@@ -15,7 +15,7 @@
 
 @set UPDATED-FOR 1.0
 
-@c Latin-1 doesn't work with tex output.
+@c Latin-1 doesn't work with TeX output.
 @c Also lookout for é characters.
 
 @set AUTHOR Niels Möller
@@ -98,10 +98,10 @@ translation approved by the Free Software Foundation.
 
 This document describes the nettle low-level cryptographic library. You
 can use the library directly from your C-programs, or (recommended)
-write or use an object-oriented wrapper for your favourite language or
+write or use an object-oriented wrapper for your favorite language or
 application.
 
-This manual coresponds to version @value{UPDATED-FOR} of the library.
+This manual corresponds to version @value{UPDATED-FOR} of the library.
 
 @menu
 * Introduction::                What is Nettle?
@@ -139,7 +139,7 @@ In particular, Nettle doesn't do algorithm selection. It doesn't do
 memory allocation. It doesn't do any I/O.
 
 The idea is that one can build several application and context specific
-interfaces on top of Nettle, and share the code, testcases, benchmarks,
+interfaces on top of Nettle, and share the code, test-cases, benchmarks,
 documentation, etc. For this first version, the only application using
 Nettle is LSH, and it uses an object-oriented abstraction on top of the
 library. 
@@ -246,7 +246,7 @@ but they @emph{must not} overlap in any other way.
 @chapter Example
 
 A simple example program that reads a file from standard in and writes
-its SHA1 checksum on stdout should give the flavour of Nettle.
+its SHA1 checksum on standard output should give the flavor of Nettle.
 
 @example
 /* FIXME: This code is untested. */
@@ -489,7 +489,7 @@ These are all the hash functions that Nettle implements.
 A @dfn{cipher} is a function that takes a message or @dfn{plaintext}
 and a secret @dfn{key} and transforms it to a @dfn{ciphertext}. Given
 only the ciphertext, but not the key, it should be hard to find the
-cleartext. Given matching pairs of plaintext and ciphertext, it should
+clear-text. Given matching pairs of plaintext and ciphertext, it should
 be hard to find the key.
 
 There are two main classes of ciphers: Block ciphers and stream ciphers.
@@ -508,9 +508,9 @@ of the most popular. @xref{Cipher Block Chaining}, for information on
 how to apply @acronym{CBC} with Nettle.
 
 A stream cipher can be used for messages of arbitrary length; a typical
-stream cipher is a keyed pseudorandom generator. To encrypt a plaintext
+stream cipher is a keyed pseudo-random generator. To encrypt a plaintext
 message of @var{n} octets, you key the generator, generate @var{n}
-octets of pseudorandom data, and XOR it with the plaintext. To decrypt,
+octets of pseudo-random data, and XOR it with the plaintext. To decrypt,
 regenerate the same stream using the key, XOR it to the ciphertext, and
 the plaintext is recovered.
 
@@ -519,9 +519,9 @@ same as for a One Time Pad: @emph{never} ever use the same key twice.
 
 A common misconception is that encryption, by itself, implies
 authentication. Say that you and a friend share a secret key, and you
-receive an encrypted message. You apply the key, and get a cleartext
+receive an encrypted message. You apply the key, and get a clear-text
 message that makes sense to you. Can you then be sure that it really was
-your friend that wrote the message you're reading? The anser is no. For
+your friend that wrote the message you're reading? The answer is no. For
 example, if you were using a block cipher in ECB mode, an attacker may
 pick up the message on its way, and reorder, delete or repeat some of
 the blocks. Even if the attacker can't decrypt the message, he can
@@ -533,7 +533,7 @@ changes to the message.
 
 It is recommended to @emph{always} use an authentication mechanism in
 addition to encrypting the messages. Popular choices are Message
-Authetication Codes like @acronym{HMAC-SHA1} @pxref{Keyed hash
+Authentication Codes like @acronym{HMAC-SHA1} @pxref{Keyed hash
 functions}, or digital signatures like @acronym{RSA}.
 
 Some ciphers have so called "weak keys", keys that results in
@@ -555,12 +555,12 @@ decryption.
 
 @subsection AES
 AES is a quite new block cipher, specified by NIST as a replacement for
-the older DES standard. The standarad is the result of a competition
+the older DES standard. The standard is the result of a competition
 between cipher designers. The winning design, also known as RIJNDAEL,
 was constructed by Joan Daemen and Vincent Rijnmen.
 
 Like all the AES candidates, the winning design uses a block size of 128
-bits, or 16 octets, and variable keysize, 128, 192 and 256 bits (16, 24
+bits, or 16 octets, and variable key-size, 128, 192 and 256 bits (16, 24
 and 32 octets) being the allowed key sizes. It does not have any weak
 keys. Nettle defines AES in @file{<nettle/aes.h>}.
  
@@ -568,7 +568,7 @@ keys. Nettle defines AES in @file{<nettle/aes.h>}.
 @end deftp
 
 @defvr Constant AES_BLOCK_SIZE
-The AES blocksize, 16
+The AES block-size, 16
 @end defvr
 
 @defvr Constant AES_MIN_KEY_SIZE
@@ -663,11 +663,11 @@ Nettle defines cast128 in @file{<nettle/cast128.h>}.
 @end deftp
 
 @defvr Constant CAST128_BLOCK_SIZE
-The CAST128 blocksize, 8
+The CAST128 block-size, 8
 @end defvr
 
 @defvr Constant CAST128_MIN_KEY_SIZE
-Minumim CAST128 key size, 5
+Minimum CAST128 key size, 5
 @end defvr
 
 @defvr Constant CAST128_MAX_KEY_SIZE
@@ -704,7 +704,7 @@ has some weak keys. Nettle defines BLOWFISH in @file{<nettle/blowfish.h>}.
 @end deftp
 
 @defvr Constant BLOWFISH_BLOCK_SIZE
-The BLOWFISH blocksize, 8
+The BLOWFISH block-size, 8
 @end defvr
 
 @defvr Constant BLOWFISH_MIN_KEY_SIZE
@@ -748,7 +748,7 @@ key.
 
 The key size of DES is so small that keys can be found by brute force,
 using specialized hardware or lots of ordinary work stations in
-parallell. One shouldn't be using plain DES at all today, if one uses
+parallel. One shouldn't be using plain DES at all today, if one uses
 DES at all one should be using DES3 or "triple DES", see below.
 
 DES also has some weak keys. Nettle defines DES in @file{<nettle/des.h>}.
@@ -757,7 +757,7 @@ DES also has some weak keys. Nettle defines DES in @file{<nettle/des.h>}.
 @end deftp
 
 @defvr Constant DES_BLOCK_SIZE
-The DES blocksize, 8
+The DES block-size, 8
 @end defvr
 
 @defvr Constant DES_KEY_SIZE
@@ -819,7 +819,7 @@ two-key variant is believed to be secure, i.e. there are no known
 attacks significantly better than brute force.
 
 Naturally, it's simple to implement triple-DES on top of Nettle's DES
-functions. Nettle includes an inplementation of three-key "ede"
+functions. Nettle includes an implementation of three-key "ede"
 triple-DES, it is defined in the same place as plain DES,
 @file{<nettle/des.h>}.
 
@@ -827,7 +827,7 @@ triple-DES, it is defined in the same place as plain DES,
 @end deftp
 
 @defvr Constant DES3_BLOCK_SIZE
-The DES3 blocksize is the same as DES_BLOCK_SIZE, 8
+The DES3 block-size is the same as DES_BLOCK_SIZE, 8
 @end defvr
 
 @defvr Constant DES3_KEY_SIZE
@@ -858,7 +858,7 @@ Analogous to @code{des_encrypt}
 @subsection SERPENT
 SERPENT is one of the AES finalists, designed by Ross Anderson, Eli
 Biham and Lars Knudsen. Thus, the interface and properties are similar
-to AES'. One pecularity is that it is quite pointless to use it with
+to AES'. One peculiarity is that it is quite pointless to use it with
 anything but the maximum key size, smaller keys are just padded to
 larger ones. Nettle defines SERPENT in @file{<nettle/serpent.h>}.
 
@@ -866,11 +866,11 @@ larger ones. Nettle defines SERPENT in @file{<nettle/serpent.h>}.
 @end deftp
 
 @defvr Constant SERPENT_BLOCK_SIZE
-The SERPENT blocksize, 16
+The SERPENT block-size, 16
 @end defvr
 
 @defvr Constant SERPENT_MIN_KEY_SIZE
-Minumim SERPENT key size, 16
+Minimum SERPENT key size, 16
 @end defvr
 
 @defvr Constant SERPENT_MAX_KEY_SIZE
@@ -906,11 +906,11 @@ Nettle defines it in @file{<nettle/twofish.h>}.
 @end deftp
 
 @defvr Constant TWOFISH_BLOCK_SIZE
-The TWOFISH blocksize, 16
+The TWOFISH block-size, 16
 @end defvr
 
 @defvr Constant TWOFISH_MIN_KEY_SIZE
-Minumim TWOFISH key size, 16
+Minimum TWOFISH key size, 16
 @end defvr
 
 @defvr Constant TWOFISH_MAX_KEY_SIZE
@@ -970,24 +970,24 @@ struct, which is of size @code{context_size}.
 @deftypevrx {Constant Struct} {struct nettle_cipher} nettle_twofish256
 
 Nettle includes such structs for all the @emph{regular} ciphers, i.e.
-ones without weak keys or other oddnesses.
+ones without weak keys or other oddity.
 @end deftypevr
 
 @node Cipher Block Chaining, Keyed hash functions, Cipher functions, Reference
 @comment  node-name,  next,  previous,  up
 @section Cipher Block Chaining
 
-When using @acronym{CBC} mode, cleartext blocks are not encrypted
+When using @acronym{CBC} mode, clear-text blocks are not encrypted
 independently of each other, like in Electronic Cook Book mode. Instead,
 when encrypting a block in @acronym{CBC} mode, the previous ciphertext
-block is XOR:ed with the cleartext before it is fed to the block cipher.
+block is XOR:ed with the clear-text before it is fed to the block cipher.
 When encrypting the first block, a random block called an @dfn{IV}, or
 Initialization Vector, is used as the ``previous ciphertext block''. The
 IV should be chosen randomly, but it need not be kept secret, and can
 even be transmitted in the clear together with the encrypted data.
 
-In symbols, if @code{E_k} is the encryption function of a blockcipher,
-and @code{IV} is the initialization vector, then @code{n} cleartext blocks
+In symbols, if @code{E_k} is the encryption function of a block-cipher,
+and @code{IV} is the initialization vector, then @code{n} clear-text blocks
 @code{M_1},@dots{} @code{M_n} are transformed into @code{n} ciphertext blocks
 @code{C_1},@dots{} @code{C_n} as follows:
 
@@ -1102,7 +1102,7 @@ such constructions have weaknesses. A better construction is
 
 For an underlying hash function @code{H}, with digest size @code{l} and
 internal block size @code{b}, @acronym{HMAC-H} is constructed as
-follows: From a given key @code{k}, two distinct subkeys @code{k_i} and
+follows: From a given key @code{k}, two distinct sub-keys @code{k_i} and
 @code{k_o} are constructed, both of length @code{b}. The
 @acronym{HMAC-H} of a message @code{m} is then computed as @code{H(k_o |
 H(k_i | m))}, where @code{|} denotes string concatenation.
@@ -1123,7 +1123,7 @@ functions:
 
 @deftypefun void hmac_set_key (void *@var{outer}, void *@var{inner}, void *@var{state}, const struct nettle_hash *@var{H}, unsigned @var{length}, const uint8_t *@var{key})
 Initializes the three context structs from the key. The @var{outer} and
-@var{inner} contexts corresponds to the subkeys @code{k_o} and
+@var{inner} contexts corresponds to the sub-keys @code{k_o} and
 @code{k_i}. @var{state} is used for hashing the message, and is
 initialized as a copy of the @var{inner} context.
 @end deftypefun
@@ -1159,7 +1159,7 @@ Expands into
 @end example
 @end deffn
 
-It can be used to define a @acronym{HMAC} constext struct, either
+It can be used to define a @acronym{HMAC} context struct, either
 directly,
 
 @example
@@ -1296,7 +1296,7 @@ public-key encryption, as that isn't yet supported by Nettle. So the
 rest of this chapter is about digital signatures.
 
 To use a digital signature algorithm, one must first create a
-@dfn{keypair}: A public key and a corresponding private key. The private
+@dfn{key-pair}: A public key and a corresponding private key. The private
 key is used to sign messages, while the public key is used for verifying
 that that signatures and messages match. Some care must be taken when
 distributing the public key; it need not be kept secret, but if a bad
@@ -1357,7 +1357,7 @@ If @code{n} is large enough, and properly chosen, the inverse of F,
 the computation of @code{e}:th roots modulo @code{n}, is very difficult.
 But, where's the trapdoor?
 
-Let's first look at how @acronym{RSA} keypairs are generated. First
+Let's first look at how @acronym{RSA} key-pairs are generated. First
 @code{n} is chosen as the product of two large prime numbers @code{p}
 and @code{q} of roughly the same size (so if @code{n} is 1000 bits,
 @code{p} and @code{q} are about 500 bits each). One also computes the
@@ -1384,7 +1384,7 @@ knowing @code{phi}, which depends on the factorization of @code{n}.
 
 So @code{d} is the trapdoor, if we know @code{d} and @code{y = F(x)}, we can
 recover x as @code{y^d mod n}. @code{d} is also the private half of
-the @acronym{RSA} keypair.
+the @acronym{RSA} key-pair.
 
 The most common signature operation for @acronym{RSA} is defined in
 @cite{PKCS#1}, a specification by RSA Laboratories. The message to be
@@ -1394,7 +1394,7 @@ signed is first hashed using a cryptographic hash function, e.g.
 itself, are concatenated and converted to a number @code{x}. The
 signature is computed from @code{x} and the private key as @code{s = x^d
 mod n}@footnote{Actually, the computation is not done like this, it is
-done more efficiently using @code{p}, @code{q} and the chinese remainder
+done more efficiently using @code{p}, @code{q} and the Chinese remainder
 theorem (@acronym{CRT}). But the result is the same.}. The signature, @code{s} is a
 number of about the same size of @code{n}, and it usually encoded as a
 sequence of octets, most significant octet first.
@@ -1515,7 +1515,168 @@ example if if @var{n_size} is too small, or if @var{e_size} is zero and
 @comment  node-name,  next,  previous,  up
 @section Randomness
 
-XXX Not yet written.
+A crucial ingredient in many cryptographic contexts is randomness: Let
+@code{p} be a random prime, choose a random initialization vector
+@code{iv}, a random key @code{k} and a random exponent @code{e}, etc. In
+the theories, it is assumed that you have plenty of randomness around.
+If this assumption is not true in practice, systems that are otherwise
+perfectly secure, can be broken. Randomness has often turned out to be
+the weakest link in the chain.
+
+In non-cryptographic applications, such as games as well as scientific
+simulation, a good randomness generator usually means a generator that
+has good statistical properties, and is seeded by some simple function
+of things like the current time, process id, and host name.
+
+However, such a generator is inadequate for cryptography, for at least
+two reasons:
+
+@itemize
+
+@item
+It's too easy for an attacker to guess the initial seed. Even if it will
+take some 2^32 tries before he guesses right, that's far too easy. For
+example, if the process id is 16 bits, the resolution of "current time"
+is one second, and the attacker knows what day the generator was seeded,
+there are only about 2^32 possibilities to try if all possible values
+for the process id and time-of-day are tried.
+
+@item
+The generator output reveals too much. By observing only a small segment
+of the generator's output, its internal state can be recovered, and from
+there, all previous output and all future output can be computed by the
+attacker. 
+@end itemize
+
+A randomness generator that is used for cryptographic purposes must have
+better properties. Let's first look at the seeding, as the issues here
+are mostly independent of the rest of the generator. The initial state
+of the generator (its seed) must be unguessable by the attacker. So
+what's unguessable? It depends on what the attacker already knows. The
+information theoretic concept that is used to reason about such things
+is called "entropy", or "conditional entropy" (which is not to be
+confused with the thermodynamic concept with the same name). A
+reasonable requirement is that the seed contains a conditional entropy
+of at least some 80-100 bits. This property can be explained as follows:
+Allow the attacker to ask @code{n} yes-no-questions, of his own choice,
+about the the seed. If the attacker, using this question-and-answer
+session, as well as any other information he knows about the seeding
+process, still can't guess the seed correctly, then the conditional
+entropy is more than @code{n} bits.
+
+Let's look at an example. Say information about timing of received
+network packets is used in the seeding process. If there is some random
+network traffic going on, this will contribute some bits of entropy or
+"unguessability" to the seed. However, if the attacker can listen in to
+the local network, or if all but a small number of the packets were
+transmitted by machines that the attacker can monitor, this additional
+information makes the seed easier for the attacker to figure out. Even
+if the information is exactly the same, the conditional entropy, or
+unguessability, is smaller for an attacker that knows some of it already
+before the hypothetical question-and-answer session.
+
+Seeding of good generators is usually based on several sources. The key
+point here is that the amount of unguessability that each source
+contributes, depends on who the attacker is. Some sources that have been
+used are:
+
+@table @asis
+@item High resolution timing of i/o activities
+Such as completed blocks from spinning hard disks, network packets, etc.
+Getting access to such information is quite system dependent, and not
+all systems include suitable hardware. If available, it's one of the
+better randomness source one can find in a digital, mostly predictable,
+computer.
+
+@item User activity
+Timing and contents of user interaction events is another popular source
+that is available for interactive programs (even if I suspect that it is
+sometimes used in order to make the user feel good, not because the
+quality of the input is needed or used properly). Obviously, not
+available when a machine is unattended. Also beware of networks: User
+interaction that happens across a long serial cable, @acronym{TELNET}
+session, or even @acronym{SSH} session may be visible to an attacker, in
+full or partially.
+
+@item Audio input
+Any room, or even a microphone input that's left unconnected, is a
+source of some random background noise, which can be fed into the
+seeding process.
+
+@item Specialized hardware
+Hardware devices with the sole purpose of generating random data have
+been designed. They range from radioactive samples with an attached
+Geiger counter, to amplification of the inherent noise in electronic
+components such as diodes and resistors, to low-frequency sampling of
+chaotic systems. Hashing successive images of a Lava lamp is a
+spectacular example of the latter type.
+
+@item Secret information
+Secret information, such as user passwords or keys, or private files
+stored on disk, can provide some unguessability. A problem is that if
+the information is revealed at a later time, the unguessability
+vanishes. Another problem is that this kind of information tends to be
+fairly constant, so if you rely on it and seed your generator regularly,
+you risk constructing almost similar seeds or even constructing the same
+seed more than once.
+@end table
+
+For all practical sources, it's difficult but important to provide a
+reliable lower bound on the amount of unguessability that it provides.
+Two important points are to make sure that the attacker can't observe
+your sources (so if you like the Lava lamp idea, remember that you have
+to get your own lamp, and not put it by a window or anywhere else where
+strangers can see it), and that hardware failures are detected. What if
+the bulb in the Lava lamp, which you keep locked into a cupboard
+following the above advice, breaks after a few months?
+
+So let's assume that we have been able to find an unguessable seed,
+which contains at least 80 bits of conditional entropy, relative to all
+attackers that we care about (typically, we must at the very least
+assume that no attacker has root privileges on our machine).
+
+How do we generate output from this seed, and how much can we get? Some
+generators (notably the Linux @file{/dev/random} generator) tries to
+estimate available entropy and restrict the amount of output. The goal
+is that if you read 128 bits from @file{/dev/random}, you should get 128
+"truly random" bits. This is a property that is useful in some
+specialized circumstances, for instance when generating key material for
+a one time pad, or when working with unconditional blinding, but in most
+cases, it doesn't matter much. For most application, there's no limit on
+the amount of useful "random" data that we can generate from a small
+seed; what matters is that the seed is unguessable and that the
+generator has good cryptographic properties.
+
+At the heart of all generators lies its internal state. Future output
+is determined by the internal state alone. Let's call it the generator's
+key. The key is initialized from the unguessable seed. Important
+properties of a generator are:
+
+@table @dfn
+
+@item Key-hiding
+An attacker observing the output should not be able to recover the
+generator's key.
+
+@item Independence of outputs
+Observing some of the output should not help the attacker to guess
+previous or future output.
+
+@item Forward secrecy
+Even if an attacker compromises the generator's key, he should not be
+able to guess the generator output @emph{before} the key compromise.
+
+@item Recovery from key compromise
+If an attacker compromises the generator's key, he can compute
+@emph{all} future output. This is inevitable if the generator is seeded
+only once, at startup. However, the generator can provide a reseeding
+mechanism, to achieve recovery from key compromise. More precisely: If
+the attacker compromises the key at a particular time @code{t_1}, there
+is another later time @code{t_2}, such that if the attacker observes all
+output generated between @code{t_1} and @code{t_2}, he still can't guess
+what output is generated after @code{t_2}.
+
+@end table
 
 @node Miscellaneous functions, Compatibility functions, Randomness, Reference
 @comment  node-name,  next,  previous,  up
@@ -1534,11 +1695,11 @@ similar to the ANSI-C @code{memcpy} function.
 @section Compatibility functions
 
 For convenience, Nettle includes alternative interfaces to some
-algorithms, for compatibilty with some other popular crypto toolkits.
+algorithms, for compatibility with some other popular crypto toolkits.
 These are not fully documented here; refer to the source or to the
 documentation for the original implementation.
 
-MD5 is defined in [RFCXXX], which includes a reference implementation.
+MD5 is defined in [RFC 1321], which includes a reference implementation.
 Nettle defines a compatible interface to MD5 in
 @file{<nettle/md5-compat.h>}. This file defines the typedef
 @code{MD5_CTX}, and declares the functions @code{MD5Init}, @code{MD5Update} and
@@ -1559,19 +1720,19 @@ variable @code{des_check_key}, and the functions @code{des_cbc_cksum}
 @node Nettle soup, Installation, Reference, Top
 @comment  node-name,  next,  previous,  up
 @chapter Traditional Nettle Soup
-For the serious nettle hacker, here is a recipe for nettlesoup.
+For the serious nettle hacker, here is a recipe for nettle-soup.
 
 4 servings
 
 @itemize @w
 @item
-1 litre fresh nettles (urtica dioica)
+1 liter fresh nettles (urtica dioica)
 @item
 2 tablespoons butter
 @item
 3 tablespoons flour
 @item
-1 litre buillon (meat or vegetable)
+1 liter bouillon (meat or vegetable)
 @item
 1/2 teaspoon salt
 @item
@@ -1580,19 +1741,19 @@ a tad white pepper
 some cream or milk
 @end itemize
 
-Gather 1 ltre fresh nettles. Use gloves! Small, tender shoots are
+Gather 1 liter fresh nettles. Use gloves! Small, tender shoots are
 preferable but the tops of larger nettles can also be used.
 
 @c replace "hack" with "chop"?
 
 Rinse the nettles very well. Boil them for 10 minutes in lightly salted
 water. Strain the nettles and save the water. Hack the nettles. Melt the
-butter and mix in the flour. Dilute with buillon and the nettlewater you
+butter and mix in the flour. Dilute with bouillon and the nettle-water you
 save earlier. Add the hacked nettles. If you wish you can add some milk
 or cream at this stage. Bring to a boil and let boil for a few minutes.
 Season with salt and pepper.
 
-Serve with boiled egghalves.
+Serve with boiled egg-halves.
 
 @c And the original Swedish version.
 @ignore
@@ -1648,3 +1809,29 @@ Only static libraries are installed.
 @printindex cp
 
 @bye
+
+Local Variables:
+ispell-local-dictionary: "american"
+ispell-skip-region-alist: (
+ (ispell-words-keyword forward-line)
+ ("^@example" . "^@end.*example")
+ ("^@ignore" . "^@end.*ignore")
+ ("^@\\(end\\|syncodeindex\\|vskip\\|\\(un\\)?macro\\|node\\|deftp\\) .*$")
+ ("^@\\(printindex\\|set\\) .*$")
+ ("^@def.*$")
+ ;; Allows one level of nested braces in the argument 
+ ("@\\(uref\\|value\\|badspell\\|code\\|file\\|var\\){[^{}]*\\({[^{}]*}[^{}]*\\)*}")
+ ("@[a-z]+[{ ]")
+ ("@[a-z]+$")
+ ("\input texinfo.*$")
+ ("ispell-ignore" . "ispell-end-ignore")
+ ("^Local Variables:$" . "^End:$"))
+End:
+
+@c  LocalWords:  cryptographics crypto LSH GNUPG API GPL LGPL aes rijndael ller
+@c  LocalWords:  Sevilla arcfour RC Niels Dassen Colin Kuchling Biham sha Ruud
+@c  LocalWords:  Gutmann twofish de Rooij struct MB Rivest RFC Nettle's ECB CBC
+@c  LocalWords:  RSA Daemen Rijnmen Schneier DES's ede structs oddnesses HMAC
+@c  LocalWords:  NIST Alice's GMP bignum Diffie Adi Shamir Adleman Euclid's ASN
+@c  LocalWords:  PKCS callbacks Young's urtica dioica autoconf automake SSH tad
+@c  LocalWords:  unguessability reseeding
