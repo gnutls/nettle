@@ -4,10 +4,20 @@ if [ -z "$srcdir" ] ; then
   srcdir=`pwd`
 fi
 
-test_conv () {
-    # FIXME: echo -n not portable
+# echo -n is not portable
+
+if [ "`echo -n ''`" = "" ]; then
+    n='-n'; c=''
+elif [ "`echo '\c'`" = "" ]; then
+    n=''; c='\c'
+else
+    echo >&2 'Neither echo -n nor echo \c seems to work.'
+    exit 1
+fi
+
+test_advanced () {
     echo "$1" > test.in
-    if ./sexp-conv <test.in >test1.out ; then
+    if ./sexp-conv -s advanced <test.in >test1.out ; then
 	true
     else
 	exit 1
@@ -21,18 +31,42 @@ test_conv () {
     fi
 }
 
-test_conv "3:foo" "foo" -a
-test_conv "4:3des" '"3des"' -a
-test_conv '"foo"' "foo" -a
-test_conv '4:foo
-' '"foo\n"'
-test_conv '2:"\' '"\"\\"'
-test_conv "()" "()"
-test_conv '(foo bar baz)' '(foo bar
-     baz)'
-test_conv '; comment
-()' "()"
+test_canonical () {
+    echo "$1" > test.in
+    if ./sexp-conv -s canonical <test.in >test1.out ; then
+	true
+    else
+	exit 1
+    fi
+    echo $n "$2$c" > test2.out
 
-test_conv "(foo[bar]foo)" "(foo [bar]foo)" -a
+    if cmp test1.out test2.out ; then
+	true
+    else
+	exit 1;
+    fi
+}
 
+test_advanced '0:' '""'
+test_advanced '3:foo' 'foo'
+test_advanced '12:fooooooooooo' 'fooooooooooo'
+test_advanced '10:fooooooooo' 'fooooooooo'
+test_advanced '4:3des' '"3des"' 
+test_advanced '"foo"' 'foo' 
+test_advanced '4:foo
+' '"foo\n"' 
+test_advanced '2:"\' '"\"\\"' 
+test_advanced '()' '()' 
+test_advanced '(foo bar baz)' '(foo bar
+     baz)' 
+test_advanced '; comment
+()' '()' 
+
+test_advanced '(foo[bar]foo)' '(foo [bar]foo)'
+
+test_canonical '""' '0:'
+test_canonical 'foo' '3:foo'
+test_canonical 'fooooooooooo' '12:fooooooooooo'
+test_canonical 'fooooooooo' '10:fooooooooo'
+test_canonical '(foo bar baz)' '(3:foo3:bar3:baz)' 
 exit 0
