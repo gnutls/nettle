@@ -1,9 +1,18 @@
 2001-10-08  Niels Möller  <nisse@cuckoo.hack.org>
 
+	* yarrow.h (struct yarrow256_ctx): Deleted buffer, index and
+	block_count. 
+
 	* yarrow256.c (yarrow_fast_reseed): New function.
 	(yarrow_slow_reseed): New function.
 	(yarrow256_update): Check seed/reseed thresholds.
-
+	(yarrow_gate): New function, extracted from
+	yarrow_generate_block_with_gate which was deleted.
+	(yarrow_generate_block_with_gate): Deleted function.
+	(yarrow256_random): Don't buffer any output, instead gate after
+	each request.
+	(YARROW_GATE_THRESHOLD): Deleted constant.
+	
 2001-10-07  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* Makefile.am: Added yarrow files.
