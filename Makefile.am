@@ -1,5 +1,14 @@
 SUBDIRS = . testsuite examples
 
+SHLIBFORLINK = @SHLIBFORLINK@
+SHLIBSONAME = @SHLIBSONAME@
+SHLIBFILE = @SHLIBFILE@
+
+SHLIBCFLAGS = @SHLIBCFLAGS@
+SHLIBLINK = @SHLIBLINK@
+SHLIBTARGET = @SHLIBTARGET@
+SHLIBINSTALL = @SHLIBINSTALL@
+
 noinst_PROGRAMS = aesdata desdata shadata
 
 libnettleincludedir = $(includedir)/nettle
@@ -67,14 +76,38 @@ SUFFIXES = .asm
 RM_TMP = rm -f
 
 # FIXME: How to write this without using GNU make features?
+%.s: %.asm asm.m4 machine.m4 config.m4
+	$(M4) $(srcdir)/asm.m4 machine.m4 config.m4 \
+		`test -f $< || echo '$(srcdir)/'`$< >$@
+
 # NOTE: We create an empty .deps-file, to make the make/automake
 # dependency tracking happier.
-%.o: %.asm asm.m4 machine.m4 config.m4 
-	$(M4) $(srcdir)/asm.m4 machine.m4 config.m4 \
-		`test -f $< || echo '$(srcdir)/'`$< >tmp-$*.s
-	$(COMPILE) -c tmp-$*.s -o $@
-	$(RM_TMP) tmp-$*.s
+%.$(OBJEXT): %.s
+	$(COMPILE) -c $< -o $@
 	echo >.deps/$*.Po
+
+# Shared library rules
+all-local: $(SHLIBTARGET)
+install-data-local: $(SHLIBINSTALL)
+
+# Assembler files must contain only PIC-clean code.
+%_p.$(OBJEXT): %.c
+	$(COMPILE) $(SHLIBCFLAGS) -c $< -o $@
+
+%_p.$(OBJEXT): %.s
+	$(COMPILE) $(SHLIBCFLAGS) -c $< -o $@
+	echo >.deps/$*.Po
+
+SHLIBOBJECTS = (patsubst %.$(OBJEXT),%_p.$(OBJEXT),$(am_libnettle_a_OBJECTS) $(LIBOBJS))
+
+$(SHLIBFORLINK): $(SHLIBOBJECTS)
+	$(SHLIBLINK) $^ -o $@
+
+install-shared: $(SHLIBFORLINK)
+	$(INSTALL_DATA) $(SHLIBFORLINK) $(DESTDIR)$(libdir)/$(SHLIBFILE)
+	(cd $(DESTDIR)$(libdir) \
+		&& ln -sf $(SHLIBFILE) $(SHLIBSONAME) \
+		&& ln -sf $(SHLIBFILE) $(SHLIBFORLINK) )
 
 %.html : %.texinfo
 	(cd $(srcdir) \
