@@ -5,7 +5,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2002 Niels Möller
+ * Copyright (C) 2002, 2003 Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -31,12 +31,14 @@
 
 #include "dsa.h"
 
+#include "bignum.h"
+
 #include <stdlib.h>
 
 int
-dsa_verify(const struct dsa_public_key *key,
-	   struct sha1_ctx *hash,
-	   const struct dsa_signature *signature)
+dsa_verify_digest(const struct dsa_public_key *key,
+		  const uint8_t *digest,
+		  const struct dsa_signature *signature)
 {
   mpz_t w;
   mpz_t tmp;
@@ -65,12 +67,11 @@ dsa_verify(const struct dsa_public_key *key,
 
   mpz_init(tmp);
   mpz_init(v);
-  
-  /* Compute hash */
-  _dsa_hash(tmp, hash);
+
+  /* The message digest */
+  nettle_mpz_set_str_256_u(tmp, SHA1_DIGEST_SIZE, digest);
   
   /* v = g^{w * h (mod q)} (mod p)  */
-
   mpz_mul(tmp, tmp, w);
   mpz_fdiv_r(tmp, tmp, key->q);
 
@@ -95,6 +96,17 @@ dsa_verify(const struct dsa_public_key *key,
   mpz_clear(v);
 
   return res;
+}
+
+int
+dsa_verify(const struct dsa_public_key *key,
+	   struct sha1_ctx *hash,
+	   const struct dsa_signature *signature)
+{
+  uint8_t digest[SHA1_DIGEST_SIZE];
+  sha1_digest(hash, sizeof(digest), digest);
+
+  return dsa_verify_digest(key, digest, signature);
 }
 
 #endif /* WITH_PUBLIC_KEY */

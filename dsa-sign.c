@@ -37,11 +37,11 @@
 
 
 void
-dsa_sign(const struct dsa_public_key *pub,
-	 const struct dsa_private_key *key,
-	 void *random_ctx, nettle_random_func random,
-	 struct sha1_ctx *hash,
-	 struct dsa_signature *signature)
+dsa_sign_digest(const struct dsa_public_key *pub,
+		const struct dsa_private_key *key,
+		void *random_ctx, nettle_random_func random,
+		const uint8_t *digest,
+		struct dsa_signature *signature)
 {
   mpz_t k;
   mpz_t h;
@@ -61,7 +61,7 @@ dsa_sign(const struct dsa_public_key *pub,
 
   /* Compute hash */
   mpz_init(h);
-  _dsa_hash(h, hash);
+  nettle_mpz_set_str_256_u(h, SHA1_DIGEST_SIZE, digest);
 
   /* Compute k^-1 (mod q) */
   if (!mpz_invert(k, k, pub->q))
@@ -78,6 +78,20 @@ dsa_sign(const struct dsa_public_key *pub,
   mpz_clear(k);
   mpz_clear(h);
   mpz_clear(tmp);
+}
+
+void
+dsa_sign(const struct dsa_public_key *pub,
+	 const struct dsa_private_key *key,
+	 void *random_ctx, nettle_random_func random,
+	 struct sha1_ctx *hash,
+	 struct dsa_signature *signature)
+{
+  uint8_t digest[SHA1_DIGEST_SIZE];
+  sha1_digest(hash, sizeof(digest), digest);
+
+  dsa_sign_digest(pub, key, random_ctx, random,
+		  digest, signature);
 }
 
 #endif /* WITH_PUBLIC_KEY */
