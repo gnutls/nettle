@@ -1,5 +1,30 @@
 2002-10-01  Niels Möller  <niels@s3.kth.se>
 
+	* examples/rsa-sign.c: No need to include config.h. Use werror
+	instead of fprintf.
+	* examples/rsa-verify.c: Likewise.
+
+	* examples/io.h: Forward declare struct rsa_public_key and struct
+	rsa_private_key, to avoid dependences on config.h. 
+
+	* configure.ac (RSA_EXAMPLES): New substituted variable,
+	controlling which example programs to build.
+
+	* examples/rsa-verify.c: New example program.
+
+	* examples/rsa-keygen.c: Use functions from io.c.
+	* examples/rsa-sign.c: Likewise.
+
+	* examples/Makefile.am (noinst_PROGRAMS): Added rsa-verify.
+	(LDADD): Added io.o.
+
+	* configure.ac: New define WITH_PUBLIC_KEY, and new configure flag
+	--disable-public-key. Updated rsa-files to check for that, rather
+	than for HAVE_LIBGMP. 
+
+	* examples/io.c, examples/io.c: New files. Miscellaneous functions
+	used by the example programs.
+
 	* base64.h (BASE64_DECODE_LENGTH): Comment fix.
 
 2002-09-30  Niels Möller  <nisse@cuckoo.hack.org>
