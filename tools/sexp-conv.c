@@ -600,8 +600,9 @@ struct sexp_parser
   enum sexp_mode mode;
   enum sexp_token expected;
 
+#if 0
   struct sexp_compound_token token;
-  
+#endif
   /* Nesting level of lists. Transport encoding counts as one
    * level of nesting. */
   unsigned level;
@@ -620,7 +621,10 @@ sexp_parse_init(struct sexp_parser *parser,
   parser->mode = mode;
   parser->expected = 0;
 
+#if 0
   sexp_compound_token_init(&parser->token);
+#endif
+  
   /* Start counting with 1 for the top level, to make comparisons
    * between transport and level simpler.
    *
@@ -632,11 +636,12 @@ sexp_parse_init(struct sexp_parser *parser,
 /* Get next token, and check that it is of the expected kind. */
 static void
 sexp_check_token(struct sexp_parser *parser,
-		 enum sexp_token token)
+		 enum sexp_token token,
+		 struct nettle_buffer *string)
 {
   sexp_get_token(parser->input,
 		 parser->transport ? SEXP_CANONICAL : parser->mode,
-		 &parser->token.string);
+		 string);
 
   if (token && parser->input->token != token)
     die("Syntax error.\n");
@@ -650,18 +655,25 @@ sexp_check_token(struct sexp_parser *parser,
  * expression. We check at the end of strings and list whether or not
  * we should expect a SEXP_CODING_END as the next token. */
 static void
-sexp_parse(struct sexp_parser *parser)
+sexp_parse(struct sexp_parser *parser,
+	   struct sexp_compound_token *token)
 {
   for (;;)
     {
-      sexp_check_token(parser, parser->expected);
+      sexp_get_token(parser->input,
+		     parser->transport ? SEXP_CANONICAL : parser->mode,
+		     &token->string);
+#if 0
+      sexp_check_token(parser, parser->expected,
+		       &token->string);
 
       if (parser->expected)
 	{
 	  parser->expected = 0;
 	  
 	  if (parser->input->token == SEXP_STRING)
-	    /* Nothing special */
+	    /* XXX */
+	    token->type = SEXP_DISPLAY
 	    ;
 	  else
 	    {
@@ -675,7 +687,7 @@ sexp_parse(struct sexp_parser *parser)
 	      continue;
 	    }
 	}
-	    
+#endif 
       switch(parser->input->token)
 	{
 	case SEXP_LIST_END:
@@ -685,31 +697,44 @@ sexp_parse(struct sexp_parser *parser)
 
 	  if (!parser->level)
 	    die("Unmatched end of list.\n");
-	    
+
+	  token->type = SEXP_LIST_END;
+
+	check_transport_end:
 	  if (parser->level == parser->transport)
-	    parser->expected = SEXP_CODING_END;
+	    {
+	      sexp_check_token(parser, SEXP_CODING_END, &token->string);
+	      assert(parser->transport);
+	      assert(parser->level == parser->transport);
+
+	      parser->level--;
+	      parser->transport = 0;
+	    }
 	  return;
     
 	case SEXP_EOF:
 	  if (parser->level > 1)
 	    die("Unexpected end of file.\n");
+
+	  token->type = SEXP_EOF;
 	  return;
 
 	case SEXP_LIST_START:
 	  parser->level++;
+	  token->type = SEXP_LIST_START;
 	  return;
 
 	case SEXP_DISPLAY_START:
-	  sexp_check_token(parser, SEXP_STRING);
-	  sexp_check_token(parser, SEXP_DISPLAY_END);
-	  parser->input->token = SEXP_DISPLAY;
-	  parser->expected = SEXP_STRING;
-	  return;
+	  sexp_check_token(parser, SEXP_STRING, &token->display);
+	  sexp_check_token(parser, SEXP_DISPLAY_END, &token->display);
+	  sexp_check_token(parser, SEXP_STRING, &token->string);
+
+	  token->type = SEXP_DISPLAY;
+	  goto check_transport_end;
 
 	case SEXP_STRING:
-	  if (parser->level == parser->transport)
-	    parser->expected = SEXP_CODING_END;
-	  return;
+	  token->type = SEXP_STRING;
+	  goto check_transport_end;
 
 	case SEXP_TRANSPORT_START:
 	  if (parser->mode == SEXP_CANONICAL)
@@ -1024,7 +1049,8 @@ sexp_put_expression(struct sexp_output *output, enum sexp_mode mode_out,
 
 
 static void
-sexp_convert_list(struct sexp_input *input, struct sexp_parser *parser,
+sexp_convert_list(struct sexp_parser *parser,
+		  struct sexp_compound_token *token,
 		  struct sexp_output *output, enum sexp_mode mode_out,
 		  unsigned indent);
 
@@ -1032,7 +1058,8 @@ sexp_convert_list(struct sexp_input *input, struct sexp_parser *parser,
  * expression, to be converted, and return with input->token being the
  * last token of the expression. */
 static void
-sexp_convert_item(struct sexp_input *input, struct sexp_parser *parser,
+sexp_convert_item(struct sexp_parser *parser,
+		  struct sexp_compound_token *token,
 		  struct sexp_output *output, enum sexp_mode mode_out,
 		  unsigned indent)
 {
@@ -1040,11 +1067,11 @@ sexp_convert_item(struct sexp_input *input, struct sexp_parser *parser,
     {
       sexp_put_char(output, '{');
       sexp_put_code_start(output, &nettle_base64);
-      sexp_convert_item(input, parser, output, SEXP_CANONICAL, 0);
+      sexp_convert_item(parser, token, output, SEXP_CANONICAL, 0);
       sexp_put_code_end(output);
       sexp_put_char(output, '}');
     }
-  else switch(input->token)
+  else switch(token->type)
     {
     case SEXP_LIST_END:
       die("Unmatched end of list.\n");
@@ -1054,20 +1081,18 @@ sexp_convert_item(struct sexp_input *input, struct sexp_parser *parser,
       die("Unexpected end of coding.\n");
 
     case SEXP_LIST_START:
-      sexp_convert_list(input, parser, output, mode_out, indent);
+      sexp_convert_list(parser, token, output, mode_out, indent);
       break;
       
     case SEXP_STRING:
-      sexp_put_string(output, mode_out, &parser->token.string);
+      sexp_put_string(output, mode_out, &token->string);
       break;
 
     case SEXP_DISPLAY:
       sexp_put_char(output, '[');
-      sexp_put_string(output, mode_out, &parser->token.string);
+      sexp_put_string(output, mode_out, &token->display);
       sexp_put_char(output, ']');
-      sexp_parse(parser);
-      assert(input->token == SEXP_STRING);
-      sexp_put_string(output, mode_out, &parser->token.string);      
+      sexp_put_string(output, mode_out, &token->string);      
       break;
 
     default:
@@ -1077,7 +1102,8 @@ sexp_convert_item(struct sexp_input *input, struct sexp_parser *parser,
 }
 
 static void
-sexp_convert_list(struct sexp_input *input, struct sexp_parser *parser,
+sexp_convert_list(struct sexp_parser *parser,
+		  struct sexp_compound_token *token,
 		  struct sexp_output *output, enum sexp_mode mode_out,
 		  unsigned indent)
 {
@@ -1087,9 +1113,9 @@ sexp_convert_list(struct sexp_input *input, struct sexp_parser *parser,
   
   for (item = 0;; item++)
     {
-      sexp_parse(parser);
+      sexp_parse(parser, token);
 
-      if (input->token == SEXP_LIST_END)
+      if (token->type == SEXP_LIST_END)
 	{
 	  sexp_put_char(output, ')');
 	  return;
@@ -1108,7 +1134,7 @@ sexp_convert_list(struct sexp_input *input, struct sexp_parser *parser,
 	    sexp_put_newline(output, indent);
 	}
 
-      sexp_convert_item(input, parser, output, mode_out, indent);
+      sexp_convert_item(parser, token, output, mode_out, indent);
     }
 }
 
@@ -1309,12 +1335,14 @@ main(int argc, char **argv)
   struct conv_options options;
   struct sexp_input input;
   struct sexp_parser parser;
+  struct sexp_compound_token token;
   struct sexp_output output;
   
   parse_options(&options, argc, argv);
 
   sexp_input_init(&input, stdin);
   sexp_parse_init(&parser, &input, SEXP_ADVANCED);
+  sexp_compound_token_init(&token);
   sexp_output_init(&output, stdout,
 		   options.width, options.prefer_hex);
 
@@ -1325,9 +1353,9 @@ main(int argc, char **argv)
   
   sexp_get_char(&input);
   
-  sexp_parse(&parser);
+  sexp_parse(&parser, &token);
   
-  if (input.token == SEXP_EOF)
+  if (token.type == SEXP_EOF)
     {
       if (options.once)
 	die("sexp-conv: No input expression.\n");
@@ -1336,15 +1364,15 @@ main(int argc, char **argv)
   
   do 
     {
-      sexp_convert_item(&input, &parser, &output, options.mode, 0);
+      sexp_convert_item(&parser, &token, &output, options.mode, 0);
       if (options.hash)
 	sexp_put_digest(&output);
       else if (options.mode != SEXP_CANONICAL)
 	sexp_put_newline(&output, 0);
 	  
-      sexp_parse(&parser);
+      sexp_parse(&parser, &token);
     }
-  while (!options.once && input.token != SEXP_EOF);
+  while (!options.once && token.type != SEXP_EOF);
   
   if (fflush(output.f) < 0)
     die("Final fflush failed: %s.\n", strerror(errno));
