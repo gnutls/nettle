@@ -15,5 +15,4 @@ Improve sexp_Format to accept literals, like "n" in
 
   sexp_format(buffer, "(n%b)", n);
 
-Add a "avanced-hex" syntax to sexp-conv. Like the advanced syntax, but
-prefer hex instead of base 64 for non-ascii literals.
+Valgrind reports errors on the des-compat test program. Investigate.
