@@ -52,27 +52,20 @@ enum sexp_token
     SEXP_LIST_START,
     SEXP_LIST_END,
     SEXP_TRANSPORT_START,
-    SEXP_TRANSPORT_END,
+    SEXP_CODING_END,
     SEXP_EOF,
-  };
-
-enum sexp_coding
-  {
-    SEXP_PLAIN,
-    SEXP_BASE64,
-    SEXP_HEX,
   };
 
 struct sexp_input
 {
   FILE *f;
 
-  enum sexp_coding coding;
-  /* Used in transport mode */
+  const struct nettle_armor *coding;
+
   union {
     struct base64_decode_ctx base64;
     struct base16_decode_ctx hex;
-  };
+  } state;
 
   /* Terminator for current coding */
   uint8_t terminator;
@@ -91,7 +84,7 @@ static void
 sexp_input_init(struct sexp_input *input, FILE *f)
 {
   input->f = f;
-  input->coding = SEXP_PLAIN;
+  input->coding = NULL;
   input->level = 0;
 
   nettle_buffer_init(&input->string);
@@ -146,46 +139,68 @@ sexp_get_raw_char(struct sexp_input *input, uint8_t *out)
 static int
 sexp_get_char(struct sexp_input *input, uint8_t *out)
 {
-  switch (input->coding)
-    {
-    case SEXP_BASE64:
-      for (;;)
-	{
-	  int done;
-	  uint8_t c;
+  if (input->coding)
+    for (;;)
+      {
+	int done;
+	uint8_t c;
+	
+	if (!sexp_get_raw_char(input, &c))
+	  die("Unexpected end of file in coded data.\n");
+
+	if (c == input->terminator)
+	  {
+	    if (input->coding->decode_final(&input->state))
+	      {
+		input->token = SEXP_CODING_END;
+		return 0;
+	      }
+	    else
+	      die("Invalid coded data.\n");
+	  }
+	done = 1;
+	
+	if (!input->coding->decode_update(&input->state, &done, out, 1, &c))
+	  die("Invalid coded data.\n");
 	  
-	  if (!sexp_get_raw_char(input, &c))
-	    die("Unexpected end of file in base64 data.\n");
-
-	  if (c == '}')
-	    {
-	      if (base64_decode_final(&input->base64))
-		{
-		  input->token = SEXP_TRANSPORT_END;
-		  return 0;
-		}
-	      else
-		die("Invalid base64 data.\n");
-	    }
-
-	  done = base64_decode_single(&input->base64, out, c);
-	  if (done)
-	    return 1;
-	}
-    case SEXP_PLAIN:
+	if (done)
+	  return 1;
+      }
+  else
+    {
       if (sexp_get_raw_char(input, out))
 	return 1;
       
       input->token = SEXP_EOF;
       return 0;
-
-    case SEXP_HEX:
-      /* Not yet implemented */
-      abort();
-
-    default:
-      abort();
     }
+}
+
+static unsigned
+sexp_input_start_coding(struct sexp_input *input,
+			const struct nettle_armor *coding,
+			uint8_t terminator)
+{
+  unsigned old_level = input->level;
+  
+  assert(!input->coding);
+  
+  input->coding = coding;
+  input->coding->decode_init(&input->state);
+  input->terminator = terminator;
+  input->level = 0;
+
+  return old_level;
+}
+
+static void
+sexp_input_end_coding(struct sexp_input *input,
+		      unsigned old_level)
+{
+  assert(input->coding);
+
+  input->coding = NULL;
+  input->level = old_level;
 }
 
 static const char
@@ -214,6 +229,7 @@ token_chars[0x80] =
 static uint8_t
 sexp_get_token_char(struct sexp_input *input)
 {
+  /* FIXME: Use sexp_get_char */
   int c = getc(input->f);
   if (c >= 0 && TOKEN_CHAR(c))
     return c;
@@ -273,7 +289,7 @@ sexp_get_quoted_string(struct sexp_input *input)
 {
   uint8_t c;
 
-  assert(input->coding == SEXP_PLAIN);
+  assert(!input->coding);
   
   while (sexp_get_quoted_char(input, &c))
     if (!NETTLE_BUFFER_PUTC(&input->string, c))
@@ -290,47 +306,31 @@ sexp_get_hex_string(struct sexp_input *input)
 static void
 sexp_get_base64_string(struct sexp_input *input)
 {
-  struct base64_decode_ctx ctx;
+  unsigned old_level 
+    = sexp_input_start_coding(input, &nettle_base64, '|');
 
-  assert(input->coding == SEXP_PLAIN);
-
-  base64_decode_init(&ctx);
-  
   for (;;)
     {
       uint8_t c;
-      uint8_t decoded;
       
       if (!sexp_get_char(input, &c))
-	die("Unexpected end of file in base64 string.\n");
-
-      if (c == '|')
 	{
-	  if (!base64_decode_final(&ctx))
-	    die("Invalid base64 string.\n");
+	  if (input->token != SEXP_CODING_END)
+	    die("Unexpected end of file in base64 string.\n");
+
+	  sexp_input_end_coding(input, old_level);
 	  return;
 	}
       
-      switch(base64_decode_single(&ctx, &decoded, c))
-	{
-	case 0:
-	  break;
-	case 1:
-	  if (!NETTLE_BUFFER_PUTC(&input->string, decoded))
-	    die("Virtual memory exhasuted.\n");
-	  break;
-	case -1:
-	  die("Invalid base64 string.\n");
-	default:
-	  abort();
-	}
+      if (!NETTLE_BUFFER_PUTC(&input->string, c))
+	die("Virtual memory exhasuted.\n");
     }
 }
 
 static void
 sexp_get_token_string(struct sexp_input *input, uint8_t c)
 {
-  assert(input->coding == SEXP_PLAIN);
+  assert(!input->coding);
 
   if (!TOKEN_CHAR(c) || ! NETTLE_BUFFER_PUTC(&input->string, c))
     die("Invalid token.\n");
@@ -464,6 +464,10 @@ sexp_get_token(struct sexp_input *input, enum sexp_mode mode)
 	  input->token = SEXP_DISPLAY_END;
 	  return;
 
+	case '{':
+	  input->token = SEXP_TRANSPORT_START;
+	  return;
+	  
 	case ' ':  /* SPC, TAB, LF, CR */
 	case '\t':
 	case '\n':
@@ -757,10 +761,7 @@ sexp_convert_list(struct sexp_input *input, enum sexp_mode mode_in,
     {
       sexp_get_token(input, mode_in);
   
-      /* Check for end of list */
-      if (input->token == SEXP_LIST_END
-	  || input->token == SEXP_EOF
-	  || input->token == SEXP_TRANSPORT_END)
+      if (input->token == SEXP_LIST_END)
 	return;
 
       if (mode_out == SEXP_ADVANCED)
@@ -861,6 +862,7 @@ sexp_convert_item(struct sexp_input *input, enum sexp_mode mode_in,
     case SEXP_STRING:
       sexp_put_string(output, mode_out, &input->string);
       break;
+
     case SEXP_DISPLAY_START:
       sexp_put_display_start(output);
       sexp_convert_string(input, mode_in, output, mode_out);
@@ -874,28 +876,19 @@ sexp_convert_item(struct sexp_input *input, enum sexp_mode mode_in,
 	die("Base64 not allowed in canonical mode.\n");
       else
 	{
-	  unsigned old_level = input->level;
-	  assert(input->coding == SEXP_PLAIN);
+	  unsigned old_level
+	    = sexp_input_start_coding(input, &nettle_base64, '}');
+	  sexp_get_token(input, SEXP_CANONICAL);
 	  
-	  input->coding = SEXP_BASE64;
-	  input->level = 0;
-
-	  base64_decode_init(&input->base64);
-
-	  /* FIXME: sexp_convert_list is wrong. */
-	  sexp_convert_list(input, SEXP_CANONICAL, output, mode_out, indent);
+	  sexp_convert_item(input, SEXP_CANONICAL, output, mode_out, indent);
+	  sexp_skip_token(input, SEXP_CANONICAL, SEXP_CODING_END);
+	  sexp_input_end_coding(input, old_level);
 	  
-	  input->coding = SEXP_PLAIN;
-	  input->level = old_level;
 	  break;
 	}
-    case SEXP_TRANSPORT_END:
-      /* FIXME: Should be moved do sexp_convert_transport */
-      if ( (input->coding != SEXP_BASE64)
-	   || input->level || !base64_decode_final(&input->base64))
-	die("Invalid base64.\n");
+    case SEXP_CODING_END:
+      die("Unexpected end of coding.\n");
 
-      break;
     default:
       die("Syntax error.\n");
     }
