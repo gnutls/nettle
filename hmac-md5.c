@@ -23,7 +23,7 @@
  * MA 02111-1307, USA.
  */
 
-#include "hmac-md5.h"
+#include "hmac.h"
 
 void
 hmac_md5_set_key(struct hmac_md5_ctx *ctx,
