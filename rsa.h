@@ -153,6 +153,27 @@ rsa_sha1_verify(const struct rsa_public_key *key,
                 struct sha1_ctx *hash,
 		const mpz_t signature);
 
+/* Variants taking the digest as argument. */
+void
+rsa_md5_sign_digest(const struct rsa_private_key *key,
+		    const uint8_t *digest,
+		    mpz_t s);
+
+int
+rsa_md5_verify_digest(const struct rsa_public_key *key,
+		      const uint8_t *digest,
+		      const mpz_t signature);
+
+void
+rsa_sha1_sign_digest(const struct rsa_private_key *key,
+		     const uint8_t *digest,
+		     mpz_t s);
+
+int
+rsa_sha1_verify_digest(const struct rsa_public_key *key,
+		       const uint8_t *digest,
+		       const mpz_t signature);
+
 
 /* RSA encryption, using PKCS#1 */
 /* FIXME: These functions uses the v1.5 padding. What should the v2
@@ -176,7 +197,6 @@ int
 rsa_decrypt(const struct rsa_private_key *key,
 	    unsigned *length, uint8_t *cleartext,
 	    const mpz_t ciphertext);
-
 
 /* Compute x, the e:th root of m. Calling it with x == m is allowed. */
 void
@@ -249,5 +269,14 @@ rsa_keypair_to_openpgp(struct nettle_buffer *buffer,
 		       const struct rsa_private_key *priv,
 		       /* A single user id. NUL-terminated utf8. */
 		       const char userid);
+
+/* Internal functions. */
+int
+_rsa_verify(const struct rsa_public_key *key,
+	    const mpz_t m,
+	    const mpz_t s);
+
+unsigned
+_rsa_check_size(mpz_t n);
 
 #endif /* NETTLE_RSA_H_INCLUDED */
