@@ -1,5 +1,7 @@
 2004-01-09  Niels Möller  <nisse@harpo.hack.org>
 
+	* examples/rsa-encrypt-test: New testcase.
+
 	* examples/rsa-encrypt.c: Expanded the comment describing the file
 	format. 
 

@@ -19,7 +19,7 @@ LDADD = io.o -lnettle ../libnettle.a
 
 nettle_benchmark_LDADD = -lnettle ../libnettle.a $(OPENSSL_LIBFLAGS)
 
-TS_PROGS = rsa-sign-test rsa-verify-test
+TS_PROGS = rsa-sign-test rsa-verify-test rsa-encrypt-test
 EXTRA_DIST = io.h rsa-session.h run-tests setup-env teardown-env $(TS_PROGS)
 
 .PHONY: run-tests
