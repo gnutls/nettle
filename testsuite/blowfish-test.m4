@@ -8,8 +8,8 @@ uint8_t msg[BLOWFISH_BLOCK_SIZE];
 uint8_t cipher[BLOWFISH_BLOCK_SIZE];
 uint8_t clear[BLOWFISH_BLOCK_SIZE];
 
-/* 128 bit key. Test from GNUPG. */
-blowfish_set_key(&ctx, 16, "abcdefghijklmnopqrstuvwxyz"));
+/* 208 bit key. Test from GNUPG. */
+blowfish_set_key(&ctx, 26, "abcdefghijklmnopqrstuvwxyz");
 blowfish_encrypt(&ctx, BLOWFISH_BLOCK_SIZE, cipher, "BLOWFISH");
 if (!MEMEQ(BLOWFISH_BLOCK_SIZE, cipher, H("32 4E D0 FE F4 13 A2 03")))
   FAIL;
