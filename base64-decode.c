@@ -57,30 +57,26 @@ decode_table[0x100] =
 void
 base64_decode_init(struct base64_decode_ctx *ctx)
 {
-  ctx->word = ctx->bits = 0;
-  ctx->status = BASE64_DECODE_OK;
+  ctx->word = ctx->bits = ctx->padding = 0;
 }
 
-unsigned
+int
 base64_decode_single(struct base64_decode_ctx *ctx,
 		     uint8_t *dst,
 		     uint8_t src)
 {
   int data;
   
-  if (ctx->status == BASE64_DECODE_ERROR)
-    return 0;
-
   data = decode_table[src];
 
   switch(data)
     {
     default:
       assert(data >= 0 && data < 0x40);
-	  
-      if (ctx->status != BASE64_DECODE_OK)
-	goto invalid;
-	  
+
+      if (ctx->padding)
+	return -1;
+      
       ctx->word = ctx->word << 6 | data;
       ctx->bits += 6;
 
@@ -93,56 +89,60 @@ base64_decode_single(struct base64_decode_ctx *ctx,
       else return 0;
 
     case TABLE_INVALID:
-    invalid:
-      ctx->status = BASE64_DECODE_ERROR;
-      /* Fall through */
-      
+      return -1;
+
     case TABLE_SPACE:
       return 0;
       
     case TABLE_END:
-      if (!ctx->bits)
-	goto invalid;
+      /* There can be at most two padding characters. */
+      if (!ctx->bits || ctx->padding > 2)
+	return -1;
+      
       if (ctx->word & ( (1<<ctx->bits) - 1))
 	/* We shouldn't have any leftover bits */
-	goto invalid;
-      
-      ctx->status = BASE64_DECODE_END;
+	return -1;
+
+      ctx->padding++;
       ctx->bits -= 2;
       return 0;
     }
 }
 
-unsigned
+int
 base64_decode_update(struct base64_decode_ctx *ctx,
+		     unsigned *dst_length,
 		     uint8_t *dst,
-		     unsigned length,
+		     unsigned src_length,
 		     const uint8_t *src)
 {
   unsigned done;
   unsigned i;
-  
-  if (ctx->status == BASE64_DECODE_ERROR)
-    return 0;
 
-  for (i = 0, done = 0; i<length; i++)
-    done += base64_decode_single(ctx, dst + done, src[i]);
-
-  assert(done <= BASE64_DECODE_LENGTH(length));
+  assert(*dst_length >= BASE64_DECODE_LENGTH(src_length));
   
-  return done;
+  for (i = 0, done = 0; i<src_length; i++)
+    switch(base64_decode_single(ctx, dst + done, src[i]))
+      {
+      case -1:
+	return 0;
+      case 1:
+	done++;
+	/* Fall through */
+      case 0:
+	break;
+      default:
+	abort();
+      }
+  
+  assert(done <= BASE64_DECODE_LENGTH(src_length));
+
+  *dst_length = done;
+  return 1;
 }
 
 int
-base64_decode_status(struct base64_decode_ctx *ctx)
+base64_decode_final(struct base64_decode_ctx *ctx)
 {
-  switch (ctx->status)
-    {
-    case BASE64_DECODE_END:
-    case BASE64_DECODE_OK:
-      return ctx->bits == 0;
-    case BASE64_DECODE_ERROR:
-      return 0;
-    }
-  abort();
+  return ctx->bits == 0;
 }

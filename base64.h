@@ -95,36 +95,40 @@ base64_encode_group(uint8_t *dst, uint32_t group);
 
 struct base64_decode_ctx
 {
-  enum
-    {
-      BASE64_DECODE_OK,
-      BASE64_DECODE_ERROR,
-      BASE64_DECODE_END
-    } status; 
   unsigned word;   /* Leftover bits */
   unsigned bits;   /* Number buffered bits */
+
+  /* Number of padding characters encountered */
+  unsigned padding;
 };
 
 void
 base64_decode_init(struct base64_decode_ctx *ctx);
 
-/* Decodes a single byte. Returns amount of output (always 0 or 1).
- * FIXME: What to return on errors? */
-unsigned
+/* Decodes a single byte. Returns amount of output (0 or 1), or -1 on
+ * errors. */
+int
 base64_decode_single(struct base64_decode_ctx *ctx,
 		     uint8_t *dst,
 		     uint8_t src);
 
-/* Returns the number of output characters. DST should point to an
- * area of size at least BASE64_DECODE_LENGTH(length). */
-unsigned
+/* Returns 1 on success, 0 on error. DST should point to an area of
+ * size at least BASE64_DECODE_LENGTH(length), and for sanity
+ * checking, *DST_LENGTH should be initialized to the size of that
+ * area before the call. *DST_LENGTH is updated to the amount of
+ * decoded output. */
+
+/* FIXME: Currently results in an assertion failure if *DST_LENGTH is
+ * too small. Return some error instead? */
+int
 base64_decode_update(struct base64_decode_ctx *ctx,
+		     unsigned *dst_length,
 		     uint8_t *dst,
-		     unsigned length,
+		     unsigned src_length,
 		     const uint8_t *src);
 
 /* Returns 1 on success. */
 int
-base64_decode_status(struct base64_decode_ctx *ctx);
+base64_decode_final(struct base64_decode_ctx *ctx);
 
 #endif /* NETTLE_BASE64_H_INCLUDED */
