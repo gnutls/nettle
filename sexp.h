@@ -29,6 +29,23 @@
 #include <inttypes.h>
 #include <stdarg.h>
 
+/* Name mangling */
+#define sexp_iterator_first nettle_sexp_iterator_first
+#define sexp_transport_iterator_first nettle_sexp_transport_iterator_first
+#define sexp_iterator_next nettle_sexp_iterator_next
+#define sexp_iterator_enter_list nettle_sexp_iterator_enter_list
+#define sexp_iterator_exit_list nettle_sexp_iterator_exit_list
+#define sexp_iterator_subexpr nettle_sexp_iterator_subexpr
+#define sexp_iterator_get_uint32 nettle_sexp_iterator_get_uint32
+#define sexp_iterator_check_type nettle_sexp_iterator_check_type
+#define sexp_iterator_check_types nettle_sexp_iterator_check_types
+#define sexp_iterator_assoc nettle_sexp_iterator_assoc
+#define sexp_format nettle_sexp_format
+#define sexp_vformat nettle_sexp_vformat
+#define sexp_transport_format nettle_sexp_transport_format
+#define sexp_transport_vformat nettle_sexp_transport_vformat
+#define sexp_token_chars nettle_sexp_token_chars
+
 enum sexp_type
   { SEXP_ATOM, SEXP_LIST, SEXP_END };
 

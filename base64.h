@@ -28,6 +28,17 @@
 
 #include <inttypes.h>
 
+/* Name mangling */
+#define base64_encode_init nettle_base64_encode_init
+#define base64_encode_single nettle_base64_encode_single
+#define base64_encode_update nettle_base64_encode_update
+#define base64_encode_final nettle_base64_encode_final
+#define base64_encode_raw nettle_base64_encode_raw
+#define base64_encode_group nettle_base64_encode_group
+#define base64_decode_init nettle_base64_decode_init
+#define base64_decode_single nettle_base64_decode_single
+#define base64_decode_update nettle_base64_decode_update
+#define base64_decode_final nettle_base64_decode_final
 
 #define BASE64_BINARY_BLOCK_SIZE 3
 #define BASE64_TEXT_BLOCK_SIZE 4

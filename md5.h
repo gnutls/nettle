@@ -28,6 +28,11 @@
 
 #include <inttypes.h>
 
+/* Name mangling */
+#define md5_init nettle_md5_init
+#define md5_update nettle_md5_update
+#define md5_digest nettle_md5_digest
+
 #define MD5_DIGEST_SIZE 16
 #define MD5_DATA_SIZE 64
 

@@ -39,6 +39,19 @@
 # define AES_TABLE_SIZE 4
 #endif
 
+/* Name mangling */
+#define _aes_crypt _nettle_aes_crypt
+
+/* Assembler code using the table should get link errors if linked
+ * against a small table. */
+#if AES_SMALL
+# define _aes_encrypt_table _nettle_aes_encrypt_table_small
+# define _aes_decrypt_table _nettle_aes_decrypt_table_small
+#else
+# define _aes_encrypt_table _nettle_aes_encrypt_table
+# define _aes_decrypt_table _nettle_aes_decrypt_table
+#endif
+
 struct aes_table
 {
   uint8_t sbox[0x100];
@@ -69,13 +82,6 @@ _aes_crypt(const struct aes_ctx *ctx,
                         ((box)[(((x) >> 8) & 0xff)] << 8) | \
                         ((box)[(((x) >> 16) & 0xff)] << 16) | \
                         ((box)[(((x) >> 24) & 0xff)] << 24))
-
-/* Assembler code using the table should get link errors when compiled
- * against a small table. */
-#if AES_SMALL
-# define _aes_encrypt_table _aes_encrypt_table_small
-# define _aes_decrypt_table _aes_decrypt_table_small
-#endif
 
 /* Internal tables */
 extern const struct aes_table _aes_encrypt_table;

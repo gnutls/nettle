@@ -31,7 +31,19 @@
 #include "md5.h"
 #include "sha.h"
 
-#include <inttypes.h>
+/* Namespace mangling */
+#define hmac_set_key nettle_hmac_set_key
+#define hmac_update nettle_hmac_update
+#define hmac_digest nettle_hmac_digest
+#define hmac_md5_set_key nettle_hmac_md5_set_key
+#define hmac_md5_update nettle_hmac_md5_update
+#define hmac_md5_digest nettle_hmac_md5_digest
+#define hmac_sha1_set_key nettle_hmac_sha1_set_key
+#define hmac_sha1_update nettle_hmac_sha1_update
+#define hmac_sha1_digest nettle_hmac_sha1_digest
+#define hmac_sha256_set_key nettle_hmac_sha256_set_key
+#define hmac_sha256_update nettle_hmac_sha256_update
+#define hmac_sha256_digest nettle_hmac_sha256_digest
 
 void
 hmac_set_key(void *outer, void *inner, void *state,

@@ -29,6 +29,13 @@
 
 #include <inttypes.h>
 
+/* Name mangling */
+#define base16_encode_single nettle_base16_encode_single
+#define base16_encode_update nettle_base16_encode_update
+#define base16_decode_init nettle_base16_decode_init
+#define base16_decode_single nettle_base16_decode_single
+#define base16_decode_update nettle_base16_decode_update
+#define base16_decode_final nettle_base16_decode_final
 
 /* Base16 encoding */
 

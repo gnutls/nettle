@@ -28,6 +28,21 @@
 
 #include "bignum.h"
 
+/* Name mangling */
+#define pgp_put_uint32 nettle_pgp_put_uint32
+#define pgp_put_uint16 nettle_pgp_put_uint16
+#define pgp_put_mpi nettle_pgp_put_mpi
+#define pgp_put_string nettle_pgp_put_string
+#define pgp_put_length nettle_pgp_put_length
+#define pgp_put_header nettle_pgp_put_header
+#define pgp_put_header_length nettle_pgp_put_header_length
+#define pgp_sub_packet_start nettle_pgp_sub_packet_start
+#define pgp_put_sub_packet nettle_pgp_put_sub_packet
+#define pgp_sub_packet_end nettle_pgp_sub_packet_end
+#define pgp_put_userid nettle_pgp_put_userid
+#define pgp_crc24 nettle_pgp_crc24
+#define pgp_armor nettle_pgp_armor
+
 struct nettle_buffer;
 
 int

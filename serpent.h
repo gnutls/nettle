@@ -33,6 +33,11 @@
 
 #include <inttypes.h>
 
+/* Name mangling */
+#define serpent_set_key nettle_serpent_set_key
+#define serpent_encrypt nettle_serpent_encrypt
+#define serpent_decrypt nettle_serpent_decrypt
+
 #define SERPENT_BLOCK_SIZE 16
 
 /* Other key lengths are possible, but the design of Serpent makes

@@ -29,6 +29,13 @@
 #include <inttypes.h>
 #include <gmp.h>
 
+/* Name mangling */
+#define pkcs1_signature_prefix nettle_pkcs1_signature_prefix
+#define pkcs1_rsa_md5_encode nettle_pkcs1_rsa_md5_encode
+#define pkcs1_rsa_md5_encode_digest nettle_pkcs1_rsa_md5_encode_digest
+#define pkcs1_rsa_sha1_encode nettle_pkcs1_rsa_sha1_encode
+#define pkcs1_rsa_sha1_encode_digest nettle_pkcs1_rsa_sha1_encode_digest
+
 struct md5_ctx;
 struct sha1_ctx;
 

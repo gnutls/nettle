@@ -28,6 +28,12 @@
 
 #include <inttypes.h>
 
+/* Name mangling */
+#define aes_set_encrypt_key nettle_aes_set_encrypt_key
+#define aes_set_decrypt_key nettle_aes_set_decrypt_key
+#define aes_encrypt nettle_aes_encrypt
+#define aes_decrypt nettle_aes_decrypt
+
 #define AES_BLOCK_SIZE 16
 
 /* Variable key size between 128 and 256 bits. But the only valid

@@ -34,6 +34,22 @@
 /* For nettle_random_func */
 #include "nettle-meta.h"
 
+/* Name mangling */
+#define dsa_public_key_init nettle_dsa_public_key_init
+#define dsa_public_key_clear nettle_dsa_public_key_clear
+#define dsa_private_key_init nettle_dsa_private_key_init
+#define dsa_private_key_clear nettle_dsa_private_key_clear
+#define dsa_signature_init nettle_dsa_signature_init
+#define dsa_signature_clear nettle_dsa_signature_clear
+#define dsa_sign nettle_dsa_sign
+#define dsa_verify nettle_dsa_verify
+#define dsa_sign_digest nettle_dsa_sign_digest
+#define dsa_verify_digest nettle_dsa_verify_digest
+#define dsa_generate_keypair nettle_dsa_generate_keypair
+#define dsa_signature_from_sexp nettle_dsa_signature_from_sexp
+#define dsa_keypair_from_sexp_alist nettle_dsa_keypair_from_sexp_alist
+#define dsa_keypair_from_sexp nettle_dsa_keypair_from_sexp
+
 #define DSA_MIN_P_BITS 512
 #define DSA_Q_OCTETS 20
 #define DSA_Q_BITS 160

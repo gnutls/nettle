@@ -33,6 +33,12 @@
 
 #include <inttypes.h>
 
+/* Namespace mangling */
+#define knuth_lfib_init nettle_knuth_lfib_init
+#define knuth_lfib_get nettle_knuth_lfib_get
+#define knuth_lfib_get_array nettle_knuth_lfib_get_array
+#define knuth_lfib_random nettle_knuth_lfib_random
+
 #define _KNUTH_LFIB_KK 100
 
 struct knuth_lfib_ctx

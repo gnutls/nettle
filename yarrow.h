@@ -29,6 +29,17 @@
 #include "aes.h"
 #include "sha.h"
 
+/* Name mangling */
+#define yarrow256_init nettle_yarrow256_init
+#define yarrow256_seed nettle_yarrow256_seed
+#define yarrow256_update nettle_yarrow256_update
+#define yarrow256_random nettle_yarrow256_random
+#define yarrow256_is_seeded nettle_yarrow256_is_seeded
+#define yarrow256_needed_sources nettle_yarrow256_needed_sources
+#define yarrow256_force_reseed nettle_yarrow256_force_reseed
+#define yarrow_key_event_init nettle_yarrow_key_event_init
+#define yarrow_key_event_estimate nettle_yarrow_key_event_estimate
+
 enum yarrow_pool_id { YARROW_FAST = 0, YARROW_SLOW = 1 };
 
 struct yarrow_source

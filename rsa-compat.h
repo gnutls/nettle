@@ -28,6 +28,14 @@
 
 #include "rsa.h"
 
+/* Name mangling */
+#define R_SignInit nettle_R_SignInit
+#define R_SignUpdate nettle_R_SignUpdate
+#define R_SignFinal nettle_R_SignFinal
+#define R_VerifyInit nettle_R_VerifyInit
+#define R_VerifyUpdate nettle_R_VerifyUpdate
+#define R_VerifyFinal nettle_R_VerifyFinal
+
 /* 256 octets or 2048 bits */
 #define MAX_RSA_MODULUS_LEN 256
 

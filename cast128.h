@@ -34,6 +34,11 @@
 
 #include <inttypes.h>
 
+/* Name mangling */
+#define cast128_set_key nettle_cast128_set_key
+#define cast128_encrypt nettle_cast128_encrypt
+#define cast128_decrypt nettle_cast128_decrypt
+
 #define CAST128_BLOCK_SIZE 8
 
 /* Variable key size between 40 and 128. */

@@ -35,6 +35,31 @@
 /* For nettle_random_func */
 #include "nettle-meta.h"
 
+/* Name mangling */
+#define rsa_public_key_init nettle_rsa_public_key_init
+#define rsa_public_key_clear nettle_rsa_public_key_clear
+#define rsa_public_key_prepare nettle_rsa_public_key_prepare
+#define rsa_private_key_init nettle_rsa_private_key_init
+#define rsa_private_key_clear nettle_rsa_private_key_clear
+#define rsa_private_key_prepare nettle_rsa_private_key_prepare
+#define rsa_md5_sign nettle_rsa_md5_sign
+#define rsa_md5_verify nettle_rsa_md5_verify
+#define rsa_sha1_sign nettle_rsa_sha1_sign
+#define rsa_sha1_verify nettle_rsa_sha1_verify
+#define rsa_md5_sign_digest nettle_rsa_md5_sign_digest
+#define rsa_md5_verify_digest nettle_rsa_md5_verify_digest
+#define rsa_sha1_sign_digest nettle_rsa_sha1_sign_digest
+#define rsa_sha1_verify_digest nettle_rsa_sha1_verify_digest
+#define rsa_encrypt nettle_rsa_encrypt
+#define rsa_decrypt nettle_rsa_decrypt
+#define rsa_compute_root nettle_rsa_compute_root
+#define rsa_generate_keypair nettle_rsa_generate_keypair
+#define rsa_keypair_to_sexp nettle_rsa_keypair_to_sexp
+#define rsa_keypair_from_sexp_alist nettle_rsa_keypair_from_sexp_alist
+#define rsa_keypair_from_sexp nettle_rsa_keypair_from_sexp
+#define rsa_keypair_to_openpgp nettle_rsa_keypair_to_openpgp
+#define _rsa_verify _nettle_rsa_verify
+#define _rsa_check_size _nettle_rsa_check_size
 
 /* For PKCS#1 to make sense, the size of the modulo, in octets, must
  * be at least 11 + the length of the DER-encoded Digest Info.

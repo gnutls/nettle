@@ -28,6 +28,11 @@
 
 #include <inttypes.h>
 
+/* Name mangling */
+#define blowfish_set_key nettle_blowfish_set_key
+#define blowfish_encrypt nettle_blowfish_encrypt
+#define blowfish_decrypt nettle_blowfish_decrypt
+
 #define BLOWFISH_BLOCK_SIZE 8
 
 /* Variable key size between 64 and 448 bits. */

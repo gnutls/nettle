@@ -28,6 +28,10 @@
 
 #include <inttypes.h>
 
+/* Name mangling */
+#define cbc_encrypt nettle_cbc_encrypt
+#define cbc_decrypt nettle_cbc_decrypt
+
 /* Uses a void * for cipher contexts. */
 
 void

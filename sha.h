@@ -28,6 +28,14 @@
 
 #include <inttypes.h>
 
+/* Name mangling */
+#define sha1_init nettle_sha1_init
+#define sha1_update nettle_sha1_update
+#define sha1_digest nettle_sha1_digest
+#define sha256_init nettle_sha256_init
+#define sha256_update nettle_sha256_update
+#define sha256_digest nettle_sha256_digest
+
 /* SHA1 */
 
 #define SHA1_DIGEST_SIZE 20

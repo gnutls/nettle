@@ -34,6 +34,11 @@
 
 #include <inttypes.h>
 
+/* Name mangling */
+#define twofish_set_key nettle_twofish_set_key
+#define twofish_encrypt nettle_twofish_encrypt
+#define twofish_decrypt nettle_twofish_decrypt
+
 #define TWOFISH_BLOCK_SIZE 16
 
 /* Variable key size between 128 and 256 bits. But the only valid

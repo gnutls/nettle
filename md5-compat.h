@@ -28,6 +28,11 @@
 
 #include "md5.h"
 
+/* Name mangling */
+#define MD5Init nettle_MD5Init
+#define MD5Update nettle_MD5Update
+#define MD5Final nettle_MD5Final
+
 typedef struct md5_ctx MD5_CTX;
 
 void MD5Init(MD5_CTX *ctx);
