@@ -1,7 +1,7 @@
-CFLAGS = -I$(top_srcdir) @CFLAGS@
-CPPFLAGS = @CPPFLAGS@
+AM_CPPFLAGS = -I$(top_srcdir)
 
 LDADD = ../libnettle.a
 
-noinst_PROGRAMS = nettle-benchmark
+noinst_PROGRAMS = nettle-benchmark lfib-stream
+
 
