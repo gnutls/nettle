@@ -1,3 +1,18 @@
+2004-02-26  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle-meta.h (nettle_crypt_func): Typedef moved to cbc.h.
+	Include cbc.h instead.
+
+	* des-compat.c: Reverted const change, now all the des_key_sched
+	arguments are not const. This is also what openssl's interface
+	looks like.
+	(cbc_crypt_func): Deleted typedef, use nettle_crypt_func instead.	
+
+	* cbc.h (nettle_crypt_func): Moved typedef here.	
+	* cbc.c (cbc_encrypt, cbc_decrypt_internal, cbc_decrypt): Use it
+	for typing the f argument. Reverted the const change, for
+	compatibility with nettle_crypt_func.
+
 2004-02-25  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/des-compat-test.c: Use des_cblock for typing more of
