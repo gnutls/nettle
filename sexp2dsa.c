@@ -54,7 +54,7 @@ dsa_keypair_from_sexp_alist(struct dsa_public_key *pub,
 			    unsigned limit,
 			    struct sexp_iterator *i)
 {
-  static const uint8_t *names[5]
+  static const uint8_t * const names[5]
     = { "p", "q", "g", "y", "x" };
   struct sexp_iterator values[5];
   unsigned nvalues = priv ? 5 : 4;
@@ -91,7 +91,7 @@ int
 dsa_signature_from_sexp(struct dsa_signature *rs,
 			struct sexp_iterator *i)
 {
-  static const uint8_t *names[2] = { "r", "s" };
+  static const uint8_t * const names[2] = { "r", "s" };
   struct sexp_iterator values[2];
 
   if (!sexp_iterator_assoc(i, 2, names, values))
