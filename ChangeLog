@@ -1,3 +1,8 @@
+2004-08-23  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/md5-test.c (test_main): Added collision, found in 2004.
+	(test_main): Added second collision.
+
 2004-08-23  Niels Möller  <niels@s3.kth.se>
 
 	* testsuite/md5-test.c (test_main): Added first half of a
