@@ -61,7 +61,10 @@ des_ecb3_encrypt(des_cblock *src, des_cblock *dst,
 		 des_key_schedule k1, des_key_schedule k2,
 		 des_key_schedule k3, int enc)
 {
-  struct des_compat_des3 keys = { { k1, k2, k3 } };
+  struct des_compat_des3 keys;
+  keys.keys[0] = k1;
+  keys.keys[1] = k2;
+  keys.keys[2] = k3;
 
   ((enc == DES_ENCRYPT) ? des_compat_des3_encrypt : des_compat_des3_decrypt)
     (&keys, DES_BLOCK_SIZE, *dst, *src);
@@ -142,7 +145,10 @@ des_ede3_cbc_encrypt(des_cblock *src, des_cblock *dst, long length,
 		     des_cblock *iv,
 		     int enc)
 {
-  struct des_compat_des3 keys = { { k1, k2, k3 } };
+  struct des_compat_des3 keys;
+  keys.keys[0] = k1;
+  keys.keys[1] = k2;
+  keys.keys[2] = k3;
 
   switch (enc)
     {
