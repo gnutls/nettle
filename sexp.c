@@ -192,9 +192,19 @@ sexp_iterator_assoc(struct sexp_iterator *iterator,
 		    const struct sexp_assoc_key *keys,
 		    struct sexp_iterator *values)
 {
+  int *found;
+  unsigned nfound;
+  unsigned i;
+  
   if (!sexp_iterator_enter_list(iterator))
     return 0;
 
+  found = alloca(nkeys * sizeof(*found));
+  for (i = 0; i<nkeys; i++)
+    found[i] = 0;
+
+  nfound = 0;
+  
   for (;;)
     {
       if (!sexp_iterator_next(iterator))
@@ -212,13 +222,19 @@ sexp_iterator_assoc(struct sexp_iterator *iterator,
 	      && !iterator->display)
 	    {
 	      /* Compare to the given keys */
-	      unsigned i;
 	      for (i = 0; i<nkeys; i++)
 		{
 		  if (keys[i].length == iterator->atom_length
 		      && !memcmp(keys[i].name, iterator->atom,
 				 keys[i].length))
 		    {
+		      if (found[i])
+			/* We don't allow duplicates */
+			return 0;
+
+		      found[i] = 1;
+		      nfound++;
+		      
 		      /* Record this position. */
 		      values[i] = *iterator;
 
@@ -234,7 +250,8 @@ sexp_iterator_assoc(struct sexp_iterator *iterator,
 	  break;
 	  
 	case SEXP_END:
-	  return sexp_iterator_exit_list(iterator);
+	  return sexp_iterator_exit_list(iterator)
+	    && (nfound == nkeys);
 
 	default:
 	  abort();
