@@ -40,12 +40,12 @@ typedef struct {
 } BLOWFISH_context;
 
 
-const char *
+CONST char *
 blowfish_get_info( int algo, size_t *keylen,
 		   size_t *blocksize, size_t *contextsize,
-		   int	(**setkey)( void *c, const byte *key, unsigned keylen ),
-		   void (**encrypt)( void *c, byte *outbuf, const byte *inbuf ),
-		   void (**decrypt)( void *c, byte *outbuf, const byte *inbuf )
+		   int	(**setkey)( void *c, CONST byte *key, unsigned keylen ),
+		   void (**encrypt)( void *c, byte *outbuf, CONST byte *inbuf ),
+		   void (**decrypt)( void *c, byte *outbuf, CONST byte *inbuf )
 		 );
 
 #endif /*G10_BLOWFISH_H*/
