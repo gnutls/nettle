@@ -85,7 +85,8 @@ dsa_nist_gen(mpz_t p, mpz_t q,
 	uint8_t h1[SHA1_DIGEST_SIZE];
 	uint8_t h2[SHA1_DIGEST_SIZE];
 
-	progress(progress_ctx, '.');
+	if (progress)
+	  progress(progress_ctx, '.');
 	
 	nettle_mpz_random_size(s, random_ctx, random, SEED_BITS);
 	
@@ -122,7 +123,8 @@ dsa_nist_gen(mpz_t p, mpz_t q,
 	  {
 	    unsigned k;
 
-	    progress(progress_ctx, ',');
+	    if (progress)
+	      progress(progress_ctx, ',');
 	    for (k = 0; k<=n ; k++)
 	      {
 		mpz_set(t, s);
@@ -153,7 +155,8 @@ dsa_nist_gen(mpz_t p, mpz_t q,
 		return;
 	      }
 	  }
-	progress(progress_ctx, '+');
+	if (progress)
+	  progress(progress_ctx, '+');
       }
     }
 }
@@ -181,7 +184,8 @@ dsa_find_generator(mpz_t g,
       nettle_mpz_random(g, random_ctx, random, n);
       mpz_add_ui(g, g, 2);
 
-      progress(progress_ctx, 'g');
+      if (progress)
+	progress(progress_ctx, 'g');
       mpz_powm(g, g, e, p);
       
       if (mpz_cmp_ui(g, 1))
