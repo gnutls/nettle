@@ -1,3 +1,8 @@
+2004-09-23  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac (SHLIBLINK, SHLIBLIBS): On cygwin, linking needs
+	-Wl,--whole-archive $(OBJECTS) -Wl,--no-whole-archive $(LIBS). 
+
 2004-09-22  Niels Möller  <niels@s3.kth.se>
 
 	* configure.ac: Setup SHLIBFORLINK and friends for cygwin. 

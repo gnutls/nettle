@@ -125,8 +125,8 @@ case `uname -sr` in
     SHLIBFORLINK='cygnettle-$(SHLIBMAJOR)-$(SHLIBMINOR).dll'
     SHLIBSONAME=''
     SHLIBFILE='libnettle.dll.a'
-    SHLIBLINK='$(CC) $(LDFLAGS) -shared -Wl,--out-implib=$(SHLIBFILE) -Wl,--export-all-symbols -Wl,--enable-auto-import -Wl,--no-whole-archive'
-    SHLIBLIBS='$(LIBS)'
+    SHLIBLINK='$(CC) $(LDFLAGS) -shared -Wl,--out-implib=$(SHLIBFILE) -Wl,--export-all-symbols -Wl,--enable-auto-import -Wl,--whole-archive'
+    SHLIBLIBS='-Wl,--no-whole-archive $(LIBS)'
     ;;
   *)
     SHLIBFORLINK=libnettle.so
