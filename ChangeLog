@@ -1,3 +1,16 @@
+2001-04-17  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* install-sh: Copied the standard install script.
+
+	* testsuite/Makefile.am (CFLAGS): Disable optimization. Add
+	$(top_srcdir) to the include path.
+	(EXTRA_DIST): Added testutils.h, testutils.c and run-tests.
+	(run-tests): Fixed path to run-tests.
+
+	* Makefile.am (EXTRA_DIST): Added memxor.h.
+	(libnettleinclude_HEADERS): Install headers in
+	$(libnettleincludedir). 
+
 2001-04-13  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* Initial checkin.
