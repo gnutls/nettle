@@ -6,7 +6,7 @@ BODY:
 AUTOMAKE_OPTIONS = foreign
 
 noinst_LIBRARIES = libsymmetric.a
-noinst_PROGRAMS = desTest desdata bf_test twofish_test generate_q
+noinst_PROGRAMS = desTest desdata bf_test twofish_test generate_q rijndael_test
 
 Makefile.am: Makefile.am.in
 	(cd $(top_srcdir) && $(MAKE) src/symmetric/Makefile.am)
@@ -22,7 +22,8 @@ BUILT_SOURCES =	desSmallFips.c desSmallCore.c desQuickFips.c desQuickCore.c
 
 libsymmetric_a_SOURCES = desCode.h desKerb.c desUtil.c desQuick.c \
       $(BUILT_SOURCES) \
-      sha.c md5.c idea.c arcfour.c cast.c blowfish.c twofish.c
+      sha.c md5.c idea.c arcfour.c cast.c blowfish.c twofish.c rijndael.c \
+      serpent.c
 
 # Generate DES headers.
 $(des_headers): desdata
