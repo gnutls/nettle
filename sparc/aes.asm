@@ -59,7 +59,8 @@ key_addition_8to32:
 	retl
 	nop
 
-	! FIXME:	 Inline, unroll?
+! key_addition32(const uint32_t *txt, const uint32_t *keys, uint32_t *out)
+
 	.size	key_addition_8to32,.LLfe1-key_addition_8to32
 	.align 4
 	.type	key_addition32,#function
@@ -67,27 +68,25 @@ key_addition_8to32:
 key_addition32:
 	! Use %g2 and %g3 as temporaries, %o3 as counter
 	mov	0, %o3
+	! Decrement out, so we can increment the counter earlier in the loop
+	sub	%o2, 4, %o2
 .LL26:
-	! Get *txt++
-	ld	[%o0], %g2
-	add	%o0, 4, %o0
-	! Get *keys++
-	ld	[%o1], %g3
-	add	%o1, 4, %o1
-	xor	%g2, %g3, %g3
-	st	%g3, [%o2]
-	! Incrementing %o2 in the delay slot
-	add	%o3, 1, %o3
+	! Get txt[i]
+	ld	[%o0+%o3], %g2
+	! Get keys[i]
+	ld	[%o1+%o3], %g3
+	cmp	%o3, 12
+	add	%o3, 4, %o3
 
-	! FIXME:	 Unroll or inline?
-	cmp	%o3, 3
+	xor	%g2, %g3, %g3
+
 	bleu	.LL26
-	add	%o2, 4, %o2
+	st	%g3, [%o2+%o3]
 	
 	retl
 	nop
 
-! 	! And three more times
+
 ! 	
 ! 	mov	%o0, %o4
 ! 	mov	0, %o3
