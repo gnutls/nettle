@@ -38,7 +38,10 @@ extern const struct nettle_cipher nettle_des3;
 
 extern const struct nettle_cipher nettle_blowfish128;
 
-/* Glue to openssl, for comparative benchmarking */
+/* Glue to openssl, for comparative benchmarking. The corresponding
+ * code is not included in the nettle library, as that would make the
+ * shared library depend on openssl. Instead, look at
+ * examples/nettle-openssl.c. */
 extern const struct nettle_cipher nettle_openssl_blowfish128;
 extern const struct nettle_cipher nettle_openssl_des;
 extern const struct nettle_cipher nettle_openssl_cast128;
