@@ -42,7 +42,7 @@
 
 #include "io.h"
 
-#define KEYSIZE 500
+#define KEYSIZE 900
 #define ESIZE 30
 
 static void
@@ -110,7 +110,11 @@ main(int argc, char **argv)
   yarrow256_init(&yarrow, 0, NULL);
 
   /* Read some data to seed the generator */
-  simple_random(&yarrow, random_name);
+  if (!simple_random(&yarrow, random_name))
+    {
+      werror("Initialization of randomness generator failed.\n");
+      return EXIT_FAILURE;
+    }
 
   rsa_public_key_init(&pub);
   rsa_private_key_init(&priv);
