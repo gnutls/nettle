@@ -94,38 +94,45 @@ base64_encode(uint8_t *dst,
   return out - dst;
 }
 
+void
+base64_decode_init(struct base64_ctx *ctx)
+{
+  ctx->shift = 10;
+  ctx->accum = 0;
+}
+
 unsigned
-base64_decode(uint8_t *dst,
-              unsigned src_length,
-              const uint8_t *src)
+base64_decode_update(struct base64_ctx *ctx,
+                     uint8_t *dst,
+                     unsigned src_length,
+                     const uint8_t *src)
 {
   uint8_t *out = dst;
-  uint32_t accum = 0;
-  int shift = 10;
 
-  while (src_length > 0)
+  for (;;) 
     {
-      const int data = decode_table[*src];
+      int data;
+      if (src_length == 0) return out - dst;
+      data = decode_table[*src];
       switch (data)
         {
         default:
-          accum |= data << shift;
-          shift -= 6;
-          if (shift <= 2)
+          ctx->accum |= data << ctx->shift;
+          ctx->shift -= 6;
+          if (ctx->shift <= 2)
             {
-              *out++ = accum >> 8;
-              accum = accum << 8;
-              shift += 8;
+              *out++ = ctx->accum >> 8;
+              ctx->accum <<= 8;
+              ctx->shift += 8;
             }
+	  /* Fall through */
         case TABLE_INVALID:
         case TABLE_SPACE:
         case TABLE_END:
-          break;
+	  /* FIXME: Silently ignores any invalid characters.
+	   * We need to detect and return errors, in some way. */
+          ++src;
+          --src_length;
         }
-
-        ++src;
-        --src_length;
     }
-
-  return out - dst;
 }
