@@ -1,8 +1,16 @@
 changequote(<,>)dnl
-changecom(!,<
->)dnl
-
 dnl (progn (modify-syntax-entry ?< "(>") (modify-syntax-entry ?> ")<") )
+
+dnl FORTRAN style comment character
+define(C, <
+dnl>)
+
+dnl     changecom(!,<
+dnl     >)dnl
+
+dnl including files from the srcdir
+define(<include_src>, <include(srcdir/$1)>)
+
 dnl Struct defining macros
 
 dnl STRUCTURE(prefix) 
