@@ -24,6 +24,13 @@ What is Nettle? A quote from the introduction in the Nettle Manual:
   Nettle is LSH, and it uses an object-oriented abstraction on top of the
   library. 
 
+Nettle is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free
+Software Foundation. See the file COPYING for details. Most, but not
+all, of Nettle can also be used under the terms of the GNU Lesser
+General Public License; please read the Copyright section of the
+manual if you want to exercise this option.
+
 Build nettle with the usual ./configure && make && make check && make
 install. Read the manual. Mail me if you have any questions or
 suggestions.
