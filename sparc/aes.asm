@@ -162,9 +162,9 @@ _aes_crypt:
 	add	idx, 4, idx		
 
 	! Fetch roundkey
-	add	round, ctx, t1
-	ld	[t1+i], t1
-		
+	ld	[ctx+round], t1
+	add	round, 4, round
+	
 	xor	t0, t3, t0		! 0, 1, 2, 3
 
 	xor	t0, t1, t0
@@ -178,7 +178,6 @@ _aes_crypt:
 	! switch roles for tmp and wtxt
 	xor	wtxt, diff, wtxt
 
-	add	round, 16, round
 	cmp	round, nrounds
 	blu	.Lround_loop
 	xor	tmp, diff, tmp
