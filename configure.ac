@@ -106,6 +106,10 @@ Support for public key algorithms will be unavailable.])])
 # Add -R flags needed to run programs linked with gmp
 LSH_RPATH_FIX
 
+# Check for openssl's libcrypto (used only for benchmarking)
+AC_CHECK_LIB(crypto, BF_ecb_encrypt)
+LSH_RPATH_FIX
+
 # Set these flags *last*, or else the test programs won't compile
 if test x$GCC = xyes ; then
   # Using -ggdb3 makes (some versions of) Redhat's gcc-2.96 dump core
