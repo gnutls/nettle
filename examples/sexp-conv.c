@@ -3,8 +3,10 @@
  * Conversion tool for handling the different flavours of sexp
  * syntax. */
 
+#include "base16.h"
 #include "base64.h"
 #include "buffer.h"
+#include "nettle-meta.h"
 
 #include <assert.h>
 #include <errno.h>
@@ -39,8 +41,6 @@ enum sexp_mode
   {
     SEXP_CANONICAL = 0,
     SEXP_ADVANCED = 1,
-    /* OR:ed with SEXP_CANONICAL or SEXP_ADVANCED when reading
-     * transport data */
     SEXP_TRANSPORT = 2,
   };
 
@@ -63,86 +63,15 @@ enum sexp_coding
     SEXP_HEX,
   };
 
-
-/* Hex functions should move out, eventually */
-struct hex_decode_ctx
-{
-  unsigned word;
-  unsigned count;
-};
-
-static void
-hex_decode_init(struct hex_decode_ctx *ctx)
-{
-  ctx->word = ctx->count = 0;
-}
-
-enum { HEX_INVALID = -1, HEX_SPACE=-2 };
-
-/* Returns -1 on error. */
-static int
-hex_decode_single(struct hex_decode_ctx *ctx,
-		  uint8_t *dst,
-		  uint8_t src)
-{
-  static const signed char hex_decode_table[0x80] =
-    {
-      -1, -1, -1, -1, -1, -1, -1, -1, -1, -2, -2, -1, -1, -2, -1, -1, 
-      -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-      -2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-       0,  1,  2,  3,  4,  5,  6,  7,  8,  9, -1, -1, -1, -1, -1, -1,
-      -1, 10, 11, 12, 13, 14, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-      -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-      -1, 10, 11, 12, 13, 14, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-      -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    };
-  
-  int digit;
-  if (src >= 0x80)
-    return -1;
-
-  /* FIXME: This code could use more clever choices of constants. */
-  digit = hex_decode_table[src];
-  switch (digit)
-    {
-    case -1:
-      return -1;
-    case -2:
-      return 0;
-    default:
-      assert(digit >= 0);
-      assert(digit < 0x10);
-
-      if (ctx->count)
-	{
-	  *dst = (ctx->word << 4) | digit;
-	  ctx->count = 0;
-	  return 1;
-	}
-      else
-	{
-	  ctx->word = digit;
-	  ctx->count = 1;
-	  return 0;
-	}
-    }
-}
-
-static int
-hex_decode_status(struct hex_decode_ctx *ctx)
-{
-  return !ctx->count;
-}
-
 struct sexp_input
 {
   FILE *f;
-  
+
   enum sexp_coding coding;
   /* Used in transport mode */
   union {
     struct base64_decode_ctx base64;
-    struct hex_decode_ctx hex;
+    struct base16_decode_ctx hex;
   };
 
   /* Terminator for current coding */
@@ -172,19 +101,23 @@ struct sexp_output
 {
   FILE *f;
 
-  enum sexp_coding coding;
-  enum sexp_mode mode;
-  struct base64_encode_ctx base64;
-
+  const struct nettle_armor *coding;
+  unsigned coding_indent;
+  
+  union {
+    struct base64_decode_ctx base64;
+    /* NOTE: There's no context for hex encoding */
+  } state;
+  
   unsigned pos;
 };
 
 static void
-sexp_output_init(struct sexp_output *output, FILE *f, enum sexp_mode mode)
+sexp_output_init(struct sexp_output *output, FILE *f)
 {
   output->f = f;
-  output->coding = SEXP_PLAIN;
-  output->mode = mode;
+  output->coding = NULL;
+
   output->pos = 0;
 }
 
@@ -226,7 +159,7 @@ sexp_get_char(struct sexp_input *input, uint8_t *out)
 
 	  if (c == '}')
 	    {
-	      if (base64_decode_status(&input->base64))
+	      if (base64_decode_final(&input->base64))
 		{
 		  input->token = SEXP_TRANSPORT_END;
 		  return 0;
@@ -373,14 +306,24 @@ sexp_get_base64_string(struct sexp_input *input)
 
       if (c == '|')
 	{
-	  if (!base64_decode_status(&ctx))
+	  if (!base64_decode_final(&ctx))
 	    die("Invalid base64 string.\n");
 	  return;
 	}
       
-      if (base64_decode_single(&ctx, &decoded, c)
-	  && !NETTLE_BUFFER_PUTC(&input->string, decoded))
-	die("Virtual memory exhasuted.\n");	
+      switch(base64_decode_single(&ctx, &decoded, c))
+	{
+	case 0:
+	  break;
+	case 1:
+	  if (!NETTLE_BUFFER_PUTC(&input->string, decoded))
+	    die("Virtual memory exhasuted.\n");
+	  break;
+	case -1:
+	  die("Invalid base64 string.\n");
+	default:
+	  abort();
+	}
     }
 }
 
@@ -567,83 +510,77 @@ sexp_get_token(struct sexp_input *input, enum sexp_mode mode)
 
 #define LINE_WIDTH 60
 
+static void
+sexp_put_raw_char(struct sexp_output *output, uint8_t c)
+{
+  output->pos++;
+  if (putc(c, output->f) < 0)
+    die("Write failed: %s\n", strerror(errno));
+}
+
 static void 
 sexp_put_newline(struct sexp_output *output,
 		 unsigned indent)
 {
   unsigned i;
-  if (putc('\n', output->f) < 0)
-    die("Write failed: %s\n", strerror(errno));
 
+  sexp_put_raw_char(output, '\n');
+  output->pos = 0;
+  
   for(i = 0; i < indent; i++)
-    if (putc(' ', output->f) < 0)
-      die("Write failed: %s\n", strerror(errno));
-
+    sexp_put_raw_char(output, ' ');
+  
   output->pos = indent;
 }
 
 static void
-sexp_put_char(struct sexp_output *output, unsigned indent,
-	      uint8_t c)
+sexp_put_char(struct sexp_output *output, uint8_t c)
 {
-  switch (output->coding)
+  if (output->coding)
     {
-    case SEXP_BASE64:
-      {
-	uint8_t encoded[2];
-	unsigned done;
-	unsigned i;
+      /* Two is enough for both hex and base64. */
+      uint8_t encoded[2];
+      unsigned done;
+
+      unsigned i;
       
-	done = base64_encode_single(&output->base64, encoded, c);
-
-	assert(done <= sizeof(encoded));
-
-	for (i = 0; i<done; i++)
+      done = output->coding->encode_update(&output->state, encoded,
+					   1, &c);
+      assert(done <= sizeof(encoded));
+      
+      for (i = 0; i<done; i++)
 	  {
-	    if (indent &&
-		output->pos > LINE_WIDTH
-		&& output->pos > (indent + 10))
-	      sexp_put_newline(output, indent);
-	  
-	    if (putc(encoded[i], output->f) < 0)
-	      die("Write failed: %s\n", strerror(errno));
+	    if (output->pos > LINE_WIDTH
+		&& output->pos > (output->coding_indent + 10))
+	      sexp_put_newline(output, output->coding_indent);
 
-	    output->pos++;
+	    sexp_put_raw_char(output, encoded[i]);
 	  }
-	break;
-      }
-    case SEXP_PLAIN:
-      output->pos++;
-      if (putc(c, output->f) < 0)
-	die("Write failed: %s\n", strerror(errno));
-      break;
-
-    case SEXP_HEX:
-      /* Not implemented */
-      abort();
     }
+  else
+    sexp_put_raw_char(output, c);
 }
 
 static void
-sexp_put_data(struct sexp_output *output, unsigned indent,
+sexp_put_data(struct sexp_output *output,
 	      unsigned length, const uint8_t *data)
 {
   unsigned i;
 
   for (i = 0; i<length; i++)
-    sexp_put_char(output, indent, data[i]);
+    sexp_put_char(output, data[i]);
 }
 
 static void
-sexp_puts(struct sexp_output *output, unsigned indent,
+sexp_puts(struct sexp_output *output,
 	  const uint8_t *s)
 {
   while (*s)
-    sexp_put_char(output, indent, *s++);
+    sexp_put_char(output, *s++);
 }
 
 static void
-sexp_put_length(struct sexp_output *output, unsigned indent,
+sexp_put_length(struct sexp_output *output, 
 		unsigned length)
 {
   unsigned digit = 1;
@@ -657,47 +594,50 @@ sexp_put_length(struct sexp_output *output, unsigned indent,
     }
 
   for (; digit; length %= digit, digit /= 10)
-    sexp_put_char(output, indent, '0' + length / digit);
+    sexp_put_char(output, '0' + length / digit);
 }
 
 static void
-sexp_put_base64_start(struct sexp_output *output, uint8_t c)
+sexp_put_code_start(struct sexp_output *output,
+		    const struct nettle_armor *coding,
+		    uint8_t c)
 {
-  assert(output->coding == SEXP_PLAIN);
+  assert(!output->coding);
   
-  sexp_put_char(output, 0, c);
-
-  base64_encode_init(&output->base64);
-  output->coding = SEXP_BASE64;
+  sexp_put_raw_char(output, c);
+  output->coding_indent = output->pos;
+  
+  output->coding = coding;
+  output->coding->encode_init(&output->state);
 }
 
 static void
-sexp_put_base64_end(struct sexp_output *output, uint8_t c)
+sexp_put_code_end(struct sexp_output *output, uint8_t c)
 {
+  /* Enough for both hex and base64 */
   uint8_t encoded[BASE64_ENCODE_FINAL_LENGTH];
   unsigned done;
 
-  assert(output->coding = SEXP_BASE64);
+  assert(output->coding);
 
-  done = base64_encode_final(&output->base64, encoded);
+  done = output->coding->encode_final(&output->state, encoded);
 
   assert(done <= sizeof(encoded));
   
-  output->coding = SEXP_PLAIN;
+  output->coding = NULL;
 
-  sexp_put_data(output, 0, done, encoded);
-  sexp_put_char(output, 0, c);
+  sexp_put_data(output, done, encoded);
+  sexp_put_char(output, c);
 }
 
 static void
-sexp_put_string(struct sexp_output *output, unsigned indent,
+sexp_put_string(struct sexp_output *output, enum sexp_mode mode,
 		struct nettle_buffer *string)
 {
   if (!string->size)
-    sexp_puts(output, indent,
-	      (output->mode == SEXP_ADVANCED) ? "\"\"": "0:");
+    sexp_puts(output, (mode == SEXP_ADVANCED) ? "\"\"": "0:");
 
-  else if (output->mode == SEXP_ADVANCED)
+  else if (mode == SEXP_ADVANCED)
     {
       unsigned i;
       int token = (string->contents[0] < '0' || string->contents[0] > '9');
@@ -722,11 +662,11 @@ sexp_put_string(struct sexp_output *output, unsigned indent,
 	}
       
       if (token)
-	sexp_put_data(output, indent, string->size, string->contents);
+	sexp_put_data(output, string->size, string->contents);
 
       else if (quote_friendly)
 	{
-	  sexp_put_char(output, indent, '"');
+	  sexp_put_char(output, '"');
 
 	  for (i = 0; i<string->size; i++)
 	    {
@@ -744,78 +684,78 @@ sexp_put_string(struct sexp_output *output, unsigned indent,
 		  assert(c);
 		}
 	      if (escape)
-		sexp_put_char(output, indent, '\\');
+		sexp_put_char(output, '\\');
 
-	      sexp_put_char(output, indent, c);
+	      sexp_put_char(output, c);
 	    }
 	  
-	  sexp_put_char(output, indent, '"');
+	  sexp_put_char(output, '"');
 	}
       else
 	{
-	  sexp_put_base64_start(output, '|');
-	  sexp_put_data(output, output->pos,
-			string->size, string->contents);
-	  sexp_put_base64_end(output, '|');
+	  sexp_put_code_start(output, &nettle_base64, '|');
+	  sexp_put_data(output, string->size, string->contents);
+	  sexp_put_code_end(output, '|');
 	}
     }
   else
     {
-      sexp_put_length(output, indent, string->size);
-      sexp_put_char(output, indent, ':');
-      sexp_put_data(output, indent, string->size, string->contents);
+      sexp_put_length(output, string->size);
+      sexp_put_char(output, ':');
+      sexp_put_data(output, string->size, string->contents);
     }
 }
 
 static void
-sexp_put_list_start(struct sexp_output *output, unsigned indent)
+sexp_put_list_start(struct sexp_output *output)
 {
-  sexp_put_char(output, indent, '(');
+  sexp_put_char(output, '(');
 }
 
 static void
-sexp_put_list_end(struct sexp_output *output, unsigned indent)
+sexp_put_list_end(struct sexp_output *output)
 {
-  sexp_put_char(output, indent, ')');
+  sexp_put_char(output, ')');
 }
 
 static void
-sexp_put_display_start(struct sexp_output *output, unsigned indent)
+sexp_put_display_start(struct sexp_output *output)
 {
-  sexp_put_char(output, indent, '[');
+  sexp_put_char(output, '[');
 }
 
 static void
-sexp_put_display_end(struct sexp_output *output, unsigned indent)
+sexp_put_display_end(struct sexp_output *output)
 {
-  sexp_put_char(output, indent, ']');
+  sexp_put_char(output, ']');
 }
 
 static void
-sexp_convert_string(struct sexp_input *input, enum sexp_mode mode,
-		    struct sexp_output *output, unsigned indent)
+sexp_convert_string(struct sexp_input *input, enum sexp_mode mode_in,
+		    struct sexp_output *output, enum sexp_mode mode_out)
 {
-  sexp_get_token(input, mode);
+  sexp_get_token(input, mode_in);
   if (input->token == SEXP_STRING)
-    sexp_put_string(output, indent, &input->string);
+    sexp_put_string(output, mode_out, &input->string);
   else
     die("Invalid string.\n");
 }
 
 static int
-sexp_convert_item(struct sexp_input *input, enum sexp_mode mode,
-		  struct sexp_output *output, unsigned indent);
+sexp_convert_item(struct sexp_input *input, enum sexp_mode mode_in,
+		  struct sexp_output *output, enum sexp_mode mode_out,
+		  unsigned indent);
 
 static void
-sexp_convert_list(struct sexp_input *input, enum sexp_mode mode,
-		  struct sexp_output *output, 
+sexp_convert_list(struct sexp_input *input, enum sexp_mode mode_in,
+		  struct sexp_output *output, enum sexp_mode mode_out,
 		  unsigned indent)
 {
   unsigned item;
 
   for (item = 0;; item++)
     {
-      sexp_get_token(input, mode);
+      sexp_get_token(input, mode_in);
   
       /* Check for end of list */
       if (input->token == SEXP_LIST_END
@@ -823,37 +763,38 @@ sexp_convert_list(struct sexp_input *input, enum sexp_mode mode,
 	  || input->token == SEXP_TRANSPORT_END)
 	return;
 
-      if (output->mode == SEXP_ADVANCED)
+      if (mode_out == SEXP_ADVANCED)
 	{
 	  /* FIXME: Adapt pretty printing to handle a big first
 	   * element. */
 	  if (item == 1)
 	    {
-	      sexp_put_char(output, indent, ' ');
+	      sexp_put_char(output, ' ');
 	      indent = output->pos;
 	    }
 	  else if (item > 1)
 	    sexp_put_newline(output, indent);
 	}
       
-      if (!sexp_convert_item(input, mode, output, indent))
+      if (!sexp_convert_item(input, mode_in, output, mode_out, indent))
 	/* Should be detected above */
 	abort();
     }
 }
 
 static void
-sexp_convert_file(struct sexp_input *input, struct sexp_output *output)
+sexp_convert_file(struct sexp_input *input, enum sexp_mode mode_in,
+		  struct sexp_output *output, enum sexp_mode mode_out)
 {
-  sexp_get_token(input, SEXP_ADVANCED);
+  sexp_get_token(input, mode_in);
 
   while (input->token != SEXP_EOF)
     {
-      sexp_convert_item(input, SEXP_ADVANCED, output, 0);
-      if (output->mode == SEXP_ADVANCED)
+      sexp_convert_item(input, mode_in, output, mode_out, 0);
+      if (mode_out != SEXP_CANONICAL)
 	sexp_put_newline(output, 0);
 	  
-      sexp_get_token(input, SEXP_ADVANCED);
+      sexp_get_token(input, mode_in);
     }
 
   if (fflush(output->f) < 0)
@@ -875,17 +816,24 @@ sexp_skip_token(struct sexp_input *input, enum sexp_mode mode,
  *
  * Should be called after getting the first token. */
 static int
-sexp_convert_item(struct sexp_input *input, enum sexp_mode mode,
-		  struct sexp_output *output, unsigned indent)
+sexp_convert_item(struct sexp_input *input, enum sexp_mode mode_in,
+		  struct sexp_output *output, enum sexp_mode mode_out,
+		  unsigned indent)
 {
-  switch(input->token)
+  if (mode_out == SEXP_TRANSPORT)
+    {
+      sexp_put_code_start(output, &nettle_base64, '{');
+      sexp_convert_item(input, mode_in, output, SEXP_CANONICAL, 0);
+      sexp_put_code_end(output, '}');
+    }
+  else switch(input->token)
     {
     case SEXP_LIST_START:
       input->level++;
       
-      sexp_put_list_start(output, indent);
-      sexp_convert_list(input, mode, output, indent);
-      sexp_put_list_end(output, indent);
+      sexp_put_list_start(output);
+      sexp_convert_list(input, mode_in, output, mode_out, indent);
+      sexp_put_list_end(output);
 
       if (input->level)
 	{
@@ -911,18 +859,18 @@ sexp_convert_item(struct sexp_input *input, enum sexp_mode mode,
       break;
 
     case SEXP_STRING:
-      sexp_put_string(output, indent, &input->string);
+      sexp_put_string(output, mode_out, &input->string);
       break;
     case SEXP_DISPLAY_START:
-      sexp_put_display_start(output, indent);
-      sexp_convert_string(input, mode, output, indent);
-      sexp_skip_token(input, mode, SEXP_DISPLAY_END);
-      sexp_put_display_end(output, indent);
-      sexp_convert_string(input, mode, output, indent);
+      sexp_put_display_start(output);
+      sexp_convert_string(input, mode_in, output, mode_out);
+      sexp_skip_token(input, mode_in, SEXP_DISPLAY_END);
+      sexp_put_display_end(output);
+      sexp_convert_string(input, mode_in, output, mode_out);
       break;
       
     case SEXP_TRANSPORT_START:
-      if (mode != SEXP_ADVANCED)
+      if (mode_in == SEXP_CANONICAL)
 	die("Base64 not allowed in canonical mode.\n");
       else
 	{
@@ -935,7 +883,7 @@ sexp_convert_item(struct sexp_input *input, enum sexp_mode mode,
 	  base64_decode_init(&input->base64);
 
 	  /* FIXME: sexp_convert_list is wrong. */
-	  sexp_convert_list(input, SEXP_CANONICAL, output, indent);
+	  sexp_convert_list(input, SEXP_CANONICAL, output, mode_out, indent);
 	  
 	  input->coding = SEXP_PLAIN;
 	  input->level = old_level;
@@ -944,7 +892,7 @@ sexp_convert_item(struct sexp_input *input, enum sexp_mode mode,
     case SEXP_TRANSPORT_END:
       /* FIXME: Should be moved do sexp_convert_transport */
       if ( (input->coding != SEXP_BASE64)
-	   || input->level || !base64_decode_status(&input->base64))
+	   || input->level || !base64_decode_final(&input->base64))
 	die("Invalid base64.\n");
 
       break;
@@ -957,6 +905,8 @@ sexp_convert_item(struct sexp_input *input, enum sexp_mode mode,
 static int
 match_argument(const char *given, const char *name)
 {
+  /* FIXME: Allow abbreviations */
+  return !strcmp(given, name);
 }
 
 int
@@ -972,12 +922,11 @@ main(int argc, char **argv)
     switch (c)
       {
       case 's':
-	/* FIXME: Allow abbreviations */
-	if (!strcmp(optarg, "advanced"))
+	if (match_argument(optarg, "advanced"))
 	  mode = SEXP_ADVANCED;
-	else if (!strcmp(optarg, "transport"))
+	else if (match_argument(optarg, "transport"))
 	  mode = SEXP_TRANSPORT;
-	else if (!strcmp(optarg, "canonical"))
+	else if (match_argument(optarg, "canonical"))
 	  mode = SEXP_CANONICAL;
 	else
 	  die("Available syntax variants: advanced, transport, canonical\n");
@@ -995,9 +944,9 @@ main(int argc, char **argv)
       }
   
   sexp_input_init(&input, stdin);
-  sexp_output_init(&output, stdout, mode);
+  sexp_output_init(&output, stdout);
 
-  sexp_convert_file(&input, &output);
+  sexp_convert_file(&input, SEXP_ADVANCED, &output, mode);
 
   return EXIT_SUCCESS;
 }
