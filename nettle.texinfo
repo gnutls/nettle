@@ -103,12 +103,13 @@ application.
 This manual coresponds to version @value{UPDATED-FOR} of the library.
 
 @menu
-* Introduction::                
-* Copyright::                   
+* Introduction::                What is Nettle?
+* Copyright::                   Your rights.
 * Conventions::                 
 * Example::                     
-* Reference::                   
-* Installation::                
+* Reference::                   All Nettle functions and features.
+* Nettle soup::                 For the serious nettle hacker.
+* Installation::                How to install Nettle.
 * Index::                       
 @end menu
 
@@ -293,7 +294,7 @@ main(int argc, char **argv)
 @}
 @end example
 
-@node Reference, Installation, Example, Top
+@node Reference, Nettle soup, Example, Top
 @comment  node-name,  next,  previous,  up
 @chapter Reference
 
@@ -303,6 +304,7 @@ This chapter describes all the Nettle functions, grouped by family.
 * Hash functions::              
 * Cipher functions::            
 * Cipher Block Chaining::       
+* Keyed hash functions::        
 * Miscellaneous functions::     
 * Compatibility functions::     
 @end menu
@@ -455,6 +457,28 @@ This function also resets the context in the same way as
 @code{sha256_init}.
 @end deftypefun
 
+@subsection @code{struct nettle_hash}
+
+Nettle includes a struct including information about the supported hash
+functions. It is defined in @file{<nettle/nettle-meta.h>}, and is used
+by Nettle's implementation of @acronym{HMAC} @pxref{Keyed hash
+functions}.
+
+@deftp {Meta struct} @code{struct nettle_hash} name context_size digest_size block_size init update digest
+The last three attributes are function pointers, of types
+@code{nettle_hash_init_func}, @code{nettle_hash_update_func}, and
+@code{nettle_hash_digest_func}. The first argument to these functions is
+@code{void *} pointer so a context struct, which is of size
+@code{context_size}. 
+@end deftp
+
+@deftypevr {Constant Struct} {struct nettle_cipher} nettle_md5
+@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_sha1
+@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_sha256
+
+These are all the hash functions that Nettle implements.
+@end deftypevr
+
 @node Cipher functions, Cipher Block Chaining, Hash functions, Reference
 @comment  node-name,  next,  previous,  up
 @section Cipher functions
@@ -478,7 +502,7 @@ that are equal are transformed to ciphertext blocks that are equal; that
 leaks information about the plaintext. Usually you should apply the
 cipher is some feedback mode, @dfn{CBC} (Cipher Block Chaining) being one
 of the most popular. @xref{Cipher Block Chaining}, for information on
-how to apply CBC with Nettle.
+how to apply @acronym{CBC} with Nettle.
 
 A stream cipher can be used for messages of arbitrary length; a typical
 stream cipher is a keyed pseudorandom generator. To encrypt a plaintext
@@ -499,14 +523,15 @@ example, if you were using a block cipher in ECB mode, an attacker may
 pick up the message on its way, and reorder, delete or repeat some of
 the blocks. Even if the attacker can't decrypt the message, he can
 change it so that you are not reading the same message as your friend
-wrote. If you are using a block cipher in CBC mode rather than ECB, or
-are using a stream cipher, the possibilities for this sort of attack are
-different, but the attacker can still make predictable changes to the
-message.
+wrote. If you are using a block cipher in @acronym{CBC} mode rather than
+ECB, or are using a stream cipher, the possibilities for this sort of
+attack are different, but the attacker can still make predictable
+changes to the message.
 
 It is recommended to @emph{always} use an authentication mechanism in
 addition to encrypting the messages. Popular choices are Message
-Authetication Codes like HMAC-SHA1, or digital signatures.
+Authetication Codes like @acronym{HMAC-SHA1} @pxref{Keyed hash
+functions}, or digital signatures like @acronym{rsa}.
 
 Some ciphers have so called "weak keys", keys that results in
 undesirable structure after the key setup processing, and should be
@@ -909,18 +934,54 @@ in any other way.
 Analogous to @code{twofish_encrypt}
 @end deftypefun
 
-@node Cipher Block Chaining, Miscellaneous functions, Cipher functions, Reference
+@c @node nettle_cipher, Cipher Block Chaining, Cipher functions, Reference
+@c @comment  node-name,  next,  previous,  up
+@subsection @code{struct nettle_cipher}
+
+Nettle includes a struct including information about some of the more
+regular cipher functions. It should be considered a little experimental,
+but can be useful for applications that need a simple way to handle
+various algorithms. Nettle defines these structs in
+@file{<nettle/nettle-meta.h>}. 
+
+@deftp {Meta struct} @code{struct nettle_cipher} name context_size block_size key_size set_encrypt_key set_decrypt_key encrypt decrypt
+The last four attributes are function pointers, of types
+@code{nettle_set_key_func} and @code{nettle_crypt_func}. The first
+argument to these functions is a @code{void *} pointer to a context
+struct, which is of size @code{context_size}.
+@end deftp
+
+@deftypevr {Constant Struct} {struct nettle_cipher} nettle_aes128
+@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_aes192
+@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_aes256
+
+@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_arcfour128
+@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_cast128
+
+@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_serpent128
+@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_serpent192
+@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_serpent256
+
+@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_twofish128
+@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_twofish192
+@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_twofish256
+
+Nettle includes such structs for all the @emph{regular} ciphers, i.e.
+ones without weak keys or other oddnesses.
+@end deftypevr
+
+@node Cipher Block Chaining, Keyed hash functions, Cipher functions, Reference
 @comment  node-name,  next,  previous,  up
 @section Cipher Block Chaining
 
-When using CBC mode, cleartext blocks are not encrypted independently of
-each other, like in Electronic Cook Book mode. Instead, when encrypting a
-block in CBC mode, the previous ciphertext block is XOR:ed with the
-cleartext before it is fed to the block cipher. When encrypting the
-first block, a random block called an @dfn{IV}, or Initialization
-Vector, is used as the ``previous ciphertext block''. The IV should be
-chosen randomly, but it need not be kept secret, and can even be
-transmitted in the clear together with the encrypted data.
+When using @acronym{CBC} mode, cleartext blocks are not encrypted
+independently of each other, like in Electronic Cook Book mode. Instead,
+when encrypting a block in @acronym{CBC} mode, the previous ciphertext
+block is XOR:ed with the cleartext before it is fed to the block cipher.
+When encrypting the first block, a random block called an @dfn{IV}, or
+Initialization Vector, is used as the ``previous ciphertext block''. The
+IV should be chosen randomly, but it need not be kept secret, and can
+even be transmitted in the clear together with the encrypted data.
 
 In symbols, if @code{E_k} is the encryption function of a blockcipher,
 and @code{IV} is the initialization vector, then @code{n} cleartext blocks
@@ -937,14 +998,14 @@ C_n = E_k(C_(n-1) XOR M_n)
 @end example
 
 Nettle includes a few utility functions for applying a block cipher in
-Cipher Block Chaining (CBC) mode. The functions uses @code{void *} to
+Cipher Block Chaining (@acronym{CBC}) mode. The functions uses @code{void *} to
 pass cipher contexts around.
 
 @deftypefun {void} cbc_encrypt (void *@var{ctx}, void (*@var{f})(), unsigned @var{block_size}, uint8_t *@var{iv}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 @deftypefunx {void} cbc_decrypt (void *@var{ctx}, void (*@var{f})(), unsigned @var{block_size}, uint8_t *@var{iv}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 
-Applies the encryption or decryption function @var{f} in CBC mde. The
-function @var{f} is really typed as
+Applies the encryption or decryption function @var{f} in @acronym{CBC}
+mode. The function @var{f} is really typed as
 
 @code{void f (void *@var{ctx}, unsigned @var{length}, uint8_t @var{dst},
 const uint8_t *@var{src})},
@@ -965,7 +1026,7 @@ Expands into
 @end example
 @end deffn
 
-It can be used to define a CBC context struct, either directly,
+It can be used to define a @acronym{CBC} context struct, either directly,
 
 @example
 struct CBC_CTX(struct aes_ctx, AES_BLOCK_SIZE) ctx;
@@ -997,7 +1058,209 @@ the types of @var{f} and @var{ctx} don't match, e.g. if you try to use
 an @code{struct aes_ctx} context with the @code{des_encrypt} function.
 
 
-@node Miscellaneous functions, Compatibility functions, Cipher Block Chaining, Reference
+@node Keyed hash functions, Miscellaneous functions, Cipher Block Chaining, Reference
+@comment  node-name,  next,  previous,  up
+@section Keyed Hash Functions
+
+A @dfn{keyed hash function}, or @dfn{Message Authentication Code}
+(@acronym{MAC}) is a function that takes a key and a message, and
+produces fixed size @acronym{MAC}. It should be hard to compute a
+message and a matching @acronym{MAC} without knowledge of the key. It
+should also be hard to compute the key given only messages and
+corresponding @acronym{MAC}s.
+
+Keyed hash functions are useful primarily for message authentication,
+when the Alice and Bob shares a secret: The sender, Alice, computes the
+@acronym{MAC} and attaches it to the message. The receiver, Bob, also computes
+the @acronym{MAC} of the message, using the same key, and compares that
+to Alice's value. If they match, Bob can be assured that
+the message has not been modified on it's way from Alice.
+
+However, unlike digital signatures, this assurance is not transferable.
+Bob can't show the message and the @acronym{MAC} to a third party and
+prove that Alice sent that message. Not even if he gives away the key to
+the third party. The reason is that the @emph{same} key is used on both
+sides, and anyone knowing the key can create a correct @acronym{MAC} for
+any message. If Bob believes that only he and Alice knows the key, and
+he knows that he didn't attach a @acronym{MAC} to a particular message,
+he knows it must be Alice who did it. However, the third party can't
+distinguish between @acronym{MAC} created by Alice and one created by
+Bob.
+
+Keyed hash functions are typically a lot faster than digital signatures
+as well.
+
+@subsection @acronym{HMAC}
+
+One can build keyed hash functions from ordinary hash functions. Older
+constructions simply concatenate secret key and message and hashes that, but
+such constructions have weaknesses. A better construction is
+@acronym{HMAC}, described in @cite{RFC 2104}.
+
+For an underlying hash function @code{H}, with digest size @code{l} and
+internal block size @code{b}, @acronym{HMAC-H} is constructed as
+follows: From a given key @code{k}, two distinct subkeys @code{k_i} and
+@code{k_o} are constructed, both of length @code{b}. The
+@acronym{HMAC-H} of a message @code{m} is then computed as @code{H(k_o |
+H(k_i | m))}, where @code{|} denotes string concatenation.
+
+@acronym{HMAC} keys can be of any length, but it is recommended to use
+keys of length @code{l}, the digest size of the underlying hash function
+@code{H}. Keys that are longer than @code{b} are shortened to length
+@code{l} by hashing with @code{H}, so arbitrarily long keys aren't
+very useful. 
+
+Nettle's @acronym{HMAC} functions are defined in @file{<nettle/hmac.h>}.
+There are abstract functions that use a pointer to a @code{struct
+nettle_hash} to represent the underlying hash function and @code{void
+*} pointers that point to three different context structs for that hash
+function. There are also concrete functions for @acronym{HMAC-MD5},
+@acronym{HMAC-SHA1}, and @acronym{HMAC-SHA256}. First, the abstract
+functions:
+
+@deftypefun void hmac_set_key (void *@var{outer}, void *@var{inner}, void *@var{state}, const struct nettle_hash *@var{H}, unsigned @var{length}, const uint8_t *@var{key})
+Initializes the three context structs from the key. The @var{outer} and
+@var{inner} contexts corresponds to the subkeys @code{k_o} and
+@code{k_i}. @var{state} is used for hashing the message, and is
+initialized as a copy of the @var{inner} context.
+@end deftypefun
+
+@deftypefun void hmac_update(void *@var{state}, const struct nettle_hash *@var{H}, unsigned @var{length}, const uint8_t *@var{data})
+This function is called zero or more times to process the message.
+Actually, @code{hmac_update(state, H, length, data)} is equivalent to
+@code{H->update(state, length, data)}, so if you wish you can use the
+ordinary update function of the underlying hash function instead.
+@end deftypefun
+
+@deftypefun void hmac_digest (const void *@var{outer}, const void *@var{inner}, void *@var{state}, const struct nettle_hash *@var{H}, unsigned @var{length}, uint8_t *@var{digest})
+Extracts the @acronym{MAC} of the message, writing it to @var{digest}.
+@var{outer} and @var{inner} are not modified. @var{length} is usually
+equal to @code{H->digest_size}, but if you provide a smaller value,
+only the first @var{length} octets of the @acronym{MAC} are written.
+
+This function also resets the @var{state} context so that you can start
+over processing a new message (with the same key).
+@end deftypefun
+
+Like for @acronym{CBC}, there are some macros to help use these
+functions correctly.
+
+@deffn Macro HMAC_CTX (@var{type})
+Expands into
+@example
+@{
+   type outer;
+   type inner;
+   type state;
+@}
+@end example
+@end deffn
+
+It can be used to define a @acronym{HMAC} constext struct, either
+directly,
+
+@example
+struct HMAC_CTX(struct md5_ctx) ctx;
+@end example
+
+or to give it a struct tag,
+
+@example
+struct hmac_md5_ctx HMAC_CTX (struct md5_ctx);
+@end example
+
+@deffn Macro HMAC_SET_KEY (@var{ctx}, @var{H}, @var{length}, @var{key})
+@var{ctx} is a pointer to a context struct as defined by
+@code{HMAC_CTX}, @var{H} is a pointer to a @code{const struct
+nettle_hash} describing the underlying hash function (so it must match
+the type of the components of @var{ctx}). The last two arguments specify
+the secret key.
+@end deffn
+
+@deffn Macro HMAC_DIGEST (@var{ctx}, @var{H}, @var{length}, @var{digest})
+@var{ctx} is a pointer to a context struct as defined by
+@code{HMAC_CTX}, @var{H} is a pointer to a @code{const struct
+nettle_hash} describing the underlying hash function. The last two
+arguments specify where the digest is written.
+@end deffn
+
+Note that there is no @code{HMAC_UPDATE} macro; simply call hmac_update
+function directly, or the update function of the underlying hash function.
+
+@subsection Concrete @acronym{HMAC} functions
+Now we come to the specialized @acronym{HMAC} functions, which are
+easier to use than the general @acronym{HMAC} functions.
+
+@subsubsection @acronym{HMAC-MD5}
+
+@deftp {Context struct} {struct hmac_md5_ctx}
+@end deftp
+
+@deftypefun void hmac_md5_set_key (struct hmac_md5_ctx *@var{ctx}, unsigned @var{key_length}, const uint8_t *@var{key})
+Initializes the context with the key.
+@end deftypefun
+
+@deftypefun void hmac_md5_update (struct hmac_md5_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+Process some more data.
+@end deftypefun
+
+@deftypefun void hmac_md5_digest (struct hmac_md5_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+Extracts the @acronym{MAC}, writing it to @var{digest}. @var{length} may be smaller than
+@code{MD5_DIGEST_SIZE}, in which case only the first @var{length}
+octets of the @acronym{MAC} are written.
+
+This function also resets the context for processing new messages, with
+the same key.
+@end deftypefun
+
+@subsubsection @acronym{HMAC-SHA1}
+
+@deftp {Context struct} {struct hmac_sha1_ctx}
+@end deftp
+
+@deftypefun void hmac_sha1_set_key (struct hmac_sha1_ctx *@var{ctx}, unsigned @var{key_length}, const uint8_t *@var{key})
+Initializes the context with the key.
+@end deftypefun
+
+@deftypefun void hmac_sha1_update (struct hmac_sha1_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+Process some more data.
+@end deftypefun
+
+@deftypefun void hmac_sha1_digest (struct hmac_sha1_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+Extracts the @acronym{MAC}, writing it to @var{digest}. @var{length} may be smaller than
+@code{SHA1_DIGEST_SIZE}, in which case only the first @var{length}
+octets of the @acronym{MAC} are written.
+
+This function also resets the context for processing new messages, with
+the same key.
+@end deftypefun
+
+
+@subsubsection @acronym{HMAC-SHA256}
+
+@deftp {Context struct} {struct hmac_sha256_ctx}
+@end deftp
+
+@deftypefun void hmac_sha256_set_key (struct hmac_sha256_ctx *@var{ctx}, unsigned @var{key_length}, const uint8_t *@var{key})
+Initializes the context with the key.
+@end deftypefun
+
+@deftypefun void hmac_sha256_update (struct hmac_sha256_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+Process some more data.
+@end deftypefun
+
+@deftypefun void hmac_sha256_digest (struct hmac_sha256_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+Extracts the @acronym{MAC}, writing it to @var{digest}. @var{length} may be smaller than
+@code{SHA256_DIGEST_SIZE}, in which case only the first @var{length}
+octets of the @acronym{MAC} are written.
+
+This function also resets the context for processing new messages, with
+the same key.
+@end deftypefun
+
+
+
+@node Miscellaneous functions, Compatibility functions, Keyed hash functions, Reference
 @comment  node-name,  next,  previous,  up
 @section Miscellaneous functions
 
@@ -1036,8 +1299,63 @@ variable @code{des_check_key}, and the functions @code{des_cbc_cksum}
 @code{des_is_weak_key}, @code{des_key_sched}, @code{des_ncbc_encrypt}
 @code{des_set_key}, and @code{des_set_odd_parity}.
 
+@node Nettle soup, Installation, Reference, Top
+@comment  node-name,  next,  previous,  up
+@chapter Traditional Nettle Soup
+For the serious nettle hacker, here is a recipe for nettlesoup.
 
-@node Installation, Index, Reference, Top
+4 servings
+
+1 litre fresh nettles (urtica dioica)
+2 tablespoons butter
+3 tablespoons flour
+1 litre buillon (meat or vegetable)
+1/2 teaspoon salt
+a tad white pepper
+some cream or milk
+
+Gather 1 ltre fresh nettles. Use gloves! Small, tender shoots are
+preferable but the tops of larger nettles can also be used.
+
+@c replace "hack" with "chop"?
+
+Rinse the nettles very well. Boil them for 10 minutes in lightly salted
+water. Strain the nettles and save the water. Hack the nettles. Melt the
+butter and mix in the flour. Dilute with buillon and the nettlewater you
+save earlier. Add the hacked nettles. If you wish you can add some milk
+or cream at this stage. Bring to a boil and let boil for a few minutes.
+Season with salt and pepper.
+
+Serve with boiled egghalves.
+
+@c And the original Swedish version.
+
+Recept på nässelsoppa
+4 portioner
+
+1 l färska nässlor
+2 msk smör
+3 msk vetemjöl
+1 l kött- eller grönsaksbuljong
+1/2 tsk salt
+1-2 krm peppar
+(lite grädde eller mjölk)
+
+Plocka 1 liter färska nässlor. Använd handskar! Helst små och späda
+skott, men topparna av större nässlor går också bra.
+
+Skölj nässlorna väl. Förväll dem ca 10 minuter i lätt saltat vatten.
+Häll av och spara spadet. Hacka nässlorna. Smält smöret, rör i mjöl och
+späd med buljong och nässelspad. Lägg i de hackade nässlorna. Om så
+önskas, häll i en skvätt mjölk eller grädde. Koka några minuter, och
+smaksätt med salt och peppar.
+
+Servera med kokta ägghalvor.
+@ignore
+
+@end ignore
+
+@node Installation, Index, Nettle soup, Top
 @comment  node-name,  next,  previous,  up
 @chapter Installation
 
