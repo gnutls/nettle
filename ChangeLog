@@ -1,3 +1,7 @@
+2002-10-21  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/sexp-conv.c: New sexp conversion program.
+
 2002-10-21  Niels Möller  <niels@s3.kth.se>
 
 	* Makefile.am (libnettle_a_SOURCES): Added
