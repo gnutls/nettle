@@ -19,13 +19,13 @@
 #include "crypto_types.h"
 
 void idea_expand(UINT16 *ctx,
-		 CONST UINT8 *key);
+		 const UINT8 *key);
 
 void idea_invert(UINT16 *d,
-		 CONST UINT16 *e);
+		 const UINT16 *e);
 
-void idea_crypt(CONST UINT16 *ctx,
+void idea_crypt(const UINT16 *ctx,
 		UINT8 *dest,
-		CONST UINT8 *src);
+		const UINT8 *src);
 
 #endif /* IDEA_H_INCLUDED */

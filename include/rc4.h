@@ -16,7 +16,7 @@ struct rc4_ctx {
 void rc4_init(struct rc4_ctx *ctx);
 #endif
 
-void rc4_set_key(struct rc4_ctx *ctx, CONST UINT8 *key, UINT32 len);
-void rc4_crypt(struct rc4_ctx *ctx, UINT8 *dest, CONST UINT8 *src, UINT32 len);
+void rc4_set_key(struct rc4_ctx *ctx, const UINT8 *key, UINT32 len);
+void rc4_crypt(struct rc4_ctx *ctx, UINT8 *dest, const UINT8 *src, UINT32 len);
 
 #endif /* RC4_H_INCLUDED */
