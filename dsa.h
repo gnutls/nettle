@@ -113,9 +113,6 @@ dsa_signature_clear(struct dsa_signature *signature);
 
 
 void
-_dsa_hash(mpz_t x, struct sha1_ctx *hash);
-
-void
 dsa_sign(const struct dsa_public_key *pub,
 	 const struct dsa_private_key *key,
 	 void *random_ctx, nettle_random_func random,
@@ -127,6 +124,18 @@ int
 dsa_verify(const struct dsa_public_key *key,
 	   struct sha1_ctx *hash,
 	   const struct dsa_signature *signature);
+
+void
+dsa_sign_digest(const struct dsa_public_key *pub,
+		const struct dsa_private_key *key,
+		void *random_ctx, nettle_random_func random,
+		const uint8_t *digest,
+		struct dsa_signature *signature);
+
+int
+dsa_verify_digest(const struct dsa_public_key *key,
+		  const uint8_t *digest,
+		  const struct dsa_signature *signature);
 
 /* Key generation */
 
