@@ -150,14 +150,14 @@ put it to use.
 @comment  node-name,  next,  previous,  up
 @chapter Copyright
 
-Nettle is distributed under the GNU General Public License (see the file
-COPYING for details). However, several of the individual files are dual
-licensed under less restrictive licenses like the GNU Lesser General
-Public License, or are in the public domain. Consult the headers in each
-file for details.
-
-It is conceivable that future versions will use the LGPL rather than the
-GPL, mail me if you have questions or suggestions.
+Nettle is distributed under the GNU General Public License (GPL) (see
+the file COPYING for details). However, most of the individual files
+are dual licensed under less restrictive licenses like the GNU Lesser
+General Public License (LGPL), or are in the public domain. This means
+that if you don't use the parts of nettle that are GPL-only, you have
+the option to use the Nettle library just as if it were licensed under
+the LGPL. To find the current status of particular files, you have to
+read the copyright notices at the top of the files.
 
 A list of the supported algorithms, their origins and licenses:
 
