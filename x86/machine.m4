@@ -14,6 +14,22 @@ define(<AES_LAST_ROUND>, <
 	andl	<$>0xff000000,%ebp
 	orl	%ebp,%edi>)dnl
 
+dnl AES_LOAD(key, src)
+dnl Loads the next block of data from src, and add the subkey pointed
+dnl to by key.
+dnl Note that x86 allows unaligned accesses.
+dnl Would it be preferable to interleave the loads and stores?
+define(<AES_LOAD>, <
+	movl	($2),%eax
+	movl	4($2),%ebx
+	movl	8($2),%ecx
+	movl	12($2),%edx
+	
+	xorl	($1),%eax
+	xorl	4($1),%ebx
+	xorl	8($1),%ecx
+	xorl	12($1),%edx>)dnl
+
 dnl AES_STORE(key, dst)
 dnl Adds the subkey pointed to by %esi to %eax-%edx,
 dnl and stores the result in the area pointed to by %edi.
@@ -29,4 +45,3 @@ define(<AES_STORE>, <
 	movl	%ebx,4($2)
 	movl	%ecx,8($2)
 	movl	%edx,12($2)>)dnl
-	
