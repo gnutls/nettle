@@ -1,9 +1,12 @@
-/*
- *	des - fast & portable DES encryption & decryption.
- *	Copyright (C) 1992  Dana L. How
- *	Please see the file `README' for the complete copyright notice.
+/* desTest.c
  *
- *	Exercise the DES routines and collect performance statistics.
+ * Exercise the DES routines and collect performance statistics.
+ *
+ * $ID:$ */
+
+/*	des - fast & portable DES encryption & decryption.
+ *	Copyright (C) 1992  Dana L. How
+ *	Please see the file `descore.README' for the complete copyright notice.
  */
 
 #ifndef	lint
@@ -15,15 +18,16 @@ char desTest_cRcs[] = "$Id$";
 
 /* define now(w) to be the elapsed time in hundredths of a second */
 
+#if 1
+/* FIXME: Let autoconf look for getrusage */
+#define now(w) 0;
+#else /* false */
+
 #ifndef __NT__
 #include	<sys/time.h>
 #include	<sys/resource.h>
 #include	<unistd.h>
 
-#if 1
-/* FIXME: Let autoconf look for getrusage */
-#define now(w) 0;
-#else /* false */
 /* extern getrusage(); */
 static struct rusage usage;
 #define	now(w)	(						\
@@ -59,9 +63,7 @@ UINT8 cipher[8], output[8];
 
 /* noisy interfaces to the routines under test */
 
-static void
-method(key)
-UINT8 *key;
+static void method(const UINT8 *key)
 {
 	int j;
 
@@ -74,8 +76,7 @@ UINT8 *key;
 }
 
 static void
-encode(src, dst)
-UINT8 *src, *dst;
+encode(const UINT8 *src, UINT8 *dst)
 {
 	int j;
 
@@ -92,8 +93,7 @@ UINT8 *src, *dst;
 }
 
 static void
-decode(src, dst, check)
-UINT8 *src, *dst, *check;
+decode(const UINT8 *src, UINT8 *dst, const UINT8 *check)
 {
 	int j;
 
@@ -116,9 +116,11 @@ UINT8 *src, *dst, *check;
 /* run the tests */
 
 int
-main(int argc, char **argv)
+main(int argc UNUSED, char **argv UNUSED)
 {
 	int j, m, e, n;
+
+	/* FIXME: Don't use this untyped function pointer. */ 
 	void (*f)();
 	static char * expect[] = {
 		"57 99 F7 2A D2 3F AE 4C", "9C C6 2D F4 3B 6E ED 74",
@@ -126,14 +128,15 @@ main(int argc, char **argv)
 		"43 5C FF C5 68 B3 70 1D", "25 DD AC 3E 96 17 64 67",
 		"80 B5 07 E1 E6 A7 47 3D", "3F A4 0E 8A 98 4D 48 15",
 	};
-	static void (*funcs[])() = {
-		DesQuickCoreEncrypt, DesQuickFipsEncrypt,
-		DesSmallCoreEncrypt, DesSmallFipsEncrypt,
-		DesQuickCoreDecrypt, DesQuickFipsDecrypt,
-		DesSmallCoreDecrypt, DesSmallFipsDecrypt };
+	/* static void (*funcs[])() = { */
+	static DesFunc *funcs[] = {
+	  DesQuickCoreEncrypt, DesQuickFipsEncrypt,
+	  DesSmallCoreEncrypt, DesSmallFipsEncrypt,
+	  DesQuickCoreDecrypt, DesQuickFipsDecrypt,
+	  DesSmallCoreDecrypt, DesSmallFipsDecrypt };
 	static char * names[] = {
-		"QuickCore", "QuickFips",
-		"SmallCore", "SmallFips" };
+	  "QuickCore", "QuickFips",
+	  "SmallCore", "SmallFips" };
 
 	n = 0;
 	DesQuickInit();

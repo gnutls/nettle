@@ -1,7 +1,10 @@
-/*
- *	des - fast & portable DES encryption & decryption.
+/* desUtil.c
+ *
+ * $id:$ */
+
+/*	des - fast & portable DES encryption & decryption.
  *	Copyright (C) 1992  Dana L. How
- *	Please see the file `README' for the complete copyright notice.
+ *	Please see the file `descore.README' for the complete copyright notice.
  */
 
 #include	"desCode.h"
@@ -28,7 +31,7 @@ RCSID2(ego, "\n\nFast DES Library Copyright (c) 1991 Dana L. How\n\n");
 /* set up the method list from the key */
 
 int
-DesMethod(UINT32 *method, UINT8 *k)
+DesMethod(UINT32 *method, const UINT8 *k)
 {
 	register UINT32 n, w;
 	register char * b0, * b1;

@@ -1,10 +1,11 @@
-/*
- *	des - fast & portable DES encryption & decryption.
+/* desCode.h
+ *
+ * $Id$ */
+
+/*	des - fast & portable DES encryption & decryption.
  *	Copyright (C) 1992  Dana L. How
- *	Please see the file `README' for the complete copyright notice.
+ *	Please see the file `descore.README' for the complete copyright notice.
  */
-
-
 
 #include "des.h"
 
@@ -344,7 +345,7 @@ extern UINT32 des_keymap[], des_bigmap[];
 						\
 void						\
 NAME(REGISTER BYTE *D,				\
-     REGISTER UINT32 *r,			\
+     REGISTER const UINT32 *r,			\
      REGISTER const UINT8 *s)			\
 {						\
 	register UINT32 x, y, z;		\
@@ -380,7 +381,7 @@ NAME(REGISTER BYTE *D,				\
 						\
 void						\
 NAME(REGISTER BYTE *D,				\
-     REGISTER UINT32 *r,			\
+     REGISTER const UINT32 *r,			\
      REGISTER const UINT8 *s)			\
 {						\
 	register UINT32 x, y, z;		\
