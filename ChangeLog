@@ -1,3 +1,11 @@
+2002-11-16  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* sexp2dsa.c, sexp2rsa.c: (macro GET): Check sign of parsed
+	numbers.
+
+	* sexp2bignum.c (nettle_mpz_set_sexp): In the first check against
+	limit, added some margin to allow for sign octets.
+
 2002-11-15  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* testsuite/testutils.h (LDATA): Use sizeof instead of strlen. Now
