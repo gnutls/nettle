@@ -65,6 +65,9 @@ nettle_arcfour_crypt:
 	incl    %edi
 	cmpl	%esi, %edx
 	jne	.Lloop
+
+	movb	%al, 256(%ebp)		C  Store the new i and j.
+	movb	%bl, 257(%ebp)
 .Lend:
 	popl	%edi
 	popl	%esi
