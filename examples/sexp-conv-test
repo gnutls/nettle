@@ -23,6 +23,16 @@ test_conv () {
 
 test_conv "3:foo" "foo" -a
 test_conv "4:3des" '"3des"' -a
-test_conv "(3:foo [bar]foo)" "(3:foo[3:bar]3:foo)" -c
+test_conv '"foo"' "foo" -a
+test_conv '4:foo
+' '"foo\n"'
+test_conv '2:"\' '"\"\\"'
+test_conv "()" "()"
+test_conv '(foo bar baz)' '(foo bar
+     baz)'
+test_conv '; comment
+()' "()"
+
+test_conv "(foo[bar]foo)" "(foo [bar]foo)" -a
 
 exit 0
