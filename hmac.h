@@ -28,150 +28,86 @@
 
 #include "nettle-meta.h"
 
+#include "md5.h"
+#include "sha.h"
+
 #include <inttypes.h>
-
-struct hmac_info
-{
-  /* Size of digests, both internal and the final MAC */
-  unsigned digest_size;
-  
-  /* Internal block size */
-  unsigned block_size;
-
-  /* Size of the context struct for the underlying hash function. */
-  unsigned ctx_size;
-  
-  /* Init function */
-  void (*init)(void *ctx);
-
-  /* Update function */
-  void (*update)(void *ctx,
-		 unsigned length,
-		 const uint8_t *data);
-
-  /* Digest extraction function */
-
-  void (*digest)(void *ctx,
-		 unsigned length,
-		 uint8_t *digest);
-};
-
-#define _HMAC_INFO(name, NAME)
-{
-  NAME##_DIGEST_SIZE,
-  NAME##_DATA_SIZE,
-  sizeof(struct name##_ctx);
-
-  (void (*)(void *ctx))			name##_init,
-  (void (*)(void *ctx,
-	    unsigned length,
-	    const uint8_t *data))	name##_update,
-  (void (*)(void *ctx,
-	    unsigned length,
-	    uint8_t *digest))		name##_digest
-}
-
-extern const struct hmac_info hmac_md5_info;
-extern const struct hmac_info hmac_sha1_info;
-
-#if 0
-void
-hmac_init(void *outer, void *inner, void *state,
-	  struct hmac_info *info,
-	  unsigned key_length, const uint8_t *key);
-
-void
-hmac_update(void *state, void (*update)(void *ctx,
-					unsigned length,
-					const uint8_t *data));
-void
-hmac_digest(void *outer, void *inner, void *state
-	    struct hmac_info *info, 	    
-	    unsigned length, uint8_t *dst);
-#endif
 
 void
 hmac_set_key(void *outer, void *inner, void *state,
-	     (void (*update)(void *ctx, 
-			     unsigned length, 
-			     const uint8_t *data))(update), 
-	     (void (*digest)(void *ctx, 
-			     unsigned length, 
-			     uint8_t *digest))(digest),
-	     unsigned block_size, unsigned digest_size,
-	     unsigned context_size,
-	     unsigned key_length, const uint8_t *key);
+	     const struct nettle_hash *hash,
+	     unsigned length, const uint8_t *key);
+
+/* This function is not strictly needed, it's s just the same as the
+ * hash update function. */
+void
+hmac_update(void *state,
+	    const struct nettle_hash *hash,
+	    unsigned length, const uint8_t *data);
 
 void
-hmac_digest(void *outer, void *inner, void *state,
-	    (void (*update)(void *ctx, 
-			    unsigned length, 
-			    const uint8_t *data))(update), 
-	    (void (*digest)(void *ctx, 
-			    unsigned length, 
-			    uint8_t *digest))(digest),
-	    unsigned digest_size,
-	    unsigned context_size,
-	    unsigned digest_length, uint8_t *digest);
+hmac_digest(const void *outer, const void *inner, void *state,
+	    const struct nettle_hash *hash,
+	    unsigned length, uint8_t *digest);
 
-		  
+
 #define HMAC_CTX(type) \
 { type outer; type inner; type state; }
 
-#define HMAC_INIT(ctx, init) \
-((init)((ctx)->outer), (init)((ctx)->inner), (init)((ctx)->state))
+#define HMAC_SET_KEY(ctx, hash, length, key)			\
+  hmac_set_key( &(ctx)->outer, &(ctx)->inner, &(ctx)->state,	\
+                (hash), (length), (key) )
 
-#define HMAC_SET_KEY(ctx, update, digest, block_size, digest_size, length, key)	\
-(0 ? ( (update)(ctx->outer, 0, NULL), (digest)(ctx->outer, 0, NULL))		\
-   : hmac_set_key( (void *) (ctx)->outer,					\
-		   (void *) (ctx)->inner,					\
-		   (void *) (ctx)->state,					\
-		   (void (*)(void *ctx,						\
-			     unsigned length,					\
-			     const uint8_t *data))(update),			\
-		   (void (*)(void *ctx,						\
-			     unsigned length,					\
-			     uint8_t *digest))(digest),				\
-		   (block_size), (digest_size),					\
-		   sizeof(*(ctx)->state),					\
-		   (length), (key)))
+#define HMAC_DIGEST(ctx, hash, length, digest)			\
+  hmac_digest( &(ctx)->outer, &(ctx)->inner, &(ctx)->state,	\
+               (hash), (length), (digest) )
 
-#define HMAC_UPDATE(ctx, f, length, data) \
-((f)((ctx)->state, (length), (data)))
+/* HMAC using specific hash functions */
 
-#define HMAC_DIGEST(ctx, update, digest, digest_size, length, digest)	\
-(0 ? ( (update)(ctx->outer, 0, NULL), (digest)(ctx->outer, 0, NULL))	\
-   : hmac_digest( (void *) (ctx)->outer,				\
-		  (void *) (ctx)->inner,				\
-		  (void *) (ctx)->state,				\
-		  (void (*)(void *ctx,					\
-			    unsigned length,				\
-			    const uint8_t *data))(update),		\
-		  (void (*)(void *ctx,					\
-			    unsigned length,				\
-			    uint8_t *digest))(digest),			\
-		  (digest_size),					\
-		  sizeof(*(ctx)->state),				\
-		  (length), (digest)))
+/* hmac-md5 */
+struct hmac_md5_ctx HMAC_CTX(struct md5_ctx);
 
-#if 0
-#define HMAC_INIT(info, ctx, length, key)					\
-  (hmac_init(									\
-    (void *) ((ctx)->outer), (void *) ((ctx)->inner), (void *) ((ctx)->state),	\
-    (info),									\
-    (length), (key)))
+void
+hmac_md5_set_key(struct hmac_md5_ctx *ctx,
+		 unsigned key_length, const uint8_t *key);
 
-#define HMAC_UPDATE(info, ctx, length, data)	\
-  ((info)->update(				\
-    (void *) ((ctx)->state),			\
-    (length), (data)))
+void
+hmac_md5_update(struct hmac_md5_ctx *ctx,
+		unsigned length, const uint8_t *data);
 
-#define HMAC_DIGEST(info, ctx, length, digest)					\
-  (hmac_digest(									\
-    (void *) ((ctx)->outer), (void *) ((ctx)->inner), (void *) ((ctx)->state),	\
-    (info),									\
-    (length), (digest)))
+void
+hmac_md5_digest(struct hmac_md5_ctx *ctx,
+		unsigned length, uint8_t *digest);
 
-#endif
+
+/* hmac-sha1 */
+struct hmac_sha1_ctx HMAC_CTX(struct sha1_ctx);
+
+void
+hmac_sha1_set_key(struct hmac_sha1_ctx *ctx,
+		  unsigned key_length, const uint8_t *key);
+
+void
+hmac_sha1_update(struct hmac_sha1_ctx *ctx,
+		 unsigned length, const uint8_t *data);
+
+void
+hmac_sha1_digest(struct hmac_sha1_ctx *ctx,
+		 unsigned length, uint8_t *digest);
+
+/* hmac-sha256 */
+struct hmac_sha256_ctx HMAC_CTX(struct sha256_ctx);
+
+void
+hmac_sha256_set_key(struct hmac_sha256_ctx *ctx,
+		    unsigned key_length, const uint8_t *key);
+
+void
+hmac_sha256_update(struct hmac_sha256_ctx *ctx,
+		   unsigned length, const uint8_t *data);
+
+void
+hmac_sha256_digest(struct hmac_sha256_ctx *ctx,
+		   unsigned length, uint8_t *digest);
 
 #endif /* NETTLE_HMAC_H_INCLUDED */
