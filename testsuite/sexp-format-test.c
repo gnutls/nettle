@@ -73,7 +73,24 @@ test_main(void)
 
     ASSERT(MEMEQ(buffer.size, buffer.contents, e));
   }
-  
+
+  /* Try literals */
+  {
+    const uint8_t e[] = "(3:foo(3:bar17:xxxxxxxxxxxxxxxxx))";
+
+    nettle_buffer_init(&buffer);
+    ASSERT(sexp_format(&buffer, "(%0s(bar%0s))",
+		       "foo", "xxxxxxxxxxxxxxxxx")
+	   == strlen(e));
+    
+    ASSERT(sexp_format(NULL, "(%0s(%0s%0s))",
+		       "foo", "bar", "xxxxxxxxxxxxxxxxx")
+	   == strlen(e));
+    
+    ASSERT(buffer.size == strlen(e));
+    ASSERT(MEMEQ(buffer.size, buffer.contents, e));
+  }
+
 #if HAVE_LIBGMP
   {
     mpz_t x;
