@@ -23,24 +23,30 @@
  * MA 02111-1307, USA.
  */
 
-#ifndef NETTLE_DES_COMPAT_H_INCLUDED
-#define NETTLE_DES_COMPAT_H_INCLUDED
+#include "des-compat.h"
 
-/* According to Assar, des_set_key, des_set_key_odd_parity,
- * des_is_weak_key, plus the encryption functions (des_*_encrypt and
- * des_cbc_cksum) would be a pretty useful subset. */
-
-/* NOTE: This is quite experimental, and not all functions are
- * implemented. Contributions, in particular test cases are welcome. */
-
-#include "des.h"
-
-/* FIXME: Some names collides with nettle, so we'll need some ugly symbol
- * munging */
+#include "cbc.h"
 
 void des_ecb3_encrypt(const uint8_t *src, uint8_t *dst,
 		      struct des_ctx *k1, struct des_ctx *k2,
-		      struct des_ctx *k3, int enc);
+		      struct des_ctx *k3, int enc)
+{
+  switch(enc)
+    {
+    case DES_ENCRYPT:
+      des_encrypt(k1, dst, src, DES_BLOCK_SIZE);
+      des_decrypt(k2, dst, dst, DES_BLOCK_SIZE);
+      des_encrypt(k3, dst, dst, DES_BLOCK_SIZE);
+      break;
+    case DES_DECRYPT:
+      des_decrypt(k3, dst, src, DES_BLOCK_SIZE);
+      des_encrypt(k2, dst, dst, DES_BLOCK_SIZE);
+      des_decrypt(k1, dst, dst, DES_BLOCK_SIZE);
+      break;
+    default:
+      abort();
+    }
+}
 
 uint32_t
 des_cbc_cksum(const uint8_t *src, uint8_t dst,
@@ -50,7 +56,12 @@ des_cbc_cksum(const uint8_t *src, uint8_t dst,
 void
 des_cbc_encrypt(const uint8_t *src, uint8_t *dst, long length,
 		struct des_ctx *ctx, uint8_t *iv,
-		int enc);
+		int enc)
+{
+  cbc_encrypt(ctx, (enc == DES_ENCRYPT) ? des_encrypt : des_decrypt,
+              DES_BLOCK_SIZE, iv,
+              length, dst, src);
+}
 
 void
 des_3cbc_encrypt(const uint8_t *src, uint8_t *dst, long length,
@@ -62,7 +73,10 @@ des_3cbc_encrypt(const uint8_t *src, uint8_t *dst, long length,
 void
 des_ecb_encrypt(const uint8_t *src, uint8_t *dst, long length,
 		struct des_ctx *ctx, uint8_t *iv,
-		int enc);
+		int enc)
+{
+  )(enc == DES_ENCRYPT) ? des_encrypt : des_decrypt)(
+}
 void
 des_ede3_cbc_encrypt(const uint8_t *src, uint8_t *dst, long length,
 		     struct des_ctx * k1,struct des_ctx *k2, struct des_ctx *k3,
@@ -80,5 +94,3 @@ des_key_sched(const uint8_t *key, struct des_ctx *ctx);
 
 int
 des_is_weak_key(const uint8_t key);
-
-#endif /* NETTLE_DES_COMPAT_H_INCLUDED */
