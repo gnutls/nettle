@@ -11,7 +11,7 @@ bin_PROGRAMS = sexp-conv
 # It seems there's no DEPENDENCIES variable that affects all programs.
 LDADD = -lnettle ../libnettle.a
 
-EXTRA_DIST = misc.h input.h output.h parse.h
+EXTRA_DIST = misc.h input.h output.h parse.h getopt.h
 
 sexp_conv_SOURCES = sexp-conv.c input.c output.c parse.c \
 	getopt.c getopt1.c misc.c
