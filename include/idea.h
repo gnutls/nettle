@@ -2,6 +2,11 @@
  * $Id$
  */
 
+/*
+ * Please be aware that IDEA IS PATENT ENCUMBERED; see the note in idea.c.
+ *                      -------------------------
+ */
+
 #ifndef IDEA_H_INCLUDED
 #define IDEA_H_INCLUDED
 
@@ -14,13 +19,13 @@
 #include "crypto_types.h"
 
 void idea_expand(UINT16 *ctx,
-		 const UINT8 *key);
+		 CONST UINT8 *key);
 
 void idea_invert(UINT16 *d,
-		 const UINT16 *e);
+		 CONST UINT16 *e);
 
-void idea_crypt(const UINT16 *ctx,
+void idea_crypt(CONST UINT16 *ctx,
 		UINT8 *dest,
-		const UINT8 *src);
+		CONST UINT8 *src);
 
 #endif /* IDEA_H_INCLUDED */
