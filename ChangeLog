@@ -1,3 +1,13 @@
+2001-09-16  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* testsuite/des-compat-test.c (cbc_data): Shorten to 32 bytes (4
+	blocks), the last block of zeroes wasn't used anyway.
+
+	* des-compat.c (des_compat_des3_decrypt): Decrypt in the right
+	order. 
+	(des_ncbc_encrypt): Bug fixed.
+	(des_cbc_encrypt): Rewritten as a wrapper around des_ncbc_encrypt.
+
 2001-09-14  Niels Möller  <nisse@ehand.com>
 
 	* testsuite/des-compat-test.c: New file, copied from libdes
