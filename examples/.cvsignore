@@ -2,3 +2,4 @@
 Makefile
 Makefile.in
 nettle-benchmark
+rsa-keygen
