@@ -36,6 +36,8 @@ test_main(void)
   mpz_set_str(key.x,
 	      "56c6efaf878d06eef21dc070fab71da6ec1e30a6", 16);
 
+  test_dsa_key(&pub, &key);
+  
   test_dsa(&pub, &key);
 
   dsa_public_key_clear(&pub);
