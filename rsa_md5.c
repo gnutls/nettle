@@ -46,9 +46,9 @@ rsa_md5_sign(struct rsa_private_key *key,
              struct md5_ctx *hash,
              mpz_t s)
 {
-  assert(key->pub.size >= 45);
+  assert(key->size >= 45);
 
-  pkcs1_encode_md5(s, key->pub.size - 1, hash);
+  pkcs1_encode_md5(s, key->size - 1, hash);
 
   rsa_compute_root(key, s, s);
 }
