@@ -35,10 +35,11 @@ BEGIN {
       text_total += text_size;
       data_total += data_size;
       rodata_total += rodata_size; 
-    }
+    } 
   if ($1 ~ filter)
     {
       name = $1; text_size = data_size = rodata_size = 0;
+      sub(/^[^-]*_a-/, "", name);
     }
   else
     name = ""
