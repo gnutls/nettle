@@ -1,0 +1,5 @@
+#! /bin/sh
+
+if [ -x rsa-keygen ] ; then
+  ./rsa-keygen -r rsa-keygen -o testkey || exit 1
+fi
