@@ -1,3 +1,4 @@
+! -*- mode: asm; asm-comment-char: ?!; -*-  
 	! Used registers:	%l0,1,2,3,4,5,6,7
 	!			%i0,1,2,3,4,5 (%i6=%fp, %i7 = return)
 	!			%o0,1,2,3,4,5,7 (%o6=%sp)
@@ -146,16 +147,13 @@ _aes_crypt:
 
 	add	idx, 4, idx		
 	! Fetch roundkey
-	! ld	[ctx+round], t1
-	! add	round, 4, round
 	ld	[key+i], t1
 	xor	t0, t3, t0		! 0, 1, 2, 3
-
 	xor	t0, t1, t0
+
 	st	t0, [tmp+i]
 	cmp	i, 8
 	bleu	.Linner_loop
-	
 	add	i, 4, i
 	
 	! switch roles for tmp and wtxt
@@ -163,42 +161,45 @@ _aes_crypt:
 	add	round, 16, round
 	add	key, 16, key
 	cmp	round, nrounds
+
 	blu	.Lround_loop
 	xor	tmp, diff, tmp
 
 	! final round
 	mov	0, i
-	! IDX3
-	add	T, 288, %g4
+	! SIDX3
+	add	T, AES_SIDX3, %g4
 .Lfinal_loop:
-	ld	[%g4-32], %g2
+	! Comments mark which j in T->sbox[Bj(wtxt[IDXj(i)])]
+	! the instruction is part of
+	ld	[%g4-32], %g2 	! 1
 	sll	i, 2, %i5
-	sll	%g2, 2, %g2
-	add	wtxt, %g2, %g2
-	ldub	[%g2+2], %o3
-	add	%i5, dst, %o2
-	ld	[%g4-16], %g3
+
+	add	wtxt, %g2, %g2	! 1
+	ldub	[%g2+2], %o3	! 1
+	add	%i5, dst, %o2	
+	ld	[%g4-16], %g3	! 2
 	add	i, 1, i
-	ld	[wtxt+%i5], %g2
-	sll	%g3, 2, %g3
-	lduh	[wtxt+%g3], %o4
-	and	%g2, 255, %g2
-	ld	[%g4], %o5
-	and	%o4, 255, %o4
-	ldub	[T+%o3], %o0
-	sll	%o5, 2, %o5
-	ldub	[T+%g2], %g3
-	sll	%o0, 8, %o0
-	ldub	[wtxt+%o5], %o3
-	or	%g3, %o0, %g3
-	ldub	[T+%o4], %g2
+	ld	[wtxt+%i5], %g2	! 0
+
+	lduh	[wtxt+%g3], %o4	! 2
+	and	%g2, 255, %g2	! 0
+	ld	[%g4], %o5	! 3
+	and	%o4, 255, %o4	! 2
+	ldub	[T+%o3], %o0	! 1
+
+	ldub	[T+%g2], %g3	! 0
+	sll	%o0, 8, %o0	! 1
+	ldub	[wtxt+%o5], %o3	! 3
+	or	%g3, %o0, %g3	! 0, 1
+	ldub	[T+%o4], %g2	! 2
 	cmp	i, 3
-	ldub	[T+%o3], %o5
-	sll	%g2, 16, %g2
-	or	%g3, %g2, %g3
+	ldub	[T+%o3], %o5	! 3
+	sll	%g2, 16, %g2	! 2
+	or	%g3, %g2, %g3	! 0, 1, 2
 	ld	[ctx + round], %g2
-	sll	%o5, 24, %o5
-	or	%g3, %o5, %g3
+	sll	%o5, 24, %o5	! 3
+	or	%g3, %o5, %g3	! 0, 1, 2, 3
 	xor	%g3, %g2, %g3
 	srl	%g3, 24, %o5
 	srl	%g3, 16, %o0
