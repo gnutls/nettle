@@ -24,6 +24,9 @@
 
 2001-06-12  Niels Möller  <nisse@cuckoo.hack.org>
 
+	* des.c (des_encrypt, des_decrypt): Assert that the key setup was
+	successful.
+	
 	* testsuite/Makefile.am (TS_PROGS): Added tests for des and sha1. 
 
 	* testsuite/sha1-test.m4: New file.
