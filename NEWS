@@ -1,3 +1,18 @@
+NEWS for the 1.6 release
+
+	Optimized Assembler implementations of aes, for sparc and x86.
+	
+	New example programs, rsa-keygen, rsa-sign and rsa-verify,
+	located in the examples directory.
+
+	New configure option --enable-shared, which builds a shared
+	library. Not tested.
+
+	New experimental features, including sexp parsing and
+	formatting, and changes to base64 encoding and decoding. The
+	interfaces to these functions are subject to change, and are
+	documented only in the source code.
+	
 NEWS for the 1.5 release
 
 	RSA support. Key generation and signatures.
