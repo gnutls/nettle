@@ -69,7 +69,9 @@ _aes_crypt:
 	mov	-4, i
 .Lsource_loop:
 	add	i, 4, i
-	add	i, src, %o5
+	! add	i, src, %o5
+	mov	src, %o5
+	
 	ldub	[%o5+3], %g2
 	ldub	[%o5+2], %g3
 	
@@ -78,14 +80,15 @@ _aes_crypt:
 	sll	%g3, 16, %g3
 	or	%g2, %g3, %g2
 	
-	ldub	[src+i], %o5
+	ldub	[%o5], %o5
 	sll	%o0, 8, %o0
 	ld	[ctx+i], %g3
 	or	%g2, %o0, %g2
 	
 	or	%g2, %o5, %g2
 	xor	%g2, %g3, %g2
-	cmp	i, 12
+	add	src, 4, src
+	cmp	i, 8
 	bleu	.Lsource_loop
 	
 	st	%g2, [wtxt+i]
@@ -233,7 +236,7 @@ _aes_crypt:
 	bleu	.Lfinal_loop
 	add	%g4, 4, %g4
 	
-	add	src, 16, src
+	! add	src, 16, src
 	addcc	length, -16, length
 	bne	.Lblock_loop
 	add	dst, 16, dst
