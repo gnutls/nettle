@@ -85,12 +85,15 @@ clean-local:
 	rm -rf .lib
 
 # Using assembler files. Should get precedence before the .c.o rule.
-SUFFIXES = .asm
+SUFFIXES = .asm .html
 
 # can be overridden during development, eg. "make RM_TMP=: aes.o"
 RM_TMP = rm -f
 
 # FIXME: How to write this without using GNU make features?
+# For now, use automake to disable these rules when they are not needed.
+
+if ENABLE_ASSEMBLER
 
 # NOTE: We have to use an explicit rule .asm -> .o, to override the .c
 # -> .o rule. Using rules involving .s doesn't seem to work.
@@ -112,17 +115,15 @@ RM_TMP = rm -f
 	$(COMPILE) -c $*.s -o $@
 	echo >.deps/$*.Po
 
-# Shared library rules
-all-local: $(SHLIBTARGET)
-install-data-local: $(SHLIBINSTALL)
-
 # Assembler files must contain only PIC-clean code.
 %_p.$(OBJEXT): %.asm asm.m4 machine.m4 config.m4
 	$(M4) $(srcdir)/asm.m4 machine.m4 config.m4 \
 		`test -f $< || echo '$(srcdir)/'`$< >$*.s
 	$(COMPILE) -c $*.s -o $@
 	echo >.deps/$*.Po
+endif
 
+if ENABLE_SHARED
 # FIXME: This rule doesn't get dependencies right.
 %_p.$(OBJEXT): %.c
 	$(COMPILE) $(SHLIBCFLAGS) -c $< -o $@
@@ -136,13 +137,19 @@ $(SHLIBFORLINK): $(SHLIBOBJECTS)
 	-mkdir .lib 2>/dev/null
 	(cd .lib && ln -sf ../$(SHLIBFORLINK) $(SHLIBSONAME))
 
+endif
+
+# Shared library rules
+all-local: $(SHLIBTARGET)
+install-data-local: $(SHLIBINSTALL)
+
 install-shared: $(SHLIBFORLINK)
 	$(INSTALL_DATA) $(SHLIBFORLINK) $(DESTDIR)$(libdir)/$(SHLIBFILE)
 	(cd $(DESTDIR)$(libdir) \
 		&& ln -sf $(SHLIBFILE) $(SHLIBSONAME) \
 		&& ln -sf $(SHLIBFILE) $(SHLIBFORLINK) )
 
-%.html : %.texinfo
+.texinfo.html:
 	(cd $(srcdir) \
 	 && $(MAKEINFO) --html --no-split --output $@T $(<F) \
 	 ; test -s $@T && mv -f $@T $@)
