@@ -8,8 +8,11 @@ AUTOMAKE_OPTIONS = foreign
 noinst_LIBRARIES = libsymmetric.a
 noinst_PROGRAMS = desTest desdata bf_test
 
+# FIXME: Use the BASH variable to execute the script. The problem is
+# that the script attempts to start itselt with "$0 args".
+
 Makefile.am: Makefile.am.in
-	(cd $(top_srcdir); $(BASH) make_am)
+	(cd $(top_srcdir); ./make_am)
 
 # When compiling with lsh, this is set to to -DLSH -I/path/to/lsh/include
 # INCLUDES = @crypto_cpp_flags@

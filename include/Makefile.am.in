@@ -4,6 +4,9 @@ BODY:
 
 EXTRA_DIST = $(cvs_headers) Makefile.am.in
 
+Makefile.am: Makefile.am.in
+	(cd $(top_srcdir); ./make_am)
+
 .PHONY: ctags-recursive ctags
 
 ctags-recursive:
