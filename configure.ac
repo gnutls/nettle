@@ -49,6 +49,10 @@ AC_ARG_ENABLE(pic,
   [Do not try to compile library files as position independent code]),,
   [enable_pic=yes])
 
+AC_ARG_ENABLE(openssl,
+  AC_HELP_STRING([--disable-openssl], [Do not include openssl glue in the benchmark program]),,
+  [enable_openssl=yes])
+  
 LSH_RPATH_INIT([`echo $with_lib_path | sed 's/:/ /g'` \
     `echo $exec_prefix | sed "s@^NONE@$prefix/lib@g" | sed "s@^NONE@$ac_default_prefix/lib@g"` \
     /usr/local/lib /sw/local/lib /sw/lib \
@@ -177,6 +181,10 @@ AC_TYPE_UID_T
 AC_TYPE_SIZE_T
 AC_HEADER_TIME
 
+AC_CHECK_HEADERS([openssl/blowfish.h openssl/des.h openssl/cast.h],,
+[enable_openssl=no
+ break])
+
 LSH_FUNC_ALLOCA
 
 # Needed by the supplied memcmp.c
@@ -209,16 +217,21 @@ AC_SUBST(RSA_EXAMPLES)
 # Add -R flags needed to run programs linked with gmp
 LSH_RPATH_FIX
 
-AH_TEMPLATE([HAVE_LIBCRYPTO],
-	    [Define if you have openssl's libcrypto (used for benchmarking)])
-
 OPENSSL_LIBFLAGS=''
 
 # Check for openssl's libcrypto (used only for benchmarking)
-AC_CHECK_LIB(crypto, BF_ecb_encrypt,
-  [AC_DEFINE(HAVE_LIBCRYPTO)
-   OPENSSL_LIBFLAGS='-lcrypto'
-])
+if test x$enable_openssl = xyes ; then
+  AC_CHECK_LIB(crypto, BF_ecb_encrypt,
+    [OPENSSL_LIBFLAGS='-lcrypto'],
+    [enable_openssl=no])
+fi
+
+AH_TEMPLATE([WITH_OPENSSL],
+	    [Define if you have openssl's libcrypto (used for benchmarking)])
+
+if test x$enable_openssl = xyes ; then
+  AC_DEFINE(WITH_OPENSSL)
+fi
 
 AC_SUBST(OPENSSL_LIBFLAGS)
 
