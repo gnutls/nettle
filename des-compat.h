@@ -30,4 +30,52 @@
  * des_is_weak_key, plus the encryption functions (des_*_encrypt and
  * des_cbc_cksum) would be a pretty useful subset. */
 
+#include "des.h"
+
+/* FIXME: Names collides with nettle, so we'll need some ugly symbol
+ * munging */
+
+void des_ecb3_encrypt(const uint8_t *src, uint8_t *dst,
+		      struct des_ctx *k1, struct des_ctx *k2,
+		      struct des_ctx *k3, int enc);
+
+uint32_t
+des_cbc_cksum(const uint8_t *src, uint8_t dst,
+	      long length, struct des_ctx *ctx,
+	      uint8_t *iv);
+
+void
+des_cbc_encrypt(const uint8_t *src, uint8_t *dst, long length,
+		struct des_ctx *ctx, uint8_t *iv,
+		int enc);
+
+void
+des_3cbc_encrypt(const uint8_t *src, uint8_t *dst, long length,
+		 struct des_ctx * k1,struct des_ctx *k2, struct des_ctx *k3,
+		 /* What mode is this, two iv:s? */
+		 uint8_t *iv1, uint8_t *iv2,
+		 int enc);
+
+void
+des_ecb_encrypt(const uint8_t *src, uint8_t *dst, long length,
+		struct des_ctx *ctx, uint8_t *iv,
+		int enc);
+void
+des_ede3_cbc_encrypt(const uint8_t *src, uint8_t *dst, long length,
+		     struct des_ctx * k1,struct des_ctx *k2, struct des_ctx *k3,
+		     uint8_t *iv,
+		     int enc);
+
+int
+des_set_odd_parity(uint8_t *key);
+
+int
+des_set_key(const uint8_t *key, struct des_ctx *ctx);
+
+int
+des_key_sched(const uint8_t *key, struct des_ctx *ctx);
+
+int
+des_is_weak_key(const uint8_t key);
+
 #endif /* NETTLE_DES_COMPAT_H_INCLUDED */
