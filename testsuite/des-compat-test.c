@@ -216,7 +216,7 @@ static unsigned char cbc_key [8]={0x01,0x23,0x45,0x67,0x89,0xab,0xcd,0xef};
 static unsigned char cbc2_key[8]={0xf0,0xe1,0xd2,0xc3,0xb4,0xa5,0x96,0x87};
 static unsigned char cbc3_key[8]={0xfe,0xdc,0xba,0x98,0x76,0x54,0x32,0x10};
 static unsigned char cbc_iv  [8]={0xfe,0xdc,0xba,0x98,0x76,0x54,0x32,0x10};
-static char cbc_data[40]="7654321 Now is the time for \0001";
+static char cbc_data[32]="7654321 Now is the time for ";
 
 static unsigned char cbc_ok[32]={
 	0xcc,0xd1,0x73,0xff,0xab,0x20,0x39,0xf4,
@@ -391,8 +391,8 @@ int main(int argc, char **argv)
 		printf("Key error %d\n",j);
 		err=1;
 		}
-	memset(cbc_out,0,40);
-	memset(cbc_in,0,40);
+	memset(cbc_out,0,sizeof(cbc_data));
+	memset(cbc_in,0,sizeof(cbc_data));
 	memcpy(iv3,cbc_iv,sizeof(cbc_iv));
 	des_ncbc_encrypt((C_Block *)cbc_data,(C_Block *)cbc_out,
 		sizeof(cbc_data),ks,
@@ -418,8 +418,8 @@ int main(int argc, char **argv)
 		printf("Key error %d\n",j);
 		err=1;
 		}
-	memset(cbc_out,0,40);
-	memset(cbc_in,0,40);
+	memset(cbc_out,0,sizeof(cbc_data));
+	memset(cbc_in,0,sizeof(cbc_data));
 	memcpy(iv3,cbc_iv,sizeof(cbc_iv));
 	des_xcbc_encrypt((C_Block *)cbc_data,(C_Block *)cbc_out,
 		sizeof(cbc_data), ks,
@@ -458,8 +458,8 @@ int main(int argc, char **argv)
 		printf("Key error %d\n",j);
 		err=1;
 		}
-	memset(cbc_out,0,40);
-	memset(cbc_in,0,40);
+	memset(cbc_out,0,sizeof(cbc_data));
+	memset(cbc_in,0,sizeof(cbc_data));
 	i=sizeof(cbc_data);
 	/* i=((i+7)/8)*8; */
 	memcpy(iv3,cbc_iv,sizeof(cbc_iv));
@@ -492,8 +492,8 @@ int main(int argc, char **argv)
 		printf("Key error %d\n",j);
 		err=1;
 		}
-	memset(cbc_out,0,40);
-	memset(cbc_in,0,40);
+	memset(cbc_out,0,sizeof(cbc_data));
+	memset(cbc_in,0,sizeof(cbc_data));
 	des_pcbc_encrypt((C_Block *)cbc_data,(C_Block *)cbc_out,
 		sizeof(cbc_data),ks,(C_Block *)cbc_iv,DES_ENCRYPT);
 	if (memcmp(cbc_out,pcbc_ok,32) != 0)
