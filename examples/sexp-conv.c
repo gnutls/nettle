@@ -63,6 +63,9 @@ enum sexp_token
     SEXP_EOF,
   };
 
+
+/* Input */
+
 struct sexp_input
 {
   FILE *f;
@@ -98,32 +101,6 @@ sexp_input_init(struct sexp_input *input, FILE *f)
   nettle_buffer_init(&input->string);
 }
 
-struct sexp_output
-{
-  FILE *f;
-
-  const struct nettle_armor *coding;
-  unsigned coding_indent;
-  
-  union {
-    struct base64_decode_ctx base64;
-    /* NOTE: There's no context for hex encoding */
-  } state;
-  
-  unsigned pos;
-};
-
-static void
-sexp_output_init(struct sexp_output *output, FILE *f)
-{
-  output->f = f;
-  output->coding = NULL;
-
-  output->pos = 0;
-}
-
-
-/* Input */
 
 static void
 sexp_get_raw_char(struct sexp_input *input)
@@ -539,6 +516,30 @@ sexp_get_token(struct sexp_input *input, enum sexp_mode mode)
 
 /* Output routines */
 
+struct sexp_output
+{
+  FILE *f;
+
+  const struct nettle_armor *coding;
+  unsigned coding_indent;
+  
+  union {
+    struct base64_decode_ctx base64;
+    /* NOTE: There's no context for hex encoding */
+  } state;
+  
+  unsigned pos;
+};
+
+static void
+sexp_output_init(struct sexp_output *output, FILE *f)
+{
+  output->f = f;
+  output->coding = NULL;
+
+  output->pos = 0;
+}
+
 #define LINE_WIDTH 60
 
 static void
@@ -772,68 +773,14 @@ sexp_convert_string(struct sexp_input *input, enum sexp_mode mode_in,
     die("Invalid string.\n");
 }
 
-static void
-sexp_convert_item(struct sexp_input *input, enum sexp_mode mode_in,
-		  struct sexp_output *output, enum sexp_mode mode_out,
-		  unsigned indent);
+
+
+/* Parsing and conversion functions. */
 
 static void
 sexp_convert_list(struct sexp_input *input, enum sexp_mode mode_in,
 		  struct sexp_output *output, enum sexp_mode mode_out,
-		  unsigned indent)
-{
-  unsigned item;
-
-  sexp_put_list_start(output);
-  
-  for (item = 0;; item++)
-    {
-      sexp_get_token(input, mode_in);
-
-      if (input->token == SEXP_LIST_END)
-	{
-	  sexp_put_list_end(output);
-	  return;
-	}
-
-      if (mode_out == SEXP_ADVANCED)
-	{
-	  /* FIXME: Adapt pretty printing to handle a big first
-	   * element. */
-	  if (item == 1)
-	    {
-	      sexp_put_char(output, ' ');
-	      indent = output->pos;
-	    }
-	  else if (item > 1)
-	    sexp_put_newline(output, indent);
-	}
-
-      sexp_convert_item(input, mode_in, output, mode_out, indent);
-    }
-}
-
-static void
-sexp_convert_file(struct sexp_input *input, enum sexp_mode mode_in,
-		  struct sexp_output *output, enum sexp_mode mode_out)
-{
-  sexp_get_char(input);
-  sexp_get_token(input, mode_in);
-
-  while (input->token != SEXP_EOF)
-    {
-      sexp_convert_item(input, mode_in, output, mode_out, 0);
-      if (mode_out != SEXP_CANONICAL)
-	sexp_put_newline(output, 0);
-	  
-      sexp_get_token(input, mode_in);
-    }
-
-  if (fflush(output->f) < 0)
-    die("Final fflush failed: %s.\n", strerror(errno));
-}
-
-
+		  unsigned indent);
 
 static void
 sexp_skip_token(struct sexp_input *input, enum sexp_mode mode,
@@ -902,6 +849,66 @@ sexp_convert_item(struct sexp_input *input, enum sexp_mode mode_in,
       die("Syntax error.\n");
     }
 }
+
+static void
+sexp_convert_list(struct sexp_input *input, enum sexp_mode mode_in,
+		  struct sexp_output *output, enum sexp_mode mode_out,
+		  unsigned indent)
+{
+  unsigned item;
+
+  sexp_put_list_start(output);
+  
+  for (item = 0;; item++)
+    {
+      sexp_get_token(input, mode_in);
+
+      if (input->token == SEXP_LIST_END)
+	{
+	  sexp_put_list_end(output);
+	  return;
+	}
+
+      if (mode_out == SEXP_ADVANCED)
+	{
+	  /* FIXME: Adapt pretty printing to handle a big first
+	   * element. */
+	  if (item == 1)
+	    {
+	      sexp_put_char(output, ' ');
+	      indent = output->pos;
+	    }
+	  else if (item > 1)
+	    sexp_put_newline(output, indent);
+	}
+
+      sexp_convert_item(input, mode_in, output, mode_out, indent);
+    }
+}
+
+static void
+sexp_convert_file(struct sexp_input *input, enum sexp_mode mode_in,
+		  struct sexp_output *output, enum sexp_mode mode_out)
+{
+  sexp_get_char(input);
+  sexp_get_token(input, mode_in);
+
+  while (input->token != SEXP_EOF)
+    {
+      sexp_convert_item(input, mode_in, output, mode_out, 0);
+      if (mode_out != SEXP_CANONICAL)
+	sexp_put_newline(output, 0);
+	  
+      sexp_get_token(input, mode_in);
+    }
+
+  if (fflush(output->f) < 0)
+    die("Final fflush failed: %s.\n", strerror(errno));
+}
+
+
+
+/* Argument parsing and main program */
 
 static int
 match_argument(const char *given, const char *name)
