@@ -1,3 +1,8 @@
+2004-11-24  Niels Möller  <niels@s3.kth.se>
+
+	* configure.ac: Fixed typo, preventing the creation of dependency
+	files. 
+
 2004-11-23  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in: Use DEP_INCLUDE.

@@ -86,7 +86,7 @@ AC_PROG_INSTALL
 
 LSH_DEPENDENCY_TRACKING
 
-if test x$dependency_tracking = xyes ; then
+if test x$enable_dependency_tracking = xyes ; then
   # Since the makefiles use include to get the dependency files, we must
   # make sure that the files exist. We generate some more files than are
   # actually needed.
