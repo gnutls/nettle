@@ -18,8 +18,6 @@ libnettleinclude_HEADERS = aes.h arcfour.h blowfish.h \
 			   serpent.h sha.h twofish.h \
 			   yarrow.h
 
-# FIXME: There's some confusion on - vs _ in source file names.
-# My current belief is that the _-ones ought to be renamed.
 libnettle_a_SOURCES = aes.c aes.h aes-internal.h \
 		      aes-decrypt-table.c aes-decrypt.c \
 		      aes-encrypt-table.c aes-encrypt.c \
@@ -42,7 +40,10 @@ libnettle_a_SOURCES = aes.c aes.h aes-internal.h \
 		      sexp.h sexp.c sexp-format.c \
 		      sexp-transport.c sexp-transport-format.c \
 		      bignum.h bignum.c bignum-random.c sexp2bignum.c \
-		      rsa.h rsa.c rsa_md5.c rsa_sha1.c \
+		      pkcs1.h pkcs1.c pkcs1-rsa-md5.c pkcs1-rsa-sha1.c \
+		      rsa.h rsa.c rsa-sign.c rsa-verify.c \
+		      rsa-md5-sign.c rsa-md5-verify.c \
+		      rsa-sha1-sign.c rsa-sha1-verify.c \
 		      rsa-encrypt.c rsa-decrypt.c \
 		      rsa-keygen.c rsa-compat.h rsa-compat.c \
 		      rsa2sexp.c sexp2rsa.c \

@@ -1,3 +1,37 @@
+2003-01-23  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* Makefile.am (libnettle_a_SOURCES): Added new rsa and pkcs1
+	files. Removed old rsa_md5.c and rsa_sha1.c.
+
+	* testsuite/Makefile.am (TS_PROGS): Added pkcs1-test.
+
+	* dsa-verify.c (dsa_verify_digest): New function.
+	(dsa_verify): Most of the code moved to dsa_verify_digest, which
+	is used here.
+	* dsa-sign.c (dsa_sign_digest): New function.
+	(dsa_sign): Most of the code moved to dsa_sign_digest, which is
+	used here.
+	* dsa.c (_dsa_hash): Deleted function.
+
+	* rsa_md5.c, rsa_sha1.c: Deleted files, contents spread over
+	several files for signing and verification.
+	* rsa-sign.c, rsa-sha1-verify.c, rsa-sha1-sign.c,
+	rsa-md5-verify.c, rsa-md5-sign.c:  New files.
+
+	* rsa-sha1-verify.c (rsa_sha1_verify_digest): New function.
+	* rsa-sha1-sign.c (rsa_sha1_sign_digest):  New function.
+	* rsa-md5-verify.c (rsa_md5_verify_digest):  New function.
+	* rsa-md5-sign.c (rsa_md5_sign_digest):  New function.
+	* rsa-verify.c (_rsa_verify): New file, new function.
+
+	* rsa.c (_rsa_check_size): Renamed from rsa_check_size, and made
+	non-static. Private key functions moved to rsa-sign.c.
+
+	* pkcs1.c, pkcs1.h, pkcs1-rsa-md5.c, pkcs1-rsa-sha1.c: New files. 
+	(pkcs1_signature_prefix): New function.
+
+	* testsuite/pkcs1-test.c: New test.
+	
 2003-01-22  Niels Möller  <niels@s3.kth.se>
 
 	* examples/Makefile.am (nettle_benchmark_LDADD): Use
