@@ -1,3 +1,17 @@
+2004-09-22  Niels Möller  <niels@s3.kth.se>
+
+	* configure.ac: Setup SHLIBFORLINK and friends for cygwin. 
+
+	* list-obj-sizes.awk: Strip *_a-prefix from all file names.
+
+	* Makefile.am (libnettle_a_SOURCES): List only .c files. Headers
+	moved to noinst_HEADERS.
+	(SHLIBOBJECTS): Substitute from libnettle_a_SOURCES, not
+	am_libnettle_a_OBJECTS, since the latter includes
+	libnettle_a-prefixes with some automake versions.
+	(SHLIBSONAME): Check if this name is empty, which is the case on
+	cygwin, before using it.
+
 2004-08-31  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: New command line option --disable-pic. Use
