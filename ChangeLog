@@ -1,3 +1,7 @@
+2004-03-04  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/symbols-test: Pass -g flag to nm.
+
 2004-03-02  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Fixed EXEEXT workaround.
