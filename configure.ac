@@ -40,7 +40,7 @@ AC_ARG_ENABLE(assembler,
   [enable_assembler=yes])
 
 AC_ARG_ENABLE(shared,
-  AC_HELP_STRING([--enable-shared], [Build a shared library]),
+  AC_HELP_STRING([--enable-shared], [Build a shared library]),,
   [enable_shared=no])
 
 LSH_RPATH_INIT([`echo $with_lib_path | sed 's/:/ /g'` \
@@ -96,15 +96,24 @@ SHLIBSONAME='$(SHLIBFORLINK).$(MAJOR)'
 SHLIBFILE='$(SHLIBSONAME).$(MINOR)'
 SHLIBLINK='$(CC) $(LDFLAGS) -shared -Wl,-soname=$(SHLIBSONAME)'
 
+echo "enable_shared: $enable_shared"
+     
 if test "x$enable_shared" = xyes ; then
   SHLIBTARGET='$(SHLIBFORLINK)'
   SHLIBINSTALL=install-shared
+else
+  SHLIBTARGET=''
+  SHLIBINSTALL=''
 fi
 
 AC_SUBST(SHLIBCFLAGS)
+AC_SUBST(SHLIBFORLINK)
+AC_SUBST(SHLIBSONAME)
+AC_SUBST(SHLIBFILE)
+AC_SUBST(SHLIBLINK)
 AC_SUBST(SHLIBTARGET)
 AC_SUBST(SHLIBINSTALL)
-
+	
 AC_PATH_PROG(M4, m4, m4)
 
 # Checks for typedefs, structures, and compiler characteristics.
