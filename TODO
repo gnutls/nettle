@@ -1,0 +1,11 @@
+Public key support, analogous to that provided by RSAREF. Suggested by
+Dan Egnor. References:
+
+  http://download.gale.org/rsaref20.tar.Z
+  http://www.openssl.org/docs/crypto/evp.html
+  http://www.openssl.org/docs/crypto/rsa.html
+
+More feedback modes, in order of decreasing priority:  CBC-MAC, OFB,
+Counter, and CFB. Suggested by Rafael 'Dido' Sevilla. References:
+
+  http://csrc.nist.gov/encryption/modes/Recommendation/Modes01.pdf
