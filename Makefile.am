@@ -68,7 +68,7 @@ print-path:
 	echo PATH: $$PATH
 
 EXTRA_DIST = memxor.h $(des_headers) descore.README nettle.html \
-	.bootstrap $(des_headers) \
+	sha-example.c .bootstrap $(des_headers) \
 	sparc/aes.asm sparc/machine.m4 \
 	x86/aes.asm x86/aes_tables.asm
 
