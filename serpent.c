@@ -41,6 +41,8 @@
 #include "serpent.h"
 #include "serpent_sboxes.h"
 
+#include "macros.h"
+
 #include <assert.h>
 
 void
@@ -55,18 +57,19 @@ serpent_set_key(struct serpent_ctx *ctx,
 
   for (i = key_size, j = 0;
        (i >= 4);
-       i-=4, key +=4, j++)
+       i-=4, j++)
     {
       assert(j<8);
-      w[j] = key[0] | (key[1] << 8) | (key[2] << 16) | (key[3] << 24);
+      /* Read the key in the reverse direction. Why? */
+      w[j] = READ_UINT32(key + i - 4);
     }
 
     if (j < 8)
     {
-      /* Pad key, "aabbcc" -> "aabbcc0100...00" */
+      /* Pad key, "aabbccddeeff" -> 0xccddeeff, 0x01aabb" */
       uint32_t partial = 0x01;
       while (i)
-	partial = (partial << 8 ) | key[--i];
+	partial = (partial << 8 ) | *key++;
       w[j++] = partial;
 
       while (j < 8)
@@ -126,19 +129,14 @@ serpent_encrypt(struct serpent_ctx *ctx,
 {
   register uint32_t x0, x1, x2, x3;
   register uint32_t y0, y1, y2, y3;
-  int i;
 
-  assert (!(length % SERPENT_BLOCKSIZE));
-
-  for (; length;
-         length -= SERPENT_BLOCKSIZE,
-         plain += SERPENT_BLOCKSIZE,
-         dst += SERPENT_BLOCKSIZE)
+  FOR_BLOCKS(length, dst, plain, SERPENT_BLOCK_SIZE)
     {
-      x0=plain[0]|(plain[1]<<8)|(plain[2]<<16)|(plain[3]<<24);
-      x1=plain[4]|(plain[5]<<8)|(plain[6]<<16)|(plain[7]<<24);
-      x2=plain[8]|(plain[9]<<8)|(plain[10]<<16)|(plain[11]<<24);
-      x3=plain[12]|(plain[13]<<8)|(plain[14]<<16)|(plain[15]<<24);
+      /* Why the reverse order? */
+      x0=READ_UINT32(plain + 12);
+      x1=READ_UINT32(plain + 8);
+      x2=READ_UINT32(plain + 4);
+      x3=READ_UINT32(plain);
 
       /* Start to encrypt the plaintext x */
       keying(x0, x1, x2, x3, ctx->keys[ 0]);
@@ -241,14 +239,11 @@ serpent_encrypt(struct serpent_ctx *ctx,
 
       /* The ciphertext is now in x */
 
-      for (i=0; i<4; i++)
-        *dst++ = (x0 >> i*8) & 0xff;
-      for (i=0; i<4; i++)
-        *dst++ = (x1 >> i*8) & 0xff;
-      for (i=0; i<4; i++)
-        *dst++ = (x2 >> i*8) & 0xff;
-      for (i=0; i<4; i++)
-        *dst++ = (x3 >> i*8) & 0xff;
+      /* Why the reverse order? */
+      WRITE_UINT32(dst, x3);
+      WRITE_UINT32(dst+4, x2);
+      WRITE_UINT32(dst+8, x1);
+      WRITE_UINT32(dst+12, x0);
     }
 }
 
@@ -259,18 +254,15 @@ serpent_decrypt(struct serpent_ctx *ctx,
 {
   register uint32_t x0, x1, x2, x3;
   register uint32_t y0, y1, y2, y3;
-  int i;
 
-  for (; length;
-         length -= SERPENT_BLOCKSIZE,
-         cipher += SERPENT_BLOCKSIZE,
-         dst += SERPENT_BLOCKSIZE)
+  FOR_BLOCKS(length, dst, cipher, SERPENT_BLOCK_SIZE)
     {
-      x0=cipher[0]|(cipher[1]<<8)|(cipher[2]<<16)|(cipher[3]<<24);
-      x1=cipher[4]|(cipher[5]<<8)|(cipher[6]<<16)|(cipher[7]<<24);
-      x2=cipher[8]|(cipher[9]<<8)|(cipher[10]<<16)|(cipher[11]<<24);
-      x3=cipher[12]|(cipher[13]<<8)|(cipher[14]<<16)|(cipher[15]<<24);
-
+      /* Why the reverse order? */
+      x0 = READ_UINT32(cipher + 12);
+      x1 = READ_UINT32(cipher + 8);
+      x2 = READ_UINT32(cipher + 4);
+      x3 = READ_UINT32(cipher);
+      
       /* Start to decrypt the ciphertext x */
       keying(x0, x1, x2, x3, ctx->keys[32]);
       InvRND31(x0, x1, x2, x3, y0, y1, y2, y3);
@@ -372,13 +364,10 @@ serpent_decrypt(struct serpent_ctx *ctx,
 
       /* The plaintext is now in x */
 
-      for (i=0; i<4; i++)
-        *dst++ = (x0 >> i*8) & 0xff;
-      for (i=0; i<4; i++)
-        *dst++ = (x1 >> i*8) & 0xff;
-      for (i=0; i<4; i++)
-        *dst++ = (x2 >> i*8) & 0xff;
-      for (i=0; i<4; i++)
-        *dst++ = (x3 >> i*8) & 0xff;
+      /* Why the reverse order? */
+      WRITE_UINT32(dst, x3);
+      WRITE_UINT32(dst+4, x2);
+      WRITE_UINT32(dst+8, x1);
+      WRITE_UINT32(dst+12, x0);
     }
 }
