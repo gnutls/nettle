@@ -7,6 +7,8 @@ top_srcdir = @top_srcdir@
 
 include ../config.make
 
+INCLUDES = -I.. -I$(top_srcdir)
+
 TARGETS = sexp-conv nettle-lfib-stream
 
 all: $(TARGETS)
@@ -16,7 +18,7 @@ sexp_conv_SOURCES = sexp-conv.c input.c output.c parse.c \
 
 SOURCES = $(sexp_conv_SOURCES) nettle-lfib-stream.c
 
-DISTFILES = $(SOURCES) Makefile.in
+DISTFILES = $(SOURCES) Makefile.in getopt.h input.h misc.h output.h parse.h
 
 sexp-conv: $(sexp_conv_SOURCES:.c=.$(OBJEXT)) ../libnettle.a
 	$(LINK) $^ $(LIBS) -L.. -lnettle -o $@
@@ -61,9 +63,12 @@ install: $(TARGETS)
 	$(INSTALL_PROGRAM) $(TARGETS) $(bindir)
 
 distdir: $(DISTFILES)
-	cp $(DISTFILES) $(distdir)
+	cp $^ $(distdir)
 
 clean:
-	rm -f $(TARGETS) *.o *.d
+	-rm -f $(TARGETS) *.o *.d
+
+distclean: clean
+	-rm -f Makefile
 
 -include $(SOURCES:.c=.$(OBJEXT).d)
