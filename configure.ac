@@ -108,9 +108,15 @@ LSH_RPATH_FIX
 
 # Set these flags *last*, or else the test programs won't compile
 if test x$GCC = xyes ; then
-    CFLAGS="$CFLAGS -ggdb3 -Wall -W \
- -Wmissing-prototypes -Wmissing-declarations -Wstrict-prototypes \
- -Wpointer-arith -Wbad-function-cast -Wnested-externs"
+  # Using -ggdb3 makes (some versions of) Redhat's gcc-2.96 dump core
+  if "$CC" --version | grep '^2\.96$' 1>/dev/null 2>&1; then
+    true
+  else
+    CFLAGS="$CFLAGS -ggdb3"
+  fi
+  CFLAGS="$CFLAGS -Wall -W \
+  -Wmissing-prototypes -Wmissing-declarations -Wstrict-prototypes \
+  -Wpointer-arith -Wbad-function-cast -Wnested-externs"
 
 # Don't enable -Wcast-align as it results in tons of warnings in the
 # DES code. And when using stdio.

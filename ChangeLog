@@ -1,3 +1,7 @@
+2002-07-18  Niels Möller  <niels@s3.kth.se>
+
+	* configure.ac: Don't use -ggdb3 with gcc-2.96. 
+
 2002-05-16  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* sparc/aes.asm: Deleted registers i and t3.
