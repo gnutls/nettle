@@ -8,14 +8,15 @@ AM_LDFLAGS = -L..
 TS_PROGS = aes-test arcfour-test blowfish-test cast128-test \
            base16-test base64-test \
 	   des-test des3-test des-compat-test \
-	   md5-test md5-compat-test sha1-test sha256-test \
+	   md2-test md4-test md5-test md5-compat-test \
+	   sha1-test sha256-test \
 	   serpent-test twofish-test \
 	   buffer-test sexp-test sexp-format-test \
 	   rsa2sexp-test sexp2rsa-test \
 	   knuth-lfib-test \
 	   cbc-test hmac-test bignum-test \
 	   pkcs1-test \
-	   rsa-test rsa-keygen-test \
+	   rsa-test rsa-encrypt-test rsa-keygen-test \
 	   dsa-test dsa-keygen-test \
 	   yarrow-test
 
