@@ -1,3 +1,4 @@
+*.s
 *.tar.gz
 *.tar.gz.asc
 .deps

@@ -30,6 +30,7 @@ _$*
 *.elc
 *.ln
 core
+/*.s
 /*.tar.gz
 /*.tar.gz.asc
 /.deps
