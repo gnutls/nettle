@@ -50,7 +50,7 @@ aes_encrypt:
 	C src = 32(%esp)
 
 	movl	24(%esp), %ebp
-	cmpl	$0, %ebp
+	testl	%ebp,%ebp
 	jz	.Lencrypt_end
 	
 .Lencrypt_block_loop:
