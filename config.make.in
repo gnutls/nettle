@@ -66,4 +66,6 @@ LINK = $(CC) $(CFLAGS) $(LDFLAGS)
 .PHONY: all check install uninstall clean distclean mostlyclean maintainer-clean distdir \
 	all-here check-here install-here clean-here distclean-here mostlyclean-here \
 	maintainer-clean-here distdir-here \
-	install-shared install-info dist distcleancheck
+	install-shared install-info install-headers \
+	uninstall-shared uninstall-info uninstall-headers \
+	dist distcleancheck
