@@ -10,6 +10,7 @@
 /des-compat-test
 /des-test
 /des3-test
+/hmac-test
 /md5-compat-test
 /md5-test
 /rsa-test

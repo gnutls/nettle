@@ -1,3 +1,52 @@
+2002-01-14  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* des.c: Use static const for all tables.
+	(des_set_key): Use a new const * variable for the parity
+	procesing, for constness reasons.
+
+	* list-obj-sizes.awk: New file.
+
+	* nettle-internal.c, nettle-internal.h: New files.
+
+	* testsuite/Makefile.am (TS_PROGS): Added hmac-test. Deleted old
+	m4-stuff. 
+
+	* testsuite/testutils.h (LDATA): Moved this macro here,...
+	* testsuite/rsa-test.c: ... from here.
+
+	* testsuite/hmac-test.c: New file.
+
+	* hmac.h: General cleanup. Added declarations of hmac-md5,
+	hmac-sha1 and hmac-sha256.
+
+	* hmac.c: Bug fixes.
+
+	* hmac-md5.c: First working version.
+
+	* Makefile.am (libnettle_a_SOURCES): Added hmac.c and hmac-md5.c.
+	(libnettleinclude_HEADERS): Added hmac.h.
+
+	* testsuite/rsa-test.c: Also test a 777-bit key.
+
+	* rsa.c (rsa_check_size): Changed argument to an mpz_t. Updated
+	callers. 
+	(rsa_prepare_private_key): Compute the size of the key by
+	computing n = p * q.
+
+	* rsa-compat.c: Adapted to new private key struct.
+	* rsa_md5.c: Likesize.
+	* rsa_sha1.c: Likesize.
+
+	* rsa.c (rsa_check_size): New function, for computing and checking
+	the size of the modulo in octets.
+	(rsa_prepare_public_key): Usa rsa_check_size.
+	(rsa_init_private_key): Removed code handling n, e and d.
+	(rsa_clear_private_key): Likewise.
+	(rsa_compute_root): Always use CRT.
+
+	* rsa.h (struct rsa_private_key): Deleted public key and d from
+	the struct, as they are not needed. Added size attribute.
+
 2002-01-12  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* Makefile.am: Added *-meta files.
