@@ -9,6 +9,9 @@ AC_PREREQ(2.50)
 AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER([config.h])
 
+SHLIBMAJOR=0
+SHLIBMINOR=0
+
 AC_CANONICAL_HOST
 
 # Command line options
@@ -35,6 +38,10 @@ AC_ARG_ENABLE(public-key,
 AC_ARG_ENABLE(assembler,
   AC_HELP_STRING([--disable-assembler],[Disable assembler code]),,
   [enable_assembler=yes])
+
+AC_ARG_ENABLE(shared,
+  AC_HELP_STRING([--enable-shared], [Build a shared library]),
+  [enable_shared=no])
 
 LSH_RPATH_INIT([`echo $with_lib_path | sed 's/:/ /g'` \
     `echo $exec_prefix | sed "s@^NONE@$prefix/lib@g" | sed "s@^NONE@$ac_default_prefix/lib@g"` \
@@ -82,6 +89,21 @@ if test "x$enable_assembler" = xyes ; then
     fi
   fi
 fi
+
+SHLIBCFLAGS="-fpic"
+SHLIBFORLINK=libnettle.so
+SHLIBSONAME='$(SHLIBFORLINK).$(MAJOR)'
+SHLIBFILE='$(SHLIBSONAME).$(MINOR)'
+SHLIBLINK='$(CC) $(LDFLAGS) -shared -Wl,-soname=$(SHLIBSONAME)'
+
+if test "x$enable_shared" = xyes ; then
+  SHLIBTARGET='$(SHLIBFORLINK)'
+  SHLIBINSTALL=install-shared
+fi
+
+AC_SUBST(SHLIBCFLAGS)
+AC_SUBST(SHLIBTARGET)
+AC_SUBST(SHLIBINSTALL)
 
 AC_PATH_PROG(M4, m4, m4)
 
