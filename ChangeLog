@@ -2,6 +2,8 @@
 
 	* Released nettle-1.8.
 
+	* examples/teardown-env: Delete more test files.
+
 	* nettle.texinfo (Hash functions): Documented md2 and md4.
 
 	* configure.ac (SHLIBMAJOR): Bumped to 2.
