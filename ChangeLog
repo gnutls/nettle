@@ -1,3 +1,7 @@
+2003-05-12  Niels Möller  <niels@s3.kth.se>
+
+	* configure.ac: Use LSH_FUNC_ALLOCA.
+
 2003-04-25  Niels Möller  <niels@s3.kth.se>
 
 	* Makefile.am (libnettle_a_SOURCES): Added hmac-sha256.c.
