@@ -5,7 +5,7 @@ noinst_PROGRAMS = aesdata desdata shadata
 libnettleincludedir = $(includedir)/nettle
 
 lib_LIBRARIES = libnettle.a
-libnettleinclude_HEADERS = aes.h arcfour.h blowfish.h \
+libnettleinclude_HEADERS = aes.h arcfour.h bignum.h blowfish.h \
 			   base16.h base64.h buffer.h cast128.h \
 			   cbc.h \
 			   des.h des-compat.h dsa.h \
@@ -14,8 +14,9 @@ libnettleinclude_HEADERS = aes.h arcfour.h blowfish.h \
 			   macros.h \
 			   md2.h md4.h \
 			   md5.h md5-compat.h \
+			   memxor.h \
 			   nettle-meta.h nettle-types.h \
-			   pgp.h realloc.h rsa.h \
+			   pgp.h pkcs1.h realloc.h rsa.h rsa-compat.h \
 			   sexp.h \
 			   serpent.h sha.h twofish.h \
 			   yarrow.h
