@@ -87,4 +87,20 @@ dsa_keypair_from_sexp(struct dsa_public_key *pub,
     && dsa_keypair_from_sexp_alist(pub, priv, limit, &i);
 }
 
+int
+dsa_signature_from_sexp(struct dsa_signature *rs,
+			struct sexp_iterator *i)
+{
+  static const uint8_t *names[2] = { "r", "s" };
+  struct sexp_iterator values[2];
+
+  if (!sexp_iterator_assoc(i, 2, names, values))
+    return 0;
+
+  GET(rs->r, 160, &values[0]);
+  GET(rs->s, 160, &values[1]);
+
+  return 1;
+}
+
 #endif /* WITH_PUBLIC_KEY */

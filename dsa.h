@@ -154,6 +154,10 @@ dsa_generate_keypair(struct dsa_public_key *pub,
 struct sexp_iterator;
 
 int
+dsa_signature_from_sexp(struct dsa_signature *rs,
+			struct sexp_iterator *i);
+
+int
 dsa_keypair_from_sexp_alist(struct dsa_public_key *pub,
 			    struct dsa_private_key *priv,
 			    unsigned limit,
