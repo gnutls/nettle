@@ -31,6 +31,22 @@ test_advanced () {
     fi
 }
 
+test_transport () {
+    echo "$1" > test.in
+    if ./sexp-conv -s transport <test.in >test1.out ; then
+	true
+    else
+	exit 1
+    fi
+    echo "$2" > test2.out
+
+    if cmp test1.out test2.out ; then
+	true
+    else
+	exit 1;
+    fi
+}
+
 test_canonical () {
     echo "$1" > test.in
     if ./sexp-conv -s canonical <test.in >test1.out ; then
@@ -64,9 +80,15 @@ test_advanced '; comment
 
 test_advanced '(foo[bar]foo)' '(foo [bar]foo)'
 
+test_transport '0:' '{MDo=}'
+test_transport '()' '{KCk=}'
+test_transport 'foo' '{Mzpmb28=}'
+test_transport '(foo bar baz)' '{KDM6Zm9vMzpiYXIzOmJheik=}'
+
 test_canonical '""' '0:'
 test_canonical 'foo' '3:foo'
 test_canonical 'fooooooooooo' '12:fooooooooooo'
 test_canonical 'fooooooooo' '10:fooooooooo'
 test_canonical '(foo bar baz)' '(3:foo3:bar3:baz)' 
+
 exit 0
