@@ -84,7 +84,7 @@ struct rsa_private_key
  *
  * Store the private key in a rsa_private_key struct.
  *
- * Call rsa_prepare_private_key. This initializes the size attribute
+ * Call rsa_private_key_prepare. This initializes the size attribute
  * to the length of a signature.
  *
  * Initialize a hashing context, by callling
@@ -102,11 +102,6 @@ struct rsa_private_key
  * When done with the key and signature, don't forget to call
  * mpz_clear.
  */
-
-/* FIXME: For consistency, these functions ought to be renamed to
- * rsa_public_key_init, rsa_public_key_clear, rsa_private_key_init,
- * rsa_private_key_clear. Perhaps the prepare functions should be
- * renamed too. Do this for nettle-2.0? */
  
 /* Calls mpz_init to initialize bignum storage. */
 void
