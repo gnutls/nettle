@@ -131,7 +131,7 @@ $(SHLIBFORLINK): $(nettle_PURE_OBJS)
 	$(COMPILE) $(SHLIBCFLAGS) -c $< -o $@ \
 	&& $(DEP_PROCESS)
 
-.o$(EXEEXT):
+.$(OBJEXT)$(EXEEXT):
 	$(LINK) $< $(LIBS) -o $@
 
 aesdata$(EXEEXT): aesdata.$(OBJEXT)
