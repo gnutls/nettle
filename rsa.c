@@ -55,10 +55,14 @@ rsa_clear_public_key(struct rsa_public_key *key)
   mpz_clear(key->e);
 }
 
-int
-rsa_prepare_public_key(struct rsa_public_key *key)
+/* Computes the size, in octets, of a size BITS modulo.
+ * Returns 0 if the modulo is too small to be useful. */
+
+static unsigned
+rsa_check_size(unsigned bits)
 {
-  unsigned size = (mpz_sizeinbase(key->n, 2) + 7) / 8;
+  /* Round upwards */
+  unsigned size = (bits + 7) / 8;
 
   /* For PKCS#1 to make sense, the size of the modulo, in octets, must
    * be at least 11 + the length of the DER-encoded Digest Info.
@@ -67,39 +71,43 @@ rsa_prepare_public_key(struct rsa_public_key *key)
    * 46 octets is 368 bits. */
   
   if (size < 46)
-    {
-      /* Make sure the signing and verification functions doesn't
-       * try to use this key. */
-      key->size = 0;
+    return 0;
 
-      return 0;
-    }
-  else
-    {
-      key->size = size;
-      return 1;
-    }
+  return size;
+}
+
+int
+rsa_prepare_public_key(struct rsa_public_key *key)
+{
+  /* FIXME: Add further sanity checks, like 0 < e < n. */
+#if 0
+  if ( (mpz_sgn(key->e) <= 0)
+       || mpz_cmp(key->e, key->n) >= 0)
+    return 0;
+#endif
+  
+  key->size = rsa_check_size(mpz_sizeinbase(key->n, 2));
+  
+  return (key->size > 0);
 }
 
 void
 rsa_init_private_key(struct rsa_private_key *key)
 {
-  rsa_init_public_key(&key->pub);
-
-  mpz_init(key->d);
   mpz_init(key->p);
   mpz_init(key->q);
   mpz_init(key->a);
   mpz_init(key->b);
   mpz_init(key->c);
+
+  /* Not really necessary, but it seems cleaner to initialize all the
+   * storage. */
+  key->size = 0;
 }
 
 void
 rsa_clear_private_key(struct rsa_private_key *key)
 {
-  rsa_clear_public_key(&key->pub);
-
-  mpz_clear(key->d);
   mpz_clear(key->p);
   mpz_clear(key->q);
   mpz_clear(key->a);
@@ -110,80 +118,71 @@ rsa_clear_private_key(struct rsa_private_key *key)
 int
 rsa_prepare_private_key(struct rsa_private_key *key)
 {
-  return rsa_prepare_public_key(&key->pub);
+  /* FIXME: Add further sanity checks. */
+
+  /* The size of the product is the sum of the sizes of the factors. */
+  key->size = rsa_check_size(mpz_sizeinbase(key->p, 2)
+			     + mpz_sizeinbase(key->p, 2));
+
+  return (key->size > 0);
 }
 
-
-#ifndef RSA_CRT
-#define RSA_CRT 1
-#endif
-
-/* Computing an rsa root.
- *
- * NOTE: We don't really need n not e, so we could drop the public
- * key info from struct rsa_private_key. */
-
+/* Computing an rsa root. */
 void
 rsa_compute_root(struct rsa_private_key *key, mpz_t x, const mpz_t m)
 {
-#if RSA_CRT
-  {
-    mpz_t xp; /* modulo p */
-    mpz_t xq; /* modulo q */
+  mpz_t xp; /* modulo p */
+  mpz_t xq; /* modulo q */
 
-    mpz_init(xp); mpz_init(xq);    
+  mpz_init(xp); mpz_init(xq);    
 
-    /* Compute xq = m^d % q = (m%q)^b % q */
-    mpz_fdiv_r(xq, m, key->q);
-    mpz_powm(xq, xq, key->b, key->q);
+  /* Compute xq = m^d % q = (m%q)^b % q */
+  mpz_fdiv_r(xq, m, key->q);
+  mpz_powm(xq, xq, key->b, key->q);
 
-    /* Compute xp = m^d % p = (m%p)^a % p */
-    mpz_fdiv_r(xp, m, key->p);
-    mpz_powm(xp, xp, key->a, key->p);
+  /* Compute xp = m^d % p = (m%p)^a % p */
+  mpz_fdiv_r(xp, m, key->p);
+  mpz_powm(xp, xp, key->a, key->p);
 
-    /* Set xp' = (xp - xq) c % p. */
-    mpz_sub(xp, xp, xq);
-    mpz_mul(xp, xp, key->c);
-    mpz_fdiv_r(xp, xp, key->p);
+  /* Set xp' = (xp - xq) c % p. */
+  mpz_sub(xp, xp, xq);
+  mpz_mul(xp, xp, key->c);
+  mpz_fdiv_r(xp, xp, key->p);
 
-    /* Finally, compute x = xq + q xp'
-     *
-     * To prove that this works, note that
-     *
-     *   xp  = x + i p,
-     *   xq  = x + j q,
-     *   c q = 1 + k p
-     *
-     * for some integers i, j and k. Now, for some integer l,
-     *
-     *   xp' = (xp - xq) c + l p
-     *       = (x + i p - (x + j q)) c + l p
-     *       = (i p - j q) c + l p
-     *       = (i c + l) p - j (c q)
-     *       = (i c + l) p - j (1 + kp)
-     *       = (i c + l - j k) p - j
-     *
-     * which shows that xp' = -j (mod p). We get
-     *
-     *   xq + q xp' = x + j q + (i c + l - j k) p q - j q
-     *              = x + (i c + l - j k) p q
-     *
-     * so that
-     *
-     *   xq + q xp' = x (mod pq)
-     *
-     * We also get 0 <= xq + q xp' < p q, because
-     *
-     *   0 <= xq < q and 0 <= xp' < p.
-     */
-    mpz_mul(x, key->q, xp);
-    mpz_add(x, x, xq);
+  /* Finally, compute x = xq + q xp'
+   *
+   * To prove that this works, note that
+   *
+   *   xp  = x + i p,
+   *   xq  = x + j q,
+   *   c q = 1 + k p
+   *
+   * for some integers i, j and k. Now, for some integer l,
+   *
+   *   xp' = (xp - xq) c + l p
+   *       = (x + i p - (x + j q)) c + l p
+   *       = (i p - j q) c + l p
+   *       = (i c + l) p - j (c q)
+   *       = (i c + l) p - j (1 + kp)
+   *       = (i c + l - j k) p - j
+   *
+   * which shows that xp' = -j (mod p). We get
+   *
+   *   xq + q xp' = x + j q + (i c + l - j k) p q - j q
+   *              = x + (i c + l - j k) p q
+   *
+   * so that
+   *
+   *   xq + q xp' = x (mod pq)
+   *
+   * We also get 0 <= xq + q xp' < p q, because
+   *
+   *   0 <= xq < q and 0 <= xp' < p.
+   */
+  mpz_mul(x, key->q, xp);
+  mpz_add(x, x, xq);
 
-    mpz_clear(xp); mpz_clear(xq);
-  }  
-#else /* !RSA_CRT */
-  mpz_powm(x, m, key->d, key->pub->n);
-#endif /* !RSA_CRT */
+  mpz_clear(xp); mpz_clear(xq);
 }
 
 #endif /* HAVE_LIBGMP */
