@@ -1,4 +1,4 @@
-/* sexp-output.c
+/* sexp-format.c
  *
  * Writing s-expressions.
  */
@@ -101,6 +101,9 @@ sexp_vformat(struct nettle_buffer *buffer, const char *format, va_list args)
   for (;;)
     switch (*format++)
       {
+      default:
+	abort();
+
       case '\0':
 	assert(!nesting);
 	    
@@ -126,6 +129,9 @@ sexp_vformat(struct nettle_buffer *buffer, const char *format, va_list args)
       case '%':
 	switch (*format++)
 	  {
+	  default:
+	    abort();
+	    
 	  case 'z':
 	    {
 	      const char *s = va_arg(args, const char *);
@@ -242,8 +248,6 @@ sexp_vformat(struct nettle_buffer *buffer, const char *format, va_list args)
 #endif /* ! HAVE_LIBGMP */
 	      break;
 	    }
-	  default:
-	    abort();
 	  }
       }
 }
