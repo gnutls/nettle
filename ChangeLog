@@ -1,3 +1,8 @@
+2004-02-12  Niels Möller  <niels@s3.kth.se>
+
+	* configure.ac (CPPFLAGS, LDFLAGS): No spaces after -I and -L, as
+	some C compilers, in particular True64 cc, don't like that.
+
 2004-02-08  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Bumped version number to 1.10.
