@@ -1,3 +1,18 @@
+2001-12-12  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* testsuite/yarrow-test.c (main): Updated testcase to match fixed
+	generator. Send verbose output to stdout, not stderr.
+
+	* yarrow256.c (yarrow_slow_reseed): Bug fix, update the fast pool
+	with the digest of the slow pool.
+	(yarrow256_init): Initialize seed_file and counter to zero, to
+	ease debugging. 
+
+2001-12-07  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* bignum.c (nettle_mpz_get_str_256): Fixed handling of leading
+	zeroes. 
+
 2001-12-05  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* testsuite/yarrow-test.c (main): Updated test to match the fixed
