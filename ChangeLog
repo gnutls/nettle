@@ -1,5 +1,32 @@
 2004-02-07  Niels Möller  <nisse@lysator.liu.se>
 
+	* tools/sexp-conv.c (xalloc): New function.
+	(main): Use xalloc.
+
+	* tools/output.c (sexp_put_digest): Use TMP_DECL instead of alloca.
+
+	* testsuite/testutils.c (xalloc): New function. Made all other
+	functions use xalloc instead of alloca.
+
+	* examples/rsa-keygen.c (main): Use xalloc for allocation.
+	* examples/rsa-encrypt.c (write_bignum): Likewise.
+	* examples/rsa-decrypt.c (read_bignum): Likewise.
+	* testsuite/yarrow-test.c (open_file): Likewise.
+	* testsuite/rsa-encrypt-test.c (test_main): Likewise.
+	* testsuite/bignum-test.c (test_bignum): Likewise.
+
+	* examples/nettle-openssl.c: When calling des_key_sched and
+	des_ecb_encrypt, cst arguments to (void *). Openssl's typedefs
+	des_cblock and const_des_cblock are too broken.
+
+	* examples/nettle-benchmark.c (xalloc): New function. Use instead
+	of alloca, for better portability.
+
+	* examples/io.c (xalloc): New function.
+
+	* nettle-internal.h (TMP_ALLOC etc): Include <alloca.h> if
+	available.
+
 	* Makefile.am (nodist_libnettleinclude_HEADERS): nettle-types.h
 	should not be distributed.
 
