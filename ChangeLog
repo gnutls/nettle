@@ -1,3 +1,8 @@
+2002-03-16  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* configure.in (asm_path): AC_CONFIG_LINKS adds $srcdir
+	automatically. 
+
 2002-03-14  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* sparc/aes.asm, x86/aes.asm: Added copyright notice.
