@@ -209,7 +209,8 @@ des_encrypt(struct des_ctx *ctx,
 	    const uint8_t *src)
 {
   assert(!(length % DES_BLOCK_SIZE));
-
+  assert(ctx->status == DES_OK);
+  
   while (length)
     {
       DesSmallFipsEncrypt(dst, ctx->key, src);
@@ -225,6 +226,7 @@ des_decrypt(struct des_ctx *ctx,
 	    const uint8_t *src)
 {
   assert(!(length % DES_BLOCK_SIZE));
+  assert(ctx->status == DES_OK);
 
   while (length)
     {
