@@ -28,10 +28,14 @@
 #include "macros.h"
 
 #include <assert.h>
+#include <stdlib.h>
 #include <string.h>
 
-/* #define YARROW_DEBUG */
-#ifdef YARROW_DEBUG
+#ifndef YARROW_DEBUG
+#define YARROW_DEBUG 0
+#endif
+
+#if YARROW_DEBUG
 #include <stdio.h>
 #endif
 
@@ -60,6 +64,14 @@
  * overflows. */
 #define YARROW_MAX_ENTROPY 0x100000
 
+/* Forward declarations */
+
+static void
+yarrow_fast_reseed(struct yarrow256_ctx *ctx);
+
+static void
+yarrow_gate(struct yarrow256_ctx *ctx);
+
 void
 yarrow256_init(struct yarrow256_ctx *ctx,
 	       unsigned n,
@@ -83,6 +95,23 @@ yarrow256_init(struct yarrow256_ctx *ctx,
     }
 }
 
+void
+yarrow256_seed(struct yarrow256_ctx *ctx,
+	       unsigned length,
+	       uint8_t *seed_file)
+{
+  /* FIXME: Perhaps it's better to use assert ? */
+  if (!length)
+    return;
+
+  sha256_update(&ctx->pools[YARROW_FAST], length, seed_file);
+  yarrow_fast_reseed(ctx);
+
+  ctx->seeded = 1;
+}
+
+/* FIXME: Generalize so that it generates a few more blocks at a
+ * time. */
 static void
 yarrow_generate_block(struct yarrow256_ctx *ctx,
 		      uint8_t *block)
@@ -142,7 +171,7 @@ yarrow_fast_reseed(struct yarrow256_ctx *ctx)
   uint8_t digest[SHA256_DIGEST_SIZE];
   unsigned i;
   
-#ifdef YARROW_DEBUG
+#if YARROW_DEBUG
   fprintf(stderr, "yarrow_fast_reseed\n");
 #endif
   
@@ -173,6 +202,13 @@ yarrow_fast_reseed(struct yarrow256_ctx *ctx)
   /* Reset estimates. */
   for (i = 0; i<ctx->nsources; i++)
     ctx->sources[i].estimate[YARROW_FAST] = 0;
+
+  /* New seed file. */
+  /* FIXME: Extract this into a function of its own. */
+  for (i = 0; i < sizeof(ctx->seed_file); i+= AES_BLOCK_SIZE)
+    yarrow_generate_block(ctx, ctx->seed_file + i);
+
+  yarrow_gate(ctx);
 }
 
 static void
@@ -181,7 +217,7 @@ yarrow_slow_reseed(struct yarrow256_ctx *ctx)
   uint8_t digest[SHA256_DIGEST_SIZE];
   unsigned i;
 
-#ifdef YARROW_DEBUG
+#if YARROW_DEBUG
   fprintf(stderr, "yarrow_slow_reseed\n");
 #endif
 
@@ -201,7 +237,7 @@ yarrow_slow_reseed(struct yarrow256_ctx *ctx)
     ctx->sources[i].estimate[YARROW_SLOW] = 0;
 }
 
-void
+int
 yarrow256_update(struct yarrow256_ctx *ctx,
 		 unsigned source_index, unsigned entropy,
 		 unsigned length, const uint8_t *data)
@@ -213,7 +249,7 @@ yarrow256_update(struct yarrow256_ctx *ctx,
 
   if (!length)
     /* Nothing happens */
-    return;
+    return 0;
 
   source = &ctx->sources[source_index];
   
@@ -252,16 +288,20 @@ yarrow256_update(struct yarrow256_ctx *ctx,
   switch(current)
     {
     case YARROW_FAST:
-      if (source->estimate[YARROW_FAST] >= YARROW_FAST_THRESHOLD)
-	yarrow_fast_reseed(ctx);
-
-#ifdef YARROW_DEBUG
+#if YARROW_DEBUG
       fprintf(stderr,
               "yarrow256_update: source_index = %d,\n"
               "            fast pool estimate = %d\n",
               source_index, source->estimate[YARROW_FAST]);
 #endif
-      break;
+      if (source->estimate[YARROW_FAST] >= YARROW_FAST_THRESHOLD)
+	{
+	  yarrow_fast_reseed(ctx);
+	  return 1;
+	}
+      else
+	return 0;
+
     case YARROW_SLOW:
       {
 	/* FIXME: This is somewhat inefficient. It would be better to
@@ -272,7 +312,7 @@ yarrow256_update(struct yarrow256_ctx *ctx,
 	  if (ctx->sources[i].estimate[YARROW_SLOW] >= YARROW_SLOW_THRESHOLD)
 	    k++;
 
-#ifdef YARROW_DEBUG
+#if YARROW_DEBUG
         fprintf(stderr,
                 "yarrow256_update:     source_index = %d,\n"
                 "                 slow pool estimate = %d,\n"
@@ -284,8 +324,14 @@ yarrow256_update(struct yarrow256_ctx *ctx,
 	  {
 	    yarrow_slow_reseed(ctx);
 	    ctx->seeded = 1;
+
+	    return 1;
 	  }
+	else
+	  return 0;
       }
+    default:
+      abort();
     }
 }
 
