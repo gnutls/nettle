@@ -47,7 +47,7 @@ C Register usage:
 	C %ebx = j
 	C %cl  = si
 	C %ch  = sj
-	
+
 	movl	24(%esp), %edx		C  length
 	testl	%edx,%edx
 	jz	.Lend
@@ -59,15 +59,15 @@ C Register usage:
 	
 	movzbl  256(%ebp), %eax		C  i
 	movzbl  257(%ebp), %ebx		C  j
-	subl	%esi, %edi
 .Lloop:
 C	incb	%al
 	incl	%eax
 	andl	$0xff, %eax
 	movzbl  (%ebp, %eax), %ecx	C  si. Clears high bytes
-C	addb    %cl, %bl
-	addl	%ecx, %ebx
-	andl	$0xff, %ebx
+	addb    %cl, %bl
+C The addl andl is preferable on PPro and PII, but slows thing down on AMD Duron.
+C	addl	%ecx, %ebx
+C	andl	$0xff, %ebx
 	movb    (%ebp, %ebx), %ch	C  sj
 	movb    %ch, (%ebp, %eax)	C  S[i] = sj
 	movb	%cl, (%ebp, %ebx)	C  S[j] = si
@@ -76,8 +76,9 @@ C	addb    %cl, %bl
 					C  for indexing.
 	movb    (%ebp, %ecx), %cl
 	xorb    (%esi), %cl
-	movb    %cl, (%esi,%edi)
 	incl    %esi
+	movb    %cl, (%edi)
+	incl    %edi
 	cmpl	%esi, %edx
 	jne	.Lloop
 
