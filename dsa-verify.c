@@ -34,7 +34,7 @@
 #include <stdlib.h>
 
 int
-dsa_verify(struct dsa_public_key *key,
+dsa_verify(const struct dsa_public_key *key,
 	   struct sha1_ctx *hash,
 	   const struct dsa_signature *signature)
 {
