@@ -30,7 +30,8 @@ libsymmetric_a_SOURCES = desCode.h desKerb.c desUtil.c desQuick.c \
 
 # Generate DES headers.
 $(des_headers): desdata
-	./desdata $@ > $@
+	./desdata $@ > $@T
+	test -s $@T && mv -f $@T $@
 
 desUtil.o: desUtil.c $(des_headers)
 
