@@ -3,15 +3,13 @@ dnl $Id$
 
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT(arcfour.c)
-
+AC_INIT([nettle], [1.6])
+AC_CONFIG_SRCDIR([arcfour.c])
 AC_PREREQ(2.50)
+AM_INIT_AUTOMAKE([dist-gzip])
+AM_CONFIG_HEADER([config.h])
 
 AC_CANONICAL_HOST
-
-AM_INIT_AUTOMAKE(nettle, 1.6)
-
-AM_CONFIG_HEADER(config.h)
 
 # Command line options
 AC_ARG_WITH(include-path,
