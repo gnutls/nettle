@@ -28,12 +28,6 @@
 	
 	.file	"aes.asm"
 	
-	.section	".text"
-	.align 16
-	.global _aes_crypt
-	.type	_aes_crypt,#function
-	.proc	020
-
 ! Arguments
 define(ctx, %i0)
 define(T, %i1)
@@ -69,6 +63,42 @@ define(t1, %o1)
 define(t2, %o2)
 define(t3, %o3)
 
+dnl AES_ROUND(i)
+dnl Compute one word in the round function. 
+dnl Input in wtxt, output stored in tmp + i.
+define(<AES_ROUND>, <
+	ld	[IDX1+$1], t1		! 1
+	
+	ldub	[wtxt+t1], t1		! 1
+	ld	[IDX3+$1], t3		! 3
+	
+	sll	t1, 2, t1		! 1
+	ld	[wtxt+$1], t0		! 0
+	! IDX2(j) = j XOR 2
+	lduh	[wtxt+eval($1 ^ 8)], t2		! 2
+	and	t0, 255, t0		! 0
+	
+	ldub	[wtxt+t3], t3		! 3
+	sll	t0, 2, t0		! 0
+	ld	[T0+t0], t0		! 0
+	and	t2, 255, t2		! 2
+	
+	ld	[T1+t1], t1		! 1
+	sll	t2, 2, t2		! 2
+	ld	[T2+t2], t2		! 2
+	sll	t3, 2, t3		! 3
+	
+	ld	[T3+t3], t3		! 3
+	xor	t0, t1, t0		! 0, 1
+	xor	t0, t2, t0		! 0, 1, 2
+	! Fetch roundkey
+	ld	[key + $1], t1
+	
+	xor	t0, t3, t0		! 0, 1, 2, 3
+	xor	t0, t1, t0
+	st	t0, [tmp + $1]>)
+	
+	
 C The stack frame looks like
 C
 C %fp -   4: OS-dependent link field
@@ -78,6 +108,12 @@ C %fp -  40: wtxt, uint32_t[4]
 C %fp - 136: OS register save area. 
 define(<FRAME_SIZE>, 136)
 
+	.section	".text"
+	.align 16
+	.global _aes_crypt
+	.type	_aes_crypt,#function
+	.proc	020
+	
 _aes_crypt:
 	save	%sp, -FRAME_SIZE, %sp
 	cmp	length, 0
@@ -145,42 +181,41 @@ _aes_crypt:
 	C Unrolled inner loop begins
 	
 	C i = 0
-	ld	[IDX1+0], t1		! 1
-	
-	C add	wtxt, t1, t1		! 1
-	ldub	[wtxt+t1], t1		! 1
-	ld	[IDX3+0], t3		! 3
-	
-	sll	t1, 2, t1		! 1
-	ld	[wtxt], t0		! 0
-	! IDX2(j) = j XOR 2
-	lduh	[wtxt+8], t2		! 2
-	and	t0, 255, t0		! 0
-	
-	ldub	[wtxt+t3], t3		! 3
-	sll	t0, 2, t0		! 0
-	ld	[T0+t0], t0		! 0
-	and	t2, 255, t2		! 2
-	
-	ld	[T1+t1], t1		! 1
-	sll	t2, 2, t2		! 2
-	ld	[T2+t2], t2		! 2
-	sll	t3, 2, t3		! 3
-	
-	ld	[T3+t3], t3		! 3
-	xor	t0, t1, t0		! 0, 1
-	xor	t0, t2, t0		! 0, 1, 2
-	! Fetch roundkey
-	ld	[key], t1
-	
-	xor	t0, t3, t0		! 0, 1, 2, 3
-	xor	t0, t1, t0
-	st	t0, [tmp]
+	AES_ROUND(0)
+C 	ld	[IDX1+0], t1		! 1
+C 	
+C 	ldub	[wtxt+t1], t1		! 1
+C 	ld	[IDX3+0], t3		! 3
+C 	
+C 	sll	t1, 2, t1		! 1
+C 	ld	[wtxt], t0		! 0
+C 	! IDX2(j) = j XOR 2
+C 	lduh	[wtxt+8], t2		! 2
+C 	and	t0, 255, t0		! 0
+C 	
+C 	ldub	[wtxt+t3], t3		! 3
+C 	sll	t0, 2, t0		! 0
+C 	ld	[T0+t0], t0		! 0
+C 	and	t2, 255, t2		! 2
+C 	
+C 	ld	[T1+t1], t1		! 1
+C 	sll	t2, 2, t2		! 2
+C 	ld	[T2+t2], t2		! 2
+C 	sll	t3, 2, t3		! 3
+C 	
+C 	ld	[T3+t3], t3		! 3
+C 	xor	t0, t1, t0		! 0, 1
+C 	xor	t0, t2, t0		! 0, 1, 2
+C 	! Fetch roundkey
+C 	ld	[key], t1
+C 	
+C 	xor	t0, t3, t0		! 0, 1, 2, 3
+C 	xor	t0, t1, t0
+C 	st	t0, [tmp]
 
 	C i = 1
 	ld	[IDX1+4], t1		! 1
 	
-	C add	wtxt, t1, t1		! 1
 	ldub	[wtxt+t1], t1		! 1
 	ld	[IDX3+4], t3		! 3
 	
@@ -213,7 +248,6 @@ _aes_crypt:
 	C = 2
 	ld	[IDX1+8], t1		! 1
 	
-	C add	wtxt, t1, t1		! 1
 	ldub	[wtxt+t1], t1		! 1
 	ld	[IDX3+8], t3		! 3
 	
@@ -246,7 +280,6 @@ _aes_crypt:
 	C = 3
 	ld	[IDX1+12], t1		! 1
 	
-	C add	wtxt, t1, t1		! 1
 	ldub	[wtxt+t1], t1		! 1
 	ld	[IDX3+12], t3		! 3
 	
@@ -295,7 +328,6 @@ _aes_crypt:
 
 	C i = 0
 	ld	[IDX1+0], t1 	! 1
-	C add	wtxt, t1, t1	! 1
 	ldub	[wtxt+t1], t1	! 1
 
 	ld	[wtxt+0], t0	! 0
@@ -335,7 +367,6 @@ _aes_crypt:
 	C i = 1
 	ld	[IDX1+4], t1 	! 1
 
-	C add	wtxt, t1, t1	! 1
 	ldub	[wtxt+t1], t1	! 1
 
 	ld	[wtxt+4], t0	! 0
@@ -375,7 +406,6 @@ _aes_crypt:
 	C i = 2
 	ld	[IDX1+8], t1 	! 1
 	
-	C add	wtxt, t1, t1	! 1
 	ldub	[wtxt+t1], t1	! 1
 
 	ld	[wtxt+8], t0	! 0
@@ -415,7 +445,6 @@ _aes_crypt:
 	C i = 3
 	ld	[IDX1+12], t1 	! 1
 
-	C add	wtxt, t1, t1	! 1
 	ldub	[wtxt+t1], t1	! 1
 
 	ld	[wtxt+12], t0	! 0
@@ -461,7 +490,6 @@ _aes_crypt:
 	sub	wtxt, src, %g3
 
 .Lend:
-	C add	%sp, FRAME_SIZE, %fp
 	ret
 	restore
 .LLFE1:
