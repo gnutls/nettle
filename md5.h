@@ -1,6 +1,6 @@
 /* md5.h
  *
- * The md5 hash function.
+ * The MD5 hash function, described in RFC 1321.
  */
 
 /* nettle, low-level cryptographics library
