@@ -130,7 +130,7 @@ main(int argc, char **argv)
       return EXIT_FAILURE;
     }
 
-  if (!rsa_keypair_to_sexp(&pub_buffer, &pub, &priv))
+  if (!rsa_keypair_to_sexp(&priv_buffer, &pub, &priv))
     {
       werror("Formatting private key failed.\n");
       return EXIT_FAILURE;
