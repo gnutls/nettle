@@ -1,9 +1,13 @@
 NEWS for the 1.5 release
 
-	Added RSA support. Key generation and signatures.
+	RSA support. Key generation and signatures.
 	
-	Added support for HMAC (RFC-2104).
+	Support for HMAC (RFC-2104).
 
+	An implementation of the Yarrow-256 PRNG.
+
+	New sections in the manual.
+	
 	Changed the interface for hash functions. The md5_digest
 	function is now equivalent to the old sequence of md5_final,
 	md5_digest, md5_init, and similarly for the other hashing

@@ -1,3 +1,14 @@
+2002-01-31  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* nettle.texinfo (Randomness): New subsection on Yarrow.
+
+2002-01-30  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* nettle.texinfo (Randomness): New chapter.
+	Spell checking and ispell configuration.
+
+	* md5.c: Added reference to RFC 1321.
+
 2002-01-24  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* nettle.texinfo (Public-key algorithms): Minor fixes.
