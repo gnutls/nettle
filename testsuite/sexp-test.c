@@ -55,7 +55,6 @@ test_main(void)
 
     ASSERT(sexp_iterator_next(&v[1]) && v[1].type == SEXP_END);
 
-#if 0
     sexp_iterator_init(&i, LDATA("((1:n))"));
     ASSERT(sexp_iterator_next(&i)
 	   && !sexp_iterator_assoc(&i, 2, keys, v));
@@ -63,7 +62,6 @@ test_main(void)
     sexp_iterator_init(&i, LDATA("((1:n)(1:n3:foo))"));
     ASSERT(sexp_iterator_next(&i)
 	   && !sexp_iterator_assoc(&i, 2, keys, v));
-#endif
   }
   SUCCESS();
 }
