@@ -118,10 +118,16 @@ write_file(const char *name, unsigned size, const char *buffer)
 
   res = fwrite(buffer, 1, size, f);
   
-  if (res < size || ferror(f))
+  if (res < size)
     res = 0;
 
-  fclose(f);
+  return fclose(f) == 0 && res > 0;
+}
+
+int
+write_string(FILE *f, unsigned size, const char *buffer)
+{
+  size_t res = fwrite(buffer, 1, size, f);
 
   return res > 0;
 }

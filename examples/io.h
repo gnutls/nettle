@@ -50,6 +50,9 @@ int
 write_file(const char *name, unsigned size, const char *buffer);
 
 int
+write_string(FILE *f, unsigned size, const char *buffer);
+
+int
 simple_random(struct yarrow256_ctx *ctx, const char *name);
 
 int
