@@ -330,7 +330,6 @@ twofish_selftest(void)
     0x9F, 0x0C, 0xFC, 0xCA, 0xE8, 0x7C, 0xFA, 0x20 };
 
   TWOFISH_context context;
-  int i;
   byte plaintext[16], ciphertext[16];
 
   twofish_setup(&context, 16, testkey128);
