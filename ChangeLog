@@ -1,3 +1,8 @@
+2003-03-11  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* nettle.texinfo (DSA): New section.
+	(RSA): Updated documentation.
+
 2003-03-02  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* examples/nettle-benchmark.c (time_cipher): Don't use GNU C
@@ -294,11 +299,10 @@
 	grow_realloc. 
 	(nettle_buffer_clear): Rewritten to use buffer->realloc.
 
-	* buffer.h (struct nettle_buffer): REplaced the GROW function
-	pointer with a nettle_realloc_func pointer and a void
+	* buffer.h (struct nettle_buffer): Replaced the GROW function
+	pointer with a nettle_realloc_func pointer and a
+	void *realloc_ctx.
 	(NETTLE_BUFFER_GROW): Deleted macro, use function instead.
-
-	*realloc_ctx.
 
 	* buffer-init.c (nettle_buffer_init): Moved to a separate file.
 

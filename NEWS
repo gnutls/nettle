@@ -1,8 +1,24 @@
 NEWS for the 1.7 release
 
-	Renamed rsa functions for consistency. Now it's
+	Implemented DSA.
+
+	Renamed RSA functions for consistency. Now it's
 	rsa_public_key_init, not rsa_init_public_key, etc.
-	
+
+	Both RSA and DSA now have sign/verify functions that take the
+	hash digest as argument.
+
+	A rewritten and much more powerful sexp-conv program.
+
+	Other changes to the sexp code, in particular updating it to
+	the latest SPKI draft.
+
+	Building nettle as a shared library (ELF only) seems to work.
+	The version number is increased, so the library "soname" for
+	this release is "libnettle.so.1".
+
+	Bugfixes. Fixes for build and portability problems.
+
 NEWS for the 1.6 release
 
 	Optimized assembler implementations of aes, for sparc and x86.
