@@ -1,7 +1,10 @@
+*.tar.gz
+*.tar.gz.asc
 .deps
 Makefile
 Makefile.in
 aclocal.m4
+aesdata
 config.cache
 config.h
 config.h.in
@@ -10,8 +13,6 @@ config.status
 configure
 desdata
 keymap.h
-*.tar.gz
-*.tar.gz.asc
 nettle.aux
 nettle.cp
 nettle.cps

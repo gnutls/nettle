@@ -1,6 +1,6 @@
 SUBDIRS = . testsuite examples
 
-noinst_PROGRAMS = desdata shadata
+noinst_PROGRAMS = aesdata desdata shadata
 
 libnettleincludedir = $(includedir)/nettle
 

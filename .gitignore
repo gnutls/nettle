@@ -30,10 +30,13 @@ _$*
 *.elc
 *.ln
 core
+/*.tar.gz
+/*.tar.gz.asc
 /.deps
 /Makefile
 /Makefile.in
 /aclocal.m4
+/aesdata
 /config.cache
 /config.h
 /config.h.in
@@ -42,8 +45,6 @@ core
 /configure
 /desdata
 /keymap.h
-/*.tar.gz
-/*.tar.gz.asc
 /nettle.aux
 /nettle.cp
 /nettle.cps
