@@ -1,3 +1,13 @@
+2004-02-06  Niels Möller  <niels@s3.kth.se>
+
+	* Makefile.am (EXTRA_DIST, DISTCLEANFILES): Handle
+	sha1-compress.asm.
+
+	* configure.ac: Use assembler file sha1-compress.asm if available.
+
+	* x86/sha1-compress.asm (EXPAND): Fixed the rotation part of the
+	data expansion.
+
 2004-02-06  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86/sha1-compress.asm: Assembler implementation of
