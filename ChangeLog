@@ -24,9 +24,6 @@
 
 	* examples/io.c (xalloc): New function.
 
-	* nettle-internal.h (TMP_ALLOC etc): Include <alloca.h> if
-	available.
-
 	* Makefile.am (nodist_libnettleinclude_HEADERS): nettle-types.h
 	should not be distributed.
 
