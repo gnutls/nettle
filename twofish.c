@@ -199,10 +199,11 @@ compute_s(uint32_t m1, uint32_t m2)
  * of the function h, cf. figure 2 of the twofish paper.
  */
 
-static const uint8_t * q_table[4][5] = { { q1, q1, q0, q0, q1 },
-                                { q0, q1, q1, q0, q0 },
-                                { q0, q0, q0, q1, q1 },
-                                { q1, q0, q1, q1, q0 } };
+static const uint8_t * const q_table[4][5] =
+  { { q1, q1, q0, q0, q1 },
+    { q0, q1, q1, q0, q0 },
+    { q0, q0, q0, q1, q1 },
+    { q1, q0, q1, q1, q0 } };
 
 /* The matrix MDS as specified in section 4.3.2 of the twofish paper. */
 
