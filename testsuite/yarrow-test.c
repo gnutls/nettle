@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+static int verbose = 0;
+
 /* Lagged fibonacci sequence as described in Knuth 3.6 */
 
 #define KK 100
@@ -191,6 +193,11 @@ main(int argc, char **argv)
   unsigned i;
   
   static const char zeroes[100];
+
+  if ((argc == 2)
+      && (argv[1][0] == '-')
+      && (argv[1][1] == 'v'))
+    verbose = 1;
   
   yarrow256_init(&yarrow, 2, sources);
   yarrow_key_event_init(&estimator);
@@ -204,9 +211,10 @@ main(int argc, char **argv)
   /* Fake input to source 0 */
   yarrow256_update(&yarrow, 0, 200, sizeof(zeroes), zeroes);
 
-  fprintf(stderr, "source 0 entropy: %d\n",
-          sources[0].estimate[YARROW_SLOW]);
-
+  if (verbose)
+    fprintf(stderr, "source 0 entropy: %d\n",
+	    sources[0].estimate[YARROW_SLOW]);
+  
   assert(!yarrow.seeded);
 
   input = open_file("rfc1750.txt");
@@ -237,52 +245,65 @@ main(int argc, char **argv)
           
           uint8_t buf[500];
 
-          if (!output)
+          if (verbose && !output)
             fprintf(stderr, "Generator was seeded after %d events\n",
                     processed);
           
           yarrow256_random(&yarrow, size, buf);
 
           sha1_update(&output_hash, size, buf);
-          
-          fprintf(stderr, "%02x ", buf[0]);
-          if (! (processed % 16))
-            fprintf(stderr, "\n");
 
+	  if (verbose)
+	    {
+	      fprintf(stderr, "%02x ", buf[0]);
+	      if (! (processed % 16))
+		fprintf(stderr, "\n");
+	    }
           output += size;
         }
     }
 
-  for (i = 0; i<2; i++)
-    fprintf(stderr, "source %d, (fast, slow) entropy: (%d, %d)\n",
-            i,
-            sources[i].estimate[YARROW_FAST],
-            sources[i].estimate[YARROW_SLOW]); 
+  if (verbose)
+    {
+      for (i = 0; i<2; i++)
+	fprintf(stderr, "source %d, (fast, slow) entropy: (%d, %d)\n",
+		i,
+		sources[i].estimate[YARROW_FAST],
+		sources[i].estimate[YARROW_SLOW]); 
 
-  fprintf(stderr, "Processed input: %d octets\n", processed);
-  fprintf(stderr, "           sha1:");
-  
+      fprintf(stderr, "Processed input: %d octets\n", processed);
+      fprintf(stderr, "           sha1:");
+    }
   sha1_final(&input_hash);
   sha1_digest(&input_hash, sizeof(digest), digest);
 
-  print_digest(digest);
-  fprintf(stderr, "\n");
-
+  if (verbose)
+    {
+      print_digest(digest);
+      fprintf(stderr, "\n");
+    }
+  
   if (memcmp(digest, expected_input, sizeof(digest)))
     {
       fprintf(stderr, "Failed.\n");
       return EXIT_FAILURE;
     }
-  
-  fprintf(stderr, "Generated output: %d octets\n", output);
-  fprintf(stderr, "            sha1:");
+
+  if (verbose)
+    {
+      fprintf(stderr, "Generated output: %d octets\n", output);
+      fprintf(stderr, "            sha1:");
+    }
   
   sha1_final(&output_hash);
   sha1_digest(&output_hash, sizeof(digest), digest);
 
-  print_digest(digest);
-  fprintf(stderr, "\n");
-
+  if (verbose)
+    {
+      print_digest(digest);
+      fprintf(stderr, "\n");
+    }
+  
   if (memcmp(digest, expected_output, sizeof(digest)))
     {
       fprintf(stderr, "Failed.\n");
