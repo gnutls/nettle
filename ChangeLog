@@ -1,3 +1,23 @@
+2002-10-23  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* examples/Makefile.am (TS_PROGS): Added sexp-conv-test.
+
+	* examples/sexp-conv.c (sexp_input_init): Initialize input->string
+	properly. 
+	(sexp_get_char): Fixed non-transport case.
+	(sexp_get_quoted_char): Fixed default case.
+	(sexp_get_token): Loop over sexp_get_char (needed for handling of
+	white space). Don't modify input->level. Fixed the code that skips
+	comments. 
+	(sexp_put_char): Fixed off-by-one bug in assertion.
+	(sexp_put_string): Fixed escape handling for output of quoted
+	strings. 
+	(sexp_convert_list): Prettier output, hanging indent after the
+	first list element.
+	(sexp_skip_token): New function.
+	(sexp_convert_item): Use sexp_skip_token to skip the end of a
+	"[display-type]".
+
 2002-10-22  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* examples/sexp-conv-test: New test program.
