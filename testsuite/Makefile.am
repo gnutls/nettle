@@ -5,7 +5,9 @@ TS_PROGS = aes-test arcfour-test blowfish-test cast128-test \
 	   des-test des3-test des-compat-test \
 	   md5-test md5-compat-test sha1-test sha256-test \
 	   serpent-test twofish-test \
-	   cbc-test hmac-test rsa-test bignum-test yarrow-test
+	   knuth-lfib-test \
+	   cbc-test hmac-test bignum-test \
+	   rsa-test rsa-keygen-test yarrow-test
 
 noinst_PROGRAMS = $(TS_PROGS)
 

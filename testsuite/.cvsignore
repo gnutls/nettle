@@ -11,8 +11,10 @@ des-compat-test
 des-test
 des3-test
 hmac-test
+knuth-lfib-test
 md5-compat-test
 md5-test
+rsa-keygen-test
 rsa-test
 serpent-test
 sha1-test
