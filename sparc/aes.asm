@@ -22,7 +22,6 @@
 	!			%i0,1,2,3,4 (%i6=%fp, %i7 = return)
 	!			%o0,1,2,3 (%o6=%sp)
 	!			%g2,3,4,5,6
-include(`asm.m4')
 	
 	.file	"aes.asm"
 	
