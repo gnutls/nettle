@@ -72,4 +72,4 @@ nettle_arcfour_crypt:
 	popl	%ebx
 	ret
 .Leord:
-	.size	nettle_arcfour_crypt,.Leord-aes_decrypt
+	.size	nettle_arcfour_crypt,.Leord-nettle_arcfour_crypt
