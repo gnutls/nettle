@@ -40,6 +40,7 @@
 #include "macros.h"
 
 #include <assert.h>
+#include <stdlib.h>
 #include <string.h>
 
 /* A block, treated as a sequence of 32-bit words. */
