@@ -1,5 +1,15 @@
 2004-02-05  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/nettle-benchmark.c (bench_hash, time_hash): New functions.
+	(main): Benchmark hash functions too.
+	(BENCH_BLOCK): Increased 10K.
+	(BENCH_INTERVAL): Decreased to 0.25s.
+
+	* examples/nettle-benchmark.c (time_function): Loop around calling
+	f, until 1s has elapsed. Returns seconds per call. Updated bench
+	functions to not loop themselves.
+	(display): Updated MB/s calculation.
+
 	* testsuite/arcfour-test.c (test_main): Use test_cipher_stream.
 
 	* testsuite/testutils.c (test_cipher_stream): New function, that
