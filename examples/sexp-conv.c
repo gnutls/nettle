@@ -56,6 +56,8 @@ sexp_input_init(struct sexp_input *input, FILE *f, enum sexp_mode mode)
   input->f = f;
   input->mode = mode;
   input->level = 0;
+
+  nettle_buffer_init(&input->string);
 }
 
 struct sexp_output
@@ -114,19 +116,21 @@ sexp_get_char(struct sexp_input *input, uint8_t *out)
 	}
     }
   else
-    for (;;)
-      {
-	int c = getc(input->f);
+    {
+      int c = getc(input->f);
       
-	if (c < 0)
-	  {
-	    if (ferror(input->f))
-	      return -1;
-	    
-	    input->token = SEXP_EOF;
-	    return 0;
-	  }
-      }
+      if (c < 0)
+	{
+	  if (ferror(input->f))
+	    return -1;
+	  
+	  input->token = SEXP_EOF;
+	  return 0;
+	}
+
+      *out = c;
+      return 1;
+    }
 }
 
 static const char
@@ -188,6 +192,8 @@ sexp_get_quoted_char(struct sexp_input *input, uint8_t *c)
   for (;;)
     switch (*c)
       {
+      default:
+	return 1;
       case '\"':
 	return 0;
       case '\\':
@@ -382,76 +388,73 @@ static int
 sexp_get_token(struct sexp_input *input)
 {
   uint8_t c;
-  switch (sexp_get_char(input, &c))
-    {
-    case -1:
-      return 0;
-    case 0:
-      return 1;
-    case 1:
-      switch(c)
-	{
-	case '0': case '1': case '2': case '3': case '4':
-	case '5': case '6': case '7': case '8': case '9':
-	  return sexp_get_string_length(input, c - '0');
+
+  for(;;)
+    switch (sexp_get_char(input, &c))
+      {
+      case -1:
+	return 0;
+      case 0:
+	return 1;
+      case 1:
+	switch(c)
+	  {
+	  case '0': case '1': case '2': case '3': case '4':
+	  case '5': case '6': case '7': case '8': case '9':
+	    return sexp_get_string_length(input, c - '0');
 	  
-	case '(':
-	  input->token = SEXP_LIST_START;
-	  return 1;
-	case ')':
-	  input->token = SEXP_LIST_END;
+	  case '(':
+	    input->token = SEXP_LIST_START;
+	    return 1;
+	  case ')':
+	    input->token = SEXP_LIST_END;
 
-	  if (!input->level)
-	    return 0;
+	    return 1;
 
-	  input->level--;
-	  return 1;
+	  case '[':
+	    input->token = SEXP_DISPLAY_START;
+	    return 1;
 
-	case '[':
-	  input->token = SEXP_DISPLAY_START;
-	  return 1;
+	  case ']':
+	    input->token = SEXP_DISPLAY_END;
+	    return 1;
 
-	case ']':
-	  input->token = SEXP_DISPLAY_END;
-	  return 1;
+	  case ' ':  /* SPC, TAB, LF, CR */
+	  case '\t':
+	  case '\n':
+	  case '\r':
+	    if (input->mode != SEXP_ADVANCED)
+	      return 0;
+	    break;
 
-	case ' ':  /* SPC, TAB, LF, CR */
-	case '\t':
-	case '\n':
-	case '\r':
-	  if (input->mode != SEXP_ADVANCED)
-	    return 0;
-	  break;
+	  case ';': /* Comments */
+	    if (input->mode != SEXP_ADVANCED)
+	      return 0;
 
-	case ';': /* Comments */
-	  if (input->mode != SEXP_ADVANCED)
-	    return 0;
-
-	  for (;;)
-	    {
-	      int c = getc(input->f);
-	      if (c < 0)
-		{
-		  if (ferror(input->f))
-		    return 0;
-		  else
-		    {
-		      input->token = SEXP_EOF;
-		      return 1;
-		    }
-		}
-	      if (c != '\n')
-		break;
-	    }
-	  break;
+	    for (;;)
+	      {
+		int c = getc(input->f);
+		if (c < 0)
+		  {
+		    if (ferror(input->f))
+		      return 0;
+		    else
+		      {
+			input->token = SEXP_EOF;
+			return 1;
+		      }
+		  }
+		if (c == '\n')
+		  break;
+	      }
+	    break;
 	  
-	default:
-	  /* Ought to be a string */
-	  return (input->mode == SEXP_ADVANCED)
-	    && sexp_get_string(input, c);
-	}
-    }
-  abort();
+	  default:
+	    /* Ought to be a string */
+	    return (input->mode == SEXP_ADVANCED)
+	      && sexp_get_string(input, c);
+	  }
+      }
 }
 
 
@@ -577,7 +580,7 @@ sexp_put_base64_end(struct sexp_output *output, uint8_t c)
 
   done = base64_encode_final(&output->base64, encoded);
 
-  assert(done < sizeof(encoded));
+  assert(done <= sizeof(encoded));
   
   output->mode &= ~ SEXP_TRANSPORT;
 
@@ -598,7 +601,9 @@ sexp_put_string(struct sexp_output *output, unsigned indent,
       unsigned i;
       int token = (string->contents[0] < '0' || string->contents[0] > '9');
       int quote_friendly = 1;
-      
+      static const char escape_names[0x10] =
+	{ 0,0,0,0,0,0,0,0, 'b','t','n',0,'f','r',0,0 };
+
       for (i = 0; i<string->size; i++)
 	{
 	  uint8_t c = string->contents[i];
@@ -606,8 +611,13 @@ sexp_put_string(struct sexp_output *output, unsigned indent,
 	  if (token & !TOKEN_CHAR(c))
 	    token = 0;
 	  
-	  if (quote_friendly && (c < 0x20 || c >= 0x7f))
-	    quote_friendly = 0;
+	  if (quote_friendly)
+	    {
+	      if (c >= 0x7f)
+		quote_friendly = 0;
+	      else if (c < 0x20 && !escape_names[c])
+		quote_friendly = 0;
+	    }
 	}
       
       if (token)
@@ -615,9 +625,31 @@ sexp_put_string(struct sexp_output *output, unsigned indent,
 
       else if (quote_friendly)
 	{
-	  return sexp_put_char(output, indent, '"')
-	    && sexp_put_data(output, indent, string->size, string->contents)
-	    && sexp_put_char(output, indent, '"');
+	  if (!sexp_put_char(output, indent, '"'))
+	    return 0;
+	  for (i = 0; i<string->size; i++)
+	    {
+	      int escape = 0;
+	      uint8_t c = string->contents[i];
+
+	      assert(c < 0x7f);
+	      
+	      if (c == '\\' || c == '"')
+		escape = 1;
+	      else if (c < 0x20)
+		{
+		  escape = 1;
+		  c = escape_names[c];
+		  assert(c);
+		}
+	      if (escape && !sexp_put_char(output, indent, '\\'))
+		return 0;
+
+	      if (!sexp_put_char(output, indent, c))
+		return 0;
+	    }
+		
+	  return sexp_put_char(output, indent, '"');
 	}
       else
 	return (sexp_put_base64_start(output, '|')
@@ -677,34 +709,50 @@ static int
 sexp_convert_list(struct sexp_input *input, struct sexp_output *output,
 		  unsigned indent)
 {
-  if (!sexp_get_token(input))
-    return 0;
+  unsigned item;
   
-  switch (sexp_convert_item(input, output, indent))
-    {
-    case 0:
-      return 1;
-    case -1:
-      return 0;
-    case 1:
-      break;
-    }
-
-  indent = output->pos;
-
-  for (;;)
+  for (item = 0;; item++)
     {
       if (!sexp_get_token(input))
 	return 0;
-      
+
+      /* Check for end of list */
       if (input->token == SEXP_LIST_END
 	  || input->token == SEXP_EOF
 	  || input->token == SEXP_TRANSPORT_END)
 	return 1;
 
-      sexp_put_newline(output, indent);
-      sexp_convert_item(input, output, indent);
+      if (output->mode == SEXP_ADVANCED)
+	{
+	  /* FIXME: Adapt pretty printing to handle a big first
+	   * element. */
+	  if (item == 1)
+	    {
+	      if (!sexp_put_char(output, indent, ' '))
+		return 0;
+	      indent = output->pos;
+	    }
+	  else if (item > 1 && !sexp_put_newline(output, indent))
+	    return 0;
+	}
+      
+      switch (sexp_convert_item(input, output, indent))
+	{
+	case 0:
+	  /* Should be detected above */
+	  abort();
+	case -1:
+	  return 0;
+	case 1:
+	  break;
+	}
     }
+}
+
+static int
+sexp_skip_token(struct sexp_input *input, enum sexp_token token)
+{
+  return sexp_get_token(input) && input->token == token;
 }
 
 /* Returns 1 on success, -1 on error, and 0 at end of list/file.
@@ -750,6 +798,7 @@ sexp_convert_item(struct sexp_input *input, struct sexp_output *output,
     case SEXP_DISPLAY_START:
       return (sexp_put_display_start(output, indent)
 	      && sexp_convert_string(input, output, indent)
+	      && sexp_skip_token(input, SEXP_DISPLAY_END)
 	      && sexp_put_display_end(output, indent)
 	      && sexp_convert_string(input, output, indent)) ? 1 : -1;
 
