@@ -67,6 +67,14 @@ _aes_crypt:
 .Lblock_loop:
 	! Read src, and add initial subkey
 	mov	-4, i
+	! Read src, and add initial subkey
+	! mov	-4, i
+	! Difference between ctx and src
+	sub	ctx, src, %g2
+	! Difference between wtxt and src
+	sub	wtxt, src, %g3
+	! For stop condition
+	add	src, 12, %g4
 .Lsource_loop:
 	add	i, 4, i
 	
@@ -80,13 +88,15 @@ _aes_crypt:
 	
 	ldub	[src], t0
 	sll	t1, 8, t1
-	ld	[ctx+i], %g3
+	! Get subkey
+	ld	[ctx+i], t2
 	or	t3, t1, t3
 	
 	or	t3, t0, t3
-	xor	t3, %g3, t3
+	xor	t3, t2, t3
 	add	src, 4, src
-	cmp	i, 8
+	! cmp	i, 8
+	cmp	src, %g4
 	bleu	.Lsource_loop
 	
 	st	t3, [wtxt+i]
