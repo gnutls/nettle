@@ -25,6 +25,8 @@
 
 #include "yarrow.h"
 
+#include "macros.h"
+
 #include <assert.h>
 #include <string.h>
 
@@ -47,6 +49,11 @@
 
 /* Number of sources that must exceed the threshold for slow reseed */
 #define YARROW_SLOW_K 2
+
+/* The number of iterations when reseeding, P_t in the yarrow paper.
+ * Should be chosen so that reseeding takes on the order of 0.1-1
+ * seconds. */
+#define YARROW_RESEED_ITERATIONS 1500
 
 /* Entropy estimates sticks to this value, it is treated as infinity
  * in calculations. It should fit comfortably in an uint32_t, to avoid
@@ -97,16 +104,43 @@ yarrow_generate_block(struct yarrow256_ctx *ctx,
     }
 }
 
+static void
+yarrow_iterate(uint8_t *digest)
+{
+  uint8_t v0[SHA256_DIGEST_SIZE];
+  unsigned i;
+  
+  memcpy(v0, digest, SHA256_DIGEST_SIZE);
+  
+  /* When hashed inside the loop, i should run from 1 to
+   * YARROW_RESEED_ITERATIONS */
+  for (i = 0; ++i < YARROW_RESEED_ITERATIONS; )
+    {
+      uint8_t count[4];
+      struct sha256_ctx hash;
+  
+      sha256_init(&hash);
+
+      /* Hash v_i | v_0 | i */
+      WRITE_UINT32(count, i);
+      sha256_update(&hash, SHA256_DIGEST_SIZE, digest);
+      sha256_update(&hash, sizeof(v0), v0);
+      sha256_update(&hash, sizeof(count), count);
+
+      sha256_final(&hash);
+      sha256_digest(&hash, SHA256_DIGEST_SIZE, digest);
+    }
+}
+
 /* NOTE: The SHA-256 digest size equals the AES key size, so we need
- * no "size adaptor". We also use P_t = 0, i.e. we don't currently try
- * to make reseeding computationally expensive. */
+ * no "size adaptor". */
 
 static void
 yarrow_fast_reseed(struct yarrow256_ctx *ctx)
 {
   uint8_t digest[SHA256_DIGEST_SIZE];
   unsigned i;
-
+  
 #ifdef YARROW_DEBUG
   fprintf(stderr, "yarrow_fast_reseed\n");
 #endif
@@ -125,7 +159,10 @@ yarrow_fast_reseed(struct yarrow256_ctx *ctx)
   sha256_final(&ctx->pools[YARROW_FAST]);
   sha256_digest(&ctx->pools[YARROW_FAST], sizeof(digest), digest);
   sha256_init(&ctx->pools[YARROW_FAST]);
-  
+
+  /* Iterate */
+  yarrow_iterate(digest);
+
   aes_set_key(&ctx->key, sizeof(digest), digest);
 
   /* Derive new counter value */
