@@ -1,3 +1,10 @@
+2004-04-07  Niels Möller  <nisse@lysator.liu.se>
+
+	* aes-set-encrypt-key.c (log, ilog): Deleted unused tables.
+
+	* aes-set-decrypt-key.c (gf2_log, gf2_exp, mult): Renamed tables,
+	were log and ilog.
+
 2004-03-20  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Use AC_CONFIG_AUX_DIR([.]).
