@@ -36,9 +36,9 @@
 #include "macros.h"
 #include "memxor.h"
 
-struct des_compat_des3 { struct des_ctx *keys[3]; }; 
+struct des_compat_des3 { const struct des_ctx *keys[3]; }; 
 
-typedef void (*cbc_crypt_func)(void *, uint32_t, uint8_t *, const uint8_t *);
+typedef void (*cbc_crypt_func)(const void *, uint32_t, uint8_t *, const uint8_t *);
 
 static void
 des_compat_des3_encrypt(struct des_compat_des3 *ctx,
@@ -59,9 +59,9 @@ des_compat_des3_decrypt(struct des_compat_des3 *ctx,
 }
 
 void
-des_ecb3_encrypt(des_cblock *src, des_cblock *dst,
-		 des_key_schedule k1, des_key_schedule k2,
-		 des_key_schedule k3, int enc)
+des_ecb3_encrypt(const des_cblock *src, des_cblock *dst,
+		 const des_key_schedule k1, const des_key_schedule k2,
+		 const des_key_schedule k3, int enc)
 {
   struct des_compat_des3 keys;
   keys.keys[0] = k1;
@@ -73,15 +73,15 @@ des_ecb3_encrypt(des_cblock *src, des_cblock *dst,
 }
 
 uint32_t
-des_cbc_cksum(des_cblock *src, des_cblock *dst,
-	      long length, des_key_schedule ctx,
-	      des_cblock *iv)
+des_cbc_cksum(const des_cblock *src, des_cblock *dst,
+	      long length, const des_key_schedule ctx,
+	      const des_cblock *iv)
 {
   /* FIXME: I'm not entirely sure how this function is supposed to
    * work, in particular what it should return, and if iv can be
    * modified. */
   uint8_t block[DES_BLOCK_SIZE];
-  uint8_t *p;
+  const uint8_t *p;
 
   memcpy(block, *iv, DES_BLOCK_SIZE);
   
@@ -98,8 +98,8 @@ des_cbc_cksum(des_cblock *src, des_cblock *dst,
 }
 
 void
-des_ncbc_encrypt(des_cblock *src, des_cblock *dst, long length,
-                 des_key_schedule ctx, des_cblock *iv,
+des_ncbc_encrypt(const des_cblock *src, des_cblock *dst, long length,
+                 const des_key_schedule ctx, des_cblock *iv,
                  int enc)
 {
   switch (enc)
@@ -121,8 +121,8 @@ des_ncbc_encrypt(des_cblock *src, des_cblock *dst, long length,
 }
 
 void
-des_cbc_encrypt(des_cblock *src, des_cblock *dst, long length,
-		des_key_schedule ctx, des_cblock *civ,
+des_cbc_encrypt(const des_cblock *src, des_cblock *dst, long length,
+		const des_key_schedule ctx, const des_cblock *civ,
 		int enc)
 {
   des_cblock iv;
@@ -134,8 +134,8 @@ des_cbc_encrypt(des_cblock *src, des_cblock *dst, long length,
 
 
 void
-des_ecb_encrypt(des_cblock *src, des_cblock *dst,
-		des_key_schedule ctx,
+des_ecb_encrypt(const des_cblock *src, des_cblock *dst,
+		const des_key_schedule ctx,
 		int enc)
 {
   ((enc == DES_ENCRYPT) ? nettle_des_encrypt : nettle_des_decrypt)
@@ -143,10 +143,10 @@ des_ecb_encrypt(des_cblock *src, des_cblock *dst,
 }
 
 void
-des_ede3_cbc_encrypt(des_cblock *src, des_cblock *dst, long length,
-		     des_key_schedule k1,
-		     des_key_schedule k2,
-		     des_key_schedule k3,
+des_ede3_cbc_encrypt(const des_cblock *src, des_cblock *dst, long length,
+		     const des_key_schedule k1,
+		     const des_key_schedule k2,
+		     const des_key_schedule k3,
 		     des_cblock *iv,
 		     int enc)
 {
@@ -192,13 +192,21 @@ des_set_odd_parity(des_cblock *key)
 int des_check_key = 0;
 
 int
-des_key_sched(des_cblock *key, des_key_schedule ctx)
+des_key_sched(const des_cblock *key, des_key_schedule ctx)
 {
-  if (!des_check_key)
-    /* Fix the parity */
-    des_set_odd_parity(key);
+  des_cblock nkey;
+  const uint8_t *pkey;
   
-  if (nettle_des_set_key(ctx, *key))
+  if (des_check_key)
+    pkey = *key;
+  else
+    {
+      /* Fix the parity */
+      nettle_des_fix_parity(DES_KEY_SIZE, nkey, *key);
+      pkey = nkey;
+    }
+  
+  if (nettle_des_set_key(ctx, pkey))
     return 0;
   else switch(ctx->status)
     {
@@ -222,7 +230,7 @@ des_key_sched(des_cblock *key, des_key_schedule ctx)
 }
 
 int
-des_is_weak_key(des_cblock *key)
+des_is_weak_key(const des_cblock *key)
 {
   struct des_ctx ctx;
 
