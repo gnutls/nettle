@@ -5,7 +5,7 @@
 # include "config.h"
 #endif
 
-#include <inttypes.h>
+#include "nettle-types.h"
 
 #include <string.h>
 #include <stdlib.h>
