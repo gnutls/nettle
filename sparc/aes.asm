@@ -22,9 +22,9 @@
 ! (see gcc/config/sparc.h). We should probably use only %g1-%g3 to be safe.
 	
 	! Used registers:	%l0,1,2,3,4,5,6,7
-	!			%i0,1,2,3,4 (%i6=%fp, %i7 = return)
-	!			%o0,1,2,3 (%o6=%sp)
-	!			%g2,3,4,5,6,7
+	!			%i0,1,2,3,4,5 (%i6=%fp, %i7 = return)
+	!			%o0,1,2,3,4,5,7 (%o6=%sp)
+	!			%g1,2,3,5
 	
 	.file	"aes.asm"
 	
@@ -50,13 +50,13 @@ define(nrounds, %l3)
 ! Loop variables
 define(round, %l4)
 define(i, %l5)
-define(key, %g7)
+define(key, %o4)
 
 ! Further loop invariants
 define(T0, %l6)
 define(T1, %l7)
 define(T2, %g5)
-define(T3, %g6)
+define(T3, %o7)
 define(IDX1, %i5)
 define(IDX3, %o5)
 
@@ -98,7 +98,7 @@ _aes_crypt:
 .Lblock_loop:
 	! For stop condition. Note that src is incremented in the
 	! delay slot
-	add	src, 8, %g4
+	add	src, 8, %g1
 	
 .Lsource_loop:
 	ldub	[src+3], t3
@@ -117,7 +117,7 @@ _aes_crypt:
 	or	t3, t0, t3
 	xor	t3, t2, t3
 	
-	cmp	src, %g4
+	cmp	src, %g1
 	st	t3, [src+%g3]
 	bleu	.Lsource_loop
 	add	src, 4, src
