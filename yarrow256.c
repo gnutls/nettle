@@ -307,20 +307,8 @@ yarrow256_update(struct yarrow256_ctx *ctx,
 	/* FIXME: This is somewhat inefficient. It would be better to
 	 * either maintain the count, or do this loop only if the
 	 * current source just crossed the threshold. */
-	unsigned k, i;
-	for (i = k = 0; i < ctx->nsources; i++)
-	  if (ctx->sources[i].estimate[YARROW_SLOW] >= YARROW_SLOW_THRESHOLD)
-	    k++;
-
-#if YARROW_DEBUG
-        fprintf(stderr,
-                "yarrow256_update:     source_index = %d,\n"
-                "                 slow pool estimate = %d,\n"
-                "  number of sources above threshold = %d\n",
-                source_index, source->estimate[YARROW_SLOW], k);
-#endif
         
-	if (k >= YARROW_SLOW_K)
+        if (!yarrow256_needed_sources(ctx))
 	  {
 	    yarrow_slow_reseed(ctx);
 	    ctx->seeded = 1;
@@ -367,4 +355,33 @@ yarrow256_random(struct yarrow256_ctx *ctx, unsigned length, uint8_t *dst)
       memcpy(dst, buffer, length);
     }
   yarrow_gate(ctx);
+}
+
+int
+yarrow256_is_seeded(struct yarrow256_ctx *ctx)
+{
+  return ctx->seeded;
+}
+
+unsigned
+yarrow256_needed_sources(struct yarrow256_ctx *ctx)
+{
+  /* FIXME: This is somewhat inefficient. It would be better to
+   * either maintain the count, or do this loop only if the
+   * current source just crossed the threshold. */
+  unsigned k, i;
+
+  for (i = k = 0; i < ctx->nsources; i++)
+    if (ctx->sources[i].estimate[YARROW_SLOW] >= YARROW_SLOW_THRESHOLD)
+      k++;
+
+#if YARROW_DEBUG
+  fprintf(stderr,
+          "yarrow256_needed_sources: source_index = %d,\n"
+          "                    slow pool estimate = %d,\n"
+          "     number of sources above threshold = %d\n",
+          source_index, source->estimate[YARROW_SLOW], k);
+#endif
+  
+  return (k < YARROW_SLOW_K) ? (YARROW_SLOW_K - k) : 0;
 }
