@@ -1,5 +1,8 @@
 2004-11-28  Niels Möller  <nisse@lysator.liu.se>
 
+	* tools/Makefile.in (nettle-lfib-stream): Avoid using $< in
+	non-suffix rule.
+
 	* Makefile.in (distdir): Handle absolute $distdir.
 	Avoid using the GNU extension $^.
 
