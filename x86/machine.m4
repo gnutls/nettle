@@ -50,10 +50,10 @@ define(<AES_ROUND>, <
 	andl	<$>0x000003fc,%esi
 	xorl	AES_TABLE3 + $1 (%esi),%edi>)dnl
 
-dnl AES_LAST_ROUND(a, b, c, d)
+dnl AES_FINAL_ROUND(a, b, c, d)
 dnl Computes one word of the final round. Leaves result in %edi.
 dnl Note that we have to quote $ in constants.
-define(<AES_LAST_ROUND>, <
+define(<AES_FINAL_ROUND>, <
 	C FIXME: Perform substitution on least significant byte here,
 	C to save work later.
 	movl	%e<>$1<>x,%edi

@@ -90,16 +90,16 @@ aes_decrypt:
 
 	C last round
 
-	AES_LAST_ROUND(a,b,c,d)
+	AES_FINAL_ROUND(a,b,c,d)
 	pushl	%edi
 
-	AES_LAST_ROUND(b,c,d,a)
+	AES_FINAL_ROUND(b,c,d,a)
 	pushl	%edi
 
-	AES_LAST_ROUND(c,d,a,b)
+	AES_FINAL_ROUND(c,d,a,b)
 	pushl	%edi
 
-	AES_LAST_ROUND(d,a,b,c)
+	AES_FINAL_ROUND(d,a,b,c)
 	
 	movl	%edi,%edx
 	popl	%ecx
