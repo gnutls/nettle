@@ -74,8 +74,8 @@ rsa_encrypt(const struct rsa_public_key *key,
     if (!em[i+1])
       em[i+1] = 1;
 
-  em[padding+1] = 0;  
-  memcpy(em + 2 + padding, message, length);
+  em[padding+1] = 0;
+  memcpy(em + padding + 2, message, length);
 
   nettle_mpz_set_str_256_u(gibbberish, key->size - 1, em);
   mpz_powm(gibbberish, gibbberish, key->e, key->n);
