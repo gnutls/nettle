@@ -27,7 +27,7 @@ nettle-lfib-stream: nettle-lfib-stream.$(OBJEXT) ../libnettle.a
 	$(LINK) $^ $(LIBS) -L.. -lnettle -o $@
 
 .c.$(OBJEXT):
-	$(COMPILE) -I.. -c $< && $(DEP_PROCESS)
+	$(COMPILE) -c $< && $(DEP_PROCESS)
 
 
 .PRECIOUS: Makefile
