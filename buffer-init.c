@@ -33,9 +33,5 @@
 void
 nettle_buffer_init(struct nettle_buffer *buffer)
 {
-  buffer->contents = NULL;
-  buffer->alloc = 0;
-  buffer->realloc = nettle_realloc;
-  buffer->realloc_ctx = NULL;
-  buffer->size = 0;
+  nettle_buffer_init_realloc(buffer, NULL, nettle_realloc);
 }
