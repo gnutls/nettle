@@ -143,6 +143,8 @@ main(int argc, char **argv)
       return EXIT_FAILURE;
     }
 
+  /* NOTE: This doesn't set up paranoid access restrictions on the
+   * private key file, like a serious key generation tool would do. */
   if (!write_file(priv_name, priv_buffer.size, priv_buffer.contents))
     {
       werror("Failed to write private key: %s\n",
