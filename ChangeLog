@@ -1,3 +1,10 @@
+2001-09-10  Niels Möller  <nisse@ehand.com>
+
+	* nettle.texinfo (Copyright): Added copyright information for
+	serpent.
+	(Miscellaneous functions): Started writing documentation on the CBC
+	functions.
+
 2001-09-09  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* testsuite/cbc-test.m4: Record intermediate values in a comment. 
