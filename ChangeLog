@@ -1,3 +1,8 @@
+2002-03-18  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* rsa-keygen.c (rsa_generate_keypair): Output a newline after a
+	non-empty line of 'e':s (bad e was chosen, try again).
+
 2002-03-16  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* configure.in (asm_path): AC_CONFIG_LINKS adds $srcdir
