@@ -1,5 +1,11 @@
 2002-05-14  Niels Möller  <niels@s3.kth.se>
 
+	* x86/aes-encrypt.asm (aes_encrypt): Move code here...
+	* x86/aes.asm: ...from here.	
+
+	* x86/aes.asm: Use addl and subl, not add and sub. Replaced
+	references to dtbl1-4 with references to _aes_encrypt_table.
+
 	* configure.ac (asm_path): Enable x86 assembler.
 
 	* x86/aes.asm (aes_decrypt): Adapted to the current interface.
