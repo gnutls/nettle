@@ -27,7 +27,6 @@
 #define NETTLE_YARROW_COMPAT_H_INCLUDED
 
 #include "aes.h"
-#include "des.h"
 #include "sha.h"
 
 enum yarrow_pool_id { YARROW_FAST = 0, YARROW_SLOW = 1 };
@@ -41,34 +40,8 @@ struct yarrow_source
   enum yarrow_pool_id next;
 };
 
-/* Yarrow-160, based on SHA1 and DES3 */
-struct yarrow160_ctx
-{
-  /* Indexed by yarrow_pool_id */
-  struct sha1_ctx pools[2];
 
-  int seeded;
-  
-  struct des3_ctx key;
-  
-  unsigned nsources;
-  struct yarrow_source *sources;
-};
-
-void
-yarrow160_init(struct yarrow160_ctx *ctx,
-	       unsigned nsources,
-	       struct yarrow_source *sources);
-
-void
-yarrow160_update(struct yarrow160_ctx *ctx,
-		 unsigned source, unsigned length, const uint8_t *data);
-
-void
-yarrow160_random(struct yarrow160_ctx *ctx, unsigned length, uint8_t dst);
-
-int
-yarrow160_seeded(struct yarrow160_ctx *ctx);
+#define YARROW256_SEED_FILE_SIZE (2 * AES_BLOCK_SIZE)
 
 /* Yarrow-256, based on SHA-256 and AES-256 */
 struct yarrow256_ctx
@@ -76,9 +49,11 @@ struct yarrow256_ctx
   /* Indexed by yarrow_pool_id */
   struct sha256_ctx pools[2];
 
+  uint8_t seed_file[YARROW256_SEED_FILE_SIZE];
+  
   int seeded;
 
-  /* The current key key and counter block */
+  /* The current key and counter block */
   struct aes_ctx key;
   uint8_t counter[AES_BLOCK_SIZE];
 
@@ -93,6 +68,12 @@ yarrow256_init(struct yarrow256_ctx *ctx,
 	       struct yarrow_source *sources);
 
 void
+yarrow256_seed(struct yarrow256_ctx *ctx,
+	       unsigned length,
+	       uint8_t *seed_file);
+
+/* Returns 1 on reseed */
+int
 yarrow256_update(struct yarrow256_ctx *ctx,
 		 unsigned source, unsigned entropy,
 		 unsigned length, const uint8_t *data);
@@ -102,6 +83,7 @@ yarrow256_random(struct yarrow256_ctx *ctx, unsigned length, uint8_t *dst);
 
 int
 yarrow256_seeded(struct yarrow256_ctx *ctx);
+
 
 /* Key event estimator */
 #define YARROW_KEY_EVENT_BUFFER 16
