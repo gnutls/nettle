@@ -58,6 +58,12 @@ test_hash(const struct nettle_hash *hash,
 	  const uint8_t *data,
 	  const uint8_t *digest);
 
+void
+test_armor(const struct nettle_armor *armor,
+           unsigned data_length,
+           const uint8_t *data,
+           const uint8_t *ascii);
+
 #if HAVE_LIBGMP
 void
 test_rsa_md5(struct rsa_public_key *pub,

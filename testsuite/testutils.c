@@ -222,6 +222,37 @@ test_hash(const struct nettle_hash *hash,
     FAIL();
 }
 
+void
+test_armor(const struct nettle_armor *armor,
+           unsigned data_length,
+           const uint8_t *data,
+           const uint8_t *ascii)
+{
+  uint8_t *buffer = alloca(1 + strlen(ascii));
+  uint8_t *check = alloca(1 + data_length);
+
+  memset(buffer, 0, 1 + strlen(ascii));
+  memset(check, 0, 1 + data_length);
+
+  if (strlen(ascii) != armor->encode(buffer, data_length, data))
+    FAIL();
+
+  if (!MEMEQ(strlen(ascii), buffer, ascii))
+    FAIL();
+
+  if (buffer[strlen(ascii)])
+    FAIL();  
+
+  if (data_length != armor->decode(check, strlen(ascii), buffer))
+    FAIL();
+
+  if (!MEMEQ(data_length, check, data))
+    FAIL();
+
+  if (check[data_length])
+    FAIL();
+}
+
 #if HAVE_LIBGMP
 #define SIGN(key, hash, msg, signature) do {	\
   hash##_update(&hash, LDATA(msg));		\
