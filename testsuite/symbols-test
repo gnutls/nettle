@@ -7,13 +7,15 @@ if [ -z "$srcdir" ] ; then
 fi
 
 # * nm on aix seems to generate bogus outbut including random binary
-#   data. Using -g is a workaround to get rid of that. Hope nm -g is
-#   portable enough.
-
+#   data. Using -g is a workaround to get rid of that. But nm -g
+#   doesn't work on Solaris-2.4, so try nm -g first, and plain nm if
+#   -g isn't recognized.
+#
 # * gcc on x86 generates functions like __i686.get_pc_thunk.bx in pic
 #   code.
 
-nm -g ../libnettle.a | grep ' [DRT] ' | egrep -v '( |^)\.?_?(_?nettle_|memxor)|get_pc_thunk' \
+( nm -g ../libnettle.a || nm ../libnettle.a ) \
+    | grep ' [DRT] ' | egrep -v '( |^)\.?_?(_?nettle_|memxor)|get_pc_thunk' \
     | sort -k3 > test1.out
 
 if [ -s test1.out ] ; then
