@@ -1,3 +1,21 @@
+2001-09-14  Niels Möller  <nisse@ehand.com>
+
+	* testsuite/des-compat-test.c: New file, copied from libdes
+	(freeswan). All implemented functions but des_cbc_cksum seems to
+	work now.
+
+	* testsuite/Makefile.am (TS_PROGS): Added des-compat-test.
+
+	* des-compat.c: Added libdes typedef:s. Had to remove all use of
+	const in the process.
+	(des_check_key): New global variable, checked by des_set_key.
+
+	* des.c (des_set_key): Go on and expand the key even if it is
+	weak.
+
+	* des-compat.c (des_cbc_cksum): Implemented.
+	(des_key_sched): Fixed return values.
+
 2001-09-11  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* Makefile.am: Added des-compat.c and des-compat.h
