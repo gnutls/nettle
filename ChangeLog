@@ -1,5 +1,7 @@
 2004-02-07  Niels Möller  <nisse@lysator.liu.se>
 
+	* Released nettle-1.9.
+
 	* configure.ac (SHLIBMINOR): Bumped, library version is now 2.1.
 
 	* testsuite/sexp-format-test.c: Include bignum.h only if HAVE_LIBGMP.
