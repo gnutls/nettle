@@ -11,7 +11,7 @@ uint8_t clear[TWOFISH_BLOCK_SIZE];
 /* 128 bit key */
 H(msg, "0000000000000000 0000000000000000");
 
-twofish_set_key(&ctx, 16, H("0000000000000000 0000000000000000"))
+twofish_set_key(&ctx, 16, H("0000000000000000 0000000000000000"));
 twofish_encrypt(&ctx, TWOFISH_BLOCK_SIZE, cipher, msg);
 
 if (!MEMEQ(TWOFISH_BLOCK_SIZE, cipher,
@@ -39,8 +39,6 @@ if (!MEMEQ(TWOFISH_BLOCK_SIZE, msg, clear))
 /* 256 bit key */
 twofish_set_key(&ctx, 32, H("0123456789ABCDEF FEDCBA9876543210"
 			    "0011223344556677 8899AABBCCDDEEFF"));
-  FAIL;
-
 twofish_encrypt(&ctx, TWOFISH_BLOCK_SIZE, cipher, msg);
 
 if (!MEMEQ(TWOFISH_BLOCK_SIZE, cipher,

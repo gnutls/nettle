@@ -11,5 +11,9 @@
 /des-test.c
 /md5-test
 /md5-test.c
+/serpent-test
+/serpent-test.c
 /sha1-test
 /sha1-test.c
+/twofish-test
+/twofish-test.c

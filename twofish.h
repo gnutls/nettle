@@ -46,7 +46,7 @@
 struct twofish_ctx
 {
   uint32_t keys[40];
-  uitn32_t s_box[4][256];
+  uint32_t s_box[4][256];
 };
 
 void

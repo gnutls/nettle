@@ -1,3 +1,52 @@
+2001-06-17  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* testsuite/serpent-test.m4: Added a few rudimentary tests
+	extracted from the serpent package.
+
+	* twofish.c: Adapted to nettle. Made constant tables const.
+	Deleted bytes_to_word and word_to_bytes; use LE_READ_UINT32 and
+	LE_WRITE_UINT32 instead.
+	(twofish_selftest): Deleted. Moved the tests to the external
+	testsuite. 
+	(twofish_set_key): Don't silently truncate too large keys. 
+
+	* sha1.c (sha1_update): Use unsigned for length.
+
+	* serpent.c (serpent_set_key): Read the key backwards. Fixed
+	padding (but there are no test vectors for key_size not a multiple
+	of 4).
+	(serpent_encrypt): Read and write data in the strange order used
+	by the reference implementation.
+	(serpent_decrypt): Likewise.
+
+	* macros.h (FOR_BLOCKS): New macro, taken from lsh.
+
+	* blowfish.h (struct blowfish_ctx): Use a two-dimensional array
+	for s.
+
+	* blowfish.c (initial_ctx): Arrange constants into a struct, to
+	simplify key setup.
+	(F): Deleted all but one definitions of the F function/macro.
+	Added a context argument, and use that to find the subkeys.
+	(R): Added context argument, and use that to find the subkeys.
+	(blowfish_set_key): Some simplification.
+
+	(encrypt): Deleted code for non-standard number of rounds. Deleted
+	a bunch of local variables. Using the context pointer for
+	everything should consume less registers.
+	(decrypt): Likewise.
+
+	* Makefile.am (libnettle_a_SOURCES): Added twofish.
+
+2001-06-16  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* testsuite/blowfish-test.m4: Fixed test.
+
+	* Added twofish implementation.
+
+	* blowfish.h (struct blowfish_ctx): Use the correct size for the p
+	array. 
+
 2001-06-15  Niels Möller  <nisse@ehand.com>
 
 	* testsuite/blowfish-test.m4: Fixed testcase, use correct key

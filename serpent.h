@@ -33,14 +33,14 @@
 
 #include <stdint.h>
 
-#define SERPENT_BLOCKSIZE 16
+#define SERPENT_BLOCK_SIZE 16
 
-/* Other key lengths are possible, but we only use 256 bits.  Besides, the
-   design of Serpent makes other key lengths useless; they cheated with the
-   AES requirements, using a 256-bit key length exclusively and just padding
-   it out if the desired key length was less, so there really is no advantage
-   to using key lengths less than 256 bits. */
-#define SERPENT_KEYSIZE 32
+/* Other key lengths are possible, but the design of Serpent makes
+ * smaller key lengths quite pointless; they cheated with the AES
+ * requirements, using a 256-bit key length exclusively and just
+ * padding it out if the desired key length was less, so there really
+ * is no advantage to using key lengths less than 256 bits. */
+#define SERPENT_KEY_SIZE 32
 
 /* Allow keys of size 128 <= bits <= 256 */
 
