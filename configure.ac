@@ -168,7 +168,30 @@ else
 fi
 AC_SUBST([CCPIC_MAYBE])
 
-LSH_MAKE_CONDITIONAL([ENABLE_ASM], [test x$enable_assembler = xyes])
+ASM_SYMBOL_PREFIX=''
+
+if test x$enable_assembler = xyes ; then
+  AC_CACHE_CHECK([if globals are prefixed by underscore],
+  nettle_cv_asm_underscore,
+  [ # Default is no underscore
+    nettle_cv_asm_underscore=no
+    AC_COMPILE_IFELSE(
+      [int a_global_symbol;],
+      [ nm conftest.$OBJEXT >conftest.out
+        if grep _a_global_symbol conftest.out >/dev/null ; then
+          nettle_cv_asm_underscore=yes
+        elif grep a_global_symbol conftest.out >/dev/null ; then
+          nettle_cv_asm_underscore=no
+        else
+          AC_MSG_WARN([nm doesn't list a_global_symbol at all])
+	fi],
+      [AC_MSG_WARN([test program with a single global could not be compiled!?])])])
+  if x$nettle_cv_asm_underscore=xyes ; then
+    ASM_SYMBOL_PREFIX='_'
+  fi 
+fi
+
+AC_SUBST(ASM_SYMBOL_PREFIX)
 
 AC_SUBST(SHLIBCFLAGS)
 AC_SUBST(SHLIBMAJOR)
