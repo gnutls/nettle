@@ -71,27 +71,24 @@ base64_encode(uint8_t *dst,
 
   if (left_over)
     {
+      in -= left_over;
+      *--out = '=';
       switch(left_over)
 	{
 	case 1:
-	  in--;
-	  *--out = '=';
 	  *--out = '=';
 	  *--out = ENCODE(in[0] << 4);
-	  *--out = ENCODE(in[0] >> 2);
 	  break;
 	  
 	case 2:
-	  in-= 2;
-	  *--out = '=';
 	  *--out = ENCODE( in[1] << 2);
 	  *--out = ENCODE((in[0] << 4) | (in[1] >> 4));
-	  *--out = ENCODE( in[0] >> 2);
 	  break;
 
 	default:
 	  abort();
 	}
+      *--out = ENCODE(in[0] >> 2);
     }
   
   while (in > src)
