@@ -61,9 +61,6 @@ yarrow256_init(struct yarrow256_ctx *ctx,
 
   ctx->seeded = 0;
 
-  /* Means that we have no buffered output */
-  ctx->index = sizeof(ctx->buffer);
-  
   ctx->nsources = n;
   ctx->sources = s;
 }
@@ -144,9 +141,6 @@ yarrow256_update(struct yarrow256_ctx *ctx,
 
   sha256_update(&ctx->pools[current], length, data);
  
-  /* FIXME: Use different counters for fast and slow poll? Or a total
-   * for fast poll, and individual for slow poll? */
-
   /* NOTE: We should be careful to avoid overflows in the estimates. */
   if (source->estimate[current] < YARROW_MAX_ENTROPY)
     {
@@ -215,30 +209,16 @@ yarrow_generate_block(struct yarrow256_ctx *ctx,
     }
 }
 
-/* FIXME: According to Niels Ferguson, it's better to gate after each
- * request for random data. */
 static void
-yarrow_generate_block_with_gate(struct yarrow256_ctx *ctx,
-				uint8_t *block)
+yarrow_gate(struct yarrow256_ctx *ctx)
 {
-  if (ctx->block_count < YARROW_GATE_THRESHOLD)
-    {
-      yarrow_generate_block(ctx, block);
-      ctx->block_count++;
-    }
-  else
-    {
-      uint8_t key[AES_MAX_KEY_SIZE];
-      unsigned i;
+  uint8_t key[AES_MAX_KEY_SIZE];
+  unsigned i;
 
-      for (i = 0; i < sizeof(key); i+= AES_BLOCK_SIZE)
-	yarrow_generate_block(ctx, key + i);
+  for (i = 0; i < sizeof(key); i+= AES_BLOCK_SIZE)
+    yarrow_generate_block(ctx, key + i);
 
-      aes_set_key(&ctx->key, sizeof(key), key);
-
-      yarrow_generate_block(ctx, block);
-      ctx->block_count = 1;
-    }
+  aes_set_key(&ctx->key, sizeof(key), key);
 }
 
 void
@@ -246,35 +226,19 @@ yarrow256_random(struct yarrow256_ctx *ctx, unsigned length, uint8_t *dst)
 {
   assert(ctx->seeded);
 
-  if (ctx->index < AES_BLOCK_SIZE)
-    {
-      unsigned left = AES_BLOCK_SIZE - ctx->index;
-
-      if (length <= left)
-	{
-	  memcpy(dst, ctx->buffer + ctx->index, length);
-	  ctx->index += length;
-	  return;
-	}
-
-      memcpy(dst, ctx->buffer + ctx->index, left);
-      dst += left;
-      length -= left;
-
-      assert(length);
-    }
-
   while (length > AES_BLOCK_SIZE)
     {
-      yarrow_generate_block_with_gate(ctx, dst);
+      yarrow_generate_block(ctx, dst);
       dst += AES_BLOCK_SIZE;
       length -= AES_BLOCK_SIZE;
     }
   if (length)
     {
+      uint8_t buffer[AES_BLOCK_SIZE];
+      
       assert(length < AES_BLOCK_SIZE);
-      yarrow_generate_block_with_gate(ctx, ctx->buffer);
-      memcpy(dst, ctx->buffer, length);
-      ctx->index = length;
+      yarrow_generate_block(ctx, buffer);
+      memcpy(dst, buffer, length);
     }
+  yarrow_gate(ctx);
 }
