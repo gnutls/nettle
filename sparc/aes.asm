@@ -15,7 +15,7 @@ include(`asm.m4')
 define(ctx, %i0)
 define(T, %i1)
 define(length, %i2)
-define(dst, %o3)
+define(dst, %i3)
 define(src, %o2)
 
 define(wtxt, %l2)
@@ -25,8 +25,7 @@ _aes_crypt:
 	save	%sp, -136, %sp
 
 ! Why this moving around of the input parameters?
-	! mov	%i2, length
-	mov	%i3, dst
+	!mov	%i3, dst
 	cmp	length, 0
 	be	.Lend
 	mov	%i4, src
@@ -74,15 +73,15 @@ _aes_crypt:
 	! or	%g3, %g2, %g2
 	! sll	%g2, 8, %g2
 	! 
-	! ld	[ctx+%i3], %g3
+	! ld	[ctx+%o3], %g3
 	! xor	%g3, %g2, %g2
 	! 
 	! add	src, 4, src
 	! st	%g2, [wtxt+%o4]
 	! 
-	! cmp	%i3, 8
+	! cmp	%o3, 8
 	! bleu	.Lsource_loop
-	! add	%i3, 4, %i3
+	! add	%o3, 4, %o3
 
 	ld	[ctx + AES_NROUNDS], %g2
 	mov	1, %g1
@@ -94,8 +93,8 @@ _aes_crypt:
 	! wtxt
 	mov	%l1, %g4
 
-	! 4*i:	%i3
-	mov	0, %i3
+	! 4*i:	%o3
+	mov	0, %o3
 .Lround_loop:
 	add	T, AES_SIDX3, %i4
 .Linner_loop:
@@ -113,7 +112,7 @@ _aes_crypt:
 	sll	%o0, 2, %o0
 	
 	! wtxt[j]
-	ld	[%g4+%i3], %o5
+	ld	[%g4+%o3], %o5
 	
 	! wtxt[IDX2...]
 	lduh	[%g4+%o4], %g3
@@ -142,17 +141,17 @@ _aes_crypt:
 	add	%i4, 4, %i4
 	
 	xor	%g2, %g3, %g2
-	st	%g2, [%l0+%i3]
+	st	%g2, [%l0+%o3]
 
-	cmp	%i3, 8
+	cmp	%o3, 8
 
 	bleu	.Linner_loop
-	add	%i3, 4, %i3
+	add	%o3, 4, %o3
 	
 	sll	%g1, 4, %g2
 	add	%g2, ctx, %o0
 	mov	0, %i5
-	mov	%l1, %i3
+	mov	%l1, %o3
 	mov	tmp, %o4
 .Lroundkey_loop:
 	sll	%i5, 2, %g2
@@ -161,13 +160,13 @@ _aes_crypt:
 	ld	[%o4+%g2], %g3
 	cmp	%i5, 3
 	xor	%g3, %o5, %g3
-	st	%g3, [%i3+%g2]
+	st	%g3, [%o3+%g2]
 	bleu	.Lroundkey_loop
 	add	%o0, 4, %o0
 	add	%g1, 1, %g1
 	cmp	%g1, %o7
 	blu	.Lround_loop
-	mov	0, %i3
+	mov	0, %o3
 
 	sll	%g1, 4, %g2
 	
@@ -181,7 +180,7 @@ _aes_crypt:
 	sll	%o1, 2, %i5
 	sll	%g2, 2, %g2
 	add	%g1, %g2, %g2
-	ldub	[%g2+2], %i3
+	ldub	[%g2+2], %o3
 	add	%i5, dst, %i4
 	ld	[%g4-16], %g3
 	add	%o1, 1, %o1
@@ -191,15 +190,15 @@ _aes_crypt:
 	and	%g2, 255, %g2
 	ld	[%g4], %o5
 	and	%o4, 255, %o4
-	ldub	[T+%i3], %o0
+	ldub	[T+%o3], %o0
 	sll	%o5, 2, %o5
 	ldub	[T+%g2], %g3
 	sll	%o0, 8, %o0
-	ldub	[%g1+%o5], %i3
+	ldub	[%g1+%o5], %o3
 	or	%g3, %o0, %g3
 	ldub	[T+%o4], %g2
 	cmp	%o1, 3
-	ldub	[T+%i3], %o5
+	ldub	[T+%o3], %o5
 	sll	%g2, 16, %g2
 	or	%g3, %g2, %g3
 	ld	[%o7], %g2
