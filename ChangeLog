@@ -1,5 +1,9 @@
 2003-09-19  Niels Möller  <niels@s3.kth.se>
 
+	* tools/nettle-lfib-stream.c: New tool, which outputs a sequence
+	of pseudorandom (non-cryptographic) bytes, using Knuth's lagged
+	fibonacci generator.
+
 	* examples/rsa-decrypt.c: Fixes to get the file to compile. It
 	won't work yet.
 
