@@ -1,3 +1,25 @@
+2002-05-15  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* aes-internal.h (struct aes_table): Renamed the shift_idx field
+	to sparc_idx, as it will be tweaked to improve the sparc code.
+	Also reduced its size to [2][4].
+	(IDX_FACTOR): Deleted constant.
+	* aes-encrypt-table.c (_aes_encrypt_table): Adapted initializer of
+	sparc_idx. 
+	* aes-decrypt-table.c (_aes_decrypt_table): Likewise.
+	* asm.m4: Deleted AES_SIDX2, to match struct aes_table.
+
+	* sparc/aes.asm (_aes_crypt): Unrolled the inner loop, preparing
+	for optimizations suggested by Marcus Comstedt.
+	(_aes_crypt): Eliminated i from the first copy of the inner loop.
+	(_aes_crypt): And from the second copy.
+	(_aes_crypt): And from the third copy.
+	(_aes_crypt): And from the fourth copy.
+	(_aes_crypt): Renamed .Linner_loop to .Lround_loop.
+	(_aes_crypt): Eliminated the loop variable i from the unrolled
+	loop. 
+	(_aes_crypt): Deleted moves of constants into t2.
+
 2002-05-15  Niels Möller  <niels@s3.kth.se>
 
 	* x86/aes-encrypt.asm (aes_encrypt): Use AES_SUBST_BYTE.
@@ -37,6 +59,12 @@
 	printouts of intermediate state.
 
 2002-05-15  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* sparc/aes.asm: (_aes_crypt): Restore %fp at end of function, to
+	make %fp available for other uses.
+
+	* sparc/aes.asm: The frame setup was broken. Tried to fix it.
+	Reverted to revision 1.70 + minor changes from the head revision.
 
 	* x86/aes-encrypt.asm (aes_encrypt): Use test instead of cmpl $0,.
 
