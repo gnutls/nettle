@@ -95,11 +95,11 @@ struct dsa_signature
  * Create the signature by calling
  *   dsa_sign
  *
- * The signature is represented as two mpz_t bignums. This call also
+ * The signature is represented as a struct dsa_signature. This call also
  * resets the hashing context.
  *
  * When done with the key and signature, don't forget to call
- * mpz_clear.
+ * dsa_signature_clear.
  */
 
 /* Calls mpz_init to initialize bignum storage. */
