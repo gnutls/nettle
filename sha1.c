@@ -260,7 +260,7 @@ sha1_block(struct sha1_ctx *ctx, const uint8_t *block)
 
 void
 sha1_update(struct sha1_ctx *ctx,
-	    uint32_t length, const uint8_t *buffer)
+	    unsigned length, const uint8_t *buffer)
 {
   if (ctx->index)
     { /* Try to fill partial block */
