@@ -52,17 +52,18 @@ werror(const char *format, ...)
 #define MIN(a,b) (((a) < (b)) ? (a) : (b))
 
 unsigned
-read_file(const char *name, unsigned max_size, char **buffer)
+read_file(const char *name, unsigned max_size, char **contents)
 {
   unsigned size;
   unsigned done;
+  char *buffer;
   FILE *f;
     
   f = fopen(name, "rb");
   if (!f)
     return 0;
 
-  *buffer = NULL;
+  buffer = NULL;
 
   if (max_size && max_size < 100)
     size = max_size;
@@ -75,22 +76,22 @@ read_file(const char *name, unsigned max_size, char **buffer)
     {
       char *p;
 
-      if (size > max_size)
+      if (max_size && size > max_size)
 	size = max_size;
 
       /* Space for terminating NUL */
-      p = realloc(*buffer, size + 1);
+      p = realloc(buffer, size + 1);
 
       if (!p)
 	{
 	fail:
 	  fclose(f);
-	  free(*buffer);
-	  *buffer = NULL;
+	  free(buffer);
+	  *contents = NULL;
 	  return 0;
 	}
 
-      *buffer = p;
+      buffer = p;
       done += fread(buffer + done, 1, size - done, f);
 
       if (ferror(f))
@@ -100,7 +101,9 @@ read_file(const char *name, unsigned max_size, char **buffer)
   fclose(f);
 
   /* NUL-terminate the data. */
-  (*buffer)[done] = '\0';
+  buffer[done] = '\0';
+  *contents = buffer;
+  
   return done;
 }
 
