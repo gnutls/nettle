@@ -46,6 +46,9 @@ md5_transform(uint32_t *digest, const uint32_t *data);
 static void
 md5_block(struct md5_ctx *ctx, const uint8_t *block);
 
+static void
+md5_final(struct md5_ctx *ctx);
+
 void
 md5_init(struct md5_ctx *ctx)
 {
@@ -92,53 +95,6 @@ md5_update(struct md5_ctx *ctx,
     memcpy(ctx->block, data, length);
 }
 
-/* Final wrapup - pad to MD5_DATA_SIZE-byte boundary with the bit
- * pattern 1 0* (64-bit count of bits processed, LSB-first) */
-
-static void
-md5_final(struct md5_ctx *ctx)
-{
-  uint32_t data[MD5_DATA_LENGTH];
-  unsigned i;
-  unsigned words;
-  
-  i = ctx->index;
-
-  /* Set the first char of padding to 0x80. This is safe since there
-   * is always at least one byte free */
-  assert(i < MD5_DATA_SIZE);
-  ctx->block[i++] = 0x80;
-
-  /* Fill rest of word */
-  for( ; i & 3; i++)
-    ctx->block[i] = 0;
-
-  /* i is now a multiple of the word size 4 */
-  words = i >> 2;
-  for (i = 0; i < words; i++)
-    data[i] = LE_READ_UINT32(ctx->block + 4*i);
-  
-  if (words > (MD5_DATA_LENGTH-2))
-    { /* No room for length in this block. Process it and
-       * pad with another one */
-      for (i = words ; i < MD5_DATA_LENGTH; i++)
-	data[i] = 0;
-      md5_transform(ctx->digest, data);
-      for (i = 0; i < (MD5_DATA_LENGTH-2); i++)
-	data[i] = 0;
-    }
-  else
-    for (i = words ; i < MD5_DATA_LENGTH - 2; i++)
-      data[i] = 0;
-  
-  /* There are 512 = 2^9 bits in one block 
-   * Little-endian order => Least significant word first */
-
-  data[MD5_DATA_LENGTH-1] = (ctx->count_h << 9) | (ctx->count_l >> 23);
-  data[MD5_DATA_LENGTH-2] = (ctx->count_l << 9) | (ctx->index << 3);
-  md5_transform(ctx->digest, data);
-}
-
 void
 md5_digest(struct md5_ctx *ctx,
 	   unsigned length,
@@ -175,10 +131,10 @@ md5_digest(struct md5_ctx *ctx,
 }
 
 /* MD5 functions */
-#define F1(x, y, z) (z ^ (x & (y ^ z)))
-#define F2(x, y, z) F1(z, x, y)
-#define F3(x, y, z) (x ^ y ^ z)
-#define F4(x, y, z) (y ^ (x | ~z))
+#define F1(x, y, z) ((z) ^ ((x) & ((y) ^ (z))))
+#define F2(x, y, z) F1((z), (x), (y))
+#define F3(x, y, z) ((x) ^ (y) ^ (z))
+#define F4(x, y, z) ((y) ^ ((x) | ~(z)))
 
 #define ROUND(f, w, x, y, z, data, s) \
 ( w += f(x, y, z) + data,  w = w<<s | w>>(32-s),  w += x )
@@ -286,5 +242,52 @@ md5_block(struct md5_ctx *ctx, const uint8_t *block)
   for (i = 0; i<16; i++, block += 4)
     data[i] = LE_READ_UINT32(block);
 
+  md5_transform(ctx->digest, data);
+}
+
+/* Final wrapup - pad to MD5_DATA_SIZE-byte boundary with the bit
+ * pattern 1 0* (64-bit count of bits processed, LSB-first) */
+
+static void
+md5_final(struct md5_ctx *ctx)
+{
+  uint32_t data[MD5_DATA_LENGTH];
+  unsigned i;
+  unsigned words;
+  
+  i = ctx->index;
+
+  /* Set the first char of padding to 0x80. This is safe since there
+   * is always at least one byte free */
+  assert(i < MD5_DATA_SIZE);
+  ctx->block[i++] = 0x80;
+
+  /* Fill rest of word */
+  for( ; i & 3; i++)
+    ctx->block[i] = 0;
+
+  /* i is now a multiple of the word size 4 */
+  words = i >> 2;
+  for (i = 0; i < words; i++)
+    data[i] = LE_READ_UINT32(ctx->block + 4*i);
+  
+  if (words > (MD5_DATA_LENGTH-2))
+    { /* No room for length in this block. Process it and
+       * pad with another one */
+      for (i = words ; i < MD5_DATA_LENGTH; i++)
+	data[i] = 0;
+      md5_transform(ctx->digest, data);
+      for (i = 0; i < (MD5_DATA_LENGTH-2); i++)
+	data[i] = 0;
+    }
+  else
+    for (i = words ; i < MD5_DATA_LENGTH - 2; i++)
+      data[i] = 0;
+  
+  /* There are 512 = 2^9 bits in one block 
+   * Little-endian order => Least significant word first */
+
+  data[MD5_DATA_LENGTH-1] = (ctx->count_h << 9) | (ctx->count_l >> 23);
+  data[MD5_DATA_LENGTH-2] = (ctx->count_l << 9) | (ctx->index << 3);
   md5_transform(ctx->digest, data);
 }
