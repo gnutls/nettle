@@ -28,8 +28,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* Initializes the iterator. You have to call next to get to the first
- * element. */
+/* Initializes the iterator, but one has to call next to get to the
+ * first element. */
 static void
 sexp_iterator_init(struct sexp_iterator *iterator,
 		   unsigned length, const uint8_t *input)
@@ -38,7 +38,7 @@ sexp_iterator_init(struct sexp_iterator *iterator,
   iterator->buffer = input;
   iterator->pos = 0;
   iterator->level = 0;
-  iterator->type = SEXP_START;
+  iterator->type = SEXP_END; /* Value doesn't matter */
   iterator->display_length = 0;
   iterator->display = NULL;
   iterator->atom_length = 0;
@@ -46,14 +46,6 @@ sexp_iterator_init(struct sexp_iterator *iterator,
 
   /* FIXME: For other than canonical syntax,
    * skip white space here. */
-}
-
-int
-sexp_iterator_first(struct sexp_iterator *iterator,
-		    unsigned length, const uint8_t *input)
-{
-  sexp_iterator_init(iterator, length, input);
-  return sexp_iterator_next(iterator);
 }
 
 #define EMPTY(i) ((i)->pos == (i)->length)
@@ -100,12 +92,13 @@ sexp_iterator_simple(struct sexp_iterator *iterator,
 }
 
 /* All these functions return 1 on success, 0 on failure */
-int
-sexp_iterator_next(struct sexp_iterator *iterator)
+
+/* Look at the current position in the data. Sets iterator->type, and
+ * ignores the old value. */
+
+static int
+sexp_iterator_parse(struct sexp_iterator *iterator)
 {
-  if (iterator->type == SEXP_END)
-    return 1;
-  
   if (EMPTY(iterator))
     {
       if (iterator->level)
@@ -117,18 +110,15 @@ sexp_iterator_next(struct sexp_iterator *iterator)
   switch (iterator->buffer[iterator->pos])
     {
     case '(': /* A list */
-      if (iterator->type == SEXP_LIST)
-	/* Skip this list */
-	return sexp_iterator_enter_list(iterator)
-	  && sexp_iterator_exit_list(iterator);
-      else
-	{
-	  iterator->type = SEXP_LIST;
-	  return 1;
-	}
+      iterator->type = SEXP_LIST;
+      return 1;
+
     case ')':
+      if (!iterator->level)
+	return 0;
+      
       iterator->pos++;
-      iterator->type = SEXP_END;
+      iterator->type = SEXP_END;      
       return 1;
       
     case '[': /* Atom with display type */
@@ -158,6 +148,32 @@ sexp_iterator_next(struct sexp_iterator *iterator)
 			      &iterator->atom);
 }
 
+int
+sexp_iterator_first(struct sexp_iterator *iterator,
+		    unsigned length, const uint8_t *input)
+{
+  sexp_iterator_init(iterator, length, input);
+  return sexp_iterator_parse(iterator);
+}
+
+int
+sexp_iterator_next(struct sexp_iterator *iterator)
+{
+  switch (iterator->type)
+    {
+    case SEXP_END:
+      return 1;
+    case SEXP_LIST:
+      /* Skip this list */
+      return sexp_iterator_enter_list(iterator)
+	&& sexp_iterator_exit_list(iterator);
+    case SEXP_ATOM:
+      /* iterator->pos should already point at the start of the next
+       * element. */
+      return sexp_iterator_parse(iterator);
+    }
+}
+
 /* Current element must be a list. */
 int
 sexp_iterator_enter_list(struct sexp_iterator *iterator)
@@ -170,9 +186,8 @@ sexp_iterator_enter_list(struct sexp_iterator *iterator)
     abort();
 
   iterator->level++;
-  iterator->type = SEXP_START;
-  
-  return sexp_iterator_next(iterator);
+
+  return sexp_iterator_parse(iterator);
 }
 
 /* Skips the rest of the current list */
@@ -186,10 +201,9 @@ sexp_iterator_exit_list(struct sexp_iterator *iterator)
     if (!sexp_iterator_next(iterator))
       return 0;
       
-  iterator->type = SEXP_START;	  
   iterator->level--;
 
-  return sexp_iterator_next(iterator);
+  return sexp_iterator_parse(iterator);
 }
 
 int
@@ -222,7 +236,6 @@ sexp_iterator_check_types(struct sexp_iterator *iterator,
     }
   return NULL;
 }
-		   
 
 int
 sexp_iterator_assoc(struct sexp_iterator *iterator,
@@ -246,7 +259,9 @@ sexp_iterator_assoc(struct sexp_iterator *iterator,
 	{
 	case SEXP_LIST:
 
-	  /* FIXME: Use sexp_iterator_check_type? */
+	  /* FIXME: Use sexp_iterator_check_type? Problem is to
+	   * distinguish syntax errors from unkown keys (which we want
+	   * to just ignore). */
 	  if (!sexp_iterator_enter_list(iterator))
 	    return 0;
 	  
