@@ -22,26 +22,12 @@
  * MA 02111-1307, USA.
  */
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif /* HAVE_CONFIG_H */
-
-#if !WITH_PUBLIC_KEY
-int
-main(int argc, char **argv)
-{
-  fprintf(stderr,
-	  "You need to install GMP somewhere where Nettle can find it,\n"
-	  "and recompile Nettle\n");
-  return EXIT_FAILURE;
-}
-#else /* WITH_PUBLIC_KEY */
-
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
+/* string.h must be included before gmp.h */
 #include "rsa.h"
 #include "io.h"
 
@@ -54,7 +40,7 @@ main(int argc, char **argv)
   
   if (argc != 2)
     {
-      fprintf(stderr, "Usage: rsa-sign PRIVATE-KEY < file\n");
+      werror("Usage: rsa-sign PRIVATE-KEY < file\n");
       return EXIT_FAILURE;
     }
 
@@ -62,14 +48,14 @@ main(int argc, char **argv)
   
   if (!read_rsa_key(argv[1], NULL, &key))
     {
-      fprintf(stderr, "Invalid key\n");
+      werror("Invalid key\n");
       return EXIT_FAILURE;
     }
 
   sha1_init(&hash);
   if (!hash_file(&nettle_sha1, &hash, stdin))
     {
-      fprintf(stderr, "Failed reading stdin: %s\n",
+      werror("Failed reading stdin: %s\n",
 	      strerror(errno));
       return 0;
     }
@@ -79,7 +65,7 @@ main(int argc, char **argv)
 
   if (!mpz_out_str(stdout, 16, s))
     {
-      fprintf(stderr, "Failed writing signature: %s\n",
+      werror("Failed writing signature: %s\n",
 	      strerror(errno));
       return 0;
     }
@@ -91,4 +77,3 @@ main(int argc, char **argv)
 
   return EXIT_SUCCESS;
 }
-#endif /* WITH_PUBLIC_KEY */

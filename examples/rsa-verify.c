@@ -22,28 +22,14 @@
  * MA 02111-1307, USA.
  */
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif /* HAVE_CONFIG_H */
 
-#if !WITH_PUBLIC_KEY
-int
-main(int argc, char **argv)
-{
-  fprintf(stderr,
-	  "You need to install GMP somewhere where Nettle can find it,\n"
-	  "and recompile Nettle\n");
-  return EXIT_FAILURE;
-}
-#else /* WITH_PUBLIC_KEY */
+#include "rsa.h"
+#include "io.h"
 
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
-#include "rsa.h"
-#include "io.h"
 
 static int
 read_signature(const char *name, mpz_t s)
@@ -71,7 +57,7 @@ main(int argc, char **argv)
   
   if (argc != 3)
     {
-      fprintf(stderr, "Usage: rsa-sign PUBLIC-KEY SIGNATURE-FILE < file\n");
+      werror("Usage: rsa-sign PUBLIC-KEY SIGNATURE-FILE < file\n");
       return EXIT_FAILURE;
     }
 
@@ -79,7 +65,7 @@ main(int argc, char **argv)
   
   if (!read_rsa_key(argv[1], &key, NULL))
     {
-      fprintf(stderr, "Invalid key\n");
+      werror("Invalid key\n");
       return EXIT_FAILURE;
     }
 
@@ -87,7 +73,7 @@ main(int argc, char **argv)
 
   if (!read_signature(argv[2], s))
     {
-      fprintf(stderr, "Failed to read signature file `%s'\n",
+      werror("Failed to read signature file `%s'\n",
 	      argv[2]);
       return EXIT_FAILURE;
     }
@@ -95,14 +81,14 @@ main(int argc, char **argv)
   sha1_init(&hash);
   if (!hash_file(&nettle_sha1, &hash, stdin))
     {
-      fprintf(stderr, "Failed reading stdin: %s\n",
+      werror("Failed reading stdin: %s\n",
 	      strerror(errno));
       return 0;
     }
 
   if (!rsa_sha1_verify(&key, &hash, s))
     {
-      fprintf(stderr, "Invalid signature!\n");
+      werror("Invalid signature!\n");
       return EXIT_FAILURE;
     }
     
@@ -111,4 +97,3 @@ main(int argc, char **argv)
 
   return EXIT_SUCCESS;
 }
-#endif /* WITH_PUBLIC_KEY */
