@@ -214,100 +214,103 @@ C 	xor	t0, t1, t0
 C 	st	t0, [tmp]
 
 	C i = 1
-	ld	[IDX1+4], t1		! 1
-	
-	ldub	[wtxt+t1], t1		! 1
-	ld	[IDX3+4], t3		! 3
-	
-	sll	t1, 2, t1		! 1
-	ld	[wtxt+4], t0		! 0
-	! IDX2(j) = j XOR 2
-	lduh	[wtxt+12], t2		! 2
-	and	t0, 255, t0		! 0
-	
-	ldub	[wtxt+t3], t3		! 3
-	sll	t0, 2, t0		! 0
-	ld	[T0+t0], t0		! 0
-	and	t2, 255, t2		! 2
-	
-	ld	[T1+t1], t1		! 1
-	sll	t2, 2, t2		! 2
-	ld	[T2+t2], t2		! 2
-	sll	t3, 2, t3		! 3
-	
-	ld	[T3+t3], t3		! 3
-	xor	t0, t1, t0		! 0, 1
-	xor	t0, t2, t0		! 0, 1, 2
-	! Fetch roundkey
-	ld	[key+4], t1
-	
-	xor	t0, t3, t0		! 0, 1, 2, 3
-	xor	t0, t1, t0
-	st	t0, [tmp+4]
+	AES_ROUND(4)
+C 	ld	[IDX1+4], t1		! 1
+C 	
+C 	ldub	[wtxt+t1], t1		! 1
+C 	ld	[IDX3+4], t3		! 3
+C 	
+C 	sll	t1, 2, t1		! 1
+C 	ld	[wtxt+4], t0		! 0
+C 	! IDX2(j) = j XOR 2
+C 	lduh	[wtxt+12], t2		! 2
+C 	and	t0, 255, t0		! 0
+C 	
+C 	ldub	[wtxt+t3], t3		! 3
+C 	sll	t0, 2, t0		! 0
+C 	ld	[T0+t0], t0		! 0
+C 	and	t2, 255, t2		! 2
+C 	
+C 	ld	[T1+t1], t1		! 1
+C 	sll	t2, 2, t2		! 2
+C 	ld	[T2+t2], t2		! 2
+C 	sll	t3, 2, t3		! 3
+C 	
+C 	ld	[T3+t3], t3		! 3
+C 	xor	t0, t1, t0		! 0, 1
+C 	xor	t0, t2, t0		! 0, 1, 2
+C 	! Fetch roundkey
+C 	ld	[key+4], t1
+C 	
+C 	xor	t0, t3, t0		! 0, 1, 2, 3
+C 	xor	t0, t1, t0
+C 	st	t0, [tmp+4]
 
 	C = 2
-	ld	[IDX1+8], t1		! 1
-	
-	ldub	[wtxt+t1], t1		! 1
-	ld	[IDX3+8], t3		! 3
-	
-	sll	t1, 2, t1		! 1
-	ld	[wtxt+8], t0		! 0
-	! IDX2(j) = j XOR 2
-	lduh	[wtxt], t2		! 2
-	and	t0, 255, t0		! 0
-	
-	ldub	[wtxt+t3], t3		! 3
-	sll	t0, 2, t0		! 0
-	ld	[T0+t0], t0		! 0
-	and	t2, 255, t2		! 2
-	
-	ld	[T1+t1], t1		! 1
-	sll	t2, 2, t2		! 2
-	ld	[T2+t2], t2		! 2
-	sll	t3, 2, t3		! 3
-	
-	ld	[T3+t3], t3		! 3
-	xor	t0, t1, t0		! 0, 1
-	xor	t0, t2, t0		! 0, 1, 2
-	! Fetch roundkey
-	ld	[key+8], t1
-	
-	xor	t0, t3, t0		! 0, 1, 2, 3
-	xor	t0, t1, t0
-	st	t0, [tmp+8]
+	AES_ROUND(8)
+C 	ld	[IDX1+8], t1		! 1
+C 	
+C 	ldub	[wtxt+t1], t1		! 1
+C 	ld	[IDX3+8], t3		! 3
+C 	
+C 	sll	t1, 2, t1		! 1
+C 	ld	[wtxt+8], t0		! 0
+C 	! IDX2(j) = j XOR 2
+C 	lduh	[wtxt], t2		! 2
+C 	and	t0, 255, t0		! 0
+C 	
+C 	ldub	[wtxt+t3], t3		! 3
+C 	sll	t0, 2, t0		! 0
+C 	ld	[T0+t0], t0		! 0
+C 	and	t2, 255, t2		! 2
+C 	
+C 	ld	[T1+t1], t1		! 1
+C 	sll	t2, 2, t2		! 2
+C 	ld	[T2+t2], t2		! 2
+C 	sll	t3, 2, t3		! 3
+C 	
+C 	ld	[T3+t3], t3		! 3
+C 	xor	t0, t1, t0		! 0, 1
+C 	xor	t0, t2, t0		! 0, 1, 2
+C 	! Fetch roundkey
+C 	ld	[key+8], t1
+C 	
+C 	xor	t0, t3, t0		! 0, 1, 2, 3
+C 	xor	t0, t1, t0
+C 	st	t0, [tmp+8]
 
 	C = 3
-	ld	[IDX1+12], t1		! 1
-	
-	ldub	[wtxt+t1], t1		! 1
-	ld	[IDX3+12], t3		! 3
-	
-	sll	t1, 2, t1		! 1
-	ld	[wtxt+12], t0		! 0
-	! IDX2(j) = j XOR 2
-	lduh	[wtxt+4], t2		! 2
-	and	t0, 255, t0		! 0
-	
-	ldub	[wtxt+t3], t3		! 3
-	sll	t0, 2, t0		! 0
-	ld	[T0+t0], t0		! 0
-	and	t2, 255, t2		! 2
-	
-	ld	[T1+t1], t1		! 1
-	sll	t2, 2, t2		! 2
-	ld	[T2+t2], t2		! 2
-	sll	t3, 2, t3		! 3
-	
-	ld	[T3+t3], t3		! 3
-	xor	t0, t1, t0		! 0, 1
-	xor	t0, t2, t0		! 0, 1, 2
-	! Fetch roundkey
-	ld	[key+12], t1
-	
-	xor	t0, t3, t0		! 0, 1, 2, 3
-	xor	t0, t1, t0
-	st	t0, [tmp+12]
+	AES_ROUND(12)
+C 	ld	[IDX1+12], t1		! 1
+C 	
+C 	ldub	[wtxt+t1], t1		! 1
+C 	ld	[IDX3+12], t3		! 3
+C 	
+C 	sll	t1, 2, t1		! 1
+C 	ld	[wtxt+12], t0		! 0
+C 	! IDX2(j) = j XOR 2
+C 	lduh	[wtxt+4], t2		! 2
+C 	and	t0, 255, t0		! 0
+C 	
+C 	ldub	[wtxt+t3], t3		! 3
+C 	sll	t0, 2, t0		! 0
+C 	ld	[T0+t0], t0		! 0
+C 	and	t2, 255, t2		! 2
+C 	
+C 	ld	[T1+t1], t1		! 1
+C 	sll	t2, 2, t2		! 2
+C 	ld	[T2+t2], t2		! 2
+C 	sll	t3, 2, t3		! 3
+C 	
+C 	ld	[T3+t3], t3		! 3
+C 	xor	t0, t1, t0		! 0, 1
+C 	xor	t0, t2, t0		! 0, 1, 2
+C 	! Fetch roundkey
+C 	ld	[key+12], t1
+C 	
+C 	xor	t0, t3, t0		! 0, 1, 2, 3
+C 	xor	t0, t1, t0
+C 	st	t0, [tmp+12]
 			
 	C Unrolled inner loop ends
 	
