@@ -1,3 +1,9 @@
+2001-09-02  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* twofish.c (twofish_decrypt): Fixed for();-bug in the block-loop.
+	Spotted by Jean-Pierre.
+	(twofish_encrypt): Likewise.
+
 2001-07-03  Niels Möller  <nisse@ehand.com>
 
 	* testsuite/testutils.c: Include string.h.
