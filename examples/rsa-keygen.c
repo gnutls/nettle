@@ -106,7 +106,7 @@ main(int argc, char **argv)
 
   int c;
   char *pub_name = NULL;
-  char *priv_name = NULL;;
+  char *priv_name = NULL;
   struct stat sbuf;
   
   struct nettle_buffer pub_buffer;
