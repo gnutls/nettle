@@ -51,30 +51,8 @@ check: $(TS_ALL) $(srcdir)/run-tests
 	  $(srcdir)/run-tests $(TS_ALL)
 
 
-.PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in ../config.status
 	cd .. && $(SHELL) ./config.status testsuite/$@
-
-../config.make: $(top_srcdir)/config.make.in ../config.status
-	cd .. && $(SHELL) ./config.status config.make
-
-../config.status: $(top_srcdir)/configure
-	cd .. && $(SHELL) ./config.status --recheck
-
-../configure: $(top_srcdir)/configure.ac $(top_srcdir)/aclocal.m4
-	cd $(top_srcdir) && $(AUTOCONF)
-
-# # FIXME: To we really need all this in all subdirs?
-# ../config.h: ../stamp-h1
-# 	@cd .. $(MAKE) stamp-h1;
-# 
-# ../stamp-h1: $(top_srcdir)/config.h.in ../config.status
-# 	cd .. && $(MAKE) stamp-h1
-# 
-# $(top_srcdir)/config.h.in: $(top_srcdir)/configure.ac
-# 	cd $(top_srcdir) && $(AUTOHEADER)
-# 	rm -f ../stamp-h1
-# 	touch $@
 
 install uninstall:
 	true
