@@ -71,20 +71,19 @@ define(<AES_LOAD>, <
 	ldub	[src+$1+2], t2
 	sll	t1, 8, t1
 	or	t0, t1, t0	
-	ldub	[src+$1+3], t3
-	sll	t3, 24, t3
+	ldub	[src+$1+3], t1
+	sll	t1, 24, t1
 	
 	sll	t2, 16, t2
-	or	t3, t2, t3
+	or	t1, t2, t1
 
 	
 	! Get subkey
 	ld	[ctx + $1], t2
-	C or	t3, t1, t3
-	or	t3, t0, t3
-	xor	t3, t2, t3
+	or	t1, t0, t0
+	xor	t0, t2, t0
 	
-	st	t3, [wtxt+$1]
+	st	t0, [wtxt+$1]
 	C add	src, 4, src
 	
 	C ldub	[src + $1], t0
