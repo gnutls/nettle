@@ -1,3 +1,14 @@
+2004-10-26  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86/arcfour-crypt.asm: Use movzbl when extending %cl to 32 bits.
+
+2004-10-24  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86/arcfour-crypt.asm: Reverted the latest two changes; update
+	bost src and dst pointers in the loop, and use plain addb when
+	updating j. These two previous changes slowed the code down on AMD
+	Duron. 
+
 2004-10-21  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in (install-shared): Use $(INSTALL_PROGRAM).

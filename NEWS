@@ -24,12 +24,13 @@ NEWS for the 1.11 release
 	Stricter constness typing for the sexp_iterator_assoc and
 	sexp_iterator_check_types arguments.
 
-	Speedup of arcfour on older x86 cpu:s, in particular PII and
-	PPro.
+	Minor tweaks of arcfour on x86 cpu:s, to speed it up on older
+	x86 variants such as PII and PPro.
 
 	The shared library is intended to be binary compatible with
 	nettle-1.8 - nettle-1.10. Only the minor version number of the
-	shared library is increased.
+	shared library is increased. The soname is still
+	libnettle.so.2.
 
 NEWS for the 1.10 release
 
