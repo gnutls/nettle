@@ -1,4 +1,4 @@
-AM_CFLAGS = -I$(top_srcdir)
+AM_CPPFLAGS = -I$(top_srcdir)
 
 # We need .. to be searched before standard places, in order to pick
 # up the newly built libnettle.a/libnettle.so, rather than any
