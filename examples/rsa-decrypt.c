@@ -103,56 +103,83 @@ struct process_ctx
   struct yarrow256_ctx yarrow;
 };
 
+#define BUF_SIZE (100 * AES_BLOCK_SIZE)
+
+/* Trailing data that needs special processing */
+#define BUF_FINAL (AES_BLOCK_SIZE + SHA1_DIGEST_SIZE)
+
 static int
 process_file(struct rsa_session *ctx,
 	     FILE *in, FILE *out)
 {
-  uint8_t buffer[AES_BLOCK_SIZE * 100];
-  unsigned leftover;
+  uint8_t buffer[BUF_SIZE + BUF_FINAL];
+  uint8_t digest[SHA1_DIGEST_SIZE];
+  size_t size;
   unsigned padding;
 
-  /* FIXME: Cut'n'paste code, not working yet */
-  abort();
-  for (padding = leftover = 0; padding == 0;)
+  size = fread(buffer, 1, BUF_FINAL, in);
+  if (size < BUF_FINAL || ferror(in))
     {
-      size_t size = fread(buffer, 1, sizeof(buffer), in);
+      werror("Reading input failed: %s\n", strerror(errno));
+      return 0;
+    }
+
+  do
+    {
+      size = fread(buffer + BUF_FINAL, 1, BUF_SIZE, in);
+
       if (ferror(in))
 	{
 	  werror("Reading input failed: %s\n", strerror(errno));
 	  return 0;
 	}
 
-      hmac_sha1_update(&ctx->hmac, size, buffer);
-      if (size < sizeof(buffer))
+      if (size % AES_BLOCK_SIZE != 0)
 	{
-	  /* Setting padding != ends the loop */
-	  leftover = size % AES_BLOCK_SIZE;
-	  padding = AES_BLOCK_SIZE - leftover;
-	  size -= leftover;
-
-	  if (!size)
-	    break;
+	  werror("Unexpected EOF on input.\n");
+	  return 0;
 	}
 
-      CBC_DECRYPT(&ctx->aes, aes_encrypt, size, buffer, buffer);
-      if (!write_string(out, size, buffer))
+      if (size)
+	{
+	  CBC_DECRYPT(&ctx->aes, aes_decrypt, size, buffer, buffer);
+	  hmac_sha1_update(&ctx->hmac, size, buffer);
+	  if (!write_string(out, size, buffer))
+	    {
+	      werror("Writing output failed: %s\n", strerror(errno));
+	      return 0;
+	    }
+	  memmove(buffer, buffer + size, BUF_FINAL);
+	}
+    }
+  while (size == BUF_SIZE);
+
+  /* Decrypt final block */
+  CBC_DECRYPT(&ctx->aes, aes_decrypt, AES_BLOCK_SIZE, buffer, buffer);
+  padding = buffer[AES_BLOCK_SIZE - 1];
+  if (padding > AES_BLOCK_SIZE)
+    {
+      werror("Decryption failed: Invalid padding.\n");
+      return 0;
+    }
+
+  if (padding < AES_BLOCK_SIZE)
+    {
+      unsigned leftover = AES_BLOCK_SIZE - padding;
+      hmac_sha1_update(&ctx->hmac, leftover, buffer);
+      if (!write_string(out, leftover, buffer))
 	{
 	  werror("Writing output failed: %s\n", strerror(errno));
 	  return 0;
 	}
     }
-  if (padding > 1)
-    yarrow256_random(&ctx->yarrow, padding - 1, buffer + leftover);
-
-  buffer[AES_BLOCK_SIZE - 1] = padding;
-  CBC_ENCRYPT(&ctx->aes, aes_encrypt, AES_BLOCK_SIZE, buffer, buffer);
-  hmac_sha1_digest(&ctx->hmac, SHA1_DIGEST_SIZE, buffer + AES_BLOCK_SIZE);
-  if (!write_string(out, AES_BLOCK_SIZE + SHA1_DIGEST_SIZE, buffer))
+  hmac_sha1_digest(&ctx->hmac, SHA1_DIGEST_SIZE, digest);
+  if (memcmp(digest, buffer + AES_BLOCK_SIZE, SHA1_DIGEST_SIZE) != 0)
     {
-      werror("Writing output failed: %s\n", strerror(errno));
+      werror("Decryption failed: Invalid mac.\n");
       return 0;
     }
-
+  
   return 1;
 }
 
@@ -165,6 +192,8 @@ main(int argc, char **argv)
 
   unsigned length;
   mpz_t x;
+
+  mpz_init(x);
   
   if (argc != 2)
     {
@@ -193,12 +222,13 @@ main(int argc, char **argv)
     }
 
   length = sizeof(session.key);
-  if (!rsa_decrypt(&key, &length, session.key, x))
+  if (!rsa_decrypt(&key, &length, session.key, x) || length != sizeof(session.key))
     {
       werror("Failed to decrypt rsa header in input file.\n");
       return EXIT_FAILURE;      
     }
-
+  mpz_clear(x);
+  
   rsa_session_set_decrypt_key(&ctx, &session);
 
   if (!process_file(&ctx,
