@@ -11,13 +11,13 @@
 #include "RCSID.h"
 RCSID2(desQuick_cRcs, "$Id$");
 
-extern unsigned INT32 des_keymap[];
+extern UINT32 des_keymap[];
 
 
 /* static information */
 
 static int depth = 0;		/* keep track of the request depth */
-unsigned INT32 des_bigmap[0x4000];	/* big lookup table */
+UINT32 des_bigmap[0x4000];	/* big lookup table */
 
 /* fill in the 64k table used by the `quick' option */
 
@@ -25,7 +25,7 @@ void
 DesQuickInit(void)
 {
 	int s1, s3, x;
-	unsigned INT32 * t0, * t1, * t2, * t3;
+	UINT32 * t0, * t1, * t2, * t3;
 
 	if ( depth++ )
 		return;

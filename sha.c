@@ -139,9 +139,9 @@ void sha_init(struct sha_ctx *ctx)
 
    Note that this function destroys the data area */
 
-static void sha_transform(struct sha_ctx *ctx, unsigned INT32 *data )
+static void sha_transform(struct sha_ctx *ctx, UINT32 *data )
 {
-  unsigned INT32 A, B, C, D, E;     /* Local vars */
+  UINT32 A, B, C, D, E;     /* Local vars */
 
   /* Set up first buffer and local data buffer */
   A = ctx->digest[0];
@@ -254,9 +254,9 @@ static void sha_transform(struct sha_ctx *ctx, unsigned INT32 *data )
 			 | EXTRACT_UCHAR(s+2)) << 8)  \
 			 | EXTRACT_UCHAR(s+3))
 #else
-unsigned INT32 STRING2INT(unsigned INT8 *s)
+UINT32 STRING2INT(UINT8 *s)
 {
-  unsigned INT32 r;
+  UINT32 r;
   int i;
   
   for (i = 0, r = 0; i < 4; i++, s++)
@@ -265,9 +265,9 @@ unsigned INT32 STRING2INT(unsigned INT8 *s)
 }
 #endif
 
-static void sha_block(struct sha_ctx *ctx, unsigned INT8 *block)
+static void sha_block(struct sha_ctx *ctx, UINT8 *block)
 {
-  unsigned INT32 data[SHA_DATALEN];
+  UINT32 data[SHA_DATALEN];
   int i;
   
   /* Update block count */
@@ -281,7 +281,7 @@ static void sha_block(struct sha_ctx *ctx, unsigned INT8 *block)
   sha_transform(ctx, data);
 }
 
-void sha_update(struct sha_ctx *ctx, unsigned INT8 *buffer, unsigned INT32 len)
+void sha_update(struct sha_ctx *ctx, UINT8 *buffer, UINT32 len)
 {
   if (ctx->index)
     { /* Try to fill partial block */
@@ -316,7 +316,7 @@ void sha_update(struct sha_ctx *ctx, unsigned INT8 *buffer, unsigned INT32 len)
 
 void sha_final(struct sha_ctx *ctx)
 {
-  unsigned INT32 data[SHA_DATALEN];
+  UINT32 data[SHA_DATALEN];
   int i;
   int words;
   
@@ -352,7 +352,7 @@ void sha_final(struct sha_ctx *ctx)
   sha_transform(ctx, data);
 }
 
-void sha_digest(struct sha_ctx *ctx, INT8 *s)
+void sha_digest(struct sha_ctx *ctx, UINT8 *s)
 {
   int i;
 

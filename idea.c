@@ -42,12 +42,12 @@
  * compiler doesn't schedule branches.
  */
 #ifdef SMALL_CACHE
-const static unsigned INT16
-mul(unsigned INT16 a, unsigned INT16 b)
+const static UINT16
+mul(UINT16 a, UINT16 b)
 {
-  register unsigned INT32 p;
+  register UINT32 p;
 
-  p = (unsigned INT32)a * b;
+  p = (UINT32)a * b;
   if (p)
     {
       b = low16(p);
@@ -70,11 +70,11 @@ mul(unsigned INT16 a, unsigned INT16 b)
  * algorithm. It is unrolled twice to avoid swapping the registers each
  * iteration, and some subtracts of t have been changed to adds.
  */
-static const unsigned INT16
-inv(unsigned INT16 x)     
+static const UINT16
+inv(UINT16 x)     
 {
-  unsigned INT16 t0, t1;
-  unsigned INT16 q, y;
+  UINT16 t0, t1;
+  UINT16 q, y;
 
   if (x <= 1)
     return x;	/* 0 and 1 are self-inverse */
@@ -102,8 +102,8 @@ inv(unsigned INT16 x)
  * Expand a 128-bit user key to a working encryption key ctx
  */
 void
-idea_expand(unsigned INT16 *ctx,
-	    const unsigned INT8 *userkey)
+idea_expand(UINT16 *ctx,
+	    const UINT8 *userkey)
 {
   int i,j;
   
@@ -125,13 +125,13 @@ idea_expand(unsigned INT16 *ctx,
  * inverted into an internal buffer, and then copied to the output.
  */
 void
-idea_invert(unsigned INT16 *d,
-	    const unsigned INT16 *e)
+idea_invert(UINT16 *d,
+	    const UINT16 *e)
 {
   int i;
-  unsigned INT16 t1, t2, t3;
-  unsigned INT16 temp[IDEA_KEYLEN];
-  unsigned INT16 *p = temp + IDEA_KEYLEN;
+  UINT16 t1, t2, t3;
+  UINT16 temp[IDEA_KEYLEN];
+  UINT16 *p = temp + IDEA_KEYLEN;
 
   t1 = inv(*e++);
   t2 = -*e++;
@@ -182,13 +182,13 @@ idea_invert(unsigned INT16 *d,
 #else /* !SMALL_CACHE */
 #ifdef AVOID_JUMPS
 #define MUL(x,y) (x = low16(x-1), t16 = low16((y)-1), \
-		t32 = (unsigned INT32)x*t16 + x + t16 + 1, x = low16(t32), \
+		t32 = (UINT32)x*t16 + x + t16 + 1, x = low16(t32), \
 		t16 = t32>>16, x = (x-t16) + (x<t16) )
 #else /* !AVOID_JUMPS (default) */
 #define MUL(x,y) \
 	((t16 = (y)) ? \
 		(x=low16(x)) ? \
-			t32 = (unsigned INT32)x*t16, \
+			t32 = (UINT32)x*t16, \
 			x = low16(t32), \
 			t16 = t32>>16, \
 			x = (x-t16)+(x<t16) \
@@ -213,11 +213,11 @@ idea_invert(unsigned INT16 *d,
 /*	IDEA encryption/decryption algorithm */
 /* Note that in and out can be the same buffer */
 void
-idea_crypt(const unsigned INT16 *key,
-	   unsigned INT8 *dest,
-	   const unsigned INT8 *src)
+idea_crypt(const UINT16 *key,
+	   UINT8 *dest,
+	   const UINT8 *src)
 {
-  register unsigned INT16 x1, x2, x3, x4, s2, s3;
+  register UINT16 x1, x2, x3, x4, s2, s3;
   
   /* Setup */
     
@@ -227,8 +227,8 @@ idea_crypt(const unsigned INT16 *key,
   /* Encrypt */
   {
 #ifndef SMALL_CACHE
-    register unsigned INT16 t16;	/* Temporaries needed by MUL macro */
-    register unsigned INT32 t32;
+    register UINT16 t16;	/* Temporaries needed by MUL macro */
+    register UINT32 t32;
 #endif
     int r = IDEA_ROUNDS;
     do

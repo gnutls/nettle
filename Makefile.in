@@ -9,15 +9,10 @@ AR=ar
 
 # Reset VPATH
 SRCDIR=@srcdir@
-VPATH=$(SRCDIR):$(SRCDIR)/../include
-
-CRYPTO_INCLUDES=$(SRCDIR)/../include
-
-# Additional C preprocessor flags
-PREFLAGS=$(EXTRA_CPP_FLAGS) -I$(CRYPTO_INCLUDES) -I. -I$(SRCDIR) $(DEFINES)
+VPATH=$(SRCDIR):$(EXTRA_VPATH)
 
 # The flags to generate a shared library
-CFLAGS=$(PREFLAGS) $(OTHERFLAGS) $(EXTRA_CFLAGS)
+CPPFLAGS=$(PREFLAGS) $(DEFS) $(EXTRA_CPPFLAGS)
 LDFLAGS=@LDFLAGS@
 
 default: algorithms.a
@@ -57,8 +52,8 @@ desTest:	desCore.a desTest.o
 
 # test all performance enhancement flags
 sure:
-		make clean ; make desTest 'CPPFLAGS=-Di386    -Umc68000 -Usparc'
-		make clean ; make desTest 'CPPFLAGS=-Dvax     -Umc68000 -Usparc'
+		make clean ; make desTest 'CPPFLAGS=-Di386 -Umc68000 -Usparc'
+		make clean ; make desTest 'CPPFLAGS=-Dvax -Umc68000 -Usparc'
 		make clean ; make desTest 'CPPFLAGS=-Dmc68000 -Usparc'
 		make clean ; make desTest 'CPPFLAGS=-Dsparc   -Umc68000'
 		make clean ; make desTest
@@ -141,19 +136,41 @@ desQuickCore.c:
 
 ### End of rules for desCore
 
-# BEGIN NATIONAL SECURITY
-MASS_DESTRUCTION_OBJS = idea.o rc4.o cast.o $(O)
-# END NATIONAL SECURITY
-
-OBJS = $(MASS_DESTRUCTION_OBJS) sha.o md5.o
+SRCS = sha.c md5.c idea.c rc4.c cast.c $(SC) $(GC)
+OBJS = $(SRCS:.c=.o)
 
 algorithms.a: $(OBJS)
 	rm -f algorithms.a
 	$(AR) cru algorithms.a $(OBJS)
 	$(RANLIB) algorithms.a
 
-Makefile: $(SRCDIR)/Makefile.in config.status
-	CONFIG_FILES=Makefile CONFIG_HEADERS="" ./config.status
-	@echo "Run make again"
-	@exit 1
+#### Remaking the Makefile and configure scripts. ####
 
+#${srcdir}/configure: configure.in aclocal.m4
+${srcdir}/configure: configure.in
+	cd ${srcdir} && autoconf
+
+# autoheader might not change config.h.in, so touch a stamp file.
+${srcdir}/config.h.in: stamp-h.in
+
+#${srcdir}/stamp-h.in: configure.in aclocal.m4 acconfig.h \
+#    config.h.top config.h.bot
+
+${srcdir}/stamp-h.in: configure.in 
+	cd ${srcdir} && autoheader
+	echo timestamp > ${srcdir}/stamp-h.in
+
+config.h: stamp-h
+
+stamp-h: config.h.in config.status
+	./config.status
+
+Makefile: Makefile.in config.status
+	./config.status
+
+config.status: configure
+	./config.status --recheck
+
+%.d: %.c
+	$(SHELL) -ec '$(CC) -MM -MG $(CPPFLAGS) $(DEFS) $< \
+		| sed '\''s/\($*\)\.o:/\1\.o $@ : /g'\'' > $@'

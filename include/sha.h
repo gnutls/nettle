@@ -13,14 +13,14 @@
 /* The structure for storing SHA info */
 
 struct sha_ctx {
-  unsigned INT32 digest[SHA_DIGESTLEN];  /* Message digest */
-  unsigned INT32 count_l, count_h;       /* 64-bit block count */
-  unsigned INT8 block[SHA_DATASIZE];     /* SHA data buffer */
+  UINT32 digest[SHA_DIGESTLEN];  /* Message digest */
+  UINT32 count_l, count_h;       /* 64-bit block count */
+  UINT8 block[SHA_DATASIZE];     /* SHA data buffer */
   int index;                             /* index into buffer */
 };
 
 void sha_init(struct sha_ctx *ctx);
-void sha_update(struct sha_ctx *ctx, unsigned INT8 *buffer, unsigned INT32 len);
+void sha_update(struct sha_ctx *ctx, UINT8 *buffer, UINT32 len);
 void sha_final(struct sha_ctx *ctx);
-void sha_digest(struct sha_ctx *ctx, INT8 *s);
+void sha_digest(struct sha_ctx *ctx, UINT8 *s);
 void sha_copy(struct sha_ctx *dest, struct sha_ctx *src);

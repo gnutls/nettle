@@ -21,16 +21,16 @@
 #include "crypto_types.h"
 
 struct cast_key {
-	unsigned INT32 xkey[32];	/* Key, after expansion */
+	UINT32 xkey[32];	/* Key, after expansion */
 	unsigned rounds;		/* Number of rounds to use, 12 or 16 */
 };
 
-void cast_setkey(struct cast_key *key, unsigned INT8 *rawkey,
+void cast_setkey(struct cast_key *key, UINT8 *rawkey,
 		 unsigned keybytes);
-void cast_encrypt(struct cast_key *key, unsigned INT8 *inblock,
-		  unsigned INT8 *outblock);
-void cast_decrypt(struct cast_key *key, unsigned INT8 *inblock,
-		  unsigned INT8* outblock);
+void cast_encrypt(struct cast_key *key, UINT8 *inblock,
+		  UINT8 *outblock);
+void cast_decrypt(struct cast_key *key, UINT8 *inblock,
+		  UINT8* outblock);
 
 #endif /* ifndef _CAST_H_INCLUDED */
 

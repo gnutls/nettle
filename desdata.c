@@ -60,7 +60,7 @@ int printf(const char *, ...);
 int
 main(int argc, char **argv)
 {
-	unsigned INT32 d, i, j, k, l, m, n, s;
+	UINT32 d, i, j, k, l, m, n, s;
 	char b[256], ksr[56];
 
 	switch ( argv[1][0] ) {

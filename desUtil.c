@@ -11,11 +11,11 @@ RCSID2(desUtil_cRcs, "$Id$");
 
 /* various tables */
 
-unsigned INT32 des_keymap[] = {
+UINT32 des_keymap[] = {
 #include	"keymap.h"
 };
 
-static unsigned INT8 rotors[] = {
+static UINT8 rotors[] = {
 #include	"rotors.h"
 };
 static char parity[] = {
@@ -28,9 +28,9 @@ RCSID2(ego, "\n\nFast DES Library Copyright (c) 1991 Dana L. How\n\n");
 /* set up the method list from the key */
 
 int
-DesMethod(unsigned INT32 *method, unsigned INT8 *k)
+DesMethod(UINT32 *method, UINT8 *k)
 {
-	register unsigned INT32 n, w;
+	register UINT32 n, w;
 	register char * b0, * b1;
 	char bits0[56], bits1[56];
 

@@ -11,11 +11,11 @@ RCSID("$Id$");
 
 #define SWAP(a,b) do { int _t = a; a = b; b = _t; } while(0)
 
-void rc4_set_key(struct rc4_ctx *ctx, const unsigned INT8 *key, INT32 len)
+void rc4_set_key(struct rc4_ctx *ctx, const UINT8 *key, UINT32 len)
 {
-  register unsigned INT8 j; /* Depends on the eight-bitness of these variables. */
+  register UINT8 j; /* Depends on the eight-bitness of these variables. */
   unsigned i;
-  INT32 k;
+  UINT32 k;
 
   /* Initialize context */
   i = 0;
@@ -32,15 +32,15 @@ void rc4_set_key(struct rc4_ctx *ctx, const unsigned INT8 *key, INT32 len)
   ctx->i = ctx->j = 0;
 }
 
-void rc4_crypt(struct rc4_ctx *ctx, unsigned INT8 *dest, const unsigned INT8 *src, INT32 len)
+void rc4_crypt(struct rc4_ctx *ctx, UINT8 *dest, const UINT8 *src, UINT32 len)
 {
-  register unsigned INT8 i, j; /* Depends on the eight-bitness of these variables */
+  register UINT8 i, j;
 
   i = ctx->i; j = ctx->j;
   while(len--)
     {
-      i++;
-      j += ctx->S[i];
+      i++; i &= 0xff;
+      j += ctx->S[i]; j &= 0xff;
       SWAP(ctx->S[i], ctx->S[j]);
       *dest++ = *src++ ^ ctx->S[ (ctx->S[i] + ctx->S[j]) & 0xff ];
     }

@@ -11,7 +11,7 @@
 #include "RCSID.h"
 RCSID2(desCode_hRcs, "$Id$");
 
-extern unsigned INT32 des_keymap[], des_bigmap[];
+extern UINT32 des_keymap[], des_bigmap[];
 
 /* optional customization:
  * the idea here is to alter the code so it will still run correctly
@@ -51,15 +51,15 @@ extern unsigned INT32 des_keymap[], des_bigmap[];
  * a macro definition that the users of the function doesn't
  * know about. - Niels */
 #if	0			/* didn't feel like deleting */
-#define	SREGFREE	; s = (unsigned INT8 *) D
+#define	SREGFREE	; s = (UINT8 *) D
 #define	DEST		s
 #define	D		m0
-#define	BYTE		unsigned INT32
+#define	BYTE		UINT32
 #else
 #define	SREGFREE
 #define	DEST		d
 #define	D		d
-#define	BYTE		unsigned INT8
+#define	BYTE		UINT8
 #endif
 
 /* handle constants in the optimal way for 386 & vax */
@@ -132,8 +132,8 @@ extern unsigned INT32 des_keymap[], des_bigmap[];
 #define	LS2(z)	k1 & z
 #define	LS3(z)	k2 & z
 #define	REGQUICK				\
-	register unsigned INT32 k0, k1;			\
-	register unsigned INT32 *m0, *m1, *m2, *m3;
+	register UINT32 k0, k1;			\
+	register UINT32 *m0, *m1, *m2, *m3;
 #define	SETQUICK				\
 	; k0 = 0XFCFC				\
 	; k1 = 16				\
@@ -143,8 +143,8 @@ extern unsigned INT32 des_keymap[], des_bigmap[];
 	; m2 = m1 + 64				\
 	; m3 = m2 + 64
 #define	REGSMALL				\
-	register unsigned INT32 k0, k1, k2;		\
-	register unsigned INT32 *m0, *m1, *m2, *m3;
+	register UINT32 k0, k1, k2;		\
+	register UINT32 *m0, *m1, *m2, *m3;
 #define	SETSMALL				\
 	; k0 = 0X01000100L			\
 	; k1 = 0X0FC				\
@@ -189,8 +189,8 @@ extern unsigned INT32 des_keymap[], des_bigmap[];
 #define	LS2(z)	0XFC & z
 #define	LS3(z)	0XFC & z
 #define	REGQUICK				\
-	register unsigned INT32 k0;		\
-	register unsigned INT32 *m0, *m1, *m2, *m3;
+	register UINT32 k0;		\
+	register UINT32 *m0, *m1, *m2, *m3;
 #define	SETQUICK				\
 	; k0 = 0XFCFC				\
 	; m0 = des_bigmap			\
@@ -198,7 +198,7 @@ extern unsigned INT32 des_keymap[], des_bigmap[];
 	; m2 = m1 + 64				\
 	; m3 = m2 + 64
 #define	REGSMALL				\
-	register unsigned INT32 *m0, *m1, *m2, *m3, *m4, *m5, *m6, *m7;
+	register UINT32 *m0, *m1, *m2, *m3, *m4, *m5, *m6, *m7;
 #define	SETSMALL				\
 	; m0 = des_keymap			\
 	; m1 = m0 + 64				\
@@ -214,7 +214,7 @@ extern unsigned INT32 des_keymap[], des_bigmap[];
 /* some basic stuff */
 
 /* generate addresses from a base and an index */
-#define	ADD(b,x)	(unsigned INT32 *) ((unsigned INT8 *)b + (x))
+#define	ADD(b,x)	(UINT32 *) ((UINT8 *)b + (x))
 
 /* low level rotate operations */
 #define	NOP(d,c,o)
@@ -344,10 +344,10 @@ extern unsigned INT32 des_keymap[], des_bigmap[];
 						\
 void						\
 NAME(REGISTER BYTE *D,                          \
-     REGISTER unsigned INT32 *r,                \
-     REGISTER unsigned INT8 *s)                 \
+     REGISTER UINT32 *r,                \
+     REGISTER UINT8 *s)                 \
 {						\
-	register unsigned INT32 x, y, z;	\
+	register UINT32 x, y, z;	\
 						\
 	/* declare temps & load data */		\
 	TEMP(LOAD);				\
@@ -380,10 +380,10 @@ NAME(REGISTER BYTE *D,                          \
 						\
 void						\
 NAME(REGISTER BYTE *D,                          \
-     REGISTER unsigned INT32 *r,                \
-     REGISTER unsigned INT8 *s)                 \
+     REGISTER UINT32 *r,                \
+     REGISTER UINT8 *s)                 \
 {						\
-	register unsigned INT32 x, y, z;        \
+	register UINT32 x, y, z;        \
 						\
 	/* declare temps & load data */		\
 	TEMP(LOAD);				\

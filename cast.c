@@ -11,8 +11,8 @@
 
 #include <cast.h>
 
-#define u8 unsigned INT8
-#define u32 unsigned INT32
+#define u8 UINT8
+#define u32 UINT32
 
 #include "cast_sboxes.h"
 

@@ -46,9 +46,9 @@ void md5_init(struct md5_ctx *ctx)
   
 /* Perform the MD5 transformation on one full block of 16 32-bit words. */
    
-static void md5_transform(struct md5_ctx *ctx, unsigned INT32 *data)
+static void md5_transform(struct md5_ctx *ctx, UINT32 *data)
 {
-  unsigned INT32 a, b, c, d;
+  UINT32 a, b, c, d;
   a = ctx->digest[0];
   b = ctx->digest[1];
   c = ctx->digest[2];
@@ -138,9 +138,9 @@ static void md5_transform(struct md5_ctx *ctx, unsigned INT32 *data)
 			 | EXTRACT_UCHAR(s+1)) << 8)    \
 		       | EXTRACT_UCHAR(s))
   
-static void md5_block(struct md5_ctx *ctx, unsigned INT8 *block)
+static void md5_block(struct md5_ctx *ctx, UINT8 *block)
 {
-  unsigned INT32 data[MD5_DATALEN];
+  UINT32 data[MD5_DATALEN];
   int i;
   
   /* Update block count */
@@ -155,8 +155,8 @@ static void md5_block(struct md5_ctx *ctx, unsigned INT8 *block)
 }
 
 void md5_update(struct md5_ctx *ctx,
-		      unsigned INT8 *buffer,
-		      unsigned INT32 len)
+		      UINT8 *buffer,
+		      UINT32 len)
 {
   if (ctx->index)
   { /* Try to fill partial block */
@@ -191,7 +191,7 @@ void md5_update(struct md5_ctx *ctx,
 
 void md5_final(struct md5_ctx *ctx)
 {
-  unsigned INT32 data[MD5_DATALEN];
+  UINT32 data[MD5_DATALEN];
   int i;
   int words;
   
@@ -228,7 +228,7 @@ void md5_final(struct md5_ctx *ctx)
   md5_transform(ctx, data);
 }
 
-void md5_digest(struct md5_ctx *ctx, INT8 *s)
+void md5_digest(struct md5_ctx *ctx, UINT8 *s)
 {
   int i;
 
