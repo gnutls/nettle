@@ -1,6 +1,20 @@
 2002-07-18  Niels Möller  <niels@s3.kth.se>
 
+	* examples/nettle-benchmark.c (main): Try openssl's ciphers as
+	well, if available.
+
+	* Makefile.am (libnettle_a_SOURCES): Added nettle-openssl.c.
+
+	* nettle-openssl.c: New file.
+
+	* nettle-internal.h: Declare openssl glue ciphers.
+
+	* des-compat.h: Extra name-mangling, to avoid collisions in case a
+	program links with both nettle and libcrypto (the nettle-benchmark
+	program does).
+
 	* configure.ac: Don't use -ggdb3 with gcc-2.96. 
+	Check for openssl's libcrypto (for benchmarking).
 
 2002-05-16  Niels Möller  <nisse@cuckoo.hack.org>
 
