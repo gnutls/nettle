@@ -1,5 +1,7 @@
 2003-03-11  Niels Möller  <nisse@cuckoo.hack.org>
 
+	* Released nettle-1.7.
+
 	* configure.ac: Bumped version to 1.7.
 
 	* nettle.texinfo (DSA): New section.
