@@ -29,7 +29,7 @@ void
 hmac_md5_set_key(struct hmac_md5_ctx *ctx,
 		 unsigned key_length, const uint8_t *key)
 {
-  HMAC_INIT(&hmac_md5_info, ctx, key_length, key);
+  HMAC_SET_KEY(ctx, &nettle_md5, key_length, key);
 }
 
 void
@@ -43,5 +43,5 @@ void
 hmac_md5_digest(struct hmac_md5_ctx *ctx,
 		unsigned length, uint8_t *digest)
 {
-  HMAC_DIGEST(&hmac_md5_info, ctx, length, digest);
+  HMAC_DIGEST(ctx, &nettle_md5, length, digest);
 }
