@@ -1,3 +1,18 @@
+2001-06-15  Niels Möller  <nisse@ehand.com>
+
+	* Makefile.am (libnettle_a_SOURCES): Added blowfish files.
+
+	* testsuite/blowfish-test.m4: Added one test, from GNUPG.
+
+	* Created blowfish.c and blowfish.h (from GNUPG via LSH). Needs
+	more work.
+
+	* aes.h: Fixed copyright notice to not mention GNU MP. XXX: Review
+	all nettle copyrights.
+
+	* testsuite/Makefile.am (TS_PROGS): Added tests for twofish and
+	blowfish.
+
 2001-06-13  Niels Möller  <nisse@ehand.com>
 
 	* Makefile.am (libnettle_a_SOURCES): Added serpent files.
