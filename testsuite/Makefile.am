@@ -24,7 +24,10 @@ TS_ALL = $(TS_PROGS) $(TS_SH)
 
 noinst_PROGRAMS = $(TS_PROGS)
 
-LDADD = testutils.o -lnettle
+# libnettle.a is added at the end to make sure all programs depend on it.
+# It seems there's no DEPENDENCIES variable that affects all programs.
+
+LDADD = testutils.o -lnettle ../libnettle.a
 EXTRA_DIST = $(TS_SH) testutils.c testutils.h \
 	     run-tests rfc1750.txt
 
