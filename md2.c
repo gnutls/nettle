@@ -1,6 +1,6 @@
 /* md2.h
  *
- * The MD2 hash function. XXX What RFC, if any?
+ * The MD2 hash function, described in RFC 1319.
  */
 
 /* nettle, low-level cryptographics library

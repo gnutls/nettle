@@ -1,6 +1,6 @@
 /* md4.h
  *
- * The MD4 hash function. XXX What RFC, if any?
+ * The MD4 hash function, described in RFC 1320.
  */
 
 /* nettle, low-level cryptographics library

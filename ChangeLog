@@ -1,3 +1,8 @@
+2003-08-30  Niels Möller  <niels@s3.kth.se>
+
+	* md2.c, md2.h: Added reference to RFC 1319.
+	* md4.c, md4.h: Added reference to RFC 1320
+
 2003-08-26  Niels Möller  <niels@s3.kth.se>
 
 	* Makefile.am: Added md2 and md5 files. Deleted the print-path
