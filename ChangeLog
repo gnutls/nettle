@@ -1,3 +1,71 @@
+2002-10-30  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* Makefile.am: Added base16 files.
+
+	* examples/sexp-conv-test: New tests for transport output.
+
+	* examples/sexp-conv.c: Deleted hex functions, moved to Nettle's
+	base16 files.
+	(struct sexp_output): Represent the current encoding as a
+	nettle_armor pointer and a state struct.
+	(sexp_output_init): Deleted MODE argument. Now passed to functions
+	that need it. 
+	(sexp_get_char): Updated to new base64 conventions.
+	(sexp_get_base64_string): Likewise.
+	(sexp_put_raw_char): New function.
+	(sexp_put_newline): Use sexp_put_raw_char.
+	(sexp_put_char): Use nettle_armor interface for encoding data.
+	Use OUTPUT->coding_indent for line breaking, so the INDENT
+	argument was deleted.
+	(sexp_put_code_start): New function, replacing sexp_put_base64_start.
+	(sexp_put_code_end): New function, replacing sexp_put_base64_end. 
+	(sexp_put_data): Deleted argument INDENT.
+	(sexp_puts): Likewise.
+	(sexp_put_length): Likewise.
+	(sexp_put_list_start): Likewise.
+	(sexp_put_list_end): Likewise.
+	(sexp_put_display_start): Likewise.
+	(sexp_put_display_end): Likewise.
+	(sexp_put_string): Likewise. Also changed base64 handling.
+	(sexp_convert_string): Deleted argument INDENT. New argument
+	MODE_OUT. 
+	(sexp_convert_list): New argument MODE_OUT.
+	(sexp_convert_file): Likewise.
+	(sexp_convert_item): Likewise. Also handle output in transport
+	mode. 
+	(match_argument): Simple string comparison.
+	(main): Adapted to above changes.
+
+	* testsuite/testutils.c (test_armor): Allocate a larger buffer
+	CHECK, to make decode_update happy. Updated to new base64
+	conventions.
+
+	* testsuite/base64-test.c (test_main): Fixed overlap test to not
+	change the base64 before decoding. Updated to new base64
+	conventions. 
+
+	* testsuite/Makefile.am (TS_PROGS): Added base16-test.
+
+	* testsuite/base16-test.c: New test.
+
+	* sexp-transport.c (sexp_transport_iterator_first): Updated to new
+	conventions for base64_decode_update and base64_decode_final.
+
+	* nettle-meta.h: Updated ascii armor declarations. New declaration
+	for nettle_base16.
+
+	* base64-decode.c (base64_decode_single): Return -1 on error.
+	Also keep track of the number of padding characters ('=') seen.
+	(base64_decode_update): New argument dst_length. Return -1 on error.
+	(base64_decode_status):  Renamed function...
+	(base64_decode_final): ... to this.
+
+	* base64.h (struct base64_decode_ctx): Deleted STATUS attribute.
+	Added PADDING attribute.
+
+	* base16.h, base16-encode.c, base16-decode.c, base16-meta.c: New
+	files. 
+
 2002-10-28  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* examples/sexp-conv.c (struct hex_decode_ctx): New hex decoding
