@@ -1,5 +1,19 @@
 2003-05-12  Niels Möller  <nisse@cuckoo.hack.org>
 
+	* rsa2openpgp.c (rsa_keypair_to_openpgp): Some bugfixes.
+
+	* pgp.h (enum pgp_subpacket_tag): New enum. Definition is bogus
+	and needs to be fixed.
+	Added forward declarations of structs, and prototypes for
+	pgp_put_public_rsa_key and pgp_put_rsa_sha1_signature.
+
+	* pgp-encode.c (pgp_put_mpi): Take a const mpz_t argument. Gugfix,
+	use nettle_mpz_get_str_256.
+	(pgp_put_public_rsa_key, pgp_put_rsa_sha1_signature):
+	Constification. Some bugfixes.
+
+	* Use "config.h", not <config.h>.
+
 	* Reordered includes in most or all .c-files. All should now
 	include config.h.
 
