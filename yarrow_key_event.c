@@ -30,6 +30,8 @@ yarrow_key_event_init(struct yarrow_key_event_ctx *ctx)
   unsigned i;
   
   ctx->index = 0;
+  ctx->previous = 0;
+  
   for (i = 0; i < YARROW_KEY_EVENT_BUFFER; i++)
     ctx->chars[i] = 0;  
 }
@@ -42,7 +44,7 @@ yarrow_key_event_estimate(struct yarrow_key_event_ctx *ctx,
   unsigned i;
 
   /* Look at timing first. */
-  if (ctx->index)
+  if (ctx->previous)
     {
       if ( (time - ctx->previous) < 256)
         entropy++;
