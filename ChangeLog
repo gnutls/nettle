@@ -1,5 +1,21 @@
 2001-06-17  Niels Möller  <nisse@cuckoo.hack.org>
 
+	* Fixed copyright notices.
+
+	* Makefile.am (libnettle_a_SOURCES): Added desinfo.h and
+	desCode.h. 
+	(info_TEXINFOS): Added manual.
+	(EXTRA_DIST): Added nettle.html.
+	(%.html): Added rule for building nettle.html.
+
+	* nettle.texinfo: New manual.
+
+	* configure.in: Bumped version to 0.2.
+
+	* testsuite/Makefile.am (TS_PROGS): Added cast128 test.
+
+	* Added CAST128.
+
 	* testsuite/serpent-test.m4: Added a few rudimentary tests
 	extracted from the serpent package.
 
