@@ -15,6 +15,8 @@
 	! aes256 (CBC encrypt): 20.92s, 0.478MB/s
 	! aes256 ((CBC decrypt)): 23.22s, 0.431MB/s
 
+include(`asm.m4')
+	
 	.file	"aes.asm"
 	.section	".text"
 	.align 4
@@ -130,22 +132,17 @@ key_addition32to8:
 	.type	idx,#object
 	.size	idx,64
 idx:
-	.long	0
-	.long	1
-	.long	2
-	.long	3
-	.long	1
-	.long	2
-	.long	3
-	.long	0
-	.long	2
-	.long	3
-	.long	0
-	.long	1
-	.long	3
-	.long	0
-	.long	1
-	.long	2
+define(idx_row,
+<	.long	$1
+	.long	$2
+	.long	$3
+	.long	$4
+>)
+idx_row(0, 1, 2, 3)
+idx_row(1, 2, 3, 0)
+idx_row(2, 3, 0, 1)
+idx_row(3, 0, 1, 2)	
+	
 	.align 8
 .LLC0:
 	.asciz	"!(length % 16)"
