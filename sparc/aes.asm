@@ -174,12 +174,11 @@ _aes_crypt:
 	! Comments mark which j in T->sbox[Bj(wtxt[IDXj(i)])]
 	! the instruction is part of
 	ld	[idx-32], t1 	! 1
+	ld	[idx-16], t2	! 2
 
-	! mov	i, %i5
 	add	wtxt, t1, t1	! 1
 	ldub	[t1+2], t1	! 1
-	add	i, dst, %g2	
-	ld	[idx-16], t2	! 2
+
 	ld	[wtxt+i], t0	! 0
 
 	lduh	[wtxt+t2], t2	! 2
@@ -208,17 +207,19 @@ _aes_crypt:
 	srl	t0, 24, t3
 	srl	t0, 16, t2
 	srl	t0, 8, t1
-	stb	t1, [%g2+1]
-	stb	t3, [%g2+3]
-	stb	t2, [%g2+2]
-	stb	t0, [%g2]
-
+	stb	t1, [dst+1]
+	stb	t3, [dst+3]
+	stb	t2, [dst+2]
+	stb	t0, [dst]
+	add	dst, 4, dst
+	
 	bleu	.Lfinal_loop
 	add	idx, 4, idx
 	
 	addcc	length, -16, length
 	bne	.Lblock_loop
-	add	dst, 16, dst
+	nop
+	!	add	dst, 16, dst
 .Lend:
 	ret
 	restore
