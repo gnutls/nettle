@@ -36,7 +36,7 @@ key_addition_8to32:
 	mov	0, %o3
 .Lshiftloop:
 	ldub	[%o0], %g3
-	! %g2 = 0 << 3. FIXME:	 Delete
+	! %g2 = j << 3
 	sll	%o3, 3, %g2
 	! %g3 << 0
 	sll	%g3, %g2, %g3
@@ -206,14 +206,14 @@ aes_encrypt:
 	mov	txt, %l4
 	mov	wtxt, %l0
 	! FIXME:	%l7 = idx, seems redundant? 
-	or	%i4, %lo(idx), %l7
+	! or	%i4, %lo(idx), %l7
 	add	ctx, 16, %l2
 .Lencrypt_round:
 	! j:	%o7
 	! 4j:	%g2
 	mov	0, %o7
 	! %g3 = &idx[3][0]
-	add	%l7, 48, %g3
+	add	g_idx, 48, %g3
 .Lencrypt_inner:
 	! %o0 = idx[3][0]
 	ld	[%g3], %o0
