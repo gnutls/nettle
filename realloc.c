@@ -41,9 +41,10 @@ void *
 nettle_xrealloc(void *ctx UNUSED, void *p, unsigned length)
 {
   void *n = realloc(p, length);
-  if (n)
-    return n;
-
-  fprintf(stderr, "Virtual memory exhausted.\n");
-  abort();    
+  if (length && !n)
+    {
+      fprintf(stderr, "Virtual memory exhausted.\n");
+      abort();
+    }
+  return n;
 }
