@@ -51,6 +51,7 @@ base16_encode_update_wrapper(void *ctx, uint8_t *dst,
   return BASE16_ENCODE_LENGTH(length);
 }
 
+#undef base16_encode_update
 #define base16_encode_update base16_encode_update_wrapper
 
 static unsigned
