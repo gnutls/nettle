@@ -1,5 +1,8 @@
 2004-11-14  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.in (DEP_FILES): Try include with only one macro
+	argument to be expanted.
+
 	* configure.ac (dummy-dep-files): Create dummy dependency files,
 	so that they can be included by the makefiles.
 

@@ -323,4 +323,5 @@ distclean-here: clean-here
 	-rm -f config.h stamp-h config.log config.status \
 	config.make config.m4 Makefile nettle-types.h
 
-include $(SOURCES:.c=.$(OBJEXT).d) $(SOURCES:.c=.p$(OBJEXT).d)
+DEP_FILES = $(SOURCES:.c=.$(OBJEXT).d) $(SOURCES:.c=.p$(OBJEXT).d)
+include $(DEP_FILES)
