@@ -44,9 +44,9 @@ yarrow_key_event_estimate(struct yarrow_key_event_ctx *ctx,
   unsigned i;
 
   /* Look at timing first. */
-  if (ctx->previous)
+  if (ctx->previous && (time > ctx->previous) )
     {
-      if ( (time - ctx->previous) < 256)
+      if ( (time - ctx->previous) >= 256)
         entropy++;
     }
   ctx->previous = time;
