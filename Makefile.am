@@ -1,4 +1,4 @@
-SUBDIRS = . testsuite examples
+SUBDIRS = . tools testsuite examples
 
 noinst_PROGRAMS = aesdata desdata shadata
 
@@ -39,13 +39,15 @@ libnettle_a_SOURCES = aes.c aes.h aes-internal.h \
 		      serpent.c serpent.h serpent_sboxes.h serpent-meta.c \
 		      twofish.c twofish.h twofish-meta.c \
 		      yarrow.h yarrow256.c yarrow_key_event.c \
-		      sexp.h sexp.c sexp-format.c sexp-transport.c \
-		      bignum.h bignum.c bignum-random.c \
+		      sexp.h sexp.c sexp-format.c \
+		      sexp-transport.c sexp-transport-format.c \
+		      bignum.h bignum.c bignum-random.c sexp2bignum.c \
 		      rsa.h rsa.c rsa_md5.c rsa_sha1.c \
 		      rsa-encrypt.c rsa-decrypt.c \
 		      rsa-keygen.c rsa-compat.h rsa-compat.c \
 		      rsa2sexp.c sexp2rsa.c \
 		      dsa.c dsa-sign.c dsa-verify.c dsa-keygen.c \
+		      sexp2dsa.c \
 		      pgp.h pgp-encode.c rsa2openpgp.c \
 		      buffer.h buffer.c \
 		      nettle-meta.h \
@@ -108,6 +110,8 @@ install-data-local: $(SHLIBINSTALL)
 
 SHLIBOBJECTS = $(patsubst %.$(OBJEXT),%_p.$(OBJEXT),$(am_libnettle_a_OBJECTS) $(LIBOBJS))
 
+# The point of the linking is to use -Lnettle-dir at linktime,
+# and LD_LIBRARY_PATH=nettle-dir/.lib at run time.
 $(SHLIBFORLINK): $(SHLIBOBJECTS)
 	$(SHLIBLINK) $^ -o $@
 	-mkdir .lib 2>/dev/null
