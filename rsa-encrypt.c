@@ -56,11 +56,11 @@ rsa_encrypt(const struct rsa_public_key *key,
    * where padding should be at least 8 pseudorandomly generated
    * *non-zero* octets. */
      
-  if (length + 11 < key->size)
+  if (length + 11 > key->size)
     /* Message too long for this key. */
     return 0;
 
-  /* At least 8 bits of random padding */
+  /* At least 8 octets of random padding */
   padding = key->size - length - 3;
   assert(padding >= 8);
   
@@ -73,8 +73,9 @@ rsa_encrypt(const struct rsa_public_key *key,
   for (i = 0; i<padding; i++)
     if (!em[i+1])
       em[i+1] = 1;
-  
-  memcpy(em + 1 + padding, message, length);
+
+  em[padding+1] = 0;  
+  memcpy(em + 2 + padding, message, length);
 
   nettle_mpz_set_str_256_u(gibbberish, key->size - 1, em);
   mpz_powm(gibbberish, gibbberish, key->e, key->n);
