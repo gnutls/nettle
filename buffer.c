@@ -55,6 +55,18 @@ nettle_buffer_grow(struct nettle_buffer *buffer,
 }
 
 void
+nettle_buffer_init_realloc(struct nettle_buffer *buffer,
+			   void *realloc_ctx,
+			   nettle_realloc_func realloc)
+{
+  buffer->contents = NULL;
+  buffer->alloc = 0;
+  buffer->realloc = realloc;
+  buffer->realloc_ctx = realloc_ctx;
+  buffer->size = 0;
+}
+
+void
 nettle_buffer_init_size(struct nettle_buffer *buffer,
 			unsigned length, uint8_t *space)
 {

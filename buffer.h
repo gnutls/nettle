@@ -34,8 +34,8 @@ struct nettle_buffer
   /* Allocated size */
   unsigned alloc;
 
-  nettle_realloc_func *realloc;
   void *realloc_ctx;
+  nettle_realloc_func *realloc;
 
   /* Current size */
   unsigned size;
@@ -44,6 +44,11 @@ struct nettle_buffer
 /* Initializes a buffer that uses plain realloc */
 void
 nettle_buffer_init(struct nettle_buffer *buffer);
+
+void
+nettle_buffer_init_realloc(struct nettle_buffer *buffer,
+			   void *realloc_ctx,
+			   nettle_realloc_func realloc);
 
 /* Initializes a buffer of fix size */
 void
