@@ -47,28 +47,9 @@ aes_decrypt:
 	movl	32(%esp),%ebp	C  address of plaintext
 	AES_LOAD(%esi, %ebp)
 	addl	$16, 32(%esp)	C Increment src pointer
-	
-C 	movl	32(%esp),%esi	C  address of ciphertext
-C 	movl	(%esi),%eax	C  load ciphertext into registers
-C 	movl	4(%esi),%ebx
-C 	movl	8(%esi),%ecx
-C 	movl	12(%esi),%edx
-C 	
-C 	addl	$16, 32(%esp)	C Increment src pointer
-C 	
-C 	movl	20(%esp),%esi	C  address of context struct ctx
-C 	xorl	(%esi),%eax	C  add first key to ciphertext
-C 	xorl	4(%esi),%ebx
-C 	xorl	8(%esi),%ecx
-C 	xorl	12(%esi),%edx
-	movl	AES_NROUNDS (%esi),%ebp	C  get number of rounds to do from struct
-	C shll	$4,%ebp
-	C leal	240(%esi, %ebp),%esi
-	C shrl	$4,%ebp
-	C xorl	(%esi),%eax	C  add last key to ciphertext
-	C xorl	4(%esi),%ebx
-	C xorl	8(%esi),%ecx
-	C xorl	12(%esi),%edx
+
+	C  get number of rounds to do from struct	
+	movl	AES_NROUNDS (%esi),%ebp	
 
 	subl	$1,%ebp		C  one round is complete
 	addl	$16,%esi	C  point to next key
@@ -78,24 +59,25 @@ C 	xorl	12(%esi),%edx
 	C Why???
 	xchgl	%ebx,%edx
 
-	C // First column
-	C a b c d
-	movl	%eax,%esi	C  copy first in
-	andl	$0x000000ff,%esi C  clear all but offset
-	shll	$2,%esi		C  index in itbl1
-	movl	AES_TABLE0 + _aes_decrypt_table (%esi),%edi
-	movl	%ebx,%esi	C  second one
-	shrl	$6,%esi
-	andl	$0x000003fc,%esi C  clear all but offset bytes
-	xorl	AES_TABLE1 + _aes_decrypt_table (%esi),%edi
-	movl	%ecx,%esi	C  third one
-	shrl	$14,%esi
-	andl	$0x000003fc,%esi
-	xorl	AES_TABLE2 + _aes_decrypt_table (%esi),%edi
-	movl	%edx,%esi	C  fourth one
-	shrl	$22,%esi
-	andl	$0x000003fc,%esi
-	xorl	AES_TABLE3 + _aes_decrypt_table (%esi),%edi
+	C First column
+	AES_ROUND(_aes_decrypt_table,a,b,c,d)
+C 	C a b c d
+C 	movl	%eax,%esi	C  copy first in
+C 	andl	$0x000000ff,%esi C  clear all but offset
+C 	shll	$2,%esi		C  index in itbl1
+C 	movl	AES_TABLE0 + _aes_decrypt_table (%esi),%edi
+C 	movl	%ebx,%esi	C  second one
+C 	shrl	$6,%esi
+C 	andl	$0x000003fc,%esi C  clear all but offset bytes
+C 	xorl	AES_TABLE1 + _aes_decrypt_table (%esi),%edi
+C 	movl	%ecx,%esi	C  third one
+C 	shrl	$14,%esi
+C 	andl	$0x000003fc,%esi
+C 	xorl	AES_TABLE2 + _aes_decrypt_table (%esi),%edi
+C 	movl	%edx,%esi	C  fourth one
+C 	shrl	$22,%esi
+C 	andl	$0x000003fc,%esi
+C 	xorl	AES_TABLE3 + _aes_decrypt_table (%esi),%edi
 	pushl	%edi		C  save first on stack
 
 	C // Second column
