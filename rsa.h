@@ -223,6 +223,13 @@ rsa_keypair_to_sexp(struct nettle_buffer *buffer,
 		    const struct rsa_public_key *pub,
 		    const struct rsa_private_key *priv);
 
+struct sexp_iterator;
+
+int
+rsa_keypair_from_sexp_alist(struct rsa_public_key *pub,
+			    struct rsa_private_key *priv,
+			    struct sexp_iterator *i);
+
 /* If PRIV is NULL, expect a public-key expression. If PUB is NULL,
  * expect a private key expression and ignore the parts not needed for
  * the public key. */

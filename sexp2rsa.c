@@ -50,42 +50,26 @@ get_value(mpz_t x, struct sexp_iterator *i)
 
 #define GET(x, v) do { if (!get_value(x, v)) return 0; } while(0)
 
+/* FIXME: Pass in a maximum key size, to avoid denial-of-service
+ * problems. */
+
+/* Iterator should point past the algorithm tag, e.g.
+ *
+ *   (public-key (rsa (n |xxxx|) (e |xxxx|))
+ *                    ^ here
+ */
+
 int
-rsa_keypair_from_sexp(struct rsa_public_key *pub,
-		      struct rsa_private_key *priv,
-		      unsigned length, const uint8_t *expr)
+rsa_keypair_from_sexp_alist(struct rsa_public_key *pub,
+			    struct rsa_private_key *priv,
+			    struct sexp_iterator *i)
 {
-  struct sexp_iterator i;
-
-  static const uint8_t *inner[8]
+  static const uint8_t *names[8]
     = { "n", "e", "d", "p", "q", "a", "b", "c" };
-  static const uint8_t *names[3]
-    = { "rsa", "rsa-pkcs1", "rsa-pkcs1-sha1" };
-  const uint8_t *outer;
   struct sexp_iterator values[8];
-  unsigned nvalues;
+  unsigned nvalues = priv ? 8 : 2;
   
-  if (!sexp_iterator_first(&i, length, expr))
-    return 0;
-  
-  if (priv)
-    {
-      outer = "private-key";
-      nvalues = 8;
-    }
-  else
-    {
-      outer = "public-key";
-      nvalues = 2;
-    }
-
-  if (!sexp_iterator_check_type(&i, outer))
-    return 0;
-
-  if (!sexp_iterator_check_types(&i, 3, names))
-    return 0;
-  
-  if (!sexp_iterator_assoc(&i, nvalues, inner, values))
+  if (!sexp_iterator_assoc(i, nvalues, names, values))
     return 0;
 
   if (priv)
@@ -109,8 +93,29 @@ rsa_keypair_from_sexp(struct rsa_public_key *pub,
       if (!rsa_prepare_public_key(pub))
 	return 0;
     }
-    
+  
   return 1;
+}
+
+int
+rsa_keypair_from_sexp(struct rsa_public_key *pub,
+		      struct rsa_private_key *priv,
+		      unsigned length, const uint8_t *expr)
+{
+  struct sexp_iterator i;
+  static const uint8_t *names[3]
+    = { "rsa", "rsa-pkcs1", "rsa-pkcs1-sha1" };
+
+  if (!sexp_iterator_first(&i, length, expr))
+    return 0;
+  
+  if (!sexp_iterator_check_type(&i, priv ? "private-key" : "public-key"))
+    return 0;
+
+  if (!sexp_iterator_check_types(&i, 3, names))
+    return 0;
+
+  return rsa_keypair_from_sexp_alist(pub, priv, &i);
 }
 
 #endif /* WITH_PUBLIC_KEY */
