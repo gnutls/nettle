@@ -24,7 +24,7 @@
 #  elif SIZEOF_LONG >= 4
 #   define UINT32 unsigned long
 #  else
-#   error Ledsen error
+#   error No suitable type found to use for UINT32
 #  endif /* UINT32 */
 
 #  if SIZEOF_SHORT >= 2
@@ -32,7 +32,7 @@
 #  elif SIZEOF_INT >= 2
 #   define UINT16 unsigned int
 #  else
-#   error Ledsen error
+#   error No suitable type found to use for UINT16
 #  endif  /* UINT16 */
 
 #  define UINT8 unsigned char
