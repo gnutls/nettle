@@ -9,6 +9,28 @@ AM_INIT_AUTOMAKE(nettle, 1.5)
 
 AM_CONFIG_HEADER(config.h)
 
+# Command line options
+AC_ARG_WITH(include-path,
+  AC_HELP_STRING([--with-include-path], [A colon-separated list of directories to search for include files]),,
+  [with_include_path=''])
+
+if test x$with_include_path != x ; then
+  CPPFLAGS="$CPPFLAGS -I `echo $with_include_path | sed 's/:/ -I /g'`"
+fi
+
+AC_ARG_WITH(lib-path,
+  AC_HELP_STRING([--with-lib-path], [A colon-separated list of directories to search for libraries]),,
+  [with_lib_path=''])
+
+if test x$with_lib_path != x ; then
+  LDFLAGS="-L `echo $with_lib_path | sed 's/:/ -L /g'`"
+fi
+
+LSH_RPATH_INIT([`echo $with_lib_path | sed 's/:/ /g'` \
+    `echo $exec_prefix | sed "s@^NONE@$prefix/lib@g" | sed "s@^NONE@$ac_default_prefix/lib@g"` \
+    /usr/local/lib /sw/local/lib /sw/lib \
+    /usr/gnu/lib /opt/gnu/lib /sw/gnu/lib /usr/freeware/lib /usr/pkg/lib])
+
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_MAKE_SET
@@ -39,6 +61,8 @@ AC_CHECK_LIB(gmp, __gmpz_getlimbn,,
 [GNU MP not found, or not 3.1 or up, see http://www.swox.com/gmp.
 Support for public key algorithms will be unavailable.])])
 
+# Add -R flags needed to run programs linked with gmp
+LSH_RPATH_FIX
 
 # Set these flags *last*, or else the test programs won't compile
 if test x$GCC = xyes ; then
