@@ -5,7 +5,7 @@ noinst_PROGRAMS = desdata
 libnettleincludedir = $(includedir)/nettle
 
 lib_LIBRARIES = libnettle.a
-libnettleinclude_HEADERS = aes.h arcfour.h blowfish.h cast128.h des.h \
+libnettleinclude_HEADERS = aes.h arcfour.h blowfish.h cast128.h des.h des-compat.h \
 			   serpent.h twofish.h \
 			   md5.h md5-compat.h sha1.h \
 			   cbc.h
@@ -14,7 +14,8 @@ libnettle_a_SOURCES = aes.c aes.h arcfour.c arcfour.h \
 		      cast128.c cast128.h cast128_sboxes.h \
 		      blowfish.h blowfish.c \
 		      cbc.c \
-		      des.c des.h des3.c desinfo.h desCode.h \
+		      des.c des.h desinfo.h desCode.h \
+		      des3.c des-compat.c des-compat.h \
 		      md5.c md5.h md5-compat.c md5-compat.h \
 		      sha1.c sha1.h \
 		      serpent.c serpent.h serpent_sboxes.h \
