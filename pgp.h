@@ -28,7 +28,9 @@
 
 #include <time.h>
 
-#include "bignum.h"
+/* FIXME: User must include bignum.h before this file, in order to get
+   mpz_t defined. We don't do that here, in order to kludge through
+   compilation without public key support and without gmp.h. */
 
 /* Name mangling */
 #define pgp_put_uint32 nettle_pgp_put_uint32

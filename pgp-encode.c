@@ -31,16 +31,23 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "pgp.h"
+#if HAVE_LIBGMP
+# include "bignum.h"
+# include "pgp.h"
+#else /* !HAVE_LIBGMP */
+/* Kludge to make it possible to include pgp.h */
+# define mpz_t int
+# include "pgp.h"
+# undef mpz_t
+#endif /* !HAVE_LIBGMP */
+
+#if WITH_PUBLIC_KEY
+# include "rsa.h"
+#endif
 
 #include "base64.h"
 #include "buffer.h"
 #include "macros.h"
-
-#if WITH_PUBLIC_KEY
-# include "bignum.h"
-# include "rsa.h"
-#endif /* WITH_PUBLIC_KEY */
 
 int
 pgp_put_uint32(struct nettle_buffer *buffer, uint32_t i)
@@ -64,6 +71,7 @@ pgp_put_uint16(struct nettle_buffer *buffer, unsigned i)
   return 1;
 }
 
+#if HAVE_LIBGMP
 int
 pgp_put_mpi(struct nettle_buffer *buffer, const mpz_t x)
 {
@@ -85,6 +93,7 @@ pgp_put_mpi(struct nettle_buffer *buffer, const mpz_t x)
 
   return 1;
 }
+#endif
 
 int
 pgp_put_string(struct nettle_buffer *buffer,
