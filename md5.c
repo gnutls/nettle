@@ -91,7 +91,7 @@ md5_update(struct md5_ctx *ctx,
 /* Final wrapup - pad to MD5_DATA_SIZE-byte boundary with the bit
  * pattern 1 0* (64-bit count of bits processed, LSB-first) */
 
-void
+static void
 md5_final(struct md5_ctx *ctx)
 {
   uint32_t data[MD5_DATA_LENGTH];
@@ -136,7 +136,7 @@ md5_final(struct md5_ctx *ctx)
 }
 
 void
-md5_digest(const struct md5_ctx *ctx,
+md5_digest(struct md5_ctx *ctx,
 	   unsigned length,
 	   uint8_t *digest)
 {
@@ -146,6 +146,8 @@ md5_digest(const struct md5_ctx *ctx,
   
   assert(length <= MD5_DIGEST_SIZE);
 
+  md5_final(ctx);
+  
   words = length / 4;
   leftover = length % 4;
   
@@ -165,6 +167,7 @@ md5_digest(const struct md5_ctx *ctx,
 	   j++, word >>= 8)
 	digest[j] = word & 0xff;
     }
+  md5_init(ctx);
 }
 
 /* MD5 functions */

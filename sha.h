@@ -53,10 +53,7 @@ sha1_update(struct sha1_ctx *ctx,
 	    const uint8_t *data);
 
 void
-sha1_final(struct sha1_ctx *ctx);
-
-void
-sha1_digest(const struct sha1_ctx *ctx,
+sha1_digest(struct sha1_ctx *ctx,
 	    unsigned length,
 	    uint8_t *digest);
 
@@ -85,10 +82,7 @@ sha256_update(struct sha256_ctx *ctx,
 	      const uint8_t *data);
 
 void
-sha256_final(struct sha256_ctx *ctx);
-
-void
-sha256_digest(const struct sha256_ctx *ctx,
+sha256_digest(struct sha256_ctx *ctx,
 	      unsigned length,
 	      uint8_t *digest);
 

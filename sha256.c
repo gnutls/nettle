@@ -268,7 +268,7 @@ sha256_update(struct sha256_ctx *ctx,
 /* Final wrapup - pad to SHA1_DATA_SIZE-byte boundary with the bit pattern
    1 0* (64-bit count of bits processed, MSB-first) */
 
-void
+static void
 sha256_final(struct sha256_ctx *ctx)
 {
   uint32_t data[SHA256_DATA_LENGTH];
@@ -312,7 +312,7 @@ sha256_final(struct sha256_ctx *ctx)
 }
 
 void
-sha256_digest(const struct sha256_ctx *ctx,
+sha256_digest(struct sha256_ctx *ctx,
 	      unsigned length,
 	      uint8_t *digest)
 {
@@ -322,6 +322,8 @@ sha256_digest(const struct sha256_ctx *ctx,
   
   assert(length <= SHA256_DIGEST_SIZE);
 
+  sha256_final(ctx);
+  
   words = length / 4;
   leftover = length % 4;
 
@@ -351,4 +353,5 @@ sha256_digest(const struct sha256_ctx *ctx,
 	  digest[--j] = (word >> 24) & 0xff;
 	}
     }
+  sha256_init(ctx);
 }

@@ -51,10 +51,7 @@ md5_update(struct md5_ctx *ctx,
 	   const uint8_t *data);
 
 void
-md5_final(struct md5_ctx *ctx);
-
-void
-md5_digest(const struct md5_ctx *ctx,
+md5_digest(struct md5_ctx *ctx,
 	   unsigned length,
 	   uint8_t *digest);
 
