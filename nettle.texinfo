@@ -1190,11 +1190,11 @@ should also be hard to compute the key given only messages and
 corresponding @acronym{MAC}s.
 
 Keyed hash functions are useful primarily for message authentication,
-when the Alice and Bob shares a secret: The sender, Alice, computes the
+when Alice and Bob shares a secret: The sender, Alice, computes the
 @acronym{MAC} and attaches it to the message. The receiver, Bob, also computes
 the @acronym{MAC} of the message, using the same key, and compares that
 to Alice's value. If they match, Bob can be assured that
-the message has not been modified on it's way from Alice.
+the message has not been modified on its way from Alice.
 
 However, unlike digital signatures, this assurance is not transferable.
 Bob can't show the message and the @acronym{MAC} to a third party and
@@ -1204,7 +1204,7 @@ sides, and anyone knowing the key can create a correct @acronym{MAC} for
 any message. If Bob believes that only he and Alice knows the key, and
 he knows that he didn't attach a @acronym{MAC} to a particular message,
 he knows it must be Alice who did it. However, the third party can't
-distinguish between @acronym{MAC} created by Alice and one created by
+distinguish between a @acronym{MAC} created by Alice and one created by
 Bob.
 
 Keyed hash functions are typically a lot faster than digital signatures
