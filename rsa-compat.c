@@ -76,10 +76,18 @@ R_SignFinal(R_SIGNATURE_CTX *ctx,
   nettle_mpz_init_set_str_256(k.c,
                               MAX_RSA_MODULUS_LEN, key->coefficient);
 
-  if (rsa_init_private_key(&k) && (k.pub.size <= MAX_RSA_MODULUS_LEN))
+  if (rsa_prepare_private_key(&k) && (k.pub.size <= MAX_RSA_MODULUS_LEN))
     {
+      mpz_t s;
+      mpz_init(s);
+
+      rsa_md5_sign(&k, &ctx->hash, s);
+      nettle_mpz_get_str_256(k.pub.size, signature, s);
+
+      mpz_clear(s);
+
       *length = k.pub.size;
-      rsa_md5_sign(&k, &ctx->hash, signature);
+
       res = RE_SUCCESS;
     }
   else
@@ -126,10 +134,18 @@ R_VerifyFinal(R_SIGNATURE_CTX *ctx,
                               MAX_RSA_MODULUS_LEN, key->modulus);
   nettle_mpz_init_set_str_256(k.e,
                               MAX_RSA_MODULUS_LEN, key->exponent);
+  
+  if (rsa_prepare_public_key(&k) && (k.size == length))
+    {
+      mpz_t s;
+  
+      nettle_mpz_init_set_str_256(s,
+				  k.size, signature);
+      res = rsa_md5_verify(&k, &ctx->hash, s)
+	? RE_SUCCESS : RE_SIGNATURE;
 
-  if (rsa_init_public_key(&k) && (k.size == length))
-    res = rsa_md5_verify(&k, &ctx->hash, signature)
-      ? RE_SUCCESS : RE_SIGNATURE;
+      mpz_clear(s);
+    }
   else
     res = RE_PUBLIC_KEY;
 
