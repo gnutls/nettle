@@ -305,6 +305,7 @@ This chapter describes all the Nettle functions, grouped by family.
 * Cipher functions::            
 * Cipher Block Chaining::       
 * Miscellaneous functions::     
+* Compatibility functions::     
 @end menu
 
 @node Hash functions, Cipher functions, Reference, Reference
@@ -963,7 +964,7 @@ the types of @var{f} and @var{ctx} don't match, e.g. if you try to use
 an @code{struct aes_ctx} context with the @code{des_encrypt} function.
 
 
-@node Miscellaneous functions,  , Cipher Block Chaining, Reference
+@node Miscellaneous functions, Compatibility functions, Cipher Block Chaining, Reference
 @comment  node-name,  next,  previous,  up
 @section Miscellaneous functions
 
@@ -974,6 +975,34 @@ similar to the ANSI-C @code{memcpy} function.
 @end deftypefun
 
 @code{memxor} is declared in @file{<nettle/memxor.h>}.
+
+@node Compatibility functions,  , Miscellaneous functions, Reference
+@comment  node-name,  next,  previous,  up
+@section Compatibility functions
+
+For convenience, Nettle includes alternative interfaces to some
+algorithms, for compatibilty with some other popular crypto toolkits.
+These are not fully documented here; refer to the source or to the
+documentation for the original implementation.
+
+MD5 is defined in [RFCXXX], which includes a reference implementation.
+Nettle defines a compatible interface to MD5 in
+@file{<nettle/md5-compat.h>}. This file defines the typedef
+@code{MD5_CTX}, and declares the functions @code{MD5Init}, @code{MD5Update} and
+@code{MD5Final}.
+
+Eric Young's "libdes" (also part of OpenSSL) is a quite popular DES
+implementation. Nettle includes a subset if it's interface in
+@file{<nettle/des-compat.h>}. This file defines the typedefs
+@code{des_key_schedule} and @code{des_cblock}, two constants
+@code{DES_ENCRYPT} and @code{DES_DECRYPT}, and declares one global
+variable @code{des_check_key}, and the functions @code{des_cbc_cksum}
+@code{des_cbc_encrypt}, @code{des_ecb2_encrypt},
+@code{des_ecb3_encrypt}, @code{des_ecb_encrypt},
+@code{des_ede2_cbc_encrypt}, @code{des_ede3_cbc_encrypt},
+@code{des_is_weak_key}, @code{des_key_sched}, @code{des_ncbc_encrypt}
+@code{des_set_key}, and @code{des_set_odd_parity}.
+
 
 @node Installation, Index, Reference, Top
 @comment  node-name,  next,  previous,  up
