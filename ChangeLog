@@ -1,3 +1,19 @@
+2004-08-24  Niels Möller  <niels@s3.kth.se>
+
+	Integrated arctwo patch from Simon Josefsson.
+	* testsuite/Makefile.am (noinst_PROGRAMS): Added arctwo-test.
+
+	* Makefile.am (libnettleinclude_HEADERS): Added arctwo.h.
+	(libnettle_a_SOURCES): Added arctwo.c, arctwo.h and arctwo-meta.c.
+
+	* nettle-meta.h (nettle_arctwo40, nettle_arctwo64)
+	(nettle_arctwo64, nettle_arctwo_gutmann128): Declare ciphers.
+
+	* arctwo-meta.c, arctwo.c, arctwo.h, testsuite/arctwo-test.c: New
+	files.
+
+	* macros.h (LE_READ_UINT16, LE_WRITE_UINT16): New macros.
+
 2004-08-23  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/md5-test.c (test_main): Added collision, found in 2004.
