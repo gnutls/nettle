@@ -1,3 +1,21 @@
+NEWS for the 1.10 release
+
+	Nettle should now compile also on Tru64, Darwin, FreeBSD and
+	Windows. (The only tested windows build uses the rntcl rsh
+	wrapper to run the command line M$ C compiler "cl". See
+	http://pike.ida.liu.se for those tools, I don't know all
+	details about the Pike team's windows setup).
+
+	There are some known testsuite failures, on Windows and on one
+	of the xenofarm HPUX machines, see
+	http://www.lysator.liu.se/~nisse/xeno-lsh/latest.html. Help
+	tracking these down is appreciated.
+
+	There are no new features.
+	
+	This release is intended to be binary compatible with
+	nettle-1.8 and nettle-1.9.
+	
 NEWS for the 1.9 release
 
 	Optimized C implementation of arcfour. Optimized x86
