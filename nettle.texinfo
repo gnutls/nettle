@@ -185,6 +185,15 @@ Released into the public domain.
 The implementation of the DES cipher is written by Dana L. How, and
 released under the LGPL.
 
+@item MD2
+The implementation of MD2 is written by Andrew Kuchling, and hacked
+some by Andreas Sigfridsson and Niels Möller. Python Cryptography
+Toolkit license (essentially public domain).
+
+@item MD4
+This is almost the same code as for MD5 below, with modifications by
+Marcus Comstedt. Released into the public domain.
+
 @item MD5
 The implementation of the MD5 message digest is written by Colin Plumb.
 It has been hacked some more by Andrew Kuchling and Niels Möller.
@@ -298,6 +307,11 @@ Hash functions are useful as building blocks for digital signatures,
 message authentication codes, pseudo random generators, association of
 unique id:s to documents, and many other things.
 
+There are several fairly popular hash functions. Collisions have been
+found the the compression function of MD4, and in variants of MD5.
+These functions are therefore not recommended for new applications.
+The recommended hash function for new applications is SHA1.
+
 @subsection @acronym{MD5}
 
 MD5 is a message digest function constructed by Ronald Rivest, and
@@ -341,6 +355,79 @@ its initial state, so you can start over calling @code{md5_update} to
 hash new data.
 
 To start over, you can call @code{md5_init} at any time.
+
+@subsection @acronym{MD2}
+
+MD2 is another hash function of Ronald Rivests', described in
+@cite{RFC 1319}. It outputs message digests of 128 bits, or 16 octets.
+Nettle defines MD2 in @file{<nettle/md2.h>}.
+
+@deftp {Context struct} {struct md2_ctx}
+@end deftp
+
+@defvr Constant MD2_DIGEST_SIZE
+The size of an MD2 digest, i.e. 16.
+@end defvr
+
+@defvr Constant MD2_DATA_SIZE
+The internal block size of MD2.
+@end defvr
+
+@deftypefun void md2_init (struct md2_ctx *@var{ctx})
+Initialize the MD2 state.
+@end deftypefun
+
+@deftypefun void md2_update (struct md2_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+Hash some more data.
+@end deftypefun
+
+@deftypefun void md2_digest (struct md2_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing it
+to @var{digest}. @var{length} may be smaller than
+@code{MD2_DIGEST_SIZE}, in which case only the first @var{length}
+octets of the digest are written.
+
+This function also resets the context in the same way as
+@code{md2_init}.
+@end deftypefun
+
+@subsection @acronym{MD4}
+
+MD4 is a predecessor of MD5, described in @cite{RFC 1320}. Like MD5,
+it is constructed by Ronald Rivest. It outputs message digests of 128
+bits, or 16 octets. Nettle defines MD4 in @file{<nettle/md4.h>}.
+Because of discovered weaknesses, use of MD4 is not recommended, but
+it is sometimes needed for compatibility with existing applications
+and protocols.
+
+@deftp {Context struct} {struct md4_ctx}
+@end deftp
+
+@defvr Constant MD4_DIGEST_SIZE
+The size of an MD4 digest, i.e. 16.
+@end defvr
+
+@defvr Constant MD4_DATA_SIZE
+The internal block size of MD4.
+@end defvr
+
+@deftypefun void md4_init (struct md4_ctx *@var{ctx})
+Initialize the MD4 state.
+@end deftypefun
+
+@deftypefun void md4_update (struct md4_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+Hash some more data.
+@end deftypefun
+
+@deftypefun void md4_digest (struct md4_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing it
+to @var{digest}. @var{length} may be smaller than
+@code{MD4_DIGEST_SIZE}, in which case only the first @var{length}
+octets of the digest are written.
+
+This function also resets the context in the same way as
+@code{md4_init}.
+@end deftypefun
 
 @subsection @acronym{SHA1}
 
@@ -495,7 +582,7 @@ addition to encrypting the messages. Popular choices are Message
 Authentication Codes like @acronym{HMAC-SHA1} @pxref{Keyed hash
 functions}, or digital signatures like @acronym{RSA}.
 
-Some ciphers have so called "weak keys", keys that results in
+Some ciphers have so called ``weak keys'', keys that results in
 undesirable structure after the key setup processing, and should be
 avoided. In Nettle, the presence of weak keys for a cipher mean that the
 key setup function can fail, so you have to check its return value. In
@@ -561,7 +648,7 @@ ARCFOUR is a stream cipher, also known under the trade marked name RC4,
 and it is one of the fastest ciphers around. A problem is that the key
 setup of ARCFOUR is quite weak, you should never use keys with
 structure, keys that are ordinary passwords, or sequences of keys like
-"secret:1", "secret:2", @enddots{}. If you have keys that don't look
+``secret:1'', ``secret:2'', @enddots{}. If you have keys that don't look
 like random bit strings, and you want to use ARCFOUR, always hash the
 key before feeding it to ARCFOUR. For example
 
@@ -708,7 +795,7 @@ key.
 The key size of DES is so small that keys can be found by brute force,
 using specialized hardware or lots of ordinary work stations in
 parallel. One shouldn't be using plain DES at all today, if one uses
-DES at all one should be using DES3 or "triple DES", see below.
+DES at all one should be using DES3 or ``triple DES'', see below.
 
 DES also has some weak keys. Nettle defines DES in @file{<nettle/des.h>}.
 
@@ -760,10 +847,10 @@ The mode of operation is a little peculiar: the middle DES box is wired
 in the reverse direction. To encrypt a block with DES3, you encrypt it
 using the first 56 bits of the key, then @emph{decrypt} it using the
 middle 56 bits of the key, and finally encrypt it again using the last
-56 bits of the key. This is known as "ede" triple-DES, for
-"encrypt-decrypt-encrypt".
+56 bits of the key. This is known as ``ede'' triple-DES, for
+``encrypt-decrypt-encrypt''.
 
-The "ede" construction provides some backward compatibility, as you get
+The ``ede'' construction provides some backward compatibility, as you get
 plain single DES simply by feeding the same key to all three boxes. That
 should help keeping down the gate count, and the price, of hardware
 circuits implementing both plain DES and DES3.
@@ -771,14 +858,14 @@ circuits implementing both plain DES and DES3.
 DES3 has a key size of 168 bits, but just like plain DES, useless parity
 bits are inserted, so that keys are represented as 24 octets (192 bits).
 As a 112 bit key is large enough to make brute force attacks
-impractical, some applications uses a "two-key" variant of triple-DES.
+impractical, some applications uses a ``two-key'' variant of triple-DES.
 In this mode, the same key bits are used for the first and the last DES
 box in the pipe, while the middle box is keyed independently. The
 two-key variant is believed to be secure, i.e. there are no known
 attacks significantly better than brute force.
 
 Naturally, it's simple to implement triple-DES on top of Nettle's DES
-functions. Nettle includes an implementation of three-key "ede"
+functions. Nettle includes an implementation of three-key ``ede''
 triple-DES, it is defined in the same place as plain DES,
 @file{<nettle/des.h>}.
 
@@ -1232,7 +1319,7 @@ Nettle, and you need to link your programs with @code{-lgmp}.
 
 The concept of @dfn{Public-key} encryption and digital signatures was
 discovered by Whitfield Diffie and Martin E. Hellman and described in a
-paper 1976. In traditional, "symmetric", cryptography, sender and
+paper 1976. In traditional, ``symmetric'', cryptography, sender and
 receiver share the same keys, and these keys must be distributed in a
 secure way. And if there are many users or entities that need to
 communicate, each @emph{pair} needs a shared secret key known by nobody
@@ -1274,7 +1361,7 @@ The verification operation takes a public key, a message, and a string
 that is claimed to be a signature on the message, and returns true or
 false. If it returns true, that means that the three input values
 matched, and the verifier can be sure that someone went through with the
-signature operation on that very message, and that the "someone" also
+signature operation on that very message, and that the ``someone'' also
 knows the private key corresponding to the public key.
 
 The desired properties of a digital signature algorithm are as follows:
@@ -1288,9 +1375,9 @@ authorization. A server can be configured with a public key, such that
 any client that connects to the service is given a random nonce message.
 If the server gets a reply with a correct signature matching the nonce
 message and the configured public key, the client is granted access. So
-the configuration of the server can be understood as "grant access to
+the configuration of the server can be understood as ``grant access to
 whoever knows the private key corresponding to this particular public
-key, and to no others".
+key, and to no others''.
 
 
 @menu
@@ -1309,7 +1396,7 @@ patented in 1983. The patent expired on September 20, 2000, and since
 that day, @acronym{RSA} can be used freely.
 
 It's remarkably simple to describe the trapdoor function behind
-@acronym{RSA}. The "one-way"-function used is
+@acronym{RSA}. The ``one-way''-function used is
 
 @example
 F(x) = x^e mod n
@@ -1358,7 +1445,7 @@ The most common signature operation for @acronym{RSA} is defined in
 @cite{PKCS#1}, a specification by RSA Laboratories. The message to be
 signed is first hashed using a cryptographic hash function, e.g.
 @acronym{MD5} or @acronym{SHA1}. Next, some padding, the @acronym{ASN.1}
-"Algorithm Identifier" for the hash function, and the message digest
+``Algorithm Identifier'' for the hash function, and the message digest
 itself, are concatenated and converted to a number @code{x}. The
 signature is computed from @code{x} and the private key as @code{s = x^d
 mod n}@footnote{Actually, the computation is not done like this, it is
@@ -1406,8 +1493,8 @@ deallocated by calling one of
 Calls @code{mpz_clear} on all numbers in the key struct.
 @end deftypefun
 
-In general, Nettle's @acronym{RSA} functions deviates from Nettle's "no
-memory allocation"-policy. Space for all the numbers, both in the key structs
+In general, Nettle's @acronym{RSA} functions deviates from Nettle's ``no
+memory allocation''-policy. Space for all the numbers, both in the key structs
 above, and temporaries, are allocated dynamically. For information on how
 to customize allocation, see
 @xref{Custom Allocation,,GMP Allocation,gmp, GMP Manual}.
@@ -1713,7 +1800,7 @@ two reasons:
 @item
 It's too easy for an attacker to guess the initial seed. Even if it will
 take some 2^32 tries before he guesses right, that's far too easy. For
-example, if the process id is 16 bits, the resolution of "current time"
+example, if the process id is 16 bits, the resolution of ``current time''
 is one second, and the attacker knows what day the generator was seeded,
 there are only about 2^32 possibilities to try if all possible values
 for the process id and time-of-day are tried.
@@ -1731,7 +1818,7 @@ are mostly independent of the rest of the generator. The initial state
 of the generator (its seed) must be unguessable by the attacker. So
 what's unguessable? It depends on what the attacker already knows. The
 concept used in information theory to reason about such things is called
-"entropy", or "conditional entropy" (not to be confused with the
+``entropy'', or ``conditional entropy'' (not to be confused with the
 thermodynamic concept with the same name). A reasonable requirement is
 that the seed contains a conditional entropy of at least some 80-100
 bits. This property can be explained as follows: Allow the attacker to
@@ -1744,7 +1831,7 @@ bits.
 Let's look at an example. Say information about timing of received
 network packets is used in the seeding process. If there is some random
 network traffic going on, this will contribute some bits of entropy or
-"unguessability" to the seed. However, if the attacker can listen in to
+``unguessability'' to the seed. However, if the attacker can listen in to
 the local network, or if all but a small number of the packets were
 transmitted by machines that the attacker can monitor, this additional
 information makes the seed easier for the attacker to figure out. Even
@@ -1816,11 +1903,11 @@ How do we generate output from this seed, and how much can we get? Some
 generators (notably the Linux @file{/dev/random} generator) tries to
 estimate available entropy and restrict the amount of output. The goal
 is that if you read 128 bits from @file{/dev/random}, you should get 128
-"truly random" bits. This is a property that is useful in some
+``truly random'' bits. This is a property that is useful in some
 specialized circumstances, for instance when generating key material for
 a one time pad, or when working with unconditional blinding, but in most
 cases, it doesn't matter much. For most application, there's no limit on
-the amount of useful "random" data that we can generate from a small
+the amount of useful ``random'' data that we can generate from a small
 seed; what matters is that the seed is unguessable and that the
 generator has good cryptographic properties.
 
@@ -1864,7 +1951,7 @@ hashed properly before it is used with @code{arcfour_set_key}. There's
 no single natural way to reseed it, but if you need reseeding, you
 should be using Yarrow instead.
 
-The "lagged Fibonacci" generator in @file{<nettle/knuth-lfib.h>} is a
+The ``lagged Fibonacci'' generator in @file{<nettle/knuth-lfib.h>} is a
 fast generator with good statistical properties, but is @strong{not} for
 cryptographic use, and therefore not documented here. It is included
 mostly because the Nettle test suite needs to generate some test data
@@ -1890,12 +1977,12 @@ Yarrow-256, as implemented by Nettle, you have to consult the source
 code. Maybe a complete specification can be written later.
 
 Yarrow can use many sources (at least two are needed for proper
-reseeding), and two randomness "pools", referred to as the "slow pool" and
-the "fast pool". Input from the sources is fed alternatingly into the
+reseeding), and two randomness ``pools'', referred to as the ``slow pool'' and
+the ``fast pool''. Input from the sources is fed alternatingly into the
 two pools. When one of the sources has contributed 100 bits of entropy
-to the fast pool, a "fast reseed" happens and the fast pool is mixed
+to the fast pool, a ``fast reseed'' happens and the fast pool is mixed
 into the internal state. When at least two of the sources have
-contributed at least 160 bits each to the slow pool, a "slow reseed"
+contributed at least 160 bits each to the slow pool, a ``slow reseed''
 takes place. The contents of both pools are mixed into the internal
 state. These procedures should ensure that the generator will eventually
 recover after a key compromise.
@@ -2028,7 +2115,7 @@ Nettle defines a compatible interface to MD5 in
 @code{MD5_CTX}, and declares the functions @code{MD5Init}, @code{MD5Update} and
 @code{MD5Final}.
 
-Eric Young's "libdes" (also part of OpenSSL) is a quite popular DES
+Eric Young's ``libdes'' (also part of OpenSSL) is a quite popular DES
 implementation. Nettle includes a subset if it's interface in
 @file{<nettle/des-compat.h>}. This file defines the typedefs
 @code{des_key_schedule} and @code{des_cblock}, two constants
@@ -2064,8 +2151,6 @@ some cream or milk
 
 Gather 1 liter fresh nettles. Use gloves! Small, tender shoots are
 preferable but the tops of larger nettles can also be used.
-
-@c replace "hack" with "chop"?
 
 Rinse the nettles very well. Boil them for 10 minutes in lightly salted
 water. Strain the nettles and save the water. Hack the nettles. Melt the
