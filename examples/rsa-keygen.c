@@ -22,9 +22,6 @@
  * MA 02111-1307, USA.
  */
 
-/* For asprintf */
-#define _GNU_SOURCE
-
 #include "buffer.h"
 #include "rsa.h"
 #include "sexp.h"
@@ -95,13 +92,16 @@ main(int argc, char **argv)
       return EXIT_FAILURE;
     }
 
-  asprintf(&pub_name, "%s.pub", priv_name);
-  if (!pub_name)
+  pub_name = malloc(strlen(priv_name) + 5);  
+
+  if (pub_name)
+    sprintf(pub_name, "%s.pub", priv_name);
+  else
     {
       werror("Memory exhausted.\n");
       return EXIT_FAILURE;
     }
-  
+
   /* NOTE: No sources */
   yarrow256_init(&yarrow, 0, NULL);
 
