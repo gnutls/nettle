@@ -47,7 +47,7 @@ key_addition_8to32:
 	add	%o0, 1, %o0
 	! val in %o4 now
 
-		! out[i] = keys[i] ^ val;  i++
+	! out[i] = keys[i] ^ val;  i++
 	sll	%o5, 2, %g3
 	ld	[%o1+%g3], %g2
 	add	%o5, 1, %o5
@@ -59,35 +59,26 @@ key_addition_8to32:
 	retl
 	nop
 
+	! FIXME:	 Inline, unroll?
 	.size	key_addition_8to32,.LLfe1-key_addition_8to32
 	.align 4
 	.type	key_addition32,#function
 	.proc	020
 key_addition32:
-.LLFB2:
-.LLM14:
-	!#PROLOGUE# 0
-	!#PROLOGUE# 1
-.LLBB3:
 	mov	%o0, %o4
-.LLM15:
 	mov	0, %o3
 .LL26:
-.LLM16:
 	sll	%o3, 2, %g2
 	ld	[%o1+%g2], %g3
-.LLM17:
 	add	%o3, 1, %o3
-.LLM18:
 	ld	[%o4+%g2], %o0
-.LLM19:
 	cmp	%o3, 3
-.LLM20:
+
 	xor	%g3, %o0, %g3
-.LLM21:
+
 	bleu	.LL26
 	st	%g3, [%o2+%g2]
-.LLBE3:
+
 	retl
 	nop
 .LLFE2:
@@ -97,40 +88,31 @@ key_addition32:
 	.type	key_addition32to8,#function
 	.proc	020
 key_addition32to8:
-.LLFB3:
-.LLM22:
-	!#PROLOGUE# 0
-	!#PROLOGUE# 1
-.LLBB4:
 	mov	%o0, %o5
-.LLM23:
 	mov	0, %o4
-.LLM24:
 	sll	%o4, 2, %g2
 .LL42:
 	ld	[%o1+%g2], %o0
-.LLM25:
 	mov	0, %o3
-.LLM26:
 	ld	[%o5+%g2], %g3
 	xor	%g3, %o0, %g3
+	! FIXME:	Unroll inner loop
 .LL37:
-.LLM27:
 	sll	%o3, 3, %g2
 	srl	%g3, %g2, %g2
 	stb	%g2, [%o2]
-.LLM28:
+
 	add	%o3, 1, %o3
 	cmp	%o3, 3
-.LLM29:
+
 	bleu	.LL37
 	add	%o2, 1, %o2
-.LLM30:
+
 	add	%o4, 1, %o4
 	cmp	%o4, 3
 	bleu	.LL42
 	sll	%o4, 2, %g2
-.LLBE4:
+
 	retl
 	nop
 .LLFE3:
@@ -162,7 +144,7 @@ idx:
 	.asciz	"!(length % 16)"
 	.align 8
 .LLC1:
-	.asciz	"aes.c"
+	.asciz	"aes.asm"
 	.align 8
 .LLC2:
 	.asciz	"aes_encrypt"
@@ -172,30 +154,21 @@ idx:
 	.type	aes_encrypt,#function
 	.proc	020
 aes_encrypt:
-.LLFB4:
-.LLM31:
-	!#PROLOGUE# 0
 	save	%sp, -136, %sp
-.LLCFI0:
-	!#PROLOGUE# 1
-.LLM32:
-.LLBB5:
+
 	andcc	%i1, 15, %g0
-	bne	.LL76
+	bne	.Lencrypt_fail
 	cmp	%i1, 0
-.LLM33:
-	be	.LL71
+	be	.Lencrypt_end
 	sethi	%hi(idx), %i4
 	add	%fp, -24, %l6
 	add	%fp, -40, %l5
 	or	%i4, %lo(idx), %i5
-.LL49:
-.LLM34:
+.Lencrypt_block:
 	mov	%i3, %o0
 	mov	%i0, %o1
 	call	key_addition_8to32, 0
 	mov	%l6, %o2
-.LLM35:
 	ld	[%i0+480], %o0
 	mov	1, %l3
 	cmp	%l3, %o0
@@ -208,11 +181,9 @@ aes_encrypt:
 	or	%i4, %lo(idx), %l7
 	add	%i0, 16, %l2
 .LL53:
-.LLM36:
 	mov	0, %o7
 	add	%l7, 48, %g3
 .LL57:
-.LLM37:
 	ld	[%g3], %o0
 	sll	%o7, 2, %g2
 	ld	[%g3-16], %o1
@@ -247,26 +218,20 @@ aes_encrypt:
 	sll	%o0, 8, %o0
 	or	%o0, %o3, %o0
 	xor	%o1, %o0, %o1
-.LLM38:
 	add	%o7, 1, %o7
-.LLM39:
 	st	%o1, [%l4+%g2]
-.LLM40:
 	cmp	%o7, 3
 	bleu	.LL57
 	add	%g3, 4, %g3
-.LLM41:
 	mov	%l2, %o1
 	mov	%l5, %o0
 	call	key_addition32, 0
 	mov	%l6, %o2
-.LLM42:
 	ld	[%i0+480], %o0
 	add	%l3, 1, %l3
 	cmp	%l3, %o0
 	blu	.LL53
 	add	%l2, 16, %l2
-.LLM43:
 	sethi	%hi(64512), %o0
 .LL77:
 	or	%o0, 768, %l3
@@ -277,60 +242,37 @@ aes_encrypt:
 	mov	%l5, %l0
 	add	%i5, 48, %g2
 .LL63:
-.LLM44:
 	ld	[%g2-32], %o0
-.LLM45:
 	sll	%o7, 2, %o5
-.LLM46:
 	ld	[%g2-16], %o2
-.LLM47:
 	sll	%o0, 2, %o0
 	ld	[%g3+%o0], %o3
-.LLM48:
 	sll	%o2, 2, %o2
-.LLM49:
 	ld	[%g2], %o4
-.LLM50:
 	and	%o3, %l3, %o3
-.LLM51:
 	ld	[%g3+%o2], %o1
-.LLM52:
 	sll	%o4, 2, %o4
-.LLM53:
 	ld	[%g3+%o5], %o0
-.LLM54:
 	and	%o1, %l2, %o1
-.LLM55:
 	ld	[%g3+%o4], %o2
-.LLM56:
 	and	%o0, 255, %o0
-.LLM57:
 	or	%o0, %o3, %o0
-.LLM58:
 	or	%o0, %o1, %o0
-.LLM59:
 	and	%o2, %l1, %o2
 	or	%o0, %o2, %o0
-.LLM60:
 	add	%o7, 1, %o7
-.LLM61:
 	st	%o0, [%l0+%o5]
-.LLM62:
 	cmp	%o7, 3
 	bleu	.LL63
 	add	%g2, 4, %g2
-.LLM63:
 	sethi	%hi(_aes_sbox), %o0
 	or	%o0, %lo(_aes_sbox), %g3
 	mov	0, %o7
 	mov	%l5, %g2
 .LL68:
-.LLM64:
 	sll	%o7, 2, %o5
 	ld	[%g2+%o5], %o3
-.LLM65:
 	add	%o7, 1, %o7
-.LLM66:
 	srl	%o3, 8, %o0
 	and	%o0, 255, %o0
 	ldub	[%g3+%o0], %o4
@@ -347,24 +289,21 @@ aes_encrypt:
 	or	%o1, %o0, %o1
 	sll	%o2, 24, %o2
 	or	%o1, %o2, %o1
-.LLM67:
 	cmp	%o7, 3
 	bleu	.LL68
 	st	%o1, [%g2+%o5]
-.LLM68:
 	ld	[%i0+480], %o1
 	mov	%i2, %o2
 	sll	%o1, 4, %o1
 	add	%i0, %o1, %o1
 	call	key_addition32to8, 0
 	mov	%l5, %o0
-.LLM69:
 	add	%i3, 16, %i3
 	addcc	%i1, -16, %i1
-	bne	.LL49
+	bne	.Lencrypt_block
 	add	%i2, 16, %i2
-	b,a	.LL71
-.LL76:
+	b,a	.Lencrypt_end
+.Lencrypt_fail:
 	sethi	%hi(.LLC0), %o0
 	sethi	%hi(.LLC1), %o1
 	sethi	%hi(.LLC2), %o3
@@ -373,7 +312,7 @@ aes_encrypt:
 	or	%o3, %lo(.LLC2), %o3
 	call	__assert_fail, 0
 	mov	92, %o2
-.LL71:
+.Lencrypt_end:
 .LLBE5:
 	ret
 	restore
@@ -411,24 +350,20 @@ iidx:
 	.proc	020
 aes_decrypt:
 .LLFB5:
-.LLM70:
 	!#PROLOGUE# 0
 	save	%sp, -136, %sp
 .LLCFI1:
 	!#PROLOGUE# 1
-.LLM71:
 .LLBB6:
 	andcc	%i1, 15, %g0
 	bne	.LL111
 	cmp	%i1, 0
-.LLM72:
 	be	.LL106
 	sethi	%hi(iidx), %i4
 	add	%fp, -24, %l6
 	add	%fp, -40, %l5
 	add	%i0, 240, %i5
 .LL84:
-.LLM73:
 	ld	[%i0+480], %o1
 	mov	%i3, %o0
 	sll	%o1, 4, %o1
@@ -436,7 +371,6 @@ aes_decrypt:
 	add	%o1, 240, %o1
 	call	key_addition_8to32, 0
 	mov	%l6, %o2
-.LLM74:
 	ld	[%i0+480], %o0
 	addcc	%o0, -1, %l2
 	be	.LL107
@@ -449,11 +383,9 @@ aes_decrypt:
 	mov	%l6, %l0
 	or	%i4, %lo(iidx), %l7
 .LL88:
-.LLM75:
 	mov	0, %o7
 	add	%l7, 48, %g3
 .LL92:
-.LLM76:
 	ld	[%g3], %o0
 	sll	%o7, 2, %g2
 	ld	[%g3-16], %o1
@@ -488,25 +420,19 @@ aes_decrypt:
 	sll	%o0, 8, %o0
 	or	%o0, %o3, %o0
 	xor	%o1, %o0, %o1
-.LLM77:
 	add	%o7, 1, %o7
-.LLM78:
 	st	%o1, [%l4+%g2]
-.LLM79:
 	cmp	%o7, 3
 	bleu	.LL92
 	add	%g3, 4, %g3
-.LLM80:
 	mov	%l3, %o1
 	mov	%l5, %o0
 	call	key_addition32, 0
 	mov	%l6, %o2
-.LLM81:
 	addcc	%l2, -1, %l2
 	bne	.LL88
 	add	%l3, -16, %l3
 .LL107:
-.LLM82:
 	sethi	%hi(64512), %o0
 	or	%o0, 768, %l3
 	sethi	%hi(iidx), %o0
@@ -518,60 +444,37 @@ aes_decrypt:
 	mov	%l5, %l0
 	add	%o0, 48, %g2
 .LL98:
-.LLM83:
 	ld	[%g2-32], %o0
-.LLM84:
 	sll	%o7, 2, %o5
-.LLM85:
 	ld	[%g2-16], %o2
-.LLM86:
 	sll	%o0, 2, %o0
 	ld	[%g3+%o0], %o3
-.LLM87:
 	sll	%o2, 2, %o2
-.LLM88:
 	ld	[%g2], %o4
-.LLM89:
 	and	%o3, %l3, %o3
-.LLM90:
 	ld	[%g3+%o2], %o1
-.LLM91:
 	sll	%o4, 2, %o4
-.LLM92:
 	ld	[%g3+%o5], %o0
-.LLM93:
 	and	%o1, %l2, %o1
-.LLM94:
 	ld	[%g3+%o4], %o2
-.LLM95:
 	and	%o0, 255, %o0
-.LLM96:
 	or	%o0, %o3, %o0
-.LLM97:
 	or	%o0, %o1, %o0
-.LLM98:
 	and	%o2, %l1, %o2
 	or	%o0, %o2, %o0
-.LLM99:
 	add	%o7, 1, %o7
-.LLM100:
 	st	%o0, [%l0+%o5]
-.LLM101:
 	cmp	%o7, 3
 	bleu	.LL98
 	add	%g2, 4, %g2
-.LLM102:
 	sethi	%hi(_aes_isbox), %o0
 	or	%o0, %lo(_aes_isbox), %g3
 	mov	0, %o7
 	mov	%l5, %g2
 .LL103:
-.LLM103:
 	sll	%o7, 2, %o5
 	ld	[%g2+%o5], %o3
-.LLM104:
 	add	%o7, 1, %o7
-.LLM105:
 	srl	%o3, 8, %o0
 	and	%o0, 255, %o0
 	ldub	[%g3+%o0], %o4
@@ -588,16 +491,13 @@ aes_decrypt:
 	or	%o1, %o0, %o1
 	sll	%o2, 24, %o2
 	or	%o1, %o2, %o1
-.LLM106:
 	cmp	%o7, 3
 	bleu	.LL103
 	st	%o1, [%g2+%o5]
-.LLM107:
 	mov	%i2, %o2
 	mov	%l5, %o0
 	call	key_addition32to8, 0
 	mov	%i5, %o1
-.LLM108:
 	add	%i3, 16, %i3
 	addcc	%i1, -16, %i1
 	bne	.LL84
