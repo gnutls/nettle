@@ -27,7 +27,8 @@ env_program () {
 }
 
 test_program () {
-  testname=`basename "$1" -test`
+  testname=`basename "$1" .exe`
+  testname=`basename "$testname" -test`
   "$1"
   case "$?" in
       0)
