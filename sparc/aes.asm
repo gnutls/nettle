@@ -123,7 +123,10 @@ _aes_crypt:
 	ld	[idx-32], t1		! 1
 
 	! AES_SIDX2
-	ld	[idx-16], t2		! 2
+	! ld	[idx-16], t2		! 2
+	! IDX2(j) = j XOR 2
+	xor	i, 8, t2
+	
 	! wtxt[IDX1...]
 	add	wtxt, t1, t1		! 1
 	ldub	[t1+2], t1		! 1
@@ -162,6 +165,9 @@ _aes_crypt:
 	add	idx, 4, idx		
 
 	! Fetch roundkey
+	! FIXME: We could save one instruction
+	! if we kept a pointer to the current subkey,
+	! indexed by i.
 	ld	[ctx+round], t1
 	add	round, 4, round
 	
@@ -290,3 +296,36 @@ _aes_crypt:
 	! aes256 (ECB decrypt): 14.81s, 0.675MB/s
 	! aes256 (CBC encrypt): 22.65s, 0.442MB/s
 	! aes256 (CBC decrypt): 16.46s, 0.608MB/s
+
+	! After implementing double buffering
+	! aes128 (ECB encrypt): 12.59s, 0.794MB/s
+	! aes128 (ECB decrypt): 10.56s, 0.947MB/s
+	! aes128 (CBC encrypt): 17.91s, 0.558MB/s
+	! aes128 (CBC decrypt): 12.30s, 0.813MB/s
+	! 
+	! aes192 (ECB encrypt): 15.03s, 0.665MB/s
+	! aes192 (ECB decrypt): 12.56s, 0.796MB/s
+	! aes192 (CBC encrypt): 20.30s, 0.493MB/s
+	! aes192 (CBC decrypt): 14.26s, 0.701MB/s
+	! 
+	! aes256 (ECB encrypt): 17.30s, 0.578MB/s
+	! aes256 (ECB decrypt): 14.51s, 0.689MB/s
+	! aes256 (CBC encrypt): 22.75s, 0.440MB/s
+	! aes256 (CBC decrypt): 16.35s, 0.612MB/s
+	
+	! After reordering aes-encrypt.c and aes-decypt.c
+	! (the order probably causes strange cache-effects):
+	! aes128 (ECB encrypt): 9.21s, 1.086MB/s
+	! aes128 (ECB decrypt): 11.13s, 0.898MB/s
+	! aes128 (CBC encrypt): 14.12s, 0.708MB/s
+	! aes128 (CBC decrypt): 13.77s, 0.726MB/s
+	! 
+	! aes192 (ECB encrypt): 10.86s, 0.921MB/s
+	! aes192 (ECB decrypt): 13.17s, 0.759MB/s
+	! aes192 (CBC encrypt): 15.74s, 0.635MB/s
+	! aes192 (CBC decrypt): 15.91s, 0.629MB/s
+	! 
+	! aes256 (ECB encrypt): 12.71s, 0.787MB/s
+	! aes256 (ECB decrypt): 15.38s, 0.650MB/s
+	! aes256 (CBC encrypt): 17.49s, 0.572MB/s
+	! aes256 (CBC decrypt): 17.87s, 0.560MB/s
