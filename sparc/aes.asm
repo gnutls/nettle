@@ -41,6 +41,9 @@ _aes_crypt:
 	add	%fp, -40, tmp
 	! Compute xor, so that we can swap efficiently.
 	xor	wtxt, tmp, diff
+	
+	ld	[ctx + AES_NROUNDS], nround
+
 .Lblock_loop:
 	! Read src, and add initial subkey
 	mov	-4, i
@@ -92,7 +95,6 @@ _aes_crypt:
 	! bleu	.Lsource_loop
 	! add	%o3, 4, %o3
 
-	ld	[ctx + AES_NROUNDS], nround
 	mov	1, round
 
 	! 4*i:	i
