@@ -1,8 +1,32 @@
 2002-10-01  Niels Möller  <niels@s3.kth.se>
 
+	* examples/run-tests (test_program): Use basename.
+
+	* examples/teardown-env: Delete some more files.
+
+	* examples/run-tests (test_program): Strip directory part of
+	displayed name.
+
+	* examples/Makefile.am (TS_PROGS): New variable. Run tests.
+
+	* examples/io.c (read_file): Bug fix, used to overwrite pointer.
+
+	* examples/rsa-keygen.c (main): Bug fix, private key wasn't
+	written properly.
+
+	* testsuite/Makefile.am: Some cleanup of make check.
+
+	* examples/setup-env, examples/teardown-env: Test environment scripts.
+	* examples/rsa-verify-test, examples/rsa-sign-test: New test cases.
+
+	* examples/run-tests: New file (copied from lsh testsuite).
+
+	* examples/Makefile.am: Use EXTRA_PROGRAMS and @RSA_EXAMPLES@.
+
 	* examples/rsa-sign.c: No need to include config.h. Use werror
 	instead of fprintf.
 	* examples/rsa-verify.c: Likewise.
+	* examples/rsa-keygen.c: Likewise.
 
 	* examples/io.h: Forward declare struct rsa_public_key and struct
 	rsa_private_key, to avoid dependences on config.h. 
