@@ -528,8 +528,8 @@ test_dsa_key(struct dsa_public_key *pub,
 
   mpz_init(t);
 
-  ASSERT(mpz_sizeinbase(pub->q, 2) == 160);
-  ASSERT(mpz_sizeinbase(pub->p, 2) >= DSA_MINIMUM_BITS);
+  ASSERT(mpz_sizeinbase(pub->q, 2) == DSA_Q_BITS);
+  ASSERT(mpz_sizeinbase(pub->p, 2) >= DSA_MIN_P_BITS);
   
   ASSERT(mpz_probab_prime_p(pub->p, 10));
 

@@ -1,3 +1,8 @@
+2002-11-08  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* testsuite/testutils.c (test_dsa_key): Bugfix for renamed DSA
+	constant (noted by James Ralston).
+
 2002-11-07  Niels Möller  <niels@s3.kth.se>
 
 	* testsuite/run-tests: Copied new version rom lsh/src/testsuite.
