@@ -292,7 +292,7 @@ pgp_put_rsa_sha1_signature(struct nettle_buffer *buffer,
   if (!sub_packet_start)
     return 0;
 
-  if (pgp_put_sub_packet(buffer, PGP_SUBPACKET_ISSUER, 8, keyid))
+  if (pgp_put_sub_packet(buffer, PGP_SUBPACKET_ISSUER_KEY_ID, 8, keyid))
     {
       pgp_sub_packet_end(buffer, sub_packet_start);
       return 0;
