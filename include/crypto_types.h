@@ -13,6 +13,13 @@
 # define UINT8 unsigned INT8
 #else  /* !PIKE */
 
+/* FIXME: Reorganize the header files for definitions. This stuff
+ * should probably live in lsh_types.h, and object definitions should
+ * move into a separate header file.
+ *
+ * FIXME: some of the crypto implementations could well use the
+ * READ_UINT32 and WRITE_UINT32 macros. */
+
 # ifdef LSH
 #  ifdef HAVE_CONFIG_H
 #   include "config.h"
@@ -42,6 +49,16 @@
 #  define UINT16 unsigned short
 #  define UINT8 unsigned char
 # endif /* !PIKE */
+#endif
+
+#ifdef __GNUC__
+#define NORETURN __attribute__ ((noreturn))
+#define PRINTF_STYLE(f, a) __attribute__ ((format(printf, f, a)))
+#define UNUSED __attribute__ ((unused))
+#else
+#define NORETURN
+#define PRINTF_STYLE(f, a)
+#define UNUSED
 #endif
 
 #endif /* CRYPTO_TYPES_H_INCLUDED */
