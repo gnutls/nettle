@@ -1,3 +1,8 @@
+2004-02-24  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/symbols-test: Allow symbols starting with double
+	underscores, like on darwin.
+
 2004-02-17  Niels Möller  <niels@s3.kth.se>
 
 	* Makefile.am: Protected %-rules used for building pure objects,
