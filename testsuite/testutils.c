@@ -457,7 +457,8 @@ test_rsa_key(struct rsa_public_key *pub,
 )
 
 void
-test_dsa(struct dsa_private_key *key)
+test_dsa(const struct dsa_public_key *pub,
+	 const struct dsa_private_key *key)
 {
   struct sha1_ctx sha1;
   struct dsa_signature signature;
@@ -468,7 +469,7 @@ test_dsa(struct dsa_private_key *key)
   knuth_lfib_init(&lfib, 1111);
   
   sha1_update(&sha1, LDATA("The magic words are squeamish ossifrage"));
-  dsa_sign(key,
+  dsa_sign(pub, key,
 	   &lfib, (nettle_random_func) knuth_lfib_random,
 	   &sha1, &signature);
   
@@ -487,19 +488,19 @@ test_dsa(struct dsa_private_key *key)
 #endif
   
   /* Try bad data */
-  if (DSA_VERIFY(&key->pub, &sha1,
+  if (DSA_VERIFY(pub, &sha1,
 		 "The magick words are squeamish ossifrage", &signature))
     FAIL();
 
   /* Try correct data */
-  if (!DSA_VERIFY(&key->pub, &sha1,
+  if (!DSA_VERIFY(pub, &sha1,
 		 "The magic words are squeamish ossifrage", &signature))
     FAIL();
 
   /* Try bad signature */
   mpz_togglebit(signature.r, 17);
 
-  if (DSA_VERIFY(&key->pub, &sha1,
+  if (DSA_VERIFY(pub, &sha1,
 		 "The magic words are squeamish ossifrage", &signature))
     FAIL();
 

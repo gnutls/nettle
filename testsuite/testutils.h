@@ -88,7 +88,8 @@ test_rsa_key(struct rsa_public_key *pub,
 	     struct rsa_private_key *key);
 
 void
-test_dsa(struct dsa_private_key *key);
+test_dsa(const struct dsa_public_key *pub,
+	 const struct dsa_private_key *key);
 
 #endif /* WITH_PUBLIC_KEY */
 
