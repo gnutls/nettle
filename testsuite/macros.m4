@@ -23,5 +23,4 @@ m4_define(`H', `m4_ifelse(`$#',1,
 			  `decode_hex($1, $2)')')m4_dnl
 m4_define(`MEMEQ', `(!memcmp ($2, $3, $1))')m4_dnl
 m4_define(`FAIL', `abort()')m4_dnl
-
-
+m4_define(`SKIP', `exit(77)')m4_dnl
