@@ -215,7 +215,7 @@ install-here: install-info install-headers libnettle.a $(SHLIBINSTALL)
 
 install-shared: $(SHLIBFORLINK)
 	$(INSTALL) -d $(DESTDIR)$(libdir)
-	$(INSTALL_DATA) $(SHLIBFORLINK) $(DESTDIR)$(libdir)/$(SHLIBFILE)
+	$(INSTALL_PROGRAM) $(SHLIBFORLINK) $(DESTDIR)$(libdir)/$(SHLIBFILE)
 	[ -z "$(SHLIBSONAME)" ] \
                 || (cd $(DESTDIR)$(libdir) \
 		&& ln -sf $(SHLIBFILE) $(SHLIBSONAME) \
