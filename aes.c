@@ -68,6 +68,11 @@ d2(const char *aname, uint32_t a, const char *bname,  uint32_t b)
 #define B2(x) (((x) >> 16) & 0xff)
 #define B3(x) (((x) >> 24) & 0xff)
 
+#define IDX0(j) (j)
+#define IDX1(j) (T->idx[0][j])
+#define IDX2(j) (T->idx[1][j])
+#define IDX3(j) (T->idx[2][j])
+
 void
 _aes_crypt(const struct aes_ctx *ctx,
 	   const struct aes_table *T,
@@ -105,15 +110,15 @@ _aes_crypt(const struct aes_ctx *ctx,
 	       * in the wrong direction, but I don't think so. */
 
 #if AES_SMALL
-	      t[j] =         T->table[0][ B0(wtxt[j]) ] ^
-		ROTRBYTE(    T->table[0][ B1(wtxt[T->idx[0][j]]) ]^
-		  ROTRBYTE(  T->table[0][ B2(wtxt[T->idx[1][j]]) ] ^
-		    ROTRBYTE(T->table[0][ B3(wtxt[T->idx[2][j]]) ])));
+	      t[j] =         T->table[0][ B0(wtxt[IDX0(j)]) ] ^
+		ROTRBYTE(    T->table[0][ B1(wtxt[IDX1(j)]) ]^
+		  ROTRBYTE(  T->table[0][ B2(wtxt[IDX2(j)]) ] ^
+		    ROTRBYTE(T->table[0][ B3(wtxt[IDX3(j)]) ])));
 #else /* !AES_SMALL */
-	      t[j] = (  T->table[0][ B0(wtxt[j]) ]
-		      ^ T->table[1][ B1(wtxt[T->idx[0][j]]) ]
-		      ^ T->table[2][ B2(wtxt[T->idx[1][j]]) ]
-		      ^ T->table[3][ B3(wtxt[T->idx[2][j]]) ]);
+	      t[j] = (  T->table[0][ B0(wtxt[IDX0(j)]) ]
+		      ^ T->table[1][ B1(wtxt[IDX1(j)]) ]
+		      ^ T->table[2][ B2(wtxt[IDX2(j)]) ]
+		      ^ T->table[3][ B3(wtxt[IDX3(j)]) ]);
 #endif /* !AES_SMALL */
 	    }
 	  D4(("t", round, t));
@@ -131,10 +136,10 @@ _aes_crypt(const struct aes_ctx *ctx,
 	     * It looks like this code shifts the rows in the wrong
 	     * direction, but it passes the testsuite. */
 
-	    out = (   (uint32_t) T->sbox[ B0(wtxt[j]) ]
-		   | ((uint32_t) T->sbox[ B1(wtxt[T->idx[0][j]]) ] << 8)
-		   | ((uint32_t) T->sbox[ B2(wtxt[T->idx[1][j]]) ] << 16)
-		   | ((uint32_t) T->sbox[ B3(wtxt[T->idx[2][j]]) ] << 24));
+	    out = (   (uint32_t) T->sbox[ B0(wtxt[IDX0(j)]) ]
+		   | ((uint32_t) T->sbox[ B1(wtxt[IDX1(j)]) ] << 8)
+		   | ((uint32_t) T->sbox[ B2(wtxt[IDX2(j)]) ] << 16)
+		   | ((uint32_t) T->sbox[ B3(wtxt[IDX3(j)]) ] << 24));
 
 	    D2(("t", out, "key", ctx->keys[4*round + j]));
 
