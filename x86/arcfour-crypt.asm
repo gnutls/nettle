@@ -59,6 +59,7 @@ C Register usage:
 	
 	movzbl  256(%ebp), %eax		C  i
 	movzbl  257(%ebp), %ebx		C  j
+	subl	%esi, %edi
 .Lloop:
 C	incb	%al
 	incl	%eax
@@ -75,9 +76,8 @@ C	addb    %cl, %bl
 					C  for indexing.
 	movb    (%ebp, %ecx), %cl
 	xorb    (%esi), %cl
+	movb    %cl, (%esi,%edi)
 	incl    %esi
-	movb    %cl, (%edi)
-	incl    %edi
 	cmpl	%esi, %edx
 	jne	.Lloop
 
