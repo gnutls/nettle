@@ -8,7 +8,8 @@ lib_LIBRARIES = libnettle.a
 libnettleinclude_HEADERS = aes.h arcfour.h des.h md5.h sha1.h
 
 libnettle_a_SOURCES = aes.c aes.h arcfour.c arcfour.h des.c des.h \
-		      md5.c md5.h sha1.c sha1.h
+		      md5.c md5.h sha1.c sha1.h \
+		      serpent.c serpent.h serpent_sboxes.h
 
 libnettle_a_LIBADD = @LIBOBJS@
 

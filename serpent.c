@@ -1,12 +1,15 @@
-/* serpent.c
+/* serpent.h
  *
- * $Id$
+ * The serpent block cipher.
  *
  * For more details on this algorithm, see the Serpent website at
  * http://www.cl.cam.ac.uk/~rja14/serpent.html
  */
 
-/* Copyright (C) 1998 Ross Anderson, Eli Biham, Lars Knudsen
+/* nettle, low-level cryptographics library
+ *
+ * Copyright (C) 1998, 2000, 2001, Ross Anderson, Eli Biham, Lars
+ *                                 Knudsen, Rafael R. Sevilla, Niels Möller
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -32,23 +35,23 @@
  * selection process. No other use is allowed." However, the authors
  * later decided to GPL the code. /nisse */
 
+/* FIXME: Use the READ_UINT32 and WRITE_UINT32 macros, where
+ * applicable. */
 
 #include "serpent.h"
 #include "serpentsboxes.h"
 
 #include <assert.h>
 
-/*  The functions  */
 void
-serpent_setup(SERPENT_context *ctx, UINT32 key_size, const UINT8 *key)
+serpent_set_key(struct serpent_ctx *ctx,
+                unsigned length, const uint8_t *key)
 {
   unsigned i, j;
-  UINT32 w[132], k[132];
-  /* UINT32 kd[8]; */
-  /* const UINT8 *kptr; */
+  uint32_t w[132], k[132];
 
-  assert(key_size >= SERPENT_MIN_KEYSIZE);
-  assert(key_size <= SERPENT_MAX_KEYSIZE);
+  assert(key_size >= SERPENT_MIN_KEY_SIZE);
+  assert(key_size <= SERPENT_MAX_KEY_SIZE);
 
   for (i = key_size, j = 0;
        (i >= 4);
@@ -69,36 +72,6 @@ serpent_setup(SERPENT_context *ctx, UINT32 key_size, const UINT8 *key)
       while (j < 8)
 	w[j++] = 0;
     }  
-#if 0
-  if (key_size == SERPENT_KEYSIZE)
-    kptr = key;
-  else
-    {
-      /* Expand key by appending bits 1000...00. */
-      UINT8 *ekey = alloca(SERPENT_KEYSIZE);
-      unsigned i = key_size;
-      
-      memcpy(ekey, key, i);
-      ekey[i++] = 0x01;
-
-      while (i < SERPENT_KEYSIZE)
-	ekey[i++] = 0;
-
-      kptr = ekey;
-    }
-      
-  for (i=0; i<8; i++) {
-    kd[i] = 0;
-    for (j=0; j<4; j++)
-      kd[i] |= (*kptr++) << j*8;
-  }
-
-  for(i=0; i<8; i++)
-    w[i]=kd[i];
-
-  for(i++; i<8; i++)
-    w[i]=0;
-#endif
 
   for(i=8; i<16; i++)
     w[i]=ROL(w[i-8]^w[i-5]^w[i-3]^w[i-1]^PHI^(i-8),11);
@@ -147,255 +120,265 @@ serpent_setup(SERPENT_context *ctx, UINT32 key_size, const UINT8 *key)
 }
 
 void
-serpent_encrypt(SERPENT_context *ctx,
-		const UINT8 *plaintext,
-		UINT8 *ciphertext)
+serpent_encrypt(struct aes_ctx *ctx,
+                unsigned length, uint8_t *dst,
+                const uint8_t *plain)
 {
-  register UINT32 x0, x1, x2, x3;
-  register UINT32 y0, y1, y2, y3;
+  register uint32_t x0, x1, x2, x3;
+  register uint32_t y0, y1, y2, y3;
   int i;
-  UINT8 *cptr;
 
-  x0=plaintext[0]|(plaintext[1]<<8)|(plaintext[2]<<16)|(plaintext[3]<<24);
-  x1=plaintext[4]|(plaintext[5]<<8)|(plaintext[6]<<16)|(plaintext[7]<<24);
-  x2=plaintext[8]|(plaintext[9]<<8)|(plaintext[10]<<16)|(plaintext[11]<<24);
-  x3=plaintext[12]|(plaintext[13]<<8)|(plaintext[14]<<16)|(plaintext[15]<<24);
+  assert (!(length % SERPENT_BLOCKSIZE));
 
-  /* Start to encrypt the plaintext x */
-  keying(x0, x1, x2, x3, ctx->keys[ 0]);
-  RND00(x0, x1, x2, x3, y0, y1, y2, y3);
-  transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  keying(x0, x1, x2, x3, ctx->keys[ 1]);
-  RND01(x0, x1, x2, x3, y0, y1, y2, y3);
-  transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  keying(x0, x1, x2, x3, ctx->keys[ 2]);
-  RND02(x0, x1, x2, x3, y0, y1, y2, y3);
-  transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  keying(x0, x1, x2, x3, ctx->keys[ 3]);
-  RND03(x0, x1, x2, x3, y0, y1, y2, y3);
-  transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  keying(x0, x1, x2, x3, ctx->keys[ 4]);
-  RND04(x0, x1, x2, x3, y0, y1, y2, y3);
-  transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  keying(x0, x1, x2, x3, ctx->keys[ 5]);
-  RND05(x0, x1, x2, x3, y0, y1, y2, y3);
-  transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  keying(x0, x1, x2, x3, ctx->keys[ 6]);
-  RND06(x0, x1, x2, x3, y0, y1, y2, y3);
-  transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  keying(x0, x1, x2, x3, ctx->keys[ 7]);
-  RND07(x0, x1, x2, x3, y0, y1, y2, y3);
-  transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  keying(x0, x1, x2, x3, ctx->keys[ 8]);
-  RND08(x0, x1, x2, x3, y0, y1, y2, y3);
-  transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  keying(x0, x1, x2, x3, ctx->keys[ 9]);
-  RND09(x0, x1, x2, x3, y0, y1, y2, y3);
-  transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  keying(x0, x1, x2, x3, ctx->keys[10]);
-  RND10(x0, x1, x2, x3, y0, y1, y2, y3);
-  transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  keying(x0, x1, x2, x3, ctx->keys[11]);
-  RND11(x0, x1, x2, x3, y0, y1, y2, y3);
-  transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  keying(x0, x1, x2, x3, ctx->keys[12]);
-  RND12(x0, x1, x2, x3, y0, y1, y2, y3);
-  transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  keying(x0, x1, x2, x3, ctx->keys[13]);
-  RND13(x0, x1, x2, x3, y0, y1, y2, y3);
-  transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  keying(x0, x1, x2, x3, ctx->keys[14]);
-  RND14(x0, x1, x2, x3, y0, y1, y2, y3);
-  transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  keying(x0, x1, x2, x3, ctx->keys[15]);
-  RND15(x0, x1, x2, x3, y0, y1, y2, y3);
-  transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  keying(x0, x1, x2, x3, ctx->keys[16]);
-  RND16(x0, x1, x2, x3, y0, y1, y2, y3);
-  transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  keying(x0, x1, x2, x3, ctx->keys[17]);
-  RND17(x0, x1, x2, x3, y0, y1, y2, y3);
-  transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  keying(x0, x1, x2, x3, ctx->keys[18]);
-  RND18(x0, x1, x2, x3, y0, y1, y2, y3);
-  transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  keying(x0, x1, x2, x3, ctx->keys[19]);
-  RND19(x0, x1, x2, x3, y0, y1, y2, y3);
-  transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  keying(x0, x1, x2, x3, ctx->keys[20]);
-  RND20(x0, x1, x2, x3, y0, y1, y2, y3);
-  transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  keying(x0, x1, x2, x3, ctx->keys[21]);
-  RND21(x0, x1, x2, x3, y0, y1, y2, y3);
-  transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  keying(x0, x1, x2, x3, ctx->keys[22]);
-  RND22(x0, x1, x2, x3, y0, y1, y2, y3);
-  transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  keying(x0, x1, x2, x3, ctx->keys[23]);
-  RND23(x0, x1, x2, x3, y0, y1, y2, y3);
-  transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  keying(x0, x1, x2, x3, ctx->keys[24]);
-  RND24(x0, x1, x2, x3, y0, y1, y2, y3);
-  transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  keying(x0, x1, x2, x3, ctx->keys[25]);
-  RND25(x0, x1, x2, x3, y0, y1, y2, y3);
-  transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  keying(x0, x1, x2, x3, ctx->keys[26]);
-  RND26(x0, x1, x2, x3, y0, y1, y2, y3);
-  transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  keying(x0, x1, x2, x3, ctx->keys[27]);
-  RND27(x0, x1, x2, x3, y0, y1, y2, y3);
-  transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  keying(x0, x1, x2, x3, ctx->keys[28]);
-  RND28(x0, x1, x2, x3, y0, y1, y2, y3);
-  transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  keying(x0, x1, x2, x3, ctx->keys[29]);
-  RND29(x0, x1, x2, x3, y0, y1, y2, y3);
-  transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  keying(x0, x1, x2, x3, ctx->keys[30]);
-  RND30(x0, x1, x2, x3, y0, y1, y2, y3);
-  transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  keying(x0, x1, x2, x3, ctx->keys[31]);
-  RND31(x0, x1, x2, x3, y0, y1, y2, y3);
-  x0 = y0; x1 = y1; x2 = y2; x3 = y3;
-  keying(x0, x1, x2, x3, ctx->keys[32]);
-  /* The ciphertext is now in x */
+  for (; length;
+         length -= SERPENT_BLOCKSIZE,
+         plain += SERPENT_BLOCKSIZE,
+         dst += SERPENT_BLOCKSIZE)
+    {
+      x0=plain[0]|(plain[1]<<8)|(plain[2]<<16)|(plain[3]<<24);
+      x1=plain[4]|(plain[5]<<8)|(plain[6]<<16)|(plain[7]<<24);
+      x2=plain[8]|(plain[9]<<8)|(plain[10]<<16)|(plain[11]<<24);
+      x3=plain[12]|(plain[13]<<8)|(plain[14]<<16)|(plain[15]<<24);
 
-  cptr = ciphertext;
+      /* Start to encrypt the plaintext x */
+      keying(x0, x1, x2, x3, ctx->keys[ 0]);
+      RND00(x0, x1, x2, x3, y0, y1, y2, y3);
+      transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      keying(x0, x1, x2, x3, ctx->keys[ 1]);
+      RND01(x0, x1, x2, x3, y0, y1, y2, y3);
+      transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      keying(x0, x1, x2, x3, ctx->keys[ 2]);
+      RND02(x0, x1, x2, x3, y0, y1, y2, y3);
+      transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      keying(x0, x1, x2, x3, ctx->keys[ 3]);
+      RND03(x0, x1, x2, x3, y0, y1, y2, y3);
+      transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      keying(x0, x1, x2, x3, ctx->keys[ 4]);
+      RND04(x0, x1, x2, x3, y0, y1, y2, y3);
+      transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      keying(x0, x1, x2, x3, ctx->keys[ 5]);
+      RND05(x0, x1, x2, x3, y0, y1, y2, y3);
+      transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      keying(x0, x1, x2, x3, ctx->keys[ 6]);
+      RND06(x0, x1, x2, x3, y0, y1, y2, y3);
+      transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      keying(x0, x1, x2, x3, ctx->keys[ 7]);
+      RND07(x0, x1, x2, x3, y0, y1, y2, y3);
+      transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      keying(x0, x1, x2, x3, ctx->keys[ 8]);
+      RND08(x0, x1, x2, x3, y0, y1, y2, y3);
+      transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      keying(x0, x1, x2, x3, ctx->keys[ 9]);
+      RND09(x0, x1, x2, x3, y0, y1, y2, y3);
+      transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      keying(x0, x1, x2, x3, ctx->keys[10]);
+      RND10(x0, x1, x2, x3, y0, y1, y2, y3);
+      transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      keying(x0, x1, x2, x3, ctx->keys[11]);
+      RND11(x0, x1, x2, x3, y0, y1, y2, y3);
+      transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      keying(x0, x1, x2, x3, ctx->keys[12]);
+      RND12(x0, x1, x2, x3, y0, y1, y2, y3);
+      transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      keying(x0, x1, x2, x3, ctx->keys[13]);
+      RND13(x0, x1, x2, x3, y0, y1, y2, y3);
+      transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      keying(x0, x1, x2, x3, ctx->keys[14]);
+      RND14(x0, x1, x2, x3, y0, y1, y2, y3);
+      transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      keying(x0, x1, x2, x3, ctx->keys[15]);
+      RND15(x0, x1, x2, x3, y0, y1, y2, y3);
+      transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      keying(x0, x1, x2, x3, ctx->keys[16]);
+      RND16(x0, x1, x2, x3, y0, y1, y2, y3);
+      transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      keying(x0, x1, x2, x3, ctx->keys[17]);
+      RND17(x0, x1, x2, x3, y0, y1, y2, y3);
+      transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      keying(x0, x1, x2, x3, ctx->keys[18]);
+      RND18(x0, x1, x2, x3, y0, y1, y2, y3);
+      transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      keying(x0, x1, x2, x3, ctx->keys[19]);
+      RND19(x0, x1, x2, x3, y0, y1, y2, y3);
+      transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      keying(x0, x1, x2, x3, ctx->keys[20]);
+      RND20(x0, x1, x2, x3, y0, y1, y2, y3);
+      transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      keying(x0, x1, x2, x3, ctx->keys[21]);
+      RND21(x0, x1, x2, x3, y0, y1, y2, y3);
+      transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      keying(x0, x1, x2, x3, ctx->keys[22]);
+      RND22(x0, x1, x2, x3, y0, y1, y2, y3);
+      transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      keying(x0, x1, x2, x3, ctx->keys[23]);
+      RND23(x0, x1, x2, x3, y0, y1, y2, y3);
+      transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      keying(x0, x1, x2, x3, ctx->keys[24]);
+      RND24(x0, x1, x2, x3, y0, y1, y2, y3);
+      transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      keying(x0, x1, x2, x3, ctx->keys[25]);
+      RND25(x0, x1, x2, x3, y0, y1, y2, y3);
+      transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      keying(x0, x1, x2, x3, ctx->keys[26]);
+      RND26(x0, x1, x2, x3, y0, y1, y2, y3);
+      transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      keying(x0, x1, x2, x3, ctx->keys[27]);
+      RND27(x0, x1, x2, x3, y0, y1, y2, y3);
+      transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      keying(x0, x1, x2, x3, ctx->keys[28]);
+      RND28(x0, x1, x2, x3, y0, y1, y2, y3);
+      transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      keying(x0, x1, x2, x3, ctx->keys[29]);
+      RND29(x0, x1, x2, x3, y0, y1, y2, y3);
+      transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      keying(x0, x1, x2, x3, ctx->keys[30]);
+      RND30(x0, x1, x2, x3, y0, y1, y2, y3);
+      transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      keying(x0, x1, x2, x3, ctx->keys[31]);
+      RND31(x0, x1, x2, x3, y0, y1, y2, y3);
+      x0 = y0; x1 = y1; x2 = y2; x3 = y3;
+      keying(x0, x1, x2, x3, ctx->keys[32]);
 
-  for (i=0; i<4; i++)
-    *cptr++ = (x0 >> i*8) & 0xff;
-  for (i=0; i<4; i++)
-    *cptr++ = (x1 >> i*8) & 0xff;
-  for (i=0; i<4; i++)
-    *cptr++ = (x2 >> i*8) & 0xff;
-  for (i=0; i<4; i++)
-    *cptr++ = (x3 >> i*8) & 0xff;
+      /* The ciphertext is now in x */
+
+      for (i=0; i<4; i++)
+        *dst++ = (x0 >> i*8) & 0xff;
+      for (i=0; i<4; i++)
+        *dst++ = (x1 >> i*8) & 0xff;
+      for (i=0; i<4; i++)
+        *dst++ = (x2 >> i*8) & 0xff;
+      for (i=0; i<4; i++)
+        *dst++ = (x3 >> i*8) & 0xff;
+    }
 }
 
 void
-serpent_decrypt(SERPENT_context *ctx,
-		const UINT8 *ciphertext,
-		UINT8 *plaintext)
+serpent_decrypt(struct aes_ctx *ctx,
+                unsigned length, uint8_t *dst,
+                const uint8_t *cipher);
 {
-  register UINT32 x0, x1, x2, x3;
-  register UINT32 y0, y1, y2, y3;
+  register uint32_t x0, x1, x2, x3;
+  register uint32_t y0, y1, y2, y3;
   int i;
-  UINT8 *pptr;
 
-  x0=ciphertext[0]|(ciphertext[1]<<8)|(ciphertext[2]<<16)|(ciphertext[3]<<24);
-  x1=ciphertext[4]|(ciphertext[5]<<8)|(ciphertext[6]<<16)|(ciphertext[7]<<24);
-  x2=ciphertext[8]|(ciphertext[9]<<8)|(ciphertext[10]<<16)|(ciphertext[11]<<24);
-  x3=ciphertext[12]|(ciphertext[13]<<8)|(ciphertext[14]<<16)|(ciphertext[15]<<24);
+  for (; length;
+         length -= SERPENT_BLOCKSIZE,
+         plain += SERPENT_BLOCKSIZE,
+         dst += SERPENT_BLOCKSIZE)
+    {
+      x0=cipher[0]|(cipher[1]<<8)|(cipher[2]<<16)|(cipher[3]<<24);
+      x1=cipher[4]|(cipher[5]<<8)|(cipher[6]<<16)|(cipher[7]<<24);
+      x2=cipher[8]|(cipher[9]<<8)|(cipher[10]<<16)|(cipher[11]<<24);
+      x3=cipher[12]|(cipher[13]<<8)|(cipher[14]<<16)|(cipher[15]<<24);
 
-  /* Start to decrypt the ciphertext x */
-  keying(x0, x1, x2, x3, ctx->keys[32]);
-  InvRND31(x0, x1, x2, x3, y0, y1, y2, y3);
-  keying(y0, y1, y2, y3, ctx->keys[31]);
-  inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  InvRND30(x0, x1, x2, x3, y0, y1, y2, y3);
-  keying(y0, y1, y2, y3, ctx->keys[30]);
-  inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  InvRND29(x0, x1, x2, x3, y0, y1, y2, y3);
-  keying(y0, y1, y2, y3, ctx->keys[29]);
-  inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  InvRND28(x0, x1, x2, x3, y0, y1, y2, y3);
-  keying(y0, y1, y2, y3, ctx->keys[28]);
-  inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  InvRND27(x0, x1, x2, x3, y0, y1, y2, y3);
-  keying(y0, y1, y2, y3, ctx->keys[27]);
-  inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  InvRND26(x0, x1, x2, x3, y0, y1, y2, y3);
-  keying(y0, y1, y2, y3, ctx->keys[26]);
-  inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  InvRND25(x0, x1, x2, x3, y0, y1, y2, y3);
-  keying(y0, y1, y2, y3, ctx->keys[25]);
-  inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  InvRND24(x0, x1, x2, x3, y0, y1, y2, y3);
-  keying(y0, y1, y2, y3, ctx->keys[24]);
-  inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  InvRND23(x0, x1, x2, x3, y0, y1, y2, y3);
-  keying(y0, y1, y2, y3, ctx->keys[23]);
-  inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  InvRND22(x0, x1, x2, x3, y0, y1, y2, y3);
-  keying(y0, y1, y2, y3, ctx->keys[22]);
-  inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  InvRND21(x0, x1, x2, x3, y0, y1, y2, y3);
-  keying(y0, y1, y2, y3, ctx->keys[21]);
-  inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  InvRND20(x0, x1, x2, x3, y0, y1, y2, y3);
-  keying(y0, y1, y2, y3, ctx->keys[20]);
-  inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  InvRND19(x0, x1, x2, x3, y0, y1, y2, y3);
-  keying(y0, y1, y2, y3, ctx->keys[19]);
-  inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  InvRND18(x0, x1, x2, x3, y0, y1, y2, y3);
-  keying(y0, y1, y2, y3, ctx->keys[18]);
-  inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  InvRND17(x0, x1, x2, x3, y0, y1, y2, y3);
-  keying(y0, y1, y2, y3, ctx->keys[17]);
-  inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  InvRND16(x0, x1, x2, x3, y0, y1, y2, y3);
-  keying(y0, y1, y2, y3, ctx->keys[16]);
-  inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  InvRND15(x0, x1, x2, x3, y0, y1, y2, y3);
-  keying(y0, y1, y2, y3, ctx->keys[15]);
-  inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  InvRND14(x0, x1, x2, x3, y0, y1, y2, y3);
-  keying(y0, y1, y2, y3, ctx->keys[14]);
-  inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  InvRND13(x0, x1, x2, x3, y0, y1, y2, y3);
-  keying(y0, y1, y2, y3, ctx->keys[13]);
-  inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  InvRND12(x0, x1, x2, x3, y0, y1, y2, y3);
-  keying(y0, y1, y2, y3, ctx->keys[12]);
-  inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  InvRND11(x0, x1, x2, x3, y0, y1, y2, y3);
-  keying(y0, y1, y2, y3, ctx->keys[11]);
-  inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  InvRND10(x0, x1, x2, x3, y0, y1, y2, y3);
-  keying(y0, y1, y2, y3, ctx->keys[10]);
-  inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  InvRND09(x0, x1, x2, x3, y0, y1, y2, y3);
-  keying(y0, y1, y2, y3, ctx->keys[ 9]);
-  inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  InvRND08(x0, x1, x2, x3, y0, y1, y2, y3);
-  keying(y0, y1, y2, y3, ctx->keys[ 8]);
-  inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  InvRND07(x0, x1, x2, x3, y0, y1, y2, y3);
-  keying(y0, y1, y2, y3, ctx->keys[ 7]);
-  inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  InvRND06(x0, x1, x2, x3, y0, y1, y2, y3);
-  keying(y0, y1, y2, y3, ctx->keys[ 6]);
-  inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  InvRND05(x0, x1, x2, x3, y0, y1, y2, y3);
-  keying(y0, y1, y2, y3, ctx->keys[ 5]);
-  inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  InvRND04(x0, x1, x2, x3, y0, y1, y2, y3);
-  keying(y0, y1, y2, y3, ctx->keys[ 4]);
-  inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  InvRND03(x0, x1, x2, x3, y0, y1, y2, y3);
-  keying(y0, y1, y2, y3, ctx->keys[ 3]);
-  inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  InvRND02(x0, x1, x2, x3, y0, y1, y2, y3);
-  keying(y0, y1, y2, y3, ctx->keys[ 2]);
-  inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  InvRND01(x0, x1, x2, x3, y0, y1, y2, y3);
-  keying(y0, y1, y2, y3, ctx->keys[ 1]);
-  inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
-  InvRND00(x0, x1, x2, x3, y0, y1, y2, y3);
-  x0 = y0; x1 = y1; x2 = y2; x3 = y3;
-  keying(x0, x1, x2, x3, ctx->keys[ 0]);
-  /* The plaintext is now in x */
+      /* Start to decrypt the ciphertext x */
+      keying(x0, x1, x2, x3, ctx->keys[32]);
+      InvRND31(x0, x1, x2, x3, y0, y1, y2, y3);
+      keying(y0, y1, y2, y3, ctx->keys[31]);
+      inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      InvRND30(x0, x1, x2, x3, y0, y1, y2, y3);
+      keying(y0, y1, y2, y3, ctx->keys[30]);
+      inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      InvRND29(x0, x1, x2, x3, y0, y1, y2, y3);
+      keying(y0, y1, y2, y3, ctx->keys[29]);
+      inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      InvRND28(x0, x1, x2, x3, y0, y1, y2, y3);
+      keying(y0, y1, y2, y3, ctx->keys[28]);
+      inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      InvRND27(x0, x1, x2, x3, y0, y1, y2, y3);
+      keying(y0, y1, y2, y3, ctx->keys[27]);
+      inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      InvRND26(x0, x1, x2, x3, y0, y1, y2, y3);
+      keying(y0, y1, y2, y3, ctx->keys[26]);
+      inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      InvRND25(x0, x1, x2, x3, y0, y1, y2, y3);
+      keying(y0, y1, y2, y3, ctx->keys[25]);
+      inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      InvRND24(x0, x1, x2, x3, y0, y1, y2, y3);
+      keying(y0, y1, y2, y3, ctx->keys[24]);
+      inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      InvRND23(x0, x1, x2, x3, y0, y1, y2, y3);
+      keying(y0, y1, y2, y3, ctx->keys[23]);
+      inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      InvRND22(x0, x1, x2, x3, y0, y1, y2, y3);
+      keying(y0, y1, y2, y3, ctx->keys[22]);
+      inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      InvRND21(x0, x1, x2, x3, y0, y1, y2, y3);
+      keying(y0, y1, y2, y3, ctx->keys[21]);
+      inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      InvRND20(x0, x1, x2, x3, y0, y1, y2, y3);
+      keying(y0, y1, y2, y3, ctx->keys[20]);
+      inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      InvRND19(x0, x1, x2, x3, y0, y1, y2, y3);
+      keying(y0, y1, y2, y3, ctx->keys[19]);
+      inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      InvRND18(x0, x1, x2, x3, y0, y1, y2, y3);
+      keying(y0, y1, y2, y3, ctx->keys[18]);
+      inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      InvRND17(x0, x1, x2, x3, y0, y1, y2, y3);
+      keying(y0, y1, y2, y3, ctx->keys[17]);
+      inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      InvRND16(x0, x1, x2, x3, y0, y1, y2, y3);
+      keying(y0, y1, y2, y3, ctx->keys[16]);
+      inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      InvRND15(x0, x1, x2, x3, y0, y1, y2, y3);
+      keying(y0, y1, y2, y3, ctx->keys[15]);
+      inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      InvRND14(x0, x1, x2, x3, y0, y1, y2, y3);
+      keying(y0, y1, y2, y3, ctx->keys[14]);
+      inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      InvRND13(x0, x1, x2, x3, y0, y1, y2, y3);
+      keying(y0, y1, y2, y3, ctx->keys[13]);
+      inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      InvRND12(x0, x1, x2, x3, y0, y1, y2, y3);
+      keying(y0, y1, y2, y3, ctx->keys[12]);
+      inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      InvRND11(x0, x1, x2, x3, y0, y1, y2, y3);
+      keying(y0, y1, y2, y3, ctx->keys[11]);
+      inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      InvRND10(x0, x1, x2, x3, y0, y1, y2, y3);
+      keying(y0, y1, y2, y3, ctx->keys[10]);
+      inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      InvRND09(x0, x1, x2, x3, y0, y1, y2, y3);
+      keying(y0, y1, y2, y3, ctx->keys[ 9]);
+      inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      InvRND08(x0, x1, x2, x3, y0, y1, y2, y3);
+      keying(y0, y1, y2, y3, ctx->keys[ 8]);
+      inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      InvRND07(x0, x1, x2, x3, y0, y1, y2, y3);
+      keying(y0, y1, y2, y3, ctx->keys[ 7]);
+      inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      InvRND06(x0, x1, x2, x3, y0, y1, y2, y3);
+      keying(y0, y1, y2, y3, ctx->keys[ 6]);
+      inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      InvRND05(x0, x1, x2, x3, y0, y1, y2, y3);
+      keying(y0, y1, y2, y3, ctx->keys[ 5]);
+      inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      InvRND04(x0, x1, x2, x3, y0, y1, y2, y3);
+      keying(y0, y1, y2, y3, ctx->keys[ 4]);
+      inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      InvRND03(x0, x1, x2, x3, y0, y1, y2, y3);
+      keying(y0, y1, y2, y3, ctx->keys[ 3]);
+      inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      InvRND02(x0, x1, x2, x3, y0, y1, y2, y3);
+      keying(y0, y1, y2, y3, ctx->keys[ 2]);
+      inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      InvRND01(x0, x1, x2, x3, y0, y1, y2, y3);
+      keying(y0, y1, y2, y3, ctx->keys[ 1]);
+      inv_transform(y0, y1, y2, y3, x0, x1, x2, x3);
+      InvRND00(x0, x1, x2, x3, y0, y1, y2, y3);
+      x0 = y0; x1 = y1; x2 = y2; x3 = y3;
+      keying(x0, x1, x2, x3, ctx->keys[ 0]);
 
-  pptr = plaintext;
+      /* The plaintext is now in x */
 
-  for (i=0; i<4; i++)
-    *pptr++ = (x0 >> i*8) & 0xff;
-  for (i=0; i<4; i++)
-    *pptr++ = (x1 >> i*8) & 0xff;
-  for (i=0; i<4; i++)
-    *pptr++ = (x2 >> i*8) & 0xff;
-  for (i=0; i<4; i++)
-    *pptr++ = (x3 >> i*8) & 0xff;
+      for (i=0; i<4; i++)
+        *dst++ = (x0 >> i*8) & 0xff;
+      for (i=0; i<4; i++)
+        *dst++ = (x1 >> i*8) & 0xff;
+      for (i=0; i<4; i++)
+        *dst++ = (x2 >> i*8) & 0xff;
+      for (i=0; i<4; i++)
+        *dst++ = (x3 >> i*8) & 0xff;
+    }
 }
