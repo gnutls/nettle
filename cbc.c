@@ -81,13 +81,33 @@ cbc_decrypt(void *ctx, void (*f)(void *ctx,
   memcpy(iv, src + length - block_size, block_size);
 }
 
-#include "des.h"
+#if 0
+#include "twofish.h"
+#include "aes.h"
+
 static void foo(void)
 {
-  struct des_ctx ctx;
-  uint8_t iv[DES_BLOCK_SIZE];
-  uint8_t src[DES_BLOCK_SIZE];
-  uint8_t dst[DES_BLOCK_SIZE];
+  struct CBC_CTX(struct twofish_ctx, TWOFISH_BLOCK_SIZE) ctx;
+  uint8_t src[TWOFISH_BLOCK_SIZE];
+  uint8_t dst[TWOFISH_BLOCK_SIZE];
   
-  CBC_ENCRYPT(&ctx, des_encrypt, DES_BLOCK_SIZE, iv, DES_BLOCK_SIZE, dst, src);
+  CBC_ENCRYPT(&ctx, twofish_encrypt, TWOFISH_BLOCK_SIZE, dst, src);
+
+  /* Should result in a warning */
+  CBC_ENCRYPT(&ctx, aes_encrypt, TWOFISH_BLOCK_SIZE, dst, src);
+  
 }
+
+static void foo2(void)
+{
+  struct twofish_ctx ctx;
+  uint8_t iv[TWOFISH_BLOCK_SIZE];
+  uint8_t src[TWOFISH_BLOCK_SIZE];
+  uint8_t dst[TWOFISH_BLOCK_SIZE];
+  
+  CBC_ENCRYPT2(&ctx, twofish_encrypt, TWOFISH_BLOCK_SIZE, iv, TWOFISH_BLOCK_SIZE, dst, src);
+  /* Should result in a warning */
+  CBC_ENCRYPT2(&ctx, aes_encrypt, TWOFISH_BLOCK_SIZE, iv, TWOFISH_BLOCK_SIZE, dst, src);
+}
+
+#endif

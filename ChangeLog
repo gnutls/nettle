@@ -1,3 +1,23 @@
+2001-09-09  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* Makefile.am (libnettleinclude_HEADERS): Added cbc.h. Deleted
+	des3.h. 
+	(libnettle_a_SOURCES): Added des3.c.
+
+	* testsuite/Makefile.am (TS_PROGS): Added des3-test and cbc-test.
+
+	* testsuite/cbc-test.m4: New testcase.
+
+	* testsuite/des3-test.m4: New testcase.
+
+	* cbc.h (CBC_CTX): New macro.
+	(CBC_ENCRYPT): New macro.
+	(CBC_DECRYPT): New macro.
+
+	* des.c (des_fix_parity): New function.
+
+	* des3.c: New file, implementing triple des.
+
 2001-09-06  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* cbc.c, cbc.h: New files, for general CBC encryption.
