@@ -65,9 +65,10 @@ yarrow256_init(struct yarrow256_ctx *ctx,
 	       unsigned n,
 	       struct yarrow_source *s)
 {
+  unsigned i;
+
   sha256_init(&ctx->pools[0]);
   sha256_init(&ctx->pools[1]);
-  unsigned i;
   
   ctx->seeded = 0;
 
