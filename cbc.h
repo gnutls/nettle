@@ -35,17 +35,17 @@
 /* Uses a void * for cipher contexts. */
 
 void
-cbc_encrypt(void *ctx, void (*f)(void *ctx,
-				 unsigned length, uint8_t *dst,
-				 const uint8_t *src),
+cbc_encrypt(const void *ctx, void (*f)(const void *ctx,
+				       unsigned length, uint8_t *dst,
+				       const uint8_t *src),
 	    unsigned block_size, uint8_t *iv,
 	    unsigned length, uint8_t *dst,
 	    const uint8_t *src);
 
 void
-cbc_decrypt(void *ctx, void (*f)(void *ctx,
-				 unsigned length, uint8_t *dst,
-				 const uint8_t *src),
+cbc_decrypt(const void *ctx, void (*f)(const void *ctx,
+				       unsigned length, uint8_t *dst,
+				       const uint8_t *src),
 	    unsigned block_size, uint8_t *iv,
 	    unsigned length, uint8_t *dst,
 	    const uint8_t *src);
