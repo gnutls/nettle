@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /bin/sh
 
 failed=0
 all=0
@@ -14,16 +14,17 @@ env_program () {
 
 test_program () {
   "./$1"
+  testname=`echo "$1" | sed -e 's/-test//'`
   case "$?" in
       0)
-    	echo PASS: ${1%-test}
+    	echo PASS: $testname
 	all=`expr $all + 1`
 	;;
       77)
-      	echo SKIP: ${1%-test}
+      	echo SKIP: $testname
       ;;
       *)
-    	echo FAIL: ${1%-test}
+    	echo FAIL: $testname
 	failed=`expr $failed + 1`
 	all=`expr $all + 1`
 	;;
