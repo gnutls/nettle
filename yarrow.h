@@ -57,7 +57,7 @@ struct yarrow160_ctx
 
 void
 yarrow160_init(struct yarrow160_ctx *ctx,
-	       int nsources,
+	       unsigned nsources,
 	       struct yarrow_source *sources);
 
 void
@@ -89,7 +89,7 @@ struct yarrow256_ctx
 
 void
 yarrow256_init(struct yarrow256_ctx *ctx,
-	       int nsources,
+	       unsigned nsources,
 	       struct yarrow_source *sources);
 
 void
@@ -104,11 +104,13 @@ int
 yarrow256_seeded(struct yarrow256_ctx *ctx);
 
 /* Key event estimator */
+#define YARROW_KEY_EVENT_BUFFER 16
+
 struct yarrow_key_event_ctx
 {
   /* Counter for initial priming of the state */
   unsigned index;
-  unsigned chars[16];
+  unsigned chars[YARROW_KEY_EVENT_BUFFER];
   unsigned previous;
 };
 
