@@ -5,7 +5,7 @@ AM_CPPFLAGS = -I$(top_srcdir)
 # installed version.
 AM_LDFLAGS = -L..
 
-TS_PROGS = aes-test arcfour-test blowfish-test cast128-test \
+noinst_PROGRAMS = aes-test arcfour-test blowfish-test cast128-test \
            base16-test base64-test \
 	   des-test des3-test des-compat-test \
 	   md2-test md4-test md5-test md5-compat-test \
@@ -20,11 +20,10 @@ TS_PROGS = aes-test arcfour-test blowfish-test cast128-test \
 	   dsa-test dsa-keygen-test \
 	   yarrow-test
 
+TS_PROGS = $(noinst_PROGRAMS)
 TS_SH = sexp-conv-test symbols-test
 
 TS_ALL = $(TS_PROGS) $(TS_SH)
-
-noinst_PROGRAMS = $(TS_PROGS)
 
 # Workaround to get automake to keep dependencies for testutils.o
 EXTRA_PROGRAMS = testutils
