@@ -1,3 +1,19 @@
+2003-02-05  Niels Möller  <nisse@lysator.liu.se>
+
+	* des-compat.h (des_set_key): Different name mangling, if this
+	file is included, des_set_key should refer to a function that
+	behaves like openssl's.
+
+	* des-compat.c (des_key_sched, des_is_weak_key): Use the name
+	nettle_des_set_key for referring to Nettle's function.
+
+	* des.h (des_set_key): Name mangling, linker symbols should use a
+	"nettle_" prefix, and this one collided with openssl. Perhaps all
+	symbols should be mangled in a similar way, but that's for later. 
+
+	* configure.ac (LDFLAGS): --with-lib-path should add to LDFLAGS,
+	not replace it.
+
 2003-01-30  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* tools/output.c (sexp_put_string): Fixed handling of escapable
