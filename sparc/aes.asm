@@ -66,19 +66,21 @@ define(t3, %o3)
 C AES_LOAD(i)
 C Get one word of input, XOR with first subkey, store in wtxt
 define(<AES_LOAD>, <
-	ldub	[src+$1+3], t3
-	ldub	[src+$1+2], t2
-	sll	t3, 24, t3
+	ldub	[src+$1], t0
 	ldub	[src+$1+1], t1
+	ldub	[src+$1+2], t2
+	sll	t1, 8, t1
+	or	t0, t1, t0	
+	ldub	[src+$1+3], t3
+	sll	t3, 24, t3
 	
 	sll	t2, 16, t2
 	or	t3, t2, t3
-	ldub	[src+$1], t0
-	sll	t1, 8, t1
+
 	
 	! Get subkey
 	ld	[ctx + $1], t2
-	or	t3, t1, t3
+	C or	t3, t1, t3
 	or	t3, t0, t3
 	xor	t3, t2, t3
 	
