@@ -18,7 +18,7 @@
  * License for more details.
  * 
  * You should have received a copy of the GNU Lesser General Public License
- * along with the GNU MP Library; see the file COPYING.LIB.  If not, write to
+ * along with the nettle library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
  * MA 02111-1307, USA.
  */
