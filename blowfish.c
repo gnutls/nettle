@@ -254,8 +254,8 @@ function_F( BLOWFISH_context *bc, u32 x )
     unsigned a, b, c, d;
 
 /* FIXME: I don't quite like this hack. It assumes that the byteorder
- * is plain big or little endian (and for instance not VAX-ish), and
- * that u32 are exactly 32 bits large (while the autoconf stuff only
+ * is plain big or little endian (and for instance not PDP-ish), and
+ * that a u32 is exactly 32 bits (while the autoconf stuff only
  * guarantees that it is *at least* 32 bits).
  *
  * On the other hand, taking the address of x makes it difficult to
