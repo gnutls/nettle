@@ -114,6 +114,9 @@ dsa_nist_gen(mpz_t p, mpz_t q,
       }
       /* q is a prime, with overwhelming probability. */
 
+      if (progress)
+	progress(progress_ctx, '\n');
+      
       {
 	unsigned size = (n+1) * SHA1_DIGEST_SIZE;
 	uint8_t *buffer = alloca(size);
@@ -148,6 +151,9 @@ dsa_nist_gen(mpz_t p, mpz_t q,
 	    if (mpz_probab_prime_p(p, 5))
 	      {
 		/* Done! */
+		if (progress)
+		  progress(progress_ctx, '\n');
+		
 		mpz_clear(s);
 		mpz_clear(t);
 		mpz_clear(c);
@@ -191,6 +197,9 @@ dsa_find_generator(mpz_t g,
       if (mpz_cmp_ui(g, 1))
 	{
 	  /* g != 1. Finished. */
+	  if (progress)
+	    progress(progress_ctx, '\n');
+
 	  mpz_clear(e);
 	  mpz_clear(n);
 
@@ -211,7 +220,7 @@ dsa_generate_keypair(struct dsa_public_key *pub,
 {
   mpz_t t;
   
-  if (bits < DSA_MINIMUM_BITS)
+  if (bits < DSA_MIN_P_BITS)
     return 0;
   
   dsa_nist_gen(pub->p, pub->q,
