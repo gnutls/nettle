@@ -94,6 +94,7 @@ dsa_sign(struct dsa_private_key *key,
   mpz_fdiv_r(signature->r, tmp, key->pub.q);
 
   /* Compute hash */
+  mpz_init(h);
   _dsa_hash(h, hash);
 
   /* Compute k^-1 (mod q) */
