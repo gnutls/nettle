@@ -12,13 +12,6 @@ md5_digest(&ctx, MD5_DIGEST_SIZE, digest);
 if (!MEMEQ(MD5_DIGEST_SIZE, digest, H("D41D8CD98F00B204 E9800998ECF8427E")))
   FAIL;
 
-md5_init(&ctx);
-md5_final(&ctx);
-md5_digest(&ctx, MD5_DIGEST_SIZE, digest);
-
-if (!MEMEQ(MD5_DIGEST_SIZE, digest, H("D41D8CD98F00B204 E9800998ECF8427E")))
-  FAIL;
-
 memset(digest, 0, MD5_DIGEST_SIZE);
 md5_digest(&ctx, MD5_DIGEST_SIZE - 1, digest);
 
