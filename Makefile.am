@@ -12,7 +12,8 @@ libnettleinclude_HEADERS = aes.h arcfour.h blowfish.h \
 			   hmac.h \
 			   knuth-lfib.h \
 			   md5.h md5-compat.h \
-			   nettle-meta.h rsa.h \
+			   nettle-meta.h \
+			   pgp.h rsa.h \
 			   sexp.h \
 			   serpent.h sha.h twofish.h \
 			   yarrow.h
@@ -41,6 +42,7 @@ libnettle_a_SOURCES = aes.c aes.h aes-internal.h \
 		      rsa-encrypt.c rsa-decrypt.c \
 		      rsa-keygen.c rsa-compat.h rsa-compat.c \
 		      rsa2sexp.c sexp2rsa.c \
+		      pgp.h pgp-encode.c rsa2openpgp.c \
 		      buffer.h buffer.c \
 		      nettle-meta.h \
 		      nettle-internal.c nettle-internal.h nettle-openssl.c
