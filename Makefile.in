@@ -104,6 +104,7 @@ DISTFILES = $(SOURCES) $(HEADERS) .bootstrap aclocal.m4 configure.ac \
 	memxor.c $(des_headers) descore.README \
 	aes-internal.h cast128_sboxes.h desinfo.h desCode.h \
 	serpent_sboxes.h nettle-internal.h \
+	asm.m4 \
 	nettle.texinfo nettle.info nettle.html sha-example.c
 
 # Rules building libnettle.a

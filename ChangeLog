@@ -1,3 +1,7 @@
+2004-10-21  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (DISTFILES): Added asm.m4.
+
 2004-10-21  Niels Möller  <niels@s3.kth.se>
 
 	* examples/Makefile.in: Deleted all configure-related rules,
