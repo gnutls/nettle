@@ -181,24 +181,13 @@ C .Laes_got_t:
 	jnz	.Laes_encrypt_loop
 
 	C last round
-	C first column
 
+	C first column
 	AES_LAST_ROUND(a,b,c,d)
 	pushl	%edi
 
-	C // second column
-	C d a b c
-	movl	%eax,%edi
-	andl	$0x0000ff00,%edi
-	movl	%ebx,%ebp
-	andl	$0x00ff0000,%ebp
-	orl	%ebp,%edi
-	movl	%ecx,%ebp
-	andl	$0xff000000,%ebp
-	orl	%ebp,%edi
-	movl	%edx,%ebp
-	andl	$0x000000ff,%ebp
-	orl	%ebp,%edi
+	C second column
+	AES_LAST_ROUND(d,a,b,c)
 	pushl	%edi
 
 	C c d a b
