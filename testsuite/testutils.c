@@ -108,6 +108,19 @@ decode_hex_dup(const char *hex)
     }
 }
 
+void
+print_hex(unsigned length, uint8_t *data)
+{
+  unsigned i;
+  
+  for (i = 0; i < length; i++)
+    {
+      if (! (i % 8))
+        printf(" ");
+      printf("%02x", data[i]);
+    }
+}
+
 int verbose = 0;
 
 int

@@ -36,19 +36,6 @@ get_event(FILE *f, struct sha256_ctx *hash,
   return 1;
 }
 
-static void
-print_hex(unsigned length, uint8_t *digest)
-{
-  unsigned i;
-  
-  for (i = 0; i < length; i++)
-    {
-      if (! (i % 8))
-        printf(" ");
-      printf("%02x", digest[i]);
-    }
-}
-
 static FILE *
 open_file(const char *name)
 {

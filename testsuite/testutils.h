@@ -29,6 +29,9 @@ decode_hex(uint8_t *dst, const char *hex);
 const uint8_t *
 decode_hex_dup(const char *hex);
 
+void
+print_hex(unsigned length, uint8_t *data);
+
 /* The main program */
 int
 test_main(void);
