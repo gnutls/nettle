@@ -54,8 +54,11 @@ libdir =	@libdir@
 includedir =	@includedir@
 infodir =	@infodir@
 
-COMPILE = $(CC) $(CPPFLAGS) $(INCLUDES) $(DEFS) $(CFLAGS) $(CCPIC) $(DEP_FLAGS)
-LINK = $(CC) $(CFLAGS) $(LDFLAGS)
+# PRE_CPPFLAGS and PRE_LDFLAGS lets each Makefile.in prepend its own
+# flags before CPPFLAGS and LDFLAGS.
+
+COMPILE = $(CC) $(PRE_CPPFLAGS) $(CPPFLAGS) $(DEFS) $(CFLAGS) $(CCPIC) $(DEP_FLAGS)
+LINK = $(CC) $(CFLAGS) $(PRE_LDFLAGS) $(LDFLAGS)
 
 # Disable builtin rule
 %$(EXEEXT) : %.c

@@ -7,7 +7,8 @@ top_srcdir = @top_srcdir@
 
 include ../config.make
 
-INCLUDES = -I.. -I$(top_srcdir)
+PRE_CPPFLAGS = -I.. -I$(top_srcdir)
+PRE_LDFLAGS = -L..
 
 TARGETS = sexp-conv nettle-lfib-stream
 
@@ -21,10 +22,10 @@ SOURCES = $(sexp_conv_SOURCES) nettle-lfib-stream.c
 DISTFILES = $(SOURCES) Makefile.in getopt.h input.h misc.h output.h parse.h
 
 sexp-conv: $(sexp_conv_SOURCES:.c=.$(OBJEXT)) ../libnettle.a
-	$(LINK) $^ $(LIBS) -L.. -lnettle -o $@
+	$(LINK) $^ -lnettle $(LIBS) -o $@
 
 nettle-lfib-stream: nettle-lfib-stream.$(OBJEXT) ../libnettle.a
-	$(LINK) $^ $(LIBS) -L.. -lnettle -o $@
+	$(LINK) $^ -lnettle $(LIBS) -o $@
 
 .c.$(OBJEXT):
 	$(COMPILE) -c $< && $(DEP_PROCESS)

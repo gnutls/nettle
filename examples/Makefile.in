@@ -7,7 +7,8 @@ top_srcdir = @top_srcdir@
 
 include ../config.make
 
-INCLUDES = -I.. -I$(top_srcdir)
+PRE_CPPFLAGS = -I.. -I$(top_srcdir)
+PRE_LDFLAGS = -L..
 
 OPENSSL_LIBFLAGS = @OPENSSL_LIBFLAGS@
 TARGETS = nettle-benchmark @RSA_EXAMPLES@
@@ -23,12 +24,12 @@ DISTFILES= $(SOURCES) Makefile.in $(TS_ALL) run-tests setup-env teardown-env \
 all: $(TARGETS)
 
 .c.$(OBJEXT):
-	$(COMPILE) -I.. -c $<
+	$(COMPILE) -c $<
 .o$(EXEEXT):
-	$(LINK) $^ $(LIBS) -L.. -lnettle -o $@
+	$(LINK) $^ -lnettle $(LIBS) -o $@
 
 nettle-benchmark: nettle-benchmark.o nettle-openssl.o ../libnettle.a
-	$(LINK) $^ $(LIBS) -L.. -lnettle $(OPENSSL_LIBFLAGS) -o $@
+	$(LINK) $^ -lnettle $(LIBS) $(OPENSSL_LIBFLAGS) -o $@
 
 $(TARGETS) : io.o ../libnettle.a
 

@@ -7,7 +7,8 @@ top_srcdir = @top_srcdir@
 
 include ../config.make
 
-INCLUDES = -I.. -I$(top_srcdir)
+PRE_CPPFLAGS = -I.. -I$(top_srcdir)
+PRE_LDFLAGS = -L..
 
 TS_SOURCES = aes-test.c arcfour-test.c arctwo-test.c \
 	     blowfish-test.c cast128-test.c \
@@ -38,7 +39,7 @@ all: $(TARGETS)
 	$(COMPILE) -I.. -c $< && $(DEP_PROCESS)
 
 .o$(EXEEXT):
-	$(LINK) $< testutils.o $(LIBS) -L.. -lnettle -o $@
+	$(LINK) $< testutils.o -lnettle $(LIBS) -o $@
 # .c$(EXEEXT):
 # 	$(COMPILE) -I..
 # 	$(CC) $(CFLAGS) $(LDFLAGS) $*.o testutils.o -L.. -lnettle $(LIBS) -o $@

@@ -1,3 +1,13 @@
+2004-10-20  Niels Möller  <nisse@lysator.liu.se>
+
+	* config.make.in: Insert $(PRE_CPPFLAGS) and $(PRE_LDFLAGS) before
+	$(CPPFLAGS) and $(LDFLAGS). This mechanism replaces $(INCLUDES).
+
+	* examples/Makefile.in (PRE_CPPFLAGS, PRE_LDFLAGS): Use these
+	flags to get -I.. and -L.. early on the command line.
+	* testsuite/Makefile.in: Likewise
+	* tools/Makefile.in: Likewise.
+
 2004-10-20  Niels Möller  <niels@s3.kth.se>
 
 	* Makefile.in: In the assembler rules, there's no need to look in
