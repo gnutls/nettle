@@ -180,16 +180,16 @@ main(int argc, char **argv)
   uint8_t digest[SHA256_DIGEST_SIZE];
 
   const uint8_t *expected_output
-    = decode_hex_dup("6af27fa0a2751256 a17b64df80838abb"
-		     "76a84038d98fadd7 e79b619b3e1d8b18");
+    = decode_hex_dup("8df8796bd937ad3d ea9a0a5ff284c275"
+		     "cd8e4fafe21fe114 19ba154dfbde2ec4");
 
   const uint8_t *expected_input
     = decode_hex_dup("fec4c0767434a8a3 22d6d5d0c9f49c42"
 		     "988ce8c159b1a806 29d51aa40c2e99aa");
 
   const uint8_t *expected_seed_file
-    = decode_hex_dup("b3674735824f6504 edcb07a883f16482"
-		     "a2b1855992441ced 812d8ffda99af0e0");
+    = decode_hex_dup("f473011d57f4a76b 8eeaff5edbd59224"
+		     "c942cdce44a6e3ec 39b9a771b6944a60");
   
   unsigned c; unsigned t;
 
