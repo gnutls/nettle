@@ -1,11 +1,11 @@
-/* arcfour.c
+/* arcfour-crypt.c
  *
  * The arcfour/rc4 stream cipher.
  */
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2001 Niels Möller
+ * Copyright (C) 2001, 2004 Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -31,34 +31,10 @@
 
 #include "arcfour.h"
 
-#define SWAP(a,b) do { int _t = a; a = b; b = _t; } while(0)
-
 void
-arcfour_set_key(struct arcfour_ctx *ctx,
-		unsigned length, const uint8_t *key)
-{
-  unsigned i, j, k;
-  
-  assert(length >= ARCFOUR_MIN_KEY_SIZE);
-  assert(length <= ARCFOUR_MAX_KEY_SIZE);
-
-  /* Initialize context */
-  for (i = 0; i<256; i++)
-    ctx->S[i] = i;
-
-  for (i = j = k = 0; i<256; i++)
-    {
-      j += ctx->S[i] + key[k]; j &= 0xff;
-      SWAP(ctx->S[i], ctx->S[j]);
-      /* Repeat key as needed */
-      k = (k + 1) % length;
-    }
-  ctx->i = ctx->j = 0;
-}
-
-void
-arcfour_stream(struct arcfour_ctx *ctx,
-	       unsigned length, uint8_t *dst)
+arcfour_crypt(struct arcfour_ctx *ctx,
+	      unsigned length, uint8_t *dst,
+	      const uint8_t *src)
 {
   register uint8_t i, j;
   register int si, sj;
@@ -70,8 +46,7 @@ arcfour_stream(struct arcfour_ctx *ctx,
       si = ctx->S[i];
       j += si; j &= 0xff;
       sj = ctx->S[i] = ctx->S[j];
-      *dst++ = ctx->S[ (si + sj) & 0xff ];
+      *dst++ = *src++ ^ ctx->S[ (si + sj) & 0xff ];
     }
   ctx->i = i; ctx->j = j;
 }
-
