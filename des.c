@@ -81,73 +81,77 @@ des_set_key(struct des_ctx *ctx, const uint8_t *key)
   n |= b0[key[6]]; n <<= 4;
   n |= b0[key[7]];
   w  = 0x88888888l;
+
   /* report bad parity in key */
   if ( n & w )
     {
       ctx->status = DES_BAD_PARITY;
       return 0;
     }
-  ctx->status = DES_WEAK_KEY; 
+  ctx->status = DES_OK; 
+
   /* report a weak or semi-weak key */
   if ( !((n - (w >> 3)) & w) ) {	/* 1 in 10^10 keys passes this test */
     if ( n < 0X41415151 ) {
       if ( n < 0X31312121 ) {
 	if ( n < 0X14141515 ) {
 	  /* 01 01 01 01 01 01 01 01 */
-	  if ( n == 0X11111111 ) return 0;
+	  if ( n == 0X11111111 ) goto weak;
 	  /* 01 1F 01 1F 01 0E 01 0E */
-	  if ( n == 0X13131212 ) return 0;
+	  if ( n == 0X13131212 ) goto weak;
 	} else {
 	  /* 01 E0 01 E0 01 F1 01 F1 */
-	  if ( n == 0X14141515 ) return 0;
+	  if ( n == 0X14141515 ) goto weak;
 	  /* 01 FE 01 FE 01 FE 01 FE */
-	  if ( n == 0X16161616 ) return 0;
+	  if ( n == 0X16161616 ) goto weak;
 	}
       } else {
 	if ( n < 0X34342525 ) {
 	  /* 1F 01 1F 01 0E 01 0E 01 */
-	  if ( n == 0X31312121 ) return 0;
+	  if ( n == 0X31312121 ) goto weak;
 	  /* 1F 1F 1F 1F 0E 0E 0E 0E */	/* ? */
-	  if ( n == 0X33332222 ) return 0;;
+	  if ( n == 0X33332222 ) goto weak;
 	} else {
 	  /* 1F E0 1F E0 0E F1 0E F1 */
-	  if ( n == 0X34342525 ) return 0;;
+	  if ( n == 0X34342525 ) goto weak;
 	  /* 1F FE 1F FE 0E FE 0E FE */
-	  if ( n == 0X36362626 ) return 0;;
+	  if ( n == 0X36362626 ) goto weak;
 	}
       }
     } else {
       if ( n < 0X61616161 ) {
 	if ( n < 0X44445555 ) {
 	  /* E0 01 E0 01 F1 01 F1 01 */
-	  if ( n == 0X41415151 ) return 0;
+	  if ( n == 0X41415151 ) goto weak;
 	  /* E0 1F E0 1F F1 0E F1 0E */
-	  if ( n == 0X43435252 ) return 0;
+	  if ( n == 0X43435252 ) goto weak;
 	} else {
 	  /* E0 E0 E0 E0 F1 F1 F1 F1 */	/* ? */
-	  if ( n == 0X44445555 ) return 0;
+	  if ( n == 0X44445555 ) goto weak;
 	  /* E0 FE E0 FE F1 FE F1 FE */
-	  if ( n == 0X46465656 ) return 0;
+	  if ( n == 0X46465656 ) goto weak;
 	}
       } else {
 	if ( n < 0X64646565 ) {
 	  /* FE 01 FE 01 FE 01 FE 01 */
-	  if ( n == 0X61616161 ) return 0;
+	  if ( n == 0X61616161 ) goto weak;
 	  /* FE 1F FE 1F FE 0E FE 0E */
-	  if ( n == 0X63636262 ) return 0;
+	  if ( n == 0X63636262 ) goto weak;
 	} else {
 	  /* FE E0 FE E0 FE F1 FE F1 */
-	  if ( n == 0X64646565 ) return 0;
+	  if ( n == 0X64646565 ) goto weak;
 	  /* FE FE FE FE FE FE FE FE */
-	  if ( n == 0X66666666 ) return 0;
+	  if ( n == 0X66666666 )
+          {
+          weak:
+            ctx->status = DES_WEAK_KEY;
+          }
 	}
       }
     }
   }
 
-  /* key is ok */
-  ctx->status = DES_OK;
-  
+  /* NOTE: We go on and expand the key, even if it was weak */
   /* explode the bits */
   n = 56;
   b0 = bits0;
@@ -209,7 +213,7 @@ des_set_key(struct des_ctx *ctx, const uint8_t *key)
     method	+= 2;
   } while ( --n );
 
-  return 1;
+  return (ctx->status == DES_OK);
 }
 
 void
