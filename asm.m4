@@ -5,9 +5,6 @@ dnl FORTRAN style comment character
 define(<C>, <
 dnl>)dnl
 
-dnl     changecom(!,<
-dnl     >)dnl
-
 dnl including files from the srcdir
 define(<include_src>, <include(srcdir/$1)>)dnl
 
