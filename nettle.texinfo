@@ -241,6 +241,8 @@ pointer. Source and destination areas are of the same length. Source and
 destination may be the same, so that you can process strings in place,
 but they @emph{must not} overlap in any other way.
 
+@c FIXME: Say something about the name mangling.
+
 @node Example, Reference, Conventions, Top
 @comment  node-name,  next,  previous,  up
 @chapter Example
