@@ -1,3 +1,11 @@
+2001-09-11  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* Makefile.am: Added des-compat.c and des-compat.h
+
+	* des-compat.c: Bugfixes, more functions implemented.
+
+	* des-compat.h: Define DES_ENCRYPT and DES_DECRYPT. Bugfixes.
+
 2001-09-10  Niels Möller  <nisse@ehand.com>
 
 	* nettle.texinfo (Copyright): Added copyright information for
