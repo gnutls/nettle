@@ -133,7 +133,7 @@
 
 2004-08-24  Niels Möller  <nisse@lysator.liu.se>
 
-	* des-compat.c (des_cbc_cksum): Pad input with NUL:s, if it's not
+	* des-compat.c (des_cbc_cksum): Pad input with NUL's, if it's not
 	an integral number of blocks.
 
 2004-08-24  Niels Möller  <niels@s3.kth.se>
