@@ -33,6 +33,8 @@ core
 /*.d
 /.deps
 /Makefile
+/Makefile.am
+/Makefile.in
 /config.cache
 /config.h.in
 /config.log
