@@ -14,7 +14,7 @@
 #include <unistd.h>
 
 /* -1 means invalid */
-const signed char hex_digits[0x100] =
+static const signed char hex_digits[0x100] =
   {
     -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
     -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
