@@ -122,8 +122,9 @@ dsa_nist_gen(mpz_t p, mpz_t q,
 	/* Official maximum key size: L = 1024 => n = 6 */
 	TMP_DECL(buffer, uint8_t, (6 + 1) * SHA1_DIGEST_SIZE);
 	unsigned size = (n+1) * SHA1_DIGEST_SIZE;
-	TMP_ALLOC(buffer, size);
 	unsigned i, j;
+
+	TMP_ALLOC(buffer, size);
 	
 	for (i = 0, j = 2; i<4096; i++, j+= n+1)
 	  {

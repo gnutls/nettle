@@ -1,5 +1,7 @@
 2004-01-08  Niels Möller  <niels@s3.kth.se>
 
+	* dsa-keygen.c (dsa_nist_gen): Fixed declaration/statement order.
+
 	* rsa-keygen.c (bignum_next_prime): Fixed off-by-one error when
 	comparing input to the largest listed prime. General cleanup, as
 	prime_limit > 0 always. Use TMP_DECL and TMP_ALLOC.
