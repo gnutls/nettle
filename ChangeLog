@@ -1,3 +1,9 @@
+2004-03-05  Niels Möller  <nisse@lysator.liu.se>
+
+	* Released nettle-1.10.
+
+	* configure.ac (SHLIBMINOR): Shared library version is now 2.2.
+
 2004-03-04  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/symbols-test: Pass -g flag to nm.
