@@ -1,3 +1,7 @@
+2004-12-01  Niels Möller  <nisse@lysator.liu.se>
+
+	* config.make.in: Added a default target.
+
 2004-11-29  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/Makefile.in: Use .$(OBJEXT). Explicitly set .SUFFIXES.

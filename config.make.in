@@ -60,6 +60,10 @@ infodir =	@infodir@
 COMPILE = $(CC) $(PRE_CPPFLAGS) $(CPPFLAGS) $(DEFS) $(CFLAGS) $(CCPIC) $(DEP_FLAGS)
 LINK = $(CC) $(CFLAGS) $(PRE_LDFLAGS) $(LDFLAGS)
 
+# Default rule. Must be here, since config.make is included before the
+# usual targets.
+default: all
+
 # Disable builtin rule
 %$(EXEEXT) : %.c
 
