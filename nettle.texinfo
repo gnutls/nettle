@@ -251,7 +251,7 @@ A simple example program that reads a file from standard in and writes
 its SHA1 checksum on standard output should give the flavor of Nettle.
 
 @example
-@verbatiminclude example.c
+@verbatiminclude sha-example.c
 @end example
 
 @node Reference, Nettle soup, Example, Top
