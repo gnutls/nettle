@@ -84,7 +84,7 @@ extern const struct nettle_cipher nettle_twofish192;
 extern const struct nettle_cipher nettle_twofish256;
 
 
-/* Hash algorithm */
+/* Hash algorithms */
 typedef void (*nettle_hash_init_func)(void *ctx);
 typedef void (*nettle_hash_update_func)(void *ctx,
 					unsigned length,
@@ -123,5 +123,33 @@ struct nettle_hash
 extern const struct nettle_hash nettle_md5;
 extern const struct nettle_hash nettle_sha1;
 extern const struct nettle_hash nettle_sha256;
+
+
+/* ASCII armor codecs */
+typedef unsigned (*nettle_armor_func)(uint8_t *dst,
+                                      unsigned src_length,
+                                      const uint8_t *src);
+
+struct nettle_armor
+{
+  const char *name;
+
+  unsigned ascii_block_size;
+  unsigned raw_block_size;
+
+  nettle_armor_func encode;
+  nettle_armor_func decode;
+};
+
+#define _NETTLE_ARMOR(name, NAME) {		\
+  #name,					\
+  NAME##_ASCII_BLOCK_SIZE,			\
+  NAME##_RAW_BLOCK_SIZE,			\
+  name##_encode,				\
+  name##_decode					\
+}
+
+extern const struct nettle_armor nettle_base64;
+extern const struct nettle_armor nettle_base16;
 
 #endif /* NETTLE_META_H_INCLUDED */
