@@ -27,6 +27,14 @@
 
    of size (4 + AES_KEY_SIZE + AES_BLOCK_SIZE + SHA1_DIGEST_SIZE) = 72
    bytes, encrypted using rsa-pkcs1.
+
+   The cleartext input is encrypted using aes-cbc. The final block is
+   padded as
+
+     | data | random octets | padding length |
+
+   where the last octet is the padding length, a number between 1 and
+   AES_BLOCK_SIZE (inclusive).
 */
 
 struct rsa_session

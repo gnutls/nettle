@@ -21,32 +21,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
  * MA 02111-1307, USA.
  */
-
-/* Encryption program using the following file format:
-
-     uint32_t version = 1;
-     uint32_t xsize;
-     uint8_t x[xsize];
-     uint8_t encrypted[n];
-     uint8_t hmac[SHA1_DIGEST_SIZE];
-
-   "x" is the data
-
-     uint32_t version = 1;
-     uint8_t aes_key[AES_KEY_SIZE];
-     uint8_t iv[AES_BLOCK_SIZE];
-     uint8_t hmac_key[SHA1_DIGEST_SIZE];
-
-   of size (4 + AES_KEY_SIZE + AES_BLOCK_SIZE + SHA1_DIGEST_SIZE) = 72
-   bytes, encrypted using rsa-pkcs1.
-
-   "encrypted" is the cleartext processed with aes-cbc. The final block is padded as
-
-     | data | random octets | padding length |
-
-   where the last octet is the padding length, a number between 1 and
-   AES_BLOCK_SIZE (inclusive).
-*/
    
 #if HAVE_CONFIG_H
 # include "config.h"
