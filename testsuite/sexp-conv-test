@@ -16,7 +16,7 @@ else
 fi
 
 test_advanced () {
-    echo "$1" > test.in
+    echo $n "$1$c" > test.in
     if ../tools/sexp-conv -s advanced <test.in >test1.out ; then
 	true
     else
@@ -32,7 +32,7 @@ test_advanced () {
 }
 
 test_transport () {
-    echo "$1" > test.in
+    echo $n "$1$c" > test.in
     if ../tools/sexp-conv -s transport <test.in >test1.out ; then
 	true
     else
@@ -48,7 +48,7 @@ test_transport () {
 }
 
 test_canonical () {
-    echo "$1" > test.in
+    echo $n "$1$c" > test.in
     if ../tools/sexp-conv -s canonical <test.in >test1.out ; then
 	true
     else
