@@ -13,11 +13,11 @@ test_main(void)
     const uint8_t e[] = "(3:foo(3:bar17:xxxxxxxxxxxxxxxxx))";
 
     nettle_buffer_init(&buffer);
-    ASSERT(sexp_format(&buffer, "(%z(%z%z))",
+    ASSERT(sexp_format(&buffer, "(%0s(%0s%0s))",
 		       "foo", "bar", "xxxxxxxxxxxxxxxxx")
 	   == strlen(e));
     
-    ASSERT(sexp_format(NULL, "(%z(%z%z))",
+    ASSERT(sexp_format(NULL, "(%0s(%0s%0s))",
 		       "foo", "bar", "xxxxxxxxxxxxxxxxx")
 	   == strlen(e));
     
@@ -28,11 +28,11 @@ test_main(void)
     const uint8_t e[] = "{KDM6Zm9vKDM6YmFyMTc6eHh4eHh4eHh4eHh4eHh4eHgpKQ==}";
 
     nettle_buffer_init(&buffer);
-    ASSERT(sexp_transport_format(&buffer, "(%z(%z%z))",
+    ASSERT(sexp_transport_format(&buffer, "(%0s(%0s%0s))",
 		       "foo", "bar", "xxxxxxxxxxxxxxxxx")
 	   == strlen(e));
     
-    ASSERT(sexp_transport_format(NULL, "(%z(%z%z))",
+    ASSERT(sexp_transport_format(NULL, "(%0s(%0s%0s))",
 				 "foo", "bar", "xxxxxxxxxxxxxxxxx")
 	   == strlen(e));
     
@@ -55,14 +55,25 @@ test_main(void)
     const uint8_t e[] = "(3:foo(4:bar))";
     
     nettle_buffer_init(&buffer);  
-    ASSERT(sexp_format(&buffer, "(%z%l)",
+    ASSERT(sexp_format(&buffer, "(%0s%l)",
 		       "foo", 7, "(4:bar)")
 	   == strlen(e));
     
     ASSERT(buffer.size == strlen(e));
     ASSERT(MEMEQ(buffer.size, buffer.contents, e));
   }
-    
+
+  {
+    const uint8_t e[] = "([1:t]3:foo3:bar[6:gazonk]3:baz1:q)";
+
+    nettle_buffer_init(&buffer);
+    ASSERT(sexp_format(&buffer, "(%0t%0s%0s%0t%0s%0t%0s)",
+		       "t", "foo", "bar", "gazonk", "baz", NULL, "q")
+	   == strlen(e));
+
+    ASSERT(MEMEQ(buffer.size, buffer.contents, e));
+  }
+  
 #if HAVE_LIBGMP
   {
     mpz_t x;
@@ -79,11 +90,11 @@ test_main(void)
     nettle_mpz_init_set_str_256_u(z, 12, "\x81""abcdefghijk");
     nettle_buffer_init(&buffer);
 
-    ASSERT(sexp_format(&buffer, "(%z(%z%b%b%b))",
+    ASSERT(sexp_format(&buffer, "(%0s(%0s%b%b%b))",
 		     "foo", "bar", x, y, z)
 	   == LLENGTH(e));
 
-    ASSERT(sexp_format(NULL, "(%z(%z%b%b%b))",
+    ASSERT(sexp_format(NULL, "(%0s(%0s%b%b%b))",
 		     "foo", "bar", x, y, z)
 	   == LLENGTH(e));
     
