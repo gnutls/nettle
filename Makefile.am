@@ -14,7 +14,7 @@ libnettleinclude_HEADERS = aes.h arcfour.h blowfish.h \
 			   macros.h \
 			   md2.h md4.h \
 			   md5.h md5-compat.h \
-			   nettle-meta.h \
+			   nettle-meta.h nettle-types.h \
 			   pgp.h realloc.h rsa.h \
 			   sexp.h \
 			   serpent.h sha.h twofish.h \
@@ -73,7 +73,7 @@ EXTRA_DIST = memxor.h $(des_headers) descore.README nettle.html \
 
 DISTCLEANFILES = aes.asm aes.s \
 	aes-decrypt.asm aes-decrypt.s aes-encrypt.asm aes-encrypt.s \
-	machine.m4
+	machine.m4 nettle-types.h
 
 CLEANFILES = $(SHLIBFORLINK)
 clean-local:
