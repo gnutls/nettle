@@ -1,7 +1,12 @@
 2002-12-30  Niels Möller  <nisse@cuckoo.hack.org>
 
+	* testsuite/rsa2sexp-test.c: Don't include rsa.h (done by
+	testutils.h, if enabled).
+	* testsuite/sexp2rsa-test.c: Likewise.
+
 	* rsa-decrypt.c: Make compilation conditional on WITH_PUBLIC_KEY.
 	* rsa-encrypt.c: Likewise.
+	* rsa-compat.c: Likewise.
 
 2002-12-04  Niels Möller  <niels@s3.kth.se>
 
