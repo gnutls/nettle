@@ -581,13 +581,13 @@ sexp_put_char(struct sexp_output *output, uint8_t c)
       assert(done <= sizeof(encoded));
       
       for (i = 0; i<done; i++)
-	  {
-	    if (output->pos > LINE_WIDTH
-		&& output->pos > (output->coding_indent + 10))
-	      sexp_put_newline(output, output->coding_indent);
-
-	    sexp_put_raw_char(output, encoded[i]);
-	  }
+	{
+	  if (output->pos > LINE_WIDTH
+	      && output->pos > (output->coding_indent + 10))
+	    sexp_put_newline(output, output->coding_indent);
+	  
+	  sexp_put_raw_char(output, encoded[i]);
+	}
     }
   else
     sexp_put_raw_char(output, c);
@@ -601,14 +601,6 @@ sexp_put_data(struct sexp_output *output,
 
   for (i = 0; i<length; i++)
     sexp_put_char(output, data[i]);
-}
-
-static void
-sexp_puts(struct sexp_output *output,
-	  const uint8_t *s)
-{
-  while (*s)
-    sexp_put_char(output, *s++);
 }
 
 static void
@@ -667,7 +659,8 @@ sexp_put_string(struct sexp_output *output, enum sexp_mode mode,
 		struct nettle_buffer *string)
 {
   if (!string->size)
-    sexp_puts(output, (mode == SEXP_ADVANCED) ? "\"\"": "0:");
+    sexp_put_data(output, 2,
+		  (mode == SEXP_ADVANCED) ? "\"\"": "0:");
 
   else if (mode == SEXP_ADVANCED)
     {
@@ -738,29 +731,8 @@ sexp_put_string(struct sexp_output *output, enum sexp_mode mode,
     }
 }
 
-static void
-sexp_put_list_start(struct sexp_output *output)
-{
-  sexp_put_char(output, '(');
-}
-
-static void
-sexp_put_list_end(struct sexp_output *output)
-{
-  sexp_put_char(output, ')');
-}
-
-static void
-sexp_put_display_start(struct sexp_output *output)
-{
-  sexp_put_char(output, '[');
-}
-
-static void
-sexp_put_display_end(struct sexp_output *output)
-{
-  sexp_put_char(output, ']');
-}
+
+/* Parsing and conversion functions. */
 
 static void
 sexp_convert_string(struct sexp_input *input, enum sexp_mode mode_in,
@@ -773,9 +745,6 @@ sexp_convert_string(struct sexp_input *input, enum sexp_mode mode_in,
     die("Invalid string.\n");
 }
 
-
-
-/* Parsing and conversion functions. */
 
 static void
 sexp_convert_list(struct sexp_input *input, enum sexp_mode mode_in,
@@ -808,25 +777,26 @@ sexp_convert_item(struct sexp_input *input, enum sexp_mode mode_in,
     }
   else switch(input->token)
     {
+    case SEXP_LIST_END:
+      die("Unmatched end of list.\n");      
+    case SEXP_EOF:
+      die("Unexpected end of file.\n");
+    case SEXP_CODING_END:
+      die("Unexpected end of coding.\n");
+
     case SEXP_LIST_START:
       sexp_convert_list(input, mode_in, output, mode_out, indent);
       break;
       
-    case SEXP_LIST_END:
-      die("Unexpected end of list.\n");
-      
-    case SEXP_EOF:
-      die("Unexpected end of file.\n");
-
     case SEXP_STRING:
       sexp_put_string(output, mode_out, &input->string);
       break;
 
     case SEXP_DISPLAY_START:
-      sexp_put_display_start(output);
+      sexp_put_char(output, '[');
       sexp_convert_string(input, mode_in, output, mode_out);
       sexp_skip_token(input, mode_in, SEXP_DISPLAY_END);
-      sexp_put_display_end(output);
+      sexp_put_char(output, ']');
       sexp_convert_string(input, mode_in, output, mode_out);
       break;
       
@@ -836,14 +806,11 @@ sexp_convert_item(struct sexp_input *input, enum sexp_mode mode_in,
       else
 	{
 	  sexp_get_token(input, SEXP_CANONICAL);
-	  
 	  sexp_convert_item(input, SEXP_CANONICAL, output, mode_out, indent);
 	  sexp_skip_token(input, SEXP_CANONICAL, SEXP_CODING_END);
 	  
 	  break;
 	}
-    case SEXP_CODING_END:
-      die("Unexpected end of coding.\n");
 
     default:
       die("Syntax error.\n");
@@ -857,7 +824,7 @@ sexp_convert_list(struct sexp_input *input, enum sexp_mode mode_in,
 {
   unsigned item;
 
-  sexp_put_list_start(output);
+  sexp_put_char(output, '(');
   
   for (item = 0;; item++)
     {
@@ -865,7 +832,7 @@ sexp_convert_list(struct sexp_input *input, enum sexp_mode mode_in,
 
       if (input->token == SEXP_LIST_END)
 	{
-	  sexp_put_list_end(output);
+	  sexp_put_char(output, ')');
 	  return;
 	}
 
