@@ -63,9 +63,15 @@ define(t1, %o1)
 define(t2, %o2)
 define(t3, %o3)
 
-dnl AES_ROUND(i)
-dnl Compute one word in the round function. 
-dnl Input in wtxt, output stored in tmp + i.
+C AES_ROUND(i)
+C Compute one word in the round function. 
+C Input in wtxt, output stored in tmp + i.
+C
+C The comments mark which j in T->table[j][ Bj(wtxt[IDXi(i)]) ]
+C the instruction is a part of. 
+C
+C The code uses the register %o[j], aka tj, as the primary 
+C register for that sub-expression. True for j==1,3.
 define(<AES_ROUND>, <
 	ld	[IDX1+$1], t1		! 1
 	
@@ -75,7 +81,7 @@ define(<AES_ROUND>, <
 	sll	t1, 2, t1		! 1
 	ld	[wtxt+$1], t0		! 0
 	! IDX2(j) = j XOR 2
-	lduh	[wtxt+eval($1 ^ 8)], t2		! 2
+	lduh	[wtxt+eval($1 ^ 8)], t2	! 2
 	and	t0, 255, t0		! 0
 	
 	ldub	[wtxt+t3], t3		! 3
@@ -172,148 +178,12 @@ _aes_crypt:
 	add	ctx, 16, key
 
 .Lround_loop:
-	! The comments mark which j in T->table[j][ Bj(wtxt[IDXi(i)]) ]
-	! the instruction is a part of. 
-	!
-	! The code uses the register %o[j], aka tj, as the primary 
-	! register for that sub-expression. True for j==1,3.
 
-	C Unrolled inner loop begins
-	
-	C i = 0
-	AES_ROUND(0)
-C 	ld	[IDX1+0], t1		! 1
-C 	
-C 	ldub	[wtxt+t1], t1		! 1
-C 	ld	[IDX3+0], t3		! 3
-C 	
-C 	sll	t1, 2, t1		! 1
-C 	ld	[wtxt], t0		! 0
-C 	! IDX2(j) = j XOR 2
-C 	lduh	[wtxt+8], t2		! 2
-C 	and	t0, 255, t0		! 0
-C 	
-C 	ldub	[wtxt+t3], t3		! 3
-C 	sll	t0, 2, t0		! 0
-C 	ld	[T0+t0], t0		! 0
-C 	and	t2, 255, t2		! 2
-C 	
-C 	ld	[T1+t1], t1		! 1
-C 	sll	t2, 2, t2		! 2
-C 	ld	[T2+t2], t2		! 2
-C 	sll	t3, 2, t3		! 3
-C 	
-C 	ld	[T3+t3], t3		! 3
-C 	xor	t0, t1, t0		! 0, 1
-C 	xor	t0, t2, t0		! 0, 1, 2
-C 	! Fetch roundkey
-C 	ld	[key], t1
-C 	
-C 	xor	t0, t3, t0		! 0, 1, 2, 3
-C 	xor	t0, t1, t0
-C 	st	t0, [tmp]
-
-	C i = 1
-	AES_ROUND(4)
-C 	ld	[IDX1+4], t1		! 1
-C 	
-C 	ldub	[wtxt+t1], t1		! 1
-C 	ld	[IDX3+4], t3		! 3
-C 	
-C 	sll	t1, 2, t1		! 1
-C 	ld	[wtxt+4], t0		! 0
-C 	! IDX2(j) = j XOR 2
-C 	lduh	[wtxt+12], t2		! 2
-C 	and	t0, 255, t0		! 0
-C 	
-C 	ldub	[wtxt+t3], t3		! 3
-C 	sll	t0, 2, t0		! 0
-C 	ld	[T0+t0], t0		! 0
-C 	and	t2, 255, t2		! 2
-C 	
-C 	ld	[T1+t1], t1		! 1
-C 	sll	t2, 2, t2		! 2
-C 	ld	[T2+t2], t2		! 2
-C 	sll	t3, 2, t3		! 3
-C 	
-C 	ld	[T3+t3], t3		! 3
-C 	xor	t0, t1, t0		! 0, 1
-C 	xor	t0, t2, t0		! 0, 1, 2
-C 	! Fetch roundkey
-C 	ld	[key+4], t1
-C 	
-C 	xor	t0, t3, t0		! 0, 1, 2, 3
-C 	xor	t0, t1, t0
-C 	st	t0, [tmp+4]
-
-	C = 2
-	AES_ROUND(8)
-C 	ld	[IDX1+8], t1		! 1
-C 	
-C 	ldub	[wtxt+t1], t1		! 1
-C 	ld	[IDX3+8], t3		! 3
-C 	
-C 	sll	t1, 2, t1		! 1
-C 	ld	[wtxt+8], t0		! 0
-C 	! IDX2(j) = j XOR 2
-C 	lduh	[wtxt], t2		! 2
-C 	and	t0, 255, t0		! 0
-C 	
-C 	ldub	[wtxt+t3], t3		! 3
-C 	sll	t0, 2, t0		! 0
-C 	ld	[T0+t0], t0		! 0
-C 	and	t2, 255, t2		! 2
-C 	
-C 	ld	[T1+t1], t1		! 1
-C 	sll	t2, 2, t2		! 2
-C 	ld	[T2+t2], t2		! 2
-C 	sll	t3, 2, t3		! 3
-C 	
-C 	ld	[T3+t3], t3		! 3
-C 	xor	t0, t1, t0		! 0, 1
-C 	xor	t0, t2, t0		! 0, 1, 2
-C 	! Fetch roundkey
-C 	ld	[key+8], t1
-C 	
-C 	xor	t0, t3, t0		! 0, 1, 2, 3
-C 	xor	t0, t1, t0
-C 	st	t0, [tmp+8]
-
-	C = 3
-	AES_ROUND(12)
-C 	ld	[IDX1+12], t1		! 1
-C 	
-C 	ldub	[wtxt+t1], t1		! 1
-C 	ld	[IDX3+12], t3		! 3
-C 	
-C 	sll	t1, 2, t1		! 1
-C 	ld	[wtxt+12], t0		! 0
-C 	! IDX2(j) = j XOR 2
-C 	lduh	[wtxt+4], t2		! 2
-C 	and	t0, 255, t0		! 0
-C 	
-C 	ldub	[wtxt+t3], t3		! 3
-C 	sll	t0, 2, t0		! 0
-C 	ld	[T0+t0], t0		! 0
-C 	and	t2, 255, t2		! 2
-C 	
-C 	ld	[T1+t1], t1		! 1
-C 	sll	t2, 2, t2		! 2
-C 	ld	[T2+t2], t2		! 2
-C 	sll	t3, 2, t3		! 3
-C 	
-C 	ld	[T3+t3], t3		! 3
-C 	xor	t0, t1, t0		! 0, 1
-C 	xor	t0, t2, t0		! 0, 1, 2
-C 	! Fetch roundkey
-C 	ld	[key+12], t1
-C 	
-C 	xor	t0, t3, t0		! 0, 1, 2, 3
-C 	xor	t0, t1, t0
-C 	st	t0, [tmp+12]
+	AES_ROUND(0)	! i = 0
+	AES_ROUND(4)	! i = 1
+	AES_ROUND(8)	! i = 2
+	AES_ROUND(12)	! i = 3
 			
-	C Unrolled inner loop ends
-	
 	! switch roles for tmp and wtxt
 	xor	wtxt, diff, wtxt
 	xor	tmp, diff, tmp
