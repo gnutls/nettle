@@ -98,3 +98,147 @@ aes_decrypt(&ctx, AES_BLOCK_SIZE, clear, cipher);
 if (!MEMEQ(16, msg, clear))
   FAIL;
 
+/* From draft NIST spec on AES modes.
+
+F.1 ECB Example Vectors
+F.1.1 ECB-AES128-Encrypt
+
+Key	2b7e151628aed2a6abf7158809cf4f3c
+Block #1
+Plaintext	6bc1bee22e409f96e93d7e117393172a
+Input Block	6bc1bee22e409f96e93d7e117393172a
+Output Block	3ad77bb40d7a3660a89ecaf32466ef97
+Ciphertext	3ad77bb40d7a3660a89ecaf32466ef97
+Block #2
+Plaintext	ae2d8a571e03ac9c9eb76fac45af8e51
+Input Block	ae2d8a571e03ac9c9eb76fac45af8e51
+Output Block	f5d3d58503b9699de785895a96fdbaaf
+Ciphertext	f5d3d58503b9699de785895a96fdbaaf
+Block #3
+Plaintext	30c81c46a35ce411e5fbc1191a0a52ef
+Input Block	30c81c46a35ce411e5fbc1191a0a52ef
+Output Block	43b1cd7f598ece23881b00e3ed030688
+Ciphertext	43b1cd7f598ece23881b00e3ed030688
+Block #4
+Plaintext	f69f2445df4f9b17ad2b417be66c3710
+Input Block	f69f2445df4f9b17ad2b417be66c3710
+Output Block	7b0c785e27e8ad3f8223207104725dd4
+Ciphertext	7b0c785e27e8ad3f8223207104725dd4
+
+F.1.2 ECB-AES128-Decrypt
+Key	2b7e151628aed2a6abf7158809cf4f3c
+Block #1
+Ciphertext	3ad77bb40d7a3660a89ecaf32466ef97
+Input Block	3ad77bb40d7a3660a89ecaf32466ef97
+Output Block	6bc1bee22e409f96e93d7e117393172a
+Plaintext	6bc1bee22e409f96e93d7e117393172a
+Block #2
+Ciphertext	f5d3d58503b9699de785895a96fdbaaf
+Input Block	f5d3d58503b9699de785895a96fdbaaf
+Output Block	ae2d8a571e03ac9c9eb76fac45af8e51
+Plaintext	ae2d8a571e03ac9c9eb76fac45af8e51
+Block #3
+Ciphertext	43b1cd7f598ece23881b00e3ed030688
+Input Block	43b1cd7f598ece23881b00e3ed030688
+Output Block	30c81c46a35ce411e5fbc1191a0a52ef
+Plaintext	30c81c46a35ce411e5fbc1191a0a52ef
+Block #4
+Ciphertext	7b0c785e27e8ad3f8223207104725dd4
+Input Block	7b0c785e27e8ad3f8223207104725dd4
+Output Block	f69f2445df4f9b17ad2b417be66c3710
+Plaintext	f69f2445df4f9b17ad2b417be66c3710
+
+F.1.3 ECB-AES192-Encrypt
+Key	8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b
+Block #1
+Plaintext	6bc1bee22e409f96e93d7e117393172a
+Input Block	6bc1bee22e409f96e93d7e117393172a
+Output Block	bd334f1d6e45f25ff712a214571fa5cc
+Ciphertext	bd334f1d6e45f25ff712a214571fa5cc
+Block #2
+Plaintext	ae2d8a571e03ac9c9eb76fac45af8e51
+Input Block	ae2d8a571e03ac9c9eb76fac45af8e51
+Output Block	974104846d0ad3ad7734ecb3ecee4eef
+Ciphertext	974104846d0ad3ad7734ecb3ecee4eef
+Block #3
+Plaintext	30c81c46a35ce411e5fbc1191a0a52ef
+Input Block	30c81c46a35ce411e5fbc1191a0a52ef
+Output Block	ef7afd2270e2e60adce0ba2face6444e
+Ciphertext	ef7afd2270e2e60adce0ba2face6444e
+Block #4
+Plaintext	f69f2445df4f9b17ad2b417be66c3710
+Input Block	f69f2445df4f9b17ad2b417be66c3710
+Output Block	9a4b41ba738d6c72fb16691603c18e0e
+Ciphertext	9a4b41ba738d6c72fb16691603c18e0e
+
+F.1.4 ECB-AES192-Decrypt
+Key	8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b
+Block #1
+Ciphertext	bd334f1d6e45f25ff712a214571fa5cc
+Input Block	bd334f1d6e45f25ff712a214571fa5cc
+Output Block	6bc1bee22e409f96e93d7e117393172a
+Plaintext	6bc1bee22e409f96e93d7e117393172a
+Block #2
+Ciphertext	974104846d0ad3ad7734ecb3ecee4eef
+Input Block	974104846d0ad3ad7734ecb3ecee4eef
+Output Block	ae2d8a571e03ac9c9eb76fac45af8e51
+Plaintext	ae2d8a571e03ac9c9eb76fac45af8e51
+Block #3
+Ciphertext	ef7afd2270e2e60adce0ba2face6444e
+Input Block	ef7afd2270e2e60adce0ba2face6444e
+Output Block	30c81c46a35ce411e5fbc1191a0a52ef
+Plaintext	30c81c46a35ce411e5fbc1191a0a52ef
+Block #4
+Ciphertext	9a4b41ba738d6c72fb16691603c18e0e
+Input Block	9a4b41ba738d6c72fb16691603c18e0e
+Output Block	f69f2445df4f9b17ad2b417be66c3710
+Plaintext	f69f2445df4f9b17ad2b417be66c3710
+
+F.1.5 ECB-AES256-Encrypt
+Key	603deb1015ca71be2b73aef0857d7781
+	1f352c073b6108d72d9810a30914dff4
+Block #1
+Plaintext	6bc1bee22e409f96e93d7e117393172a
+Input Block	6bc1bee22e409f96e93d7e117393172a
+Output Block	f3eed1bdb5d2a03c064b5a7e3db181f8
+Ciphertext	f3eed1bdb5d2a03c064b5a7e3db181f8
+Block #2
+Plaintext	ae2d8a571e03ac9c9eb76fac45af8e51
+Input Block	ae2d8a571e03ac9c9eb76fac45af8e51
+Output Block	591ccb10d410ed26dc5ba74a31362870
+Ciphertext	591ccb10d410ed26dc5ba74a31362870
+Block #3
+Plaintext	30c81c46a35ce411e5fbc1191a0a52ef
+Input Block	30c81c46a35ce411e5fbc1191a0a52ef
+Output Block	b6ed21b99ca6f4f9f153e7b1beafed1d
+Ciphertext	b6ed21b99ca6f4f9f153e7b1beafed1d
+Block #4
+Plaintext	f69f2445df4f9b17ad2b417be66c3710
+Input Block	f69f2445df4f9b17ad2b417be66c3710
+Output Block	23304b7a39f9f3ff067d8d8f9e24ecc7
+Ciphertext	23304b7a39f9f3ff067d8d8f9e24ecc7
+
+F.1.6 ECB-AES256-Decrypt
+Key	603deb1015ca71be2b73aef0857d7781
+	1f352c073b6108d72d9810a30914dff4
+Block #1
+Ciphertext	f3eed1bdb5d2a03c064b5a7e3db181f8
+Input Block	f3eed1bdb5d2a03c064b5a7e3db181f8
+Output Block	6bc1bee22e409f96e93d7e117393172a
+Plaintext	6bc1bee22e409f96e93d7e117393172a
+Block #2
+Ciphertext	591ccb10d410ed26dc5ba74a31362870
+Input Block	591ccb10d410ed26dc5ba74a31362870
+Output Block	ae2d8a571e03ac9c9eb76fac45af8e51
+Plaintext	ae2d8a571e03ac9c9eb76fac45af8e51
+Block #3
+Ciphertext	b6ed21b99ca6f4f9f153e7b1beafed1d
+Input Block	b6ed21b99ca6f4f9f153e7b1beafed1d
+Output Block	30c81c46a35ce411e5fbc1191a0a52ef
+Plaintext	30c81c46a35ce411e5fbc1191a0a52ef
+Block #4
+Ciphertext	23304b7a39f9f3ff067d8d8f9e24ecc7
+Input Block	23304b7a39f9f3ff067d8d8f9e24ecc7
+Output Block	f69f2445df4f9b17ad2b417be66c3710
+Plaintext	f69f2445df4f9b17ad2b417be66c3710
+*/
