@@ -144,15 +144,14 @@ _aes_crypt:
 	C i = 0
 	ld	[IDX1], t1		! 1
 	
-	! IDX2(j) = j XOR 2
-	mov	8, t2			! 2
 	add	wtxt, t1, t1		! 1
 	ldub	[t1+2], t1		! 1
 	ld	[IDX3], t3		! 3
 	
 	sll	t1, 2, t1		! 1
 	ld	[wtxt], t0		! 0
-	lduh	[wtxt+t2], t2		! 2
+	! IDX2(j) = j XOR 2
+	lduh	[wtxt+8], t2		! 2
 	and	t0, 255, t0		! 0
 	
 	ldub	[wtxt+t3], t3		! 3
@@ -178,15 +177,14 @@ _aes_crypt:
 	C i = 1
 	ld	[IDX1+4], t1		! 1
 	
-	! IDX2(j) = j XOR 2
-	mov	12, t2			! 2
 	add	wtxt, t1, t1		! 1
 	ldub	[t1+2], t1		! 1
 	ld	[IDX3+4], t3		! 3
 	
 	sll	t1, 2, t1		! 1
 	ld	[wtxt+4], t0		! 0
-	lduh	[wtxt+t2], t2		! 2
+	! IDX2(j) = j XOR 2
+	lduh	[wtxt+12], t2		! 2
 	and	t0, 255, t0		! 0
 	
 	ldub	[wtxt+t3], t3		! 3
@@ -212,15 +210,14 @@ _aes_crypt:
 	C = 2
 	ld	[IDX1+8], t1		! 1
 	
-	! IDX2(j) = j XOR 2
-	mov	0, t2			! 2
 	add	wtxt, t1, t1		! 1
 	ldub	[t1+2], t1		! 1
 	ld	[IDX3+8], t3		! 3
 	
 	sll	t1, 2, t1		! 1
 	ld	[wtxt+8], t0		! 0
-	lduh	[wtxt+t2], t2		! 2
+	! IDX2(j) = j XOR 2
+	lduh	[wtxt], t2		! 2
 	and	t0, 255, t0		! 0
 	
 	ldub	[wtxt+t3], t3		! 3
@@ -246,15 +243,14 @@ _aes_crypt:
 	C = 3
 	ld	[IDX1+12], t1		! 1
 	
-	! IDX2(j) = j XOR 2
-	mov	4, t2			! 2
 	add	wtxt, t1, t1		! 1
 	ldub	[t1+2], t1		! 1
 	ld	[IDX3+12], t3		! 3
 	
 	sll	t1, 2, t1		! 1
 	ld	[wtxt+12], t0		! 0
-	lduh	[wtxt+t2], t2		! 2
+	! IDX2(j) = j XOR 2
+	lduh	[wtxt+4], t2		! 2
 	and	t0, 255, t0		! 0
 	
 	ldub	[wtxt+t3], t3		! 3
