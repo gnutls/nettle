@@ -1,3 +1,7 @@
+2003-02-16  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* tools/Makefile.am (EXTRA_DIST): Added getopt.h.
+
 2003-02-14  Niels Möller  <niels@s3.kth.se>
 
 	* Makefile.am (print_path): Added target to print the used PATH,
