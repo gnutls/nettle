@@ -23,8 +23,8 @@
 uint8_t sbox[0x100];
 uint8_t isbox[0x100];
 
-uint8_t log[0x100];
-uint8_t ilog[0x100];
+uint8_t gf2_log[0x100];
+uint8_t gf2_exp[0x100];
 
 uint32_t dtable[4][0x100];
 uint32_t itable[4][0x100];
@@ -51,30 +51,30 @@ compute_log(void)
   unsigned i = 0;
   unsigned x = 1;
 
-  memset(log, 0, 0x100);
+  memset(gf2_log, 0, 0x100);
   
   for (i = 0; i < 0x100; i++, x = x ^ xtime(x))
     {
-      ilog[i] = x;
-      log[x] = i;
+      gf2_exp[i] = x;
+      gf2_log[x] = i;
     }
   /* Invalid. */
-  log[0] = 0;
-  /* The loop above sets log[1] = 0xff, which is correct,
-   * but log[1] = 0 is nicer. */
-  log[1] = 0;
+  gf2_log[0] = 0;
+  /* The loop above sets gf2_log[1] = 0xff, which is correct,
+   * but gf2_log[1] = 0 is nicer. */
+  gf2_log[1] = 0;
 }
 
 static unsigned
 mult(unsigned a, unsigned b)
 {
-  return (a && b) ? ilog[ (log[a] + log[b]) % 255] : 0;
+  return (a && b) ? gf2_exp[ (gf2_log[a] + gf2_log[b]) % 255] : 0;
 }
 
 static unsigned
 invert(unsigned x)
 {
-  return x ? ilog[0xff - log[x]] : 0;
+  return x ? gf2_exp[0xff - gf2_log[x]] : 0;
 }
 
 static unsigned
@@ -188,8 +188,8 @@ main(int argc, char **argv)
   compute_log();
   if (argc == 1)
     {
-      display_byte_table("log", log);
-      display_byte_table("ilog", ilog);
+      display_byte_table("gf2_log", gf2_log);
+      display_byte_table("gf2_exp", gf2_exp);
 
       compute_sbox();
       display_byte_table("sbox", sbox);
