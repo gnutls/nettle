@@ -1,5 +1,32 @@
 2002-10-09  Niels Möller  <nisse@cuckoo.hack.org>
 
+	* Makefile.am (libnettle_a_SOURCES): Added bignum-random.c and
+	dsa-keygen.c. 
+
+	* testsuite/testutils.c (test_dsa_key): New function to sanity
+	check a dsa keypair.
+
+	* testsuite/dsa-test.c (test_main): Call dsa_test_key.
+
+	* testsuite/dsa-keygen-test.c: New test case.
+
+	* dsa.h (DSA_MINIMUM_BITS): New constant.
+
+	* bignum.h (nettle_mpz_random, nettle_mpz_random_size): Added
+	prototypes.
+
+	* dsa-keygen.c: New file.
+
+	* bignum-random.c: New file.
+	(nettle_mpz_random): New function, moved from...
+	* dsa-sign.c (nettle_mpz_random): ... here. Also changed argument
+	ordering and updated callers. 
+	
+	* bignum-random.c: (nettle_mpz_random_size): New function, renamed
+	and moved here from...  
+	* rsa-keygen.c (bignum_random_size): ... here. Updated all
+	callers. 
+
 	* testsuite/testutils.c (test_dsa): Needs both public and private
 	key as arguments.
 
