@@ -91,7 +91,7 @@ _aes_crypt:
 	
 	! Read src, and add initial subkey
 	! Difference between ctx and src.
-	! NOTE: These instruction is duplicated in the delay slot,
+	! NOTE: These instructions are duplicated in the delay slot,
 	! and the instruction before the branch
 	sub	ctx, src, %g2
 	! Difference between wtxt and src
