@@ -1,3 +1,14 @@
+2004-01-08  Niels Möller  <niels@s3.kth.se>
+
+	* rsa-keygen.c (bignum_next_prime): Fixed off-by-one error when
+	comparing input to the largest listed prime. General cleanup, as
+	prime_limit > 0 always. Use TMP_DECL and TMP_ALLOC.
+
+	* nettle-internal.h (TMP_DECL, TMP_ALLOC): New macros. When alloca
+	is unavailable, they work by allocating a fix amount of stack and
+	imposing a hard limit on what can be allocated. Updated all users
+	of alloca.
+
 2004-01-07  Niels Möller  <nisse@harpo.hack.org>
 
 	* nettle-types.h: New (generated) file, to be used instead of
