@@ -1,7 +1,11 @@
+2004-11-14  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac (dummy-dep-files): Create dummy dependency files,
+	so that they can be included by the makefiles.
+
 2004-11-13  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in: Don't use -include, as it's GNU make specific.
-	Added rule to create empty dependency files if they are missing.
 	* examples/Makefile.in, tools/Makefile.in, testsuite/Makefile.in:
 	Likewise. 
 
