@@ -74,6 +74,9 @@ default: all
 %$(EXEEXT) : %.c
 .c:
 
+# Keep object files
+.PRECIOUS: %.o
+
 .PHONY: all check install uninstall clean distclean mostlyclean maintainer-clean distdir \
 	all-here check-here install-here clean-here distclean-here mostlyclean-here \
 	maintainer-clean-here distdir-here \
