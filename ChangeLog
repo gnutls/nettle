@@ -1,5 +1,10 @@
 2004-11-13  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.in: Don't use -include, as it's GNU make specific.
+	Added rule to create empty dependency files if they are missing.
+	* examples/Makefile.in, tools/Makefile.in, testsuite/Makefile.in:
+	Likewise. 
+
 	* examples/nettle-openssl.c: Check WITH_OPENSSL, not HAVE_LIBCRYPTO.
 
 	* configure.ac: Check for individual openssl headers blowfish.h,

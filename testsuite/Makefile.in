@@ -66,4 +66,10 @@ clean:
 distclean: clean
 	-rm -f Makefile
 
--include $(SOURCES:.c=.$(OBJEXT).d)
+DEP_FILES = $(SOURCES:.c=.$(OBJEXT).d)
+
+# Create empty dependency files, if needed.
+$(DEP_FILES):
+	@echo > $@
+
+include $(DEP_FILES)
