@@ -32,6 +32,13 @@
 #include "md5.h"
 #include "sha.h"
 
+/* Randomness function. This typedef doesn't really belong here, but
+ * so far it's used only by rsa functions (encryption and key
+ * generation) */
+typedef void (*nettle_random_func)(void *ctx,
+				   unsigned length, uint8_t *dst);
+
+
 /* For PKCS#1 to make sense, the size of the modulo, in octets, must
  * be at least 11 + the length of the DER-encoded Digest Info.
  *
@@ -144,17 +151,37 @@ rsa_sha1_verify(struct rsa_public_key *key,
                 struct sha1_ctx *hash,
 		const mpz_t signature);
 
+
+/* RSA encryption, using PKCS#1 */
+/* FIXME: These functions uses the v1.5 padding. What should the v2
+ * (OAEP) functions be called? */
+
+/* Returns 1 on success, 0 on failure, which happens if the
+ * message is too long for the key. */
+int
+rsa_encrypt(struct rsa_public_key *key,
+	    /* For padding */
+	    void *random_ctx, nettle_random_func random,
+	    unsigned length, const uint8_t *message,
+	    mpz_t gibbberish);
+
+/* Message must point to a buffer of size *LENGTH. KEY->size is enough
+ * for all valid messages. On success, *LENGTH is updated to reflect
+ * the actual length of the message. Returns 1 on success, 0 on
+ * failure, which happens if decryption failed or if the message
+ * didn't fit. */
+int
+rsa_decrypt(struct rsa_private_key *key,
+	    unsigned *length, uint8_t *message,
+	    const mpz_t gibberish);
+
+
 /* Compute x, the e:th root of m. Calling it with x == m is allowed. */
 void
 rsa_compute_root(struct rsa_private_key *key, mpz_t x, const mpz_t m);
 
 
 /* Key generation */
-
-/* Randomness function. This typedef doesn't really belong here, but
- * so far it's used only by the rsa key generator. */
-typedef void (*nettle_random_func)(void *ctx,
-				   unsigned length, uint8_t *dst);
 
 /* Progress report function. */
 typedef void (*nettle_progress_func)(void *ctx,
