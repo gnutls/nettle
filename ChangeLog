@@ -1,3 +1,11 @@
+2004-03-01  Niels Möller  <niels@s3.kth.se>
+
+	* config.guess: Copied from automake-1.8.2. Hacked to recognize
+	Windows_NT (and Windows_95 and Windows_98) running on "x86" and
+	"686".
+
+	* install-sh: Removed from CVS repository. Let automake supply it.
+
 2004-02-26  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle-meta.h (nettle_crypt_func): Typedef moved to cbc.h.
