@@ -375,4 +375,78 @@ test_rsa_sha1(struct rsa_public_key *pub,
 
   mpz_clear(signature);
 }
+
+#if HAVE_LIBGMP
+void
+test_rsa_key(struct rsa_public_key *pub,
+	     struct rsa_private_key *key)
+{
+  mpz_t tmp;
+  mpz_t phi;
+  
+  mpz_init(tmp); mpz_init(phi);
+  
+  if (verbose)
+    {
+      /* FIXME: Use gmp_printf */
+      fprintf(stderr, "Public key: n=");
+      mpz_out_str(stderr, 16, pub->n);
+      fprintf(stderr, "\n    e=");
+      mpz_out_str(stderr, 16, pub->e);
+
+      fprintf(stderr, "\n\nPrivate key: d=");
+      mpz_out_str(stderr, 16, key->d);
+      fprintf(stderr, "\n    p=");
+      mpz_out_str(stderr, 16, key->p);
+      fprintf(stderr, "\n    q=");
+      mpz_out_str(stderr, 16, key->q);
+      fprintf(stderr, "\n    a=");
+      mpz_out_str(stderr, 16, key->a);
+      fprintf(stderr, "\n    b=");
+      mpz_out_str(stderr, 16, key->b);
+      fprintf(stderr, "\n    c=");
+      mpz_out_str(stderr, 16, key->c);
+      fprintf(stderr, "\n\n");
+    }
+
+  /* Check n = p q */
+  mpz_mul(tmp, key->p, key->q);
+  if (mpz_cmp(tmp, pub->n))
+    FAIL();
+
+  /* Check c q = 1 mod p */
+  mpz_mul(tmp, key->c, key->q);
+  mpz_fdiv_r(tmp, tmp, key->p);
+  if (mpz_cmp_ui(tmp, 1))
+    FAIL();
+
+  /* Check ed = 1 (mod phi) */
+  mpz_sub_ui(phi, key->p, 1);
+  mpz_sub_ui(tmp, key->q, 1);
+
+  mpz_mul(phi, phi, tmp);
+
+  mpz_mul(tmp, pub->e, key->d);
+  mpz_fdiv_r(tmp, tmp, phi);
+  if (mpz_cmp_ui(tmp, 1))
+    FAIL();
+
+  /* Check a e = 1 (mod (p-1) ) */
+  mpz_sub_ui(phi, key->p, 1);
+  mpz_mul(tmp, pub->e, key->a);
+  mpz_fdiv_r(tmp, tmp, phi);
+  if (mpz_cmp_ui(tmp, 1))
+    FAIL();
+  
+  /* Check b e = 1 (mod (q-1) ) */
+  mpz_sub_ui(phi, key->q, 1);
+  mpz_mul(tmp, pub->e, key->b);
+  mpz_fdiv_r(tmp, tmp, phi);
+  if (mpz_cmp_ui(tmp, 1))
+    FAIL();
+  
+  mpz_clear(tmp); mpz_clear(phi);
+}
+#endif /* HAVE_LIBGMP */
+
 #endif /* HAVE_LIBGMP */
