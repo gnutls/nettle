@@ -1,3 +1,7 @@
+2001-06-13  Niels Möller  <nisse@ehand.com>
+
+	* Makefile.am (libnettle_a_SOURCES): Added serpent files.
+
 2001-06-12  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* testsuite/Makefile.am (TS_PROGS): Added tests for des and sha1. 
