@@ -125,13 +125,16 @@ case `uname -sr` in
     SHLIBFORLINK='cygnettle-$(SHLIBMAJOR)-$(SHLIBMINOR).dll'
     SHLIBSONAME=''
     SHLIBFILE='libnettle.dll.a'
-    SHLIBLINK='$(CC) $(LDFLAGS) -shared -Wl,--out-implib=$(SHLIBFILE) -Wl,--export-all-symbols -Wl,--enable-auto-import -Wl,--whole-archive'
+    SHLIBLINK='$(CC) $(LDFLAGS) -shared -Wl,--out-implib=$(SHLIBFILE) -Wl,--export-all-symbols -Wl,--enable-auto-import -Wl,--no-whole-archive'
+    SHLIBLIBS='$(LIBS)'
     ;;
   *)
     SHLIBFORLINK=libnettle.so
     SHLIBSONAME='$(SHLIBFORLINK).$(SHLIBMAJOR)'
     SHLIBFILE='$(SHLIBSONAME).$(SHLIBMINOR)'
     SHLIBLINK='$(CC) $(LDFLAGS) -shared -Wl,-soname=$(SHLIBSONAME)'
+    # FIXME: It might make some sense to link with -lgmp
+    SHLIBLIBS=''
     ;;
 esac
 
@@ -159,7 +162,8 @@ AC_SUBST(SHLIBFILE)
 AC_SUBST(SHLIBLINK)
 AC_SUBST(SHLIBTARGET)
 AC_SUBST(SHLIBINSTALL)
-	
+AC_SUBST(SHLIBLIBS)
+
 AC_PATH_PROG(M4, m4, m4)
 
 # Checks for typedefs, structures, and compiler characteristics.

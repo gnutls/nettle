@@ -138,9 +138,9 @@ SHLIBOBJECTS = $(patsubst %.c,%_p.$(OBJEXT),$(libnettle_a_SOURCES)) \
 # The point of the sym links is to use -Lnettle-dir at linktime,
 # and LD_LIBRARY_PATH=nettle-dir/.lib at run time.
 $(SHLIBFORLINK): $(SHLIBOBJECTS)
-	$(SHLIBLINK) $^ -o $@
+	$(SHLIBLINK) $^ -o $@ $(SHLIBLIBS)
 	-mkdir .lib 2>/dev/null
-	( [ -z "$(SHLIBSONAME)" ] || cd .lib \
+	[ -z "$(SHLIBSONAME)" ] || (cd .lib \
           && ln -sf ../$(SHLIBFORLINK) $(SHLIBSONAME))
 
 endif
@@ -151,8 +151,8 @@ install-data-local: $(SHLIBINSTALL)
 
 install-shared: $(SHLIBFORLINK)
 	$(INSTALL_DATA) $(SHLIBFORLINK) $(DESTDIR)$(libdir)/$(SHLIBFILE)
-	( [ -z "$(SHLIBSONAME)" ] \
-                || cd $(DESTDIR)$(libdir) \
+	[ -z "$(SHLIBSONAME)" ] \
+                || (cd $(DESTDIR)$(libdir) \
 		&& ln -sf $(SHLIBFILE) $(SHLIBSONAME) \
 		&& ln -sf $(SHLIBFILE) $(SHLIBFORLINK) )
 
