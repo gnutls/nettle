@@ -35,6 +35,9 @@ struct sexp_iterator
 {
   unsigned length;
   const uint8_t *buffer;
+  
+  /* If type is SEXP_LIST, pos points at the start of the current
+   * element. Otherwise, it points at the end. */
   unsigned pos;
   unsigned level;
 
