@@ -5,7 +5,8 @@ noinst_PROGRAMS = desdata shadata
 libnettleincludedir = $(includedir)/nettle
 
 lib_LIBRARIES = libnettle.a
-libnettleinclude_HEADERS = aes.h arcfour.h blowfish.h cast128.h \
+libnettleinclude_HEADERS = aes.h arcfour.h blowfish.h
+			   base64.h cast128.h \
 			   cbc.h \
 			   des.h des-compat.h \
 			   hmac.h \
@@ -16,14 +17,15 @@ libnettleinclude_HEADERS = aes.h arcfour.h blowfish.h cast128.h \
 			   yarrow.h
 			   
 libnettle_a_SOURCES = aes.c aes.h aes-meta.c \
-		      arcfour.c arcfour.h arcfour-meta.c\
+		      arcfour.c arcfour.h arcfour-meta.c \
+                      base64.c base64-meta.c base64.h \
 		      cast128.c cast128.h cast128_sboxes.h cast128-meta.c \
 		      blowfish.h blowfish.c \
-		      cbc.c \
+		      cbc.c cbc.h \
 		      des.c des.h desinfo.h desCode.h \
 		      des3.c des-compat.c des-compat.h \
-		      hmac.c hmac-md5.c hmac-sha1.c \
-		      knuth-lfib.c \
+		      hmac.c hmac.h hmac-md5.c hmac-sha1.c \
+		      knuth-lfib.c knuth-lfib.h \
 		      md5.c md5.h md5-compat.c md5-compat.h md5-meta.c \
 		      sha.h sha1.c sha1-meta.c sha256.c sha256-meta.c \
 		      serpent.c serpent.h serpent_sboxes.h serpent-meta.c \
@@ -32,7 +34,7 @@ libnettle_a_SOURCES = aes.c aes.h aes-meta.c \
 		      bignum.h bignum.c \
 		      rsa.h rsa.c rsa_md5.c rsa_sha1.c \
 		      rsa-keygen.c rsa-compat.h rsa-compat.c \
-		      nettle-internal.c nettle-internal.h
+		      nettle-internal.c nettle-internal.h nettle-meta.h
 
 libnettle_a_LIBADD = @LIBOBJS@
 
