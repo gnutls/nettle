@@ -183,10 +183,7 @@ _aes_crypt:
 	blu	.Lround_loop
 	xor	tmp, diff, tmp
 
-	! sll	round, 4, %g2
-	
 	! final round
-	add	round, ctx, %o7
 	mov	0, i
 	add	T, 288, %g4
 .Lfinal_loop:
@@ -215,7 +212,7 @@ _aes_crypt:
 	ldub	[T+%o3], %o5
 	sll	%g2, 16, %g2
 	or	%g3, %g2, %g3
-	ld	[%o7], %g2
+	ld	[ctx + round], %g2
 	sll	%o5, 24, %o5
 	or	%g3, %o5, %g3
 	xor	%g3, %g2, %g3
@@ -226,7 +223,7 @@ _aes_crypt:
 	stb	%o5, [%o2+3]
 	stb	%o0, [%o2+2]
 	stb	%g3, [dst+%i5]
-	add	%o7, 4, %o7
+	add	round, 4, round
 	bleu	.Lfinal_loop
 	add	%g4, 4, %g4
 	
