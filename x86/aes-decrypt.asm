@@ -87,19 +87,18 @@ aes_decrypt:
 	AES_FINAL_ROUND(a,d,c,b)
 	pushl	%edi
 
-	AES_FINAL_ROUND(d,c,b,a)
+	AES_FINAL_ROUND(b,a,d,c)
 	pushl	%edi
 
 	AES_FINAL_ROUND(c,b,a,d)
 	pushl	%edi
 
-	AES_FINAL_ROUND(b,a,d,c)
+	AES_FINAL_ROUND(d,c,b,a)
 	
 	movl	%edi,%edx
 	popl	%ecx
 	popl	%ebx
 	popl	%eax
-	xchgl	%ebx,%edx
 
 	C inverse S-box substitution
 	mov	$4,%edi
