@@ -26,6 +26,7 @@
 #include "base64.h"
 
 #include <assert.h>
+#include <stdlib.h>
 
 #define TABLE_INVALID -1
 #define TABLE_SPACE -2
@@ -56,42 +57,55 @@ static const signed char decode_table[256] =
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
 };
 
+#define ENCODE(x) (encode_table[0x3F & (x)])
+
 unsigned 
 base64_encode(uint8_t *dst,
               unsigned src_length,
               const uint8_t *src)
 {
-  uint8_t *out = dst;
+  unsigned dst_length = BASE64_ENCODE_LENGTH(src_length);
+  const uint8_t *in = src + src_length;
+  uint8_t *out = dst + dst_length;
+  unsigned left_over = src_length % 3;
 
-  while (src_length >= 3)
+  if (left_over)
     {
-      *out++ = encode_table[0x3F &  (src[0] >> 2)];
-      *out++ = encode_table[0x3F & ((src[0] << 4) | (src[1] >> 4))];
-      *out++ = encode_table[0x3F & ((src[1] << 2) | (src[2] >> 6))];
-      *out++ = encode_table[0x3F &   src[2]];
-      src += 3;
-      src_length -= 3;
+      switch(left_over)
+	{
+	case 1:
+	  in--;
+	  *--out = '=';
+	  *--out = '=';
+	  *--out = ENCODE(in[0] << 4);
+	  *--out = ENCODE(in[0] >> 2);
+	  break;
+	  
+	case 2:
+	  in-= 2;
+	  *--out = '=';
+	  *--out = ENCODE( in[1] << 2);
+	  *--out = ENCODE((in[0] << 4) | (in[1] >> 4));
+	  *--out = ENCODE( in[0] >> 2);
+	  break;
+
+	default:
+	  abort();
+	}
+    }
+  
+  while (in > src)
+    {
+      in -= 3;
+      *--out = ENCODE( in[2]);
+      *--out = ENCODE((in[1] << 2) | (in[2] >> 6));
+      *--out = ENCODE((in[0] << 4) | (in[1] >> 4));
+      *--out = ENCODE( in[0] >> 2);
     }
 
-  switch (src_length) 
-    {
-    case 2:
-      *out++ = encode_table[0x3F &  (src[0] >> 2)];
-      *out++ = encode_table[0x3F & ((src[0] << 4) | (src[1] >> 4))];
-      *out++ = encode_table[0x3F &  (src[1] << 2)];
-      *out++ = '=';
-      break;
-    case 1:
-      *out++ = encode_table[0x3F & (src[0] >> 2)];
-      *out++ = encode_table[0x3F & (src[0] << 4)];
-      *out++ = '=';
-      *out++ = '=';
-      break;
-    case 0:
-      break;
-    }
+  assert(out == dst);
 
-  return out - dst;
+  return dst_length;
 }
 
 void

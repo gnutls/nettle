@@ -33,6 +33,9 @@
 #define BASE64_BINARY_BLOCK_SIZE 3
 #define BASE64_TEXT_BLOCK_SIZE 4
 
+/* Overlapping source and destination is allowed, as long as the start
+ * of the source area is not later than the start of the destination
+ * area. */
 unsigned /* Returns the length of encoded data */
 base64_encode(uint8_t *dst,
               unsigned src_length,
@@ -53,6 +56,9 @@ struct base64_ctx /* Internal, do not modify */
 void
 base64_decode_init(struct base64_ctx *ctx);
 
+/* Overlapping source and destination is allowed, as long as the start
+ * of the source area is not before the start of the destination
+ * area. */
 unsigned /* Returns the length of decoded data */
 base64_decode_update(struct base64_ctx *ctx,
                      uint8_t *dst,
