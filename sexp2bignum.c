@@ -32,7 +32,7 @@
 #include "bignum.h"
 
 int
-nettle_mpz_set_sexp(mpz_t x, unsigned limit, const struct sexp_iterator *i)
+nettle_mpz_set_sexp(mpz_t x, unsigned limit, struct sexp_iterator *i)
 {
   if (i->type == SEXP_ATOM
       && i->atom_length
@@ -43,8 +43,12 @@ nettle_mpz_set_sexp(mpz_t x, unsigned limit, const struct sexp_iterator *i)
 	return 0;
       
       nettle_mpz_set_str_256_s(x, i->atom_length, i->atom);
+
       /* FIXME: How to interpret a limit for negative numbers? */
-      return !limit || mpz_sizeinbase(x, 2) <= limit;
+      if (limit && mpz_sizeinbase(x, 2) > limit)
+	return 0;
+      
+      return sexp_iterator_next(i);
     }
   else
     return 0;

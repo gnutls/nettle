@@ -80,8 +80,9 @@ nettle_mpz_random(mpz_t x,
 
 struct sexp_iterator;
 
-/* If LIMIT is non-zero, the number must be at most LIMIT bits. */
+/* If LIMIT is non-zero, the number must be at most LIMIT bits.
+ * Implies sexp_iterator_next. */
 int
-nettle_mpz_set_sexp(mpz_t x, unsigned limit, const struct sexp_iterator *i);
+nettle_mpz_set_sexp(mpz_t x, unsigned limit, struct sexp_iterator *i);
 
 #endif /* NETTLE_BIGNUM_H_INCLUDED */
