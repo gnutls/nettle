@@ -1,6 +1,9 @@
 /* $Id$
  *
  * The basic IDEA transformation
+ * 
+ * Please be aware that IDEA IS PATENT ENCUMBERED; see the note below.
+ *                      -------------------------
  *
  * This implementation is taken from pgp, see note below.
  *
@@ -25,6 +28,77 @@
  * Some changes including endianness cleanup done by Niels Möller.
  *
  */
+ 
+/*
+ IDEA is patent encumbered; the following information was copied from the
+ idea.c extension for the GNU Privacy Guard.
+
+ The IDEA algorithm is patented by Ascom Systec Ltd. of CH-5506 Maegenwil,
+ Switzerland, who allow it to be used on a royalty-free basis for certain
+ non-profit applications.  Commercial users must obtain a license from the
+ company in order to use IDEA.	IDEA may be used on a royalty-free basis under
+ the following conditions:
+
+ Free use for private purposes:
+
+ The free use of software containing the algorithm is strictly limited to non
+ revenue generating data transfer between private individuals, ie not serving
+ commercial purposes.  Requests by freeware developers to obtain a
+ royalty-free license to spread an application program containing the
+ algorithm for non-commercial purposes must be directed to Ascom.
+
+ Special offer for shareware developers:
+
+ There is a special waiver for shareware developers.  Such waiver eliminates
+ the upfront fees as well as royalties for the first US$10,000 gross sales of
+ a product containing the algorithm if and only if:
+
+ 1. The product is being sold for a minimum of US$10 and a maximum of US$50.
+ 2. The source code for the shareware is available to the public.
+
+ Special conditions for research projects:
+
+ The use of the algorithm in research projects is free provided that it serves
+ the purpose of such project and within the project duration.  Any use of the
+ algorithm after the termination of a project including activities resulting
+ from a project and for purposes not directly related to the project requires
+ a license.
+
+ Ascom Tech requires the following notice to be included for freeware
+ products:
+
+ This software product contains the IDEA algorithm as described and claimed in
+ US patent 5,214,703, EPO patent 0482154 (covering Austria, France, Germany,
+ Italy, the Netherlands, Spain, Sweden, Switzerland, and the UK), and Japanese
+ patent application 508119/1991, "Device for the conversion of a digital block
+ and use of same" (hereinafter referred to as "the algorithm").  Any use of
+ the algorithm for commercial purposes is thus subject to a license from Ascom
+ Systec Ltd. of CH-5506 Maegenwil (Switzerland), being the patentee and sole
+ owner of all rights, including the trademark IDEA.
+
+ Commercial purposes shall mean any revenue generating purpose including but
+ not limited to:
+
+ i) Using the algorithm for company internal purposes (subject to a site
+    license).
+
+ ii) Incorporating the algorithm into any software and distributing such
+     software and/or providing services relating thereto to others (subject to
+     a product license).
+
+ iii) Using a product containing the algorithm not covered by an IDEA license
+      (subject to an end user license).
+
+ All such end user license agreements are available exclusively from Ascom
+ Systec Ltd and may be requested via the WWW at http://www.ascom.ch/systec or
+ by email to idea@ascom.ch.
+
+ Use other than for commercial purposes is strictly limited to non-revenue
+ generating data transfer between private individuals.	The use by government
+ agencies, non-profit organizations, etc is considered as use for commercial
+ purposes but may be subject to special conditions.  Any misuse will be
+ prosecuted.
+*/
 
 #include "crypto_types.h"
 #include <idea.h>
