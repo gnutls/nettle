@@ -41,7 +41,7 @@ test_main(void)
     ASSERT(sexp_iterator_enter_list(&i)
 	   && sexp_iterator_assoc(&i, 2, keys, v));
 
-    ASSERT(sexp_iterator_next(&v[0]) && v[0].type == SEXP_ATOM
+    ASSERT(v[0].type == SEXP_ATOM
 	   && !v[0].display_length && !v[0].display
 	   && v[0].atom_length == 2 && MEMEQ(2, "xx", v[0].atom)
 
@@ -51,7 +51,7 @@ test_main(void)
 
 	   && sexp_iterator_next(&v[0]) && v[0].type == SEXP_END);
 
-    ASSERT(sexp_iterator_next(&v[1]) && v[1].type == SEXP_END);
+    ASSERT(v[1].type == SEXP_END);
 
     ASSERT(sexp_iterator_first(&i, LDATA("((1:n))")));
     ASSERT(sexp_iterator_enter_list(&i)
