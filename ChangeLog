@@ -1,3 +1,12 @@
+2002-10-26  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* examples/sexp-conv.c (sexp_put_length): Bugfix, don't output any
+	leading zero.
+	(main): Implemented -s option.
+
+	* examples/sexp-conv-test: Test for echo -n vs echo '\c'. Added a
+	few tests for canonical output.
+
 2002-10-25  Niels Möller  <niels@s3.kth.se>
 
 	* examples/sexp-conv.c (struct sexp_input): Deleted the mode from
