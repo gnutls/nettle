@@ -11,6 +11,12 @@ bin_PROGRAMS = sexp-conv nettle-lfib-stream
 # It seems there's no DEPENDENCIES variable that affects all programs.
 LDADD = -lnettle ../libnettle.a
 
+# Explicit use of DEPENDENCIES is more correct, but scales badly to a
+# large number of programs.
+
+# sexp_conv_DEPENDENCIES = ../libnettle.a
+# nettle_lfib_stream_DEPENDENCIES = ../libnettle.a
+
 EXTRA_DIST = misc.h input.h output.h parse.h getopt.h
 
 sexp_conv_SOURCES = sexp-conv.c input.c output.c parse.c \
