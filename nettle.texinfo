@@ -296,6 +296,7 @@ This chapter describes all the Nettle functions, grouped by family.
 @menu
 * Hash functions::              
 * Cipher functions::            
+* Cipher Block Chaining::       
 * Miscellaneous functions::     
 @end menu
 
@@ -412,7 +413,7 @@ of the digest are written.
 This functions doesn't change the state in any way.
 @end deftypefun
 
-@node Cipher functions, Miscellaneous functions, Hash functions, Reference
+@node Cipher functions, Cipher Block Chaining, Hash functions, Reference
 @comment  node-name,  next,  previous,  up
 @section Cipher functions
 
@@ -441,7 +442,8 @@ However, using ECB is usually a bad idea. For a start, plaintext blocks
 that are equal are transformed to ciphertext blocks that are equal; that
 leaks information about the plaintext. Usually you should apply the
 cipher is some feedback mode, @dfn{CBC} (Cipher Block Chaining) being one
-of the most popular. XXX Add reference 
+of the most popular. @xref{Cipher Block Chaining}, for information on
+how to apply CBC with Nettle.
 
 A stream cipher can be used for messages of arbitrary length; a typical
 stream cipher is a keyed pseudorandom generator. To encrypt a plaintext
@@ -798,9 +800,32 @@ in any other way.
 Analogous to @code{twofish_encrypt}
 @end deftypefun
 
-@node CBC
+@node Cipher Block Chaining, Miscellaneous functions, Cipher functions, Reference
 @comment  node-name,  next,  previous,  up
 @section Cipher Block Chaining
+
+When using CBC mode, cleartext blocks are not encrypted independently of
+each other, like in Electronic Cookbook mode. Instead, when encrypting a
+block in CBC mode, the previous ciphertext block is XOR:ed with the
+cleartext before it is fed to the block cipher. When encrypting the
+first block, a random block called an @dfn{IV}, or Initialization
+Vector, is used as the ``previous ciphertext block''. The IV should be
+chosen randomly, but it need not be kept secret, and can even be
+transmitted in the clear together with the encrypted data.
+
+In symbols, if @code{E_k} is the encryption function of a blockcipher,
+and @code{IV} is the initialization vector, then @code{n} cleartext blocks
+@code{M_1},@dots{} @code{M_n} are transformed into @code{n} ciphertext blocks
+@code{C_1},@dots{} @code{C_n} as follows:
+
+@example
+C_1 = E_k(IV  XOR M_1)
+C_2 = E_k(C_1 XOR M_2)
+
+@dots{}
+
+C_n = E_k(C_(n-1) XOR M_n)
+@end example
 
 Nettle includes a few utility functions for applying a block cipher in
 Cipher Block Chaining (CBC) mode. The functions uses @code{void *} to
@@ -810,15 +835,18 @@ pass cipher contexts around.
 @deftypefunx {void} cbc_decrypt (void *@var{ctx}, void (*@var{f})(), unsigned @var{block_size}, uint8_t *@var{iv}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 
 Applies the encryption or decryption function @var{f} in CBC mde. The
-function f is really typed as @code{void f (void *@var{ctx}, unsigned
-@var{length}, uint8_t @var{dst}, const uint8_t *@var{src}), and the
-@code{cbc_encrypt} and @code{cbc_decrypt} functions pass their argument
-@var{ctx} on to @code{f}.
+function @var{f} is really typed as
 
-There are also some macros to help use these functions correctly. The
-are best explained by example.
+@code{void f (void *@var{ctx}, unsigned @var{length}, uint8_t @var{dst},
+const uint8_t *@var{src})},
 
-@deffn Macro CBC_CTX (@var(context_type), @var(block_size))
+@noindent and the @code{cbc_encrypt} and @code{cbc_decrypt} functions pass their
+argument @var{ctx} on to @var{f}.
+@end deftypefun
+
+There are also some macros to help use these functions correctly.
+
+@deffn Macro CBC_CTX (@var{context_type}, @var{block_size})
 Expands into
 @example
 @{
@@ -826,7 +854,10 @@ Expands into
    uint8_t iv[block_size];
 @}
 @end example
-It can be used to define a CBC context stuct, either directly
+@end deffn
+
+It can be used to define a CBC context stuct, either directly,
+
 @example
 struct CBC_CTX(struct aes_ctx, AES_BLOCK_SIZE) ctx;
 @end example
@@ -837,19 +868,27 @@ or to give it a struct tag,
 struct aes_cbc_ctx CBC_CTX (struct aes_ctx, AES_BLOCK_SIZE);
 @end example
 
-@deffn Macro CBC_SET_KEY (@var{ctx}, @var{iv})
+@deffn Macro CBC_SET_IV (@var{ctx}, @var{iv})
 First argument is a pointer to a context struct as defined by @code{CBC_CTX},
-and the second is a pointer to an Initialization Vector (iv) that is
-copied into the context.
+and the second is a pointer to an Initialization Vector (IV) that is
+copied into that context.
+@end deffn
 
 @deffn Macro CBC_ENCRYPT (@var{ctx}, @var{f}, @var{length}, @var{dst}, @var{src})
 @deffnx Macro CBC_DECRYPT (@var{ctx}, @var{f}, @var{length}, @var{dst}, @var{src})
-A simpler way to invoke @code{cbc_encrypt} and @code{cbc_decrypt}. First
-argument is XXX Here
+A simpler way to invoke @code{cbc_encrypt} and @code{cbc_decrypt}. The first
+argument is a context struct as defined by @code{CBC_CTX}, the second
+argument is an encryption or decryption function following Nettle's
+conventions. The last three arguments define the source and destination
+area for the operation.
+@end deffn
+
+These macros use some tricks to make the compiler display a warning if
+the types of @var{f} and @var{ctx} don't match, e.g. if you try to use
+an @code{struct aes_ctx} context with the @code{des_encrypt} function.
 
 
-
-@node Miscellaneous functions,  , Cipher functions, Reference
+@node Miscellaneous functions,  , Cipher Block Chaining, Reference
 @comment  node-name,  next,  previous,  up
 @section Miscellaneous functions
 
