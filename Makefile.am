@@ -1,14 +1,5 @@
 SUBDIRS = . testsuite examples
 
-SHLIBFORLINK = @SHLIBFORLINK@
-SHLIBSONAME = @SHLIBSONAME@
-SHLIBFILE = @SHLIBFILE@
-
-SHLIBCFLAGS = @SHLIBCFLAGS@
-SHLIBLINK = @SHLIBLINK@
-SHLIBTARGET = @SHLIBTARGET@
-SHLIBINSTALL = @SHLIBINSTALL@
-
 noinst_PROGRAMS = aesdata desdata shadata
 
 libnettleincludedir = $(includedir)/nettle
@@ -76,29 +67,36 @@ SUFFIXES = .asm
 RM_TMP = rm -f
 
 # FIXME: How to write this without using GNU make features?
-%.s: %.asm asm.m4 machine.m4 config.m4
-	$(M4) $(srcdir)/asm.m4 machine.m4 config.m4 \
-		`test -f $< || echo '$(srcdir)/'`$< >$@
+
+# NOTE: We have to use an explicit rule .asm -> .o, to override the .c
+# -> .o rule. Using rules involving .s doesn't seem to work.
+# %.s: %.asm asm.m4 machine.m4 config.m4
+# 	$(M4) $(srcdir)/asm.m4 machine.m4 config.m4 \
+# 		`test -f $< || echo '$(srcdir)/'`$< >$@
 
 # NOTE: We create an empty .deps-file, to make the make/automake
 # dependency tracking happier.
-%.$(OBJEXT): %.s
-	$(COMPILE) -c $< -o $@
+%.$(OBJEXT): %.asm asm.m4 machine.m4 config.m4
+	$(M4) $(srcdir)/asm.m4 machine.m4 config.m4 \
+		`test -f $< || echo '$(srcdir)/'`$< >$*.s
+	$(COMPILE) -c $*.s -o $@
 	echo >.deps/$*.Po
 
 # Shared library rules
 all-local: $(SHLIBTARGET)
 install-data-local: $(SHLIBINSTALL)
 
+%_p.$(OBJEXT): %.asm asm.m4 machine.m4 config.m4
+	$(M4) $(srcdir)/asm.m4 machine.m4 config.m4 \
+		`test -f $< || echo '$(srcdir)/'`$< >$*.s
+	$(COMPILE) -c $*.s -o $@
+	echo >.deps/$*.Po
+
 # Assembler files must contain only PIC-clean code.
 %_p.$(OBJEXT): %.c
 	$(COMPILE) $(SHLIBCFLAGS) -c $< -o $@
 
-%_p.$(OBJEXT): %.s
-	$(COMPILE) $(SHLIBCFLAGS) -c $< -o $@
-	echo >.deps/$*.Po
-
-SHLIBOBJECTS = (patsubst %.$(OBJEXT),%_p.$(OBJEXT),$(am_libnettle_a_OBJECTS) $(LIBOBJS))
+SHLIBOBJECTS = $(patsubst %.$(OBJEXT),%_p.$(OBJEXT),$(am_libnettle_a_OBJECTS) $(LIBOBJS))
 
 $(SHLIBFORLINK): $(SHLIBOBJECTS)
 	$(SHLIBLINK) $^ -o $@
