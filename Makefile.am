@@ -51,7 +51,8 @@ libnettle_a_SOURCES = aes.c aes.h aes-internal.h \
 		      nettle-meta.h \
 		      nettle-internal.c nettle-internal.h nettle-openssl.c
 
-libnettle_a_LIBADD = @LIBOBJS@
+LIBOBJS = @LIBOBJS@
+libnettle_a_LIBADD = $(LIBOBJS)
 
 shadata_LDADD = -lm
 
@@ -65,6 +66,9 @@ EXTRA_DIST = macros.h memxor.h $(des_headers) descore.README nettle.html \
 	x86/aes.asm x86/aes_tables.asm
 
 DISTCLEANFILES = aes.asm aes-decrypt.asm aes-encrypt.asm machine.m4
+CLEANFILES = $(SHLIBFORLINK)
+clean-local:
+	rm -rf .lib
 
 # Using assembler files. Should get precedence before the .c.o rule.
 SUFFIXES = .asm
@@ -106,6 +110,8 @@ SHLIBOBJECTS = $(patsubst %.$(OBJEXT),%_p.$(OBJEXT),$(am_libnettle_a_OBJECTS) $(
 
 $(SHLIBFORLINK): $(SHLIBOBJECTS)
 	$(SHLIBLINK) $^ -o $@
+	-mkdir .lib 2>/dev/null
+	(cd .lib && ln -sf ../$(SHLIBFORLINK) $(SHLIBSONAME))
 
 install-shared: $(SHLIBFORLINK)
 	$(INSTALL_DATA) $(SHLIBFORLINK) $(DESTDIR)$(libdir)/$(SHLIBFILE)
