@@ -1,3 +1,8 @@
+2001-10-15  Niels Möller  <nisse@ehand.com>
+
+	* testsuite/Makefile.am (EXTRA_DIST): Include rfc1750.txt in the
+	distribution.
+
 2001-10-14  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* testsuite/des-test.m4: Added testcase taken from applied
