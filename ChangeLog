@@ -1,3 +1,7 @@
+2002-02-01  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* Released nettle-1.5.
+
 2002-01-31  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* acinclude.m4: Commented out gmp-related macros, they're probably
