@@ -1,5 +1,7 @@
 2004-01-08  Niels Möller  <niels@s3.kth.se>
 
+	* index.html: Added instruction for CVS access.
+
 	* dsa-keygen.c (dsa_nist_gen): Fixed declaration/statement order.
 
 	* rsa-keygen.c (bignum_next_prime): Fixed off-by-one error when

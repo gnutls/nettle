@@ -23,6 +23,17 @@ href="ftp://ftp.lysator.liu.se/pub/security/lsh">ftp</a>. Nettle is
 also included with the latest development versions of <a
 href="http://www.lysator.liu.se/~nisse/lsh">lsh</a>.
 
+<h2> CVS access </h2>
+
+As some shared but crucial files are not stored in the Nettle corner
+of the CVS repository, the recommended way of CVS access is to check
+out the entire LSH tree, as per the instructions at the <a
+href="http://www.lysator.liu.se/~nisse/lsh">LSH home page</a>, run the
+top-level <tt>./.bootstrap</tt> script (which sets up a few important
+symlinks and runs .bootstrap scripts in subdirectories), and then
+descend into the <tt>src/nettle</tt> directory for a standard
+<tt>./configure && make</tt> there.
+
 <h2> Contact </h2>
 
 Send mail to the <a
