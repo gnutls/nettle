@@ -1,4 +1,18 @@
+2004-02-06  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86/sha1-compress.asm: Assembler implementation of
+	sha1_compress. (Not yet working).
+
+	* Makefile.am (libnettle_a_SOURCES): Added sha1-compress.c.
+
+	* sha1.c (sha1_transform): Function renamed to sha1_compress, and
+	moved to... 
+	* sha1-compress.c: ... New file.
+
 2004-02-05  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/rsa-encrypt.c (process_file): Copy the leftover to the
+	start of the buffer, when preparing for the final processing.
 
 	* examples/nettle-benchmark.c (bench_hash, time_hash): New functions.
 	(main): Benchmark hash functions too.
