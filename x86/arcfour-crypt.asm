@@ -33,11 +33,21 @@ nettle_arcfour_crypt:
 	pushl	%esi		C  4(%esp)
 	pushl	%edi		C  0(%esp)
 
+C Input arguments:
 	C ctx = 20(%esp)
 	C length = 24(%esp)
 	C dst = 28(%esp)
 	C src = 32(%esp)
-
+C Register usage:
+	C %ebp = ctx
+	C %esi = src (updated through out loop)
+	C %edi = dst (updated through out loop)
+	C %edx = src + length (end of source area)
+	C %eax = i
+	C %ebx = j
+	C %cl  = si
+	C %ch  = sj
+	
 	movl	24(%esp), %edx		C  length
 	testl	%edx,%edx
 	jz	.Lend
@@ -50,13 +60,16 @@ nettle_arcfour_crypt:
 	movzbl  256(%ebp), %eax		C  i
 	movzbl  257(%ebp), %ebx		C  j
 .Lloop:
+C	incb	%al
 	incl	%eax
 	andl	$0xff, %eax
 	movzbl  (%ebp, %eax), %ecx	C  si. Clears high bytes
-	addb    %cl, %bl
+C	addb    %cl, %bl
+	addl	%ecx, %ebx
+	andl	$0xff, %ebx
 	movb    (%ebp, %ebx), %ch	C  sj
 	movb    %ch, (%ebp, %eax)	C  S[i] = sj
-	movb	%cl, (%ebp, %ebx)	C  C[j] = si
+	movb	%cl, (%ebp, %ebx)	C  S[j] = si
 	addb    %ch, %cl
 	xorb    %ch, %ch		C  Clear, so it can be used
 					C  for indexing.
