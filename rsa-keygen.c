@@ -27,7 +27,7 @@
 #include "config.h"
 #endif
 
-#if HAVE_LIBGMP
+#if WITH_PUBLIC_KEY
 
 #include "rsa.h"
 #include "bignum.h"
@@ -350,4 +350,4 @@ rsa_generate_keypair(struct rsa_public_key *pub,
   return 1;
 }
 
-#endif /* HAVE_LIBGMP */
+#endif /* WITH_PUBLIC_KEY */

@@ -1,6 +1,5 @@
 /* testutils.c */
 
-
 #include "testutils.h"
 
 #include "cbc.h"
@@ -269,17 +268,6 @@ test_armor(const struct nettle_armor *armor,
 }
 
 #if HAVE_LIBGMP
-#define SIGN(key, hash, msg, signature) do {	\
-  hash##_update(&hash, LDATA(msg));		\
-  rsa_##hash##_sign(key, &hash, signature);	\
-} while(0)
-
-#define VERIFY(key, hash, msg, signature) (	\
-  hash##_update(&hash, LDATA(msg)),		\
-  rsa_##hash##_verify(key, &hash, signature)	\
-)
-
-
 /* Missing in current gmp */
 static void
 mpz_togglebit (mpz_t x, unsigned long int bit)
@@ -289,6 +277,18 @@ mpz_togglebit (mpz_t x, unsigned long int bit)
   else
     mpz_setbit(x, bit);
 }
+#endif /* HAVE_LIBGMP */
+
+#if WITH_PUBLIC_KEY
+#define SIGN(key, hash, msg, signature) do {	\
+  hash##_update(&hash, LDATA(msg));		\
+  rsa_##hash##_sign(key, &hash, signature);	\
+} while(0)
+
+#define VERIFY(key, hash, msg, signature) (	\
+  hash##_update(&hash, LDATA(msg)),		\
+  rsa_##hash##_verify(key, &hash, signature)	\
+)
 
 void
 test_rsa_md5(struct rsa_public_key *pub,
@@ -376,7 +376,6 @@ test_rsa_sha1(struct rsa_public_key *pub,
   mpz_clear(signature);
 }
 
-#if HAVE_LIBGMP
 void
 test_rsa_key(struct rsa_public_key *pub,
 	     struct rsa_private_key *key)
@@ -447,6 +446,5 @@ test_rsa_key(struct rsa_public_key *pub,
   
   mpz_clear(tmp); mpz_clear(phi);
 }
-#endif /* HAVE_LIBGMP */
+#endif /* WITH_PUBLIC_KEY */
 
-#endif /* HAVE_LIBGMP */

@@ -3,7 +3,7 @@
 int
 test_main(void)
 {
-#if HAVE_LIBGMP
+#if WITH_PUBLIC_KEY
 
   struct rsa_public_key pub;
   struct rsa_private_key key;
@@ -240,7 +240,7 @@ test_main(void)
 
   SUCCESS();
   
-#else /* !HAVE_LIBGMP */
+#else /* !WITH_PUBLIC_KEY */
   SKIP();
-#endif /* !HAVE_LIBGMP */
+#endif /* !WITH_PUBLIC_KEY */
 }

@@ -12,6 +12,10 @@
 #include <stdio.h>
 
 #if HAVE_LIBGMP
+# include "bignum.h"
+#endif
+
+#if WITH_PUBLIC_KEY
 # include "rsa.h"
 #endif
 
@@ -67,7 +71,7 @@ test_armor(const struct nettle_armor *armor,
            const uint8_t *data,
            const uint8_t *ascii);
 
-#if HAVE_LIBGMP
+#if WITH_PUBLIC_KEY
 void
 test_rsa_md5(struct rsa_public_key *pub,
 	     struct rsa_private_key *key,
@@ -82,7 +86,7 @@ void
 test_rsa_key(struct rsa_public_key *pub,
 	     struct rsa_private_key *key);
 
-#endif /* HAVE_LIBGMP */
+#endif /* WITH_PUBLIC_KEY */
 
 #define H2(d, s) decode_hex((d), (s))
 #define H(x) decode_hex_dup(x)

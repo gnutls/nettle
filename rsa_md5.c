@@ -27,7 +27,7 @@
 #include "config.h"
 #endif
 
-#if HAVE_LIBGMP
+#if WITH_PUBLIC_KEY
 
 #include "rsa.h"
 
@@ -131,4 +131,4 @@ pkcs1_encode_md5(mpz_t m, unsigned length, struct md5_ctx *hash)
   nettle_mpz_set_str_256(m, length, em);
 }
 
-#endif /* HAVE_LIBGMP */
+#endif /* WITH_PUBLIC_KEY */

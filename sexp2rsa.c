@@ -26,7 +26,7 @@
 #include "config.h"
 #endif
 
-#if HAVE_LIBGMP
+#if WITH_PUBLIC_KEY
 
 #include "rsa.h"
 
@@ -119,4 +119,4 @@ rsa_keypair_from_sexp(struct rsa_public_key *pub,
   return 1;
 }
 
-#endif /* HAVE_LIBGMP */
+#endif /* WITH_PUBLIC_KEY */

@@ -26,7 +26,7 @@
 #include "config.h"
 #endif
 
-#if HAVE_LIBGMP
+#if WITH_PUBLIC_KEY
 
 #include "rsa.h"
 
@@ -49,4 +49,4 @@ rsa_keypair_to_sexp(struct nettle_buffer *buffer,
 		       "public-key", "rsa", "n", pub->n, "e", pub->e);
 }
 
-#endif /* HAVE_LIBGMP */
+#endif /* WITH_PUBLIC_KEY */

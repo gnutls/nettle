@@ -27,7 +27,7 @@
 #include "config.h"
 #endif
 
-#if HAVE_LIBGMP
+#if WITH_PUBLIC_KEY
 
 #include "rsa.h"
 
@@ -190,4 +190,4 @@ rsa_compute_root(struct rsa_private_key *key, mpz_t x, const mpz_t m)
   mpz_clear(xp); mpz_clear(xq);
 }
 
-#endif /* HAVE_LIBGMP */
+#endif /* WITH_PUBLIC_KEY */
