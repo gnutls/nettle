@@ -32,20 +32,23 @@
 #define cbc_encrypt nettle_cbc_encrypt
 #define cbc_decrypt nettle_cbc_decrypt
 
-/* Uses a void * for cipher contexts. */
+/* Uses a void * for cipher contexts.
+
+   For block ciphers it would make sense with a const void * for the
+   context, but we use the same typedef for stream ciphers where the
+   internal state changes during the encryption. */
+typedef void (*nettle_crypt_func)(void *ctx,
+				  unsigned length, uint8_t *dst,
+				  const uint8_t *src);
 
 void
-cbc_encrypt(const void *ctx, void (*f)(const void *ctx,
-				       unsigned length, uint8_t *dst,
-				       const uint8_t *src),
+cbc_encrypt(void *ctx, nettle_crypt_func f,
 	    unsigned block_size, uint8_t *iv,
 	    unsigned length, uint8_t *dst,
 	    const uint8_t *src);
 
 void
-cbc_decrypt(const void *ctx, void (*f)(const void *ctx,
-				       unsigned length, uint8_t *dst,
-				       const uint8_t *src),
+cbc_decrypt(void *ctx, nettle_crypt_func f,
 	    unsigned block_size, uint8_t *iv,
 	    unsigned length, uint8_t *dst,
 	    const uint8_t *src);

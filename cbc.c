@@ -37,9 +37,7 @@
 #include "nettle-internal.h"
 
 void
-cbc_encrypt(const void *ctx, void (*f)(const void *ctx,
-				       unsigned length, uint8_t *dst,
-				       const uint8_t *src),
+cbc_encrypt(void *ctx, nettle_crypt_func f,
 	    unsigned block_size, uint8_t *iv,
 	    unsigned length, uint8_t *dst,
 	    const uint8_t *src)
@@ -56,9 +54,7 @@ cbc_encrypt(const void *ctx, void (*f)(const void *ctx,
 
 /* Reqires that dst != src */
 static void
-cbc_decrypt_internal(const void *ctx, void (*f)(const void *ctx,
-						unsigned length, uint8_t *dst,
-						const uint8_t *src),
+cbc_decrypt_internal(void *ctx, nettle_crypt_func f,
 		     unsigned block_size, uint8_t *iv,
 		     unsigned length, uint8_t *dst,
 		     const uint8_t *src)
@@ -80,9 +76,7 @@ cbc_decrypt_internal(const void *ctx, void (*f)(const void *ctx,
 #define CBC_BUFFER_LIMIT 4096
 
 void
-cbc_decrypt(const void *ctx, void (*f)(const void *ctx,
-				       unsigned length, uint8_t *dst,
-				       const uint8_t *src),
+cbc_decrypt(void *ctx, nettle_crypt_func f,
 	    unsigned block_size, uint8_t *iv,
 	    unsigned length, uint8_t *dst,
 	    const uint8_t *src)
