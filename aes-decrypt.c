@@ -27,7 +27,6 @@
 
 #include <assert.h>
 
-
 void
 aes_decrypt(struct aes_ctx *ctx,
 	    unsigned length, uint8_t *dst,

@@ -2,6 +2,12 @@
 
 	* x86/aes-encrypt.asm (aes_encrypt): Use AES_SUBST_BYTE.
 	* x86/aes-decrypt.asm (aes_decrypt): Likewise.
+	(aes_decrypt): Use AES_STORE.
+	(aes_decrypt): Deleted first xchgl instruction into, permuting the
+	AES_ROUND calls instead.
+	(aes_decrypt): Likewise for the final round.
+	(aes_decrypt): Got rid if the xchgl instruction after the final
+	round, folding it into the final round.
 
 	* x86/machine.m4: Renamed AES_LAST_ROUND to AES_FINAL_ROUND.
 	Updated users. 
