@@ -9,7 +9,7 @@ nettle_benchmark_LDADD = ../libnettle.a
 
 TS_PROGS = rsa-sign-test rsa-verify-test
 
-EXTRA_DIST = io.c io.h run-tests $(TS_PROGS)
+EXTRA_DIST = io.c io.h run-tests setup-env teardown-env $(TS_PROGS)
 
 .PHONY: run-tests
 run-tests: $(TS_PROGS)
