@@ -1,5 +1,8 @@
 2004-03-02  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/Makefile.am (noinst_PROGRAMS): Put test program list
+	here, to let automake add $(EXEEXT).
+
 	* configure.ac (RSA_EXAMPLES): Append $(EXEEXT) to the filenames.
 
 2004-03-01  Niels Möller  <nisse@lysator.liu.se>
