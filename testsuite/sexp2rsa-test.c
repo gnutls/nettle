@@ -7,8 +7,8 @@ test_main(void)
   struct rsa_public_key pub;
   struct rsa_private_key priv;
   
-  rsa_init_public_key(&pub);
-  rsa_init_private_key(&priv);
+  rsa_public_key_init(&pub);
+  rsa_private_key_init(&priv);
 
   ASSERT(rsa_keypair_from_sexp
 	 (&pub, &priv, 0,
@@ -38,6 +38,9 @@ test_main(void)
 	     "9ea1a8282e292929")));
 
   test_rsa_key(&pub, &priv);
+
+  rsa_public_key_clear(&pub);
+  rsa_private_key_clear(&priv);
   
   SUCCESS();
   

@@ -28,8 +28,8 @@ test_main(void)
   
   mpz_init(expected);
   
-  rsa_init_private_key(&key);
-  rsa_init_public_key(&pub);
+  rsa_private_key_init(&key);
+  rsa_public_key_init(&pub);
 
   /* Generate a 1024 bit key with random e */
   knuth_lfib_init(&lfib, 13);
@@ -79,8 +79,8 @@ test_main(void)
 
   test_rsa_sha1(&pub, &key, expected);
   
-  rsa_clear_private_key(&key);
-  rsa_clear_public_key(&pub);
+  rsa_private_key_clear(&key);
+  rsa_public_key_clear(&pub);
   mpz_clear(expected);
 
   SUCCESS();

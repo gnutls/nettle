@@ -11,8 +11,8 @@ test_main(void)
 
   struct nettle_buffer buffer;
   
-  rsa_init_public_key(&pub);
-  rsa_init_private_key(&priv);
+  rsa_public_key_init(&pub);
+  rsa_private_key_init(&priv);
 
   mpz_set_str(pub.n,
 	      "085c3408989acae4faec3cbbad91c90d34c1d259cd74121a"
@@ -20,6 +20,8 @@ test_main(void)
 	      "cc8b5e9661189b86a7b22239907c25", 16);
   mpz_set_str(pub.e, "36ad4b1d", 16);
 
+  ASSERT(rsa_public_key_prepare(&pub));
+  
   mpz_set_str(priv.d,
 	      "06ee6d4ff3c239e408150daf8117abfa36a40ad4455d9059"
 	      "a86d52f33a2de07418a0a699594588c64810248c9412d554"
@@ -45,6 +47,8 @@ test_main(void)
 	      "f8a458ea73a018dc6fa56863e3bc6de405f364f77dee6f09"
 	      "62679ea1a8282e", 16);
 
+  ASSERT(rsa_private_key_prepare(&priv));
+  
   nettle_buffer_init(&buffer);
   ASSERT(rsa_keypair_to_sexp(&buffer, &pub, &priv));
 
@@ -96,6 +100,9 @@ test_main(void)
 		"77113a6cdafe79dd7d5f2ecc8b5e9661"
 		"189b86a7b22239907c252928313a6534"
 		"3a36ad4b1d292929"));
+
+  rsa_public_key_clear(&pub);
+  rsa_private_key_clear(&priv);
   
   SUCCESS();
   

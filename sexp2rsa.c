@@ -71,7 +71,7 @@ rsa_keypair_from_sexp_alist(struct rsa_public_key *pub,
       GET(priv->b, limit, &values[6]);
       GET(priv->c, limit, &values[7]);
 
-      if (!rsa_prepare_private_key(priv))
+      if (!rsa_private_key_prepare(priv))
 	return 0;
     }
 
@@ -80,7 +80,7 @@ rsa_keypair_from_sexp_alist(struct rsa_public_key *pub,
       GET(pub->n, limit, &values[0]);
       GET(pub->e, limit, &values[1]);
 
-      if (!rsa_prepare_public_key(pub))
+      if (!rsa_public_key_prepare(pub))
 	return 0;
     }
   

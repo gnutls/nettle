@@ -78,7 +78,7 @@ R_SignFinal(R_SIGNATURE_CTX *ctx,
   nettle_mpz_init_set_str_256_u(k.c,
 				MAX_RSA_MODULUS_LEN, key->coefficient);
 
-  if (rsa_prepare_private_key(&k) && (k.size <= MAX_RSA_MODULUS_LEN))
+  if (rsa_private_key_prepare(&k) && (k.size <= MAX_RSA_MODULUS_LEN))
     {
       mpz_t s;
       mpz_init(s);
@@ -135,7 +135,7 @@ R_VerifyFinal(R_SIGNATURE_CTX *ctx,
   nettle_mpz_init_set_str_256_u(k.e,
 				MAX_RSA_MODULUS_LEN, key->exponent);
   
-  if (rsa_prepare_public_key(&k) && (k.size == length))
+  if (rsa_public_key_prepare(&k) && (k.size == length))
     {
       mpz_t s;
   

@@ -1,3 +1,13 @@
+2003-01-27  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* sexp2dsa.c (dsa_signature_from_sexp): New function.
+
+	RSA renaming. Updated all callers.
+	* rsa-sign.c (rsa_private_key_init, rsa_private_key_clear) 
+	(rsa_private_key_prepare): Renamed functions.
+	* rsa.c (rsa_public_key_init, rsa_public_key_clear) 
+	(rsa_public_key_prepare): Renamed functions.
+
 2003-01-23  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* Makefile.am (libnettle_a_SOURCES): Added new rsa and pkcs1

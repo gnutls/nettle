@@ -44,7 +44,7 @@ main(int argc, char **argv)
       return EXIT_FAILURE;
     }
 
-  rsa_init_private_key(&key);
+  rsa_private_key_init(&key);
   
   if (!read_rsa_key(argv[1], NULL, &key))
     {
@@ -73,7 +73,7 @@ main(int argc, char **argv)
   putchar('\n');
   
   mpz_clear(s);
-  rsa_clear_private_key(&key);
+  rsa_private_key_clear(&key);
 
   return EXIT_SUCCESS;
 }

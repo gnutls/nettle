@@ -108,8 +108,8 @@ main(int argc, char **argv)
   /* Read some data to seed the generator */
   simple_random(&yarrow, random_name);
 
-  rsa_init_public_key(&pub);
-  rsa_init_private_key(&priv);
+  rsa_public_key_init(&pub);
+  rsa_private_key_init(&priv);
 
   if (!rsa_generate_keypair
       (&pub, &priv,

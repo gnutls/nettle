@@ -61,7 +61,7 @@ main(int argc, char **argv)
       return EXIT_FAILURE;
     }
 
-  rsa_init_public_key(&key);
+  rsa_public_key_init(&key);
   
   if (!read_rsa_key(argv[1], &key, NULL))
     {
@@ -93,7 +93,7 @@ main(int argc, char **argv)
     }
     
   mpz_clear(s);
-  rsa_clear_public_key(&key);
+  rsa_public_key_clear(&key);
 
   return EXIT_SUCCESS;
 }
