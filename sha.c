@@ -35,6 +35,8 @@ effort (for example the reengineering of a great many Capstone chips).
 /* #include "port.h" */
 #include "sha.h"
 
+#include <string.h>
+
 void sha_copy(struct sha_ctx *dest, struct sha_ctx *src)
 {
   int i;

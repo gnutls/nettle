@@ -12,6 +12,8 @@
 #include "crypto_types.h"
 #include "md5.h"
 
+#include <string.h>
+
 void md5_copy(struct md5_ctx *dest, struct md5_ctx *src)
 {
   int i;
