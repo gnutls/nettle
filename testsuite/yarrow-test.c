@@ -223,7 +223,7 @@ main(int argc, char **argv)
     fprintf(stderr, "source 0 entropy: %d\n",
 	    sources[0].estimate[YARROW_SLOW]);
   
-  assert(!yarrow.seeded);
+  assert(!yarrow256_is_seeded(&yarrow));
 
   input = open_file("rfc1750.txt");
 
@@ -246,7 +246,7 @@ main(int argc, char **argv)
                        yarrow_key_event_estimate(&estimator, c, t),
                        sizeof(buf), buf);
 
-      if (yarrow.seeded)
+      if (yarrow256_is_seeded(&yarrow))
         {
           static const unsigned sizes[4] = { 1, 16, 500, 37 };
           unsigned size = sizes[processed % 4];
