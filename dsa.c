@@ -55,14 +55,12 @@ dsa_public_key_clear(struct dsa_public_key *key)
 void
 dsa_private_key_init(struct dsa_private_key *key)
 {
-  dsa_public_key_init(&key->pub);
   mpz_init(key->x);
 }
 
 void
 dsa_private_key_clear(struct dsa_private_key *key)
 {
-  dsa_public_key_clear(&key->pub);
   mpz_clear(key->x);
 }
 
