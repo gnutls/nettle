@@ -43,6 +43,7 @@ base64_encode(uint8_t *dst,
         ((BASE64_BINARY_BLOCK_SIZE - 1 + (src_length))	\
 	/ BASE64_BINARY_BLOCK_SIZE * BASE64_TEXT_BLOCK_SIZE)
 
+/* FIXME: Perhaps rename to base64_decode_ctx? */
 struct base64_ctx /* Internal, do not modify */
 {
   uint16_t accum; /* Partial byte accumulated so far, filled msb first */

@@ -1,3 +1,17 @@
+2002-02-06  Niels Möller  <nisse@cuckoo.hack.org>
+
+	Applied patch from Dan Egnor improving the base64 code.
+	* base64.h (BASE64_ENCODE_LENGTH): New macro.
+	(struct base64_ctx): New context struct, for decoding.
+	(BASE64_DECODE_LENGTH): New macro.
+	* base64.c (base64_decode_init): New function.
+	(base64_decode_update): New function, replacing base64_decode.
+	Takes a struct base64_ctx argument.
+	* nettle-meta.h: Updated nettle_armor, and related typedefs and
+	macros. 
+	* testsuite/testutils.c (test_armor): Updated.
+	* configure.in: Use AC_PREREQ(2.50).
+
 2002-02-01  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* Released nettle-1.5.
