@@ -1,3 +1,20 @@
+2004-10-05  Niels Möller  <nisse@lysator.liu.se>
+
+	* twofish.c (q_table): Use a const pointer array.
+
+	* sexp2dsa.c (dsa_keypair_from_sexp_alist): Use a const pointer
+	array for the keywords.
+	(dsa_signature_from_sexp): Likewise.
+	* sexp2rsa.c (rsa_keypair_from_sexp_alist): Likewise.
+	(rsa_keypair_from_sexp): Likewise.
+
+	* sexp.c (sexp_iterator_check_types): Use an argument of type
+	"const uint8_t * const *" for the types list.
+	(sexp_iterator_assoc): Likewise, for the keys list.
+
+	* list-obj-sizes.awk: Fixes to handle multiple .data and .rodata
+	sections. Also fixed to handle the last file correctly.
+
 2004-09-23  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac (SHLIBLINK, SHLIBLIBS): On cygwin, linking needs
