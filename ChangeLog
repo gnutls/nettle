@@ -1,3 +1,7 @@
+2003-09-01  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* testsuite/testutils.c (print_hex): Use const.
+
 2003-08-30  Niels Möller  <niels@s3.kth.se>
 
 	* md2.c, md2.h: Added reference to RFC 1319.
