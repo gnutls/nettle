@@ -51,9 +51,9 @@ aes_encrypt:
 
 	movl	24(%esp), %ebp
 	testl	%ebp,%ebp
-	jz	.Lencrypt_end
+	jz	.Lend
 	
-.Lencrypt_block_loop:
+.Lblock_loop:
 	movl	20(%esp),%esi	C  address of context struct ctx
 	movl	32(%esp),%ebp	C  address of plaintext
 	AES_LOAD(%esi, %ebp)
@@ -64,7 +64,7 @@ aes_encrypt:
 
 	subl	$1,%ebp
 	addl	$16,%esi	C  point to next key
-.Laes_encrypt_loop:
+.Lround_loop:
 	pushl	%esi		C  save this first: we'll clobber it later
 
 	AES_ROUND(_aes_encrypt_table,a,b,c,d)
@@ -91,7 +91,7 @@ aes_encrypt:
 	xorl	12(%esi),%edx
 	addl	$16,%esi	C  point to next key
 	decl	%ebp
-	jnz	.Laes_encrypt_loop
+	jnz	.Lround_loop
 
 	C last round
 
@@ -105,15 +105,15 @@ aes_encrypt:
 	pushl	%edi
 
 	AES_FINAL_ROUND(d,a,b,c)
+
 	movl	%edi,%edx
-	
 	popl	%ecx
 	popl	%ebx
 	popl	%eax
 
 	C S-box substitution
 	mov	$4,%edi
-.Lsubst:	
+.Lsubst:
 	AES_SUBST_BYTE(_aes_encrypt_table)
 
 	decl	%edi
@@ -128,9 +128,9 @@ aes_encrypt:
 
 	C NOTE: Will loop forever if input data is not an
 	C integer number of blocks.
-	jnz	.Lencrypt_block_loop
+	jnz	.Lblock_loop
 
-.Lencrypt_end: 
+.Lend: 
 	popl	%edi
 	popl	%esi
 	popl	%ebp

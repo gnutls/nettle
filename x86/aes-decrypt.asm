@@ -120,7 +120,10 @@ aes_decrypt:
 	AES_STORE(%esi, %edi)
 	
 	addl	$16, 28(%esp)	C Increment destination pointer
-	subl	$16, 24(%esp)
+	subl	$16, 24(%esp)	C Length
+
+	C NOTE: Will loop forever if input data is not an
+	C integer number of blocks.
 	jnz	.Lblock_loop
 
 .Lend: 
