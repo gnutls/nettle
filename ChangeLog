@@ -5,7 +5,6 @@
 	(nettle_aes_decrypt): Fixed references to
 	_nettle_aes_decrypt_table.
 	
-
 2003-04-12  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* testsuite/Makefile.am (TS_SH): New test case symbols-test.
