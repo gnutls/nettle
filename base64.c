@@ -59,6 +59,15 @@ static const signed char decode_table[256] =
 
 #define ENCODE(x) (encode_table[0x3F & (x)])
 
+void
+base64_encode_group(uint8_t *dst, uint32_t group)
+{
+  *dst++ = ENCODE(group >> 18);
+  *dst++ = ENCODE(group >> 12);
+  *dst++ = ENCODE(group >> 6);
+  *dst++ = ENCODE(group);
+}
+
 unsigned 
 base64_encode(uint8_t *dst,
               unsigned src_length,
