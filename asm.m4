@@ -1,26 +1,42 @@
 changequote(<,>)dnl
 changecom(!,<
 >)dnl
-dnl FIXME: Add some struct macros similar to the once used in Amiga assemblers
+
+dnl (progn (modify-syntax-entry ?< "(>") (modify-syntax-entry ?> ")<") )
+dnl Struct defining macros
+
+dnl STRUCTURE(prefix) 
+define(<STRUCTURE>, <define(<SOFFSET>, 0)define(<SPREFIX>, <$1>)>)
+
+dnl STRUCT(name, size)
+define(STRUCT,
+<define(SPREFIX<_>$1, SOFFSET)dnl
+ define(<SOFFSET>, eval(SOFFSET + ($2)))>)
+
+dnl UNSIGNED(name)
+define(<UNSIGNED>, <STRUCT(<$1>, 4)>)
+
 dnl Offsets in aes_ctx and aes_table
-define(AES_KEYS,	0)dnl
-define(AES_NROUNDS,	240)dnl
+STRUCTURE(AES)
+  STRUCT(KEYS, 4*60)
+  UNSIGNED(NROUNDS)
 
 define(AES_SBOX_SIZE,	256)dnl
 define(AES_IDX_SIZE,	16)dnl
 define(AES_TABLE_SIZE,	1024)dnl
 
-define(AES_SBOX,	0)dnl
-define(AES_IDX1,	AES_SBOX_SIZE)dnl
-define(AES_IDX2,	eval(AES_IDX1 + AES_IDX_SIZE))dnl
-define(AES_IDX3,	eval(AES_IDX2 + AES_IDX_SIZE))dnl
-define(AES_TABLE0,	eval(AES_IDX3 + AES_IDX_SIZE))dnl
-define(AES_TABLE1,	eval(AES_TABLE0 + AES_TABLE_SIZE))dnl
-define(AES_TABLE2,	eval(AES_TABLE1 + AES_TABLE_SIZE))dnl
-define(AES_TABLE3,	eval(AES_TABLE2 + AES_TABLE_SIZE))dnl
+STRUCT(AES)
+  STRUCT(SBOX, AES_SBOX_SIZE)
 
-dnl define(AES_SIDX1, 304)dnl
-dnl define(AES_SIDX2, 320)dnl
-dnl define(AES_SIDX3, 336)dnl
-dnl define(AES_TABLE, 352)dnl
+  STRUCT(IDX1, AES_IDX_SIZE)
+  STRUCT(IDX2, AES_IDX_SIZE)
+  STRUCT(IDX3, AES_IDX_SIZE)
 
+  STRUCT(SIDX1, AES_IDX_SIZE)
+  STRUCT(SIDX2, AES_IDX_SIZE)
+  STRUCT(SIDX3, AES_IDX_SIZE)
+
+  STRUCT(TABLE0, AES_TABLE_SIZE)
+  STRUCT(TABLE1, AES_TABLE_SIZE)
+  STRUCT(TABLE2, AES_TABLE_SIZE)
+  STRUCT(TABLE3, AES_TABLE_SIZE)
