@@ -31,7 +31,7 @@ libnettle_a_SOURCES = aes.c aes.h aes-internal.h \
 		      cbc.c cbc.h \
 		      des.c des.h desinfo.h desCode.h \
 		      des3.c des-compat.c des-compat.h \
-		      hmac.c hmac.h hmac-md5.c hmac-sha1.c \
+		      hmac.c hmac.h hmac-md5.c hmac-sha1.c hmac-sha256.c \
 		      knuth-lfib.c knuth-lfib.h \
 		      md5.c md5.h md5-compat.c md5-compat.h md5-meta.c \
 		      sha.h sha1.c sha1-meta.c sha256.c sha256-meta.c \
