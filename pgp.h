@@ -39,6 +39,8 @@
 #define pgp_sub_packet_start nettle_pgp_sub_packet_start
 #define pgp_put_sub_packet nettle_pgp_put_sub_packet
 #define pgp_sub_packet_end nettle_pgp_sub_packet_end
+#define pgp_put_public_rsa_key nettle_pgp_put_public_rsa_key
+#define pgp_put_rsa_sha1_signature nettle_pgp_put_rsa_sha1_signature
 #define pgp_put_userid nettle_pgp_put_userid
 #define pgp_crc24 nettle_pgp_crc24
 #define pgp_armor nettle_pgp_armor

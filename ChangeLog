@@ -1,5 +1,8 @@
 2003-05-13  Niels Möller  <nisse@cuckoo.hack.org>
 
+	* pgp.h: Do proper namemangling for pgp_put_public_rsa_key and
+	pgp_put_rsa_sha1_signature. 
+
 	* pgp-encode.c (pgp_put_mpi): Fixed nettle_mpz_get_str_256 call.
 
 2003-05-12  Niels Möller  <nisse@cuckoo.hack.org>
