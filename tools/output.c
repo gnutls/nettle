@@ -176,8 +176,12 @@ sexp_put_string(struct sexp_output *output, enum sexp_mode mode,
       unsigned i;
       int token = (string->contents[0] < '0' || string->contents[0] > '9');
       int quote_friendly = 1;
-      static const char escape_names[0x10] =
-	{ 0,0,0,0,0,0,0,0, 'b','t','n',0,'f','r',0,0 };
+#define CONTROL_SIZE 0x20
+      static const char escape_names[CONTROL_SIZE] =
+	{
+	  0,0,0,0,0,0,0,0, 'b','t','n',0,'f','r',0,0,
+	  0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0
+	};
 
       for (i = 0; i<string->size; i++)
 	{
@@ -190,7 +194,7 @@ sexp_put_string(struct sexp_output *output, enum sexp_mode mode,
 	    {
 	      if (c >= 0x7f)
 		quote_friendly = 0;
-	      else if (c < 0x20 && !escape_names[c])
+	      else if (c < CONTROL_SIZE && !escape_names[c])
 		quote_friendly = 0;
 	    }
 	}
@@ -211,7 +215,7 @@ sexp_put_string(struct sexp_output *output, enum sexp_mode mode,
 	      
 	      if (c == '\\' || c == '"')
 		escape = 1;
-	      else if (c < 0x20)
+	      else if (c < CONTROL_SIZE)
 		{
 		  escape = 1;
 		  c = escape_names[c];
@@ -247,6 +251,7 @@ sexp_put_string(struct sexp_output *output, enum sexp_mode mode,
 	  sexp_put_code_end(output);
 	  sexp_put_char(output, delimiter);
 	}
+#undef CONTROL_SIZE
     }
   else
     {
