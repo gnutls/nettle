@@ -1,3 +1,17 @@
+2004-11-17  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86/sha1-compress.asm: Use C_NAME for global symbols.
+	* x86/aes-encrypt.asm: Likewise.
+	* x86/aes-decrypt.asm: Likewise.
+	* x86/arcfour-crypt.asm: Likewise.
+
+	* Makefile.in (config.m4): New rule.
+
+	* config.m4.in (C_NAME): New macro.
+
+	* configure.ac (ASM_SYMBOL_PREFIX): Check if global symbols have a
+	leading underscore.
+
 2004-11-16  Niels Möller  <nisse@lysator.liu.se>
 
 	* Deleted getopt.c, getopt.h and getopt1.c from the CVS tree. Link
