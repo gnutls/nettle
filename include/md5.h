@@ -17,7 +17,7 @@ struct md5_ctx {
 };
 
 void md5_init(struct md5_ctx *ctx);
-void md5_update(struct md5_ctx *ctx, UINT8 *buffer, UINT32 len);
+void md5_update(struct md5_ctx *ctx, const UINT8 *buffer, UINT32 len);
 void md5_final(struct md5_ctx *ctx);
 void md5_digest(struct md5_ctx *ctx, UINT8 *s);
 void md5_copy(struct md5_ctx *dest, struct md5_ctx *src);

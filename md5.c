@@ -135,12 +135,13 @@ static void md5_transform(struct md5_ctx *ctx, UINT32 *data)
 #endif
 
 /* Note that MD5 uses little endian byteorder */
-#define STRING2INT(s) ((((((EXTRACT_UCHAR(s+3) << 8)    \
-			   | EXTRACT_UCHAR(s+2)) << 8)  \
-			 | EXTRACT_UCHAR(s+1)) << 8)    \
-		       | EXTRACT_UCHAR(s))
+#define STRING2INT(s) ((((((EXTRACT_UCHAR(s+3) << 8)	\
+			  | EXTRACT_UCHAR(s+2)) << 8)	\
+			  | EXTRACT_UCHAR(s+1)) << 8)	\
+		          | EXTRACT_UCHAR(s))
   
-static void md5_block(struct md5_ctx *ctx, UINT8 *block)
+static void
+md5_block(struct md5_ctx *ctx, const UINT8 *block)
 {
   UINT32 data[MD5_DATALEN];
   int i;
@@ -156,9 +157,10 @@ static void md5_block(struct md5_ctx *ctx, UINT8 *block)
   md5_transform(ctx, data);
 }
 
-void md5_update(struct md5_ctx *ctx,
-		      UINT8 *buffer,
-		      UINT32 len)
+void
+md5_update(struct md5_ctx *ctx,
+	   const UINT8 *buffer,
+	   UINT32 len)
 {
   if (ctx->index)
   { /* Try to fill partial block */
@@ -230,7 +232,8 @@ void md5_final(struct md5_ctx *ctx)
   md5_transform(ctx, data);
 }
 
-void md5_digest(struct md5_ctx *ctx, UINT8 *s)
+void
+md5_digest(struct md5_ctx *ctx, UINT8 *s)
 {
   int i;
 

@@ -267,7 +267,8 @@ UINT32 STRING2INT(UINT8 *s)
 }
 #endif
 
-static void sha_block(struct sha_ctx *ctx, UINT8 *block)
+static void
+sha_block(struct sha_ctx *ctx, const UINT8 *block)
 {
   UINT32 data[SHA_DATALEN];
   int i;
@@ -283,7 +284,9 @@ static void sha_block(struct sha_ctx *ctx, UINT8 *block)
   sha_transform(ctx, data);
 }
 
-void sha_update(struct sha_ctx *ctx, UINT8 *buffer, UINT32 len)
+void
+sha_update(struct sha_ctx *ctx,
+	   const UINT8 *buffer, UINT32 len)
 {
   if (ctx->index)
     { /* Try to fill partial block */
@@ -316,7 +319,8 @@ void sha_update(struct sha_ctx *ctx, UINT8 *buffer, UINT32 len)
 /* Final wrapup - pad to SHA_DATASIZE-byte boundary with the bit pattern
    1 0* (64-bit count of bits processed, MSB-first) */
 
-void sha_final(struct sha_ctx *ctx)
+void
+sha_final(struct sha_ctx *ctx)
 {
   UINT32 data[SHA_DATALEN];
   int i;
@@ -354,7 +358,8 @@ void sha_final(struct sha_ctx *ctx)
   sha_transform(ctx, data);
 }
 
-void sha_digest(struct sha_ctx *ctx, UINT8 *s)
+void
+sha_digest(struct sha_ctx *ctx, UINT8 *s)
 {
   int i;
 
