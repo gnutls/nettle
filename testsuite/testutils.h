@@ -91,4 +91,6 @@ test_rsa_sha1(struct rsa_public_key *pub,
 #define SKIP() exit(77)
 #define SUCCESS() return EXIT_SUCCESS
 
+#define ASSERT(x) do { if (!(x)) FAIL(); } while(0)
+
 #endif /* NETTLE_TESTUTILS_H_INCLUDED */
