@@ -1,5 +1,8 @@
 2001-10-14  Niels Möller  <nisse@cuckoo.hack.org>
 
+	* testsuite/des-test.m4: Added testcase taken from applied
+	cryptography. 
+
 	* testsuite/yarrow-test.c: Use sha256 instead of sha1 for checking
 	input and output. Updated the expected values.
 
