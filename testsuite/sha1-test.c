@@ -31,3 +31,33 @@ test_main(void)
 
   SUCCESS();
 }
+
+/* These are intermediate values for the single sha1_compress call
+   that results from the first testcase, SHA1(""). Each row is the
+   values for A, B, C, D, E after the i:th row. The row i = -1 gives
+   the initial values, and i = 99 givces the output values.
+
+      i         A        B        C        D        E
+     -1: 67452301 efcdab89 98badcfe 10325476 c3d2e1f0
+      0: 67452301 7bf36ae2 98badcfe 10325476 1fb498b3
+      1: 59d148c0 7bf36ae2 98badcfe 5d43e370 1fb498b3
+     15: 40182905 4544b22e a13017ac ab703832 d8fd6547
+     16: 50060a41 4544b22e a13017ac  6bf9173 d8fd6547
+     17: 50060a41 4544b22e 28a9520e  6bf9173 f63f5951
+     18: 50060a41  b3088dd 28a9520e c1afe45c f63f5951
+     19: e758e8da  b3088dd 8a2a5483 c1afe45c f63f5951
+     20: e758e8da 42cc2237 8a2a5483 c1afe45c 90eb9850
+     21: b9d63a36 42cc2237 8a2a5483 7dbb787d 90eb9850
+     38:  e47bc31 62273351 b201788b 413c1d9a 2aeeae62
+     39: 9bdbdd71 62273351 ec805e22 413c1d9a 2aeeae62
+     40: 9bdbdd71 5889ccd4 ec805e22 413c1d9a 95aa398b
+     41: 66f6f75c 5889ccd4 ec805e22 5e28e858 95aa398b
+     58: 2164303a 982bcbca e1afab22 c5a3382e af9292fa
+     59: 9b9d2913 982bcbca b86beac8 c5a3382e af9292fa
+     60: 9b9d2913 a60af2f2 b86beac8 c5a3382e d37db937
+     61: e6e74a44 a60af2f2 b86beac8 85b9d227 d37db937
+     78: c57a6345 6e9d9f84 666b8bc6 852dc41a ec052519
+     79: 72f480ed 6e9d9f84 999ae2f1 852dc41a ec052519
+     99: da39a3ee 5e6b4b0d 3255bfef 95601890 afd80709
+     
+*/
