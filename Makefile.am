@@ -35,7 +35,8 @@ info_TEXINFOS = nettle.texinfo
 
 all-local: nettle.html
 
-EXTRA_DIST = macros.h memxor.h $(des_headers) descore.README nettle.html .bootstrap
+EXTRA_DIST = macros.h memxor.h $(des_headers) descore.README nettle.html \
+	.bootstrap $(des_headers)
 
 # BUILT_SOURCE = $(des_headers)
 
@@ -50,7 +51,8 @@ EXTRA_DIST = macros.h memxor.h $(des_headers) descore.README nettle.html .bootst
 des_headers = parity.h rotors.h keymap.h 
 
 # Generate DES headers.
-$(des_headers): desdata
+$(des_headers): desdata.c
+	$(MAKE) desdata
 	./desdata $(@F) > $@T
 	test -s $@T && mv -f $@T $@
 
