@@ -45,5 +45,9 @@ If you get it from cvs, you need to build it with
 
   ./.bootstrap && ./configure && make && make check
 
+You may want to subscribe to the nettle-bugs mailing list. See
+<URL: http://lists.lysator.liu.se/mailman/listinfo/nettle-bugs>.
+
+
 Happy hacking,
 /Niels Möller <nisse@lysator.liu.se>
