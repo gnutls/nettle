@@ -16,7 +16,9 @@ libnettleinclude_HEADERS = aes.h arcfour.h blowfish.h \
 			   serpent.h sha.h twofish.h \
 			   yarrow.h
 			   
-libnettle_a_SOURCES = aes.c aes-decrypt.c aes-encrypt.c aes.h aes-internal.h \
+libnettle_a_SOURCES = aes.c aes-decrypt.c \
+		      aes-encrypt-table.c aes-encrypt.c \
+		      aes.h aes-internal.h \
 		      aes-set-encrypt-key.c aes-set-decrypt-key.c aes-meta.c \
 		      arcfour.c arcfour.h arcfour-meta.c \
                       base64.c base64-meta.c base64.h \
@@ -58,8 +60,9 @@ SUFFIXES = .asm
 RM_TMP = rm -f
 
 # FIXME: How to write this without using GNU make features?
-%.o: %.asm asm.m4 machine.m4
-	$(M4) `test -f $< || echo '$(srcdir)/'`$< >tmp-$*.s
+%.o: %.asm asm.m4 machine.m4 config.m4 
+	$(M4) $(srcdir)/asm.m4 $(srcdir)/machine.m4 config.m4 \
+		`test -f $< || echo '$(srcdir)/'`$< >tmp-$*.s
 	$(COMPILE) -c tmp-$*.s -o $@
 	$(RM_TMP) tmp-$*.s
 
