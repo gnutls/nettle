@@ -217,6 +217,50 @@ test_cipher_cbc(const struct nettle_cipher *cipher,
 }
 
 void
+test_cipher_stream(const struct nettle_cipher *cipher,
+		   unsigned key_length,
+		   const uint8_t *key,
+		   unsigned length,
+		   const uint8_t *cleartext,
+		   const uint8_t *ciphertext)
+{
+  unsigned block;
+  
+  void *ctx = alloca(cipher->context_size);
+  uint8_t *data = alloca(length + 1);
+  
+  for (block = 1; block <= length; block++)
+    {
+      unsigned i;
+
+      memset(data, 0x17, length + 1);
+      cipher->set_encrypt_key(ctx, key_length, key);
+
+      for (i = 0; i + block < length; i += block)
+	{
+	  cipher->encrypt(ctx, block, data + i, cleartext + i);
+	  if (data[i + block] != 0x17)
+	    FAIL();
+	}
+      cipher->encrypt(ctx, length - i, data + i, cleartext + i);
+      if (data[length] != 0x17)
+	FAIL();
+      
+      if (!MEMEQ(length, data, ciphertext))
+	FAIL();
+    }
+  
+  cipher->set_decrypt_key(ctx, key_length, key);
+  cipher->decrypt(ctx, length, data, data);
+
+  if (data[length] != 0x17)
+    FAIL();
+
+  if (!MEMEQ(length, data, cleartext))
+    FAIL();
+}
+
+void
 test_hash(const struct nettle_hash *hash,
 	  unsigned length,
 	  const uint8_t *data,

@@ -61,6 +61,14 @@ test_cipher_cbc(const struct nettle_cipher *cipher,
 		const uint8_t *iv);
 
 void
+test_cipher_stream(const struct nettle_cipher *cipher,
+		   unsigned key_length,
+		   const uint8_t *key,
+		   unsigned length,
+		   const uint8_t *cleartext,
+		   const uint8_t *ciphertext);
+
+void
 test_hash(const struct nettle_hash *hash,
 	  unsigned length,
 	  const uint8_t *data,
