@@ -1,4 +1,4 @@
-	! Used registers:	%l0,1,2
+	! Used registers:	%l0,1
 	!			%i0,1,2,3,4,5 (%i6=%fp, %i7 = return)
 	!			%o0,1,2,3,4,7 (%o6=%sp)
 	!			%g1,2,3,4
@@ -19,7 +19,7 @@ define(dst, %i3)
 define(src, %i4)
 
 define(wtxt, %l1)
-define(tmp, %o1)
+define(tmp, %l0)
 _aes_crypt:
 ! Why -136?
 	save	%sp, -136, %sp
@@ -30,7 +30,7 @@ _aes_crypt:
 
 	! wtxt
 	add	%fp, -24, wtxt
-	! mov	%l1, wtxt
+
 .Lblock_loop:
 	! Read src, and add initial subkey
 	mov	-4, %o4
@@ -87,7 +87,6 @@ _aes_crypt:
 
 	add	%fp, -40, tmp
 	mov	%g2, %o7
-	mov	tmp, %l0
 
 	! wtxt
 	mov	wtxt, %g4
@@ -97,50 +96,53 @@ _aes_crypt:
 .Lround_loop:
 	add	T, AES_SIDX3, %o2
 .Linner_loop:
+	! The comments mark which T->table[0][ B0(wtxt[IDX0(j)]) ]
+	! the isntruction is a part of.
+	
 	! AES_SIDX1
-	ld	[%o2-32], %g3
+	ld	[%o2-32], %g3		! 1
 
 	! AES_SIDX2
-	ld	[%o2-16], %o4
+	ld	[%o2-16], %o4		! 2
 	! wtxt[IDX1...]
-	add	%g4, %g3, %g3
-	ldub	[%g3+2], %o0
+	add	%g4, %g3, %g3		! 1
+	ldub	[%g3+2], %o0		! 1
 
 	! AES_SIDX3
-	ld	[%o2], %g2
-	sll	%o0, 2, %o0
+	ld	[%o2], %g2		! 3
+	sll	%o0, 2, %o0		! 1
 	
-	! wtxt[j]
-	ld	[%g4+%o3], %o5
+	! wtxt[i]
+	ld	[%g4+%o3], %o5		! 0
 	
 	! wtxt[IDX2...]
-	lduh	[%g4+%o4], %g3
+	lduh	[%g4+%o4], %g3		! 2
 	
-	and	%o5, 255, %o5
+	and	%o5, 255, %o5		! 0
 
 	! wtxt[IDX3...]
-	ldub	[%g4+%g2], %o4
+	ldub	[%g4+%g2], %o4		! 3
 	
-	sll	%o5, 2, %o5
-	add	%o5, AES_TABLE0, %o5
-	ld	[T+%o5], %g2
+	sll	%o5, 2, %o5		! 0
+	add	%o5, AES_TABLE0, %o5	! 0
+	ld	[T+%o5], %g2		! 0
 
-	add	%o0, AES_TABLE1, %o0
-	and	%g3, 255, %g3
-	ld	[T+%o0], %o5
-	sll	%g3, 2, %g3
-	add	%g3, AES_TABLE2, %g3
-	ld	[T+%g3], %o0
-	sll	%o4, 2, %o4
-	add	%o4, AES_TABLE3, %o4
-	ld	[T+%o4], %g3
-	xor	%g2, %o5, %g2
-	xor	%g2, %o0, %g2
+	add	%o0, AES_TABLE1, %o0	! 1
+	and	%g3, 255, %g3		! 2
+	ld	[T+%o0], %o5		! 1
+	sll	%g3, 2, %g3		! 2
+	add	%g3, AES_TABLE2, %g3	! 2
+	ld	[T+%g3], %o0		! 2
+	sll	%o4, 2, %o4		! 3
+	add	%o4, AES_TABLE3, %o4	! 3
+	ld	[T+%o4], %g3		! 3
+	xor	%g2, %o5, %g2		! 0, 1
+	xor	%g2, %o0, %g2		! 0, 1, 2
 
-	add	%o2, 4, %o2
+	add	%o2, 4, %o2		
 	
-	xor	%g2, %g3, %g2
-	st	%g2, [%l0+%o3]
+	xor	%g2, %g3, %g2		! 0, 1, 2, 3
+	st	%g2, [tmp+%o3]
 
 	cmp	%o3, 8
 
