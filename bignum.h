@@ -31,21 +31,39 @@
 #include <gmp.h>
 #include <inttypes.h>
 
+/* Size needed for signed encoding, including extra sign byte if
+ * necessary. */
 unsigned
-nettle_mpz_sizeinbase_256(const mpz_t x);
+nettle_mpz_sizeinbase_256_s(const mpz_t x);
 
-/* Writes an unsigned integer as length octets, using big endian byte
- * order. */
+/* Size needed for unsigned encoding */
+unsigned
+nettle_mpz_sizeinbase_256_u(const mpz_t x);
+
+/* Writes an integer as length octets, using big endian byte order,
+ * and two's complement for negative numbers. */
+/* FIXME: Change order of arguments, putting the mpz_t first? */
 void
 nettle_mpz_get_str_256(unsigned length, uint8_t *s, const mpz_t x);
 
+/* Reads a big endian, two's complement, integer. */
 void
-nettle_mpz_set_str_256(mpz_t x,
-                       unsigned length, const uint8_t *s);
+nettle_mpz_set_str_256_s(mpz_t x,
+			 unsigned length, const uint8_t *s);
 
 void
-nettle_mpz_init_set_str_256(mpz_t x,
-                            unsigned length, const uint8_t *s);
+nettle_mpz_init_set_str_256_s(mpz_t x,
+			      unsigned length, const uint8_t *s);
+
+/* Similar, but for unsigned format. These function don't interpret
+ * the most significant bit as the sign. */
+void
+nettle_mpz_set_str_256_u(mpz_t x,
+			 unsigned length, const uint8_t *s);
+
+void
+nettle_mpz_init_set_str_256_u(mpz_t x,
+			      unsigned length, const uint8_t *s);
 
 /* Returns a uniformly distributed random number 0 <= x < 2^n */
 void
