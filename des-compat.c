@@ -28,6 +28,10 @@
 #undef des_set_key
 
 #include "cbc.h"
+#include "memxor.h"
+
+#include <string.h>
+#include <assert.h>
 
 struct des_compat_des3 { struct des_ctx *keys[3]; }; 
 
@@ -62,10 +66,27 @@ des_ecb3_encrypt(const uint8_t *src, uint8_t *dst,
     (&keys, DES_BLOCK_SIZE, dst, src);
 }
 
-uint32_t
-des_cbc_cksum(const uint8_t *src, uint8_t dst,
+void
+des_cbc_cksum(const uint8_t *src, uint8_t *dst,
 	      long length, struct des_ctx *ctx,
-	      uint8_t *iv);
+	      uint8_t *iv)
+{
+  /* FIXME: I'm not entirely sure how this function is supposed to
+   * work, in particular what it should return, and if iv can be
+   * modified. */
+  uint8_t block[DES_BLOCK_SIZE];
+  memcpy(block, iv, DES_BLOCK_SIZE);
+
+  assert(!(length % DES_BLOCK_SIZE));
+  
+  for ( ; length; length -= DES_BLOCK_SIZE, src += DES_BLOCK_SIZE)
+    {
+      memxor(iv, src, DES_BLOCK_SIZE);
+      des_encrypt(ctx, DES_BLOCK_SIZE, block, block);
+    }
+  memcpy(dst, block, DES_BLOCK_SIZE);
+}
+
 
 void
 des_cbc_encrypt(const uint8_t *src, uint8_t *dst, long length,
@@ -115,16 +136,27 @@ int
 des_set_odd_parity(uint8_t *key)
 {
   des_fix_parity(DES_KEY_SIZE, key, key);
+
+  /* FIXME: What to return? */
+  return 0;
 }
 
+/* Returns 0 for ok, -1 for bad parity, and -2 for weak keys. */
 int
-des_compat_set_key(const uint8_t *key, struct des_ctx *ctx)
+des_key_sched(const uint8_t *key, struct des_ctx *ctx)
 {
-  des_set_key(ctx, key);
+  if (des_set_key(ctx, key))
+    return 0;
+  else switch(ctx->status)
+    {
+    case DES_BAD_PARITY:
+      return -1;
+    case DES_WEAK_KEY:
+      return -2;
+    default:
+      abort();
+    }
 }
-
-int
-des_key_sched(const uint8_t *key, struct des_ctx *ctx);
 
 int
 des_is_weak_key(const uint8_t *key)
