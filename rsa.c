@@ -37,6 +37,24 @@
  * one can link in the signature functions without also getting the
  * verify functions. */
 
+void
+rsa_init_public_key(struct rsa_public_key *key)
+{
+  mpz_init(key->n);
+  mpz_init(key->e);
+
+  /* Not really necessary, but it seems cleaner to initialize all the
+   * storage. */
+  key->size = 0;
+}
+
+void
+rsa_clear_public_key(struct rsa_public_key *key)
+{
+  mpz_clear(key->n);
+  mpz_clear(key->e);
+}
+
 int
 rsa_prepare_public_key(struct rsa_public_key *key)
 {
@@ -63,11 +81,38 @@ rsa_prepare_public_key(struct rsa_public_key *key)
     }
 }
 
+void
+rsa_init_private_key(struct rsa_private_key *key)
+{
+  rsa_init_public_key(&key->pub);
+
+  mpz_init(key->d);
+  mpz_init(key->p);
+  mpz_init(key->q);
+  mpz_init(key->a);
+  mpz_init(key->b);
+  mpz_init(key->c);
+}
+
+void
+rsa_clear_private_key(struct rsa_private_key *key)
+{
+  rsa_clear_public_key(&key->pub);
+
+  mpz_clear(key->d);
+  mpz_clear(key->p);
+  mpz_clear(key->q);
+  mpz_clear(key->a);
+  mpz_clear(key->b);
+  mpz_clear(key->c);
+}
+
 int
 rsa_prepare_private_key(struct rsa_private_key *key)
 {
   return rsa_prepare_public_key(&key->pub);
 }
+
 
 #ifndef RSA_CRT
 #define RSA_CRT 1

@@ -84,14 +84,32 @@ struct rsa_private_key
  * The signature is represented as a mpz_t bignum. This call also
  * resets the hashing context.
  *
- * When done with the key, don't forget to call mpz_clear.
+ * When done with the key and signature, don't forget to call
+ * mpz_clear.
  */
+
+/* Calls mpz_init to initialize bignum storage. */
+void
+rsa_init_public_key(struct rsa_public_key *key);
+
+/* Calls mpz_clear to deallocate bignum storage. */
+void
+rsa_clear_public_key(struct rsa_public_key *key);
 
 int
 rsa_prepare_public_key(struct rsa_public_key *key);
 
+/* Calls mpz_init to initialize bignum storage. */
+void
+rsa_init_private_key(struct rsa_private_key *key);
+
+/* Calls mpz_clear to deallocate bignum storage. */
+void
+rsa_clear_private_key(struct rsa_private_key *key);
+
 int
 rsa_prepare_private_key(struct rsa_private_key *key);
+
 
 /* PKCS#1 style signatures */
 void
