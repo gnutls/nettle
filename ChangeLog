@@ -1,6 +1,13 @@
-2002-03-13  Niels Möller  <nisse@cuckoo.hack.org>
+2002-03-14  Niels Möller  <nisse@cuckoo.hack.org>
 
+	* sparc/aes.asm, x86/aes.asm: Added copyright notice.
+
+	* Makefile.am (libnettle_a_SOURCES): Added aes-internal.h.
+	(EXTRA_DIST): Added assembler files.
+
+	* configure.in (asm_path): Use $srcdir when looking for the files. 
 	* configure.in (asm_path): For now, disable x86 assembler code. 
+	Bumped version to 1.6.
 
 2002-02-25  Niels Möller  <nisse@cuckoo.hack.org>
 
