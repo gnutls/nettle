@@ -59,10 +59,10 @@ rsa_clear_public_key(struct rsa_public_key *key)
  * Returns 0 if the modulo is too small to be useful. */
 
 static unsigned
-rsa_check_size(unsigned bits)
+rsa_check_size(mpz_t n)
 {
   /* Round upwards */
-  unsigned size = (bits + 7) / 8;
+  unsigned size = (mpz_sizeinbase(n, 2) + 7) / 8;
 
   /* For PKCS#1 to make sense, the size of the modulo, in octets, must
    * be at least 11 + the length of the DER-encoded Digest Info.
@@ -86,7 +86,7 @@ rsa_prepare_public_key(struct rsa_public_key *key)
     return 0;
 #endif
   
-  key->size = rsa_check_size(mpz_sizeinbase(key->n, 2));
+  key->size = rsa_check_size(key->n);
   
   return (key->size > 0);
 }
@@ -120,10 +120,19 @@ rsa_prepare_private_key(struct rsa_private_key *key)
 {
   /* FIXME: Add further sanity checks. */
 
-  /* The size of the product is the sum of the sizes of the factors. */
-  key->size = rsa_check_size(mpz_sizeinbase(key->p, 2)
-			     + mpz_sizeinbase(key->p, 2));
+  mpz_t n;
+  
+  /* The size of the product is the sum of the sizes of the factors,
+   * or sometimes one less. It's possible but tricky to compute the
+   * size without computing the full product. */
 
+  mpz_init(n);
+  mpz_mul(n, key->p, key->q);
+
+  key->size = rsa_check_size(n);
+
+  mpz_clear(n);
+  
   return (key->size > 0);
 }
 
