@@ -30,7 +30,7 @@
 
 /* Define to use only small tables. */
 #ifndef AES_SMALL
-# define AES_SMALL 1
+# define AES_SMALL 0
 #endif
 
 /* Macros */
@@ -43,20 +43,21 @@
 
 /* Don't pollute global namespace too much */
 #if AES_SMALL
-# define dtbl _aes_dtbl_small
+# define dtable _aes_dtable_small
+# define itable _aes_itable_small
 # define _AES_TABLE_SIZE 1
 #else
-# define dtbl _aes_dtbl
+# define dtable _aes_dtable
+# define itable _aes_itable
 # define _AES_TABLE_SIZE 4
 #endif
 
-#define itbl _aes_itbl
 #define sbox _aes_sbox
 #define isbox _aes_isbox
 
 /* Internal tables */
-extern const uint32_t dtbl[_AES_TABLE_SIZE][0x100];
-extern const uint32_t itbl[];
+extern const uint32_t dtable[_AES_TABLE_SIZE][0x100];
+extern const uint32_t itable[_AES_TABLE_SIZE][0x100];
 extern const uint8_t sbox[0x100];
 extern const uint8_t isbox[0x100];
 
