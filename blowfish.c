@@ -1,9 +1,18 @@
-/* blowfish.c  -  Blowfish encryption
- *	Copyright (C) 1998 Free Software Foundation, Inc.
+/* blowfish.c
+ *
+ * The blowfish block cipher.
  *
  * For a description of the algorithm, see:
  *   Bruce Schneier: Applied Cryptography. John Wiley & Sons, 1996.
  *   ISBN 0-471-11709-9. Pages 336 ff.
+ */
+
+/* NOTE: This file is distributed under the GPL, not the LGPL. */
+
+/* nettle, low-level cryptographics library
+ *
+ * Copyright (C) 1998, 2001
+ *    Free Software Foundation, Inc, Ray Dassen, Niels Möller
  *
  * This file is part of GNUPG.
  *
@@ -22,45 +31,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
  */
 
-/*
- * Modified by Ray Dassen for use in lsh.
- * * Moved BLOWFISH_context and BLOWFISH_ROUNDS to the header file.
- * * const-ified it.
- */
-
-/*
- * Hacked further by Niels Möller.
- */
-
-/* Test values:
- * key	  "abcdefghijklmnopqrstuvwxyz";
- * plain  "BLOWFISH"
- * cipher 32 4E D0 FE F4 13 A2 03
- *
- */
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
 #include "blowfish.h"
 
-#if 0
-#define CIPHER_ALGO_BLOWFISH	 4  /* blowfish 128 bit key */
-#define CIPHER_ALGO_BLOWFISH160 42  /* blowfish 160 bit key (not in OpenPGP)*/
-
-#define FNCCAST_SETKEY(f)  (int(*)(void*, const byte*, unsigned))(f)
-#define FNCCAST_CRYPT(f)   (void(*)(void*, byte*, const byte*))(f)
-
-static int  bf_setkey( BLOWFISH_context *c, const byte *key, unsigned keylen );
-static void encrypt_block( BLOWFISH_context *bc, byte *outbuf, const byte *inbuf );
-static void decrypt_block( BLOWFISH_context *bc, byte *outbuf, const byte *inbuf );
-
-static void selftest(void);
-#endif
-
 /* precomputed S boxes */
-static const u32 ks0[256] = {
+static const uint32_t ks0[256] = {
     0xD1310BA6,0x98DFB5AC,0x2FFD72DB,0xD01ADFB7,0xB8E1AFED,0x6A267E96,
     0xBA7C9045,0xF12C7F99,0x24A19947,0xB3916CF7,0x0801F2E2,0x858EFC16,
     0x636920D8,0x71574E69,0xA458FEA3,0xF4933D7E,0x0D95748F,0x728EB658,
@@ -105,7 +79,7 @@ static const u32 ks0[256] = {
     0xF296EC6B,0x2A0DD915,0xB6636521,0xE7B9F9B6,0xFF34052E,0xC5855664,
     0x53B02D5D,0xA99F8FA1,0x08BA4799,0x6E85076A };
 
-static const u32 ks1[256] = {
+static const uint32_t ks1[256] = {
     0x4B7A70E9,0xB5B32944,0xDB75092E,0xC4192623,0xAD6EA6B0,0x49A7DF7D,
     0x9CEE60B8,0x8FEDB266,0xECAA8C71,0x699A17FF,0x5664526C,0xC2B19EE1,
     0x193602A5,0x75094C29,0xA0591340,0xE4183A3E,0x3F54989A,0x5B429D65,
@@ -150,7 +124,7 @@ static const u32 ks1[256] = {
     0x675FDA79,0xE3674340,0xC5C43465,0x713E38D8,0x3D28F89E,0xF16DFF20,
     0x153E21E7,0x8FB03D4A,0xE6E39F2B,0xDB83ADF7 };
 
-static const u32 ks2[256] = {
+static const uint32_t ks2[256] = {
     0xE93D5A68,0x948140F7,0xF64C261C,0x94692934,0x411520F7,0x7602D4F7,
     0xBCF46B2E,0xD4A20068,0xD4082471,0x3320F46A,0x43B7D4B7,0x500061AF,
     0x1E39F62E,0x97244546,0x14214F74,0xBF8B8840,0x4D95FC1D,0x96B591AF,
@@ -195,7 +169,7 @@ static const u32 ks2[256] = {
     0xA28514D9,0x6C51133C,0x6FD5C7E7,0x56E14EC4,0x362ABFCE,0xDDC6C837,
     0xD79A3234,0x92638212,0x670EFA8E,0x406000E0 };
 
-static const u32 ks3[256] = {
+static const uint32_t ks3[256] = {
     0x3A39CE37,0xD3FAF5CF,0xABC27737,0x5AC52D1B,0x5CB0679E,0x4FA33742,
     0xD3822740,0x99BC9BBE,0xD5118E9D,0xBF0F7315,0xD62D1C7E,0xC700C47B,
     0xB78C1B6B,0x21A19045,0xB26EB1BE,0x6A366EB4,0x5748AB2F,0xBC946E79,
@@ -240,14 +214,12 @@ static const u32 ks3[256] = {
     0x01C36AE4,0xD6EBE1F9,0x90D4F869,0xA65CDEA0,0x3F09252D,0xC208E69F,
     0xB74E6132,0xCE77E25B,0x578FDFE3,0x3AC372E6 };
 
-static const u32 ps[BLOWFISH_ROUNDS+2] = {
+static const uint32_t ps[BLOWFISH_ROUNDS+2] = {
     0x243F6A88,0x85A308D3,0x13198A2E,0x03707344,0xA4093822,0x299F31D0,
     0x082EFA98,0xEC4E6C89,0x452821E6,0x38D01377,0xBE5466CF,0x34E90C6C,
     0xC0AC29B7,0xC97C50DD,0x3F84D5B5,0xB5470917,0x9216D5D9,0x8979FB1B };
 
-
-
-#if BLOWFISH_ROUNDS != 16
+#if _BLOWFISH_ROUNDS != 16
 static inline u32
 function_F( BLOWFISH_context *bc, u32 x )
 {
@@ -297,12 +269,11 @@ function_F( BLOWFISH_context *bc, u32 x )
 #endif
 #define R(l,r,i)  do { l ^= p[i]; r ^= F(l); } while(0)
 
-
 static void
-encrypt(  BLOWFISH_context *bc, u32 *ret_xl, u32 *ret_xr )
+encrypt(struct blowfish_ctx *bc, uint32_t *ret_xl, uint32_t *ret_xr)
 {
   #if BLOWFISH_ROUNDS == 16
-    u32 xl, xr, *s0, *s1, *s2, *s3, *p;
+    uint32_t xl, xr, *s0, *s1, *s2, *s3, *p;
 
     xl = *ret_xl;
     xr = *ret_xr;
@@ -336,7 +307,7 @@ encrypt(  BLOWFISH_context *bc, u32 *ret_xl, u32 *ret_xr )
     *ret_xr = xl;
 
   #else
-    u32 xl, xr, temp, *p;
+    uint32_t xl, xr, temp, *p;
     int i;
 
     xl = *ret_xl;
@@ -362,12 +333,11 @@ encrypt(  BLOWFISH_context *bc, u32 *ret_xl, u32 *ret_xr )
   #endif
 }
 
-
 static void
-decrypt(  BLOWFISH_context *bc, u32 *ret_xl, u32 *ret_xr )
+decrypt(struct blowfish_ctx *bc, uint32_t *ret_xl, uint32_t *ret_xr )
 {
   #if BLOWFISH_ROUNDS == 16
-    u32 xl, xr, *s0, *s1, *s2, *s3, *p;
+    uint32_t xl, xr, *s0, *s1, *s2, *s3, *p;
 
     xl = *ret_xl;
     xr = *ret_xr;
@@ -401,7 +371,7 @@ decrypt(  BLOWFISH_context *bc, u32 *ret_xl, u32 *ret_xr )
     *ret_xr = xl;
 
   #else
-    u32 xl, xr, temp, *p;
+    uint32_t xl, xr, temp, *p;
     int i;
 
     xl = *ret_xl;
@@ -431,11 +401,15 @@ decrypt(  BLOWFISH_context *bc, u32 *ret_xl, u32 *ret_xr )
 #undef F
 #undef R
 
+#warning should loop on length.
 void
-bf_encrypt_block( BLOWFISH_context *bc, byte *outbuf, const byte *inbuf )
+blowfish_encrypt(struct blowfish_ctx *bc, uitn32_t length,
+                 uint8_t *outbuf, const uint8_t *inbuf )
 {
     u32 d1, d2;
 
+    assert(!ctx->status);
+    
     d1 = inbuf[0] << 24 | inbuf[1] << 16 | inbuf[2] << 8 | inbuf[3];
     d2 = inbuf[4] << 24 | inbuf[5] << 16 | inbuf[6] << 8 | inbuf[7];
     encrypt( bc, &d1, &d2 );
@@ -451,9 +425,12 @@ bf_encrypt_block( BLOWFISH_context *bc, byte *outbuf, const byte *inbuf )
 
 
 void
-bf_decrypt_block( BLOWFISH_context *bc, byte *outbuf, const byte *inbuf )
+blowfish_decrypt(struct blowfish_ctx *bc, uint32 length,
+                 uint8_t *outbuf, const uint8_t *inbuf )
 {
     u32 d1, d2;
+
+    assert(!ctx->status);
 
     d1 = inbuf[0] << 24 | inbuf[1] << 16 | inbuf[2] << 8 | inbuf[3];
     d2 = inbuf[4] << 24 | inbuf[5] << 16 | inbuf[6] << 8 | inbuf[7];
@@ -468,47 +445,12 @@ bf_decrypt_block( BLOWFISH_context *bc, byte *outbuf, const byte *inbuf )
     outbuf[7] =  d2	   & 0xff;
 }
 
-
-/* Returns 1 on success, 0 on failure */
 int
-bf_selftest(void)
-{
-    BLOWFISH_context c;
-    byte plain[] = "BLOWFISH";
-    byte buffer[8];
-    byte plain3[] = { 0xFE, 0xDC, 0xBA, 0x98, 0x76, 0x54, 0x32, 0x10 };
-    byte key3[] = { 0x41, 0x79, 0x6E, 0xA0, 0x52, 0x61, 0x6E, 0xE4 };
-    byte cipher3[] = { 0xE1, 0x13, 0xF4, 0x10, 0x2C, 0xFC, 0xCE, 0x43 };
-
-    bf_set_key( &c, "abcdefghijklmnopqrstuvwxyz", 26 );
-    bf_encrypt_block( &c, buffer, plain );
-    if( memcmp( buffer, "\x32\x4E\xD0\xFE\xF4\x13\xA2\x03", 8 ) )
-      /* log_error("wrong blowfish encryption\n"); */
-      return 0;
-    bf_decrypt_block( &c, buffer, buffer );
-    if( memcmp( buffer, plain, 8 ) )
-      /* log_bug("blowfish failed\n"); */
-      return 0;
-
-    bf_set_key( &c, key3, 8 );
-    bf_encrypt_block( &c, buffer, plain3 );
-    if( memcmp( buffer, cipher3, 8 ) )
-      /* log_error("wrong blowfish encryption (3)\n"); */
-      return 0;
-    bf_decrypt_block( &c, buffer, buffer );
-    if( memcmp( buffer, plain3, 8 ) )
-      /* log_bug("blowfish failed (3)\n"); */
-      return 0;
-    return 1;
-}
-
-
-
-int
-bf_set_key( BLOWFISH_context *c, const byte *key, unsigned keylen )
+blowfish_set_key(struct blowfish_ctx *c,
+                 uint32_t keylen, const uint8_t *key)
 {
     int i, j;
-    u32 data, datal, datar;
+    uint32_t data, datal, datar;
 
 #if 0
     static int initialized = 0;
@@ -576,6 +518,7 @@ bf_set_key( BLOWFISH_context *c, const byte *key, unsigned keylen )
 	c->s3[i+1] = datar;
     }
 
+    ctx->status = BLOWFISH_WEAK_KEY;
 
     /* Check for weak key.  A weak key is a key in which a value in */
     /* the P-array (here c) occurs more than once per table.	    */
@@ -583,39 +526,10 @@ bf_set_key( BLOWFISH_context *c, const byte *key, unsigned keylen )
 	for( j=i+1; j < 256; j++) {
 	    if( (c->s0[i] == c->s0[j]) || (c->s1[i] == c->s1[j]) ||
 		(c->s2[i] == c->s2[j]) || (c->s3[i] == c->s3[j]) )
-		return G10ERR_WEAK_KEY;
+		return 0;
 	}
     }
 
-    return 0;
+    ctx->status = BLOWFISH_OK;
+    return 1;
 }
-
-#if 0
-/****************
- * Return some information about the algorithm.  We need algo here to
- * distinguish different flavors of the algorithm.
- * Returns: A pointer to string describing the algorithm or NULL if
- *	    the ALGO is invalid.
- */
-const char *
-blowfish_get_info( int algo, size_t *keylen,
-		   size_t *blocksize, size_t *contextsize,
-		   int	(**r_setkey)( void *c, const byte *key, unsigned keylen ),
-		   void (**r_encrypt)( void *c, byte *outbuf, const byte *inbuf ),
-		   void (**r_decrypt)( void *c, byte *outbuf, const byte *inbuf )
-		 )
-{
-    *keylen = algo == CIPHER_ALGO_BLOWFISH ? 128 : 160;
-    *blocksize = BLOWFISH_BLOCKSIZE;
-    *contextsize = sizeof(BLOWFISH_context);
-    *r_setkey = FNCCAST_SETKEY(bf_setkey);
-    *r_encrypt= FNCCAST_CRYPT(encrypt_block);
-    *r_decrypt= FNCCAST_CRYPT(decrypt_block);
-
-    if( algo == CIPHER_ALGO_BLOWFISH )
-	return "BLOWFISH";
-    if( algo == CIPHER_ALGO_BLOWFISH160 )
-	return "BLOWFISH160";
-    return NULL;
-}
-#endif
