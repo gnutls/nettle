@@ -2,6 +2,7 @@
 
 	* testsuite/sexp-format-test.c (test_main): New test with tokens
 	in the format string.
+	(test_main): Test space-searated literals too.
 
 	* rsa2sexp.c (rsa_keypair_to_sexp): New argument ALGORITHM_NAME.
 	* examples/rsa-keygen.c (main): Updated call to rsa_keypair_to_sexp.
