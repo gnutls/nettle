@@ -96,15 +96,8 @@ main(int argc, char **argv)
       return EXIT_FAILURE;
     }
 
-  pub_name = malloc(strlen(priv_name) + 5);  
-
-  if (pub_name)
-    sprintf(pub_name, "%s.pub", priv_name);
-  else
-    {
-      werror("Memory exhausted.\n");
-      return EXIT_FAILURE;
-    }
+  pub_name = xalloc(strlen(priv_name) + 5);  
+  sprintf(pub_name, "%s.pub", priv_name);
 
   /* NOTE: No sources */
   yarrow256_init(&yarrow, 0, NULL);

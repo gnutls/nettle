@@ -78,14 +78,17 @@ write_bignum(FILE *f, mpz_t x)
 {
   unsigned size = nettle_mpz_sizeinbase_256_u(x);
   uint8_t *p;
+  int res;
   
   if (!write_uint32(f, size))
     return 0;
   
-  p = alloca(size);
+  p = xalloc(size);
   nettle_mpz_get_str_256(size, p, x);
 
-  return write_string(f, size, p);
+  res = write_string(f, size, p);
+  free(p);
+  return res;
 }
 
 static int

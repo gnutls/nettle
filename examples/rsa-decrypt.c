@@ -86,11 +86,16 @@ read_bignum(FILE *f, mpz_t x)
   if (read_uint32(f, &size)
       && size < 1000)
     {
-      uint8_t *p = alloca(size);
+      uint8_t *p = xalloc(size);
       if (fread(p, 1, size, f) != size)
-	return 0;
+	{
+	  free(p);
+	  return 0;
+	}
 
       nettle_mpz_set_str_256_u(x, size, p);
+      free(p);
+
       return 1;
     }
   return 0;
