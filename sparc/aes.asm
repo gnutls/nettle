@@ -201,12 +201,12 @@ _aes_crypt:
 	sll	t3, 24, t3	! 3
 	or	t0, t3, t0	! 0, 1, 2, 3
 	xor	t0, t2, %g3
-	srl	%g3, 24, %o5
-	srl	%g3, 16, %o0
-	srl	%g3, 8, t2
-	stb	t2, [%g2+1]
-	stb	%o5, [%g2+3]
-	stb	%o0, [%g2+2]
+	srl	%g3, 24, t3
+	srl	%g3, 16, t2
+	srl	%g3, 8, t1
+	stb	t1, [%g2+1]
+	stb	t3, [%g2+3]
+	stb	t2, [%g2+2]
 	stb	%g3, [dst+%i5]
 	add	round, 4, round
 	bleu	.Lfinal_loop
