@@ -39,14 +39,14 @@ rsa_keypair_to_sexp(struct nettle_buffer *buffer,
 {
   if (priv)
     return sexp_format(buffer,
-		       "(%0s(%0s(%0s%b)(%0s%b)(%0s%b)"
-		       "(%0s%b)(%0s%b)(%0s%b)(%0s%b)(%0s%b)))",
-		       "private-key", "rsa", "n", pub->n, "e", pub->e,
-		       "d", priv->d, "p", priv->p, "q", priv->q,
-		       "a", priv->a, "b", priv->b, "c", priv->c);
+		       "(private-key(%0s(n%b)(e%b)"
+		       "(d%b)(p%b)(q%b)(a%b)(b%b)(c%b)))",
+		       "rsa", pub->n, pub->e,
+		       priv->d, priv->p, priv->q,
+		       priv->a, priv->b, priv->c);
   else
-    return sexp_format(buffer, "(%0s(%0s(%0s%b)(%0s%b)))",
-		       "public-key", "rsa", "n", pub->n, "e", pub->e);
+    return sexp_format(buffer, "(public-key(%0s(n%b)(e%b)))",
+		       "rsa", pub->n, pub->e);
 }
 
 #endif /* WITH_PUBLIC_KEY */
