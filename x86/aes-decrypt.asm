@@ -107,28 +107,10 @@ aes_decrypt:
 	popl	%eax
 	xchgl	%ebx,%edx
 
-	C // inverse S-box substitution
+	C inverse S-box substitution
 	mov	$4,%edi
 .Lisubst:
-	movl	%eax,%ebp
-	andl	$0x000000ff,%ebp
-	movb	AES_SBOX + _aes_decrypt_table (%ebp),%al
-	roll	$8,%eax
-
-	movl	%ebx,%ebp
-	andl	$0x000000ff,%ebp
-	movb	AES_SBOX + _aes_decrypt_table (%ebp),%bl
-	roll	$8,%ebx
-
-	movl	%ecx,%ebp
-	andl	$0x000000ff,%ebp
-	movb	AES_SBOX + _aes_decrypt_table (%ebp),%cl
-	roll	$8,%ecx
-
-	movl	%edx,%ebp
-	andl	$0x000000ff,%ebp
-	movb	AES_SBOX + _aes_decrypt_table (%ebp),%dl
-	roll	$8,%edx
+	AES_SUBST_BYTE(_aes_decrypt_table)
 
 	decl	%edi
 	jnz	.Lisubst
@@ -155,5 +137,5 @@ aes_decrypt:
 	popl	%ebp
 	popl	%ebx
 	ret
-.eord:
-	.size	aes_decrypt,.eord-aes_decrypt
+.Leord:
+	.size	aes_decrypt,.Leord-aes_decrypt
