@@ -20,5 +20,6 @@ desdata
 generate_q
 keymap.h
 parity.h
+rijndael_test
 rotors.h
 twofish_test
