@@ -10,3 +10,8 @@ More feedback modes, in order of decreasing priority:  CBC-MAC, OFB,
 Counter, and CFB. Suggested by Rafael 'Dido' Sevilla. References:
 
   http://csrc.nist.gov/encryption/modes/Recommendation/Modes01.pdf
+
+Fix sexp handling of integers, according to
+draft-ietf-spki-cert-structure-06.txt, integers are now signed two's
+complement numbers, similar to what is used in SSH.
+
