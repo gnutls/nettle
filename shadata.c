@@ -1,3 +1,6 @@
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
 
 #include <math.h>
 #include <stdio.h>
@@ -13,7 +16,7 @@ static const unsigned primes[64] =
   283, 293, 307, 311
 };
 
-int main(int argc, char **argv)
+int main(int argc UNUSED, char **argv UNUSED)
 {
   int i;
   static const double third = 1.0/3;

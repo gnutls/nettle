@@ -11,15 +11,14 @@
  *
  */
 
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
 #include	"desinfo.h"
 
 #include	"desCode.h"
 
-#if __GNUC__
-# define UNUSED __attribute__ ((__unused__))
-#else
-# define UNUSED
-#endif
 
 /* list of weak and semi-weak keys
 
