@@ -1747,7 +1747,9 @@ The size of the Yarrow-256 seed file.
 @end defvr
 
 @deftypefun void yarrow256_init (struct yarrow256_ctx *@var{ctx}, unsigned @var{nsources}, struct yarrow_source *@var{sources})
-Initializes the yarrow context, and its @var{nsources} sources.
+Initializes the yarrow context, and its @var{nsources} sources. It's
+possible to use call it with @var{nsources}=0 and @var{sources}=NULL, if
+you don't need the update features.
 @end deftypefun
 
 @deftypefun void yarrow256_seed (struct yarrow256_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{seed_file})
