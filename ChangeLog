@@ -1,3 +1,10 @@
+2003-01-14  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/Makefile.am (check): Don't use "run-tests" as a
+	target, as it's confused with the file with the same name.
+
+	* .bootstrap: Added missing #! /bin/sh.
+
 2003-01-12  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* buffer.c (nettle_buffer_reset): New function.
