@@ -1,0 +1,1 @@
+define(<srcdir>, <<@srcdir@>>)dnl
