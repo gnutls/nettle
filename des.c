@@ -41,14 +41,18 @@ static DECRYPT(DesSmallFipsDecrypt,TEMPSMALL, LOADFIPS,KEYMAPSMALL,SAVEFIPS)
 
 /* various tables */
 
-uint32_t des_keymap[] = {
+static const uint32_t
+des_keymap[] = {
 #include	"keymap.h"
 };
 
-static uint8_t rotors[] = {
+static const uint8_t
+rotors[] = {
 #include	"rotors.h"
 };
-static char parity[] = {
+
+static const char
+parity[] = {
 #include	"parity.h"
 };
 
@@ -68,20 +72,23 @@ des_set_key(struct des_ctx *ctx, const uint8_t *key)
   register char * b0, * b1;
   char bits0[56], bits1[56];
   uint32_t *method;
-  uint8_t *k;
-  
-  /* check for bad parity and weak keys */
-  b0 = parity;
-  n  = b0[key[0]]; n <<= 4;
-  n |= b0[key[1]]; n <<= 4;
-  n |= b0[key[2]]; n <<= 4;
-  n |= b0[key[3]]; n <<= 4;
-  n |= b0[key[4]]; n <<= 4;
-  n |= b0[key[5]]; n <<= 4;
-  n |= b0[key[6]]; n <<= 4;
-  n |= b0[key[7]];
-  w  = 0x88888888l;
+  const uint8_t *k;
 
+  {
+    register const char *b;
+    /* check for bad parity and weak keys */
+    b = parity;
+    n  = b[key[0]]; n <<= 4;
+    n |= b[key[1]]; n <<= 4;
+    n |= b[key[2]]; n <<= 4;
+    n |= b[key[3]]; n <<= 4;
+    n |= b[key[4]]; n <<= 4;
+    n |= b[key[5]]; n <<= 4;
+    n |= b[key[6]]; n <<= 4;
+    n |= b[key[7]];
+    w  = 0x88888888l;
+  }
+  
   /* report bad parity in key */
   if ( n & w )
     {
