@@ -1,5 +1,7 @@
 2004-12-02  Niels Möller  <nisse@lysator.liu.se>
 
+	* config.make.in (.c): Disable default rule for BSD-make.
+
 	* Makefile.in (all check install uninstall) 
 	(clean distclean mostlyclean maintainer-clean): Don't use the -C
 	flag when invoking make, for compatibility with Solaris make.
