@@ -38,7 +38,8 @@ libnettle_a_SOURCES = aes.c aes.h aes-internal.h \
 		      rsa.h rsa.c rsa_md5.c rsa_sha1.c \
 		      rsa-encrypt.c rsa-decrypt.c \
 		      rsa-keygen.c rsa-compat.h rsa-compat.c \
-		      nettle-internal.c nettle-internal.h nettle-meta.h
+		      nettle-meta.h \
+		      nettle-internal.c nettle-internal.h nettle-openssl.c
 
 libnettle_a_LIBADD = @LIBOBJS@
 
@@ -61,7 +62,7 @@ RM_TMP = rm -f
 
 # FIXME: How to write this without using GNU make features?
 %.o: %.asm asm.m4 machine.m4 config.m4 
-	$(M4) $(srcdir)/asm.m4 $(srcdir)/machine.m4 config.m4 \
+	$(M4) $(srcdir)/asm.m4 machine.m4 config.m4 \
 		`test -f $< || echo '$(srcdir)/'`$< >tmp-$*.s
 	$(COMPILE) -c tmp-$*.s -o $@
 	$(RM_TMP) tmp-$*.s
