@@ -1016,6 +1016,7 @@ parse_options(struct conv_options *o,
 	      int argc, char **argv)
 {  
   o->mode = SEXP_ADVANCED;
+  o->prefer_hex = 0;
   o->once = 0;
   o->hash = NULL;
   o->width = 72;
