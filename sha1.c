@@ -1,4 +1,4 @@
-/* sha1.h
+/* sha1.c
  *
  * The sha1 hash function.
  */

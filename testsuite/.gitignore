@@ -3,6 +3,7 @@
 /Makefile.in
 /aes-test
 /arcfour-test
+/base64-test
 /bignum-test
 /blowfish-test
 /cast128-test

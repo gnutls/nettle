@@ -1,3 +1,26 @@
+2002-01-22  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* nettle.texinfo (Nettle soup): New chapter.
+	(Hash functions): New subsection on struct nettle_hash. 
+	(Hash functions): New subsection on struct nettle_cipher.
+	(Keyed hash functions): New section, describing MAC:s and HMAC.
+
+	* testsuite/testutils.c (test_armor): New function.
+
+	* testsuite/base64-test.c: New testcase.
+
+	* testsuite/Makefile.am (TS_PROGS): Added base64-test.
+
+	* nettle-meta.h (struct nettle_armor): New struct.
+
+	* configure.in: Bumped version to 1.5.
+
+	* Makefile.am (libnettle_a_SOURCES): Added base64 files, and some
+	missing header files.
+
+	* base64.c, base64.h, base64-meta.c: New files, hacked by Dan
+	Egnor. 
+
 2002-01-16  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* testsuite/yarrow-test.c: Deleted ran_array code, use

@@ -1,5 +1,9 @@
 NEWS for the 1.5 release
 
+	Added RSA support. Key generation and signatures.
+	
+	Added support for HMAC (RFC-2104).
+
 	Changed the interface for hash functions. The md5_digest
 	function is now equivalent to the old sequence of md5_final,
 	md5_digest, md5_init, and similarly for the other hashing
