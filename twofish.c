@@ -337,7 +337,7 @@ twofish_encrypt(struct twofish_ctx *context,
   uint32_t (*s_box)[256] = context->s_box;
 
   assert( !(length % TWOFISH_BLOCK_SIZE) );
-  for ( ; length; length -= TWOFISH_BLOCK_SIZE);
+  for ( ; length; length -= TWOFISH_BLOCK_SIZE)
     {  
       uint32_t words[4];
       uint32_t r0, r1, r2, r3, t0, t1;
@@ -408,7 +408,7 @@ twofish_decrypt(struct twofish_ctx *context,
   uint32_t (*s_box)[256] = context->s_box;
 
   assert( !(length % TWOFISH_BLOCK_SIZE) );
-  for ( ; length; length -= TWOFISH_BLOCK_SIZE);
+  for ( ; length; length -= TWOFISH_BLOCK_SIZE)
     {  
       uint32_t words[4];
       uint32_t r0, r1, r2, r3, t0, t1;
