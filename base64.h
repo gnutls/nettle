@@ -65,8 +65,14 @@ base64_decode_update(struct base64_ctx *ctx,
                      unsigned src_length,
                      const uint8_t *src);
 
-/* FIXME: Does this always round correctly? */
-/* Maximum length of decoded data */
+/* Maximum length of decoded data.
+ *
+ * NOTE: This size should work even for improper base 64 data. For
+ * example, consider an (encoded) input string of two bytes. When
+ * we'll generate one byte of output before noticing that the input is
+ * truncated. And BASE64_DECODE_LENGTH(2) == 2*3/4 == 1, so that is
+ * just fine. */
+
 #define BASE64_DECODE_LENGTH(src_length) \
 	((src_length) * BASE64_BINARY_BLOCK_SIZE / BASE64_TEXT_BLOCK_SIZE)
 
