@@ -1,5 +1,8 @@
 2002-12-04  Niels Möller  <nisse@cuckoo.hack.org>
 
+	* testsuite/sexp-format-test.c (test_main): Use %0s instead of %z.
+	New test for %t.
+
 	* sexp-format.c (format_length_string): Deleted function.
 	(format_string): Deleted function.
 	(sexp_vformat): New %t specifier, formatting an optional display
