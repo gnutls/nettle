@@ -7,7 +7,7 @@ include(`asm.m4')
 	.file	"aes.asm"
 	
 	.section	".text"
-	.align 4
+	.align 16
 	.global _aes_crypt
 	.type	_aes_crypt,#function
 	.proc	020
@@ -66,40 +66,36 @@ _aes_crypt:
 		
 .Lblock_loop:
 	! Read src, and add initial subkey
-	mov	-4, i
-	! Read src, and add initial subkey
-	! mov	-4, i
 	! Difference between ctx and src
 	sub	ctx, src, %g2
 	! Difference between wtxt and src
 	sub	wtxt, src, %g3
-	! For stop condition
-	add	src, 12, %g4
-.Lsource_loop:
-	add	i, 4, i
+	! For stop condition. Note that src is incremented in the
+	! delay slot
+	add	src, 8, %g4
+	nop
 	
+.Lsource_loop:
 	ldub	[src+3], t3
 	ldub	[src+2], t2
-	
 	sll	t3, 24, t3
 	ldub	[src+1], t1
+	
 	sll	t2, 16, t2
 	or	t3, t2, t3
-	
 	ldub	[src], t0
 	sll	t1, 8, t1
-	! Get subkey
-	ld	[ctx+i], t2
-	or	t3, t1, t3
 	
+	! Get subkey
+	ld	[src+%g2], t2
+	or	t3, t1, t3
 	or	t3, t0, t3
 	xor	t3, t2, t3
-	add	src, 4, src
-	! cmp	i, 8
-	cmp	src, %g4
-	bleu	.Lsource_loop
 	
-	st	t3, [wtxt+i]
+	cmp	src, %g4
+	st	t3, [src+%g3]
+	bleu	.Lsource_loop
+	add	src, 4, src
 
 	mov	16, round
 	add	ctx, 16, key
