@@ -150,6 +150,8 @@ struct nettle_hash
  (nettle_hash_digest_func) name##_digest	\
 } 
 
+extern const struct nettle_hash nettle_md2;
+extern const struct nettle_hash nettle_md4;
 extern const struct nettle_hash nettle_md5;
 extern const struct nettle_hash nettle_sha1;
 extern const struct nettle_hash nettle_sha256;
