@@ -202,7 +202,7 @@ C .Laes_got_t:
 	popl	%ebx
 	popl	%eax
 
-	C // S-box substitution
+	C S-box substitution
 	mov	$4,%edi
 .Lsubst:	
 	movl	%eax,%ebp
@@ -228,21 +228,15 @@ C .Laes_got_t:
 	decl	%edi
 	jnz	.Lsubst
 
-C .Laes_got_tlast:		
-	xorl	(%esi),%eax	C  add last key to plaintext
-	xorl	4(%esi),%ebx
-	xorl	8(%esi),%ecx
-	xorl	12(%esi),%edx
-C .Laes_got_result:
-	C // store encrypted data back to caller's buffer
+	C Add last subkey, and store encrypted data
 	movl	28(%esp),%edi
-	movl	%eax,(%edi)
-	movl	%ebx,4(%edi)
-	movl	%ecx,8(%edi)
-	movl	%edx,12(%edi)
-
+	AES_STORE(%esi, %edi)
+	
 	addl	$16, 28(%esp)	C Increment destination pointer
-	subl	$16, 24(%esp)
+	subl	$16, 24(%esp)	C Length
+
+	C NOTE: Will loop forever if input data is not an
+	C integer number of blocks.
 	jnz	.Lencrypt_block_loop
 
 .Lencrypt_end: 
