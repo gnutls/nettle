@@ -162,8 +162,8 @@ int
 rsa_encrypt(struct rsa_public_key *key,
 	    /* For padding */
 	    void *random_ctx, nettle_random_func random,
-	    unsigned length, const uint8_t *message,
-	    mpz_t gibbberish);
+	    unsigned length, const uint8_t *cleartext,
+	    mpz_t cipher);
 
 /* Message must point to a buffer of size *LENGTH. KEY->size is enough
  * for all valid messages. On success, *LENGTH is updated to reflect
@@ -172,8 +172,8 @@ rsa_encrypt(struct rsa_public_key *key,
  * didn't fit. */
 int
 rsa_decrypt(struct rsa_private_key *key,
-	    unsigned *length, uint8_t *message,
-	    const mpz_t gibberish);
+	    unsigned *length, uint8_t *cleartext,
+	    const mpz_t ciphertext);
 
 
 /* Compute x, the e:th root of m. Calling it with x == m is allowed. */
