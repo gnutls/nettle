@@ -133,10 +133,10 @@ key_addition32to8:
 	.size	idx,64
 idx:
 define(idx_row,
-<	.long	$1
-	.long	$2
-	.long	$3
-	.long	$4
+<	.long	eval(4 * $1)
+	.long	eval(4 * $2)
+	.long	eval(4 * $3)
+	.long	eval(4 * $4)
 >)
 idx_row(0, 1, 2, 3)
 idx_row(1, 2, 3, 0)
@@ -218,11 +218,8 @@ aes_encrypt:
 	sll	%o7, 2, %g2
 	! %o1 = idx[2][0]
 	ld	[%g3-16], %o1
-	! %o2 = 4 idx[3][0]
-	sll	%o0, 2, %o0
 	! %o3 = wtxt[idx[3][0]], byte => bits 24-31
 	ldub	[%l0+%o0], %o3
-	sll	%o1, 2, %o1
 	! %o4 = wtxt[idx[2][0]], half-word???
 	lduh	[%l0+%o1], %o4
 	sll	%o3, 2, %o3
@@ -232,8 +229,6 @@ aes_encrypt:
 	and	%o4, 255, %o4
 	! %o2 = dtbl[wtxt[idx[3][0]] >> 24]
 	ld	[dtbl+%o3], %o2
-	! %o0 = 4 idx[1][0]
-	sll	%o0, 2, %o0
 	! %o3 = dtbl[wtxt[idx[3][0]] >> 24] >> 24
 	srl	%o2, 24, %o3
 	! %o4 = 4 ((wtxt[idx[2][0]] >> 16) & 0xff)
@@ -283,8 +278,10 @@ aes_encrypt:
 	add	%o7, 1, %o7
 	! txt[j] (old j) = XX3 
 	st	%o1, [%l4+%g2]
+
 	! j <= 3?
 	cmp	%o7, 3
+
 	bleu	.Lencrypt_inner
 	! %g3 = &idx[3][j]
 	add	%g3, 4, %g3
@@ -321,27 +318,21 @@ aes_encrypt:
 	mov	txt, %l0
 	! %g2 = &idx[3][0]
 	add	g_idx, 48, %g2
-.LL63:
+.Lencrypt_final_inner:
 	! %o0 = idx[1][0]
 	ld	[%g2-32], %o0
 	! %o5 = 4 j
 	sll	%o7, 2, %o5
 	! %o2 = idx[2][0]
 	ld	[%g2-16], %o2
-	! %o0 = 4(idx[1][0])
-	sll	%o0, 2, %o0
 	! %o3 = wtxt[idx[1][0]]
 	ld	[%g3+%o0], %o3
-	! %o2 = 4 idx[2][0]
-	sll	%o2, 2, %o2
 	! %o4 = idx[3][0]
 	ld	[%g2], %o4
 	! %o3 = wtxt[idx[1][0]] & 0xff00 
 	and	%o3, %l3, %o3
 	! %o1 = wtxt[idx[2][0]]
 	ld	[%g3+%o2], %o1
-	! %o4 = 4 idx[3][0]
-	sll	%o4, 2, %o4
 	! %o0 = wtxt[idx[1][0]]
 	ld	[%g3+%o5], %o0
 	! %o1 = wtxt[idx[2][0]] & 0xff0000
@@ -365,7 +356,7 @@ aes_encrypt:
 	st	%o0, [%l0+%o5]
 	! j <= 3?
 	cmp	%o7, 3
-	bleu	.LL63
+	bleu	.Lencrypt_final_inner
 	! %g2 = &idx[3][j]
 	add	%g2, 4, %g2
 	
