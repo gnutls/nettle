@@ -1,3 +1,8 @@
+2003-01-30  Niels Möller  <niels@s3.kth.se>
+
+	* sexp2bignum.c (nettle_mpz_set_sexp): Call sexp_iterator_next on
+	success. That means the iterator argument can't be const.
+
 2003-01-29  Niels Möller  <niels@s3.kth.se>
 
 	* tools/Makefile.am (LDADD): Add libnettle.a, for the dependency.
