@@ -34,6 +34,7 @@
 /* For nettle_random_func */
 #include "nettle-meta.h"
 
+#define DSA_MINIMUM_BITS 512
 
 struct dsa_public_key
 {  
@@ -127,8 +128,6 @@ dsa_verify(const struct dsa_public_key *key,
 
 /* Key generation */
 
-#if 0
-/* Note that the key structs must be initialized first. */
 int
 dsa_generate_keypair(struct dsa_public_key *pub,
 		     struct dsa_private_key *key,
@@ -136,23 +135,9 @@ dsa_generate_keypair(struct dsa_public_key *pub,
 		     void *random_ctx, nettle_random_func random,
 		     void *progress_ctx, nettle_progress_func progress,
 
-		     /* Desired size of modulo, in bits */
-		     unsigned n_size,
-		     
-		     /* Desired size of public exponent, in bits. If
-		      * zero, the passed in value pub->e is used. */
-		     unsigned e_size);
-
-
-#define DSA_SIGN(key, algorithm, ctx, length, data, signature) ( \
-  algorithm##_update(ctx, length, data), \
-  dsa_##algorithm##_sign(key, ctx, signature) \
-)
-
-#define DSA_VERIFY(key, algorithm, ctx, length, data, signature) ( \
-  algorithm##_update(ctx, length, data), \
-  dsa_##algorithm##_verify(key, ctx, signature) \
-)
-#endif
+		     /* Size of key, in bits.
+		      * Use size = 512 + 64 * l for the official
+		      * NIS key sizes. */
+		     unsigned bits);
 
 #endif /* NETTLE_DSA_H_INCLUDED */
