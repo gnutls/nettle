@@ -21,13 +21,18 @@
    to using key lengths less than 256 bits. */
 #define SERPENT_KEYSIZE 32
 
+/* Allow keys of size 128 <= bits <= 256 */
+
+#define SERPENT_MIN_KEYSIZE 16
+#define SERPENT_MAX_KEYSIZE 32
+
 typedef struct {
   UINT32 keys[33][4];		/* key schedule */
 } SERPENT_context;
 
 /* This performs Serpent's key scheduling algorithm. */
 void
-serpent_setup(SERPENT_context *ctx, const UINT8 *key);
+serpent_setup(SERPENT_context *ctx, UINT32 key_size, const UINT8 *key);
 
 /*
  * serpent_encrypt()

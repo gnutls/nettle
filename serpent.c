@@ -36,16 +36,37 @@
 #include "serpent.h"
 #include "serpentsboxes.h"
 
+#include <assert.h>
+
 /*  The functions  */
 void
-serpent_setup(SERPENT_context *ctx, const UINT8 *key)
+serpent_setup(SERPENT_context *ctx, UINT32 key_size, const UINT8 *key)
 {
   UINT32 i, j;
   UINT32 w[132], k[132];
   UINT32 kd[8];
   const UINT8 *kptr;
 
-  kptr = key;
+  assert(key_size >= SERPENT_MIN_KEYSIZE);
+  assert(key_size <= SERPENT_MAX_KEYSIZE);
+
+  if (key_size == SERPENT_KEYSIZE)
+    kptr = key;
+  else
+    {
+      /* Expand key by appending bits 1000...0. */
+      UINT8 *ekey = alloca(SERPENT_KEYSIZE);
+      unsigned i = key_size;
+      
+      memcpy(ekey, key, i);
+      ekey[i++] = 0x01;
+
+      while (i < SERPENT_KEYSIZE)
+	ekey[i++] = 0;
+
+      kptr = ekey;
+    }
+      
   for (i=0; i<8; i++) {
     kd[i] = 0;
     for (j=0; j<4; j++)
@@ -55,8 +76,11 @@ serpent_setup(SERPENT_context *ctx, const UINT8 *key)
   for(i=0; i<8; i++)
     w[i]=kd[i];
 
+#if 0
   for(i++; i<8; i++)
     w[i]=0;
+#endif
+
   for(i=8; i<16; i++)
     w[i]=ROL(w[i-8]^w[i-5]^w[i-3]^w[i-1]^PHI^(i-8),11);
   for(i=0; i<8; i++)
