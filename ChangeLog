@@ -1,3 +1,32 @@
+2002-05-15  Niels Möller  <niels@s3.kth.se>
+
+	* x86/machine.m4: Renamed AES_LAST_ROUND to AES_FINAL_ROUND.
+	Updated users. 
+
+	* x86/aes-decrypt.asm (aes_decrypt): Use the AES_LOAD macro.
+	(aes_decrypt): Start using AES_ROUND.
+	(aes_decrypt): Use AES_LAST_ROUND.
+
+	* x86/aes-decrypt.asm (aes_decrypt): Moved function to a separate
+	file... 
+	* x86/aes.asm: ... from here.
+
+	* x86/aes.asm (aes_decrypt): Use _aes_decrypt_table instead of
+	itbl1-4. Commented out the inclusion of aes_tables.asm. 
+	(aes_decrypt): Use _aes_decrypt_table instead of isbox.
+	
+
+	* x86/aes-decrypt.asm: New file, empty at the start.
+
+	* Makefile.am (libnettle_a_SOURCES): Added aes-decrypt-table.c.
+
+	* aes-decrypt.c (_aes_decrypt_table): Moved from this file...
+	* aes-decrypt-table.c (_aes_decrypt_table): ... to a new file.
+	
+	* testsuite/aes-test.out: New file, with the output of
+	testsuite/aes-test, when aes.c has been compiled with debugging
+	printouts of intermediate state.
+
 2002-05-15  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* x86/aes-encrypt.asm (aes_encrypt): Use test instead of cmpl $0,.
