@@ -1,3 +1,33 @@
+2002-01-12  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* Makefile.am: Added *-meta files.
+
+	* rsa.c (rsa_init_public_key): New function.
+	(rsa_clear_public_key): Likewise.
+	(rsa_init_private_key): Likewise.
+	(rsa_clear_private_key): Likewise.
+
+	* aes-meta.c: New file.
+	* arcfour-meta.c: New file.
+	* cast128-meta.c: New file.
+	* serpent-meta.c: New file.
+	* twofish-meta.c: New file.
+
+	* examples/nettle-benchmark.c: Use the interface in nettle-meta.h. 
+
+2002-01-11  Niels Möller  <nisse@cuckoo.hack.org>
+
+	Don't use m4 for generating test programs, it's way overkill. Use
+	the C preprocessor instead.
+	* testsuite/*-test.c: New file.
+
+	* hmac.c, hmac.h, hmac-md5.c: New files.
+
+	Defined structures describing the algoriths. Useful for code that
+	wants to treat an algorithm as a black box.
+	* nettle-meta.h, md5-meta.c, sha1-meta.c, sha256-meta.c: New
+	files. 
+
 2002-01-09  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* rsa-compat.c: Updated for new md5 and rsa conventions.
