@@ -50,4 +50,4 @@ desQuickCore.c:
 		@echo >> $@ 'DECRYPT(DesQuickCoreDecrypt,TEMPQUICK,\
 			     LOADCORE,KEYMAPQUICK,SAVECORE)' 
 
-EXTRA_DIST = $(cvs_headers) Makefile.am.in
+EXTRA_DIST = $(cvs_headers) Makefile.am.in descore.README
