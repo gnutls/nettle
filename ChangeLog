@@ -1,3 +1,10 @@
+2003-04-22  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* nettle.texinfo (Example): Use @verbatiminclude to include the
+	example program.
+
+	* sha-example.c: Example program, for inclusion in the manual.
+
 2003-04-14  Niels Möller  <niels@s3.kth.se>
 
 	* x86/aes-encrypt.asm (nettle_aes_encrypt): Fixed references to
