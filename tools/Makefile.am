@@ -9,4 +9,7 @@ bin_PROGRAMS = sexp-conv
 
 LDADD = -lnettle
 
-sexp_conv_SOURCES = sexp-conv.c getopt.c getopt1.c
+EXTRA_DIST = misc.h input.h output.h parse.h
+
+sexp_conv_SOURCES = sexp-conv.c input.c output.c parse.c \
+	getopt.c getopt1.c misc.c
