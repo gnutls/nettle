@@ -50,8 +50,11 @@ define(T, %o0)
 define(length, %o4)
 define(dst, %o3)
 define(src, %o2)
+
+define(wtxt, %l2)
 _aes_crypt:
 	!#PROLOGUE# 0
+! Why -136?
 	save	%sp, -136, %sp
 	!#PROLOGUE# 1
 ! Why this moving around of the input parameters?
@@ -60,13 +63,15 @@ _aes_crypt:
 	mov	%i1, T
 	mov	%i3, dst
 	cmp	length, 0
-	be	.LL41
+	be	.Lend
 	mov	%i4, src
+	! wtxt?
 	add	%fp, -24, %l1
-	mov	%l1, %l2
-.LL13:
+	mov	%l1, wtxt
+.Lblock_loop:
+	! Read src, and add initial subkey
 	mov	0, %i3
-.LL17:
+.Lsource_loop:
 	sll	%i3, 2, %i2
 	add	%i2, src, %i0
 	ldub	[%i0+3], %g2
@@ -83,9 +88,11 @@ _aes_crypt:
 	or	%g2, %i0, %g2
 	xor	%g2, %g3, %g2
 	cmp	%i3, 3
-	bleu	.LL17
-	st	%g2, [%l2+%i2]
-	ld	[ctx+240], %g2
+	bleu	.Lsource_loop
+	st	%g2, [wtxt+%i2]
+
+	! FIXME: We can safely assume that nrounds > 1 
+	ld	[ctx + AES_NROUNDS], %g2
 	mov	1, %g1
 	cmp	%g1, %g2
 	bgeu,a	.LL47
@@ -96,7 +103,7 @@ _aes_crypt:
 	mov	%l1, %g4
 	mov	0, %i5
 .LL48:
-	add	T, 288, %i4
+	add	T, AES_IDX3, %i4
 .LL26:
 	ld	[%i4-32], %g3
 	sll	%i5, 2, %i3
@@ -199,9 +206,9 @@ _aes_crypt:
 	add	%g4, 4, %g4
 	add	dst, 16, dst
 	addcc	length, -16, length
-	bne	.LL13
+	bne	.Lblock_loop
 	add	src, 16, src
-.LL41:
+.Lend:
 	ret
 	restore
 .LLFE1:
