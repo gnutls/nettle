@@ -54,7 +54,7 @@ libdir =	@libdir@
 includedir =	@includedir@
 infodir =	@infodir@
 
-COMPILE = $(CC) $(CPPFLAGS) $(DEFS) $(CFLAGS) $(CCPIC) $(DEP_FLAGS)
+COMPILE = $(CC) $(CPPFLAGS) $(INCLUDES) $(DEFS) $(CFLAGS) $(CCPIC) $(DEP_FLAGS)
 LINK = $(CC) $(CFLAGS) $(LDFLAGS)
 
 # Disable builtin rule
