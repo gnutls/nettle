@@ -1282,7 +1282,7 @@ Public-key cryptography uses trapdoor one-way functions. A
 @dfn{one-way function} is a function @code{F} such that it is easy to
 compute the value @code{F(x)} for any @code{x}, but given a value
 @code{y}, it is hard to compute a corresponding @code{x} such that
-@code{y = f(x)}. Two examples are cryptographic hash functions, and
+@code{y = F(x)}. Two examples are cryptographic hash functions, and
 exponentiation in certain groups.
 
 A @dfn{trapdoor one-way function} is a function @code{F} that is
@@ -1340,7 +1340,7 @@ Adi Shamir and L.M. Adleman, and the technique was also patented in
 1983. The patent expired on September 20, 2000, and since that day,
 @acronym{RSA} can be used freely.
 
-It's remarkably simple to describe trapdoor function behind
+It's remarkably simple to describe the trapdoor function behind
 @acronym{RSA}. The "one-way"-function used is
 
 @example
@@ -1349,7 +1349,7 @@ F(x) = x^e mod n
 
 I.e. raise x to the @code{e}:th power, while discarding all multiples of
 @code{n}. The pair of numbers @code{n} and @code{e} is the public key.
-@code{e} can be quite small, even @code{e = 3} have been used, although
+@code{e} can be quite small, even @code{e = 3} has been used, although
 slightly larger numbers are recommended. @code{n} should be about 1000
 bits or larger.
 
@@ -1393,7 +1393,7 @@ signed is first hashed using a cryptographic hash function, e.g.
 "Algorithm Identifier" for the hash function, and the message digest
 itself, are concatenated and converted to a number @code{x}. The
 signature is computed from @code{x} and the private key as @code{s = x^d
-mod n}@footnote{Actuelly, the computation is not done like this, it is
+mod n}@footnote{Actually, the computation is not done like this, it is
 done more efficiently using @code{p}, @code{q} and the chinese remainder
 theorem (@acronym{CRT}). But the result is the same.}. The signature, @code{s} is a
 number of about the same size of @code{n}, and it usually encoded as a
@@ -1440,7 +1440,7 @@ Calls @code{mpz_clear} on all numbers in the key struct.
 
 In general, Nettle's @acronym{rsa} functions deviates from Nettle's "no
 memory allocation"-policy. Space for all the numbers, both in the key structs
-above, and temporaries, are allocated dynamically. For informationon how
+above, and temporaries, are allocated dynamically. For information on how
 to customize allocation, see @xref{Custom Allocation,,GMP Allocation,gmp}.
 
 When you have assigned values to the attributes of a key, you must call
@@ -1448,7 +1448,7 @@ When you have assigned values to the attributes of a key, you must call
 @deftypefun int rsa_prepare_public_key (struct rsa_public_key *@var{pub})
 @deftypefunx int rsa_prepare_private_key (struct rsa_private_key *@var{key})
 Computes the octet size of the key (stored in the @code{size} attribute,
-and may also do other basig sanity checks. Returns one if successful, or
+and may also do other basic sanity checks. Returns one if successful, or
 zero if the key can't be used, for instance if the modulo is smaller
 than the minimum size specified by PKCS#1.
 @end deftypefun
@@ -1474,7 +1474,7 @@ the hash context is reset so that it can be used for new messages.
 @end deftypefun
 
 If you need to use the @acronym{RSA} trapdoor, the private key, in a way
-that isn't support by the above functions Nettle also includes a
+that isn't supported by the above functions Nettle also includes a
 function that computes @code{x^d mod n} and nothing more, using the
 @acronym{CRT} optimization.
 
