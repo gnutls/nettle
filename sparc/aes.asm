@@ -1,7 +1,7 @@
 ! -*- mode: asm; asm-comment-char: ?!; -*-  
 	! Used registers:	%l0,1,2,3,4,5,6,7
-	!			%i0,1,2,3,4,5 (%i6=%fp, %i7 = return)
-	!			%o0,1,2,3,4,5,7 (%o6=%sp)
+	!			%i0,1,2,3,4 (%i6=%fp, %i7 = return)
+	!			%o0,1,2,3,4 (%o6=%sp)
 	!			%g2,3,4,5,6
 include(`asm.m4')
 	
@@ -29,13 +29,15 @@ define(nrounds, %l3)
 ! Loop variables
 define(round, %l4)
 define(i, %l5)
+define(key, %g7)
 
 ! Further loop invariants
 define(T0, %l6)
 define(T1, %l7)
 define(T2, %g5)
 define(T3, %g6)
-define(key, %g7)
+define(IDX1, %i5)
+define(IDX3, %o5)
 
 ! Teporaries
 define(t0, %o0)
@@ -63,6 +65,9 @@ _aes_crypt:
 	add	T, AES_TABLE1, T1
 	add	T, AES_TABLE2, T2
 	add	T, AES_TABLE3, T3
+	add	T, AES_SIDX1, IDX1
+
+	add	T, AES_SIDX3, IDX3
 	! Read src, and add initial subkey
 	! Difference between ctx and src.
 	! NOTE: This instruction is duplicated in the delay slot
@@ -74,8 +79,6 @@ _aes_crypt:
 	! For stop condition. Note that src is incremented in the
 	! delay slot
 	add	src, 8, %g4
-	nop
-	nop
 	
 .Lsource_loop:
 	ldub	[src+3], t3
@@ -113,7 +116,7 @@ _aes_crypt:
 	! register for that sub-expression. True for j==1,3.
 	
 	! AES_SIDX1
-	ld	[idx-32], t1		! 1
+	ld	[IDX1+i], t1		! 1
 	! AES_SIDX2
 	! IDX2(j) = j XOR 2
 	xor	i, 8, t2
@@ -122,7 +125,7 @@ _aes_crypt:
 	ldub	[t1+2], t1		! 1
 
 	! AES_SIDX3
-	ld	[idx], t3		! 3
+	ld	[IDX3+i], t3		! 3
 	sll	t1, 2, t1		! 1
 	! wtxt[i]
 	ld	[wtxt+i], t0		! 0
@@ -145,7 +148,7 @@ _aes_crypt:
 	xor	t0, t1, t0		! 0, 1
 	xor	t0, t2, t0		! 0, 1, 2
 
-	add	idx, 4, idx		
+	! add	idx, 4, idx		
 	! Fetch roundkey
 	ld	[key+i], t1
 	xor	t0, t3, t0		! 0, 1, 2, 3
@@ -173,7 +176,7 @@ _aes_crypt:
 .Lfinal_loop:
 	! Comments mark which j in T->sbox[Bj(wtxt[IDXj(i)])]
 	! the instruction is part of
-	ld	[idx-32], t1 	! 1
+	ld	[IDX1+i], t1 	! 1
 	xor	i, 8, t2
 	! ld	[idx-16], t2	! 2
 	add	wtxt, t1, t1	! 1
@@ -182,7 +185,7 @@ _aes_crypt:
 	ld	[wtxt+i], t0	! 0
 	lduh	[wtxt+t2], t2	! 2
 	and	t0, 255, t0	! 0
-	ld	[idx], t3	! 3
+	ld	[IDX3 + i], t3	! 3
 	
 	and	t2, 255, t2	! 2
 	ldub	[T+t1], t1	! 1
