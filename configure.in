@@ -1,0 +1,10 @@
+# $Id$
+AC_INIT(sha.c)
+
+AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_RANLIB
+
+AC_C_CONST
+
+AC_OUTPUT(Makefile)
