@@ -22,34 +22,8 @@
  * MA 02111-1307, USA.
  */
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif /* HAVE_CONFIG_H */
-
 /* For asprintf */
 #define _GNU_SOURCE
-
-#include <ctype.h>
-#include <errno.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-
-#if !WITH_PUBLIC_KEY
-int
-main(int argc, char **argv)
-{
-  fprintf(stderr,
-	  "You need to install GMP somewhere where Nettle can find it,\n"
-	  "and recompile Nettle\n");
-  return EXIT_FAILURE;
-}
-#else /* WITH_PUBLIC_KEY */
-
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 
 #include "buffer.h"
 #include "rsa.h"
@@ -57,6 +31,15 @@ main(int argc, char **argv)
 #include "yarrow.h"
 
 #include "io.h"
+
+#include <ctype.h>
+#include <errno.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+/* For getopt */
+#include <unistd.h>
 
 #define KEYSIZE 500
 #define ESIZE 30
@@ -97,9 +80,9 @@ main(int argc, char **argv)
 	
       case '?':
 	if (isprint (optopt))
-	  fprintf(stderr, "Unknown option `-%c'.\n", optopt);
+	  werror("Unknown option `-%c'.\n", optopt);
 	else
-	  fprintf(stderr, "Unknown option character `\\x%x'.\n",
+	  werror("Unknown option character `\\x%x'.\n",
 		  optopt);
 	return EXIT_FAILURE;
       default:
@@ -108,14 +91,14 @@ main(int argc, char **argv)
 
   if (!priv_name)
     {
-      fprintf(stderr, "No filename provided.\n");
+      werror("No filename provided.\n");
       return EXIT_FAILURE;
     }
 
   asprintf(&pub_name, "%s.pub", priv_name);
   if (!pub_name)
     {
-      fprintf(stderr, "Memory exhausted.\n");
+      werror("Memory exhausted.\n");
       return EXIT_FAILURE;
     }
   
@@ -134,7 +117,7 @@ main(int argc, char **argv)
        NULL, progress,
        KEYSIZE, ESIZE))
     {
-      fprintf(stderr, "Key generation failed.\n");
+      werror("Key generation failed.\n");
       return EXIT_FAILURE;
     }
 
@@ -143,30 +126,29 @@ main(int argc, char **argv)
   
   if (!rsa_keypair_to_sexp(&pub_buffer, &pub, NULL))
     {
-      fprintf(stderr, "Formatting public key failed.\n");
+      werror("Formatting public key failed.\n");
       return EXIT_FAILURE;
     }
 
   if (!rsa_keypair_to_sexp(&pub_buffer, &pub, &priv))
     {
-      fprintf(stderr, "Formatting private key failed.\n");
+      werror("Formatting private key failed.\n");
       return EXIT_FAILURE;
     }
   
   if (!write_file(pub_name, pub_buffer.size, pub_buffer.contents))
     {
-      fprintf(stderr, "Failed to write public key: %s\n",
+      werror("Failed to write public key: %s\n",
 	      strerror(errno));
       return EXIT_FAILURE;
     }
 
   if (!write_file(priv_name, priv_buffer.size, priv_buffer.contents))
     {
-      fprintf(stderr, "Failed to write private key: %s\n",
+      werror("Failed to write private key: %s\n",
 	      strerror(errno));
       return EXIT_FAILURE;
     }
 
   return EXIT_SUCCESS;
 }
-#endif /* WITH_PUBLIC_KEY */
