@@ -35,12 +35,13 @@ int
 nettle_mpz_set_sexp(mpz_t x, unsigned limit, const struct sexp_iterator *i)
 {
   if (i->type == SEXP_ATOM
+      && i->atom_length
       && !i->display)
     {
       if (limit && (8 * i->atom_length > limit))
 	return 0;
       
-      nettle_mpz_set_str_256(x, i->atom_length, i->atom);
+      nettle_mpz_set_str_256_s(x, i->atom_length, i->atom);
       return !limit || mpz_sizeinbase(x, 2) <= limit;
     }
   else
