@@ -78,4 +78,4 @@ nettle_des3 = {
 /* NOTE: This is not as nice as one might think, as it will crash if
  * we try to encrypt something with a weak key. */
 const struct nettle_cipher
-nettle_blowfish128 = _NETTLE_CIPHER(blowfish, BLOWFISH, 16);
+nettle_blowfish128 = _NETTLE_CIPHER(blowfish, BLOWFISH, 128);
