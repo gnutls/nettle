@@ -64,15 +64,13 @@ _aes_crypt:
 	! wtxt
 	mov	%l1, %g4
 
-	! round:	%i5
-	! 4*round:	%i3
-	mov	0, %i5
+	! 4*i:	%i3
+	mov	0, %i3
 .Lround_loop:
 	add	T, AES_SIDX3, %i4
 .Linner_loop:
 	! AES_IDX1
 	ld	[%i4-32], %g3
-	sll	%i5, 2, %i3
 
 	! AES_IDX2
 	ld	[%i4-16], %i2
@@ -103,12 +101,16 @@ _aes_crypt:
 	ld	[T+%i2], %g3
 	xor	%g2, %i0, %g2
 	xor	%g2, %i1, %g2
-	add	%i5, 1, %i5
+
+	add	%i4, 4, %i4
+	
 	xor	%g2, %g3, %g2
 	st	%g2, [%l0+%i3]
-	cmp	%i5, 3
+
+	cmp	%i3, 8
+
 	bleu	.Linner_loop
-	add	%i4, 4, %i4
+	add	%i3, 4, %i3
 	
 	sll	%g1, 4, %g2
 	add	%g2, ctx, %i1
@@ -128,7 +130,8 @@ _aes_crypt:
 	add	%g1, 1, %g1
 	cmp	%g1, %o7
 	blu	.Lround_loop
-	mov	0, %i5
+	mov	0, %i3
+
 	sll	%g1, 4, %g2
 	
 	! final round
