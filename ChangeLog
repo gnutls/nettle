@@ -1,3 +1,12 @@
+2002-11-03  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* examples/Makefile.am: Don't set CFLAGS or CPPFLAGS explicitly,
+	let automake handle that.
+	* testsuite/Makefile.am: Likewise.
+
+	* sexp2rsa.c (rsa_keypair_from_sexp_alist): New function.
+	(rsa_keypair_from_sexp): Use it.
+
 2002-11-01  Niels Möller  <niels@s3.kth.se>
 
 	* examples/Makefile.am (LDADD): Use -lnettle, instead of an
