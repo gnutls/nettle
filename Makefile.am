@@ -16,7 +16,8 @@ libnettleinclude_HEADERS = aes.h arcfour.h blowfish.h \
 			   serpent.h sha.h twofish.h \
 			   yarrow.h
 			   
-libnettle_a_SOURCES = aes.c aes-tables.c aes-set-key.c aes.h aes-meta.c \
+libnettle_a_SOURCES = aes.c aes-encrypt.c aes-decrypt.c aes.h \
+		      aes-set-encrypt-key.c aes-set-decrypt-key.c aes-meta.c \
 		      arcfour.c arcfour.h arcfour-meta.c \
                       base64.c base64-meta.c base64.h \
 		      cast128.c cast128.h cast128_sboxes.h cast128-meta.c \
