@@ -1,5 +1,8 @@
 2004-02-05  Niels Möller  <niels@s3.kth.se>
 
+	* x86/arcfour-crypt.asm (nettle_arcfour_crypt): Must store the new
+	i, j at the end of the loop.
+
 	* Makefile.am (EXTRA_DIST): Make sure x86 assembler files are
 	distributed. 
 	(DISTCLEANFILES): And that the symlinks and .s files are deleted.
