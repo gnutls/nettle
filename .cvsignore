@@ -7,6 +7,7 @@ Makefile
 Makefile.in
 aclocal.m4
 aesdata
+autom4te.cache
 config.cache
 config.h
 config.h.in
