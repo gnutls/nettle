@@ -228,7 +228,7 @@ des_set_key(struct des_ctx *ctx, const uint8_t *key)
 }
 
 void
-des_encrypt(struct des_ctx *ctx,
+des_encrypt(const struct des_ctx *ctx,
 	    unsigned length, uint8_t *dst,
 	    const uint8_t *src)
 {
@@ -245,7 +245,7 @@ des_encrypt(struct des_ctx *ctx,
 }
 
 void
-des_decrypt(struct des_ctx *ctx,
+des_decrypt(const struct des_ctx *ctx,
 	    unsigned length, uint8_t *dst,
 	    const uint8_t *src)
 {

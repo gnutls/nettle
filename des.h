@@ -66,11 +66,11 @@ int
 des_set_key(struct des_ctx *ctx, const uint8_t *key);
 
 void
-des_encrypt(struct des_ctx *ctx,
+des_encrypt(const struct des_ctx *ctx,
 	    unsigned length, uint8_t *dst,
 	    const uint8_t *src);
 void
-des_decrypt(struct des_ctx *ctx,
+des_decrypt(const struct des_ctx *ctx,
 	    unsigned length, uint8_t *dst,
 	    const uint8_t *src);
 
@@ -94,12 +94,12 @@ int
 des3_set_key(struct des3_ctx *ctx, const uint8_t *key);
 
 void
-des3_encrypt(struct des3_ctx *ctx,
-	    unsigned length, uint8_t *dst,
-	    const uint8_t *src);
+des3_encrypt(const struct des3_ctx *ctx,
+	     unsigned length, uint8_t *dst,
+	     const uint8_t *src);
 void
-des3_decrypt(struct des3_ctx *ctx,
-	    unsigned length, uint8_t *dst,
-	    const uint8_t *src);
+des3_decrypt(const struct des3_ctx *ctx,
+	     unsigned length, uint8_t *dst,
+	     const uint8_t *src);
 
 #endif /* NETTLE_DES_H_INCLUDED */

@@ -50,7 +50,7 @@ des3_set_key(struct des3_ctx *ctx, const uint8_t *key)
 }
 
 void
-des3_encrypt(struct des3_ctx *ctx,
+des3_encrypt(const struct des3_ctx *ctx,
 	     unsigned length, uint8_t *dst,
 	     const uint8_t *src)
 {
@@ -63,9 +63,9 @@ des3_encrypt(struct des3_ctx *ctx,
 }
 
 void
-des3_decrypt(struct des3_ctx *ctx,
-	    unsigned length, uint8_t *dst,
-	    const uint8_t *src)
+des3_decrypt(const struct des3_ctx *ctx,
+	     unsigned length, uint8_t *dst,
+	     const uint8_t *src)
 {
   des_decrypt(&ctx->des[2],
 	      length, dst, src);
