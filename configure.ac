@@ -57,7 +57,7 @@ AC_PROG_CC
 # contents of foo and foo.exe are equal; in the rntcl case, foo is a
 # sh script, and foo.exe is a windows executable.
 
-if "x$CC" = xrntcl ; then
+if test "x$CC" = xrntcl ; then
     AC_MSG_NOTICE([Compiling with rntcl; clearing exeext])
     ac_exeext=''
     ac_cv_exeext=''
