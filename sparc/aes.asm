@@ -158,14 +158,14 @@ _aes_crypt:
 
 	add	idx, 4, idx		
 
-! 	! Fetch roundkey
-! 	sll	round, 4, %o5
-! 	add	%o5, ctx, %o5
-! 	ld	[%o5], %o5
+	! Fetch roundkey
+	sll	round, 4, t1
+	add	t1, ctx, t1
+	ld	[t1+i], t1
 		
 	xor	t0, t3, t0		! 0, 1, 2, 3
 
-!	xor	t0, %o5, t0
+	xor	t0, t1, t0
 	st	t0, [tmp+i]
 
 	cmp	i, 8
@@ -173,25 +173,25 @@ _aes_crypt:
 	bleu	.Linner_loop
 	add	i, 4, i
 	
-	sll	round, 4, %g2
-	add	%g2, ctx, %o0
-	mov	0, i
-
-.Lroundkey_loop:
-	sll	i, 2, %g2
-	ld	[%o0], %o5
-	add	i, 1, i
-	ld	[tmp+%g2], %g3
-	cmp	i, 3
-	xor	%g3, %o5, %g3
-	st	%g3, [wtxt+%g2]
-	! st	%g3, [tmp+%g2]
-	bleu	.Lroundkey_loop
-	add	%o0, 4, %o0
-
+! 	sll	round, 4, %g2
+! 	add	%g2, ctx, %o0
+! 	mov	0, i
+! 
+! .Lroundkey_loop:
+! 	sll	i, 2, %g2
+! 	ld	[%o0], %o5
+! 	add	i, 1, i
+! 	ld	[tmp+%g2], %g3
+! 	cmp	i, 3
+! 	xor	%g3, %o5, %g3
+! 	! st	%g3, [wtxt+%g2]
+! 	st	%g3, [tmp+%g2]
+! 	bleu	.Lroundkey_loop
+! 	add	%o0, 4, %o0
+! 
 	! switch roles for tmp and wtxt
-	! xor	wtxt, diff, wtxt
-	! xor	tmp, diff, tmp
+	xor	wtxt, diff, wtxt
+	xor	tmp, diff, tmp
 
 	add	round, 1, round
 	cmp	round, nround
