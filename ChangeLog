@@ -1,3 +1,18 @@
+2004-10-19  Niels Möller  <nisse@lysator.liu.se>
+
+	Stop using automake. Replaced each Makefile.am with a hand-written
+	Makefile.in.
+	* configure.ac: New output variable CCPIC_MAYBE. New output file
+	config.make. Replaced automake constructions.	
+	* .bootstrap: Don't run aclocal and automake.
+	* config.make.in: New file, with shared Makefile variables and rules.
+
+2004-10-18  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86/arcfour-crypt.asm (nettle_arcfour_crypt): Replace incb ->
+	incl + andl, to improve speed on PPro and PII. Suggested by
+	Fredrik Olsson.
+
 2004-10-08  Niels Möller  <niels@s3.kth.se>
 
 	* examples/rsa-encrypt-test: Avoid reading and executing a file at

@@ -1,8 +1,8 @@
+*.d
+*.po
 *.s
 *.tar.gz
 *.tar.gz.asc
-*.d
-*.po
 .lib
 Makefile
 aesdata
@@ -12,6 +12,7 @@ config.h
 config.h.in
 config.log
 config.m4
+config.make
 config.status
 configure
 desdata
