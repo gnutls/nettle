@@ -1,4 +1,89 @@
+2002-02-16  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* sparc/aes.asm: Use that IDX2(j) == j ^ 2
+
+	* Makefile.am (libnettle_a_SOURCES): Reordered aes-decrypt.c and
+	aes-encrypt.c. For some strange reason it makes the benchmark go
+	faster... 
+
+	* sparc/aes.asm (_aes_crypt): Use double-buffering, and no
+	separate loop for adding the round key.
+	(round): Keep round index muliplied by 16, so it can be used
+	directly for indexing the subkeys.
+	(_aes_crypt): In the final loop, use ctx+round to access the
+	subkeys, no need for an extra register.
+
+2002-02-15  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* sparc/aes.asm (_aes_crypt): Renaming variables, allocating
+	locals starting from %l0.
+	(_aes_crypt): Consistently use %l4, aka i, as the variable for the
+	innermost loops.
+	(_aes_crypt): Moved reading of ctx->nrounds out of the loop.
+	(_aes_crypt): In final_loop, deleted a redundant mov, and use i as
+	loop variable.
+	(_aes_crypt): Started renumbering registers in the inner loop. The
+	computation for the table[j] sub-expression should be kept in
+	register %o[j].
+	(_aes_crypt): Renamed more variables in the inner loop. Now the
+	primary variables are t0, t1, t2, t3.
+
+	* sparc/aes.asm (_aes_crypt): Swapped register %i0 and %o5, %i1
+	and %o0, %i2 and %o4, %i3 and %o3, %i4 and %o2.
+	(_aes_crypt): wtxt was stored in both %l1 and %l2 for the entire
+	function. Freed %l2 for other uses.
+	(_aes_crypt): Likewise for tmp, freeing register %o1.	
+
+	* sparc/machine.m4: New file, for sparc-specific macros.
+
+	* sparc/aes.asm (_aes_crypt): Hacked the source_loop, to get rid
+	of yet another redundant loop variable, and one instruction.
+	(_aes_crypt): Strength reduce loop variable in the
+	inner loop, getting rid of one register.
+	(_aes_crypt): Use pre-shifted indices (aes_table.idx_shift), to
+	avoid some shifts in the inner loop.
+	(_aes_crypt): Don't check for nrounds==0 at the start of the loop.
+
+	* asm.m4: Define and use structure-defining macros.
+
+	* Makefile.am (%.asm): Use a GNU pattern rule, to make %.o depend
+	on both %.asm and asm.m4.
+
+	* aes-internal.h (struct aes_table): New subtable idx_shift.
+	Updated tables in aes_encrypt.c and aes_decrypt.c.
+
+	* asm.m4: Use eval to compute values.
+
+	* sparc/aes.asm (_aes_crypt): Deleted commented out old version of
+	the code.
+
+	* asm.m4: Added constants for individual rows of the aes table.
+
+	* aes.c (IDX0, IDX1, IDX2, IDX3): New macros, encapsualting the
+	structure of the idx table.
+
+	* asm.m4: Define various aes struct offsets.
+
+	* testsuite/cbc-test.c (test_cbc_bulk): Use aes_set_encrypt_key
+	and aes_set_decrypt_key.
+
+	* sparc/aes.asm (_aes_crypt): Use symbolic names for the fucntion
+	arguments. 
+
 2002-02-14  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* sparc/aes.asm: Copied gcc assembler code for _aes_crypt.
+
+	* aesdata.c: New program for generating AES-related tables.
+
+	* testsuite/testutils.c (print_hex): New function (moved from
+	yarrow-test.c). 
+
+	* testsuite/rsa-keygen-test.c (progress): Declare the ctx argument
+	as UNUSED.
+
+	* testsuite/cbc-test.c (test_cbc_bulk): New function, testing CBC
+	with larger blocks.
 
 	* yarrow256.c: Replaced uses of aes_set_key with
 	aes_set_encrypt_key. 
