@@ -1,6 +1,9 @@
 #include "testutils.h"
 
-#include "rsa.h"
+#if WITH_PUBLIC_KEY
+# include "rsa.h"
+#endif
+
 #include "knuth-lfib.h"
 
 int

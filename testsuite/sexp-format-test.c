@@ -2,7 +2,10 @@
 #include "sexp.h"
 
 #include "buffer.h"
-#include "bignum.h"
+
+#if HAVE_LIBGMP
+# include "bignum.h"
+#endif
 
 int
 test_main(void)

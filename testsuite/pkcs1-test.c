@@ -1,6 +1,8 @@
 #include "testutils.h"
 
-#include "pkcs1.h"
+#if WITH_PUBLIC_KEY
+# include "pkcs1.h"
+#endif
 
 int
 test_main(void)
