@@ -79,6 +79,7 @@ yarrow_fast_reseed(struct yarrow256_ctx *ctx)
   
   unsigned i;
 
+  /* FIXME: Mixin the current key! */
   sha256_final(&ctx->pools[YARROW_FAST]);
   sha256_digest(&ctx->pools[YARROW_FAST], sizeof(digest), digest);
   sha256_init(&ctx->pools[YARROW_FAST]);
@@ -214,6 +215,8 @@ yarrow_generate_block(struct yarrow256_ctx *ctx,
     }
 }
 
+/* FIXME: According to Niels Ferguson, it's better to gate after each
+ * request for random data. */
 static void
 yarrow_generate_block_with_gate(struct yarrow256_ctx *ctx,
 				uint8_t *block)
