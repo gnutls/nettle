@@ -35,7 +35,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#if !HAVE_LIBGMP
+#if !WITH_PUBLIC_KEY
 int
 main(int argc, char **argv)
 {
@@ -44,7 +44,7 @@ main(int argc, char **argv)
 	  "and recompile Nettle\n");
   return EXIT_FAILURE;
 }
-#endif /* !HAVE_LIBGMP */
+#else /* WITH_PUBLIC_KEY */
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -56,10 +56,10 @@ main(int argc, char **argv)
 #include "sexp.h"
 #include "yarrow.h"
 
+#include "io.h"
+
 #define KEYSIZE 500
 #define ESIZE 30
-
-#define RANDOM_DEVICE "/dev/urandom"
 
 static void
 progress(void *ctx, int c)
@@ -68,32 +68,6 @@ progress(void *ctx, int c)
   fputc(c, stderr);
 }
 
-static int
-write_file(const char *name, struct nettle_buffer *buffer)
-{
-  const uint8_t *data = buffer->contents;
-  unsigned length = buffer->size;
-  int fd = open(name, O_WRONLY | O_CREAT | O_TRUNC, 0600);
-  
-  if (fd < 0)
-    return 0;
-
-  while (length)
-    {
-      int res = write(fd, data, length);
-      if (res < 0)
-	{
-	  if (errno == EINTR)
-	    continue;
-	  else
-	    return 0;
-	}
-      data += res;
-      length -= res;
-    }
-
-  return 1;
-}
 
 int
 main(int argc, char **argv)
@@ -101,23 +75,26 @@ main(int argc, char **argv)
   struct yarrow256_ctx yarrow;
   struct rsa_public_key pub;
   struct rsa_private_key priv;
-  char buf[16];
-  int fd;
 
   int c;
   char *pub_name = NULL;
-  char *priv_name = NULL;
-  struct stat sbuf;
+  const char *priv_name = NULL;
+  const char *random_name = NULL;
   
   struct nettle_buffer pub_buffer;
   struct nettle_buffer priv_buffer;
 
-  while ( (c = getopt(argc, argv, "o:")) != -1)
+  while ( (c = getopt(argc, argv, "o:r:")) != -1)
     switch (c)
       {
       case 'o':
 	priv_name = optarg;
 	break;
+
+      case 'r':
+	random_name = optarg;
+	break;
+	
       case '?':
 	if (isprint (optopt))
 	  fprintf(stderr, "Unknown option `-%c'.\n", optopt);
@@ -135,12 +112,6 @@ main(int argc, char **argv)
       return EXIT_FAILURE;
     }
 
-  if (stat(priv_name, &sbuf) == 0)
-    {
-      fprintf(stderr, "The output file `%s' already exists.\n", priv_name);
-      return EXIT_FAILURE;
-    }
-
   asprintf(&pub_name, "%s.pub", priv_name);
   if (!pub_name)
     {
@@ -148,25 +119,12 @@ main(int argc, char **argv)
       return EXIT_FAILURE;
     }
   
-  if (stat(pub_name, &sbuf) == 0)
-    {
-      fprintf(stderr, "The output file `%s' already exists.\n", pub_name);
-      return EXIT_FAILURE;
-    }
-    
-  /* Read some data to seed the generator */
-  if ( ( (fd = open(RANDOM_DEVICE, O_RDONLY)) < 0)
-       || (sizeof(buf) != read(fd, buf, sizeof(buf))))
-    {
-      fprintf(stderr, "Failed to open `%s': %s\n",
-	      RANDOM_DEVICE, strerror(errno));
-      return EXIT_FAILURE;
-    }
-  
   /* NOTE: No sources */
   yarrow256_init(&yarrow, 0, NULL);
-  yarrow256_seed(&yarrow, sizeof(buf), buf);
-  
+
+  /* Read some data to seed the generator */
+  simple_random(&yarrow, random_name);
+
   rsa_init_public_key(&pub);
   rsa_init_private_key(&priv);
 
@@ -195,14 +153,14 @@ main(int argc, char **argv)
       return EXIT_FAILURE;
     }
   
-  if (!write_file(pub_name, &pub_buffer))
+  if (!write_file(pub_name, pub_buffer.size, pub_buffer.contents))
     {
       fprintf(stderr, "Failed to write public key: %s\n",
 	      strerror(errno));
       return EXIT_FAILURE;
     }
 
-  if (!write_file(priv_name, &priv_buffer))
+  if (!write_file(priv_name, priv_buffer.size, priv_buffer.contents))
     {
       fprintf(stderr, "Failed to write private key: %s\n",
 	      strerror(errno));
@@ -211,3 +169,4 @@ main(int argc, char **argv)
 
   return EXIT_SUCCESS;
 }
+#endif /* WITH_PUBLIC_KEY */
