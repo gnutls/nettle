@@ -33,7 +33,7 @@ int
 nettle_buffer_grow(struct nettle_buffer *buffer,
 		   unsigned length)
 {
-  assert(buffer->size <= buffer->realloc);
+  assert(buffer->size <= buffer->alloc);
   
   if (buffer->size + length > buffer->alloc)
     {
