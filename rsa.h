@@ -289,7 +289,7 @@ rsa_keypair_to_openpgp(struct nettle_buffer *buffer,
 		       const struct rsa_public_key *pub,
 		       const struct rsa_private_key *priv,
 		       /* A single user id. NUL-terminated utf8. */
-		       const char userid);
+		       const char *userid);
 
 /* Internal functions. */
 int

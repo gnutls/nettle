@@ -29,6 +29,7 @@
 
 #if WITH_PUBLIC_KEY
 
+#include <string.h>
 #include <time.h>
 
 #include "rsa.h"
@@ -54,13 +55,13 @@
  *
  * Currently, we generate a public key packet, a single user id, and a
  * signature. */
- */
+
 int
 rsa_keypair_to_openpgp(struct nettle_buffer *buffer,
 		       const struct rsa_public_key *pub,
 		       const struct rsa_private_key *priv,
 		       /* A single user id. NUL-terminated utf8. */
-		       const char userid)
+		       const char *userid)
 {
   time_t now = time(NULL);
 
@@ -71,8 +72,6 @@ rsa_keypair_to_openpgp(struct nettle_buffer *buffer,
   struct sha1_ctx key_hash;
   struct sha1_ctx signature_hash;
   uint8_t fingerprint[SHA1_DIGEST_SIZE];
-  
-  mpz_t s;
   
   key_start = buffer->size;
   
@@ -91,7 +90,7 @@ rsa_keypair_to_openpgp(struct nettle_buffer *buffer,
 	      buffer->contents + key_start);
 
   signature_hash = key_hash;
-  sha1_digest(&key_hash, fingerprint, sizeof(fingerprint));
+  sha1_digest(&key_hash, sizeof(fingerprint), fingerprint);
 
   sha1_update(&signature_hash,
 	      buffer->size - userid_start,
@@ -101,6 +100,6 @@ rsa_keypair_to_openpgp(struct nettle_buffer *buffer,
 				    priv,
 				    fingerprint + SHA1_DIGEST_SIZE - 8,
 				    PGP_SIGN_CERTIFICATION,
-				    signature_hash);
+				    &signature_hash);
 }
 #endif /* WITH_PUBLIC_KEY */
