@@ -1,3 +1,9 @@
+2004-10-08  Niels Möller  <niels@s3.kth.se>
+
+	* examples/rsa-encrypt-test: Avoid reading and executing a file at
+	the same time.
+	* examples/setup-env: Likewise.
+
 2004-10-06  Niels Möller  <niels@s3.kth.se>
 
 	* testsuite/symbols-test: Ignore __i686.get_pc_thunk.bx and
