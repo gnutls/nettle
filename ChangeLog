@@ -1,3 +1,16 @@
+2001-12-05  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* testsuite/yarrow-test.c (main): Updated test to match the fixed
+	key event estimator.
+
+	* yarrow_key_event.c (yarrow_key_event_estimate): Fixed handling
+	of timing info. 
+
+	* nettle.texinfo (Copyright): Say that under certain
+	circumstances, Nettle can be used as if under the LGPL.
+
+	* README: Added a paragraph on copyright.
+
 2001-11-15  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* yarrow256.c (yarrow256_force_reseed): New function.
