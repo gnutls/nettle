@@ -95,8 +95,10 @@ process_file(struct rsa_session *ctx,
   uint8_t buffer[AES_BLOCK_SIZE * 100];
   unsigned leftover;
   unsigned padding;
-  
-  for (padding = leftover = 0; padding == 0;)
+
+  padding = leftover = 0;
+
+  for (;;)
     {
       size_t size = fread(buffer, 1, sizeof(buffer), in);
       if (ferror(in))
@@ -123,6 +125,14 @@ process_file(struct rsa_session *ctx,
 	  werror("Writing output failed: %s\n", strerror(errno));
 	  return 0;
 	}
+
+      if (padding)
+	{
+	  if (leftover)
+	    memcpy(buffer, buffer + size, leftover);
+
+	  break;
+	}
     }
   if (padding > 1)
     yarrow256_random(&ctx->yarrow, padding - 1, buffer + leftover);
@@ -130,6 +140,7 @@ process_file(struct rsa_session *ctx,
   buffer[AES_BLOCK_SIZE - 1] = padding;
   CBC_ENCRYPT(&ctx->aes, aes_encrypt, AES_BLOCK_SIZE, buffer, buffer);
   hmac_sha1_digest(&ctx->hmac, SHA1_DIGEST_SIZE, buffer + AES_BLOCK_SIZE);
+
   if (!write_string(out, AES_BLOCK_SIZE + SHA1_DIGEST_SIZE, buffer))
     {
       werror("Writing output failed: %s\n", strerror(errno));
