@@ -569,6 +569,8 @@ struct sexp_output
   const struct nettle_armor *coding;
   unsigned coding_indent;
 
+  int prefer_hex;
+  
   const struct nettle_hash *hash;
   void *ctx;
   
@@ -581,11 +583,13 @@ struct sexp_output
 };
 
 static void
-sexp_output_init(struct sexp_output *output, FILE *f, unsigned width)
+sexp_output_init(struct sexp_output *output, FILE *f,
+		 unsigned width, int prefer_hex)
 {
   output->f = f;
   output->line_width = width;
   output->coding = NULL;
+  output->prefer_hex = prefer_hex;
   output->hash = NULL;
   output->ctx = NULL;
   
@@ -775,13 +779,27 @@ sexp_put_string(struct sexp_output *output, enum sexp_mode mode,
 	  
 	  sexp_put_char(output, '"');
 	}
-      else
+      else 
 	{
-	  sexp_put_char(output, '|');
-	  sexp_put_code_start(output, &nettle_base64);
+	  uint8_t delimiter;
+	  const struct nettle_armor *coding;
+	  
+	  if (output->prefer_hex)
+	    {
+	      delimiter = '#';
+	      coding = &nettle_base16;
+	    }
+	  else
+	    {
+	      delimiter = '|';
+	      coding = &nettle_base64;
+	    }
+	  
+	  sexp_put_char(output, delimiter);
+	  sexp_put_code_start(output, coding);
 	  sexp_put_data(output, string->size, string->contents);
 	  sexp_put_code_end(output);
-	  sexp_put_char(output, '|');
+	  sexp_put_char(output, delimiter);
 	}
     }
   else
@@ -978,6 +996,7 @@ struct conv_options
 {
   /* Output mode */
   enum sexp_mode mode;
+  int prefer_hex;
   int once;
   unsigned width;
   const struct nettle_hash *hash;
@@ -1058,6 +1077,11 @@ parse_options(struct conv_options *o,
 	    o->mode = SEXP_TRANSPORT;
 	  else if (match_argument(optarg, "canonical"))
 	    o->mode = SEXP_CANONICAL;
+	  else if (match_argument(optarg, "hex"))
+	    {
+	      o->mode = SEXP_ADVANCED;
+	      o->prefer_hex = 1;
+	    }
 	  else
 	    die("Available syntax variants: advanced, transport, canonical\n");
 	  break;
@@ -1101,7 +1125,7 @@ parse_options(struct conv_options *o,
 	    }
 	  printf(" (default is sha1).\n"
 		 "   -s, --syntax=SYNTAX      The syntax used for the output. Available\n"
-		 "                            variants: advanced, transport, canonical\n"
+		 "                            variants: advanced, hex, transport, canonical\n"
 		 "       --once               Process only the first s-expression.\n"
 		 "   -w, --width=WIDTH        Linewidth for base64 encoded data.\n"
 		 "                            Zero means no limit.\n\n"
@@ -1125,7 +1149,8 @@ main(int argc, char **argv)
   parse_options(&options, argc, argv);
 
   sexp_input_init(&input, stdin);
-  sexp_output_init(&output, stdout, options.width);
+  sexp_output_init(&output, stdout,
+		   options.width, options.prefer_hex);
 
   if (options.hash)
     sexp_output_hash_init(&output,
