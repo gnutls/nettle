@@ -1,5 +1,10 @@
 2004-12-02  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.in (.SUFFIXES): Moved from Makefile.in to...
+	* config.make.in (.SUFFIXES): ... here.	This helps compilation
+	with BSD make.
+	* testsuite/Makefile.in (.SUFFIXES): Deleted target.
+
 	* config.make.in (.c): Disable default rule for BSD-make.
 
 	* Makefile.in (all check install uninstall) 

@@ -35,9 +35,6 @@ check-here:
 dvi installcheck uninstallcheck:
 	true
 
-.SUFFIXES:
-.SUFFIXES: .asm .html .c .dvi .info .$(OBJEXT) .p$(OBJEXT) .exe .pdf .ps .texinfo
-
 all-here: $(TARGETS)
 
 nettle_SOURCES = aes.c \
@@ -135,12 +132,6 @@ $(SHLIBFORLINK): $(nettle_PURE_OBJS)
 
 .$(OBJEXT)$(EXEEXT):
 	$(LINK) $< $(LIBS) -o $@
-
-# aesdata$(EXEEXT): aesdata.$(OBJEXT)
-# 	$(LINK) $< $(LIBS) -o $@
-# 
-# desdata$(EXEEXT): desdata.$(OBJEXT)
-# 	$(LINK) $< $(LIBS) -o $@
 
 shadata$(EXEEXT): shadata.$(OBJEXT)
 	$(LINK) shadata.$(OBJEXT) $(LIBS) -lm -o $@

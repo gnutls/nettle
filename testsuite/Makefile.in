@@ -35,9 +35,6 @@ DISTFILES = $(SOURCES) Makefile.in $(TS_SH) run-tests rfc1750.txt testutils.h
 
 all: $(TARGETS)
 
-.SUFFIXES:
-.SUFFIXES: .c .$(OBJEXT) .exe
-
 .c.$(OBJEXT):
 	$(COMPILE) -I.. -c $< && $(DEP_PROCESS)
 
