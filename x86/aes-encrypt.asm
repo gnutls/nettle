@@ -67,16 +67,16 @@ nettle_aes_encrypt:
 .Lround_loop:
 	pushl	%esi		C  save this first: we'll clobber it later
 
-	AES_ROUND(_aes_encrypt_table,a,b,c,d)
+	AES_ROUND(_nettle_aes_encrypt_table,a,b,c,d)
 	pushl	%edi		C  save first on stack
 
-	AES_ROUND(_aes_encrypt_table,b,c,d,a)
+	AES_ROUND(_nettle_aes_encrypt_table,b,c,d,a)
 	pushl	%edi		C  save first on stack
 
-	AES_ROUND(_aes_encrypt_table,c,d,a,b)
+	AES_ROUND(_nettle_aes_encrypt_table,c,d,a,b)
 	pushl	%edi		C  save first on stack
 
-	AES_ROUND(_aes_encrypt_table,d,a,b,c)
+	AES_ROUND(_nettle_aes_encrypt_table,d,a,b,c)
 	
 	movl	%edi,%edx
 	popl	%ecx
@@ -114,7 +114,7 @@ nettle_aes_encrypt:
 	C S-box substitution
 	mov	$4,%edi
 .Lsubst:
-	AES_SUBST_BYTE(_aes_encrypt_table)
+	AES_SUBST_BYTE(_nettle_aes_encrypt_table)
 
 	decl	%edi
 	jnz	.Lsubst

@@ -59,16 +59,16 @@ nettle_aes_decrypt:
 	C In these patterns, note that each row, like
 	C "a,d,c,b" corresponds to one *column* of the 
 	C array _aes_decrypt_table.idx.
-	AES_ROUND(_aes_decrypt_table,a,d,c,b)
+	AES_ROUND(_nettle_aes_decrypt_table,a,d,c,b)
 	pushl	%edi		C  save first on stack
 
-	AES_ROUND(_aes_decrypt_table,b,a,d,c)
+	AES_ROUND(_nettle_aes_decrypt_table,b,a,d,c)
 	pushl	%edi
 
-	AES_ROUND(_aes_decrypt_table,c,b,a,d)
+	AES_ROUND(_nettle_aes_decrypt_table,c,b,a,d)
 	pushl	%edi		C  save first on stack
 
-	AES_ROUND(_aes_decrypt_table,d,c,b,a)
+	AES_ROUND(_nettle_aes_decrypt_table,d,c,b,a)
 
 	movl	%edi,%edx
 	popl	%ecx
@@ -106,7 +106,7 @@ nettle_aes_decrypt:
 	C inverse S-box substitution
 	mov	$4,%edi
 .Lsubst:
-	AES_SUBST_BYTE(_aes_decrypt_table)
+	AES_SUBST_BYTE(_nettle_aes_decrypt_table)
 
 	decl	%edi
 	jnz	.Lsubst
