@@ -33,12 +33,13 @@ _aes_crypt:
 	mov	%l1, wtxt
 .Lblock_loop:
 	! Read src, and add initial subkey
-	mov	0, %i3
+	mov	-4, %i2
 .Lsource_loop:
-	sll	%i3, 2, %i2
+	add	%i2, 4, %i2
+		
 	add	%i2, src, %i0
 	ldub	[%i0+3], %g2
-	add	%i3, 1, %i3
+
 	ldub	[%i0+2], %g3
 	sll	%g2, 24, %g2
 	ldub	[%i0+1], %i1
@@ -50,9 +51,36 @@ _aes_crypt:
 	or	%g2, %i1, %g2
 	or	%g2, %i0, %g2
 	xor	%g2, %g3, %g2
-	cmp	%i3, 3
+
+	cmp	%i2, 12
 	bleu	.Lsource_loop
 	st	%g2, [wtxt+%i2]
+
+	! ! Read a little-endian word
+	! ldub	[src+3], %g2
+	! sll	%g2, 8, %g2
+	! 
+	! ldub	[src+2], %g3
+	! or	%g3, %g2, %g2
+	! sll	%g2, 8, %g2
+	! 
+	! ldub	[src+1], %g3
+	! or	%g3, %g2, %g2
+	! sll	%g2, 8, %g2
+	! 
+	! ldub	[src+0], %g3
+	! or	%g3, %g2, %g2
+	! sll	%g2, 8, %g2
+	! 
+	! ld	[ctx+%i3], %g3
+	! xor	%g3, %g2, %g2
+	! 
+	! add	src, 4, src
+	! st	%g2, [wtxt+%i2]
+	! 
+	! cmp	%i3, 8
+	! bleu	.Lsource_loop
+	! add	%i3, 4, %i3
 
 	ld	[ctx + AES_NROUNDS], %g2
 	mov	1, %g1
@@ -69,23 +97,30 @@ _aes_crypt:
 .Lround_loop:
 	add	T, AES_SIDX3, %i4
 .Linner_loop:
-	! AES_IDX1
+	! AES_SIDX1
 	ld	[%i4-32], %g3
 
-	! AES_IDX2
+	! AES_SIDX2
 	ld	[%i4-16], %i2
 	! wtxt[IDX1...]
 	add	%g4, %g3, %g3
 	ldub	[%g3+2], %i1
 
-	! AES_IDX3
+	! AES_SIDX3
 	ld	[%i4], %g2
 	sll	%i1, 2, %i1
+	
+	! wtxt[j]
 	ld	[%g4+%i3], %i0
-
+	
+	! wtxt[IDX2...]
 	lduh	[%g4+%i2], %g3
+	
 	and	%i0, 255, %i0
+
+	! wtxt[IDX3...]
 	ldub	[%g4+%g2], %i2
+	
 	sll	%i0, 2, %i0
 	add	%i0, AES_TABLE0, %i0
 	ld	[T+%i0], %g2
@@ -180,10 +215,10 @@ _aes_crypt:
 	bleu	.Lfinal_loop
 	add	%g4, 4, %g4
 	
-	add	dst, 16, dst
+	add	src, 16, src
 	addcc	length, -16, length
 	bne	.Lblock_loop
-	add	src, 16, src
+	add	dst, 16, dst
 .Lend:
 	ret
 	restore
