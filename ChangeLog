@@ -1,3 +1,9 @@
+2001-10-08  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* yarrow256.c (yarrow_fast_reseed): New function.
+	(yarrow_slow_reseed): New function.
+	(yarrow256_update): Check seed/reseed thresholds.
+
 2001-10-07  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* Makefile.am: Added yarrow files.
