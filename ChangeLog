@@ -3,6 +3,20 @@
 	* buffer.c (nettle_buffer_copy): Bug fix, it didn't return any
 	value. 
 
+2003-02-11  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* testsuite/sexp-format-test.c (test_main): Added test for %( and
+	%). 
+
+	* sexp-format.c (sexp_vformat): Handle %( and %).
+
+	* realloc.c (nettle_xrealloc): Fixed out-of-memory check.
+
+	* configure.ac (SHLIBMAJOR): Bumped version number to 1.
+
+	* buffer.c (nettle_buffer_init_realloc): New function.
+	* buffer-init.c (nettle_buffer_init): Use nettle_buffer_init_realloc.
+
 2003-02-10  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* testsuite/sexp-format-test.c (test_main): New test with tokens
