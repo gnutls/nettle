@@ -83,6 +83,7 @@ _aes_crypt:
 	add	%fp, -24, wtxt
 	
 	add	%fp, -40, tmp
+
 	ld	[ctx + AES_NROUNDS], nrounds
 	! Compute xor, so that we can swap efficiently.
 	xor	wtxt, tmp, diff
@@ -142,7 +143,8 @@ _aes_crypt:
 	!
 	! The code uses the register %o[j], aka tj, as the primary 
 	! register for that sub-expression. True for j==1,3.
-	
+
+	C i = 0
 	ld	[IDX1+i], t1		! 1
 	
 	! IDX2(j) = j XOR 2
@@ -175,10 +177,127 @@ _aes_crypt:
 	xor	t0, t3, t0		! 0, 1, 2, 3
 	xor	t0, t1, t0
 	st	t0, [tmp+i]
-	cmp	i, 8
+	C cmp	i, 8
 	
-	bleu	.Linner_loop
+	C bleu	.Linner_loop
 	add	i, 4, i
+
+	C i = 1
+	ld	[IDX1+i], t1		! 1
+	
+	! IDX2(j) = j XOR 2
+	xor	i, 8, t2
+	add	wtxt, t1, t1		! 1
+	ldub	[t1+2], t1		! 1
+	ld	[IDX3+i], t3		! 3
+	
+	sll	t1, 2, t1		! 1
+	ld	[wtxt+i], t0		! 0
+	lduh	[wtxt+t2], t2		! 2
+	and	t0, 255, t0		! 0
+	
+	ldub	[wtxt+t3], t3		! 3
+	sll	t0, 2, t0		! 0
+	ld	[T0+t0], t0		! 0
+	and	t2, 255, t2		! 2
+	
+	ld	[T1+t1], t1		! 1
+	sll	t2, 2, t2		! 2
+	ld	[T2+t2], t2		! 2
+	sll	t3, 2, t3		! 3
+	
+	ld	[T3+t3], t3		! 3
+	xor	t0, t1, t0		! 0, 1
+	xor	t0, t2, t0		! 0, 1, 2
+	! Fetch roundkey
+	ld	[key+i], t1
+	
+	xor	t0, t3, t0		! 0, 1, 2, 3
+	xor	t0, t1, t0
+	st	t0, [tmp+i]
+	C cmp	i, 8
+	
+	C bleu	.Linner_loop
+	add	i, 4, i
+
+	C = 2
+	ld	[IDX1+i], t1		! 1
+	
+	! IDX2(j) = j XOR 2
+	xor	i, 8, t2
+	add	wtxt, t1, t1		! 1
+	ldub	[t1+2], t1		! 1
+	ld	[IDX3+i], t3		! 3
+	
+	sll	t1, 2, t1		! 1
+	ld	[wtxt+i], t0		! 0
+	lduh	[wtxt+t2], t2		! 2
+	and	t0, 255, t0		! 0
+	
+	ldub	[wtxt+t3], t3		! 3
+	sll	t0, 2, t0		! 0
+	ld	[T0+t0], t0		! 0
+	and	t2, 255, t2		! 2
+	
+	ld	[T1+t1], t1		! 1
+	sll	t2, 2, t2		! 2
+	ld	[T2+t2], t2		! 2
+	sll	t3, 2, t3		! 3
+	
+	ld	[T3+t3], t3		! 3
+	xor	t0, t1, t0		! 0, 1
+	xor	t0, t2, t0		! 0, 1, 2
+	! Fetch roundkey
+	ld	[key+i], t1
+	
+	xor	t0, t3, t0		! 0, 1, 2, 3
+	xor	t0, t1, t0
+	st	t0, [tmp+i]
+	C cmp	i, 8
+	
+	C bleu	.Linner_loop
+	add	i, 4, i
+
+	C = 3
+	ld	[IDX1+i], t1		! 1
+	
+	! IDX2(j) = j XOR 2
+	xor	i, 8, t2
+	add	wtxt, t1, t1		! 1
+	ldub	[t1+2], t1		! 1
+	ld	[IDX3+i], t3		! 3
+	
+	sll	t1, 2, t1		! 1
+	ld	[wtxt+i], t0		! 0
+	lduh	[wtxt+t2], t2		! 2
+	and	t0, 255, t0		! 0
+	
+	ldub	[wtxt+t3], t3		! 3
+	sll	t0, 2, t0		! 0
+	ld	[T0+t0], t0		! 0
+	and	t2, 255, t2		! 2
+	
+	ld	[T1+t1], t1		! 1
+	sll	t2, 2, t2		! 2
+	ld	[T2+t2], t2		! 2
+	sll	t3, 2, t3		! 3
+	
+	ld	[T3+t3], t3		! 3
+	xor	t0, t1, t0		! 0, 1
+	xor	t0, t2, t0		! 0, 1, 2
+	! Fetch roundkey
+	ld	[key+i], t1
+	
+	xor	t0, t3, t0		! 0, 1, 2, 3
+	xor	t0, t1, t0
+	st	t0, [tmp+i]
+	C cmp	i, 8
+	
+	C bleu	.Linner_loop
+	add	i, 4, i
+			
+	C End loop
+	
 	! switch roles for tmp and wtxt
 	xor	wtxt, diff, wtxt
 	xor	tmp, diff, tmp
@@ -247,7 +366,7 @@ define(i, round)
 	sub	wtxt, src, %g3
 
 .Lend:
-	add	%sp, FRAME_SIZE, %fp
+	C add	%sp, FRAME_SIZE, %fp
 	ret
 	restore
 .LLFE1:
