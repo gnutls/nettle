@@ -5,9 +5,18 @@
  *	Written by Steve Reid <sreid@sea-to-sky.net>
  *	100% Public Domain - no warranty
  *	Released 1997.10.11
+ *
+ *	CAST-128 is documented in
+ *	C. Adams, "The CAST-128 Encryption Algorithm", RFC 2144.
+ *
  */
 
 /* Adapted to the pike cryptographic toolkit by Niels Möller */
+
+/* Selftest added by J.H.M. Dassen (Ray) <jdassen@wi.LeidenUniv.nl>.
+ * Released into the public domain. */
+
+#include <assert.h>
 
 #include <cast.h>
 
@@ -42,7 +51,7 @@
 
 /***** Encryption Function *****/
 
-void cast_encrypt(struct cast_key *key, u8 *inblock, u8 *outblock)
+void cast_encrypt(struct cast_key *key, const u8 * const inblock, u8 *outblock)
 {
   u32 t, l, r;
 
@@ -87,7 +96,7 @@ void cast_encrypt(struct cast_key *key, u8 *inblock, u8 *outblock)
 
 /***** Decryption Function *****/
 
-void cast_decrypt(struct cast_key *key, u8 *inblock, u8 *outblock)
+void cast_decrypt(struct cast_key *key, const u8 * const inblock, u8 *outblock)
 {
   u32 t, l, r;
 
@@ -130,12 +139,81 @@ void cast_decrypt(struct cast_key *key, u8 *inblock, u8 *outblock)
 }
 
 
-/***** Key Schedual *****/
+/* Sanity check using the test vectors from
+ * B.1. Single Plaintext-Key-Ciphertext Sets, RFC 2144
+ */
+int cast_selftest(void)
+{
+  u8 testkey128[16] = {
+    0x01, 0x23, 0x45, 0x67, 0x12, 0x34, 0x56, 0x78,
+    0x23, 0x45, 0x67, 0x89, 0x34, 0x56, 0x78, 0x9A
+  };
+  u8 plaintext128[8] = {
+    0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF
+  };
+  u8 ciphertext128[8] = {
+    0x23, 0x8B, 0x4F, 0xE5, 0x84, 0x7E, 0x44, 0xB2
+  };
 
-void cast_setkey(struct cast_key *key, u8 *rawkey, unsigned keybytes)
+  u8 testkey80[10] = {
+    0x01, 0x23, 0x45, 0x67, 0x12, 0x34, 0x56, 0x78,
+    0x23, 0x45
+  };
+  u8 plaintext80[8] = {
+    0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF
+  };
+  u8 ciphertext80[8] = {
+    0xEB, 0x6A, 0x71, 0x1A, 0x2C, 0x02, 0x27, 0x1B
+  };
+
+  u8 testkey40[5] = {
+    0x01, 0x23, 0x45, 0x67, 0x12
+  };
+  u8 plaintext40[8] = {
+    0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF
+  };
+  u8 ciphertext40[8] = {
+    0x7A, 0xC8, 0x16, 0xD1, 0x6E, 0x9B, 0x30, 0x2E
+  };
+
+  struct cast_key context;
+  u8 ciphertext[8];
+
+  cast_setkey(&context, testkey128, 16);
+  cast_encrypt(&context, plaintext128, ciphertext);
+  if (memcmp(ciphertext, ciphertext128, 8)) {
+        return 0;
+  }
+  cast_setkey(&context, testkey80, 10);
+  cast_encrypt(&context, plaintext80, ciphertext);
+  if (memcmp(ciphertext, ciphertext80, 8)) {
+        return 0;
+  }
+  cast_setkey(&context, testkey40, 5);
+  cast_encrypt(&context, plaintext40, ciphertext);
+  if (memcmp(ciphertext, ciphertext40, 8)) {
+        return 0;
+  }
+  return 1;
+}
+
+
+/***** Key Schedule *****/
+
+void cast_setkey(struct cast_key *key, const u8 * const rawkey, unsigned keybytes)
 {
   u32 t[4], z[4], x[4];
   unsigned i;
+
+#ifndef NDEBUG
+  static int initialized = 0;
+
+  if (!initialized)
+    {
+      initialized = 1;
+      assert(cast_selftest());
+    }
+#endif
 
   /* Set number of rounds to 12 or 16, depending on key length */
   key->rounds = (keybytes <= CAST_SMALL_KEY)
