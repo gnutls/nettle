@@ -30,6 +30,9 @@
  * des_is_weak_key, plus the encryption functions (des_*_encrypt and
  * des_cbc_cksum) would be a pretty useful subset. */
 
+/* NOTE: This is quite experimental, and not all functions are
+ * implemented. Contributions, in particular test cases are welcome. */
+
 #include "des.h"
 
 /* FIXME: Names collides with nettle, so we'll need some ugly symbol

@@ -9,8 +9,12 @@ blowfish-test
 blowfish-test.c
 cast128-test
 cast128-test.c
+cbc-test
+cbc-test.c
 des-test
 des-test.c
+des3-test
+des3-test.c
 md5-compat-test
 md5-compat-test.c
 md5-test

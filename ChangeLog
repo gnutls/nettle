@@ -1,5 +1,14 @@
 2001-09-09  Niels Möller  <nisse@cuckoo.hack.org>
 
+	* testsuite/cbc-test.m4: Record intermediate values in a comment. 
+	* testsuite/des3-test.m4: Likewise.
+
+	* testsuite/aes-test.m4: Added test case that appeared broken in
+	the cbc test.
+
+	* cbc.c (cbc_encrypt): Bug fix, encrypt block *after* XOR:ing the
+	iv. 
+
 	* Makefile.am (libnettleinclude_HEADERS): Added cbc.h. Deleted
 	des3.h. 
 	(libnettle_a_SOURCES): Added des3.c.
