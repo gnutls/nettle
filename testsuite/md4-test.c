@@ -4,6 +4,7 @@
 int
 test_main(void)
 {
+  /* Testcases from RFC 1320 */
   test_hash(&nettle_md4, LDATA(""),
 	    H("31d6cfe0d16ae931b73c59d7e0c089c0"));
   test_hash(&nettle_md4, LDATA("a"),
