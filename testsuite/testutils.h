@@ -101,7 +101,9 @@ test_dsa_key(struct dsa_public_key *pub,
 #define H(x) decode_hex_dup(x)
 #define HL(x) decode_hex_length(x), decode_hex_dup(x)
 
-#define LDATA(x) strlen(x), x
+/* LDATA needs to handle NUL characters. */
+#define LLENGTH(x) (sizeof(x) - 1)
+#define LDATA(x) (sizeof(x) - 1), x
 #define LDUP(x) strlen(x), strdup(x)
 
 #define MEMEQ(length, a, b) (!memcmp((a), (b), (length)))
