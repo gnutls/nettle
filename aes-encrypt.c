@@ -351,6 +351,11 @@ _aes_encrypt_table =
     }
   };
 
+/* On my sparc, encryption is significantly slower than decryption,
+ * even though the *only* difference is which table is passed to _aes_crypt.
+ *
+ * Really strange.
+ */
 void
 aes_encrypt(struct aes_ctx *ctx,
 	    unsigned length, uint8_t *dst,
