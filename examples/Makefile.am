@@ -6,3 +6,13 @@ noinst_PROGRAMS = nettle-benchmark @RSA_EXAMPLES@
 
 LDADD = io.o ../libnettle.a
 nettle_benchmark_LDADD = ../libnettle.a
+
+TS_PROGS = rsa-sign-test rsa-verify-test
+
+EXTRA_DIST = io.c io.h run-tests $(TS_PROGS)
+
+.PHONY: run-tests
+run-tests: $(TS_PROGS)
+	srcdir="$(srcdir)" "$(srcdir)"/run-tests $(TS_PROGS)
+
+check: run-tests
