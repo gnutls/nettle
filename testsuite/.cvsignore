@@ -12,6 +12,7 @@ cbc-test
 des-compat-test
 des-test
 des3-test
+dsa-test
 hmac-test
 knuth-lfib-test
 md5-compat-test
