@@ -1,3 +1,48 @@
+2003-01-12  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* buffer.c (nettle_buffer_reset): New function.
+	(nettle_buffer_copy): New function.
+
+	* tools/input.c, tools/input.h, tools/output.c, tools/output.h,
+	tools/parse.c, tools/parse.h, tools/misc.c, tools/misc.h: Moved
+	parts ov sexp-conv.c to separate files
+
+	* tools/sexp-conv.c (sexp_convert_list): Inlined into
+	sexp_convert_item.
+
+	* tools/sexp-conv.c (struct sexp_input): Deleted string attribute.
+	Changed all related functions to take a struct nettle_buffer *
+	argument instead.
+	(struct sexp_compound_token): New struct.
+	(sexp_compound_token_init, sexp_compound_token_clear): New
+	functions. 
+	(struct sexp_parser): Added a struct sexp_compound_token
+	attribute, as a temporary measure.
+	(sexp_parse): Take a struct sexp_compound_token * as argument.
+	Updated all callers. Simplified handling of display types and
+	transport encoding.
+
+	* tools/sexp-conv.c (struct sexp_parser): Renamed struct (was
+	struct sexp_parse_state). Added input pointer. Updated users to
+	not pass around both parser and input.
+	(sexp_check_token): handle token == 0.
+	(sexp_parse): Simplified a little by calling sexp_check_token
+	unconditionally. 
+
+	* tools/sexp-conv.c (sexp_convert_string): Deleted function.
+	(sexp_skip_token): Likewise.
+
+	* tools/sexp-conv.c (enum sexp_token): New constant SEXP_DISPLAY.
+	Start constants from 1, to keep 0 free for special uses.
+	(struct sexp_parse_state): New struct for keeping track of parser
+	state. 
+	(sexp_parse_init): New function.
+	(sexp_check_token): New function, replacing sexp_skip_token.
+	(sexp_parse): New function.
+	(sexp_convert_item): Simplified by using sexp_parse.
+	(sexp_convert_list): Use sexp_parse.
+	(main): Likewise.
+
 2003-01-08  Niels Möller  <niels@s3.kth.se>
 
 	* tools/sexp-conv.c (parse_options): Initialize prefer_hex.
