@@ -1,7 +1,8 @@
 CFLAGS = -I$(top_srcdir) @CFLAGS@ -O0
 CPPFLAGS = @CPPFLAGS@
 
-TS_PROGS = aes-test arcfour-test des-test md5-test sha1-test
+TS_PROGS = aes-test arcfour-test blowfish-test des-test md5-test sha1-test \
+	   twofish-test
 
 noinst_PROGRAMS = $(TS_PROGS)
 
