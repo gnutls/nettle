@@ -24,7 +24,7 @@
  */
 
 #if HAVE_CONFIG_H
-# include <config.h>
+# include "config.h"
 #endif
 
 #include <assert.h>
@@ -36,6 +36,11 @@
 #include "base64.h"
 #include "buffer.h"
 #include "macros.h"
+
+#if WITH_PUBLIC_KEY
+# include "bignum.h"
+# include "rsa.h"
+#endif /* WITH_PUBLIC_KEY */
 
 int
 pgp_put_uint32(struct nettle_buffer *buffer, uint32_t i)
@@ -60,7 +65,7 @@ pgp_put_uint16(struct nettle_buffer *buffer, unsigned i)
 }
 
 int
-pgp_put_mpi(struct nettle_buffer *buffer, mpz_t x)
+pgp_put_mpi(struct nettle_buffer *buffer, const mpz_t x)
 {
   unsigned bits = mpz_sizeinbase(x, 2);
   unsigned octets = (bits + 7) / 8;
@@ -76,7 +81,7 @@ pgp_put_mpi(struct nettle_buffer *buffer, mpz_t x)
   if (!p)
     return 0;
   
-  nettle_mpz_set_str_256_u(x, octets, p);
+  nettle_mpz_get_str_256(x, octets, p);
 
   return 1;
 }
@@ -202,8 +207,8 @@ pgp_sub_packet_end(struct nettle_buffer *buffer, unsigned start)
 
 #if WITH_PUBLIC_KEY
 int
-pgp_put_public_rsa_key(struct nettle_buffer *,
-		       struct rsa_public_key *key,
+pgp_put_public_rsa_key(struct nettle_buffer *buffer,
+		       const struct rsa_public_key *pub,
 		       time_t timestamp)
 {
   /* Public key packet, version 4 */
@@ -212,10 +217,10 @@ pgp_put_public_rsa_key(struct nettle_buffer *,
 
   /* Size of packet is 16 + the size of e and n */
   length = (4 * 4
-	  + nettle_mpz_sizeinbase_256(pub->n)
-	  + nettle_mpz_sizeinbase_256(pub->e));
+	  + nettle_mpz_sizeinbase_256_u(pub->n)
+	  + nettle_mpz_sizeinbase_256_u(pub->e));
 
-  if (!pgp_put_header(buffer, PGP_TAG_PUBLIC_KEY, size))
+  if (!pgp_put_header(buffer, PGP_TAG_PUBLIC_KEY, length))
     return 0;
 
   start = buffer->size;
@@ -223,11 +228,11 @@ pgp_put_public_rsa_key(struct nettle_buffer *,
   if (! (pgp_put_header(buffer, PGP_TAG_PUBLIC_KEY,
 			/* Assume that we need two octets */
 			PGP_LENGTH_TWO_OCTETS)
-	  && pgp_put_uint32(buffer, 4)        /* Version */  
-	  && pgp_put_uint32(buffer, now)      /* Time stamp */
-	  && pgp_put_uint32(buffer, PGP_RSA)  /* Algorithm */
-	  && pgp_put_mpi(buffer, pub->n)
-	  && pgp_put_mpi(buffer, pub->e)) )
+	 && pgp_put_uint32(buffer, 4)        /* Version */  
+	 && pgp_put_uint32(buffer, timestamp)/* Time stamp */
+	 && pgp_put_uint32(buffer, PGP_RSA)  /* Algorithm */
+	 && pgp_put_mpi(buffer, pub->n)
+	 && pgp_put_mpi(buffer, pub->e)) )
     return 0;
 
   assert(buffer->size == start + length);
@@ -237,13 +242,14 @@ pgp_put_public_rsa_key(struct nettle_buffer *,
 
 int
 pgp_put_rsa_sha1_signature(struct nettle_buffer *buffer,
-			   struct rsa_private_key *key,
+			   const struct rsa_private_key *key,
 			   const uint8_t *keyid,
 			   unsigned type,
 			   struct sha1_ctx *hash)
 {
   unsigned signature_start = buffer->size;
   unsigned hash_end;
+  unsigned sub_packet_start;
   uint8_t trailer[6];
   uint8_t digest16[2];
   mpz_t s;
@@ -258,7 +264,7 @@ pgp_put_rsa_sha1_signature(struct nettle_buffer *buffer,
 	 /* Could also be PGP_RSA_SIGN */
 	 && NETTLE_BUFFER_PUTC(buffer, PGP_RSA)
 	 && NETTLE_BUFFER_PUTC(buffer, PGP_SHA1)
-	 && pgp_put_uint16(0)))  /* Hashed subpacket length */
+	 && pgp_put_uint16(buffer, 0)))  /* Hashed subpacket length */
     return 0;
 
   hash_end = buffer->size;
@@ -273,8 +279,8 @@ pgp_put_rsa_sha1_signature(struct nettle_buffer *buffer,
   sha1_update(hash, sizeof(trailer), trailer);
 
   {
-    sha1_ctx hcopy = *hash;
-    uint8_t *p = nettle_buffer_space(2);
+    struct sha1_ctx hcopy = *hash;
+    uint8_t *p = nettle_buffer_space(buffer, 2);
     if (!p)
       return 0;
     
@@ -286,9 +292,11 @@ pgp_put_rsa_sha1_signature(struct nettle_buffer *buffer,
   if (!sub_packet_start)
     return 0;
 
-  if (pgp_put_sub_packet(buffer, PGP_SUBPACKET_ISSUER, 8, keyid)
-      && pgp_sub_packet_end(buffer, sub_packet_start))
-    return 0;
+  if (pgp_put_sub_packet(buffer, PGP_SUBPACKET_ISSUER, 8, keyid))
+    {
+      pgp_sub_packet_end(buffer, sub_packet_start);
+      return 0;
+    }
     
   mpz_init(s);
   rsa_sha1_sign(key, hash, s);
