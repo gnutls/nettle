@@ -114,25 +114,7 @@ aes_encrypt:
 	C S-box substitution
 	mov	$4,%edi
 .Lsubst:	
-	movl	%eax,%ebp
-	andl	$0x000000ff,%ebp
-	movb	AES_SBOX + _aes_encrypt_table (%ebp),%al
-	roll	$8,%eax
-
-	movl	%ebx,%ebp
-	andl	$0x000000ff,%ebp
-	movb	AES_SBOX + _aes_encrypt_table (%ebp),%bl
-	roll	$8,%ebx
-
-	movl	%ecx,%ebp
-	andl	$0x000000ff,%ebp
-	movb	AES_SBOX + _aes_encrypt_table (%ebp),%cl
-	roll	$8,%ecx
-
-	movl	%edx,%ebp
-	andl	$0x000000ff,%ebp
-	movb	AES_SBOX + _aes_encrypt_table (%ebp),%dl
-	roll	$8,%edx
+	AES_SUBST_BYTE(_aes_encrypt_table)
 
 	decl	%edi
 	jnz	.Lsubst
