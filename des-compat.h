@@ -87,36 +87,38 @@ extern int des_check_key;
    struct des_ctx.  */
 void
 des_ecb3_encrypt(const des_cblock *src, des_cblock *dst,
-                 const des_key_schedule k1, const des_key_schedule k2,
-                 const des_key_schedule k3, int enc);
+		 des_key_schedule k1,
+		 des_key_schedule k2,
+		 des_key_schedule k3, int enc);
 
 /* des_cbc_cksum in libdes returns a 32 bit integer, representing the
  * latter half of the output block, using little endian byte order. */
 uint32_t
 des_cbc_cksum(const des_cblock *src, des_cblock *dst,
-              long length, const des_key_schedule ctx,
+              long length, des_key_schedule ctx,
               const des_cblock *iv);
 
 /* NOTE: Doesn't update iv. */
 void
 des_cbc_encrypt(const des_cblock *src, des_cblock *dst, long length,
-		const des_key_schedule ctx, const des_cblock *iv,
+		des_key_schedule ctx, const des_cblock *iv,
 		int enc);
 
 /* Similar, but updates iv. */
 void
 des_ncbc_encrypt(const des_cblock *src, des_cblock *dst, long length,
-                 const des_key_schedule ctx, des_cblock *iv,
+		 des_key_schedule ctx, des_cblock *iv,
                  int enc);
 
 void
 des_ecb_encrypt(const des_cblock *src, des_cblock *dst,
-		const des_key_schedule ctx, int enc);
+		des_key_schedule ctx, int enc);
 
 void
 des_ede3_cbc_encrypt(const des_cblock *src, des_cblock *dst, long length,
-		     const des_key_schedule k1, const des_key_schedule k2,
-		     const des_key_schedule k3,
+		     des_key_schedule k1,
+		     des_key_schedule k2,
+		     des_key_schedule k3,
 		     des_cblock *iv,
 		     int enc);
 

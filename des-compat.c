@@ -38,8 +38,6 @@
 
 struct des_compat_des3 { const struct des_ctx *keys[3]; }; 
 
-typedef void (*cbc_crypt_func)(const void *, uint32_t, uint8_t *, const uint8_t *);
-
 static void
 des_compat_des3_encrypt(struct des_compat_des3 *ctx,
 			uint32_t length, uint8_t *dst, const uint8_t *src)
@@ -60,8 +58,9 @@ des_compat_des3_decrypt(struct des_compat_des3 *ctx,
 
 void
 des_ecb3_encrypt(const des_cblock *src, des_cblock *dst,
-		 const des_key_schedule k1, const des_key_schedule k2,
-		 const des_key_schedule k3, int enc)
+		 des_key_schedule k1,
+		 des_key_schedule k2,
+		 des_key_schedule k3, int enc)
 {
   struct des_compat_des3 keys;
   keys.keys[0] = k1;
@@ -74,7 +73,7 @@ des_ecb3_encrypt(const des_cblock *src, des_cblock *dst,
 
 uint32_t
 des_cbc_cksum(const des_cblock *src, des_cblock *dst,
-	      long length, const des_key_schedule ctx,
+	      long length, des_key_schedule ctx,
 	      const des_cblock *iv)
 {
   /* FIXME: I'm not entirely sure how this function is supposed to
@@ -99,19 +98,19 @@ des_cbc_cksum(const des_cblock *src, des_cblock *dst,
 
 void
 des_ncbc_encrypt(const des_cblock *src, des_cblock *dst, long length,
-                 const des_key_schedule ctx, des_cblock *iv,
+                 des_key_schedule ctx, des_cblock *iv,
                  int enc)
 {
   switch (enc)
     {
     case DES_ENCRYPT:
-      nettle_cbc_encrypt(ctx, (cbc_crypt_func) des_encrypt,
+      nettle_cbc_encrypt(ctx, (nettle_crypt_func) des_encrypt,
 			 DES_BLOCK_SIZE, *iv,
 			 length, *dst, *src);
       break;
     case DES_DECRYPT:
       nettle_cbc_decrypt(ctx,
-			 (cbc_crypt_func) des_decrypt,
+			 (nettle_crypt_func) des_decrypt,
 			 DES_BLOCK_SIZE, *iv,
 			 length, *dst, *src);
       break;
@@ -122,7 +121,7 @@ des_ncbc_encrypt(const des_cblock *src, des_cblock *dst, long length,
 
 void
 des_cbc_encrypt(const des_cblock *src, des_cblock *dst, long length,
-		const des_key_schedule ctx, const des_cblock *civ,
+		des_key_schedule ctx, const des_cblock *civ,
 		int enc)
 {
   des_cblock iv;
@@ -135,7 +134,7 @@ des_cbc_encrypt(const des_cblock *src, des_cblock *dst, long length,
 
 void
 des_ecb_encrypt(const des_cblock *src, des_cblock *dst,
-		const des_key_schedule ctx,
+		des_key_schedule ctx,
 		int enc)
 {
   ((enc == DES_ENCRYPT) ? nettle_des_encrypt : nettle_des_decrypt)
@@ -144,9 +143,9 @@ des_ecb_encrypt(const des_cblock *src, des_cblock *dst,
 
 void
 des_ede3_cbc_encrypt(const des_cblock *src, des_cblock *dst, long length,
-		     const des_key_schedule k1,
-		     const des_key_schedule k2,
-		     const des_key_schedule k3,
+		     des_key_schedule k1,
+		     des_key_schedule k2,
+		     des_key_schedule k3,
 		     des_cblock *iv,
 		     int enc)
 {
@@ -158,12 +157,12 @@ des_ede3_cbc_encrypt(const des_cblock *src, des_cblock *dst, long length,
   switch (enc)
     {
     case DES_ENCRYPT:
-      nettle_cbc_encrypt(&keys, (cbc_crypt_func) des_compat_des3_encrypt,
+      nettle_cbc_encrypt(&keys, (nettle_crypt_func) des_compat_des3_encrypt,
 			 DES_BLOCK_SIZE, *iv,
 			 length, *dst, *src);
       break;
     case DES_DECRYPT:
-      nettle_cbc_decrypt(&keys, (cbc_crypt_func) des_compat_des3_decrypt,
+      nettle_cbc_decrypt(&keys, (nettle_crypt_func) des_compat_des3_decrypt,
 			 DES_BLOCK_SIZE, *iv,
 			 length, *dst, *src);
       break;
