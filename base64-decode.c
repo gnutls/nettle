@@ -60,6 +60,61 @@ base64_decode_init(struct base64_decode_ctx *ctx)
 }
 
 unsigned
+base64_decode_single(struct base64_decode_ctx *ctx,
+		     uint8_t *dst,
+		     uint8_t src)
+{
+  int data;
+  
+  if (ctx->status == BASE64_DECODE_ERROR)
+    return 0;
+
+  data = decode_table[src];
+
+  switch(data)
+    {
+    default:
+      {
+	unsigned done = 0;
+	
+	assert(data >= 0 && data < 0x40);
+	  
+	if (ctx->status != BASE64_DECODE_OK)
+	  goto invalid;
+	
+	ctx->word = ctx->word << 6 | data;
+	ctx->bits += 6;
+	
+	if (ctx->bits >= 8)
+	  {
+	    ctx->bits -= 8;
+	    dst[done++] = ctx->word >> ctx->bits;
+	  }
+	return done;
+      }
+    case TABLE_INVALID:
+    invalid:
+      ctx->status = BASE64_DECODE_ERROR;
+      return 0;
+
+    case TABLE_END:
+      if (!ctx->bits)
+	goto invalid;
+      if (ctx->word & ( (1<<ctx->bits) - 1))
+	/* We shouldn't have any leftover bits */
+	goto invalid;
+	  
+      ctx->status = BASE64_DECODE_END;
+      ctx->bits -= 2;
+      /* Fall through */
+      
+    case TABLE_SPACE:
+      /* Ignore */
+      return 0;
+    }
+}
+
+unsigned
 base64_decode_update(struct base64_decode_ctx *ctx,
 		     uint8_t *dst,
 		     unsigned length,
@@ -72,48 +127,7 @@ base64_decode_update(struct base64_decode_ctx *ctx,
     return 0;
 
   for (i = 0; i<length; i++)
-    {
-      int data = decode_table[src[i]];
-
-      switch(data)
-	{
-	default:
-	  assert(data >= 0 && data < 0x40);
-	  
-	  if (ctx->status != BASE64_DECODE_OK)
-	    goto invalid;
-	  
-	  ctx->word = ctx->word << 6 | data;
-	  ctx->bits += 6;
-
-	  if (ctx->bits >= 8)
-	    {
-	      ctx->bits -= 8;
-	      dst[done++] = ctx->word >> ctx->bits;
-	    }
-	  break;
-
-	case TABLE_INVALID:
-	invalid:
-	  ctx->status = BASE64_DECODE_ERROR;
-	  return done;
-
-	case TABLE_SPACE:
-	  /* Ignore */
-	  break;
-
-	case TABLE_END:
-	  if (!ctx->bits)
-	    goto invalid;
-	  if (ctx->word & ( (1<<ctx->bits) - 1))
-	    /* We shouldn't have any leftover bits */
-	    goto invalid;
-	  
-	  ctx->status = BASE64_DECODE_END;
-	  ctx->bits -= 2;
-	  break;
-	}
-    }
+    done += base64_decode_single(ctx, dst + done, src[i]);
 
   assert(done <= BASE64_DECODE_LENGTH(length));
   

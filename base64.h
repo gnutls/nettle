@@ -55,7 +55,7 @@ struct base64_encode_ctx
 void
 base64_encode_init(struct base64_encode_ctx *ctx);
 
-/* Encodes a single byte. Returns amoutn of output (always 1 or 2). */
+/* Encodes a single byte. Returns amount of output (always 1 or 2). */
 unsigned
 base64_encode_single(struct base64_encode_ctx *ctx,
 		     uint8_t *dst,
@@ -107,6 +107,13 @@ struct base64_decode_ctx
 
 void
 base64_decode_init(struct base64_decode_ctx *ctx);
+
+/* Decodes a single byte. Returns amount of output (always 0 or 1).
+ * FIXME: What to return on errors? */
+unsigned
+base64_decode_single(struct base64_decode_ctx *ctx,
+		     uint8_t *dst,
+		     uint8_t src);
 
 /* Returns the number of output characters. DST should point to an
  * area of size at least BASE64_DECODE_LENGTH(length). */
