@@ -6,23 +6,23 @@ test_main(void)
 {
   struct sexp_iterator i;
 
-  sexp_iterator_init(&i, LDATA(""));
-  ASSERT(sexp_iterator_next(&i) && i.type == SEXP_END);
+  ASSERT(sexp_iterator_first(&i, LDATA("")));
+  ASSERT(i.type == SEXP_END);
 
-  sexp_iterator_init(&i, LDATA("()"));
-  ASSERT(sexp_iterator_next(&i) && i.type == SEXP_LIST
+  ASSERT(sexp_iterator_first(&i, LDATA("()")));
+  ASSERT(i.type == SEXP_LIST
 	 && sexp_iterator_enter_list(&i)
 	 && sexp_iterator_next(&i) && i.type == SEXP_END
 	 && sexp_iterator_exit_list(&i)
 	 && sexp_iterator_next(&i) && i.type == SEXP_END);
 
-  sexp_iterator_init(&i, LDATA("("));
-  ASSERT(sexp_iterator_next(&i) && i.type == SEXP_LIST
+  ASSERT(sexp_iterator_first(&i, LDATA("(")));
+  ASSERT(i.type == SEXP_LIST
 	 && sexp_iterator_enter_list(&i)
 	 && !sexp_iterator_next(&i));
 
-  sexp_iterator_init(&i, LDATA("3:foo0:[3:bar]1:x"));
-  ASSERT(sexp_iterator_next(&i) && i.type == SEXP_ATOM
+  ASSERT(sexp_iterator_first(&i, LDATA("3:foo0:[3:bar]1:x")));
+  ASSERT(i.type == SEXP_ATOM
 	 && !i.display_length && !i.display
 	 && i.atom_length == 3 && MEMEQ(3, "foo", i.atom)
 
@@ -38,8 +38,8 @@ test_main(void)
     static const uint8_t *keys[2] = { "n", "e" };
     struct sexp_iterator v[2];
     
-    sexp_iterator_init(&i, LDATA("((1:n2:xx3:foo)0:(1:y)(1:e))"));
-    ASSERT(sexp_iterator_next(&i) && sexp_iterator_enter_list(&i)
+    ASSERT(sexp_iterator_first(&i, LDATA("((1:n2:xx3:foo)0:(1:y)(1:e))")));
+    ASSERT(sexp_iterator_enter_list(&i)
 	   && sexp_iterator_assoc(&i, 2, keys, v));
 
     ASSERT(sexp_iterator_next(&v[0]) && v[0].type == SEXP_ATOM
@@ -54,12 +54,12 @@ test_main(void)
 
     ASSERT(sexp_iterator_next(&v[1]) && v[1].type == SEXP_END);
 
-    sexp_iterator_init(&i, LDATA("((1:n))"));
-    ASSERT(sexp_iterator_next(&i) && sexp_iterator_enter_list(&i)
+    ASSERT(sexp_iterator_first(&i, LDATA("((1:n))")));
+    ASSERT(sexp_iterator_enter_list(&i)
 	   && !sexp_iterator_assoc(&i, 2, keys, v));
 
-    sexp_iterator_init(&i, LDATA("((1:n)(1:n3:foo))"));
-    ASSERT(sexp_iterator_next(&i) && sexp_iterator_enter_list(&i)
+    ASSERT(sexp_iterator_first(&i, LDATA("((1:n)(1:n3:foo))")));
+    ASSERT(sexp_iterator_enter_list(&i)
 	   && !sexp_iterator_assoc(&i, 2, keys, v));    
   }
 
