@@ -94,6 +94,7 @@ rsa_prepare_public_key(struct rsa_public_key *key)
 void
 rsa_init_private_key(struct rsa_private_key *key)
 {
+  mpz_init(key->d);
   mpz_init(key->p);
   mpz_init(key->q);
   mpz_init(key->a);
@@ -108,6 +109,7 @@ rsa_init_private_key(struct rsa_private_key *key)
 void
 rsa_clear_private_key(struct rsa_private_key *key)
 {
+  mpz_clear(key->d);
   mpz_clear(key->p);
   mpz_clear(key->q);
   mpz_clear(key->a);
