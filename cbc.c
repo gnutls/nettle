@@ -49,6 +49,31 @@ cbc_encrypt(void *ctx, void (*f)(void *ctx,
     }
 }
 
+/* Reqires that dst != src */
+static void
+cbc_decrypt_internal(void *ctx, void (*f)(void *ctx,
+					  unsigned length, uint8_t *dst,
+					  const uint8_t *src),
+		     unsigned block_size, uint8_t *iv,
+		     unsigned length, uint8_t *dst,
+		     const uint8_t *src)
+{
+  assert(length);
+  assert( !(length % block_size) );
+  assert(src != dst);
+  
+  /* Decrypt in ECB mode */
+  f(ctx, length, dst, src);
+
+  /* XOR the cryptotext, shifted one block */
+  memxor(dst, iv, block_size);
+  memxor(dst + block_size, src, length - block_size);
+  memcpy(iv, src + length - block_size, block_size);
+}
+
+/* Don't allocate any more space than this on the stack */
+#define CBC_BUFFER_LIMIT 4096
+
 void
 cbc_decrypt(void *ctx, void (*f)(void *ctx,
 				 unsigned length, uint8_t *dst,
@@ -62,23 +87,49 @@ cbc_decrypt(void *ctx, void (*f)(void *ctx,
   if (!length)
     return;
 
-  if (src == dst)
+  if (src != dst)
+    cbc_decrypt_internal(ctx, f, block_size, iv,
+			 length, dst, src);
+  else
     {
-      /* Keep a copy of the ciphertext. */
-      /* FIXME: If length is large enough, allocate a smaller buffer
-       * and process one buffer size at a time */
-      uint8_t *tmp = alloca(length);
-      memcpy(tmp, src, length);
-      src = tmp;
+      /* We need a copy of the ciphertext, so we can't ECB decrypt in
+       * place.
+       *
+       * If length is small, we allocate a complete copy of src on the
+       * stack. Otherwise, we allocate a block of size at most
+       * CBC_BUFFER_LIMIT, and process that amount of data at a
+       * time.
+       *
+       * NOTE: We assume that block_size <= CBC_BUFFER_LIMIT. */
+
+      uint8_t *buffer;
+      
+      if (length <= CBC_BUFFER_LIMIT)
+	buffer = alloca(length);
+      else
+	{
+	  /* The buffer size must be an integral number of blocks. */
+	  unsigned buffer_size
+	    = CBC_BUFFER_LIMIT - (CBC_BUFFER_LIMIT % block_size);
+
+	  buffer = alloca(buffer_size);
+
+	  for ( ; length >= buffer_size;
+		length -= buffer_size, dst += buffer_size, src += buffer_size)
+	    {
+	      memcpy(buffer, src, buffer_size);
+	      cbc_decrypt_internal(ctx, f, block_size, iv,
+				   buffer_size, dst, buffer);
+	    }
+	  if (!length)
+	    return;
+	}
+      /* Now, we have at most CBC_BUFFER_LIMIT octets left */
+      memcpy(buffer, src, length);
+
+      cbc_decrypt_internal(ctx, f, block_size, iv,
+			   length, dst, buffer);
     }
-
-  /* Decrypt in ECB mode */
-  f(ctx, length, dst, src);
-
-  /* XOR the cryptotext, shifted one block */
-  memxor(dst, iv, block_size);
-  memxor(dst + block_size, src, length - block_size);
-  memcpy(iv, src + length - block_size, block_size);
 }
 
 #if 0
