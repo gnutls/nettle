@@ -22,44 +22,45 @@ libnettleinclude_HEADERS = aes.h arcfour.h arctwo.h bignum.h blowfish.h \
 			   yarrow.h
 
 nodist_libnettleinclude_HEADERS = nettle-types.h
+noinst_HEADERS = aes-internal.h cast128_sboxes.h desinfo.h desCode.h \
+		 serpent_sboxes.h nettle-internal.h
 
-libnettle_a_SOURCES = aes.c aes.h aes-internal.h \
+libnettle_a_SOURCES = aes.c \
 		      aes-decrypt-table.c aes-decrypt.c \
 		      aes-encrypt-table.c aes-encrypt.c \
 		      aes-set-encrypt-key.c aes-set-decrypt-key.c aes-meta.c \
-		      arcfour.c arcfour.h arcfour-crypt.c arcfour-meta.c \
-		      arctwo.c arctwo.h arctwo-meta.c \
+		      arcfour.c arcfour-crypt.c arcfour-meta.c \
+		      arctwo.c arctwo-meta.c \
 		      base16-encode.c base16-decode.c base16-meta.c \
-                      base64-encode.c base64-decode.c base64-meta.c base64.h \
-		      cast128.c cast128.h cast128_sboxes.h cast128-meta.c \
-		      blowfish.h blowfish.c \
-		      cbc.c cbc.h \
-		      des.c des.h desinfo.h desCode.h \
-		      des3.c des-compat.c des-compat.h \
-		      hmac.c hmac.h hmac-md5.c hmac-sha1.c hmac-sha256.c \
-		      knuth-lfib.c knuth-lfib.h \
+                      base64-encode.c base64-decode.c base64-meta.c \
+		      cast128.c cast128-meta.c \
+		      blowfish.c \
+		      cbc.c \
+		      des.c \
+		      des3.c des-compat.c \
+		      hmac.c hmac-md5.c hmac-sha1.c hmac-sha256.c \
+		      knuth-lfib.c \
 		      md2.c md2-meta.c md4.c md4-meta.c \
-		      md5.c md5.h md5-compat.c md5-compat.h md5-meta.c \
-		      sha.h sha1.c sha1-compress.c sha1-meta.c sha256.c sha256-meta.c \
-		      serpent.c serpent.h serpent_sboxes.h serpent-meta.c \
-		      twofish.c twofish.h twofish-meta.c \
-		      yarrow.h yarrow256.c yarrow_key_event.c \
-		      sexp.h sexp.c sexp-format.c \
+		      md5.c md5-compat.c md5-meta.c \
+		      sha1.c sha1-compress.c sha1-meta.c sha256.c sha256-meta.c \
+		      serpent.c serpent-meta.c \
+		      twofish.c twofish-meta.c \
+		      yarrow256.c yarrow_key_event.c \
+		      sexp.c sexp-format.c \
 		      sexp-transport.c sexp-transport-format.c \
-		      bignum.h bignum.c bignum-random.c sexp2bignum.c \
-		      pkcs1.h pkcs1.c pkcs1-rsa-md5.c pkcs1-rsa-sha1.c \
-		      rsa.h rsa.c rsa-sign.c rsa-verify.c \
+		      bignum.c bignum-random.c sexp2bignum.c \
+		      pkcs1.c pkcs1-rsa-md5.c pkcs1-rsa-sha1.c \
+		      rsa.c rsa-sign.c rsa-verify.c \
 		      rsa-md5-sign.c rsa-md5-verify.c \
 		      rsa-sha1-sign.c rsa-sha1-verify.c \
 		      rsa-encrypt.c rsa-decrypt.c \
-		      rsa-keygen.c rsa-compat.h rsa-compat.c \
+		      rsa-keygen.c rsa-compat.c \
 		      rsa2sexp.c sexp2rsa.c \
 		      dsa.c dsa-sign.c dsa-verify.c dsa-keygen.c \
 		      sexp2dsa.c \
-		      pgp.h pgp-encode.c rsa2openpgp.c \
-		      buffer.h buffer.c buffer-init.c realloc.c \
-		      nettle-meta.h \
-		      nettle-internal.c nettle-internal.h
+		      pgp-encode.c rsa2openpgp.c \
+		      buffer.c buffer-init.c realloc.c \
+		      nettle-internal.c
 
 libnettle_a_CFLAGS = $(CCPIC)
 
@@ -72,7 +73,7 @@ info_TEXINFOS = nettle.texinfo
 
 all-local: nettle.html
 
-EXTRA_DIST = memxor.h $(des_headers) descore.README nettle.html \
+EXTRA_DIST = $(des_headers) descore.README nettle.html \
 	sha-example.c .bootstrap $(des_headers) \
 	sparc/aes.asm sparc/machine.m4 \
 	x86/aes.asm x86/aes-encrypt.asm x86/aes-decrypt.asm \
@@ -131,14 +132,16 @@ if ENABLE_SHARED
 %_p.$(OBJEXT): %.c
 	$(COMPILE) $(SHLIBCFLAGS) -c $< -o $@
 
-SHLIBOBJECTS = $(patsubst %.$(OBJEXT),%_p.$(OBJEXT),$(am_libnettle_a_OBJECTS) $(LIBOBJS))
+SHLIBOBJECTS = $(patsubst %.c,%_p.$(OBJEXT),$(libnettle_a_SOURCES)) \
+               $(patsubst %.$(OBJEXT),%_p.$(OBJEXT),$(LIBOBJS))
 
-# The point of the linking is to use -Lnettle-dir at linktime,
+# The point of the sym links is to use -Lnettle-dir at linktime,
 # and LD_LIBRARY_PATH=nettle-dir/.lib at run time.
 $(SHLIBFORLINK): $(SHLIBOBJECTS)
 	$(SHLIBLINK) $^ -o $@
 	-mkdir .lib 2>/dev/null
-	(cd .lib && ln -sf ../$(SHLIBFORLINK) $(SHLIBSONAME))
+	( [ -z "$(SHLIBSONAME)" ] || cd .lib \
+          && ln -sf ../$(SHLIBFORLINK) $(SHLIBSONAME))
 
 endif
 
@@ -148,7 +151,8 @@ install-data-local: $(SHLIBINSTALL)
 
 install-shared: $(SHLIBFORLINK)
 	$(INSTALL_DATA) $(SHLIBFORLINK) $(DESTDIR)$(libdir)/$(SHLIBFILE)
-	(cd $(DESTDIR)$(libdir) \
+	( [ -z "$(SHLIBSONAME)" ] \
+                || cd $(DESTDIR)$(libdir) \
 		&& ln -sf $(SHLIBFILE) $(SHLIBSONAME) \
 		&& ln -sf $(SHLIBFILE) $(SHLIBFORLINK) )
 
