@@ -1,5 +1,11 @@
 2004-10-26  Niels Möller  <nisse@lysator.liu.se>
 
+	* Released nettle-1.11.
+
+	* Makefile.in (clean-here): Delete *.s files.
+	(PRE_CPPFLAGS): Use this variable, not INCLUDES. Removed
+	-I$(srcdir). 
+
 	* x86/arcfour-crypt.asm: Use movzbl when extending %cl to 32 bits.
 
 2004-10-24  Niels Möller  <nisse@lysator.liu.se>

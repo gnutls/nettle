@@ -11,8 +11,7 @@ SUBDIRS = tools testsuite examples
 
 include config.make
 
-# FIXME: Really need -I$(srcdir) ???
-INCLUDES = -I. -I$(srcdir)
+PRE_CPPFLAGS = -I.
 
 TARGETS = aesdata$(EXEEXT) desdata$(EXEEXT) shadata$(EXEEXT) \
 	  libnettle.a $(SHLIBTARGET) \
@@ -318,7 +317,7 @@ distcheck: dist
 	$(rm_distcheck)
 
 clean-here:
-	-rm -f $(TARGETS) *.$(OBJEXT) *.p$(OBJEXT) *.d
+	-rm -f $(TARGETS) *.$(OBJEXT) *.p$(OBJEXT) *.d *.s
 
 distclean-here: clean-here
 	-rm -f config.h stamp-h config.log config.status \
