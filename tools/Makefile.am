@@ -7,7 +7,9 @@ AM_LDFLAGS = -L..
 
 bin_PROGRAMS = sexp-conv
 
-LDADD = -lnettle
+# libnettle.a is added at the end to make sure all programs depend on it.
+# It seems there's no DEPENDENCIES variable that affects all programs.
+LDADD = -lnettle ../libnettle.a
 
 EXTRA_DIST = misc.h input.h output.h parse.h
 
