@@ -1,3 +1,10 @@
+NEWS for the 1.5 release
+
+	Changed the interface for hash functions. The md5_digest
+	function is now equivalent to the old sequence of md5_final,
+	md5_digest, md5_init, and similarly for the other hashing
+	algorithms. This makes the interface simpler.
+
 NEWS for the 1.0 release
 
 	Fixed twofish bug spotted by Jean-Pierre Stierlin.
