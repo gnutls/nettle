@@ -3,6 +3,7 @@ Makefile
 Makefile.in
 aes-test
 arcfour-test
+base16-test
 base64-test
 bignum-test
 blowfish-test
