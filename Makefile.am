@@ -23,7 +23,7 @@ libnettle_a_SOURCES = aes.c aes.h aes-internal.h \
 		      aes-encrypt-table.c aes-encrypt.c \
 		      aes-set-encrypt-key.c aes-set-decrypt-key.c aes-meta.c \
 		      arcfour.c arcfour.h arcfour-meta.c \
-                      base64.c base64-meta.c base64.h \
+                      base64-encode.c base64-decode.c base64-meta.c base64.h \
 		      cast128.c cast128.h cast128_sboxes.h cast128-meta.c \
 		      blowfish.h blowfish.c \
 		      cbc.c cbc.h \
