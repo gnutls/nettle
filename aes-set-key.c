@@ -71,6 +71,17 @@ static const uint8_t Alogtable[256] = {
 };
 
 static uint8_t
+xtime(uint8_t a)
+{
+  uint8_t b;
+
+  b = (a & 0x80) ? 0x1b : 0;
+  a<<=1;
+  a^=b;
+  return(a);
+}
+
+static uint8_t
 mul(uint8_t a, uint8_t b)
 {
   if (a && b) return Alogtable[(Logtable[a] + Logtable[b])%255];
@@ -99,17 +110,6 @@ inv_mix_column(uint32_t *a, uint32_t *b)
       for(j = 0; j < 4; j++)
 	b[i] |= c[i][j] << (j*8);
     }
-}
-
-static uint8_t
-xtime(uint8_t a)
-{
-  uint8_t b;
-
-  b = (a & 0x80) ? 0x1b : 0;
-  a<<=1;
-  a^=b;
-  return(a);
 }
 
 /* FIXME: Perhaps we should have separate fucntion for encryption and
