@@ -136,8 +136,8 @@ _aes_crypt:
 	nop
 	! 4*i
 	! NOTE: Instruction duplicated in delay slot
-	mov	0, i
-.Linner_loop:
+	C mov	0, i
+.Lround_loop:
 	! The comments mark which j in T->table[j][ Bj(wtxt[IDXi(i)]) ]
 	! the instruction is a part of. 
 	!
@@ -178,7 +178,7 @@ _aes_crypt:
 	xor	t0, t3, t0		! 0, 1, 2, 3
 	xor	t0, t1, t0
 	st	t0, [tmp]
-	add	i, 4, i
+	C add	i, 4, i
 
 	C i = 1
 	ld	[IDX1+4], t1		! 1
@@ -214,7 +214,7 @@ _aes_crypt:
 	xor	t0, t3, t0		! 0, 1, 2, 3
 	xor	t0, t1, t0
 	st	t0, [tmp+4]
-	add	i, 4, i
+	C add	i, 4, i
 
 	C = 2
 	ld	[IDX1+8], t1		! 1
@@ -250,7 +250,7 @@ _aes_crypt:
 	xor	t0, t3, t0		! 0, 1, 2, 3
 	xor	t0, t1, t0
 	st	t0, [tmp+8]
-	add	i, 4, i
+	C add	i, 4, i
 
 	C = 3
 	ld	[IDX1+12], t1		! 1
@@ -286,9 +286,9 @@ _aes_crypt:
 	xor	t0, t3, t0		! 0, 1, 2, 3
 	xor	t0, t1, t0
 	st	t0, [tmp+12]
-	add	i, 4, i
+	C add	i, 4, i
 			
-	C End loop
+	C End of unrolled loop
 	
 	! switch roles for tmp and wtxt
 	xor	wtxt, diff, wtxt
@@ -296,8 +296,9 @@ _aes_crypt:
 
 	subcc	round, 1, round
 	add	key, 16, key
-	bne	.Linner_loop
-	mov	0, i
+	bne	.Lround_loop
+	nop
+	C mov	0, i
 
 	! final round
 	! Use round as the loop variable, as it's already zero
