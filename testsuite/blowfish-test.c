@@ -3,7 +3,7 @@
 #include "blowfish.h"
 
 int
-main(int argc, char **argv)
+test_main(void)
 {
   /* 208 bit key. Test from GNUPG. */
   test_cipher(&nettle_blowfish128,

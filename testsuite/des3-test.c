@@ -3,7 +3,7 @@
 #include "des.h"
 
 int
-main(int argc, char **argv)
+test_main(void)
 {
   /* Intermediate values:
    *   After first DES encryption:  "cd ea 2a 20 c2 e0 9e 48"

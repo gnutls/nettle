@@ -90,7 +90,8 @@ rsa_sha1_verify(struct rsa_public_key *key,
  *   sha1Identifier ::= AlgorithmIdentifier {id-sha1, NULL}
  */
 
-static const uint8_t sha1_prefix[] =
+static const uint8_t
+sha1_prefix[] =
 {
   /* 15 octets prefix, 20 octets hash, total 35 */
   0x30,       33, /* SEQUENCE */
@@ -102,8 +103,6 @@ static const uint8_t sha1_prefix[] =
       /* Here comes the raw hash value */
 };
     
-
-
 static void
 pkcs1_encode_sha1(mpz_t m, unsigned length, struct sha1_ctx *hash)
 {

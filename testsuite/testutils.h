@@ -20,6 +20,12 @@ decode_hex(uint8_t *dst, const char *hex);
 const uint8_t *
 decode_hex_dup(const char *hex);
 
+/* The main program */
+int
+test_main(void);
+
+extern int verbose;
+
 void
 test_cipher(const struct nettle_cipher *cipher,
 	    unsigned key_length,
@@ -42,7 +48,7 @@ test_hash(const struct nettle_hash *hash,
 	  unsigned length,
 	  const uint8_t *data,
 	  const uint8_t *digest);
-	  
+
 #define H2(d, s) decode_hex((d), (s))
 #define H(x) decode_hex_dup(x)
 #define HL(x) decode_hex_length(x), decode_hex_dup(x)

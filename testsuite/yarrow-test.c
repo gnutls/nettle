@@ -9,8 +9,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-static int verbose = 0;
-
 /* Lagged fibonacci sequence as described in Knuth 3.6 */
 
 #define KK 100
@@ -166,7 +164,7 @@ open_file(const char *name)
 }
 
 int
-main(int argc, char **argv)
+test_main(void)
 {
   FILE *input;
   
@@ -200,11 +198,6 @@ main(int argc, char **argv)
   
   static const char zeroes[100];
 
-  if ((argc == 2)
-      && (argv[1][0] == '-')
-      && (argv[1][1] == 'v'))
-    verbose = 1;
-  
   yarrow256_init(&yarrow, 2, sources);
   memset(&yarrow.seed_file, 0, sizeof(yarrow.seed_file));
   

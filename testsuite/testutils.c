@@ -5,8 +5,12 @@
 #include "cbc.h"
 
 #include <ctype.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+/* For getopt() */
+#include <unistd.h>
 
 /* -1 means invalid */
 const signed char hex_digits[0x100] =
@@ -101,6 +105,33 @@ decode_hex_dup(const char *hex)
       free(p);
       return NULL;
     }
+}
+
+int verbose = 0;
+
+int
+main(int argc, char **argv)
+{
+  int c;
+
+  while ((c = getopt (argc, argv, "v")) != -1)
+    switch (c)
+      {
+      case 'v':
+	verbose = 1;
+	break;
+      case '?':
+	if (isprint (optopt))
+	  fprintf (stderr, "Unknown option `-%c'.\n", optopt);
+	else
+	  fprintf (stderr,
+		   "Unknown option character `\\x%x'.\n",
+		   optopt);
+      default:
+	abort();
+      }
+
+  return test_main();
 }
 
 void

@@ -3,7 +3,7 @@
 #include "cbc.h"
 
 int
-main(int argc, char **argv)
+test_main(void)
 {
   uint8_t msg[2 * AES_BLOCK_SIZE] = "Listen, I'll say this only once!";
 

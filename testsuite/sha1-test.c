@@ -2,7 +2,7 @@
 #include "sha.h"
 
 int
-main(int argc, char **argv)
+test_main(void)
 {
   test_hash(&nettle_sha1, 0, "",
 	    H("DA39A3EE5E6B4B0D 3255BFEF95601890 AFD80709")); 

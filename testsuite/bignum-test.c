@@ -4,11 +4,11 @@
 #include "config.h"
 #endif
 
-#if HAVE_LIBGMP
-#include "bignum.h"
-
 #include <stdlib.h>
 #include <string.h>
+
+#if HAVE_LIBGMP
+#include "bignum.h"
 
 static void
 test_bignum(const char *hex, unsigned length, const uint8_t *base256)
@@ -38,7 +38,7 @@ test_bignum(const char *hex, unsigned length, const uint8_t *base256)
 #endif /* HAVE_LIBGMP */
 
 int
-main(int argc, char **argv)
+test_main(void)
 {
 #if HAVE_LIBGMP
   test_bignum("0", 0, "");

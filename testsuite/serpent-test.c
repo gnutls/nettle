@@ -2,7 +2,7 @@
 #include "serpent.h"
 
 int
-main(int argc, char **argv)
+test_main(void)
 {
   /* The first test for each key size from the ecb_vk.txt and ecb_vt.txt
    * files in the serpent package. */

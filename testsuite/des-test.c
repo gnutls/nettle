@@ -3,7 +3,7 @@
 #include "des.h"
 
 int
-main(int argc, char **argv)
+test_main(void)
 {
   struct des_ctx ctx;
   

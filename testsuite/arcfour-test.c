@@ -2,7 +2,7 @@
 #include "arcfour.h"
 
 int
-main(int argc, char **argv)
+test_main(void)
 {
   test_cipher(&nettle_arcfour128,
 	      HL("01234567 89ABCDEF 00000000 00000000"),

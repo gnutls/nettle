@@ -90,7 +90,8 @@ rsa_md5_verify(struct rsa_public_key *key,
  *   md5Identifier ::= AlgorithmIdentifier {md5, NULL}
  */
 
-static const uint8_t md5_prefix[] =
+static const uint8_t
+md5_prefix[] =
 {
   /* 18 octets prefix, 16 octets hash, 34 total. */
   0x30,       32, /* SEQUENCE */

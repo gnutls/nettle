@@ -2,7 +2,7 @@
 #include "md5-compat.h"
 
 int
-main(int argc, char **argv)
+test_main(void)
 {
   MD5_CTX ctx;
   unsigned char digest[MD5_DIGEST_SIZE];

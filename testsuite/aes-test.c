@@ -2,7 +2,7 @@
 #include "aes.h"
 
 int
-main(int argc, char **argv)
+test_main(void)
 {
   /* 128 bit keys */
   test_cipher(&nettle_aes128, 

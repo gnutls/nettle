@@ -2,7 +2,7 @@
 #include "cast128.h"
 
 int
-main(int argc, char **argv)
+test_main(void)
 {
   /* Test vectors from B.1. Single Plaintext-Key-Ciphertext Sets, RFC
    * 2144 */

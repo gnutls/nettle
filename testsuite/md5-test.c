@@ -2,7 +2,7 @@
 #include "md5.h"
 
 int
-main(int argc, char **argv)
+test_main(void)
 {
   test_hash(&nettle_md5, 0, "",
 	    H("D41D8CD98F00B204 E9800998ECF8427E"));

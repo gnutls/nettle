@@ -137,5 +137,14 @@ rsa_sha1_verify(struct rsa_public_key *key,
 void
 rsa_compute_root(struct rsa_private_key *key, mpz_t x, const mpz_t m);
 
+#define RSA_SIGN(key, algorithm, ctx, length, data, signature) ( \
+  algorithm##_update(ctx, length, data), \
+  rsa_##algorithm##_sign(key, ctx, signature) \
+)
+
+#define RSA_VERIFY(key, algorithm, ctx, length, data, signature) ( \
+  algorithm##_update(ctx, length, data), \
+  rsa_##algorithm##_verify(key, ctx, signature) \
+)
 
 #endif /* NETTLE_RSA_H_INCLUDED */

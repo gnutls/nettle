@@ -2,7 +2,7 @@
 #include "sha.h"
 
 int
-main(int argc, char **argv)
+test_main(void)
 {
   test_hash(&nettle_sha256, 3, "abc",
 	    H("ba7816bf8f01cfea 414140de5dae2223"

@@ -62,6 +62,7 @@
 #include <string.h>
 
 #include "des-compat.h"
+#include "testutils.h"
 
 #define C_Block des_cblock
 #define Key_schedule des_key_schedule
@@ -300,7 +301,8 @@ static int cfb64_test();
 static int ede_cfb64_test();
 #endif
 
-int main(int argc, char **argv)
+int
+test_main(void)
 	{
 	int i,j,err=0;
 	des_cblock in,out,outin,iv3;
