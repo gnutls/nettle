@@ -1,0 +1,629 @@
+\input texinfo          @c -*-texinfo-*-
+
+@c %**start of header
+@setfilename nettle.info
+@settitle The Nettle low-level cryptographic library.
+@c %**end of header
+
+@syncodeindex fn cp
+
+@dircategory GNU Libraries
+@direntry
+* Nettle: (nettle).           A low-level cryptographics library.
+@end direntry
+
+@set UPDATED-FOR 0.2
+
+@c Latin-1 doesn't work with tex output.
+@c Also lookout for é characters.
+
+@set AUTHOR Niels Möller
+@ifinfo
+Draft manual for the Nettle library. This manual corresponds to version
+@value{UPDATED-FOR}.
+
+Copyright 2001 @value{AUTHOR}
+
+Permission is granted to make and distribute verbatim
+copies of this manual provided the copyright notice and
+this permission notice are preserved on all copies.
+
+@ignore
+Permission is granted to process this file through TeX
+and print the results, provided the printed document
+carries a copying permission notice identical to this
+one except for the removal of this paragraph (this
+paragraph not being relevant to the printed manual).
+
+@end ignore
+Permission is granted to copy and distribute modified
+versions of this manual under the conditions for
+verbatim copying, provided also that the sections
+entitled ``Copying'' and ``GNU General Public License''
+are included exactly as in the original, and provided
+that the entire resulting derived work is distributed
+under the terms of a permission notice identical to this
+one.
+
+Permission is granted to copy and distribute
+translations of this manual into another language,
+under the above conditions for modified versions,
+except that this permission notice may be stated in a
+translation approved by the Free Software Foundation.
+
+@end ifinfo
+
+@titlepage
+@sp 10
+@c @center @titlefont{Nettle Manual}
+
+@title Nettle Manual
+@subtitle For the Nettle Library version @value{UPDATED-FOR}
+
+@author @value{AUTHOR}
+
+@c The following two commands start the copyright page.
+@page
+@vskip 0pt plus 1filll
+Copyright @copyright{} 2001 @value{AUTHOR}
+
+Permission is granted to make and distribute verbatim
+copies of this manual provided the copyright notice and
+this permission notice are preserved on all copies.
+
+Permission is granted to copy and distribute modified
+versions of this manual under the conditions for
+verbatim copying, provided also that the sections
+entitled ``Copying'' and ``GNU General Public License''
+are included exactly as in the original, and provided
+that the entire resulting derived work is distributed
+under the terms of a permission notice identical to this
+one.
+
+Permission is granted to copy and distribute
+translations of this manual into another language,
+under the above conditions for modified versions,
+except that this permission notice may be stated in a
+translation approved by the Free Software Foundation.
+
+@end titlepage
+
+@ifnottex
+@node     Top, Introduction, (dir), (dir)
+@comment  node-name,  next,  previous,  up
+@top
+
+This document describes the nettle low-level cryptographic library. You
+can use the library directly from your C-programs, or (recommended)
+write or use an object-oriented wrapper for your favourite language or
+application.
+
+This manual coresponds to version @value{UPDATED-FOR} of the library.
+
+@menu
+* Introduction::                
+* Copyright::                   
+* Conventions::                 
+* Example::                     
+* Reference::                   
+* Installation::                
+* Index::                       
+@end menu
+
+@end ifnottex
+
+@node Introduction, Copyright, Top, Top
+@comment  node-name,  next,  previous,  up
+@chapter Introduction
+
+Nettle is a cryptographic library that is designed to fit easily in more
+or less any context: In crypto toolkits for object-oriented languages
+(C++, Python, Pike, ...), in applications like LSH or GNUPG, or even in
+kernel space. In most contexts, you need more than the basic
+cryptographic algorithms, you also need some way to keep track of available
+algorithms, their properties and variants. You often have some algorithm
+selection process, often dictated by a protocol you want to implement.
+
+And as the requirements of applications differ on subtle and not so
+subtle ways, an API that fits one application well can be a pain to use
+in a different context. And that is why there are so many different
+cryptographic libraries around.
+
+Nettle tries to avoid this problem by doing one thing, the low-level
+crypto stuff, and providing a @emph{simple} but general interface to it.
+In particular, Nettle doesn't do algorithm selection. It doesn't do
+memory allocation. It doesn't do any I/O.
+
+The idea is that one can build several application and context specific
+interfaces on top of Nettle, and share the code, testcases, banchmarks,
+documentation, etc. For this first version, the only application using
+Nettle is LSH, and it uses an object-oriented abstraction on top of the
+library. 
+
+@node Copyright, Conventions, Introduction, Top
+@comment  node-name,  next,  previous,  up
+@chapter Copyright
+
+Nettle is distributed under the GNU General Public License (see the file
+COPYING for details). However, many of the individual files are dual
+licensed under less restrictive licenses like the GNU Lesser General
+Public License, or public domain. Consult the headers in each file for
+details.
+
+It is conceivable that future versions will use the LGPL rather than the
+GPL, mail me if you have questions or suggestions.
+
+A list of the supported algorithms, their origins and licenses:
+
+@table @emph
+@item AES
+The implementation of the AES cipher (also known as rijndael) is written
+by Rafael Sevilla. Released under the LGPL.
+
+@item ARCFOUR
+The implementation of the ARCFOUR (also known as RC4) cipher is written
+by Niels Möller. Released under the LGPL.
+
+@item BLOWFISH
+The implementation of the BLOWFISH cipher is written by Werner Koch,
+copyright owned by the Free Software Foundation. Also hacked by Ray
+Dassen and Niels Möller. Released under the GPL.
+
+@item CAST128
+The implementation of the CAST128 cipher is written by Steve Reid.
+Released into the public domain.
+
+@item DES
+The implementation of the DES cipher is written by Dana L. How, and
+released under the LGPL.
+
+@item MD5
+The implementation of the MD5 message digest is written by Colin Plumb.
+It has been hacked some more by Andrew Kuchling and Niels Möller.
+Released into the public domain.
+
+@item SERPENT
+The implementation of the SERPENT cipher is written by Ross Anderson,
+Eli Biham, and Lars Knudsen, adapted to LSH by Rafael Sevilla, and to
+Nettle by Niels Möller.
+
+@item SHA1
+The implementation of the SHA1 message digest is written by Peter
+Gutmann, and hacked some more by Andrew Kuchling and Niels Möller.
+Released into the public domain.
+
+@item TWOFISH
+The implementation of the TWOFISH cipher is written by Ruud de Rooij.
+Released under the LGPL.
+@end table
+
+@node Conventions, Example, Copyright, Top
+@comment  node-name,  next,  previous,  up
+@chapter Conventions
+
+For each supported algorithm, there is an include file that defines a
+@emph{context struct}, a few constants, and declares functions for
+operating on the state. The context struct encapsulates all information
+needed by the algorithm, and it can be copied or moved in memory with no
+unexpected effects.
+
+The functions for similar algorithms are similar, but there are some
+differences, for instance reflecting if the key setup or encryption
+function differ for encryption and encryption, and whether or not key
+setup can fail. There are also differences that doesn't show in function
+prototypes, but which the application must nevertheless be aware of.
+There is no difference between stream ciphers and block ciphers,
+although they should be used quite differently by the application.
+
+If your application uses more than one algorithm, you should probably
+create an interface that is tailor-made for your needs, and then write a
+few lines of glue code on top of Nettle.
+
+By convention, for an algorithm named @code{foo}, the struct tag for the
+context struct is @code{foo_ctx}, constants and functions uses prefixes
+like @code{FOO_BLOCK_SIZE} (a constant) and @code{foo_set_key} (a
+function).
+
+In all functions, strings are represented with an explicit length, of
+type @code{unsigned}, and a pointer of type @code{uint8_t *} or a
+@code{const uint8_t *}. For functions that transform one string to
+another, the argument order is length, destination pointer and source
+pointer. Source and destination areas are of the same length. Source and
+destination may be the same, so that you can process strings in place,
+but they must not overlap in any other way.
+
+@node Example, Reference, Conventions, Top
+@comment  node-name,  next,  previous,  up
+@chapter Example
+
+A simple example program that reads a file from standard in and writes
+its SHA1 checksum on stdout should give the flavour of Nettle.
+
+@example
+/* FIXME: This code is untested. */
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <nettle/sha1.h>
+
+#define BUF_SIZE 1000
+
+static void
+display_hex(unsigned length, uint8_t *data)
+@{
+  static const char digits[16] = "0123456789abcdef";
+  unsigned i;
+
+  for (i = 0; i<length; i++)
+  @{
+    uint8_t byte = data[i];
+    printf("%c%c ", digits[(byte / 16) & 0xf], digits[byte & 0xf]);
+  @}
+@}
+
+int
+main(int argc, char **argv)
+@{
+  struct sha1_ctx ctx;
+  uint8_t buffer[BUF_SIZE];
+  uint8_t digest[SHA1_DIGEST_SIZE];
+  
+  sha1_init(&ctx);
+  for (;;)
+  @{
+    int done = fread(buffer, 1, sizeof(buffer), stdin);
+    if (done <= 0)
+      break;
+    sha1_update(&ctx, done, buf);
+  @}
+  if (ferror(stdin))
+    return EXIT_FAILURE;
+
+  sha1_finish(&ctx);
+  sha1_digest(&ctx, SHA1_DIGEST_SIZE, digest);
+
+  display_hex(SHA1_DIGEST_SIZE, digest);
+  return EXIT_SUCCESS;  
+@}
+@end example
+
+@node Reference, Installation, Example, Top
+@comment  node-name,  next,  previous,  up
+@chapter Reference
+
+This chapter describes all the Nettle functions, grouped by family.
+
+@menu
+* Hash functions::              
+* Cipher functions::            
+* Miscellaneous functions::     
+@end menu
+
+@node Hash functions, Cipher functions, Reference, Reference
+@comment  node-name,  next,  previous,  up
+@section Hash functions
+
+A cryptographic @dfn{hash function} is a function that takes variable
+size strings, and maps them to strings of fixed, short, length. There
+are naturally lots of collisions, as there are more possible 1MB files
+than 20 byte strings. But the function is constructed such that is hard
+to find the collisions. More precisely, a cryptographic hash function
+@code{H} should have the following properties:
+
+@table @emph
+
+@item One-way
+Given a hash value @code{H(x)} it is hard to find a string @code{x}
+that hashes to that value.
+
+@item Collision-resistant
+It is hard to find two different strings, @code{x} and @code{y}, such
+that @code{H(x)} = @code{H(y)}.
+
+@end table
+
+Hash functions are useful as building blocks for digital signatures,
+message authentication codes, pseudo random generators, associating
+unique id:s to documents, and many other things.
+
+@subsection @acronym{MD5}
+
+MD5 is a message digest function constructed by Ronald Rivest, and
+described in @cite{RFC 1321}. It outputs message digests of 128 bits, or
+16 octets. Nettle defines MD5 in @file{<nettle/md5.h>}.
+
+@deftp {Context struct} {struct md5_ctx}
+@end deftp
+
+@defvr Constant MD5_DIGEST_SIZE
+The size of an MD5 digest, i.e. 16.
+@end defvr
+
+@defvr Constant MD5_DATA_SIZE
+The internal block size of MD5. Useful for some special constructions,
+in particular HMAC-MD5.
+@end defvr
+
+@deftypefun void md5_init (struct md5_ctx *@var{ctx})
+Initialize the MD5 state.
+@end deftypefun
+
+@deftypefun void md5_update (struct md5_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+Hash some more data.
+@end deftypefun
+
+@deftypefun void md5_final (struct md5_ctx *@var{ctx})
+Performs final processing that is needed after all input data has been
+processed with @code{md5_update}.
+@end deftypefun
+
+@deftypefun void md5_digest (struct md5_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+Extracts the digest, writing it to @var{digest}. @var{length} may be smaller than
+@code{MD5_DIGEST_SIZE}, in which case only the first @var{length} octets
+of the digest are written.
+
+This functions doesn't change the state in any way.
+@end deftypefun
+
+The normal way to use MD5 is to call the functions in order: First
+@code{md5_init}, then @code{md5_update} zero or more times, then
+@code{md5_final}, and at last @code{md5_digest} zero or more times.
+
+To start over, you can call @code{md5_init} at any time.
+
+@subsection @acronym{SHA1}
+
+SHA1 is a hash function specified by @dfn{NIST} (The U.S. National Institute
+for Standards and Technology. It outputs hash values of 160 bits, or 20
+octets. Nettle defines SHA1 in @file{<nettle/sha1.h>}.
+
+The functions are analogous to the MD5 ones.
+
+@deftp {Context struct} {struct sha1_ctx}
+@end deftp
+
+@defvr Constant SHA1_DIGEST_SIZE
+The size of an SHA1 digest, i.e. 20.
+@end defvr
+
+@defvr Constant SHA1_DATA_SIZE
+The internal block size of SHA1. Useful for some special constructions,
+in particular HMAC-SHA1.
+@end defvr
+
+@deftypefun void sha1_init (struct sha1_ctx *@var{ctx})
+Initialize the SHA1 state.
+@end deftypefun
+
+@deftypefun void sha1_update (struct sha1_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+Hash some more data.
+@end deftypefun
+
+@deftypefun void sha1_final (struct sha1_ctx *@var{ctx})
+Performs final processing that is needed after all input data has been
+processed with @code{sha1_update}.
+@end deftypefun
+
+@deftypefun void sha1_digest (struct sha1_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+Extracts the digest, writing it to @var{digest}. @var{length} may be smaller than
+@code{SHA1_DIGEST_SIZE}, in which case only the first @var{length} octets
+of the digest are written.
+
+This functions doesn't change the state in any way.
+@end deftypefun
+
+@node Cipher functions, Miscellaneous functions, Hash functions, Reference
+@comment  node-name,  next,  previous,  up
+@section Cipher functions
+
+A @dfn{cipher} is a function that takes a message or @dfn{plaintext}
+and a secret @dfn{key} and transforms it to a @dfn{ciphertext}. Given
+only the ciphertext, but not the key, it should be hard to find the
+cleartext. Given matching pairs of plaintext and ciphertext, it should
+be hard to find the key.
+
+To do this, you first initialize the cipher context for encryption or
+decryption with a particular key, then use it to process plaintext och
+ciphertext messages. The initialization is also called @dfn{key setup}.
+With Nettle, it is recommended to use each context struct for only one
+direction, even if some of the ciphers use a single key setup function
+that can be used for both encryption and decryption.
+
+There are two main classes of ciphers: Block ciphers and stream ciphers.
+
+A block cipher can process data only in fixed size chunks, called
+@dfn{blocks}. Typical block sizes are 8 or 16 octets. To encrypt
+arbitrary messages, you usually have to pad it to an integral number of
+blocks, split it into blocks, and then process each block. The simplest
+way is to process one block at a time, independent of each other. That
+mode of operation is called @dfn{ECB}, Electronic Code Book mode.
+However, using ECB is usually a bad idea. For a start, plaintext blocks
+that are equal are transformed to ciphertext blocks that are equal; that
+leaks information about the plaintext. Usually you should apply the
+cipher is some feedback mode, @dfn{CBC} (Cipher Block Chaining) being one
+of the most popular.
+
+A stream cipher can be used for messages of arbitrary length; a typical
+stream cipher is a keyed pseudorandom generator. To encrypt a plaintext
+message of @var{n} octets, you key the generator, generate @var{n}
+octets of pseudorandom data, and XOR it with the plaintext. To decrypt,
+regenerate the same stream using the key, XOR it to the ciphertext, and
+the plaintext is recovered.
+
+@strong{Caution:} The first rule for this kind of cipher is the
+same as for a One Time Pad: @emph{never} ever use the same key twice.
+
+A common misconception is that encryption, by itself, implies
+authentication. Say that you and a friend share a secret key, and you
+receive an encrypted message, apply the key, and get a cleartext message
+that makes sense to you. Can you then be sure that it really was your
+friend that wrote the message you're reading? The anser is no. For
+example, if you were using a block cipher in ECB mode, an attacker may
+pick up the message on its way, and reorder, delete or repeat some of
+the blocks. Even if the attacker can't decrypt the message, he can
+change it so that you are not reading the same message as your friend
+wrote. If you are using a block cipher in CBC mode rather than ECB, or
+are using a stream cipher, the possibilities for this sort of attack are
+different, but the attacker can still make predictable changes to the
+message.
+
+It is recommended to @emph{always} use an authentication mechanism in
+addition to encrypting the messages. Popular choices are Message
+Authetication Codes like HMAC-SHA1, or digital signatures.
+
+Some ciphers have so called "weak keys", keys that results in
+undesirable structure after the key setup processing, and should be
+avoided. In Nettle, the presence of weak keys for a cipher mean that the
+key setup function can fail, so you have to check its return value. In
+addition, the context struct has a field @code{status}, that is set to a
+non-zero value if key setup fails. When possible, avoid algorithm that
+have weak keys. There are several good ciphers that don't have any weak
+keys.
+
+@subsection AES
+AES is a quite new block cipher, specified by NIST as a replacement for
+the older DES standard. It is the result of a competition between cipher
+designers, and the winning design, constructed by Joan Daemen and
+Vincent Rijnmen. Before it won the competition, it was known under the
+name RIJNDAEL.
+
+Like all the AES candidates, the winning design uses a block size of 128
+bits, or 16 octets, and variable keysize, 128, 192 and 256 bits (16, 24
+and 32 octets) being the allowed key sizes. It does not have any weak
+keys. Nettle defines AES in @file{<nettle/aes.h>}.
+ 
+@deftp {Context struct} {struct aes_ctx}
+@end deftp
+
+@defvr Constant AES_BLOCK_SIZE
+The AES blocksize, 16
+@end defvr
+
+@defvr Constant AES_MIN_KEY_SIZE
+@end defvr
+
+@defvr Constant AES_MAX_KEY_SIZE
+@end defvr
+
+@defvr Constant AES_KEY_SIZE
+Default AES key size, 32
+@end defvr
+
+@deftypefun void aes_set_key (struct aes_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
+Initialize the cipher. The same function is used for both encryption and
+decryption. 
+@end deftypefun
+
+@deftypefun void aes_encrypt (struct aes_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
+Encryption function. @var{length} must be an integral multiple of the
+block size. If it is more than one block, the data is processed in ECB
+mode. @code{src} and @code{dst} may be equal, but they must not overlap
+in any other way.
+@end deftypefun
+
+@deftypefun void aes_decrypt (struct aes_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
+Analogous to @code{aes_encrypt}
+@end deftypefun
+
+@subsection ARCFOUR
+ARCFOUR is a stream cipher, also known under the trade marked name RC4,
+and it is one of the fastest ciphers around. A problem is that the key
+setup of ARCFOUR is quite weak, you should never use keys with
+structure, keys that are ordinary passwords, or sequences of keys like
+"secret:1", "secret:2", @enddots{}. If you have keys that don't look
+like random bit strings, and you want to use ARCFOUR, always hash the
+key before feeding it to ARCFOUR. For example
+
+@example
+/* A more robust key setup function for ARCFOUR */
+void
+my_arcfour_set_key(struct arcfour_ctx *ctx,
+                   unsigned length, const uint8_t *key)
+@{
+  struct sha1_ctx hash;
+  uint8_t digest[SHA1_DIGEST_SIZE];
+
+  sha1_init(&hash);
+  sha1_update(&hash, length, key);
+  sha1_final(&hash);
+  sha1_digest(&hash, SHA1_DIGEST_SIZE, digest);
+
+  arcfour_set_key(ctx, SHA1_DIGEST_SIZE, digest);
+@}
+@end example
+
+Nettle defines ARCFOUR in @file{<nettle/arcfour.h>}.
+
+@deftp {Context struct} {struct arcfour_ctx}
+@end deftp
+
+@defvr Constant ARCFOUR_BLOCK_SIZE
+The ARCFOUR blocksize, 16
+@end defvr
+
+@defvr Constant ARCFOUR_MIN_KEY_SIZE
+Minimum key size, 1
+@end defvr
+
+@defvr Constant ARCFOUR_MAX_KEY_SIZE
+Maximum key size, 256
+@end defvr
+
+@defvr Constant ARCFOUR_KEY_SIZE
+Default ARCFOUR key size, 16
+@end defvr
+
+@deftypefun void arcfour_set_key (struct arcfour_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
+Initialize the cipher. The same function is used for both encryption and
+decryption. 
+@end deftypefun
+
+@deftypefun void arcfour_crypt (struct arcfour_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
+Encrypt some data. The same function is used for both encryption and
+decryption. Unlike the block ciphers, this function modifies the
+context, so you can split the data into arbitrary chunks and encrypt
+them one after another. The result is the same as if you had called
+@code{arcfour_crypt} only once with all the data.
+@end deftypefun
+
+@subsection CAST128
+
+@subsection BLOWFISH
+
+@subsection DES
+
+@subsection SERPENT
+
+@subsection TWOFISH
+
+@node Miscellaneous functions,  , Cipher functions, Reference
+@comment  node-name,  next,  previous,  up
+@section Miscellaneous functions
+
+@node Installation, Index, Reference, Top
+@comment  node-name,  next,  previous,  up
+@chapter Installation
+
+Nettle uses @command{autoconf} and @command{automake}. To build it,
+unpack the source and run
+
+@example
+./configure
+make
+make check
+make install
+@end example
+
+to install in the default location, @file{/usr/local}. The library is
+installed in @file{/use/local/lib/libnettle.a} and the include files are
+installed in @file{/use/local/include/nettle/}.
+
+Only static libraries are installed.
+
+@node Index,  , Installation, Top
+@comment  node-name,  next,  previous,  up
+@unnumbered Function and Concept Index
+
+@printindex cp
+
+@bye
