@@ -11,6 +11,8 @@ noinst_PROGRAMS = nettle-benchmark @RSA_EXAMPLES@
 LDADD = io.o -lnettle
 nettle_benchmark_LDADD = -lnettle
 
+nettle_benchmark_SOURCES = nettle-benchmark.c nettle-openssl.c
+
 TS_PROGS = rsa-sign-test rsa-verify-test
 EXTRA_DIST = io.c io.h run-tests setup-env teardown-env $(TS_PROGS)
 

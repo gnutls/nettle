@@ -51,7 +51,7 @@ libnettle_a_SOURCES = aes.c aes.h aes-internal.h \
 		      pgp.h pgp-encode.c rsa2openpgp.c \
 		      buffer.h buffer.c \
 		      nettle-meta.h \
-		      nettle-internal.c nettle-internal.h nettle-openssl.c
+		      nettle-internal.c nettle-internal.h
 
 LIBOBJS = @LIBOBJS@
 libnettle_a_LIBADD = $(LIBOBJS)
