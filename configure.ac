@@ -185,9 +185,18 @@ AC_SUBST(RSA_EXAMPLES)
 # Add -R flags needed to run programs linked with gmp
 LSH_RPATH_FIX
 
+AH_TEMPLATE([HAVE_LIBCRYPTO],
+	    [Define if you have openssl's libcrypto (used for benchmarking)])
+
+OPENSSL_LIBFLAGS=''
+
 # Check for openssl's libcrypto (used only for benchmarking)
-AC_CHECK_LIB(crypto, BF_ecb_encrypt)
-LSH_RPATH_FIX
+AC_CHECK_LIB(crypto, BF_ecb_encrypt,
+  [AC_DEFINE(HAVE_LIBCRYPTO)
+   OPENSSL_LIBFLAGS='-lcrypto'
+])
+
+AC_SUBST(OPENSSL_LIBFLAGS)
 
 # Set these flags *last*, or else the test programs won't compile
 if test x$GCC = xyes ; then
