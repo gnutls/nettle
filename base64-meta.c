@@ -24,5 +24,18 @@
 
 #include "base64.h"
 
+/* Same as the macros with the same name */
+static unsigned
+base64_encode_length(unsigned length)
+{
+  return BASE64_ENCODE_LENGTH(length);
+}
+
+static unsigned
+base64_decode_length(unsigned length)
+{
+  return BASE64_DECODE_LENGTH(length);
+}
+
 const struct nettle_armor nettle_base64
 = _NETTLE_ARMOR(base64, BASE64);
