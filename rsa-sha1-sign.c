@@ -31,7 +31,7 @@
 
 #include <assert.h>
 
-include "rsa.h"
+#include "rsa.h"
 
 #include "bignum.h"
 #include "pkcs1.h"
