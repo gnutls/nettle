@@ -32,8 +32,8 @@
  * Slightly edited by Niels Möller, 1997
  */
 
-#ifndef NETTLE_DES_H
-#define NETTLE_DES_H
+#ifndef NETTLE_DES_H_INCLUDED
+#define NETTLE_DES_H_INCLUDED
 
 #include <inttypes.h>
 
@@ -65,4 +65,4 @@ des_decrypt(struct des_ctx *ctx,
 	    unsigned length, uint8_t *dst,
 	    const uint8_t *src);
 
-#endif /* NETTLE_DES_H */
+#endif /* NETTLE_DES_H_INCLUDED */
