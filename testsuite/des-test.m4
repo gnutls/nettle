@@ -8,6 +8,23 @@ uint8_t msg[DES_BLOCK_SIZE];
 uint8_t cipher[DES_BLOCK_SIZE];
 uint8_t clear[DES_BLOCK_SIZE];
 
+/* From Applied Cryptography */
+H(msg, "01234567 89ABCDE7");
+
+if (!des_set_key(&ctx, H("01234567 89ABCDEF")))
+  FAIL;
+
+des_encrypt(&ctx, DES_BLOCK_SIZE, cipher, msg);
+
+if (!MEMEQ(DES_BLOCK_SIZE, cipher,
+	H("C9574425 6A5ED31D")))
+  FAIL;
+
+des_decrypt(&ctx, DES_BLOCK_SIZE, clear, cipher);
+if (!MEMEQ(DES_BLOCK_SIZE, msg, clear))
+  FAIL;
+
+
 H(msg, "00 00 00 00 00 00 00 00");
 
 if (!des_set_key(&ctx, H("01 01 01 01 01 01 01 80")))
