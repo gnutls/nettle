@@ -1,3 +1,8 @@
+2001-11-02  Niels Möller  <nisse@ehand.com>
+
+	* yarrow256.c (yarrow256_init): Fixed order of code and
+	declarations. 
+
 2001-10-30  Niels Möller  <nisse@ehand.com>
 
 	* rsa-compat.h: Added real prototypes and declarations.
