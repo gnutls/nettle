@@ -1,7 +1,7 @@
-	! Used registers:	%l0,1,2,3,4,5
+	! Used registers:	%l0,1,2,3,4,5,6,7
 	!			%i0,1,2,3,4,5 (%i6=%fp, %i7 = return)
 	!			%o0,1,2,3,4,5,7 (%o6=%sp)
-	!			%g2,3,4
+	!			%g2,3,4,5,6
 include(`asm.m4')
 	
 	.file	"aes.asm"
@@ -26,8 +26,15 @@ define(diff, %l2)
 define(nrounds, %l3)
 
 ! Loop variables
-define(round, %l4) ! Should perhaps be 16 * round
+define(round, %l4) ! Really 16 * round
 define(i, %l5)
+
+! Further loop invariants
+define(T0, %l6)
+define(T1, %l7)
+define(T2, %g5)
+define(T3, %g6)
+define(key, %g7)
 
 ! Teporaries
 define(t0, %o0)
@@ -39,45 +46,48 @@ define(idx, %o4)
 _aes_crypt:
 ! Why -136?
 	save	%sp, -136, %sp
-
 	cmp	length, 0
 	be	.Lend
-
 	! wtxt
 	add	%fp, -24, wtxt
+	
 	add	%fp, -40, tmp
-
 	ld	[ctx + AES_NROUNDS], nrounds
-
 	! Compute xor, so that we can swap efficiently.
 	xor	wtxt, tmp, diff
-
 	! The loop variable will be multiplied by 16.
 	sll	nrounds, 4, nrounds
-
+	
+	! More loop invariants
+	add	T, AES_TABLE0, T0
+	add	T, AES_TABLE1, T1
+	add	T, AES_TABLE2, T2
+	add	T, AES_TABLE3, T3
+		
 .Lblock_loop:
 	! Read src, and add initial subkey
 	mov	-4, i
 .Lsource_loop:
 	add	i, 4, i
-		
 	add	i, src, %o5
 	ldub	[%o5+3], %g2
-
 	ldub	[%o5+2], %g3
+	
 	sll	%g2, 24, %g2
 	ldub	[%o5+1], %o0
 	sll	%g3, 16, %g3
 	or	%g2, %g3, %g2
+	
 	ldub	[src+i], %o5
 	sll	%o0, 8, %o0
 	ld	[ctx+i], %g3
 	or	%g2, %o0, %g2
+	
 	or	%g2, %o5, %g2
 	xor	%g2, %g3, %g2
-
 	cmp	i, 12
 	bleu	.Lsource_loop
+	
 	st	%g2, [wtxt+i]
 
 	! ! Read a little-endian word
@@ -86,6 +96,7 @@ _aes_crypt:
 	! 
 	! ldub	[src+2], %g3
 	! or	%g3, %g2, %g2
+	
 	! sll	%g2, 8, %g2
 	! 
 	! ldub	[src+1], %g3
@@ -97,16 +108,19 @@ _aes_crypt:
 	! sll	%g2, 8, %g2
 	! 
 	! ld	[ctx+%o3], %g3
+	
 	! xor	%g3, %g2, %g2
 	! 
 	! add	src, 4, src
 	! st	%g2, [wtxt+%o4]
 	! 
 	! cmp	%o3, 8
+	
 	! bleu	.Lsource_loop
 	! add	%o3, 4, %o3
 
 	mov	16, round
+	! add	ctx, 16, key
 
 .Lround_loop:
 	! 4*i
@@ -121,12 +135,9 @@ _aes_crypt:
 	
 	! AES_SIDX1
 	ld	[idx-32], t1		! 1
-
 	! AES_SIDX2
-	! ld	[idx-16], t2		! 2
 	! IDX2(j) = j XOR 2
 	xor	i, 8, t2
-	
 	! wtxt[IDX1...]
 	add	wtxt, t1, t1		! 1
 	ldub	[t1+2], t1		! 1
@@ -134,56 +145,44 @@ _aes_crypt:
 	! AES_SIDX3
 	ld	[idx], t3		! 3
 	sll	t1, 2, t1		! 1
-	
 	! wtxt[i]
 	ld	[wtxt+i], t0		! 0
-	
 	! wtxt[IDX2...]
 	lduh	[wtxt+t2], t2		! 2
 	
 	and	t0, 255, t0		! 0
-
 	! wtxt[IDX3...]
 	ldub	[wtxt+t3], t3		! 3
-	
 	sll	t0, 2, t0		! 0
-	add	t0, AES_TABLE0, t0	! 0
-	ld	[T+t0], t0		! 0
+	ld	[T0+t0], t0		! 0
 
-	add	t1, AES_TABLE1, t1	! 1
 	and	t2, 255, t2		! 2
-	ld	[T+t1], t1		! 1
+	ld	[T1+t1], t1		! 1
 	sll	t2, 2, t2		! 2
-	add	t2, AES_TABLE2, t2	! 2
-	ld	[T+t2], t2		! 2
+	ld	[T2+t2], t2		! 2
+
 	sll	t3, 2, t3		! 3
-	add	t3, AES_TABLE3, t3	! 3
-	ld	[T+t3], t3		! 3
+	ld	[T3+t3], t3		! 3
 	xor	t0, t1, t0		! 0, 1
 	xor	t0, t2, t0		! 0, 1, 2
 
 	add	idx, 4, idx		
-
 	! Fetch roundkey
-	! FIXME: We could save one instruction
-	! if we kept a pointer to the current subkey,
-	! indexed by i.
 	ld	[ctx+round], t1
 	add	round, 4, round
-	
+	! ld	[key+i], t1
 	xor	t0, t3, t0		! 0, 1, 2, 3
 
 	xor	t0, t1, t0
 	st	t0, [tmp+i]
-
 	cmp	i, 8
-
 	bleu	.Linner_loop
+	
 	add	i, 4, i
 	
 	! switch roles for tmp and wtxt
 	xor	wtxt, diff, wtxt
-
+	! add	key, 16, key
 	cmp	round, nrounds
 	blu	.Lround_loop
 	xor	tmp, diff, tmp
