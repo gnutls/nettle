@@ -32,6 +32,16 @@
 #include "md5.h"
 #include "sha.h"
 
+/* For PKCS#1 to make sense, the size of the modulo, in octets, must
+ * be at least 11 + the length of the DER-encoded Digest Info.
+ *
+ * And a DigestInfo is 34 octets for md5, and 35 octets for sha1. 46
+ * octets is 368 bits, and as the upper 7 bits may be zero, the
+ * smallest useful size of n is 361 bits. */
+
+#define RSA_MINIMUM_N_OCTETS 46
+#define RSA_MINIMUM_N_BITS 361
+
 struct rsa_public_key
 {
   /* Size of the modulo, in octets. This is also the size of all
@@ -140,18 +150,31 @@ rsa_compute_root(struct rsa_private_key *key, mpz_t x, const mpz_t m);
 
 
 /* Key generation */
+
+/* Randomness function. This typedef doesn't really belong here, but
+ * so far it's used only by the rsa key generator. */
+typedef void (*nettle_random_func)(void *ctx,
+				   unsigned length, uint8_t *dst);
+
+/* Progress report function. */
+typedef void (*nettle_progress_func)(void *ctx,
+				     int c);
+
+/* Note that the key structs must be initialized first. */
 int
 rsa_generate_keypair(struct rsa_public_key *pub,
-		     struct rsa_public_key *key,
-		     void *random_ctx,
-		     void (*random)(void *ctx, unsigned length, uint8_t *dst),
-		     
+		     struct rsa_private_key *key,
+
+		     void *random_ctx, nettle_random_func random,
+		     void *progress_ctx, nettle_progress_func progress,
+
 		     /* Desired size of modulo, in bits */
 		     unsigned n_size,
 		     
 		     /* Desired size of public exponent, in bits. If
 		      * zero, the passed in value pub->e is used. */
 		     unsigned e_size);
+
 
 #define RSA_SIGN(key, algorithm, ctx, length, data, signature) ( \
   algorithm##_update(ctx, length, data), \
