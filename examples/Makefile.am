@@ -4,13 +4,12 @@
 AM_LDFLAGS = -L..
 
 EXTRA_PROGRAMS = rsa-keygen rsa-sign rsa-verify
-noinst_PROGRAMS = nettle-benchmark sexp-conv @RSA_EXAMPLES@
+noinst_PROGRAMS = nettle-benchmark @RSA_EXAMPLES@
 
 LDADD = io.o -lnettle
 nettle_benchmark_LDADD = -lnettle
 
-TS_PROGS = rsa-sign-test rsa-verify-test sexp-conv-test
-
+TS_PROGS = rsa-sign-test rsa-verify-test
 EXTRA_DIST = io.c io.h run-tests setup-env teardown-env $(TS_PROGS)
 
 .PHONY: run-tests
