@@ -1,3 +1,8 @@
+2004-11-16  Niels Möller  <nisse@lysator.liu.se>
+
+	* Deleted getopt.c, getopt.h and getopt1.c from the CVS tree. Link
+	them from shared copies in lsh/misc instead.
+
 2004-11-14  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in (DEP_FILES): Try include with only one macro
