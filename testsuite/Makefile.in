@@ -35,14 +35,14 @@ DISTFILES = $(SOURCES) Makefile.in $(TS_SH) run-tests rfc1750.txt testutils.h
 
 all: $(TARGETS)
 
+.SUFFIXES:
+.SUFFIXES: .c .$(OBJEXT) .exe
+
 .c.$(OBJEXT):
 	$(COMPILE) -I.. -c $< && $(DEP_PROCESS)
 
-.o$(EXEEXT):
+.$(OBJEXT)$(EXEEXT):
 	$(LINK) $< testutils.o -lnettle $(LIBS) -o $@
-# .c$(EXEEXT):
-# 	$(COMPILE) -I..
-# 	$(CC) $(CFLAGS) $(LDFLAGS) $*.o testutils.o -L.. -lnettle $(LIBS) -o $@
 
 $(TARGETS) : testutils.$(OBJEXT) ../libnettle.a
 
