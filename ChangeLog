@@ -1,3 +1,7 @@
+2002-03-20  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* testsuite/run-tests (test_program): Added missing single quote.
+
 2002-03-20  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/run-tests (test_program): Test the exit status of the
