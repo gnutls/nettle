@@ -162,7 +162,6 @@ yarrow_iterate(uint8_t *digest)
       sha256_update(&hash, sizeof(v0), v0);
       sha256_update(&hash, sizeof(count), count);
 
-      sha256_final(&hash);
       sha256_digest(&hash, SHA256_DIGEST_SIZE, digest);
     }
 }
@@ -191,9 +190,7 @@ yarrow_fast_reseed(struct yarrow256_ctx *ctx)
       sha256_update(&ctx->pools[YARROW_FAST], sizeof(blocks), blocks);
     }
   
-  sha256_final(&ctx->pools[YARROW_FAST]);
   sha256_digest(&ctx->pools[YARROW_FAST], sizeof(digest), digest);
-  sha256_init(&ctx->pools[YARROW_FAST]);
 
   /* Iterate */
   yarrow_iterate(digest);
@@ -228,9 +225,7 @@ yarrow_slow_reseed(struct yarrow256_ctx *ctx)
 
   /* Get digest of the slow pool*/
   
-  sha256_final(&ctx->pools[YARROW_SLOW]);
   sha256_digest(&ctx->pools[YARROW_SLOW], sizeof(digest), digest);
-  sha256_init(&ctx->pools[YARROW_SLOW]);
 
   /* Feed it into the fast pool */
   sha256_update(&ctx->pools[YARROW_FAST], sizeof(digest), digest);
