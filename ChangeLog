@@ -1,5 +1,13 @@
 2001-10-30  Niels Möller  <nisse@ehand.com>
 
+	* rsa-compat.h: Added real prototypes and declarations.
+
+	* Makefile.am (libnettle_a_SOURCES): Added rsa-compat.h and
+	rsa-compat.c. 
+
+	* rsa-compat.c: New file, implementing RSA ref signature and
+	verification functions.
+
 	* configure.in: Check for libgmp. Deleted tests for SIZEOF_INT and
 	friends. 
 
