@@ -16,3 +16,15 @@ Improve sexp_Format to accept literals, like "n" in
   sexp_format(buffer, "(n%b)", n);
 
 Valgrind reports errors on the des-compat test program. Investigate.
+
+
+Change the convention for declaring function pointers. Instead of for
+example
+
+  typedef void *
+  nettle_realloc_func(void *ctx, void *p, unsigned length);
+
+use
+
+  typedef void
+  nettle_realloc_func(void *ctx, void *p, unsigned length);
