@@ -5,7 +5,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2003 Niels Möller
+ * Copyright (C) 2003 Niels Möller, Marcus Comstedt
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -23,7 +23,8 @@
  * MA 02111-1307, USA.
  */
 
-/* Adapted from md5 code by Marcus Comstedt */
+/* Based on the public domain md5 code, and modified by Marcus
+   Comstedt */
 
 #if HAVE_CONFIG_H
 # include "config.h"
