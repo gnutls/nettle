@@ -7,9 +7,30 @@
 #include "buffer.h"
 
 #include <assert.h>
+#include <errno.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
+void
+die(const char *format, ...)
+#if __GNUC___
+     __attribute__((__format__ (__printf__,1, 2)))
+     __attribute__((__noreturn__))
+#endif
+     ;
+
+void
+die(const char *format, ...)
+{
+  va_list args;
+  va_start(args, format);
+  vfprintf(stderr, format, args);
+  va_end(args);
+
+  exit(EXIT_FAILURE);
+}
 
 enum sexp_mode
   {
@@ -67,9 +88,6 @@ struct sexp_output
   enum sexp_mode mode;
   struct base64_encode_ctx base64;
 
-  /* Items at the head of the list */
-  unsigned items;
-  
   unsigned pos;
 };
 
@@ -84,7 +102,7 @@ sexp_output_init(struct sexp_output *output, FILE *f, enum sexp_mode mode)
 
 /* Input */
 
-/* Returns 1 on success. On failure, return -1. For special tokens,
+/* Returns 1 on success. For special tokens,
  * return 0 and set input->token accordingly. */
 static int
 sexp_get_char(struct sexp_input *input, uint8_t *out)
@@ -97,7 +115,7 @@ sexp_get_char(struct sexp_input *input, uint8_t *out)
 	  int done;
 	  int c = getc(input->f);
 	  if (c < 0)
-	    return -1;
+	    die("Unexpected end of file in base64 data.\n");
 
 	  if (c == '}')
 	    {
@@ -107,7 +125,7 @@ sexp_get_char(struct sexp_input *input, uint8_t *out)
 		  return 0;
 		}
 	      else
-		return -1;
+		die("Invalid base64 data.\n");
 	    }
 
 	  done = base64_decode_single(&input->base64, out, c);
@@ -122,7 +140,7 @@ sexp_get_char(struct sexp_input *input, uint8_t *out)
       if (c < 0)
 	{
 	  if (ferror(input->f))
-	    return -1;
+	    die("Read error: %s\n", strerror(errno));
 	  
 	  input->token = SEXP_EOF;
 	  return 0;
@@ -167,27 +185,12 @@ sexp_get_token_char(struct sexp_input *input)
   return 0;
 }
      
-
-#if 0
-static void
-sexp_unget_char(struct sexp_input *input, uint8_t c)
-{
-  assert(input->mode == SEXP_ADVANCED);
-  ungetc(c, input->f);
-}
-
-static int
-sexp_get_string_char(struct sexp_input *input)
-{
-  assert(input->mode == SEXP_ADVANCED);
-}
-#endif
-
+/* Return 0 at end-of-string */
 static int
 sexp_get_quoted_char(struct sexp_input *input, uint8_t *c)
 {
   if (sexp_get_char(input, c) <= 0)
-    return -1;
+    die("Unexpected end of file in quoted string.\n");
 
   for (;;)
     switch (*c)
@@ -197,8 +200,9 @@ sexp_get_quoted_char(struct sexp_input *input, uint8_t *c)
       case '\"':
 	return 0;
       case '\\':
-	if (sexp_get_char(input, c) <= 0)
-	  return -1;
+	if (!sexp_get_char(input, c))
+	  die("Unexpected end of file in quoted string.\n");
+
 	switch (*c)
 	  {
 	  case 'b': *c = '\b'; return 1;
@@ -212,51 +216,41 @@ sexp_get_quoted_char(struct sexp_input *input, uint8_t *c)
 	    /* Not implemnted */
 	    abort();
 	  case '\n':
-	    if (sexp_get_char(input, c) <= 0)
-	      return -1;
-	    if (*c == '\r' && sexp_get_char(input, c) <= 0)
-	      return -1;
+	    if (!sexp_get_char(input, c))
+	      die("Unexpected end of file in quoted string.\n");
+	    if (*c == '\r' && !sexp_get_char(input, c))
+	      die("Unexpected end of file in quoted string.\n");
 	    break;
 	  case '\r':
-	    if (sexp_get_char(input, c) <= 0)
-	      return -1;
-	    if (*c == '\n' && sexp_get_char(input, c) <= 0)
-	      return -1;
+	    if (!sexp_get_char(input, c))
+	      die("Unexpected end of file in quoted string.\n");
+	    if (*c == '\n' && !sexp_get_char(input, c))
+	      die("Unexpected end of file in quoted string.\n");
 	    break;
 	  }
       }
 }
 
-static int
+static void
 sexp_get_quoted_string(struct sexp_input *input)
 {
   assert(input->mode == SEXP_ADVANCED);
   
-  for (;;)
-    {
-      uint8_t c;
-      
-      switch (sexp_get_quoted_char(input, &c))
-	{
-	case 0:
-	  return 1;
-	case -1:
-	  return 0;
-	default:
-	  if (!NETTLE_BUFFER_PUTC(&input->string, c))
-	    return 0;
-	}
-    }
+  uint8_t c;
+
+  while (sexp_get_quoted_char(input, &c))
+    if (!NETTLE_BUFFER_PUTC(&input->string, c))
+      die("Virtual memory exhasuted.\n");
 }
 
-static int
+static void
 sexp_get_hex_string(struct sexp_input *input)
 {
   /* Not implemented */
   abort();
 }
 
-static int
+static void
 sexp_get_base64_string(struct sexp_input *input)
 {
   struct base64_decode_ctx ctx;
@@ -270,37 +264,40 @@ sexp_get_base64_string(struct sexp_input *input)
       uint8_t c;
       uint8_t decoded;
       
-      if (sexp_get_char(input, &c) <= 0)
-	return -1;
+      if (!sexp_get_char(input, &c))
+	die("Unexpected end of file in base64 string.\n");
 
       if (c == '|')
-	return base64_decode_status(&ctx);
+	{
+	  if (!base64_decode_status(&ctx))
+	    die("Invalid base64 string.\n");
+	  return;
+	}
       
-      if (base64_decode_single(&ctx, &decoded, c))
-	if (!NETTLE_BUFFER_PUTC(&input->string, decoded))
-	  return 0;
+      if (base64_decode_single(&ctx, &decoded, c)
+	  && !NETTLE_BUFFER_PUTC(&input->string, decoded))
+	die("Virtual memory exhasuted.\n");	
     }
 }
 
-static int
+static void
 sexp_get_token_string(struct sexp_input *input, uint8_t c)
 {
   assert(input->mode == SEXP_ADVANCED);
 
   if (!TOKEN_CHAR(c) || ! NETTLE_BUFFER_PUTC(&input->string, c))
-    return 0;
+    die("Invalid token.\n");
   
   while ( (c = sexp_get_token_char(input)) > 0)
     {
       if (!NETTLE_BUFFER_PUTC(&input->string, c))
-	return 0;
+	die("Virtual memory exhasuted.\n");	
     }
 
   assert (input->string.size);
-  return 1;
 }
 
-static int
+static void
 sexp_get_string(struct sexp_input *input, uint8_t c)
 {
   assert(input->mode == SEXP_ADVANCED);
@@ -310,20 +307,23 @@ sexp_get_string(struct sexp_input *input, uint8_t c)
   switch (c)
     {
     case '\"':
-      return sexp_get_quoted_string(input);
-
+      sexp_get_quoted_string(input);
+      break;
+      
     case '#':
-      return sexp_get_hex_string(input);
+      sexp_get_hex_string(input);
+      break;;
 
     case '|':
-      return sexp_get_base64_string(input);
-
+      sexp_get_base64_string(input);
+      break;
     default:
-      return sexp_get_token_string(input, c);
+      sexp_get_token_string(input, c);
+      break;
     }
 }
 
-static int
+static void
 sexp_get_string_length(struct sexp_input *input, unsigned length)
 {
   uint8_t c;
@@ -334,15 +334,15 @@ sexp_get_string_length(struct sexp_input *input, unsigned length)
   if (!length)
     {
       /* There must ne no more digits */
-      if (sexp_get_char(input, &c) <= 0)
-	return 0;
+      if (!sexp_get_char(input, &c))
+	die("Unexpected end of file in string.\n");
     }
   else
     /* Get rest of digits */
     for (;;)
       {
-	if (sexp_get_char(input, &c) <= 0)
-	  return 0;
+	if (!sexp_get_char(input, &c))
+	  die("Unexpected end of file in string.\n");
 
 	if (c < '0' || c > '9')
 	  break;
@@ -356,22 +356,23 @@ sexp_get_string_length(struct sexp_input *input, unsigned length)
     case ':':
       /* Verbatim */
       for (; length; length--)
-	if (sexp_get_char(input, &c) <= 0
+	if (!sexp_get_char(input, &c)
 	    || !NETTLE_BUFFER_PUTC(&input->string, c))
-	  return 0;
+	  die("Unexpected end of file in string.\n");
       
-      return 1;
+      return;
 
     case '"':
       if (input->mode != SEXP_ADVANCED)
-	return 0;
+	die("Encountered quoted string in canonical mode.\n");
 
       for (; length; length--)
-	if (sexp_get_quoted_char(input, &c) != 1
+	if (!sexp_get_quoted_char(input, &c)
 	    || !NETTLE_BUFFER_PUTC(&input->string, c))
-	  return 0;
+	  die("Unexpected end of string.\n");
 
-      return sexp_get_quoted_char(input, &c) == 0;
+      if (sexp_get_quoted_char(input, &c))
+	die("Quoted string longer than expected.\n");
       
     case '#':
     case '|':
@@ -379,82 +380,80 @@ sexp_get_string_length(struct sexp_input *input, unsigned length)
       abort();
 
     default:
-      return 0;
+      die("Invalid string.\n");
     }
 }
 
-/* Returns 1 on success, zero on failure */
-static int
+static void
 sexp_get_token(struct sexp_input *input)
 {
   uint8_t c;
 
   for(;;)
-    switch (sexp_get_char(input, &c))
-      {
-      case -1:
-	return 0;
-      case 0:
-	return 1;
-      case 1:
-	switch(c)
-	  {
-	  case '0': case '1': case '2': case '3': case '4':
-	  case '5': case '6': case '7': case '8': case '9':
-	    return sexp_get_string_length(input, c - '0');
+    if (!sexp_get_char(input, &c))
+      return;
+    else
+      switch(c)
+	{
+	case '0': case '1': case '2': case '3': case '4':
+	case '5': case '6': case '7': case '8': case '9':
+	  sexp_get_string_length(input, c - '0');
+	  return;
 	  
-	  case '(':
-	    input->token = SEXP_LIST_START;
-	    return 1;
-	  case ')':
-	    input->token = SEXP_LIST_END;
-
-	    return 1;
-
-	  case '[':
-	    input->token = SEXP_DISPLAY_START;
-	    return 1;
-
-	  case ']':
-	    input->token = SEXP_DISPLAY_END;
-	    return 1;
-
-	  case ' ':  /* SPC, TAB, LF, CR */
-	  case '\t':
-	  case '\n':
-	  case '\r':
-	    if (input->mode != SEXP_ADVANCED)
-	      return 0;
-	    break;
-
-	  case ';': /* Comments */
-	    if (input->mode != SEXP_ADVANCED)
-	      return 0;
-
-	    for (;;)
-	      {
-		int c = getc(input->f);
-		if (c < 0)
-		  {
-		    if (ferror(input->f))
-		      return 0;
-		    else
-		      {
-			input->token = SEXP_EOF;
-			return 1;
-		      }
-		  }
-		if (c == '\n')
-		  break;
-	      }
-	    break;
+	case '(':
+	  input->token = SEXP_LIST_START;
+	  return;
 	  
-	  default:
-	    /* Ought to be a string */
-	    return (input->mode == SEXP_ADVANCED)
-	      && sexp_get_string(input, c);
-	  }
-      }
+	case ')':
+	  input->token = SEXP_LIST_END;
+	  return;
+
+	case '[':
+	  input->token = SEXP_DISPLAY_START;
+	  return;
+
+	case ']':
+	  input->token = SEXP_DISPLAY_END;
+	  return;
+
+	case ' ':  /* SPC, TAB, LF, CR */
+	case '\t':
+	case '\n':
+	case '\r':
+	  if (input->mode != SEXP_ADVANCED)
+	    die("Whitespace encountered in canonical mode.\n");
+	  break;
+
+	case ';': /* Comments */
+	  if (input->mode != SEXP_ADVANCED)
+	    die("Comment encountered in canonical mode.\n");
+
+	  for (;;)
+	    {
+	      int c = getc(input->f);
+	      if (c < 0)
+		{
+		  if (ferror(input->f))
+		    die("Read failed: %s.\n", strerror(errno));
+		  else
+		    {
+		      input->token = SEXP_EOF;
+		      return;
+		    }
+		}
+	      if (c == '\n')
+		break;
+	    }
+	  break;
+	  
+	default:
+	  /* Ought to be a string */
+	  if (input->mode != SEXP_ADVANCED)
+	    die("Encountered advanced string in canonical mode.\n");
+
+	  sexp_get_string(input, c);
+	  return;
+	}
 }
 
 
@@ -669,8 +668,6 @@ sexp_put_list_start(struct sexp_output *output, unsigned indent)
   if (!sexp_put_char(output, indent, '('))
     return 0;
   
-  output->items = 0;
-
   return 1;
 }
 
@@ -696,8 +693,8 @@ static int
 sexp_convert_string(struct sexp_input *input, struct sexp_output *output,
 		    unsigned indent)
 {
-  return (sexp_get_token(input)
-	  && input->token == SEXP_STRING
+  sexp_get_token(input);
+  return (input->token == SEXP_STRING
 	  && sexp_put_string(output, indent, &input->string));
 }
 
@@ -710,12 +707,11 @@ sexp_convert_list(struct sexp_input *input, struct sexp_output *output,
 		  unsigned indent)
 {
   unsigned item;
-  
+
   for (item = 0;; item++)
     {
-      if (!sexp_get_token(input))
-	return 0;
-
+      sexp_get_token(input);
+  
       /* Check for end of list */
       if (input->token == SEXP_LIST_END
 	  || input->token == SEXP_EOF
@@ -749,10 +745,32 @@ sexp_convert_list(struct sexp_input *input, struct sexp_output *output,
     }
 }
 
+static void
+sexp_convert_file(struct sexp_input *input, struct sexp_output *output)
+{
+  sexp_get_token(input);
+
+  while (input->token != SEXP_EOF)
+    {
+      sexp_convert_item(input, output, 0);
+      if (output->mode == SEXP_ADVANCED)
+	if (!sexp_put_newline(output, 0))
+	  die("Write failed.\n");
+
+      sexp_get_token(input);
+    }
+
+  if (fflush(output->f) < 0)
+    die("Final fflush failed: %s.\n", strerror(errno));
+}
+
+
+
 static int
 sexp_skip_token(struct sexp_input *input, enum sexp_token token)
 {
-  return sexp_get_token(input) && input->token == token;
+  sexp_get_token(input);
+  return input->token == token;
 }
 
 /* Returns 1 on success, -1 on error, and 0 at end of list/file.
@@ -841,5 +859,7 @@ main(int argc, char **argv)
   sexp_input_init(&input, stdin, SEXP_ADVANCED);
   sexp_output_init(&output, stdout, SEXP_ADVANCED);
 
-  return sexp_convert_list(&input, &output, 0) ? EXIT_SUCCESS : EXIT_FAILURE;
+  sexp_convert_file(&input, &output);
+
+  return EXIT_SUCCESS;
 }
