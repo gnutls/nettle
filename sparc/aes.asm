@@ -292,7 +292,7 @@ undefine(<i>)
 define(i, round)
 
 	! Comments mark which j in T->sbox[Bj(wtxt[IDXj(i)])]
-	! the instruction is part of
+	! the instruction is part of.
 
 	C Unrolled final loop begins
 	! NOTE: First instruction duplicated in delay slot
@@ -325,7 +325,7 @@ define(i, round)
 	
 	or	t0, t3, t0	! 0, 1, 2, 3
 	xor	t0, t2, t0
-	add	i, 4, i
+	C add	i, 4, i
 	
 	srl	t0, 24, t3
 	srl	t0, 16, t2
@@ -343,7 +343,7 @@ define(i, round)
 	add	wtxt, t1, t1	! 1
 	ldub	[t1+2], t1	! 1
 
-	ld	[wtxt+i], t0	! 0
+	ld	[wtxt+4], t0	! 0
 	! IDX2(j) = j XOR 2
 	lduh	[wtxt+12], t2	! 2
 	and	t0, 255, t0	! 0
@@ -366,7 +366,7 @@ define(i, round)
 	
 	or	t0, t3, t0	! 0, 1, 2, 3
 	xor	t0, t2, t0
-	add	i, 4, i
+	C add	i, 4, i
 	
 	srl	t0, 24, t3
 	srl	t0, 16, t2
@@ -407,7 +407,7 @@ define(i, round)
 	
 	or	t0, t3, t0	! 0, 1, 2, 3
 	xor	t0, t2, t0
-	add	i, 4, i
+	C add	i, 4, i
 	
 	srl	t0, 24, t3
 	srl	t0, 16, t2
@@ -422,11 +422,10 @@ define(i, round)
 	C i = 3
 	ld	[IDX1+12], t1 	! 1
 
-	xor	i, 8, t2
 	add	wtxt, t1, t1	! 1
 	ldub	[t1+2], t1	! 1
 
-	ld	[wtxt+i], t0	! 0
+	ld	[wtxt+12], t0	! 0
 	! IDX2(j) = j XOR 2
 	lduh	[wtxt+4], t2	! 2
 	and	t0, 255, t0	! 0
@@ -449,7 +448,7 @@ define(i, round)
 	
 	or	t0, t3, t0	! 0, 1, 2, 3
 	xor	t0, t2, t0
-	add	i, 4, i
+	C add	i, 4, i
 	
 	srl	t0, 24, t3
 	srl	t0, 16, t2
@@ -461,8 +460,6 @@ define(i, round)
 	stb	t0, [dst]
 	add	dst, 4, dst
 	
-	C ld	[IDX1+i], t1 	! 1
-			
 	C Unrolled final loop ends
 	
 	addcc	length, -16, length
