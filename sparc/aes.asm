@@ -16,7 +16,7 @@ define(ctx, %i0)
 define(T, %i1)
 define(length, %i2)
 define(dst, %i3)
-define(src, %o2)
+define(src, %i4)
 
 define(wtxt, %l2)
 define(tmp, %o1)
@@ -25,10 +25,9 @@ _aes_crypt:
 	save	%sp, -136, %sp
 
 ! Why this moving around of the input parameters?
-	!mov	%i3, dst
 	cmp	length, 0
 	be	.Lend
-	mov	%i4, src
+
 	! wtxt
 	add	%fp, -24, %l1
 	mov	%l1, wtxt
@@ -96,19 +95,19 @@ _aes_crypt:
 	! 4*i:	%o3
 	mov	0, %o3
 .Lround_loop:
-	add	T, AES_SIDX3, %i4
+	add	T, AES_SIDX3, %o2
 .Linner_loop:
 	! AES_SIDX1
-	ld	[%i4-32], %g3
+	ld	[%o2-32], %g3
 
 	! AES_SIDX2
-	ld	[%i4-16], %o4
+	ld	[%o2-16], %o4
 	! wtxt[IDX1...]
 	add	%g4, %g3, %g3
 	ldub	[%g3+2], %o0
 
 	! AES_SIDX3
-	ld	[%i4], %g2
+	ld	[%o2], %g2
 	sll	%o0, 2, %o0
 	
 	! wtxt[j]
@@ -138,7 +137,7 @@ _aes_crypt:
 	xor	%g2, %o5, %g2
 	xor	%g2, %o0, %g2
 
-	add	%i4, 4, %i4
+	add	%o2, 4, %o2
 	
 	xor	%g2, %g3, %g2
 	st	%g2, [%l0+%o3]
@@ -181,7 +180,7 @@ _aes_crypt:
 	sll	%g2, 2, %g2
 	add	%g1, %g2, %g2
 	ldub	[%g2+2], %o3
-	add	%i5, dst, %i4
+	add	%i5, dst, %o2
 	ld	[%g4-16], %g3
 	add	%o1, 1, %o1
 	ld	[%g1+%i5], %g2
@@ -208,9 +207,9 @@ _aes_crypt:
 	srl	%g3, 24, %o5
 	srl	%g3, 16, %o0
 	srl	%g3, 8, %g2
-	stb	%g2, [%i4+1]
-	stb	%o5, [%i4+3]
-	stb	%o0, [%i4+2]
+	stb	%g2, [%o2+1]
+	stb	%o5, [%o2+3]
+	stb	%o0, [%o2+2]
 	stb	%g3, [dst+%i5]
 	add	%o7, 4, %o7
 	bleu	.Lfinal_loop
