@@ -133,10 +133,7 @@ _aes_crypt:
 	
 	sub	nrounds, 1, round
 	add	ctx, 16, key
-	nop
-	! 4*i
-	! NOTE: Instruction duplicated in delay slot
-	C mov	0, i
+
 .Lround_loop:
 	! The comments mark which j in T->table[j][ Bj(wtxt[IDXi(i)]) ]
 	! the instruction is a part of. 
@@ -149,7 +146,6 @@ _aes_crypt:
 	
 	! IDX2(j) = j XOR 2
 	mov	8, t2			! 2
-	C xor	i, 8, t2		! 2
 	add	wtxt, t1, t1		! 1
 	ldub	[t1+2], t1		! 1
 	ld	[IDX3], t3		! 3
@@ -178,13 +174,11 @@ _aes_crypt:
 	xor	t0, t3, t0		! 0, 1, 2, 3
 	xor	t0, t1, t0
 	st	t0, [tmp]
-	C add	i, 4, i
 
 	C i = 1
 	ld	[IDX1+4], t1		! 1
 	
 	! IDX2(j) = j XOR 2
-	C xor	i, 8, t2		! 2
 	mov	12, t2			! 2
 	add	wtxt, t1, t1		! 1
 	ldub	[t1+2], t1		! 1
@@ -214,13 +208,11 @@ _aes_crypt:
 	xor	t0, t3, t0		! 0, 1, 2, 3
 	xor	t0, t1, t0
 	st	t0, [tmp+4]
-	C add	i, 4, i
 
 	C = 2
 	ld	[IDX1+8], t1		! 1
 	
 	! IDX2(j) = j XOR 2
-	C xor	i, 8, t2		! 2
 	mov	0, t2			! 2
 	add	wtxt, t1, t1		! 1
 	ldub	[t1+2], t1		! 1
@@ -250,13 +242,11 @@ _aes_crypt:
 	xor	t0, t3, t0		! 0, 1, 2, 3
 	xor	t0, t1, t0
 	st	t0, [tmp+8]
-	C add	i, 4, i
 
 	C = 3
 	ld	[IDX1+12], t1		! 1
 	
 	! IDX2(j) = j XOR 2
-	C xor	i, 8, t2		! 2
 	mov	4, t2			! 2
 	add	wtxt, t1, t1		! 1
 	ldub	[t1+2], t1		! 1
@@ -286,7 +276,6 @@ _aes_crypt:
 	xor	t0, t3, t0		! 0, 1, 2, 3
 	xor	t0, t1, t0
 	st	t0, [tmp+12]
-	C add	i, 4, i
 			
 	C End of unrolled loop
 	
@@ -295,10 +284,8 @@ _aes_crypt:
 	xor	tmp, diff, tmp
 
 	subcc	round, 1, round
-	add	key, 16, key
 	bne	.Lround_loop
-	nop
-	C mov	0, i
+	add	key, 16, key
 
 	! final round
 	! Use round as the loop variable, as it's already zero
