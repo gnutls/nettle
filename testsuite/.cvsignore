@@ -6,6 +6,7 @@ arcfour-test
 base64-test
 bignum-test
 blowfish-test
+buffer-test
 cast128-test
 cbc-test
 des-compat-test
@@ -17,8 +18,11 @@ md5-compat-test
 md5-test
 rsa-keygen-test
 rsa-test
+rsa2sexp-test
 serpent-test
+sexp-format-test
 sexp-test
+sexp2rsa-test
 sha1-test
 sha256-test
 twofish-test

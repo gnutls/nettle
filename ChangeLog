@@ -1,3 +1,48 @@
+2002-09-29  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* testsuite/Makefile.am (TS_PROGS): Added buffer-test
+	sexp-format-test rsa2sexp-test sexp2rsa-test. 
+
+
+	* testsuite/sexp-test.c (test_main): Updated calls to
+	sexp_iterator_assoc. 
+
+	* testsuite/testutils.h (MEMEQH): New macro.
+
+	* testsuite/sexp2rsa-test.c: New test.
+	* testsuite/sexp-format-test.c: New test.
+	* testsuite/rsa2sexp-test.c: New test.
+	* testsuite/buffer-test.c: New test.
+
+	* testsuite/testutils.c (test_rsa_key): Copied this function
+	from...
+	testsuite/rsa-keygen-test.c: ... here.
+
+	* examples/rsa-keygen.c: New file.
+
+	* Makefile.am: Added new source files and headers buffer.h,
+	buffer.c, sexp_format.c, sexp2rsa.c, rsa2sexp.c.
+
+	* rsa.h (rsa_keypair_to_sexp, rsa_keypair_from_sexp): New
+	prototypes. 
+
+	* rsa2sexp.c, sexp2rsa.c: New files.
+
+	* sexp.c (sexp_iterator_assoc): Don't enter the list, associate
+	keys within the current list. Still exit the list when done.
+	(sexp_iterator_assoc): Represent keys as plain NUL-terminated
+	strings. 
+	(sexp_iterator_check_type, sexp_iterator_check_types): New
+	functions. 
+
+	* sexp_format.c: New file, implementing an sexp canonical syntax
+	formatter.
+
+	* buffer.c, buffer.h: New files, implementing a bare-bones string
+	stream.
+
+	* bignum.c (nettle_mpz_sizeinbase_256): New function.
+
 2002-09-28  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* sexp.c (sexp_iterator_assoc): Return 0 for missing or duplicate
