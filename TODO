@@ -11,10 +11,6 @@ Counter, and CFB. Suggested by Rafael 'Dido' Sevilla. References:
 
   http://csrc.nist.gov/encryption/modes/Recommendation/Modes01.pdf
 
-Improve sexp_Format to accept literals, like "n" in
-
-  sexp_format(buffer, "(n%b)", n);
-
 Valgrind reports errors on the des-compat test program. Investigate.
 
 
@@ -28,3 +24,6 @@ use
 
   typedef void
   nettle_realloc_func(void *ctx, void *p, unsigned length);
+
+The make rules for building position independent *_p.o files doesn't
+get dependencies right.

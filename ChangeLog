@@ -1,3 +1,30 @@
+2003-04-12  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* testsuite/Makefile.am (TS_SH): New test case symbols-test.
+	(EXTRA_PROGRAMS): Added testutils, as a kludge to
+	get automake to track dependencies for testutils.o.
+
+	* x86/aes-encrypt.asm (nettle_aes_encrypt): Renamed function to
+	use the nettle_ prefix.
+	* x86/aes-decrypt.asm (nettle_aes_decrypt): Likewise.
+	* sparc/aes.asm (_nettle_aes_crypt): Likewise.
+
+	* examples/Makefile.am (EXTRA_PROGRAMS): Add "io", as a kludge to
+	get automake to track dependencies for io.o.
+	(LDADD): Added ../libnettle.a, for the dependency.
+
+	* des-compat.c: Use names with the nettle_ prefix when using
+	Nettle's des functions.
+
+	* base16-meta.c (base16_encode_update): Need to undef before
+	redefining. 
+
+	* New name mangling, to reduce the risk of link collisions. All
+	functions (except memxor) now use a nettle_ or _nettle prefix when
+	seen by the linker. For most functions, the header file that
+	declares a function also use #define to provide a shorter more
+	readable name without the prefix.
+
 2003-03-11  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* Released nettle-1.7.

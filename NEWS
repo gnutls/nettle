@@ -1,3 +1,11 @@
+NEWS for the 1.8 release
+
+	New name mangling, to reduce the risk of link collisions. All
+	functions (except memxor) now use a nettle_ or _nettle prefix
+	when seen by the linker. For most functions, the header file
+	that declares a function also use #define to provide a shorter
+	more readable name without the prefix.
+
 NEWS for the 1.7 release
 
 	Implemented DSA.
