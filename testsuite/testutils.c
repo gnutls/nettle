@@ -1,5 +1,6 @@
 /* testutils.c */
 
+
 #include "testutils.h"
 
 #include "cbc.h"
@@ -220,3 +221,112 @@ test_hash(const struct nettle_hash *hash,
   if (buffer[hash->digest_size - 1])
     FAIL();
 }
+
+#if HAVE_LIBGMP
+#define SIGN(key, hash, msg, signature) do {	\
+  hash##_update(&hash, LDATA(msg));		\
+  rsa_##hash##_sign(key, &hash, signature);	\
+} while(0)
+
+#define VERIFY(key, hash, msg, signature) (	\
+  hash##_update(&hash, LDATA(msg)),		\
+  rsa_##hash##_verify(key, &hash, signature)	\
+)
+
+
+/* Missing in current gmp */
+static void
+mpz_togglebit (mpz_t x, unsigned long int bit)
+{
+  if (mpz_tstbit(x, bit))
+    mpz_clrbit(x, bit);
+  else
+    mpz_setbit(x, bit);
+}
+
+void
+test_rsa_md5(struct rsa_public_key *pub,
+	     struct rsa_private_key *key,
+	     mpz_t expected)
+{
+  struct md5_ctx md5;
+  mpz_t signature;
+
+  md5_init(&md5);
+  mpz_init(signature);
+  
+  SIGN(key, md5, "The magic words are squeamish ossifrage", signature);
+
+  if (verbose)
+    {
+      fprintf(stderr, "rsa-md5 signature: ");
+      mpz_out_str(stderr, 16, signature);
+      fprintf(stderr, "\n");
+    }
+
+  if (mpz_cmp(signature, expected))
+    FAIL();
+  
+  /* Try bad data */
+  if (VERIFY(pub, md5,
+	     "The magick words are squeamish ossifrage", signature))
+    FAIL();
+
+  /* Try correct data */
+  if (!VERIFY(pub, md5,
+	      "The magic words are squeamish ossifrage", signature))
+    FAIL();
+
+  /* Try bad signature */
+  mpz_togglebit(signature, 17);
+
+  if (VERIFY(pub, md5,
+	     "The magic words are squeamish ossifrage", signature))
+    FAIL();
+
+  mpz_clear(signature);
+}
+
+void
+test_rsa_sha1(struct rsa_public_key *pub,
+	     struct rsa_private_key *key,
+	     mpz_t expected)
+{
+  struct sha1_ctx sha1;
+  mpz_t signature;
+
+  sha1_init(&sha1);
+  mpz_init(signature);
+
+  SIGN(key, sha1, "The magic words are squeamish ossifrage", signature);
+
+  if (verbose)
+    {
+      fprintf(stderr, "rsa-sha1 signature: ");
+      mpz_out_str(stderr, 16, signature);
+      fprintf(stderr, "\n");
+    }
+
+  if (mpz_cmp(signature, expected))
+    FAIL();
+  
+  /* Try bad data */
+  if (VERIFY(pub, sha1,
+	     "The magick words are squeamish ossifrage", signature))
+    FAIL();
+
+  /* Try correct data */
+  if (!VERIFY(pub, sha1,
+	      "The magic words are squeamish ossifrage", signature))
+    FAIL();
+
+  /* Try bad signature */
+  mpz_togglebit(signature, 17);
+
+  if (VERIFY(pub, sha1,
+	     "The magic words are squeamish ossifrage", signature))
+    FAIL();
+
+  mpz_clear(signature);
+}
+#endif /* HAVE_LIBGMP */

@@ -1,10 +1,19 @@
 #ifndef NETTLE_TESTUTILS_H_INCLUDED
 #define NETTLE_TESTUTILS_H_INCLUDED
 
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
 #include <inttypes.h>
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
+
+#if HAVE_LIBGMP
+# include "rsa.h"
+#endif
 
 #include "nettle-meta.h"
 
@@ -48,6 +57,18 @@ test_hash(const struct nettle_hash *hash,
 	  unsigned length,
 	  const uint8_t *data,
 	  const uint8_t *digest);
+
+#if HAVE_LIBGMP
+void
+test_rsa_md5(struct rsa_public_key *pub,
+	     struct rsa_private_key *key,
+	     mpz_t expected);
+
+void
+test_rsa_sha1(struct rsa_public_key *pub,
+	      struct rsa_private_key *key,
+	      mpz_t expected);
+#endif /* HAVE_LIBGMP */
 
 #define H2(d, s) decode_hex((d), (s))
 #define H(x) decode_hex_dup(x)
