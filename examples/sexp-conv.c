@@ -62,15 +62,92 @@ enum sexp_coding
     SEXP_BASE64,
     SEXP_HEX,
   };
-    
+
+
+/* Hex functions should move out, eventually */
+struct hex_decode_ctx
+{
+  unsigned word;
+  unsigned count;
+};
+
+static void
+hex_decode_init(struct hex_decode_ctx *ctx)
+{
+  ctx->word = ctx->count = 0;
+}
+
+enum { HEX_INVALID = -1, HEX_SPACE=-2 };
+
+/* Returns -1 on error. */
+static int
+hex_decode_single(struct hex_decode_ctx *ctx,
+		  uint8_t *dst,
+		  uint8_t src)
+{
+  static const signed char hex_decode_table[0x80] =
+    {
+      -1, -1, -1, -1, -1, -1, -1, -1, -1, -2, -2, -1, -1, -2, -1, -1, 
+      -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+      -2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+       0,  1,  2,  3,  4,  5,  6,  7,  8,  9, -1, -1, -1, -1, -1, -1,
+      -1, 10, 11, 12, 13, 14, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+      -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+      -1, 10, 11, 12, 13, 14, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+      -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    };
+  
+  int digit;
+  if (src >= 0x80)
+    return -1;
+
+  /* FIXME: This code could use more clever choices of constants. */
+  digit = hex_decode_table[src];
+  switch (digit)
+    {
+    case -1:
+      return -1;
+    case -2:
+      return 0;
+    default:
+      assert(digit >= 0);
+      assert(digit < 0x10);
+
+      if (ctx->count)
+	{
+	  *dst = (ctx->word << 4) | digit;
+	  ctx->count = 0;
+	  return 1;
+	}
+      else
+	{
+	  ctx->word = digit;
+	  ctx->count = 1;
+	  return 0;
+	}
+    }
+}
+
+static int
+hex_decode_status(struct hex_decode_ctx *ctx)
+{
+  return !ctx->count;
+}
+
 struct sexp_input
 {
   FILE *f;
   
   enum sexp_coding coding;
   /* Used in transport mode */
-  struct base64_decode_ctx base64;
+  union {
+    struct base64_decode_ctx base64;
+    struct hex_decode_ctx hex;
+  };
 
+  /* Terminator for current coding */
+  uint8_t terminator;
+  
   /* Type of current token */
   enum sexp_token token;
 
@@ -114,6 +191,23 @@ sexp_output_init(struct sexp_output *output, FILE *f, enum sexp_mode mode)
 
 /* Input */
 
+/* Returns zero at EOF */
+static int
+sexp_get_raw_char(struct sexp_input *input, uint8_t *out)
+{
+  int c = getc(input->f);
+  
+  if (c < 0)
+    {
+      if (ferror(input->f))
+	die("Read error: %s\n", strerror(errno));
+
+      return 0;
+    }
+  *out = c;
+  return 1;
+}
+
 /* Returns 1 on success. For special tokens,
  * return 0 and set input->token accordingly. */
 static int
@@ -125,8 +219,9 @@ sexp_get_char(struct sexp_input *input, uint8_t *out)
       for (;;)
 	{
 	  int done;
-	  int c = getc(input->f);
-	  if (c < 0)
+	  uint8_t c;
+	  
+	  if (!sexp_get_raw_char(input, &c))
 	    die("Unexpected end of file in base64 data.\n");
 
 	  if (c == '}')
@@ -145,21 +240,12 @@ sexp_get_char(struct sexp_input *input, uint8_t *out)
 	    return 1;
 	}
     case SEXP_PLAIN:
-      {
-	int c = getc(input->f);
-      
-	if (c < 0)
-	  {
-	    if (ferror(input->f))
-	      die("Read error: %s\n", strerror(errno));
-	  
-	    input->token = SEXP_EOF;
-	    return 0;
-	  }
-
-	*out = c;
+      if (sexp_get_raw_char(input, out))
 	return 1;
-      }
+      
+      input->token = SEXP_EOF;
+      return 0;
+
     case SEXP_HEX:
       /* Not yet implemented */
       abort();
