@@ -31,6 +31,8 @@ LDADD = testutils.o -lnettle ../libnettle.a
 EXTRA_DIST = $(TS_SH) testutils.c testutils.h \
 	     run-tests rfc1750.txt
 
+CLEANFILES = test.in test1.out test2.out
+
 .PHONY: check 
 check: $(TS_ALL) $(srcdir)/run-tests
 	LD_LIBRARY_PATH=../.lib srcdir="$(srcdir)" \
