@@ -1,5 +1,19 @@
 2002-09-28  Niels Möller  <nisse@cuckoo.hack.org>
 
+	* sexp.c (sexp_iterator_assoc): Return 0 for missing or duplicate
+	keys. Now passes all the tests.
+
+	* sexp.c (sexp_iterator_simple): Bugfixes. Check earlier that
+	length doesn't grow too large.
+	(sexp_iterator_next): Skip the current list only if type is
+	SEXP_LIST. Handle ')'.
+	(sexp_iterator_enter_list): Set type to SEXP_START.
+	(sexp_iterator_exit_list): Likewise. Don't skip the ')' here. 
+	(sexp_iterator_assoc): Bug fix.
+
+	* testsuite/sexp-test.c (test_main): Reordered sexp_iterator_assoc
+	tests. 
+
 	* nettle.texinfo (Randomness): Documented that yarrow256_init can
 	be called with a zero number of sources.
 
