@@ -32,6 +32,6 @@ EXTRA_DIST = $(TS_SH) testutils.c testutils.h \
 	     run-tests rfc1750.txt
 
 .PHONY: check 
-check: $(TS_ALL) "$(srcdir)"/run-tests
+check: $(TS_ALL) $(srcdir)/run-tests
 	LD_LIBRARY_PATH=../.lib srcdir="$(srcdir)" \
-	  "$(srcdir)"/run-tests $(TS_ALL)
+	  $(srcdir)/run-tests $(TS_ALL)
