@@ -27,7 +27,7 @@ info_TEXINFOS = nettle.texinfo
 
 all-local: nettle.html
 
-EXTRA_DIST = macros.h memxor.h $(des_headers) descore.README nettle.html
+EXTRA_DIST = macros.h memxor.h $(des_headers) descore.README nettle.html .bootstrap
 
 # BUILT_SOURCE = $(des_headers)
 
