@@ -28,6 +28,11 @@
 
 #include "aes.h"
 
+/* Define to use only small tables. */
+#ifndef AES_SMALL
+# define AES_SMALL 1
+#endif
+
 /* Macros */
 #define ROTBYTE(x) (((x) >> 8) | (((x) & 0xff) << 24))
 #define ROTRBYTE(x) (((x) << 8) | (((x) >> 24) & 0xff))
@@ -37,13 +42,20 @@
                         ((box)[(((x) >> 24) & 0xff)] << 24))
 
 /* Don't pollute global namespace too much */
-#define dtbl _aes_dtbl
+#if AES_SMALL
+# define dtbl _aes_dtbl_small
+# define _AES_TABLE_SIZE 1
+#else
+# define dtbl _aes_dtbl
+# define _AES_TABLE_SIZE 4
+#endif
+
 #define itbl _aes_itbl
 #define sbox _aes_sbox
 #define isbox _aes_isbox
 
 /* Internal tables */
-extern const uint32_t dtbl[4][0x100];
+extern const uint32_t dtbl[_AES_TABLE_SIZE][0x100];
 extern const uint32_t itbl[];
 extern const uint8_t sbox[0x100];
 extern const uint8_t isbox[0x100];
