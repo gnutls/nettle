@@ -54,6 +54,8 @@ dnl AES_LAST_ROUND(a, b, c, d)
 dnl Computes one word of the final round. Leaves result in %edi.
 dnl Note that we have to quote $ in constants.
 define(<AES_LAST_ROUND>, <
+	C FIXME: Perform substitution on least significant byte here,
+	C to save work later.
 	movl	%e<>$1<>x,%edi
 	andl	<$>0x000000ff,%edi
 	movl	%e<>$2<>x,%ebp
@@ -66,3 +68,27 @@ define(<AES_LAST_ROUND>, <
 	andl	<$>0xff000000,%ebp
 	orl	%ebp,%edi>)dnl
 
+dnl AES_SUBST_BYTE(table)
+dnl Substitutes the least significant byte of
+dnl each of eax, ebx, ecx and edx, and also rotates
+dnl the words one byte to the left.
+define(<AES_SUBST_BYTE>, <
+	movl	%eax,%ebp
+	andl	<$>0x000000ff,%ebp
+	movb	AES_SBOX + $1 (%ebp),%al
+	roll	<$>8,%eax
+
+	movl	%ebx,%ebp
+	andl	<$>0x000000ff,%ebp
+	movb	AES_SBOX + $1 (%ebp),%bl
+	roll	<$>8,%ebx
+
+	movl	%ecx,%ebp
+	andl	<$>0x000000ff,%ebp
+	movb	AES_SBOX + $1 (%ebp),%cl
+	roll	<$>8,%ecx
+
+	movl	%edx,%ebp
+	andl	<$>0x000000ff,%ebp
+	movb	AES_SBOX + $1 (%ebp),%dl
+	roll	<$>8,%edx>)dnl
