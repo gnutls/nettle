@@ -1,3 +1,11 @@
+2001-11-14  Niels Möller  <nisse@ehand.com>
+
+	* testsuite/yarrow-test.c (main): Use yarrow256_is_seeded.
+
+	* yarrow256.c (yarrow256_needed_sources): New function.
+	(yarrow256_is_seeded): New function.
+	(yarrow256_update): Use yarrow256_needed_sources. 
+
 2001-11-14  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* testsuite/yarrow-test.out: Updated, to match the seed-file aware
