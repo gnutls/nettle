@@ -72,7 +72,7 @@ dsa_nist_gen(mpz_t p, mpz_t q,
   mpz_t t;
   mpz_t c;
 
-  /* For NIS keysizes, we should have L = 512 + 65 * l */
+  /* For NIS keysizes, we should have L = 512 + 64 * l */
   n = (L-1) / 160; b = (L-1) % 160;
 
   mpz_init(s);

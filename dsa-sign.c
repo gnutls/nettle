@@ -68,7 +68,7 @@ dsa_sign_digest(const struct dsa_public_key *pub,
     /* What do we do now? The key is invalid. */
     abort();
 
-  /* Compute signature s = k^-1(h + xr) (mod q) */
+  /* Compute signature s = k^-1 (h + xr) (mod q) */
   mpz_mul(tmp, signature->r, key->x);
   mpz_fdiv_r(tmp, tmp, pub->q);
   mpz_add(tmp, tmp, h);
