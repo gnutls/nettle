@@ -7,16 +7,20 @@ AM_CPPFLAGS = -I$(top_srcdir)
 # installed version.
 AM_LDFLAGS = -L..
 
-EXTRA_PROGRAMS = rsa-keygen rsa-sign rsa-verify
+# There's no program "io", it's just a trick to get automake to keep track
+# of dependencies for io.o.
+EXTRA_PROGRAMS = rsa-keygen rsa-sign rsa-verify io
 noinst_PROGRAMS = nettle-benchmark @RSA_EXAMPLES@
-
-LDADD = io.o -lnettle
-nettle_benchmark_LDADD = -lnettle $(OPENSSL_LIBFLAGS)
 
 nettle_benchmark_SOURCES = nettle-benchmark.c nettle-openssl.c
 
+# libnettle.a for the dependency
+LDADD = io.o -lnettle ../libnettle.a
+
+nettle_benchmark_LDADD = -lnettle ../libnettle.a $(OPENSSL_LIBFLAGS)
+
 TS_PROGS = rsa-sign-test rsa-verify-test
-EXTRA_DIST = io.c io.h run-tests setup-env teardown-env $(TS_PROGS)
+EXTRA_DIST = io.h run-tests setup-env teardown-env $(TS_PROGS)
 
 .PHONY: run-tests
 run-tests: $(TS_PROGS)
