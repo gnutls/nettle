@@ -28,6 +28,8 @@
 
 #include "arcfour.h"
 
+#include <assert.h>
+
 #ifdef RCSID
 RCSID("$Id$");
 #endif
@@ -44,6 +46,8 @@ void arcfour_init(struct arcfour_ctx *ctx)
     ctx->S[i] = i;
 }
 
+/* This mode of operation is non-standard and possibly insecure. */
+#if 0
 void arcfour_update_key(struct arcfour_ctx *ctx,
 			UINT32 length, const UINT8 *key)
 {
@@ -60,6 +64,7 @@ void arcfour_update_key(struct arcfour_ctx *ctx,
     }
   ctx->i = i; ctx->j = j;
 }
+#endif
 
 void arcfour_stream(struct arcfour_ctx *ctx,
 		    UINT32 length, UINT8 *dest)
@@ -86,16 +91,18 @@ void arcfour_set_key(struct arcfour_ctx *ctx, UINT32 length, const UINT8 *key)
   UINT32 k;
 
   /* Initialize context */
-  i = 0;
-  do ctx->S[i] = i; while (++i < 256);
+  arcfour_init(ctx);
 
+  assert(length);
+  
   /* Expand key */
   i = j = k = 0;
-  do {
-    j += ctx->S[i] + key[k];
-    SWAP(ctx->S[i], ctx->S[j]);
-    k = (k+1) % length; /* Repeat key if needed */
-  } while(++i < 256);
+  for ( ; i<256; i++)
+    {
+      j += ctx->S[i] + key[k]; j &= 0xff;
+      SWAP(ctx->S[i], ctx->S[j]);
+      k = (k+1) % length; /* Repeat key if needed */
+    } 
   
   ctx->i = ctx->j = 0;
 }
