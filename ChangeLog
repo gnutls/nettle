@@ -1,5 +1,18 @@
 2004-02-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/des-compat-test.c: Use des_cblock for typing more of
+	the variables. Use const. Got rid of most of the explicit casts.
+	Disabled the input/output alignment tests.
+
+	* des.c (des_encrypt, des_decrypt): Use a const context pointer.
+	* des3.c (des3_encrypt, des3_decrypt): Likewise.
+
+	* cbc.c (cbc_encrypt, cbc_decrypt): Use a _const_ void *ctx argument.
+
+	* des-compat.c: Use const for all unchanged arguments.
+	(des_key_sched): Use a copy of the key if we need to fix the
+	parity.
+
 	* testsuite/des-compat-test.c (C_Block, Key_schedule): Deleted
 	defines. Deleted some of the explicit casts.
 
