@@ -192,21 +192,20 @@ _aes_crypt:
 	
 	! final round
 	add	%g2, ctx, %o7
-	mov	0, %o1
-	mov	wtxt, %g1
+	mov	0, i
 	add	T, 288, %g4
 .Lfinal_loop:
 	ld	[%g4-32], %g2
-	sll	%o1, 2, %i5
+	sll	i, 2, %i5
 	sll	%g2, 2, %g2
-	add	%g1, %g2, %g2
+	add	wtxt, %g2, %g2
 	ldub	[%g2+2], %o3
 	add	%i5, dst, %o2
 	ld	[%g4-16], %g3
-	add	%o1, 1, %o1
-	ld	[%g1+%i5], %g2
+	add	i, 1, i
+	ld	[wtxt+%i5], %g2
 	sll	%g3, 2, %g3
-	lduh	[%g1+%g3], %o4
+	lduh	[wtxt+%g3], %o4
 	and	%g2, 255, %g2
 	ld	[%g4], %o5
 	and	%o4, 255, %o4
@@ -214,10 +213,10 @@ _aes_crypt:
 	sll	%o5, 2, %o5
 	ldub	[T+%g2], %g3
 	sll	%o0, 8, %o0
-	ldub	[%g1+%o5], %o3
+	ldub	[wtxt+%o5], %o3
 	or	%g3, %o0, %g3
 	ldub	[T+%o4], %g2
-	cmp	%o1, 3
+	cmp	i, 3
 	ldub	[T+%o3], %o5
 	sll	%g2, 16, %g2
 	or	%g3, %g2, %g3
