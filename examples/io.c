@@ -30,6 +30,10 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
+/* For errno and strerror */
+#include <errno.h>
+#include <string.h>
+
 #include "io.h"
 
 #define RANDOM_DEVICE "/dev/urandom"
@@ -74,8 +78,10 @@ read_file(const char *name, unsigned max_size, char **contents)
     
   f = fopen(name, "rb");
   if (!f)
-    return 0;
-
+    {
+      werror("Opening `%s' falied: %s\n", name, strerror(errno));
+      return 0;
+    }
   buffer = NULL;
 
   if (max_size && max_size < 100)
