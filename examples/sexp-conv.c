@@ -220,28 +220,6 @@ sexp_input_end_coding(struct sexp_input *input)
   input->coding = NULL;
 }
 
-static const char
-token_chars[0x80] =
-  {
-    /* 0, ... 0x1f */
-    0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,
-    /* SPC ! " # $ % & '  ( ) * + , - . / */
-    0,0,0,0,0,0,0,0, 0,0,1,1,0,1,1,1,
-    /* 0 1 2 3 4 5 6 7  8 9 : ; < = > ? */
-    1,1,1,1,1,1,1,1, 1,1,1,0,0,1,0,0,
-    /* @ A ... O */
-    0,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,	
-    /* P ...             Z [ \ ] ^ _ */
-    1,1,1,1,1,1,1,1, 1,1,1,0,0,0,0,1,
-    /* ` a, ... o */
-    0,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,	
-    /* p ...             z { | } ~ DEL */
-    1,1,1,1,1,1,1,1, 1,1,1,0,0,0,0,0,
-  };
-
-#define TOKEN_CHAR(c) ((c) < 0x80 && token_chars[(c)])
-
 
 /* Return 0 at end-of-string */
 static int
@@ -286,46 +264,28 @@ sexp_get_quoted_char(struct sexp_input *input)
       }
 }
 
-static void
-sexp_get_quoted_string(struct sexp_input *input)
-{
-  assert(!input->coding);
-  
-  while (sexp_get_quoted_char(input))
-    sexp_push_char(input);
 
-  sexp_get_char(input);
-}
+static const char
+token_chars[0x80] =
+  {
+    /* 0, ... 0x1f */
+    0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,
+/* SPC ! " # $ % & ' ( ) * + , - . / */
+    0,0,0,0,0,0,0,0, 0,0,1,1,0,1,1,1,
+ /* 0 1 2 3 4 5 6 7  8 9 : ; < = > ? */
+    1,1,1,1,1,1,1,1, 1,1,1,0,0,1,0,0,
+    /* @ A ... O */
+    0,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,	
+    /* P ...             Z [ \ ] ^ _ */
+    1,1,1,1,1,1,1,1, 1,1,1,0,0,0,0,1,
+    /* ` a, ... o */
+    0,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,	
+    /* p ...             z { | } ~ DEL */
+    1,1,1,1,1,1,1,1, 1,1,1,0,0,0,0,0,
+  };
 
-static void
-sexp_get_hex_string(struct sexp_input *input)
-{
-  /* Not implemented */
-  abort();
-}
-
-static void
-sexp_get_base64_string(struct sexp_input *input)
-{
-  sexp_input_start_coding(input, &nettle_base64, '|');
-
-  for (;;)
-    {
-      sexp_get_char(input);
-      switch (input->ctype)
-	{
-	case SEXP_NORMAL_CHAR:
-	  sexp_push_char(input);
-	  break;
-	case SEXP_EOF_CHAR:
-	  die("Unexpected end of file in base64 string.\n");
-	case SEXP_END_CHAR:
-	  sexp_input_end_coding(input);
-	  sexp_get_char(input);
-	  return;
-	}
-    }
-}
+#define TOKEN_CHAR(c) ((c) < 0x80 && token_chars[(c)])
 
 static void
 sexp_get_token_string(struct sexp_input *input)
@@ -355,15 +315,37 @@ sexp_get_string(struct sexp_input *input)
   switch (input->c)
     {
     case '\"':
-      sexp_get_quoted_string(input);
+      while (sexp_get_quoted_char(input))
+	sexp_push_char(input);
+      
+      sexp_get_char(input);
       break;
       
     case '#':
-      sexp_get_hex_string(input);
-      break;;
+      sexp_input_start_coding(input, &nettle_base16, '#');
+      goto decode;
 
     case '|':
-      sexp_get_base64_string(input);
+      sexp_input_start_coding(input, &nettle_base64, '|');
+
+    decode:
+      for (;;)
+	{
+	  sexp_get_char(input);
+	  switch (input->ctype)
+	    {
+	    case SEXP_NORMAL_CHAR:
+	      sexp_push_char(input);
+	      break;
+	    case SEXP_EOF_CHAR:
+	      die("Unexpected end of file in coded string.\n");
+	    case SEXP_END_CHAR:
+	      sexp_input_end_coding(input);
+	      sexp_get_char(input);
+	      return;
+	    }
+	}
+
       break;
 
     default:
@@ -430,10 +412,26 @@ sexp_get_string_length(struct sexp_input *input, enum sexp_mode mode)
       break;
       
     case '#':
-    case '|':
-      /* Not yet implemented */
-      abort();
+      sexp_input_start_coding(input, &nettle_base16, '#');
+      goto decode;
 
+    case '|':
+      sexp_input_start_coding(input, &nettle_base64, '|');
+
+    decode:
+      for (; length; length--)
+	{
+	  sexp_next_char(input);
+	  sexp_push_char(input);
+	}
+      sexp_get_char(input);
+      if (input->ctype != SEXP_END_CHAR)
+	die("Coded string too long.\n");
+
+      sexp_input_end_coding(input);
+      
+      break;
+      
     default:
       die("Invalid string.\n");
     }
@@ -792,7 +790,6 @@ sexp_convert_list(struct sexp_input *input, enum sexp_mode mode_in,
     {
       sexp_get_token(input, mode_in);
 
-      /* FIXME: Fix interface so that we consume the list end token. */
       if (input->token == SEXP_LIST_END)
 	{
 	  sexp_put_list_end(output);
