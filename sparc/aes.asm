@@ -30,6 +30,7 @@ define(round, %l4) ! Should perhaps be 16 * round
 define(i, %l5)
 
 ! Teporaries
+define(t0, %o0)
 define(t1, %o1)
 define(t2, %o2)
 define(t3, %o3)
@@ -129,19 +130,19 @@ _aes_crypt:
 	sll	t1, 2, t1		! 1
 	
 	! wtxt[i]
-	ld	[wtxt+i], %o5		! 0
+	ld	[wtxt+i], t0		! 0
 	
 	! wtxt[IDX2...]
 	lduh	[wtxt+t2], t2		! 2
 	
-	and	%o5, 255, %o5		! 0
+	and	t0, 255, t0		! 0
 
 	! wtxt[IDX3...]
 	ldub	[wtxt+t3], t3		! 3
 	
-	sll	%o5, 2, %o5		! 0
-	add	%o5, AES_TABLE0, %o5	! 0
-	ld	[T+%o5], %g2		! 0
+	sll	t0, 2, t0		! 0
+	add	t0, AES_TABLE0, t0	! 0
+	ld	[T+t0], t0		! 0
 
 	add	t1, AES_TABLE1, t1	! 1
 	and	t2, 255, t2		! 2
@@ -152,8 +153,8 @@ _aes_crypt:
 	sll	t3, 2, t3		! 3
 	add	t3, AES_TABLE3, t3	! 3
 	ld	[T+t3], t3		! 3
-	xor	%g2, t1, %g2		! 0, 1
-	xor	%g2, t2, %g2		! 0, 1, 2
+	xor	t0, t1, t0		! 0, 1
+	xor	t0, t2, t0		! 0, 1, 2
 
 	add	idx, 4, idx		
 
@@ -162,10 +163,10 @@ _aes_crypt:
 ! 	add	%o5, ctx, %o5
 ! 	ld	[%o5], %o5
 		
-	xor	%g2, t3, %g2		! 0, 1, 2, 3
+	xor	t0, t3, t0		! 0, 1, 2, 3
 
-!	xor	%g2, %o5, %g2
-	st	%g2, [tmp+i]
+!	xor	t0, %o5, t0
+	st	t0, [tmp+i]
 
 	cmp	i, 8
 
