@@ -113,7 +113,7 @@ ran_test(void)
 }
 
 static int
-get_event(FILE *f, struct sha1_ctx *hash,
+get_event(FILE *f, struct sha256_ctx *hash,
           unsigned *key, unsigned *time)
 {
   static int t = 0;
@@ -124,7 +124,7 @@ get_event(FILE *f, struct sha1_ctx *hash,
     return 0;
 
   buf[0] = c;
-  sha1_update(hash, sizeof(buf), buf);
+  sha256_update(hash, sizeof(buf), buf);
     
   *key = c;
 
@@ -139,7 +139,7 @@ print_digest(uint8_t *digest)
 {
   unsigned i;
   
-  for (i = 0; i < SHA1_DIGEST_SIZE; i++)
+  for (i = 0; i < SHA256_DIGEST_SIZE; i++)
     {
       if (! (i % 8))
         fprintf(stderr, " ");
@@ -175,15 +175,17 @@ main(int argc, char **argv)
 
   struct yarrow_source sources[2];
 
-  struct sha1_ctx output_hash;
-  struct sha1_ctx input_hash;
-  uint8_t digest[SHA1_DIGEST_SIZE];
+  struct sha256_ctx output_hash;
+  struct sha256_ctx input_hash;
+  uint8_t digest[SHA256_DIGEST_SIZE];
 
   const uint8_t *expected_output
-    = decode_hex_dup("0904a172950c7dc4 de5c788eaff58bfc 7def9039");
+    = decode_hex_dup("51126a67cac6dff1 1d2ee4fe67cefa7e"
+		     "151f1f8deec69d71 000eb6c6fb3fc65f");
 
   const uint8_t *expected_input
-    = decode_hex_dup("ca606b728892452b 7d6868d34a9743b9 16750284");
+    = decode_hex_dup("fec4c0767434a8a3 22d6d5d0c9f49c42"
+		     "988ce8c159b1a806 29d51aa40c2e99aa");
   
   unsigned c; unsigned t;
 
@@ -201,8 +203,8 @@ main(int argc, char **argv)
   
   yarrow256_init(&yarrow, 2, sources);
   yarrow_key_event_init(&estimator);
-  sha1_init(&input_hash);
-  sha1_init(&output_hash);
+  sha256_init(&input_hash);
+  sha256_init(&output_hash);
 
   ran_test();
 
@@ -251,7 +253,7 @@ main(int argc, char **argv)
           
           yarrow256_random(&yarrow, size, buf);
 
-          sha1_update(&output_hash, size, buf);
+          sha256_update(&output_hash, size, buf);
 
 	  if (verbose)
 	    {
@@ -272,10 +274,10 @@ main(int argc, char **argv)
 		sources[i].estimate[YARROW_SLOW]); 
 
       fprintf(stderr, "Processed input: %d octets\n", processed);
-      fprintf(stderr, "           sha1:");
+      fprintf(stderr, "         sha256:");
     }
-  sha1_final(&input_hash);
-  sha1_digest(&input_hash, sizeof(digest), digest);
+  sha256_final(&input_hash);
+  sha256_digest(&input_hash, sizeof(digest), digest);
 
   if (verbose)
     {
@@ -292,11 +294,11 @@ main(int argc, char **argv)
   if (verbose)
     {
       fprintf(stderr, "Generated output: %d octets\n", output);
-      fprintf(stderr, "            sha1:");
+      fprintf(stderr, "          sha256:");
     }
   
-  sha1_final(&output_hash);
-  sha1_digest(&output_hash, sizeof(digest), digest);
+  sha256_final(&output_hash);
+  sha256_digest(&output_hash, sizeof(digest), digest);
 
   if (verbose)
     {
