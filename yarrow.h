@@ -82,12 +82,6 @@ struct yarrow256_ctx
   struct aes_ctx key;
   uint8_t counter[AES_BLOCK_SIZE];
 
-  uint8_t buffer[AES_BLOCK_SIZE];
-  unsigned index;
-
-  /* Number of block generated with the current key */
-  unsigned block_count;
-
   /* The entropy sources */
   unsigned nsources;
   struct yarrow_source *sources;
