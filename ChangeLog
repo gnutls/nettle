@@ -35,6 +35,13 @@
 	(sexp_vformat): Implemented support for literals in the format
 	string. 
 
+2003-02-06  Niels Möller  <nisse@lysator.liu.se>
+	
+	* testsuite/sexp-conv-test (print_raw, print_nl): New functions.
+	The testfunctions use these instead of using echo directly.
+	Use the test input '3:"\x' instead of '2:"\', to be friendlier to
+	sysv echo.
+
 2003-02-05  Niels Möller  <nisse@lysator.liu.se>
 
 	* des-compat.h (des_set_key): Different name mangling, if this
