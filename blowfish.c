@@ -28,6 +28,10 @@
  * * const-ified it.
  */
 
+/*
+ * Hacked further by Niels Möller.
+ */
+
 /* Test values:
  * key	  "abcdefghijklmnopqrstuvwxyz";
  * plain  "BLOWFISH"
@@ -35,28 +39,25 @@
  *
  */
 
-#include <config.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include "util.h"
-#include "types.h"
 #include "blowfish.h"
 
+#if 0
 #define CIPHER_ALGO_BLOWFISH	 4  /* blowfish 128 bit key */
 #define CIPHER_ALGO_BLOWFISH160 42  /* blowfish 160 bit key (not in OpenPGP)*/
 
 #define FNCCAST_SETKEY(f)  (int(*)(void*, const byte*, unsigned))(f)
 #define FNCCAST_CRYPT(f)   (void(*)(void*, byte*, const byte*))(f)
 
-#define BLOWFISH_BLOCKSIZE 8
-
 static int  bf_setkey( BLOWFISH_context *c, const byte *key, unsigned keylen );
 static void encrypt_block( BLOWFISH_context *bc, byte *outbuf, const byte *inbuf );
 static void decrypt_block( BLOWFISH_context *bc, byte *outbuf, const byte *inbuf );
 
 static void selftest(void);
+#endif
 
 /* precomputed S boxes */
 static const u32 ks0[256] = {
@@ -250,30 +251,49 @@ static const u32 ps[BLOWFISH_ROUNDS+2] = {
 static inline u32
 function_F( BLOWFISH_context *bc, u32 x )
 {
-    u16 a, b, c, d;
+    unsigned a, b, c, d;
 
-  #ifdef BIG_ENDIAN_HOST
+/* FIXME: I don't quite like this hack. It assumes that the byteorder
+ * is plain big or little endian (and for instance not VAX-ish), and
+ * that u32 are exactly 32 bits large (while the autoconf stuff only
+ * guarantees that it is *at least* 32 bits).
+ *
+ * On the other hand, taking the address of x makes it difficult to
+ * place it in a register, which make me wonder if it will really make
+ * the code run any faster. */
+#if BIG_ENDIAN_HOST
+#warning BIG_ENDIAN hack used
     a = ((byte*)&x)[0];
     b = ((byte*)&x)[1];
     c = ((byte*)&x)[2];
     d = ((byte*)&x)[3];
-  #else
+#elif LITTLE_ENDIAN_HOST
+#warning LITTLE_ENDIAN hack used
     a = ((byte*)&x)[3];
     b = ((byte*)&x)[2];
     c = ((byte*)&x)[1];
     d = ((byte*)&x)[0];
-  #endif
-
-    return ((bc->s0[a] + bc->s1[b]) ^ bc->s2[c] ) + bc->s3[d];
+#else
+    a = x >> 24;
+    b = (x >> 16) & 0xff;
+    c = (x >> 8) & 0xff;
+    d = x & 0xff;
+#endif
+    return (((bc->s0[a] + bc->s1[b]) ^ bc->s2[c] ) + bc->s3[d]) & 0xffffffff;
 }
 #endif
 
-#ifdef BIG_ENDIAN_HOST
+#if BIG_ENDIAN_HOST
+  #warning BIG_ENDIAN hack used
   #define F(x) ((( s0[((byte*)&x)[0]] + s1[((byte*)&x)[1]])	 \
 		   ^ s2[((byte*)&x)[2]]) + s3[((byte*)&x)[3]] )
-#else
+#elif LITTLE_ENDIAN_HOST
+  #warning LITTLE_ENDIAN hack used
   #define F(x) ((( s0[((byte*)&x)[3]] + s1[((byte*)&x)[2]])	 \
 		   ^ s2[((byte*)&x)[1]]) + s3[((byte*)&x)[0]] )
+#else
+  #define F(x) (((( s0[x>>24] + s1[(x>>16) & 0xff]) \
+		  ^ s2[(x>>8) & 0xff]) + s3[x & 0xff]) & 0xffffffff)
 #endif
 #define R(l,r,i)  do { l ^= p[i]; r ^= F(l); } while(0)
 
@@ -411,8 +431,8 @@ decrypt(  BLOWFISH_context *bc, u32 *ret_xl, u32 *ret_xr )
 #undef F
 #undef R
 
-static void
-encrypt_block( BLOWFISH_context *bc, byte *outbuf, const byte *inbuf )
+void
+bf_encrypt_block( BLOWFISH_context *bc, byte *outbuf, const byte *inbuf )
 {
     u32 d1, d2;
 
@@ -430,8 +450,8 @@ encrypt_block( BLOWFISH_context *bc, byte *outbuf, const byte *inbuf )
 }
 
 
-static void
-decrypt_block( BLOWFISH_context *bc, byte *outbuf, const byte *inbuf )
+void
+bf_decrypt_block( BLOWFISH_context *bc, byte *outbuf, const byte *inbuf )
 {
     u32 d1, d2;
 
@@ -449,8 +469,9 @@ decrypt_block( BLOWFISH_context *bc, byte *outbuf, const byte *inbuf )
 }
 
 
-static void
-selftest(void)
+/* Returns 1 on success, 0 on failure */
+int
+bf_selftest(void)
 {
     BLOWFISH_context c;
     byte plain[] = "BLOWFISH";
@@ -459,37 +480,45 @@ selftest(void)
     byte key3[] = { 0x41, 0x79, 0x6E, 0xA0, 0x52, 0x61, 0x6E, 0xE4 };
     byte cipher3[] = { 0xE1, 0x13, 0xF4, 0x10, 0x2C, 0xFC, 0xCE, 0x43 };
 
-    bf_setkey( &c, "abcdefghijklmnopqrstuvwxyz", 26 );
-    encrypt_block( &c, buffer, plain );
+    bf_set_key( &c, "abcdefghijklmnopqrstuvwxyz", 26 );
+    bf_encrypt_block( &c, buffer, plain );
     if( memcmp( buffer, "\x32\x4E\xD0\xFE\xF4\x13\xA2\x03", 8 ) )
-	log_error("wrong blowfish encryption\n");
-    decrypt_block( &c, buffer, buffer );
+      /* log_error("wrong blowfish encryption\n"); */
+      return 0;
+    bf_decrypt_block( &c, buffer, buffer );
     if( memcmp( buffer, plain, 8 ) )
-	log_bug("blowfish failed\n");
+      /* log_bug("blowfish failed\n"); */
+      return 0;
 
-    bf_setkey( &c, key3, 8 );
-    encrypt_block( &c, buffer, plain3 );
+    bf_set_key( &c, key3, 8 );
+    bf_encrypt_block( &c, buffer, plain3 );
     if( memcmp( buffer, cipher3, 8 ) )
-	log_error("wrong blowfish encryption (3)\n");
-    decrypt_block( &c, buffer, buffer );
+      /* log_error("wrong blowfish encryption (3)\n"); */
+      return 0;
+    bf_decrypt_block( &c, buffer, buffer );
     if( memcmp( buffer, plain3, 8 ) )
-	log_bug("blowfish failed (3)\n");
+      /* log_bug("blowfish failed (3)\n"); */
+      return 0;
+    return 1;
 }
 
 
 
-static int
-bf_setkey( BLOWFISH_context *c, const byte *key, unsigned keylen )
+int
+bf_set_key( BLOWFISH_context *c, const byte *key, unsigned keylen )
 {
     int i, j;
     u32 data, datal, datar;
-    static int initialized;
+
+#if 0
+    static int initialized = 0;
 
     if( !initialized ) {
 	initialized = 1;
-	selftest();
+	assert(selftest());
     }
-
+#endif
+    
     for(i=0; i < BLOWFISH_ROUNDS+2; i++ )
 	c->p[i] = ps[i];
     for(i=0; i < 256; i++ ) {
@@ -500,16 +529,21 @@ bf_setkey( BLOWFISH_context *c, const byte *key, unsigned keylen )
     }
 
     for(i=j=0; i < BLOWFISH_ROUNDS+2; i++ ) {
-      #ifdef BIG_ENDIAN_HOST
+      #if BIG_ENDIAN_HOST
+        #werror BIG_ENDIAN hack used
 	((byte*)&data)[0] = key[j];
 	((byte*)&data)[1] = key[(j+1)%keylen];
 	((byte*)&data)[2] = key[(j+2)%keylen];
 	((byte*)&data)[3] = key[(j+3)%keylen];
-      #else
+      #elif LITTLE_ENDIAN_HOST
+	#werror LITTLE_ENDIAN hack used
 	((byte*)&data)[3] = key[j];
 	((byte*)&data)[2] = key[(j+1)%keylen];
 	((byte*)&data)[1] = key[(j+2)%keylen];
 	((byte*)&data)[0] = key[(j+3)%keylen];
+      #else
+	data = key[j] << 24 | key[(j+1) % keylen] <<16
+	  | key[(j+2)%keylen] << 8 | key[(j+3)%keylen];
       #endif
 	c->p[i] ^= data;
 	j = (j+4) % keylen;
@@ -556,7 +590,7 @@ bf_setkey( BLOWFISH_context *c, const byte *key, unsigned keylen )
     return 0;
 }
 
-
+#if 0
 /****************
  * Return some information about the algorithm.  We need algo here to
  * distinguish different flavors of the algorithm.
@@ -584,4 +618,4 @@ blowfish_get_info( int algo, size_t *keylen,
 	return "BLOWFISH160";
     return NULL;
 }
-
+#endif

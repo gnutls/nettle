@@ -25,11 +25,31 @@
 #ifndef G10_BLOWFISH_H
 #define G10_BLOWFISH_H
 
-#include "types.h"
+#include "crypto_types.h"
 
+/* Use lsh types */
+typedef UINT8 byte;
+typedef UINT16 u16;
+typedef UINT32 u32;
+
+/* FIXME: A search&replace on the type names would be better, but I
+ * keep GPG names for now to make it easier to get smaller diffs. */
+
+#if 0
 #define CIPHER_ALGO_BLOWFISH     4  /* blowfish 128 bit key */
+#endif
 
+#define BLOWFISH_BLOCKSIZE 8
 #define BLOWFISH_ROUNDS 16
+
+/* Other key lengths are possible, but 128 bits is the default. */
+#define BLOWFISH_KEYSIZE 16
+
+/* Allow keys of size 64 <= bits <= 448 */
+#define BLOWFISH_MIN_KEYSIZE 8
+#define BLOWFISH_MAX_KEYSIZE 56
+
+#define G10ERR_WEAK_KEY 43
 
 typedef struct {
     u32 s0[256];
@@ -40,6 +60,15 @@ typedef struct {
 } BLOWFISH_context;
 
 
+/* Returns 0 if the key is ok */
+
+int  bf_set_key( BLOWFISH_context *c, const byte *key, unsigned keylen );
+void bf_encrypt_block( BLOWFISH_context *bc, byte *outbuf, const byte *inbuf );
+void bf_decrypt_block( BLOWFISH_context *bc, byte *outbuf, const byte *inbuf );
+
+int bf_selftest(void);
+
+#if 0
 const char *
 blowfish_get_info( int algo, size_t *keylen,
 		   size_t *blocksize, size_t *contextsize,
@@ -47,5 +76,6 @@ blowfish_get_info( int algo, size_t *keylen,
 		   void (**encrypt)( void *c, byte *outbuf, const byte *inbuf ),
 		   void (**decrypt)( void *c, byte *outbuf, const byte *inbuf )
 		 );
-
+#endif
+		 
 #endif /*G10_BLOWFISH_H*/
