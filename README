@@ -8,7 +8,7 @@ What is Nettle? A quote from the introduction in the Nettle Manual:
   algorithms, their properties and variants. You often have some algorithm
   selection process, often dictated by a protocol you want to implement.
   
-  And as the requirements of applications differ on subtle and not so
+  And as the requirements of applications differ in subtle and not so
   subtle ways, an API that fits one application well can be a pain to use
   in a different context. And that is why there are so many different
   cryptographic libraries around.
@@ -19,7 +19,7 @@ What is Nettle? A quote from the introduction in the Nettle Manual:
   memory allocation. It doesn't do any I/O.
   
   The idea is that one can build several application and context specific
-  interfaces on top of Nettle, and share the code, testcases, banchmarks,
+  interfaces on top of Nettle, and share the code, testcases, benchmarks,
   documentation, etc. For this first version, the only application using
   Nettle is LSH, and it uses an object-oriented abstraction on top of the
   library. 
