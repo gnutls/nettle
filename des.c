@@ -2,7 +2,6 @@
  *
  * The des block cipher.
  *
- * $Id$
  */
 
 /* nettle, low-level cryptographics library
