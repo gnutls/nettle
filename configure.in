@@ -57,7 +57,8 @@ fi
 asm_path=
 case "$host" in
   [i?86*-*-* | k[5-8]*-*-* | pentium*-*-* | athlon-*-*])
-    asm_path=x86
+    # Disable x86 assembler until tested properly
+    # asm_path=x86
     ;;
   *sparc*-*-*)
     asm_path=sparc
