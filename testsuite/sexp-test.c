@@ -12,14 +12,13 @@ test_main(void)
   ASSERT(sexp_iterator_first(&i, LDATA("()")));
   ASSERT(i.type == SEXP_LIST
 	 && sexp_iterator_enter_list(&i)
-	 && sexp_iterator_next(&i) && i.type == SEXP_END
+	 && i.type == SEXP_END
 	 && sexp_iterator_exit_list(&i)
 	 && sexp_iterator_next(&i) && i.type == SEXP_END);
 
   ASSERT(sexp_iterator_first(&i, LDATA("(")));
   ASSERT(i.type == SEXP_LIST
-	 && sexp_iterator_enter_list(&i)
-	 && !sexp_iterator_next(&i));
+	 && !sexp_iterator_enter_list(&i));
 
   ASSERT(sexp_iterator_first(&i, LDATA("3:foo0:[3:bar]1:x")));
   ASSERT(i.type == SEXP_ATOM
