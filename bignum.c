@@ -119,7 +119,10 @@ nettle_mpz_get_str_256(unsigned length, uint8_t *s, const mpz_t x)
       mpz_t c;
       mpz_init(c);
       mpz_com(c, x);
-      
+
+      /* FIXME: A different trick is to complement all the limbs of c
+       * now. That way, nettle_mpz_to_octets need not complement each
+       * digit. */
       assert(nettle_mpz_sizeinbase_256_u(c) <= length);
       nettle_mpz_to_octets(length, s, c, 0xff);
 
