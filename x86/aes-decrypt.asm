@@ -56,6 +56,9 @@ aes_decrypt:
 .Lround_loop:
 	pushl	%esi		C  save this first: we'll clobber it later
 
+	C In these patterns, note that each row, like
+	C "a,d,c,b" corresponds to one *column* of the 
+	C array _aes_decrypt_table.idx.
 	AES_ROUND(_aes_decrypt_table,a,d,c,b)
 	pushl	%edi		C  save first on stack
 
