@@ -1,3 +1,8 @@
+2002-08-27  Niels Möller  <niels@s3.kth.se>
+
+	* Makefile.am (DISTCLEANFILES): make distclean should delete the
+	assembler-related symlinks.
+
 2002-08-26  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* Makefile.am (%.o: %.asm): Create an empty (and unused)

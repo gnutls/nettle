@@ -54,6 +54,8 @@ EXTRA_DIST = macros.h memxor.h $(des_headers) descore.README nettle.html \
 	sparc/aes.asm sparc/machine.m4 \
 	x86/aes.asm x86/aes_tables.asm
 
+DISTCLEANFILES = aes.asm aes-decrypt.asm aes-encrypt.asm machine.m4
+
 # Using assembler files. Should get precedence before the .c.o rule.
 SUFFIXES = .asm
 
