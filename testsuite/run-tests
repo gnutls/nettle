@@ -13,13 +13,21 @@ env_program () {
 }
 
 test_program () {
-  if "./$1" ; then
-    echo PASS: ${1%-test}
-  else
-    echo FAIL: ${1%-test}
-    failed=`expr $failed + 1`
-  fi
-  all=`expr $all + 1`
+  "./$1"
+  case "$?" in
+      0)
+    	echo PASS: ${1%-test}
+	all=`expr $all + 1`
+	;;
+      77)
+      	echo SKIP: ${1%-test}
+      ;;
+      *)
+    	echo FAIL: ${1%-test}
+	failed=`expr $failed + 1`
+	all=`expr $all + 1`
+	;;
+  esac
 }
 
 env_program setup-env
