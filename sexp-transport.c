@@ -60,7 +60,7 @@ sexp_transport_iterator_first(struct sexp_iterator *iterator,
 	{
 	  /* Found transport encoding */
 	  struct base64_decode_ctx ctx;
-	  unsigned length;
+	  unsigned coded_length;
 	  unsigned end;
 
 	  for (end = ++in; end < length && input[end] != '}'; end++)
@@ -70,13 +70,13 @@ sexp_transport_iterator_first(struct sexp_iterator *iterator,
 	    return 0;
 	    
 	  base64_decode_init(&ctx);
-	  length = end - in;
+	  coded_length = end - in;
 	  
-	  if (base64_decode_update(&ctx, &length, input + out,
-				   length, input + in)
+	  if (base64_decode_update(&ctx, &coded_length, input + out,
+				   coded_length, input + in)
 	      && base64_decode_final(&ctx))
 	    {	  
-	      out += length;
+	      out += coded_length;
 	      in = end + 1;
 	    }
 	  else
