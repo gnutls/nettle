@@ -1,5 +1,7 @@
 2004-11-17  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/symbols-test: Try plain nm if nm -g doesn't work.
+
 	* x86/sha1-compress.asm: Use C_NAME for global symbols.
 	* x86/aes-encrypt.asm: Likewise.
 	* x86/aes-decrypt.asm: Likewise.
