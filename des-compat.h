@@ -35,10 +35,22 @@
 
 #include "des.h"
 
-/* Some names collides with nettle, so we'll need some ugly symbol
- * munging */
+/* We use some name mangling, to avoid collisions with either other
+ * nettle functions or with libcrypto. */
 
-#define des_set_key des_key_sched
+#define des_ecb3_encrypt nettle_openssl_des_ecb3_encrypt
+#define des_cbc_cksum nettle_openssl_des_cbc_cksum
+#define des_ncbc_encrypt nettle_openssl_des_ncbc_encrypt
+#define des_cbc_encrypt nettle_openssl_des_cbc_encrypt
+#define des_ecb_encrypt nettle_openssl_des_ecb_encrypt
+#define des_ede3_cbc_encrypt nettle_openssl_des_ede3_cbc_encrypt
+#define des_set_odd_parity nettle_openssl_des_set_odd_parity
+#define des_check_key nettle_openssl_des_check_key
+#define des_key_sched nettle_openssl_des_key_sched
+#define des_is_weak_key nettle_openssl_des_is_weak_key
+
+/* An extra alias */
+#define des_set_key nettle_openssl_des_key_sched
 
 enum { DES_DECRYPT = 0, DES_ENCRYPT = 1 };
 
