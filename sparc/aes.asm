@@ -14,7 +14,7 @@ include(`asm.m4')
 
 define(ctx, %i0)
 define(T, %i1)
-define(length, %o4)
+define(length, %i2)
 define(dst, %o3)
 define(src, %o2)
 
@@ -25,8 +25,7 @@ _aes_crypt:
 	save	%sp, -136, %sp
 
 ! Why this moving around of the input parameters?
-	mov	%i2, length
-	! mov	%i1, T
+	! mov	%i2, length
 	mov	%i3, dst
 	cmp	length, 0
 	be	.Lend
@@ -36,11 +35,11 @@ _aes_crypt:
 	mov	%l1, wtxt
 .Lblock_loop:
 	! Read src, and add initial subkey
-	mov	-4, %i2
+	mov	-4, %o4
 .Lsource_loop:
-	add	%i2, 4, %i2
+	add	%o4, 4, %o4
 		
-	add	%i2, src, %o5
+	add	%o4, src, %o5
 	ldub	[%o5+3], %g2
 
 	ldub	[%o5+2], %g3
@@ -48,16 +47,16 @@ _aes_crypt:
 	ldub	[%o5+1], %o0
 	sll	%g3, 16, %g3
 	or	%g2, %g3, %g2
-	ldub	[src+%i2], %o5
+	ldub	[src+%o4], %o5
 	sll	%o0, 8, %o0
-	ld	[ctx+%i2], %g3
+	ld	[ctx+%o4], %g3
 	or	%g2, %o0, %g2
 	or	%g2, %o5, %g2
 	xor	%g2, %g3, %g2
 
-	cmp	%i2, 12
+	cmp	%o4, 12
 	bleu	.Lsource_loop
-	st	%g2, [wtxt+%i2]
+	st	%g2, [wtxt+%o4]
 
 	! ! Read a little-endian word
 	! ldub	[src+3], %g2
@@ -79,7 +78,7 @@ _aes_crypt:
 	! xor	%g3, %g2, %g2
 	! 
 	! add	src, 4, src
-	! st	%g2, [wtxt+%i2]
+	! st	%g2, [wtxt+%o4]
 	! 
 	! cmp	%i3, 8
 	! bleu	.Lsource_loop
@@ -104,7 +103,7 @@ _aes_crypt:
 	ld	[%i4-32], %g3
 
 	! AES_SIDX2
-	ld	[%i4-16], %i2
+	ld	[%i4-16], %o4
 	! wtxt[IDX1...]
 	add	%g4, %g3, %g3
 	ldub	[%g3+2], %o0
@@ -117,12 +116,12 @@ _aes_crypt:
 	ld	[%g4+%i3], %o5
 	
 	! wtxt[IDX2...]
-	lduh	[%g4+%i2], %g3
+	lduh	[%g4+%o4], %g3
 	
 	and	%o5, 255, %o5
 
 	! wtxt[IDX3...]
-	ldub	[%g4+%g2], %i2
+	ldub	[%g4+%g2], %o4
 	
 	sll	%o5, 2, %o5
 	add	%o5, AES_TABLE0, %o5
@@ -134,9 +133,9 @@ _aes_crypt:
 	sll	%g3, 2, %g3
 	add	%g3, AES_TABLE2, %g3
 	ld	[T+%g3], %o0
-	sll	%i2, 2, %i2
-	add	%i2, AES_TABLE3, %i2
-	ld	[T+%i2], %g3
+	sll	%o4, 2, %o4
+	add	%o4, AES_TABLE3, %o4
+	ld	[T+%o4], %g3
 	xor	%g2, %o5, %g2
 	xor	%g2, %o0, %g2
 
@@ -154,12 +153,12 @@ _aes_crypt:
 	add	%g2, ctx, %o0
 	mov	0, %i5
 	mov	%l1, %i3
-	mov	tmp, %i2
+	mov	tmp, %o4
 .Lroundkey_loop:
 	sll	%i5, 2, %g2
 	ld	[%o0], %o5
 	add	%i5, 1, %i5
-	ld	[%i2+%g2], %g3
+	ld	[%o4+%g2], %g3
 	cmp	%i5, 3
 	xor	%g3, %o5, %g3
 	st	%g3, [%i3+%g2]
@@ -188,17 +187,17 @@ _aes_crypt:
 	add	%o1, 1, %o1
 	ld	[%g1+%i5], %g2
 	sll	%g3, 2, %g3
-	lduh	[%g1+%g3], %i2
+	lduh	[%g1+%g3], %o4
 	and	%g2, 255, %g2
 	ld	[%g4], %o5
-	and	%i2, 255, %i2
+	and	%o4, 255, %o4
 	ldub	[T+%i3], %o0
 	sll	%o5, 2, %o5
 	ldub	[T+%g2], %g3
 	sll	%o0, 8, %o0
 	ldub	[%g1+%o5], %i3
 	or	%g3, %o0, %g3
-	ldub	[T+%i2], %g2
+	ldub	[T+%o4], %g2
 	cmp	%o1, 3
 	ldub	[T+%i3], %o5
 	sll	%g2, 16, %g2
