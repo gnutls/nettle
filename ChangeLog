@@ -1,3 +1,7 @@
+2002-03-19  Pontus Sköld  <pont@it.uu.se>
+
+	* testsuite/run-tests: Removed /bin/bashisms to use with /bin/sh. 
+
 2002-03-18  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* rsa-keygen.c (rsa_generate_keypair): Output a newline after a
