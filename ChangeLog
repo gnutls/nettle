@@ -1,5 +1,16 @@
 2002-10-22  Niels Möller  <nisse@cuckoo.hack.org>
 
+	* examples/sexp-conv-test: New test program.
+
+	* examples/Makefile.am (noinst_PROGRAMS): Added sexp-conv.
+
+	* examples/sexp-conv.c (sexp_convert_list): New function.
+	(sexp_convert_item): New function.
+	(main): New function. Compiles and runs now, but doesn't work.
+
+	* base64-decode.c (base64_decode_single): New function.
+	(base64_decode_update): Use base64_decode_single.
+
 	* examples/sexp-conv.c: Added output functions.
 
 2002-10-21  Pontus Sköld  <pont@soua.net>
