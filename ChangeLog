@@ -1,3 +1,9 @@
+2001-07-03  Niels Möller  <nisse@ehand.com>
+
+	* testsuite/testutils.c: Include string.h.
+
+	* twofish.c: Include string.h.
+
 2001-06-17  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.am (des_headers): Dont use $(srcdir)/-prefixes as that
