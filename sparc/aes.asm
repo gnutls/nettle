@@ -52,6 +52,7 @@ define(dst, %o3)
 define(src, %o2)
 
 define(wtxt, %l2)
+define(tmp, %o1)
 _aes_crypt:
 	!#PROLOGUE# 0
 ! Why -136?
@@ -97,19 +98,27 @@ _aes_crypt:
 	cmp	%g1, %g2
 	bgeu,a	.Lfinal_round
 	sll	%g1, 4, %g2
-	add	%fp, -40, %o1
+
+	add	%fp, -40, tmp
 	mov	%g2, %o7
-	mov	%o1, %l0
+	mov	tmp, %l0
+
+	! wtxt
 	mov	%l1, %g4
+
+	! round:	%i5
+	! 4*round:	%i3
 	mov	0, %i5
 .Lround_loop:
 	add	T, AES_IDX3, %i4
 .Linner_loop:
-	! Equals AES_IDX1
+	! AES_IDX1
 	ld	[%i4-32], %g3
 	sll	%i5, 2, %i3
 	sll	%g3, 2, %g3
+	! AES_IDX2
 	ld	[%i4-16], %i2
+	! wtxt[IDX1...]
 	add	%g4, %g3, %g3
 	ldub	[%g3+2], %i1
 	sll	%i2, 2, %i2
@@ -121,16 +130,17 @@ _aes_crypt:
 	and	%i0, 255, %i0
 	ldub	[%g4+%g2], %i2
 	sll	%i0, 2, %i0
-	add	%i0, 304, %i0
+	add	%i0, AES_TABLE0, %i0
 	ld	[T+%i0], %g2
-	add	%i1, 1328, %i1
+
+	add	%i1, AES_TABLE1, %i1
 	and	%g3, 255, %g3
 	ld	[T+%i1], %i0
 	sll	%g3, 2, %g3
-	add	%g3, 2352, %g3
+	add	%g3, AES_TABLE2, %g3
 	ld	[T+%g3], %i1
 	sll	%i2, 2, %i2
-	add	%i2, 3376, %i2
+	add	%i2, AES_TABLE3, %i2
 	ld	[T+%i2], %g3
 	xor	%g2, %i0, %g2
 	xor	%g2, %i1, %g2
@@ -140,11 +150,12 @@ _aes_crypt:
 	cmp	%i5, 3
 	bleu	.Linner_loop
 	add	%i4, 4, %i4
+	
 	sll	%g1, 4, %g2
 	add	%g2, ctx, %i1
 	mov	0, %i5
 	mov	%l1, %i3
-	mov	%o1, %i2
+	mov	tmp, %i2
 .Lroundkey_loop:
 	sll	%i5, 2, %g2
 	ld	[%i1], %i0
