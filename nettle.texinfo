@@ -1187,8 +1187,9 @@ nettle_hash} describing the underlying hash function. The last two
 arguments specify where the digest is written.
 @end deffn
 
-Note that there is no @code{HMAC_UPDATE} macro; simply call hmac_update
-function directly, or the update function of the underlying hash function.
+Note that there is no @code{HMAC_UPDATE} macro; simply call
+@code{hmac_update} function directly, or the update function of the
+underlying hash function.
 
 @subsection Concrete @acronym{HMAC} functions
 Now we come to the specialized @acronym{HMAC} functions, which are
@@ -1446,7 +1447,7 @@ deallocated by calling one of
 Calls @code{mpz_clear} on all numbers in the key struct.
 @end deftypefun
 
-In general, Nettle's @acronym{rsa} functions deviates from Nettle's "no
+In general, Nettle's @acronym{RSA} functions deviates from Nettle's "no
 memory allocation"-policy. Space for all the numbers, both in the key structs
 above, and temporaries, are allocated dynamically. For information on how
 to customize allocation, see
@@ -1464,9 +1465,9 @@ than the minimum size specified by PKCS#1.
 
 Before signing or verifying a message, you first hash it with the
 appropriate hash function. You pass the hash function's context struct
-to the rsa function, and it will extract the message digest and do the
-rest of the work. There are also alternative functions that take the
-@acronym{md5} or @acronym{sha1} hash digest as argument.
+to the @acronym{RSA} signature function, and it will extract the message
+digest and do the rest of the work. There are also alternative functions
+that take the @acronym{MD5} or @acronym{SHA1} hash digest as argument.
 
 Creation and verification of signatures is done with the following functions:
 
@@ -1492,8 +1493,7 @@ the hash context is reset so that it can be used for new messages.
 @end deftypefun
 
 @deftypefun int rsa_md5_verify_digest (const struct rsa_public_key *@var{key}, const uint8_t *@var{digest}, const mpz_t @var{signature})
-@deftypefunx int rsa_sha1_verify_digest (const struct rsa_public_key
-*@var{key}, const uint8_t *@var{digest}, const mpz_t @var{signature})
+@deftypefunx int rsa_sha1_verify_digest (const struct rsa_public_key *@var{key}, const uint8_t *@var{digest}, const mpz_t @var{signature})
 Returns 1 if the signature is valid, or 0 if it isn't. @var{digest} should
 point to a digest of size @code{MD5_DIGEST_SIZE} or
 @code{SHA1_DIGEST_SIZE}, respectively.
@@ -1542,9 +1542,9 @@ example if if @var{n_size} is too small, or if @var{e_size} is zero and
 
 The @acronym{DSA} digital signature algorithm is more complex than
 @acronym{RSA}. It was specified during the early 1990s, and in 1994 NIST
-published FIPS 186 which is the authoritative specification. Sometimes
-@acronym{DSA} is referred to using the acronym @acronym{DSS}, for
-Digital Signature Standard.
+published @acronym{FIPS} 186 which is the authoritative specification.
+Sometimes @acronym{DSA} is referred to using the acronym @acronym{DSS},
+for Digital Signature Standard.
 
 For @acronym{DSA}, the underlying mathematical problem is the
 computation of discreet logarithms. The public key consists of a large
@@ -2196,4 +2196,5 @@ End:
 @c  LocalWords:  RSA Daemen Rijnmen Schneier DES's ede structs oddnesses HMAC
 @c  LocalWords:  NIST Alice's GMP bignum Diffie Adi Shamir Adleman Euclid's ASN
 @c  LocalWords:  PKCS callbacks Young's urtica dioica autoconf automake SSH tad
-@c  LocalWords:  unguessability reseeding reseed alternatingly keysym
+@c  LocalWords:  unguessability reseeding reseed alternatingly keysym subkeys
+@c  LocalWords:  DSA gmp FIPS DSS libdes OpenSSL
