@@ -13,6 +13,9 @@ EXTRA_PROGRAMS = rsa-keygen rsa-sign rsa-verify rsa-encrypt rsa-decrypt io
 noinst_PROGRAMS = nettle-benchmark @RSA_EXAMPLES@
 
 nettle_benchmark_SOURCES = nettle-benchmark.c nettle-openssl.c
+rsa_encrypt_SOURCES = rsa-encrypt.c getopt.h getopt.c getopt1.c
+rsa_decrypt_SOURCES = rsa-decrypt.c getopt.h getopt.c getopt1.c
+rsa_keygen_SOURCES = rsa-keygen.c getopt.h getopt.c getopt1.c
 
 # libnettle.a for the dependency
 LDADD = io.o -lnettle ../libnettle.a
