@@ -81,13 +81,11 @@ define(<AES_ROUND>, <
 	sll	t1, 2, t1		! 1
 	ldub	[wtxt+$1+3], t0		! 0
 	! IDX2(j) = j XOR 2
-	lduh	[wtxt+eval($1 ^ 8)], t2	! 2
-	C and	t0, 255, t0		! 0
+	ldub	[wtxt+eval($1 ^ 8)+1], t2	! 2
 	
 	ldub	[wtxt+t3], t3		! 3
 	sll	t0, 2, t0		! 0
 	ld	[T0+t0], t0		! 0
-	and	t2, 255, t2		! 2
 	
 	ld	[T1+t1], t1		! 1
 	sll	t2, 2, t2		! 2
