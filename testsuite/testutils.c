@@ -243,18 +243,20 @@ test_armor(const struct nettle_armor *armor,
 {
   unsigned ascii_length = strlen(ascii);
   uint8_t *buffer = alloca(1 + ascii_length);
-  uint8_t *check = alloca(1 + data_length);
+  uint8_t *check = alloca(1 + armor->decode_length(ascii_length));
   void *encode = alloca(armor->encode_context_size);
   void *decode = alloca(armor->decode_context_size);
   unsigned done;
+
+  ASSERT(ascii_length
+	 <= (armor->encode_length(data_length) + armor->encode_final_length));
+  ASSERT(data_length <= armor->decode_length(ascii_length));
   
   memset(buffer, 0x33, 1 + ascii_length);
   memset(check, 0x55, 1 + data_length);
 
   armor->encode_init(encode);
   
-  ASSERT(armor->encode_length(data_length) <= ascii_length);
-
   done = armor->encode_update(encode, buffer, data_length, data);
   done += armor->encode_final(encode, buffer + done);
   ASSERT(done == ascii_length);
@@ -266,10 +268,11 @@ test_armor(const struct nettle_armor *armor,
     FAIL();  
 
   armor->decode_init(decode);
-  ASSERT(data_length
-	 == armor->decode_update(decode, check, ascii_length, buffer));
+  done = armor->decode_length(ascii_length);
 
-  ASSERT(armor->decode_status(decode));
+  ASSERT(armor->decode_update(decode, &done, check, ascii_length, buffer));
+  ASSERT(done == data_length);
+  ASSERT(armor->decode_final(decode));
   
   if (!MEMEQ(data_length, check, data))
     FAIL();
