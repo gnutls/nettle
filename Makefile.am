@@ -72,7 +72,10 @@ EXTRA_DIST = memxor.h $(des_headers) descore.README nettle.html \
 	sparc/aes.asm sparc/machine.m4 \
 	x86/aes.asm x86/aes_tables.asm
 
-DISTCLEANFILES = aes.asm aes-decrypt.asm aes-encrypt.asm machine.m4
+DISTCLEANFILES = aes.asm aes.s \
+	aes-decrypt.asm aes-decrypt.s aes-encrypt.asm aes-encrypt.s \
+	machine.m4
+
 CLEANFILES = $(SHLIBFORLINK)
 clean-local:
 	rm -rf .lib

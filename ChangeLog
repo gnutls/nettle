@@ -1,3 +1,7 @@
+2003-06-05  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.am (DISTCLEANFILES): Delete .s files.
+
 2003-05-27  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* testsuite/symbols-test: And allow symbols that start at the
