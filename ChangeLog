@@ -1,3 +1,10 @@
+2004-03-01  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/des-compat-test.c: Don't include <unistd.h>.
+
+	* testsuite/testutils.c (main): Don't use getopt. Then we don't
+	need to include <unistd.h>.
+
 2004-03-01  Niels Möller  <niels@s3.kth.se>
 
 	* config.guess: Copied from automake-1.8.2. Hacked to recognize
