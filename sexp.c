@@ -120,8 +120,7 @@ sexp_iterator_next(struct sexp_iterator *iterator)
       if (iterator->type == SEXP_LIST)
 	/* Skip this list */
 	return sexp_iterator_enter_list(iterator)
-	  && sexp_iterator_exit_list(iterator)
-	  && sexp_iterator_next(iterator);
+	  && sexp_iterator_exit_list(iterator);
       else
 	{
 	  iterator->type = SEXP_LIST;
@@ -183,18 +182,14 @@ sexp_iterator_exit_list(struct sexp_iterator *iterator)
   if (!iterator->level)
     return 0;
 
-  for (;;)
-    {
-      if (!sexp_iterator_next(iterator))
-	return 0;
+  while(iterator->type != SEXP_END)
+    if (!sexp_iterator_next(iterator))
+      return 0;
       
-      if (iterator->type == SEXP_END)
-	{
-	  iterator->type = SEXP_START;	  
-	  iterator->level--;
-	  return 1;
-	}
-    }
+  iterator->type = SEXP_START;	  
+  iterator->level--;
+
+  return sexp_iterator_next(iterator);
 }
 
 int
@@ -205,7 +200,8 @@ sexp_iterator_check_type(struct sexp_iterator *iterator,
 	  && iterator->type == SEXP_ATOM
 	  && !iterator->display
 	  && strlen(type) == iterator->atom_length
-	  && !memcmp(type, iterator->atom, iterator->atom_length));
+	  && !memcmp(type, iterator->atom, iterator->atom_length)
+	  && sexp_iterator_next(iterator));
 }
 
 const uint8_t *
@@ -222,9 +218,9 @@ sexp_iterator_check_types(struct sexp_iterator *iterator,
 	if (strlen(types[i]) == iterator->atom_length
 	    && !memcmp(types[i], iterator->atom,
 		       iterator->atom_length))
-	  return types[i];
+	  return sexp_iterator_next(iterator) ? types[i] : NULL;
     }
-  return 0;
+  return NULL;
 }
 		   
 
@@ -285,6 +281,8 @@ sexp_iterator_assoc(struct sexp_iterator *iterator,
 	  break;
 	case SEXP_ATOM:
 	  /* Just ignore */
+	  if (!sexp_iterator_next(iterator))
+	    return 0;
 	  break;
 	  
 	case SEXP_END:
@@ -294,7 +292,5 @@ sexp_iterator_assoc(struct sexp_iterator *iterator,
 	default:
 	  abort();
 	}
-      if (!sexp_iterator_next(iterator))
-	return 0;
     }
 }
