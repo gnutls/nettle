@@ -23,7 +23,7 @@ define(src, %i4)
 define(wtxt, %l0)
 define(tmp, %l1)
 define(diff, %l2)
-define(nround, %l3)
+define(nrounds, %l3)
 
 ! Loop variables
 define(round, %l4) ! Should perhaps be 16 * round
@@ -46,10 +46,14 @@ _aes_crypt:
 	! wtxt
 	add	%fp, -24, wtxt
 	add	%fp, -40, tmp
+
+	ld	[ctx + AES_NROUNDS], nrounds
+
 	! Compute xor, so that we can swap efficiently.
 	xor	wtxt, tmp, diff
-	
-	ld	[ctx + AES_NROUNDS], nround
+
+	! The loop variable will be multiplied by 16.
+	sll	nrounds, 4, nrounds
 
 .Lblock_loop:
 	! Read src, and add initial subkey
@@ -102,12 +106,11 @@ _aes_crypt:
 	! bleu	.Lsource_loop
 	! add	%o3, 4, %o3
 
-	mov	1, round
+	mov	16, round
 
-	! 4*i:	i
-	! This instruction copied to the delay slot of the branch here. 
-	mov	0, i
 .Lround_loop:
+	! 4*i
+	mov	0, i
 	add	T, AES_SIDX3, idx
 .Linner_loop:
 	! The comments mark which j in T->table[j][ Bj(wtxt[IDXi(i)]) ]
@@ -159,8 +162,7 @@ _aes_crypt:
 	add	idx, 4, idx		
 
 	! Fetch roundkey
-	sll	round, 4, t1
-	add	t1, ctx, t1
+	add	round, ctx, t1
 	ld	[t1+i], t1
 		
 	xor	t0, t3, t0		! 0, 1, 2, 3
@@ -173,35 +175,18 @@ _aes_crypt:
 	bleu	.Linner_loop
 	add	i, 4, i
 	
-! 	sll	round, 4, %g2
-! 	add	%g2, ctx, %o0
-! 	mov	0, i
-! 
-! .Lroundkey_loop:
-! 	sll	i, 2, %g2
-! 	ld	[%o0], %o5
-! 	add	i, 1, i
-! 	ld	[tmp+%g2], %g3
-! 	cmp	i, 3
-! 	xor	%g3, %o5, %g3
-! 	! st	%g3, [wtxt+%g2]
-! 	st	%g3, [tmp+%g2]
-! 	bleu	.Lroundkey_loop
-! 	add	%o0, 4, %o0
-! 
 	! switch roles for tmp and wtxt
 	xor	wtxt, diff, wtxt
+
+	add	round, 16, round
+	cmp	round, nrounds
+	blu	.Lround_loop
 	xor	tmp, diff, tmp
 
-	add	round, 1, round
-	cmp	round, nround
-	blu	.Lround_loop
-	mov	0, i
-
-	sll	round, 4, %g2
+	! sll	round, 4, %g2
 	
 	! final round
-	add	%g2, ctx, %o7
+	add	round, ctx, %o7
 	mov	0, i
 	add	T, 288, %g4
 .Lfinal_loop:
