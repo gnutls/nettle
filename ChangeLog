@@ -1,3 +1,8 @@
+2003-01-07  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* Makefile.am (des_headers): Refer to the desdata binary using
+	$(EXEEXT). 
+
 2003-01-01  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* testsuite/sexp-conv-test: New tests for hex and base64 literal
