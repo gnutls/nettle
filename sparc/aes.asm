@@ -18,7 +18,7 @@ define(length, %i2)
 define(dst, %i3)
 define(src, %i4)
 
-define(wtxt, %l2)
+define(wtxt, %l1)
 define(tmp, %o1)
 _aes_crypt:
 ! Why -136?
@@ -29,8 +29,8 @@ _aes_crypt:
 	be	.Lend
 
 	! wtxt
-	add	%fp, -24, %l1
-	mov	%l1, wtxt
+	add	%fp, -24, wtxt
+	! mov	%l1, wtxt
 .Lblock_loop:
 	! Read src, and add initial subkey
 	mov	-4, %o4
@@ -90,7 +90,7 @@ _aes_crypt:
 	mov	tmp, %l0
 
 	! wtxt
-	mov	%l1, %g4
+	mov	wtxt, %g4
 
 	! 4*i:	%o3
 	mov	0, %o3
@@ -150,7 +150,7 @@ _aes_crypt:
 	sll	%g1, 4, %g2
 	add	%g2, ctx, %o0
 	mov	0, %i5
-	mov	%l1, %o3
+	mov	wtxt, %o3
 	mov	tmp, %o4
 .Lroundkey_loop:
 	sll	%i5, 2, %g2
@@ -172,7 +172,7 @@ _aes_crypt:
 	! final round
 	add	%g2, ctx, %o7
 	mov	0, %o1
-	mov	%l1, %g1
+	mov	wtxt, %g1
 	add	T, 288, %g4
 .Lfinal_loop:
 	ld	[%g4-32], %g2
