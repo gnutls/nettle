@@ -26,6 +26,8 @@
 #ifndef NETTLE_BIGNUM_H_INCLUDED
 #define NETTLE_BIGNUM_H_INCLUDED
 
+#include "nettle-meta.h"
+
 #include <gmp.h>
 #include <inttypes.h>
 
@@ -44,5 +46,18 @@ nettle_mpz_set_str_256(mpz_t x,
 void
 nettle_mpz_init_set_str_256(mpz_t x,
                             unsigned length, const uint8_t *s);
+
+/* Returns a uniformly distributed random number 0 <= x < 2^n */
+void
+nettle_mpz_random_size(mpz_t x,
+		       void *ctx, nettle_random_func random,
+		       unsigned bits);
+
+/* Returns a number x, almost uniformly random in the range
+ * 0 <= x < n. */
+void
+nettle_mpz_random(mpz_t x, 
+		  void *ctx, nettle_random_func random,
+		  const mpz_t n);
 
 #endif /* NETTLE_BIGNUM_H_INCLUDED */
