@@ -37,6 +37,15 @@
 /* Generator gate threshold */
 #define YARROW_GATE_THRESHOLD 10
 
+/* Entropy threshold for reseeding from the fast pool */
+#define YARROW_FAST_THRESHOLD 100
+
+/* Entropy threshold for reseeding from the fast pool */
+#define YARROW_SLOW_THRESHOLD 160
+
+/* Number of sources that must exceed the threshold for slow reseed */
+#define YARROW_SLOW_K 2
+
 /* Entropy estimates sticks to this value, it is treated as infinity
  * in calculations. It should fit comfortably in an uint32_t, to avoid
  * overflows. */
@@ -52,8 +61,59 @@ yarrow256_init(struct yarrow256_ctx *ctx,
 
   ctx->seeded = 0;
 
+  /* Means that we have no buffered output */
+  ctx->index = sizeof(ctx->buffer);
+  
   ctx->nsources = n;
   ctx->sources = s;
+}
+
+/* NOTE: The SHA-256 digest size equals the AES key size, so we need
+ * no "size adaptor". We also use P_t = 0, i.e. we don't currently try
+ * to make reseeding computationally expensive. */
+
+static void
+yarrow_fast_reseed(struct yarrow256_ctx *ctx)
+{
+  uint8_t digest[SHA256_DIGEST_SIZE];
+  
+  unsigned i;
+
+  sha256_final(&ctx->pools[YARROW_FAST]);
+  sha256_digest(&ctx->pools[YARROW_FAST], sizeof(digest), digest);
+  sha256_init(&ctx->pools[YARROW_FAST]);
+  
+  aes_set_key(&ctx->key, sizeof(digest), digest);
+
+  /* Derive new counter value */
+  memset(ctx->counter, 0, sizeof(ctx->counter));
+  aes_encrypt(&ctx->key, sizeof(ctx->counter), ctx->counter, ctx->counter);
+  
+  /* Reset estimates. */
+  for (i = 0; i<ctx->nsources; i++)
+    ctx->sources[i].estimate[YARROW_FAST] = 0;
+}
+
+static void
+yarrow_slow_reseed(struct yarrow256_ctx *ctx)
+{
+  uint8_t digest[SHA256_DIGEST_SIZE];
+  unsigned i;
+
+  /* Get digest of the slow pool*/
+  
+  sha256_final(&ctx->pools[YARROW_SLOW]);
+  sha256_digest(&ctx->pools[YARROW_SLOW], sizeof(digest), digest);
+  sha256_init(&ctx->pools[YARROW_SLOW]);
+
+  /* Feed it into the fast pool */
+  sha256_update(&ctx->pools[YARROW_SLOW], sizeof(digest), digest);
+
+  yarrow_fast_reseed(ctx);
+  
+  /* Reset estimates. */
+  for (i = 0; i<ctx->nsources; i++)
+    ctx->sources[i].estimate[YARROW_SLOW] = 0;
 }
 
 void
@@ -107,7 +167,29 @@ yarrow256_update(struct yarrow256_ctx *ctx,
     }
 
   /* Check for seed/reseed */
-  
+  switch(current)
+    {
+    case YARROW_FAST:
+      if (source->estimate[YARROW_FAST] >= YARROW_FAST_THRESHOLD)
+	yarrow_fast_reseed(ctx);
+      break;
+    case YARROW_SLOW:
+      {
+	/* FIXME: This is somewhat inefficient. It would be better to
+	 * either maintain the count, or do this loop only if the
+	 * current source just crossed the threshold. */
+	unsigned k, i;
+	for (i = k = 0; i < ctx->nsources; i++)
+	  if (ctx->sources[i].estimate[YARROW_SLOW] >= YARROW_SLOW_THRESHOLD)
+	    k++;
+
+	if (k >= YARROW_SLOW_K)
+	  {
+	    yarrow_slow_reseed(ctx);
+	    ctx->seeded = 1;
+	  }
+      }
+    }
 }
 
 static void
@@ -116,14 +198,16 @@ yarrow_generate_block(struct yarrow256_ctx *ctx,
 {
   unsigned i;
   
-  aes_encrypt(&ctx->key, AES_BLOCK_SIZE, block, ctx->counter);
+  aes_encrypt(&ctx->key, sizeof(ctx->counter), block, ctx->counter);
 
-  /* Increment counter, treating it as a big-endian number.
+  /* Increment counter, treating it as a big-endian number. This is
+   * machine independent, and follows appendix B of the NIST
+   * specification of cipher modes of operation.
    *
-   * We could keep a representation of th counter as 4 32-bit values,
+   * We could keep a representation of thy counter as 4 32-bit values,
    * and write entire words (in big-endian byteorder) into the counter
    * block, whenever they change. */
-  for (i = AES_BLOCK_SIZE; i--; )
+  for (i = sizeof(ctx->counter); i--; )
     {
       if (++ctx->counter[i])
 	break;
