@@ -70,11 +70,12 @@ all-local: nettle.html
 EXTRA_DIST = memxor.h $(des_headers) descore.README nettle.html \
 	sha-example.c .bootstrap $(des_headers) \
 	sparc/aes.asm sparc/machine.m4 \
-	x86/aes.asm x86/aes_tables.asm
+	x86/aes.asm x86/aes-encrypt.asm x86/aes-decrypt.asm \
+	x86/aes_tables.asm x86/arcfour-crypt.asm
 
 DISTCLEANFILES = aes.asm aes.s \
 	aes-decrypt.asm aes-decrypt.s aes-encrypt.asm aes-encrypt.s \
-	machine.m4 nettle-types.h
+	arcfour-crypt.asm arcfour-crypt.s machine.m4 nettle-types.h
 
 CLEANFILES = $(SHLIBFORLINK)
 clean-local:
