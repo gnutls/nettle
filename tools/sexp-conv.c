@@ -968,35 +968,11 @@ sexp_put_digest(struct sexp_output *output)
 
 /* Conversion functions. */
 
-#if 0
-static void
-sexp_convert_string(struct sexp_input *input, enum sexp_mode mode_in,
-		    struct sexp_output *output, enum sexp_mode mode_out)
-{
-  sexp_get_token(input, mode_in);
-  if (input->token == SEXP_STRING)
-    sexp_put_string(output, mode_out, &input->string);
-  else
-    die("Invalid string.\n");
-}
-#endif
 
 static void
 sexp_convert_list(struct sexp_input *input, struct sexp_parse_state *parser,
 		  struct sexp_output *output, enum sexp_mode mode_out,
 		  unsigned indent);
-
-#if 0
-static void
-sexp_skip_token(struct sexp_input *input, enum sexp_mode mode,
-		enum sexp_token token)
-{
-  sexp_get_token(input, mode);
-
-  if (input->token != token)
-    die("Syntax error.\n");
-}
-#endif
 
 /* Should be called with input->token being the first token of the
  * expression, to be converted, and return with input->token being the
@@ -1040,19 +1016,6 @@ sexp_convert_item(struct sexp_input *input, struct sexp_parse_state *parser,
       sexp_put_string(output, mode_out, &input->string);      
       break;
 
-#if 0
-    case SEXP_TRANSPORT_START:
-      if (mode_in == SEXP_CANONICAL)
-	die("Base64 not allowed in canonical mode.\n");
-      else
-	{
-	  sexp_get_token(input, SEXP_CANONICAL);
-	  sexp_convert_item(input, SEXP_CANONICAL, output, mode_out, indent);
-	  sexp_skip_token(input, SEXP_CANONICAL, SEXP_CODING_END);
-	  
-	  break;
-	}
-#endif
     default:
       /* Internal error */
       abort();
