@@ -166,6 +166,7 @@ _aes_crypt:
 	xor	tmp, diff, tmp
 
 	! final round
+	! 4*i
 	mov	0, i
 	! SIDX3
 	add	T, AES_SIDX3, idx
@@ -173,13 +174,13 @@ _aes_crypt:
 	! Comments mark which j in T->sbox[Bj(wtxt[IDXj(i)])]
 	! the instruction is part of
 	ld	[idx-32], t1 	! 1
-	sll	i, 2, %i5
-
+	!sll	i, 2, %i5
+	mov	i, %i5
 	add	wtxt, t1, t1	! 1
 	ldub	[t1+2], t1	! 1
 	add	%i5, dst, %g2	
 	ld	[idx-16], t2	! 2
-	add	i, 1, i
+	add	i, 4, i
 	ld	[wtxt+%i5], t0	! 0
 
 	lduh	[wtxt+t2], t2	! 2
@@ -193,11 +194,11 @@ _aes_crypt:
 	ldub	[wtxt+t3], t3	! 3
 	or	t0, t1, t0	! 0, 1
 	ldub	[T+t2], t2	! 2
-	cmp	i, 3
+	cmp	i, 12
 	ldub	[T+t3], t3	! 3
 	sll	t2, 16, t2	! 2
 	or	t0, t2, t0	! 0, 1, 2
-	ld	[ctx + round], t2
+	ld	[key + %i5], t2
 	sll	t3, 24, t3	! 3
 	or	t0, t3, t0	! 0, 1, 2, 3
 	xor	t0, t2, %g3
