@@ -78,3 +78,23 @@ if (!MEMEQ(16, cipher, H("1946DABF6A03A2A2 C3D0B05080AED6FC")))
 aes_decrypt(&ctx, AES_BLOCK_SIZE, clear, cipher);
 if (!MEMEQ(16, msg, clear))
   FAIL;
+
+/* This test case has been problematic with the CBC test case */
+H(msg, "a5 ce 55 d4 21 15 a1 c6 4a a4 0c b2 ca a6 d1 37");
+
+aes_set_key(&ctx, 32, H("8d ae 93 ff fc 78 c9 44"
+			"2a bd 0c 1e 68 bc a6 c7"
+			"05 c7 84 e3 5a a9 11 8b"
+			"d3 16 aa 54 9b 44 08 9e"));
+
+aes_encrypt(&ctx, AES_BLOCK_SIZE, cipher, msg);
+/* In the cbc test, I once got the bad value
+ *   "b2 a0 6c d2 2f df 7d 2c  26 d2 42 88 8f 20 74 a2" */
+if (!MEMEQ(16, cipher, H("1f 94 fc 85 f2 36 21 06"
+			 "4a ea e3 c9 cc 38 01 0e")))
+  FAIL;
+
+aes_decrypt(&ctx, AES_BLOCK_SIZE, clear, cipher);
+if (!MEMEQ(16, msg, clear))
+  FAIL;
+
