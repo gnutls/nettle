@@ -1,3 +1,7 @@
+2004-01-11  Niels Möller  <nisse@harpo.hack.org>
+
+	* configure.ac: Bumped version to 1.9.
+
 2004-01-10  Niels Möller  <nisse@harpo.hack.org>
 
 	* Released nettle-1.8.
