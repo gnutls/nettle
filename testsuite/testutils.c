@@ -38,7 +38,7 @@ void *
 xalloc(size_t size)
 {
   void *p = malloc(size);
-  if (!p)
+  if (size && !p)
     {
       fprintf(stderr, "Virtual memory exhausted.\n");
       abort();
