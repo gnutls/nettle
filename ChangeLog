@@ -1,5 +1,7 @@
 2001-10-08  Niels Möller  <nisse@cuckoo.hack.org>
 
+	* yarrow.h (struct yarrow_key_event_ctx): New struct.
+
 	* yarrow256.c (yarrow_fast_reseed): Generate two block of output
 	using the old key and feed into the pool.
 

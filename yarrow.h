@@ -103,5 +103,20 @@ yarrow256_random(struct yarrow256_ctx *ctx, unsigned length, uint8_t *dst);
 int
 yarrow256_seeded(struct yarrow256_ctx *ctx);
 
+/* Key event estimator */
+struct yarrow_key_event_ctx
+{
+  /* Counter for initial priming of the state */
+  unsigned index;
+  unsigned chars[16];
+  unsigned previous;
+};
 
+void
+yarrow_key_event_init(struct yarrow_key_event_ctx *ctx);
+
+unsigned
+yarrow_key_event_estimate(struct yarrow_key_event_ctx *ctx,
+			  unsigned key, unsigned time);
+  
 #endif /* NETTLE_YARROW_COMPAT_H_INCLUDED */
