@@ -1,0 +1,228 @@
+/* sexp.c
+ *
+ * Parsing s-expressions.
+ */
+
+/* nettle, low-level cryptographics library
+ *
+ * Copyright (C) 2002 Niels Möller
+ *  
+ * The nettle library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or (at your
+ * option) any later version.
+ * 
+ * The nettle library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
+ * License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with the nettle library; see the file COPYING.LIB.  If not, write to
+ * the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
+ * MA 02111-1307, USA.
+ */
+
+#include "sexp.h"
+
+#include <stdlib.h>
+#include <string.h>
+
+void
+sexp_iterator_init(struct sexp_iterator *iterator,
+		   unsigned length, const uint8_t *input)
+{
+  iterator->length = length;
+  iterator->buffer = input;
+  iterator->pos = 0;
+  iterator->level = 0;
+  iterator->type = SEXP_START;
+  iterator->display_length = 0;
+  iterator->display = NULL;
+  iterator->atom_length = 0;
+  iterator->atom = NULL;
+
+  /* FIXME: For other than canonical syntax,
+   * skip white space here. */
+}
+
+#define EMPTY(i) ((i)->pos == (i)->length)
+#define NEXT(i) ((i)->buffer[(i)->pos++])
+
+static int
+sexp_iterator_simple(struct sexp_iterator *iterator,
+		     unsigned *size,
+		     const uint8_t **string)
+{
+  unsigned length = 0;
+  uint8_t c;
+  
+  if (EMPTY(iterator)) return 0;
+  c = NEXT(iterator);
+
+  if (c >= '1' && c <= '9')
+    do
+      {
+	length = length * 10 + (c - '0');
+
+	if (EMPTY(iterator)) return 0;
+	c = NEXT(iterator);
+      }
+    while (c < '0' || c > '9');
+
+  else if (c != '0')
+    return 0;
+
+  if (EMPTY(iterator) || NEXT(iterator) != ':')
+    return 0;
+
+  if (length > (iterator->length - iterator->pos))
+    return 0;
+
+  *size = length;
+  *string = iterator->buffer + iterator->pos;
+  iterator->pos += length;
+
+  return 1;
+}
+
+/* All these functions return 1 on success, 0 on failure */
+int
+sexp_iterator_next(struct sexp_iterator *iterator)
+{
+  if (iterator->type == SEXP_END)
+    return 1;
+  
+  if (EMPTY(iterator))
+    {
+      if (iterator->level)
+	return 0;
+      
+      iterator->type = SEXP_END;
+      return 1;
+    }
+  switch (iterator->buffer[iterator->pos])
+    {
+    case '(': /* A list */
+      if (iterator->type == SEXP_START)
+	iterator->type = SEXP_LIST;
+      else
+	return sexp_iterator_enter_list(iterator)
+	  && sexp_iterator_exit_list(iterator);
+    case '[': /* Atom with display type */
+      iterator->pos++;
+      if (!sexp_iterator_simple(iterator,
+				&iterator->display_length,
+				&iterator->display))
+	return 0;
+      if (EMPTY(iterator) || NEXT(iterator) != ']')
+	return 0;
+
+      break;
+
+    default:
+      iterator->display_length = 0;
+      iterator->display = NULL;
+
+      break;
+    }
+
+  iterator->type = SEXP_ATOM;
+      
+  return sexp_iterator_simple(iterator,
+			      &iterator->atom_length,
+			      &iterator->atom);
+}
+
+/* Current element must be a list. */
+int
+sexp_iterator_enter_list(struct sexp_iterator *iterator)
+{
+  if (iterator->type != SEXP_LIST)
+    return 0;
+
+  if (EMPTY(iterator) || NEXT(iterator) != '(')
+    /* Internal error */
+    abort();
+
+  iterator->level++;
+  return 1;
+}
+
+/* Skips the rest of the current list */
+int
+sexp_iterator_exit_list(struct sexp_iterator *iterator)
+{
+  if (!iterator->level)
+    return 0;
+
+  while (sexp_iterator_next(iterator))
+    if (iterator->type == SEXP_END)
+      {
+	if (NEXT(iterator) != ')')
+	  return 0;
+	iterator->level--;
+	return 1;
+      }
+  return 0;
+}
+
+int
+sexp_iterator_assoc(struct sexp_iterator *iterator,
+		    unsigned nkeys,
+		    const struct sexp_assoc_key *keys,
+		    struct sexp_iterator *values)
+{
+  if (!sexp_iterator_enter_list(iterator))
+    return 0;
+
+  for (;;)
+    {
+      if (!sexp_iterator_next(iterator))
+	return 0;
+
+      switch (iterator->type)
+	{
+	case SEXP_LIST:
+	  
+	  if (sexp_iterator_enter_list(iterator)
+	      && sexp_iterator_next(iterator))
+	    return 0;
+	  
+	  if (iterator->type == SEXP_ATOM
+	      && !iterator->display)
+	    {
+	      /* Compare to the given keys */
+	      unsigned i;
+	      for (i = 0; i<nkeys; i++)
+		{
+		  if (keys[i].length == iterator->atom_length
+		      && !memcmp(keys[i].name, iterator->atom,
+				 keys[i].length))
+		    {
+		      /* Match found. NOTE: We allow multiple matches. */
+		      if (!sexp_iterator_next(iterator))
+			return 0;
+
+		      /* Record this position. */
+		      values[i] = *iterator;
+
+		      break;
+		    }
+		}
+	    }
+	  if (!sexp_iterator_exit_list(iterator))
+	    return 0;
+	  break;
+	case SEXP_ATOM:
+	  /* Just ignore */
+	  break;
+	  
+	case SEXP_END:
+	  return sexp_iterator_exit_list(iterator);
+
+	default:
+	  abort();
+	}
+    }
+}
