@@ -57,6 +57,8 @@ nettle_buffer_init_size(struct nettle_buffer *buffer,
 void
 nettle_buffer_clear(struct nettle_buffer *buffer);
 
+/* FIXME: Put the comparison buffer->size + length > buffer->alloc
+ * inside this macro. */
 #define NETTLE_BUFFER_GROW(o, l) ((o)->grow && (o)->grow((o), l))
 
 #define NETTLE_BUFFER_PUTC(buffer, c) \
