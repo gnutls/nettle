@@ -1,3 +1,7 @@
+2003-01-08  Niels Möller  <niels@s3.kth.se>
+
+	* tools/sexp-conv.c (parse_options): Initialize prefer_hex.
+
 2003-01-07  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* Makefile.am (des_headers): Refer to the desdata binary using
