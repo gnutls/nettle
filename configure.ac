@@ -106,9 +106,13 @@ Support for public key algorithms will be unavailable.])]
 
 if test "x$enable_public_key" = xyes ; then
   AC_DEFINE(WITH_PUBLIC_KEY)
+  RSA_EXAMPLES="rsa-keygen rsa-sign rsa-verify"
+else
+  RSA_EXAMPLES=""
 fi
 
 AH_TEMPLATE([WITH_PUBLIC_KEY], [Define to enable public key features])
+AC_SUBST(RSA_EXAMPLES)
 
 # Add -R flags needed to run programs linked with gmp
 LSH_RPATH_FIX
