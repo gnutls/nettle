@@ -102,11 +102,11 @@ define(<AES_ROUND>, <
 	
 	xor	t0, t3, t0		! 0, 1, 2, 3
 	xor	t0, t1, t0
-	st	t0, [tmp + $1]>)
+	st	t0, [tmp + $1]>)dnl
 
 C AES_FINAL_ROUND(i)
 C Compute one word in the final round function. 
-C Input in wtxt, output stored in tmp + i.
+C Input in wtxt, output converted to an octet string and stored at dst. 
 C
 C The comments mark which j in T->table[j][ Bj(wtxt[IDXi(i)]) ]
 C the instruction is a part of. 
@@ -141,12 +141,11 @@ define(<AES_FINAL_ROUND>, <
 	srl	t0, 24, t3
 	srl	t0, 16, t2
 	srl	t0, 8, t1
-	stb	t1, [dst++1]
+	stb	t1, [dst+$1+1]
 	
-	stb	t3, [dst+3]
-	stb	t2, [dst+2]
-	stb	t0, [dst]
-	add	dst, 4, dst>)
+	stb	t3, [dst+$1+3]
+	stb	t2, [dst+$1+2]
+	stb	t0, [dst+$1]>)dnl
 	
 C The stack frame looks like
 C
@@ -235,13 +234,14 @@ _aes_crypt:
 	bne	.Lround_loop
 	add	key, 16, key
 
-	C Final round
+	C Final round, and storage of the output
 
 	AES_FINAL_ROUND(0)	! i = 0
 	AES_FINAL_ROUND(4)	! i = 1
 	AES_FINAL_ROUND(8)	! i = 2
 	AES_FINAL_ROUND(12)	! i = 3
-	
+	add	dst, 16, dst
+		
 	addcc	length, -16, length
 	sub	ctx, src, %g2
 	
