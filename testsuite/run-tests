@@ -3,9 +3,23 @@
 failed=0
 all=0
 
+if [ -z "$srcdir" ] ; then
+  srcdir=`pwd`
+fi
+
+export srcdir
+
+find_program () {
+  if [ -x "$1" ] ; then
+    echo "./$1"
+  else
+    echo "$srcdir/$1"
+  fi
+}
+
 env_program () {
-  if [ -x ./"$1" ] ; then
-    if ./"$1"; then : ; else
+  if [ -x "$1" ] ; then
+    if "$1"; then : ; else
       echo FAIL: $1
       exit 1
     fi
@@ -13,8 +27,8 @@ env_program () {
 }
 
 test_program () {
-  testname=`echo "$1" | sed -e 's,-test$,,' -e 's,^\./,,'`
-  "./$1"
+  testname=`basename "$1" -test`
+  "$1"
   case "$?" in
       0)
     	echo PASS: $testname
@@ -31,12 +45,12 @@ test_program () {
   esac
 }
 
-env_program setup-env
+env_program `find_program setup-env`
 
 if [ $# -eq 0 ] ; then
-  for f in *-test; do test_program "$f"; done
+  for f in *-test; do test_program "./$f"; done
 else
-  for f in "$@" ; do test_program "$f"; done
+  for f in "$@" ; do test_program `find_program "$f"`; done
 fi
 
 if [ $failed -eq 0 ] ; then
@@ -49,7 +63,7 @@ echo "$dashes"
 echo "$banner"
 echo "$dashes"
 
-env_program teardown-env
+env_program `find_program teardown-env`
 
 [ "$failed" -eq 0 ]
 
