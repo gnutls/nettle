@@ -28,63 +28,72 @@
 #include "memxor.h"
 
 #include <assert.h>
+#include <string.h>
 
 #define IPAD 0x36
 #define OPAD 0x5c
 
 void
-hmac_init(void *outer, void *inner, void *state,
-	  struct hmac_info *info,
-	  unsigned key_length, const uint8_t *key)
+hmac_set_key(void *outer, void *inner, void *state,
+	     const struct nettle_hash *hash,
+	     unsigned key_length, const uint8_t *key)
 {
-  uint8_t pad = alloca(info->block_size);
+  uint8_t *pad = alloca(hash->block_size);
   
-  info->init(outer);
-  info->init(inner);
+  hash->init(outer);
+  hash->init(inner);
 
-  if (length > info->block_size)
+  if (key_length > hash->block_size)
     {
       /* Reduce key to the algorithm's hash size. Use the area pointed
        * to by state for the temporary state. */
 
-      uint8_t *digest = alloca(info->digest_size);
+      uint8_t *digest = alloca(hash->digest_size);
 
-      info->init(state);
-      info->update(state, key_length, key);
-      info->digest(state, info->digest_size, digest);
+      hash->init(state);
+      hash->update(state, key_length, key);
+      hash->digest(state, hash->digest_size, digest);
 
       key = digest;
-      key_length = info->digest_size;
+      key_length = hash->digest_size;
     }
 
-  assert(key_size <= info->block_size);
+  assert(key_length <= hash->block_size);
   
-  memset(pad, OPAD, info->block_size);
+  memset(pad, OPAD, hash->block_size);
   memxor(pad, key, key_length);
 
-  info->update(outer, info->block_size, pad);
+  hash->update(outer, hash->block_size, pad);
 
-  memset(pad, IPAD, info->block_size);
+  memset(pad, IPAD, hash->block_size);
   memxor(pad, key, key_length);
 
-  info->update(inner, info->block_size, pad);
+  hash->update(inner, hash->block_size, pad);
 
-  memcpy(state, inner, info->ctx_size);
+  memcpy(state, inner, hash->context_size);
 }
 
 void
-hmac_digest(void *outer, void *inner, void *state
-	    struct hmac_info *info, 	    
+hmac_update(void *state,
+	    const struct nettle_hash *hash,
+	    unsigned length, const uint8_t *data)
+{
+  hash->update(state, length, data);
+}
+
+void
+hmac_digest(const void *outer, const void *inner, void *state,
+	    const struct nettle_hash *hash, 	    
 	    unsigned length, uint8_t *dst)
 {
-  uint8_t *digest = alloca(info->digest_size);
+  uint8_t *digest = alloca(hash->digest_size);
 
-  info->digest(state, info->digest_size, digest);
+  hash->digest(state, hash->digest_size, digest);
 
-  memcpy(outer, state, info->ctx_size);
+  memcpy(state, outer, hash->context_size);
 
-  info->update(state, info->digest_size, digest);
-  info->digest(state, length, dst);
+  hash->update(state, hash->digest_size, digest);
+  hash->digest(state, length, dst);
 
-  memcpy(state, inner, info->ctx_size);
+  memcpy(state, inner, hash->context_size);
 }
