@@ -69,12 +69,12 @@ _aes_crypt:
 	add	T, AES_SIDX3, IDX3
 	! Read src, and add initial subkey
 	! Difference between ctx and src.
-	! NOTE: This instruction is duplicated in the delay slot
+	! NOTE: These instruction is duplicated in the delay slot,
+	! and the instruction before the branch
 	sub	ctx, src, %g2
-
-.Lblock_loop:
 	! Difference between wtxt and src
 	sub	wtxt, src, %g3
+.Lblock_loop:
 	! For stop condition. Note that src is incremented in the
 	! delay slot
 	add	src, 8, %g4
@@ -105,6 +105,7 @@ _aes_crypt:
 	add	ctx, 16, key
 .Lround_loop:
 	! 4*i
+	! NOTE: Instruction duplicated in delay slot
 	mov	0, i
 .Linner_loop:
 	! The comments mark which j in T->table[j][ Bj(wtxt[IDXi(i)]) ]
@@ -151,21 +152,23 @@ _aes_crypt:
 	add	i, 4, i
 	! switch roles for tmp and wtxt
 	xor	wtxt, diff, wtxt
-	subcc	round, 1, round
-	
-	add	key, 16, key
-	nop
-	bne	.Lround_loop
 	xor	tmp, diff, tmp
 
-	! final round
-	! 4*i
+	subcc	round, 1, round
+	add	key, 16, key
+	bne	.Linner_loop
 	mov	0, i
 
-.Lfinal_loop:
+	! final round
+	! Use round as the loop variable, as it's already zero
+undefine(<i>)
+define(i, round)
+
 	! Comments mark which j in T->sbox[Bj(wtxt[IDXj(i)])]
 	! the instruction is part of
+	! NOTE: First instruction duplicated in delay slot
 	ld	[IDX1+i], t1 	! 1
+.Lfinal_loop:
 	! IDX2(j) = j XOR 2
 	xor	i, 8, t2
 	! ld	[idx-16], t2	! 2
@@ -205,15 +208,15 @@ _aes_crypt:
 	stb	t3, [dst+3]
 	stb	t2, [dst+2]
 	stb	t0, [dst]
+	add	dst, 4, dst
 	
 	bleu	.Lfinal_loop
-	add	dst, 4, dst
-
+	ld	[IDX1+i], t1 	! 1
 	addcc	length, -16, length
-	nop
+	sub	ctx, src, %g2
 	
 	bne	.Lblock_loop
-	sub	ctx, src, %g2
+	sub	wtxt, src, %g3
 
 .Lend:
 	ret
