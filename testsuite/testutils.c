@@ -1,9 +1,9 @@
-/* testutils.h */
+/* testutils.c */
 
 #include "testutils.h"
 
 #include <ctype.h>
-
+#include <stdlib.h>
 
 int
 decode_hex(uint8_t *dst, const char *hex)
