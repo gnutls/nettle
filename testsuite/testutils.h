@@ -77,6 +77,11 @@ void
 test_rsa_sha1(struct rsa_public_key *pub,
 	      struct rsa_private_key *key,
 	      mpz_t expected);
+
+void
+test_rsa_key(struct rsa_public_key *pub,
+	     struct rsa_private_key *key);
+
 #endif /* HAVE_LIBGMP */
 
 #define H2(d, s) decode_hex((d), (s))
@@ -86,6 +91,9 @@ test_rsa_sha1(struct rsa_public_key *pub,
 #define LDATA(x) strlen(x), x
 
 #define MEMEQ(length, a, b) (!memcmp((a), (b), (length)))
+#define MEMEQH(length, a, b) \
+((length) == decode_hex_length((b)) \
+ && !memcmp((a), decode_hex_dup((b)), (length)))
 
 #define FAIL() abort()
 #define SKIP() exit(77)
