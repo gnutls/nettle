@@ -52,6 +52,15 @@ static char parity[] = {
 #include	"parity.h"
 };
 
+void
+des_fix_parity(unsigned length, uint8_t *dst,
+	       const uint8_t *src)
+{
+  unsigned i;
+  for (i = 0; i<length; i++)
+    dst[i] = src[i] ^ (parity[src[i]] == 8);
+}
+
 int
 des_set_key(struct des_ctx *ctx, const uint8_t *key)
 {

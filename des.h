@@ -1,6 +1,6 @@
 /* des.h
  *
- * The des block cipher.
+ * The des block cipher. And triple des.
  */
 
 /* nettle, low-level cryptographics library
@@ -62,6 +62,34 @@ des_encrypt(struct des_ctx *ctx,
 	    const uint8_t *src);
 void
 des_decrypt(struct des_ctx *ctx,
+	    unsigned length, uint8_t *dst,
+	    const uint8_t *src);
+
+void
+des_fix_parity(unsigned length, uint8_t *dst,
+	       const uint8_t *src);
+
+#define DES3_KEY_SIZE 24
+#define DES3_BLOCK_SIZE DES_BLOCK_SIZE
+
+struct des3_ctx
+{
+  struct des_ctx des[3];
+  enum des_error status;
+};
+
+
+/* On success, returns 1 and sets ctx->status to DES_OK (zero). On
+ * error, returns 0 and sets ctx->status accordingly. */
+int
+des3_set_key(struct des3_ctx *ctx, const uint8_t *key);
+
+void
+des3_encrypt(struct des3_ctx *ctx,
+	    unsigned length, uint8_t *dst,
+	    const uint8_t *src);
+void
+des3_decrypt(struct des3_ctx *ctx,
 	    unsigned length, uint8_t *dst,
 	    const uint8_t *src);
 
