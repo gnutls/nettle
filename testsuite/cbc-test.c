@@ -1,12 +1,79 @@
 #include "testutils.h"
 #include "aes.h"
 #include "cbc.h"
+#include "knuth-lfib.h"
+
+/* Test with more data and inplace decryption, to check that the
+ * cbc_decrypt buffering works. */
+#define CBC_BULK_DATA 0x2710 /* 10000 */
+
+static void
+test_cbc_bulk(void)
+{
+  struct knuth_lfib_ctx random;
+  
+  uint8_t clear[CBC_BULK_DATA];
+  
+  uint8_t cipher[CBC_BULK_DATA + 1];
+
+  const uint8_t *key = H("966c7bf00bebe6dc 8abd37912384958a"
+			 "743008105a08657d dcaad4128eee38b3");
+  
+  const uint8_t *start_iv = H("11adbff119749103 207619cfa0e8d13a");
+  const uint8_t *end_iv = H("c7a42a569b421224 d0c23e52f46f97f5");
+  
+  struct CBC_CTX(struct aes_ctx, AES_BLOCK_SIZE) aes;
+  
+  knuth_lfib_init(&random, CBC_BULK_DATA);
+  knuth_lfib_random(&random, CBC_BULK_DATA, clear);
+
+  /* Byte that should not be overwritten */
+  cipher[CBC_BULK_DATA] = 17;
+  
+  aes_set_key(&aes.ctx, 32, key);
+  CBC_SET_IV(&aes, start_iv);
+
+  CBC_ENCRYPT(&aes, aes_encrypt, CBC_BULK_DATA, cipher, clear);
+
+  if (cipher[CBC_BULK_DATA] != 17)
+    FAIL();
+
+  if (verbose)
+    {
+      printf("IV after bulk encryption: ");
+      print_hex(AES_BLOCK_SIZE, aes.iv);
+      printf("\n");
+    }
+
+  if (!MEMEQ(AES_BLOCK_SIZE, aes.iv, end_iv))
+    FAIL();
+  
+  /* Decrypt, in place */
+  CBC_SET_IV(&aes, start_iv);
+  CBC_DECRYPT(&aes, aes_decrypt, CBC_BULK_DATA, cipher, cipher);
+
+  if (cipher[CBC_BULK_DATA] != 17)
+    FAIL();
+
+  if (verbose)
+    {
+      printf("IV after bulk decryption: ");
+      print_hex(AES_BLOCK_SIZE, aes.iv);
+      printf("\n");
+    }
+
+  if (!MEMEQ(AES_BLOCK_SIZE, aes.iv, end_iv))
+    FAIL();
+
+  if (!MEMEQ(CBC_BULK_DATA, clear, cipher))
+    FAIL();
+}
 
 int
 test_main(void)
 {
   uint8_t msg[2 * AES_BLOCK_SIZE] = "Listen, I'll say this only once!";
-
+  
   /* Intermediate values:
    *   iv XOR first message block:
    *       "a5 ce 55 d4 21 15 a1 c6 4a a4 0c b2 ca a6 d1 37"
@@ -36,7 +103,7 @@ test_main(void)
    * F.2.1 CBC-AES128.Encrypt
    */
 
-  /* Intermediate values, blcoks input to AES:
+  /* Intermediate values, blocks input to AES:
    *
    *   6bc0bce12a459991e134741a7f9e1925 
    *   d86421fb9f1a1eda505ee1375746972c 
@@ -101,6 +168,8 @@ test_main(void)
 		     "b2eb05e2c39be9fcda6c19078c6a9d1b"),
 		   H("000102030405060708090a0b0c0d0e0f"));
 
+   test_cbc_bulk();
+   
    SUCCESS();
 }
 
