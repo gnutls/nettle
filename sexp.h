@@ -58,6 +58,11 @@ int
 sexp_iterator_first(struct sexp_iterator *iterator,
 		    unsigned length, const uint8_t *input);
 
+/* NOTE: Decodes the input string in place */
+int
+sexp_transport_iterator_first(struct sexp_iterator *iterator,
+			      unsigned length, uint8_t *input);
+
 int
 sexp_iterator_next(struct sexp_iterator *iterator);
 
@@ -105,6 +110,13 @@ struct nettle_buffer;
 
 int
 sexp_format(struct nettle_buffer *buffer, const char *format, ...);
+
+int
+sexp_transport_format(struct nettle_buffer *buffer,
+		      /* If non-zero, break lines to at most
+		       * line_length characters. */
+		      unsigned line_length,
+		      const char *format, ...);
 
 
 #endif /* NETTLE_SEXP_H_INCLUDED */
