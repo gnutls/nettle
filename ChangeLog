@@ -1,8 +1,12 @@
 2002-05-14  Niels Möller  <niels@s3.kth.se>
 
+	* configure.ac (asm_path): Enable x86 assembler.
+
 	* x86/aes.asm (aes_decrypt): Adapted to the current interface.
 	Notably, the order of the subkeys was reversed. Single block
 	encrypt/decrypt works now.
+	(aes_encrypt, aes_decrypt): Added an outer loop, so that we can
+	encrypt more than one block at a time.
 
 2002-05-07  Niels Möller  <niels@s3.kth.se>
 
