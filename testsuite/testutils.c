@@ -3,6 +3,7 @@
 #include "testutils.h"
 
 #include "cbc.h"
+#include "knuth-lfib.h"
 
 #include <ctype.h>
 #include <stdio.h>
@@ -376,6 +377,9 @@ test_rsa_sha1(struct rsa_public_key *pub,
   mpz_clear(signature);
 }
 
+#undef SIGN
+#undef VERIFY
+
 void
 test_rsa_key(struct rsa_public_key *pub,
 	     struct rsa_private_key *key)
@@ -446,5 +450,61 @@ test_rsa_key(struct rsa_public_key *pub,
   
   mpz_clear(tmp); mpz_clear(phi);
 }
+
+#define DSA_VERIFY(key, hash, msg, signature) (	\
+  sha1_update(hash, LDATA(msg)),		\
+  dsa_verify(key, hash, signature)		\
+)
+
+void
+test_dsa(struct dsa_private_key *key)
+{
+  struct sha1_ctx sha1;
+  struct dsa_signature signature;
+  struct knuth_lfib_ctx lfib;
+  
+  sha1_init(&sha1);
+  dsa_signature_init(&signature);
+  knuth_lfib_init(&lfib, 1111);
+  
+  sha1_update(&sha1, LDATA("The magic words are squeamish ossifrage"));
+  dsa_sign(key,
+	   &lfib, (nettle_random_func) knuth_lfib_random,
+	   &sha1, &signature);
+  
+  if (verbose)
+    {
+      fprintf(stderr, "dsa signature: ");
+      mpz_out_str(stderr, 16, signature.r);
+      fprintf(stderr, ", ");
+      mpz_out_str(stderr, 16, signature.s);
+      fprintf(stderr, "\n");
+    }
+
+#if 0
+  if (mpz_cmp(signature, expected))
+    FAIL();
+#endif
+  
+  /* Try bad data */
+  if (DSA_VERIFY(&key->pub, &sha1,
+		 "The magick words are squeamish ossifrage", &signature))
+    FAIL();
+
+  /* Try correct data */
+  if (!DSA_VERIFY(&key->pub, &sha1,
+		 "The magic words are squeamish ossifrage", &signature))
+    FAIL();
+
+  /* Try bad signature */
+  mpz_togglebit(signature.r, 17);
+
+  if (DSA_VERIFY(&key->pub, &sha1,
+		 "The magic words are squeamish ossifrage", &signature))
+    FAIL();
+
+  dsa_signature_clear(&signature);
+}
+
 #endif /* WITH_PUBLIC_KEY */
 

@@ -17,6 +17,7 @@
 
 #if WITH_PUBLIC_KEY
 # include "rsa.h"
+# include "dsa.h"
 #endif
 
 #include "nettle-meta.h"
@@ -85,6 +86,9 @@ test_rsa_sha1(struct rsa_public_key *pub,
 void
 test_rsa_key(struct rsa_public_key *pub,
 	     struct rsa_private_key *key);
+
+void
+test_dsa(struct dsa_private_key *key);
 
 #endif /* WITH_PUBLIC_KEY */
 
