@@ -58,7 +58,7 @@ install uninstall:
 	true
 
 distdir: $(DISTFILES)
-	cp $^ $(distdir)
+	cp $? $(distdir)
 
 clean:
 	-rm -f $(TARGETS) *.o test.in test1.out test2.out

@@ -21,11 +21,12 @@ SOURCES = $(sexp_conv_SOURCES) nettle-lfib-stream.c
 
 DISTFILES = $(SOURCES) Makefile.in getopt.h input.h misc.h output.h parse.h
 
-sexp-conv: $(sexp_conv_SOURCES:.c=.$(OBJEXT)) ../libnettle.a
-	$(LINK) $^ -lnettle $(LIBS) -o $@
+sexp_conv_OBJS = $(sexp_conv_SOURCES:.c=.$(OBJEXT))
+sexp-conv: $(sexp_conv_OBJS) ../libnettle.a
+	$(LINK) $(sexp_conv_OBJS) -lnettle $(LIBS) -o $@
 
 nettle-lfib-stream: nettle-lfib-stream.$(OBJEXT) ../libnettle.a
-	$(LINK) $^ -lnettle $(LIBS) -o $@
+	$(LINK) $< -lnettle $(LIBS) -o $@
 
 .c.$(OBJEXT):
 	$(COMPILE) -c $< && $(DEP_PROCESS)
@@ -46,8 +47,10 @@ uninstall:
 	  rm -f $(DESTDIR)$(bindir)/$$f ; \
 	done
 
+# NOTE: I'd like to use $^, but that's a GNU extension. $? should be
+# more portable, equivalent for phony targets.
 distdir: $(DISTFILES)
-	cp $^ $(distdir)
+	cp $? $(distdir)
 
 clean:
 	-rm -f $(TARGETS) *.o

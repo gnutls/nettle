@@ -26,10 +26,11 @@ all: $(TARGETS)
 .c.$(OBJEXT):
 	$(COMPILE) -c $<
 .o$(EXEEXT):
-	$(LINK) $^ -lnettle $(LIBS) -o $@
+	$(LINK) $< io.o -lnettle $(LIBS) -o $@
 
-nettle-benchmark: nettle-benchmark.o nettle-openssl.o ../libnettle.a
-	$(LINK) $^ -lnettle $(LIBS) $(OPENSSL_LIBFLAGS) -o $@
+nettle-benchmark: nettle-benchmark.o nettle-openssl.o
+	$(LINK) nettle-benchmark.o nettle-openssl.o io.o \
+	-lnettle $(LIBS) $(OPENSSL_LIBFLAGS) -o $@
 
 $(TARGETS) : io.o ../libnettle.a
 
@@ -45,7 +46,7 @@ install uninstall:
 	true
 
 distdir: $(DISTFILES)
-	cp $^ $(distdir)
+	cp $? $(distdir)
 
 clean:
 	-rm -f $(TARGETS) *.o

@@ -108,9 +108,12 @@ DISTFILES = $(SOURCES) $(HEADERS) .bootstrap aclocal.m4 configure.ac \
 
 # Rules building libnettle.a
 # FIXME: Do we really need to delete the archive first?
-libnettle.a: $(nettle_SOURCES:.c=.o) $(LIBOBJS)
+nettle_OBJS = $(nettle_SOURCES:.c=.$(OBJEXT)) $(LIBOBJS)
+nettle_PURE_OBJS = $(nettle_OBJS:.$(OBJEXT)=.p$(OBJEXT))
+
+libnettle.a: $(nettle_OBJS)
 	-rm -f $@
-	$(AR) $(ARFLAGS) $@ $^
+	$(AR) $(ARFLAGS) $@ $(nettle_OBJS)
 	$(RANLIB) $@
 
 .c.$(OBJEXT):
@@ -118,8 +121,8 @@ libnettle.a: $(nettle_SOURCES:.c=.o) $(LIBOBJS)
 	&& $(DEP_PROCESS)
 
 # Rules building libnettle.so
-$(SHLIBFORLINK): $(nettle_SOURCES:.c=.p$(OBJEXT)) $(LIBOBJS:.$(OBJEXT)=.p$(OBJEXT))
-	$(SHLIBLINK) $^ -o $@ $(SHLIBLIBS)
+$(SHLIBFORLINK): $(nettle_PURE_OBJS)
+	$(SHLIBLINK) $(nettle_PURE_OBJS) -o $@ $(SHLIBLIBS)
 	-mkdir .lib 2>/dev/null
 	[ -z "$(SHLIBSONAME)" ] || (cd .lib \
           && ln -sf ../$(SHLIBFORLINK) $(SHLIBSONAME))
@@ -129,22 +132,16 @@ $(SHLIBFORLINK): $(nettle_SOURCES:.c=.p$(OBJEXT)) $(LIBOBJS:.$(OBJEXT)=.p$(OBJEX
 	&& $(DEP_PROCESS)
 
 .o$(EXEEXT):
-	$(LINK) $^ $(LIBS) -o $@
+	$(LINK) $< $(LIBS) -o $@
 
-# aesdata.$(OBJEXT) : aesdata.c
-# 	$(COMPILE) -c $< && $(DEP_PROCESS)
 aesdata$(EXEEXT): aesdata.$(OBJEXT)
-	$(LINK) $^ $(LIBS) -o $@
+	$(LINK) $< $(LIBS) -o $@
 
-# desdata.$(OBJEXT) : desdata.c
-# 	$(COMPILE)  -c $< && $(DEP_PROCESS)
 desdata$(EXEEXT): desdata.$(OBJEXT)
-	$(LINK) $^ $(LIBS) -o $@
+	$(LINK) $< $(LIBS) -o $@
 
-# shadata.$(OBJEXT) : shadata.c
-# 	$(COMPILE)  -c $< && $(DEP_PROCESS)
 shadata$(EXEEXT): shadata.$(OBJEXT)
-	$(LINK) $^ $(LIBS) -lm -o $@
+	$(LINK) $< $(LIBS) -lm -o $@
 
 # desCore rules
 # It seems using $(srcdir)/ doesn't work with GNU make 3.79.1
@@ -231,9 +228,11 @@ install-info: nettle.info
 	  install-info --info-dir="$(DESTDIR)$(infodir)" $< ; \
 	else : ; fi
 
+# NOTE: I'd like to use $^, but that's a GNU extension. $? should be
+# more portable, and equivalent for phony targets.
 install-headers: $(INSTALL_HEADERS)
 	$(INSTALL) -d $(DESTDIR)$(includedir)/nettle
-	$(INSTALL_DATA) $^ $(DESTDIR)$(includedir)/nettle
+	$(INSTALL_DATA) $? $(DESTDIR)$(includedir)/nettle
 
 # Uninstall
 uninstall-here: uninstall-info uninstall-headers uninstall-shared
@@ -259,18 +258,22 @@ uninstall-shared:
 distdir = $(PACKAGE_NAME)-$(PACKAGE_VERSION)
 top_distdir = $(distdir)
 
-# $(distdir) must always be a relative path!
+# NOTE: Depending on the automake version in the parent dir,
+# we must handle both absolute and relative $destdir.
+
+# NOTE: I'd like to use $^, but that's a GNU extension. $? should be
+# more portable, and equivalent for phony targets.
 distdir: $(DISTFILES)
-	rm -rf $(distdir)
-	mkdir $(distdir)
-	cp $^ $(distdir)
+	rm -rf "$(distdir)"
+	mkdir "$(distdir)"
+	cp $? "$(distdir)"
 	set -e; for d in sparc x86 ; do \
-	  mkdir $(distdir)/$$d ; \
-	  cp $(srcdir)/$$d/*.asm $(srcdir)/$$d/*.m4 $(distdir)/$$d ; \
+	  mkdir "$(distdir)/$$d" ; \
+	  cp $(srcdir)/$$d/*.asm $(srcdir)/$$d/*.m4 "$(distdir)/$$d" ; \
 	done
 	set -e; for d in $(SUBDIRS); do \
-	  sd=$(distdir)/$$d ; \
-	  mkdir $$sd && $(MAKE) -C $$d distdir=../$$sd $@ ; \
+	  sd="$(distdir)/$$d" ; \
+	  mkdir "$$sd" && $(MAKE) -C $$d distdir="`cd $$sd && pwd`" $@ ; \
 	done
 
 dist: distdir
