@@ -184,22 +184,22 @@ _aes_crypt:
 
 	lduh	[wtxt+%g3], %o4	! 2
 	and	t0, 255, t0	! 0
-	ld	[%g4], %o5	! 3
+	ld	[%g4], t3	! 3
 	and	%o4, 255, %o4	! 2
 	ldub	[T+t1], t1	! 1
 
 	ldub	[T+t0], t0	! 0
 	sll	t1, 8, t1	! 1
-	ldub	[wtxt+%o5], %o3	! 3
+	ldub	[wtxt+t3], t3	! 3
 	or	t0, t1, %g3	! 0, 1
 	ldub	[T+%o4], %g2	! 2
 	cmp	i, 3
-	ldub	[T+%o3], %o5	! 3
+	ldub	[T+t3], t3	! 3
 	sll	%g2, 16, %g2	! 2
 	or	%g3, %g2, %g3	! 0, 1, 2
 	ld	[ctx + round], %g2
-	sll	%o5, 24, %o5	! 3
-	or	%g3, %o5, %g3	! 0, 1, 2, 3
+	sll	t3, 24, t3	! 3
+	or	%g3, t3, %g3	! 0, 1, 2, 3
 	xor	%g3, %g2, %g3
 	srl	%g3, 24, %o5
 	srl	%g3, 16, %o0
