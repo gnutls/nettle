@@ -25,4 +25,4 @@
 #include "cast128.h"
 
 const struct nettle_cipher nettle_cast128
-= _NETTLE_CIPHER(cast128, CAST128, 128);
+= _NETTLE_CIPHER_FIX(cast128, CAST128, 128);
