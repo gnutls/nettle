@@ -1,3 +1,5 @@
+
+OPENSSL_LIBFLAGS = @OPENSSL_LIBFLAGS@
 AM_CPPFLAGS = -I$(top_srcdir)
 
 # We need .. to be searched before standard places, in order to pick
@@ -9,7 +11,7 @@ EXTRA_PROGRAMS = rsa-keygen rsa-sign rsa-verify
 noinst_PROGRAMS = nettle-benchmark @RSA_EXAMPLES@
 
 LDADD = io.o -lnettle
-nettle_benchmark_LDADD = -lnettle
+nettle_benchmark_LDADD = -lnettle $(OPENSSL_LIBFLAGS)
 
 nettle_benchmark_SOURCES = nettle-benchmark.c nettle-openssl.c
 
