@@ -54,26 +54,34 @@ aes_encrypt:
 	C length = 24(%esp)
 	C dst = 28(%esp)
 	C src = 32(%esp)
+
+	movl	24(%esp), %ebp
+	C What's the right way to set the flags?
+	add	$0, %ebp
+	jz	.Lencrypt_end
 	
+.Lencrypt_block_loop:
 	movl	32(%esp),%esi	C  address of plaintext
 	movl	(%esi),%eax	C  load plaintext into registers
 	movl	4(%esi),%ebx
 	movl	8(%esi),%ecx
 	movl	12(%esi),%edx
-aes_got_plain: 
+	
+	add	$16, 32(%esp)	C Increment src pointer
+C .Laes_got_plain: 
 	movl	20(%esp),%esi	C  address of context struct ctx
 	xorl	(%esi),%eax	C  add first key to plaintext
 	xorl	4(%esi),%ebx
 	xorl	8(%esi),%ecx
 	xorl	12(%esi),%edx
-aes_xored_initial:
+C .Laes_xored_initial:
 	C FIXME:	Use %esi instead
 	movl	20(%esp),%ebp	C  address of context struct
 	movl	AES_NROUNDS (%ebp),%ebp	C  get number of rounds to do from struct
 
 	subl	$1,%ebp
 	addl	$16,%esi	C  point to next key
-aes_encrypt_loop:
+.Laes_encrypt_loop:
 	pushl	%esi		C  save this first: we'll clobber it later
 
 	C Computation of the new %eax is broken, in the first test case, 
@@ -169,14 +177,14 @@ aes_encrypt_loop:
 	popl	%ebx
 	popl	%eax
 	popl	%esi
-aes_got_t: 
+C .Laes_got_t: 
 	xorl	(%esi),%eax	C  add current session key to plaintext
 	xorl	4(%esi),%ebx
 	xorl	8(%esi),%ecx
 	xorl	12(%esi),%edx
 	addl	$16,%esi	C  point to next key
 	decl	%ebp
-	jnz	aes_encrypt_loop
+	jnz	.Laes_encrypt_loop
 
 	C // last round
 	C // first column
@@ -245,7 +253,7 @@ aes_got_t:
 
 	C // S-box substitution
 	mov	$4,%edi
-.sb_sub:
+.Lsubst:	
 	movl	%eax,%ebp
 	andl	$0x000000ff,%ebp
 	movb	sbox(%ebp),%al
@@ -267,20 +275,26 @@ aes_got_t:
 	roll	$8,%edx
 
 	decl	%edi
-	jnz	.sb_sub
+	jnz	.Lsubst
 
-aes_got_tlast:		
+C .Laes_got_tlast:		
 	xorl	(%esi),%eax	C  add last key to plaintext
 	xorl	4(%esi),%ebx
 	xorl	8(%esi),%ecx
 	xorl	12(%esi),%edx
-aes_got_result:
+C .Laes_got_result:
 	C // store encrypted data back to caller's buffer
 	movl	28(%esp),%edi
 	movl	%eax,(%edi)
 	movl	%ebx,4(%edi)
 	movl	%ecx,8(%edi)
 	movl	%edx,12(%edi)
+
+	add	$16, 28(%esp)	C Increment destination pointer
+	sub	$16, 24(%esp)
+	jnz	.Lencrypt_block_loop
+
+.Lencrypt_end: 
 	popl	%edi
 	popl	%esi
 	popl	%ebp
@@ -308,11 +322,19 @@ aes_decrypt:
 	C dst = 28(%esp)
 	C src = 32(%esp)
 
+	movl	24(%esp), %ebp
+	C What's the right way to set the flags?
+	add	$0, %ebp
+	jz	.Ldecrypt_end
+	
+.Ldecrypt_block_loop:
 	movl	32(%esp),%esi	C  address of ciphertext
 	movl	(%esi),%eax	C  load ciphertext into registers
 	movl	4(%esi),%ebx
 	movl	8(%esi),%ecx
 	movl	12(%esi),%edx
+	
+	add	$16, 32(%esp)	C Increment src pointer
 	
 	movl	20(%esp),%esi	C  address of context struct ctx
 	xorl	(%esi),%eax	C  add first key to ciphertext
@@ -330,7 +352,7 @@ aes_decrypt:
 
 	subl	$1,%ebp		C  one round is complete
 	addl	$16,%esi	C  point to next key
-Ldecrypt_loop:
+.Ldecrypt_loop:
 	pushl	%esi		C  save this first: we'll clobber it later
 
 	C Why???
@@ -426,7 +448,7 @@ Ldecrypt_loop:
 	xorl	12(%esi),%edx
 	addl	$16,%esi	C  point to next key
 	decl	%ebp
-	jnz	Ldecrypt_loop
+	jnz	.Ldecrypt_loop
 
 	C Foo?
 	xchgl	%ebx,%edx
@@ -498,7 +520,7 @@ Ldecrypt_loop:
 
 	C // inverse S-box substitution
 	mov	$4,%edi
-.isb_sub:
+.Lisubst:
 	movl	%eax,%ebp
 	andl	$0x000000ff,%ebp
 	movb	isbox(%ebp),%al
@@ -520,7 +542,7 @@ Ldecrypt_loop:
 	roll	$8,%edx
 
 	decl	%edi
-	jnz	.isb_sub
+	jnz	.Lisubst
 
 	xorl	(%esi),%eax	C  add last key to plaintext
 	xorl	4(%esi),%ebx
@@ -533,6 +555,12 @@ Ldecrypt_loop:
 	movl	%ebx,4(%edi)
 	movl	%ecx,8(%edi)
 	movl	%edx,12(%edi)
+	
+	add	$16, 28(%esp)	C Increment destination pointer
+	sub	$16, 24(%esp)
+	jnz	.Ldecrypt_block_loop
+
+.Ldecrypt_end: 
 	popl	%edi
 	popl	%esi
 	popl	%ebp
