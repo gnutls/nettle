@@ -50,7 +50,8 @@ nettle_arcfour_crypt:
 	movzbl  256(%ebp), %eax		C  i
 	movzbl  257(%ebp), %ebx		C  j
 .Lloop:
-	incb	%al
+	incl	%eax
+	andl	$0xff, %eax
 	movzbl  (%ebp, %eax), %ecx	C  si. Clears high bytes
 	addb    %cl, %bl
 	movb    (%ebp, %ebx), %ch	C  sj
