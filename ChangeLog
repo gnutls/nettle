@@ -1,3 +1,13 @@
+2004-01-07  Niels Möller  <nisse@harpo.hack.org>
+
+	* nettle-types.h: New (generated) file, to be used instead of
+	including <inttypes.h> directly. Updated all users of inttypes.h.
+	
+	* Makefile.am (DISTCLEANFILES, libnettleinclude_HEADERS): Added
+	nettle-types.h. 
+
+	* configure.ac (AX_CREATE_STDINT_H): Create nettle-types.h.
+
 2003-11-16  Niels Möller  <nisse@harpo.hack.org>
 
 	* yarrow256.c (yarrow256_seed): Use const for the seed_file input.

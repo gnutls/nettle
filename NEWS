@@ -1,5 +1,8 @@
 NEWS for the 1.8 release
 
+	Uses AX_CREATE_STDINT_H, to support systems without
+	inttypes.h.
+
 	New name mangling, to reduce the risk of link collisions. All
 	functions (except memxor) now use a nettle_ or _nettle prefix
 	when seen by the linker. For most functions, the header file
