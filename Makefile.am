@@ -15,11 +15,13 @@ libnettleinclude_HEADERS = aes.h arcfour.h bignum.h blowfish.h \
 			   md2.h md4.h \
 			   md5.h md5-compat.h \
 			   memxor.h \
-			   nettle-meta.h nettle-types.h \
+			   nettle-meta.h \
 			   pgp.h pkcs1.h realloc.h rsa.h rsa-compat.h \
 			   sexp.h \
 			   serpent.h sha.h twofish.h \
 			   yarrow.h
+
+nodist_libnettleinclude_HEADERS = nettle-types.h
 
 libnettle_a_SOURCES = aes.c aes.h aes-internal.h \
 		      aes-decrypt-table.c aes-decrypt.c \

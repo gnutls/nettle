@@ -1,3 +1,8 @@
+2004-02-07  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.am (nodist_libnettleinclude_HEADERS): nettle-types.h
+	should not be distributed.
+
 2004-02-06  Niels Möller  <niels@s3.kth.se>
 
 	* x86/sha1-compress.asm: Rename round -> ROUND.
