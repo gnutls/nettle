@@ -5,7 +5,7 @@ TS_PROGS = aes-test arcfour-test blowfish-test cast128-test \
 	   des-test des3-test des-compat-test \
 	   md5-test md5-compat-test sha1-test sha256-test \
 	   serpent-test twofish-test \
-	   cbc-test
+	   cbc-test yarrow-test
 
 M4_FILES = aes-test.m4 arcfour-test.m4 blowfish-test.m4 cast128-test.m4 \
 	   des-test.m4 des3-test.m4 \
