@@ -1,4 +1,4 @@
-/* armor.h
+/* base64.h
  *
  * "ASCII armor" codecs.
  */
@@ -23,24 +23,44 @@
  * MA 02111-1307, USA.
  */
  
-#ifndef NETTLE_ARMOR_H_INCLUDED
-#define NETTLE_ARMOR_H_INCLUDED
+#ifndef NETTLE_BASE64_H_INCLUDED
+#define NETTLE_BASE64_H_INCLUDED
 
 #include <inttypes.h>
 
 /* Base64 encoding */
 
-#define BASE64_ASCII_BLOCK_SIZE 4
-#define BASE64_RAW_BLOCK_SIZE   3
+#define BASE64_BINARY_BLOCK_SIZE 3
+#define BASE64_TEXT_BLOCK_SIZE 4
 
 unsigned /* Returns the length of encoded data */
 base64_encode(uint8_t *dst,
               unsigned src_length,
               const uint8_t *src);
 
-unsigned /* Returns the length of decoded data */
-base64_decode(uint8_t *dst,
-              unsigned src_length,
-              const uint8_t *src);
+/* Precise length of encoded data (including padding) */
+#define BASE64_ENCODE_LENGTH(src_length)		\
+        ((BASE64_BINARY_BLOCK_SIZE - 1 + (src_length))	\
+	/ BASE64_BINARY_BLOCK_SIZE * BASE64_TEXT_BLOCK_SIZE)
 
-#endif /* NETTLE_ARMOR_H_INCLUDED */
+struct base64_ctx /* Internal, do not modify */
+{
+  uint16_t accum; /* Partial byte accumulated so far, filled msb first */
+  int16_t shift;  /* Bitshift for the next 6-bit segment added to buffer */
+};
+
+void
+base64_decode_init(struct base64_ctx *ctx);
+
+unsigned /* Returns the length of decoded data */
+base64_decode_update(struct base64_ctx *ctx,
+                     uint8_t *dst,
+                     unsigned src_length,
+                     const uint8_t *src);
+
+/* FIXME: Does this always round correctly? */
+/* Maximum length of decoded data */
+#define BASE64_DECODE_LENGTH(src_length) \
+	((src_length) * BASE64_BINARY_BLOCK_SIZE / BASE64_TEXT_BLOCK_SIZE)
+
+#endif /* NETTLE_BASE64_H_INCLUDED */
