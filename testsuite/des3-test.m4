@@ -8,8 +8,9 @@ uint8_t msg[DES3_BLOCK_SIZE] = "Now is t";
 uint8_t cipher[DES3_BLOCK_SIZE];
 uint8_t clear[DES3_BLOCK_SIZE];
 
-/* Intermediate values: "cd ea 2a 20 c2 e0 9e 48"
- *                      "69 52 6e 95 8b ea 49 bd"
+/* Intermediate values:
+ *   After first DES encryption:  "cd ea 2a 20 c2 e0 9e 48"
+ *   After second DES decryption: "69 52 6e 95 8b ea 49 bd"
  */
 if (!des3_set_key(&ctx, H("3e 0b 10 b0 5d 49 c2 54"
 			  "6b 46 e0 75 8a 91 61 85"
