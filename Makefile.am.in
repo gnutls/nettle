@@ -90,7 +90,9 @@ ctags: ctags-recursive $(HEADERS) $(SOURCES) $(CONFIG_HEADER) $(TAGS_DEPENDENCIE
 	  awk '    { files[$$0] = 1; } \
 	       END { for (i in files) print i; }'`; \
 	test -z "$(CTAGS_ARGS)$(CONFIG_HEADER)$$unique$(LISP)$$tags" \
-	  || (cd $(srcdir) && ctags -o $$here/tags $(CTAGS_ARGS) $$tags $(CONFIG_HEADER) $$unique $(LISP))
+	  || (cd $(srcdir) && ctags --langmap=c:.c.x -o $$here/tags $(CTAGS_ARGS) $$tags $(CONFIG_HEADER) $$unique $(LISP))
+# This treats .h.x files as C files rather than headers, but we can't
+# distinguish them from .c.x files with ctags.
 
 # Override the standard distclean-tags target, as this doesn't support `tags'
 distclean-tags:
