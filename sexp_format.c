@@ -82,10 +82,10 @@ int
 sexp_format(struct nettle_buffer *buffer, const char *format, ...)
 {
   va_list args;
-  va_start(args, format);
-
   unsigned nesting = 0;
   
+  va_start(args, format);
+
   for (;;)
     switch (*format++)
       {
