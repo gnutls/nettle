@@ -31,13 +31,13 @@ C %edi is a temporary, often used as an accumulator.
 	.file "aes-encrypt.asm"
 	
 	C aes_encrypt(struct aes_context *ctx, 
-	C             unsigned length, uint8_t *dst,
-	C 	      uint8_t *src)
+	C	      unsigned length, uint8_t *dst,
+	C	      uint8_t *src)
 	.text
 	.align 16
-	.globl nettle_aes_encrypt
-	.type  nettle_aes_encrypt,@function
-nettle_aes_encrypt:
+	.globl C_NAME(nettle_aes_encrypt)
+	.type  C_NAME(nettle_aes_encrypt),@function
+C_NAME(nettle_aes_encrypt):
 	C save all registers that need to be saved
 	pushl	%ebx		C  16(%esp)
 	pushl	%ebp		C  12(%esp)
@@ -67,16 +67,16 @@ nettle_aes_encrypt:
 .Lround_loop:
 	pushl	%esi		C  save this first: we'll clobber it later
 
-	AES_ROUND(_nettle_aes_encrypt_table,a,b,c,d)
+	AES_ROUND(C_NAME(_nettle_aes_encrypt_table),a,b,c,d)
 	pushl	%edi		C  save first on stack
 
-	AES_ROUND(_nettle_aes_encrypt_table,b,c,d,a)
+	AES_ROUND(C_NAME(_nettle_aes_encrypt_table),b,c,d,a)
 	pushl	%edi		C  save first on stack
 
-	AES_ROUND(_nettle_aes_encrypt_table,c,d,a,b)
+	AES_ROUND(C_NAME(_nettle_aes_encrypt_table),c,d,a,b)
 	pushl	%edi		C  save first on stack
 
-	AES_ROUND(_nettle_aes_encrypt_table,d,a,b,c)
+	AES_ROUND(C_NAME(_nettle_aes_encrypt_table),d,a,b,c)
 	
 	movl	%edi,%edx
 	popl	%ecx
@@ -114,7 +114,7 @@ nettle_aes_encrypt:
 	C S-box substitution
 	mov	$4,%edi
 .Lsubst:
-	AES_SUBST_BYTE(_nettle_aes_encrypt_table)
+	AES_SUBST_BYTE(C_NAME(_nettle_aes_encrypt_table))
 
 	decl	%edi
 	jnz	.Lsubst
@@ -137,4 +137,4 @@ nettle_aes_encrypt:
 	popl	%ebx
 	ret
 .Leord:
-	.size	nettle_aes_encrypt,.Leord-nettle_aes_encrypt
+	.size	C_NAME(nettle_aes_encrypt),.Leord-C_NAME(nettle_aes_encrypt)

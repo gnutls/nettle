@@ -113,9 +113,9 @@ define(<ROUND>, <
 	
 	.text
 	.align 16
-	.globl _nettle_sha1_compress
-	.type  _nettle_sha1_compress,@function
-_nettle_sha1_compress:
+	.globl C_NAME(_nettle_sha1_compress)
+	.type  C_NAME(_nettle_sha1_compress),@function
+C_NAME(_nettle_sha1_compress):
 	C save all registers that need to be saved
 	
 	pushl	%ebx		C  20(%esp)

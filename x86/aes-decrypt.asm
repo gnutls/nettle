@@ -20,13 +20,13 @@ C MA 02111-1307, USA.
 	.file "aes-decrypt.asm"
 
 	C aes_decrypt(struct aes_context *ctx, 
-	C             unsigned length, uint8_t *dst,
-	C 	      uint8_t *src)
+	C	      unsigned length, uint8_t *dst,
+	C	      uint8_t *src)
 	.text
 	.align 16
-	.globl nettle_aes_decrypt
-	.type  nettle_aes_decrypt,@function
-nettle_aes_decrypt:
+	.globl C_NAME(nettle_aes_decrypt)
+	.type  C_NAME(nettle_aes_decrypt),@function
+C_NAME(nettle_aes_decrypt):
 	C save all registers that need to be saved
 	pushl	%ebx		C  16(%esp)
 	pushl	%ebp		C  12(%esp)
@@ -59,16 +59,16 @@ nettle_aes_decrypt:
 	C In these patterns, note that each row, like
 	C "a,d,c,b" corresponds to one *column* of the 
 	C array _aes_decrypt_table.idx.
-	AES_ROUND(_nettle_aes_decrypt_table,a,d,c,b)
+	AES_ROUND(C_NAME(_nettle_aes_decrypt_table),a,d,c,b)
 	pushl	%edi		C  save first on stack
 
-	AES_ROUND(_nettle_aes_decrypt_table,b,a,d,c)
+	AES_ROUND(C_NAME(_nettle_aes_decrypt_table),b,a,d,c)
 	pushl	%edi
 
-	AES_ROUND(_nettle_aes_decrypt_table,c,b,a,d)
+	AES_ROUND(C_NAME(_nettle_aes_decrypt_table),c,b,a,d)
 	pushl	%edi		C  save first on stack
 
-	AES_ROUND(_nettle_aes_decrypt_table,d,c,b,a)
+	AES_ROUND(C_NAME(_nettle_aes_decrypt_table),d,c,b,a)
 
 	movl	%edi,%edx
 	popl	%ecx
@@ -129,4 +129,4 @@ nettle_aes_decrypt:
 	popl	%ebx
 	ret
 .Leord:
-	.size	nettle_aes_decrypt,.Leord-nettle_aes_decrypt
+	.size	C_NAME(nettle_aes_decrypt),.Leord-C_NAME(nettle_aes_decrypt)
