@@ -1,3 +1,15 @@
+2001-10-14  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* testsuite/yarrow-test.c: Use sha256 instead of sha1 for checking
+	input and output. Updated the expected values.
+
+	* yarrow256.c (YARROW_RESEED_ITERATIONS): New constant.
+	(yarrow_iterate): New function.
+	(yarrow_fast_reseed): Call yarrow_iterate.
+
+	* testsuite/yarrow-test.c: Added verbose flag, disabled by
+	default. 
+
 2001-10-12  Niels Möller  <nisse@ehand.com>
 
 	* examples/nettle-benchmark.c: Added more ciphers.
@@ -5,6 +17,10 @@
 	* Makefile.am (SUBDIRS): Added the examples subdir.
 
 	* configure.in: Output examples/Makefile.
+
+2001-10-12  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* examples/nettle-benchmark.c: New benchmarking program. 
 
 2001-10-10  Niels Möller  <nisse@ehand.com>
 
