@@ -2,7 +2,9 @@ NEWS for the 1.0 release
 
 	Fixed twofish bug spotted by Jean-Pierre Stierlin.
 
+	Added des3 and cbc.
+	
 	New RFC-1321-like interface in nettle/md5-compat.h, suggested
 	by Assar Westerlund.
 
-	
+	New libdes-style compatibility interface in nettle/des-compat.h.
