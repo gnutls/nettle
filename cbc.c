@@ -25,7 +25,11 @@
 
 #include "cbc.h"
 
+#include "memxor.h"
+
 #include <assert.h>
+#include <stdlib.h>
+#include <string.h>
 
 void
 cbc_encrypt(void *ctx, void (*f)(void *ctx,
@@ -40,7 +44,7 @@ cbc_encrypt(void *ctx, void (*f)(void *ctx,
   for ( ; length; length -= block_size, src += block_size, dst += block_size)
     {
       memxor(iv, src, block_size);
-      f(ctx, dst, src, block_size);
+      f(ctx, block_size, dst, src);
       memcpy(iv, dst, block_size);
     }
 }
@@ -69,10 +73,21 @@ cbc_decrypt(void *ctx, void (*f)(void *ctx,
     }
 
   /* Decrypt in ECB mode */
-  f(ctx, dst, src, length);
+  f(ctx, length, dst, src);
 
   /* XOR the cryptotext, shifted one block */
   memxor(dst, iv, block_size);
   memxor(dst + block_size, src, length - block_size);
   memcpy(iv, src + length - block_size, block_size);
+}
+
+#include "des.h"
+static void foo(void)
+{
+  struct des_ctx ctx;
+  uint8_t iv[DES_BLOCK_SIZE];
+  uint8_t src[DES_BLOCK_SIZE];
+  uint8_t dst[DES_BLOCK_SIZE];
+  
+  CBC_ENCRYPT(&ctx, des_encrypt, DES_BLOCK_SIZE, iv, DES_BLOCK_SIZE, dst, src);
 }

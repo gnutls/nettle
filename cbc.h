@@ -28,7 +28,7 @@
 
 #include <inttypes.h>
 
-/* Uses a void * for cipher contexts. It's hard to be type safe. */
+/* Uses a void * for cipher contexts. */
 
 void
 cbc_encrypt(void *ctx, void (*f)(void *ctx,
@@ -45,5 +45,12 @@ cbc_decrypt(void *ctx, void (*f)(void *ctx,
 	    unsigned block_size, uint8_t *iv,
 	    unsigned length, uint8_t *dst,
 	    const uint8_t *src);
+
+/* Type safer variants */
+#define CBC_ENCRYPT(ctx, f, b, iv, l, dst, src) \
+(0 ? ((f)((ctx),0,NULL,NULL)) \
+   : cbc_encrypt((void *)(ctx), \
+                 ((*)(void *, unsigned, uint8_t *, const uint8_t *)) (f), \
+                 (b), (iv), (l), (dst), (src)))
 
 #endif /* NETTLE_CBC_H_INCLUDED */

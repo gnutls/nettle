@@ -12,6 +12,7 @@ libnettleinclude_HEADERS = aes.h arcfour.h blowfish.h cast128.h des.h \
 libnettle_a_SOURCES = aes.c aes.h arcfour.c arcfour.h \
 		      cast128.c cast128.h cast128_sboxes.h \
 		      blowfish.h blowfish.c \
+		      cbc.c \
 		      des.c des.h desinfo.h desCode.h \
 		      md5.c md5.h md5-compat.c md5-compat.h \
 		      sha1.c sha1.h \
