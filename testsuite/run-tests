@@ -13,8 +13,8 @@ env_program () {
 }
 
 test_program () {
+  testname=`echo "$1" | sed -e 's,-test$,,' -e 's,^\./,,`
   "./$1"
-  testname=`echo "$1" | sed -e 's/-test//'`
   case "$?" in
       0)
     	echo PASS: $testname
