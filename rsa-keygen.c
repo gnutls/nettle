@@ -44,21 +44,6 @@
 # include <stdio.h>
 #endif
 
-/* Returns a random number, 0 <= x < 2^bits. */
-static void
-bignum_random_size(mpz_t x, unsigned bits,
-		   void *random_ctx, nettle_random_func random)
-{
-  unsigned length = (bits + 7) / 8;
-  uint8_t *data = alloca(length);
-
-  random(random_ctx, length, data);
-
-  nettle_mpz_set_str_256(x, length, data);
-
-  if (bits % 8)
-    mpz_fdiv_r_2exp(x, x, bits);
-}
 
 #define NUMBER_OF_PRIMES 167
 
@@ -172,7 +157,7 @@ bignum_random_prime(mpz_t x, unsigned bits,
   
   for (;;)
     {
-      bignum_random_size(x, bits, random_ctx, random);
+      nettle_mpz_random_size(x, random_ctx, random, bits);
       mpz_setbit(x, bits - 1);
 
       /* Miller-rabin count of 25 is probably much overkill. */
@@ -307,8 +292,9 @@ rsa_generate_keypair(struct rsa_public_key *pub,
       int retried = 0;
       for (;;)
 	{
-	  bignum_random_size(pub->e, e_size,
-			     random_ctx, random);
+	  nettle_mpz_random_size(pub->e,
+				 random_ctx, random,
+				 e_size);
 	
 	  /* Make sure it's odd and that the most significant bit is
 	   * set */
