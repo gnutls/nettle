@@ -35,8 +35,12 @@
 
 #include <string.h>
 
-#define GET(x, l, v) \
-do { if (!nettle_mpz_set_sexp((x), (l), (v))) return 0; } while(0)
+#define GET(x, l, v)				\
+do {						\
+  if (!nettle_mpz_set_sexp((x), (l), (v))	\
+      || mpz_sgn(x) <= 0)			\
+    return 0;					\
+} while(0)
 
 /* Iterator should point past the algorithm tag, e.g.
  *
