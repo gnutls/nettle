@@ -21,10 +21,10 @@
 ! NOTE: Some of the %g registers are reserved for operating system etc
 ! (see gcc/config/sparc.h). We should use only %g1-%g3 to be safe.
 	
-	! Used registers:	%l0,1,2,3,4,5,6,7
+	! Used registers:	%l0,1,2,3,4,6,7
 	!			%i0,1,2,3,4 (%i6=%fp, %i7 = return)
-	!			%o0,1,2,3,4,7 (%o6=%sp)
-	!			%g1,2,3,5
+	!			%o0,1,2,,4,7 (%o6=%sp)
+	!			%g5
 	
 	.file	"aes.asm"
 	
@@ -43,7 +43,6 @@ define(nrounds, %l3)
 
 ! Loop variables
 define(round, %l4)
-define(i, %l5)
 define(key, %o4)
 
 ! Further loop invariants
@@ -61,7 +60,6 @@ define(IDX3, <T + AES_SIDX3 >)
 define(t0, %o0)
 define(t1, %o1)
 define(t2, %o2)
-define(t3, %o3)
 
 C AES_LOAD(i)
 C Get one word of input, XOR with first subkey, store in wtxt
