@@ -5,7 +5,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2001 Niels Möller
+ * Copyright (C) 2001, 2002 Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -233,5 +233,13 @@ rsa_keypair_from_sexp(struct rsa_public_key *pub,
 		      struct rsa_private_key *priv,
 		      unsigned length, const uint8_t *expr);
 
+
+/* OpenPGP format. Experimental interface, subject to change. */
+int
+rsa_keypair_to_openpgp(struct nettle_buffer *buffer,
+		       const struct rsa_public_key *pub,
+		       const struct rsa_private_key *priv,
+		       /* A single user id. NUL-terminated utf8. */
+		       const char userid);
 
 #endif /* NETTLE_RSA_H_INCLUDED */
