@@ -50,6 +50,7 @@
 #define des_is_weak_key nettle_openssl_des_is_weak_key
 
 /* An extra alias */
+#undef des_set_key
 #define des_set_key nettle_openssl_des_key_sched
 
 enum { DES_DECRYPT = 0, DES_ENCRYPT = 1 };
