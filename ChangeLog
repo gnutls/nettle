@@ -1,3 +1,11 @@
+2003-11-12  Niels Möller  <niels@s3.kth.se>
+
+	* list-obj-sizes.awk: New function for decoding hex values, with a
+	new function hex2int. Also implemented calculation of total
+	storage, removed the dependence on the .comment section, and use
+	the $FILTER environment variable as a regexp for restricting the
+	object files that are considered.
+
 2003-09-21  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* testsuite/rsa-encrypt-test.c (test_main): Don't use gmp_printf,
