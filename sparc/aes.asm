@@ -65,14 +65,17 @@ _aes_crypt:
 	add	T, AES_TABLE3, T3
 	! Read src, and add initial subkey
 	! Difference between ctx and src.
-	! NOTE: This isntruction is duplicated in the delay slot
+	! NOTE: This instruction is duplicated in the delay slot
 	sub	ctx, src, %g2
+
 .Lblock_loop:
 	! Difference between wtxt and src
 	sub	wtxt, src, %g3
 	! For stop condition. Note that src is incremented in the
 	! delay slot
 	add	src, 8, %g4
+	nop
+	nop
 	
 .Lsource_loop:
 	ldub	[src+3], t3
@@ -95,10 +98,9 @@ _aes_crypt:
 	st	t3, [src+%g3]
 	bleu	.Lsource_loop
 	add	src, 4, src
-
+	
 	sub	nrounds, 1, round
 	add	ctx, 16, key
-
 .Lround_loop:
 	! 4*i
 	mov	0, i
@@ -158,7 +160,8 @@ _aes_crypt:
 	xor	wtxt, diff, wtxt
 	subcc	round, 1, round
 	add	key, 16, key
-
+	nop
+	
 	bne	.Lround_loop
 	xor	tmp, diff, tmp
 
@@ -171,33 +174,33 @@ _aes_crypt:
 	! Comments mark which j in T->sbox[Bj(wtxt[IDXj(i)])]
 	! the instruction is part of
 	ld	[idx-32], t1 	! 1
-	ld	[idx-16], t2	! 2
-
+	xor	i, 8, t2
+	! ld	[idx-16], t2	! 2
 	add	wtxt, t1, t1	! 1
 	ldub	[t1+2], t1	! 1
 
 	ld	[wtxt+i], t0	! 0
-
 	lduh	[wtxt+t2], t2	! 2
 	and	t0, 255, t0	! 0
 	ld	[idx], t3	! 3
+	
 	and	t2, 255, t2	! 2
 	ldub	[T+t1], t1	! 1
-
 	ldub	[T+t0], t0	! 0
 	sll	t1, 8, t1	! 1
+	
 	ldub	[wtxt+t3], t3	! 3
 	or	t0, t1, t0	! 0, 1
 	ldub	[T+t2], t2	! 2
-
 	ldub	[T+t3], t3	! 3
+	
 	sll	t2, 16, t2	! 2
 	or	t0, t2, t0	! 0, 1, 2
 	ld	[key + i], t2
 	sll	t3, 24, t3	! 3
+	
 	or	t0, t3, t0	! 0, 1, 2, 3
 	xor	t0, t2, t0
-	
 	add	i, 4, i
 	cmp	i, 12
 	
@@ -205,6 +208,7 @@ _aes_crypt:
 	srl	t0, 16, t2
 	srl	t0, 8, t1
 	stb	t1, [dst+1]
+	
 	stb	t3, [dst+3]
 	stb	t2, [dst+2]
 	stb	t0, [dst]
@@ -212,8 +216,9 @@ _aes_crypt:
 	
 	bleu	.Lfinal_loop
 	add	idx, 4, idx
-	
 	addcc	length, -16, length
+	nop
+	
 	bne	.Lblock_loop
 	sub	ctx, src, %g2
 
@@ -310,3 +315,21 @@ _aes_crypt:
 	! aes256 (ECB decrypt): 15.38s, 0.650MB/s
 	! aes256 (CBC encrypt): 17.49s, 0.572MB/s
 	! aes256 (CBC decrypt): 17.87s, 0.560MB/s
+
+	! After further optimizations of the initial and final loops,
+	! source_loop and final_loop. 
+	! aes128 (ECB encrypt): 8.07s, 1.239MB/s
+	! aes128 (ECB decrypt): 9.48s, 1.055MB/s
+	! aes128 (CBC encrypt): 12.76s, 0.784MB/s
+	! aes128 (CBC decrypt): 12.15s, 0.823MB/s
+	! 
+	! aes192 (ECB encrypt): 9.43s, 1.060MB/s
+	! aes192 (ECB decrypt): 11.20s, 0.893MB/s
+	! aes192 (CBC encrypt): 14.19s, 0.705MB/s
+	! aes192 (CBC decrypt): 13.97s, 0.716MB/s
+	! 
+	! aes256 (ECB encrypt): 10.81s, 0.925MB/s
+	! aes256 (ECB decrypt): 12.92s, 0.774MB/s
+	! aes256 (CBC encrypt): 15.59s, 0.641MB/s
+	! aes256 (CBC decrypt): 15.76s, 0.635MB/s
+	
