@@ -1,3 +1,8 @@
+2003-05-14  Niels Möller  <niels@s3.kth.se>
+
+	* pgp.h (enum pgp_subpacket_tag): Copied values from RFC 2440. 
+	Renamed PGP_SUBPACKET_ISSUER to PGP_SUBPACKET_ISSUER_KEY_ID.
+
 2003-05-13  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* pgp.h: Do proper namemangling for pgp_put_public_rsa_key and
