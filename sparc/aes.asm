@@ -65,23 +65,47 @@ key_addition_8to32:
 	.type	key_addition32,#function
 	.proc	020
 key_addition32:
-	mov	%o0, %o4
+	! Use %g2 and %g3 as temporaries, %o3 as counter
 	mov	0, %o3
 .LL26:
-	sll	%o3, 2, %g2
-	ld	[%o1+%g2], %g3
+	! Get *txt++
+	ld	[%o0], %g2
+	add	%o0, 4, %o0
+	! Get *keys++
+	ld	[%o1], %g3
+	add	%o1, 4, %o1
+	xor	%g2, %g3, %g3
+	st	%g3, [%o2]
+	! Incrementing %o2 in the delay slot
 	add	%o3, 1, %o3
-	ld	[%o4+%g2], %o0
+
+	! FIXME:	 Unroll or inline?
 	cmp	%o3, 3
-
-	xor	%g3, %o0, %g3
-
 	bleu	.LL26
-	st	%g3, [%o2+%g2]
-
+	add	%o2, 4, %o2
+	
 	retl
 	nop
-.LLFE2:
+
+! 	! And three more times
+! 	
+! 	mov	%o0, %o4
+! 	mov	0, %o3
+! .LL26:
+! 	sll	%o3, 2, %g2
+! 	ld	[%o1+%g2], %g3
+! 	add	%o3, 1, %o3
+! 	ld	[%o4+%g2], %o0
+! 	cmp	%o3, 3
+! 
+! 	xor	%g3, %o0, %g3
+! 
+! 	bleu	.LL26
+! 	st	%g3, [%o2+%g2]
+! 
+! 	retl
+! 	nop
+
 .LLfe2:
 	.size	key_addition32,.LLfe2-key_addition32
 	.align 4
