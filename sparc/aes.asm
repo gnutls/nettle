@@ -63,6 +63,24 @@ define(t1, %o1)
 define(t2, %o2)
 define(t3, %o3)
 
+C AES_LOAD(i)
+C Get one word of input, XOR with first subkey, store in wtxt
+define(<AES_LOAD>, <
+	ldub	[src + $1], t0
+	ldub	[src + $1 + 1], t1
+	sll	t1, 8, t1
+	or	t0, t1, t0
+	ldub	[src + $1 + 2], t2
+	sll	t2, 16, t2
+	or	t0, t2, t0
+	ldub	[src + $1 + 3], t1
+	sll	t1, 24, t1
+	or	t0, t1, t0
+	ld	[key + $1], t2
+	xor	t0, t2, t0
+	st	t0, [wtxt + $1]
+	>)dnl
+
 C AES_ROUND(i)
 C Compute one word in the round function. 
 C Input in wtxt, output stored in tmp + i.
@@ -186,8 +204,16 @@ _aes_crypt:
 	! For stop condition. Note that src is incremented in the
 	! delay slot
 	add	src, 8, %g1
-	
-.Lsource_loop:
+
+	C AES_LOAD(0)	! i = 0
+	C AES_LOAD(4)	! i = 1
+	C AES_LOAD(8)	! i = 2
+	C AES_LOAD(12)	! i = 3
+	C add	src, 16, src
+			
+C .Lsource_loop:
+	C Begin loop
+	C i = 0
 	ldub	[src+3], t3
 	ldub	[src+2], t2
 	sll	t3, 24, t3
@@ -204,10 +230,76 @@ _aes_crypt:
 	or	t3, t0, t3
 	xor	t3, t2, t3
 	
-	cmp	src, %g1
+	C cmp	src, %g1
 	st	t3, [src+%g3]
-	bleu	.Lsource_loop
+	C bleu	.Lsource_loop
 	add	src, 4, src
+
+	C i = 1
+	ldub	[src+3], t3
+	ldub	[src+2], t2
+	sll	t3, 24, t3
+	ldub	[src+1], t1
+	
+	sll	t2, 16, t2
+	or	t3, t2, t3
+	ldub	[src], t0
+	sll	t1, 8, t1
+	
+	! Get subkey
+	ld	[src+%g2], t2
+	or	t3, t1, t3
+	or	t3, t0, t3
+	xor	t3, t2, t3
+	
+	C cmp	src, %g1
+	st	t3, [src+%g3]
+	C bleu	.Lsource_loop
+	add	src, 4, src
+	C i = 2
+	ldub	[src+3], t3
+	ldub	[src+2], t2
+	sll	t3, 24, t3
+	ldub	[src+1], t1
+	
+	sll	t2, 16, t2
+	or	t3, t2, t3
+	ldub	[src], t0
+	sll	t1, 8, t1
+	
+	! Get subkey
+	ld	[src+%g2], t2
+	or	t3, t1, t3
+	or	t3, t0, t3
+	xor	t3, t2, t3
+	
+	C cmp	src, %g1
+	st	t3, [src+%g3]
+	C bleu	.Lsource_loop
+	add	src, 4, src
+	C i = 3
+	ldub	[src+3], t3
+	ldub	[src+2], t2
+	sll	t3, 24, t3
+	ldub	[src+1], t1
+	
+	sll	t2, 16, t2
+	or	t3, t2, t3
+	ldub	[src], t0
+	sll	t1, 8, t1
+	
+	! Get subkey
+	ld	[src+%g2], t2
+	or	t3, t1, t3
+	or	t3, t0, t3
+	xor	t3, t2, t3
+	
+	C cmp	src, %g1
+	st	t3, [src+%g3]
+	C bleu	.Lsource_loop
+	add	src, 4, src
+
+	C End loop
 	
 	sub	nrounds, 1, round
 	add	ctx, 16, key
