@@ -42,19 +42,39 @@
 void
 serpent_setup(SERPENT_context *ctx, UINT32 key_size, const UINT8 *key)
 {
-  UINT32 i, j;
+  unsigned i, j;
   UINT32 w[132], k[132];
-  UINT32 kd[8];
-  const UINT8 *kptr;
+  /* UINT32 kd[8]; */
+  /* const UINT8 *kptr; */
 
   assert(key_size >= SERPENT_MIN_KEYSIZE);
   assert(key_size <= SERPENT_MAX_KEYSIZE);
 
+  for (i = key_size, j = 0;
+       (i >= 4);
+       i-=4, key +=4, j++)
+    {
+      assert(j<8);
+      w[j] = key[0] | (key[1] << 8) | (key[2] << 16) | (key[3] << 24);
+    }
+
+    if (j < 8)
+    {
+      /* Pad key, "aabbcc" -> "aabbcc0100...00" */
+      UINT32 partial = 0x01;
+      while (i)
+	partial = (partial << 8 ) | key[--i];
+      w[j++] = partial;
+
+      while (j < 8)
+	w[j++] = 0;
+    }  
+#if 0
   if (key_size == SERPENT_KEYSIZE)
     kptr = key;
   else
     {
-      /* Expand key by appending bits 1000...0. */
+      /* Expand key by appending bits 1000...00. */
       UINT8 *ekey = alloca(SERPENT_KEYSIZE);
       unsigned i = key_size;
       
@@ -76,7 +96,6 @@ serpent_setup(SERPENT_context *ctx, UINT32 key_size, const UINT8 *key)
   for(i=0; i<8; i++)
     w[i]=kd[i];
 
-#if 0
   for(i++; i<8; i++)
     w[i]=0;
 #endif
@@ -122,10 +141,9 @@ serpent_setup(SERPENT_context *ctx, UINT32 key_size, const UINT8 *key)
   RND04(w[124], w[125], w[126], w[127], k[124], k[125], k[126], k[127]);
   RND03(w[128], w[129], w[130], w[131], k[128], k[129], k[130], k[131]);
 
-  for(i=0; i<=32; i++) {
+  for(i=0; i<=32; i++)
     for(j=0; j<4; j++)
       ctx->keys[i][j] = k[4*i+j];
-  }
 }
 
 void
