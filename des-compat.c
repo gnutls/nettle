@@ -71,6 +71,10 @@ des_ecb3_encrypt(const_des_cblock *src, des_cblock *dst,
     (&keys, DES_BLOCK_SIZE, *dst, *src);
 }
 
+/* If input is not a integral number of blocks, the final block is
+   padded with zeros, no length field or anything like that. That's
+   pretty broken, since it means that "$100" and "$100\0" always have
+   the same checksum, but I think that's how it's supposed to work. */
 uint32_t
 des_cbc_cksum(const uint8_t *src, des_cblock *dst,
 	      long length, des_key_schedule ctx,
@@ -80,16 +84,21 @@ des_cbc_cksum(const uint8_t *src, des_cblock *dst,
    * work, in particular what it should return, and if iv can be
    * modified. */
   uint8_t block[DES_BLOCK_SIZE];
-  const uint8_t *p;
 
   memcpy(block, *iv, DES_BLOCK_SIZE);
-  
-  assert(!(length % DES_BLOCK_SIZE));
-  
-  for (p = src; length; length -= DES_BLOCK_SIZE, p += DES_BLOCK_SIZE)
+
+  while (length >= DES_BLOCK_SIZE)
     {
-      memxor(block, p, DES_BLOCK_SIZE);
+      memxor(block, src, DES_BLOCK_SIZE);
       nettle_des_encrypt(ctx, DES_BLOCK_SIZE, block, block);
+
+      src += DES_BLOCK_SIZE;
+      length -= DES_BLOCK_SIZE;	  
+    }
+  if (length > 0)
+    {
+      memxor(block, src, length);
+      nettle_des_encrypt(ctx, DES_BLOCK_SIZE, block, block);	  
     }
   memcpy(*dst, block, DES_BLOCK_SIZE);
 
