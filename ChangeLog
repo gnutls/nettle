@@ -1,3 +1,8 @@
+2005-03-17  Niels Möller  <niels@s3.kth.se>
+
+	* config.guess: Support Solaris on x86_64. Fix by Henrik
+	Grubbström. 
+
 2005-01-03  Niels Möller  <niels@s3.kth.se>
 
 	* examples/io.h: Include RSA declarations only when public key
