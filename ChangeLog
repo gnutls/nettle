@@ -1,3 +1,59 @@
+2002-10-31  Niels Möller  <niels@s3.kth.se>
+
+	* examples/sexp-conv.c(sexp_put_list_start): Deleted function. 
+	(sexp_put_list_end): Likewise.
+	(sexp_put_display_start): Likewise.
+	(sexp_put_display_end): Likewise.
+	(sexp_puts): Likewise.
+
+	* examples/sexp-conv.c (sexp_get_quoted_string): Deleted function.
+	Merged with sexp_get_String.
+	(sexp_get_hex_string): Likewise.
+	(sexp_get_base64_string): Likewise.
+	(sexp_get_string): Do hex and base64 decoding.
+	
+	* examples/sexp-conv.c (enum sexp_char_type): New enum, for end
+	markers in the input strem.
+	(struct sexp_input): Deleted LEVEL attribute. Deleted all usage of
+	it.
+	(sexp_get_raw_char): Use INPUT->c and INPUT->ctype to store
+	results. Deleted OUT argument.
+	(sexp_get_char): Likewise. Also removed the
+	INPUT->coding->decode_final call, for symmetry.
+	(sexp_input_end_coding): Call INPUT->coding->decode_final.
+	(sexp_next_char): New function.
+	(sexp_push_char): New function.
+	(sexp_get_token_char): Deleted function.
+	(sexp_get_quoted_char): Simplified. Deleted output argument.
+	(sexp_get_quoted_string): Simplified.
+	(sexp_get_base64_string): Likewise.
+	(sexp_get_token_string): Likewise.
+	(sexp_get_string_length): Skip the character that terminates the
+	string.
+	(sexp_get_token): Cleared upp calling conventions. Always consume
+	the final character of the token.
+	(sexp_convert_list): Take responsibility for converting the start
+	and end of the list.
+	(sexp_convert_file): Call sexp_get_char first, to get the token
+	reading started.
+	(sexp_convert_item): Cleared up calling conventions. Should be
+	called with INPUT->token being the first token of the expression,
+	and returns with INPUT->token being the final token of the
+	expression. Return value changed to void..
+
+	* examples/sexp-conv-test: Added test for transport mode input.
+
+	* examples/sexp-conv.c (sexp_get_char): Use the nettle_armor
+	interface for decoding.
+	(sexp_input_start_coding): New function.
+	(sexp_input_end_coding): New function.
+	(sexp_get_base64_string): Rewrote to use sexp_input_start_coding
+	and sexp_input_end_coding.
+	(sexp_get_token): Generate SEXP_TRANSPORT_START tokens.
+	(sexp_convert_list): Lists are ended only by SEXP_LIST_END.
+	(sexp_convert_item): Implemented transport mode, using
+	sexp_input_start_coding and sexp_input_end_coding.
+
 2002-10-30  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* Makefile.am: Added base16 files.
