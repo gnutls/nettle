@@ -47,11 +47,8 @@ struct rsa_public_key
 
 struct rsa_private_key
 {
-  struct rsa_public_key pub;
+  unsigned size;
   
-  /* Secret exponent */
-  mpz_t d;
-
   /* The two factors */
   mpz_t p; mpz_t q;
 
