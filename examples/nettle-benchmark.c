@@ -45,9 +45,18 @@
 
 #include <time.h>
 
+#if __GNUC__
+# define UNUSED __attribute__ ((__unused__))
+#else
+# define UNUSED
+#endif
+
 /* Encrypt 100MB, 1K at a time. */
 #define BENCH_BLOCK 1024
 #define BENCH_COUNT 10240
+
+/* Total MB:s, for MB/s figures. */
+#define BENCH_TOTAL 10.0
 
 static double
 time_function(void (*f)(void *arg), void *arg)
@@ -139,6 +148,15 @@ init_key(unsigned length,
 }
 
 static void
+display(const char *name, const char *mode,
+	double elapsed)
+{
+  printf("%13s (%s): %.2fs, %.3fMB/s\n",
+	 name, mode,
+	 elapsed, BENCH_TOTAL / elapsed);
+}
+
+static void
 time_cipher(const struct nettle_cipher *cipher)
 {
   void *ctx = alloca(cipher->context_size);
@@ -156,9 +174,9 @@ time_cipher(const struct nettle_cipher *cipher)
     
     init_key(cipher->key_size, key);
     cipher->set_encrypt_key(ctx, cipher->key_size, key);
-    
-    printf("%13s (ECB encrypt): %f\n", cipher->name,
-           time_function(bench_cipher, &info));
+
+    display(cipher->name, "ECB encrypt",
+	    time_function(bench_cipher, &info));
   }
   
   {
@@ -167,9 +185,9 @@ time_cipher(const struct nettle_cipher *cipher)
     
     init_key(cipher->key_size, key);
     cipher->set_decrypt_key(ctx, cipher->key_size, key);
-    
-    printf("%13s (ECB decrypt): %f\n", cipher->name,
-           time_function(bench_cipher, &info));
+
+    display(cipher->name, "ECB decrypt",
+	    time_function(bench_cipher, &info));
   }
 
   if (cipher->block_size)
@@ -185,9 +203,8 @@ time_cipher(const struct nettle_cipher *cipher)
     
         cipher->set_encrypt_key(ctx, cipher->key_size, key);
 
-        printf("%13s (CBC encrypt): %f\n", cipher->name,
-               time_function(bench_cbc_encrypt,
-                             &info));
+	display(cipher->name, "CBC encrypt",
+		time_function(bench_cbc_encrypt, &info));
       }
 
       {
@@ -198,9 +215,8 @@ time_cipher(const struct nettle_cipher *cipher)
 
         cipher->set_decrypt_key(ctx, cipher->key_size, key);
 
-        printf("%13s (CBC decrypt): %f\n", cipher->name,
-               time_function(bench_cbc_decrypt,
-                             &info));
+	display(cipher->name, "CBC decrypt",
+		time_function(bench_cbc_decrypt, &info));
       }
     }
 }
@@ -209,7 +225,7 @@ time_cipher(const struct nettle_cipher *cipher)
 #define NCIPHERS 12
 
 int
-main(int argc, char **argv)
+main(int argc UNUSED, char **argv UNUSED)
 {
   unsigned i;
   const struct nettle_cipher *ciphers[NCIPHERS] =
