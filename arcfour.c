@@ -34,7 +34,52 @@ RCSID("$Id$");
 
 #define SWAP(a,b) do { int _t = a; a = b; b = _t; } while(0)
 
-void arcfour_set_key(struct arcfour_ctx *ctx, const UINT8 *key, UINT32 len)
+void arcfour_init(struct arcfour_ctx *ctx)
+{
+  unsigned i;
+
+  /* Initialize context */
+
+  for (i = 0; i<256; i++)
+    ctx->S[i] = i;
+}
+
+void arcfour_update_key(struct arcfour_ctx *ctx,
+			UINT32 length, const UINT8 *key)
+{
+  register UINT8 i = ctx->i;
+  register UINT8 j = ctx->j;
+
+  unsigned k;
+
+  for (k = 0; k<length; k++)
+    {
+      i++; i &= 0xff;
+      j += ctx->S[i] + key[k]; j &= 0xff;
+      SWAP(ctx->S[i], ctx->S[j]);
+    }
+  ctx->i = i; ctx->j = j;
+}
+
+void arcfour_stream(struct arcfour_ctx *ctx,
+		    UINT32 length, UINT8 *dest)
+{
+  register UINT8 i = ctx->i;
+  register UINT8 j = ctx->j;
+  unsigned k;
+
+  for (k = 0; k<length; k++)
+    {
+      i++; i &= 0xff;
+      j += ctx->S[i]; j &= 0xff;
+      SWAP(ctx->S[i], ctx->S[j]);
+      dest[k] = ctx->S[ (ctx->S[i] + ctx->S[j]) & 0xff ];
+    }
+  
+  ctx->i = i; ctx->j = j;
+}
+
+void arcfour_set_key(struct arcfour_ctx *ctx, UINT32 length, const UINT8 *key)
 {
   register UINT8 j; /* Depends on the eight-bitness of these variables. */
   unsigned i;
@@ -49,19 +94,19 @@ void arcfour_set_key(struct arcfour_ctx *ctx, const UINT8 *key, UINT32 len)
   do {
     j += ctx->S[i] + key[k];
     SWAP(ctx->S[i], ctx->S[j]);
-    k = (k+1) % len; /* Repeat key if needed */
+    k = (k+1) % length; /* Repeat key if needed */
   } while(++i < 256);
   
   ctx->i = ctx->j = 0;
 }
 
 void arcfour_crypt(struct arcfour_ctx *ctx, UINT8 *dest,
-		   const UINT8 *src, UINT32 len)
+		   UINT32 length, const UINT8 *src)
 {
   register UINT8 i, j;
 
   i = ctx->i; j = ctx->j;
-  while(len--)
+  while(length--)
     {
       i++; i &= 0xff;
       j += ctx->S[i]; j &= 0xff;

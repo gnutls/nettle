@@ -16,8 +16,17 @@ struct arcfour_ctx {
 void arcfour_init(struct arcfour_ctx *ctx);
 #endif
 
-void arcfour_set_key(struct arcfour_ctx *ctx, const UINT8 *key, UINT32 len);
+/* Encryption functions */
+void arcfour_set_key(struct arcfour_ctx *ctx, UINT32 length, const UINT8 *key);
 void arcfour_crypt(struct arcfour_ctx *ctx, UINT8 *dest,
-		   const UINT8 *src, UINT32 len);
+		   UINT32 length, const UINT8 *src);
+
+/* Using arcfour as a randomness generator. */
+void arcfour_init(struct arcfour_ctx *ctx);
+void arcfour_update_key(struct arcfour_ctx *ctx,
+			UINT32 length, const UINT8 *key);
+void arcfour_stream(struct arcfour_ctx *ctx,
+		    UINT32 length, UINT8 *dest);
+
 
 #endif /* ARCFOUR_H_INCLUDED */
