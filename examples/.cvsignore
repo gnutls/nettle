@@ -1,4 +1,5 @@
 .deps
 Makefile
 Makefile.in
+lfib-stream
 nettle-benchmark
