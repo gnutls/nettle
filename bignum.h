@@ -32,7 +32,7 @@
 /* Writes an unsigned integer as length octets, using big endian byte
  * order. */
 void
-nettle_mpz_get_str_256(unsigned length, uint8_t *s, mpz_t x);
+nettle_mpz_get_str_256(unsigned length, uint8_t *s, const mpz_t x);
 
 void
 nettle_mpz_set_str_256(mpz_t x,

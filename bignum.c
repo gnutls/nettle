@@ -35,7 +35,7 @@
 #include <string.h>
 
 void
-nettle_mpz_get_str_256(unsigned length, uint8_t *s, mpz_t x)
+nettle_mpz_get_str_256(unsigned length, uint8_t *s, const mpz_t x)
 {
   uint8_t *dst = s + length - 1;
   unsigned size = mpz_size(x);
