@@ -187,7 +187,7 @@ C .Laes_got_t:
 	pushl	%edi
 
 	C second column
-	AES_LAST_ROUND(d,a,b,c)
+	AES_LAST_ROUND(b,c,d,a)
 	pushl	%edi
 
 	C third column
@@ -195,13 +195,12 @@ C .Laes_got_t:
 	pushl	%edi
 
 	C fourth column
-	AES_LAST_ROUND(b,c,d,a)
+	AES_LAST_ROUND(d,a,b,c)
 	movl	%edi,%edx
 	
 	popl	%ecx
 	popl	%ebx
 	popl	%eax
-	xchgl	%ebx,%edx
 
 	C // S-box substitution
 	mov	$4,%edi
