@@ -1,3 +1,9 @@
+2002-11-01  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Fixed definitions using SHLIBMAJOR and SHLIBMINOR.
+	Also AC_SUBST SHLIBMAJOR and SHLIBMINOR. Reported by James
+	Ralston. 
+
 2002-10-31  Niels Möller  <niels@s3.kth.se>
 
 	* examples/sexp-conv.c(sexp_put_list_start): Deleted function. 
