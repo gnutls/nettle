@@ -5,6 +5,9 @@
 	(aes_encrypt): Similarly for the second column.
 	(aes_encrypt): Similarly for the third and fourth column.
 
+	(aes_encrypt): Deleted xchgl instruction in final round, by
+	reordering the second and fourth round.
+
 	* x86/machine.m4 (AES_LAST_ROUND): New macro.
 
 	* x86/aes-encrypt.asm (aes_encrypt): Move code here...
