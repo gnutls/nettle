@@ -1,3 +1,9 @@
+2004-12-02  Niels Möller  <niels@s3.kth.se>
+
+	* Makefile.in (aesdata, desdata): Commented out the explicit
+	targets.
+	(shadata): Avoid using $< in non-pattern rule.
+
 2004-12-01  Niels Möller  <nisse@lysator.liu.se>
 
 	* config.make.in: Added a default target.

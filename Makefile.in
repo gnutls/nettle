@@ -134,14 +134,14 @@ $(SHLIBFORLINK): $(nettle_PURE_OBJS)
 .$(OBJEXT)$(EXEEXT):
 	$(LINK) $< $(LIBS) -o $@
 
-aesdata$(EXEEXT): aesdata.$(OBJEXT)
-	$(LINK) $< $(LIBS) -o $@
-
-desdata$(EXEEXT): desdata.$(OBJEXT)
-	$(LINK) $< $(LIBS) -o $@
+# aesdata$(EXEEXT): aesdata.$(OBJEXT)
+# 	$(LINK) $< $(LIBS) -o $@
+# 
+# desdata$(EXEEXT): desdata.$(OBJEXT)
+# 	$(LINK) $< $(LIBS) -o $@
 
 shadata$(EXEEXT): shadata.$(OBJEXT)
-	$(LINK) $< $(LIBS) -lm -o $@
+	$(LINK) shadata.$(OBJEXT) $(LIBS) -lm -o $@
 
 # desCore rules
 # It seems using $(srcdir)/ doesn't work with GNU make 3.79.1
