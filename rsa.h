@@ -213,4 +213,25 @@ rsa_generate_keypair(struct rsa_public_key *pub,
   rsa_##algorithm##_verify(key, ctx, signature) \
 )
 
+
+/* Keys in sexp form. */
+
+struct nettle_buffer;
+
+/* Generates a public-key expression if PRIV is NULL .*/
+int
+rsa_keypair_to_sexp(struct nettle_buffer *buffer,
+		    const struct rsa_public_key *pub,
+		    const struct rsa_private_key *priv);
+
+/* If PRIV is NULL, expect a public-key expression. If PUB is NULL,
+ * expect a private key expression and ignore the parts not needed for
+ * the public key. */
+/* Keys must be initialized before calling this function, as usual. */
+int
+rsa_keypair_from_sexp(struct rsa_public_key *pub,
+		      struct rsa_private_key *priv,
+		      unsigned length, const uint8_t *expr);
+
+
 #endif /* NETTLE_RSA_H_INCLUDED */
