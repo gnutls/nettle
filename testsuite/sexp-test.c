@@ -5,7 +5,8 @@ int
 test_main(void)
 {
   struct sexp_iterator i;
-
+  uint32_t x;
+  
   ASSERT(sexp_iterator_first(&i, LDATA("")));
   ASSERT(i.type == SEXP_END);
 
@@ -20,6 +21,18 @@ test_main(void)
   ASSERT(i.type == SEXP_LIST
 	 && !sexp_iterator_enter_list(&i));
 
+  /* Check integers. */
+  ASSERT(sexp_iterator_first(&i, LDATA("1:\0"
+				       "1:\x11"
+				       "2:\x00\x11"
+				       "2:\x00\x80"
+				       "5:\x00\xaa\xbb\xcc\xdd")));
+  ASSERT(sexp_iterator_get_uint32(&i, &x) && x == 0);
+  ASSERT(sexp_iterator_get_uint32(&i, &x) && x == 0x11);
+  ASSERT(sexp_iterator_get_uint32(&i, &x) && x == 0x11);
+  ASSERT(sexp_iterator_get_uint32(&i, &x) && x == 0x80);
+  ASSERT(sexp_iterator_get_uint32(&i, &x) && x == 0xaabbccdd);
+  
   ASSERT(sexp_iterator_first(&i, LDATA("3:foo0:[3:bar]12:xxxxxxxxxxxx")));
   ASSERT(i.type == SEXP_ATOM
 	 && !i.display_length && !i.display
