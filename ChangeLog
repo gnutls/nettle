@@ -1,3 +1,20 @@
+2002-11-01  Niels Möller  <niels@s3.kth.se>
+
+	* examples/Makefile.am (LDADD): Use -lnettle, instead of an
+	explicit filename libnettle.a, so that we will use the shared
+	library, if it exists.
+	(AM_LDFLAGS): Added -L.., so we can find -lnettle.
+	(run-tests): Set LD_LIBRARY_PATH to ../.lib, when running the
+	testsuite. 
+	* testsuite/Makefile.am: Similar changes.
+	
+	* Makefile.am (LIBOBJS): Put @LIBOBJS@ into the make variable
+	LIBOBJS. 
+	(CLEANFILES): Delete libnettle.so.
+	(clean-local): Delete the .lib linkfarm.
+	($(SHLIBFORLINK)): When building libnettle.so, create a link from
+	.lib/$SHLIBSONAME. Needed at runtime, for the testsuite. 
+
 2002-11-01  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Fixed definitions using SHLIBMAJOR and SHLIBMINOR.
