@@ -38,7 +38,7 @@ C %edi is a temporary, often used as an accumulator.
 	.globl aes_encrypt
 	.type	aes_encrypt,@function
 aes_encrypt:
-	C // save all registers that need to be saved
+	C save all registers that need to be saved
 	pushl	%ebx		C  16(%esp)
 	pushl	%ebp		C  12(%esp)
 	pushl	%esi		C  8(%esp)
@@ -50,7 +50,6 @@ aes_encrypt:
 	C src = 32(%esp)
 
 	movl	24(%esp), %ebp
-	C What's the right way to set the flags?
 	cmpl	$0, %ebp
 	jz	.Lencrypt_end
 	
@@ -59,78 +58,33 @@ aes_encrypt:
 	movl	32(%esp),%ebp	C  address of plaintext
 	AES_LOAD(%esi, %ebp)
 	addl	$16, 32(%esp)	C Increment src pointer
-		
-	C FIXME:	Use %esi instead
-	C movl	20(%esp),%ebp	C  address of context struct
-	movl	AES_NROUNDS (%esi),%ebp	C  get number of rounds to do from struct
+
+	C  get number of rounds to do from ctx struct	
+	movl	AES_NROUNDS (%esi),%ebp
 
 	subl	$1,%ebp
 	addl	$16,%esi	C  point to next key
 .Laes_encrypt_loop:
 	pushl	%esi		C  save this first: we'll clobber it later
 
-	C Computation of the new %eax is broken, in the first test case, 
-	C first round, we get 0xb3b638c6, not dfd5b20f, just
-	C before adding the subkey
-	
-	C First column, IDXi = 0, 1, 2, 3
-	C T[0] = table[0][B0(%eax)]
-	C      ^ table[1][B1(%ebx)]
-	C      ^ table[2][B2(%ebx)]
-	C      ^ table[3][B3(%ebx)]
-
 	AES_ROUND(_aes_encrypt_table,a,b,c,d)
 	pushl	%edi		C  save first on stack
 
-	C Second column
 	AES_ROUND(_aes_encrypt_table,b,c,d,a)
 	pushl	%edi		C  save first on stack
 
-	C // Third column
-	C c d a b
-	movl	%ecx,%esi	C  copy first in
-	andl	$0x000000ff,%esi C  clear all but offset
-	shll	$2,%esi		C  index in table
-	movl	AES_TABLE0 + _aes_encrypt_table (%esi),%edi
-	movl	%edx,%esi	C  second one
-	shrl	$6,%esi
-	andl	$0x000003fc,%esi C  clear all but offset bytes
-	xorl	AES_TABLE1 + _aes_encrypt_table (%esi),%edi
-	movl	%eax,%esi	C  third one
-	shrl	$14,%esi
-	andl	$0x000003fc,%esi
-	xorl	AES_TABLE2 + _aes_encrypt_table (%esi),%edi
-	movl	%ebx,%esi	C  fourth one
-	shrl	$22,%esi
-	andl	$0x000003fc,%esi
-	xorl	AES_TABLE3 + _aes_encrypt_table (%esi),%edi
+	AES_ROUND(_aes_encrypt_table,c,d,a,b)
 	pushl	%edi		C  save first on stack
 
-	C // Fourth column
-	C d a b c
-	movl	%edx,%esi	C  copy first in
-	andl	$0x000000ff,%esi C  clear all but offset
-	shll	$2,%esi		C  index in table
-	movl	AES_TABLE0 + _aes_encrypt_table (%esi),%edi
-	movl	%eax,%esi	C  second one
-	shrl	$6,%esi
-	andl	$0x000003fc,%esi C  clear all but offset bytes
-	xorl	AES_TABLE1 + _aes_encrypt_table (%esi),%edi
-	movl	%ebx,%esi	C  third one
-	shrl	$14,%esi
-	andl	$0x000003fc,%esi
-	xorl	AES_TABLE2 + _aes_encrypt_table (%esi),%edi
-	movl	%ecx,%esi	C  fourth one
-	shrl	$22,%esi
-	andl	$0x000003fc,%esi
-	xorl	AES_TABLE3 + _aes_encrypt_table (%esi),%edi
-
+	AES_ROUND(_aes_encrypt_table,d,a,b,c)
+	
 	movl	%edi,%edx
 	popl	%ecx
 	popl	%ebx
 	popl	%eax
+	
 	popl	%esi
-C .Laes_got_t: 
+
 	xorl	(%esi),%eax	C  add current session key to plaintext
 	xorl	4(%esi),%ebx
 	xorl	8(%esi),%ecx
@@ -141,19 +95,15 @@ C .Laes_got_t:
 
 	C last round
 
-	C first column
 	AES_LAST_ROUND(a,b,c,d)
 	pushl	%edi
 
-	C second column
 	AES_LAST_ROUND(b,c,d,a)
 	pushl	%edi
 
-	C third column
 	AES_LAST_ROUND(c,d,a,b)
 	pushl	%edi
 
-	C fourth column
 	AES_LAST_ROUND(d,a,b,c)
 	movl	%edi,%edx
 	
@@ -204,5 +154,3 @@ C .Laes_got_t:
 	popl	%ebp
 	popl	%ebx
 	ret
-.eore:
-	.size	aes_encrypt,.eore-aes_encrypt
