@@ -195,7 +195,7 @@ yarrow_fast_reseed(struct yarrow256_ctx *ctx)
   /* Iterate */
   yarrow_iterate(digest);
 
-  aes_set_key(&ctx->key, sizeof(digest), digest);
+  aes_set_encrypt_key(&ctx->key, sizeof(digest), digest);
 
   /* Derive new counter value */
   memset(ctx->counter, 0, sizeof(ctx->counter));
@@ -332,7 +332,7 @@ yarrow_gate(struct yarrow256_ctx *ctx)
   for (i = 0; i < sizeof(key); i+= AES_BLOCK_SIZE)
     yarrow_generate_block(ctx, key + i);
 
-  aes_set_key(&ctx->key, sizeof(key), key);
+  aes_set_encrypt_key(&ctx->key, sizeof(key), key);
 }
 
 void
