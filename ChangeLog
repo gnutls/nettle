@@ -1,3 +1,9 @@
+2002-10-21  Pontus Sköld  <pont@soua.net>
+
+	* base64-encode.c (base64_encode_raw): Fixed null statement
+	amongst variable declarations, broke compilation for non C99
+	compilers.
+
 2002-10-21  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/sexp-conv.c: New sexp conversion program.

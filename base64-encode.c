@@ -38,7 +38,7 @@ static const uint8_t encode_table[64] =
 void
 base64_encode_raw(uint8_t *dst, unsigned length, const uint8_t *src)
 {
-  const uint8_t *in = src + length;;
+  const uint8_t *in = src + length;
   uint8_t *out = dst + BASE64_ENCODE_RAW_LENGTH(length);
 
   unsigned left_over = length % 3;
