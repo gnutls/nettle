@@ -329,10 +329,9 @@ pgp_crc24(unsigned length, const uint8_t *data)
 
 #define WRITE(buffer, s) (nettle_buffer_write(buffer, strlen((s)), (s)))
 
-/* Base 64 groups data per line */
-#define GROUPS_PER_LINE 15
-#define BINARY_PER_LINE (GROUPS_PER_LINE * BASE64_BINARY_BLOCK_SIZE)
-#define TEXT_PER_LINE (GROUPS_PER_LINE * BASE64_BINARY_BLOCK_SIZE)
+/* 15 base 64 groups data per line */
+#define BINARY_PER_LINE 45
+#define TEXT_PER_LINE BASE64_ENCODE_LENGTH(BINARY_PER_LINE)
 
 int
 pgp_armor(struct nettle_buffer *buffer,
@@ -340,7 +339,11 @@ pgp_armor(struct nettle_buffer *buffer,
 	  unsigned length,
 	  const uint8_t *data)
 {
+  struct base64_encode_ctx ctx;
+  
   unsigned crc = pgp_crc24(length, data);
+
+  base64_encode_init(&ctx);
   
   if (! (WRITE(buffer, "BEGIN PGP ")
 	 && WRITE(buffer, tag)
@@ -351,28 +354,40 @@ pgp_armor(struct nettle_buffer *buffer,
        length >= BINARY_PER_LINE;
        length -= BINARY_PER_LINE, data += BINARY_PER_LINE)
     {
+      unsigned done;
       uint8_t *p
 	= nettle_buffer_space(buffer, TEXT_PER_LINE);
       
       if (!p)
 	return 0;
 
-      base64_encode(p, BINARY_PER_LINE, data);
+      done = base64_encode_update(&ctx, p, BINARY_PER_LINE, data);
+      assert(done <= TEXT_PER_LINE);
 
+      /* FIXME: Create some official way to do this */
+      buffer->size -= (TEXT_PER_LINE - done);
+      
       if (!NETTLE_BUFFER_PUTC(buffer, '\n'))
 	return 0;
     }
 
   if (length)
     {
-      unsigned text_size = BASE64_ENCODE_LENGTH(length);
-
+      unsigned text_size = BASE64_ENCODE_LENGTH(length)
+	+ BASE64_ENCODE_FINAL_LENGTH;
+      unsigned done;
+      
       uint8_t *p
 	= nettle_buffer_space(buffer, text_size);
       if (!p)
 	return 0;
 
-      base64_encode(p, length, data);
+      done = base64_encode_update(&ctx, p, length, data);
+      done += base64_encode_final(&ctx, p + done);
+
+      /* FIXME: Create some official way to do this */
+      buffer->size -= (text_size - done);
+      
       if (!NETTLE_BUFFER_PUTC(buffer, '\n'))
 	return 0;
     }
