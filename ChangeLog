@@ -1,3 +1,9 @@
+2001-09-06  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* cbc.c, cbc.h: New files, for general CBC encryption.
+
+	* des-compat.h: Added some prototypes.
+
 2001-09-05  Niels Möller  <nisse@ehand.com>
 
 	* testsuite/Makefile.am (TS_PROGS): Added md5-compat-test.
