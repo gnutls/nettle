@@ -56,16 +56,15 @@ libnettle_a_SOURCES = aes.c aes.h aes-internal.h \
 
 LIBOBJS = @LIBOBJS@
 libnettle_a_LIBADD = $(LIBOBJS)
-libnettle.a: print_path
-.PHONY: print_path
-print_path:
-	echo PATH: $$PATH
 
 shadata_LDADD = -lm
 
 info_TEXINFOS = nettle.texinfo
 
-all-local: nettle.html
+all-local: nettle.html print-path
+.PHONY: print-path
+print-path:
+	echo PATH: $$PATH
 
 EXTRA_DIST = macros.h memxor.h $(des_headers) descore.README nettle.html \
 	.bootstrap $(des_headers) \

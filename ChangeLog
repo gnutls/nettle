@@ -2,6 +2,7 @@
 
 	* Makefile.am (print_path): Added target to print the used PATH,
 	for debugging.
+	(print-path): Moved dependency to all-local.
 
 2003-02-11  Niels Möller  <niels@s3.kth.se>
 
