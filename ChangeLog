@@ -1,3 +1,10 @@
+2003-04-25  Niels Möller  <niels@s3.kth.se>
+
+	* testsuite/hmac-test.c (test_main): Added tests for hmac-256,
+	from draft-ietf-ipsec-ciph-sha-256-01.txt.
+
+	* hmac-sha256.c (hmac_sha256_digest): New file.
+
 2003-04-22  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* sha-example.c (display_hex): Simplified by using printf better.
