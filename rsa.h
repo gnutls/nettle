@@ -144,7 +144,7 @@ rsa_sha1_verify(struct rsa_public_key *key,
                 struct sha1_ctx *hash,
 		const mpz_t signature);
 
-/* Compute x, the d:th root of m. Calling it with x == m is allowed. */
+/* Compute x, the e:th root of m. Calling it with x == m is allowed. */
 void
 rsa_compute_root(struct rsa_private_key *key, mpz_t x, const mpz_t m);
 
