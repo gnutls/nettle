@@ -67,8 +67,9 @@ esac
 
 if test "$enable_assembler" = yes ; then
   if test -n "$asm_path"; then
+    AC_MSG_NOTICE([Looking for assembler files in $asm_path/.])
     found=no
-    for tmp_f in aes.asm machine.m4; do
+    for tmp_f in aes.asm aes-encrypt.asm aes-decrypt.asm machine.m4; do
 #       echo "Looking for $srcdir/$asm_path/$tmp_f"
       if test -f "$srcdir/$asm_path/$tmp_f"; then
 #        echo found
@@ -118,5 +119,5 @@ if test x$GCC = xyes ; then
 # inttypes.h.
 fi
 
-AC_OUTPUT(Makefile testsuite/Makefile examples/Makefile)
+AC_OUTPUT(Makefile testsuite/Makefile examples/Makefile config.m4)
 
