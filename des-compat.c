@@ -40,18 +40,18 @@ static void
 des_compat_des3_encrypt(struct des_compat_des3 *ctx,
 			uint32_t length, uint8_t *dst, const uint8_t *src)
 {
-  des_encrypt(ctx->keys[0], length, dst, src);
-  des_decrypt(ctx->keys[1], length, dst, dst);
-  des_encrypt(ctx->keys[2], length, dst, dst);
+  nettle_des_encrypt(ctx->keys[0], length, dst, src);
+  nettle_des_decrypt(ctx->keys[1], length, dst, dst);
+  nettle_des_encrypt(ctx->keys[2], length, dst, dst);
 }
 
 static void
 des_compat_des3_decrypt(struct des_compat_des3 *ctx,
 			uint32_t length, uint8_t *dst, const uint8_t *src)
 {
-  des_decrypt(ctx->keys[2], length, dst, src);
-  des_encrypt(ctx->keys[1], length, dst, dst);
-  des_decrypt(ctx->keys[0], length, dst, dst);
+  nettle_des_decrypt(ctx->keys[2], length, dst, src);
+  nettle_des_encrypt(ctx->keys[1], length, dst, dst);
+  nettle_des_decrypt(ctx->keys[0], length, dst, dst);
 }
 
 void
@@ -86,7 +86,7 @@ des_cbc_cksum(des_cblock *src, des_cblock *dst,
   for (p = *src; length; length -= DES_BLOCK_SIZE, p += DES_BLOCK_SIZE)
     {
       memxor(block, p, DES_BLOCK_SIZE);
-      des_encrypt(ctx, DES_BLOCK_SIZE, block, block);
+      nettle_des_encrypt(ctx, DES_BLOCK_SIZE, block, block);
     }
   memcpy(dst, block, DES_BLOCK_SIZE);
 
@@ -101,15 +101,15 @@ des_ncbc_encrypt(des_cblock *src, des_cblock *dst, long length,
   switch (enc)
     {
     case DES_ENCRYPT:
-      cbc_encrypt(ctx, (cbc_crypt_func) des_encrypt,
-		  DES_BLOCK_SIZE, *iv,
-		  length, *dst, *src);
+      nettle_cbc_encrypt(ctx, (cbc_crypt_func) des_encrypt,
+			 DES_BLOCK_SIZE, *iv,
+			 length, *dst, *src);
       break;
     case DES_DECRYPT:
-      cbc_decrypt(ctx,
-		  (cbc_crypt_func) des_decrypt,
-		  DES_BLOCK_SIZE, *iv,
-		  length, *dst, *src);
+      nettle_cbc_decrypt(ctx,
+			 (cbc_crypt_func) des_decrypt,
+			 DES_BLOCK_SIZE, *iv,
+			 length, *dst, *src);
       break;
     default:
       abort();
@@ -134,12 +134,15 @@ des_ecb_encrypt(des_cblock *src, des_cblock *dst,
 		des_key_schedule ctx,
 		int enc)
 {
-  ((enc == DES_ENCRYPT) ? des_encrypt : des_decrypt)(ctx, DES_BLOCK_SIZE, *dst, *src);
+  ((enc == DES_ENCRYPT) ? nettle_des_encrypt : nettle_des_decrypt)
+    (ctx, DES_BLOCK_SIZE, *dst, *src);
 }
 
 void
 des_ede3_cbc_encrypt(des_cblock *src, des_cblock *dst, long length,
-		     des_key_schedule  k1, des_key_schedule k2, des_key_schedule k3,
+		     des_key_schedule k1,
+		     des_key_schedule k2,
+		     des_key_schedule k3,
 		     des_cblock *iv,
 		     int enc)
 {
@@ -151,14 +154,14 @@ des_ede3_cbc_encrypt(des_cblock *src, des_cblock *dst, long length,
   switch (enc)
     {
     case DES_ENCRYPT:
-      cbc_encrypt(&keys, (cbc_crypt_func) des_compat_des3_encrypt,
-		  DES_BLOCK_SIZE, *iv,
-		  length, *dst, *src);
+      nettle_cbc_encrypt(&keys, (cbc_crypt_func) des_compat_des3_encrypt,
+			 DES_BLOCK_SIZE, *iv,
+			 length, *dst, *src);
       break;
     case DES_DECRYPT:
-      cbc_decrypt(&keys, (cbc_crypt_func) des_compat_des3_decrypt,
-		  DES_BLOCK_SIZE, *iv,
-		  length, *dst, *src);
+      nettle_cbc_decrypt(&keys, (cbc_crypt_func) des_compat_des3_decrypt,
+			 DES_BLOCK_SIZE, *iv,
+			 length, *dst, *src);
       break;
     default:
       abort();
@@ -168,7 +171,7 @@ des_ede3_cbc_encrypt(des_cblock *src, des_cblock *dst, long length,
 int
 des_set_odd_parity(des_cblock *key)
 {
-  des_fix_parity(DES_KEY_SIZE, *key, *key);
+  nettle_des_fix_parity(DES_KEY_SIZE, *key, *key);
 
   /* FIXME: What to return? */
   return 0;
