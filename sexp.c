@@ -172,6 +172,8 @@ sexp_iterator_next(struct sexp_iterator *iterator)
        * element. */
       return sexp_iterator_parse(iterator);
     }
+  /* If we get here, we have a bug. */
+  abort();
 }
 
 /* Current element must be a list. */
