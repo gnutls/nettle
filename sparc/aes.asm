@@ -277,47 +277,49 @@ C .Lsource_loop:
 	C add	src, 4, src
 	
 	C i = 2
-	ldub	[src+3], t3
-	ldub	[src+2], t2
-	sll	t3, 24, t3
-	ldub	[src+1], t1
-	
-	sll	t2, 16, t2
-	or	t3, t2, t3
-	ldub	[src], t0
-	sll	t1, 8, t1
-	
-	! Get subkey
-	ld	[src+%g2], t2
-	or	t3, t1, t3
-	or	t3, t0, t3
-	xor	t3, t2, t3
-	
-	C cmp	src, %g1
-	st	t3, [src+%g3]
-	C bleu	.Lsource_loop
-	add	src, 4, src
+	AES_LOAD(8)
+	C ldub	[src+3], t3
+	C ldub	[src+2], t2
+	C sll	t3, 24, t3
+	C ldub	[src+1], t1
+	C 
+	C sll	t2, 16, t2
+	C or	t3, t2, t3
+	C ldub	[src], t0
+	C sll	t1, 8, t1
+	C 
+	C ! Get subkey
+	C ld	[src+%g2], t2
+	C or	t3, t1, t3
+	C or	t3, t0, t3
+	C xor	t3, t2, t3
+	C 
+	C C cmp	src, %g1
+	C st	t3, [src+%g3]
+	C C bleu	.Lsource_loop
+	C add	src, 4, src
 	C i = 3
-	ldub	[src+3], t3
-	ldub	[src+2], t2
-	sll	t3, 24, t3
-	ldub	[src+1], t1
-	
-	sll	t2, 16, t2
-	or	t3, t2, t3
-	ldub	[src], t0
-	sll	t1, 8, t1
-	
-	! Get subkey
-	ld	[src+%g2], t2
-	or	t3, t1, t3
-	or	t3, t0, t3
-	xor	t3, t2, t3
-	
-	C cmp	src, %g1
-	st	t3, [src+%g3]
-	C bleu	.Lsource_loop
-	add	src, 4, src
+	AES_LOAD(12)
+	C ldub	[src+3], t3
+	C ldub	[src+2], t2
+	C sll	t3, 24, t3
+	C ldub	[src+1], t1
+	C 
+	C sll	t2, 16, t2
+	C or	t3, t2, t3
+	C ldub	[src], t0
+	C sll	t1, 8, t1
+	C 
+	C ! Get subkey
+	C ld	[src+%g2], t2
+	C or	t3, t1, t3
+	C or	t3, t0, t3
+	C xor	t3, t2, t3
+	C 
+	C C cmp	src, %g1
+	C st	t3, [src+%g3]
+	C C bleu	.Lsource_loop
+	C add	src, 4, src
 
 	C End loop
 	
