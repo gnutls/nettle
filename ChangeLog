@@ -1,7 +1,11 @@
 2001-06-17  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.am (des_headers): Dont use $(srcdir)/-prefixes as that
+	seems to break with GNU make 3.79.1.
+
 	* testsuite/testutils.c, testsuite/testutils.h: Use <inttypes.h>,
 	not <stdint.h>.
+	Include <stdlib.h>.
 
 2001-06-17  Niels Möller  <nisse@cuckoo.hack.org>
 

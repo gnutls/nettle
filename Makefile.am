@@ -31,7 +31,9 @@ EXTRA_DIST = macros.h memxor.h $(des_headers) descore.README nettle.html
 	 ; test -s $@T && mv -f $@T $@)
 
 # desCore rules
-des_headers = $(srcdir)/parity.h $(srcdir)/rotors.h $(srcdir)/keymap.h 
+# It seems using $(srcdir)/ doesn't work with GNU make 3.79.1
+# des_headers = $(srcdir)/parity.h $(srcdir)/rotors.h $(srcdir)/keymap.h 
+des_headers = parity.h rotors.h keymap.h 
 
 # Generate DES headers.
 $(des_headers): desdata
