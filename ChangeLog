@@ -1,9 +1,12 @@
 2003-04-22  Niels Möller  <nisse@cuckoo.hack.org>
 
+	* sha-example.c (display_hex): Simplified by using printf better.
+
 	* nettle.texinfo (Example): Use @verbatiminclude to include the
 	example program.
 
 	* sha-example.c: Example program, for inclusion in the manual.
+	Fixed bugs reported by Mark Arking.
 
 2003-04-14  Niels Möller  <niels@s3.kth.se>
 

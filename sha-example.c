@@ -8,14 +8,11 @@
 static void
 display_hex(unsigned length, uint8_t *data)
 {
-  static const char digits[16] = "0123456789abcdef";
   unsigned i;
 
   for (i = 0; i<length; i++)
-  {
-    uint8_t byte = data[i];
-    printf("%c%c ", digits[(byte / 16) & 0xf], digits[byte & 0xf]);
-  }
+    printf("%2x ", data[i]);
+
   printf("\n");
 }
 
