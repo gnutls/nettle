@@ -34,6 +34,19 @@ static const signed char hex_digits[0x100] =
     -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
   };
 
+void *
+xalloc(size_t size)
+{
+  void *p = malloc(size);
+  if (!p)
+    {
+      fprintf(stderr, "Virtual memory exhausted.\n");
+      abort();
+    }
+
+  return p;
+}
+
 unsigned
 decode_hex_length(const char *h)
 {
@@ -95,9 +108,7 @@ decode_hex_dup(const char *hex)
   uint8_t *p;
   unsigned length = decode_hex_length(hex);
 
-  p = malloc(length);
-  if (!p)
-    abort();
+  p = xalloc(length);
 
   if (decode_hex(p, hex))
     return p;
@@ -166,8 +177,8 @@ test_cipher(const struct nettle_cipher *cipher,
 	    const uint8_t *cleartext,
 	    const uint8_t *ciphertext)
 {
-  void *ctx = alloca(cipher->context_size);
-  uint8_t *data = alloca(length);
+  void *ctx = xalloc(cipher->context_size);
+  uint8_t *data = xalloc(length);
 
   cipher->set_encrypt_key(ctx, key_length, key);
   cipher->encrypt(ctx, length, data, cleartext);
@@ -180,6 +191,9 @@ test_cipher(const struct nettle_cipher *cipher,
 
   if (!MEMEQ(length, data, cleartext))
     FAIL();
+
+  free(ctx);
+  free(data);
 }
 
 void
@@ -191,9 +205,9 @@ test_cipher_cbc(const struct nettle_cipher *cipher,
 		const uint8_t *ciphertext,
 		const uint8_t *iiv)
 {
-  void *ctx = alloca(cipher->context_size);
-  uint8_t *data = alloca(length);
-  uint8_t *iv = alloca(cipher->block_size);
+  void *ctx = xalloc(cipher->context_size);
+  uint8_t *data = xalloc(length);
+  uint8_t *iv = xalloc(cipher->block_size);
   
   cipher->set_encrypt_key(ctx, key_length, key);
   memcpy(iv, iiv, cipher->block_size);
@@ -214,6 +228,10 @@ test_cipher_cbc(const struct nettle_cipher *cipher,
 
   if (!MEMEQ(length, data, cleartext))
     FAIL();
+
+  free(ctx);
+  free(data);
+  free(iv);
 }
 
 void
@@ -226,8 +244,8 @@ test_cipher_stream(const struct nettle_cipher *cipher,
 {
   unsigned block;
   
-  void *ctx = alloca(cipher->context_size);
-  uint8_t *data = alloca(length + 1);
+  void *ctx = xalloc(cipher->context_size);
+  uint8_t *data = xalloc(length + 1);
   
   for (block = 1; block <= length; block++)
     {
@@ -258,6 +276,9 @@ test_cipher_stream(const struct nettle_cipher *cipher,
 
   if (!MEMEQ(length, data, cleartext))
     FAIL();
+
+  free(ctx);
+  free(data);
 }
 
 void
@@ -266,8 +287,8 @@ test_hash(const struct nettle_hash *hash,
 	  const uint8_t *data,
 	  const uint8_t *digest)
 {
-  void *ctx = alloca(hash->context_size);
-  uint8_t *buffer = alloca(hash->digest_size);
+  void *ctx = xalloc(hash->context_size);
+  uint8_t *buffer = xalloc(hash->digest_size);
 
   hash->init(ctx);
   hash->update(ctx, length, data);
@@ -287,6 +308,9 @@ test_hash(const struct nettle_hash *hash,
 
   if (buffer[hash->digest_size - 1])
     FAIL();
+
+  free(ctx);
+  free(buffer);
 }
 
 void
@@ -296,10 +320,10 @@ test_armor(const struct nettle_armor *armor,
            const uint8_t *ascii)
 {
   unsigned ascii_length = strlen(ascii);
-  uint8_t *buffer = alloca(1 + ascii_length);
-  uint8_t *check = alloca(1 + armor->decode_length(ascii_length));
-  void *encode = alloca(armor->encode_context_size);
-  void *decode = alloca(armor->decode_context_size);
+  uint8_t *buffer = xalloc(1 + ascii_length);
+  uint8_t *check = xalloc(1 + armor->decode_length(ascii_length));
+  void *encode = xalloc(armor->encode_context_size);
+  void *decode = xalloc(armor->decode_context_size);
   unsigned done;
 
   ASSERT(ascii_length
@@ -333,6 +357,11 @@ test_armor(const struct nettle_armor *armor,
 
   if (0x55 != check[data_length])
     FAIL();
+
+  free(buffer);
+  free(check);
+  free(encode);
+  free(decode);
 }
 
 #if HAVE_LIBGMP

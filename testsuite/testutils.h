@@ -22,6 +22,9 @@
 
 #include "nettle-meta.h"
 
+void *
+xalloc(size_t size);
+
 /* Decodes a NUL-terminated hex string. */
 
 unsigned
