@@ -1,5 +1,4 @@
-CFLAGS = -I$(top_srcdir) @CFLAGS@
-CPPFLAGS = @CPPFLAGS@
+AM_CPPFLAGS = -I$(top_srcdir)
 
 TS_PROGS = aes-test arcfour-test blowfish-test cast128-test \
            base64-test \
