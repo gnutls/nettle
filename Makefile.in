@@ -96,7 +96,8 @@ INSTALL_HEADERS = $(HEADERS) nettle-types.h
 
 SOURCES = $(nettle_SOURCES) aesdata.c desdata.c shadata.c
 
-DISTFILES = $(SOURCES) $(HEADERS) .bootstrap aclocal.m4 configure.ac configure \
+DISTFILES = $(SOURCES) $(HEADERS) .bootstrap aclocal.m4 configure.ac \
+	configure stamp-h.in \
 	config.guess config.sub install-sh texinfo.tex \
 	config.h.in config.m4.in config.make.in	Makefile.in \
 	README AUTHORS COPYING INSTALL NEWS TODO ChangeLog \
@@ -158,24 +159,17 @@ $(des_headers): desdata.c
 
 des.o: des.c des.h $(des_headers)
 
-# FIXME: For some reason, this rule breaks builds on Tru64 5.1B (on
-# alpha), with the system make. It fails with "Don't know how to make
-# aes.asm", which is very strange, since the make program on this
-# system is not supposed to know about %-style pattern rules, and
-# "aes.asm" doesn't occur explicitly in any target or dependency.
+.asm.$(OBJEXT):
+	$(M4) $(srcdir)/asm.m4 machine.m4 config.m4 \
+		$< >$*.s
+	$(COMPILE) $(CCPIC_MAYBE) -c $*.s
+	echo "$@ : $< $(srcdir)/asm.m4 machine.m4 config.m4" >$@.d 
 
-@IF_ENABLE_ASM@%.$(OBJEXT): %.asm asm.m4 machine.m4 config.m4
-@IF_ENABLE_ASM@	$(M4) $(srcdir)/asm.m4 machine.m4 config.m4 \
-@IF_ENABLE_ASM@		$< >$*.s
-@IF_ENABLE_ASM@	$(CC) $(CFLAGS) $(CCPIC_MAYBE) -c $*.s -o $@
-@IF_ENABLE_ASM@	echo >$*.d 
-
-# All assembler files should use pic-code only.
-@IF_ENABLE_ASM@%.p$(OBJEXT): %.asm asm.m4 machine.m4 config.m4
-@IF_ENABLE_ASM@	$(M4) $(srcdir)/asm.m4 machine.m4 config.m4 \
-@IF_ENABLE_ASM@		$< >$*.s
-@IF_ENABLE_ASM@	$(CC) $(CFLAGS) $(CCPIC) -c $*.s -o $@
-@IF_ENABLE_ASM@	echo >$*.d 
+.asm.p$(OBJEXT):
+	$(M4) $(srcdir)/asm.m4 machine.m4 config.m4 \
+		$< >$*.s
+	$(COMPILE) $(SHLIBCFLAGS) -c $*.s -o $@
+	echo "$@ : $< $(srcdir)/asm.m4 machine.m4 config.m4" >$@.d 
 
 # Texinfo rules
 .texinfo.info:
@@ -183,40 +177,35 @@ des.o: des.c des.h $(des_headers)
 	&& test -s $@T && mv -f $@T $@
 
 .texinfo.html:
-	cd $(srcdir) && $(MAKEINFO) --html --no-split --output $@T `basename $<` \
-	&& test -s $@T && mv -f $@T $@
+	cd $(srcdir) && $(MAKEINFO) --html --no-split \
+	  --output $@T `basename $<` \
+	  && test -s $@T && mv -f $@T $@
 
-# Configure-related rules
+# Configure-related rules, mostly copied from the autoconf manual. No
+# $(srcdir) prefixes on the targets, though.
 
-.PRECIOUS: Makefile
-Makefile: $(srcdir)/Makefile.in config.status
-	$(SHELL) ./config.status $@
-
-config.make: $(srcdir)/config.make.in config.status
-	$(SHELL) ./config.status $@
-
-config.status: $(srcdir)/configure
-	$(SHELL) ./config.status --recheck
-
-config.m4: config.status $(srcdir)/config.m4.in
-	$(SHELL) ./config.status $@
-
-configure: $(srcdir)/configure.ac $(srcdir)/aclocal.m4
+configure: configure.ac aclocal.m4
 	cd $(srcdir) && $(AUTOCONF)
 
-config.h: stamp-h1
-	@if test ! -f $@; then \
-	  rm -f stamp-h1; \
-	  $(MAKE) stamp-h1; \
-	else :; fi
+# autoheader might not change config.h.in, so touch a stamp file.
+config.h.in: stamp-h.in
+stamp-h.in: configure.ac aclocal.m4
+	cd $(srcdir) && autoheader
+	echo timestamp > $(srcdir)/stamp-h.in
 
-stamp-h1: $(srcdir)/config.h.in config.status
-	@rm -f stamp-h1
-	$(SHELL) ./config.status config.h
-$(srcdir)/config.h.in: $(srcdir)/configure.ac
-	cd $(srcdir) && $(AUTOHEADER)
-	rm -f stamp-h1
-	touch $@
+config.status: configure
+	./config.status --recheck
+
+config.h: stamp-h
+stamp-h: config.h.in config.status
+	./config.status config.h
+	echo timestamp > stamp-h
+
+Makefile: Makefile.in config.status
+	./config.status $@
+
+config.make: config.make.in config.status
+	./config.status $@
 
 # Installation
 install-here: install-info install-headers libnettle.a $(SHLIBINSTALL)
@@ -331,7 +320,7 @@ clean-here:
 	-rm -f $(TARGETS) *.$(OBJEXT) *.p$(OBJEXT) *.d
 
 distclean-here: clean-here
-	-rm -f config.h stamp-h1 config.log config.status \
+	-rm -f config.h stamp-h config.log config.status \
 	config.make config.m4 Makefile nettle-types.h
 
 -include $(SOURCES:.c=.$(OBJEXT).d) $(SOURCES:.c=.p$(OBJEXT).d)

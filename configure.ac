@@ -240,5 +240,8 @@ if test x$GCC = xyes ; then
 # inttypes.h.
 fi
 
-AC_OUTPUT(Makefile config.make config.m4 tools/Makefile testsuite/Makefile examples/Makefile)
+AC_CONFIG_FILES([config.make config.m4 Makefile])
+AC_CONFIG_FILES([tools/Makefile testsuite/Makefile examples/Makefile])
+
+AC_OUTPUT
 

@@ -1,3 +1,18 @@
+2004-10-21  Niels Möller  <niels@s3.kth.se>
+
+	* examples/Makefile.in: Deleted all configure-related rules,
+	except the one rebuilding this Makefile. Run make at top level if
+	other configure related files change.
+	* tools/Makefile.in: Likewise.
+	* testsuite/Makefile.in: Likewise.
+
+	* configure.ac: Replaced AC_OUTPUT(list...) with an AC_OUTPUT
+	without arguments, and AC_CONFIG_FILES listing the files.
+
+	* Makefile.in: Changed the assembler rules as suffix rules.
+	Rewrote the configure-related rules, mostly based on the example
+	in the autoconf manual.
+
 2004-10-20  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/nettle-openssl.c (NCOMPAT): Disable openssl backwards
