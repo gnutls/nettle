@@ -42,7 +42,7 @@ static void
 pkcs1_encode_sha1(mpz_t m, unsigned length, struct sha1_ctx *hash);
 
 void
-rsa_sha1_sign(struct rsa_private_key *key,
+rsa_sha1_sign(const struct rsa_private_key *key,
               struct sha1_ctx *hash,
               mpz_t s)
 {
@@ -54,7 +54,7 @@ rsa_sha1_sign(struct rsa_private_key *key,
 }
 
 int
-rsa_sha1_verify(struct rsa_public_key *key,
+rsa_sha1_verify(const struct rsa_public_key *key,
                 struct sha1_ctx *hash,
                 const mpz_t s)
 {

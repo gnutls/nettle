@@ -32,7 +32,7 @@
 #include <string.h>
 
 int
-rsa_encrypt(struct rsa_public_key *key,
+rsa_encrypt(const struct rsa_public_key *key,
 	    /* For padding */
 	    void *random_ctx, nettle_random_func random,
 	    unsigned length, const uint8_t *message,

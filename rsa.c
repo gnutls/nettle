@@ -134,7 +134,8 @@ rsa_prepare_private_key(struct rsa_private_key *key)
 
 /* Computing an rsa root. */
 void
-rsa_compute_root(struct rsa_private_key *key, mpz_t x, const mpz_t m)
+rsa_compute_root(const struct rsa_private_key *key,
+		 mpz_t x, const mpz_t m)
 {
   mpz_t xp; /* modulo p */
   mpz_t xq; /* modulo q */

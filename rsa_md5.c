@@ -42,7 +42,7 @@ static void
 pkcs1_encode_md5(mpz_t m, unsigned length, struct md5_ctx *hash);
 
 void
-rsa_md5_sign(struct rsa_private_key *key,
+rsa_md5_sign(const struct rsa_private_key *key,
              struct md5_ctx *hash,
              mpz_t s)
 {
@@ -54,7 +54,7 @@ rsa_md5_sign(struct rsa_private_key *key,
 }
 
 int
-rsa_md5_verify(struct rsa_public_key *key,
+rsa_md5_verify(const struct rsa_public_key *key,
                struct md5_ctx *hash,
                const mpz_t s)
 {

@@ -32,7 +32,7 @@
 #include <string.h>
 
 int
-rsa_decrypt(struct rsa_private_key *key,
+rsa_decrypt(const struct rsa_private_key *key,
 	    unsigned *length, uint8_t *message,
 	    const mpz_t gibberish)
 {

@@ -133,23 +133,23 @@ rsa_prepare_private_key(struct rsa_private_key *key);
 
 /* PKCS#1 style signatures */
 void
-rsa_md5_sign(struct rsa_private_key *key,
+rsa_md5_sign(const struct rsa_private_key *key,
              struct md5_ctx *hash,
              mpz_t signature);
 
 
 int
-rsa_md5_verify(struct rsa_public_key *key,
+rsa_md5_verify(const struct rsa_public_key *key,
                struct md5_ctx *hash,
 	       const mpz_t signature);
 
 void
-rsa_sha1_sign(struct rsa_private_key *key,
+rsa_sha1_sign(const struct rsa_private_key *key,
               struct sha1_ctx *hash,
               mpz_t signature);
 
 int
-rsa_sha1_verify(struct rsa_public_key *key,
+rsa_sha1_verify(const struct rsa_public_key *key,
                 struct sha1_ctx *hash,
 		const mpz_t signature);
 
@@ -161,7 +161,7 @@ rsa_sha1_verify(struct rsa_public_key *key,
 /* Returns 1 on success, 0 on failure, which happens if the
  * message is too long for the key. */
 int
-rsa_encrypt(struct rsa_public_key *key,
+rsa_encrypt(const struct rsa_public_key *key,
 	    /* For padding */
 	    void *random_ctx, nettle_random_func random,
 	    unsigned length, const uint8_t *cleartext,
@@ -173,14 +173,15 @@ rsa_encrypt(struct rsa_public_key *key,
  * failure, which happens if decryption failed or if the message
  * didn't fit. */
 int
-rsa_decrypt(struct rsa_private_key *key,
+rsa_decrypt(const struct rsa_private_key *key,
 	    unsigned *length, uint8_t *cleartext,
 	    const mpz_t ciphertext);
 
 
 /* Compute x, the e:th root of m. Calling it with x == m is allowed. */
 void
-rsa_compute_root(struct rsa_private_key *key, mpz_t x, const mpz_t m);
+rsa_compute_root(const struct rsa_private_key *key,
+		 mpz_t x, const mpz_t m);
 
 
 /* Key generation */
