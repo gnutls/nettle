@@ -1,3 +1,7 @@
+2001-11-15  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* yarrow256.c (yarrow256_force_reseed): New function.
+
 2001-11-14  Niels Möller  <nisse@ehand.com>
 
 	* testsuite/yarrow-test.c (main): Use yarrow256_is_seeded.

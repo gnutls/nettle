@@ -87,6 +87,10 @@ yarrow256_is_seeded(struct yarrow256_ctx *ctx);
 unsigned
 yarrow256_needed_sources(struct yarrow256_ctx *ctx);
 
+void
+yarrow256_force_reseed(struct yarrow256_ctx *ctx);
+
+
 /* Key event estimator */
 #define YARROW_KEY_EVENT_BUFFER 16
 

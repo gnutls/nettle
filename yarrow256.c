@@ -385,3 +385,9 @@ yarrow256_needed_sources(struct yarrow256_ctx *ctx)
   
   return (k < YARROW_SLOW_K) ? (YARROW_SLOW_K - k) : 0;
 }
+
+void
+yarrow256_force_reseed(struct yarrow256_ctx *ctx)
+{
+  yarrow_slow_reseed(ctx);
+}
