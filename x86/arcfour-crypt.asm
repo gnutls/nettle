@@ -17,7 +17,7 @@ C along with the nettle library; see the file COPYING.LIB.  If not, write to
 C the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 C MA 02111-1307, USA.
 
-	.file "arcfour.asm"
+	.file "arcfour-crypt.asm"
 
 	C arcfour_crypt(struct arcfour_ctx *ctx,
 	C               unsigned length, uint8_t *dst,
