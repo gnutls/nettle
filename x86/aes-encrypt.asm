@@ -35,9 +35,9 @@ C %edi is a temporary, often used as an accumulator.
 	C 	      uint8_t *src)
 	.text
 	.align 16
-	.globl aes_encrypt
-	.type	aes_encrypt,@function
-aes_encrypt:
+	.globl nettle_aes_encrypt
+	.type  nettle_aes_encrypt,@function
+nettle_aes_encrypt:
 	C save all registers that need to be saved
 	pushl	%ebx		C  16(%esp)
 	pushl	%ebp		C  12(%esp)

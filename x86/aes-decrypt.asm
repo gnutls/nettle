@@ -24,9 +24,9 @@ C MA 02111-1307, USA.
 	C 	      uint8_t *src)
 	.text
 	.align 16
-	.globl aes_decrypt
-	.type	aes_decrypt,@function
-aes_decrypt:
+	.globl nettle_aes_decrypt
+	.type  nettle_aes_decrypt,@function
+nettle_aes_decrypt:
 	C save all registers that need to be saved
 	pushl	%ebx		C  16(%esp)
 	pushl	%ebp		C  12(%esp)
