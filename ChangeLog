@@ -1,3 +1,18 @@
+2001-11-14  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* testsuite/yarrow-test.out: Updated, to match the seed-file aware
+	generator. 
+
+	* testsuite/yarrow-test.c: Updated expected_output. Check the seed
+	file contents at the end.
+
+	* yarrow256.c (yarrow256_seed): New function.
+	(yarrow_fast_reseed): Create new seed file contents.
+
+2001-11-13  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* yarrow.h: Deleted yarrow160 declarations.
+
 2001-11-02  Niels Möller  <nisse@ehand.com>
 
 	* yarrow256.c (yarrow256_init): Fixed order of code and
