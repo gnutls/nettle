@@ -34,7 +34,7 @@
 #include "bignum.h"
 
 void
-rsa_init_private_key(struct rsa_private_key *key)
+rsa_private_key_init(struct rsa_private_key *key)
 {
   mpz_init(key->d);
   mpz_init(key->p);
@@ -49,7 +49,7 @@ rsa_init_private_key(struct rsa_private_key *key)
 }
 
 void
-rsa_clear_private_key(struct rsa_private_key *key)
+rsa_private_key_clear(struct rsa_private_key *key)
 {
   mpz_clear(key->d);
   mpz_clear(key->p);
@@ -60,7 +60,7 @@ rsa_clear_private_key(struct rsa_private_key *key)
 }
 
 int
-rsa_prepare_private_key(struct rsa_private_key *key)
+rsa_private_key_prepare(struct rsa_private_key *key)
 {
   /* FIXME: Add further sanity checks. */
 

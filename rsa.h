@@ -110,25 +110,25 @@ struct rsa_private_key
  
 /* Calls mpz_init to initialize bignum storage. */
 void
-rsa_init_public_key(struct rsa_public_key *key);
+rsa_public_key_init(struct rsa_public_key *key);
 
 /* Calls mpz_clear to deallocate bignum storage. */
 void
-rsa_clear_public_key(struct rsa_public_key *key);
+rsa_public_key_clear(struct rsa_public_key *key);
 
 int
-rsa_prepare_public_key(struct rsa_public_key *key);
+rsa_public_key_prepare(struct rsa_public_key *key);
 
 /* Calls mpz_init to initialize bignum storage. */
 void
-rsa_init_private_key(struct rsa_private_key *key);
+rsa_private_key_init(struct rsa_private_key *key);
 
 /* Calls mpz_clear to deallocate bignum storage. */
 void
-rsa_clear_private_key(struct rsa_private_key *key);
+rsa_private_key_clear(struct rsa_private_key *key);
 
 int
-rsa_prepare_private_key(struct rsa_private_key *key);
+rsa_private_key_prepare(struct rsa_private_key *key);
 
 
 /* PKCS#1 style signatures */

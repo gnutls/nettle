@@ -1,3 +1,8 @@
+NEWS for the 1.7 release
+
+	Renamed rsa functions for consistency. Now it's
+	rsa_public_key_init, not rsa_init_public_key, etc.
+	
 NEWS for the 1.6 release
 
 	Optimized assembler implementations of aes, for sparc and x86.

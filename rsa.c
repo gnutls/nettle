@@ -38,7 +38,7 @@
  * verify functions. */
 
 void
-rsa_init_public_key(struct rsa_public_key *key)
+rsa_public_key_init(struct rsa_public_key *key)
 {
   mpz_init(key->n);
   mpz_init(key->e);
@@ -49,7 +49,7 @@ rsa_init_public_key(struct rsa_public_key *key)
 }
 
 void
-rsa_clear_public_key(struct rsa_public_key *key)
+rsa_public_key_clear(struct rsa_public_key *key)
 {
   mpz_clear(key->n);
   mpz_clear(key->e);
@@ -71,7 +71,7 @@ _rsa_check_size(mpz_t n)
 }
 
 int
-rsa_prepare_public_key(struct rsa_public_key *key)
+rsa_public_key_prepare(struct rsa_public_key *key)
 {
   /* FIXME: Add further sanity checks, like 0 < e < n. */
 #if 0
