@@ -10,7 +10,9 @@ TS_PROGS = aes-test arcfour-test blowfish-test cast128-test \
 	   rsa2sexp-test sexp2rsa-test \
 	   knuth-lfib-test \
 	   cbc-test hmac-test bignum-test \
-	   rsa-test rsa-keygen-test yarrow-test
+	   rsa-test rsa-keygen-test \
+	   dsa-test \
+	   yarrow-test
 
 noinst_PROGRAMS = $(TS_PROGS)
 
