@@ -1,5 +1,13 @@
 2002-05-14  Niels Möller  <niels@s3.kth.se>
 
+	* x86/aes-encrypt.asm (aes_encrypt): Use AES_LOAD macro.
+
+	* x86/machine.m4 (AES_LOAD): New macro.
+
+	* x86/aes-encrypt.asm (aes_encrypt): Use AES_STORE.
+
+	* x86/machine.m4 (AES_STORE): New macro.
+
 	* x86/aes-encrypt.asm (aes_encrypt): Use the AES_LAST_ROUND macro
 	for the first column of the final round.
 	(aes_encrypt): Similarly for the second column.
