@@ -48,6 +48,10 @@ struct rsa_public_key
 struct rsa_private_key
 {
   unsigned size;
+
+  /* d is filled in by the key generation function; otherwise it's
+   * completely unused. */
+  mpz_t d;
   
   /* The two factors */
   mpz_t p; mpz_t q;
@@ -133,6 +137,21 @@ rsa_sha1_verify(struct rsa_public_key *key,
 /* Compute x, the d:th root of m. Calling it with x == m is allowed. */
 void
 rsa_compute_root(struct rsa_private_key *key, mpz_t x, const mpz_t m);
+
+
+/* Key generation */
+int
+rsa_generate_keypair(struct rsa_public_key *pub,
+		     struct rsa_public_key *key,
+		     void *random_ctx,
+		     void (*random)(void *ctx, unsigned length, uint8_t *dst),
+		     
+		     /* Desired size of modulo, in bits */
+		     unsigned n_size,
+		     
+		     /* Desired size of public exponent, in bits. If
+		      * zero, the passed in value pub->e is used. */
+		     unsigned e_size);
 
 #define RSA_SIGN(key, algorithm, ctx, length, data, signature) ( \
   algorithm##_update(ctx, length, data), \
