@@ -169,12 +169,25 @@ display(const char *name, const char *mode,
 	 1 / (speed * 1048576.0 / BENCH_BLOCK));
 }
 
+static void *
+xalloc(size_t size)
+{
+  void *p = malloc(size);
+  if (!p)
+    {
+      fprintf(stderr, "Virtual memory exhausted.\n");
+      abort();
+    }
+
+  return p;
+}
+
 static void
 time_hash(const struct nettle_hash *hash)
 {
   static uint8_t data[BENCH_BLOCK];
   struct bench_hash_info info;
-  info.ctx = alloca(hash->context_size); 
+  info.ctx = xalloc(hash->context_size); 
   info.update = hash->update;
   info.data = data;
 
@@ -183,13 +196,15 @@ time_hash(const struct nettle_hash *hash)
 
   display(hash->name, "Update",
 	  time_function(bench_hash, &info));
+
+  free(info.ctx);
 }
 
 static void
 time_cipher(const struct nettle_cipher *cipher)
 {
-  void *ctx = alloca(cipher->context_size);
-  uint8_t *key = alloca(cipher->key_size);
+  void *ctx = xalloc(cipher->context_size);
+  uint8_t *key = xalloc(cipher->key_size);
 
   static uint8_t data[BENCH_BLOCK];
 
@@ -226,7 +241,7 @@ time_cipher(const struct nettle_cipher *cipher)
 
   if (cipher->block_size)
     {
-      uint8_t *iv = alloca(cipher->block_size);
+      uint8_t *iv = xalloc(cipher->block_size);
       
       /* Do CBC mode */
       {
@@ -260,7 +275,10 @@ time_cipher(const struct nettle_cipher *cipher)
 	display(cipher->name, "CBC decrypt",
 		time_function(bench_cbc_decrypt, &info));
       }
+      free(iv);
     }
+  free(ctx);
+  free(key);
 }
 
 #if HAVE_LIBCRYPTO
