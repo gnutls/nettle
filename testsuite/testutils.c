@@ -10,9 +10,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* For getopt() */
-#include <unistd.h>
-
 /* -1 means invalid */
 static const signed char hex_digits[0x100] =
   {
@@ -147,24 +144,17 @@ int verbose = 0;
 int
 main(int argc, char **argv)
 {
-  int c;
-
-  while ((c = getopt (argc, argv, "v")) != -1)
-    switch (c)
-      {
-      case 'v':
+  if (argc > 1)
+    {
+      if (argc == 2 && strcmp(argv[1], "-v"))
 	verbose = 1;
-	break;
-      case '?':
-	if (isprint (optopt))
-	  fprintf (stderr, "Unknown option `-%c'.\n", optopt);
-	else
-	  fprintf (stderr,
-		   "Unknown option character `\\x%x'.\n",
-		   optopt);
-      default:
-	abort();
-      }
+      else
+	{
+	  fprintf(stderr, "Invalid argument `%s', only accepted option is `-v'.\n",
+		  argv[1]);
+	  return 1;
+	}
+    }
 
   return test_main();
 }
