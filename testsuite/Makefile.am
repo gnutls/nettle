@@ -2,7 +2,7 @@ CFLAGS = -I$(top_srcdir) @CFLAGS@
 CPPFLAGS = @CPPFLAGS@
 
 TS_PROGS = aes-test arcfour-test blowfish-test cast128-test \
-           base64-test \
+           base16-test base64-test \
 	   des-test des3-test des-compat-test \
 	   md5-test md5-compat-test sha1-test sha256-test \
 	   serpent-test twofish-test \
