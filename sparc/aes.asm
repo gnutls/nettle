@@ -13,7 +13,7 @@ include(`asm.m4')
 	.proc	020
 
 define(ctx, %i0)
-define(T, %o0)
+define(T, %i1)
 define(length, %o4)
 define(dst, %o3)
 define(src, %o2)
@@ -26,7 +26,7 @@ _aes_crypt:
 
 ! Why this moving around of the input parameters?
 	mov	%i2, length
-	mov	%i1, T
+	! mov	%i1, T
 	mov	%i3, dst
 	cmp	length, 0
 	be	.Lend
@@ -45,13 +45,13 @@ _aes_crypt:
 
 	ldub	[%o5+2], %g3
 	sll	%g2, 24, %g2
-	ldub	[%o5+1], %i1
+	ldub	[%o5+1], %o0
 	sll	%g3, 16, %g3
 	or	%g2, %g3, %g2
 	ldub	[src+%i2], %o5
-	sll	%i1, 8, %i1
+	sll	%o0, 8, %o0
 	ld	[ctx+%i2], %g3
-	or	%g2, %i1, %g2
+	or	%g2, %o0, %g2
 	or	%g2, %o5, %g2
 	xor	%g2, %g3, %g2
 
@@ -107,11 +107,11 @@ _aes_crypt:
 	ld	[%i4-16], %i2
 	! wtxt[IDX1...]
 	add	%g4, %g3, %g3
-	ldub	[%g3+2], %i1
+	ldub	[%g3+2], %o0
 
 	! AES_SIDX3
 	ld	[%i4], %g2
-	sll	%i1, 2, %i1
+	sll	%o0, 2, %o0
 	
 	! wtxt[j]
 	ld	[%g4+%i3], %o5
@@ -128,17 +128,17 @@ _aes_crypt:
 	add	%o5, AES_TABLE0, %o5
 	ld	[T+%o5], %g2
 
-	add	%i1, AES_TABLE1, %i1
+	add	%o0, AES_TABLE1, %o0
 	and	%g3, 255, %g3
-	ld	[T+%i1], %o5
+	ld	[T+%o0], %o5
 	sll	%g3, 2, %g3
 	add	%g3, AES_TABLE2, %g3
-	ld	[T+%g3], %i1
+	ld	[T+%g3], %o0
 	sll	%i2, 2, %i2
 	add	%i2, AES_TABLE3, %i2
 	ld	[T+%i2], %g3
 	xor	%g2, %o5, %g2
-	xor	%g2, %i1, %g2
+	xor	%g2, %o0, %g2
 
 	add	%i4, 4, %i4
 	
@@ -151,20 +151,20 @@ _aes_crypt:
 	add	%i3, 4, %i3
 	
 	sll	%g1, 4, %g2
-	add	%g2, ctx, %i1
+	add	%g2, ctx, %o0
 	mov	0, %i5
 	mov	%l1, %i3
 	mov	tmp, %i2
 .Lroundkey_loop:
 	sll	%i5, 2, %g2
-	ld	[%i1], %o5
+	ld	[%o0], %o5
 	add	%i5, 1, %i5
 	ld	[%i2+%g2], %g3
 	cmp	%i5, 3
 	xor	%g3, %o5, %g3
 	st	%g3, [%i3+%g2]
 	bleu	.Lroundkey_loop
-	add	%i1, 4, %i1
+	add	%o0, 4, %o0
 	add	%g1, 1, %g1
 	cmp	%g1, %o7
 	blu	.Lround_loop
@@ -192,12 +192,12 @@ _aes_crypt:
 	and	%g2, 255, %g2
 	ld	[%g4], %o5
 	and	%i2, 255, %i2
-	ldub	[T+%i3], %i1
+	ldub	[T+%i3], %o0
 	sll	%o5, 2, %o5
 	ldub	[T+%g2], %g3
-	sll	%i1, 8, %i1
+	sll	%o0, 8, %o0
 	ldub	[%g1+%o5], %i3
-	or	%g3, %i1, %g3
+	or	%g3, %o0, %g3
 	ldub	[T+%i2], %g2
 	cmp	%o1, 3
 	ldub	[T+%i3], %o5
@@ -208,11 +208,11 @@ _aes_crypt:
 	or	%g3, %o5, %g3
 	xor	%g3, %g2, %g3
 	srl	%g3, 24, %o5
-	srl	%g3, 16, %i1
+	srl	%g3, 16, %o0
 	srl	%g3, 8, %g2
 	stb	%g2, [%i4+1]
 	stb	%o5, [%i4+3]
-	stb	%i1, [%i4+2]
+	stb	%o0, [%i4+2]
 	stb	%g3, [dst+%i5]
 	add	%o7, 4, %o7
 	bleu	.Lfinal_loop
