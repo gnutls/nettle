@@ -75,7 +75,7 @@ Makefile: $(srcdir)/Makefile.in ../config.status
 # 	rm -f ../stamp-h1
 # 	touch $@
 
-install:
+install uninstall:
 	true
 
 distdir: $(DISTFILES)
