@@ -2,6 +2,8 @@
 
 	* x86/aes-encrypt.asm (aes_encrypt): Replaced first quarter of the
 	round function with an invocation of AES_ROUND.
+	(aes_encrypt): Similarly for the second column.
+	(aes_encrypt): Similarly for the rest of the round function.
 
 	* x86/machine.m4 (AES_ROUND): New macro.
 
