@@ -137,4 +137,4 @@ nettle_aes_encrypt:
 	popl	%ebx
 	ret
 .Leord:
-	.size	aes_encrypt,.Leord-aes_encrypt
+	.size	nettle_aes_encrypt,.Leord-nettle_aes_encrypt

@@ -129,4 +129,4 @@ nettle_aes_decrypt:
 	popl	%ebx
 	ret
 .Leord:
-	.size	aes_decrypt,.Leord-aes_decrypt
+	.size	nettle_aes_decrypt,.Leord-nettle_aes_decrypt
