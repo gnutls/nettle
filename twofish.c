@@ -1,48 +1,37 @@
 /* twofish.c
  *
- * $Id$
+ * The twofish block cipher.
  */
-  
+
 /* twofish - An implementation of the twofish cipher.
  * Copyright (C) 1999 Ruud de Rooij <ruud@debian.org>
  *
  * Modifications for lsh, integrated testing
  * Copyright (C) 1999 J.H.M. Dassen (Ray) <jdassen@wi.LeidenUniv.nl>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Library General Public License for more details.
- *
- * You should have received a copy of the GNU Library General Public
- * License along with this library; if not, write to the Free
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Integrated with the nettle library,
+ * Copyright (C) 2001 Niels Möller
  */
 
-/* ------------------------------------------------------------------------- */
+/* nettle, low-level cryptographics library
+ *
+ * The nettle library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or (at your
+ * option) any later version.
+ * 
+ * The GNU MP Library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
+ * License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with the GNU MP Library; see the file COPYING.LIB.  If not, write to
+ * the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
+ * MA 02111-1307, USA.
+ */
 
 #include "twofish.h"
-
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
-
-static char cvs_id[] UNUSED =
-"$Id$";
-
-/* ------------------------------------------------------------------------- */
-
-/* Type definitions for byte and word.  word refers to a 32-bit unsigned
- * value.
- */
-
-typedef UINT8 byte;
-typedef UINT32 word;
 
 /* Bitwise rotations on 32-bit words.  These are defined as macros that
  * evaluate their argument twice, so do not apply to any expressions with
