@@ -51,7 +51,7 @@
 # define UNUSED
 #endif
 
-/* Encrypt 100MB, 1K at a time. */
+/* Encrypt 10MB, 1K at a time. */
 #define BENCH_BLOCK 1024
 #define BENCH_COUNT 10240
 
