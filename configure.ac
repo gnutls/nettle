@@ -119,10 +119,21 @@ fi
 LSH_CCPIC
 
 SHLIBCFLAGS="$CCPIC"
-SHLIBFORLINK=libnettle.so
-SHLIBSONAME='$(SHLIBFORLINK).$(SHLIBMAJOR)'
-SHLIBFILE='$(SHLIBSONAME).$(SHLIBMINOR)'
-SHLIBLINK='$(CC) $(LDFLAGS) -shared -Wl,-soname=$(SHLIBSONAME)'
+
+case `uname -sr` in
+  CYGWIN*)
+    SHLIBFORLINK='cygnettle-$(SHLIBMAJOR)-$(SHLIBMINOR).dll'
+    SHLIBSONAME=''
+    SHLIBFILE='libnettle.dll.a'
+    SHLIBLINK='$(CC) $(LDFLAGS) -shared -Wl,--out-implib=$(SHLIBFILE) -Wl,--export-all-symbols -Wl,--enable-auto-import -Wl,--whole-archive'
+    ;;
+  *)
+    SHLIBFORLINK=libnettle.so
+    SHLIBSONAME='$(SHLIBFORLINK).$(SHLIBMAJOR)'
+    SHLIBFILE='$(SHLIBSONAME).$(SHLIBMINOR)'
+    SHLIBLINK='$(CC) $(LDFLAGS) -shared -Wl,-soname=$(SHLIBSONAME)'
+    ;;
+esac
 
 if test "x$enable_shared" = xyes ; then
   SHLIBTARGET='$(SHLIBFORLINK)'
