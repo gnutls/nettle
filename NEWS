@@ -1,13 +1,17 @@
 NEWS for the 1.8 release
 
+	Support for systems that don't have alloca. On such systems,
+	some of Nettle's functions have arbitrary limits applied to
+	their input.
+
 	Uses AX_CREATE_STDINT_H, to support systems without
 	inttypes.h.
 
 	New name mangling, to reduce the risk of link collisions. All
-	functions (except memxor) now use a nettle_ or _nettle prefix
+	functions (except memxor) now use a nettle_ or _nettle_ prefix
 	when seen by the linker. For most functions, the header file
-	that declares a function also use #define to provide a shorter
-	more readable name without the prefix.
+	that declares a function also uses #define to provide a
+	shorter more readable name without the prefix.
 
 NEWS for the 1.7 release
 
