@@ -9,7 +9,7 @@ AM_INIT_AUTOMAKE(nettle, 1.0)
 
 AM_CONFIG_HEADER(config.h)
 
-dnl Checks for programs.
+# Checks for programs.
 AC_PROG_CC
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
@@ -21,21 +21,24 @@ fi
 
 AC_PATH_PROG(M4, m4, m4)
 
-dnl Checks for typedefs, structures, and compiler characteristics.
+# Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_C_INLINE
 AC_TYPE_UID_T
 AC_TYPE_SIZE_T
 AC_HEADER_TIME
 
-dnl Needed by the supplied memcmp.c
+# Needed by the supplied memcmp.c
 AC_C_BIGENDIAN
 
-AC_CHECK_SIZEOF(short, 2)
-AC_CHECK_SIZEOF(int, 4)
-AC_CHECK_SIZEOF(long, 4)
-
 AC_REPLACE_FUNCS(memxor)
+
+# Checks for libraries
+AC_CHECK_LIB(gmp, __gmpz_getlimbn,,
+    [AC_MSG_WARN(
+[GNU MP not found, or not 3.1 or up, see http://www.swox.com/gmp.
+Support for public key algorithms will be unavailable.])])
+
 
 # Set these flags *last*, or else the test programs won't compile
 if test x$GCC = xyes ; then
