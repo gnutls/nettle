@@ -46,6 +46,7 @@ arcfour_crypt(struct arcfour_ctx *ctx,
       si = ctx->S[i];
       j += si; j &= 0xff;
       sj = ctx->S[i] = ctx->S[j];
+      ctx->S[j] = si;
       *dst++ = *src++ ^ ctx->S[ (si + sj) & 0xff ];
     }
   ctx->i = i; ctx->j = j;

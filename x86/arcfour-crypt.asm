@@ -54,7 +54,8 @@ nettle_arcfour_crypt:
 	movzbl  (%ebp, %eax), %ecx	C  si. Clears high bytes
 	addb    %cl, %bl
 	movb    (%ebp, %ebx), %ch	C  sj
-	movb    %ch, (%ebp, %eax)
+	movb    %ch, (%ebp, %eax)	C  S[i] = sj
+	movb	%cl, (%ebp, %ebx)	C  C[j] = si
 	addb    %ch, %cl
 	xorb    %ch, %ch		C  Clear, so it can be used
 					C  for indexing.
