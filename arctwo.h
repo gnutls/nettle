@@ -31,7 +31,7 @@
 
 /* Name mangling */
 #define arctwo_set_key nettle_arctwo_set_key
-#define arctwo_set_key_ebk nettle_arctwo_set_key_ebk
+#define arctwo_set_key_ekb nettle_arctwo_set_key_ekb
 #define arctwo_encrypt nettle_arctwo_encrypt
 #define arctwo_decrypt nettle_arctwo_decrypt
 #define arctwo_set_key_gutmann nettle_arctwo_set_key_gutmann
@@ -52,14 +52,14 @@ struct arctwo_ctx
 /* Key expansion function that takes the "effective key bits", 1-1024,
    as an explicit argument. 0 means maximum key bits. */
 void
-arctwo_set_key_ebk (struct arctwo_ctx *ctx,
-		    unsigned length, const uint8_t * key, unsigned ebk);
+arctwo_set_key_ekb (struct arctwo_ctx *ctx,
+		    unsigned length, const uint8_t * key, unsigned ekb);
 
-/* Equvivalent to arctwo_set_key_ebk, with ebk = 8 * length */
+/* Equvivalent to arctwo_set_key_ekb, with ekb = 8 * length */
 void
 arctwo_set_key (struct arctwo_ctx *ctx, unsigned length, const uint8_t *key);
 
-/* Equvivalent to arctwo_set_key_ebk, with ebk = 1024 */
+/* Equvivalent to arctwo_set_key_ekb, with ekb = 1024 */
 /* FIXME: Is this function really needed, and if so, what's the right
    name for it? */
 void

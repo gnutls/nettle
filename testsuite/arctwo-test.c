@@ -24,7 +24,7 @@
 
 /* For tests with obscure values of ebk. */
 static void
-test_arctwo(unsigned ebk,
+test_arctwo(unsigned ekb,
 	    unsigned key_length,
 	    const uint8_t *key,
 	    unsigned length,
@@ -34,7 +34,7 @@ test_arctwo(unsigned ebk,
   struct arctwo_ctx ctx;
   uint8_t *data = xalloc(length);
 
-  arctwo_set_key_ebk(&ctx, key_length, key, ebk);
+  arctwo_set_key_ekb(&ctx, key_length, key, ekb);
   arctwo_encrypt(&ctx, length, data, cleartext);
 
   if (!MEMEQ(length, data, ciphertext))

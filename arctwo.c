@@ -175,8 +175,8 @@ arctwo_decrypt (struct arctwo_ctx *ctx,
 }
 
 void
-arctwo_set_key_ebk (struct arctwo_ctx *ctx,
-		    unsigned length, const uint8_t *key, unsigned ebk)
+arctwo_set_key_ekb (struct arctwo_ctx *ctx,
+		    unsigned length, const uint8_t *key, unsigned ekb)
 {
   unsigned i;
   /* Expanded key, treated as octets */
@@ -185,7 +185,7 @@ arctwo_set_key_ebk (struct arctwo_ctx *ctx,
 
   assert (length >= ARCTWO_MIN_KEY_SIZE);
   assert (length <= ARCTWO_MAX_KEY_SIZE);
-  assert (ebk <= 1024);
+  assert (ekb <= 1024);
 
   for (i = 0; i < length; i++)
     S[i] = key[i];
@@ -196,12 +196,12 @@ arctwo_set_key_ebk (struct arctwo_ctx *ctx,
 
   S[0] = arctwo_sbox[S[0]];
 
-  /* Reduce effective key size to ebk bits, if requested by caller. */
-  if (ebk > 0 && ebk < 1024)
+  /* Reduce effective key size to ekb bits, if requested by caller. */
+  if (ekb > 0 && ekb < 1024)
     {
-      int len = (ebk + 7) >> 3;
+      int len = (ekb + 7) >> 3;
       i = 128 - len;
-      x = arctwo_sbox[S[i] & (255 >> (7 & -ebk))];
+      x = arctwo_sbox[S[i] & (255 >> (7 & -ekb))];
       S[i] = x;
 
       while (i--)
@@ -219,12 +219,12 @@ arctwo_set_key_ebk (struct arctwo_ctx *ctx,
 void
 arctwo_set_key (struct arctwo_ctx *ctx, unsigned length, const uint8_t *key)
 {
-  arctwo_set_key_ebk (ctx, length, key, 8 * length);
+  arctwo_set_key_ekb (ctx, length, key, 8 * length);
 }
 
 void
 arctwo_set_key_gutmann (struct arctwo_ctx *ctx,
 			unsigned length, const uint8_t *key)
 {
-  arctwo_set_key_ebk (ctx, length, key, 0);
+  arctwo_set_key_ekb (ctx, length, key, 0);
 }
