@@ -32,7 +32,7 @@
 
 /* Variable key size between 64 and 448 bits. */
 #define BLOWFISH_MIN_KEY_SIZE 8
-#define BLOWFISH_MAX_KEY_SIZE 32
+#define BLOWFISH_MAX_KEY_SIZE 56
 
 /* Default to 128 bits */
 #define BLOWFISH_KEY_SIZE 16
