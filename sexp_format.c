@@ -40,7 +40,7 @@
 #endif
 
 static int
-format_prefix(struct nettle_buffer *output,
+format_prefix(struct nettle_buffer *buffer,
 	      unsigned length)
 {
   unsigned prefix_length;
@@ -67,8 +67,8 @@ static uint8_t *
 format_space(struct nettle_buffer *buffer,
 	     unsigned length)
 {
-  return format_prefix(output, length)
-    ? nettle_buffer_space(output, length) : NULL;
+  return format_prefix(buffer, length)
+    ? nettle_buffer_space(buffer, length) : NULL;
 }
 
 static int
