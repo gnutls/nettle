@@ -1,3 +1,8 @@
+2003-01-16  Niels Möller  <niels@s3.kth.se>
+
+	* testsuite/Makefile.am (check): Can't use quotes around
+	$(srcdir). 
+
 2003-01-14  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/Makefile.am (check): Don't use "run-tests" as a
