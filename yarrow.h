@@ -26,20 +26,46 @@
 #ifndef NETTLE_YARROW_COMPAT_H_INCLUDED
 #define NETTLE_YARROW_COMPAT_H_INCLUDED
 
+#include "sha1.h"
+#include "des.h"
+
+enum yarrow_pool_id { YARROW_FAST = 0, YARROW_SLOW = 1 };
+
+struct yarrow_source
+{
+  uint32_t estimate;
+  
+  /* The pool next sample should go to. */
+  enum yarrow_pool_id next;
+};
+
 struct yarrow160_ctx
 {
+  /* Indexed by yarrow_pool_id */
+  struct sha1_ctx pools[2];
+
+  int seeded;
+  
+  struct des3_ctx key;
+  
+  unsigned nsources;
+  struct yarrow_source *sources;
 };
 
 void
-yarrow160_init(struct *yarrow160_ctx);
+yarrow160_init(struct yarrow160_ctx *ctx,
+	       int nsources,
+	       struct yarrow_source *sources);
 
 void
-yarrow160_update(struct *yarrow160_ctx, unsigned length, const uint8_t *data);
+yarrow160_update(struct yarrow160_ctx *ctx,
+		 unsigned source, unsigned length, const uint8_t *data);
 
 void
-yarrow160_random(struct *yarrow160_ctx, unsigned length, uint8_t dst);
+yarrow160_random(struct yarrow160_ctx *ctx, unsigned length, uint8_t dst);
 
-unsigned 
-yarrow160_needed(struct *yarrow160_ctx);
+int
+yarrow160_seeded(struct yarrow160_ctx *ctx);
+
 
 #endif /* NETTLE_YARROW_COMPAT_H_INCLUDED */
