@@ -1,3 +1,7 @@
+2004-02-25  Niels Möller  <niels@s3.kth.se>
+
+	* pgp.h: Include nettle-types.h.
+
 2004-02-24  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/symbols-test: Allow symbols starting with double
