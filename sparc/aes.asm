@@ -108,17 +108,15 @@ C The comments mark which j in T->table[j][ Bj(wtxt[IDXi(i)]) ]
 C the instruction is a part of. 
 define(<AES_FINAL_ROUND>, <
 	ld	[IDX1+$1], t1		! 1
-	ldub	[wtxt+t1], t1		! 1
-
 	ldub	[wtxt+$1+3], t0		! 0
+	ldub	[wtxt+t1], t1		! 1
+	ldub	[T+t0], t0		! 0
+	ldub	[T+t1], t1		! 1
+
 	! IDX2(j) = j XOR 2
 	ldub	[wtxt+eval($1 ^ 8)+1], t2	! 2
-	C and	t0, 255, t0		! 0
 	ld	[IDX3 + $1], t3		! 3
 	
-	C and	t2, 255, t2		! 2
-	ldub	[T+t1], t1		! 1
-	ldub	[T+t0], t0		! 0
 	sll	t1, 8, t1		! 1
 	
 	ldub	[wtxt+t3], t3		! 3
