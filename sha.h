@@ -1,6 +1,6 @@
-/* sha1.h
+/* sha.h
  *
- * The sha1 hash function.
+ * The sha1 and sha256 hash functions.
  */
 
 /* nettle, low-level cryptographics library
@@ -23,15 +23,17 @@
  * MA 02111-1307, USA.
  */
  
-#ifndef NETTLE_SHA1_H_INCLUDED
-#define NETTLE_SHA1_H_INCLUDED
+#ifndef NETTLE_SHA_H_INCLUDED
+#define NETTLE_SHA_H_INCLUDED
 
 #include <inttypes.h>
+
+/* SHA1 */
 
 #define SHA1_DIGEST_SIZE 20
 #define SHA1_DATA_SIZE 64
 
-/* Digest is kept internally as 4 32-bit words. */
+/* Digest is kept internally as 5 32-bit words. */
 #define _SHA1_DIGEST_LENGTH 5
 
 struct sha1_ctx
@@ -58,4 +60,37 @@ sha1_digest(const struct sha1_ctx *ctx,
 	    unsigned length,
 	    uint8_t *digest);
 
-#endif /* NETTLE_SHA1_H_INCLUDED */
+/* SHA256 */
+
+#define SHA256_DIGEST_SIZE 32
+#define SHA256_DATA_SIZE 64
+
+/* Digest is kept internally as 8 32-bit words. */
+#define _SHA256_DIGEST_LENGTH 8
+
+struct sha256_ctx
+{
+  uint32_t state[_SHA256_DIGEST_LENGTH];    /* State variables */
+  uint32_t count_low, count_high;           /* 64-bit block count */
+  uint8_t block[SHA256_DATA_SIZE];          /* SHA256 data buffer */
+  unsigned int index;                       /* index into buffer */
+};
+
+void
+sha256_init(struct sha256_ctx *ctx);
+
+void
+sha256_update(struct sha256_ctx *ctx,
+	      unsigned length,
+	      const uint8_t *data);
+
+void
+sha256_final(struct sha256_ctx *ctx);
+
+void
+sha256_digest(const struct sha256_ctx *ctx,
+	      unsigned length,
+	      uint8_t *digest);
+
+
+#endif /* NETTLE_SHA_H_INCLUDED */

@@ -35,7 +35,7 @@
  * effort (for example the reengineering of a great many Capstone chips).
  */
 
-#include "sha1.h"
+#include "sha.h"
 
 #include "macros.h"
 
