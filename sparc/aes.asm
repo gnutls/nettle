@@ -212,25 +212,14 @@ _aes_crypt:
 	add	T, AES_TABLE2, T2
 	add	T, AES_TABLE3, T3
 	
-	! Read src, and add initial subkey
-	! Difference between ctx and src.
-	! NOTE: These instructions are duplicated in the delay slot,
-	! and the instruction before the branch.
-	C sub	ctx, src, %g2
-	! Difference between wtxt and src
-	C sub	wtxt, src, %g3
 .Lblock_loop:
-	! For stop condition. Note that src is incremented in the
-	! delay slot
-	C add	src, 8, %g1
-
+	C  Read src, and add initial subkey
 	AES_LOAD(0)	! i = 0
 	AES_LOAD(4)	! i = 1
 	AES_LOAD(8)	! i = 2
 	AES_LOAD(12)	! i = 3
 	add	src, 16, src
-			
-	
+
 	sub	nrounds, 1, round
 	add	ctx, 16, key
 
@@ -255,14 +244,11 @@ _aes_crypt:
 	AES_FINAL_ROUND(4)	! i = 1
 	AES_FINAL_ROUND(8)	! i = 2
 	AES_FINAL_ROUND(12)	! i = 3
-	add	dst, 16, dst
 		
 	addcc	length, -16, length
-	C sub	ctx, src, %g2
 	
 	bne	.Lblock_loop
-	nop
-	C sub	wtxt, src, %g3
+	add	dst, 16, dst
 
 .Lend:
 	ret
