@@ -78,45 +78,12 @@ aes_encrypt:
 	C      ^ table[1][B1(%ebx)]
 	C      ^ table[2][B2(%ebx)]
 	C      ^ table[3][B3(%ebx)]
-	C
-	C a b c d
+
 	AES_ROUND(_aes_encrypt_table,a,b,c,d)
-C 	movl	%eax, %esi
-C 	andl	$0xff, %esi
-C 	shll	$2,%esi		C  index in table
-C 	movl	AES_TABLE0 + _aes_encrypt_table (%esi),%edi
-C 	movl	%ebx, %esi
-C 	shrl	$6,%esi
-C 	andl	$0x000003fc,%esi C  clear all but offset bytes
-C 	xorl	AES_TABLE1 + _aes_encrypt_table (%esi),%edi
-C 	movl	%ecx,%esi	C  third one
-C 	shrl	$14,%esi
-C 	andl	$0x000003fc,%esi
-C 	xorl	AES_TABLE2 + _aes_encrypt_table (%esi),%edi
-C 	movl	%edx,%esi	C  fourth one
-C 	shrl	$22,%esi
-C 	andl	$0x000003fc,%esi
-C 	xorl	AES_TABLE3 + _aes_encrypt_table (%esi),%edi
 	pushl	%edi		C  save first on stack
 
-	C // Second column
-	C b c d a
-	movl	%ebx,%esi	C  copy first in
-	andl	$0x000000ff,%esi C  clear all but offset
-	shll	$2,%esi		C  index in table
-	movl	AES_TABLE0 + _aes_encrypt_table (%esi),%edi
-	movl	%ecx,%esi	C  second one
-	shrl	$6,%esi
-	andl	$0x000003fc,%esi C  clear all but offset bytes
-	xorl	AES_TABLE1 + _aes_encrypt_table (%esi),%edi
-	movl	%edx,%esi	C  third one
-	shrl	$14,%esi
-	andl	$0x000003fc,%esi
-	xorl	AES_TABLE2 + _aes_encrypt_table (%esi),%edi
-	movl	%eax,%esi	C  fourth one
-	shrl	$22,%esi
-	andl	$0x000003fc,%esi
-	xorl	AES_TABLE3 + _aes_encrypt_table (%esi),%edi
+	C Second column
+	AES_ROUND(_aes_encrypt_table,b,c,d,a)
 	pushl	%edi		C  save first on stack
 
 	C // Third column
