@@ -145,16 +145,17 @@ _aes_crypt:
 	! register for that sub-expression. True for j==1,3.
 
 	C i = 0
-	ld	[IDX1+i], t1		! 1
+	ld	[IDX1], t1		! 1
 	
 	! IDX2(j) = j XOR 2
-	xor	i, 8, t2
+	mov	8, t2			! 2
+	C xor	i, 8, t2		! 2
 	add	wtxt, t1, t1		! 1
 	ldub	[t1+2], t1		! 1
-	ld	[IDX3+i], t3		! 3
+	ld	[IDX3], t3		! 3
 	
 	sll	t1, 2, t1		! 1
-	ld	[wtxt+i], t0		! 0
+	ld	[wtxt], t0		! 0
 	lduh	[wtxt+t2], t2		! 2
 	and	t0, 255, t0		! 0
 	
@@ -172,14 +173,11 @@ _aes_crypt:
 	xor	t0, t1, t0		! 0, 1
 	xor	t0, t2, t0		! 0, 1, 2
 	! Fetch roundkey
-	ld	[key+i], t1
+	ld	[key], t1
 	
 	xor	t0, t3, t0		! 0, 1, 2, 3
 	xor	t0, t1, t0
-	st	t0, [tmp+i]
-	C cmp	i, 8
-	
-	C bleu	.Linner_loop
+	st	t0, [tmp]
 	add	i, 4, i
 
 	C i = 1
@@ -215,9 +213,6 @@ _aes_crypt:
 	xor	t0, t3, t0		! 0, 1, 2, 3
 	xor	t0, t1, t0
 	st	t0, [tmp+i]
-	C cmp	i, 8
-	
-	C bleu	.Linner_loop
 	add	i, 4, i
 
 	C = 2
@@ -253,9 +248,6 @@ _aes_crypt:
 	xor	t0, t3, t0		! 0, 1, 2, 3
 	xor	t0, t1, t0
 	st	t0, [tmp+i]
-	C cmp	i, 8
-	
-	C bleu	.Linner_loop
 	add	i, 4, i
 
 	C = 3
@@ -291,9 +283,6 @@ _aes_crypt:
 	xor	t0, t3, t0		! 0, 1, 2, 3
 	xor	t0, t1, t0
 	st	t0, [tmp+i]
-	C cmp	i, 8
-	
-	C bleu	.Linner_loop
 	add	i, 4, i
 			
 	C End loop
