@@ -19,8 +19,8 @@ LDADD = testutils.o ../libnettle.a
 EXTRA_DIST = $(M4_FILES) macros.m4 testutils.c testutils.h \
 	     run-tests rfc1750.txt
 
-M4FLAGS = -P -s
-# M4FLAGS = -P
+# M4FLAGS = -P -s
+M4FLAGS = -P
 $(M4_FILES:.m4=.c): %.c: macros.m4 %.m4
 	$(M4) $(M4FLAGS) $^ > $@T
 	test -s $@T && mv -f $@T $@
