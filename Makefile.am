@@ -16,7 +16,7 @@ libnettleinclude_HEADERS = aes.h arcfour.h blowfish.h \
 			   serpent.h sha.h twofish.h \
 			   yarrow.h
 			   
-libnettle_a_SOURCES = aes.c aes-decrypt.c aes-encrypt.c aes.h \
+libnettle_a_SOURCES = aes.c aes-decrypt.c aes-encrypt.c aes.h aes-internal.h \
 		      aes-set-encrypt-key.c aes-set-decrypt-key.c aes-meta.c \
 		      arcfour.c arcfour.h arcfour-meta.c \
                       base64.c base64-meta.c base64.h \
@@ -47,7 +47,9 @@ info_TEXINFOS = nettle.texinfo
 all-local: nettle.html
 
 EXTRA_DIST = macros.h memxor.h $(des_headers) descore.README nettle.html \
-	.bootstrap $(des_headers)
+	.bootstrap $(des_headers) \
+	sparc/aes.asm sparc/machine.m4 \
+	x86/aes.asm x86/aes_tables.asm
 
 # Using assembler files. Should get precedence before the .c.o rule.
 SUFFIXES = .asm
