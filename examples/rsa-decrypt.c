@@ -32,9 +32,6 @@
 #include <stdio.h>
 #include <string.h>
 
-/* For getopt */
-#include <unistd.h>
-
 /* string.h must be included before gmp.h */
 #include "aes.h"
 #include "bignum.h"
@@ -47,6 +44,8 @@
 
 #include "io.h"
 #include "rsa-session.h"
+
+#include "getopt.h"
 
 void
 rsa_session_set_decrypt_key(struct rsa_session *ctx,

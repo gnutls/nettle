@@ -32,15 +32,14 @@
 #include <stdio.h>
 #include <string.h>
 
-/* For getopt */
-#include <unistd.h>
-
 #include "buffer.h"
 #include "rsa.h"
 #include "sexp.h"
 #include "yarrow.h"
 
 #include "io.h"
+
+#include "getopt.h"
 
 #define KEYSIZE 900
 #define ESIZE 30
