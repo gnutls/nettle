@@ -9,7 +9,7 @@ AC_PREREQ(2.50)
 
 AC_CANONICAL_HOST
 
-AM_INIT_AUTOMAKE(nettle, 1.5)
+AM_INIT_AUTOMAKE(nettle, 1.6)
 
 AM_CONFIG_HEADER(config.h)
 
@@ -71,11 +71,11 @@ if test "$enable_assembler" = yes ; then
   if test -n "$asm_path"; then
     found=no
     for tmp_f in aes.asm machine.m4; do
-#       echo "Looking for $asm_path/$tmp_f"
-      if test -f "$asm_path/$tmp_f"; then
+#       echo "Looking for $srcdir/$asm_path/$tmp_f"
+      if test -f "$srcdir/$asm_path/$tmp_f"; then
 #        echo found
         found=yes
-        AC_CONFIG_LINKS($tmp_f:$asm_path/$tmp_f)
+        AC_CONFIG_LINKS($tmp_f:$srcdir/$asm_path/$tmp_f)
       fi
     done
     if test "$found" = no; then
