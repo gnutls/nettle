@@ -61,11 +61,14 @@ SUFFIXES = .asm
 RM_TMP = rm -f
 
 # FIXME: How to write this without using GNU make features?
+# NOTE: We create an empty .deps-file, to make the make/automake
+# dependency tracking happier.
 %.o: %.asm asm.m4 machine.m4 config.m4 
 	$(M4) $(srcdir)/asm.m4 machine.m4 config.m4 \
 		`test -f $< || echo '$(srcdir)/'`$< >tmp-$*.s
 	$(COMPILE) -c tmp-$*.s -o $@
 	$(RM_TMP) tmp-$*.s
+	echo >.deps/$*.Po
 
 %.html : %.texinfo
 	(cd $(srcdir) \
