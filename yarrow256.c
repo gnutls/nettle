@@ -70,10 +70,19 @@ static void
 yarrow_fast_reseed(struct yarrow256_ctx *ctx)
 {
   uint8_t digest[SHA256_DIGEST_SIZE];
-  
   unsigned i;
 
-  /* FIXME: Mixin the current key! */
+  /* We feed two block of output using the current key into the pool
+   * before emptying it. */
+  if (ctx->seeded)
+    {
+      uint8_t blocks[AES_BLOCK_SIZE * 2];
+      
+      yarrow_generate_block(ctx, blocks);
+      yarrow_generate_block(ctx, blocks + AES_BLOCK_SIZE);
+      sha256_update(&ctx->pools[YARROW_FAST], sizeof(blocks), blocks);
+    }
+  
   sha256_final(&ctx->pools[YARROW_FAST]);
   sha256_digest(&ctx->pools[YARROW_FAST], sizeof(digest), digest);
   sha256_init(&ctx->pools[YARROW_FAST]);
