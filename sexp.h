@@ -36,7 +36,9 @@ struct sexp_iterator
 {
   unsigned length;
   const uint8_t *buffer;
-  
+
+  /* Points at the start of the current sub expression. */
+  unsigned start;
   /* If type is SEXP_LIST, pos points at the start of the current
    * element. Otherwise, it points at the end. */
   unsigned pos;
@@ -74,6 +76,12 @@ sexp_iterator_enter_list(struct sexp_iterator *iterator);
 /* Skips the rest of the current list */
 int
 sexp_iterator_exit_list(struct sexp_iterator *iterator);
+
+/* Gets start and length of the current subexpression. Implies
+ * sexp_iterator_next. */
+const uint8_t *
+sexp_iterator_subexpr(struct sexp_iterator *iterator,
+		      unsigned *length);
 
 
 /* Checks the type of the current expression, which should be a list

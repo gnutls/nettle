@@ -99,6 +99,8 @@ sexp_iterator_simple(struct sexp_iterator *iterator,
 static int
 sexp_iterator_parse(struct sexp_iterator *iterator)
 {
+  iterator->start = iterator->pos;
+  
   if (EMPTY(iterator))
     {
       if (iterator->level)
@@ -207,6 +209,19 @@ sexp_iterator_exit_list(struct sexp_iterator *iterator)
 
   return sexp_iterator_parse(iterator);
 }
+
+const uint8_t *
+sexp_iterator_subexpr(struct sexp_iterator *iterator,
+		      unsigned *length)
+{
+  unsigned start = iterator->start;
+  if (!sexp_iterator_next(iterator))
+    return 0;
+
+  *length = iterator->start - start;
+  return iterator->buffer + start;
+}
+
 
 int
 sexp_iterator_check_type(struct sexp_iterator *iterator,
