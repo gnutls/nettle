@@ -95,16 +95,17 @@ _aes_crypt:
 	ld	[ctx + AES_NROUNDS], %g2
 	mov	1, %g1
 	cmp	%g1, %g2
-	bgeu,a	.LL47
+	bgeu,a	.Lfinal_round
 	sll	%g1, 4, %g2
 	add	%fp, -40, %o1
 	mov	%g2, %o7
 	mov	%o1, %l0
 	mov	%l1, %g4
 	mov	0, %i5
-.LL48:
+.Lround_loop:
 	add	T, AES_IDX3, %i4
-.LL26:
+.Linner_loop:
+	! Equals AES_IDX1
 	ld	[%i4-32], %g3
 	sll	%i5, 2, %i3
 	sll	%g3, 2, %g3
@@ -137,14 +138,14 @@ _aes_crypt:
 	xor	%g2, %g3, %g2
 	st	%g2, [%l0+%i3]
 	cmp	%i5, 3
-	bleu	.LL26
+	bleu	.Linner_loop
 	add	%i4, 4, %i4
 	sll	%g1, 4, %g2
 	add	%g2, ctx, %i1
 	mov	0, %i5
 	mov	%l1, %i3
 	mov	%o1, %i2
-.LL31:
+.Lroundkey_loop:
 	sll	%i5, 2, %g2
 	ld	[%i1], %i0
 	add	%i5, 1, %i5
@@ -152,19 +153,19 @@ _aes_crypt:
 	cmp	%i5, 3
 	xor	%g3, %i0, %g3
 	st	%g3, [%i3+%g2]
-	bleu	.LL31
+	bleu	.Lroundkey_loop
 	add	%i1, 4, %i1
 	add	%g1, 1, %g1
 	cmp	%g1, %o7
-	blu	.LL48
+	blu	.Lround_loop
 	mov	0, %i5
 	sll	%g1, 4, %g2
-.LL47:
+.Lfinal_round:
 	add	%g2, ctx, %o7
 	mov	0, %o1
 	mov	%l1, %g1
 	add	T, 288, %g4
-.LL37:
+.Lfinal_loop:
 	ld	[%g4-32], %g2
 	sll	%o1, 2, %i5
 	sll	%g2, 2, %g2
@@ -202,8 +203,9 @@ _aes_crypt:
 	stb	%i1, [%i4+2]
 	stb	%g3, [dst+%i5]
 	add	%o7, 4, %o7
-	bleu	.LL37
+	bleu	.Lfinal_loop
 	add	%g4, 4, %g4
+	
 	add	dst, 16, dst
 	addcc	length, -16, length
 	bne	.Lblock_loop
