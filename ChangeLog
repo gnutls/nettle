@@ -1,5 +1,9 @@
 2002-10-09  Niels Möller  <nisse@cuckoo.hack.org>
 
+	* testsuite/Makefile.am (TS_PROGS): Added dsa-keygen-test.
+
+	* dsa-keygen.c: Call the progress callback only if it's non-NULL. 
+
 	* Makefile.am (libnettle_a_SOURCES): Added bignum-random.c and
 	dsa-keygen.c. 
 
