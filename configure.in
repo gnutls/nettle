@@ -75,7 +75,7 @@ if test "$enable_assembler" = yes ; then
       if test -f "$srcdir/$asm_path/$tmp_f"; then
 #        echo found
         found=yes
-        AC_CONFIG_LINKS($tmp_f:$srcdir/$asm_path/$tmp_f)
+        AC_CONFIG_LINKS($tmp_f:$asm_path/$tmp_f)
       fi
     done
     if test "$found" = no; then
