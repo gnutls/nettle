@@ -31,6 +31,9 @@
 
 #if HAVE_LIBCRYPTO
 
+/* No ancient ssleay compatibility */
+#define NCOMPAT
+
 #include <assert.h>
 
 #include <openssl/blowfish.h>
