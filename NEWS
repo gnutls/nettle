@@ -27,6 +27,10 @@ NEWS for the 1.11 release
 	Speedup of arcfour on older x86 cpu:s, in particular PII and
 	PPro.
 
+	The shared library is intended to be binary compatible with
+	nettle-1.8 - nettle-1.10. Only the minor version number of the
+	shared library is increased.
+
 NEWS for the 1.10 release
 
 	Nettle should now compile also on Tru64, Darwin, FreeBSD and
