@@ -50,11 +50,6 @@ struct sexp_iterator
   const uint8_t *atom;
 };
 
-struct sexp_assoc_key
-{
-  unsigned length;
-  const uint8_t *name;
-};
 
 /* Initializes the iterator. You have to call next to get to the first
  * element. */
@@ -74,17 +69,42 @@ sexp_iterator_enter_list(struct sexp_iterator *iterator);
 int
 sexp_iterator_exit_list(struct sexp_iterator *iterator);
 
+
+/* Checks the type of the current expression, which should be a list
+ *
+ *  (<type> ...)
+ */
+int
+sexp_iterator_check_type(struct sexp_iterator *iterator,
+			 const uint8_t *type);
+
+const uint8_t *
+sexp_iterator_check_types(struct sexp_iterator *iterator,
+			  unsigned ntypes,
+			  const uint8_t **types);
+
 /* Current element must be a list. Looks up element of type
  *
  *   (key rest...)
  *
- * For a matching key, the corersponding iterator is initialized
+ * For a matching key, the corresponding iterator is initialized
  * pointing at the start of REST.
  */
 int
 sexp_iterator_assoc(struct sexp_iterator *iterator,
 		    unsigned nkeys,
-		    const struct sexp_assoc_key *keys,
+		    const uint8_t **keys,
 		    struct sexp_iterator *values);
+
+
+/* Output functions. What is a reasonable API for this? It seems
+ * ugly to have to reimplement string streams. */
+
+/* Declared for real in buffer.h */
+struct nettle_buffer;
+
+int
+sexp_format(struct nettle_buffer *buffer, const char *format, ...);
+
 
 #endif /* NETTLE_SEXP_H_INCLUDED */

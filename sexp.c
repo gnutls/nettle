@@ -187,18 +187,48 @@ sexp_iterator_exit_list(struct sexp_iterator *iterator)
 }
 
 int
+sexp_iterator_check_type(struct sexp_iterator *iterator,
+			 const uint8_t *type)
+{
+  return (sexp_iterator_enter_list(iterator)
+	  && sexp_iterator_next(iterator)
+	  && iterator->type == SEXP_ATOM
+	  && !iterator->display
+	  && strlen(type) == iterator->atom_length
+	  && !memcmp(type, iterator->atom, iterator->atom_length));
+}
+
+const uint8_t *
+sexp_iterator_check_types(struct sexp_iterator *iterator,
+			  unsigned ntypes,
+			  const uint8_t **types)
+{
+  if (sexp_iterator_enter_list(iterator)
+      && sexp_iterator_next(iterator)
+      && iterator->type == SEXP_ATOM
+      && !iterator->display)
+    {
+      unsigned i;
+      for (i = 0; i<ntypes; i++)
+	if (strlen(types[i]) == iterator->atom_length
+	    && !memcmp(types[i], iterator->atom,
+		       iterator->atom_length))
+	  return types[i];
+    }
+  return 0;
+}
+		   
+
+int
 sexp_iterator_assoc(struct sexp_iterator *iterator,
 		    unsigned nkeys,
-		    const struct sexp_assoc_key *keys,
+		    const uint8_t **keys,
 		    struct sexp_iterator *values)
 {
   int *found;
   unsigned nfound;
   unsigned i;
   
-  if (!sexp_iterator_enter_list(iterator))
-    return 0;
-
   found = alloca(nkeys * sizeof(*found));
   for (i = 0; i<nkeys; i++)
     found[i] = 0;
@@ -213,7 +243,8 @@ sexp_iterator_assoc(struct sexp_iterator *iterator,
       switch (iterator->type)
 	{
 	case SEXP_LIST:
-	  
+
+	  /* FIXME: Use sexp_iterator_check_type? */
 	  if (! (sexp_iterator_enter_list(iterator)
 		 && sexp_iterator_next(iterator)))
 	    return 0;
@@ -224,9 +255,11 @@ sexp_iterator_assoc(struct sexp_iterator *iterator,
 	      /* Compare to the given keys */
 	      for (i = 0; i<nkeys; i++)
 		{
-		  if (keys[i].length == iterator->atom_length
-		      && !memcmp(keys[i].name, iterator->atom,
-				 keys[i].length))
+		  /* NOTE: The strlen could be put outside of the
+		   * loop */
+		  if (strlen(keys[i]) == iterator->atom_length
+		      && !memcmp(keys[i], iterator->atom,
+				 iterator->atom_length))
 		    {
 		      if (found[i])
 			/* We don't allow duplicates */
