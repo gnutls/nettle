@@ -65,7 +65,7 @@ nettle_mpz_get_str_256(unsigned length, uint8_t *s, mpz_t x)
     }
   
   if (length)
-    memset(dst, 0, length);
+    memset(s, 0, length);
 }
 
 void
