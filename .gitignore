@@ -36,6 +36,7 @@ core
 /Makefile
 /Makefile.am
 /Makefile.in
+/bf_test
 /config.cache
 /config.h.in
 /config.log
