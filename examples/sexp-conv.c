@@ -92,6 +92,7 @@ struct sexp_output
 {
   FILE *f;
 
+  enum sexp_coding coding;
   enum sexp_mode mode;
   struct base64_encode_ctx base64;
 
@@ -102,6 +103,7 @@ static void
 sexp_output_init(struct sexp_output *output, FILE *f, enum sexp_mode mode)
 {
   output->f = f;
+  output->coding = SEXP_PLAIN;
   output->mode = mode;
   output->pos = 0;
 }
@@ -492,34 +494,41 @@ static void
 sexp_put_char(struct sexp_output *output, unsigned indent,
 	      uint8_t c)
 {
-  if (output->mode & SEXP_TRANSPORT)
+  switch (output->coding)
     {
-      uint8_t encoded[2];
-      unsigned done;
-      unsigned i;
+    case SEXP_BASE64:
+      {
+	uint8_t encoded[2];
+	unsigned done;
+	unsigned i;
       
-      done = base64_encode_single(&output->base64, encoded, c);
+	done = base64_encode_single(&output->base64, encoded, c);
 
-      assert(done <= sizeof(encoded));
+	assert(done <= sizeof(encoded));
 
-      for (i = 0; i<done; i++)
-	{
-	  if (indent &&
-	      output->pos > LINE_WIDTH
-	      && output->pos > (indent + 10))
-	    sexp_put_newline(output, indent);
+	for (i = 0; i<done; i++)
+	  {
+	    if (indent &&
+		output->pos > LINE_WIDTH
+		&& output->pos > (indent + 10))
+	      sexp_put_newline(output, indent);
 	  
-	  if (putc(encoded[i], output->f) < 0)
-	    die("Write failed: %s\n", strerror(errno));
+	    if (putc(encoded[i], output->f) < 0)
+	      die("Write failed: %s\n", strerror(errno));
 
-	  output->pos++;
-	}
-    }
-  else
-    {
+	    output->pos++;
+	  }
+	break;
+      }
+    case SEXP_PLAIN:
       output->pos++;
       if (putc(c, output->f) < 0)
 	die("Write failed: %s\n", strerror(errno));
+      break;
+
+    case SEXP_HEX:
+      /* Not implemented */
+      abort();
     }
 }
 
@@ -557,12 +566,12 @@ sexp_put_length(struct sexp_output *output, unsigned indent,
 static void
 sexp_put_base64_start(struct sexp_output *output, uint8_t c)
 {
-  assert(! (output->mode & SEXP_TRANSPORT));
+  assert(output->coding == SEXP_PLAIN);
   
   sexp_put_char(output, 0, c);
 
   base64_encode_init(&output->base64);
-  output->mode |= SEXP_TRANSPORT;
+  output->coding = SEXP_BASE64;
 }
 
 static void
@@ -571,13 +580,13 @@ sexp_put_base64_end(struct sexp_output *output, uint8_t c)
   uint8_t encoded[BASE64_ENCODE_FINAL_LENGTH];
   unsigned done;
 
-  assert(output->mode & SEXP_TRANSPORT);
+  assert(output->coding = SEXP_BASE64);
 
   done = base64_encode_final(&output->base64, encoded);
 
   assert(done <= sizeof(encoded));
   
-  output->mode &= ~ SEXP_TRANSPORT;
+  output->coding = SEXP_PLAIN;
 
   sexp_put_data(output, 0, done, encoded);
   sexp_put_char(output, 0, c);
@@ -702,7 +711,7 @@ sexp_convert_item(struct sexp_input *input, enum sexp_mode mode,
 
 static void
 sexp_convert_list(struct sexp_input *input, enum sexp_mode mode,
-		  struct sexp_output *output,
+		  struct sexp_output *output, 
 		  unsigned indent)
 {
   unsigned item;
