@@ -1,4 +1,72 @@
+2002-11-07  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* Makefile.am (SUBDIRS): Added tools.
+	(libnettle_a_SOURCES): Added sexp-transport-format.c,
+	sexp2bignum.c, sexp2dsa.c.
+
+	* sexp2dsa.c (dsa_keypair_from_sexp_alist, dsa_keypair_from_sexp):
+	New file, new functions.
+
+	* rsa2sexp.c (rsa_keypair_to_sexp): %s -> %z renaming. 
+
+	* sexp-transport.c (sexp_transport_iterator_first): Fixed bug,
+	length was mishandled.
+
+	* sexp-transport-format.c (sexp_transport_format,
+	sexp_transport_vformat): New file, new functions.
+
+	* sexp-format.c (sexp_format): Return length of output. Allow
+	buffer == NULL, and onyl compute the needed length in this case.
+	Renamed %s to %z. New format specifiers %s, %i, and %l.
+	(sexp_vformat): New function.
+	(format_prefix): Rewrote to not use snprintf.
+
+	* sexp2rsa.c (rsa_keypair_from_sexp): New limit argument. Use
+	nettle_mpz_set_sexp. 
+
+	* dsa-keygen.c (dsa_generate_keypair): Added some newlines to
+	progress display. Use DSA_P_MIN_BITS.
+
+	* dsa.h (DSA_MIN_P_BITS): New constant (was DSA_MINIMUM_BITS).
+	(DSA_Q_OCTETS, DSA_Q_BITS): New constants.
+	(dsa_keypair_from_sexp_alist, dsa_keypair_from_sexp): New
+	prototypes. 
+
+	* configure.ac: Output tools/Makefile.
+
+	* sexp2bignum.c (nettle_mpz_set_sexp): New file, and new function.
+	Moved from sexp2rsa.c:get_value.
+
+	* examples/io.c (read_rsa_key): New limit argument in
+	call of rsa_keypair_from_sexp_alist.
+
+	* examples/Makefile.am (noinst_PROGRAMS): Removed sexp-conv.
+
+	* tools/sexp-conv.c: Moved file from examples directory.
+
+	* testsuite/Makefile.am (TS_SH): New variable. Added
+	sexp-conv-test. 
+
+	* testsuite/testutils.h (LDUP): New macro.
+
+	* testsuite/sexp2rsa-test.c (test_main): New limit argument in
+	call of rsa_keypair_from_sexp_alist.
+
+	* testsuite/sexp-test.c (test_main): Added test for lengths with
+	more than one digit. Added tests for transport mode decoding.
+
+	* testsuite/sexp-format-test.c (test_main): Added tests for %i and
+	%l. 
+
+	* testsuite/sexp-conv-test: Moved test from examples directory.
+	Updated path to sexp-conv, now in ../tools/sexp-conv.
+
 2002-11-03  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* sexp-format.c, sexp_format.c: Renamed sexp_format.c to
+	sexp-format.c.
+	* Makefile.am (libnettle_a_SOURCES): Renamed sexp_format.c to
+	sexp-format.c.
 
 	* examples/Makefile.am: Don't set CFLAGS or CPPFLAGS explicitly,
 	let automake handle that.

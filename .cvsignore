@@ -1,6 +1,7 @@
 *.tar.gz
 *.tar.gz.asc
 .deps
+.lib
 Makefile
 Makefile.in
 aclocal.m4
