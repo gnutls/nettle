@@ -85,19 +85,19 @@ aes_decrypt:
 	movl	%eax,%esi	C  copy first in
 	andl	$0x000000ff,%esi C  clear all but offset
 	shll	$2,%esi		C  index in itbl1
-	movl	itbl1(%esi),%edi
+	movl	AES_TABLE0 + _aes_decrypt_table (%esi),%edi
 	movl	%ebx,%esi	C  second one
 	shrl	$6,%esi
 	andl	$0x000003fc,%esi C  clear all but offset bytes
-	xorl	itbl2(%esi),%edi
+	xorl	AES_TABLE1 + _aes_decrypt_table (%esi),%edi
 	movl	%ecx,%esi	C  third one
 	shrl	$14,%esi
 	andl	$0x000003fc,%esi
-	xorl	itbl3(%esi),%edi
+	xorl	AES_TABLE2 + _aes_decrypt_table (%esi),%edi
 	movl	%edx,%esi	C  fourth one
 	shrl	$22,%esi
 	andl	$0x000003fc,%esi
-	xorl	itbl4(%esi),%edi
+	xorl	AES_TABLE3 + _aes_decrypt_table (%esi),%edi
 	pushl	%edi		C  save first on stack
 
 	C // Second column
