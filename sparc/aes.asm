@@ -180,18 +180,18 @@ _aes_crypt:
 	add	%i5, dst, %o2	
 	ld	[%g4-16], %g3	! 2
 	add	i, 1, i
-	ld	[wtxt+%i5], %g2	! 0
+	ld	[wtxt+%i5], t0	! 0
 
 	lduh	[wtxt+%g3], %o4	! 2
-	and	%g2, 255, %g2	! 0
+	and	t0, 255, t0	! 0
 	ld	[%g4], %o5	! 3
 	and	%o4, 255, %o4	! 2
 	ldub	[T+t1], t1	! 1
 
-	ldub	[T+%g2], %g3	! 0
+	ldub	[T+t0], t0	! 0
 	sll	t1, 8, t1	! 1
 	ldub	[wtxt+%o5], %o3	! 3
-	or	%g3, t1, %g3	! 0, 1
+	or	t0, t1, %g3	! 0, 1
 	ldub	[T+%o4], %g2	! 2
 	cmp	i, 3
 	ldub	[T+%o3], %o5	! 3
