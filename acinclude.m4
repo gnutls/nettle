@@ -1,66 +1,66 @@
-# checks for gmp version 3 or later. 
-# AC_CHECK_LIBGMP(library, [, if-found [, if-not-found]])
-AC_DEFUN([AC_CHECK_LIBGMP],
-[AC_CACHE_CHECK([for mpz_getlimbn in -l$1], ac_cv_lib_$1_mpz_getlimbn,
-[ac_save_libs="$LIBS"
-LIBS="-l$1 $LIBS"
-AC_TRY_LINK(dnl
-[#if HAVE_GMP_H
-#include <gmp.h>
-#elif HAVE_GMP2_GMP_H
-#include <gmp2/gmp.h>
-#endif
-],
-[mpz_getlimbn(NULL, 0);],
-ac_cv_lib_$1_mpz_getlimbn=yes,
-ac_cv_lib_$1_mpz_getlimbn=no)
-LIBS="$ac_save_LIBS"
-])
-if test x$ac_cv_lib_$1_mpz_getlimbn = xyes ; then
-ifelse([$2], ,
-[AC_DEFINE(HAVE_LIBGMP)
-LIBS="-l$1 $LIBS"
-], [$2])
-ifelse([$3], , ,
-[else
-$3
-])dnl
-fi
-])
-
-# checks for gmp version 2 or later. 
-# AC_SEARCH_LIBGMP(libraries, [, if-found [, if-not-found]])
-AC_DEFUN([AC_SEARCH_LIBGMP],
-[AC_CACHE_CHECK([for library containing mpz_getlimbn], ac_cv_search_mpz_getlimbn,
-[ac_search_save_LIBS="$LIBS"
-ac_cv_search_mpz_getlimbn="no"
-for i in $1; do
-LIBS="-l$i $ac_search_save_LIBS"
-AC_TRY_LINK(dnl
-[#if HAVE_GMP_H
-#include <gmp.h>
-#elif HAVE_GMP2_GMP_H
-#include <gmp2/gmp.h>
-#endif
-],
-[mpz_getlimbn(0);],
-[ac_cv_search_mpz_getlimbn=-l$i
-break
-])
-done
-LIBS="$ac_search_save_LIBS"
-])
-if test "x$ac_cv_search_mpz_getlimbn" != xno ; then
-  LIBS="$ac_cv_search_mpz_getlimbn $LIBS"
-ifelse([$2], ,
-[AC_DEFINE(HAVE_LIBGMP)
-], [$2])
-ifelse([$3], , ,
-[else
-$3
-])dnl
-fi
-])
+##  # checks for gmp version 3 or later. 
+##  # AC_CHECK_LIBGMP(library, [, if-found [, if-not-found]])
+##  AC_DEFUN([AC_CHECK_LIBGMP],
+##  [AC_CACHE_CHECK([for mpz_getlimbn in -l$1], ac_cv_lib_$1_mpz_getlimbn,
+##  [ac_save_libs="$LIBS"
+##  LIBS="-l$1 $LIBS"
+##  AC_TRY_LINK(dnl
+##  [#if HAVE_GMP_H
+##  #include <gmp.h>
+##  #elif HAVE_GMP2_GMP_H
+##  #include <gmp2/gmp.h>
+##  #endif
+##  ],
+##  [mpz_getlimbn(NULL, 0);],
+##  ac_cv_lib_$1_mpz_getlimbn=yes,
+##  ac_cv_lib_$1_mpz_getlimbn=no)
+##  LIBS="$ac_save_LIBS"
+##  ])
+##  if test x$ac_cv_lib_$1_mpz_getlimbn = xyes ; then
+##  ifelse([$2], ,
+##  [AC_DEFINE(HAVE_LIBGMP)
+##  LIBS="-l$1 $LIBS"
+##  ], [$2])
+##  ifelse([$3], , ,
+##  [else
+##  $3
+##  ])dnl
+##  fi
+##  ])
+##  
+##  # checks for gmp version 3 or later. 
+##  # AC_SEARCH_LIBGMP(libraries, [, if-found [, if-not-found]])
+##  AC_DEFUN([AC_SEARCH_LIBGMP],
+##  [AC_CACHE_CHECK([for library containing mpz_getlimbn], ac_cv_search_mpz_getlimbn,
+##  [ac_search_save_LIBS="$LIBS"
+##  ac_cv_search_mpz_getlimbn="no"
+##  for i in $1; do
+##  LIBS="-l$i $ac_search_save_LIBS"
+##  AC_TRY_LINK(dnl
+##  [#if HAVE_GMP_H
+##  #include <gmp.h>
+##  #elif HAVE_GMP2_GMP_H
+##  #include <gmp2/gmp.h>
+##  #endif
+##  ],
+##  [mpz_getlimbn(0);],
+##  [ac_cv_search_mpz_getlimbn=-l$i
+##  break
+##  ])
+##  done
+##  LIBS="$ac_search_save_LIBS"
+##  ])
+##  if test "x$ac_cv_search_mpz_getlimbn" != xno ; then
+##    LIBS="$ac_cv_search_mpz_getlimbn $LIBS"
+##  ifelse([$2], ,
+##  [AC_DEFINE(HAVE_LIBGMP)
+##  ], [$2])
+##  ifelse([$3], , ,
+##  [else
+##  $3
+##  ])dnl
+##  fi
+##  ])
 
 # LSH_PATH_ADD(path-id, directory)
 AC_DEFUN([LSH_PATH_ADD],
