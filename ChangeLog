@@ -4,6 +4,7 @@
 	(Hash functions): New subsection on struct nettle_hash. 
 	(Hash functions): New subsection on struct nettle_cipher.
 	(Keyed hash functions): New section, describing MAC:s and HMAC.
+	(Public-key algorithms): New chapter.
 
 	* testsuite/testutils.c (test_armor): New function.
 
