@@ -2,8 +2,14 @@
 
 #include "knuth-lfib.h"
 
+#if __GNUC__
+# define UNUSED __attribute__ ((__unused__))
+#else
+# define UNUSED
+#endif
+
 static void
-progress(void *ctx, int c)
+progress(void *ctx UNUSED, int c)
 {
   fputc(c, stderr);
 }
