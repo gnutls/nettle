@@ -11,6 +11,7 @@ libnettleinclude_HEADERS = aes.h arcfour.h blowfish.h \
 			   des.h des-compat.h dsa.h \
 			   hmac.h \
 			   knuth-lfib.h \
+			   macros.h \
 			   md5.h md5-compat.h \
 			   nettle-meta.h \
 			   pgp.h realloc.h rsa.h \
@@ -66,7 +67,7 @@ all-local: nettle.html print-path
 print-path:
 	echo PATH: $$PATH
 
-EXTRA_DIST = macros.h memxor.h $(des_headers) descore.README nettle.html \
+EXTRA_DIST = memxor.h $(des_headers) descore.README nettle.html \
 	.bootstrap $(des_headers) \
 	sparc/aes.asm sparc/machine.m4 \
 	x86/aes.asm x86/aes_tables.asm
