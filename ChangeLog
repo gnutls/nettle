@@ -1,3 +1,28 @@
+2001-10-30  Niels Möller  <nisse@ehand.com>
+
+	* configure.in: Check for libgmp. Deleted tests for SIZEOF_INT and
+	friends. 
+
+	* rsa_sha1.c: New file, PKCS#1 rsa-sha1 signatures. 
+	* rsa_md5.c: New file, PKCS#1 rsa-md5 signatures.
+
+	* rsa.c: New file with general rsa functions.
+
+	* Makefile.am (libnettle_a_SOURCES): Added rsa and bignum files.
+
+	* bignum.c, bignum.h: New file, with base256 functions missing in
+	gmp. 
+
+	* testsuite/Makefile.am: Added bignum-test.
+
+	* testsuite/run-tests (test_program): Check the xit code more
+	carefully, and treat 77 as skip. This convention was borrowed from
+	autotest. 
+
+	* testsuite/macros.m4: New macro SKIP which exits with code 77.
+
+	* testsuite/bignum-test.m4: New file.
+
 2001-10-15  Niels Möller  <nisse@ehand.com>
 
 	* testsuite/Makefile.am (EXTRA_DIST): Include rfc1750.txt in the

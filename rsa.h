@@ -27,19 +27,95 @@
 #define NETTLE_RSA_H_INCLUDED
 
 #include <inttypes.h>
-
 #include <gmp.h>
+
+#include "md5.h"
+#include "sha.h"
 
 struct rsa_public_key
 {
+  /* Size of the modulo, in octets. This is also the size of all
+   * signatures that are created or verified with this key. */
+  unsigned size;
+  
+  /* Modulo */
   mpz_t n;
+
+  /* Public exponent */
   mpz_t e;
 };
 
 struct rsa_private_key
 {
+  struct rsa_public_key pub;
   
+  /* Secret exponent */
+  mpz_t d;
+
+  /* The two factors */
+  mpz_t p; mpz_t q;
+
+  /* d % (p-1), i.e. a e = 1 (mod (p-1)) */
+  mpz_t a;
+
+  /* d % (q-1), i.e. b e = 1 (mod (q-1)) */
+  mpz_t b;
+
+  /* modular inverse of q , i.e. c q = 1 (mod p) */
+  mpz_t c;
 };
 
+/* Signing a message works as follows:
+ *
+ * Store the private key in a rsa_private_key struct.
+ *
+ * Call rsa_init_private_key. This initializes the size attribute
+ * to the length of a signature.
+ *
+ * Initialize a hashing context, by callling
+ *   md5_init
+ *
+ * Hash the message by calling
+ *   md5_update
+ *
+ * Finally, call
+ *   rsa_md5_sign
+ *
+ * The final call stores the signature, of length size, in the supplied buffer,
+ * and resets the hashing context.
+ */
 
-#endif NETTLE_RSA_H_INCLUDED
+int
+rsa_init_public_key(struct rsa_public_key *key);
+
+int
+rsa_init_private_key(struct rsa_private_key *key);
+
+/* PKCS#1 style signatures */
+void
+rsa_md5_sign(struct rsa_private_key *key,
+             struct md5_ctx *hash,
+             uint8_t *signature);
+
+
+int
+rsa_md5_verify(struct rsa_public_key *key,
+               struct md5_ctx *hash,
+               const uint8_t *signature);
+
+void
+rsa_sha1_sign(struct rsa_private_key *key,
+              struct sha1_ctx *hash,
+              uint8_t *signature);
+
+int
+rsa_sha1_verify(struct rsa_public_key *key,
+                struct sha1_ctx *hash,
+                const uint8_t *signature);
+
+/* Compute x, the d:th root of m. Calling it with x == m is allowed. */
+void
+rsa_compute_root(struct rsa_private_key *key, mpz_t x, mpz_t m);
+
+
+#endif /* NETTLE_RSA_H_INCLUDED */
