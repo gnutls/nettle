@@ -16,15 +16,19 @@ TS_PROGS = aes-test arcfour-test blowfish-test cast128-test \
 	   dsa-test dsa-keygen-test \
 	   yarrow-test
 
+TS_SH = sexp-conv-test
+
+TS_ALL = $(TS_PROGS) $(TS_SH)
+
 noinst_PROGRAMS = $(TS_PROGS)
 
 LDADD = testutils.o -lnettle
-EXTRA_DIST = testutils.c testutils.h \
+EXTRA_DIST = $(TS_SH) testutils.c testutils.h \
 	     run-tests rfc1750.txt
 
 .PHONY: run-tests
-run-tests: $(TS_PROGS)
+run-tests: $(TS_ALL)
 	LD_LIBRARY_PATH=../.lib srcdir="$(srcdir)" \
-	  "$(srcdir)"/run-tests $(TS_PROGS)
+	  "$(srcdir)"/run-tests $(TS_ALL)
 
 check: run-tests
