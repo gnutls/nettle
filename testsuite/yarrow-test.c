@@ -284,7 +284,7 @@ main(int argc, char **argv)
       printf("Processed input: %d octets\n", processed);
       printf("         sha256:");
     }
-  sha256_final(&input_hash);
+
   sha256_digest(&input_hash, sizeof(digest), digest);
 
   if (verbose)
@@ -318,7 +318,6 @@ main(int argc, char **argv)
       printf("          sha256:");
     }
   
-  sha256_final(&output_hash);
   sha256_digest(&output_hash, sizeof(digest), digest);
 
   if (verbose)
