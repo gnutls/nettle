@@ -33,6 +33,25 @@
 # define AES_SMALL 0
 #endif
 
+#if AES_SMALL
+# define AES_TABLE_SIZE 1
+#else
+# define AES_TABLE_SIZE 4
+#endif
+
+struct aes_table
+{
+  uint8_t sbox[0x100];
+  unsigned idx[3][4];
+  uint32_t table[AES_TABLE_SIZE][0x100];
+};
+
+void
+_aes_crypt(const struct aes_ctx *ctx,
+	   const struct aes_table *T,
+	   unsigned length, uint8_t *dst,
+	   const uint8_t *src);
+
 /* Macros */
 #define ROTBYTE(x) (((x) >> 8) | (((x) & 0xff) << 24))
 #define ROTRBYTE(x) (((x) << 8) | (((x) >> 24) & 0xff))
@@ -41,24 +60,17 @@
                         ((box)[(((x) >> 16) & 0xff)] << 16) | \
                         ((box)[(((x) >> 24) & 0xff)] << 24))
 
-/* Don't pollute global namespace too much */
+/* Assembler code using the table should get link errors when compiled
+ * against a small table. */
 #if AES_SMALL
-# define dtable _aes_dtable_small
-# define itable _aes_itable_small
-# define _AES_TABLE_SIZE 1
-#else
-# define dtable _aes_dtable
-# define itable _aes_itable
-# define _AES_TABLE_SIZE 4
+# define _aes_encrypt_table _aes_encrypt_table_small
+# define _aes_decrypt_table _aes_decrypt_table_small
 #endif
 
-#define sbox _aes_sbox
-#define isbox _aes_isbox
-
 /* Internal tables */
-extern const uint32_t dtable[_AES_TABLE_SIZE][0x100];
-extern const uint32_t itable[_AES_TABLE_SIZE][0x100];
-extern const uint8_t sbox[0x100];
-extern const uint8_t isbox[0x100];
+extern const struct aes_table _aes_encrypt_table;
+extern const struct aes_table _aes_decrypt_table;
+
+#define aes_sbox (_aes_encrypt_table.sbox)
 
 #endif /* NETTLE_AES_INTERNAL_H_INCLUDED */
