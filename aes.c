@@ -1,4 +1,4 @@
-/* aes.h
+/* aes.c
  *
  * The aes/rijndael block cipher.
  */

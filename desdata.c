@@ -1,6 +1,6 @@
 /* desdata.c
  *
- * Generate tables used by desUtil.c and desCode.h.
+ * Generate tables used by des.c and desCode.h.
  *
  * $Id$ */
 
@@ -15,8 +15,11 @@
 
 #include	"desCode.h"
 
-#include "RCSID.h"
-RCSID2(desdata_cRcs, "$Id$");
+#if __GNUC__
+# define UNUSED __attribute__ ((__unused__))
+#else
+# define UNUSED
+#endif
 
 /* list of weak and semi-weak keys
 
@@ -65,7 +68,7 @@ int printf(const char *, ...);
 int
 main(int argc UNUSED, char **argv UNUSED)
 {
-	UINT32 d, i, j, k, l, m, n, s;
+	uint32_t d, i, j, k, l, m, n, s;
 	char b[256], ksr[56];
 
 	switch ( argv[1][0] ) {

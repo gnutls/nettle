@@ -1,3 +1,17 @@
+2001-06-12  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* testsuite/Makefile.am (TS_PROGS): Added tests for des and sha1. 
+
+	* testsuite/sha1-test.m4: New file.
+
+	* testsuite/des-test.m4: New file.
+
+	* Added SHA1 files.
+
+	* Added desCore files.
+	
+	* Makefile.am: Added desCore and sha1.
+
 2001-04-17  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* install-sh: Copied the standard install script.

@@ -9,10 +9,8 @@
 
 #include "des.h"
 
-#include "RCSID.h"
-RCSID2(desCode_hRcs, "$Id$");
-
-extern UINT32 des_keymap[], des_bigmap[];
+extern uint32_t des_keymap[];
+extern uint32_t des_bigmap[];
 
 /* optional customization:
  * the idea here is to alter the code so it will still run correctly
@@ -50,17 +48,17 @@ extern UINT32 des_keymap[], des_bigmap[];
 /* The BYTE type is used as parameter for the encrypt/decrypt functions.
  * It's pretty bad to have the function prototypes depend on
  * a macro definition that the users of the function doesn't
- * know about. - Niels */
+ * know about. /Niels */
 #if	0			/* didn't feel like deleting */
-#define	SREGFREE	; s = (UINT8 *) D
+#define	SREGFREE	; s = (uint8_t *) D
 #define	DEST		s
 #define	D		m0
-#define	BYTE		UINT32
+#define	BYTE		uint32_t
 #else
 #define	SREGFREE
 #define	DEST		d
 #define	D		d
-#define	BYTE		UINT8
+#define	BYTE		uint8_t
 #endif
 
 /* handle constants in the optimal way for 386 & vax */
@@ -73,12 +71,12 @@ extern UINT32 des_keymap[], des_bigmap[];
 #define	MQ1	(des_bigmap +  64)
 #define	MQ2	(des_bigmap + 128)
 #define	MQ3	(des_bigmap + 192)
-#define	HQ0(z)				/*	z |= 0X01000000L; */
-#define	HQ2(z)				/*	z |= 0X03000200L; */
-#define	LQ0(z)	0XFCFC & z
-#define	LQ1(z)	0XFCFC & z
-#define	LQ2(z)	0XFCFC & z
-#define	LQ3(z)	0XFCFC & z
+#define	HQ0(z)				/*	z |= 0x01000000L; */
+#define	HQ2(z)				/*	z |= 0x03000200L; */
+#define	LQ0(z)	0xFCFC & z
+#define	LQ1(z)	0xFCFC & z
+#define	LQ2(z)	0xFCFC & z
+#define	LQ3(z)	0xFCFC & z
 #define	SQ	16
 #define	MS0	 des_keymap 
 #define	MS1	(des_keymap +  64)
@@ -89,10 +87,10 @@ extern UINT32 des_keymap[], des_bigmap[];
 #define	MS6	(des_keymap + 384)
 #define	MS7	(des_keymap + 448)
 #define	HS(z)
-#define	LS0(z)	0XFC & z
-#define	LS1(z)	0XFC & z
-#define	LS2(z)	0XFC & z
-#define	LS3(z)	0XFC & z
+#define	LS0(z)	0xFC & z
+#define	LS1(z)	0xFC & z
+#define	LS2(z)	0xFC & z
+#define	LS3(z)	0xFC & z
 #define	REGQUICK
 #define	SETQUICK
 #define	REGSMALL
@@ -133,10 +131,10 @@ extern UINT32 des_keymap[], des_bigmap[];
 #define	LS2(z)	k1 & z
 #define	LS3(z)	k2 & z
 #define	REGQUICK				\
-	register UINT32 k0, k1;			\
-	register UINT32 *m0, *m1, *m2, *m3;
+	register uint32_t k0, k1;		\
+	register uint32_t *m0, *m1, *m2, *m3;
 #define	SETQUICK				\
-	; k0 = 0XFCFC				\
+	; k0 = 0xFCFC				\
 	; k1 = 16				\
 	/*k2 = 28 to speed up ROL */		\
 	; m0 = des_bigmap			\
@@ -144,12 +142,12 @@ extern UINT32 des_keymap[], des_bigmap[];
 	; m2 = m1 + 64				\
 	; m3 = m2 + 64
 #define	REGSMALL				\
-	register UINT32 k0, k1, k2;		\
-	register UINT32 *m0, *m1, *m2, *m3;
+	register uint32_t k0, k1, k2;		\
+	register uint32_t *m0, *m1, *m2, *m3;
 #define	SETSMALL				\
-	; k0 = 0X01000100L			\
-	; k1 = 0X0FC				\
-	; k2 = 0X1FC				\
+	; k0 = 0x01000100L			\
+	; k1 = 0x0FC				\
+	; k2 = 0x1FC				\
 	; m0 = des_keymap			\
 	; m1 = m0 + 128				\
 	; m2 = m1 + 128				\
@@ -185,21 +183,21 @@ extern UINT32 des_keymap[], des_bigmap[];
 #define	MS6	m6
 #define	MS7	m7
 #define	HS(z)
-#define	LS0(z)	0XFC & z
-#define	LS1(z)	0XFC & z
-#define	LS2(z)	0XFC & z
-#define	LS3(z)	0XFC & z
+#define	LS0(z)	0xFC & z
+#define	LS1(z)	0xFC & z
+#define	LS2(z)	0xFC & z
+#define	LS3(z)	0xFC & z
 #define	REGQUICK				\
-	register UINT32 k0;		\
-	register UINT32 *m0, *m1, *m2, *m3;
+	register uint32_t k0;			\
+	register uint32_t *m0, *m1, *m2, *m3;
 #define	SETQUICK				\
-	; k0 = 0XFCFC				\
+	; k0 = 0xFCFC				\
 	; m0 = des_bigmap			\
 	; m1 = m0 + 64				\
 	; m2 = m1 + 64				\
 	; m3 = m2 + 64
 #define	REGSMALL				\
-	register UINT32 *m0, *m1, *m2, *m3, *m4, *m5, *m6, *m7;
+	register uint32_t *m0, *m1, *m2, *m3, *m4, *m5, *m6, *m7;
 #define	SETSMALL				\
 	; m0 = des_keymap			\
 	; m1 = m0 + 64				\
@@ -215,7 +213,9 @@ extern UINT32 des_keymap[], des_bigmap[];
 /* some basic stuff */
 
 /* generate addresses from a base and an index */
-#define	ADD(b,x)	(UINT32 *) ((UINT8 *)b + (x))
+/* FIXME: This is used only as *ADD(msi,lsi(z)) or *ADD(mqi,lqi(z)).
+ * Why not use plain indexing instead? /Niels */
+#define	ADD(b,x)	(uint32_t *) ((uint8_t *)b + (x))
 
 /* low level rotate operations */
 #define	NOP(d,c,o)
@@ -263,12 +263,12 @@ extern UINT32 des_keymap[], des_bigmap[];
 /* load data, do the initial permutation and put into efficient position */
 #define	LOADFIPS()				\
 	LOADDATA(y, x);				\
-	SWAP(x, y, 0X0F0F0F0FL, 004);		\
-	SWAP(y, x, 0X0000FFFFL, 020);		\
-	SWAP(x, y, 0X33333333L, 002);		\
-	SWAP(y, x, 0X00FF00FFL, 010);		\
+	SWAP(x, y, 0x0F0F0F0FL, 004);		\
+	SWAP(y, x, 0x0000FFFFL, 020);		\
+	SWAP(x, y, 0x33333333L, 002);		\
+	SWAP(y, x, 0x00FF00FFL, 010);		\
 	ROR1(x);				\
-	z  = (x ^ y) & 0X55555555L;		\
+	z  = (x ^ y) & 0x55555555L;		\
 	y ^= z;					\
 	x ^= z;					\
 	ROR1(y)
@@ -328,14 +328,14 @@ extern UINT32 des_keymap[], des_bigmap[];
 /* do final permutation and write out result */
 #define	SAVEFIPS()				\
 	ROL1(x);				\
-	z  = (x ^ y) & 0X55555555L;		\
+	z  = (x ^ y) & 0x55555555L;		\
 	y ^= z;					\
 	x ^= z;					\
 	ROL1(y);				\
-	SWAP(x, y, 0X00FF00FFL, 010);		\
-	SWAP(y, x, 0X33333333L, 002);		\
-	SWAP(x, y, 0X0000FFFFL, 020);		\
-	SWAP(y, x, 0X0F0F0F0FL, 004);		\
+	SWAP(x, y, 0x00FF00FFL, 010);		\
+	SWAP(y, x, 0x33333333L, 002);		\
+	SWAP(x, y, 0x0000FFFFL, 020);		\
+	SWAP(y, x, 0x0F0F0F0FL, 004);		\
 	SAVEDATA(x, y)
 
 
@@ -345,10 +345,10 @@ extern UINT32 des_keymap[], des_bigmap[];
 						\
 void						\
 NAME(REGISTER BYTE *D,				\
-     REGISTER const UINT32 *r,			\
-     REGISTER const UINT8 *s)			\
+     REGISTER const uint32_t *r,		\
+     REGISTER const uint8_t *s)			\
 {						\
-	register UINT32 x, y, z;		\
+	register uint32_t x, y, z;		\
 						\
 	/* declare temps & load data */		\
 	TEMP(LOAD);				\
@@ -381,10 +381,10 @@ NAME(REGISTER BYTE *D,				\
 						\
 void						\
 NAME(REGISTER BYTE *D,				\
-     REGISTER const UINT32 *r,			\
-     REGISTER const UINT8 *s)			\
+     REGISTER const uint32_t *r,		\
+     REGISTER const uint8_t *s)			\
 {						\
-	register UINT32 x, y, z;		\
+	register uint32_t x, y, z;		\
 						\
 	/* declare temps & load data */		\
 	TEMP(LOAD);				\

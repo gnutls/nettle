@@ -40,5 +40,9 @@ core
 /config.log
 /config.status
 /configure
+/desdata
+/keymap.h
+/parity.h
+/rotors.h
 /stamp-h
 /stamp-h.in

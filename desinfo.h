@@ -10,9 +10,6 @@
  *	Please see the file `descore.README' for the complete copyright notice.
  */
 
-#include "RCSID.h"
-RCSID2(desinfo_hRcs, "$Id$");
-
 /* the initial permutation, E selection, and final permutation are hardwired */
 
 /* Key Load: how to load the shift register from the user key */
