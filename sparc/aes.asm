@@ -22,31 +22,32 @@ define(src, %i4)
 ! Loop invariants
 define(wtxt, %l0)
 define(tmp, %l1)
-define(nround, %l2)
+define(diff, %l2)
+define(nround, %l3)
 
 ! Loop variables
-define(round, %l3) ! Should perhaps be 16 * round
-define(i, %l4)
+define(round, %l4) ! Should perhaps be 16 * round
+define(i, %l5)
 	
 _aes_crypt:
 ! Why -136?
 	save	%sp, -136, %sp
 
-! Why this moving around of the input parameters?
 	cmp	length, 0
 	be	.Lend
 
 	! wtxt
 	add	%fp, -24, wtxt
 	add	%fp, -40, tmp
-
+	! Compute xor, so that we can swap efficiently.
+	xor	wtxt, tmp, diff
 .Lblock_loop:
 	! Read src, and add initial subkey
-	mov	-4, %o4
+	mov	-4, i
 .Lsource_loop:
-	add	%o4, 4, %o4
+	add	i, 4, i
 		
-	add	%o4, src, %o5
+	add	i, src, %o5
 	ldub	[%o5+3], %g2
 
 	ldub	[%o5+2], %g3
@@ -54,16 +55,16 @@ _aes_crypt:
 	ldub	[%o5+1], %o0
 	sll	%g3, 16, %g3
 	or	%g2, %g3, %g2
-	ldub	[src+%o4], %o5
+	ldub	[src+i], %o5
 	sll	%o0, 8, %o0
-	ld	[ctx+%o4], %g3
+	ld	[ctx+i], %g3
 	or	%g2, %o0, %g2
 	or	%g2, %o5, %g2
 	xor	%g2, %g3, %g2
 
-	cmp	%o4, 12
+	cmp	i, 12
 	bleu	.Lsource_loop
-	st	%g2, [wtxt+%o4]
+	st	%g2, [wtxt+i]
 
 	! ! Read a little-endian word
 	! ldub	[src+3], %g2
@@ -99,13 +100,14 @@ _aes_crypt:
 	! wtxt
 	mov	wtxt, %g4
 
-	! 4*i:	%o3
-	mov	0, %o3
+	! 4*i:	i
+	! This instruction copied to the delay slot of the branch here. 
+	mov	0, i
 .Lround_loop:
 	add	T, AES_SIDX3, %o2
 .Linner_loop:
 	! The comments mark which T->table[0][ B0(wtxt[IDX0(j)]) ]
-	! the isntruction is a part of.
+	! the instruction is a part of.
 	
 	! AES_SIDX1
 	ld	[%o2-32], %g3		! 1
@@ -121,7 +123,7 @@ _aes_crypt:
 	sll	%o0, 2, %o0		! 1
 	
 	! wtxt[i]
-	ld	[%g4+%o3], %o5		! 0
+	ld	[%g4+i], %o5		! 0
 	
 	! wtxt[IDX2...]
 	lduh	[%g4+%o4], %g3		! 2
@@ -148,34 +150,45 @@ _aes_crypt:
 	xor	%g2, %o0, %g2		! 0, 1, 2
 
 	add	%o2, 4, %o2		
-	
-	xor	%g2, %g3, %g2		! 0, 1, 2, 3
-	st	%g2, [tmp+%o3]
 
-	cmp	%o3, 8
+! 	! Fetch roundkey
+! 	sll	round, 4, %o5
+! 	add	%o5, ctx, %o5
+! 	ld	[%o5], %o5
+		
+	xor	%g2, %g3, %g2		! 0, 1, 2, 3
+
+!	xor	%g2, %o5, %g2
+	st	%g2, [tmp+i]
+
+	cmp	i, 8
 
 	bleu	.Linner_loop
-	add	%o3, 4, %o3
+	add	i, 4, i
 	
 	sll	round, 4, %g2
 	add	%g2, ctx, %o0
-	mov	0, %i5
-	mov	wtxt, %o3
-	mov	tmp, %o4
+	mov	0, i
+
 .Lroundkey_loop:
-	sll	%i5, 2, %g2
+	sll	i, 2, %g2
 	ld	[%o0], %o5
-	add	%i5, 1, %i5
-	ld	[%o4+%g2], %g3
-	cmp	%i5, 3
+	add	i, 1, i
+	ld	[tmp+%g2], %g3
+	cmp	i, 3
 	xor	%g3, %o5, %g3
-	st	%g3, [%o3+%g2]
+	st	%g3, [wtxt+%g2]
 	bleu	.Lroundkey_loop
 	add	%o0, 4, %o0
+
+	! switch roles for tmp and wtxt
+!	xor	wtxt, diff, wtxt
+!	xor	tmp, diff, tmp
+
 	add	round, 1, round
 	cmp	round, nround
 	blu	.Lround_loop
-	mov	0, %o3
+	mov	0, i
 
 	sll	round, 4, %g2
 	
