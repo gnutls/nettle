@@ -134,7 +134,8 @@ struct nettle_buffer;
 /* Returns the number of output characters, or 0 on out of memory. If
  * buffer == NULL, just compute length.
  *
- * Format strings can contained matched parentheses, and the following
+ * Format strings can contained matched parentheses, tokens ("foo" in
+ * the format string is formatted as "3:foo"), and the following
  * formatting specifiers:
  *
  *   %s   String represented as unsigned length, const uint8_t *data.
@@ -157,8 +158,7 @@ struct nettle_buffer;
  *        instead the string is NUL-terminated, and there's only one
  *        const uint8_t * argument.
  *
- * FIXME: Allow literals, like "(x%b)". Allow "%(" for unbalanced
- * parenthesis. */
+ * FIXME: Allow "%(" for unbalanced parenthesis. */
 
 unsigned
 sexp_format(struct nettle_buffer *buffer,
@@ -178,5 +178,11 @@ sexp_transport_format(struct nettle_buffer *buffer,
 unsigned
 sexp_transport_vformat(struct nettle_buffer *buffer,
 		       const char *format, va_list args);
+
+/* Classification for advanced syntax. */
+extern const char
+sexp_token_chars[0x80];
+
+#define TOKEN_CHAR(c) ((c) < 0x80 && sexp_token_chars[(c)])
 
 #endif /* NETTLE_SEXP_H_INCLUDED */

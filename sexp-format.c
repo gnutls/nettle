@@ -71,6 +71,20 @@ format_prefix(struct nettle_buffer *buffer,
   return prefix_length + 1;
 }
 
+static unsigned
+format_string(struct nettle_buffer *buffer,
+	      unsigned length, const uint8_t *s)
+{
+  unsigned prefix_length = format_prefix(buffer, length);
+  if (!prefix_length)
+    return 0;
+
+  if (buffer && !nettle_buffer_write(buffer, length, s))
+    return 0;
+
+  return prefix_length + length;
+}
+
 unsigned
 sexp_vformat(struct nettle_buffer *buffer, const char *format, va_list args)
 {
@@ -81,8 +95,18 @@ sexp_vformat(struct nettle_buffer *buffer, const char *format, va_list args)
     switch (*format++)
       {
       default:
-	abort();
+	{
+	  const char *start = format - 1;
+	  unsigned length = 1 + strcspn(format, "()%");
+	  unsigned output_length = format_string(buffer, length, start);
+	  if (!output_length)
+	    return 0;
+	  
+	  done += output_length;
+	  format = start + length;
 
+	  break;
+	}
       case '\0':
 	assert(!nesting);
 	    
@@ -123,7 +147,7 @@ sexp_vformat(struct nettle_buffer *buffer, const char *format, va_list args)
 	      {
 		const char *s;
 		unsigned length;
-		unsigned prefix_length;
+		unsigned output_length;
 		
 		if (nul_flag)
 		  {
@@ -136,25 +160,18 @@ sexp_vformat(struct nettle_buffer *buffer, const char *format, va_list args)
 		    s = va_arg(args, const char *);
 		  }
 		
-		prefix_length = format_prefix(buffer, length);
-	      
-		if (!prefix_length)
+		output_length = format_string(buffer, length, s);
+		if (!output_length)
 		  return 0;
 
-		done += prefix_length;
-
-		if (buffer && !nettle_buffer_write(buffer, length, s))
-		  return 0;
-
-		done += length;
-
+		done += output_length;
 		break;
 	      }
 	    case 't':
 	      {
 		const char *s;
 		unsigned length;
-		unsigned prefix_length;
+		unsigned output_length;
 		
 		if (nul_flag)
 		  {
@@ -176,18 +193,13 @@ sexp_vformat(struct nettle_buffer *buffer, const char *format, va_list args)
 		  return 0;
 		done++;
 		
-		prefix_length = format_prefix(buffer, length);
+		output_length = format_string(buffer, length, s);
 	      
-		if (!prefix_length)
+		if (!output_length)
 		  return 0;
 
-		done += prefix_length;
-
-		if (buffer && !nettle_buffer_write(buffer, length, s))
-		  return 0;
-
-		done += length;
-
+		done += output_length;
+		
 		if (buffer && !NETTLE_BUFFER_PUTC(buffer, ']'))
 		  return 0;
 		done++;
