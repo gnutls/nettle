@@ -13,7 +13,7 @@
 * Nettle: (nettle).           A low-level cryptographics library.
 @end direntry
 
-@set UPDATED-FOR 1.0
+@set UPDATED-FOR 1.5
 
 @c Latin-1 doesn't work with TeX output.
 @c Also lookout for é characters.
@@ -94,7 +94,7 @@ translation approved by the Free Software Foundation.
 @ifnottex
 @node     Top, Introduction, (dir), (dir)
 @comment  node-name,  next,  previous,  up
-@top
+@top Nettle
 
 This document describes the nettle low-level cryptographic library. You
 can use the library directly from your C-programs, or (recommended)
@@ -1441,7 +1441,8 @@ Calls @code{mpz_clear} on all numbers in the key struct.
 In general, Nettle's @acronym{rsa} functions deviates from Nettle's "no
 memory allocation"-policy. Space for all the numbers, both in the key structs
 above, and temporaries, are allocated dynamically. For information on how
-to customize allocation, see @xref{Custom Allocation,,GMP Allocation,gmp}.
+to customize allocation, see
+@xref{Custom Allocation,,GMP Allocation,gmp, GMP Manual}.
 
 When you have assigned values to the attributes of a key, you must call
 
@@ -1553,16 +1554,16 @@ better properties. Let's first look at the seeding, as the issues here
 are mostly independent of the rest of the generator. The initial state
 of the generator (its seed) must be unguessable by the attacker. So
 what's unguessable? It depends on what the attacker already knows. The
-information theoretic concept that is used to reason about such things
-is called "entropy", or "conditional entropy" (which is not to be
-confused with the thermodynamic concept with the same name). A
-reasonable requirement is that the seed contains a conditional entropy
-of at least some 80-100 bits. This property can be explained as follows:
-Allow the attacker to ask @code{n} yes-no-questions, of his own choice,
-about the the seed. If the attacker, using this question-and-answer
-session, as well as any other information he knows about the seeding
-process, still can't guess the seed correctly, then the conditional
-entropy is more than @code{n} bits.
+concept used in information theory to reason about such things is called
+"entropy", or "conditional entropy" (not to be confused with the
+thermodynamic concept with the same name). A reasonable requirement is
+that the seed contains a conditional entropy of at least some 80-100
+bits. This property can be explained as follows: Allow the attacker to
+ask @code{n} yes-no-questions, of his own choice, about the seed. If
+the attacker, using this question-and-answer session, as well as any
+other information he knows about the seeding process, still can't guess
+the seed correctly, then the conditional entropy is more than @code{n}
+bits.
 
 Let's look at an example. Say information about timing of received
 network packets is used in the seeding process. If there is some random
@@ -1678,6 +1679,150 @@ what output is generated after @code{t_2}.
 
 @end table
 
+Nettle includes one randomness generator that is believed to have all
+the above properties, and two simpler ones.
+
+@acronym{ARCFOUR}, like any stream cipher, can be used as a randomness
+generator. Its output should be of reasonable quality, if the seed is
+hashed properly before it is used with @code{arcfour_set_key}. There's
+no single natural way to reseed it, but if you need reseeding, you
+should be using Yarrow instead.
+
+The "lagged Fibonacci" generator in @file{<nettle/knuth-lfib.h>} is a
+fast generator with good statistical properties, but is @strong{not} for
+cryptographic use, and therefore not documented here. It is included
+mostly because the Nettle test suite needs to generate some test data
+from a small seed.
+
+The recommended generator to use is Yarrow, described below.
+
+@subsection Yarrow
+
+Yarrow is a family of pseudo-randomness generators, designed for
+cryptographic use, by John Kelsey, Bruce Schneier and Niels Ferguson.
+Yarrow-160 is described in a paper at
+@url{http://www.counterpane.com/yarrow.html}, and it uses @acronym{SHA1}
+and triple-DES, and has a 160-bit internal state. Nettle implements
+Yarrow-256, which is similar, but uses @acronym{SHA256} and
+@acronym{AES} to get an internal state of 256 bits.
+
+Yarrow was an almost finished project, the paper mentioned above is the
+closest thing to a specification for it, but some smaller details are
+left out. There is no official reference implementation or test cases.
+This section includes an overview of Yarrow, but the details of
+Yarrow-256, as implemented by Nettle, you have to consult the source
+code. Maybe a complete specification can be written later.
+
+Yarrow can use many sources (at least two are needed for proper
+reseeding), and two randomness "pools", referred to the "slow pool" and
+the "fast pool". Input from the sources is fed alternatingly into the
+two pools. When one of the sources has contributed 100 bits of entropy
+to the fast pool, a "fast reseed" happens and the fast pool is mixed
+into the internal state. When at least two of the sources have
+contributed at least 160 bits each to the slow pool, a "slow reseed"
+takes place. The contents of both pools are mixed into the internal
+state. These procedures should ensure that the generator will eventually
+recover after a key compromise.
+
+The output is generated by using @acronym{AES} to encrypt a counter,
+using the generator's current key. After each request for output,
+another 256 bits are generated which replace the key. This ensures
+forward secrecy.
+
+Yarrow can also use a @dfn{seed file} to save state across restarts.
+Yarrow is seeded by either feeding it the contents of the previous seed
+file, or feeding it input from its sources until a slow reseed happens.
+
+Nettle defines Yarrow-256 in @file{<nettle/yarrow.h>}. 
+
+@deftp {Context struct} {struct yarrow256_ctx}
+@end deftp
+
+@deftp {Context struct} {struct yarrow_source}
+Information about a single source.
+@end deftp
+
+@defvr Constant YARROW256_SEED_FILE_SIZE
+The size of the Yarrow-256 seed file.
+@end defvr
+
+@deftypefun void yarrow256_init (struct yarrow256_ctx *@var{ctx}, unsigned @var{nsources}, struct yarrow_source *@var{sources})
+Initializes the yarrow context, and its @var{nsources} sources.
+@end deftypefun
+
+@deftypefun void yarrow256_seed (struct yarrow256_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{seed_file})
+Seeds Yarrow-256 from a previous seed file. @var{length} should be at least
+@code{YARROW256_SEED_FILE_SIZE}, but it can be larger.
+
+The generator will trust you that the @var{seed_file} data really is
+unguessable. After calling this function, you @emph{must} overwrite the old
+seed file with the contents of @code{@var{ctx}->seed_file}. If it's
+possible for several processes to read the seed file at about the same
+time, access must be coordinated, for example using lock files.
+@end deftypefun
+
+@deftypefun int yarrow256_update (struct yarrow256_ctx *@var{ctx}, unsigned @var{source}, unsigned @var{entropy}, unsigned @var{length}, const uint8_t *@var{data})
+Updates the generator with data from source @var{SOURCE} (an index that
+must be smaller than the number of sources). @var{entropy} is your
+estimated lower bound for the entropy in the data, measured in bits.
+Calling update with zero @var{entropy} is always safe, no matter if the
+data is random or not.
+
+Returns 1 if a reseed happened, in which case the seed file can be
+overwritten with the contents of @code{@var{ctx}->seed_file}. Otherwise,
+the function returns 0.
+@end deftypefun
+
+@deftypefun void yarrow256_random (struct yarrow256_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst})
+Generates @var{length} octets of output. The generator must be seeded
+before you call this function.
+
+If you don't need forward secrecy, e.g. if you need non-secret
+randomness for initialization vectors or padding, you can gain some
+efficiency by buffering, calling this function for reasonably large
+blocks of data, say 100-1000 octets at a time.
+@end deftypefun
+
+@deftypefun int yarrow256_is_seeded (struct yarrow256_ctx *@var{ctx})
+Returns 1 if the generator is seeded and ready to generate output,
+otherwise 0.
+@end deftypefun
+
+@deftypefun unsigned yarrow256_needed_sources (struct yarrow256_ctx *@var{ctx})
+Returns the number of sources that must reach the threshold before a
+slow reseed will happen. Useful primarily when the generator is unseeded.
+@end deftypefun
+
+@deftypefun void yarrow256_force_reseed (struct yarrow256_ctx *@var{ctx})
+Causes a slow reseed to take place immediately, regardless of the
+current entropy estimates of the two pools. Use with care.
+@end deftypefun
+
+Nettle includes an entropy estimator for one kind of input source: User
+keyboard input.
+
+@deftp {Context struct} {struct yarrow_key_event_ctx}
+Information about recent key events.
+@end deftp
+
+@deftypefun void yarrow_key_event_init (struct yarrow_key_event_ctx *@var{ctx})
+Initializes the context.
+@end deftypefun
+
+@deftypefun unsigned yarrow_key_event_estimate(struct yarrow_key_event_ctx *@var{ctx}, unsigned @var{key}, unsigned @var{time})
+@var{key} is the id of the key (ASCII value, hardware key-code, X
+keysym, @dots{} it doesn't matter), and @var{time} is the timestamp of
+the event. The time must be given in units matching the resolution by
+which you read the clock. If you read the clock with microsecond
+precision, @var{time} should be provided in units of microseconds. But
+if you use @code{gettimeofday} on a typical Unix system where the clock
+ticks 10 or so microseconds at a time, @var{time} should be given in
+units of 10 microseconds.
+
+Returns an entropy estimate, in bits, suitable for calling
+@code{yarrow256_update}. Usually, 0, 1 or 2 bits.
+@end deftypefun
+
 @node Miscellaneous functions, Compatibility functions, Randomness, Reference
 @comment  node-name,  next,  previous,  up
 @section Miscellaneous functions
@@ -1720,11 +1865,9 @@ variable @code{des_check_key}, and the functions @code{des_cbc_cksum}
 @node Nettle soup, Installation, Reference, Top
 @comment  node-name,  next,  previous,  up
 @chapter Traditional Nettle Soup
-For the serious nettle hacker, here is a recipe for nettle-soup.
+For the serious nettle hacker, here is a recipe for nettle-soup. 4 servings
 
-4 servings
-
-@itemize @w
+@itemize @w{}
 @item
 1 liter fresh nettles (urtica dioica)
 @item
@@ -1820,7 +1963,7 @@ ispell-skip-region-alist: (
  ("^@\\(printindex\\|set\\) .*$")
  ("^@def.*$")
  ;; Allows one level of nested braces in the argument 
- ("@\\(uref\\|value\\|badspell\\|code\\|file\\|var\\){[^{}]*\\({[^{}]*}[^{}]*\\)*}")
+ ("@\\(uref\\|value\\|badspell\\|code\\|file\\|var\\|url\\){[^{}]*\\({[^{}]*}[^{}]*\\)*}")
  ("@[a-z]+[{ ]")
  ("@[a-z]+$")
  ("\input texinfo.*$")
@@ -1834,4 +1977,4 @@ End:
 @c  LocalWords:  RSA Daemen Rijnmen Schneier DES's ede structs oddnesses HMAC
 @c  LocalWords:  NIST Alice's GMP bignum Diffie Adi Shamir Adleman Euclid's ASN
 @c  LocalWords:  PKCS callbacks Young's urtica dioica autoconf automake SSH tad
-@c  LocalWords:  unguessability reseeding
+@c  LocalWords:  unguessability reseeding reseed alternatingly keysym
