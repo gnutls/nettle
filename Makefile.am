@@ -10,22 +10,23 @@ libnettleinclude_HEADERS = aes.h arcfour.h blowfish.h cast128.h \
 			   serpent.h twofish.h \
 			   md5.h md5-compat.h sha.h \
 			   cbc.h yarrow.h \
-			   rsa.h
+			   rsa.h nettle-meta.h
 
-libnettle_a_SOURCES = aes.c aes.h arcfour.c arcfour.h \
-		      cast128.c cast128.h cast128_sboxes.h \
+libnettle_a_SOURCES = aes.c aes.h aes-meta.c arcfour.c arcfour.h arcfour-meta.c\
+		      cast128.c cast128.h cast128_sboxes.h cast128-meta.c \
 		      blowfish.h blowfish.c \
 		      cbc.c \
 		      des.c des.h desinfo.h desCode.h \
 		      des3.c des-compat.c des-compat.h \
-		      md5.c md5.h md5-compat.c md5-compat.h \
-		      sha.h sha1.c sha256.c \
-		      serpent.c serpent.h serpent_sboxes.h \
-		      twofish.c twofish.h \
+		      md5.c md5.h md5-compat.c md5-compat.h md5-meta.c \
+		      sha.h sha1.c sha1-meta.c sha256.c sha256-meta.c \
+		      serpent.c serpent.h serpent_sboxes.h serpent-meta.c \
+		      twofish.c twofish.h twofish-meta.c \
 		      yarrow.h yarrow256.c yarrow_key_event.c \
 		      bignum.h bignum.c \
 		      rsa.h rsa.c rsa_md5.c rsa_sha1.c \
-		      rsa-compat.h rsa-compat.c
+		      rsa-compat.h rsa-compat.c \
+		      nettle-internal.c
 
 libnettle_a_LIBADD = @LIBOBJS@
 
