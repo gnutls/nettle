@@ -1,3 +1,7 @@
+2002-09-30  Niels Möller  <niels@s3.kth.se>
+
+	* sexp_format.c (sexp_format): Don't mix code and declarations.
+
 2002-09-29  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* testsuite/Makefile.am (TS_PROGS): Added buffer-test
