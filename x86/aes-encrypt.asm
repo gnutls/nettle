@@ -51,7 +51,7 @@ aes_encrypt:
 
 	movl	24(%esp), %ebp
 	C What's the right way to set the flags?
-	addl	$0, %ebp
+	cmpl	$0, %ebp
 	jz	.Lencrypt_end
 	
 .Lencrypt_block_loop:
@@ -61,8 +61,8 @@ aes_encrypt:
 	addl	$16, 32(%esp)	C Increment src pointer
 		
 	C FIXME:	Use %esi instead
-	movl	20(%esp),%ebp	C  address of context struct
-	movl	AES_NROUNDS (%ebp),%ebp	C  get number of rounds to do from struct
+	C movl	20(%esp),%ebp	C  address of context struct
+	movl	AES_NROUNDS (%esi),%ebp	C  get number of rounds to do from struct
 
 	subl	$1,%ebp
 	addl	$16,%esi	C  point to next key
