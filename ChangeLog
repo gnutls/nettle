@@ -1,3 +1,41 @@
+2002-02-25  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* sparc/aes.asm (_aes_crypt): Moved increment of src into the
+	source_loop. Also fixed stop condition, the loop was run 5 times,
+	not 4, as it should.
+	(_aes_crypt): Use src directly when accessing the source data,
+	don't use %o5.
+	(_aes_crypt): Renamed variables in source_loop.
+	(_aes_crypt): Changed stop condition in source_loop to not depend
+	on i. Finally reduced the source_loop to 16 instructions. Also
+	increased the alignment of the code to 16.
+	(_aes_crypt): In final_loop, use preshifted indices.
+	(_aes_crypt): In final_loop, construct the result in t0. Use t0-t3
+	for intermediate values.
+	(_aes_crypt): In final_loop, use the register idx.
+	(_aes_crypt): In final_loop, keep i multiplied by 4. Use key to
+	get to the current roundkey.
+	(_aes_crypt): In final_loop, use i for indexing.
+	(_aes_crypt): Update dst in the output loop. This yields a delay
+	slot that isn't filled yet.
+	(_aes_crypt): Decrement round when looping, saving yet some
+	instructions.
+	(_aes_crypt): Reformatted code as blocks of four instructions
+	each.
+	(_aes_crypt): Copy the addresses of the indexing tables into
+	registers at the start. No more need for the idx register.
+	(_aes_crypt): Deleted idx register.
+	(_aes_crypt): Some peep hole optimizations, duplicating some
+	instructions to fill nop:s, and put branch instructions on even
+	word addresses.
+
+2002-02-22  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* sparc/aes.asm (_aes_crypt): Moved some more additions out of the
+	inner loop, using additional registers.
+	(_aes_crypt): Deleted one more addition from the inner loop, by
+	using the subkey pointer.
+
 2002-02-19  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* configure.in (asm_path): Renamed "path" to "asm_path". Also look
