@@ -1,3 +1,10 @@
+2002-10-02  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* examples/rsa-keygen.c (main): Comment on the lax security of the
+	private key file.
+
+	* index.html: Added link to mailing list.
+
 2002-10-02  Niels Möller  <niels@s3.kth.se>
 
 	* Makefile.am: Fixed assembler rules, and shared libraries.
