@@ -93,7 +93,9 @@ static void
 openssl_des_set_key(void *ctx, unsigned length, const uint8_t *key)
 {
   assert(length == 8);
-  des_key_sched((char *) key, ctx);
+  /* Explicit cast used as I don't want to care about openssl's broken
+     array typedefs des_cblock and const_des_cblock. */
+  des_key_sched( (void *) key, ctx);
 }
 
 #define DES_BLOCK_SIZE 8
@@ -105,7 +107,7 @@ openssl_des_encrypt(void *ctx, unsigned length,
   assert (!(length % DES_BLOCK_SIZE));
   while (length)
     {
-      des_ecb_encrypt((char *) src, (char *) dst, ctx, DES_ENCRYPT);
+      des_ecb_encrypt( (void *) src, (void *) dst, ctx, DES_ENCRYPT);
       length -= DES_BLOCK_SIZE;
       dst += DES_BLOCK_SIZE;
       src += DES_BLOCK_SIZE;
@@ -119,7 +121,7 @@ openssl_des_decrypt(void *ctx, unsigned length,
   assert (!(length % DES_BLOCK_SIZE));
   while (length)
     {
-      des_ecb_encrypt((char *) src, (char *) dst, ctx, DES_DECRYPT);
+      des_ecb_encrypt( (void *) src, (void *) dst, ctx, DES_DECRYPT);
       length -= DES_BLOCK_SIZE;
       dst += DES_BLOCK_SIZE;
       src += DES_BLOCK_SIZE;
