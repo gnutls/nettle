@@ -1,3 +1,7 @@
+2003-05-26  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* testsuite/symbols-test: Allow symbols to start with a dot.
+
 2003-05-14  Niels Möller  <niels@s3.kth.se>
 
 	* pgp.h (enum pgp_subpacket_tag): Copied values from RFC 2440. 
