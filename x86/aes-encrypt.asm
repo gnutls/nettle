@@ -190,35 +190,14 @@ C .Laes_got_t:
 	AES_LAST_ROUND(d,a,b,c)
 	pushl	%edi
 
-	C c d a b
-	C // third column
-	movl	%eax,%edi
-	andl	$0x00ff0000,%edi
-	movl	%ebx,%ebp
-	andl	$0xff000000,%ebp
-	orl	%ebp,%edi
-	movl	%ecx,%ebp
-	andl	$0x000000ff,%ebp
-	orl	%ebp,%edi
-	movl	%edx,%ebp
-	andl	$0x0000ff00,%ebp
-	orl	%ebp,%edi
+	C third column
+	AES_LAST_ROUND(c,d,a,b)
 	pushl	%edi
 
-	C // fourth column
-	C b c d a
-	movl	%eax,%edi
-	andl	$0xff000000,%edi
-	movl	%ebx,%ebp
-	andl	$0x000000ff,%ebp
-	orl	%ebp,%edi
-	movl	%ecx,%ebp
-	andl	$0x0000ff00,%ebp
-	orl	%ebp,%edi
-	movl	%edx,%ebp
-	andl	$0x00ff0000,%ebp
-	orl	%ebp,%edi
+	C fourth column
+	AES_LAST_ROUND(b,c,d,a)
 	movl	%edi,%edx
+	
 	popl	%ecx
 	popl	%ebx
 	popl	%eax

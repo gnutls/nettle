@@ -2,6 +2,8 @@
 
 	* x86/aes-encrypt.asm (aes_encrypt): Use the AES_LAST_ROUND macro
 	for the first column of the final round.
+	(aes_encrypt): Similarly for the second column.
+	(aes_encrypt): Similarly for the third and fourth column.
 
 	* x86/machine.m4 (AES_LAST_ROUND): New macro.
 
