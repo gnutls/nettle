@@ -26,7 +26,7 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#if !HAVE_LIBGMP
+#if !WITH_PUBLIC_KEY
 int
 main(int argc, char **argv)
 {
@@ -35,54 +35,15 @@ main(int argc, char **argv)
 	  "and recompile Nettle\n");
   return EXIT_FAILURE;
 }
-#endif /* !HAVE_LIBGMP */
+#else /* WITH_PUBLIC_KEY */
 
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
-#include <unistd.h>
-#include <fcntl.h>
-
 #include "rsa.h"
-
-#define BUFSIZE 1000
-
-static int
-read_key(const char *name,
-	 struct rsa_private_key *key)
-{
-  uint8_t buffer[BUFSIZE];
-  unsigned done;
-
-  int fd = open(name, O_RDONLY);
-  if (fd < 0)
-    {
-      fprintf(stderr, "Failed to open `%s': %s\n",
-	      name, strerror(errno));
-      return 0;
-    }
-
-  for (done = 0; done < sizeof(buffer) ;)
-    {
-      int res = read(fd, buffer, sizeof(buffer) - done);
-      if (!res)
-	break;
-      else if (res < 0 && errno == EINTR)
-	continue;
-      else if (res < 0)
-	{
-	  fprintf(stderr, "Failed reading `%s': %s\n",
-		  name, strerror(errno));
-	  return 0;
-	}
-      else
-	done += res;
-    }
-  return rsa_keypair_from_sexp(NULL, key,
-			       done, buffer);
-}
+#include "io.h"
 
 int
 main(int argc, char **argv)
@@ -99,30 +60,18 @@ main(int argc, char **argv)
 
   rsa_init_private_key(&key);
   
-  if (!read_key(argv[1], &key))
+  if (!read_rsa_key(argv[1], NULL, &key))
     {
       fprintf(stderr, "Invalid key\n");
       return EXIT_FAILURE;
     }
 
   sha1_init(&hash);
-  for (;;)
+  if (!hash_file(&nettle_sha1, &hash, stdin))
     {
-      uint8_t buffer[BUFSIZE];
-      int res = read(STDIN_FILENO, buffer, sizeof(buffer));
-      if (!res)
-	/* EOF */
-	break;
-      else if (res < 0 && errno == EINTR)
-	continue;
-      else if (res < 0)
-	{
-	  fprintf(stderr, "Failed reading stdin: %s\n",
-		  strerror(errno));
-	  return 0;
-	}
-      else
-	sha1_update(&hash, res, buffer);
+      fprintf(stderr, "Failed reading stdin: %s\n",
+	      strerror(errno));
+      return 0;
     }
 
   mpz_init(s);
@@ -142,3 +91,4 @@ main(int argc, char **argv)
 
   return EXIT_SUCCESS;
 }
+#endif /* WITH_PUBLIC_KEY */
