@@ -31,6 +31,22 @@ test_advanced () {
     fi
 }
 
+test_advanced_hex () {
+    echo $n "$1$c" > test.in
+    if ../tools/sexp-conv -s hex <test.in >test1.out ; then
+	true
+    else
+	exit 1
+    fi
+    echo "$2" > test2.out
+
+    if cmp test1.out test2.out ; then
+	true
+    else
+	exit 1;
+    fi
+}
+
 test_transport () {
     echo $n "$1$c" > test.in
     if ../tools/sexp-conv -s transport <test.in >test1.out ; then
@@ -79,6 +95,11 @@ test_advanced '; comment
 ()' '()' 
 
 test_advanced '(foo[bar]foo)' '(foo [bar]foo)'
+
+test_advanced '(#aabb#)' '(|qrs=|)'
+test_advanced '(|qrs=|)' '(|qrs=|)'
+test_advanced_hex '(|qrs=|)' '(#aabb#)'
+test_advanced_hex '(#aabb#)' '(#aabb#)'
 
 test_transport '0:' '{MDo=}'
 test_transport '()' '{KCk=}'
