@@ -1,5 +1,20 @@
 2004-02-05  Niels Möller  <niels@s3.kth.se>
 
+	* Makefile.am (EXTRA_DIST): Make sure x86 assembler files are
+	distributed. 
+	(DISTCLEANFILES): And that the symlinks and .s files are deleted.
+
+	* x86/aes-encrypt.asm, x86/aes-decrypt.asm: Fixed debug
+	information.
+
+	* x86/arcfour-crypt.asm: New file. About three times faster than
+	the optimized C code.
+
+	* configure.ac: Use assembler file arcfour-crypt.asm if available.
+
+	* arcfour.c (arcfour_crypt): Moved function too...
+	* arcfour-crypt.c (arcfour_crypt): New file.
+
 	* arcfour.c (arcfour_crypt): Optimization suggested by Jonas
 	Walldén. Makes arcfour up to 50% faster on x86 and ppc, and
 	probably on other architectures as well.
