@@ -66,9 +66,7 @@ rsa_keypair_from_sexp(struct rsa_public_key *pub,
   struct sexp_iterator values[8];
   unsigned nvalues;
   
-  sexp_iterator_init(&i, length, expr);
-
-  if (!sexp_iterator_next(&i))
+  if (!sexp_iterator_first(&i, length, expr))
     return 0;
   
   if (priv)
