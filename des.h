@@ -51,8 +51,8 @@ struct des_ctx
   enum des_error status;
 };
 
-/* On success, returns 1 and sets ctx->status to DES_OK. On error,
- * returns 0 and sets ctx->status accordingly. */
+/* On success, returns 1 and sets ctx->status to DES_OK (zero). On
+ * error, returns 0 and sets ctx->status accordingly. */
 int
 des_set_key(struct des_ctx *ctx, const uint8_t *key);
 

@@ -39,13 +39,13 @@
  * applicable. */
 
 #include "serpent.h"
-#include "serpentsboxes.h"
+#include "serpent_sboxes.h"
 
 #include <assert.h>
 
 void
 serpent_set_key(struct serpent_ctx *ctx,
-                unsigned length, const uint8_t *key)
+                unsigned key_size, const uint8_t *key)
 {
   unsigned i, j;
   uint32_t w[132], k[132];
@@ -64,7 +64,7 @@ serpent_set_key(struct serpent_ctx *ctx,
     if (j < 8)
     {
       /* Pad key, "aabbcc" -> "aabbcc0100...00" */
-      UINT32 partial = 0x01;
+      uint32_t partial = 0x01;
       while (i)
 	partial = (partial << 8 ) | key[--i];
       w[j++] = partial;
@@ -120,7 +120,7 @@ serpent_set_key(struct serpent_ctx *ctx,
 }
 
 void
-serpent_encrypt(struct aes_ctx *ctx,
+serpent_encrypt(struct serpent_ctx *ctx,
                 unsigned length, uint8_t *dst,
                 const uint8_t *plain)
 {
@@ -253,9 +253,9 @@ serpent_encrypt(struct aes_ctx *ctx,
 }
 
 void
-serpent_decrypt(struct aes_ctx *ctx,
+serpent_decrypt(struct serpent_ctx *ctx,
                 unsigned length, uint8_t *dst,
-                const uint8_t *cipher);
+                const uint8_t *cipher)
 {
   register uint32_t x0, x1, x2, x3;
   register uint32_t y0, y1, y2, y3;
@@ -263,7 +263,7 @@ serpent_decrypt(struct aes_ctx *ctx,
 
   for (; length;
          length -= SERPENT_BLOCKSIZE,
-         plain += SERPENT_BLOCKSIZE,
+         cipher += SERPENT_BLOCKSIZE,
          dst += SERPENT_BLOCKSIZE)
     {
       x0=cipher[0]|(cipher[1]<<8)|(cipher[2]<<16)|(cipher[3]<<24);

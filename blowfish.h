@@ -51,7 +51,9 @@ struct blowfish_ctx
   enum blowfish_error status;
 };
 
-void
+/* On success, returns 1 and sets ctx->status to BLOWFISH_OK (zero).
+ * On error, returns 0 and sets ctx->status to BLOWFISH_WEAK_KEY. */
+int
 blowfish_set_key(struct blowfish_ctx *ctx,
                  unsigned length, const uint8_t *key);
 

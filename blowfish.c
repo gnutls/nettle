@@ -33,6 +33,8 @@
 
 #include "blowfish.h"
 
+#include <assert.h>
+
 /* precomputed S boxes */
 static const uint32_t ks0[256] = {
     0xD1310BA6,0x98DFB5AC,0x2FFD72DB,0xD01ADFB7,0xB8E1AFED,0x6A267E96,
@@ -214,7 +216,7 @@ static const uint32_t ks3[256] = {
     0x01C36AE4,0xD6EBE1F9,0x90D4F869,0xA65CDEA0,0x3F09252D,0xC208E69F,
     0xB74E6132,0xCE77E25B,0x578FDFE3,0x3AC372E6 };
 
-static const uint32_t ps[BLOWFISH_ROUNDS+2] = {
+static const uint32_t ps[_BLOWFISH_ROUNDS+2] = {
     0x243F6A88,0x85A308D3,0x13198A2E,0x03707344,0xA4093822,0x299F31D0,
     0x082EFA98,0xEC4E6C89,0x452821E6,0x38D01377,0xBE5466CF,0x34E90C6C,
     0xC0AC29B7,0xC97C50DD,0x3F84D5B5,0xB5470917,0x9216D5D9,0x8979FB1B };
@@ -272,7 +274,7 @@ function_F( BLOWFISH_context *bc, u32 x )
 static void
 encrypt(struct blowfish_ctx *bc, uint32_t *ret_xl, uint32_t *ret_xr)
 {
-  #if BLOWFISH_ROUNDS == 16
+  #if _BLOWFISH_ROUNDS == 16
     uint32_t xl, xr, *s0, *s1, *s2, *s3, *p;
 
     xl = *ret_xl;
@@ -300,8 +302,8 @@ encrypt(struct blowfish_ctx *bc, uint32_t *ret_xl, uint32_t *ret_xr)
     R( xl, xr, 14);
     R( xr, xl, 15);
 
-    xl ^= p[BLOWFISH_ROUNDS];
-    xr ^= p[BLOWFISH_ROUNDS+1];
+    xl ^= p[_BLOWFISH_ROUNDS];
+    xr ^= p[_BLOWFISH_ROUNDS+1];
 
     *ret_xl = xr;
     *ret_xr = xl;
@@ -314,7 +316,7 @@ encrypt(struct blowfish_ctx *bc, uint32_t *ret_xl, uint32_t *ret_xr)
     xr = *ret_xr;
     p = bc->p;
 
-    for(i=0; i < BLOWFISH_ROUNDS; i++ ) {
+    for(i=0; i < _BLOWFISH_ROUNDS; i++ ) {
 	xl ^= p[i];
 	xr ^= function_F(bc, xl);
 	temp = xl;
@@ -325,8 +327,8 @@ encrypt(struct blowfish_ctx *bc, uint32_t *ret_xl, uint32_t *ret_xr)
     xl = xr;
     xr = temp;
 
-    xr ^= p[BLOWFISH_ROUNDS];
-    xl ^= p[BLOWFISH_ROUNDS+1];
+    xr ^= p[_BLOWFISH_ROUNDS];
+    xl ^= p[_BLOWFISH_ROUNDS+1];
 
     *ret_xl = xl;
     *ret_xr = xr;
@@ -336,7 +338,7 @@ encrypt(struct blowfish_ctx *bc, uint32_t *ret_xl, uint32_t *ret_xr)
 static void
 decrypt(struct blowfish_ctx *bc, uint32_t *ret_xl, uint32_t *ret_xr )
 {
-  #if BLOWFISH_ROUNDS == 16
+  #if _BLOWFISH_ROUNDS == 16
     uint32_t xl, xr, *s0, *s1, *s2, *s3, *p;
 
     xl = *ret_xl;
@@ -378,7 +380,7 @@ decrypt(struct blowfish_ctx *bc, uint32_t *ret_xl, uint32_t *ret_xr )
     xr = *ret_xr;
     p = bc->p;
 
-    for(i=BLOWFISH_ROUNDS+1; i > 1; i-- ) {
+    for(i=_BLOWFISH_ROUNDS+1; i > 1; i-- ) {
 	xl ^= p[i];
 	xr ^= function_F(bc, xl);
 	temp = xl;
@@ -403,12 +405,12 @@ decrypt(struct blowfish_ctx *bc, uint32_t *ret_xl, uint32_t *ret_xr )
 
 #warning should loop on length.
 void
-blowfish_encrypt(struct blowfish_ctx *bc, uitn32_t length,
-                 uint8_t *outbuf, const uint8_t *inbuf )
+blowfish_encrypt(struct blowfish_ctx *bc, uint32_t length,
+                 uint8_t *outbuf, const uint8_t *inbuf)
 {
-    u32 d1, d2;
+    uint32_t d1, d2;
 
-    assert(!ctx->status);
+    assert(!bc->status);
     
     d1 = inbuf[0] << 24 | inbuf[1] << 16 | inbuf[2] << 8 | inbuf[3];
     d2 = inbuf[4] << 24 | inbuf[5] << 16 | inbuf[6] << 8 | inbuf[7];
@@ -425,12 +427,12 @@ blowfish_encrypt(struct blowfish_ctx *bc, uitn32_t length,
 
 
 void
-blowfish_decrypt(struct blowfish_ctx *bc, uint32 length,
+blowfish_decrypt(struct blowfish_ctx *bc, unsigned length,
                  uint8_t *outbuf, const uint8_t *inbuf )
 {
-    u32 d1, d2;
+    uint32_t d1, d2;
 
-    assert(!ctx->status);
+    assert(!bc->status);
 
     d1 = inbuf[0] << 24 | inbuf[1] << 16 | inbuf[2] << 8 | inbuf[3];
     d2 = inbuf[4] << 24 | inbuf[5] << 16 | inbuf[6] << 8 | inbuf[7];
@@ -446,7 +448,7 @@ blowfish_decrypt(struct blowfish_ctx *bc, uint32 length,
 }
 
 int
-blowfish_set_key(struct blowfish_ctx *c,
+blowfish_set_key(struct blowfish_ctx *ctx,
                  uint32_t keylen, const uint8_t *key)
 {
     int i, j;
@@ -461,16 +463,16 @@ blowfish_set_key(struct blowfish_ctx *c,
     }
 #endif
     
-    for(i=0; i < BLOWFISH_ROUNDS+2; i++ )
-	c->p[i] = ps[i];
+    for(i=0; i < _BLOWFISH_ROUNDS+2; i++ )
+        ctx->p[i] = ps[i];
     for(i=0; i < 256; i++ ) {
-	c->s0[i] = ks0[i];
-	c->s1[i] = ks1[i];
-	c->s2[i] = ks2[i];
-	c->s3[i] = ks3[i];
+	ctx->s0[i] = ks0[i];
+	ctx->s1[i] = ks1[i];
+	ctx->s2[i] = ks2[i];
+	ctx->s3[i] = ks3[i];
     }
 
-    for(i=j=0; i < BLOWFISH_ROUNDS+2; i++ ) {
+    for(i=j=0; i < _BLOWFISH_ROUNDS+2; i++ ) {
       #if BIG_ENDIAN_HOST
         #werror BIG_ENDIAN hack used
 	((byte*)&data)[0] = key[j];
@@ -487,35 +489,35 @@ blowfish_set_key(struct blowfish_ctx *c,
 	data = key[j] << 24 | key[(j+1) % keylen] <<16
 	  | key[(j+2)%keylen] << 8 | key[(j+3)%keylen];
       #endif
-	c->p[i] ^= data;
+	ctx->p[i] ^= data;
 	j = (j+4) % keylen;
     }
 
     datal = datar = 0;
-    for(i=0; i < BLOWFISH_ROUNDS+2; i += 2 ) {
-	encrypt( c, &datal, &datar );
-	c->p[i]   = datal;
-	c->p[i+1] = datar;
+    for(i=0; i < _BLOWFISH_ROUNDS+2; i += 2 ) {
+	encrypt( ctx, &datal, &datar );
+	ctx->p[i]   = datal;
+	ctx->p[i+1] = datar;
     }
     for(i=0; i < 256; i += 2 )	{
-	encrypt( c, &datal, &datar );
-	c->s0[i]   = datal;
-	c->s0[i+1] = datar;
+	encrypt( ctx, &datal, &datar );
+	ctx->s0[i]   = datal;
+	ctx->s0[i+1] = datar;
     }
     for(i=0; i < 256; i += 2 )	{
-	encrypt( c, &datal, &datar );
-	c->s1[i]   = datal;
-	c->s1[i+1] = datar;
+	encrypt( ctx, &datal, &datar );
+	ctx->s1[i]   = datal;
+	ctx->s1[i+1] = datar;
     }
     for(i=0; i < 256; i += 2 )	{
-	encrypt( c, &datal, &datar );
-	c->s2[i]   = datal;
-	c->s2[i+1] = datar;
+	encrypt( ctx, &datal, &datar );
+	ctx->s2[i]   = datal;
+	ctx->s2[i+1] = datar;
     }
     for(i=0; i < 256; i += 2 )	{
-	encrypt( c, &datal, &datar );
-	c->s3[i]   = datal;
-	c->s3[i+1] = datar;
+	encrypt( ctx, &datal, &datar );
+	ctx->s3[i]   = datal;
+	ctx->s3[i+1] = datar;
     }
 
     ctx->status = BLOWFISH_WEAK_KEY;
@@ -524,8 +526,8 @@ blowfish_set_key(struct blowfish_ctx *c,
     /* the P-array (here c) occurs more than once per table.	    */
     for(i=0; i < 255; i++ ) {
 	for( j=i+1; j < 256; j++) {
-	    if( (c->s0[i] == c->s0[j]) || (c->s1[i] == c->s1[j]) ||
-		(c->s2[i] == c->s2[j]) || (c->s3[i] == c->s3[j]) )
+	    if( (ctx->s0[i] == ctx->s0[j]) || (ctx->s1[i] == ctx->s1[j]) ||
+		(ctx->s2[i] == ctx->s2[j]) || (ctx->s3[i] == ctx->s3[j]) )
 		return 0;
 	}
     }
