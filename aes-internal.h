@@ -43,9 +43,9 @@
 #define isbox _aes_isbox
 
 /* Internal tables */
-extern const uint32_t dtbl[];
+extern const uint32_t dtbl[4][0x100];
 extern const uint32_t itbl[];
-extern const uint8_t sbox[256];
-extern const uint8_t isbox[256];
+extern const uint8_t sbox[0x100];
+extern const uint8_t isbox[0x100];
 
 #endif /* NETTLE_AES_INTERNAL_H_INCLUDED */
