@@ -1,3 +1,9 @@
+2002-10-02  Niels Möller  <niels@s3.kth.se>
+
+	* Makefile.am: Fixed assembler rules, and shared libraries.
+
+	* configure.ac: Fixed the enable-shared option.
+
 2002-10-01  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* configure.ac: New option --enable-shared, and a first attempt at
