@@ -266,12 +266,16 @@ sexp_iterator_assoc(struct sexp_iterator *iterator,
 			/* We don't allow duplicates */
 			return 0;
 
+		      /* Advance to point to value */
+		      if (!sexp_iterator_next(iterator))
+			return 0;
+
 		      found[i] = 1;
 		      nfound++;
 		      
 		      /* Record this position. */
 		      values[i] = *iterator;
-
+		      
 		      break;
 		    }
 		}
