@@ -34,19 +34,23 @@
 
 int
 rsa_keypair_to_sexp(struct nettle_buffer *buffer,
+		    const char *algorithm_name,
 		    const struct rsa_public_key *pub,
 		    const struct rsa_private_key *priv)
 {
+  if (!algorithm_name)
+    algorithm_name = "rsa";
+  
   if (priv)
     return sexp_format(buffer,
 		       "(private-key(%0s(n%b)(e%b)"
 		       "(d%b)(p%b)(q%b)(a%b)(b%b)(c%b)))",
-		       "rsa", pub->n, pub->e,
+		       algorithm_name, pub->n, pub->e,
 		       priv->d, priv->p, priv->q,
 		       priv->a, priv->b, priv->c);
   else
     return sexp_format(buffer, "(public-key(%0s(n%b)(e%b)))",
-		       "rsa", pub->n, pub->e);
+		       algorithm_name, pub->n, pub->e);
 }
 
 #endif /* WITH_PUBLIC_KEY */

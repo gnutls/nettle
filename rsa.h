@@ -235,6 +235,7 @@ struct nettle_buffer;
 /* Generates a public-key expression if PRIV is NULL .*/
 int
 rsa_keypair_to_sexp(struct nettle_buffer *buffer,
+		    const char *algorithm_name, /* NULL means "rsa" */
 		    const struct rsa_public_key *pub,
 		    const struct rsa_private_key *priv);
 
