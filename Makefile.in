@@ -166,14 +166,14 @@ des.o: des.c des.h $(des_headers)
 
 @IF_ENABLE_ASM@%.$(OBJEXT): %.asm asm.m4 machine.m4 config.m4
 @IF_ENABLE_ASM@	$(M4) $(srcdir)/asm.m4 machine.m4 config.m4 \
-@IF_ENABLE_ASM@		`test -f $< || echo '$(srcdir)/'`$< >$*.s
+@IF_ENABLE_ASM@		$< >$*.s
 @IF_ENABLE_ASM@	$(CC) $(CFLAGS) $(CCPIC_MAYBE) -c $*.s -o $@
 @IF_ENABLE_ASM@	echo >$*.d 
 
 # All assembler files should use pic-code only.
 @IF_ENABLE_ASM@%.p$(OBJEXT): %.asm asm.m4 machine.m4 config.m4
 @IF_ENABLE_ASM@	$(M4) $(srcdir)/asm.m4 machine.m4 config.m4 \
-@IF_ENABLE_ASM@		`test -f $< || echo '$(srcdir)/'`$< >$*.s
+@IF_ENABLE_ASM@		$< >$*.s
 @IF_ENABLE_ASM@	$(CC) $(CFLAGS) $(CCPIC) -c $*.s -o $@
 @IF_ENABLE_ASM@	echo >$*.d 
 
