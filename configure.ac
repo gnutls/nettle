@@ -152,7 +152,7 @@ Support for public key algorithms will be unavailable.])]
 
 if test "x$enable_public_key" = xyes ; then
   AC_DEFINE(WITH_PUBLIC_KEY)
-  RSA_EXAMPLES="rsa-keygen rsa-sign rsa-verify rsa-encrypt rsa-decrypt"
+  RSA_EXAMPLES='rsa-keygen$(EXEEXT) rsa-sign$(EXEEXT) rsa-verify$(EXEEXT) rsa-encrypt$(EXEEXT) rsa-decrypt$(EXEEXT)'
 else
   RSA_EXAMPLES=""
 fi
