@@ -137,9 +137,11 @@ struct nettle_buffer;
  * Format strings can contained matched parentheses, and the following
  * formatting specifiers:
  *
- *   %z   NUL-terminated string, const uint8_t *.
- *
  *   %s   String represented as unsigned length, const uint8_t *data.
+ *
+ *   %t   Optional display type, represented as
+ *        unsigned display_length, const uint8_t *display,
+ *        display == NULL means no display type.
  *
  *   %i   Non-negative small integer, uint32_t.
  *
@@ -148,7 +150,15 @@ struct nettle_buffer;
  *   %l   Literal string (no length added), typically a balanced
  *        subexpression. Represented as unsigned length, const uint8_t
  *        *data.
- */
+ *
+ * Modifiers:
+ *
+ *   %0   For %s, %t and %l, says that there's no length argument,
+ *        instead the string is NUL-terminated, and there's only one
+ *        const uint8_t * argument.
+ *
+ * FIXME: Allow literals, like "(x%b)". Allow "%(" for unbalanced
+ * parenthesis. */
 
 unsigned
 sexp_format(struct nettle_buffer *buffer,
