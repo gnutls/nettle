@@ -1,5 +1,8 @@
 2004-10-20  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/nettle-openssl.c (NCOMPAT): Disable openssl backwards
+	compatibility.
+
 	* config.make.in: Insert $(PRE_CPPFLAGS) and $(PRE_LDFLAGS) before
 	$(CPPFLAGS) and $(LDFLAGS). This mechanism replaces $(INCLUDES).
 
