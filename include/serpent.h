@@ -27,7 +27,7 @@ typedef struct {
 
 /* This performs Serpent's key scheduling algorithm. */
 void
-serpent_setup(SERPENT_context *ctx, const UINT8 key[32]);
+serpent_setup(SERPENT_context *ctx, const UINT8 *key);
 
 /*
  * serpent_encrypt()
