@@ -48,6 +48,13 @@ test_main(void)
 
   nettle_buffer_init(&buffer);
   ASSERT(rsa_keypair_to_sexp(&buffer, &pub, &priv));
+
+  if (verbose)
+    {
+      printf("private:");
+      print_hex(buffer.size, buffer.contents);  
+    }
+  
   ASSERT(MEMEQH(buffer.size, buffer.contents,
 		"2831313a707269766174652d6b657928"
 		"333a72736128313a6e36333a085c3408"
@@ -70,12 +77,18 @@ test_main(void)
 		"6a8944f0b92928313a6233323a014875"
 		"1e622d6d58e3bb094afd6edacf737035"
 		"1d068e2ce9f565c5528c4a7473292831"
-		"3a6333313af8a458ea73a018dc6fa568"
-		"63e3bc6de405f364f77dee6f0962679e"
-		"a1a8282e292929"));
+		"3a6333323a00f8a458ea73a018dc6fa5"
+		"6863e3bc6de405f364f77dee6f096267"
+		"9ea1a8282e292929"));
 
   nettle_buffer_clear(&buffer);
   ASSERT(rsa_keypair_to_sexp(&buffer, &pub, NULL));
+
+  if (verbose)
+    {
+      printf("public:");
+      print_hex(buffer.size, buffer.contents);  
+    }
   ASSERT(MEMEQH(buffer.size, buffer.contents,
 		"2831303a7075626c69632d6b65792833"
 		"3a72736128313a6e36333a085c340898"
