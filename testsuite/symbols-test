@@ -6,7 +6,7 @@ if [ -z "$srcdir" ] ; then
   srcdir=`pwd`
 fi
 
-nm ../libnettle.a | grep ' [DRT] ' | egrep -v '( |^)\.?(_?nettle_|memxor)' \
+nm ../libnettle.a | grep ' [DRT] ' | egrep -v '( |^)\.?_?(_?nettle_|memxor)' \
     | sort -k3 > test1.out
 
 if [ -s test1.out ] ; then
