@@ -1,3 +1,9 @@
+2004-12-02  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (all check install uninstall) 
+	(clean distclean mostlyclean maintainer-clean): Don't use the -C
+	flag when invoking make, for compatibility with Solaris make.
+
 2004-12-02  Niels Möller  <niels@s3.kth.se>
 
 	* Makefile.in (aesdata, desdata): Commented out the explicit
