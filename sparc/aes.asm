@@ -66,44 +66,28 @@ key_addition_8to32:
 	.type	key_addition32,#function
 	.proc	020
 key_addition32:
-	! Use %g2 and %g3 as temporaries, %o3 as counter
-	mov	-4, %o3
-	! Increment txt
-	add	%o0, 4, %o0
-.LL26:
-	! Get txt[i]
-	ld	[%o0+%o3], %g2
-	add	%o3, 4, %o3
-	! Get keys[i]
-	ld	[%o1+%o3], %g3
-	cmp	%o3, 12
-
+	! Unrolled version
+	ld	[%o0], %g2
+	ld	[%o1], %g3
 	xor	%g2, %g3, %g3
+	st	%g3, [%o2]
 
-	bleu	.LL26
-	st	%g3, [%o2+%o3]
-	
+	ld	[%o0+4], %g2
+	ld	[%o1+4], %g3
+	xor	%g2, %g3, %g3
+	st	%g3, [%o2+4]
+
+	ld	[%o0+8], %g2
+	ld	[%o1+8], %g3
+	xor	%g2, %g3, %g3
+	st	%g3, [%o2+8]
+
+	ld	[%o0+12], %g2
+	ld	[%o1+12], %g3
+	xor	%g2, %g3, %g3
 	retl
-	nop
+	st	%g3, [%o2+12]
 
-
-! 	
-! 	mov	%o0, %o4
-! 	mov	0, %o3
-! .LL26:
-! 	sll	%o3, 2, %g2
-! 	ld	[%o1+%g2], %g3
-! 	add	%o3, 1, %o3
-! 	ld	[%o4+%g2], %o0
-! 	cmp	%o3, 3
-! 
-! 	xor	%g3, %o0, %g3
-! 
-! 	bleu	.LL26
-! 	st	%g3, [%o2+%g2]
-! 
-! 	retl
-! 	nop
 
 .LLfe2:
 	.size	key_addition32,.LLfe2-key_addition32
@@ -176,155 +160,280 @@ idx:
 	.global aes_encrypt
 	.type	aes_encrypt,#function
 	.proc	020
+
+! input parameters
+define(ctx,	%i0)
+define(length,	%i1)
+define(dst,	%i2)
+define(src,	%i3)
+
+! locals
+define(g_idx, %i5)
+	
+define(dtbl,	%l1)
+define(round,	%l3)
+define(txt,	%l5)
+define(wtxt,	%l6)
+
 aes_encrypt:
 	save	%sp, -136, %sp
 
-	andcc	%i1, 15, %g0
+	andcc	length, 15, %g0
 	bne	.Lencrypt_fail
-	cmp	%i1, 0
+	cmp	length, 0
 	be	.Lencrypt_end
 	sethi	%hi(idx), %i4
-	add	%fp, -24, %l6
-	add	%fp, -40, %l5
-	or	%i4, %lo(idx), %i5
+	add	%fp, -24, wtxt
+	add	%fp, -40, txt
+	or	%i4, %lo(idx), g_idx
 .Lencrypt_block:
-	mov	%i3, %o0
-	mov	%i0, %o1
+	! key_addition_8to32(src, ctx->keys, wtxt);
+	mov	src, %o0
+	mov	ctx, %o1
 	call	key_addition_8to32, 0
-	mov	%l6, %o2
-	ld	[%i0+480], %o0
-	mov	1, %l3
-	cmp	%l3, %o0
-	bgeu	.LL77
+	mov	wtxt, %o2
+
+	! get nrounds
+	ld	[ctx+480], %o0
+	mov	1, round
+	cmp	round, %o0
+	bgeu	.Lencrypt_final
 	sethi	%hi(64512), %o0
+
 	sethi	%hi(_aes_dtbl), %o0
-	or	%o0, %lo(_aes_dtbl), %l1
-	mov	%l5, %l4
-	mov	%l6, %l0
+	or	%o0, %lo(_aes_dtbl), dtbl
+
+	mov	txt, %l4
+	mov	wtxt, %l0
+	! FIXME:	%l7 = idx, seems redundant? 
 	or	%i4, %lo(idx), %l7
-	add	%i0, 16, %l2
-.LL53:
+	add	ctx, 16, %l2
+.Lencrypt_round:
+	! j:	%o7
+	! 4j:	%g2
 	mov	0, %o7
+	! %g3 = &idx[3][0]
 	add	%l7, 48, %g3
-.LL57:
+.Lencrypt_inner:
+	! %o0 = idx[3][0]
 	ld	[%g3], %o0
+	! %g2 = 4j
 	sll	%o7, 2, %g2
+	! %o1 = idx[2][0]
 	ld	[%g3-16], %o1
+	! %o2 = 4 idx[3][0]
 	sll	%o0, 2, %o0
+	! %o3 = wtxt[idx[3][0]], byte => bits 24-31
 	ldub	[%l0+%o0], %o3
 	sll	%o1, 2, %o1
+	! %o4 = wtxt[idx[2][0]], half-word???
 	lduh	[%l0+%o1], %o4
 	sll	%o3, 2, %o3
+	! %o0 = idx[1][0]
 	ld	[%g3-32], %o0
+	! %o4 = (wtxt[idx[2][0]] >> 16) & 0xff => bits 16-23
 	and	%o4, 255, %o4
-	ld	[%l1+%o3], %o2
+	! %o2 = dtbl[wtxt[idx[3][0]] >> 24]
+	ld	[dtbl+%o3], %o2
+	! %o0 = 4 idx[1][0]
 	sll	%o0, 2, %o0
+	! %o3 = dtbl[wtxt[idx[3][0]] >> 24] >> 24
 	srl	%o2, 24, %o3
+	! %o4 = 4 ((wtxt[idx[2][0]] >> 16) & 0xff)
 	sll	%o4, 2, %o4
+	! %o0 = &wtxt[idx[1][0]]
 	add	%l0, %o0, %o0
-	ld	[%l1+%o4], %o1
+	! %o1 = dtbl[(wtxt[idx[2][0]] >> 16) & 0xff]
+	ld	[dtbl+%o4], %o1
+	! %o2 = dtbl[wtxt[idx[3][0]] >> 24] << 8
 	sll	%o2, 8, %o2
+	! %o5 = (wtxt[idx[1][0]] >> 8) & 0xff
 	ldub	[%o0+2], %o5
+	! %o2 = ROL(dtbl[wtxt[idx[3][0]] >> 24])
 	or	%o2, %o3, %o2
+	! %o1 = dtbl[(wtxt[idx[2][0]] >> 16) & 0xff] 
+	!       ^ ROL(dtbl[wtxt[idx[3][0]] >> 24])  = XX1
 	xor	%o1, %o2, %o1
+	! %o3 = XX1 >> 24
 	srl	%o1, 24, %o3
+	! %o5 = 4 ((wtxt[idx[1][0]] >> 8) & 0xff)
 	sll	%o5, 2, %o5
+	! %o2 = wtxt[j]
 	ld	[%l0+%g2], %o2
+	! %o1 = XX1 << 8
 	sll	%o1, 8, %o1
-	ld	[%l1+%o5], %o0
+	! %o0 = dtbl[(wtxt[idx[1][0]] >> 8) & 0xff]
+	ld	[dtbl+%o5], %o0
+	! %o1 = ROL(XX1)
 	or	%o1, %o3, %o1
+	! %o0 = dtbl[(wtxt[idx[1][0]] >> 8) & 0xff] ^ ROL(XX1) = XX2
 	xor	%o0, %o1, %o0
+	! %o2 = wtxt[j] & 0xff
 	and	%o2, 255, %o2
+	! %03 = XX2 >> 24
 	srl	%o0, 24, %o3
+	! %o2 = 4 (wtxt[j] & 0xff)
 	sll	%o2, 2, %o2
-	ld	[%l1+%o2], %o1
+	! %o1 = dtbl[wtxt[j] & 0xff]
+	ld	[dtbl+%o2], %o1
+	! %o0 = XX2 << 8
 	sll	%o0, 8, %o0
+	! %o0 = ROL(XX2)
 	or	%o0, %o3, %o0
+	! %o1 = dtbl[wtxt[j] & 0xff] ^ ROL(XX2 = XX3
 	xor	%o1, %o0, %o1
+	! j++
 	add	%o7, 1, %o7
+	! txt[j] (old j) = XX3 
 	st	%o1, [%l4+%g2]
+	! j <= 3?
 	cmp	%o7, 3
-	bleu	.LL57
+	bleu	.Lencrypt_inner
+	! %g3 = &idx[3][j]
 	add	%g3, 4, %g3
+
+	! key_addition32(txt, ctx + 16, wtxt)
 	mov	%l2, %o1
-	mov	%l5, %o0
+	mov	txt, %o0
 	call	key_addition32, 0
-	mov	%l6, %o2
-	ld	[%i0+480], %o0
-	add	%l3, 1, %l3
-	cmp	%l3, %o0
-	blu	.LL53
+	mov	wtxt, %o2
+
+	! %o0 = nrounds
+	! FIXME:	Keep in some register?
+	ld	[ctx+480], %o0
+	add	round, 1, round
+	cmp	round, %o0
+	! round < nrounds?
+	blu	.Lencrypt_round
+	! %l2 = ctx->keys + r*4 
 	add	%l2, 16, %l2
+	
 	sethi	%hi(64512), %o0
-.LL77:
+.Lencrypt_final:
+	! %l3 = 0xff00 ???
 	or	%o0, 768, %l3
+	! %o7 = j = 0
 	mov	0, %o7
-	mov	%l6, %g3
+	! %g3 = wtxt
+	mov	wtxt, %g3
+	! %l2 = 0xff0000
 	sethi	%hi(16711680), %l2
+	! %l1 = 0xff000000
 	sethi	%hi(-16777216), %l1
-	mov	%l5, %l0
-	add	%i5, 48, %g2
+	! %l0 = txt 
+	mov	txt, %l0
+	! %g2 = &idx[3][0]
+	add	g_idx, 48, %g2
 .LL63:
+	! %o0 = idx[1][0]
 	ld	[%g2-32], %o0
+	! %o5 = 4 j
 	sll	%o7, 2, %o5
+	! %o2 = idx[2][0]
 	ld	[%g2-16], %o2
+	! %o0 = 4(idx[1][0])
 	sll	%o0, 2, %o0
+	! %o3 = wtxt[idx[1][0]]
 	ld	[%g3+%o0], %o3
+	! %o2 = 4 idx[2][0]
 	sll	%o2, 2, %o2
+	! %o4 = idx[3][0]
 	ld	[%g2], %o4
+	! %o3 = wtxt[idx[1][0]] & 0xff00 
 	and	%o3, %l3, %o3
+	! %o1 = wtxt[idx[2][0]]
 	ld	[%g3+%o2], %o1
+	! %o4 = 4 idx[3][0]
 	sll	%o4, 2, %o4
+	! %o0 = wtxt[idx[1][0]]
 	ld	[%g3+%o5], %o0
+	! %o1 = wtxt[idx[2][0]] & 0xff0000
 	and	%o1, %l2, %o1
+	! %o2 = wtxt[idx[3][0]]
 	ld	[%g3+%o4], %o2
+	! %o0 = wtxt[idx[1][0]] & 0xff
 	and	%o0, 255, %o0
+
+	! % o0 = wtxt[idx[1][0]] & 0xff
+	!        | wtxt[idx[1][0]] & 0xff00
+	!        | wtxt[idx[2][0]] & 0xff0000
 	or	%o0, %o3, %o0
 	or	%o0, %o1, %o0
+	! %o2 = wtxt[idx[3][0]] & 0xff000000
 	and	%o2, %l1, %o2
 	or	%o0, %o2, %o0
+	! j++
 	add	%o7, 1, %o7
+	! txt[j] = ... | ... | ... | ... (old j)
 	st	%o0, [%l0+%o5]
+	! j <= 3?
 	cmp	%o7, 3
 	bleu	.LL63
+	! %g2 = &idx[3][j]
 	add	%g2, 4, %g2
+	
 	sethi	%hi(_aes_sbox), %o0
 	or	%o0, %lo(_aes_sbox), %g3
+	
+	! %o7 = j = 0
 	mov	0, %o7
+	! %g2 = txt
 	mov	%l5, %g2
-.LL68:
+.Lencrypt_sbox:
+	! %o5 = 4 j
 	sll	%o7, 2, %o5
+	! %o3 = txt[j]
 	ld	[%g2+%o5], %o3
+	! j++
 	add	%o7, 1, %o7
+	! %o0 = (txt[j] >> 8) & 0xff (old j) 
 	srl	%o3, 8, %o0
 	and	%o0, 255, %o0
+	! %o4 = sbox[(txt[j] >> 8) & 0xff]
 	ldub	[%g3+%o0], %o4
+	! %o2 = (txt[j] >> 16) (old j)
 	srl	%o3, 16, %o2
+	! %o0 = txt[j] & 0xff
 	and	%o3, 255, %o0
+	! %o1 = sbox[txt[j] & 0xff]
 	ldub	[%g3+%o0], %o1
+	! %o2 = (txt[j] >> 16) & 0xff (old j)
 	and	%o2, 255, %o2
+	! %o0 = sbox[(txt[j] >> 16) & 0xff]
 	ldub	[%g3+%o2], %o0
+	! %o3 = txt[j] >> 24
 	srl	%o3, 24, %o3
+	! %o4 = sbox[txt[j] & 0xff] << 8
 	sll	%o4, 8, %o4
+	! %o2 = sbox[txt[j] >> 24]
 	ldub	[%g3+%o3], %o2
+	! %o1 = sbox[txt[j] & 0xff] 
+	!	| sbox[(txt[j] >> 8) & 0xff] << 8
 	or	%o1, %o4, %o1
+	!	| sbox[(txt[j] >> 16) & 0xff] << 16
 	sll	%o0, 16, %o0
 	or	%o1, %o0, %o1
+	!	| sbox[txt[j] >> 24] << 24
 	sll	%o2, 24, %o2
 	or	%o1, %o2, %o1
+	! j < 3 
 	cmp	%o7, 3
-	bleu	.LL68
+	bleu	.Lencrypt_sbox
+	! txt[j] = ... | ... | ... | ...
 	st	%o1, [%g2+%o5]
-	ld	[%i0+480], %o1
-	mov	%i2, %o2
+
+	! key_addition32to8(txt, ctx + nrounds * 4, dst,
+	ld	[ctx+480], %o1
+	mov	dst, %o2
 	sll	%o1, 4, %o1
-	add	%i0, %o1, %o1
+	add	ctx, %o1, %o1
 	call	key_addition32to8, 0
 	mov	%l5, %o0
-	add	%i3, 16, %i3
-	addcc	%i1, -16, %i1
+
+	add	src, 16, src
+	addcc	length, -16, length
 	bne	.Lencrypt_block
-	add	%i2, 16, %i2
+	add	dst, 16, dst
 	b,a	.Lencrypt_end
 .Lencrypt_fail:
 	sethi	%hi(.LLC0), %o0
