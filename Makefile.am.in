@@ -18,11 +18,13 @@ BUILT_SOURCES =	desSmallFips.c desSmallCore.c desQuickFips.c desQuickCore.c \
 
 libsymmetric_a_SOURCES = desCode.h desKerb.c desUtil.c desQuick.c \
       $(BUILT_SOURCES) \
-      sha.c md5.c idea.c rc4.c cast.c
+      sha.c md5.c idea.c rc4.c cast.c blowfish.c util.c
 
 # Generate DES headers.
 $(des_headers): desdata
 	./desdata $@ > $@
+
+desUtil.o: desUtil.c $(des_headers)
 
 # Generate DES sources. Slowest to quickest.
 desSmallFips.c:
