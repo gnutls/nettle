@@ -1,23 +1,18 @@
+#include "testutils.h"
+#include "nettle-internal.h"
 #include "blowfish.h"
 
-BEGIN_TEST
+int
+main(int argc, char **argv)
+{
+  /* 208 bit key. Test from GNUPG. */
+  test_cipher(&nettle_blowfish128,
+	      26, "abcdefghijklmnopqrstuvwxyz",
+	      BLOWFISH_BLOCK_SIZE, "BLOWFISH",
+	      H("32 4E D0 FE F4 13 A2 03"));
 
-struct blowfish_ctx ctx;
-
-uint8_t msg[BLOWFISH_BLOCK_SIZE];
-uint8_t cipher[BLOWFISH_BLOCK_SIZE];
-uint8_t clear[BLOWFISH_BLOCK_SIZE];
-
-/* 208 bit key. Test from GNUPG. */
-blowfish_set_key(&ctx, 26, "abcdefghijklmnopqrstuvwxyz");
-blowfish_encrypt(&ctx, BLOWFISH_BLOCK_SIZE, cipher, "BLOWFISH");
-if (!MEMEQ(BLOWFISH_BLOCK_SIZE, cipher, H("32 4E D0 FE F4 13 A2 03")))
-  FAIL;
-
-blowfish_decrypt(&ctx, BLOWFISH_BLOCK_SIZE, clear, cipher);
-if (!MEMEQ(BLOWFISH_BLOCK_SIZE, "BLOWFISH", clear))
-  FAIL;
-
+  SUCCESS();
+}
 /* FIXME: All values below are bogus. */
 #if 0
 
