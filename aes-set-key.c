@@ -89,7 +89,7 @@ mul(uint8_t a, uint8_t b)
 }
 
 static void
-inv_mix_column(uint32_t *a, uint32_t *b)
+inv_mix_column(const uint32_t *a, uint32_t *b)
 {
   uint8_t c[4][4];
   unsigned i, j;
@@ -165,9 +165,9 @@ aes_set_key(struct aes_ctx *ctx, unsigned keysize, const uint8_t *key)
   /* Generate the inverse keys */
   for (i=0; i<4; i++)
     {
-      ctx->ikeys[i] = ctx->keys[i];
-      ctx->ikeys[lastkey-4 + i] = ctx->keys[lastkey-4 + i];
+      ctx->ikeys[i] = ctx->keys[lastkey-4 + i];
+      ctx->ikeys[lastkey-4 + i] = ctx->keys[i];
     }
   for (i=4; i<lastkey-4; i+=4)
-    inv_mix_column(&(ctx->keys[i]), &(ctx->ikeys[i]));
+    inv_mix_column(&(ctx->keys[i]), &(ctx->ikeys[lastkey-4 - i]));
 }
