@@ -1,3 +1,51 @@
+2002-11-15  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* testsuite/testutils.h (LDATA): Use sizeof instead of strlen. Now
+	handles strings including NUL-characters. But works only with
+	literals and character arrays, no char pointers.
+	(LLENGTH): New macro, computing length the same way as LDATA.
+
+	* testsuite/sexp-test.c (test_main): Test sexp_iterator_get_uint32.
+
+	* testsuite/sexp-format-test.c (test_main): Check that %i and %b
+	generate leading zeroes when needed. Check that %b handles
+	negative numbers.	
+
+	* testsuite/rsa2sexp-test.c (test_main): Updated test, one leading
+	zero is needed in the private key expression. In verbose mode,
+	print the generated keys.
+
+	* testsuite/sexp2rsa-test.c (test_main): Added a leading zero in
+	the private key expression.
+
+	* testsuite/bignum-test.c (test_bignum): Use
+	nettle_mpz_init_set_str_256_s. 
+	(test_size): New function.
+	(test_main): Test size computation and formatting of negative
+	numbers. 
+
+	* sexp2bignum.c (nettle_mpz_set_sexp): Use
+	nettle_mpz_set_str_256_s, to handle negative numbers correctly. 
+
+	* sexp-format.c (sexp_vformat): For %i, output a leading zero when
+	needed to get a correct, positive, sign. For %b, use
+	nettle_mpz_sizeinbase_256_s, to handle negative numbers properly.	
+
+	* bignum.c (nettle_mpz_sizeinbase_256_s): New function.
+	(nettle_mpz_sizeinbase_256_u): New name, was
+	nettle_mpz_sizeinbase_256. Updated all callers.
+	(nettle_mpz_to_octets): New function.
+	(nettle_mpz_get_str_256): Handle negative numbers.
+	(nettle_mpz_from_octets): New function.
+	(nettle_mpz_set_str_256_u): New name, was nettle_mpz_set_str_256.
+	(nettle_mpz_init_set_str_256_u): New name, was
+	nettle_mpz_init_set_str_256. 
+	(nettle_mpz_set_str_256_s): New function, handling negative two's
+	complement numbers.
+	(nettle_mpz_init_set_str_256_s): And an init variant.
+
+	* sexp.c (sexp_iterator_get_uint32): New function.
+	
 2002-11-10  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* testsuite/sexp-conv-test: Use input files without any trailing
