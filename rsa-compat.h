@@ -26,13 +26,92 @@
 #ifndef NETTLE_RSA_COMPAT_H_INCLUDED
 #define NETTLE_RSA_COMPAT_H_INCLUDED
 
-         R_SignInit,     computes a digital signature on data of
-       R_SignUpdate,       arbitrary length, processing in parts
-     and R_SignFinal
+#include "rsa.h"
 
-       R_VerifyInit,     verifies a digital signature, processing in
-     R_VerifyUpdate,       parts
-   and R_VerifyFinal
+/* 256 octets or 2048 bits */
+#define MAX_RSA_MODULUS_LEN 256
+
+typedef struct
+{
+  unsigned bits;
+  uint8_t modulus[MAX_RSA_MODULUS_LEN];
+  uint8_t exponent[MAX_RSA_MODULUS_LEN];
+} R_RSA_PUBLIC_KEY;
+
+typedef struct
+{
+  unsigned bits;
+  uint8_t modulus[MAX_RSA_MODULUS_LEN];
+  uint8_t publicExponent[MAX_RSA_MODULUS_LEN];
+  uint8_t exponent[MAX_RSA_MODULUS_LEN];
+  uint8_t prime[2][MAX_RSA_MODULUS_LEN];
+  uint8_t primeExponent[2][MAX_RSA_MODULUS_LEN];
+  uint8_t coefficient[MAX_RSA_MODULUS_LEN];
+} R_RSA_PRIVATE_KEY;
+
+/* Only MD5 is supported for now */
+typedef struct
+{
+  struct md5_ctx hash;
+} R_SIGNATURE_CTX;
+
+/* Digest algorithms */
+/* DA_MD2 not implemented */
+enum { DA_MD5 = 1 };
+
+/* Return values */
+enum {
+  RE_SUCCESS = 0,
+  RE_CONTENT_ENCODING,     /* encryptedContent has RFC 1421 encoding error */
+  RE_DATA,                 /* other party's private value out of range */
+  RE_DIGEST_ALGORITHM,     /* message-digest algorithm is invalid */
+  RE_ENCODING,             /* encoded block has RFC 1421 encoding error */
+  RE_ENCRYPTION_ALGORITHM, /* encryption algorithm is invalid */
+  RE_KEY,                  /* recovered data encryption key cannot decrypt */
+  RE_KEY_ENCODING,         /* encrypted key has RFC 1421 encoding error */
+  RE_LEN,                  /* signatureLen out of range */
+  RE_MODULUS_LEN,          /* modulus length invalid */
+  RE_NEED_RANDOM,          /* random structure is not seeded */
+  RE_PRIVATE_KEY,          /* private key cannot encrypt message digest, */
+  RE_PUBLIC_KEY,           /* publicKey cannot decrypt signature */
+  RE_SIGNATURE,            /* signature is incorrect */
+  RE_SIGNATURE_ENCODING,   /* encodedSignature has RFC 1421 encoding error */
+};
+
+int
+R_SignInit(R_SIGNATURE_CTX *ctx,
+           int digestAlgorithm);
+
+int
+R_SignUpdate(R_SIGNATURE_CTX *ctx,
+             const uint8_t *data,
+             /* Length is an unsigned char according to rsaref.txt,
+              * but that must be a typo. */
+             unsigned length);
+
+int
+R_SignFinal(R_SIGNATURE_CTX *ctx,
+            uint8_t *signature,
+            unsigned *length,
+            R_RSA_PRIVATE_KEY *key);
+
+int
+R_VerifyInit(R_SIGNATURE_CTX *ctx,
+             int digestAlgorithm);
+
+int
+R_VerifyUpdate(R_SIGNATURE_CTX *ctx,
+               const uint8_t *data,
+               /* Length is an unsigned char according to rsaref.txt,
+                * but that must be a typo. */
+               unsigned length);
+
+int
+R_VerifyFinal(R_SIGNATURE_CTX *ctx,
+              uint8_t *signature,
+              unsigned length,
+              R_RSA_PUBLIC_KEY *key);
+
 
 #endif /* NETTLE_RSA_COMPAT_H_INCLUDED */
 
