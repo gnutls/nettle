@@ -55,20 +55,11 @@ aes_encrypt:
 	jz	.Lencrypt_end
 	
 .Lencrypt_block_loop:
-	movl	32(%esp),%esi	C  address of plaintext
-	movl	(%esi),%eax	C  load plaintext into registers
-	movl	4(%esi),%ebx
-	movl	8(%esi),%ecx
-	movl	12(%esi),%edx
-	
-	addl	$16, 32(%esp)	C Increment src pointer
-C .Laes_got_plain: 
 	movl	20(%esp),%esi	C  address of context struct ctx
-	xorl	(%esi),%eax	C  add first key to plaintext
-	xorl	4(%esi),%ebx
-	xorl	8(%esi),%ecx
-	xorl	12(%esi),%edx
-C .Laes_xored_initial:
+	movl	32(%esp),%ebp	C  address of plaintext
+	AES_LOAD(%esi, %ebp)
+	addl	$16, 32(%esp)	C Increment src pointer
+		
 	C FIXME:	Use %esi instead
 	movl	20(%esp),%ebp	C  address of context struct
 	movl	AES_NROUNDS (%ebp),%ebp	C  get number of rounds to do from struct
