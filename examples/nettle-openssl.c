@@ -29,7 +29,7 @@
 
 /* Openssl glue, for comparative benchmarking only */
 
-#if HAVE_LIBCRYPTO
+#if WITH_OPENSSL
 
 /* No ancient ssleay compatibility */
 #define NCOMPAT
@@ -189,4 +189,4 @@ nettle_openssl_cast128 = {
   openssl_cast_encrypt, openssl_cast_decrypt
 };
 
-#endif /* HAVE_LIBCRYPTO */
+#endif /* WITH_OPENSSL */
