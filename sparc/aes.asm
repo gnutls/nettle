@@ -19,12 +19,13 @@
 ! MA 02111-1307, USA.
 
 ! NOTE: Some of the %g registers are reserved for operating system etc
-! (see gcc/config/sparc.h). We should use only %g1-%g3 to be safe.
+! (see gcc/config/sparc.h). The only %g registers that seems safe to
+! use are %g1-%g3.
 	
-	! Used registers:	%l0,1,2,3,4,6,7
+	! Used registers:	%l0,1,2,3,4,5,6,7
 	!			%i0,1,2,3,4 (%i6=%fp, %i7 = return)
-	!			%o0,1,2,,4,7 (%o6=%sp)
-	!			%g5
+	!			%o0,1,2,3,4 (%o6=%sp)
+	!			
 	
 	.file	"aes.asm"
 	
@@ -41,25 +42,26 @@ define(tmp, %l1)
 define(diff, %l2)
 define(nrounds, %l3)
 
-! Loop variables
-define(round, %l4)
-define(key, %o4)
-
 ! Further loop invariants
-define(T0, %l6)
-define(T1, %l7)
-define(T2, %g5)
-define(T3, %o7)
+define(T0, %l4)
+define(T1, %l5)
+define(T2, %l6)
+define(T3, %l7)
+	
+! Teporaries
+define(t0, %o0)
+define(t1, %o1)
+define(t2, %o2)
+
+! Loop variables
+define(round, %o3)
+define(key, %o4)
 
 C IDX1 cointains the permutation values * 4 + 2
 define(IDX1, <T + AES_SIDX1 >)
 C IDX3 cointains the permutation values * 4
 define(IDX3, <T + AES_SIDX3 >)
 
-! Teporaries
-define(t0, %o0)
-define(t1, %o1)
-define(t2, %o2)
 
 C AES_LOAD(i)
 C Get one word of input, XOR with first subkey, store in wtxt
@@ -88,9 +90,6 @@ C Input in wtxt, output stored in tmp + i.
 C
 C The comments mark which j in T->table[j][ Bj(wtxt[IDXi(i)]) ]
 C the instruction is a part of. 
-C
-C The code uses the register %o[j], aka tj, as the primary 
-C register for that sub-expression. True for j==1,3.
 define(<AES_ROUND>, <
 	ld	[IDX1+$1], t1		! 1
 	ldub	[wtxt+$1+3], t0		! 0
@@ -182,7 +181,6 @@ _aes_crypt:
 	add	%fp, -24, wtxt
 	
 	add	%fp, -40, tmp
-
 	ld	[ctx + AES_NROUNDS], nrounds
 	! Compute xor, so that we can swap efficiently.
 	xor	wtxt, tmp, diff
@@ -193,6 +191,7 @@ _aes_crypt:
 	add	T, AES_TABLE1, T1
 	add	T, AES_TABLE2, T2
 	add	T, AES_TABLE3, T3
+	nop
 	
 .Lblock_loop:
 	C  Read src, and add initial subkey
@@ -204,7 +203,7 @@ _aes_crypt:
 
 	sub	nrounds, 1, round
 	add	ctx, 16, key
-
+	nop
 .Lround_loop:
 
 	AES_ROUND(0)	! i = 0
@@ -215,9 +214,9 @@ _aes_crypt:
 	! switch roles for tmp and wtxt
 	xor	wtxt, diff, wtxt
 	xor	tmp, diff, tmp
-
 	subcc	round, 1, round
 	bne	.Lround_loop
+
 	add	key, 16, key
 
 	C Final round, and storage of the output
@@ -228,16 +227,14 @@ _aes_crypt:
 	AES_FINAL_ROUND(12)	! i = 3
 		
 	addcc	length, -16, length
-	
 	bne	.Lblock_loop
 	add	dst, 16, dst
 
 .Lend:
 	ret
 	restore
-.LLFE1:
-.LLfe1:
-	.size	_aes_crypt,.LLfe1-_aes_crypt
+.Leord:
+	.size	_aes_crypt,.Leord-_aes_crypt
 
 	! Benchmarks on my slow sparcstation:	
 	! Original C code	
@@ -343,3 +340,19 @@ _aes_crypt:
 	! aes256 (CBC encrypt): 15.59s, 0.641MB/s
 	! aes256 (CBC decrypt): 15.76s, 0.635MB/s
 	
+	! After unrolling loops, and other optimizations suggested by
+	! Marcus: 
+	! aes128 (ECB encrypt): 6.40s, 1.562MB/s
+	! aes128 (ECB decrypt): 8.17s, 1.224MB/s
+	! aes128 (CBC encrypt): 13.11s, 0.763MB/s
+	! aes128 (CBC decrypt): 10.05s, 0.995MB/s
+	! 
+	! aes192 (ECB encrypt): 7.43s, 1.346MB/s
+	! aes192 (ECB decrypt): 9.51s, 1.052MB/s
+	! aes192 (CBC encrypt): 14.09s, 0.710MB/s
+	! aes192 (CBC decrypt): 11.58s, 0.864MB/s
+	! 
+	! aes256 (ECB encrypt): 8.57s, 1.167MB/s
+	! aes256 (ECB decrypt): 11.13s, 0.898MB/s
+	! aes256 (CBC encrypt): 15.30s, 0.654MB/s
+	! aes256 (CBC decrypt): 12.93s, 0.773MB/s
