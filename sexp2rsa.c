@@ -102,12 +102,18 @@ rsa_keypair_from_sexp(struct rsa_public_key *pub,
       GET(priv->a, &values[5]);
       GET(priv->b, &values[6]);
       GET(priv->c, &values[7]);
+
+      if (!rsa_prepare_private_key(priv))
+	return 0;
     }
 
   if (pub)
     {
       GET(pub->n, &values[0]);
       GET(pub->e, &values[1]);
+
+      if (!rsa_prepare_public_key(pub))
+	return 0;
     }
     
   return 1;
