@@ -66,9 +66,9 @@ _aes_decrypt_table =
       { 3, 0, 1, 2 },
       { 2, 3, 0, 1 },
       { 1, 2, 3, 0 } },
-    { /* sparc_idx, IDX1 and IDX3 shifted by the size of a word */
-      { 12, 0, 4,  8 },
-      {  4, 8, 12, 0 } },
+    { /* sparc_idx, explained in aes-internal.h */
+      { 14, 2, 6,  10 },
+      {  4, 8, 12,  0 } },
     { /* itable */
       { 
 	0x50a7f451,0x5365417e,0xc3a4171a,0x965e273a,
