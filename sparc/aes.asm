@@ -67,16 +67,16 @@ key_addition_8to32:
 	.proc	020
 key_addition32:
 	! Use %g2 and %g3 as temporaries, %o3 as counter
-	mov	0, %o3
-	! Decrement out, so we can increment the counter earlier in the loop
-	sub	%o2, 4, %o2
+	mov	-4, %o3
+	! Increment txt
+	add	%o0, 4, %o0
 .LL26:
 	! Get txt[i]
 	ld	[%o0+%o3], %g2
+	add	%o3, 4, %o3
 	! Get keys[i]
 	ld	[%o1+%o3], %g3
 	cmp	%o3, 12
-	add	%o3, 4, %o3
 
 	xor	%g2, %g3, %g3
 
