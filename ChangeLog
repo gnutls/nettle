@@ -1,6 +1,52 @@
+2002-12-04  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* sexp-format.c (format_length_string): Deleted function.
+	(format_string): Deleted function.
+	(sexp_vformat): New %t specifier, formatting an optional display
+	type. Deleted %z specifier. Instead, introduced a new modifier "0"
+	that can be used with %s, %l and %t, which says that the data is
+	NUL-terminated.
+
+	* rsa2sexp.c (rsa_keypair_to_sexp): Use %0s rather than %z, when
+	formatting s-expressions.
+
+	* buffer.c (nettle_buffer_grow): Fixed assertion.
+
 2002-11-22  Niels Möller  <niels@s3.kth.se>
 
 	* buffer.c: Include assert.h.
+
+2002-11-21  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* testsuite/testutils.c (print_hex): Add line breaks.
+
+	* Makefile.am (libnettleinclude_HEADERS): Added realloc.h.
+	(libnettle_a_SOURCES): Added buffer-init.c and realloc.c.
+
+	* sexp.c (sexp_iterator_exit_lists): New function, #if:ed out for
+	now. 
+
+	* desdata.c: Include config.h, to get definition of UNUSED.
+	* shadata.c: Likewise.
+
+	* buffer.c (nettle_buffer_grow): New function, replacing
+	grow_realloc. 
+	(nettle_buffer_clear): Rewritten to use buffer->realloc.
+
+	* buffer.h (struct nettle_buffer): REplaced the GROW function
+	pointer with a nettle_realloc_func pointer and a void
+	(NETTLE_BUFFER_GROW): Deleted macro, use function instead.
+
+	*realloc_ctx.
+
+	* buffer-init.c (nettle_buffer_init): Moved to a separate file.
+
+	* realloc.c (nettle_realloc): New function.
+	(nettle_xrealloc): New function.
+
+	* realloc.h (nettle_realloc_func): New typedef.
+
+	* configure.ac: Check for gcc:s __attribute__.
 
 2002-11-16  Niels Möller  <nisse@cuckoo.hack.org>
 
