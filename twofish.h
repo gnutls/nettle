@@ -32,7 +32,7 @@
 #ifndef NETTLE_TWOFISH_H_INCLUDED
 #define NETTLE_TWOFISH_H_INCLUDED
 
-#include <stdint.h>
+#include <inttypes.h>
 
 #define TWOFISH_BLOCK_SIZE 16
 

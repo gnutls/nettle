@@ -31,7 +31,7 @@
 #ifndef NETTLE_SERPENT_H_INCLUDED
 #define NETTLE_SERPENT_H_INCLUDED
 
-#include <stdint.h>
+#include <inttypes.h>
 
 #define SERPENT_BLOCK_SIZE 16
 

@@ -32,7 +32,7 @@
 #ifndef NETTLE_CAST128_H_INCLUDED
 #define NETTLE_CAST128_H_INCLUDED
 
-#include <stdint.h>
+#include <inttypes.h>
 
 #define CAST128_BLOCK_SIZE 8
 

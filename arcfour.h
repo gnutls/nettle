@@ -26,7 +26,7 @@
 #ifndef NETTLE_ARCFOUR_H_INCLUDED
 #define NETTLE_ARCFOUR_H_INCLUDED
 
-#include <stdint.h>
+#include <inttypes.h>
 
 /* Minimum and maximum keysizes, and a reasonable default. In
  * octets.*/

@@ -26,7 +26,7 @@
 #ifndef NETTLE_MD5_H_INCLUDED
 #define NETTLE_MD5_H_INCLUDED
 
-#include <stdint.h>
+#include <inttypes.h>
 
 #define MD5_DIGEST_SIZE 16
 #define MD5_DATA_SIZE 64

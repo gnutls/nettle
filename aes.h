@@ -26,7 +26,7 @@
 #ifndef NETTLE_AES_H_INCLUDED
 #define NETTLE_AES_H_INCLUDED
 
-#include <stdint.h>
+#include <inttypes.h>
 
 #define AES_BLOCK_SIZE 16
 

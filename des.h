@@ -35,7 +35,7 @@
 #ifndef NETTLE_DES_H
 #define NETTLE_DES_H
 
-#include <stdint.h>
+#include <inttypes.h>
 
 #define DES_KEY_SIZE 8
 #define DES_BLOCK_SIZE 8

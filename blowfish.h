@@ -26,7 +26,7 @@
 #ifndef NETTLE_BLOWFISH_H_INCLUDED
 #define NETTLE_BLOWFISH_H_INCLUDED
 
-#include <stdint.h>
+#include <inttypes.h>
 
 #define BLOWFISH_BLOCK_SIZE 8
 

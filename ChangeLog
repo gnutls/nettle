@@ -1,5 +1,9 @@
 2001-06-17  Niels Möller  <nisse@cuckoo.hack.org>
 
+	* Use <inttypes.h>, not <stdint.h>.
+
+	* blowfish.h (BLOWFISH_MAX_KEY_SIZE): Fixed, should be 56. 
+
 	* Fixed copyright notices.
 
 	* Makefile.am (libnettle_a_SOURCES): Added desinfo.h and
