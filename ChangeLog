@@ -1,3 +1,9 @@
+2004-02-05  Niels Möller  <niels@s3.kth.se>
+
+	* arcfour.c (arcfour_crypt): Optimization suggested by Jonas
+	Walldén. Makes arcfour up to 50% faster on x86 and ppc, and
+	probably on other architectures as well.
+
 2004-01-31  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac (AX_CREATE_STDINT_H): Also look for uint32_t and
