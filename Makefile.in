@@ -202,11 +202,11 @@ config.m4: config.m4.in config.status
 
 # Installation
 install-here: install-info install-headers libnettle.a $(SHLIBINSTALL)
-	$(INSTALL) -d $(DESTDIR)$(libdir)
+	[ -d $(DESTDIR)$(libdir) ] || $(INSTALL) -d $(DESTDIR)$(libdir)
 	$(INSTALL_DATA) libnettle.a $(DESTDIR)$(libdir)
 
 install-shared: $(SHLIBFORLINK)
-	$(INSTALL) -d $(DESTDIR)$(libdir)
+	[ -d $(DESTDIR)$(libdir) ] || $(INSTALL) -d $(DESTDIR)$(libdir)
 	$(INSTALL_PROGRAM) $(SHLIBFORLINK) $(DESTDIR)$(libdir)/$(SHLIBFILE)
 	[ -z "$(SHLIBSONAME)" ] \
                 || (cd $(DESTDIR)$(libdir) \
@@ -214,7 +214,7 @@ install-shared: $(SHLIBFORLINK)
 		&& ln -sf $(SHLIBFILE) $(SHLIBFORLINK) )
 
 install-info: nettle.info
-	$(INSTALL) -d $(DESTDIR)$(infodir)
+	[ -d $(DESTDIR)$(infodir) ] || $(INSTALL) -d $(DESTDIR)$(infodir)
 	$(INSTALL_DATA) $< $(DESTDIR)$(infodir)
 	if (install-info --version && \
 	    install-info --version 2>&1 | sed 1q | grep -i -v debian) >/dev/null 2>&1; then \
@@ -224,7 +224,8 @@ install-info: nettle.info
 # NOTE: I'd like to use $^, but that's a GNU extension. $? should be
 # more portable, and equivalent for phony targets.
 install-headers: $(INSTALL_HEADERS)
-	$(INSTALL) -d $(DESTDIR)$(includedir)/nettle
+	[ -d $(DESTDIR)$(includedir) ] || $(INSTALL) -d $(DESTDIR)$(includedir)
+	[ -d $(DESTDIR)$(includedir)/nettle ] || $(INSTALL) -d $(DESTDIR)$(includedir)/nettle
 	$(INSTALL_DATA) $? $(DESTDIR)$(includedir)/nettle
 
 # Uninstall
