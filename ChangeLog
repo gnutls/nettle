@@ -1,3 +1,17 @@
+2002-05-15  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* sparc/aes.asm: wtxt needs no register of it's own, as its
+	pointed to by %sp. %g5 moved to %l0, the register previously
+	allocated for wtxt, so that we stay clean of the reserved %g
+	registers.
+
+2002-05-14  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* sparc/aes.asm: Avoid using %g6 and %g7, as they are reserved for
+	operating sytem use. Use %i5 and %o7 instead. Also moved %g4 to %g1.
+	(_aes_crypt): Allocate only 32 bytes local storage on the stack.
+	Calculate wtxt and tmp using offsets from %sp, not %fp. 
+
 2002-05-14  Niels Möller  <niels@s3.kth.se>
 
 	* x86/aes-encrypt.asm (aes_encrypt): Replaced first quarter of the
