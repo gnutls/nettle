@@ -19,6 +19,7 @@
 /knuth-lfib-test
 /md5-compat-test
 /md5-test
+/pkcs1-test
 /rsa-keygen-test
 /rsa-test
 /rsa2sexp-test

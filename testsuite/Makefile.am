@@ -14,6 +14,7 @@ TS_PROGS = aes-test arcfour-test blowfish-test cast128-test \
 	   rsa2sexp-test sexp2rsa-test \
 	   knuth-lfib-test \
 	   cbc-test hmac-test bignum-test \
+	   pkcs1-test \
 	   rsa-test rsa-keygen-test \
 	   dsa-test dsa-keygen-test \
 	   yarrow-test
