@@ -1,7 +1,8 @@
+#include "testutils.h"
 #include "yarrow.h"
+#include "knuth-lfib.h"
 
 #include "macros.h"
-#include "testutils.h"
 
 #include <assert.h>
 #include <errno.h>
@@ -11,104 +12,7 @@
 
 /* Lagged fibonacci sequence as described in Knuth 3.6 */
 
-#define KK 100
-#define LL 37
-#define MM (1UL << 30)
-#define TT 70
-
-uint32_t ran_x[KK];
-unsigned ran_index;
-
-static void
-ran_init(uint32_t seed)
-{
-  uint32_t t,j;
-  uint32_t x[2*KK - 1];
-  uint32_t ss = (seed + 2) & (MM-2);
-
-  for (j = 0; j<KK; j++)
-    {
-      x[j] = ss;
-      ss <<= 1;  if (ss >= MM) ss -= (MM-2);
-    }
-  for (;j< 2*KK-1; j++)
-    x[j] = 0;
-
-  x[1]++;
-
-  ss = seed & (MM-1);
-  for (t = TT-1; t; )
-    {
-      for (j = KK-1; j>0; j--)
-        x[j+j] = x[j];
-      for (j = 2*KK-2; j > KK-LL; j-= 2)
-        x[2*KK-1-j] = x[j] & ~1;
-      for (j = 2*KK-2; j>=KK; j--)
-        if (x[j] & 1)
-          {
-            x[j-(KK-LL)] = (x[j - (KK-LL)] - x[j]) & (MM-1);
-            x[j-KK] = (x[j-KK] - x[j]) & (MM-1);
-          }
-      if (ss & 1)
-        {
-          for (j=KK; j>0; j--)
-            x[j] = x[j-1];
-          x[0] = x[KK];
-          if (x[KK] & 1)
-            x[LL] = (x[LL] - x[KK]) & (MM-1);
-        }
-      if (ss)
-        ss >>= 1;
-      else
-        t--;
-    }
-  for (j=0; j<LL; j++)
-    ran_x[j+KK-LL] = x[j];
-  for (; j<KK; j++)
-    ran_x[j-LL] = x[j];
-
-  ran_index = 0;
-}
-
-static uint32_t
-ran_get(void)
-{
-  uint32_t value;
-  assert(ran_index < KK);
-  
-  value = ran_x[ran_index];
-  ran_x[ran_index] -= ran_x[(ran_index + KK - LL) % KK];
-  ran_x[ran_index] &= (MM-1);
-  
-  ran_index = (ran_index + 1) % KK;
-
-  return value;
-}
-
-static void
-ran_array(uint32_t *a, unsigned n)
-{
-  unsigned i;
-  
-  for (i = 0; i<n; i++)
-    a[i] = ran_get();
-}
-
-static void
-ran_test(void)
-{
-  uint32_t a[2009];
-  uint32_t x;
-  
-  unsigned m;
-  
-  ran_init(310952);
-  for (m = 0; m<2009; m++)
-    ran_array(a, 1009);
-
-  x = ran_get();
-  assert(x == 461390032);
-}
+struct knuth_lfib_ctx lfib;
 
 static int
 get_event(FILE *f, struct sha256_ctx *hash,
@@ -126,7 +30,7 @@ get_event(FILE *f, struct sha256_ctx *hash,
     
   *key = c;
 
-  t += (ran_get() % 10000);
+  t += (knuth_lfib_get(&lfib) % 10000);
   *time = t;
 
   return 1;
@@ -205,9 +109,7 @@ test_main(void)
   sha256_init(&input_hash);
   sha256_init(&output_hash);
 
-  ran_test();
-
-  ran_init(31416);
+  knuth_lfib_init(&lfib, 31416);
 
   /* Fake input to source 0 */
   yarrow256_update(&yarrow, 0, 200, sizeof(zeroes), zeroes);
