@@ -115,10 +115,20 @@ print_hex(unsigned length, uint8_t *data)
   
   for (i = 0; i < length; i++)
     {
-      if (! (i % 8))
-        printf(" ");
+      switch (i % 16)
+	{
+	default:
+	  break;
+	case 0:
+	  printf("\n");
+	  break;
+	case 8:
+	  printf(" ");
+	  break;
+	}
       printf("%02x", data[i]);
     }
+  printf("\n");
 }
 
 int verbose = 0;
