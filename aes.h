@@ -40,13 +40,15 @@
 struct aes_ctx
 {
   uint32_t keys[60];  /* maximum size of key schedule */
-  uint32_t ikeys[60]; /* inverse key schedule */
   unsigned  nrounds;  /* number of rounds to use for our key size */
 };
 
 void
-aes_set_key(struct aes_ctx *ctx,
-	    unsigned length, const uint8_t *key);
+aes_set_encrypt_key(struct aes_ctx *ctx,
+		    unsigned length, const uint8_t *key);
+void
+aes_set_decrypt_key(struct aes_ctx *ctx,
+		   unsigned length, const uint8_t *key);
 
 void
 aes_encrypt(struct aes_ctx *ctx,
