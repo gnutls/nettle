@@ -56,6 +56,10 @@ libnettle_a_SOURCES = aes.c aes.h aes-internal.h \
 
 LIBOBJS = @LIBOBJS@
 libnettle_a_LIBADD = $(LIBOBJS)
+libnettle_a_DEPENDENCIES = print_path
+.PHONY: print_path
+print_path:
+	echo PATH: $$PATH
 
 shadata_LDADD = -lm
 
