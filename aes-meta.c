@@ -25,10 +25,10 @@
 #include "aes.h"
 
 const struct nettle_cipher nettle_aes128
-= _NETTLE_CIPHER(aes, AES, 128);
+= _NETTLE_CIPHER_SEP(aes, AES, 128);
 
 const struct nettle_cipher nettle_aes192
-= _NETTLE_CIPHER(aes, AES, 192);
+= _NETTLE_CIPHER_SEP(aes, AES, 192);
 
 const struct nettle_cipher nettle_aes256
-= _NETTLE_CIPHER(aes, AES, 256);
+= _NETTLE_CIPHER_SEP(aes, AES, 256);

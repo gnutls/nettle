@@ -1,3 +1,36 @@
+2002-02-14  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* yarrow256.c: Replaced uses of aes_set_key with
+	aes_set_encrypt_key. 
+
+	* nettle-meta.h (_NETTLE_CIPHER_SEP): New macro, useful for
+	algorithms with separate encyption and decryption key setup. 
+
+	* aes-internal.h (struct aes_table): New structure, including all
+	constant tables needed by the unified encryption or decryption
+	function _aes_crypt.
+
+	* aes.c (_aes_crypt): New function, which unifies encryption and
+	decryption.
+
+	AES key setup now uses two separate functions for setting
+	encryption and decryption keys. Applications that don't do
+	decryption need no inverted subkeys and no code to generate them.
+	Similarly, the tables (about 4K each for encryption and
+	decryption), are put into separate files.
+
+	* aes.h (struct aes_ctx): Deleted space for inverse subkeys. For
+	decryption, the inverse subkeys replace the normal subkeys, and
+	they are stored _in the order they are used_. 
+
+	* aes-set-key.c (aes_set_key): Deleted file, code moved...
+	* aes-set-decrypt-key.c, aes-set-encrypt-key.c: New files,
+	separated normal and inverse key setup.
+
+	* aes-tables.c: Deleted, tables moved elsewhere...
+	* aes-encrypt.c, aes-decrypt.c: New files; moved encryption and
+	decryption funktions, and needed tables, into separate files.
+
 2002-02-13  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* aes.c (aes_encrypt): Don't unroll the innerloop.
