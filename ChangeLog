@@ -1,3 +1,10 @@
+2004-11-02  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle.texinfo (Cipher functions): Updated AES documentation,
+	for aes_set_encrypt_key and aes_set_decrypt_key.
+	(UPDATED-FOR): Set to 1.11. I think the manual should be updated
+	with all user-visible changes.
+
 2004-10-26  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Bumped version to 1.12.

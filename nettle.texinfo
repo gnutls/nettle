@@ -13,7 +13,7 @@
 * Nettle: (nettle).           A low-level cryptographics library.
 @end direntry
 
-@set UPDATED-FOR 1.5
+@set UPDATED-FOR 1.11
 
 @c Latin-1 doesn't work with TeX output.
 @c Also lookout for é characters.
@@ -632,9 +632,9 @@ The AES block-size, 16
 Default AES key size, 32
 @end defvr
 
-@deftypefun void aes_set_key (struct aes_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
-Initialize the cipher. The same function is used for both encryption and
-decryption. 
+@deftypefun void aes_set_encrypt_key (struct aes_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
+@deftypefunx void aes_set_decrypt_key (struct aes_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
+Initialize the cipher, for encryption or decryption, respectively.
 @end deftypefun
 
 @deftypefun void aes_encrypt (struct aes_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
