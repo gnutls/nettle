@@ -154,3 +154,5 @@ aes_encrypt:
 	popl	%ebp
 	popl	%ebx
 	ret
+.Leord:
+	.size	aes_encrypt,.Leord-aes_encrypt
