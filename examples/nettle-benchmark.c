@@ -24,6 +24,10 @@
  * MA 02111-1307, USA.
  */
 
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include "aes.h"
 #include "arcfour.h"
 #include "blowfish.h"
@@ -221,25 +225,31 @@ time_cipher(const struct nettle_cipher *cipher)
     }
 }
 
-
-#define NCIPHERS 12
+#if HAVE_LIBCRYPTO
+# define OPENSSL(x) x,
+#else
+# define OPENSSL(x)
+#endif
 
 int
 main(int argc UNUSED, char **argv UNUSED)
 {
   unsigned i;
-  const struct nettle_cipher *ciphers[NCIPHERS] =
+  const struct nettle_cipher *ciphers[] =
     {
       &nettle_aes128, &nettle_aes192, &nettle_aes256,
       &nettle_arcfour128,
       &nettle_blowfish128,
-      &nettle_cast128,
-      &nettle_des, &nettle_des3,
+      OPENSSL(&nettle_openssl_blowfish128)
+      &nettle_cast128, OPENSSL(&nettle_openssl_cast128)
+      &nettle_des, OPENSSL(&nettle_openssl_des)
+      &nettle_des3,
       &nettle_serpent256,
       &nettle_twofish128, &nettle_twofish192, &nettle_twofish256,
+      NULL
     };
 
-  for (i = 0; i<NCIPHERS; i++)
+  for (i = 0; ciphers[i]; i++)
     time_cipher(ciphers[i]);
   
   return 0;
