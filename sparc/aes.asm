@@ -1,7 +1,7 @@
-	! Used registers:	%l0,1,2
+	! Used registers:	%l0,1,2,3,4,5
 	!			%i0,1,2,3,4,5 (%i6=%fp, %i7 = return)
-	!			%o0,1,2,3,4,7 (%o6=%sp)
-	!			%g1,2,3,4
+	!			%o0,2,3,4,5,7 (%o6=%sp)
+	!			%g2,3,4
 include(`asm.m4')
 	
 	.file	"aes.asm"
@@ -103,21 +103,22 @@ _aes_crypt:
 .Lround_loop:
 	add	T, AES_SIDX3, %o2
 .Linner_loop:
-	! The comments mark which T->table[0][ B0(wtxt[IDX0(j)]) ]
-	! the instruction is a part of.
+	! The comments mark which j in T->table[j][ Bj(wtxt[IDXi(i)]) ]
+	! the instruction is a part of. Uses the %o[j] as the primary 
+	! register for that sub-expression. True for j==1.
 	
 	! AES_SIDX1
-	ld	[%o2-32], %g3		! 1
+	ld	[%o2-32], %o1		! 1
 
 	! AES_SIDX2
 	ld	[%o2-16], %o4		! 2
 	! wtxt[IDX1...]
-	add	wtxt, %g3, %g3		! 1
-	ldub	[%g3+2], %o0		! 1
+	add	wtxt, %o1, %o1		! 1
+	ldub	[%o1+2], %o1		! 1
 
 	! AES_SIDX3
 	ld	[%o2], %g2		! 3
-	sll	%o0, 2, %o0		! 1
+	sll	%o1, 2, %o1		! 1
 	
 	! wtxt[i]
 	ld	[wtxt+i], %o5		! 0
@@ -134,16 +135,16 @@ _aes_crypt:
 	add	%o5, AES_TABLE0, %o5	! 0
 	ld	[T+%o5], %g2		! 0
 
-	add	%o0, AES_TABLE1, %o0	! 1
+	add	%o1, AES_TABLE1, %o1	! 1
 	and	%g3, 255, %g3		! 2
-	ld	[T+%o0], %o5		! 1
+	ld	[T+%o1], %o1		! 1
 	sll	%g3, 2, %g3		! 2
 	add	%g3, AES_TABLE2, %g3	! 2
 	ld	[T+%g3], %o0		! 2
 	sll	%o4, 2, %o4		! 3
 	add	%o4, AES_TABLE3, %o4	! 3
 	ld	[T+%o4], %g3		! 3
-	xor	%g2, %o5, %g2		! 0, 1
+	xor	%g2, %o1, %g2		! 0, 1
 	xor	%g2, %o0, %g2		! 0, 1, 2
 
 	add	%o2, 4, %o2		
