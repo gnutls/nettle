@@ -1,12 +1,17 @@
 2004-10-21  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.in (install-shared): Use $(INSTALL_PROGRAM).
+
+	* configure.ac (SHLIBMINOR): Updated, shared library version is
+	now libnettle.so.2.3, soname still libnettle.so.2.
+
 	* Makefile.in (DISTFILES): Added asm.m4.
 
 2004-10-21  Niels Möller  <niels@s3.kth.se>
 
 	* examples/Makefile.in: Deleted all configure-related rules,
-	except the one rebuilding this Makefile. Run make at top level if
-	other configure related files change.
+	except the one rebuilding this Makefile. One should run make at
+	top level if other configure related files change.
 	* tools/Makefile.in: Likewise.
 	* testsuite/Makefile.in: Likewise.
 
