@@ -33,7 +33,7 @@ typedef void (*nettle_crypt_func)(void *ctx,
 				  unsigned length, uint8_t *dst,
 				  const uint8_t *src);
 
-typedef void (*nettle_setkey_func)(void *ctx,
+typedef void (*nettle_set_key_func)(void *ctx,
 				   unsigned length,
 				   const uint8_t *key);
 
@@ -47,20 +47,21 @@ struct nettle_cipher
   /* Zero for stream ciphers */
   unsigned block_size;
 
+  /* Suggested key size; other sizes are sometimes possible. */
   unsigned key_size;
 
-  nettle_setkey_func set_encrypt_key;
-  nettle_setkey_func set_decrypt_key;
+  nettle_set_key_func set_encrypt_key;
+  nettle_set_key_func set_decrypt_key;
 
   nettle_crypt_func encrypt;
   nettle_crypt_func decrypt;
 };
 
 #define _NETTLE_CIPHER(name, NAME, keysize) {	\
-  #name ## #keysize,				\
+  #name #keysize,				\
   sizeof(struct name##_ctx),			\
   NAME##_BLOCK_SIZE,				\
-  keysize,					\
+  keysize / 8,					\
   (nettle_set_key_func) name##_set_key,		\
   (nettle_set_key_func) name##_set_key,		\
   (nettle_crypt_func) name##_encrypt,		\
@@ -82,14 +83,6 @@ extern const struct nettle_cipher nettle_twofish128;
 extern const struct nettle_cipher nettle_twofish192;
 extern const struct nettle_cipher nettle_twofish256;
 
-#if 0
-/* Doesn't quite fit, because of the weak keys and parity requirements. */
-extern const struct nettle_des;
-extern const struct nettle_des3;
-
-extern const struct nettle_blowfish128;
-#endif
-
 
 /* Hash algorithm */
 typedef void (*nettle_hash_init_func)(void *ctx);
@@ -104,7 +97,7 @@ struct nettle_hash
   const char *name;
 
   /* Size of the context struct */
-  unsigned ctx_size;
+  unsigned context_size;
 
   /* Size of digests */
   unsigned digest_size;

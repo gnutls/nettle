@@ -32,6 +32,9 @@
 #include "serpent.h"
 #include "twofish.h"
 
+#include "nettle-meta.h"
+#include "nettle-internal.h"
+
 #include "cbc.h"
 
 #include <assert.h>
@@ -45,14 +48,6 @@
 /* Encrypt 100MB, 1K at a time. */
 #define BENCH_BLOCK 1024
 #define BENCH_COUNT 10240
-
-typedef void (*crypt_func)(void *ctx,
-			   unsigned length, uint8_t *dst,
-			   const uint8_t *src);
-
-typedef void (*setkey_func)(void *ctx,
-                            unsigned length,
-                            const uint8_t *key);
 
 static double
 time_function(void (*f)(void *arg), void *arg)
@@ -72,7 +67,7 @@ time_function(void (*f)(void *arg), void *arg)
 struct bench_cipher_info
 {
   void *ctx;
-  crypt_func crypt;
+  nettle_crypt_func crypt;
   uint8_t *data;
 };
 
@@ -89,10 +84,10 @@ bench_cipher(void *arg)
 struct bench_cbc_info
 {
   void *ctx;
-  crypt_func crypt;
-
+  nettle_crypt_func crypt;
+ 
   uint8_t *data;
-
+  
   unsigned block_size;
   uint8_t *iv;
 };
@@ -143,22 +138,8 @@ init_key(unsigned length,
     key[i] = i;
 }
 
-struct cipher
-{
-  const char *name;
-  unsigned context_size;
-  
-  unsigned block_size;
-  unsigned key_size;
-
-  setkey_func setkey;
-  crypt_func encrypt;
-  crypt_func decrypt;
-};
-  
-
 static void
-time_cipher(struct cipher *cipher)
+time_cipher(const struct nettle_cipher *cipher)
 {
   void *ctx = alloca(cipher->context_size);
   uint8_t *key = alloca(cipher->key_size);
@@ -174,7 +155,7 @@ time_cipher(struct cipher *cipher)
       = { ctx, cipher->encrypt, data };
     
     init_key(cipher->key_size, key);
-    cipher->setkey(ctx, cipher->key_size, key);
+    cipher->set_encrypt_key(ctx, cipher->key_size, key);
     
     printf("%13s (ECB encrypt): %f\n", cipher->name,
            time_function(bench_cipher, &info));
@@ -185,7 +166,7 @@ time_cipher(struct cipher *cipher)
       = { ctx, cipher->decrypt, data };
     
     init_key(cipher->key_size, key);
-    cipher->setkey(ctx, cipher->key_size, key);
+    cipher->set_decrypt_key(ctx, cipher->key_size, key);
     
     printf("%13s (ECB decrypt): %f\n", cipher->name,
            time_function(bench_cipher, &info));
@@ -202,7 +183,7 @@ time_cipher(struct cipher *cipher)
     
         memset(iv, 0, sizeof(iv));
     
-        cipher->setkey(ctx, cipher->key_size, key);
+        cipher->set_encrypt_key(ctx, cipher->key_size, key);
 
         printf("%13s (CBC encrypt): %f\n", cipher->name,
                time_function(bench_cbc_encrypt,
@@ -215,7 +196,7 @@ time_cipher(struct cipher *cipher)
     
         memset(iv, 0, sizeof(iv));
 
-        cipher->setkey(ctx, cipher->key_size, key);
+        cipher->set_decrypt_key(ctx, cipher->key_size, key);
 
         printf("%13s (CBC decrypt): %f\n", cipher->name,
                time_function(bench_cbc_decrypt,
@@ -224,31 +205,6 @@ time_cipher(struct cipher *cipher)
     }
 }
 
-/* DES uses a different signature for the key set function.
- * And we have to adjust parity. */
-static void
-des_set_key_hack(void *c, unsigned length, const uint8_t *key)
-{
-  struct des_ctx *ctx = c;
-  uint8_t pkey[DES_KEY_SIZE];
-  
-  assert(length == DES_KEY_SIZE);
-  des_fix_parity(DES_KEY_SIZE, pkey, key);
-  if (!des_set_key(ctx, pkey))
-    abort();
-}
-
-static void
-des3_set_key_hack(void *c, unsigned length, const uint8_t *key)
-{
-  struct des3_ctx *ctx = c;
-  uint8_t pkey[DES3_KEY_SIZE];
-  
-  assert(length == DES3_KEY_SIZE);
-  des_fix_parity(DES3_KEY_SIZE, pkey, key);
-  if (!des3_set_key(ctx, pkey))
-    abort();
-}
 
 #define NCIPHERS 12
 
@@ -256,84 +212,19 @@ int
 main(int argc, char **argv)
 {
   unsigned i;
-  struct cipher ciphers[NCIPHERS] =
+  const struct nettle_cipher *ciphers[NCIPHERS] =
     {
-      { "AES-128", sizeof(struct aes_ctx),
-        AES_BLOCK_SIZE, 16,
-        (setkey_func) aes_set_key,
-        (crypt_func) aes_encrypt,
-        (crypt_func) aes_decrypt
-      },
-      { "AES-192", sizeof(struct aes_ctx),
-        AES_BLOCK_SIZE, 24,
-        (setkey_func) aes_set_key,
-        (crypt_func) aes_encrypt,
-        (crypt_func) aes_decrypt
-      },
-      { "AES-256", sizeof(struct aes_ctx),
-        AES_BLOCK_SIZE, 32,
-        (setkey_func) aes_set_key,
-        (crypt_func) aes_encrypt,
-        (crypt_func) aes_decrypt
-      },
-      { "ARCFOUR-128", sizeof(struct arcfour_ctx),
-        0, ARCFOUR_KEY_SIZE,
-        (setkey_func) arcfour_set_key,
-        (crypt_func) arcfour_crypt,
-        (crypt_func) arcfour_crypt
-      },
-      { "BLOWFISH-128", sizeof(struct blowfish_ctx),
-        BLOWFISH_BLOCK_SIZE, BLOWFISH_KEY_SIZE,
-        (setkey_func) blowfish_set_key,
-        (crypt_func) blowfish_encrypt,
-        (crypt_func) blowfish_decrypt
-      },
-      { "CAST-128", sizeof(struct cast128_ctx),
-        CAST128_BLOCK_SIZE, CAST128_KEY_SIZE,
-        (setkey_func) cast128_set_key,
-        (crypt_func) cast128_encrypt,
-        (crypt_func) cast128_decrypt
-      },
-      { "DES", sizeof(struct des_ctx),
-        DES_BLOCK_SIZE, DES_KEY_SIZE,
-        des_set_key_hack,
-        (crypt_func) des_encrypt,
-        (crypt_func) des_decrypt
-      },
-      { "DES3", sizeof(struct des3_ctx),
-        DES3_BLOCK_SIZE, DES3_KEY_SIZE,
-        des3_set_key_hack,
-        (crypt_func) des3_encrypt,
-        (crypt_func) des3_decrypt
-      },
-      { "SERPENT-256", sizeof(struct serpent_ctx),
-        SERPENT_BLOCK_SIZE, SERPENT_KEY_SIZE,
-        (setkey_func) serpent_set_key,
-        (crypt_func) serpent_encrypt,
-        (crypt_func) serpent_decrypt
-      },
-      { "TWOFISH-128", sizeof(struct twofish_ctx),
-        TWOFISH_BLOCK_SIZE, 16,
-        (setkey_func) twofish_set_key,
-        (crypt_func) twofish_encrypt,
-        (crypt_func) twofish_decrypt
-      },
-      { "TWOFISH-192", sizeof(struct twofish_ctx),
-        TWOFISH_BLOCK_SIZE, 24,
-        (setkey_func) twofish_set_key,
-        (crypt_func) twofish_encrypt,
-        (crypt_func) twofish_decrypt
-      },
-      { "TWOFISH-256", sizeof(struct twofish_ctx),
-        TWOFISH_BLOCK_SIZE, 32,
-        (setkey_func) twofish_set_key,
-        (crypt_func) twofish_encrypt,
-        (crypt_func) twofish_decrypt
-      },
+      &nettle_aes128, &nettle_aes192, &nettle_aes256,
+      &nettle_arcfour128,
+      &nettle_blowfish128,
+      &nettle_cast128,
+      &nettle_des, &nettle_des3,
+      &nettle_serpent256,
+      &nettle_twofish128, &nettle_twofish192, &nettle_twofish256,
     };
 
   for (i = 0; i<NCIPHERS; i++)
-    time_cipher(ciphers + i);
+    time_cipher(ciphers[i]);
   
   return 0;
 }
