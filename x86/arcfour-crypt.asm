@@ -28,10 +28,10 @@ C MA 02111-1307, USA.
 	.type  nettle_arcfour_crypt,@function
 nettle_arcfour_crypt:
 	C save all registers that need to be saved
-	pushl	%ebx		C  16(%esp)
-	pushl	%ebp		C  12(%esp)
-	pushl	%esi		C  8(%esp)
-	pushl	%edi		C  4(%esp)
+	pushl	%ebx		C  12(%esp)
+	pushl	%ebp		C  8(%esp)
+	pushl	%esi		C  4(%esp)
+	pushl	%edi		C  0(%esp)
 
 	C ctx = 20(%esp)
 	C length = 24(%esp)
