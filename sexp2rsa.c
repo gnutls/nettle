@@ -38,8 +38,7 @@
 static int
 get_value(mpz_t x, struct sexp_iterator *i)
 {
-  if (sexp_iterator_next(i)
-      && i->type == SEXP_ATOM
+  if (i->type == SEXP_ATOM
       && !i->display)
     {
       nettle_mpz_set_str_256(x, i->atom_length, i->atom);
