@@ -1,5 +1,7 @@
 2004-10-26  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac: Bumped version to 1.12.
+
 	* Released nettle-1.11.
 
 	* Makefile.in (clean-here): Delete *.s files.
