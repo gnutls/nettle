@@ -15,11 +15,29 @@ function hex2int (hex) {
   return n;
 }
 
+function output () {
+  if (name)
+    {
+      printf "%25s %6x   %6x   %6x\n", name, text_size, data_size, rodata_size;
+      text_total += text_size;
+      data_total += data_size;
+      rodata_total += rodata_size; 
+    } 
+  text_size = 0;
+  data_size = 0;
+  rodata_size = 0;
+}
+
 BEGIN {
-    print "file            text-size  data-size  rodata-size";
+    print "file                   text-size  data-size  rodata-size";
     text_total = 0;
     data_total = 0;
     rodata_total = 0;
+
+    text_size = 0;
+    data_size = 0;
+    rodata_size = 0;
+
     name = "";
     filter = ENVIRON["FILTER"];
     if (!filter)
@@ -29,25 +47,21 @@ BEGIN {
 }
 
 /elf32/ {
-  if (name)
-    {
-      printf "%25s %6x   %6x   %6x\n", name, text_size, data_size, rodata_size;
-      text_total += text_size;
-      data_total += data_size;
-      rodata_total += rodata_size; 
-    } 
+  output();
   if ($1 ~ filter)
     {
       name = $1; text_size = data_size = rodata_size = 0;
       sub(/^[^-]*_a-/, "", name);
     }
   else
-    name = ""
+    name = "";
 }
-/\.text/ { text_size = hex2int($3) }
-/\.data/ { data_size = hex2int($3); }
-/\.rodata/ { rodata_size = hex2int($3); }
+
+/\.text/ { text_size += hex2int($3); }
+/\.data/ { data_size += hex2int($3); }
+/\.rodata/ { rodata_size += hex2int($3);}
 
 END {
+  output();
   printf "%25s %6x   %6x   %6x\n", "TOTAL", text_total, data_total, rodata_total;
 }
