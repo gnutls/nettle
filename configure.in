@@ -49,5 +49,5 @@ if test x$GCC = xyes ; then
 
 fi
 
-AC_OUTPUT(Makefile testsuite/Makefile)
+AC_OUTPUT(Makefile testsuite/Makefile examples/Makefile)
 
