@@ -28,13 +28,13 @@ if test x$with_lib_path != x ; then
   LDFLAGS="-L `echo $with_lib_path | sed 's/:/ -L /g'`"
 fi
 
+AC_ARG_ENABLE(public-key,
+  AC_HELP_STRING([--disable-public-key], [Disable public key algorithms]),,
+  [enable_public_key=yes])
+
 AC_ARG_ENABLE(assembler,
-AC_HELP_STRING([--enable-assembler],[enable assembler code [default=yes]]),
-[ case $enableval in
-yes|no) ;;
-*) AC_MSG_ERROR([bad value $enableval for --enable-assembler, need yes or no]) ;;
-esac],
-[enable_assembler=yes])
+  AC_HELP_STRING([--disable-assembler],[Disable assembler code]),,
+  [enable_assembler=yes])
 
 LSH_RPATH_INIT([`echo $with_lib_path | sed 's/:/ /g'` \
     `echo $exec_prefix | sed "s@^NONE@$prefix/lib@g" | sed "s@^NONE@$ac_default_prefix/lib@g"` \
@@ -64,7 +64,7 @@ esac
 
 # echo "enable_assembler: $enable_assembler, asm_path: $asm_path"
 
-if test "$enable_assembler" = yes ; then
+if test "x$enable_assembler" = xyes ; then
   if test -n "$asm_path"; then
     AC_MSG_NOTICE([Looking for assembler files in $asm_path/.])
     found=no
@@ -101,7 +101,14 @@ AC_REPLACE_FUNCS(memxor)
 AC_CHECK_LIB(gmp, __gmpz_getlimbn,,
     [AC_MSG_WARN(
 [GNU MP not found, or not 3.1 or up, see http://www.swox.com/gmp.
-Support for public key algorithms will be unavailable.])])
+Support for public key algorithms will be unavailable.])]
+    enable_public_key=no)
+
+if test "x$enable_public_key" = xyes ; then
+  AC_DEFINE(WITH_PUBLIC_KEY)
+fi
+
+AH_TEMPLATE([WITH_PUBLIC_KEY], [Define to enable public key features])
 
 # Add -R flags needed to run programs linked with gmp
 LSH_RPATH_FIX
