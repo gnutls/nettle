@@ -180,10 +180,13 @@ main(int argc, char **argv)
 
   fprintf(stderr, "\n\nseeded: %s\n", yarrow.seeded ? "yes": "no");
   
-  fprintf(stderr, "source 0 entropy: %d\n",
-          sources[0].estimate[YARROW_SLOW]);
-  fprintf(stderr, "source 1 entropy: %d\n",
-          sources[1].estimate[YARROW_SLOW]);
-  
+  fprintf(stderr, "source 0, (fast, slow) entropy: (%d, %d)\n",
+          sources[0].estimate[YARROW_FAST],
+          sources[0].estimate[YARROW_SLOW]); 
+
+  fprintf(stderr, "source 1, (fast, slow) entropy: (%d, %d)\n",
+          sources[1].estimate[YARROW_FAST],
+          sources[1].estimate[YARROW_SLOW]); 
+
   return EXIT_SUCCESS;
 }
