@@ -1,3 +1,7 @@
+2004-02-08  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Bumped version number to 1.10.
+
 2004-02-07  Niels Möller  <nisse@lysator.liu.se>
 
 	* Released nettle-1.9.
