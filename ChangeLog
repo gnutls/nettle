@@ -1,3 +1,11 @@
+2004-11-13  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/nettle-openssl.c: Check WITH_OPENSSL, not HAVE_LIBCRYPTO.
+
+	* configure.ac: Check for individual openssl headers blowfish.h,
+	cast.h, des.h. Renamed symbol HAVE_LIBCRYPTO to WITH_OPENSSL. New
+	configure option --disable-openssl.
+
 2004-11-04  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Bumped version to 1.13.
