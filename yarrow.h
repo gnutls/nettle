@@ -81,7 +81,7 @@ yarrow256_init(struct yarrow256_ctx *ctx,
 void
 yarrow256_seed(struct yarrow256_ctx *ctx,
 	       unsigned length,
-	       uint8_t *seed_file);
+	       const uint8_t *seed_file);
 
 /* Returns 1 on reseed */
 int

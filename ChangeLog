@@ -1,3 +1,7 @@
+2003-11-16  Niels Möller  <nisse@harpo.hack.org>
+
+	* yarrow256.c (yarrow256_seed): Use const for the seed_file input.
+
 2003-11-12  Niels Möller  <niels@s3.kth.se>
 
 	* list-obj-sizes.awk: New function for decoding hex values, with a
