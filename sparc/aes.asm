@@ -18,10 +18,13 @@
 ! the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 ! MA 02111-1307, USA.
 
+! FIXME: Some of the %g registers are reserved for operating system etc
+! (see gcc/config/sparc.h). We should probably use only %g1-%g3 to be safe.
+	
 	! Used registers:	%l0,1,2,3,4,5,6,7
 	!			%i0,1,2,3,4 (%i6=%fp, %i7 = return)
 	!			%o0,1,2,3 (%o6=%sp)
-	!			%g2,3,4,5,6
+	!			%g2,3,4,5,6,7
 	
 	.file	"aes.asm"
 	
