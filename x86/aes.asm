@@ -245,22 +245,22 @@ aes_decrypt:
 .Lisubst:
 	movl	%eax,%ebp
 	andl	$0x000000ff,%ebp
-	movb	isbox(%ebp),%al
+	movb	AES_SBOX + _aes_decrypt_table (%ebp),%al
 	roll	$8,%eax
 
 	movl	%ebx,%ebp
 	andl	$0x000000ff,%ebp
-	movb	isbox(%ebp),%bl
+	movb	AES_SBOX + _aes_decrypt_table (%ebp),%bl
 	roll	$8,%ebx
 
 	movl	%ecx,%ebp
 	andl	$0x000000ff,%ebp
-	movb	isbox(%ebp),%cl
+	movb	AES_SBOX + _aes_decrypt_table (%ebp),%cl
 	roll	$8,%ecx
 
 	movl	%edx,%ebp
 	andl	$0x000000ff,%ebp
-	movb	isbox(%ebp),%dl
+	movb	AES_SBOX + _aes_decrypt_table (%ebp),%dl
 	roll	$8,%edx
 
 	decl	%edi
