@@ -66,6 +66,9 @@ case "$host" in
   *sparc*-*-*)
     asm_path=sparc
     ;;
+  *)
+    enable_assembler=no
+    ;;
 esac
 
 # echo "enable_assembler: $enable_assembler, asm_path: $asm_path"
@@ -105,6 +108,9 @@ else
   SHLIBTARGET=''
   SHLIBINSTALL=''
 fi
+
+AM_CONDITIONAL([ENABLE_ASSEMBLER], [test x$enable_assembler = xyes])
+AM_CONDITIONAL([ENABLE_SHARED],  [test x$enable_shared = xyes])
 
 AC_SUBST(SHLIBCFLAGS)
 AC_SUBST(SHLIBMAJOR)
