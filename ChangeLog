@@ -1,3 +1,8 @@
+2004-02-15  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/testutils.h: #include nettle-types.h instead of
+	inttypes.h. 
+
 2004-02-12  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/rsa-encrypt-test: Use -r option when invoking
