@@ -1,3 +1,7 @@
+2004-06-08  Niels Möller  <niels@s3.kth.se>
+
+	* aesdata.c: Renamed log and ilog to gf2_log and gf2_exp.
+
 2004-04-07  Niels Möller  <nisse@lysator.liu.se>
 
 	* aes-set-encrypt-key.c (log, ilog): Deleted unused tables.
