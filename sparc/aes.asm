@@ -69,28 +69,27 @@ _aes_crypt:
 	mov	-4, i
 .Lsource_loop:
 	add	i, 4, i
-	! mov	src, %o5
 	
-	ldub	[src+3], %g2
-	ldub	[src+2], %g3
+	ldub	[src+3], t3
+	ldub	[src+2], t2
 	
-	sll	%g2, 24, %g2
-	ldub	[src+1], %o0
-	sll	%g3, 16, %g3
-	or	%g2, %g3, %g2
+	sll	t3, 24, t3
+	ldub	[src+1], t1
+	sll	t2, 16, t2
+	or	t3, t2, t3
 	
-	ldub	[src], %o5
-	sll	%o0, 8, %o0
+	ldub	[src], t0
+	sll	t1, 8, t1
 	ld	[ctx+i], %g3
-	or	%g2, %o0, %g2
+	or	t3, t1, t3
 	
-	or	%g2, %o5, %g2
-	xor	%g2, %g3, %g2
+	or	t3, t0, t3
+	xor	t3, %g3, t3
 	add	src, 4, src
 	cmp	i, 8
 	bleu	.Lsource_loop
 	
-	st	%g2, [wtxt+i]
+	st	t3, [wtxt+i]
 
 	mov	16, round
 	add	ctx, 16, key
