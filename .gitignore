@@ -31,6 +31,10 @@ _$*
 *.ln
 core
 /*.d
+/*.bb
+/*.bbg
+/*.da
+/*.gcov
 /.deps
 /.dist_headers
 /Makefile
