@@ -1,4 +1,4 @@
-	! Used registers:	%l0,1
+	! Used registers:	%l0,1,2
 	!			%i0,1,2,3,4,5 (%i6=%fp, %i7 = return)
 	!			%o0,1,2,3,4,7 (%o6=%sp)
 	!			%g1,2,3,4
@@ -12,14 +12,22 @@ include(`asm.m4')
 	.type	_aes_crypt,#function
 	.proc	020
 
+! Arguments
 define(ctx, %i0)
 define(T, %i1)
 define(length, %i2)
 define(dst, %i3)
 define(src, %i4)
 
-define(wtxt, %l1)
-define(tmp, %l0)
+! Loop invariants
+define(wtxt, %l0)
+define(tmp, %l1)
+define(nround, %l2)
+
+! Loop variables
+define(round, %l3) ! Should perhaps be 16 * round
+define(i, %l4)
+	
 _aes_crypt:
 ! Why -136?
 	save	%sp, -136, %sp
@@ -30,6 +38,7 @@ _aes_crypt:
 
 	! wtxt
 	add	%fp, -24, wtxt
+	add	%fp, -40, tmp
 
 .Lblock_loop:
 	! Read src, and add initial subkey
@@ -82,11 +91,10 @@ _aes_crypt:
 	! bleu	.Lsource_loop
 	! add	%o3, 4, %o3
 
-	ld	[ctx + AES_NROUNDS], %g2
-	mov	1, %g1
+	ld	[ctx + AES_NROUNDS], nround
+	mov	1, round
 
-	add	%fp, -40, tmp
-	mov	%g2, %o7
+	! mov	%g2, %o7
 
 	! wtxt
 	mov	wtxt, %g4
@@ -149,7 +157,7 @@ _aes_crypt:
 	bleu	.Linner_loop
 	add	%o3, 4, %o3
 	
-	sll	%g1, 4, %g2
+	sll	round, 4, %g2
 	add	%g2, ctx, %o0
 	mov	0, %i5
 	mov	wtxt, %o3
@@ -164,12 +172,12 @@ _aes_crypt:
 	st	%g3, [%o3+%g2]
 	bleu	.Lroundkey_loop
 	add	%o0, 4, %o0
-	add	%g1, 1, %g1
-	cmp	%g1, %o7
+	add	round, 1, round
+	cmp	round, nround
 	blu	.Lround_loop
 	mov	0, %o3
 
-	sll	%g1, 4, %g2
+	sll	round, 4, %g2
 	
 	! final round
 	add	%g2, ctx, %o7
