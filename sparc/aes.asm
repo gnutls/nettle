@@ -44,52 +44,48 @@ include(`asm.m4')
 	.global _aes_crypt
 	.type	_aes_crypt,#function
 	.proc	020
+
+define(ctx, %o5)
+define(T, %o0)
+define(length, %o4)
+define(dst, %o3)
+define(src, %o2)
 _aes_crypt:
-.LLFB1:
-.LLM1:
 	!#PROLOGUE# 0
 	save	%sp, -136, %sp
-.LLCFI0:
 	!#PROLOGUE# 1
-	mov	%i2, %o4
-	mov	%i0, %o5
-	mov	%i1, %o0
-	mov	%i3, %o3
-.LLM2:
-	cmp	%o4, 0
+! Why this moving around of the input parameters?
+	mov	%i2, length
+	mov	%i0, ctx
+	mov	%i1, T
+	mov	%i3, dst
+	cmp	length, 0
 	be	.LL41
-	mov	%i4, %o2
+	mov	%i4, src
 	add	%fp, -24, %l1
 	mov	%l1, %l2
-.LLBB2:
 .LL13:
-.LLM3:
 	mov	0, %i3
 .LL17:
-.LLM4:
 	sll	%i3, 2, %i2
-	add	%i2, %o2, %i0
+	add	%i2, src, %i0
 	ldub	[%i0+3], %g2
-.LLM5:
 	add	%i3, 1, %i3
-.LLM6:
 	ldub	[%i0+2], %g3
 	sll	%g2, 24, %g2
 	ldub	[%i0+1], %i1
 	sll	%g3, 16, %g3
 	or	%g2, %g3, %g2
-	ldub	[%o2+%i2], %i0
+	ldub	[src+%i2], %i0
 	sll	%i1, 8, %i1
-	ld	[%o5+%i2], %g3
+	ld	[ctx+%i2], %g3
 	or	%g2, %i1, %g2
 	or	%g2, %i0, %g2
 	xor	%g2, %g3, %g2
-.LLM7:
 	cmp	%i3, 3
 	bleu	.LL17
 	st	%g2, [%l2+%i2]
-.LLM8:
-	ld	[%o5+240], %g2
+	ld	[ctx+240], %g2
 	mov	1, %g1
 	cmp	%g1, %g2
 	bgeu,a	.LL47
@@ -98,13 +94,10 @@ _aes_crypt:
 	mov	%g2, %o7
 	mov	%o1, %l0
 	mov	%l1, %g4
-.LLBB3:
-.LLM9:
 	mov	0, %i5
 .LL48:
-	add	%o0, 288, %i4
+	add	T, 288, %i4
 .LL26:
-.LLM10:
 	ld	[%i4-32], %g3
 	sll	%i5, 2, %i3
 	sll	%g3, 2, %g3
@@ -121,122 +114,93 @@ _aes_crypt:
 	ldub	[%g4+%g2], %i2
 	sll	%i0, 2, %i0
 	add	%i0, 304, %i0
-	ld	[%o0+%i0], %g2
+	ld	[T+%i0], %g2
 	add	%i1, 1328, %i1
 	and	%g3, 255, %g3
-	ld	[%o0+%i1], %i0
+	ld	[T+%i1], %i0
 	sll	%g3, 2, %g3
 	add	%g3, 2352, %g3
-	ld	[%o0+%g3], %i1
+	ld	[T+%g3], %i1
 	sll	%i2, 2, %i2
 	add	%i2, 3376, %i2
-	ld	[%o0+%i2], %g3
+	ld	[T+%i2], %g3
 	xor	%g2, %i0, %g2
 	xor	%g2, %i1, %g2
-.LLM11:
 	add	%i5, 1, %i5
-.LLM12:
 	xor	%g2, %g3, %g2
 	st	%g2, [%l0+%i3]
-.LLM13:
 	cmp	%i5, 3
 	bleu	.LL26
 	add	%i4, 4, %i4
-.LLM14:
 	sll	%g1, 4, %g2
-	add	%g2, %o5, %i1
+	add	%g2, ctx, %i1
 	mov	0, %i5
 	mov	%l1, %i3
 	mov	%o1, %i2
 .LL31:
-.LLM15:
 	sll	%i5, 2, %g2
 	ld	[%i1], %i0
-.LLM16:
 	add	%i5, 1, %i5
-.LLM17:
 	ld	[%i2+%g2], %g3
-.LLM18:
 	cmp	%i5, 3
-.LLM19:
 	xor	%g3, %i0, %g3
 	st	%g3, [%i3+%g2]
-.LLM20:
 	bleu	.LL31
 	add	%i1, 4, %i1
-.LLBE3:
-.LLM21:
 	add	%g1, 1, %g1
 	cmp	%g1, %o7
 	blu	.LL48
 	mov	0, %i5
-.LLBB4:
-.LLM22:
 	sll	%g1, 4, %g2
 .LL47:
-	add	%g2, %o5, %o7
+	add	%g2, ctx, %o7
 	mov	0, %o1
 	mov	%l1, %g1
-	add	%o0, 288, %g4
+	add	T, 288, %g4
 .LL37:
-.LLM23:
 	ld	[%g4-32], %g2
 	sll	%o1, 2, %i5
 	sll	%g2, 2, %g2
 	add	%g1, %g2, %g2
 	ldub	[%g2+2], %i3
-.LLM24:
-	add	%i5, %o3, %i4
-.LLM25:
+	add	%i5, dst, %i4
 	ld	[%g4-16], %g3
-.LLM26:
 	add	%o1, 1, %o1
-.LLM27:
 	ld	[%g1+%i5], %g2
 	sll	%g3, 2, %g3
 	lduh	[%g1+%g3], %i2
 	and	%g2, 255, %g2
 	ld	[%g4], %i0
 	and	%i2, 255, %i2
-	ldub	[%o0+%i3], %i1
+	ldub	[T+%i3], %i1
 	sll	%i0, 2, %i0
-	ldub	[%o0+%g2], %g3
+	ldub	[T+%g2], %g3
 	sll	%i1, 8, %i1
 	ldub	[%g1+%i0], %i3
 	or	%g3, %i1, %g3
-	ldub	[%o0+%i2], %g2
-.LLM28:
+	ldub	[T+%i2], %g2
 	cmp	%o1, 3
-.LLM29:
-	ldub	[%o0+%i3], %i0
+	ldub	[T+%i3], %i0
 	sll	%g2, 16, %g2
 	or	%g3, %g2, %g3
-.LLM30:
 	ld	[%o7], %g2
-.LLM31:
 	sll	%i0, 24, %i0
 	or	%g3, %i0, %g3
-.LLM32:
 	xor	%g3, %g2, %g3
-.LLM33:
 	srl	%g3, 24, %i0
 	srl	%g3, 16, %i1
 	srl	%g3, 8, %g2
 	stb	%g2, [%i4+1]
 	stb	%i0, [%i4+3]
 	stb	%i1, [%i4+2]
-	stb	%g3, [%o3+%i5]
-.LLM34:
+	stb	%g3, [dst+%i5]
 	add	%o7, 4, %o7
 	bleu	.LL37
 	add	%g4, 4, %g4
-.LLBE4:
-.LLBE2:
-.LLM35:
-	add	%o3, 16, %o3
-	addcc	%o4, -16, %o4
+	add	dst, 16, dst
+	addcc	length, -16, length
 	bne	.LL13
-	add	%o2, 16, %o2
+	add	src, 16, src
 .LL41:
 	ret
 	restore
@@ -656,7 +620,6 @@ _aes_crypt:
 ! 	call	__assert_fail, 0
 ! 	mov	92, %o2
 ! .Lencrypt_end:
-! .LLBE5:
 ! 	ret
 ! 	restore
 ! .LLFE4:
@@ -697,7 +660,6 @@ _aes_crypt:
 ! 	save	%sp, -136, %sp
 ! .LLCFI1:
 ! 	!#PROLOGUE# 1
-! .LLBB6:
 ! 	andcc	%i1, 15, %g0
 ! 	bne	.LL111
 ! 	cmp	%i1, 0
@@ -856,7 +818,6 @@ _aes_crypt:
 ! 	call	__assert_fail, 0
 ! 	mov	142, %o2
 ! .LL106:
-! .LLBE6:
 ! 	ret
 ! 	restore
 ! .LLFE5:
