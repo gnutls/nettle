@@ -1,3 +1,9 @@
+2003-09-21  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* testsuite/rsa-encrypt-test.c (test_main): Don't use gmp_printf,
+	as it seems it's only available with the newer gmp. Use
+	mpz_out_str instead.
+
 2003-09-19  Niels Möller  <niels@s3.kth.se>
 
 	* examples/Makefile.am (EXTRA_DIST): Added rsa-session.h.
