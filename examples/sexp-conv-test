@@ -6,13 +6,13 @@ fi
 
 test_conv () {
     # FIXME: echo -n not portable
-    echo -n "$1" > test.in
+    echo "$1" > test.in
     if ./sexp-conv <test.in >test1.out ; then
 	true
     else
 	exit 1
     fi
-    echo -n "$2" > test2.out
+    echo "$2" > test2.out
 
     if cmp test1.out test2.out ; then
 	true
