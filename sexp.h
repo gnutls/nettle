@@ -27,6 +27,7 @@
 #define NETTLE_SEXP_H_INCLUDED
 
 #include <inttypes.h>
+#include <stdarg.h>
 
 enum sexp_type
   { SEXP_ATOM, SEXP_LIST, SEXP_END };
@@ -94,6 +95,8 @@ sexp_iterator_check_types(struct sexp_iterator *iterator,
  *
  * For a matching key, the corresponding iterator is initialized
  * pointing at the start of REST.
+ *
+ * On success, exits the current list.
  */
 int
 sexp_iterator_assoc(struct sexp_iterator *iterator,
@@ -108,15 +111,42 @@ sexp_iterator_assoc(struct sexp_iterator *iterator,
 /* Declared for real in buffer.h */
 struct nettle_buffer;
 
-int
-sexp_format(struct nettle_buffer *buffer, const char *format, ...);
+/* Returns the number of output characters, or 0 on out of memory. If
+ * buffer == NULL, just compute length.
+ *
+ * Format strings can contained matched parentheses, and the following
+ * formatting specifiers:
+ *
+ *   %z   NUL-terminated string, const uint8_t *.
+ *
+ *   %s   String represented as unsigned length, const uint8_t *data.
+ *
+ *   %i   Non-negative small integer, uint32_t.
+ *
+ *   %b   Non-negative bignum, mpz_t.
+ *
+ *   %l   Literal string (no length added), typically a balanced
+ *        subexpression. Represented as unsigned length, const uint8_t
+ *        *data.
+ */
 
-int
+unsigned
+sexp_format(struct nettle_buffer *buffer,
+	    const char *format, ...);
+
+unsigned
+sexp_vformat(struct nettle_buffer *buffer,
+	     const char *format, va_list args);
+
+/* FIXME: Add argument LINE_WIDTH. If non-zero, break lines to at most
+ * that width. */
+
+unsigned
 sexp_transport_format(struct nettle_buffer *buffer,
-		      /* If non-zero, break lines to at most
-		       * line_length characters. */
-		      unsigned line_length,
 		      const char *format, ...);
 
+unsigned
+sexp_transport_vformat(struct nettle_buffer *buffer,
+		       const char *format, va_list args);
 
 #endif /* NETTLE_SEXP_H_INCLUDED */
