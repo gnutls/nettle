@@ -19,17 +19,20 @@ TS_PROGS = aes-test arcfour-test blowfish-test cast128-test \
 	   dsa-test dsa-keygen-test \
 	   yarrow-test
 
-TS_SH = sexp-conv-test
+TS_SH = sexp-conv-test symbols-test
 
 TS_ALL = $(TS_PROGS) $(TS_SH)
 
 noinst_PROGRAMS = $(TS_PROGS)
 
+# Workaround to get automake to keep dependencies for testutils.o
+EXTRA_PROGRAMS = testutils
+
 # libnettle.a is added at the end to make sure all programs depend on it.
 # It seems there's no DEPENDENCIES variable that affects all programs.
 
 LDADD = testutils.o -lnettle ../libnettle.a
-EXTRA_DIST = $(TS_SH) testutils.c testutils.h \
+EXTRA_DIST = $(TS_SH) testutils.h \
 	     run-tests rfc1750.txt
 
 CLEANFILES = test.in test1.out test2.out
