@@ -135,8 +135,8 @@ des_headers = parity.h rotors.h keymap.h
 
 # Generate DES headers.
 $(des_headers): desdata.c
-	$(MAKE) desdata
-	./desdata $(@F) > $@T
+	$(MAKE) desdata$(EXEEXT)
+	./desdata$(EXEEXT) $(@F) > $@T
 	test -s $@T && mv -f $@T $@
 
 des.o: des.c des.h $(des_headers)
