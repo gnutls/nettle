@@ -55,7 +55,8 @@ SUFFIXES = .asm
 # can be overridden during development, eg. "make RM_TMP=: aes.o"
 RM_TMP = rm -f
 
-.asm.o:
+# FIXME: How to write this without using GNU make features?
+%.o: %.asm asm.m4
 	$(M4) `test -f $< || echo '$(srcdir)/'`$< >tmp-$*.s
 	$(COMPILE) -c tmp-$*.s -o $@
 	$(RM_TMP) tmp-$*.s
