@@ -57,18 +57,18 @@ aes_decrypt:
 	pushl	%esi		C  save this first: we'll clobber it later
 
 	C Why???
-	xchgl	%ebx,%edx
+	C xchgl	%ebx,%edx
 
-	AES_ROUND(_aes_decrypt_table,a,b,c,d)
+	AES_ROUND(_aes_decrypt_table,a,d,c,b)
 	pushl	%edi		C  save first on stack
 
-	AES_ROUND(_aes_decrypt_table,d,a,b,c)
+	AES_ROUND(_aes_decrypt_table,b,a,d,c)
 	pushl	%edi
 
-	AES_ROUND(_aes_decrypt_table,c,d,a,b)
+	AES_ROUND(_aes_decrypt_table,c,b,a,d)
 	pushl	%edi		C  save first on stack
 
-	AES_ROUND(_aes_decrypt_table,b,c,d,a)
+	AES_ROUND(_aes_decrypt_table,d,c,b,a)
 
 	movl	%edi,%edx
 	popl	%ecx
