@@ -18,6 +18,7 @@ md5-test
 rsa-keygen-test
 rsa-test
 serpent-test
+sexp-test
 sha1-test
 sha256-test
 twofish-test
