@@ -98,6 +98,12 @@ RM_TMP = rm -f
 # 	$(M4) $(srcdir)/asm.m4 machine.m4 config.m4 \
 # 		`test -f $< || echo '$(srcdir)/'`$< >$@
 
+# FIXME: For some reasomn, this rule breaks builds on OSF1 alpha V5.1.
+# It fails with "Don't know how to make aes.asm", which is very
+# strange, since the make program on this system is not supposed to
+# know about %-style pattern rules, and "aes.asm" doesn't not occur
+# explicitly in any target or dependency.
+
 # NOTE: We create an empty .deps-file, to make the make/automake
 # dependency tracking happier.
 %.$(OBJEXT): %.asm asm.m4 machine.m4 config.m4
