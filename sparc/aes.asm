@@ -66,15 +66,19 @@ define(t1, %o1)
 define(t2, %o2)
 define(t3, %o3)
 
+define(<FRAME_SIZE>, 32)
+define(<FRAME_WTXT>, 0)
+define(<FRAME_TMP>, 16)
+
 _aes_crypt:
 ! Why -136?
-	save	%sp, -136, %sp
+	save	%sp, -FRAME_SIZE, %sp
 	cmp	length, 0
 	be	.Lend
-	! wtxt
-	add	%fp, -24, wtxt
-	
-	add	%fp, -40, tmp
+
+	add	%sp, FRAME_WTXT, wtxt
+	add	%sp, FRAME_TMP, tmp
+
 	ld	[ctx + AES_NROUNDS], nrounds
 	! Compute xor, so that we can swap efficiently.
 	xor	wtxt, tmp, diff
