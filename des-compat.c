@@ -51,9 +51,9 @@ static void
 des_compat_des3_decrypt(struct des_compat_des3 *ctx,
 			uint32_t length, uint8_t *dst, const uint8_t *src)
 {
-  des_decrypt(ctx->keys[0], length, dst, src);
+  des_decrypt(ctx->keys[2], length, dst, src);
   des_encrypt(ctx->keys[1], length, dst, dst);
-  des_decrypt(ctx->keys[2], length, dst, dst);
+  des_decrypt(ctx->keys[0], length, dst, dst);
 }
 
 void
@@ -76,7 +76,7 @@ des_cbc_cksum(des_cblock *src, des_cblock *dst,
    * work, in particular what it should return, and if iv can be
    * modified. */
   uint8_t block[DES_BLOCK_SIZE];
-  memcpy(block, iv, DES_BLOCK_SIZE);
+  memcpy(block, *iv, DES_BLOCK_SIZE);
 
   uint8_t *p;
   
@@ -92,32 +92,41 @@ des_cbc_cksum(des_cblock *src, des_cblock *dst,
   return LE_READ_UINT32(block + 4);
 }
 
+void
+des_ncbc_encrypt(des_cblock *src, des_cblock *dst, long length,
+                 des_key_schedule ctx, des_cblock *iv,
+                 int enc)
+{
+  switch (enc)
+    {
+    case DES_ENCRYPT:
+      cbc_encrypt(ctx, (cbc_crypt_func) des_encrypt,
+		  DES_BLOCK_SIZE, *iv,
+		  length, *dst, *src);
+      break;
+    case DES_DECRYPT:
+      cbc_decrypt(ctx,
+		  (cbc_crypt_func) des_decrypt,
+		  DES_BLOCK_SIZE, *iv,
+		  length, *dst, *src);
+      break;
+    default:
+      abort();
+    }
+}
 
 void
 des_cbc_encrypt(des_cblock *src, des_cblock *dst, long length,
 		des_key_schedule ctx, des_cblock *civ,
 		int enc)
 {
-  uint8_t iv[DES_BLOCK_SIZE];
+  des_cblock iv;
 
   memcpy(iv, civ, DES_BLOCK_SIZE);
-  
-  cbc_encrypt(ctx,
-	      (cbc_crypt_func) ((enc == DES_ENCRYPT) ? des_encrypt : des_decrypt),
-              DES_BLOCK_SIZE, iv,
-              length, *dst, *src);
+
+  des_ncbc_encrypt(src, dst, length, ctx, &iv, enc);
 }
 
-void
-des_ncbc_encrypt(des_cblock *src, des_cblock *dst, long length,
-                 des_key_schedule ctx, des_cblock *iv,
-                 int enc)
-{
-  cbc_encrypt(ctx,
-	      (cbc_crypt_func) ((enc == DES_ENCRYPT) ? des_encrypt : des_decrypt),
-              DES_BLOCK_SIZE, *iv,
-              length, *dst, *src);
-}
 
 void
 des_ecb_encrypt(des_cblock *src, des_cblock *dst,
@@ -135,14 +144,21 @@ des_ede3_cbc_encrypt(des_cblock *src, des_cblock *dst, long length,
 {
   struct des_compat_des3 keys = { { k1, k2, k3 } };
 
-  if (enc == DES_ENCRYPT)
-    cbc_encrypt(&keys, (cbc_crypt_func) des_compat_des3_encrypt,
-		DES_BLOCK_SIZE, *iv,
-		length, *dst, *src);
-  else
-    cbc_decrypt(&keys, (cbc_crypt_func) des_compat_des3_decrypt,
-		DES_BLOCK_SIZE, *iv,
-		length, *dst, *src);
+  switch (enc)
+    {
+    case DES_ENCRYPT:
+      cbc_encrypt(&keys, (cbc_crypt_func) des_compat_des3_encrypt,
+		  DES_BLOCK_SIZE, *iv,
+		  length, *dst, *src);
+      break;
+    case DES_DECRYPT:
+      cbc_decrypt(&keys, (cbc_crypt_func) des_compat_des3_decrypt,
+		  DES_BLOCK_SIZE, *iv,
+		  length, *dst, *src);
+      break;
+    default:
+      abort();
+    }
 }
 
 int
