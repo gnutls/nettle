@@ -126,5 +126,5 @@ int
 nettle_buffer_copy(struct nettle_buffer *dst,
 		   const struct nettle_buffer *src)
 {
-  nettle_buffer_write(dst, src->size, src->contents);
+  return nettle_buffer_write(dst, src->size, src->contents);
 }
