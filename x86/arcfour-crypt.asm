@@ -72,7 +72,7 @@ C	andl	$0xff, %ebx
 	movb    %ch, (%ebp, %eax)	C  S[i] = sj
 	movb	%cl, (%ebp, %ebx)	C  S[j] = si
 	addb    %ch, %cl
-	xorb    %ch, %ch		C  Clear, so it can be used
+	movzbl  %cl, %ecx		C  Clear, so it can be used
 					C  for indexing.
 	movb    (%ebp, %ecx), %cl
 	xorb    (%esi), %cl
