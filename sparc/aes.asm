@@ -168,23 +168,23 @@ _aes_crypt:
 	! final round
 	mov	0, i
 	! SIDX3
-	add	T, AES_SIDX3, %g4
+	add	T, AES_SIDX3, idx
 .Lfinal_loop:
 	! Comments mark which j in T->sbox[Bj(wtxt[IDXj(i)])]
 	! the instruction is part of
-	ld	[%g4-32], t1 	! 1
+	ld	[idx-32], t1 	! 1
 	sll	i, 2, %i5
 
 	add	wtxt, t1, t1	! 1
 	ldub	[t1+2], t1	! 1
 	add	%i5, dst, %g2	
-	ld	[%g4-16], t2	! 2
+	ld	[idx-16], t2	! 2
 	add	i, 1, i
 	ld	[wtxt+%i5], t0	! 0
 
 	lduh	[wtxt+t2], t2	! 2
 	and	t0, 255, t0	! 0
-	ld	[%g4], t3	! 3
+	ld	[idx], t3	! 3
 	and	t2, 255, t2	! 2
 	ldub	[T+t1], t1	! 1
 
@@ -210,7 +210,7 @@ _aes_crypt:
 	stb	%g3, [dst+%i5]
 	add	round, 4, round
 	bleu	.Lfinal_loop
-	add	%g4, 4, %g4
+	add	idx, 4, idx
 	
 	addcc	length, -16, length
 	bne	.Lblock_loop
