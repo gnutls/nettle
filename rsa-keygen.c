@@ -303,21 +303,28 @@ rsa_generate_keypair(struct rsa_public_key *pub,
   
   /* If we didn't have a given e, generate one now. */
   if (e_size)
-    for (;;)
-      {
-	bignum_random_size(pub->e, e_size,
-			   random_ctx, random);
+    {
+      int retried = 0;
+      for (;;)
+	{
+	  bignum_random_size(pub->e, e_size,
+			     random_ctx, random);
 	
-	/* Make sure it's odd and that the most significant bit is
-	 * set */
-	mpz_setbit(pub->e, 0);
-	mpz_setbit(pub->e, e_size - 1);
+	  /* Make sure it's odd and that the most significant bit is
+	   * set */
+	  mpz_setbit(pub->e, 0);
+	  mpz_setbit(pub->e, e_size - 1);
 
-	/* Needs gmp-3, or inverse might be negative. */
-	if (mpz_invert(key->d, pub->e, phi))
-	  break;
-	else if (progress) progress(progress_ctx, 'e');
-      }
+	  /* Needs gmp-3, or inverse might be negative. */
+	  if (mpz_invert(key->d, pub->e, phi))
+	    break;
+
+	  if (progress) progress(progress_ctx, 'e');
+	  retried = 1;
+	}
+      if (retried && progress)
+	progress(progress_ctx, '\n');	
+    }
   else
     {
       /* Must always succeed, as we already that e
