@@ -24,5 +24,7 @@
 /serpent-test.c
 /sha1-test
 /sha1-test.c
+/sha256-test
+/sha256-test.c
 /twofish-test
 /twofish-test.c

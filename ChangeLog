@@ -1,3 +1,14 @@
+2001-10-07  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* testsuite/Makefile.am (CFLAGS): Added sha256-test.
+
+	* testsuite/sha256-test.m4: New testcases for SHA-256.
+
+	* shadata.c: New file, for generating SHA-256 constants.
+
+	* sha.h: Renamed sha1.h to sha.h, and added declarations for
+	SHA-256. 
+
 2001-10-05  Niels Möller  <nisse@ehand.com>
 
 	* testsuite/aes-test.m4: Added a comment with NIST test vectors.

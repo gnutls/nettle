@@ -1,4 +1,4 @@
-#include "sha1.h"
+#include "sha.h"
 
 BEGIN_TEST
 
