@@ -12,6 +12,7 @@ des-test
 des3-test
 md5-compat-test
 md5-test
+rsa-test
 serpent-test
 sha1-test
 sha256-test
