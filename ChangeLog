@@ -1,3 +1,40 @@
+2004-10-20  Niels Möller  <nisse@lysator.liu.se>
+
+	* tools/Makefile.in (install): Support DESTDIR.
+	(uninstall): New target.
+
+	* testsuite/Makefile.in (uninstall): New dummy target.
+
+	* config.sub: Copied from automake-1.8.5. 
+
+	* examples/Makefile.in (SOURCES): Added rsa-sign.c and rsa-verify.c.
+	(DISTFILES): Added getopt.h.
+	(install uninstall): New dummy targets.
+
+	* config.make.in (.PHONY): Added more targets.
+
+	* Makefile.in (.texinfo.info, .texinfo.html): New targets. Added
+	support for uninstall and DESTDIR. Various fixes to install and
+	distcheck.
+
+	* examples/Makefile.in (INCLUDES): Added -I flags.
+	(distdir): Use $^ to refer to the files.
+	(distclean): New target.
+	* testsuite/Makefile.in: Likewise.
+	* tools/Makefile.in: Likewise.
+
+	* Makefile.in (INCLUDES): Need -I flags for VPATH build.
+	(clean distclean mostlyclean maintainer-clean): Clean
+	subdirectories first.
+	(DISTFILES): Added a bunch of files.
+	(des_headers): Added desCore rules.
+	(install-here): Split off target install-headers, which uses $^ to
+	refer to the files.
+	(distdir): Use $^ to refer to the files.
+	distcheck): Fixes.
+
+	* config.make.in (COMPILE): Add $(INCLUDE) to the line.
+
 2004-10-19  Niels Möller  <nisse@lysator.liu.se>
 
 	Stop using automake. Replaced each Makefile.am with a hand-written
