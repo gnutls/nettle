@@ -1,3 +1,8 @@
+2004-01-31  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac (AX_CREATE_STDINT_H): Also look for uint32_t and
+	friends in sys/types.h.
+
 2004-01-11  Niels Möller  <nisse@harpo.hack.org>
 
 	* Makefile.am (libnettleinclude_HEADERS): Added bignum.h,
