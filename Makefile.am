@@ -98,13 +98,13 @@ RM_TMP = rm -f
 all-local: $(SHLIBTARGET)
 install-data-local: $(SHLIBINSTALL)
 
+# Assembler files must contain only PIC-clean code.
 %_p.$(OBJEXT): %.asm asm.m4 machine.m4 config.m4
 	$(M4) $(srcdir)/asm.m4 machine.m4 config.m4 \
 		`test -f $< || echo '$(srcdir)/'`$< >$*.s
 	$(COMPILE) -c $*.s -o $@
 	echo >.deps/$*.Po
 
-# Assembler files must contain only PIC-clean code.
 %_p.$(OBJEXT): %.c
 	$(COMPILE) $(SHLIBCFLAGS) -c $< -o $@
 
