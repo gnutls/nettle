@@ -35,13 +35,13 @@
  * fix maximum size, and abort if we ever need anything larger. */
 
 #if HAVE_ALLOCA
-# define TMP_DECL(name, type, max) \
-type *name
-# define TMP_ALLOC(name, size) \
-(name = alloca(sizeof (*name) * size))
+# if HAVE_ALLOCA_H
+#  include <alloca.h>
+# endif
+# define TMP_DECL(name, type, max) type *name
+# define TMP_ALLOC(name, size) (name = alloca(sizeof (*name) * size))
 #else /* !HAVE_ALLOCA */
-# define TMP_DECL(name, type, max) \
-type name[max]
+# define TMP_DECL(name, type, max) type name[max]
 # define TMP_ALLOC(name, size) \
 do { if (size > (sizeof(name) / sizeof(name[0]))) abort(); } while (0)
 #endif 
