@@ -27,11 +27,13 @@ define(<DATA>,<%esi>)
 define(<TMP>,<%edi>)
 C Extra temporary needed by F3. Can we get rid of it?
 define(<TMP2>,<(%esp)>)
+define(<K>, <4(%esp)>)dnl
 C Constants
-define(<K1>, <<$>0x5A827999>)		C  Rounds  0-19
-define(<K2>, <<$>0x6ED9EBA1>)		C  Rounds 20-39
-define(<K3>, <<$>0x8F1BBCDC>)		C  Rounds 40-59
-define(<K4>, <<$>0xCA62C1D6>)		C  Rounds 60-79
+define(<K1VALUE>, <<$>0x5A827999>)		C  Rounds  0-19
+define(<K2VALUE>, <<$>0x6ED9EBA1>)		C  Rounds 20-39
+define(<K3VALUE>, <<$>0x8F1BBCDC>)		C  Rounds 40-59
+define(<K4VALUE>, <<$>0xCA62C1D6>)		C  Rounds 60-79
+	
 C expand(i) is the expansion function
 C
 C   W[i] = (W[i - 16] ^ W[i - 14] ^ W[i - 8] ^ W[i - 3]) <<< 1
@@ -93,10 +95,10 @@ C
 C   e += a <<< 5 + f( b, c, d ) + k + w;
 C   b <<<= 30
 C
-C round(a,b,c,d,e,f,k,w)
+C round(a,b,c,d,e,f,w)
 define(<round>, <
+	addl	K, $5
 	addl	$7, $5
-	addl	$8, $5
 	$6($2,$3,$4)
 	addl	TMP, $5
 	movl	$1, TMP
@@ -116,130 +118,132 @@ define(<round>, <
 _nettle_sha1_compress:
 	C save all registers that need to be saved
 	
-	pushl	%ebx		C  16(%esp)
-	pushl	%ebp		C  12(%esp)
-	pushl	%esi		C  8(%esp)
-	pushl	%edi		C  4(%esp)
+	pushl	%ebx		C  20(%esp)
+	pushl	%ebp		C  16(%esp)
+	pushl	%esi		C  12(%esp)
+	pushl	%edi		C  8(%esp)
+
+	pushl	K1VALUE		C  4(%esp)	
 	subl	$4, %esp	C  0(%esp) = TMP
 
 	C load the state vector
-	movl	24(%esp),TMP
+	movl	28(%esp),TMP
 	movl	(TMP),   SA
 	movl	4(TMP),  SB
 	movl	8(TMP),  SC
 	movl	12(TMP), SD
 	movl	16(TMP), SE
 
-	movl	28(%esp), DATA
+	movl	32(%esp), DATA
 
-	round(SA, SB, SC, SD, SE, <F1>, K1, NOEXPAND( 0))
-	round(SE, SA, SB, SC, SD, <F1>, K1, NOEXPAND( 1))
-	round(SD, SE, SA, SB, SC, <F1>, K1, NOEXPAND( 2))
-	round(SC, SD, SE, SA, SB, <F1>, K1, NOEXPAND( 3))
-	round(SB, SC, SD, SE, SA, <F1>, K1, NOEXPAND( 4))
+	round(SA, SB, SC, SD, SE, <F1>, NOEXPAND( 0))
+	round(SE, SA, SB, SC, SD, <F1>, NOEXPAND( 1))
+	round(SD, SE, SA, SB, SC, <F1>, NOEXPAND( 2))
+	round(SC, SD, SE, SA, SB, <F1>, NOEXPAND( 3))
+	round(SB, SC, SD, SE, SA, <F1>, NOEXPAND( 4))
 
-	round(SA, SB, SC, SD, SE, <F1>, K1, NOEXPAND( 5))
-	round(SE, SA, SB, SC, SD, <F1>, K1, NOEXPAND( 6))
-	round(SD, SE, SA, SB, SC, <F1>, K1, NOEXPAND( 7))
-	round(SC, SD, SE, SA, SB, <F1>, K1, NOEXPAND( 8))
-	round(SB, SC, SD, SE, SA, <F1>, K1, NOEXPAND( 9))
+	round(SA, SB, SC, SD, SE, <F1>, NOEXPAND( 5))
+	round(SE, SA, SB, SC, SD, <F1>, NOEXPAND( 6))
+	round(SD, SE, SA, SB, SC, <F1>, NOEXPAND( 7))
+	round(SC, SD, SE, SA, SB, <F1>, NOEXPAND( 8))
+	round(SB, SC, SD, SE, SA, <F1>, NOEXPAND( 9))
 
-	round(SA, SB, SC, SD, SE, <F1>, K1, NOEXPAND(10))
-	round(SE, SA, SB, SC, SD, <F1>, K1, NOEXPAND(11))
-	round(SD, SE, SA, SB, SC, <F1>, K1, NOEXPAND(12))
-	round(SC, SD, SE, SA, SB, <F1>, K1, NOEXPAND(13))
-	round(SB, SC, SD, SE, SA, <F1>, K1, NOEXPAND(14))
+	round(SA, SB, SC, SD, SE, <F1>, NOEXPAND(10))
+	round(SE, SA, SB, SC, SD, <F1>, NOEXPAND(11))
+	round(SD, SE, SA, SB, SC, <F1>, NOEXPAND(12))
+	round(SC, SD, SE, SA, SB, <F1>, NOEXPAND(13))
+	round(SB, SC, SD, SE, SA, <F1>, NOEXPAND(14))
 
-		   round(SA, SB, SC, SD, SE, <F1>, K1, NOEXPAND(15))
-	EXPAND(16) round(SE, SA, SB, SC, SD, <F1>, K1, TMP)
-	EXPAND(17) round(SD, SE, SA, SB, SC, <F1>, K1, TMP)
-	EXPAND(18) round(SC, SD, SE, SA, SB, <F1>, K1, TMP)
-	EXPAND(19) round(SB, SC, SD, SE, SA, <F1>, K1, TMP)
+		   round(SA, SB, SC, SD, SE, <F1>, NOEXPAND(15))
+	EXPAND(16) round(SE, SA, SB, SC, SD, <F1>, TMP)
+	EXPAND(17) round(SD, SE, SA, SB, SC, <F1>, TMP)
+	EXPAND(18) round(SC, SD, SE, SA, SB, <F1>, TMP)
+	EXPAND(19) round(SB, SC, SD, SE, SA, <F1>, TMP)
 
+	movl	K2VALUE, K
+	EXPAND(20) round(SA, SB, SC, SD, SE, <F2>, TMP)
+	EXPAND(21) round(SE, SA, SB, SC, SD, <F2>, TMP)
+	EXPAND(22) round(SD, SE, SA, SB, SC, <F2>, TMP)
+	EXPAND(23) round(SC, SD, SE, SA, SB, <F2>, TMP)
+	EXPAND(24) round(SB, SC, SD, SE, SA, <F2>, TMP)
 
-	EXPAND(20) round(SA, SB, SC, SD, SE, <F2>, K2, TMP)
-	EXPAND(21) round(SE, SA, SB, SC, SD, <F2>, K2, TMP)
-	EXPAND(22) round(SD, SE, SA, SB, SC, <F2>, K2, TMP)
-	EXPAND(23) round(SC, SD, SE, SA, SB, <F2>, K2, TMP)
-	EXPAND(24) round(SB, SC, SD, SE, SA, <F2>, K2, TMP)
+	EXPAND(25) round(SA, SB, SC, SD, SE, <F2>, TMP)
+	EXPAND(26) round(SE, SA, SB, SC, SD, <F2>, TMP)
+	EXPAND(27) round(SD, SE, SA, SB, SC, <F2>, TMP)
+	EXPAND(28) round(SC, SD, SE, SA, SB, <F2>, TMP)
+	EXPAND(29) round(SB, SC, SD, SE, SA, <F2>, TMP)
 
-	EXPAND(25) round(SA, SB, SC, SD, SE, <F2>, K2, TMP)
-	EXPAND(26) round(SE, SA, SB, SC, SD, <F2>, K2, TMP)
-	EXPAND(27) round(SD, SE, SA, SB, SC, <F2>, K2, TMP)
-	EXPAND(28) round(SC, SD, SE, SA, SB, <F2>, K2, TMP)
-	EXPAND(29) round(SB, SC, SD, SE, SA, <F2>, K2, TMP)
+	EXPAND(30) round(SA, SB, SC, SD, SE, <F2>, TMP)
+	EXPAND(31) round(SE, SA, SB, SC, SD, <F2>, TMP)
+	EXPAND(32) round(SD, SE, SA, SB, SC, <F2>, TMP)
+	EXPAND(33) round(SC, SD, SE, SA, SB, <F2>, TMP)
+	EXPAND(34) round(SB, SC, SD, SE, SA, <F2>, TMP)
 
-	EXPAND(30) round(SA, SB, SC, SD, SE, <F2>, K2, TMP)
-	EXPAND(31) round(SE, SA, SB, SC, SD, <F2>, K2, TMP)
-	EXPAND(32) round(SD, SE, SA, SB, SC, <F2>, K2, TMP)
-	EXPAND(33) round(SC, SD, SE, SA, SB, <F2>, K2, TMP)
-	EXPAND(34) round(SB, SC, SD, SE, SA, <F2>, K2, TMP)
+	EXPAND(35) round(SA, SB, SC, SD, SE, <F2>, TMP)
+	EXPAND(36) round(SE, SA, SB, SC, SD, <F2>, TMP)
+	EXPAND(37) round(SD, SE, SA, SB, SC, <F2>, TMP)
+	EXPAND(38) round(SC, SD, SE, SA, SB, <F2>, TMP)
+	EXPAND(39) round(SB, SC, SD, SE, SA, <F2>, TMP)
 
-	EXPAND(35) round(SA, SB, SC, SD, SE, <F2>, K2, TMP)
-	EXPAND(36) round(SE, SA, SB, SC, SD, <F2>, K2, TMP)
-	EXPAND(37) round(SD, SE, SA, SB, SC, <F2>, K2, TMP)
-	EXPAND(38) round(SC, SD, SE, SA, SB, <F2>, K2, TMP)
-	EXPAND(39) round(SB, SC, SD, SE, SA, <F2>, K2, TMP)
+	movl	K3VALUE, K
+	EXPAND(40) round(SA, SB, SC, SD, SE, <F3>, TMP)
+	EXPAND(41) round(SE, SA, SB, SC, SD, <F3>, TMP)
+	EXPAND(42) round(SD, SE, SA, SB, SC, <F3>, TMP)
+	EXPAND(43) round(SC, SD, SE, SA, SB, <F3>, TMP)
+	EXPAND(44) round(SB, SC, SD, SE, SA, <F3>, TMP)
 
+	EXPAND(45) round(SA, SB, SC, SD, SE, <F3>, TMP)
+	EXPAND(46) round(SE, SA, SB, SC, SD, <F3>, TMP)
+	EXPAND(47) round(SD, SE, SA, SB, SC, <F3>, TMP)
+	EXPAND(48) round(SC, SD, SE, SA, SB, <F3>, TMP)
+	EXPAND(49) round(SB, SC, SD, SE, SA, <F3>, TMP)
 
-	EXPAND(40) round(SA, SB, SC, SD, SE, <F3>, K3, TMP)
-	EXPAND(41) round(SE, SA, SB, SC, SD, <F3>, K3, TMP)
-	EXPAND(42) round(SD, SE, SA, SB, SC, <F3>, K3, TMP)
-	EXPAND(43) round(SC, SD, SE, SA, SB, <F3>, K3, TMP)
-	EXPAND(44) round(SB, SC, SD, SE, SA, <F3>, K3, TMP)
+	EXPAND(50) round(SA, SB, SC, SD, SE, <F3>, TMP)
+	EXPAND(51) round(SE, SA, SB, SC, SD, <F3>, TMP)
+	EXPAND(52) round(SD, SE, SA, SB, SC, <F3>, TMP)
+	EXPAND(53) round(SC, SD, SE, SA, SB, <F3>, TMP)
+	EXPAND(54) round(SB, SC, SD, SE, SA, <F3>, TMP)
 
-	EXPAND(45) round(SA, SB, SC, SD, SE, <F3>, K3, TMP)
-	EXPAND(46) round(SE, SA, SB, SC, SD, <F3>, K3, TMP)
-	EXPAND(47) round(SD, SE, SA, SB, SC, <F3>, K3, TMP)
-	EXPAND(48) round(SC, SD, SE, SA, SB, <F3>, K3, TMP)
-	EXPAND(49) round(SB, SC, SD, SE, SA, <F3>, K3, TMP)
+	EXPAND(55) round(SA, SB, SC, SD, SE, <F3>, TMP)
+	EXPAND(56) round(SE, SA, SB, SC, SD, <F3>, TMP)
+	EXPAND(57) round(SD, SE, SA, SB, SC, <F3>, TMP)
+	EXPAND(58) round(SC, SD, SE, SA, SB, <F3>, TMP)
+	EXPAND(59) round(SB, SC, SD, SE, SA, <F3>, TMP)
 
-	EXPAND(50) round(SA, SB, SC, SD, SE, <F3>, K3, TMP)
-	EXPAND(51) round(SE, SA, SB, SC, SD, <F3>, K3, TMP)
-	EXPAND(52) round(SD, SE, SA, SB, SC, <F3>, K3, TMP)
-	EXPAND(53) round(SC, SD, SE, SA, SB, <F3>, K3, TMP)
-	EXPAND(54) round(SB, SC, SD, SE, SA, <F3>, K3, TMP)
+	movl	K4VALUE, K
+	EXPAND(60) round(SA, SB, SC, SD, SE, <F2>, TMP)
+	EXPAND(61) round(SE, SA, SB, SC, SD, <F2>, TMP)
+	EXPAND(62) round(SD, SE, SA, SB, SC, <F2>, TMP)
+	EXPAND(63) round(SC, SD, SE, SA, SB, <F2>, TMP)
+	EXPAND(64) round(SB, SC, SD, SE, SA, <F2>, TMP)
 
-	EXPAND(55) round(SA, SB, SC, SD, SE, <F3>, K3, TMP)
-	EXPAND(56) round(SE, SA, SB, SC, SD, <F3>, K3, TMP)
-	EXPAND(57) round(SD, SE, SA, SB, SC, <F3>, K3, TMP)
-	EXPAND(58) round(SC, SD, SE, SA, SB, <F3>, K3, TMP)
-	EXPAND(59) round(SB, SC, SD, SE, SA, <F3>, K3, TMP)
+	EXPAND(65) round(SA, SB, SC, SD, SE, <F2>, TMP)
+	EXPAND(66) round(SE, SA, SB, SC, SD, <F2>, TMP)
+	EXPAND(67) round(SD, SE, SA, SB, SC, <F2>, TMP)
+	EXPAND(68) round(SC, SD, SE, SA, SB, <F2>, TMP)
+	EXPAND(69) round(SB, SC, SD, SE, SA, <F2>, TMP)
 
+	EXPAND(70) round(SA, SB, SC, SD, SE, <F2>, TMP)
+	EXPAND(71) round(SE, SA, SB, SC, SD, <F2>, TMP)
+	EXPAND(72) round(SD, SE, SA, SB, SC, <F2>, TMP)
+	EXPAND(73) round(SC, SD, SE, SA, SB, <F2>, TMP)
+	EXPAND(74) round(SB, SC, SD, SE, SA, <F2>, TMP)
 
-	EXPAND(60) round(SA, SB, SC, SD, SE, <F2>, K4, TMP)
-	EXPAND(61) round(SE, SA, SB, SC, SD, <F2>, K4, TMP)
-	EXPAND(62) round(SD, SE, SA, SB, SC, <F2>, K4, TMP)
-	EXPAND(63) round(SC, SD, SE, SA, SB, <F2>, K4, TMP)
-	EXPAND(64) round(SB, SC, SD, SE, SA, <F2>, K4, TMP)
-
-	EXPAND(65) round(SA, SB, SC, SD, SE, <F2>, K4, TMP)
-	EXPAND(66) round(SE, SA, SB, SC, SD, <F2>, K4, TMP)
-	EXPAND(67) round(SD, SE, SA, SB, SC, <F2>, K4, TMP)
-	EXPAND(68) round(SC, SD, SE, SA, SB, <F2>, K4, TMP)
-	EXPAND(69) round(SB, SC, SD, SE, SA, <F2>, K4, TMP)
-
-	EXPAND(70) round(SA, SB, SC, SD, SE, <F2>, K4, TMP)
-	EXPAND(71) round(SE, SA, SB, SC, SD, <F2>, K4, TMP)
-	EXPAND(72) round(SD, SE, SA, SB, SC, <F2>, K4, TMP)
-	EXPAND(73) round(SC, SD, SE, SA, SB, <F2>, K4, TMP)
-	EXPAND(74) round(SB, SC, SD, SE, SA, <F2>, K4, TMP)
-
-	EXPAND(75) round(SA, SB, SC, SD, SE, <F2>, K4, TMP)
-	EXPAND(76) round(SE, SA, SB, SC, SD, <F2>, K4, TMP)
-	EXPAND(77) round(SD, SE, SA, SB, SC, <F2>, K4, TMP)
-	EXPAND(78) round(SC, SD, SE, SA, SB, <F2>, K4, TMP)
-	EXPAND(79) round(SB, SC, SD, SE, SA, <F2>, K4, TMP)
+	EXPAND(75) round(SA, SB, SC, SD, SE, <F2>, TMP)
+	EXPAND(76) round(SE, SA, SB, SC, SD, <F2>, TMP)
+	EXPAND(77) round(SD, SE, SA, SB, SC, <F2>, TMP)
+	EXPAND(78) round(SC, SD, SE, SA, SB, <F2>, TMP)
+	EXPAND(79) round(SB, SC, SD, SE, SA, <F2>, TMP)
 
 	C Update the state vector
-	movl	24(%esp),TMP
+	movl	28(%esp),TMP
 	addl	SA, (TMP) 
 	addl	SB, 4(TMP) 
 	addl	SC, 8(TMP) 
 	addl	SD, 12(TMP) 
 	addl	SE, 16(TMP)
 
-	addl	$4, %esp
+	addl	$8, %esp
 	popl	%edi
 	popl	%esi
 	popl	%ebp
