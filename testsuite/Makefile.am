@@ -1,4 +1,4 @@
-CFLAGS = -I$(top_srcdir) @CFLAGS@ -O0
+CFLAGS = -I$(top_srcdir) @CFLAGS@
 CPPFLAGS = @CPPFLAGS@
 
 TS_PROGS = aes-test arcfour-test blowfish-test cast128-test \
@@ -29,5 +29,5 @@ $(M4_FILES:.m4=.c): %.c: macros.m4 %.m4
 check: run-tests
 
 run-tests: $(TS_PROGS)
-	$(srcdir)/run-tests $^
+	srcdir="$(srcdir)" "$(srcdir)"/run-tests $^
 
