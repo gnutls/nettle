@@ -1332,13 +1332,21 @@ the configuration of the server can be understood as "grant access to
 whoever knows the private key corresponding to this particular public
 key, and to no others".
 
+
+@menu
+* RSA::                         The RSA public key algorithm.
+* DSA::                         The DSA digital signature algorithm.
+@end menu
+
+@node RSA, DSA, Public-key algorithms, Public-key algorithms
+@comment  node-name,  next,  previous,  up
 @subsection @acronym{RSA}
 
-The @acronym{RSA} was the first practical digital signature algorithm
-that was constructed. It was described 1978 in a paper by Ronald Rivest,
-Adi Shamir and L.M. Adleman, and the technique was also patented in
-1983. The patent expired on September 20, 2000, and since that day,
-@acronym{RSA} can be used freely.
+The @acronym{RSA} algorithm was the first practical digital signature
+algorithm that was constructed. It was described 1978 in a paper by
+Ronald Rivest, Adi Shamir and L.M. Adleman, and the technique was also
+patented in 1983. The patent expired on September 20, 2000, and since
+that day, @acronym{RSA} can be used freely.
 
 It's remarkably simple to describe the trapdoor function behind
 @acronym{RSA}. The "one-way"-function used is
@@ -1406,9 +1414,6 @@ computed, the operation returns true if and only if the result equals
 
 @subsection Nettle's @acronym{RSA} support
 
-@c FIXME: Update for RSA renaming. and new *_digest functions. Document
-@c dsa. 
-
 Nettle represents @acronym{RSA} keys using two structures that contain
 large numbers (of type @code{mpz_t}).
 
@@ -1428,16 +1433,16 @@ signing. Instead, the factors @code{p} and @code{q}, and the parameters
 
 Before use, these structs must be initialized by calling one of
 
-@deftypefun void rsa_init_public_key (struct rsa_public_key *@var{pub})
-@deftypefunx void rsa_init_private_key (struct rsa_private_key *@var{key})
+@deftypefun void rsa_public_key_init (struct rsa_public_key *@var{pub})
+@deftypefunx void rsa_private_key_init (struct rsa_private_key *@var{key})
 Calls @code{mpz_init} on all numbers in the key struct.
 @end deftypefun
 
 and when finished with them, the space for the numbers must be
 deallocated by calling one of
 
-@deftypefun void rsa_clear_public_key (struct rsa_public_key *@var{pub})
-@deftypefunx void rsa_clear_private_key (struct rsa_private_key *@var{key})
+@deftypefun void rsa_public_key_clear (struct rsa_public_key *@var{pub})
+@deftypefunx void rsa_private_key_clear (struct rsa_private_key *@var{key})
 Calls @code{mpz_clear} on all numbers in the key struct.
 @end deftypefun
 
@@ -1449,8 +1454,8 @@ to customize allocation, see
 
 When you have assigned values to the attributes of a key, you must call
 
-@deftypefun int rsa_prepare_public_key (struct rsa_public_key *@var{pub})
-@deftypefunx int rsa_prepare_private_key (struct rsa_private_key *@var{key})
+@deftypefun int rsa_public_key_prepare (struct rsa_public_key *@var{pub})
+@deftypefunx int rsa_private_key_prepare (struct rsa_private_key *@var{key})
 Computes the octet size of the key (stored in the @code{size} attribute,
 and may also do other basic sanity checks. Returns one if successful, or
 zero if the key can't be used, for instance if the modulo is smaller
@@ -1460,21 +1465,38 @@ than the minimum size specified by PKCS#1.
 Before signing or verifying a message, you first hash it with the
 appropriate hash function. You pass the hash function's context struct
 to the rsa function, and it will extract the message digest and do the
-rest of the work.
+rest of the work. There are also alternative functions that take the
+@acronym{md5} or @acronym{sha1} hash digest as argument.
 
 Creation and verification of signatures is done with the following functions:
 
-@deftypefun void rsa_md5_sign (struct rsa_private_key *@var{key}, struct md5_ctx *@var{hash}, mpz_t @var{signature})
-@deftypefunx void rsa_sha1_sign (struct rsa_private_key *@var{key}, struct sha1_ctx *@var{hash}, mpz_t @var{signature})
+@deftypefun void rsa_md5_sign (const struct rsa_private_key *@var{key}, struct md5_ctx *@var{hash}, mpz_t @var{signature})
+@deftypefunx void rsa_sha1_sign (const struct rsa_private_key *@var{key}, struct sha1_ctx *@var{hash}, mpz_t @var{signature})
 The signature is stored in @var{signature} (which must have been
 @code{mpz_init}:ed earlier). The hash context is reset so that it can be
 used for new messages.
 @end deftypefun
 
-@deftypefun int rsa_md5_verify (struct rsa_public_key *@var{key}, struct md5_ctx *@var{hash}, const mpz_t @var{signature})
-@deftypefunx int rsa_sha1_verify (struct rsa_public_key *@var{key}, struct sha1_ctx *@var{hash}, const mpz_t @var{signature})
+@deftypefun void rsa_md5_sign_digest (const struct rsa_private_key *@var{key}, const uint8_t *@var{digest}, mpz_t @var{signature})
+@deftypefunx void rsa_sha1_sign_digest (const struct rsa_private_key *@var{key}, const uint8_t *@var{digest}, mpz_t @var{signature});
+Creates a signature from the given hash digest. @var{digest} should
+point to a digest of size @code{MD5_DIGEST_SIZE} or
+@code{SHA1_DIGEST_SIZE}, respectively. The signature is stored in
+@var{signature} (which must have been @code{mpz_init}:ed earlier)
+@end deftypefun
+
+@deftypefun int rsa_md5_verify (const struct rsa_public_key *@var{key}, struct md5_ctx *@var{hash}, const mpz_t @var{signature})
+@deftypefunx int rsa_sha1_verify (const struct rsa_public_key *@var{key}, struct sha1_ctx *@var{hash}, const mpz_t @var{signature})
 Returns 1 if the signature is valid, or 0 if it isn't. In either case,
 the hash context is reset so that it can be used for new messages.
+@end deftypefun
+
+@deftypefun int rsa_md5_verify_digest (const struct rsa_public_key *@var{key}, const uint8_t *@var{digest}, const mpz_t @var{signature})
+@deftypefunx int rsa_sha1_verify_digest (const struct rsa_public_key
+*@var{key}, const uint8_t *@var{digest}, const mpz_t @var{signature})
+Returns 1 if the signature is valid, or 0 if it isn't. @var{digest} should
+point to a digest of size @code{MD5_DIGEST_SIZE} or
+@code{SHA1_DIGEST_SIZE}, respectively.
 @end deftypefun
 
 If you need to use the @acronym{RSA} trapdoor, the private key, in a way
@@ -1491,8 +1513,8 @@ At last, how do you create new keys?
 @deftypefun int rsa_generate_keypair (struct rsa_public_key *@var{pub}, struct rsa_private_key *@var{key}, void *@var{random_ctx}, nettle_random_func @var{random}, void *@var{progress_ctx}, nettle_progress_func @var{progress}, unsigned @var{n_size}, unsigned @var{e_size});
 There are lots of parameters. @var{pub} and @var{key} is where the
 resulting key pair is stored. The structs should be initialized, but you
-don't need to call @code{rsa_prepare_public_key} or
-@code{rsa_prepare_private_key} after key generation.
+don't need to call @code{rsa_public_key_prepare} or
+@code{rsa_private_key_prepare} after key generation.
 
 @var{random_ctx} and @var{random} is a randomness generator.
 @code{random(random_ctx, length, dst)} should generate @code{length}
@@ -1509,10 +1531,202 @@ is non-zero, it is the desired size of the public exponent and a random
 exponent of that size is selected. But if @var{e_size} is zero, it is
 assumed that the caller has already chosen a value for @code{e}, and
 stored it in @var{pub}.
-
 Returns 1 on success, and 0 on failure. The function can fail for
 example if if @var{n_size} is too small, or if @var{e_size} is zero and
 @code{pub->e} is an even number.
+@end deftypefun
+
+@node DSA,  , RSA, Public-key algorithms
+@comment  node-name,  next,  previous,  up
+@subsection Nettle's @acronym{DSA} support
+
+The @acronym{DSA} digital signature algorithm is more complex than
+@acronym{RSA}. It was specified during the early 1990s, and in 1994 NIST
+published FIPS 186 which is the authoritative specification. Sometimes
+@acronym{DSA} is referred to using the acronym @acronym{DSS}, for
+Digital Signature Standard.
+
+For @acronym{DSA}, the underlying mathematical problem is the
+computation of discreet logarithms. The public key consists of a large
+prime @code{p}, a small prime @code{q} which is a factor of @code{p-1},
+a number @code{g} which generates a subgroup of order @code{q} modulo
+@code{p}, and an element @code{y} in that subgroup.
+
+The size of @code{q} is fixed to 160 bits, to match with the
+@acronym{SHA1} hash algorithm which is used in @acronym{DSA}. The size
+of @code{q} is in principle unlimited, but the standard specifies only
+nine specific sizes: @code{512 + l*64}, where @code{l} is between 0 and
+8. Thus, the maximum size of @code{p} is 1024 bits, at that is also the
+recommended size.
+
+The subgroup requirement means that if you compute 
+
+@example
+g^t mod p
+@end example
+
+for all possible integers @code{t}, you will get precisely @code{q}
+distinct values.
+
+The private key is a secret exponent @code{x}, such that
+
+@example
+g^x = y mod p
+@end example
+
+In mathematical speak, @code{x} is the @dfn{discrete logarithm} of
+@code{y} mod @code{p}, with respect to the generator @code{d}. The size
+of @code{x} will also be about 160 bits.
+
+The signature generation algorithm is randomized; in order to create a
+@acronym{DSA} signature, you need a good source for random numbers
+(@pxref{Randomness}).
+
+To create a signature, one starts with the hash digest of the message,
+@code{h}, which is a 160 bit number, and a random number @code{k,
+0<k<q}, also 160 bits. Next, one computes 
+
+@example
+r = (g^k mod p) mod q
+s = k^-1 (h + x r) mod q
+@end example
+
+The signature is the pair @code{(r, s)}, two 160 bit numbers. Note the
+two different mod operations when computing @code{r}, and the use of the
+secret exponent @code{x}.
+
+To verify a signature, one first checks that @code{0 < r,s < q}, and
+then one computes backwards,
+
+@example
+w = s^-1 mod q
+v = (g^(w h) y^(w r) mod p) mod q
+@end example
+
+The signature is valid if @code{v = r}. This works out because @code{w =
+s^-1 mod q = k (h + x r)^-1 mod q}, so that
+
+@example
+g^(w h) y^(w r) = g^(w h) (g^x)^(w r) = g^(w (h + x r)) = g^k 
+@end example
+
+When reducing mod @code{q} this yields @code{r}. Note that when
+verifying a signature, we don't know either @code{k} or @code{x}: those
+numbers are secret.
+
+If you can choose between @acronym{RSA} and @acronym{DSA}, which one is
+best? Both are believed to be secure. @acronym{DSA} gained popularity
+in the late 1990s, as a patent free alternative to @acronym{RSA}. Now
+that the @acronym{RSA} patents have expired, there's no compelling
+reason to want to use @acronym{DSA}.
+
+@acronym{DSA} signatures are smaller than @acronym{RSA} signatures,
+which is important for some specialized applications.
+
+From a practical point of view, @acronym{DSA}'s need for a good
+randomness source is a serious disadvantage. If you ever use the same
+@code{k} (and @code{r}) for two different message, you leak your private
+key.
+
+@subsection Nettle's @acronym{DSA} support
+
+Like for @acronym{RSA}, Nettle represents @acronym{DSA} keys using two
+structures, containing values of type @code{mpz_t}. For information on
+how to customize allocation, see @xref{Custom Allocation,,GMP
+Allocation,gmp, GMP Manual}.
+
+Most of the @acronym{DSA} functions are very similar to the
+corresponding @acronym{RSA} functions, but there are a few differences
+pointed out below. For a start, there are no functions corresponding to
+@code{rsa_public_key_prepare} and @code{rsa_private_key_prepare}.
+
+@deftp {Context struct} {dsa_public_key} p q g y
+The public parameters described above.
+@end deftp
+
+@deftp {Context struct} {dsa_private_key} x
+The private key @code{x}.
+@end deftp
+
+Before use, these structs must be initialized by calling one of
+
+@deftypefun void dsa_public_key_init (struct dsa_public_key *@var{pub})
+@deftypefunx void dsa_private_key_init (struct dsa_private_key *@var{key})
+Calls @code{mpz_init} on all numbers in the key struct.
+@end deftypefun
+
+When finished with them, the space for the numbers must be
+deallocated by calling one of
+
+@deftypefun void dsa_public_key_clear (struct dsa_public_key *@var{pub})
+@deftypefunx void dsa_private_key_clear (struct dsa_private_key *@var{key})
+Calls @code{mpz_clear} on all numbers in the key struct.
+@end deftypefun
+
+Signatures are represented using the structure below, and need to be
+initialized and cleared in the same way as the key structs.
+
+@deftp {Context struct} {dsa_signature} r s
+@end deftp
+
+@deftypefun void dsa_signature_init (struct dsa_signature *@var{signature})
+@deftypefunx void dsa_signature_clear (struct dsa_signature *@var{signature})
+You must call @code{dsa_signature_init} before creating or using a
+signature, and call @code{dsa_signature_clear} when you are finished
+with it.
+@end deftypefun
+
+For signing, you need to provide both the public and the private key
+(unlike @acronym{RSA}, where the private key struct includes all
+information needed for signing), and a source for random numbers.
+Signatures always use the @acronym{SHA1} hash function.
+
+@deftypefun void dsa_sign (const struct dsa_public_key *@var{pub}, const struct dsa_private_key *@var{key}, void *@var{random_ctx}, nettle_random_func @var{random}, struct sha1_ctx *@var{hash}, struct dsa_signature *@var{signature})
+@deftypefunx void dsa_sign_digest (const struct dsa_public_key *@var{pub}, const struct dsa_private_key *@var{key}, void *@var{random_ctx}, nettle_random_func @var{random}, const uint8_t *@var{digest}, struct dsa_signature *@var{signature})
+Creates a signature from the given hash context or digest.
+@var{random_ctx} and @var{random} is a randomness generator.
+@code{random(random_ctx, length, dst)} should generate @code{length}
+random octets and store them at @code{dst}. For advice, see
+@xref{Randomness}.
+@end deftypefun
+
+Verifying signatures is a little easier, since no randomness generator is
+needed. The functions are
+
+@deftypefun int dsa_verify (const struct dsa_public_key *@var{key}, struct sha1_ctx *@var{hash}, const struct dsa_signature *@var{signature})
+@deftypefunx int dsa_verify_digest (const struct dsa_public_key *@var{key}, const uint8_t *@var{digest}, const struct dsa_signature *@var{signature})
+Verifies a signature. Returns 1 if the signature is valid, otherwise 0.
+@end deftypefun
+
+Key generation uses mostly the same parameters as the corresponding
+@acronym{RSA} function.
+
+@deftypefun int dsa_generate_keypair (struct dsa_public_key *@var{pub}, struct dsa_private_key *@var{key}, void *@var{random_ctx}, nettle_random_func @var{random}, void *@var{progress_ctx}, nettle_progress_func @var{progress}, unsigned @var{bits})
+@var{pub} and @var{key} is where the resulting key pair is stored. The
+structs should be initialized before you call this function.
+
+@var{random_ctx} and @var{random} is a randomness generator.
+@code{random(random_ctx, length, dst)} should generate @code{length}
+random octets and store them at @code{dst}. For advice, see
+@xref{Randomness}.
+
+@var{progress} and @var{progress_ctx} can be used to get callbacks
+during the key generation process, in order to uphold an illusion of
+progress. @var{progress} can be NULL, in that case there are no
+callbacks.
+
+@var{bits} is the desired size of @code{p}, in bits. To generate keys
+that conform to the standard, you must use a value of the form @code{512
++ l*64}, for @code{0 <= l <= 8}. Keys smaller than 768 bits are not
+considered secure, so you should probably stick to 1024. Non-standard
+sizes are possible, in particular sizes larger than 1024 bits, although
+@acronym{DSA} implementations can not in general be expected to support
+such keys. Also note that using very large keys doesn't make much sense,
+because the security is also limited by the size of the smaller prime
+@code{q}, which is always 160 bits.
+
+Returns 1 on success, and 0 on failure. The function will fail if
+@var{bits} is too small.
 @end deftypefun
 
 @node Randomness, Miscellaneous functions, Public-key algorithms, Reference
