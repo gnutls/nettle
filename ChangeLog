@@ -1,6 +1,13 @@
-2002-10-02  Niels Möller  <nisse@cuckoo.hack.org>
+2002-10-03  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* Released nettle-1.6.
+
+	* NEWS: Note the aes api change.
+
+	* examples/Makefile.am (EXTRA_DIST): Distribute setup-env and
+	teardown-env. 
+
+2002-10-02  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* examples/rsa-keygen.c (main): Comment on the lax security of the
 	private key file.

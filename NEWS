@@ -1,7 +1,11 @@
 NEWS for the 1.6 release
 
-	Optimized Assembler implementations of aes, for sparc and x86.
-	
+	Optimized assembler implementations of aes, for sparc and x86.
+
+	The aes interface has changed slightly. The function
+	aes_set_key is no more. Instead one has to use
+	aes_set_encrypt_key or aes_set_decrypt_key. Sorry about that. 
+
 	New example programs, rsa-keygen, rsa-sign and rsa-verify,
 	located in the examples directory.
 
