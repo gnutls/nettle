@@ -39,10 +39,15 @@
 # define AES_TABLE_SIZE 4
 #endif
 
+#define IDX_FACTOR 4
 struct aes_table
 {
   uint8_t sbox[0x100];
   unsigned idx[3][4];
+
+  /* Preshifted indices, multiplied by IDX_FACTOR */
+  unsigned idx_shift[3][4];
+
   uint32_t table[AES_TABLE_SIZE][0x100];
 };
 

@@ -79,6 +79,10 @@ _aes_encrypt_table =
       { 1, 2, 3, 0 },
       { 2, 3, 0, 1 },
       { 3, 0, 1, 2 } },
+    { /* idx_shift */
+      { 1 * IDX_FACTOR, 2 * IDX_FACTOR, 3 * IDX_FACTOR, 0 * IDX_FACTOR },
+      { 2 * IDX_FACTOR, 3 * IDX_FACTOR, 0 * IDX_FACTOR, 1 * IDX_FACTOR },
+      { 3 * IDX_FACTOR, 0 * IDX_FACTOR, 1 * IDX_FACTOR, 2 * IDX_FACTOR } },
     { /* dtable */
       { 
 	0xa56363c6,0x847c7cf8,0x997777ee,0x8d7b7bf6,
