@@ -1,3 +1,16 @@
+2002-09-28  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* nettle.texinfo (Randomness): Documented that yarrow256_init can
+	be called with a zero number of sources.
+
+	* testsuite/testutils.h (ASSERT): New macro.
+
+	* testsuite/sexp-test.c: Test sexp parser.
+
+	* Makefile.am (SUBDIRS): Added sexp files.
+
+	* sexp.c, sexp.h: New files, implementing an sexp-parser.
+
 2002-08-27  Niels Möller  <niels@s3.kth.se>
 
 	* Makefile.am (DISTCLEANFILES): make distclean should delete the
