@@ -1,3 +1,14 @@
+2004-01-09  Niels Möller  <nisse@harpo.hack.org>
+
+	* examples/rsa-encrypt.c: Expanded the comment describing the file
+	format. 
+
+	* examples/rsa-decrypt.c (process_file): Finished this function.
+	(main): Initialize x. Check the size of the session key after rsa
+	decryption. 
+
+	* examples/io.c (write_string): Treat short item count as an error.
+
 2004-01-08  Niels Möller  <niels@s3.kth.se>
 
 	* index.html: Added instruction for CVS access.
