@@ -212,6 +212,22 @@ sexp_iterator_exit_list(struct sexp_iterator *iterator)
   return sexp_iterator_parse(iterator);
 }
 
+#if 0
+/* What's a reasonable interface for this? */
+int
+sexp_iterator_exit_lists(struct sexp_iterator *iterator,
+			 unsigned level)
+{
+  assert(iterator->level >= level);
+
+  while (iterator->level > level)
+    if (!sexp_iterator_exit_list(iterator))
+      return 0;
+
+  return 1;
+}
+#endif
+
 const uint8_t *
 sexp_iterator_subexpr(struct sexp_iterator *iterator,
 		      unsigned *length)
