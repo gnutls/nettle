@@ -247,6 +247,7 @@ define(i, round)
 	sub	wtxt, src, %g3
 
 .Lend:
+	add	%sp, FRAME_SIZE, %fp
 	ret
 	restore
 .LLFE1:
