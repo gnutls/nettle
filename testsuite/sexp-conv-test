@@ -15,14 +15,27 @@ else
     exit 1
 fi
 
+# Doesn't work if $1 contains 
+print_raw () {
+    echo $n "$1$c" > "$2"
+}
+
+# Using a here-document seems more robust. However, I don't know how
+# to get rid of the final newline, so we can't use it exclusively.
+print_nl () {
+    cat >"$2" <<EOF
+$1
+EOF
+}
+
 test_advanced () {
-    echo $n "$1$c" > test.in
+    print_raw "$1" test.in
     if ../tools/sexp-conv -s advanced <test.in >test1.out ; then
 	true
     else
 	exit 1
     fi
-    echo "$2" > test2.out
+    print_nl "$2" test2.out
 
     if cmp test1.out test2.out ; then
 	true
@@ -32,13 +45,13 @@ test_advanced () {
 }
 
 test_advanced_hex () {
-    echo $n "$1$c" > test.in
+    print_raw "$1" test.in
     if ../tools/sexp-conv -s hex <test.in >test1.out ; then
 	true
     else
 	exit 1
     fi
-    echo "$2" > test2.out
+    print_nl "$2" test2.out
 
     if cmp test1.out test2.out ; then
 	true
@@ -48,13 +61,13 @@ test_advanced_hex () {
 }
 
 test_transport () {
-    echo $n "$1$c" > test.in
+    print_raw "$1" test.in
     if ../tools/sexp-conv -s transport <test.in >test1.out ; then
 	true
     else
 	exit 1
     fi
-    echo "$2" > test2.out
+    print_nl "$2" test2.out
 
     if cmp test1.out test2.out ; then
 	true
@@ -64,13 +77,13 @@ test_transport () {
 }
 
 test_canonical () {
-    echo $n "$1$c" > test.in
+    print_raw "$1" test.in
     if ../tools/sexp-conv -s canonical <test.in >test1.out ; then
 	true
     else
 	exit 1
     fi
-    echo $n "$2$c" > test2.out
+    print_raw "$2" test2.out
 
     if cmp test1.out test2.out ; then
 	true
@@ -86,8 +99,9 @@ test_advanced '10:fooooooooo' 'fooooooooo'
 test_advanced '4:3des' '"3des"' 
 test_advanced '"foo"' 'foo' 
 test_advanced '4:foo
-' '"foo\n"' 
-test_advanced '2:"\' '"\"\\"' 
+' '"foo\n"'
+# Having the string end with a \ breaks with sysv echo. \x seems harmless.
+test_advanced '3:"\x' '"\"\\x"' 
 test_advanced '()' '()' 
 test_advanced '(foo bar baz)' '(foo bar
      baz)' 
