@@ -267,7 +267,7 @@ static byte mds_matrix[4][4] = { { 0x01, 0xEF, 0x5B, 0x5B },
  *
  * k is the key size (/ 64 bits), i is the byte number (0 = LSB), x is the
  * actual byte to apply the function to; l0, l1, l2, and l3 are the
- * appropriate bytes from the subkey.  Note that only l0..lk are used.
+ * appropriate bytes from the subkey.  Note that only l0..l(k-1) are used.
  */
 
 static word
@@ -300,7 +300,7 @@ h(int k, byte x, word l0, word l1, word l2, word l3)
 
 
 /*
- * Sanity check using the test vectors from appendix 2 of the Twofish paper.
+ * Sanity check using the test vectors from appendix A.1 of the Twofish paper.
  */
 int
 twofish_selftest(void)
@@ -310,16 +310,15 @@ twofish_selftest(void)
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
   byte ciphertext128[16] =
   {
-    0x5D, 0x9D, 0x4E, 0xEF, 0xFA, 0x91, 0x51, 0x57,
-    0x55, 0x24, 0xF1, 0x15, 0x81, 0x5A, 0x12, 0xE0 };
-
+    0x9F, 0x58, 0x9F, 0x5C, 0xF6, 0x12, 0x2C, 0x32,
+    0xB6, 0xBF, 0xEC, 0x2F, 0x2A, 0xE8, 0xC3, 0x5A };
   byte testkey192[24] =
   { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF,
     0xFE, 0xDC, 0xBA, 0x98, 0x76, 0x54, 0x32, 0x10,
     0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77 };
   byte ciphertext192[16] =
-  { 0xE7, 0x54, 0x49, 0x21, 0x2B, 0xEE, 0xF9, 0xF4,
-    0xA3, 0x90, 0xBD, 0x86, 0x0A, 0x64, 0x09, 0x41 };
+  { 0xCF, 0xD1, 0xD2, 0xE5, 0xA9, 0xBE, 0x9C, 0xDF,
+    0x50, 0x1F, 0x13, 0xB8, 0x92, 0xBD, 0x22, 0x48 };
 
   byte testkey256[32] =
   { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF,
@@ -327,8 +326,8 @@ twofish_selftest(void)
     0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
     0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF };
   byte ciphertext256[16] =
-  { 0x37, 0xFE, 0x26, 0xFF, 0x1C, 0xF6, 0x61, 0x75,
-    0xF5, 0xDD, 0xF4, 0xC3, 0x3B, 0x97, 0xA2, 0x05 };
+  { 0x37, 0x52, 0x7B, 0xE0, 0x05, 0x23, 0x34, 0xB8,
+    0x9F, 0x0C, 0xFC, 0xCA, 0xE8, 0x7C, 0xFA, 0x20 };
 
   TWOFISH_context context;
   int i;
@@ -337,33 +336,24 @@ twofish_selftest(void)
   twofish_setup(&context, 16, testkey128);
   memset(plaintext, 0, 16);
 
-  for (i = 0 ; i < 50; i++) {
-    twofish_encrypt(&context, plaintext, ciphertext);
-    memcpy(plaintext, ciphertext, 16);
-  }
-  if (!memcmp(ciphertext, ciphertext128, 16)) {
+  twofish_encrypt(&context, plaintext, ciphertext);
+  if (memcmp(ciphertext, ciphertext128, 16)) {
     return 0;
   }
 
   twofish_setup(&context, 24, testkey192);
   memset(plaintext, 0, 16);
 
-  for (i = 0 ; i < 50; i++) {
-    twofish_encrypt(&context, plaintext, ciphertext);
-    memcpy(plaintext, ciphertext, 16);
-  }
-  if (!memcmp(ciphertext, ciphertext192, 16)) {
+  twofish_encrypt(&context, plaintext, ciphertext);
+  if (memcmp(ciphertext, ciphertext192, 16)) {
     return 0;
   }
 
   twofish_setup(&context, 32, testkey256);
   memset(plaintext, 0, 16);
 
-  for (i = 0 ; i < 50; i++) {
-    twofish_encrypt(&context, plaintext, ciphertext);
-    memcpy(plaintext, ciphertext, 16);
-  }
-  if (!memcmp(ciphertext, ciphertext256, 16)) {
+  twofish_encrypt(&context, plaintext, ciphertext);
+  if (memcmp(ciphertext, ciphertext256, 16)) {
     return 0;
   }
 
