@@ -1,5 +1,13 @@
 2002-11-10  Niels Möller  <nisse@cuckoo.hack.org>
 
+	* testsuite/sexp-conv-test: Use input files without any trailing
+	newline character, in order to stress the end of file handling.
+
+	* tools/sexp-conv.c (sexp_get_token_string): Fixed end of file
+	handling.
+	(sexp_get_string): Fixed end of encoding/end of file handling.
+	(parse_options): Check for negative width and complain.
+
 	* tools/sexp-conv.c: Use supplied getopt.
 	(werror): New function.
 	(sexp_output_hash_init): New function.
