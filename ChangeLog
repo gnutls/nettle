@@ -1,3 +1,16 @@
+2004-10-20  Niels Möller  <niels@s3.kth.se>
+
+	* Makefile.in: In the assembler rules, there's no need to look in
+	$(srcdir) for the input file.
+
+	* x86/arcfour-crypt.asm: Reduced inner loop by one instruction, by
+	precomputing the offset between src and dst.
+
+	* tools/Makefile.in (.c.$(OBJEXT)): Removed redundant -I.. flag.
+
+	* x86/arcfour-crypt.asm (nettle_arcfour_crypt): Replaced addb ->
+	addl + andl $0xff, improving speed on PPro by another 15%.
+
 2004-10-20  Niels Möller  <nisse@lysator.liu.se>
 
 	* tools/Makefile.in (install): Support DESTDIR.
