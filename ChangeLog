@@ -1,5 +1,11 @@
 2001-10-07  Niels Möller  <nisse@cuckoo.hack.org>
 
+	* Makefile.am: Added yarrow files.
+
+	* yarrow256.c: New file, implementing Yarrow. Work in progress. 
+
+	* sha256.c: New file, implementing SHA-256.
+
 	* testsuite/Makefile.am (CFLAGS): Added sha256-test.
 
 	* testsuite/sha256-test.m4: New testcases for SHA-256.
