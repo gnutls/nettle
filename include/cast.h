@@ -25,12 +25,13 @@ struct cast_key {
 	unsigned rounds;		/* Number of rounds to use, 12 or 16 */
 };
 
-void cast_setkey(struct cast_key *key, UINT8 *rawkey,
+void cast_setkey(struct cast_key *key, const UINT8 * const rawkey,
 		 unsigned keybytes);
-void cast_encrypt(struct cast_key *key, UINT8 *inblock,
+void cast_encrypt(struct cast_key *key, const UINT8 * const inblock,
 		  UINT8 *outblock);
-void cast_decrypt(struct cast_key *key, UINT8 *inblock,
+void cast_decrypt(struct cast_key *key, const UINT8 * const inblock,
 		  UINT8* outblock);
+int cast_selftest(void);
 
 #endif /* ifndef _CAST_H_INCLUDED */
 
