@@ -1,3 +1,15 @@
+2003-09-19  Niels Möller  <niels@s3.kth.se>
+
+	* examples/lfib-stream.c: New example program that generates
+	pseudorandom output.
+
+	* examples/Makefile.am (AM_CPPFLAGS): Set AM_CPPFLAGS, not
+	CPPFLAGS. 
+	(noinst_PROGRAMS): Added lfib-stream.
+
+	* testsuite/Makefile.am (AM_CPPFLAGS): Set AM_CPPFLAGS, not
+	CPPFLAGS. 
+
 2002-05-16  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* sparc/aes.asm: Deleted registers i and t3.
