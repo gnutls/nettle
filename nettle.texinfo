@@ -2140,7 +2140,7 @@ For the serious nettle hacker, here is a recipe for nettle soup. 4 servings
 @item
 3 tablespoons flour
 @item
-1 liter bouillon (meat or vegetable)
+1 liter stock (meat or vegetable)
 @item
 1/2 teaspoon salt
 @item
@@ -2154,8 +2154,8 @@ preferable but the tops of larger nettles can also be used.
 
 Rinse the nettles very well. Boil them for 10 minutes in lightly salted
 water. Strain the nettles and save the water. Hack the nettles. Melt the
-butter and mix in the flour. Dilute with bouillon and the nettle-water you
-save earlier. Add the hacked nettles. If you wish you can add some milk
+butter and mix in the flour. Dilute with stock and the nettle-water you
+saved earlier. Add the hacked nettles. If you wish you can add some milk
 or cream at this stage. Bring to a boil and let boil for a few minutes.
 Season with salt and pepper.
 
