@@ -86,6 +86,15 @@ AC_PROG_INSTALL
 
 LSH_DEPENDENCY_TRACKING
 
+# Since the makefiles use include to get the dependency files, we must
+# make sure that the files exist. We generate some more files than are
+# actually needed.
+
+AC_CONFIG_COMMANDS([dummy-dep-files],
+[(cd "$srcdir" && find . -name '*.c' -print) \
+ | sed s/\.c$// | (while read f; do echo > "$f.o.d"; echo > "$f.po.d"; done)
+])
+
 # Select assembler code
 asm_path=
 case "$host" in
