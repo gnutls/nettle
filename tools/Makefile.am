@@ -5,7 +5,7 @@ AM_CFLAGS = -I$(top_srcdir)
 # installed version.
 AM_LDFLAGS = -L..
 
-bin_PROGRAMS = sexp-conv
+bin_PROGRAMS = sexp-conv nettle-lfib-stream
 
 # libnettle.a is added at the end to make sure all programs depend on it.
 # It seems there's no DEPENDENCIES variable that affects all programs.
