@@ -61,16 +61,16 @@ R_SignFinal(R_SIGNATURE_CTX *ctx,
   struct rsa_private_key k;
   int res;
   
-  nettle_mpz_init_set_str_256(k.p,
-                              MAX_RSA_MODULUS_LEN, key->prime[0]);
-  nettle_mpz_init_set_str_256(k.q,
-                              MAX_RSA_MODULUS_LEN, key->prime[1]);
-  nettle_mpz_init_set_str_256(k.a,
-                              MAX_RSA_MODULUS_LEN, key->primeExponent[0]);
-  nettle_mpz_init_set_str_256(k.b,
-                              MAX_RSA_MODULUS_LEN, key->primeExponent[1]);
-  nettle_mpz_init_set_str_256(k.c,
-                              MAX_RSA_MODULUS_LEN, key->coefficient);
+  nettle_mpz_init_set_str_256_u(k.p,
+				MAX_RSA_MODULUS_LEN, key->prime[0]);
+  nettle_mpz_init_set_str_256_u(k.q,
+				MAX_RSA_MODULUS_LEN, key->prime[1]);
+  nettle_mpz_init_set_str_256_u(k.a,
+				MAX_RSA_MODULUS_LEN, key->primeExponent[0]);
+  nettle_mpz_init_set_str_256_u(k.b,
+				MAX_RSA_MODULUS_LEN, key->primeExponent[1]);
+  nettle_mpz_init_set_str_256_u(k.c,
+				MAX_RSA_MODULUS_LEN, key->coefficient);
 
   if (rsa_prepare_private_key(&k) && (k.size <= MAX_RSA_MODULUS_LEN))
     {
@@ -124,17 +124,17 @@ R_VerifyFinal(R_SIGNATURE_CTX *ctx,
   struct rsa_public_key k;
   int res;
 
-  nettle_mpz_init_set_str_256(k.n,
-                              MAX_RSA_MODULUS_LEN, key->modulus);
-  nettle_mpz_init_set_str_256(k.e,
-                              MAX_RSA_MODULUS_LEN, key->exponent);
+  nettle_mpz_init_set_str_256_u(k.n,
+				MAX_RSA_MODULUS_LEN, key->modulus);
+  nettle_mpz_init_set_str_256_u(k.e,
+				MAX_RSA_MODULUS_LEN, key->exponent);
   
   if (rsa_prepare_public_key(&k) && (k.size == length))
     {
       mpz_t s;
   
-      nettle_mpz_init_set_str_256(s,
-				  k.size, signature);
+      nettle_mpz_init_set_str_256_u(s,
+				    k.size, signature);
       res = rsa_md5_verify(&k, &ctx->hash, s)
 	? RE_SUCCESS : RE_SIGNATURE;
 

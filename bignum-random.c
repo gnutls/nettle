@@ -43,7 +43,7 @@ nettle_mpz_random_size(mpz_t x,
 
   random(ctx, length, data);
 
-  nettle_mpz_set_str_256(x, length, data);
+  nettle_mpz_set_str_256_u(x, length, data);
 
   if (bits % 8)
     mpz_fdiv_r_2exp(x, x, bits);

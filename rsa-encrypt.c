@@ -70,7 +70,7 @@ rsa_encrypt(const struct rsa_public_key *key,
   
   memcpy(em + 1 + padding, message, length);
 
-  nettle_mpz_set_str_256(gibbberish, key->size - 1, em);
+  nettle_mpz_set_str_256_u(gibbberish, key->size - 1, em);
   mpz_powm(gibbberish, gibbberish, key->e, key->n);
 
   return 1;  

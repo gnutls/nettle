@@ -72,7 +72,7 @@ pgp_put_mpi(struct nettle_buffer *buffer, mpz_t x)
   if (!p)
     return 0;
   
-  nettle_mpz_set_str_256(x, octets, p);
+  nettle_mpz_set_str_256_u(x, octets, p);
 
   return 1;
 }

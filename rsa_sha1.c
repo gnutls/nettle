@@ -128,7 +128,7 @@ pkcs1_encode_sha1(mpz_t m, unsigned length, struct sha1_ctx *hash)
   em[0] = 1;
   memset(em + 1, 0xff, i - 1);
 
-  nettle_mpz_set_str_256(m, length, em);
+  nettle_mpz_set_str_256_u(m, length, em);
 }
 
 #endif /* WITH_PUBLIC_KEY */

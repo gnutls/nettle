@@ -85,7 +85,7 @@ _dsa_hash(mpz_t x, struct sha1_ctx *hash)
   uint8_t digest[SHA1_DIGEST_SIZE];
   sha1_digest(hash, sizeof(digest), digest);
 
-  nettle_mpz_set_str_256(x, sizeof(digest), digest);
+  nettle_mpz_set_str_256_u(x, sizeof(digest), digest);
 }
 
 #endif /* WITH_PUBLIC_KEY */

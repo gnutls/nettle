@@ -102,7 +102,7 @@ dsa_nist_gen(mpz_t p, mpz_t q,
 	h1[0] |= 0x80;
 	h1[SHA1_DIGEST_SIZE - 1] |= 1;
 
-	nettle_mpz_set_str_256(q, SHA1_DIGEST_SIZE, h1);
+	nettle_mpz_set_str_256_u(q, SHA1_DIGEST_SIZE, h1);
 
 	/* The spec says that we should use 18 iterations of
 	 * miller-rabin. For performance, we want to do some trial
@@ -134,7 +134,7 @@ dsa_nist_gen(mpz_t p, mpz_t q,
 		mpz_add_ui(t, t, j + k);
 		hash(t, buffer + ( (n-k) * SHA1_DIGEST_SIZE));
 	      }
-	    nettle_mpz_set_str_256(p, size, buffer);
+	    nettle_mpz_set_str_256_u(p, size, buffer);
 
 	    mpz_fdiv_r_2exp(p, p, L);
 	    mpz_setbit(p, L-1);
