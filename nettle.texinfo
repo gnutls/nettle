@@ -1128,7 +1128,7 @@ Initializes the three context structs from the key. The @var{outer} and
 initialized as a copy of the @var{inner} context.
 @end deftypefun
 
-@deftypefun void hmac_update(void *@var{state}, const struct nettle_hash *@var{H}, unsigned @var{length}, const uint8_t *@var{data})
+@deftypefun void hmac_update (void *@var{state}, const struct nettle_hash *@var{H}, unsigned @var{length}, const uint8_t *@var{data})
 This function is called zero or more times to process the message.
 Actually, @code{hmac_update(state, H, length, data)} is equivalent to
 @code{H->update(state, length, data)}, so if you wish you can use the
@@ -1809,7 +1809,7 @@ Information about recent key events.
 Initializes the context.
 @end deftypefun
 
-@deftypefun unsigned yarrow_key_event_estimate(struct yarrow_key_event_ctx *@var{ctx}, unsigned @var{key}, unsigned @var{time})
+@deftypefun unsigned yarrow_key_event_estimate (struct yarrow_key_event_ctx *@var{ctx}, unsigned @var{key}, unsigned @var{time})
 @var{key} is the id of the key (ASCII value, hardware key code, X
 keysym, @dots{} it doesn't matter), and @var{time} is the timestamp of
 the event. The time must be given in units matching the resolution by
