@@ -1,5 +1,9 @@
 NEWS for the 1.8 release
 
+	New example programs, demonstrating encrypting and decrypting
+	files using RSA, and random sessions keys for bulk encryption
+	and message authentication.
+
 	Support for systems that don't have alloca. On such systems,
 	some of Nettle's functions have arbitrary limits applied to
 	their input.
@@ -7,12 +11,16 @@ NEWS for the 1.8 release
 	Uses AX_CREATE_STDINT_H, to support systems without
 	inttypes.h.
 
+	Support for the md2 and md4 hash functions.
+	 
 	New name mangling, to reduce the risk of link collisions. All
 	functions (except memxor) now use a nettle_ or _nettle_ prefix
 	when seen by the linker. For most functions, the header file
 	that declares a function also uses #define to provide a
 	shorter more readable name without the prefix.
 
+	The shared library soname for this version is libnettle.so.2.
+	
 NEWS for the 1.7 release
 
 	Implemented DSA.

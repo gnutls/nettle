@@ -1,3 +1,9 @@
+2004-01-10  Niels Möller  <nisse@harpo.hack.org>
+
+	* nettle.texinfo (Hash functions): Documented md2 and md4.
+
+	* configure.ac (SHLIBMAJOR): Bumped to 2.
+
 2004-01-09  Niels Möller  <nisse@harpo.hack.org>
 
 	* examples/rsa-encrypt-test: New testcase.
@@ -13,7 +19,7 @@
 
 2004-01-08  Niels Möller  <niels@s3.kth.se>
 
-	* index.html: Added instruction for CVS access.
+	* index.html: Added instructions for CVS access.
 
 	* dsa-keygen.c (dsa_nist_gen): Fixed declaration/statement order.
 
