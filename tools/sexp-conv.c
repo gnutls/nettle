@@ -3,10 +3,18 @@
  * Conversion tool for handling the different flavours of sexp
  * syntax. */
 
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#define BUG_ADDRESS "nettle-bugs@lists.lysator.liu.se"
+
 #include "base16.h"
 #include "base64.h"
 #include "buffer.h"
 #include "nettle-meta.h"
+
+#include "getopt.h"
 
 #include <assert.h>
 #include <errno.h>
@@ -15,10 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* For getopt */
-#include <unistd.h>
-
-void
+static void
 die(const char *format, ...)
 #if __GNUC___
      __attribute__((__format__ (__printf__,1, 2)))
@@ -26,8 +31,27 @@ die(const char *format, ...)
 #endif
      ;
 
-void
+static void
 die(const char *format, ...)
+{
+  va_list args;
+  va_start(args, format);
+  vfprintf(stderr, format, args);
+  va_end(args);
+
+  exit(EXIT_FAILURE);
+}
+
+static void
+werror(const char *format, ...)
+#if __GNUC___
+     __attribute__((__format__ (__printf__,1, 2)))
+     __attribute__((__noreturn__))
+#endif
+     ;
+
+static void
+werror(const char *format, ...)
 {
   va_list args;
   va_start(args, format);
@@ -520,8 +544,13 @@ struct sexp_output
 {
   FILE *f;
 
+  unsigned line_width;
+  
   const struct nettle_armor *coding;
   unsigned coding_indent;
+
+  const struct nettle_hash *hash;
+  void *ctx;
   
   union {
     struct base64_decode_ctx base64;
@@ -532,15 +561,25 @@ struct sexp_output
 };
 
 static void
-sexp_output_init(struct sexp_output *output, FILE *f)
+sexp_output_init(struct sexp_output *output, FILE *f, unsigned width)
 {
   output->f = f;
+  output->line_width = width;
   output->coding = NULL;
-
+  output->hash = NULL;
+  output->ctx = NULL;
+  
   output->pos = 0;
 }
 
-#define LINE_WIDTH 60
+static void
+sexp_output_hash_init(struct sexp_output *output,
+		      const struct nettle_hash *hash, void *ctx)
+{
+  output->hash = hash;
+  output->ctx = ctx;
+  hash->init(ctx);
+}
 
 static void
 sexp_put_raw_char(struct sexp_output *output, uint8_t c)
@@ -582,13 +621,16 @@ sexp_put_char(struct sexp_output *output, uint8_t c)
       
       for (i = 0; i<done; i++)
 	{
-	  if (output->pos > LINE_WIDTH
-	      && output->pos > (output->coding_indent + 10))
+	  if (output->line_width
+	      && output->pos >= output->line_width
+	      && output->pos >= (output->coding_indent + 10))
 	    sexp_put_newline(output, output->coding_indent);
 	  
 	  sexp_put_raw_char(output, encoded[i]);
 	}
     }
+  else if (output->hash)
+    output->hash->update(output->ctx, 1, &c);
   else
     sexp_put_raw_char(output, c);
 }
@@ -623,12 +665,10 @@ sexp_put_length(struct sexp_output *output,
 
 static void
 sexp_put_code_start(struct sexp_output *output,
-		    const struct nettle_armor *coding,
-		    uint8_t c)
+		    const struct nettle_armor *coding)
 {
   assert(!output->coding);
   
-  sexp_put_raw_char(output, c);
   output->coding_indent = output->pos;
   
   output->coding = coding;
@@ -636,7 +676,7 @@ sexp_put_code_start(struct sexp_output *output,
 }
 
 static void
-sexp_put_code_end(struct sexp_output *output, uint8_t c)
+sexp_put_code_end(struct sexp_output *output)
 {
   /* Enough for both hex and base64 */
   uint8_t encoded[BASE64_ENCODE_FINAL_LENGTH];
@@ -651,7 +691,6 @@ sexp_put_code_end(struct sexp_output *output, uint8_t c)
   output->coding = NULL;
 
   sexp_put_data(output, done, encoded);
-  sexp_put_char(output, c);
 }
 
 static void
@@ -718,9 +757,11 @@ sexp_put_string(struct sexp_output *output, enum sexp_mode mode,
 	}
       else
 	{
-	  sexp_put_code_start(output, &nettle_base64, '|');
+	  sexp_put_char(output, '|');
+	  sexp_put_code_start(output, &nettle_base64);
 	  sexp_put_data(output, string->size, string->contents);
-	  sexp_put_code_end(output, '|');
+	  sexp_put_code_end(output);
+	  sexp_put_char(output, '|');
 	}
     }
   else
@@ -729,6 +770,21 @@ sexp_put_string(struct sexp_output *output, enum sexp_mode mode,
       sexp_put_char(output, ':');
       sexp_put_data(output, string->size, string->contents);
     }
+}
+
+static void
+sexp_put_digest(struct sexp_output *output)
+{
+  uint8_t *digest;
+  
+  assert(output->hash);
+
+  digest = alloca(output->hash->digest_size);
+  output->hash->digest(output->ctx, output->hash->digest_size, digest);
+
+  sexp_put_code_start(output, &nettle_base16);
+  sexp_put_data(output, output->hash->digest_size, digest);
+  sexp_put_code_end(output);
 }
 
 
@@ -771,9 +827,11 @@ sexp_convert_item(struct sexp_input *input, enum sexp_mode mode_in,
 {
   if (mode_out == SEXP_TRANSPORT)
     {
-      sexp_put_code_start(output, &nettle_base64, '{');
+      sexp_put_char(output, '{');
+      sexp_put_code_start(output, &nettle_base64);
       sexp_convert_item(input, mode_in, output, SEXP_CANONICAL, 0);
-      sexp_put_code_end(output, '}');
+      sexp_put_code_end(output);
+      sexp_put_char(output, '}');
     }
   else switch(input->token)
     {
@@ -853,29 +911,59 @@ sexp_convert_list(struct sexp_input *input, enum sexp_mode mode_in,
     }
 }
 
-static void
-sexp_convert_file(struct sexp_input *input, enum sexp_mode mode_in,
-		  struct sexp_output *output, enum sexp_mode mode_out)
-{
-  sexp_get_char(input);
-  sexp_get_token(input, mode_in);
-
-  while (input->token != SEXP_EOF)
-    {
-      sexp_convert_item(input, mode_in, output, mode_out, 0);
-      if (mode_out != SEXP_CANONICAL)
-	sexp_put_newline(output, 0);
-	  
-      sexp_get_token(input, mode_in);
-    }
-
-  if (fflush(output->f) < 0)
-    die("Final fflush failed: %s.\n", strerror(errno));
-}
-
 
 
 /* Argument parsing and main program */
+
+/* The old lsh sexp-conv program took the following options:
+ *
+ * Usage: sexp-conv [OPTION...]
+ *             Conversion: sexp-conv [options] <INPUT-SEXP >OUTPUT
+ *   or:  sexp-conv [OPTION...]
+ *             Fingerprinting: sexp-conv --raw-hash [ --hash=ALGORITHM ]
+ *             <PUBLIC-KEY
+ * Reads an s-expression on stdin, and outputs the same s-expression on stdout,
+ * possibly using a different encoding. By default, output uses the advanced
+ * encoding. 
+ * 
+ *       --hash=Algorithm       Hash algorithm (default sha1).
+ *       --once                 Process exactly one s-expression.
+ *       --raw-hash             Output the hash for the canonical representation
+ *                              of the object, in hexadecimal.
+ *       --replace=Substitution An expression `/before/after/' replaces all
+ *                              occurances of the atom `before' with `after'. The
+ *                              delimiter `/' can be any single character.
+ *       --select=Operator      Select a subexpression (e.g `caddr') for
+ *                              processing.
+ *       --spki-hash            Output an SPKI hash for the object.
+ *       --debug                Print huge amounts of debug information
+ *       --log-file=File name   Append messages to this file.
+ *   -q, --quiet                Suppress all warnings and diagnostic messages
+ *       --trace                Detailed trace
+ *   -v, --verbose              Verbose diagnostic messages
+ * 
+ *  Valid sexp-formats are transport, canonical, advanced, and international.
+ * 
+ *  Valid sexp-formats are transport, canonical, advanced, advanced-hex and
+ *  international.
+ *   -f, --output-format=format Variant of the s-expression syntax to generate.
+ *   -i, --input-format=format  Variant of the s-expression syntax to accept.
+ * 
+ *   -?, --help                 Give this help list
+ *       --usage                Give a short usage message
+ *   -V, --version              Print program version
+ */ 
+
+struct conv_options
+{
+  /* Output mode */
+  enum sexp_mode mode;
+  int once;
+  unsigned width;
+  const struct nettle_hash *hash;
+};
+
+enum { OPT_ONCE = 300, OPT_HASH };
 
 static int
 match_argument(const char *given, const char *name)
@@ -884,44 +972,169 @@ match_argument(const char *given, const char *name)
   return !strcmp(given, name);
 }
 
+static void
+parse_options(struct conv_options *o,
+	      int argc, char **argv)
+{  
+  o->mode = SEXP_ADVANCED;
+  o->once = 0;
+  o->hash = NULL;
+  o->width = 72;
+  
+  for (;;)
+    {
+      static const struct nettle_hash *hashes[] =
+	{ &nettle_md5, &nettle_sha1, &nettle_sha256, NULL };
+  
+      static const struct option options[] =
+	{
+	  /* Name, args, flag, val */
+	  { "help", no_argument, NULL, '?' },
+	  { "version", no_argument, NULL, 'V' },
+	  { "once", no_argument, NULL, OPT_ONCE },
+	  { "syntax", required_argument, NULL, 's' },
+	  { "hash", optional_argument, NULL, OPT_HASH },
+	  { "width", required_argument, NULL, 'w' },
+#if 0
+	  /* Not yet implemented */
+	  { "replace", required_argument, NULL, OPT_REPLACE },
+	  { "select", required_argument, NULL, OPT_SELECT },
+	  { "spki-hash", optional_argument, NULL, OPT_SPKI_HASH },
+#endif
+	  { NULL, 0, NULL, 0 }
+	};
+      int c;
+      int option_index = 0;
+      unsigned i;
+     
+      c = getopt_long(argc, argv, "V?s:w:", options, &option_index);
+
+      switch (c)
+	{
+	default:
+	  abort();
+	  
+	case -1:
+	  if (optind != argc)
+	    die("sexp-conv: Command line takes no arguments, only options.\n");
+	  return;
+
+	case 'w':
+	  {
+	    char *end;
+	    o->width = strtol(optarg, &end , 0);
+	    if (!*optarg || *end || o->width < 0)
+	      die("sexp-conv: Invalid width `%s'.\n",
+		  optarg);
+	    break;
+	  }
+	case 's':
+	  if (o->hash)
+	    werror("sexp-conv: Combining --hash and -s usually makes no sense.\n");
+	  if (match_argument(optarg, "advanced"))
+	    o->mode = SEXP_ADVANCED;
+	  else if (match_argument(optarg, "transport"))
+	    o->mode = SEXP_TRANSPORT;
+	  else if (match_argument(optarg, "canonical"))
+	    o->mode = SEXP_CANONICAL;
+	  else
+	    die("Available syntax variants: advanced, transport, canonical\n");
+	  break;
+
+	case OPT_ONCE:
+	  o->once = 1;
+	  break;
+	
+	case OPT_HASH:
+	  o->mode = SEXP_CANONICAL;
+	  if (!optarg)
+	    o->hash = &nettle_sha1;
+	  else
+	    for (i = 0;; i++)
+	      {
+		if (!hashes[i])
+		  die("sexp_conv: Unknown hash algorithm `%s'\n",
+		      optarg);
+	      
+		if (match_argument(optarg, hashes[i]->name))
+		  {
+		    o->hash = hashes[i];
+		    break;
+		  }
+	      }
+	  break;
+	       
+	case '?':
+	  printf("Usage: sexp-conv [OPTION...]\n"
+		 "  Conversion:     sexp-conv [OPTION...] <INPUT-SEXP\n"
+		 "  Fingerprinting: sexp-conv --hash=HASH <INPUT-SEXP\n\n"
+		 "Reads an s-expression on stdin, and outputs the same\n"
+		 "sexp on stdout, possibly with a different syntax.\n\n"
+		 "       --hash[=ALGORITHM]   Outputs only the hash of the expression.\n"
+		 "                            Available hash algorithms:\n"
+		 "                            ");
+	  for(i = 0; hashes[i]; i++)
+	    {
+	      if (i) printf(", ");
+	      printf("%s", hashes[i]->name);
+	    }
+	  printf(" (default is sha1).\n"
+		 "   -s, --syntax=SYNTAX      The syntax used for the output. Available\n"
+		 "                            variants: advanced, transport, canonical\n"
+		 "       --once               Process only the first s-expression.\n"
+		 "   -w, --width=WIDTH        Linewidth for base64 encoded data.\n"
+		 "                            Zero means no limit.\n\n"
+		 "Report bugs to " BUG_ADDRESS ".\n");
+	  exit(EXIT_SUCCESS);
+
+	case 'V':
+	  printf("sexp-conv (" PACKAGE_STRING ")\n");
+	  exit (EXIT_SUCCESS);
+	}
+    }
+}
+
 int
 main(int argc, char **argv)
-{  
+{
+  struct conv_options options;
   struct sexp_input input;
   struct sexp_output output;
-  enum sexp_mode mode = SEXP_ADVANCED;
-  unsigned width;
   
-  int c;
-  while ( (c = getopt(argc, argv, "s:w:")) != -1)
-    switch (c)
-      {
-      case 's':
-	if (match_argument(optarg, "advanced"))
-	  mode = SEXP_ADVANCED;
-	else if (match_argument(optarg, "transport"))
-	  mode = SEXP_TRANSPORT;
-	else if (match_argument(optarg, "canonical"))
-	  mode = SEXP_CANONICAL;
-	else
-	  die("Available syntax variants: advanced, transport, canonical\n");
-	break;
+  parse_options(&options, argc, argv);
 
-      case 'w':
-	die("Option -w not yet implemented.\n");
-	
-      case '?':
-	printf("Usage: sexp-conv [-m syntax]\n"
-	       "Available syntax variants: advanced, transport, canonical\n");
-	return EXIT_FAILURE;
-
-      default: abort();
-      }
-  
   sexp_input_init(&input, stdin);
-  sexp_output_init(&output, stdout);
+  sexp_output_init(&output, stdout, options.width);
 
-  sexp_convert_file(&input, SEXP_ADVANCED, &output, mode);
-
+  if (options.hash)
+    sexp_output_hash_init(&output,
+			  options.hash,
+			  alloca(options.hash->context_size));
+  
+  sexp_get_char(&input);
+  sexp_get_token(&input, SEXP_ADVANCED);
+    
+  if (input.token == SEXP_EOF)
+    {
+      if (options.once)
+	die("sexp-conv: No input expression.\n");
+      return EXIT_SUCCESS;
+    }
+  
+  do 
+    {
+      sexp_convert_item(&input, SEXP_ADVANCED, &output, options.mode, 0);
+      if (options.hash)
+	sexp_put_digest(&output);
+      else if (options.mode != SEXP_CANONICAL)
+	sexp_put_newline(&output, 0);
+	  
+      sexp_get_token(&input, SEXP_ADVANCED);
+    }
+  while (!options.once && input.token != SEXP_EOF);
+  
+  if (fflush(output.f) < 0)
+    die("Final fflush failed: %s.\n", strerror(errno));
+  
   return EXIT_SUCCESS;
 }
