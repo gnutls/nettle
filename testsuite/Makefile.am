@@ -18,10 +18,8 @@ LDADD = testutils.o ../libnettle.a
 EXTRA_DIST = testutils.c testutils.h \
 	     run-tests rfc1750.txt
 
-.PHONY: check run-tests
+.PHONY: run-tests
+run-tests: $(TS_PROGS)
+	srcdir="$(srcdir)" "$(srcdir)"/run-tests $(TS_PROGS)
 
 check: run-tests
-
-run-tests: $(TS_PROGS)
-	srcdir="$(srcdir)" "$(srcdir)"/run-tests $^
-
