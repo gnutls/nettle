@@ -124,13 +124,13 @@ main(int argc, char **argv)
   nettle_buffer_init(&priv_buffer);
   nettle_buffer_init(&pub_buffer);
   
-  if (!rsa_keypair_to_sexp(&pub_buffer, &pub, NULL))
+  if (!rsa_keypair_to_sexp(&pub_buffer, "rsa-pkcs1-sha1", &pub, NULL))
     {
       werror("Formatting public key failed.\n");
       return EXIT_FAILURE;
     }
 
-  if (!rsa_keypair_to_sexp(&priv_buffer, &pub, &priv))
+  if (!rsa_keypair_to_sexp(&priv_buffer, "rsa-pkcs1-sha1", &pub, &priv))
     {
       werror("Formatting private key failed.\n");
       return EXIT_FAILURE;
