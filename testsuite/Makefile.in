@@ -7,6 +7,8 @@ top_srcdir = @top_srcdir@
 
 include ../config.make
 
+INCLUDES = -I.. -I$(top_srcdir)
+
 TS_SOURCES = aes-test.c arcfour-test.c arctwo-test.c \
 	     blowfish-test.c cast128-test.c \
              base16-test.c base64-test.c \
@@ -77,9 +79,12 @@ install:
 	true
 
 distdir: $(DISTFILES)
-	cp $(DISTFILES) $(distdir)
+	cp $^ $(distdir)
 
 clean:
-	rm -f $(TARGETS) *.o *.d
+	-rm -f $(TARGETS) *.o *.d test.in test1.out test2.out
+
+distclean: clean
+	-rm -f Makefile
 
 -include $(SOURCES:.c=.$(OBJEXT).d)
