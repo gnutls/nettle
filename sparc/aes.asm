@@ -230,98 +230,10 @@ _aes_crypt:
 	C AES_LOAD(12)	! i = 3
 	C add	src, 16, src
 			
-C .Lsource_loop:
-	C Begin loop
-	C i = 0
-	AES_LOAD(0)
-	C ldub	[src+3], t3
-	C ldub	[src+2], t2
-	C sll	t3, 24, t3
-	C ldub	[src+1], t1
-	C 
-	C sll	t2, 16, t2
-	C or	t3, t2, t3
-	C ldub	[src], t0
-	C sll	t1, 8, t1
-	C 
-	C ! Get subkey
-	C ld	[ctx + 0], t2
-	C or	t3, t1, t3
-	C or	t3, t0, t3
-	C xor	t3, t2, t3
-	C 
-	C st	t3, [wtxt+0]
-	C add	src, 4, src
-
-	C i = 1
-	AES_LOAD(4)
-	C ldub	[src+3], t3
-	C ldub	[src+2], t2
-	C sll	t3, 24, t3
-	C ldub	[src+1], t1
-	C 
-	C sll	t2, 16, t2
-	C or	t3, t2, t3
-	C ldub	[src], t0
-	C sll	t1, 8, t1
-	C 
-	C ! Get subkey
-	C ld	[ctx + 4], t2
-	C or	t3, t1, t3
-	C or	t3, t0, t3
-	C xor	t3, t2, t3
-	C 
-	C C cmp	src, %g1
-	C st	t3, [wtxt + 4]
-	C C bleu	.Lsource_loop
-	C add	src, 4, src
-	
-	C i = 2
-	AES_LOAD(8)
-	C ldub	[src+3], t3
-	C ldub	[src+2], t2
-	C sll	t3, 24, t3
-	C ldub	[src+1], t1
-	C 
-	C sll	t2, 16, t2
-	C or	t3, t2, t3
-	C ldub	[src], t0
-	C sll	t1, 8, t1
-	C 
-	C ! Get subkey
-	C ld	[src+%g2], t2
-	C or	t3, t1, t3
-	C or	t3, t0, t3
-	C xor	t3, t2, t3
-	C 
-	C C cmp	src, %g1
-	C st	t3, [src+%g3]
-	C C bleu	.Lsource_loop
-	C add	src, 4, src
-	C i = 3
-	AES_LOAD(12)
-	C ldub	[src+3], t3
-	C ldub	[src+2], t2
-	C sll	t3, 24, t3
-	C ldub	[src+1], t1
-	C 
-	C sll	t2, 16, t2
-	C or	t3, t2, t3
-	C ldub	[src], t0
-	C sll	t1, 8, t1
-	C 
-	C ! Get subkey
-	C ld	[src+%g2], t2
-	C or	t3, t1, t3
-	C or	t3, t0, t3
-	C xor	t3, t2, t3
-	C 
-	C C cmp	src, %g1
-	C st	t3, [src+%g3]
-	C C bleu	.Lsource_loop
-	C add	src, 4, src
-
-	C End loop
+	AES_LOAD(0)	! i = 0
+	AES_LOAD(4)	! i = 1
+	AES_LOAD(8)	! i = 2
+	AES_LOAD(12)	! i = 3
 	
 	sub	nrounds, 1, round
 	add	ctx, 16, key
