@@ -1,3 +1,10 @@
+2002-10-28  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* examples/sexp-conv.c (struct hex_decode_ctx): New hex decoding
+	functions. 
+	(sexp_get_raw_char): New function.
+	(sexp_get_char): Use sexp_get_raw_char.
+
 2002-10-26  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* examples/sexp-conv.c (sexp_put_length): Bugfix, don't output any
