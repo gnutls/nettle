@@ -1,3 +1,11 @@
+2003-01-22  Niels Möller  <niels@s3.kth.se>
+
+	* examples/Makefile.am (nettle_benchmark_LDADD): Use
+	OPENSSL_LIBFLAGS. 
+
+	* configure.ac (OPENSSL_LIBFLAGS): If libcrypto is found, add
+	-lcrypto to OPENSSL_LIBFLAGS, not the plain LDFLAGS.
+
 2003-01-20  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* testsuite/Makefile.am (CLEANFILES): Delete test.in, test1.out
