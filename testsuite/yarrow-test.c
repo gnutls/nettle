@@ -142,8 +142,8 @@ print_hex(unsigned length, uint8_t *digest)
   for (i = 0; i < length; i++)
     {
       if (! (i % 8))
-        fprintf(stderr, " ");
-      fprintf(stderr, "%02x", digest[i]);
+        printf(" ");
+      printf("%02x", digest[i]);
     }
 }
 
@@ -180,16 +180,16 @@ main(int argc, char **argv)
   uint8_t digest[SHA256_DIGEST_SIZE];
 
   const uint8_t *expected_output
-    = decode_hex_dup("8df8796bd937ad3d ea9a0a5ff284c275"
-		     "cd8e4fafe21fe114 19ba154dfbde2ec4");
+    = decode_hex_dup("06ca66b204a92939 e75e09e11922153e"
+		     "a2391000e0686da4 c7d27afb37a4630f");
 
   const uint8_t *expected_input
     = decode_hex_dup("fec4c0767434a8a3 22d6d5d0c9f49c42"
 		     "988ce8c159b1a806 29d51aa40c2e99aa");
 
   const uint8_t *expected_seed_file
-    = decode_hex_dup("f473011d57f4a76b 8eeaff5edbd59224"
-		     "c942cdce44a6e3ec 39b9a771b6944a60");
+    = decode_hex_dup("87213a8a863a91f9 0e776c01e0d7c3a8"
+		     "6b2ecf9977b06da5 34f3df8375918ac9");
   
   unsigned c; unsigned t;
 
@@ -220,8 +220,8 @@ main(int argc, char **argv)
   yarrow256_update(&yarrow, 0, 200, sizeof(zeroes), zeroes);
 
   if (verbose)
-    fprintf(stderr, "source 0 entropy: %d\n",
-	    sources[0].estimate[YARROW_SLOW]);
+    printf("source 0 entropy: %d\n",
+	   sources[0].estimate[YARROW_SLOW]);
   
   assert(!yarrow256_is_seeded(&yarrow));
 
@@ -254,8 +254,8 @@ main(int argc, char **argv)
           uint8_t buf[500];
 
           if (verbose && !output)
-            fprintf(stderr, "Generator was seeded after %d events\n",
-                    processed);
+            printf("Generator was seeded after %d events\n",
+		   processed);
           
           yarrow256_random(&yarrow, size, buf);
 
@@ -263,9 +263,9 @@ main(int argc, char **argv)
 
 	  if (verbose)
 	    {
-	      fprintf(stderr, "%02x ", buf[0]);
+	      printf("%02x ", buf[0]);
 	      if (! (processed % 16))
-		fprintf(stderr, "\n");
+		printf("\n");
 	    }
           output += size;
         }
@@ -273,16 +273,16 @@ main(int argc, char **argv)
 
   if (verbose)
     {
-      fprintf(stderr, "\n");
+      printf("\n");
       
       for (i = 0; i<2; i++)
-	fprintf(stderr, "source %d, (fast, slow) entropy: (%d, %d)\n",
-		i,
-		sources[i].estimate[YARROW_FAST],
-		sources[i].estimate[YARROW_SLOW]); 
-
-      fprintf(stderr, "Processed input: %d octets\n", processed);
-      fprintf(stderr, "         sha256:");
+	printf("source %d, (fast, slow) entropy: (%d, %d)\n",
+	       i,
+	       sources[i].estimate[YARROW_FAST],
+	       sources[i].estimate[YARROW_SLOW]); 
+      
+      printf("Processed input: %d octets\n", processed);
+      printf("         sha256:");
     }
   sha256_final(&input_hash);
   sha256_digest(&input_hash, sizeof(digest), digest);
@@ -290,7 +290,7 @@ main(int argc, char **argv)
   if (verbose)
     {
       print_hex(sizeof(digest), digest);
-      fprintf(stderr, "\n");
+      printf("\n");
     }
   
   if (memcmp(digest, expected_input, sizeof(digest)))
@@ -301,9 +301,9 @@ main(int argc, char **argv)
 
   if (verbose)
     {
-      fprintf(stderr, "New seed file: ");
+      printf("New seed file: ");
       print_hex(sizeof(yarrow.seed_file), yarrow.seed_file);
-      fprintf(stderr, "\n");
+      printf("\n");
     }
 
   if (memcmp(yarrow.seed_file, expected_seed_file, sizeof(yarrow.seed_file)))
@@ -314,8 +314,8 @@ main(int argc, char **argv)
   
   if (verbose)
     {
-      fprintf(stderr, "Generated output: %d octets\n", output);
-      fprintf(stderr, "          sha256:");
+      printf("Generated output: %d octets\n", output);
+      printf("          sha256:");
     }
   
   sha256_final(&output_hash);
@@ -324,7 +324,7 @@ main(int argc, char **argv)
   if (verbose)
     {
       print_hex(sizeof(digest), digest);
-      fprintf(stderr, "\n");
+      printf("\n");
     }
   
   if (memcmp(digest, expected_output, sizeof(digest)))
