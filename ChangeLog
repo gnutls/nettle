@@ -1,3 +1,9 @@
+2004-02-12  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/rsa-encrypt-test: Use -r option when invoking
+	rsa-encrypt. Needed for the test to work on systems with no
+	/dev/urandom.
+
 2004-02-12  Niels Möller  <niels@s3.kth.se>
 
 	* configure.ac (CPPFLAGS, LDFLAGS): No spaces after -I and -L, as
