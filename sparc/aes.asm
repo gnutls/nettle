@@ -31,7 +31,9 @@ define(i, %l5)
 
 ! Teporaries
 define(t1, %o1)
+define(t2, %o2)
 define(t3, %o3)
+define(idx, %o4)
 
 _aes_crypt:
 ! Why -136?
@@ -105,7 +107,7 @@ _aes_crypt:
 	! This instruction copied to the delay slot of the branch here. 
 	mov	0, i
 .Lround_loop:
-	add	T, AES_SIDX3, %o2
+	add	T, AES_SIDX3, idx
 .Linner_loop:
 	! The comments mark which j in T->table[j][ Bj(wtxt[IDXi(i)]) ]
 	! the instruction is a part of. 
@@ -114,23 +116,23 @@ _aes_crypt:
 	! register for that sub-expression. True for j==1,3.
 	
 	! AES_SIDX1
-	ld	[%o2-32], t1		! 1
+	ld	[idx-32], t1		! 1
 
 	! AES_SIDX2
-	ld	[%o2-16], %o4		! 2
+	ld	[idx-16], t2		! 2
 	! wtxt[IDX1...]
 	add	wtxt, t1, t1		! 1
 	ldub	[t1+2], t1		! 1
 
 	! AES_SIDX3
-	ld	[%o2], t3		! 3
+	ld	[idx], t3		! 3
 	sll	t1, 2, t1		! 1
 	
 	! wtxt[i]
 	ld	[wtxt+i], %o5		! 0
 	
 	! wtxt[IDX2...]
-	lduh	[wtxt+%o4], %g3		! 2
+	lduh	[wtxt+t2], t2		! 2
 	
 	and	%o5, 255, %o5		! 0
 
@@ -142,18 +144,18 @@ _aes_crypt:
 	ld	[T+%o5], %g2		! 0
 
 	add	t1, AES_TABLE1, t1	! 1
-	and	%g3, 255, %g3		! 2
+	and	t2, 255, t2		! 2
 	ld	[T+t1], t1		! 1
-	sll	%g3, 2, %g3		! 2
-	add	%g3, AES_TABLE2, %g3	! 2
-	ld	[T+%g3], %o0		! 2
+	sll	t2, 2, t2		! 2
+	add	t2, AES_TABLE2, t2	! 2
+	ld	[T+t2], t2		! 2
 	sll	t3, 2, t3		! 3
 	add	t3, AES_TABLE3, t3	! 3
 	ld	[T+t3], t3		! 3
 	xor	%g2, t1, %g2		! 0, 1
-	xor	%g2, %o0, %g2		! 0, 1, 2
+	xor	%g2, t2, %g2		! 0, 1, 2
 
-	add	%o2, 4, %o2		
+	add	idx, 4, idx		
 
 ! 	! Fetch roundkey
 ! 	sll	round, 4, %o5
