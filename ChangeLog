@@ -1,3 +1,14 @@
+2004-08-23  Niels Möller  <niels@s3.kth.se>
+
+	* testsuite/md5-test.c (test_main): Added first half of a
+	collision test case.
+
+	* des-compat.c (des_cbc_cksum): Changed input argument to be of
+	type const uint8_t * (was const des_cblock *).
+
+	* des-compat.h (const_des_cblock): New bogus type. Disabled use of
+	const, for compatibility with openssl.
+
 2004-06-08  Niels Möller  <niels@s3.kth.se>
 
 	* aesdata.c: Renamed log and ilog to gf2_log and gf2_exp.
