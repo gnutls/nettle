@@ -35,41 +35,6 @@
 
 #include <stdlib.h>
 
-/* Returns a number x, almost uniformly random in the range
- * 0 <= x < n. */
-static void
-nettle_mpz_random(mpz_t x, const mpz_t n,
-		  void *ctx, nettle_random_func random)
-{
-  /* FIXME: This leaves some bias, which may be bad for DSA. A better
-   * way might to generate a random number of mpz_sizeinbase(n, 2)
-   * bits, and loop until one smaller than n is found. */
-
-  /* From Daniel Bleichenbacher (via coderpunks):
-   *
-   * There is still a theoretical attack possible with 8 extra bits.
-   * But, the attack would need about 2^66 signatures 2^66 memory and
-   * 2^66 time (if I remember that correctly). Compare that to DSA,
-   * where the attack requires 2^22 signatures 2^40 memory and 2^64
-   * time. And of course, the numbers above are not a real threat for
-   * PGP. Using 16 extra bits (i.e. generating a 176 bit random number
-   * and reducing it modulo q) will defeat even this theoretical
-   * attack.
-   * 
-   * More generally log_2(q)/8 extra bits are enough to defeat my
-   * attack. NIST also plans to update the standard.
-   */
-
-  /* Add a few bits extra, to decrease the bias from the final modulo
-   * operation. */
-  unsigned ndigits = (mpz_sizeinbase(n, 2) + 7) / 8 + 2;
-  uint8_t *digits = alloca(ndigits);
-
-  random(ctx, ndigits, digits);
-  nettle_mpz_set_str_256(x, ndigits, digits);
-
-  mpz_fdiv_r(x, x, n);
-}
 
 void
 dsa_sign(const struct dsa_public_key *pub,
@@ -87,7 +52,7 @@ dsa_sign(const struct dsa_public_key *pub,
   mpz_sub_ui(tmp, tmp, 1);
 
   mpz_init(k);
-  nettle_mpz_random(k, tmp, random_ctx, random);
+  nettle_mpz_random(k, random_ctx, random, tmp);
   mpz_add_ui(k, k, 1);
 
   /* Compute r = (g^k (mod p)) (mod q) */
