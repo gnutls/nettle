@@ -16,30 +16,26 @@ char desTest_cRcs[] = "$Id$";
 #include "des.h"
 #include <stdio.h>
 
+#if 0
 /* define now(w) to be the elapsed time in hundredths of a second */
 
-#if 1
-/* FIXME: Let autoconf look for getrusage */
-#define now(w) 0;
-#else /* false */
-
 #ifndef __NT__
-#include	<sys/time.h>
-#include	<sys/resource.h>
-#include	<unistd.h>
+# include	<sys/time.h>
+# include	<sys/resource.h>
+# include	<unistd.h>
 
 /* extern getrusage(); */
 static struct rusage usage;
-#define	now(w)	(						\
-		(void)getrusage(RUSAGE_SELF, &usage),		\
-		usage.ru_utime.tv_sec  * 100 +			\
-		usage.ru_utime.tv_usec / 10000			\
+# define	now(w)	(				\
+		getrusage(RUSAGE_SELF, &usage),		\
+		usage.ru_utime.tv_sec  * 100 +		\
+		usage.ru_utime.tv_usec / 10000		\
 	)
 #else
-#include       <windows.h>
-#define now(w) 0
+# include       <windows.h>
+# define now(w) 0
 #endif
-#endif /* false */
+#endif /* 0 */
      
 /* test data
  * the tests (key0-3, text0-3) are cribbed from code which is (c) 1988 MIT
@@ -67,12 +63,12 @@ static void method(const UINT8 *key)
 {
 	int j;
 
-	(void)printf("\nkey:\t");
+	printf("\nkey:\t");
 	for ( j = 0; j < 8; j++ )
-		(void)printf("%02X ", key[j]);
+		printf("%02X ", key[j]);
 	if ( des_key_sched(key, keys) )
-		(void)printf("W");
-	(void)printf("\t");
+		printf("W");
+	printf("\t");
 }
 
 static void
@@ -80,16 +76,16 @@ encode(const UINT8 *src, UINT8 *dst)
 {
 	int j;
 
-	(void)printf("clear:\t");
+	printf("clear:\t");
 	for (j = 0; j < 8; j++)
-		(void)printf("%02X ", src[j]);
+		printf("%02X ", src[j]);
 
-	(void)des_ecb_encrypt(src, dst, keys, 1);
+	des_ecb_encrypt(src, dst, keys, 1);
 
-	(void)printf("\tcipher:\t");
+	printf("\tcipher:\t");
 	for (j = 0; j < 8; j++)
-		(void)printf("%02X ", dst[j]);
-	(void)printf("\n");
+		printf("%02X ", dst[j]);
+	printf("\n");
 }
 
 static void
@@ -97,15 +93,15 @@ decode(const UINT8 *src, UINT8 *dst, const UINT8 *check)
 {
 	int j;
 
-	(void)printf("cipher:\t");
+	printf("cipher:\t");
 	for (j = 0; j < 8; j++)
-		(void)printf("%02X ", src[j]);
+		printf("%02X ", src[j]);
 
-	(void)des_ecb_encrypt(src, dst, keys, 0);
+	des_ecb_encrypt(src, dst, keys, 0);
 
-	(void)printf("\tclear:\t");
+	printf("\tclear:\t");
 	for (j = 0; j < 8; j++)
-		(void)printf("%02X ", dst[j]);
+		printf("%02X ", dst[j]);
 
         if(!memcmp(dst,check,8))
            printf("Ok\n");
@@ -118,79 +114,84 @@ decode(const UINT8 *src, UINT8 *dst, const UINT8 *check)
 int
 main(int argc UNUSED, char **argv UNUSED)
 {
-	int j, m, e, n;
-
-	/* FIXME: Don't use this untyped function pointer. */ 
-	void (*f)();
+	int j, n;
+#if 0
+	int m, e;
+#endif
+	DesFunc *f;
 	static char * expect[] = {
 		"57 99 F7 2A D2 3F AE 4C", "9C C6 2D F4 3B 6E ED 74",
 		"90 E6 96 A2 AD 56 50 0D", "A3 80 E0 2A 6B E5 46 96",
 		"43 5C FF C5 68 B3 70 1D", "25 DD AC 3E 96 17 64 67",
 		"80 B5 07 E1 E6 A7 47 3D", "3F A4 0E 8A 98 4D 48 15",
 	};
-	/* static void (*funcs[])() = { */
+
 	static DesFunc *funcs[] = {
 	  DesQuickCoreEncrypt, DesQuickFipsEncrypt,
 	  DesSmallCoreEncrypt, DesSmallFipsEncrypt,
 	  DesQuickCoreDecrypt, DesQuickFipsDecrypt,
 	  DesSmallCoreDecrypt, DesSmallFipsDecrypt };
+#if 0
 	static char * names[] = {
 	  "QuickCore", "QuickFips",
 	  "SmallCore", "SmallFips" };
-
+#endif
 	n = 0;
 	DesQuickInit();
 
 	/* do timing info first */
 
-	f = (void (*)())DesMethod;
 	j = 10000;
+#if 0
 	m = now(0);
+#endif
 	do
-		(*f)(keys, keyt);
+		DesMethod(keys, keyt);
 	while ( --j );
+#if 0
 	m = now(1) - m;
-
+#endif
 	do {
 		    DesCryptFuncs[0] = funcs[n+4];
 		f = DesCryptFuncs[1] = funcs[n  ];
 		j = 100000;
+#if 0
 		e = now(0);
+#endif
 		do
 			(*f)(cipher, keys, textt);
 		while ( --j );
+#if 0
 		e = now(1) - e;
-
-		(void)printf(	"%s:  setkey,%5duS;  encode,%3d.%1duS.\n",
-				names[n], m, e/10, e%10);
-
+		printf(	"%s:  setkey,%5duS;  encode,%3d.%1duS.\n",
+			names[n], m , e/10, e%10);
+#endif
 		/* now check functionality */
 
 		method(key0);
-		(void)printf("cipher?\t%s\n", expect[(n % 2) + 0]);
+		printf("cipher?\t%s\n", expect[(n % 2) + 0]);
 		encode(text0, cipher);
 		decode(cipher, output, text0);
 
 		method(key1);
-		(void)printf("cipher?\t%s\n", expect[(n % 2) + 2]);
+		printf("cipher?\t%s\n", expect[(n % 2) + 2]);
 		encode(text1, cipher);
 		decode(cipher, output, text1);
 
 		method(key2);
-		(void)printf("cipher?\t%s\n", expect[(n % 2) + 4]);
+		printf("cipher?\t%s\n", expect[(n % 2) + 4]);
 		encode(text2, cipher);
 		decode(cipher, output, text2);
 
 		method(key3);
-		(void)printf("cipher?\t%s\n", expect[(n % 2) + 6]);
+		printf("cipher?\t%s\n", expect[(n % 2) + 6]);
 		encode(text3, cipher);
 		decode(cipher, output, text3);
 
-		(void)printf("%c", "\n\f\n\0"[n]);
+		printf("%c", "\n\f\n\0"[n]);
 
 	} while ( ++n < 4 );
 
 	DesQuickDone();
-	fflush(stdout);
 	return 0;
 }
