@@ -588,17 +588,226 @@ them one after another. The result is the same as if you had called
 
 @subsection CAST128
 
+CAST-128 is a block cipher, specified in @cite{RFC 2144}. It uses a 64
+bit (8 octets) block size, and a variable key size of up to 128 bits.
+Nettle defines cast128 in @file{<nettle/cast128.h>}.
+
+@deftp {Context struct} {struct cast128_ctx}
+@end deftp
+
+@defvr Constant CAST128_BLOCK_SIZE
+The CAST128 blocksize, 8
+@end defvr
+
+@defvr Constant CAST128_MIN_KEY_SIZE
+Minumim CAST128 key size, 5
+@end defvr
+
+@defvr Constant CAST128_MAX_KEY_SIZE
+Maximum CAST128 key size, 16
+@end defvr
+
+@defvr Constant CAST128_KEY_SIZE
+Default CAST128 key size, 16
+@end defvr
+
+@deftypefun void cast128_set_key (struct cast128_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
+Initialize the cipher. The same function is used for both encryption and
+decryption. 
+@end deftypefun
+
+@deftypefun void cast128_encrypt (struct cast128_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
+Encryption function. @var{length} must be an integral multiple of the
+block size. If it is more than one block, the data is processed in ECB
+mode. @code{src} and @code{dst} may be equal, but they must not overlap
+in any other way.
+@end deftypefun
+
+@deftypefun void cast128_decrypt (struct cast128_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
+Analogous to @code{cast128_encrypt}
+@end deftypefun
+
 @subsection BLOWFISH
 
+BLOWFISH is a block cipher designed by Bruce Schneier. It uses a block
+size of 64 bits (8 octets), and a variable key size, up to 448 bits. It
+has some weak keys. Nettle defines BLOWFISH in @file{<nettle/blowfish.h>}.
+
+@deftp {Context struct} {struct blowfish_ctx}
+@end deftp
+
+@defvr Constant BLOWFISH_BLOCK_SIZE
+The BLOWFISH blocksize, 8
+@end defvr
+
+@defvr Constant BLOWFISH_MIN_KEY_SIZE
+Minimum BLOWFISH key size, 8
+@end defvr
+
+@defvr Constant BLOWFISH_MAX_KEY_SIZE
+Maximum BLOWFISH key size, 56
+@end defvr
+
+@defvr Constant BLOWFISH_KEY_SIZE
+Default BLOWFISH key size, 16
+@end defvr
+
+@deftypefun int blowfish_set_key (struct blowfish_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
+Initialize the cipher. The same function is used for both encryption and
+decryption. Returns 1 on success, and 0 if the key was weak. Calling
+@code{blowfish_encrypt} or @code{blowfish_decrypt} with a weak key will
+crash with an assert violation.
+@end deftypefun
+
+@deftypefun void blowfish_encrypt (struct blowfish_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
+Encryption function. @var{length} must be an integral multiple of the
+block size. If it is more than one block, the data is processed in ECB
+mode. @code{src} and @code{dst} may be equal, but they must not overlap
+in any other way.
+@end deftypefun
+
+@deftypefun void blowfish_decrypt (struct blowfish_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
+Analogous to @code{blowfish_encrypt}
+@end deftypefun
+
 @subsection DES
+DES is the old Data Encryption Standard, specified by NIST. It uses a
+block size of 64 bits (8 octets), and a key size of 56 bits. However,
+the key bits are distributed over 8 octets, where the least significant
+bit of each octet is used for parity. A common way to use DES is to
+generate 8 random octets in some way, then set the least significant bit
+of each octet to get odd parity, and initialize DES with the resulting
+key.
+
+The key size of DES is so small that keys can be found by brute force,
+using specialized hardware or lots of ordinary work stations in
+parallell. One shouldn't be using plain DES at all today, if one uses
+DES at all one should be using "triple DES", three DES ciphers piped
+together, with three (or sometimes just two) independent keys.
+
+DES also has some weak keys. Nettle defines DES in @file{<nettle/des.h>}.
+
+@deftp {Context struct} {struct des_ctx}
+@end deftp
+
+@defvr Constant DES_BLOCK_SIZE
+The DES blocksize, 8
+@end defvr
+
+@defvr Constant DES_KEY_SIZE
+DES key size, 8
+@end defvr
+
+@deftypefun int des_set_key (struct des_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
+Initialize the cipher. The same function is used for both encryption and
+decryption. Returns 1 on success, and 0 if the key was weak or had bad
+parity. Calling @code{des_encrypt} or @code{des_decrypt} with a bad key
+will crash with an assert violation.
+@end deftypefun
+
+@deftypefun void des_encrypt (struct des_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
+Encryption function. @var{length} must be an integral multiple of the
+block size. If it is more than one block, the data is processed in ECB
+mode. @code{src} and @code{dst} may be equal, but they must not overlap
+in any other way.
+@end deftypefun
+
+@deftypefun void des_decrypt (struct des_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
+Analogous to @code{des_encrypt}
+@end deftypefun
 
 @subsection SERPENT
+SERPENT is one of the AES finalists, designed by Ross Anderson, Eli
+Biham and Lars Knudsen. Thus, the interface and properties are similar
+to AES'. One pecularity is that it is quite pointless to use it with
+anything but the maximum key size, smaller keys are just padded to
+larger ones. Nettle defines SERPENT in @file{<nettle/serpent.h>}.
+
+@deftp {Context struct} {struct serpent_ctx}
+@end deftp
+
+@defvr Constant SERPENT_BLOCK_SIZE
+The SERPENT blocksize, 16
+@end defvr
+
+@defvr Constant SERPENT_MIN_KEY_SIZE
+Minumim SERPENT key size, 16
+@end defvr
+
+@defvr Constant SERPENT_MAX_KEY_SIZE
+Maximum SERPENT key size, 32
+@end defvr
+
+@defvr Constant SERPENT_KEY_SIZE
+Default SERPENT key size, 32
+@end defvr
+
+@deftypefun void serpent_set_key (struct serpent_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
+Initialize the cipher. The same function is used for both encryption and
+decryption. 
+@end deftypefun
+
+@deftypefun void serpent_encrypt (struct serpent_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
+Encryption function. @var{length} must be an integral multiple of the
+block size. If it is more than one block, the data is processed in ECB
+mode. @code{src} and @code{dst} may be equal, but they must not overlap
+in any other way.
+@end deftypefun
+
+@deftypefun void serpent_decrypt (struct serpent_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
+Analogous to @code{serpent_encrypt}
+@end deftypefun
+
 
 @subsection TWOFISH
+Another AES finalist, this one designed by Bruce Schneier and others.
+Nettle defines it in @file{<nettle/twofish.h>}.
+
+@deftp {Context struct} {struct twofish_ctx}
+@end deftp
+
+@defvr Constant TWOFISH_BLOCK_SIZE
+The TWOFISH blocksize, 16
+@end defvr
+
+@defvr Constant TWOFISH_MIN_KEY_SIZE
+Minumim TWOFISH key size, 16
+@end defvr
+
+@defvr Constant TWOFISH_MAX_KEY_SIZE
+Maximum TWOFISH key size, 32
+@end defvr
+
+@defvr Constant TWOFISH_KEY_SIZE
+Default TWOFISH key size, 32
+@end defvr
+
+@deftypefun void twofish_set_key (struct twofish_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
+Initialize the cipher. The same function is used for both encryption and
+decryption. 
+@end deftypefun
+
+@deftypefun void twofish_encrypt (struct twofish_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
+Encryption function. @var{length} must be an integral multiple of the
+block size. If it is more than one block, the data is processed in ECB
+mode. @code{src} and @code{dst} may be equal, but they must not overlap
+in any other way.
+@end deftypefun
+
+@deftypefun void twofish_decrypt (struct twofish_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
+Analogous to @code{twofish_encrypt}
+@end deftypefun
+
 
 @node Miscellaneous functions,  , Cipher functions, Reference
 @comment  node-name,  next,  previous,  up
 @section Miscellaneous functions
+
+@deftypefun {uint8_t *} memxor (uint8_t *@var{dst}, const uint8_t *@var{src}, size_t @var{n})
+XOR:s the source area on top of the destination area. The interface
+doesn't follow the Nettle conventions, because it is intended to be
+similar to the ANSI-C @code{memcpy} function.
+@end deftypefun
 
 @node Installation, Index, Reference, Top
 @comment  node-name,  next,  previous,  up
