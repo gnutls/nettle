@@ -32,6 +32,7 @@ _$*
 core
 /*.d
 /.deps
+/.dist_headers
 /Makefile
 /Makefile.am
 /Makefile.in
