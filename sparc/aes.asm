@@ -22,8 +22,8 @@
 ! (see gcc/config/sparc.h). We should use only %g1-%g3 to be safe.
 	
 	! Used registers:	%l0,1,2,3,4,5,6,7
-	!			%i0,1,2,3,4,5 (%i6=%fp, %i7 = return)
-	!			%o0,1,2,3,4,5,7 (%o6=%sp)
+	!			%i0,1,2,3,4 (%i6=%fp, %i7 = return)
+	!			%o0,1,2,3,4,7 (%o6=%sp)
 	!			%g1,2,3,5
 	
 	.file	"aes.asm"
@@ -57,9 +57,10 @@ define(T0, %l6)
 define(T1, %l7)
 define(T2, %g5)
 define(T3, %o7)
-define(IDX1, %i5)
-C define(IDX1, <T + AES_SIDX1 >)
-define(IDX3, %o5)
+C define(IDX1, %i5)
+define(IDX1, <T + AES_SIDX1 >)
+C define(IDX3, %o5)
+define(IDX3, <T + AES_SIDX3 >)
 
 ! Teporaries
 define(t0, %o0)
@@ -95,9 +96,9 @@ _aes_crypt:
 	add	T, AES_TABLE1, T1
 	add	T, AES_TABLE2, T2
 	add	T, AES_TABLE3, T3
-	add	T, AES_SIDX1, IDX1
+	C add	T, AES_SIDX1, IDX1
 	
-	add	T, AES_SIDX3, IDX3
+	C add	T, AES_SIDX3, IDX3
 	! Read src, and add initial subkey
 	! Difference between ctx and src.
 	! NOTE: These instructions are duplicated in the delay slot,
