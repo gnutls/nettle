@@ -7,7 +7,7 @@ noinst_PROGRAMS = nettle-benchmark sexp-conv @RSA_EXAMPLES@
 LDADD = io.o ../libnettle.a
 nettle_benchmark_LDADD = ../libnettle.a
 
-TS_PROGS = rsa-sign-test rsa-verify-test
+TS_PROGS = rsa-sign-test rsa-verify-test sexp-conv-test
 
 EXTRA_DIST = io.c io.h run-tests setup-env teardown-env $(TS_PROGS)
 
