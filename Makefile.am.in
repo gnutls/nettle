@@ -60,8 +60,8 @@ depend:
 	rm -f $(DEP_FILES)
 	make $(DEP_FILES)
 
-.deps/%.P : %.c
-	$(CC) $(CPPFLAGS) $(DEFS) -M -MG $< > $@
+# .deps/%.P : %.c
+# 	$(CC) $(CPPFLAGS) $(DEFS) -M -MG $< > $@
 
 MAINTAINERCLEANFILES += $(DEP_FILES)
 
