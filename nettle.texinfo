@@ -5,6 +5,7 @@
 @settitle The Nettle low-level cryptographic library.
 @c %**end of header
 
+@footnotestyle end
 @syncodeindex fn cp
 
 @dircategory GNU Libraries
@@ -305,6 +306,8 @@ This chapter describes all the Nettle functions, grouped by family.
 * Cipher functions::            
 * Cipher Block Chaining::       
 * Keyed hash functions::        
+* Public-key algorithms::       
+* Randomness::                  
 * Miscellaneous functions::     
 * Compatibility functions::     
 @end menu
@@ -531,7 +534,7 @@ changes to the message.
 It is recommended to @emph{always} use an authentication mechanism in
 addition to encrypting the messages. Popular choices are Message
 Authetication Codes like @acronym{HMAC-SHA1} @pxref{Keyed hash
-functions}, or digital signatures like @acronym{rsa}.
+functions}, or digital signatures like @acronym{RSA}.
 
 Some ciphers have so called "weak keys", keys that results in
 undesirable structure after the key setup processing, and should be
@@ -606,8 +609,8 @@ key before feeding it to ARCFOUR. For example
 @example
 /* A more robust key setup function for ARCFOUR */
 void
-my_arcfour_set_key(struct arcfour_ctx *ctx,
-                   unsigned length, const uint8_t *key)
+arcfour_set_key_hashed(struct arcfour_ctx *ctx,
+                       unsigned length, const uint8_t *key)
 @{
   struct sha1_ctx hash;
   uint8_t digest[SHA1_DIGEST_SIZE];
@@ -1058,7 +1061,7 @@ the types of @var{f} and @var{ctx} don't match, e.g. if you try to use
 an @code{struct aes_ctx} context with the @code{des_encrypt} function.
 
 
-@node Keyed hash functions, Miscellaneous functions, Cipher Block Chaining, Reference
+@node Keyed hash functions, Public-key algorithms, Cipher Block Chaining, Reference
 @comment  node-name,  next,  previous,  up
 @section Keyed Hash Functions
 
@@ -1258,9 +1261,263 @@ This function also resets the context for processing new messages, with
 the same key.
 @end deftypefun
 
+@node Public-key algorithms, Randomness, Keyed hash functions, Reference
+@comment  node-name,  next,  previous,  up
+@section Public-key algorithms
 
+Nettle uses @acronym{GMP}, the GNU bignum library, for all calculations
+with large numbers. In order to use the public-key features of Nettle,
+you must install @acronym{GMP}, at least version 3.0, before compiling
+Nettle, and you need to link your programs with @code{-lgmp}.
 
-@node Miscellaneous functions, Compatibility functions, Keyed hash functions, Reference
+The concept of @dfn{Public-key} encryption and digital signatures was
+discovered by Whitfield Diffie and Martin E. Hellman and described in a
+paper 1976. In traditional, "symmetric", cryptography, sender and
+receiver share the same keys, and these keys must be distributed in a
+secure way. And if there are many users or entities that need to
+communicate, each @emph{pair} needs a shared secret key known by nobody
+else.
+
+Public-key cryptography uses trapdoor one-way functions. A
+@dfn{one-way function} is a function @code{F} such that it is easy to
+compute the value @code{F(x)} for any @code{x}, but given a value
+@code{y}, it is hard to compute a corresponding @code{x} such that
+@code{y = f(x)}. Two examples are cryptographic hash functions, and
+exponentiation in certain groups.
+
+A @dfn{trapdoor one-way function} is a function @code{F} that is
+one-way, unless one knows some secret information about @code{F}. If one
+knows the secret, it is easy to compute both @code{F} and it's inverse.
+If this sounds strange, look at the @acronym{RSA} example below.
+
+Two important uses for one-way functions with trapdoors are public-key
+encryption, and digital signatures. Of these, I won't say more about
+public-key encryption, as that isn't yet supported by Nettle. So the
+rest of this chapter is about digital signatures.
+
+To use a digital signature algorithm, one must first create a
+@dfn{keypair}: A public key and a corresponding private key. The private
+key is used to sign messages, while the public key is used for verifying
+that that signatures and messages match. Some care must be taken when
+distributing the public key; it need not be kept secret, but if a bad
+guy is able to replace it (in transit, or in some user's list of known
+public keys), bad things may happen.
+
+There are two operations one can do with the keys. The signature
+operation takes a message and a private key, and creates a signature for
+the message. A signature is some string of bits, usually at most a few
+thousand bits or a few hundred octets. Unlike paper-and-ink signatures,
+the digital signature depends on the message, so one can't cut it out of
+context and glue it to a different message.
+
+The verification operation takes a public key, a message, and a string
+that is claimed to be a signature on the message, and returns true or
+false. If it returns true, that means that the three input values
+matched, and the verifier can be sure that someone went through with the
+signature operation on that very message, and that the "someone" also
+knows the private key corresponding to the public key.
+
+The desired properties of a digital signature algorithm are as follows:
+Given the public key and pairs of messages and valid signatures on them,
+it should be hard to compute the private key, and it should also be hard
+to create a new message and signature that is accepted by the
+verification operation.
+
+Besides signing meaningful messages, digital signatures can be used for
+authorization. A server can be configured with a public key, such that
+any client that connects to the service is given a random nonce message.
+If the server gets a reply with a correct signature matching the nonce
+message and the configured public key, the client is granted access. So
+the configuration of the server can be understood as "grant access to
+whoever knows the private key corresponding to this particular public
+key, and to no others".
+
+@subsection @acronym{RSA}
+
+The @acronym{RSA} was the first practical digital signature algorithm
+that was constructed. It was described 1978 in a paper by Ronald Rivest,
+Adi Shamir and L.M. Adleman, and the technique was also patented in
+1983. The patent expired on September 20, 2000, and since that day,
+@acronym{RSA} can be used freely.
+
+It's remarkably simple to describe trapdoor function behind
+@acronym{RSA}. The "one-way"-function used is
+
+@example
+F(x) = x^e mod n
+@end example
+
+I.e. raise x to the @code{e}:th power, while discarding all multiples of
+@code{n}. The pair of numbers @code{n} and @code{e} is the public key.
+@code{e} can be quite small, even @code{e = 3} have been used, although
+slightly larger numbers are recommended. @code{n} should be about 1000
+bits or larger.
+
+If @code{n} is large enough, and properly chosen, the inverse of F,
+the computation of @code{e}:th roots modulo @code{n}, is very difficult.
+But, where's the trapdoor?
+
+Let's first look at how @acronym{RSA} keypairs are generated. First
+@code{n} is chosen as the product of two large prime numbers @code{p}
+and @code{q} of roughly the same size (so if @code{n} is 1000 bits,
+@code{p} and @code{q} are about 500 bits each). One also computes the
+number @code{phi = (p-1)(q-1)}, in mathematical speak, phi is the order
+of the multiplicative group of integers modulo n.
+
+Next, @code{e} is chosen. It must have no factors in common with phi (in
+particular, it must be odd), but can otherwise be chosen more or less
+randomly. @code{e = 65537} is a popular choice, because it makes raising
+to the @code{e}:th power particularly efficient, and being prime, it
+usually has no factors common with @code{phi}.
+
+Finally, a number @code{d}, @code{d < n} is computed such that @code{e d
+mod phi = 1}. It can be shown that such a number exists (this is why
+@code{e} and @code{phi} must have no common factors), and that for all x,
+
+@example
+(x^e)^d mod n = x^(ed) mod n = (x^d)^e mod n = x
+@end example
+
+Using Euclid's algorithm, @code{d} can be computed quite easily from
+@code{phi} and @code{e}. But it is still hard to get @code{d} without
+knowing @code{phi}, which depends on the factorization of @code{n}.
+
+So @code{d} is the trapdoor, if we know @code{d} and @code{y = F(x)}, we can
+recover x as @code{y^d mod n}. @code{d} is also the private half of
+the @acronym{RSA} keypair.
+
+The most common signature operation for @acronym{RSA} is defined in
+@cite{PKCS#1}, a specification by RSA Laboratories. The message to be
+signed is first hashed using a cryptographic hash function, e.g.
+@acronym{MD5} or @acronym{SHA1}. Next, some padding, the @acronym{ASN.1}
+"Algorithm Identifier" for the hash function, and the message digest
+itself, are concatenated and converted to a number @code{x}. The
+signature is computed from @code{x} and the private key as @code{s = x^d
+mod n}@footnote{Actuelly, the computation is not done like this, it is
+done more efficiently using @code{p}, @code{q} and the chinese remainder
+theorem (@acronym{CRT}). But the result is the same.}. The signature, @code{s} is a
+number of about the same size of @code{n}, and it usually encoded as a
+sequence of octets, most significant octet first.
+
+The verification operation is straight-forward, @code{x} is computed
+from the message in the same way as above. Then @code{s^e mod n} is
+computed, the operation returns true if and only if the result equals
+@code{x}.
+
+@subsection Nettle's @acronym{RSA} support
+
+Nettle represents @acronym{RSA} keys using two structures that contain
+large numbers (of type @code{mpz_t}).
+
+@deftp {Context struct} {rsa_public_key} size n e
+@code{size} is the size, in octets, of the modulo, and is used internally.
+@code{n} and @code{e} is the public key.
+@end deftp
+
+@deftp {Context struct} {rsa_private_key} size d p q a b c
+@code{size} is the size, in octets, of the modulo, and is used internally.
+@code{d} is the secret exponent, but it is not actually used when
+signing. Instead, the factors @code{p} and @code{q}, and the parameters
+@code{a}, @code{b} and @code{c} are used. They are computed from @code{p},
+@code{q} and @code{d} such that @code{a e mod (p - 1) = 1, b e mod (q -
+1) = 1, c q mod p= 1}.
+@end deftp
+
+Before use, these structs must be initialized by calling one of
+
+@deftypefun void rsa_init_public_key (struct rsa_public_key *@var{pub})
+@deftypefunx void rsa_init_private_key (struct rsa_private_key *@var{key})
+Calls @code{mpz_init} on all numbers in the key struct.
+@end deftypefun
+
+and when finished with them, the space for the numbers must be
+deallocated by calling one of
+
+@deftypefun void rsa_clear_public_key (struct rsa_public_key *@var{pub})
+@deftypefunx void rsa_clear_private_key (struct rsa_private_key *@var{key})
+Calls @code{mpz_clear} on all numbers in the key struct.
+@end deftypefun
+
+In general, Nettle's @acronym{rsa} functions deviates from Nettle's "no
+memory allocation"-policy. Space for all the numbers, both in the key structs
+above, and temporaries, are allocated dynamically. For informationon how
+to customize allocation, see @xref{Custom Allocation,,GMP Allocation,gmp}.
+
+When you have assigned values to the attributes of a key, you must call
+
+@deftypefun int rsa_prepare_public_key (struct rsa_public_key *@var{pub})
+@deftypefunx int rsa_prepare_private_key (struct rsa_private_key *@var{key})
+Computes the octet size of the key (stored in the @code{size} attribute,
+and may also do other basig sanity checks. Returns one if successful, or
+zero if the key can't be used, for instance if the modulo is smaller
+than the minimum size specified by PKCS#1.
+@end deftypefun
+
+Before signing or verifying a message, you first hash it with the
+appropriate hash function. You pass the hash function's context struct
+to the rsa function, and it will extract the message digest and do the
+rest of the work.
+
+Creation and verification of signatures is done with the following functions:
+
+@deftypefun void rsa_md5_sign (struct rsa_private_key *@var{key}, struct md5_ctx *@var{hash}, mpz_t @var{signature})
+@deftypefunx void rsa_sha1_sign (struct rsa_private_key *@var{key}, struct sha1_ctx *@var{hash}, mpz_t @var{signature})
+The signature is stored in @var{signature} (which must have been
+@code{mpz_init}:ed earlier). The hash context is reset so that it can be
+used for new messages.
+@end deftypefun
+
+@deftypefun int rsa_md5_verify (struct rsa_public_key *@var{key}, struct md5_ctx *@var{hash}, const mpz_t @var{signature})
+@deftypefunx int rsa_sha1_verify (struct rsa_public_key *@var{key}, struct sha1_ctx *@var{hash}, const mpz_t @var{signature})
+Returns 1 if the signature is valid, or 0 if it isn't. In either case,
+the hash context is reset so that it can be used for new messages.
+@end deftypefun
+
+If you need to use the @acronym{RSA} trapdoor, the private key, in a way
+that isn't support by the above functions Nettle also includes a
+function that computes @code{x^d mod n} and nothing more, using the
+@acronym{CRT} optimization.
+
+@deftypefun void rsa_compute_root (struct rsa_private_key *@var{key}, mpz_t @var{x}, const mpz_t @var{m})
+Computes @code{x = m^d}, efficiently.
+@end deftypefun
+
+At last, how do you create new keys?
+
+@deftypefun int rsa_generate_keypair (struct rsa_public_key *@var{pub}, struct rsa_private_key *@var{key}, void *@var{random_ctx}, nettle_random_func @var{random}, void *@var{progress_ctx}, nettle_progress_func @var{progress}, unsigned @var{n_size}, unsigned @var{e_size});
+There are lots of parameters. @var{pub} and @var{key} is where the
+resulting key pair is stored. The structs should be initialized, but you
+don't need to call @code{rsa_prepare_public_key} or
+@code{rsa_prepare_private_key} after key generation.
+
+@var{random_ctx} and @var{random} is a randomness generator.
+@code{random(random_ctx, length, dst)} should generate @code{length}
+random octets and store them at @code{dst}. For advice, see
+@xref{Randomness}.
+
+@var{progress} and @var{progress_ctx} can be used to get callbacks
+during the key generation process, in order to uphold an illusion of
+progress. @var{progress} can be NULL, in that case there are no
+callbacks.
+
+@var{size_n} is the desired size of the modulo, in bits. If @var{size_e}
+is non-zero, it is the desired size of the public exponent and a random
+exponent of that size is selected. But if @var{e_size} is zero, it is
+assumed that the caller has already chosen a value for @code{e}, and
+stored it in @var{pub}.
+
+Returns 1 on success, and 0 on failure. The function can fail for
+example if if @var{n_size} is too small, or if @var{e_size} is zero and
+@code{pub->e} is an even number.
+@end deftypefun
+
+@node Randomness, Miscellaneous functions, Public-key algorithms, Reference
+@comment  node-name,  next,  previous,  up
+@section Randomness
+
+XXX Not yet written.
+
+@node Miscellaneous functions, Compatibility functions, Randomness, Reference
 @comment  node-name,  next,  previous,  up
 @section Miscellaneous functions
 
@@ -1306,13 +1563,22 @@ For the serious nettle hacker, here is a recipe for nettlesoup.
 
 4 servings
 
+@itemize @w
+@item
 1 litre fresh nettles (urtica dioica)
+@item
 2 tablespoons butter
+@item
 3 tablespoons flour
+@item
 1 litre buillon (meat or vegetable)
+@item
 1/2 teaspoon salt
+@item
 a tad white pepper
+@item
 some cream or milk
+@end itemize
 
 Gather 1 ltre fresh nettles. Use gloves! Small, tender shoots are
 preferable but the tops of larger nettles can also be used.
@@ -1329,6 +1595,7 @@ Season with salt and pepper.
 Serve with boiled egghalves.
 
 @c And the original Swedish version.
+@ignore
 
 Recept på nässelsoppa
 4 portioner
@@ -1351,8 +1618,6 @@ späd med buljong och nässelspad. Lägg i de hackade nässlorna. Om så
 smaksätt med salt och peppar.
 
 Servera med kokta ägghalvor.
-@ignore
-
 @end ignore
 
 @node Installation, Index, Nettle soup, Top
