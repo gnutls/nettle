@@ -10,6 +10,8 @@ config.status
 configure
 desdata
 keymap.h
+nettle.html
+nettle.info
 parity.h
 rotors.h
 stamp-h
