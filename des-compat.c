@@ -76,9 +76,9 @@ des_cbc_cksum(des_cblock *src, des_cblock *dst,
    * work, in particular what it should return, and if iv can be
    * modified. */
   uint8_t block[DES_BLOCK_SIZE];
-  memcpy(block, *iv, DES_BLOCK_SIZE);
-
   uint8_t *p;
+
+  memcpy(block, *iv, DES_BLOCK_SIZE);
   
   assert(!(length % DES_BLOCK_SIZE));
   
