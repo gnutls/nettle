@@ -109,7 +109,7 @@ decode_hex_dup(const char *hex)
 }
 
 void
-print_hex(unsigned length, uint8_t *data)
+print_hex(unsigned length, const uint8_t *data)
 {
   unsigned i;
   
