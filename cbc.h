@@ -46,11 +46,44 @@ cbc_decrypt(void *ctx, void (*f)(void *ctx,
 	    unsigned length, uint8_t *dst,
 	    const uint8_t *src);
 
+#define CBC_CTX(type, size) \
+{ type ctx; uint8_t iv[size]; }
+
+#define CBC_SET_IV(ctx, data) \
+memcpy((ctx)->iv, (data), sizeof((ctx)->iv))
+
+#if 0
+#define CBC_ENCRYPT(self, f, length, dst, src) \
+do { if (0) (f)(&(self)->ctx, 0, NULL, NULL); \
+     cbc_encrypt((void *) &(self)->ctx, \
+                 (void (*)(void *, unsigned, uint8_t *, const uint8_t *)) (f), \
+		 sizeof((self)->iv), (self)->iv, \
+                 (length), (dst), (src)); \
+} while (0)
+#endif
+
+#define CBC_ENCRYPT(self, f, length, dst, src) \
+(0 ? ((f)(&(self)->ctx, 0, NULL, NULL)) \
+   : cbc_encrypt((void *) &(self)->ctx, \
+                 (void (*)(void *, unsigned, uint8_t *, const uint8_t *)) (f), \
+		 sizeof((self)->iv), (self)->iv, \
+                 (length), (dst), (src)))
+
+#define CBC_DECRYPT(self, f, length, dst, src) \
+(0 ? ((f)(&(self)->ctx, 0, NULL, NULL)) \
+   : cbc_decrypt((void *) &(self)->ctx, \
+                 (void (*)(void *, unsigned, uint8_t *, const uint8_t *)) (f), \
+		 sizeof((self)->iv), (self)->iv, \
+                 (length), (dst), (src)))
+
+#if 0
 /* Type safer variants */
-#define CBC_ENCRYPT(ctx, f, b, iv, l, dst, src) \
+#define CBC_ENCRYPT2(ctx, f, b, iv, l, dst, src) \
 (0 ? ((f)((ctx),0,NULL,NULL)) \
    : cbc_encrypt((void *)(ctx), \
-                 ((*)(void *, unsigned, uint8_t *, const uint8_t *)) (f), \
+                 (void (*)(void *, unsigned, uint8_t *, const uint8_t *)) (f), \
                  (b), (iv), (l), (dst), (src)))
+
+#endif
 
 #endif /* NETTLE_CBC_H_INCLUDED */
