@@ -1,4 +1,58 @@
+2002-05-16  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* sparc/aes.asm: Deleted registers i and t3.
+	(_aes_crypt): Moved some registers around. We now use input
+	registers only for arguments, local registers for loop invariants,
+	output registers for temporaries and loop variables, and no global
+	registers at all.
+
+	* sparc/aes.asm (AES_FINAL_ROUND): New macro.
+	(_aes_crypt): Use AES_FINAL_ROUND for the first word if the final
+	round. 
+	(_aes_crypt): And for the rest of the final round.
+	(AES_FINAL_ROUND): Don't update dst, just access it offseted by i.
+	(_aes_crypt): Add 16 to dst at the end of the final round.
+	(AES_ROUND): Use ldub, not ld + and, to get the third byte
+	of wtxt.
+	(AES_ROUND): Use ldub, not lduh + and, to get the second
+	byte of a word.
+	(AES_ROUND): Reordered instructions, so that we can save one
+	register. 
+	(AES_ROUND): Eliminated use of t3.
+	(AES_FINAL_ROUND): Eliminated ands.
+	(AES_FINAL_ROUND): Reordered, so that we can save one register. 
+	(AES_FINAL_ROUND): Eliminated t3.
+	(AES_LOAD): New macro.
+	(_aes_crypt): Unrolled source loop.
+	(_aes_crypt): Use AES_LOAD macro.
+	(_aes_crypt): Deleted cruft from the old source loop.
+	(AES_LOAD): Eliminated t3.
+
 2002-05-15  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* sparc/aes.asm (AES_ROUND): New macro.
+	(_aes_crypt): Use AES_ROUND for first word of the
+	round function.
+	(_aes_crypt): And for the rest of the round function.
+	
+	* sparc/aes.asm (_aes_crypt): Deleted a bunch of additions,
+	after accessing IDX1.
+
+	* aes-internal.h (struct aes_table): sparc_idx[0] should now
+	contain index values shifted by the size of a word, and with 2
+	added. This saves some additions in the sparc assembler code.
+	Updates aes-encrypt-table.c and aes-decrypt-table.c.
+
+	* sparc/aes.asm (_aes_crypt): Unrolled final loop, preparing for
+	optimizations. 
+	(_aes_crypt): Eliminated i from forst copy of the loop. Some
+	cleanup. 
+	(_aes_crypt): And from second copy.
+	(_aes_crypt): And from third.
+	(_aes_crypt): And fourth.
+	(_aes_crypt): Eliminated updates of i from the loop.
+	(_aes_crypt): Access IDX1 and IDX3 through the T pointer, saving
+	two registers.
 
 	* aes-internal.h (struct aes_table): Renamed the shift_idx field
 	to sparc_idx, as it will be tweaked to improve the sparc code.
