@@ -1,5 +1,8 @@
 2004-08-24  Niels Möller  <niels@s3.kth.se>
 
+	* testsuite/arctwo-test.c, arctwo.h, arctwo.c
+	(arctwo_set_key_ekb): Fixed typo; it should be "ekb", not "ebk".
+
 	Integrated arctwo patch from Simon Josefsson.
 	* testsuite/Makefile.am (noinst_PROGRAMS): Added arctwo-test.
 
