@@ -52,9 +52,8 @@ struct dsa_public_key
 
 struct dsa_private_key
 {
-  /* Unlike an rsa public key, all the public information is needed,
-   * in addition to the private information. */
-  struct dsa_public_key pub;
+  /* Unlike an rsa public key, private key operations will need both
+   * the private and the public information. */
   mpz_t x;
 };
 
@@ -114,14 +113,15 @@ void
 _dsa_hash(mpz_t x, struct sha1_ctx *hash);
 
 void
-dsa_sign(struct dsa_private_key *key,
+dsa_sign(const struct dsa_public_key *pub,
+	 const struct dsa_private_key *key,
 	 void *random_ctx, nettle_random_func random,
 	 struct sha1_ctx *hash,
 	 struct dsa_signature *signature);
 
 
 int
-dsa_verify(struct dsa_public_key *key,
+dsa_verify(const struct dsa_public_key *key,
 	   struct sha1_ctx *hash,
 	   const struct dsa_signature *signature);
 
