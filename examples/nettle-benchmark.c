@@ -50,9 +50,9 @@
 #include "cbc.h"
 
 
-/* Encrypt 1K at a time, for one second */
-#define BENCH_BLOCK 1024
-#define BENCH_INTERVAL CLOCKS_PER_SEC
+/* Process BENCH_BLOCK bytes at a time, for BENCH_INTERVAL clocks. */
+#define BENCH_BLOCK 10240
+#define BENCH_INTERVAL (CLOCKS_PER_SEC / 4)
 
 /* Total MB:s, for MB/s figures. */
 #define BENCH_TOTAL 10.0
@@ -79,6 +79,20 @@ time_function(void (*f)(void *arg), void *arg)
   while (after < done);
   
   return ((double)(after - before)) / CLOCKS_PER_SEC / ncalls;
+}
+
+struct bench_hash_info
+{
+  void *ctx;
+  nettle_hash_update_func update;
+  const uint8_t *data;
+};
+
+static void
+bench_hash(void *arg)
+{
+  struct bench_hash_info *info = arg;
+  info->update(info->ctx, BENCH_BLOCK, info->data);
 }
 
 struct bench_cipher_info
@@ -156,12 +170,28 @@ display(const char *name, const char *mode,
 }
 
 static void
+time_hash(const struct nettle_hash *hash)
+{
+  static uint8_t data[BENCH_BLOCK];
+  struct bench_hash_info info;
+  info.ctx = alloca(hash->context_size); 
+  info.update = hash->update;
+  info.data = data;
+
+  init_data(data);
+  hash->init(info.ctx);
+
+  display(hash->name, "Update",
+	  time_function(bench_hash, &info));
+}
+
+static void
 time_cipher(const struct nettle_cipher *cipher)
 {
   void *ctx = alloca(cipher->context_size);
   uint8_t *key = alloca(cipher->key_size);
 
-  uint8_t data[BENCH_BLOCK];
+  static uint8_t data[BENCH_BLOCK];
 
   printf("\n");
   
@@ -243,6 +273,14 @@ int
 main(int argc UNUSED, char **argv UNUSED)
 {
   unsigned i;
+
+  const struct nettle_hash *hashes[] =
+    {
+      &nettle_md2, &nettle_md4, &nettle_md5,
+      &nettle_sha1, &nettle_sha256,
+      NULL
+    };
+
   const struct nettle_cipher *ciphers[] =
     {
       &nettle_aes128, &nettle_aes192, &nettle_aes256,
@@ -257,6 +295,9 @@ main(int argc UNUSED, char **argv UNUSED)
       NULL
     };
 
+  for (i = 0; hashes[i]; i++)
+    time_hash(hashes[i]);
+  
   for (i = 0; ciphers[i]; i++)
     time_cipher(ciphers[i]);
   
