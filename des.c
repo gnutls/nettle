@@ -40,9 +40,6 @@
 
 #include "desCode.h"
 
-static ENCRYPT(DesSmallFipsEncrypt,TEMPSMALL, LOADFIPS,KEYMAPSMALL,SAVEFIPS)
-static DECRYPT(DesSmallFipsDecrypt,TEMPSMALL, LOADFIPS,KEYMAPSMALL,SAVEFIPS)
-
 /* various tables */
 
 static const uint32_t
@@ -59,6 +56,9 @@ static const char
 parity[] = {
 #include	"parity.h"
 };
+
+static ENCRYPT(DesSmallFipsEncrypt,TEMPSMALL, LOADFIPS,KEYMAPSMALL,SAVEFIPS)
+static DECRYPT(DesSmallFipsDecrypt,TEMPSMALL, LOADFIPS,KEYMAPSMALL,SAVEFIPS)
 
 void
 des_fix_parity(unsigned length, uint8_t *dst,

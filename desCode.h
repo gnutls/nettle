@@ -9,9 +9,6 @@
 
 #include "des.h"
 
-extern const uint32_t des_keymap[];
-extern const uint32_t des_bigmap[];
-
 /* optional customization:
  * the idea here is to alter the code so it will still run correctly
  * on any machine,  but the quickest on the specific machine in mind.

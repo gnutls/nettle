@@ -1,3 +1,12 @@
+2003-08-17  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* desCode.h (des_keymap, des_bigmap): Deleted extern declarations,
+	they conficted with the static definition in des.c. Reported by
+	Simon Josefsson.
+
+	* des.c (DesSmallFipsEncrypt, DesSmallFipsDecrypt): Moved
+	definitions after the definition of the des_kemap array. 
+	
 2003-08-11  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* rsa-encrypt.c (rsa_encrypt): Bugfix contributed by
