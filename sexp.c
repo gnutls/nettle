@@ -28,7 +28,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-void
+/* Initializes the iterator. You have to call next to get to the first
+ * element. */
+static void
 sexp_iterator_init(struct sexp_iterator *iterator,
 		   unsigned length, const uint8_t *input)
 {
@@ -44,6 +46,14 @@ sexp_iterator_init(struct sexp_iterator *iterator,
 
   /* FIXME: For other than canonical syntax,
    * skip white space here. */
+}
+
+int
+sexp_iterator_first(struct sexp_iterator *iterator,
+		    unsigned length, const uint8_t *input)
+{
+  sexp_iterator_init(iterator, length, input);
+  return sexp_iterator_next(iterator);
 }
 
 #define EMPTY(i) ((i)->pos == (i)->length)

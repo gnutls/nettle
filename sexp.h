@@ -51,13 +51,13 @@ struct sexp_iterator
 };
 
 
-/* Initializes the iterator. You have to call next to get to the first
- * element. */
-void
-sexp_iterator_init(struct sexp_iterator *iterator,
-		   unsigned length, const uint8_t *input);
-
 /* All these functions return 1 on success, 0 on failure */
+
+/* Initializes the iterator. */
+int
+sexp_iterator_first(struct sexp_iterator *iterator,
+		    unsigned length, const uint8_t *input);
+
 int
 sexp_iterator_next(struct sexp_iterator *iterator);
 
