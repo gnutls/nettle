@@ -1,3 +1,8 @@
+2003-03-02  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* examples/nettle-benchmark.c (time_cipher): Don't use GNU C
+	non-constant initializers. 
+
 2003-02-23  Niels Moller  <nisse@carduelis>
 
 	* configure.ac: Use LSH_GCC_ATTRIBUTES.
