@@ -74,30 +74,28 @@ C The code uses the register %o[j], aka tj, as the primary
 C register for that sub-expression. True for j==1,3.
 define(<AES_ROUND>, <
 	ld	[IDX1+$1], t1		! 1
-	
+	ldub	[wtxt+$1+3], t0		! 0
 	ldub	[wtxt+t1], t1		! 1
+	sll	t0, 2, t0		! 0
+	
+	ld	[T0+t0], t0		! 0
+	sll	t1, 2, t1		! 1
+	ld	[T1+t1], t1		! 1
 	ld	[IDX3+$1], t3		! 3
 	
-	sll	t1, 2, t1		! 1
-	ldub	[wtxt+$1+3], t0		! 0
+	xor	t0, t1, t0		! 0, 1
 	! IDX2(j) = j XOR 2
 	ldub	[wtxt+eval($1 ^ 8)+1], t2	! 2
-	
 	ldub	[wtxt+t3], t3		! 3
-	sll	t0, 2, t0		! 0
-	ld	[T0+t0], t0		! 0
-	
-	ld	[T1+t1], t1		! 1
 	sll	t2, 2, t2		! 2
+	
 	ld	[T2+t2], t2		! 2
 	sll	t3, 2, t3		! 3
-	
 	ld	[T3+t3], t3		! 3
-	xor	t0, t1, t0		! 0, 1
 	xor	t0, t2, t0		! 0, 1, 2
+	
 	! Fetch roundkey
 	ld	[key + $1], t1
-	
 	xor	t0, t3, t0		! 0, 1, 2, 3
 	xor	t0, t1, t0
 	st	t0, [tmp + $1]>)dnl
