@@ -58,9 +58,7 @@ aes_encrypt(struct aes_ctx *ctx,
 	    unsigned length, uint8_t *dst,
 	    const uint8_t *src)
 {
-  assert(!(length % AES_BLOCK_SIZE));
-
-  for (; length; length -= AES_BLOCK_SIZE)
+  FOR_BLOCKS(length, dst, src, AES_BLOCK_SIZE)
     {
       uint32_t wtxt[4];		/* working ciphertext */
       unsigned i;
@@ -68,8 +66,8 @@ aes_encrypt(struct aes_ctx *ctx,
       
       /* Get clear text, using little-endian byte order.
        * Also XOR with the first subkey. */
-      for (i = 0; i<4; i++, src += 4)
-	wtxt[i] = LE_READ_UINT32(src) ^ ctx->keys[i];
+      for (i = 0; i<4; i++)
+	wtxt[i] = LE_READ_UINT32(src + 4*i) ^ ctx->keys[i];
 
       for (round = 1; round < ctx->nrounds; round++)
 	{
@@ -109,10 +107,10 @@ aes_encrypt(struct aes_ctx *ctx,
 
 #if AES_SMALL
 	  for (j=0; j<4; j++)
-	    t[j] = dtbl[0][wtxt[j] & 0xff] ^
-	      ROTRBYTE(dtbl[0][(wtxt[idx[1][j]] >> 8) & 0xff]^
-		ROTRBYTE(dtbl[0][(wtxt[idx[2][j]] >> 16) & 0xff] ^
-		  ROTRBYTE(dtbl[0][(wtxt[idx[3][j]] >> 24) & 0xff])));
+	    t[j] =         dtbl[0][ B0(wtxt[j]) ] ^
+	      ROTRBYTE(    dtbl[0][ B1(wtxt[idx[1][j]]) ]^
+		ROTRBYTE(  dtbl[0][ B2(wtxt[idx[2][j]]) ] ^
+		  ROTRBYTE(dtbl[0][ B3(wtxt[idx[3][j]]) ])));
 #else /* !AES_SMALL */
 	  
 	  /* FIXME: Figure out how the indexing should really be done.
@@ -147,46 +145,43 @@ aes_encrypt(struct aes_ctx *ctx,
 	}
       /* Final round */
       {
-	uint32_t t[4];
-	unsigned j;
+	uint32_t cipher;
 
-#if DEBUG
-	fprintf(stderr, "round: %d\n  wtxt: ", round);
-	for (j = 0; j<4; j++)
-	  fprintf(stderr, "%08x, ", wtxt[j]);
-	fprintf(stderr, "\n  key: ");
-	for (j = 0; j<4; j++)
-	  fprintf(stderr, "%08x, ", ctx->keys[4*round + j]);
-	fprintf(stderr, "\n\n");
-#endif
 	/* FIXME: Figure out how the indexing should really be done.
 	 * It looks like this code shifts the rows in the wrong
 	 * direction, but it passes the testsuite. */
-	t[0] = (   (uint32_t) sbox[ B0(wtxt[0]) ]
-		| ((uint32_t) sbox[ B1(wtxt[1]) ] << 8)
-		| ((uint32_t) sbox[ B2(wtxt[2]) ] << 16)
-		| ((uint32_t) sbox[ B3(wtxt[3]) ] << 24));
-	t[3] = (   (uint32_t) sbox[ B0(wtxt[3]) ]
-		| ((uint32_t) sbox[ B1(wtxt[0]) ] << 8)
-		| ((uint32_t) sbox[ B2(wtxt[1]) ] << 16)
-		| ((uint32_t) sbox[ B3(wtxt[2]) ] << 24));
-	t[2] = (   (uint32_t) sbox[ B0(wtxt[2]) ]
-		| ((uint32_t) sbox[ B1(wtxt[3]) ] << 8)
-		| ((uint32_t) sbox[ B2(wtxt[0]) ] << 16)
-		| ((uint32_t) sbox[ B3(wtxt[1]) ] << 24));
-	t[1] = (   (uint32_t) sbox[ B0(wtxt[1]) ]
-		| ((uint32_t) sbox[ B1(wtxt[2]) ] << 8)
-		| ((uint32_t) sbox[ B2(wtxt[3]) ] << 16)
-		| ((uint32_t) sbox[ B3(wtxt[0]) ] << 24));
-      
-	for (j = 0; j<4; j++)
-	  {
-	    uint32_t cipher = t[j] ^ ctx->keys[4*round + j];
-#if DEBUG
-	    fprintf(stderr, "cipher[%d]: %08x\n", j, cipher);
-#endif
-	    LE_WRITE_UINT32(dst, cipher); dst += 4;
-	  }
+
+	cipher = (   (uint32_t) sbox[ B0(wtxt[0]) ]
+		  | ((uint32_t) sbox[ B1(wtxt[1]) ] << 8)
+		  | ((uint32_t) sbox[ B2(wtxt[2]) ] << 16)
+		  | ((uint32_t) sbox[ B3(wtxt[3]) ] << 24))
+	  ^ ctx->keys[4*round];
+
+	LE_WRITE_UINT32(dst, cipher);
+
+	cipher = (   (uint32_t) sbox[ B0(wtxt[1]) ]
+		  | ((uint32_t) sbox[ B1(wtxt[2]) ] << 8)
+		  | ((uint32_t) sbox[ B2(wtxt[3]) ] << 16)
+		  | ((uint32_t) sbox[ B3(wtxt[0]) ] << 24))
+	  ^ ctx->keys[4*round + 1];
+	
+	LE_WRITE_UINT32(dst + 4, cipher);
+		
+	cipher = (   (uint32_t) sbox[ B0(wtxt[2]) ]
+		  | ((uint32_t) sbox[ B1(wtxt[3]) ] << 8)
+		  | ((uint32_t) sbox[ B2(wtxt[0]) ] << 16)
+		  | ((uint32_t) sbox[ B3(wtxt[1]) ] << 24))
+	  ^ ctx->keys[4*round + 2];
+
+	LE_WRITE_UINT32(dst + 8, cipher);
+
+	cipher = (   (uint32_t) sbox[ B0(wtxt[3]) ]
+		  | ((uint32_t) sbox[ B1(wtxt[0]) ] << 8)
+		  | ((uint32_t) sbox[ B2(wtxt[1]) ] << 16)
+		  | ((uint32_t) sbox[ B3(wtxt[2]) ] << 24))
+	  ^ ctx->keys[4*round + 3];
+
+	LE_WRITE_UINT32(dst + 12, cipher);
       }
     }
 }
