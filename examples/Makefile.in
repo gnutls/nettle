@@ -48,9 +48,9 @@ distdir: $(DISTFILES)
 	cp $^ $(distdir)
 
 clean:
-	-rm -f $(TARGETS) *.o *.d
+	-rm -f $(TARGETS) *.o
 
 distclean: clean
-	-rm -f Makefile
+	-rm -f Makefile *.d
 
 include $(SOURCES:.c=.$(OBJEXT).d)

@@ -61,9 +61,9 @@ distdir: $(DISTFILES)
 	cp $^ $(distdir)
 
 clean:
-	-rm -f $(TARGETS) *.o *.d test.in test1.out test2.out
+	-rm -f $(TARGETS) *.o test.in test1.out test2.out
 
 distclean: clean
-	-rm -f Makefile
+	-rm -f Makefile *.d
 
 include $(SOURCES:.c=.$(OBJEXT).d)

@@ -1,5 +1,11 @@
 2004-11-18  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.in (clean-here): The clean target should not delete the
+	dependency files. Moved to the distclean target.
+	* examples/Makefile.in: Likewise.
+	* testsuite/Makefile.in: Likewise.
+	* tools/Makefile.in: Likewise.
+	
 	* configure.ac (ASM_SYMBOL_PREFIX): Fixed test.
 	(dummy-dep-files): Added quotes to sed command.
 
