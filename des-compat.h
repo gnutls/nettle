@@ -42,45 +42,68 @@
 
 enum { DES_DECRYPT = 0, DES_ENCRYPT = 1 };
 
-void des_ecb3_encrypt(const uint8_t *src, uint8_t *dst,
-		      struct des_ctx *k1, struct des_ctx *k2,
-		      struct des_ctx *k3, int enc);
+/* Types */
+/* NOTE: Typedef:ed arrays should be avoided, but they're used here
+ * for compatibility. */
+
+typedef uint32_t DES_LONG;
+
+typedef struct des_ctx des_key_schedule[1];
+
+typedef uint8_t des_cblock[DES_BLOCK_SIZE];
+
+/* Aliases */
+#define des_ecb2_encrypt(i,o,k1,k2,e) \
+	des_ecb3_encrypt((i),(o),(k1),(k2),(k1),(e))
+
+#define des_ede2_cbc_encrypt(i,o,l,k1,k2,iv,e) \
+	des_ede3_cbc_encrypt((i),(o),(l),(k1),(k2),(k1),(iv),(e))
+
+/* Global flag */
+extern int des_check_key;
+
+/* Prototypes */
+void
+des_ecb3_encrypt(des_cblock *src, des_cblock *dst,
+                 des_key_schedule k1, des_key_schedule k2,
+                 des_key_schedule k3, int enc);
 
 /* des_cbc_cksum in libdes returns a 32 bit integer, representing the
- * latter half of the output block, in some byte order. For now, lets
- * just hope nobody uses thet feature, and return void instead. */
-void
-des_cbc_cksum(const uint8_t *src, uint8_t *dst,
-	      long length, struct des_ctx *ctx,
-	      uint8_t *iv);
+ * latter half of the output block, using little endian byte order. */
+uint32_t
+des_cbc_cksum(des_cblock *src, des_cblock *dst,
+              long length, des_key_schedule ctx,
+              des_cblock *iv);
 
+/* NOTE: Doesn't update iv. */
 void
-des_cbc_encrypt(const uint8_t *src, uint8_t *dst, long length,
-		struct des_ctx *ctx, uint8_t *iv,
+des_cbc_encrypt(des_cblock *src, des_cblock *dst, long length,
+		des_key_schedule ctx, des_cblock *iv,
 		int enc);
 
+/* Similar, but updates iv. */
 void
-des_3cbc_encrypt(const uint8_t *src, uint8_t *dst, long length,
-		 struct des_ctx * k1, struct des_ctx *k2, 
-		 uint8_t *iv1, uint8_t *iv2,
-		 int enc);
+des_ncbc_encrypt(des_cblock *src, des_cblock *dst, long length,
+                 des_key_schedule ctx, des_cblock *iv,
+                 int enc);
 
 void
-des_ecb_encrypt(const uint8_t *src, uint8_t *dst, long length,
-		struct des_ctx *ctx, int enc);
+des_ecb_encrypt(des_cblock *src, des_cblock *dst,
+		des_key_schedule ctx, int enc);
+
 void
-des_ede3_cbc_encrypt(const uint8_t *src, uint8_t *dst, long length,
-		     struct des_ctx * k1,struct des_ctx *k2, struct des_ctx *k3,
-		     uint8_t *iv,
+des_ede3_cbc_encrypt(des_cblock *src, des_cblock *dst, long length,
+		     des_key_schedule k1,des_key_schedule k2, des_key_schedule k3,
+		     des_cblock *iv,
 		     int enc);
 
 int
-des_set_odd_parity(uint8_t *key);
+des_set_odd_parity(des_cblock *key);
 
 int
-des_key_sched(const uint8_t *key, struct des_ctx *ctx);
+des_key_sched(des_cblock *key, des_key_schedule ctx);
 
 int
-des_is_weak_key(const uint8_t *key);
+des_is_weak_key(des_cblock *key);
 
 #endif /* NETTLE_DES_COMPAT_H_INCLUDED */
