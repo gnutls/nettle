@@ -1,54 +1,44 @@
-/* Copyright (C) 1998 Ross Anderson, Eli Biham, Lars Knudsen
- * All rights reserved.
+/* serpent.c
  *
- * This code is freely distributed for AES selection process.
- * No other use is allowed.
- * 
- * Copyright remains of the copyright holders, and as such any Copyright
- * notices in the code are not to be removed.
- * 
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted only for the AES selection process, provided
- * that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 
- * THIS SOFTWARE IS PROVIDED ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- * 
- * The licence and distribution terms for any publically available version or
- * derivative of this code cannot be changed without the authors permission.
- *  i.e. this code cannot simply be copied and put under another distribution
- * licence [including the GNU Public Licence.]
+ * $Id$
  *
- * Contrary to these statements, all Serpent code available from the authors is
- * now covered under LGPL, including this source file, according to the
- * Serpent website.  For more details on this algorithm, see the Serpent
- * website at http://www.cl.cam.ac.uk/~rja14/serpent.html
- *
- * I've modified this code a bit so that it interoperates with lsh properly.
- * 2000-9-5, Rafael R. Sevilla <dido@pacific.net.ph>
+ * For more details on this algorithm, see the Serpent website at
+ * http://www.cl.cam.ac.uk/~rja14/serpent.html
  */
+
+/* Copyright (C) 1998 Ross Anderson, Eli Biham, Lars Knudsen
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+/* I've modified this code a bit so that it interoperates with lsh
+ * properly. 2000-9-5, Rafael R. Sevilla <dido@pacific.net.ph>
+ */
+
+/* NOTE: The copyright notice for the original version of this code
+ * said "All rights reserved. This code is freely distributed for AES
+ * selection process. No other use is allowed." However, the authors
+ * later decided to GPL the code. /nisse */
+
 
 #include "serpent.h"
 #include "serpentsboxes.h"
 
 /*  The functions  */
 void
-serpent_setup(SERPENT_context *ctx, const UINT8 key[32])
+serpent_setup(SERPENT_context *ctx, const UINT8 *key)
 {
   UINT32 i, j;
   UINT32 w[132], k[132];
