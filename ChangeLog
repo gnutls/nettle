@@ -1,3 +1,31 @@
+2002-05-07  Niels Möller  <niels@s3.kth.se>
+
+	* configure.ac: Generate config.m4.
+
+	* x86/aes.asm: Use C for comments, include the tables using
+	include_src, and commented out the key setup functions.
+	Fixed the processing of the first handling of the round function.
+	Now, encryption of a single block works! Multiple blocks, and
+	decryption, is still broken.
+
+	* x86/machine.m4: New file (empty).
+
+	* x86/aes-encrypt.asm: New file, empty for now.
+
+	* Makefile.am (%.asm): Added asm.m4, machine.m4 and config.m4 to
+	the m4 command line.
+	(libnettle_a_SOURCES): Added aes-encrypt-table.c.
+
+	* sparc/aes.asm: No need to include asm.m4, that is taken care of
+	by the Makefile. 
+
+	* config.m4.in: New file, configuration for asm.m4.
+
+	* asm.m4 (C, include_src): New macros.
+
+	* aes-encrypt-table.c: New file, table moved out from
+	aes-encrypt.c. 
+
 2002-05-06  Niels Möller  <niels@s3.kth.se>
 
 	* configure.ac (CFLAGS): Don't enable -Waggregate-return.
