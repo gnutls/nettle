@@ -1,3 +1,8 @@
+2003-08-11  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* rsa-encrypt.c (rsa_encrypt): Bugfix contributed by
+	leg@terra.com.br.
+
 2003-06-10  Niels Möller  <niels@s3.kth.se>
 
 	* Makefile.am (EXTRA_DIST): Distribute sha-example.c.
