@@ -69,18 +69,17 @@ _aes_crypt:
 	mov	-4, i
 .Lsource_loop:
 	add	i, 4, i
-	! add	i, src, %o5
-	mov	src, %o5
+	! mov	src, %o5
 	
-	ldub	[%o5+3], %g2
-	ldub	[%o5+2], %g3
+	ldub	[src+3], %g2
+	ldub	[src+2], %g3
 	
 	sll	%g2, 24, %g2
-	ldub	[%o5+1], %o0
+	ldub	[src+1], %o0
 	sll	%g3, 16, %g3
 	or	%g2, %g3, %g2
 	
-	ldub	[%o5], %o5
+	ldub	[src], %o5
 	sll	%o0, 8, %o0
 	ld	[ctx+i], %g3
 	or	%g2, %o0, %g2
@@ -92,35 +91,6 @@ _aes_crypt:
 	bleu	.Lsource_loop
 	
 	st	%g2, [wtxt+i]
-
-	! ! Read a little-endian word
-	! ldub	[src+3], %g2
-	! sll	%g2, 8, %g2
-	! 
-	! ldub	[src+2], %g3
-	! or	%g3, %g2, %g2
-	
-	! sll	%g2, 8, %g2
-	! 
-	! ldub	[src+1], %g3
-	! or	%g3, %g2, %g2
-	! sll	%g2, 8, %g2
-	! 
-	! ldub	[src+0], %g3
-	! or	%g3, %g2, %g2
-	! sll	%g2, 8, %g2
-	! 
-	! ld	[ctx+%o3], %g3
-	
-	! xor	%g3, %g2, %g2
-	! 
-	! add	src, 4, src
-	! st	%g2, [wtxt+%o4]
-	! 
-	! cmp	%o3, 8
-	
-	! bleu	.Lsource_loop
-	! add	%o3, 4, %o3
 
 	mov	16, round
 	add	ctx, 16, key
@@ -236,7 +206,6 @@ _aes_crypt:
 	bleu	.Lfinal_loop
 	add	%g4, 4, %g4
 	
-	! add	src, 16, src
 	addcc	length, -16, length
 	bne	.Lblock_loop
 	add	dst, 16, dst
