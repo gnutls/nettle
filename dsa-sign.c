@@ -72,7 +72,8 @@ nettle_mpz_random(mpz_t x, const mpz_t n,
 }
 
 void
-dsa_sign(struct dsa_private_key *key,
+dsa_sign(const struct dsa_public_key *pub,
+	 const struct dsa_private_key *key,
 	 void *random_ctx, nettle_random_func random,
 	 struct sha1_ctx *hash,
 	 struct dsa_signature *signature)
@@ -82,7 +83,7 @@ dsa_sign(struct dsa_private_key *key,
   mpz_t tmp;
   
   /* Select k, 0<k<q, randomly */
-  mpz_init_set(tmp, key->pub.q);
+  mpz_init_set(tmp, pub->q);
   mpz_sub_ui(tmp, tmp, 1);
 
   mpz_init(k);
@@ -90,24 +91,24 @@ dsa_sign(struct dsa_private_key *key,
   mpz_add_ui(k, k, 1);
 
   /* Compute r = (g^k (mod p)) (mod q) */
-  mpz_powm(tmp, key->pub.g, k, key->pub.p);
-  mpz_fdiv_r(signature->r, tmp, key->pub.q);
+  mpz_powm(tmp, pub->g, k, pub->p);
+  mpz_fdiv_r(signature->r, tmp, pub->q);
 
   /* Compute hash */
   mpz_init(h);
   _dsa_hash(h, hash);
 
   /* Compute k^-1 (mod q) */
-  if (!mpz_invert(k, k, key->pub.q))
+  if (!mpz_invert(k, k, pub->q))
     /* What do we do now? The key is invalid. */
     abort();
 
   /* Compute signature s = k^-1(h + xr) (mod q) */
   mpz_mul(tmp, signature->r, key->x);
-  mpz_fdiv_r(tmp, tmp, key->pub.q);
+  mpz_fdiv_r(tmp, tmp, pub->q);
   mpz_add(tmp, tmp, h);
   mpz_mul(tmp, tmp, k);
-  mpz_fdiv_r(signature->s, tmp, key->pub.q);
+  mpz_fdiv_r(signature->s, tmp, pub->q);
 
   mpz_clear(k);
   mpz_clear(h);
