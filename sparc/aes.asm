@@ -82,13 +82,13 @@ _aes_crypt:
 	! The loop variable will be multiplied by 16.
 	! More loop invariants
 	add	T, AES_TABLE0, T0
-	
 	add	T, AES_TABLE1, T1
+	
 	add	T, AES_TABLE2, T2
 	add	T, AES_TABLE3, T3
 	add	T, AES_SIDX1, IDX1
-
 	add	T, AES_SIDX3, IDX3
+	
 	! Read src, and add initial subkey
 	! Difference between ctx and src.
 	! NOTE: These instruction is duplicated in the delay slot,
@@ -100,7 +100,8 @@ _aes_crypt:
 	! For stop condition. Note that src is incremented in the
 	! delay slot
 	add	src, 8, %g1
-	
+	nop
+		
 .Lsource_loop:
 	ldub	[src+3], t3
 	ldub	[src+2], t2
@@ -125,7 +126,7 @@ _aes_crypt:
 	
 	sub	nrounds, 1, round
 	add	ctx, 16, key
-.Lround_loop:
+	nop
 	! 4*i
 	! NOTE: Instruction duplicated in delay slot
 	mov	0, i
@@ -137,55 +138,53 @@ _aes_crypt:
 	! register for that sub-expression. True for j==1,3.
 	
 	ld	[IDX1+i], t1		! 1
-	
 	! IDX2(j) = j XOR 2
 	xor	i, 8, t2
 	add	wtxt, t1, t1		! 1
 	ldub	[t1+2], t1		! 1
-	ld	[IDX3+i], t3		! 3
 	
+	ld	[IDX3+i], t3		! 3
 	sll	t1, 2, t1		! 1
 	ld	[wtxt+i], t0		! 0
 	lduh	[wtxt+t2], t2		! 2
-	and	t0, 255, t0		! 0
 	
+	and	t0, 255, t0		! 0
 	ldub	[wtxt+t3], t3		! 3
 	sll	t0, 2, t0		! 0
 	ld	[T0+t0], t0		! 0
-	and	t2, 255, t2		! 2
 	
+	and	t2, 255, t2		! 2
 	ld	[T1+t1], t1		! 1
 	sll	t2, 2, t2		! 2
 	ld	[T2+t2], t2		! 2
-	sll	t3, 2, t3		! 3
 	
+	sll	t3, 2, t3		! 3
 	ld	[T3+t3], t3		! 3
 	xor	t0, t1, t0		! 0, 1
 	xor	t0, t2, t0		! 0, 1, 2
+	
 	! Fetch roundkey
 	ld	[key+i], t1
-	
 	xor	t0, t3, t0		! 0, 1, 2, 3
 	xor	t0, t1, t0
 	st	t0, [tmp+i]
-	cmp	i, 8
 	
+	cmp	i, 8
 	bleu	.Linner_loop
 	add	i, 4, i
 	! switch roles for tmp and wtxt
 	xor	wtxt, diff, wtxt
+	
 	xor	tmp, diff, tmp
-
 	subcc	round, 1, round
 	add	key, 16, key
 	bne	.Linner_loop
+	
 	mov	0, i
-
 	! final round
 	! Use round as the loop variable, as it's already zero
 undefine(<i>)
 define(i, round)
-
 	! Comments mark which j in T->sbox[Bj(wtxt[IDXj(i)])]
 	! the instruction is part of
 	! NOTE: First instruction duplicated in delay slot
@@ -193,7 +192,6 @@ define(i, round)
 .Lfinal_loop:
 	! IDX2(j) = j XOR 2
 	xor	i, 8, t2
-	! ld	[idx-16], t2	! 2
 	add	wtxt, t1, t1	! 1
 	ldub	[t1+2], t1	! 1
 
