@@ -1,6 +1,5 @@
-/.deps
+/*.d
 /Makefile
-/Makefile.in
 /nettle-benchmark
 /rsa-decrypt
 /rsa-encrypt

@@ -1,6 +1,5 @@
-.deps
+*.d
 Makefile
-Makefile.in
 aes-test
 arcfour-test
 arctwo-test

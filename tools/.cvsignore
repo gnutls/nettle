@@ -1,5 +1,4 @@
-.deps
+*.d
 Makefile
-Makefile.in
 nettle-lfib-stream
 sexp-conv

@@ -1,11 +1,10 @@
 *.s
 *.tar.gz
 *.tar.gz.asc
-.deps
+*.d
+*.po
 .lib
 Makefile
-Makefile.in
-aclocal.m4
 aesdata
 autom4te.cache
 config.cache
