@@ -84,6 +84,11 @@ yarrow256_init(struct yarrow256_ctx *ctx,
   
   ctx->seeded = 0;
 
+  /* Not strictly, necessary, but it makes it easier to see if the
+   * values are sane. */
+  memset(ctx->seed_file, 0, YARROW256_SEED_FILE_SIZE);
+  memset(ctx->counter, 0, sizeof(ctx->counter));
+  
   ctx->nsources = n;
   ctx->sources = s;
 
@@ -228,7 +233,7 @@ yarrow_slow_reseed(struct yarrow256_ctx *ctx)
   sha256_init(&ctx->pools[YARROW_SLOW]);
 
   /* Feed it into the fast pool */
-  sha256_update(&ctx->pools[YARROW_SLOW], sizeof(digest), digest);
+  sha256_update(&ctx->pools[YARROW_FAST], sizeof(digest), digest);
 
   yarrow_fast_reseed(ctx);
   
