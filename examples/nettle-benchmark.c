@@ -50,26 +50,35 @@
 #include "cbc.h"
 
 
-/* Encrypt 10MB, 1K at a time. */
+/* Encrypt 1K at a time, for one second */
 #define BENCH_BLOCK 1024
-#define BENCH_COUNT 10240
+#define BENCH_INTERVAL CLOCKS_PER_SEC
 
 /* Total MB:s, for MB/s figures. */
 #define BENCH_TOTAL 10.0
 
+/* Returns second per function call */
 static double
 time_function(void (*f)(void *arg), void *arg)
 {
   clock_t before;
   clock_t after;
-
+  clock_t done;
+  unsigned ncalls;
+  
   before = clock();
+  done = before + BENCH_INTERVAL;
+  ncalls = 0;
   
-  f(arg);
+  do 
+    {
+      f(arg);
+      after = clock();
+      ncalls++;
+    }
+  while (after < done);
   
-  after = clock();
-
-  return ((double)(after - before)) / CLOCKS_PER_SEC;
+  return ((double)(after - before)) / CLOCKS_PER_SEC / ncalls;
 }
 
 struct bench_cipher_info
@@ -83,10 +92,7 @@ static void
 bench_cipher(void *arg)
 {
   struct bench_cipher_info *info = arg;
-  unsigned i;
-  
-  for (i = 0; i<BENCH_COUNT; i++)
-    info->crypt(info->ctx, BENCH_BLOCK, info->data, info->data);
+  info->crypt(info->ctx, BENCH_BLOCK, info->data, info->data);
 }
 
 struct bench_cbc_info
@@ -104,24 +110,18 @@ static void
 bench_cbc_encrypt(void *arg)
 {
   struct bench_cbc_info *info = arg;
-  unsigned i;
-
-  for (i = 0; i<BENCH_COUNT; i++)
-    cbc_encrypt(info->ctx, info->crypt,
-		info->block_size, info->iv,
-		BENCH_BLOCK, info->data, info->data);
+  cbc_encrypt(info->ctx, info->crypt,
+	      info->block_size, info->iv,
+	      BENCH_BLOCK, info->data, info->data);
 }
 
 static void
 bench_cbc_decrypt(void *arg)
 {
   struct bench_cbc_info *info = arg;
-  unsigned i;
-
-  for (i = 0; i<BENCH_COUNT; i++)
-    cbc_decrypt(info->ctx, info->crypt,
-		info->block_size, info->iv,
-		BENCH_BLOCK, info->data, info->data);
+  cbc_decrypt(info->ctx, info->crypt,
+	      info->block_size, info->iv,
+	      BENCH_BLOCK, info->data, info->data);
 }
 
 /* Set data[i] = floor(sqrt(i)) */
@@ -148,11 +148,11 @@ init_key(unsigned length,
 
 static void
 display(const char *name, const char *mode,
-	double elapsed)
+	double speed)
 {
-  printf("%13s (%s): %.2fs, %.3fMB/s\n",
+  printf("%13s (%s): %.3fMB/s\n",
 	 name, mode,
-	 elapsed, BENCH_TOTAL / elapsed);
+	 1 / (speed * 1048576.0 / BENCH_BLOCK));
 }
 
 static void
