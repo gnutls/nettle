@@ -16,7 +16,8 @@ M4_FILES = aes-test.m4 arcfour-test.m4 blowfish-test.m4 cast128-test.m4 \
 noinst_PROGRAMS = $(TS_PROGS)
 
 LDADD = testutils.o ../libnettle.a
-EXTRA_DIST = $(M4_FILES) macros.m4 testutils.c testutils.h run-tests
+EXTRA_DIST = $(M4_FILES) macros.m4 testutils.c testutils.h \
+	     run-tests rfc1750.txt
 
 M4FLAGS = -P -s
 # M4FLAGS = -P
