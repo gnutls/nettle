@@ -31,6 +31,7 @@ _$*
 *.ln
 core
 /*.d
+/.deps
 /Makefile
 /config.cache
 /config.h.in
@@ -42,6 +43,7 @@ core
 /desQuickFips.c
 /desSmallCore.c
 /desSmallFips.c
+/desTest
 /desdata
 /keymap.h
 /parity.h
