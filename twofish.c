@@ -411,9 +411,7 @@ twofish_setup(TWOFISH_context * context, size_t keysize, const UINT8 *key)
     keysize = 32;
   memcpy(key_copy, key, keysize);
 
-  /* FIXME: This truncates the key if it is not a multiple of 4 octets.
-   * Is this really indended? */
-  bytes_to_words(m, key_copy, keysize/4);
+  bytes_to_words(m, key_copy, (keysize + 3)/4);
 
   if (keysize <= 16)
     k = 2;
