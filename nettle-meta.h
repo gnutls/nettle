@@ -67,7 +67,18 @@ struct nettle_cipher
   (nettle_crypt_func) name##_encrypt,		\
   (nettle_crypt_func) name##_decrypt,		\
 }
-    
+
+#define _NETTLE_CIPHER_FIX(name, NAME, keysize) {	\
+  #name,					\
+  sizeof(struct name##_ctx),			\
+  NAME##_BLOCK_SIZE,				\
+  keysize / 8,					\
+  (nettle_set_key_func) name##_set_key,		\
+  (nettle_set_key_func) name##_set_key,		\
+  (nettle_crypt_func) name##_encrypt,		\
+  (nettle_crypt_func) name##_decrypt,		\
+}
+
 extern const struct nettle_cipher nettle_aes128;
 extern const struct nettle_cipher nettle_aes192;
 extern const struct nettle_cipher nettle_aes256;
