@@ -18,6 +18,13 @@
 ! the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 ! MA 02111-1307, USA.
 
+! FIXME: For improved ultra sparc performance, we should avoid ALU
+! instructions that use the result of an immediately preceeding ALU
+! instruction. It is also a good idea to have a greater distance than
+! one instruction between a load and use of its value, as that reduces
+! the penalty for cache misses. Such instruction sequences are marked
+! with !U comments.
+
 ! NOTE: Some of the %g registers are reserved for operating system etc
 ! (see gcc/config/sparc.h). The only %g registers that seems safe to
 ! use are %g1-%g3.
@@ -28,7 +35,7 @@
 	!			
 	
 	.file	"aes.asm"
-	
+
 ! Arguments
 define(ctx, %i0)
 define(T, %i1)
@@ -71,7 +78,7 @@ define(<AES_LOAD>, <
 	ldub	[src+$1+2], t2
 	sll	t1, 8, t1
 	
-	or	t0, t1, t0	
+	or	t0, t1, t0	! U
 	ldub	[src+$1+3], t1
 	sll	t2, 16, t2
 	or	t0, t2, t0
@@ -98,7 +105,7 @@ define(<AES_ROUND>, <
 	
 	ld	[T0+t0], t0		! 0
 	sll	t1, 2, t1		! 1
-	ld	[T1+t1], t1		! 1
+	ld	[T1+t1], t1		! 1 !U
 	ld	[IDX3+$1], t2		! 3
 	
 	xor	t0, t1, t0		! 0, 1
@@ -107,15 +114,15 @@ define(<AES_ROUND>, <
 	ldub	[wtxt+t2], t2		! 3
 	sll	t1, 2, t1		! 2
 	
-	ld	[T2+t1], t1		! 2
+	ld	[T2+t1], t1		! 2	!U
 	sll	t2, 2, t2		! 3
-	ld	[T3+t2], t2		! 3
+	ld	[T3+t2], t2		! 3	!U
 	xor	t0, t1, t0		! 0, 1, 2
 	
 	! Fetch roundkey
 	ld	[key + $1], t1
 	xor	t0, t2, t0		! 0, 1, 2, 3
-	xor	t0, t1, t0
+	xor	t0, t1, t0		!U
 	st	t0, [tmp + $1]>)dnl
 
 C AES_FINAL_ROUND(i)
@@ -133,7 +140,7 @@ define(<AES_FINAL_ROUND>, <
 	ldub	[T+t1], t1		! 1
 	ld	[IDX3 + $1], t2		! 3
 	sll	t1, 8, t1		! 1
-	or	t0, t1, t0		! 0, 1
+	or	t0, t1, t0		! 0, 1 !U
 	
 	! IDX2(j) = j XOR 2
 	ldub	[wtxt+eval($1 ^ 8)+1], t1	! 2
@@ -142,19 +149,19 @@ define(<AES_FINAL_ROUND>, <
 	ldub	[T+t2], t2		! 3
 	
 	sll	t1, 16, t1		! 2
-	or	t0, t1, t0		! 0, 1, 2
+	or	t0, t1, t0		! 0, 1, 2 !U
 	sll	t2, 24, t2		! 3
 	ld	[key + $1], t1
 	
 	or	t0, t2, t0		! 0, 1, 2, 3
-	xor	t0, t1, t0
-	srl	t0, 24, t1
-	stb	t1, [dst+$1+3]
+	xor	t0, t1, t0		!U
+	srl	t0, 24, t1		!U
+	stb	t1, [dst+$1+3]		!U
 	
 	srl	t0, 16, t1
-	stb	t1, [dst+$1+2]
+	stb	t1, [dst+$1+2]		!U
 	srl	t0, 8, t1
-	stb	t1, [dst+$1+1]
+	stb	t1, [dst+$1+1]		!U
 	
 	stb	t0, [dst+$1]>)dnl
 	
