@@ -1,3 +1,22 @@
+2001-10-10  Niels Möller  <nisse@ehand.com>
+
+	* testsuite/yarrow-test.c: Open rfc1750.txt. Hash input and
+	output, and compare to expected values.
+
+	* testsuite/Makefile.am (CFLAGS): Don't disable optimization.
+	(run-tests): Set srcdir in the environment when running run-tests. 
+
+	* testsuite/rfc1750.txt: Added this rfc as test input for yarrow. 
+
+	* yarrow_key_event.c (yarrow_key_event_estimate): Check if
+	previous is zero.
+	(yarrow_key_event_init): Initialize previous to zero.
+
+	* yarrow256.c: Added debug some output.
+
+	* testsuite/yarrow-test.c (main): Better output of entropy
+	estimates at the end. 
+
 2001-10-09  Niels Möller  <nisse@ehand.com>
 
 	* testsuite/Makefile.am (TS_PROGS): Added yarrow-test.
