@@ -1,5 +1,9 @@
 2004-02-06  Niels Möller  <niels@s3.kth.se>
 
+	* x86/sha1-compress.asm: Store the magic constants on stack.
+	Accessing them via %esp should be a little faster than using large
+	immediate operands.
+
 	* Makefile.am (EXTRA_DIST, DISTCLEANFILES): Handle
 	sha1-compress.asm.
 
