@@ -1,5 +1,14 @@
 2002-10-25  Niels Möller  <niels@s3.kth.se>
 
+	* examples/sexp-conv.c (struct sexp_input): Deleted the mode from
+	the state, that should be passed as argument to relevant
+	functions. Instead, introduces enum sexp_coding, to say if base64
+	coding is in effect.
+	(struct sexp_output): Added coding attribute.
+	(sexp_put_char): Use output->coding.
+	(sexp_put_base64_start): Likewise.
+	(sexp_put_base64_end): Likewise.
+
 	* base64-decode.c (base64_decode_single): Simplified, got rid of
 	the done variable.
 
