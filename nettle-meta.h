@@ -155,35 +155,51 @@ extern const struct nettle_hash nettle_sha1;
 extern const struct nettle_hash nettle_sha256;
 
 
-/* ASCII armor codecs */
-typedef unsigned (*nettle_armor_encode_func)(uint8_t *dst,
-                                             unsigned src_length,
-                                             const uint8_t *src);
+/* ASCII armor codecs. NOTE: Experimental and subject to change. */
+
+typedef unsigned (*nettle_armor_length_func)(unsigned length);
 typedef void (*nettle_armor_init_func)(void *ctx);
+
 typedef unsigned (*nettle_armor_update_func)(void *ctx,
-                                             uint8_t *dst,
-                                             unsigned src_length,
-                                             const uint8_t *src);
+					     uint8_t *dst,
+					     unsigned src_length,
+					     const uint8_t *src);
+typedef unsigned (*nettle_armor_encode_final_func)(void *ctx, uint8_t *dst);
+
+typedef int (*nettle_armor_decode_status_func)(void *ctx);
 
 struct nettle_armor
 {
   const char *name;
-  unsigned context_size;
-  unsigned text_block_size;
-  unsigned binary_block_size;
-  nettle_armor_encode_func encode;
+  unsigned encode_context_size;
+  unsigned decode_context_size;
+
+  unsigned encode_final_length;
+
+  nettle_armor_init_func encode_init;
+  nettle_armor_length_func encode_length;
+  nettle_armor_update_func encode_update;
+  nettle_armor_encode_final_func encode_final;
+  
   nettle_armor_init_func decode_init;
+  nettle_armor_length_func decode_length;
   nettle_armor_update_func decode_update;
+  nettle_armor_decode_status_func decode_status;
 };
 
-#define _NETTLE_ARMOR(name, NAME) {			\
-  #name,						\
-  sizeof(struct name##_ctx),				\
-  NAME##_TEXT_BLOCK_SIZE,				\
-  NAME##_BINARY_BLOCK_SIZE,				\
-  (nettle_armor_encode_func) name##_encode,		\
+#define _NETTLE_ARMOR(name, NAME) {				\
+  #name,							\
+  sizeof(struct name##_encode_ctx),				\
+  sizeof(struct name##_decode_ctx),				\
+  NAME##_ENCODE_FINAL_LENGTH,					\
+  (nettle_armor_init_func) name##_encode_init,		\
+  (nettle_armor_length_func) name##_encode_length,	\
+  (nettle_armor_update_func) name##_encode_update,	\
+  (nettle_armor_encode_final_func) name##_encode_final,		\
   (nettle_armor_init_func) name##_decode_init,		\
-  (nettle_armor_update_func) name##_decode_update	\
+  (nettle_armor_length_func) name##_decode_length,	\
+  (nettle_armor_update_func) name##_decode_update,	\
+  (nettle_armor_decode_status_func) name##_decode_status,	\
 }
 
 extern const struct nettle_armor nettle_base64;
