@@ -76,6 +76,12 @@ nettle_buffer_clear(struct nettle_buffer *buffer)
   buffer->size = 0;
 }
 
+void
+nettle_buffer_reset(struct nettle_buffer *buffer)
+{
+  buffer->size = 0;
+}
+
 uint8_t *
 nettle_buffer_space(struct nettle_buffer *buffer,
 		    unsigned length)
@@ -102,4 +108,11 @@ nettle_buffer_write(struct nettle_buffer *buffer,
     }
   else
     return 0;
+}
+
+int
+nettle_buffer_copy(struct nettle_buffer *dst,
+		   const struct nettle_buffer *src)
+{
+  nettle_buffer_write(dst, src->size, src->contents);
 }

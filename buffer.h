@@ -53,6 +53,10 @@ nettle_buffer_init_size(struct nettle_buffer *buffer,
 void
 nettle_buffer_clear(struct nettle_buffer *buffer);
 
+/* Resets the buffer, without freeing the buffer space. */
+void
+nettle_buffer_reset(struct nettle_buffer *buffer);
+
 int
 nettle_buffer_grow(struct nettle_buffer *buffer,
 		   unsigned length);
@@ -72,5 +76,10 @@ nettle_buffer_write(struct nettle_buffer *buffer,
 uint8_t *
 nettle_buffer_space(struct nettle_buffer *buffer,
 		    unsigned length);
+
+/* Copy the contents of SRC to the end of DST. */
+int
+nettle_buffer_copy(struct nettle_buffer *dst,
+		   const struct nettle_buffer *src);
 
 #endif /* NETTLE_BUFFER_H_INCLUDED */
