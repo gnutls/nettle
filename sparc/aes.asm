@@ -24,7 +24,7 @@
 	! Used registers:	%l0,1,2,3,4,5,6,7
 	!			%i0,1,2,3,4,5 (%i6=%fp, %i7 = return)
 	!			%o0,1,2,3,4,5,7 (%o6=%sp)
-	!			%g1,2,3
+	!			%g1,2,3,5
 	
 	.file	"aes.asm"
 	
@@ -42,9 +42,7 @@ define(dst, %i3)
 define(src, %i4)
 
 ! Loop invariants
-! NOTE: We overwrite %fp with the wtxt pointer,
-!       so it must be restored at the end of the function.
-define(wtxt, %fp)
+define(wtxt, %l0)
 define(tmp, %l1)
 define(diff, %l2)
 define(nrounds, %l3)
@@ -57,7 +55,7 @@ define(key, %o4)
 ! Further loop invariants
 define(T0, %l6)
 define(T1, %l7)
-define(T2, %l0)
+define(T2, %g5)
 define(T3, %o7)
 define(IDX1, %i5)
 define(IDX3, %o5)
@@ -81,10 +79,10 @@ _aes_crypt:
 	save	%sp, -FRAME_SIZE, %sp
 	cmp	length, 0
 	be	.Lend
-	add	%fp, -24, tmp
-
-	C NOTE: Over writes %fp
-	add	%fp, -40, wtxt
+	! wtxt
+	add	%fp, -24, wtxt
+	
+	add	%fp, -40, tmp
 	ld	[ctx + AES_NROUNDS], nrounds
 	! Compute xor, so that we can swap efficiently.
 	xor	wtxt, tmp, diff
@@ -101,7 +99,7 @@ _aes_crypt:
 	! Read src, and add initial subkey
 	! Difference between ctx and src.
 	! NOTE: These instructions are duplicated in the delay slot,
-	! and the instruction before the branch
+	! and the instruction before the branch.
 	sub	ctx, src, %g2
 	! Difference between wtxt and src
 	sub	wtxt, src, %g3
@@ -109,7 +107,7 @@ _aes_crypt:
 	! For stop condition. Note that src is incremented in the
 	! delay slot
 	add	src, 8, %g1
-		
+	
 .Lsource_loop:
 	ldub	[src+3], t3
 	ldub	[src+2], t2
@@ -146,53 +144,55 @@ _aes_crypt:
 	! register for that sub-expression. True for j==1,3.
 	
 	ld	[IDX1+i], t1		! 1
+	
 	! IDX2(j) = j XOR 2
 	xor	i, 8, t2
 	add	wtxt, t1, t1		! 1
 	ldub	[t1+2], t1		! 1
-	
 	ld	[IDX3+i], t3		! 3
+	
 	sll	t1, 2, t1		! 1
 	ld	[wtxt+i], t0		! 0
 	lduh	[wtxt+t2], t2		! 2
-	
 	and	t0, 255, t0		! 0
+	
 	ldub	[wtxt+t3], t3		! 3
 	sll	t0, 2, t0		! 0
 	ld	[T0+t0], t0		! 0
-	
 	and	t2, 255, t2		! 2
+	
 	ld	[T1+t1], t1		! 1
 	sll	t2, 2, t2		! 2
 	ld	[T2+t2], t2		! 2
-	
 	sll	t3, 2, t3		! 3
+	
 	ld	[T3+t3], t3		! 3
 	xor	t0, t1, t0		! 0, 1
 	xor	t0, t2, t0		! 0, 1, 2
-	
 	! Fetch roundkey
 	ld	[key+i], t1
+	
 	xor	t0, t3, t0		! 0, 1, 2, 3
 	xor	t0, t1, t0
 	st	t0, [tmp+i]
-	
 	cmp	i, 8
+	
 	bleu	.Linner_loop
 	add	i, 4, i
 	! switch roles for tmp and wtxt
 	xor	wtxt, diff, wtxt
-	
 	xor	tmp, diff, tmp
+
 	subcc	round, 1, round
 	add	key, 16, key
 	bne	.Linner_loop
-	
 	mov	0, i
+
 	! final round
 	! Use round as the loop variable, as it's already zero
 undefine(<i>)
 define(i, round)
+
 	! Comments mark which j in T->sbox[Bj(wtxt[IDXj(i)])]
 	! the instruction is part of
 	! NOTE: First instruction duplicated in delay slot
@@ -246,7 +246,6 @@ define(i, round)
 	bne	.Lblock_loop
 	sub	wtxt, src, %g3
 
-	add	%sp, FRAME_SIZE, %fp
 .Lend:
 	ret
 	restore
