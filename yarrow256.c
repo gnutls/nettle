@@ -50,16 +50,46 @@
 
 void
 yarrow256_init(struct yarrow256_ctx *ctx,
-	       int n,
+	       unsigned n,
 	       struct yarrow_source *s)
 {
   sha256_init(&ctx->pools[0]);
   sha256_init(&ctx->pools[1]);
-
+  unsigned i;
+  
   ctx->seeded = 0;
 
   ctx->nsources = n;
   ctx->sources = s;
+
+  for (i = 0; i<n; i++)
+    {
+      ctx->sources[i].estimate[YARROW_FAST] = 0;
+      ctx->sources[i].estimate[YARROW_SLOW] = 0;
+      ctx->sources[i].next = YARROW_FAST;
+    }
+}
+
+static void
+yarrow_generate_block(struct yarrow256_ctx *ctx,
+		      uint8_t *block)
+{
+  unsigned i;
+  
+  aes_encrypt(&ctx->key, sizeof(ctx->counter), block, ctx->counter);
+
+  /* Increment counter, treating it as a big-endian number. This is
+   * machine independent, and follows appendix B of the NIST
+   * specification of cipher modes of operation.
+   *
+   * We could keep a representation of thy counter as 4 32-bit values,
+   * and write entire words (in big-endian byteorder) into the counter
+   * block, whenever they change. */
+  for (i = sizeof(ctx->counter); i--; )
+    {
+      if (++ctx->counter[i])
+	break;
+    }
 }
 
 /* NOTE: The SHA-256 digest size equals the AES key size, so we need
@@ -194,28 +224,6 @@ yarrow256_update(struct yarrow256_ctx *ctx,
 }
 
 static void
-yarrow_generate_block(struct yarrow256_ctx *ctx,
-		      uint8_t *block)
-{
-  unsigned i;
-  
-  aes_encrypt(&ctx->key, sizeof(ctx->counter), block, ctx->counter);
-
-  /* Increment counter, treating it as a big-endian number. This is
-   * machine independent, and follows appendix B of the NIST
-   * specification of cipher modes of operation.
-   *
-   * We could keep a representation of thy counter as 4 32-bit values,
-   * and write entire words (in big-endian byteorder) into the counter
-   * block, whenever they change. */
-  for (i = sizeof(ctx->counter); i--; )
-    {
-      if (++ctx->counter[i])
-	break;
-    }
-}
-
-static void
 yarrow_gate(struct yarrow256_ctx *ctx)
 {
   uint8_t key[AES_MAX_KEY_SIZE];
@@ -232,7 +240,7 @@ yarrow256_random(struct yarrow256_ctx *ctx, unsigned length, uint8_t *dst)
 {
   assert(ctx->seeded);
 
-  while (length > AES_BLOCK_SIZE)
+  while (length >= AES_BLOCK_SIZE)
     {
       yarrow_generate_block(ctx, dst);
       dst += AES_BLOCK_SIZE;
