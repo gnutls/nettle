@@ -1,3 +1,8 @@
+2001-06-17  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/testutils.c, testsuite/testutils.h: Use <inttypes.h>,
+	not <stdint.h>.
+
 2001-06-17  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* Use <inttypes.h>, not <stdint.h>.
