@@ -44,6 +44,19 @@
 
 #define BUG_ADDRESS "nettle-bugs@lists.lysator.liu.se"
 
+static void *
+xalloc(size_t size)
+{
+  void *p = malloc(size);
+  if (!p)
+    {
+      fprintf(stderr, "Virtual memory exhausted.\n");
+      abort();
+    }
+
+  return p;
+}
+
 
 /* Conversion functions. */
 
@@ -318,7 +331,7 @@ main(int argc, char **argv)
   struct sexp_parser parser;
   struct sexp_compound_token token;
   struct sexp_output output;
-  
+
   parse_options(&options, argc, argv);
 
   sexp_input_init(&input, stdin);
@@ -328,9 +341,11 @@ main(int argc, char **argv)
 		   options.width, options.prefer_hex);
 
   if (options.hash)
-    sexp_output_hash_init(&output,
-			  options.hash,
-			  alloca(options.hash->context_size));
+    {
+      /* Leaks the context, but that doesn't matter */
+      void *ctx = xalloc(options.hash->context_size);
+      sexp_output_hash_init(&output, options.hash, ctx);
+    }
   
   sexp_get_char(&input);
   
