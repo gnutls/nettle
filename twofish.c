@@ -36,6 +36,7 @@
 #include "macros.h"
 
 #include <assert.h>
+#include <string.h>
 
 /* Bitwise rotations on 32-bit words.  These are defined as macros that
  * evaluate their argument twice, so do not apply to any expressions with

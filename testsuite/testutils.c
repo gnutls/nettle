@@ -4,6 +4,7 @@
 
 #include <ctype.h>
 #include <stdlib.h>
+#include <string.h>
 
 int
 decode_hex(uint8_t *dst, const char *hex)
