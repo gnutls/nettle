@@ -1,5 +1,17 @@
 2004-02-07  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/sexp-format-test.c: Include bignum.h only if HAVE_LIBGMP.
+	* testsuite/rsa-encrypt-test.c: Include rsa.h only if WITH_PUBLIC_KEY.
+	* testsuite/pkcs1-test.c: Include pkcs1.h only if WITH_PUBLIC_KEY.
+
+	* pgp-encode.c [!HAVE_LIBGMP]: Kludge around the pgp.h's
+	dependency on gmp.h.
+	(pgp_put_mpi): Condition on HAVE_LIBGMP.
+
+	* pgp.h: Don't include bignum.h, to make it possible to compile
+	the non-bignum parts of pgp-encode.c without bignum support. Needs
+	to be fixed properly before the pgp interface is advertised.
+
 	* tools/sexp-conv.c (xalloc): New function.
 	(main): Use xalloc.
 
