@@ -1,5 +1,8 @@
 2002-05-15  Niels Möller  <niels@s3.kth.se>
 
+	* x86/aes-encrypt.asm (aes_encrypt): Use AES_SUBST_BYTE.
+	* x86/aes-decrypt.asm (aes_decrypt): Likewise.
+
 	* x86/machine.m4: Renamed AES_LAST_ROUND to AES_FINAL_ROUND.
 	Updated users. 
 
