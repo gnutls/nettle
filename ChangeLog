@@ -4,8 +4,8 @@
 	distributed. 
 	(DISTCLEANFILES): And that the symlinks and .s files are deleted.
 
-	* x86/aes-encrypt.asm, x86/aes-decrypt.asm: Fixed debug
-	information.
+	* x86/aes-encrypt.asm, x86/aes-decrypt.asm, x86/arcfour-crypt.asm:
+	Fixed debug information.
 
 	* x86/arcfour-crypt.asm: New file. About three times faster than
 	the optimized C code.
