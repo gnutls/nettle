@@ -35,6 +35,14 @@
 #ifndef NETTLE_DES_H_INCLUDED
 #define NETTLE_DES_H_INCLUDED
 
+/* Namespace mangling.
+ *
+ * FIXME: In the long run, all nettle symbols should probably have the
+ * prefix nettle_, with the appropriate header file defining
+ * shorthands. */
+
+#define des_set_key nettle_des_set_key
+
 #include <inttypes.h>
 
 #define DES_KEY_SIZE 8
