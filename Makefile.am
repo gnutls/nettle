@@ -10,15 +10,25 @@ libnettleinclude_HEADERS = aes.h arcfour.h des.h md5.h sha1.h
 libnettle_a_SOURCES = aes.c aes.h arcfour.c arcfour.h \
 		      cast128.c cast128.h cast128_sboxes.h \
 		      blowfish.h blowfish.c \
-		      des.c des.h \
+		      des.c des.h desinfo.h desCode.h \
 		      md5.c md5.h sha1.c sha1.h \
 		      serpent.c serpent.h serpent_sboxes.h \
 		      twofish.c twofish.h
 
 libnettle_a_LIBADD = @LIBOBJS@
 
-EXTRA_DIST = macros.h memxor.h $(des_headers) descore.README
+info_TEXINFOS = nettle.texinfo
+
+all-local: nettle.html
+
+EXTRA_DIST = macros.h memxor.h $(des_headers) descore.README nettle.html
+
 # BUILT_SOURCE = $(des_headers)
+
+%.html : %.texinfo
+	(cd $(srcdir) \
+	 && $(MAKEINFO) --html --no-split --output $@T $(<F) \
+	 ; test -s $@T && mv -f $@T $@)
 
 # desCore rules
 des_headers = $(srcdir)/parity.h $(srcdir)/rotors.h $(srcdir)/keymap.h 
