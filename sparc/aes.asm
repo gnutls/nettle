@@ -57,9 +57,10 @@ define(T0, %l6)
 define(T1, %l7)
 define(T2, %g5)
 define(T3, %o7)
-C define(IDX1, %i5)
+
+C IDX1 cointains the permutation values * 4 + 2
 define(IDX1, <T + AES_SIDX1 >)
-C define(IDX3, %o5)
+C IDX3 cointains the permutation values * 4
 define(IDX3, <T + AES_SIDX3 >)
 
 ! Teporaries
@@ -96,9 +97,7 @@ _aes_crypt:
 	add	T, AES_TABLE1, T1
 	add	T, AES_TABLE2, T2
 	add	T, AES_TABLE3, T3
-	C add	T, AES_SIDX1, IDX1
 	
-	C add	T, AES_SIDX3, IDX3
 	! Read src, and add initial subkey
 	! Difference between ctx and src.
 	! NOTE: These instructions are duplicated in the delay slot,
@@ -148,8 +147,8 @@ _aes_crypt:
 	C i = 0
 	ld	[IDX1+0], t1		! 1
 	
-	add	wtxt, t1, t1		! 1
-	ldub	[t1+2], t1		! 1
+	C add	wtxt, t1, t1		! 1
+	ldub	[wtxt+t1], t1		! 1
 	ld	[IDX3+0], t3		! 3
 	
 	sll	t1, 2, t1		! 1
@@ -181,8 +180,8 @@ _aes_crypt:
 	C i = 1
 	ld	[IDX1+4], t1		! 1
 	
-	add	wtxt, t1, t1		! 1
-	ldub	[t1+2], t1		! 1
+	C add	wtxt, t1, t1		! 1
+	ldub	[wtxt+t1], t1		! 1
 	ld	[IDX3+4], t3		! 3
 	
 	sll	t1, 2, t1		! 1
@@ -214,8 +213,8 @@ _aes_crypt:
 	C = 2
 	ld	[IDX1+8], t1		! 1
 	
-	add	wtxt, t1, t1		! 1
-	ldub	[t1+2], t1		! 1
+	C add	wtxt, t1, t1		! 1
+	ldub	[wtxt+t1], t1		! 1
 	ld	[IDX3+8], t3		! 3
 	
 	sll	t1, 2, t1		! 1
@@ -247,8 +246,8 @@ _aes_crypt:
 	C = 3
 	ld	[IDX1+12], t1		! 1
 	
-	add	wtxt, t1, t1		! 1
-	ldub	[t1+2], t1		! 1
+	C add	wtxt, t1, t1		! 1
+	ldub	[wtxt+t1], t1		! 1
 	ld	[IDX3+12], t3		! 3
 	
 	sll	t1, 2, t1		! 1
@@ -296,8 +295,8 @@ _aes_crypt:
 
 	C i = 0
 	ld	[IDX1+0], t1 	! 1
-	add	wtxt, t1, t1	! 1
-	ldub	[t1+2], t1	! 1
+	C add	wtxt, t1, t1	! 1
+	ldub	[wtxt+t1], t1	! 1
 
 	ld	[wtxt+0], t0	! 0
 	! IDX2(j) = j XOR 2
@@ -336,8 +335,8 @@ _aes_crypt:
 	C i = 1
 	ld	[IDX1+4], t1 	! 1
 
-	add	wtxt, t1, t1	! 1
-	ldub	[t1+2], t1	! 1
+	C add	wtxt, t1, t1	! 1
+	ldub	[wtxt+t1], t1	! 1
 
 	ld	[wtxt+4], t0	! 0
 	! IDX2(j) = j XOR 2
@@ -376,8 +375,8 @@ _aes_crypt:
 	C i = 2
 	ld	[IDX1+8], t1 	! 1
 	
-	add	wtxt, t1, t1	! 1
-	ldub	[t1+2], t1	! 1
+	C add	wtxt, t1, t1	! 1
+	ldub	[wtxt+t1], t1	! 1
 
 	ld	[wtxt+8], t0	! 0
 	! IDX2(j) = j XOR 2
@@ -416,8 +415,8 @@ _aes_crypt:
 	C i = 3
 	ld	[IDX1+12], t1 	! 1
 
-	add	wtxt, t1, t1	! 1
-	ldub	[t1+2], t1	! 1
+	C add	wtxt, t1, t1	! 1
+	ldub	[wtxt+t1], t1	! 1
 
 	ld	[wtxt+12], t0	! 0
 	! IDX2(j) = j XOR 2
