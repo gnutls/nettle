@@ -1,3 +1,33 @@
+2002-01-16  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* testsuite/yarrow-test.c: Deleted ran_array code, use
+	knuth-lfib.h instead.
+
+	* testsuite/testutils.c (test_rsa_md5, test_rsa_sha1): Moved
+	functions here...
+	* testsuite/rsa-test.c: ...from here.
+
+	* testsuite/rsa-keygen-test.c: New file.
+
+	* testsuite/knuth-lfib-test.c: New file.
+
+	* Makefile.am (libnettle_a_SOURCES): Added knuth-lfib.c and
+	rsa-keygen.c.
+
+	* rsa-keygen.c: New file.
+
+	* rsa.h (RSA_MINIMUM_N_OCTETS): New constant.
+	(RSA_MINIMUM_N_BITS): New constant.
+	(nettle_random_func, nettle_progress_func): New typedefs. Perhaps
+	they don't really belong in this file.
+	(rsa_generate_keypair): Added progress-callback argument.
+
+	* macros.h (READ_UINT24, WRITE_UINT24, READ_UINT16, WRITE_UINT16):
+	New macros.
+
+	* knuth-lfib.c, knuth-lfib.h: New files, implementing a
+	non-cryptographic prng.
+
 2002-01-15  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* hmac-sha1.c: New file.

@@ -64,13 +64,7 @@ rsa_check_size(mpz_t n)
   /* Round upwards */
   unsigned size = (mpz_sizeinbase(n, 2) + 7) / 8;
 
-  /* For PKCS#1 to make sense, the size of the modulo, in octets, must
-   * be at least 11 + the length of the DER-encoded Digest Info.
-   *
-   * And a DigestInfo is 34 octets for md5, and 35 octets for sha1.
-   * 46 octets is 368 bits. */
-  
-  if (size < 46)
+  if (size < RSA_MINIMUM_N_OCTETS)
     return 0;
 
   return size;
