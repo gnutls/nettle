@@ -286,16 +286,12 @@ _aes_crypt:
 	bne	.Lround_loop
 	add	key, 16, key
 
-	! final round
-	! Use round as the loop variable, as it's already zero
-undefine(<i>)
-define(i, round)
+	! Final round
 
 	! Comments mark which j in T->sbox[Bj(wtxt[IDXj(i)])]
 	! the instruction is part of.
 
 	C Unrolled final loop begins
-	! NOTE: First instruction duplicated in delay slot
 
 	C i = 0
 	ld	[IDX1+0], t1 	! 1
@@ -325,7 +321,6 @@ define(i, round)
 	
 	or	t0, t3, t0	! 0, 1, 2, 3
 	xor	t0, t2, t0
-	C add	i, 4, i
 	
 	srl	t0, 24, t3
 	srl	t0, 16, t2
@@ -366,7 +361,6 @@ define(i, round)
 	
 	or	t0, t3, t0	! 0, 1, 2, 3
 	xor	t0, t2, t0
-	C add	i, 4, i
 	
 	srl	t0, 24, t3
 	srl	t0, 16, t2
@@ -407,7 +401,6 @@ define(i, round)
 	
 	or	t0, t3, t0	! 0, 1, 2, 3
 	xor	t0, t2, t0
-	C add	i, 4, i
 	
 	srl	t0, 24, t3
 	srl	t0, 16, t2
@@ -448,7 +441,6 @@ define(i, round)
 	
 	or	t0, t3, t0	! 0, 1, 2, 3
 	xor	t0, t2, t0
-	C add	i, 4, i
 	
 	srl	t0, 24, t3
 	srl	t0, 16, t2
