@@ -1,5 +1,7 @@
 2003-09-19  Niels Möller  <niels@s3.kth.se>
 
+	* examples/Makefile.am (EXTRA_DIST): Added rsa-session.h.
+
 	* tools/nettle-lfib-stream.c: New tool, which outputs a sequence
 	of pseudorandom (non-cryptographic) bytes, using Knuth's lagged
 	fibonacci generator.
