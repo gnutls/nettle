@@ -1,6 +1,6 @@
 /* hmac.c
  *
- * HMAC message authentication code.
+ * HMAC message authentication code (RFC-2104).
  */
 
 /* nettle, low-level cryptographics library
