@@ -1,5 +1,7 @@
 2003-02-16  Niels Möller  <nisse@cuckoo.hack.org>
 
+	* Makefile.am (libnettleinclude_HEADERS): Added macros.h.
+
 	* tools/Makefile.am (EXTRA_DIST): Added getopt.h.
 
 2003-02-14  Niels Möller  <niels@s3.kth.se>
