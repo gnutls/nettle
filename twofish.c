@@ -33,6 +33,10 @@
 
 #include "twofish.h"
 
+#include "macros.h"
+
+#include <assert.h>
+
 /* Bitwise rotations on 32-bit words.  These are defined as macros that
  * evaluate their argument twice, so do not apply to any expressions with
  * side effects.
@@ -43,50 +47,6 @@
 #define rol9(x) (((x) << 9) | (((x) & 0xFF800000) >> 23))
 #define ror1(x) (((x) >> 1) | (((x) & 0x00000001) << 31))
 
-/* void bytes_to_words(word * dest, const byte * src, int n);
- * void words_to_bytes(byte * dest, const byte * src, int n);
- *
- * Copy n*4 bytes to n words and vice versa.
- */
-
-#if defined(__i386__)
-
-/* In the i386 case, these are simply memcpy's since the memory layout
- * of an array of bytes and an array of words is identical.
- */
-
-#define bytes_to_words(dest,src,n) memcpy(dest,src,(n)*4)
-#define words_to_bytes(dest,src,n) memcpy(dest,src,(n)*4)
-
-#else
-
-/* These versions are independent of endianness and word size. */
-
-static void
-bytes_to_words(word *dest, const byte *src, int n)
-{
-  while (n-- > 0)
-    {
-      *dest++ = src[0] | src[1] << 8 | src[2] << 16 | src[3] << 24;
-      src += 4;
-    }
-}
-
-static void
-words_to_bytes(byte *dest, const word *src, int n)
-{
-  while (n-- > 0)
-    {
-      *dest++ = *src;
-      *dest++ = *src >> 8;
-      *dest++ = *src >> 16;
-      *dest++ = *src >> 24;
-      src++;
-    }
-}
-
-#endif
-
 /* ------------------------------------------------------------------------- */
 
 /* The permutations q0 and q1.  These are fixed permutations on 8-bit values.
@@ -94,7 +54,7 @@ words_to_bytes(byte *dest, const word *src, int n)
  * which is distributed along with this file.
  */
 
-static byte q0[] = { 0xA9, 0x67, 0xB3, 0xE8, 0x04, 0xFD, 0xA3, 0x76,
+static const uint8_t q0[] = { 0xA9, 0x67, 0xB3, 0xE8, 0x04, 0xFD, 0xA3, 0x76,
                      0x9A, 0x92, 0x80, 0x78, 0xE4, 0xDD, 0xD1, 0x38,
                      0x0D, 0xC6, 0x35, 0x98, 0x18, 0xF7, 0xEC, 0x6C,
                      0x43, 0x75, 0x37, 0x26, 0xFA, 0x13, 0x94, 0x48,
@@ -127,7 +87,7 @@ static byte q0[] = { 0xA9, 0x67, 0xB3, 0xE8, 0x04, 0xFD, 0xA3, 0x76,
                      0xCA, 0x10, 0x21, 0xF0, 0xD3, 0x5D, 0x0F, 0x00,
                      0x6F, 0x9D, 0x36, 0x42, 0x4A, 0x5E, 0xC1, 0xE0, };
 
-static byte q1[] = { 0x75, 0xF3, 0xC6, 0xF4, 0xDB, 0x7B, 0xFB, 0xC8,
+static const uint8_t q1[] = { 0x75, 0xF3, 0xC6, 0xF4, 0xDB, 0x7B, 0xFB, 0xC8,
                      0x4A, 0xD3, 0xE6, 0x6B, 0x45, 0x7D, 0xE8, 0x4B,
                      0xD6, 0x32, 0xD8, 0xFD, 0x37, 0x71, 0xF1, 0xE1,
                      0x30, 0x0F, 0xF8, 0x1B, 0x87, 0xFA, 0x06, 0x3F,
@@ -162,7 +122,7 @@ static byte q1[] = { 0x75, 0xF3, 0xC6, 0xF4, 0xDB, 0x7B, 0xFB, 0xC8,
 
 /* ------------------------------------------------------------------------- */
 
-/* byte gf_multiply(byte p, byte a, byte b)
+/* uint8_t gf_multiply(uint8_t p, uint8_t a, uint8_t b)
  *
  * Multiplication in GF(2^8).
  *
@@ -176,11 +136,11 @@ static byte q1[] = { 0x75, 0xF3, 0xC6, 0xF4, 0xDB, 0x7B, 0xFB, 0xC8,
  * operation.
  */
 
-static byte
-gf_multiply(byte p, byte a, byte b)
+static uint8_t
+gf_multiply(uint8_t p, uint8_t a, uint8_t b)
 {
-  word shift  = b;
-  byte result = 0;
+  uint32_t shift  = b;
+  uint8_t result = 0;
   while (a)
     {
       if (a & 1) result ^= shift;
@@ -195,13 +155,13 @@ gf_multiply(byte p, byte a, byte b)
 
 /* The matrix RS as specified in section 4.3 the twofish paper. */
 
-static byte rs_matrix[4][8] = {
+static const uint8_t rs_matrix[4][8] = {
     { 0x01, 0xA4, 0x55, 0x87, 0x5A, 0x58, 0xDB, 0x9E },
     { 0xA4, 0x56, 0x82, 0xF3, 0x1E, 0xC6, 0x68, 0xE5 },
     { 0x02, 0xA1, 0xFC, 0xC1, 0x47, 0xAE, 0x3D, 0x19 },
     { 0xA4, 0x55, 0x87, 0x5A, 0x58, 0xDB, 0x9E, 0x03 } };
 
-/* word compute_s(word m1, word m2);
+/* uint32_t compute_s(uint32_t m1, uint32_t m2);
  *
  * Computes the value RS * M, where M is a byte vector composed of the
  * bytes of m1 and m2.  Arithmetic is done in GF(2^8) with primitive
@@ -211,10 +171,10 @@ static byte rs_matrix[4][8] = {
  * to generate the S-boxes.
  */
 
-static word
-compute_s(word m1, word m2)
+static uint32_t
+compute_s(uint32_t m1, uint32_t m2)
 {
-  word s = 0;
+  uint32_t s = 0;
   int i;
   for (i = 0; i < 4; i++)
     s |=  ((  gf_multiply(0x4D, m1,       rs_matrix[i][0])
@@ -234,19 +194,19 @@ compute_s(word m1, word m2)
  * of the function h, cf. figure 2 of the twofish paper.
  */
 
-static byte * q_table[4][5] = { { q1, q1, q0, q0, q1 },
+static const uint8_t * q_table[4][5] = { { q1, q1, q0, q0, q1 },
                                 { q0, q1, q1, q0, q0 },
                                 { q0, q0, q0, q1, q1 },
                                 { q1, q0, q1, q1, q0 } };
 
 /* The matrix MDS as specified in section 4.3.2 of the twofish paper. */
 
-static byte mds_matrix[4][4] = { { 0x01, 0xEF, 0x5B, 0x5B },
+static const uint8_t mds_matrix[4][4] = { { 0x01, 0xEF, 0x5B, 0x5B },
 				 { 0x5B, 0xEF, 0xEF, 0x01 },
 				 { 0xEF, 0x5B, 0x01, 0xEF },
 				 { 0xEF, 0x01, 0xEF, 0x5B } };
 
-/* word h_byte(int k, int i, byte x, byte l0, byte l1, byte l2, byte l3);
+/* uint32_t h_uint8_t(int k, int i, uint8_t x, uint8_t l0, uint8_t l1, uint8_t l2, uint8_t l3);
  *
  * Perform the h function (section 4.3.2) on one byte.  It consists of
  * repeated applications of the q permutation, followed by a XOR with
@@ -259,27 +219,27 @@ static byte mds_matrix[4][4] = { { 0x01, 0xEF, 0x5B, 0x5B },
  * appropriate bytes from the subkey.  Note that only l0..l(k-1) are used.
  */
 
-static word
-h_byte(int k, int i, byte x, byte l0, byte l1, byte l2, byte l3)
+static uint32_t
+h_byte(int k, int i, uint8_t x, uint8_t l0, uint8_t l1, uint8_t l2, uint8_t l3)
 {
-  byte y = q_table[i][4][l0 ^
+  uint8_t y = q_table[i][4][l0 ^
             q_table[i][3][l1 ^
               q_table[i][2][k == 2 ? x : l2 ^
                 q_table[i][1][k == 3 ? x : l3 ^ q_table[i][0][x]]]]];
 
-  return ( ((word)gf_multiply(0x69, mds_matrix[0][i], y))
-	   | ((word)gf_multiply(0x69, mds_matrix[1][i], y) << 8)
-	   | ((word)gf_multiply(0x69, mds_matrix[2][i], y) << 16)
-	   | ((word)gf_multiply(0x69, mds_matrix[3][i], y) << 24) );
+  return ( ((uint32_t)gf_multiply(0x69, mds_matrix[0][i], y))
+	   | ((uint32_t)gf_multiply(0x69, mds_matrix[1][i], y) << 8)
+	   | ((uint32_t)gf_multiply(0x69, mds_matrix[2][i], y) << 16)
+	   | ((uint32_t)gf_multiply(0x69, mds_matrix[3][i], y) << 24) );
 }
 
-/* word h(int k, byte x, word l0, word l1, word l2, word l3);
+/* uint32_t h(int k, uint8_t x, uint32_t l0, uint32_t l1, uint32_t l2, uint32_t l3);
  *
  * Perform the function h on a word.  See the description of h_byte() above.
  */
 
-static word
-h(int k, byte x, word l0, word l1, word l2, word l3)
+static uint32_t
+h(int k, uint8_t x, uint32_t l0, uint32_t l1, uint32_t l2, uint32_t l3)
 {
   return (  h_byte(k, 0, x, l0,       l1,       l2,       l3)
 	  ^ h_byte(k, 1, x, l0 >> 8,  l1 >> 8,  l2 >> 8,  l3 >> 8)
@@ -287,66 +247,6 @@ h(int k, byte x, word l0, word l1, word l2, word l3)
 	  ^ h_byte(k, 3, x, l0 >> 24, l1 >> 24, l2 >> 24, l3 >> 24) );
 }
 
-
-/*
- * Sanity check using the test vectors from appendix A.1 of the Twofish paper.
- */
-int
-twofish_selftest(void)
-{
-  byte testkey128[16] =
-  { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-  byte ciphertext128[16] =
-  {
-    0x9F, 0x58, 0x9F, 0x5C, 0xF6, 0x12, 0x2C, 0x32,
-    0xB6, 0xBF, 0xEC, 0x2F, 0x2A, 0xE8, 0xC3, 0x5A };
-  byte testkey192[24] =
-  { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF,
-    0xFE, 0xDC, 0xBA, 0x98, 0x76, 0x54, 0x32, 0x10,
-    0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77 };
-  byte ciphertext192[16] =
-  { 0xCF, 0xD1, 0xD2, 0xE5, 0xA9, 0xBE, 0x9C, 0xDF,
-    0x50, 0x1F, 0x13, 0xB8, 0x92, 0xBD, 0x22, 0x48 };
-
-  byte testkey256[32] =
-  { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF,
-    0xFE, 0xDC, 0xBA, 0x98, 0x76, 0x54, 0x32, 0x10,
-    0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
-    0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF };
-  byte ciphertext256[16] =
-  { 0x37, 0x52, 0x7B, 0xE0, 0x05, 0x23, 0x34, 0xB8,
-    0x9F, 0x0C, 0xFC, 0xCA, 0xE8, 0x7C, 0xFA, 0x20 };
-
-  TWOFISH_context context;
-  byte plaintext[16], ciphertext[16];
-
-  twofish_setup(&context, 16, testkey128);
-  memset(plaintext, 0, 16);
-
-  twofish_encrypt(&context, plaintext, ciphertext);
-  if (memcmp(ciphertext, ciphertext128, 16)) {
-    return 0;
-  }
-
-  twofish_setup(&context, 24, testkey192);
-  memset(plaintext, 0, 16);
-
-  twofish_encrypt(&context, plaintext, ciphertext);
-  if (memcmp(ciphertext, ciphertext192, 16)) {
-    return 0;
-  }
-
-  twofish_setup(&context, 32, testkey256);
-  memset(plaintext, 0, 16);
-
-  twofish_encrypt(&context, plaintext, ciphertext);
-  if (memcmp(ciphertext, ciphertext256, 16)) {
-    return 0;
-  }
-
-  return 1;
-}
 
 /* ------------------------------------------------------------------------- */
 
@@ -357,40 +257,32 @@ twofish_selftest(void)
  */
 
 
-/* void twofish_setup(TWOFISH_context *ctx, size_t keysize, const UINT8 * key);
- *
- * Set up internal tables required for twofish encryption and decryption.
+/* Set up internal tables required for twofish encryption and decryption.
  *
  * The key size is specified in bytes.  Key sizes up to 32 bytes are
  * supported.  Larger key sizes are silently truncated.  
  */
 
 void
-twofish_setup(TWOFISH_context * context, size_t keysize, const UINT8 *key)
+twofish_set_key(struct twofish_ctx *context,
+		unsigned keysize, const uint8_t *key)
 {
-  byte key_copy[32];
-  word m[8], s[4], t;
+  uint8_t key_copy[32];
+  uint32_t m[8], s[4], t;
   int i, j, k;
 
-#ifndef NDEBUG
-  static int initialized = 0;
+  /* Extend key as necessary */
 
-  if (!initialized)
-    {
-      initialized = 1;
-      assert(twofish_selftest());
-    }
-#endif
+  assert(keysize <= 32);
 
-  /* Extend or truncate key as necessary */
-
+  /* We do a little more copying than necessary, but that doesn't
+   * really matter. */
   memset(key_copy, 0, 32);
-  if (keysize > 32)
-    keysize = 32;
   memcpy(key_copy, key, keysize);
 
-  bytes_to_words(m, key_copy, (keysize + 3)/4);
-
+  for (i = 0; i<8; i++)
+    m[i] = LE_READ_UINT32(key_copy + i*4);
+  
   if (keysize <= 16)
     k = 2;
   else if (keysize <= 24)
@@ -424,13 +316,9 @@ twofish_setup(TWOFISH_context * context, size_t keysize, const UINT8 *key)
 				    s[3] >> (i*8));
 }
 
-/* void twofish_encrypt(TWOFISH_context *context,
- *                      const UINT8 *plaintext,
- *                      UINT8 *ciphertext);
+/* Encrypt blocks of 16 bytes of data with the twofish algorithm.
  *
- * Encrypt 16 bytes of data with the twofish algorithm.
- *
- * Before this function can be used, twofish_setup() must be used in order to
+ * Before this function can be used, twofish_set_key() must be used in order to
  * set up various tables required for the encryption algorithm.
  * 
  * This function always encrypts 16 bytes of plaintext to 16 bytes of
@@ -439,64 +327,68 @@ twofish_setup(TWOFISH_context * context, size_t keysize, const UINT8 *key)
  */
 
 void
-twofish_encrypt(TWOFISH_context *context,
-		const UINT8 *plaintext,
-		UINT8 *ciphertext)
+twofish_encrypt(struct twofish_ctx *context,
+		unsigned length,
+		uint8_t *ciphertext,
+		const uint8_t *plaintext)
 {
-  word words[4];
-  word r0, r1, r2, r3, t0, t1;
-  int i;
-  word * keys        = context->keys;
-  word (*s_box)[256] = context->s_box;
+  uint32_t * keys        = context->keys;
+  uint32_t (*s_box)[256] = context->s_box;
 
-  bytes_to_words(words, plaintext, 4);
+  assert( !(length % TWOFISH_BLOCK_SIZE) );
+  for ( ; length; length -= TWOFISH_BLOCK_SIZE);
+    {  
+      uint32_t words[4];
+      uint32_t r0, r1, r2, r3, t0, t1;
+      int i;
 
-  r0 = words[0] ^ keys[0];
-  r1 = words[1] ^ keys[1];
-  r2 = words[2] ^ keys[2];
-  r3 = words[3] ^ keys[3];
+      for (i = 0; i<4; i++, plaintext += 4)
+	words[i] = LE_READ_UINT32(plaintext);
 
-  for (i = 0; i < 8; i++) {
-    t1 = (  s_box[1][r1 & 0xFF]
-	  ^ s_box[2][(r1 >> 8) & 0xFF]
-	  ^ s_box[3][(r1 >> 16) & 0xFF]
-	  ^ s_box[0][(r1 >> 24) & 0xFF]);
-    t0 = (  s_box[0][r0 & 0xFF]
-	  ^ s_box[1][(r0 >> 8) & 0xFF]
-	  ^ s_box[2][(r0 >> 16) & 0xFF]
-	  ^ s_box[3][(r0 >> 24) & 0xFF]) + t1;
-    r3 = (t1 + t0 + keys[4*i+9]) ^ rol1(r3);
-    r2 = (t0 + keys[4*i+8]) ^ r2;
-    r2 = ror1(r2);
+      r0 = words[0] ^ keys[0];
+      r1 = words[1] ^ keys[1];
+      r2 = words[2] ^ keys[2];
+      r3 = words[3] ^ keys[3];
+  
+      for (i = 0; i < 8; i++) {
+	t1 = (  s_box[1][r1 & 0xFF]
+		^ s_box[2][(r1 >> 8) & 0xFF]
+		^ s_box[3][(r1 >> 16) & 0xFF]
+		^ s_box[0][(r1 >> 24) & 0xFF]);
+	t0 = (  s_box[0][r0 & 0xFF]
+		^ s_box[1][(r0 >> 8) & 0xFF]
+		^ s_box[2][(r0 >> 16) & 0xFF]
+		^ s_box[3][(r0 >> 24) & 0xFF]) + t1;
+	r3 = (t1 + t0 + keys[4*i+9]) ^ rol1(r3);
+	r2 = (t0 + keys[4*i+8]) ^ r2;
+	r2 = ror1(r2);
 
-    t1 = (  s_box[1][r3 & 0xFF]
-	  ^ s_box[2][(r3 >> 8) & 0xFF]
-	  ^ s_box[3][(r3 >> 16) & 0xFF]
-	  ^ s_box[0][(r3 >> 24) & 0xFF]);
-    t0 = (  s_box[0][r2 & 0xFF]
-	  ^ s_box[1][(r2 >> 8) & 0xFF]
-	  ^ s_box[2][(r2 >> 16) & 0xFF]
-	  ^ s_box[3][(r2 >> 24) & 0xFF]) + t1;
-    r1 = (t1 + t0 + keys[4*i+11]) ^ rol1(r1);
-    r0 = (t0 + keys[4*i+10]) ^ r0;
-    r0 = ror1(r0);
-  }
+	t1 = (  s_box[1][r3 & 0xFF]
+		^ s_box[2][(r3 >> 8) & 0xFF]
+		^ s_box[3][(r3 >> 16) & 0xFF]
+		^ s_box[0][(r3 >> 24) & 0xFF]);
+	t0 = (  s_box[0][r2 & 0xFF]
+		^ s_box[1][(r2 >> 8) & 0xFF]
+		^ s_box[2][(r2 >> 16) & 0xFF]
+		^ s_box[3][(r2 >> 24) & 0xFF]) + t1;
+	r1 = (t1 + t0 + keys[4*i+11]) ^ rol1(r1);
+	r0 = (t0 + keys[4*i+10]) ^ r0;
+	r0 = ror1(r0);
+      }
 
-  words[0] = r2 ^ keys[4];
-  words[1] = r3 ^ keys[5];
-  words[2] = r0 ^ keys[6];
-  words[3] = r1 ^ keys[7];
+      words[0] = r2 ^ keys[4];
+      words[1] = r3 ^ keys[5];
+      words[2] = r0 ^ keys[6];
+      words[3] = r1 ^ keys[7];
 
-  words_to_bytes(ciphertext, words, 4);
+      for (i = 0; i<4; i++, ciphertext += 4)
+	LE_WRITE_UINT32(ciphertext, words[i]);
+    }
 }
 
-/* void twofish_decrypt(TWOFISH_context *context,
- *                      const UINT8 *ciphertext,
- *                      UINT8 *plaintext);
+/* Decrypt blocks of 16 bytes of data with the twofish algorithm.
  *
- * Decrypt 16 bytes of data with the twofish algorithm.
- *
- * Before this function can be used, twofish_setup() must be used in order to
+ * Before this function can be used, twofish_set_key() must be used in order to
  * set up various tables required for the decryption algorithm.
  * 
  * This function always decrypts 16 bytes of ciphertext to 16 bytes of
@@ -505,53 +397,62 @@ twofish_encrypt(TWOFISH_context *context,
  */
 
 void
-twofish_decrypt(TWOFISH_context *context,
-		const UINT8 *ciphertext,
-		UINT8 *plaintext)
+twofish_decrypt(struct twofish_ctx *context,
+		unsigned length,
+		uint8_t *plaintext,
+		const uint8_t *ciphertext)
+
 {
-  word words[4];
-  word r0, r1, r2, r3, t0, t1;
-  int i;
-  word *keys  = context->keys;
-  word (*s_box)[256] = context->s_box;
+  uint32_t *keys  = context->keys;
+  uint32_t (*s_box)[256] = context->s_box;
 
-  bytes_to_words(words, ciphertext, 4);
+  assert( !(length % TWOFISH_BLOCK_SIZE) );
+  for ( ; length; length -= TWOFISH_BLOCK_SIZE);
+    {  
+      uint32_t words[4];
+      uint32_t r0, r1, r2, r3, t0, t1;
+      int i;
 
-  r0 = words[2] ^ keys[6];
-  r1 = words[3] ^ keys[7];
-  r2 = words[0] ^ keys[4];
-  r3 = words[1] ^ keys[5];
+      for (i = 0; i<4; i++, ciphertext += 4)
+	words[i] = LE_READ_UINT32(ciphertext);
 
-  for (i = 0; i < 8; i++) {
-    t1 = (  s_box[1][r3 & 0xFF]
-	  ^ s_box[2][(r3 >> 8) & 0xFF]
-	  ^ s_box[3][(r3 >> 16) & 0xFF]
-	  ^ s_box[0][(r3 >> 24) & 0xFF]);
-    t0 = (  s_box[0][r2 & 0xFF]
-	  ^ s_box[1][(r2 >> 8) & 0xFF]
-	  ^ s_box[2][(r2 >> 16) & 0xFF]
-	  ^ s_box[3][(r2 >> 24) & 0xFF]) + t1;
-    r1 = (t1 + t0 + keys[39-4*i]) ^ r1;
-    r1 = ror1(r1);
-    r0 = (t0 + keys[38-4*i]) ^ rol1(r0);
+      r0 = words[2] ^ keys[6];
+      r1 = words[3] ^ keys[7];
+      r2 = words[0] ^ keys[4];
+      r3 = words[1] ^ keys[5];
 
-    t1 = (  s_box[1][r1 & 0xFF]
-	  ^ s_box[2][(r1 >> 8) & 0xFF]
-	  ^ s_box[3][(r1 >> 16) & 0xFF]
-	  ^ s_box[0][(r1 >> 24) & 0xFF]);
-    t0 = (  s_box[0][r0 & 0xFF]
-	  ^ s_box[1][(r0 >> 8) & 0xFF]
-	  ^ s_box[2][(r0 >> 16) & 0xFF]
-	  ^ s_box[3][(r0 >> 24) & 0xFF]) + t1;
-    r3 = (t1 + t0 + keys[37-4*i]) ^ r3;
-    r3 = ror1(r3);
-    r2 = (t0 + keys[36-4*i]) ^ rol1(r2);
-  }
+      for (i = 0; i < 8; i++) {
+	t1 = (  s_box[1][r3 & 0xFF]
+		^ s_box[2][(r3 >> 8) & 0xFF]
+		^ s_box[3][(r3 >> 16) & 0xFF]
+		^ s_box[0][(r3 >> 24) & 0xFF]);
+	t0 = (  s_box[0][r2 & 0xFF]
+		^ s_box[1][(r2 >> 8) & 0xFF]
+		^ s_box[2][(r2 >> 16) & 0xFF]
+		^ s_box[3][(r2 >> 24) & 0xFF]) + t1;
+	r1 = (t1 + t0 + keys[39-4*i]) ^ r1;
+	r1 = ror1(r1);
+	r0 = (t0 + keys[38-4*i]) ^ rol1(r0);
 
-  words[0] = r0 ^ keys[0];
-  words[1] = r1 ^ keys[1];
-  words[2] = r2 ^ keys[2];
-  words[3] = r3 ^ keys[3];
+	t1 = (  s_box[1][r1 & 0xFF]
+		^ s_box[2][(r1 >> 8) & 0xFF]
+		^ s_box[3][(r1 >> 16) & 0xFF]
+		^ s_box[0][(r1 >> 24) & 0xFF]);
+	t0 = (  s_box[0][r0 & 0xFF]
+		^ s_box[1][(r0 >> 8) & 0xFF]
+		^ s_box[2][(r0 >> 16) & 0xFF]
+		^ s_box[3][(r0 >> 24) & 0xFF]) + t1;
+	r3 = (t1 + t0 + keys[37-4*i]) ^ r3;
+	r3 = ror1(r3);
+	r2 = (t0 + keys[36-4*i]) ^ rol1(r2);
+      }
 
-  words_to_bytes(plaintext, words, 4);
+      words[0] = r0 ^ keys[0];
+      words[1] = r1 ^ keys[1];
+      words[2] = r2 ^ keys[2];
+      words[3] = r3 ^ keys[3];
+
+      for (i = 0; i<4; i++, plaintext += 4)
+	LE_WRITE_UINT32(plaintext, words[i]);
+    }
 }
