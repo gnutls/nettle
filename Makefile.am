@@ -1,49 +1,11 @@
-## Process this file with automake to produce Makefile.in
+SUBDIRS = . testsuite
 
-AUTOMAKE_OPTIONS = foreign
+lib_LIBRARIES = libnettle.a
+include_HEADERS = arcfour.h
 
-noinst_LIBRARIES = libsymmetric.a
-noinst_PROGRAMS = desTest desdata
+libnettleincludedir = $(includedir)/nettle
+libnettle_a_SOURCES = aes.c aes.h arcfour.c arcfour.h md5.c md5.h
 
-# When compiling with lsh, this is set to to -DLSH -I/path/to/lsh/include
-# INCLUDES = @crypto_cpp_flags@
+libnettle_a_LIBADD = @LIBOBJS@
 
-desTest_LDADD = libsymmetric.a
-
-des_headers = parity.h rotors.h keymap.h 
-BUILT_SOURCES =	desSmallFips.c desSmallCore.c desQuickFips.c desQuickCore.c \
-	$(des_headers)
-
-libsymmetric_a_SOURCES = desCode.h desKerb.c desUtil.c desQuick.c \
-      $(BUILT_SOURCES) \
-      sha.c md5.c idea.c rc4.c cast.c
-
-# Generate DES headers.
-$(des_headers): desdata
-	./desdata $@ > $@
-
-# Generate DES sources. Slowest to quickest.
-desSmallFips.c:
-		@echo > $@ '#include "desCode.h"' 
-		@echo >> $@ 'ENCRYPT(DesSmallFipsEncrypt,TEMPSMALL,\
-			     LOADFIPS,KEYMAPSMALL,SAVEFIPS)' 
-		@echo >> $@ 'DECRYPT(DesSmallFipsDecrypt,TEMPSMALL,\
-			     LOADFIPS,KEYMAPSMALL,SAVEFIPS)' 
-desSmallCore.c:
-		@echo > $@ '#include "desCode.h"' 
-		@echo >> $@ 'ENCRYPT(DesSmallCoreEncrypt,TEMPSMALL,\
-			     LOADCORE,KEYMAPSMALL,SAVECORE)' 
-		@echo >> $@ 'DECRYPT(DesSmallCoreDecrypt,TEMPSMALL,\
-			     LOADCORE,KEYMAPSMALL,SAVECORE)' 
-desQuickFips.c:
-		@echo > $@ '#include "desCode.h"' 
-		@echo >> $@ 'ENCRYPT(DesQuickFipsEncrypt,TEMPQUICK,\
-			     LOADFIPS,KEYMAPQUICK,SAVEFIPS)' 
-		@echo >> $@ 'DECRYPT(DesQuickFipsDecrypt,TEMPQUICK,\
-			     LOADFIPS,KEYMAPQUICK,SAVEFIPS)' 
-desQuickCore.c:
-		@echo > $@ '#include "desCode.h"' 
-		@echo >> $@ 'ENCRYPT(DesQuickCoreEncrypt,TEMPQUICK,\
-			     LOADCORE,KEYMAPQUICK,SAVECORE)' 
-		@echo >> $@ 'DECRYPT(DesQuickCoreDecrypt,TEMPQUICK,\
-			     LOADCORE,KEYMAPQUICK,SAVECORE)' 
+EXTRA_DIST = macros.h

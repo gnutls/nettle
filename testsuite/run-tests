@@ -1,0 +1,46 @@
+#! /bin/bash
+
+failed=0
+all=0
+
+env_program () {
+  if [ -x ./"$1" ] ; then
+    if ./"$1"; then : ; else
+      echo FAIL: $1
+      exit 1
+    fi
+  fi
+}
+
+test_program () {
+  if "./$1" ; then
+    echo PASS: ${1%-test}
+  else
+    echo FAIL: ${1%-test}
+    failed=`expr $failed + 1`
+  fi
+  all=`expr $all + 1`
+}
+
+env_program setup-env
+
+if [ $# -eq 0 ] ; then
+  for f in *-test; do test_program "$f"; done
+else
+  for f in "$@" ; do test_program "$f"; done
+fi
+
+if [ $failed -eq 0 ] ; then
+  banner="All $all tests passed"
+else
+  banner="$failed of $all tests failed"
+fi
+dashes=`echo "$banner" | sed s/./=/g`
+echo "$dashes"
+echo "$banner"
+echo "$dashes"
+
+env_program teardown-env
+
+[ "$failed" -eq 0 ]
+
