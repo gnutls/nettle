@@ -1,3 +1,7 @@
+2004-03-20  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Use AC_CONFIG_AUX_DIR([.]).
+
 2004-03-18  Niels Möller  <niels@s3.kth.se>
 
 	* examples/io.c (read_file): Display a message if fopen fails.
