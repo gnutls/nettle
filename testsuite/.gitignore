@@ -1,0 +1,9 @@
+/.deps
+/Makefile
+/Makefile.in
+/aes-test
+/aes-test.c
+/arcfour-test
+/arcfour-test.c
+/md5-test
+/md5-test.c
