@@ -1,3 +1,7 @@
+2003-05-13  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* pgp-encode.c (pgp_put_mpi): Fixed nettle_mpz_get_str_256 call.
+
 2003-05-12  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* rsa2openpgp.c (rsa_keypair_to_openpgp): Some bugfixes.
