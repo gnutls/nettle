@@ -28,6 +28,11 @@
 #include <assert.h>
 #include <string.h>
 
+/* #define YARROW_DEBUG */
+#ifdef YARROW_DEBUG
+#include <stdio.h>
+#endif
+
 /* Parameters */
 
 /* An upper limit on the entropy (in bits) in one octet of sample
@@ -102,6 +107,10 @@ yarrow_fast_reseed(struct yarrow256_ctx *ctx)
   uint8_t digest[SHA256_DIGEST_SIZE];
   unsigned i;
 
+#ifdef YARROW_DEBUG
+  fprintf(stderr, "yarrow_fast_reseed\n");
+#endif
+  
   /* We feed two block of output using the current key into the pool
    * before emptying it. */
   if (ctx->seeded)
@@ -133,6 +142,10 @@ yarrow_slow_reseed(struct yarrow256_ctx *ctx)
 {
   uint8_t digest[SHA256_DIGEST_SIZE];
   unsigned i;
+
+#ifdef YARROW_DEBUG
+  fprintf(stderr, "yarrow_slow_reseed\n");
+#endif
 
   /* Get digest of the slow pool*/
   
@@ -203,6 +216,13 @@ yarrow256_update(struct yarrow256_ctx *ctx,
     case YARROW_FAST:
       if (source->estimate[YARROW_FAST] >= YARROW_FAST_THRESHOLD)
 	yarrow_fast_reseed(ctx);
+
+#ifdef YARROW_DEBUG
+      fprintf(stderr,
+              "yarrow256_update: source_index = %d,\n"
+              "            fast pool estimate = %d\n",
+              source_index, source->estimate[YARROW_FAST]);
+#endif
       break;
     case YARROW_SLOW:
       {
@@ -214,6 +234,14 @@ yarrow256_update(struct yarrow256_ctx *ctx,
 	  if (ctx->sources[i].estimate[YARROW_SLOW] >= YARROW_SLOW_THRESHOLD)
 	    k++;
 
+#ifdef YARROW_DEBUG
+        fprintf(stderr,
+                "yarrow256_update:     source_index = %d,\n"
+                "                 slow pool estimate = %d,\n"
+                "  number of sources above threshold = %d\n",
+                source_index, source->estimate[YARROW_SLOW], k);
+#endif
+        
 	if (k >= YARROW_SLOW_K)
 	  {
 	    yarrow_slow_reseed(ctx);
