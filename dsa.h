@@ -34,7 +34,9 @@
 /* For nettle_random_func */
 #include "nettle-meta.h"
 
-#define DSA_MINIMUM_BITS 512
+#define DSA_MIN_P_BITS 512
+#define DSA_Q_OCTETS 20
+#define DSA_Q_BITS 160
 
 struct dsa_public_key
 {  
@@ -139,5 +141,24 @@ dsa_generate_keypair(struct dsa_public_key *pub,
 		      * Use size = 512 + 64 * l for the official
 		      * NIS key sizes. */
 		     unsigned bits);
+
+struct sexp_iterator;
+
+int
+dsa_keypair_from_sexp_alist(struct dsa_public_key *pub,
+			    struct dsa_private_key *priv,
+			    unsigned limit,
+			    struct sexp_iterator *i);
+
+/* If PRIV is NULL, expect a public-key expression. If PUB is NULL,
+ * expect a private key expression and ignore the parts not needed for
+ * the public key. */
+/* Keys must be initialized before calling this function, as usual. */
+int
+dsa_keypair_from_sexp(struct dsa_public_key *pub,
+		      struct dsa_private_key *priv,
+		      unsigned limit,
+		      unsigned length, const uint8_t *expr);
+
 
 #endif /* NETTLE_DSA_H_INCLUDED */
