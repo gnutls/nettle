@@ -65,7 +65,9 @@ LINK = $(CC) $(CFLAGS) $(PRE_LDFLAGS) $(LDFLAGS)
 default: all
 
 # For some reason the suffixes list must be set before the rules.
-# Otherwise BSD make won't build binaries e.g. aesdata.
+# Otherwise BSD make won't build binaries e.g. aesdata. On the other
+# hand, AIX make has the opposite idiosyncrasies to BSD, and the AIX
+# compile was broken when .SUFFIXES was moved here from Makefile.in.
 
 .SUFFIXES:
 .SUFFIXES: .asm .c .$(OBJEXT) .p$(OBJEXT) .html .dvi .info .exe .pdf .ps .texinfo
