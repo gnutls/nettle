@@ -28,6 +28,14 @@
 
 #include <inttypes.h>
 
+/* Randomness. Used by key generation and dsa signature creation. */
+typedef void (*nettle_random_func)(void *ctx,
+				   unsigned length, uint8_t *dst);
+
+/* Progress report function, mainly for key generation. */
+typedef void (*nettle_progress_func)(void *ctx,
+				     int c);
+
 /* Ciphers */
 typedef void (*nettle_crypt_func)(void *ctx,
 				  unsigned length, uint8_t *dst,

@@ -32,11 +32,8 @@
 #include "md5.h"
 #include "sha.h"
 
-/* Randomness function. This typedef doesn't really belong here, but
- * so far it's used only by rsa functions (encryption and key
- * generation) */
-typedef void (*nettle_random_func)(void *ctx,
-				   unsigned length, uint8_t *dst);
+/* For nettle_random_func */
+#include "nettle-meta.h"
 
 
 /* For PKCS#1 to make sense, the size of the modulo, in octets, must
@@ -106,6 +103,11 @@ struct rsa_private_key
  * mpz_clear.
  */
 
+/* FIXME: For consistency, these functions ought to be renamed to
+ * rsa_public_key_init, rsa_public_key_clear, rsa_private_key_init,
+ * rsa_private_key_clear. Perhaps the prepare functions should be
+ * renamed too. Do this for nettle-2.0? */
+ 
 /* Calls mpz_init to initialize bignum storage. */
 void
 rsa_init_public_key(struct rsa_public_key *key);
@@ -182,10 +184,6 @@ rsa_compute_root(struct rsa_private_key *key, mpz_t x, const mpz_t m);
 
 
 /* Key generation */
-
-/* Progress report function. */
-typedef void (*nettle_progress_func)(void *ctx,
-				     int c);
 
 /* Note that the key structs must be initialized first. */
 int
