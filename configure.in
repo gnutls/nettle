@@ -54,27 +54,27 @@ if test "x$am_cv_prog_cc_stdc" = xno ; then
 fi
 
 # Select assembler code
-path=
+asm_path=
 case "$host" in
   [i?86*-*-* | k[5-8]*-*-* | pentium*-*-* | athlon-*-*])
-    path=x86
+    asm_path=x86
     ;;
   *sparc*-*-*)
-    path=sparc
+    asm_path=sparc
     ;;
 esac
 
-# echo "enable_assembler: $enable_assembler, path: $path"
+# echo "enable_assembler: $enable_assembler, asm_path: $asm_path"
 
 if test "$enable_assembler" = yes ; then
-  if test -n "$path"; then
+  if test -n "$asm_path"; then
     found=no
-    for tmp_f in aes aes_tables; do
-#       echo "Looking for $path/$tmp_f.asm"
-      if test -f "$path/$tmp_f.asm"; then
+    for tmp_f in aes.asm machine.m4; do
+#       echo "Looking for $asm_path/$tmp_f"
+      if test -f "$asm_path/$tmp_f"; then
 #        echo found
         found=yes
-        AC_CONFIG_LINKS($tmp_f.asm:$path/$tmp_f.asm)
+        AC_CONFIG_LINKS($tmp_f:$asm_path/$tmp_f)
       fi
     done
     if test "$found" = no; then
