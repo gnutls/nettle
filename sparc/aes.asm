@@ -27,7 +27,7 @@ define(diff, %l2)
 define(nrounds, %l3)
 
 ! Loop variables
-define(round, %l4) ! Really 16 * round
+define(round, %l4)
 define(i, %l5)
 
 ! Further loop invariants
@@ -57,24 +57,22 @@ _aes_crypt:
 	! Compute xor, so that we can swap efficiently.
 	xor	wtxt, tmp, diff
 	! The loop variable will be multiplied by 16.
-	sll	nrounds, 4, nrounds
-	
 	! More loop invariants
 	add	T, AES_TABLE0, T0
+	
 	add	T, AES_TABLE1, T1
 	add	T, AES_TABLE2, T2
 	add	T, AES_TABLE3, T3
-		
-.Lblock_loop:
 	! Read src, and add initial subkey
-	! Difference between ctx and src
+	! Difference between ctx and src.
+	! NOTE: This isntruction is duplicated in the delay slot
 	sub	ctx, src, %g2
+.Lblock_loop:
 	! Difference between wtxt and src
 	sub	wtxt, src, %g3
 	! For stop condition. Note that src is incremented in the
 	! delay slot
 	add	src, 8, %g4
-	nop
 	
 .Lsource_loop:
 	ldub	[src+3], t3
@@ -98,7 +96,7 @@ _aes_crypt:
 	bleu	.Lsource_loop
 	add	src, 4, src
 
-	mov	16, round
+	sub	nrounds, 1, round
 	add	ctx, 16, key
 
 .Lround_loop:
@@ -158,11 +156,10 @@ _aes_crypt:
 	
 	! switch roles for tmp and wtxt
 	xor	wtxt, diff, wtxt
-	add	round, 16, round
+	subcc	round, 1, round
 	add	key, 16, key
-	cmp	round, nrounds
 
-	blu	.Lround_loop
+	bne	.Lround_loop
 	xor	tmp, diff, tmp
 
 	! final round
@@ -218,8 +215,8 @@ _aes_crypt:
 	
 	addcc	length, -16, length
 	bne	.Lblock_loop
-	nop
-	!	add	dst, 16, dst
+	sub	ctx, src, %g2
+
 .Lend:
 	ret
 	restore
