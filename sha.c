@@ -37,6 +37,26 @@ effort (for example the reengineering of a great many Capstone chips).
 
 #include <string.h>
 
+/* Also defined in lsh_types.h */
+#ifndef READ_UINT32
+/* Reads a 32-bit integer, in network byte order */
+#define READ_UINT32(p)				\
+((((UINT32) (p)[0]) << 24)			\
+ | (((UINT32) (p)[1]) << 16)			\
+ | (((UINT32) (p)[2]) << 8)			\
+ | ((UINT32) (p)[3]))
+#endif
+
+#ifndef WRITE_UINT32
+#define WRITE_UINT32(p, i)			\
+do {						\
+  (p)[0] = ((i) >> 24) & 0xff;			\
+  (p)[1] = ((i) >> 16) & 0xff;			\
+  (p)[2] = ((i) >> 8) & 0xff;			\
+  (p)[3] = (i) & 0xff;				\
+} while(0)
+#endif
+
 void sha_copy(struct sha_ctx *dest, struct sha_ctx *src)
 {
   int i;
@@ -141,16 +161,16 @@ void sha_init(struct sha_ctx *ctx)
 
    Note that this function destroys the data area */
 
-static void sha_transform(struct sha_ctx *ctx, UINT32 *data )
+void sha_transform(UINT32 *state, UINT32 *data)
 {
   UINT32 A, B, C, D, E;     /* Local vars */
 
   /* Set up first buffer and local data buffer */
-  A = ctx->digest[0];
-  B = ctx->digest[1];
-  C = ctx->digest[2];
-  D = ctx->digest[3];
-  E = ctx->digest[4];
+  A = state[0];
+  B = state[1];
+  C = state[2];
+  D = state[3];
+  E = state[4];
 
   /* Heavy mangling, in 4 sub-rounds of 20 interations each. */
   subRound( A, B, C, D, E, f1, K1, data[ 0] );
@@ -238,50 +258,28 @@ static void sha_transform(struct sha_ctx *ctx, UINT32 *data )
   subRound( B, C, D, E, A, f4, K4, expand( data, 79 ) );
 
   /* Build message digest */
-  ctx->digest[0] += A;
-  ctx->digest[1] += B;
-  ctx->digest[2] += C;
-  ctx->digest[3] += D;
-  ctx->digest[4] += E;
+  state[0] += A;
+  state[1] += B;
+  state[2] += C;
+  state[3] += D;
+  state[4] += E;
 }
-
-#if 1
-
-#ifndef EXTRACT_UCHAR
-#define EXTRACT_UCHAR(p)  (*(unsigned char *)(p))
-#endif
-
-#define STRING2INT(s) ((((((EXTRACT_UCHAR(s) << 8)    \
-			 | EXTRACT_UCHAR(s+1)) << 8)  \
-			 | EXTRACT_UCHAR(s+2)) << 8)  \
-			 | EXTRACT_UCHAR(s+3))
-#else
-UINT32 STRING2INT(UINT8 *s)
-{
-  UINT32 r;
-  int i;
-  
-  for (i = 0, r = 0; i < 4; i++, s++)
-    r = (r << 8) | *s;
-  return r;
-}
-#endif
 
 static void
 sha_block(struct sha_ctx *ctx, const UINT8 *block)
 {
   UINT32 data[SHA_DATALEN];
   int i;
-  
+
   /* Update block count */
   if (!++ctx->count_l)
     ++ctx->count_h;
 
   /* Endian independent conversion */
   for (i = 0; i<SHA_DATALEN; i++, block += 4)
-    data[i] = STRING2INT(block);
+    data[i] = READ_UINT32(block);
 
-  sha_transform(ctx, data);
+  sha_transform(ctx->digest, data);
 }
 
 void
@@ -338,14 +336,14 @@ sha_final(struct sha_ctx *ctx)
   /* i is now a multiple of the word size 4 */
   words = i >> 2;
   for (i = 0; i < words; i++)
-    data[i] = STRING2INT(ctx->block + 4*i);
+    data[i] = READ_UINT32(ctx->block + 4*i);
   
   if (words > (SHA_DATALEN-2))
     { /* No room for length in this block. Process it and
        * pad with another one */
       for (i = words ; i < SHA_DATALEN; i++)
 	data[i] = 0;
-      sha_transform(ctx, data);
+      sha_transform(ctx->digest, data);
       for (i = 0; i < (SHA_DATALEN-2); i++)
 	data[i] = 0;
     }
@@ -355,7 +353,7 @@ sha_final(struct sha_ctx *ctx)
   /* Theres 512 = 2^9 bits in one block */
   data[SHA_DATALEN-2] = (ctx->count_h << 9) | (ctx->count_l >> 23);
   data[SHA_DATALEN-1] = (ctx->count_l << 9) | (ctx->index << 3);
-  sha_transform(ctx, data);
+  sha_transform(ctx->digest, data);
 }
 
 void
@@ -363,11 +361,6 @@ sha_digest(struct sha_ctx *ctx, UINT8 *s)
 {
   int i;
 
-  for (i = 0; i < SHA_DIGESTLEN; i++)
-    {
-      *s++ =         ctx->digest[i] >> 24;
-      *s++ = 0xff & (ctx->digest[i] >> 16);
-      *s++ = 0xff & (ctx->digest[i] >> 8);
-      *s++ = 0xff &  ctx->digest[i];
-    }
+  for (i = 0; i < SHA_DIGESTLEN; i++, s+= 4)
+    WRITE_UINT32(s, ctx->digest[i]);
 }
