@@ -6,7 +6,7 @@ libnettleincludedir = $(includedir)/nettle
 
 lib_LIBRARIES = libnettle.a
 libnettleinclude_HEADERS = aes.h arcfour.h blowfish.h \
-			   base64.h buffer.h cast128.h \
+			   base16.h base64.h buffer.h cast128.h \
 			   cbc.h \
 			   des.h des-compat.h dsa.h \
 			   hmac.h \
@@ -25,6 +25,7 @@ libnettle_a_SOURCES = aes.c aes.h aes-internal.h \
 		      aes-encrypt-table.c aes-encrypt.c \
 		      aes-set-encrypt-key.c aes-set-decrypt-key.c aes-meta.c \
 		      arcfour.c arcfour.h arcfour-meta.c \
+		      base16-encode.c base16-decode.c base16-meta.c \
                       base64-encode.c base64-decode.c base64-meta.c base64.h \
 		      cast128.c cast128.h cast128_sboxes.h cast128-meta.c \
 		      blowfish.h blowfish.c \
