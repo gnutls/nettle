@@ -6,7 +6,7 @@ dnl Process this file with autoconf to produce a configure script.
 AC_INIT([nettle], [1.6])
 AC_CONFIG_SRCDIR([arcfour.c])
 AC_PREREQ(2.50)
-AM_INIT_AUTOMAKE([dist-gzip])
+AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER([config.h])
 
 AC_CANONICAL_HOST
