@@ -11,6 +11,8 @@
 /cast128-test.c
 /des-test
 /des-test.c
+/md5-compat-test
+/md5-compat-test.c
 /md5-test
 /md5-test.c
 /serpent-test

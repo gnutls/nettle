@@ -1,3 +1,17 @@
+2001-09-05  Niels Möller  <nisse@ehand.com>
+
+	* testsuite/Makefile.am (TS_PROGS): Added md5-compat-test.
+
+	* README: Copied introduction from the manual.
+
+	* configure.in: Bumped version to 1.0.
+
+	* Makefile.am (libnettleinclude_HEADERS): Added missing includes.
+	(libnettle_a_SOURCES): Added md5-compat.c and md5-compat.h.
+
+	* md5-compat.c, md5-compat.h: New files, implementing an RFC
+	1321-style interface.
+
 2001-09-02  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* twofish.c (twofish_decrypt): Fixed for();-bug in the block-loop.
