@@ -1,3 +1,7 @@
+2001-09-18  Niels Möller  <nisse@ehand.com>
+
+	* index.html: New file.
+
 2001-09-16  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* nettle.texinfo: Added description of des3. Minor fixes.
