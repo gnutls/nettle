@@ -92,7 +92,7 @@ des_cbc_cksum(des_cblock *src, des_cblock *dst,
       memxor(block, p, DES_BLOCK_SIZE);
       nettle_des_encrypt(ctx, DES_BLOCK_SIZE, block, block);
     }
-  memcpy(dst, block, DES_BLOCK_SIZE);
+  memcpy(*dst, block, DES_BLOCK_SIZE);
 
   return LE_READ_UINT32(block + 4);
 }
