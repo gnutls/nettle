@@ -13,7 +13,7 @@ test_main(void)
   rsa_init_private_key(&priv);
 
   ASSERT(rsa_keypair_from_sexp
-	 (&pub, &priv,
+	 (&pub, &priv, 0,
 	  HL("2831313a707269766174652d6b657928"
 	     "333a72736128313a6e36333a085c3408"
 	     "989acae4faec3cbbad91c90d34c1d259"
