@@ -603,8 +603,7 @@ sexp_check_token(struct sexp_parser *parser,
   sexp_get_token(parser->input,
 		 parser->transport ? SEXP_CANONICAL : parser->mode);
 
-  /* FIXME: Handle token == 0 meaning any. */ 
-  if (parser->input->token != token)
+  if (token && parser->input->token != token)
     die("Syntax error.\n");
 }
 
@@ -620,12 +619,10 @@ sexp_parse(struct sexp_parser *parser)
 {
   for (;;)
     {
-      if (!parser->expected)
-	sexp_get_token(parser->input,
-		       parser->transport ? SEXP_CANONICAL : parser->mode);
-      else
+      sexp_check_token(parser, parser->expected);
+
+      if (parser->expected)
 	{
-	  sexp_check_token(parser, parser->expected);
 	  parser->expected = 0;
 	  
 	  if (parser->input->token == SEXP_STRING)
