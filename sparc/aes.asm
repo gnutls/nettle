@@ -95,11 +95,6 @@ _aes_crypt:
 	ld	[ctx + AES_NROUNDS], nround
 	mov	1, round
 
-	! mov	%g2, %o7
-
-	! wtxt
-	mov	wtxt, %g4
-
 	! 4*i:	i
 	! This instruction copied to the delay slot of the branch here. 
 	mov	0, i
@@ -115,7 +110,7 @@ _aes_crypt:
 	! AES_SIDX2
 	ld	[%o2-16], %o4		! 2
 	! wtxt[IDX1...]
-	add	%g4, %g3, %g3		! 1
+	add	wtxt, %g3, %g3		! 1
 	ldub	[%g3+2], %o0		! 1
 
 	! AES_SIDX3
@@ -123,15 +118,15 @@ _aes_crypt:
 	sll	%o0, 2, %o0		! 1
 	
 	! wtxt[i]
-	ld	[%g4+i], %o5		! 0
+	ld	[wtxt+i], %o5		! 0
 	
 	! wtxt[IDX2...]
-	lduh	[%g4+%o4], %g3		! 2
+	lduh	[wtxt+%o4], %g3		! 2
 	
 	and	%o5, 255, %o5		! 0
 
 	! wtxt[IDX3...]
-	ldub	[%g4+%g2], %o4		! 3
+	ldub	[wtxt+%g2], %o4		! 3
 	
 	sll	%o5, 2, %o5		! 0
 	add	%o5, AES_TABLE0, %o5	! 0
@@ -178,12 +173,13 @@ _aes_crypt:
 	cmp	i, 3
 	xor	%g3, %o5, %g3
 	st	%g3, [wtxt+%g2]
+	! st	%g3, [tmp+%g2]
 	bleu	.Lroundkey_loop
 	add	%o0, 4, %o0
 
 	! switch roles for tmp and wtxt
-!	xor	wtxt, diff, wtxt
-!	xor	tmp, diff, tmp
+	! xor	wtxt, diff, wtxt
+	! xor	tmp, diff, tmp
 
 	add	round, 1, round
 	cmp	round, nround
