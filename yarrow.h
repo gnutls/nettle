@@ -82,8 +82,10 @@ void
 yarrow256_random(struct yarrow256_ctx *ctx, unsigned length, uint8_t *dst);
 
 int
-yarrow256_seeded(struct yarrow256_ctx *ctx);
+yarrow256_is_seeded(struct yarrow256_ctx *ctx);
 
+unsigned
+yarrow256_needed_sources(struct yarrow256_ctx *ctx);
 
 /* Key event estimator */
 #define YARROW_KEY_EVENT_BUFFER 16
