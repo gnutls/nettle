@@ -3,5 +3,5 @@ CPPFLAGS = @CPPFLAGS@
 
 LDADD = ../libnettle.a
 
-noinst_PROGRAMS = nettle-benchmark rsa-keygen
+noinst_PROGRAMS = nettle-benchmark rsa-keygen rsa-sign
 
