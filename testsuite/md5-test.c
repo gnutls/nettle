@@ -29,14 +29,34 @@ test_main(void)
 	    "1234567890123456789012345678901234567890"
 	    "1234567890123456789012345678901234567890",
 	    H("57EDF4A22BE3C955 AC49DA2E2107B67A"));
-#if 0
+
   /* Collisions, reported by Xiaoyun Wang1, Dengguo Feng2, Xuejia
-     Lai3, Hongbo Yu1, http://eprint.iacr.org/2004/199 */
+     Lai3, Hongbo Yu1, http://eprint.iacr.org/2004/199. */
+
+  /* Note: The checksum in the paper, 1f160396 efc71ff4 bcff659f
+     bf9d0fa3, is incorrect. */
 
   test_hash(&nettle_md5,
-	    HL("d131dd02 c5e6eec4 693d9a06 98aff95c 2fcab587 12467eab 4004583e b8fb7f89"
-	       "55ad3406 09f4b302 83e48883 2571415a 085125e8 f7cdc99f d91dbdf2 80373c5b"),
-	    H("1f160396 efc71ff4 bcff659f bf9d0fa3"));
-#endif
+	    HL("d131dd02 c5e6eec4 693d9a06 98aff95c 2fcab5 87 12467eab 4004583e b8fb7f89"
+	       /*                                          ^^ */
+	       "55ad3406 09f4b302 83e48883 25 71 415a 085125e8 f7cdc99f d91dbd f2 80373c5b"
+	       /*                             ^^                               ^^ */
+	       "960b1dd1 dc417b9c e4d897f4 5a6555d5 35739a c7 f0ebfd0c 3029f166 d109b18f"
+	       /*                                          ^^ */
+	       "75277f79 30d55ceb 22e8adba 79cc155c ed74cbdd 5fc5d36d b19b0ad8 35cca7e3"),
+	       /*                            ^^                             ^^ */
+	    H("a4c0d35c 95a63a80 5915367d cfe6b751"));
+
+  test_hash(&nettle_md5,
+	    HL("d131dd02 c5e6eec4 693d9a06 98aff95c 2fcab5 07 12467eab 4004583e b8fb7f89"
+	       /*                                          ^^ */
+	       "55ad3406 09f4b302 83e48883 25 f1 415a 085125e8 f7cdc99f d91dbd 72 80373c5b"
+	       /*                             ^^                               ^^ */
+	       "960b1dd1 dc417b9c e4d897f4 5a6555d5 35739a 47 f0ebfd0c 3029f166 d109b18f"
+	       /*                                          ^^ */
+	       "75277f79 30d55ceb 22e8adba 79 4c 155c ed74cbdd 5fc5d36d b19b0a 58 35cca7e3"),
+	       /*                             ^^                               ^^ */
+	    H("a4c0d35c 95a63a80 5915367d cfe6b751"));
+
   SUCCESS();
 }
