@@ -13,6 +13,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* For getopt */
+#include <unistd.h>
+
 void
 die(const char *format, ...)
 #if __GNUC___
@@ -159,6 +162,9 @@ sexp_get_char(struct sexp_input *input, uint8_t *out)
       }
     case SEXP_HEX:
       /* Not yet implemented */
+      abort();
+
+    default:
       abort();
     }
 }
@@ -556,8 +562,13 @@ sexp_put_length(struct sexp_output *output, unsigned indent,
 {
   unsigned digit = 1;
 
-  while (digit < length)
-    digit *= 10;
+  for (;;)
+    {
+      unsigned next = digit * 10;
+      if (next > length)
+	break;
+      digit = next;
+    }
 
   for (; digit; length %= digit, digit /= 10)
     sexp_put_char(output, indent, '0' + length / digit);
@@ -857,14 +868,48 @@ sexp_convert_item(struct sexp_input *input, enum sexp_mode mode,
   return 1;
 }
 
+static int
+match_argument(const char *given, const char *name)
+{
+}
+
 int
 main(int argc, char **argv)
-{
+{  
   struct sexp_input input;
   struct sexp_output output;
+  enum sexp_mode mode = SEXP_ADVANCED;
+  unsigned width;
+  
+  int c;
+  while ( (c = getopt(argc, argv, "s:w:")) != -1)
+    switch (c)
+      {
+      case 's':
+	/* FIXME: Allow abbreviations */
+	if (!strcmp(optarg, "advanced"))
+	  mode = SEXP_ADVANCED;
+	else if (!strcmp(optarg, "transport"))
+	  mode = SEXP_TRANSPORT;
+	else if (!strcmp(optarg, "canonical"))
+	  mode = SEXP_CANONICAL;
+	else
+	  die("Available syntax variants: advanced, transport, canonical\n");
+	break;
 
+      case 'w':
+	die("Option -w not yet implemented.\n");
+	
+      case '?':
+	printf("Usage: sexp-conv [-m syntax]\n"
+	       "Available syntax variants: advanced, transport, canonical\n");
+	return EXIT_FAILURE;
+
+      default: abort();
+      }
+  
   sexp_input_init(&input, stdin);
-  sexp_output_init(&output, stdout, SEXP_ADVANCED);
+  sexp_output_init(&output, stdout, mode);
 
   sexp_convert_file(&input, &output);
 
