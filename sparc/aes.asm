@@ -1,40 +1,3 @@
-	! Benchmarks on my slow sparcstation:	
-	! Original C code	
-	! aes128 (ECB encrypt): 14.36s, 0.696MB/s
-	! aes128 (ECB decrypt): 17.19s, 0.582MB/s
-	! aes128 (CBC encrypt): 16.08s, 0.622MB/s
-	! aes128 ((CBC decrypt)): 18.79s, 0.532MB/s
-	! 
-	! aes192 (ECB encrypt): 16.85s, 0.593MB/s
-	! aes192 (ECB decrypt): 19.64s, 0.509MB/s
-	! aes192 (CBC encrypt): 18.43s, 0.543MB/s
-	! aes192 (CBC decrypt): 20.76s, 0.482MB/s
-	! 
-	! aes256 (ECB encrypt): 19.12s, 0.523MB/s
-	! aes256 (ECB decrypt): 22.57s, 0.443MB/s
-	! aes256 (CBC encrypt): 20.92s, 0.478MB/s
-	! aes256 (CBC decrypt): 23.22s, 0.431MB/s
-
-	! After unrolling key_addition32, and getting rid of
-	! some sll x, 2, x, encryption speed is 0.760 MB/s.
-
-	! Next, the C code was optimized to use larger tables and
-	! no rotates. New timings:
-	! aes128 (ECB encrypt): 13.10s, 0.763MB/s
-	! aes128 (ECB decrypt): 11.51s, 0.869MB/s
-	! aes128 (CBC encrypt): 15.15s, 0.660MB/s
-	! aes128 (CBC decrypt): 13.10s, 0.763MB/s
-	! 
-	! aes192 (ECB encrypt): 15.68s, 0.638MB/s
-	! aes192 (ECB decrypt): 13.59s, 0.736MB/s
-	! aes192 (CBC encrypt): 17.65s, 0.567MB/s
-	! aes192 (CBC decrypt): 15.31s, 0.653MB/s
-	! 
-	! aes256 (ECB encrypt): 17.95s, 0.557MB/s
-	! aes256 (ECB decrypt): 15.90s, 0.629MB/s
-	! aes256 (CBC encrypt): 20.16s, 0.496MB/s
-	! aes256 (CBC decrypt): 17.47s, 0.572MB/s
-	
 include(`asm.m4')
 	
 	.file	"aes.asm"
@@ -91,12 +54,8 @@ _aes_crypt:
 	bleu	.Lsource_loop
 	st	%g2, [wtxt+%i2]
 
-	! FIXME: We can safely assume that nrounds > 1 
 	ld	[ctx + AES_NROUNDS], %g2
 	mov	1, %g1
-	! cmp	%g1, %g2
-	! bgeu,a	.Lfinal_round
-	! sll	%g1, 4, %g2
 
 	add	%fp, -40, tmp
 	mov	%g2, %o7
@@ -109,22 +68,23 @@ _aes_crypt:
 	! 4*round:	%i3
 	mov	0, %i5
 .Lround_loop:
-	add	T, AES_IDX3, %i4
+	add	T, AES_SIDX3, %i4
 .Linner_loop:
 	! AES_IDX1
 	ld	[%i4-32], %g3
 	sll	%i5, 2, %i3
-	sll	%g3, 2, %g3
+
 	! AES_IDX2
 	ld	[%i4-16], %i2
 	! wtxt[IDX1...]
 	add	%g4, %g3, %g3
 	ldub	[%g3+2], %i1
-	sll	%i2, 2, %i2
+
+	! AES_IDX3
 	ld	[%i4], %g2
 	sll	%i1, 2, %i1
 	ld	[%g4+%i3], %i0
-	sll	%g2, 2, %g2
+
 	lduh	[%g4+%i2], %g3
 	and	%i0, 255, %i0
 	ldub	[%g4+%g2], %i2
@@ -170,7 +130,8 @@ _aes_crypt:
 	blu	.Lround_loop
 	mov	0, %i5
 	sll	%g1, 4, %g2
-.Lfinal_round:
+	
+	! final round
 	add	%g2, ctx, %o7
 	mov	0, %o1
 	mov	%l1, %g1
@@ -227,3 +188,56 @@ _aes_crypt:
 .LLfe1:
 	.size	_aes_crypt,.LLfe1-_aes_crypt
 
+	! Benchmarks on my slow sparcstation:	
+	! Original C code	
+	! aes128 (ECB encrypt): 14.36s, 0.696MB/s
+	! aes128 (ECB decrypt): 17.19s, 0.582MB/s
+	! aes128 (CBC encrypt): 16.08s, 0.622MB/s
+	! aes128 ((CBC decrypt)): 18.79s, 0.532MB/s
+	! 
+	! aes192 (ECB encrypt): 16.85s, 0.593MB/s
+	! aes192 (ECB decrypt): 19.64s, 0.509MB/s
+	! aes192 (CBC encrypt): 18.43s, 0.543MB/s
+	! aes192 (CBC decrypt): 20.76s, 0.482MB/s
+	! 
+	! aes256 (ECB encrypt): 19.12s, 0.523MB/s
+	! aes256 (ECB decrypt): 22.57s, 0.443MB/s
+	! aes256 (CBC encrypt): 20.92s, 0.478MB/s
+	! aes256 (CBC decrypt): 23.22s, 0.431MB/s
+
+	! After unrolling key_addition32, and getting rid of
+	! some sll x, 2, x, encryption speed is 0.760 MB/s.
+
+	! Next, the C code was optimized to use larger tables and
+	! no rotates. New timings:
+	! aes128 (ECB encrypt): 13.10s, 0.763MB/s
+	! aes128 (ECB decrypt): 11.51s, 0.869MB/s
+	! aes128 (CBC encrypt): 15.15s, 0.660MB/s
+	! aes128 (CBC decrypt): 13.10s, 0.763MB/s
+	! 
+	! aes192 (ECB encrypt): 15.68s, 0.638MB/s
+	! aes192 (ECB decrypt): 13.59s, 0.736MB/s
+	! aes192 (CBC encrypt): 17.65s, 0.567MB/s
+	! aes192 (CBC decrypt): 15.31s, 0.653MB/s
+	! 
+	! aes256 (ECB encrypt): 17.95s, 0.557MB/s
+	! aes256 (ECB decrypt): 15.90s, 0.629MB/s
+	! aes256 (CBC encrypt): 20.16s, 0.496MB/s
+	! aes256 (CBC decrypt): 17.47s, 0.572MB/s
+
+	! After optimization using pre-shifted indices
+	! (AES_SIDX[1-3]): 
+	! aes128 (ECB encrypt): 12.46s, 0.803MB/s
+	! aes128 (ECB decrypt): 10.74s, 0.931MB/s
+	! aes128 (CBC encrypt): 17.74s, 0.564MB/s
+	! aes128 (CBC decrypt): 12.43s, 0.805MB/s
+	! 
+	! aes192 (ECB encrypt): 14.59s, 0.685MB/s
+	! aes192 (ECB decrypt): 12.76s, 0.784MB/s
+	! aes192 (CBC encrypt): 19.97s, 0.501MB/s
+	! aes192 (CBC decrypt): 14.46s, 0.692MB/s
+	! 
+	! aes256 (ECB encrypt): 17.00s, 0.588MB/s
+	! aes256 (ECB decrypt): 14.81s, 0.675MB/s
+	! aes256 (CBC encrypt): 22.65s, 0.442MB/s
+	! aes256 (CBC decrypt): 16.46s, 0.608MB/s
