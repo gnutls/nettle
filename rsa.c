@@ -38,7 +38,7 @@
  * verify functions. */
 
 int
-rsa_init_public_key(struct rsa_public_key *key)
+rsa_prepare_public_key(struct rsa_public_key *key)
 {
   unsigned size = (mpz_sizeinbase(key->n, 2) + 7) / 8;
 
@@ -64,23 +64,22 @@ rsa_init_public_key(struct rsa_public_key *key)
 }
 
 int
-rsa_init_private_key(struct rsa_private_key *key)
+rsa_prepare_private_key(struct rsa_private_key *key)
 {
-  return rsa_init_public_key(&key->pub);
+  return rsa_prepare_public_key(&key->pub);
 }
 
 #ifndef RSA_CRT
 #define RSA_CRT 1
 #endif
 
-/* Internal function for computing an rsa root.
+/* Computing an rsa root.
  *
- * NOTE: We don't really need n not e, so we could delete the public
- * key info from struct rsa_private_key. We do need the size,
- * though. */
+ * NOTE: We don't really need n not e, so we could drop the public
+ * key info from struct rsa_private_key. */
 
 void
-rsa_compute_root(struct rsa_private_key *key, mpz_t x, mpz_t m)
+rsa_compute_root(struct rsa_private_key *key, mpz_t x, const mpz_t m)
 {
 #if RSA_CRT
   {

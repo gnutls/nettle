@@ -44,42 +44,38 @@ pkcs1_encode_md5(mpz_t m, unsigned length, struct md5_ctx *hash);
 void
 rsa_md5_sign(struct rsa_private_key *key,
              struct md5_ctx *hash,
-             uint8_t *signature)
+             mpz_t s)
 {
-  mpz_t m;
-  mpz_init(m);
-
   assert(key->pub.size >= 45);
 
-  pkcs1_encode_md5(m, key->pub.size - 1, hash);
+  pkcs1_encode_md5(s, key->pub.size - 1, hash);
 
-  rsa_compute_root(key, m, m);
-
-  nettle_mpz_get_str_256(key->pub.size, signature, m);
-
-  mpz_clear(m);
+  rsa_compute_root(key, s, s);
 }
 
 int
 rsa_md5_verify(struct rsa_public_key *key,
                struct md5_ctx *hash,
-               const uint8_t *signature)
+               const mpz_t s)
 {
   int res;
   
-  mpz_t m;
-  mpz_t s;
-
-  mpz_init(m);
+  mpz_t m1;
+  mpz_t m2;
   
-  nettle_mpz_init_set_str_256(s, key->size, signature);
-  mpz_powm(s, s, key->e, key->n);
+  if ( (mpz_sgn(s) <= 0)
+       || (mpz_cmp(s, key->n) >= 0) )
+    return 0;
+       
+  mpz_init(m1); mpz_init(m2);
+  
+  mpz_powm(m1, s, key->e, key->n);
 
-  /* FIXME: Is it cheaper to convert s to a string and check that? */
-  pkcs1_encode_md5(m, key->size - 1, hash);
-  res = !mpz_cmp(m, s);
+  /* FIXME: Is it cheaper to convert m1 to a string and check that? */
+  pkcs1_encode_md5(m2, key->size - 1, hash);
+  res = !mpz_cmp(m1, m2);
 
-  mpz_clear(m); mpz_clear(s);
+  mpz_clear(m1); mpz_clear(m2);
 
   return res;
 }
@@ -116,9 +112,7 @@ pkcs1_encode_md5(mpz_t m, unsigned length, struct md5_ctx *hash)
 
   i = length - MD5_DIGEST_SIZE;
   
-  md5_final(hash);
   md5_digest(hash, MD5_DIGEST_SIZE, em + i);
-  md5_init(hash);
 
   assert(i >= sizeof(md5_prefix));
 

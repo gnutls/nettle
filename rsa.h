@@ -69,7 +69,7 @@ struct rsa_private_key
  *
  * Store the private key in a rsa_private_key struct.
  *
- * Call rsa_init_private_key. This initializes the size attribute
+ * Call rsa_prepare_private_key. This initializes the size attribute
  * to the length of a signature.
  *
  * Initialize a hashing context, by callling
@@ -78,44 +78,46 @@ struct rsa_private_key
  * Hash the message by calling
  *   md5_update
  *
- * Finally, call
+ * Create the signature by calling
  *   rsa_md5_sign
  *
- * The final call stores the signature, of length size, in the supplied buffer,
- * and resets the hashing context.
+ * The signature is represented as a mpz_t bignum. This call also
+ * resets the hashing context.
+ *
+ * When done with the key, don't forget to call mpz_clear.
  */
 
 int
-rsa_init_public_key(struct rsa_public_key *key);
+rsa_prepare_public_key(struct rsa_public_key *key);
 
 int
-rsa_init_private_key(struct rsa_private_key *key);
+rsa_prepare_private_key(struct rsa_private_key *key);
 
 /* PKCS#1 style signatures */
 void
 rsa_md5_sign(struct rsa_private_key *key,
              struct md5_ctx *hash,
-             uint8_t *signature);
+             mpz_t signature);
 
 
 int
 rsa_md5_verify(struct rsa_public_key *key,
                struct md5_ctx *hash,
-               const uint8_t *signature);
+	       const mpz_t signature);
 
 void
 rsa_sha1_sign(struct rsa_private_key *key,
               struct sha1_ctx *hash,
-              uint8_t *signature);
+              mpz_t signature);
 
 int
 rsa_sha1_verify(struct rsa_public_key *key,
                 struct sha1_ctx *hash,
-                const uint8_t *signature);
+		const mpz_t signature);
 
 /* Compute x, the d:th root of m. Calling it with x == m is allowed. */
 void
-rsa_compute_root(struct rsa_private_key *key, mpz_t x, mpz_t m);
+rsa_compute_root(struct rsa_private_key *key, mpz_t x, const mpz_t m);
 
 
 #endif /* NETTLE_RSA_H_INCLUDED */
