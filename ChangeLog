@@ -1,3 +1,8 @@
+2003-02-11  Niels Möller  <niels@s3.kth.se>
+
+	* buffer.c (nettle_buffer_copy): Bug fix, it didn't return any
+	value. 
+
 2003-02-10  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* testsuite/sexp-format-test.c (test_main): New test with tokens
