@@ -8,13 +8,15 @@
 	! aes192 (ECB encrypt): 16.85s, 0.593MB/s
 	! aes192 (ECB decrypt): 19.64s, 0.509MB/s
 	! aes192 (CBC encrypt): 18.43s, 0.543MB/s
-	! aes192 ((CBC decrypt)): 20.76s, 0.482MB/s
+	! aes192 (CBC decrypt): 20.76s, 0.482MB/s
 	! 
 	! aes256 (ECB encrypt): 19.12s, 0.523MB/s
 	! aes256 (ECB decrypt): 22.57s, 0.443MB/s
 	! aes256 (CBC encrypt): 20.92s, 0.478MB/s
-	! aes256 ((CBC decrypt)): 23.22s, 0.431MB/s
+	! aes256 (CBC decrypt): 23.22s, 0.431MB/s
 
+	! After unrolling key_addition32, and getting rid of
+	! some sll x, 2, x, encryption speed is 0.760 MB/s.
 include(`asm.m4')
 	
 	.file	"aes.asm"
@@ -206,16 +208,13 @@ aes_encrypt:
 	! or	%i4, %lo(idx), %l7
 	add	ctx, 16, %l2
 .Lencrypt_round:
-	! j:	%o7
 	! 4j:	%g2
-	mov	0, %o7
+	mov	0, %g2
 	! %g3 = &idx[3][0]
 	add	g_idx, 48, %g3
 .Lencrypt_inner:
 	! %o0 = idx[3][0]
 	ld	[%g3], %o0
-	! %g2 = 4j
-	sll	%o7, 2, %g2
 	! %o1 = idx[2][0]
 	ld	[%g3-16], %o1
 	! %o3 = wtxt[idx[3][0]], byte => bits 24-31
@@ -274,14 +273,14 @@ aes_encrypt:
 	or	%o0, %o3, %o0
 	! %o1 = dtbl[wtxt[j] & 0xff] ^ ROL(XX2 = XX3
 	xor	%o1, %o0, %o1
-	! j++
-	add	%o7, 1, %o7
 	! txt[j] (old j) = XX3 
 	st	%o1, [%l4+%g2]
 
 	! j <= 3?
-	cmp	%o7, 3
-
+	cmp	%g2, 8
+	! j++
+	add	%g2, 4, %g2
+	
 	bleu	.Lencrypt_inner
 	! %g3 = &idx[3][j]
 	add	%g3, 4, %g3
