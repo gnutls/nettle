@@ -91,6 +91,10 @@ void
 test_dsa(const struct dsa_public_key *pub,
 	 const struct dsa_private_key *key);
 
+void
+test_dsa_key(struct dsa_public_key *pub,
+	     struct dsa_private_key *key);
+
 #endif /* WITH_PUBLIC_KEY */
 
 #define H2(d, s) decode_hex((d), (s))

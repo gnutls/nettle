@@ -507,5 +507,33 @@ test_dsa(const struct dsa_public_key *pub,
   dsa_signature_clear(&signature);
 }
 
+void
+test_dsa_key(struct dsa_public_key *pub,
+	     struct dsa_private_key *key)
+{
+  mpz_t t;
+
+  mpz_init(t);
+
+  ASSERT(mpz_sizeinbase(pub->q, 2) == 160);
+  ASSERT(mpz_sizeinbase(pub->p, 2) >= DSA_MINIMUM_BITS);
+  
+  ASSERT(mpz_probab_prime_p(pub->p, 10));
+
+  ASSERT(mpz_probab_prime_p(pub->q, 10));
+
+  mpz_fdiv_r(t, pub->p, pub->q);
+
+  ASSERT(0 == mpz_cmp_ui(t, 1));
+
+  ASSERT(mpz_cmp_ui(pub->g, 1) > 0);
+  
+  mpz_powm(t, pub->g, pub->q, pub->p);
+  ASSERT(0 == mpz_cmp_ui(t, 1));
+  
+  mpz_powm(t, pub->g, key->x, pub->p);
+  ASSERT(0 == mpz_cmp(t, pub->y));
+};
+
 #endif /* WITH_PUBLIC_KEY */
 
