@@ -59,45 +59,10 @@ aes_decrypt:
 	C Why???
 	xchgl	%ebx,%edx
 
-	C First column
 	AES_ROUND(_aes_decrypt_table,a,b,c,d)
-C 	C a b c d
-C 	movl	%eax,%esi	C  copy first in
-C 	andl	$0x000000ff,%esi C  clear all but offset
-C 	shll	$2,%esi		C  index in itbl1
-C 	movl	AES_TABLE0 + _aes_decrypt_table (%esi),%edi
-C 	movl	%ebx,%esi	C  second one
-C 	shrl	$6,%esi
-C 	andl	$0x000003fc,%esi C  clear all but offset bytes
-C 	xorl	AES_TABLE1 + _aes_decrypt_table (%esi),%edi
-C 	movl	%ecx,%esi	C  third one
-C 	shrl	$14,%esi
-C 	andl	$0x000003fc,%esi
-C 	xorl	AES_TABLE2 + _aes_decrypt_table (%esi),%edi
-C 	movl	%edx,%esi	C  fourth one
-C 	shrl	$22,%esi
-C 	andl	$0x000003fc,%esi
-C 	xorl	AES_TABLE3 + _aes_decrypt_table (%esi),%edi
 	pushl	%edi		C  save first on stack
 
-	C // Second column
-	C d a b c
-	movl	%edx,%esi	C  copy first in
-	andl	$0x000000ff,%esi C  clear all but offset
-	shll	$2,%esi		C  index in itbl1
-	movl	AES_TABLE0 + _aes_decrypt_table (%esi),%edi
-	movl	%eax,%esi	C  second one
-	shrl	$6,%esi
-	andl	$0x000003fc,%esi C  clear all but offset bytes
-	xorl	AES_TABLE1 + _aes_decrypt_table (%esi),%edi
-	movl	%ebx,%esi	C  third one
-	shrl	$14,%esi
-	andl	$0x000003fc,%esi
-	xorl	AES_TABLE2 + _aes_decrypt_table (%esi),%edi
-	movl	%ecx,%esi	C  fourth one
-	shrl	$22,%esi
-	andl	$0x000003fc,%esi
-	xorl	AES_TABLE3 + _aes_decrypt_table (%esi),%edi
+	AES_ROUND(_aes_decrypt_table,d,a,b,c)
 	pushl	%edi
 
 	C // Third column
