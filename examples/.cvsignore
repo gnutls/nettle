@@ -3,3 +3,5 @@ Makefile
 Makefile.in
 nettle-benchmark
 rsa-keygen
+rsa-sign
+rsa-verify
