@@ -1,3 +1,10 @@
+2004-02-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/des-compat-test.c (C_Block, Key_schedule): Deleted
+	defines. Deleted some of the explicit casts.
+
+	* des-compat.c (des_cbc_cksum): Dereference DST pointer.
+
 2004-02-25  Niels Möller  <niels@s3.kth.se>
 
 	* pgp.h: Include nettle-types.h.
