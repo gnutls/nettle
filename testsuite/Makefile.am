@@ -1,6 +1,11 @@
 CFLAGS = -I$(top_srcdir) @CFLAGS@
 CPPFLAGS = @CPPFLAGS@
 
+# We need .. to be searched before standard places, in order to pick
+# up the newly built libnettle.a/libnettle.so, rather than any
+# installed version.
+AM_LDFLAGS = -L..
+
 TS_PROGS = aes-test arcfour-test blowfish-test cast128-test \
            base16-test base64-test \
 	   des-test des3-test des-compat-test \
@@ -16,12 +21,13 @@ TS_PROGS = aes-test arcfour-test blowfish-test cast128-test \
 
 noinst_PROGRAMS = $(TS_PROGS)
 
-LDADD = testutils.o ../libnettle.a
+LDADD = testutils.o -lnettle
 EXTRA_DIST = testutils.c testutils.h \
 	     run-tests rfc1750.txt
 
 .PHONY: run-tests
 run-tests: $(TS_PROGS)
-	srcdir="$(srcdir)" "$(srcdir)"/run-tests $(TS_PROGS)
+	LD_LIBRARY_PATH=../.lib srcdir="$(srcdir)" \
+	  "$(srcdir)"/run-tests $(TS_PROGS)
 
 check: run-tests
