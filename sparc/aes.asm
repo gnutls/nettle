@@ -177,36 +177,36 @@ _aes_crypt:
 
 	add	wtxt, t1, t1	! 1
 	ldub	[t1+2], t1	! 1
-	add	%i5, dst, %o2	
-	ld	[%g4-16], %g3	! 2
+	add	%i5, dst, %g2	
+	ld	[%g4-16], t2	! 2
 	add	i, 1, i
 	ld	[wtxt+%i5], t0	! 0
 
-	lduh	[wtxt+%g3], %o4	! 2
+	lduh	[wtxt+t2], t2	! 2
 	and	t0, 255, t0	! 0
 	ld	[%g4], t3	! 3
-	and	%o4, 255, %o4	! 2
+	and	t2, 255, t2	! 2
 	ldub	[T+t1], t1	! 1
 
 	ldub	[T+t0], t0	! 0
 	sll	t1, 8, t1	! 1
 	ldub	[wtxt+t3], t3	! 3
 	or	t0, t1, t0	! 0, 1
-	ldub	[T+%o4], %g2	! 2
+	ldub	[T+t2], t2	! 2
 	cmp	i, 3
 	ldub	[T+t3], t3	! 3
-	sll	%g2, 16, %g2	! 2
-	or	t0, %g2, t0	! 0, 1, 2
-	ld	[ctx + round], %g2
+	sll	t2, 16, t2	! 2
+	or	t0, t2, t0	! 0, 1, 2
+	ld	[ctx + round], t2
 	sll	t3, 24, t3	! 3
 	or	t0, t3, t0	! 0, 1, 2, 3
-	xor	t0, %g2, %g3
+	xor	t0, t2, %g3
 	srl	%g3, 24, %o5
 	srl	%g3, 16, %o0
-	srl	%g3, 8, %g2
-	stb	%g2, [%o2+1]
-	stb	%o5, [%o2+3]
-	stb	%o0, [%o2+2]
+	srl	%g3, 8, t2
+	stb	t2, [%g2+1]
+	stb	%o5, [%g2+3]
+	stb	%o0, [%g2+2]
 	stb	%g3, [dst+%i5]
 	add	round, 4, round
 	bleu	.Lfinal_loop
