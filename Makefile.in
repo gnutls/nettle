@@ -207,6 +207,9 @@ Makefile: Makefile.in config.status
 config.make: config.make.in config.status
 	./config.status $@
 
+config.m4: config.m4.in config.status
+	./config.status $@
+
 # Installation
 install-here: install-info install-headers libnettle.a $(SHLIBINSTALL)
 	$(INSTALL) -d $(DESTDIR)$(libdir)
