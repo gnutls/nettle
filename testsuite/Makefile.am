@@ -6,7 +6,8 @@ TS_PROGS = aes-test arcfour-test blowfish-test cast128-test \
 	   des-test des3-test des-compat-test \
 	   md5-test md5-compat-test sha1-test sha256-test \
 	   serpent-test twofish-test \
-	   sexp-test \
+	   buffer-test sexp-test sexp-format-test \
+	   rsa2sexp-test sexp2rsa-test \
 	   knuth-lfib-test \
 	   cbc-test hmac-test bignum-test \
 	   rsa-test rsa-keygen-test yarrow-test
