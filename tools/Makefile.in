@@ -59,8 +59,13 @@ check:
 	true
 
 install: $(TARGETS)
-	$(INSTALL) -d $(bindir)
-	$(INSTALL_PROGRAM) $(TARGETS) $(bindir)
+	$(INSTALL) -d $(DESTDIR)$(bindir)
+	$(INSTALL_PROGRAM) $(TARGETS) $(DESTDIR)$(bindir)
+
+uninstall:
+	for f in $(TARGETS) ; do \
+	  rm -f $(DESTDIR)$(bindir)/$$f ; \
+	done
 
 distdir: $(DISTFILES)
 	cp $^ $(distdir)
