@@ -1,3 +1,8 @@
+2002-03-20  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/run-tests (test_program): Test the exit status of the
+	right process.
+
 2002-03-19  Pontus Sköld  <pont@it.uu.se>
 
 	* testsuite/run-tests: Removed /bin/bashisms to use with /bin/sh. 
