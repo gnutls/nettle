@@ -251,7 +251,7 @@ its SHA1 checksum on stdout should give the flavour of Nettle.
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <nettle/sha1.h>
+#include <nettle/sha.h>
 
 #define BUF_SIZE 1000
 
@@ -286,7 +286,6 @@ main(int argc, char **argv)
   if (ferror(stdin))
     return EXIT_FAILURE;
 
-  sha1_finish(&ctx);
   sha1_digest(&ctx, SHA1_DIGEST_SIZE, digest);
 
   display_hex(SHA1_DIGEST_SIZE, digest);
@@ -361,30 +360,29 @@ Initialize the MD5 state.
 Hash some more data.
 @end deftypefun
 
-@deftypefun void md5_final (struct md5_ctx *@var{ctx})
-Performs final processing that is needed after all input data has been
-processed with @code{md5_update}.
-@end deftypefun
-
 @deftypefun void md5_digest (struct md5_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
-Extracts the message digest, writing it to @var{digest}. @var{length}
-may be smaller than @code{MD5_DIGEST_SIZE}, in which case only the first
-@var{length} octets of the digest are written.
+Performs final processing and extracts the message digest, writing it
+to @var{digest}. @var{length} may be smaller than
+@code{MD5_DIGEST_SIZE}, in which case only the first @var{length}
+octets of the digest are written.
 
-This functions doesn't change the state in any way.
+This function also resets the context in the same way as
+@code{md5_init}.
 @end deftypefun
 
 The normal way to use MD5 is to call the functions in order: First
-@code{md5_init}, then @code{md5_update} zero or more times, then
-@code{md5_final}, and at last @code{md5_digest} zero or more times.
+@code{md5_init}, then @code{md5_update} zero or more times, and finally
+@code{md5_digest}. After @code{md5_digest}, the context is reset to
+its initial state, so you can start over calling @code{md5_update} to
+hash new data.
 
 To start over, you can call @code{md5_init} at any time.
 
 @subsection @acronym{SHA1}
 
 SHA1 is a hash function specified by @dfn{NIST} (The U.S. National Institute
-for Standards and Technology. It outputs hash values of 160 bits, or 20
-octets. Nettle defines SHA1 in @file{<nettle/sha1.h>}.
+for Standards and Technology). It outputs hash values of 160 bits, or 20
+octets. Nettle defines SHA1 in @file{<nettle/sha.h>}.
 
 The functions are analogous to the MD5 ones.
 
@@ -408,17 +406,53 @@ Initialize the SHA1 state.
 Hash some more data.
 @end deftypefun
 
-@deftypefun void sha1_final (struct sha1_ctx *@var{ctx})
-Performs final processing that is needed after all input data has been
-processed with @code{sha1_update}.
+@deftypefun void sha1_digest (struct sha1_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing it
+to @var{digest}. @var{length} may be smaller than
+@code{SHA1_DIGEST_SIZE}, in which case only the first @var{length}
+octets of the digest are written.
+
+This function also resets the context in the same way as
+@code{sha1_init}.
 @end deftypefun
 
-@deftypefun void sha1_digest (struct sha1_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
-Extracts the digest, writing it to @var{digest}. @var{length} may be smaller than
-@code{SHA1_DIGEST_SIZE}, in which case only the first @var{length} octets
-of the digest are written.
+@subsection @acronym{SHA256}
 
-This functions doesn't change the state in any way.
+SHA256 is another hash function specified by @dfn{NIST}, intended as a
+replacement for @acronym{SHA1}, generating larger digests. It outputs
+hash values of 256 bits, or 32 octets. Nettle defines SHA256 in
+@file{<nettle/sha.h>}.
+
+The functions are analogous to the MD5 ones.
+
+@deftp {Context struct} {struct sha256_ctx}
+@end deftp
+
+@defvr Constant SHA256_DIGEST_SIZE
+The size of an SHA256 digest, i.e. 20.
+@end defvr
+
+@defvr Constant SHA256_DATA_SIZE
+The internal block size of SHA256. Useful for some special constructions,
+in particular HMAC-SHA256.
+@end defvr
+
+@deftypefun void sha256_init (struct sha256_ctx *@var{ctx})
+Initialize the SHA256 state.
+@end deftypefun
+
+@deftypefun void sha256_update (struct sha256_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+Hash some more data.
+@end deftypefun
+
+@deftypefun void sha256_digest (struct sha256_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing it
+to @var{digest}. @var{length} may be smaller than
+@code{SHA256_DIGEST_SIZE}, in which case only the first @var{length}
+octets of the digest are written.
+
+This function also resets the context in the same way as
+@code{sha256_init}.
 @end deftypefun
 
 @node Cipher functions, Cipher Block Chaining, Hash functions, Reference
@@ -555,7 +589,6 @@ my_arcfour_set_key(struct arcfour_ctx *ctx,
 
   sha1_init(&hash);
   sha1_update(&hash, length, key);
-  sha1_final(&hash);
   sha1_digest(&hash, SHA1_DIGEST_SIZE, digest);
 
   arcfour_set_key(ctx, SHA1_DIGEST_SIZE, digest);
