@@ -34,6 +34,9 @@
 
 extern int quiet_flag;
 
+void *
+xalloc(size_t size);
+
 void
 werror(const char *format, ...)
 #if __GNUC___

@@ -37,6 +37,19 @@
 
 int quiet_flag = 0;
 
+void *
+xalloc(size_t size)
+{
+  void *p = malloc(size);
+  if (!p)
+    {
+      fprintf(stderr, "Virtual memory exhausted.\n");
+      abort();
+    }
+
+  return p;
+}
+
 void
 werror(const char *format, ...)
 {
