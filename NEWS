@@ -1,3 +1,32 @@
+NEWS for the 1.11 release
+
+	Nettle no longer uses automake. Side effects:
+
+	  * Dependency tracking is enabled only for gcc-3 (help with
+	    supporting dependency tracking with other compilers is
+	    appreciated).
+	  
+	  * Makefile compatibility with make programs other than GNU
+	    make is mostly unknown, please report any problems.
+
+	Support for arctwo.
+
+	Fixes to the libdes compatibility code. Declarations should
+	now match openssl/libdes better. des_cbc_cksum pads
+	input with NUL's, if it's not an integral number of blocks (in
+	general, such unreversible padding is a bad idea).
+
+	By default, also the static library is compiled as position
+	independent code. This is needed on some systems to make it
+	possible to link nettle into a dynamically loaded module. Use
+	the configure flag --disable-pic if this is not desired.
+
+	Stricter constness typing for the sexp_iterator_assoc and
+	sexp_iterator_check_types arguments.
+
+	Speedup of arcfour on older x86 cpu:s, in particular PII and
+	PPro.
+
 NEWS for the 1.10 release
 
 	Nettle should now compile also on Tru64, Darwin, FreeBSD and
