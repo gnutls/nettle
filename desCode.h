@@ -9,8 +9,8 @@
 
 #include "des.h"
 
-extern uint32_t des_keymap[];
-extern uint32_t des_bigmap[];
+extern const uint32_t des_keymap[];
+extern const uint32_t des_bigmap[];
 
 /* optional customization:
  * the idea here is to alter the code so it will still run correctly
