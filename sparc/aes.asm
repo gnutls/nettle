@@ -1,3 +1,7 @@
+	! Used registers:	%l0,1,2
+	!			%i0,1,2,3,4,5 (%i6=%fp, %i7 = return)
+	!			%o0,1,2,3,4,7 (%o6=%sp)
+	!			%g1,2,3,4
 include(`asm.m4')
 	
 	.file	"aes.asm"
@@ -8,7 +12,7 @@ include(`asm.m4')
 	.type	_aes_crypt,#function
 	.proc	020
 
-define(ctx, %o5)
+define(ctx, %i0)
 define(T, %o0)
 define(length, %o4)
 define(dst, %o3)
@@ -22,7 +26,6 @@ _aes_crypt:
 
 ! Why this moving around of the input parameters?
 	mov	%i2, length
-	mov	%i0, ctx
 	mov	%i1, T
 	mov	%i3, dst
 	cmp	length, 0
@@ -37,19 +40,19 @@ _aes_crypt:
 .Lsource_loop:
 	add	%i2, 4, %i2
 		
-	add	%i2, src, %i0
-	ldub	[%i0+3], %g2
+	add	%i2, src, %o5
+	ldub	[%o5+3], %g2
 
-	ldub	[%i0+2], %g3
+	ldub	[%o5+2], %g3
 	sll	%g2, 24, %g2
-	ldub	[%i0+1], %i1
+	ldub	[%o5+1], %i1
 	sll	%g3, 16, %g3
 	or	%g2, %g3, %g2
-	ldub	[src+%i2], %i0
+	ldub	[src+%i2], %o5
 	sll	%i1, 8, %i1
 	ld	[ctx+%i2], %g3
 	or	%g2, %i1, %g2
-	or	%g2, %i0, %g2
+	or	%g2, %o5, %g2
 	xor	%g2, %g3, %g2
 
 	cmp	%i2, 12
@@ -111,30 +114,30 @@ _aes_crypt:
 	sll	%i1, 2, %i1
 	
 	! wtxt[j]
-	ld	[%g4+%i3], %i0
+	ld	[%g4+%i3], %o5
 	
 	! wtxt[IDX2...]
 	lduh	[%g4+%i2], %g3
 	
-	and	%i0, 255, %i0
+	and	%o5, 255, %o5
 
 	! wtxt[IDX3...]
 	ldub	[%g4+%g2], %i2
 	
-	sll	%i0, 2, %i0
-	add	%i0, AES_TABLE0, %i0
-	ld	[T+%i0], %g2
+	sll	%o5, 2, %o5
+	add	%o5, AES_TABLE0, %o5
+	ld	[T+%o5], %g2
 
 	add	%i1, AES_TABLE1, %i1
 	and	%g3, 255, %g3
-	ld	[T+%i1], %i0
+	ld	[T+%i1], %o5
 	sll	%g3, 2, %g3
 	add	%g3, AES_TABLE2, %g3
 	ld	[T+%g3], %i1
 	sll	%i2, 2, %i2
 	add	%i2, AES_TABLE3, %i2
 	ld	[T+%i2], %g3
-	xor	%g2, %i0, %g2
+	xor	%g2, %o5, %g2
 	xor	%g2, %i1, %g2
 
 	add	%i4, 4, %i4
@@ -154,11 +157,11 @@ _aes_crypt:
 	mov	tmp, %i2
 .Lroundkey_loop:
 	sll	%i5, 2, %g2
-	ld	[%i1], %i0
+	ld	[%i1], %o5
 	add	%i5, 1, %i5
 	ld	[%i2+%g2], %g3
 	cmp	%i5, 3
-	xor	%g3, %i0, %g3
+	xor	%g3, %o5, %g3
 	st	%g3, [%i3+%g2]
 	bleu	.Lroundkey_loop
 	add	%i1, 4, %i1
@@ -187,28 +190,28 @@ _aes_crypt:
 	sll	%g3, 2, %g3
 	lduh	[%g1+%g3], %i2
 	and	%g2, 255, %g2
-	ld	[%g4], %i0
+	ld	[%g4], %o5
 	and	%i2, 255, %i2
 	ldub	[T+%i3], %i1
-	sll	%i0, 2, %i0
+	sll	%o5, 2, %o5
 	ldub	[T+%g2], %g3
 	sll	%i1, 8, %i1
-	ldub	[%g1+%i0], %i3
+	ldub	[%g1+%o5], %i3
 	or	%g3, %i1, %g3
 	ldub	[T+%i2], %g2
 	cmp	%o1, 3
-	ldub	[T+%i3], %i0
+	ldub	[T+%i3], %o5
 	sll	%g2, 16, %g2
 	or	%g3, %g2, %g3
 	ld	[%o7], %g2
-	sll	%i0, 24, %i0
-	or	%g3, %i0, %g3
+	sll	%o5, 24, %o5
+	or	%g3, %o5, %g3
 	xor	%g3, %g2, %g3
-	srl	%g3, 24, %i0
+	srl	%g3, 24, %o5
 	srl	%g3, 16, %i1
 	srl	%g3, 8, %g2
 	stb	%g2, [%i4+1]
-	stb	%i0, [%i4+3]
+	stb	%o5, [%i4+3]
 	stb	%i1, [%i4+2]
 	stb	%g3, [dst+%i5]
 	add	%o7, 4, %o7
