@@ -54,10 +54,9 @@ define(src, %o2)
 define(wtxt, %l2)
 define(tmp, %o1)
 _aes_crypt:
-	!#PROLOGUE# 0
 ! Why -136?
 	save	%sp, -136, %sp
-	!#PROLOGUE# 1
+
 ! Why this moving around of the input parameters?
 	mov	%i2, length
 	mov	%i0, ctx
@@ -66,7 +65,7 @@ _aes_crypt:
 	cmp	length, 0
 	be	.Lend
 	mov	%i4, src
-	! wtxt?
+	! wtxt
 	add	%fp, -24, %l1
 	mov	%l1, wtxt
 .Lblock_loop:
@@ -95,9 +94,9 @@ _aes_crypt:
 	! FIXME: We can safely assume that nrounds > 1 
 	ld	[ctx + AES_NROUNDS], %g2
 	mov	1, %g1
-	cmp	%g1, %g2
-	bgeu,a	.Lfinal_round
-	sll	%g1, 4, %g2
+	! cmp	%g1, %g2
+	! bgeu,a	.Lfinal_round
+	! sll	%g1, 4, %g2
 
 	add	%fp, -40, tmp
 	mov	%g2, %o7
