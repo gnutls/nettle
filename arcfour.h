@@ -26,7 +26,7 @@
 #ifndef NETTLE_ARCFOUR_H_INCLUDED
 #define NETTLE_ARCFOUR_H_INCLUDED
 
-#include <inttypes.h>
+#include "nettle-types.h"
 
 /* Name mangling */
 #define arcfour_set_key nettle_arcfour_set_key

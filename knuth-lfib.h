@@ -31,7 +31,7 @@
 #ifndef NETTLE_KNUTH_LFIB_H_INCLUDED
 #define NETTLE_KNUTH_LFIB_H_INCLUDED
 
-#include <inttypes.h>
+#include "nettle-types.h"
 
 /* Namespace mangling */
 #define knuth_lfib_init nettle_knuth_lfib_init

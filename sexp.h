@@ -26,8 +26,8 @@
 #ifndef NETTLE_SEXP_H_INCLUDED
 #define NETTLE_SEXP_H_INCLUDED
 
-#include <inttypes.h>
 #include <stdarg.h>
+#include "nettle-types.h"
 
 /* Name mangling */
 #define sexp_iterator_first nettle_sexp_iterator_first

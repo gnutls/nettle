@@ -26,7 +26,7 @@
 #ifndef NETTLE_AES_H_INCLUDED
 #define NETTLE_AES_H_INCLUDED
 
-#include <inttypes.h>
+#include "nettle-types.h"
 
 /* Name mangling */
 #define aes_set_encrypt_key nettle_aes_set_encrypt_key

@@ -31,7 +31,7 @@
 #ifndef NETTLE_SERPENT_H_INCLUDED
 #define NETTLE_SERPENT_H_INCLUDED
 
-#include <inttypes.h>
+#include "nettle-types.h"
 
 /* Name mangling */
 #define serpent_set_key nettle_serpent_set_key

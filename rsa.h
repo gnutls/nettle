@@ -26,8 +26,8 @@
 #ifndef NETTLE_RSA_H_INCLUDED
 #define NETTLE_RSA_H_INCLUDED
 
-#include <inttypes.h>
 #include <gmp.h>
+#include "nettle-types.h"
 
 #include "md5.h"
 #include "sha.h"

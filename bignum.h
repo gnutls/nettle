@@ -29,7 +29,7 @@
 #include "nettle-meta.h"
 
 #include <gmp.h>
-#include <inttypes.h>
+#include "nettle-types.h"
 
 /* Size needed for signed encoding, including extra sign byte if
  * necessary. */

@@ -27,7 +27,7 @@
 #ifndef NETTLE_BASE16_H_INCLUDED
 #define NETTLE_BASE16_H_INCLUDED
 
-#include <inttypes.h>
+#include "nettle-types.h"
 
 /* Name mangling */
 #define base16_encode_single nettle_base16_encode_single

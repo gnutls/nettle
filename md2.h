@@ -26,7 +26,7 @@
 #ifndef NETTLE_MD2_H_INCLUDED
 #define NETTLE_MD2_H_INCLUDED
 
-#include <inttypes.h>
+#include "nettle-types.h"
 
 /* Name mangling */
 #define md2_init nettle_md2_init

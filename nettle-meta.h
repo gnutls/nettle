@@ -26,7 +26,7 @@
 #ifndef NETTLE_META_H_INCLUDED
 #define NETTLE_META_H_INCLUDED
 
-#include <inttypes.h>
+#include "nettle-types.h"
 
 /* Randomness. Used by key generation and dsa signature creation. */
 typedef void (*nettle_random_func)(void *ctx,

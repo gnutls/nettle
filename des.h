@@ -35,7 +35,7 @@
 #ifndef NETTLE_DES_H_INCLUDED
 #define NETTLE_DES_H_INCLUDED
 
-#include <inttypes.h>
+#include "nettle-types.h"
 
 /* Namespace mangling */
 #define des_set_key nettle_des_set_key

@@ -26,8 +26,9 @@
 #ifndef NETTLE_DSA_H_INCLUDED
 #define NETTLE_DSA_H_INCLUDED
 
-#include <inttypes.h>
 #include <gmp.h>
+
+#include "nettle-types.h"
 
 #include "sha.h"
 

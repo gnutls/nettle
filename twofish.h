@@ -32,7 +32,7 @@
 #ifndef NETTLE_TWOFISH_H_INCLUDED
 #define NETTLE_TWOFISH_H_INCLUDED
 
-#include <inttypes.h>
+#include "nettle-types.h"
 
 /* Name mangling */
 #define twofish_set_key nettle_twofish_set_key

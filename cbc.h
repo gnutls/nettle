@@ -26,7 +26,7 @@
 #ifndef NETTLE_CBC_H_INCLUDED
 #define NETTLE_CBC_H_INCLUDED
 
-#include <inttypes.h>
+#include "nettle-types.h"
 
 /* Name mangling */
 #define cbc_encrypt nettle_cbc_encrypt

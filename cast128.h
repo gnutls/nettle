@@ -32,7 +32,7 @@
 #ifndef NETTLE_CAST128_H_INCLUDED
 #define NETTLE_CAST128_H_INCLUDED
 
-#include <inttypes.h>
+#include "nettle-types.h"
 
 /* Name mangling */
 #define cast128_set_key nettle_cast128_set_key

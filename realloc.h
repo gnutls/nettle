@@ -25,7 +25,7 @@
 #ifndef NETTLE_REALLOC_H_INCLUDED
 #define NETTLE_REALLOC_H_INCLUDED
 
-#include <inttypes.h>
+#include "nettle-types.h"
 
 typedef void *nettle_realloc_func(void *ctx, void *p, unsigned length);
 

@@ -26,8 +26,8 @@
 #ifndef NETTLE_PKCS1_H_INCLUDED
 #define NETTLE_PKCS1_H_INCLUDED
 
-#include <inttypes.h>
 #include <gmp.h>
+#include "nettle-types.h"
 
 /* Name mangling */
 #define pkcs1_signature_prefix nettle_pkcs1_signature_prefix

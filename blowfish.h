@@ -26,7 +26,7 @@
 #ifndef NETTLE_BLOWFISH_H_INCLUDED
 #define NETTLE_BLOWFISH_H_INCLUDED
 
-#include <inttypes.h>
+#include "nettle-types.h"
 
 /* Name mangling */
 #define blowfish_set_key nettle_blowfish_set_key

@@ -26,7 +26,7 @@
 #ifndef NETTLE_MD4_H_INCLUDED
 #define NETTLE_MD4_H_INCLUDED
 
-#include <inttypes.h>
+#include "nettle-types.h"
 
 /* Name mangling */
 #define md4_init nettle_md4_init

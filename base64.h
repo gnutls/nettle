@@ -26,7 +26,7 @@
 #ifndef NETTLE_BASE64_H_INCLUDED
 #define NETTLE_BASE64_H_INCLUDED
 
-#include <inttypes.h>
+#include "nettle-types.h"
 
 /* Name mangling */
 #define base64_encode_init nettle_base64_encode_init

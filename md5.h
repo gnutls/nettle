@@ -26,7 +26,7 @@
 #ifndef NETTLE_MD5_H_INCLUDED
 #define NETTLE_MD5_H_INCLUDED
 
-#include <inttypes.h>
+#include "nettle-types.h"
 
 /* Name mangling */
 #define md5_init nettle_md5_init

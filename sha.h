@@ -26,7 +26,7 @@
 #ifndef NETTLE_SHA_H_INCLUDED
 #define NETTLE_SHA_H_INCLUDED
 
-#include <inttypes.h>
+#include "nettle-types.h"
 
 /* Name mangling */
 #define sha1_init nettle_sha1_init
