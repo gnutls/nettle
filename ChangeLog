@@ -1,3 +1,9 @@
+2001-12-14  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* Makefile.am (EXTRA_DIST): Added $(des_headers). Changed
+	dependencies for $(des_headers) to depend only on the source file
+	desdata.c, not on the executable.	
+
 2001-12-12  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* testsuite/yarrow-test.c (main): Updated testcase to match fixed
