@@ -6,7 +6,9 @@ if [ -z "$srcdir" ] ; then
   srcdir=`pwd`
 fi
 
-nm ../libnettle.a | grep ' [DRT] ' | egrep -v '( |^)\.?_?(_?nettle_|memxor)' \
+# nm on aix seems to generate bogus outbut including random binary data.
+# Using -g is a workaround to get rid of that. Hope nm -g is portable enough.
+nm -g ../libnettle.a | grep ' [DRT] ' | egrep -v '( |^)\.?_?(_?nettle_|memxor)' \
     | sort -k3 > test1.out
 
 if [ -s test1.out ] ; then
