@@ -1,3 +1,13 @@
+2002-11-08  Niels Möller  <niels@s3.kth.se>
+
+	* des-compat.c (des_ecb3_encrypt): Don't use struct initialization
+	(c89 doesn't allow non-constant initializers). Reported by James
+	Ralston. 
+	(des_ede3_cbc_encrypt): Likewise.
+
+	* examples/nettle-openssl.c: Moved from the top-level directory.
+	Should *not* be included in the nettle library.
+
 2002-11-08  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* testsuite/testutils.c (test_dsa_key): Bugfix for renamed DSA
