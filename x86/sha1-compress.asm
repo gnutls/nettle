@@ -252,3 +252,58 @@ _nettle_sha1_compress:
 
 .Leord:
 	.size	_nettle_sha1_compress,.Leord-_nettle_sha1_compress
+
+C  It's possible to shave of half of the stores to tmp in the evaluation of f3,
+C  although it's probably not worth the effort. This is the trick: 
+C  
+C  round(a,b,c,d,e,f,k) modifies only b,e.
+C  
+C  round(a,b,c,d,e,f3,k) load + store
+C  round(e,a,b,c,d,f3,k) load + store
+C  
+C  ; f3(b,c,d) = (b & c) | (d & (b | c))
+C  
+C    movl b, tmp
+C    andl c, tmp
+C    movl tmp, tmp2
+C    movl b, tmp
+C    orl  c, tmp
+C    andl d, tmp
+C    orl tmp2, tmp
+C  
+C  and corresponding code for f3(a,b,c)
+C  
+C  Use the register allocated for c as a temporary?
+C  
+C    movl c, tmp2
+C  ; f3(b,c,d) = (b & c) | (d & (b | c))
+C    movl b, tmp
+C    orl  c, tmp
+C    andl b, c
+C    andl d, tmp
+C    orl  c, tmp
+C  
+C  ; fr(a,b,c) = (a & b) | (c & (a | b))
+C    movl b, tmp
+C    andl a, tmp
+C    movl a, c
+C    orl  b, c
+C    andl tmp2, c
+C    orl  c, tmp
+C  
+C    movl tmp2, c
+C  
+C  Before: 14 instr, 2 store, 2 load
+C  After: 13 instr, 1 store, 2 load
+C  
+C  Final load can be folded into the next round,
+C  
+C  round(d,e,a,b,c,f3,k)
+C  
+C    c += d <<< 5 + f(e, a, b) + k + w
+C  
+C  if we arrange to have w placed directly into the register
+C  corresponding to w. That way we save one more instruction, total save
+C  of two instructions, one of which is a store, per two rounds. For the
+C  twenty rounds involving f3, that's 20 instructions, 10 of which are
+C  stores, or about 1.5 %.
