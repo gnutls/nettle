@@ -9,3 +9,7 @@ More feedback modes, in order of decreasing priority:  CBC-MAC, OFB,
 Counter, and CFB. Suggested by Rafael 'Dido' Sevilla. References:
 
   http://csrc.nist.gov/encryption/modes/Recommendation/Modes01.pdf
+
+Add a randomness pool. Perhaps YARROW?
+
+  http://www.counterpane.com/yarrow.html
