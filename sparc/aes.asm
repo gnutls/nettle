@@ -176,11 +176,11 @@ define(<FRAME_SIZE>, 136)
 
 	.section	".text"
 	.align 16
-	.global _aes_crypt
-	.type	_aes_crypt,#function
+	.global _nettle_aes_crypt
+	.type	_nettle_aes_crypt,#function
 	.proc	020
 	
-_aes_crypt:
+_nettle_aes_crypt:
 	save	%sp, -FRAME_SIZE, %sp
 	cmp	length, 0
 	be	.Lend
@@ -241,7 +241,7 @@ _aes_crypt:
 	ret
 	restore
 .Leord:
-	.size	_aes_crypt,.Leord-_aes_crypt
+	.size	_nettle_aes_crypt,.Leord-_nettle_aes_crypt
 
 	! Benchmarks on my slow sparcstation:	
 	! Original C code	
