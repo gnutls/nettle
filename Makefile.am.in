@@ -18,8 +18,7 @@ LDADD = libsymmetric.a
 desdata_LDADD =
 
 des_headers = parity.h rotors.h keymap.h 
-BUILT_SOURCES =	desSmallFips.c desSmallCore.c desQuickFips.c desQuickCore.c \
-	$(des_headers)
+BUILT_SOURCES =	desSmallFips.c desSmallCore.c desQuickFips.c desQuickCore.c
 
 libsymmetric_a_SOURCES = desCode.h desKerb.c desUtil.c desQuick.c \
       $(BUILT_SOURCES) \
@@ -58,7 +57,7 @@ desQuickCore.c:
 		@echo >> $@ 'DECRYPT(DesQuickCoreDecrypt,TEMPQUICK,\
 			     LOADCORE,KEYMAPQUICK,SAVECORE)' 
 
-EXTRA_DIST = $(cvs_headers) Makefile.am.in descore.README
+EXTRA_DIST = $(cvs_headers) $(des_headers) Makefile.am.in descore.README
 
 .PHONY: depend
 depend:
