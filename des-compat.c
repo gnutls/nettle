@@ -25,8 +25,6 @@
 
 #include "des-compat.h"
 
-#undef des_set_key
-
 #include "cbc.h"
 #include "macros.h"
 #include "memxor.h"
@@ -193,7 +191,7 @@ des_key_sched(des_cblock *key, des_key_schedule ctx)
     /* Fix the parity */
     des_set_odd_parity(key);
   
-  if (des_set_key(ctx, *key))
+  if (nettle_des_set_key(ctx, *key))
     return 0;
   else switch(ctx->status)
     {
@@ -221,5 +219,5 @@ des_is_weak_key(des_cblock *key)
 {
   struct des_ctx ctx;
 
-  return !des_set_key(&ctx, *key);
+  return !nettle_des_set_key(&ctx, *key);
 }
