@@ -35,12 +35,11 @@ test_main(void)
 	 && i.atom_length == 1 && MEMEQ(1, "x", i.atom));
 
   {
-    struct sexp_assoc_key keys[2] =
-      { { LDATA("n") }, { LDATA("e") } };
+    static const uint8_t *keys[2] = { "n", "e" };
     struct sexp_iterator v[2];
     
     sexp_iterator_init(&i, LDATA("((1:n2:xx3:foo)0:(1:y)(1:e))"));
-    ASSERT(sexp_iterator_next(&i)
+    ASSERT(sexp_iterator_next(&i) && sexp_iterator_enter_list(&i)
 	   && sexp_iterator_assoc(&i, 2, keys, v));
 
     ASSERT(sexp_iterator_next(&v[0]) && v[0].type == SEXP_ATOM
@@ -56,12 +55,13 @@ test_main(void)
     ASSERT(sexp_iterator_next(&v[1]) && v[1].type == SEXP_END);
 
     sexp_iterator_init(&i, LDATA("((1:n))"));
-    ASSERT(sexp_iterator_next(&i)
+    ASSERT(sexp_iterator_next(&i) && sexp_iterator_enter_list(&i)
 	   && !sexp_iterator_assoc(&i, 2, keys, v));
 
     sexp_iterator_init(&i, LDATA("((1:n)(1:n3:foo))"));
-    ASSERT(sexp_iterator_next(&i)
-	   && !sexp_iterator_assoc(&i, 2, keys, v));
+    ASSERT(sexp_iterator_next(&i) && sexp_iterator_enter_list(&i)
+	   && !sexp_iterator_assoc(&i, 2, keys, v));    
   }
+
   SUCCESS();
 }
