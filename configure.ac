@@ -132,6 +132,8 @@ AC_REPLACE_FUNCS(memxor)
 
 LSH_GCC_ATTRIBUTES
 
+AX_CREATE_STDINT_H([nettle-types.h])
+
 # Checks for libraries
 AC_CHECK_LIB(gmp, __gmpz_getlimbn,,
     [AC_MSG_WARN(
