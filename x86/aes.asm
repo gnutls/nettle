@@ -57,7 +57,7 @@ aes_encrypt:
 
 	movl	24(%esp), %ebp
 	C What's the right way to set the flags?
-	add	$0, %ebp
+	addl	$0, %ebp
 	jz	.Lencrypt_end
 	
 .Lencrypt_block_loop:
@@ -67,7 +67,7 @@ aes_encrypt:
 	movl	8(%esi),%ecx
 	movl	12(%esi),%edx
 	
-	add	$16, 32(%esp)	C Increment src pointer
+	addl	$16, 32(%esp)	C Increment src pointer
 C .Laes_got_plain: 
 	movl	20(%esp),%esi	C  address of context struct ctx
 	xorl	(%esi),%eax	C  add first key to plaintext
@@ -98,19 +98,20 @@ C .Laes_xored_initial:
 	movl	%eax, %esi
 	andl	$0xff, %esi
 	shll	$2,%esi		C  index in dtbl1
-	movl	dtbl1(%esi),%edi
+	C movl	dtbl1(%esi),%edi
+	movl	AES_TABLE0 + _aes_encrypt_table (%esi),%edi
 	movl	%ebx, %esi
 	shrl	$6,%esi
 	andl	$0x000003fc,%esi C  clear all but offset bytes
-	xorl	dtbl2(%esi),%edi
+	xorl	AES_TABLE1 + _aes_encrypt_table (%esi),%edi
 	movl	%ecx,%esi	C  third one
 	shrl	$14,%esi
 	andl	$0x000003fc,%esi
-	xorl	dtbl3(%esi),%edi
+	xorl	AES_TABLE2 + _aes_encrypt_table (%esi),%edi
 	movl	%edx,%esi	C  fourth one
 	shrl	$22,%esi
 	andl	$0x000003fc,%esi
-	xorl	dtbl4(%esi),%edi
+	xorl	AES_TABLE3 + _aes_encrypt_table (%esi),%edi
 	pushl	%edi		C  save first on stack
 
 	C // Second column
@@ -256,7 +257,7 @@ C .Laes_got_t:
 .Lsubst:	
 	movl	%eax,%ebp
 	andl	$0x000000ff,%ebp
-	movb	sbox(%ebp),%al
+	movb	AES_SBOX + _aes_encrypt_table (%ebp),%al
 	roll	$8,%eax
 
 	movl	%ebx,%ebp
@@ -290,8 +291,8 @@ C .Laes_got_result:
 	movl	%ecx,8(%edi)
 	movl	%edx,12(%edi)
 
-	add	$16, 28(%esp)	C Increment destination pointer
-	sub	$16, 24(%esp)
+	addl	$16, 28(%esp)	C Increment destination pointer
+	subl	$16, 24(%esp)
 	jnz	.Lencrypt_block_loop
 
 .Lencrypt_end: 
@@ -324,7 +325,7 @@ aes_decrypt:
 
 	movl	24(%esp), %ebp
 	C What's the right way to set the flags?
-	add	$0, %ebp
+	addl	$0, %ebp
 	jz	.Ldecrypt_end
 	
 .Ldecrypt_block_loop:
@@ -334,7 +335,7 @@ aes_decrypt:
 	movl	8(%esi),%ecx
 	movl	12(%esi),%edx
 	
-	add	$16, 32(%esp)	C Increment src pointer
+	addl	$16, 32(%esp)	C Increment src pointer
 	
 	movl	20(%esp),%esi	C  address of context struct ctx
 	xorl	(%esi),%eax	C  add first key to ciphertext
@@ -556,8 +557,8 @@ aes_decrypt:
 	movl	%ecx,8(%edi)
 	movl	%edx,12(%edi)
 	
-	add	$16, 28(%esp)	C Increment destination pointer
-	sub	$16, 24(%esp)
+	addl	$16, 28(%esp)	C Increment destination pointer
+	subl	$16, 24(%esp)
 	jnz	.Ldecrypt_block_loop
 
 .Ldecrypt_end: 
@@ -611,3 +612,40 @@ C 	/* rotate and substitute */
 C 	roll	$8,%eax
 C 	movl	%eax,%edi
 C 	andl	$0xff,%eax
+
+C Some performance figures, measured on a 
+C 930 MHz Pentium III with 1854 bogomips.
+C
+C Optimized C code
+C
+C        aes128 (ECB encrypt): 1.04s, 9.615MB/s
+C        aes128 (ECB decrypt): 1.04s, 9.615MB/s
+C        aes128 (CBC encrypt): 1.21s, 8.264MB/s
+C        aes128 (CBC decrypt): 1.10s, 9.091MB/s
+C 
+C        aes192 (ECB encrypt): 1.25s, 8.000MB/s
+C        aes192 (ECB decrypt): 1.24s, 8.065MB/s
+C        aes192 (CBC encrypt): 1.40s, 7.143MB/s
+C        aes192 (CBC decrypt): 1.29s, 7.752MB/s
+C 
+C        aes256 (ECB encrypt): 1.43s, 6.993MB/s
+C        aes256 (ECB decrypt): 1.44s, 6.944MB/s
+C        aes256 (CBC encrypt): 1.60s, 6.250MB/s
+C        aes256 (CBC decrypt): 1.49s, 6.711MB/s
+C
+C Assembler code
+C
+C        aes128 (ECB encrypt): 0.50s, 20.000MB/s
+C        aes128 (ECB decrypt): 0.48s, 20.833MB/s
+C        aes128 (CBC encrypt): 0.63s, 15.873MB/s
+C        aes128 (CBC decrypt): 0.54s, 18.519MB/s
+C 
+C        aes192 (ECB encrypt): 0.54s, 18.519MB/s
+C        aes192 (ECB decrypt): 0.55s, 18.182MB/s
+C        aes192 (CBC encrypt): 0.69s, 14.493MB/s
+C        aes192 (CBC decrypt): 0.60s, 16.667MB/s
+C 
+C        aes256 (ECB encrypt): 0.62s, 16.129MB/s
+C        aes256 (ECB decrypt): 0.62s, 16.129MB/s
+C        aes256 (CBC encrypt): 0.76s, 13.158MB/s
+C        aes256 (CBC decrypt): 0.67s, 14.925MB/s
