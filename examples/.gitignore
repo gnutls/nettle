@@ -2,6 +2,8 @@
 /Makefile
 /Makefile.in
 /nettle-benchmark
+/rsa-decrypt
+/rsa-encrypt
 /rsa-keygen
 /rsa-sign
 /rsa-verify

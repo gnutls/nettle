@@ -1,3 +1,24 @@
+2003-09-19  Niels Möller  <niels@s3.kth.se>
+
+	* examples/rsa-decrypt.c: Fixes to get the file to compile. It
+	won't work yet.
+
+	* examples/Makefile.am (EXTRA_PROGRAMS): Added rsa-encrypt and
+	rsa-decrypt.
+
+	* examples/io.c (write_file): New function.
+	(write_string): Simplified error check, it's no real point in
+	calling ferror unless we also call fflush.
+
+	* examples/rsa-keygen.c (main): Check return value from
+	simple_random. 
+
+	* examples/rsa-decrypt.c, examples/rsa-encrypt.c,
+	examples/rsa-session.h: New files, demonstrating rsa encryption
+	and decryption.
+
+	* configure.ac (RSA_EXAMPLES): Added rsa-encrypt and rsa-decrypt.
+
 2003-09-01  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* testsuite/testutils.c (print_hex): Use const.
