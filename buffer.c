@@ -28,40 +28,29 @@
 #include <stdlib.h>
 #include <string.h>
 
-static int
-grow_realloc(struct nettle_buffer *buffer,
-	     unsigned length)
+int
+nettle_buffer_grow(struct nettle_buffer *buffer,
+		   unsigned length)
 {
-  if (!length)
+  assert(buffer->size <= buffer->realloc);
+  
+  if (buffer->size + length > buffer->alloc)
     {
-      realloc(buffer->contents, 0);
-      buffer->contents = NULL;
-      buffer->alloc = 0;
-      buffer->size = 0;
-
-      return 1;
-    }
-  else
-    {
-      unsigned alloc = buffer->alloc * 2 + length + 100;
-      uint8_t *p = realloc(buffer->contents, alloc);
+      unsigned alloc;
+      uint8_t *p;
+      
+      if (!buffer->realloc)
+	return 0;
+      
+      alloc = buffer->alloc * 2 + length + 100;
+      p = buffer->realloc(buffer->realloc_ctx, buffer->contents, alloc);
       if (!p)
 	return 0;
       
       buffer->contents = p;
       buffer->alloc = alloc;
-      
-      return 1;
     }
-}
-
-void
-nettle_buffer_init(struct nettle_buffer *buffer)
-{
-  buffer->contents = NULL;
-  buffer->alloc = 0;
-  buffer->grow = grow_realloc;
-  buffer->size = 0;
+  return 1;
 }
 
 void
@@ -70,14 +59,20 @@ nettle_buffer_init_size(struct nettle_buffer *buffer,
 {
   buffer->contents = space;
   buffer->alloc = length;
-  buffer->grow = NULL;
+  buffer->realloc = NULL;
+  buffer->realloc_ctx = NULL;
   buffer->size = 0;
 }
 
 void
 nettle_buffer_clear(struct nettle_buffer *buffer)
 {
-  NETTLE_BUFFER_GROW(buffer, 0);
+  if (buffer->realloc)
+    buffer->realloc(buffer->realloc_ctx, buffer->contents, 0);
+
+  buffer->contents = NULL;
+  buffer->alloc = 0;
+  buffer->size = 0;
 }
 
 uint8_t *
@@ -85,9 +80,9 @@ nettle_buffer_space(struct nettle_buffer *buffer,
 		    unsigned length)
 {
   uint8_t *p;
-  if (buffer->size + length > buffer->alloc)
-    if (!NETTLE_BUFFER_GROW(buffer, length))
-      return NULL;
+
+  if (!nettle_buffer_grow(buffer, length))
+    return NULL;
 
   p = buffer->contents + buffer->size;
   buffer->size += length;

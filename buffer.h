@@ -26,20 +26,16 @@
 #ifndef NETTLE_BUFFER_H_INCLUDED
 #define NETTLE_BUFFER_H_INCLUDED
 
-#include <inttypes.h>
+#include "realloc.h"
 
 struct nettle_buffer
 {
   uint8_t *contents;
   /* Allocated size */
   unsigned alloc;
-  
-  /* If GROW is NULL, no reallocation is done. Otherwise, it should be
-   * a function that reallocates the contents to at least the size SIZE
-   * + LENGTH. It can return 0 if allocation fails. Furthermore, if
-   * GROW is called with LENGTH = 0, it should deallocate the buffer
-   * space. */
-  int (*grow)(struct nettle_buffer *buffer, unsigned length);
+
+  nettle_realloc_func *realloc;
+  void *realloc_ctx;
 
   /* Current size */
   unsigned size;
@@ -57,12 +53,12 @@ nettle_buffer_init_size(struct nettle_buffer *buffer,
 void
 nettle_buffer_clear(struct nettle_buffer *buffer);
 
-/* FIXME: Put the comparison buffer->size + length > buffer->alloc
- * inside this macro. */
-#define NETTLE_BUFFER_GROW(o, l) ((o)->grow && (o)->grow((o), l))
+int
+nettle_buffer_grow(struct nettle_buffer *buffer,
+		   unsigned length);
 
 #define NETTLE_BUFFER_PUTC(buffer, c) \
-( (((buffer)->size < (buffer)->alloc) || NETTLE_BUFFER_GROW((buffer), 1)) \
+( (((buffer)->size < (buffer)->alloc) || nettle_buffer_grow((buffer), 1)) \
   && ((buffer)->contents[(buffer)->size++] = (c), 1) )
 
 int
