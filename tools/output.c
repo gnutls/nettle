@@ -32,6 +32,9 @@
 
 #include "output.h"
 
+/* For TMP_ALLOC */ 
+#include "nettle-internal.h"
+
 void
 sexp_output_init(struct sexp_output *output, FILE *f,
 		 unsigned width, int prefer_hex)
@@ -268,11 +271,11 @@ sexp_put_string(struct sexp_output *output, enum sexp_mode mode,
 void
 sexp_put_digest(struct sexp_output *output)
 {
-  uint8_t *digest;
+  TMP_DECL(digest, uint8_t, NETTLE_MAX_HASH_DIGEST_SIZE);
+  TMP_ALLOC(digest, output->hash->digest_size);
   
   assert(output->hash);
 
-  digest = alloca(output->hash->digest_size);
   output->hash->digest(output->ctx, output->hash->digest_size, digest);
 
   sexp_put_code_start(output, &nettle_base16);
