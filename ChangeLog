@@ -1,3 +1,11 @@
+2004-08-31  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: New command line option --disable-pic. Use
+	LSH_CCPIC. 
+
+	* Makefile.am (libnettle_a_CFLAGS): Added $(CCPIC), to attempt to
+	build also the static library as position independent code.
+
 2004-08-24  Niels Möller  <nisse@lysator.liu.se>
 
 	* des-compat.c (des_cbc_cksum): Pad input with NUL:s, if it's not

@@ -61,6 +61,8 @@ libnettle_a_SOURCES = aes.c aes.h aes-internal.h \
 		      nettle-meta.h \
 		      nettle-internal.c nettle-internal.h
 
+libnettle_a_CFLAGS = $(CCPIC)
+
 LIBOBJS = @LIBOBJS@
 libnettle_a_LIBADD = $(LIBOBJS)
 

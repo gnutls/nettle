@@ -45,6 +45,11 @@ AC_ARG_ENABLE(shared,
   AC_HELP_STRING([--enable-shared], [Build a shared library]),,
   [enable_shared=no])
 
+AC_ARG_ENABLE(pic,
+  AC_HELP_STRING([--disable-pic],
+  [Do not try to compile library files as position independent code]),,
+  [enable_pic=yes])
+
 LSH_RPATH_INIT([`echo $with_lib_path | sed 's/:/ /g'` \
     `echo $exec_prefix | sed "s@^NONE@$prefix/lib@g" | sed "s@^NONE@$ac_default_prefix/lib@g"` \
     /usr/local/lib /sw/local/lib /sw/lib \
@@ -111,20 +116,24 @@ if test "x$enable_assembler" = xyes ; then
   fi
 fi
 
-SHLIBCFLAGS="-fpic"
+LSH_CCPIC
+
+SHLIBCFLAGS="$CCPIC"
 SHLIBFORLINK=libnettle.so
 SHLIBSONAME='$(SHLIBFORLINK).$(SHLIBMAJOR)'
 SHLIBFILE='$(SHLIBSONAME).$(SHLIBMINOR)'
 SHLIBLINK='$(CC) $(LDFLAGS) -shared -Wl,-soname=$(SHLIBSONAME)'
 
-echo "enable_shared: $enable_shared"
-     
 if test "x$enable_shared" = xyes ; then
   SHLIBTARGET='$(SHLIBFORLINK)'
   SHLIBINSTALL=install-shared
 else
   SHLIBTARGET=''
   SHLIBINSTALL=''
+fi
+
+if test "x$enable_pic" = xyes; then : ; else
+  CCPIC=''
 fi
 
 AM_CONDITIONAL([ENABLE_ASSEMBLER], [test x$enable_assembler = xyes])
