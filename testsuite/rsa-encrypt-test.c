@@ -38,7 +38,11 @@ test_main(void)
 		     gibberish));
 
   if (verbose)
-    gmp_fprintf(stderr, "encrypted: %Zd\n", gibberish);
+    {
+      /* In which GMP version was gmp_fprintf introduced? */
+      fprintf(stderr, "encrypted: ");
+      mpz_out_str(stderr, 10, gibberish);
+    }
   
   decrypted = alloca(msg_length + 1);
 
