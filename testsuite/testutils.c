@@ -2,7 +2,6 @@
 
 #include "testutils.h"
 
-#include <stdlib.h>
 #include <ctype.h>
 
 

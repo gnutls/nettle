@@ -1,7 +1,7 @@
 #ifndef NETTLE_TESTUTILS_H_INCLUDED
 #define NETTLE_TESTUTILS_H_INCLUDED
 
-#include <stdint.h>
+#include <inttypes.h>
 
 /* Decodes a NUL-terminated hex string. */
 int
