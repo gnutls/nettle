@@ -44,7 +44,7 @@ cbc_encrypt(void *ctx, void (*f)(void *ctx,
   for ( ; length; length -= block_size, src += block_size, dst += block_size)
     {
       memxor(iv, src, block_size);
-      f(ctx, block_size, dst, src);
+      f(ctx, block_size, dst, iv);
       memcpy(iv, dst, block_size);
     }
 }
