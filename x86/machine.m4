@@ -13,3 +13,20 @@ define(<AES_LAST_ROUND>, <
 	movl	%e<>$4<>x,%ebp
 	andl	<$>0xff000000,%ebp
 	orl	%ebp,%edi>)dnl
+
+dnl AES_STORE(key, dst)
+dnl Adds the subkey pointed to by %esi to %eax-%edx,
+dnl and stores the result in the area pointed to by %edi.
+dnl Note that x86 allows unaligned accesses.
+dnl Would it be preferable to interleave the loads and stores?
+define(<AES_STORE>, <
+	xorl	($1),%eax
+	xorl	4($1),%ebx
+	xorl	8($1),%ecx
+	xorl	12($1),%edx
+
+	movl	%eax,($2)
+	movl	%ebx,4($2)
+	movl	%ecx,8($2)
+	movl	%edx,12($2)>)dnl
+	
