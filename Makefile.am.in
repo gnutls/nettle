@@ -1,4 +1,5 @@
 ## Process this file with make_am to produce Makefile.am
+SUBDIRS: include
 CVS_HEADERS: cvs_headers
 BODY:
 
@@ -6,6 +7,9 @@ AUTOMAKE_OPTIONS = foreign
 
 noinst_LIBRARIES = libsymmetric.a
 noinst_PROGRAMS = desTest desdata bf_test
+
+Makefile.am: Makefile.am.in
+	(cd $(top_srcdir); $(BASH) make_am)
 
 # When compiling with lsh, this is set to to -DLSH -I/path/to/lsh/include
 # INCLUDES = @crypto_cpp_flags@
