@@ -1,5 +1,5 @@
 ## Process this file with make_am to produce Makefile.am
-CVS_HEADERS: EXTRA_DIST
+CVS_HEADERS: cvs_headers
 BODY:
 
 AUTOMAKE_OPTIONS = foreign
@@ -49,3 +49,5 @@ desQuickCore.c:
 			     LOADCORE,KEYMAPQUICK,SAVECORE)' 
 		@echo >> $@ 'DECRYPT(DesQuickCoreDecrypt,TEMPQUICK,\
 			     LOADCORE,KEYMAPQUICK,SAVECORE)' 
+
+EXTRA_DIST = $(cvs_headers) Makefile.am.in

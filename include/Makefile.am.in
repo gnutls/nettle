@@ -1,3 +1,5 @@
 ## Process this file with make_am to produce Makefile.am
-CVS_HEADERS: EXTRA_DIST
+CVS_HEADERS: cvs_headers
 BODY:
+
+EXTRA_DIST = $(cvs_headers) Makefile.am.in
