@@ -1406,6 +1406,9 @@ computed, the operation returns true if and only if the result equals
 
 @subsection Nettle's @acronym{RSA} support
 
+@c FIXME: Update for RSA renaming. and new *_digest functions. Document
+@c dsa. 
+
 Nettle represents @acronym{RSA} keys using two structures that contain
 large numbers (of type @code{mpz_t}).
 
