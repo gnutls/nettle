@@ -1,3 +1,35 @@
+2002-01-09  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* rsa-compat.c: Updated for new md5 and rsa conventions.
+
+	* rsa_md5.c: Represent a signature as an mpz_t, not a string.
+	Updated calls of md5 functions.
+	* rsa_sha1.c: Likewise.
+
+	* rsa.c (rsa_prepare_public_key): Renamed function, was
+	rsa_init_public_key. 
+	(rsa_prepare_private_key): Renamed function, was
+	rsa_init_private_key. 
+
+	* nettle.texinfo (Hash functions): Update for the changed
+	interface without *_final. Document sha256.
+
+	* testsuite/md5-test.m4, testsuite/sha1-test.m4,
+	testsuite/sha256-test.m4, testsuite/yarrow-test.c: Updated for new
+	hash function interface.
+
+	* yarrow256.c: Removed calls of sha256_final and and some calls of
+	sha256_init.
+
+	* md5-compat.c (MD5Final): Call only md5_digest.
+
+	* md5.c (md5_digest): Call md5_final and md5_init.
+	(md5_final): Declared static.
+	sha1.c, sha256.c: Analogous changes.
+	
+	* bignum.c (nettle_mpz_get_str_256): Declare the input argument
+	const. 
+
 2001-12-14  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* Makefile.am (EXTRA_DIST): Added $(des_headers). Changed
