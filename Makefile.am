@@ -24,7 +24,8 @@ libnettle_a_SOURCES = aes.c aes.h arcfour.c arcfour.h \
 		      twofish.c twofish.h \
 		      yarrow.h yarrow256.c yarrow_key_event.c \
 		      bignum.h bignum.c \
-		      rsa.h rsa.c rsa_md5.c rsa_sha1.c
+		      rsa.h rsa.c rsa_md5.c rsa_sha1.c \
+		      rsa-compat.h rsa-compat.c
 
 libnettle_a_LIBADD = @LIBOBJS@
 
