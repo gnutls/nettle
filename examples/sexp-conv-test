@@ -90,5 +90,6 @@ test_canonical 'foo' '3:foo'
 test_canonical 'fooooooooooo' '12:fooooooooooo'
 test_canonical 'fooooooooo' '10:fooooooooo'
 test_canonical '(foo bar baz)' '(3:foo3:bar3:baz)' 
+test_canonical '{KDM6Zm9vMzpiYXIzOmJheik=}' '(3:foo3:bar3:baz)' 
 
 exit 0
