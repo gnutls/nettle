@@ -7,8 +7,7 @@
  *   
  */
 
-#include "crypto_types.h"
-#include <arcfour.h>
+#include "arcfour.h"
 
 #ifdef RCSID
 RCSID("$Id$");
