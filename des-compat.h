@@ -38,7 +38,7 @@
 /* Some names collides with nettle, so we'll need some ugly symbol
  * munging */
 
-#define des_set_key des_compat_set_key
+#define des_set_key des_key_sched
 
 enum { DES_DECRYPT = 0, DES_ENCRYPT = 1 };
 
@@ -46,8 +46,11 @@ void des_ecb3_encrypt(const uint8_t *src, uint8_t *dst,
 		      struct des_ctx *k1, struct des_ctx *k2,
 		      struct des_ctx *k3, int enc);
 
-uint32_t
-des_cbc_cksum(const uint8_t *src, uint8_t dst,
+/* des_cbc_cksum in libdes returns a 32 bit integer, representing the
+ * latter half of the output block, in some byte order. For now, lets
+ * just hope nobody uses thet feature, and return void instead. */
+void
+des_cbc_cksum(const uint8_t *src, uint8_t *dst,
 	      long length, struct des_ctx *ctx,
 	      uint8_t *iv);
 
@@ -74,10 +77,6 @@ des_ede3_cbc_encrypt(const uint8_t *src, uint8_t *dst, long length,
 int
 des_set_odd_parity(uint8_t *key);
 
-int
-des_set_key(const uint8_t *key, struct des_ctx *ctx);
-
-/* What's the difference between this and des_set_key */
 int
 des_key_sched(const uint8_t *key, struct des_ctx *ctx);
 
