@@ -32,7 +32,7 @@
 #include <string.h>
 #include <assert.h>
 
-UNUSED static char cvs_id[] =
+static char cvs_id[] UNUSED =
 "$Id$";
 
 /* ------------------------------------------------------------------------- */
