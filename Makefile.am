@@ -13,6 +13,7 @@ libnettleinclude_HEADERS = aes.h arcfour.h blowfish.h \
 			   knuth-lfib.h \
 			   md5.h md5-compat.h \
 			   nettle-meta.h rsa.h \
+			   sexp.h \
 			   serpent.h sha.h twofish.h \
 			   yarrow.h
 			   
@@ -34,6 +35,7 @@ libnettle_a_SOURCES = aes.c aes.h aes-internal.h \
 		      serpent.c serpent.h serpent_sboxes.h serpent-meta.c \
 		      twofish.c twofish.h twofish-meta.c \
 		      yarrow.h yarrow256.c yarrow_key_event.c \
+		      sexp.h sexp.c \
 		      bignum.h bignum.c \
 		      rsa.h rsa.c rsa_md5.c rsa_sha1.c \
 		      rsa-encrypt.c rsa-decrypt.c \
