@@ -177,15 +177,17 @@ sexp_vformat(struct nettle_buffer *buffer, const char *format, va_list args)
 	      uint32_t x = va_arg(args, uint32_t);
 	      unsigned length;
 	      
-	      if (x < 0x100)
+	      if (x < 0x80)
 		length = 1;
-	      else if (x < 0x10000L)
+	      else if (x < 0x8000L)
 		length = 2;
-	      else if (x < 0x1000000L)
+	      else if (x < 0x800000L)
 		length = 3;
-	      else
+	      else if (x < 0x80000000L)
 		length = 4;
-
+	      else
+		length = 5;
+	      
 	      if (buffer && !(NETTLE_BUFFER_PUTC(buffer, '0' + length)
 			      && NETTLE_BUFFER_PUTC(buffer, ':')))
 		return 0;
@@ -195,6 +197,11 @@ sexp_vformat(struct nettle_buffer *buffer, const char *format, va_list args)
 	      if (buffer)
 		switch(length)
 		{
+		case 5:
+		  /* Leading byte needed for the sign. */
+		  if (!NETTLE_BUFFER_PUTC(buffer, 0))
+		    return 0;
+		  /* Fall through */
 		case 4:
 		  if (!NETTLE_BUFFER_PUTC(buffer, x >> 24))
 		    return 0;
@@ -223,9 +230,7 @@ sexp_vformat(struct nettle_buffer *buffer, const char *format, va_list args)
 	      unsigned length;
 	      unsigned prefix_length;
 	      
-	      assert(mpz_sgn(n) >= 0);
-
-	      length = nettle_mpz_sizeinbase_256(n);
+	      length = nettle_mpz_sizeinbase_256_s(n);
 	      prefix_length = format_prefix(buffer, length);
 	      if (!prefix_length)
 		return 0;
