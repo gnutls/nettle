@@ -29,7 +29,7 @@
 #include <inttypes.h>
 
 enum sexp_type
-  { SEXP_START, SEXP_ATOM, SEXP_LIST, SEXP_END };
+  { SEXP_ATOM, SEXP_LIST, SEXP_END };
 
 struct sexp_iterator
 {
