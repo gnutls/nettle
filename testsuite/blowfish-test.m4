@@ -2,12 +2,24 @@
 
 BEGIN_TEST
 
-/* FIXME: All values below are bogus. */
 struct blowfish_ctx ctx;
 
 uint8_t msg[BLOWFISH_BLOCK_SIZE];
 uint8_t cipher[BLOWFISH_BLOCK_SIZE];
 uint8_t clear[BLOWFISH_BLOCK_SIZE];
+
+/* 128 bit key. Test from GNUPG. */
+blowfish_set_key(&ctx, 16, "abcdefghijklmnopqrstuvwxyz"));
+blowfish_encrypt(&ctx, BLOWFISH_BLOCK_SIZE, cipher, "BLOWFISH");
+if (!MEMEQ(BLOWFISH_BLOCK_SIZE, cipher, H("32 4E D0 FE F4 13 A2 03")))
+  FAIL;
+
+blowfish_decrypt(&ctx, BLOWFISH_BLOCK_SIZE, clear, cipher);
+if (!MEMEQ(16, "BLOWFISH", clear))
+  FAIL;
+
+/* FIXME: All values below are bogus. */
+#if 0
 
 /* 128 bit keys */
 H(msg, "506812A45F08C889 B97F5980038B8359");
@@ -79,3 +91,4 @@ if (!MEMEQ(16, cipher, H("1946DABF6A03A2A2 C3D0B05080AED6FC")))
 blowfish_decrypt(&ctx, BLOWFISH_BLOCK_SIZE, clear, cipher);
 if (!MEMEQ(16, msg, clear))
   FAIL;
+#endif
