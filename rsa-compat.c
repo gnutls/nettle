@@ -25,6 +25,7 @@
 
 #include "rsa-compat.h"
 
+#include "bignum.h"
 #include "md5.h"
 
 int
@@ -75,10 +76,10 @@ R_SignFinal(R_SIGNATURE_CTX *ctx,
   nettle_mpz_init_set_str_256(k.c,
                               MAX_RSA_MODULUS_LEN, key->coefficient);
 
-  if (rsa_init_private_key(&k) && (k.size <= MAX_RSA_MODULUS_LEN))
+  if (rsa_init_private_key(&k) && (k.pub.size <= MAX_RSA_MODULUS_LEN))
     {
-      *length = k->size;
-      rsa_md5_sign(&key, &ctx->hash, signature);
+      *length = k.pub.size;
+      rsa_md5_sign(&k, &ctx->hash, signature);
       res = RE_SUCCESS;
     }
   else
@@ -124,9 +125,9 @@ R_VerifyFinal(R_SIGNATURE_CTX *ctx,
   nettle_mpz_init_set_str_256(k.n,
                               MAX_RSA_MODULUS_LEN, key->modulus);
   nettle_mpz_init_set_str_256(k.e,
-                              MAX_RSA_MODULUS_LEN, key->publicExponent);
+                              MAX_RSA_MODULUS_LEN, key->exponent);
 
-  if (rsa_init_private_key(&k) && (k.size == length))
+  if (rsa_init_public_key(&k) && (k.size == length))
     res = rsa_md5_verify(&k, &ctx->hash, signature)
       ? RE_SUCCESS : RE_SIGNATURE;
   else
