@@ -175,7 +175,7 @@ read_rsa_key(const char *name,
   if (!length)
     return 0;
 
-  res = rsa_keypair_from_sexp(pub, priv, length, buffer);
+  res = rsa_keypair_from_sexp(pub, priv, 0, length, buffer);
   free(buffer);
 
   return res;
