@@ -1,3 +1,7 @@
+2002-10-01  Niels Möller  <niels@s3.kth.se>
+
+	* base64.h (BASE64_DECODE_LENGTH): Comment fix.
+
 2002-09-30  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* sexp2rsa.c (rsa_keypair_from_sexp): Bugfix: Call
