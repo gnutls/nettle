@@ -23,6 +23,12 @@
  * MA 02111-1307, USA.
  */
 
+#if HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#if WITH_PUBLIC_KEY
+
 #include "rsa.h"
 
 #include "bignum.h"
@@ -75,3 +81,5 @@ rsa_encrypt(const struct rsa_public_key *key,
 
   return 1;  
 }
+
+#endif /* WITH_PUBLIC_KEY */
