@@ -35,6 +35,7 @@
 
 #include "bignum.h"
 #include "memxor.h"
+#include "nettle-internal.h"
 
 /* The (slow) NIST method of generating DSA primes. Algorithm 4.56 of
  * Handbook of Applied Cryptography. */
@@ -118,8 +119,10 @@ dsa_nist_gen(mpz_t p, mpz_t q,
 	progress(progress_ctx, '\n');
       
       {
+	/* Official maximum key size: L = 1024 => n = 6 */
+	TMP_DECL(buffer, uint8_t, (6 + 1) * SHA1_DIGEST_SIZE);
 	unsigned size = (n+1) * SHA1_DIGEST_SIZE;
-	uint8_t *buffer = alloca(size);
+	TMP_ALLOC(buffer, size);
 	unsigned i, j;
 	
 	for (i = 0, j = 2; i<4096; i++, j+= n+1)

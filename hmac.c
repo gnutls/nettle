@@ -33,6 +33,7 @@
 #include "hmac.h"
 
 #include "memxor.h"
+#include "nettle-internal.h"
 
 #define IPAD 0x36
 #define OPAD 0x5c
@@ -42,7 +43,8 @@ hmac_set_key(void *outer, void *inner, void *state,
 	     const struct nettle_hash *hash,
 	     unsigned key_length, const uint8_t *key)
 {
-  uint8_t *pad = alloca(hash->block_size);
+  TMP_DECL(pad, uint8_t, NETTLE_MAX_HASH_BLOCK_SIZE);
+  TMP_ALLOC(pad, hash->block_size);
   
   hash->init(outer);
   hash->init(inner);
@@ -52,7 +54,8 @@ hmac_set_key(void *outer, void *inner, void *state,
       /* Reduce key to the algorithm's hash size. Use the area pointed
        * to by state for the temporary state. */
 
-      uint8_t *digest = alloca(hash->digest_size);
+      TMP_DECL(digest, uint8_t, NETTLE_MAX_HASH_DIGEST_SIZE);
+      TMP_ALLOC(digest, hash->digest_size);
 
       hash->init(state);
       hash->update(state, key_length, key);
@@ -90,7 +93,8 @@ hmac_digest(const void *outer, const void *inner, void *state,
 	    const struct nettle_hash *hash, 	    
 	    unsigned length, uint8_t *dst)
 {
-  uint8_t *digest = alloca(hash->digest_size);
+  TMP_DECL(digest, uint8_t, NETTLE_MAX_HASH_DIGEST_SIZE);
+  TMP_ALLOC(digest, hash->digest_size);
 
   hash->digest(state, hash->digest_size, digest);
 

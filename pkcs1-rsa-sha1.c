@@ -38,6 +38,8 @@
 #include "bignum.h"
 #include "pkcs1.h"
 
+#include "nettle-internal.h"
+
 /* From pkcs-1v2
  *
  *   id-sha1 OBJECT IDENTIFIER ::=
@@ -64,7 +66,8 @@ sha1_prefix[] =
 void
 pkcs1_rsa_sha1_encode(mpz_t m, unsigned length, struct sha1_ctx *hash)
 {
-  uint8_t *em = alloca(length);
+  TMP_DECL(em, uint8_t, NETTLE_MAX_BIGNUM_BITS / 8);
+  TMP_ALLOC(em, length);
 
   assert(length >= SHA1_DIGEST_SIZE);
   pkcs1_signature_prefix(length - SHA1_DIGEST_SIZE, em,
@@ -78,7 +81,8 @@ pkcs1_rsa_sha1_encode(mpz_t m, unsigned length, struct sha1_ctx *hash)
 void
 pkcs1_rsa_sha1_encode_digest(mpz_t m, unsigned length, const uint8_t *digest)
 {
-  uint8_t *em = alloca(length);
+  TMP_DECL(em, uint8_t, NETTLE_MAX_BIGNUM_BITS / 8);
+  TMP_ALLOC(em, length);
 
   assert(length >= SHA1_DIGEST_SIZE);
   pkcs1_signature_prefix(length - SHA1_DIGEST_SIZE, em,

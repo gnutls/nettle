@@ -34,6 +34,7 @@
 #include "cbc.h"
 
 #include "memxor.h"
+#include "nettle-internal.h"
 
 void
 cbc_encrypt(void *ctx, void (*f)(void *ctx,
@@ -106,33 +107,31 @@ cbc_decrypt(void *ctx, void (*f)(void *ctx,
        *
        * NOTE: We assume that block_size <= CBC_BUFFER_LIMIT. */
 
-      uint8_t *buffer;
-      
+      unsigned buffer_size;
+
       if (length <= CBC_BUFFER_LIMIT)
-	buffer = alloca(length);
+	buffer_size = length;
       else
-	{
-	  /* The buffer size must be an integral number of blocks. */
-	  unsigned buffer_size
-	    = CBC_BUFFER_LIMIT - (CBC_BUFFER_LIMIT % block_size);
+	buffer_size
+	  = CBC_BUFFER_LIMIT - (CBC_BUFFER_LIMIT % block_size);
 
-	  buffer = alloca(buffer_size);
+      {
+	TMP_DECL(buffer, uint8_t, CBC_BUFFER_LIMIT);
+	TMP_ALLOC(buffer, buffer_size);
 
-	  for ( ; length >= buffer_size;
-		length -= buffer_size, dst += buffer_size, src += buffer_size)
-	    {
-	      memcpy(buffer, src, buffer_size);
-	      cbc_decrypt_internal(ctx, f, block_size, iv,
-				   buffer_size, dst, buffer);
-	    }
-	  if (!length)
-	    return;
-	}
-      /* Now, we have at most CBC_BUFFER_LIMIT octets left */
-      memcpy(buffer, src, length);
-
-      cbc_decrypt_internal(ctx, f, block_size, iv,
-			   length, dst, buffer);
+	for ( ; length > buffer_size;
+	      length -= buffer_size, dst += buffer_size, src += buffer_size)
+	  {
+	    memcpy(buffer, src, buffer_size);
+	    cbc_decrypt_internal(ctx, f, block_size, iv,
+				 buffer_size, dst, buffer);
+	  }
+	/* Now, we have at most CBC_BUFFER_LIMIT octets left */
+	memcpy(buffer, src, length);
+	
+	cbc_decrypt_internal(ctx, f, block_size, iv,
+			     length, dst, buffer);
+      }
     }
 }
 

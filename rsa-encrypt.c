@@ -36,6 +36,7 @@
 #include "rsa.h"
 
 #include "bignum.h"
+#include "nettle-internal.h"
 
 int
 rsa_encrypt(const struct rsa_public_key *key,
@@ -44,7 +45,7 @@ rsa_encrypt(const struct rsa_public_key *key,
 	    unsigned length, const uint8_t *message,
 	    mpz_t gibbberish)
 {
-  uint8_t *em;
+  TMP_DECL(em, uint8_t, NETTLE_MAX_BIGNUM_BITS / 8);
   unsigned padding;
   unsigned i;
   
@@ -64,7 +65,7 @@ rsa_encrypt(const struct rsa_public_key *key,
   padding = key->size - length - 3;
   assert(padding >= 8);
   
-  em = alloca(key->size - 1);
+  TMP_ALLOC(em, key->size - 1);
   em[0] = 2;
 
   random(random_ctx, padding, em + 1);

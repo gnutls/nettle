@@ -32,6 +32,7 @@
 #include <stdlib.h>
 
 #include "bignum.h"
+#include "nettle-internal.h"
 
 void
 nettle_mpz_random_size(mpz_t x,
@@ -39,7 +40,8 @@ nettle_mpz_random_size(mpz_t x,
 		       unsigned bits)
 {
   unsigned length = (bits + 7) / 8;
-  uint8_t *data = alloca(length);
+  TMP_DECL(data, uint8_t, NETTLE_MAX_BIGNUM_BITS / 8);
+  TMP_ALLOC(data, length);
 
   random(ctx, length, data);
 
@@ -49,6 +51,7 @@ nettle_mpz_random_size(mpz_t x,
     mpz_fdiv_r_2exp(x, x, bits);
 }
 
+/* Returns a random number x, 0 <= x < n */
 void
 nettle_mpz_random(mpz_t x,
 		  void *ctx, nettle_random_func random,

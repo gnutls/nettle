@@ -33,6 +33,7 @@
 #include "sexp.h"
 
 #include "macros.h"
+#include "nettle-internal.h"
 
 /* Initializes the iterator, but one has to call next to get to the
  * first element. */
@@ -324,11 +325,11 @@ sexp_iterator_assoc(struct sexp_iterator *iterator,
 		    const uint8_t **keys,
 		    struct sexp_iterator *values)
 {
-  int *found;
+  TMP_DECL(found, int, NETTLE_MAX_SEXP_ASSOC);
   unsigned nfound;
   unsigned i;
-  
-  found = alloca(nkeys * sizeof(*found));
+
+  TMP_ALLOC(found, nkeys);
   for (i = 0; i<nkeys; i++)
     found[i] = 0;
 

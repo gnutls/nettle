@@ -36,13 +36,14 @@
 #include "rsa.h"
 
 #include "bignum.h"
+#include "nettle-internal.h"
 
 int
 rsa_decrypt(const struct rsa_private_key *key,
 	    unsigned *length, uint8_t *message,
 	    const mpz_t gibberish)
 {
-  uint8_t *em;
+  TMP_DECL(em, uint8_t, NETTLE_MAX_BIGNUM_BITS / 8);
   uint8_t *terminator;
   unsigned padding;
   unsigned message_length;
@@ -52,7 +53,7 @@ rsa_decrypt(const struct rsa_private_key *key,
   mpz_init(m);
   rsa_compute_root(key, m, gibberish);
 
-  em = alloca(key->size);
+  TMP_ALLOC(em, key->size);
   nettle_mpz_get_str_256(key->size, em, m);
   mpz_clear(m);
 
