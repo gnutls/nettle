@@ -302,7 +302,7 @@ sexp_get_token_string(struct sexp_input *input)
       sexp_push_char(input);
       sexp_get_char(input);
     }
-  while (TOKEN_CHAR(input->c));
+  while (input->ctype == SEXP_NORMAL_CHAR && TOKEN_CHAR(input->c));
   
   assert (input->string.size);
 }
@@ -459,7 +459,7 @@ sexp_get_token(struct sexp_input *input, enum sexp_mode mode)
       case SEXP_END_CHAR:
 	input->token = SEXP_CODING_END;
 	sexp_input_end_coding(input);
-	sexp_next_char(input);
+	sexp_get_char(input);
 	return;
 
       case SEXP_NORMAL_CHAR:
@@ -1022,10 +1022,11 @@ parse_options(struct conv_options *o,
 	case 'w':
 	  {
 	    char *end;
-	    o->width = strtol(optarg, &end , 0);
-	    if (!*optarg || *end || o->width < 0)
-	      die("sexp-conv: Invalid width `%s'.\n",
-		  optarg);
+	    int width = strtol(optarg, &end , 0);
+	    if (!*optarg || *end || width < 0)
+	      die("sexp-conv: Invalid width `%s'.\n", optarg);
+
+	    o->width = width;
 	    break;
 	  }
 	case 's':
