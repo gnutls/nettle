@@ -1,3 +1,11 @@
+2001-10-12  Niels Möller  <nisse@ehand.com>
+
+	* examples/nettle-benchmark.c: Added more ciphers.
+
+	* Makefile.am (SUBDIRS): Added the examples subdir.
+
+	* configure.in: Output examples/Makefile.
+
 2001-10-10  Niels Möller  <nisse@ehand.com>
 
 	* testsuite/yarrow-test.c: Open rfc1750.txt. Hash input and
