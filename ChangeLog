@@ -1,4 +1,44 @@
+2002-10-07  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* sexp.h (enum sexp_type): Deleted SEXP_START.
+
+	* sexp.c (sexp_iterator_parse): New function, similar to the old
+	sexp_iterator_next, but independent of the previous value of the
+	iterator->type. 
+	(sexp_iterator_first): Use sexp_iterator_parse.
+	(sexp_iterator_next): Likewise.
+	(sexp_iterator_enter_list): Use sexp_iterator_parse. SEXP_START
+	not needed anymore.
+	(sexp_iterator_exit_list): Likewise.
+
 2002-10-06  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* sexp2rsa.c (get_value): No need to call sexp_iterator_next
+	anymore. 
+
+	* sexp.c (sexp_iterator_assoc): Advance the iterator to the
+	element after a matching tag, before recording it.
+	* testsuite/sexp-test.c (test_main): Updated test.
+
+	* testsuite/sexp-test.c (test_main): No need to call
+	sexp_iterator_next after sexp_iterator_exit_list.
+
+	* sexp2rsa.c (rsa_keypair_from_sexp): No need to call
+	sexp_iterator_next anymore.
+
+	* sexp.c (sexp_iterator_next): Updated to new sexp_iterator_exit_list.
+	(sexp_iterator_exit_list): Return with iterator pointing to the
+	element after the list.
+	(sexp_iterator_check_type): Call sexp_iterator_next before
+	returning. 
+	(sexp_iterator_check_types): Likewise.
+	(sexp_iterator_assoc): Rearranged calls of sexp_iterator_next. 
+
+	* sexp.c (sexp_iterator_enter_list): Call sexp_iterator_next to
+	get to the first element of the list. Updated callers.
+
+	* base64.c (base64_encode_group): New function, used by openpgp
+	armoring code.
 
 	* Makefile.am: Added openpgp files.
 
