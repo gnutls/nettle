@@ -1,3 +1,9 @@
+2004-11-29  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/Makefile.in: Use .$(OBJEXT). Explicitly set .SUFFIXES.
+
+	* Makefile.in: Use .$(OBJEXT).
+
 2004-11-28  Niels Möller  <nisse@lysator.liu.se>
 
 	* tools/Makefile.in (nettle-lfib-stream): Avoid using $< in
