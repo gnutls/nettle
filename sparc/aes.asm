@@ -110,13 +110,13 @@ define(<AES_FINAL_ROUND>, <
 	ld	[IDX1+$1], t1		! 1
 	ldub	[wtxt+t1], t1		! 1
 
-	ld	[wtxt+$1], t0		! 0
+	ldub	[wtxt+$1+3], t0		! 0
 	! IDX2(j) = j XOR 2
-	lduh	[wtxt+eval($1 ^ 8)], t2	! 2
-	and	t0, 255, t0		! 0
+	ldub	[wtxt+eval($1 ^ 8)+1], t2	! 2
+	C and	t0, 255, t0		! 0
 	ld	[IDX3 + $1], t3		! 3
 	
-	and	t2, 255, t2		! 2
+	C and	t2, 255, t2		! 2
 	ldub	[T+t1], t1		! 1
 	ldub	[T+t0], t0		! 0
 	sll	t1, 8, t1		! 1
