@@ -53,4 +53,4 @@ clean:
 distclean: clean
 	-rm -f Makefile *.d
 
-include $(SOURCES:.c=.$(OBJEXT).d)
+@DEP_INCLUDE@ $(SOURCES:.c=.$(OBJEXT).d)

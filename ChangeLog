@@ -1,3 +1,13 @@
+2004-11-23  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in: Use DEP_INCLUDE.
+	* tools/Makefile.in: Likewise.
+	* testsuite/Makefile.in: Likewise.
+	* examples/Makefile.in: Likewise.
+
+	* configure.ac (dummy-dep-files): Generate only of dependency
+	tracking is enabled.
+
 2004-11-18  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in (clean-here): The clean target should not delete the
