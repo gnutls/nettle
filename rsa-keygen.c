@@ -35,6 +35,7 @@
 
 #include "rsa.h"
 #include "bignum.h"
+#include "nettle-internal.h"
 
 #ifndef DEBUG
 # define DEBUG 0
@@ -69,10 +70,11 @@ bignum_next_prime(mpz_t p, mpz_t n, int count,
 		  void *progress_ctx, nettle_progress_func progress)
 {
   mpz_t tmp;
-  unsigned long *moduli = NULL;
+  TMP_DECL(moduli, unsigned long, NUMBER_OF_PRIMES);
+  
   unsigned long difference;
-  int prime_limit = NUMBER_OF_PRIMES;
-
+  unsigned prime_limit = NUMBER_OF_PRIMES;
+  
   /* First handle tiny numbers */
   if (mpz_cmp_ui(n, 2) <= 0)
     {
@@ -87,22 +89,23 @@ bignum_next_prime(mpz_t p, mpz_t n, int count,
 
   mpz_init(tmp);
 
-  if (prime_limit && (mpz_cmp_ui(p, primes[prime_limit]) <= 0) )
-    /* Use unly 3, 5 and 7 */
+  if (mpz_cmp_ui(p, primes[prime_limit-1]) <= 0)
+    /* Use only 3, 5 and 7 */
     prime_limit = 3;
-
-  if (prime_limit)
-    {
-      /* Compute residues modulo small odd primes */
-      int i;
-
-      moduli = alloca(prime_limit * sizeof(*moduli));
-      for (i = 0; i < prime_limit; i++)
-	moduli[i] = mpz_fdiv_ui(p, primes[i]);
-    }
-
+  
+  /* Compute residues modulo small odd primes */
+  TMP_ALLOC(moduli, prime_limit);
+  {
+    unsigned i;
+    for (i = 0; i < prime_limit; i++)
+      moduli[i] = mpz_fdiv_ui(p, primes[i]);
+  }
+  
   for (difference = 0; ; difference += 2)
     {
+      int composite = 0;
+      unsigned i;
+
       if (difference >= ULONG_MAX - 10)
 	{ /* Should not happen, at least not very often... */
 	  mpz_add_ui(p, p, difference);
@@ -110,20 +113,14 @@ bignum_next_prime(mpz_t p, mpz_t n, int count,
 	}
 
       /* First check residues */
-      if (prime_limit)
+      for (i = 0; i < prime_limit; i++)
 	{
-	  int composite = 0;
-      	  int i;
-
-	  for (i = 0; i < prime_limit; i++)
-	    {
-	      if (moduli[i] == 0)
-		composite = 1;
-	      moduli[i] = (moduli[i] + 2) % primes[i];
-	    }
-	  if (composite)
-	    continue;
+	  if (moduli[i] == 0)
+	    composite = 1;
+	  moduli[i] = (moduli[i] + 2) % primes[i];
 	}
+      if (composite)
+	continue;
       
       mpz_add_ui(p, p, difference);
       difference = 0;
