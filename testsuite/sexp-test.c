@@ -20,7 +20,7 @@ test_main(void)
   ASSERT(i.type == SEXP_LIST
 	 && !sexp_iterator_enter_list(&i));
 
-  ASSERT(sexp_iterator_first(&i, LDATA("3:foo0:[3:bar]1:x")));
+  ASSERT(sexp_iterator_first(&i, LDATA("3:foo0:[3:bar]12:xxxxxxxxxxxx")));
   ASSERT(i.type == SEXP_ATOM
 	 && !i.display_length && !i.display
 	 && i.atom_length == 3 && MEMEQ(3, "foo", i.atom)
@@ -31,8 +31,28 @@ test_main(void)
 
 	 && sexp_iterator_next(&i) && i.type == SEXP_ATOM
 	 && i.display_length == 3 && MEMEQ(3, "bar", i.display)
-	 && i.atom_length == 1 && MEMEQ(1, "x", i.atom));
+	 && i.atom_length == 12 && MEMEQ(12, "xxxxxxxxxxxx", i.atom)
 
+	 && sexp_iterator_next(&i) && i.type == SEXP_END);
+  
+  /* Same data, transport encoded. */
+  
+  ASSERT(sexp_transport_iterator_first
+	 (&i, LDUP("{Mzpmb28=} {MDo=} {WzM6YmFyXTEyOnh4eHh4eHh4eHh4eA==}")));
+  ASSERT(i.type == SEXP_ATOM
+	 && !i.display_length && !i.display
+	 && i.atom_length == 3 && MEMEQ(3, "foo", i.atom)
+
+	 && sexp_iterator_next(&i) && i.type == SEXP_ATOM
+	 && !i.display_length && !i.display
+	 && !i.atom_length && i.atom
+
+	 && sexp_iterator_next(&i) && i.type == SEXP_ATOM
+	 && i.display_length == 3 && MEMEQ(3, "bar", i.display)
+	 && i.atom_length == 12 && MEMEQ(12, "xxxxxxxxxxxx", i.atom)
+
+	 && sexp_iterator_next(&i) && i.type == SEXP_END);
+  
   {
     static const uint8_t *keys[2] = { "n", "e" };
     struct sexp_iterator v[2];
