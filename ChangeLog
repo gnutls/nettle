@@ -1,6 +1,11 @@
 2001-06-15  Niels Möller  <nisse@ehand.com>
 
+	* testsuite/blowfish-test.m4: Fixed testcase, use correct key
+	length. 
+
 	* Makefile.am (libnettle_a_SOURCES): Added blowfish files.
+	($(des_headers)): Strip directory part when passing file name to
+	desdata. 
 
 	* testsuite/blowfish-test.m4: Added one test, from GNUPG.
 

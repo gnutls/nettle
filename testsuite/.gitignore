@@ -5,6 +5,8 @@
 /aes-test.c
 /arcfour-test
 /arcfour-test.c
+/blowfish-test
+/blowfish-test.c
 /des-test
 /des-test.c
 /md5-test
