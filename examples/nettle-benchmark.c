@@ -173,8 +173,11 @@ time_cipher(const struct nettle_cipher *cipher)
   init_data(data);
 
   {
-    struct bench_cipher_info info
-      = { ctx, cipher->encrypt, data };
+    /* Decent initializers are a GNU extension, so don't use it here. */
+    struct bench_cipher_info info;
+    info.ctx = ctx;
+    info.crypt = cipher->encrypt;
+    info.data = data;
     
     init_key(cipher->key_size, key);
     cipher->set_encrypt_key(ctx, cipher->key_size, key);
@@ -184,8 +187,10 @@ time_cipher(const struct nettle_cipher *cipher)
   }
   
   {
-    struct bench_cipher_info info
-      = { ctx, cipher->decrypt, data };
+    struct bench_cipher_info info;
+    info.ctx = ctx;
+    info.crypt = cipher->decrypt;
+    info.data = data;
     
     init_key(cipher->key_size, key);
     cipher->set_decrypt_key(ctx, cipher->key_size, key);
@@ -200,8 +205,12 @@ time_cipher(const struct nettle_cipher *cipher)
       
       /* Do CBC mode */
       {
-        struct bench_cbc_info info
-          = { ctx, cipher->encrypt, data, cipher->block_size, iv };
+        struct bench_cbc_info info;
+	info.ctx = ctx;
+	info.crypt = cipher->encrypt;
+	info.data = data;
+	info.block_size = cipher->block_size;
+	info.iv = iv;
     
         memset(iv, 0, sizeof(iv));
     
@@ -212,8 +221,12 @@ time_cipher(const struct nettle_cipher *cipher)
       }
 
       {
-        struct bench_cbc_info info
-          = { ctx, cipher->decrypt, data, cipher->block_size, iv };
+        struct bench_cbc_info info;
+	info.ctx = ctx;
+	info.crypt = cipher->decrypt;
+	info.data = data;
+	info.block_size = cipher->block_size;
+	info.iv = iv;
     
         memset(iv, 0, sizeof(iv));
 
