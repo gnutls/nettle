@@ -40,9 +40,9 @@ aes_decrypt:
 
 	movl	24(%esp), %ebp
 	testl	%ebp,%ebp
-	jz	.Ldecrypt_end
+	jz	.Lend
 	
-.Ldecrypt_block_loop:
+.Lblock_loop:
 	movl	20(%esp),%esi	C  address of context struct ctx
 	movl	32(%esp),%ebp	C  address of plaintext
 	AES_LOAD(%esi, %ebp)
@@ -53,7 +53,7 @@ aes_decrypt:
 
 	subl	$1,%ebp		C  one round is complete
 	addl	$16,%esi	C  point to next key
-.Ldecrypt_loop:
+.Lround_loop:
 	pushl	%esi		C  save this first: we'll clobber it later
 
 	C Why???
@@ -83,7 +83,7 @@ aes_decrypt:
 	xorl	12(%esi),%edx
 	addl	$16,%esi	C  point to next key
 	decl	%ebp
-	jnz	.Ldecrypt_loop
+	jnz	.Lround_loop
 
 	C Foo?
 	xchgl	%ebx,%edx
@@ -109,29 +109,21 @@ aes_decrypt:
 
 	C inverse S-box substitution
 	mov	$4,%edi
-.Lisubst:
+.Lsubst:
 	AES_SUBST_BYTE(_aes_decrypt_table)
 
 	decl	%edi
-	jnz	.Lisubst
+	jnz	.Lsubst
 
-	xorl	(%esi),%eax	C  add last key to plaintext
-	xorl	4(%esi),%ebx
-	xorl	8(%esi),%ecx
-	xorl	12(%esi),%edx
-
-	C // store decrypted data back to caller's buffer
+	C Add last subkey, and store encrypted data
 	movl	28(%esp),%edi
-	movl	%eax,(%edi)
-	movl	%ebx,4(%edi)
-	movl	%ecx,8(%edi)
-	movl	%edx,12(%edi)
+	AES_STORE(%esi, %edi)
 	
 	addl	$16, 28(%esp)	C Increment destination pointer
 	subl	$16, 24(%esp)
-	jnz	.Ldecrypt_block_loop
+	jnz	.Lblock_loop
 
-.Ldecrypt_end: 
+.Lend: 
 	popl	%edi
 	popl	%esi
 	popl	%ebp
