@@ -1,9 +1,14 @@
+/* desdata.c
+ *
+ * Generate tables used by desUtil.c and desCode.h.
+ *
+ * $Id$ */
+
 /*
  *	des - fast & portable DES encryption & decryption.
  *	Copyright (C) 1992  Dana L. How
- *	Please see the file `README' for the complete copyright notice.
+ *	Please see the file `descore.README' for the complete copyright notice.
  *
- *	Generate tables used by desUtil.c and desCode.h.
  */
 
 #include	"desinfo.h"
@@ -58,7 +63,7 @@ int sorder[] = {
 int printf(const char *, ...);
 
 int
-main(int argc, char **argv)
+main(int argc UNUSED, char **argv UNUSED)
 {
 	UINT32 d, i, j, k, l, m, n, s;
 	char b[256], ksr[56];

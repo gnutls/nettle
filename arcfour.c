@@ -1,5 +1,10 @@
 /* arcfour.c
  *
+ * This implements the Arcfour stream cipher with 128 bit keys. 
+ *
+ * The Arcfour cipher is believed to be compatible with the RC4 cipher. 
+ * RC4 is a registered trademark of RSA Data Security Inc.
+ *   
  */
 
 #include "crypto_types.h"

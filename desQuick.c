@@ -1,7 +1,7 @@
 /*
  *	des - fast & portable DES encryption & decryption.
  *	Copyright (C) 1992  Dana L. How
- *	Please see the file `README' for the complete copyright notice.
+ *	Please see the file `descore.README' for the complete copyright notice.
  *
  * Slightly edited by Niels Möller, 1997
  */

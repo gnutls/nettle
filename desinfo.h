@@ -1,10 +1,13 @@
-/*
- *	des - fast & portable DES encryption & decryption.
- *	Copyright (C) 1992  Dana L. How
- *	Please see the file `README' for the complete copyright notice.
+/* desinfo.h
  *
- *	Tables describing DES rather than just this implementation.
- *	These are used in desdata but NOT in runtime code.
+ * Tables describing DES rather than just this implementation.
+ * These are used in desdata but NOT in runtime code.
+ *
+ * $Id$ */
+
+/*	des - fast & portable DES encryption & decryption.
+ *	Copyright (C) 1992  Dana L. How
+ *	Please see the file `descore.README' for the complete copyright notice.
  */
 
 #include "RCSID.h"

@@ -8,17 +8,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main (int argc, char **argv)
+int main (int argc UNUSED, char **argv UNUSED)
 {
   if (bf_selftest())
     {
       fprintf(stderr, "Blowfish works.\n");
-      exit(EXIT_SUCCESS);
+      return EXIT_SUCCESS;
     }
   else
     {
       fprintf(stderr, "ERROR: Blowfish failed.\n");
-      exit(EXIT_FAILURE);
+      return EXIT_FAILURE;
     }
 }
 
