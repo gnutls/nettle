@@ -35,5 +35,15 @@ Build nettle with the usual ./configure && make && make check && make
 install. Read the manual. Mail me if you have any questions or
 suggestions.
 
+You can also build Nettle from cvs, using
+
+  cvs -d :pserver:anonymous@cvs.lysator.liu.se:/cvsroot/lsh login
+  [ empty password ]
+  cvs -d :pserver:anonymous@cvs.lysator.liu.se:/cvsroot/lsh co nettle
+
+If you get it from cvs, you need to build it with
+
+  ./.bootstrap && ./configure && make && make check
+
 Happy hacking,
 /Niels Möller <nisse@lysator.liu.se>
