@@ -798,6 +798,56 @@ in any other way.
 Analogous to @code{twofish_encrypt}
 @end deftypefun
 
+@node CBC
+@comment  node-name,  next,  previous,  up
+@section Cipher Block Chaining
+
+Nettle includes a few utility functions for applying a block cipher in
+Cipher Block Chaining (CBC) mode. The functions uses @code{void *} to
+pass cipher contexts around.
+
+@deftypefun {void} cbc_encrypt (void *@var{ctx}, void (*@var{f})(), unsigned @var{block_size}, uint8_t *@var{iv}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx {void} cbc_decrypt (void *@var{ctx}, void (*@var{f})(), unsigned @var{block_size}, uint8_t *@var{iv}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+
+Applies the encryption or decryption function @var{f} in CBC mde. The
+function f is really typed as @code{void f (void *@var{ctx}, unsigned
+@var{length}, uint8_t @var{dst}, const uint8_t *@var{src}), and the
+@code{cbc_encrypt} and @code{cbc_decrypt} functions pass their argument
+@var{ctx} on to @code{f}.
+
+There are also some macros to help use these functions correctly. The
+are best explained by example.
+
+@deffn Macro CBC_CTX (@var(context_type), @var(block_size))
+Expands into
+@example
+@{
+   context_type ctx;
+   uint8_t iv[block_size];
+@}
+@end example
+It can be used to define a CBC context stuct, either directly
+@example
+struct CBC_CTX(struct aes_ctx, AES_BLOCK_SIZE) ctx;
+@end example
+
+or to give it a struct tag,
+
+@example
+struct aes_cbc_ctx CBC_CTX (struct aes_ctx, AES_BLOCK_SIZE);
+@end example
+
+@deffn Macro CBC_SET_KEY (@var{ctx}, @var{iv})
+First argument is a pointer to a context struct as defined by @code{CBC_CTX},
+and the second is a pointer to an Initialization Vector (iv) that is
+copied into the context.
+
+@deffn Macro CBC_ENCRYPT (@var{ctx}, @var{f}, @var{length}, @var{dst}, @var{src})
+@deffnx Macro CBC_DECRYPT (@var{ctx}, @var{f}, @var{length}, @var{dst}, @var{src})
+A simpler way to invoke @code{cbc_encrypt} and @code{cbc_decrypt}. First
+argument is XXX Here
+
+
 
 @node Miscellaneous functions,  , Cipher functions, Reference
 @comment  node-name,  next,  previous,  up
@@ -809,18 +859,6 @@ doesn't follow the Nettle conventions, because it is intended to be
 similar to the ANSI-C @code{memcpy} function.
 @end deftypefun
 
-@deftypefun {void} cbc_encrypt (void *@var{ctx}, void (*@var{f})(), unsigned @var{block_size}, uint8_t *@var{iv}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
-@deftypefunx {void} cbc_decrypt (void *@var{ctx}, void (*@var{f})(), unsigned @var{block_size}, uint8_t *@var{iv}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
-Utility functions for applying a block cipher in Cipher Block Chaining
-(CBC) mode. The function f is really typed as @code{void f (void
-*@var{ctx}, unsigned @var{length}, uint8_t @var{dst}, const uint8_t
-*@var{src}), and the @code{cbc_encrypt} and @code{cbc_decrypt} functions
-pass their argument @var{ctx} on to @code{f}.
-
-There are also some macros to help use these functions correctly, XXX
-describe CBC_SET_IV, CBC_ENCRYPT and CBC_DECRYPT.
-
-@end example
 @node Installation, Index, Reference, Top
 @comment  node-name,  next,  previous,  up
 @chapter Installation
