@@ -83,9 +83,6 @@ rsa_keypair_from_sexp(struct rsa_public_key *pub,
   if (!sexp_iterator_check_type(&i, outer))
     return 0;
 
-  if (!sexp_iterator_next(&i))
-    return 0;
-
   if (!sexp_iterator_check_types(&i, 3, names))
     return 0;
   
