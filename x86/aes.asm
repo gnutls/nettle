@@ -17,6 +17,7 @@ C along with the nettle library; see the file COPYING.LIB.  If not, write to
 C the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 C MA 02111-1307, USA.
 
+
 	.file	"aes.asm"
 
 	.data
@@ -25,7 +26,16 @@ include_src(<x86/aes_tables.asm>)
 
 	.text
 
-.globl	print_word
+C Register usage:
+C
+C The aes state is kept in %eax, %ebx, %ecx and %edx
+C
+C %esi is used as temporary, to point to the input, and to the
+C subkeys, etc.
+C
+C %ebp is used as the round counter, and as a temporary in the final round.
+C
+C %edi is a temporary, often used as an accumulator.
 
 	C aes_encrypt(struct aes_context *ctx, 
 	C             unsigned length, uint8_t *dst,
@@ -56,7 +66,8 @@ aes_got_plain:
 	xorl	4(%esi),%ebx
 	xorl	8(%esi),%ecx
 	xorl	12(%esi),%edx
-aes_xored_initial: 
+aes_xored_initial:
+	C FIXME:	Use %esi instead
 	movl	20(%esp),%ebp	C  address of context struct
 	movl	AES_NROUNDS (%ebp),%ebp	C  get number of rounds to do from struct
 
@@ -74,6 +85,8 @@ aes_encrypt_loop:
 	C      ^ table[1][B1(%ebx)]
 	C      ^ table[2][B2(%ebx)]
 	C      ^ table[3][B3(%ebx)]
+	C
+	C a b c d
 	movl	%eax, %esi
 	andl	$0xff, %esi
 	shll	$2,%esi		C  index in dtbl1
@@ -93,6 +106,7 @@ aes_encrypt_loop:
 	pushl	%edi		C  save first on stack
 
 	C // Second column
+	C b c d a
 	movl	%ebx,%esi	C  copy first in
 	andl	$0x000000ff,%esi C  clear all but offset
 	shll	$2,%esi		C  index in dtbl1
@@ -112,6 +126,7 @@ aes_encrypt_loop:
 	pushl	%edi		C  save first on stack
 
 	C // Third column
+	C c d a b
 	movl	%ecx,%esi	C  copy first in
 	andl	$0x000000ff,%esi C  clear all but offset
 	shll	$2,%esi		C  index in dtbl1
@@ -131,6 +146,7 @@ aes_encrypt_loop:
 	pushl	%edi		C  save first on stack
 
 	C // Fourth column
+	C d a b c
 	movl	%edx,%esi	C  copy first in
 	andl	$0x000000ff,%esi C  clear all but offset
 	shll	$2,%esi		C  index in dtbl1
@@ -164,6 +180,7 @@ aes_got_t:
 
 	C // last round
 	C // first column
+	C a b c d
 	movl	%eax,%edi
 	andl	$0x000000ff,%edi
 	movl	%ebx,%ebp
@@ -178,6 +195,7 @@ aes_got_t:
 	pushl	%edi
 
 	C // second column
+	C d a b c
 	movl	%eax,%edi
 	andl	$0x0000ff00,%edi
 	movl	%ebx,%ebp
@@ -191,6 +209,7 @@ aes_got_t:
 	orl	%ebp,%edi
 	pushl	%edi
 
+	C c d a b
 	C // third column
 	movl	%eax,%edi
 	andl	$0x00ff0000,%edi
@@ -206,6 +225,7 @@ aes_got_t:
 	pushl	%edi
 
 	C // fourth column
+	C b c d a
 	movl	%eax,%edi
 	andl	$0xff000000,%edi
 	movl	%ebx,%ebp
@@ -270,8 +290,9 @@ aes_got_result:
 	.size	aes_encrypt,.eore-aes_encrypt
 
 
-	C // aes_decrypt(AES_context *ctx, const UINT8 *ciphertext
-	C //		    UINT8 *plaintext)
+	C aes_encrypt(struct aes_context *ctx, 
+	C             unsigned length, uint8_t *dst,
+	C 	      uint8_t *src)
 	.align 16
 .globl aes_decrypt
 	.type	aes_decrypt,@function
@@ -281,28 +302,42 @@ aes_decrypt:
 	pushl	%ebp		C  12(%esp)
 	pushl	%esi		C  8(%esp)
 	pushl	%edi		C  4(%esp)
-	movl	24(%esp),%esi	C  address of ciphertext
+
+	C ctx = 20(%esp)
+	C length = 24(%esp)
+	C dst = 28(%esp)
+	C src = 32(%esp)
+
+	movl	32(%esp),%esi	C  address of ciphertext
 	movl	(%esi),%eax	C  load ciphertext into registers
 	movl	4(%esi),%ebx
 	movl	8(%esi),%ecx
 	movl	12(%esi),%edx
+	
 	movl	20(%esp),%esi	C  address of context struct ctx
-	movl	480(%esi),%ebp	C  get number of rounds to do from struct
-	shll	$4,%ebp
-	leal	240(%esi, %ebp),%esi
-	shrl	$4,%ebp
-	xorl	(%esi),%eax	C  add last key to ciphertext
+	xorl	(%esi),%eax	C  add first key to ciphertext
 	xorl	4(%esi),%ebx
 	xorl	8(%esi),%ecx
 	xorl	12(%esi),%edx
+	movl	AES_NROUNDS (%esi),%ebp	C  get number of rounds to do from struct
+	C shll	$4,%ebp
+	C leal	240(%esi, %ebp),%esi
+	C shrl	$4,%ebp
+	C xorl	(%esi),%eax	C  add last key to ciphertext
+	C xorl	4(%esi),%ebx
+	C xorl	8(%esi),%ecx
+	C xorl	12(%esi),%edx
 
 	subl	$1,%ebp		C  one round is complete
-	subl	$16,%esi	C  point to previous key
-.decrypt_loop:
+	addl	$16,%esi	C  point to next key
+Ldecrypt_loop:
 	pushl	%esi		C  save this first: we'll clobber it later
+
+	C Why???
 	xchgl	%ebx,%edx
 
 	C // First column
+	C a b c d
 	movl	%eax,%esi	C  copy first in
 	andl	$0x000000ff,%esi C  clear all but offset
 	shll	$2,%esi		C  index in itbl1
@@ -322,6 +357,7 @@ aes_decrypt:
 	pushl	%edi		C  save first on stack
 
 	C // Second column
+	C d a b c
 	movl	%edx,%esi	C  copy first in
 	andl	$0x000000ff,%esi C  clear all but offset
 	shll	$2,%esi		C  index in itbl1
@@ -341,6 +377,7 @@ aes_decrypt:
 	pushl	%edi
 
 	C // Third column
+	C c d a b
 	movl	%ecx,%esi	C  copy first in
 	andl	$0x000000ff,%esi C  clear all but offset
 	shll	$2,%esi		C  index in itbl1
@@ -360,6 +397,7 @@ aes_decrypt:
 	pushl	%edi		C  save first on stack
 
 	C // Fourth column
+	C b c d a
 	movl	%ebx,%esi	C  copy first in
 	andl	$0x000000ff,%esi C  clear all but offset
 	shll	$2,%esi		C  index in itbl1
@@ -376,6 +414,7 @@ aes_decrypt:
 	shrl	$22,%esi
 	andl	$0x000003fc,%esi
 	xorl	itbl4(%esi),%edi
+
 	movl	%edi,%edx
 	popl	%ecx
 	popl	%ebx
@@ -385,14 +424,16 @@ aes_decrypt:
 	xorl	4(%esi),%ebx
 	xorl	8(%esi),%ecx
 	xorl	12(%esi),%edx
-	subl	$16,%esi	C  point to previous key
+	addl	$16,%esi	C  point to next key
 	decl	%ebp
-	jnz	.decrypt_loop
+	jnz	Ldecrypt_loop
 
+	C Foo?
 	xchgl	%ebx,%edx
 
 	C // last round
 	C // first column
+	C a b c d
 	movl	%eax,%edi
 	andl	$0x000000ff,%edi
 	movl	%ebx,%ebp
@@ -407,6 +448,7 @@ aes_decrypt:
 	pushl	%edi
 
 	C // second column
+	C b c d a
 	movl	%eax,%edi
 	andl	$0xff000000,%edi
 	movl	%ebx,%ebp
@@ -421,6 +463,7 @@ aes_decrypt:
 	pushl	%edi
 
 	C // third column
+	C c d a b
 	movl	%eax,%edi
 	andl	$0x00ff0000,%edi
 	movl	%ebx,%ebp
@@ -434,7 +477,8 @@ aes_decrypt:
 	orl	%ebp,%edi
 	pushl	%edi
 
-	C // second column
+	C // fourth column
+	C d a b c
 	movl	%eax,%edi
 	andl	$0x0000ff00,%edi
 	movl	%ebx,%ebp
@@ -478,7 +522,7 @@ aes_decrypt:
 	decl	%edi
 	jnz	.isb_sub
 
-	xorl	(%esi),%eax	C  add first key to plaintext
+	xorl	(%esi),%eax	C  add last key to plaintext
 	xorl	4(%esi),%ebx
 	xorl	8(%esi),%ecx
 	xorl	12(%esi),%edx
