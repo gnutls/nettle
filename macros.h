@@ -55,5 +55,11 @@ do {						\
   (p)[0] = (i) & 0xff;				\
 } while(0)
 
+/* Macro to make it easier to loop over several blocks. */
+#define FOR_BLOCKS(length, dst, src, blocksize)	\
+  assert( !((length) % (blocksize)));           \
+  for (; (length); ((length) -= (blocksize),	\
+		  (dst) += (blocksize),		\
+		  (src) += (blocksize)) )
 
 #endif /* NETTLE_MACROS_H_INCLUDED */
