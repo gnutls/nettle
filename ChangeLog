@@ -1,3 +1,7 @@
+2002-01-24  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* nettle.texinfo (Public-key algorithms): Minor fixes.
+
 2002-01-22  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* nettle.texinfo (Nettle soup): New chapter.
