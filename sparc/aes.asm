@@ -42,7 +42,9 @@ define(dst, %i3)
 define(src, %i4)
 
 ! Loop invariants
-define(wtxt, %sp)
+! NOTE: We overwrite %fp with the wtxt pointer,
+!       so it must be restored at the end of the function.
+define(wtxt, %fp)
 define(tmp, %l1)
 define(diff, %l2)
 define(nrounds, %l3)
@@ -66,29 +68,36 @@ define(t1, %o1)
 define(t2, %o2)
 define(t3, %o3)
 
-define(<FRAME_SIZE>, 32)
-define(<FRAME_WTXT>, 0)
-define(<FRAME_TMP>, 16)
+C The stack frame looks like
+C
+C %fp -   4: OS-dependent link field
+C %fp -   8: OS-dependent link field
+C %fp -  24: tmp, uint32_t[4]
+C %fp -  40: wtxt, uint32_t[4]
+C %fp - 136: OS register save area. 
+define(<FRAME_SIZE>, 136)
 
 _aes_crypt:
 	save	%sp, -FRAME_SIZE, %sp
 	cmp	length, 0
 	be	.Lend
-	add	%sp, FRAME_TMP, tmp
+	add	%fp, -24, tmp
 
+	C NOTE: Over writes %fp
+	add	%fp, -40, wtxt
 	ld	[ctx + AES_NROUNDS], nrounds
 	! Compute xor, so that we can swap efficiently.
 	xor	wtxt, tmp, diff
 	! The loop variable will be multiplied by 16.
 	! More loop invariants
 	add	T, AES_TABLE0, T0
-	add	T, AES_TABLE1, T1
 	
+	add	T, AES_TABLE1, T1
 	add	T, AES_TABLE2, T2
 	add	T, AES_TABLE3, T3
 	add	T, AES_SIDX1, IDX1
-	add	T, AES_SIDX3, IDX3
 	
+	add	T, AES_SIDX3, IDX3
 	! Read src, and add initial subkey
 	! Difference between ctx and src.
 	! NOTE: These instructions are duplicated in the delay slot,
@@ -100,7 +109,6 @@ _aes_crypt:
 	! For stop condition. Note that src is incremented in the
 	! delay slot
 	add	src, 8, %g1
-	nop
 		
 .Lsource_loop:
 	ldub	[src+3], t3
@@ -238,6 +246,7 @@ define(i, round)
 	bne	.Lblock_loop
 	sub	wtxt, src, %g3
 
+	add	%sp, FRAME_SIZE, %fp
 .Lend:
 	ret
 	restore
