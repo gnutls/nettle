@@ -1,0 +1,28 @@
+#! /bin/sh
+
+if [ -z "$srcdir" ] ; then
+  srcdir=`pwd`
+fi
+
+test_conv () {
+    # FIXME: echo -n not portable
+    echo -n "$1" > test.in
+    if ./sexp-conv <test.in >test1.out ; then
+	true
+    else
+	exit 1
+    fi
+    echo -n "$2" > test2.out
+
+    if cmp test1.out test2.out ; then
+	true
+    else
+	exit 1;
+    fi
+}
+
+test_conv "3:foo" "foo" -a
+test_conv "4:3des" '"3des"' -a
+test_conv "(3:foo [bar]foo)" "(3:foo[3:bar]3:foo)" -c
+
+exit 0
