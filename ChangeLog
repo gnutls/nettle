@@ -1,3 +1,27 @@
+2002-11-10  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* tools/sexp-conv.c: Use supplied getopt.
+	(werror): New function.
+	(sexp_output_hash_init): New function.
+	(sexp_put_char): Made base64 linebreaking configurable.
+	Implemented hashing. 
+	(sexp_put_code_start, sexp_put_code_end): Don't output any
+	delimiters here.
+	(sexp_put_string): Output base64 delimiters.
+	(sexp_put_digest): New function.
+	(sexp_convert_item): Output transport delimiters.
+	(sexp_convert_file): Deleted function, folded with main.
+	(parse_options): New function.
+	(main): Implemented --hash and --once, needed by lsh-authorize.
+
+	* sexp.h (struct sexp_iterator): New field start.
+
+	* sexp.c (sexp_iterator_subexpr): New function.
+	(sexp_iterator_parse): Initialize ITERATOR->start.
+
+	* sexp-format.c (sexp_vformat): Abort if format string contains
+	unhandled characters.
+
 2002-11-08  Niels Möller  <niels@s3.kth.se>
 
 	* des-compat.c (des_ecb3_encrypt): Don't use struct initialization
