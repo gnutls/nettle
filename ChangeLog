@@ -1,3 +1,7 @@
+2004-11-18  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac (ASM_SYMBOL_PREFIX): Fixed test.
+
 2004-11-17  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/symbols-test: Try plain nm if nm -g doesn't work.
