@@ -22,11 +22,12 @@ C MA 02111-1307, USA.
 	C aes_decrypt(struct aes_context *ctx, 
 	C             unsigned length, uint8_t *dst,
 	C 	      uint8_t *src)
+	.text
 	.align 16
-.globl aes_decrypt
+	.globl aes_decrypt
 	.type	aes_decrypt,@function
 aes_decrypt:
-	C // save all registers that need to be saved
+	C save all registers that need to be saved
 	pushl	%ebx		C  16(%esp)
 	pushl	%ebp		C  12(%esp)
 	pushl	%esi		C  8(%esp)
@@ -38,24 +39,28 @@ aes_decrypt:
 	C src = 32(%esp)
 
 	movl	24(%esp), %ebp
-	C What's the right way to set the flags?
-	addl	$0, %ebp
+	testl	%ebp,%ebp
 	jz	.Ldecrypt_end
 	
 .Ldecrypt_block_loop:
-	movl	32(%esp),%esi	C  address of ciphertext
-	movl	(%esi),%eax	C  load ciphertext into registers
-	movl	4(%esi),%ebx
-	movl	8(%esi),%ecx
-	movl	12(%esi),%edx
-	
+	movl	20(%esp),%esi	C  address of context struct ctx
+	movl	32(%esp),%ebp	C  address of plaintext
+	AES_LOAD(%esi, %ebp)
 	addl	$16, 32(%esp)	C Increment src pointer
 	
-	movl	20(%esp),%esi	C  address of context struct ctx
-	xorl	(%esi),%eax	C  add first key to ciphertext
-	xorl	4(%esi),%ebx
-	xorl	8(%esi),%ecx
-	xorl	12(%esi),%edx
+C 	movl	32(%esp),%esi	C  address of ciphertext
+C 	movl	(%esi),%eax	C  load ciphertext into registers
+C 	movl	4(%esi),%ebx
+C 	movl	8(%esi),%ecx
+C 	movl	12(%esi),%edx
+C 	
+C 	addl	$16, 32(%esp)	C Increment src pointer
+C 	
+C 	movl	20(%esp),%esi	C  address of context struct ctx
+C 	xorl	(%esi),%eax	C  add first key to ciphertext
+C 	xorl	4(%esi),%ebx
+C 	xorl	8(%esi),%ecx
+C 	xorl	12(%esi),%edx
 	movl	AES_NROUNDS (%esi),%ebp	C  get number of rounds to do from struct
 	C shll	$4,%ebp
 	C leal	240(%esi, %ebp),%esi
