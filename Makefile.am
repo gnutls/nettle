@@ -22,7 +22,7 @@ des_headers = $(srcdir)/parity.h $(srcdir)/rotors.h $(srcdir)/keymap.h
 
 # Generate DES headers.
 $(des_headers): desdata
-	./desdata $@ > $@T
+	./desdata $(@F) > $@T
 	test -s $@T && mv -f $@T $@
 
 des.o: des.c des.h $(des_headers)
