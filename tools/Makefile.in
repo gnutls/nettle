@@ -1,0 +1,69 @@
+@SET_MAKE@
+
+srcdir = @srcdir@
+VPATH = @srcdir@
+
+top_srcdir = @top_srcdir@
+
+include ../config.make
+
+TARGETS = sexp-conv nettle-lfib-stream
+
+all: $(TARGETS)
+
+sexp_conv_SOURCES = sexp-conv.c input.c output.c parse.c \
+	getopt.c getopt1.c misc.c
+
+SOURCES = $(sexp_conv_SOURCES) nettle-lfib-stream.c
+
+DISTFILES = $(SOURCES) Makefile.in
+
+sexp-conv: $(sexp_conv_SOURCES:.c=.$(OBJEXT)) ../libnettle.a
+	$(LINK) $^ $(LIBS) -L.. -lnettle -o $@
+
+nettle-lfib-stream: nettle-lfib-stream.$(OBJEXT) ../libnettle.a
+	$(LINK) $^ $(LIBS) -L.. -lnettle -o $@
+
+.c.$(OBJEXT):
+	$(COMPILE) -I.. -c $< && $(DEP_PROCESS)
+
+
+.PRECIOUS: Makefile
+Makefile: $(srcdir)/Makefile.in ../config.status
+	cd .. && $(SHELL) ./config.status tools/$@
+
+../config.make: $(top_srcdir)/config.make.in ../config.status
+	cd .. && $(SHELL) ./config.status config.make
+
+../config.status: $(top_srcdir)/configure
+	cd .. && $(SHELL) ./config.status --recheck
+
+../configure: $(top_srcdir)/configure.ac $(top_srcdir)/aclocal.m4
+	cd $(top_srcdir) && $(AUTOCONF)
+
+# # FIXME: To we really need all this in all subdirs?
+# ../config.h: ../stamp-h1
+# 	@cd .. $(MAKE) stamp-h1;
+# 
+# ../stamp-h1: $(top_srcdir)/config.h.in ../config.status
+# 	cd .. && $(MAKE) stamp-h1
+# 
+# $(top_srcdir)/config.h.in: $(top_srcdir)/configure.ac
+# 	cd $(top_srcdir) && $(AUTOHEADER)
+# 	rm -f ../stamp-h1
+# 	touch $@
+
+check:
+	true
+
+install: $(TARGETS)
+	$(INSTALL) -d $(bindir)
+	$(INSTALL_PROGRAM) $(TARGETS) $(bindir)
+
+distdir: $(DISTFILES)
+	cp $(DISTFILES) $(distdir)
+
+clean:
+	rm -f $(TARGETS) *.o *.d
+
+-include $(SOURCES:.c=.$(OBJEXT).d)

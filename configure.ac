@@ -2,14 +2,13 @@ dnl -*- mode: shell-script; sh-indentation: 2; -*-
 
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([nettle], [1.10])
+AC_INIT([nettle], [1.11], [nettle-bugs@lists.lysator.liu.se])
 AC_PREREQ(2.50)
 AC_CONFIG_SRCDIR([arcfour.c])
 # Needed to stop autoconf from looking for files in parent directories.
 AC_CONFIG_AUX_DIR([.])
 
-AM_INIT_AUTOMAKE
-AM_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADER([config.h])
 
 SHLIBMAJOR=2
 SHLIBMINOR=2
@@ -74,11 +73,14 @@ fi
 
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
-AM_PROG_CC_STDC
 
-if test "x$am_cv_prog_cc_stdc" = xno ; then
+if test "x$ac_cv_prog_cc_stdc" = xno ; then
   AC_ERROR([the C compiler doesn't handle ANSI-C])
 fi
+
+AC_PROG_INSTALL
+
+LSH_DEPENDENCY_TRACKING
 
 # Select assembler code
 asm_path=
@@ -146,12 +148,14 @@ else
   SHLIBINSTALL=''
 fi
 
-if test "x$enable_pic" = xyes; then : ; else
-  CCPIC=''
+if test "x$enable_pic" = xyes; then
+  CCPIC_MAYBE="$CCPIC"
+else
+  CCPIC_MAYBE=''
 fi
+AC_SUBST([CCPIC_MAYBE])
 
-AM_CONDITIONAL([ENABLE_ASSEMBLER], [test x$enable_assembler = xyes])
-AM_CONDITIONAL([ENABLE_SHARED],  [test x$enable_shared = xyes])
+LSH_MAKE_CONDITIONAL([ENABLE_ASM], [test x$enable_assembler = xyes])
 
 AC_SUBST(SHLIBCFLAGS)
 AC_SUBST(SHLIBMAJOR)
@@ -236,5 +240,5 @@ if test x$GCC = xyes ; then
 # inttypes.h.
 fi
 
-AC_OUTPUT(Makefile tools/Makefile testsuite/Makefile examples/Makefile config.m4)
+AC_OUTPUT(Makefile config.make config.m4 tools/Makefile testsuite/Makefile examples/Makefile)
 
