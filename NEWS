@@ -1,3 +1,23 @@
+NEWS for the 1.9 release
+
+	Optimized C implementation of arcfour. Optimized x86
+	implementations of arcfour and sha1.
+
+	Improved benchmark program.
+	
+	Fixed bug in the rsa-encrypt example program.
+
+	Fixed bug in make install, some of the header files were
+	forgotten.
+	
+	Portability fixes. Fixes to make Nettle compile on systems
+	without gmp. This version has been tested on GNU/Linux,
+	Solaris, HPUX and AIX.
+
+	The shared library is intended to be binary compatible with
+	nettle-1.8. Only the minor version number of the shared
+	library is increased.
+
 NEWS for the 1.8 release
 
 	New example programs, demonstrating encrypting and decrypting
