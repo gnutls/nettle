@@ -29,6 +29,29 @@
 
 #include "nettle-meta.h"
 
+/* Temporary allocation, for systems that don't support alloca. Note
+ * that the allocation requests should always be reasonably small, so
+ * that they can fit on the stack. For non-alloca systems, we use a
+ * fix maximum size, and abort if we ever need anything larger. */
+
+#if HAVE_ALLOCA
+# define TMP_DECL(name, type, max) \
+type *name
+# define TMP_ALLOC(name, size) \
+(name = alloca(sizeof (*name) * size))
+#else /* !HAVE_ALLOCA */
+# define TMP_DECL(name, type, max) \
+type name[max]
+# define TMP_ALLOC(name, size) \
+do { if (size > (sizeof(name) / sizeof(name[0]))) abort(); } while (0)
+#endif 
+
+/* Arbitrary limits which apply to systems that don't have alloca */
+#define NETTLE_MAX_BIGNUM_BITS 10000
+#define NETTLE_MAX_HASH_BLOCK_SIZE 64
+#define NETTLE_MAX_HASH_DIGEST_SIZE 32
+#define NETTLE_MAX_SEXP_ASSOC 17
+ 
 /* Doesn't quite fit with the other algorithms, because of the weak
  * keys. Weak keys are not reported, the functions will simply crash
  * if you try to use a weak key. */
