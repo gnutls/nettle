@@ -9,6 +9,7 @@ config.cache
 config.h
 config.h.in
 config.log
+config.m4
 config.status
 configure
 desdata
