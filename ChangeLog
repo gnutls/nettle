@@ -1,3 +1,33 @@
+2002-10-25  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* examples/sexp-conv.c (sexp_put_newline): Return void, die on
+	error. 
+	(sexp_put_char, sexp_put_data, sexp_puts, sexp_put_length,
+	sexp_put_base64_start, sexp_put_base64_end, sexp_put_string,
+	sexp_put_list_start, sexp_put_list_end, sexp_put_display_start,
+	sexp_put_display_end, sexp_convert_string, sexp_convert_list,
+	sexp_skip_token): Likewise. 
+	(sexp_convert_item): Die on error.
+
+2002-10-24  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* examples/sexp-conv-test: Doesn't need echo -n anymore.
+
+	* examples/sexp-conv.c (die): New function.
+	(struct sexp_input): Deleted field ITEM.
+	(sexp_get_char): Die on failure, never return -1.
+	(sexp_get_quoted_char): Likewise.
+	(sexp_get_quoted_string): Die on failure, no returned value. 
+	(sexp_get_base64_string): Likewise.
+	(sexp_get_token_string): Likewise.
+	(sexp_get_string): Likewise.
+	(sexp_get_string_length): Likewise.
+	(sexp_get_token): Likewise.
+	(sexp_convert_string): Adapted to sexp_get_token.
+	(sexp_convert_list): Likewise.
+	(sexp_convert_file): New function.
+	(main): Use sexp_convert_file.
+
 2002-10-23  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* examples/Makefile.am (TS_PROGS): Added sexp-conv-test.
