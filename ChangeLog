@@ -1,3 +1,8 @@
+2004-03-02  Niels Möller  <niels@s3.kth.se>
+
+	* configure.ac: Added workaround to get the correct $(EXEEXT)=''
+	when compiling with rntcl.
+
 2004-03-02  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/Makefile.am (noinst_PROGRAMS): Put test program list

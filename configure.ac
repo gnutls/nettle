@@ -49,6 +49,20 @@ LSH_RPATH_INIT([`echo $with_lib_path | sed 's/:/ /g'` \
 
 # Checks for programs.
 AC_PROG_CC
+
+# When $CC foo.c -o foo creates both foo and foo.exe, autoconf picks
+# up the foo.exe and sets exeext to .exe. That is correct for cygwin,
+# which has some kind of magic link from foo to foo.exe, but not for
+# rntcl. A better check for the cygwin case would check if the
+# contents of foo and foo.exe are equal; in the rntcl case, foo is a
+# sh script, and foo.exe is a windows executable.
+
+if "x$CC" = xrntcl ; then
+    AC_MSG_NOTICE([Compiling with rntcl; clearing exeext])
+    ac_exeext=''
+    ac_cv_exeext=''
+fi
+
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
 AM_PROG_CC_STDC
