@@ -44,7 +44,7 @@ test_main(void)
       mpz_out_str(stderr, 10, gibberish);
     }
   
-  decrypted = alloca(msg_length + 1);
+  decrypted = xalloc(msg_length + 1);
 
   decrypted_length = msg_length - 1;
   ASSERT(!rsa_decrypt(&key, &decrypted_length, decrypted, gibberish));
@@ -62,7 +62,7 @@ test_main(void)
   rsa_private_key_clear(&key);
   rsa_public_key_clear(&pub);
   mpz_clear(gibberish);
-
+  free(decrypted);
   SUCCESS();
   
 #else /* !WITH_PUBLIC_KEY */

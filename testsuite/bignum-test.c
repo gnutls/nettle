@@ -23,7 +23,7 @@ test_bignum(const char *hex, unsigned length, const uint8_t *base256)
   if (mpz_cmp(a, b))
     FAIL();
 
-  buf = alloca(length + 1);
+  buf = xalloc(length + 1);
   memset(buf, 17, length + 1);
 
   nettle_mpz_get_str_256(length, buf, a);
@@ -34,6 +34,7 @@ test_bignum(const char *hex, unsigned length, const uint8_t *base256)
     FAIL();
 
   mpz_clear(a); mpz_clear(b);
+  free(buf);
 }
 
 static void

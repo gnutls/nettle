@@ -45,7 +45,8 @@ open_file(const char *name)
   const char *srcdir = getenv("srcdir");
   if (srcdir && srcdir[0])
     {
-      char *buf = alloca(strlen(name) + strlen(srcdir) + 10);
+      /* Leaks this name, but that doesn't matter. */
+      char *buf = xalloc(strlen(name) + strlen(srcdir) + 10);
       sprintf(buf, "%s/%s", srcdir, name);
       name = buf;
     }
