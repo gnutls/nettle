@@ -1,3 +1,7 @@
+2003-06-10  Niels Möller  <niels@s3.kth.se>
+
+	* Makefile.am (EXTRA_DIST): Distribute sha-example.c.
+
 2003-06-05  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.am (DISTCLEANFILES): Delete .s files.
