@@ -1,5 +1,10 @@
 2002-05-14  Niels Möller  <niels@s3.kth.se>
 
+	* x86/aes-encrypt.asm (aes_encrypt): Replaced first quarter of the
+	round function with an invocation of AES_ROUND.
+
+	* x86/machine.m4 (AES_ROUND): New macro.
+
 	* x86/aes-encrypt.asm (aes_encrypt): Use AES_LOAD macro.
 
 	* x86/machine.m4 (AES_LOAD): New macro.
