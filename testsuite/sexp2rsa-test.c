@@ -1,7 +1,5 @@
 #include "testutils.h"
 
-#include "rsa.h"
-
 int
 test_main(void)
 {

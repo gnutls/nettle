@@ -1,6 +1,5 @@
 #include "testutils.h"
 
-#include "rsa.h"
 #include "buffer.h"
 
 int
