@@ -1,6 +1,6 @@
 /* cast128.c
  *
- * The CAST-128 block cipher.
+ * The CAST-128 block cipher, described in RFC 2144.
  */
 
 /*	CAST-128 in C
