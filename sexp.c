@@ -25,6 +25,8 @@
 
 #include "sexp.h"
 
+#include "macros.h"
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -222,6 +224,48 @@ sexp_iterator_subexpr(struct sexp_iterator *iterator,
   return iterator->buffer + start;
 }
 
+int
+sexp_iterator_get_uint32(struct sexp_iterator *iterator,
+			 uint32_t *x)
+{
+  if (iterator->type == SEXP_ATOM
+      && !iterator->display
+      && iterator->atom_length
+      && iterator->atom[0] < 0x80)
+    {
+      unsigned length = iterator->atom_length;
+      const uint8_t *p = iterator->atom;
+
+      /* Skip leading zeros. */
+      while(length && !*p)
+	{
+	  length--; p++;
+	}
+
+      switch(length)
+	{
+	case 0:
+	  *x = 0;
+	  break;
+	case 1:
+	  *x = p[0];
+	  break;
+	case 2:
+	  *x = READ_UINT16(p);
+	  break;
+	case 3:
+	  *x = READ_UINT24(p);
+	  break;
+	case 4:
+	  *x = READ_UINT32(p);
+	  break;
+	default:
+	  return 0;
+	}
+      return sexp_iterator_next(iterator);
+    }
+  return 0;
+}
 
 int
 sexp_iterator_check_type(struct sexp_iterator *iterator,

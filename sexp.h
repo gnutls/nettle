@@ -83,6 +83,10 @@ const uint8_t *
 sexp_iterator_subexpr(struct sexp_iterator *iterator,
 		      unsigned *length);
 
+int
+sexp_iterator_get_uint32(struct sexp_iterator *iterator,
+			 uint32_t *x);
+
 
 /* Checks the type of the current expression, which should be a list
  *
