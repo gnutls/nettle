@@ -1,3 +1,12 @@
+2003-01-30  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* tools/output.c (sexp_put_string): Fixed handling of escapable
+	characters. The code generated random escape sequences for
+	characters in the 0x10-0x1f range.
+
+	* testsuite/sexp-conv-test: More tests for hex and base64 input
+	and output.
+
 2003-01-30  Niels Möller  <niels@s3.kth.se>
 
 	* sexp2bignum.c (nettle_mpz_set_sexp): Call sexp_iterator_next on
