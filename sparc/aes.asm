@@ -70,36 +70,19 @@ define(<AES_LOAD>, <
 	ldub	[src+$1+1], t1
 	ldub	[src+$1+2], t2
 	sll	t1, 8, t1
+	
 	or	t0, t1, t0	
 	ldub	[src+$1+3], t1
-	sll	t1, 24, t1
-	
 	sll	t2, 16, t2
-	or	t1, t2, t1
-
+	or	t0, t2, t0
 	
+	sll	t1, 24, t1
 	! Get subkey
 	ld	[ctx + $1], t2
-	or	t1, t0, t0
+	or	t0, t1, t0
 	xor	t0, t2, t0
 	
-	st	t0, [wtxt+$1]
-	C add	src, 4, src
-	
-	C ldub	[src + $1], t0
-	C ldub	[src + $1 + 1], t1
-	C sll	t1, 8, t1
-	C or	t0, t1, t0
-	C ldub	[src + $1 + 2], t2
-	C sll	t2, 16, t2
-	C or	t0, t2, t0
-	C ldub	[src + $1 + 3], t1
-	C sll	t1, 24, t1
-	C or	t0, t1, t0
-	C ld	[key + $1], t2
-	C xor	t0, t2, t0
-	C st	t0, [wtxt + $1]
-	>)dnl
+	st	t0, [wtxt+$1]>)dnl
 
 C AES_ROUND(i)
 C Compute one word in the round function. 
