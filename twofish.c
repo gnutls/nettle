@@ -1,5 +1,9 @@
-/*
- * twofish - An implementation of the twofish cipher.
+/* twofish.c
+ *
+ * $Id$
+ */
+  
+/* twofish - An implementation of the twofish cipher.
  * Copyright (C) 1999 Ruud de Rooij <ruud@debian.org>
  *
  * Modifications for lsh, integrated testing
@@ -72,21 +76,23 @@ typedef UINT32 word;
 static void
 bytes_to_words(word *dest, const byte *src, int n)
 {
-    while (n-- > 0) {
-        *dest++ = src[0] | src[1] << 8 | src[2] << 16 | src[3] << 24;
-        src += 4;
+  while (n-- > 0)
+    {
+      *dest++ = src[0] | src[1] << 8 | src[2] << 16 | src[3] << 24;
+      src += 4;
     }
 }
 
 static void
 words_to_bytes(byte *dest, const word *src, int n)
 {
-    while (n-- > 0) {
-        *dest++ = *src;
-        *dest++ = *src >> 8;
-        *dest++ = *src >> 16;
-        *dest++ = *src >> 24;
-        src++;
+  while (n-- > 0)
+    {
+      *dest++ = *src;
+      *dest++ = *src >> 8;
+      *dest++ = *src >> 16;
+      *dest++ = *src >> 24;
+      src++;
     }
 }
 
@@ -184,15 +190,16 @@ static byte q1[] = { 0x75, 0xF3, 0xC6, 0xF4, 0xDB, 0x7B, 0xFB, 0xC8,
 static byte
 gf_multiply(byte p, byte a, byte b)
 {
-    word shift  = b;
-    byte result = 0;
-    while (a) {
-        if (a & 1) result ^= shift;
-        a = a >> 1;
-        shift = shift << 1;
-        if (shift & 0x100) shift ^= p;
+  word shift  = b;
+  byte result = 0;
+  while (a)
+    {
+      if (a & 1) result ^= shift;
+      a = a >> 1;
+      shift = shift << 1;
+      if (shift & 0x100) shift ^= p;
     }
-    return result;
+  return result;
 }
 
 /* ------------------------------------------------------------------------- */
@@ -218,18 +225,18 @@ static byte rs_matrix[4][8] = {
 static word
 compute_s(word m1, word m2)
 {
-    word s = 0;
-    int i;
-    for (i = 0; i < 4; i++)
-        s |=  ((  gf_multiply(0x4D, m1,       rs_matrix[i][0])
-                ^ gf_multiply(0x4D, m1 >> 8,  rs_matrix[i][1])
-                ^ gf_multiply(0x4D, m1 >> 16, rs_matrix[i][2])
-                ^ gf_multiply(0x4D, m1 >> 24, rs_matrix[i][3])
-                ^ gf_multiply(0x4D, m2,       rs_matrix[i][4])
-                ^ gf_multiply(0x4D, m2 >> 8,  rs_matrix[i][5])
-                ^ gf_multiply(0x4D, m2 >> 16, rs_matrix[i][6])
-                ^ gf_multiply(0x4D, m2 >> 24, rs_matrix[i][7])) << (i*8));
-    return s;
+  word s = 0;
+  int i;
+  for (i = 0; i < 4; i++)
+    s |=  ((  gf_multiply(0x4D, m1,       rs_matrix[i][0])
+	    ^ gf_multiply(0x4D, m1 >> 8,  rs_matrix[i][1])
+	    ^ gf_multiply(0x4D, m1 >> 16, rs_matrix[i][2])
+	    ^ gf_multiply(0x4D, m1 >> 24, rs_matrix[i][3])
+	    ^ gf_multiply(0x4D, m2,       rs_matrix[i][4])
+	    ^ gf_multiply(0x4D, m2 >> 8,  rs_matrix[i][5])
+	    ^ gf_multiply(0x4D, m2 >> 16, rs_matrix[i][6])
+	    ^ gf_multiply(0x4D, m2 >> 24, rs_matrix[i][7])) << (i*8));
+  return s;
 }
 
 /* ------------------------------------------------------------------------- */
@@ -246,9 +253,9 @@ static byte * q_table[4][5] = { { q1, q1, q0, q0, q1 },
 /* The matrix MDS as specified in section 4.3.2 of the twofish paper. */
 
 static byte mds_matrix[4][4] = { { 0x01, 0xEF, 0x5B, 0x5B },
-                                { 0x5B, 0xEF, 0xEF, 0x01 },
-                                { 0xEF, 0x5B, 0x01, 0xEF },
-                                { 0xEF, 0x01, 0xEF, 0x5B } };
+				 { 0x5B, 0xEF, 0xEF, 0x01 },
+				 { 0xEF, 0x5B, 0x01, 0xEF },
+				 { 0xEF, 0x01, 0xEF, 0x5B } };
 
 /* word h_byte(int k, int i, byte x, byte l0, byte l1, byte l2, byte l3);
  *
@@ -266,15 +273,15 @@ static byte mds_matrix[4][4] = { { 0x01, 0xEF, 0x5B, 0x5B },
 static word
 h_byte(int k, int i, byte x, byte l0, byte l1, byte l2, byte l3)
 {
-    byte y = q_table[i][4][l0 ^
-                 q_table[i][3][l1 ^
-                     q_table[i][2][k == 2 ? x : l2 ^
-                         q_table[i][1][k == 3 ? x : l3 ^ q_table[i][0][x]]]]];
+  byte y = q_table[i][4][l0 ^
+            q_table[i][3][l1 ^
+              q_table[i][2][k == 2 ? x : l2 ^
+                q_table[i][1][k == 3 ? x : l3 ^ q_table[i][0][x]]]]];
 
-    return ((word)gf_multiply(0x69, mds_matrix[0][i], y))       |
-           ((word)gf_multiply(0x69, mds_matrix[1][i], y) << 8)  |
-           ((word)gf_multiply(0x69, mds_matrix[2][i], y) << 16) |
-           ((word)gf_multiply(0x69, mds_matrix[3][i], y) << 24);
+  return ( ((word)gf_multiply(0x69, mds_matrix[0][i], y))
+	   | ((word)gf_multiply(0x69, mds_matrix[1][i], y) << 8)
+	   | ((word)gf_multiply(0x69, mds_matrix[2][i], y) << 16)
+	   | ((word)gf_multiply(0x69, mds_matrix[3][i], y) << 24) );
 }
 
 /* word h(int k, byte x, word l0, word l1, word l2, word l3);
@@ -285,75 +292,76 @@ h_byte(int k, int i, byte x, byte l0, byte l1, byte l2, byte l3)
 static word
 h(int k, byte x, word l0, word l1, word l2, word l3)
 {
-    return   h_byte(k, 0, x, l0,       l1,       l2,       l3)
-           ^ h_byte(k, 1, x, l0 >> 8,  l1 >> 8,  l2 >> 8,  l3 >> 8)
-           ^ h_byte(k, 2, x, l0 >> 16, l1 >> 16, l2 >> 16, l3 >> 16)
-           ^ h_byte(k, 3, x, l0 >> 24, l1 >> 24, l2 >> 24, l3 >> 24);
+  return (  h_byte(k, 0, x, l0,       l1,       l2,       l3)
+	  ^ h_byte(k, 1, x, l0 >> 8,  l1 >> 8,  l2 >> 8,  l3 >> 8)
+	  ^ h_byte(k, 2, x, l0 >> 16, l1 >> 16, l2 >> 16, l3 >> 16)
+	  ^ h_byte(k, 3, x, l0 >> 24, l1 >> 24, l2 >> 24, l3 >> 24) );
 }
 
 
 /*
  * Sanity check using the test vectors from appendix 2 of the Twofish paper.
  */
-static int
-twofish_selftest(void) {
+int
+twofish_selftest(void)
+{
   byte testkey128[16] =
-       { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+  { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
   byte ciphertext128[16] =
-       {
-	 0x5D, 0x9D, 0x4E, 0xEF, 0xFA, 0x91, 0x51, 0x57,
-	 0x55, 0x24, 0xF1, 0x15, 0x81, 0x5A, 0x12, 0xE0 };
+  {
+    0x5D, 0x9D, 0x4E, 0xEF, 0xFA, 0x91, 0x51, 0x57,
+    0x55, 0x24, 0xF1, 0x15, 0x81, 0x5A, 0x12, 0xE0 };
 
   byte testkey192[24] =
-       { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF,
-         0xFE, 0xDC, 0xBA, 0x98, 0x76, 0x54, 0x32, 0x10,
-         0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77 };
+  { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF,
+    0xFE, 0xDC, 0xBA, 0x98, 0x76, 0x54, 0x32, 0x10,
+    0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77 };
   byte ciphertext192[16] =
-       { 0xE7, 0x54, 0x49, 0x21, 0x2B, 0xEE, 0xF9, 0xF4,
-	 0xA3, 0x90, 0xBD, 0x86, 0x0A, 0x64, 0x09, 0x41 };
+  { 0xE7, 0x54, 0x49, 0x21, 0x2B, 0xEE, 0xF9, 0xF4,
+    0xA3, 0x90, 0xBD, 0x86, 0x0A, 0x64, 0x09, 0x41 };
 
   byte testkey256[32] =
-       { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF,
-         0xFE, 0xDC, 0xBA, 0x98, 0x76, 0x54, 0x32, 0x10,
-         0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
-         0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF };
+  { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF,
+    0xFE, 0xDC, 0xBA, 0x98, 0x76, 0x54, 0x32, 0x10,
+    0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
+    0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF };
   byte ciphertext256[16] =
-       { 0x37, 0xFE, 0x26, 0xFF, 0x1C, 0xF6, 0x61, 0x75,
-	 0xF5, 0xDD, 0xF4, 0xC3, 0x3B, 0x97, 0xA2, 0x05 };
+  { 0x37, 0xFE, 0x26, 0xFF, 0x1C, 0xF6, 0x61, 0x75,
+    0xF5, 0xDD, 0xF4, 0xC3, 0x3B, 0x97, 0xA2, 0x05 };
 
-  TWOFISH_context * context;
+  TWOFISH_context context;
   int i;
   byte plaintext[16], ciphertext[16];
 
-  context = twofish_setup(16, testkey128);
-  bzero(plaintext, 16);
+  twofish_setup(&context, 16, testkey128);
+  memset(plaintext, 0, 16);
 
   for (i = 0 ; i < 50; i++) {
-     twofish_encrypt(context, plaintext, ciphertext);
-     memcpy(plaintext, ciphertext, 16);
+    twofish_encrypt(&context, plaintext, ciphertext);
+    memcpy(plaintext, ciphertext, 16);
   }
   if (!memcmp(ciphertext, ciphertext128, 16)) {
     return 0;
   }
 
-  context = twofish_setup(24, testkey192);
-  bzero(plaintext, 16);
+  twofish_setup(&context, 24, testkey192);
+  memset(plaintext, 0, 16);
 
   for (i = 0 ; i < 50; i++) {
-     twofish_encrypt(context, plaintext, ciphertext);
-     memcpy(plaintext, ciphertext, 16);
+    twofish_encrypt(&context, plaintext, ciphertext);
+    memcpy(plaintext, ciphertext, 16);
   }
   if (!memcmp(ciphertext, ciphertext192, 16)) {
     return 0;
   }
 
-  context = twofish_setup(32, testkey256);
-  bzero(plaintext, 16);
+  twofish_setup(&context, 32, testkey256);
+  memset(plaintext, 0, 16);
 
   for (i = 0 ; i < 50; i++) {
-     twofish_encrypt(context, plaintext, ciphertext);
-     memcpy(plaintext, ciphertext, 16);
+    twofish_encrypt(&context, plaintext, ciphertext);
+    memcpy(plaintext, ciphertext, 16);
   }
   if (!memcmp(ciphertext, ciphertext256, 16)) {
     return 0;
@@ -371,204 +379,203 @@ twofish_selftest(void) {
  */
 
 
-/* TWOFISH_context * twofish_setup(size_t keysize, const void * key);
+/* void twofish_setup(TWOFISH_context *ctx, size_t keysize, const UINT8 * key);
  *
  * Set up internal tables required for twofish encryption and decryption.
  *
  * The key size is specified in bytes.  Key sizes up to 32 bytes are
- * supported.  Larger key sizes are silently truncated.  The function
- * returns a pointer which must be passed as the first argument to
- * twofish_encrypt() and twofish_decrypt().  When no more encryption or
- * decryption with this key is to be performed, the storage for the tables
- * can be reclaimed with the free() function.
- * If no memory is available to store the tables, twofish_setup()
- * returns NULL.
+ * supported.  Larger key sizes are silently truncated.  
  */
 
-TWOFISH_context *
-twofish_setup(size_t keysize, const void *key)
+void
+twofish_setup(TWOFISH_context * context, size_t keysize, const UINT8 *key)
 {
-    TWOFISH_context * context = malloc(sizeof (TWOFISH_context));
-    byte key_copy[32];
-    word m[8], s[4], t;
-    int i, j, k;
+  byte key_copy[32];
+  word m[8], s[4], t;
+  int i, j, k;
 
 #ifndef NDEBUG
-    static int initialized = 0;
+  static int initialized = 0;
 
-    if (!initialized) {
-         initialized = 1;
-         assert(twofish_selftest());
+  if (!initialized)
+    {
+      initialized = 1;
+      assert(twofish_selftest());
     }
 #endif
 
-    if (!context)
-        return NULL;
+  /* Extend or truncate key as necessary */
 
-    /* Extend or truncate key as necessary */
+  memset(key_copy, 0, 32);
+  if (keysize > 32)
+    keysize = 32;
+  memcpy(key_copy, key, keysize);
 
-    memset(key_copy, 0, 32);
-    if (keysize > 32) keysize =32;
-    memcpy(key_copy, key, keysize);
+  /* FIXME: This truncates the key if it is not a multiple of 4 octets.
+   * Is this really indended? */
+  bytes_to_words(m, key_copy, keysize/4);
 
-    bytes_to_words(m, key_copy, keysize/4);
+  if (keysize <= 16)
+    k = 2;
+  else if (keysize <= 24)
+    k = 3;
+  else
+    k = 4;
 
-    if (keysize <= 16)
-        k = 2;
-    else if (keysize <= 24)
-        k = 3;
-    else
-        k = 4;
+  /* Compute sub-keys */
 
-    /* Compute sub-keys */
-
-    for (i = 0; i < 20; i++) {
-        t = h(k, 2*i+1, m[1], m[3], m[5], m[7]);
-        t = rol8(t);
-        t += (context->keys[2*i] =
-                   t + h(k, 2*i, m[0], m[2], m[4], m[6]));
-        t = rol9(t);
-        context->keys[2*i+1] = t;
+  for (i = 0; i < 20; i++)
+    {
+      t = h(k, 2*i+1, m[1], m[3], m[5], m[7]);
+      t = rol8(t);
+      t += (context->keys[2*i] =
+	    t + h(k, 2*i, m[0], m[2], m[4], m[6]));
+      t = rol9(t);
+      context->keys[2*i+1] = t;
     }
 
-    /* Compute key-dependent S-boxes */
+  /* Compute key-dependent S-boxes */
 
-    for (i = 0; i < k; i++)
-        s[k-1-i] = compute_s(m[2*i], m[2*i+1]);
+  for (i = 0; i < k; i++)
+    s[k-1-i] = compute_s(m[2*i], m[2*i+1]);
 
-    for (i = 0; i < 4; i++)
-        for (j = 0; j < 256; j++)
-            context->s_box[i][j] = h_byte(k, i, j, s[0] >> (i*8),
-                                                   s[1] >> (i*8),
-                                                   s[2] >> (i*8),
-                                                   s[3] >> (i*8));
-    return context;
+  for (i = 0; i < 4; i++)
+    for (j = 0; j < 256; j++)
+      context->s_box[i][j] = h_byte(k, i, j,
+				    s[0] >> (i*8),
+				    s[1] >> (i*8),
+				    s[2] >> (i*8),
+				    s[3] >> (i*8));
 }
 
-/* void twofish_encrypt(void * context,
- *                      const void * plaintext,
- *                      void * ciphertext);
+/* void twofish_encrypt(TWOFISH_context *context,
+ *                      const UINT8 *plaintext,
+ *                      UINT8 *ciphertext);
  *
  * Encrypt 16 bytes of data with the twofish algorithm.
  *
  * Before this function can be used, twofish_setup() must be used in order to
  * set up various tables required for the encryption algorithm.
- * The first argument is the handle returned from twofish_setup().
+ * 
  * This function always encrypts 16 bytes of plaintext to 16 bytes of
  * ciphertext.  The memory areas of the plaintext and the ciphertext can
  * overlap.
  */
 
 void
-twofish_encrypt(void *context, const void *plaintext, void *ciphertext)
+twofish_encrypt(TWOFISH_context *context,
+		const UINT8 *plaintext,
+		UINT8 *ciphertext)
 {
-    word words[4];
-    word r0, r1, r2, r3, t0, t1;
-    int i;
-    word * keys        = ((TWOFISH_context *)context)->keys;
-    word (*s_box)[256] = ((TWOFISH_context *)context)->s_box;
+  word words[4];
+  word r0, r1, r2, r3, t0, t1;
+  int i;
+  word * keys        = context->keys;
+  word (*s_box)[256] = context->s_box;
 
-    bytes_to_words(words, plaintext, 4);
+  bytes_to_words(words, plaintext, 4);
 
-    r0 = words[0] ^ keys[0];
-    r1 = words[1] ^ keys[1];
-    r2 = words[2] ^ keys[2];
-    r3 = words[3] ^ keys[3];
+  r0 = words[0] ^ keys[0];
+  r1 = words[1] ^ keys[1];
+  r2 = words[2] ^ keys[2];
+  r3 = words[3] ^ keys[3];
 
-    for (i = 0; i < 8; i++) {
-        t1 =   s_box[1][r1 & 0xFF]
-             ^ s_box[2][(r1 >> 8) & 0xFF]
-             ^ s_box[3][(r1 >> 16) & 0xFF]
-             ^ s_box[0][(r1 >> 24) & 0xFF];
-        t0 = (  s_box[0][r0 & 0xFF]
-              ^ s_box[1][(r0 >> 8) & 0xFF]
-              ^ s_box[2][(r0 >> 16) & 0xFF]
-              ^ s_box[3][(r0 >> 24) & 0xFF]) + t1;
-        r3 = (t1 + t0 + keys[4*i+9]) ^ rol1(r3);
-        r2 = (t0 + keys[4*i+8]) ^ r2;
-        r2 = ror1(r2);
+  for (i = 0; i < 8; i++) {
+    t1 = (  s_box[1][r1 & 0xFF]
+	  ^ s_box[2][(r1 >> 8) & 0xFF]
+	  ^ s_box[3][(r1 >> 16) & 0xFF]
+	  ^ s_box[0][(r1 >> 24) & 0xFF]);
+    t0 = (  s_box[0][r0 & 0xFF]
+	  ^ s_box[1][(r0 >> 8) & 0xFF]
+	  ^ s_box[2][(r0 >> 16) & 0xFF]
+	  ^ s_box[3][(r0 >> 24) & 0xFF]) + t1;
+    r3 = (t1 + t0 + keys[4*i+9]) ^ rol1(r3);
+    r2 = (t0 + keys[4*i+8]) ^ r2;
+    r2 = ror1(r2);
 
-        t1 =   s_box[1][r3 & 0xFF]
-             ^ s_box[2][(r3 >> 8) & 0xFF]
-             ^ s_box[3][(r3 >> 16) & 0xFF]
-             ^ s_box[0][(r3 >> 24) & 0xFF];
-        t0 = (  s_box[0][r2 & 0xFF]
-              ^ s_box[1][(r2 >> 8) & 0xFF]
-              ^ s_box[2][(r2 >> 16) & 0xFF]
-              ^ s_box[3][(r2 >> 24) & 0xFF]) + t1;
-        r1 = (t1 + t0 + keys[4*i+11]) ^ rol1(r1);
-        r0 = (t0 + keys[4*i+10]) ^ r0;
-        r0 = ror1(r0);
-    }
+    t1 = (  s_box[1][r3 & 0xFF]
+	  ^ s_box[2][(r3 >> 8) & 0xFF]
+	  ^ s_box[3][(r3 >> 16) & 0xFF]
+	  ^ s_box[0][(r3 >> 24) & 0xFF]);
+    t0 = (  s_box[0][r2 & 0xFF]
+	  ^ s_box[1][(r2 >> 8) & 0xFF]
+	  ^ s_box[2][(r2 >> 16) & 0xFF]
+	  ^ s_box[3][(r2 >> 24) & 0xFF]) + t1;
+    r1 = (t1 + t0 + keys[4*i+11]) ^ rol1(r1);
+    r0 = (t0 + keys[4*i+10]) ^ r0;
+    r0 = ror1(r0);
+  }
 
-    words[0] = r2 ^ keys[4];
-    words[1] = r3 ^ keys[5];
-    words[2] = r0 ^ keys[6];
-    words[3] = r1 ^ keys[7];
+  words[0] = r2 ^ keys[4];
+  words[1] = r3 ^ keys[5];
+  words[2] = r0 ^ keys[6];
+  words[3] = r1 ^ keys[7];
 
-    words_to_bytes(ciphertext, words, 4);
+  words_to_bytes(ciphertext, words, 4);
 }
 
-/* void twofish_decrypt(void * context,
- *                      const void * ciphertext,
- *                      void * plaintext);
+/* void twofish_decrypt(TWOFISH_context *context,
+ *                      const UINT8 *ciphertext,
+ *                      UINT8 *plaintext);
  *
  * Decrypt 16 bytes of data with the twofish algorithm.
  *
  * Before this function can be used, twofish_setup() must be used in order to
  * set up various tables required for the decryption algorithm.
- * The first argument is the handle returned from twofish_setup().
+ * 
  * This function always decrypts 16 bytes of ciphertext to 16 bytes of
  * plaintext.  The memory areas of the plaintext and the ciphertext can
  * overlap.
  */
 
 void
-twofish_decrypt(void *context, const void *ciphertext, void *plaintext)
+twofish_decrypt(TWOFISH_context *context,
+		const UINT8 *ciphertext,
+		UINT8 *plaintext)
 {
-    word words[4];
-    word r0, r1, r2, r3, t0, t1;
-    int i;
-    word * keys  = ((TWOFISH_context *)context)->keys;
-    word (*s_box)[256] = ((TWOFISH_context *)context)->s_box;
+  word words[4];
+  word r0, r1, r2, r3, t0, t1;
+  int i;
+  word *keys  = context->keys;
+  word (*s_box)[256] = context->s_box;
 
-    bytes_to_words(words, ciphertext, 4);
+  bytes_to_words(words, ciphertext, 4);
 
-    r0 = words[2] ^ keys[6];
-    r1 = words[3] ^ keys[7];
-    r2 = words[0] ^ keys[4];
-    r3 = words[1] ^ keys[5];
+  r0 = words[2] ^ keys[6];
+  r1 = words[3] ^ keys[7];
+  r2 = words[0] ^ keys[4];
+  r3 = words[1] ^ keys[5];
 
-    for (i = 0; i < 8; i++) {
-        t1 =   s_box[1][r3 & 0xFF]
-             ^ s_box[2][(r3 >> 8) & 0xFF]
-             ^ s_box[3][(r3 >> 16) & 0xFF]
-             ^ s_box[0][(r3 >> 24) & 0xFF];
-        t0 = (  s_box[0][r2 & 0xFF]
-              ^ s_box[1][(r2 >> 8) & 0xFF]
-              ^ s_box[2][(r2 >> 16) & 0xFF]
-              ^ s_box[3][(r2 >> 24) & 0xFF]) + t1;
-        r1 = (t1 + t0 + keys[39-4*i]) ^ r1;
-        r1 = ror1(r1);
-        r0 = (t0 + keys[38-4*i]) ^ rol1(r0);
+  for (i = 0; i < 8; i++) {
+    t1 = (  s_box[1][r3 & 0xFF]
+	  ^ s_box[2][(r3 >> 8) & 0xFF]
+	  ^ s_box[3][(r3 >> 16) & 0xFF]
+	  ^ s_box[0][(r3 >> 24) & 0xFF]);
+    t0 = (  s_box[0][r2 & 0xFF]
+	  ^ s_box[1][(r2 >> 8) & 0xFF]
+	  ^ s_box[2][(r2 >> 16) & 0xFF]
+	  ^ s_box[3][(r2 >> 24) & 0xFF]) + t1;
+    r1 = (t1 + t0 + keys[39-4*i]) ^ r1;
+    r1 = ror1(r1);
+    r0 = (t0 + keys[38-4*i]) ^ rol1(r0);
 
-        t1 =   s_box[1][r1 & 0xFF]
-             ^ s_box[2][(r1 >> 8) & 0xFF]
-             ^ s_box[3][(r1 >> 16) & 0xFF]
-             ^ s_box[0][(r1 >> 24) & 0xFF];
-        t0 = (  s_box[0][r0 & 0xFF]
-              ^ s_box[1][(r0 >> 8) & 0xFF]
-              ^ s_box[2][(r0 >> 16) & 0xFF]
-              ^ s_box[3][(r0 >> 24) & 0xFF]) + t1;
-        r3 = (t1 + t0 + keys[37-4*i]) ^ r3;
-        r3 = ror1(r3);
-        r2 = (t0 + keys[36-4*i]) ^ rol1(r2);
-    }
+    t1 = (  s_box[1][r1 & 0xFF]
+	  ^ s_box[2][(r1 >> 8) & 0xFF]
+	  ^ s_box[3][(r1 >> 16) & 0xFF]
+	  ^ s_box[0][(r1 >> 24) & 0xFF]);
+    t0 = (  s_box[0][r0 & 0xFF]
+	  ^ s_box[1][(r0 >> 8) & 0xFF]
+	  ^ s_box[2][(r0 >> 16) & 0xFF]
+	  ^ s_box[3][(r0 >> 24) & 0xFF]) + t1;
+    r3 = (t1 + t0 + keys[37-4*i]) ^ r3;
+    r3 = ror1(r3);
+    r2 = (t0 + keys[36-4*i]) ^ rol1(r2);
+  }
 
-    words[0] = r0 ^ keys[0];
-    words[1] = r1 ^ keys[1];
-    words[2] = r2 ^ keys[2];
-    words[3] = r3 ^ keys[3];
+  words[0] = r0 ^ keys[0];
+  words[1] = r1 ^ keys[1];
+  words[2] = r2 ^ keys[2];
+  words[3] = r3 ^ keys[3];
 
-    words_to_bytes(plaintext, words, 4);
+  words_to_bytes(plaintext, words, 4);
 }

@@ -1,3 +1,8 @@
+/* twofish.h
+ *
+ * $Id$
+ */
+
 /*
  * twofish - An implementation of the twofish cipher.
  * Copyright (C) 1999 Ruud de Rooij <ruud@debian.org>
@@ -50,52 +55,53 @@ typedef struct {
     UINT32 s_box[4][256];
 } TWOFISH_context;
 
-/* TWOFISH_context * twofish_setup(size_t keysize, const void * key);
+/* Set up internal tables required for twofish encryption and decryption.
  *
- * Set up internal tables required for twofish encryption and decryption.
- *
- * The key size is specified in bytes.  Key sizes up to 32 bytes are
- * supported.  Larger key sizes are silently truncated.  The function
- * returns a pointer which must be passed as the first argument to
- * twofish_encrypt() and twofish_decrypt().  When no more encryption or
- * decryption with this key is to be performed, the storage for the tables
- * can be reclaimed with the free() function.
- * If no memory is available to store the tables, twofish_setup()
- * returns NULL.
- */
+ * The key size is specified in bytes. Key sizes up to 32 bytes are
+ * supported. Larger key sizes are silently truncated. */
 
-TWOFISH_context * twofish_setup(size_t keysize, const void *key);
+void
+twofish_setup(TWOFISH_context *ctx, size_t keysize, const UINT8 *key);
 
-/* void twofish_encrypt(void * context,
- *                      const void * plaintext,
- *                      void * ciphertext);
+/* void twofish_encrypt(TWOFISH_context *context,
+ *                      const UINT8 *plaintext,
+ *                      UINT8 *ciphertext);
  *
  * Encrypt 16 bytes of data with the twofish algorithm.
  *
  * Before this function can be used, twofish_setup() must be used in order to
  * set up various tables required for the encryption algorithm.
- * The first argument is the handle returned from twofish_setup().
+ * 
  * This function always encrypts 16 bytes of plaintext to 16 bytes of
  * ciphertext.  The memory areas of the plaintext and the ciphertext can
  * overlap.
  */
 
-void twofish_encrypt(void *context, const void *plaintext, void *ciphertext);
+void
+twofish_encrypt(TWOFISH_context *context,
+		const UINT8 *plaintext,
+		UINT8 *ciphertext);
 
-/* void twofish_decrypt(void * context,
- *                      const void * ciphertext,
- *                      void * plaintext);
+/* void twofish_decrypt(TWOFISH_context *context,
+ *                      const UINT8 *ciphertext,
+ *                      UINT8 *plaintext);
  *
  * Decrypt 16 bytes of data with the twofish algorithm.
  *
  * Before this function can be used, twofish_setup() must be used in order to
  * set up various tables required for the decryption algorithm.
- * The first argument is the handle returned from twofish_setup().
+ * 
  * This function always decrypts 16 bytes of ciphertext to 16 bytes of
  * plaintext.  The memory areas of the plaintext and the ciphertext can
  * overlap.
  */
 
-void twofish_decrypt(void *context, const void *ciphertext, void *plaintext);
+void
+twofish_decrypt(TWOFISH_context *context,
+		const UINT8 *ciphertext,
+		UINT8 *plaintext);
 
-#endif
+int
+twofish_selftest(void);
+
+#endif /* TWOFISH_H */
