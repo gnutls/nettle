@@ -340,7 +340,6 @@ define(i, round)
 	C i = 1
 	ld	[IDX1+4], t1 	! 1
 
-	xor	i, 8, t2
 	add	wtxt, t1, t1	! 1
 	ldub	[t1+2], t1	! 1
 
@@ -379,20 +378,17 @@ define(i, round)
 	stb	t0, [dst]
 	add	dst, 4, dst
 	
-	ld	[IDX1+i], t1 	! 1
-
 	C i = 2
-	ld	[IDX1+i], t1 	! 1
+	ld	[IDX1+8], t1 	! 1
 	
-	! IDX2(j) = j XOR 2
-	xor	i, 8, t2
 	add	wtxt, t1, t1	! 1
 	ldub	[t1+2], t1	! 1
 
-	ld	[wtxt+i], t0	! 0
-	lduh	[wtxt+t2], t2	! 2
+	ld	[wtxt+8], t0	! 0
+	! IDX2(j) = j XOR 2
+	lduh	[wtxt+0], t2	! 2
 	and	t0, 255, t0	! 0
-	ld	[IDX3 + i], t3	! 3
+	ld	[IDX3 + 8], t3	! 3
 	
 	and	t2, 255, t2	! 2
 	ldub	[T+t1], t1	! 1
@@ -406,7 +402,7 @@ define(i, round)
 	
 	sll	t2, 16, t2	! 2
 	or	t0, t2, t0	! 0, 1, 2
-	ld	[key + i], t2
+	ld	[key + 8], t2
 	sll	t3, 24, t3	! 3
 	
 	or	t0, t3, t0	! 0, 1, 2, 3
