@@ -59,24 +59,27 @@ sexp_iterator_simple(struct sexp_iterator *iterator,
   
   if (EMPTY(iterator)) return 0;
   c = NEXT(iterator);
+  if (EMPTY(iterator)) return 0;
 
   if (c >= '1' && c <= '9')
     do
       {
 	length = length * 10 + (c - '0');
+	if (length > (iterator->length - iterator->pos))
+	  return 0;
 
 	if (EMPTY(iterator)) return 0;
 	c = NEXT(iterator);
       }
-    while (c < '0' || c > '9');
+    while (c >= '0' && c <= '9');
 
-  else if (c != '0')
+  else if (c == '0')
+    /* There can be only one */
+    c = NEXT(iterator);
+  else 
     return 0;
 
-  if (EMPTY(iterator) || NEXT(iterator) != ':')
-    return 0;
-
-  if (length > (iterator->length - iterator->pos))
+  if (c != ':')
     return 0;
 
   *size = length;
@@ -104,11 +107,21 @@ sexp_iterator_next(struct sexp_iterator *iterator)
   switch (iterator->buffer[iterator->pos])
     {
     case '(': /* A list */
-      if (iterator->type == SEXP_START)
-	iterator->type = SEXP_LIST;
-      else
+      if (iterator->type == SEXP_LIST)
+	/* Skip this list */
 	return sexp_iterator_enter_list(iterator)
-	  && sexp_iterator_exit_list(iterator);
+	  && sexp_iterator_exit_list(iterator)
+	  && sexp_iterator_next(iterator);
+      else
+	{
+	  iterator->type = SEXP_LIST;
+	  return 1;
+	}
+    case ')':
+      iterator->pos++;
+      iterator->type = SEXP_END;
+      return 1;
+      
     case '[': /* Atom with display type */
       iterator->pos++;
       if (!sexp_iterator_simple(iterator,
@@ -121,6 +134,8 @@ sexp_iterator_next(struct sexp_iterator *iterator)
       break;
 
     default:
+      /* Must be either a decimal digit or a syntax error.
+       * Errors are detected by sexp_iterator_simple. */
       iterator->display_length = 0;
       iterator->display = NULL;
 
@@ -146,6 +161,7 @@ sexp_iterator_enter_list(struct sexp_iterator *iterator)
     abort();
 
   iterator->level++;
+  iterator->type = SEXP_START;
   return 1;
 }
 
@@ -156,15 +172,18 @@ sexp_iterator_exit_list(struct sexp_iterator *iterator)
   if (!iterator->level)
     return 0;
 
-  while (sexp_iterator_next(iterator))
-    if (iterator->type == SEXP_END)
-      {
-	if (NEXT(iterator) != ')')
-	  return 0;
-	iterator->level--;
-	return 1;
-      }
-  return 0;
+  for (;;)
+    {
+      if (!sexp_iterator_next(iterator))
+	return 0;
+      
+      if (iterator->type == SEXP_END)
+	{
+	  iterator->type = SEXP_START;	  
+	  iterator->level--;
+	  return 1;
+	}
+    }
 }
 
 int
@@ -185,8 +204,8 @@ sexp_iterator_assoc(struct sexp_iterator *iterator,
 	{
 	case SEXP_LIST:
 	  
-	  if (sexp_iterator_enter_list(iterator)
-	      && sexp_iterator_next(iterator))
+	  if (! (sexp_iterator_enter_list(iterator)
+		 && sexp_iterator_next(iterator)))
 	    return 0;
 	  
 	  if (iterator->type == SEXP_ATOM
@@ -200,10 +219,6 @@ sexp_iterator_assoc(struct sexp_iterator *iterator,
 		      && !memcmp(keys[i].name, iterator->atom,
 				 keys[i].length))
 		    {
-		      /* Match found. NOTE: We allow multiple matches. */
-		      if (!sexp_iterator_next(iterator))
-			return 0;
-
 		      /* Record this position. */
 		      values[i] = *iterator;
 
