@@ -1,7 +1,7 @@
 ! -*- mode: asm; asm-comment-char: ?!; -*-  
 	! Used registers:	%l0,1,2,3,4,5,6,7
 	!			%i0,1,2,3,4 (%i6=%fp, %i7 = return)
-	!			%o0,1,2,3,4 (%o6=%sp)
+	!			%o0,1,2,3 (%o6=%sp)
 	!			%g2,3,4,5,6
 include(`asm.m4')
 	
@@ -44,7 +44,6 @@ define(t0, %o0)
 define(t1, %o1)
 define(t2, %o2)
 define(t3, %o3)
-define(idx, %o4)
 
 _aes_crypt:
 ! Why -136?
@@ -107,7 +106,7 @@ _aes_crypt:
 .Lround_loop:
 	! 4*i
 	mov	0, i
-	add	T, AES_SIDX3, idx
+	! add	T, AES_SIDX3, idx
 .Linner_loop:
 	! The comments mark which j in T->table[j][ Bj(wtxt[IDXi(i)]) ]
 	! the instruction is a part of. 
@@ -172,7 +171,7 @@ _aes_crypt:
 	! 4*i
 	mov	0, i
 	! SIDX3
-	add	T, AES_SIDX3, idx
+	! add	T, AES_SIDX3, idx
 .Lfinal_loop:
 	! Comments mark which j in T->sbox[Bj(wtxt[IDXj(i)])]
 	! the instruction is part of
@@ -215,10 +214,10 @@ _aes_crypt:
 	stb	t3, [dst+3]
 	stb	t2, [dst+2]
 	stb	t0, [dst]
-	add	dst, 4, dst
 	
 	bleu	.Lfinal_loop
-	add	idx, 4, idx
+	add	dst, 4, dst
+
 	addcc	length, -16, length
 	nop
 	
