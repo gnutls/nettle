@@ -46,6 +46,7 @@
 #include "yarrow.h"
 
 #include "io.h"
+#include "rsa-session.h"
 
 void
 rsa_session_set_decrypt_key(struct rsa_session *ctx,
@@ -55,9 +56,9 @@ rsa_session_set_decrypt_key(struct rsa_session *ctx,
   const uint8_t *iv = SESSION_IV(key);
   const uint8_t *hmac_key = SESSION_HMAC_KEY(key);
   
-  aes_set_decrypt_key(ctx->aes.ctx, AES_KEY_SIZE, aes_key);
-  CBC_SET_IV(ctx->aes, iv);
-  hmac_sha1_set_key(ctx->hmac, SHA1_DIGEST_SIZE, hmac_key);
+  aes_set_decrypt_key(&ctx->aes.ctx, AES_KEY_SIZE, aes_key);
+  CBC_SET_IV(&ctx->aes, iv);
+  hmac_sha1_set_key(&ctx->hmac, SHA1_DIGEST_SIZE, hmac_key);
 }
 
 static int
@@ -67,7 +68,7 @@ read_uint32(FILE *f, uint32_t *n)
   if (fread(buf, 1, sizeof(buf), f) != sizeof(buf))
     return 0;
 
-  *n = WRITE_UINT32(buf);
+  *n = READ_UINT32(buf);
   return 1;
 }
 
@@ -103,7 +104,7 @@ struct process_ctx
 };
 
 static int
-process_file(struct process_ctx *ctx,
+process_file(struct rsa_session *ctx,
 	     FILE *in, FILE *out)
 {
   uint8_t buffer[AES_BLOCK_SIZE * 100];
@@ -158,8 +159,6 @@ process_file(struct process_ctx *ctx,
 int
 main(int argc, char **argv)
 {
-  struct process_ctx ctx;
-  
   struct rsa_private_key key;
   struct rsa_session ctx;
   struct rsa_session_info session;
@@ -167,15 +166,12 @@ main(int argc, char **argv)
   unsigned length;
   mpz_t x;
   
-  int c;
-  
   if (argc != 2)
     {
       werror("Usage: rsa-decrypt PRIVATE-KEY < ciphertext\n");
       return EXIT_FAILURE;
     }
 
-  rsa_public_key_init(&pub);
   rsa_private_key_init(&key);
   
   if (!read_rsa_key(argv[1], NULL, &key))
@@ -197,7 +193,7 @@ main(int argc, char **argv)
     }
 
   length = sizeof(session.key);
-  if (!rsa_decrypt(&key, &length, session->key, x))
+  if (!rsa_decrypt(&key, &length, session.key, x))
     {
       werror("Failed to decrypt rsa header in input file.\n");
       return EXIT_FAILURE;      
