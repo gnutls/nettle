@@ -2,8 +2,8 @@
 
 	* examples/rsa-encrypt-test: New testcase.
 
-	* examples/rsa-encrypt.c: Expanded the comment describing the file
-	format. 
+	* examples/rsa-encrypt.c, examples/rsa-session.h: Expanded the
+	comment describing the file format, and moved to rsa-session.h.
 
 	* examples/rsa-decrypt.c (process_file): Finished this function.
 	(main): Initialize x. Check the size of the session key after rsa
