@@ -50,7 +50,7 @@ test_main(void)
   ASSERT(rsa_private_key_prepare(&priv));
   
   nettle_buffer_init(&buffer);
-  ASSERT(rsa_keypair_to_sexp(&buffer, &pub, &priv));
+  ASSERT(rsa_keypair_to_sexp(&buffer, "rsa", &pub, &priv));
 
   if (verbose)
     {
@@ -85,7 +85,7 @@ test_main(void)
 		"9ea1a8282e292929"));
 
   nettle_buffer_clear(&buffer);
-  ASSERT(rsa_keypair_to_sexp(&buffer, &pub, NULL));
+  ASSERT(rsa_keypair_to_sexp(&buffer, NULL, &pub, NULL));
 
   if (verbose)
     {
