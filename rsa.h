@@ -228,6 +228,7 @@ struct sexp_iterator;
 int
 rsa_keypair_from_sexp_alist(struct rsa_public_key *pub,
 			    struct rsa_private_key *priv,
+			    unsigned limit,
 			    struct sexp_iterator *i);
 
 /* If PRIV is NULL, expect a public-key expression. If PUB is NULL,
@@ -237,6 +238,7 @@ rsa_keypair_from_sexp_alist(struct rsa_public_key *pub,
 int
 rsa_keypair_from_sexp(struct rsa_public_key *pub,
 		      struct rsa_private_key *priv,
+		      unsigned limit,
 		      unsigned length, const uint8_t *expr);
 
 
