@@ -22,12 +22,9 @@
  * MA 02111-1307, USA.
  */
 
-#include "buffer.h"
-#include "rsa.h"
-#include "sexp.h"
-#include "yarrow.h"
-
-#include "io.h"
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
 
 #include <ctype.h>
 #include <errno.h>
@@ -37,6 +34,13 @@
 
 /* For getopt */
 #include <unistd.h>
+
+#include "buffer.h"
+#include "rsa.h"
+#include "sexp.h"
+#include "yarrow.h"
+
+#include "io.h"
 
 #define KEYSIZE 500
 #define ESIZE 30

@@ -23,9 +23,13 @@
  * MA 02111-1307, USA.
  */
 
-#include "arcfour.h"
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
 
 #include <assert.h>
+
+#include "arcfour.h"
 
 #define SWAP(a,b) do { int _t = a; a = b; b = _t; } while(0)
 

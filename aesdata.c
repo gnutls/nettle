@@ -1,3 +1,7 @@
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
 #include <assert.h>
 #include <inttypes.h>
 #include <stdlib.h>
@@ -38,7 +42,7 @@ xtime(unsigned x)
   return x;
 }
 
-/* Computes the expoenntiatiom and logarithm tables for GF_2, to the
+/* Computes the exponentiatiom and logarithm tables for GF_2, to the
  * base x+1 (0x03). The unit element is 1 (0x01).*/
 static void
 compute_log(void)

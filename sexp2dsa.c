@@ -23,17 +23,17 @@
  */
 
 #if HAVE_CONFIG_H
-#include "config.h"
+# include "config.h"
 #endif
 
 #if WITH_PUBLIC_KEY
+
+#include <string.h>
 
 #include "dsa.h"
 
 #include "bignum.h"
 #include "sexp.h"
-
-#include <string.h>
 
 #define GET(x, l, v)				\
 do {						\

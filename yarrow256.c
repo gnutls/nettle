@@ -23,13 +23,17 @@
  * MA 02111-1307, USA.
  */
 
-#include "yarrow.h"
-
-#include "macros.h"
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
 
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "yarrow.h"
+
+#include "macros.h"
 
 #ifndef YARROW_DEBUG
 #define YARROW_DEBUG 0

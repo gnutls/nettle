@@ -24,12 +24,16 @@
  * MA 02111-1307, USA.
  */
 
-#include "nettle-internal.h"
-#include "des.h"
-#include "blowfish.h"
+#if HAVE_CONFIG_H
+# include <config.h>
+#endif
 
 #include <assert.h>
 #include <stdlib.h>
+
+#include "nettle-internal.h"
+#include "des.h"
+#include "blowfish.h"
 
 /* DES uses a different signature for the key set function.
  * And we have to adjust parity. */

@@ -26,12 +26,16 @@
 /* Based on public domain code hacked by Colin Plumb, Andrew Kuchling, and
  * Niels Möller. */
 
-#include "md5.h"
-
-#include "macros.h"
+#if HAVE_CONFIG_H
+# include <config.h>
+#endif
 
 #include <assert.h>
 #include <string.h>
+
+#include "md5.h"
+
+#include "macros.h"
 
 /* A block, treated as a sequence of 32-bit words. */
 #define MD5_DATA_LENGTH 16

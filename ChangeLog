@@ -1,3 +1,8 @@
+2003-05-12  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* Reordered includes in most or all .c-files. All should now
+	include config.h.
+
 2003-05-12  Niels Möller  <niels@s3.kth.se>
 
 	* configure.ac: Use LSH_FUNC_ALLOCA.

@@ -23,9 +23,13 @@
  * MA 02111-1307, USA.
  */
 
-#include "aes-internal.h"
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
 
 #include <assert.h>
+
+#include "aes-internal.h"
 
 void
 aes_decrypt(struct aes_ctx *ctx,

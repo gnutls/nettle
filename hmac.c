@@ -23,12 +23,16 @@
  * MA 02111-1307, USA.
  */
 
-#include "hmac.h"
-
-#include "memxor.h"
+#if HAVE_CONFIG_H
+# include <config.h>
+#endif
 
 #include <assert.h>
 #include <string.h>
+
+#include "hmac.h"
+
+#include "memxor.h"
 
 #define IPAD 0x36
 #define OPAD 0x5c

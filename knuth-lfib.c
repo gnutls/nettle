@@ -31,12 +31,16 @@
  * applications. It is useful for generating deterministic but
  * random-looking test data, and is used by the Nettle testsuite. */
 
-#include "knuth-lfib.h"
-
-#include "macros.h"
+#if HAVE_CONFIG_H
+# include <config.h>
+#endif
 
 #include <assert.h>
 #include <stdlib.h>
+
+#include "knuth-lfib.h"
+
+#include "macros.h"
 
 #define KK _KNUTH_LFIB_KK
 #define LL 37

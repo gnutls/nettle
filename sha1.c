@@ -35,13 +35,17 @@
  * effort (for example the reengineering of a great many Capstone chips).
  */
 
-#include "sha.h"
-
-#include "macros.h"
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
 
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "sha.h"
+
+#include "macros.h"
 
 /* A block, treated as a sequence of 32-bit words. */
 #define SHA1_DATA_LENGTH 16

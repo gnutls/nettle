@@ -25,11 +25,15 @@
 
 /* Originally written by Rafael R. Sevilla <dido@pacific.net.ph> */
 
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include <assert.h>
+
 #include "aes-internal.h"
 
 #include "macros.h"
-
-#include <assert.h>
 
 #ifndef AES_DEBUG
 # define AES_DEBUG 0

@@ -20,12 +20,16 @@
  * MA 02111-1307, USA.
  */
 
-#include "input.h"
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
 
 #include <assert.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "input.h"
 
 void
 sexp_input_init(struct sexp_input *input, FILE *f)

@@ -22,10 +22,14 @@
  * MA 02111-1307, USA.
  */
 
-#include "base64.h"
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
 
 #include <assert.h>
 #include <stdlib.h>
+
+#include "base64.h"
 
 #define TABLE_INVALID -1
 #define TABLE_SPACE -2

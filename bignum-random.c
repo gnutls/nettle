@@ -24,14 +24,14 @@
  */
 
 #if HAVE_CONFIG_H
-#include "config.h"
+# include "config.h"
 #endif
 
 #if HAVE_LIBGMP
 
-#include "bignum.h"
-
 #include <stdlib.h>
+
+#include "bignum.h"
 
 void
 nettle_mpz_random_size(mpz_t x,

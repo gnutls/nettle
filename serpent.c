@@ -35,15 +35,16 @@
  * selection process. No other use is allowed." However, the authors
  * later decided to GPL the code. /nisse */
 
-/* FIXME: Use the READ_UINT32 and WRITE_UINT32 macros, where
- * applicable. */
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include <assert.h>
 
 #include "serpent.h"
 #include "serpent_sboxes.h"
 
 #include "macros.h"
-
-#include <assert.h>
 
 void
 serpent_set_key(struct serpent_ctx *ctx,

@@ -23,9 +23,13 @@
  * MA 02111-1307, USA.
  */
 
-#include "aes-internal.h"
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
 
 #include <assert.h>
+
+#include "aes-internal.h"
 
 /* On my sparc, encryption is significantly slower than decryption,
  * even though the *only* difference is which table is passed to _aes_crypt.

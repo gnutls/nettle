@@ -30,11 +30,15 @@
  *	Please see the file `descore.README' for the complete copyright notice.
  */
 
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include <assert.h>
+
 #include "des.h"
 
 #include "desCode.h"
-
-#include <assert.h>
 
 static ENCRYPT(DesSmallFipsEncrypt,TEMPSMALL, LOADFIPS,KEYMAPSMALL,SAVEFIPS)
 static DECRYPT(DesSmallFipsDecrypt,TEMPSMALL, LOADFIPS,KEYMAPSMALL,SAVEFIPS)

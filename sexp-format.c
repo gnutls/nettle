@@ -24,17 +24,17 @@
  */
 
 #if HAVE_CONFIG_H
-#include "config.h"
+# include "config.h"
 #endif
-
-#include "sexp.h"
-#include "buffer.h"
 
 #include <assert.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "sexp.h"
+#include "buffer.h"
 
 #if HAVE_LIBGMP
 # include "bignum.h"

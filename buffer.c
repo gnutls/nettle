@@ -23,11 +23,15 @@
  * MA 02111-1307, USA.
  */
 
-#include "buffer.h"
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
 
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "buffer.h"
 
 int
 nettle_buffer_grow(struct nettle_buffer *buffer,

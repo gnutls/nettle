@@ -23,13 +23,17 @@
  * MA 02111-1307, USA.
  */
 
-#include "cbc.h"
-
-#include "memxor.h"
+#if HAVE_CONFIG_H
+# include <config.h>
+#endif
 
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "cbc.h"
+
+#include "memxor.h"
 
 void
 cbc_encrypt(void *ctx, void (*f)(void *ctx,

@@ -22,10 +22,14 @@
  * MA 02111-1307, USA.
  */
 
-#include "buffer.h"
-#include "realloc.h"
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
 
 #include <stdlib.h>
+
+#include "buffer.h"
+#include "realloc.h"
 
 /* This is in a separate file so that we don't link in realloc in
  * programs that don't need it. */

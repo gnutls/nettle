@@ -23,6 +23,10 @@
  * MA 02111-1307, USA.
  */
 
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
 #include "des.h"
 
 /* It's possible to make some more general pipe construction, like the

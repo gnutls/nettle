@@ -24,15 +24,15 @@
  */
 
 #if HAVE_CONFIG_H
-#include "config.h"
+# include "config.h"
 #endif
 
 #if HAVE_LIBGMP
 
-#include "bignum.h"
-
 #include <assert.h>
 #include <string.h>
+
+#include "bignum.h"
 
 /* Two's complement negation means that -x = ~x + 1, ~x = -(x+1),
  * and we use that x = ~~x = ~(-x-1).

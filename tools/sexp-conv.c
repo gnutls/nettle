@@ -23,7 +23,15 @@
  * MA 02111-1307, USA.
  */
 
-#define BUG_ADDRESS "nettle-bugs@lists.lysator.liu.se"
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include <assert.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "buffer.h"
 #include "nettle-meta.h"
@@ -34,15 +42,7 @@
 #include "output.h"
 #include "parse.h"
 
-#include <assert.h>
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-
-
-
+#define BUG_ADDRESS "nettle-bugs@lists.lysator.liu.se"
 
 
 /* Conversion functions. */

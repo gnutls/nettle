@@ -26,7 +26,15 @@
 
 #if HAVE_CONFIG_H
 # include "config.h"
-#endif /* HAVE_CONFIG_H */
+#endif
+
+#include <assert.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include <time.h>
 
 #include "aes.h"
 #include "arcfour.h"
@@ -41,19 +49,6 @@
 
 #include "cbc.h"
 
-#include <assert.h>
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include <time.h>
-
-#if __GNUC__
-# define UNUSED __attribute__ ((__unused__))
-#else
-# define UNUSED
-#endif
 
 /* Encrypt 10MB, 1K at a time. */
 #define BENCH_BLOCK 1024

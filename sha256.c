@@ -25,13 +25,17 @@
 
 /* Modelled after the sha1.c code by Peter Gutmann. */
 
-#include "sha.h"
-
-#include "macros.h"
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
 
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "sha.h"
+
+#include "macros.h"
 
 /* A block, treated as a sequence of 32-bit words. */
 #define SHA256_DATA_LENGTH 16

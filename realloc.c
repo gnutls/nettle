@@ -26,10 +26,10 @@
 # include "config.h"
 #endif
 
-#include "realloc.h"
-
 #include <stdlib.h>
 #include <stdio.h>
+
+#include "realloc.h"
 
 void *
 nettle_realloc(void *ctx UNUSED, void *p, unsigned length)

@@ -23,12 +23,16 @@
  * MA 02111-1307, USA.
  */
 
-#include "sexp.h"
-
-#include "macros.h"
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
 
 #include <stdlib.h>
 #include <string.h>
+
+#include "sexp.h"
+
+#include "macros.h"
 
 /* Initializes the iterator, but one has to call next to get to the
  * first element. */

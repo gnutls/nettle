@@ -24,17 +24,17 @@
  */
 
 #if HAVE_CONFIG_H
-#include "config.h"
+# include "config.h"
 #endif
 
 #if WITH_PUBLIC_KEY
+
+#include <stdlib.h>
 
 #include "dsa.h"
 
 #include "bignum.h"
 #include "memxor.h"
-
-#include <stdlib.h>
 
 /* The (slow) NIST method of generating DSA primes. Algorithm 4.56 of
  * Handbook of Applied Cryptography. */

@@ -20,13 +20,17 @@
  * MA 02111-1307, USA.
  */
 
-#include "output.h"
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
 
 #include <assert.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "output.h"
 
 void
 sexp_output_init(struct sexp_output *output, FILE *f,

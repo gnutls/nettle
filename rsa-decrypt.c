@@ -24,18 +24,18 @@
  */
 
 #if HAVE_CONFIG_H
-#include "config.h"
+# include "config.h"
 #endif
 
 #if WITH_PUBLIC_KEY
 
-#include "rsa.h"
-
-#include "bignum.h"
-
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "rsa.h"
+
+#include "bignum.h"
 
 int
 rsa_decrypt(const struct rsa_private_key *key,

@@ -23,12 +23,16 @@
  * MA 02111-1307, USA.
  */
 
-#include "sexp.h"
-
-#include "base64.h"
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
 
 #include <assert.h>
 #include <string.h>
+
+#include "sexp.h"
+
+#include "base64.h"
 
 /* NOTE: Decodes the input string in place */
 int

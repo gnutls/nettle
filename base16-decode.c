@@ -23,10 +23,14 @@
  * MA 02111-1307, USA.
  */
  
-#include "base16.h"
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
 
 #include <assert.h>
 #include <stdlib.h>
+
+#include "base16.h"
 
 void
 base16_decode_init(struct base16_decode_ctx *ctx)

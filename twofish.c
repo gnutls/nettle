@@ -31,12 +31,16 @@
  * MA 02111-1307, USA.
  */
 
-#include "twofish.h"
-
-#include "macros.h"
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
 
 #include <assert.h>
 #include <string.h>
+
+#include "twofish.h"
+
+#include "macros.h"
 
 /* Bitwise rotations on 32-bit words.  These are defined as macros that
  * evaluate their argument twice, so do not apply to any expressions with

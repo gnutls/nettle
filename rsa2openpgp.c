@@ -23,14 +23,18 @@
  * MA 02111-1307, USA.
  */
 
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
 #if WITH_PUBLIC_KEY
+
+#include <time.h>
 
 #include "rsa.h"
 
 #include "buffer.h"
 #include "pgp.h"
-
-#include <time.h>
 
 
 /* According to RFC 2440, a public key consists of the following packets:

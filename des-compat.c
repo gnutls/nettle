@@ -23,14 +23,18 @@
  * MA 02111-1307, USA.
  */
 
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include <string.h>
+#include <assert.h>
+
 #include "des-compat.h"
 
 #include "cbc.h"
 #include "macros.h"
 #include "memxor.h"
-
-#include <string.h>
-#include <assert.h>
 
 struct des_compat_des3 { struct des_ctx *keys[3]; }; 
 

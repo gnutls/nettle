@@ -24,17 +24,17 @@
  */
 
 #if HAVE_CONFIG_H
-#include "config.h"
+# include "config.h"
 #endif
 
 #if WITH_PUBLIC_KEY
 
-#include "rsa.h"
+#include <assert.h>
+
+include "rsa.h"
 
 #include "bignum.h"
 #include "pkcs1.h"
-
-#include <assert.h>
 
 void
 rsa_sha1_sign(const struct rsa_private_key *key,

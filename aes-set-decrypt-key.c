@@ -25,9 +25,13 @@
 
 /* Originally written by Rafael R. Sevilla <dido@pacific.net.ph> */
 
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
 #include "aes-internal.h"
 
-/* Tables for comoutations in the AES GF2 field. */
+/* Tables for computations in the AES GF2 field. */
 static const uint8_t log[0x100] =
 {
   0x00,0x00,0x19,0x01,0x32,0x02,0x1a,0xc6,

@@ -29,12 +29,16 @@
  * MA 02111-1307, USA.
  */
 
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include <assert.h>
+
 #include "cast128.h"
 #include "cast128_sboxes.h"
 
 #include "macros.h"
-
-#include <assert.h>
 
 #define CAST_SMALL_KEY 10
 #define CAST_SMALL_ROUNDS 12

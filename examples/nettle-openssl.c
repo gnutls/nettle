@@ -25,19 +25,19 @@
 
 #if HAVE_CONFIG_H
 # include "config.h"
-#endif /* HAVE_CONFIG_H */
+#endif
 
 /* Openssl glue, for comparative benchmarking only */
 
 #if HAVE_LIBCRYPTO
 
-#include "nettle-internal.h"
+#include <assert.h>
 
 #include <openssl/blowfish.h>
 #include <openssl/des.h>
 #include <openssl/cast.h>
 
-#include <assert.h>
+#include "nettle-internal.h"
 
 
 /* Blowfish */

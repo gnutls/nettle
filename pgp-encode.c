@@ -23,15 +23,19 @@
  * MA 02111-1307, USA.
  */
 
+#if HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+#include <assert.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "pgp.h"
 
 #include "base64.h"
 #include "buffer.h"
 #include "macros.h"
-
-#include <assert.h>
-#include <stdlib.h>
-#include <string.h>
 
 int
 pgp_put_uint32(struct nettle_buffer *buffer, uint32_t i)

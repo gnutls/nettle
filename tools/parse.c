@@ -20,12 +20,16 @@
  * MA 02111-1307, USA.
  */
 
-#include "parse.h"
-
-#include "input.h"
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
 
 #include <assert.h>
 #include <stdlib.h>
+
+#include "parse.h"
+
+#include "input.h"
 
 void
 sexp_compound_token_init(struct sexp_compound_token *token)

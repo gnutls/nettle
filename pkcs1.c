@@ -24,15 +24,15 @@
  */
 
 #if HAVE_CONFIG_H
-#include "config.h"
+# include "config.h"
 #endif
 
 #if WITH_PUBLIC_KEY
 
-#include "pkcs1.h"
-
 #include <assert.h>
 #include <string.h>
+
+#include "pkcs1.h"
 
 void
 pkcs1_signature_prefix(unsigned length,

@@ -22,14 +22,17 @@
  * MA 02111-1307, USA.
  */
 
-
-#include "rsa.h"
-#include "io.h"
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
 
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+
+#include "rsa.h"
+#include "io.h"
 
 static int
 read_signature(const char *name, mpz_t s)

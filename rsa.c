@@ -24,7 +24,7 @@
  */
 
 #if HAVE_CONFIG_H
-#include "config.h"
+# include "config.h"
 #endif
 
 #if WITH_PUBLIC_KEY
@@ -32,10 +32,6 @@
 #include "rsa.h"
 
 #include "bignum.h"
-
-/* FIXME: Perhaps we should split this into several functions, so that
- * one can link in the signature functions without also getting the
- * verify functions. */
 
 void
 rsa_public_key_init(struct rsa_public_key *key)
