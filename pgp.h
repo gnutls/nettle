@@ -44,6 +44,9 @@
 #define pgp_armor nettle_pgp_armor
 
 struct nettle_buffer;
+struct rsa_public_key;
+struct rsa_private_key;
+struct sha1_ctx;
 
 int
 pgp_put_uint32(struct nettle_buffer *buffer, uint32_t i);
@@ -52,7 +55,7 @@ int
 pgp_put_uint16(struct nettle_buffer *buffer, unsigned i);
 
 int
-pgp_put_mpi(struct nettle_buffer *buffer, mpz_t x);
+pgp_put_mpi(struct nettle_buffer *buffer, const mpz_t x);
 
 int
 pgp_put_string(struct nettle_buffer *buffer,
@@ -85,6 +88,17 @@ pgp_put_sub_packet(struct nettle_buffer *buffer,
 void
 pgp_sub_packet_end(struct nettle_buffer *buffer, unsigned start);
 
+int
+pgp_put_public_rsa_key(struct nettle_buffer *,
+		       const struct rsa_public_key *key,
+		       time_t timestamp);
+
+int
+pgp_put_rsa_sha1_signature(struct nettle_buffer *buffer,
+			   const struct rsa_private_key *key,
+			   const uint8_t *keyid,
+			   unsigned type,
+			   struct sha1_ctx *hash);
 
 int
 pgp_put_userid(struct nettle_buffer *buffer,
@@ -183,6 +197,12 @@ enum pgp_signature_type
     PGP_SIGN_REVOCATION_SUBKEY = 0x28,
     PGP_SIGN_REVOCATION_CERTIFICATE = 0x30,
     PGP_SIGN_TIMESTAMP = 0x40,
+  };
+
+enum pgp_subpacket_tag
+  {
+    /* FIXME: XXX just to it by the compiler */
+    PGP_SUBPACKET_ISSUER = 0,
   };
 
 #endif /* NETTLE_PGP_H_INCLUDED */
