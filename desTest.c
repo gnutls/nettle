@@ -7,10 +7,10 @@
  */
 
 #ifndef	lint
-static char desTest_cRcs[] = "$Id$";
+char desTest_cRcs[] = "$Id$";
 #endif
 
-#include	"des.h"
+#include "des.h"
 #include <stdio.h>
 
 /* define now(w) to be the elapsed time in hundredths of a second */
