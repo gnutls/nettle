@@ -110,6 +110,7 @@ install-data-local: $(SHLIBINSTALL)
 	$(COMPILE) -c $*.s -o $@
 	echo >.deps/$*.Po
 
+# FIXME: This rule doesn't get dependencies right.
 %_p.$(OBJEXT): %.c
 	$(COMPILE) $(SHLIBCFLAGS) -c $< -o $@
 
