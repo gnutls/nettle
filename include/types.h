@@ -3,6 +3,8 @@
 
 /* Define types for GPG code */
 
+#warning Don't use include/types.h
+
 #include "lsh_types.h"
 
 typedef UINT8 byte;

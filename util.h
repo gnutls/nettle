@@ -1,6 +1,8 @@
 #ifndef _UTIL_H
 #define _UTIL_H
 
+#warning Don't use lib/util.h
+
 /* Bridge from GPG style to lsh style */
 #include "lsh_types.h"
 
