@@ -135,7 +135,8 @@ struct nettle_buffer;
  * buffer == NULL, just compute length.
  *
  * Format strings can contained matched parentheses, tokens ("foo" in
- * the format string is formatted as "3:foo"), and the following
+ * the format string is formatted as "3:foo"), whitespace (which
+ * separates tokens but is otherwise ignored) and the following
  * formatting specifiers:
  *
  *   %s   String represented as unsigned length, const uint8_t *data.

@@ -97,7 +97,7 @@ sexp_vformat(struct nettle_buffer *buffer, const char *format, va_list args)
       default:
 	{
 	  const char *start = format - 1;
-	  unsigned length = 1 + strcspn(format, "()%");
+	  unsigned length = 1 + strcspn(format, "()% \t");
 	  unsigned output_length = format_string(buffer, length, start);
 	  if (!output_length)
 	    return 0;
@@ -107,6 +107,9 @@ sexp_vformat(struct nettle_buffer *buffer, const char *format, va_list args)
 
 	  break;
 	}
+      case ' ': case '\t':
+	break;
+	
       case '\0':
 	assert(!nesting);
 	    
