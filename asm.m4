@@ -2,27 +2,27 @@ changequote(<,>)dnl
 dnl (progn (modify-syntax-entry ?< "(>") (modify-syntax-entry ?> ")<") )
 
 dnl FORTRAN style comment character
-define(C, <
-dnl>)
+define(<C>, <
+dnl>)dnl
 
 dnl     changecom(!,<
 dnl     >)dnl
 
 dnl including files from the srcdir
-define(<include_src>, <include(srcdir/$1)>)
+define(<include_src>, <include(srcdir/$1)>)dnl
 
 dnl Struct defining macros
 
 dnl STRUCTURE(prefix) 
-define(<STRUCTURE>, <define(<SOFFSET>, 0)define(<SPREFIX>, <$1>)>)
+define(<STRUCTURE>, <define(<SOFFSET>, 0)define(<SPREFIX>, <$1>)>)dnl
 
 dnl STRUCT(name, size)
-define(STRUCT,
+define(<STRUCT>,
 <define(SPREFIX<_>$1, SOFFSET)dnl
- define(<SOFFSET>, eval(SOFFSET + ($2)))>)
+ define(<SOFFSET>, eval(SOFFSET + ($2)))>)dnl
 
 dnl UNSIGNED(name)
-define(<UNSIGNED>, <STRUCT(<$1>, 4)>)
+define(<UNSIGNED>, <STRUCT(<$1>, 4)>)dnl
 
 dnl Offsets in aes_ctx and aes_table
 STRUCTURE(AES)
