@@ -9,7 +9,7 @@ AM_LDFLAGS = -L..
 
 # There's no program "io", it's just a trick to get automake to keep track
 # of dependencies for io.o.
-EXTRA_PROGRAMS = rsa-keygen rsa-sign rsa-verify io
+EXTRA_PROGRAMS = rsa-keygen rsa-sign rsa-verify rsa-encrypt rsa-decrypt io
 noinst_PROGRAMS = nettle-benchmark @RSA_EXAMPLES@
 
 nettle_benchmark_SOURCES = nettle-benchmark.c nettle-openssl.c
