@@ -31,6 +31,7 @@
 #include "macros.h"
 
 #include <assert.h>
+#include <string.h>
 
 /* A block, treated as a sequence of 32-bit words. */
 #define MD5_DATA_LENGTH 16
