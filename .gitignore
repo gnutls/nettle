@@ -49,6 +49,8 @@ core
 /desSmallFips.c
 /desTest
 /desdata
+/generate_q
 /keymap.h
 /parity.h
 /rotors.h
+/twofish_test
