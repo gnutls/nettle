@@ -1,3 +1,7 @@
+2004-11-04  Niels Möller  <niels@s3.kth.se>
+
+	* nettle.texinfo (UPDATED-FOR): Bumped to 1.12.
+
 2004-11-02  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle.texinfo (Cipher functions): Updated AES documentation,
@@ -5,6 +9,10 @@
 	(UPDATED-FOR): Set to 1.11. I think the manual should be updated
 	with all user-visible changes.
 
+	* aclocal.m4 (LSH_DEPENDENCY_TRACKING): Need extra quoting in case
+	pattern. (This file really lives in the lsh tree, as
+	lsh/acinclude.m4. For a complete ChangeLog, see lsh/Changelog).
+	
 2004-10-26  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Bumped version to 1.12.

@@ -1,3 +1,10 @@
+NEWS for the 1.12 release
+	
+	Fixed a bug in the configure script.
+
+	Updated the description of aes_set_encrypt_key and
+	aes_set_decrypt_key in the manual.
+
 NEWS for the 1.11 release
 
 	Nettle no longer uses automake. Side effects:

@@ -13,7 +13,7 @@
 * Nettle: (nettle).           A low-level cryptographics library.
 @end direntry
 
-@set UPDATED-FOR 1.11
+@set UPDATED-FOR 1.12
 
 @c Latin-1 doesn't work with TeX output.
 @c Also lookout for é characters.
