@@ -343,11 +343,11 @@ extern UINT32 des_keymap[], des_bigmap[];
 #define	ENCRYPT(NAME, TEMP, LOAD, KEYMAP, SAVE)	\
 						\
 void						\
-NAME(REGISTER BYTE *D,                          \
-     REGISTER UINT32 *r,                \
-     REGISTER UINT8 *s)                 \
+NAME(REGISTER BYTE *D,				\
+     REGISTER UINT32 *r,			\
+     REGISTER const UINT8 *s)			\
 {						\
-	register UINT32 x, y, z;	\
+	register UINT32 x, y, z;		\
 						\
 	/* declare temps & load data */		\
 	TEMP(LOAD);				\
@@ -379,11 +379,11 @@ NAME(REGISTER BYTE *D,                          \
 #define	DECRYPT(NAME, TEMP, LOAD, KEYMAP, SAVE)	\
 						\
 void						\
-NAME(REGISTER BYTE *D,                          \
-     REGISTER UINT32 *r,                \
-     REGISTER UINT8 *s)                 \
+NAME(REGISTER BYTE *D,				\
+     REGISTER UINT32 *r,			\
+     REGISTER const UINT8 *s)			\
 {						\
-	register UINT32 x, y, z;        \
+	register UINT32 x, y, z;		\
 						\
 	/* declare temps & load data */		\
 	TEMP(LOAD);				\

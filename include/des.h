@@ -18,9 +18,11 @@ RCSID2(desCore_hRcs, "$Id$");
 #define DES_BLOCKSIZE 8
 #define DES_EXPANDED_KEYLEN 32
 
+/* FIXME: typedef on arrays is ugly. */
 typedef UINT8 DesData[DES_BLOCKSIZE];
 typedef UINT32 DesKeys[DES_EXPANDED_KEYLEN];
-typedef void DesFunc(UINT8 *d, UINT32 *r, UINT8 *s);
+
+typedef void DesFunc(UINT8 *d, UINT32 *r, const UINT8 *s);
 
 extern int DesMethod(UINT32 *method, UINT8 *k);
 extern void DesQuickInit(void);
