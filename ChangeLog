@@ -1,5 +1,14 @@
 2004-03-01  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/rsa-keygen.c, examples/rsa-encrypt.c,
+	examples/rsa-decrypt.c: Include "getopt.h" instead of <unistd.h>.
+
+	* examples/Makefile.am (rsa_encrypt_SOURCES, rsa_decrypt_SOURCES)
+	(rsa_keygen_SOURCES): Added getopt.h, getopt.c and getopt1.c.
+
+	* examples/getopt.h, examples/getopt.c, examples/getopt1.c: New
+	files. 
+
 	* testsuite/des-compat-test.c: Don't include <unistd.h>.
 
 	* testsuite/testutils.c (main): Don't use getopt. Then we don't
