@@ -13,12 +13,12 @@ OPENSSL_LIBFLAGS = @OPENSSL_LIBFLAGS@
 TARGETS = nettle-benchmark @RSA_EXAMPLES@
 SOURCES = nettle-benchmark.c nettle-openssl.c \
 	io.c getopt.c getopt1.c \
-	rsa-encrypt.c rsa-decrypt.c rsa-keygen.c
+	rsa-encrypt.c rsa-decrypt.c rsa-keygen.c rsa-sign.c rsa-verify.c
 
 TS_ALL = rsa-sign-test rsa-verify-test rsa-encrypt-test
 
 DISTFILES= $(SOURCES) Makefile.in $(TS_ALL) run-tests setup-env teardown-env \
-	io.h rsa-session.h
+	io.h rsa-session.h getopt.h
 
 all: $(TARGETS)
 
@@ -62,7 +62,7 @@ Makefile: $(srcdir)/Makefile.in ../config.status
 # 	rm -f ../stamp-h1
 # 	touch $@
 
-install:
+install uninstall:
 	true
 
 distdir: $(DISTFILES)
