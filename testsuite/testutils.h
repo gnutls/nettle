@@ -53,6 +53,8 @@ test_hash(const struct nettle_hash *hash,
 #define H(x) decode_hex_dup(x)
 #define HL(x) decode_hex_length(x), decode_hex_dup(x)
 
+#define LDATA(x) strlen(x), x
+
 #define MEMEQ(length, a, b) (!memcmp((a), (b), (length)))
 
 #define FAIL() abort()

@@ -10,8 +10,6 @@
 # include "rsa.h"
 #endif
 
-#define LDATA(s) strlen(s), s
-
 #define SIGN(key, hash, msg, signature) do {	\
   hash##_update(&hash, LDATA(msg));		\
   rsa_##hash##_sign(key, &hash, signature);	\
