@@ -1,5 +1,7 @@
 2004-01-10  Niels Möller  <nisse@harpo.hack.org>
 
+	* Released nettle-1.8.
+
 	* nettle.texinfo (Hash functions): Documented md2 and md4.
 
 	* configure.ac (SHLIBMAJOR): Bumped to 2.
