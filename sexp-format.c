@@ -146,6 +146,14 @@ sexp_vformat(struct nettle_buffer *buffer, const char *format, va_list args)
 	    default:
 	      abort();
 
+	    case '(':
+	    case ')':
+	      /* Allow unbalanced parenthesis */
+	      if (buffer && !NETTLE_BUFFER_PUTC(buffer, format[-1]))
+		return 0;
+	      done++;
+	      break;
+	      
 	    case 's':
 	      {
 		const char *s;

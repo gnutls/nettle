@@ -153,14 +153,15 @@ struct nettle_buffer;
  *        subexpression. Represented as unsigned length, const uint8_t
  *        *data.
  *
+ *   %(, %)  Allows insertion of unbalanced parenthesis.
+ *
  * Modifiers:
  *
  *   %0   For %s, %t and %l, says that there's no length argument,
  *        instead the string is NUL-terminated, and there's only one
  *        const uint8_t * argument.
- *
- * FIXME: Allow "%(" for unbalanced parenthesis. */
-
+ */
+ 
 unsigned
 sexp_format(struct nettle_buffer *buffer,
 	    const char *format, ...);
