@@ -1,5 +1,7 @@
+*.d
 Makefile
 config.cache
+config.h.in
 config.log
 config.status
 configure
@@ -12,4 +14,3 @@ desdata
 keymap.h
 parity.h
 rotors.h
-*.d

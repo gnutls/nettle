@@ -30,8 +30,10 @@ _$*
 *.elc
 *.ln
 core
+/*.d
 /Makefile
 /config.cache
+/config.h.in
 /config.log
 /config.status
 /configure
@@ -44,4 +46,3 @@ core
 /keymap.h
 /parity.h
 /rotors.h
-/*.d
