@@ -34,9 +34,6 @@
  * data. */
 #define YARROW_MULTIPLIER 4
 
-/* Generator gate threshold */
-#define YARROW_GATE_THRESHOLD 10
-
 /* Entropy threshold for reseeding from the fast pool */
 #define YARROW_FAST_THRESHOLD 100
 
