@@ -110,9 +110,6 @@ C Input in wtxt, output stored in tmp + i.
 C
 C The comments mark which j in T->table[j][ Bj(wtxt[IDXi(i)]) ]
 C the instruction is a part of. 
-C
-C The code uses the register %o[j], aka tj, as the primary 
-C register for that sub-expression. True for j==1,3.
 define(<AES_FINAL_ROUND>, <
 	ld	[IDX1+$1], t1		! 1
 	ldub	[wtxt+t1], t1		! 1
@@ -238,173 +235,12 @@ _aes_crypt:
 	bne	.Lround_loop
 	add	key, 16, key
 
-	! Final round
+	C Final round
 
-	! Comments mark which j in T->sbox[Bj(wtxt[IDXj(i)])]
-	! the instruction is part of.
-
-	C Unrolled final loop begins
-
-	C i = 0
-	AES_FINAL_ROUND(0)
-C 	ld	[IDX1+0], t1 	! 1
-C 	ldub	[wtxt+t1], t1	! 1
-C 
-C 	ld	[wtxt+0], t0	! 0
-C 	! IDX2(j) = j XOR 2
-C 	lduh	[wtxt+8], t2	! 2
-C 	and	t0, 255, t0	! 0
-C 	ld	[IDX3 + 0], t3	! 3
-C 	
-C 	and	t2, 255, t2	! 2
-C 	ldub	[T+t1], t1	! 1
-C 	ldub	[T+t0], t0	! 0
-C 	sll	t1, 8, t1	! 1
-C 	
-C 	ldub	[wtxt+t3], t3	! 3
-C 	or	t0, t1, t0	! 0, 1
-C 	ldub	[T+t2], t2	! 2
-C 	ldub	[T+t3], t3	! 3
-C 	
-C 	sll	t2, 16, t2	! 2
-C 	or	t0, t2, t0	! 0, 1, 2
-C 	ld	[key + 0], t2
-C 	sll	t3, 24, t3	! 3
-C 	
-C 	or	t0, t3, t0	! 0, 1, 2, 3
-C 	xor	t0, t2, t0
-C 	
-C 	srl	t0, 24, t3
-C 	srl	t0, 16, t2
-C 	srl	t0, 8, t1
-C 	stb	t1, [dst+1]
-C 	
-C 	stb	t3, [dst+3]
-C 	stb	t2, [dst+2]
-C 	stb	t0, [dst]
-C 	add	dst, 4, dst
-	
-	C i = 1
+	AES_FINAL_ROUND(0)	! i = 0
 	AES_FINAL_ROUND(4)	! i = 1
-C 	ld	[IDX1+4], t1 	! 1
-C 
-C 	ldub	[wtxt+t1], t1	! 1
-C 
-C 	ld	[wtxt+4], t0	! 0
-C 	! IDX2(j) = j XOR 2
-C 	lduh	[wtxt+12], t2	! 2
-C 	and	t0, 255, t0	! 0
-C 	ld	[IDX3 + 4], t3	! 3
-C 	
-C 	and	t2, 255, t2	! 2
-C 	ldub	[T+t1], t1	! 1
-C 	ldub	[T+t0], t0	! 0
-C 	sll	t1, 8, t1	! 1
-C 	
-C 	ldub	[wtxt+t3], t3	! 3
-C 	or	t0, t1, t0	! 0, 1
-C 	ldub	[T+t2], t2	! 2
-C 	ldub	[T+t3], t3	! 3
-C 	
-C 	sll	t2, 16, t2	! 2
-C 	or	t0, t2, t0	! 0, 1, 2
-C 	ld	[key + 4], t2
-C 	sll	t3, 24, t3	! 3
-C 	
-C 	or	t0, t3, t0	! 0, 1, 2, 3
-C 	xor	t0, t2, t0
-C 	
-C 	srl	t0, 24, t3
-C 	srl	t0, 16, t2
-C 	srl	t0, 8, t1
-C 	stb	t1, [dst+1]
-C 	
-C 	stb	t3, [dst+3]
-C 	stb	t2, [dst+2]
-C 	stb	t0, [dst]
-C 	add	dst, 4, dst
-	
-	C i = 2
 	AES_FINAL_ROUND(8)	! i = 2
-C 	ld	[IDX1+8], t1 	! 1
-C 	
-C 	ldub	[wtxt+t1], t1	! 1
-C 
-C 	ld	[wtxt+8], t0	! 0
-C 	! IDX2(j) = j XOR 2
-C 	lduh	[wtxt+0], t2	! 2
-C 	and	t0, 255, t0	! 0
-C 	ld	[IDX3 + 8], t3	! 3
-C 	
-C 	and	t2, 255, t2	! 2
-C 	ldub	[T+t1], t1	! 1
-C 	ldub	[T+t0], t0	! 0
-C 	sll	t1, 8, t1	! 1
-C 	
-C 	ldub	[wtxt+t3], t3	! 3
-C 	or	t0, t1, t0	! 0, 1
-C 	ldub	[T+t2], t2	! 2
-C 	ldub	[T+t3], t3	! 3
-C 	
-C 	sll	t2, 16, t2	! 2
-C 	or	t0, t2, t0	! 0, 1, 2
-C 	ld	[key + 8], t2
-C 	sll	t3, 24, t3	! 3
-C 	
-C 	or	t0, t3, t0	! 0, 1, 2, 3
-C 	xor	t0, t2, t0
-C 	
-C 	srl	t0, 24, t3
-C 	srl	t0, 16, t2
-C 	srl	t0, 8, t1
-C 	stb	t1, [dst+1]
-C 	
-C 	stb	t3, [dst+3]
-C 	stb	t2, [dst+2]
-C 	stb	t0, [dst]
-C 	add	dst, 4, dst
-	
-	C i = 3
 	AES_FINAL_ROUND(12)	! i = 3
-C 	ld	[IDX1+12], t1 	! 1
-C 
-C 	ldub	[wtxt+t1], t1	! 1
-C 
-C 	ld	[wtxt+12], t0	! 0
-C 	! IDX2(j) = j XOR 2
-C 	lduh	[wtxt+4], t2	! 2
-C 	and	t0, 255, t0	! 0
-C 	ld	[IDX3 + 12], t3	! 3
-C 	
-C 	and	t2, 255, t2	! 2
-C 	ldub	[T+t1], t1	! 1
-C 	ldub	[T+t0], t0	! 0
-C 	sll	t1, 8, t1	! 1
-C 	
-C 	ldub	[wtxt+t3], t3	! 3
-C 	or	t0, t1, t0	! 0, 1
-C 	ldub	[T+t2], t2	! 2
-C 	ldub	[T+t3], t3	! 3
-C 	
-C 	sll	t2, 16, t2	! 2
-C 	or	t0, t2, t0	! 0, 1, 2
-C 	ld	[key + 12], t2
-C 	sll	t3, 24, t3	! 3
-C 	
-C 	or	t0, t3, t0	! 0, 1, 2, 3
-C 	xor	t0, t2, t0
-C 	
-C 	srl	t0, 24, t3
-C 	srl	t0, 16, t2
-C 	srl	t0, 8, t1
-C 	stb	t1, [dst+1]
-C 	
-C 	stb	t3, [dst+3]
-C 	stb	t2, [dst+2]
-C 	stb	t0, [dst]
-C 	add	dst, 4, dst
-
-	C Unrolled final loop ends
 	
 	addcc	length, -16, length
 	sub	ctx, src, %g2
