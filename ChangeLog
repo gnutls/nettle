@@ -1,3 +1,19 @@
+2002-09-30  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* sexp2rsa.c (rsa_keypair_from_sexp): Bugfix: Call
+	rsa_prepare_public_key and rsa_prepare_private_key.
+
+	* examples/Makefile.am (noinst_PROGRAMS): Added rsa-sign.
+
+	* examples/rsa-sign.c: New example program.
+
+	* testsuite/base64-test.c (test_main): Test encoding and decoding
+	in place.
+
+	* base64.c (base64_encode): Encode from the end of the data
+	towards the start, in order to support overlapping areas.
+	(base64_encode): Broke out some common code from the switch..
+
 2002-09-30  Niels Möller  <niels@s3.kth.se>
 
 	* sexp_format.c (sexp_format): Don't mix code and declarations.
