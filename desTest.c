@@ -19,6 +19,11 @@ char desTest_cRcs[] = "$Id$";
 #include	<sys/time.h>
 #include	<sys/resource.h>
 #include	<unistd.h>
+
+#if 1
+/* FIXME: Let autoconf look for getrusage */
+#define now(w) 0;
+#else /* false */
 /* extern getrusage(); */
 static struct rusage usage;
 #define	now(w)	(						\
@@ -30,7 +35,8 @@ static struct rusage usage;
 #include       <windows.h>
 #define now(w) 0
 #endif
-
+#endif /* false */
+     
 /* test data
  * the tests (key0-3, text0-3) are cribbed from code which is (c) 1988 MIT
  */
