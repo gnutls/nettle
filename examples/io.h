@@ -27,7 +27,9 @@
 #define NETTLE_EXAMPLES_IO_H_INCLUDED
 
 #include "nettle-meta.h"
-#include "rsa.h"
+#if WITH_PUBLIC_KEY
+# include "rsa.h"
+#endif
 #include "yarrow.h"
 
 #include <stdio.h>
@@ -61,6 +63,7 @@ simple_random(struct yarrow256_ctx *ctx, const char *name);
 int
 hash_file(const struct nettle_hash *hash, void *ctx, FILE *f);
 
+#if WITH_PUBLIC_KEY
 struct rsa_public_key;
 struct rsa_private_key;
 
@@ -68,5 +71,6 @@ int
 read_rsa_key(const char *name,
 	     struct rsa_public_key *pub,
 	     struct rsa_private_key *priv);
+#endif /* WITH_PUBLIC_KEY */
 
 #endif /* NETTLE_EXAMPLES_IO_H_INCLUDED */
