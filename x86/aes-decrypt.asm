@@ -56,9 +56,6 @@ aes_decrypt:
 .Lround_loop:
 	pushl	%esi		C  save this first: we'll clobber it later
 
-	C Why???
-	C xchgl	%ebx,%edx
-
 	AES_ROUND(_aes_decrypt_table,a,d,c,b)
 	pushl	%edi		C  save first on stack
 
@@ -85,21 +82,18 @@ aes_decrypt:
 	decl	%ebp
 	jnz	.Lround_loop
 
-	C Foo?
-	xchgl	%ebx,%edx
-
 	C last round
 
-	AES_FINAL_ROUND(a,b,c,d)
+	AES_FINAL_ROUND(a,d,c,b)
 	pushl	%edi
 
-	AES_FINAL_ROUND(b,c,d,a)
+	AES_FINAL_ROUND(d,c,b,a)
 	pushl	%edi
 
-	AES_FINAL_ROUND(c,d,a,b)
+	AES_FINAL_ROUND(c,b,a,d)
 	pushl	%edi
 
-	AES_FINAL_ROUND(d,a,b,c)
+	AES_FINAL_ROUND(b,a,d,c)
 	
 	movl	%edi,%edx
 	popl	%ecx
