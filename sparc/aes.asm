@@ -66,14 +66,14 @@ define(t3, %o3)
 C AES_LOAD(i)
 C Get one word of input, XOR with first subkey, store in wtxt
 define(<AES_LOAD>, <
-	ldub	[src+3], t3
-	ldub	[src+2], t2
+	ldub	[src+$1+3], t3
+	ldub	[src+$1+2], t2
 	sll	t3, 24, t3
-	ldub	[src+1], t1
+	ldub	[src+$1+1], t1
 	
 	sll	t2, 16, t2
 	or	t3, t2, t3
-	ldub	[src+0], t0
+	ldub	[src+$1], t0
 	sll	t1, 8, t1
 	
 	! Get subkey
@@ -83,7 +83,7 @@ define(<AES_LOAD>, <
 	xor	t3, t2, t3
 	
 	st	t3, [wtxt+$1]
-	add	src, 4, src
+	C add	src, 4, src
 	
 	C ldub	[src + $1], t0
 	C ldub	[src + $1 + 1], t1
@@ -216,24 +216,20 @@ _aes_crypt:
 	! Difference between ctx and src.
 	! NOTE: These instructions are duplicated in the delay slot,
 	! and the instruction before the branch.
-	sub	ctx, src, %g2
+	C sub	ctx, src, %g2
 	! Difference between wtxt and src
-	sub	wtxt, src, %g3
+	C sub	wtxt, src, %g3
 .Lblock_loop:
 	! For stop condition. Note that src is incremented in the
 	! delay slot
-	add	src, 8, %g1
+	C add	src, 8, %g1
 
-	C AES_LOAD(0)	! i = 0
-	C AES_LOAD(4)	! i = 1
-	C AES_LOAD(8)	! i = 2
-	C AES_LOAD(12)	! i = 3
-	C add	src, 16, src
-			
 	AES_LOAD(0)	! i = 0
 	AES_LOAD(4)	! i = 1
 	AES_LOAD(8)	! i = 2
 	AES_LOAD(12)	! i = 3
+	add	src, 16, src
+			
 	
 	sub	nrounds, 1, round
 	add	ctx, 16, key
@@ -262,10 +258,11 @@ _aes_crypt:
 	add	dst, 16, dst
 		
 	addcc	length, -16, length
-	sub	ctx, src, %g2
+	C sub	ctx, src, %g2
 	
 	bne	.Lblock_loop
-	sub	wtxt, src, %g3
+	nop
+	C sub	wtxt, src, %g3
 
 .Lend:
 	ret
