@@ -12,6 +12,7 @@ libnettleinclude_HEADERS = aes.h arcfour.h blowfish.h \
 			   hmac.h \
 			   knuth-lfib.h \
 			   macros.h \
+			   md2.h md4.h \
 			   md5.h md5-compat.h \
 			   nettle-meta.h \
 			   pgp.h realloc.h rsa.h \
@@ -33,6 +34,7 @@ libnettle_a_SOURCES = aes.c aes.h aes-internal.h \
 		      des3.c des-compat.c des-compat.h \
 		      hmac.c hmac.h hmac-md5.c hmac-sha1.c hmac-sha256.c \
 		      knuth-lfib.c knuth-lfib.h \
+		      md2.c md2-meta.c md4.c md4-meta.c \
 		      md5.c md5.h md5-compat.c md5-compat.h md5-meta.c \
 		      sha.h sha1.c sha1-meta.c sha256.c sha256-meta.c \
 		      serpent.c serpent.h serpent_sboxes.h serpent-meta.c \
@@ -62,10 +64,7 @@ shadata_LDADD = -lm
 
 info_TEXINFOS = nettle.texinfo
 
-all-local: nettle.html print-path
-.PHONY: print-path
-print-path:
-	echo PATH: $$PATH
+all-local: nettle.html
 
 EXTRA_DIST = memxor.h $(des_headers) descore.README nettle.html \
 	sha-example.c .bootstrap $(des_headers) \
