@@ -129,7 +129,7 @@ write_string(FILE *f, unsigned size, const char *buffer)
 {
   size_t res = fwrite(buffer, 1, size, f);
 
-  return res > 0;
+  return res == size;
 }
 
 int
