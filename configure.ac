@@ -92,7 +92,7 @@ LSH_DEPENDENCY_TRACKING
 
 AC_CONFIG_COMMANDS([dummy-dep-files],
 [(cd "$srcdir" && find . -name '*.c' -print) \
- | sed s/\.c$// | (while read f; do echo > "$f.o.d"; echo > "$f.po.d"; done)
+ | sed 's/\.c$//' | (while read f; do echo > "$f.o.d"; echo > "$f.po.d"; done)
 ])
 
 # Select assembler code
