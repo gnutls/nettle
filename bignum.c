@@ -34,6 +34,12 @@
 #include <assert.h>
 #include <string.h>
 
+unsigned
+nettle_mpz_sizeinbase_256(const mpz_t x)
+{
+  return (mpz_sizeinbase(x, 2) + 7) / 8;
+}
+
 void
 nettle_mpz_get_str_256(unsigned length, uint8_t *s, const mpz_t x)
 {
@@ -49,7 +55,7 @@ nettle_mpz_get_str_256(unsigned length, uint8_t *s, const mpz_t x)
     }
   
   assert(mpz_sgn(x) >= 0);
-  assert( (mpz_sizeinbase(x, 2) + 7) / 8 <= length);
+  assert(nettle_mpz_sizeinbase_256(x) <= length);
 
   for (i = 0; i<size; i++)
     {

@@ -29,6 +29,9 @@
 #include <gmp.h>
 #include <inttypes.h>
 
+unsigned
+nettle_mpz_sizeinbase_256(const mpz_t x);
+
 /* Writes an unsigned integer as length octets, using big endian byte
  * order. */
 void
