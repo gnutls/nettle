@@ -18,13 +18,13 @@
 ! the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 ! MA 02111-1307, USA.
 
-! FIXME: Some of the %g registers are reserved for operating system etc
-! (see gcc/config/sparc.h). We should probably use only %g1-%g3 to be safe.
+! NOTE: Some of the %g registers are reserved for operating system etc
+! (see gcc/config/sparc.h). We should use only %g1-%g3 to be safe.
 	
 	! Used registers:	%l0,1,2,3,4,5,6,7
 	!			%i0,1,2,3,4,5 (%i6=%fp, %i7 = return)
 	!			%o0,1,2,3,4,5,7 (%o6=%sp)
-	!			%g1,2,3,5
+	!			%g1,2,3
 	
 	.file	"aes.asm"
 	
@@ -42,7 +42,7 @@ define(dst, %i3)
 define(src, %i4)
 
 ! Loop invariants
-define(wtxt, %l0)
+define(wtxt, %sp)
 define(tmp, %l1)
 define(diff, %l2)
 define(nrounds, %l3)
@@ -55,7 +55,7 @@ define(key, %o4)
 ! Further loop invariants
 define(T0, %l6)
 define(T1, %l7)
-define(T2, %g5)
+define(T2, %l0)
 define(T3, %o7)
 define(IDX1, %i5)
 define(IDX3, %o5)
@@ -71,12 +71,9 @@ define(<FRAME_WTXT>, 0)
 define(<FRAME_TMP>, 16)
 
 _aes_crypt:
-! Why -136?
 	save	%sp, -FRAME_SIZE, %sp
 	cmp	length, 0
 	be	.Lend
-
-	add	%sp, FRAME_WTXT, wtxt
 	add	%sp, FRAME_TMP, tmp
 
 	ld	[ctx + AES_NROUNDS], nrounds
