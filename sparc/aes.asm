@@ -120,7 +120,7 @@ _aes_crypt:
 	! add	%o3, 4, %o3
 
 	mov	16, round
-	! add	ctx, 16, key
+	add	ctx, 16, key
 
 .Lround_loop:
 	! 4*i
@@ -168,9 +168,9 @@ _aes_crypt:
 
 	add	idx, 4, idx		
 	! Fetch roundkey
-	ld	[ctx+round], t1
-	add	round, 4, round
-	! ld	[key+i], t1
+	! ld	[ctx+round], t1
+	! add	round, 4, round
+	ld	[key+i], t1
 	xor	t0, t3, t0		! 0, 1, 2, 3
 
 	xor	t0, t1, t0
@@ -182,13 +182,15 @@ _aes_crypt:
 	
 	! switch roles for tmp and wtxt
 	xor	wtxt, diff, wtxt
-	! add	key, 16, key
+	add	round, 16, round
+	add	key, 16, key
 	cmp	round, nrounds
 	blu	.Lround_loop
 	xor	tmp, diff, tmp
 
 	! final round
 	mov	0, i
+	! IDX3
 	add	T, 288, %g4
 .Lfinal_loop:
 	ld	[%g4-32], %g2
