@@ -1,5 +1,7 @@
 2003-04-25  Niels Möller  <niels@s3.kth.se>
 
+	* Makefile.am (libnettle_a_SOURCES): Added hmac-sha256.c.
+
 	* testsuite/hmac-test.c (test_main): Added tests for hmac-256,
 	from draft-ietf-ipsec-ciph-sha-256-01.txt.
 
