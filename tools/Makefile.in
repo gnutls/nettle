@@ -26,7 +26,7 @@ sexp-conv: $(sexp_conv_OBJS) ../libnettle.a
 	$(LINK) $(sexp_conv_OBJS) -lnettle $(LIBS) -o $@
 
 nettle-lfib-stream: nettle-lfib-stream.$(OBJEXT) ../libnettle.a
-	$(LINK) $< -lnettle $(LIBS) -o $@
+	$(LINK) nettle-lfib-stream.$(OBJEXT) -lnettle $(LIBS) -o $@
 
 .c.$(OBJEXT):
 	$(COMPILE) -c $< && $(DEP_PROCESS)
