@@ -135,11 +135,11 @@ get_event(FILE *f, struct sha256_ctx *hash,
 }
 
 static void
-print_digest(uint8_t *digest)
+print_hex(unsigned length, uint8_t *digest)
 {
   unsigned i;
   
-  for (i = 0; i < SHA256_DIGEST_SIZE; i++)
+  for (i = 0; i < length; i++)
     {
       if (! (i % 8))
         fprintf(stderr, " ");
@@ -180,12 +180,16 @@ main(int argc, char **argv)
   uint8_t digest[SHA256_DIGEST_SIZE];
 
   const uint8_t *expected_output
-    = decode_hex_dup("51126a67cac6dff1 1d2ee4fe67cefa7e"
-		     "151f1f8deec69d71 000eb6c6fb3fc65f");
+    = decode_hex_dup("6af27fa0a2751256 a17b64df80838abb"
+		     "76a84038d98fadd7 e79b619b3e1d8b18");
 
   const uint8_t *expected_input
     = decode_hex_dup("fec4c0767434a8a3 22d6d5d0c9f49c42"
 		     "988ce8c159b1a806 29d51aa40c2e99aa");
+
+  const uint8_t *expected_seed_file
+    = decode_hex_dup("b3674735824f6504 edcb07a883f16482"
+		     "a2b1855992441ced 812d8ffda99af0e0");
   
   unsigned c; unsigned t;
 
@@ -202,6 +206,8 @@ main(int argc, char **argv)
     verbose = 1;
   
   yarrow256_init(&yarrow, 2, sources);
+  memset(&yarrow.seed_file, 0, sizeof(yarrow.seed_file));
+  
   yarrow_key_event_init(&estimator);
   sha256_init(&input_hash);
   sha256_init(&output_hash);
@@ -267,6 +273,8 @@ main(int argc, char **argv)
 
   if (verbose)
     {
+      fprintf(stderr, "\n");
+      
       for (i = 0; i<2; i++)
 	fprintf(stderr, "source %d, (fast, slow) entropy: (%d, %d)\n",
 		i,
@@ -281,7 +289,7 @@ main(int argc, char **argv)
 
   if (verbose)
     {
-      print_digest(digest);
+      print_hex(sizeof(digest), digest);
       fprintf(stderr, "\n");
     }
   
@@ -293,6 +301,19 @@ main(int argc, char **argv)
 
   if (verbose)
     {
+      fprintf(stderr, "New seed file: ");
+      print_hex(sizeof(yarrow.seed_file), yarrow.seed_file);
+      fprintf(stderr, "\n");
+    }
+
+  if (memcmp(yarrow.seed_file, expected_seed_file, sizeof(yarrow.seed_file)))
+    {
+      fprintf(stderr, "Failed.\n");
+      return EXIT_FAILURE;
+    }
+  
+  if (verbose)
+    {
       fprintf(stderr, "Generated output: %d octets\n", output);
       fprintf(stderr, "          sha256:");
     }
@@ -302,7 +323,7 @@ main(int argc, char **argv)
 
   if (verbose)
     {
-      print_digest(digest);
+      print_hex(sizeof(digest), digest);
       fprintf(stderr, "\n");
     }
   
