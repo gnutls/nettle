@@ -1,3 +1,13 @@
+2003-01-01  Niels Möller  <nisse@cuckoo.hack.org>
+
+	* testsuite/sexp-conv-test: New tests for hex and base64 literal
+	output. 
+
+	* tools/sexp-conv.c (sexp_put_string): Print binary strings using
+	either hex or base 64 (in advanced mode).
+	(parse_options): Implemented -s hex, for output using hex rather
+	than base64.
+
 2002-12-30  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* testsuite/rsa2sexp-test.c: Don't include rsa.h (done by
