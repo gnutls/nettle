@@ -37,7 +37,7 @@ libnettle_a_SOURCES = aes.c aes.h aes-internal.h \
 		      knuth-lfib.c knuth-lfib.h \
 		      md2.c md2-meta.c md4.c md4-meta.c \
 		      md5.c md5.h md5-compat.c md5-compat.h md5-meta.c \
-		      sha.h sha1.c sha1-meta.c sha256.c sha256-meta.c \
+		      sha.h sha1.c sha1-compress.c sha1-meta.c sha256.c sha256-meta.c \
 		      serpent.c serpent.h serpent_sboxes.h serpent-meta.c \
 		      twofish.c twofish.h twofish-meta.c \
 		      yarrow.h yarrow256.c yarrow_key_event.c \
