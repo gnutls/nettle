@@ -16,7 +16,7 @@ libnettleinclude_HEADERS = aes.h arcfour.h blowfish.h \
 			   serpent.h sha.h twofish.h \
 			   yarrow.h
 			   
-libnettle_a_SOURCES = aes.c aes.h aes-meta.c \
+libnettle_a_SOURCES = aes.c aes-tables.c aes-set-key.c aes.h aes-meta.c \
 		      arcfour.c arcfour.h arcfour-meta.c \
                       base64.c base64-meta.c base64.h \
 		      cast128.c cast128.h cast128_sboxes.h cast128-meta.c \
@@ -33,6 +33,7 @@ libnettle_a_SOURCES = aes.c aes.h aes-meta.c \
 		      yarrow.h yarrow256.c yarrow_key_event.c \
 		      bignum.h bignum.c \
 		      rsa.h rsa.c rsa_md5.c rsa_sha1.c \
+		      rsa-encrypt.c rsa-decrypt.c \
 		      rsa-keygen.c rsa-compat.h rsa-compat.c \
 		      nettle-internal.c nettle-internal.h nettle-meta.h
 
@@ -47,7 +48,16 @@ all-local: nettle.html
 EXTRA_DIST = macros.h memxor.h $(des_headers) descore.README nettle.html \
 	.bootstrap $(des_headers)
 
-# BUILT_SOURCE = $(des_headers)
+# Using assembler files. Should get precedence before the .c.o rule.
+SUFFIXES = .asm
+
+# can be overridden during development, eg. "make RM_TMP=: aes.o"
+RM_TMP = rm -f
+
+.asm.o:
+	$(M4) `test -f $< || echo '$(srcdir)/'`$< >tmp-$*.s
+	$(COMPILE) -c tmp-$*.s -o $@
+	$(RM_TMP) tmp-$*.s
 
 %.html : %.texinfo
 	(cd $(srcdir) \
