@@ -15,7 +15,7 @@ if (!MEMEQ(BLOWFISH_BLOCK_SIZE, cipher, H("32 4E D0 FE F4 13 A2 03")))
   FAIL;
 
 blowfish_decrypt(&ctx, BLOWFISH_BLOCK_SIZE, clear, cipher);
-if (!MEMEQ(16, "BLOWFISH", clear))
+if (!MEMEQ(BLOWFISH_BLOCK_SIZE, "BLOWFISH", clear))
   FAIL;
 
 /* FIXME: All values below are bogus. */
