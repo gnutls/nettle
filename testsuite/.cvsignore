@@ -17,9 +17,12 @@ dsa-keygen-test
 dsa-test
 hmac-test
 knuth-lfib-test
+md2-test
+md4-test
 md5-compat-test
 md5-test
 pkcs1-test
+rsa-encrypt-test
 rsa-keygen-test
 rsa-test
 rsa2sexp-test

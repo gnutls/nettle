@@ -1,3 +1,30 @@
+2003-08-26  Niels Möller  <niels@s3.kth.se>
+
+	* Makefile.am: Added md2 and md5 files. Deleted the print-path
+	hack. 
+
+	* configure.ac: Bumped version to 1.8.
+
+	* testsuite/testutils.c (test_rsa_set_key_1): New function.
+	* testsuite/rsa-test.c (test_main): Use it.
+
+	* testsuite/dsa-keygen-test.c: Deleted definition of UNUSED, it's
+	now in config.h.
+	* testsuite/rsa-keygen-test.c: Likewise.
+
+	* testsuite/Makefile.am (TS_PROGS): Added rsa-encrypt-test,
+	md4-test, and md2-test.
+
+	* testsuite/rsa-encrypt-test.c, testsuite/md4-test.c,
+	testsuite/md2-test.c: New test cases.
+
+	* nettle-meta.h: Declare nettle_md2 and nettle_md4.
+
+	* md5.c: Reorderd functions, putting md5_final at the end.
+
+	* md2.c, md2.h, md2-meta.c: New files, implemented md2.
+	* md4.c, md4.h, md4-meta.c: New files, implemented md4.
+
 2003-08-17  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* desCode.h (des_keymap, des_bigmap): Deleted extern declarations,
