@@ -35,8 +35,12 @@
 
 #include "des.h"
 
-/* FIXME: Some names collides with nettle, so we'll need some ugly symbol
+/* Some names collides with nettle, so we'll need some ugly symbol
  * munging */
+
+#define des_set_key des_compat_set_key
+
+enum { DES_DECRYPT = 0, DES_ENCRYPT = 1 };
 
 void des_ecb3_encrypt(const uint8_t *src, uint8_t *dst,
 		      struct des_ctx *k1, struct des_ctx *k2,
@@ -54,15 +58,13 @@ des_cbc_encrypt(const uint8_t *src, uint8_t *dst, long length,
 
 void
 des_3cbc_encrypt(const uint8_t *src, uint8_t *dst, long length,
-		 struct des_ctx * k1,struct des_ctx *k2, struct des_ctx *k3,
-		 /* What mode is this, two iv:s? */
+		 struct des_ctx * k1, struct des_ctx *k2, 
 		 uint8_t *iv1, uint8_t *iv2,
 		 int enc);
 
 void
 des_ecb_encrypt(const uint8_t *src, uint8_t *dst, long length,
-		struct des_ctx *ctx, uint8_t *iv,
-		int enc);
+		struct des_ctx *ctx, int enc);
 void
 des_ede3_cbc_encrypt(const uint8_t *src, uint8_t *dst, long length,
 		     struct des_ctx * k1,struct des_ctx *k2, struct des_ctx *k3,
@@ -75,10 +77,11 @@ des_set_odd_parity(uint8_t *key);
 int
 des_set_key(const uint8_t *key, struct des_ctx *ctx);
 
+/* What's the difference between this and des_set_key */
 int
 des_key_sched(const uint8_t *key, struct des_ctx *ctx);
 
 int
-des_is_weak_key(const uint8_t key);
+des_is_weak_key(const uint8_t *key);
 
 #endif /* NETTLE_DES_COMPAT_H_INCLUDED */
