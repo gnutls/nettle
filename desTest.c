@@ -18,7 +18,8 @@ char desTest_cRcs[] = "$Id$";
 #ifndef __NT__
 #include	<sys/time.h>
 #include	<sys/resource.h>
-extern getrusage();
+#include	<unistd.h>
+/* extern getrusage(); */
 static struct rusage usage;
 #define	now(w)	(						\
 		(void)getrusage(RUSAGE_SELF, &usage),		\
@@ -109,7 +110,7 @@ UINT8 *src, *dst, *check;
 /* run the tests */
 
 int
-main()
+main(int argc, char **argv)
 {
 	int j, m, e, n;
 	void (*f)();
