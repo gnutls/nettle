@@ -81,7 +81,7 @@ base64_encode_update(struct base64_encode_ctx *ctx,
 		     const uint8_t *src);
 
 /* DST should point to an area of size at least
- * BASE64_ENCODE_FINAL_SIZE */
+ * BASE64_ENCODE_FINAL_LENGTH */
 unsigned
 base64_encode_final(struct base64_encode_ctx *ctx,
 		    uint8_t *dst);
