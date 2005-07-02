@@ -229,7 +229,7 @@ LSH_GCC_ATTRIBUTES
 
 # According to Simon Josefsson, looking for uint32_t and friends in
 # sys/types.h is needed on some systems, in particular cygwin.
-AX_CREATE_STDINT_H([nettle-types.h], [sys/types.h])
+AX_CREATE_STDINT_H([nettle-stdint.h], [sys/types.h])
 
 # Checks for libraries
 AC_CHECK_LIB(gmp, __gmpz_getlimbn,,
