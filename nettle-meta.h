@@ -28,9 +28,6 @@
 
 #include "nettle-types.h"
 
-/* For nettle_crypt_func */
-#include "cbc.h"
-
 /* Randomness. Used by key generation and dsa signature creation. */
 typedef void (*nettle_random_func)(void *ctx,
 				   unsigned length, uint8_t *dst);
