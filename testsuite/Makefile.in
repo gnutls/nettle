@@ -20,7 +20,7 @@ TS_SOURCES = aes-test.c arcfour-test.c arctwo-test.c \
 	     buffer-test.c sexp-test.c sexp-format-test.c \
 	     rsa2sexp-test.c sexp2rsa-test.c \
 	     knuth-lfib-test.c \
-	     cbc-test.c hmac-test.c bignum-test.c \
+	     cbc-test.c ctr-test.c hmac-test.c bignum-test.c \
 	     pkcs1-test.c \
 	     rsa-test.c rsa-encrypt-test.c rsa-keygen-test.c \
 	     dsa-test.c dsa-keygen-test.c \
