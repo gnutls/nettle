@@ -10,6 +10,7 @@
 /buffer-test
 /cast128-test
 /cbc-test
+/ctr-test
 /des-compat-test
 /des-test
 /des3-test
