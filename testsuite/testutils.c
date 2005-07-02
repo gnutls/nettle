@@ -3,6 +3,7 @@
 #include "testutils.h"
 
 #include "cbc.h"
+#include "ctr.h"
 #include "knuth-lfib.h"
 
 #include <ctype.h>
@@ -222,6 +223,43 @@ test_cipher_cbc(const struct nettle_cipher *cipher,
   free(ctx);
   free(data);
   free(iv);
+}
+
+void
+test_cipher_ctr(const struct nettle_cipher *cipher,
+		unsigned key_length,
+		const uint8_t *key,
+		unsigned length,
+		const uint8_t *cleartext,
+		const uint8_t *ciphertext,
+		const uint8_t *ictr)
+{
+  void *ctx = xalloc(cipher->context_size);
+  uint8_t *data = xalloc(length);
+  uint8_t *ctr = xalloc(cipher->block_size);
+  
+  cipher->set_encrypt_key(ctx, key_length, key);
+  memcpy(ctr, ictr, cipher->block_size);
+
+  ctr_crypt(ctx, cipher->encrypt,
+	    cipher->block_size, ctr,
+	    length, data, cleartext);
+
+  if (!MEMEQ(length, data, ciphertext))
+    FAIL();
+
+  memcpy(ctr, ictr, cipher->block_size);
+
+  ctr_crypt(ctx, cipher->encrypt,
+	    cipher->block_size, ctr,
+	    length, data, data);
+
+  if (!MEMEQ(length, data, cleartext))
+    FAIL();
+
+  free(ctx);
+  free(data);
+  free(ctr);
 }
 
 void
