@@ -47,7 +47,7 @@ nettle_SOURCES = aes.c \
                  base64-encode.c base64-decode.c base64-meta.c \
 		 cast128.c cast128-meta.c \
 		 blowfish.c \
-		 cbc.c \
+		 cbc.c ctr.c \
 		 des.c \
 		 des3.c des-compat.c \
 		 hmac.c hmac-md5.c hmac-sha1.c hmac-sha256.c \
@@ -76,7 +76,7 @@ nettle_SOURCES = aes.c \
 
 HEADERS = aes.h arcfour.h arctwo.h bignum.h blowfish.h \
 	  base16.h base64.h buffer.h cast128.h \
-	  cbc.h \
+	  cbc.h ctr.h \
 	  des.h des-compat.h dsa.h \
 	  hmac.h \
 	  knuth-lfib.h \
@@ -84,13 +84,13 @@ HEADERS = aes.h arcfour.h arctwo.h bignum.h blowfish.h \
 	  md2.h md4.h \
 	  md5.h md5-compat.h \
 	  memxor.h \
-	  nettle-meta.h \
+	  nettle-meta.h nettle-types.h \
 	  pgp.h pkcs1.h realloc.h rsa.h rsa-compat.h \
 	  sexp.h \
 	  serpent.h sha.h twofish.h \
 	  yarrow.h
 
-INSTALL_HEADERS = $(HEADERS) nettle-types.h
+INSTALL_HEADERS = $(HEADERS) nettle-stdint.h
 
 SOURCES = $(nettle_SOURCES) aesdata.c desdata.c shadata.c
 
@@ -321,7 +321,7 @@ clean-here:
 
 distclean-here: clean-here
 	-rm -f config.h stamp-h config.log config.status \
-	config.make config.m4 Makefile nettle-types.h *.d
+	config.make config.m4 Makefile nettle-stdint.h *.asm *.d
 
 DEP_FILES = $(SOURCES:.c=.$(OBJEXT).d) $(SOURCES:.c=.p$(OBJEXT).d)
 @DEP_INCLUDE@ $(DEP_FILES)
