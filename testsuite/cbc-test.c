@@ -73,7 +73,7 @@ test_cbc_bulk(void)
 int
 test_main(void)
 {
-  uint8_t msg[2 * AES_BLOCK_SIZE] = "Listen, I'll say this only once!";
+  static const uint8_t msg[2 * AES_BLOCK_SIZE] = "Listen, I'll say this only once!";
   
   /* Intermediate values:
    *   iv XOR first message block:
