@@ -49,7 +49,7 @@ core
 /configure
 /desdata
 /keymap.h
-/nettle-types.h
+/nettle-stdint.h
 /nettle.aux
 /nettle.cp
 /nettle.cps
