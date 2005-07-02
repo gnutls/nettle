@@ -32,15 +32,6 @@
 #define cbc_encrypt nettle_cbc_encrypt
 #define cbc_decrypt nettle_cbc_decrypt
 
-/* Uses a void * for cipher contexts.
-
-   For block ciphers it would make sense with a const void * for the
-   context, but we use the same typedef for stream ciphers where the
-   internal state changes during the encryption. */
-typedef void (*nettle_crypt_func)(void *ctx,
-				  unsigned length, uint8_t *dst,
-				  const uint8_t *src);
-
 void
 cbc_encrypt(void *ctx, nettle_crypt_func f,
 	    unsigned block_size, uint8_t *iv,
@@ -59,38 +50,18 @@ cbc_decrypt(void *ctx, nettle_crypt_func f,
 #define CBC_SET_IV(ctx, data) \
 memcpy((ctx)->iv, (data), sizeof((ctx)->iv))
 
-#if 0
-#define CBC_ENCRYPT(self, f, length, dst, src) \
-do { if (0) (f)(&(self)->ctx, 0, NULL, NULL); \
-     cbc_encrypt((void *) &(self)->ctx, \
-                 (void (*)(void *, unsigned, uint8_t *, const uint8_t *)) (f), \
-		 sizeof((self)->iv), (self)->iv, \
-                 (length), (dst), (src)); \
-} while (0)
-#endif
-
-#define CBC_ENCRYPT(self, f, length, dst, src) \
-(0 ? ((f)(&(self)->ctx, 0, NULL, NULL)) \
-   : cbc_encrypt((void *) &(self)->ctx, \
-                 (void (*)(void *, unsigned, uint8_t *, const uint8_t *)) (f), \
-		 sizeof((self)->iv), (self)->iv, \
+#define CBC_ENCRYPT(self, f, length, dst, src)		\
+(0 ? ((f)(&(self)->ctx, 0, NULL, NULL))			\
+   : cbc_encrypt((void *) &(self)->ctx,			\
+                 (nettle_crypt_func) (f),		\
+		 sizeof((self)->iv), (self)->iv,	\
                  (length), (dst), (src)))
 
-#define CBC_DECRYPT(self, f, length, dst, src) \
-(0 ? ((f)(&(self)->ctx, 0, NULL, NULL)) \
-   : cbc_decrypt((void *) &(self)->ctx, \
-                 (void (*)(void *, unsigned, uint8_t *, const uint8_t *)) (f), \
-		 sizeof((self)->iv), (self)->iv, \
+#define CBC_DECRYPT(self, f, length, dst, src)		\
+(0 ? ((f)(&(self)->ctx, 0, NULL, NULL))			\
+   : cbc_decrypt((void *) &(self)->ctx,			\
+                 (nettle_crypt_func) (f),		\
+		 sizeof((self)->iv), (self)->iv,	\
                  (length), (dst), (src)))
-
-#if 0
-/* Type safer variants */
-#define CBC_ENCRYPT2(ctx, f, b, iv, l, dst, src) \
-(0 ? ((f)((ctx),0,NULL,NULL)) \
-   : cbc_encrypt((void *)(ctx), \
-                 (void (*)(void *, unsigned, uint8_t *, const uint8_t *)) (f), \
-                 (b), (iv), (l), (dst), (src)))
-
-#endif
 
 #endif /* NETTLE_CBC_H_INCLUDED */
