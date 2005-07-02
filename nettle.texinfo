@@ -696,7 +696,7 @@ Initialize the cipher. The same function is used for both encryption and
 decryption. 
 @end deftypefun
 
-@deftypefun void arcfour_crypt (struct arcfour_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
+@deftypefun void arcfour_crypt (struct arcfour_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
 Encrypt some data. The same function is used for both encryption and
 decryption. Unlike the block ciphers, this function modifies the
 context, so you can split the data into arbitrary chunks and encrypt
