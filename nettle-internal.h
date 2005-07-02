@@ -48,7 +48,8 @@ do { if (size > (sizeof(name) / sizeof(name[0]))) abort(); } while (0)
 #define NETTLE_MAX_HASH_BLOCK_SIZE 64
 #define NETTLE_MAX_HASH_DIGEST_SIZE 32
 #define NETTLE_MAX_SEXP_ASSOC 17
- 
+#define NETTLE_MAX_CIPHER_BLOCK_SIZE 32
+
 /* Doesn't quite fit with the other algorithms, because of the weak
  * keys. Weak keys are not reported, the functions will simply crash
  * if you try to use a weak key. */
