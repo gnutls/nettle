@@ -13,7 +13,8 @@
 
 #include "memxor.h"
 
-uint8_t *memxor(uint8_t *dst, const uint8_t *src, size_t n)
+uint8_t *
+memxor(uint8_t *dst, const uint8_t *src, size_t n)
 {
   size_t i;
   for (i = 0; i<n; i++)
@@ -21,3 +22,14 @@ uint8_t *memxor(uint8_t *dst, const uint8_t *src, size_t n)
 
   return dst;
 }
+
+uint8_t *
+memxor3(uint8_t *dst, const uint8_t *a, const uint8_t *b, size_t n)
+{
+  size_t i;
+  for (i = 0; i<n; i++)
+    dst[i] = a[i] ^ b[i];
+
+  return dst;
+}
+
