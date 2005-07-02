@@ -1,3 +1,39 @@
+2005-07-02  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/Makefile.in (TS_SOURCES): Added ctr-test.c.
+
+	* testsuite/testutils.c (test_cipher_ctr): New function.
+
+	* testsuite/ctr-test.c: New file.
+
+	* testsuite/cbc-test.c (test_main): Use static const for msg.
+
+	* Makefile.in (nettle_SOURCES): Added ctr.c.
+	(HEADERS): Added ctr.h.
+	(HEADERS): Added nettle-types.h.
+	(INSTALL_HEADERS): Install nettle-stdint.h.
+	(distclean-here): Delete nettle-stdint.h, not nettle-types.h.
+
+	* ctr.c (ctr_crypt): New file, new function.
+
+	* memxor.c (memxor3): New function, suggested by Adam Langley.
+
+	* nettle-internal.h (NETTLE_MAX_CIPHER_BLOCK_SIZE): New constant.
+
+	* nettle.texinfo (Cipher functions): Fixed typo in prototype for
+	arctwo_encrypt (noticed by Adam Langley). 
+
+	* nettle-meta.h: No longer needs to include cbc.h.
+
+	* cbc.h (nettle_crypt_func): Moved typedef to nettle-types.h.
+	(CBC_ENCRYPT, CBC_DECRYPT): Deleted older #if:ed out versions.
+
+	* configure.ac (AX_CREATE_STDINT_H): Use the file name
+	nettle-stdint.h, not nettle-types.h.
+
+	* nettle-types.h: New file. Automatically generated declarations
+	are now in nettle-stdint.h.
+
 2005-03-17  Niels Möller  <niels@s3.kth.se>
 
 	* config.guess: Support Solaris on x86_64. Fix by Henrik
@@ -1350,7 +1386,7 @@
 	sexp_transport_vformat): New file, new functions.
 
 	* sexp-format.c (sexp_format): Return length of output. Allow
-	buffer == NULL, and onyl compute the needed length in this case.
+	buffer == NULL, and only compute the needed length in this case.
 	Renamed %s to %z. New format specifiers %s, %i, and %l.
 	(sexp_vformat): New function.
 	(format_prefix): Rewrote to not use snprintf.
