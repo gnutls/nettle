@@ -1,3 +1,8 @@
+2005-09-06  Niels Möller  <niels@s3.kth.se>
+
+	* tools/sexp-conv.c (main): With --hash, output a newline after
+	each hash.
+
 2005-07-02  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/Makefile.in (TS_SOURCES): Added ctr-test.c.
