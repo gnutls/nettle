@@ -362,7 +362,10 @@ main(int argc, char **argv)
     {
       sexp_convert_item(&parser, &token, &output, options.mode, 0);
       if (options.hash)
-	sexp_put_digest(&output);
+	{
+	  sexp_put_digest(&output);
+	  sexp_put_newline(&output, 0);
+	}
       else if (options.mode != SEXP_CANONICAL)
 	sexp_put_newline(&output, 0);
 	  
