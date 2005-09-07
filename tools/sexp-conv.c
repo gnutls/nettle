@@ -217,6 +217,7 @@ parse_options(struct conv_options *o,
 	  { "once", no_argument, NULL, OPT_ONCE },
 	  { "syntax", required_argument, NULL, 's' },
 	  { "hash", optional_argument, NULL, OPT_HASH },
+	  { "raw-hash", optional_argument, NULL, OPT_HASH },
 	  { "width", required_argument, NULL, 'w' },
 #if 0
 	  /* Not yet implemented */
@@ -312,7 +313,9 @@ parse_options(struct conv_options *o,
 		 "                            variants: advanced, hex, transport, canonical\n"
 		 "       --once               Process only the first s-expression.\n"
 		 "   -w, --width=WIDTH        Linewidth for base64 encoded data.\n"
-		 "                            Zero means no limit.\n\n"
+		 "                            Zero means no limit.\n"
+		 "       --raw-hash           Alias for --hash, for compatibility\n"
+		 "                            with lsh-1.x.\n\n"
 		 "Report bugs to " BUG_ADDRESS ".\n");
 	  exit(EXIT_SUCCESS);
 
