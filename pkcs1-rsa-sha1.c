@@ -1,6 +1,6 @@
-/* pkcs1-rsa-md5.c
+/* pkcs1-rsa-sha1.c
  *
- * PKCS stuff for rsa-md5.
+ * PKCS stuff for rsa-sha1.
  */
 
 /* nettle, low-level cryptographics library
