@@ -1,3 +1,8 @@
+2005-09-27  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle.texinfo (RSA): Improved text about the RSA patent.
+	Use @documentencoding ISO-8859-1.
+
 2005-09-07  Niels Möller  <niels@s3.kth.se>
 
 	* tools/sexp-conv.c (parse_options): New option --raw-hash, for
