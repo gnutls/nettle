@@ -5,6 +5,8 @@
 @settitle The Nettle low-level cryptographic library.
 @c %**end of header
 
+@documentencoding ISO-8859-1
+
 @footnotestyle end
 @syncodeindex fn cp
 
@@ -1463,8 +1465,8 @@ key, and to no others''.
 The @acronym{RSA} algorithm was the first practical digital signature
 algorithm that was constructed. It was described 1978 in a paper by
 Ronald Rivest, Adi Shamir and L.M. Adleman, and the technique was also
-patented in 1983. The patent expired on September 20, 2000, and since
-that day, @acronym{RSA} can be used freely.
+patented in the @acronym{USA} in 1983. The patent expired on September 20, 2000, and since
+that day, @acronym{RSA} can be used freely, even in the @acronym{USA}.
 
 It's remarkably simple to describe the trapdoor function behind
 @acronym{RSA}. The ``one-way''-function used is
