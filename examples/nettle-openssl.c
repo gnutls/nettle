@@ -33,15 +33,118 @@
 
 /* No ancient ssleay compatibility */
 #define NCOMPAT
+#define OPENSSL_DISABLE_OLD_DES_SUPPORT
 
 #include <assert.h>
 
+#include <openssl/aes.h>
 #include <openssl/blowfish.h>
 #include <openssl/des.h>
 #include <openssl/cast.h>
+#include <openssl/rc4.h>
 
 #include "nettle-internal.h"
 
+
+/* AES */
+
+static void
+openssl_aes_set_encrypt_key(void *ctx, unsigned length, const uint8_t *key)
+{
+  AES_set_encrypt_key(key, length * 8, ctx);
+}
+
+static void
+openssl_aes_set_decrypt_key(void *ctx, unsigned length, const uint8_t *key)
+{
+  AES_set_decrypt_key(key, length * 8, ctx);
+}
+
+
+static void
+openssl_aes_encrypt(void *ctx, unsigned length,
+		    uint8_t *dst, const uint8_t *src)
+{
+  assert (!(length % AES_BLOCK_SIZE));
+  while (length)
+    {
+      AES_ecb_encrypt(src, dst, ctx, AES_ENCRYPT);
+      length -= AES_BLOCK_SIZE;
+      dst += AES_BLOCK_SIZE;
+      src += AES_BLOCK_SIZE;
+    }
+}
+
+static void
+openssl_aes_decrypt(void *ctx, unsigned length,
+		    uint8_t *dst, const uint8_t *src)
+{
+  assert (!(length % AES_BLOCK_SIZE));
+  while (length)
+    {
+      AES_ecb_encrypt(src, dst, ctx, AES_DECRYPT);
+      length -= AES_BLOCK_SIZE;
+      dst += AES_BLOCK_SIZE;
+      src += AES_BLOCK_SIZE;
+    }
+}
+
+const struct nettle_cipher
+nettle_openssl_aes128 = {
+  "openssl aes128", sizeof(AES_KEY),
+  /* Claim no block size, so that the benchmark doesn't try CBC mode
+   * (as openssl cipher + nettle cbc is somewhat pointless to
+   * benchmark). */
+  0, 16,
+  openssl_aes_set_encrypt_key, openssl_aes_set_decrypt_key,
+  openssl_aes_encrypt, openssl_aes_decrypt
+};
+
+const struct nettle_cipher
+nettle_openssl_aes192 = {
+  "openssl aes192", sizeof(AES_KEY),
+  /* Claim no block size, so that the benchmark doesn't try CBC mode
+   * (as openssl cipher + nettle cbc is somewhat pointless to
+   * benchmark). */
+  0, 24,
+  openssl_aes_set_encrypt_key, openssl_aes_set_decrypt_key,
+  openssl_aes_encrypt, openssl_aes_decrypt
+};
+
+const struct nettle_cipher
+nettle_openssl_aes256 = {
+  "openssl aes256", sizeof(AES_KEY),
+  /* Claim no block size, so that the benchmark doesn't try CBC mode
+   * (as openssl cipher + nettle cbc is somewhat pointless to
+   * benchmark). */
+  0, 32,
+  openssl_aes_set_encrypt_key, openssl_aes_set_decrypt_key,
+  openssl_aes_encrypt, openssl_aes_decrypt
+};
+
+/* Arcfour */
+
+static void
+openssl_arcfour_set_key(void *ctx, unsigned length, const uint8_t *key)
+{
+  RC4_set_key(ctx, length, key);
+}
+
+
+static void
+openssl_arcfour_crypt(void *ctx, unsigned length,
+		      uint8_t *dst, const uint8_t *src)
+{
+  RC4(ctx, length, src, dst);
+}
+
+const struct nettle_cipher
+nettle_openssl_arcfour128 = {
+  "openssl arcfour128", sizeof(RC4_KEY),
+  0, 16,
+  openssl_arcfour_set_key, openssl_arcfour_set_key,
+  openssl_arcfour_crypt, openssl_arcfour_crypt
+};
 
 /* Blowfish */
 static void
@@ -95,10 +198,12 @@ nettle_openssl_blowfish128 = {
 static void
 openssl_des_set_key(void *ctx, unsigned length, const uint8_t *key)
 {
-  assert(length == 8);
+  assert(length == 8);  
+  /* Not sure what "unchecked" means. We want to ignore parity bits,
+     but it would still make sense to check for weak keys. */
   /* Explicit cast used as I don't want to care about openssl's broken
-     array typedefs des_cblock and const_des_cblock. */
-  des_key_sched( (void *) key, ctx);
+     array typedefs DES_cblock and const_DES_cblock. */
+  DES_set_key_unchecked( (void *) key, ctx);
 }
 
 #define DES_BLOCK_SIZE 8
@@ -110,7 +215,7 @@ openssl_des_encrypt(void *ctx, unsigned length,
   assert (!(length % DES_BLOCK_SIZE));
   while (length)
     {
-      des_ecb_encrypt( (void *) src, (void *) dst, ctx, DES_ENCRYPT);
+      DES_ecb_encrypt((void *) src, (void *) dst, ctx, DES_ENCRYPT);
       length -= DES_BLOCK_SIZE;
       dst += DES_BLOCK_SIZE;
       src += DES_BLOCK_SIZE;
@@ -124,7 +229,7 @@ openssl_des_decrypt(void *ctx, unsigned length,
   assert (!(length % DES_BLOCK_SIZE));
   while (length)
     {
-      des_ecb_encrypt( (void *) src, (void *) dst, ctx, DES_DECRYPT);
+      DES_ecb_encrypt((void *) src, (void *) dst, ctx, DES_DECRYPT);
       length -= DES_BLOCK_SIZE;
       dst += DES_BLOCK_SIZE;
       src += DES_BLOCK_SIZE;
@@ -133,7 +238,7 @@ openssl_des_decrypt(void *ctx, unsigned length,
 
 const struct nettle_cipher
 nettle_openssl_des = {
-  "openssl des", sizeof(des_key_schedule),
+  "openssl des", sizeof(DES_key_schedule),
   /* Claim no block size, so that the benchmark doesn't try CBC mode
    * (as openssl cipher + nettle cbc is somewhat pointless to
    * benchmark). */
