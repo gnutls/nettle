@@ -43,6 +43,9 @@
 #include <openssl/cast.h>
 #include <openssl/rc4.h>
 
+#include <openssl/md5.h>
+#include <openssl/sha.h>
+
 #include "nettle-internal.h"
 
 
@@ -294,4 +297,74 @@ nettle_openssl_cast128 = {
   openssl_cast_encrypt, openssl_cast_decrypt
 };
 
+/* Hash functions */
+
+/* md5 */
+
+static void
+openssl_md5_init(void *ctx)
+{
+  MD5_Init(ctx);
+}
+
+static void
+openssl_md5_update(void *ctx,
+		    unsigned length,
+		    const uint8_t *src)
+{
+  MD5_Update(ctx, src, length);
+}
+
+static void
+openssl_md5_digest(void *ctx,
+		    unsigned length, uint8_t *dst)
+{
+  assert(length == SHA_DIGEST_LENGTH);
+  MD5_Final(dst, ctx);
+  MD5_Init(ctx);
+}
+
+const struct nettle_hash
+nettle_openssl_md5 = {
+  "openssl md5", sizeof(SHA_CTX),
+  SHA_DIGEST_LENGTH, SHA_CBLOCK,
+  openssl_md5_init,
+  openssl_md5_update,
+  openssl_md5_digest
+};
+
+/* sha1 */
+
+static void
+openssl_sha1_init(void *ctx)
+{
+  SHA1_Init(ctx);
+}
+
+static void
+openssl_sha1_update(void *ctx,
+		    unsigned length,
+		    const uint8_t *src)
+{
+  SHA1_Update(ctx, src, length);
+}
+
+static void
+openssl_sha1_digest(void *ctx,
+		    unsigned length, uint8_t *dst)
+{
+  assert(length == SHA_DIGEST_LENGTH);
+  SHA1_Final(dst, ctx);
+  SHA1_Init(ctx);
+}
+
+const struct nettle_hash
+nettle_openssl_sha1 = {
+  "openssl sha1", sizeof(SHA_CTX),
+  SHA_DIGEST_LENGTH, SHA_CBLOCK,
+  openssl_sha1_init,
+  openssl_sha1_update,
+  openssl_sha1_digest
+};
+  
 #endif /* WITH_OPENSSL */
