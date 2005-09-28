@@ -63,6 +63,10 @@ extern const struct nettle_cipher nettle_blowfish128;
  * code is not included in the nettle library, as that would make the
  * shared library depend on openssl. Instead, look at
  * examples/nettle-openssl.c. */
+extern const struct nettle_cipher nettle_openssl_aes128;
+extern const struct nettle_cipher nettle_openssl_aes192;
+extern const struct nettle_cipher nettle_openssl_aes256;
+extern const struct nettle_cipher nettle_openssl_arcfour128;
 extern const struct nettle_cipher nettle_openssl_blowfish128;
 extern const struct nettle_cipher nettle_openssl_des;
 extern const struct nettle_cipher nettle_openssl_cast128;
