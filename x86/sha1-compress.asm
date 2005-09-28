@@ -101,6 +101,9 @@ define(<ROUND>, <
 	addl	$7, $5
 	$6($2,$3,$4)
 	addl	TMP, $5
+
+C Using the TMP register can be avoided, by rotating $1 in place,
+C adding, and then rotating back.
 	movl	$1, TMP
 	roll	<$>5, TMP
 	addl	TMP, $5
