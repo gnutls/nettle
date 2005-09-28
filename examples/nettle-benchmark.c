@@ -281,7 +281,7 @@ time_cipher(const struct nettle_cipher *cipher)
   free(key);
 }
 
-#if HAVE_LIBCRYPTO
+#if WITH_OPENSSL
 # define OPENSSL(x) x,
 #else
 # define OPENSSL(x)
@@ -302,9 +302,11 @@ main(int argc UNUSED, char **argv UNUSED)
   const struct nettle_cipher *ciphers[] =
     {
       &nettle_aes128, &nettle_aes192, &nettle_aes256,
-      &nettle_arcfour128,
-      &nettle_blowfish128,
-      OPENSSL(&nettle_openssl_blowfish128)
+      OPENSSL(&nettle_openssl_aes128)
+      OPENSSL(&nettle_openssl_aes192)
+      OPENSSL(&nettle_openssl_aes256)
+      &nettle_arcfour128, OPENSSL(&nettle_openssl_arcfour128)
+      &nettle_blowfish128, OPENSSL(&nettle_openssl_blowfish128)
       &nettle_cast128, OPENSSL(&nettle_openssl_cast128)
       &nettle_des, OPENSSL(&nettle_openssl_des)
       &nettle_des3,
