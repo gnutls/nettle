@@ -1,5 +1,17 @@
 2005-09-28  Niels Möller  <niels@s3.kth.se>
 
+	* sha1.c (sha1_final): Call sha1_block, don't call the compression
+	function _nettle_sha1_compress directly.
+
+	* nettle-internal.h (nettle_openssl_md5)
+	(nettle_openssl_sha1): Declare.
+
+	* examples/nettle-benchmark.c (main): Benchmark openssl md5 and
+	sha1.
+
+	* examples/nettle-openssl.c (nettle_openssl_md5)
+	(nettle_openssl_sha1): Added glue for openssl hash functions.
+
 	* nettle-internal.h (nettle_openssl_aes128, nettle_openssl_aes192)
 	(nettle_openssl_aes256, nettle_openssl_arcfour128): Declare.
 
