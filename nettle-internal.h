@@ -71,4 +71,7 @@ extern const struct nettle_cipher nettle_openssl_blowfish128;
 extern const struct nettle_cipher nettle_openssl_des;
 extern const struct nettle_cipher nettle_openssl_cast128;
 
+extern const struct nettle_hash nettle_openssl_md5;
+extern const struct nettle_hash nettle_openssl_sha1;
+
 #endif /* NETTLE_INTERNAL_H_INCLUDED */
