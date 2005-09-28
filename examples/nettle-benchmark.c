@@ -162,11 +162,11 @@ init_key(unsigned length,
 
 static void
 display(const char *name, const char *mode,
-	double speed)
+	double time)
 {
-  printf("%13s (%s): %.3fMB/s\n",
+  printf("%18s (%s): %.3f MB/s\n",
 	 name, mode,
-	 1 / (speed * 1048576.0 / BENCH_BLOCK));
+	 BENCH_BLOCK / (time * 1048576.0));
 }
 
 static void *
@@ -295,7 +295,9 @@ main(int argc UNUSED, char **argv UNUSED)
   const struct nettle_hash *hashes[] =
     {
       &nettle_md2, &nettle_md4, &nettle_md5,
+      OPENSSL(&nettle_openssl_md5)
       &nettle_sha1, &nettle_sha256,
+      OPENSSL(&nettle_openssl_sha1)
       NULL
     };
 
