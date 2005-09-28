@@ -1,6 +1,7 @@
 /* sha1.c
  *
  * The sha1 hash function.
+ * Defined by http://www.itl.nist.gov/fipspubs/fip180-1.htm.
  */
 
 /* nettle, low-level cryptographics library
@@ -77,10 +78,6 @@ sha1_init(struct sha1_ctx *ctx)
   ctx->index = 0;
 }
 
-/* Compression function, written in assembler on some systems.
-   Note that it destroys the data array. */
-#define sha1_compress _nettle_sha1_compress
-
 static void
 sha1_block(struct sha1_ctx *ctx, const uint8_t *block)
 {
@@ -91,11 +88,14 @@ sha1_block(struct sha1_ctx *ctx, const uint8_t *block)
   if (!++ctx->count_low)
     ++ctx->count_high;
 
+  /* FIXME: Move this processing to _nettle_sha1_compress. Then it can
+     access the data array via the stack pointer, and save one
+     register. */
   /* Endian independent conversion */
   for (i = 0; i<SHA1_DATA_LENGTH; i++, block += 4)
     data[i] = READ_UINT32(block);
 
-  sha1_compress(ctx->digest, data);
+  _nettle_sha1_compress(ctx->digest, data);
 }
 
 void
@@ -136,10 +136,17 @@ sha1_update(struct sha1_ctx *ctx,
 static void
 sha1_final(struct sha1_ctx *ctx)
 {
-  uint32_t data[SHA1_DATA_LENGTH];
-  int i;
-  int words;
+  uint32_t bitcount_high;
+  uint32_t bitcount_low;
+  unsigned i;
 
+  /* The calls to sha1_block increments the block counter, so compute
+     the bit length first. */
+
+  /* There are 512 = 2^9 bits in one block */  
+  bitcount_high = (ctx->count_high << 9) | (ctx->count_low >> 23);
+  bitcount_low = (ctx->count_low << 9) | (ctx->index << 3);
+  
   i = ctx->index;
   
   /* Set the first char of padding to 0x80.  This is safe since there is
@@ -148,32 +155,24 @@ sha1_final(struct sha1_ctx *ctx)
   assert(i < SHA1_DATA_SIZE);
   ctx->block[i++] = 0x80;
 
-  /* Fill rest of word */
-  for( ; i & 3; i++)
-    ctx->block[i] = 0;
-
-  /* i is now a multiple of the word size 4 */
-  words = i >> 2;
-  for (i = 0; i < words; i++)
-    data[i] = READ_UINT32(ctx->block + 4*i);
-  
-  if (words > (SHA1_DATA_LENGTH-2))
+  if (i > (SHA1_DATA_SIZE - 8))
     { /* No room for length in this block. Process it and
-       * pad with another one */
-      for (i = words ; i < SHA1_DATA_LENGTH; i++)
-	data[i] = 0;
-      sha1_compress(ctx->digest, data);
-      for (i = 0; i < (SHA1_DATA_LENGTH-2); i++)
-	data[i] = 0;
+	 pad with another one */
+      memset(ctx->block + i, 0, SHA1_DATA_SIZE - i);
+      
+      sha1_block(ctx, ctx->block);
+      i = 0;
     }
-  else
-    for (i = words ; i < SHA1_DATA_LENGTH - 2; i++)
-      data[i] = 0;
+  if (i < (SHA1_DATA_SIZE - 8))
+    memset(ctx->block + i, 0, (SHA1_DATA_SIZE - 8) - i);
 
-  /* There are 512 = 2^9 bits in one block */
-  data[SHA1_DATA_LENGTH-2] = (ctx->count_high << 9) | (ctx->count_low >> 23);
-  data[SHA1_DATA_LENGTH-1] = (ctx->count_low << 9) | (ctx->index << 3);
-  sha1_compress(ctx->digest, data);
+  /* This is slightly inefficient, as the numbers are converted to
+     big-endian format, and will be converted back by the compression
+     function. It's probably not worth the effort to fix this. */
+  WRITE_UINT32(ctx->block + (SHA1_DATA_SIZE - 8), bitcount_high);
+  WRITE_UINT32(ctx->block + (SHA1_DATA_SIZE - 4), bitcount_low);
+
+  sha1_block(ctx, ctx->block);
 }
 
 void
