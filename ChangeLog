@@ -1,3 +1,14 @@
+2005-09-28  Niels Möller  <niels@s3.kth.se>
+
+	* nettle-internal.h (nettle_openssl_aes128, nettle_openssl_aes192)
+	(nettle_openssl_aes256, nettle_openssl_arcfour128): Declare.
+
+	* examples/nettle-benchmark.c: Check WITH_OPENSSL, not
+	HAVE_LIBCRYPTO. Benchmark openssl's aes and arcfour code.
+
+	* examples/nettle-openssl.c: Updated openssl des glue to use the
+	new openssl DES interface. Added glue for arcfour and aes.
+
 2005-09-27  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle.texinfo (RSA): Improved text about the RSA patent.
