@@ -23,11 +23,11 @@ define(<SB>,<%ebx>)
 define(<SC>,<%ecx>)
 define(<SD>,<%edx>)
 define(<SE>,<%ebp>)
-define(<DATA>,<%esi>)
+define(<DATA>,<%esp>)
 define(<TMP>,<%edi>)
-C Extra temporary needed by F3. Can we get rid of it?
-define(<TMP2>,<(%esp)>)
-define(<K>, <4(%esp)>)dnl
+define(<TMP2>,<%esi>)
+
+define(<K>, <64(%esp)>)dnl
 C Constants
 define(<K1VALUE>, <<$>0x5A827999>)		C  Rounds  0-19
 define(<K2VALUE>, <<$>0x6ED9EBA1>)		C  Rounds 20-39
@@ -81,6 +81,7 @@ define(<F3>, <
 	andl	$3, TMP
 	orl	TMP2, TMP
 >)dnl
+
 C The form of one sha1 round is
 C
 C   a' = e + a <<< 5 + f( b, c, d ) + k + w;
@@ -110,9 +111,16 @@ C adding, and then rotating back.
 	roll	<$>30, $2
 >)dnl
 
+C SWAP(from, to, register)
+define(<SWAP>, <
+	movl	$1, $3
+	bswap	$3
+	movl	$3, $2
+>)dnl
+
 	.file "sha1-compress.asm"
 
-	C sha1_compress(uint32_t *state, uint32_t *data)
+	C sha1_compress(uint32_t *state, uint8_t *data)
 	
 	.text
 	.align 16
@@ -121,23 +129,43 @@ C adding, and then rotating back.
 C_NAME(_nettle_sha1_compress):
 	C save all registers that need to be saved
 	
-	pushl	%ebx		C  20(%esp)
-	pushl	%ebp		C  16(%esp)
-	pushl	%esi		C  12(%esp)
-	pushl	%edi		C  8(%esp)
+	pushl	%ebx		C  80(%esp)
+	pushl	%ebp		C  76(%esp)
+	pushl	%esi		C  72(%esp)
+	pushl	%edi		C  68(%esp)
 
-	pushl	K1VALUE		C  4(%esp)	
-	subl	$4, %esp	C  0(%esp) = TMP
+	pushl	K1VALUE		C  64(%esp)
+	subl	$64, %esp	C  %esp = W
 
+	C Load and byteswap data
+	movl	92(%esp), TMP
+
+	C No scheduling of these instructions, just use a couple of registers,
+	C and hope the out-of-order unit can keep up.
+	SWAP(  (TMP),   (DATA), %eax)
+	SWAP( 4(TMP),  4(DATA), %ebx)
+	SWAP( 8(TMP),  8(DATA), %ecx)
+	SWAP(12(TMP), 12(DATA), %edx)
+	SWAP(16(TMP), 16(DATA), %eax)
+	SWAP(20(TMP), 20(DATA), %ebx)
+	SWAP(24(TMP), 24(DATA), %ecx)
+	SWAP(28(TMP), 28(DATA), %edx)
+	SWAP(32(TMP), 32(DATA), %eax)
+	SWAP(36(TMP), 36(DATA), %ebx)
+	SWAP(40(TMP), 40(DATA), %ecx)
+	SWAP(44(TMP), 44(DATA), %edx)
+	SWAP(48(TMP), 48(DATA), %eax)
+	SWAP(52(TMP), 52(DATA), %ebx)
+	SWAP(56(TMP), 56(DATA), %ecx)
+	SWAP(60(TMP), 60(DATA), %edx)
+	
 	C load the state vector
-	movl	28(%esp),TMP
+	movl	88(%esp),TMP
 	movl	(TMP),   SA
 	movl	4(TMP),  SB
 	movl	8(TMP),  SC
 	movl	12(TMP), SD
 	movl	16(TMP), SE
-
-	movl	32(%esp), DATA
 
 	ROUND(SA, SB, SC, SD, SE, <F1>, NOEXPAND( 0))
 	ROUND(SE, SA, SB, SC, SD, <F1>, NOEXPAND( 1))
@@ -239,14 +267,14 @@ C_NAME(_nettle_sha1_compress):
 	EXPAND(79) ROUND(SB, SC, SD, SE, SA, <F2>, TMP)
 
 	C Update the state vector
-	movl	28(%esp),TMP
+	movl	88(%esp),TMP
 	addl	SA, (TMP) 
 	addl	SB, 4(TMP) 
 	addl	SC, 8(TMP) 
 	addl	SD, 12(TMP) 
 	addl	SE, 16(TMP)
 
-	addl	$8, %esp
+	addl	$68, %esp
 	popl	%edi
 	popl	%esi
 	popl	%ebp
