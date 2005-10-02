@@ -78,24 +78,15 @@ sha1_init(struct sha1_ctx *ctx)
   ctx->index = 0;
 }
 
+/* FIXME: Inline where used? */
 static void
 sha1_block(struct sha1_ctx *ctx, const uint8_t *block)
 {
-  uint32_t data[SHA1_DATA_LENGTH];
-  int i;
-
   /* Update block count */
   if (!++ctx->count_low)
     ++ctx->count_high;
 
-  /* FIXME: Move this processing to _nettle_sha1_compress. Then it can
-     access the data array via the stack pointer, and save one
-     register. */
-  /* Endian independent conversion */
-  for (i = 0; i<SHA1_DATA_LENGTH; i++, block += 4)
-    data[i] = READ_UINT32(block);
-
-  _nettle_sha1_compress(ctx->digest, data);
+  _nettle_sha1_compress(ctx->digest, block);
 }
 
 void
