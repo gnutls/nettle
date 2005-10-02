@@ -36,6 +36,9 @@
 
 #include <time.h>
 
+/* For getopt */
+#include <unistd.h>
+
 #include "aes.h"
 #include "arcfour.h"
 #include "blowfish.h"
@@ -49,6 +52,7 @@
 
 #include "cbc.h"
 
+static double frequency = 0.0;
 
 /* Process BENCH_BLOCK bytes at a time, for BENCH_INTERVAL clocks. */
 #define BENCH_BLOCK 10240
@@ -161,12 +165,24 @@ init_key(unsigned length,
 }
 
 static void
+header(void)
+{
+  printf("%18s %11s Mbyte/s%s\n",
+	 "Algorithm", "mode", 
+	 frequency > 0.0 ? " cycles/byte" : "");  
+}
+
+static void
 display(const char *name, const char *mode,
 	double time)
 {
-  printf("%18s (%s): %.3f MB/s\n",
+  printf("%18s %11s %7.1f",
 	 name, mode,
 	 BENCH_BLOCK / (time * 1048576.0));
+  if (frequency > 0.0)
+    printf(" %11.1f", time * frequency / BENCH_BLOCK);
+
+  printf("\n");
 }
 
 static void *
@@ -194,7 +210,7 @@ time_hash(const struct nettle_hash *hash)
   init_data(data);
   hash->init(info.ctx);
 
-  display(hash->name, "Update",
+  display(hash->name, "update",
 	  time_function(bench_hash, &info));
 
   free(info.ctx);
@@ -291,6 +307,7 @@ int
 main(int argc UNUSED, char **argv UNUSED)
 {
   unsigned i;
+  int c;
 
   const struct nettle_hash *hashes[] =
     {
@@ -316,6 +333,24 @@ main(int argc UNUSED, char **argv UNUSED)
       &nettle_twofish128, &nettle_twofish192, &nettle_twofish256,
       NULL
     };
+
+  while ( (c = getopt(argc, argv, "f:")) != -1)
+    switch (c)
+      {
+      case 'f':
+	frequency = atof(optarg);
+	if (frequency > 0.0)
+	  break;
+
+      case ':': case '?':
+	fprintf(stderr, "Usage: nettle-benchmark [-f clock frequency]\n");
+	return EXIT_FAILURE;
+
+      default:
+	abort();
+    }
+
+  header();
 
   for (i = 0; hashes[i]; i++)
     time_hash(hashes[i]);
