@@ -110,14 +110,19 @@
 /* Perform the SHA transformation.  Note that this code, like MD5, seems to
    break some optimizing compilers due to the complexity of the expressions
    and the size of the basic block.  It may be necessary to split it into
-   sections, e.g. based on the four subrounds
-
-   Note that this function destroys the data area */
+   sections, e.g. based on the four subrounds. */
 
 void
-_nettle_sha1_compress(uint32_t *state, uint32_t *data)
+_nettle_sha1_compress(uint32_t *state, const uint8_t *input)
 {
+  uint32_t data[16];
   uint32_t A, B, C, D, E;     /* Local vars */
+  int i;
+
+  for (i = 0; i < 16; i++, input+= 4)
+    {
+      data[i] = READ_UINT32(input);
+    }
 
   /* Set up first buffer and local data buffer */
   A = state[0];
