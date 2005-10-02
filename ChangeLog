@@ -1,3 +1,19 @@
+2005-10-02  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86/sha1-compress.asm (_nettle_sha1_compress): Do byte order
+	conversion, and store the input data on the stack. This leaves one
+	more register free for other uses.
+
+	* examples/nettle-benchmark.c: Now display cycles/byte, if the -f
+	option is used to say what the clock frequency is.
+
+	* sha1.c (sha1_block): Don't convert data from uint8_t to
+	uint32_t, that's now the responsibility of _nettle_sha1_compress.
+
+	* sha.h (_nettle_sha1_compress): Changed interface. Second
+	argument is now a pointer to the input data in unaligned,
+	big-endian form.
+
 2005-09-28  Niels Möller  <niels@s3.kth.se>
 
 	* sha1.c (sha1_final): Call sha1_block, don't call the compression
