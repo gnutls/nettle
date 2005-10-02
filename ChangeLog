@@ -1,5 +1,8 @@
 2005-10-02  Niels Möller  <nisse@lysator.liu.se>
 
+	* sha1-compress.c (_nettle_sha1_compress): Updated to new
+	interface. Now responsible for byte conversion.
+
 	* x86/sha1-compress.asm (_nettle_sha1_compress): Do byte order
 	conversion, and store the input data on the stack. This leaves one
 	more register free for other uses.
