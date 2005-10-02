@@ -66,9 +66,9 @@ sha1_digest(struct sha1_ctx *ctx,
 	    uint8_t *digest);
 
 /* Internal compression function. STATE points to 5 uint32_t words,
-   and DATA points to 16 uint32_t words which are destroyed. */
+   and DATA points to 64 bytes of input data, possibly unaligned. */
 void
-_nettle_sha1_compress(uint32_t *state, uint32_t *data);
+_nettle_sha1_compress(uint32_t *state, const uint8_t *data);
 
 /* SHA256 */
 
