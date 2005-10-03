@@ -1,3 +1,10 @@
+2005-10-03  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86/sha1-compress.asm (OFFSET): New macro.
+	(F3): Eliminated a movl.
+	(ROUND): New argument, for k. When using F3, it's TMP3, on the
+	stack, otherwise, it is kept in TMP2, a register.
+
 2005-10-03  Niels Möller  <niels@s3.kth.se>
 
 	* examples/nettle-openssl.c: Use correct block sizes for openssl
