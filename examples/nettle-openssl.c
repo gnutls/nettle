@@ -95,10 +95,7 @@ openssl_aes_decrypt(void *ctx, unsigned length,
 const struct nettle_cipher
 nettle_openssl_aes128 = {
   "openssl aes128", sizeof(AES_KEY),
-  /* Claim no block size, so that the benchmark doesn't try CBC mode
-   * (as openssl cipher + nettle cbc is somewhat pointless to
-   * benchmark). */
-  0, 16,
+  16, 16,
   openssl_aes_set_encrypt_key, openssl_aes_set_decrypt_key,
   openssl_aes_encrypt, openssl_aes_decrypt
 };
@@ -109,7 +106,7 @@ nettle_openssl_aes192 = {
   /* Claim no block size, so that the benchmark doesn't try CBC mode
    * (as openssl cipher + nettle cbc is somewhat pointless to
    * benchmark). */
-  0, 24,
+  16, 24,
   openssl_aes_set_encrypt_key, openssl_aes_set_decrypt_key,
   openssl_aes_encrypt, openssl_aes_decrypt
 };
@@ -120,7 +117,7 @@ nettle_openssl_aes256 = {
   /* Claim no block size, so that the benchmark doesn't try CBC mode
    * (as openssl cipher + nettle cbc is somewhat pointless to
    * benchmark). */
-  0, 32,
+  16, 32,
   openssl_aes_set_encrypt_key, openssl_aes_set_decrypt_key,
   openssl_aes_encrypt, openssl_aes_decrypt
 };
@@ -188,10 +185,7 @@ openssl_bf_decrypt(void *ctx, unsigned length,
 const struct nettle_cipher
 nettle_openssl_blowfish128 = {
   "openssl bf128", sizeof(BF_KEY),
-  /* Claim no block size, so that the benchmark doesn't try CBC mode
-   * (as openssl cipher + nettle cbc is somewhat pointless to
-   * benchmark). */
-  0, 16,
+  8, 16,
   openssl_bf_set_key, openssl_bf_set_key,
   openssl_bf_encrypt, openssl_bf_decrypt
 };
@@ -242,10 +236,7 @@ openssl_des_decrypt(void *ctx, unsigned length,
 const struct nettle_cipher
 nettle_openssl_des = {
   "openssl des", sizeof(DES_key_schedule),
-  /* Claim no block size, so that the benchmark doesn't try CBC mode
-   * (as openssl cipher + nettle cbc is somewhat pointless to
-   * benchmark). */
-  0, 8,
+  8, 8,
   openssl_des_set_key, openssl_des_set_key,
   openssl_des_encrypt, openssl_des_decrypt
 };
@@ -289,10 +280,7 @@ openssl_cast_decrypt(void *ctx, unsigned length,
 const struct nettle_cipher
 nettle_openssl_cast128 = {
   "openssl cast128", sizeof(CAST_KEY),
-  /* Claim no block size, so that the benchmark doesn't try CBC mode
-   * (as openssl cipher + nettle cbc is somewhat pointless to
-   * benchmark). */
-  0, CAST_KEY_LENGTH,
+  8, CAST_KEY_LENGTH,
   openssl_cast_set_key, openssl_cast_set_key,
   openssl_cast_encrypt, openssl_cast_decrypt
 };
