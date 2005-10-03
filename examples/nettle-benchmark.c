@@ -169,19 +169,22 @@ header(void)
 {
   printf("%18s %11s Mbyte/s%s\n",
 	 "Algorithm", "mode", 
-	 frequency > 0.0 ? " cycles/byte" : "");  
+	 frequency > 0.0 ? " cycles/byte cycles/block" : "");  
 }
 
 static void
-display(const char *name, const char *mode,
+display(const char *name, const char *mode, unsigned block_size,
 	double time)
 {
   printf("%18s %11s %7.1f",
 	 name, mode,
 	 BENCH_BLOCK / (time * 1048576.0));
   if (frequency > 0.0)
-    printf(" %11.1f", time * frequency / BENCH_BLOCK);
-
+    {
+      printf(" %11.1f", time * frequency / BENCH_BLOCK);
+      if (block_size > 0)
+	printf(" %12.1f", time * frequency * block_size / BENCH_BLOCK);
+    }
   printf("\n");
 }
 
@@ -210,7 +213,7 @@ time_hash(const struct nettle_hash *hash)
   init_data(data);
   hash->init(info.ctx);
 
-  display(hash->name, "update",
+  display(hash->name, "update", hash->block_size,
 	  time_function(bench_hash, &info));
 
   free(info.ctx);
@@ -238,7 +241,7 @@ time_cipher(const struct nettle_cipher *cipher)
     init_key(cipher->key_size, key);
     cipher->set_encrypt_key(ctx, cipher->key_size, key);
 
-    display(cipher->name, "ECB encrypt",
+    display(cipher->name, "ECB encrypt", cipher->block_size,
 	    time_function(bench_cipher, &info));
   }
   
@@ -251,11 +254,12 @@ time_cipher(const struct nettle_cipher *cipher)
     init_key(cipher->key_size, key);
     cipher->set_decrypt_key(ctx, cipher->key_size, key);
 
-    display(cipher->name, "ECB decrypt",
+    display(cipher->name, "ECB decrypt", cipher->block_size,
 	    time_function(bench_cipher, &info));
   }
 
-  if (cipher->block_size)
+  /* Don't use nettle cbc to benchmark openssl ciphers */
+  if (cipher->block_size && cipher->name[0] != 'o')
     {
       uint8_t *iv = xalloc(cipher->block_size);
       
@@ -272,7 +276,7 @@ time_cipher(const struct nettle_cipher *cipher)
     
         cipher->set_encrypt_key(ctx, cipher->key_size, key);
 
-	display(cipher->name, "CBC encrypt",
+	display(cipher->name, "CBC encrypt", cipher->block_size,
 		time_function(bench_cbc_encrypt, &info));
       }
 
@@ -288,7 +292,7 @@ time_cipher(const struct nettle_cipher *cipher)
 
         cipher->set_decrypt_key(ctx, cipher->key_size, key);
 
-	display(cipher->name, "CBC decrypt",
+	display(cipher->name, "CBC decrypt", cipher->block_size,
 		time_function(bench_cbc_decrypt, &info));
       }
       free(iv);
