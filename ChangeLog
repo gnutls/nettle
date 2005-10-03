@@ -1,3 +1,10 @@
+2005-10-03  Niels Möller  <niels@s3.kth.se>
+
+	* examples/nettle-openssl.c: Use correct block sizes for openssl
+	ciphers.
+
+	* examples/nettle-benchmark.c: Also display cycles per block.
+
 2005-10-02  Niels Möller  <nisse@lysator.liu.se>
 
 	* sha1-compress.c (_nettle_sha1_compress): Updated to new
