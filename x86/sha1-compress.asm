@@ -50,17 +50,17 @@ C expand(i) is the expansion function
 C
 C   W[i] = (W[i - 16] ^ W[i - 14] ^ W[i - 8] ^ W[i - 3]) <<< 1
 C
-C where W[i] is stored in DATA[i & 15].
+C where W[i] is stored in DATA[i mod 16].
 C
 C Result is stored back in W[i], and also left in TMP, the only
 C register that is used.
 define(<EXPAND>, <
-	movl	OFFSET(eval($1 & 15)) (DATA), TMP
-	xorl	OFFSET(eval(($1 +  2) & 15)) (DATA), TMP
-	xorl	OFFSET(eval(($1 +  8) & 15)) (DATA), TMP
-	xorl	OFFSET(eval(($1 + 13) & 15)) (DATA), TMP
+	movl	OFFSET(eval($1 % 16)) (DATA), TMP
+	xorl	OFFSET(eval(($1 +  2) % 16)) (DATA), TMP
+	xorl	OFFSET(eval(($1 +  8) % 16)) (DATA), TMP
+	xorl	OFFSET(eval(($1 + 13) % 16)) (DATA), TMP
 	roll	<$>1, TMP
-	movl	TMP, OFFSET(eval($1 & 15)) (DATA)>)dnl
+	movl	TMP, OFFSET(eval($1 % 16)) (DATA)>)dnl
 define(<NOEXPAND>, <OFFSET($1) (DATA)>)dnl
 
 C The f functions,
