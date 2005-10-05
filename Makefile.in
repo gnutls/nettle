@@ -14,8 +14,9 @@ include config.make
 PRE_CPPFLAGS = -I.
 
 TARGETS = aesdata$(EXEEXT) desdata$(EXEEXT) shadata$(EXEEXT) \
-	  libnettle.a $(SHLIBTARGET) \
-	  nettle.info nettle.html
+	  libnettle.a $(SHLIBTARGET)
+
+DOCTARGETS = nettle.info nettle.html nettle.pdf
 
 all check install uninstall:
 	$(MAKE) $@-here
@@ -35,7 +36,7 @@ check-here:
 dvi installcheck uninstallcheck:
 	true
 
-all-here: $(TARGETS)
+all-here: $(TARGETS) $(DOCTARGETS)
 
 nettle_SOURCES = aes.c \
 	         aes-decrypt-table.c aes-decrypt.c \
@@ -103,7 +104,7 @@ DISTFILES = $(SOURCES) $(HEADERS) .bootstrap aclocal.m4 configure.ac \
 	aes-internal.h cast128_sboxes.h desinfo.h desCode.h \
 	serpent_sboxes.h nettle-internal.h \
 	asm.m4 \
-	nettle.texinfo nettle.info nettle.html sha-example.c
+	nettle.texinfo nettle.info nettle.html nettle.pdf sha-example.c
 
 # Rules building libnettle.a
 # FIXME: Do we really need to delete the archive first?
@@ -170,6 +171,16 @@ des.o: des.c des.h $(des_headers)
 	cd $(srcdir) && $(MAKEINFO) --html --no-split \
 	  --output $@T `basename $<` \
 	  && test -s $@T && mv -f $@T $@
+
+.texinfo.dvi:
+	cd $(srcdir) && texi2dvi `basename $<`
+
+.dvi.ps:
+	cd $(srcdir) && dvips -Ppdf -G0 -o `basename $< .dvi`.ps `basename $<`
+
+PS2PDFFLAGS=-dCompatibilityLevel=1.3 -dMAxSubsetPct=100 -dSubsetFonts=true -dEmbedAllFonts=true
+.ps.pdf:
+	cd $(srcdir) && ps2pdf $(PS2PDFFLAGS) `basename $<`
 
 # Configure-related rules, mostly copied from the autoconf manual. No
 # $(srcdir) prefixes on the targets, though.
@@ -322,6 +333,9 @@ clean-here:
 distclean-here: clean-here
 	-rm -f config.h stamp-h config.log config.status \
 	config.make config.m4 Makefile nettle-stdint.h *.asm *.d
+
+maintainer-clean-here:
+	-rm -f $(DOCTARGETS) *.dvi *.ps
 
 DEP_FILES = $(SOURCES:.c=.$(OBJEXT).d) $(SOURCES:.c=.p$(OBJEXT).d)
 @DEP_INCLUDE@ $(DEP_FILES)
