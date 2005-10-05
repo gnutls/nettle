@@ -15,17 +15,24 @@
 * Nettle: (nettle).           A low-level cryptographics library.
 @end direntry
 
-@set UPDATED-FOR 1.12
+@set COPYRIGHT-YEARS 2001, 2004, 2005
+@set UPDATED-FOR 1.13
 
 @c Latin-1 doesn't work with TeX output.
 @c Also lookout for é characters.
 
+@iftex
+@set AUTHOR Niels M@"oller
+@end iftex
+@ifnottex
 @set AUTHOR Niels Möller
+@end ifnottex
+
 @ifinfo
-Draft manual for the Nettle library. This manual corresponds to version
+Manual for the Nettle library. This manual corresponds to version
 @value{UPDATED-FOR}.
 
-Copyright 2001, 2004 @value{AUTHOR}
+Copyright @value{COPYRIGHT-YEARS} @value{AUTHOR}
 
 Permission is granted to make and distribute verbatim
 copies of this manual provided the copyright notice and
@@ -68,7 +75,7 @@ translation approved by the Free Software Foundation.
 @c The following two commands start the copyright page.
 @page
 @vskip 0pt plus 1filll
-Copyright @copyright{} 2001 @value{AUTHOR}
+Copyright @copyright{} @value{COPYRIGHT-YEARS} @value{AUTHOR}
 
 Permission is granted to make and distribute verbatim
 copies of this manual provided the copyright notice and
@@ -168,11 +175,13 @@ A list of the supported algorithms, their origins and licenses:
 @table @emph
 @item AES
 The implementation of the AES cipher (also known as rijndael) is written
-by Rafael Sevilla. Released under the LGPL.
+by Rafael Sevilla. Assembler for x86 by Rafael Sevilla and
+@value{AUTHOR}, Sparc assembler by @value{AUTHOR}. Released under the
+LGPL.
 
 @item ARCFOUR
 The implementation of the ARCFOUR (also known as RC4) cipher is written
-by Niels Möller. Released under the LGPL.
+by @value{AUTHOR}. Released under the LGPL.
 
 @item ARCTWO
 The implementation of the ARCTWO (also known as RC2) cipher is written
@@ -182,7 +191,7 @@ Josefsson. Released under the LGPL.
 @item BLOWFISH
 The implementation of the BLOWFISH cipher is written by Werner Koch,
 copyright owned by the Free Software Foundation. Also hacked by Ray
-Dassen and Niels Möller. Released under the GPL.
+Dassen and @value{AUTHOR}. Released under the GPL.
 
 @item CAST128
 The implementation of the CAST128 cipher is written by Steve Reid.
@@ -194,7 +203,7 @@ released under the LGPL.
 
 @item MD2
 The implementation of MD2 is written by Andrew Kuchling, and hacked
-some by Andreas Sigfridsson and Niels Möller. Python Cryptography
+some by Andreas Sigfridsson and @value{AUTHOR}. Python Cryptography
 Toolkit license (essentially public domain).
 
 @item MD4
@@ -203,18 +212,19 @@ Marcus Comstedt. Released into the public domain.
 
 @item MD5
 The implementation of the MD5 message digest is written by Colin Plumb.
-It has been hacked some more by Andrew Kuchling and Niels Möller.
+It has been hacked some more by Andrew Kuchling and @value{AUTHOR}.
 Released into the public domain.
 
 @item SERPENT
 The implementation of the SERPENT cipher is written by Ross Anderson,
 Eli Biham, and Lars Knudsen, adapted to LSH by Rafael Sevilla, and to
-Nettle by Niels Möller. Released under the GPL.
+Nettle by @value{AUTHOR}. Released under the GPL.
 
 @item SHA1
-The implementation of the SHA1 message digest is written by Peter
-Gutmann, and hacked some more by Andrew Kuchling and Niels Möller.
-Released into the public domain.
+The C implementation of the SHA1 message digest is written by Peter
+Gutmann, and hacked some more by Andrew Kuchling and @value{AUTHOR}.
+Released into the public domain. Assembler for x86 by @value{AUTHOR},
+released under the LGPL.
 
 @item TWOFISH
 The implementation of the TWOFISH cipher is written by Ruud de Rooij.
@@ -279,7 +289,7 @@ This chapter describes all the Nettle functions, grouped by family.
 @menu
 * Hash functions::              
 * Cipher functions::            
-* Cipher Block Chaining::       
+* Cipher modes::                
 * Keyed hash functions::        
 * Public-key algorithms::       
 * Randomness::                  
@@ -535,7 +545,7 @@ The last three attributes are function pointers, of types
 These are all the hash functions that Nettle implements.
 @end deftypevr
 
-@node Cipher functions, Cipher Block Chaining, Hash functions, Reference
+@node Cipher functions, Cipher modes, Hash functions, Reference
 @comment  node-name,  next,  previous,  up
 @section Cipher functions
 
@@ -553,12 +563,13 @@ arbitrary messages, you usually have to pad it to an integral number of
 blocks, split it into blocks, and then process each block. The simplest
 way is to process one block at a time, independent of each other. That
 mode of operation is called @dfn{ECB}, Electronic Code Book mode.
-However, using ECB is usually a bad idea. For a start, plaintext blocks
+However, using @acronym{ECB} is usually a bad idea. For a start, plaintext blocks
 that are equal are transformed to ciphertext blocks that are equal; that
 leaks information about the plaintext. Usually you should apply the
-cipher is some feedback mode, @dfn{CBC} (Cipher Block Chaining) being one
-of the most popular. @xref{Cipher Block Chaining}, for information on
-how to apply @acronym{CBC} with Nettle.
+cipher is some ``feedback mode'', @dfn{CBC} (Cipher Block Chaining) and
+@dfn{CTR} (Counter mode) being two of
+of the most popular. See @xref{Cipher modes}, for information on
+how to apply @acronym{CBC} and @acronym{CTR} with Nettle.
 
 A stream cipher can be used for messages of arbitrary length; a typical
 stream cipher is a keyed pseudo-random generator. To encrypt a plaintext
@@ -710,7 +721,7 @@ them one after another. The result is the same as if you had called
 ARCTWO (also known as the trade marked name RC2) is a block cipher
 specified in RFC 2268. Nettle also include a variation of the ARCTWO
 set key operation that lack one step, to be compatible with the
-reverse engineered RRC2 cipher description, as described in a Usenet
+reverse engineered RC2 cipher description, as described in a Usenet
 post to @code{sci.crypt} by Peter Gutmann.
 
 ARCTWO uses a block size of 64 bits, and variable key-size ranging
@@ -1092,14 +1103,27 @@ Nettle includes such structs for all the @emph{regular} ciphers, i.e.
 ones without weak keys or other oddities.
 @end deftypevr
 
-@node Cipher Block Chaining, Keyed hash functions, Cipher functions, Reference
+@node Cipher modes, Keyed hash functions, Cipher functions, Reference
 @comment  node-name,  next,  previous,  up
-@section Cipher Block Chaining
+@section Cipher modes
+
+Cipher modes of of operation specifies the procedure to use when
+encrypting a message that is larger than the cipher's block size. As
+explained in @xref{Cipher functions}, splitting the message into blocks
+and processing them independently with the block cipher (Electronic Code
+Book mode, @acronym{ECB}) leaks information. Besides @acronym{ECB},
+Nettle provides two other modes of operation: Cipher Block Chaining
+(@acronym{CBC}) and Counter mode (@acronym{CTR}). @acronym{CBC} is
+widely used, but there are a few subtle issues of information leakage.
+@acronym{CTR} was standardized more recently, and is believed to be more
+secure.
+
+@subsection Cipher Block Chaining
 
 When using @acronym{CBC} mode, plaintext blocks are not encrypted
 independently of each other, like in Electronic Cook Book mode. Instead,
 when encrypting a block in @acronym{CBC} mode, the previous ciphertext
-block is XOR:ed with the plaintext before it is fed to the block cipher.
+block is XORed with the plaintext before it is fed to the block cipher.
 When encrypting the first block, a random block called an @dfn{IV}, or
 Initialization Vector, is used as the ``previous ciphertext block''. The
 IV should be chosen randomly, but it need not be kept secret, and can
@@ -1119,15 +1143,16 @@ C_2 = E_k(C_1 XOR M_2)
 C_n = E_k(C_(n-1) XOR M_n)
 @end example
 
-Nettle includes a few utility functions for applying a block cipher in
-Cipher Block Chaining (@acronym{CBC}) mode. The functions uses @code{void *} to
-pass cipher contexts around.
+Nettle's includes two functions for applying a block cipher in Cipher
+Block Chaining (@acronym{CBC}) mode, one for encryption and one for
+decryption. The functions uses @code{void *} to pass cipher contexts
+around.
 
-@deftypefun {void} cbc_encrypt (void *@var{ctx}, void (*@var{f})(), unsigned @var{block_size}, uint8_t *@var{iv}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun {void} cbc_encrypt (void *@var{ctx}, nettle_crypt_func @var{f}, unsigned @var{block_size}, uint8_t *@var{iv}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 @deftypefunx {void} cbc_decrypt (void *@var{ctx}, void (*@var{f})(), unsigned @var{block_size}, uint8_t *@var{iv}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 
 Applies the encryption or decryption function @var{f} in @acronym{CBC}
-mode. The function @var{f} is really typed as
+mode. The function @var{f} is of type
 
 @code{void f (void *@var{ctx}, unsigned @var{length}, uint8_t @var{dst},
 const uint8_t *@var{src})},
@@ -1179,8 +1204,79 @@ These macros use some tricks to make the compiler display a warning if
 the types of @var{f} and @var{ctx} don't match, e.g. if you try to use
 an @code{struct aes_ctx} context with the @code{des_encrypt} function.
 
+@subsection Counter mode
 
-@node Keyed hash functions, Public-key algorithms, Cipher Block Chaining, Reference
+Counter mode uses the block cipher as a keyed pseudo-random generator.
+The output of the generator is XORed with the data to be encrypted. It
+can be understood as a way to transform a block cipher to a stream
+cipher.
+
+The message is divided into @code{n} blocks @code{M_1},@dots{}
+@code{M_n}, where @code{M_n} is of size @code{m} which may be smaller
+than the block size. Except for the last block, all the message blocks
+must be of size equal to the cipher's block size.
+
+If @code{E_k} is the encryption function of a block cipher, @code{IV} is
+the initialization vector, then the @code{n} plaintext blocks are
+transformed into @code{n} ciphertext blocks @code{C_1},@dots{}
+@code{C_n} as follows:
+
+@example
+C_1 = E_k(IC) XOR M_1
+C_2 = E_k(IC + 1) XOR M_2
+
+@dots{}
+
+C_(n-1) = E_k(IC + n - 2) XOR M_(n-1)
+C_n = E_k(IC + n - 1) [1..m] XOR M_n
+@end example
+
+The @acronym{IC} is the initial value for the counter, it plays a
+similar role as the @acronym{IV} for @acronym{CBC}. When adding,
+@code{IC + x}, @acronym{IC} is interpreted as an integer, in network
+byte order. For the last block, @code{E_k(IC + n - 1) [1..m]} means that
+the cipher output is truncated to @code{m} bytes.
+
+@deftypefun {void} ctr_crypt (void *@var{ctx}, nettle_crypt_func @var{f}, unsigned @var{block_size}, uint8_t *@var{ctr}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+
+Applies the encryption function @var{f} in @acronym{CTR} mode. Note that
+for @acronym{CTR} mode, encryption and decryption is the same operation,
+and hence @var{f} should always be the encryption function for the
+underlying block cipher.
+
+When a message is encrypted using a sequence of calls to
+@code{ctr_crypt}, all but the last call @emph{must} use a length that is
+a multiple of the block size.
+@end deftypefun
+
+Like for @acronym{CBC}, there are also a couple of helper macros.
+
+@deffn Macro CTR_CTX (@var{context_type}, @var{block_size})
+Expands into
+@example
+@{
+   context_type ctx;
+   uint8_t ctr[block_size];
+@}
+@end example
+@end deffn
+
+@deffn Macro CTR_SET_COUNTER (@var{ctx}, @var{iv})
+First argument is a pointer to a context struct as defined by
+@code{CTR_CTX}, and the second is a pointer to an initial counter that
+is copied into that context.
+@end deffn
+
+@deffn Macro CTR_CRYPT (@var{ctx}, @var{f}, @var{length}, @var{dst}, @var{src})
+A simpler way to invoke @code{ctr_crypt}. The first argument is a
+pointer to a context struct as defined by @code{CTR_CTX}, and the second
+argument is an encryption function following Nettle's conventions. The
+last three arguments define the source and destination area for the
+operation.
+@end deffn
+
+
+@node Keyed hash functions, Public-key algorithms, Cipher modes, Reference
 @comment  node-name,  next,  previous,  up
 @section Keyed Hash Functions
 
@@ -2166,7 +2262,7 @@ Returns an entropy estimate, in bits, suitable for calling
 @section Miscellaneous functions
 
 @deftypefun {uint8_t *} memxor (uint8_t *@var{dst}, const uint8_t *@var{src}, size_t @var{n})
-XOR:s the source area on top of the destination area. The interface
+XORs the source area on top of the destination area. The interface
 doesn't follow the Nettle conventions, because it is intended to be
 similar to the ANSI-C @code{memcpy} function.
 @end deftypefun
@@ -2264,8 +2360,7 @@ Servera med kokta ägghalvor.
 @comment  node-name,  next,  previous,  up
 @chapter Installation
 
-Nettle uses @command{autoconf} and @command{automake}. To build it,
-unpack the source and run
+Nettle uses @command{autoconf}. To build it, unpack the source and run
 
 @example
 ./configure
@@ -2279,7 +2374,8 @@ to install in the default location, @file{/usr/local}. The library is
 installed in @file{/use/local/lib/libnettle.a} and the include files are
 installed in @file{/use/local/include/nettle/}.
 
-Only static libraries are installed.
+By default, only static libraries are built and installed. To build and
+install a shared library, use @code{./configure --enable-shared}.
 
 @node Index,  , Installation, Top
 @comment  node-name,  next,  previous,  up
@@ -2312,7 +2408,9 @@ End:
 @c  LocalWords:  Gutmann twofish de Rooij struct MB Rivest RFC Nettle's ECB CBC
 @c  LocalWords:  RSA Daemen Rijnmen Schneier DES's ede structs oddnesses HMAC
 @c  LocalWords:  NIST Alice's GMP bignum Diffie Adi Shamir Adleman Euclid's ASN
-@c  LocalWords:  PKCS callbacks Young's urtica dioica autoconf automake SSH tad
+@c  LocalWords:  PKCS callbacks Young's urtica dioica autoconf SSH tad
 @c  LocalWords:  unguessability reseeding reseed alternatingly keysym subkeys
 @c  LocalWords:  DSA gmp FIPS DSS libdes OpenSSL ARCTWO Josefsson Nikos Andreas
-@c  LocalWords:  Mavroyanopoulos Sigfridsson Comstedt interoperability
+@c  LocalWords:  Mavroyanopoulos Sigfridsson Comstedt interoperability Sparc IC
+@c  LocalWords:  DES FIXME Rivest's plaintext ciphertext CTR XORed timestamp
+@c  LocalWords:  XORs
