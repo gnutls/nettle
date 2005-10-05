@@ -1,9 +1,14 @@
 NEWS for the 1.13 release
 
-	Implemented CTR mode.
-
 	Fixed problem with broken m4 on bsd, which resulted in
 	corrupted x86 assembler for sha1.
+
+	Nettle probably works on windows: I've been able to cross
+	compile it with ./configure --host=i586-mingw32msvc (without
+	public-key support), and the testsuite binaries seem to run
+	fine in Wine.
+
+	Implemented CTR mode.
 
 	Improved sha1 performance on x86.
 
