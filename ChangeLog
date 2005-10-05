@@ -1,5 +1,23 @@
 2005-10-05  Niels Möller  <nisse@lysator.liu.se>
 
+	* x86/aes-decrypt.asm: Use C_NAME(_nettle_aes_decrypt_table) when
+	using the AES_SUBST_BYTE macro. Use PROLOGUE and EPILOGUE.
+	* x86/sha1-compress.asm: Use PROLOGUE and EPILOGUE.
+	* x86/arcfour-crypt.asm: Likewise.
+	* x86/aes-encrypt.asm: Likewise.
+
+	* config.m4.in (ELF_STYLE): Substitute configure's ASM_ELF_STYLE.
+
+	* asm.m4 (PROLOGUE, EPILOGUE): New macros, checking the value of
+	ELF_STYLE. So far, used and tested only for the x86 assembler
+	files, and needed to make the assembler happy both with ELF
+	(linux, solaris) and COFF (windows).
+
+	* configure.ac (NM): Use AC_CHECK_TOOL to check for nm.
+	(ASM_SYMBOL_PREFIX): Use $NM when examining the object file.
+	(ASM_ELF_STYLE): New variable. Set to 'yes' if assembling a file
+	with ELF-style .type and .size pseudo ops works.
+
 	* Makefile.in (TARGETS, DISTFILES): Added nettle.pdf.
 	(.texinfo.dvi, .dvi.ps, .ps.pdf): New targets, to build nettle.pdf.
 	(DOCTARGETS): New variable with targets that shouldn't be deleted
