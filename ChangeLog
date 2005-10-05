@@ -1,5 +1,30 @@
 2005-10-05  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.in (TARGETS, DISTFILES): Added nettle.pdf.
+	(.texinfo.dvi, .dvi.ps, .ps.pdf): New targets, to build nettle.pdf.
+	(DOCTARGETS): New variable with targets that shouldn't be deleted
+	by make clean.
+	(maintainer-clean-here): New target. Deletes generated
+	documentation files.
+
+	* nettle.texinfo: Define AUTHOR with accents, when running in TeX
+	mode, which doesn't handle latin-1 properly. Set UPDATED-FOR to
+	1.13. Updated copyright years, and introduced a COPYRIGHT-YEARS
+	symbol. Updated copyright section, to mention assembler
+	implementations.
+	(Cipher modes): Transformed the Cipher Block Chaining to a section
+	Cipher modes, describing both CBC and the new CTR mode.
+
+	* src/nettle/x86/aes_tables.asm: Deleted unused file.
+
+	* x86/aes.asm: Deleted contents. This file is needed just to
+	override aes.c, which isn't needed for the x86 implementation.
+
+	* configure.ac (SHLIBMINOR): Increased minor number. Library
+	version is now libnettle.so.2.4, soname still libnettle.so.2.
+
+	* examples/nettle-benchmark.c (main): Reordered hash benchmarks.
+
 	* x86/sha1-compress.asm (EXPAND): Use % 16 instead of & 15 to
 	compute offsets mod 16, since m4 on FreeBSD 49.RELEASE and NetBSD
 	doesn't implement & correctly in eval.

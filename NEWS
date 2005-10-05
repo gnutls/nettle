@@ -1,3 +1,26 @@
+NEWS for the 1.13 release
+
+	Implemented CTR mode.
+
+	Fixed problem with broken m4 on bsd, which resulted in
+	corrupted x86 assembler for sha1.
+
+	Improved sha1 performance on x86.
+
+	Configure check to figure out if symbols in assembler files
+	need a leading underscore.
+
+	Improved benchmark program. Displays cycles per byte and block,
+	and compares with openssl (if openssl is installed).
+	
+	Terminating newline in output from sexp-conv --hash.
+
+	The library is intended to be binary compatible with earlier
+	versions. The library name is libnettle.so.2.4. However, the
+	interface for the internal function _nettle_sha1_compress has
+	changed; any program that calls this function directly will
+	break.
+
 NEWS for the 1.12 release
 	
 	Fixed a bug in the configure script.
