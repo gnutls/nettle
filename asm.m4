@@ -8,6 +8,22 @@ dnl>)dnl
 dnl including files from the srcdir
 define(<include_src>, <include(srcdir/$1)>)dnl
 
+dnl Pseudo ops
+
+define(<PROLOGUE>,
+<ifelse(ELF_STYLE,yes,
+<.globl C_NAME($1)
+.type C_NAME($1),@function
+C_NAME($1):>,
+<.globl C_NAME($1)
+C_NAME($1):>)>)
+
+define(<EPILOGUE>,
+<ifelse(ELF_STYLE,yes,
+<.L$1end:
+.size C_NAME($1), .L$1end - C_NAME($1)>,)>)
+
+
 dnl Struct defining macros
 
 dnl STRUCTURE(prefix) 
