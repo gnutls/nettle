@@ -77,6 +77,7 @@ fi
 
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
+AC_CHECK_TOOL(NM, nm, strings)
 
 if test "x$ac_cv_prog_cc_stdc" = xno ; then
   AC_ERROR([the C compiler doesn't handle ANSI-C])
@@ -171,6 +172,7 @@ fi
 AC_SUBST([CCPIC_MAYBE])
 
 ASM_SYMBOL_PREFIX=''
+ASM_ELF_STYLE='no'
 
 if test x$enable_assembler = xyes ; then
   AC_CACHE_CHECK([if globals are prefixed by underscore],
@@ -179,7 +181,7 @@ if test x$enable_assembler = xyes ; then
     nettle_cv_asm_underscore=no
     AC_COMPILE_IFELSE(
       [int a_global_symbol;],
-      [ nm conftest.$OBJEXT >conftest.out
+      [ $NM conftest.$OBJEXT >conftest.out
         if grep _a_global_symbol conftest.out >/dev/null ; then
           nettle_cv_asm_underscore=yes
         elif grep a_global_symbol conftest.out >/dev/null ; then
@@ -190,10 +192,37 @@ if test x$enable_assembler = xyes ; then
       [AC_MSG_WARN([test program with a single global could not be compiled!?])])])
   if test x$nettle_cv_asm_underscore = xyes ; then
     ASM_SYMBOL_PREFIX='_'
-  fi 
+  fi
+  # With inspiration from GMP_TRY_ASSEMBLE
+  AC_CACHE_CHECK([for ELF-style pseudo-ops],
+    nettle_cv_asm_elf_style_pseudo_ops,
+    [cat >conftest.s <<EOF
+.text
+.globl foo
+.type foo @function
+foo:
+.Lend:
+
+.size foo, .Lend - foo
+EOF
+    nettle_assemble="$CC $CFLAGS $CPPFLAGS -c conftest.s >conftest.out 2>&1"
+    if AC_TRY_EVAL(nettle_assemble); then
+      cat conftest.out >&AC_FD_CC
+      nettle_cv_asm_elf_style_pseudo_ops=yes
+    else
+      cat conftest.out >&AC_FD_CC
+      echo "configure: failed program was:" >&AC_FD_CC
+      cat conftest.s >&AC_FD_CC
+      nettle_cv_asm_elf_style_pseudo_ops=no
+    fi
+    rm -f conftest.*])
+  if test x$nettle_cv_asm_elf_style_pseudo_ops = xyes ; then
+    ASM_ELF_STYLE='yes'
+  fi
 fi
 
 AC_SUBST(ASM_SYMBOL_PREFIX)
+AC_SUBST(ASM_ELF_STYLE)
 
 AC_SUBST(SHLIBCFLAGS)
 AC_SUBST(SHLIBMAJOR)
