@@ -35,9 +35,7 @@ C %edi is a temporary, often used as an accumulator.
 	C	      uint8_t *src)
 	.text
 	.align 16
-	.globl C_NAME(nettle_aes_encrypt)
-	.type  C_NAME(nettle_aes_encrypt),@function
-C_NAME(nettle_aes_encrypt):
+PROLOGUE(nettle_aes_encrypt)
 	C save all registers that need to be saved
 	pushl	%ebx		C  16(%esp)
 	pushl	%ebp		C  12(%esp)
@@ -136,5 +134,4 @@ C_NAME(nettle_aes_encrypt):
 	popl	%ebp
 	popl	%ebx
 	ret
-.Leord:
-	.size	C_NAME(nettle_aes_encrypt),.Leord-C_NAME(nettle_aes_encrypt)
+EPILOGUE(nettle_aes_encrypt)

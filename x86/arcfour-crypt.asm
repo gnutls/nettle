@@ -24,9 +24,7 @@ C MA 02111-1307, USA.
 	C               const uint8_t *src)
 	.text
 	.align 16
-	.globl C_NAME(nettle_arcfour_crypt)
-	.type  C_NAME(nettle_arcfour_crypt),@function
-C_NAME(nettle_arcfour_crypt):
+PROLOGUE(nettle_arcfour_crypt)
 	C save all registers that need to be saved
 	pushl	%ebx		C  12(%esp)
 	pushl	%ebp		C  8(%esp)
@@ -90,5 +88,4 @@ C	andl	$0xff, %ebx
 	popl	%ebp
 	popl	%ebx
 	ret
-.Leord:
-	.size	C_NAME(nettle_arcfour_crypt),.Leord-C_NAME(nettle_arcfour_crypt)
+EPILOGUE(nettle_arcfour_crypt)

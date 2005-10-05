@@ -124,9 +124,7 @@ C adding, and then rotating back.
 	
 	.text
 	.align 16
-	.globl C_NAME(_nettle_sha1_compress)
-	.type  C_NAME(_nettle_sha1_compress),@function
-C_NAME(_nettle_sha1_compress):
+PROLOGUE(_nettle_sha1_compress)
 	C save all registers that need to be saved
 	
 	pushl	%ebx		C  80(%esp)
@@ -268,9 +266,7 @@ C_NAME(_nettle_sha1_compress):
 	popl	%ebp
 	popl	%ebx
 	ret
-
-.Leord:
-	.size	_nettle_sha1_compress,.Leord-_nettle_sha1_compress
+EPILOGUE(_nettle_sha1_compress)
 
 C  It's possible to shave of half of the stores to tmp in the evaluation of f3,
 C  although it's probably not worth the effort. This is the trick: 
