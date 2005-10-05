@@ -1,3 +1,9 @@
+2005-10-05  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86/sha1-compress.asm (EXPAND): Use % 16 instead of & 15 to
+	compute offsets mod 16, since m4 on FreeBSD 49.RELEASE and NetBSD
+	doesn't implement & correctly in eval.
+
 2005-10-03  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86/sha1-compress.asm (OFFSET): New macro.
