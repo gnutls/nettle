@@ -1,6 +1,8 @@
 /* sha256.h
  *
  * The sha256 hash function.
+ *
+ * See http://csrc.nist.gov/publications/fips/fips180-2/fips180-2.pdf
  */
 
 /* nettle, low-level cryptographics library
@@ -86,7 +88,7 @@ K[64] =
    64-word expanded input array W, where the first 16 are copies of the input
    data, and the remaining 64 are defined by
 
-        W[ t ] = s1(W[t-2] + W[t-7] + s0(W[i-15] + W[i-16]
+        W[ t ] = s1(W[t-2]) + W[t-7] + s0(W[i-15]) + W[i-16]
 
    This implementation generates these values on the fly in a circular
    buffer - thanks to Colin Plumb, colin@nyx10.cs.du.edu for this
