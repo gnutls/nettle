@@ -24,9 +24,7 @@ C MA 02111-1307, USA.
 	C	      uint8_t *src)
 	.text
 	.align 16
-	.globl C_NAME(nettle_aes_decrypt)
-	.type  C_NAME(nettle_aes_decrypt),@function
-C_NAME(nettle_aes_decrypt):
+PROLOGUE(nettle_aes_decrypt)
 	C save all registers that need to be saved
 	pushl	%ebx		C  16(%esp)
 	pushl	%ebp		C  12(%esp)
@@ -106,7 +104,7 @@ C_NAME(nettle_aes_decrypt):
 	C inverse S-box substitution
 	mov	$4,%edi
 .Lsubst:
-	AES_SUBST_BYTE(_nettle_aes_decrypt_table)
+	AES_SUBST_BYTE(C_NAME(_nettle_aes_decrypt_table))
 
 	decl	%edi
 	jnz	.Lsubst
@@ -128,5 +126,4 @@ C_NAME(nettle_aes_decrypt):
 	popl	%ebp
 	popl	%ebx
 	ret
-.Leord:
-	.size	C_NAME(nettle_aes_decrypt),.Leord-C_NAME(nettle_aes_decrypt)
+EPILOGUE(nettle_aes_decrypt)
