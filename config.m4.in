@@ -1,2 +1,3 @@
 define(<srcdir>, <<@srcdir@>>)dnl
 define(<C_NAME>, <@ASM_SYMBOL_PREFIX@><$1>)
+define(<ELF_STYLE>, <@ASM_ELF_STYLE@>)
