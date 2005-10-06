@@ -1,5 +1,9 @@
 2005-10-06  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac: Bumped version to 1.14.
+
+	* Released nettle-1.13.
+
 	* configure.ac: Check for openssl/aes.h.
 
 	* Makefile.in (distdir): Use a loop to pick up the contents of
