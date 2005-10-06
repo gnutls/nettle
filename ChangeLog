@@ -1,5 +1,7 @@
 2005-10-06  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac: Check for openssl/aes.h.
+
 	* Makefile.in (distdir): Use a loop to pick up the contents of
 	$(DISTFILES) from source and build directories. For some reason,
 	$? failed to find stamp-h.in in the source directory.
