@@ -1,3 +1,9 @@
+2005-10-06  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (distdir): Use a loop to pick up the contents of
+	$(DISTFILES) from source and build directories. For some reason,
+	$? failed to find stamp-h.in in the source directory.
+
 2005-10-05  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86/aes-decrypt.asm: Use C_NAME(_nettle_aes_decrypt_table) when

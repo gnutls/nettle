@@ -271,7 +271,11 @@ top_distdir = $(distdir)
 distdir: $(DISTFILES)
 	rm -rf "$(distdir)"
 	mkdir "$(distdir)"
-	cp $? "$(distdir)"
+	set -e; for f in $(DISTFILES) ; do \
+	  if [ -e "$$f" ] ; then cp "$$f" "$(distdir)" ; \
+	  else cp "$(srcdir)/$$f" "$(distdir)" ; \
+	  fi ; \
+	done
 	set -e; for d in sparc x86 ; do \
 	  mkdir "$(distdir)/$$d" ; \
 	  cp $(srcdir)/$$d/*.asm $(srcdir)/$$d/*.m4 "$(distdir)/$$d" ; \
