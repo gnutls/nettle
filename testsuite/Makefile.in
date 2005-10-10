@@ -28,12 +28,14 @@ TS_SOURCES = aes-test.c arcfour-test.c arctwo-test.c \
 TARGETS = $(TS_SOURCES:.c=$(EXEEXT))
 TS_SH = sexp-conv-test symbols-test
 TS_ALL = $(TARGETS) $(TS_SH)
+EXTRA_SOURCES = sha1-huge-test.c
+EXTRA_TARGETS = $(EXTRA_SOURCES:.c=$(EXEEXT))
 
 SOURCES = $(TS_SOURCES) testutils.c
 
 DISTFILES = $(SOURCES) Makefile.in $(TS_SH) run-tests rfc1750.txt testutils.h
 
-all: $(TARGETS)
+all: $(TARGETS) $(EXTRA_TARGETS)
 
 .c.$(OBJEXT):
 	$(COMPILE) -I.. -c $< && $(DEP_PROCESS)
@@ -41,7 +43,7 @@ all: $(TARGETS)
 .$(OBJEXT)$(EXEEXT):
 	$(LINK) $< testutils.o -lnettle $(LIBS) -o $@
 
-$(TARGETS) : testutils.$(OBJEXT) ../libnettle.a
+$(TARGETS) $(EXTRA_TARGETS) : testutils.$(OBJEXT) ../libnettle.a
 
 check: $(TS_ALL) $(srcdir)/run-tests
 	LD_LIBRARY_PATH=../.lib srcdir="$(srcdir)" \
