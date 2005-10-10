@@ -31,6 +31,7 @@ serpent-test
 sexp-format-test
 sexp-test
 sexp2rsa-test
+sha1-huge-test
 sha1-test
 sha256-test
 twofish-test
