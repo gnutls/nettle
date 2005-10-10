@@ -78,16 +78,7 @@ sha1_init(struct sha1_ctx *ctx)
   ctx->index = 0;
 }
 
-/* FIXME: Inline where used? */
-static void
-sha1_block(struct sha1_ctx *ctx, const uint8_t *block)
-{
-  /* Update block count */
-  if (!++ctx->count_low)
-    ++ctx->count_high;
-
-  _nettle_sha1_compress(ctx->digest, block);
-}
+#define SHA1_INCR(ctx) ((ctx)->count_high += !++(ctx)->count_low)
 
 void
 sha1_update(struct sha1_ctx *ctx,
@@ -105,14 +96,19 @@ sha1_update(struct sha1_ctx *ctx,
       else
 	{
 	  memcpy(ctx->block + ctx->index, buffer, left);
-	  sha1_block(ctx, ctx->block);
+
+	  _nettle_sha1_compress(ctx->digest, ctx->block);
+	  SHA1_INCR(ctx);
+
 	  buffer += left;
 	  length -= left;
 	}
     }
   while (length >= SHA1_DATA_SIZE)
     {
-      sha1_block(ctx, buffer);
+      _nettle_sha1_compress(ctx->digest, buffer);
+      SHA1_INCR(ctx);
+
       buffer += SHA1_DATA_SIZE;
       length -= SHA1_DATA_SIZE;
     }
@@ -130,13 +126,6 @@ sha1_final(struct sha1_ctx *ctx)
   uint32_t bitcount_high;
   uint32_t bitcount_low;
   unsigned i;
-
-  /* The calls to sha1_block increments the block counter, so compute
-     the bit length first. */
-
-  /* There are 512 = 2^9 bits in one block */  
-  bitcount_high = (ctx->count_high << 9) | (ctx->count_low >> 23);
-  bitcount_low = (ctx->count_low << 9) | (ctx->index << 3);
   
   i = ctx->index;
   
@@ -151,11 +140,15 @@ sha1_final(struct sha1_ctx *ctx)
 	 pad with another one */
       memset(ctx->block + i, 0, SHA1_DATA_SIZE - i);
       
-      sha1_block(ctx, ctx->block);
+      _nettle_sha1_compress(ctx->digest, ctx->block);
       i = 0;
     }
   if (i < (SHA1_DATA_SIZE - 8))
     memset(ctx->block + i, 0, (SHA1_DATA_SIZE - 8) - i);
+
+  /* There are 512 = 2^9 bits in one block */  
+  bitcount_high = (ctx->count_high << 9) | (ctx->count_low >> 23);
+  bitcount_low = (ctx->count_low << 9) | (ctx->index << 3);
 
   /* This is slightly inefficient, as the numbers are converted to
      big-endian format, and will be converted back by the compression
@@ -163,7 +156,7 @@ sha1_final(struct sha1_ctx *ctx)
   WRITE_UINT32(ctx->block + (SHA1_DATA_SIZE - 8), bitcount_high);
   WRITE_UINT32(ctx->block + (SHA1_DATA_SIZE - 4), bitcount_low);
 
-  sha1_block(ctx, ctx->block);
+  _nettle_sha1_compress(ctx->digest, ctx->block);
 }
 
 void
