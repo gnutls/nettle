@@ -87,6 +87,12 @@ test_hash(const struct nettle_hash *hash,
 	  const uint8_t *digest);
 
 void
+test_hash_large(const struct nettle_hash *hash,
+		unsigned count, unsigned length,
+		uint8_t c,
+		const uint8_t *digest);
+
+void
 test_armor(const struct nettle_armor *armor,
            unsigned data_length,
            const uint8_t *data,

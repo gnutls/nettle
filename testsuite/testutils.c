@@ -342,6 +342,34 @@ test_hash(const struct nettle_hash *hash,
 }
 
 void
+test_hash_large(const struct nettle_hash *hash,
+		unsigned count, unsigned length,
+		uint8_t c,
+		const uint8_t *digest)
+{
+  void *ctx = xalloc(hash->context_size);
+  uint8_t *buffer = xalloc(hash->digest_size);
+  uint8_t *data = xalloc(length);
+  unsigned i;
+
+  memset(data, c, length);
+
+  hash->init(ctx);
+  for (i = 0; i < count; i++)
+    hash->update(ctx, length, data);
+  hash->digest(ctx, hash->digest_size, buffer);
+
+  print_hex(hash->digest_size, buffer);
+
+  if (!MEMEQ(hash->digest_size, digest, buffer))
+    FAIL();
+
+  free(ctx);
+  free(buffer);
+  free(data);
+}
+
+void
 test_armor(const struct nettle_armor *armor,
            unsigned data_length,
            const uint8_t *data,
