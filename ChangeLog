@@ -1,3 +1,16 @@
+2005-10-10  Niels Möller  <niels@s3.kth.se>
+
+	* testsuite/Makefile.in (EXTRA_SOURCES, EXTRA_TARGETS): New
+	variables, for test cases that are not run by default.
+
+	* testsuite/sha1-huge-test.c (test_main): New test case, with a
+	very large sha1 input.
+
+	* testsuite/testutils.c (test_hash_large): New function.
+
+	* sha1.c (sha1_block): Deleted function; inlined where used.
+	(SHA1_INCR): New macro for incrementing the block count.
+
 2005-10-06  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Bumped version to 1.14.
