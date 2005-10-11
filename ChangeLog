@@ -1,3 +1,12 @@
+2005-10-11  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (nettle_SOURCES): Added md5-compress.c.
+
+	* md5.c: Reorganized to use _nettle_md5_compress, in analogy with
+	sha1.c.
+
+	* md5-compress.c (_nettle_md5_compress): New file and new function.
+
 2005-10-10  Niels Möller  <niels@s3.kth.se>
 
 	* testsuite/Makefile.in (EXTRA_SOURCES, EXTRA_TARGETS): New
