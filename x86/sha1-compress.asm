@@ -33,10 +33,6 @@ define(<K1VALUE>, <<$>0x5A827999>)		C  Rounds  0-19
 define(<K2VALUE>, <<$>0x6ED9EBA1>)		C  Rounds 20-39
 define(<K3VALUE>, <<$>0x8F1BBCDC>)		C  Rounds 40-59
 define(<K4VALUE>, <<$>0xCA62C1D6>)		C  Rounds 60-79
-
-C OFFSET(i)
-C Expands to 4*i, or to the empty string if i is zero
-define(<OFFSET>, <ifelse($1,0,,eval(4*$1))>)
 	
 C Reads the input via TMP2 into register, byteswaps it, and stores it in the DATA array.
 C SWAP(index, register)
@@ -120,7 +116,7 @@ C adding, and then rotating back.
 
 	.file "sha1-compress.asm"
 
-	C sha1_compress(uint32_t *state, uint8_t *data)
+	C _nettle_sha1_compress(uint32_t *state, uint8_t *data)
 	
 	.text
 	.align 16
