@@ -1,3 +1,11 @@
+2005-10-12  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86/machine.m4 (OFFSET): Moved macro, used to be in...
+	* x86/sha1-compress.asm (OFFSET): ... removed macro.
+
+	* x86/md5-compress.asm: New file, with first attempt at md5
+	assembler. Not yet working.
+
 2005-10-11  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in (nettle_SOURCES): Added md5-compress.c.
