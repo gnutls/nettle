@@ -92,3 +92,25 @@ test_main(void)
 
   SUCCESS();
 }
+
+/* Intermediate values for the single _nettle_md5_compress call for
+   the first test case. Each row gives the values for a, b, c, d after
+   the i:th round. The row i = -1 gives the initial values, and i = 99
+   gives the output values.
+
+     i         a        b        c        d
+    -1: 67452301 efcdab89 98badcfe 10325476
+     0: a5202774 efcdab89 98badcfe 10325476
+     1: a5202774 efcdab89 98badcfe f59592dd
+    15: f56c7cf1 d6819c6a 5aa53f75 374943a7
+    16: 1c7d7513 d6819c6a 5aa53f75 374943a7
+    17: 1c7d7513 d6819c6a 5aa53f75 7bd57a3a
+    31: 13707036 a2205f1f 1c31c384 ae7813db
+    32: df63eaa1 a2205f1f 1c31c384 ae7813db
+    33: df63eaa1 a2205f1f 1c31c384 c3689f5b
+    47: 3f55edfd ca7d2dbd 68d84ea2 22a31f54
+    48: 93aa2577 ca7d2dbd 68d84ea2 22a31f54
+    49: 93aa2577 ca7d2dbd 68d84ea2 1688dc85
+    63: 7246fad3 14e45506 ff4ea3eb 6e10a476
+    99: d98c1dd4  4b2008f 980980e9 7e42f8ec
+*/
