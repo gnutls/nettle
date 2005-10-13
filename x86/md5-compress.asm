@@ -23,19 +23,17 @@ define(<SB>,<%ebx>)
 define(<SC>,<%ecx>)
 define(<SD>,<%edx>)
 define(<TMP>,<%ebp>)
-define(<TMP2>,<%edi>)
 define(<INPUT>,<%esi>)
-define(<DATA>,<%esp>)
+C define(<DATA>,<%esp>)
 
-C %ebp, %edi and %esi available for temporaries
+C %edi is unused
 
-C F1(x,y,z) = (z ^ x) & (y ^ z)
+C F1(x,y,z) = (z ^ (x & (y ^ z)))
 define(<F1>, <
-	movl	$3, TMP2
 	movl	$3, TMP
-	xorl	$1, TMP2
 	xorl	$2, TMP
-	andl	TMP, TMP>)
+	andl	$1, TMP
+	xorl	$3, TMP>)
 
 define(<F2>,<F1($3, $1, $2)>)
 
@@ -52,12 +50,7 @@ define(<F4>,<
 	orl	$1, TMP
 	xorl	$2, TMP>)
 
-define(<COPY>,<
-	movl	OFFSET($1)(INPUT), TMP
-	movl	TMP, OFFSET($1)(DATA)
->)
-
-define(<REF>,<OFFSET($1)(DATA)>)
+define(<REF>,<OFFSET($1)(INPUT)>)
 	
 C ROUND(f, w, x, y, z, k, data, s):
 C	w += f(x,y,z) + data + k
@@ -98,22 +91,22 @@ PROLOGUE(_nettle_md5_compress)
 	C at %esp when we first use it.
 	movl	88(%esp), INPUT
 
-	COPY( 0) ROUND(<F1>, SA, SB, SC, SD, TMP, $0xd76aa478, 7)
-	COPY( 1) ROUND(<F1>, SD, SA, SB, SC, TMP, $0xe8c7b756, 12)
-	COPY( 2) ROUND(<F1>, SC, SD, SA, SB, TMP, $0x242070db, 17)
-	COPY( 3) ROUND(<F1>, SB, SC, SD, SA, TMP, $0xc1bdceee, 22)
-	COPY( 4) ROUND(<F1>, SA, SB, SC, SD, TMP, $0xf57c0faf, 7)
-	COPY( 5) ROUND(<F1>, SD, SA, SB, SC, TMP, $0x4787c62a, 12)
-	COPY( 6) ROUND(<F1>, SC, SD, SA, SB, TMP, $0xa8304613, 17)
-	COPY( 7) ROUND(<F1>, SB, SC, SD, SA, TMP, $0xfd469501, 22)
-	COPY( 8) ROUND(<F1>, SA, SB, SC, SD, TMP, $0x698098d8, 7)
-	COPY( 9) ROUND(<F1>, SD, SA, SB, SC, TMP, $0x8b44f7af, 12)
-	COPY(10) ROUND(<F1>, SC, SD, SA, SB, TMP, $0xffff5bb1, 17)
-	COPY(11) ROUND(<F1>, SB, SC, SD, SA, TMP, $0x895cd7be, 22)
-	COPY(12) ROUND(<F1>, SA, SB, SC, SD, TMP, $0x6b901122, 7)
-	COPY(13) ROUND(<F1>, SD, SA, SB, SC, TMP, $0xfd987193, 12)
-	COPY(14) ROUND(<F1>, SC, SD, SA, SB, TMP, $0xa679438e, 17)
-	COPY(15) ROUND(<F1>, SB, SC, SD, SA, TMP, $0x49b40821, 22)
+	ROUND(<F1>, SA, SB, SC, SD, REF( 0), $0xd76aa478, 7)
+	ROUND(<F1>, SD, SA, SB, SC, REF( 1), $0xe8c7b756, 12)
+	ROUND(<F1>, SC, SD, SA, SB, REF( 2), $0x242070db, 17)
+	ROUND(<F1>, SB, SC, SD, SA, REF( 3), $0xc1bdceee, 22)
+	ROUND(<F1>, SA, SB, SC, SD, REF( 4), $0xf57c0faf, 7)
+	ROUND(<F1>, SD, SA, SB, SC, REF( 5), $0x4787c62a, 12)
+	ROUND(<F1>, SC, SD, SA, SB, REF( 6), $0xa8304613, 17)
+	ROUND(<F1>, SB, SC, SD, SA, REF( 7), $0xfd469501, 22)
+	ROUND(<F1>, SA, SB, SC, SD, REF( 8), $0x698098d8, 7)
+	ROUND(<F1>, SD, SA, SB, SC, REF( 9), $0x8b44f7af, 12)
+	ROUND(<F1>, SC, SD, SA, SB, REF(10), $0xffff5bb1, 17)
+	ROUND(<F1>, SB, SC, SD, SA, REF(11), $0x895cd7be, 22)
+	ROUND(<F1>, SA, SB, SC, SD, REF(12), $0x6b901122, 7)
+	ROUND(<F1>, SD, SA, SB, SC, REF(13), $0xfd987193, 12)
+	ROUND(<F1>, SC, SD, SA, SB, REF(14), $0xa679438e, 17)
+	ROUND(<F1>, SB, SC, SD, SA, REF(15), $0x49b40821, 22)
 	
         ROUND(<F2>, SA, SB, SC, SD, REF( 1), $0xf61e2562, 5)
         ROUND(<F2>, SD, SA, SB, SC, REF( 6), $0xc040b340, 9)
