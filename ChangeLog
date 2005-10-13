@@ -1,3 +1,7 @@
+2005-10-13  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86/md5-compress.asm (REF): Fixed calculation of offset.
+
 2005-10-12  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86/machine.m4 (OFFSET): Moved macro, used to be in...
