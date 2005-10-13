@@ -105,7 +105,15 @@ case "$host" in
     asm_path=x86
     ;;
   *sparc*-*-*)
-    asm_path=sparc
+    AC_TRY_COMPILE([
+#if defined(__sparcv9) || defined(__arch64__)
+#error 64-bit sparc
+#endif
+    ], [], [
+      asm_path=sparc
+    ], [
+      asm_path=sparc64
+    ])
     ;;
   *)
     enable_assembler=no
@@ -119,7 +127,7 @@ if test "x$enable_assembler" = xyes ; then
     AC_MSG_NOTICE([Looking for assembler files in $asm_path/.])
     found=no
     for tmp_f in aes.asm aes-encrypt.asm aes-decrypt.asm \
-		 arcfour-crypt.asm sha1-compress.asm machine.m4; do
+		 arcfour-crypt.asm md5-compress.asm sha1-compress.asm machine.m4; do
 #       echo "Looking for $srcdir/$asm_path/$tmp_f"
       if test -f "$srcdir/$asm_path/$tmp_f"; then
 #        echo found
