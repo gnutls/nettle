@@ -1,5 +1,13 @@
 2005-10-13  Niels Möller  <niels@s3.kth.se>
 
+	* config.m4.in (ASM_MARK_NOEXEC_STACK): Use a diversion, to
+	substitute the value of ASM_MARK_NOEXEC_STACK at the end of each
+	assembler file.
+
+	* configure.ac (ASM_MARK_NOEXEC_STACK): Check if the C compiler
+	generates a .note.GNU-stack section. If so, we should do the same
+	in our assembler files.
+
 	* sparc64/aes.asm: New file. Copy of sparc/aes.asm, with minor
 	changes to the stack frame layout. Patch contributed by Henrik
 	Grubbström. Not yet tested.
