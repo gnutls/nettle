@@ -1,3 +1,19 @@
+2005-10-13  Niels Möller  <niels@s3.kth.se>
+
+	* sparc64/aes.asm: New file. Copy of sparc/aes.asm, with minor
+	changes to the stack frame layout. Patch contributed by Henrik
+	Grubbström. Not yet tested.
+
+	* x86/md5-compress.asm: Skip copying of input to the stack, and
+	don't allocate space for it.
+	(F1): Fixed bug.
+
+	* testsuite/md5-test.c: Document intermediate values for first
+	test case.
+
+	* configure.ac (asm_path): Check for sparc64, and use sparc64
+	subdirectory. Link in md5-compress.asm, if it exists.
+
 2005-10-13  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86/md5-compress.asm (REF): Fixed calculation of offset.
