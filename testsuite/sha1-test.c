@@ -34,8 +34,8 @@ test_main(void)
 
 /* These are intermediate values for the single sha1_compress call
    that results from the first testcase, SHA1(""). Each row is the
-   values for A, B, C, D, E after the i:th row. The row i = -1 gives
-   the initial values, and i = 99 givces the output values.
+   values for A, B, C, D, E after the i:th round. The row i = -1 gives
+   the initial values, and i = 99 gives the output values.
 
       i         A        B        C        D        E
      -1: 67452301 efcdab89 98badcfe 10325476 c3d2e1f0
