@@ -181,6 +181,7 @@ AC_SUBST([CCPIC_MAYBE])
 
 ASM_SYMBOL_PREFIX=''
 ASM_ELF_STYLE='no'
+ASM_MARK_NOEXEC_STACK=''
 
 if test x$enable_assembler = xyes ; then
   AC_CACHE_CHECK([if globals are prefixed by underscore],
@@ -201,6 +202,30 @@ if test x$enable_assembler = xyes ; then
   if test x$nettle_cv_asm_underscore = xyes ; then
     ASM_SYMBOL_PREFIX='_'
   fi
+
+  AC_CACHE_CHECK([if we should use a .note.GNU-stack section],
+  nettle_cv_asm_gnu_stack,
+  [ # Default
+    nettle_cv_asm_gnu_stack=no
+
+    cat >conftest.c <<EOF
+int foo() { return 0; }
+EOF
+    nettle_compile="$CC $CFLAGS $CPPFLAGS -c conftest.c >conftest.out 2>&1"
+    if AC_TRY_EVAL(nettle_compile); then
+      cat conftest.out >&AC_FD_CC
+      objdump -x conftest.o | grep '\.note\.GNU-stack' > /dev/null \
+      && nettle_cv_asm_gnu_stack=yes
+    else
+      cat conftest.out >&AC_FD_CC
+      echo "configure: failed program was:" >&AC_FD_CC
+      cat conftest.s >&AC_FD_CC
+    fi
+    rm -f conftest.*])
+  if test x$nettle_cv_asm_gnu_stack = xyes ; then
+    ASM_MARK_NOEXEC_STACK='.section .note.GNU-stack,"",@progbits'
+  fi
+
   # With inspiration from GMP_TRY_ASSEMBLE
   AC_CACHE_CHECK([for ELF-style pseudo-ops],
     nettle_cv_asm_elf_style_pseudo_ops,
@@ -231,6 +256,7 @@ fi
 
 AC_SUBST(ASM_SYMBOL_PREFIX)
 AC_SUBST(ASM_ELF_STYLE)
+AC_SUBST(ASM_MARK_NOEXEC_STACK)
 
 AC_SUBST(SHLIBCFLAGS)
 AC_SUBST(SHLIBMAJOR)
