@@ -57,7 +57,7 @@ define(<COPY>,<
 	movl	TMP, OFFSET($1)(DATA)
 >)
 
-define(<REF>,<OFFSET(eval(4 * $1))(DATA)>)
+define(<REF>,<OFFSET($1)(DATA)>)
 	
 C ROUND(f, w, x, y, z, k, data, s):
 C	w += f(x,y,z) + data + k
