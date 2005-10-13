@@ -24,7 +24,6 @@ define(<SC>,<%ecx>)
 define(<SD>,<%edx>)
 define(<TMP>,<%ebp>)
 define(<INPUT>,<%esi>)
-C define(<DATA>,<%esp>)
 
 C %edi is unused
 
@@ -72,24 +71,25 @@ define(<ROUND>,<
 	.align 16
 PROLOGUE(_nettle_md5_compress)
 	C save all registers that need to be saved
-	
-	pushl	%ebx		C  76(%esp)
-	pushl	%ebp		C  72(%esp)
-	pushl	%esi		C  68(%esp)
-	pushl	%edi		C  64(%esp)
 
-	subl	$64, %esp	C  %esp = W
+				C  24(%esp)  input
+				C  20(%esp)  state
+				C  16(%esp)  Return address
+	pushl	%ebx		C  12(%esp)
+	pushl	%ebp		C   8(%esp)
+	pushl	%esi		C   4(%esp)
+	pushl	%edi		C    (%esp)
 
 	C load the state vector
-	movl	84(%esp),TMP
+	movl	20(%esp),TMP
 	movl	(TMP),   SA
 	movl	4(TMP),  SB
 	movl	8(TMP),  SC
 	movl	12(TMP), SD
 
-	C Pointer to source data. We copy it to aligned storage
-	C at %esp when we first use it.
-	movl	88(%esp), INPUT
+	C Pointer to source data.
+	C Note that if analigned, we suffer unaligned accesses
+	movl	24(%esp), INPUT
 
 	ROUND(<F1>, SA, SB, SC, SD, REF( 0), $0xd76aa478, 7)
 	ROUND(<F1>, SD, SA, SB, SC, REF( 1), $0xe8c7b756, 12)
@@ -160,13 +160,12 @@ PROLOGUE(_nettle_md5_compress)
         ROUND(<F4>, SB, SC, SD, SA, REF( 9), $0xeb86d391, 21)
 	
 	C Update the state vector
-	movl	84(%esp),TMP
+	movl	20(%esp),TMP
 	addl	SA, (TMP) 
 	addl	SB, 4(TMP) 
 	addl	SC, 8(TMP) 
 	addl	SD, 12(TMP) 
 
-	addl	$64, %esp
 	popl	%edi
 	popl	%esi
 	popl	%ebp
