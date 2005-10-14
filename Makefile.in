@@ -38,9 +38,8 @@ dvi installcheck uninstallcheck:
 
 all-here: $(TARGETS) $(DOCTARGETS)
 
-nettle_SOURCES = aes.c \
-	         aes-decrypt-table.c aes-decrypt.c \
-		 aes-encrypt-table.c aes-encrypt.c \
+nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
+		 aes-encrypt-internal.c aes-encrypt.c aes-encrypt-table.c \
 		 aes-set-encrypt-key.c aes-set-decrypt-key.c aes-meta.c \
 		 arcfour.c arcfour-crypt.c arcfour-meta.c \
 		 arctwo.c arctwo-meta.c \
