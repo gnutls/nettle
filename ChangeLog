@@ -1,9 +1,25 @@
+2005-10-14  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (nettle_SOURCES): Removed aes.c,
+	aes-decrypt-table.c. Added aes-decrypt-internal.c and aes-encrypt-internal.c.
+
+	* aes.c, aes-decrypt-table.c: Deleted files.
+
+	* aes-decrypt.c (_aes_decrypt_table): Moved table here, and made
+	static.
+
+	* aes-internal.h (_aes_decrypt_table): Don't declare, it's no
+	longer globally visible.
+
+	* aes-decrypt-internal.c (_nettle_aes_decrypt): New AES decryption
+	function, analogous to _nettle_aes_encrypt.
+
 2005-10-14  Niels Möller  <niels@s3.kth.se>
 
 	* aes-internal.h (AES_ROUND, AES_FINAL_ROUND): New macros.
 
 	* aes-encrypt-internal.c (_nettle_aes_encrypt): New AES encryption
-	function, avoiding the tablebased indexing.
+	function, avoiding the table-based indexing.
 
 	* sha1-compress.c: Added debugging code.
 	* md5-compress.c: Likewise.
