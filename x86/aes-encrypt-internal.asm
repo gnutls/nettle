@@ -1,7 +1,7 @@
 C -*- mode: asm; asm-comment-char: ?C; -*-  
 C nettle, low-level cryptographics library
 C 
-C Copyright (C) 2001, 2002 Rafael R. Sevilla, Niels Möller
+C Copyright (C) 2001, 2002, 2005 Rafael R. Sevilla, Niels Möller
 C  
 C The nettle library is free software; you can redistribute it and/or modify
 C it under the terms of the GNU Lesser General Public License as published by
@@ -90,16 +90,16 @@ PROLOGUE(_nettle_aes_encrypt)
 	movl	KEY,FRAME_KEY
 	.align 16
 .Lround_loop:
-	AES_ROUND(T, SA, SB, SC, SD, TMP, KEY)
+	AES_ROUND(T, SA,SB,SC,SD, TMP, KEY)
 	pushl	TMP
 
-	AES_ROUND(T, SB, SC, SD, SA, TMP, KEY)
+	AES_ROUND(T, SB,SC,SD,SA, TMP, KEY)
 	pushl	TMP
 
-	AES_ROUND(T, SC, SD, SA, SB, TMP, KEY)
+	AES_ROUND(T, SC,SD,SA,SB, TMP, KEY)
 	pushl	TMP
 
-	AES_ROUND(T, SD, SA, SB, SC, TMP, KEY)
+	AES_ROUND(T, SD,SA,SB,SC, TMP, KEY)
 	
 	movl	TMP,SD
 	popl	SC
@@ -145,7 +145,7 @@ PROLOGUE(_nettle_aes_encrypt)
 	C Add last subkey, and store encrypted data
 	movl	FRAME_DST,TMP
 	movl	FRAME_KEY, KEY
-	AES_STORE(SA, SB, SC, SD, KEY, TMP)
+	AES_STORE(SA,SB,SC,SD, KEY, TMP)
 	
 	addl	$16, FRAME_DST		C Increment destination pointer
 	subl	$16, FRAME_LENGTH	C Length
