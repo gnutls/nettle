@@ -82,7 +82,7 @@ _nettle_aes_encrypt(const struct aes_ctx *ctx,
     }
 }
 
-/* Some stats (on a P4 2.2GHz), all for AES 128:
+/* Some stats, all for AES 128:
 
    A. Table-driven indexing (the approach of the old unified
       _aes_crypt function).
@@ -93,11 +93,13 @@ _nettle_aes_encrypt(const struct aes_ctx *ctx,
    D. Put wtxt in four scalar variables.
 
    E. Also put t in four scalar variables.
-   
+
+       P4 2.2 GHz         AMD Duron 1.4GHz
+       
        MB/s  code size
-   A   35.9  0x202
+   A   35.9  0x202        17 MB/s
    B   37.3  0x334
    C   33.0  0x2a7
    D   40.7  0x3f9
-   E   42.9  0x44a
+   E   42.9  0x44a        26 MB/s
  */
