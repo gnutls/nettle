@@ -78,6 +78,7 @@ fi
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
 AC_CHECK_TOOL(NM, nm, strings)
+AC_CHECK_TOOL(OBJDUMP, objdump, strings)
 
 if test "x$ac_cv_prog_cc_stdc" = xno ; then
   AC_ERROR([the C compiler doesn't handle ANSI-C])
@@ -214,7 +215,7 @@ EOF
     nettle_compile="$CC $CFLAGS $CPPFLAGS -c conftest.c >conftest.out 2>&1"
     if AC_TRY_EVAL(nettle_compile); then
       cat conftest.out >&AC_FD_CC
-      objdump -x conftest.o | grep '\.note\.GNU-stack' > /dev/null \
+      $OBJDUMP -x conftest.o | grep '\.note\.GNU-stack' > /dev/null \
       && nettle_cv_asm_gnu_stack=yes
     else
       cat conftest.out >&AC_FD_CC
