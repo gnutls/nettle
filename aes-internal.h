@@ -33,7 +33,7 @@
 #define _aes_decrypt _nettle_aes_decrypt
 #define _aes_encrypt_table _nettle_aes_encrypt_table
 
-/* Define to use only small tables. */
+/* Define to use only small tables. FIXME: Currently not working. */
 #ifndef AES_SMALL
 # define AES_SMALL 0
 #endif
@@ -42,16 +42,6 @@
 # define AES_TABLE_SIZE 1
 #else
 # define AES_TABLE_SIZE 4
-#endif
-
-/* Assembler code using the table should get link errors if linked
- * against a small table. */
-#if AES_SMALL
-# define _aes_encrypt_table _nettle_aes_encrypt_table_small
-# define _aes_decrypt_table _nettle_aes_decrypt_table_small
-#else
-# define _aes_encrypt_table _nettle_aes_encrypt_table
-# define _aes_decrypt_table _nettle_aes_decrypt_table
 #endif
 
 struct aes_table
