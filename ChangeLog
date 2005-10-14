@@ -1,3 +1,13 @@
+2005-10-14  Niels Möller  <niels@s3.kth.se>
+
+	* aes-internal.h (AES_ROUND, AES_FINAL_ROUND): New macros.
+
+	* aes-encrypt-internal.c (_nettle_aes_encrypt): New AES encryption
+	function, avoiding the tablebased indexing.
+
+	* sha1-compress.c: Added debugging code.
+	* md5-compress.c: Likewise.
+
 2005-10-13  Niels Möller  <niels@s3.kth.se>
 
 	* config.m4.in (ASM_MARK_NOEXEC_STACK): Use a diversion, to
