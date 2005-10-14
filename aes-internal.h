@@ -39,9 +39,6 @@
 # define AES_TABLE_SIZE 4
 #endif
 
-/* Name mangling */
-#define _aes_crypt _nettle_aes_crypt
-
 /* Assembler code using the table should get link errors if linked
  * against a small table. */
 #if AES_SMALL
@@ -70,10 +67,16 @@ struct aes_table
 };
 
 void
-_aes_crypt(const struct aes_ctx *ctx,
-	   const struct aes_table *T,
-	   unsigned length, uint8_t *dst,
-	   const uint8_t *src);
+_nettle_aes_crypt(const struct aes_ctx *ctx,
+		  const struct aes_table *T,
+		  unsigned length, uint8_t *dst,
+		  const uint8_t *src);
+
+void
+_nettle_aes_encrypt(const struct aes_ctx *ctx,
+		    const struct aes_table *T,
+		    unsigned length, uint8_t *dst,
+		    const uint8_t *src);
 
 /* Macros */
 #define ROTBYTE(x) (((x) >> 8) | (((x) & 0xff) << 24))
@@ -83,6 +86,24 @@ _aes_crypt(const struct aes_ctx *ctx,
                         ((box)[(((x) >> 16) & 0xff)] << 16) | \
                         ((box)[(((x) >> 24) & 0xff)] << 24))
 
+/* Get the byte with index 0, 1, 2 and 3 */
+#define B0(x) ((x) & 0xff)
+#define B1(x) (((x) >> 8) & 0xff)
+#define B2(x) (((x) >> 16) & 0xff)
+#define B3(x) (((x) >> 24) & 0xff)
+
+#define AES_ROUND(T, w0, w1, w2, w3, k)		\
+((  T->table[0][ B0(w0) ]			\
+  ^ T->table[1][ B1(w1) ]			\
+  ^ T->table[2][ B2(w2) ]			\
+  ^ T->table[3][ B3(w3) ]) ^ (k))
+
+#define AES_FINAL_ROUND(T, w0, w1, w2, w3, k)		\
+((   (uint32_t) T->sbox[ B0(w0) ]			\
+  | ((uint32_t) T->sbox[ B1(w1) ] << 8)			\
+  | ((uint32_t) T->sbox[ B2(w2) ] << 16)		\
+  | ((uint32_t) T->sbox[ B3(w3) ] << 24)) ^ (k))
+     
 /* Internal tables */
 extern const struct aes_table _aes_encrypt_table;
 extern const struct aes_table _aes_decrypt_table;
