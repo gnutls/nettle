@@ -28,6 +28,11 @@
 
 #include "aes.h"
 
+/* Name mangling */
+#define _aes_encrypt _nettle_aes_encrypt
+#define _aes_decrypt _nettle_aes_decrypt
+#define _aes_encrypt_table _nettle_aes_encrypt_table
+
 /* Define to use only small tables. */
 #ifndef AES_SMALL
 # define AES_SMALL 0
@@ -67,16 +72,16 @@ struct aes_table
 };
 
 void
-_nettle_aes_crypt(const struct aes_ctx *ctx,
-		  const struct aes_table *T,
-		  unsigned length, uint8_t *dst,
-		  const uint8_t *src);
+_aes_encrypt(const struct aes_ctx *ctx,
+	     const struct aes_table *T,
+	     unsigned length, uint8_t *dst,
+	     const uint8_t *src);
 
 void
-_nettle_aes_encrypt(const struct aes_ctx *ctx,
-		    const struct aes_table *T,
-		    unsigned length, uint8_t *dst,
-		    const uint8_t *src);
+_aes_decrypt(const struct aes_ctx *ctx,
+	     const struct aes_table *T,
+	     unsigned length, uint8_t *dst,
+	     const uint8_t *src);
 
 /* Macros */
 #define ROTBYTE(x) (((x) >> 8) | (((x) & 0xff) << 24))
@@ -104,10 +109,9 @@ _nettle_aes_encrypt(const struct aes_ctx *ctx,
   | ((uint32_t) T->sbox[ B2(w2) ] << 16)		\
   | ((uint32_t) T->sbox[ B3(w3) ] << 24)) ^ (k))
      
-/* Internal tables */
-extern const struct aes_table _aes_encrypt_table;
-extern const struct aes_table _aes_decrypt_table;
+/* Globally visible so that the same sbox table can be used by aes_set_encrypt_key */
 
+extern const struct aes_table _aes_encrypt_table;
 #define aes_sbox (_aes_encrypt_table.sbox)
 
 #endif /* NETTLE_AES_INTERNAL_H_INCLUDED */
