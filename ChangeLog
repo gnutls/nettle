@@ -1,3 +1,12 @@
+2005-10-16  Niels Möller  <nisse@lysator.liu.se>
+
+	* sparc/aes-encrypt-internal.asm: Implemented. Not yet working,
+	and not optimized.
+
+	* sparc/machine.m4: Use TMP1 and TMP2, so we don't need to pass
+	them as arguments.
+	(AES_FINAL_ROUND): New macro.
+
 2005-10-15  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac (OBJDUMP): Substitute the program false if objdump
