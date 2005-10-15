@@ -182,6 +182,7 @@ AC_SUBST([CCPIC_MAYBE])
 
 ASM_SYMBOL_PREFIX=''
 ASM_ELF_STYLE='no'
+ASM_TYPE_FUNCTION=''
 ASM_MARK_NOEXEC_STACK=''
 
 if test x$enable_assembler = xyes ; then
@@ -227,36 +228,49 @@ EOF
     ASM_MARK_NOEXEC_STACK='.section .note.GNU-stack,"",@progbits'
   fi
 
-  # With inspiration from GMP_TRY_ASSEMBLE
-  AC_CACHE_CHECK([for ELF-style pseudo-ops],
-    nettle_cv_asm_elf_style_pseudo_ops,
-    [cat >conftest.s <<EOF
+  AC_CACHE_CHECK([for ELF-style .type,%function pseudo-ops],
+    [nettle_cv_asm_type_percent_function],
+    [GMP_TRY_ASSEMBLE([
 .text
 .globl foo
-.type foo,@function
+.type foo,%function
 foo:
 .Lend:
 
 .size foo, .Lend - foo
-EOF
-    nettle_assemble="$CC $CFLAGS $CPPFLAGS -c conftest.s >conftest.out 2>&1"
-    if AC_TRY_EVAL(nettle_assemble); then
-      cat conftest.out >&AC_FD_CC
-      nettle_cv_asm_elf_style_pseudo_ops=yes
-    else
-      cat conftest.out >&AC_FD_CC
-      echo "configure: failed program was:" >&AC_FD_CC
-      cat conftest.s >&AC_FD_CC
-      nettle_cv_asm_elf_style_pseudo_ops=no
-    fi
-    rm -f conftest.*])
-  if test x$nettle_cv_asm_elf_style_pseudo_ops = xyes ; then
+],
+       [nettle_cv_asm_type_percent_function=yes],
+       [nettle_cv_asm_type_percent_function=no])])
+
+dnl Needs double quote for the # character
+  AC_CACHE_CHECK([[for ELF-style .type,#function pseudo-ops]],
+    [nettle_cv_asm_type_hash_function],
+    [GMP_TRY_ASSEMBLE([
+.text
+.globl foo
+.type foo,#function
+foo:
+.Lend:
+
+.size foo, .Lend - foo
+],
+       [nettle_cv_asm_type_hash_function=yes],
+       [nettle_cv_asm_type_hash_function=no])])
+
+  if test x$nettle_cv_asm_type_percent_function = xyes ; then
     ASM_ELF_STYLE='yes'
+    ASM_TYPE_FUNCTION='%function'
+  else
+    if test x$nettle_cv_asm_type_hash_function = xyes ; then
+      ASM_ELF_STYLE='yes'
+      ASM_TYPE_FUNCTION='#function'
+    fi
   fi
 fi
 
 AC_SUBST(ASM_SYMBOL_PREFIX)
 AC_SUBST(ASM_ELF_STYLE)
+AC_SUBST(ASM_TYPE_FUNCTION)
 AC_SUBST(ASM_MARK_NOEXEC_STACK)
 
 AC_SUBST(SHLIBCFLAGS)
