@@ -1,7 +1,15 @@
 2005-10-15  Niels Möller  <nisse@lysator.liu.se>
 
-	* configure.ac (ASM_ELF_STYLE): Fixed .type,@function statement
-	used when checking for pseudo operations.
+	* asm.m4 (PROLOGUE): Use TYPE_FUNCTION.
+
+	* config.m4.in: Substitute ASM_TYPE_FUNCTION as TYPE_FUNCTION.
+
+	* configure.ac (ASM_ELF_STYLE): Check for %function and #function,
+	but not for @function.
+	(ASM_TYPE_FUNCTION): New substituted variable.
+
+	* configure.ac (ASM_ELF_STYLE): Fixed .type foo,@function statement
+	used when checking for pseudo operations.	
 
 	* sparc/machine.m4 (AES_LOAD, AES_ROUND): Started writing new AES
 	macros.
