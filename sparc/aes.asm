@@ -28,6 +28,12 @@
 ! NOTE: Some of the %g registers are reserved for operating system etc
 ! (see gcc/config/sparc.h). The only %g registers that seems safe to
 ! use are %g1-%g3.
+
+C FIXME: Use separate code for encryption and decryption, to avoid the IDX lookups.
+C Put AES state in registers. If possible, use two register sets and unroll the loop twice.
+C On sparc64, investigate if we can do two blocks in parallell, using
+C the upper and lower parts of the registers for different blocks.
+C It seems hard to do the byte indexing in parallel though.
 	
 	! Used registers:	%l0,1,2,3,4,5,6,7
 	!			%i0,1,2,3,4 (%i6=%fp, %i7 = return)
@@ -64,9 +70,9 @@ define(t2, %o2)
 define(round, %o3)
 define(key, %o4)
 
-C IDX1 cointains the permutation values * 4 + 2
+C IDX1 contains the permutation values * 4 + 2
 define(IDX1, <T + AES_SIDX1 >)
-C IDX3 cointains the permutation values * 4
+C IDX3 contains the permutation values * 4
 define(IDX3, <T + AES_SIDX3 >)
 
 
