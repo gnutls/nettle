@@ -1,5 +1,8 @@
 2005-10-15  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac (OBJDUMP): Substitute the program false if objdump
+	is not found.
+
 	* asm.m4 (PROLOGUE): Use TYPE_FUNCTION.
 
 	* config.m4.in: Substitute ASM_TYPE_FUNCTION as TYPE_FUNCTION.

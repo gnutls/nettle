@@ -62,7 +62,15 @@ PROLOGUE(_nettle_aes_encrypt)
 .Lblock_loop:
 	C  Read src, and add initial subkey
 
+	
 .Lend:
 	ret
 	restore
 EPILOGUE(_nettle_aes_encrypt)
+
+C Some stats from adriana.lysator.liu.se (SS1000$, 85 MHz), for AES 128
+
+C nettle-1.13 C-code:		1.2 MB/s, 1107 cycles/block	
+C nettle-1.13 assembler:	2.3 MB/s,  572 cycles/block
+
+	
