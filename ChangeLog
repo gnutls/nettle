@@ -1,5 +1,8 @@
 2005-10-15  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac (ASM_ELF_STYLE): Fixed .type,@function statement
+	used when checking for pseudo operations.
+
 	* sparc/machine.m4 (AES_LOAD, AES_ROUND): Started writing new AES
 	macros.
 
