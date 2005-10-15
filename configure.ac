@@ -78,7 +78,8 @@ fi
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
 AC_CHECK_TOOL(NM, nm, strings)
-AC_CHECK_TOOL(OBJDUMP, objdump, strings)
+# Used only for the GNU-stack configure test.
+AC_CHECK_TOOL(OBJDUMP, objdump, false)
 
 if test "x$ac_cv_prog_cc_stdc" = xno ; then
   AC_ERROR([the C compiler doesn't handle ANSI-C])
