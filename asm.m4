@@ -13,7 +13,7 @@ dnl Pseudo ops
 define(<PROLOGUE>,
 <ifelse(ELF_STYLE,yes,
 <.globl C_NAME($1)
-.type C_NAME($1),@function
+.type C_NAME($1),TYPE_FUNCTION
 C_NAME($1):>,
 <.globl C_NAME($1)
 C_NAME($1):>)>)
