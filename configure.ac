@@ -233,7 +233,7 @@ EOF
     [cat >conftest.s <<EOF
 .text
 .globl foo
-.type foo @function
+.type foo,@function
 foo:
 .Lend:
 
