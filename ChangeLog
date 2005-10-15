@@ -1,4 +1,29 @@
+2005-10-15  Niels Möller  <nisse@lysator.liu.se>
+
+	* sparc/machine.m4 (AES_LOAD, AES_ROUND): Started writing new AES
+	macros.
+
+	* sparc/aes-encrypt-internal.asm: New file.
+
 2005-10-14  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86/aes-decrypt.asm, x86/aes-encrypt.asm: Deleted files.
+
+	* x86/aes-decrypt-internal.asm: New file.
+
+	* x86/machine.m4: Changed AES macros, to handle a table register.
+	Also take more of the used registers as argument.
+
+	* x86/aes-encrypt-internal.asm: Rewritten to match new interface,
+	with the table pointer as an argument. Unlike the old code, this
+	should really be position independent.
+
+	* configure.ac: When looking for assembler files, link in
+	aes-encrypt-internal.asm and aes-decrypt-internal.asm. Don't look
+	for aes.asm, aes-encrypt.asm and aes-decrypt.asm.
+	
+	* configure.ac (OBJDUMP): Use AC_CHECK_TOOL to check for objdump.
+	(ASM_MARK_NOEXEC_STACK): Use $OBJDUMP when examining the object file.
 
 	* Makefile.in (nettle_SOURCES): Removed aes.c,
 	aes-decrypt-table.c. Added aes-decrypt-internal.c and aes-encrypt-internal.c.
