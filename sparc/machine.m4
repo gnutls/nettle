@@ -37,12 +37,12 @@ define(<AES_ROUND>, <
 	add	TMP1, AES_TABLE0, TMP1
 	ld	[$2 + TMP1], $8
 
-	srl	$4, 6, TMP1
-	and	TMP1, 0x3fc, TMP1
-	add	TMP1, AES_TABLE1, TMP1
-	ld	[$2 + TMP1], TMP1
+	srl	$4, 6, TMP2
+	and	TMP2, 0x3fc, TMP2
+	add	TMP2, AES_TABLE1, TMP2
+	ld	[$2 + TMP2], TMP2
 	nop
-	xor	$8, TMP1, $8
+	xor	$8, TMP2, $8
 
 	srl	$5, 14, TMP1
 	and	TMP1, 0x3fc, TMP1
@@ -51,16 +51,16 @@ define(<AES_ROUND>, <
 	nop
 	xor	$8, TMP1, $8
 
-	srl	$6, 22, TMP1
-	and	TMP1, 0x3fc, TMP1
-	add	TMP1, AES_TABLE3, TMP1
-	ld	[$2 + TMP1], TMP1
+	srl	$6, 22, TMP2
+	and	TMP2, 0x3fc, TMP2
+	add	TMP2, AES_TABLE3, TMP2
+	ld	[$2 + TMP2], TMP2
 	nop
-	xor	$8, TMP1, $8
+	xor	$8, TMP2, $8
 
-	ld	[$7 + eval(4*$1)], TMP1
+	ld	[$7 + eval(4*$1)], TMP2
 	nop
-	xor	$8, TMP1, $8>)dnl
+	xor	$8, TMP2, $8>)dnl
 
 C AES_FINAL_ROUND(i, T, a, b, c, d, key, dst)
 C Compute one word in the final round function. Output is converted to
