@@ -84,8 +84,10 @@ PROLOGUE(_nettle_aes_encrypt)
 
 	C	Must be even, and includes the final round
 	ld	[AES_NROUNDS + CTX], ROUND
+	nop
 	srl	ROUND, 1, ROUND
-
+	C	Last two rounds handled specially
+	sub	ROUND, 1, ROUND
 .Lround_loop:
 	C	Transform W -> T
 	AES_ROUND(0, T, W0, W1, W2, W3, KEY, T0)
@@ -111,10 +113,10 @@ PROLOGUE(_nettle_aes_encrypt)
 
 	add	KEY, 16, KEY
 	C	Final round
-	AES_ROUND(0, T, T0, T1, T2, T3, KEY, DST)
-	AES_ROUND(1, T, T1, T2, T3, T0, KEY, DST)
-	AES_ROUND(2, T, T2, T3, T0, T1, KEY, DST)
-	AES_ROUND(3, T, T3, T0, T1, T2, KEY, DST)
+	AES_FINAL_ROUND(0, T, T0, T1, T2, T3, KEY, DST)
+	AES_FINAL_ROUND(1, T, T1, T2, T3, T0, KEY, DST)
+	AES_FINAL_ROUND(2, T, T2, T3, T0, T1, KEY, DST)
+	AES_FINAL_ROUND(3, T, T3, T0, T1, T2, KEY, DST)
 
 	subcc	LENGTH, 16, LENGTH
 	bne	.Lblock_loop
@@ -127,9 +129,14 @@ EPILOGUE(_nettle_aes_encrypt)
 
 C Some stats from adriana.lysator.liu.se (SS1000$, 85 MHz), for AES 128
 
-C nettle-1.13 C-code:		1.2 MB/s, 1107 cycles/block	
-C nettle-1.13 assembler:	2.3 MB/s,  572 cycles/block
+C A:	nettle-1.13 C-code
+C B:	nettle-1.13 assembler
+C C:	New C-code
+C D:	New assembler, first correct version
 
-C New C-code:			2.1 MB/s,  615 cycles/block
-
+C	MB/s	cycles/block
+C A	1.2	1107
+C B	2.3	572
+C C	2.1	627
+C D	1.8	722
 	
