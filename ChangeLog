@@ -1,5 +1,17 @@
 2005-10-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* sparc/machine.m4 (AES_FINAL_ROUND): Better scheduling, by
+	interleaving independent operations.
+
+	* sparc/machine.m4 (TMP3): A third temporary register.
+	(AES_FINAL_ROUND): Prepared for scheduling.
+
+	* sparc/machine.m4 (AES_ROUND): Deleted unused argument T. Updated
+	all calls in aes-encrypt-internal.asm.
+
+	* sparc/machine.m4 (AES_ROUND): New loop invariants T0-T3, to
+	avoid the additions of the AES_TABLEx constants in the inner loop.
+
 	* sparc/machine.m4 (AES_ROUND): Better scheduling, by
 	interleaving independent operations.
 
