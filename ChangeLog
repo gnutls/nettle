@@ -1,5 +1,12 @@
 2005-10-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* sparc/aes.asm: Deleted old aes implementation.
+
+	* sparc/aes-decrypt-internal.asm: New file.
+
+	* sparc/machine.m4: Don't use m4 eval, instead rely on the
+	assembler's arithmetic.
+
 	* sparc/machine.m4 (AES_FINAL_ROUND): Better scheduling, by
 	interleaving independent operations.
 
@@ -47,7 +54,7 @@
 	(ASM_TYPE_FUNCTION): New substituted variable.
 
 	* configure.ac (ASM_ELF_STYLE): Fixed .type foo,@function statement
-	used when checking for pseudo operations.	
+	used when checking for pseudo operations.
 
 	* sparc/machine.m4 (AES_LOAD, AES_ROUND): Started writing new AES
 	macros.
@@ -70,7 +77,7 @@
 	* configure.ac: When looking for assembler files, link in
 	aes-encrypt-internal.asm and aes-decrypt-internal.asm. Don't look
 	for aes.asm, aes-encrypt.asm and aes-decrypt.asm.
-	
+
 	* configure.ac (OBJDUMP): Use AC_CHECK_TOOL to check for objdump.
 	(ASM_MARK_NOEXEC_STACK): Use $OBJDUMP when examining the object file.
 
@@ -311,7 +318,7 @@
 	* nettle-internal.h (NETTLE_MAX_CIPHER_BLOCK_SIZE): New constant.
 
 	* nettle.texinfo (Cipher functions): Fixed typo in prototype for
-	arctwo_encrypt (noticed by Adam Langley). 
+	arctwo_encrypt (noticed by Adam Langley).
 
 	* nettle-meta.h: No longer needs to include cbc.h.
 
@@ -327,13 +334,13 @@
 2005-03-17  Niels Möller  <niels@s3.kth.se>
 
 	* config.guess: Support Solaris on x86_64. Fix by Henrik
-	Grubbström. 
+	Grubbström.
 
 2005-01-03  Niels Möller  <niels@s3.kth.se>
 
 	* examples/io.h: Include RSA declarations only when public key
 	algorithms are enabled. Problem reported by Meilof Veeningen
-	<meilof@gmail.com>. 
+	<meilof@gmail.com>.
 
 2004-12-07  Niels Möller  <nisse@lysator.liu.se>
 
@@ -355,7 +362,7 @@
 
 	* config.make.in (.c): Disable default rule for BSD-make.
 
-	* Makefile.in (all check install uninstall) 
+	* Makefile.in (all check install uninstall)
 	(clean distclean mostlyclean maintainer-clean): Don't use the -C
 	flag when invoking make, for compatibility with Solaris make.
 
@@ -390,7 +397,7 @@
 2004-11-24  Niels Möller  <niels@s3.kth.se>
 
 	* configure.ac: Fixed typo, preventing the creation of dependency
-	files. 
+	files.
 
 2004-11-23  Niels Möller  <nisse@lysator.liu.se>
 
@@ -409,7 +416,7 @@
 	* examples/Makefile.in: Likewise.
 	* testsuite/Makefile.in: Likewise.
 	* tools/Makefile.in: Likewise.
-	
+
 	* configure.ac (ASM_SYMBOL_PREFIX): Fixed test.
 	(dummy-dep-files): Added quotes to sed command.
 
@@ -446,7 +453,7 @@
 
 	* Makefile.in: Don't use -include, as it's GNU make specific.
 	* examples/Makefile.in, tools/Makefile.in, testsuite/Makefile.in:
-	Likewise. 
+	Likewise.
 
 	* examples/nettle-openssl.c: Check WITH_OPENSSL, not HAVE_LIBCRYPTO.
 
@@ -474,7 +481,7 @@
 	* aclocal.m4 (LSH_DEPENDENCY_TRACKING): Need extra quoting in case
 	pattern. (This file really lives in the lsh tree, as
 	lsh/acinclude.m4. For a complete ChangeLog, see lsh/Changelog).
-	
+
 2004-10-26  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Bumped version to 1.12.
@@ -483,7 +490,7 @@
 
 	* Makefile.in (clean-here): Delete *.s files.
 	(PRE_CPPFLAGS): Use this variable, not INCLUDES. Removed
-	-I$(srcdir). 
+	-I$(srcdir).
 
 	* x86/arcfour-crypt.asm: Use movzbl when extending %cl to 32 bits.
 
@@ -492,7 +499,7 @@
 	* x86/arcfour-crypt.asm: Reverted the latest two changes; update
 	bost src and dst pointers in the loop, and use plain addb when
 	updating j. These two previous changes slowed the code down on AMD
-	Duron. 
+	Duron.
 
 2004-10-21  Niels Möller  <nisse@lysator.liu.se>
 
@@ -551,7 +558,7 @@
 
 	* testsuite/Makefile.in (uninstall): New dummy target.
 
-	* config.sub: Copied from automake-1.8.5. 
+	* config.sub: Copied from automake-1.8.5.
 
 	* examples/Makefile.in (SOURCES): Added rsa-sign.c and rsa-verify.c.
 	(DISTFILES): Added getopt.h.
@@ -586,7 +593,7 @@
 	Stop using automake. Replaced each Makefile.am with a hand-written
 	Makefile.in.
 	* configure.ac: New output variable CCPIC_MAYBE. New output file
-	config.make. Replaced automake constructions.	
+	config.make. Replaced automake constructions.
 	* .bootstrap: Don't run aclocal and automake.
 	* config.make.in: New file, with shared Makefile variables and rules.
 
@@ -627,11 +634,11 @@
 2004-09-23  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac (SHLIBLINK, SHLIBLIBS): On cygwin, linking needs
-	-Wl,--whole-archive $(OBJECTS) -Wl,--no-whole-archive $(LIBS). 
+	-Wl,--whole-archive $(OBJECTS) -Wl,--no-whole-archive $(LIBS).
 
 2004-09-22  Niels Möller  <niels@s3.kth.se>
 
-	* configure.ac: Setup SHLIBFORLINK and friends for cygwin. 
+	* configure.ac: Setup SHLIBFORLINK and friends for cygwin.
 
 	* list-obj-sizes.awk: Strip *_a-prefix from all file names.
 
@@ -646,7 +653,7 @@
 2004-08-31  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: New command line option --disable-pic. Use
-	LSH_CCPIC. 
+	LSH_CCPIC.
 
 	* Makefile.am (libnettle_a_CFLAGS): Added $(CCPIC), to attempt to
 	build also the static library as position independent code.
@@ -745,7 +752,7 @@
 	(rsa_keygen_SOURCES): Added getopt.h, getopt.c and getopt1.c.
 
 	* examples/getopt.h, examples/getopt.c, examples/getopt1.c: New
-	files. 
+	files.
 
 	* testsuite/des-compat-test.c: Don't include <unistd.h>.
 
@@ -768,9 +775,9 @@
 	* des-compat.c: Reverted const change, now all the des_key_sched
 	arguments are not const. This is also what openssl's interface
 	looks like.
-	(cbc_crypt_func): Deleted typedef, use nettle_crypt_func instead.	
+	(cbc_crypt_func): Deleted typedef, use nettle_crypt_func instead.
 
-	* cbc.h (nettle_crypt_func): Moved typedef here.	
+	* cbc.h (nettle_crypt_func): Moved typedef here.
 	* cbc.c (cbc_encrypt, cbc_decrypt_internal, cbc_decrypt): Use it
 	for typing the f argument. Reverted the const change, for
 	compatibility with nettle_crypt_func.
@@ -812,10 +819,10 @@
 	doesn't get it right.
 	(SUFFIXES): Added .html.
 	(.texinfo.html): Rewrote rule to use a traditional suffix target.
-	
+
 	* configure.ac (enable_assembler): Explicitly set
 	enable_assembler=no, on architectures where we have no assembler
-	files. 
+	files.
 	(ENABLE_ASSEMBLER, ENABLE_SHARED): New automake conditionals.
 
 	* testsuite/testutils.c (xalloc): xalloc(0) should work also on
@@ -828,7 +835,7 @@
 2004-02-15  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/testutils.h: #include nettle-types.h instead of
-	inttypes.h. 
+	inttypes.h.
 
 2004-02-12  Niels Möller  <nisse@lysator.liu.se>
 
@@ -914,7 +921,7 @@
 	* Makefile.am (libnettle_a_SOURCES): Added sha1-compress.c.
 
 	* sha1.c (sha1_transform): Function renamed to sha1_compress, and
-	moved to... 
+	moved to...
 	* sha1-compress.c: ... New file.
 
 2004-02-05  Niels Möller  <nisse@lysator.liu.se>
@@ -936,7 +943,7 @@
 
 	* testsuite/testutils.c (test_cipher_stream): New function, that
 	tries dividing the input into varying size blocks before
-	processing. 
+	processing.
 
 	* x86/arcfour-crypt.asm (nettle_arcfour_crypt): Bug fix, half of
 	the S array swap was forgotten.
@@ -949,7 +956,7 @@
 	i, j at the end of the loop.
 
 	* Makefile.am (EXTRA_DIST): Make sure x86 assembler files are
-	distributed. 
+	distributed.
 	(DISTCLEANFILES): And that the symlinks and .s files are deleted.
 
 	* x86/aes-encrypt.asm, x86/aes-decrypt.asm, x86/arcfour-crypt.asm:
@@ -998,7 +1005,7 @@
 
 	* examples/rsa-decrypt.c (process_file): Finished this function.
 	(main): Initialize x. Check the size of the session key after rsa
-	decryption. 
+	decryption.
 
 	* examples/io.c (write_string): Treat short item count as an error.
 
@@ -1021,9 +1028,9 @@
 
 	* nettle-types.h: New (generated) file, to be used instead of
 	including <inttypes.h> directly. Updated all users of inttypes.h.
-	
+
 	* Makefile.am (DISTCLEANFILES, libnettleinclude_HEADERS): Added
-	nettle-types.h. 
+	nettle-types.h.
 
 	* configure.ac (AX_CREATE_STDINT_H): Create nettle-types.h.
 
@@ -1064,7 +1071,7 @@
 	calling ferror unless we also call fflush.
 
 	* examples/rsa-keygen.c (main): Check return value from
-	simple_random. 
+	simple_random.
 
 	* examples/rsa-decrypt.c, examples/rsa-encrypt.c,
 	examples/rsa-session.h: New files, demonstrating rsa encryption
@@ -1084,7 +1091,7 @@
 2003-08-26  Niels Möller  <niels@s3.kth.se>
 
 	* Makefile.am: Added md2 and md5 files. Deleted the print-path
-	hack. 
+	hack.
 
 	* configure.ac: Bumped version to 1.8.
 
@@ -1115,8 +1122,8 @@
 	Simon Josefsson.
 
 	* des.c (DesSmallFipsEncrypt, DesSmallFipsDecrypt): Moved
-	definitions after the definition of the des_kemap array. 
-	
+	definitions after the definition of the des_kemap array.
+
 2003-08-11  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* rsa-encrypt.c (rsa_encrypt): Bugfix contributed by
@@ -1141,13 +1148,13 @@
 
 2003-05-14  Niels Möller  <niels@s3.kth.se>
 
-	* pgp.h (enum pgp_subpacket_tag): Copied values from RFC 2440. 
+	* pgp.h (enum pgp_subpacket_tag): Copied values from RFC 2440.
 	Renamed PGP_SUBPACKET_ISSUER to PGP_SUBPACKET_ISSUER_KEY_ID.
 
 2003-05-13  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* pgp.h: Do proper namemangling for pgp_put_public_rsa_key and
-	pgp_put_rsa_sha1_signature. 
+	pgp_put_rsa_sha1_signature.
 
 	* pgp-encode.c (pgp_put_mpi): Fixed nettle_mpz_get_str_256 call.
 
@@ -1199,7 +1206,7 @@
 	_nettle_aes_encrypt_table.
 	* x86/aes-decrypt.asm (nettle_aes_decrypt): Fixed references to
 	_nettle_aes_decrypt_table.
-	
+
 2003-04-12  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* testsuite/Makefile.am (TS_SH): New test case symbols-test.
@@ -1219,7 +1226,7 @@
 	Nettle's des functions.
 
 	* base16-meta.c (base16_encode_update): Need to undef before
-	redefining. 
+	redefining.
 
 	* New name mangling, to reduce the risk of link collisions. All
 	functions (except memxor) now use a nettle_ or _nettle prefix when
@@ -1239,7 +1246,7 @@
 2003-03-02  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* examples/nettle-benchmark.c (time_cipher): Don't use GNU C
-	non-constant initializers. 
+	non-constant initializers.
 
 2003-02-23  Niels Moller  <nisse@carduelis>
 
@@ -1265,12 +1272,12 @@
 2003-02-11  Niels Möller  <niels@s3.kth.se>
 
 	* buffer.c (nettle_buffer_copy): Bug fix, it didn't return any
-	value. 
+	value.
 
 2003-02-11  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* testsuite/sexp-format-test.c (test_main): Added test for %( and
-	%). 
+	%).
 
 	* sexp-format.c (sexp_vformat): Handle %( and %).
 
@@ -1297,10 +1304,10 @@
 
 	* sexp-format.c (format_string): New function.
 	(sexp_vformat): Implemented support for literals in the format
-	string. 
+	string.
 
 2003-02-06  Niels Möller  <nisse@lysator.liu.se>
-	
+
 	* testsuite/sexp-conv-test (print_raw, print_nl): New functions.
 	The testfunctions use these instead of using echo directly.
 	Use the test input '3:"\x' instead of '2:"\', to be friendlier to
@@ -1317,7 +1324,7 @@
 
 	* des.h (des_set_key): Name mangling, linker symbols should use a
 	"nettle_" prefix, and this one collided with openssl. Perhaps all
-	symbols should be mangled in a similar way, but that's for later. 
+	symbols should be mangled in a similar way, but that's for later.
 
 	* configure.ac (LDFLAGS): --with-lib-path should add to LDFLAGS,
 	not replace it.
@@ -1345,9 +1352,9 @@
 	* sexp2dsa.c (dsa_signature_from_sexp): New function.
 
 	RSA renaming. Updated all callers.
-	* rsa-sign.c (rsa_private_key_init, rsa_private_key_clear) 
+	* rsa-sign.c (rsa_private_key_init, rsa_private_key_clear)
 	(rsa_private_key_prepare): Renamed functions.
-	* rsa.c (rsa_public_key_init, rsa_public_key_clear) 
+	* rsa.c (rsa_public_key_init, rsa_public_key_clear)
 	(rsa_public_key_prepare): Renamed functions.
 
 2003-01-23  Niels Möller  <nisse@cuckoo.hack.org>
@@ -1379,15 +1386,15 @@
 	* rsa.c (_rsa_check_size): Renamed from rsa_check_size, and made
 	non-static. Private key functions moved to rsa-sign.c.
 
-	* pkcs1.c, pkcs1.h, pkcs1-rsa-md5.c, pkcs1-rsa-sha1.c: New files. 
+	* pkcs1.c, pkcs1.h, pkcs1-rsa-md5.c, pkcs1-rsa-sha1.c: New files.
 	(pkcs1_signature_prefix): New function.
 
 	* testsuite/pkcs1-test.c: New test.
-	
+
 2003-01-22  Niels Möller  <niels@s3.kth.se>
 
 	* examples/Makefile.am (nettle_benchmark_LDADD): Use
-	OPENSSL_LIBFLAGS. 
+	OPENSSL_LIBFLAGS.
 
 	* configure.ac (OPENSSL_LIBFLAGS): If libcrypto is found, add
 	-lcrypto to OPENSSL_LIBFLAGS, not the plain LDFLAGS.
@@ -1400,13 +1407,13 @@
 2003-01-17  Niels Möller  <niels@s3.kth.se>
 
 	* examples/Makefile.am (AM_CPPFLAGS): Use AM_CPPFLAGS instead of
-	AM_CFLAGS. 
+	AM_CFLAGS.
 	* testsuite/Makefile.am (AM_CPPFLAGS): Likewise.
 
 2003-01-16  Niels Möller  <niels@s3.kth.se>
 
 	* testsuite/Makefile.am (check): Can't use quotes around
-	$(srcdir). 
+	$(srcdir).
 
 2003-01-14  Niels Möller  <nisse@lysator.liu.se>
 
@@ -1432,7 +1439,7 @@
 	argument instead.
 	(struct sexp_compound_token): New struct.
 	(sexp_compound_token_init, sexp_compound_token_clear): New
-	functions. 
+	functions.
 	(struct sexp_parser): Added a struct sexp_compound_token
 	attribute, as a temporary measure.
 	(sexp_parse): Take a struct sexp_compound_token * as argument.
@@ -1444,7 +1451,7 @@
 	not pass around both parser and input.
 	(sexp_check_token): handle token == 0.
 	(sexp_parse): Simplified a little by calling sexp_check_token
-	unconditionally. 
+	unconditionally.
 
 	* tools/sexp-conv.c (sexp_convert_string): Deleted function.
 	(sexp_skip_token): Likewise.
@@ -1452,7 +1459,7 @@
 	* tools/sexp-conv.c (enum sexp_token): New constant SEXP_DISPLAY.
 	Start constants from 1, to keep 0 free for special uses.
 	(struct sexp_parse_state): New struct for keeping track of parser
-	state. 
+	state.
 	(sexp_parse_init): New function.
 	(sexp_check_token): New function, replacing sexp_skip_token.
 	(sexp_parse): New function.
@@ -1467,12 +1474,12 @@
 2003-01-07  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* Makefile.am (des_headers): Refer to the desdata binary using
-	$(EXEEXT). 
+	$(EXEEXT).
 
 2003-01-01  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* testsuite/sexp-conv-test: New tests for hex and base64 literal
-	output. 
+	output.
 
 	* tools/sexp-conv.c (sexp_put_string): Print binary strings using
 	either hex or base 64 (in advanced mode).
@@ -1523,13 +1530,13 @@
 	(libnettle_a_SOURCES): Added buffer-init.c and realloc.c.
 
 	* sexp.c (sexp_iterator_exit_lists): New function, #if:ed out for
-	now. 
+	now.
 
 	* desdata.c: Include config.h, to get definition of UNUSED.
 	* shadata.c: Likewise.
 
 	* buffer.c (nettle_buffer_grow): New function, replacing
-	grow_realloc. 
+	grow_realloc.
 	(nettle_buffer_clear): Rewritten to use buffer->realloc.
 
 	* buffer.h (struct nettle_buffer): Replaced the GROW function
@@ -1565,7 +1572,7 @@
 
 	* testsuite/sexp-format-test.c (test_main): Check that %i and %b
 	generate leading zeroes when needed. Check that %b handles
-	negative numbers.	
+	negative numbers.
 
 	* testsuite/rsa2sexp-test.c (test_main): Updated test, one leading
 	zero is needed in the private key expression. In verbose mode,
@@ -1575,17 +1582,17 @@
 	the private key expression.
 
 	* testsuite/bignum-test.c (test_bignum): Use
-	nettle_mpz_init_set_str_256_s. 
+	nettle_mpz_init_set_str_256_s.
 	(test_size): New function.
 	(test_main): Test size computation and formatting of negative
-	numbers. 
+	numbers.
 
 	* sexp2bignum.c (nettle_mpz_set_sexp): Use
-	nettle_mpz_set_str_256_s, to handle negative numbers correctly. 
+	nettle_mpz_set_str_256_s, to handle negative numbers correctly.
 
 	* sexp-format.c (sexp_vformat): For %i, output a leading zero when
 	needed to get a correct, positive, sign. For %b, use
-	nettle_mpz_sizeinbase_256_s, to handle negative numbers properly.	
+	nettle_mpz_sizeinbase_256_s, to handle negative numbers properly.
 
 	* bignum.c (nettle_mpz_sizeinbase_256_s): New function.
 	(nettle_mpz_sizeinbase_256_u): New name, was
@@ -1595,13 +1602,13 @@
 	(nettle_mpz_from_octets): New function.
 	(nettle_mpz_set_str_256_u): New name, was nettle_mpz_set_str_256.
 	(nettle_mpz_init_set_str_256_u): New name, was
-	nettle_mpz_init_set_str_256. 
+	nettle_mpz_init_set_str_256.
 	(nettle_mpz_set_str_256_s): New function, handling negative two's
 	complement numbers.
 	(nettle_mpz_init_set_str_256_s): And an init variant.
 
 	* sexp.c (sexp_iterator_get_uint32): New function.
-	
+
 2002-11-10  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* testsuite/sexp-conv-test: Use input files without any trailing
@@ -1616,7 +1623,7 @@
 	(werror): New function.
 	(sexp_output_hash_init): New function.
 	(sexp_put_char): Made base64 linebreaking configurable.
-	Implemented hashing. 
+	Implemented hashing.
 	(sexp_put_code_start, sexp_put_code_end): Don't output any
 	delimiters here.
 	(sexp_put_string): Output base64 delimiters.
@@ -1638,7 +1645,7 @@
 
 	* des-compat.c (des_ecb3_encrypt): Don't use struct initialization
 	(c89 doesn't allow non-constant initializers). Reported by James
-	Ralston. 
+	Ralston.
 	(des_ede3_cbc_encrypt): Likewise.
 
 	* examples/nettle-openssl.c: Moved from the top-level directory.
@@ -1667,7 +1674,7 @@
 	* sexp2dsa.c (dsa_keypair_from_sexp_alist, dsa_keypair_from_sexp):
 	New file, new functions.
 
-	* rsa2sexp.c (rsa_keypair_to_sexp): %s -> %z renaming. 
+	* rsa2sexp.c (rsa_keypair_to_sexp): %s -> %z renaming.
 
 	* sexp-transport.c (sexp_transport_iterator_first): Fixed bug,
 	length was mishandled.
@@ -1682,7 +1689,7 @@
 	(format_prefix): Rewrote to not use snprintf.
 
 	* sexp2rsa.c (rsa_keypair_from_sexp): New limit argument. Use
-	nettle_mpz_set_sexp. 
+	nettle_mpz_set_sexp.
 
 	* dsa-keygen.c (dsa_generate_keypair): Added some newlines to
 	progress display. Use DSA_P_MIN_BITS.
@@ -1690,7 +1697,7 @@
 	* dsa.h (DSA_MIN_P_BITS): New constant (was DSA_MINIMUM_BITS).
 	(DSA_Q_OCTETS, DSA_Q_BITS): New constants.
 	(dsa_keypair_from_sexp_alist, dsa_keypair_from_sexp): New
-	prototypes. 
+	prototypes.
 
 	* configure.ac: Output tools/Makefile.
 
@@ -1705,7 +1712,7 @@
 	* tools/sexp-conv.c: Moved file from examples directory.
 
 	* testsuite/Makefile.am (TS_SH): New variable. Added
-	sexp-conv-test. 
+	sexp-conv-test.
 
 	* testsuite/testutils.h (LDUP): New macro.
 
@@ -1716,7 +1723,7 @@
 	more than one digit. Added tests for transport mode decoding.
 
 	* testsuite/sexp-format-test.c (test_main): Added tests for %i and
-	%l. 
+	%l.
 
 	* testsuite/sexp-conv-test: Moved test from examples directory.
 	Updated path to sexp-conv, now in ../tools/sexp-conv.
@@ -1742,25 +1749,25 @@
 	library, if it exists.
 	(AM_LDFLAGS): Added -L.., so we can find -lnettle.
 	(run-tests): Set LD_LIBRARY_PATH to ../.lib, when running the
-	testsuite. 
+	testsuite.
 	* testsuite/Makefile.am: Similar changes.
-	
+
 	* Makefile.am (LIBOBJS): Put @LIBOBJS@ into the make variable
-	LIBOBJS. 
+	LIBOBJS.
 	(CLEANFILES): Delete libnettle.so.
 	(clean-local): Delete the .lib linkfarm.
 	($(SHLIBFORLINK)): When building libnettle.so, create a link from
-	.lib/$SHLIBSONAME. Needed at runtime, for the testsuite. 
+	.lib/$SHLIBSONAME. Needed at runtime, for the testsuite.
 
 2002-11-01  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Fixed definitions using SHLIBMAJOR and SHLIBMINOR.
 	Also AC_SUBST SHLIBMAJOR and SHLIBMINOR. Reported by James
-	Ralston. 
+	Ralston.
 
 2002-10-31  Niels Möller  <niels@s3.kth.se>
 
-	* examples/sexp-conv.c(sexp_put_list_start): Deleted function. 
+	* examples/sexp-conv.c(sexp_put_list_start): Deleted function.
 	(sexp_put_list_end): Likewise.
 	(sexp_put_display_start): Likewise.
 	(sexp_put_display_end): Likewise.
@@ -1771,7 +1778,7 @@
 	(sexp_get_hex_string): Likewise.
 	(sexp_get_base64_string): Likewise.
 	(sexp_get_string): Do hex and base64 decoding.
-	
+
 	* examples/sexp-conv.c (enum sexp_char_type): New enum, for end
 	markers in the input strem.
 	(struct sexp_input): Deleted LEVEL attribute. Deleted all usage of
@@ -1825,7 +1832,7 @@
 	(struct sexp_output): Represent the current encoding as a
 	nettle_armor pointer and a state struct.
 	(sexp_output_init): Deleted MODE argument. Now passed to functions
-	that need it. 
+	that need it.
 	(sexp_get_char): Updated to new base64 conventions.
 	(sexp_get_base64_string): Likewise.
 	(sexp_put_raw_char): New function.
@@ -1834,7 +1841,7 @@
 	Use OUTPUT->coding_indent for line breaking, so the INDENT
 	argument was deleted.
 	(sexp_put_code_start): New function, replacing sexp_put_base64_start.
-	(sexp_put_code_end): New function, replacing sexp_put_base64_end. 
+	(sexp_put_code_end): New function, replacing sexp_put_base64_end.
 	(sexp_put_data): Deleted argument INDENT.
 	(sexp_puts): Likewise.
 	(sexp_put_length): Likewise.
@@ -1844,11 +1851,11 @@
 	(sexp_put_display_end): Likewise.
 	(sexp_put_string): Likewise. Also changed base64 handling.
 	(sexp_convert_string): Deleted argument INDENT. New argument
-	MODE_OUT. 
+	MODE_OUT.
 	(sexp_convert_list): New argument MODE_OUT.
 	(sexp_convert_file): Likewise.
 	(sexp_convert_item): Likewise. Also handle output in transport
-	mode. 
+	mode.
 	(match_argument): Simple string comparison.
 	(main): Adapted to above changes.
 
@@ -1858,7 +1865,7 @@
 
 	* testsuite/base64-test.c (test_main): Fixed overlap test to not
 	change the base64 before decoding. Updated to new base64
-	conventions. 
+	conventions.
 
 	* testsuite/Makefile.am (TS_PROGS): Added base16-test.
 
@@ -1880,12 +1887,12 @@
 	Added PADDING attribute.
 
 	* base16.h, base16-encode.c, base16-decode.c, base16-meta.c: New
-	files. 
+	files.
 
 2002-10-28  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* examples/sexp-conv.c (struct hex_decode_ctx): New hex decoding
-	functions. 
+	functions.
 	(sexp_get_raw_char): New function.
 	(sexp_get_char): Use sexp_get_raw_char.
 
@@ -1915,12 +1922,12 @@
 2002-10-25  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* examples/sexp-conv.c (sexp_put_newline): Return void, die on
-	error. 
+	error.
 	(sexp_put_char, sexp_put_data, sexp_puts, sexp_put_length,
 	sexp_put_base64_start, sexp_put_base64_end, sexp_put_string,
 	sexp_put_list_start, sexp_put_list_end, sexp_put_display_start,
 	sexp_put_display_end, sexp_convert_string, sexp_convert_list,
-	sexp_skip_token): Likewise. 
+	sexp_skip_token): Likewise.
 	(sexp_convert_item): Die on error.
 
 2002-10-24  Niels Möller  <nisse@cuckoo.hack.org>
@@ -1931,7 +1938,7 @@
 	(struct sexp_input): Deleted field ITEM.
 	(sexp_get_char): Die on failure, never return -1.
 	(sexp_get_quoted_char): Likewise.
-	(sexp_get_quoted_string): Die on failure, no returned value. 
+	(sexp_get_quoted_string): Die on failure, no returned value.
 	(sexp_get_base64_string): Likewise.
 	(sexp_get_token_string): Likewise.
 	(sexp_get_string): Likewise.
@@ -1947,15 +1954,15 @@
 	* examples/Makefile.am (TS_PROGS): Added sexp-conv-test.
 
 	* examples/sexp-conv.c (sexp_input_init): Initialize input->string
-	properly. 
+	properly.
 	(sexp_get_char): Fixed non-transport case.
 	(sexp_get_quoted_char): Fixed default case.
 	(sexp_get_token): Loop over sexp_get_char (needed for handling of
 	white space). Don't modify input->level. Fixed the code that skips
-	comments. 
+	comments.
 	(sexp_put_char): Fixed off-by-one bug in assertion.
 	(sexp_put_string): Fixed escape handling for output of quoted
-	strings. 
+	strings.
 	(sexp_convert_list): Prettier output, hanging indent after the
 	first list element.
 	(sexp_skip_token): New function.
@@ -1990,10 +1997,10 @@
 2002-10-21  Niels Möller  <niels@s3.kth.se>
 
 	* Makefile.am (libnettle_a_SOURCES): Added
-	sexp-format-transport.c. 
+	sexp-format-transport.c.
 
 	* sexp-transport.c (sexp_transport_iterator_first): New file and
-	function. 
+	function.
 	* sexp.h (sexp_transport_iterator_first): Added protoype.
 
 	* sexp.c (sexp_iterator_next): Abort if iterator type is boogus.
@@ -2001,11 +2008,11 @@
 2002-10-19  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* testsuite/testutils.c (test_armor): Updated to new armor
-	conventions. 
+	conventions.
 
 	* testsuite/base64-test.c (test_main): Test BASE64_ENCODE_LENGTH
 	and BASE64_DECODE_LENGTH. Updated test of base64_encode_raw (used
-	to be base64_encode). 
+	to be base64_encode).
 
 	* base64.h (BASE64_ENCODE_LENGTH, BASE64_DECODE_LENGTH): Fixed and
 	documented macros.
@@ -2023,10 +2030,10 @@
 	* base64.h: Major reorganization.
 
 	* base64.c: Deleted file, contents moved to base64-encode.c or
-	base64-decode.c. 
+	base64-decode.c.
 
 	* base64-encode.c: New file. New supporting both encode-at-once
-	and streamed operation. 
+	and streamed operation.
 
 	* base64-decode.c: New file.
 
@@ -2034,10 +2041,10 @@
 
 	* testsuite/Makefile.am (TS_PROGS): Added dsa-keygen-test.
 
-	* dsa-keygen.c: Call the progress callback only if it's non-NULL. 
+	* dsa-keygen.c: Call the progress callback only if it's non-NULL.
 
 	* Makefile.am (libnettle_a_SOURCES): Added bignum-random.c and
-	dsa-keygen.c. 
+	dsa-keygen.c.
 
 	* testsuite/testutils.c (test_dsa_key): New function to sanity
 	check a dsa keypair.
@@ -2056,12 +2063,12 @@
 	* bignum-random.c: New file.
 	(nettle_mpz_random): New function, moved from...
 	* dsa-sign.c (nettle_mpz_random): ... here. Also changed argument
-	ordering and updated callers. 
-	
+	ordering and updated callers.
+
 	* bignum-random.c: (nettle_mpz_random_size): New function, renamed
-	and moved here from...  
+	and moved here from...
 	* rsa-keygen.c (bignum_random_size): ... here. Updated all
-	callers. 
+	callers.
 
 	* testsuite/testutils.c (test_dsa): Needs both public and private
 	key as arguments.
@@ -2080,17 +2087,17 @@
 	(rsa_sha1_verify): Likewise.
 
 	* dsa-verify.c (dsa_verify): Use const for the public key
-	argument. 
+	argument.
 
 	* dsa-sign.c (dsa_sign): Needs the public key as argument, in
 	addition to the private key. Use const.
 
 	* dsa.h (struct dsa_private_key): Don't include the public
-	information here. 
+	information here.
 	* dsa.c (dsa_private_key_init, dsa_private_key_clear): Updated to
-	new struct dsa_private_key.  
+	new struct dsa_private_key.
 
-	* dsa-sign.c (dsa_sign): Bugfix, added missing mpz_init call. 
+	* dsa-sign.c (dsa_sign): Bugfix, added missing mpz_init call.
 
 	* Makefile.am (libnettle_a_SOURCES): Added dsa files.
 	(libnettleinclude_HEADERS): Added dsa.h.
@@ -2103,7 +2110,7 @@
 
 	* nettle-meta.h: Moved the nettle_random_func and
 	nettle_progress_func typedefs here...
-	* rsa.h: ... from here.	
+	* rsa.h: ... from here.
 
 2002-10-07  Niels Möller  <nisse@cuckoo.hack.org>
 
@@ -2111,7 +2118,7 @@
 
 	* sexp.c (sexp_iterator_parse): New function, similar to the old
 	sexp_iterator_next, but independent of the previous value of the
-	iterator->type. 
+	iterator->type.
 	(sexp_iterator_first): Use sexp_iterator_parse.
 	(sexp_iterator_next): Likewise.
 	(sexp_iterator_enter_list): Use sexp_iterator_parse. SEXP_START
@@ -2121,7 +2128,7 @@
 2002-10-06  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* sexp2rsa.c (get_value): No need to call sexp_iterator_next
-	anymore. 
+	anymore.
 
 	* sexp.c (sexp_iterator_assoc): Advance the iterator to the
 	element after a matching tag, before recording it.
@@ -2137,9 +2144,9 @@
 	(sexp_iterator_exit_list): Return with iterator pointing to the
 	element after the list.
 	(sexp_iterator_check_type): Call sexp_iterator_next before
-	returning. 
+	returning.
 	(sexp_iterator_check_types): Likewise.
-	(sexp_iterator_assoc): Rearranged calls of sexp_iterator_next. 
+	(sexp_iterator_assoc): Rearranged calls of sexp_iterator_next.
 
 	* sexp.c (sexp_iterator_enter_list): Call sexp_iterator_next to
 	get to the first element of the list. Updated callers.
@@ -2153,14 +2160,14 @@
 	* testsuite/sexp-test.c (test_main): Likewise.
 
 	* sexp.c (sexp_iterator_init): Made this function static.
-	(sexp_iterator_first): New, friendlier, initialization function. 
+	(sexp_iterator_first): New, friendlier, initialization function.
 
 	* pgp-encode.c: New file. Functions for writing openpgp data
-	packets. 
+	packets.
 
 	* pgp.h: New file, with pgp related declarations.
 
-	* rsa2openpgp.c (rsa_keypair_to_openpgp): New file, new function. 
+	* rsa2openpgp.c (rsa_keypair_to_openpgp): New file, new function.
 
 2002-10-04  Niels Möller  <niels@s3.kth.se>
 
@@ -2173,7 +2180,7 @@
 	* NEWS: Note the aes api change.
 
 	* examples/Makefile.am (EXTRA_DIST): Distribute setup-env and
-	teardown-env. 
+	teardown-env.
 
 2002-10-02  Niels Möller  <nisse@cuckoo.hack.org>
 
@@ -2194,7 +2201,7 @@
 	building a shared library (*without* using libtool).
 
 	* Makefile.am: A first attempt at rules for building a shared
-	libnettle.so. 
+	libnettle.so.
 
 2002-10-01  Niels Möller  <niels@s3.kth.se>
 
@@ -2227,7 +2234,7 @@
 	* examples/rsa-keygen.c: Likewise.
 
 	* examples/io.h: Forward declare struct rsa_public_key and struct
-	rsa_private_key, to avoid dependences on config.h. 
+	rsa_private_key, to avoid dependences on config.h.
 
 	* configure.ac (RSA_EXAMPLES): New substituted variable,
 	controlling which example programs to build.
@@ -2242,7 +2249,7 @@
 
 	* configure.ac: New define WITH_PUBLIC_KEY, and new configure flag
 	--disable-public-key. Updated rsa-files to check for that, rather
-	than for HAVE_LIBGMP. 
+	than for HAVE_LIBGMP.
 
 	* examples/io.c, examples/io.c: New files. Miscellaneous functions
 	used by the example programs.
@@ -2272,11 +2279,11 @@
 2002-09-29  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* testsuite/Makefile.am (TS_PROGS): Added buffer-test
-	sexp-format-test rsa2sexp-test sexp2rsa-test. 
+	sexp-format-test rsa2sexp-test sexp2rsa-test.
 
 
 	* testsuite/sexp-test.c (test_main): Updated calls to
-	sexp_iterator_assoc. 
+	sexp_iterator_assoc.
 
 	* testsuite/testutils.h (MEMEQH): New macro.
 
@@ -2295,16 +2302,16 @@
 	buffer.c, sexp_format.c, sexp2rsa.c, rsa2sexp.c.
 
 	* rsa.h (rsa_keypair_to_sexp, rsa_keypair_from_sexp): New
-	prototypes. 
+	prototypes.
 
 	* rsa2sexp.c, sexp2rsa.c: New files.
 
 	* sexp.c (sexp_iterator_assoc): Don't enter the list, associate
 	keys within the current list. Still exit the list when done.
 	(sexp_iterator_assoc): Represent keys as plain NUL-terminated
-	strings. 
+	strings.
 	(sexp_iterator_check_type, sexp_iterator_check_types): New
-	functions. 
+	functions.
 
 	* sexp_format.c: New file, implementing an sexp canonical syntax
 	formatter.
@@ -2324,11 +2331,11 @@
 	(sexp_iterator_next): Skip the current list only if type is
 	SEXP_LIST. Handle ')'.
 	(sexp_iterator_enter_list): Set type to SEXP_START.
-	(sexp_iterator_exit_list): Likewise. Don't skip the ')' here. 
+	(sexp_iterator_exit_list): Likewise. Don't skip the ')' here.
 	(sexp_iterator_assoc): Bug fix.
 
 	* testsuite/sexp-test.c (test_main): Reordered sexp_iterator_assoc
-	tests. 
+	tests.
 
 	* nettle.texinfo (Randomness): Documented that yarrow256_init can
 	be called with a zero number of sources.
@@ -2350,7 +2357,7 @@
 
 	* Makefile.am (%.o: %.asm): Create an empty (and unused)
 	dependency file, to make the make/automake dependency tracking
-	happier. 
+	happier.
 
 2002-07-18  Niels Möller  <niels@s3.kth.se>
 
@@ -2367,7 +2374,7 @@
 	program links with both nettle and libcrypto (the nettle-benchmark
 	program does).
 
-	* configure.ac: Don't use -ggdb3 with gcc-2.96. 
+	* configure.ac: Don't use -ggdb3 with gcc-2.96.
 	Check for openssl's libcrypto (for benchmarking).
 
 2002-05-16  Niels Möller  <nisse@cuckoo.hack.org>
@@ -2380,7 +2387,7 @@
 
 	* sparc/aes.asm (AES_FINAL_ROUND): New macro.
 	(_aes_crypt): Use AES_FINAL_ROUND for the first word if the final
-	round. 
+	round.
 	(_aes_crypt): And for the rest of the final round.
 	(AES_FINAL_ROUND): Don't update dst, just access it offseted by i.
 	(_aes_crypt): Add 16 to dst at the end of the final round.
@@ -2389,10 +2396,10 @@
 	(AES_ROUND): Use ldub, not lduh + and, to get the second
 	byte of a word.
 	(AES_ROUND): Reordered instructions, so that we can save one
-	register. 
+	register.
 	(AES_ROUND): Eliminated use of t3.
 	(AES_FINAL_ROUND): Eliminated ands.
-	(AES_FINAL_ROUND): Reordered, so that we can save one register. 
+	(AES_FINAL_ROUND): Reordered, so that we can save one register.
 	(AES_FINAL_ROUND): Eliminated t3.
 	(AES_LOAD): New macro.
 	(_aes_crypt): Unrolled source loop.
@@ -2406,7 +2413,7 @@
 	(_aes_crypt): Use AES_ROUND for first word of the
 	round function.
 	(_aes_crypt): And for the rest of the round function.
-	
+
 	* sparc/aes.asm (_aes_crypt): Deleted a bunch of additions,
 	after accessing IDX1.
 
@@ -2416,9 +2423,9 @@
 	Updates aes-encrypt-table.c and aes-decrypt-table.c.
 
 	* sparc/aes.asm (_aes_crypt): Unrolled final loop, preparing for
-	optimizations. 
+	optimizations.
 	(_aes_crypt): Eliminated i from forst copy of the loop. Some
-	cleanup. 
+	cleanup.
 	(_aes_crypt): And from second copy.
 	(_aes_crypt): And from third.
 	(_aes_crypt): And fourth.
@@ -2431,7 +2438,7 @@
 	Also reduced its size to [2][4].
 	(IDX_FACTOR): Deleted constant.
 	* aes-encrypt-table.c (_aes_encrypt_table): Adapted initializer of
-	sparc_idx. 
+	sparc_idx.
 	* aes-decrypt-table.c (_aes_decrypt_table): Likewise.
 	* asm.m4: Deleted AES_SIDX2, to match struct aes_table.
 
@@ -2443,7 +2450,7 @@
 	(_aes_crypt): And from the fourth copy.
 	(_aes_crypt): Renamed .Linner_loop to .Lround_loop.
 	(_aes_crypt): Eliminated the loop variable i from the unrolled
-	loop. 
+	loop.
 	(_aes_crypt): Deleted moves of constants into t2.
 
 2002-05-15  Niels Möller  <niels@s3.kth.se>
@@ -2458,20 +2465,20 @@
 	round, folding it into the final round.
 
 	* x86/machine.m4: Renamed AES_LAST_ROUND to AES_FINAL_ROUND.
-	Updated users. 
+	Updated users.
 
 	* x86/aes-decrypt.asm (aes_decrypt): Use the AES_LOAD macro.
 	(aes_decrypt): Start using AES_ROUND.
 	(aes_decrypt): Use AES_LAST_ROUND.
 
 	* x86/aes-decrypt.asm (aes_decrypt): Moved function to a separate
-	file... 
+	file...
 	* x86/aes.asm: ... from here.
 
 	* x86/aes.asm (aes_decrypt): Use _aes_decrypt_table instead of
-	itbl1-4. Commented out the inclusion of aes_tables.asm. 
+	itbl1-4. Commented out the inclusion of aes_tables.asm.
 	(aes_decrypt): Use _aes_decrypt_table instead of isbox.
-	
+
 
 	* x86/aes-decrypt.asm: New file, empty at the start.
 
@@ -2479,7 +2486,7 @@
 
 	* aes-decrypt.c (_aes_decrypt_table): Moved from this file...
 	* aes-decrypt-table.c (_aes_decrypt_table): ... to a new file.
-	
+
 	* testsuite/aes-test.out: New file, with the output of
 	testsuite/aes-test, when aes.c has been compiled with debugging
 	printouts of intermediate state.
@@ -2506,7 +2513,7 @@
 	* sparc/aes.asm: Avoid using %g6 and %g7, as they are reserved for
 	operating sytem use. Use %i5 and %o7 instead. Also moved %g4 to %g1.
 	(_aes_crypt): Allocate only 32 bytes local storage on the stack.
-	Calculate wtxt and tmp using offsets from %sp, not %fp. 
+	Calculate wtxt and tmp using offsets from %sp, not %fp.
 
 2002-05-14  Niels Möller  <niels@s3.kth.se>
 
@@ -2536,7 +2543,7 @@
 	* x86/machine.m4 (AES_LAST_ROUND): New macro.
 
 	* x86/aes-encrypt.asm (aes_encrypt): Move code here...
-	* x86/aes.asm: ...from here.	
+	* x86/aes.asm: ...from here.
 
 	* x86/aes.asm: Use addl and subl, not add and sub. Replaced
 	references to dtbl1-4 with references to _aes_encrypt_table.
@@ -2568,14 +2575,14 @@
 	(libnettle_a_SOURCES): Added aes-encrypt-table.c.
 
 	* sparc/aes.asm: No need to include asm.m4, that is taken care of
-	by the Makefile. 
+	by the Makefile.
 
 	* config.m4.in: New file, configuration for asm.m4.
 
 	* asm.m4 (C, include_src): New macros.
 
 	* aes-encrypt-table.c: New file, table moved out from
-	aes-encrypt.c. 
+	aes-encrypt.c.
 
 2002-05-06  Niels Möller  <niels@s3.kth.se>
 
@@ -2590,7 +2597,7 @@
 	* configure.ac: Update for automake-1.6.
 
 	* configure.ac: Renamed file, used to be configure.in.
-	
+
 2002-03-20  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* testsuite/run-tests (test_program): Added missing single quote.
@@ -2602,7 +2609,7 @@
 
 2002-03-19  Pontus Sköld  <pont@it.uu.se>
 
-	* testsuite/run-tests: Removed /bin/bashisms to use with /bin/sh. 
+	* testsuite/run-tests: Removed /bin/bashisms to use with /bin/sh.
 
 2002-03-18  Niels Möller  <nisse@cuckoo.hack.org>
 
@@ -2612,7 +2619,7 @@
 2002-03-16  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* configure.in (asm_path): AC_CONFIG_LINKS adds $srcdir
-	automatically. 
+	automatically.
 
 2002-03-14  Niels Möller  <nisse@cuckoo.hack.org>
 
@@ -2621,8 +2628,8 @@
 	* Makefile.am (libnettle_a_SOURCES): Added aes-internal.h.
 	(EXTRA_DIST): Added assembler files.
 
-	* configure.in (asm_path): Use $srcdir when looking for the files. 
-	* configure.in (asm_path): For now, disable x86 assembler code. 
+	* configure.in (asm_path): Use $srcdir when looking for the files.
+	* configure.in (asm_path): For now, disable x86 assembler code.
 	Bumped version to 1.6.
 
 2002-02-25  Niels Möller  <nisse@cuckoo.hack.org>
@@ -2674,7 +2681,7 @@
 
 	* Makefile.am (libnettle_a_SOURCES): Reordered aes-decrypt.c and
 	aes-encrypt.c. For some strange reason it makes the benchmark go
-	faster... 
+	faster...
 
 	* sparc/aes.asm (_aes_crypt): Use double-buffering, and no
 	separate loop for adding the round key.
@@ -2702,7 +2709,7 @@
 	and %o0, %i2 and %o4, %i3 and %o3, %i4 and %o2.
 	(_aes_crypt): wtxt was stored in both %l1 and %l2 for the entire
 	function. Freed %l2 for other uses.
-	(_aes_crypt): Likewise for tmp, freeing register %o1.	
+	(_aes_crypt): Likewise for tmp, freeing register %o1.
 
 	* sparc/machine.m4: New file, for sparc-specific macros.
 
@@ -2738,7 +2745,7 @@
 	and aes_set_decrypt_key.
 
 	* sparc/aes.asm (_aes_crypt): Use symbolic names for the fucntion
-	arguments. 
+	arguments.
 
 2002-02-14  Niels Möller  <nisse@cuckoo.hack.org>
 
@@ -2747,7 +2754,7 @@
 	* aesdata.c: New program for generating AES-related tables.
 
 	* testsuite/testutils.c (print_hex): New function (moved from
-	yarrow-test.c). 
+	yarrow-test.c).
 
 	* testsuite/rsa-keygen-test.c (progress): Declare the ctx argument
 	as UNUSED.
@@ -2756,10 +2763,10 @@
 	with larger blocks.
 
 	* yarrow256.c: Replaced uses of aes_set_key with
-	aes_set_encrypt_key. 
+	aes_set_encrypt_key.
 
 	* nettle-meta.h (_NETTLE_CIPHER_SEP): New macro, useful for
-	algorithms with separate encyption and decryption key setup. 
+	algorithms with separate encyption and decryption key setup.
 
 	* aes-internal.h (struct aes_table): New structure, including all
 	constant tables needed by the unified encryption or decryption
@@ -2776,7 +2783,7 @@
 
 	* aes.h (struct aes_ctx): Deleted space for inverse subkeys. For
 	decryption, the inverse subkeys replace the normal subkeys, and
-	they are stored _in the order they are used_. 
+	they are stored _in the order they are used_.
 
 	* aes-set-key.c (aes_set_key): Deleted file, code moved...
 	* aes-set-decrypt-key.c, aes-set-encrypt-key.c: New files,
@@ -2795,7 +2802,7 @@
 	* aes-set-key.c (aes_set_key): Reversed the order of the inverted
 	subkeys. They are now stored in the same order as they are used.
 
-	* aes-tables.c (itable): New bigger table, generated by aesdata.c. 
+	* aes-tables.c (itable): New bigger table, generated by aesdata.c.
 
 	* aes.c (aes_decrypt): Rewrote to use the bigger tables.
 
@@ -2822,7 +2829,7 @@
 	* configure.in: Fixed spelling of --enable-assembler. Commented
 	out debug echo:s.
 
-	* asm.m4: New file. For now, only doing changequote and changecom.  
+	* asm.m4: New file. For now, only doing changequote and changecom.
 
 	* sparc/aes.asm (aes_encrypt): Added comments.
 	(aes_encrypt): Cut off redundant instruction per block, also
@@ -2839,8 +2846,8 @@
 
 	* sparc/aes.asm (key_addition32): Unrolled loop, gained 4%
 	speed, payed four instructions compared to gcc
-	generated code. 
-	
+	generated code.
+
 	* Makefile.am (.asm.o): New rule for assembling via m4.
 	(libnettle_a_SOURCES): Added new rsa and aes files.
 
@@ -2848,14 +2855,14 @@
 	Selects assembler code depending on the host system.
 
 	* rsa-decrypt.c, rsa-encrypt.c: New files for rsa pkcs#1
-	encryption. 
+	encryption.
 
 	* aes-set-key.c, aes-tables.c: New files, split off from aes.c.
-	Tables are now not static, but use a _aes_ prefix on their names. 
+	Tables are now not static, but use a _aes_ prefix on their names.
 
 	* aes-internal.h: New file.
 
-	* cast128-meta.c (_NETTLE_CIPHER_FIX): Use _NETTLE_CIPHER_FIX. 
+	* cast128-meta.c (_NETTLE_CIPHER_FIX): Use _NETTLE_CIPHER_FIX.
 
 	* cbc.c (cbc_decrypt_internal): New function, doing the real CBC
 	procesing and requiring that src != dst.
@@ -2877,7 +2884,7 @@
 2002-02-11  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86/aes.asm, x86/aes_tables.asm: New assembler implementation by
-	Rafael Sevilla. 
+	Rafael Sevilla.
 
 2002-02-06  Niels Möller  <nisse@cuckoo.hack.org>
 
@@ -2889,7 +2896,7 @@
 	(base64_decode_update): New function, replacing base64_decode.
 	Takes a struct base64_ctx argument.
 	* nettle-meta.h: Updated nettle_armor, and related typedefs and
-	macros. 
+	macros.
 	* testsuite/testutils.c (test_armor): Updated.
 	* configure.in: Use AC_PREREQ(2.50).
 
@@ -2928,7 +2935,7 @@
 2002-01-22  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* nettle.texinfo (Nettle soup): New chapter.
-	(Hash functions): New subsection on struct nettle_hash. 
+	(Hash functions): New subsection on struct nettle_hash.
 	(Hash functions): New subsection on struct nettle_cipher.
 	(Keyed hash functions): New section, describing MAC:s and HMAC.
 	(Public-key algorithms): New chapter.
@@ -2947,7 +2954,7 @@
 	missing header files.
 
 	* base64.c, base64.h, base64-meta.c: New files, hacked by Dan
-	Egnor. 
+	Egnor.
 
 2002-01-16  Niels Möller  <nisse@cuckoo.hack.org>
 
@@ -2989,14 +2996,14 @@
 
 	* testsuite/hmac-test.c (test_main): Added hmac-sha1 test cases.
 
-	* rsa.c (rsa_init_private_key, rsa_clear_private_key): Handle d. 
+	* rsa.c (rsa_init_private_key, rsa_clear_private_key): Handle d.
 
 	* rsa.h (struct rsa_private_key): Reintroduced d attribute, to be
 	used only for key generation output.
 	(rsa_generate_keypair): Wrote a prototype.
 
 	* Makefile.am (libnettle_a_SOURCES): Added hmac-sha1.c and
-	nettle-internal.h. 
+	nettle-internal.h.
 
 	* des.c: Use static const for all tables.
 	(des_set_key): Use a new const * variable for the parity
@@ -3007,7 +3014,7 @@
 	* nettle-internal.c, nettle-internal.h: New files.
 
 	* testsuite/Makefile.am (TS_PROGS): Added hmac-test. Deleted old
-	m4-stuff. 
+	m4-stuff.
 
 	* testsuite/testutils.h (LDATA): Moved this macro here,...
 	* testsuite/rsa-test.c: ... from here.
@@ -3027,7 +3034,7 @@
 	* testsuite/rsa-test.c: Also test a 777-bit key.
 
 	* rsa.c (rsa_check_size): Changed argument to an mpz_t. Updated
-	callers. 
+	callers.
 	(rsa_prepare_private_key): Compute the size of the key by
 	computing n = p * q.
 
@@ -3060,7 +3067,7 @@
 	* serpent-meta.c: New file.
 	* twofish-meta.c: New file.
 
-	* examples/nettle-benchmark.c: Use the interface in nettle-meta.h. 
+	* examples/nettle-benchmark.c: Use the interface in nettle-meta.h.
 
 2002-01-11  Niels Möller  <nisse@cuckoo.hack.org>
 
@@ -3073,7 +3080,7 @@
 	Defined structures describing the algoriths. Useful for code that
 	wants to treat an algorithm as a black box.
 	* nettle-meta.h, md5-meta.c, sha1-meta.c, sha256-meta.c: New
-	files. 
+	files.
 
 2002-01-09  Niels Möller  <nisse@cuckoo.hack.org>
 
@@ -3084,9 +3091,9 @@
 	* rsa_sha1.c: Likewise.
 
 	* rsa.c (rsa_prepare_public_key): Renamed function, was
-	rsa_init_public_key. 
+	rsa_init_public_key.
 	(rsa_prepare_private_key): Renamed function, was
-	rsa_init_private_key. 
+	rsa_init_private_key.
 
 	* nettle.texinfo (Hash functions): Update for the changed
 	interface without *_final. Document sha256.
@@ -3103,15 +3110,15 @@
 	* md5.c (md5_digest): Call md5_final and md5_init.
 	(md5_final): Declared static.
 	sha1.c, sha256.c: Analogous changes.
-	
+
 	* bignum.c (nettle_mpz_get_str_256): Declare the input argument
-	const. 
+	const.
 
 2001-12-14  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* Makefile.am (EXTRA_DIST): Added $(des_headers). Changed
 	dependencies for $(des_headers) to depend only on the source file
-	desdata.c, not on the executable.	
+	desdata.c, not on the executable.
 
 2001-12-12  Niels Möller  <nisse@cuckoo.hack.org>
 
@@ -3121,12 +3128,12 @@
 	* yarrow256.c (yarrow_slow_reseed): Bug fix, update the fast pool
 	with the digest of the slow pool.
 	(yarrow256_init): Initialize seed_file and counter to zero, to
-	ease debugging. 
+	ease debugging.
 
 2001-12-07  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* bignum.c (nettle_mpz_get_str_256): Fixed handling of leading
-	zeroes. 
+	zeroes.
 
 2001-12-05  Niels Möller  <nisse@cuckoo.hack.org>
 
@@ -3134,7 +3141,7 @@
 	key event estimator.
 
 	* yarrow_key_event.c (yarrow_key_event_estimate): Fixed handling
-	of timing info. 
+	of timing info.
 
 	* nettle.texinfo (Copyright): Say that under certain
 	circumstances, Nettle can be used as if under the LGPL.
@@ -3151,12 +3158,12 @@
 
 	* yarrow256.c (yarrow256_needed_sources): New function.
 	(yarrow256_is_seeded): New function.
-	(yarrow256_update): Use yarrow256_needed_sources. 
+	(yarrow256_update): Use yarrow256_needed_sources.
 
 2001-11-14  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* testsuite/yarrow-test.out: Updated, to match the seed-file aware
-	generator. 
+	generator.
 
 	* testsuite/yarrow-test.c: Updated expected_output. Check the seed
 	file contents at the end.
@@ -3171,22 +3178,22 @@
 2001-11-02  Niels Möller  <nisse@ehand.com>
 
 	* yarrow256.c (yarrow256_init): Fixed order of code and
-	declarations. 
+	declarations.
 
 2001-10-30  Niels Möller  <nisse@ehand.com>
 
 	* rsa-compat.h: Added real prototypes and declarations.
 
 	* Makefile.am (libnettle_a_SOURCES): Added rsa-compat.h and
-	rsa-compat.c. 
+	rsa-compat.c.
 
 	* rsa-compat.c: New file, implementing RSA ref signature and
 	verification functions.
 
 	* configure.in: Check for libgmp. Deleted tests for SIZEOF_INT and
-	friends. 
+	friends.
 
-	* rsa_sha1.c: New file, PKCS#1 rsa-sha1 signatures. 
+	* rsa_sha1.c: New file, PKCS#1 rsa-sha1 signatures.
 	* rsa_md5.c: New file, PKCS#1 rsa-md5 signatures.
 
 	* rsa.c: New file with general rsa functions.
@@ -3194,13 +3201,13 @@
 	* Makefile.am (libnettle_a_SOURCES): Added rsa and bignum files.
 
 	* bignum.c, bignum.h: New file, with base256 functions missing in
-	gmp. 
+	gmp.
 
 	* testsuite/Makefile.am: Added bignum-test.
 
 	* testsuite/run-tests (test_program): Check the xit code more
 	carefully, and treat 77 as skip. This convention was borrowed from
-	autotest. 
+	autotest.
 
 	* testsuite/macros.m4: New macro SKIP which exits with code 77.
 
@@ -3214,7 +3221,7 @@
 2001-10-14  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* testsuite/des-test.m4: Added testcase taken from applied
-	cryptography. 
+	cryptography.
 
 	* testsuite/yarrow-test.c: Use sha256 instead of sha1 for checking
 	input and output. Updated the expected values.
@@ -3224,7 +3231,7 @@
 	(yarrow_fast_reseed): Call yarrow_iterate.
 
 	* testsuite/yarrow-test.c: Added verbose flag, disabled by
-	default. 
+	default.
 
 2001-10-12  Niels Möller  <nisse@ehand.com>
 
@@ -3236,7 +3243,7 @@
 
 2001-10-12  Niels Möller  <nisse@cuckoo.hack.org>
 
-	* examples/nettle-benchmark.c: New benchmarking program. 
+	* examples/nettle-benchmark.c: New benchmarking program.
 
 2001-10-10  Niels Möller  <nisse@ehand.com>
 
@@ -3244,9 +3251,9 @@
 	output, and compare to expected values.
 
 	* testsuite/Makefile.am (CFLAGS): Don't disable optimization.
-	(run-tests): Set srcdir in the environment when running run-tests. 
+	(run-tests): Set srcdir in the environment when running run-tests.
 
-	* testsuite/rfc1750.txt: Added this rfc as test input for yarrow. 
+	* testsuite/rfc1750.txt: Added this rfc as test input for yarrow.
 
 	* yarrow_key_event.c (yarrow_key_event_estimate): Check if
 	previous is zero.
@@ -3255,7 +3262,7 @@
 	* yarrow256.c: Added debug some output.
 
 	* testsuite/yarrow-test.c (main): Better output of entropy
-	estimates at the end. 
+	estimates at the end.
 
 2001-10-09  Niels Möller  <nisse@ehand.com>
 
@@ -3263,7 +3270,7 @@
 
 	* testsuite/yarrow-test.c: New file.
 
-	* yarrow256.c (yarrow256_init): Initialize the sources. 
+	* yarrow256.c (yarrow256_init): Initialize the sources.
 	(yarrow256_random): Fixed loop condition.
 
 	* yarrow.h (YARROW_KEY_EVENT_BUFFER): New constant.
@@ -3280,7 +3287,7 @@
 	using the old key and feed into the pool.
 
 	* yarrow.h (struct yarrow256_ctx): Deleted buffer, index and
-	block_count. 
+	block_count.
 
 	* yarrow256.c (yarrow_fast_reseed): New function.
 	(yarrow_slow_reseed): New function.
@@ -3291,12 +3298,12 @@
 	(yarrow256_random): Don't buffer any output, instead gate after
 	each request.
 	(YARROW_GATE_THRESHOLD): Deleted constant.
-	
+
 2001-10-07  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* Makefile.am: Added yarrow files.
 
-	* yarrow256.c: New file, implementing Yarrow. Work in progress. 
+	* yarrow256.c: New file, implementing Yarrow. Work in progress.
 
 	* sha256.c: New file, implementing SHA-256.
 
@@ -3307,7 +3314,7 @@
 	* shadata.c: New file, for generating SHA-256 constants.
 
 	* sha.h: Renamed sha1.h to sha.h, and added declarations for
-	SHA-256. 
+	SHA-256.
 
 2001-10-05  Niels Möller  <nisse@ehand.com>
 
@@ -3315,7 +3322,7 @@
 
 2001-10-04  Niels Möller  <nisse@ehand.com>
 
-	* rsa.h, rsa-compat.h, yarrow.h: New files. 
+	* rsa.h, rsa-compat.h, yarrow.h: New files.
 
 2001-09-25  Niels Möller  <nisse@cuckoo.hack.org>
 
@@ -3358,7 +3365,7 @@
 	blocks), the last block of zeroes wasn't used anyway.
 
 	* des-compat.c (des_compat_des3_decrypt): Decrypt in the right
-	order. 
+	order.
 	(des_ncbc_encrypt): Bug fixed.
 	(des_cbc_encrypt): Rewritten as a wrapper around des_ncbc_encrypt.
 
@@ -3398,17 +3405,17 @@
 
 2001-09-09  Niels Möller  <nisse@cuckoo.hack.org>
 
-	* testsuite/cbc-test.m4: Record intermediate values in a comment. 
+	* testsuite/cbc-test.m4: Record intermediate values in a comment.
 	* testsuite/des3-test.m4: Likewise.
 
 	* testsuite/aes-test.m4: Added test case that appeared broken in
 	the cbc test.
 
 	* cbc.c (cbc_encrypt): Bug fix, encrypt block *after* XOR:ing the
-	iv. 
+	iv.
 
 	* Makefile.am (libnettleinclude_HEADERS): Added cbc.h. Deleted
-	des3.h. 
+	des3.h.
 	(libnettle_a_SOURCES): Added des3.c.
 
 	* testsuite/Makefile.am (TS_PROGS): Added des3-test and cbc-test.
@@ -3470,12 +3477,12 @@
 
 	* Use <inttypes.h>, not <stdint.h>.
 
-	* blowfish.h (BLOWFISH_MAX_KEY_SIZE): Fixed, should be 56. 
+	* blowfish.h (BLOWFISH_MAX_KEY_SIZE): Fixed, should be 56.
 
 	* Fixed copyright notices.
 
 	* Makefile.am (libnettle_a_SOURCES): Added desinfo.h and
-	desCode.h. 
+	desCode.h.
 	(info_TEXINFOS): Added manual.
 	(EXTRA_DIST): Added nettle.html.
 	(%.html): Added rule for building nettle.html.
@@ -3495,8 +3502,8 @@
 	Deleted bytes_to_word and word_to_bytes; use LE_READ_UINT32 and
 	LE_WRITE_UINT32 instead.
 	(twofish_selftest): Deleted. Moved the tests to the external
-	testsuite. 
-	(twofish_set_key): Don't silently truncate too large keys. 
+	testsuite.
+	(twofish_set_key): Don't silently truncate too large keys.
 
 	* sha1.c (sha1_update): Use unsigned for length.
 
@@ -3533,16 +3540,16 @@
 	* Added twofish implementation.
 
 	* blowfish.h (struct blowfish_ctx): Use the correct size for the p
-	array. 
+	array.
 
 2001-06-15  Niels Möller  <nisse@ehand.com>
 
 	* testsuite/blowfish-test.m4: Fixed testcase, use correct key
-	length. 
+	length.
 
 	* Makefile.am (libnettle_a_SOURCES): Added blowfish files.
 	($(des_headers)): Strip directory part when passing file name to
-	desdata. 
+	desdata.
 
 	* testsuite/blowfish-test.m4: Added one test, from GNUPG.
 
@@ -3563,8 +3570,8 @@
 
 	* des.c (des_encrypt, des_decrypt): Assert that the key setup was
 	successful.
-	
-	* testsuite/Makefile.am (TS_PROGS): Added tests for des and sha1. 
+
+	* testsuite/Makefile.am (TS_PROGS): Added tests for des and sha1.
 
 	* testsuite/sha1-test.m4: New file.
 
@@ -3573,7 +3580,7 @@
 	* Added SHA1 files.
 
 	* Added desCore files.
-	
+
 	* Makefile.am: Added desCore and sha1.
 
 2001-04-17  Niels Möller  <nisse@cuckoo.hack.org>
@@ -3587,9 +3594,8 @@
 
 	* Makefile.am (EXTRA_DIST): Added memxor.h.
 	(libnettleinclude_HEADERS): Install headers in
-	$(libnettleincludedir). 
+	$(libnettleincludedir).
 
 2001-04-13  Niels Möller  <nisse@cuckoo.hack.org>
 
 	* Initial checkin.
-
