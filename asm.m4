@@ -5,7 +5,7 @@ dnl FORTRAN style comment character
 define(<C>, <
 dnl>)dnl
 
-dnl including files from the srcdir
+dnl Including files from the srcdir
 define(<include_src>, <include(srcdir/$1)>)dnl
 
 dnl Pseudo ops
