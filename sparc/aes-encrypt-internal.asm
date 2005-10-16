@@ -42,10 +42,7 @@ C	%o0-%03 are used for loop invariants T0-T3
 define(<KEY>,	<%o4>)
 define(<ROUND>, <%o5>)
 
-C %g1 and %g2 are TMP1 and TMP2
-		
-
-C Registers %g1-%g3 and %o0 - %o5 are free to use.
+C %g1, %g2, %g3 are TMP1, TMP2 and TMP3
 
 C I'm still slightly confused by the frame layout, specified in
 C "SYSTEM V APPLICATION BINARY INTERFACE SPARC Processor Supplement".
