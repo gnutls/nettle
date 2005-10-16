@@ -32,35 +32,35 @@ C FIXME: Could use registers pointing directly to the four tables
 C FIXME: Needs better instruction scheduling, and perhaps more temporaries
 C Alternatively, we can use a single table and some rotations
 define(<AES_ROUND>, <
-	and	$3, 0xff, TMP1
-	sll	TMP1, 2, TMP1
-	add	TMP1, AES_TABLE0, TMP1
-	ld	[$2 + TMP1], $8
+	and	$3, 0xff, TMP1		C  0
+	sll	TMP1, 2, TMP1		C  0
+	add	TMP1, AES_TABLE0, TMP1	C  0
+	ld	[$2 + TMP1], $8		C  0
 
-	srl	$4, 6, TMP2
-	and	TMP2, 0x3fc, TMP2
-	add	TMP2, AES_TABLE1, TMP2
-	ld	[$2 + TMP2], TMP2
+	srl	$4, 6, TMP2		C  1
+	and	TMP2, 0x3fc, TMP2	C  1
+	add	TMP2, AES_TABLE1, TMP2	C  1
+	ld	[$2 + TMP2], TMP2	C  1
 	nop
-	xor	$8, TMP2, $8
+	xor	$8, TMP2, $8		C  1
 
-	srl	$5, 14, TMP1
-	and	TMP1, 0x3fc, TMP1
-	add	TMP1, AES_TABLE2, TMP1
-	ld	[$2 + TMP1], TMP1
+	srl	$5, 14, TMP1		C  2
+	and	TMP1, 0x3fc, TMP1	C  2
+	add	TMP1, AES_TABLE2, TMP1	C  2
+	ld	[$2 + TMP1], TMP1	C  2
 	nop
-	xor	$8, TMP1, $8
+	xor	$8, TMP1, $8		C  2
 
-	srl	$6, 22, TMP2
-	and	TMP2, 0x3fc, TMP2
-	add	TMP2, AES_TABLE3, TMP2
-	ld	[$2 + TMP2], TMP2
+	srl	$6, 22, TMP2		C  3
+	and	TMP2, 0x3fc, TMP2	C  3
+	add	TMP2, AES_TABLE3, TMP2	C  3
+	ld	[$2 + TMP2], TMP2	C  3
 	nop
-	xor	$8, TMP2, $8
+	xor	$8, TMP2, $8		C  3
 
-	ld	[$7 + eval(4*$1)], TMP2
+	ld	[$7 + eval(4*$1)], TMP2	C  4
 	nop
-	xor	$8, TMP2, $8>)dnl
+	xor	$8, TMP2, $8>)dnl	C  4
 
 C AES_FINAL_ROUND(i, T, a, b, c, d, key, dst)
 C Compute one word in the final round function. Output is converted to
