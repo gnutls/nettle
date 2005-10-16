@@ -1,5 +1,11 @@
 2005-10-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* sparc/aes-encrypt-internal.asm: Explicitly include sparc/aes.m4.
+	* sparc/aes-decrypt-internal.asm: Likewise.
+
+	* sparc/aes.m4: New file. Moved aes-related macros here...
+	* sparc/machine.m4: ... removed aes macros.
+
 	* x86/aes-encrypt-internal.asm: Explicitly include x86/aes.m4.
 	* x86/aes-decrypt-internal.asm: Likewise.
 
