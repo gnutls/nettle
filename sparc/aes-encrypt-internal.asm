@@ -33,10 +33,10 @@ define(<W1>,	<%l1>)
 define(<W2>,	<%l2>)
 define(<W3>,	<%l3>)
 
-define(<T0>,	<%l4>)
-define(<T1>,	<%l5>)
-define(<T2>,	<%l6>)
-define(<T3>,	<%l7>)
+define(<X0>,	<%l4>)
+define(<X1>,	<%l5>)
+define(<X2>,	<%l6>)
+define(<X3>,	<%l7>)
 
 C %o0 and %01 are TMP1 and TMP2
 define(<KEY>,	<%o4>)
@@ -89,34 +89,34 @@ PROLOGUE(_nettle_aes_encrypt)
 	C	Last two rounds handled specially
 	sub	ROUND, 1, ROUND
 .Lround_loop:
-	C	Transform W -> T
-	AES_ROUND(0, T, W0, W1, W2, W3, KEY, T0)
-	AES_ROUND(1, T, W1, W2, W3, W0, KEY, T1)
-	AES_ROUND(2, T, W2, W3, W0, W1, KEY, T2)
-	AES_ROUND(3, T, W3, W0, W1, W2, KEY, T3)
+	C	Transform W -> X
+	AES_ROUND(0, T, W0, W1, W2, W3, KEY, X0)
+	AES_ROUND(1, T, W1, W2, W3, W0, KEY, X1)
+	AES_ROUND(2, T, W2, W3, W0, W1, KEY, X2)
+	AES_ROUND(3, T, W3, W0, W1, W2, KEY, X3)
 
-	C	Transform T -> W
-	AES_ROUND(4, T, T0, T1, T2, T3, KEY, W0)
-	AES_ROUND(5, T, T1, T2, T3, T0, KEY, W1)
-	AES_ROUND(6, T, T2, T3, T0, T1, KEY, W2)
-	AES_ROUND(7, T, T3, T0, T1, T2, KEY, W3)
+	C	Transform X -> W
+	AES_ROUND(4, T, X0, X1, X2, X3, KEY, W0)
+	AES_ROUND(5, T, X1, X2, X3, X0, KEY, W1)
+	AES_ROUND(6, T, X2, X3, X0, X1, KEY, W2)
+	AES_ROUND(7, T, X3, X0, X1, X2, KEY, W3)
 
 	subcc	ROUND, 1, ROUND
 	bne	.Lround_loop
 	add	KEY, 32, KEY
 
 	C	Penultimate round
-	AES_ROUND(0, T, W0, W1, W2, W3, KEY, T0)
-	AES_ROUND(1, T, W1, W2, W3, W0, KEY, T1)
-	AES_ROUND(2, T, W2, W3, W0, W1, KEY, T2)
-	AES_ROUND(3, T, W3, W0, W1, W2, KEY, T3)
+	AES_ROUND(0, T, W0, W1, W2, W3, KEY, X0)
+	AES_ROUND(1, T, W1, W2, W3, W0, KEY, X1)
+	AES_ROUND(2, T, W2, W3, W0, W1, KEY, X2)
+	AES_ROUND(3, T, W3, W0, W1, W2, KEY, X3)
 
 	add	KEY, 16, KEY
 	C	Final round
-	AES_FINAL_ROUND(0, T, T0, T1, T2, T3, KEY, DST)
-	AES_FINAL_ROUND(1, T, T1, T2, T3, T0, KEY, DST)
-	AES_FINAL_ROUND(2, T, T2, T3, T0, T1, KEY, DST)
-	AES_FINAL_ROUND(3, T, T3, T0, T1, T2, KEY, DST)
+	AES_FINAL_ROUND(0, T, X0, X1, X2, X3, KEY, DST)
+	AES_FINAL_ROUND(1, T, X1, X2, X3, X0, KEY, DST)
+	AES_FINAL_ROUND(2, T, X2, X3, X0, X1, KEY, DST)
+	AES_FINAL_ROUND(3, T, X3, X0, X1, X2, KEY, DST)
 
 	subcc	LENGTH, 16, LENGTH
 	bne	.Lblock_loop
