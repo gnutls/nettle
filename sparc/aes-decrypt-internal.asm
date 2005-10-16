@@ -51,10 +51,8 @@ C The sparc32 stack frame looks like
 C
 C %fp -   4: OS-dependent link field
 C %fp -   8: OS-dependent link field
-C %fp -  24: tmp, uint32_t[4]
-C %fp -  40: wtxt, uint32_t[4]
-C %fp - 136: OS register save area. 
-define(<FRAME_SIZE>, 136)
+C %fp - 104: OS register save area. 
+define(<FRAME_SIZE>, 104)
 
 	.file "aes-decrypt-internal.asm"
 

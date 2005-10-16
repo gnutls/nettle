@@ -47,14 +47,17 @@ C %g1 and %g2 are TMP1 and TMP2
 
 C Registers %g1-%g3 and %o0 - %o5 are free to use.
 
+C I'm still slightly confused by the frame layout, specified in
+C "SYSTEM V APPLICATION BINARY INTERFACE SPARC Processor Supplement".
+C However, Sun's cc generates a 104 byte stack frame for a function
+C with no local variables, so that should be good enough for us too.
+
 C The sparc32 stack frame looks like
 C
 C %fp -   4: OS-dependent link field
 C %fp -   8: OS-dependent link field
-C %fp -  24: tmp, uint32_t[4]
-C %fp -  40: wtxt, uint32_t[4]
-C %fp - 136: OS register save area. 
-define(<FRAME_SIZE>, 136)
+C %fp - 104: OS register save area 
+define(<FRAME_SIZE>, 104)
 
 	.file "aes-encrypt-internal.asm"
 
