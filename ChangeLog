@@ -1,5 +1,11 @@
 2005-10-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* sparc/aes-encrypt-internal.asm: Fixed bugs. Now passes the
+	testsuite.
+
+	* sparc/machine.m4 (AES_ROUND, AES_FINAL_ROUND): Bugfixes. Put
+	NOPs in the load dely slots.
+
 	* sparc/aes-encrypt-internal.asm: Implemented. Not yet working,
 	and not optimized.
 
