@@ -22,6 +22,10 @@ C The only difference between this code and the sparc32 code is the
 C frame offsets, and the magic BIAS when accessing the stack (which
 C doesn't matter, since we don't access any data on the stack).
 
+
+C Use the same AES macros as on sparc32.
+include_src(sparc/aes.m4)
+
 C	Arguments
 define(<CTX>,	<%i0>)
 define(<T>,	<%i1>)
@@ -132,3 +136,14 @@ PROLOGUE(_nettle_aes_encrypt)
 	ret
 	restore
 EPILOGUE(_nettle_aes_encrypt)
+
+C	Stats for AES 128 on sellafield.lysator.liu.se (UE450, 296 MHz)
+
+C 1. nettle-1.13 C-code (nettle-1.13 assembler was broken for sparc64)
+C 2. New C-code
+C 3. New assembler code (basically the same as for sparc32)
+	
+C	MB/s	cycles/block
+C 1	0.8	5781
+C 2	1.8	2460
+C 3	8.2	548
