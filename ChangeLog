@@ -1,5 +1,13 @@
 2005-10-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* sparc/machine.m4 (AES_ROUND): Better scheduling, by
+	interleaving independent operations.
+
+	* sparc/machine.m4 (AES_ROUND): Alternate between using TMP1 and
+	TMP2, to prepare for scheduling.
+
+	* sparc/aes-encrypt-internal.asm: Renamed Ti -> Xi.
+
 	* sparc/aes-encrypt-internal.asm: Fixed bugs. Now passes the
 	testsuite.
 
