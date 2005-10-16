@@ -41,21 +41,25 @@ define(<AES_ROUND>, <
 	and	TMP1, 0x3fc, TMP1
 	add	TMP1, AES_TABLE1, TMP1
 	ld	[$2 + TMP1], TMP1
+	nop
 	xor	$8, TMP1, $8
 
 	srl	$5, 14, TMP1
 	and	TMP1, 0x3fc, TMP1
 	add	TMP1, AES_TABLE2, TMP1
 	ld	[$2 + TMP1], TMP1
+	nop
 	xor	$8, TMP1, $8
 
-	srl	$4, 22, TMP1
+	srl	$6, 22, TMP1
 	and	TMP1, 0x3fc, TMP1
 	add	TMP1, AES_TABLE3, TMP1
 	ld	[$2 + TMP1], TMP1
+	nop
 	xor	$8, TMP1, $8
 
 	ld	[$7 + eval(4*$1)], TMP1
+	nop
 	xor	$8, TMP1, $8>)dnl
 
 C AES_FINAL_ROUND(i, T, a, b, c, d, key, dst)
@@ -67,26 +71,27 @@ define(<AES_FINAL_ROUND>, <
 
 	and	$3, 0xff, TMP2
 	ldub	[T + TMP2], TMP2
+	nop
 	xor	TMP1, TMP2, TMP2
-	stb	[$8 + eval(4*i)]
+	stb	TMP2, [$8 + eval(4*$1)]
 	
 	srl	$4, 8, TMP2
 	and	TMP2, 0xff, TMP2
 	ldub	[T + TMP2], TMP2
 	srl	TMP1, 8, TMP1
 	xor	TMP1, TMP2, TMP2
-	stb	[$8 + eval(4*i + 1)]
+	stb	TMP2, [$8 + eval(4*$1 + 1)]
 
 	srl	$5, 16, TMP2
 	and	TMP2, 0xff, TMP2
 	ldub	[T + TMP2], TMP2
 	srl	TMP1, 8, TMP1
 	xor	TMP1, TMP2, TMP2
-	stb	[$8 + eval(4*i + 2)]
+	stb	TMP2, [$8 + eval(4*$1 + 2)]
 
 	srl	$6, 24, TMP2
 	ldub	[T + TMP2], TMP2
 	srl	TMP1, 8, TMP1
 	xor	TMP1, TMP2, TMP2
-	stb	[$8 + eval(4*i + 1)]>)
+	stb	TMP2, [$8 + eval(4*$1 + 3)]>)
 
