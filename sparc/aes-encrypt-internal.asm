@@ -133,10 +133,11 @@ C A:	nettle-1.13 C-code
 C B:	nettle-1.13 assembler
 C C:	New C-code
 C D:	New assembler, first correct version
-
+C E:	New assembler, with basic scheduling of AES_ROUND.
+	
 C	MB/s	cycles/block
 C A	1.2	1107
 C B	2.3	572
 C C	2.1	627
 C D	1.8	722
-	
+C E	2.6	496
