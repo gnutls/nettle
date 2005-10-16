@@ -19,14 +19,14 @@ C the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 C MA 02111-1307, USA.
 
 
-C Arguments
+C	Arguments
 define(<CTX>,	<%i0>)
 define(<T>,	<%i1>)
 define(<LENGTH>,<%i2>)
 define(<DST>,	<%i3>)
 define(<SRC>,	<%i4>)
 
-C AES state, two copies for unrolling
+C	AES state, two copies for unrolling
 
 define(<W0>,	<%l0>)
 define(<W1>,	<%l1>)
@@ -38,9 +38,12 @@ define(<X1>,	<%l5>)
 define(<X2>,	<%l6>)
 define(<X3>,	<%l7>)
 
-C %o0 and %01 are TMP1 and TMP2
+C	%o0-%03 are used for loop invariants T0-T3
 define(<KEY>,	<%o4>)
 define(<ROUND>, <%o5>)
+
+C %g1 and %g2 are TMP1 and TMP2
+		
 
 C Registers %g1-%g3 and %o0 - %o5 are free to use.
 
@@ -69,7 +72,12 @@ PROLOGUE(_nettle_aes_encrypt)
 	save	%sp, -FRAME_SIZE, %sp
 	cmp	LENGTH, 0
 	be	.Lend
-	nop
+
+	C	Loop invariants
+	add	T, AES_TABLE0, T0
+	add	T, AES_TABLE1, T1
+	add	T, AES_TABLE2, T2
+	add	T, AES_TABLE3, T3
 
 .Lblock_loop:
 	C  Read src, and add initial subkey
@@ -79,16 +87,16 @@ PROLOGUE(_nettle_aes_encrypt)
 	AES_LOAD(2, SRC, KEY, W2)
 	AES_LOAD(3, SRC, KEY, W3)
 
+	C	Must be even, and includes the final round
+	ld	[AES_NROUNDS + CTX], ROUND
 	add	SRC, 16, SRC
 	add	KEY, 16, KEY
 
-	C	Must be even, and includes the final round
-	ld	[AES_NROUNDS + CTX], ROUND
-	nop
 	srl	ROUND, 1, ROUND
 	C	Last two rounds handled specially
 	sub	ROUND, 1, ROUND
 .Lround_loop:
+	C The AES_ROUND macro uses T0,... T3
 	C	Transform W -> X
 	AES_ROUND(0, T, W0, W1, W2, W3, KEY, X0)
 	AES_ROUND(1, T, W1, W2, W3, W0, KEY, X1)

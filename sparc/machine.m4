@@ -5,8 +5,14 @@ C understand arithmetic expressions? Mayby we don't need to use m4
 C eval.
 
 C Used as temporaries by the AES macros
-define(<TMP1>, <%o0>)
-define(<TMP2>, <%o1>)
+define(<TMP1>, <%g1>)
+define(<TMP2>, <%g2>)
+
+C Loop invariants used by AES_ROUND
+define(<T0>,	<%o0>)
+define(<T1>,	<%o1>)
+define(<T2>,	<%o2>)
+define(<T3>,	<%o3>)
 
 C AES_LOAD(i, src, key, res)
 define(<AES_LOAD>, <
@@ -36,23 +42,19 @@ define(<AES_ROUND>, <
 	srl	$4, 6, TMP2		C  1
 	sll	TMP1, 2, TMP1		C  0
 	and	TMP2, 0x3fc, TMP2	C  1
-	add	TMP1, AES_TABLE0, TMP1	C  0
-	add	TMP2, AES_TABLE1, TMP2	C  1
-	ld	[$2 + TMP1], $8		C  0	E0
+	ld	[T0 + TMP1], $8		C  0	E0
 	srl	$5, 14, TMP1		C  2
-	ld	[$2 + TMP2], TMP2	C  1
+	ld	[T1 + TMP2], TMP2	C  1
 	and	TMP1, 0x3fc, TMP1	C  2
 	xor	$8, TMP2, $8		C  1	E1
 	srl	$6, 22, TMP2		C  3
-	add	TMP1, AES_TABLE2, TMP1	C  2
+	ld	[T2 + TMP1], TMP1	C  2
 	and	TMP2, 0x3fc, TMP2	C  3
-	ld	[$2 + TMP1], TMP1	C  2
-	add	TMP2, AES_TABLE3, TMP2	C  3
 	xor	$8, TMP1, $8		C  2	E2
 	ld	[$7 + eval(4*$1)], TMP1	C  4
-	ld	[$2 + TMP2], TMP2	C  3
-	xor	$8, TMP1, $8		C  4
-	xor	$8, TMP2, $8		C  3
+	ld	[T3 + TMP2], TMP2	C  3
+	xor	$8, TMP1, $8		C  4	E4
+	xor	$8, TMP2, $8		C  3	E3
 >)dnl
 
 C AES_FINAL_ROUND(i, T, a, b, c, d, key, dst)
