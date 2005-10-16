@@ -63,7 +63,7 @@ sexp_get_char(struct sexp_input *input)
   if (input->coding)
     for (;;)
       {
-	int done;
+	unsigned done;
 
 	sexp_get_raw_char(input);
 	if (input->ctype == SEXP_EOF_CHAR)
