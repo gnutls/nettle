@@ -1,5 +1,9 @@
 2005-10-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* sparc/aes-encrypt-internal.asm, sparc/aes-decrypt-internal.asm:
+	Reduced frame size to 104 bytes, since we no longer need wtxt and
+	tmp on the stack.
+
 	* sparc/aes.asm: Deleted old aes implementation.
 
 	* sparc/aes-decrypt-internal.asm: New file.
