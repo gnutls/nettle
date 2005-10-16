@@ -137,15 +137,19 @@ EPILOGUE(_nettle_aes_encrypt)
 
 C Some stats from adriana.lysator.liu.se (SS1000$, 85 MHz), for AES 128
 
-C A:	nettle-1.13 C-code
-C B:	nettle-1.13 assembler
-C C:	New C-code
-C D:	New assembler, first correct version
-C E:	New assembler, with basic scheduling of AES_ROUND.
+C 1:	nettle-1.13 C-code
+C 2:	nettle-1.13 assembler
+C 3:	New C-code
+C 4:	New assembler, first correct version
+C 5:	New assembler, with basic scheduling of AES_ROUND.
+C 6:	New assembpler, with loop invariants T0-T3.
+C 7:	New assembler, with basic scheduling also of AES_FINAL_ROUND.
 	
 C	MB/s	cycles/block
-C A	1.2	1107
-C B	2.3	572
-C C	2.1	627
-C D	1.8	722
-C E	2.6	496
+C 1	1.2	1107
+C 2	2.3	572
+C 3	2.1	627
+C 4	1.8	722
+C 5	2.6	496
+C 6	3.0	437
+C 7	3.1	415

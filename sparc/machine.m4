@@ -66,29 +66,25 @@ define(<AES_FINAL_ROUND>, <
 	ld	[$7 + eval(4*$1)], TMP3
 
 	and	$3, 0xff, TMP1		C  0
-	ldub	[T + TMP1], TMP1	C  0
-	nop
-	xor	TMP3, TMP1, TMP1	C  0
-	stb	TMP1, [$8 + eval(4*$1)]	C  0
-	
 	srl	$4, 8, TMP2		C  1
+	ldub	[T + TMP1], TMP1	C  0
 	and	TMP2, 0xff, TMP2	C  1
+	xor	TMP3, TMP1, TMP1	C  0
 	ldub	[T + TMP2], TMP2	C  1
-	srl	TMP3, 8, TMP3		C  1
-	xor	TMP3, TMP2, TMP2	C  1
-	stb	TMP2, [$8 + eval(4*$1 + 1)]	C  1
-
+	stb	TMP1, [$8 + eval(4*$1)]	C  0	E0
 	srl	$5, 16, TMP1		C  2
+	srl	TMP3, 8, TMP3		C  1
 	and	TMP1, 0xff, TMP1	C  2
+	xor	TMP3, TMP2, TMP2	C  1
 	ldub	[T + TMP1], TMP1	C  2
-	srl	TMP3, 8, TMP3		C  2
-	xor	TMP3, TMP1, TMP1	C  2
-	stb	TMP1, [$8 + eval(4*$1 + 2)]	C  2
-
+	stb	TMP2, [$8 + eval(4*$1 + 1)]	C  1	E1
 	srl	$6, 24, TMP2		C  3
+	srl	TMP3, 8, TMP3		C  2
 	ldub	[T + TMP2], TMP2	C  3
+	xor	TMP3, TMP1, TMP1	C  2
 	srl	TMP3, 8, TMP3		C  3
+	stb	TMP1, [$8 + eval(4*$1 + 2)]	C  2	E2
 	xor	TMP3, TMP2, TMP2	C  3
-	stb	TMP2, [$8 + eval(4*$1 + 3)]	C  3
+	stb	TMP2, [$8 + eval(4*$1 + 3)]	C  3	E3
 >)
 
