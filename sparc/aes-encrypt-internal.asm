@@ -98,26 +98,26 @@ PROLOGUE(_nettle_aes_encrypt)
 .Lround_loop:
 	C The AES_ROUND macro uses T0,... T3
 	C	Transform W -> X
-	AES_ROUND(0, T, W0, W1, W2, W3, KEY, X0)
-	AES_ROUND(1, T, W1, W2, W3, W0, KEY, X1)
-	AES_ROUND(2, T, W2, W3, W0, W1, KEY, X2)
-	AES_ROUND(3, T, W3, W0, W1, W2, KEY, X3)
+	AES_ROUND(0, W0, W1, W2, W3, KEY, X0)
+	AES_ROUND(1, W1, W2, W3, W0, KEY, X1)
+	AES_ROUND(2, W2, W3, W0, W1, KEY, X2)
+	AES_ROUND(3, W3, W0, W1, W2, KEY, X3)
 
 	C	Transform X -> W
-	AES_ROUND(4, T, X0, X1, X2, X3, KEY, W0)
-	AES_ROUND(5, T, X1, X2, X3, X0, KEY, W1)
-	AES_ROUND(6, T, X2, X3, X0, X1, KEY, W2)
-	AES_ROUND(7, T, X3, X0, X1, X2, KEY, W3)
+	AES_ROUND(4, X0, X1, X2, X3, KEY, W0)
+	AES_ROUND(5, X1, X2, X3, X0, KEY, W1)
+	AES_ROUND(6, X2, X3, X0, X1, KEY, W2)
+	AES_ROUND(7, X3, X0, X1, X2, KEY, W3)
 
 	subcc	ROUND, 1, ROUND
 	bne	.Lround_loop
 	add	KEY, 32, KEY
 
 	C	Penultimate round
-	AES_ROUND(0, T, W0, W1, W2, W3, KEY, X0)
-	AES_ROUND(1, T, W1, W2, W3, W0, KEY, X1)
-	AES_ROUND(2, T, W2, W3, W0, W1, KEY, X2)
-	AES_ROUND(3, T, W3, W0, W1, W2, KEY, X3)
+	AES_ROUND(0, W0, W1, W2, W3, KEY, X0)
+	AES_ROUND(1, W1, W2, W3, W0, KEY, X1)
+	AES_ROUND(2, W2, W3, W0, W1, KEY, X2)
+	AES_ROUND(3, W3, W0, W1, W2, KEY, X3)
 
 	add	KEY, 16, KEY
 	C	Final round

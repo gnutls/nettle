@@ -32,29 +32,29 @@ define(<AES_LOAD>, <
 	or	$4, TMP1, $4
 	xor	$4, TMP2, $4>)dnl
 
-C AES_ROUND(i, T, a, b, c, d, key, res)
+C AES_ROUND(i, a, b, c, d, key, res)
 C Computes one word of the AES round
 C FIXME: Could use registers pointing directly to the four tables
 C FIXME: Needs better instruction scheduling, and perhaps more temporaries
 C Alternatively, we can use a single table and some rotations
 define(<AES_ROUND>, <
-	and	$3, 0xff, TMP1		C  0
-	srl	$4, 6, TMP2		C  1
+	and	$2, 0xff, TMP1		C  0
+	srl	$3, 6, TMP2		C  1
 	sll	TMP1, 2, TMP1		C  0
 	and	TMP2, 0x3fc, TMP2	C  1
-	ld	[T0 + TMP1], $8		C  0	E0
-	srl	$5, 14, TMP1		C  2
+	ld	[T0 + TMP1], $7		C  0	E0
+	srl	$4, 14, TMP1		C  2
 	ld	[T1 + TMP2], TMP2	C  1
 	and	TMP1, 0x3fc, TMP1	C  2
-	xor	$8, TMP2, $8		C  1	E1
-	srl	$6, 22, TMP2		C  3
+	xor	$7, TMP2, $7		C  1	E1
+	srl	$5, 22, TMP2		C  3
 	ld	[T2 + TMP1], TMP1	C  2
 	and	TMP2, 0x3fc, TMP2	C  3
-	xor	$8, TMP1, $8		C  2	E2
-	ld	[$7 + eval(4*$1)], TMP1	C  4
+	xor	$7, TMP1, $7		C  2	E2
+	ld	[$6 + eval(4*$1)], TMP1	C  4
 	ld	[T3 + TMP2], TMP2	C  3
-	xor	$8, TMP1, $8		C  4	E4
-	xor	$8, TMP2, $8		C  3	E3
+	xor	$7, TMP1, $7		C  4	E4
+	xor	$7, TMP2, $7		C  3	E3
 >)dnl
 
 C AES_FINAL_ROUND(i, T, a, b, c, d, key, dst)
