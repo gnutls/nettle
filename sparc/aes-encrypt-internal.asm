@@ -18,6 +18,7 @@ C along with the nettle library; see the file COPYING.LIB.  If not, write to
 C the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 C MA 02111-1307, USA.
 
+include_src(<sparc/aes.m4>)
 
 C	Arguments
 define(<CTX>,	<%i0>)
