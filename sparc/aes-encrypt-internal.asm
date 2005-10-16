@@ -145,11 +145,11 @@ C 5:	New assembler, with basic scheduling of AES_ROUND.
 C 6:	New assembpler, with loop invariants T0-T3.
 C 7:	New assembler, with basic scheduling also of AES_FINAL_ROUND.
 	
-C	MB/s	cycles/block
-C 1	1.2	1107
-C 2	2.3	572
+C	MB/s	cycles/block	Code size (bytes)
+C 1	1.2	1107		592
+C 2	2.3	572		1032
 C 3	2.1	627
 C 4	1.8	722
 C 5	2.6	496
 C 6	3.0	437
-C 7	3.1	415
+C 7	3.1	415		1448
