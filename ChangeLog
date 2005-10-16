@@ -1,5 +1,11 @@
 2005-10-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* x86/aes-encrypt-internal.asm: Explicitly include x86/aes.m4.
+	* x86/aes-decrypt-internal.asm: Likewise.
+
+	* x86/aes.m4: New file. Moved aes-related macros here, from...
+	* x86/machine.m4: ... removed aes macros.
+
 	* sparc64/aes-encrypt-internal.asm: New file.
 	* sparc64/aes-decrypt-internal.asm: New file.
 
