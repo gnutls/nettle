@@ -1,5 +1,12 @@
 2005-10-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* sparc64/aes-encrypt-internal.asm: New file.
+	* sparc64/aes-decrypt-internal.asm: New file.
+
+	* sparc64/machine.m4: Include the same aes macros used for
+	sparc32.
+	(BIAS): Define magic stack bias constant.
+
 	* sparc/aes-encrypt-internal.asm, sparc/aes-decrypt-internal.asm:
 	Reduced frame size to 104 bytes, since we no longer need wtxt and
 	tmp on the stack.
