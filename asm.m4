@@ -34,8 +34,17 @@ define(<STRUCT>,
 <define(SPREFIX<_>$1, SOFFSET)dnl
  define(<SOFFSET>, eval(SOFFSET + ($2)))>)dnl
 
+dnl UCHAR(name)
+define(<UCHAR>, <STRUCT(<$1>, 1)>)dnl
+
 dnl UNSIGNED(name)
 define(<UNSIGNED>, <STRUCT(<$1>, 4)>)dnl
+
+dnl Offsets in arcfour_ctx
+STRUCTURE(ARCFOUR)
+  STRUCT(S, 256)
+  UCHAR(I)
+  UCHAR(J)
 
 dnl Offsets in aes_ctx and aes_table
 STRUCTURE(AES)

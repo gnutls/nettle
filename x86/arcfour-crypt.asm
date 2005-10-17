@@ -55,8 +55,8 @@ C Register usage:
 	movl	32(%esp), %esi
 	addl	%esi, %edx		C  Keep src + length
 	
-	movzbl  256(%ebp), %eax		C  i
-	movzbl  257(%ebp), %ebx		C  j
+	movzbl  ARCFOUR_I (%ebp), %eax	C  i
+	movzbl  ARCFOUR_J (%ebp), %ebx	C  j
 .Lloop:
 C	incb	%al
 	incl	%eax
@@ -80,8 +80,8 @@ C	andl	$0xff, %ebx
 	cmpl	%esi, %edx
 	jne	.Lloop
 
-	movb	%al, 256(%ebp)		C  Store the new i and j.
-	movb	%bl, 257(%ebp)
+	movb	%al, ARCFOUR_I (%ebp)		C  Store the new i and j.
+	movb	%bl, ARCFOUR_J (%ebp)
 .Lend:
 	popl	%edi
 	popl	%esi
