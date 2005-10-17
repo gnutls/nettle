@@ -98,3 +98,19 @@ test_main(void)
 
   SUCCESS();
 }
+
+/* Internal state for the first test case:
+
+   0: a7106950 81cf0e5a 8d5574b3 4b929b0c
+   1: aa1e31c4 c19a8917  12282e4 b23e51eb
+   2: 14be6dac fede8fdc 8fb98878 a27dfb5c
+   3: e80a6f32 431515bb 72e8a651 7daf188b
+   4: c50438c0 d464b2b6 76b875e9 b2b5f574
+   5: d81ab740 746b4d89 ff033aac 44d5ffa2
+   6: 52e6bb4a edadc170 24867df4 6e2ad5d5
+   7: ab1c7365 64d09f00 7718d521 46a3df32
+   8: f1eaad16  1aefdfb 7ba5724d d8499631
+   9:  1020300  2030001  3000102    10203
+  99: 5332f5d8 7def8982 a406b506 c9e95bfd
+
+*/
