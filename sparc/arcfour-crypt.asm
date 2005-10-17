@@ -52,7 +52,7 @@ PROLOGUE(nettle_arcfour_crypt)
 	be	.Lend
 	
 	C	Load both I and J
-	lduw	[CTX + ARCFOUR_I], I
+	lduh	[CTX + ARCFOUR_I], I
 	and	I, 0xff, J
 	srl	I, 8, I
 
@@ -79,7 +79,7 @@ PROLOGUE(nettle_arcfour_crypt)
 	C	Save back I and J	
 	sll	I, 8, I
 	or	I, J, I
-	stuw	I, [CTX + ARCFOUR_I]
+	stuh	I, [CTX + ARCFOUR_I]
 
 .Lend:
 	ret
@@ -90,6 +90,8 @@ EPILOGUE(nettle_arcfour_crypt)
 C Some stats from adriana.lysator.liu.se (SS1000$, 85 MHz), for AES 128
 
 C 1:	nettle-1.13 C-code
-
+C 2:	First working version of the assembler code
+	
 C	MB/s	cycles/byte	Code size (bytes)
-C 1:	6.6	12.4			132
+C 1:	6.6	12.4		132
+C 2:	5.6	14.5		116
