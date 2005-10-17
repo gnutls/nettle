@@ -60,19 +60,19 @@ PROLOGUE(nettle_arcfour_crypt)
 	add	I, 1, I
 	and	I, 0xff, I
 	ldub	[CTX + I], SI
+	subcc	LENGTH,1,LENGTH
+	ldub	[SRC], TMP
 	add	J, SI, J
 	and	J, 0xff, J
 	ldub	[CTX + J], SJ
-	stb	SJ, [CTX + I]
+	add	SRC, 1, SRC
 	stb	SI, [CTX + J]
 	add	SI, SJ, SI
 	and	SI, 0xff, SI
 	ldub	[CTX + SI], SI
-	ldub	[SRC], TMP
+	stb	SJ, [CTX + I]
 	xor	TMP, SI, TMP
 	stb	TMP, [DST]
-	subcc	LENGTH,1,LENGTH
-	add	SRC, 1, SRC
 	bne	.Loop
 	add	DST, 1, DST
 
@@ -91,7 +91,11 @@ C Some stats from adriana.lysator.liu.se (SS1000$, 85 MHz), for AES 128
 
 C 1:	nettle-1.13 C-code
 C 2:	First working version of the assembler code
-	
+C 3:	Moved load of source byte
+C 4:	Better instruction scheduling
+
 C	MB/s	cycles/byte	Code size (bytes)
 C 1:	6.6	12.4		132
 C 2:	5.6	14.5		116
+C 3:	6.0	13.5		116
+C 4:	6.5	12.4		116
