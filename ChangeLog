@@ -1,5 +1,7 @@
 2005-10-17  Niels Möller  <nisse@lysator.liu.se>
 
+	* sparc/arcfour-crypt.asm: Improved instruction scheduling.
+
 	* sparc/arcfour-crypt.asm: Bugfix, use lduh and stuh.
 
 	* sparc/arcfour-crypt.asm: New file.
