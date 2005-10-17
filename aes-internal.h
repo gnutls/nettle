@@ -47,17 +47,6 @@
 struct aes_table
 {
   uint8_t sbox[0x100];
-  unsigned idx[3][4];
-
-  /* Variant of the idx array suitable for the sparc
-   * assembler code.
-   *
-   * sparc_idx[0][i] = idx[0][i] * 4 + 2
-   * sparc_idx[1][i] = idx[2][i] * 4
-   */
-  
-  unsigned sparc_idx [2][4]; 
-
   uint32_t table[AES_TABLE_SIZE][0x100];
 };
 

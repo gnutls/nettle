@@ -1,3 +1,11 @@
+2005-10-17  Niels Möller  <niels@s3.kth.se>
+
+	* aes-internal.h (struct aes_table): Deleted idx and sparc_idx
+	arrays. 
+	* aes-encrypt-table.c (_aes_encrypt_table): Likewise.
+	* aes-decrypt.c (_aes_decrypt_table): Likewise.
+	* asm.m4 (AES): Likewise
+
 2005-10-16  Niels Möller  <nisse@lysator.liu.se>
 
 	* tools/input.c (sexp_get_char): Use unsigned for the done flag.

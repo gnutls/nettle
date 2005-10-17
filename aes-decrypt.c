@@ -68,13 +68,12 @@ _aes_decrypt_table =
       0x17,0x2b,0x04,0x7e,0xba,0x77,0xd6,0x26,
       0xe1,0x69,0x14,0x63,0x55,0x21,0x0c,0x7d,
     },
-    { /* idx */
-      { 3, 0, 1, 2 },
-      { 2, 3, 0, 1 },
-      { 1, 2, 3, 0 } },
-    { /* sparc_idx, explained in aes-internal.h */
-      { 14, 2, 6,  10 },
-      {  4, 8, 12,  0 } },
+    /* Indexing array, hard-coded into the decryption function.
+      { { 0, 1, 2, 3 },
+        { 3, 0, 1, 2 },
+	{ 2, 3, 0, 1 },
+	{ 1, 2, 3, 0 } }
+    */
     { /* itable */
       { 
 	0x50a7f451,0x5365417e,0xc3a4171a,0x965e273a,

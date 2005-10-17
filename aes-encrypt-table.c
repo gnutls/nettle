@@ -77,13 +77,12 @@ _aes_encrypt_table =
       0x8c,0xa1,0x89,0x0d,0xbf,0xe6,0x42,0x68,
       0x41,0x99,0x2d,0x0f,0xb0,0x54,0xbb,0x16,
     },
-    { /* idx */
-      { 1, 2, 3, 0 },
-      { 2, 3, 0, 1 },
-      { 3, 0, 1, 2 } },
-    { /* sparc_idx, explained in aes-internal.h */
-      {  6, 10, 14, 2 },
-      { 12,  0,  4, 8 } },
+    /* Indexing array, hard coded into the encryption function.
+       { { 0, 1, 2, 3 },
+	 { 1, 2, 3, 0 },
+	 { 2, 3, 0, 1 },
+	 { 3, 0, 1, 2 } }
+    */
     { /* dtable */
       { 
 	0xa56363c6,0x847c7cf8,0x997777ee,0x8d7b7bf6,
