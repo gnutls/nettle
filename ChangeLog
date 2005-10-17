@@ -1,3 +1,12 @@
+2005-10-17  Niels Möller  <nisse@lysator.liu.se>
+
+	* sparc/arcfour-crypt.asm: New file.
+
+	* sparc64/aes.asm: Deleted unused file.
+
+	* x86/arcfour-crypt.asm: Use ARCFOUR_I and ARCFOUR_J
+	* asm.m4 (ARCFOUR): New struct.
+
 2005-10-17  Niels Möller  <niels@s3.kth.se>
 
 	* aes-internal.h (struct aes_table): Deleted idx and sparc_idx
