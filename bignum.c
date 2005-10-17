@@ -137,17 +137,14 @@ nettle_mpz_from_octets(mpz_t x,
 		       uint8_t sign)
 {
   unsigned i;
-  mpz_t digit;
 
-  mpz_init(digit);
-
+  /* FIXME: See if we can use something like
+     mpz_import(x, length, 1, 1, 0, 0, s). */
   for (i = 0; i < length; i++)
     {
-      mpz_set_ui(digit, sign ^ s[i]);
-      mpz_mul_2exp(digit, digit, (length - i - 1) * 8);
-      mpz_ior(x, x, digit);
+      mpz_mul_2exp(x, x, 8);
+      mpz_add_ui(x, x, sign ^ s[i]);
     }
-  mpz_clear(digit);
 }
 
 void
