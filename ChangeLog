@@ -1,5 +1,8 @@
 2005-10-17  Niels Möller  <nisse@lysator.liu.se>
 
+	* bignum.c (nettle_mpz_from_octets): Improved loop. Removed the
+	digit temporary (suggested by Torbjörn Granlund).
+
 	* sparc/arcfour-crypt.asm: Improved instruction scheduling.
 
 	* sparc/arcfour-crypt.asm: Bugfix, use lduh and stuh.
