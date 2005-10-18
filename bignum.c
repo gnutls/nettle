@@ -131,54 +131,64 @@ nettle_mpz_get_str_256(unsigned length, uint8_t *s, const mpz_t x)
 }
 
 /* Converting from strings */
+
+#ifdef mpz_import
+/* Was introduced in GMP-4.1 */
+# define nettle_mpz_from_octets(x, length, s) \
+   mpz_import((x), (length), 1, 1, 0, 0, (s))
+#else
 static void
 nettle_mpz_from_octets(mpz_t x,
-		       unsigned length, const uint8_t *s,
-		       uint8_t sign)
+		       unsigned length, const uint8_t *s)
 {
   unsigned i;
 
-  /* FIXME: See if we can use something like
-     mpz_import(x, length, 1, 1, 0, 0, s). */
+  mpz_set_ui(x, 0);
+
   for (i = 0; i < length; i++)
     {
       mpz_mul_2exp(x, x, 8);
-      mpz_add_ui(x, x, sign ^ s[i]);
+      mpz_add_ui(x, x, s[i]);
     }
 }
+#endif
 
 void
 nettle_mpz_set_str_256_u(mpz_t x,
 			 unsigned length, const uint8_t *s)
 {
-  mpz_set_ui(x, 0);
-  nettle_mpz_from_octets(x, length, s, 0);
+  nettle_mpz_from_octets(x, length, s);
 }
 
 void
 nettle_mpz_init_set_str_256_u(mpz_t x,
 			      unsigned length, const uint8_t *s)
 {
-  mpz_init_set_ui(x, 0);
-  nettle_mpz_from_octets(x, length, s, 0);
+  mpz_init(x);
+  nettle_mpz_from_octets(x, length, s);
 }
 
 void
 nettle_mpz_set_str_256_s(mpz_t x,
 			 unsigned length, const uint8_t *s)
 {
-  mpz_set_ui(x, 0);
-
   if (!length)
-    return;
+    {
+      mpz_set_ui(x, 0);
+      return;
+    }
   
+  nettle_mpz_from_octets(x, length, s);
+
   if (s[0] & 0x80)
     {
-      nettle_mpz_from_octets(x, length, s, 0xff);
-      mpz_com(x, x);
+      mpz_t t;
+
+      mpz_init_set_ui(t, 1);
+      mpz_mul_2exp(t, t, length*8);
+      mpz_sub(x, x, t);
+      mpz_clear(t);
     }
-  else
-    nettle_mpz_from_octets(x, length, s, 0);
 }
 
 void
