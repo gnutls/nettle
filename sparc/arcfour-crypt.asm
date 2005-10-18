@@ -87,7 +87,7 @@ PROLOGUE(nettle_arcfour_crypt)
 
 EPILOGUE(nettle_arcfour_crypt)
 
-C Some stats from adriana.lysator.liu.se (SS1000$, 85 MHz), for AES 128
+C Some stats from adriana.lysator.liu.se (SS1000E, 85 MHz), for AES 128
 
 C 1:	nettle-1.13 C-code
 C 2:	First working version of the assembler code
