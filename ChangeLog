@@ -1,3 +1,14 @@
+2005-10-18  Niels Möller  <nisse@lysator.liu.se>
+
+	* bignum.c (nettle_mpz_from_octets): Removed sign argument. If
+	mpz_import is available, define nettle_mpz_from_octets as a macro
+	calling mpz_import.
+	(nettle_mpz_from_octets): Start by setting x to zero; callers no
+	longer need to do that.
+	(nettle_mpz_set_str_256_s): New logic for the handling of negative
+	numbers. Convert in the same way as for positive numbers, and then
+	subtract the appropriate power of two.
+
 2005-10-17  Niels Möller  <nisse@lysator.liu.se>
 
 	* bignum.c (nettle_mpz_from_octets): Improved loop. Removed the
