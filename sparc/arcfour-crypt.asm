@@ -21,7 +21,7 @@ C MA 02111-1307, USA.
 C	Define to YES, to enable the complex code to special case SRC
 C	and DST with compatible alignment.
 	
-define(<WITH_ALIGN>, <NO>)
+define(<WITH_ALIGN>, <YES>)
 
 C	Registers
 
@@ -54,8 +54,8 @@ $2:
 	stb	SI, [CTX + J]
 	add	SI, SJ, SI
 	and	SI, 0xff, SI
-	ldub	[CTX + SI], SI
 	stb	SJ, [CTX + I]
+	ldub	[CTX + SI], SI
 	xor	TMP, SI, TMP
 	stb	TMP, [DST]
 	bne	$2
@@ -77,8 +77,8 @@ $2:
 	stb	SI, [CTX + J]
 	add	SI, SJ, SI
 	and	SI, 0xff, SI
-	ldub	[CTX + SI], TMP
 	stb	SJ, [CTX + I]
+	ldub	[CTX + SI], TMP
 
 	add	I, 1, I
 	and	I, 0xff, I
@@ -90,9 +90,9 @@ $2:
 	stb	SI, [CTX + J]
 	add	SI, SJ, SI
 	and	SI, 0xff, SI
+	stb	SJ, [CTX + I]
 	ldub	[CTX + SI], SI
 	sll	TMP, 8, TMP
-	stb	SJ, [CTX + I]
 	or	TMP, SI, TMP
 	
 	add	I, 1, I
@@ -105,9 +105,9 @@ $2:
 	stb	SI, [CTX + J]
 	add	SI, SJ, SI
 	and	SI, 0xff, SI
+	stb	SJ, [CTX + I]
 	ldub	[CTX + SI], SI
 	sll	TMP, 8, TMP
-	stb	SJ, [CTX + I]
 	or	TMP, SI, TMP
 
 	add	I, 1, I
@@ -120,9 +120,9 @@ $2:
 	stb	SI, [CTX + J]
 	add	SI, SJ, SI
 	and	SI, 0xff, SI
+	stb	SJ, [CTX + I]
 	ldub	[CTX + SI], SI
 	sll	TMP, 8, TMP
-	stb	SJ, [CTX + I]
 	or	TMP, SI, TMP
 	xor	WORD, TMP, WORD
 	st	WORD, [DST]
@@ -211,6 +211,7 @@ C 2:	First working version of the assembler code
 C 3:	Moved load of source byte
 C 4:	Better instruction scheduling
 C 5:	Special case SRC and DST with compatible alignment
+C 6:	After bugfix (reorder of ld [CTX+SI+SJ] and st [CTX + SI])
 
 C	MB/s	cycles/byte	Code size (bytes)
 C 1:	6.6	12.4		132
@@ -218,3 +219,4 @@ C 2:	5.6	14.5		116
 C 3:	6.0	13.5		116
 C 4:	6.5	12.4		116
 C 5:	7.9	10.4		496
+C 6:	8.3	9.7		496
