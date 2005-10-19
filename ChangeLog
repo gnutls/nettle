@@ -1,4 +1,13 @@
+2005-10-19  Niels Möller  <nisse@lysator.liu.se>
+
+	* sparc/arcfour-crypt.asm: Fixed bug, spotted by Mikael Kalms. We
+	must order the store at [CTX+I] before the load of [CTX+SI+SJ].
+
 2005-10-18  Niels Möller  <nisse@lysator.liu.se>
+
+	* sparc/arcfour-crypt.asm: Special unrolled code if SRC and DST
+	have compatible alignment. Improves performance by 20%, but I'm
+	not sure it's worth the extra complexity.
 
 	* bignum.c (nettle_mpz_from_octets): Removed sign argument. If
 	mpz_import is available, define nettle_mpz_from_octets as a macro
