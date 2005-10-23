@@ -176,14 +176,14 @@ static void
 display(const char *name, const char *mode, unsigned block_size,
 	double time)
 {
-  printf("%18s %11s %7.1f",
+  printf("%18s %11s %7.2f",
 	 name, mode,
 	 BENCH_BLOCK / (time * 1048576.0));
   if (frequency > 0.0)
     {
-      printf(" %11.1f", time * frequency / BENCH_BLOCK);
+      printf(" %11.2f", time * frequency / BENCH_BLOCK);
       if (block_size > 0)
-	printf(" %12.1f", time * frequency * block_size / BENCH_BLOCK);
+	printf(" %12.2f", time * frequency * block_size / BENCH_BLOCK);
     }
   printf("\n");
 }
