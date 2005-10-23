@@ -1,3 +1,12 @@
+2005-10-23  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/nettle-benchmark.c (display): Use two decimal places.
+
+	* sparc/arcfour-crypt.asm: Reorganized. Main loop unrolled four
+	times. Uses aligned 32-bit write accesses at DST. Still uses 8-bit
+	read accesses at SRC; could be improved int he case that SRC and
+	DST have compatible alignment.
+
 2005-10-19  Niels Möller  <niels@s3.kth.se>
 
 	* testsuite/arcfour-test.c (test_main): New testcase with 512
