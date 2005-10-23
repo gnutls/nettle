@@ -30,107 +30,34 @@ define(<LENGTH>,<%i1>)
 define(<DST>,	<%i2>)
 define(<SRC>,	<%i3>)
 
-define(<I>,	<%i4>)
-define(<J>,	<%i5>)
-define(<SI>,	<%g1>)
-define(<SJ>,	<%g2>)
-define(<TMP>,	<%g3>)
-define(<N>,	<%o0>)
-define(<WORD>,	<%o1>)
+define(<I1>,	<%i4>)
+define(<I2>,	<%i5>)
+define(<J>,	<%g1>)
+define(<SI>,	<%g2>)
+define(<SJ>,	<%g3>)
+define(<TMP>,	<%o0>)
+define(<N>,	<%o1>)
+define(<DATA>,	<%o2>)
 
-C	Encrypts n bytes, one byte at a time.
-C	ARCFOUR_BYTE_LOOP(n, label)
-define(<ARCFOUR_BYTE_LOOP>, <
-$2:	
-	add	I, 1, I
-	and	I, 0xff, I
-	ldub	[CTX + I], SI
-	subcc	$1,1,$1
-	ldub	[SRC], TMP
+C	Computes the next byte of the key stream. As input, i must
+C	already point to the index for the current access, the index
+C	for the next access is stored in ni. The resulting key byte is
+C	stored in res.
+C	ARCFOUR_BYTE(i, ni, res)
+define(<ARCFOUR_BYTE>, <
+	ldub	[CTX + $1], SI
+	add	$1, 1, $2
 	add	J, SI, J
 	and	J, 0xff, J
 	ldub	[CTX + J], SJ
-	add	SRC, 1, SRC
+	and	$2, 0xff, $2
 	stb	SI, [CTX + J]
 	add	SI, SJ, SI
 	and	SI, 0xff, SI
-	stb	SJ, [CTX + I]
-	ldub	[CTX + SI], SI
-	xor	TMP, SI, TMP
-	stb	TMP, [DST]
-	bne	$2
-	add	DST, 1, DST
+	stb	SJ, [CTX + $1]
+	ldub	[CTX + SI], $3
 >)dnl
-
-C	Encrypts 4n bytes, four at a time. Requires proper alignmentof
-C	SRC and DST.
-C	ARCFOUR_WORD_LOOP(n, label)
-define(<ARCFOUR_WORD_LOOP>, <
-$2:
-	add	I, 1, I
-	and	I, 0xff, I
-	ldub	[CTX + I], SI
-	ld	[SRC], WORD
-	add	J, SI, J
-	and	J, 0xff, J
-	ldub	[CTX + J], SJ
-	stb	SI, [CTX + J]
-	add	SI, SJ, SI
-	and	SI, 0xff, SI
-	stb	SJ, [CTX + I]
-	ldub	[CTX + SI], TMP
-
-	add	I, 1, I
-	and	I, 0xff, I
-	ldub	[CTX + I], SI
-	add	SRC, 4, SRC
-	add	J, SI, J
-	and	J, 0xff, J
-	ldub	[CTX + J], SJ
-	stb	SI, [CTX + J]
-	add	SI, SJ, SI
-	and	SI, 0xff, SI
-	stb	SJ, [CTX + I]
-	ldub	[CTX + SI], SI
-	sll	TMP, 8, TMP
-	or	TMP, SI, TMP
-	
-	add	I, 1, I
-	and	I, 0xff, I
-	ldub	[CTX + I], SI
-	subcc	$1, 1, $1
-	add	J, SI, J
-	and	J, 0xff, J
-	ldub	[CTX + J], SJ
-	stb	SI, [CTX + J]
-	add	SI, SJ, SI
-	and	SI, 0xff, SI
-	stb	SJ, [CTX + I]
-	ldub	[CTX + SI], SI
-	sll	TMP, 8, TMP
-	or	TMP, SI, TMP
-
-	add	I, 1, I
-	and	I, 0xff, I
-	ldub	[CTX + I], SI
-	C	empty slot
-	add	J, SI, J
-	and	J, 0xff, J
-	ldub	[CTX + J], SJ
-	stb	SI, [CTX + J]
-	add	SI, SJ, SI
-	and	SI, 0xff, SI
-	stb	SJ, [CTX + I]
-	ldub	[CTX + SI], SI
-	sll	TMP, 8, TMP
-	or	TMP, SI, TMP
-	xor	WORD, TMP, WORD
-	st	WORD, [DST]
-	
-	bne	$2
-	add	DST, 4, DST
->)dnl
-		
+			
 C	FIXME: Consider using the callers window
 define(<FRAME_SIZE>, 104)
 
@@ -151,52 +78,48 @@ PROLOGUE(nettle_arcfour_crypt)
 	be	.Lend
 	
 	C	Load both I and J
-	lduh	[CTX + ARCFOUR_I], I
-	and	I, 0xff, J
-	srl	I, 8, I
+	lduh	[CTX + ARCFOUR_I], I1
+	and	I1, 0xff, J
+	srl	I1, 8, I1
 
-ifelse(WITH_ALIGN, YES, <
-	C	Check if SRC and DST have compatible alignment
-	xor	SRC, DST, TMP
-	andcc	TMP, 3, TMP
+	andcc	LENGTH, 1, %g0
+	beq	.Loop
 
-	bne	.Lrest
-	nop
-	
-	andcc	DST, 3, N
-	bz	.Laligned
-	nop
-	
-	sub	N, 4, N
-	neg	N
-	cmp	N, LENGTH
-	bgeu	.Lrest
-	nop
-	
-	sub	LENGTH, N, LENGTH
-	
-	ARCFOUR_BYTE_LOOP(N, .Lunalignedloop)
+	add	I1, 1 ,I1
+	and	I1, 0xff, I1
 
-.Laligned:
-	srl	LENGTH, 2, N
-	cmp	N, 0
-	be	.Lrest
-	nop
+	ARCFOUR_BYTE(I1, I2, TMP)
+	ldub	[SRC], DATA
+	subcc	LENGTH, 1, LENGTH
+	add	SRC, 1, SRC
+	xor	DATA, TMP, DATA
+	stb	DATA, [DST]
+	beq	.Ldone
+	add	DST, 1, DST
+
+	mov	I2, I1
+.Loop:
+	ARCFOUR_BYTE(I1, I2, TMP)
+	ldub	[SRC], DATA
+	add	SRC, 2, SRC
+	xor	DATA, TMP, DATA
+	stb	DATA, [DST]
+
+	ARCFOUR_BYTE(I2, I1, TMP)
+	ldub	[SRC - 1], DATA
+	subcc	LENGTH, 2, LENGTH
+	add	DST, 2, DST
+	xor	DATA, TMP, DATA
 	
-	ARCFOUR_WORD_LOOP(N, .Lalignedloop)
+	bne	.Loop
+	stb	DATA, [DST - 1]
 
-	andcc	LENGTH, 3, LENGTH
-	bz	.Ldone
-	nop
->)
-.Lrest:
-	ARCFOUR_BYTE_LOOP(LENGTH, .Loop)
-
+	mov	I2, I1
 .Ldone:
-	C	Save back I and J	
-	sll	I, 8, I
-	or	I, J, I
-	stuh	I, [CTX + ARCFOUR_I]
+	C	Save back I and J
+	sll	I1, 8, I1
+	or	I1, J, I1
+	stuh	I1, [CTX + ARCFOUR_I]
 
 .Lend:
 	ret
@@ -212,6 +135,7 @@ C 3:	Moved load of source byte
 C 4:	Better instruction scheduling
 C 5:	Special case SRC and DST with compatible alignment
 C 6:	After bugfix (reorder of ld [CTX+SI+SJ] and st [CTX + SI])
+C 7:	Unrolled only twice, with byte-accesses
 
 C	MB/s	cycles/byte	Code size (bytes)
 C 1:	6.6	12.4		132
@@ -220,3 +144,4 @@ C 3:	6.0	13.5		116
 C 4:	6.5	12.4		116
 C 5:	7.9	10.4		496
 C 6:	8.3	9.7		496
+C 7:	6.7	12.1		268
