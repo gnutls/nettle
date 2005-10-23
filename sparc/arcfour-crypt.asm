@@ -36,8 +36,9 @@ define(<J>,	<%g1>)
 define(<SI>,	<%g2>)
 define(<SJ>,	<%g3>)
 define(<TMP>,	<%o0>)
-define(<N>,	<%o1>)
-define(<DATA>,	<%o2>)
+define(<TMP2>,	<%o1>)
+define(<N>,	<%o2>)
+define(<DATA>,	<%o3>)
 
 C	Computes the next byte of the key stream. As input, i must
 C	already point to the index for the current access, the index
@@ -76,20 +77,22 @@ PROLOGUE(nettle_arcfour_crypt)
 	save	%sp, -FRAME_SIZE, %sp
 	cmp	LENGTH, 0
 	be	.Lend
+	nop
 	
 	C	Load both I and J
 	lduh	[CTX + ARCFOUR_I], I1
 	and	I1, 0xff, J
 	srl	I1, 8, I1
 
-	andcc	LENGTH, 1, %g0
-	beq	.Loop
-
+	C	We want an even address for DST
+	andcc	DST, 1, %g0
 	add	I1, 1 ,I1
+	beq	.Laligned2
 	and	I1, 0xff, I1
 
-	ARCFOUR_BYTE(I1, I2, TMP)
+	mov	I1, I2
 	ldub	[SRC], DATA
+	ARCFOUR_BYTE(I2, I1, TMP)
 	subcc	LENGTH, 1, LENGTH
 	add	SRC, 1, SRC
 	xor	DATA, TMP, DATA
@@ -97,29 +100,107 @@ PROLOGUE(nettle_arcfour_crypt)
 	beq	.Ldone
 	add	DST, 1, DST
 
-	mov	I2, I1
-.Loop:
-	ARCFOUR_BYTE(I1, I2, TMP)
+.Laligned2:
+
+	cmp	LENGTH, 2
+	blu	.Lfinal1
+	C	Harmless delay slot instruction	
+	andcc	DST, 2, %g0
+	beq	.Laligned4
+	nop
+
 	ldub	[SRC], DATA
+	ARCFOUR_BYTE(I1, I2, TMP)
+	ldub	[SRC + 1], TMP2
 	add	SRC, 2, SRC
+	xor	DATA, TMP, DATA
+	sll	DATA, 8, DATA	
+
+	ARCFOUR_BYTE(I2, I1, TMP)
+	xor	TMP2, TMP, TMP
+	subcc	LENGTH, 2, LENGTH
+	or	DATA, TMP, DATA
+
+	sth	DATA, [DST]
+	beq	.Ldone
+	add	DST, 2, DST
+	
+.Laligned4:
+	cmp	LENGTH, 4
+	blu	.Lfinal2
+	C	Harmless delay slot instruction
+	srl	LENGTH, 2, N
+	
+.Loop:
+	C	Main loop, with aligned writes
+	
+	C	FIXME: Could check if SRC is aligned, and
+	C	use 32-bit reads in that case.
+
+	ldub	[SRC], DATA
+	ARCFOUR_BYTE(I1, I2, TMP)
+	ldub	[SRC + 1], TMP2
+	xor	TMP, DATA, DATA
+	sll	DATA, 8, DATA
+
+	ARCFOUR_BYTE(I2, I1, TMP)
+	xor	TMP2, TMP, TMP
+	ldub	[SRC + 2], TMP2
+	or	TMP, DATA, DATA
+	sll	DATA, 8, DATA
+
+	ARCFOUR_BYTE(I1, I2, TMP)
+	xor	TMP2, TMP, TMP
+	ldub	[SRC + 3], TMP2
+	or	TMP, DATA, DATA
+	sll	DATA, 8, DATA
+
+	ARCFOUR_BYTE(I2, I1, TMP)
+	xor	TMP2, TMP, TMP
+	or	TMP, DATA, DATA
+	subcc	N, 1, N
+	add	SRC, 4, SRC
+	st	DATA, [DST]
+	bne	.Loop
+	add	DST, 4, DST
+	
+	andcc	LENGTH, 3, LENGTH
+	beq	.Ldone
+	nop
+
+.Lfinal2:
+	C	DST address must be 2-aligned
+	cmp	LENGTH, 2
+	blu	.Lfinal1
+	nop
+
+	ldub	[SRC], DATA
+	ARCFOUR_BYTE(I1, I2, TMP)
+	ldub	[SRC + 1], TMP2
+	add	SRC, 2, SRC
+	xor	DATA, TMP, DATA
+	sll	DATA, 8, DATA	
+
+	ARCFOUR_BYTE(I2, I1, TMP)
+	xor	TMP2, TMP, TMP
+	or	DATA, TMP, DATA
+
+	sth	DATA, [DST]
+	beq	.Ldone
+	add	DST, 2, DST
+
+.Lfinal1:
+	mov	I1, I2
+	ldub	[SRC], DATA
+	ARCFOUR_BYTE(I2, I1, TMP)
 	xor	DATA, TMP, DATA
 	stb	DATA, [DST]
 
-	ARCFOUR_BYTE(I2, I1, TMP)
-	ldub	[SRC - 1], DATA
-	subcc	LENGTH, 2, LENGTH
-	add	DST, 2, DST
-	xor	DATA, TMP, DATA
-	
-	bne	.Loop
-	stb	DATA, [DST - 1]
-
-	mov	I2, I1
 .Ldone:
 	C	Save back I and J
-	sll	I1, 8, I1
-	or	I1, J, I1
-	stuh	I1, [CTX + ARCFOUR_I]
+	sll	I2, 8, I2
+	or	I2, J, I2
+	stuh	I2, [CTX + ARCFOUR_I]
 
 .Lend:
 	ret
@@ -136,6 +217,7 @@ C 4:	Better instruction scheduling
 C 5:	Special case SRC and DST with compatible alignment
 C 6:	After bugfix (reorder of ld [CTX+SI+SJ] and st [CTX + SI])
 C 7:	Unrolled only twice, with byte-accesses
+C 8:	Unrolled, using 8-bit reads and aligned 32-bit writes.
 
 C	MB/s	cycles/byte	Code size (bytes)
 C 1:	6.6	12.4		132
@@ -145,3 +227,4 @@ C 4:	6.5	12.4		116
 C 5:	7.9	10.4		496
 C 6:	8.3	9.7		496
 C 7:	6.7	12.1		268
+C 8:	8.3	9.8		768
