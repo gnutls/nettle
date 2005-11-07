@@ -37,7 +37,9 @@
 #include <time.h>
 
 /* For getopt */
-#include <unistd.h>
+#if HAVE_UNISTD_H
+# include <unistd.h>
+#endif
 
 #include "aes.h"
 #include "arcfour.h"
