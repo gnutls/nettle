@@ -10,7 +10,7 @@ include ../config.make
 PRE_CPPFLAGS = -I.. -I$(top_srcdir)
 PRE_LDFLAGS = -L..
 
-TARGETS = sexp-conv nettle-lfib-stream
+TARGETS = sexp-conv$(EXEEXT) nettle-lfib-stream$(EXEEXT)
 
 all: $(TARGETS)
 
@@ -22,10 +22,10 @@ SOURCES = $(sexp_conv_SOURCES) nettle-lfib-stream.c
 DISTFILES = $(SOURCES) Makefile.in getopt.h input.h misc.h output.h parse.h
 
 sexp_conv_OBJS = $(sexp_conv_SOURCES:.c=.$(OBJEXT))
-sexp-conv: $(sexp_conv_OBJS) ../libnettle.a
+sexp-conv$(EXEEXT): $(sexp_conv_OBJS) ../libnettle.a
 	$(LINK) $(sexp_conv_OBJS) -lnettle $(LIBS) -o $@
 
-nettle-lfib-stream: nettle-lfib-stream.$(OBJEXT) ../libnettle.a
+nettle-lfib-stream$(EXEEXT): nettle-lfib-stream.$(OBJEXT) ../libnettle.a
 	$(LINK) nettle-lfib-stream.$(OBJEXT) -lnettle $(LIBS) -o $@
 
 .c.$(OBJEXT):
