@@ -1,3 +1,8 @@
+2005-11-07  Niels Möller  <nisse@lysator.liu.se>
+
+	* config.guess, config.sub: In the CVS tree, moved files to the
+	lsh top-level directory.
+
 2005-10-23  Niels Möller  <nisse@lysator.liu.se>
 
 	* sparc64/arcfour-crypt.asm: New file, almost the same as
