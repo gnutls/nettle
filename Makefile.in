@@ -147,7 +147,7 @@ $(des_headers): desdata.c
 	./desdata$(EXEEXT) $(@F) > $@T
 	test -s $@T && mv -f $@T $@
 
-des.o: des.c des.h $(des_headers)
+des.$(OBJEXT): des.c des.h $(des_headers)
 
 .asm.$(OBJEXT):
 	$(M4) $(srcdir)/asm.m4 machine.m4 config.m4 \
