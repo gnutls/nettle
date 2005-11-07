@@ -102,11 +102,11 @@ fi
 
 # Select assembler code
 asm_path=
-case "$host" in
-  [i?86*-*-* | k[5-8]*-*-* | pentium*-*-* | athlon-*-*])
+case "$host_cpu" in
+  [i?86* | k[5-8]* | pentium* | athlon])
     asm_path=x86
     ;;
-  *sparc*-*-*)
+  *sparc*)
     AC_TRY_COMPILE([
 #if defined(__sparcv9) || defined(__arch64__)
 #error 64-bit sparc
@@ -148,8 +148,8 @@ LSH_CCPIC
 
 SHLIBCFLAGS="$CCPIC"
 
-case `uname -sr` in
-  CYGWIN*)
+case "$host_os" in
+  cygwin*)
     SHLIBFORLINK='cygnettle-$(SHLIBMAJOR)-$(SHLIBMINOR).dll'
     SHLIBSONAME=''
     SHLIBFILE='libnettle.dll.a'
@@ -355,6 +355,10 @@ if test x$GCC = xyes ; then
     true
   else
     CFLAGS="$CFLAGS -ggdb3"
+  fi
+  # FIXME: It would be better to actually test if this option works and/or is needed.
+  if "$CC" --version | grep 'gcc.* 4\.' 1>/dev/null 2>&1; then
+    CFLAGS="$CFLAGS -Wno-pointer-sign"
   fi
   CFLAGS="$CFLAGS -Wall -W \
   -Wmissing-prototypes -Wmissing-declarations -Wstrict-prototypes \
