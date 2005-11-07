@@ -11,7 +11,7 @@ PRE_CPPFLAGS = -I.. -I$(top_srcdir)
 PRE_LDFLAGS = -L..
 
 OPENSSL_LIBFLAGS = @OPENSSL_LIBFLAGS@
-TARGETS = nettle-benchmark @RSA_EXAMPLES@
+TARGETS = nettle-benchmark$(EXEEXT) @RSA_EXAMPLES@
 SOURCES = nettle-benchmark.c nettle-openssl.c \
 	io.c getopt.c getopt1.c \
 	rsa-encrypt.c rsa-decrypt.c rsa-keygen.c rsa-sign.c rsa-verify.c
