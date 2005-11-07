@@ -1,5 +1,16 @@
 2005-11-07  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/nettle-benchmark.c: Check HAVE_UNISTD_H.
+
+	* examples/Makefile.in (TARGETS): Use $(EXEEXT).
+	* tools/Makefile.in (TARGETS, sexp-conv, nettle-lfib-stream): Likewise.
+
+	* configure.ac: Use $host_cpu, not $host, when setting up the
+	assembler path. Use $host_os, not uname, when setting up shared
+	library flags.
+
+	* Makefile.in (des.$(OBJEXT)): Use OBJEXT. 
+
 	* config.guess, config.sub: In the CVS tree, moved files to the
 	lsh top-level directory.
 
