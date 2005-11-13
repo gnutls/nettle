@@ -71,10 +71,11 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 dsa.c dsa-sign.c dsa-verify.c dsa-keygen.c \
 		 sexp2dsa.c \
 		 pgp-encode.c rsa2openpgp.c \
+		 der-iterator.c \
 		 buffer.c buffer-init.c realloc.c \
 		 nettle-internal.c
 
-HEADERS = aes.h arcfour.h arctwo.h bignum.h blowfish.h \
+HEADERS = aes.h arcfour.h arctwo.h asn1.h bignum.h blowfish.h \
 	  base16.h base64.h buffer.h cast128.h \
 	  cbc.h ctr.h \
 	  des.h des-compat.h dsa.h \

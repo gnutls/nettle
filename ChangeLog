@@ -1,3 +1,13 @@
+2005-11-13  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (nettle_SOURCES): Added der-iterator.c.
+	(HEADERS): Added asn1.h.
+
+	* bignum.h (asn1_der_get_bignum): Declare function.
+
+	* der-iterator.c: New file.
+	* asn1.h: New file.
+
 2005-11-07  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/nettle-benchmark.c: Check HAVE_UNISTD_H.
