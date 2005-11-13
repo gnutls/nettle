@@ -78,11 +78,20 @@ nettle_mpz_random(mpz_t x,
 		  void *ctx, nettle_random_func random,
 		  const mpz_t n);
 
+/* sexp parsing */
 struct sexp_iterator;
 
 /* If LIMIT is non-zero, the number must be at most LIMIT bits.
  * Implies sexp_iterator_next. */
 int
 nettle_mpz_set_sexp(mpz_t x, unsigned limit, struct sexp_iterator *i);
+
+
+/* der parsing */
+struct asn1_der_iterator;
+
+int
+asn1_der_get_bignum(struct asn1_der_iterator *iterator,
+		    mpz_t x, unsigned limit);
 
 #endif /* NETTLE_BIGNUM_H_INCLUDED */
