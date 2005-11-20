@@ -26,7 +26,7 @@ TS_SOURCES = aes-test.c arcfour-test.c arctwo-test.c \
 	     dsa-test.c dsa-keygen-test.c \
 	     yarrow-test.c
 TARGETS = $(TS_SOURCES:.c=$(EXEEXT))
-TS_SH = sexp-conv-test symbols-test
+TS_SH = sexp-conv-test pkcs1-conv-test symbols-test
 TS_ALL = $(TARGETS) $(TS_SH)
 EXTRA_SOURCES = sha1-huge-test.c
 EXTRA_TARGETS = $(EXTRA_SOURCES:.c=$(EXEEXT))
