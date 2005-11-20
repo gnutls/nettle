@@ -28,6 +28,17 @@
 
 #include "nettle-types.h"
 
+/* Name mangling */
+#define asn1_der_iterator_first nettle_asn1_der_iterator_first
+#define asn1_der_iterator_next nettle_asn1_der_iterator_next
+#define asn1_der_decode_constructed nettle_asn1_der_decode_constructed
+#define asn1_der_decode_constructed_last nettle_asn1_der_decode_constructed_last
+#define asn1_der_decode_bitstring nettle_asn1_der_decode_bitstring
+#define asn1_der_decode_bitstring_last nettle_asn1_der_decode_bitstring_last
+#define asn1_der_get_uint32 nettle_asn1_der_get_uint32
+#define asn1_der_get_bignum nettle_asn1_der_get_bignum
+
+
 /* enum asn1_type keeps the class number and the constructive in bits
    13-14, and the constructive flag in bit 12. The remaining 14 bits
    are the tag (although currently, only tags in the range 0-30 are
@@ -103,6 +114,19 @@ asn1_der_iterator_next(struct asn1_der_iterator *iterator);
 enum asn1_iterator_result
 asn1_der_decode_constructed(struct asn1_der_iterator *i,
 			    struct asn1_der_iterator *contents);
+
+/* For the common case that we have a sequence at the end of the
+   object. Checks that the current object is the final one, and ten
+   reinitialize the iterator to parse its ontents. */
+enum asn1_iterator_result
+asn1_der_decode_constructed_last(struct asn1_der_iterator *i);
+
+enum asn1_iterator_result
+asn1_der_decode_bitstring(struct asn1_der_iterator *i,
+			  struct asn1_der_iterator *contents);
+
+enum asn1_iterator_result
+asn1_der_decode_bitstring_last(struct asn1_der_iterator *i);
 
 /* All these functions return 1 on success, 0 on failure */
 int
