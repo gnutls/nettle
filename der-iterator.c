@@ -28,6 +28,7 @@
 #endif
 
 #include <assert.h>
+#include <stdlib.h>
 
 #if HAVE_LIBGMP
 #include "bignum.h"
@@ -66,7 +67,7 @@
     _________________
    |_1_|___________k_|
 
-   followed by k additional bytes that gice the length, in network
+   followed by k additional bytes that give the length, in network
    byte order. The length must be encoded using as few bytes as
    possible, and k = 0 is reserved for the "indefinite length form"
    which is not supported.
@@ -92,6 +93,8 @@ asn1_der_iterator_init(struct asn1_der_iterator *iterator,
   iterator->buffer = input;
   iterator->pos = 0;
   iterator->type = 0;
+  iterator->length = 0;
+  iterator->data = NULL;
 }
 
 #define LEFT(i) ((i)->buffer_length - (i)->pos)
@@ -119,8 +122,28 @@ asn1_der_iterator_next(struct asn1_der_iterator *i)
   i->length = NEXT(i);
   if (i->length & 0x80)
     {
-      /* FIXME: Large objects not yet supported. */
-      return ASN1_ITERATOR_ERROR;
+      unsigned k = i->length & 0x7f;
+      unsigned j;
+      const uint8_t *data = i->buffer + i->pos;
+      
+      if (k == 0)
+	/* Indefinite encoding. Not supported. */
+	return ASN1_ITERATOR_ERROR;
+
+      if (LEFT(i) < k)
+	return ASN1_ITERATOR_ERROR;
+
+      if (k > sizeof(unsigned))
+	return ASN1_ITERATOR_ERROR;
+
+      i->pos += k;
+      i->length = data[0];
+      if (i->length == 0
+	  || (k == 1 && i->length < 0x80))
+	return ASN1_ITERATOR_ERROR;
+
+      for (j = 1; j < k; j++)
+	i->length = (i->length << 8) | data[j];
     }
   if (LEFT(i) < i->length)
     return ASN1_ITERATOR_ERROR;
@@ -153,6 +176,37 @@ asn1_der_decode_constructed(struct asn1_der_iterator *i,
 {
   assert(i->type & ASN1_TYPE_CONSTRUCTED);
   return asn1_der_iterator_first(contents, i->length, i->data);
+}
+
+enum asn1_iterator_result
+asn1_der_decode_constructed_last(struct asn1_der_iterator *i)
+{
+  if (LEFT(i) > 0)
+    return ASN1_ITERATOR_ERROR;
+
+  return asn1_der_decode_constructed(i, i);
+}
+
+/* Decoding a DER object which is wrapped in a bit string. */
+enum asn1_iterator_result
+asn1_der_decode_bitstring(struct asn1_der_iterator *i,
+			  struct asn1_der_iterator *contents)
+{
+  assert(i->type == ASN1_BITSTRING);
+  /* First byte is the number of padding bits, which must be zero. */
+  if (i->length == 0  || i->data[0] != 0)
+    return ASN1_ITERATOR_ERROR;
+
+  return asn1_der_iterator_first(contents, i->length - 1, i->data + 1);
+}
+
+enum asn1_iterator_result
+asn1_der_decode_bitstring_last(struct asn1_der_iterator *i)
+{
+  if (LEFT(i) > 0)
+    return ASN1_ITERATOR_ERROR;
+
+  return asn1_der_decode_bitstring(i, i);
 }
 
 int
@@ -197,6 +251,12 @@ int
 asn1_der_get_bignum(struct asn1_der_iterator *i,
 		    mpz_t x, unsigned limit)
 {
+  if (i->length > 1
+      && ((i->data[0] == 0 && i->data[1] < 0x80)
+	  || (i->data[0] == 0xff && i->data[1] >= 0x80)))
+    /* Non-minimal number of digits */
+    return 0;
+
   /* Allow some extra here, for leading sign octets. */
   if (limit && (8 * i->length > (16 + limit)))
     return 0;
