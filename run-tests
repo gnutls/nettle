@@ -3,6 +3,8 @@
 failed=0
 all=0
 
+debug='no'
+
 if [ -z "$srcdir" ] ; then
   srcdir=`pwd`
 fi
@@ -48,6 +50,23 @@ test_program () {
 
 env_program `find_program setup-env`
 
+while test $# != 0
+do
+  case "$1" in
+  --debug)
+    debug=yes
+    ;;
+  -*)
+    echo >&2 'Unknown option `'"$1'" 
+    exit 1
+    ;;
+  *)
+    break
+    ;;
+  esac
+  shift
+done
+  
 if [ $# -eq 0 ] ; then
   for f in *-test; do test_program "./$f"; done
 else
@@ -64,7 +83,9 @@ echo "$dashes"
 echo "$banner"
 echo "$dashes"
 
-env_program `find_program teardown-env`
+if [ "x$debug" = xno ] ; then
+  env_program `find_program teardown-env`
+fi
 
 [ "$failed" -eq 0 ]
 
