@@ -10,14 +10,14 @@ include ../config.make
 PRE_CPPFLAGS = -I.. -I$(top_srcdir)
 PRE_LDFLAGS = -L..
 
-TARGETS = sexp-conv$(EXEEXT) nettle-lfib-stream$(EXEEXT)
+TARGETS = sexp-conv$(EXEEXT) nettle-lfib-stream$(EXEEXT) @RSA_TOOLS@
 
 all: $(TARGETS)
 
 sexp_conv_SOURCES = sexp-conv.c input.c output.c parse.c \
 	getopt.c getopt1.c misc.c
 
-SOURCES = $(sexp_conv_SOURCES) nettle-lfib-stream.c
+SOURCES = $(sexp_conv_SOURCES) nettle-lfib-stream.c pkcs1-conv.c
 
 DISTFILES = $(SOURCES) Makefile.in getopt.h input.h misc.h output.h parse.h
 
@@ -27,6 +27,9 @@ sexp-conv$(EXEEXT): $(sexp_conv_OBJS) ../libnettle.a
 
 nettle-lfib-stream$(EXEEXT): nettle-lfib-stream.$(OBJEXT) ../libnettle.a
 	$(LINK) nettle-lfib-stream.$(OBJEXT) -lnettle $(LIBS) -o $@
+
+pkcs1-conv$(EXEEXT): pkcs1-conv.$(OBJEXT) misc.$(OBJEXT) ../libnettle.a
+	$(LINK) pkcs1-conv.$(OBJEXT) misc.$(OBJEXT) -lnettle $(LIBS) -o $@
 
 .c.$(OBJEXT):
 	$(COMPILE) -c $< && $(DEP_PROCESS)
