@@ -57,6 +57,9 @@
 #define rsa_keypair_to_sexp nettle_rsa_keypair_to_sexp
 #define rsa_keypair_from_sexp_alist nettle_rsa_keypair_from_sexp_alist
 #define rsa_keypair_from_sexp nettle_rsa_keypair_from_sexp
+#define rsa_public_key_from_der_iterator nettle_rsa_public_key_from_der_iterator
+#define rsa_private_key_from_der_iterator nettle_rsa_private_key_from_der_iterator
+#define rsa_keypair_from_der nettle_rsa_keypair_from_der
 #define rsa_keypair_to_openpgp nettle_rsa_keypair_to_openpgp
 #define _rsa_verify _nettle_rsa_verify
 #define _rsa_check_size _nettle_rsa_check_size
@@ -282,6 +285,27 @@ rsa_keypair_from_sexp(struct rsa_public_key *pub,
 		      unsigned limit,
 		      unsigned length, const uint8_t *expr);
 
+
+/* Keys in PKCS#1 format. */
+struct asn1_der_iterator;
+
+int
+rsa_public_key_from_der_iterator(struct rsa_public_key *pub,
+				 unsigned limit,
+				 struct asn1_der_iterator *i);
+
+int
+rsa_private_key_from_der_iterator(struct rsa_public_key *pub,
+				  struct rsa_private_key *priv,
+				  unsigned limit,
+				  struct asn1_der_iterator *i);
+
+/* For public keys, use PRIV == NULL */ 
+int
+rsa_keypair_from_der(struct rsa_public_key *pub,
+		     struct rsa_private_key *priv,
+		     unsigned limit, 
+		     unsigned length, const uint8_t *data);
 
 /* OpenPGP format. Experimental interface, subject to change. */
 int
