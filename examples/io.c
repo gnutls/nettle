@@ -79,7 +79,7 @@ read_file(const char *name, unsigned max_size, char **contents)
   f = fopen(name, "rb");
   if (!f)
     {
-      werror("Opening `%s' falied: %s\n", name, strerror(errno));
+      werror("Opening `%s' failed: %s\n", name, strerror(errno));
       return 0;
     }
   buffer = NULL;
