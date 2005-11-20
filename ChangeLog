@@ -1,3 +1,42 @@
+2005-11-20  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (nettle_SOURCES): Added der2rsa.c.
+
+	* testsuite/Makefile.in (TS_SH): Added pkcs1-conv-test.
+
+	* tools/Makefile.in (TARGETS): Added @RSA_TOOLS@.
+	(SOURCES): Added pkcs1-conv.c.
+	(pkcs1-conv): New rule.
+
+	* tools/pkcs1-conv.c: New program.
+
+	* testsuite/pkcs1-conv-test: New file.
+
+	* examples/rsa-verify-test: Use rsa-sign to create signature.
+
+	* examples/io.c (read_file): Fixed spelling in error message.
+
+	* rsa.h (rsa_public_key_from_der_iterator)
+	(rsa_private_key_from_der_iterator, rsa_keypair_from_der): Declare
+	functions. 
+
+	* der2rsa.c: New file.
+
+	* der-iterator.c (asn1_der_iterator_init): Initialize length and
+	data.
+	(asn1_der_iterator_next): Support for lengths >= 0x80.
+	(asn1_der_decode_constructed_last, asn1_der_decode_bitstring) 
+	(asn1_der_decode_bitstring_last): New functions.
+	(asn1_der_get_bignum): Check for non-mininal encodings.
+
+	* configure.ac (RSA_TOOLS): New substituted variable. Includes
+	pkcs1-conv, when public-key support is enabled.
+
+	* bignum.h (nettle_asn1_der_get_bignum): Include nettle_-prefix in
+	declaration.
+
+	* asn1.h: Added name mangling defines, and a few new declarations.
+
 2005-11-13  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in (nettle_SOURCES): Added der-iterator.c.
