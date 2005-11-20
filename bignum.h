@@ -91,7 +91,7 @@ nettle_mpz_set_sexp(mpz_t x, unsigned limit, struct sexp_iterator *i);
 struct asn1_der_iterator;
 
 int
-asn1_der_get_bignum(struct asn1_der_iterator *iterator,
-		    mpz_t x, unsigned limit);
+nettle_asn1_der_get_bignum(struct asn1_der_iterator *iterator,
+			   mpz_t x, unsigned limit);
 
 #endif /* NETTLE_BIGNUM_H_INCLUDED */
