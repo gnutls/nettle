@@ -71,7 +71,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 dsa.c dsa-sign.c dsa-verify.c dsa-keygen.c \
 		 sexp2dsa.c \
 		 pgp-encode.c rsa2openpgp.c \
-		 der-iterator.c \
+		 der-iterator.c der2rsa.c \
 		 buffer.c buffer-init.c realloc.c \
 		 nettle-internal.c
 
