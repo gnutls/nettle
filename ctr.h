@@ -39,16 +39,16 @@ ctr_crypt(void *ctx, nettle_crypt_func f,
 	  const uint8_t *src);
 
 #define CTR_CTX(type, size) \
-{ type ctx; uint8_t ctr[size] }
+{ type ctx; uint8_t ctr[size]; }
 
 #define CTR_SET_COUNTER(ctx, data) \
 memcpy((ctx)->ctr, (data), sizeof((ctx)->ctr))
 
 #define CTR_CRYPT(self, f, length, dst, src)		\
 (0 ? ((f)(&(self)->ctx, 0, NULL, NULL))			\
-   : ctr_encrypt((void *) &(self)->ctx,			\
-                 (nettle_crypt_func) (f),		\
-		 sizeof((self)->ctr), (self)->ctr,	\
-                 (length), (dst), (src)))
+   : ctr_crypt((void *) &(self)->ctx,			\
+               (nettle_crypt_func) (f),			\
+	       sizeof((self)->ctr), (self)->ctr,	\
+               (length), (dst), (src)))
 
 #endif /* NETTLE_CTR_H_INCLUDED */
