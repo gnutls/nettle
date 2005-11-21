@@ -1,3 +1,8 @@
+2005-11-21  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/testutils.c (main): Fixed check for -v option. Spotted
+	by Goran K. 
+
 2005-11-21  Niels Möller  <niels@s3.kth.se>
 
 	* ctr.h (CTR_CTX, CTR_CRYPT): Fixed bugs, spotted by Goran K.
