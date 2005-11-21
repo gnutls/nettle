@@ -1,3 +1,7 @@
+2005-11-21  Niels Möller  <niels@s3.kth.se>
+
+	* ctr.h (CTR_CTX, CTR_CRYPT): Fixed bugs, spotted by Goran K.
+
 2005-11-20  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in (nettle_SOURCES): Added der2rsa.c.
