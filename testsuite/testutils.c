@@ -147,7 +147,7 @@ main(int argc, char **argv)
 {
   if (argc > 1)
     {
-      if (argc == 2 && strcmp(argv[1], "-v"))
+      if (argc == 2 && !strcmp(argv[1], "-v"))
 	verbose = 1;
       else
 	{
