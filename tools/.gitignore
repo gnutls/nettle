@@ -1,4 +1,5 @@
 /*.d
 /Makefile
 /nettle-lfib-stream
+/pkcs1-conv
 /sexp-conv
