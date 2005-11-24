@@ -1,3 +1,8 @@
+2005-11-24  Niels Möller  <niels@s3.kth.se>
+
+	* Makefile.in (distdir): Use [ -f, not [ -e, since the latter
+	is less portable, and not supported by Solaris /bin/sh.
+
 2005-11-23  Niels Möller  <niels@s3.kth.se>
 
 	* testsuite/Makefile.in (DISTFILES): Added teardown-env.

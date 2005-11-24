@@ -272,7 +272,7 @@ distdir: $(DISTFILES)
 	rm -rf "$(distdir)"
 	mkdir "$(distdir)"
 	set -e; for f in $(DISTFILES) ; do \
-	  if [ -e "$$f" ] ; then cp "$$f" "$(distdir)" ; \
+	  if [ -f "$$f" ] ; then cp "$$f" "$(distdir)" ; \
 	  else cp "$(srcdir)/$$f" "$(distdir)" ; \
 	  fi ; \
 	done
