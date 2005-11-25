@@ -46,13 +46,22 @@ all: $(TARGETS) $(EXTRA_TARGETS)
 .SUFFIXES: -test.c -test.$(OBJEXT) -test$(EXEEXT)
 
 .c.$(OBJEXT):
-	$(COMPILE) -I.. -c $< && $(DEP_PROCESS)
+	$(COMPILE) -c $< && $(DEP_PROCESS)
+
+# It seems really tricky to write suffix rules for the transformation
+# foo-test.o -> foo-test, that work with all make variants. We use a a
+# %-rule that works with Solaris make and GNU-make and a two-suffix
+# -test.o-test: that works for BSD make and GNU make. For BSD make, we
+# also need a -test.c-test.o rule.
+
+%$(EXEEXT): %.$(OBJEXT)
+	$(LINK) $< testutils.$(OBJEXT) -lnettle $(LIBS) -o $@
 
 -test.c-test.$(OBJEXT):
-	$(COMPILE) -I.. -c $< && $(DEP_PROCESS)
+	$(COMPILE) -c $< && $(DEP_PROCESS)
 
 -test.$(OBJEXT)-test$(EXEEXT):
-	$(LINK) $< testutils.o -lnettle $(LIBS) -o $@
+	$(LINK) $< testutils.$(OBJEXT) -lnettle $(LIBS) -o $@
 
 $(TARGETS) $(EXTRA_TARGETS) : testutils.$(OBJEXT) ../libnettle.a
 
