@@ -1,3 +1,8 @@
+2005-11-25  Niels Möller  <niels@s3.kth.se>
+
+	* testsuite/Makefile.in: Avoid using single-suffix rule to build
+	executables.
+
 2005-11-24  Niels Möller  <niels@s3.kth.se>
 
 	* Makefile.in (distdir): Use [ -f, not [ -e, since the latter
