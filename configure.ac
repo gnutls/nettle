@@ -69,10 +69,11 @@ AC_PROG_CC
 # sh script, and foo.exe is a windows executable.
 
 if test "x$CC" = xrntcl ; then
-    AC_MSG_NOTICE([Compiling with rntcl; clearing EXEEXT])
+    AC_MSG_NOTICE([Compiling with rntcl; clearing EXEEXT and disabling assembler])
     ac_exeext=''
     ac_cv_exeext=''
     EXEEXT=''
+    enable_assembler=no
 fi
 
 AC_PROG_MAKE_SET
