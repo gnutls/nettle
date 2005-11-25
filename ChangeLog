@@ -1,5 +1,8 @@
 2005-11-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.in (aesdata, desdata, shadata): Use explicit rules for
+	executables.
+
 	* testsuite/Makefile.in: Use %-rules for building the -test
 	executables, in addition to the suffix rules. Hopefully, this
 	should make all of GNU make, BSD make and Solaris make happy.
