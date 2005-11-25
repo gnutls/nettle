@@ -1,5 +1,7 @@
 2005-11-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac: Disable assembler when compiling with rntcl.
+
 	* tools/Makefile.in (pkcs1_conv_SOURCES): New variable.
 	(pkcs1-conv): Link with getopt.o and getopt1.o.
 
