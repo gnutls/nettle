@@ -1,5 +1,8 @@
 2005-11-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* tools/Makefile.in (pkcs1_conv_SOURCES): New variable.
+	(pkcs1-conv): Link with getopt.o and getopt1.o.
+
 	* Makefile.in (aesdata, desdata, shadata): Use explicit rules for
 	executables.
 
