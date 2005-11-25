@@ -1,3 +1,13 @@
+2005-11-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/Makefile.in: Use %-rules for building the -test
+	executables, in addition to the suffix rules. Hopefully, this
+	should make all of GNU make, BSD make and Solaris make happy.
+	Use $(EXEEXT) and $(OBJEXT) more consistently.
+	
+	* examples/Makefile.in: Use explicit rules for all executable
+	targets. Use $(EXEEXT) and $(OBJEXT) more consistently.
+
 2005-11-25  Niels Möller  <niels@s3.kth.se>
 
 	* testsuite/Makefile.in: Avoid using single-suffix rule to build
