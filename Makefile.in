@@ -131,11 +131,18 @@ $(SHLIBFORLINK): $(nettle_PURE_OBJS)
 	$(COMPILE) $(SHLIBCFLAGS) -c $< -o $@ \
 	&& $(DEP_PROCESS)
 
-.$(OBJEXT)$(EXEEXT):
-	$(LINK) $< $(LIBS) -o $@
+# For Solaris and BSD make, we have to use an explicit rule for each executable
+aesdata$(EXEEXT): aesdata.$(OBJEXT)
+	$(LINK) aesdata.$(OBJEXT) $(LIBS) -o aesdata$(EXEEXT)
+
+desdata$(EXEEXT): desdata.$(OBJEXT)
+	$(LINK) desdata.$(OBJEXT) $(LIBS) -o desdata$(EXEEXT)
 
 shadata$(EXEEXT): shadata.$(OBJEXT)
-	$(LINK) shadata.$(OBJEXT) $(LIBS) -lm -o $@
+	$(LINK) shadata.$(OBJEXT) $(LIBS) -lm -o shadata$(EXEEXT)
+
+# .$(OBJEXT)$(EXEEXT):
+# 	$(LINK) $< $(LIBS) -o $@
 
 # desCore rules
 # It seems using $(srcdir)/ doesn't work with GNU make 3.79.1
