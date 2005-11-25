@@ -38,10 +38,15 @@ DISTFILES = $(SOURCES) Makefile.in $(TS_SH) run-tests teardown-env \
 
 all: $(TARGETS) $(EXTRA_TARGETS)
 
+.SUFFIXES: -test.c -test.$(OBJEXT) -test$(EXEEXT)
+
 .c.$(OBJEXT):
 	$(COMPILE) -I.. -c $< && $(DEP_PROCESS)
 
-.$(OBJEXT)$(EXEEXT):
+-test.c-test.$(OBJEXT):
+	$(COMPILE) -I.. -c $< && $(DEP_PROCESS)
+
+-test.$(OBJEXT)-test$(EXEEXT):
 	$(LINK) $< testutils.o -lnettle $(LIBS) -o $@
 
 $(TARGETS) $(EXTRA_TARGETS) : testutils.$(OBJEXT) ../libnettle.a
