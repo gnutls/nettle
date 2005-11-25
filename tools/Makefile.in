@@ -16,6 +16,7 @@ all: $(TARGETS)
 
 sexp_conv_SOURCES = sexp-conv.c input.c output.c parse.c \
 	getopt.c getopt1.c misc.c
+pkcs1_conv_SOURCES = pkcs1-conv.c getopt.c getopt1.c misc.c
 
 SOURCES = $(sexp_conv_SOURCES) nettle-lfib-stream.c pkcs1-conv.c
 
@@ -28,8 +29,9 @@ sexp-conv$(EXEEXT): $(sexp_conv_OBJS) ../libnettle.a
 nettle-lfib-stream$(EXEEXT): nettle-lfib-stream.$(OBJEXT) ../libnettle.a
 	$(LINK) nettle-lfib-stream.$(OBJEXT) -lnettle $(LIBS) -o $@
 
-pkcs1-conv$(EXEEXT): pkcs1-conv.$(OBJEXT) misc.$(OBJEXT) ../libnettle.a
-	$(LINK) pkcs1-conv.$(OBJEXT) misc.$(OBJEXT) -lnettle $(LIBS) -o $@
+pkcs1_conv_OBJS = $(pkcs1_conv_SOURCES:.c=.$(OBJEXT))
+pkcs1-conv$(EXEEXT): $(pkcs1_conv_OBJS) ../libnettle.a
+	$(LINK) $(pkcs1_conv_OBJS) -lnettle $(LIBS) -o $@
 
 .c.$(OBJEXT):
 	$(COMPILE) -c $< && $(DEP_PROCESS)
