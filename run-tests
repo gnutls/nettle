@@ -12,12 +12,21 @@ fi
 
 export srcdir
 
+# When used in make rules, we sometimes get the filenames VPATH
+# expanded, but usually not. 
 find_program () {
-  if [ -x "$1" ] ; then
-    echo "./$1"
-  else
-    echo "$srcdir/$1"
-  fi
+    case "$1" in
+	*/*)
+	  echo "$1"
+	  ;;
+	*)
+	  if [ -x "$1" ] ; then
+	      echo "./$1"
+	  else
+	      echo "$srcdir/$1"
+	  fi
+	  ;;
+    esac
 }
 
 env_program () {
