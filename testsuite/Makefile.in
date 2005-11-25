@@ -38,6 +38,11 @@ DISTFILES = $(SOURCES) Makefile.in $(TS_SH) run-tests teardown-env \
 
 all: $(TARGETS) $(EXTRA_TARGETS)
 
+# BSD (and Solaris) make doesn't allow extra dependencies together one
+# single-suffix rules. So in the common case of $(EXEEXT) empty, we
+# need a rule -test.$(OBJEXT)-test$(EXEEXT): rather than the simpler
+# .$(OBJEXT)$(EXEEXT):
+
 .SUFFIXES: -test.c -test.$(OBJEXT) -test$(EXEEXT)
 
 .c.$(OBJEXT):
