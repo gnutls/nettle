@@ -1,3 +1,12 @@
+2005-11-26  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/Makefile.in: Include .test-rules.make, which contains
+	the rules for all the test executables.
+	(test-rules): New rule, to update this file.
+
+	* testsuite/.test-rules.make: Automatically generated file for
+	building the test programs.
+
 2005-11-25  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Disable assembler when compiling with rntcl.
