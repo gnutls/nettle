@@ -3,6 +3,7 @@
 	* testsuite/Makefile.in: Include .test-rules.make, which contains
 	the rules for all the test executables.
 	(test-rules): New rule, to update this file.
+	(DISTFILES): Added $(EXTRA_SOURCES).
 
 	* testsuite/.test-rules.make: Automatically generated file for
 	building the test programs.
