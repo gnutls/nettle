@@ -33,7 +33,8 @@ EXTRA_TARGETS = $(EXTRA_SOURCES:.c=$(EXEEXT))
 
 SOURCES = $(TS_SOURCES) testutils.c
 
-DISTFILES = $(SOURCES) Makefile.in .test-rules.make $(TS_SH) run-tests teardown-env \
+DISTFILES = $(SOURCES) $(EXTRA_SOURCES) Makefile.in .test-rules.make \
+	$(TS_SH) run-tests teardown-env \
 	rfc1750.txt testutils.h
 
 all: $(TARGETS) $(EXTRA_TARGETS)
