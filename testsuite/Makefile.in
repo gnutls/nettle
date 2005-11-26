@@ -33,35 +33,30 @@ EXTRA_TARGETS = $(EXTRA_SOURCES:.c=$(EXEEXT))
 
 SOURCES = $(TS_SOURCES) testutils.c
 
-DISTFILES = $(SOURCES) Makefile.in $(TS_SH) run-tests teardown-env \
+DISTFILES = $(SOURCES) Makefile.in .test-rules.make $(TS_SH) run-tests teardown-env \
 	rfc1750.txt testutils.h
 
 all: $(TARGETS) $(EXTRA_TARGETS)
 
-# BSD (and Solaris) make doesn't allow extra dependencies together one
-# single-suffix rules. So in the common case of $(EXEEXT) empty, we
-# need a rule -test.$(OBJEXT)-test$(EXEEXT): rather than the simpler
-# .$(OBJEXT)$(EXEEXT):
-
-.SUFFIXES: -test.c -test.$(OBJEXT) -test$(EXEEXT)
-
 .c.$(OBJEXT):
 	$(COMPILE) -c $< && $(DEP_PROCESS)
 
-# It seems really tricky to write suffix rules for the transformation
-# foo-test.o -> foo-test, that work with all make variants. We use a a
-# %-rule that works with Solaris make and GNU-make and a two-suffix
-# -test.o-test: that works for BSD make and GNU make. For BSD make, we
-# also need a -test.c-test.o rule.
+# BSD (and Solaris) make doesn't allow extra dependencies together one
+# single-suffix rules, which makes it impossible or almost impossible
+# to use suffix rules to build the test executables. So we use an
+# explicit rule for each and every executable.
 
-%$(EXEEXT): %.$(OBJEXT)
-	$(LINK) $< testutils.$(OBJEXT) -lnettle $(LIBS) -o $@
+TEST_OBJS = testutils.$(OBJEXT) -lnettle $(LIBS)
 
--test.c-test.$(OBJEXT):
-	$(COMPILE) -c $< && $(DEP_PROCESS)
+.PHONY: test-rules
+test-rules:
+	for f in $(TARGETS) $(EXTRA_TARGETS) ; do \
+	  echo $$f'$$(EXEEXT): '$$f'.$$(OBJEXT)' ; \
+	  echo '	$$(LINK) '$$f'.$$(OBJEXT) $$(TEST_OBJS) -o '$$f'$$(EXEEXT)' ; \
+	  echo ; \
+	done > $(srcdir)/.test-rules.make
 
--test.$(OBJEXT)-test$(EXEEXT):
-	$(LINK) $< testutils.$(OBJEXT) -lnettle $(LIBS) -o $@
+include $(srcdir)/.test-rules.make
 
 $(TARGETS) $(EXTRA_TARGETS) : testutils.$(OBJEXT) ../libnettle.a
 
