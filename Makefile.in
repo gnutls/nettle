@@ -231,12 +231,18 @@ install-shared: $(SHLIBFORLINK)
 		&& ln -sf $(SHLIBFILE) $(SHLIBSONAME) \
 		&& ln -sf $(SHLIBFILE) $(SHLIBFORLINK) )
 
+# I'd like to use makes VPATH search to locate the files to be
+# installed. But it seems most make programs don't set $<, $^, $? and
+# friends for ordinary explicit rules.
+
 install-info: nettle.info
 	[ -d $(DESTDIR)$(infodir) ] || $(INSTALL) -d $(DESTDIR)$(infodir)
-	$(INSTALL_DATA) $< $(DESTDIR)$(infodir)
+	f=nettle.info ; \
+	[ -f $$f ] || f="$(srcdir)/$$f" ; \
+	$(INSTALL_DATA) "$$f" $(DESTDIR)$(infodir) ; \
 	if (install-info --version && \
 	    install-info --version 2>&1 | sed 1q | grep -i -v debian) >/dev/null 2>&1; then \
-	  install-info --info-dir="$(DESTDIR)$(infodir)" $< ; \
+	  install-info --info-dir="$(DESTDIR)$(infodir)" "$$f" ; \
 	else : ; fi
 
 # NOTE: I'd like to use $^, but that's a GNU extension. $? should be
@@ -244,7 +250,12 @@ install-info: nettle.info
 install-headers: $(INSTALL_HEADERS)
 	[ -d $(DESTDIR)$(includedir) ] || $(INSTALL) -d $(DESTDIR)$(includedir)
 	[ -d $(DESTDIR)$(includedir)/nettle ] || $(INSTALL) -d $(DESTDIR)$(includedir)/nettle
-	$(INSTALL_DATA) $? $(DESTDIR)$(includedir)/nettle
+	for f in $(INSTALL_HEADERS) ; do \
+	  if [ -f "$$f" ] ; then \
+	    $(INSTALL_DATA) "$$f" $(DESTDIR)$(includedir)/nettle ; \
+	  else \
+	    $(INSTALL_DATA) "$(srcdir)/$$f" $(DESTDIR)$(includedir)/nettle ; \
+	  fi ; done
 
 # Uninstall
 uninstall-here: uninstall-info uninstall-headers uninstall-shared
@@ -273,8 +284,6 @@ top_distdir = $(distdir)
 # NOTE: Depending on the automake version in the parent dir,
 # we must handle both absolute and relative $destdir.
 
-# NOTE: I'd like to use $^, but that's a GNU extension. $? should be
-# more portable, and equivalent for phony targets.
 distdir: $(DISTFILES)
 	rm -rf "$(distdir)"
 	mkdir "$(distdir)"
