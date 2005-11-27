@@ -76,7 +76,7 @@ distdir: $(DISTFILES)
 	cp $? $(distdir)
 
 clean:
-	-rm -f $(TARGETS) *.o test.in test1.out test2.out
+	-rm -f $(TARGETS) $(EXTRA_TARGETS) *.o test.in test1.out test2.out
 
 distclean: clean
 	-rm -f Makefile *.d
