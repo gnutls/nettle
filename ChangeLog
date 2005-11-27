@@ -1,3 +1,10 @@
+2005-11-27  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/Makefile.in (clean): Delete sha1-huge-test.
+
+	* Makefile.in (install-info, install-headers): Don't use $< and
+	$?; Solaris make doesn't support them in explicit rules.
+
 2005-11-26  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/Makefile.in: Include .test-rules.make, which contains
