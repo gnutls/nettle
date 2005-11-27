@@ -1,5 +1,8 @@
 2005-11-27  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.in (.texinfo.pdf): New rule. Avoid dependency on
+	intermediate .dvi and .ps files.
+
 	* testsuite/Makefile.in (clean): Delete sha1-huge-test.
 
 	* Makefile.in (install-info, install-headers): Don't use $< and
