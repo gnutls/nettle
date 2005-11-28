@@ -1,3 +1,13 @@
+2005-11-28  Niels Möller  <nisse@lysator.liu.se>
+
+	* config.make.in (INSTALL): Don't substitute INSTALL, INSTALL_DATA
+	and friends here, to get a correct a relative filename for
+	install-sh when used in tools/Makefile.
+
+	* tools/Makefile.in (INSTALL): Substitute INSTALL, INSTALL_DATA
+	and friends here.
+	* Makefile.in (INSTALL): Likewise.
+
 2005-11-27  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in (.texinfo.pdf): New rule. Avoid dependency on
