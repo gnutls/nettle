@@ -1,3 +1,10 @@
+2005-12-05  Niels Möller  <nisse@lysator.liu.se>
+
+	* NEWS: Updated for 1.14.
+
+	* configure.ac (SHLIBMINOR): Increased minor number. Library
+	version is now libnettle.so.2.5, soname still libnettle.so.2.
+
 2005-11-28  Niels Möller  <nisse@lysator.liu.se>
 
 	* config.make.in (INSTALL): Don't substitute INSTALL, INSTALL_DATA

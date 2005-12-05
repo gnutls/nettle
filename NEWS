@@ -1,8 +1,11 @@
 NEWS for the 1.14 release
 
-	Fixed support for sparc64.
-
+	Experimental support for reading keys in PKCS#1 ASN1/DER
+	format, and a new command line tool pkcs1-conv.
+	
 	Improved MD5 performance on x86.
+
+	Fixed support for sparc64.
 
 	Reorganized AES code. Better performance for all three
 	implementations (C, x86 assembler, sparc assembler).
@@ -13,7 +16,15 @@ NEWS for the 1.14 release
 
 	Replaced the internal function nettle_mpz_from_octets with a
 	call to mpz_import, if available in the installed GMP library.
-	
+
+	More Makefile fixes; it now seems to work to build with
+	the the make programs on Solaris and FreeBSD (although
+	--disable-dependency-tracking is required for the latter).
+
+	The library is intended to be binary compatible with earlier
+	versions. The library name is libnettle.so.2.5, soname is
+	still libnettle.so.2.
+
 NEWS for the 1.13 release
 
 	Fixed problem with broken m4 on bsd, which resulted in
