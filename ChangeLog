@@ -1,5 +1,9 @@
 2005-12-05  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac: Bumped version to 1.15,
+
+	* Released nettle-1.14.
+
 	* NEWS: Updated for 1.14.
 
 	* configure.ac (SHLIBMINOR): Increased minor number. Library
