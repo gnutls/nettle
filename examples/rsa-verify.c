@@ -60,7 +60,7 @@ main(int argc, char **argv)
   
   if (argc != 3)
     {
-      werror("Usage: rsa-sign PUBLIC-KEY SIGNATURE-FILE < file\n");
+      werror("Usage: rsa-verify PUBLIC-KEY SIGNATURE-FILE < FILE\n");
       return EXIT_FAILURE;
     }
 
