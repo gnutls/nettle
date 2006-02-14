@@ -22,7 +22,7 @@ all check install uninstall:
 	set -e; for d in $(SUBDIRS); do \
 	  echo "Making $@ in $$d" ; (cd $$d && $(MAKE) $@); done
 
-clean distclean mostlyclean maintainer-clean:
+clean distclean mostlyclean maintainer-clean tags:
 	set -e; for d in $(SUBDIRS); do \
 	  echo "Making $@ in $$d" ; (cd $$d && $(MAKE) $@); done
 	$(MAKE) $@-here
@@ -322,6 +322,9 @@ clean-here:
 distclean-here: clean-here
 	-rm -f config.h stamp-h config.log config.status \
 	config.make config.m4 Makefile nettle-types.h *.d
+
+tags-here:	
+	etags $(srcdir)/*.c $(srcdir)/*.h
 
 DEP_FILES = $(SOURCES:.c=.$(OBJEXT).d) $(SOURCES:.c=.p$(OBJEXT).d)
 @DEP_INCLUDE@ $(DEP_FILES)
