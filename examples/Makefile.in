@@ -54,4 +54,7 @@ clean:
 distclean: clean
 	-rm -f Makefile *.d
 
+tags:
+	etags --include $(top_srcdir) $(srcdir)/*.c $(srcdir)/*.h
+
 @DEP_INCLUDE@ $(SOURCES:.c=.$(OBJEXT).d)
