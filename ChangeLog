@@ -1,3 +1,10 @@
+2006-02-14  Niels Möller  <niels@s3.kth.se>
+
+	* Makefile.in (tags, tags-here): New targets.
+	* tools/Makefile.in (tags): New target.
+	* testsuite/Makefile.in (tags): New target.
+	* examples/Makefile.in (tags): New target.
+
 2005-01-03  Niels Möller  <niels@s3.kth.se>
 
 	* examples/io.h: Include RSA declarations only when public key
