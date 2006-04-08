@@ -186,9 +186,11 @@ read_pem(struct nettle_buffer *buffer, FILE *f,
   /* Find start line */
   for (;;)
     {
+      int res;
+
       nettle_buffer_reset(buffer);
 
-      int res = read_line(buffer, f);
+      res = read_line(buffer, f);
       if (res != 1)
 	return res;
 
