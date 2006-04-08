@@ -1,3 +1,8 @@
+2006-04-08  Niels Möller  <nisse@lysator.liu.se>
+
+	* tools/pkcs1-conv.c (read_pem): Fixed c99-style declaration.
+	Reported by Henrik Grubbström.
+
 2006-01-31  Niels Möller  <niels@s3.kth.se>
 
 	* examples/rsa-verify.c: Fixed typo in usage message.
