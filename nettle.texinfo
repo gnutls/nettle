@@ -1507,9 +1507,9 @@ knows the secret, it is easy to compute both @code{F} and it's inverse.
 If this sounds strange, look at the @acronym{RSA} example below.
 
 Two important uses for one-way functions with trapdoors are public-key
-encryption, and digital signatures. Of these, I won't say more about
-public-key encryption, as that isn't yet supported by Nettle. So the
-rest of this chapter is about digital signatures.
+encryption, and digital signatures. The public-key encryption functions
+in Nettle are not yet documented; the rest of this chapter is about
+digital signatures.
 
 To use a digital signature algorithm, one must first create a
 @dfn{key-pair}: A public key and a corresponding private key. The private
