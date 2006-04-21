@@ -1,3 +1,9 @@
+2006-04-21  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle.texinfo (Public-key algorithms): Say that the public key
+	operations are undocumented, not unsupported. Reported by Jeronimo
+	Pellegrini. 
+
 2006-04-08  Niels Möller  <nisse@lysator.liu.se>
 
 	* tools/pkcs1-conv.c (read_pem): Fixed c99-style declaration.
