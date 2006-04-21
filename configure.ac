@@ -361,6 +361,7 @@ if test x$GCC = xyes ; then
     CFLAGS="$CFLAGS -ggdb3"
   fi
   # FIXME: It would be better to actually test if this option works and/or is needed.
+  # Or perhaps use -funsigned-char.
   if "$CC" --version | grep 'gcc.* 4\.' 1>/dev/null 2>&1; then
     CFLAGS="$CFLAGS -Wno-pointer-sign"
   fi
