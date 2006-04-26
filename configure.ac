@@ -186,6 +186,7 @@ ASM_SYMBOL_PREFIX=''
 ASM_ELF_STYLE='no'
 ASM_TYPE_FUNCTION=''
 ASM_MARK_NOEXEC_STACK=''
+ASM_ALIGN_LOG=''
 
 if test x$enable_assembler = xyes ; then
   AC_CACHE_CHECK([if globals are prefixed by underscore],
@@ -268,12 +269,23 @@ foo:
       ASM_TYPE_FUNCTION='#function'
     fi
   fi
+  AC_CACHE_CHECK([if .align assembly directive is logarithmic],
+    [nettle_cv_asm_align_log],
+    [GMP_TRY_ASSEMBLE([
+.align 3
+],
+       [nettle_cv_asm_align_log=yes],
+       [nettle_cv_asm_align_log=no])])
+  if test x$nettle_cv_asm_align_log = xyes ; then
+    ASM_ALIGN_LOG='yes'
+  fi
 fi
 
 AC_SUBST(ASM_SYMBOL_PREFIX)
 AC_SUBST(ASM_ELF_STYLE)
 AC_SUBST(ASM_TYPE_FUNCTION)
 AC_SUBST(ASM_MARK_NOEXEC_STACK)
+AC_SUBST(ASM_ALIGN_LOG)
 
 AC_SUBST(SHLIBCFLAGS)
 AC_SUBST(SHLIBMAJOR)
