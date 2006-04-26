@@ -45,8 +45,6 @@
 #include "io.h"
 #include "rsa-session.h"
 
-#include "getopt.h"
-
 void
 rsa_session_set_decrypt_key(struct rsa_session *ctx,
 			    const struct rsa_session_info *key)
