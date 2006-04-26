@@ -16,6 +16,8 @@ SOURCES = nettle-benchmark.c nettle-openssl.c \
 	io.c getopt.c getopt1.c \
 	rsa-encrypt.c rsa-decrypt.c rsa-keygen.c rsa-sign.c rsa-verify.c
 
+GETOPT_OBJS = getopt.$(OBJEXT) getopt1.$(OBJEXT)
+
 TS_ALL = rsa-sign-test rsa-verify-test rsa-encrypt-test
 
 DISTFILES= $(SOURCES) Makefile.in $(TS_ALL) run-tests setup-env teardown-env \
@@ -27,8 +29,8 @@ all: $(TARGETS)
 	$(COMPILE) -c $< && $(DEP_PROCESS)
 
 # For Solaris and BSD make, we have to use an explicit rule for each executable
-rsa-keygen$(EXEEXT): rsa-keygen.$(OBJEXT)
-	$(LINK) rsa-keygen.$(OBJEXT) io.$(OBJEXT) \
+rsa-keygen$(EXEEXT): rsa-keygen.$(OBJEXT) $(GETOPT_OBJS)
+	$(LINK) rsa-keygen.$(OBJEXT) io.$(OBJEXT) $(GETOPT_OBJS) \
 	-lnettle $(LIBS) -o rsa-keygen$(EXEEXT)
 
 rsa-sign$(EXEEXT): rsa-sign.$(OBJEXT)
@@ -39,19 +41,16 @@ rsa-verify$(EXEEXT): rsa-verify.$(OBJEXT)
 	$(LINK) rsa-verify.$(OBJEXT) io.$(OBJEXT) \
 	-lnettle $(LIBS) -o rsa-verify$(EXEEXT)
 
-rsa-encrypt$(EXEEXT): rsa-encrypt.$(OBJEXT)
-	$(LINK) rsa-encrypt.$(OBJEXT) io.$(OBJEXT) \
+rsa-encrypt$(EXEEXT): rsa-encrypt.$(OBJEXT) $(GETOPT_OBJS)
+	$(LINK) rsa-encrypt.$(OBJEXT) io.$(OBJEXT) $(GETOPT_OBJS) \
 	-lnettle $(LIBS) -o rsa-encrypt$(EXEEXT)
 
 rsa-decrypt$(EXEEXT): rsa-decrypt.$(OBJEXT)
 	$(LINK) rsa-decrypt.$(OBJEXT) io.$(OBJEXT) \
 	-lnettle $(LIBS) -o rsa-decrypt$(EXEEXT)
 
-# .$(OBJEXT)$(EXEEXT):
-# 	$(LINK) $< io.$(OBJEXT) -lnettle $(LIBS) -o $@
-
-nettle-benchmark$(EXEEXT): nettle-benchmark.$(OBJEXT) nettle-openssl.$(OBJEXT)
-	$(LINK) nettle-benchmark.$(OBJEXT) nettle-openssl.$(OBJEXT) io.$(OBJEXT) \
+nettle-benchmark$(EXEEXT): nettle-benchmark.$(OBJEXT) nettle-openssl.$(OBJEXT) $(GETOPT_OBJS)
+	$(LINK) nettle-benchmark.$(OBJEXT) nettle-openssl.$(OBJEXT) io.$(OBJEXT) $(GETOPT_OBJS) \
 	-lnettle $(LIBS) $(OPENSSL_LIBFLAGS) -o $@
 
 $(TARGETS) : io.$(OBJEXT) ../libnettle.a
