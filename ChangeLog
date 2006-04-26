@@ -1,3 +1,17 @@
+2006-04-26  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86/aes-decrypt-internal.asm: Use ALIGN.
+	* x86/aes-encrypt-internal.asm: Likewise.
+	* x86/arcfour-crypt.asm: Likewise.
+	* x86/md5-compress.asm: Likewise.
+	* x86/sha1-compress.asm: Likewise.
+
+	* config.m4.in (ASM_ALIGN_LOG): Substitute.
+	* configure.ac (ASM_ALIGN_LOG): Check if .align directive is
+	logarithmic.
+	* asm.m4 (ALIGN): New macro. Takes a logarithmic argument, and
+	expands to a .align directive.
+
 2006-04-21  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle.texinfo (Public-key algorithms): Say that the public key
