@@ -36,15 +36,11 @@
 
 #include <time.h>
 
-/* For getopt */
-#if HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-
 #include "aes.h"
 #include "arcfour.h"
 #include "blowfish.h"
 #include "cast128.h"
+#include "cbc.h"
 #include "des.h"
 #include "serpent.h"
 #include "twofish.h"
@@ -52,7 +48,7 @@
 #include "nettle-meta.h"
 #include "nettle-internal.h"
 
-#include "cbc.h"
+#include "getopt.h"
 
 static double frequency = 0.0;
 
