@@ -58,7 +58,7 @@ C %edi is a temporary, often used as an accumulator.
 	C	       unsigned length, uint8_t *dst,
 	C	       uint8_t *src)
 	.text
-	.align 16
+	ALIGN(4)
 PROLOGUE(_nettle_aes_encrypt)
 	C save all registers that need to be saved
 	pushl	%ebx		C  20(%esp)
@@ -90,7 +90,7 @@ PROLOGUE(_nettle_aes_encrypt)
 
 	addl	$16,KEY		C  point to next key
 	movl	KEY,FRAME_KEY
-	.align 16
+	ALIGN(4)
 .Lround_loop:
 	AES_ROUND(T, SA,SB,SC,SD, TMP, KEY)
 	pushl	TMP

@@ -68,7 +68,7 @@ define(<ROUND>,<
 	C _nettle_md5_compress(uint32_t *state, uint8_t *data)
 	
 	.text
-	.align 16
+	ALIGN(4)
 PROLOGUE(_nettle_md5_compress)
 	C save all registers that need to be saved
 

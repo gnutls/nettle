@@ -23,7 +23,7 @@ C MA 02111-1307, USA.
 	C               unsigned length, uint8_t *dst,
 	C               const uint8_t *src)
 	.text
-	.align 16
+	ALIGN(4)
 PROLOGUE(nettle_arcfour_crypt)
 	C save all registers that need to be saved
 	pushl	%ebx		C  12(%esp)
