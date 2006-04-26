@@ -23,6 +23,10 @@ define(<EPILOGUE>,
 <.L$1end:
 .size C_NAME($1), .L$1end - C_NAME($1)>,)>)
 
+dnl Argument to ALIGN is always logarithmic
+dnl Can't use << operator with our choice of quote characters...
+define(<ALIGN>,
+<.align ifelse(ALIGN_LOG,yes,$1,eval(2 ** $1))>)
 
 dnl Struct defining macros
 
