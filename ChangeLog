@@ -1,5 +1,12 @@
 2006-04-26  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/rsa-decrypt.c: Don't include "getopt.h", since it's not used.
+	* examples/nettle-benchmark.c: Include "getopt.h".
+
+	* examples/Makefile.in (GETOPT_OBJS): New variable.
+	(rsa-keygen, rsa-encrypt, nettle-benchmark): Depend on and link
+	with $(GETOPT_OBJS).
+
 	* x86/aes-decrypt-internal.asm: Use ALIGN.
 	* x86/aes-encrypt-internal.asm: Likewise.
 	* x86/arcfour-crypt.asm: Likewise.
