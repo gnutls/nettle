@@ -29,7 +29,7 @@ all check install uninstall:
 	set -e; for d in $(SUBDIRS); do \
 	  echo "Making $@ in $$d" ; (cd $$d && $(MAKE) $@); done
 
-clean distclean mostlyclean maintainer-clean:
+clean distclean mostlyclean maintainer-clean tags:
 	set -e; for d in $(SUBDIRS); do \
 	  echo "Making $@ in $$d" ; (cd $$d && $(MAKE) $@); done
 	$(MAKE) $@-here
@@ -364,6 +364,9 @@ distclean-here: clean-here
 
 maintainer-clean-here:
 	-rm -f $(DOCTARGETS) *.dvi *.ps
+
+tags-here:	
+	etags $(srcdir)/*.c $(srcdir)/*.h
 
 DEP_FILES = $(SOURCES:.c=.$(OBJEXT).d) $(SOURCES:.c=.p$(OBJEXT).d)
 @DEP_INCLUDE@ $(DEP_FILES)
