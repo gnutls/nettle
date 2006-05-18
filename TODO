@@ -27,5 +27,3 @@ use
 
 The make rules for building position independent *_p.o files doesn't
 get dependencies right.
-
-Delete the old x86/aes_tables.asm file.
