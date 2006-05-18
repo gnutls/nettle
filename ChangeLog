@@ -1,3 +1,16 @@
+2006-05-18  Niels Möller  <nisse@lysator.liu.se>
+
+	* src/nettle/x86/aes.asm: Deleted unused file.
+
+	* aes-decrypt.c (_aes_decrypt_table): Deleted the indexing array,
+	previously commented out.
+	* aes-encrypt-table.c (_aes_encrypt_table): Likewise.
+
+	* Makefile.in (.texinfo.info, .dvi.ps): Use more quotes with
+	basename.
+	(install-here, install-shared, install-info, install-headers): Use
+	plain mkdir, not $(INSTALL) -d.
+
 2006-02-14  Niels Möller  <niels@s3.kth.se>
 	Merged from the lsh experimental branch.
 	* Makefile.in (tags, tags-here): New targets.
