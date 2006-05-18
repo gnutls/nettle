@@ -177,7 +177,7 @@ des.$(OBJEXT): des.c des.h $(des_headers)
 
 # Texinfo rules
 .texinfo.info:
-	cd $(srcdir) && $(MAKEINFO) --output $@T `basename $<` \
+	cd $(srcdir) && $(MAKEINFO) --output $@T `basename "$<"` \
 	&& test -s $@T && mv -f $@T $@
 
 .texinfo.html:
@@ -189,7 +189,7 @@ des.$(OBJEXT): des.c des.h $(des_headers)
 	cd $(srcdir) && texi2dvi `basename "$<"`
 
 .dvi.ps:
-	cd $(srcdir) && dvips -Ppdf -G0 -o `basename $< .dvi`.ps `basename $<`
+	cd $(srcdir) && dvips -Ppdf -G0 -o `basename "$<" .dvi`.ps `basename "$<"`
 
 # Avoid rebuilding .dvi and .ps files when the .texinfo source is unchanged.
 PS2PDFFLAGS=-dCompatibilityLevel=1.3 -dMAxSubsetPct=100 -dSubsetFonts=true -dEmbedAllFonts=true
@@ -227,12 +227,13 @@ config.m4: config.m4.in config.status
 	./config.status $@
 
 # Installation
+# FIXME: Use mkinstalldirs.
 install-here: install-info install-headers libnettle.a $(SHLIBINSTALL)
-	[ -d $(DESTDIR)$(libdir) ] || $(INSTALL) -d $(DESTDIR)$(libdir)
+	[ -d $(DESTDIR)$(libdir) ] || mkdir $(DESTDIR)$(libdir)
 	$(INSTALL_DATA) libnettle.a $(DESTDIR)$(libdir)
 
 install-shared: $(SHLIBFORLINK)
-	[ -d $(DESTDIR)$(libdir) ] || $(INSTALL) -d $(DESTDIR)$(libdir)
+	[ -d $(DESTDIR)$(libdir) ] || mkdir $(DESTDIR)$(libdir)
 	$(INSTALL_PROGRAM) $(SHLIBFORLINK) $(DESTDIR)$(libdir)/$(SHLIBFILE)
 	[ -z "$(SHLIBSONAME)" ] \
                 || (cd $(DESTDIR)$(libdir) \
@@ -244,7 +245,7 @@ install-shared: $(SHLIBFORLINK)
 # friends for ordinary explicit rules.
 
 install-info: nettle.info
-	[ -d $(DESTDIR)$(infodir) ] || $(INSTALL) -d $(DESTDIR)$(infodir)
+	[ -d $(DESTDIR)$(infodir) ] || mkdir $(DESTDIR)$(infodir)
 	f=nettle.info ; \
 	[ -f $$f ] || f="$(srcdir)/$$f" ; \
 	$(INSTALL_DATA) "$$f" $(DESTDIR)$(infodir) ; \
@@ -256,8 +257,8 @@ install-info: nettle.info
 # NOTE: I'd like to use $^, but that's a GNU extension. $? should be
 # more portable, and equivalent for phony targets.
 install-headers: $(INSTALL_HEADERS)
-	[ -d $(DESTDIR)$(includedir) ] || $(INSTALL) -d $(DESTDIR)$(includedir)
-	[ -d $(DESTDIR)$(includedir)/nettle ] || $(INSTALL) -d $(DESTDIR)$(includedir)/nettle
+	[ -d $(DESTDIR)$(includedir) ] || mkdir $(DESTDIR)$(includedir)
+	[ -d $(DESTDIR)$(includedir)/nettle ] || mkdir $(DESTDIR)$(includedir)/nettle
 	for f in $(INSTALL_HEADERS) ; do \
 	  if [ -f "$$f" ] ; then \
 	    $(INSTALL_DATA) "$$f" $(DESTDIR)$(includedir)/nettle ; \
