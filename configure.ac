@@ -157,6 +157,13 @@ case "$host_os" in
     SHLIBLINK='$(CC) $(LDFLAGS) -shared -Wl,--out-implib=$(SHLIBFILE) -Wl,--export-all-symbols -Wl,--enable-auto-import -Wl,--whole-archive'
     SHLIBLIBS='-Wl,--no-whole-archive $(LIBS)'
     ;;
+  darwin*)
+    SHLIBFORLINK=libnettle.dylib
+    SHLIBSONAME='$(SHLIBFORLINK).$(SHLIBMAJOR)'
+    SHLIBFILE='$(SHLIBSONAME).$(SHLIBMINOR)'
+    SHLIBLINK='$(CC) -dynamiclib $(LDFLAGS)'
+    # SHLIBLIBS=' -lgmp'
+    ;;
   *)
     SHLIBFORLINK=libnettle.so
     SHLIBSONAME='$(SHLIBFORLINK).$(SHLIBMAJOR)'
