@@ -1,3 +1,12 @@
+2006-08-28  Niels Möller  <niels@s3.kth.se>
+
+	* index.html: Added section on language bindings.
+
+2006-06-10  Niels Möller  <niels@s3.kth.se>
+
+	* configure.ac: Darwin shared library support, from Grant
+	Robinsson.
+
 2006-05-18  Niels Möller  <nisse@lysator.liu.se>
 
 	* src/nettle/x86/aes.asm: Deleted unused file.
