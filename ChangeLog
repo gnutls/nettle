@@ -1,3 +1,14 @@
+2006-11-24  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/yarrow-test.c (test_main): Use gold-bug.txt as input
+	file, instead of rfc1750.txt.
+
+	* testsuite/gold-bug.txt: New test input file for yarrow-test.
+	The copyright on this short story by Edgar Allan Poe has expired.
+
+	* testsuite/rfc1750.txt: Deleted file. Debian considers RFC:s
+	non-free, and it was expired anyway. Replaced by gold-bug.txt.
+
 2006-11-24  Niels Möller  <niels@s3.kth.se>
 
 	* Almost all header files: Added C++ guards.
