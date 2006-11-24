@@ -76,6 +76,14 @@ if test "x$CC" = xrntcl ; then
     enable_assembler=no
 fi
 
+# Used by the testsuite only
+AC_PROG_CXX
+
+AC_LANG_PUSH(C++)
+AC_TRY_COMPILE([],[return 0;],[CXX_TESTS='cxx-test$(EXEEXT)'], [CXX_TESTS=''])
+AC_SUBST([CXX_TESTS])
+AC_LANG_POP
+
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
 AC_CHECK_TOOL(NM, nm, strings)
