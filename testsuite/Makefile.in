@@ -25,7 +25,10 @@ TS_SOURCES = aes-test.c arcfour-test.c arctwo-test.c \
 	     rsa-test.c rsa-encrypt-test.c rsa-keygen-test.c \
 	     dsa-test.c dsa-keygen-test.c \
 	     yarrow-test.c
-TARGETS = $(TS_SOURCES:.c=$(EXEEXT))
+
+TS_C = $(TS_SOURCES:.c=$(EXEEXT))
+TS_CXX = @CXX_TESTS@
+TARGETS = $(TS_C) $(TS_CXX)
 TS_SH = sexp-conv-test pkcs1-conv-test symbols-test
 TS_ALL = $(TARGETS) $(TS_SH)
 EXTRA_SOURCES = sha1-huge-test.c
@@ -33,7 +36,7 @@ EXTRA_TARGETS = $(EXTRA_SOURCES:.c=$(EXEEXT))
 
 SOURCES = $(TS_SOURCES) testutils.c
 
-DISTFILES = $(SOURCES) $(EXTRA_SOURCES) Makefile.in .test-rules.make \
+DISTFILES = $(SOURCES) $(EXTRA_SOURCES) cxx-test.cxx Makefile.in .test-rules.make \
 	$(TS_SH) run-tests teardown-env \
 	rfc1750.txt testutils.h
 
@@ -41,6 +44,10 @@ all: $(TARGETS) $(EXTRA_TARGETS)
 
 .c.$(OBJEXT):
 	$(COMPILE) -c $< && $(DEP_PROCESS)
+
+.SUFFIXES: .cxx
+.cxx.$(OBJEXT):
+	$(COMPILE_CXX) -c $< && $(DEP_PROCESS)
 
 # BSD (and Solaris) make doesn't allow extra dependencies together one
 # single-suffix rules, which makes it impossible or almost impossible
@@ -51,11 +58,16 @@ TEST_OBJS = testutils.$(OBJEXT) -lnettle $(LIBS)
 
 .PHONY: test-rules
 test-rules:
-	for f in $(TARGETS) $(EXTRA_TARGETS) ; do \
+	(for f in $(TS_C) $(EXTRA_TARGETS) ; do \
 	  echo $$f'$$(EXEEXT): '$$f'.$$(OBJEXT)' ; \
 	  echo '	$$(LINK) '$$f'.$$(OBJEXT) $$(TEST_OBJS) -o '$$f'$$(EXEEXT)' ; \
 	  echo ; \
-	done > $(srcdir)/.test-rules.make
+	done ; \
+	for f in $(TS_CXX) ; do \
+	  echo $$f'$$(EXEEXT): '$$f'.$$(OBJEXT)' ; \
+	  echo '	$$(LINK_CXX) '$$f'.$$(OBJEXT) $$(TEST_OBJS) -o '$$f'$$(EXEEXT)' ; \
+	  echo ; \
+	done) > $(srcdir)/.test-rules.make
 
 include $(srcdir)/.test-rules.make
 
