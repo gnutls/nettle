@@ -106,3 +106,6 @@ yarrow-test$(EXEEXT): yarrow-test.$(OBJEXT)
 sha1-huge-test$(EXEEXT): sha1-huge-test.$(OBJEXT)
 	$(LINK) sha1-huge-test.$(OBJEXT) $(TEST_OBJS) -o sha1-huge-test$(EXEEXT)
 
+cxx-test$(EXEEXT): cxx-test.$(OBJEXT)
+	$(LINK_CXX) cxx-test.$(OBJEXT) $(TEST_OBJS) -o cxx-test$(EXEEXT)
+
