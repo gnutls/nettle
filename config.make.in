@@ -1,7 +1,9 @@
 # Makefile settings shared between Makefiles.
 
 CC = @CC@
+CXX = @CXX@
 CFLAGS = @CFLAGS@
+CXXFLAGS = @CXXFLAGS@
 CCPIC = @CCPIC@
 CCPIC_MAYBE = @CCPIC_MAYBE@
 CPPFLAGS = @CPPFLAGS@
@@ -52,7 +54,9 @@ infodir =	@infodir@
 # flags before CPPFLAGS and LDFLAGS.
 
 COMPILE = $(CC) $(PRE_CPPFLAGS) $(CPPFLAGS) $(DEFS) $(CFLAGS) $(CCPIC) $(DEP_FLAGS)
+COMPILE_CXX = $(CXX) $(PRE_CPPFLAGS) $(CPPFLAGS) $(DEFS) $(CXXFLAGS) $(CCPIC) $(DEP_FLAGS)
 LINK = $(CC) $(CFLAGS) $(PRE_LDFLAGS) $(LDFLAGS)
+LINK_CXX = $(CXX) $(CXXFLAGS) $(PRE_LDFLAGS) $(LDFLAGS)
 
 # Default rule. Must be here, since config.make is included before the
 # usual targets.
