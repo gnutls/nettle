@@ -70,16 +70,16 @@ test_main(void)
   uint8_t digest[SHA256_DIGEST_SIZE];
 
   const uint8_t *expected_output
-    = decode_hex_dup("06ca66b204a92939 e75e09e11922153e"
-		     "a2391000e0686da4 c7d27afb37a4630f");
+    = decode_hex_dup("85fe6afb5bd627f3 ea20a6127038d3da"
+		     "69e880a6ecbbb7d8 3514d967a2c4c0d4");
 
   const uint8_t *expected_input
-    = decode_hex_dup("fec4c0767434a8a3 22d6d5d0c9f49c42"
-		     "988ce8c159b1a806 29d51aa40c2e99aa");
+    = decode_hex_dup("e0596cf006025506 65d1195f32a87e4a"
+		     "5c354910dfbd0a31 e2105b262f5ce3d8");
 
   const uint8_t *expected_seed_file
-    = decode_hex_dup("87213a8a863a91f9 0e776c01e0d7c3a8"
-		     "6b2ecf9977b06da5 34f3df8375918ac9");
+    = decode_hex_dup("3b7ad33dcd577048 b9e0cbc70b5ca12d"
+		     "5882be29c964a3a6 ea79fdbfa06299dc");
   
   unsigned c; unsigned t;
 
@@ -108,11 +108,11 @@ test_main(void)
   
   assert(!yarrow256_is_seeded(&yarrow));
 
-  input = open_file("rfc1750.txt");
+  input = open_file("gold-bug.txt");
 
   if (!input)
     {
-      fprintf(stderr, "Couldn't open `rfc1750.txt', errno = %d\n",
+      fprintf(stderr, "Couldn't open `gold-bug.txt', errno = %d\n",
               errno);
       return EXIT_FAILURE;
     }
