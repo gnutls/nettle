@@ -1,3 +1,17 @@
+2006-11-24  Niels Möller  <niels@s3.kth.se>
+
+	* Almost all header files: Added C++ guards.
+
+	* configure.ac: Test if the system has any C++ compiler.
+
+	* config.make.in (CXX, CXXFLAGS, COMPILE_CXX, LINK_CXX): New variables.
+
+	* testsuite/Makefile.in: New variables TS_C and TS_CXX. Setup for
+	compiling the C++ file cxx-test.cxx.
+
+	* testsuite/cxx-test.cxx: New testcase, trying to use nettle from
+	a C++ program.
+
 2006-08-28  Niels Möller  <niels@s3.kth.se>
 
 	* index.html: Added section on language bindings.
