@@ -28,6 +28,10 @@
 
 #include "realloc.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct nettle_buffer
 {
   uint8_t *contents;
@@ -86,5 +90,9 @@ nettle_buffer_space(struct nettle_buffer *buffer,
 int
 nettle_buffer_copy(struct nettle_buffer *dst,
 		   const struct nettle_buffer *src);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* NETTLE_BUFFER_H_INCLUDED */

@@ -28,6 +28,10 @@
 
 #include "nettle-types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Name mangling */
 #define sha1_init nettle_sha1_init
 #define sha1_update nettle_sha1_update
@@ -99,5 +103,8 @@ sha256_digest(struct sha256_ctx *ctx,
 	      unsigned length,
 	      uint8_t *digest);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* NETTLE_SHA_H_INCLUDED */

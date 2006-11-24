@@ -31,6 +31,10 @@
 #include "md5.h"
 #include "sha.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Namespace mangling */
 #define hmac_set_key nettle_hmac_set_key
 #define hmac_update nettle_hmac_update
@@ -121,5 +125,9 @@ hmac_sha256_update(struct hmac_sha256_ctx *ctx,
 void
 hmac_sha256_digest(struct hmac_sha256_ctx *ctx,
 		   unsigned length, uint8_t *digest);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* NETTLE_HMAC_H_INCLUDED */

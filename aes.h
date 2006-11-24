@@ -28,6 +28,10 @@
 
 #include "nettle-types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Name mangling */
 #define aes_set_encrypt_key nettle_aes_set_encrypt_key
 #define aes_set_decrypt_key nettle_aes_set_decrypt_key
@@ -64,5 +68,9 @@ void
 aes_decrypt(struct aes_ctx *ctx,
 	    unsigned length, uint8_t *dst,
 	    const uint8_t *src);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* NETTLE_AES_H_INCLUDED */

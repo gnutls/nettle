@@ -29,6 +29,10 @@
 
 #include "nettle-types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Name mangling */
 #define ctr_crypt nettle_ctr_crypt
 
@@ -50,5 +54,9 @@ memcpy((ctx)->ctr, (data), sizeof((ctx)->ctr))
                (nettle_crypt_func) (f),			\
 	       sizeof((self)->ctr), (self)->ctr,	\
                (length), (dst), (src)))
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* NETTLE_CTR_H_INCLUDED */

@@ -33,6 +33,10 @@
 
 #include "nettle-types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Name mangling */
 #define serpent_set_key nettle_serpent_set_key
 #define serpent_encrypt nettle_serpent_encrypt
@@ -69,5 +73,9 @@ void
 serpent_decrypt(struct serpent_ctx *ctx,
                 unsigned length, uint8_t *dst,
                 const uint8_t *src);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* NETTLE_SERPENT_H_INCLUDED */

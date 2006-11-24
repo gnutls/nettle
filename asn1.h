@@ -28,6 +28,10 @@
 
 #include "nettle-types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Name mangling */
 #define asn1_der_iterator_first nettle_asn1_der_iterator_first
 #define asn1_der_iterator_next nettle_asn1_der_iterator_next
@@ -132,5 +136,9 @@ asn1_der_decode_bitstring_last(struct asn1_der_iterator *i);
 int
 asn1_der_get_uint32(struct asn1_der_iterator *i,
 		    uint32_t *x);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* NETTLE_ASN1_H_INCLUDED */

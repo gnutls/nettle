@@ -28,6 +28,10 @@
 
 #include "nettle-types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Name mangling */
 #define base64_encode_init nettle_base64_encode_init
 #define base64_encode_single nettle_base64_encode_single
@@ -141,5 +145,9 @@ base64_decode_update(struct base64_decode_ctx *ctx,
 /* Returns 1 on success. */
 int
 base64_decode_final(struct base64_decode_ctx *ctx);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* NETTLE_BASE64_H_INCLUDED */

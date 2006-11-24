@@ -28,6 +28,10 @@
 
 #include "md5.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Name mangling */
 #define MD5Init nettle_MD5Init
 #define MD5Update nettle_MD5Update
@@ -38,5 +42,9 @@ typedef struct md5_ctx MD5_CTX;
 void MD5Init(MD5_CTX *ctx);
 void MD5Update(MD5_CTX *ctx, const unsigned char *data, unsigned int length);
 void MD5Final(unsigned char *out, MD5_CTX *ctx);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* NETTLE_MD5_COMPAT_H_INCLUDED */

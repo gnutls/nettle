@@ -28,6 +28,10 @@
 
 #include "nettle-types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Name mangling */
 #define md5_init nettle_md5_init
 #define md5_update nettle_md5_update
@@ -64,5 +68,9 @@ md5_digest(struct md5_ctx *ctx,
    and DATA points to 64 bytes of input data, possibly unaligned. */
 void
 _nettle_md5_compress(uint32_t *state, const uint8_t *data);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* NETTLE_MD5_H_INCLUDED */

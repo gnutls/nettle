@@ -29,6 +29,10 @@
 
 #include "nettle-types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Name mangling */
 #define arctwo_set_key nettle_arctwo_set_key
 #define arctwo_set_key_ekb nettle_arctwo_set_key_ekb
@@ -72,5 +76,9 @@ arctwo_encrypt (struct arctwo_ctx *ctx,
 void
 arctwo_decrypt (struct arctwo_ctx *ctx,
 		unsigned length, uint8_t *dst, const uint8_t *src);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* NETTLE_ARCTWO_H_INCLUDED */

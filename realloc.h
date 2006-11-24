@@ -27,9 +27,17 @@
 
 #include "nettle-types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef void *nettle_realloc_func(void *ctx, void *p, unsigned length);
 
 nettle_realloc_func nettle_realloc;
 nettle_realloc_func nettle_xrealloc;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* NETTLE_REALLOC_H_INCLUDED */

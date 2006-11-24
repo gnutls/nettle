@@ -28,6 +28,10 @@
 
 #include "nettle-types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Name mangling */
 #define md2_init nettle_md2_init
 #define md2_update nettle_md2_update
@@ -57,5 +61,9 @@ md2_digest(struct md2_ctx *ctx,
 	   unsigned length,
 	   uint8_t *digest);
 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* NETTLE_MD2_H_INCLUDED */

@@ -28,6 +28,10 @@
 
 #include "nettle-types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Randomness. Used by key generation and dsa signature creation. */
 typedef void (*nettle_random_func)(void *ctx,
 				   unsigned length, uint8_t *dst);
@@ -230,5 +234,9 @@ struct nettle_armor
 
 extern const struct nettle_armor nettle_base64;
 extern const struct nettle_armor nettle_base16;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* NETTLE_META_H_INCLUDED */

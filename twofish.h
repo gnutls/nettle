@@ -34,6 +34,10 @@
 
 #include "nettle-types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Name mangling */
 #define twofish_set_key nettle_twofish_set_key
 #define twofish_encrypt nettle_twofish_encrypt
@@ -66,5 +70,9 @@ void
 twofish_decrypt(struct twofish_ctx *ctx,
 		unsigned length, uint8_t *dst,
 		const uint8_t *src);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* NETTLE_TWOFISH_H_INCLUDED */

@@ -29,6 +29,10 @@
 
 #include "nettle-types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Name mangling */
 #define base16_encode_single nettle_base16_encode_single
 #define base16_encode_update nettle_base16_encode_update
@@ -94,5 +98,9 @@ base16_decode_update(struct base16_decode_ctx *ctx,
 /* Returns 1 on success. */
 int
 base16_decode_final(struct base16_decode_ctx *ctx);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* NETTLE_BASE16_H_INCLUDED */

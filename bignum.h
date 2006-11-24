@@ -31,6 +31,10 @@
 #include <gmp.h>
 #include "nettle-types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Size needed for signed encoding, including extra sign byte if
  * necessary. */
 unsigned
@@ -93,5 +97,9 @@ struct asn1_der_iterator;
 int
 nettle_asn1_der_get_bignum(struct asn1_der_iterator *iterator,
 			   mpz_t x, unsigned limit);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* NETTLE_BIGNUM_H_INCLUDED */

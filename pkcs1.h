@@ -29,6 +29,10 @@
 #include <gmp.h>
 #include "nettle-types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Name mangling */
 #define pkcs1_signature_prefix nettle_pkcs1_signature_prefix
 #define pkcs1_rsa_md5_encode nettle_pkcs1_rsa_md5_encode
@@ -56,5 +60,9 @@ pkcs1_rsa_sha1_encode(mpz_t m, unsigned length, struct sha1_ctx *hash);
 
 void
 pkcs1_rsa_sha1_encode_digest(mpz_t m, unsigned length, const uint8_t *digest);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* NETTLE_PKCS1_H_INCLUDED */

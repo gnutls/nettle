@@ -34,6 +34,10 @@
 
 #include "nettle-types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Name mangling */
 #define cast128_set_key nettle_cast128_set_key
 #define cast128_encrypt nettle_cast128_encrypt
@@ -65,5 +69,9 @@ void
 cast128_decrypt(struct cast128_ctx *ctx,
 		unsigned length, uint8_t *dst,
 		const uint8_t *src);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* NETTLE_CAST128_H_INCLUDED */

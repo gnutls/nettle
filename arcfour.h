@@ -28,6 +28,10 @@
 
 #include "nettle-types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Name mangling */
 #define arcfour_set_key nettle_arcfour_set_key
 #define arcfour_crypt nettle_arcfour_crypt
@@ -58,6 +62,10 @@ arcfour_crypt(struct arcfour_ctx *ctx,
 void
 arcfour_stream(struct arcfour_ctx *ctx,
 	       unsigned length, uint8_t *dst);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* NETTLE_ARCFOUR_H_INCLUDED */
 

@@ -29,6 +29,10 @@
 #include <stdarg.h>
 #include "nettle-types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Name mangling */
 #define sexp_iterator_first nettle_sexp_iterator_first
 #define sexp_transport_iterator_first nettle_sexp_transport_iterator_first
@@ -203,5 +207,9 @@ extern const char
 sexp_token_chars[0x80];
 
 #define TOKEN_CHAR(c) ((c) < 0x80 && sexp_token_chars[(c)])
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* NETTLE_SEXP_H_INCLUDED */

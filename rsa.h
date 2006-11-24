@@ -35,6 +35,10 @@
 /* For nettle_random_func */
 #include "nettle-meta.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Name mangling */
 #define rsa_public_key_init nettle_rsa_public_key_init
 #define rsa_public_key_clear nettle_rsa_public_key_clear
@@ -323,5 +327,9 @@ _rsa_verify(const struct rsa_public_key *key,
 
 unsigned
 _rsa_check_size(mpz_t n);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* NETTLE_RSA_H_INCLUDED */

@@ -35,6 +35,10 @@
 
 #include "des.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* We use some name mangling, to avoid collisions with either other
  * nettle functions or with libcrypto. */
 
@@ -142,5 +146,9 @@ des_key_sched(const_des_cblock *key, des_key_schedule ctx);
 
 int
 des_is_weak_key(const_des_cblock *key);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* NETTLE_DES_COMPAT_H_INCLUDED */

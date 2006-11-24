@@ -28,6 +28,10 @@
 
 #include "rsa.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Name mangling */
 #define R_SignInit nettle_R_SignInit
 #define R_SignUpdate nettle_R_SignUpdate
@@ -120,6 +124,8 @@ R_VerifyFinal(R_SIGNATURE_CTX *ctx,
               unsigned length,
               R_RSA_PUBLIC_KEY *key);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* NETTLE_RSA_COMPAT_H_INCLUDED */
-

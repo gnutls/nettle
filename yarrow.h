@@ -29,6 +29,10 @@
 #include "aes.h"
 #include "sha.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Name mangling */
 #define yarrow256_init nettle_yarrow256_init
 #define yarrow256_seed nettle_yarrow256_seed
@@ -120,4 +124,8 @@ unsigned
 yarrow_key_event_estimate(struct yarrow_key_event_ctx *ctx,
 			  unsigned key, unsigned time);
   
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* NETTLE_YARROW_COMPAT_H_INCLUDED */

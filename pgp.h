@@ -34,6 +34,10 @@
    mpz_t defined. We don't do that here, in order to kludge through
    compilation without public key support and without gmp.h. */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Name mangling */
 #define pgp_put_uint32 nettle_pgp_put_uint32
 #define pgp_put_uint16 nettle_pgp_put_uint16
@@ -231,5 +235,9 @@ enum pgp_subpacket_tag
     PGP_SUBPACKET_SIGNERS_USER_ID = 28,
     PGP_SUBPACKET_REASON_FOR_REVOCATION = 29,
   };
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* NETTLE_PGP_H_INCLUDED */

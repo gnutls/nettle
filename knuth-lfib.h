@@ -33,6 +33,10 @@
 
 #include "nettle-types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Namespace mangling */
 #define knuth_lfib_init nettle_knuth_lfib_init
 #define knuth_lfib_get nettle_knuth_lfib_get
@@ -63,5 +67,9 @@ knuth_lfib_get_array(struct knuth_lfib_ctx *ctx,
 void
 knuth_lfib_random(struct knuth_lfib_ctx *ctx,
 		  unsigned n, uint8_t *dst);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* NETTLE_KNUTH_LFIB_H_INCLUDED */

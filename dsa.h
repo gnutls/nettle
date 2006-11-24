@@ -35,6 +35,10 @@
 /* For nettle_random_func */
 #include "nettle-meta.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Name mangling */
 #define dsa_public_key_init nettle_dsa_public_key_init
 #define dsa_public_key_clear nettle_dsa_public_key_clear
@@ -190,5 +194,9 @@ dsa_keypair_from_sexp(struct dsa_public_key *pub,
 		      unsigned limit,
 		      unsigned length, const uint8_t *expr);
 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* NETTLE_DSA_H_INCLUDED */

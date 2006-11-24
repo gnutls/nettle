@@ -28,6 +28,10 @@
 
 #include "nettle-types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Name mangling */
 #define cbc_encrypt nettle_cbc_encrypt
 #define cbc_decrypt nettle_cbc_decrypt
@@ -63,5 +67,9 @@ memcpy((ctx)->iv, (data), sizeof((ctx)->iv))
                  (nettle_crypt_func) (f),		\
 		 sizeof((self)->iv), (self)->iv,	\
                  (length), (dst), (src)))
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* NETTLE_CBC_H_INCLUDED */

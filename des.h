@@ -37,6 +37,10 @@
 
 #include "nettle-types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Namespace mangling */
 #define des_set_key nettle_des_set_key
 #define des_encrypt nettle_des_encrypt
@@ -101,5 +105,9 @@ void
 des3_decrypt(const struct des3_ctx *ctx,
 	     unsigned length, uint8_t *dst,
 	     const uint8_t *src);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* NETTLE_DES_H_INCLUDED */

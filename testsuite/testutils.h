@@ -22,6 +22,10 @@
 
 #include "nettle-meta.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void *
 xalloc(size_t size);
 
@@ -126,6 +130,10 @@ test_dsa_key(struct dsa_public_key *pub,
 	     struct dsa_private_key *key);
 
 #endif /* WITH_PUBLIC_KEY */
+
+#ifdef __cplusplus
+}
+#endif
 
 #define H2(d, s) decode_hex((d), (s))
 #define H(x) decode_hex_dup(x)

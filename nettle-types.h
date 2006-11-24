@@ -25,6 +25,10 @@
 
 #include "nettle-stdint.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Uses a void * for cipher contexts.
 
    For block ciphers it would make sense with a const void * for the
@@ -37,5 +41,8 @@ typedef void (*nettle_crypt_func)(void *ctx,
 
 /* FIXME: Move more of the typedefs to this file? */
 
-#endif /* NETTLE_TYPES_H */
+#ifdef __cplusplus
+}
+#endif
 
+#endif /* NETTLE_TYPES_H */
