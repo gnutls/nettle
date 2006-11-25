@@ -7,7 +7,7 @@ missing. References:
   http://www.openssl.org/docs/crypto/rsa.html
 
 More feedback modes, in order of decreasing priority:  CBC-MAC, OFB,
-Counter, and CFB. Suggested by Rafael 'Dido' Sevilla. References:
+and CFB. Suggested by Rafael 'Dido' Sevilla. References:
 
   http://csrc.nist.gov/encryption/modes/Recommendation/Modes01.pdf
 
