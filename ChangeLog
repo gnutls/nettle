@@ -45,12 +45,623 @@
 	(install-here, install-shared, install-info, install-headers): Use
 	plain mkdir, not $(INSTALL) -d.
 
-2006-02-14  Niels Möller  <niels@s3.kth.se>
+2006-05-16  Niels Möller  <niels@s3.kth.se>
 	Merged from the lsh experimental branch.
-	* Makefile.in (tags, tags-here): New targets.
-	* tools/Makefile.in (tags): New target.
-	* testsuite/Makefile.in (tags): New target.
-	* examples/Makefile.in (tags): New target.
+	
+2006-04-26  Niels Möller  <nisse@lysator.liu.se>
+
+        * examples/rsa-decrypt.c: Don't include "getopt.h", since it's not used.
+        * examples/nettle-benchmark.c: Include "getopt.h".
+
+        * examples/Makefile.in (GETOPT_OBJS): New variable.
+        (rsa-keygen, rsa-encrypt, nettle-benchmark): Depend on and link
+        with $(GETOPT_OBJS).
+
+        * x86/aes-decrypt-internal.asm: Use ALIGN.
+        * x86/aes-encrypt-internal.asm: Likewise.
+        * x86/arcfour-crypt.asm: Likewise.
+        * x86/md5-compress.asm: Likewise.
+        * x86/sha1-compress.asm: Likewise.
+
+        * config.m4.in (ASM_ALIGN_LOG): Substitute.
+        * configure.ac (ASM_ALIGN_LOG): Check if .align directive is
+        logarithmic.
+        * asm.m4 (ALIGN): New macro. Takes a logarithmic argument, and
+        expands to a .align directive.
+
+2006-04-21  Niels Möller  <nisse@lysator.liu.se>
+
+        * nettle.texinfo (Public-key algorithms): Say that the public key
+        operations are undocumented, not unsupported. Reported by Jeronimo
+        Pellegrini. 
+
+2006-04-08  Niels Möller  <nisse@lysator.liu.se>
+
+        * tools/pkcs1-conv.c (read_pem): Fixed c99-style declaration.
+        Reported by Henrik Grubbström.
+
+2006-01-31  Niels Möller  <niels@s3.kth.se>
+
+        * examples/rsa-verify.c: Fixed typo in usage message.
+	
+2005-12-05  Niels Möller  <nisse@lysator.liu.se>
+
+        * configure.ac: Bumped version to 1.15,
+
+        * Released nettle-1.14.
+
+	* NEWS: Updated for 1.14.
+
+	* configure.ac (SHLIBMINOR): Increased minor number. Library
+	version is now libnettle.so.2.5, soname still libnettle.so.2.
+
+2005-11-28  Niels Möller  <nisse@lysator.liu.se>
+
+	* config.make.in (INSTALL): Don't substitute INSTALL, INSTALL_DATA
+	and friends here, to get a correct a relative filename for
+	install-sh when used in tools/Makefile.
+
+	* tools/Makefile.in (INSTALL): Substitute INSTALL, INSTALL_DATA
+	and friends here.
+	* Makefile.in (INSTALL): Likewise.
+
+2005-11-27  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (.texinfo.pdf): New rule. Avoid dependency on
+	intermediate .dvi and .ps files.
+
+	* testsuite/Makefile.in (clean): Delete sha1-huge-test.
+
+	* Makefile.in (install-info, install-headers): Don't use $< and
+	$?; Solaris make doesn't support them in explicit rules.
+
+2005-11-26  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/Makefile.in: Include .test-rules.make, which contains
+	the rules for all the test executables.
+	(test-rules): New rule, to update this file.
+	(DISTFILES): Added $(EXTRA_SOURCES).
+
+	* testsuite/.test-rules.make: Automatically generated file for
+	building the test programs.
+
+2005-11-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Disable assembler when compiling with rntcl.
+
+	* tools/Makefile.in (pkcs1_conv_SOURCES): New variable.
+	(pkcs1-conv): Link with getopt.o and getopt1.o.
+
+	* Makefile.in (aesdata, desdata, shadata): Use explicit rules for
+	executables.
+
+	* testsuite/Makefile.in: Use %-rules for building the -test
+	executables, in addition to the suffix rules. Hopefully, this
+	should make all of GNU make, BSD make and Solaris make happy.
+	Use $(EXEEXT) and $(OBJEXT) more consistently.
+	
+	* examples/Makefile.in: Use explicit rules for all executable
+	targets. Use $(EXEEXT) and $(OBJEXT) more consistently.
+
+2005-11-25  Niels Möller  <niels@s3.kth.se>
+
+	* testsuite/Makefile.in: Avoid using single-suffix rule to build
+	executables.
+
+2005-11-24  Niels Möller  <niels@s3.kth.se>
+
+	* Makefile.in (distdir): Use [ -f, not [ -e, since the latter
+	is less portable, and not supported by Solaris /bin/sh.
+
+2005-11-23  Niels Möller  <niels@s3.kth.se>
+
+	* testsuite/Makefile.in (DISTFILES): Added teardown-env.
+	* testsuite/teardown-env: New file. Delete files created by the
+	testsuite.
+
+2005-11-21  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/testutils.c (main): Fixed check for -v option. Spotted
+	by Goran K. 
+
+2005-11-21  Niels Möller  <niels@s3.kth.se>
+
+	* ctr.h (CTR_CTX, CTR_CRYPT): Fixed bugs, spotted by Goran K.
+
+2005-11-20  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (nettle_SOURCES): Added der2rsa.c.
+
+	* testsuite/Makefile.in (TS_SH): Added pkcs1-conv-test.
+
+	* tools/Makefile.in (TARGETS): Added @RSA_TOOLS@.
+	(SOURCES): Added pkcs1-conv.c.
+	(pkcs1-conv): New rule.
+
+	* tools/pkcs1-conv.c: New program.
+
+	* testsuite/pkcs1-conv-test: New file.
+
+	* examples/rsa-verify-test: Use rsa-sign to create signature.
+
+	* examples/io.c (read_file): Fixed spelling in error message.
+
+	* rsa.h (rsa_public_key_from_der_iterator)
+	(rsa_private_key_from_der_iterator, rsa_keypair_from_der): Declare
+	functions. 
+
+	* der2rsa.c: New file.
+
+	* der-iterator.c (asn1_der_iterator_init): Initialize length and
+	data.
+	(asn1_der_iterator_next): Support for lengths >= 0x80.
+	(asn1_der_decode_constructed_last, asn1_der_decode_bitstring) 
+	(asn1_der_decode_bitstring_last): New functions.
+	(asn1_der_get_bignum): Check for non-mininal encodings.
+
+	* configure.ac (RSA_TOOLS): New substituted variable. Includes
+	pkcs1-conv, when public-key support is enabled.
+
+	* bignum.h (nettle_asn1_der_get_bignum): Include nettle_-prefix in
+	declaration.
+
+	* asn1.h: Added name mangling defines, and a few new declarations.
+
+2005-11-13  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (nettle_SOURCES): Added der-iterator.c.
+	(HEADERS): Added asn1.h.
+
+	* bignum.h (asn1_der_get_bignum): Declare function.
+
+	* der-iterator.c: New file.
+	* asn1.h: New file.
+
+2005-11-07  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/nettle-benchmark.c: Check HAVE_UNISTD_H.
+
+	* examples/Makefile.in (TARGETS): Use $(EXEEXT).
+	* tools/Makefile.in (TARGETS, sexp-conv, nettle-lfib-stream): Likewise.
+
+	* configure.ac: Use $host_cpu, not $host, when setting up the
+	assembler path. Use $host_os, not uname, when setting up shared
+	library flags.
+
+	* Makefile.in (des.$(OBJEXT)): Use OBJEXT. 
+
+	* config.guess, config.sub: In the CVS tree, moved files to the
+	lsh top-level directory.
+
+2005-10-23  Niels Möller  <nisse@lysator.liu.se>
+
+	* sparc64/arcfour-crypt.asm: New file, almost the same as
+	sparc/arcfour-crypt.asm. 
+
+	* examples/nettle-benchmark.c (display): Use two decimal places.
+
+	* sparc/arcfour-crypt.asm: Reorganized. Main loop unrolled four
+	times. Uses aligned 32-bit write accesses at DST. Still uses 8-bit
+	read accesses at SRC; could be improved int he case that SRC and
+	DST have compatible alignment.
+
+2005-10-19  Niels Möller  <niels@s3.kth.se>
+
+	* testsuite/arcfour-test.c (test_main): New testcase with 512
+	bytes of data.
+
+2005-10-19  Niels Möller  <nisse@lysator.liu.se>
+
+	* sparc/arcfour-crypt.asm: Fixed bug, spotted by Mikael Kalms. We
+	must order the store at [CTX+I] before the load of [CTX+SI+SJ].
+
+2005-10-18  Niels Möller  <nisse@lysator.liu.se>
+
+	* sparc/arcfour-crypt.asm: Special unrolled code if SRC and DST
+	have compatible alignment. Improves performance by 20%, but I'm
+	not sure it's worth the extra complexity.
+
+	* bignum.c (nettle_mpz_from_octets): Removed sign argument. If
+	mpz_import is available, define nettle_mpz_from_octets as a macro
+	calling mpz_import.
+	(nettle_mpz_from_octets): Start by setting x to zero; callers no
+	longer need to do that.
+	(nettle_mpz_set_str_256_s): New logic for the handling of negative
+	numbers. Convert in the same way as for positive numbers, and then
+	subtract the appropriate power of two.
+
+2005-10-17  Niels Möller  <nisse@lysator.liu.se>
+
+	* bignum.c (nettle_mpz_from_octets): Improved loop. Removed the
+	digit temporary (suggested by Torbjörn Granlund).
+
+	* sparc/arcfour-crypt.asm: Improved instruction scheduling.
+
+	* sparc/arcfour-crypt.asm: Bugfix, use lduh and stuh.
+
+	* sparc/arcfour-crypt.asm: New file.
+
+	* sparc64/aes.asm: Deleted unused file.
+
+	* x86/arcfour-crypt.asm: Use ARCFOUR_I and ARCFOUR_J
+	* asm.m4 (ARCFOUR): New struct.
+
+2005-10-17  Niels Möller  <niels@s3.kth.se>
+
+	* aes-internal.h (struct aes_table): Deleted idx and sparc_idx
+	arrays. 
+	* aes-encrypt-table.c (_aes_encrypt_table): Likewise.
+	* aes-decrypt.c (_aes_decrypt_table): Likewise.
+	* asm.m4 (AES): Likewise
+
+2005-10-16  Niels Möller  <nisse@lysator.liu.se>
+
+	* tools/input.c (sexp_get_char): Use unsigned for the done flag.
+
+	* sparc64/aes-encrypt-internal.asm: Include sparc/aes.m4.
+	* sparc64/aes-decrypt-internal.asm: Likewise.	
+
+	* sparc64/machine.m4: Use .register pseudo op to say that we use
+	%g2 and %g3 as scratch registers.
+
+	* sparc/aes-encrypt-internal.asm: Explicitly include sparc/aes.m4.
+	* sparc/aes-decrypt-internal.asm: Likewise.
+
+	* sparc/aes.m4: New file. Moved aes-related macros here...
+	* sparc/machine.m4: ... removed aes macros.
+
+	* x86/aes-encrypt-internal.asm: Explicitly include x86/aes.m4.
+	* x86/aes-decrypt-internal.asm: Likewise.
+
+	* x86/aes.m4: New file. Moved aes-related macros here, from...
+	* x86/machine.m4: ... removed aes macros.
+
+	* sparc64/aes-encrypt-internal.asm: New file.
+	* sparc64/aes-decrypt-internal.asm: New file.
+
+	* sparc64/machine.m4: Include the same aes macros used for
+	sparc32.
+	(BIAS): Define magic stack bias constant.
+
+	* sparc/aes-encrypt-internal.asm, sparc/aes-decrypt-internal.asm:
+	Reduced frame size to 104 bytes, since we no longer need wtxt and
+	tmp on the stack.
+
+	* sparc/aes.asm: Deleted old aes implementation.
+
+	* sparc/aes-decrypt-internal.asm: New file.
+
+	* sparc/machine.m4: Don't use m4 eval, instead rely on the
+	assembler's arithmetic.
+
+	* sparc/machine.m4 (AES_FINAL_ROUND): Better scheduling, by
+	interleaving independent operations.
+
+	* sparc/machine.m4 (TMP3): A third temporary register.
+	(AES_FINAL_ROUND): Prepared for scheduling.
+
+	* sparc/machine.m4 (AES_ROUND): Deleted unused argument T. Updated
+	all calls in aes-encrypt-internal.asm.
+
+	* sparc/machine.m4 (AES_ROUND): New loop invariants T0-T3, to
+	avoid the additions of the AES_TABLEx constants in the inner loop.
+
+	* sparc/machine.m4 (AES_ROUND): Better scheduling, by
+	interleaving independent operations.
+
+	* sparc/machine.m4 (AES_ROUND): Alternate between using TMP1 and
+	TMP2, to prepare for scheduling.
+
+	* sparc/aes-encrypt-internal.asm: Renamed Ti -> Xi.
+
+	* sparc/aes-encrypt-internal.asm: Fixed bugs. Now passes the
+	testsuite.
+
+	* sparc/machine.m4 (AES_ROUND, AES_FINAL_ROUND): Bugfixes. Put
+	NOPs in the load dely slots.
+
+	* sparc/aes-encrypt-internal.asm: Implemented. Not yet working,
+	and not optimized.
+
+	* sparc/machine.m4: Use TMP1 and TMP2, so we don't need to pass
+	them as arguments.
+	(AES_FINAL_ROUND): New macro.
+
+2005-10-15  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac (OBJDUMP): Substitute the program false if objdump
+	is not found.
+
+	* asm.m4 (PROLOGUE): Use TYPE_FUNCTION.
+
+	* config.m4.in: Substitute ASM_TYPE_FUNCTION as TYPE_FUNCTION.
+
+	* configure.ac (ASM_ELF_STYLE): Check for %function and #function,
+	but not for @function.
+	(ASM_TYPE_FUNCTION): New substituted variable.
+
+	* configure.ac (ASM_ELF_STYLE): Fixed .type foo,@function statement
+	used when checking for pseudo operations.
+
+	* sparc/machine.m4 (AES_LOAD, AES_ROUND): Started writing new AES
+	macros.
+
+	* sparc/aes-encrypt-internal.asm: New file.
+
+2005-10-14  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86/aes-decrypt.asm, x86/aes-encrypt.asm: Deleted files.
+
+	* x86/aes-decrypt-internal.asm: New file.
+
+	* x86/machine.m4: Changed AES macros, to handle a table register.
+	Also take more of the used registers as argument.
+
+	* x86/aes-encrypt-internal.asm: Rewritten to match new interface,
+	with the table pointer as an argument. Unlike the old code, this
+	should really be position independent.
+
+	* configure.ac: When looking for assembler files, link in
+	aes-encrypt-internal.asm and aes-decrypt-internal.asm. Don't look
+	for aes.asm, aes-encrypt.asm and aes-decrypt.asm.
+
+	* configure.ac (OBJDUMP): Use AC_CHECK_TOOL to check for objdump.
+	(ASM_MARK_NOEXEC_STACK): Use $OBJDUMP when examining the object file.
+
+	* Makefile.in (nettle_SOURCES): Removed aes.c,
+	aes-decrypt-table.c. Added aes-decrypt-internal.c and aes-encrypt-internal.c.
+
+	* aes.c, aes-decrypt-table.c: Deleted files.
+
+	* aes-decrypt.c (_aes_decrypt_table): Moved table here, and made
+	static.
+
+	* aes-internal.h (_aes_decrypt_table): Don't declare, it's no
+	longer globally visible.
+
+	* aes-decrypt-internal.c (_nettle_aes_decrypt): New AES decryption
+	function, analogous to _nettle_aes_encrypt.
+
+2005-10-14  Niels Möller  <niels@s3.kth.se>
+
+	* aes-internal.h (AES_ROUND, AES_FINAL_ROUND): New macros.
+
+	* aes-encrypt-internal.c (_nettle_aes_encrypt): New AES encryption
+	function, avoiding the table-based indexing.
+
+	* sha1-compress.c: Added debugging code.
+	* md5-compress.c: Likewise.
+
+2005-10-13  Niels Möller  <niels@s3.kth.se>
+
+	* config.m4.in (ASM_MARK_NOEXEC_STACK): Use a diversion, to
+	substitute the value of ASM_MARK_NOEXEC_STACK at the end of each
+	assembler file.
+
+	* configure.ac (ASM_MARK_NOEXEC_STACK): Check if the C compiler
+	generates a .note.GNU-stack section. If so, we should do the same
+	in our assembler files.
+
+	* sparc64/aes.asm: New file. Copy of sparc/aes.asm, with minor
+	changes to the stack frame layout. Patch contributed by Henrik
+	Grubbström. Not yet tested.
+
+	* x86/md5-compress.asm: Skip copying of input to the stack, and
+	don't allocate space for it.
+	(F1): Fixed bug.
+
+	* testsuite/md5-test.c: Document intermediate values for first
+	test case.
+
+	* configure.ac (asm_path): Check for sparc64, and use sparc64
+	subdirectory. Link in md5-compress.asm, if it exists.
+
+2005-10-13  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86/md5-compress.asm (REF): Fixed calculation of offset.
+
+2005-10-12  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86/machine.m4 (OFFSET): Moved macro, used to be in...
+	* x86/sha1-compress.asm (OFFSET): ... removed macro.
+
+	* x86/md5-compress.asm: New file, with first attempt at md5
+	assembler. Not yet working.
+
+2005-10-11  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (nettle_SOURCES): Added md5-compress.c.
+
+	* md5.c: Reorganized to use _nettle_md5_compress, in analogy with
+	sha1.c.
+
+	* md5-compress.c (_nettle_md5_compress): New file and new function.
+
+2005-10-10  Niels Möller  <niels@s3.kth.se>
+
+	* testsuite/Makefile.in (EXTRA_SOURCES, EXTRA_TARGETS): New
+	variables, for test cases that are not run by default.
+
+	* testsuite/sha1-huge-test.c (test_main): New test case, with a
+	very large sha1 input.
+
+	* testsuite/testutils.c (test_hash_large): New function.
+
+	* sha1.c (sha1_block): Deleted function; inlined where used.
+	(SHA1_INCR): New macro for incrementing the block count.
+
+2005-10-06  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Bumped version to 1.14.
+
+	* Released nettle-1.13.
+
+	* configure.ac: Check for openssl/aes.h.
+
+	* Makefile.in (distdir): Use a loop to pick up the contents of
+	$(DISTFILES) from source and build directories. For some reason,
+	$? failed to find stamp-h.in in the source directory.
+
+2005-10-05  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86/aes-decrypt.asm: Use C_NAME(_nettle_aes_decrypt_table) when
+	using the AES_SUBST_BYTE macro. Use PROLOGUE and EPILOGUE.
+	* x86/sha1-compress.asm: Use PROLOGUE and EPILOGUE.
+	* x86/arcfour-crypt.asm: Likewise.
+	* x86/aes-encrypt.asm: Likewise.
+
+	* config.m4.in (ELF_STYLE): Substitute configure's ASM_ELF_STYLE.
+
+	* asm.m4 (PROLOGUE, EPILOGUE): New macros, checking the value of
+	ELF_STYLE. So far, used and tested only for the x86 assembler
+	files, and needed to make the assembler happy both with ELF
+	(linux, solaris) and COFF (windows).
+
+	* configure.ac (NM): Use AC_CHECK_TOOL to check for nm.
+	(ASM_SYMBOL_PREFIX): Use $NM when examining the object file.
+	(ASM_ELF_STYLE): New variable. Set to 'yes' if assembling a file
+	with ELF-style .type and .size pseudo ops works.
+
+	* Makefile.in (TARGETS, DISTFILES): Added nettle.pdf.
+	(.texinfo.dvi, .dvi.ps, .ps.pdf): New targets, to build nettle.pdf.
+	(DOCTARGETS): New variable with targets that shouldn't be deleted
+	by make clean.
+	(maintainer-clean-here): New target. Deletes generated
+	documentation files.
+
+	* nettle.texinfo: Define AUTHOR with accents, when running in TeX
+	mode, which doesn't handle latin-1 properly. Set UPDATED-FOR to
+	1.13. Updated copyright years, and introduced a COPYRIGHT-YEARS
+	symbol. Updated copyright section, to mention assembler
+	implementations.
+	(Cipher modes): Transformed the Cipher Block Chaining to a section
+	Cipher modes, describing both CBC and the new CTR mode.
+
+	* src/nettle/x86/aes_tables.asm: Deleted unused file.
+
+	* x86/aes.asm: Deleted contents. This file is needed just to
+	override aes.c, which isn't needed for the x86 implementation.
+
+	* configure.ac (SHLIBMINOR): Increased minor number. Library
+	version is now libnettle.so.2.4, soname still libnettle.so.2.
+
+	* examples/nettle-benchmark.c (main): Reordered hash benchmarks.
+
+	* x86/sha1-compress.asm (EXPAND): Use % 16 instead of & 15 to
+	compute offsets mod 16, since m4 on FreeBSD 49.RELEASE and NetBSD
+	doesn't implement & correctly in eval.
+
+2005-10-03  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86/sha1-compress.asm (OFFSET): New macro.
+	(F3): Eliminated a movl.
+	(ROUND): New argument, for k. When using F3, it's TMP3, on the
+	stack, otherwise, it is kept in TMP2, a register.
+
+2005-10-03  Niels Möller  <niels@s3.kth.se>
+
+	* examples/nettle-openssl.c: Use correct block sizes for openssl
+	ciphers.
+
+	* examples/nettle-benchmark.c: Also display cycles per block.
+
+2005-10-02  Niels Möller  <nisse@lysator.liu.se>
+
+	* sha1-compress.c (_nettle_sha1_compress): Updated to new
+	interface. Now responsible for byte conversion.
+
+	* x86/sha1-compress.asm (_nettle_sha1_compress): Do byte order
+	conversion, and store the input data on the stack. This leaves one
+	more register free for other uses.
+
+	* examples/nettle-benchmark.c: Now display cycles/byte, if the -f
+	option is used to say what the clock frequency is.
+
+	* sha1.c (sha1_block): Don't convert data from uint8_t to
+	uint32_t, that's now the responsibility of _nettle_sha1_compress.
+
+	* sha.h (_nettle_sha1_compress): Changed interface. Second
+	argument is now a pointer to the input data in unaligned,
+	big-endian form.
+
+2005-09-28  Niels Möller  <niels@s3.kth.se>
+
+	* sha1.c (sha1_final): Call sha1_block, don't call the compression
+	function _nettle_sha1_compress directly.
+
+	* nettle-internal.h (nettle_openssl_md5)
+	(nettle_openssl_sha1): Declare.
+
+	* examples/nettle-benchmark.c (main): Benchmark openssl md5 and
+	sha1.
+
+	* examples/nettle-openssl.c (nettle_openssl_md5)
+	(nettle_openssl_sha1): Added glue for openssl hash functions.
+
+	* nettle-internal.h (nettle_openssl_aes128, nettle_openssl_aes192)
+	(nettle_openssl_aes256, nettle_openssl_arcfour128): Declare.
+
+	* examples/nettle-benchmark.c: Check WITH_OPENSSL, not
+	HAVE_LIBCRYPTO. Benchmark openssl's aes and arcfour code.
+
+	* examples/nettle-openssl.c: Updated openssl des glue to use the
+	new openssl DES interface. Added glue for arcfour and aes.
+
+2005-09-27  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle.texinfo (RSA): Improved text about the RSA patent.
+	Use @documentencoding ISO-8859-1.
+
+2005-09-07  Niels Möller  <niels@s3.kth.se>
+
+	* tools/sexp-conv.c (parse_options): New option --raw-hash, for
+	compatibility with lsh-1.x. Equivalent to --hash.
+
+2005-09-06  Niels Möller  <niels@s3.kth.se>
+
+	* tools/sexp-conv.c (main): With --hash, output a newline after
+	each hash.
+
+2005-07-02  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/Makefile.in (TS_SOURCES): Added ctr-test.c.
+
+	* testsuite/testutils.c (test_cipher_ctr): New function.
+
+	* testsuite/ctr-test.c: New file.
+
+	* testsuite/cbc-test.c (test_main): Use static const for msg.
+
+	* Makefile.in (nettle_SOURCES): Added ctr.c.
+	(HEADERS): Added ctr.h.
+	(HEADERS): Added nettle-types.h.
+	(INSTALL_HEADERS): Install nettle-stdint.h.
+	(distclean-here): Delete nettle-stdint.h, not nettle-types.h.
+
+	* ctr.c (ctr_crypt): New file, new function.
+
+	* memxor.c (memxor3): New function, suggested by Adam Langley.
+
+	* nettle-internal.h (NETTLE_MAX_CIPHER_BLOCK_SIZE): New constant.
+
+	* nettle.texinfo (Cipher functions): Fixed typo in prototype for
+	arctwo_encrypt (noticed by Adam Langley).
+
+	* nettle-meta.h: No longer needs to include cbc.h.
+
+	* cbc.h (nettle_crypt_func): Moved typedef to nettle-types.h.
+	(CBC_ENCRYPT, CBC_DECRYPT): Deleted older #if:ed out versions.
+
+	* configure.ac (AX_CREATE_STDINT_H): Use the file name
+	nettle-stdint.h, not nettle-types.h.
+
+	* nettle-types.h: New file. Automatically generated declarations
+	are now in nettle-stdint.h.
+
+2005-03-17  Niels Möller  <niels@s3.kth.se>
+
+	* config.guess: Support Solaris on x86_64. Fix by Henrik
+	Grubbström.
 
 2005-01-03  Niels Möller  <niels@s3.kth.se>
 
