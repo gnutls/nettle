@@ -624,6 +624,49 @@ test_rsa_sha1(struct rsa_public_key *pub,
   mpz_clear(signature);
 }
 
+void
+test_rsa_sha256(struct rsa_public_key *pub,
+	     struct rsa_private_key *key,
+	     mpz_t expected)
+{
+  struct sha256_ctx sha256;
+  mpz_t signature;
+
+  sha256_init(&sha256);
+  mpz_init(signature);
+
+  SIGN(key, sha256, "The magic words are squeamish ossifrage", signature);
+
+  if (verbose)
+    {
+      fprintf(stderr, "rsa-sha256 signature: ");
+      mpz_out_str(stderr, 16, signature);
+      fprintf(stderr, "\n");
+    }
+
+  if (mpz_cmp(signature, expected))
+    FAIL();
+  
+  /* Try bad data */
+  if (VERIFY(pub, sha256,
+	     "The magick words are squeamish ossifrage", signature))
+    FAIL();
+
+  /* Try correct data */
+  if (!VERIFY(pub, sha256,
+	      "The magic words are squeamish ossifrage", signature))
+    FAIL();
+
+  /* Try bad signature */
+  mpz_togglebit(signature, 17);
+
+  if (VERIFY(pub, sha256,
+	     "The magic words are squeamish ossifrage", signature))
+    FAIL();
+
+  mpz_clear(signature);
+}
+
 #undef SIGN
 #undef VERIFY
 

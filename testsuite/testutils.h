@@ -118,6 +118,11 @@ test_rsa_sha1(struct rsa_public_key *pub,
 	      mpz_t expected);
 
 void
+test_rsa_sha256(struct rsa_public_key *pub,
+		struct rsa_private_key *key,
+		mpz_t expected);
+
+void
 test_rsa_key(struct rsa_public_key *pub,
 	     struct rsa_private_key *key);
 
