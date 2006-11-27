@@ -1,3 +1,43 @@
+2006-11-27  Niels Möller  <nisse@lysator.liu.se>
+
+	* NEWS: New entry for nettle-1.15.
+
+	* configure.ac (SHLIBMINOR): Bumped version. Library name is now
+	libnettle.so.2.6.
+
+	* sha256.c: Changed copyright notice to use the LGPL.
+
+	* Makefile.in (DISTFILES): Added COPYING.LIB.
+
+	* COPYING.LIB: New file (previously only the plain GPL was
+	included in the distribution).
+
+	* nettle.texinfo: Updated vor nettle-1.15.
+
+	* testsuite/rsa-test.c (test_main): Use test_rsa_sha256.
+	* testsuite/testutils.c (test_rsa_sha256): New function.
+
+	* testsuite/Makefile.in (DISTFILES): Replaces rfc1750.txt by
+	gold-bug.txt.
+
+	* rsa.h (rsa_sha256_sign, rsa_sha256_verify)
+	(rsa_sha256_sign_digest, rsa_sha256_verify_digest): New declarations. 
+	(RSA_MINIMUM_N_OCTETS, RSA_MINIMUM_N_BITS): Increased to
+	62 octets and  489 bits, respectively, for supporting sha256.
+
+	* pkcs1.h (pkcs1_rsa_sha256_encode)
+	(pkcs1_rsa_sha256_encode_digest): New declarations and name
+	mangling symbols.
+
+	* Makefile.in (nettle_SOURCES): Added pkcs1-rsa-sha256.c,
+	rsa-sha256-sign.c, rsa-sha256-verify.c.
+
+	* pkcs1-rsa-sha256.c, rsa-sha256-sign.c, rsa-sha256-verify.c: New
+	files.
+
+	* COPYING, INSTALL, install-sh, texinfo.tex: Updated files, from
+	automake-1.10.
+
 2006-11-27  Niels Möller  <niels@s3.kth.se>
 
 	* tools/Makefile.in (install): Use MKDIR_P to create installation
