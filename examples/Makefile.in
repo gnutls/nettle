@@ -66,6 +66,8 @@ Makefile: $(srcdir)/Makefile.in ../config.status
 install uninstall:
 	true
 
+# NOTE: I'd like to use $^, but that's a GNU extension. $? should be
+# more portable, equivalent for phony targets.
 distdir: $(DISTFILES)
 	cp $? $(distdir)
 
