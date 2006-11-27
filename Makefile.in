@@ -107,7 +107,7 @@ DISTFILES = $(SOURCES) $(HEADERS) .bootstrap aclocal.m4 configure.ac \
 	configure stamp-h.in \
 	config.guess config.sub install-sh texinfo.tex \
 	config.h.in config.m4.in config.make.in	Makefile.in \
-	README AUTHORS COPYING INSTALL NEWS TODO ChangeLog \
+	README AUTHORS COPYING COPYING.LIB INSTALL NEWS TODO ChangeLog \
 	memxor.c $(des_headers) descore.README \
 	aes-internal.h cast128_sboxes.h desinfo.h desCode.h \
 	serpent_sboxes.h nettle-internal.h \
