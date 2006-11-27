@@ -50,10 +50,14 @@ extern "C" {
 #define rsa_md5_verify nettle_rsa_md5_verify
 #define rsa_sha1_sign nettle_rsa_sha1_sign
 #define rsa_sha1_verify nettle_rsa_sha1_verify
+#define rsa_sha256_sign nettle_rsa_sha256_sign
+#define rsa_sha256_verify nettle_rsa_sha256_verify
 #define rsa_md5_sign_digest nettle_rsa_md5_sign_digest
 #define rsa_md5_verify_digest nettle_rsa_md5_verify_digest
 #define rsa_sha1_sign_digest nettle_rsa_sha1_sign_digest
 #define rsa_sha1_verify_digest nettle_rsa_sha1_verify_digest
+#define rsa_sha256_sign_digest nettle_rsa_sha256_sign_digest
+#define rsa_sha256_verify_digest nettle_rsa_sha256_verify_digest
 #define rsa_encrypt nettle_rsa_encrypt
 #define rsa_decrypt nettle_rsa_decrypt
 #define rsa_compute_root nettle_rsa_compute_root
@@ -71,12 +75,12 @@ extern "C" {
 /* For PKCS#1 to make sense, the size of the modulo, in octets, must
  * be at least 11 + the length of the DER-encoded Digest Info.
  *
- * And a DigestInfo is 34 octets for md5, and 35 octets for sha1. 46
- * octets is 368 bits, and as the upper 7 bits may be zero, the
- * smallest useful size of n is 361 bits. */
+ * And a DigestInfo is 34 octets for md5, 35 octets for sha1, and 51
+ * octets for sha256. 62 octets is 496 bits, and as the upper 7 bits
+ * may be zero, the smallest useful size of n is 489 bits. */
 
-#define RSA_MINIMUM_N_OCTETS 46
-#define RSA_MINIMUM_N_BITS 361
+#define RSA_MINIMUM_N_OCTETS 62
+#define RSA_MINIMUM_N_BITS 489
 
 struct rsa_public_key
 {
@@ -180,6 +184,16 @@ rsa_sha1_verify(const struct rsa_public_key *key,
                 struct sha1_ctx *hash,
 		const mpz_t signature);
 
+void
+rsa_sha256_sign(const struct rsa_private_key *key,
+		struct sha256_ctx *hash,
+		mpz_t signature);
+
+int
+rsa_sha256_verify(const struct rsa_public_key *key,
+		  struct sha256_ctx *hash,
+		  const mpz_t signature);
+
 /* Variants taking the digest as argument. */
 void
 rsa_md5_sign_digest(const struct rsa_private_key *key,
@@ -200,6 +214,16 @@ int
 rsa_sha1_verify_digest(const struct rsa_public_key *key,
 		       const uint8_t *digest,
 		       const mpz_t signature);
+
+void
+rsa_sha256_sign_digest(const struct rsa_private_key *key,
+		       const uint8_t *digest,
+		       mpz_t s);
+
+int
+rsa_sha256_verify_digest(const struct rsa_public_key *key,
+			 const uint8_t *digest,
+			 const mpz_t signature);
 
 
 /* RSA encryption, using PKCS#1 */
