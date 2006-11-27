@@ -1,3 +1,42 @@
+NEWS for the 1.15 release
+
+	Added support for PKCS#1 style RSA signatures using SHA256,
+	according to RFC 3447. Currently lacks interoperability
+	testing.
+	
+	Header files are now C++ aware, so C++ programs using Nettle
+	should now use plain
+
+	  #include <nettle/foo.h>
+
+	rather than
+
+	  #extern "C" {
+	  #include <nettle/foo.h>
+	  }
+
+	as was the recommendation for the previous version. This
+	breaks source-level compatibility with C++, even though
+	there's full binary compatibility.
+
+	The file rfc1750.txt (which is considered non-free by debian)
+	has been removed from the distribution. The file was used as input
+	for the Yarrow testcase, and has been replaced by the short
+	story "The Gold-bug" by Edgar Allan Poe. Anyway, RFC 1750 is
+	obsoleted by RFC 4086.
+
+	Fixes for Darwin shared library support, contributed by Grant
+	Robinsson.
+
+	Example programs now use a supplied getopt.c.
+
+	Configure tests for assemblers with a logarithmic .align
+	directive.
+
+	The library is intended to be upwards binary compatible with
+	earlier versions. The library name is libnettle.so.2.6, soname
+	is still libnettle.so.2.
+		
 NEWS for the 1.14 release
 
 	Experimental support for reading keys in PKCS#1 ASN1/DER
