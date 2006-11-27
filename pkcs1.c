@@ -34,6 +34,12 @@
 
 #include "pkcs1.h"
 
+/* Formats the PKCS#1 padding, of the form
+ *
+ *   0x01 0xff ... 0xff 0x00 id
+ *
+ * where the 0xff ... 0xff part consists of at least 8 octets.
+ */
 void
 pkcs1_signature_prefix(unsigned length,
 		       uint8_t *buffer,
