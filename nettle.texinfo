@@ -16,7 +16,7 @@
 @end direntry
 
 @set COPYRIGHT-YEARS 2001, 2004, 2005
-@set UPDATED-FOR 1.13
+@set UPDATED-FOR 1.15
 
 @c Latin-1 doesn't work with TeX output.
 @c Also lookout for é characters.
@@ -149,9 +149,9 @@ memory allocation. It doesn't do any I/O.
 
 The idea is that one can build several application and context specific
 interfaces on top of Nettle, and share the code, test cases, benchmarks,
-documentation, etc. For this first version, the only application using
-Nettle is LSH, and it uses an object-oriented abstraction on top of the
-library. 
+documentation, etc. Examples are the Nettle module for the Pike
+language, and LSH, which both use an object-oriented abstraction on top
+of the library.
 
 This manual explains how to use the Nettle library. It also tries to
 provide some background on the cryptography, and advice on how to best
@@ -226,9 +226,21 @@ Gutmann, and hacked some more by Andrew Kuchling and @value{AUTHOR}.
 Released into the public domain. Assembler for x86 by @value{AUTHOR},
 released under the LGPL.
 
+@item SHA256
+Written by @value{AUTHOR}, using Peter Gutmann's SHA1 code as a model. 
+Released under the LGPL.
+
 @item TWOFISH
 The implementation of the TWOFISH cipher is written by Ruud de Rooij.
 Released under the LGPL.
+
+@item RSA
+Written by @value{AUTHOR}, released under the LGPL. Uses the GMP library
+for bignum operations.
+
+@item DSA
+Written by @value{AUTHOR}, released under the LGPL. Uses the GMP library
+for bignum operations.
 @end table
 
 @node Conventions, Example, Copyright, Top
@@ -324,10 +336,12 @@ Hash functions are useful as building blocks for digital signatures,
 message authentication codes, pseudo random generators, association of
 unique id:s to documents, and many other things.
 
-There are several fairly popular hash functions. Collisions have been
-found the the compression function of MD4, and in variants of MD5.
-These functions are therefore not recommended for new applications.
-The recommended hash function for new applications is SHA1.
+The most commonly used hash functions are MD5 and SHA1. Unfortunately,
+both these fail the collision-resistance requirement; cryptologists have
+found ways to construct colliding inputs. The recommended hash function
+for new applications is SHA256, even though it uses a structure similar
+to MD5 and SHA1. Constructing better hash functions is an urgent research
+problem.
 
 @subsection @acronym{MD5}
 
@@ -410,12 +424,11 @@ This function also resets the context in the same way as
 
 @subsection @acronym{MD4}
 
-MD4 is a predecessor of MD5, described in @cite{RFC 1320}. Like MD5,
-it is constructed by Ronald Rivest. It outputs message digests of 128
-bits, or 16 octets. Nettle defines MD4 in @file{<nettle/md4.h>}.
-Because of discovered weaknesses, use of MD4 is not recommended, but
-it is sometimes needed for compatibility with existing applications
-and protocols.
+MD4 is a predecessor of MD5, described in @cite{RFC 1320}. Like MD5, it
+is constructed by Ronald Rivest. It outputs message digests of 128 bits,
+or 16 octets. Nettle defines MD4 in @file{<nettle/md4.h>}. Use of MD4 is
+not recommended, but it is sometimes needed for compatibility with
+existing applications and protocols.
 
 @deftp {Context struct} {struct md4_ctx}
 @end deftp
@@ -538,7 +551,9 @@ The last three attributes are function pointers, of types
 @code{context_size}. 
 @end deftp
 
-@deftypevr {Constant Struct} {struct nettle_cipher} nettle_md5
+@deftypevr {Constant Struct} {struct nettle_cipher} nettle_md2
+@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_md4
+@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_md5
 @deftypevrx {Constant Struct} {struct nettle_cipher} nettle_sha1
 @deftypevrx {Constant Struct} {struct nettle_cipher} nettle_sha256
 
@@ -571,7 +586,7 @@ cipher is some ``feedback mode'', @dfn{CBC} (Cipher Block Chaining) and
 of the most popular. See @xref{Cipher modes}, for information on
 how to apply @acronym{CBC} and @acronym{CTR} with Nettle.
 
-A stream cipher can be used for messages of arbitrary length; a typical
+A stream cipher can be used for messages of arbitrary length. A typical
 stream cipher is a keyed pseudo-random generator. To encrypt a plaintext
 message of @var{n} octets, you key the generator, generate @var{n}
 octets of pseudo-random data, and XOR it with the plaintext. To decrypt,
@@ -668,7 +683,9 @@ setup of ARCFOUR is quite weak, you should never use keys with
 structure, keys that are ordinary passwords, or sequences of keys like
 ``secret:1'', ``secret:2'', @enddots{}. If you have keys that don't look
 like random bit strings, and you want to use ARCFOUR, always hash the
-key before feeding it to ARCFOUR. For example
+key before feeding it to ARCFOUR. Furthermore, the initial bytes of the
+generated key stream leak information about the key; for this reason, it
+is recommended to discard the first 512 bytes of the key stream.
 
 @example
 /* A more robust key setup function for ARCFOUR */
@@ -676,14 +693,16 @@ void
 arcfour_set_key_hashed(struct arcfour_ctx *ctx,
                        unsigned length, const uint8_t *key)
 @{
-  struct sha1_ctx hash;
-  uint8_t digest[SHA1_DIGEST_SIZE];
+  struct sha256_ctx hash;
+  uint8_t digest[SHA256_DIGEST_SIZE];
+  uint8_t buffer[0x200];
 
-  sha1_init(&hash);
-  sha1_update(&hash, length, key);
-  sha1_digest(&hash, SHA1_DIGEST_SIZE, digest);
+  sha256_init(&hash);
+  sha256_update(&hash, length, key);
+  sha256_digest(&hash, SHA256_DIGEST_SIZE, digest);
 
-  arcfour_set_key(ctx, SHA1_DIGEST_SIZE, digest);
+  arcfour_set_key(ctx, SHA256_DIGEST_SIZE, digest);
+  arcfour_crypt(ctx, sizeof(buffer), buffer, buffer);
 @}
 @end example
 
@@ -874,7 +893,7 @@ key.
 The key size of DES is so small that keys can be found by brute force,
 using specialized hardware or lots of ordinary work stations in
 parallel. One shouldn't be using plain DES at all today, if one uses
-DES at all one should be using DES3 or ``triple DES'', see below.
+DES at all one should be using ``triple DES'', see DES3 below.
 
 DES also has some weak keys. Nettle defines DES in @file{<nettle/des.h>}.
 
@@ -1107,7 +1126,7 @@ ones without weak keys or other oddities.
 @comment  node-name,  next,  previous,  up
 @section Cipher modes
 
-Cipher modes of of operation specifies the procedure to use when
+Cipher modes of operation specifies the procedure to use when
 encrypting a message that is larger than the cipher's block size. As
 explained in @xref{Cipher functions}, splitting the message into blocks
 and processing them independently with the block cipher (Electronic Code
@@ -1145,14 +1164,16 @@ C_n = E_k(C_(n-1) XOR M_n)
 
 Nettle's includes two functions for applying a block cipher in Cipher
 Block Chaining (@acronym{CBC}) mode, one for encryption and one for
-decryption. The functions uses @code{void *} to pass cipher contexts
+decryption. These functions uses @code{void *} to pass cipher contexts
 around.
 
 @deftypefun {void} cbc_encrypt (void *@var{ctx}, nettle_crypt_func @var{f}, unsigned @var{block_size}, uint8_t *@var{iv}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 @deftypefunx {void} cbc_decrypt (void *@var{ctx}, void (*@var{f})(), unsigned @var{block_size}, uint8_t *@var{iv}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 
 Applies the encryption or decryption function @var{f} in @acronym{CBC}
-mode. The function @var{f} is of type
+mode. The final ciphertext block processed is copied into @var{iv}
+before returning, so that large message be processed be a sequence of
+calls to @code{cbc_encrypt}. The function @var{f} is of type
 
 @code{void f (void *@var{ctx}, unsigned @var{length}, uint8_t @var{dst},
 const uint8_t *@var{src})},
@@ -1216,8 +1237,8 @@ The message is divided into @code{n} blocks @code{M_1},@dots{}
 than the block size. Except for the last block, all the message blocks
 must be of size equal to the cipher's block size.
 
-If @code{E_k} is the encryption function of a block cipher, @code{IV} is
-the initialization vector, then the @code{n} plaintext blocks are
+If @code{E_k} is the encryption function of a block cipher, @code{IC} is
+the initial counter, then the @code{n} plaintext blocks are
 transformed into @code{n} ciphertext blocks @code{C_1},@dots{}
 @code{C_n} as follows:
 
@@ -1585,10 +1606,10 @@ Let's first look at how @acronym{RSA} key-pairs are generated. First
 @code{n} is chosen as the product of two large prime numbers @code{p}
 and @code{q} of roughly the same size (so if @code{n} is 1000 bits,
 @code{p} and @code{q} are about 500 bits each). One also computes the
-number @code{phi = (p-1)(q-1)}, in mathematical speak, phi is the order
-of the multiplicative group of integers modulo n.
+number @code{phi = (p-1)(q-1)}, in mathematical speak, @code{phi} is the
+order of the multiplicative group of integers modulo n.
 
-Next, @code{e} is chosen. It must have no factors in common with phi (in
+Next, @code{e} is chosen. It must have no factors in common with @code{phi} (in
 particular, it must be odd), but can otherwise be chosen more or less
 randomly. @code{e = 65537} is a popular choice, because it makes raising
 to the @code{e}:th power particularly efficient, and being prime, it
@@ -1643,8 +1664,8 @@ large numbers (of type @code{mpz_t}).
 @code{d} is the secret exponent, but it is not actually used when
 signing. Instead, the factors @code{p} and @code{q}, and the parameters
 @code{a}, @code{b} and @code{c} are used. They are computed from @code{p},
-@code{q} and @code{d} such that @code{a e mod (p - 1) = 1, b e mod (q -
-1) = 1, c q mod p= 1}.
+@code{q} and @code{e} such that @code{a e mod (p - 1) = 1, b e mod (q -
+1) = 1, c q mod p = 1}.
 @end deftp
 
 Before use, these structs must be initialized by calling one of
@@ -1688,6 +1709,7 @@ Creation and verification of signatures is done with the following functions:
 
 @deftypefun void rsa_md5_sign (const struct rsa_private_key *@var{key}, struct md5_ctx *@var{hash}, mpz_t @var{signature})
 @deftypefunx void rsa_sha1_sign (const struct rsa_private_key *@var{key}, struct sha1_ctx *@var{hash}, mpz_t @var{signature})
+@deftypefunx void rsa_sha256_sign (const struct rsa_private_key *@var{key}, struct sha256_ctx *@var{hash}, mpz_t @var{signature})
 The signature is stored in @var{signature} (which must have been
 @code{mpz_init}:ed earlier). The hash context is reset so that it can be
 used for new messages.
@@ -1695,23 +1717,27 @@ used for new messages.
 
 @deftypefun void rsa_md5_sign_digest (const struct rsa_private_key *@var{key}, const uint8_t *@var{digest}, mpz_t @var{signature})
 @deftypefunx void rsa_sha1_sign_digest (const struct rsa_private_key *@var{key}, const uint8_t *@var{digest}, mpz_t @var{signature});
+@deftypefunx void rsa_sha256_sign_digest (const struct rsa_private_key *@var{key}, const uint8_t *@var{digest}, mpz_t @var{signature});
 Creates a signature from the given hash digest. @var{digest} should
-point to a digest of size @code{MD5_DIGEST_SIZE} or
-@code{SHA1_DIGEST_SIZE}, respectively. The signature is stored in
-@var{signature} (which must have been @code{mpz_init}:ed earlier)
+point to a digest of size @code{MD5_DIGEST_SIZE},
+@code{SHA1_DIGEST_SIZE}, or @code{SHA256_DIGEST_SIZE}, respectively. The
+signature is stored in @var{signature} (which must have been
+@code{mpz_init}:ed earlier)
 @end deftypefun
 
 @deftypefun int rsa_md5_verify (const struct rsa_public_key *@var{key}, struct md5_ctx *@var{hash}, const mpz_t @var{signature})
 @deftypefunx int rsa_sha1_verify (const struct rsa_public_key *@var{key}, struct sha1_ctx *@var{hash}, const mpz_t @var{signature})
+@deftypefunx int rsa_sha256_verify (const struct rsa_public_key *@var{key}, struct sha256_ctx *@var{hash}, const mpz_t @var{signature})
 Returns 1 if the signature is valid, or 0 if it isn't. In either case,
 the hash context is reset so that it can be used for new messages.
 @end deftypefun
 
 @deftypefun int rsa_md5_verify_digest (const struct rsa_public_key *@var{key}, const uint8_t *@var{digest}, const mpz_t @var{signature})
 @deftypefunx int rsa_sha1_verify_digest (const struct rsa_public_key *@var{key}, const uint8_t *@var{digest}, const mpz_t @var{signature})
+@deftypefunx int rsa_sha256_verify_digest (const struct rsa_public_key *@var{key}, const uint8_t *@var{digest}, const mpz_t @var{signature})
 Returns 1 if the signature is valid, or 0 if it isn't. @var{digest} should
-point to a digest of size @code{MD5_DIGEST_SIZE} or
-@code{SHA1_DIGEST_SIZE}, respectively.
+point to a digest of size @code{MD5_DIGEST_SIZE},
+@code{SHA1_DIGEST_SIZE}, or @code{SHA256_DIGEST_SIZE}, respectively.
 @end deftypefun
 
 If you need to use the @acronym{RSA} trapdoor, the private key, in a way
@@ -2285,7 +2311,7 @@ Nettle defines a compatible interface to MD5 in
 @code{MD5Final}.
 
 Eric Young's ``libdes'' (also part of OpenSSL) is a quite popular DES
-implementation. Nettle includes a subset if it's interface in
+implementation. Nettle includes a subset if its interface in
 @file{<nettle/des-compat.h>}. This file defines the typedefs
 @code{des_key_schedule} and @code{des_cblock}, two constants
 @code{DES_ENCRYPT} and @code{DES_DECRYPT}, and declares one global
@@ -2413,4 +2439,4 @@ End:
 @c  LocalWords:  DSA gmp FIPS DSS libdes OpenSSL ARCTWO Josefsson Nikos Andreas
 @c  LocalWords:  Mavroyanopoulos Sigfridsson Comstedt interoperability Sparc IC
 @c  LocalWords:  DES FIXME Rivest's plaintext ciphertext CTR XORed timestamp
-@c  LocalWords:  XORs
+@c  LocalWords:  XORs cryptologists
