@@ -38,7 +38,7 @@ SOURCES = $(TS_SOURCES) testutils.c
 
 DISTFILES = $(SOURCES) $(EXTRA_SOURCES) cxx-test.cxx Makefile.in .test-rules.make \
 	$(TS_SH) run-tests teardown-env \
-	rfc1750.txt testutils.h
+	gold-bug.txt testutils.h
 
 all: $(TARGETS) $(EXTRA_TARGETS)
 
