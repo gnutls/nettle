@@ -96,6 +96,10 @@ fi
 
 AC_PROG_INSTALL
 
+# According to the autoconf manual, needs install-sh from
+# autoconf-2.60 or automake-1.10 to avoid races.
+AC_PROG_MKDIR_P
+
 LSH_DEPENDENCY_TRACKING
 
 if test x$enable_dependency_tracking = xyes ; then

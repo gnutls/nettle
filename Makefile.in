@@ -12,6 +12,7 @@ INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = $(INSTALL_PROGRAM) -s
+MKDIR_P = @MKDIR_P@
 
 SUBDIRS = tools testsuite examples
 
@@ -229,11 +230,11 @@ config.m4: config.m4.in config.status
 # Installation
 # FIXME: Use mkinstalldirs.
 install-here: install-info install-headers libnettle.a $(SHLIBINSTALL)
-	[ -d $(DESTDIR)$(libdir) ] || mkdir $(DESTDIR)$(libdir)
+	$(MKDIR_P) $(DESTDIR)$(libdir)
 	$(INSTALL_DATA) libnettle.a $(DESTDIR)$(libdir)
 
 install-shared: $(SHLIBFORLINK)
-	[ -d $(DESTDIR)$(libdir) ] || mkdir $(DESTDIR)$(libdir)
+	$(MKDIR_P) $(DESTDIR)$(libdir)
 	$(INSTALL_PROGRAM) $(SHLIBFORLINK) $(DESTDIR)$(libdir)/$(SHLIBFILE)
 	[ -z "$(SHLIBSONAME)" ] \
                 || (cd $(DESTDIR)$(libdir) \
@@ -245,7 +246,7 @@ install-shared: $(SHLIBFORLINK)
 # friends for ordinary explicit rules.
 
 install-info: nettle.info
-	[ -d $(DESTDIR)$(infodir) ] || mkdir $(DESTDIR)$(infodir)
+	$(MKDIR_P) $(DESTDIR)$(infodir)
 	f=nettle.info ; \
 	[ -f $$f ] || f="$(srcdir)/$$f" ; \
 	$(INSTALL_DATA) "$$f" $(DESTDIR)$(infodir) ; \
@@ -257,8 +258,7 @@ install-info: nettle.info
 # NOTE: I'd like to use $^, but that's a GNU extension. $? should be
 # more portable, and equivalent for phony targets.
 install-headers: $(INSTALL_HEADERS)
-	[ -d $(DESTDIR)$(includedir) ] || mkdir $(DESTDIR)$(includedir)
-	[ -d $(DESTDIR)$(includedir)/nettle ] || mkdir $(DESTDIR)$(includedir)/nettle
+	$(MKDIR_P) $(DESTDIR)$(includedir)/nettle
 	for f in $(INSTALL_HEADERS) ; do \
 	  if [ -f "$$f" ] ; then \
 	    $(INSTALL_DATA) "$$f" $(DESTDIR)$(includedir)/nettle ; \

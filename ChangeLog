@@ -1,3 +1,13 @@
+2006-11-27  Niels Möller  <niels@s3.kth.se>
+
+	* tools/Makefile.in (install): Use MKDIR_P to create installation
+	directory. Install only one file at a time.
+
+	* Makefile.in (MKDIR_P): Use MKDIR_P for creating installation
+	directories.
+
+	* configure.ac: Use AC_PROG_MKDIR_P.
+
 2006-11-24  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/yarrow-test.c (test_main): Use gold-bug.txt as input
