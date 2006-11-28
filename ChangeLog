@@ -1,5 +1,7 @@
 2006-11-28  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac: Bumped version to 1.16.
+
 	* Released nettle-1.15.
 
 2006-11-27  Niels Möller  <nisse@lysator.liu.se>
