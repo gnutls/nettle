@@ -1,3 +1,10 @@
+2006-12-05  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: AC_PREREQ 2.61, for AC_PROG_MKDIR_P.
+
+	* config.make.in (datarootdir): New directory variable (for
+	autoconf-2.61).
+
 2006-11-28  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Bumped version to 1.16.
