@@ -359,9 +359,10 @@ distcheck: dist
 
 clean-here:
 	-rm -f $(TARGETS) *.$(OBJEXT) *.p$(OBJEXT) *.s
+        -rm -rf .lib
 
 distclean-here: clean-here
-	-rm -f config.h stamp-h config.log config.status \
+	-rm -f config.h stamp-h config.log config.status machine.m4 \
 	config.make config.m4 Makefile nettle-stdint.h *.asm *.d
 
 maintainer-clean-here:
