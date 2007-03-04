@@ -510,7 +510,7 @@ The functions are analogous to the MD5 ones.
 @end deftp
 
 @defvr Constant SHA256_DIGEST_SIZE
-The size of an SHA256 digest, i.e. 20.
+The size of an SHA256 digest, i.e. 32.
 @end defvr
 
 @defvr Constant SHA256_DATA_SIZE
