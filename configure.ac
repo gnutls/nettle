@@ -125,7 +125,7 @@ case "$host_cpu" in
 #error 64-bit sparc
 #endif
     ], [], [
-      asm_path=sparc
+      asm_path=sparc32
     ], [
       asm_path=sparc64
     ])

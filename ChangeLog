@@ -1,3 +1,7 @@
+2007-04-05  Niels Möller  <nisse@lysator.liu.se>
+
+	* Moved in CVS tree. Also renamed directory sparc to sparc32.
+
 2007-02-24  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in (clean-here): Remove .lib directory. 
