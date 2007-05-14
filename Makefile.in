@@ -19,9 +19,11 @@ SUBDIRS = tools testsuite examples
 include config.make
 
 PRE_CPPFLAGS = -I.
+LIBTARGETS = libnettle.a @IF_HOGWEED@ libhogweed.a
+SHLIBTARGETS = $(LIBNETTLE_FORLINK) @IF_HOGWEED@ $(LIBHOGWEED_FORLINK)
 
 TARGETS = aesdata$(EXEEXT) desdata$(EXEEXT) shadata$(EXEEXT) \
-	  libnettle.a $(SHLIBTARGET)
+	  $(LIBTARGETS) @IF_SHARED@ $(SHLIBTARGETS)
 
 DOCTARGETS = nettle.info nettle.html nettle.pdf
 
@@ -65,23 +67,24 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 serpent.c serpent-meta.c \
 		 twofish.c twofish-meta.c \
 		 yarrow256.c yarrow_key_event.c \
-		 sexp.c sexp-format.c \
-		 sexp-transport.c sexp-transport-format.c \
-		 bignum.c bignum-random.c sexp2bignum.c \
-		 pkcs1.c pkcs1-rsa-md5.c pkcs1-rsa-sha1.c pkcs1-rsa-sha256.c \
-		 rsa.c rsa-sign.c rsa-verify.c \
-		 rsa-md5-sign.c rsa-md5-verify.c \
-		 rsa-sha1-sign.c rsa-sha1-verify.c \
-		 rsa-sha256-sign.c rsa-sha256-verify.c \
-		 rsa-encrypt.c rsa-decrypt.c \
-		 rsa-keygen.c rsa-compat.c \
-		 rsa2sexp.c sexp2rsa.c \
-		 dsa.c dsa-sign.c dsa-verify.c dsa-keygen.c \
-		 sexp2dsa.c \
-		 pgp-encode.c rsa2openpgp.c \
-		 der-iterator.c der2rsa.c \
 		 buffer.c buffer-init.c realloc.c \
 		 nettle-internal.c
+
+hogweed_SOURCES = sexp.c sexp-format.c \
+		  sexp-transport.c sexp-transport-format.c \
+		  bignum.c bignum-random.c sexp2bignum.c \
+		  pkcs1.c pkcs1-rsa-md5.c pkcs1-rsa-sha1.c pkcs1-rsa-sha256.c \
+		  rsa.c rsa-sign.c rsa-verify.c \
+		  rsa-md5-sign.c rsa-md5-verify.c \
+		  rsa-sha1-sign.c rsa-sha1-verify.c \
+		  rsa-sha256-sign.c rsa-sha256-verify.c \
+		  rsa-encrypt.c rsa-decrypt.c \
+		  rsa-keygen.c rsa-compat.c \
+		  rsa2sexp.c sexp2rsa.c \
+		  dsa.c dsa-sign.c dsa-verify.c dsa-keygen.c \
+		  sexp2dsa.c \
+		  pgp-encode.c rsa2openpgp.c \
+		  der-iterator.c der2rsa.c \
 
 HEADERS = aes.h arcfour.h arctwo.h asn1.h bignum.h blowfish.h \
 	  base16.h base64.h buffer.h cast128.h \
@@ -101,7 +104,7 @@ HEADERS = aes.h arcfour.h arctwo.h asn1.h bignum.h blowfish.h \
 
 INSTALL_HEADERS = $(HEADERS) nettle-stdint.h
 
-SOURCES = $(nettle_SOURCES) aesdata.c desdata.c shadata.c
+SOURCES = $(nettle_SOURCES) $(hogweed_SOURCES) aesdata.c desdata.c shadata.c
 
 DISTFILES = $(SOURCES) $(HEADERS) .bootstrap aclocal.m4 configure.ac \
 	configure stamp-h.in \
@@ -114,26 +117,41 @@ DISTFILES = $(SOURCES) $(HEADERS) .bootstrap aclocal.m4 configure.ac \
 	asm.m4 \
 	nettle.texinfo nettle.info nettle.html nettle.pdf sha-example.c
 
-# Rules building libnettle.a
-# FIXME: Do we really need to delete the archive first?
+# Rules building static libraries
 nettle_OBJS = $(nettle_SOURCES:.c=.$(OBJEXT)) $(LIBOBJS)
 nettle_PURE_OBJS = $(nettle_OBJS:.$(OBJEXT)=.p$(OBJEXT))
 
+hogweed_OBJS = $(hogweed_SOURCES:.c=.$(OBJEXT)) $(LIBOBJS)
+hogweed_PURE_OBJS = $(hogweed_OBJS:.$(OBJEXT)=.p$(OBJEXT))
+
+# FIXME: Do we really need to delete the archive first?
 libnettle.a: $(nettle_OBJS)
 	-rm -f $@
 	$(AR) $(ARFLAGS) $@ $(nettle_OBJS)
+	$(RANLIB) $@
+
+# FIXME: Do we really need to delete the archive first?
+libhogweed.a: $(hogweed_OBJS)
+	-rm -f $@
+	$(AR) $(ARFLAGS) $@ $(hogweed_OBJS)
 	$(RANLIB) $@
 
 .c.$(OBJEXT):
 	$(COMPILE) $(CCPIC_MAYBE) -c $< \
 	&& $(DEP_PROCESS)
 
-# Rules building libnettle.so
-$(SHLIBFORLINK): $(nettle_PURE_OBJS)
-	$(SHLIBLINK) $(nettle_PURE_OBJS) -o $@ $(SHLIBLIBS)
+# Rules building shared libraries
+$(LIBNETTLE_FORLINK): $(nettle_PURE_OBJS)
+	$(SHLIBLINK) $(nettle_PURE_OBJS) -o $@ $(LIBNETTLE_LIBS)
 	-mkdir .lib 2>/dev/null
-	[ -z "$(SHLIBSONAME)" ] || (cd .lib \
-          && ln -sf ../$(SHLIBFORLINK) $(SHLIBSONAME))
+	[ -z "$(LIBNETTLE_SONAME)" ] || (cd .lib \
+          && ln -sf ../$(LIBNETTLE_FORLINK) $(LIBNETTLE_SONAME))
+
+$(LIBHOGWEED_FORLINK): $(hogweed_PURE_OBJS)
+	$(SHLIBLINK) $(hogweed_PURE_OBJS) -o $@ $(LIBHOGWEED_LIBS)
+	-mkdir .lib 2>/dev/null
+	[ -z "$(LIBHOGWEED_SONAME)" ] || (cd .lib \
+          && ln -sf ../$(LIBHOGWEED_FORLINK) $(LIBHOGWEED_SONAME))
 
 .c.p$(OBJEXT):
 	$(COMPILE) $(SHLIBCFLAGS) -c $< -o $@ \
@@ -229,18 +247,30 @@ config.m4: config.m4.in config.status
 	./config.status $@
 
 # Installation
-# FIXME: Use mkinstalldirs.
-install-here: install-info install-headers libnettle.a $(SHLIBINSTALL)
-	$(MKDIR_P) $(DESTDIR)$(libdir)
-	$(INSTALL_DATA) libnettle.a $(DESTDIR)$(libdir)
+install-here: install-info install-headers install-static \
+	@IF_SHARED$ install-shared-nettle @IF_HOGWEED@ install-shared-hogweed
 
-install-shared: $(SHLIBFORLINK)
+install-static: $(LIBTARGETS)
 	$(MKDIR_P) $(DESTDIR)$(libdir)
-	$(INSTALL_PROGRAM) $(SHLIBFORLINK) $(DESTDIR)$(libdir)/$(SHLIBFILE)
-	[ -z "$(SHLIBSONAME)" ] \
+	for f in $(LIBTARGETS); do \
+	  $(INSTALL_DATA) $$f $(DESTDIR)$(libdir) ; \
+	done
+
+install-shared-nettle: $(LIBNETTLE_FORLINK)
+	$(MKDIR_P) $(DESTDIR)$(libdir)
+	$(INSTALL_PROGRAM) $(LIBNETTLE_FORLINK) $(DESTDIR)$(libdir)/$(LIBNETTLE_FILE)
+	[ -z "$(LIBNETTLE_SONAME)" ] \
                 || (cd $(DESTDIR)$(libdir) \
-		&& ln -sf $(SHLIBFILE) $(SHLIBSONAME) \
-		&& ln -sf $(SHLIBFILE) $(SHLIBFORLINK) )
+		&& ln -sf $(LIBNETTLE_FILE) $(LIBNETTLE_SONAME) \
+		&& ln -sf $(LIBNETTLE_FILE) $(LIBNETTLE_FORLINK)
+
+install-shared-hogweed: $(LIBHOGWEED_FORLINK)
+	$(MKDIR_P) $(DESTDIR)$(libdir)
+	$(INSTALL_PROGRAM) $(LIBHOGWEED_FORLINK) $(DESTDIR)$(libdir)/$(LIBHOGWEED_FILE)
+	[ -z "$(LIBHOGWEED_SONAME)" ] \
+                || (cd $(DESTDIR)$(libdir) \
+		&& ln -sf $(LIBHOGWEED_FILE) $(LIBHOGWEED_SONAME) \
+		&& ln -sf $(LIBHOGWEED_FILE) $(LIBHOGWEED_FORLINK)
 
 # I'd like to use makes VPATH search to locate the files to be
 # installed. But it seems most make programs don't set $<, $^, $? and
@@ -268,8 +298,13 @@ install-headers: $(INSTALL_HEADERS)
 	  fi ; done
 
 # Uninstall
-uninstall-here: uninstall-info uninstall-headers uninstall-shared
-	rm -f $(DESTDIR)$(libdir)/libnettle.a
+uninstall-here: uninstall-info uninstall-headers uninstall-static \
+	        @IF_SHARED@ uninstall-shared
+
+uninstall-static:
+	for f in $(STATIC_LIBS) ; do \
+	  rm -f $(DESTDIR)$(libdir)/$$f ; \
+	done
 
 uninstall-headers:
 	for f in $(INSTALL_HEADERS) ; do \
@@ -284,8 +319,17 @@ uninstall-info:
 	-rm -f $(DESTDIR)$(infodir)/nettle.info
 
 # FIXME: Leaves the links around
-uninstall-shared:
-	test -z "$(SHLIBINSTALL)" || rm -f $(DESTDIR)$(libdir)/$(SHLIBFILE)
+uninstall-shared: uninstall-shared-nettle @IF_HOGWEED@ uninstall-shared-hogweed
+
+uninstall-shared-nettle:
+	rm -f $(DESTDIR)$(libdir)/$(LIBNETTLE_FILE)
+	[ -z "$(LIBNETTLE_SONAME)" ] \
+		|| rm -f $(LIBNETTLE_SONAME) $(LIBNETTLE_FORLINK)
+
+uninstall-shared-hogweed:
+	rm -f $(DESTDIR)$(libdir)/$(LIBHOGWEED_FILE)
+	[ -z "$(LIBHOGWEED_SONAME)" ] \
+		|| rm -f $(LIBHOGWEED_SONAME) $(LIBHOGWEED_FORLINK)
 
 # Distribution
 distdir = $(PACKAGE_NAME)-$(PACKAGE_VERSION)
