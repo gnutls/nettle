@@ -55,6 +55,9 @@ twofish-test$(EXEEXT): twofish-test.$(OBJEXT)
 buffer-test$(EXEEXT): buffer-test.$(OBJEXT)
 	$(LINK) buffer-test.$(OBJEXT) $(TEST_OBJS) -o buffer-test$(EXEEXT)
 
+yarrow-test$(EXEEXT): yarrow-test.$(OBJEXT)
+	$(LINK) yarrow-test.$(OBJEXT) $(TEST_OBJS) -o yarrow-test$(EXEEXT)
+
 sexp-test$(EXEEXT): sexp-test.$(OBJEXT)
 	$(LINK) sexp-test.$(OBJEXT) $(TEST_OBJS) -o sexp-test$(EXEEXT)
 
@@ -99,9 +102,6 @@ dsa-test$(EXEEXT): dsa-test.$(OBJEXT)
 
 dsa-keygen-test$(EXEEXT): dsa-keygen-test.$(OBJEXT)
 	$(LINK) dsa-keygen-test.$(OBJEXT) $(TEST_OBJS) -o dsa-keygen-test$(EXEEXT)
-
-yarrow-test$(EXEEXT): yarrow-test.$(OBJEXT)
-	$(LINK) yarrow-test.$(OBJEXT) $(TEST_OBJS) -o yarrow-test$(EXEEXT)
 
 sha1-huge-test$(EXEEXT): sha1-huge-test.$(OBJEXT)
 	$(LINK) sha1-huge-test.$(OBJEXT) $(TEST_OBJS) -o sha1-huge-test$(EXEEXT)
