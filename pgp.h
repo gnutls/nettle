@@ -29,10 +29,7 @@
 #include <time.h>
 
 #include "nettle-types.h"
-
-/* FIXME: User must include bignum.h before this file, in order to get
-   mpz_t defined. We don't do that here, in order to kludge through
-   compilation without public key support and without gmp.h. */
+#include "bignum.h"
 
 #ifdef __cplusplus
 extern "C" {

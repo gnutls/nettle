@@ -31,23 +31,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if HAVE_LIBGMP
-# include "bignum.h"
-# include "pgp.h"
-#else /* !HAVE_LIBGMP */
-/* Kludge to make it possible to include pgp.h */
-# define mpz_t int
-# include "pgp.h"
-# undef mpz_t
-#endif /* !HAVE_LIBGMP */
-
-#if WITH_PUBLIC_KEY
-# include "rsa.h"
-#endif
+#include "pgp.h"
 
 #include "base64.h"
 #include "buffer.h"
 #include "macros.h"
+#include "rsa.h"
 
 int
 pgp_put_uint32(struct nettle_buffer *buffer, uint32_t i)
@@ -71,7 +60,6 @@ pgp_put_uint16(struct nettle_buffer *buffer, unsigned i)
   return 1;
 }
 
-#if HAVE_LIBGMP
 int
 pgp_put_mpi(struct nettle_buffer *buffer, const mpz_t x)
 {
@@ -93,7 +81,6 @@ pgp_put_mpi(struct nettle_buffer *buffer, const mpz_t x)
 
   return 1;
 }
-#endif
 
 int
 pgp_put_string(struct nettle_buffer *buffer,
@@ -214,7 +201,6 @@ pgp_sub_packet_end(struct nettle_buffer *buffer, unsigned start)
   WRITE_UINT32(buffer->contents + start - 2, length);
 }
 
-#if WITH_PUBLIC_KEY
 int
 pgp_put_public_rsa_key(struct nettle_buffer *buffer,
 		       const struct rsa_public_key *pub,
@@ -321,7 +307,6 @@ pgp_put_rsa_sha1_signature(struct nettle_buffer *buffer,
 
   return 1;
 }
-#endif /* WITH_PUBLIC_KEY */
 
 #define CRC24_INIT 0x0b704ceL
 #define CRC24_POLY 0x1864cfbL
