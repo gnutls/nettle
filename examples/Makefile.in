@@ -11,9 +11,11 @@ PRE_CPPFLAGS = -I.. -I$(top_srcdir)
 PRE_LDFLAGS = -L..
 
 OPENSSL_LIBFLAGS = @OPENSSL_LIBFLAGS@
-TARGETS = nettle-benchmark$(EXEEXT) @RSA_EXAMPLES@
+RSA_TARGETS = rsa-keygen$(EXEEXT) rsa-sign$(EXEEXT) \
+	      rsa-verify$(EXEEXT) rsa-encrypt$(EXEEXT) rsa-decrypt$(EXEEXT)
+TARGETS = nettle-benchmark$(EXEEXT) @IF_HOGWEED@ $(RSA_TARGETS)
 SOURCES = nettle-benchmark.c nettle-openssl.c \
-	io.c getopt.c getopt1.c \
+	io.c read_rsa_key.c getopt.c getopt1.c \
 	rsa-encrypt.c rsa-decrypt.c rsa-keygen.c rsa-sign.c rsa-verify.c
 
 GETOPT_OBJS = getopt.$(OBJEXT) getopt1.$(OBJEXT)
@@ -31,23 +33,24 @@ all: $(TARGETS)
 # For Solaris and BSD make, we have to use an explicit rule for each executable
 rsa-keygen$(EXEEXT): rsa-keygen.$(OBJEXT) $(GETOPT_OBJS)
 	$(LINK) rsa-keygen.$(OBJEXT) io.$(OBJEXT) $(GETOPT_OBJS) \
-	-lnettle $(LIBS) -o rsa-keygen$(EXEEXT)
+	-lhogweed -lnettle $(LIBS) -o rsa-keygen$(EXEEXT)
 
-rsa-sign$(EXEEXT): rsa-sign.$(OBJEXT)
-	$(LINK) rsa-sign.$(OBJEXT) io.$(OBJEXT) \
-	-lnettle $(LIBS) -o rsa-sign$(EXEEXT)
+rsa-sign$(EXEEXT): rsa-sign.$(OBJEXT) read_rsa_key.$(OBJEXT)
+	$(LINK) rsa-sign.$(OBJEXT) io.$(OBJEXT) read_rsa_key.$(OBJEXT) \
+	-lhogweed -lnettle $(LIBS) -o rsa-sign$(EXEEXT)
 
-rsa-verify$(EXEEXT): rsa-verify.$(OBJEXT)
-	$(LINK) rsa-verify.$(OBJEXT) io.$(OBJEXT) \
-	-lnettle $(LIBS) -o rsa-verify$(EXEEXT)
+rsa-verify$(EXEEXT): rsa-verify.$(OBJEXT) read_rsa_key.$(OBJEXT)
+	$(LINK) rsa-verify.$(OBJEXT) io.$(OBJEXT) read_rsa_key.$(OBJEXT) \
+	-lhogweed -lnettle $(LIBS) -o rsa-verify$(EXEEXT)
 
-rsa-encrypt$(EXEEXT): rsa-encrypt.$(OBJEXT) $(GETOPT_OBJS)
-	$(LINK) rsa-encrypt.$(OBJEXT) io.$(OBJEXT) $(GETOPT_OBJS) \
-	-lnettle $(LIBS) -o rsa-encrypt$(EXEEXT)
+rsa-encrypt$(EXEEXT): rsa-encrypt.$(OBJEXT) read_rsa_key.$(OBJEXT) $(GETOPT_OBJS)
+	$(LINK) rsa-encrypt.$(OBJEXT) io.$(OBJEXT) read_rsa_key.$(OBJEXT) \
+	$(GETOPT_OBJS) \
+	-lhogweed -lnettle $(LIBS) -o rsa-encrypt$(EXEEXT)
 
-rsa-decrypt$(EXEEXT): rsa-decrypt.$(OBJEXT)
-	$(LINK) rsa-decrypt.$(OBJEXT) io.$(OBJEXT) \
-	-lnettle $(LIBS) -o rsa-decrypt$(EXEEXT)
+rsa-decrypt$(EXEEXT): rsa-decrypt.$(OBJEXT) read_rsa_key.$(OBJEXT)
+	$(LINK) rsa-decrypt.$(OBJEXT) io.$(OBJEXT) read_rsa_key.$(OBJEXT) \
+	-lhogweed -lnettle $(LIBS) -o rsa-decrypt$(EXEEXT)
 
 nettle-benchmark$(EXEEXT): nettle-benchmark.$(OBJEXT) nettle-openssl.$(OBJEXT) $(GETOPT_OBJS)
 	$(LINK) nettle-benchmark.$(OBJEXT) nettle-openssl.$(OBJEXT) io.$(OBJEXT) $(GETOPT_OBJS) \
