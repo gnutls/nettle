@@ -17,7 +17,9 @@ include ../config.make
 PRE_CPPFLAGS = -I.. -I$(top_srcdir)
 PRE_LDFLAGS = -L..
 
-TARGETS = sexp-conv$(EXEEXT) nettle-lfib-stream$(EXEEXT) @RSA_TOOLS@
+HOGWEED_TARGETS = pkcs1-conv$(EXEEXT)
+TARGETS = sexp-conv$(EXEEXT) nettle-lfib-stream$(EXEEXT) \
+	  @IF_HOGWEED@ $(HOGWEED_TARGETS)
 
 all: $(TARGETS)
 
@@ -38,7 +40,7 @@ nettle-lfib-stream$(EXEEXT): nettle-lfib-stream.$(OBJEXT) ../libnettle.a
 
 pkcs1_conv_OBJS = $(pkcs1_conv_SOURCES:.c=.$(OBJEXT))
 pkcs1-conv$(EXEEXT): $(pkcs1_conv_OBJS) ../libnettle.a
-	$(LINK) $(pkcs1_conv_OBJS) -lnettle $(LIBS) -o $@
+	$(LINK) $(pkcs1_conv_OBJS) -lhogweed -lnettle $(LIBS) -o $@
 
 .c.$(OBJEXT):
 	$(COMPILE) -c $< && $(DEP_PROCESS)
