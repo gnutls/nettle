@@ -10,23 +10,28 @@ include ../config.make
 PRE_CPPFLAGS = -I.. -I$(top_srcdir)
 PRE_LDFLAGS = -L..
 
-TS_SOURCES = aes-test.c arcfour-test.c arctwo-test.c \
-	     blowfish-test.c cast128-test.c \
-             base16-test.c base64-test.c \
-	     des-test.c des3-test.c des-compat-test.c \
-	     md2-test.c md4-test.c md5-test.c md5-compat-test.c \
-	     sha1-test.c sha256-test.c \
-	     serpent-test.c twofish-test.c \
-	     buffer-test.c sexp-test.c sexp-format-test.c \
-	     rsa2sexp-test.c sexp2rsa-test.c \
-	     knuth-lfib-test.c \
-	     cbc-test.c ctr-test.c hmac-test.c bignum-test.c \
-	     pkcs1-test.c \
-	     rsa-test.c rsa-encrypt-test.c rsa-keygen-test.c \
-	     dsa-test.c dsa-keygen-test.c \
-	     yarrow-test.c
+TS_NETTLE_SOURCES = aes-test.c arcfour-test.c arctwo-test.c \
+		    blowfish-test.c cast128-test.c \
+	            base16-test.c base64-test.c \
+		    des-test.c des3-test.c des-compat-test.c \
+		    md2-test.c md4-test.c md5-test.c md5-compat-test.c \
+		    sha1-test.c sha256-test.c \
+		    serpent-test.c twofish-test.c \
+		    buffer-test.c yarrow-test.c
 
-TS_C = $(TS_SOURCES:.c=$(EXEEXT))
+TS_HOGWEED_SOURCES = sexp-test.c sexp-format-test.c \
+		     rsa2sexp-test.c sexp2rsa-test.c \
+		     knuth-lfib-test.c \
+		     cbc-test.c ctr-test.c hmac-test.c bignum-test.c \
+		     pkcs1-test.c \
+		     rsa-test.c rsa-encrypt-test.c rsa-keygen-test.c \
+		     dsa-test.c dsa-keygen-test.c
+
+TS_SOURCES = $(TS_NETTLE_SOURCES) @IF_HOGWEED@ $(TS_HOGWEED_SOURCES)
+
+TS_NETTLE = $(TS_NETTLE_SOURCES:.c=$(EXEEXT))
+TS_HOGWEED = $(TS_HOGWEED_SOURCES:.c=$(EXEEXT))
+TS_C = $(TS_NETTLE) @IF_HOGWEED@ $(TS_HOGWEED)
 TS_CXX = @CXX_TESTS@
 TARGETS = $(TS_C) $(TS_CXX)
 TS_SH = sexp-conv-test pkcs1-conv-test symbols-test
@@ -54,11 +59,12 @@ all: $(TARGETS) $(EXTRA_TARGETS)
 # to use suffix rules to build the test executables. So we use an
 # explicit rule for each and every executable.
 
-TEST_OBJS = testutils.$(OBJEXT) -lnettle $(LIBS)
+LIB_HOGWEED = @IF_HOGWEED@ -lhogweed
+TEST_OBJS = testutils.$(OBJEXT) $(LIB_HOGWEED) -lnettle $(LIBS)
 
 .PHONY: test-rules
 test-rules:
-	(for f in $(TS_C) $(EXTRA_TARGETS) ; do \
+	(for f in $(TS_NETTLE) $(TS_HOGWEED) $(EXTRA_TARGETS) ; do \
 	  echo $$f'$$(EXEEXT): '$$f'.$$(OBJEXT)' ; \
 	  echo '	$$(LINK) '$$f'.$$(OBJEXT) $$(TEST_OBJS) -o '$$f'$$(EXEEXT)' ; \
 	  echo ; \
