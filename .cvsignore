@@ -6,7 +6,6 @@
 .lib
 Makefile
 aesdata
-autom4te.cache
 config.cache
 config.h
 config.h.in
