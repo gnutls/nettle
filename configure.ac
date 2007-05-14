@@ -10,8 +10,11 @@ AC_CONFIG_AUX_DIR([.])
 
 AC_CONFIG_HEADER([config.h])
 
-SHLIBMAJOR=2
-SHLIBMINOR=6
+LIBNETTLE_MAJOR=3
+LIBNETTLE_MINOR=0
+
+LIBHOGWEED_MAJOR=1
+LIBHOGWEED_MINOR=0
 
 AC_CANONICAL_HOST
 
@@ -163,36 +166,47 @@ SHLIBCFLAGS="$CCPIC"
 
 case "$host_os" in
   cygwin*)
-    SHLIBFORLINK='cygnettle-$(SHLIBMAJOR)-$(SHLIBMINOR).dll'
-    SHLIBSONAME=''
-    SHLIBFILE='libnettle.dll.a'
-    SHLIBLINK='$(CC) $(LDFLAGS) -shared -Wl,--out-implib=$(SHLIBFILE) -Wl,--export-all-symbols -Wl,--enable-auto-import -Wl,--whole-archive'
-    SHLIBLIBS='-Wl,--no-whole-archive $(LIBS)'
+    LIBNETTLE_FORLINK='cygnettle-$(SHLIBMAJOR)-$(SHLIBMINOR).dll'
+    LIBNETTLE_SONAME=''
+    LIBNETTLE_FILE='libnettle.dll.a'
+    LIBNETTLE_LINK='$(CC) $(LDFLAGS) -shared -Wl,--out-implib=$(LIBNETTLE_LIBFILE) -Wl,--export-all-symbols -Wl,--enable-auto-import -Wl,--whole-archive'
+    LIBNETTLE_LIBS='-Wl,--no-whole-archive $(LIBS)'
+
+    LIBHOGWEED_FORLINK='cygnettle-$(SHLIBMAJOR)-$(SHLIBMINOR).dll'
+    LIBHOGWEED_SONAME=''
+    LIBHOGWEED_FILE='libnettle.dll.a'
+    LIBHOGWEED_LINK='$(CC) $(LDFLAGS) -shared -Wl,--out-implib=$(LIBHOGWEED_LIBFILE) -Wl,--export-all-symbols -Wl,--enable-auto-import -Wl,--whole-archive'
+    LIBHOGWEED_LIBS='-Wl,--no-whole-archive $(LIBS)'
     ;;
   darwin*)
-    SHLIBFORLINK=libnettle.dylib
-    SHLIBSONAME='$(SHLIBFORLINK).$(SHLIBMAJOR)'
-    SHLIBFILE='$(SHLIBSONAME).$(SHLIBMINOR)'
-    SHLIBLINK='$(CC) -dynamiclib $(LDFLAGS)'
-    # SHLIBLIBS=' -lgmp'
+    LIBNETTLE_FORLINK=libnettle.dylib
+    LIBNETTLE_SONAME='$(LIBNETTLE_FORLINK).$(LIBNETTLE_MAJOR)'
+    LIBNETTLE_FILE='$(LIBNETTLE_SONAME).$(LIBNETTLE_MINOR)'
+    LIBNETTLE_LINK='$(CC) -dynamiclib $(LDFLAGS)'
+    LIBNETTLE_LIBS=''
+
+    LIBHOGWEED_FORLINK=libnettle.dylib
+    LIBHOGWEED_SONAME='$(LIBHOGWEED_FORLINK).$(LIBHOGWEED_MAJOR)'
+    LIBHOGWEED_FILE='$(LIBHOGWEED_SONAME).$(LIBHOGWEED_MINOR)'
+    LIBHOGWEED_LINK='$(CC) -dynamiclib $(LDFLAGS)'
+    LIBHOGWEED_LIBS=''
     ;;
   *)
-    SHLIBFORLINK=libnettle.so
-    SHLIBSONAME='$(SHLIBFORLINK).$(SHLIBMAJOR)'
-    SHLIBFILE='$(SHLIBSONAME).$(SHLIBMINOR)'
-    SHLIBLINK='$(CC) $(LDFLAGS) -shared -Wl,-soname=$(SHLIBSONAME)'
+    LIBNETTLE_FORLINK=libnettle.so
+    LIBNETTLE_SONAME='$(LIBNETTLE_FORLINK).$(LIBNETTLE_MAJOR)'
+    LIBNETTLE_FILE='$(LIBNETTLE_SONAME).$(LIBNETTLE_MINOR)'
+    LIBNETTLE_LINK='$(CC) $(LDFLAGS) -shared -Wl,-soname=$(LIBNETTLE_SONAME)'
     # FIXME: It might make some sense to link with -lgmp
-    SHLIBLIBS=''
+    LIBNETTLE_LIBS=''
+
+    LIBHOGWEED_FORLINK=libnettle.so
+    LIBHOGWEED_SONAME='$(LIBHOGWEED_FORLINK).$(LIBHOGWEED_MAJOR)'
+    LIBHOGWEED_FILE='$(LIBHOGWEED_SONAME).$(LIBHOGWEED_MINOR)'
+    LIBHOGWEED_LINK='$(CC) $(LDFLAGS) -shared -Wl,-soname=$(LIBHOGWEED_SONAME)'
+    # FIXME: It might make some sense to link with -lgmp
+    LIBHOGWEED_LIBS=''
     ;;
 esac
-
-if test "x$enable_shared" = xyes ; then
-  SHLIBTARGET='$(SHLIBFORLINK)'
-  SHLIBINSTALL=install-shared
-else
-  SHLIBTARGET=''
-  SHLIBINSTALL=''
-fi
 
 if test "x$enable_pic" = xyes; then
   CCPIC_MAYBE="$CCPIC"
@@ -307,15 +321,22 @@ AC_SUBST(ASM_MARK_NOEXEC_STACK)
 AC_SUBST(ASM_ALIGN_LOG)
 
 AC_SUBST(SHLIBCFLAGS)
-AC_SUBST(SHLIBMAJOR)
-AC_SUBST(SHLIBMINOR)
-AC_SUBST(SHLIBFORLINK)
-AC_SUBST(SHLIBSONAME)
-AC_SUBST(SHLIBFILE)
-AC_SUBST(SHLIBLINK)
-AC_SUBST(SHLIBTARGET)
-AC_SUBST(SHLIBINSTALL)
-AC_SUBST(SHLIBLIBS)
+
+AC_SUBST(LIBNETTLE_MAJOR)
+AC_SUBST(LIBNETTLE_MINOR)
+AC_SUBST(LIBNETTLE_FORLINK)
+AC_SUBST(LIBNETTLE_SONAME)
+AC_SUBST(LIBNETTLE_FILE)
+AC_SUBST(LIBNETTLE_LINK)
+AC_SUBST(LIBNETTLE_LIBS)
+
+AC_SUBST(HOGWEED_MAJOR)
+AC_SUBST(HOGWEED_MINOR)
+AC_SUBST(HOGWEED_FORLINK)
+AC_SUBST(HOGWEED_SONAME)
+AC_SUBST(HOGWEED_FILE)
+AC_SUBST(HOGWEED_LINK)
+AC_SUBST(HOGWEED_LIBS)
 
 AC_PATH_PROG(M4, m4, m4)
 
@@ -349,18 +370,23 @@ AC_CHECK_LIB(gmp, __gmpz_getlimbn,,
 Support for public key algorithms will be unavailable.])]
     enable_public_key=no)
 
+AH_TEMPLATE([WITH_HOGWEED], [Defined if public key features are enabled])
+
 if test "x$enable_public_key" = xyes ; then
-  AC_DEFINE(WITH_PUBLIC_KEY)
-  RSA_EXAMPLES='rsa-keygen$(EXEEXT) rsa-sign$(EXEEXT) rsa-verify$(EXEEXT) rsa-encrypt$(EXEEXT) rsa-decrypt$(EXEEXT)'
-  RSA_TOOLS='pkcs1-conv$(EXEEXT)'
+  AC_DEFINE(WITH_HOGWEED)
+  IF_HOGWEED=''
 else
-  RSA_EXAMPLES=''
-  RSA_TOOLS=''
+  IF_HOGWEED='#'
 fi
 
-AH_TEMPLATE([WITH_PUBLIC_KEY], [Define to enable public key features])
-AC_SUBST(RSA_EXAMPLES)
-AC_SUBST(RSA_TOOLS)
+if test "x$enable_shared" = xyes ; then
+  IF_SHARED=''
+else
+  IF_SHARED='#'
+fi
+
+AC_SUBST(IF_HOGWEED)
+AC_SUBST(IF_SHARED)
 
 # Add -R flags needed to run programs linked with gmp
 LSH_RPATH_FIX
