@@ -166,15 +166,15 @@ SHLIBCFLAGS="$CCPIC"
 
 case "$host_os" in
   cygwin*)
-    LIBNETTLE_FORLINK='cygnettle-$(SHLIBMAJOR)-$(SHLIBMINOR).dll'
+    LIBNETTLE_FORLINK='cygnettle-$(LIBNETTLE_MAJOR)-$(LIBNETTLE_MINOR).dll'
     LIBNETTLE_SONAME=''
     LIBNETTLE_FILE='libnettle.dll.a'
     LIBNETTLE_LINK='$(CC) $(LDFLAGS) -shared -Wl,--out-implib=$(LIBNETTLE_LIBFILE) -Wl,--export-all-symbols -Wl,--enable-auto-import -Wl,--whole-archive'
     LIBNETTLE_LIBS='-Wl,--no-whole-archive $(LIBS)'
 
-    LIBHOGWEED_FORLINK='cygnettle-$(SHLIBMAJOR)-$(SHLIBMINOR).dll'
+    LIBHOGWEED_FORLINK='cyghogweed-$(LIBHOGWEED_MAJOR)-$(LIBHOGWEED_MINOR).dll'
     LIBHOGWEED_SONAME=''
-    LIBHOGWEED_FILE='libnettle.dll.a'
+    LIBHOGWEED_FILE='libhogweed.dll.a'
     LIBHOGWEED_LINK='$(CC) $(LDFLAGS) -shared -Wl,--out-implib=$(LIBHOGWEED_LIBFILE) -Wl,--export-all-symbols -Wl,--enable-auto-import -Wl,--whole-archive'
     LIBHOGWEED_LIBS='-Wl,--no-whole-archive $(LIBS)'
     ;;
@@ -185,7 +185,7 @@ case "$host_os" in
     LIBNETTLE_LINK='$(CC) -dynamiclib $(LDFLAGS)'
     LIBNETTLE_LIBS=''
 
-    LIBHOGWEED_FORLINK=libnettle.dylib
+    LIBHOGWEED_FORLINK=libhogweed.dylib
     LIBHOGWEED_SONAME='$(LIBHOGWEED_FORLINK).$(LIBHOGWEED_MAJOR)'
     LIBHOGWEED_FILE='$(LIBHOGWEED_SONAME).$(LIBHOGWEED_MINOR)'
     LIBHOGWEED_LINK='$(CC) -dynamiclib $(LDFLAGS)'
@@ -199,7 +199,7 @@ case "$host_os" in
     # FIXME: It might make some sense to link with -lgmp
     LIBNETTLE_LIBS=''
 
-    LIBHOGWEED_FORLINK=libnettle.so
+    LIBHOGWEED_FORLINK=libhogweed.so
     LIBHOGWEED_SONAME='$(LIBHOGWEED_FORLINK).$(LIBHOGWEED_MAJOR)'
     LIBHOGWEED_FILE='$(LIBHOGWEED_SONAME).$(LIBHOGWEED_MINOR)'
     LIBHOGWEED_LINK='$(CC) $(LDFLAGS) -shared -Wl,-soname=$(LIBHOGWEED_SONAME)'
