@@ -432,7 +432,7 @@ mpz_togglebit (mpz_t x, unsigned long int bit)
 }
 #endif /* HAVE_LIBGMP */
 
-#if WITH_PUBLIC_KEY
+#if WITH_HOGWEED
 #define SIGN(key, hash, msg, signature) do {	\
   hash##_update(&hash, LDATA(msg));		\
   rsa_##hash##_sign(key, &hash, signature);	\
@@ -825,5 +825,5 @@ test_dsa_key(struct dsa_public_key *pub,
   ASSERT(0 == mpz_cmp(t, pub->y));
 };
 
-#endif /* WITH_PUBLIC_KEY */
+#endif /* WITH_HOGWEED */
 

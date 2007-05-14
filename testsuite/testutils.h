@@ -15,7 +15,7 @@
 # include "bignum.h"
 #endif
 
-#if WITH_PUBLIC_KEY
+#if WITH_HOGWEED
 # include "rsa.h"
 # include "dsa.h"
 #endif
@@ -102,7 +102,7 @@ test_armor(const struct nettle_armor *armor,
            const uint8_t *data,
            const uint8_t *ascii);
 
-#if WITH_PUBLIC_KEY
+#if WITH_HOGWEED
 void
 test_rsa_set_key_1(struct rsa_public_key *pub,
 		   struct rsa_private_key *key);
@@ -134,7 +134,7 @@ void
 test_dsa_key(struct dsa_public_key *pub,
 	     struct dsa_private_key *key);
 
-#endif /* WITH_PUBLIC_KEY */
+#endif /* WITH_HOGWEED */
 
 #ifdef __cplusplus
 }
