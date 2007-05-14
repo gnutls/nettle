@@ -185,24 +185,3 @@ hash_file(const struct nettle_hash *hash, void *ctx, FILE *f)
 	return 1;
     }
 }
-
-#if WITH_PUBLIC_KEY
-int
-read_rsa_key(const char *name,
-	     struct rsa_public_key *pub,
-	     struct rsa_private_key *priv)
-{
-  unsigned length;
-  char *buffer;
-  int res;
-  
-  length = read_file(name, 0, &buffer);
-  if (!length)
-    return 0;
-
-  res = rsa_keypair_from_sexp(pub, priv, 0, length, buffer);
-  free(buffer);
-
-  return res;
-}
-#endif /* WITH_PUBLIC_KEY */
