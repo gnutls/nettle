@@ -3,7 +3,6 @@
 int
 test_main(void)
 {
-#if WITH_PUBLIC_KEY
   struct dsa_public_key pub;
   struct dsa_private_key key;
 
@@ -44,8 +43,4 @@ test_main(void)
   dsa_private_key_clear(&key);
 
   SUCCESS();
-  
-#else /* !WITH_PUBLIC_KEY */
-  SKIP();
-#endif /* !WITH_PUBLIC_KEY */
 }

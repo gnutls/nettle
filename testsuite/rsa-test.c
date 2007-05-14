@@ -3,8 +3,6 @@
 int
 test_main(void)
 {
-#if WITH_PUBLIC_KEY
-
   struct rsa_public_key pub;
   struct rsa_private_key key;
 
@@ -171,8 +169,4 @@ test_main(void)
   mpz_clear(expected);
 
   SUCCESS();
-  
-#else /* !WITH_PUBLIC_KEY */
-  SKIP();
-#endif /* !WITH_PUBLIC_KEY */
 }

@@ -1,15 +1,11 @@
 #include "testutils.h"
 
-#if WITH_PUBLIC_KEY
-# include "rsa.h"
-#endif
-
+#include "rsa.h"
 #include "knuth-lfib.h"
 
 int
 test_main(void)
 {
-#if WITH_PUBLIC_KEY
   struct rsa_public_key pub;
   struct rsa_private_key key;
   struct knuth_lfib_ctx lfib;
@@ -67,9 +63,5 @@ test_main(void)
   mpz_clear(gibberish);
   free(decrypted);
   SUCCESS();
-  
-#else /* !WITH_PUBLIC_KEY */
-  SKIP();
-#endif /* !WITH_PUBLIC_KEY */
 }
   

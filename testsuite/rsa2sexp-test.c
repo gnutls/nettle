@@ -5,7 +5,6 @@
 int
 test_main(void)
 {
-#if WITH_PUBLIC_KEY
   struct rsa_public_key pub;
   struct rsa_private_key priv;
 
@@ -105,8 +104,4 @@ test_main(void)
   rsa_private_key_clear(&priv);
   
   SUCCESS();
-  
-#else /* !WITH_PUBLIC_KEY */
-  SKIP();
-#endif /* !WITH_PUBLIC_KEY */
 }
