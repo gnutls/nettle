@@ -142,13 +142,13 @@ libhogweed.a: $(hogweed_OBJS)
 
 # Rules building shared libraries
 $(LIBNETTLE_FORLINK): $(nettle_PURE_OBJS)
-	$(SHLIBLINK) $(nettle_PURE_OBJS) -o $@ $(LIBNETTLE_LIBS)
+	$(LIBNETTLE_LINK) $(nettle_PURE_OBJS) -o $@ $(LIBNETTLE_LIBS)
 	-mkdir .lib 2>/dev/null
 	[ -z "$(LIBNETTLE_SONAME)" ] || (cd .lib \
           && ln -sf ../$(LIBNETTLE_FORLINK) $(LIBNETTLE_SONAME))
 
 $(LIBHOGWEED_FORLINK): $(hogweed_PURE_OBJS)
-	$(SHLIBLINK) $(hogweed_PURE_OBJS) -o $@ $(LIBHOGWEED_LIBS)
+	$(LIBHOGWEED_LINK) $(hogweed_PURE_OBJS) -o $@ $(LIBHOGWEED_LIBS)
 	-mkdir .lib 2>/dev/null
 	[ -z "$(LIBHOGWEED_SONAME)" ] || (cd .lib \
           && ln -sf ../$(LIBHOGWEED_FORLINK) $(LIBHOGWEED_SONAME))
