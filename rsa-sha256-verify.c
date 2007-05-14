@@ -27,8 +27,6 @@
 # include "config.h"
 #endif
 
-#if WITH_PUBLIC_KEY
-
 #include <assert.h>
 
 #include "rsa.h"
@@ -73,5 +71,3 @@ rsa_sha256_verify_digest(const struct rsa_public_key *key,
 
   return res;
 }
-     
-#endif /* WITH_PUBLIC_KEY */

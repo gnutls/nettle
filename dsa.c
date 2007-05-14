@@ -27,8 +27,6 @@
 # include "config.h"
 #endif
 
-#if WITH_PUBLIC_KEY
-
 #include "dsa.h"
 
 #include "bignum.h"
@@ -78,5 +76,3 @@ dsa_signature_clear(struct dsa_signature *signature)
   mpz_clear(signature->r);
   mpz_clear(signature->s);
 }
-
-#endif /* WITH_PUBLIC_KEY */

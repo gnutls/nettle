@@ -27,8 +27,6 @@
 # include "config.h"
 #endif
 
-#if WITH_PUBLIC_KEY
-
 #include "rsa.h"
 
 #include "bignum.h"
@@ -133,5 +131,3 @@ rsa_keypair_from_der(struct rsa_public_key *pub,
   else
     return rsa_public_key_from_der_iterator(pub, limit, &i);    
 }
-
-#endif /* WITH_PUBLIC_KEY */

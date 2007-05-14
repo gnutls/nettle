@@ -27,8 +27,6 @@
 # include "config.h"
 #endif
 
-#if WITH_PUBLIC_KEY
-
 #include "rsa.h"
 
 #include "bignum.h"
@@ -57,5 +55,3 @@ _rsa_verify(const struct rsa_public_key *key,
 
   return res;
 }
-
-#endif /* WITH_PUBLIC_KEY */

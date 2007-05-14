@@ -27,8 +27,6 @@
 # include "config.h"
 #endif
 
-#if WITH_PUBLIC_KEY
-
 #include "rsa-compat.h"
 
 #include "bignum.h"
@@ -154,5 +152,3 @@ R_VerifyFinal(R_SIGNATURE_CTX *ctx,
 
   return res;
 }
-
-#endif /* WITH_PUBLIC_KEY */

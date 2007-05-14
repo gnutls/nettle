@@ -26,8 +26,6 @@
 # include "config.h"
 #endif
 
-#if WITH_PUBLIC_KEY
-
 #include <string.h>
 
 #include "dsa.h"
@@ -102,5 +100,3 @@ dsa_signature_from_sexp(struct dsa_signature *rs,
 
   return 1;
 }
-
-#endif /* WITH_PUBLIC_KEY */

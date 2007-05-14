@@ -27,8 +27,6 @@
 # include "config.h"
 #endif
 
-#if WITH_PUBLIC_KEY
-
 #include <assert.h>
 #include <string.h>
 
@@ -57,5 +55,3 @@ pkcs1_signature_prefix(unsigned length,
   memset(buffer + 1, 0xff, length - 1);
   buffer[0] = 1;
 }
-		     
-#endif /* WITH_PUBLIC_KEY */

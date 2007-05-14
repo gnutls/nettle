@@ -27,8 +27,6 @@
 # include "config.h"
 #endif
 
-#if WITH_PUBLIC_KEY
-
 #include <string.h>
 #include <time.h>
 
@@ -102,4 +100,3 @@ rsa_keypair_to_openpgp(struct nettle_buffer *buffer,
 				    PGP_SIGN_CERTIFICATION,
 				    &signature_hash);
 }
-#endif /* WITH_PUBLIC_KEY */

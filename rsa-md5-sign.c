@@ -27,8 +27,6 @@
 # include "config.h"
 #endif
 
-#if WITH_PUBLIC_KEY
-
 #include <assert.h>
 
 #include "rsa.h"
@@ -59,5 +57,3 @@ rsa_md5_sign_digest(const struct rsa_private_key *key,
 
   rsa_compute_root(key, s, s);
 }
-
-#endif /* WITH_PUBLIC_KEY */

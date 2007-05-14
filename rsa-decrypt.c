@@ -27,8 +27,6 @@
 # include "config.h"
 #endif
 
-#if WITH_PUBLIC_KEY
-
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
@@ -80,5 +78,3 @@ rsa_decrypt(const struct rsa_private_key *key,
 
   return 1;
 }
-
-#endif /* WITH_PUBLIC_KEY */

@@ -27,8 +27,6 @@
 # include "config.h"
 #endif
 
-#if WITH_PUBLIC_KEY
-
 #include "rsa.h"
 
 #include "bignum.h"
@@ -138,5 +136,3 @@ rsa_compute_root(const struct rsa_private_key *key,
 
   mpz_clear(xp); mpz_clear(xq);
 }
-
-#endif /* WITH_PUBLIC_KEY */

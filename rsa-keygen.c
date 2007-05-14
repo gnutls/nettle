@@ -27,8 +27,6 @@
 # include "config.h"
 #endif
 
-#if WITH_PUBLIC_KEY
-
 #include <assert.h>
 #include <limits.h>
 #include <stdlib.h>
@@ -332,5 +330,3 @@ rsa_generate_keypair(struct rsa_public_key *pub,
 
   return 1;
 }
-
-#endif /* WITH_PUBLIC_KEY */

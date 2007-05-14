@@ -27,8 +27,6 @@
 # include "config.h"
 #endif
 
-#if WITH_PUBLIC_KEY
-
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
@@ -90,5 +88,3 @@ pkcs1_rsa_sha256_encode_digest(mpz_t m, unsigned length, const uint8_t *digest)
   memcpy(em + length - SHA256_DIGEST_SIZE, digest, SHA256_DIGEST_SIZE);
   nettle_mpz_set_str_256_u(m, length, em);
 }
-
-#endif /* WITH_PUBLIC_KEY */

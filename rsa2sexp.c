@@ -26,8 +26,6 @@
 # include "config.h"
 #endif
 
-#if WITH_PUBLIC_KEY
-
 #include "rsa.h"
 
 #include "sexp.h"
@@ -52,5 +50,3 @@ rsa_keypair_to_sexp(struct nettle_buffer *buffer,
     return sexp_format(buffer, "(public-key(%0s(n%b)(e%b)))",
 		       algorithm_name, pub->n, pub->e);
 }
-
-#endif /* WITH_PUBLIC_KEY */

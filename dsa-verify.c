@@ -27,8 +27,6 @@
 # include "config.h"
 #endif
 
-#if WITH_PUBLIC_KEY
-
 #include <stdlib.h>
 
 #include "dsa.h"
@@ -108,5 +106,3 @@ dsa_verify(const struct dsa_public_key *key,
 
   return dsa_verify_digest(key, digest, signature);
 }
-
-#endif /* WITH_PUBLIC_KEY */

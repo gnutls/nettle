@@ -27,8 +27,6 @@
 # include "config.h"
 #endif
 
-#if WITH_PUBLIC_KEY
-
 #include <stdlib.h>
 
 #include "dsa.h"
@@ -249,5 +247,3 @@ dsa_generate_keypair(struct dsa_public_key *pub,
 
   return 1;
 }
-
-#endif /* WITH_PUBLIC_KEY */

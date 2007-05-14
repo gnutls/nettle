@@ -27,8 +27,6 @@
 # include "config.h"
 #endif
 
-#if WITH_PUBLIC_KEY
-
 #include "rsa.h"
 
 #include "bignum.h"
@@ -80,5 +78,3 @@ rsa_public_key_prepare(struct rsa_public_key *key)
   
   return (key->size > 0);
 }
-
-#endif /* WITH_PUBLIC_KEY */

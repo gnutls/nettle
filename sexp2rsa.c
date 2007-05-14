@@ -26,8 +26,6 @@
 # include "config.h"
 #endif
 
-#if WITH_PUBLIC_KEY
-
 #include <string.h>
 
 #include "rsa.h"
@@ -108,5 +106,3 @@ rsa_keypair_from_sexp(struct rsa_public_key *pub,
 
   return rsa_keypair_from_sexp_alist(pub, priv, limit, &i);
 }
-
-#endif /* WITH_PUBLIC_KEY */
