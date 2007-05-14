@@ -6,6 +6,8 @@ if [ -z "$srcdir" ] ; then
   srcdir=`pwd`
 fi
 
+# FIXME: Check libhogweed.a too.
+
 # * nm on aix seems to generate bogus outbut including random binary
 #   data. Using -g is a workaround to get rid of that. But nm -g
 #   doesn't work on Solaris-2.4, so try nm -g first, and plain nm if
