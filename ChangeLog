@@ -1,3 +1,41 @@
+2007-05-14  Niels Möller  <niels@s3.kth.se>
+
+	* Makefile.in: Split nettle library into two files, libnettle.a
+	and libhogweed.a, and similarly for the shared libraries.
+
+	* configure.ac: Bumped nettle so-versions to 3.0. Set hogweed
+	so-versions to 1.0. New makefile conditionals IF_SHARED and
+	IF_HOGWEED. Renamed WITH_PUBLIC_KEY to WITH_HOGWEED. Deleted
+	SHLIBTARGET, SHLIBINSTALL, RSA_EXAMPLES and RSA_TOOLS.
+
+	* config.make.in: Updated for hogweed split.
+
+	* C source files: Don't use WITH_PUBLIC_KEY / WITH_HOGWEED, the
+	Makefile sorts out which files should be compiled.
+	
+	* pgp.h: Include bignum.h, don't pretend to work without bignums.
+
+	* pgp-encode.c (pgp_put_mpi, pgp_put_public_rsa_key)
+	(pgp_put_rsa_sha1_signature): Define unconditionally. Removed the
+	checking of HAVE_LIBGMP and WITH_PUBLIC_KEY.
+
+	* examples/io.h: Use WITH_HOGWEED, not WITH_PUBLIC_KEY.
+	* examples/io.c (read_rsa_key): Deleted, moved to...
+	* examples/read_rsa_key.c: New file, extracted from io.c.
+
+	* examples/Makefile.in: Use IF_HOGWEED instead of RSA_EXAMPLES.
+	Link appropriate programs with -lhogweed.
+	(SOURCES): Added read_rsa_key.c.
+
+	* tools/Makefile.in (pkcs1-conv): Use IF_HOGWEED, not @RSA_TOOLS@,
+	for configuration. Link with -lhogweed.
+
+	* testsuite/testutils.h: Use WITH_HOGWEED, not WITH_PUBLIC_KEY.
+	* testsuite/testutils.c: Likewise.
+
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES, TS_HOGWEED_SOURCES):
+	Separate test cases using nettle and those also using hogweed.
+	
 2007-04-05  Niels Möller  <nisse@lysator.liu.se>
 
 	* Moved in CVS tree. Also renamed directory sparc to sparc32.
