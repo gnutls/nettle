@@ -1,5 +1,12 @@
 2007-05-14  Niels Möller  <niels@s3.kth.se>
 
+	* configure.ac: Fixed copy-and-paste errors in shared library
+	name setup.
+
+	* config.make.in (LIBNETTLE_SONAME, LIBHOGWEED_SONAME): Define.
+
+	* Makefile.in (libnettle.so, libhogweed.so): Fixed rules.
+
 	* Makefile.in: Split nettle library into two files, libnettle.a
 	and libhogweed.a, and similarly for the shared libraries.
 
