@@ -248,7 +248,7 @@ config.m4: config.m4.in config.status
 
 # Installation
 install-here: install-info install-headers install-static \
-	@IF_SHARED$ install-shared-nettle @IF_HOGWEED@ install-shared-hogweed
+	@IF_SHARED@ install-shared-nettle @IF_HOGWEED@ install-shared-hogweed
 
 install-static: $(LIBTARGETS)
 	$(MKDIR_P) $(DESTDIR)$(libdir)
@@ -262,7 +262,7 @@ install-shared-nettle: $(LIBNETTLE_FORLINK)
 	[ -z "$(LIBNETTLE_SONAME)" ] \
                 || (cd $(DESTDIR)$(libdir) \
 		&& ln -sf $(LIBNETTLE_FILE) $(LIBNETTLE_SONAME) \
-		&& ln -sf $(LIBNETTLE_FILE) $(LIBNETTLE_FORLINK)
+		&& ln -sf $(LIBNETTLE_FILE) $(LIBNETTLE_FORLINK))
 
 install-shared-hogweed: $(LIBHOGWEED_FORLINK)
 	$(MKDIR_P) $(DESTDIR)$(libdir)
@@ -270,7 +270,7 @@ install-shared-hogweed: $(LIBHOGWEED_FORLINK)
 	[ -z "$(LIBHOGWEED_SONAME)" ] \
                 || (cd $(DESTDIR)$(libdir) \
 		&& ln -sf $(LIBHOGWEED_FILE) $(LIBHOGWEED_SONAME) \
-		&& ln -sf $(LIBHOGWEED_FILE) $(LIBHOGWEED_FORLINK)
+		&& ln -sf $(LIBHOGWEED_FILE) $(LIBHOGWEED_FORLINK))
 
 # I'd like to use makes VPATH search to locate the files to be
 # installed. But it seems most make programs don't set $<, $^, $? and
