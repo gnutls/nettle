@@ -196,14 +196,13 @@ case "$host_os" in
     LIBNETTLE_SONAME='$(LIBNETTLE_FORLINK).$(LIBNETTLE_MAJOR)'
     LIBNETTLE_FILE='$(LIBNETTLE_SONAME).$(LIBNETTLE_MINOR)'
     LIBNETTLE_LINK='$(CC) $(LDFLAGS) -shared -Wl,-soname=$(LIBNETTLE_SONAME)'
-    # FIXME: It might make some sense to link with -lgmp
     LIBNETTLE_LIBS=''
 
     LIBHOGWEED_FORLINK=libhogweed.so
     LIBHOGWEED_SONAME='$(LIBHOGWEED_FORLINK).$(LIBHOGWEED_MAJOR)'
     LIBHOGWEED_FILE='$(LIBHOGWEED_SONAME).$(LIBHOGWEED_MINOR)'
     LIBHOGWEED_LINK='$(CC) $(LDFLAGS) -shared -Wl,-soname=$(LIBHOGWEED_SONAME)'
-    # FIXME: It might make some sense to link with -lgmp
+    # FIXME: It might make some sense to link with -lnettle -lgmp
     LIBHOGWEED_LIBS=''
     ;;
 esac
