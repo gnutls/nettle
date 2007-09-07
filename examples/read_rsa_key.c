@@ -24,6 +24,8 @@
 # include "config.h"
 #endif
 
+#include <stdlib.h>
+
 #include "io.h"
 #include "rsa.h"
 
