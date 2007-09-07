@@ -1,3 +1,7 @@
+2007-09-07  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/read_rsa_key.c: Include stdlib.h.
+
 2007-06-02  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in: Typo fixes to install targets, spotted by Magnus
