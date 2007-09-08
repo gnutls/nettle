@@ -1,3 +1,11 @@
+2007-09-08  Niels Möller  <nisse@lysator.liu.se>
+
+	* sparc64/aes-encrypt-internal.asm: The directory with the aes.m4
+	include file was renamed from "sparc" to "sparc32". Updated include.
+	* sparc64/aes-decrypt-internal.asm: Likewise.
+	* sparc32/aes-encrypt-internal.asm: Likewise.
+	* sparc32/aes-decrypt-internal.asm: Likewise.
+
 2007-09-07  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/read_rsa_key.c: Include stdlib.h.
