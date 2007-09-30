@@ -62,6 +62,13 @@ static const unsigned long primes[NUMBER_OF_PRIMES] = {
   977, 983, 991, 997
 };
 
+/* FIXME: Tune and optimize this more cerefully.
+   
+   1. Avoid using % in the loop.
+
+   2. Tune the number of primes.
+*/
+
 /* NOTE: The mpz_nextprime in current GMP is unoptimized. */
 static void
 bignum_next_prime(mpz_t p, mpz_t n, int count,
