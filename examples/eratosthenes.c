@@ -53,12 +53,13 @@ usage(void)
   fprintf(stderr, "Usage: erathostenes [OPTIONS] [LIMIT]\n\n"
 	  "Options:\n"
 	  "      --help         Display this message.\n"
+	  "      --quiet        No summary line.\n"
 	  "      --odd-only     Omit the prime 2.\n"
 	  "      --primes-only  Suppress output of differences.\n"
 	  "      --diff-only    Supress output of primes.\n"
 	  "      --tabular      Tabular output (default is one prime per line).\n"
 	  "      --binary       Binary output.\n"
-	  "      --quiet        No summary line.\n");
+	  "      --block SIZE   Block size.\n");
 }
 
 static unsigned
@@ -103,58 +104,14 @@ vector_alloc(unsigned size)
 static void
 vector_clear_bits (unsigned long *vector, unsigned step, unsigned start, unsigned size)
 {
-#if 0
-  if (step <= BITS_PER_LONG/2)
+  unsigned bit;
+
+  for (bit = start; bit < size; bit += step)
     {
-      unsigned long buf[BITS_PER_LONG - 1];      
+      unsigned i = bit / BITS_PER_LONG;
+      unsigned long mask = 1L << (bit % BITS_PER_LONG);
 
-      unsigned end = (size + BITS_PER_LONG - 1) / BITS_PER_LONG;
-
-      unsigned i = start / BITS_PER_LONG;
-      unsigned bit = start % BITS_PER_LONG;
-      unsigned long mask;
-      unsigned j;
-
-      if (bit >= step)
-	{
-	  /* Must handle first word specially */
-	  for (mask = 0; bit < BITS_PER_LONG; bit += step)
-	    mask |= 1L << (bit % BITS_PER_LONG);
-
-	  vector[i++] &= ~mask;
-	  bit -= BITS_PER_LONG;
-	}
-
-      /* Fill buf with bit pattern */
-      for (j = 0; j < step; j++)
-	{
-	  for (mask = 0; bit < BITS_PER_LONG; bit += step)
-	    mask |= 1L << (bit % BITS_PER_LONG);
-
-	  buf[j] = ~mask;
-	  bit -= BITS_PER_LONG;
-	}
-
-      /* Apply bit pattern */
-      while (i + step < end)
-	for (j = 0; j < step; )
-	  vector[i++] &= buf[j++];
-
-      for (j = 0; i < end; )
-	vector[i++] &= buf[j++];
-    }
-  else
-#endif
-    {
-      unsigned bit;
-
-      for (bit = start; bit < size; bit += step)
-	{
-	  unsigned i = bit / BITS_PER_LONG;
-	  unsigned long mask = 1L << (bit % BITS_PER_LONG);
-
-	  vector[i] &= ~mask;
-	}
+      vector[i] &= ~mask;
     }
 }
 
@@ -369,28 +326,35 @@ main (int argc, char **argv)
   unsigned bit;
   unsigned prime_count;
   unsigned sieve_limit;
+  unsigned block_size;
+  unsigned block;
 
   struct output_info info;
   int quiet;
   int c;
   
-  enum { FLAG_ODD = -100, FLAG_PRIME, FLAG_DIFF, FLAG_TABULAR, FLAG_BINARY, FLAG_QUIET };
+  enum { FLAG_ODD = -100, FLAG_PRIME, FLAG_DIFF, FLAG_TABULAR, FLAG_BINARY,
+	 FLAG_QUIET, FLAG_BLOCK };
   
   static const struct option options[] =
     {
       /* Name, args, flag, val */
       { "help", no_argument, NULL, '?' },
+      { "quiet", no_argument, NULL, FLAG_QUIET },
       { "odd-only", no_argument, NULL, FLAG_ODD },
       { "prime-only", no_argument, NULL, FLAG_PRIME },
       { "diff-only", no_argument, NULL, FLAG_DIFF },
       { "tabular", no_argument, NULL, FLAG_TABULAR },
       { "binary", no_argument, NULL, FLAG_BINARY },
-      { "quiet" , no_argument, NULL, FLAG_QUIET },
+      { "block" , required_argument, NULL, FLAG_BLOCK },
       { NULL, 0, NULL, 0}
     };
 
   output_init(&info);
 
+  quiet = 0;
+  block_size = 0;
+  
   while ( (c = getopt_long(argc, argv, "?", options, NULL)) != -1)
     switch (c)
       {
@@ -415,6 +379,17 @@ main (int argc, char **argv)
       case FLAG_QUIET:
 	quiet = 1;
 	break;
+      case FLAG_BLOCK:
+	{
+	  int arg = atoi(optarg);
+	  if (arg <= 10)
+	    {
+	      usage();
+	      return EXIT_FAILURE;
+	    }
+	  block_size = (arg - 3) / 2;
+	  break;
+	}
       default:
 	abort();
       }
@@ -438,6 +413,9 @@ main (int argc, char **argv)
 
   size = (limit - 1) / 2;
 
+  if (!block_size || block_size > size)
+    block_size = size;
+
   vector = vector_alloc (size);
   if (!vector)
     {
@@ -453,7 +431,7 @@ main (int argc, char **argv)
   if (limit == 2)
     return EXIT_SUCCESS;
 
-  sieve_limit = (isqrt(limit) - 1) / 2;
+  sieve_limit = (isqrt(2*block_size + 1) - 1) / 2;
   
   while (bit < sieve_limit)
     {
@@ -466,20 +444,54 @@ main (int argc, char **argv)
 
 	 (n^2 - 3) / 2 = n * bit + 3 (bit + 1)
       */
-      vector_clear_bits (vector, n, n*bit + 3*(bit + 1), size);
+      vector_clear_bits (vector, n, n*bit + 3*(bit + 1), block_size);
+
+      bit = vector_find_next (vector, bit + 1, block_size);
+    }
+
+  /* No more marking, just output the remaining primes. */
+  while (bit < block_size)
+    {
+      output(&info, 3 + 2 * bit);
+      prime_count++;
 
       bit = vector_find_next (vector, bit + 1, size);
     }
 
-  /* No more marking, just output the remaining primes. */
-  while (bit < size)
+  for (block = block_size; block < size; block += block_size)
     {
-      unsigned n = 3 + 2 * bit;
+      unsigned block_start;
+      unsigned block_end;
 
-      output(&info, n);
-      prime_count++;
+      if (block + block_size > size)
+	/* For the final block */
+	block_size = size - block;
 
-      bit = vector_find_next (vector, bit + 1, size);
+      block_start = 2*block + 3;
+      block_end = 2*(block + block_size) + 3;
+
+      sieve_limit = (isqrt(block_end) - 1) / 2;
+      for (bit = 0; bit < sieve_limit ;)
+	{
+	  unsigned n = 3 + 2 * bit;
+
+	  unsigned start = n*bit + 3*(bit + 1);
+	  if (start < block)
+	    {
+	      unsigned k = (block + 1) / n;
+	      start = bit + k*n;
+	    }
+	  vector_clear_bits (vector, n, start, block + block_size);
+	  
+	  bit = vector_find_next (vector, bit + 1, block + block_size);
+	}
+      for (bit = vector_find_next (vector, block, block + block_size);
+	   bit < block + block_size;
+	   bit = vector_find_next (vector, bit + 1, block + block_size))
+	{
+	  output(&info, 3 + 2 * bit);
+	  prime_count++;
+	}
     }
 
   if (!quiet)
