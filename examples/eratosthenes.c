@@ -3,21 +3,21 @@
  * An implementation of the sieve of Eratosthenes, to generate a list of primes.
  *
  */
- 
+
 /* nettle, low-level cryptographics library
  *
  * Copyright (C) 2007 Niels Möller
- *  
+ *
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at your
  * option) any later version.
- * 
+ *
  * The nettle library is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with the nettle library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
@@ -71,7 +71,7 @@ isqrt(unsigned n)
     x = n;
   else
     /* Must avoid overflow in the first step. */
-    x = n-1;  
+    x = n-1;
 
   for (;;)
     {
@@ -90,7 +90,7 @@ vector_alloc(unsigned size)
   unsigned end = (size + BITS_PER_LONG - 1) / BITS_PER_LONG;
   unsigned i;
   unsigned long *vector = malloc (end * sizeof(long));
-  
+
   if (!vector)
     return NULL;
 
@@ -120,14 +120,14 @@ find_first_one (unsigned long x)
   unsigned table[0x10] =
     {
       /* 0, 1,  2,  3,  4,  5,  6,  7 */
-        -1, 0,  1,  0,  2,  0,  1 , 0,
+	-1, 0,  1,  0,  2,  0,  1 , 0,
       /* 8, 9, 10, 11, 12, 13, 14, 15 */
 	 3, 0,  1,  0,  2,  0,  1,  0
     };
 
   /* Isolate least significant bit */
   x &= -x;
-  
+
   unsigned i = 0;
 #if NEED_HANDLE_LARGE_LONG
 #ifndef SIZEOF_LONG
@@ -253,10 +253,10 @@ main (int argc, char **argv)
   struct output_info info;
   int quiet;
   int c;
-  
+
   enum { FLAG_ODD = -100, FLAG_PRIME, FLAG_DIFF, FLAG_TABULAR,
 	 FLAG_QUIET, FLAG_BLOCK };
-  
+
   static const struct option options[] =
     {
       /* Name, args, flag, val */
@@ -274,7 +274,7 @@ main (int argc, char **argv)
 
   quiet = 0;
   block_size = 0;
-  
+
   while ( (c = getopt_long(argc, argv, "?", options, NULL)) != -1)
     switch (c)
       {
@@ -349,11 +349,11 @@ main (int argc, char **argv)
     return EXIT_SUCCESS;
 
   sieve_limit = (isqrt(2*block_size + 1) - 1) / 2;
-  
+
   while (bit < sieve_limit)
     {
       unsigned n = 3 + 2 * bit;
-      
+
       output(&info, n);
       prime_count++;
 
@@ -399,7 +399,7 @@ main (int argc, char **argv)
 	      start = bit + k*n;
 	    }
 	  vector_clear_bits (vector, n, start, block + block_size);
-	  
+
 	  bit = vector_find_next (vector, bit + 1, block + block_size);
 	}
       for (bit = vector_find_next (vector, block, block + block_size);
