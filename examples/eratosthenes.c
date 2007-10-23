@@ -58,7 +58,6 @@ usage(void)
 	  "      --primes-only  Suppress output of differences.\n"
 	  "      --diff-only    Supress output of primes.\n"
 	  "      --tabular      Tabular output (default is one prime per line).\n"
-	  "      --binary       Binary output.\n"
 	  "      --block SIZE   Block size.\n");
 }
 
@@ -185,14 +184,11 @@ struct output_info
 {
   int output_2;
   enum {
-    FORMAT_PRIMES = 1, FORMAT_DIFF = 2, FORMAT_TABULAR = 4, FORMAT_BINARY = 8
+    FORMAT_PRIMES = 1, FORMAT_DIFF = 2, FORMAT_TABULAR = 4
   } format;
 
   unsigned long last;
   unsigned column;
-
-  /* For the binary output */
-  unsigned size;
 };
 
 static void
@@ -201,79 +197,12 @@ output_init(struct output_info *info)
   info->output_2 = 1;
   info->format = FORMAT_PRIMES | FORMAT_DIFF;
   info->last = 0;
-  info->size = 1;
 }
 
 static void
 output(struct output_info *info, unsigned long p)
 {
-  if (info->format & FORMAT_BINARY)
-    {
-      /* Overrides the other formats. */
-      unsigned char buf[4];
-      unsigned diff = (p - info->last) / 2;
-      switch (info->size)
-	{
-	case 1:
-	  if (diff < 0x100)
-	    {
-	      putchar(diff);
-	      break;
-	    }
-	  else
-	    {
-	      info->size++;
-	      putchar(0);
-	      /* Fall through */
-	    }
-	case 2:
-	  if (diff < 0x10000)
-	    {
-	      buf[0] = diff >> 8;
-	      buf[1] = diff & 0xff;
-	      putchar(buf[0]);
-	      putchar(buf[1]);
-	      break;
-	    }
-	  else
-	    {
-	      info->size++;
-	      putchar(0);
-	      putchar(0);
-	      /* Fall through */
-	    }
-	case 3:
-	  if (diff < 0x1000000)
-	    {
-	      buf[0] = diff >> 16;
-	      buf[1] = (diff >> 8) & 0xff;
-	      buf[2] = diff & 0xff;
-	      putchar(buf[0]);
-	      putchar(buf[1]);
-	      putchar(buf[2]);
-	      break;
-	    }
-	  else
-	    {
-	      info->size++;
-	      putchar(0);
-	      putchar(0);
-	      putchar(0);
-	      /* Fall through */
-	    }
-	case 4:
-	  buf[0] = diff >> 24;
-	  buf[1] = (diff >> 16) & 0xff;
-	  buf[2] = (diff >> 8) & 0xff;
-	  buf[3] = diff & 0xff;
-	  putchar(buf[0]);
-	  putchar(buf[1]);
-	  putchar(buf[2]);
-	  putchar(buf[3]);
-	  break;
-	}
-    }
-  else if (info->format & (FORMAT_PRIMES | FORMAT_DIFF))
+  if (info->format & (FORMAT_PRIMES | FORMAT_DIFF))
     {
       if (info->format & FORMAT_PRIMES)
 	printf("%ld", p);
@@ -301,19 +230,11 @@ output(struct output_info *info, unsigned long p)
 static void
 output_first(struct output_info *info)
 {
-  if (info->format & FORMAT_BINARY)
-    {
-      /* Omit 2, and start with 1, so that differences are odd. */
-      info->last = 1;
-    }
-  else
-    {
-      info->column = 0;
-      if (info->output_2)
-	output(info, 2);
+  info->column = 0;
+  if (info->output_2)
+    output(info, 2);
 
-      info->last = 2;
-    }
+  info->last = 2;
 }
 
 int
@@ -333,7 +254,7 @@ main (int argc, char **argv)
   int quiet;
   int c;
   
-  enum { FLAG_ODD = -100, FLAG_PRIME, FLAG_DIFF, FLAG_TABULAR, FLAG_BINARY,
+  enum { FLAG_ODD = -100, FLAG_PRIME, FLAG_DIFF, FLAG_TABULAR,
 	 FLAG_QUIET, FLAG_BLOCK };
   
   static const struct option options[] =
@@ -345,7 +266,6 @@ main (int argc, char **argv)
       { "prime-only", no_argument, NULL, FLAG_PRIME },
       { "diff-only", no_argument, NULL, FLAG_DIFF },
       { "tabular", no_argument, NULL, FLAG_TABULAR },
-      { "binary", no_argument, NULL, FLAG_BINARY },
       { "block" , required_argument, NULL, FLAG_BLOCK },
       { NULL, 0, NULL, 0}
     };
@@ -372,9 +292,6 @@ main (int argc, char **argv)
 	break;
       case FLAG_TABULAR:
 	info.format |= FORMAT_TABULAR;
-	break;
-      case FLAG_BINARY:
-	info.format |= FORMAT_BINARY;
 	break;
       case FLAG_QUIET:
 	quiet = 1;
