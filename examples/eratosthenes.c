@@ -52,22 +52,17 @@ usage(void)
 {
   fprintf(stderr, "Usage: erathostenes [OPTIONS] [LIMIT]\n\n"
 	  "Options:\n"
-	  "      --help         Display this message.\n"
-	  "      --quiet        No summary line.\n"
-	  "      --odd-only     Omit the prime 2.\n"
-	  "      --primes-only  Suppress output of differences.\n"
-	  "      --diff-only    Supress output of primes.\n"
-	  "      --tabular      Tabular output (default is one prime per line).\n"
-	  "      --block SIZE   Block size.\n");
+	  "      -?         Display this message.\n"
+	  "      -b  SIZE   Block size.\n");
 }
 
 static unsigned
-isqrt(unsigned n)
+isqrt(unsigned long n)
 {
-  unsigned x;
+  unsigned long x;
 
   /* FIXME: Better initialization. */
-  if (n < UINT_MAX)
+  if (n < ULONG_MAX)
     x = n;
   else
     /* Must avoid overflow in the first step. */
@@ -75,7 +70,7 @@ isqrt(unsigned n)
 
   for (;;)
     {
-      unsigned y = (x + n/x) / 2;
+      unsigned long y = (x + n/x) / 2;
       if (y >= x)
 	return x;
 
@@ -85,10 +80,10 @@ isqrt(unsigned n)
 
 /* Size is in bits */
 static unsigned long *
-vector_alloc(unsigned size)
+vector_alloc(unsigned long size)
 {
-  unsigned end = (size + BITS_PER_LONG - 1) / BITS_PER_LONG;
-  unsigned i;
+  unsigned long end = (size + BITS_PER_LONG - 1) / BITS_PER_LONG;
+  unsigned long i;
   unsigned long *vector = malloc (end * sizeof(long));
 
   if (!vector)
@@ -101,13 +96,14 @@ vector_alloc(unsigned size)
 }
 
 static void
-vector_clear_bits (unsigned long *vector, unsigned step, unsigned start, unsigned size)
+vector_clear_bits (unsigned long *vector, unsigned long step,
+		   unsigned long start, unsigned long size)
 {
-  unsigned bit;
+  unsigned long bit;
 
   for (bit = start; bit < size; bit += step)
     {
-      unsigned i = bit / BITS_PER_LONG;
+      unsigned long i = bit / BITS_PER_LONG;
       unsigned long mask = 1L << (bit % BITS_PER_LONG);
 
       vector[i] &= ~mask;
@@ -161,11 +157,11 @@ find_first_one (unsigned long x)
 }
 
 /* Returns size if there's no more bits set */
-static unsigned
-vector_find_next (const unsigned long *vector, unsigned bit, unsigned size)
+static unsigned long
+vector_find_next (const unsigned long *vector, unsigned long bit, unsigned long size)
 {
-  unsigned end = (size + BITS_PER_LONG - 1) / BITS_PER_LONG;
-  unsigned i = bit / BITS_PER_LONG;
+  unsigned long end = (size + BITS_PER_LONG - 1) / BITS_PER_LONG;
+  unsigned long i = bit / BITS_PER_LONG;
   unsigned long mask = 1L << (bit % BITS_PER_LONG);
   unsigned long word;
 
@@ -180,125 +176,31 @@ vector_find_next (const unsigned long *vector, unsigned bit, unsigned size)
   return i * BITS_PER_LONG + find_first_one(word);
 }
 
-struct output_info
-{
-  int output_2;
-  enum {
-    FORMAT_PRIMES = 1, FORMAT_DIFF = 2, FORMAT_TABULAR = 4
-  } format;
-
-  unsigned long last;
-  unsigned column;
-};
-
-static void
-output_init(struct output_info *info)
-{
-  info->output_2 = 1;
-  info->format = FORMAT_PRIMES | FORMAT_DIFF;
-  info->last = 0;
-}
-
-static void
-output(struct output_info *info, unsigned long p)
-{
-  if (info->format & (FORMAT_PRIMES | FORMAT_DIFF))
-    {
-      if (info->format & FORMAT_PRIMES)
-	printf("%ld", p);
-      if (info->format & FORMAT_DIFF)
-	printf(" %ld", p - info->last);
-
-      if (info->format & FORMAT_TABULAR)
-	{
-	  printf(",");
-	  info->column++;
-	  if (info->column == 16)
-	    {
-	      printf("\n");
-	      info->column = 0;
-	    }
-	  else
-	    printf(" ");
-	}
-      else
-	printf("\n");
-    }
-  info->last = p;
-}
-
-static void
-output_first(struct output_info *info)
-{
-  info->column = 0;
-  if (info->output_2)
-    output(info, 2);
-
-  info->last = 2;
-}
-
 int
 main (int argc, char **argv)
 {
   unsigned long *vector;
   /* Generate all primes p <= limit */
-  unsigned limit;
-  unsigned size;
-  unsigned bit;
-  unsigned prime_count;
-  unsigned sieve_limit;
-  unsigned block_size;
-  unsigned block;
+  unsigned long limit;
+  unsigned long size;
+  unsigned long bit;
+  unsigned long sieve_limit;
+  unsigned long block_size;
+  unsigned long block;
 
-  struct output_info info;
-  int quiet;
   int c;
 
-  enum { FLAG_ODD = -100, FLAG_PRIME, FLAG_DIFF, FLAG_TABULAR,
-	 FLAG_QUIET, FLAG_BLOCK };
-
-  static const struct option options[] =
-    {
-      /* Name, args, flag, val */
-      { "help", no_argument, NULL, '?' },
-      { "quiet", no_argument, NULL, FLAG_QUIET },
-      { "odd-only", no_argument, NULL, FLAG_ODD },
-      { "prime-only", no_argument, NULL, FLAG_PRIME },
-      { "diff-only", no_argument, NULL, FLAG_DIFF },
-      { "tabular", no_argument, NULL, FLAG_TABULAR },
-      { "block" , required_argument, NULL, FLAG_BLOCK },
-      { NULL, 0, NULL, 0}
-    };
-
-  output_init(&info);
-
-  quiet = 0;
   block_size = 0;
 
-  while ( (c = getopt_long(argc, argv, "?", options, NULL)) != -1)
+  while ( (c = getopt(argc, argv, "?b:")) != -1)
     switch (c)
       {
       case '?':
 	usage();
 	return EXIT_FAILURE;
-      case FLAG_ODD:
-	info.output_2 = 0;
-	break;
-      case FLAG_PRIME:
-	info.format &= ~FORMAT_DIFF;
-	break;
-      case FLAG_DIFF:
-	info.format &= ~FORMAT_PRIMES;
-	break;
-      case FLAG_TABULAR:
-	info.format |= FORMAT_TABULAR;
-	break;
-      case FLAG_QUIET:
-	quiet = 1;
-	break;
-      case FLAG_BLOCK:
+      case 'b':
 	{
-	  int arg = atoi(optarg);
+	  long arg = atoi(optarg);
 	  if (arg <= 10)
 	    {
 	      usage();
@@ -340,8 +242,7 @@ main (int argc, char **argv)
       return EXIT_FAILURE;
     }
 
-  output_first(&info);
-  prime_count = 1;
+  printf("2\n");
 
   bit = 0;
 
@@ -352,10 +253,9 @@ main (int argc, char **argv)
 
   while (bit < sieve_limit)
     {
-      unsigned n = 3 + 2 * bit;
+      unsigned long n = 3 + 2 * bit;
 
-      output(&info, n);
-      prime_count++;
+      printf("%lu\n", n);
 
       /* First bit to clear corresponds to n^2, which is bit
 
@@ -367,18 +267,15 @@ main (int argc, char **argv)
     }
 
   /* No more marking, just output the remaining primes. */
-  while (bit < block_size)
-    {
-      output(&info, 3 + 2 * bit);
-      prime_count++;
+  for (; bit < block_size ;
+       bit = vector_find_next (vector, bit + 1, size))
 
-      bit = vector_find_next (vector, bit + 1, size);
-    }
+    printf("%lu\n", 3 + 2 * bit);
 
   for (block = block_size; block < size; block += block_size)
     {
-      unsigned block_start;
-      unsigned block_end;
+      unsigned long block_start;
+      unsigned long block_end;
 
       if (block + block_size > size)
 	/* For the final block */
@@ -390,12 +287,12 @@ main (int argc, char **argv)
       sieve_limit = (isqrt(block_end) - 1) / 2;
       for (bit = 0; bit < sieve_limit ;)
 	{
-	  unsigned n = 3 + 2 * bit;
+	  unsigned long n = 3 + 2 * bit;
 
-	  unsigned start = n*bit + 3*(bit + 1);
+	  unsigned long start = n*bit + 3*(bit + 1);
 	  if (start < block)
 	    {
-	      unsigned k = (block + 1) / n;
+	      unsigned long k = (block + 1) / n;
 	      start = bit + k*n;
 	    }
 	  vector_clear_bits (vector, n, start, block + block_size);
@@ -405,16 +302,7 @@ main (int argc, char **argv)
       for (bit = vector_find_next (vector, block, block + block_size);
 	   bit < block + block_size;
 	   bit = vector_find_next (vector, bit + 1, block + block_size))
-	{
-	  output(&info, 3 + 2 * bit);
-	  prime_count++;
-	}
-    }
-
-  if (!quiet)
-    {
-      printf("\n");
-      fprintf(stderr, "Prime #%d = %ld\n", prime_count, info.last);
+	printf("%lu\n", 3 + 2 * bit);
     }
 
   return EXIT_SUCCESS;
