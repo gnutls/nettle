@@ -176,6 +176,10 @@ vector_find_next (const unsigned long *vector, unsigned long bit, unsigned long 
   return i * BITS_PER_LONG + find_first_one(word);
 }
 
+/* For benchmarking, define to do nothing (otherwise, most of the time
+   will be spent converting the output to decimal). */
+#define OUTPUT(n) printf("%lu\n", (n))
+
 int
 main (int argc, char **argv)
 {
@@ -242,7 +246,7 @@ main (int argc, char **argv)
       return EXIT_FAILURE;
     }
 
-  printf("2\n");
+  OUTPUT(2UL);
 
   bit = 0;
 
@@ -255,7 +259,7 @@ main (int argc, char **argv)
     {
       unsigned long n = 3 + 2 * bit;
 
-      printf("%lu\n", n);
+      OUTPUT(n);
 
       /* First bit to clear corresponds to n^2, which is bit
 
@@ -270,7 +274,7 @@ main (int argc, char **argv)
   for (; bit < block_size ;
        bit = vector_find_next (vector, bit + 1, size))
 
-    printf("%lu\n", 3 + 2 * bit);
+    OUTPUT(3 + 2 * bit);
 
   for (block = block_size; block < size; block += block_size)
     {
@@ -302,7 +306,7 @@ main (int argc, char **argv)
       for (bit = vector_find_next (vector, block, block + block_size);
 	   bit < block + block_size;
 	   bit = vector_find_next (vector, bit + 1, block + block_size))
-	printf("%lu\n", 3 + 2 * bit);
+	OUTPUT(3 + 2 * bit);
     }
 
   return EXIT_SUCCESS;
