@@ -141,7 +141,7 @@ find_first_one (unsigned long x)
   if (x >= 0x10000)
     {
       x >>= 16;
-      i =+ 16;
+      i += 16;
     }
   if (x >= 0x100)
     {
@@ -272,7 +272,7 @@ main (int argc, char **argv)
 
   /* No more marking, just output the remaining primes. */
   for (; bit < block_size ;
-       bit = vector_find_next (vector, bit + 1, size))
+       bit = vector_find_next (vector, bit + 1, block_size))
 
     OUTPUT(3 + 2 * bit);
 
