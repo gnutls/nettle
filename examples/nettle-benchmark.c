@@ -306,7 +306,7 @@ time_cipher(const struct nettle_cipher *cipher)
 #endif
 
 int
-main(int argc UNUSED, char **argv UNUSED)
+main(int argc, char **argv)
 {
   unsigned i;
   int c;
