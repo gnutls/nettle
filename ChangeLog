@@ -1,3 +1,11 @@
+2008-01-03  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/nettle-benchmark.c (main): Removed incorrect UNUSED
+	from declaration.
+
+	* bignum-next-prime.c: Moved the bignum_next_prime function to a
+	separate file.
+
 2007-09-08  Niels Möller  <nisse@lysator.liu.se>
 
 	* sparc64/aes-encrypt-internal.asm: The directory with the aes.m4
