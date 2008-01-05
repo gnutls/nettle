@@ -1,5 +1,6 @@
 *.d
 Makefile
+eratosthenes
 nettle-benchmark
 rsa-decrypt
 rsa-encrypt
