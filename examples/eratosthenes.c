@@ -112,13 +112,26 @@ vector_clear_bits (unsigned long *vector, unsigned long step,
 
 static unsigned
 find_first_one (unsigned long x)
-{
-  unsigned table[0x10] =
+{  
+  unsigned table[0x101] =
     {
-      /* 0, 1,  2,  3,  4,  5,  6,  7 */
-	-1, 0,  1,  0,  2,  0,  1 , 0,
-      /* 8, 9, 10, 11, 12, 13, 14, 15 */
-	 3, 0,  1,  0,  2,  0,  1,  0
+     15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+     14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+     13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+     12, 0, 0, 0, 0, 0, 0, 0,11, 0, 0, 0,10, 0, 9, 8,
+      0, 0, 1, 0, 2, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0,
+      4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      7,
     };
 
   /* Isolate least significant bit */
@@ -127,7 +140,7 @@ find_first_one (unsigned long x)
   unsigned i = 0;
 #if NEED_HANDLE_LARGE_LONG
 #ifndef SIZEOF_LONG
-  /* Can't not be tested by the preprocessor. May generate warnings
+  /* Can not be tested by the preprocessor. May generate warnings
      when long is 32 bits. */
   if (BITS_PER_LONG > 32)
 #endif
@@ -143,17 +156,7 @@ find_first_one (unsigned long x)
       x >>= 16;
       i += 16;
     }
-  if (x >= 0x100)
-    {
-      x >>= 8;
-      i += 8;
-    }
-  if (x >= 0x10)
-    {
-      x >>= 4;
-      i += 4;
-    }
-  return i + table[x & 0xf];
+  return i + table[128 + (x & 0xff) - (x >> 8)];
 }
 
 /* Returns size if there's no more bits set */
@@ -204,7 +207,7 @@ main (int argc, char **argv)
 	return EXIT_FAILURE;
       case 'b':
 	{
-	  long arg = atoi(optarg);
+	  long arg = atol(optarg);
 	  if (arg <= 10)
 	    {
 	      usage();
@@ -224,7 +227,7 @@ main (int argc, char **argv)
     limit = 1000;
   else if (argc == 1)
     {
-      limit = atoi(argv[0]);
+      limit = atol(argv[0]);
       if (limit < 2)
 	return EXIT_SUCCESS;
     }
@@ -239,7 +242,10 @@ main (int argc, char **argv)
   if (!block_size || block_size > size)
     block_size = size;
 
-  vector = vector_alloc (size);
+  /* FIXME: Allocates a bit for all odd numbers up to limit. Could
+     save a lot of memory by allocating space only for numbers up to
+     the square root, plus one additional block. */
+  vector = vector_alloc(size);
   if (!vector)
     {
       fprintf(stderr, "Insufficient memory.\n");
