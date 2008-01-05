@@ -28,12 +28,10 @@
 #endif
 
 #include <assert.h>
-#include <limits.h>
 #include <stdlib.h>
 
 #include "rsa.h"
 #include "bignum.h"
-#include "nettle-internal.h"
 
 #ifndef DEBUG
 # define DEBUG 0
@@ -43,111 +41,6 @@
 # include <stdio.h>
 #endif
 
-
-#define NUMBER_OF_PRIMES 167
-
-static const unsigned long primes[NUMBER_OF_PRIMES] = {
-  3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67,
-  71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139,
-  149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211,
-  223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281,
-  283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367,
-  373, 379, 383, 389, 397, 401, 409, 419, 421, 431, 433, 439, 443,
-  449, 457, 461, 463, 467, 479, 487, 491, 499, 503, 509, 521, 523,
-  541, 547, 557, 563, 569, 571, 577, 587, 593, 599, 601, 607, 613,
-  617, 619, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691,
-  701, 709, 719, 727, 733, 739, 743, 751, 757, 761, 769, 773, 787,
-  797, 809, 811, 821, 823, 827, 829, 839, 853, 857, 859, 863, 877,
-  881, 883, 887, 907, 911, 919, 929, 937, 941, 947, 953, 967, 971,
-  977, 983, 991, 997
-};
-
-/* FIXME: Tune and optimize this more cerefully.
-   
-   1. Avoid using % in the loop.
-
-   2. Tune the number of primes.
-*/
-
-/* NOTE: The mpz_nextprime in current GMP is unoptimized. */
-static void
-bignum_next_prime(mpz_t p, mpz_t n, int count,
-		  void *progress_ctx, nettle_progress_func progress)
-{
-  mpz_t tmp;
-  TMP_DECL(moduli, unsigned long, NUMBER_OF_PRIMES);
-  
-  unsigned long difference;
-  unsigned prime_limit = NUMBER_OF_PRIMES;
-  
-  /* First handle tiny numbers */
-  if (mpz_cmp_ui(n, 2) <= 0)
-    {
-      mpz_set_ui(p, 2);
-      return;
-    }
-  mpz_set(p, n);
-  mpz_setbit(p, 0);
-
-  if (mpz_cmp_ui(p, 8) < 0)
-    return;
-
-  mpz_init(tmp);
-
-  if (mpz_cmp_ui(p, primes[prime_limit-1]) <= 0)
-    /* Use only 3, 5 and 7 */
-    prime_limit = 3;
-  
-  /* Compute residues modulo small odd primes */
-  TMP_ALLOC(moduli, prime_limit);
-  {
-    unsigned i;
-    for (i = 0; i < prime_limit; i++)
-      moduli[i] = mpz_fdiv_ui(p, primes[i]);
-  }
-  
-  for (difference = 0; ; difference += 2)
-    {
-      int composite = 0;
-      unsigned i;
-
-      if (difference >= ULONG_MAX - 10)
-	{ /* Should not happen, at least not very often... */
-	  mpz_add_ui(p, p, difference);
-	  difference = 0;
-	}
-
-      /* First check residues */
-      for (i = 0; i < prime_limit; i++)
-	{
-	  if (moduli[i] == 0)
-	    composite = 1;
-	  moduli[i] = (moduli[i] + 2) % primes[i];
-	}
-      if (composite)
-	continue;
-      
-      mpz_add_ui(p, p, difference);
-      difference = 0;
-
-      if (progress)
-	progress(progress_ctx, '.');
-      
-      /* Fermat test, with respect to 2 */
-      mpz_set_ui(tmp, 2);
-      mpz_powm(tmp, tmp, p, p);
-      if (mpz_cmp_ui(tmp, 2) != 0)
-	continue;
-
-      if (progress)
-	progress(progress_ctx, '+');
-
-      /* Miller-Rabin test */
-      if (mpz_probab_prime_p(p, count))
-	break;
-    }
-  mpz_clear(tmp);
-}
 
 /* Returns a random prime of size BITS */
 static void
@@ -163,7 +56,7 @@ bignum_random_prime(mpz_t x, unsigned bits,
       mpz_setbit(x, bits - 1);
 
       /* Miller-rabin count of 25 is probably much overkill. */
-      bignum_next_prime(x, x, 25, progress_ctx, progress);
+      bignum_next_prime(x, x, 25, 10000, progress_ctx, progress);
 
       if (mpz_sizeinbase(x, 2) == bits)
 	break;
