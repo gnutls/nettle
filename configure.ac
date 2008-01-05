@@ -345,6 +345,8 @@ AC_C_INLINE
 AC_TYPE_UID_T
 AC_TYPE_SIZE_T
 AC_HEADER_TIME
+# Used by eratosthenes.c
+AC_CHECK_SIZEOF(long)
 
 AC_CHECK_HEADERS([openssl/blowfish.h openssl/des.h openssl/cast.h openssl/aes.h],,
 [enable_openssl=no
