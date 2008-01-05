@@ -1,3 +1,40 @@
+2008-01-05  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/Makefile.in (TARGETS): Added eratosthenes and next-prime.
+	(next-prime, eratosthenes): New rules.
+	(nettle-benchmark): Don't rely on $@.
+
+	* examples/eratosthenes.c (find_first_one): Optimized, using
+	slightly larger table.
+	(main): Use atol, arther than atoi.
+
+	* testsuite/symbols-test: Check symbols also in libhogweed.
+
+	* examples/next-prime.c: New file.
+	Deleted code for detailed timing.
+
+	* Makefile.in (hogweed_SOURCES): Added bignum-next-prime.c.
+	(DISTFILES): Added prime-list.h.
+	(hogweed_OBJS): Removed $(LIBOBJS).
+
+	* bignum-next-prime.c (nettle_next_prime): Renamed function, for
+	name space reasons. Was bignum_next_prime. Updated call in
+	rsa-keygen.c.
+	(primes): Use prime-list.h.
+	(nettle_next_prime): Skip Fermat test. Use mpz_millerrabin
+	directly, rather than mpz_probab_prime_p, when the former is
+	available.
+
+	* bignum.h (nettle_next_prime): New prototype.
+
+	* rsa-keygen.c (bignum_next_prime): Deleted, moved to
+	bignum-next-prime.c. Call with a larger prime limit, this improves
+	the running time of lsh-keygen by roughly 25%.
+
+	* prime-list.h: List of odd primes < 2^16.
+
+	* configure.ac: Check for sizeof(long).
+
 2008-01-03  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/nettle-benchmark.c (main): Removed incorrect UNUSED
