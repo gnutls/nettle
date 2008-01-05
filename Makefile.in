@@ -72,7 +72,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 
 hogweed_SOURCES = sexp.c sexp-format.c \
 		  sexp-transport.c sexp-transport-format.c \
-		  bignum.c bignum-random.c sexp2bignum.c \
+		  bignum.c bignum-next-prime.c bignum-random.c sexp2bignum.c \
 		  pkcs1.c pkcs1-rsa-md5.c pkcs1-rsa-sha1.c pkcs1-rsa-sha256.c \
 		  rsa.c rsa-sign.c rsa-verify.c \
 		  rsa-md5-sign.c rsa-md5-verify.c \
@@ -113,7 +113,7 @@ DISTFILES = $(SOURCES) $(HEADERS) .bootstrap aclocal.m4 configure.ac \
 	README AUTHORS COPYING COPYING.LIB INSTALL NEWS TODO ChangeLog \
 	memxor.c $(des_headers) descore.README \
 	aes-internal.h cast128_sboxes.h desinfo.h desCode.h \
-	serpent_sboxes.h nettle-internal.h \
+	serpent_sboxes.h nettle-internal.h prime-list.h \
 	asm.m4 \
 	nettle.texinfo nettle.info nettle.html nettle.pdf sha-example.c
 
@@ -121,7 +121,7 @@ DISTFILES = $(SOURCES) $(HEADERS) .bootstrap aclocal.m4 configure.ac \
 nettle_OBJS = $(nettle_SOURCES:.c=.$(OBJEXT)) $(LIBOBJS)
 nettle_PURE_OBJS = $(nettle_OBJS:.$(OBJEXT)=.p$(OBJEXT))
 
-hogweed_OBJS = $(hogweed_SOURCES:.c=.$(OBJEXT)) $(LIBOBJS)
+hogweed_OBJS = $(hogweed_SOURCES:.c=.$(OBJEXT))
 hogweed_PURE_OBJS = $(hogweed_OBJS:.$(OBJEXT)=.p$(OBJEXT))
 
 # FIXME: Do we really need to delete the archive first?
