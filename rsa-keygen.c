@@ -56,7 +56,7 @@ bignum_random_prime(mpz_t x, unsigned bits,
       mpz_setbit(x, bits - 1);
 
       /* Miller-rabin count of 25 is probably much overkill. */
-      bignum_next_prime(x, x, 25, 10000, progress_ctx, progress);
+      nettle_next_prime(x, x, 25, 10000, progress_ctx, progress);
 
       if (mpz_sizeinbase(x, 2) == bits)
 	break;
