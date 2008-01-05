@@ -82,6 +82,10 @@ nettle_mpz_random(mpz_t x,
 		  void *ctx, nettle_random_func random,
 		  const mpz_t n);
 
+void
+nettle_next_prime(mpz_t p, mpz_t n, unsigned count, unsigned prime_limit,
+		  void *progress_ctx, nettle_progress_func progress);
+
 /* sexp parsing */
 struct sexp_iterator;
 
