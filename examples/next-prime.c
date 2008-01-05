@@ -47,51 +47,6 @@ usage(void)
 	  "  -s  --sieve-limit  Number of primes to use for sieving.\n");
 }
 
-/* For timing */
-struct timing {
-  clock_t start;
-  clock_t sieve_start;
-  clock_t sieve_time;
-  clock_t fermat_start;
-  clock_t fermat_time;
-  unsigned fermat_count;
-  clock_t miller_start;
-  clock_t miller_time;
-  unsigned miller_count;
-  clock_t end;
-};
-
-static void
-progress(void *ctx, int c)
-{
-  struct timing *timing = (struct timing *) ctx;
-  clock_t now = clock();
-  switch (c)
-    {
-    case '.':
-      timing->sieve_time += (now - timing->sieve_start);
-      timing->fermat_count++;
-      timing->fermat_start = now;
-      break;
-    case ',':
-      timing->sieve_start = now;
-      timing->fermat_time += (now - timing->fermat_start);
-      break;
-    case '+':
-      timing->fermat_time += (now - timing->fermat_start);
-      timing->miller_count++;
-      timing->miller_start = now;
-      break;
-    case '*':
-      timing->sieve_start = now;
-      timing->miller_time += (now - timing->miller_start);
-      break;
-      
-    default:
-      abort();
-    }
-}
-
 int
 main(int argc, char **argv)
 {
@@ -103,8 +58,9 @@ main(int argc, char **argv)
   int factorial = 0;
   int prime_limit = 200;
 
-  struct timing timing;
-
+  clock_t start;
+  clock_t end;
+  
   enum { OPT_FACTORIAL = -100, OPT_RANDOM };
   static const struct option options[] =
     {
@@ -175,11 +131,9 @@ main(int argc, char **argv)
 
   mpz_init(p);
 
-  timing.fermat_count = timing.miller_count = 0;
-  timing.sieve_time = timing.fermat_time = timing.miller_time = 0;
-  timing.start = timing.sieve_start = clock();
-  nettle_next_prime(p, n, 25, prime_limit, &timing, verbose ? progress : NULL);
-  timing.end = clock();
+  start = clock();
+  nettle_next_prime(p, n, 25, prime_limit, NULL, NULL);
+  end = clock();
   
   mpz_out_str(stdout, 10, p);
   printf("\n");
@@ -191,18 +145,9 @@ main(int argc, char **argv)
       mpz_init(d);
       mpz_sub(d, p, n);
 
-      timing.miller_time += (timing.end - timing.miller_start);
-
       gmp_fprintf(stderr, "bit size: %lu, diff: %Zd, total time: %.3g s\n",
 		  mpz_sizeinbase(p, 2), d,
-		  (double)(timing.end - timing.start) / CLOCKS_PER_SEC);
-
-      fprintf(stderr, "sieve time = %.3g s\n",
-	      (double)(timing.sieve_time) / CLOCKS_PER_SEC);
-      fprintf(stderr, "fermat count: %d, time: %.3g s\n",
-	      timing.fermat_count, (double)(timing.fermat_time) / CLOCKS_PER_SEC);
-      fprintf(stderr, "miller count: %d, time: %.3g s\n",
-	      timing.miller_count, (double)(timing.miller_time) / CLOCKS_PER_SEC);
+		  (double)(end - start) / CLOCKS_PER_SEC);
     }
   return EXIT_SUCCESS;
 }
