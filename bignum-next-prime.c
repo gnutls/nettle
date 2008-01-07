@@ -104,7 +104,12 @@ nettle_next_prime(mpz_t p, mpz_t n, unsigned count, unsigned prime_limit,
   /* Compute residues modulo small odd primes */
   /* FIXME: Could be sped up by collecting limb-sized products of the
      primes, to reduce the calls to mpz_fdiv_ui */
-  
+
+  /* FIXME: Could also handle the first few primes separately; compute
+     the residue mod 15015 = 3 * 7 * 11 * 13, and tabulate the steps
+     between the 5760 odd numbers in this interval that have no factor
+     in common with 15015.
+   */
   TMP_ALLOC(moduli, prime_limit);
   {
     unsigned i;
