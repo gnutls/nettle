@@ -14,7 +14,7 @@ OPENSSL_LIBFLAGS = @OPENSSL_LIBFLAGS@
 RSA_TARGETS = rsa-keygen$(EXEEXT) rsa-sign$(EXEEXT) \
 	      rsa-verify$(EXEEXT) rsa-encrypt$(EXEEXT) rsa-decrypt$(EXEEXT)
 TARGETS = nettle-benchmark$(EXEEXT) eratosthenes$(EXEEXT) @IF_HOGWEED@ $(RSA_TARGETS) next-prime$(EXEEXT)
-SOURCES = nettle-benchmark.c eratosthenes.c nettle-openssl.c \
+SOURCES = nettle-benchmark.c eratosthenes.c next-prime.c nettle-openssl.c \
 	io.c read_rsa_key.c getopt.c getopt1.c \
 	rsa-encrypt.c rsa-decrypt.c rsa-keygen.c rsa-sign.c rsa-verify.c
 
