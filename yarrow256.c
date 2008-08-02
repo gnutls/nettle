@@ -278,7 +278,7 @@ yarrow256_update(struct yarrow256_ctx *ctx,
 	   && (entropy > YARROW_MULTIPLIER * length) )
 	entropy = YARROW_MULTIPLIER * length;
 
-      /* FIXME: Calling a more sophisticated estimater should be done
+      /* FIXME: Calling a more sophisticated estimator could be done
        * here. */
 
       entropy += source->estimate[current];
