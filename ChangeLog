@@ -1,3 +1,10 @@
+2008-08-26  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (tags-here): Put TAGS file in the source directory.
+	* examples/Makefile.in (tags): Likewise.
+	* testsuite/Makefile.in (tags): Likewise.
+	* tools/Makefile.in (tags): Likewise.
+
 2008-02-29  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/Makefile.in (SOURCES): Added next-prime.c.
