@@ -4,28 +4,12 @@ if [ -z "$srcdir" ] ; then
   srcdir=`pwd`
 fi
 
-# echo -n is not portable
-
-if [ "`echo -n ''`" = "" ]; then
-    n='-n'; c=''
-elif [ "`echo '\c'`" = "" ]; then
-    n=''; c='\c'
-else
-    echo >&2 'Neither echo -n nor echo \c seems to work.'
-    exit 1
-fi
-
-# Doesn't work if $1 contains 
 print_raw () {
-    echo $n "$1$c" > "$2"
+    printf "%s" "$1" > "$2"
 }
 
-# Using a here-document seems more robust. However, I don't know how
-# to get rid of the final newline, so we can't use it exclusively.
 print_nl () {
-    cat >"$2" <<EOF
-$1
-EOF
+    printf "%s\n" "$1" > "$2"
 }
 
 test_advanced () {
@@ -106,7 +90,13 @@ test_advanced '()' '()'
 test_advanced '(foo bar baz)' '(foo bar
      baz)' 
 test_advanced '; comment
-()' '()' 
+()' '; comment
+
+()' 
+test_advanced '(foo ; gazonk
+bar)' '(foo ; gazonk
+     
+     bar)'
 
 test_advanced '(foo[bar]foo)' '(foo [bar]foo)'
 
