@@ -1,3 +1,27 @@
+2008-08-27  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/sexp-conv-test (print_raw, print_nl): Use printf.
+	Updated testcases with comments; comments are now preserved.
+	
+	* tools/sexp-conv.c (sexp_convert_item): Keep comments in advanced
+	output.
+	(parse_options): New --lock option.
+	(main): Optionally lock output file.
+
+	* tools/parse.c (sexp_check_token): Removed check for "any" token.
+	All callers specify the token they expect.
+	(sexp_parse): Pass on comment tokens.
+
+	* tools/output.c (sexp_put_data): Made non-static.
+
+	* tools/input.c (sexp_get_comment): New function.
+	(sexp_get_token): Use sexp_get_comment.
+
+	* tools/misc.h (enum sexp_token): Start enumeration with zero, zero
+	is no longer used to maen any type. New type SEXP_COMMENT.
+
+	* configure.ac: Check for fcntl file locking.
+
 2008-08-26  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in (tags-here): Put TAGS file in the source directory.
