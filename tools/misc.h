@@ -52,14 +52,14 @@ enum sexp_mode
 
 enum sexp_token
   {
-    /* Zero is used to mean "any token" in sexp_parse. */
-    SEXP_STRING = 1,
+    SEXP_STRING,
     SEXP_DISPLAY, /* Constructed by sexp_parse */
+    SEXP_COMMENT,
     SEXP_LIST_START,
     SEXP_LIST_END,
     SEXP_EOF,
 
-    /* The below types are internal to the input parsing. sexp-parse
+    /* The below types are internal to the input parsing. sexp_parse
      * should never return a token of this type. */
     SEXP_DISPLAY_START,
     SEXP_DISPLAY_END,
