@@ -69,6 +69,10 @@ void
 sexp_put_char(struct sexp_output *output, uint8_t c);
 
 void
+sexp_put_data(struct sexp_output *output,
+	      unsigned length, const uint8_t *data);
+
+void
 sexp_put_code_start(struct sexp_output *output,
 		    const struct nettle_armor *coding);
 

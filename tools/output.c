@@ -112,7 +112,7 @@ sexp_put_char(struct sexp_output *output, uint8_t c)
     sexp_put_raw_char(output, c);
 }
 
-static void
+void
 sexp_put_data(struct sexp_output *output,
 	      unsigned length, const uint8_t *data)
 {
