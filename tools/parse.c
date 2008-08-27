@@ -72,7 +72,7 @@ sexp_check_token(struct sexp_parser *parser,
 		 parser->transport ? SEXP_CANONICAL : parser->mode,
 		 string);
 
-  if (token && parser->input->token != token)
+  if (parser->input->token != token)
     die("Syntax error.\n");
 }
 
@@ -140,6 +140,10 @@ sexp_parse(struct sexp_parser *parser,
 	case SEXP_STRING:
 	  token->type = SEXP_STRING;
 	  goto check_transport_end;
+
+	case SEXP_COMMENT:
+	  token->type = SEXP_COMMENT;
+	  return;
 
 	case SEXP_TRANSPORT_START:
 	  if (parser->mode == SEXP_CANONICAL)
