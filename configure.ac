@@ -364,6 +364,30 @@ LSH_GCC_ATTRIBUTES
 # sys/types.h is needed on some systems, in particular cygwin.
 AX_CREATE_STDINT_H([nettle-stdint.h], [sys/types.h])
 
+# Check for file locking. We (AC_PROG_CC?) have already checked for
+# sys/types.h and unistd.h.
+AC_CACHE_CHECK([for fcntl file locking],
+		nettle_cv_fcntl_locking,
+[AC_TRY_COMPILE([
+#if HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+#if HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+#include <fcntl.h>
+],[
+int op = F_SETLKW;
+struct flock fl;
+],
+nettle_cv_fcntl_locking=yes,
+nettle_cv_fcntl_locking=no)])
+
+AH_TEMPLATE([HAVE_FCNTL_LOCKING], [Define if fcntl file locking is available])
+if test "x$nettle_cv_fcntl_locking" = "xyes" ; then
+  AC_DEFINE(HAVE_FCNTL_LOCKING)
+fi
+
 # Checks for libraries
 AC_CHECK_LIB(gmp, __gmpz_getlimbn,,
     [AC_MSG_WARN(
