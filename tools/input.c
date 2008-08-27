@@ -180,7 +180,7 @@ sexp_get_quoted_char(struct sexp_input *input)
 
 static void
 sexp_get_token_string(struct sexp_input *input,
-	       struct nettle_buffer *string)
+		      struct nettle_buffer *string)
 {
   assert(!input->coding);
   assert(input->ctype == SEXP_NORMAL_CHAR);
@@ -334,6 +334,24 @@ sexp_get_string_length(struct sexp_input *input, enum sexp_mode mode,
   sexp_get_char(input);  
 }
 
+static void
+sexp_get_comment(struct sexp_input *input, struct nettle_buffer *string)
+{
+  nettle_buffer_reset(string);
+
+  assert(input->ctype == SEXP_NORMAL_CHAR);
+  assert(input->c == ';');
+
+  do
+    {
+      sexp_push_char(input, string);
+      sexp_get_raw_char(input);
+    }
+  while (input->ctype == SEXP_NORMAL_CHAR && input->c != '\n');
+
+  input->token = SEXP_COMMENT;
+}
+
 /* When called, input->c should be the first character of the current
  * token.
  *
@@ -409,15 +427,8 @@ sexp_get_token(struct sexp_input *input, enum sexp_mode mode,
 	    if (mode == SEXP_CANONICAL)
 	      die("Comment encountered in canonical mode.\n");
 
-	    do
-	      {
-		sexp_get_raw_char(input);
-		if (input->ctype != SEXP_NORMAL_CHAR)
-		  return;
-	      }
-	    while (input->c != '\n');
-	  
-	    break;
+	    sexp_get_comment(input, string);
+	    return;
 	  
 	  default:
 	    /* Ought to be a string */
