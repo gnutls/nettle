@@ -33,6 +33,16 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if HAVE_FCNTL_LOCKING
+# if HAVE_SYS_TYPES_H
+#  include <sys/types.h>
+# endif
+# if HAVE_UNISTD_H
+#  include <unistd.h>
+# endif
+# include <fcntl.h>
+#endif
+
 #include "buffer.h"
 #include "nettle-meta.h"
 
@@ -127,6 +137,15 @@ sexp_convert_item(struct sexp_parser *parser,
       sexp_put_string(output, mode_out, &token->string);      
       break;
 
+    case SEXP_COMMENT:
+      if (mode_out == SEXP_ADVANCED)
+	{
+	  sexp_put_data(output, token->string.size, token->string.contents);
+	  /* This newline is necessary only if the comment comes first
+	     in a list. It would be nice to supress extra newlines. */
+	  sexp_put_newline(output, indent);
+	}
+      break;
     default:
       /* Internal error */
       abort();
@@ -181,11 +200,12 @@ struct conv_options
   enum sexp_mode mode;
   int prefer_hex;
   int once;
+  int lock;
   unsigned width;
   const struct nettle_hash *hash;
 };
 
-enum { OPT_ONCE = 300, OPT_HASH };
+enum { OPT_ONCE = 300, OPT_HASH, OPT_LOCK };
 
 static int
 match_argument(const char *given, const char *name)
@@ -201,6 +221,7 @@ parse_options(struct conv_options *o,
   o->mode = SEXP_ADVANCED;
   o->prefer_hex = 0;
   o->once = 0;
+  o->lock = 0;
   o->hash = NULL;
   o->width = 72;
   
@@ -219,6 +240,9 @@ parse_options(struct conv_options *o,
 	  { "hash", optional_argument, NULL, OPT_HASH },
 	  { "raw-hash", optional_argument, NULL, OPT_HASH },
 	  { "width", required_argument, NULL, 'w' },
+#if HAVE_FCNTL_LOCKING
+	  { "lock", no_argument, NULL, OPT_LOCK },
+#endif
 #if 0
 	  /* Not yet implemented */
 	  { "replace", required_argument, NULL, OPT_REPLACE },
@@ -293,7 +317,11 @@ parse_options(struct conv_options *o,
 		  }
 	      }
 	  break;
-	       
+#if HAVE_FCNTL_LOCKING
+	case OPT_LOCK:
+	  o->lock = 1;
+	  break;
+#endif
 	case '?':
 	  printf("Usage: sexp-conv [OPTION...]\n"
 		 "  Conversion:     sexp-conv [OPTION...] <INPUT-SEXP\n"
@@ -314,6 +342,9 @@ parse_options(struct conv_options *o,
 		 "       --once               Process only the first s-expression.\n"
 		 "   -w, --width=WIDTH        Linewidth for base64 encoded data.\n"
 		 "                            Zero means no limit.\n"
+#if HAVE_FCNTL_LOCKING
+		 "       --lock               Lock output file.\n"
+#endif
 		 "       --raw-hash           Alias for --hash, for compatibility\n"
 		 "                            with lsh-1.x.\n\n"
 		 "Report bugs to " BUG_ADDRESS ".\n");
@@ -343,6 +374,16 @@ main(int argc, char **argv)
   sexp_output_init(&output, stdout,
 		   options.width, options.prefer_hex);
 
+#if HAVE_FCNTL_LOCKING
+  if (options.lock)
+    {
+      struct flock fl;
+  
+      memset(&fl, 0, sizeof(fl));
+      if (fcntl(STDOUT_FILENO, F_SETLKW, &fl) == -1)
+	die("Locking output file failed: $s\n", strerror(errno));
+    }
+#endif /* HAVE_FCNTL_LOCKING */
   if (options.hash)
     {
       /* Leaks the context, but that doesn't matter */
