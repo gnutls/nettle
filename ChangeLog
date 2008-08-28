@@ -1,3 +1,8 @@
+2008-08-28  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/eratosthenes.c (main): Rewrote block-wise sieving to
+	use less memory. New options -s and -v.
+
 2008-08-27  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/sexp-conv-test (print_raw, print_nl): Use printf.
