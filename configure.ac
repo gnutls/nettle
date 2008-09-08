@@ -122,6 +122,9 @@ case "$host_cpu" in
   [i?86* | k[5-8]* | pentium* | athlon])
     asm_path=x86
     ;;
+  [x86_64 | amd64])
+    asm_path=x86_64
+    ;;
   *sparc*)
     AC_TRY_COMPILE([
 #if defined(__sparcv9) || defined(__arch64__)
