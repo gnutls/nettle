@@ -1,5 +1,7 @@
 2008-09-08  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.in (stamp-h.in): Use $(AUTOHEADER).
+
 	* x86_64/sha1-compress.asm: New x86_64 assembler, based on the x86
 	version.	
 

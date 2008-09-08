@@ -226,7 +226,7 @@ configure: configure.ac aclocal.m4
 # autoheader might not change config.h.in, so touch a stamp file.
 config.h.in: stamp-h.in
 stamp-h.in: configure.ac aclocal.m4
-	cd $(srcdir) && autoheader
+	cd $(srcdir) && $(AUTOHEADER)
 	echo timestamp > $(srcdir)/stamp-h.in
 
 config.status: configure
