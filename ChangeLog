@@ -1,5 +1,8 @@
 2008-09-08  Niels Möller  <nisse@lysator.liu.se>
 
+	* x86_64/sha1-compress.asm: New x86_64 assembler, based on the x86
+	version.	
+
 	* configure.ac (asm_path): Set up asm_path for x86_64.
 
 	* x86_64/machine.m4: New file, new directory.
@@ -29,7 +32,7 @@
 	(sexp_get_token): Use sexp_get_comment.
 
 	* tools/misc.h (enum sexp_token): Start enumeration with zero, zero
-	is no longer used to maen any type. New type SEXP_COMMENT.
+	is no longer used to mean any type. New type SEXP_COMMENT.
 
 	* configure.ac: Check for fcntl file locking.
 
