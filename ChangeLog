@@ -1,3 +1,8 @@
+2008-09-10  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/sha1-compress.asm: Avoid using registers %rbx and %rbp,
+	which must be preserved.
+
 2008-09-08  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in (stamp-h.in): Use $(AUTOHEADER).
