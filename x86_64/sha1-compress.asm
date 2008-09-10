@@ -17,16 +17,16 @@ C along with the nettle library; see the file COPYING.LIB.  If not, write to
 C the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 C MA 02111-1307, USA.
 
-C Register usage
+C Register usage. KVALUE and INPUT share a register.
 define(<SA>,<%eax>)dnl
-define(<SB>,<%ebx>)dnl
+define(<SB>,<%r8d>)dnl
 define(<SC>,<%ecx>)dnl
 define(<SD>,<%edx>)dnl
-define(<SE>,<%ebp>)dnl
+define(<SE>,<%r9d>)dnl
 define(<DATA>,<%rsp>)dnl
-define(<TMP>,<%r9d>)dnl
-define(<TMP2>,<%r10d>)dnl			C  Used by F3
-define(<KVALUE>, <%r11d>)dnl			
+define(<TMP>,<%r10d>)dnl
+define(<TMP2>,<%r11d>)dnl			C  Used by F3
+define(<KVALUE>, <%esi>)dnl			
 
 C Arguments
 define(<STATE>,<%rdi>)dnl
@@ -127,17 +127,13 @@ C adding, and then rotating back.
 PROLOGUE(_nettle_sha1_compress)
 	C save all registers that need to be saved
 	
-	push	%rbx
-	push	%rbp
-
 	sub	$68, %rsp	C  %rsp = W
 
 	C Load and byteswap data
-	
-	SWAP( 0, %eax) SWAP( 1, %ebx) SWAP( 2, %ecx) SWAP( 3, %edx)
-	SWAP( 4, %eax) SWAP( 5, %ebx) SWAP( 6, %ecx) SWAP( 7, %edx)
-	SWAP( 8, %eax) SWAP( 9, %ebx) SWAP(10, %ecx) SWAP(11, %edx)
-	SWAP(12, %eax) SWAP(13, %ebx) SWAP(14, %ecx) SWAP(15, %edx)
+	SWAP( 0, SA) SWAP( 1, SB) SWAP( 2, SC) SWAP( 3, SD)
+	SWAP( 4, SA) SWAP( 5, SB) SWAP( 6, SC) SWAP( 7, SD)
+	SWAP( 8, SA) SWAP( 9, SB) SWAP(10, SC) SWAP(11, SD)
+	SWAP(12, SA) SWAP(13, SB) SWAP(14, SC) SWAP(15, SD)
 
 	C Load the state vector
 	movl	  (STATE), SA
@@ -254,7 +250,5 @@ PROLOGUE(_nettle_sha1_compress)
 	addl	SE, 16(STATE)
 
 	add	$68, %rsp
-	pop	%rbp
-	pop	%rbx
 	ret
 EPILOGUE(_nettle_sha1_compress)
