@@ -1,3 +1,11 @@
+2008-09-13  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86/aes-encrypt-internal.asm: Updated use of AES_SUBST_BYTE.
+	* x86/aes-decrypt-internal.asm: Likewise.
+	* x86/aes.m4 (BYTEREG): New macro.
+	(AES_SUBST_BYTE): Take state registers as argument. Use BYTEREG to
+	get the corresponding byte register.
+
 2008-09-10  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86_64/sha1-compress.asm: Avoid using registers %rbx and %rbp,
