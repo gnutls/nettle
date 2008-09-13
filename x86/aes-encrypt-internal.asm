@@ -121,16 +121,16 @@ PROLOGUE(_nettle_aes_encrypt)
 
 	C last round
 
-	AES_FINAL_ROUND(SA,SB,SC,SD, TMP, KEY)
+	AES_FINAL_ROUND(SA,SB,SC,SD, T, TMP, KEY)
 	pushl	TMP
 
-	AES_FINAL_ROUND(SB,SC,SD,SA, TMP, KEY)
+	AES_FINAL_ROUND(SB,SC,SD,SA, T, TMP, KEY)
 	pushl	TMP
 
-	AES_FINAL_ROUND(SC,SD,SA,SB, TMP, KEY)
+	AES_FINAL_ROUND(SC,SD,SA,SB, T, TMP, KEY)
 	pushl	TMP
 
-	AES_FINAL_ROUND(SD,SA,SB,SC, TMP, KEY)
+	AES_FINAL_ROUND(SD,SA,SB,SC, T, TMP, KEY)
 
 	movl	TMP,SD
 	popl	SC
@@ -138,7 +138,7 @@ PROLOGUE(_nettle_aes_encrypt)
 	popl	SA
 
 	C S-box substitution
-	mov	$4,TMP
+	mov	$3,TMP
 .Lsubst:
 	AES_SUBST_BYTE(SA,SB,SC,SD, T, KEY)
 
