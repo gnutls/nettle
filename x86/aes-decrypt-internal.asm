@@ -72,6 +72,8 @@ PROLOGUE(_nettle_aes_decrypt)
 	testl	%ebp,%ebp
 	jz	.Lend
 
+	shrl	$4, FRAME_LENGTH
+	
 .Lblock_loop:
 	movl	FRAME_CTX,KEY	C  address of context struct ctx
 	C  get number of rounds to do from ctx struct	
@@ -150,10 +152,8 @@ PROLOGUE(_nettle_aes_decrypt)
 	AES_STORE(SA,SB,SC,SD, KEY, TMP)
 	
 	addl	$16, FRAME_DST		C Increment destination pointer
-	subl	$16, FRAME_LENGTH	C Length
+	decl	FRAME_LENGTH
 
-	C NOTE: Will loop forever if input data is not an
-	C integer number of blocks.
 	jnz	.Lblock_loop
 
 .Lend:
