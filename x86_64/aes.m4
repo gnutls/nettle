@@ -81,6 +81,7 @@ define(<AES_ROUND>, <
 	and	<$>0xff,$7
 	xorl	AES_TABLE2 ($1, $7, 4),$6
 	movl	$5,XREG($7)
+	shr	<$>24,$7
 	xorl	AES_TABLE3 ($1, $7, 4),$6>)dnl
 
 dnl AES_FINAL_ROUND(a, b, c, d, table, out, tmp)
