@@ -49,7 +49,7 @@ C register as a temporary.
 	
 define(<FRAME_COUNT>,	<(%esp)>)
 define(<TMP>,<%edx>)
-
+define(<TMPPTR>,<%rdx>)
 	.file "aes-encrypt-internal.asm"
 	
 	C _aes_encrypt(struct aes_context *ctx, 
@@ -89,28 +89,28 @@ PROLOGUE(_nettle_aes_encrypt)
 	addl	$16,KEY		C  point to next key
 	ALIGN(4)
 .Lround_loop:
-	AES_ROUND(TABLE, SA,SB,SC,SD, TA, TMP)
+	AES_ROUND(TABLE, SA,SB,SC,SD, TA, TMPPTR)
 	xorl	(KEY), TA
 
-	AES_ROUND(TABLE, SB,SC,SD,SA, TB, TMP)
+	AES_ROUND(TABLE, SB,SC,SD,SA, TB, TMPPTR)
 	xorl	4(KEY),TB
 
-	AES_ROUND(TABLE, SC,SD,SA,SB, TC, TMP)
+	AES_ROUND(TABLE, SC,SD,SA,SB, TC, TMPPTR)
 	xorl	8(KEY),TC
 
-	AES_ROUND(TABLE, SD,SA,SB,SC, TD, TMP)
+	AES_ROUND(TABLE, SD,SA,SB,SC, TD, TMPPTR)
 	xorl	12(KEY),TD
 
-	AES_ROUND(TABLE, TA,TB,TC,TD, SA, TMP)
+	AES_ROUND(TABLE, TA,TB,TC,TD, SA, TMPPTR)
 	xorl	16(KEY), SA
 
-	AES_ROUND(TABLE, TB,TC,TD,TA, SB, TMP)
+	AES_ROUND(TABLE, TB,TC,TD,TA, SB, TMPPTR)
 	xorl	20(KEY),SB
 
-	AES_ROUND(TABLE, TC,TD,TA,TB, SC, TMP)
+	AES_ROUND(TABLE, TC,TD,TA,TB, SC, TMPPTR)
 	xorl	24(KEY),SC
 
-	AES_ROUND(TABLE, TD,TA,TB,TC, SD, TMP)
+	AES_ROUND(TABLE, TD,TA,TB,TC, SD, TMPPTR)
 	xorl	28(KEY),SD
 	
 	addl	$32,KEY	C  point to next key
@@ -127,7 +127,7 @@ PROLOGUE(_nettle_aes_encrypt)
 	C S-box substitution
 	mov	$4, COUNT
 .Lsubst:
-	AES_SUBST_BYTE(TA,TB,TC,TD, TABLE, TMP)
+	AES_SUBST_BYTE(TA,TB,TC,TD, TABLE, TMPPTR)
 
 	decl	COUNT
 	jnz	.Lsubst
