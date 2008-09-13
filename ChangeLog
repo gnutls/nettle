@@ -1,10 +1,29 @@
 2008-09-13  Niels Möller  <nisse@lysator.liu.se>
 
-	* x86/aes-encrypt-internal.asm: Updated use of AES_SUBST_BYTE.
+	* x86/aes-encrypt-internal.asm: Replaced pushl and popl in the
+	loop with movl.	Eliminated redundant movl.
 	* x86/aes-decrypt-internal.asm: Likewise.
-	* x86/aes.m4 (BYTEREG): New macro.
-	(AES_SUBST_BYTE): Take state registers as argument. Use BYTEREG to
+
+	* x86_64/aes.m4: New file.
+
+	* x86/aes-encrypt-internal.asm: Updated for AES_FINAL_ROUND. Only
+	three times through the substitution loop.
+	* x86/aes-decrypt-internal.asm: Likewise.
+	* x86_64/aes-encrypt-internal.asm: Likewise.
+
+	* x86/aes.m4 (AES_FINAL_ROUND): Do the substitution on the least
+	significant byte here.
+
+	* x86/aes-encrypt-internal.asm: Updated use of AES_SUBST_BYTE. USe
+	decl for outer loop.
+	* x86/aes-decrypt-internal.asm: Likewise.	
+
+	* x86/aes.m4 (LREG, HREG): New macros.
+	(AES_SUBST_BYTE): Take state registers as argument. Use LREG to
 	get the corresponding byte register.
+	(AES_ROUND): Use movzbl together with LREG and HREG.
+	(AES_SUBST_BYTE): Likewise.
+	
 
 2008-09-10  Niels Möller  <nisse@lysator.liu.se>
 
