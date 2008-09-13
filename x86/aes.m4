@@ -1,5 +1,4 @@
 dnl LREG(reg) gives the 8-bit register corresponding to the given 32-bit register.
-dnl Use in AES_SUBST_BYTE below, and is used by both the x86 and the x86_64 assembler.
 define(<LREG>,<ifelse(
 	$1, %eax, %al,
 	$1, %ebx, %bl,
