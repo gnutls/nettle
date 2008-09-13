@@ -111,7 +111,7 @@ PROLOGUE(_nettle_aes_encrypt)
 	AES_ROUND(TABLE, TD,TA,TB,TC, SD, TMP)
 	xorl	28(KEY),SD
 	
-	addl	$32,KEY	C  point to next key
+	add	$32,KEY	C  point to next key
 	decl	COUNT
 	jnz	.Lround_loop
 
