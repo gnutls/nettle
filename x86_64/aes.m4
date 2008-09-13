@@ -70,34 +70,34 @@ define(<AES_STORE>, <
 dnl AES_ROUND(table,a,b,c,d,out,ptr)
 dnl Computes one word of the AES round. Leaves result in $6.
 define(<AES_ROUND>, <
-	movzbl	LREG($2), $7
+	movzb	LREG($2), $7
 	movl	AES_TABLE0 ($1, $7, 4),$6
 	movl	$3, XREG($7)
-	shrl	<$>8,$7
-	andl	<$>0xff,$7
+	shr	<$>8,$7
+	and	<$>0xff,$7
 	xorl	AES_TABLE1 ($1, $7, 4),$6
 	movl	$4,XREG($7)
-	shrl	<$>16,$7
-	andl	<$>0xff,$7
+	shr	<$>16,$7
+	and	<$>0xff,$7
 	xorl	AES_TABLE2 ($1, $7, 4),$6
 	movl	$5,XREG($7)
 	xorl	AES_TABLE3 ($1, $7, 4),$6>)dnl
 
-dnl AES_FINAL_ROUND(a, b, c, d, table out, tmp)
+dnl AES_FINAL_ROUND(a, b, c, d, table, out, tmp)
 dnl Computes one word of the final round. Leaves result in %edi.
 dnl Note that we have to quote $ in constants.
 define(<AES_FINAL_ROUND>, <
-	movzb	LREG($1),$6
-	movzbl	($5, $6), $6
-	movl	$2,$7
-	andl	<$>0x0000ff00,$7
-	orl	$7, $6
-	movl	$3,$7
-	andl	<$>0x00ff0000,$7
-	orl	$7, $6
-	movl	$4,$7
-	andl	<$>0xff000000,$7
-	orl	$7, $6
+	movzb	LREG($1),$7
+	movzbl	($5, $7), $6
+	movl	$2,XREG($7)
+	andl	<$>0x0000ff00,XREG($7)
+	orl	XREG($7), $6
+	movl	$3,XREG($7)
+	andl	<$>0x00ff0000,XREG($7)
+	orl	XREG($7), $6
+	movl	$4,XREG($7)
+	andl	<$>0xff000000,XREG($7)
+	orl	XREG($7), $6
 	roll	<$>8, $6>)dnl
 
 dnl AES_SUBST_BYTE(A, B, C, D, table, tmp)
@@ -110,14 +110,14 @@ define(<AES_SUBST_BYTE>, <
 	movb	($5, $6),LREG($1)
 	roll	<$>8,$1
 
-	movzbl  LREG($2),$6
+	movzb  LREG($2),$6
 	movb	($5, $6),LREG($2)
 	roll	<$>8,$2
 
-	movzbl  LREG($3),$6
+	movzb  LREG($3),$6
 	movb	($5, $6),LREG($3)
 	roll	<$>8,$3
 
-	movzbl  LREG($4),$6
+	movzb  LREG($4),$6
 	movb	($5, $6),LREG($4)
 	roll	<$>8,$4>)dnl
