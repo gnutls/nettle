@@ -17,6 +17,24 @@ define(<LREG>,<ifelse(
 	$1, %r14d, %r14b,
 	$1, %r15d, %r15b)>)dnl
 
+define(<XREG>,<ifelse(
+	$1, %rax, %eax,
+	$1, %rbx, %ebx,
+	$1, %rcx, %ecx,
+	$1, %rdx, %edx,
+	$1, %rsi, %esi,
+	$1, %rdi, %edi,
+	$1, %rbp, %ebp,
+	$1, %rsp, %esp,
+	$1, %r8d, %r8d,
+	$1, %r9d, %r9d,
+	$1, %r10,%r10d,
+	$1, %r11,%r11d,
+	$1, %r12,%r12d,
+	$1, %r13,%r13d,
+	$1, %r14,%r14d,
+	$1, %r15,%r15d)>)dnl
+
 dnl AES_LOAD(a, b, c, d, src, key)
 dnl Loads the next block of data from src, and add the subkey pointed
 dnl to by key.
@@ -54,15 +72,15 @@ dnl Computes one word of the AES round. Leaves result in $6.
 define(<AES_ROUND>, <
 	movzbl	LREG($2), $7
 	movl	AES_TABLE0 ($1, $7, 4),$6
-	movl	$3, $7
+	movl	$3, XREG($7)
 	shrl	<$>8,$7
 	andl	<$>0xff,$7
 	xorl	AES_TABLE1 ($1, $7, 4),$6
-	movl	$4,$7
+	movl	$4,XREG($7)
 	shrl	<$>16,$7
 	andl	<$>0xff,$7
 	xorl	AES_TABLE2 ($1, $7, 4),$6
-	movl	$5,$7
+	movl	$5,XREG($7)
 	xorl	AES_TABLE3 ($1, $7, 4),$6>)dnl
 
 dnl AES_FINAL_ROUND(a, b, c, d, table out, tmp)
