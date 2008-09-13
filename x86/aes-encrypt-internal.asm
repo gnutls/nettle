@@ -139,7 +139,7 @@ PROLOGUE(_nettle_aes_encrypt)
 	C S-box substitution
 	mov	$4,TMP
 .Lsubst:
-	AES_SUBST_BYTE(T, KEY)
+	AES_SUBST_BYTE(SA,SB,SC,SD, T, KEY)
 
 	decl	TMP
 	jnz	.Lsubst

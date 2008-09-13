@@ -67,28 +67,49 @@ define(<AES_FINAL_ROUND>, <
 	andl	<$>0xff000000,$6
 	orl	$6, $5>)dnl
 
-dnl AES_SUBST_BYTE(table, tmp)
+dnl BYTEREG(reg) gives the 8-bit register corresponding to the given 32-bit register.
+dnl Use in AES_SUBST_BYTE below, and is used by both the x86 and the x86_64 assembler.
+define(<BYTEREG>,<ifelse(
+	$1, %eax, %al,
+	$1, %ebx, %bl,
+	$1, %ecx, %cl,
+	$1, %edx, %dl,
+	dnl The rest are x86_64 only	
+	$1, %esi, %sil,
+	$1, %edi, %dil,
+	$1, %ebp, %bpl,
+	$1, %esp, %spl,
+	$1, %r8d, %r8b,
+	$1, %r9d, %r9b,
+	$1, %r10d, %r10b,
+	$1, %r11d, %r11b,
+	$1, %r12d, %r12b,
+	$1, %r13d, %r13b,
+	$1, %r14d, %r14b,
+	$1, %r15d, %r15b)>)dnl
+
+dnl AES_SUBST_BYTE(A, B, C, D, table, tmp)
 dnl Substitutes the least significant byte of
 dnl each of eax, ebx, ecx and edx, and also rotates
 dnl the words one byte to the left.
-dnl FIXME: AES_SBOX is zero. Any win by deleting the offset?
+dnl Uses that AES_SBOX == 0
 define(<AES_SUBST_BYTE>, <
-	movl	%eax,$2
-	andl	<$>0x000000ff,$2
-	movb	AES_SBOX ($1, $2),%al
-	roll	<$>8,%eax
+	movl	$1,$6
+	andl	<$>0x000000ff,$6
+	movb	($5, $6),BYTEREG($1)
+	roll	<$>8,$1
 
-	movl	%ebx,$2
-	andl	<$>0x000000ff,$2
-	movb	AES_SBOX ($1, $2),%bl
-	roll	<$>8,%ebx
+	movl	$2,$6
+	andl	<$>0x000000ff,$6
+	movb	($5, $6),BYTEREG($2)
+	roll	<$>8,$2
 
-	movl	%ecx,$2
-	andl	<$>0x000000ff,$2
-	movb	AES_SBOX ($1, $2),%cl
-	roll	<$>8,%ecx
+	movl	$3,$6
+	andl	<$>0x000000ff,$6
+	movb	($5, $6),BYTEREG($3)
+	roll	<$>8,$3
 
-	movl	%edx,$2
-	andl	<$>0x000000ff,$2
-	movb	AES_SBOX ($1, $2),%dl
-	roll	<$>8,%edx>)dnl
+	movl	$4,$6
+	andl	<$>0x000000ff,$6
+	movb	($5, $6),BYTEREG($4)
+	roll	<$>8,$4>)dnl
