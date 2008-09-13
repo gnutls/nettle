@@ -59,22 +59,22 @@ define(<AES_ROUND>, <
 	shrl	<$>24,$7
 	xorl	AES_TABLE3 ($1, $7, 4),$6>)dnl
 
-dnl AES_FINAL_ROUND(a, b, c, d, out, tmp)
-dnl Computes one word of the final round. Leaves result in %edi.
+dnl AES_FINAL_ROUND(a, b, c, d, table, out, tmp)
+dnl Computes one word of the final round.
 dnl Note that we have to quote $ in constants.
 define(<AES_FINAL_ROUND>, <
-	C FIXME: Perform substitution on least significant byte here,
-	C to save work later.
-	movzbl	LREG($1),$5
-	movl	$2,$6
-	andl	<$>0x0000ff00,$6
-	orl	$6, $5
-	movl	$3,$6
-	andl	<$>0x00ff0000,$6
-	orl	$6, $5
-	movl	$4,$6
-	andl	<$>0xff000000,$6
-	orl	$6, $5>)dnl
+	movzbl	LREG($1),$6
+	movzbl	($5, $6), $6
+	movl	$2,$7
+	andl	<$>0x0000ff00,$7
+	orl	$7, $6
+	movl	$3,$7
+	andl	<$>0x00ff0000,$7
+	orl	$7, $6
+	movl	$4,$7
+	andl	<$>0xff000000,$7
+	orl	$7, $6
+	roll	<$>8, $6>)dnl
 
 dnl AES_SUBST_BYTE(A, B, C, D, table, ptr)
 dnl Substitutes the least significant byte of
