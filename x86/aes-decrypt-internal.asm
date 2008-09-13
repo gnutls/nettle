@@ -33,14 +33,17 @@ define(<T>,<%ebp>)
 define(<TMP>,<%edi>)
 define(<KEY>,<%esi>)
 
-define(<FRAME_CTX>,	<28(%esp)>)
-define(<FRAME_TABLE>,	<32(%esp)>)
-define(<FRAME_LENGTH>,	<36(%esp)>)
-define(<FRAME_DST>,	<40(%esp)>)
-define(<FRAME_SRC>,	<44(%esp)>)
+define(<FRAME_CTX>,	<40(%esp)>)
+define(<FRAME_TABLE>,	<44(%esp)>)
+define(<FRAME_LENGTH>,	<48(%esp)>)
+define(<FRAME_DST>,	<52(%esp)>)
+define(<FRAME_SRC>,	<56(%esp)>)
 
-define(<FRAME_KEY>,	<4(%esp)>)
-define(<FRAME_COUNT>,	<(%esp)>)
+define(<FRAME_KEY>,	<16(%esp)>)
+define(<FRAME_COUNT>,	<12(%esp)>)
+define(<TA>,		<8(%esp)>)
+define(<TB>,		<4(%esp)>)
+define(<TC>,		<(%esp)>)
 
 C The aes state is kept in %eax, %ebx, %ecx and %edx
 C
@@ -66,7 +69,7 @@ PROLOGUE(_nettle_aes_decrypt)
 	pushl	%esi		C  12(%esp)
 	pushl	%edi		C  8(%esp)
 
-	subl	$8, %esp	C  loop counter and save area for the key pointer
+	subl	$20, %esp	C  loop counter and save area for the key pointer
 
 	movl	FRAME_LENGTH, %ebp
 	testl	%ebp,%ebp
@@ -95,20 +98,19 @@ PROLOGUE(_nettle_aes_decrypt)
 	ALIGN(4)
 .Lround_loop:
 	AES_ROUND(T, SA,SD,SC,SB, TMP, KEY)
-	pushl	TMP
+	movl	TMP, TA
 
 	AES_ROUND(T, SB,SA,SD,SC, TMP, KEY)
-	pushl	TMP
+	movl	TMP, TB
 
 	AES_ROUND(T, SC,SB,SA,SD, TMP, KEY)
-	pushl	TMP
+	movl	TMP, TC
 
-	AES_ROUND(T, SD,SC,SB,SA, TMP, KEY)
+	AES_ROUND(T, SD,SC,SB,SA, SD, KEY)
 	
-	movl	TMP,SD
-	popl	SC
-	popl	SB
-	popl	SA
+	movl	TA, SA
+	movl	TB, SB
+	movl	TC, SC
 	
 	movl	FRAME_KEY, KEY
 
@@ -123,20 +125,19 @@ PROLOGUE(_nettle_aes_decrypt)
 	C last round
 
 	AES_FINAL_ROUND(SA,SD,SC,SB,T, TMP, KEY)
-	pushl	TMP
+	movl	TMP, TA
 
 	AES_FINAL_ROUND(SB,SA,SD,SC,T, TMP, KEY)
-	pushl	TMP
+	movl	TMP, TB
 
 	AES_FINAL_ROUND(SC,SB,SA,SD,T, TMP, KEY)
-	pushl	TMP
+	movl	TMP, TC
 
-	AES_FINAL_ROUND(SD,SC,SB,SA,T, TMP, KEY)
+	AES_FINAL_ROUND(SD,SC,SB,SA,T, SD, KEY)
 
-	movl	TMP,SD
-	popl	SC
-	popl	SB
-	popl	SA
+	movl	TA, SA
+	movl	TB, SB
+	movl	TC, SC
 
 	C Inverse S-box substitution
 	mov	$3,TMP
@@ -157,7 +158,7 @@ PROLOGUE(_nettle_aes_decrypt)
 	jnz	.Lblock_loop
 
 .Lend:
-	addl	$8, %esp
+	addl	$20, %esp
 	popl	%edi
 	popl	%esi
 	popl	%ebp
