@@ -118,16 +118,16 @@ PROLOGUE(_nettle_aes_encrypt)
 	C last two rounds
 
 	AES_ROUND(TABLE, SA,SB,SC,SD, TA, TMP)
-	xorl    (KEY), TA
+	xorl	(KEY), TA
 	
 	AES_ROUND(TABLE, SB,SC,SD,SA, TB, TMP)
-	xorl    4(KEY),TB
+	xorl	4(KEY),TB
 	
 	AES_ROUND(TABLE, SC,SD,SA,SB, TC, TMP)
-	xorl    8(KEY),TC
+	xorl	8(KEY),TC
 	
 	AES_ROUND(TABLE, SD,SA,SB,SC, TD, TMP)
-	xorl    12(KEY),TD
+	xorl	12(KEY),TD
 	
 	AES_FINAL_ROUND(TA,TB,TC,TD, TABLE, SA, TMP)
 	AES_FINAL_ROUND(TB,TC,TD,TA, TABLE, SB, TMP)
