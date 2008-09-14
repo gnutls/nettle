@@ -115,23 +115,35 @@ PROLOGUE(_nettle_aes_encrypt)
 	decl	COUNT
 	jnz	.Lround_loop
 
-	C last round
+	C last two rounds
 
-	AES_FINAL_ROUND(SA,SB,SC,SD, TABLE, TA, TMP)
-	AES_FINAL_ROUND(SB,SC,SD,SA, TABLE, TB, TMP)
-	AES_FINAL_ROUND(SC,SD,SA,SB, TABLE, TC, TMP)
-	AES_FINAL_ROUND(SD,SA,SB,SC, TABLE, TD, TMP)
+	AES_ROUND(TABLE, SA,SB,SC,SD, TA, TMP)
+	xorl    (KEY), TA
+	
+	AES_ROUND(TABLE, SB,SC,SD,SA, TB, TMP)
+	xorl    4(KEY),TB
+	
+	AES_ROUND(TABLE, SC,SD,SA,SB, TC, TMP)
+	xorl    8(KEY),TC
+	
+	AES_ROUND(TABLE, SD,SA,SB,SC, TD, TMP)
+	xorl    12(KEY),TD
+	
+	AES_FINAL_ROUND(TA,TB,TC,TD, TABLE, SA, TMP)
+	AES_FINAL_ROUND(TB,TC,TD,TA, TABLE, SB, TMP)
+	AES_FINAL_ROUND(TC,TD,TA,TB, TABLE, SC, TMP)
+	AES_FINAL_ROUND(TD,TA,TB,TC, TABLE, SD, TMP)
 
 	C S-box substitution
 	mov	$3, COUNT
 .Lsubst:
-	AES_SUBST_BYTE(TA,TB,TC,TD, TABLE, TMP)
+	AES_SUBST_BYTE(SA,SB,SC,SD, TABLE, TMP)
 
 	decl	COUNT
 	jnz	.Lsubst
 
 	C Add last subkey, and store encrypted data
-	AES_STORE(TA,TB,TC,TD, KEY, DST)
+	AES_STORE(SA,SB,SC,SD, KEY, DST)
 	
 	add	$16, DST
 	decl	FRAME_COUNT
