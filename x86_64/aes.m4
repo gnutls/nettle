@@ -57,10 +57,10 @@ dnl and stores the result in the area pointed to by dst.
 dnl Note that x86 allows unaligned accesses.
 dnl Would it be preferable to interleave the loads and stores?
 define(<AES_STORE>, <
-	xorl	($5),$1
-	xorl	4($5),$2
-	xorl	8($5),$3
-	xorl	12($5),$4
+	xorl	16($5),$1
+	xorl	20($5),$2
+	xorl	24($5),$3
+	xorl	28($5),$4
 
 	movl	$1,($6)
 	movl	$2,4($6)
