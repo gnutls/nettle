@@ -109,9 +109,7 @@ yarrow256_seed(struct yarrow256_ctx *ctx,
 	       unsigned length,
 	       const uint8_t *seed_file)
 {
-  /* FIXME: Perhaps it's better to use assert ? */
-  if (!length)
-    return;
+  assert(length > 0);
 
   sha256_update(&ctx->pools[YARROW_FAST], length, seed_file);
   yarrow_fast_reseed(ctx);
@@ -133,7 +131,7 @@ yarrow_generate_block(struct yarrow256_ctx *ctx,
    * machine independent, and follows appendix B of the NIST
    * specification of cipher modes of operation.
    *
-   * We could keep a representation of thy counter as 4 32-bit values,
+   * We could keep a representation of the counter as 4 32-bit values,
    * and write entire words (in big-endian byteorder) into the counter
    * block, whenever they change. */
   for (i = sizeof(ctx->counter); i--; )
@@ -278,9 +276,6 @@ yarrow256_update(struct yarrow256_ctx *ctx,
 	   && (entropy > YARROW_MULTIPLIER * length) )
 	entropy = YARROW_MULTIPLIER * length;
 
-      /* FIXME: Calling a more sophisticated estimator could be done
-       * here. */
-
       entropy += source->estimate[current];
       if (entropy > YARROW_MAX_ENTROPY)
 	entropy = YARROW_MAX_ENTROPY;
@@ -308,10 +303,6 @@ yarrow256_update(struct yarrow256_ctx *ctx,
 
     case YARROW_SLOW:
       {
-	/* FIXME: This is somewhat inefficient. It would be better to
-	 * either maintain the count, or do this loop only if the
-	 * current source just crossed the threshold. */
-        
         if (!yarrow256_needed_sources(ctx))
 	  {
 	    yarrow_slow_reseed(ctx);
