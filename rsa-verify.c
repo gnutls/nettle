@@ -48,7 +48,6 @@ _rsa_verify(const struct rsa_public_key *key,
   
   mpz_powm(m1, s, key->e, key->n);
 
-  /* FIXME: Is it cheaper to convert m1 to a string and check that? */
   res = !mpz_cmp(m, m1);
 
   mpz_clear(m1);

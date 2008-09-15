@@ -191,9 +191,6 @@ unsigned
 sexp_vformat(struct nettle_buffer *buffer,
 	     const char *format, va_list args);
 
-/* FIXME: Add argument LINE_WIDTH. If non-zero, break lines to at most
- * that width. */
-
 unsigned
 sexp_transport_format(struct nettle_buffer *buffer,
 		      const char *format, ...);

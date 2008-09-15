@@ -86,8 +86,8 @@ base16_decode_single(struct base16_decode_ctx *ctx,
  * area before the call. *DST_LENGTH is updated to the amount of
  * decoded output. */
 
-/* FIXME: Currently results in an assertion failure if *DST_LENGTH is
- * too small. Return some error instead? */
+/* Currently results in an assertion failure if *DST_LENGTH is
+ * too small. FIXME: Return some error instead? */
 int
 base16_decode_update(struct base16_decode_ctx *ctx,
 		     unsigned *dst_length,

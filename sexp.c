@@ -50,9 +50,6 @@ sexp_iterator_init(struct sexp_iterator *iterator,
   iterator->display = NULL;
   iterator->atom_length = 0;
   iterator->atom = NULL;
-
-  /* FIXME: For other than canonical syntax,
-   * skip white space here. */
 }
 
 #define EMPTY(i) ((i)->pos == (i)->length)

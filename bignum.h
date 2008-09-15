@@ -46,7 +46,6 @@ nettle_mpz_sizeinbase_256_u(const mpz_t x);
 
 /* Writes an integer as length octets, using big endian byte order,
  * and two's complement for negative numbers. */
-/* FIXME: Change order of arguments, putting the mpz_t first? */
 void
 nettle_mpz_get_str_256(unsigned length, uint8_t *s, const mpz_t x);
 

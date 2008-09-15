@@ -64,8 +64,6 @@ void
 arctwo_set_key (struct arctwo_ctx *ctx, unsigned length, const uint8_t *key);
 
 /* Equvivalent to arctwo_set_key_ekb, with ekb = 1024 */
-/* FIXME: Is this function really needed, and if so, what's the right
-   name for it? */
 void
 arctwo_set_key_gutmann (struct arctwo_ctx *ctx,
 			unsigned length, const uint8_t *key);

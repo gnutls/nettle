@@ -65,7 +65,6 @@ base16_decode_single(struct base16_decode_ctx *ctx,
   if (src >= 0x80)
     return -1;
 
-  /* FIXME: This code could use more clever choices of constants. */
   digit = hex_decode_table[src];
   switch (digit)
     {

@@ -67,13 +67,6 @@ _rsa_check_size(mpz_t n)
 int
 rsa_public_key_prepare(struct rsa_public_key *key)
 {
-  /* FIXME: Add further sanity checks, like 0 < e < n. */
-#if 0
-  if ( (mpz_sgn(key->e) <= 0)
-       || mpz_cmp(key->e, key->n) >= 0)
-    return 0;
-#endif
-  
   key->size = _rsa_check_size(key->n);
   
   return (key->size > 0);

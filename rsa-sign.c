@@ -60,8 +60,6 @@ rsa_private_key_clear(struct rsa_private_key *key)
 int
 rsa_private_key_prepare(struct rsa_private_key *key)
 {
-  /* FIXME: Add further sanity checks. */
-
   mpz_t n;
   
   /* The size of the product is the sum of the sizes of the factors,

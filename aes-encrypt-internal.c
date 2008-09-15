@@ -59,9 +59,9 @@ _nettle_aes_encrypt(const struct aes_ctx *ctx,
 	  t2 = AES_ROUND(T, w2, w3, w0, w1, ctx->keys[4*round + 2]);
 	  t3 = AES_ROUND(T, w3, w0, w1, w2, ctx->keys[4*round + 3]);
 
-	  /* FIXME: We could unrolling the loop twice, to avoid these
-	     assignments. If all eight variables fit in registers, that
-	     should give a speedup. */
+	  /* We could unroll the loop twice, to avoid these
+	     assignments. If all eight variables fit in registers,
+	     that should give a slight speedup. */
 	  w0 = t0;
 	  w1 = t1;
 	  w2 = t2;

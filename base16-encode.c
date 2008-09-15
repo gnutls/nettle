@@ -35,7 +35,6 @@ hex_digits[16] = "0123456789abcdef";
 
 #define DIGIT(x) (hex_digits[(x) & 0xf])
 
-/* FIXME: Is this really needed? */
 /* Encodes a single byte. Always stores two digits in dst[0] and dst[1]. */
 void
 base16_encode_single(uint8_t *dst,

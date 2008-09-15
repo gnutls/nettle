@@ -57,8 +57,8 @@ nettle_mpz_random(mpz_t x,
 		  void *ctx, nettle_random_func random,
 		  const mpz_t n)
 {
-  /* FIXME: This leaves some bias, which may be bad for DSA. A better
-   * way might to generate a random number of mpz_sizeinbase(n, 2)
+  /* NOTE: This leaves some bias, which may be bad for DSA. A better
+   * way might be to generate a random number of mpz_sizeinbase(n, 2)
    * bits, and loop until one smaller than n is found. */
 
   /* From Daniel Bleichenbacher (via coderpunks):

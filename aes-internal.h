@@ -33,7 +33,7 @@
 #define _aes_decrypt _nettle_aes_decrypt
 #define _aes_encrypt_table _nettle_aes_encrypt_table
 
-/* Define to use only small tables. FIXME: Currently not working. */
+/* Define to use only small tables. */
 #ifndef AES_SMALL
 # define AES_SMALL 0
 #endif

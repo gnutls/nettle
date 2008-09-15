@@ -57,9 +57,6 @@ sexp_transport_vformat(struct nettle_buffer *buffer,
 
   if (buffer)
     {
-      /* FIXME: This assumes that data is never removed from the
-       * buffer. That works for the current buffer, but it would be
-       * nice to get rid of this restriction. */
       if (!nettle_buffer_space(buffer, base64_length - length))
 	return 0;
 

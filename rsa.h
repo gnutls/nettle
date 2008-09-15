@@ -227,8 +227,8 @@ rsa_sha256_verify_digest(const struct rsa_public_key *key,
 
 
 /* RSA encryption, using PKCS#1 */
-/* FIXME: These functions uses the v1.5 padding. What should the v2
- * (OAEP) functions be called? */
+/* These functions uses the v1.5 padding. What should the v2 (OAEP)
+ * functions be called? */
 
 /* Returns 1 on success, 0 on failure, which happens if the
  * message is too long for the key. */
