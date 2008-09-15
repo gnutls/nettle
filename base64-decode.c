@@ -35,12 +35,11 @@
 #define TABLE_SPACE -2
 #define TABLE_END -3
 
-/* FIXME: Make sure that all whitespace characters, SPC, HT, VT, FF,
- * CR and LF are ignored. */
 static const signed char
 decode_table[0x100] =
 {
-  -1, -1, -1, -1, -1, -1, -1, -1, -1, -2, -2, -1, -1, -2, -1, -1, 
+  /* White space is HT, VT, FF, CR, LF and SPC */
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -2, -2, -2, -2, -2, -1, -1, 
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
   -2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 62, -1, -1, -1, 63,
   52, 53, 54, 55, 56, 57, 58, 59, 60, 61, -1, -1, -1, -3, -1, -1,
