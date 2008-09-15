@@ -1,5 +1,10 @@
 2008-09-15  Niels Möller  <nisse@lysator.liu.se>
 
+	* yarrow256.c (yarrow256_seed): Disallow length == 0.
+
+	* base64-decode.c (decode_table): Added vertical tab (VT) and form
+	feed (FF) as white space characters.
+
 	* x86_64/aes-decrypt-internal.asm: New file.
 
 2008-09-13  Niels Möller  <nisse@lysator.liu.se>
