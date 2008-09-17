@@ -38,48 +38,69 @@ C Input arguments:
 	C src = 32(%esp)
 C Register usage:
 	C %ebp = ctx
-	C %esi = src (updated through out loop)
-	C %edi = dst (updated through out loop)
-	C %edx = src + length (end of source area)
+	C %esi = src
+	C %edi = dst
+	C %edx = loop counter
 	C %eax = i
 	C %ebx = j
 	C %cl  = si
 	C %ch  = sj
 
 	movl	24(%esp), %edx		C  length
-	testl	%edx,%edx
-	jz	.Lend
-
 	movl	20(%esp), %ebp		C  ctx
-	movl	28(%esp), %edi
-	movl	32(%esp), %esi
-	addl	%esi, %edx		C  Keep src + length
+	movl	28(%esp), %edi		C  dst
+	movl	32(%esp), %esi		C  src
+
+	lea	(%edx, %edi), %edi
+	lea	(%edx, %esi), %esi
+	negl	%edx
+	jnc	.Lend
 	
 	movzbl  ARCFOUR_I (%ebp), %eax	C  i
 	movzbl  ARCFOUR_J (%ebp), %ebx	C  j
+
+	incb	%al
+	sarl	$1, %edx
+	jc	.Lloop_odd
+	
+	ALIGN(4)
 .Lloop:
-C	incb	%al
-	incl	%eax
-	andl	$0xff, %eax
-	movzbl  (%ebp, %eax), %ecx	C  si. Clears high bytes
+	movb	(%ebp, %eax), %cl	C  si.
 	addb    %cl, %bl
-C The addl andl is preferable on PPro and PII, but slows thing down on AMD Duron.
-C	addl	%ecx, %ebx
-C	andl	$0xff, %ebx
 	movb    (%ebp, %ebx), %ch	C  sj
 	movb    %ch, (%ebp, %eax)	C  S[i] = sj
+	incl	%eax
+	movzbl	%al, %eax
 	movb	%cl, (%ebp, %ebx)	C  S[j] = si
 	addb    %ch, %cl
 	movzbl  %cl, %ecx		C  Clear, so it can be used
 					C  for indexing.
 	movb    (%ebp, %ecx), %cl
-	xorb    (%esi), %cl
-	incl    %esi
-	movb    %cl, (%edi)
-	incl    %edi
-	cmpl	%esi, %edx
-	jne	.Lloop
+	xorb    (%esi, %edx, 2), %cl
+	movb    %cl, (%edi, %edx, 2)
 
+	C FIXME: Could exchange cl and ch in the second half
+	C and try to interleave instructions better.
+.Lloop_odd:
+	movb	(%ebp, %eax), %cl	C  si.
+	addb    %cl, %bl
+	movb    (%ebp, %ebx), %ch	C  sj
+	movb    %ch, (%ebp, %eax)	C  S[i] = sj
+	incl	%eax
+	movzbl	%al, %eax
+	movb	%cl, (%ebp, %ebx)	C  S[j] = si
+	addb    %ch, %cl
+	movzbl  %cl, %ecx		C  Clear, so it can be used
+					C  for indexing.
+	movb    (%ebp, %ecx), %cl
+	xorb    1(%esi, %edx, 2), %cl
+	incl    %edx
+	movb    %cl, -1(%edi, %edx, 2)
+
+	jnz	.Lloop
+
+C .Lloop_done:
+	decb	%al
 	movb	%al, ARCFOUR_I (%ebp)		C  Store the new i and j.
 	movb	%bl, ARCFOUR_J (%ebp)
 .Lend:
