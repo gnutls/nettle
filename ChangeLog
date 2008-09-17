@@ -1,3 +1,8 @@
+2008-09-17  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86/arcfour-crypt.asm: Improved loop logic, and unrolled
+	loop twice. Gave a modest speedup.
+
 2008-09-15  Niels Möller  <nisse@lysator.liu.se>
 
 	* yarrow256.c (yarrow256_seed): Disallow length == 0.
