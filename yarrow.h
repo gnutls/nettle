@@ -40,10 +40,15 @@ extern "C" {
 #define yarrow256_random nettle_yarrow256_random
 #define yarrow256_is_seeded nettle_yarrow256_is_seeded
 #define yarrow256_needed_sources nettle_yarrow256_needed_sources
-#define yarrow256_force_reseed nettle_yarrow256_force_reseed
+#define yarrow256_fast_reseed nettle_yarrow256_fast_reseed
+#define yarrow256_slow_reseed nettle_yarrow256_slow_reseed
 #define yarrow_key_event_init nettle_yarrow_key_event_init
 #define yarrow_key_event_estimate nettle_yarrow_key_event_estimate
 
+/* Obsolete alias for backwards compatibility. Will be deleted in some
+   later version. */
+#define yarrow256_force_reseed yarrow256_slow_reseed
+  
 enum yarrow_pool_id { YARROW_FAST = 0, YARROW_SLOW = 1 };
 
 struct yarrow_source
@@ -64,8 +69,6 @@ struct yarrow256_ctx
   /* Indexed by yarrow_pool_id */
   struct sha256_ctx pools[2];
 
-  uint8_t seed_file[YARROW256_SEED_FILE_SIZE];
-  
   int seeded;
 
   /* The current key and counter block */
@@ -103,7 +106,10 @@ unsigned
 yarrow256_needed_sources(struct yarrow256_ctx *ctx);
 
 void
-yarrow256_force_reseed(struct yarrow256_ctx *ctx);
+yarrow256_fast_reseed(struct yarrow256_ctx *ctx);
+
+void
+yarrow256_slow_reseed(struct yarrow256_ctx *ctx);
 
 
 /* Key event estimator */

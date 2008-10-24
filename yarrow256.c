@@ -69,10 +69,6 @@
 #define YARROW_MAX_ENTROPY 0x100000
 
 /* Forward declarations */
-
-static void
-yarrow_fast_reseed(struct yarrow256_ctx *ctx);
-
 static void
 yarrow_gate(struct yarrow256_ctx *ctx);
 
@@ -88,9 +84,8 @@ yarrow256_init(struct yarrow256_ctx *ctx,
   
   ctx->seeded = 0;
 
-  /* Not strictly, necessary, but it makes it easier to see if the
+  /* Not strictly necessary, but it makes it easier to see if the
    * values are sane. */
-  memset(ctx->seed_file, 0, YARROW256_SEED_FILE_SIZE);
   memset(ctx->counter, 0, sizeof(ctx->counter));
   
   ctx->nsources = n;
@@ -112,7 +107,7 @@ yarrow256_seed(struct yarrow256_ctx *ctx,
   assert(length > 0);
 
   sha256_update(&ctx->pools[YARROW_FAST], length, seed_file);
-  yarrow_fast_reseed(ctx);
+  yarrow256_fast_reseed(ctx);
 
   ctx->seeded = 1;
 }
@@ -171,14 +166,14 @@ yarrow_iterate(uint8_t *digest)
 /* NOTE: The SHA-256 digest size equals the AES key size, so we need
  * no "size adaptor". */
 
-static void
-yarrow_fast_reseed(struct yarrow256_ctx *ctx)
+void
+yarrow256_fast_reseed(struct yarrow256_ctx *ctx)
 {
   uint8_t digest[SHA256_DIGEST_SIZE];
   unsigned i;
   
 #if YARROW_DEBUG
-  fprintf(stderr, "yarrow_fast_reseed\n");
+  fprintf(stderr, "yarrow256_fast_reseed\n");
 #endif
   
   /* We feed two block of output using the current key into the pool
@@ -206,23 +201,16 @@ yarrow_fast_reseed(struct yarrow256_ctx *ctx)
   /* Reset estimates. */
   for (i = 0; i<ctx->nsources; i++)
     ctx->sources[i].estimate[YARROW_FAST] = 0;
-
-  /* New seed file. */
-  /* FIXME: Extract this into a function of its own. */
-  for (i = 0; i < sizeof(ctx->seed_file); i+= AES_BLOCK_SIZE)
-    yarrow_generate_block(ctx, ctx->seed_file + i);
-
-  yarrow_gate(ctx);
 }
 
-static void
-yarrow_slow_reseed(struct yarrow256_ctx *ctx)
+void
+yarrow256_slow_reseed(struct yarrow256_ctx *ctx)
 {
   uint8_t digest[SHA256_DIGEST_SIZE];
   unsigned i;
 
 #if YARROW_DEBUG
-  fprintf(stderr, "yarrow_slow_reseed\n");
+  fprintf(stderr, "yarrow256_slow_reseed\n");
 #endif
 
   /* Get digest of the slow pool*/
@@ -232,7 +220,7 @@ yarrow_slow_reseed(struct yarrow256_ctx *ctx)
   /* Feed it into the fast pool */
   sha256_update(&ctx->pools[YARROW_FAST], sizeof(digest), digest);
 
-  yarrow_fast_reseed(ctx);
+  yarrow256_fast_reseed(ctx);
   
   /* Reset estimates. */
   for (i = 0; i<ctx->nsources; i++)
@@ -295,7 +283,7 @@ yarrow256_update(struct yarrow256_ctx *ctx,
 #endif
       if (source->estimate[YARROW_FAST] >= YARROW_FAST_THRESHOLD)
 	{
-	  yarrow_fast_reseed(ctx);
+	  yarrow256_fast_reseed(ctx);
 	  return 1;
 	}
       else
@@ -305,7 +293,7 @@ yarrow256_update(struct yarrow256_ctx *ctx,
       {
         if (!yarrow256_needed_sources(ctx))
 	  {
-	    yarrow_slow_reseed(ctx);
+	    yarrow256_slow_reseed(ctx);
 	    ctx->seeded = 1;
 
 	    return 1;
@@ -379,10 +367,4 @@ yarrow256_needed_sources(struct yarrow256_ctx *ctx)
 #endif
   
   return (k < YARROW_SLOW_K) ? (YARROW_SLOW_K - k) : 0;
-}
-
-void
-yarrow256_force_reseed(struct yarrow256_ctx *ctx)
-{
-  yarrow_slow_reseed(ctx);
 }
