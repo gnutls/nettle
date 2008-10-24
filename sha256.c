@@ -117,14 +117,12 @@ K[64] =
    iteration. This code is then replicated 8, using the next 8 values
    from the W[] array each time */
 
-/* FIXME: We can probably reorder this to optimize away at least one
- * of T1 and T2. It's crucial that DATA is only used once, as that
- * argument will have side effects. */
+/* It's crucial that DATA is only used once, as that argument will
+ * have side effects. */
 #define ROUND(a,b,c,d,e,f,g,h,k,data) do {		\
-  uint32_t T1 = h + S1(e) + Choice(e,f,g) + k + data;	\
-  uint32_t T2 = S0(a) + Majority(a,b,c);		\
-  d += T1;						\
-  h = T1 + T2;						\
+  uint32_t T = h + S1(e) + Choice(e,f,g) + k + data;	\
+  d += T;						\
+  h = T + S0(a) + Majority(a,b,c);			\
 } while (0)
 
 /* Initialize the SHA values */
