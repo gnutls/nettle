@@ -338,9 +338,6 @@ sexp_iterator_assoc(struct sexp_iterator *iterator,
 	{
 	case SEXP_LIST:
 
-	  /* FIXME: Use sexp_iterator_check_type? Problem is to
-	   * distinguish syntax errors from unkown keys (which we want
-	   * to just ignore). */
 	  if (!sexp_iterator_enter_list(iterator))
 	    return 0;
 	  
