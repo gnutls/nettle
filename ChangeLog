@@ -1,3 +1,24 @@
+2008-10-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/Makefile.in (next-prime$(EXEEXT)): Added -lnettle to
+	linker.
+
+2008-10-24  Niels Möller  <nisse@lysator.liu.se>
+
+	* sha256.c (ROUND): Simplified macro.
+
+	* yarrow256.c (yarrow256_fast_reseed): Renamed (was
+	yarrow_fast_reseed) and made non-static. Don't generate seed file
+	here, let the application use yarrow256_random instead.
+	(yarrow256_slow_reseed): Renamed (was yarrow_slow_reseed) and made
+	non-static.
+	(yarrow256_force_reseed): Deleted function, use
+	yarrow256_slow_reseed instead. For backwards compatibility,
+	yarrow.h defines yarrow256_force_reseed as an alias for that
+	function.
+
+	* yarrow.h (struct yarrow256_ctx): Deleted seed_file buffer.
+
 2008-09-17  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86/arcfour-crypt.asm: Improved loop logic, and unrolled
@@ -37,7 +58,6 @@
 	get the corresponding byte register.
 	(AES_ROUND): Use movzbl together with LREG and HREG.
 	(AES_SUBST_BYTE): Likewise.
-	
 
 2008-09-10  Niels Möller  <nisse@lysator.liu.se>
 
