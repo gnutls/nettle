@@ -33,7 +33,7 @@ all: $(TARGETS)
 # For Solaris and BSD make, we have to use an explicit rule for each executable
 next-prime$(EXEEXT): next-prime.$(OBJEXT) $(GETOPT_OBJS) ../libhogweed.a
 	$(LINK) next-prime.$(OBJEXT) $(GETOPT_OBJS) \
-	-lhogweed $(LIBS) -o next-prime$(EXEEXT)
+	-lhogweed -lnettle $(LIBS) -o next-prime$(EXEEXT)
 
 rsa-keygen$(EXEEXT): rsa-keygen.$(OBJEXT) $(GETOPT_OBJS)
 	$(LINK) rsa-keygen.$(OBJEXT) io.$(OBJEXT) $(GETOPT_OBJS) \
