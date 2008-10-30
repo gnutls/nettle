@@ -380,8 +380,13 @@ main(int argc, char **argv)
       struct flock fl;
   
       memset(&fl, 0, sizeof(fl));
+      fl.l_type = F_WRLCK;
+      fl.l_whence = SEEK_SET;
+      fl.l_start = 0;
+      fl.l_len = 0; /* Means entire file. */
+      
       if (fcntl(STDOUT_FILENO, F_SETLKW, &fl) == -1)
-	die("Locking output file failed: $s\n", strerror(errno));
+	die("Locking output file failed: %s\n", strerror(errno));
     }
 #endif /* HAVE_FCNTL_LOCKING */
   if (options.hash)
