@@ -1,3 +1,7 @@
+2008-10-30  Niels Möller  <nisse@lysator.liu.se>
+
+	* tools/sexp-conv.c (main): Fixed file locking.
+
 2008-10-25  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/Makefile.in (next-prime$(EXEEXT)): Added -lnettle to
