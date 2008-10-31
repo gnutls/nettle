@@ -69,17 +69,19 @@ test_main(void)
   struct sha256_ctx input_hash;
   uint8_t digest[SHA256_DIGEST_SIZE];
 
+  uint8_t seed_file[YARROW256_SEED_FILE_SIZE];
+
   const uint8_t *expected_output
-    = decode_hex_dup("85fe6afb5bd627f3 ea20a6127038d3da"
-		     "69e880a6ecbbb7d8 3514d967a2c4c0d4");
+    = decode_hex_dup("dd304aacac3dc95e 70d684a642967c89"
+		     "58501f7c8eb88b79 43b2ffccde6f0f79");
 
   const uint8_t *expected_input
     = decode_hex_dup("e0596cf006025506 65d1195f32a87e4a"
 		     "5c354910dfbd0a31 e2105b262f5ce3d8");
 
   const uint8_t *expected_seed_file
-    = decode_hex_dup("3b7ad33dcd577048 b9e0cbc70b5ca12d"
-		     "5882be29c964a3a6 ea79fdbfa06299dc");
+    = decode_hex_dup("b03518f32b1084dd 983e6a445d47bb6f"
+		     "13bb7b998740d570 503d6aaa62e28901");
   
   unsigned c; unsigned t;
 
@@ -91,7 +93,6 @@ test_main(void)
   static const char zeroes[100];
 
   yarrow256_init(&yarrow, 2, sources);
-  memset(&yarrow.seed_file, 0, sizeof(yarrow.seed_file));
   
   yarrow_key_event_init(&estimator);
   sha256_init(&input_hash);
@@ -182,14 +183,15 @@ test_main(void)
       return EXIT_FAILURE;
     }
 
+  yarrow256_random(&yarrow, sizeof(seed_file), seed_file);
   if (verbose)
     {
       printf("New seed file: ");
-      print_hex(sizeof(yarrow.seed_file), yarrow.seed_file);
+      print_hex(sizeof(seed_file), seed_file);
       printf("\n");
     }
 
-  if (memcmp(yarrow.seed_file, expected_seed_file, sizeof(yarrow.seed_file)))
+  if (memcmp(seed_file, expected_seed_file, sizeof(seed_file)))
     {
       fprintf(stderr, "Failed.\n");
       return EXIT_FAILURE;
