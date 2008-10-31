@@ -11,7 +11,7 @@ display_hex(unsigned length, uint8_t *data)
   unsigned i;
 
   for (i = 0; i<length; i++)
-    printf("%2x ", data[i]);
+    printf("%02x ", data[i]);
 
   printf("\n");
 }
