@@ -1,3 +1,68 @@
+NEWS for the 2.0 release
+
+	This release breaks binary compatibility by splitting the
+	library into two. Some other smaller changes that are not
+	backwards compatible are also done at the same time.
+
+	* The nettle library is split into two libraries, libnettle
+	  and libhogweed. libnettle contains the symmetric crypto
+	  algorithms that don't depend on GMP, while libhogweed
+	  contains the public key algorithms that depend on GMP.
+	  Using a single library worked fine with static linking, but
+	  not with dynamic linking. Consider an application that uses
+	  nettle and which doesn't use any public key cryptography. If
+	  this application is linked dynamically to nettle, it would
+	  have to be linked also with GMP if and only if public key
+	  support was enabled when the nettle library was installed.
+
+	  The library names are libnettle.so.3.0 and
+	  libhogweed.so.1.0, with sonames libnettle.so.3 and
+	  libhogweed.so.1.
+
+	* Function typedefs have been changed to non-pointer types.
+	  E.g, the
+
+	    typedef void (nettle_hash_init_func *)(void *ctx);
+
+	  of previous versions is replaced by
+
+	    typedef void (nettle_hash_init_func)(void *ctx);
+
+	  This makes it possible to use the type when declaring
+	  functions, like
+
+	    nettle_hash_init_func foo_hash_init;
+
+	    void foo_hash_init(void *ctx) { ... }
+
+	* Changes to the yarrow256 interface. The automatic seed file
+	  generation, and the seed_file member in struct
+	  yarrow256_ctx, has been removed. To generate a new seed
+	  file, use yarrow256_random. The function
+	  yarrow256_force_reseed has been replaced by the two
+	  functions yarrow256_fast_reseed and yarrow256_slow_reseed,
+	  which were previously static. This interface change makes it
+	  easier to mix in the current content of the seed file before
+	  overwriting it with newly generated data.
+
+	Other changes:
+
+	* The sexp-conv program preserves comments when using the
+	  advanced syntax for output. Optionally locks the output
+	  file.
+
+	* The base64 decoder recognizes ASCII FF (form feed) and VT
+          (vertical tab) as white space.
+
+	* New x86_64 implementations of AES and SHA1. On a 2.2 GHz
+          opteron, SHA1 was benchmarked at 250 MByte/s, and AES-128 at
+          110 MByte/s.
+
+	* Performance of AES increased by 20-30% on x86.
+
+	* New programs in the examples directory: erathostenes and
+          next-prime.
+	
 NEWS for the 1.15 release
 
 	Added support for PKCS#1 style RSA signatures using SHA256,
