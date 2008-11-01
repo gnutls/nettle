@@ -1,8 +1,17 @@
+2008-10-31  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/yarrow-test.c (test_main): Updated for seed file
+	changes.
+
+	* sha-example.c (display_hex): Use %02x, not %2x.
+
 2008-10-30  Niels Möller  <nisse@lysator.liu.se>
 
 	* tools/sexp-conv.c (main): Fixed file locking.
 
 2008-10-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Set version to 2.0rc1.
 
 	* examples/Makefile.in (next-prime$(EXEEXT)): Added -lnettle to
 	linker.
