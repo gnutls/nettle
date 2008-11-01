@@ -16,7 +16,7 @@
 @end direntry
 
 @set COPYRIGHT-YEARS 2001, 2004, 2005
-@set UPDATED-FOR 1.15
+@set UPDATED-FOR 2.0
 
 @c Latin-1 doesn't work with TeX output.
 @c Also lookout for é characters.
@@ -115,12 +115,13 @@ This manual corresponds to version @value{UPDATED-FOR} of the library.
 @menu
 * Introduction::                What is Nettle?
 * Copyright::                   Your rights.
-* Conventions::                 
-* Example::                     
+* Conventions::                 General interface conventions.
+* Example::                     An example program.
+* Linking::                     
 * Reference::                   All Nettle functions and features.
 * Nettle soup::                 For the serious nettle hacker.
 * Installation::                How to install Nettle.
-* Index::                       
+* Index::                       Function and concept index.
 @end menu
 
 @end ifnottex
@@ -255,7 +256,7 @@ unexpected effects.
 
 For consistency, functions for different algorithms are very similar,
 but there are some differences, for instance reflecting if the key setup
-or encryption function differ for encryption and encryption, and whether
+or encryption function differ for encryption and decryption, and whether
 or not key setup can fail. There are also differences between algorithms
 that don't show in function prototypes, but which the application must
 nevertheless be aware of. There is no big difference between the
@@ -281,18 +282,41 @@ but they @emph{must not} overlap in any other way.
 
 @c FIXME: Say something about the name mangling.
 
-@node Example, Reference, Conventions, Top
+@node Example, Linking, Conventions, Top
 @comment  node-name,  next,  previous,  up
 @chapter Example
 
-A simple example program that reads a file from standard in and writes
-its SHA1 checksum on standard output should give the flavor of Nettle.
+A simple example program that reads a file from standard input and
+writes its SHA1 checksum on standard output should give the flavor of
+Nettle.
 
 @example
 @verbatiminclude sha-example.c
 @end example
 
-@node Reference, Nettle soup, Example, Top
+On a typical Unix system, this program can be compiled and linked with
+the command line 
+@example
+cc sha-example.c -o sha-example -lnettle
+@end example
+
+@node Linking, Reference, Example, Top
+@comment  node-name,  next,  previous,  up
+@chapter Linking
+
+Nettle actually consists of two libraries, @file{libnettle} and
+@file{libhogweed}. The @file{libhogweed} library contains those
+functions of Nettle that uses bignum operations, and depends on the GMP
+library. With this division, linking works the same for both static and
+dynamic libraries.
+
+If an application uses only the symmetric crypto algorithms of
+Nettle (i.e., block ciphers, hash functions, and the like), it's
+sufficient to link with @code{-lnettle}. If an application also uses
+public-key algorithms, it must be linked with @code{-lhogweed -lnettle
+-lgmp}.
+
+@node Reference, Nettle soup, Linking, Top
 @comment  node-name,  next,  previous,  up
 @chapter Reference
 
@@ -1505,7 +1529,8 @@ the same key.
 Nettle uses @acronym{GMP}, the GNU bignum library, for all calculations
 with large numbers. In order to use the public-key features of Nettle,
 you must install @acronym{GMP}, at least version 3.0, before compiling
-Nettle, and you need to link your programs with @code{-lgmp}.
+Nettle, and you need to link your programs with @code{-lhogweed -lnettle
+-lgmp}.
 
 The concept of @dfn{Public-key} encryption and digital signatures was
 discovered by Whitfield Diffie and Martin E. Hellman and described in a
@@ -2201,12 +2226,12 @@ Information about a single source.
 @end deftp
 
 @defvr Constant YARROW256_SEED_FILE_SIZE
-The size of the Yarrow-256 seed file.
+Recommanded size of the Yarrow-256 seed file.
 @end defvr
 
 @deftypefun void yarrow256_init (struct yarrow256_ctx *@var{ctx}, unsigned @var{nsources}, struct yarrow_source *@var{sources})
 Initializes the yarrow context, and its @var{nsources} sources. It's
-possible to use call it with @var{nsources}=0 and @var{sources}=NULL, if
+possible to call it with @var{nsources}=0 and @var{sources}=NULL, if
 you don't need the update features.
 @end deftypefun
 
@@ -2216,9 +2241,9 @@ Seeds Yarrow-256 from a previous seed file. @var{length} should be at least
 
 The generator will trust you that the @var{seed_file} data really is
 unguessable. After calling this function, you @emph{must} overwrite the old
-seed file with the contents of @code{@var{ctx}->seed_file}. If it's
+seed file with newly generated data from @code{yarrow256_random}. If it's
 possible for several processes to read the seed file at about the same
-time, access must be coordinated, for example using lock files.
+time, access must be coordinated using some locking mechanism.
 @end deftypefun
 
 @deftypefun int yarrow256_update (struct yarrow256_ctx *@var{ctx}, unsigned @var{source}, unsigned @var{entropy}, unsigned @var{length}, const uint8_t *@var{data})
@@ -2228,9 +2253,10 @@ estimated lower bound for the entropy in the data, measured in bits.
 Calling update with zero @var{entropy} is always safe, no matter if the
 data is random or not.
 
-Returns 1 if a reseed happened, in which case the seed file can be
-overwritten with the contents of @code{@var{ctx}->seed_file}. Otherwise,
-the function returns 0.
+Returns 1 if a reseed happened, in which case an application using a
+seed file may want to generate new seed data with
+@code{yarrow256_random} and overwrite the seed file. Otherwise, the
+function returns 0.
 @end deftypefun
 
 @deftypefun void yarrow256_random (struct yarrow256_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst})
@@ -2253,8 +2279,9 @@ Returns the number of sources that must reach the threshold before a
 slow reseed will happen. Useful primarily when the generator is unseeded.
 @end deftypefun
 
-@deftypefun void yarrow256_force_reseed (struct yarrow256_ctx *@var{ctx})
-Causes a slow reseed to take place immediately, regardless of the
+@deftypefun void yarrow256_fast_reseed (struct yarrow256_ctx *@var{ctx})
+@deftypefunx void yarrow256_slow_reseed (struct yarrow256_ctx *@var{ctx})
+Causes a fast or slow reseed to take place immediately, regardless of the
 current entropy estimates of the two pools. Use with care.
 @end deftypefun
 
@@ -2271,7 +2298,7 @@ Initializes the context.
 
 @deftypefun unsigned yarrow_key_event_estimate (struct yarrow_key_event_ctx *@var{ctx}, unsigned @var{key}, unsigned @var{time})
 @var{key} is the id of the key (ASCII value, hardware key code, X
-keysym, @dots{} it doesn't matter), and @var{time} is the timestamp of
+keysym, @dots{}, it doesn't matter), and @var{time} is the timestamp of
 the event. The time must be given in units matching the resolution by
 which you read the clock. If you read the clock with microsecond
 precision, @var{time} should be provided in units of microseconds. But
@@ -2325,7 +2352,7 @@ variable @code{des_check_key}, and the functions @code{des_cbc_cksum}
 @node Nettle soup, Installation, Reference, Top
 @comment  node-name,  next,  previous,  up
 @chapter Traditional Nettle Soup
-For the serious nettle hacker, here is a recipe for nettle soup. 4 servings
+For the serious nettle hacker, here is a recipe for nettle soup. 4 servings.
 
 @itemize @w{}
 @item
@@ -2396,12 +2423,20 @@ make install
 @end example
 
 @noindent
-to install in the default location, @file{/usr/local}. The library is
-installed in @file{/use/local/lib/libnettle.a} and the include files are
-installed in @file{/use/local/include/nettle/}.
+to install in the default location, @file{/usr/local}. The library files
+are installed in @file{/use/local/lib/libnettle.a}
+@file{/use/local/lib/libhogweed.a} and the include files are installed
+in @file{/use/local/include/nettle/}.
 
-By default, only static libraries are built and installed. To build and
-install a shared library, use @code{./configure --enable-shared}.
+To get a list of configure options, use @code{./configure --help}.
+
+By default, only static libraries are built and installed. To also build
+and install shared libraries, use the @option{ --enable-shared} option
+to @command{./configure}.
+
+Using GNU make is recommended. For other make programs, in particular
+BSD make, you may have to use the @option{--disable-dependency-tracking}
+option to @command{./configure}.
 
 @node Index,  , Installation, Top
 @comment  node-name,  next,  previous,  up
