@@ -1,3 +1,9 @@
+2008-11-01  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle-types.h, nettle-meta.h: Moved all typedefs for function
+	types to nettle-types.h. Use non-pointer types, so that the types
+	can be used to declare functions. Updated all users.
+
 2008-10-31  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/yarrow-test.c (test_main): Updated for seed file
