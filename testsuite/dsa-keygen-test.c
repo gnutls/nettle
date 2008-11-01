@@ -23,7 +23,7 @@ test_main(void)
   knuth_lfib_init(&lfib, 13);
 
   if (!dsa_generate_keypair(&pub, &key,
-			    &lfib, (nettle_random_func) knuth_lfib_random,
+			    &lfib, (nettle_random_func *) knuth_lfib_random,
 			    NULL, verbose ? progress : NULL,
 			    1024))
     FAIL();

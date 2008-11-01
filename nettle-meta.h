@@ -32,19 +32,6 @@
 extern "C" {
 #endif
 
-/* Randomness. Used by key generation and dsa signature creation. */
-typedef void (*nettle_random_func)(void *ctx,
-				   unsigned length, uint8_t *dst);
-
-/* Progress report function, mainly for key generation. */
-typedef void (*nettle_progress_func)(void *ctx,
-				     int c);
-
-/* Ciphers */
-typedef void (*nettle_set_key_func)(void *ctx,
-				    unsigned length,
-				    const uint8_t *key);
-
 
 struct nettle_cipher
 {
@@ -58,11 +45,11 @@ struct nettle_cipher
   /* Suggested key size; other sizes are sometimes possible. */
   unsigned key_size;
 
-  nettle_set_key_func set_encrypt_key;
-  nettle_set_key_func set_decrypt_key;
+  nettle_set_key_func *set_encrypt_key;
+  nettle_set_key_func *set_decrypt_key;
 
-  nettle_crypt_func encrypt;
-  nettle_crypt_func decrypt;
+  nettle_crypt_func *encrypt;
+  nettle_crypt_func *decrypt;
 };
 
 #define _NETTLE_CIPHER(name, NAME, keysize) {	\
@@ -70,32 +57,32 @@ struct nettle_cipher
   sizeof(struct name##_ctx),			\
   NAME##_BLOCK_SIZE,				\
   keysize / 8,					\
-  (nettle_set_key_func) name##_set_key,		\
-  (nettle_set_key_func) name##_set_key,		\
-  (nettle_crypt_func) name##_encrypt,		\
-  (nettle_crypt_func) name##_decrypt,		\
+  (nettle_set_key_func *) name##_set_key,	\
+  (nettle_set_key_func *) name##_set_key,	\
+  (nettle_crypt_func *) name##_encrypt,		\
+  (nettle_crypt_func *) name##_decrypt,		\
 }
 
 #define _NETTLE_CIPHER_SEP(name, NAME, keysize) {	\
-  #name #keysize,				\
-  sizeof(struct name##_ctx),			\
-  NAME##_BLOCK_SIZE,				\
-  keysize / 8,					\
-  (nettle_set_key_func) name##_set_encrypt_key,	\
-  (nettle_set_key_func) name##_set_decrypt_key,	\
-  (nettle_crypt_func) name##_encrypt,		\
-  (nettle_crypt_func) name##_decrypt,		\
+  #name #keysize,					\
+  sizeof(struct name##_ctx),				\
+  NAME##_BLOCK_SIZE,					\
+  keysize / 8,						\
+  (nettle_set_key_func *) name##_set_encrypt_key,	\
+  (nettle_set_key_func *) name##_set_decrypt_key,	\
+  (nettle_crypt_func *) name##_encrypt,			\
+  (nettle_crypt_func *) name##_decrypt,			\
 }
 
 #define _NETTLE_CIPHER_FIX(name, NAME, keysize) {	\
-  #name,					\
-  sizeof(struct name##_ctx),			\
-  NAME##_BLOCK_SIZE,				\
-  keysize / 8,					\
-  (nettle_set_key_func) name##_set_key,		\
-  (nettle_set_key_func) name##_set_key,		\
-  (nettle_crypt_func) name##_encrypt,		\
-  (nettle_crypt_func) name##_decrypt,		\
+  #name,						\
+  sizeof(struct name##_ctx),				\
+  NAME##_BLOCK_SIZE,					\
+  keysize / 8,						\
+  (nettle_set_key_func *) name##_set_key,		\
+  (nettle_set_key_func *) name##_set_key,		\
+  (nettle_crypt_func *) name##_encrypt,			\
+  (nettle_crypt_func *) name##_decrypt,			\
 }
 
 extern const struct nettle_cipher nettle_aes128;
@@ -118,15 +105,6 @@ extern const struct nettle_cipher nettle_arctwo64;
 extern const struct nettle_cipher nettle_arctwo128;
 extern const struct nettle_cipher nettle_arctwo_gutmann128;
 
-
-/* Hash algorithms */
-typedef void (*nettle_hash_init_func)(void *ctx);
-typedef void (*nettle_hash_update_func)(void *ctx,
-					unsigned length,
-					const uint8_t *src);
-typedef void (*nettle_hash_digest_func)(void *ctx,
-					unsigned length, uint8_t *dst);
-
 struct nettle_hash
 {
   const char *name;
@@ -140,9 +118,9 @@ struct nettle_hash
   /* Internal block size */
   unsigned block_size;
 
-  nettle_hash_init_func init;
-  nettle_hash_update_func update;
-  nettle_hash_digest_func digest;
+  nettle_hash_init_func *init;
+  nettle_hash_update_func *update;
+  nettle_hash_digest_func *digest;
 };
 
 #define _NETTLE_HASH(name, NAME) {		\
@@ -150,9 +128,9 @@ struct nettle_hash
  sizeof(struct name##_ctx),			\
  NAME##_DIGEST_SIZE,				\
  NAME##_DATA_SIZE,				\
- (nettle_hash_init_func) name##_init,		\
- (nettle_hash_update_func) name##_update,	\
- (nettle_hash_digest_func) name##_digest	\
+ (nettle_hash_init_func *) name##_init,		\
+ (nettle_hash_update_func *) name##_update,	\
+ (nettle_hash_digest_func *) name##_digest	\
 } 
 
 extern const struct nettle_hash nettle_md2;
@@ -160,27 +138,6 @@ extern const struct nettle_hash nettle_md4;
 extern const struct nettle_hash nettle_md5;
 extern const struct nettle_hash nettle_sha1;
 extern const struct nettle_hash nettle_sha256;
-
-
-/* ASCII armor codecs. NOTE: Experimental and subject to change. */
-
-typedef unsigned (*nettle_armor_length_func)(unsigned length);
-typedef void (*nettle_armor_init_func)(void *ctx);
-
-typedef unsigned (*nettle_armor_encode_update_func)(void *ctx,
-						    uint8_t *dst,
-						    unsigned src_length,
-						    const uint8_t *src);
-
-typedef unsigned (*nettle_armor_encode_final_func)(void *ctx, uint8_t *dst);
-
-typedef int (*nettle_armor_decode_update_func)(void *ctx,
-					       unsigned *dst_length,
-					       uint8_t *dst,
-					       unsigned src_length,
-					       const uint8_t *src);
-
-typedef int (*nettle_armor_decode_final_func)(void *ctx);
 
 struct nettle_armor
 {
@@ -190,15 +147,15 @@ struct nettle_armor
 
   unsigned encode_final_length;
 
-  nettle_armor_init_func encode_init;
-  nettle_armor_length_func encode_length;
-  nettle_armor_encode_update_func encode_update;
-  nettle_armor_encode_final_func encode_final;
+  nettle_armor_init_func *encode_init;
+  nettle_armor_length_func *encode_length;
+  nettle_armor_encode_update_func *encode_update;
+  nettle_armor_encode_final_func *encode_final;
   
-  nettle_armor_init_func decode_init;
-  nettle_armor_length_func decode_length;
-  nettle_armor_decode_update_func decode_update;
-  nettle_armor_decode_final_func decode_final;
+  nettle_armor_init_func *decode_init;
+  nettle_armor_length_func *decode_length;
+  nettle_armor_decode_update_func *decode_update;
+  nettle_armor_decode_final_func *decode_final;
 };
 
 #define _NETTLE_ARMOR(name, NAME) {				\
@@ -206,14 +163,14 @@ struct nettle_armor
   sizeof(struct name##_encode_ctx),				\
   sizeof(struct name##_decode_ctx),				\
   NAME##_ENCODE_FINAL_LENGTH,					\
-  (nettle_armor_init_func) name##_encode_init,			\
-  (nettle_armor_length_func) name##_encode_length,		\
-  (nettle_armor_encode_update_func) name##_encode_update,	\
-  (nettle_armor_encode_final_func) name##_encode_final,		\
-  (nettle_armor_init_func) name##_decode_init,			\
-  (nettle_armor_length_func) name##_decode_length,		\
-  (nettle_armor_decode_update_func) name##_decode_update,	\
-  (nettle_armor_decode_final_func) name##_decode_final,		\
+  (nettle_armor_init_func *) name##_encode_init,		\
+  (nettle_armor_length_func *) name##_encode_length,		\
+  (nettle_armor_encode_update_func *) name##_encode_update,	\
+  (nettle_armor_encode_final_func *) name##_encode_final,	\
+  (nettle_armor_init_func *) name##_decode_init,		\
+  (nettle_armor_length_func *) name##_decode_length,		\
+  (nettle_armor_decode_update_func *) name##_decode_update,	\
+  (nettle_armor_decode_final_func *) name##_decode_final,	\
 }
 
 #define _NETTLE_ARMOR_0(name, NAME) {				\
@@ -221,16 +178,15 @@ struct nettle_armor
   0,								\
   sizeof(struct name##_decode_ctx),				\
   NAME##_ENCODE_FINAL_LENGTH,					\
-  (nettle_armor_init_func) name##_encode_init,			\
-  (nettle_armor_length_func) name##_encode_length,		\
-  (nettle_armor_encode_update_func) name##_encode_update,	\
-  (nettle_armor_encode_final_func) name##_encode_final,		\
-  (nettle_armor_init_func) name##_decode_init,			\
-  (nettle_armor_length_func) name##_decode_length,		\
-  (nettle_armor_decode_update_func) name##_decode_update,	\
-  (nettle_armor_decode_final_func) name##_decode_final,		\
+  (nettle_armor_init_func *) name##_encode_init,		\
+  (nettle_armor_length_func *) name##_encode_length,		\
+  (nettle_armor_encode_update_func *) name##_encode_update,	\
+  (nettle_armor_encode_final_func *) name##_encode_final,	\
+  (nettle_armor_init_func *) name##_decode_init,		\
+  (nettle_armor_length_func *) name##_decode_length,		\
+  (nettle_armor_decode_update_func *) name##_decode_update,	\
+  (nettle_armor_decode_final_func *) name##_decode_final,	\
 }
-
 
 extern const struct nettle_armor nettle_base64;
 extern const struct nettle_armor nettle_base16;

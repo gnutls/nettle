@@ -27,7 +27,7 @@ test_main(void)
   knuth_lfib_init(&lfib, 13);
 
   if (!rsa_generate_keypair(&pub, &key,
-			    &lfib, (nettle_random_func) knuth_lfib_random,
+			    &lfib, (nettle_random_func *) knuth_lfib_random,
 			    NULL, verbose ? progress : NULL,
 			    1024, 50))
     FAIL();
@@ -49,7 +49,7 @@ test_main(void)
 
   mpz_set_ui(pub.e, 17);
   if (!rsa_generate_keypair(&pub, &key,
-			    &lfib, (nettle_random_func) knuth_lfib_random,
+			    &lfib, (nettle_random_func *) knuth_lfib_random,
 			    NULL, verbose ? progress : NULL,
 			    2000, 0))
     FAIL();

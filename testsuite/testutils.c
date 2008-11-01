@@ -175,13 +175,30 @@ test_cipher(const struct nettle_cipher *cipher,
   cipher->encrypt(ctx, length, data, cleartext);
 
   if (!MEMEQ(length, data, ciphertext))
-    FAIL();
-
+    {
+      fprintf(stderr, "Encrypt failed:\nInput:");
+      print_hex(length, cleartext);
+      fprintf(stderr, "\nOutput: ");
+      print_hex(length, data);
+      fprintf(stderr, "\nExpected:");
+      print_hex(length, ciphertext);
+      fprintf(stderr, "\n");
+      FAIL();
+    }
   cipher->set_decrypt_key(ctx, key_length, key);
   cipher->decrypt(ctx, length, data, data);
 
   if (!MEMEQ(length, data, cleartext))
-    FAIL();
+    {
+      fprintf(stderr, "Decrypt failed:\nInput:");
+      print_hex(length, ciphertext);
+      fprintf(stderr, "\nOutput: ");
+      print_hex(length, data);
+      fprintf(stderr, "\nExpected:");
+      print_hex(length, cleartext);
+      fprintf(stderr, "\n");
+      FAIL();
+    }
 
   free(ctx);
   free(data);
@@ -760,7 +777,7 @@ test_dsa(const struct dsa_public_key *pub,
   
   sha1_update(&sha1, LDATA("The magic words are squeamish ossifrage"));
   dsa_sign(pub, key,
-	   &lfib, (nettle_random_func) knuth_lfib_random,
+	   &lfib, (nettle_random_func *) knuth_lfib_random,
 	   &sha1, &signature);
   
   if (verbose)

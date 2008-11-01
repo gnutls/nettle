@@ -220,7 +220,7 @@ main(int argc, char **argv)
   mpz_init(x);
 
   if (!rsa_encrypt(&key,
-		   &ctx.yarrow, (nettle_random_func) yarrow256_random,
+		   &ctx.yarrow, (nettle_random_func *) yarrow256_random,
 		   sizeof(info.key), info.key, 
 		   x))
     {

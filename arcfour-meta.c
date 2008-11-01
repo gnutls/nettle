@@ -31,8 +31,8 @@
 const struct nettle_cipher nettle_arcfour128 =
   { "arcfour128", sizeof(struct arcfour_ctx),
     0, 16,
-    (nettle_set_key_func) arcfour_set_key,
-    (nettle_set_key_func) arcfour_set_key,
-    (nettle_crypt_func) arcfour_crypt,
-    (nettle_crypt_func) arcfour_crypt
+    (nettle_set_key_func *) arcfour_set_key,
+    (nettle_set_key_func *) arcfour_set_key,
+    (nettle_crypt_func *) arcfour_crypt,
+    (nettle_crypt_func *) arcfour_crypt
   };

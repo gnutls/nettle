@@ -66,8 +66,8 @@ nettle_des = {
   "des", sizeof(struct des_ctx),
   DES_BLOCK_SIZE, DES_KEY_SIZE,
   des_set_key_hack, des_set_key_hack,
-  (nettle_crypt_func) des_encrypt,
-  (nettle_crypt_func) des_decrypt
+  (nettle_crypt_func *) des_encrypt,
+  (nettle_crypt_func *) des_decrypt
 };
 
 const struct nettle_cipher
@@ -75,8 +75,8 @@ nettle_des3 = {
  "des3", sizeof(struct des3_ctx),
  DES3_BLOCK_SIZE, DES3_KEY_SIZE,
  des3_set_key_hack, des3_set_key_hack,
- (nettle_crypt_func) des3_encrypt,
- (nettle_crypt_func) des3_decrypt
+ (nettle_crypt_func *) des3_encrypt,
+ (nettle_crypt_func *) des3_decrypt
 };
 
 /* NOTE: This is not as nice as one might think, as it will crash if

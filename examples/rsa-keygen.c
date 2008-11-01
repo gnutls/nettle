@@ -113,7 +113,7 @@ main(int argc, char **argv)
 
   if (!rsa_generate_keypair
       (&pub, &priv,
-       (void *) &yarrow, (nettle_random_func) yarrow256_random,
+       (void *) &yarrow, (nettle_random_func *) yarrow256_random,
        NULL, progress,
        KEYSIZE, ESIZE))
     {

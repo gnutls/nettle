@@ -50,20 +50,21 @@
 
 
 /* AES */
-
+static nettle_set_key_func openssl_aes_set_encrypt_key;
 static void
 openssl_aes_set_encrypt_key(void *ctx, unsigned length, const uint8_t *key)
 {
   AES_set_encrypt_key(key, length * 8, ctx);
 }
 
+static nettle_set_key_func openssl_aes_set_decrypt_key;
 static void
 openssl_aes_set_decrypt_key(void *ctx, unsigned length, const uint8_t *key)
 {
   AES_set_decrypt_key(key, length * 8, ctx);
 }
 
-
+static nettle_crypt_func openssl_aes_encrypt;
 static void
 openssl_aes_encrypt(void *ctx, unsigned length,
 		    uint8_t *dst, const uint8_t *src)
@@ -78,6 +79,7 @@ openssl_aes_encrypt(void *ctx, unsigned length,
     }
 }
 
+static nettle_crypt_func openssl_aes_decrypt;
 static void
 openssl_aes_decrypt(void *ctx, unsigned length,
 		    uint8_t *dst, const uint8_t *src)
@@ -123,14 +125,14 @@ nettle_openssl_aes256 = {
 };
 
 /* Arcfour */
-
+static nettle_set_key_func openssl_arcfour_set_key;
 static void
 openssl_arcfour_set_key(void *ctx, unsigned length, const uint8_t *key)
 {
   RC4_set_key(ctx, length, key);
 }
 
-
+static nettle_crypt_func openssl_arcfour_crypt;
 static void
 openssl_arcfour_crypt(void *ctx, unsigned length,
 		      uint8_t *dst, const uint8_t *src)
@@ -147,13 +149,14 @@ nettle_openssl_arcfour128 = {
 };
 
 /* Blowfish */
+static nettle_set_key_func openssl_bf_set_key;
 static void
 openssl_bf_set_key(void *ctx, unsigned length, const uint8_t *key)
 {
   BF_set_key(ctx, length, key);
 }
 
-
+static nettle_crypt_func openssl_bf_encrypt;
 static void
 openssl_bf_encrypt(void *ctx, unsigned length,
 		   uint8_t *dst, const uint8_t *src)
@@ -168,6 +171,7 @@ openssl_bf_encrypt(void *ctx, unsigned length,
     }
 }
 
+static nettle_crypt_func openssl_bf_decrypt;
 static void
 openssl_bf_decrypt(void *ctx, unsigned length,
 		   uint8_t *dst, const uint8_t *src)
@@ -192,6 +196,7 @@ nettle_openssl_blowfish128 = {
 
 
 /* DES */
+static nettle_set_key_func openssl_des_set_key;
 static void
 openssl_des_set_key(void *ctx, unsigned length, const uint8_t *key)
 {
@@ -205,6 +210,7 @@ openssl_des_set_key(void *ctx, unsigned length, const uint8_t *key)
 
 #define DES_BLOCK_SIZE 8
 
+static nettle_crypt_func openssl_des_encrypt;
 static void
 openssl_des_encrypt(void *ctx, unsigned length,
 		    uint8_t *dst, const uint8_t *src)
@@ -219,6 +225,7 @@ openssl_des_encrypt(void *ctx, unsigned length,
     }
 }
 
+static nettle_crypt_func openssl_des_decrypt;
 static void
 openssl_des_decrypt(void *ctx, unsigned length,
 		    uint8_t *dst, const uint8_t *src)
@@ -243,12 +250,14 @@ nettle_openssl_des = {
 
 
 /* Cast128 */
+static nettle_set_key_func openssl_cast_set_key;
 static void
 openssl_cast_set_key(void *ctx, unsigned length, const uint8_t *key)
 {
   CAST_set_key(ctx, length, key);
 }
 
+static nettle_crypt_func openssl_cast_encrypt;
 static void
 openssl_cast_encrypt(void *ctx, unsigned length,
 		     uint8_t *dst, const uint8_t *src)
@@ -263,6 +272,7 @@ openssl_cast_encrypt(void *ctx, unsigned length,
     }
 }
 
+static nettle_crypt_func openssl_cast_decrypt;
 static void
 openssl_cast_decrypt(void *ctx, unsigned length,
 		     uint8_t *dst, const uint8_t *src)
@@ -288,13 +298,14 @@ nettle_openssl_cast128 = {
 /* Hash functions */
 
 /* md5 */
-
+static nettle_hash_init_func openssl_md5_init;
 static void
 openssl_md5_init(void *ctx)
 {
   MD5_Init(ctx);
 }
 
+static nettle_hash_update_func openssl_md5_update;
 static void
 openssl_md5_update(void *ctx,
 		    unsigned length,
@@ -303,6 +314,7 @@ openssl_md5_update(void *ctx,
   MD5_Update(ctx, src, length);
 }
 
+static nettle_hash_digest_func openssl_md5_digest;
 static void
 openssl_md5_digest(void *ctx,
 		    unsigned length, uint8_t *dst)
@@ -322,13 +334,14 @@ nettle_openssl_md5 = {
 };
 
 /* sha1 */
-
+static nettle_hash_init_func openssl_sha1_init;
 static void
 openssl_sha1_init(void *ctx)
 {
   SHA1_Init(ctx);
 }
 
+static nettle_hash_update_func openssl_sha1_update;
 static void
 openssl_sha1_update(void *ctx,
 		    unsigned length,
@@ -337,6 +350,7 @@ openssl_sha1_update(void *ctx,
   SHA1_Update(ctx, src, length);
 }
 
+static nettle_hash_digest_func openssl_sha1_digest;
 static void
 openssl_sha1_digest(void *ctx,
 		    unsigned length, uint8_t *dst)

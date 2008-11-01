@@ -32,7 +32,7 @@ test_main(void)
     fprintf(stderr, "msg: `%s', length = %d\n", msg, msg_length);
   
   ASSERT(rsa_encrypt(&pub,
-		     &lfib, (nettle_random_func) knuth_lfib_random,
+		     &lfib, (nettle_random_func *) knuth_lfib_random,
 		     msg_length, msg,
 		     gibberish));
 

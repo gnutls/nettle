@@ -57,14 +57,14 @@ memcpy((ctx)->iv, (data), sizeof((ctx)->iv))
 #define CBC_ENCRYPT(self, f, length, dst, src)		\
 (0 ? ((f)(&(self)->ctx, 0, NULL, NULL))			\
    : cbc_encrypt((void *) &(self)->ctx,			\
-                 (nettle_crypt_func) (f),		\
+                 (nettle_crypt_func *) (f),		\
 		 sizeof((self)->iv), (self)->iv,	\
                  (length), (dst), (src)))
 
 #define CBC_DECRYPT(self, f, length, dst, src)		\
 (0 ? ((f)(&(self)->ctx, 0, NULL, NULL))			\
    : cbc_decrypt((void *) &(self)->ctx,			\
-                 (nettle_crypt_func) (f),		\
+                 (nettle_crypt_func *) (f),		\
 		 sizeof((self)->iv), (self)->iv,	\
                  (length), (dst), (src)))
 
