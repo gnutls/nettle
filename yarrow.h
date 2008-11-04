@@ -23,8 +23,8 @@
  * MA 02111-1307, USA.
  */
  
-#ifndef NETTLE_YARROW_COMPAT_H_INCLUDED
-#define NETTLE_YARROW_COMPAT_H_INCLUDED
+#ifndef NETTLE_YARROW_H_INCLUDED
+#define NETTLE_YARROW_H_INCLUDED
 
 #include "aes.h"
 #include "sha.h"
@@ -134,4 +134,4 @@ yarrow_key_event_estimate(struct yarrow_key_event_ctx *ctx,
 }
 #endif
 
-#endif /* NETTLE_YARROW_COMPAT_H_INCLUDED */
+#endif /* NETTLE_YARROW_H_INCLUDED */
