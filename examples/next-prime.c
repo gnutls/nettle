@@ -145,9 +145,11 @@ main(int argc, char **argv)
       mpz_init(d);
       mpz_sub(d, p, n);
 
-      gmp_fprintf(stderr, "bit size: %lu, diff: %Zd, total time: %.3g s\n",
-		  mpz_sizeinbase(p, 2), d,
-		  (double)(end - start) / CLOCKS_PER_SEC);
+      /* Avoid using gmp_fprintf, to stay compatible with gmp-3.1. */
+      fprintf(stderr, "bit size: %lu, diff: ", (unsigned long) mpz_sizeinbase(p, 2));
+      mpz_out_str(stderr, 10, d);
+      fprintf(stderr, ", total time: %.3g s\n",
+	      (double)(end - start) / CLOCKS_PER_SEC);
     }
   return EXIT_SUCCESS;
 }
