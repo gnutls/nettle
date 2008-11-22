@@ -108,8 +108,6 @@ yarrow256_seed(struct yarrow256_ctx *ctx,
 
   sha256_update(&ctx->pools[YARROW_FAST], length, seed_file);
   yarrow256_fast_reseed(ctx);
-
-  ctx->seeded = 1;
 }
 
 /* FIXME: Generalize so that it generates a few more blocks at a
@@ -193,6 +191,7 @@ yarrow256_fast_reseed(struct yarrow256_ctx *ctx)
   yarrow_iterate(digest);
 
   aes_set_encrypt_key(&ctx->key, sizeof(digest), digest);
+  ctx->seeded = 1;
 
   /* Derive new counter value */
   memset(ctx->counter, 0, sizeof(ctx->counter));
@@ -294,8 +293,6 @@ yarrow256_update(struct yarrow256_ctx *ctx,
         if (!yarrow256_needed_sources(ctx))
 	  {
 	    yarrow256_slow_reseed(ctx);
-	    ctx->seeded = 1;
-
 	    return 1;
 	  }
 	else

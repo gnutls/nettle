@@ -1,3 +1,11 @@
+2008-11-22  Niels Möller  <nisse@lysator.liu.se>
+
+	* yarrow256.c (yarrow256_fast_reseed): Set ctx->seeded = 1, so
+	that it is set if and only if the aes context has been initialized
+	with aes_set_encrypt_key.
+	(yarrow256_seed): No need to set ctx->seeded here.
+	(yarrow256_update): Likewise.
+
 2008-11-04  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/next-prime.c (main): Avoid using gmp_fprintf, to stay
