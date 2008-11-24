@@ -117,7 +117,7 @@ yarrow_generate_block(struct yarrow256_ctx *ctx,
 		      uint8_t *block)
 {
   unsigned i;
-  
+
   aes_encrypt(&ctx->key, sizeof(ctx->counter), block, ctx->counter);
 
   /* Increment counter, treating it as a big-endian number. This is
@@ -213,7 +213,6 @@ yarrow256_slow_reseed(struct yarrow256_ctx *ctx)
 #endif
 
   /* Get digest of the slow pool*/
-  
   sha256_digest(&ctx->pools[YARROW_SLOW], sizeof(digest), digest);
 
   /* Feed it into the fast pool */
