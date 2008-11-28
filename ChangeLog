@@ -1,3 +1,7 @@
+2008-11-28  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/cxx-test.cxx: Include <cstdio>.
+
 2008-11-22  Niels Möller  <nisse@lysator.liu.se>
 
 	* yarrow256.c (yarrow256_fast_reseed): Set ctx->seeded = 1, so
