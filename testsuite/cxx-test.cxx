@@ -1,3 +1,6 @@
+/* For FILE, used by gmp.h */
+#include <cstdio>
+
 #include "testutils.h"
 #include "md5.h"
 
