@@ -1,3 +1,7 @@
+2008-12-22  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in ($(des_headers)): Create files in $(srcdir).
+
 2008-11-28  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/cxx-test.cxx: Include <cstdio>.

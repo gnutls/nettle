@@ -19,6 +19,7 @@ SUBDIRS = tools testsuite examples
 include config.make
 
 PRE_CPPFLAGS = -I.
+# FIXME: Add configuration of LIBEXT?
 LIBTARGETS = libnettle.a @IF_HOGWEED@ libhogweed.a
 SHLIBTARGETS = $(LIBNETTLE_FORLINK) @IF_HOGWEED@ $(LIBHOGWEED_FORLINK)
 
@@ -178,8 +179,9 @@ des_headers = parity.h rotors.h keymap.h
 # Generate DES headers.
 $(des_headers): desdata.c
 	$(MAKE) desdata$(EXEEXT)
-	./desdata$(EXEEXT) $(@F) > $@T
-	test -s $@T && mv -f $@T $@
+	f="$(srcdir)/`basename $@`"; \
+	  ./desdata$(EXEEXT) $(@F) > $${f}T; \
+	  test -s $${f}T && mv -f $${f}T $$f
 
 des.$(OBJEXT): des.c des.h $(des_headers)
 
@@ -302,7 +304,7 @@ uninstall-here: uninstall-info uninstall-headers uninstall-static \
 	        @IF_SHARED@ uninstall-shared
 
 uninstall-static:
-	for f in $(STATIC_LIBS) ; do \
+	for f in $(LIBTARGETS) ; do \
 	  rm -f $(DESTDIR)$(libdir)/$$f ; \
 	done
 
