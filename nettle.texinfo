@@ -657,7 +657,7 @@ single key setup function that can be used for both encryption and
 decryption.
 
 @subsection AES
-AES is a quite new block cipher, specified by NIST as a replacement for
+AES is a block cipher, specified by NIST as a replacement for
 the older DES standard. The standard is the result of a competition
 between cipher designers. The winning design, also known as RIJNDAEL,
 was constructed by Joan Daemen and Vincent Rijnmen.
