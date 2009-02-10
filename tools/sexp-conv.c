@@ -110,13 +110,26 @@ sexp_convert_item(struct sexp_parser *parser,
 	      {
 		/* FIXME: Adapt pretty printing to handle a big first
 		 * element. */
-		if (item == 1)
+		switch (item)
 		  {
+		  case 0:
+		    if (token->type == SEXP_COMMENT)
+		      {
+			indent = output->pos;
+			/* Disable the indentation setup for next item */
+			item++;
+		      }
+		    break;
+		    
+		  case  1:
 		    sexp_put_char(output, ' ');
 		    indent = output->pos;
+		    break;
+
+		  default:
+		    sexp_put_newline(output, indent);
+		    break;
 		  }
-		else if (item > 1)
-		  sexp_put_newline(output, indent);
 	      }
 
 	    sexp_convert_item(parser, token, output, mode_out, indent);
@@ -141,9 +154,7 @@ sexp_convert_item(struct sexp_parser *parser,
       if (mode_out == SEXP_ADVANCED)
 	{
 	  sexp_put_data(output, token->string.size, token->string.contents);
-	  /* This newline is necessary only if the comment comes first
-	     in a list. It would be nice to supress extra newlines. */
-	  sexp_put_newline(output, indent);
+	  sexp_put_soft_newline(output, indent);
 	}
       break;
     default:

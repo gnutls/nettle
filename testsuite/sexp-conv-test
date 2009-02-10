@@ -91,11 +91,9 @@ test_advanced '(foo bar baz)' '(foo bar
      baz)' 
 test_advanced '; comment
 ()' '; comment
-
 ()' 
 test_advanced '(foo ; gazonk
 bar)' '(foo ; gazonk
-     
      bar)'
 
 test_advanced '(foo[bar]foo)' '(foo [bar]foo)'

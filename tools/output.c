@@ -47,6 +47,7 @@ sexp_output_init(struct sexp_output *output, FILE *f,
   output->ctx = NULL;
   
   output->pos = 0;
+  output->soft_newline = 0;
 }
 
 void
@@ -61,24 +62,41 @@ sexp_output_hash_init(struct sexp_output *output,
 static void
 sexp_put_raw_char(struct sexp_output *output, uint8_t c)
 {
-  output->pos++;
   if (putc(c, output->f) < 0)
     die("Write failed: %s\n", strerror(errno));
+
+  output->pos++;
+  output->soft_newline = 0;
 }
 
-void 
+void
 sexp_put_newline(struct sexp_output *output,
 		 unsigned indent)
 {
-  unsigned i;
+  if (output->soft_newline)
+    output->soft_newline = 0;
+  else
+    {
+      unsigned i;
 
-  sexp_put_raw_char(output, '\n');
-  output->pos = 0;
+      sexp_put_raw_char(output, '\n');
+      output->pos = 0;
   
-  for(i = 0; i < indent; i++)
-    sexp_put_raw_char(output, ' ');
+      for(i = 0; i < indent; i++)
+	sexp_put_raw_char(output, ' ');
   
-  output->pos = indent;
+      output->pos = indent;
+    }
+}
+
+/* Put a newline, but only if it is followed by another newline,
+   collaps to one newline only. */
+void
+sexp_put_soft_newline(struct sexp_output *output,
+		      unsigned indent)
+{
+  sexp_put_newline(output, indent);
+  output->soft_newline = 1;
 }
 
 void
@@ -86,13 +104,13 @@ sexp_put_char(struct sexp_output *output, uint8_t c)
 {
   if (output->coding)
     {
-      /* Two is enough for both hex and base64. */
+      /* Two is enough for both base16 and base64. */
       uint8_t encoded[2];
       unsigned done;
 
       unsigned i;
-      
-      done = output->coding->encode_update(&output->state, encoded,
+
+      done = output->coding->encode_update(&output->base64, encoded,
 					   1, &c);
       assert(done <= sizeof(encoded));
       
@@ -149,7 +167,7 @@ sexp_put_code_start(struct sexp_output *output,
   output->coding_indent = output->pos;
   
   output->coding = coding;
-  output->coding->encode_init(&output->state);
+  output->coding->encode_init(&output->base64);
 }
 
 void
@@ -161,7 +179,7 @@ sexp_put_code_end(struct sexp_output *output)
 
   assert(output->coding);
 
-  done = output->coding->encode_final(&output->state, encoded);
+  done = output->coding->encode_final(&output->base64, encoded);
 
   assert(done <= sizeof(encoded));
   

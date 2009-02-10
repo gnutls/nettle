@@ -1,3 +1,23 @@
+2009-02-10  Niels Möller  <nisse@lysator.liu.se>
+
+	* base16-meta.c (base16_encode_update_wrapper): Mark ctx argument
+	as UNUSED.
+
+	* testsuite/sexp-conv-test: Updated testcases for improved
+	handling of comments.
+
+	* tools/sexp-conv.c (sexp_convert_item): Use sexp_put_soft_newline
+	to terminate comments, and modify indentation for the case that a
+	list starts with a comment.
+
+	* tools/output.c (sexp_output_init): Initialize soft_newline.
+	(sexp_put_raw_char): Clear soft_newline.
+	(sexp_put_newline): Check and reset soft_newline.
+	(sexp_put_soft_newline): New function.
+
+	* tools/output.h (struct sexp_output): Removed union with single
+	element, and updated all users. New attribute soft_newline.
+
 2008-12-22  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in ($(des_headers)): Create files in $(srcdir).
