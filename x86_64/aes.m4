@@ -17,6 +17,28 @@ define(<LREG>,<ifelse(
 	$1, %r14d, %r14b,
 	$1, %r15d, %r15b)>)dnl
 
+define(<HREG>,<ifelse(
+	$1, %eax, %ah,
+	$1, %ebx, %bh,
+	$1, %ecx, %ch,
+	$1, %edx, %dh,
+	error)>)
+
+dnl MOVE_HREG(src, dst)
+define(<MOVE_HREG>, <ifelse(
+	$1, %eax, <movzb	%ah, $2
+	>,
+	$1, %ebx, <movzb	%bh, $2
+	>,
+	$1, %ecx, <movzb	%ch, $2
+	>,
+	$1, %edx, <movzb	%dh, $2
+	>,
+	<movl	$1, $2
+	shr	<$>8, $2
+	and	<$>0xff, $2
+	>)>)
+
 define(<XREG>,<ifelse(
 	$1, %rax, %eax,
 	$1, %rbx, %ebx,
@@ -26,8 +48,8 @@ define(<XREG>,<ifelse(
 	$1, %rdi, %edi,
 	$1, %rbp, %ebp,
 	$1, %rsp, %esp,
-	$1, %r8d, %r8d,
-	$1, %r9d, %r9d,
+	$1, %r8, %r8d,
+	$1, %r9, %r9d,
 	$1, %r10,%r10d,
 	$1, %r11,%r11d,
 	$1, %r12,%r12d,
@@ -72,9 +94,7 @@ dnl Computes one word of the AES round. Leaves result in $6.
 define(<AES_ROUND>, <
 	movzb	LREG($2), $7
 	movl	AES_TABLE0 ($1, $7, 4),$6
-	movl	$3, XREG($7)
-	shr	<$>8,$7
-	and	<$>0xff,$7
+	MOVE_HREG($3, XREG($7))
 	xorl	AES_TABLE1 ($1, $7, 4),$6
 	movl	$4,XREG($7)
 	shr	<$>16,$7

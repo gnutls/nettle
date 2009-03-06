@@ -1,4 +1,3 @@
-C -*- mode: asm; asm-comment-char: ?C; -*-  
 C nettle, low-level cryptographics library
 C 
 C Copyright (C) 2001, 2002, 2005, 2008 Rafael R. Sevilla, Niels Möller
@@ -25,28 +24,25 @@ C Register usage:
 C AES state, use two of them
 define(<SA>,<%eax>)
 define(<SB>,<%ebx>)
-define(<SC>,<%ebp>)
-define(<SD>,<%r9d>)
+define(<SC>,<%ecx>)
+define(<SD>,<%edx>)
 
 define(<TA>,<%r10d>)
 define(<TB>,<%r11d>)
 define(<TC>,<%r12d>)
-define(<TD>,<%r13d>)
 
 define(<CTX>,	<%rdi>)
 define(<TABLE>,	<%rsi>)
-define(<LENGTH>,<%edx>)		C Length is only 32 bits
-define(<DST>,	<%rcx>)
+define(<PARAM_LENGTH>,<%edx>)		C Length is only 32 bits
+define(<PARAM_DST>,	<%rcx>)
 define(<SRC>,	<%r8>)
 
+define(<DST>, <%r9>) 
 define(<KEY>,<%r14>)
 define(<COUNT>,	<%r15d>)
+define(<BLOCK_COUNT>, <%r13d>)
 
-C Put the outer loop counter on the stack, and reuse the LENGTH
-C register as a temporary. 
-	
-define(<FRAME_COUNT>,	<(%rsp)>)
-define(<TMP>,<%rdx>)
+define(<TMP>,<%rbp>)
 
 	.file "aes-encrypt-internal.asm"
 	
@@ -57,7 +53,7 @@ define(<TMP>,<%rdx>)
 	.text
 	ALIGN(4)
 PROLOGUE(_nettle_aes_encrypt)
-	test	LENGTH, LENGTH
+	test	PARAM_LENGTH, PARAM_LENGTH
 	jz	.Lend
 
         C save all registers that need to be saved
@@ -68,11 +64,9 @@ PROLOGUE(_nettle_aes_encrypt)
 	push	%r14
 	push	%r15	
 
-	C Allocates 4 bytes more than we need, for nicer alignment.
-	sub	$8, %rsp
-
-	shrl	$4, LENGTH
-	movl	LENGTH, FRAME_COUNT
+	mov	PARAM_DST, DST
+	movl	PARAM_LENGTH, BLOCK_COUNT
+	shrl	$4, BLOCK_COUNT
 .Lblock_loop:
 	mov	CTX,KEY
 	
@@ -96,19 +90,19 @@ PROLOGUE(_nettle_aes_encrypt)
 	AES_ROUND(TABLE, SC,SD,SA,SB, TC, TMP)
 	xorl	8(KEY),TC
 
-	AES_ROUND(TABLE, SD,SA,SB,SC, TD, TMP)
-	xorl	12(KEY),TD
+	AES_ROUND(TABLE, SD,SA,SB,SC, SD, TMP)
+	xorl	12(KEY),SD
 
-	AES_ROUND(TABLE, TA,TB,TC,TD, SA, TMP)
+	AES_ROUND(TABLE, TA,TB,TC,SD, SA, TMP)
 	xorl	16(KEY), SA
 
-	AES_ROUND(TABLE, TB,TC,TD,TA, SB, TMP)
+	AES_ROUND(TABLE, TB,TC,SD,TA, SB, TMP)
 	xorl	20(KEY),SB
 
-	AES_ROUND(TABLE, TC,TD,TA,TB, SC, TMP)
+	AES_ROUND(TABLE, TC,SD,TA,TB, SC, TMP)
 	xorl	24(KEY),SC
 
-	AES_ROUND(TABLE, TD,TA,TB,TC, SD, TMP)
+	AES_ROUND(TABLE, SD,TA,TB,TC, SD, TMP)
 	xorl	28(KEY),SD
 	
 	add	$32,KEY	C  point to next key
@@ -126,13 +120,13 @@ PROLOGUE(_nettle_aes_encrypt)
 	AES_ROUND(TABLE, SC,SD,SA,SB, TC, TMP)
 	xorl	8(KEY),TC
 
-	AES_ROUND(TABLE, SD,SA,SB,SC, TD, TMP)
-	xorl	12(KEY),TD
+	AES_ROUND(TABLE, SD,SA,SB,SC, SD, TMP)
+	xorl	12(KEY),SD
 
-	AES_FINAL_ROUND(TA,TB,TC,TD, TABLE, SA, TMP)
-	AES_FINAL_ROUND(TB,TC,TD,TA, TABLE, SB, TMP)
-	AES_FINAL_ROUND(TC,TD,TA,TB, TABLE, SC, TMP)
-	AES_FINAL_ROUND(TD,TA,TB,TC, TABLE, SD, TMP)
+	AES_FINAL_ROUND(TA,TB,TC,SD, TABLE, SA, TMP)
+	AES_FINAL_ROUND(TB,TC,SD,TA, TABLE, SB, TMP)
+	AES_FINAL_ROUND(TC,SD,TA,TB, TABLE, SC, TMP)
+	AES_FINAL_ROUND(SD,TA,TB,TC, TABLE, SD, TMP)
 
 	C S-box substitution
 	mov	$3, COUNT
@@ -146,11 +140,10 @@ PROLOGUE(_nettle_aes_encrypt)
 	AES_STORE(SA,SB,SC,SD, KEY, DST)
 	
 	add	$16, DST
-	decl	FRAME_COUNT
+	decl	BLOCK_COUNT
 
 	jnz	.Lblock_loop
 
-	add	$8, %rsp
 	pop	%r15	
 	pop	%r14
 	pop	%r13
