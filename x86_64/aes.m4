@@ -24,21 +24,6 @@ define(<HREG>,<ifelse(
 	$1, %edx, %dh,
 	error)>)
 
-dnl MOVE_HREG(src, dst)
-define(<MOVE_HREG>, <ifelse(
-	$1, %eax, <movzb	%ah, $2
-	>,
-	$1, %ebx, <movzb	%bh, $2
-	>,
-	$1, %ecx, <movzb	%ch, $2
-	>,
-	$1, %edx, <movzb	%dh, $2
-	>,
-	<movl	$1, $2
-	shr	<$>8, $2
-	and	<$>0xff, $2
-	>)>)
-
 define(<XREG>,<ifelse(
 	$1, %rax, %eax,
 	$1, %rbx, %ebx,
@@ -79,10 +64,10 @@ dnl and stores the result in the area pointed to by dst.
 dnl Note that x86 allows unaligned accesses.
 dnl Would it be preferable to interleave the loads and stores?
 define(<AES_STORE>, <
-	xorl	16($5),$1
-	xorl	20($5),$2
-	xorl	24($5),$3
-	xorl	28($5),$4
+	xorl	($5),$1
+	xorl	4($5),$2
+	xorl	8($5),$3
+	xorl	12($5),$4
 
 	movl	$1,($6)
 	movl	$2,4($6)
@@ -94,7 +79,7 @@ dnl Computes one word of the AES round. Leaves result in $6.
 define(<AES_ROUND>, <
 	movzb	LREG($2), $7
 	movl	AES_TABLE0 ($1, $7, 4),$6
-	MOVE_HREG($3, XREG($7))
+	movzb	HREG($3), XREG($7)
 	xorl	AES_TABLE1 ($1, $7, 4),$6
 	movl	$4,XREG($7)
 	shr	<$>16,$7
@@ -105,7 +90,7 @@ define(<AES_ROUND>, <
 	xorl	AES_TABLE3 ($1, $7, 4),$6>)dnl
 
 dnl AES_FINAL_ROUND(a, b, c, d, table, out, tmp)
-dnl Computes one word of the final round. Leaves result in %edi.
+dnl Computes one word of the final round. Leaves result in $6.
 dnl Note that we have to quote $ in constants.
 define(<AES_FINAL_ROUND>, <
 	movzb	LREG($1),$7
