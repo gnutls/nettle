@@ -1,5 +1,13 @@
 2009-03-06  Niels Möller  <nisse@lysator.liu.se>
 
+	* x86_64/aes-encrypt-internal.asm: Reduced unrolling. Keep state
+	in %eax--%edx only.
+	* x86_64/aes-decrypt-internal.asm: Likewise.
+
+	* x86_64/aes.m4 (MOVE_HREG): Deleted, no longer needed.
+	(AES_STORE): Reduced offsets.
+	(AES_ROUND): Use HREG directly, not MOVE_HREG.
+
 	* x86_64/aes-decrypt-internal.asm: Rearrange register allocation.
 	Put SA--SD in %eax--%edx, so the second byte can be accessed as
 	%ah-%dh. TD is not needed, SD can be reused. Use the register that
