@@ -42,6 +42,8 @@ define(<KEY>,<%r14>)
 define(<COUNT>,	<%r15d>)
 define(<BLOCK_COUNT>, <%r13d>)
 
+C Must correspond to an old-style register, for movzb from %ah--%dh to
+C work.
 define(<TMP>,<%rbp>)
 
 	.file "aes-encrypt-internal.asm"
@@ -75,69 +77,45 @@ PROLOGUE(_nettle_aes_encrypt)
 
 	C  get number of rounds to do from ctx struct	
 	movl	AES_NROUNDS (CTX), COUNT
-	shrl	$1, COUNT
 	subl	$1, COUNT
 
 	add	$16,KEY		C  point to next key
 	ALIGN(4)
 .Lround_loop:
 	AES_ROUND(TABLE, SA,SB,SC,SD, TA, TMP)
-	xorl	(KEY), TA
-
 	AES_ROUND(TABLE, SB,SC,SD,SA, TB, TMP)
-	xorl	4(KEY),TB
-
 	AES_ROUND(TABLE, SC,SD,SA,SB, TC, TMP)
-	xorl	8(KEY),TC
-
 	AES_ROUND(TABLE, SD,SA,SB,SC, SD, TMP)
+
+	movl	TA, SA
+	movl	TB, SB
+	movl	TC, SC
+
+	xorl	(KEY),SA	C  add current session key to plaintext
+	xorl	4(KEY),SB
+	xorl	8(KEY),SC
 	xorl	12(KEY),SD
 
-	AES_ROUND(TABLE, TA,TB,TC,SD, SA, TMP)
-	xorl	16(KEY), SA
-
-	AES_ROUND(TABLE, TB,TC,SD,TA, SB, TMP)
-	xorl	20(KEY),SB
-
-	AES_ROUND(TABLE, TC,SD,TA,TB, SC, TMP)
-	xorl	24(KEY),SC
-
-	AES_ROUND(TABLE, SD,TA,TB,TC, SD, TMP)
-	xorl	28(KEY),SD
-	
-	add	$32,KEY	C  point to next key
+	add	$16,KEY	C  point to next key
 	decl	COUNT
 	jnz	.Lround_loop
 
-	C last two rounds
-
-	AES_ROUND(TABLE, SA,SB,SC,SD, TA, TMP)
-	xorl	(KEY), TA
-
-	AES_ROUND(TABLE, SB,SC,SD,SA, TB, TMP)
-	xorl	4(KEY),TB
-
-	AES_ROUND(TABLE, SC,SD,SA,SB, TC, TMP)
-	xorl	8(KEY),TC
-
-	AES_ROUND(TABLE, SD,SA,SB,SC, SD, TMP)
-	xorl	12(KEY),SD
-
-	AES_FINAL_ROUND(TA,TB,TC,SD, TABLE, SA, TMP)
-	AES_FINAL_ROUND(TB,TC,SD,TA, TABLE, SB, TMP)
-	AES_FINAL_ROUND(TC,SD,TA,TB, TABLE, SC, TMP)
-	AES_FINAL_ROUND(SD,TA,TB,TC, TABLE, SD, TMP)
+	C last round
+	AES_FINAL_ROUND(SA,SB,SC,SD, TABLE, TA, TMP)
+	AES_FINAL_ROUND(SB,SC,SD,SA, TABLE, TB, TMP)
+	AES_FINAL_ROUND(SC,SD,SA,SB, TABLE, TC, TMP)
+	AES_FINAL_ROUND(SD,SA,SB,SC, TABLE, SD, TMP)
 
 	C S-box substitution
 	mov	$3, COUNT
 .Lsubst:
-	AES_SUBST_BYTE(SA,SB,SC,SD, TABLE, TMP)
+	AES_SUBST_BYTE(TA,TB,TC,SD, TABLE, TMP)
 
 	decl	COUNT
 	jnz	.Lsubst
 
 	C Add last subkey, and store encrypted data
-	AES_STORE(SA,SB,SC,SD, KEY, DST)
+	AES_STORE(TA,TB,TC,SD, KEY, DST)
 	
 	add	$16, DST
 	decl	BLOCK_COUNT
