@@ -1,3 +1,15 @@
+2009-03-06  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/aes-decrypt-internal.asm: Rearrange register allocation.
+	Put SA--SD in %eax--%edx, so the second byte can be accessed as
+	%ah-%dh. TD is not needed, SD can be reused. Use the register that
+	is saved for the outer loop counter, getting it off the stack.
+	* x86_64/aes-encrypt-internal.asm: Likewise.	
+
+	* x86_64/aes.m4 (HREG, MOVE_HREG): New macros.
+	(XREG): Fixed bug in handling of %r8 and %r9.
+	(AES_ROUND): Use MOVE_HREG.
+
 2009-02-10  Niels Möller  <nisse@lysator.liu.se>
 
 	* base16-meta.c (base16_encode_update_wrapper): Mark ctx argument
