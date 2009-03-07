@@ -76,9 +76,9 @@ PROLOGUE(_nettle_aes_encrypt)
 	jz	.Lend
 
 	shrl	$4, FRAME_LENGTH
+
 .Lblock_loop:
 	movl	FRAME_CTX,KEY	C  address of context struct ctx
-	C  get number of rounds to do from ctx struct	
 	
 	movl	FRAME_SRC,TMP	C  address of plaintext
 	AES_LOAD(SA, SB, SC, SD, TMP, KEY)
@@ -152,7 +152,7 @@ PROLOGUE(_nettle_aes_encrypt)
 	AES_STORE(SA,SB,SC,SD, KEY, TMP)
 	
 	addl	$16, FRAME_DST		C Increment destination pointer
-	decl	FRAME_LENGTH		C Length
+	decl	FRAME_LENGTH
 
 	jnz	.Lblock_loop
 
