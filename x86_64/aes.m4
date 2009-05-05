@@ -89,10 +89,10 @@ define(<AES_ROUND>, <
 	shr	<$>24,$7
 	xorl	AES_TABLE3 ($1, $7, 4),$6>)dnl
 
-dnl AES_FINAL_ROUND(a, b, c, d, table, out, tmp) Computes one word of
-dnl the final round. Leaves result in $6. Also performs the first
-dnl substitution step, on the least significant byte, and rotates 8
-dnl bits.
+dnl AES_FINAL_ROUND(a, b, c, d, table, out, tmp)
+dnl Computes one word of the final round. Leaves result in $6. Also
+dnl performs the first substitution step, on the least significant
+dnl byte, and rotates 8 bits.
 define(<AES_FINAL_ROUND>, <
 	movzb	LREG($1),$7
 	movzbl	($5, $7), $6
