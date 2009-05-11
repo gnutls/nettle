@@ -1,102 +1,44 @@
 \input texinfo          @c -*-texinfo-*-
-
 @c %**start of header
 @setfilename nettle.info
-@settitle The Nettle low-level cryptographic library.
-@c %**end of header
-
+@settitle Nettle: a low-level cryptographic library
 @documentencoding ISO-8859-1
-
 @footnotestyle end
 @syncodeindex fn cp
+@c %**end of header
 
-@dircategory GNU Libraries
-@direntry
-* Nettle: (nettle).           A low-level cryptographics library.
-@end direntry
-
-@set COPYRIGHT-YEARS 2001, 2004, 2005
-@set UPDATED-FOR 2.0
-
-@c Latin-1 doesn't work with TeX output.
-@c Also lookout for é characters.
-
-@iftex
-@set AUTHOR Niels M@"oller
-@end iftex
-@ifnottex
+@set UPDATED-FOR 1.15
 @set AUTHOR Niels Möller
-@end ifnottex
 
-@ifinfo
-Manual for the Nettle library. This manual corresponds to version
-@value{UPDATED-FOR}.
+@copying
+This manual is for the Nettle library (version @value{UPDATED-FOR}), a
+low-level cryptographic library.
 
-Copyright @value{COPYRIGHT-YEARS} @value{AUTHOR}
+Copyright 2001, 2004, 2005, 2009 @value{AUTHOR}.
 
-Permission is granted to make and distribute verbatim
-copies of this manual provided the copyright notice and
-this permission notice are preserved on all copies.
-
-@ignore
-Permission is granted to process this file through TeX
-and print the results, provided the printed document
-carries a copying permission notice identical to this
-one except for the removal of this paragraph (this
-paragraph not being relevant to the printed manual).
-
-@end ignore
-Permission is granted to copy and distribute modified
-versions of this manual under the conditions for
-verbatim copying, provided also that the sections
-entitled ``Copying'' and ``GNU General Public License''
-are included exactly as in the original, and provided
-that the entire resulting derived work is distributed
-under the terms of a permission notice identical to this
-one.
-
-Permission is granted to copy and distribute
-translations of this manual into another language,
-under the above conditions for modified versions,
-except that this permission notice may be stated in a
-translation approved by the Free Software Foundation.
-
-@end ifinfo
+@quotation
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with no Front-Cover Texts, and with no Back-Cover
+Texts.  A copy of the license is included in 
+@ref{GNU Free Documentation License}.
+@end quotation
+@end copying
 
 @titlepage
-@sp 10
-@c @center @titlefont{Nettle Manual}
-
 @title Nettle Manual
 @subtitle For the Nettle Library version @value{UPDATED-FOR}
-
 @author @value{AUTHOR}
-
-@c The following two commands start the copyright page.
 @page
 @vskip 0pt plus 1filll
-Copyright @copyright{} @value{COPYRIGHT-YEARS} @value{AUTHOR}
-
-Permission is granted to make and distribute verbatim
-copies of this manual provided the copyright notice and
-this permission notice are preserved on all copies.
-
-Permission is granted to copy and distribute modified
-versions of this manual under the conditions for
-verbatim copying, provided also that the sections
-entitled ``Copying'' and ``GNU General Public License''
-are included exactly as in the original, and provided
-that the entire resulting derived work is distributed
-under the terms of a permission notice identical to this
-one.
-
-Permission is granted to copy and distribute
-translations of this manual into another language,
-under the above conditions for modified versions,
-except that this permission notice may be stated in a
-translation approved by the Free Software Foundation.
-
+@insertcopying
 @end titlepage
+
+@dircategory Encryption
+@direntry
+* Nettle: (nettle).             A low-level cryptographic library.
+@end direntry
 
 @contents
 
@@ -105,12 +47,11 @@ translation approved by the Free Software Foundation.
 @comment  node-name,  next,  previous,  up
 @top Nettle
 
-This document describes the nettle low-level cryptographic library. You
-can use the library directly from your C programs, or (recommended)
-write or use an object-oriented wrapper for your favorite language or
-application.
+This document describes the Nettle low-level cryptographic library. You
+can use the library directly from your C programs, or write or use an
+object-oriented wrapper for your favorite language or application.
 
-This manual corresponds to version @value{UPDATED-FOR} of the library.
+@insertcopying
 
 @menu
 * Introduction::                What is Nettle?
@@ -121,6 +62,7 @@ This manual corresponds to version @value{UPDATED-FOR} of the library.
 * Reference::                   All Nettle functions and features.
 * Nettle soup::                 For the serious nettle hacker.
 * Installation::                How to install Nettle.
+* GNU Free Documentation License::
 * Index::                       Function and concept index.
 @end menu
 
@@ -336,7 +278,7 @@ This chapter describes all the Nettle functions, grouped by family.
 @node Hash functions, Cipher functions, Reference, Reference
 @comment  node-name,  next,  previous,  up
 @section Hash functions
-
+@cindex Hash function
 A cryptographic @dfn{hash function} is a function that takes variable
 size strings, and maps them to strings of fixed, short, length. There
 are naturally lots of collisions, as there are more possible 1MB files
@@ -347,10 +289,12 @@ to find the collisions. More precisely, a cryptographic hash function
 @table @emph
 
 @item One-way
+@cindex One-way
 Given a hash value @code{H(x)} it is hard to find a string @code{x}
 that hashes to that value.
 
 @item Collision-resistant
+@cindex Collision-resistant
 It is hard to find two different strings, @code{x} and @code{y}, such
 that @code{H(x)} = @code{H(y)}.
 
@@ -587,12 +531,16 @@ These are all the hash functions that Nettle implements.
 @node Cipher functions, Cipher modes, Hash functions, Reference
 @comment  node-name,  next,  previous,  up
 @section Cipher functions
+@cindex Cipher
 
 A @dfn{cipher} is a function that takes a message or @dfn{plaintext}
 and a secret @dfn{key} and transforms it to a @dfn{ciphertext}. Given
 only the ciphertext, but not the key, it should be hard to find the
 plaintext. Given matching pairs of plaintext and ciphertext, it should
 be hard to find the key.
+
+@cindex Block Cipher
+@cindex Stream Cipher
 
 There are two main classes of ciphers: Block ciphers and stream ciphers.
 
@@ -1163,6 +1111,9 @@ secure.
 
 @subsection Cipher Block Chaining
 
+@cindex Cipher Block Chaining
+@cindex CBC Mode
+
 When using @acronym{CBC} mode, plaintext blocks are not encrypted
 independently of each other, like in Electronic Cook Book mode. Instead,
 when encrypting a block in @acronym{CBC} mode, the previous ciphertext
@@ -1251,10 +1202,13 @@ an @code{struct aes_ctx} context with the @code{des_encrypt} function.
 
 @subsection Counter mode
 
-Counter mode uses the block cipher as a keyed pseudo-random generator.
-The output of the generator is XORed with the data to be encrypted. It
-can be understood as a way to transform a block cipher to a stream
-cipher.
+@cindex Counter Mode
+@cindex CTR Mode
+
+Counter mode (@acronym{CTR}) uses the block cipher as a keyed
+pseudo-random generator. The output of the generator is XORed with the
+data to be encrypted. It can be understood as a way to transform a block
+cipher to a stream cipher.
 
 The message is divided into @code{n} blocks @code{M_1},@dots{}
 @code{M_n}, where @code{M_n} is of size @code{m} which may be smaller
@@ -1324,6 +1278,10 @@ operation.
 @node Keyed hash functions, Public-key algorithms, Cipher modes, Reference
 @comment  node-name,  next,  previous,  up
 @section Keyed Hash Functions
+
+@cindex Keyed Hash Function
+@cindex Message Authentication Code
+@cindex MAC
 
 A @dfn{keyed hash function}, or @dfn{Message Authentication Code}
 (@acronym{MAC}) is a function that takes a key and a message, and
@@ -1539,6 +1497,9 @@ receiver share the same keys, and these keys must be distributed in a
 secure way. And if there are many users or entities that need to
 communicate, each @emph{pair} needs a shared secret key known by nobody
 else.
+
+@cindex Public Key Cryptography
+@cindex One-way function
 
 Public-key cryptography uses trapdoor one-way functions. A
 @dfn{one-way function} is a function @code{F} such that it is easy to
@@ -1999,6 +1960,8 @@ Returns 1 on success, and 0 on failure. The function will fail if
 @comment  node-name,  next,  previous,  up
 @section Randomness
 
+@cindex Randomness
+
 A crucial ingredient in many cryptographic contexts is randomness: Let
 @code{p} be a random prime, choose a random initialization vector
 @code{iv}, a random key @code{k} and a random exponent @code{e}, etc. In
@@ -2047,6 +2010,9 @@ the attacker, using this question-and-answer session, as well as any
 other information he knows about the seeding process, still can't guess
 the seed correctly, then the conditional entropy is more than @code{n}
 bits.
+
+@cindex Entropy
+@cindex Conditional entropy
 
 Let's look at an example. Say information about timing of received
 network packets is used in the seeding process. If there is some random
@@ -2409,7 +2375,7 @@ smaksätt med salt och peppar.
 Servera med kokta ägghalvor.
 @end ignore
 
-@node Installation, Index, Nettle soup, Top
+@node Installation, GNU Free Documentation License, Nettle soup, Top
 @comment  node-name,  next,  previous,  up
 @chapter Installation
 
@@ -2438,7 +2404,12 @@ Using GNU make is recommended. For other make programs, in particular
 BSD make, you may have to use the @option{--disable-dependency-tracking}
 option to @command{./configure}.
 
-@node Index,  , Installation, Top
+@node GNU Free Documentation License, Index, Installation, Top
+@appendix GNU Free Documentation License
+@cindex Free Documentation License
+@include fdl.texi
+
+@node Index,  , GNU Free Documentation License, Top
 @comment  node-name,  next,  previous,  up
 @unnumbered Function and Concept Index
 
