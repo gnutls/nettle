@@ -1,3 +1,10 @@
+2009-05-11  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle.texinfo: Fixes from Karl Berry. Changed license to GNU
+	FDL, with no invariant sections. Added some more index terms.
+
+	* fdl.texi: New file.
+
 2009-03-06  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86_64/aes-encrypt-internal.asm: Reduced unrolling. Keep state
