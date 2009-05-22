@@ -109,6 +109,11 @@ the option to use the Nettle library just as if it were licensed under
 the LGPL. To find the current status of particular files, you have to
 read the copyright notices at the top of the files.
 
+This manual is in the public domain. You may freely copy it in whole or
+in part, e.g., into documentation of programs that build on Nettle.
+Attribution, as well as contribution of improvements to the text, is of
+course appreciated, but it is not required.
+
 A list of the supported algorithms, their origins and licenses:
 
 @table @emph
