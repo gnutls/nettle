@@ -199,8 +199,7 @@ des.$(OBJEXT): des.c des.h $(des_headers)
 
 # Texinfo rules
 .texinfo.info:
-	cd $(srcdir) && $(MAKEINFO) --output $@T `basename "$<"` \
-	&& test -s $@T && mv -f $@T $@
+	cd $(srcdir) && $(MAKEINFO) --output $@ `basename "$<"`
 
 .texinfo.html:
 	cd $(srcdir) && $(MAKEINFO) --html --no-split \
