@@ -1,3 +1,12 @@
+2009-06-04  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Set version to 2.0
+
+2009-05-30  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (.texinfo.info): Don't use a temporary output file
+	$@T, trust makeinfo to remove output file on errors.
+
 2009-05-19  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle.texinfo: Changed license to public domain.
@@ -214,7 +223,7 @@
 
 	* examples/eratosthenes.c (find_first_one): Optimized, using
 	slightly larger table.
-	(main): Use atol, arther than atoi.
+	(main): Use atol, rather than atoi.
 
 	* testsuite/symbols-test: Check symbols also in libhogweed.
 
