@@ -47,6 +47,10 @@ NEWS for the 2.0 release
 
 	Other changes:
 
+	* Nettle manual now contributed to the public domain, to
+          enable remixing into documentation of programs that use
+          Nettle.	  
+
 	* The sexp-conv program preserves comments when using the
 	  advanced syntax for output. Optionally locks the output
 	  file.
