@@ -1,3 +1,7 @@
+2009-06-08  Niels Möller  <nisse@lysator.liu.se>
+
+	* Released nettle-2.0.
+
 2009-06-04  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Set version to 2.0
