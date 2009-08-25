@@ -30,6 +30,7 @@
 
 #include <assert.h>
 #include <errno.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -43,6 +44,7 @@
 #include "cbc.h"
 #include "des.h"
 #include "serpent.h"
+#include "sha.h"
 #include "twofish.h"
 
 #include "nettle-meta.h"
@@ -58,6 +60,28 @@ static double frequency = 0.0;
 
 /* Total MB:s, for MB/s figures. */
 #define BENCH_TOTAL 10.0
+
+/* FIXME: Proper configure test for rdtsc? */
+#ifndef WITH_CYCLE_COUNTER
+# if defined(__GNUC__) && defined(__i386__)
+#  define WITH_CYCLE_COUNTER 1
+# else
+#  define WITH_CYCLE_COUNTER 0
+# endif
+#endif
+
+#if WITH_CYCLE_COUNTER
+#define GET_CYCLE_COUNTER(hi, lo)		\
+  __asm__("xorl %%eax,%%eax\n"			\
+	  "movl %%ebx, %%edi\n"			\
+	  "cpuid\n"				\
+	  "rdtsc\n"				\
+	  "movl %%edi, %%ebx\n"			\
+	  : "=a" (lo), "=d" (hi)		\
+	  : /* No inputs. */			\
+	  : "%edi", "%ecx", "cc")
+#define BENCH_ITERATIONS 10
+#endif
 
 /* Returns second per function call */
 static double
@@ -299,6 +323,54 @@ time_cipher(const struct nettle_cipher *cipher)
   free(key);
 }
 
+static int
+compare_double(const void *ap, const void *bp)
+{
+  double a = *(const double *) ap;
+  double b = *(const double *) bp;
+  if (a < b)
+    return -1;
+  else if (a > b)
+    return 1;
+  else
+    return 0;
+}
+
+/* Try to get accurate cycle times for assembler functions. */
+static void
+bench_sha1_compress(void)
+{
+#if WITH_CYCLE_COUNTER
+  uint32_t state[_SHA1_DIGEST_LENGTH];
+  uint8_t data[BENCH_ITERATIONS * SHA1_DATA_SIZE];
+  uint32_t start_lo, start_hi, end_lo, end_hi;
+
+  double count[5];
+  
+  uint8_t *p;
+  unsigned i, j;
+
+  for (j = 0; j < 5; j++)
+    {
+      i = 0;
+      p = data;
+      GET_CYCLE_COUNTER(start_hi, start_lo);
+      for (; i < BENCH_ITERATIONS; i++, p += SHA1_DATA_SIZE)
+	_nettle_sha1_compress(state, p);
+
+      GET_CYCLE_COUNTER(end_hi, end_lo);
+
+      end_hi -= (start_hi + (start_lo > end_lo));
+      end_lo -= start_lo;
+
+      count[j] = ldexp(end_hi, 32) + end_lo;
+    }
+
+  qsort(count, 5, sizeof(double), compare_double);
+  printf("sha1_compress: %.2f cycles\n\n", count[2] / BENCH_ITERATIONS);  
+#endif
+}
+
 #if WITH_OPENSSL
 # define OPENSSL(x) x,
 #else
@@ -351,6 +423,8 @@ main(int argc, char **argv)
       default:
 	abort();
     }
+
+  bench_sha1_compress();
 
   header();
 
