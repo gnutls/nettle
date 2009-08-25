@@ -145,17 +145,19 @@ C adding, and then rotating back.
 	ALIGN(4)
 PROLOGUE(_nettle_sha1_compress)
 	C save all registers that need to be saved
-	
-	pushl	%ebx		C  80(%esp)
-	pushl	%ebp		C  76(%esp)
-	pushl	%esi		C  72(%esp)
-	pushl	%edi		C  68(%esp)
+	C 			   88(%esp)  data
+	C 			   84(%esp)  state
+	C 			   80(%esp)  Return address
+	pushl	%ebx		C  76(%esp)
+	pushl	%ebp		C  72(%esp)
+	pushl	%esi		C  68(%esp)
+	pushl	%edi		C  64(%esp)
 
 	C FIXME: Trim to 64
-	subl	$68, %esp	C  %esp = W
+	subl	$64, %esp	C  %esp = W
 
 	C Load and byteswap data
-	movl	92(%esp), TMP2
+	movl	88(%esp), TMP2
 
 	SWAP( 0, %eax) SWAP( 1, %ebx) SWAP( 2, %ecx) SWAP( 3, %edx)
 	SWAP( 4, %eax) SWAP( 5, %ebx) SWAP( 6, %ecx) SWAP( 7, %edx)
@@ -163,7 +165,7 @@ PROLOGUE(_nettle_sha1_compress)
 	SWAP(12, %eax) SWAP(13, %ebx) SWAP(14, %ecx) SWAP(15, %edx)
 
 	C load the state vector
-	movl	88(%esp),TMP
+	movl	84(%esp),TMP
 	movl	(TMP),   SA
 	movl	4(TMP),  SB
 	movl	8(TMP),  SC
@@ -273,14 +275,14 @@ PROLOGUE(_nettle_sha1_compress)
 	EXPAND(79) ROUND(SB, SC, SD, SE, SA, <F2>)
 
 	C Update the state vector
-	movl	88(%esp),TMP
+	movl	84(%esp),TMP
 	addl	SA, (TMP) 
 	addl	SB, 4(TMP) 
 	addl	SC, 8(TMP) 
 	addl	SD, 12(TMP) 
 	addl	SE, 16(TMP)
 
-	addl	$68, %esp
+	addl	$64, %esp
 	popl	%edi
 	popl	%esi
 	popl	%ebp
