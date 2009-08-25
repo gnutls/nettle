@@ -1,5 +1,7 @@
 2009-08-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* x86/sha1-compress.asm: Eliminated tmp variable for f3 rounds.
+
 	* examples/nettle-benchmark.c (bench_sha1_compress): New function,
 	for precise benchmarking of the compression function.
 
