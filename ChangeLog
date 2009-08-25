@@ -1,3 +1,8 @@
+2009-08-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/nettle-benchmark.c (bench_sha1_compress): New function,
+	for precise benchmarking of the compression function.
+
 2009-06-08  Niels Möller  <nisse@lysator.liu.se>
 
 	* Released nettle-2.0.
