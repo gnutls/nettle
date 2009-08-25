@@ -336,8 +336,7 @@ uninstall-shared-hogweed:
 distdir = $(PACKAGE_NAME)-$(PACKAGE_VERSION)
 top_distdir = $(distdir)
 
-# NOTE: Depending on the automake version in the parent dir,
-# we must handle both absolute and relative $destdir.
+# NOTE: We should handle both absolute and relative $destdir.
 
 distdir: $(DISTFILES)
 	rm -rf "$(distdir)"
