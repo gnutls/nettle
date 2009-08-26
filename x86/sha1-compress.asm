@@ -31,7 +31,7 @@ define(<KVALUE>,<%esi>)				C  Used by rounds
 C Constants
 define(<K1VALUE>, <0x5A827999>)		C  Rounds  0-19
 define(<K2VALUE>, <0x6ED9EBA1>)		C  Rounds 20-39
-define(<K3VALUE>, <<$>0x8F1BBCDC>)		C  Rounds 40-59
+define(<K3VALUE>, <0x8F1BBCDC>)		C  Rounds 40-59
 define(<K4VALUE>, <0xCA62C1D6>)		C  Rounds 60-79
 	
 C Reads the input via T2 into register, byteswaps it, and stores it in the DATA array.
@@ -63,16 +63,11 @@ C The f functions,
 C
 C  f1(x,y,z) = z ^ (x & (y ^ z))
 C  f2(x,y,z) = x ^ y ^ z
-C  f3(x,y,z) = (x & y) | (z & (x | y))
+C  f3(x,y,z) = (x & (y ^ z)) + (y & z)
 C  f4 = f2
-C
-C The macro Fk(x,y,z) computes = fk(x,y,z). 
-C Result is left in T1.
-define(<F1>, <
-	movl	$3, T1
-	xorl	$2, T1
-	andl	$1, T1
-	xorl	$3, T1>)dnl
+
+C This form for f3 was suggested by George Spelvin. The terms can be
+C added into the result one at a time, saving one temporary.
 
 C The form of one sha1 round is
 C
@@ -87,23 +82,6 @@ C instead get
 C
 C   e += a <<< 5 + f( b, c, d ) + k + w;
 C   b <<<= 30
-C
-C ROUND(a,b,c,d,e,f,w)
-define(<ROUND>, <
-	addl	KVALUE, $5
-	addl	ifelse($7,,T1,$7), $5
-	$6($2,$3,$4)
-	addl	T1, $5
-
-C Using the T1 register can be avoided, by rotating $1 in place,
-C adding, and then rotating back.
-	movl	$1, T1
-	roll	<$>5, T1
-	addl	T1, $5
-	C roll	<$>5, $1
-	C addl	$1, $5
-	C rorl	<$>5, $1
-	roll	<$>30, $2>)dnl
 
 dnl ROUND_F1(a, b, c, d, e, i)
 define(<ROUND_F1>, <
@@ -158,33 +136,32 @@ define(<ROUND_F2>, <
 	add	T2, $5
 >)
 
+dnl ROUND_F3(a, b, c, d, e, i)
+define(<ROUND_F3>, <
+	mov	OFFSET(eval($6 % 16)) (DATA), T1
+	xor	OFFSET(eval(($6 +  2) % 16)) (DATA), T1
+	xor	OFFSET(eval(($6 +  8) % 16)) (DATA), T1
+	xor	OFFSET(eval(($6 + 13) % 16)) (DATA), T1
+	rol	<$>1, T1
+	mov	T1, OFFSET(eval($6 % 16)) (DATA)
+	mov	$4, T2
+	and	$3, T2
+	lea	K3VALUE (T1, T2), T1
+	mov	$4, T2
+	xor	$3, T2
+	and	$2, T2
+	add	T1, $5
+	rol	<$>30, $2
+	mov	$1, T1
+	rol	<$>5, T1
+	add	T1, $5
+	add	T2, $5
+>)
+
+
 C As suggested by George Spelvin, write the F3 function as
 C (x&y) | (y&z) | (x&z) == (x & (y^z)) + (y&z). Then, we can compute
 C and add each term to e, using a single temporary.
-	
-C ROUND_F3(a,b,c,d,e,w)
-define(<ROUND_F3>, <
-	addl	KVALUE, $5
-	addl	T1, $5
-
-	movl	$3, T1
-	andl	$4, T1
-	addl	T1, $5
-	movl	$3, T1
-	xorl	$4, T1
-	andl	$2, T1
-	addl	T1, $5
-
-C Using the T1 register can be avoided, by rotating $1 in place,
-C adding, and then rotating back.
-	movl	$1, T1
-	roll	<$>5, T1
-	addl	T1, $5
-	C roll	<$>5, $1
-	C addl	$1, $5
-	C rorl	<$>5, $1
-	roll	<$>30, $2>)dnl
-
 
 	.file "sha1-compress.asm"
 
@@ -269,30 +246,29 @@ PROLOGUE(_nettle_sha1_compress)
 	ROUND_F2(SC, SD, SE, SA, SB, 38, K2VALUE)
 	ROUND_F2(SB, SC, SD, SE, SA, 39, K2VALUE)
 
-	movl	K3VALUE, KVALUE
-	EXPAND(40) ROUND_F3(SA, SB, SC, SD, SE)
-	EXPAND(41) ROUND_F3(SE, SA, SB, SC, SD)
-	EXPAND(42) ROUND_F3(SD, SE, SA, SB, SC)
-	EXPAND(43) ROUND_F3(SC, SD, SE, SA, SB)
-	EXPAND(44) ROUND_F3(SB, SC, SD, SE, SA)
+	ROUND_F3(SA, SB, SC, SD, SE, 40)
+	ROUND_F3(SE, SA, SB, SC, SD, 41)
+	ROUND_F3(SD, SE, SA, SB, SC, 42)
+	ROUND_F3(SC, SD, SE, SA, SB, 43)
+	ROUND_F3(SB, SC, SD, SE, SA, 44)
 
-	EXPAND(45) ROUND_F3(SA, SB, SC, SD, SE)
-	EXPAND(46) ROUND_F3(SE, SA, SB, SC, SD)
-	EXPAND(47) ROUND_F3(SD, SE, SA, SB, SC)
-	EXPAND(48) ROUND_F3(SC, SD, SE, SA, SB)
-	EXPAND(49) ROUND_F3(SB, SC, SD, SE, SA)
+	ROUND_F3(SA, SB, SC, SD, SE, 45)
+	ROUND_F3(SE, SA, SB, SC, SD, 46)
+	ROUND_F3(SD, SE, SA, SB, SC, 47)
+	ROUND_F3(SC, SD, SE, SA, SB, 48)
+	ROUND_F3(SB, SC, SD, SE, SA, 49)
 
-	EXPAND(50) ROUND_F3(SA, SB, SC, SD, SE)
-	EXPAND(51) ROUND_F3(SE, SA, SB, SC, SD)
-	EXPAND(52) ROUND_F3(SD, SE, SA, SB, SC)
-	EXPAND(53) ROUND_F3(SC, SD, SE, SA, SB)
-	EXPAND(54) ROUND_F3(SB, SC, SD, SE, SA)
+	ROUND_F3(SA, SB, SC, SD, SE, 50)
+	ROUND_F3(SE, SA, SB, SC, SD, 51)
+	ROUND_F3(SD, SE, SA, SB, SC, 52)
+	ROUND_F3(SC, SD, SE, SA, SB, 53)
+	ROUND_F3(SB, SC, SD, SE, SA, 54)
 
-	EXPAND(55) ROUND_F3(SA, SB, SC, SD, SE)
-	EXPAND(56) ROUND_F3(SE, SA, SB, SC, SD)
-	EXPAND(57) ROUND_F3(SD, SE, SA, SB, SC)
-	EXPAND(58) ROUND_F3(SC, SD, SE, SA, SB)
-	EXPAND(59) ROUND_F3(SB, SC, SD, SE, SA)
+	ROUND_F3(SA, SB, SC, SD, SE, 55)
+	ROUND_F3(SE, SA, SB, SC, SD, 56)
+	ROUND_F3(SD, SE, SA, SB, SC, 57)
+	ROUND_F3(SC, SD, SE, SA, SB, 58)
+	ROUND_F3(SB, SC, SD, SE, SA, 59)
 
  	ROUND_F2(SA, SB, SC, SD, SE, 60, K4VALUE)
  	ROUND_F2(SE, SA, SB, SC, SD, 61, K4VALUE)
