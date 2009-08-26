@@ -24,20 +24,20 @@ define(<SC>,<%ecx>)
 define(<SD>,<%edx>)
 define(<SE>,<%ebp>)
 define(<DATA>,<%esp>)
-define(<TMP>,<%edi>)
-define(<TMP2>,<%esi>)				C  Used by SWAP
+define(<T1>,<%edi>)
+define(<T2>,<%esi>)				C  Used by SWAP
 define(<KVALUE>,<%esi>)				C  Used by rounds
 	
 C Constants
-define(<K1VALUE>, <<$>0x5A827999>)		C  Rounds  0-19
-define(<K2VALUE>, <<$>0x6ED9EBA1>)		C  Rounds 20-39
+define(<K1VALUE>, <0x5A827999>)		C  Rounds  0-19
+define(<K2VALUE>, <0x6ED9EBA1>)		C  Rounds 20-39
 define(<K3VALUE>, <<$>0x8F1BBCDC>)		C  Rounds 40-59
 define(<K4VALUE>, <<$>0xCA62C1D6>)		C  Rounds 60-79
 	
-C Reads the input via TMP2 into register, byteswaps it, and stores it in the DATA array.
+C Reads the input via T2 into register, byteswaps it, and stores it in the DATA array.
 C SWAP(index, register)
 define(<SWAP>, <
-	movl	OFFSET($1)(TMP2), $2
+	movl	OFFSET($1)(T2), $2
 	bswap	$2
 	movl	$2, OFFSET($1) (DATA)
 >)dnl
@@ -48,15 +48,15 @@ C   W[i] = (W[i - 16] ^ W[i - 14] ^ W[i - 8] ^ W[i - 3]) <<< 1
 C
 C where W[i] is stored in DATA[i mod 16].
 C
-C Result is stored back in W[i], and also left in TMP, the only
+C Result is stored back in W[i], and also left in T1, the only
 C register that is used.
 define(<EXPAND>, <
-	movl	OFFSET(eval($1 % 16)) (DATA), TMP
-	xorl	OFFSET(eval(($1 +  2) % 16)) (DATA), TMP
-	xorl	OFFSET(eval(($1 +  8) % 16)) (DATA), TMP
-	xorl	OFFSET(eval(($1 + 13) % 16)) (DATA), TMP
-	roll	<$>1, TMP
-	movl	TMP, OFFSET(eval($1 % 16)) (DATA)>)dnl
+	movl	OFFSET(eval($1 % 16)) (DATA), T1
+	xorl	OFFSET(eval(($1 +  2) % 16)) (DATA), T1
+	xorl	OFFSET(eval(($1 +  8) % 16)) (DATA), T1
+	xorl	OFFSET(eval(($1 + 13) % 16)) (DATA), T1
+	roll	<$>1, T1
+	movl	T1, OFFSET(eval($1 % 16)) (DATA)>)dnl
 define(<NOEXPAND>, <OFFSET($1) (DATA)>)dnl
 
 C The f functions,
@@ -67,16 +67,17 @@ C  f3(x,y,z) = (x & y) | (z & (x | y))
 C  f4 = f2
 C
 C The macro Fk(x,y,z) computes = fk(x,y,z). 
-C Result is left in TMP.
+C Result is left in T1.
 define(<F1>, <
-	movl	$3, TMP
-	xorl	$2, TMP
-	andl	$1, TMP
-	xorl	$3, TMP>)dnl
+	movl	$3, T1
+	xorl	$2, T1
+	andl	$1, T1
+	xorl	$3, T1>)dnl
+
 define(<F2>, <
-	movl	$1, TMP
-	xorl	$2, TMP
-	xorl	$3, TMP>)dnl
+	movl	$1, T1
+	xorl	$2, T1
+	xorl	$3, T1>)dnl
 
 C The form of one sha1 round is
 C
@@ -95,19 +96,71 @@ C
 C ROUND(a,b,c,d,e,f,w)
 define(<ROUND>, <
 	addl	KVALUE, $5
-	addl	ifelse($7,,TMP,$7), $5
+	addl	ifelse($7,,T1,$7), $5
 	$6($2,$3,$4)
-	addl	TMP, $5
+	addl	T1, $5
 
-C Using the TMP register can be avoided, by rotating $1 in place,
+C Using the T1 register can be avoided, by rotating $1 in place,
 C adding, and then rotating back.
-	movl	$1, TMP
-	roll	<$>5, TMP
-	addl	TMP, $5
+	movl	$1, T1
+	roll	<$>5, T1
+	addl	T1, $5
 	C roll	<$>5, $1
 	C addl	$1, $5
 	C rorl	<$>5, $1
 	roll	<$>30, $2>)dnl
+
+dnl ROUND_F1(a, b, c, d, e, i)
+define(<ROUND_F1>, <
+	mov	OFFSET(eval($6 % 16)) (DATA), T1
+	xor	OFFSET(eval(($6 +  2) % 16)) (DATA), T1
+	xor	OFFSET(eval(($6 +  8) % 16)) (DATA), T1
+	xor	OFFSET(eval(($6 + 13) % 16)) (DATA), T1
+	rol	<$>1, T1
+	mov	T1, OFFSET(eval($6 % 16)) (DATA)
+	mov	$4, T2
+	xor	$3, T2
+	and	$2, T2
+	xor	$4, T2
+	lea	K1VALUE (T1, T2), T2
+	rol	<$>30, $2
+	mov	$1, T1
+	rol	<$>5, T1
+	add	T1, $5
+	add	T2, $5
+>)
+
+define(<ROUND_F1_NOEXP>, <
+	mov	$4, T2
+	xor	$3, T2
+	and	$2, T2
+	xor	$4, T2
+	add	OFFSET(eval($6 % 16)) (DATA), T2
+	rol	<$>30, $2
+	mov	$1, T1
+	rol	<$>5, T1
+	lea	K1VALUE (T1, $5), $5
+	add	T2, $5
+>)
+
+dnl ROUND_F2(a, b, c, d, e, i)
+define(<ROUND_F2>, <
+	mov	OFFSET(eval($6 % 16)) (DATA), T1
+	xor	OFFSET(eval(($6 +  2) % 16)) (DATA), T1
+	xor	OFFSET(eval(($6 +  8) % 16)) (DATA), T1
+	xor	OFFSET(eval(($6 + 13) % 16)) (DATA), T1
+	rol	<$>1, T1
+	mov	T1, OFFSET(eval($6 % 16)) (DATA)
+	mov	$4, T2
+	xor	$3, T2
+	xor	$2, T2
+	lea	K2VALUE (T1, T2), T2
+	rol	<$>30, $2
+	mov	$1, T1
+	rol	<$>5, T1
+	add	T1, $5
+	add	T2, $5
+>)
 
 C As suggested by George Spelvin, write the F3 function as
 C (x&y) | (y&z) | (x&z) == (x & (y^z)) + (y&z). Then, we can compute
@@ -116,21 +169,21 @@ C and add each term to e, using a single temporary.
 C ROUND_F3(a,b,c,d,e,w)
 define(<ROUND_F3>, <
 	addl	KVALUE, $5
-	addl	TMP, $5
+	addl	T1, $5
 
-	movl	$3, TMP
-	andl	$4, TMP
-	addl	TMP, $5
-	movl	$3, TMP
-	xorl	$4, TMP
-	andl	$2, TMP
-	addl	TMP, $5
+	movl	$3, T1
+	andl	$4, T1
+	addl	T1, $5
+	movl	$3, T1
+	xorl	$4, T1
+	andl	$2, T1
+	addl	T1, $5
 
-C Using the TMP register can be avoided, by rotating $1 in place,
+C Using the T1 register can be avoided, by rotating $1 in place,
 C adding, and then rotating back.
-	movl	$1, TMP
-	roll	<$>5, TMP
-	addl	TMP, $5
+	movl	$1, T1
+	roll	<$>5, T1
+	addl	T1, $5
 	C roll	<$>5, $1
 	C addl	$1, $5
 	C rorl	<$>5, $1
@@ -157,7 +210,7 @@ PROLOGUE(_nettle_sha1_compress)
 	subl	$64, %esp	C  %esp = W
 
 	C Load and byteswap data
-	movl	88(%esp), TMP2
+	movl	88(%esp), T2
 
 	SWAP( 0, %eax) SWAP( 1, %ebx) SWAP( 2, %ecx) SWAP( 3, %edx)
 	SWAP( 4, %eax) SWAP( 5, %ebx) SWAP( 6, %ecx) SWAP( 7, %edx)
@@ -165,14 +218,14 @@ PROLOGUE(_nettle_sha1_compress)
 	SWAP(12, %eax) SWAP(13, %ebx) SWAP(14, %ecx) SWAP(15, %edx)
 
 	C load the state vector
-	movl	84(%esp),TMP
-	movl	(TMP),   SA
-	movl	4(TMP),  SB
-	movl	8(TMP),  SC
-	movl	12(TMP), SD
-	movl	16(TMP), SE
+	movl	84(%esp),T1
+	movl	(T1),   SA
+	movl	4(T1),  SB
+	movl	8(T1),  SC
+	movl	12(T1), SD
+	movl	16(T1), SE
 
-	movl	K1VALUE, KVALUE
+	movl	$ K1VALUE, KVALUE
 	ROUND(SA, SB, SC, SD, SE, <F1>, NOEXPAND( 0))
 	ROUND(SE, SA, SB, SC, SD, <F1>, NOEXPAND( 1))
 	ROUND(SD, SE, SA, SB, SC, <F1>, NOEXPAND( 2))
@@ -197,31 +250,31 @@ PROLOGUE(_nettle_sha1_compress)
 	EXPAND(18) ROUND(SC, SD, SE, SA, SB, <F1>)
 	EXPAND(19) ROUND(SB, SC, SD, SE, SA, <F1>)
 
-	C TMP2 is free to use in these rounds
-	movl	K2VALUE, KVALUE
-	EXPAND(20) ROUND(SA, SB, SC, SD, SE, <F2>)
-	EXPAND(21) ROUND(SE, SA, SB, SC, SD, <F2>)
-	EXPAND(22) ROUND(SD, SE, SA, SB, SC, <F2>)
-	EXPAND(23) ROUND(SC, SD, SE, SA, SB, <F2>)
-	EXPAND(24) ROUND(SB, SC, SD, SE, SA, <F2>)
+	C T2 is free to use in these rounds
+	C movl	K2VALUE, KVALUE
+	ROUND_F2(SA, SB, SC, SD, SE, 20)
+	ROUND_F2(SE, SA, SB, SC, SD, 21)
+	ROUND_F2(SD, SE, SA, SB, SC, 22)
+	ROUND_F2(SC, SD, SE, SA, SB, 23)
+	ROUND_F2(SB, SC, SD, SE, SA, 24)
 
-	EXPAND(25) ROUND(SA, SB, SC, SD, SE, <F2>)
-	EXPAND(26) ROUND(SE, SA, SB, SC, SD, <F2>)
-	EXPAND(27) ROUND(SD, SE, SA, SB, SC, <F2>)
-	EXPAND(28) ROUND(SC, SD, SE, SA, SB, <F2>)
-	EXPAND(29) ROUND(SB, SC, SD, SE, SA, <F2>)
+	ROUND_F2(SA, SB, SC, SD, SE, 25)
+	ROUND_F2(SE, SA, SB, SC, SD, 26)
+	ROUND_F2(SD, SE, SA, SB, SC, 27)
+	ROUND_F2(SC, SD, SE, SA, SB, 28)
+	ROUND_F2(SB, SC, SD, SE, SA, 29)
 
-	EXPAND(30) ROUND(SA, SB, SC, SD, SE, <F2>)
-	EXPAND(31) ROUND(SE, SA, SB, SC, SD, <F2>)
-	EXPAND(32) ROUND(SD, SE, SA, SB, SC, <F2>)
-	EXPAND(33) ROUND(SC, SD, SE, SA, SB, <F2>)
-	EXPAND(34) ROUND(SB, SC, SD, SE, SA, <F2>)
+	ROUND_F2(SA, SB, SC, SD, SE, 30)
+	ROUND_F2(SE, SA, SB, SC, SD, 31)
+	ROUND_F2(SD, SE, SA, SB, SC, 32)
+	ROUND_F2(SC, SD, SE, SA, SB, 33)
+	ROUND_F2(SB, SC, SD, SE, SA, 34)
 
-	EXPAND(35) ROUND(SA, SB, SC, SD, SE, <F2>)
-	EXPAND(36) ROUND(SE, SA, SB, SC, SD, <F2>)
-	EXPAND(37) ROUND(SD, SE, SA, SB, SC, <F2>)
-	EXPAND(38) ROUND(SC, SD, SE, SA, SB, <F2>)
-	EXPAND(39) ROUND(SB, SC, SD, SE, SA, <F2>)
+	ROUND_F2(SA, SB, SC, SD, SE, 35)
+	ROUND_F2(SE, SA, SB, SC, SD, 36)
+	ROUND_F2(SD, SE, SA, SB, SC, 37)
+	ROUND_F2(SC, SD, SE, SA, SB, 38)
+	ROUND_F2(SB, SC, SD, SE, SA, 39)
 
 	C We have to put this constant on the stack
 	movl	K3VALUE, KVALUE
@@ -275,12 +328,12 @@ PROLOGUE(_nettle_sha1_compress)
 	EXPAND(79) ROUND(SB, SC, SD, SE, SA, <F2>)
 
 	C Update the state vector
-	movl	84(%esp),TMP
-	addl	SA, (TMP) 
-	addl	SB, 4(TMP) 
-	addl	SC, 8(TMP) 
-	addl	SD, 12(TMP) 
-	addl	SE, 16(TMP)
+	movl	84(%esp),T1
+	addl	SA, (T1) 
+	addl	SB, 4(T1) 
+	addl	SC, 8(T1) 
+	addl	SD, 12(T1) 
+	addl	SE, 16(T1)
 
 	addl	$64, %esp
 	popl	%edi
@@ -296,21 +349,21 @@ C for loosen up dependencies and to more operations in parallel. For
 C example, take the rounds involving f2, the simplest round function.
 C Currently, we have
 C 
-C 	movl	16(%esp), TMP
-C 	xorl	24(%esp), TMP
-C 	xorl	48(%esp), TMP
-C 	xorl	4(%esp), TMP
-C 	roll	$1, TMP
-C 	movl	TMP, 16(%esp)
+C 	movl	16(%esp), T1
+C 	xorl	24(%esp), T1
+C 	xorl	48(%esp), T1
+C 	xorl	4(%esp), T1
+C 	roll	$1, T1
+C 	movl	T1, 16(%esp)
 C 	addl	KVALUE, SE	C 0
-C 	addl	TMP, SE		C 1
-C 	movl	SB, TMP		C 0
-C 	xorl	SC, TMP		C 1
-C 	xorl	SD, TMP		C 2
-C 	addl	TMP, SE		C 3
-C 	movl	SA, TMP		C 0
-C 	roll	$5, TMP		C 1
-C 	addl	TMP, SE		C 4
+C 	addl	T1, SE		C 1
+C 	movl	SB, T1		C 0
+C 	xorl	SC, T1		C 1
+C 	xorl	SD, T1		C 2
+C 	addl	T1, SE		C 3
+C 	movl	SA, T1		C 0
+C 	roll	$5, T1		C 1
+C 	addl	T1, SE		C 4
 C 	roll	$30, SB		C 0
 	
 C These 16 instructions could be executed in 5.33 cycles if there were
@@ -322,30 +375,30 @@ C It would be preferable to accumulate the terms in two or more
 C registers, to make dependencies shallower. Something like
 
 C	...expand, put data in W
-C	movl	SD, TMP			C 0
+C	movl	SD, T1			C 0
 C	leal	K1VALUE(SE, W), SE	C 0
-C	movl	SA, TMP2		C 0
-C	xorl	SC, TMP			C 1
-C	roll	$5, TMP2		C 1
-C 	xorl	SB, TMP			C 2
-C	addl	TMP2, TMP		C 3
-C	addl	TMP, SE			C 4
+C	movl	SA, T2		C 0
+C	xorl	SC, T1			C 1
+C	roll	$5, T2		C 1
+C 	xorl	SB, T1			C 2
+C	addl	T2, T1		C 3
+C	addl	T1, SE			C 4
 C a + b + c + d + e = ((((a + b) + c) + d) + e), latency 4
 C a + b + c + d + e = ((a + b) + c) + (d + e)
 C the out-of-order execution. Next iteration
 C
 C 	...expand...
-C 	roll	$1, TMP		C 4
-C 	movl	TMP, 16(%esp)	C 5
+C 	roll	$1, T1		C 4
+C 	movl	T1, 16(%esp)	C 5
 C 	addl	KVALUE, SD	C 0
-C 	addl	TMP, SD		C 5
-C 	movl	SA, TMP		C 0
-C 	xorl	SB, TMP		C 1
-C 	xorl	SC, TMP		C 2
-C 	addl	TMP, SD		C 6
-C 	movl	SE, TMP		C 8
-C 	roll	$5, TMP		C 9
-C 	addl	TMP, SD		C 7
+C 	addl	T1, SD		C 5
+C 	movl	SA, T1		C 0
+C 	xorl	SB, T1		C 1
+C 	xorl	SC, T1		C 2
+C 	addl	T1, SD		C 6
+C 	movl	SE, T1		C 8
+C 	roll	$5, T1		C 9
+C 	addl	T1, SD		C 7
 C 	roll	$30, SA		C 0
 C
 C Lets look at the latency. Next iteration will operate on (E, A, B, C, D), so we have recurrencies:
