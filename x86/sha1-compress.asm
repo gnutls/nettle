@@ -32,7 +32,7 @@ C Constants
 define(<K1VALUE>, <0x5A827999>)		C  Rounds  0-19
 define(<K2VALUE>, <0x6ED9EBA1>)		C  Rounds 20-39
 define(<K3VALUE>, <<$>0x8F1BBCDC>)		C  Rounds 40-59
-define(<K4VALUE>, <<$>0xCA62C1D6>)		C  Rounds 60-79
+define(<K4VALUE>, <0xCA62C1D6>)		C  Rounds 60-79
 	
 C Reads the input via T2 into register, byteswaps it, and stores it in the DATA array.
 C SWAP(index, register)
@@ -72,11 +72,6 @@ define(<F1>, <
 	movl	$3, T1
 	xorl	$2, T1
 	andl	$1, T1
-	xorl	$3, T1>)dnl
-
-define(<F2>, <
-	movl	$1, T1
-	xorl	$2, T1
 	xorl	$3, T1>)dnl
 
 C The form of one sha1 round is
@@ -143,7 +138,7 @@ define(<ROUND_F1_NOEXP>, <
 	add	T2, $5
 >)
 
-dnl ROUND_F2(a, b, c, d, e, i)
+dnl ROUND_F2(a, b, c, d, e, i, k)
 define(<ROUND_F2>, <
 	mov	OFFSET(eval($6 % 16)) (DATA), T1
 	xor	OFFSET(eval(($6 +  2) % 16)) (DATA), T1
@@ -154,7 +149,7 @@ define(<ROUND_F2>, <
 	mov	$4, T2
 	xor	$3, T2
 	xor	$2, T2
-	lea	K2VALUE (T1, T2), T2
+	lea	$7 (T1, T2), T2
 	rol	<$>30, $2
 	mov	$1, T1
 	rol	<$>5, T1
@@ -250,33 +245,30 @@ PROLOGUE(_nettle_sha1_compress)
 	EXPAND(18) ROUND(SC, SD, SE, SA, SB, <F1>)
 	EXPAND(19) ROUND(SB, SC, SD, SE, SA, <F1>)
 
-	C T2 is free to use in these rounds
-	C movl	K2VALUE, KVALUE
-	ROUND_F2(SA, SB, SC, SD, SE, 20)
-	ROUND_F2(SE, SA, SB, SC, SD, 21)
-	ROUND_F2(SD, SE, SA, SB, SC, 22)
-	ROUND_F2(SC, SD, SE, SA, SB, 23)
-	ROUND_F2(SB, SC, SD, SE, SA, 24)
+	ROUND_F2(SA, SB, SC, SD, SE, 20, K2VALUE)
+	ROUND_F2(SE, SA, SB, SC, SD, 21, K2VALUE)
+	ROUND_F2(SD, SE, SA, SB, SC, 22, K2VALUE)
+	ROUND_F2(SC, SD, SE, SA, SB, 23, K2VALUE)
+	ROUND_F2(SB, SC, SD, SE, SA, 24, K2VALUE)
 
-	ROUND_F2(SA, SB, SC, SD, SE, 25)
-	ROUND_F2(SE, SA, SB, SC, SD, 26)
-	ROUND_F2(SD, SE, SA, SB, SC, 27)
-	ROUND_F2(SC, SD, SE, SA, SB, 28)
-	ROUND_F2(SB, SC, SD, SE, SA, 29)
+	ROUND_F2(SA, SB, SC, SD, SE, 25, K2VALUE)
+	ROUND_F2(SE, SA, SB, SC, SD, 26, K2VALUE)
+	ROUND_F2(SD, SE, SA, SB, SC, 27, K2VALUE)
+	ROUND_F2(SC, SD, SE, SA, SB, 28, K2VALUE)
+	ROUND_F2(SB, SC, SD, SE, SA, 29, K2VALUE)
 
-	ROUND_F2(SA, SB, SC, SD, SE, 30)
-	ROUND_F2(SE, SA, SB, SC, SD, 31)
-	ROUND_F2(SD, SE, SA, SB, SC, 32)
-	ROUND_F2(SC, SD, SE, SA, SB, 33)
-	ROUND_F2(SB, SC, SD, SE, SA, 34)
+	ROUND_F2(SA, SB, SC, SD, SE, 30, K2VALUE)
+	ROUND_F2(SE, SA, SB, SC, SD, 31, K2VALUE)
+	ROUND_F2(SD, SE, SA, SB, SC, 32, K2VALUE)
+	ROUND_F2(SC, SD, SE, SA, SB, 33, K2VALUE)
+	ROUND_F2(SB, SC, SD, SE, SA, 34, K2VALUE)
 
-	ROUND_F2(SA, SB, SC, SD, SE, 35)
-	ROUND_F2(SE, SA, SB, SC, SD, 36)
-	ROUND_F2(SD, SE, SA, SB, SC, 37)
-	ROUND_F2(SC, SD, SE, SA, SB, 38)
-	ROUND_F2(SB, SC, SD, SE, SA, 39)
+	ROUND_F2(SA, SB, SC, SD, SE, 35, K2VALUE)
+	ROUND_F2(SE, SA, SB, SC, SD, 36, K2VALUE)
+	ROUND_F2(SD, SE, SA, SB, SC, 37, K2VALUE)
+	ROUND_F2(SC, SD, SE, SA, SB, 38, K2VALUE)
+	ROUND_F2(SB, SC, SD, SE, SA, 39, K2VALUE)
 
-	C We have to put this constant on the stack
 	movl	K3VALUE, KVALUE
 	EXPAND(40) ROUND_F3(SA, SB, SC, SD, SE)
 	EXPAND(41) ROUND_F3(SE, SA, SB, SC, SD)
@@ -302,30 +294,29 @@ PROLOGUE(_nettle_sha1_compress)
 	EXPAND(58) ROUND_F3(SC, SD, SE, SA, SB)
 	EXPAND(59) ROUND_F3(SB, SC, SD, SE, SA)
 
-	movl	K4VALUE, KVALUE
-	EXPAND(60) ROUND(SA, SB, SC, SD, SE, <F2>)
-	EXPAND(61) ROUND(SE, SA, SB, SC, SD, <F2>)
-	EXPAND(62) ROUND(SD, SE, SA, SB, SC, <F2>)
-	EXPAND(63) ROUND(SC, SD, SE, SA, SB, <F2>)
-	EXPAND(64) ROUND(SB, SC, SD, SE, SA, <F2>)
-
-	EXPAND(65) ROUND(SA, SB, SC, SD, SE, <F2>)
-	EXPAND(66) ROUND(SE, SA, SB, SC, SD, <F2>)
-	EXPAND(67) ROUND(SD, SE, SA, SB, SC, <F2>)
-	EXPAND(68) ROUND(SC, SD, SE, SA, SB, <F2>)
-	EXPAND(69) ROUND(SB, SC, SD, SE, SA, <F2>)
-
-	EXPAND(70) ROUND(SA, SB, SC, SD, SE, <F2>)
-	EXPAND(71) ROUND(SE, SA, SB, SC, SD, <F2>)
-	EXPAND(72) ROUND(SD, SE, SA, SB, SC, <F2>)
-	EXPAND(73) ROUND(SC, SD, SE, SA, SB, <F2>)
-	EXPAND(74) ROUND(SB, SC, SD, SE, SA, <F2>)
-
-	EXPAND(75) ROUND(SA, SB, SC, SD, SE, <F2>)
-	EXPAND(76) ROUND(SE, SA, SB, SC, SD, <F2>)
-	EXPAND(77) ROUND(SD, SE, SA, SB, SC, <F2>)
-	EXPAND(78) ROUND(SC, SD, SE, SA, SB, <F2>)
-	EXPAND(79) ROUND(SB, SC, SD, SE, SA, <F2>)
+ 	ROUND_F2(SA, SB, SC, SD, SE, 60, K4VALUE)
+ 	ROUND_F2(SE, SA, SB, SC, SD, 61, K4VALUE)
+ 	ROUND_F2(SD, SE, SA, SB, SC, 62, K4VALUE)
+ 	ROUND_F2(SC, SD, SE, SA, SB, 63, K4VALUE)
+ 	ROUND_F2(SB, SC, SD, SE, SA, 64, K4VALUE)
+ 
+ 	ROUND_F2(SA, SB, SC, SD, SE, 65, K4VALUE)
+ 	ROUND_F2(SE, SA, SB, SC, SD, 66, K4VALUE)
+ 	ROUND_F2(SD, SE, SA, SB, SC, 67, K4VALUE)
+ 	ROUND_F2(SC, SD, SE, SA, SB, 68, K4VALUE)
+ 	ROUND_F2(SB, SC, SD, SE, SA, 69, K4VALUE)
+ 
+ 	ROUND_F2(SA, SB, SC, SD, SE, 70, K4VALUE)
+ 	ROUND_F2(SE, SA, SB, SC, SD, 71, K4VALUE)
+ 	ROUND_F2(SD, SE, SA, SB, SC, 72, K4VALUE)
+ 	ROUND_F2(SC, SD, SE, SA, SB, 73, K4VALUE)
+ 	ROUND_F2(SB, SC, SD, SE, SA, 74, K4VALUE)
+ 
+ 	ROUND_F2(SA, SB, SC, SD, SE, 75, K4VALUE)
+ 	ROUND_F2(SE, SA, SB, SC, SD, 76, K4VALUE)
+ 	ROUND_F2(SD, SE, SA, SB, SC, 77, K4VALUE)
+ 	ROUND_F2(SC, SD, SE, SA, SB, 78, K4VALUE)
+ 	ROUND_F2(SB, SC, SD, SE, SA, 79, K4VALUE)
 
 	C Update the state vector
 	movl	84(%esp),T1
