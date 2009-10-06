@@ -88,7 +88,7 @@ PROLOGUE(_nettle_md5_compress)
 	movl	12(TMP), SD
 
 	C Pointer to source data.
-	C Note that if analigned, we suffer unaligned accesses
+	C Note that if unaligned, we suffer unaligned accesses
 	movl	24(%esp), INPUT
 
 	ROUND(<F1>, SA, SB, SC, SD, REF( 0), $0xd76aa478, 7)
