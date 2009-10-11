@@ -1,3 +1,8 @@
+2009-10-11  Niels Möller  <nisse@lysator.liu.se>
+
+	* rsa2sexp.c (rsa_keypair_to_sexp): Changed default algorithm name
+	to "rsa-pkcs1".
+
 2009-09-20  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86/sha1-compress.asm: Improved performance by 17% on AMD K7,
