@@ -52,8 +52,12 @@ extern "C" {
 #define dsa_verify_digest nettle_dsa_verify_digest
 #define dsa_generate_keypair nettle_dsa_generate_keypair
 #define dsa_signature_from_sexp nettle_dsa_signature_from_sexp
+#define dsa_keypair_to_sexp nettle_dsa_keypair_to_sexp
 #define dsa_keypair_from_sexp_alist nettle_dsa_keypair_from_sexp_alist
 #define dsa_keypair_from_sexp nettle_dsa_keypair_from_sexp
+#define dsa_public_key_from_der_iterators nettle_dsa_public_key_from_der_iterators
+#define dsa_private_key_from_der_iterator nettle_dsa_private_key_from_der_iterator 
+#define dsa_keypair_from_der nettle_dsa_keypair_from_der
 
 #define DSA_MIN_P_BITS 512
 #define DSA_Q_OCTETS 20
@@ -172,6 +176,17 @@ dsa_generate_keypair(struct dsa_public_key *pub,
 		      * NIS key sizes. */
 		     unsigned bits);
 
+/* Keys in sexp form. */
+
+struct nettle_buffer;
+
+/* Generates a public-key expression if PRIV is NULL .*/
+int
+dsa_keypair_to_sexp(struct nettle_buffer *buffer,
+		    const char *algorithm_name, /* NULL means "dsa" */
+		    const struct dsa_public_key *pub,
+		    const struct dsa_private_key *priv);
+
 struct sexp_iterator;
 
 int
@@ -193,6 +208,28 @@ dsa_keypair_from_sexp(struct dsa_public_key *pub,
 		      struct dsa_private_key *priv,
 		      unsigned limit,
 		      unsigned length, const uint8_t *expr);
+
+/* Keys in X.509 andd OpenSSL format. */
+struct asn1_der_iterator;
+
+int
+dsa_public_key_from_der_iterators(struct dsa_public_key *pub,
+				  unsigned limit,
+				  struct asn1_der_iterator *i,
+				  struct asn1_der_iterator *j);
+
+int
+dsa_private_key_from_der_iterator(struct dsa_public_key *pub,
+				  struct dsa_private_key *priv,
+				  unsigned limit,
+				  struct asn1_der_iterator *i);
+
+/* For public keys, use PRIV == NULL */ 
+int
+dsa_keypair_from_der(struct dsa_public_key *pub,
+		     struct dsa_private_key *priv,
+		     unsigned limit, 
+		     unsigned length, const uint8_t *data);
 
 
 #ifdef __cplusplus
