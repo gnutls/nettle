@@ -1,5 +1,16 @@
 2009-10-12  Niels Möller  <nisse@lysator.liu.se>
 
+	* sexp-format.c: Removed conditioning on HAVE_LIBGMP.
+
+	* tools/pkcs1-conv.c: Support for DSA keys, contributed by Magnus
+	Holmgren.
+
+	* Makefile.in (hogweed_SOURCES): Added dsa2sexp.c and der2dsa.c.
+
+	* der2dsa.c: New file, contributed by Magnus Holmgren.
+	* dsa2sexp.c: Likewise.
+	* dsa.h: Added prototypes.
+
 	* configure.ac (LIBHOGWEED_MINOR): Bumped libhogweed minor
 	version, now it's 1.1.
 
