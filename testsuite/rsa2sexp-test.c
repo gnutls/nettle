@@ -92,13 +92,13 @@ test_main(void)
       print_hex(buffer.size, buffer.contents);  
     }
   ASSERT(MEMEQH(buffer.size, buffer.contents,
-		"2831303a7075626c69632d6b65792833"
-		"3a72736128313a6e36333a085c340898"
-		"9acae4faec3cbbad91c90d34c1d259cd"
-		"74121a36f38b0b51424a9b2be514a043"
-		"77113a6cdafe79dd7d5f2ecc8b5e9661"
-		"189b86a7b22239907c252928313a6534"
-		"3a36ad4b1d292929"));
+		"2831303a7075626c69632d6b65792839"
+		"3a7273612d706b63733128313a6e3633"
+		"3a085c3408989acae4faec3cbbad91c9"
+		"0d34c1d259cd74121a36f38b0b51424a"
+		"9b2be514a04377113a6cdafe79dd7d5f"
+		"2ecc8b5e9661189b86a7b22239907c25"
+		"2928313a65343a36ad4b1d292929"));
 
   rsa_public_key_clear(&pub);
   rsa_private_key_clear(&priv);
