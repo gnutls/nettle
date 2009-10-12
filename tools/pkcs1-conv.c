@@ -1,10 +1,10 @@
 /* pkcs1-conv.c
  *
- * Converting pkcs#1 keys to sexp format. */
+ * Converting pkcs#1 and similar keys to sexp format. */
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2005 Niels Möller
+ * Copyright (C) 2005, 2009 Niels Möller, Magnus Holmgren
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -35,6 +35,7 @@
 #include "base64.h"
 #include "buffer.h"
 #include "rsa.h"
+#include "dsa.h"
 
 #include "getopt.h"
 #include "misc.h"
@@ -43,6 +44,9 @@ enum object_type
   {
     RSA_PRIVATE_KEY = 0x200,
     RSA_PUBLIC_KEY,
+    DSA_PRIVATE_KEY,
+    /* DSA public keys only supported as part of a
+       SubjectPublicKeyInfo, i.e., the GENERAL_PUBLIC_KEY case. */
     GENERAL_PUBLIC_KEY,
   };
 
@@ -303,6 +307,34 @@ convert_rsa_private_key(struct nettle_buffer *buffer, unsigned length, const uin
   return res;
 }
 
+static int
+convert_dsa_private_key(struct nettle_buffer *buffer, unsigned length, const uint8_t *data)
+{
+  struct dsa_public_key pub;
+  struct dsa_private_key priv;
+  int res;
+  
+  dsa_public_key_init(&pub);
+  dsa_private_key_init(&priv);
+
+  if (dsa_keypair_from_der(&pub, &priv, 0,
+			   length, data))
+    {
+      /* Reuses the buffer */
+      nettle_buffer_reset(buffer);
+      res = dsa_keypair_to_sexp(buffer, NULL, &pub, &priv);
+    }
+  else
+    {
+      werror("Invalid OpenSSL private key.\n");
+      res = 0;
+    }
+  dsa_public_key_clear(&pub);
+  dsa_private_key_clear(&priv);
+
+  return res;
+}
+
 /* Returns 1 on success, 0 on error, and -1 for unsupported algorithms. */
 static int
 convert_public_key(struct nettle_buffer *buffer, unsigned length, const uint8_t *data)
@@ -332,9 +364,8 @@ convert_public_key(struct nettle_buffer *buffer, unsigned length, const uint8_t 
       && asn1_der_iterator_next(&i) == ASN1_ITERATOR_PRIMITIVE
       && i.type == ASN1_BITSTRING
 
-      /* Use i to parse the object wrapped in the bit string. For all
-	 currently supported key types, it is a sequence. */
-      && asn1_der_decode_bitstring_last(&i) == ASN1_ITERATOR_CONSTRUCTED)
+      /* Use i to parse the object wrapped in the bit string.*/
+      && asn1_der_decode_bitstring_last(&i))
     {
       /* pkcs-1 {
 	     iso(1) member-body(2) us(840) rsadsi(113549) pkcs(1) pkcs-1(1)
@@ -349,7 +380,16 @@ convert_public_key(struct nettle_buffer *buffer, unsigned length, const uint8_t 
       */
       static const uint8_t id_rsaEncryption[9] =
 	{ 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x01 };
-      
+      /*
+	 --
+	 -- When dsa is used in an AlgorithmIdentifier the
+	 -- parameters MUST be present and MUST NOT be NULL.
+	 --
+	 dsa    OBJECT IDENTIFIER ::= { iso(1) member-body(2) us(840) x9-57(10040) x9algorithm(4) 1 }
+      */
+      static const uint8_t id_dsa[7] =
+	{ 0x2A, 0x86, 0x48, 0xCE, 0x38, 0x04, 0x01 };
+
       switch (j.length)
 	{
 	unknown:
@@ -358,6 +398,27 @@ convert_public_key(struct nettle_buffer *buffer, unsigned length, const uint8_t 
 	  res = -1;
 	  break;
 	  
+	case 7:
+	  if (memcmp(j.data, id_dsa, 7) == 0)
+	    {
+	      if (asn1_der_iterator_next(&j) == ASN1_ITERATOR_CONSTRUCTED
+		  && asn1_der_decode_constructed_last(&j) == ASN1_ITERATOR_PRIMITIVE)
+		{
+		  struct dsa_public_key pub;
+
+		  dsa_public_key_init(&pub);
+
+		  if (dsa_public_key_from_der_iterators(&pub, 0, &i, &j))
+		    {
+		      nettle_buffer_reset(buffer);
+		      res = dsa_keypair_to_sexp(buffer, NULL, &pub, NULL) > 0;
+		    }
+		}
+	      if (!res)
+		werror("SubjectPublicKeyInfo: Invalid DSA key.\n");
+	      break;
+	    }
+	  else goto unknown;
 	case 9:
 	  if (memcmp(j.data, id_rsaEncryption, 9) == 0)
 	    {
@@ -413,6 +474,10 @@ convert_type(struct nettle_buffer *buffer,
 
     case RSA_PRIVATE_KEY:
       res = convert_rsa_private_key(buffer, length, data);
+      break;
+
+    case DSA_PRIVATE_KEY:
+      res = convert_dsa_private_key(buffer, length, data);
       break;
     }
 
@@ -487,6 +552,11 @@ convert_file(struct nettle_buffer *buffer,
 		  type = RSA_PRIVATE_KEY;
 		  break;
 		}
+	      if (memcmp(marker, "DSA PRIVATE KEY", 15) == 0)
+		{
+		  type = DSA_PRIVATE_KEY;
+		  break;
+		}
 	    }
 	  
 	  if (!type)
@@ -516,6 +586,7 @@ main(int argc, char **argv)
       { "version", no_argument, NULL, 'V' },
       { "private-rsa-key", no_argument, NULL, RSA_PRIVATE_KEY },
       { "public-rsa-key", no_argument, NULL, RSA_PUBLIC_KEY },
+      { "private-dsa-key", no_argument, NULL, DSA_PRIVATE_KEY },
       { "public-key-info", no_argument, NULL, GENERAL_PUBLIC_KEY },
       { "base-64", no_argument, NULL, 'b' },
       { NULL, 0, NULL, 0 }
@@ -534,6 +605,7 @@ main(int argc, char **argv)
 
 	case RSA_PRIVATE_KEY:
 	case RSA_PUBLIC_KEY:
+	case DSA_PRIVATE_KEY:
 	case GENERAL_PUBLIC_KEY:
 	  type = c;
 	  break;
