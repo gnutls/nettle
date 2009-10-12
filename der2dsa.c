@@ -84,7 +84,7 @@ dsa_private_key_from_der_iterator(struct dsa_public_key *pub,
   uint32_t version;
   
   return (i->type == ASN1_SEQUENCE
-	  asn1_der_decode_constructed_last(i) == ASN1_ITERATOR_PRIMITIVE
+	  && asn1_der_decode_constructed_last(i) == ASN1_ITERATOR_PRIMITIVE
 	  && i->type == ASN1_INTEGER
 	  && asn1_der_get_uint32(i, &version)
 	  && version == 0
