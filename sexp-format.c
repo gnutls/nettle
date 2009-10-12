@@ -36,11 +36,8 @@
 #include "sexp.h"
 #include "buffer.h"
 
-#if HAVE_LIBGMP
-# include "bignum.h"
-#endif
+#include "bignum.h"
 
-/* Code copied from sexp-conv.c: sexp_put_length */
 static unsigned
 format_prefix(struct nettle_buffer *buffer,
 	      unsigned length)
@@ -293,7 +290,6 @@ sexp_vformat(struct nettle_buffer *buffer, const char *format, va_list args)
 	      }
 	    case 'b':
 	      {
-#if HAVE_LIBGMP
 		const MP_INT *n = va_arg(args, const MP_INT *);
 		unsigned length;
 		unsigned prefix_length;
@@ -316,9 +312,6 @@ sexp_vformat(struct nettle_buffer *buffer, const char *format, va_list args)
 
 		done += length;
 	      
-#else /* ! HAVE_LIBGMP */
-		abort();
-#endif /* ! HAVE_LIBGMP */
 		break;
 	      }
 	    }
