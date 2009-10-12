@@ -1,5 +1,8 @@
 2009-10-12  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac (LIBHOGWEED_MINOR): Bumped libhogweed minor
+	version, now it's 1.1.
+
 	* testsuite/rsa2sexp-test.c (test_main): Updated testcase for "rsa-pkcs1".
 
 2009-10-11  Niels Möller  <nisse@lysator.liu.se>
