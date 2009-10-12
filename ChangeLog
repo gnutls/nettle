@@ -1,3 +1,7 @@
+2009-10-12  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/rsa2sexp-test.c (test_main): Updated testcase for "rsa-pkcs1".
+
 2009-10-11  Niels Möller  <nisse@lysator.liu.se>
 
 	* rsa2sexp.c (rsa_keypair_to_sexp): Changed default algorithm name
