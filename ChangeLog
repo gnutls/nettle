@@ -1,3 +1,16 @@
+2009-10-19  Niels Möller  <nisse@lysator.liu.se>
+
+	* tools/pkcs1-conv.c: Updated for dsa/der interface change.
+
+	* der2dsa.c (dsa_public_key_from_der_iterators): Split into two
+	new functions...
+	(dsa_params_from_der_iterator): New function.
+	(dsa_public_key_from_der_iterator): New function.
+	(dsa_openssl_private_key_from_der_iterator): Renamed, was
+	dsa_private_key_from_der_iterator.
+	(dsa_openssl_private_key_from_der): Likewise.
+	* dsa.h: Corresponding changees to prototypes and #defines.
+
 2009-10-12  Niels Möller  <nisse@lysator.liu.se>
 
 	* sexp-format.c: Removed conditioning on HAVE_LIBGMP.
@@ -14,7 +27,8 @@
 	* configure.ac (LIBHOGWEED_MINOR): Bumped libhogweed minor
 	version, now it's 1.1.
 
-	* testsuite/rsa2sexp-test.c (test_main): Updated testcase for "rsa-pkcs1".
+	* testsuite/rsa2sexp-test.c (test_main): Updated testcase for
+	"rsa-pkcs1".
 
 2009-10-11  Niels Möller  <nisse@lysator.liu.se>
 

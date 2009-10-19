@@ -39,37 +39,45 @@
  && mpz_sgn((x)) > 0)
 
 int
-dsa_public_key_from_der_iterators(struct dsa_public_key *pub,
-				 unsigned limit,
-				 struct asn1_der_iterator *i,
-				 struct asn1_der_iterator *j)
+dsa_params_from_der_iterator(struct dsa_public_key *pub,
+			     unsigned limit,
+			     struct asn1_der_iterator *i)
 {
-  /* DSAPublicKey ::= INTEGER
-     Dss-Parms ::= SEQUENCE {
+  /* Dss-Parms ::= SEQUENCE {
 	 p  INTEGER,
 	 q  INTEGER,
 	 g  INTEGER
      }
   */
+  return (i->type == ASN1_INTEGER
+	  && asn1_der_get_bignum(i, pub->p, limit)
+	  && mpz_sgn(pub->p) > 0
+	  && GET(i, pub->q, limit)
+	  && GET(i, pub->g, limit)
+	  && asn1_der_iterator_next(i) == ASN1_ITERATOR_END);
+  
+}
+
+int
+dsa_public_key_from_der_iterator(struct dsa_public_key *pub,
+				 unsigned limit,
+				 struct asn1_der_iterator *i)
+{
+  /* DSAPublicKey ::= INTEGER
+  */
 
   return (i->type == ASN1_INTEGER
 	  && asn1_der_get_bignum(i, pub->y, limit)
-	  && mpz_sgn(pub->y) > 0
-	  && j->type == ASN1_INTEGER
-	  && asn1_der_get_bignum(j, pub->p, limit)
-	  && mpz_sgn(pub->p) > 0
-	  && GET(j, pub->q, limit)
-	  && GET(j, pub->g, limit)
-	  && asn1_der_iterator_next(i) == ASN1_ITERATOR_END);
+	  && mpz_sgn(pub->y) > 0);
 }
 
 /* FIXME: Rename this and the next function to something
    openssl-specific? */
 int
-dsa_private_key_from_der_iterator(struct dsa_public_key *pub,
-				  struct dsa_private_key *priv,
-				  unsigned limit,
-				  struct asn1_der_iterator *i)
+dsa_openssl_private_key_from_der_iterator(struct dsa_public_key *pub,
+					  struct dsa_private_key *priv,
+					  unsigned limit,
+					  struct asn1_der_iterator *i)
 {
   /* DSAPrivateKey ::= SEQUENCE {
          version           Version,
@@ -97,7 +105,7 @@ dsa_private_key_from_der_iterator(struct dsa_public_key *pub,
 }
 
 int
-dsa_keypair_from_der(struct dsa_public_key *pub,
+dsa_openssl_private_key_from_der(struct dsa_public_key *pub,
 		     struct dsa_private_key *priv,
 		     unsigned limit,
 		     unsigned length, const uint8_t *data)
@@ -107,11 +115,6 @@ dsa_keypair_from_der(struct dsa_public_key *pub,
 
   res = asn1_der_iterator_first(&i, length, data);
 
-  if (res != ASN1_ITERATOR_CONSTRUCTED)
-    return 0;
-
-  if (priv)
-    return dsa_private_key_from_der_iterator(pub, priv, limit, &i);
-  else
-    return 0;
+  return (res == ASN1_ITERATOR_CONSTRUCTED
+	  && dsa_openssl_private_key_from_der_iterator(pub, priv, limit, &i));
 }

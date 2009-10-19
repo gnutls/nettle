@@ -317,8 +317,8 @@ convert_dsa_private_key(struct nettle_buffer *buffer, unsigned length, const uin
   dsa_public_key_init(&pub);
   dsa_private_key_init(&priv);
 
-  if (dsa_keypair_from_der(&pub, &priv, 0,
-			   length, data))
+  if (dsa_openssl_private_key_from_der(&pub, &priv, 0,
+				       length, data))
     {
       /* Reuses the buffer */
       nettle_buffer_reset(buffer);
@@ -408,7 +408,8 @@ convert_public_key(struct nettle_buffer *buffer, unsigned length, const uint8_t 
 
 		  dsa_public_key_init(&pub);
 
-		  if (dsa_public_key_from_der_iterators(&pub, 0, &i, &j))
+		  if (dsa_params_from_der_iterator(&pub, 0, &i)
+		      && dsa_public_key_from_der_iterator(&pub, 0, &j))
 		    {
 		      nettle_buffer_reset(buffer);
 		      res = dsa_keypair_to_sexp(buffer, NULL, &pub, NULL) > 0;
