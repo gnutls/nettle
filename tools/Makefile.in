@@ -39,7 +39,7 @@ nettle-lfib-stream$(EXEEXT): nettle-lfib-stream.$(OBJEXT) ../libnettle.a
 	$(LINK) nettle-lfib-stream.$(OBJEXT) -lnettle $(LIBS) -o $@
 
 pkcs1_conv_OBJS = $(pkcs1_conv_SOURCES:.c=.$(OBJEXT))
-pkcs1-conv$(EXEEXT): $(pkcs1_conv_OBJS) ../libnettle.a
+pkcs1-conv$(EXEEXT): $(pkcs1_conv_OBJS) ../libnettle.a ../libhogweed.a
 	$(LINK) $(pkcs1_conv_OBJS) -lhogweed -lnettle $(LIBS) -o $@
 
 .c.$(OBJEXT):
