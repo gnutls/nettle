@@ -120,8 +120,8 @@ asn1_der_decode_constructed(struct asn1_der_iterator *i,
 			    struct asn1_der_iterator *contents);
 
 /* For the common case that we have a sequence at the end of the
-   object. Checks that the current object is the final one, and ten
-   reinitialize the iterator to parse its ontents. */
+   object. Checks that the current object is the final one, and then
+   reinitializes the iterator to parse its ontents. */
 enum asn1_iterator_result
 asn1_der_decode_constructed_last(struct asn1_der_iterator *i);
 
