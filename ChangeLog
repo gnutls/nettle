@@ -1,3 +1,13 @@
+2010-01-13  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in ($(LIBHOGWEED_FORLINK)): Depend on
+	$(LIBNETTLE_FORLINK).
+
+	* configure.ac (LIBHOGWEED_LIBS): Added -lnettle -lgmp for the
+	default case. Follows debian, and also makes dlopen of
+	libhogweed.so work, without having to use RTLD_GLOBAL.
+	(LIBHOGWEED_LINK): Added -L., to find our libnettle.so.
+
 2009-10-21  Niels Möller  <nisse@lysator.liu.se>
 
 	* tools/Makefile.in (pkcs1-conv$(EXEEXT)): Added dependency on

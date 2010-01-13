@@ -148,7 +148,7 @@ $(LIBNETTLE_FORLINK): $(nettle_PURE_OBJS)
 	[ -z "$(LIBNETTLE_SONAME)" ] || (cd .lib \
           && ln -sf ../$(LIBNETTLE_FORLINK) $(LIBNETTLE_SONAME))
 
-$(LIBHOGWEED_FORLINK): $(hogweed_PURE_OBJS)
+$(LIBHOGWEED_FORLINK): $(hogweed_PURE_OBJS) $(LIBNETTLE_FORLINK)
 	$(LIBHOGWEED_LINK) $(hogweed_PURE_OBJS) -o $@ $(LIBHOGWEED_LIBS)
 	-mkdir .lib 2>/dev/null
 	[ -z "$(LIBHOGWEED_SONAME)" ] || (cd .lib \
