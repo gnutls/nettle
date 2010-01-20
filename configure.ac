@@ -402,6 +402,12 @@ AC_CHECK_LIB(gmp, __gmpz_getlimbn,,
 Support for public key algorithms will be unavailable.])]
     enable_public_key=no)
 
+# Add -R flags needed to run programs linked with gmp
+LSH_RPATH_FIX
+
+AH_TEMPLATE([HAVE_MPZ_POWM_SEC], [Define if mpz_powm_sec is available (appeared in GMP-5)])
+AC_CHECK_FUNC(__gmpz_powm_sec, [AC_DEFINE(HAVE_MPZ_POWM_SEC)])
+
 AH_TEMPLATE([WITH_HOGWEED], [Defined if public key features are enabled])
 
 if test "x$enable_public_key" = xyes ; then
@@ -419,9 +425,6 @@ fi
 
 AC_SUBST(IF_HOGWEED)
 AC_SUBST(IF_SHARED)
-
-# Add -R flags needed to run programs linked with gmp
-LSH_RPATH_FIX
 
 OPENSSL_LIBFLAGS=''
 

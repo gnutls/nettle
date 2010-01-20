@@ -1,3 +1,7 @@
+2010-01-20  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Check for mpz_powm_sec.
+
 2010-01-13  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in ($(LIBHOGWEED_FORLINK)): Depend on
