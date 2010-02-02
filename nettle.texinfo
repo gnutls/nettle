@@ -1599,7 +1599,7 @@ order of the multiplicative group of integers modulo n.
 Next, @code{e} is chosen. It must have no factors in common with @code{phi} (in
 particular, it must be odd), but can otherwise be chosen more or less
 randomly. @code{e = 65537} is a popular choice, because it makes raising
-to the @code{e}:th power particularly efficient, and being prime, it
+to the @code{e}'th power particularly efficient, and being prime, it
 usually has no factors common with @code{phi}.
 
 Finally, a number @code{d}, @code{d < n} is computed such that @code{e d
