@@ -1,3 +1,7 @@
+2010-03-06  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (distdir): Include x86_64 assembler files.
+
 2010-01-20  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Check for mpz_powm_sec.
