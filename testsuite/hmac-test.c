@@ -7,12 +7,13 @@ test_main(void)
   struct hmac_md5_ctx md5;
   struct hmac_sha1_ctx sha1;
   struct hmac_sha256_ctx sha256;
+  struct hmac_sha512_ctx sha512;
 
-  /* sha256's digests are longest */
-  uint8_t digest[SHA256_DIGEST_SIZE];
+  /* sha512's digests are longest */
+  uint8_t digest[SHA512_DIGEST_SIZE];
 
   memset(digest, 0, sizeof(digest));
-  
+
   /* Test vectors for md5, from RFC-2202 */
 
   /* md5 - 1 */
@@ -44,7 +45,7 @@ test_main(void)
   if (!MEMEQ(MD5_DIGEST_SIZE, digest,
 	     H("56be34521d144c88 dbb8c733f0e8b3f6")))
     FAIL();
-  
+
   /* md5 - 4 */
   hmac_md5_set_key(&md5, HL("0102030405060708 090a0b0c0d0e0f10" 
 			    "1112131415161718 19"));
@@ -97,7 +98,7 @@ test_main(void)
 	     H("6f630fad67cda0ee 1fb1f562db3aa53e")))
     FAIL();
 
- 
+
   /* Test vectors for sha1, from RFC-2202 */
 
   /* sha1 - 1 */
@@ -129,7 +130,7 @@ test_main(void)
   if (!MEMEQ(SHA1_DIGEST_SIZE, digest,
 	     H("125d7342b9ac11cd 91a39af48aa17b4f 63f175d3")))
     FAIL();
-  
+
   /* sha1 - 4 */
   hmac_sha1_set_key(&sha1, HL("0102030405060708 090a0b0c0d0e0f10" 
 			      "1112131415161718 19"));
@@ -315,6 +316,58 @@ test_main(void)
 	     H("6355ac22e890d0a3 c8481a5ca4825bc8"
 	       "84d3e7a1ff98a2fc 2ac7d8e064c3b2e6")))
     FAIL();
+
+  /* Test vectors for sha512, from draft-kelly-ipsec-ciph-sha2-01.txt */
+
+  /* Test case AUTH512-1: */
+  hmac_sha512_set_key(&sha512, HL("0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b"
+				  "0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b"
+				  "0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b"
+				  "0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b"));
+  hmac_sha512_update(&sha512, LDATA("Hi There"));
+  hmac_sha512_digest(&sha512, SHA512_DIGEST_SIZE, digest);
+
+  if (!MEMEQ(SHA512_DIGEST_SIZE, digest,
+	     H("637edc6e01dce7e6742a99451aae82df"
+	       "23da3e92439e590e43e761b33e910fb8"
+	       "ac2878ebd5803f6f0b61dbce5e251ff8"
+	       "789a4722c1be65aea45fd464e89f8f5b")))
+    FAIL();
+
+  /* Test case AUTH512-2: */
+  hmac_sha512_set_key(&sha512, LDATA("JefeJefeJefeJefe"
+				     "JefeJefeJefeJefe"
+				     "JefeJefeJefeJefe"
+				     "JefeJefeJefeJefe"));
+  hmac_sha512_update(&sha512, LDATA("what do ya want for nothing?"));
+  hmac_sha512_digest(&sha512, SHA512_DIGEST_SIZE, digest);
+
+  if (!MEMEQ(SHA512_DIGEST_SIZE, digest,
+	     H("cb370917ae8a7ce28cfd1d8f4705d614"
+	       "1c173b2a9362c15df235dfb251b15454"
+	       "6aa334ae9fb9afc2184932d8695e397b"
+	       "fa0ffb93466cfcceaae38c833b7dba38")))
+    FAIL();
+
+  /* Test case AUTH512-3: */
+  hmac_sha512_set_key(&sha512, HL("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+				  "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+				  "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+				  "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"));
+  hmac_sha512_update(&sha512, HL("dddddddddddddddddddddddddddddddd"
+				 "dddddddddddddddddddddddddddddddd"
+				 "dddddddddddddddddddddddddddddddd"
+				 "dddd"));
+  hmac_sha512_digest(&sha512, SHA512_DIGEST_SIZE, digest);
+
+  if (!MEMEQ(SHA512_DIGEST_SIZE, digest,
+	     H("2ee7acd783624ca9398710f3ee05ae41"
+	       "b9f9b0510c87e49e586cc9bf961733d8"
+	       "623c7b55cebefccf02d5581acc1c9d5f"
+	       "b1ff68a1de45509fbe4da9a433922655")))
+    FAIL();
+
+  /* Test case AUTH512-3 from same document seems broken. */
 
   SUCCESS();
 }
