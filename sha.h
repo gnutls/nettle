@@ -39,6 +39,9 @@ extern "C" {
 #define sha256_init nettle_sha256_init
 #define sha256_update nettle_sha256_update
 #define sha256_digest nettle_sha256_digest
+#define sha512_init nettle_sha512_init
+#define sha512_update nettle_sha512_update
+#define sha512_digest nettle_sha512_digest
 
 /* SHA1 */
 
@@ -100,6 +103,35 @@ sha256_update(struct sha256_ctx *ctx,
 
 void
 sha256_digest(struct sha256_ctx *ctx,
+	      unsigned length,
+	      uint8_t *digest);
+
+/* SHA512 */
+
+#define SHA512_DIGEST_SIZE 64
+#define SHA512_DATA_SIZE 128
+
+/* Digest is kept internally as 8 64-bit words. */
+#define _SHA512_DIGEST_LENGTH 8
+
+struct sha512_ctx
+{
+  uint64_t state[_SHA512_DIGEST_LENGTH];    /* State variables */
+  uint64_t count_low, count_high;           /* 128-bit block count */
+  uint8_t block[SHA512_DATA_SIZE];          /* SHA512 data buffer */
+  unsigned int index;                       /* index into buffer */
+};
+
+void
+sha512_init(struct sha512_ctx *ctx);
+
+void
+sha512_update(struct sha512_ctx *ctx,
+	      unsigned length,
+	      const uint8_t *data);
+
+void
+sha512_digest(struct sha512_ctx *ctx,
 	      unsigned length,
 	      uint8_t *digest);
 
