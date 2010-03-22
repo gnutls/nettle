@@ -1,5 +1,13 @@
 2010-03-22  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.in (nettle_SOURCES): Added hmac-sha512.c.
+
+	* testsuite/hmac-test.c (test_main): Added test cases for
+	hmac-sha512.
+
+	* hmac.h: Declare functions SHA-512-related functions.
+	* hmac-sha512.c (hmac_sha512_set_key): New file.
+
 	Basic SHA 512 support.
 	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Added sha512-test.c.
 	* testsuite/sha512-test.c: New file.
@@ -2004,7 +2012,7 @@
 
 	* Makefile.am (libnettle_a_SOURCES): Added hmac-sha256.c.
 
-	* testsuite/hmac-test.c (test_main): Added tests for hmac-256,
+	* testsuite/hmac-test.c (test_main): Added tests for hmac-sha256,
 	from draft-ietf-ipsec-ciph-sha-256-01.txt.
 
 	* hmac-sha256.c (hmac_sha256_digest): New file.
