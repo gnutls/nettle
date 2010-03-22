@@ -48,6 +48,9 @@ extern "C" {
 #define hmac_sha256_set_key nettle_hmac_sha256_set_key
 #define hmac_sha256_update nettle_hmac_sha256_update
 #define hmac_sha256_digest nettle_hmac_sha256_digest
+#define hmac_sha512_set_key nettle_hmac_sha512_set_key
+#define hmac_sha512_update nettle_hmac_sha512_update
+#define hmac_sha512_digest nettle_hmac_sha512_digest
 
 void
 hmac_set_key(void *outer, void *inner, void *state,
@@ -124,6 +127,21 @@ hmac_sha256_update(struct hmac_sha256_ctx *ctx,
 
 void
 hmac_sha256_digest(struct hmac_sha256_ctx *ctx,
+		   unsigned length, uint8_t *digest);
+
+/* hmac-sha512 */
+struct hmac_sha512_ctx HMAC_CTX(struct sha512_ctx);
+
+void
+hmac_sha512_set_key(struct hmac_sha512_ctx *ctx,
+		    unsigned key_length, const uint8_t *key);
+
+void
+hmac_sha512_update(struct hmac_sha512_ctx *ctx,
+		   unsigned length, const uint8_t *data);
+
+void
+hmac_sha512_digest(struct hmac_sha512_ctx *ctx,
 		   unsigned length, uint8_t *digest);
 
 #ifdef __cplusplus
