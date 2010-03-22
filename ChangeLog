@@ -1,3 +1,17 @@
+2010-03-22  Niels Möller  <nisse@lysator.liu.se>
+
+	Basic SHA 512 support.
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Added sha512-test.c.
+	* testsuite/sha512-test.c: New file.
+
+	* macros.h (READ_UINT64, WRITE_UINT64): New macros.
+
+	* Makefile.in (nettle_SOURCES): Added sha512.c and sha512-meta.c.
+	* sha.h: Added SHA-512-related declarations.
+	* nettle-meta.h: Likewise.
+	* sha512-meta.c: New file.
+	* sha512.c: New file.
+
 2010-03-06  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in (distdir): Include x86_64 assembler files.
