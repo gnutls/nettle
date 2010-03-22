@@ -46,6 +46,9 @@ sha1-test$(EXEEXT): sha1-test.$(OBJEXT)
 sha256-test$(EXEEXT): sha256-test.$(OBJEXT)
 	$(LINK) sha256-test.$(OBJEXT) $(TEST_OBJS) -o sha256-test$(EXEEXT)
 
+sha512-test$(EXEEXT): sha512-test.$(OBJEXT)
+	$(LINK) sha512-test.$(OBJEXT) $(TEST_OBJS) -o sha512-test$(EXEEXT)
+
 serpent-test$(EXEEXT): serpent-test.$(OBJEXT)
 	$(LINK) serpent-test.$(OBJEXT) $(TEST_OBJS) -o serpent-test$(EXEEXT)
 
