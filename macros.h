@@ -4,7 +4,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2001 Niels Möller
+ * Copyright (C) 2001, 2010 Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -24,6 +24,29 @@
 
 #ifndef NETTLE_MACROS_H_INCLUDED
 #define NETTLE_MACROS_H_INCLUDED
+
+/* Reads a 64-bit integer, in network, big-endian, byte order */
+#define READ_UINT64(p)				\
+(  (((uint64_t) (p)[0]) << 56)			\
+ | (((uint64_t) (p)[1]) << 48)			\
+ | (((uint64_t) (p)[2]) << 40)			\
+ | (((uint64_t) (p)[3]) << 32)			\
+ | (((uint64_t) (p)[4]) << 24)			\
+ | (((uint64_t) (p)[5]) << 16)			\
+ | (((uint64_t) (p)[6]) << 8)			\
+ |  ((uint64_t) (p)[7]))
+
+#define WRITE_UINT64(p, i)			\
+do {						\
+  (p)[0] = ((i) >> 56) & 0xff;			\
+  (p)[1] = ((i) >> 48) & 0xff;			\
+  (p)[2] = ((i) >> 40) & 0xff;			\
+  (p)[3] = ((i) >> 32) & 0xff;			\
+  (p)[4] = ((i) >> 24) & 0xff;			\
+  (p)[5] = ((i) >> 16) & 0xff;			\
+  (p)[6] = ((i) >> 8) & 0xff;			\
+  (p)[7] = (i) & 0xff;				\
+} while(0)
 
 /* Reads a 32-bit integer, in network, big-endian, byte order */
 #define READ_UINT32(p)				\
