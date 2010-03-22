@@ -1,4 +1,4 @@
-/* sha256.h
+/* sha256.c
  *
  * The sha256 hash function.
  *
