@@ -15,7 +15,7 @@ TS_NETTLE_SOURCES = aes-test.c arcfour-test.c arctwo-test.c \
 	            base16-test.c base64-test.c \
 		    des-test.c des3-test.c des-compat-test.c \
 		    md2-test.c md4-test.c md5-test.c md5-compat-test.c \
-		    sha1-test.c sha256-test.c \
+		    sha1-test.c sha256-test.c sha512-test.c \
 		    serpent-test.c twofish-test.c \
 		    buffer-test.c yarrow-test.c
 
