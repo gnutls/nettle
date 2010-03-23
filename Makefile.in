@@ -75,11 +75,13 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 hogweed_SOURCES = sexp.c sexp-format.c \
 		  sexp-transport.c sexp-transport-format.c \
 		  bignum.c bignum-next-prime.c bignum-random.c sexp2bignum.c \
-		  pkcs1.c pkcs1-rsa-md5.c pkcs1-rsa-sha1.c pkcs1-rsa-sha256.c \
+		  pkcs1.c pkcs1-rsa-md5.c pkcs1-rsa-sha1.c \
+		  pkcs1-rsa-sha256.c pkcs1-rsa-sha512.c \
 		  rsa.c rsa-sign.c rsa-verify.c \
 		  rsa-md5-sign.c rsa-md5-verify.c \
 		  rsa-sha1-sign.c rsa-sha1-verify.c \
 		  rsa-sha256-sign.c rsa-sha256-verify.c \
+		  rsa-sha512-sign.c rsa-sha512-verify.c \
 		  rsa-encrypt.c rsa-decrypt.c \
 		  rsa-keygen.c rsa-compat.c \
 		  rsa2sexp.c sexp2rsa.c \

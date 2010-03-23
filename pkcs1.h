@@ -41,10 +41,13 @@ extern "C" {
 #define pkcs1_rsa_sha1_encode_digest nettle_pkcs1_rsa_sha1_encode_digest
 #define pkcs1_rsa_sha256_encode nettle_pkcs1_rsa_sha256_encode
 #define pkcs1_rsa_sha256_encode_digest nettle_pkcs1_rsa_sha256_encode_digest
+#define pkcs1_rsa_sha512_encode nettle_pkcs1_rsa_sha512_encode
+#define pkcs1_rsa_sha512_encode_digest nettle_pkcs1_rsa_sha512_encode_digest
 
 struct md5_ctx;
 struct sha1_ctx;
 struct sha256_ctx;
+struct sha512_ctx;
 
 void
 pkcs1_signature_prefix(unsigned length,
@@ -69,6 +72,12 @@ pkcs1_rsa_sha256_encode(mpz_t m, unsigned length, struct sha256_ctx *hash);
 
 void
 pkcs1_rsa_sha256_encode_digest(mpz_t m, unsigned length, const uint8_t *digest);
+
+void
+pkcs1_rsa_sha512_encode(mpz_t m, unsigned length, struct sha512_ctx *hash);
+
+void
+pkcs1_rsa_sha512_encode_digest(mpz_t m, unsigned length, const uint8_t *digest);
 
 #ifdef __cplusplus
 }

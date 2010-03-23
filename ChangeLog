@@ -1,3 +1,16 @@
+2010-03-23  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (hogweed_SOURCES): Added pkcs1-rsa-sha512.c,
+	rsa-sha512-sign.c and rsa-sha512-verify.c.
+
+	* rsa.h: Added prototypes for sha512-related functions.
+	(RSA_MINIMUM_N_OCTETS, RSA_MINIMUM_N_BITS): Increased.
+	* pkcs1.h: Added prototypes for sha512-related functions.
+
+	* rsa-sha512-verify.c: New file.
+	* rsa-sha512-sign.c: New file.
+	* pkcs1-rsa-sha512.c: New file.
+
 2010-03-22  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in (nettle_SOURCES): Added hmac-sha512.c.
@@ -5,17 +18,17 @@
 	* testsuite/hmac-test.c (test_main): Added test cases for
 	hmac-sha512.
 
-	* hmac.h: Declare functions SHA-512-related functions.
+	* hmac.h: Declare functions sha512-related functions.
 	* hmac-sha512.c (hmac_sha512_set_key): New file.
 
-	Basic SHA 512 support.
+	Basic sha512 support.
 	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Added sha512-test.c.
 	* testsuite/sha512-test.c: New file.
 
 	* macros.h (READ_UINT64, WRITE_UINT64): New macros.
 
 	* Makefile.in (nettle_SOURCES): Added sha512.c and sha512-meta.c.
-	* sha.h: Added SHA-512-related declarations.
+	* sha.h: Added sha512-related declarations.
 	* nettle-meta.h: Likewise.
 	* sha512-meta.c: New file.
 	* sha512.c: New file.
@@ -402,7 +415,7 @@
 
 	* C source files: Don't use WITH_PUBLIC_KEY / WITH_HOGWEED, the
 	Makefile sorts out which files should be compiled.
-	
+
 	* pgp.h: Include bignum.h, don't pretend to work without bignums.
 
 	* pgp-encode.c (pgp_put_mpi, pgp_put_public_rsa_key)
@@ -4132,16 +4145,16 @@
 
 	* yarrow256.c: New file, implementing Yarrow. Work in progress.
 
-	* sha256.c: New file, implementing SHA-256.
+	* sha256.c: New file, implementing sha256.
 
 	* testsuite/Makefile.am (CFLAGS): Added sha256-test.
 
-	* testsuite/sha256-test.m4: New testcases for SHA-256.
+	* testsuite/sha256-test.m4: New testcases for sha256.
 
-	* shadata.c: New file, for generating SHA-256 constants.
+	* shadata.c: New file, for generating sha256 constants.
 
 	* sha.h: Renamed sha1.h to sha.h, and added declarations for
-	SHA-256.
+	sha256.
 
 2001-10-05  Niels Möller  <nisse@ehand.com>
 
@@ -4404,7 +4417,7 @@
 
 	* testsuite/des-test.m4: New file.
 
-	* Added SHA1 files.
+	* Added sha1 files.
 
 	* Added desCore files.
 
