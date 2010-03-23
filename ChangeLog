@@ -1,5 +1,9 @@
 2010-03-23  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/rsa-test.c (test_main): Test signing with sha512.
+
+	* testsuite/testutils.c (test_rsa_sha512): New function.
+
 	* Makefile.in (hogweed_SOURCES): Added pkcs1-rsa-sha512.c,
 	rsa-sha512-sign.c and rsa-sha512-verify.c.
 
