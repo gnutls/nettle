@@ -1,5 +1,12 @@
 2010-03-24  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.in (nettle_SOURCES): Added sha256-compress.c.
+
+	* sha256.c: Reorganized to use _nettle_sha256_compress.
+
+	* sha256-compress.c (_nettle_sha256_compress): Compression
+	function extracted from sha256.c to a new file.
+
 	* examples/nettle-benchmark.c (main): Benchmark sha512.
 
 	* rsa-keygen.c (rsa_generate_keypair): Ensure that bit size of e
