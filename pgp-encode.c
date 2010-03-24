@@ -294,9 +294,8 @@ pgp_put_rsa_sha1_signature(struct nettle_buffer *buffer,
     }
     
   mpz_init(s);
-  rsa_sha1_sign(key, hash, s);
-
-  if (!pgp_put_mpi(buffer, s))
+  if (!(rsa_sha1_sign(key, hash, s)
+	&& pgp_put_mpi(buffer, s)))
     {
       mpz_clear(s);
       return 0;

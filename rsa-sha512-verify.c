@@ -42,11 +42,11 @@ rsa_sha512_verify(const struct rsa_public_key *key,
   int res;
   mpz_t m;
 
-  assert(key->size >= RSA_MINIMUM_N_OCTETS);
+  assert(key->size > 0);
   mpz_init(m);
   
-  pkcs1_rsa_sha512_encode(m, key->size - 1, hash);
-  res = _rsa_verify(key, m, s);
+  res = (pkcs1_rsa_sha512_encode(m, key->size - 1, hash) 
+	 && _rsa_verify(key, m, s));
   
   mpz_clear(m);
 
@@ -61,11 +61,11 @@ rsa_sha512_verify_digest(const struct rsa_public_key *key,
   int res;
   mpz_t m;
 
-  assert(key->size >= RSA_MINIMUM_N_OCTETS);
+  assert(key->size > 0);
   mpz_init(m);
   
-  pkcs1_rsa_sha512_encode_digest(m, key->size - 1, digest);
-  res = _rsa_verify(key, m, s);
+  res = (pkcs1_rsa_sha512_encode_digest(m, key->size - 1, digest)
+	 && _rsa_verify(key, m, s));
   
   mpz_clear(m);
 

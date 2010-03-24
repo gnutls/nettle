@@ -34,24 +34,31 @@
 
 /* Formats the PKCS#1 padding, of the form
  *
- *   0x01 0xff ... 0xff 0x00 id
+ *   0x01 0xff ... 0xff 0x00 id ...digest...
  *
- * where the 0xff ... 0xff part consists of at least 8 octets.
+ * where the 0xff ... 0xff part consists of at least 8 octets. The 
+ * total size should be one less than the octet size of n.
  */
-void
-pkcs1_signature_prefix(unsigned length,
+int
+pkcs1_signature_prefix(unsigned size,
 		       uint8_t *buffer,
-		       unsigned id_length,
-		       const uint8_t *id)
+		       unsigned id_size,
+		       const uint8_t *id,
+		       unsigned digest_size)
 {
-  assert(length >= id_length);
-  length -= id_length;
-  memcpy(buffer + length, id, id_length);
+  unsigned j;
+  
+  if (size < 10 + id_size + digest_size)
+    return 0;
 
-  assert(length);
-  buffer[--length] = 0;
+  j = size - digest_size - id_size;
 
-  assert(length >= 9);
-  memset(buffer + 1, 0xff, length - 1);
+  memcpy (buffer + j, id, id_size);
   buffer[0] = 1;
+  buffer[--j] = 0;
+
+  assert(j >= 9);
+  memset(buffer + 1, 0xff, j - 1);
+
+  return 1;
 }

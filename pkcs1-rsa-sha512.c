@@ -59,32 +59,41 @@ sha512_prefix[] =
       /* Here comes the raw hash value, 64 octets */
 };
 
-void
-pkcs1_rsa_sha512_encode(mpz_t m, unsigned length, struct sha512_ctx *hash)
+int
+pkcs1_rsa_sha512_encode(mpz_t m, unsigned size, struct sha512_ctx *hash)
 {
   TMP_DECL(em, uint8_t, NETTLE_MAX_BIGNUM_BITS / 8);
-  TMP_ALLOC(em, length);
+  TMP_ALLOC(em, size);
 
-  assert(length >= SHA512_DIGEST_SIZE);
-  pkcs1_signature_prefix(length - SHA512_DIGEST_SIZE, em,
-			 sizeof(sha512_prefix),
-			 sha512_prefix);
-  
-  sha512_digest(hash, SHA512_DIGEST_SIZE, em + length - SHA512_DIGEST_SIZE);
-  nettle_mpz_set_str_256_u(m, length, em);
+  if (pkcs1_signature_prefix(size, em,
+			     sizeof(sha512_prefix),
+			     sha512_prefix,
+			     SHA512_DIGEST_SIZE))
+    {
+      sha512_digest(hash, SHA512_DIGEST_SIZE,
+		    em + size - SHA512_DIGEST_SIZE);
+      nettle_mpz_set_str_256_u(m, size, em);
+      return 1;
+    }
+  else
+    return 0;
 }
 
-void
-pkcs1_rsa_sha512_encode_digest(mpz_t m, unsigned length, const uint8_t *digest)
+int
+pkcs1_rsa_sha512_encode_digest(mpz_t m, unsigned size, const uint8_t *digest)
 {
   TMP_DECL(em, uint8_t, NETTLE_MAX_BIGNUM_BITS / 8);
-  TMP_ALLOC(em, length);
+  TMP_ALLOC(em, size);
 
-  assert(length >= SHA512_DIGEST_SIZE);
-  pkcs1_signature_prefix(length - SHA512_DIGEST_SIZE, em,
-			 sizeof(sha512_prefix),
-			 sha512_prefix);
-
-  memcpy(em + length - SHA512_DIGEST_SIZE, digest, SHA512_DIGEST_SIZE);
-  nettle_mpz_set_str_256_u(m, length, em);
+  if (pkcs1_signature_prefix(size, em,
+			     sizeof(sha512_prefix),
+			     sha512_prefix,
+			     SHA512_DIGEST_SIZE))
+    {
+      memcpy(em + size - SHA512_DIGEST_SIZE, digest, SHA512_DIGEST_SIZE);
+      nettle_mpz_set_str_256_u(m, size, em);
+      return 1;
+    }
+  else
+    return 0;
 }

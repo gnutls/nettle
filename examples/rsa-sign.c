@@ -65,7 +65,11 @@ main(int argc, char **argv)
     }
 
   mpz_init(s);
-  rsa_sha1_sign(&key, &hash, s);
+  if (!rsa_sha1_sign(&key, &hash, s))
+    {
+      werror("RSA key too small\n");
+      return 0;
+    }
 
   if (!mpz_out_str(stdout, 16, s))
     {

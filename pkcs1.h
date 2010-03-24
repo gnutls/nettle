@@ -49,34 +49,35 @@ struct sha1_ctx;
 struct sha256_ctx;
 struct sha512_ctx;
 
-void
-pkcs1_signature_prefix(unsigned length,
+int
+pkcs1_signature_prefix(unsigned size,
 		       uint8_t *buffer,
-		       unsigned id_length,
-		       const uint8_t *id);
+		       unsigned id_size,
+		       const uint8_t *id,
+		       unsigned digest_size);
 
-void
+int
 pkcs1_rsa_md5_encode(mpz_t m, unsigned length, struct md5_ctx *hash);
 
-void
+int
 pkcs1_rsa_md5_encode_digest(mpz_t m, unsigned length, const uint8_t *digest);
 
-void
+int
 pkcs1_rsa_sha1_encode(mpz_t m, unsigned length, struct sha1_ctx *hash);
 
-void
+int
 pkcs1_rsa_sha1_encode_digest(mpz_t m, unsigned length, const uint8_t *digest);
 
-void
+int
 pkcs1_rsa_sha256_encode(mpz_t m, unsigned length, struct sha256_ctx *hash);
 
-void
+int
 pkcs1_rsa_sha256_encode_digest(mpz_t m, unsigned length, const uint8_t *digest);
 
-void
+int
 pkcs1_rsa_sha512_encode(mpz_t m, unsigned length, struct sha512_ctx *hash);
 
-void
+int
 pkcs1_rsa_sha512_encode_digest(mpz_t m, unsigned length, const uint8_t *digest);
 
 #ifdef __cplusplus

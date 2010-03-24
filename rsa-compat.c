@@ -81,14 +81,17 @@ R_SignFinal(R_SIGNATURE_CTX *ctx,
       mpz_t s;
       mpz_init(s);
 
-      rsa_md5_sign(&k, &ctx->hash, s);
-      nettle_mpz_get_str_256(k.size, signature, s);
+      if (rsa_md5_sign(&k, &ctx->hash, s))
+	{
+	  nettle_mpz_get_str_256(k.size, signature, s);
+	  *length = k.size;
+
+	  res = RE_SUCCESS;
+	}
+      else
+	res = RE_PRIVATE_KEY;
 
       mpz_clear(s);
-
-      *length = k.size;
-
-      res = RE_SUCCESS;
     }
   else
     res = RE_PRIVATE_KEY;

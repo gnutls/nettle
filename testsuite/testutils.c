@@ -450,9 +450,9 @@ mpz_togglebit (mpz_t x, unsigned long int bit)
 #endif /* HAVE_LIBGMP */
 
 #if WITH_HOGWEED
-#define SIGN(key, hash, msg, signature) do {	\
-  hash##_update(&hash, LDATA(msg));		\
-  rsa_##hash##_sign(key, &hash, signature);	\
+#define SIGN(key, hash, msg, signature) do {		\
+  hash##_update(&hash, LDATA(msg));			\
+  ASSERT(rsa_##hash##_sign(key, &hash, signature));	\
 } while(0)
 
 #define VERIFY(key, hash, msg, signature) (	\

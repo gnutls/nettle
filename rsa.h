@@ -76,15 +76,15 @@ extern "C" {
 #define _rsa_verify _nettle_rsa_verify
 #define _rsa_check_size _nettle_rsa_check_size
 
-/* For PKCS#1 to make sense, the size of the modulo, in octets, must
- * be at least 11 + the length of the DER-encoded Digest Info.
- *
- * And a DigestInfo is 34 octets for md5, 35 octets for sha1, 51
- * octets for sha256, and 83 octetss for sha512. 94 octets is 752
- * bits, and as the upper 7 bits may be zero, the smallest useful size
- * of n is 745 bits. */
+  /* This limit is somewhat arbitrary. Technically, the smallest
+     modulo which makes sense at all is 15 = 3*5, phi(15) = 8, size 4
+     bits. But for ridiculously small keys, not all odd e are possible
+     (e.g., for 5 bits, the only possible modulo is 3*7 = 21, phi(21)
+     = 12, and e = 3 don't work). The smallest size that makes sense
+     with pkcs#1, and which allows RSA encryption of one byte
+     messages, is 12 octets, 89 bits. */
 
-#define RSA_MINIMUM_N_OCTETS 94
+#define RSA_MINIMUM_N_OCTETS 12
 #define RSA_MINIMUM_N_BITS (8*RSA_MINIMUM_N_OCTETS - 7)
 
 struct rsa_public_key
@@ -168,7 +168,7 @@ rsa_private_key_prepare(struct rsa_private_key *key);
 
 
 /* PKCS#1 style signatures */
-void
+int
 rsa_md5_sign(const struct rsa_private_key *key,
              struct md5_ctx *hash,
              mpz_t signature);
@@ -179,7 +179,7 @@ rsa_md5_verify(const struct rsa_public_key *key,
                struct md5_ctx *hash,
 	       const mpz_t signature);
 
-void
+int
 rsa_sha1_sign(const struct rsa_private_key *key,
               struct sha1_ctx *hash,
               mpz_t signature);
@@ -189,7 +189,7 @@ rsa_sha1_verify(const struct rsa_public_key *key,
                 struct sha1_ctx *hash,
 		const mpz_t signature);
 
-void
+int
 rsa_sha256_sign(const struct rsa_private_key *key,
 		struct sha256_ctx *hash,
 		mpz_t signature);
@@ -199,7 +199,7 @@ rsa_sha256_verify(const struct rsa_public_key *key,
 		  struct sha256_ctx *hash,
 		  const mpz_t signature);
 
-void
+int
 rsa_sha512_sign(const struct rsa_private_key *key,
 		struct sha512_ctx *hash,
 		mpz_t signature);
@@ -210,7 +210,7 @@ rsa_sha512_verify(const struct rsa_public_key *key,
 		  const mpz_t signature);
 
 /* Variants taking the digest as argument. */
-void
+int
 rsa_md5_sign_digest(const struct rsa_private_key *key,
 		    const uint8_t *digest,
 		    mpz_t s);
@@ -220,7 +220,7 @@ rsa_md5_verify_digest(const struct rsa_public_key *key,
 		      const uint8_t *digest,
 		      const mpz_t signature);
 
-void
+int
 rsa_sha1_sign_digest(const struct rsa_private_key *key,
 		     const uint8_t *digest,
 		     mpz_t s);
@@ -230,7 +230,7 @@ rsa_sha1_verify_digest(const struct rsa_public_key *key,
 		       const uint8_t *digest,
 		       const mpz_t signature);
 
-void
+int
 rsa_sha256_sign_digest(const struct rsa_private_key *key,
 		       const uint8_t *digest,
 		       mpz_t s);
@@ -240,7 +240,7 @@ rsa_sha256_verify_digest(const struct rsa_public_key *key,
 			 const uint8_t *digest,
 			 const mpz_t signature);
 
-void
+int
 rsa_sha512_sign_digest(const struct rsa_private_key *key,
 		       const uint8_t *digest,
 		       mpz_t s);

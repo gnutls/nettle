@@ -59,32 +59,40 @@ sha256_prefix[] =
       /* Here comes the raw hash value */
 };
 
-void
-pkcs1_rsa_sha256_encode(mpz_t m, unsigned length, struct sha256_ctx *hash)
+int
+pkcs1_rsa_sha256_encode(mpz_t m, unsigned size, struct sha256_ctx *hash)
 {
   TMP_DECL(em, uint8_t, NETTLE_MAX_BIGNUM_BITS / 8);
-  TMP_ALLOC(em, length);
+  TMP_ALLOC(em, size);
 
-  assert(length >= SHA256_DIGEST_SIZE);
-  pkcs1_signature_prefix(length - SHA256_DIGEST_SIZE, em,
-			 sizeof(sha256_prefix),
-			 sha256_prefix);
-  
-  sha256_digest(hash, SHA256_DIGEST_SIZE, em + length - SHA256_DIGEST_SIZE);
-  nettle_mpz_set_str_256_u(m, length, em);
+  if (pkcs1_signature_prefix(size, em,
+			     sizeof(sha256_prefix),
+			     sha256_prefix,
+			     SHA256_DIGEST_SIZE))
+    {
+      sha256_digest(hash, SHA256_DIGEST_SIZE, em + size - SHA256_DIGEST_SIZE);
+      nettle_mpz_set_str_256_u(m, size, em);
+      return 1;
+    }
+  else
+    return 0;	
 }
 
-void
-pkcs1_rsa_sha256_encode_digest(mpz_t m, unsigned length, const uint8_t *digest)
+int
+pkcs1_rsa_sha256_encode_digest(mpz_t m, unsigned size, const uint8_t *digest)
 {
   TMP_DECL(em, uint8_t, NETTLE_MAX_BIGNUM_BITS / 8);
-  TMP_ALLOC(em, length);
+  TMP_ALLOC(em, size);
 
-  assert(length >= SHA256_DIGEST_SIZE);
-  pkcs1_signature_prefix(length - SHA256_DIGEST_SIZE, em,
-			 sizeof(sha256_prefix),
-			 sha256_prefix);
-
-  memcpy(em + length - SHA256_DIGEST_SIZE, digest, SHA256_DIGEST_SIZE);
-  nettle_mpz_set_str_256_u(m, length, em);
+  if (pkcs1_signature_prefix(size, em,
+			     sizeof(sha256_prefix),
+			     sha256_prefix,
+			     SHA256_DIGEST_SIZE))
+    {
+      memcpy(em + size - SHA256_DIGEST_SIZE, digest, SHA256_DIGEST_SIZE);
+      nettle_mpz_set_str_256_u(m, size, em);
+      return 1;
+    }
+  else
+    return 0;
 }

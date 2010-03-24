@@ -1,3 +1,47 @@
+2010-03-24  Niels Möller  <nisse@lysator.liu.se>
+
+	* rsa-keygen.c (rsa_generate_keypair): Ensure that bit size of e
+	is less than bit size of n, and check for the unlikely case p = q.
+
+	* rsa.h (RSA_MINIMUM_N_OCTETS, RSA_MINIMUM_N_BITS): Reduced, to
+	correspond to pkcs#1 encryption of single byte messagees.
+
+	* pgp-encode.c (pgp_put_rsa_sha1_signature): Check return value
+	from rsa_sha1_sign.
+	* rsa-compat.c (R_SignFinal): Likewise.
+
+	* rsa-md5-sign.c (rsa_md5_sign): Check and propagate return value
+	from pkcs1_rsa_md5_encode.
+	(rsa_md5_sign_digest): Check and propagate return value from
+	pkcs1_rsa_md5_encode_digest.
+	* rsa-md5-verify.c (rsa_md5_verify): Check return value from
+	pkcs1_rsa_md5_encode.
+	(rsa_md5_verify_digest): Check return value from
+	pkcs1_rsa_md5_encode_digest.
+	* rsa-sha1-sign.c: Analogous changes.
+	* rsa-sha1-verify.c: Analogous changes.
+	* rsa-sha256-sign.c: Analogous changes.
+	* rsa-sha256-verify.c: Analogous changes.
+	* rsa-sha512-sign.c: Analogous changes.
+	* rsa-sha512-verify.c: Analogous changes.
+
+	* pkcs1-rsa-md5.c (pkcs1_rsa_md5_encode)
+	(pkcs1_rsa_md5_encode_digest): Added return value. Check and
+	propagate return value from pkcs1_signature_prefix.
+	* pkcs1-rsa-sha256.c (pkcs1_rsa_sha256_encode)
+	(pkcs1_rsa_sha256_encode_digest): Likewise.
+	* pkcs1-rsa-sha1.c (pkcs1_rsa_sha1_encode)
+	(pkcs1_rsa_sha1_encode_digest): Likewise.
+	* pkcs1-rsa-sha512.c (pkcs1_rsa_sha512_encode)
+	(pkcs1_rsa_sha512_encode_digest): Likewise.
+
+	* pkcs1.c (pkcs1_signature_prefix): Interface change, take both
+	the total size and digest size as arguments, and return a status
+	code to say if the size was large enough.
+
+	* testsuite/Makefile.in: Added hogweed dependency for the test
+	programs.
+
 2010-03-23  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/rsa-test.c (test_main): Test signing with sha512.

@@ -34,26 +34,40 @@
 #include "bignum.h"
 #include "pkcs1.h"
 
-void
+int
 rsa_sha256_sign(const struct rsa_private_key *key,
 		struct sha256_ctx *hash,
 		mpz_t s)
 {
-  assert(key->size >= RSA_MINIMUM_N_OCTETS);
+  assert(key->size > 0);
 
-  pkcs1_rsa_sha256_encode(s, key->size - 1, hash);
-
-  rsa_compute_root(key, s, s);
+  if (pkcs1_rsa_sha256_encode(s, key->size - 1, hash))
+    {
+      rsa_compute_root(key, s, s);
+      return 1;
+    }
+  else
+    {
+      mpz_set_ui(s, 0);
+      return 0;
+    }  
 }
 
-void
+int
 rsa_sha256_sign_digest(const struct rsa_private_key *key,
 		       const uint8_t *digest,
 		       mpz_t s)
 {
-  assert(key->size >= RSA_MINIMUM_N_OCTETS);
+  assert(key->size > 0);
 
-  pkcs1_rsa_sha256_encode_digest(s, key->size - 1, digest);
-
-  rsa_compute_root(key, s, s);
+  if (pkcs1_rsa_sha256_encode_digest(s, key->size - 1, digest))
+    {
+      rsa_compute_root(key, s, s);
+      return 1;
+    }
+  else
+    {
+      mpz_set_ui(s, 0);
+      return 0;
+    }  
 }

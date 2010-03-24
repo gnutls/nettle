@@ -88,7 +88,7 @@ test_main(void)
   /* Create signature */
   md5_update (&md5, 39, reinterpret_cast<const uint8_t *>
 	      ("The magic words are squeamish ossifrage"));
-  rsa_md5_sign (&key, &md5, signature);
+  ASSERT (rsa_md5_sign (&key, &md5, signature));
 
   /* Verify it */
   md5_update (&md5, 39, reinterpret_cast<const uint8_t *>
