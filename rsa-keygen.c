@@ -87,7 +87,7 @@ rsa_generate_keypair(struct rsa_public_key *pub,
       /* We have a fixed e. Check that it makes sense */
 
       /* It must be odd */
-      if (mpz_even_p(pub->e, 0))
+      if (!mpz_tstbit(pub->e, 0))
 	return 0;
 
       /* And 3 or larger */
