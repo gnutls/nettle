@@ -1,5 +1,8 @@
 2010-03-24  Niels Möller  <nisse@lysator.liu.se>
 
+	* sha512.c: (sha512_digest): Simplified handling of any final
+	partial word of the digest.
+
 	* sha512.c: Reorganized to use _nettle_sha512_compress.
 
 	* sha512-compress.c (_nettle_sha512_compress): Compression

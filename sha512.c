@@ -237,37 +237,14 @@ sha512_digest(struct sha512_ctx *ctx,
 
   if (leftover)
     {
-      uint64_t word;
-      unsigned j = leftover;
-      
-      assert(i < _SHA512_DIGEST_LENGTH);
-      
-      word = ctx->state[i];
-      
-      switch (leftover)
-	{
-	default:
-	  abort();
-	case 7:
-	  digest[--j] = (word >> 8) & 0xff;
-	  /* Fall through */
-	case 6:
-	  digest[--j] = (word >> 16) & 0xff;
-	  /* Fall through */
-	case 5:
-	  digest[--j] = (word >> 24) & 0xff;
-	  /* Fall through */
-	case 4:
-	  digest[--j] = (word >> 32) & 0xff;
-	case 3:
-	  digest[--j] = (word >> 40) & 0xff;
-	  /* Fall through */
-	case 2:
-	  digest[--j] = (word >> 48) & 0xff;
-	  /* Fall through */
-	case 1:
-	  digest[--j] = (word >> 56) & 0xff;
-	}
+      /* Truncate to the right size */
+      uint64_t word = ctx->state[i] >> (8*(8 - leftover));
+
+      do {
+	digest[--leftover] = word & 0xff;
+	word >>= 8;
+      } while (leftover);
     }
+
   sha512_init(ctx);
 }
