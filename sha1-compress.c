@@ -66,12 +66,18 @@
    save one boolean operation each - thanks to Rich Schroeppel,
    rcs@cs.arizona.edu for discovering this */
 
+/* FIXME: Can save a temporary in f3 by using ( (x & y) + (z & (x ^
+   y)) ), and then, in the round, compute one of the terms and add it
+   into the destination word before computing the second term. Credits
+   to George Spelvin for pointing this out. Unfortunately, gcc
+   doesn't seem to be smart enough to take advantage of this. */
+
 /* #define f1(x,y,z) ( ( x & y ) | ( ~x & z ) )            Rounds  0-19 */
 #define f1(x,y,z)   ( z ^ ( x & ( y ^ z ) ) )           /* Rounds  0-19 */
 #define f2(x,y,z)   ( x ^ y ^ z )                       /* Rounds 20-39 */
 /* #define f3(x,y,z) ( ( x & y ) | ( x & z ) | ( y & z ) ) Rounds 40-59 */
 #define f3(x,y,z)   ( ( x & y ) | ( z & ( x | y ) ) )   /* Rounds 40-59 */
-#define f4(x,y,z)   ( x ^ y ^ z )                       /* Rounds 60-79 */
+#define f4 f2
 
 /* The SHA Mysterious Constants */
 
@@ -127,11 +133,11 @@
 void
 _nettle_sha1_compress(uint32_t *state, const uint8_t *input)
 {
-  uint32_t data[16];
+  uint32_t data[SHA1_DATA_LENGTH];
   uint32_t A, B, C, D, E;     /* Local vars */
   int i;
 
-  for (i = 0; i < 16; i++, input+= 4)
+  for (i = 0; i < SHA1_DATA_LENGTH; i++, input+= 4)
     {
       data[i] = READ_UINT32(input);
     }
