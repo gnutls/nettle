@@ -79,7 +79,7 @@ rsa_generate_keypair(struct rsa_public_key *pub,
   if (e_size)
     {
       /* We should choose e randomly. Is the size reasonable? */
-      if ((e_size < 16) || (e_size > n_size) )
+      if ((e_size < 16) || (e_size >= n_size) )
 	return 0;
     }
   else
@@ -87,14 +87,18 @@ rsa_generate_keypair(struct rsa_public_key *pub,
       /* We have a fixed e. Check that it makes sense */
 
       /* It must be odd */
-      if (!mpz_tstbit(pub->e, 0))
+      if (mpz_even_p(pub->e, 0))
 	return 0;
 
       /* And 3 or larger */
       if (mpz_cmp_ui(pub->e, 3) < 0)
 	return 0;
+
+      /* And size less than n */
+      if (mpz_sizeinbase(pub->e, 2) >= n_size)
+	return 0;
     }
-  
+
   if (n_size < RSA_MINIMUM_N_BITS)
     return 0;
   
@@ -132,6 +136,11 @@ rsa_generate_keypair(struct rsa_public_key *pub,
 	  bignum_random_prime(key->q, n_size/2,
 			      random_ctx, random,
 			      progress_ctx, progress);
+
+	  /* Very unlikely. */
+	  if (mpz_cmp (key->q, key->p) == 0)
+	    continue;
+
 	  mpz_sub_ui(q1, key->q, 1);
       
 	  /* If e was given, we must chose q such that q-1 has no factors in
