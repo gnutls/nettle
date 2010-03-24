@@ -76,13 +76,13 @@ extern "C" {
 #define _rsa_verify _nettle_rsa_verify
 #define _rsa_check_size _nettle_rsa_check_size
 
-  /* This limit is somewhat arbitrary. Technically, the smallest
-     modulo which makes sense at all is 15 = 3*5, phi(15) = 8, size 4
-     bits. But for ridiculously small keys, not all odd e are possible
-     (e.g., for 5 bits, the only possible modulo is 3*7 = 21, phi(21)
-     = 12, and e = 3 don't work). The smallest size that makes sense
-     with pkcs#1, and which allows RSA encryption of one byte
-     messages, is 12 octets, 89 bits. */
+/* This limit is somewhat arbitrary. Technically, the smallest modulo
+   which makes sense at all is 15 = 3*5, phi(15) = 8, size 4 bits. But
+   for ridiculously small keys, not all odd e are possible (e.g., for
+   5 bits, the only possible modulo is 3*7 = 21, phi(21) = 12, and e =
+   3 don't work). The smallest size that makes sense with pkcs#1, and
+   which allows RSA encryption of one byte messages, is 12 octets, 89
+   bits. */
 
 #define RSA_MINIMUM_N_OCTETS 12
 #define RSA_MINIMUM_N_BITS (8*RSA_MINIMUM_N_OCTETS - 7)
