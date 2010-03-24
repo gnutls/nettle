@@ -1,5 +1,7 @@
 2010-03-24  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/nettle-benchmark.c (main): Benchmark sha512.
+
 	* rsa-keygen.c (rsa_generate_keypair): Ensure that bit size of e
 	is less than bit size of n, and check for the unlikely case p = q.
 
