@@ -141,6 +141,12 @@ sha512_digest(struct sha512_ctx *ctx,
 	      unsigned length,
 	      uint8_t *digest);
 
+/* Internal compression function. STATE points to 8 uint64_t words,
+   DATA points to 128 bytes of input data, possibly unaligned, and K
+   points to the table of constants. */
+void
+_nettle_sha512_compress(uint64_t *state, const uint8_t *data, const uint64_t *k);
+
 #ifdef __cplusplus
 }
 #endif

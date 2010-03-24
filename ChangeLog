@@ -1,6 +1,12 @@
 2010-03-24  Niels Möller  <nisse@lysator.liu.se>
 
-	* Makefile.in (nettle_SOURCES): Added sha256-compress.c.
+	* sha512.c: Reorganized to use _nettle_sha512_compress.
+
+	* sha512-compress.c (_nettle_sha512_compress): Compression
+	function extracted from sha512.c to a new file.
+
+	* Makefile.in (nettle_SOURCES): Added sha256-compress.c and
+	sha512-compress.c.
 
 	* sha256.c: Reorganized to use _nettle_sha256_compress.
 
