@@ -7,7 +7,7 @@
 @syncodeindex fn cp
 @c %**end of header
 
-@set UPDATED-FOR 2.0
+@set UPDATED-FOR 2.5
 @set AUTHOR Niels Möller
 
 @copying
@@ -55,7 +55,7 @@ object-oriented wrapper for your favorite language or application.
 * Copyright::                   Your rights.
 * Conventions::                 General interface conventions.
 * Example::                     An example program.
-* Linking::                     
+* Linking::                     Linking with the libnettle and libhogweed.
 * Reference::                   All Nettle functions and features.
 * Nettle soup::                 For the serious nettle hacker.
 * Installation::                How to install Nettle.
@@ -174,6 +174,10 @@ released under the LGPL.
 Written by @value{AUTHOR}, using Peter Gutmann's SHA1 code as a model. 
 Released under the LGPL.
 
+@item SHA512
+Written by @value{AUTHOR}, using Peter Gutmann's SHA1 and the above
+SHA256 code as a model. Released under the LGPL.
+
 @item TWOFISH
 The implementation of the TWOFISH cipher is written by Ruud de Rooij.
 Released under the LGPL.
@@ -253,11 +257,13 @@ functions of Nettle that uses bignum operations, and depends on the GMP
 library. With this division, linking works the same for both static and
 dynamic libraries.
 
-If an application uses only the symmetric crypto algorithms of
-Nettle (i.e., block ciphers, hash functions, and the like), it's
-sufficient to link with @code{-lnettle}. If an application also uses
-public-key algorithms, it must be linked with @code{-lhogweed -lnettle
--lgmp}.
+If an application uses only the symmetric crypto algorithms of Nettle
+(i.e., block ciphers, hash functions, and the like), it's sufficient to
+link with @code{-lnettle}. If an application also uses public-key
+algorithms, the recommended linker flags are @code{-lhogweed -lnettle
+-lgmp}. If the involved libraries are installed as dynamic libraries, it
+may be sufficient to link with just @code{-lhogweed}, and the loader
+will resolve the dependencies automatically.
 
 @node Reference, Nettle soup, Linking, Top
 @comment  node-name,  next,  previous,  up
@@ -505,6 +511,47 @@ This function also resets the context in the same way as
 @code{sha256_init}.
 @end deftypefun
 
+@subsection @acronym{SHA512}
+
+SHA512 is a larger sibling to SHA256,
+with a very similar similar but with both the output and the internal
+variables of twice the size. The internal variables are 64 bits rather
+than 32, making it significantly slower on 32-bit computers. It outputs
+hash values of 512 bits, or 64 octets. Nettle defines SHA512 in
+@file{<nettle/sha.h>}.
+
+The functions are analogous to the MD5 ones.
+
+@deftp {Context struct} {struct sha512_ctx}
+@end deftp
+
+@defvr Constant SHA512_DIGEST_SIZE
+The size of an SHA512 digest, i.e. 64.
+@end defvr
+
+@defvr Constant SHA512_DATA_SIZE
+The internal block size of SHA512. Useful for some special constructions,
+in particular HMAC-SHA512.
+@end defvr
+
+@deftypefun void sha512_init (struct sha512_ctx *@var{ctx})
+Initialize the SHA512 state.
+@end deftypefun
+
+@deftypefun void sha512_update (struct sha512_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+Hash some more data.
+@end deftypefun
+
+@deftypefun void sha512_digest (struct sha512_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing it
+to @var{digest}. @var{length} may be smaller than
+@code{SHA512_DIGEST_SIZE}, in which case only the first @var{length}
+octets of the digest are written.
+
+This function also resets the context in the same way as
+@code{sha512_init}.
+@end deftypefun
+
 @subsection @code{struct nettle_hash}
 
 Nettle includes a struct including information about the supported hash
@@ -525,6 +572,7 @@ The last three attributes are function pointers, of types
 @deftypevrx {Constant Struct} {struct nettle_cipher} nettle_md5
 @deftypevrx {Constant Struct} {struct nettle_cipher} nettle_sha1
 @deftypevrx {Constant Struct} {struct nettle_cipher} nettle_sha256
+@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_sha512
 
 These are all the hash functions that Nettle implements.
 @end deftypevr
@@ -1337,8 +1385,8 @@ There are abstract functions that use a pointer to a @code{struct
 nettle_hash} to represent the underlying hash function and @code{void
 *} pointers that point to three different context structs for that hash
 function. There are also concrete functions for @acronym{HMAC-MD5},
-@acronym{HMAC-SHA1}, and @acronym{HMAC-SHA256}. First, the abstract
-functions:
+@acronym{HMAC-SHA1}, @acronym{HMAC-SHA256}, and @acronym{HMAC-SHA512}.
+First, the abstract functions:
 
 @deftypefun void hmac_set_key (void *@var{outer}, void *@var{inner}, void *@var{state}, const struct nettle_hash *@var{H}, unsigned @var{length}, const uint8_t *@var{key})
 Initializes the three context structs from the key. The @var{outer} and
@@ -1475,6 +1523,29 @@ Process some more data.
 @deftypefun void hmac_sha256_digest (struct hmac_sha256_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
 Extracts the @acronym{MAC}, writing it to @var{digest}. @var{length} may be smaller than
 @code{SHA256_DIGEST_SIZE}, in which case only the first @var{length}
+octets of the @acronym{MAC} are written.
+
+This function also resets the context for processing new messages, with
+the same key.
+@end deftypefun
+
+
+@subsubsection @acronym{HMAC-SHA512}
+
+@deftp {Context struct} {struct hmac_sha512_ctx}
+@end deftp
+
+@deftypefun void hmac_sha512_set_key (struct hmac_sha512_ctx *@var{ctx}, unsigned @var{key_length}, const uint8_t *@var{key})
+Initializes the context with the key.
+@end deftypefun
+
+@deftypefun void hmac_sha512_update (struct hmac_sha512_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+Process some more data.
+@end deftypefun
+
+@deftypefun void hmac_sha512_digest (struct hmac_sha512_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+Extracts the @acronym{MAC}, writing it to @var{digest}. @var{length} may be smaller than
+@code{SHA512_DIGEST_SIZE}, in which case only the first @var{length}
 octets of the @acronym{MAC} are written.
 
 This function also resets the context for processing new messages, with
@@ -1683,7 +1754,7 @@ When you have assigned values to the attributes of a key, you must call
 Computes the octet size of the key (stored in the @code{size} attribute,
 and may also do other basic sanity checks. Returns one if successful, or
 zero if the key can't be used, for instance if the modulo is smaller
-than the minimum size specified by PKCS#1.
+than the minimum size needed for @acronym{RSA} operations specified by PKCS#1.
 @end deftypefun
 
 Before signing or verifying a message, you first hash it with the
@@ -1694,22 +1765,27 @@ that take the @acronym{MD5} or @acronym{SHA1} hash digest as argument.
 
 Creation and verification of signatures is done with the following functions:
 
-@deftypefun void rsa_md5_sign (const struct rsa_private_key *@var{key}, struct md5_ctx *@var{hash}, mpz_t @var{signature})
-@deftypefunx void rsa_sha1_sign (const struct rsa_private_key *@var{key}, struct sha1_ctx *@var{hash}, mpz_t @var{signature})
-@deftypefunx void rsa_sha256_sign (const struct rsa_private_key *@var{key}, struct sha256_ctx *@var{hash}, mpz_t @var{signature})
+@deftypefun int rsa_md5_sign (const struct rsa_private_key *@var{key}, struct md5_ctx *@var{hash}, mpz_t @var{signature})
+@deftypefunx int rsa_sha1_sign (const struct rsa_private_key *@var{key}, struct sha1_ctx *@var{hash}, mpz_t @var{signature})
+@deftypefunx int rsa_sha256_sign (const struct rsa_private_key *@var{key}, struct sha256_ctx *@var{hash}, mpz_t @var{signature})
+@deftypefunx int rsa_sha512_sign (const struct rsa_private_key *@var{key}, struct sha512_ctx *@var{hash}, mpz_t @var{signature})
 The signature is stored in @var{signature} (which must have been
 @code{mpz_init}:ed earlier). The hash context is reset so that it can be
-used for new messages.
+used for new messages. Returns one on success, or zero on failure.
+Signing fails if the key is too small for the given hash size, e.g.,
+it's not possible to create a signature using SHA512 and a 512-bit
+@acronym{RSA} key.
 @end deftypefun
 
-@deftypefun void rsa_md5_sign_digest (const struct rsa_private_key *@var{key}, const uint8_t *@var{digest}, mpz_t @var{signature})
-@deftypefunx void rsa_sha1_sign_digest (const struct rsa_private_key *@var{key}, const uint8_t *@var{digest}, mpz_t @var{signature});
-@deftypefunx void rsa_sha256_sign_digest (const struct rsa_private_key *@var{key}, const uint8_t *@var{digest}, mpz_t @var{signature});
+@deftypefun int rsa_md5_sign_digest (const struct rsa_private_key *@var{key}, const uint8_t *@var{digest}, mpz_t @var{signature})
+@deftypefunx int rsa_sha1_sign_digest (const struct rsa_private_key *@var{key}, const uint8_t *@var{digest}, mpz_t @var{signature});
+@deftypefunx int rsa_sha256_sign_digest (const struct rsa_private_key *@var{key}, const uint8_t *@var{digest}, mpz_t @var{signature});
+@deftypefunx int rsa_sha512_sign_digest (const struct rsa_private_key *@var{key}, const uint8_t *@var{digest}, mpz_t @var{signature});
 Creates a signature from the given hash digest. @var{digest} should
 point to a digest of size @code{MD5_DIGEST_SIZE},
 @code{SHA1_DIGEST_SIZE}, or @code{SHA256_DIGEST_SIZE}, respectively. The
 signature is stored in @var{signature} (which must have been
-@code{mpz_init}:ed earlier)
+@code{mpz_init}:ed earlier). Returns one on success, or zero on failure.
 @end deftypefun
 
 @deftypefun int rsa_md5_verify (const struct rsa_public_key *@var{key}, struct md5_ctx *@var{hash}, const mpz_t @var{signature})
