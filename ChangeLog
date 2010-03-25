@@ -1,5 +1,17 @@
 2010-03-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* hmac-sha384.c: New file.
+
+	* testsuite/sha224-test.c: New file.
+
+	* testsuite/md4-test.c (test_main): More test vectors, provided by
+	Daniel Kahn Gillmor.
+	* testsuite/md5-test.c (test_main): Likewise.
+	* testsuite/sha1-test.c (test_main): Likewise.
+	* testsuite/sha256-test.c (test_main): Likewise.
+	* testsuite/sha384-test.c (test_main): Likewise.
+	* testsuite/sha512-test.c (test_main): Likewise.
+
 	* configure.ac: Bumped version numbers. Package version
 	nettle-2.1, library versions libnettle.so.3.1, libhogweed.so.2.0.
 
