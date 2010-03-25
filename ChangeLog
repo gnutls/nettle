@@ -1,5 +1,11 @@
 2010-03-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/nettle-benchmark.c (main): Benchmark sha384.
+
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Added sha384-test.c.
+
+	* testsuite/sha384-test.c: New file.
+
 	* Makefile.in (nettle_SOURCES): Added sha384-meta.c.
 
 	* sha384-meta.c: New file.
