@@ -388,7 +388,7 @@ main(int argc, char **argv)
       &nettle_md2, &nettle_md4, &nettle_md5,
       OPENSSL(&nettle_openssl_md5)
       &nettle_sha1, OPENSSL(&nettle_openssl_sha1)
-      &nettle_sha256, &nettle_sha512,
+      &nettle_sha256, &nettle_sha384, &nettle_sha512,
       NULL
     };
 
