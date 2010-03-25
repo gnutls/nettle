@@ -29,6 +29,10 @@ test_main(void)
 	    "1234567890123456789012345678901234567890",
 	    H("50ABF5706A150990 A08B2C5EA40FA0E5 85554732"));
 
+  /* Additional test vector, from Daniel Kahn Gillmor */
+  test_hash(&nettle_sha1, LDATA("38"),
+	    H("5b384ce32d8cdef02bc3a139d4cac0a22bb029e8"));
+
   SUCCESS();
 }
 

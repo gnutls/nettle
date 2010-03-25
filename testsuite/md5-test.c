@@ -30,6 +30,10 @@ test_main(void)
 	    "1234567890123456789012345678901234567890",
 	    H("57EDF4A22BE3C955 AC49DA2E2107B67A"));
 
+  /* Additional test vector, from Daniel Kahn Gillmor */
+  test_hash(&nettle_md5, LDATA("38"),
+	    H("a5771bce93e200c3 6f7cd9dfd0e5deaa"));
+
   /* Collisions, reported by Xiaoyun Wang1, Dengguo Feng2, Xuejia
      Lai3, Hongbo Yu1, http://eprint.iacr.org/2004/199. */
 

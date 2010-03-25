@@ -23,6 +23,16 @@ test_main(void)
 	    LDATA("12345678901234567890123456789012345678901234567890"
 		  "123456789012345678901234567890"),
 	    H("e33b4ddc9c38f2199c3e7b164fcc0536"));
-  
+
+  /* Additional test vectors, from Daniel Kahn Gillmor */
+  test_hash(&nettle_md4, LDATA("38"),
+	    H("ae9c7ebfb68ea795483d270f5934b71d"));
+  test_hash(&nettle_md4, LDATA("abc"),
+	    H("a448017aaf21d8525fc10ae87aa6729d"));
+  test_hash(&nettle_md4, LDATA("message digest"),
+	    H("d9130a8164549fe818874806e1c7014b"));
+  test_hash(&nettle_md4, LDATA("abcdefghijklmnopqrstuvwxyz"),
+	    H("d79e1c308aa5bbcdeea8ed63df412da9"));
+
   SUCCESS();
 }
