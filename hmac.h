@@ -144,6 +144,19 @@ void
 hmac_sha512_digest(struct hmac_sha512_ctx *ctx,
 		   unsigned length, uint8_t *digest);
 
+/* hmac-sha384 */
+#define hmac_sha384_ctx hmac_sha512_ctx
+
+void
+hmac_sha384_set_key(struct hmac_sha512_ctx *ctx,
+		    unsigned key_length, const uint8_t *key);
+
+#define hmac_sha384_update hmac_sha512_update
+
+void
+hmac_sha384_digest(struct hmac_sha512_ctx *ctx,
+		   unsigned length, uint8_t *digest);
+
 #ifdef __cplusplus
 }
 #endif
