@@ -1,5 +1,8 @@
 2010-03-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac: Bumped version numbers. Package version
+	nettle-2.1, library versions libnettle.so.3.1, libhogweed.so.2.0.
+
 	* examples/nettle-benchmark.c (main): Benchmark sha384.
 
 	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Added sha384-test.c.
