@@ -52,5 +52,6 @@ test_main(void)
 	    H("b12932b0627d1c06 0942f54477641556"
 	      "55bd4da0c9afa6dd 9b9ef53129af1b8f"
 	      "b0195996d2de9ca0 df9d821ffee67026"));
-    SUCCESS();
+
+  SUCCESS();
 }
