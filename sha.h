@@ -39,6 +39,8 @@ extern "C" {
 #define sha256_init nettle_sha256_init
 #define sha256_update nettle_sha256_update
 #define sha256_digest nettle_sha256_digest
+#define sha384_init nettle_sha384_init
+#define sha384_digest nettle_sha384_digest
 #define sha512_init nettle_sha512_init
 #define sha512_update nettle_sha512_update
 #define sha512_digest nettle_sha512_digest
@@ -146,6 +148,24 @@ sha512_digest(struct sha512_ctx *ctx,
    points to the table of constants. */
 void
 _nettle_sha512_compress(uint64_t *state, const uint8_t *data, const uint64_t *k);
+
+/* SHA384. */
+/* This is the same algorithm as SHA512, but with different initial
+   state and truncated output. */
+
+#define SHA384_DIGEST_SIZE 48
+#define SHA384_DATA_SIZE SHA512_DATA_SIZE
+#define sha384_ctx sha512_ctx
+
+void
+sha384_init(struct sha512_ctx *ctx);
+
+#define sha384_update nettle_sha512_update
+
+void
+sha384_digest(struct sha512_ctx *ctx,
+	      unsigned length,
+	      uint8_t *digest);
 
 #ifdef __cplusplus
 }

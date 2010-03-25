@@ -1,3 +1,17 @@
+2010-03-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (nettle_SOURCES): Added sha384-meta.c.
+
+	* sha384-meta.c: New file.
+
+	* sha.h: Added declarations for sha384. Some are aliases for the
+	corresponding sha512 definition.
+
+	* sha512.c (sha512_write_digest): New function.
+	(sha512_digest): Use it.
+	(sha384_init): New function.
+	(sha384_digest): New function.
+
 2010-03-24  Niels Möller  <nisse@lysator.liu.se>
 
 	* sha512.c: (sha512_digest): Simplified handling of any final
