@@ -64,13 +64,14 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 knuth-lfib.c \
 		 md2.c md2-meta.c md4.c md4-meta.c \
 		 md5.c md5-compress.c md5-compat.c md5-meta.c \
-		 sha1.c sha1-compress.c sha1-meta.c sha256.c sha256-compress.c sha256-meta.c \
+		 sha1.c sha1-compress.c sha1-meta.c \
+		 sha256.c sha256-compress.c sha224-meta.c sha256-meta.c \
 		 sha512.c sha512-compress.c sha384-meta.c sha512-meta.c \
 		 serpent.c serpent-meta.c \
 		 twofish.c twofish-meta.c \
 		 yarrow256.c yarrow_key_event.c \
 		 buffer.c buffer-init.c realloc.c \
-		 nettle-internal.c
+		 nettle-internal.c write-be32.c
 
 hogweed_SOURCES = sexp.c sexp-format.c \
 		  sexp-transport.c sexp-transport-format.c \
@@ -117,7 +118,7 @@ DISTFILES = $(SOURCES) $(HEADERS) .bootstrap aclocal.m4 configure.ac \
 	README AUTHORS COPYING COPYING.LIB INSTALL NEWS TODO ChangeLog \
 	memxor.c $(des_headers) descore.README \
 	aes-internal.h cast128_sboxes.h desinfo.h desCode.h \
-	serpent_sboxes.h nettle-internal.h prime-list.h \
+	serpent_sboxes.h nettle-internal.h nettle-write.h prime-list.h \
 	asm.m4 \
 	nettle.texinfo nettle.info nettle.html nettle.pdf sha-example.c
 
