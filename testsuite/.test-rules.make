@@ -43,6 +43,9 @@ md5-compat-test$(EXEEXT): md5-compat-test.$(OBJEXT)
 sha1-test$(EXEEXT): sha1-test.$(OBJEXT)
 	$(LINK) sha1-test.$(OBJEXT) $(TEST_OBJS) -o sha1-test$(EXEEXT)
 
+sha224-test$(EXEEXT): sha224-test.$(OBJEXT)
+	$(LINK) sha224-test.$(OBJEXT) $(TEST_OBJS) -o sha224-test$(EXEEXT)
+
 sha256-test$(EXEEXT): sha256-test.$(OBJEXT)
 	$(LINK) sha256-test.$(OBJEXT) $(TEST_OBJS) -o sha256-test$(EXEEXT)
 
