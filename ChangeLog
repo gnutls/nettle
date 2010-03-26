@@ -1,3 +1,30 @@
+2010-03-26  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Added sha224-test.c.
+
+	* Makefile.in (nettle_SOURCES): Added sha224-meta.c and
+	write-be32.c.
+	(DISTFILES): Added nettle-write.h.
+
+	* sha.h: Added declarations for sha224. Some are aliases for the
+	corresponding sha256 definition.
+
+	* sha256.c (sha256_digest): Use _nettle_write_be32.
+	(sha224_init): New function.
+	(sha224_digest): New function.
+
+	* sha1.c (sha1_digest): Use _nettle_write_be32.
+
+	* nettle-internal.h (NETTLE_MAX_HASH_BLOCK_SIZE)
+	(NETTLE_MAX_HASH_DIGEST_SIZE): Increased, to take sha512 into
+	account.
+
+	* nettle-write.h: New file.
+
+	* write-be32.c (_nettle_write_be32): New file, new function.
+
+	* sha224-meta.c: New file.
+
 2010-03-25  Niels Möller  <nisse@lysator.liu.se>
 
 	* hmac-sha384.c: New file.
