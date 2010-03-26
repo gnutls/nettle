@@ -45,8 +45,8 @@ do { if (size > (sizeof(name) / sizeof(name[0]))) abort(); } while (0)
 
 /* Arbitrary limits which apply to systems that don't have alloca */
 #define NETTLE_MAX_BIGNUM_BITS 10000
-#define NETTLE_MAX_HASH_BLOCK_SIZE 64
-#define NETTLE_MAX_HASH_DIGEST_SIZE 32
+#define NETTLE_MAX_HASH_BLOCK_SIZE 128
+#define NETTLE_MAX_HASH_DIGEST_SIZE 64
 #define NETTLE_MAX_SEXP_ASSOC 17
 #define NETTLE_MAX_CIPHER_BLOCK_SIZE 32
 
