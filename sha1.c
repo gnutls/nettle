@@ -47,6 +47,7 @@
 #include "sha.h"
 
 #include "macros.h"
+#include "nettle-write.h"
 
 /* A block, treated as a sequence of 32-bit words. */
 #define SHA1_DATA_LENGTH 16
@@ -164,42 +165,9 @@ sha1_digest(struct sha1_ctx *ctx,
 	    unsigned length,
 	    uint8_t *digest)
 {
-  unsigned i;
-  unsigned words;
-  unsigned leftover;
-  
   assert(length <= SHA1_DIGEST_SIZE);
 
   sha1_final(ctx);
-  
-  words = length / 4;
-  leftover = length % 4;
-
-  for (i = 0; i < words; i++, digest += 4)
-    WRITE_UINT32(digest, ctx->digest[i]);
-
-  if (leftover)
-    {
-      uint32_t word;
-      unsigned j = leftover;
-      
-      assert(i < _SHA1_DIGEST_LENGTH);
-      
-      word = ctx->digest[i];
-      
-      switch (leftover)
-	{
-	default:
-	  abort();
-	case 3:
-	  digest[--j] = (word >> 8) & 0xff;
-	  /* Fall through */
-	case 2:
-	  digest[--j] = (word >> 16) & 0xff;
-	  /* Fall through */
-	case 1:
-	  digest[--j] = (word >> 24) & 0xff;
-	}
-    }
+  _nettle_write_be32(length, digest, ctx->digest);
   sha1_init(ctx);
 }
