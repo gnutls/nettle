@@ -36,6 +36,8 @@ extern "C" {
 #define sha1_init nettle_sha1_init
 #define sha1_update nettle_sha1_update
 #define sha1_digest nettle_sha1_digest
+#define sha224_init nettle_sha224_init
+#define sha224_digest nettle_sha224_digest
 #define sha256_init nettle_sha256_init
 #define sha256_update nettle_sha256_update
 #define sha256_digest nettle_sha256_digest
@@ -114,6 +116,24 @@ sha256_digest(struct sha256_ctx *ctx,
 void
 _nettle_sha256_compress(uint32_t *state, const uint8_t *data, const uint32_t *k);
 
+
+/* SHA224, a truncated SHA256 with different initial state. */
+
+#define SHA224_DIGEST_SIZE 28
+#define SHA224_DATA_SIZE SHA256_DATA_SIZE
+#define sha224_ctx sha256_ctx
+
+void
+sha224_init(struct sha256_ctx *ctx);
+
+#define sha224_update nettle_sha256_update
+
+void
+sha224_digest(struct sha256_ctx *ctx,
+	      unsigned length,
+	      uint8_t *digest);
+
+
 /* SHA512 */
 
 #define SHA512_DIGEST_SIZE 64
@@ -149,9 +169,8 @@ sha512_digest(struct sha512_ctx *ctx,
 void
 _nettle_sha512_compress(uint64_t *state, const uint8_t *data, const uint64_t *k);
 
-/* SHA384. */
-/* This is the same algorithm as SHA512, but with different initial
-   state and truncated output. */
+
+/* SHA384, a truncated SHA512 with different initial state. */
 
 #define SHA384_DIGEST_SIZE 48
 #define SHA384_DATA_SIZE SHA512_DATA_SIZE
