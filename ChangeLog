@@ -1,5 +1,9 @@
 2010-03-26  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/hmac-test.c (HMAC_TEST): New macro.
+	(test_main): Use HMAC_TEST for the md5 and sha1 tests, and add
+	test vectors from Daniel Kahn Gillmor.
+
 	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Added sha224-test.c.
 
 	* Makefile.in (nettle_SOURCES): Added sha224-meta.c and
