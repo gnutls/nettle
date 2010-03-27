@@ -45,9 +45,13 @@ extern "C" {
 #define hmac_sha1_set_key nettle_hmac_sha1_set_key
 #define hmac_sha1_update nettle_hmac_sha1_update
 #define hmac_sha1_digest nettle_hmac_sha1_digest
+#define hmac_sha224_set_key nettle_hmac_sha224_set_key
+#define hmac_sha224_digest nettle_hmac_sha224_digest
 #define hmac_sha256_set_key nettle_hmac_sha256_set_key
 #define hmac_sha256_update nettle_hmac_sha256_update
 #define hmac_sha256_digest nettle_hmac_sha256_digest
+#define hmac_sha384_set_key nettle_hmac_sha384_set_key
+#define hmac_sha384_digest nettle_hmac_sha384_digest
 #define hmac_sha512_set_key nettle_hmac_sha512_set_key
 #define hmac_sha512_update nettle_hmac_sha512_update
 #define hmac_sha512_digest nettle_hmac_sha512_digest
@@ -129,6 +133,19 @@ void
 hmac_sha256_digest(struct hmac_sha256_ctx *ctx,
 		   unsigned length, uint8_t *digest);
 
+/* hmac-sha224 */
+#define hmac_sha224_ctx hmac_sha256_ctx
+
+void
+hmac_sha224_set_key(struct hmac_sha224_ctx *ctx,
+		    unsigned key_length, const uint8_t *key);
+
+#define hmac_sha224_update nettle_hmac_sha256_update
+
+void
+hmac_sha224_digest(struct hmac_sha224_ctx *ctx,
+		   unsigned length, uint8_t *digest);
+
 /* hmac-sha512 */
 struct hmac_sha512_ctx HMAC_CTX(struct sha512_ctx);
 
@@ -151,7 +168,7 @@ void
 hmac_sha384_set_key(struct hmac_sha512_ctx *ctx,
 		    unsigned key_length, const uint8_t *key);
 
-#define hmac_sha384_update hmac_sha512_update
+#define hmac_sha384_update nettle_hmac_sha512_update
 
 void
 hmac_sha384_digest(struct hmac_sha512_ctx *ctx,

@@ -1,3 +1,12 @@
+2010-03-27  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (nettle_SOURCES): Added hmac-sha224.c and
+	hmac-sha384.c.
+
+	* hmac.h: Added declarations of hmac-sha224 and hmac-sha384.
+
+	* hmac-sha224.c: New file.
+
 2010-03-26  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/hmac-test.c (HMAC_TEST): New macro.
