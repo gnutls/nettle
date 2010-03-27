@@ -25,7 +25,7 @@ int main(int argc UNUSED, char **argv UNUSED)
   for (i = 0; i < 64; )
     {
       double root = pow(primes[i++], third);
-      double fraction = root - (floor(root));
+      double fraction = root - floor(root);
       double value = floor(ldexp(fraction, 32));
 
       printf("0x%lxUL, ", (unsigned long) value);
