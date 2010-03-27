@@ -1,5 +1,9 @@
 2010-03-27  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/hmac-test.c (test_main): Rewrote rest of tests to use
+	HMAC_TEST, and added more tests from Daniel Kahn Gillmor and from
+	RFC 4231.
+
 	* Makefile.in (nettle_SOURCES): Added hmac-sha224.c and
 	hmac-sha384.c.
 
