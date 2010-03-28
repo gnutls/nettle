@@ -123,7 +123,15 @@ case "$host_cpu" in
     asm_path=x86
     ;;
   [x86_64 | amd64])
-    asm_path=x86_64
+    AC_TRY_COMPILE([
+#if defined(__i386__)
+#error 32-bit x86
+#endif
+    ], [], [
+      asm_path=x86_64
+    ], [
+      asm_path=x86
+    ])
     ;;
   *sparc*)
     AC_TRY_COMPILE([

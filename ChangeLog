@@ -1,3 +1,8 @@
+2010-03-28  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac (asm_path): For x86_64, check if compiler is
+	generating 32-bit code.
+
 2010-03-27  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/hmac-test.c (test_main): Rewrote rest of tests to use
