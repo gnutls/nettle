@@ -94,7 +94,7 @@ AC_CHECK_TOOL(NM, nm, strings)
 AC_CHECK_TOOL(OBJDUMP, objdump, false)
 
 if test "x$ac_cv_prog_cc_stdc" = xno ; then
-  AC_ERROR([the C compiler doesn't handle ANSI-C])
+  AC_ERROR([the C compiler doesn't handle ANSI-C]) #'
 fi
 
 AC_PROG_INSTALL
@@ -146,7 +146,38 @@ esac
 
 if test "x$ABI" != xstandard ; then
   AC_MSG_NOTICE([Compiler uses $ABI-bit ABI. To change, set CFLAGS.])
-  AC_MSG_NOTICE([You may want to set libdir!])
+  if test "$libdir" = '${exec_prefix}/lib' ; then
+    # Try setting a better default
+    case "$host_cpu:$host_os:$ABI" in
+      *:solaris*:32|*:sunos*:32)
+	libdir='${exec_prefix}/lib'
+	;;
+      *:solaris*:64|*:sunos*:64)
+	libdir='${exec_prefix}/lib/64'
+	;;
+      # According to the fhs, all architectures except IA64
+      # puts 32-bit libraries in lib, and 64-bit in lib64.
+      *:linux*:32)
+	libdir='${exec_prefix}/lib'
+	;;
+      *:linux*:64)
+	libdir='${exec_prefix}/lib64'
+	;;
+      # On freebsd, it seems 32-bit libraries are in lib32,
+      # and 64-bit in lib. Don't know about "kfreebsd", does
+      # it follow the Linux fhs conventions?
+      *:freebsd*:32)
+	libdir='${exec_prefix}/lib32'
+	;;
+      *:freebsd*:64)
+	libdir='${exec_prefix}/lib'
+	;;
+      *)
+        AC_MSG_WARN([Don't know where to install $ABI-bit libraries on this system.]); #'
+
+    esac
+    AC_MSG_NOTICE([Libraries to be installed in $libdir.])
+  fi
 fi
 
 # Select assembler code
