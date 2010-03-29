@@ -187,14 +187,14 @@ case "$host_cpu" in
     asm_path=x86
     ;;
   [x86_64 | amd64])
-    if test "x$ABI" = 64 ; then
+    if test "$ABI" = 64 ; then
       asm_path=x86_64
     else
       asm_path=x86
     fi
     ;;
   *sparc*)
-    if test "x$ABI" = 64 ; then
+    if test "$ABI" = 64 ; then
       asm_path=sparc64
     else
       asm_path=sparc32
