@@ -116,21 +116,19 @@ if test x$enable_dependency_tracking = xyes ; then
 ])
 fi
 
-# Select assembler code
-asm_path=
+# Figure out ABI. Currently, configurable only be setting CFLAGS.
+ABI=standard
+
 case "$host_cpu" in
-  [i?86* | k[5-8]* | pentium* | athlon])
-    asm_path=x86
-    ;;
   [x86_64 | amd64])
     AC_TRY_COMPILE([
-#if defined(__i386__)
-#error 32-bit x86
+#if defined(__x86_64__) || defined(__arch64__)
+#error 64-bit x86
 #endif
     ], [], [
-      asm_path=x86_64
+      ABI=32
     ], [
-      asm_path=x86
+      ABI=64
     ])
     ;;
   *sparc*)
@@ -139,10 +137,37 @@ case "$host_cpu" in
 #error 64-bit sparc
 #endif
     ], [], [
-      asm_path=sparc32
+      ABI=32
     ], [
-      asm_path=sparc64
+      ABI=64
     ])
+    ;;
+esac
+
+if test "x$ABI" != xstandard ; then
+  AC_MSG_NOTICE([Compiler uses $ABI-bit ABI. To change, set CFLAGS.])
+  AC_MSG_NOTICE([You may want to set libdir!])
+fi
+
+# Select assembler code
+asm_path=
+case "$host_cpu" in
+  [i?86* | k[5-8]* | pentium* | athlon])
+    asm_path=x86
+    ;;
+  [x86_64 | amd64])
+    if test "x$ABI" = 64 ; then
+      asm_path=x86_64
+    else
+      asm_path=x86
+    fi
+    ;;
+  *sparc*)
+    if test "x$ABI" = 64 ; then
+      asm_path=sparc64
+    else
+      asm_path=sparc32
+    fi
     ;;
   *)
     enable_assembler=no

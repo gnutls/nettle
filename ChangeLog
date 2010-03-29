@@ -1,3 +1,8 @@
+2010-03-29  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac (ABI): Detect which ABI the compiler is using.
+	On x86_64, also check for __arch64__.
+
 2010-03-28  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac (asm_path): For x86_64, check if compiler is
