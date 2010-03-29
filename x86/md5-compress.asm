@@ -171,4 +171,4 @@ PROLOGUE(_nettle_md5_compress)
 	popl	%ebp
 	popl	%ebx
 	ret
-EPILOGUE(_nettle_sha1_compress)
+EPILOGUE(_nettle_md5_compress)
