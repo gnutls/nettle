@@ -1,5 +1,7 @@
 2010-03-29  Niels Möller  <nisse@lysator.liu.se>
 
+	* asm.m4 (EPILOGUE): Use . to refer to current address.
+
 	* configure.ac (ABI): Detect which ABI the compiler is using.
 	On x86_64, also check for __arch64__.
 
