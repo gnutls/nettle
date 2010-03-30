@@ -1,5 +1,9 @@
 2010-03-30  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/testutils.c (DSA_VERIFY): Updated for dsa_sha1_verify
+	rename.
+	(test_dsa): Check return value from dsa_sha1_sign.
+
 	* Makefile.in (hogweed_SOURCES): Added dsa-sha1-sign.c,
 	dsa-sha1-verify.c, dsa-sha256-sign.c, and dsa-sha256-verify.c.
 
