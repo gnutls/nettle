@@ -46,10 +46,14 @@ extern "C" {
 #define dsa_private_key_clear nettle_dsa_private_key_clear
 #define dsa_signature_init nettle_dsa_signature_init
 #define dsa_signature_clear nettle_dsa_signature_clear
-#define dsa_sign nettle_dsa_sign
-#define dsa_verify nettle_dsa_verify
-#define dsa_sign_digest nettle_dsa_sign_digest
-#define dsa_verify_digest nettle_dsa_verify_digest
+#define dsa_sha1_sign nettle_dsa_sha1_sign
+#define dsa_sha1_verify nettle_dsa_sha1_verify
+#define dsa_sha256_sign nettle_dsa_sha256_sign
+#define dsa_sha256_verify nettle_dsa_sha256_verify
+#define dsa_sha1_sign_digest nettle_dsa_sha1_sign_digest
+#define dsa_sha1_verify_digest nettle_dsa_sha1_verify_digest
+#define dsa_sha256_sign_digest nettle_dsa_sha256_sign_digest
+#define dsa_sha256_verify_digest nettle_dsa_sha256_verify_digest
 #define dsa_generate_keypair nettle_dsa_generate_keypair
 #define dsa_signature_from_sexp nettle_dsa_signature_from_sexp
 #define dsa_keypair_to_sexp nettle_dsa_keypair_to_sexp
@@ -59,6 +63,8 @@ extern "C" {
 #define dsa_public_key_from_der_iterator nettle_dsa_public_key_from_der_iterator
 #define dsa_openssl_private_key_from_der_iterator nettle_dsa_openssl_private_key_from_der_iterator 
 #define dsa_openssl_private_key_from_der nettle_openssl_provate_key_from_der
+#define _dsa_sign _nettle_dsa_sign
+#define _dsa_verify _nettle_dsa_verify
 
 #define DSA_MIN_P_BITS 512
 #define DSA_Q_OCTETS 20
@@ -138,30 +144,52 @@ void
 dsa_signature_clear(struct dsa_signature *signature);
 
 
-void
-dsa_sign(const struct dsa_public_key *pub,
-	 const struct dsa_private_key *key,
-	 void *random_ctx, nettle_random_func random,
-	 struct sha1_ctx *hash,
-	 struct dsa_signature *signature);
-
+int
+dsa_sha1_sign(const struct dsa_public_key *pub,
+	      const struct dsa_private_key *key,
+	      void *random_ctx, nettle_random_func random,
+	      struct sha1_ctx *hash,
+	      struct dsa_signature *signature);
 
 int
-dsa_verify(const struct dsa_public_key *key,
-	   struct sha1_ctx *hash,
-	   const struct dsa_signature *signature);
-
-void
-dsa_sign_digest(const struct dsa_public_key *pub,
+dsa_sha256_sign(const struct dsa_public_key *pub,
 		const struct dsa_private_key *key,
 		void *random_ctx, nettle_random_func random,
-		const uint8_t *digest,
+		struct sha256_ctx *hash,
 		struct dsa_signature *signature);
 
 int
-dsa_verify_digest(const struct dsa_public_key *key,
-		  const uint8_t *digest,
+dsa_sha1_verify(const struct dsa_public_key *key,
+		struct sha1_ctx *hash,
+		const struct dsa_signature *signature);
+
+int
+dsa_sha256_verify(const struct dsa_public_key *key,
+		  struct sha256_ctx *hash,
 		  const struct dsa_signature *signature);
+
+int
+dsa_sha1_sign_digest(const struct dsa_public_key *pub,
+		     const struct dsa_private_key *key,
+		     void *random_ctx, nettle_random_func random,
+		     const uint8_t *digest,
+		     struct dsa_signature *signature);
+int
+dsa_sha256_sign_digest(const struct dsa_public_key *pub,
+		       const struct dsa_private_key *key,
+		       void *random_ctx, nettle_random_func random,
+		       const uint8_t *digest,
+		       struct dsa_signature *signature);
+
+int
+dsa_sha1_verify_digest(const struct dsa_public_key *key,
+		       const uint8_t *digest,
+		       const struct dsa_signature *signature);
+
+int
+dsa_sha256_verify_digest(const struct dsa_public_key *key,
+			 const uint8_t *digest,
+			 const struct dsa_signature *signature);
 
 /* Key generation */
 
@@ -234,6 +262,21 @@ dsa_openssl_private_key_from_der(struct dsa_public_key *pub,
 				 unsigned limit, 
 				 unsigned length, const uint8_t *data);
 
+
+/* Internal functions. */
+int
+_dsa_sign(const struct dsa_public_key *pub,
+	  const struct dsa_private_key *key,
+	  void *random_ctx, nettle_random_func random,
+	  unsigned digest_size,
+	  const uint8_t *digest,
+	  struct dsa_signature *signature);
+
+int
+_dsa_verify(const struct dsa_public_key *key,
+	    unsigned digest_size,
+	    const uint8_t *digest,
+	    const struct dsa_signature *signature);
 
 #ifdef __cplusplus
 }

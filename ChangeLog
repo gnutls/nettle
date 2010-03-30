@@ -1,3 +1,31 @@
+2010-03-30  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (hogweed_SOURCES): Added dsa-sha1-sign.c,
+	dsa-sha1-verify.c, dsa-sha256-sign.c, and dsa-sha256-verify.c.
+
+	* dsa.h: Updated and added dsa declarations.
+
+	* dsa-sha256-verify.c (dsa_sha256_verify_digest): New file, new
+	function.
+	(dsa_sha256_verify): New function.
+	* dsa-sha256-sign.c (dsa_sha256_sign_digest): New file, new
+	function.
+	(dsa_sha256_sign): New function.
+
+	* dsa-sha1-verify.c (dsa_sha1_verify_digest): New file. Moved and
+	renamed function, from dsa_verify_digest, rewrote to use
+	_dsa_verify.
+	(dsa_sha1_verify): Analogous change, renamed from dsa_verify.
+	* dsa-sha1-sign.c (dsa_sha1_sign_digest): New file. Moved and
+	renamed function, from dsa_sign_digest, rewrote to use _dsa_sign,
+	and added return value.
+	(dsa_sha1_sign): Analogous change, renamed from dsa_sign.
+
+	* dsa-verify.c (_dsa_verify): New general verification function,
+	for any hash.
+	* dsa-sign.c (_dsa_sign): New general signing function, for any
+	hash. Returns success code, like the rsa signture functions.
+
 2010-03-29  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac (ABI): Attempt to use a better, ABI-dependant,

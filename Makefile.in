@@ -88,6 +88,8 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  rsa-keygen.c rsa-compat.c \
 		  rsa2sexp.c sexp2rsa.c \
 		  dsa.c dsa-sign.c dsa-verify.c dsa-keygen.c \
+		  dsa-sha1-sign.c dsa-sha1-verify.c \
+		  dsa-sha256-sign.c dsa-sha256-verify.c  \
 		  dsa2sexp.c sexp2dsa.c \
 		  pgp-encode.c rsa2openpgp.c \
 		  der-iterator.c der2rsa.c der2dsa.c

@@ -34,16 +34,20 @@
 #include "bignum.h"
 
 int
-dsa_verify_digest(const struct dsa_public_key *key,
-		  const uint8_t *digest,
-		  const struct dsa_signature *signature)
+_dsa_verify(const struct dsa_public_key *key,
+	    unsigned digest_size,
+	    const uint8_t *digest,
+	    const struct dsa_signature *signature)
 {
   mpz_t w;
   mpz_t tmp;
   mpz_t v;
 
   int res;
-  
+
+  if (mpz_sizeinbase(key->q, 2) != 8 * digest_size)
+    return 0;
+
   /* Check that r and s are in the proper range */
   if (mpz_sgn(signature->r) <= 0 || mpz_cmp(signature->r, key->q) >= 0)
     return 0;
@@ -67,7 +71,7 @@ dsa_verify_digest(const struct dsa_public_key *key,
   mpz_init(v);
 
   /* The message digest */
-  nettle_mpz_set_str_256_u(tmp, SHA1_DIGEST_SIZE, digest);
+  nettle_mpz_set_str_256_u(tmp, digest_size, digest);
   
   /* v = g^{w * h (mod q)} (mod p)  */
   mpz_mul(tmp, tmp, w);
@@ -94,15 +98,4 @@ dsa_verify_digest(const struct dsa_public_key *key,
   mpz_clear(v);
 
   return res;
-}
-
-int
-dsa_verify(const struct dsa_public_key *key,
-	   struct sha1_ctx *hash,
-	   const struct dsa_signature *signature)
-{
-  uint8_t digest[SHA1_DIGEST_SIZE];
-  sha1_digest(hash, sizeof(digest), digest);
-
-  return dsa_verify_digest(key, digest, signature);
 }

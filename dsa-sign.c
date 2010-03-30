@@ -5,7 +5,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2002 Niels Möller
+ * Copyright (C) 2002, 2010 Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -27,6 +27,7 @@
 # include "config.h"
 #endif
 
+#include <assert.h>
 #include <stdlib.h>
 
 #include "dsa.h"
@@ -34,17 +35,25 @@
 #include "bignum.h"
 
 
-void
-dsa_sign_digest(const struct dsa_public_key *pub,
-		const struct dsa_private_key *key,
-		void *random_ctx, nettle_random_func random,
-		const uint8_t *digest,
-		struct dsa_signature *signature)
+int
+_dsa_sign(const struct dsa_public_key *pub,
+	  const struct dsa_private_key *key,
+	  void *random_ctx, nettle_random_func random,
+	  unsigned digest_size,
+	  const uint8_t *digest,
+	  struct dsa_signature *signature)
 {
   mpz_t k;
   mpz_t h;
   mpz_t tmp;
-  
+
+  /* Require precise match of bitsize of q and hash size. The general
+     description of DSA in FIPS186-3 allows both larger and smaller q;
+     in the the latter case, the hash must be truncated to the right
+     number of bits. */
+  if (mpz_sizeinbase(pub->q, 2) != 8 * digest_size)
+    return 0;
+
   /* Select k, 0<k<q, randomly */
   mpz_init_set(tmp, pub->q);
   mpz_sub_ui(tmp, tmp, 1);
@@ -59,12 +68,12 @@ dsa_sign_digest(const struct dsa_public_key *pub,
 
   /* Compute hash */
   mpz_init(h);
-  nettle_mpz_set_str_256_u(h, SHA1_DIGEST_SIZE, digest);
+  nettle_mpz_set_str_256_u(h, digest_size, digest);
 
   /* Compute k^-1 (mod q) */
   if (!mpz_invert(k, k, pub->q))
     /* What do we do now? The key is invalid. */
-    abort();
+    return 0;
 
   /* Compute signature s = k^-1 (h + xr) (mod q) */
   mpz_mul(tmp, signature->r, key->x);
@@ -76,18 +85,6 @@ dsa_sign_digest(const struct dsa_public_key *pub,
   mpz_clear(k);
   mpz_clear(h);
   mpz_clear(tmp);
-}
 
-void
-dsa_sign(const struct dsa_public_key *pub,
-	 const struct dsa_private_key *key,
-	 void *random_ctx, nettle_random_func random,
-	 struct sha1_ctx *hash,
-	 struct dsa_signature *signature)
-{
-  uint8_t digest[SHA1_DIGEST_SIZE];
-  sha1_digest(hash, sizeof(digest), digest);
-
-  dsa_sign_digest(pub, key, random_ctx, random,
-		  digest, signature);
+  return 1;
 }
