@@ -803,7 +803,7 @@ test_rsa_key(struct rsa_public_key *pub,
 
 #define DSA_VERIFY(key, hash, msg, signature) (	\
   sha1_update(hash, LDATA(msg)),		\
-  dsa_verify(key, hash, signature)		\
+  dsa_sha1_verify(key, hash, signature)		\
 )
 
 void
@@ -819,9 +819,9 @@ test_dsa(const struct dsa_public_key *pub,
   knuth_lfib_init(&lfib, 1111);
   
   sha1_update(&sha1, LDATA("The magic words are squeamish ossifrage"));
-  dsa_sign(pub, key,
-	   &lfib, (nettle_random_func *) knuth_lfib_random,
-	   &sha1, &signature);
+  ASSERT (dsa_sha1_sign(pub, key,
+			&lfib, (nettle_random_func *) knuth_lfib_random,
+			&sha1, &signature));
   
   if (verbose)
     {
