@@ -1,3 +1,7 @@
+2010-03-31  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/nettle-benchmark.c (main): Benchmark sha224.
+
 2010-03-30  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/testutils.c (DSA_VERIFY): Updated for dsa_sha1_verify
