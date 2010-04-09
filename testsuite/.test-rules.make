@@ -61,6 +61,18 @@ serpent-test$(EXEEXT): serpent-test.$(OBJEXT)
 twofish-test$(EXEEXT): twofish-test.$(OBJEXT)
 	$(LINK) twofish-test.$(OBJEXT) $(TEST_OBJS) -o twofish-test$(EXEEXT)
 
+knuth-lfib-test$(EXEEXT): knuth-lfib-test.$(OBJEXT)
+	$(LINK) knuth-lfib-test.$(OBJEXT) $(TEST_OBJS) -o knuth-lfib-test$(EXEEXT)
+
+cbc-test$(EXEEXT): cbc-test.$(OBJEXT)
+	$(LINK) cbc-test.$(OBJEXT) $(TEST_OBJS) -o cbc-test$(EXEEXT)
+
+ctr-test$(EXEEXT): ctr-test.$(OBJEXT)
+	$(LINK) ctr-test.$(OBJEXT) $(TEST_OBJS) -o ctr-test$(EXEEXT)
+
+hmac-test$(EXEEXT): hmac-test.$(OBJEXT)
+	$(LINK) hmac-test.$(OBJEXT) $(TEST_OBJS) -o hmac-test$(EXEEXT)
+
 buffer-test$(EXEEXT): buffer-test.$(OBJEXT)
 	$(LINK) buffer-test.$(OBJEXT) $(TEST_OBJS) -o buffer-test$(EXEEXT)
 
@@ -79,20 +91,11 @@ rsa2sexp-test$(EXEEXT): rsa2sexp-test.$(OBJEXT)
 sexp2rsa-test$(EXEEXT): sexp2rsa-test.$(OBJEXT)
 	$(LINK) sexp2rsa-test.$(OBJEXT) $(TEST_OBJS) -o sexp2rsa-test$(EXEEXT)
 
-knuth-lfib-test$(EXEEXT): knuth-lfib-test.$(OBJEXT)
-	$(LINK) knuth-lfib-test.$(OBJEXT) $(TEST_OBJS) -o knuth-lfib-test$(EXEEXT)
-
-cbc-test$(EXEEXT): cbc-test.$(OBJEXT)
-	$(LINK) cbc-test.$(OBJEXT) $(TEST_OBJS) -o cbc-test$(EXEEXT)
-
-ctr-test$(EXEEXT): ctr-test.$(OBJEXT)
-	$(LINK) ctr-test.$(OBJEXT) $(TEST_OBJS) -o ctr-test$(EXEEXT)
-
-hmac-test$(EXEEXT): hmac-test.$(OBJEXT)
-	$(LINK) hmac-test.$(OBJEXT) $(TEST_OBJS) -o hmac-test$(EXEEXT)
-
 bignum-test$(EXEEXT): bignum-test.$(OBJEXT)
 	$(LINK) bignum-test.$(OBJEXT) $(TEST_OBJS) -o bignum-test$(EXEEXT)
+
+random-prime-test$(EXEEXT): random-prime-test.$(OBJEXT)
+	$(LINK) random-prime-test.$(OBJEXT) $(TEST_OBJS) -o random-prime-test$(EXEEXT)
 
 pkcs1-test$(EXEEXT): pkcs1-test.$(OBJEXT)
 	$(LINK) pkcs1-test.$(OBJEXT) $(TEST_OBJS) -o pkcs1-test$(EXEEXT)
