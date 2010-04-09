@@ -27,8 +27,6 @@
 # include "config.h"
 #endif
 
-#if HAVE_LIBGMP
-
 #include <assert.h>
 #include <string.h>
 
@@ -195,5 +193,3 @@ nettle_mpz_init_set_str_256_s(mpz_t x,
   mpz_init(x);
   nettle_mpz_set_str_256_s(x, length, s);
 }
-
-#endif /* HAVE_LIBGMP */
