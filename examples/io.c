@@ -167,6 +167,8 @@ simple_random(struct yarrow256_ctx *ctx, const char *name)
 
   yarrow256_seed(ctx, length, buffer);
 
+  free(buffer);
+
   return 1;
 }
 
