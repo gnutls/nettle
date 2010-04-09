@@ -26,8 +26,6 @@
 # include "config.h"
 #endif
 
-#if HAVE_LIBGMP
-
 #include "sexp.h"
 #include "bignum.h"
 
@@ -53,5 +51,3 @@ nettle_mpz_set_sexp(mpz_t x, unsigned limit, struct sexp_iterator *i)
   else
     return 0;
 }
-
-#endif /* HAVE_LIBGMP */
