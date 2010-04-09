@@ -1,3 +1,10 @@
+2010-04-09  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (hogweed_SOURCES): Added bignum-random-prime.c.
+
+	* bignum-random-prime.c (nettle_random_prime): New file, new
+	function.
+
 2010-03-31  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/nettle-benchmark.c (main): Benchmark sha224.
