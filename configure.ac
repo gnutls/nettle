@@ -145,7 +145,7 @@ case "$host_cpu" in
 esac
 
 if test "x$ABI" != xstandard ; then
-  AC_MSG_NOTICE([Compiler uses $ABI-bit ABI. To change, set CFLAGS.])
+  AC_MSG_NOTICE([Compiler uses $ABI-bit ABI. To change, set CC.])
   if test "$libdir" = '${exec_prefix}/lib' ; then
     # Try setting a better default
     case "$host_cpu:$host_os:$ABI" in
