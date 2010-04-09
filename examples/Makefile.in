@@ -13,7 +13,7 @@ PRE_LDFLAGS = -L..
 OPENSSL_LIBFLAGS = @OPENSSL_LIBFLAGS@
 RSA_TARGETS = rsa-keygen$(EXEEXT) rsa-sign$(EXEEXT) \
 	      rsa-verify$(EXEEXT) rsa-encrypt$(EXEEXT) rsa-decrypt$(EXEEXT)
-TARGETS = nettle-benchmark$(EXEEXT) eratosthenes$(EXEEXT) @IF_HOGWEED@ $(RSA_TARGETS) next-prime$(EXEEXT)
+TARGETS = nettle-benchmark$(EXEEXT) eratosthenes$(EXEEXT) @IF_HOGWEED@ $(RSA_TARGETS) next-prime$(EXEEXT) random-prime$(EXEEXT)
 SOURCES = nettle-benchmark.c eratosthenes.c next-prime.c nettle-openssl.c \
 	io.c read_rsa_key.c getopt.c getopt1.c \
 	rsa-encrypt.c rsa-decrypt.c rsa-keygen.c rsa-sign.c rsa-verify.c
@@ -34,6 +34,10 @@ all: $(TARGETS)
 next-prime$(EXEEXT): next-prime.$(OBJEXT) $(GETOPT_OBJS) ../libhogweed.a
 	$(LINK) next-prime.$(OBJEXT) $(GETOPT_OBJS) \
 	-lhogweed -lnettle $(LIBS) -o next-prime$(EXEEXT)
+
+random-prime$(EXEEXT): random-prime.$(OBJEXT) $(GETOPT_OBJS) ../libhogweed.a
+	$(LINK) random-prime.$(OBJEXT) io.$(OBJEXT) $(GETOPT_OBJS) \
+	-lhogweed -lnettle $(LIBS) -o random-prime$(EXEEXT)
 
 rsa-keygen$(EXEEXT): rsa-keygen.$(OBJEXT) $(GETOPT_OBJS)
 	$(LINK) rsa-keygen.$(OBJEXT) io.$(OBJEXT) $(GETOPT_OBJS) \
