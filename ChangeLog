@@ -1,5 +1,26 @@
 2010-04-09  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/random-prime.c: New program.
+
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Moved
+	knuth-lfib-test.c, cbc-test.c, ctr-test.c, hmac-test.c here, from
+	TS_HOGWEED_SOURCES.
+	(TS_HOGWEED_SOURCES): Added random-prime-test.c.
+
+	* testsuite/random-prime-test.c: New test case.
+
+	* examples/next-prime.c (main): With no command line arguments.
+	exit after dislaying usage message.
+
+	* examples/io.c (simple_random): Free buffer when done.
+
+	* configure.ac: Changed message, say CC is the recommended
+	way to configure the ABI.
+
+	* bignum-random.c: Deleted test of HAVE_LIBGMP.
+	* bignum.c: Likewise.
+	* sexp2bignum.c: Likewise.
+
 	* Makefile.in (hogweed_SOURCES): Added bignum-random-prime.c.
 
 	* bignum-random-prime.c (nettle_random_prime): New file, new
