@@ -35,6 +35,9 @@
 #include "memxor.h"
 #include "nettle-internal.h"
 
+/* FIXME: Update for fips186-3. p,q: A.1, g: A.2, x,y: B.1,
+   Shawe-Taylor: C.6 */
+
 /* The (slow) NIST method of generating DSA primes. Algorithm 4.56 of
  * Handbook of Applied Cryptography. */
 
