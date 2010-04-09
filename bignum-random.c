@@ -27,8 +27,6 @@
 # include "config.h"
 #endif
 
-#if HAVE_LIBGMP
-
 #include <stdlib.h>
 
 #include "bignum.h"
@@ -85,5 +83,3 @@ nettle_mpz_random(mpz_t x,
   
   mpz_fdiv_r(x, x, n);
 }
-
-#endif /* HAVE_LIBGMP */
