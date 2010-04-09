@@ -1,5 +1,11 @@
 2010-04-09  Niels Möller  <nisse@lysator.liu.se>
 
+	* bignum-next-prime.c: Include stdlib.h, needed for alloca on
+	freebsd.
+	* hmac.c: Likewise.
+
+	* examples/Makefile.in (SOURCES): Added random-prime.c.
+
 	* examples/random-prime.c: New program.
 
 	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Moved

@@ -27,6 +27,8 @@
 #endif
 
 #include <limits.h>
+/* Needed for alloca on freebsd */
+#include <stdlib.h>
 
 #include "bignum.h"
 
