@@ -61,7 +61,7 @@ main(int argc, char **argv)
   clock_t start;
   clock_t end;
   
-  enum { OPT_FACTORIAL = -100, OPT_RANDOM };
+  enum { OPT_FACTORIAL = -100 };
   static const struct option options[] =
     {
       /* Name, args, flag, val */
@@ -101,7 +101,10 @@ main(int argc, char **argv)
   argv += optind;
 
   if (argc != 1)
-    usage();
+    {
+      usage();
+      return EXIT_FAILURE;
+    }
 
   mpz_init(n);
 
