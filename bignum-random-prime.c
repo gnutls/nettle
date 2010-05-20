@@ -180,6 +180,30 @@ miller_rabin_pocklington(mpz_t n, mpz_t nm1, mpz_t nm1dq, mpz_t a)
    6.42 Handbook of applied cryptography), but with ratio = 1/2 (like
    the variant in fips186-3). FIXME: Force primes to start with two
    one bits? */
+
+/* The algorithm is based on the following special case of
+   Pocklington's theorem:
+
+   Assume that n = 1 + r q, where q is a prime, q > sqrt(n) - 1. If we
+   can find an a such that
+
+     a^{n-1} = 1 (mod n)
+     gcd(a^r - 1, n) = 1
+
+   then n is prime.
+
+   Proof: Assume that n is composite, with smallest prime factor p <=
+   sqrt(n). Since q is prime, and q > sqrt(n) - 1 >= p - 1, q and p-1
+   are coprime, so that we can define u = q^{-1} (mod (p-1)). The
+   assumption a^{n-1} = 1 (mod n) implies that also a^{n-1} = 1 (mod
+   p). Since p is prime, we have a^{(p-1)} = 1 (mod p). Now, r =
+   (n-1)/q = (n-1) u (mod (p-1)), and it follows that a^r = a^{(n-1)
+   u} = 1 (mod p). Then p is a common factor of a^r - 1 and n. This
+   contradicts gcd(a^r - 1, n) = 1, and concludes the proof.
+
+   If n is specified as k bits, we need q of size ceil(k/2) + 1 bits
+   (or more) to make the theorem apply.
+ */
 void
 nettle_random_prime(mpz_t p, unsigned bits,
 		    void *ctx, nettle_random_func random)
@@ -241,8 +265,9 @@ nettle_random_prime(mpz_t p, unsigned bits,
       mpz_init (a);
       mpz_init (i);
 
-     /* Bit size ceil(k/2) + 1, slightly larger than used in Alg.
-         4.62. */
+     /* Bit size ceil(k/2) + 1, slightly larger than used in Alg. 4.62
+	in Handbook of Applied Cryptography (which seems to be
+	incorrect for odd k). */
       nettle_random_prime (q, (bits+3)/2, ctx, random);
 
       /* i = floor (2^{bits-2} / q) */
