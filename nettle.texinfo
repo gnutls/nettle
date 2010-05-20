@@ -170,13 +170,9 @@ Gutmann, and hacked some more by Andrew Kuchling and @value{AUTHOR}.
 Released into the public domain. Assembler for x86 by @value{AUTHOR},
 released under the LGPL.
 
-@item SHA256
+@item SHA224, SHA256, SHA384, and SHA512
 Written by @value{AUTHOR}, using Peter Gutmann's SHA1 code as a model. 
 Released under the LGPL.
-
-@item SHA512
-Written by @value{AUTHOR}, using Peter Gutmann's SHA1 and the above
-SHA256 code as a model. Released under the LGPL.
 
 @item TWOFISH
 The implementation of the TWOFISH cipher is written by Ruud de Rooij.
@@ -511,14 +507,51 @@ This function also resets the context in the same way as
 @code{sha256_init}.
 @end deftypefun
 
+@subsection @acronym{SHA224}
+
+SHA224 is a variant of SHA256, with a different initial state, and with
+the output truncated to 224 bits, or 28 octets. Nettle defines SHA224 in
+@file{<nettle/sha.h>}.
+
+The functions are analogous to the MD5 ones.
+
+@deftp {Context struct} {struct sha224_ctx}
+@end deftp
+
+@defvr Constant SHA224_DIGEST_SIZE
+The size of an SHA224 digest, i.e. 28.
+@end defvr
+
+@defvr Constant SHA224_DATA_SIZE
+The internal block size of SHA224. Useful for some special constructions,
+in particular HMAC-SHA224.
+@end defvr
+
+@deftypefun void sha224_init (struct sha224_ctx *@var{ctx})
+Initialize the SHA224 state.
+@end deftypefun
+
+@deftypefun void sha224_update (struct sha224_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+Hash some more data.
+@end deftypefun
+
+@deftypefun void sha224_digest (struct sha224_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing it
+to @var{digest}. @var{length} may be smaller than
+@code{SHA224_DIGEST_SIZE}, in which case only the first @var{length}
+octets of the digest are written.
+
+This function also resets the context in the same way as
+@code{sha224_init}.
+@end deftypefun
+
 @subsection @acronym{SHA512}
 
-SHA512 is a larger sibling to SHA256,
-with a very similar similar but with both the output and the internal
-variables of twice the size. The internal variables are 64 bits rather
-than 32, making it significantly slower on 32-bit computers. It outputs
-hash values of 512 bits, or 64 octets. Nettle defines SHA512 in
-@file{<nettle/sha.h>}.
+SHA512 is a larger sibling to SHA256, with a very similar structure but
+with both the output and the internal variables of twice the size. The
+internal variables are 64 bits rather than 32, making it significantly
+slower on 32-bit computers. It outputs hash values of 512 bits, or 64
+octets. Nettle defines SHA512 in @file{<nettle/sha.h>}.
 
 The functions are analogous to the MD5 ones.
 
@@ -550,6 +583,44 @@ octets of the digest are written.
 
 This function also resets the context in the same way as
 @code{sha512_init}.
+@end deftypefun
+
+@subsection @acronym{SHA384}
+
+SHA384 is a variant of SHA512, with a different initial state, and with
+the output truncated to 384 bits, or 48 octets. Nettle defines SHA384 in
+@file{<nettle/sha.h>}.
+
+The functions are analogous to the MD5 ones.
+
+@deftp {Context struct} {struct sha384_ctx}
+@end deftp
+
+@defvr Constant SHA384_DIGEST_SIZE
+The size of an SHA384 digest, i.e. 48.
+@end defvr
+
+@defvr Constant SHA384_DATA_SIZE
+The internal block size of SHA384. Useful for some special constructions,
+in particular HMAC-SHA384.
+@end defvr
+
+@deftypefun void sha384_init (struct sha384_ctx *@var{ctx})
+Initialize the SHA384 state.
+@end deftypefun
+
+@deftypefun void sha384_update (struct sha384_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+Hash some more data.
+@end deftypefun
+
+@deftypefun void sha384_digest (struct sha384_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing it
+to @var{digest}. @var{length} may be smaller than
+@code{SHA384_DIGEST_SIZE}, in which case only the first @var{length}
+octets of the digest are written.
+
+This function also resets the context in the same way as
+@code{sha384_init}.
 @end deftypefun
 
 @subsection @code{struct nettle_hash}
@@ -1761,7 +1832,11 @@ Before signing or verifying a message, you first hash it with the
 appropriate hash function. You pass the hash function's context struct
 to the @acronym{RSA} signature function, and it will extract the message
 digest and do the rest of the work. There are also alternative functions
-that take the @acronym{MD5} or @acronym{SHA1} hash digest as argument.
+that take the hash digest as argument. 
+
+There is currently no support for using SHA224 or SHA384 with
+@acronym{RSA} signatures, since there's no gain in either computation
+time nor message size compared to using SHA256 and SHA512, respectively.
 
 Creation and verification of signatures is done with the following functions:
 
