@@ -143,28 +143,31 @@ miller_rabin_pocklington(mpz_t n, mpz_t nm1, mpz_t nm1dq, mpz_t a)
   mpz_powm(y, a, r, n);
 
   if (mpz_cmp_ui(y, 1) == 0 || mpz_cmp(y, nm1) == 0)
-    {
-    passed_miller_rabin:
-      /* We know that a^{n-1} = 1 (mod n)
-
-	 Remains to check that gcd(a^{(n-1)/q} - 1, n) == 1 */      
-      VERBOSE("x");
-
-      mpz_powm(y, a, nm1dq, n);
-      mpz_sub_ui(y, y, 1);
-      mpz_gcd(y, y, n);
-      is_prime = mpz_cmp_ui (y, 1) == 0;
-      VERBOSE(is_prime ? "\n" : "");
-    }
-
+    goto passed_miller_rabin;
+    
   for (j = 1; j < k; j++)
     {
       mpz_powm_ui (y, y, 2, n);
 
       if (mpz_cmp_ui (y, 1) == 0)
 	break;
+
       if (mpz_cmp (y, nm1) == 0)
-	goto passed_miller_rabin;
+	{
+	passed_miller_rabin:
+	  /* We know that a^{n-1} = 1 (mod n)
+
+	     Remains to check that gcd(a^{(n-1)/q} - 1, n) == 1 */      
+	  VERBOSE("x");
+
+	  mpz_powm(y, a, nm1dq, n);
+	  mpz_sub_ui(y, y, 1);
+	  mpz_gcd(y, y, n);
+	  is_prime = mpz_cmp_ui (y, 1) == 0;
+	  VERBOSE(is_prime ? "\n" : "");
+	  break;
+	}
+
     }
 
   mpz_clear(r);
@@ -172,56 +175,6 @@ miller_rabin_pocklington(mpz_t n, mpz_t nm1, mpz_t nm1dq, mpz_t a)
 
   return is_prime;
 }
-
-#if 0
-/* Single Miller-Rabin test to base 2. */
-static int
-miller_rabin_2(mpz_t n)
-{
-  mpz_t nm1;
-  mpz_t r;
-  mpz_t y;
-
-  /* Avoid the mp_bitcnt_t type for compatibility with older GMP
-     versions. */
-  unsigned k;
-  unsigned j;
-
-  //  gmp_fprintf(stderr, "n = %Zd\n", n);
-
-  if (mpz_even_p(n) || mpz_cmp_ui(n, 3) < 0)
-    return 0;
-
-  mpz_init(nm1);
-  mpz_init(r);
-  mpz_init_set_ui(y, 2);
-
-  mpz_sub_ui(nm1, n, 1);
-  k = mpz_scan1(nm1, 0);
-  assert(k > 0);
-
-  mpz_fdiv_q_2exp (r, nm1, k);
-
-  mpz_powm(y, y, r, n);
-
-  //  gmp_fprintf (stderr, "r = %Zd, y = %Zd\n", r,y);
-
-  if (mpz_cmp_ui(y, 1) == 0 || mpz_cmp(y, nm1) == 0)
-    return 1;
-
-  for (j = 1; j < k; j++)
-    {
-      mpz_powm_ui (y, y, 2, n);
-      //      gmp_fprintf (stderr, "j = %d, y = %Zd\n", j, y);
-
-      if (mpz_cmp_ui (y, 1) == 0)
-	return 0;
-      if (mpz_cmp (y, nm1) == 0)
-	return 1;
-    }
-  return 0;
-}
-#endif
 
 /* Generate random prime of a given size. Maurer's algorithm (Alg.
    6.42 Handbook of applied cryptography), but with ratio = 1/2 (like
@@ -334,6 +287,5 @@ nettle_random_prime(mpz_t p, unsigned bits,
       mpz_clear (t);
       mpz_clear (a);
       mpz_clear (i);
-      
     }
 }
