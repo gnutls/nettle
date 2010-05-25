@@ -19,18 +19,26 @@ test_main(void)
   dsa_private_key_init(&key);
   dsa_public_key_init(&pub);
 
-  /* Generate a 1024 bit key with random e */
   knuth_lfib_init(&lfib, 13);
 
   if (!dsa_generate_keypair(&pub, &key,
 			    &lfib, (nettle_random_func *) knuth_lfib_random,
 			    NULL, verbose ? progress : NULL,
-			    1024))
+			    1024, 160))
     FAIL();
 
-  test_dsa_key(&pub, &key);
-  test_dsa(&pub, &key);
+  test_dsa_key(&pub, &key, 160);
+  test_dsa160(&pub, &key);
 
+  if (!dsa_generate_keypair(&pub, &key,
+			    &lfib, (nettle_random_func *) knuth_lfib_random,
+			    NULL, verbose ? progress : NULL,
+			    2048, 256))
+    FAIL();
+
+  test_dsa_key(&pub, &key, 256);
+  test_dsa256(&pub, &key);
+  
   dsa_public_key_clear(&pub);
   dsa_private_key_clear(&key);
   
