@@ -72,13 +72,9 @@ dsa_generate_keypair(struct dsa_public_key *pub,
   
   nettle_random_prime (p0, p0_bits, ctx, random);
   
-  /* Generate p = r q p0 + 1, such that 2^{n-1} < p < 2^n.
+  /* Generate p = 2 r q p0 + 1, such that 2^{n-1} < p < 2^n.
    *
-   * Then r = (p-1) / (q p0) < (2^n-2) / (q p0)
-   *
-   * and r >= 2^{n-1} (q p0).
-   *
-   * FIXME: Check further. */
+   * We select r in the range i + 1 < r <= 2i, with i = floor (2^{n-2} / (p0 q). */
 
   mpz_init (p0q);
   mpz_mul (p0q, p0, pub->q);
