@@ -387,6 +387,24 @@ test_hash_large(const struct nettle_hash *hash,
 }
 
 void
+test_mac(const struct nettle_mac *mac,
+	 unsigned key_length, const uint8_t *key,
+	 unsigned msg_length, const uint8_t *msg,
+	 const uint8_t *digest)
+{
+  void *ctx = xalloc(mac->context_size);
+  uint8_t *buffer = xalloc(mac->digest_size);
+
+  mac->set_key(ctx, key_length, key);
+  mac->update(ctx, msg_length, msg);
+  mac->digest(ctx, mac->digest_size, buffer);
+  ASSERT(MEMEQ(mac->digest_size, digest, buffer));
+
+  free(ctx);
+  free(buffer);
+}
+
+void
 test_armor(const struct nettle_armor *armor,
            unsigned data_length,
            const uint8_t *data,
@@ -801,14 +819,14 @@ test_rsa_key(struct rsa_public_key *pub,
   mpz_clear(tmp); mpz_clear(phi);
 }
 
-#define DSA_VERIFY(key, hash, msg, signature) (	\
-  sha1_update(hash, LDATA(msg)),		\
-  dsa_sha1_verify(key, hash, signature)		\
-)
+/* Requires that the context is named like the hash algorithm. */
+#define DSA_VERIFY(key, hash, msg, signature)	\
+  (hash##_update(&hash, LDATA(msg)),		\
+   dsa_##hash##_verify(key, &hash, signature))
 
 void
-test_dsa(const struct dsa_public_key *pub,
-	 const struct dsa_private_key *key)
+test_dsa160(const struct dsa_public_key *pub,
+	    const struct dsa_private_key *key)
 {
   struct sha1_ctx sha1;
   struct dsa_signature signature;
@@ -825,7 +843,53 @@ test_dsa(const struct dsa_public_key *pub,
   
   if (verbose)
     {
-      fprintf(stderr, "dsa signature: ");
+      fprintf(stderr, "dsa160 signature: ");
+      mpz_out_str(stderr, 16, signature.r);
+      fprintf(stderr, ", ");
+      mpz_out_str(stderr, 16, signature.s);
+      fprintf(stderr, "\n");
+    }
+  
+  /* Try bad data */
+  if (DSA_VERIFY(pub, sha1,
+		 "The magick words are squeamish ossifrage", &signature))
+    FAIL();
+
+  /* Try correct data */
+  if (!DSA_VERIFY(pub, sha1,
+		 "The magic words are squeamish ossifrage", &signature))
+    FAIL();
+
+  /* Try bad signature */
+  mpz_togglebit(signature.r, 17);
+
+  if (DSA_VERIFY(pub, sha1,
+		 "The magic words are squeamish ossifrage", &signature))
+    FAIL();
+
+  dsa_signature_clear(&signature);
+}
+
+void
+test_dsa256(const struct dsa_public_key *pub,
+	    const struct dsa_private_key *key)
+{
+  struct sha256_ctx sha256;
+  struct dsa_signature signature;
+  struct knuth_lfib_ctx lfib;
+  
+  sha256_init(&sha256);
+  dsa_signature_init(&signature);
+  knuth_lfib_init(&lfib, 1111);
+  
+  sha256_update(&sha256, LDATA("The magic words are squeamish ossifrage"));
+  ASSERT (dsa_sha256_sign(pub, key,
+			&lfib, (nettle_random_func *) knuth_lfib_random,
+			&sha256, &signature));
+  
+  if (verbose)
+    {
+      fprintf(stderr, "dsa256 signature: ");
       mpz_out_str(stderr, 16, signature.r);
       fprintf(stderr, ", ");
       mpz_out_str(stderr, 16, signature.s);
@@ -838,19 +902,19 @@ test_dsa(const struct dsa_public_key *pub,
 #endif
   
   /* Try bad data */
-  if (DSA_VERIFY(pub, &sha1,
+  if (DSA_VERIFY(pub, sha256,
 		 "The magick words are squeamish ossifrage", &signature))
     FAIL();
 
   /* Try correct data */
-  if (!DSA_VERIFY(pub, &sha1,
+  if (!DSA_VERIFY(pub, sha256,
 		 "The magic words are squeamish ossifrage", &signature))
     FAIL();
 
   /* Try bad signature */
   mpz_togglebit(signature.r, 17);
 
-  if (DSA_VERIFY(pub, &sha1,
+  if (DSA_VERIFY(pub, sha256,
 		 "The magic words are squeamish ossifrage", &signature))
     FAIL();
 
@@ -859,13 +923,14 @@ test_dsa(const struct dsa_public_key *pub,
 
 void
 test_dsa_key(struct dsa_public_key *pub,
-	     struct dsa_private_key *key)
+	     struct dsa_private_key *key,
+	     unsigned q_size)
 {
   mpz_t t;
 
   mpz_init(t);
 
-  ASSERT(mpz_sizeinbase(pub->q, 2) == DSA_Q_BITS);
+  ASSERT(mpz_sizeinbase(pub->q, 2) == q_size);
   ASSERT(mpz_sizeinbase(pub->p, 2) >= DSA_MIN_P_BITS);
   
   ASSERT(mpz_probab_prime_p(pub->p, 10));
