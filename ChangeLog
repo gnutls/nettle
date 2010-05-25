@@ -1,3 +1,25 @@
+2010-05-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/dsa-test.c (test_main): Updated for dsa testing
+	changes. 
+
+	* testsuite/dsa-keygen-test.c (test_main): Test dsa256.
+
+	* testsuite/testutils.h (struct nettle_mac): New struct, currently
+	unused.
+
+	* testsuite/testutils.c (test_mac): New function (currently not
+	used).
+	(test_dsa): Replaced by two new functions...
+	(test_dsa160): New function.
+	(test_dsa256): New function.
+	(test_dsa_key): New argument q_size.
+	(DSA_VERIFY): Generalized.
+
+	* dsa-keygen.c (dsa_generate_keypair): Rewritten, now generating
+	primes using Pocklington's theorem. Takes both p_size and q_size
+	as arguments.
+
 2010-05-20  Niels Möller  <nisse@lysator.liu.se>
 
 	* bignum-random-prime.c (miller_rabin_pocklington): Fixed broken
