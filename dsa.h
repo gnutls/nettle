@@ -198,12 +198,9 @@ dsa_generate_keypair(struct dsa_public_key *pub,
 		     struct dsa_private_key *key,
 
 		     void *random_ctx, nettle_random_func random,
-		     void *progress_ctx, nettle_progress_func progress,
 
-		     /* Size of key, in bits.
-		      * Use size = 512 + 64 * l for the official
-		      * NIS key sizes. */
-		     unsigned bits);
+		     void *progress_ctx, nettle_progress_func progress,
+		     unsigned p_bits, unsigned q_bits);
 
 /* Keys in sexp form. */
 

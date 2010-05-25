@@ -27,6 +27,7 @@
 # include "config.h"
 #endif
 
+#include <assert.h>
 #include <stdlib.h>
 
 #include "dsa.h"
@@ -34,6 +35,133 @@
 #include "bignum.h"
 #include "memxor.h"
 #include "nettle-internal.h"
+
+
+/* Valid sizes, according to FIPS 186-3 are (1024, 160), (2048. 224),
+   (2048, 256), (3072, 256). Currenty, we use only q_bits of 160 or
+   256. */
+int
+dsa_generate_keypair(struct dsa_public_key *pub,
+		     struct dsa_private_key *key,
+		     void *ctx, nettle_random_func random,
+		     void *progress_ctx, nettle_progress_func progress,
+		     unsigned p_bits, unsigned q_bits)
+{
+  mpz_t p0, p0q, i, r, pm1, y;
+  unsigned p0_bits;
+  unsigned a;
+
+  switch (q_bits)
+    {
+    case 160:
+      if (p_bits < 512)
+	return 0;
+      break;
+    case 256:
+      if (p_bits < 1024)
+	return 0;
+      break;
+    default:
+      return 0;
+    }
+
+  nettle_random_prime (pub->q, q_bits, ctx, random);
+
+  mpz_init (p0);
+  p0_bits = (p_bits + 3)/2;
+  
+  nettle_random_prime (p0, p0_bits, ctx, random);
+  
+  /* Generate p = r q p0 + 1, such that 2^{n-1} < p < 2^n.
+   *
+   * Then r = (p-1) / (q p0) < (2^n-2) / (q p0)
+   *
+   * and r >= 2^{n-1} (q p0).
+   *
+   * FIXME: Check further. */
+
+  mpz_init (p0q);
+  mpz_mul (p0q, p0, pub->q);
+  
+  mpz_init_set_ui (i, 1);
+  mpz_mul_2exp (i, i, p_bits-2);
+  mpz_fdiv_q (i, i, p0q);
+
+  mpz_init (r);
+  mpz_init (pm1);
+  mpz_init (y);
+
+  for (;;)
+    {
+      uint8_t buf[1];
+
+      /* Generate r in the range i + 1 <= r <= 2*i */
+      nettle_mpz_random (r, ctx, random, i);
+      mpz_add (r, r, i);
+      mpz_add_ui (r, r, 1);
+
+      /* Set p = 2*r*q*p0 + 1 */
+      mpz_mul_2exp(r, r, 1);
+      mpz_mul (pm1, r, p0q);
+      mpz_add_ui (pub->p, pm1, 1);
+
+      assert(mpz_sizeinbase(pub->p, 2) == p_bits);
+
+      if (!mpz_probab_prime_p (pub->p, 1))
+	continue;
+
+      random(ctx, sizeof(buf), buf);
+
+      a = buf[0] + 2;
+      mpz_set_ui (y, a);
+
+      /* Pocklington's theorem. Check
+       *
+       *  a^{p-1} = 1 (mod p)
+       *  gcd(a^{p-1} / p0, p) = 1
+       */
+
+      mpz_powm (y, y, pm1, pub->p);
+      if (mpz_cmp_ui (y, 1) != 0)
+	continue;
+
+      /* (p-1) / p0 = q * r */
+      mpz_set_ui (y, a);
+      mpz_powm (y, y, pub->q, pub->p);
+      mpz_powm (y, y, r, pub->p);
+      mpz_sub_ui (y, y, 1);
+      mpz_gcd (y, y, pub->p);
+      if (mpz_cmp_ui (y, 1) == 0)
+	break;      
+    }
+
+  mpz_mul (r, r, p0);
+
+  for (a = 2; ; a++)
+    {
+      mpz_set_ui (y, a);
+      mpz_powm (pub->g, y, r, pub->p);
+      if (mpz_cmp_ui (pub->g, 1) != 0)
+	break;
+    }
+
+  mpz_init_set(r, pub->q);
+  mpz_sub_ui(r, r, 2);
+  nettle_mpz_random(key->x, ctx, random, r);
+
+  mpz_add_ui(key->x, key->x, 1);
+
+  mpz_powm(pub->y, pub->g, key->x, pub->p);
+  
+  mpz_clear (p0);
+  mpz_clear (p0q);
+  mpz_clear (r);
+  mpz_clear (pm1);
+  mpz_clear (y);
+
+  return 1;
+}
+#if 0
 
 /* FIXME: Update for fips186-3. p,q: A.1, g: A.2, x,y: B.1,
    Shawe-Taylor: C.6 */
@@ -250,3 +378,4 @@ dsa_generate_keypair(struct dsa_public_key *pub,
 
   return 1;
 }
+#endif
