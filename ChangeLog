@@ -1,5 +1,7 @@
 2010-05-26  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/random-prime.c (main): Allow sizes down to 3 bits.
+
 	* bignum-random-prime.c (_nettle_generate_pocklington_prime): New
 	function. Rely on mpz_probab_prime_p (for lack of a trial division
 	function) for trial division.
