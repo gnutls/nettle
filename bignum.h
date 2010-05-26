@@ -89,6 +89,13 @@ void
 nettle_random_prime(mpz_t p, unsigned bits,
 		    void *ctx, nettle_random_func random);
 
+void
+_nettle_generate_pocklington_prime (mpz_t p, unsigned bits,
+				    void *ctx, nettle_random_func random, 
+				    const mpz_t p0,
+				    const mpz_t q,
+				    const mpz_t p0q);
+  
 /* sexp parsing */
 struct sexp_iterator;
 

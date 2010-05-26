@@ -1,7 +1,17 @@
+2010-05-26  Niels Möller  <nisse@lysator.liu.se>
+
+	* bignum-random-prime.c (_nettle_generate_pocklington_prime): New
+	function. Rely on mpz_probab_prime_p (for lack of a trial division
+	function) for trial division.
+	(nettle_random_prime): Rewritten. Uses the prime table for the
+	smallest sizes, then trial division using a new set of tables, and
+	then Maurer's algorithm, calling the new
+	_nettle_generate_pocklington_prime for the final search.
+
 2010-05-25  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/dsa-test.c (test_main): Updated for dsa testing
-	changes. 
+	changes.
 
 	* testsuite/dsa-keygen-test.c (test_main): Test dsa256.
 
