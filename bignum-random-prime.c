@@ -257,18 +257,17 @@ miller_rabin_pocklington(mpz_t n, mpz_t nm1, mpz_t nm1dq, mpz_t a)
    p0 must be of size >= ceil(bits/2) + 1. The extra factor q can be
    omitted. */
 void
-_nettle_generate_pocklington_prime (mpz_t p, unsigned bits,
+_nettle_generate_pocklington_prime (mpz_t p, unsigned bits, mpz_t r,
 				    void *ctx, nettle_random_func random, 
 				    const mpz_t p0,
 				    const mpz_t q,
 				    const mpz_t p0q)
 {
-  mpz_t i, r, pm1,a;
+  mpz_t i, pm1,a;
   
   assert (2*mpz_sizeinbase (p0, 2) > bits + 1);
 
   mpz_init (i);
-  mpz_init (r);
   mpz_init (pm1);
   mpz_init (a);
 
@@ -304,13 +303,23 @@ _nettle_generate_pocklington_prime (mpz_t p, unsigned bits,
       mpz_set_ui (a, buf[0] + 2);
 
       if (q)
-	mpz_mul (r, r, q);
-      
-      if (miller_rabin_pocklington(p, pm1, r, a))
+	{
+	  mpz_t e;
+	  int is_prime;
+	  
+	  mpz_init (e);
+
+	  mpz_mul (e, r, q);
+	  is_prime = miller_rabin_pocklington(p, pm1, e, a);
+	  mpz_clear (e);
+
+	  if (is_prime)
+	    break;
+	}
+      else if (miller_rabin_pocklington(p, pm1, r, a))
 	break;
     }
   mpz_clear (i);
-  mpz_clear (r);
   mpz_clear (pm1);
   mpz_clear (a);
 }
@@ -362,18 +371,20 @@ nettle_random_prime(mpz_t p, unsigned bits,
     }
   else
     {
-      mpz_t q;
+      mpz_t q, r;
 
       mpz_init (q);
+      mpz_init (r);
 
      /* Bit size ceil(k/2) + 1, slightly larger than used in Alg. 4.62
 	in Handbook of Applied Cryptography (which seems to be
 	incorrect for odd k). */
       nettle_random_prime (q, (bits+3)/2, ctx, random);
 
-      _nettle_generate_pocklington_prime (p, bits, ctx, random,
+      _nettle_generate_pocklington_prime (p, bits, r, ctx, random,
 					  q, NULL, q);
       
       mpz_clear (q);
+      mpz_clear (r);
     }
 }

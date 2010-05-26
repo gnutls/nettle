@@ -90,7 +90,7 @@ nettle_random_prime(mpz_t p, unsigned bits,
 		    void *ctx, nettle_random_func random);
 
 void
-_nettle_generate_pocklington_prime (mpz_t p, unsigned bits,
+_nettle_generate_pocklington_prime (mpz_t p, unsigned bits, mpz_t r,
 				    void *ctx, nettle_random_func random, 
 				    const mpz_t p0,
 				    const mpz_t q,
