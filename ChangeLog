@@ -1,5 +1,12 @@
 2010-05-26  Niels Möller  <nisse@lysator.liu.se>
 
+	* dsa-keygen.c (dsa_generate_keypair): Use
+	_nettle_generate_pocklington_prime. Deleted old key generation
+	code.
+
+	* bignum-random-prime.c (_nettle_generate_pocklington_prime): Also
+	return the used r. Updated caller.
+
 	* examples/random-prime.c (main): Allow sizes down to 3 bits.
 
 	* bignum-random-prime.c (_nettle_generate_pocklington_prime): New
