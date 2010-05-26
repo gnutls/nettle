@@ -106,9 +106,9 @@ main(int argc, char **argv)
       return EXIT_FAILURE;
     }
 
-  if (bits < 6)
+  if (bits < 3)
     {
-      fprintf(stderr, "Bitsize must be at least 6.\n");
+      fprintf(stderr, "Bitsize must be at least 3.\n");
       return EXIT_FAILURE;
     }
 
