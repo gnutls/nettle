@@ -43,7 +43,7 @@
 int
 dsa_generate_keypair(struct dsa_public_key *pub,
 		     struct dsa_private_key *key,
-		     void *ctx, nettle_random_func random,
+		     void *random_ctx, nettle_random_func random,
 		     void *progress_ctx, nettle_progress_func progress,
 		     unsigned p_bits, unsigned q_bits)
 {
@@ -65,23 +65,34 @@ dsa_generate_keypair(struct dsa_public_key *pub,
       return 0;
     }
 
-  nettle_random_prime (pub->q, q_bits, ctx, random);
-
   mpz_init (p0);
+  mpz_init (p0q);
+  mpz_init (r);
+
+  nettle_random_prime (pub->q, q_bits, 0, random_ctx, random,
+		       progress_ctx, progress);
+
   p0_bits = (p_bits + 3)/2;
   
-  nettle_random_prime (p0, p0_bits, ctx, random);
+  nettle_random_prime (p0, p0_bits, 0,
+		       random_ctx, random,
+		       progress_ctx, progress);
+
+  if (progress)
+    progress (progress_ctx, 'q');
   
   /* Generate p = 2 r q p0 + 1, such that 2^{n-1} < p < 2^n.
    *
    * We select r in the range i + 1 < r <= 2i, with i = floor (2^{n-2} / (p0 q). */
 
-  mpz_init (p0q);
   mpz_mul (p0q, p0, pub->q);
 
-  _nettle_generate_pocklington_prime (pub->p, p_bits, r,
-				      ctx, random,
+  _nettle_generate_pocklington_prime (pub->p, r, p_bits, 0,
+				      random_ctx, random,
 				      p0, pub->q, p0q);
+
+  if (progress)
+    progress (progress_ctx, 'p');
 
   mpz_mul (r, r, p0);
 
@@ -93,13 +104,19 @@ dsa_generate_keypair(struct dsa_public_key *pub,
 	break;
     }
 
+  if (progress)
+    progress (progress_ctx, 'g');
+
   mpz_init_set(r, pub->q);
   mpz_sub_ui(r, r, 2);
-  nettle_mpz_random(key->x, ctx, random, r);
+  nettle_mpz_random(key->x, random_ctx, random, r);
 
   mpz_add_ui(key->x, key->x, 1);
 
   mpz_powm(pub->y, pub->g, key->x, pub->p);
+
+  if (progress)
+    progress (progress_ctx, '\n');
   
   mpz_clear (p0);
   mpz_clear (p0q);
