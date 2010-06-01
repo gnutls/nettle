@@ -17,8 +17,10 @@ test_main(void)
       if (verbose)
 	fprintf(stderr, "bits = %d\n", bits);
       
-      nettle_random_prime(p, bits,
-			  &lfib, (nettle_random_func *) knuth_lfib_random );
+      nettle_random_prime(p, bits, 0,
+			  &lfib, (nettle_random_func *) knuth_lfib_random,
+			  NULL, NULL);
+      ASSERT (mpz_sizeinbase (p, 2) == bits);
       ASSERT (mpz_probab_prime_p(p, 25));
     }
 

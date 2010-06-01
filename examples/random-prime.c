@@ -126,8 +126,9 @@ main(int argc, char **argv)
 
   start = clock();
 
-  nettle_random_prime(p, bits,
-		      &yarrow, (nettle_random_func *) yarrow256_random);
+  nettle_random_prime(p, bits, 0,
+		      &yarrow, (nettle_random_func *) yarrow256_random,
+		      NULL, NULL);
 
   end = clock();
 
