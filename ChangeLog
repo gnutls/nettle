@@ -1,3 +1,26 @@
+2010-06-01  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/rsa-keygen-test.c (test_main): Updated expected
+	signatures.
+
+	* examples/random-prime.c (main): Updated for nettle_random_prime
+	change.
+	* testsuite/random-prime-test.c (test_main): Likewise.
+
+	* rsa-keygen.c (bignum_random_prime): Deleted function.
+	(rsa_generate_keypair): Use new nettle_random_prime. Generate
+	secret factors p and q with the two most significant bits set.
+
+	* dsa-keygen.c (dsa_generate_keypair): Updated for changes in
+	nettle_random_prime and _nettle_generate_pocklington_prime. Invoke
+	progress callback.
+
+	* bignum-random-prime.c (_nettle_generate_pocklington_prime): New
+	argument top_bits_set, to optionally generate primes with the two
+	most significant bits set. Reordered argument list.
+	(nettle_random_prime): Likewise, added top_bits_set argument.
+	Invoke progress callback when a prime is generated.
+
 2010-05-26  Niels Möller  <nisse@lysator.liu.se>
 
 	* dsa-keygen.c (dsa_generate_keypair): Use
