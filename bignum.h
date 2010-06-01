@@ -86,11 +86,13 @@ nettle_next_prime(mpz_t p, mpz_t n, unsigned count, unsigned prime_limit,
 		  void *progress_ctx, nettle_progress_func progress);
 
 void
-nettle_random_prime(mpz_t p, unsigned bits,
-		    void *ctx, nettle_random_func random);
+nettle_random_prime(mpz_t p, unsigned bits, int top_bits_set,
+		    void *ctx, nettle_random_func random,
+		    void *progress_ctx, nettle_progress_func progress);
 
 void
-_nettle_generate_pocklington_prime (mpz_t p, unsigned bits, mpz_t r,
+_nettle_generate_pocklington_prime (mpz_t p, mpz_t r,
+				    unsigned bits, int top_bits_set, 
 				    void *ctx, nettle_random_func random, 
 				    const mpz_t p0,
 				    const mpz_t q,

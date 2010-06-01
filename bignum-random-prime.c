@@ -255,35 +255,50 @@ miller_rabin_pocklington(mpz_t n, mpz_t nm1, mpz_t nm1dq, mpz_t a)
 
 /* Generate a prime number p of size bits with 2 p0q dividing (p-1).
    p0 must be of size >= ceil(bits/2) + 1. The extra factor q can be
-   omitted. */
+   omitted. If top_bits_set is one, the top most two bits are one,
+   suitable for RSA primes. */
 void
-_nettle_generate_pocklington_prime (mpz_t p, unsigned bits, mpz_t r,
+_nettle_generate_pocklington_prime (mpz_t p, mpz_t r,
+				    unsigned bits, int top_bits_set, 
 				    void *ctx, nettle_random_func random, 
 				    const mpz_t p0,
 				    const mpz_t q,
 				    const mpz_t p0q)
 {
-  mpz_t i, pm1,a;
+  mpz_t r_min, r_range, pm1,a;
   
   assert (2*mpz_sizeinbase (p0, 2) > bits + 1);
 
-  mpz_init (i);
+  mpz_init (r_min);
+  mpz_init (r_range);
   mpz_init (pm1);
   mpz_init (a);
 
-  /* i = floor (2^{bits-2} / p0q) */
-  mpz_init_set_ui (i, 1);
-  mpz_mul_2exp (i, i, bits-2);
-  mpz_fdiv_q (i, i, p0q);
-
+  if (top_bits_set)
+    {
+      /* i = floor (2^{bits-3} / p0q), then 3I + 3 <= r <= 4I, with I
+	 - 2 possible values. */
+      mpz_set_ui (r_min, 1);
+      mpz_mul_2exp (r_min, r_min, bits-3);
+      mpz_fdiv_q (r_min, r_min, p0q);
+      mpz_sub_ui (r_range, r_min, 2);
+      mpz_mul_ui (r_min, r_min, 3);
+      mpz_add_ui (r_min, r_min, 3);
+    }
+  else
+    {
+      /* i = floor (2^{bits-2} / p0q), I + 1 <= r <= 2I */
+      mpz_set_ui (r_range, 1);
+      mpz_mul_2exp (r_range, r_range, bits-2);
+      mpz_fdiv_q (r_range, r_range, p0q);
+      mpz_add_ui (r_min, r_range, 1);
+    }
   for (;;)
     {
       uint8_t buf[1];
 
-      /* Generate r in the range i + 1 <= r <= 2*i */
-      nettle_mpz_random (r, ctx, random, i);
-      mpz_add (r, r, i);
-      mpz_add_ui (r, r, 1);
+      nettle_mpz_random (r, ctx, random, r_range);
+      mpz_add (r, r, r_min);
 
       /* Set p = 2*r*p0q + 1 */
       mpz_mul_2exp(r, r, 1);
@@ -319,18 +334,19 @@ _nettle_generate_pocklington_prime (mpz_t p, unsigned bits, mpz_t r,
       else if (miller_rabin_pocklington(p, pm1, r, a))
 	break;
     }
-  mpz_clear (i);
+  mpz_clear (r_min);
+  mpz_clear (r_range);
   mpz_clear (pm1);
   mpz_clear (a);
 }
 
 /* Generate random prime of a given size. Maurer's algorithm (Alg.
    6.42 Handbook of applied cryptography), but with ratio = 1/2 (like
-   the variant in fips186-3). FIXME: Force primes to start with two
-   one bits? */
+   the variant in fips186-3). */
 void
-nettle_random_prime(mpz_t p, unsigned bits,
-		    void *ctx, nettle_random_func random)
+nettle_random_prime(mpz_t p, unsigned bits, int top_bits_set,
+		    void *random_ctx, nettle_random_func random,
+		    void *progress_ctx, nettle_progress_func progress)
 {
   assert (bits >= 3);
   if (bits <= 10)
@@ -339,7 +355,9 @@ nettle_random_prime(mpz_t p, unsigned bits,
       unsigned choices;
       uint8_t buf;
 
-      random (ctx, sizeof(buf), &buf);
+      assert (!top_bits_set);
+
+      random (random_ctx, sizeof(buf), &buf);
 
       first = prime_by_size[bits-3];
       choices = prime_by_size[bits-2] - first;
@@ -353,10 +371,12 @@ nettle_random_prime(mpz_t p, unsigned bits,
       unsigned long x;
       unsigned j;
       
+      assert (!top_bits_set);
+
       highbit = 1L << (bits - 1);
 
     again:
-      random (ctx, sizeof(buf), buf);
+      random (random_ctx, sizeof(buf), buf);
       x = READ_UINT24(buf);
       x &= (highbit - 1);
       x |= highbit | 1;
@@ -379,11 +399,16 @@ nettle_random_prime(mpz_t p, unsigned bits,
      /* Bit size ceil(k/2) + 1, slightly larger than used in Alg. 4.62
 	in Handbook of Applied Cryptography (which seems to be
 	incorrect for odd k). */
-      nettle_random_prime (q, (bits+3)/2, ctx, random);
+      nettle_random_prime (q, (bits+3)/2, 0, random_ctx, random,
+			   progress_ctx, progress);
 
-      _nettle_generate_pocklington_prime (p, bits, r, ctx, random,
+      _nettle_generate_pocklington_prime (p, r, bits, top_bits_set,
+					  random_ctx, random,
 					  q, NULL, q);
       
+      if (progress)
+	progress (progress_ctx, 'x');
+
       mpz_clear (q);
       mpz_clear (r);
     }
