@@ -1,3 +1,12 @@
+2010-06-02  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/dsa-test.c (test_main): Provide expected value of the
+	signature.
+
+	* testsuite/testutils.c (test_dsa160): Added argument for expected
+	signature.
+	(test_dsa256): Likewise.
+
 2010-06-01  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/rsa-keygen-test.c (test_main): Updated expected
