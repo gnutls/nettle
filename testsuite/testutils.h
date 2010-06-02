@@ -168,11 +168,13 @@ test_rsa_key(struct rsa_public_key *pub,
 
 void
 test_dsa160(const struct dsa_public_key *pub,
-	    const struct dsa_private_key *key);
+	    const struct dsa_private_key *key,
+	    const struct dsa_signature *expected);
 
 void
 test_dsa256(const struct dsa_public_key *pub,
-	    const struct dsa_private_key *key);
+	    const struct dsa_private_key *key,
+	    const struct dsa_signature *expected);
 
 void
 test_dsa_key(struct dsa_public_key *pub,

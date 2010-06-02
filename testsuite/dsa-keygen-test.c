@@ -28,7 +28,7 @@ test_main(void)
     FAIL();
 
   test_dsa_key(&pub, &key, 160);
-  test_dsa160(&pub, &key);
+  test_dsa160(&pub, &key, NULL);
 
   if (!dsa_generate_keypair(&pub, &key,
 			    &lfib, (nettle_random_func *) knuth_lfib_random,
@@ -37,7 +37,7 @@ test_main(void)
     FAIL();
 
   test_dsa_key(&pub, &key, 256);
-  test_dsa256(&pub, &key);
+  test_dsa256(&pub, &key, NULL);
   
   dsa_public_key_clear(&pub);
   dsa_private_key_clear(&key);

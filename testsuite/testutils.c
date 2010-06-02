@@ -826,7 +826,8 @@ test_rsa_key(struct rsa_public_key *pub,
 
 void
 test_dsa160(const struct dsa_public_key *pub,
-	    const struct dsa_private_key *key)
+	    const struct dsa_private_key *key,
+	    const struct dsa_signature *expected)
 {
   struct sha1_ctx sha1;
   struct dsa_signature signature;
@@ -840,7 +841,7 @@ test_dsa160(const struct dsa_public_key *pub,
   ASSERT (dsa_sha1_sign(pub, key,
 			&lfib, (nettle_random_func *) knuth_lfib_random,
 			&sha1, &signature));
-  
+
   if (verbose)
     {
       fprintf(stderr, "dsa160 signature: ");
@@ -849,6 +850,11 @@ test_dsa160(const struct dsa_public_key *pub,
       mpz_out_str(stderr, 16, signature.s);
       fprintf(stderr, "\n");
     }
+
+  if (expected)
+    if (mpz_cmp (signature.r, expected->r)
+	|| mpz_cmp (signature.s, expected->s))
+      FAIL();
   
   /* Try bad data */
   if (DSA_VERIFY(pub, sha1,
@@ -872,7 +878,8 @@ test_dsa160(const struct dsa_public_key *pub,
 
 void
 test_dsa256(const struct dsa_public_key *pub,
-	    const struct dsa_private_key *key)
+	    const struct dsa_private_key *key,
+	    const struct dsa_signature *expected)
 {
   struct sha256_ctx sha256;
   struct dsa_signature signature;
@@ -896,10 +903,10 @@ test_dsa256(const struct dsa_public_key *pub,
       fprintf(stderr, "\n");
     }
 
-#if 0
-  if (mpz_cmp(signature, expected))
-    FAIL();
-#endif
+  if (expected)
+    if (mpz_cmp (signature.r, expected->r)
+	|| mpz_cmp (signature.s, expected->s))
+      FAIL();
   
   /* Try bad data */
   if (DSA_VERIFY(pub, sha256,
