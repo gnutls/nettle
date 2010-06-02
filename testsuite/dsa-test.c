@@ -5,9 +5,11 @@ test_main(void)
 {
   struct dsa_public_key pub;
   struct dsa_private_key key;
-
+  struct dsa_signature expected;
+  
   dsa_public_key_init(&pub);
   dsa_private_key_init(&key);
+  dsa_signature_init(&expected);
 
   mpz_set_str(pub.p,
 	      "83d9a7c2ce2a9179f43cdb3bffe7de0f0eef26dd5dfae44d"
@@ -36,11 +38,14 @@ test_main(void)
 	      "56c6efaf878d06eef21dc070fab71da6ec1e30a6", 16);
 
   test_dsa_key(&pub, &key, 160);
-  
-  test_dsa160(&pub, &key);
+
+  mpz_set_str(expected.r, "373999e9ee0a84a9983e528ee266938091e4c55c", 16);
+  mpz_set_str(expected.s, "8017d54592bde7353f6558b3090d12ed8367e2ba", 16);
+
+  test_dsa160(&pub, &key, &expected);
 
   dsa_public_key_clear(&pub);
   dsa_private_key_clear(&key);
-
+  dsa_signature_clear(&expected);
   SUCCESS();
 }
