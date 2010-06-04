@@ -58,7 +58,8 @@ extern "C" {
 #define dsa_signature_from_sexp nettle_dsa_signature_from_sexp
 #define dsa_keypair_to_sexp nettle_dsa_keypair_to_sexp
 #define dsa_keypair_from_sexp_alist nettle_dsa_keypair_from_sexp_alist
-#define dsa_keypair_from_sexp nettle_dsa_keypair_from_sexp
+#define dsa_sha1_keypair_from_sexp nettle_dsa_sha1_keypair_from_sexp
+#define dsa_sha256_keypair_from_sexp nettle_dsa_sha256_keypair_from_sexp
 #define dsa_params_from_der_iterator nettle_dsa_params_from_der_iterator
 #define dsa_public_key_from_der_iterator nettle_dsa_public_key_from_der_iterator
 #define dsa_openssl_private_key_from_der_iterator nettle_dsa_openssl_private_key_from_der_iterator 
@@ -66,10 +67,14 @@ extern "C" {
 #define _dsa_sign _nettle_dsa_sign
 #define _dsa_verify _nettle_dsa_verify
 
-#define DSA_MIN_P_BITS 512
-#define DSA_Q_OCTETS 20
-#define DSA_Q_BITS 160
+#define DSA_SHA1_MIN_P_BITS 512
+#define DSA_SHA1_Q_OCTETS 20
+#define DSA_SHA1_Q_BITS 160
 
+#define DSA_SHA256_MIN_P_BITS 1024
+#define DSA_SHA256_Q_OCTETS 32
+#define DSA_SHA256_Q_BITS 256
+  
 struct dsa_public_key
 {  
   /* Modulo */
@@ -217,12 +222,14 @@ struct sexp_iterator;
 
 int
 dsa_signature_from_sexp(struct dsa_signature *rs,
-			struct sexp_iterator *i);
+			struct sexp_iterator *i,
+			unsigned q_bits);
 
 int
 dsa_keypair_from_sexp_alist(struct dsa_public_key *pub,
 			    struct dsa_private_key *priv,
-			    unsigned limit,
+			    unsigned p_max_bits,
+			    unsigned q_bits,
 			    struct sexp_iterator *i);
 
 /* If PRIV is NULL, expect a public-key expression. If PUB is NULL,
@@ -230,33 +237,39 @@ dsa_keypair_from_sexp_alist(struct dsa_public_key *pub,
  * the public key. */
 /* Keys must be initialized before calling this function, as usual. */
 int
-dsa_keypair_from_sexp(struct dsa_public_key *pub,
-		      struct dsa_private_key *priv,
-		      unsigned limit,
-		      unsigned length, const uint8_t *expr);
+dsa_sha1_keypair_from_sexp(struct dsa_public_key *pub,
+			   struct dsa_private_key *priv,
+			   unsigned p_max_bits,
+			   unsigned length, const uint8_t *expr);
+
+int
+dsa_sha256_keypair_from_sexp(struct dsa_public_key *pub,
+			     struct dsa_private_key *priv,
+			     unsigned p_max_bits,
+			     unsigned length, const uint8_t *expr);
 
 /* Keys in X.509 andd OpenSSL format. */
 struct asn1_der_iterator;
 
 int
 dsa_params_from_der_iterator(struct dsa_public_key *pub,
-			     unsigned limit,
+			     unsigned p_max_bits,
 			     struct asn1_der_iterator *i);
 int
 dsa_public_key_from_der_iterator(struct dsa_public_key *pub,
-				 unsigned limit,
+				 unsigned p_max_bits,
 				 struct asn1_der_iterator *i);
 
 int
 dsa_openssl_private_key_from_der_iterator(struct dsa_public_key *pub,
 					  struct dsa_private_key *priv,
-					  unsigned limit,
+					  unsigned p_max_bits,
 					  struct asn1_der_iterator *i);
 
 int
 dsa_openssl_private_key_from_der(struct dsa_public_key *pub,
 				 struct dsa_private_key *priv,
-				 unsigned limit, 
+				 unsigned p_max_bits, 
 				 unsigned length, const uint8_t *data);
 
 
