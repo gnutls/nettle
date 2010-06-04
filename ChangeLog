@@ -1,3 +1,31 @@
+2010-06-04  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/testutils.c (test_dsa_key): Updated for new name
+	DSA_SHA1_MIN_P_BITS.
+
+	* dsa-keygen.c (dsa_generate_keypair): Use DSA_SHA1_MIN_P_BITS and
+	DSA_SHA256_MIN_P_BITS.
+
+	* dsa.h (DSA_MIN_P_BITS, DSA_Q_OCTETS, DSA_Q_BITS): Renamed to...
+	(DSA_SHA1_MIN_P_BITS, DSA_SHA1_Q_OCTETS, DSA_SHA1_Q_BITS): New
+	names.
+
+	* sexp2dsa.c (dsa_keypair_from_sexp_alist): New argument q_bits.
+	Renamed parameter limit to p_max_bits.
+	(dsa_sha1_keypair_from_sexp): Renamed, was dsa_keypair_from_sexp.
+	Updated to call dsa_keypair_from_sexp_alist with the new argument.
+	(dsa_sha256_keypair_from_sexp): New function.
+	(dsa_signature_from_sexp): New argument q_bits.
+
+	* der2dsa.c (dsa_params_from_der_iterator): Enforce 160-bit limit
+	on q. Renamed parameter limit to p_max_bits.
+	(dsa_openssl_private_key_from_der_iterator): Enforce 160-bit limit
+	on q and x. Renamed parameter limit to p_max_bits.
+
+2010-06-03  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/dsa-test.c (test_main): Added test for dsa-sha256.
+
 2010-06-02  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/dsa-test.c (test_main): Provide expected value of the
