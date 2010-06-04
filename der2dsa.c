@@ -40,7 +40,7 @@
 
 int
 dsa_params_from_der_iterator(struct dsa_public_key *pub,
-			     unsigned limit,
+			     unsigned p_max_bits,
 			     struct asn1_der_iterator *i)
 {
   /* Dss-Parms ::= SEQUENCE {
@@ -50,24 +50,23 @@ dsa_params_from_der_iterator(struct dsa_public_key *pub,
      }
   */
   return (i->type == ASN1_INTEGER
-	  && asn1_der_get_bignum(i, pub->p, limit)
+	  && asn1_der_get_bignum(i, pub->p, p_max_bits)
 	  && mpz_sgn(pub->p) > 0
-	  && GET(i, pub->q, limit)
-	  && GET(i, pub->g, limit)
+	  && GET(i, pub->q, DSA_SHA1_Q_BITS)
+	  && GET(i, pub->g, p_max_bits)
 	  && asn1_der_iterator_next(i) == ASN1_ITERATOR_END);
-  
 }
 
 int
 dsa_public_key_from_der_iterator(struct dsa_public_key *pub,
-				 unsigned limit,
+				 unsigned p_max_bits,
 				 struct asn1_der_iterator *i)
 {
   /* DSAPublicKey ::= INTEGER
   */
 
   return (i->type == ASN1_INTEGER
-	  && asn1_der_get_bignum(i, pub->y, limit)
+	  && asn1_der_get_bignum(i, pub->y, p_max_bits)
 	  && mpz_sgn(pub->y) > 0);
 }
 
@@ -76,7 +75,7 @@ dsa_public_key_from_der_iterator(struct dsa_public_key *pub,
 int
 dsa_openssl_private_key_from_der_iterator(struct dsa_public_key *pub,
 					  struct dsa_private_key *priv,
-					  unsigned limit,
+					  unsigned p_max_bits,
 					  struct asn1_der_iterator *i)
 {
   /* DSAPrivateKey ::= SEQUENCE {
@@ -96,18 +95,18 @@ dsa_openssl_private_key_from_der_iterator(struct dsa_public_key *pub,
 	  && i->type == ASN1_INTEGER
 	  && asn1_der_get_uint32(i, &version)
 	  && version == 0
-	  && GET(i, pub->p, limit)
-	  && GET(i, pub->q, limit)
-	  && GET(i, pub->g, limit)
-	  && GET(i, pub->y, limit)
-	  && GET(i, priv->x, limit)
+	  && GET(i, pub->p, p_max_bits)
+	  && GET(i, pub->q, DSA_SHA1_Q_BITS)
+	  && GET(i, pub->g, p_max_bits)
+	  && GET(i, pub->y, p_max_bits)
+	  && GET(i, priv->x, DSA_SHA1_Q_BITS)
 	  && asn1_der_iterator_next(i) == ASN1_ITERATOR_END);
 }
 
 int
 dsa_openssl_private_key_from_der(struct dsa_public_key *pub,
 		     struct dsa_private_key *priv,
-		     unsigned limit,
+		     unsigned p_max_bits,
 		     unsigned length, const uint8_t *data)
 {
   struct asn1_der_iterator i;
@@ -116,5 +115,5 @@ dsa_openssl_private_key_from_der(struct dsa_public_key *pub,
   res = asn1_der_iterator_first(&i, length, data);
 
   return (res == ASN1_ITERATOR_CONSTRUCTED
-	  && dsa_openssl_private_key_from_der_iterator(pub, priv, limit, &i));
+	  && dsa_openssl_private_key_from_der_iterator(pub, priv, p_max_bits, &i));
 }
