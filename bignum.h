@@ -112,7 +112,7 @@ struct asn1_der_iterator;
 
 int
 nettle_asn1_der_get_bignum(struct asn1_der_iterator *iterator,
-			   mpz_t x, unsigned limit);
+			   mpz_t x, unsigned max_bits);
 
 #ifdef __cplusplus
 }

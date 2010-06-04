@@ -249,7 +249,7 @@ asn1_der_get_uint32(struct asn1_der_iterator *i,
 #if HAVE_LIBGMP
 int
 asn1_der_get_bignum(struct asn1_der_iterator *i,
-		    mpz_t x, unsigned limit)
+		    mpz_t x, unsigned max_bits)
 {
   if (i->length > 1
       && ((i->data[0] == 0 && i->data[1] < 0x80)
@@ -258,13 +258,13 @@ asn1_der_get_bignum(struct asn1_der_iterator *i,
     return 0;
 
   /* Allow some extra here, for leading sign octets. */
-  if (limit && (8 * i->length > (16 + limit)))
+  if (max_bits && (8 * i->length > (16 + max_bits)))
     return 0;
 
   nettle_mpz_set_str_256_s(x, i->length, i->data);
 
-  /* FIXME: How to interpret a limit for negative numbers? */
-  if (limit && mpz_sizeinbase(x, 2) > limit)
+  /* FIXME: How to interpret a max_bits for negative numbers? */
+  if (max_bits && mpz_sizeinbase(x, 2) > max_bits)
     return 0;
 
   return 1;
