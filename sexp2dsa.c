@@ -49,7 +49,8 @@ do {						\
 int
 dsa_keypair_from_sexp_alist(struct dsa_public_key *pub,
 			    struct dsa_private_key *priv,
-			    unsigned limit,
+			    unsigned p_max_bits,
+			    unsigned q_bits,
 			    struct sexp_iterator *i)
 {
   static const uint8_t * const names[5]
@@ -61,33 +62,50 @@ dsa_keypair_from_sexp_alist(struct dsa_public_key *pub,
     return 0;
 
   if (priv)
-    GET(priv->x, limit, &values[4]);
+    GET(priv->x, q_bits, &values[4]);
   
-  GET(pub->p, limit, &values[0]);
-  GET(pub->q, DSA_Q_BITS, &values[1]);
-  GET(pub->g, limit, &values[2]);
-  GET(pub->y, limit, &values[3]);
+  GET(pub->p, p_max_bits, &values[0]);
+  GET(pub->q, q_bits, &values[1]);
+  if (mpz_sizeinbase(pub->q, 2) != q_bits)
+    return 0;
+  GET(pub->g, p_max_bits, &values[2]);
+  GET(pub->y, p_max_bits, &values[3]);
   
   return 1;
 }
 
 int
-dsa_keypair_from_sexp(struct dsa_public_key *pub,
-		      struct dsa_private_key *priv,
-		      unsigned limit, 
-		      unsigned length, const uint8_t *expr)
+dsa_sha1_keypair_from_sexp(struct dsa_public_key *pub,
+			   struct dsa_private_key *priv,
+			   unsigned p_max_bits, 
+			   unsigned length, const uint8_t *expr)
 {
   struct sexp_iterator i;
 
   return sexp_iterator_first(&i, length, expr)
     && sexp_iterator_check_type(&i, priv ? "private-key" : "public-key")
     && sexp_iterator_check_type(&i, "dsa")
-    && dsa_keypair_from_sexp_alist(pub, priv, limit, &i);
+    && dsa_keypair_from_sexp_alist(pub, priv, p_max_bits, DSA_SHA1_Q_BITS, &i);
+}
+
+int
+dsa_sha256_keypair_from_sexp(struct dsa_public_key *pub,
+			     struct dsa_private_key *priv,
+			     unsigned p_max_bits, 
+			     unsigned length, const uint8_t *expr)
+{
+  struct sexp_iterator i;
+
+  return sexp_iterator_first(&i, length, expr)
+    && sexp_iterator_check_type(&i, priv ? "private-key" : "public-key")
+    && sexp_iterator_check_type(&i, "dsa-sha256")
+    && dsa_keypair_from_sexp_alist(pub, priv, p_max_bits, DSA_SHA256_Q_BITS, &i);
 }
 
 int
 dsa_signature_from_sexp(struct dsa_signature *rs,
-			struct sexp_iterator *i)
+			struct sexp_iterator *i,
+			unsigned q_bits)
 {
   static const uint8_t * const names[2] = { "r", "s" };
   struct sexp_iterator values[2];
@@ -95,8 +113,8 @@ dsa_signature_from_sexp(struct dsa_signature *rs,
   if (!sexp_iterator_assoc(i, 2, names, values))
     return 0;
 
-  GET(rs->r, 160, &values[0]);
-  GET(rs->s, 160, &values[1]);
+  GET(rs->r, q_bits, &values[0]);
+  GET(rs->s, q_bits, &values[1]);
 
   return 1;
 }
