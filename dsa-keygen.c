@@ -54,11 +54,11 @@ dsa_generate_keypair(struct dsa_public_key *pub,
   switch (q_bits)
     {
     case 160:
-      if (p_bits < 512)
+      if (p_bits < DSA_SHA1_MIN_P_BITS)
 	return 0;
       break;
     case 256:
-      if (p_bits < 1024)
+      if (p_bits < DSA_SHA256_MIN_P_BITS)
 	return 0;
       break;
     default:
