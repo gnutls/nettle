@@ -1,5 +1,11 @@
 2010-06-30  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/des-test.c (test_des): New function.
+	(test_weak): New function.
+	(test_main): Use test_des and test_weak. Added tests for all the
+	weak keys. Added some tests with invalid (to be ignored) parity
+	bits.
+
 	* des.c (parity_16): New smaller parity table.
 	(des_check_parity): New function.
 	(des_fix_parity): Use parity_16.
