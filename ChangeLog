@@ -1,3 +1,13 @@
+2010-06-30  Niels Möller  <nisse@lysator.liu.se>
+
+	* des.c (parity_16): New smaller parity table.
+	(des_check_parity): New function.
+	(des_fix_parity): Use parity_16.
+	(des_weak_p): New weak-key detection. Ignores parity bits, and
+	uses a hash table.
+	(des_set_key): Deleted parity checking code. Replaced old weak-key
+	detection code by a call to des_weak_p.
+
 2010-06-04  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/testutils.c (test_dsa_key): Updated for new name
