@@ -45,6 +45,7 @@ extern "C" {
 #define des_set_key nettle_des_set_key
 #define des_encrypt nettle_des_encrypt
 #define des_decrypt nettle_des_decrypt
+#define des_check_parity nettle_des_check_parity
 #define des_fix_parity nettle_des_fix_parity
 #define des3_set_key nettle_des3_set_key
 #define des3_encrypt nettle_des3_encrypt
@@ -77,6 +78,9 @@ void
 des_decrypt(const struct des_ctx *ctx,
 	    unsigned length, uint8_t *dst,
 	    const uint8_t *src);
+
+int
+des_check_parity(unsigned length, const uint8_t *key);
 
 void
 des_fix_parity(unsigned length, uint8_t *dst,

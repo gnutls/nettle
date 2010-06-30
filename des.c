@@ -51,13 +51,29 @@ rotors[] = {
 #include	"rotors.h"
 };
 
-static const char
-parity[] = {
-#include	"parity.h"
-};
-
 static ENCRYPT(DesSmallFipsEncrypt,TEMPSMALL, LOADFIPS,KEYMAPSMALL,SAVEFIPS)
 static DECRYPT(DesSmallFipsDecrypt,TEMPSMALL, LOADFIPS,KEYMAPSMALL,SAVEFIPS)
+
+/* If parity bits are used, keys should have odd parity. We use a
+   small table, to not waste any memory on this fairly obscure DES
+   feature. */
+
+static const unsigned
+parity_16[16] =
+{ 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0 };
+
+#define PARITY(x) (parity_16[(x)&0xf] ^ parity_16[((x)>>4) & 0xf])
+
+int
+des_check_parity(unsigned length, const uint8_t *key)
+{
+  unsigned i;
+  for (i = 0; i<length; i++)
+    if (!PARITY(key[i]))
+      return 0;
+
+  return 1;
+}
 
 void
 des_fix_parity(unsigned length, uint8_t *dst,
@@ -65,7 +81,112 @@ des_fix_parity(unsigned length, uint8_t *dst,
 {
   unsigned i;
   for (i = 0; i<length; i++)
-    dst[i] = src[i] ^ (parity[src[i]] == 8);
+    dst[i] = src[i] ^ PARITY(src[i]) ^ 1;
+}
+
+/* Weak and semiweak keys, excluding parity:
+ *
+ * 00 00 00 00  00 00 00 00
+ * 7f 7f 7f 7f  7f 7f 7f 7f 
+ * 0f 0f 0f 0f  07 07 07 07
+ * 70 70 70 70  78 78 78 78
+ *
+ * 00 7f 00 7f  00 7f 00 7f
+ * 7f 00 7f 00  7f 00 7f 00
+ *
+ * 0f 70 0f 70  07 78 07 78
+ * 70 0f 70 0f  78 07 78 07
+ *
+ * 00 70 00 70  00 78 00 78
+ * 70 00 70 00  78 00 78 00
+ *
+ * 0f 7f 0f 7f  07 7f 07 7f
+ * 7f 0f 7f 0f  7f 07 7f 07
+ *
+ * 00 0f 00 0f  00 07 00 07
+ * 0f 00 0f 00  07 00 07 00
+ *
+ * 70 7f 70 7f  78 7f 78 7f
+ * 7f 70 7f 70  7f 78 7f 78
+ */
+
+static int
+des_weak_p(const uint8_t *key)
+{
+  /* Hash function generated using gperf. */
+  static const unsigned char asso_values[0x81] =
+    {
+      16,  9, 26, 26, 26, 26, 26, 26, 26, 26,
+      26, 26, 26, 26, 26,  6,  2, 26, 26, 26,
+      26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
+      26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
+      26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
+      26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
+      26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
+      26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
+      26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
+      26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
+      26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
+      26, 26,  3,  1, 26, 26, 26, 26, 26, 26,
+      26, 26, 26, 26, 26, 26, 26,  0,  0
+    };
+
+  static const int8_t weak_key_hash[26][4] =
+    {
+      /*  0 */ {0x7f,0x7f, 0x7f,0x7f},
+      /*  1 */ {0x7f,0x70, 0x7f,0x78},
+      /*  2 */ {0x7f,0x0f, 0x7f,0x07},
+      /*  3 */ {0x70,0x7f, 0x78,0x7f},
+      /*  4 */ {0x70,0x70, 0x78,0x78},
+      /*  5 */ {0x70,0x0f, 0x78,0x07},
+      /*  6 */ {0x0f,0x7f, 0x07,0x7f},
+      /*  7 */ {0x0f,0x70, 0x07,0x78},
+      /*  8 */ {0x0f,0x0f, 0x07,0x07},
+      /*  9 */ {0x7f,0x00, 0x7f,0x00},
+      /* 10 */ {-1,-1,-1,-1},
+      /* 11 */ {-1,-1,-1,-1},
+      /* 12 */ {0x70,0x00, 0x78,0x00},
+      /* 13 */ {-1,-1,-1,-1},
+      /* 14 */ {-1,-1,-1,-1},
+      /* 15 */ {0x0f,0x00, 0x07,0x00},
+      /* 16 */ {0x00,0x7f, 0x00,0x7f},
+      /* 17 */ {0x00,0x70, 0x00,0x78},
+      /* 18 */ {0x00,0x0f, 0x00,0x07},
+      /* 19 */ {-1,-1,-1,-1},
+      /* 20 */ {-1,-1,-1,-1},
+      /* 21 */ {-1,-1,-1,-1},
+      /* 22 */ {-1,-1,-1,-1},
+      /* 23 */ {-1,-1,-1,-1},
+      /* 24 */ {-1,-1,-1,-1},
+      /* 25 */ {0x00,0x00, 0x00,0x00}
+    };
+
+  int8_t k0 = key[0] >> 1;
+  int8_t k1 = key[1] >> 1;
+
+  unsigned hash = asso_values[k1 + 1] + asso_values[k0];
+  const int8_t *candidate = weak_key_hash[hash];
+
+  if (hash > 25)
+    return 0;
+  if (k0 != candidate[0]
+      || k1 != candidate[1])
+    return 0;
+  
+  if ( (key[2] >> 1) != k0
+       || (key[3] >> 1) != k1)
+    return 0;
+
+  k0 = key[4] >> 1;
+  k1 = key[5] >> 1;
+  if (k0 != candidate[2]
+      || k1 != candidate[3])
+    return 0;
+  if ( (key[6] >> 1) != k0
+       || (key[7] >> 1) != k1)
+    return 0;
+
+  return 1;
 }
 
 int
@@ -77,90 +198,8 @@ des_set_key(struct des_ctx *ctx, const uint8_t *key)
   uint32_t *method;
   const uint8_t *k;
 
-  {
-    register const char *b;
-    /* check for bad parity and weak keys */
-    b = parity;
-    n  = b[key[0]]; n <<= 4;
-    n |= b[key[1]]; n <<= 4;
-    n |= b[key[2]]; n <<= 4;
-    n |= b[key[3]]; n <<= 4;
-    n |= b[key[4]]; n <<= 4;
-    n |= b[key[5]]; n <<= 4;
-    n |= b[key[6]]; n <<= 4;
-    n |= b[key[7]];
-    w  = 0x88888888l;
-  }
+  ctx->status = des_weak_p(key) ? DES_WEAK_KEY : DES_OK;
   
-  /* report bad parity in key */
-  if ( n & w )
-    {
-      ctx->status = DES_BAD_PARITY;
-      return 0;
-    }
-  ctx->status = DES_OK; 
-
-  /* report a weak or semi-weak key */
-  if ( !((n - (w >> 3)) & w) ) {	/* 1 in 10^10 keys passes this test */
-    if ( n < 0X41415151 ) {
-      if ( n < 0X31312121 ) {
-	if ( n < 0X14141515 ) {
-	  /* 01 01 01 01 01 01 01 01 */
-	  if ( n == 0X11111111 ) goto weak;
-	  /* 01 1F 01 1F 01 0E 01 0E */
-	  if ( n == 0X13131212 ) goto weak;
-	} else {
-	  /* 01 E0 01 E0 01 F1 01 F1 */
-	  if ( n == 0X14141515 ) goto weak;
-	  /* 01 FE 01 FE 01 FE 01 FE */
-	  if ( n == 0X16161616 ) goto weak;
-	}
-      } else {
-	if ( n < 0X34342525 ) {
-	  /* 1F 01 1F 01 0E 01 0E 01 */
-	  if ( n == 0X31312121 ) goto weak;
-	  /* 1F 1F 1F 1F 0E 0E 0E 0E */	/* ? */
-	  if ( n == 0X33332222 ) goto weak;
-	} else {
-	  /* 1F E0 1F E0 0E F1 0E F1 */
-	  if ( n == 0X34342525 ) goto weak;
-	  /* 1F FE 1F FE 0E FE 0E FE */
-	  if ( n == 0X36362626 ) goto weak;
-	}
-      }
-    } else {
-      if ( n < 0X61616161 ) {
-	if ( n < 0X44445555 ) {
-	  /* E0 01 E0 01 F1 01 F1 01 */
-	  if ( n == 0X41415151 ) goto weak;
-	  /* E0 1F E0 1F F1 0E F1 0E */
-	  if ( n == 0X43435252 ) goto weak;
-	} else {
-	  /* E0 E0 E0 E0 F1 F1 F1 F1 */	/* ? */
-	  if ( n == 0X44445555 ) goto weak;
-	  /* E0 FE E0 FE F1 FE F1 FE */
-	  if ( n == 0X46465656 ) goto weak;
-	}
-      } else {
-	if ( n < 0X64646565 ) {
-	  /* FE 01 FE 01 FE 01 FE 01 */
-	  if ( n == 0X61616161 ) goto weak;
-	  /* FE 1F FE 1F FE 0E FE 0E */
-	  if ( n == 0X63636262 ) goto weak;
-	} else {
-	  /* FE E0 FE E0 FE F1 FE F1 */
-	  if ( n == 0X64646565 ) goto weak;
-	  /* FE FE FE FE FE FE FE FE */
-	  if ( n == 0X66666666 )
-          {
-          weak:
-            ctx->status = DES_WEAK_KEY;
-          }
-	}
-      }
-    }
-  }
-
   /* NOTE: We go on and expand the key, even if it was weak */
   /* explode the bits */
   n = 56;
