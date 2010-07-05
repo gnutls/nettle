@@ -33,20 +33,18 @@
  * lsh/src/cascade.c, but as in practice it's never used for anything
  * like triple DES, it's not worth the effort. */
 
-/* On success, returns 1 and sets ctx->status to DES_OK (zero). On
- * error, returns 0 and sets ctx->status accordingly. */
+/* Returns 1 for good keys and 0 for weak keys. */
 int
 des3_set_key(struct des3_ctx *ctx, const uint8_t *key)
 {
   unsigned i;
+  int is_good = 1;
+  
   for (i = 0; i<3; i++, key += DES_KEY_SIZE)
     if (!des_set_key(&ctx->des[i], key))
-      {
-	ctx->status = ctx->des[i].status;
-	return 0;
-      }
-  ctx->status = DES_OK;
-  return 1;
+      is_good = 0;
+
+  return is_good;
 }
 
 void
