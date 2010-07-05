@@ -75,7 +75,7 @@ typedef uint8_t des_cblock[DES_BLOCK_SIZE];
    foo(const_des_cblock src, des_cblock dst), letting argument arrays
    "decay" into pointers of type uint8_t * and const uint8_t *.
 
-   But since openssl's prototypes use *pointers const_des_cblock *src,
+   But since openssl's prototypes use *pointers* const_des_cblock *src,
    des_cblock *dst, this ends up in type conflicts, and the workaround
    is to not use const at all.
 */
