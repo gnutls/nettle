@@ -1,3 +1,39 @@
+2010-07-05  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle.texinfo: Document new conventions for weak key and des
+	parity checks. Document des_check_parity.
+
+	* testsuite/des-test.c (test_weak): Don't check the deleted status
+	attribute.
+
+	* des-compat.c (des_key_sched): Rewrote error checking logic for
+	the case of non-zero des_check_key.
+
+	* des3.c (des3_set_key): Changed weak key detection logic.
+	Complete key setup also for weak keys, and don't set the status
+	attribute.
+
+	* des.c (des_set_key): New iteration logic, to keep key pointer
+	unchanged. Moved weak key check to the end, and don't set the
+	status attribute.
+	(des_encrypt): Ignore status attribute.
+	(des_decrypt): Likewise.
+
+	* des.h (enum des_error): Deleted.
+	(struct des_ctx): Deleted status attribute.
+	(struct des3_ctx): Likewise.
+
+	* blowfish.c (initial_ctx): Deleted status value.
+	(blowfish_encrypt): Ignore status attribute.
+	(blowfish_decrypt): Likewise.
+	(blowfish_set_key): return result from weak key check, without
+	setting the status attribute.
+
+	* blowfish.h (enum blowfish_error): Deleted.
+	(struct blowfish_ctx): Deleted status attribute.
+
+	* Makefile.in (des_headers): Deleted parity.h.
+
 2010-06-30  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/des-test.c (test_des): New function.
@@ -1472,7 +1508,7 @@
 	HAVE_LIBCRYPTO. Benchmark openssl's aes and arcfour code.
 
 	* examples/nettle-openssl.c: Updated openssl des glue to use the
-	new openssl DES interface. Added glue for arcfour and aes.
+	new openssl des interface. Added glue for arcfour and aes.
 
 2005-09-27  Niels Möller  <nisse@lysator.liu.se>
 
