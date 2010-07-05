@@ -202,39 +202,15 @@ int des_check_key = 0;
 int
 des_key_sched(const_des_cblock *key, des_key_schedule ctx)
 {
-  des_cblock nkey;
-  const uint8_t *pkey;
+  if (des_check_key && !des_check_parity (DES_KEY_SIZE, *key))
+    /* Bad parity */
+    return -1;
   
-  if (des_check_key)
-    pkey = *key;
-  else
-    {
-      /* Fix the parity */
-      nettle_des_fix_parity(DES_KEY_SIZE, nkey, *key);
-      pkey = nkey;
-    }
-  
-  if (nettle_des_set_key(ctx, pkey))
-    return 0;
-  else switch(ctx->status)
-    {
-    case DES_BAD_PARITY:
-      if (des_check_key)
-        return -1;
-      else
-        /* We fixed the parity above */
-        abort();
-    case DES_WEAK_KEY:
-      if (des_check_key)
-        return -2;
+  if (!nettle_des_set_key(ctx, *key) && des_check_key)
+    /* Weak key */
+    return -2;
 
-      /* Pretend the key was good */
-      ctx->status = DES_OK;
-      return 0;
-      
-    default:
-      abort();
-    }
+  return 0;
 }
 
 int
