@@ -53,8 +53,7 @@ test_weak(const uint8_t *key)
 {
   struct des_ctx ctx;
 
-  if (des_set_key(&ctx, key)
-      || (ctx.status != DES_WEAK_KEY))
+  if (des_set_key(&ctx, key))
     FAIL();
 }
 
