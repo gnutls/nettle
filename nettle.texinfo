@@ -709,10 +709,10 @@ functions}, or digital signatures like @acronym{RSA}.
 
 Some ciphers have so called ``weak keys'', keys that results in
 undesirable structure after the key setup processing, and should be
-avoided. In Nettle, the presence of weak keys for a cipher mean that the
-key setup function can fail, so you have to check its return value. In
-addition, the context struct has a field @code{status}, that is set to a
-non-zero value if key setup fails. When possible, avoid algorithm that
+avoided. In Nettle, most key setup functions have no return value, but
+for ciphers with weak keys, the return value indicates whether or not
+the given key is weak. For good keys, key setup returns 1, and for weak
+keys, it returns 0. When possible, avoid algorithms that
 have weak keys. There are several good ciphers that don't have any weak
 keys.
 
@@ -957,7 +957,10 @@ Default BLOWFISH key size, 16
 
 @deftypefun int blowfish_set_key (struct blowfish_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
 Initialize the cipher. The same function is used for both encryption and
-decryption. Returns 1 on success, and 0 if the key was weak. Calling
+decryption. Checks for weak keys, returning 1
+for good keys and 0 for weak keys. Applications that don't care about
+weak keys can ignore the return value.
+
 @code{blowfish_encrypt} or @code{blowfish_decrypt} with a weak key will
 crash with an assert violation.
 @end deftypefun
@@ -977,7 +980,7 @@ Analogous to @code{blowfish_encrypt}
 DES is the old Data Encryption Standard, specified by NIST. It uses a
 block size of 64 bits (8 octets), and a key size of 56 bits. However,
 the key bits are distributed over 8 octets, where the least significant
-bit of each octet is used for parity. A common way to use DES is to
+bit of each octet may be used for parity. A common way to use DES is to
 generate 8 random octets in some way, then set the least significant bit
 of each octet to get odd parity, and initialize DES with the resulting
 key.
@@ -1002,9 +1005,9 @@ DES key size, 8
 
 @deftypefun int des_set_key (struct des_ctx *@var{ctx}, const uint8_t *@var{key})
 Initialize the cipher. The same function is used for both encryption and
-decryption. Returns 1 on success, and 0 if the key was weak or had bad
-parity. Calling @code{des_encrypt} or @code{des_decrypt} with a bad key
-will crash with an assert violation.
+decryption. Parity bits are ignored. Checks for weak keys, returning 1
+for good keys and 0 for weak keys. Applications that don't care about
+weak keys can ignore the return value.
 @end deftypefun
 
 @deftypefun void des_encrypt (struct des_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
@@ -1016,6 +1019,11 @@ in any other way.
 
 @deftypefun void des_decrypt (struct des_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
 Analogous to @code{des_encrypt}
+@end deftypefun
+
+@deftypefun int des_check_parity (unsigned @var{length}, const uint8_t *@var{key});
+Checks that the given key has correct, odd, parity. Returns 1 for
+correct parity, and 0 for bad parity.
 @end deftypefun
 
 @deftypefun void des_fix_parity (unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
@@ -1072,9 +1080,10 @@ DES key size, 24
 
 @deftypefun int des3_set_key (struct des3_ctx *@var{ctx}, const uint8_t *@var{key})
 Initialize the cipher. The same function is used for both encryption and
-decryption. Returns 1 on success, and 0 if the key was weak or had bad
-parity. Calling @code{des_encrypt} or @code{des_decrypt} with a bad key
-will crash with an assert violation.
+decryption. Parity bits are ignored. Checks for weak keys, returning 1
+if all three keys are good keys, and 0 if one or more key is weak.
+Applications that don't care about weak keys can ignore the return
+value.
 @end deftypefun
 
 For random-looking strings, you can use @code{des_fix_parity} to adjust

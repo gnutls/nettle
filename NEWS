@@ -18,7 +18,23 @@ NEWS for the 2.5 release
           which callers sould check, and they return failure if the
           number q is not of the appropriate size.
 
+	* The return value from des_set_key, des3_set_key and
+	  blowfish_set_key now indicates whether or not the given key
+	  is weak. But in either case, the key setup is done, and
+	  applications that don't care about weak keys can ignore the
+	  return value.
+
+	  The incompatible part of this change is that enum des_error
+	  and enum blowfish_error has been deleted, and so has the
+	  status attribute in struct des_ctx, struct des3_ctx, and
+	  struct blowfish_ctx.
+
 	Other changes:
+
+	* des_set_key and des3_set_key no longer check the key parity
+	  bits. Parity bits are silently ignored. A new function
+	  des_check_parity is provided, for applications that care
+	  about the DES parity bits.
 
 	* Support for sha224, sha384 and sha512.
 
