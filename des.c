@@ -198,15 +198,13 @@ des_set_key(struct des_ctx *ctx, const uint8_t *key)
   uint32_t *method;
   const uint8_t *k;
 
-  ctx->status = des_weak_p(key) ? DES_WEAK_KEY : DES_OK;
-  
-  /* NOTE: We go on and expand the key, even if it was weak */
   /* explode the bits */
   n = 56;
   b0 = bits0;
   b1 = bits1;
+  k = key;
   do {
-    w = (256 | *key++) << 2;
+    w = (256 | *k++) << 2;
     do {
       --n;
       b1[n] = 8 & w;
@@ -262,7 +260,7 @@ des_set_key(struct des_ctx *ctx, const uint8_t *key)
     method	+= 2;
   } while ( --n );
 
-  return (ctx->status == DES_OK);
+  return !des_weak_p (key);
 }
 
 void
@@ -271,7 +269,6 @@ des_encrypt(const struct des_ctx *ctx,
 	    const uint8_t *src)
 {
   assert(!(length % DES_BLOCK_SIZE));
-  assert(ctx->status == DES_OK);
   
   while (length)
     {
@@ -288,7 +285,6 @@ des_decrypt(const struct des_ctx *ctx,
 	    const uint8_t *src)
 {
   assert(!(length % DES_BLOCK_SIZE));
-  assert(ctx->status == DES_OK);
 
   while (length)
     {
