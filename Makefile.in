@@ -182,8 +182,8 @@ shadata$(EXEEXT): shadata.$(OBJEXT)
 
 # desCore rules
 # It seems using $(srcdir)/ doesn't work with GNU make 3.79.1
-# des_headers = $(srcdir)/parity.h $(srcdir)/rotors.h $(srcdir)/keymap.h 
-des_headers = parity.h rotors.h keymap.h 
+# des_headers = $(srcdir)/rotors.h $(srcdir)/keymap.h 
+des_headers = rotors.h keymap.h 
 
 # Generate DES headers.
 $(des_headers): desdata.c
