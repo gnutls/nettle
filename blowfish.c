@@ -230,8 +230,6 @@ initial_ctx =
     0x082EFA98,0xEC4E6C89,0x452821E6,0x38D01377,0xBE5466CF,0x34E90C6C,
     0xC0AC29B7,0xC97C50DD,0x3F84D5B5,0xB5470917,0x9216D5D9,0x8979FB1B
   },
-  /* Initial value, reset after key is checked. */
-  BLOWFISH_WEAK_KEY
 };
 
 /* It's unfortunate to have to pick the bytes apart in the round
@@ -318,8 +316,6 @@ blowfish_encrypt(struct blowfish_ctx *bc, unsigned length,
 {
     uint32_t d1, d2;
 
-    assert(!bc->status);
-
     FOR_BLOCKS(length, outbuf, inbuf, BLOWFISH_BLOCK_SIZE)
       {
 	d1 = READ_UINT32(inbuf);
@@ -339,8 +335,6 @@ blowfish_decrypt(struct blowfish_ctx *bc, unsigned length,
 {
     uint32_t d1, d2;
 
-    assert(!bc->status);
-
     FOR_BLOCKS(length, outbuf, inbuf, BLOWFISH_BLOCK_SIZE)
       {
 	d1 = READ_UINT32(inbuf);
@@ -359,15 +353,6 @@ blowfish_set_key(struct blowfish_ctx *ctx,
 {
     int i, j;
     uint32_t data, datal, datar;
-
-#if 0
-    static int initialized = 0;
-
-    if( !initialized ) {
-	initialized = 1;
-	assert(selftest());
-    }
-#endif
 
     *ctx = initial_ctx;
 
@@ -420,6 +405,5 @@ blowfish_set_key(struct blowfish_ctx *ctx,
 	    (ctx->s[2][i] == ctx->s[2][j]) || (ctx->s[3][i] == ctx->s[3][j]) )
 	  return 0;
     
-    ctx->status = BLOWFISH_OK;
     return 1;
 }
