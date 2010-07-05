@@ -57,16 +57,12 @@ extern "C" {
 /* Expanded key length */
 #define _DES_KEY_LENGTH 32
 
-enum des_error { DES_OK, DES_BAD_PARITY, DES_WEAK_KEY };
-
 struct des_ctx
 {
   uint32_t key[_DES_KEY_LENGTH];
-  enum des_error status;
 };
 
-/* On success, returns 1 and sets ctx->status to DES_OK (zero). On
- * error, returns 0 and sets ctx->status accordingly. */
+/* Returns 1 for good keys and 0 for weak keys. */
 int
 des_set_key(struct des_ctx *ctx, const uint8_t *key);
 
@@ -92,12 +88,10 @@ des_fix_parity(unsigned length, uint8_t *dst,
 struct des3_ctx
 {
   struct des_ctx des[3];
-  enum des_error status;
 };
 
 
-/* On success, returns 1 and sets ctx->status to DES_OK (zero). On
- * error, returns 0 and sets ctx->status accordingly. */
+/* Returns 1 for good keys and 0 for weak keys. */
 int
 des3_set_key(struct des3_ctx *ctx, const uint8_t *key);
 
