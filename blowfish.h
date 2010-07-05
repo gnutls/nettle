@@ -48,13 +48,10 @@ extern "C" {
 
 #define _BLOWFISH_ROUNDS 16
 
-enum blowfish_error { BLOWFISH_OK, BLOWFISH_WEAK_KEY };
-
 struct blowfish_ctx
 {
   uint32_t s[4][256];
   uint32_t p[_BLOWFISH_ROUNDS+2];
-  enum blowfish_error status;
 };
 
 /* On success, returns 1 and sets ctx->status to BLOWFISH_OK (zero).
