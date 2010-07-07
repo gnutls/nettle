@@ -90,6 +90,11 @@ extern const struct nettle_cipher nettle_aes192;
 extern const struct nettle_cipher nettle_aes256;
 
 extern const struct nettle_cipher nettle_arcfour128;
+
+extern const struct nettle_cipher nettle_camellia128;
+extern const struct nettle_cipher nettle_camellia192;
+extern const struct nettle_cipher nettle_camellia256;
+
 extern const struct nettle_cipher nettle_cast128;
 
 extern const struct nettle_cipher nettle_serpent128;
