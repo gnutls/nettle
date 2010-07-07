@@ -35,7 +35,7 @@
    implementations of _nettle_aes_encrypt to get the table pointer.
    For PIC code, the details can be complex and system dependent. */
 void
-aes_encrypt(struct aes_ctx *ctx,
+aes_encrypt(const struct aes_ctx *ctx,
 	    unsigned length, uint8_t *dst,
 	    const uint8_t *src)
 {

@@ -124,7 +124,7 @@ serpent_set_key(struct serpent_ctx *ctx,
 }
 
 void
-serpent_encrypt(struct serpent_ctx *ctx,
+serpent_encrypt(const struct serpent_ctx *ctx,
                 unsigned length, uint8_t *dst,
                 const uint8_t *plain)
 {
@@ -249,7 +249,7 @@ serpent_encrypt(struct serpent_ctx *ctx,
 }
 
 void
-serpent_decrypt(struct serpent_ctx *ctx,
+serpent_decrypt(const struct serpent_ctx *ctx,
                 unsigned length, uint8_t *dst,
                 const uint8_t *cipher)
 {

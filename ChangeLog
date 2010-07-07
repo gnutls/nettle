@@ -1,5 +1,12 @@
 2010-07-07  Niels Möller  <nisse@lysator.liu.se>
 
+	* aes.h (aes_encrypt, aes_decrypt): Declare ctx argument as const.
+	Also updated implementation.
+	* blowfish.h (blowfish_encrypt, blowfish_decrypt): Likewise.
+	* cast128.h (cast128_encrypt, cast128_decrypt): Likewise.
+	* serpent.h (serpent_encrypt, serpent_decrypt): Likewise.
+	* twofish.h (twofish_encrypt, twofish_decrypt): Likewise.
+
 	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Added
 	camellia-test.c.
 

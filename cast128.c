@@ -71,7 +71,7 @@
 /***** Encryption Function *****/
 
 void
-cast128_encrypt(struct cast128_ctx *ctx,
+cast128_encrypt(const struct cast128_ctx *ctx,
 		unsigned length, uint8_t *dst,
 		const uint8_t *src)
 {
@@ -115,7 +115,7 @@ cast128_encrypt(struct cast128_ctx *ctx,
 /***** Decryption Function *****/
 
 void
-cast128_decrypt(struct cast128_ctx *ctx,
+cast128_decrypt(const struct cast128_ctx *ctx,
 		unsigned length, uint8_t *dst,
 		const uint8_t *src)
 {

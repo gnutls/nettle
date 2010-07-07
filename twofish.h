@@ -63,11 +63,11 @@ twofish_set_key(struct twofish_ctx *ctx,
 		unsigned length, const uint8_t *key);
 
 void
-twofish_encrypt(struct twofish_ctx *ctx,
+twofish_encrypt(const struct twofish_ctx *ctx,
 		unsigned length, uint8_t *dst,
 		const uint8_t *src);
 void
-twofish_decrypt(struct twofish_ctx *ctx,
+twofish_decrypt(const struct twofish_ctx *ctx,
 		unsigned length, uint8_t *dst,
 		const uint8_t *src);
 

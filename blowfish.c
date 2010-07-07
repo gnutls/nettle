@@ -245,7 +245,7 @@ initial_ctx =
 #define R(c, l, r, i)  do { l ^= c->p[i]; r ^= F(c, l); } while(0)
 
 static void
-encrypt(struct blowfish_ctx *bc, uint32_t *ret_xl, uint32_t *ret_xr)
+encrypt(const struct blowfish_ctx *bc, uint32_t *ret_xl, uint32_t *ret_xr)
 {
   uint32_t xl, xr;
 
@@ -276,7 +276,7 @@ encrypt(struct blowfish_ctx *bc, uint32_t *ret_xl, uint32_t *ret_xr)
 }
 
 static void
-decrypt(struct blowfish_ctx *bc, uint32_t *ret_xl, uint32_t *ret_xr )
+decrypt(const struct blowfish_ctx *bc, uint32_t *ret_xl, uint32_t *ret_xr )
 {
   uint32_t xl, xr;
 
@@ -311,7 +311,7 @@ decrypt(struct blowfish_ctx *bc, uint32_t *ret_xl, uint32_t *ret_xr )
 #undef R
 
 void
-blowfish_encrypt(struct blowfish_ctx *bc, unsigned length,
+blowfish_encrypt(const struct blowfish_ctx *bc, unsigned length,
                  uint8_t *outbuf, const uint8_t *inbuf)
 {
     uint32_t d1, d2;
@@ -330,7 +330,7 @@ blowfish_encrypt(struct blowfish_ctx *bc, unsigned length,
 
 
 void
-blowfish_decrypt(struct blowfish_ctx *bc, unsigned length,
+blowfish_decrypt(const struct blowfish_ctx *bc, unsigned length,
                  uint8_t *outbuf, const uint8_t *inbuf )
 {
     uint32_t d1, d2;

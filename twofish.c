@@ -333,13 +333,13 @@ twofish_set_key(struct twofish_ctx *context,
  */
 
 void
-twofish_encrypt(struct twofish_ctx *context,
+twofish_encrypt(const struct twofish_ctx *context,
 		unsigned length,
 		uint8_t *ciphertext,
 		const uint8_t *plaintext)
 {
-  uint32_t * keys        = context->keys;
-  uint32_t (*s_box)[256] = context->s_box;
+  const uint32_t * keys        = context->keys;
+  const uint32_t (*s_box)[256] = context->s_box;
 
   assert( !(length % TWOFISH_BLOCK_SIZE) );
   for ( ; length; length -= TWOFISH_BLOCK_SIZE)
@@ -403,14 +403,14 @@ twofish_encrypt(struct twofish_ctx *context,
  */
 
 void
-twofish_decrypt(struct twofish_ctx *context,
+twofish_decrypt(const struct twofish_ctx *context,
 		unsigned length,
 		uint8_t *plaintext,
 		const uint8_t *ciphertext)
 
 {
-  uint32_t *keys  = context->keys;
-  uint32_t (*s_box)[256] = context->s_box;
+  const uint32_t *keys  = context->keys;
+  const uint32_t (*s_box)[256] = context->s_box;
 
   assert( !(length % TWOFISH_BLOCK_SIZE) );
   for ( ; length; length -= TWOFISH_BLOCK_SIZE)

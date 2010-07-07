@@ -337,7 +337,7 @@ _aes_decrypt_table =
   };
 
 void
-aes_decrypt(struct aes_ctx *ctx,
+aes_decrypt(const struct aes_ctx *ctx,
 	    unsigned length, uint8_t *dst,
 	    const uint8_t *src)
 {

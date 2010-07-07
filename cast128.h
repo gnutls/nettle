@@ -62,11 +62,11 @@ cast128_set_key(struct cast128_ctx *ctx,
 		unsigned length, const uint8_t *key);
 
 void
-cast128_encrypt(struct cast128_ctx *ctx,
+cast128_encrypt(const struct cast128_ctx *ctx,
 		unsigned length, uint8_t *dst,
 		const uint8_t *src);
 void
-cast128_decrypt(struct cast128_ctx *ctx,
+cast128_decrypt(const struct cast128_ctx *ctx,
 		unsigned length, uint8_t *dst,
 		const uint8_t *src);
 

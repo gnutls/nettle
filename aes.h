@@ -61,11 +61,11 @@ aes_set_decrypt_key(struct aes_ctx *ctx,
 		   unsigned length, const uint8_t *key);
 
 void
-aes_encrypt(struct aes_ctx *ctx,
+aes_encrypt(const struct aes_ctx *ctx,
 	    unsigned length, uint8_t *dst,
 	    const uint8_t *src);
 void
-aes_decrypt(struct aes_ctx *ctx,
+aes_decrypt(const struct aes_ctx *ctx,
 	    unsigned length, uint8_t *dst,
 	    const uint8_t *src);
 
