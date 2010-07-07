@@ -1,7 +1,9 @@
-/* camellia.h	ver 1.2.0
+/* camellia.h
  *
  * Copyright (C) 2006,2007
  * NTT (Nippon Telegraph and Telephone Corporation).
+ *
+ * Copyright (C) 2010 Niels Möller
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,37 +20,80 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef HEADER_CAMELLIA_H
-#define HEADER_CAMELLIA_H
+#ifndef NETTLE_CAMELLIA_H_INCLUDED
+#define NETTLE_CAMELLIA_H_INCLUDED
 
-#ifdef  __cplusplus
+#include "nettle-types.h"
+
+#ifdef __cplusplus
 extern "C" {
 #endif
 
+/* Name mangling */
+#define camellia_set_key nettle_camellia_set_key
+#define camellia_encrypt nettle_camellia_encrypt
+#define camellia_decrypt nettle_camellia_decrypt
+
 #define CAMELLIA_BLOCK_SIZE 16
-#define CAMELLIA_TABLE_BYTE_LEN 272
-#define CAMELLIA_TABLE_WORD_LEN (CAMELLIA_TABLE_BYTE_LEN / 4)
+/* Valid key sizes are 128, 192 or 256 bits (16, 24 or 32 bytes) */
+#define CAMELLIA_MIN_KEY_SIZE 16
+#define CAMELLIA_MAX_KEY_SIZE 32
+#define CAMELLIA_KEY_SIZE 32
 
-typedef unsigned int KEY_TABLE_TYPE[CAMELLIA_TABLE_WORD_LEN];
+struct camellia_ctx
+{
+  int camellia128;
 
+  /* For 128-bit keys, there are 18 regular rounds, pre- and
+     post-whitening, and two FL and FLINV rounds, using a total of 26
+     subkeys, each of 64 bit. For 192- and 256-bit keys, there are 6
+     additional regular rounds and one additional FL and FLINV, using
+     a total of 34 subkeys. */
+  /* The clever combination of subkeys imply one of the pre- and
+     post-whitening keys is folded fith the round keys, so that subkey
+     subkey #1 and the last one (#25 or #33) is not used. FIXME:
+     Renumber to eliminate them. */
+  /* FIXME: For 64-bit machines, don't split in 32-bit halves. */
+  uint32_t keys[34][2];
+};
 
-void Camellia_Ekeygen(const int keyBitLength,
-		      const unsigned char *rawKey, 
-		      KEY_TABLE_TYPE keyTable);
+void
+camellia_set_key(struct camellia_ctx *ctx,
+		 unsigned length, const uint8_t *key);
 
-void Camellia_EncryptBlock(const int keyBitLength,
-			   const unsigned char *plaintext, 
-			   const KEY_TABLE_TYPE keyTable, 
-			   unsigned char *cipherText);
+void
+camellia_encrypt(const struct camellia_ctx *ctx,
+		 unsigned length, uint8_t *dst,
+		 const uint8_t *src);
+void
+camellia_decrypt(const struct camellia_ctx *ctx,
+		 unsigned length, uint8_t *dst,
+		 const uint8_t *src);
 
-void Camellia_DecryptBlock(const int keyBitLength, 
-			   const unsigned char *cipherText, 
-			   const KEY_TABLE_TYPE keyTable, 
-			   unsigned char *plaintext);
+#if 0
+/* FIXME: Use a single crypt function, and let key setup for
+   decryption reverse the order of the subkeys. */
 
+void
+camellia_set_encrypt_key(struct camellia_ctx *ctx,
+			 unsigned length, const uint8_t *key);
 
+void
+camellia_set_decrypt_key(struct camellia_ctx *ctx,
+			 unsigned length, const uint8_t *key);
+
+void
+camellia_crypt(struct camellia_ctx *ctx,
+	       unsigned length, uint8_t *dst,
+	       const uint8_t *src);
+
+void
+camellia_invert_key(struct camellia_ctx *dst,
+		    const struct camellia_ctx *src);
+
+#endif
 #ifdef  __cplusplus
 }
 #endif
 
-#endif /* HEADER_CAMELLIA_H */
+#endif /* NETTLE_CAMELLIA_H_INCLUDED */

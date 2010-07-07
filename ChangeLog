@@ -1,3 +1,36 @@
+2010-07-07  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (nettle_SOURCES): Added camellia.c and
+	camellia-meta.c.
+	(HEADERS): Added camellia.h.
+
+	* nettle-meta.h (nettle_camellia128): Declare.
+	(nettle_camellia192): Likewise.
+	(nettle_camellia256): Likewise.
+
+	* camellia-meta.c: New file.
+
+	* camellia.h: Rewrote interface to match nettle conventions.
+
+	* camellia.c: Converted to nettle conventions.
+	(camellia_encrypt128, camellia_encrypt256): Unified to new
+	function...
+	(camellia_encrypt): ...New function, with a loop doing 6
+	regular rounds, one FL round and one FLINV round per iteration,
+	with iteration count depending on the key size.
+
+	(camellia_decrypt128, camellia_decrypt256): Similarly unified
+	as...
+	(camellia_decrypt): ...New function, analogous to
+	camellia_encrypt.
+
+2010-07-06  Niels Möller  <nisse@lysator.liu.se>
+
+	* camellia.c, camellia.h: New files, copied from
+	http://info.isl.ntt.co.jp/crypt/eng/camellia/dl/camellia-LGPL-1.2.0.tar.gz.
+
+	* testsuite/camellia-test.c: New file.
+
 2010-07-05  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle.texinfo: Document new conventions for weak key and des

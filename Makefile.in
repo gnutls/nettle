@@ -55,7 +55,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 arctwo.c arctwo-meta.c \
 		 base16-encode.c base16-decode.c base16-meta.c \
                  base64-encode.c base64-decode.c base64-meta.c \
-		 cast128.c cast128-meta.c \
+		 camellia.c camellia-meta.c cast128.c cast128-meta.c \
 		 blowfish.c \
 		 cbc.c ctr.c \
 		 des.c \
@@ -97,7 +97,7 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  der-iterator.c der2rsa.c der2dsa.c
 
 HEADERS = aes.h arcfour.h arctwo.h asn1.h bignum.h blowfish.h \
-	  base16.h base64.h buffer.h cast128.h \
+	  base16.h base64.h buffer.h camellia.h cast128.h \
 	  cbc.h ctr.h \
 	  des.h des-compat.h dsa.h \
 	  hmac.h \
