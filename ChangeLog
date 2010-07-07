@@ -10,6 +10,8 @@
 	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Added
 	camellia-test.c.
 
+	* examples/nettle-benchmark.c: Added camellia ciphers.
+
 	* Makefile.in (nettle_SOURCES): Added camellia.c and
 	camellia-meta.c.
 	(HEADERS): Added camellia.h.
