@@ -1,5 +1,8 @@
 2010-07-07  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Added
+	camellia-test.c.
+
 	* Makefile.in (nettle_SOURCES): Added camellia.c and
 	camellia-meta.c.
 	(HEADERS): Added camellia.h.
