@@ -33,7 +33,6 @@
 #include "dsa.h"
 
 #include "bignum.h"
-#include "memxor.h"
 #include "nettle-internal.h"
 
 
