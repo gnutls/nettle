@@ -30,9 +30,11 @@ extern "C" {
 #endif
 
 /* Name mangling */
-#define camellia_set_key nettle_camellia_set_key
-#define camellia_encrypt nettle_camellia_encrypt
-#define camellia_decrypt nettle_camellia_decrypt
+#define camellia_set_encrypt_key nettle_camellia_set_encrypt_key
+#define camellia_set_decrypt_key nettle_camellia_set_decrypt_key
+#define camellia_invert_key nettle_camellia_invert_key
+#define camellia_crypt nettle_camellia_crypt
+#define camellia_crypt nettle_camellia_crypt
 
 #define CAMELLIA_BLOCK_SIZE 16
 /* Valid key sizes are 128, 192 or 256 bits (16, 24 or 32 bytes) */
@@ -42,36 +44,20 @@ extern "C" {
 
 struct camellia_ctx
 {
-  int camellia128;
-
+  /* Number of subkeys. */
+  unsigned nkeys;
+  
   /* For 128-bit keys, there are 18 regular rounds, pre- and
      post-whitening, and two FL and FLINV rounds, using a total of 26
      subkeys, each of 64 bit. For 192- and 256-bit keys, there are 6
      additional regular rounds and one additional FL and FLINV, using
      a total of 34 subkeys. */
   /* The clever combination of subkeys imply one of the pre- and
-     post-whitening keys is folded fith the round keys, so that subkey
-     subkey #1 and the last one (#25 or #33) is not used. FIXME:
-     Renumber to eliminate them. */
+     post-whitening keys is folded with the round keys, so that subkey
+     #1 and the last one (#25 or #33) is not used. FIXME: Renumber to
+     eliminate them. */
   uint64_t keys[34];
 };
-
-void
-camellia_set_key(struct camellia_ctx *ctx,
-		 unsigned length, const uint8_t *key);
-
-void
-camellia_encrypt(const struct camellia_ctx *ctx,
-		 unsigned length, uint8_t *dst,
-		 const uint8_t *src);
-void
-camellia_decrypt(const struct camellia_ctx *ctx,
-		 unsigned length, uint8_t *dst,
-		 const uint8_t *src);
-
-#if 0
-/* FIXME: Use a single crypt function, and let key setup for
-   decryption reverse the order of the subkeys. */
 
 void
 camellia_set_encrypt_key(struct camellia_ctx *ctx,
@@ -82,15 +68,13 @@ camellia_set_decrypt_key(struct camellia_ctx *ctx,
 			 unsigned length, const uint8_t *key);
 
 void
-camellia_crypt(struct camellia_ctx *ctx,
-	       unsigned length, uint8_t *dst,
-	       const uint8_t *src);
-
-void
 camellia_invert_key(struct camellia_ctx *dst,
 		    const struct camellia_ctx *src);
-
-#endif
+  
+void
+camellia_crypt(const struct camellia_ctx *ctx,
+	       unsigned length, uint8_t *dst,
+	       const uint8_t *src);
 #ifdef  __cplusplus
 }
 #endif

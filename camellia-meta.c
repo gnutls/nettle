@@ -29,10 +29,10 @@
 #include "camellia.h"
 
 const struct nettle_cipher nettle_camellia128
-= _NETTLE_CIPHER(camellia, CAMELLIA, 128);
+= _NETTLE_CIPHER_SEP_SET_KEY(camellia, CAMELLIA, 128);
 
 const struct nettle_cipher nettle_camellia192
-= _NETTLE_CIPHER(camellia, CAMELLIA, 192);
+= _NETTLE_CIPHER_SEP_SET_KEY(camellia, CAMELLIA, 192);
 
 const struct nettle_cipher nettle_camellia256
-= _NETTLE_CIPHER(camellia, CAMELLIA, 256);
+= _NETTLE_CIPHER_SEP_SET_KEY(camellia, CAMELLIA, 256);

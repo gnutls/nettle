@@ -1,5 +1,18 @@
 2010-07-20  Niels Möller  <nisse@lysator.liu.se>
 
+	* camellia.h (struct camellia_ctx): Replaced flag camellia128 by
+	expanded key length nkeys.
+
+	* camellia.c (camellia_set_encrypt_key): Renamed, from...
+	(camellia_set_key): ... old name.
+	(camellia_invert_key): New function.
+	(camellia_set_decrypt_key): New function, using
+	camellia_invert_key.
+	(camellia_crypt): Renamed, from...
+	(camellia_encrypt): ... old name.
+	(camellia_decrypt): Deleted, no longer needed. camellia_crypt used
+	for both encryption and decryption.
+
 	* nettle-meta.h (_NETTLE_CIPHER_SEP_SET_KEY): New macro.
 
 	* dsa-keygen.c: Removed unnecessary include of memxor.h.

@@ -751,7 +751,7 @@ camellia_setup256(struct camellia_ctx *ctx, uint64_t *key)
     subkey[4] ^= kw4;
     subkey[2] ^= kw4;
     subkey[0] ^= kw4;
-    
+
     /* key XOR is end of F-function */
     ctx->keys[0] = subkey[0] ^subkey[2];
     
@@ -818,7 +818,7 @@ camellia_setup256(struct camellia_ctx *ctx, uint64_t *key)
     ctx->keys[31] = subkey[30];
     ctx->keys[32] = subkey[32] ^ subkey[31];
 
-    /* apply the inverse of the last half of P-function */
+    /* apply the inverse of the last half of F-function */
     CAMELLIA_F_HALF_INV(ctx->keys[2]);
     CAMELLIA_F_HALF_INV(ctx->keys[3]);
     CAMELLIA_F_HALF_INV(ctx->keys[4]);
@@ -851,8 +851,8 @@ camellia_setup256(struct camellia_ctx *ctx, uint64_t *key)
 }
 
 void
-camellia_set_key(struct camellia_ctx *ctx,
-		 unsigned length, const uint8_t *key)
+camellia_set_encrypt_key(struct camellia_ctx *ctx,
+			 unsigned length, const uint8_t *key)
 {
   uint64_t k[4];
   k[0] = READ_UINT64(key);
@@ -860,12 +860,12 @@ camellia_set_key(struct camellia_ctx *ctx,
   
   if (length == 16)
     {
-      ctx->camellia128 = 1;
+      ctx->nkeys = 26;
       camellia_setup128(ctx, k);
     }
   else
     {
-      ctx->camellia128 = 0;
+      ctx->nkeys = 34;
       k[2] = READ_UINT64(key + 16);
 
       if (length == 24)
@@ -877,10 +877,43 @@ camellia_set_key(struct camellia_ctx *ctx,
 	}
       camellia_setup256(ctx, k);
     }
-}	
+}
+
+#define SWAP(a, b) \
+do { uint64_t t_swap = (a); (a) = (b); (b) = t_swap; } while(0)
 
 void
-camellia_encrypt(const struct camellia_ctx *ctx,
+camellia_invert_key(struct camellia_ctx *dst,
+		    const struct camellia_ctx *src)
+{
+  unsigned nkeys = src->nkeys;
+  unsigned i;
+  if (dst == src)
+    {
+      SWAP(dst->keys[0], dst->keys[nkeys - 2]);
+      for (i = 2; i < nkeys - 1 - i; i++)
+	SWAP(dst->keys[i], dst->keys[nkeys - 1 - i]);
+    }
+  else
+    {
+      dst->nkeys = nkeys;
+      dst->keys[0] = src->keys[nkeys - 2];
+      for (i = 2; i < nkeys - 2; i++)
+	dst->keys[i] = src->keys[nkeys - 1 - i];
+      dst->keys[nkeys - 2] = src->keys[0];
+    }
+}
+
+void
+camellia_set_decrypt_key(struct camellia_ctx *ctx,
+			 unsigned length, const uint8_t *key)
+{
+  camellia_set_encrypt_key(ctx, length, key);
+  camellia_invert_key(ctx, ctx);
+}
+
+void
+camellia_crypt(const struct camellia_ctx *ctx,
 		 unsigned length, uint8_t *dst,
 		 const uint8_t *src)
 {
@@ -904,7 +937,7 @@ camellia_encrypt(const struct camellia_ctx *ctx,
       CAMELLIA_ROUNDSM(i0,ctx->keys[6], i1);
       CAMELLIA_ROUNDSM(i1,ctx->keys[7], i0);
       
-      for (i = 0; i < 16 + 8 * !ctx->camellia128; i+= 8)
+      for (i = 0; i < ctx->nkeys - 10; i+= 8)
 	{
 	  CAMELLIA_FL(i0, ctx->keys[i+8]);
 	  CAMELLIA_FLINV(i1, ctx->keys[i+9]);
@@ -919,53 +952,6 @@ camellia_encrypt(const struct camellia_ctx *ctx,
 
       /* post whitening but kw4 */
       i1 ^= ctx->keys[i+8];
-
-      WRITE_UINT64(dst     , i1);
-      WRITE_UINT64(dst +  8, i0);
-    }
-}
-
-void
-camellia_decrypt(const struct camellia_ctx *ctx,
-		 unsigned length, uint8_t *dst,
-		 const uint8_t *src)
-{
-  FOR_BLOCKS(length, dst, src, CAMELLIA_BLOCK_SIZE)
-    {
-      uint64_t i0,i1;
-      unsigned i;
-
-      i0 = READ_UINT64(src);
-      i1 = READ_UINT64(src +  8);
-      
-      i = ctx->camellia128 ? 24 : 32;
-
-      /* pre whitening but absorb kw2*/
-      i0 ^= ctx->keys[i];
-
-      /* main iteration */
-
-      for (i -= 8; i >= 8; i -= 8)
-	{	  
-	  CAMELLIA_ROUNDSM(i0,ctx->keys[i+7], i1);
-	  CAMELLIA_ROUNDSM(i1,ctx->keys[i+6], i0);
-	  CAMELLIA_ROUNDSM(i0,ctx->keys[i+5], i1);
-	  CAMELLIA_ROUNDSM(i1,ctx->keys[i+4], i0);
-	  CAMELLIA_ROUNDSM(i0,ctx->keys[i+3], i1);
-	  CAMELLIA_ROUNDSM(i1,ctx->keys[i+2], i0);
-
-	  CAMELLIA_FL(i0, ctx->keys[i+1]);
-	  CAMELLIA_FLINV(i1, ctx->keys[i]);
-	}
-      CAMELLIA_ROUNDSM(i0,ctx->keys[7], i1);
-      CAMELLIA_ROUNDSM(i1,ctx->keys[6], i0);
-      CAMELLIA_ROUNDSM(i0,ctx->keys[5], i1);
-      CAMELLIA_ROUNDSM(i1,ctx->keys[4], i0);
-      CAMELLIA_ROUNDSM(i0,ctx->keys[3], i1);
-      CAMELLIA_ROUNDSM(i1,ctx->keys[2], i0);
-
-      /* post whitening but kw4 */
-      i1 ^= ctx->keys[0];
 
       WRITE_UINT64(dst     , i1);
       WRITE_UINT64(dst +  8, i0);
