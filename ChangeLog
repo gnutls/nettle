@@ -1,5 +1,9 @@
 2010-07-20  Niels Möller  <nisse@lysator.liu.se>
 
+	* nettle-meta.h (_NETTLE_CIPHER_SEP_SET_KEY): New macro.
+
+	* dsa-keygen.c: Removed unnecessary include of memxor.h.
+
 	* camellia.c: Rewrote to use 64-bit type for subkeys and use
 	64-bit operations throughout. Performance on x86_32, when compiled
 	with gcc-4.4.4, is reduced by roughly 15%, this should be fixed
@@ -3670,7 +3674,7 @@
 	registers at all.
 
 	* sparc/aes.asm (AES_FINAL_ROUND): New macro.
-	(_aes_crypt): Use AES_FINAL_ROUND for the first word if the final
+	(_aes_crypt): Use AES_FINAL_ROUND for the first word of the final
 	round.
 	(_aes_crypt): And for the rest of the final round.
 	(AES_FINAL_ROUND): Don't update dst, just access it offseted by i.
