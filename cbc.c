@@ -52,7 +52,7 @@ cbc_encrypt(void *ctx, nettle_crypt_func f,
     }
 }
 
-/* Reqires that dst != src */
+/* Requires that dst != src */
 static void
 cbc_decrypt_internal(void *ctx, nettle_crypt_func f,
 		     unsigned block_size, uint8_t *iv,
