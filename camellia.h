@@ -53,8 +53,7 @@ struct camellia_ctx
      post-whitening keys is folded fith the round keys, so that subkey
      subkey #1 and the last one (#25 or #33) is not used. FIXME:
      Renumber to eliminate them. */
-  /* FIXME: For 64-bit machines, don't split in 32-bit halves. */
-  uint32_t keys[34][2];
+  uint64_t keys[34];
 };
 
 void

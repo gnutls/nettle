@@ -1,3 +1,12 @@
+2010-07-20  Niels Möller  <nisse@lysator.liu.se>
+
+	* camellia.c: Rewrote to use 64-bit type for subkeys and use
+	64-bit operations throughout. Performance on x86_32, when compiled
+	with gcc-4.4.4, is reduced by roughly 15%, this should be fixed
+	later.
+
+	* camellia.h (struct camellia_ctx): Use type uint64_t for subkeys.
+
 2010-07-07  Niels Möller  <nisse@lysator.liu.se>
 
 	* aes.h (aes_encrypt, aes_decrypt): Declare ctx argument as const.
