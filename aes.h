@@ -35,6 +35,7 @@ extern "C" {
 /* Name mangling */
 #define aes_set_encrypt_key nettle_aes_set_encrypt_key
 #define aes_set_decrypt_key nettle_aes_set_decrypt_key
+#define aes_invert_key nettle_aes_invert_key
 #define aes_encrypt nettle_aes_encrypt
 #define aes_decrypt nettle_aes_decrypt
 
@@ -47,6 +48,9 @@ extern "C" {
 
 #define AES_KEY_SIZE 32
 
+/* FIXME: Change to put nrounds first, to make it possible to use a
+   truncated ctx struct, with less subkeys, for the shorter key
+   sizes? */
 struct aes_ctx
 {
   uint32_t keys[60];  /* maximum size of key schedule */
@@ -56,9 +60,14 @@ struct aes_ctx
 void
 aes_set_encrypt_key(struct aes_ctx *ctx,
 		    unsigned length, const uint8_t *key);
+
 void
 aes_set_decrypt_key(struct aes_ctx *ctx,
 		   unsigned length, const uint8_t *key);
+
+void
+aes_invert_key(struct aes_ctx *dst,
+	       const struct aes_ctx *src);
 
 void
 aes_encrypt(const struct aes_ctx *ctx,

@@ -1,5 +1,11 @@
 2010-07-24  Niels Möller  <nisse@lysator.liu.se>
 
+	* aes.h (aes_invert_key): Declare it.
+
+	* aes-set-decrypt-key.c (aes_invert_key): New function, key
+	inversion code extracted from aes_set_decrypt_key.
+	(aes_set_decrypt_key): Use aes_invert_key.
+
 	* camellia-set-encrypt-key.c (camellia_setup128): Generate
 	unmodified subkeys according to the spec. Moved clever combination
 	of subkeys to camellia_set_encrypt_key.

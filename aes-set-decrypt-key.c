@@ -138,27 +138,49 @@ inv_mix_column(uint32_t *a)
 do { uint32_t t_swap = (a); (a) = (b); (b) = t_swap; } while(0)
 
 void
+aes_invert_key(struct aes_ctx *dst,
+	       const struct aes_ctx *src)
+{
+  unsigned nrounds;
+  unsigned i;
+
+  nrounds = src->nrounds;
+
+  /* Reverse the order of subkeys, in groups of 4. */
+  /* FIXME: Instead of reordering the subkeys, change the access order
+     of aes_decrypt, since it's a separate function anyway? */
+  if (src == dst)
+    {
+      unsigned j, k;
+
+      for (i = 0, j = nrounds * 4;
+	   i < j;
+	   i += 4, j -= 4)
+	for (k = 0; k<4; k++)
+	  SWAP(dst->keys[i+k], dst->keys[j+k]);
+    }
+  else
+    {
+      unsigned k;
+
+      dst->nrounds = nrounds;
+      for (i = 0; i <= nrounds * 4; i += 4)
+	for (k = 0; k < 4; k++)
+	  dst->keys[i+k] = src->keys[nrounds * 4 - i + k];
+    }
+
+  /* Transform all subkeys but the first and last. */
+  for (i = 4; i < 4 * nrounds; i += 4)
+    inv_mix_column(dst->keys + i);
+}
+
+void
 aes_set_decrypt_key(struct aes_ctx *ctx,
 		    unsigned keysize, const uint8_t *key)
 {
-  unsigned nkeys;
-  unsigned i, j, k;
-  
   /* We first create subkeys for encryption,
    * then modify the subkeys for decryption. */
   aes_set_encrypt_key(ctx, keysize, key);
-
-  nkeys = (AES_BLOCK_SIZE/4) * (ctx->nrounds + 1);
-
-  /* Reverse the order of subkeys */
-  for (i = 0, j = ctx->nrounds * 4;
-       i < j;
-       i += 4, j -= 4)
-    for (k = 0; k<4; k++)
-      SWAP(ctx->keys[i+k], ctx->keys[j+k]);
-
-  /* Transform all subkeys but the first and last. */
-  for (i = 4; i < 4 * ctx->nrounds; i += 4)
-    inv_mix_column(ctx->keys + i);
+  aes_invert_key(ctx, ctx);
 }
 
