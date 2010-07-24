@@ -1,4 +1,34 @@
+2010-07-24  Niels Möller  <nisse@lysator.liu.se>
+
+	* camellia-set-encrypt-key.c (camellia_setup128): Generate
+	unmodified subkeys according to the spec. Moved clever combination
+	of subkeys to camellia_set_encrypt_key.
+	(camellia_setup256): Likewise.
+	(camellia_set_encrypt_key): Moved subkey post-processing code
+	here, and reduce code duplication between 128-bit keys and larger
+	keys.
+
+	* camellia.c: Deleted file, split into several new files...
+	* camellia-table.c (_camellia_table): New file with the constant
+	sbox tables.
+	* camellia-set-encrypt-key.c: New file.
+	(camellia_setup128): Generate unmodified subkeys according to the
+	spec. Moved clever combination of subkeys to camellia_set_encrypt_key.
+	(camellia_setup256): Likewise.
+
+	* camellia-set-decrypt-key.c: New file.
+	(camellia_invert_key): Key inversion function.
+	(camellia_set_decrypt_key): New key setup function.
+	* camellia-internal.h: New file.
+	* camellia-crypt.c (camellia_crypt): New file, new wrapper
+	function passing the sbox table to _camellia_crypt.
+	* camellia-crypt-internal.c (_camellia_crypt): New file, with main
+	encrypt/decrypt function.
+	* Makefile.in (nettle_SOURCES): Updated list of camellia source files.	
+	(DISTFILES): Added camellia-internal.h.
 2010-07-20  Niels Möller  <nisse@lysator.liu.se>
+
+	* camellia-meta.c: Use _NETTLE_CIPHER_SEP_SET_KEY.
 
 	* camellia.h (struct camellia_ctx): Replaced flag camellia128 by
 	expanded key length nkeys.

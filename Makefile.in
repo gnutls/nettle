@@ -55,7 +55,10 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 arctwo.c arctwo-meta.c \
 		 base16-encode.c base16-decode.c base16-meta.c \
                  base64-encode.c base64-decode.c base64-meta.c \
-		 camellia.c camellia-meta.c cast128.c cast128-meta.c \
+		 camellia-crypt.c camellia-crypt-internal.c \
+		 camellia-set-encrypt-key.c camellia-set-decrypt-key.c \
+		 camellia-table.c camellia-meta.c \
+		 cast128.c cast128-meta.c \
 		 blowfish.c \
 		 cbc.c ctr.c \
 		 des.c \
@@ -122,7 +125,7 @@ DISTFILES = $(SOURCES) $(HEADERS) .bootstrap aclocal.m4 configure.ac \
 	config.h.in config.m4.in config.make.in	Makefile.in \
 	README AUTHORS COPYING COPYING.LIB INSTALL NEWS TODO ChangeLog \
 	memxor.c $(des_headers) descore.README \
-	aes-internal.h cast128_sboxes.h desinfo.h desCode.h \
+	aes-internal.h camellia-internal.h cast128_sboxes.h desinfo.h desCode.h \
 	serpent_sboxes.h nettle-internal.h nettle-write.h prime-list.h \
 	asm.m4 \
 	nettle.texinfo nettle.info nettle.html nettle.pdf sha-example.c
