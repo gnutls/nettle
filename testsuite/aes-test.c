@@ -1,6 +1,47 @@
 #include "testutils.h"
 #include "aes.h"
 
+static void
+test_invert(unsigned key_length, const uint8_t *key,
+	    unsigned length, const uint8_t *cleartext,
+	    const uint8_t *ciphertext)
+{
+  struct aes_ctx encrypt;
+  struct aes_ctx decrypt;
+  uint8_t *data = xalloc(length);
+
+  aes_set_encrypt_key (&encrypt, key_length, key);
+  aes_encrypt (&encrypt, length, data, cleartext);
+  
+  if (!MEMEQ(length, data, ciphertext))
+    {
+      fprintf(stderr, "test_invert: Encrypt failed:\nInput:");
+      print_hex(length, cleartext);
+      fprintf(stderr, "\nOutput: ");
+      print_hex(length, data);
+      fprintf(stderr, "\nExpected:");
+      print_hex(length, ciphertext);
+      fprintf(stderr, "\n");
+      FAIL();
+    }
+
+  aes_invert_key (&decrypt, &encrypt);
+  aes_decrypt (&decrypt, length, data, data);
+
+  if (!MEMEQ(length, data, cleartext))
+    {
+      fprintf(stderr, "test_invert: Decrypt failed:\nInput:");
+      print_hex(length, ciphertext);
+      fprintf(stderr, "\nOutput: ");
+      print_hex(length, data);
+      fprintf(stderr, "\nExpected:");
+      print_hex(length, cleartext);
+      fprintf(stderr, "\n");
+      FAIL();
+    }
+  free (data);
+}
+
 int
 test_main(void)
 {
@@ -41,6 +82,7 @@ test_main(void)
 	      HL("834EADFCCAC7E1B30664B1ABA44815AB"),
 	      H("1946DABF6A03A2A2 C3D0B05080AED6FC"));
 
+  
   /* This test case has been problematic with the CBC test case */
   test_cipher(&nettle_aes256,
 	      HL("8d ae 93 ff fc 78 c9 44"
@@ -95,6 +137,19 @@ test_main(void)
 		"591ccb10d410ed26dc5ba74a31362870"
 		"b6ed21b99ca6f4f9f153e7b1beafed1d"
 		"23304b7a39f9f3ff067d8d8f9e24ecc7"));
+
+  /* Test aes_invert_key with src != dst */
+  test_invert(HL("0001020305060708 0A0B0C0D0F101112"),
+	      HL("506812A45F08C889 B97F5980038B8359"),
+	      H("D8F532538289EF7D 06B506A4FD5BE9C9"));
+  test_invert(HL("0001020305060708 0A0B0C0D0F101112"
+		"14151617191A1B1C"),
+	      HL("2D33EEF2C0430A8A 9EBF45E809C40BB6"),
+	      H("DFF4945E0336DF4C 1C56BC700EFF837F"));
+  test_invert(HL("0001020305060708 0A0B0C0D0F101112"
+		"14151617191A1B1C 1E1F202123242526"),
+	      HL("834EADFCCAC7E1B30664B1ABA44815AB"),
+	      H("1946DABF6A03A2A2 C3D0B05080AED6FC"));
 
   SUCCESS();
 }
