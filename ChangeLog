@@ -35,6 +35,7 @@
 	encrypt/decrypt function.
 	* Makefile.in (nettle_SOURCES): Updated list of camellia source files.	
 	(DISTFILES): Added camellia-internal.h.
+
 2010-07-20  Niels Möller  <nisse@lysator.liu.se>
 
 	* camellia-meta.c: Use _NETTLE_CIPHER_SEP_SET_KEY.
