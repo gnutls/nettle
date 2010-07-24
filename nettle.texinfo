@@ -137,6 +137,10 @@ The implementation of the BLOWFISH cipher is written by Werner Koch,
 copyright owned by the Free Software Foundation. Also hacked by Ray
 Dassen and @value{AUTHOR}. Released under the GPL.
 
+@item CAMELLIA
+The implementation is by Nippon Telegraph and Telephone
+Corporation (NTT), heavily modified by Niels Möller. Released under the LGPL.
+
 @item CAST128
 The implementation of the CAST128 cipher is written by Steve Reid.
 Released into the public domain.
@@ -206,9 +210,9 @@ nevertheless be aware of. There is no big difference between the
 functions for stream ciphers and for block ciphers, although they should
 be used quite differently by the application.
 
-If your application uses more than one algorithm, you should probably
-create an interface that is tailor-made for your needs, and then write a
-few lines of glue code on top of Nettle.
+If your application uses more than one algorithm of the same type, you
+should probably create an interface that is tailor-made for your needs,
+and then write a few lines of glue code on top of Nettle.
 
 By convention, for an algorithm named @code{foo}, the struct tag for the
 context struct is @code{foo_ctx}, constants and functions uses prefixes
@@ -719,7 +723,7 @@ keys.
 To encrypt a message, you first initialize a cipher context for
 encryption or decryption with a particular key. You then use the context
 to process plaintext or ciphertext messages. The initialization is known
-as called @dfn{key setup}. With Nettle, it is recommended to use each
+as @dfn{key setup}. With Nettle, it is recommended to use each
 context struct for only one direction, even if some of the ciphers use a
 single key setup function that can be used for both encryption and
 decryption.
@@ -755,6 +759,17 @@ Default AES key size, 32
 @deftypefun void aes_set_encrypt_key (struct aes_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
 @deftypefunx void aes_set_decrypt_key (struct aes_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
 Initialize the cipher, for encryption or decryption, respectively.
+@end deftypefun
+
+@deftypefun void aes_invert_key (struct aes_ctx *@var{dst}, const struct aes_ctx *@var{src})
+Given a context @var{src} initialized for encryption, initializes the
+context struct @var{dst} for decryption, using the same key. If the same
+context struct is passed for both @code{src} and @code{dst}, it is
+converted in place. Calling @code{aes_set_encrypt_key} and
+@code{aes_invert_key} is more efficient than calling
+@code{aes_set_encrypt_key} and @code{aes_set_decrypt_key}. This function
+is mainly useful for applications which needs to both encrypt and
+decrypt using the @emph{same} key.
 @end deftypefun
 
 @deftypefun void aes_encrypt (struct aes_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
@@ -889,47 +904,6 @@ overlap in any other way.
 Analogous to @code{arctwo_encrypt}
 @end deftypefun
 
-@subsection CAST128
-
-CAST-128 is a block cipher, specified in @cite{RFC 2144}. It uses a 64
-bit (8 octets) block size, and a variable key size of up to 128 bits.
-Nettle defines cast128 in @file{<nettle/cast128.h>}.
-
-@deftp {Context struct} {struct cast128_ctx}
-@end deftp
-
-@defvr Constant CAST128_BLOCK_SIZE
-The CAST128 block-size, 8
-@end defvr
-
-@defvr Constant CAST128_MIN_KEY_SIZE
-Minimum CAST128 key size, 5
-@end defvr
-
-@defvr Constant CAST128_MAX_KEY_SIZE
-Maximum CAST128 key size, 16
-@end defvr
-
-@defvr Constant CAST128_KEY_SIZE
-Default CAST128 key size, 16
-@end defvr
-
-@deftypefun void cast128_set_key (struct cast128_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
-Initialize the cipher. The same function is used for both encryption and
-decryption. 
-@end deftypefun
-
-@deftypefun void cast128_encrypt (struct cast128_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
-Encryption function. @var{length} must be an integral multiple of the
-block size. If it is more than one block, the data is processed in ECB
-mode. @code{src} and @code{dst} may be equal, but they must not overlap
-in any other way.
-@end deftypefun
-
-@deftypefun void cast128_decrypt (struct cast128_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
-Analogous to @code{cast128_encrypt}
-@end deftypefun
-
 @subsection BLOWFISH
 
 BLOWFISH is a block cipher designed by Bruce Schneier. It uses a block
@@ -974,6 +948,103 @@ in any other way.
 
 @deftypefun void blowfish_decrypt (struct blowfish_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
 Analogous to @code{blowfish_encrypt}
+@end deftypefun
+
+@subsection Camellia
+
+Camellia is a block cipher developed by Mitsubishi and Nippon Telegraph
+and Telephone Corporation, described in @cite{RFC3713}, and recommended
+by some Japanese and European authorities as an alternative to AES. The
+algorithm is patented. The implementation in Nettle is derived from the
+implementation released by NTT under the GNU LGPL (v2.1 or later), and
+relies on the implicit patent license of the LGPL. There is also a
+statement of royalty-free licensing for Camellia at
+@url{http://www.ntt.co.jp/news/news01e/0104/010417.html}, but this
+statement has some limitations which seem problematic for free software.
+
+Camellia uses a the same block size and key sizes as AES: The block size
+is 128 bits (16 octets), and the supported key sizes are 128, 192, and
+256 bits. Nettle defines Camellia in @file{<nettle/camellia.h>}.
+
+@deftp {Context struct} {struct camellia_ctx}
+@end deftp
+
+@defvr Constant CAMELLIA_BLOCK_SIZE
+The CAMELLIA block-size, 16
+@end defvr
+
+@defvr Constant CAMELLIA_MIN_KEY_SIZE
+@end defvr
+
+@defvr Constant CAMELLIA_MAX_KEY_SIZE
+@end defvr
+
+@defvr Constant CAMELLIA_KEY_SIZE
+Default CAMELLIA key size, 32
+@end defvr
+
+@deftypefun void camellia_set_encrypt_key (struct camellia_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
+@deftypefunx void camellia_set_decrypt_key (struct camellia_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
+Initialize the cipher, for encryption or decryption, respectively.
+@end deftypefun
+
+@deftypefun void camellia_invert_key (struct camellia_ctx *@var{dst}, const struct camellia_ctx *@var{src})
+Given a context @var{src} initialized for encryption, initializes the
+context struct @var{dst} for decryption, using the same key. If the same
+context struct is passed for both @code{src} and @code{dst}, it is
+converted in place. Calling @code{camellia_set_encrypt_key} and
+@code{camellia_invert_key} is more efficient than calling
+@code{camellia_set_encrypt_key} and @code{camellia_set_decrypt_key}. This function
+is mainly useful for applications which needs to both encrypt and
+decrypt using the @emph{same} key.
+@end deftypefun
+
+@deftypefun void camellia_crypt (struct camellia_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
+The same function is used for both encryption and decryption.
+@var{length} must be an integral multiple of the block size. If it is
+more than one block, the data is processed in ECB mode. @code{src} and
+@code{dst} may be equal, but they must not overlap in any other way.
+@end deftypefun
+
+@subsection CAST128
+
+CAST-128 is a block cipher, specified in @cite{RFC 2144}. It uses a 64
+bit (8 octets) block size, and a variable key size of up to 128 bits.
+Nettle defines cast128 in @file{<nettle/cast128.h>}.
+
+@deftp {Context struct} {struct cast128_ctx}
+@end deftp
+
+@defvr Constant CAST128_BLOCK_SIZE
+The CAST128 block-size, 8
+@end defvr
+
+@defvr Constant CAST128_MIN_KEY_SIZE
+Minimum CAST128 key size, 5
+@end defvr
+
+@defvr Constant CAST128_MAX_KEY_SIZE
+Maximum CAST128 key size, 16
+@end defvr
+
+@defvr Constant CAST128_KEY_SIZE
+Default CAST128 key size, 16
+@end defvr
+
+@deftypefun void cast128_set_key (struct cast128_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
+Initialize the cipher. The same function is used for both encryption and
+decryption. 
+@end deftypefun
+
+@deftypefun void cast128_encrypt (struct cast128_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
+Encryption function. @var{length} must be an integral multiple of the
+block size. If it is more than one block, the data is processed in ECB
+mode. @code{src} and @code{dst} may be equal, but they must not overlap
+in any other way.
+@end deftypefun
+
+@deftypefun void cast128_decrypt (struct cast128_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
+Analogous to @code{cast128_encrypt}
 @end deftypefun
 
 @subsection DES
