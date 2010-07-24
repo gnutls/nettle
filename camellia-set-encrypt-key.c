@@ -256,7 +256,7 @@ camellia_set_encrypt_key(struct camellia_ctx *ctx,
   /* Subkeys according to the spec, 26 for short keys and 34 for large
      keys */
   uint64_t subkey[34];
-  uint64_t kw4;
+  uint64_t kw2, kw4;
   
   uint32_t dw, tl, tr;
   unsigned i;
@@ -285,62 +285,36 @@ camellia_set_encrypt_key(struct camellia_ctx *ctx,
     }
 
   /* absorb kw2 to other subkeys */
-  subkey[3] ^= subkey[1];
-  subkey[5] ^= subkey[1];
-  subkey[7] ^= subkey[1];
-  /* FIXME: gcc for x86_32 is smart enough to fetch the 32 low bits
-     and xor the result into the 32 high bits, but it still generates
-     worse code than for explicit 32-bit operations. */
-  subkey[1] ^= (subkey[1] & ~subkey[9]) << 32;
-  dw = (subkey[1] & subkey[9]) >> 32; subkey[1] ^= ROL32(1, dw); 
+  kw2 = subkey[1];
 
-  subkey[11] ^= subkey[1];
-  subkey[13] ^= subkey[1];
-  subkey[15] ^= subkey[1];
-  subkey[1] ^= (subkey[1] & ~subkey[17]) << 32;
-  dw = (subkey[1] & subkey[17]) >> 32; subkey[1] ^= ROL32(1, dw); 
-
-  subkey[19] ^= subkey[1];
-  subkey[21] ^= subkey[1];
-  subkey[23] ^= subkey[1];
-  if (ctx->nkeys < 32)
+  subkey[3] ^= kw2;
+  subkey[5] ^= kw2;
+  subkey[7] ^= kw2;
+  for (i = 8; i < ctx->nkeys - 2; i += 8)
     {
-      subkey[24] ^= subkey[1];
-    }
-  else
-    {
-      subkey[1] ^= (subkey[1] & ~subkey[25]) << 32;
-      dw = (subkey[1] & subkey[25]) >> 32; subkey[1] ^= ROL32(1, dw); 
+      /* FIXME: gcc for x86_32 is smart enough to fetch the 32 low bits
+	 and xor the result into the 32 high bits, but it still generates
+	 worse code than for explicit 32-bit operations. */
+      kw2 ^= (kw2 & ~subkey[i+1]) << 32;
+      dw = (kw2 & subkey[i+1]) >> 32; kw2 ^= ROL32(1, dw); 
 
-      subkey[27] ^= subkey[1];
-      subkey[29] ^= subkey[1];
-      subkey[31] ^= subkey[1];
-      subkey[32] ^= subkey[1];
+      subkey[i+3] ^= kw2;
+      subkey[i+5] ^= kw2;
+      subkey[i+7] ^= kw2;
     }
-    
+  subkey[i] ^= kw2;
+  
   /* absorb kw4 to other subkeys */  
   kw4 = subkey[ctx->nkeys - 1];
-  
-  if (ctx->nkeys >= 32)
+
+  for (i = ctx->nkeys - 10; i > 0; i -= 8)
     {
-      subkey[30] ^= kw4;
-      subkey[28] ^= kw4;
-      subkey[26] ^= kw4;
-      kw4 ^= (kw4 & ~subkey[24]) << 32;
-      dw = (kw4 & subkey[24]) >> 32; kw4 ^= ROL32(1, dw);      
+      subkey[i+6] ^= kw4;
+      subkey[i+4] ^= kw4;
+      subkey[i+2] ^= kw4;
+      kw4 ^= (kw4 & ~subkey[i]) << 32;
+      dw = (kw4 & subkey[i]) >> 32; kw4 ^= ROL32(1, dw);      
     }
-
-  subkey[22] ^= kw4;
-  subkey[20] ^= kw4;
-  subkey[18] ^= kw4;
-  kw4 ^= (kw4 & ~subkey[16]) << 32;
-  dw = (kw4 & subkey[16]) >> 32; kw4 ^= ROL32(1, dw);
-
-  subkey[14] ^= kw4;
-  subkey[12] ^= kw4;
-  subkey[10] ^= kw4;
-  kw4 ^= (kw4 & ~subkey[8]) << 32;
-  dw = (kw4 & subkey[8]) >> 32; kw4 ^= ROL32(1, dw);
 
   subkey[6] ^= kw4;
   subkey[4] ^= kw4;
@@ -348,83 +322,39 @@ camellia_set_encrypt_key(struct camellia_ctx *ctx,
   subkey[0] ^= kw4;
 
   /* key XOR is end of F-function */
-  ctx->keys[0] = subkey[0] ^subkey[2];
-    
+  ctx->keys[0] = subkey[0] ^ subkey[2];
   ctx->keys[2] = subkey[3];
+
   ctx->keys[3] = subkey[2] ^ subkey[4];
   ctx->keys[4] = subkey[3] ^ subkey[5];
   ctx->keys[5] = subkey[4] ^ subkey[6];
   ctx->keys[6] = subkey[5] ^ subkey[7];
 
-  tl = (subkey[10] >> 32) ^ (subkey[10] & ~subkey[8]);
-  dw = tl & (subkey[8] >> 32);
-  tr = subkey[10] ^ROL32(1, dw);
-  ctx->keys[7] = subkey[6] ^ ( ((uint64_t) tl << 32) | tr);
-
-  ctx->keys[8] = subkey[8];
-  ctx->keys[9] = subkey[9];
-
-  tl = (subkey[7] >> 32) ^ (subkey[7] & ~subkey[9]);
-  dw = tl & (subkey[9] >> 32);
-  tr = subkey[7] ^ ROL32(1, dw);
-  ctx->keys[10] = subkey[11] ^ ( ((uint64_t) tl << 32) | tr);
-
-  ctx->keys[11] = subkey[10] ^ subkey[12];
-  ctx->keys[12] = subkey[11] ^ subkey[13];
-  ctx->keys[13] = subkey[12] ^ subkey[14];
-  ctx->keys[14] = subkey[13] ^ subkey[15];
-
-  tl = (subkey[18] >> 32) ^ (subkey[18] & ~subkey[16]);
-  dw = tl & (subkey[16] >> 32);
-  tr = subkey[18] ^ ROL32(1, dw);
-  ctx->keys[15] = subkey[14] ^ ( ((uint64_t) tl << 32) | tr);
-
-  ctx->keys[16] = subkey[16];
-  ctx->keys[17] = subkey[17];
-
-  tl = (subkey[15] >> 32) ^ (subkey[15] & ~subkey[17]);
-  dw = tl & (subkey[17] >> 32);
-  tr = subkey[15] ^ ROL32(1, dw);
-  ctx->keys[18] = subkey[19] ^ ( ((uint64_t) tl << 32) | tr);
-
-  ctx->keys[19] = subkey[18] ^ subkey[20];
-  ctx->keys[20] = subkey[19] ^ subkey[21];
-  ctx->keys[21] = subkey[20] ^ subkey[22];
-  ctx->keys[22] = subkey[21] ^ subkey[23];
-
-  if (ctx->nkeys < 32)
+  for (i = 8; i < ctx->nkeys - 2; i += 8)
     {
-      ctx->keys[23] = subkey[22];
-      ctx->keys[24] = subkey[24] ^ subkey[23];
-	  
+      tl = (subkey[i+2] >> 32) ^ (subkey[i+2] & ~subkey[i]);
+      dw = tl & (subkey[i] >> 32);
+      tr = subkey[i+2] ^ ROL32(1, dw);
+      ctx->keys[i-1] = subkey[i-2] ^ ( ((uint64_t) tl << 32) | tr);
+
+      ctx->keys[i] = subkey[i];
+      ctx->keys[i+1] = subkey[i+1];
+
+      tl = (subkey[i-1] >> 32) ^ (subkey[i-1] & ~subkey[i+1]);
+      dw = tl & (subkey[i+1] >> 32);
+      tr = subkey[i-1] ^ ROL32(1, dw);
+      ctx->keys[i+2] = subkey[i+3] ^ ( ((uint64_t) tl << 32) | tr);
+
+      ctx->keys[i+3] = subkey[i+2] ^ subkey[i+4];
+      ctx->keys[i+4] = subkey[i+3] ^ subkey[i+5];
+      ctx->keys[i+5] = subkey[i+4] ^ subkey[i+6];
+      ctx->keys[i+6] = subkey[i+5] ^ subkey[i+7];
     }
-  else
-    {
-      tl = (subkey[26] >> 32) ^ (subkey[26] & ~subkey[24]);
-      dw = tl & (subkey[24] >> 32);
-      tr = subkey[26] ^ ROL32(1, dw);
-      ctx->keys[23] = subkey[22] ^ ( ((uint64_t) tl << 32) | tr);
+  ctx->keys[i-1] = subkey[i-2];
+  ctx->keys[i] = subkey[i] ^ subkey[i-1];
 
-      ctx->keys[24] = subkey[24];
-      ctx->keys[25] = subkey[25];
-
-      tl = (subkey[23] >> 32) ^ (subkey[23] & ~subkey[25]);
-      dw = tl & (subkey[25] >> 32);
-      tr = subkey[23] ^ ROL32(1, dw);
-      ctx->keys[26] = subkey[27] ^ ( ((uint64_t) tl << 32) | tr);
-
-      ctx->keys[27] = subkey[26] ^ subkey[28];
-      ctx->keys[28] = subkey[27] ^ subkey[29];
-      ctx->keys[29] = subkey[28] ^ subkey[30];
-      ctx->keys[30] = subkey[29] ^ subkey[31];
-
-      ctx->keys[31] = subkey[30];
-      ctx->keys[32] = subkey[32] ^ subkey[31];
-	  
-    }
   for (i = 0; i < ctx->nkeys - 2; i += 8)
     {
-
       /* apply the inverse of the last half of F-function */
       CAMELLIA_F_HALF_INV(ctx->keys[i+2]);
       CAMELLIA_F_HALF_INV(ctx->keys[i+3]);
