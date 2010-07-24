@@ -1,5 +1,8 @@
 2010-07-24  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/camellia-test.c: New tests for camellia_invert_key.
+	* testsuite/aes-test.c: New tests for aes_invert_key.
+
 	* aes.h (aes_invert_key): Declare it.
 
 	* aes-set-decrypt-key.c (aes_invert_key): New function, key
