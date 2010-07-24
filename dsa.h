@@ -114,7 +114,7 @@ struct dsa_signature
  *   sha1_update
  *
  * Create the signature by calling
- *   dsa_sign
+ *   dsa_sha1_sign
  *
  * The signature is represented as a struct dsa_signature. This call also
  * resets the hashing context.
