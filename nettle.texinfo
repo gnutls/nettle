@@ -227,6 +227,9 @@ pointer. Source and destination areas are of the same length. Source and
 destination may be the same, so that you can process strings in place,
 but they @emph{must not} overlap in any other way.
 
+Many of the functions lack return value and can never fail. Those
+functions which can fail, return one on success and zero on failure.
+
 @c FIXME: Say something about the name mangling.
 
 @node Example, Linking, Conventions, Top
@@ -309,7 +312,7 @@ that @code{H(x)} = @code{H(y)}.
 
 Hash functions are useful as building blocks for digital signatures,
 message authentication codes, pseudo random generators, association of
-unique id:s to documents, and many other things.
+unique ids to documents, and many other things.
 
 The most commonly used hash functions are MD5 and SHA1. Unfortunately,
 both these fail the collision-resistance requirement; cryptologists have
@@ -638,16 +641,18 @@ functions}.
 The last three attributes are function pointers, of types
 @code{nettle_hash_init_func}, @code{nettle_hash_update_func}, and
 @code{nettle_hash_digest_func}. The first argument to these functions is
-@code{void *} pointer so a context struct, which is of size
+@code{void *} pointer to a context struct, which is of size
 @code{context_size}. 
 @end deftp
 
-@deftypevr {Constant Struct} {struct nettle_cipher} nettle_md2
-@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_md4
-@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_md5
-@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_sha1
-@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_sha256
-@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_sha512
+@deftypevr {Constant Struct} {struct nettle_hash} nettle_md2
+@deftypevrx {Constant Struct} {struct nettle_hash} nettle_md4
+@deftypevrx {Constant Struct} {struct nettle_hash} nettle_md5
+@deftypevrx {Constant Struct} {struct nettle_hash} nettle_sha1
+@deftypevrx {Constant Struct} {struct nettle_hash} nettle_sha224
+@deftypevrx {Constant Struct} {struct nettle_hash} nettle_sha256
+@deftypevrx {Constant Struct} {struct nettle_hash} nettle_sha384
+@deftypevrx {Constant Struct} {struct nettle_hash} nettle_sha512
 
 These are all the hash functions that Nettle implements.
 @end deftypevr
@@ -1274,7 +1279,17 @@ struct, which is of size @code{context_size}.
 @deftypevrx {Constant Struct} {struct nettle_cipher} nettle_aes192
 @deftypevrx {Constant Struct} {struct nettle_cipher} nettle_aes256
 
+@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_arctwo40;
+@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_arctwo64;
+@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_arctwo128;
+@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_arctwo_gutmann128;
+
 @deftypevrx {Constant Struct} {struct nettle_cipher} nettle_arcfour128
+
+@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_camellia128
+@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_camellia192
+@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_camellia256
+
 @deftypevrx {Constant Struct} {struct nettle_cipher} nettle_cast128
 
 @deftypevrx {Constant Struct} {struct nettle_cipher} nettle_serpent128
@@ -1925,7 +1940,7 @@ Creation and verification of signatures is done with the following functions:
 @deftypefunx int rsa_sha256_sign (const struct rsa_private_key *@var{key}, struct sha256_ctx *@var{hash}, mpz_t @var{signature})
 @deftypefunx int rsa_sha512_sign (const struct rsa_private_key *@var{key}, struct sha512_ctx *@var{hash}, mpz_t @var{signature})
 The signature is stored in @var{signature} (which must have been
-@code{mpz_init}:ed earlier). The hash context is reset so that it can be
+@code{mpz_init}'ed earlier). The hash context is reset so that it can be
 used for new messages. Returns one on success, or zero on failure.
 Signing fails if the key is too small for the given hash size, e.g.,
 it's not possible to create a signature using SHA512 and a 512-bit
@@ -1990,7 +2005,7 @@ is non-zero, it is the desired size of the public exponent and a random
 exponent of that size is selected. But if @var{e_size} is zero, it is
 assumed that the caller has already chosen a value for @code{e}, and
 stored it in @var{pub}.
-Returns 1 on success, and 0 on failure. The function can fail for
+Returns one on success, and zero on failure. The function can fail for
 example if if @var{n_size} is too small, or if @var{e_size} is zero and
 @code{pub->e} is an even number.
 @end deftypefun
@@ -2003,7 +2018,9 @@ The @acronym{DSA} digital signature algorithm is more complex than
 @acronym{RSA}. It was specified during the early 1990s, and in 1994 NIST
 published @acronym{FIPS} 186 which is the authoritative specification.
 Sometimes @acronym{DSA} is referred to using the acronym @acronym{DSS},
-for Digital Signature Standard.
+for Digital Signature Standard. The most recent revision of the
+specification, FIPS186-3, was issueed in 2009, and it adds support for
+larger hash functions than @acronym{sha1}.
 
 For @acronym{DSA}, the underlying mathematical problem is the
 computation of discreet logarithms. The public key consists of a large
@@ -2011,12 +2028,13 @@ prime @code{p}, a small prime @code{q} which is a factor of @code{p-1},
 a number @code{g} which generates a subgroup of order @code{q} modulo
 @code{p}, and an element @code{y} in that subgroup.
 
-The size of @code{q} is fixed to 160 bits, to match with the
-@acronym{SHA1} hash algorithm which is used in @acronym{DSA}. The size
-of @code{q} is in principle unlimited, but the standard specifies only
-nine specific sizes: @code{512 + l*64}, where @code{l} is between 0 and
-8. Thus, the maximum size of @code{p} is 1024 bits, at that is also the
-recommended size.
+In the original @acronym{DSA}, the size of @code{q} is fixed to 160
+bits, to match with the @acronym{SHA1} hash algorithm. The size of
+@code{p} is in principle unlimited, but the
+standard specifies only nine specific sizes: @code{512 + l*64}, where
+@code{l} is between 0 and 8. Thus, the maximum size of @code{p} is 1024
+bits, and sizes less than 1024 bits are considered obsolete and not
+secure.
 
 The subgroup requirement means that if you compute 
 
@@ -2034,12 +2052,40 @@ g^x = y mod p
 @end example
 
 In mathematical speak, @code{x} is the @dfn{discrete logarithm} of
-@code{y} mod @code{p}, with respect to the generator @code{d}. The size
-of @code{x} will also be about 160 bits.
+@code{y} mod @code{p}, with respect to the generator @code{g}. The size
+of @code{x} will also be about the same size as @code{q}. The security of the
+@acronym{DSA} algorithm relies on the difficulty of the discrete
+logarithm problem. Current algorithms to compute discrete logarithms in
+this setting, and hence crack @acronym{DSA}, are of two types. The first
+type works directly in the (multiplicative) group of integers mod
+@code{p}. The best known algorithm of this type is the Number Field
+Sieve, and it's complexity is similar to the complexity of factoring
+numbers of the same size as @code{p}. The other type works in the
+smaller @code{q}-sized subgroup generated by @code{g}, which has a more
+difficult group structure. One good algorithm is Pollard-rho, which has
+complexity @code{sqrt(q)}.
+
+The important point is that security depends on the size of @emph{both}
+@code{p} and @code{q}, and they should be choosen so that the difficulty
+of both discrete logarithm methods are comparable. Today, the security
+margin of the original @acronym{DSA} may be uncomfortably small. Using a
+@code{p} of 1024 bits implies that cracking using the number field sieve
+is expected to take about the same time as factoring a 1024-bit
+@acronym{RSA} modulo, and using a @code{q} of size 160 bits implies
+that cracking using Pollard-rho will take roughly @code{2^80} group
+operations. With the size of @code{q} fixed, tied to the @acronym{SHA1}
+digest size, it may be tempting to increase the size of @code{p} to,
+say, 4096 bits. This will provide excellent resistance against attacks
+like the number field sieve which works in the large group. But it will
+do very little to defend against Pollard-rho attacking the small
+subgroup; the attacker is slowed down at most by a single factor of 10
+due to the more expensive group operation. And the attacker will surely
+choose the latter attack.
 
 The signature generation algorithm is randomized; in order to create a
 @acronym{DSA} signature, you need a good source for random numbers
-(@pxref{Randomness}).
+(@pxref{Randomness}). Let us describe the common case of a 160-bit
+@code{q}.
 
 To create a signature, one starts with the hash digest of the message,
 @code{h}, which is a 160 bit number, and a random number @code{k,
@@ -2074,10 +2120,16 @@ verifying a signature, we don't know either @code{k} or @code{x}: those
 numbers are secret.
 
 If you can choose between @acronym{RSA} and @acronym{DSA}, which one is
-best? Both are believed to be secure. @acronym{DSA} gained popularity
-in the late 1990s, as a patent free alternative to @acronym{RSA}. Now
-that the @acronym{RSA} patents have expired, there's no compelling
-reason to want to use @acronym{DSA}.
+best? Both are believed to be secure. @acronym{DSA} gained popularity in
+the late 1990s, as a patent free alternative to @acronym{RSA}. Now that
+the @acronym{RSA} patents have expired, there's no compelling reason to
+want to use @acronym{DSA}. Today, the original @acronym{DSA} key size
+does not provide a large security margin, and it should probably be
+phased out together with @acronym{RSA} keys of 1024 bits. Using the
+revised @acronym{DSA} algorithm with a larger hash function, in
+particular, @acronym{SHA256}, a 256-bit @code{q}, and @code{p} of size
+2048 bits or more, should provide for a more comfortable security
+margin, but these variants are not yet in wide use.
 
 @acronym{DSA} signatures are smaller than @acronym{RSA} signatures,
 which is important for some specialized applications.
@@ -2138,31 +2190,39 @@ with it.
 For signing, you need to provide both the public and the private key
 (unlike @acronym{RSA}, where the private key struct includes all
 information needed for signing), and a source for random numbers.
-Signatures always use the @acronym{SHA1} hash function.
+Signatures can use the @acronym{SHA1} or the @acronym{SHA256} hash
+function, although the implementation of @acronym{DSA} with
+@acronym{SHA256} should be considered somewhat experimental due to lack
+of official test vectors and interoperability testing.
 
-@deftypefun void dsa_sign (const struct dsa_public_key *@var{pub}, const struct dsa_private_key *@var{key}, void *@var{random_ctx}, nettle_random_func @var{random}, struct sha1_ctx *@var{hash}, struct dsa_signature *@var{signature})
-@deftypefunx void dsa_sign_digest (const struct dsa_public_key *@var{pub}, const struct dsa_private_key *@var{key}, void *@var{random_ctx}, nettle_random_func @var{random}, const uint8_t *@var{digest}, struct dsa_signature *@var{signature})
+@deftypefun int dsa_sha1_sign (const struct dsa_public_key *@var{pub}, const struct dsa_private_key *@var{key}, void *@var{random_ctx}, nettle_random_func @var{random}, struct sha1_ctx *@var{hash}, struct dsa_signature *@var{signature})
+@deftypefunx int dsa_sha1_sign_digest (const struct dsa_public_key *@var{pub}, const struct dsa_private_key *@var{key}, void *@var{random_ctx}, nettle_random_func @var{random}, const uint8_t *@var{digest}, struct dsa_signature *@var{signature})
+@deftypefunx int dsa_sha256_sign (const struct dsa_public_key *@var{pub}, const struct dsa_private_key *@var{key}, void *@var{random_ctx}, nettle_random_func @var{random}, struct sha256_ctx *@var{hash}, struct dsa_signature *@var{signature})
+@deftypefunx int dsa_sha256_sign_digest (const struct dsa_public_key *@var{pub}, const struct dsa_private_key *@var{key}, void *@var{random_ctx}, nettle_random_func @var{random}, const uint8_t *@var{digest}, struct dsa_signature *@var{signature})
 Creates a signature from the given hash context or digest.
 @var{random_ctx} and @var{random} is a randomness generator.
 @code{random(random_ctx, length, dst)} should generate @code{length}
 random octets and store them at @code{dst}. For advice, see
-@xref{Randomness}.
+@xref{Randomness}. Returns one on success, or zero on failure.
+Signing fails if the key size and the hash size don't match.
 @end deftypefun
 
 Verifying signatures is a little easier, since no randomness generator is
 needed. The functions are
 
-@deftypefun int dsa_verify (const struct dsa_public_key *@var{key}, struct sha1_ctx *@var{hash}, const struct dsa_signature *@var{signature})
-@deftypefunx int dsa_verify_digest (const struct dsa_public_key *@var{key}, const uint8_t *@var{digest}, const struct dsa_signature *@var{signature})
+@deftypefun int dsa_sha1_verify (const struct dsa_public_key *@var{key}, struct sha1_ctx *@var{hash}, const struct dsa_signature *@var{signature})
+@deftypefunx int dsa_sha1_verify_digest (const struct dsa_public_key *@var{key}, const uint8_t *@var{digest}, const struct dsa_signature *@var{signature})
+@deftypefunx int dsa_sha256_verify (const struct dsa_public_key *@var{key}, struct sha256_ctx *@var{hash}, const struct dsa_signature *@var{signature})
+@deftypefunx int dsa_sha256_verify_digest (const struct dsa_public_key *@var{key}, const uint8_t *@var{digest}, const struct dsa_signature *@var{signature})
 Verifies a signature. Returns 1 if the signature is valid, otherwise 0.
 @end deftypefun
 
 Key generation uses mostly the same parameters as the corresponding
 @acronym{RSA} function.
 
-@deftypefun int dsa_generate_keypair (struct dsa_public_key *@var{pub}, struct dsa_private_key *@var{key}, void *@var{random_ctx}, nettle_random_func @var{random}, void *@var{progress_ctx}, nettle_progress_func @var{progress}, unsigned @var{bits})
+@deftypefun int dsa_generate_keypair (struct dsa_public_key *@var{pub}, struct dsa_private_key *@var{key}, void *@var{random_ctx}, nettle_random_func @var{random}, void *@var{progress_ctx}, nettle_progress_func @var{progress}, unsigned @var{p_bits}, unsigned @var{q_bits})
 @var{pub} and @var{key} is where the resulting key pair is stored. The
-structs should be initialized before you call this function.
+structs should be initialized before you call this function. 
 
 @var{random_ctx} and @var{random} is a randomness generator.
 @code{random(random_ctx, length, dst)} should generate @code{length}
@@ -2174,18 +2234,24 @@ during the key generation process, in order to uphold an illusion of
 progress. @var{progress} can be NULL, in that case there are no
 callbacks.
 
-@var{bits} is the desired size of @code{p}, in bits. To generate keys
-that conform to the standard, you must use a value of the form @code{512
-+ l*64}, for @code{0 <= l <= 8}. Keys smaller than 768 bits are not
-considered secure, so you should probably stick to 1024. Non-standard
-sizes are possible, in particular sizes larger than 1024 bits, although
-@acronym{DSA} implementations can not in general be expected to support
-such keys. Also note that using very large keys doesn't make much sense,
-because the security is also limited by the size of the smaller prime
-@code{q}, which is always 160 bits.
+@var{p_bits} and @var{q_bits} are the desired sizes of @code{p} and
+@code{q}. To generate keys that conform to the original @acronym{DSA}
+standard, you must use @code{q_bits = 160} and select @var{p_bits} of
+the form @code{p_bits = 512 + l*64}, for @code{0 <= l <= 8}, where the
+smaller sizes are no longer recommended, so you should most likely stick
+to @code{p_bits = 1024}. Non-standard sizes are possible, in particular
+@code{p_bits} larger than 1024, although @acronym{DSA} implementations
+can not in general be expected to support such keys. Also note that
+using very large @var{p_bits}, with @var{q_bits} fixed at 160, doesn't
+make much sense, because the security is also limited by the size of the
+smaller prime. Using a larger @code{q_bits} requires switchign to a
+larger hash function. To generate @acronym{DSA} keys for use with
+@acronym{SHA256}, use @code{q_bits = 256} and, e.g., @code{p_bits =
+2048}.
 
-Returns 1 on success, and 0 on failure. The function will fail if
-@var{bits} is too small.
+Returns one on success, and zero on failure. The function will fail if
+@var{q_bits} is neither 160 nor 256, or if @var{p_bits} is unreasonably
+small.
 @end deftypefun
 
 @node Randomness, Miscellaneous functions, Public-key algorithms, Reference
