@@ -1,16 +1,3 @@
-dnl LREG(reg) gives the 8-bit register corresponding to the given 32-bit register.
-define(<LREG>,<ifelse(
-	$1, %eax, %al,
-	$1, %ebx, %bl,
-	$1, %ecx, %cl,
-	$1, %edx, %dl)>)dnl
-
-define(<HREG>,<ifelse(
-	$1, %eax, %ah,
-	$1, %ebx, %bh,
-	$1, %ecx, %ch,
-	$1, %edx, %dh)>)dnl
-
 dnl AES_LOAD(a, b, c, d, src, key)
 dnl Loads the next block of data from src, and add the subkey pointed
 dnl to by key.
