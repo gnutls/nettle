@@ -1,6 +1,10 @@
 2010-07-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* Released nettle-2.1.
+
 	* configure.ac: Use camellia-crypt-internal.asm, if available.
+	Bumped soname to libnettle.so.4, and reset LIBNETTLE_MINOR to
+	zero.
 
 	* x86/machine.m4 (LREG, HREG): Moved macros here, from... 
 	* x86/aes.m4: ...here.

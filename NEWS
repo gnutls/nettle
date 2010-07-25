@@ -29,9 +29,14 @@ NEWS for the 2.1 release
 	  status attribute in struct des_ctx, struct des3_ctx, and
 	  struct blowfish_ctx.
 
+	The shared library names are libnettle.so.4.0 and
+	libhogweed.so.2.0, with sonames libnettle.so.4 and
+	libhogweed.so.2.
+
 	Other changes:
 
-	* Support for the Camellia block cipher.
+	* Support for the Camellia block cipher, including an
+          assembler implementation for x86_32.
 
 	* New function aes_invert_key, useful for applications that
 	  need both encryption and decryption using the same AES key.
@@ -57,7 +62,7 @@ NEWS for the 2.1 release
 	  distribution (was accidentally left out in nettle-2.0).
 
 	* Configure script now detects if the compiler uses a 32-bit
-          or 64-bit on x86_64 (prevously did this for sparc only).
+          or 64-bit ABI on x86_64 (prevously did this for sparc only).
           Also sets the default location for installing libraries
           (libdir) depending on system type and the ABI used.
 
@@ -72,7 +77,7 @@ NEWS for the 2.1 release
           Contributed by Magnus Holmgren.
 
 	* Slightly improved sha1 performance on x86.
-	
+
 NEWS for the 2.0 release
 
 	This release breaks binary compatibility by splitting the
