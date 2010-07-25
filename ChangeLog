@@ -1,5 +1,12 @@
 2010-07-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac: Use camellia-crypt-internal.asm, if available.
+
+	* x86/machine.m4 (LREG, HREG): Moved macros here, from... 
+	* x86/aes.m4: ...here.
+
+	* x86/camellia-crypt-internal.asm: New file.
+
 	* nettle.texinfo: Updated and expanded section on DSA.
 	Document aes_invert_key, and camellia. Added missing functions
 	rsa_sha512_verify and rsa_sha512_verify_digest.
