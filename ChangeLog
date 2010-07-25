@@ -1,4 +1,16 @@
+2010-07-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* camellia-set-encrypt-key.c (camellia_set_encrypt_key): Inline
+	the expansion of camellia_setup128 and camellia_setup256, keeping
+	the unexpanded key in scalar variables.
+	(camellia_setup128): Deleted.
+	(camellia_setup256): Deleted.
+
 2010-07-24  Niels Möller  <nisse@lysator.liu.se>
+
+	* camellia-set-encrypt-key.c (camellia_set_encrypt_key): Reduced
+	code size, no complete loop unroll. Use one loop for each phase of
+	the post-processing.
 
 	* testsuite/camellia-test.c: New tests for camellia_invert_key.
 	* testsuite/aes-test.c: New tests for aes_invert_key.
