@@ -54,9 +54,9 @@ struct camellia_ctx
      a total of 34 subkeys. */
   /* The clever combination of subkeys imply one of the pre- and
      post-whitening keys is folded with the round keys, so that subkey
-     #1 and the last one (#25 or #33) is not used. FIXME: Renumber to
-     eliminate them. */
-  uint64_t keys[34];
+     #1 and the last one (#25 or #33) is not used. The result is that
+     we have only 24 or 32 subkeys at the end of key setup. */
+  uint64_t keys[32];
 };
 
 void

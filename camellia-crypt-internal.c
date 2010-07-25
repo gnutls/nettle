@@ -110,28 +110,28 @@ _camellia_crypt(const struct camellia_ctx *ctx,
 
       /* main iteration */
 
-      CAMELLIA_ROUNDSM(T, i0,ctx->keys[2], i1);
-      CAMELLIA_ROUNDSM(T, i1,ctx->keys[3], i0);
-      CAMELLIA_ROUNDSM(T, i0,ctx->keys[4], i1);
-      CAMELLIA_ROUNDSM(T, i1,ctx->keys[5], i0);
-      CAMELLIA_ROUNDSM(T, i0,ctx->keys[6], i1);
-      CAMELLIA_ROUNDSM(T, i1,ctx->keys[7], i0);
+      CAMELLIA_ROUNDSM(T, i0,ctx->keys[1], i1);
+      CAMELLIA_ROUNDSM(T, i1,ctx->keys[2], i0);
+      CAMELLIA_ROUNDSM(T, i0,ctx->keys[3], i1);
+      CAMELLIA_ROUNDSM(T, i1,ctx->keys[4], i0);
+      CAMELLIA_ROUNDSM(T, i0,ctx->keys[5], i1);
+      CAMELLIA_ROUNDSM(T, i1,ctx->keys[6], i0);
       
-      for (i = 0; i < ctx->nkeys - 10; i+= 8)
+      for (i = 0; i < ctx->nkeys - 8; i+= 8)
 	{
-	  CAMELLIA_FL(i0, ctx->keys[i+8]);
-	  CAMELLIA_FLINV(i1, ctx->keys[i+9]);
+	  CAMELLIA_FL(i0, ctx->keys[i+7]);
+	  CAMELLIA_FLINV(i1, ctx->keys[i+8]);
 	  
-	  CAMELLIA_ROUNDSM(T, i0,ctx->keys[i+10], i1);
-	  CAMELLIA_ROUNDSM(T, i1,ctx->keys[i+11], i0);
-	  CAMELLIA_ROUNDSM(T, i0,ctx->keys[i+12], i1);
-	  CAMELLIA_ROUNDSM(T, i1,ctx->keys[i+13], i0);
-	  CAMELLIA_ROUNDSM(T, i0,ctx->keys[i+14], i1);
-	  CAMELLIA_ROUNDSM(T, i1,ctx->keys[i+15], i0);
+	  CAMELLIA_ROUNDSM(T, i0,ctx->keys[i+9], i1);
+	  CAMELLIA_ROUNDSM(T, i1,ctx->keys[i+10], i0);
+	  CAMELLIA_ROUNDSM(T, i0,ctx->keys[i+11], i1);
+	  CAMELLIA_ROUNDSM(T, i1,ctx->keys[i+12], i0);
+	  CAMELLIA_ROUNDSM(T, i0,ctx->keys[i+13], i1);
+	  CAMELLIA_ROUNDSM(T, i1,ctx->keys[i+14], i0);
 	}
 
       /* post whitening but kw4 */
-      i1 ^= ctx->keys[i+8];
+      i1 ^= ctx->keys[i+7];
 
       WRITE_UINT64(dst     , i1);
       WRITE_UINT64(dst +  8, i0);

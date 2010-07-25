@@ -1,5 +1,12 @@
 2010-07-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* camellia.h (struct camellia_ctx): Eliminate the two unused
+	subkeys, and renumber the remaining ones.	
+	* camellia-crypt-internal.c (_camellia_crypt): Updated for
+	renumbered subkeys.
+	* camellia-set-encrypt-key.c (camellia_set_encrypt_key): Likewise.
+	* camellia-set-decrypt-key.c (camellia_invert_key): Likewise.
+
 	* camellia-set-encrypt-key.c (camellia_set_encrypt_key): Inline
 	the expansion of camellia_setup128 and camellia_setup256, keeping
 	the unexpanded key in scalar variables.

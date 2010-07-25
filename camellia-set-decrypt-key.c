@@ -40,17 +40,15 @@ camellia_invert_key(struct camellia_ctx *dst,
   unsigned i;
   if (dst == src)
     {
-      SWAP(dst->keys[0], dst->keys[nkeys - 2]);
-      for (i = 2; i < nkeys - 1 - i; i++)
+      for (i = 0; i < nkeys - 1 - i; i++)
 	SWAP(dst->keys[i], dst->keys[nkeys - 1 - i]);
     }
   else
     {
       dst->nkeys = nkeys;
-      dst->keys[0] = src->keys[nkeys - 2];
-      for (i = 2; i < nkeys - 2; i++)
+
+      for (i = 0; i < nkeys; i++)
 	dst->keys[i] = src->keys[nkeys - 1 - i];
-      dst->keys[nkeys - 2] = src->keys[0];
     }
 }
 
