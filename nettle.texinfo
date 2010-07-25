@@ -1961,6 +1961,7 @@ signature is stored in @var{signature} (which must have been
 @deftypefun int rsa_md5_verify (const struct rsa_public_key *@var{key}, struct md5_ctx *@var{hash}, const mpz_t @var{signature})
 @deftypefunx int rsa_sha1_verify (const struct rsa_public_key *@var{key}, struct sha1_ctx *@var{hash}, const mpz_t @var{signature})
 @deftypefunx int rsa_sha256_verify (const struct rsa_public_key *@var{key}, struct sha256_ctx *@var{hash}, const mpz_t @var{signature})
+@deftypefunx int rsa_sha512_verify (const struct rsa_public_key *@var{key}, struct sha512_ctx *@var{hash}, const mpz_t @var{signature})
 Returns 1 if the signature is valid, or 0 if it isn't. In either case,
 the hash context is reset so that it can be used for new messages.
 @end deftypefun
@@ -1968,6 +1969,7 @@ the hash context is reset so that it can be used for new messages.
 @deftypefun int rsa_md5_verify_digest (const struct rsa_public_key *@var{key}, const uint8_t *@var{digest}, const mpz_t @var{signature})
 @deftypefunx int rsa_sha1_verify_digest (const struct rsa_public_key *@var{key}, const uint8_t *@var{digest}, const mpz_t @var{signature})
 @deftypefunx int rsa_sha256_verify_digest (const struct rsa_public_key *@var{key}, const uint8_t *@var{digest}, const mpz_t @var{signature})
+@deftypefunx int rsa_sha512_verify_digest (const struct rsa_public_key *@var{key}, const uint8_t *@var{digest}, const mpz_t @var{signature})
 Returns 1 if the signature is valid, or 0 if it isn't. @var{digest} should
 point to a digest of size @code{MD5_DIGEST_SIZE},
 @code{SHA1_DIGEST_SIZE}, or @code{SHA256_DIGEST_SIZE}, respectively.
