@@ -14,7 +14,7 @@
 This manual is for the Nettle library (version @value{UPDATED-FOR}), a
 low-level cryptographic library.
 
-Originally written 2001 by @value{AUTHOR}, updated 2009.
+Originally written 2001 by @value{AUTHOR}, updated 2010.
 
 @quotation
 This manual is placed in the public domain. You may freely copy it, in
@@ -138,8 +138,9 @@ copyright owned by the Free Software Foundation. Also hacked by Ray
 Dassen and @value{AUTHOR}. Released under the GPL.
 
 @item CAMELLIA
-The implementation is by Nippon Telegraph and Telephone
-Corporation (NTT), heavily modified by Niels Möller. Released under the LGPL.
+The C implementation is by Nippon Telegraph and Telephone Corporation
+(NTT), heavily modified by @value{AUTHOR}. Assembler for x86 by
+@value{AUTHOR}. Released under the LGPL.
 
 @item CAST128
 The implementation of the CAST128 cipher is written by Steve Reid.
