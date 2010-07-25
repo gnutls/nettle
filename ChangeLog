@@ -1,5 +1,9 @@
 2010-07-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* nettle.texinfo: Updated and expanded section on DSA.
+	Document aes_invert_key, and camellia. Added missing functions
+	rsa_sha512_verify and rsa_sha512_verify_digest.
+
 	* camellia.h (struct camellia_ctx): Eliminate the two unused
 	subkeys, and renumber the remaining ones.	
 	* camellia-crypt-internal.c (_camellia_crypt): Updated for
