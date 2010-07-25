@@ -1,5 +1,7 @@
 2010-07-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac: Changed version number to nettle-2.2.
+
 	* Released nettle-2.1.
 
 	* configure.ac: Use camellia-crypt-internal.asm, if available.
