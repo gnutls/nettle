@@ -1,13 +1,13 @@
-NEWS for the 2.5 release
-
-	XXX: Remaining: Manual update. Key generation for dsa256.
+NEWS for the 2.1 release
 
 	*Important*: this release breaks source and binary
-	compatibility for the digital signature functions.
+	compatibility for the digital signature functions, and for the
+	DES and BLOWFISH ciphers which have weak keys.
+
 	Incompatible changes:
 
 	* The functions rsa_md5_sign, rsa_sha1_sign and
-          rsa_sha256_sign, and the corresponding _digest varians, now
+          rsa_sha256_sign, and the corresponding _digest variants, now
           have a return value which callers should check. The functions
           return failure if the key is too small for the type of
           signature.
@@ -15,7 +15,7 @@ NEWS for the 2.5 release
 	* The functions dsa_sign and dsa_verify are renamed to
           dsa_sha1_sign and dsa_sha1_verify. The _-digest variants are
           renamed similarly. These functions now have a return value
-          which callers sould check, and they return failure if the
+          which callers should check, and they return failure if the
           number q is not of the appropriate size.
 
 	* The return value from des_set_key, des3_set_key and
@@ -31,6 +31,11 @@ NEWS for the 2.5 release
 
 	Other changes:
 
+	* Support for the Camellia block cipher.
+
+	* New function aes_invert_key, useful for applications that
+	  need both encryption and decryption using the same AES key.
+	  
 	* des_set_key and des3_set_key no longer check the key parity
 	  bits. Parity bits are silently ignored. A new function
 	  des_check_parity is provided, for applications that care
@@ -43,13 +48,18 @@ NEWS for the 2.5 release
           testing, this support should be considered somewhat
           experimental.
 
+	* Key generation for RSA and DSA changed to use Maurer's
+	  algorithm to generate provably prime numbers (as usual, the
+	  mathematical proof does not guaranteee that the
+	  implementation is bug free).
+	  
 	* x86_64 assembler implementation actually included in the
 	  distribution (was accidentally left out in nettle-2.0).
 
 	* Configure script now detects if the compiler uses a 32-bit
           or 64-bit on x86_64 (prevously did this for sparc only).
           Also sets the default location for installing libraries
-          (libdir) depending on system type andd the ABI used.
+          (libdir) depending on system type and the ABI used.
 
 	* Added the nettle and gmp libraries as dependencies when
           linking shared library libhogweed.so. On systems using
