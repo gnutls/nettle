@@ -82,207 +82,171 @@
     (x) = ((uint64_t) __w << 32) | (__t ^ __w);	\
   } while (0)
 
-
-static void
-camellia_setup128(uint64_t *subkey, const uint64_t *key)
-{
-    uint64_t k0, k1, w;
-
-    /**
-     *  k == k0 || k1 (|| is concatenation)
-     */
-    k0 = key[0];
-    k1 = key[1];
-
-    /**
-     * generate KL dependent subkeys
-     */
-    subkey[0] = k0; subkey[1] = k1;
-    ROL128(15, k0, k1);
-    subkey[4] = k0; subkey[5] = k1;
-    ROL128(30, k0, k1);
-    subkey[10] = k0; subkey[11] = k1;
-    ROL128(15, k0, k1);
-    subkey[13] = k1;
-    ROL128(17, k0, k1);
-    subkey[16] = k0; subkey[17] = k1;
-    ROL128(17, k0, k1);
-    subkey[18] = k0; subkey[19] = k1;
-    ROL128(17, k0, k1);
-    subkey[22] = k0; subkey[23] = k1;
-
-    /* generate KA. D1 is k0, d2 is k1. */
-    /* FIXME: Make notation match the spec better. */
-    /* For the 128-bit case, KR = 0, the construvtion of KA reduces to:
-
-       D1 = KL >> 64;
-       W = KL & MASK64;
-       D2 = F(D1, Sigma1);
-       W = D2 ^ W
-       D1 = F(W, Sigma2)
-       D2 = D2 ^ F(D1, Sigma3);
-       D1 = D1 ^ F(D2, Sigma4);
-       KA = (D1 << 64) | D2;
-    */
-    k0 = subkey[0]; w = subkey[1];
-    CAMELLIA_F(k0, SIGMA1, k1);
-    w ^= k1;
-    CAMELLIA_F(w, SIGMA2, k0);
-    CAMELLIA_F(k0, SIGMA3, w);
-    k1 ^= w;
-    CAMELLIA_F(k1, SIGMA4, w);
-    k0 ^= w;
-
-    /* generate KA dependent subkeys */
-    subkey[2] = k0; subkey[3] = k1;
-    ROL128(15, k0, k1);
-    subkey[6] = k0; subkey[7] = k1;
-    ROL128(15, k0, k1);
-    subkey[8] = k0; subkey[9] = k1;
-    ROL128(15, k0, k1);
-    subkey[12] = k0;
-    ROL128(15, k0, k1);
-    subkey[14] = k0; subkey[15] = k1;
-    ROL128(34, k0, k1);
-    subkey[20] = k0; subkey[21] = k1;
-    ROL128(17, k0, k1);
-    subkey[24] = k0; subkey[25] = k1;
-
-    return;
-}
-
-static void
-camellia_setup256(uint64_t *subkey, const uint64_t *key)
-{
-    uint64_t k0, k1, k2, k3;
-    uint64_t w;
-
-    /**
-     *  key = (kll || klr || krl || krr || krll || krlr || krrl || krrr)
-     *  (|| is concatenation)
-     */
-
-    k0  = key[0];
-    k1  = key[1];
-    k2  = key[2];
-    k3  = key[3];
-
-    /* generate KL dependent subkeys */
-    subkey[0] = k0; subkey[1] = k1;
-    ROL128(45, k0, k1);
-    subkey[12] = k0; subkey[13] = k1;
-    ROL128(15, k0, k1);
-    subkey[16] = k0; subkey[17] = k1;
-    ROL128(17, k0, k1);
-    subkey[22] = k0; subkey[23] = k1;
-    ROL128(34, k0, k1);
-    subkey[30] = k0; subkey[31] = k1;
-
-    /* generate KR dependent subkeys */
-    ROL128(15, k2, k3);
-    subkey[4] = k2; subkey[5] = k3;
-    ROL128(15, k2, k3);
-    subkey[8] = k2; subkey[9] = k3;
-    ROL128(30, k2, k3);
-    subkey[18] = k2; subkey[19] = k3;
-    ROL128(34, k2, k3);
-    subkey[26] = k2; subkey[27] = k3;
-    ROL128(34, k2, k3);
-
-    /* generate KA */
-    /* The construction of KA is done as
-
-       D1 = (KL ^ KR) >> 64
-       D2 = (KL ^ KR) & MASK64
-       W = F(D1, SIGMA1)
-       D2 = D2 ^ W
-       D1 = F(D2, SIGMA2) ^ (KR >> 64)
-       D2 = F(D1, SIGMA3) ^ W ^ (KR & MASK64)
-       D1 = D1 ^ F(W, SIGMA2)
-       D2 = D2 ^ F(D1, SIGMA3)
-       D1 = D1 ^ F(D2, SIGMA4)
-    */
-
-    k0 = subkey[0] ^ k2;
-    k1 = subkey[1] ^ k3;
-
-    CAMELLIA_F(k0, SIGMA1, w);
-    k1 ^= w;
-
-    CAMELLIA_F(k1, SIGMA2, k0);
-    k0 ^= k2;
-
-    CAMELLIA_F(k0, SIGMA3, k1);
-    k1 ^= w ^ k3;
-
-    CAMELLIA_F(k1, SIGMA4, w);
-    k0 ^= w;
-
-    /* generate KB */
-    k2 ^= k0; k3 ^= k1;
-    CAMELLIA_F(k2, SIGMA5, w);
-    k3 ^= w;
-    CAMELLIA_F(k3, SIGMA6, w);
-    k2 ^= w;
-
-    /* generate KA dependent subkeys */
-    ROL128(15, k0, k1);
-    subkey[6] = k0; subkey[7] = k1;
-    ROL128(30, k0, k1);
-    subkey[14] = k0; subkey[15] = k1;
-    ROL128(32, k0, k1);
-    subkey[24] = k0; subkey[25] = k1;
-    ROL128(17, k0, k1);
-    subkey[28] = k0; subkey[29] = k1;
-
-    /* generate KB dependent subkeys */
-    subkey[2] = k2; subkey[3] = k3;
-    ROL128(30, k2, k3);
-    subkey[10] = k2; subkey[11] = k3;
-    ROL128(30, k2, k3);
-    subkey[20] = k2; subkey[21] = k3;
-    ROL128(51, k2, k3);
-    subkey[32] = k2; subkey[33] = k3;
-
-    return;
-}
-
 void
 camellia_set_encrypt_key(struct camellia_ctx *ctx,
 			 unsigned length, const uint8_t *key)
 {
-  uint64_t k[4];
+  uint64_t k0, k1;
 
-  /* Subkeys according to the spec, 26 for short keys and 34 for large
-     keys */
   uint64_t subkey[34];
-  uint64_t kw2, kw4;
+  uint64_t w, kw2, kw4;
   
   uint32_t dw, tl, tr;
   unsigned i;
 
-  k[0] = READ_UINT64(key);
-  k[1] = READ_UINT64(key +  8);
+  k0 = READ_UINT64(key);
+  k1 = READ_UINT64(key +  8);
   
   if (length == 16)
     {
       ctx->nkeys = 26;
-      camellia_setup128(subkey, k);
+      /**
+       * generate KL dependent subkeys
+       */
+      subkey[0] = k0; subkey[1] = k1;
+      ROL128(15, k0, k1);
+      subkey[4] = k0; subkey[5] = k1;
+      ROL128(30, k0, k1);
+      subkey[10] = k0; subkey[11] = k1;
+      ROL128(15, k0, k1);
+      subkey[13] = k1;
+      ROL128(17, k0, k1);
+      subkey[16] = k0; subkey[17] = k1;
+      ROL128(17, k0, k1);
+      subkey[18] = k0; subkey[19] = k1;
+      ROL128(17, k0, k1);
+      subkey[22] = k0; subkey[23] = k1;
+
+      /* generate KA. D1 is k0, d2 is k1. */
+      /* FIXME: Make notation match the spec better. */
+      /* For the 128-bit case, KR = 0, the construction of KA reduces to:
+
+	 D1 = KL >> 64;
+	 W = KL & MASK64;
+	 D2 = F(D1, Sigma1);
+	 W = D2 ^ W
+	 D1 = F(W, Sigma2)
+	 D2 = D2 ^ F(D1, Sigma3);
+	 D1 = D1 ^ F(D2, Sigma4);
+	 KA = (D1 << 64) | D2;
+      */
+      k0 = subkey[0]; w = subkey[1];
+      CAMELLIA_F(k0, SIGMA1, k1);
+      w ^= k1;
+      CAMELLIA_F(w, SIGMA2, k0);
+      CAMELLIA_F(k0, SIGMA3, w);
+      k1 ^= w;
+      CAMELLIA_F(k1, SIGMA4, w);
+      k0 ^= w;
+
+      /* generate KA dependent subkeys */
+      subkey[2] = k0; subkey[3] = k1;
+      ROL128(15, k0, k1);
+      subkey[6] = k0; subkey[7] = k1;
+      ROL128(15, k0, k1);
+      subkey[8] = k0; subkey[9] = k1;
+      ROL128(15, k0, k1);
+      subkey[12] = k0;
+      ROL128(15, k0, k1);
+      subkey[14] = k0; subkey[15] = k1;
+      ROL128(34, k0, k1);
+      subkey[20] = k0; subkey[21] = k1;
+      ROL128(17, k0, k1);
+      subkey[24] = k0; subkey[25] = k1;
     }
   else
     {
+      uint64_t k2, k3;
       ctx->nkeys = 34;
-      k[2] = READ_UINT64(key + 16);
+      k2 = READ_UINT64(key + 16);
 
       if (length == 24)
-	k[3] = ~k[2];
+	k3 = ~k2;
       else
 	{
 	  assert (length == 32);
-	  k[3] = READ_UINT64(key + 24);
+	  k3 = READ_UINT64(key + 24);
 	}
-      camellia_setup256(subkey, k);
+      /* generate KL dependent subkeys */
+      subkey[0] = k0; subkey[1] = k1;
+      ROL128(45, k0, k1);
+      subkey[12] = k0; subkey[13] = k1;
+      ROL128(15, k0, k1);
+      subkey[16] = k0; subkey[17] = k1;
+      ROL128(17, k0, k1);
+      subkey[22] = k0; subkey[23] = k1;
+      ROL128(34, k0, k1);
+      subkey[30] = k0; subkey[31] = k1;
+
+      /* generate KR dependent subkeys */
+      ROL128(15, k2, k3);
+      subkey[4] = k2; subkey[5] = k3;
+      ROL128(15, k2, k3);
+      subkey[8] = k2; subkey[9] = k3;
+      ROL128(30, k2, k3);
+      subkey[18] = k2; subkey[19] = k3;
+      ROL128(34, k2, k3);
+      subkey[26] = k2; subkey[27] = k3;
+      ROL128(34, k2, k3);
+
+      /* generate KA */
+      /* The construction of KA is done as
+
+	 D1 = (KL ^ KR) >> 64
+	 D2 = (KL ^ KR) & MASK64
+	 W = F(D1, SIGMA1)
+	 D2 = D2 ^ W
+	 D1 = F(D2, SIGMA2) ^ (KR >> 64)
+	 D2 = F(D1, SIGMA3) ^ W ^ (KR & MASK64)
+	 D1 = D1 ^ F(W, SIGMA2)
+	 D2 = D2 ^ F(D1, SIGMA3)
+	 D1 = D1 ^ F(D2, SIGMA4)
+      */
+
+      k0 = subkey[0] ^ k2;
+      k1 = subkey[1] ^ k3;
+
+      CAMELLIA_F(k0, SIGMA1, w);
+      k1 ^= w;
+
+      CAMELLIA_F(k1, SIGMA2, k0);
+      k0 ^= k2;
+
+      CAMELLIA_F(k0, SIGMA3, k1);
+      k1 ^= w ^ k3;
+
+      CAMELLIA_F(k1, SIGMA4, w);
+      k0 ^= w;
+
+      /* generate KB */
+      k2 ^= k0; k3 ^= k1;
+      CAMELLIA_F(k2, SIGMA5, w);
+      k3 ^= w;
+      CAMELLIA_F(k3, SIGMA6, w);
+      k2 ^= w;
+
+      /* generate KA dependent subkeys */
+      ROL128(15, k0, k1);
+      subkey[6] = k0; subkey[7] = k1;
+      ROL128(30, k0, k1);
+      subkey[14] = k0; subkey[15] = k1;
+      ROL128(32, k0, k1);
+      subkey[24] = k0; subkey[25] = k1;
+      ROL128(17, k0, k1);
+      subkey[28] = k0; subkey[29] = k1;
+
+      /* generate KB dependent subkeys */
+      subkey[2] = k2; subkey[3] = k3;
+      ROL128(30, k2, k3);
+      subkey[10] = k2; subkey[11] = k3;
+      ROL128(30, k2, k3);
+      subkey[20] = k2; subkey[21] = k3;
+      ROL128(51, k2, k3);
+      subkey[32] = k2; subkey[33] = k3;
     }
+
+  /* At this point, the subkey array contains the subkeys as described
+     in the spec, 26 for short keys and 34 for large keys. */
 
   /* absorb kw2 to other subkeys */
   kw2 = subkey[1];
