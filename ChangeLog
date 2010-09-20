@@ -1,3 +1,23 @@
+2010-09-20  Niels Möller  <nisse@turmalin.hack.org>
+
+	* configure.ac: Less quoting when invoking $CC, to allow CC="gcc
+	-m32".
+
+	* x86/camellia-crypt-internal.asm (ROUND): Adapted to new key
+	convention, moving key xor to the end.
+
+	* camellia-set-encrypt-key.c (CAMELLIA_F_HALF_INV): Deleted macro.
+	(camellia_set_encrypt_key): Deleted the CAMELLIA_F_HALF_INV
+	operations intended for moving the key xor into the middle of the
+	round.
+
+	* camellia-crypt-internal.c (CAMELLIA_ROUNDSM): Moved addition of
+	key to the end, to use a 64-bit xor operation.
+
+	* x86_64/camellia-crypt-internal.asm: New file.
+
+	* x86_64/machine.m4 (LREG, HREG, XREG): New macros.
+
 2010-09-17  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Support shared libraries (dlls) with mingw32.
@@ -13,7 +33,7 @@
 	Bumped soname to libnettle.so.4, and reset LIBNETTLE_MINOR to
 	zero.
 
-	* x86/machine.m4 (LREG, HREG): Moved macros here, from... 
+	* x86/machine.m4 (LREG, HREG): Moved macros here, from...
 	* x86/aes.m4: ...here.
 
 	* x86/camellia-crypt-internal.asm: New file.
