@@ -525,14 +525,14 @@ AC_SUBST(OPENSSL_LIBFLAGS)
 # Set these flags *last*, or else the test programs won't compile
 if test x$GCC = xyes ; then
   # Using -ggdb3 makes (some versions of) Redhat's gcc-2.96 dump core
-  if "$CC" --version | grep '^2\.96$' 1>/dev/null 2>&1; then
+  if $CC --version | grep '^2\.96$' 1>/dev/null 2>&1; then
     true
   else
     CFLAGS="$CFLAGS -ggdb3"
   fi
   # FIXME: It would be better to actually test if this option works and/or is needed.
   # Or perhaps use -funsigned-char.
-  if "$CC" --version | grep 'gcc.* 4\.' 1>/dev/null 2>&1; then
+  if $CC --version | grep 'gcc.* 4\.' 1>/dev/null 2>&1; then
     CFLAGS="$CFLAGS -Wno-pointer-sign"
   fi
   CFLAGS="$CFLAGS -Wall -W \
