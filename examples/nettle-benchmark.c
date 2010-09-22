@@ -61,7 +61,7 @@ static double frequency = 0.0;
 
 /* FIXME: Proper configure test for rdtsc? */
 #ifndef WITH_CYCLE_COUNTER
-# if defined(__GNUC__) && defined(__i386__)
+# if defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
 #  define WITH_CYCLE_COUNTER 1
 # else
 #  define WITH_CYCLE_COUNTER 0
@@ -69,6 +69,7 @@ static double frequency = 0.0;
 #endif
 
 #if WITH_CYCLE_COUNTER
+# if defined(__i386__)
 #define GET_CYCLE_COUNTER(hi, lo)		\
   __asm__("xorl %%eax,%%eax\n"			\
 	  "movl %%ebx, %%edi\n"			\
@@ -78,6 +79,17 @@ static double frequency = 0.0;
 	  : "=a" (lo), "=d" (hi)		\
 	  : /* No inputs. */			\
 	  : "%edi", "%ecx", "cc")
+# elif defined(__x86_64__)
+#define GET_CYCLE_COUNTER(hi, lo)		\
+  __asm__("xorl %%eax,%%eax\n"			\
+	  "mov %%rbx, %%r10\n"			\
+	  "cpuid\n"				\
+	  "rdtsc\n"				\
+	  "mov %%r10, %%rbx\n"			\
+	  : "=a" (lo), "=d" (hi)		\
+	  : /* No inputs. */			\
+	  : "%r10", "%rcx", "cc")
+# endif
 #define BENCH_ITERATIONS 10
 #endif
 
@@ -272,9 +284,9 @@ time_memxor(void)
   info.src = src;
   info.dst = dst;
 
-  display ("xor", "aligned", 1, time_function(bench_memxor, &info));
+  display ("memxor", "aligned", 0, time_function(bench_memxor, &info));
   info.src++;
-  display ("xor", "unaligned", 1, time_function(bench_memxor, &info));  
+  display ("memxor", "unaligned", 0, time_function(bench_memxor, &info));  
 }
 
 static void
