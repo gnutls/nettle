@@ -5,6 +5,12 @@
 	(time_function): Use clock_gettime with CLOCK_PROCESS_CPUTIME_ID,
 	if available. This gives better accuracy, at least on recent
 	linux.
+	(BENCH_INTERVAL): Reduced to 0.1 s.
+	(struct bench_memxor_info): New struct.
+	(bench_memxor): New function.
+	(time_memxor): New function.
+	(main): Use time_memxor. Added optional argument used to limit the
+	algorithms being benchmarked.
 
 	* examples/Makefile.in (nettle-benchmark): Link using
 	$(BENCH_LIBS) rather than $(LIBS).
