@@ -1,3 +1,17 @@
+2010-09-22  Niels Möller  <nisse@turmalin.hack.org>
+
+	* examples/nettle-benchmark.c (BENCH_INTERVAL): Changed unit to
+	seconds.
+	(time_function): Use clock_gettime with CLOCK_PROCESS_CPUTIME_ID,
+	if available. This gives better accuracy, at least on recent
+	linux.
+
+	* examples/Makefile.in (nettle-benchmark): Link using
+	$(BENCH_LIBS) rather than $(LIBS).
+
+	* configure.ac: Check for clock_gettime, and add -lrt to
+	BENCH_LIBS if needed.
+
 2010-09-20  Niels Möller  <nisse@turmalin.hack.org>
 
 	* configure.ac: Less quoting when invoking $CC, to allow CC="gcc
