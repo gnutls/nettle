@@ -43,6 +43,7 @@
 #include "cast128.h"
 #include "cbc.h"
 #include "des.h"
+#include "memxor.h"
 #include "serpent.h"
 #include "sha.h"
 #include "twofish.h"
@@ -56,7 +57,7 @@ static double frequency = 0.0;
 
 /* Process BENCH_BLOCK bytes at a time, for BENCH_INTERVAL seconds. */
 #define BENCH_BLOCK 10240
-#define BENCH_INTERVAL 0.25
+#define BENCH_INTERVAL 0.1
 
 /* FIXME: Proper configure test for rdtsc? */
 #ifndef WITH_CYCLE_COUNTER
@@ -130,6 +131,19 @@ time_function(void (*f)(void *arg), void *arg)
   
   return ((double)(after - before)) / CLOCKS_PER_SEC / ncalls;
 #endif /* !HAVE_CLOCK_GETTIME */
+}
+
+struct bench_memxor_info
+{
+  uint8_t *dst;
+  const uint8_t *src;
+};
+
+static void
+bench_memxor(void *arg)
+{
+  struct bench_memxor_info *info = arg;
+  memxor (info->dst, info->src, BENCH_BLOCK);
 }
 
 struct bench_hash_info
@@ -249,10 +263,26 @@ xalloc(size_t size)
 }
 
 static void
+time_memxor(void)
+{
+  struct bench_memxor_info info;
+  uint8_t src[BENCH_BLOCK + 1];
+  uint8_t dst[BENCH_BLOCK + 1];
+
+  info.src = src;
+  info.dst = dst;
+
+  display ("xor", "aligned", 1, time_function(bench_memxor, &info));
+  info.src++;
+  display ("xor", "unaligned", 1, time_function(bench_memxor, &info));  
+}
+
+static void
 time_hash(const struct nettle_hash *hash)
 {
   static uint8_t data[BENCH_BLOCK];
   struct bench_hash_info info;
+
   info.ctx = xalloc(hash->context_size); 
   info.update = hash->update;
   info.data = data;
@@ -407,6 +437,7 @@ main(int argc, char **argv)
 {
   unsigned i;
   int c;
+  const char *alg;
 
   const struct nettle_hash *hashes[] =
     {
@@ -444,22 +475,33 @@ main(int argc, char **argv)
 	  break;
 
       case ':': case '?':
-	fprintf(stderr, "Usage: nettle-benchmark [-f clock frequency]\n");
+	fprintf(stderr, "Usage: nettle-benchmark [-f clock frequency] [alg]\n");
 	return EXIT_FAILURE;
 
       default:
 	abort();
     }
 
+  alg = argv[optind];
+  
   bench_sha1_compress();
 
   header();
 
+  if (!alg || strstr ("memxor", alg))
+    {
+      time_memxor();
+      printf("\n");
+    }
+  
   for (i = 0; hashes[i]; i++)
-    time_hash(hashes[i]);
-  
+    {
+      if (!alg || strstr(hashes[i]->name, alg))
+	time_hash(hashes[i]);
+    }
   for (i = 0; ciphers[i]; i++)
-    time_cipher(ciphers[i]);
-  
+    if (!alg || strstr(ciphers[i]->name, alg))
+      time_cipher(ciphers[i]);
+
   return 0;
 }
