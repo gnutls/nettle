@@ -54,12 +54,9 @@
 
 static double frequency = 0.0;
 
-/* Process BENCH_BLOCK bytes at a time, for BENCH_INTERVAL clocks. */
+/* Process BENCH_BLOCK bytes at a time, for BENCH_INTERVAL seconds. */
 #define BENCH_BLOCK 10240
-#define BENCH_INTERVAL (CLOCKS_PER_SEC / 4)
-
-/* Total MB:s, for MB/s figures. */
-#define BENCH_TOTAL 10.0
+#define BENCH_INTERVAL 0.25
 
 /* FIXME: Proper configure test for rdtsc? */
 #ifndef WITH_CYCLE_COUNTER
@@ -87,13 +84,40 @@ static double frequency = 0.0;
 static double
 time_function(void (*f)(void *arg), void *arg)
 {
+  unsigned ncalls;
+#if HAVE_CLOCK_GETTIME && defined CLOCK_PROCESS_CPUTIME_ID
+  struct timespec before;
+  struct timespec after;
+  struct timespec done;
+
+  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &before);
+  done = before;
+  done.tv_nsec += BENCH_INTERVAL * 1e9;
+  if (done.tv_nsec >= 1000000000L)
+    {
+      done.tv_nsec -= 1000000000L;
+      done.tv_sec ++;
+    }
+  ncalls = 0;
+
+  do 
+    {
+      f(arg);
+      clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &after);
+      ncalls++;
+    }
+  while (after.tv_sec < done.tv_sec
+	 || (after.tv_nsec < done.tv_nsec && after.tv_sec == done.tv_sec));
+  
+  return (after.tv_sec - before.tv_sec
+	  + 1e-9 * (after.tv_nsec - before.tv_nsec)) / ncalls;
+#else /* !HAVE_CLOCK_GETTIME */
   clock_t before;
   clock_t after;
   clock_t done;
-  unsigned ncalls;
   
   before = clock();
-  done = before + BENCH_INTERVAL;
+  done = before + BENCH_INTERVAL * CLOCKS_PER_SEC;
   ncalls = 0;
   
   do 
@@ -105,6 +129,7 @@ time_function(void (*f)(void *arg), void *arg)
   while (after < done);
   
   return ((double)(after - before)) / CLOCKS_PER_SEC / ncalls;
+#endif /* !HAVE_CLOCK_GETTIME */
 }
 
 struct bench_hash_info
