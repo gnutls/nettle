@@ -78,12 +78,12 @@ define(<ROUND>, <
 	movzbl	HREG($2), TMP
 	xorl	SP1110(TMP), $3
 
+	xorl	$5(KEY), $4
+	xorl	$5 + 4(KEY), $3
+
 	xorl	$3, $4
 	rorl	<$>8, $3
 	xorl	$4, $3
-
-	xorl	$5(KEY), $3
-	xorl	$5 + 4(KEY), $4
 
 	xorl	FRAME_$3, $3
 	xorl	FRAME_$4, $4
