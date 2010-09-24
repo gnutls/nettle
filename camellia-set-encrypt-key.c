@@ -36,6 +36,7 @@
 #endif
 
 #include <assert.h>
+#include <limits.h>
 
 #include "camellia-internal.h"
 
@@ -73,6 +74,16 @@
     __yr ^= __yl;				\
     (y) = ((uint64_t) __yl << 32) | __yr;	\
   } while (0)
+
+#if ! HAVE_NATIVE_64_BIT
+#define CAMELLIA_F_HALF_INV(x) do {            \
+    uint32_t __t, __w;                         \
+    __t = (x) >> 32;                           \
+    __w = __t ^(x);                            \
+    __w = ROL32(8, __w);                       \
+    (x) = ((uint64_t) __w << 32) | (__t ^ __w);        \
+  } while (0)
+#endif
 
 void
 camellia_set_encrypt_key(struct camellia_ctx *ctx,
@@ -309,4 +320,17 @@ camellia_set_encrypt_key(struct camellia_ctx *ctx,
     }
   ctx->keys[i-2] = subkey[i-2];
   ctx->keys[i-1] = subkey[i] ^ subkey[i-1];
+
+#if !HAVE_NATIVE_64_BIT
+  for (i = 0; i < ctx->nkeys; i += 8)
+    {
+      /* apply the inverse of the last half of F-function */
+      CAMELLIA_F_HALF_INV(ctx->keys[i+1]);
+      CAMELLIA_F_HALF_INV(ctx->keys[i+2]);
+      CAMELLIA_F_HALF_INV(ctx->keys[i+3]);
+      CAMELLIA_F_HALF_INV(ctx->keys[i+4]);
+      CAMELLIA_F_HALF_INV(ctx->keys[i+5]);
+      CAMELLIA_F_HALF_INV(ctx->keys[i+6]);
+    }
+#endif
 }

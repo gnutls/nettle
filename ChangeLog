@@ -1,3 +1,12 @@
+2010-09-24  Niels Möller  <nisse@lysator.liu.se>
+
+	Partial revert of 2010-09-20 changes.
+	* camellia-set-encrypt-key.c (camellia_set_encrypt_key):
+	Reintroduce CAMELLIA_F_HALF_INV, for 32-bit machines.
+	* camellia-crypt-internal.c (CAMELLIA_ROUNDSM): Two variants,
+	differing in where addition of the key is done.
+	* x86/camellia-crypt-internal.asm: Moved addition of key.
+
 2010-09-22  Niels Möller  <nisse@turmalin.hack.org>
 
 	* examples/nettle-benchmark.c (BENCH_INTERVAL): Changed unit to
