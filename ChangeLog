@@ -31,6 +31,8 @@
 	(time_memxor): New function.
 	(main): Use time_memxor. Added optional argument used to limit the
 	algorithms being benchmarked.
+	(GET_CYCLE_COUNTER): Define also for x86_64.
+	(time_memxor): Improved display.
 
 	* examples/Makefile.in (nettle-benchmark): Link using
 	$(BENCH_LIBS) rather than $(LIBS).
