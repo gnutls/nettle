@@ -1,5 +1,16 @@
 2010-09-24  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/.test-rules.make: Added rule for memxor-test.
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Added memxor-test.c
+	* testsuite/memxor-test.c: New file.
+
+	* memxor.c (memxor_common_alignment): New function.
+	(memxor_different_alignment): New function.
+	(memxor): Optimized to do word-operations rather than byte
+	operations.
+
+	* configure.ac (HAVE_NATIVE_64_BIT): New config.h define.
+
 	Partial revert of 2010-09-20 changes.
 	* camellia-set-encrypt-key.c (camellia_set_encrypt_key):
 	Reintroduce CAMELLIA_F_HALF_INV, for 32-bit machines.
