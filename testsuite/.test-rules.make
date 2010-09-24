@@ -43,6 +43,9 @@ md5-test$(EXEEXT): md5-test.$(OBJEXT)
 md5-compat-test$(EXEEXT): md5-compat-test.$(OBJEXT)
 	$(LINK) md5-compat-test.$(OBJEXT) $(TEST_OBJS) -o md5-compat-test$(EXEEXT)
 
+memxor-test$(EXEEXT): memxor-test.$(OBJEXT)
+	$(LINK) memxor-test.$(OBJEXT) $(TEST_OBJS) -o memxor-test$(EXEEXT)
+
 sha1-test$(EXEEXT): sha1-test.$(OBJEXT)
 	$(LINK) sha1-test.$(OBJEXT) $(TEST_OBJS) -o sha1-test$(EXEEXT)
 
