@@ -116,7 +116,7 @@ if test x$enable_dependency_tracking = xyes ; then
 ])
 fi
 
-# Figure out ABI. Currently, configurable only be setting CFLAGS.
+# Figure out ABI. Currently, configurable only by setting CFLAGS.
 ABI=standard
 
 case "$host_cpu" in
@@ -430,7 +430,6 @@ AC_C_INLINE
 AC_TYPE_UID_T
 AC_TYPE_SIZE_T
 AC_HEADER_TIME
-# Used by eratosthenes.c
 AC_CHECK_SIZEOF(long)
 
 AC_CHECK_HEADERS([openssl/blowfish.h openssl/des.h openssl/cast.h openssl/aes.h],,
@@ -521,6 +520,12 @@ if test x$enable_openssl = xyes ; then
 fi
 
 AC_SUBST(OPENSSL_LIBFLAGS)
+
+# Choose strategy for Camellia round
+AH_BOTTOM(
+[/* Needs include of <limits.h> before use. */
+#define HAVE_NATIVE_64_BIT (SIZEOF_LONG * CHAR_BIT >= 64)
+])
 
 # clock_gettime is in librt on *-*-osf5.1 and on glibc, so add -lrt to
 # BENCH_LIBS if needed. On linux (tested on x86_32, 2.6.26),
