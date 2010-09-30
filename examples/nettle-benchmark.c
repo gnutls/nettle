@@ -284,9 +284,11 @@ time_memxor(void)
   info.src = src;
   info.dst = dst;
 
-  display ("memxor", "aligned", 0, time_function(bench_memxor, &info));
+  display ("memxor", "aligned", sizeof(unsigned long),
+	   time_function(bench_memxor, &info));
   info.src++;
-  display ("memxor", "unaligned", 0, time_function(bench_memxor, &info));  
+  display ("memxor", "unaligned", sizeof(unsigned long),
+	   time_function(bench_memxor, &info));  
 }
 
 static void
