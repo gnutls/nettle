@@ -29,6 +29,10 @@ test_xor (const uint8_t *a, const uint8_t *b, const uint8_t *c,
   uint8_t *dst = set_align (dst_buf, align_dst);
   uint8_t *src = set_align (src_buf, align_src);
 
+  if (verbose)
+    fprintf(stderr, "size = %d, align_dst = %d, align_src = %d\n",
+	      (int) size, align_dst, align_src);
+
   memcpy (dst, a, size);
   dst[-1] = 17;
   dst[size] = 17;
