@@ -225,8 +225,16 @@ test_cipher_cbc(const struct nettle_cipher *cipher,
 	      length, data, cleartext);
 
   if (!MEMEQ(length, data, ciphertext))
-    FAIL();
-
+    {
+      fprintf(stderr, "CBC encrypt failed:\nInput:");
+      print_hex(length, cleartext);
+      fprintf(stderr, "\nOutput: ");
+      print_hex(length, data);
+      fprintf(stderr, "\nExpected:");
+      print_hex(length, ciphertext);
+      fprintf(stderr, "\n");
+      FAIL();
+    }
   cipher->set_decrypt_key(ctx, key_length, key);
   memcpy(iv, iiv, cipher->block_size);
 
@@ -235,8 +243,16 @@ test_cipher_cbc(const struct nettle_cipher *cipher,
 	      length, data, data);
 
   if (!MEMEQ(length, data, cleartext))
-    FAIL();
-
+    {
+      fprintf(stderr, "CBC decrypt failed:\nInput:");
+      print_hex(length, ciphertext);
+      fprintf(stderr, "\nOutput: ");
+      print_hex(length, data);
+      fprintf(stderr, "\nExpected:");
+      print_hex(length, cleartext);
+      fprintf(stderr, "\n");
+      FAIL();
+    }
   free(ctx);
   free(data);
   free(iv);
