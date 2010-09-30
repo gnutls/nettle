@@ -1,3 +1,13 @@
+2010-09-30  Niels Möller  <nisse@turmalin.hack.org>
+
+	* testsuite/testutils.c (test_cipher_cbc): Print more info when
+	failing.
+
+	* testsuite/memxor-test.c (test_xor): Added verbose printout.
+
+	* examples/nettle-benchmark.c (time_memxor): Count size of
+	unsigned long as "block size" for memxor.
+
 2010-09-24  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/.test-rules.make: Added rule for memxor-test.
