@@ -1,5 +1,7 @@
 2010-09-30  Niels Möller  <nisse@turmalin.hack.org>
 
+	* configure.ac: Link in memxor.asm, if found.
+
 	* testsuite/testutils.c (test_cipher_cbc): Print more info when
 	failing.
 
