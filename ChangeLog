@@ -1,3 +1,10 @@
+2010-10-01  Niels Möller  <nisse@turmalin.hack.org>
+
+	* x86_64/camellia-crypt-internal.asm (ROUND): Reordered sbox
+	lookups.
+
+	* testsuite/memxor-test.c: Also test memxor3.
+
 2010-09-30  Niels Möller  <nisse@turmalin.hack.org>
 
 	* configure.ac: Link in memxor.asm, if found.
