@@ -18,6 +18,12 @@ C along with the nettle library; see the file COPYING.LIB.  If not, write to
 C the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 C MA 02111-1307, USA.
 
+C Performance, cycles per block
+C
+C	        Intel SU4100
+C                 C  asm
+C Camellia-128  415  347
+C Camellia-256  543  461
 
 C Register usage:
 
@@ -43,29 +49,35 @@ define(<SP4404>, <3072(TABLE,$1,4)>)
 
 C ROUND(x, y, key-offset)
 define(<ROUND>, <
+	C Byte 0,1
 	movzbl	LREG($1), XREG(TMP)
 	movl	SP1110(TMP), XREG(IR)
 	movzbl	HREG($1), XREG(TMP)
 	xorl	SP4404(TMP), XREG(IR)
-	ror	<$>16, $1
+	ror	<$>32, $1
 
-	movzbl	LREG($1), XREG(TMP)
-	xorl	SP3033(TMP), XREG(IR)
-	movzbl	HREG($1), XREG(TMP)
-	xorl	SP0222(TMP), XREG(IR)
-	ror	<$>16, $1
-
+	C Byte 4,5
 	movzbl	LREG($1), XREG(TMP)
 	movl	SP4404(TMP), XREG(IL)
 	movzbl	HREG($1), XREG(TMP)
 	xorl	SP3033(TMP), XREG(IL)
-	ror	<$>16, $1
+	rol	<$>16, $1
 
+	C Byte 2,3
+	movzbl	LREG($1), XREG(TMP)
+	xorl	SP3033(TMP), XREG(IR)
+	movzbl	HREG($1), XREG(TMP)
+	xorl	SP0222(TMP), XREG(IR)
+	ror	<$>32, $1
+
+	C Byte 6,7
 	movzbl	LREG($1), XREG(TMP)
 	xorl	SP0222(TMP), XREG(IL)
 	movzbl	HREG($1), XREG(TMP)
 	xorl	SP1110(TMP), XREG(IL)
 	ror	<$>16, $1
+
+	C 76543210
 	
 	xorl	XREG(IL), XREG(IR)
 	rorl	<$>8, XREG(IL)
