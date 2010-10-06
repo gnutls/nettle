@@ -1,3 +1,24 @@
+2010-10-06  Niels Möller  <nisse@turmalin.hack.org>
+
+	* memxor.c (memxor3): Optimized.
+	(memxor3_common_alignment): New function.
+	(memxor3_different_alignment_b): New function.
+	(memxor3_different_alignment_ab): New function.
+	(memxor3_different_alignment_all): New function.
+
+	* examples/nettle-benchmark.c (time_function): Reorganized, to
+	reduce overhead.
+	(time_memxor): Also benchmark memxor3.
+
+	* x86_64/memxor.asm: New file.
+
+	* examples/nettle-benchmark.c (overhead): New global variable.
+	(time_function): Compensate for call overhead.
+	(bench_nothing, time_overhead): New functions.
+	(time_memxor): Tweaked src size, making it an integral number of
+	words.
+	(main): Call time_overhead.
+
 2010-10-01  Niels Möller  <nisse@turmalin.hack.org>
 
 	* x86_64/camellia-crypt-internal.asm (ROUND): Reordered sbox
