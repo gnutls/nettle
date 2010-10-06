@@ -95,6 +95,22 @@ static double frequency = 0.0;
 
 static double overhead = 0.0; 
 
+#if HAVE_CLOCK_GETTIME && defined CLOCK_PROCESS_CPUTIME_ID
+#define TIME_TYPE struct timespec
+#define TIME_START(start) clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &(start))
+#define TIME_END(elapsed, start) do {				\
+    struct timespec _time_end_after;				\
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &_time_end_after);	\
+    (elapsed) = _time_end_after.tv_sec - (start).tv_sec		\
+      + 1e-9 * (_time_end_after.tv_nsec - (start).tv_nsec);	\
+  } while (0)
+#else /* !HAVE_CLOCK_GETTIME */
+#define TIME_TYPE clock_t
+#define TIME_START(start) ((start) = clock)
+#define TIME_END(elapsed, start) \
+  ((elapsed) = (double) (clock() - (start)) / CLOCKS_PER_SEC)
+#endif /* !HAVE_CLOCK_GETTIME */
+
 /* Returns second per function call */
 static double
 time_function(void (*f)(void *arg), void *arg)
@@ -102,52 +118,21 @@ time_function(void (*f)(void *arg), void *arg)
   unsigned ncalls;
   double elapsed;
 
-#if HAVE_CLOCK_GETTIME && defined CLOCK_PROCESS_CPUTIME_ID
-  struct timespec before;
-  struct timespec after;
-  struct timespec done;
-
-  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &before);
-  done = before;
-  done.tv_nsec += BENCH_INTERVAL * 1e9;
-  if (done.tv_nsec >= 1000000000L)
+  for (ncalls = 10 ;;)
     {
-      done.tv_nsec -= 1000000000L;
-      done.tv_sec ++;
+      TIME_TYPE start;
+      unsigned i;
+      TIME_START(start);
+      for (i = 0; i < ncalls; i++)
+	f(arg);
+      TIME_END(elapsed, start);
+      if (elapsed > BENCH_INTERVAL)
+	break;
+      else if (elapsed < BENCH_INTERVAL / 10)
+	ncalls *= 10;
+      else
+	ncalls *= 2;
     }
-  ncalls = 0;
-
-  do 
-    {
-      f(arg);
-      clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &after);
-      ncalls++;
-    }
-  while (after.tv_sec < done.tv_sec
-	 || (after.tv_nsec < done.tv_nsec && after.tv_sec == done.tv_sec));
-
-  elapsed = after.tv_sec - before.tv_sec
-	     + 1e-9 * (after.tv_nsec - before.tv_nsec);
-
-#else /* !HAVE_CLOCK_GETTIME */
-  clock_t before;
-  clock_t after;
-  clock_t done;
-  
-  before = clock();
-  done = before + BENCH_INTERVAL * CLOCKS_PER_SEC;
-  ncalls = 0;
-  
-  do 
-    {
-      f(arg);
-      after = clock();
-      ncalls++;
-    }
-  while (after < done);
-
-  elapsed = (double)(after - before) / CLOCKS_PER_SEC;
-#endif /* !HAVE_CLOCK_GETTIME */
   return elapsed / ncalls - overhead;
 }
 
@@ -161,6 +146,7 @@ struct bench_memxor_info
 {
   uint8_t *dst;
   const uint8_t *src;
+  const uint8_t *other;  
 };
 
 static void
@@ -168,6 +154,13 @@ bench_memxor(void *arg)
 {
   struct bench_memxor_info *info = arg;
   memxor (info->dst, info->src, BENCH_BLOCK);
+}
+
+static void
+bench_memxor3(void *arg)
+{
+  struct bench_memxor_info *info = arg;
+  memxor3 (info->dst, info->src, info->other, BENCH_BLOCK);
 }
 
 struct bench_hash_info
@@ -303,6 +296,7 @@ time_memxor(void)
 {
   struct bench_memxor_info info;
   uint8_t src[BENCH_BLOCK + sizeof(long)];
+  uint8_t other[BENCH_BLOCK + sizeof(long)];
   uint8_t dst[BENCH_BLOCK];
 
   info.src = src;
@@ -310,9 +304,24 @@ time_memxor(void)
 
   display ("memxor", "aligned", sizeof(unsigned long),
 	   time_function(bench_memxor, &info));
-  info.src++;
+  info.src = src + 1;
   display ("memxor", "unaligned", sizeof(unsigned long),
-	   time_function(bench_memxor, &info));  
+	   time_function(bench_memxor, &info));
+
+  info.src = src;
+  info.other = other;
+  display ("memxor3", "aligned", sizeof(unsigned long),
+	   time_function(bench_memxor3, &info));
+
+  info.other = other + 1;
+  display ("memxor3", "unaligned01", sizeof(unsigned long),
+	   time_function(bench_memxor3, &info));
+  info.src = src + 1;
+  display ("memxor3", "unaligned11", sizeof(unsigned long),
+	   time_function(bench_memxor3, &info));
+  info.other = other + 2;
+  display ("memxor3", "unaligned12", sizeof(unsigned long),
+	   time_function(bench_memxor3, &info));  
 }
 
 static void
