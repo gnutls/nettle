@@ -93,11 +93,15 @@ static double frequency = 0.0;
 #define BENCH_ITERATIONS 10
 #endif
 
+static double overhead = 0.0; 
+
 /* Returns second per function call */
 static double
 time_function(void (*f)(void *arg), void *arg)
 {
   unsigned ncalls;
+  double elapsed;
+
 #if HAVE_CLOCK_GETTIME && defined CLOCK_PROCESS_CPUTIME_ID
   struct timespec before;
   struct timespec after;
@@ -121,9 +125,10 @@ time_function(void (*f)(void *arg), void *arg)
     }
   while (after.tv_sec < done.tv_sec
 	 || (after.tv_nsec < done.tv_nsec && after.tv_sec == done.tv_sec));
-  
-  return (after.tv_sec - before.tv_sec
-	  + 1e-9 * (after.tv_nsec - before.tv_nsec)) / ncalls;
+
+  elapsed = after.tv_sec - before.tv_sec
+	     + 1e-9 * (after.tv_nsec - before.tv_nsec);
+
 #else /* !HAVE_CLOCK_GETTIME */
   clock_t before;
   clock_t after;
@@ -140,9 +145,16 @@ time_function(void (*f)(void *arg), void *arg)
       ncalls++;
     }
   while (after < done);
-  
-  return ((double)(after - before)) / CLOCKS_PER_SEC / ncalls;
+
+  elapsed = (double)(after - before) / CLOCKS_PER_SEC;
 #endif /* !HAVE_CLOCK_GETTIME */
+  return elapsed / ncalls - overhead;
+}
+
+static void
+bench_nothing(void *arg UNUSED)
+{
+  return;
 }
 
 struct bench_memxor_info
@@ -275,11 +287,23 @@ xalloc(size_t size)
 }
 
 static void
+time_overhead(void)
+{
+  overhead = time_function(bench_nothing, NULL);
+  printf("benchmark call overhead: %7f us", overhead * 1e6);
+  if (frequency > 0.0)
+    printf("%7.2f cycles\n", overhead * frequency);
+  printf("\n");  
+}
+
+
+
+static void
 time_memxor(void)
 {
   struct bench_memxor_info info;
-  uint8_t src[BENCH_BLOCK + 1];
-  uint8_t dst[BENCH_BLOCK + 1];
+  uint8_t src[BENCH_BLOCK + sizeof(long)];
+  uint8_t dst[BENCH_BLOCK];
 
   info.src = src;
   info.dst = dst;
@@ -497,8 +521,10 @@ main(int argc, char **argv)
     }
 
   alg = argv[optind];
-  
+
   bench_sha1_compress();
+
+  time_overhead();
 
   header();
 
