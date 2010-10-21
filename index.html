@@ -25,11 +25,23 @@ href="http://www.lysator.liu.se/~nisse/lsh">lsh</a>.
 
 <h2> Language bindings </h2>
 
-<dl>
-<dt> <a href="http://pike.ida.liu.se">Pike</a></dt>
-<dd> An object-oriented interpreted language with C-like syntax.
-Nettle bindings are included with the official distrribution.</dd>
-</dl>
+<p> I'm aware of nettle-bindings for the following higher-level
+  languages.
+  <dl>
+    <dt> <a href="http://pike.ida.liu.se">Pike</a></dt>
+    <dd> An object-oriented interpreted language with C-like syntax.
+      Nettle bindings are included with the official distribution.</dd>
+    <dt> <a href='http://www.yellowbank.com/code/PostgreSQL/y_crypto/'>PostgreSQL</a></dt>
+    <dd> Bindings for the Postgres database, by Ron Peterson </dd>
+    <dt> <a href='http://marcomaggi.github.com/nausicaa.html'>R6RS
+	Scheme</a></dt>
+    <dd> Scheme bindings by Marco Maggi, supporting multiple R6RS implementations.</dd>
+    <dt> TCL </dt>
+    <dd> Included in the chiark-tcl debian package by Ian Jackson (not
+      sure if/how it's distributed outside of debian). </dd>
+  </dl>
+  Mail me for corrections or additions to this list.
+</p>
 
 <h2> CVS access </h2>
 
@@ -39,7 +51,7 @@ out the entire LSH tree, as per the instructions at the <a
 href="http://www.lysator.liu.se/~nisse/lsh">LSH home page</a>, run the
 top-level <tt>./.bootstrap</tt> script (which sets up a few important
 symlinks and runs .bootstrap scripts in subdirectories), and then
-descend into the <tt>src/nettle</tt> directory for a standard
+descend into the <tt>nettle</tt> directory for a standard
 <tt>./configure && make</tt> there.
 
 <h2> Contact </h2>
