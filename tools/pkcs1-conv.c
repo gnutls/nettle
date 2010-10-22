@@ -42,6 +42,7 @@
 
 enum object_type
   {
+    /* Use a range of values which also work as option id:s */
     RSA_PRIVATE_KEY = 0x200,
     RSA_PUBLIC_KEY,
     DSA_PRIVATE_KEY,
@@ -571,6 +572,13 @@ convert_file(struct nettle_buffer *buffer,
     }
 }
 
+enum {
+  OPT_PRIVATE_RSA = RSA_PRIVATE_KEY,
+  OPT_PUBLIC_RSA = RSA_PUBLIC_KEY,
+  OPT_PRIVATE_DSA = DSA_PRIVATE_KEY,
+  OPT_PUBLIC_KEY = GENERAL_PUBLIC_KEY,
+  OPT_HELP = 0x300,
+};
 
 int
 main(int argc, char **argv)
@@ -583,17 +591,17 @@ main(int argc, char **argv)
   static const struct option options[] =
     {
       /* Name, args, flag, val */
-      { "help", no_argument, NULL, '?' },
+      { "help", no_argument, NULL, OPT_HELP },
       { "version", no_argument, NULL, 'V' },
-      { "private-rsa-key", no_argument, NULL, RSA_PRIVATE_KEY },
-      { "public-rsa-key", no_argument, NULL, RSA_PUBLIC_KEY },
-      { "private-dsa-key", no_argument, NULL, DSA_PRIVATE_KEY },
-      { "public-key-info", no_argument, NULL, GENERAL_PUBLIC_KEY },
+      { "private-rsa-key", no_argument, NULL, OPT_PRIVATE_RSA },
+      { "public-rsa-key", no_argument, NULL, OPT_PUBLIC_RSA },
+      { "private-dsa-key", no_argument, NULL, OPT_PRIVATE_DSA },
+      { "public-key-info", no_argument, NULL, OPT_PUBLIC_KEY },
       { "base-64", no_argument, NULL, 'b' },
       { NULL, 0, NULL, 0 }
     };
 
-  while ( (c = getopt_long(argc, argv, "V?b", options, NULL)) != -1)
+  while ( (c = getopt_long(argc, argv, "Vb", options, NULL)) != -1)
     {
       switch (c)
 	{
@@ -604,20 +612,23 @@ main(int argc, char **argv)
 	  base64 = 1;
 	  break;
 
-	case RSA_PRIVATE_KEY:
-	case RSA_PUBLIC_KEY:
-	case DSA_PRIVATE_KEY:
-	case GENERAL_PUBLIC_KEY:
+	case OPT_PRIVATE_RSA:
+	case OPT_PUBLIC_RSA:
+	case OPT_PRIVATE_DSA:
+	case OPT_PUBLIC_KEY:
+	  /* Same values as the type codes. */
 	  type = c;
 	  break;
 
-	case '?':
+	case OPT_HELP:
 	  printf("FIXME: Usage information.\n");
 	  return EXIT_SUCCESS;
+	case '?':
+	  return EXIT_FAILURE;
 
 	case 'V':
 	  printf("pkcs1-conv (" PACKAGE_STRING ")\n");
-	  exit (EXIT_SUCCESS);
+	  return EXIT_SUCCESS;
 	}
     }
 

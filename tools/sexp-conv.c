@@ -216,7 +216,7 @@ struct conv_options
   const struct nettle_hash *hash;
 };
 
-enum { OPT_ONCE = 300, OPT_HASH, OPT_LOCK };
+enum { OPT_ONCE = 300, OPT_HASH, OPT_LOCK, OPT_HELP };
 
 static int
 match_argument(const char *given, const char *name)
@@ -244,7 +244,7 @@ parse_options(struct conv_options *o,
       static const struct option options[] =
 	{
 	  /* Name, args, flag, val */
-	  { "help", no_argument, NULL, '?' },
+	  { "help", no_argument, NULL, OPT_HELP },
 	  { "version", no_argument, NULL, 'V' },
 	  { "once", no_argument, NULL, OPT_ONCE },
 	  { "syntax", required_argument, NULL, 's' },
@@ -266,7 +266,7 @@ parse_options(struct conv_options *o,
       int option_index = 0;
       unsigned i;
      
-      c = getopt_long(argc, argv, "V?s:w:", options, &option_index);
+      c = getopt_long(argc, argv, "Vs:w:", options, &option_index);
 
       switch (c)
 	{
@@ -278,6 +278,9 @@ parse_options(struct conv_options *o,
 	    die("sexp-conv: Command line takes no arguments, only options.\n");
 	  return;
 
+	case '?':
+	  exit(EXIT_FAILURE);
+	  
 	case 'w':
 	  {
 	    char *end;
@@ -333,7 +336,7 @@ parse_options(struct conv_options *o,
 	  o->lock = 1;
 	  break;
 #endif
-	case '?':
+	case OPT_HELP:
 	  printf("Usage: sexp-conv [OPTION...]\n"
 		 "  Conversion:     sexp-conv [OPTION...] <INPUT-SEXP\n"
 		 "  Fingerprinting: sexp-conv --hash=HASH <INPUT-SEXP\n\n"
