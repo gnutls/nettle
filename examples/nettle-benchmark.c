@@ -513,7 +513,16 @@ main(int argc, char **argv)
       NULL
     };
 
-  while ( (c = getopt(argc, argv, "f:")) != -1)
+  enum { OPT_HELP = 300 };
+  static const struct option options[] =
+    {
+      /* Name, args, flag, val */
+      { "help", no_argument, NULL, OPT_HELP },
+      { "clock-frequency", required_argument, NULL, 'f' },
+      { NULL, 0, NULL, 0 }
+    };
+  
+  while ( (c = getopt_long(argc, argv, "f:", options, NULL)) != -1)
     switch (c)
       {
       case 'f':
@@ -521,8 +530,11 @@ main(int argc, char **argv)
 	if (frequency > 0.0)
 	  break;
 
-      case ':': case '?':
-	fprintf(stderr, "Usage: nettle-benchmark [-f clock frequency] [alg]\n");
+      case OPT_HELP:
+	printf("Usage: nettle-benchmark [-f clock frequency] [alg]\n");
+	return EXIT_SUCCESS;
+
+      case '?':
 	return EXIT_FAILURE;
 
       default:
