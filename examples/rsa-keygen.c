@@ -51,7 +51,6 @@ progress(void *ctx, int c)
   fputc(c, stderr);
 }
 
-
 int
 main(int argc, char **argv)
 {
@@ -67,7 +66,16 @@ main(int argc, char **argv)
   struct nettle_buffer pub_buffer;
   struct nettle_buffer priv_buffer;
 
-  while ( (c = getopt(argc, argv, "o:r:")) != -1)
+  enum { OPT_HELP = 300 };
+  static const struct option options[] =
+    {
+      /* Name, args, flag, val */
+      { "help", no_argument, NULL, OPT_HELP },
+      { "random", required_argument, NULL, 'r' },
+      { NULL, 0, NULL, 0}
+    };
+  
+  while ( (c = getopt_long(argc, argv, "o:r:", options, NULL)) != -1)
     switch (c)
       {
       case 'o':
@@ -77,14 +85,14 @@ main(int argc, char **argv)
       case 'r':
 	random_name = optarg;
 	break;
-	
+
+      case OPT_HELP:
+	printf("FIXME: Usage information.\n");
+	return EXIT_SUCCESS;
+
       case '?':
-	if (isprint (optopt))
-	  werror("Unknown option `-%c'.\n", optopt);
-	else
-	  werror("Unknown option character `\\x%x'.\n",
-		  optopt);
 	return EXIT_FAILURE;
+
       default:
 	abort();
       }

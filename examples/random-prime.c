@@ -65,16 +65,17 @@ main(int argc, char **argv)
   clock_t start;
   clock_t end;
   
+  enum { OPT_HELP = 300 };
   static const struct option options[] =
     {
       /* Name, args, flag, val */
-      { "help", no_argument, NULL, '?' },
+      { "help", no_argument, NULL, OPT_HELP },
       { "verbose", no_argument, NULL, 'v' },
       { "random", required_argument, NULL, 'r' },
       { NULL, 0, NULL, 0}
     };
 
-  while ( (c = getopt_long(argc, argv, "v?r:", options, NULL)) != -1)
+  while ( (c = getopt_long(argc, argv, "vr:", options, NULL)) != -1)
     switch (c)
       {
       case 'v':
@@ -83,8 +84,10 @@ main(int argc, char **argv)
       case 'r':
 	random_file = optarg;
 	break;
-      case '?':
+      case OPT_HELP:
 	usage();
+	return EXIT_SUCCESS;
+      case '?':
 	return EXIT_FAILURE;
       default:
 	abort();
