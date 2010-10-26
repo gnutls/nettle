@@ -1,3 +1,16 @@
+2010-10-22  Niels Möller  <nisse@turmalin.hack.org>
+
+	* examples/nettle-benchmark.c (main): Added long options. Deleted -?,
+	and fixed handling of bad options.
+
+	* examples/eratosthenes.c (main): Added long options. Deleted -?,
+	and fixed handling of bad options. Renamed -s to -q (long option
+	--quiet). 
+
+	* tools/pkcs1-conv.c (main): Deleted short alias -? for --help,
+	and fixed handling of bad options.
+	* tools/sexp-conv.c (parse_options): Likewise.
+
 2010-10-06  Niels Möller  <nisse@turmalin.hack.org>
 
 	* memxor.c (memxor3): Optimized.
