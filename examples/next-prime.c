@@ -61,26 +61,27 @@ main(int argc, char **argv)
   clock_t start;
   clock_t end;
   
-  enum { OPT_FACTORIAL = -100 };
+  enum { OPT_HELP = 300 };
+
   static const struct option options[] =
     {
       /* Name, args, flag, val */
-      { "help", no_argument, NULL, '?' },
+      { "help", no_argument, NULL, OPT_HELP },
       { "verbose", no_argument, NULL, 'v' },
       { "factorial", no_argument, NULL, 'f' },
       { "sieve-limit", required_argument, NULL, 's' },
       { NULL, 0, NULL, 0}
     };
 
-  while ( (c = getopt_long(argc, argv, "v?s:", options, NULL)) != -1)
+  while ( (c = getopt_long(argc, argv, "vs:", options, NULL)) != -1)
     switch (c)
       {
       case 'v':
 	verbose = 1;
 	break;
-      case '?':
+      case OPT_HELP:
 	usage();
-	return EXIT_FAILURE;
+	return EXIT_SUCCESS;
       case 'f':
 	factorial = 1;
 	break;
@@ -92,6 +93,8 @@ main(int argc, char **argv)
 	    return EXIT_FAILURE;
 	  }
 	break;
+      case '?':
+	return EXIT_FAILURE;
       default:
 	abort();
 	
