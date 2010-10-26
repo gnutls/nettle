@@ -1,3 +1,14 @@
+2010-10-26  Niels Möller  <nisse@turmalin.hack.org>
+
+	* examples/rsa-encrypt.c (main): No extra message for bad options.
+
+	* examples/rsa-keygen.c (main): Added long options. Deleted -?,
+	and fixed handling of bad options.
+
+	* examples/next-prime.c (main): Deleted -?, and fixed handling of
+	bad options.
+	* examples/random-prime.c (main): Likewise.
+
 2010-10-22  Niels Möller  <nisse@turmalin.hack.org>
 
 	* examples/nettle-benchmark.c (main): Added long options. Deleted -?,
@@ -5,7 +16,7 @@
 
 	* examples/eratosthenes.c (main): Added long options. Deleted -?,
 	and fixed handling of bad options. Renamed -s to -q (long option
-	--quiet). 
+	--quiet).
 
 	* tools/pkcs1-conv.c (main): Deleted short alias -? for --help,
 	and fixed handling of bad options.
