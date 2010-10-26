@@ -163,7 +163,8 @@ main(int argc, char **argv)
   
   int c;
   const char *random_name = NULL;
-  
+
+  /* FIXME: --help option. */
   while ( (c = getopt(argc, argv, "o:r:")) != -1)
     switch (c)
       {
@@ -172,12 +173,8 @@ main(int argc, char **argv)
 	break;
 	
       case '?':
-	if (isprint (optopt))
-	  werror("Unknown option `-%c'.\n", optopt);
-	else
-	  werror("Unknown option character `\\x%x'.\n",
-		  optopt);
 	return EXIT_FAILURE;
+
       default:
 	abort();
       }
