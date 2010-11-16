@@ -475,7 +475,7 @@ fi
 # Checks for libraries
 AC_CHECK_LIB(gmp, __gmpz_getlimbn,,
     [AC_MSG_WARN(
-[GNU MP not found, or not 3.1 or up, see http://www.swox.com/gmp.
+[GNU MP not found, or not 3.1 or up, see http://gmplib.org/.
 Support for public key algorithms will be unavailable.])]
     enable_public_key=no)
 
