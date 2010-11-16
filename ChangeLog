@@ -1,3 +1,7 @@
+2010-11-16  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Updated gmp url.
+
 2010-11-01  Niels Möller  <nisse@lysator.liu.se>
 
 	* tools/misc.c (werror): Don't call exit (copy&paste-error).
