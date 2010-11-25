@@ -271,7 +271,7 @@ install-static: $(LIBTARGETS)
 
 install-shared-nettle: $(LIBNETTLE_FORLINK)
 	$(MKDIR_P) $(DESTDIR)$(libdir)
-	$(INSTALL_PROGRAM) $(LIBNETTLE_FORLINK) $(DESTDIR)$(libdir)/$(LIBNETTLE_FILE)
+	$(INSTALL_DATA) $(LIBNETTLE_FORLINK) $(DESTDIR)$(libdir)/$(LIBNETTLE_FILE)
 	[ -z "$(LIBNETTLE_SONAME)" ] \
                 || (cd $(DESTDIR)$(libdir) \
 		&& ln -sf $(LIBNETTLE_FILE) $(LIBNETTLE_SONAME) \
@@ -279,7 +279,7 @@ install-shared-nettle: $(LIBNETTLE_FORLINK)
 
 install-shared-hogweed: $(LIBHOGWEED_FORLINK)
 	$(MKDIR_P) $(DESTDIR)$(libdir)
-	$(INSTALL_PROGRAM) $(LIBHOGWEED_FORLINK) $(DESTDIR)$(libdir)/$(LIBHOGWEED_FILE)
+	$(INSTALL_DATA) $(LIBHOGWEED_FORLINK) $(DESTDIR)$(libdir)/$(LIBHOGWEED_FILE)
 	[ -z "$(LIBHOGWEED_SONAME)" ] \
                 || (cd $(DESTDIR)$(libdir) \
 		&& ln -sf $(LIBHOGWEED_FILE) $(LIBHOGWEED_SONAME) \

@@ -1,3 +1,9 @@
+2010-11-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (install-shared-nettle): Use INSTALL_DATA, which
+	clears the execute permission bits.
+	(install-shared-hogweed): Likewise.
+
 2010-11-16  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Updated gmp url.
