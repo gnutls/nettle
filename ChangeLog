@@ -1,3 +1,8 @@
+2010-11-26  Simon Josefsson  <simon@josefsson.org>
+
+	* blowfish.c: New version ported from libgcrypt. License changed
+	from GPL to LGPL.
+
 2010-11-25  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in (install-shared-nettle): Use INSTALL_DATA, which
@@ -12,7 +17,7 @@
 
 	* tools/misc.c (werror): Don't call exit (copy&paste-error).
 
-2010-10-26  Niels Möller  <nisse@turmalin.hack.org>
+2010-10-26  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/rsa-encrypt.c (main): No extra message for bad options.
 
@@ -23,7 +28,7 @@
 	bad options.
 	* examples/random-prime.c (main): Likewise.
 
-2010-10-22  Niels Möller  <nisse@turmalin.hack.org>
+2010-10-22  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/nettle-benchmark.c (main): Added long options. Deleted -?,
 	and fixed handling of bad options.
@@ -36,7 +41,7 @@
 	and fixed handling of bad options.
 	* tools/sexp-conv.c (parse_options): Likewise.
 
-2010-10-06  Niels Möller  <nisse@turmalin.hack.org>
+2010-10-06  Niels Möller  <nisse@lysator.liu.se>
 
 	* memxor.c (memxor3): Optimized.
 	(memxor3_common_alignment): New function.
@@ -57,14 +62,14 @@
 	words.
 	(main): Call time_overhead.
 
-2010-10-01  Niels Möller  <nisse@turmalin.hack.org>
+2010-10-01  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86_64/camellia-crypt-internal.asm (ROUND): Reordered sbox
 	lookups.
 
 	* testsuite/memxor-test.c: Also test memxor3.
 
-2010-09-30  Niels Möller  <nisse@turmalin.hack.org>
+2010-09-30  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Link in memxor.asm, if found.
 
@@ -96,7 +101,7 @@
 	differing in where addition of the key is done.
 	* x86/camellia-crypt-internal.asm: Moved addition of key.
 
-2010-09-22  Niels Möller  <nisse@turmalin.hack.org>
+2010-09-22  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/nettle-benchmark.c (BENCH_INTERVAL): Changed unit to
 	seconds.
@@ -118,7 +123,7 @@
 	* configure.ac: Check for clock_gettime, and add -lrt to
 	BENCH_LIBS if needed.
 
-2010-09-20  Niels Möller  <nisse@turmalin.hack.org>
+2010-09-20  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Less quoting when invoking $CC, to allow CC="gcc
 	-m32".
