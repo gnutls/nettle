@@ -324,21 +324,21 @@ blowfish_encrypt (const struct blowfish_ctx *ctx,
 		  unsigned length, uint8_t * dst, const uint8_t * src)
 {
   FOR_BLOCKS (length, dst, src, BLOWFISH_BLOCK_SIZE)
-  {
-    uint32_t d1, d2;
+    {
+      uint32_t d1, d2;
 
-    d1 = src[0] << 24 | src[1] << 16 | src[2] << 8 | src[3];
-    d2 = src[4] << 24 | src[5] << 16 | src[6] << 8 | src[7];
-    encrypt (ctx, &d1, &d2);
-    dst[0] = (d1 >> 24) & 0xff;
-    dst[1] = (d1 >> 16) & 0xff;
-    dst[2] = (d1 >> 8) & 0xff;
-    dst[3] = d1 & 0xff;
-    dst[4] = (d2 >> 24) & 0xff;
-    dst[5] = (d2 >> 16) & 0xff;
-    dst[6] = (d2 >> 8) & 0xff;
-    dst[7] = d2 & 0xff;
-  }
+      d1 = src[0] << 24 | src[1] << 16 | src[2] << 8 | src[3];
+      d2 = src[4] << 24 | src[5] << 16 | src[6] << 8 | src[7];
+      encrypt (ctx, &d1, &d2);
+      dst[0] = (d1 >> 24) & 0xff;
+      dst[1] = (d1 >> 16) & 0xff;
+      dst[2] = (d1 >> 8) & 0xff;
+      dst[3] = d1 & 0xff;
+      dst[4] = (d2 >> 24) & 0xff;
+      dst[5] = (d2 >> 16) & 0xff;
+      dst[6] = (d2 >> 8) & 0xff;
+      dst[7] = d2 & 0xff;
+    }
 }
 
 void
@@ -346,21 +346,21 @@ blowfish_decrypt (const struct blowfish_ctx *ctx,
 		  unsigned length, uint8_t * dst, const uint8_t * src)
 {
   FOR_BLOCKS (length, dst, src, BLOWFISH_BLOCK_SIZE)
-  {
-    uint32_t d1, d2;
+    {
+      uint32_t d1, d2;
 
-    d1 = src[0] << 24 | src[1] << 16 | src[2] << 8 | src[3];
-    d2 = src[4] << 24 | src[5] << 16 | src[6] << 8 | src[7];
-    decrypt (ctx, &d1, &d2);
-    dst[0] = (d1 >> 24) & 0xff;
-    dst[1] = (d1 >> 16) & 0xff;
-    dst[2] = (d1 >> 8) & 0xff;
-    dst[3] = d1 & 0xff;
-    dst[4] = (d2 >> 24) & 0xff;
-    dst[5] = (d2 >> 16) & 0xff;
-    dst[6] = (d2 >> 8) & 0xff;
-    dst[7] = d2 & 0xff;
-  }
+      d1 = src[0] << 24 | src[1] << 16 | src[2] << 8 | src[3];
+      d2 = src[4] << 24 | src[5] << 16 | src[6] << 8 | src[7];
+      decrypt (ctx, &d1, &d2);
+      dst[0] = (d1 >> 24) & 0xff;
+      dst[1] = (d1 >> 16) & 0xff;
+      dst[2] = (d1 >> 8) & 0xff;
+      dst[3] = d1 & 0xff;
+      dst[4] = (d2 >> 24) & 0xff;
+      dst[5] = (d2 >> 16) & 0xff;
+      dst[6] = (d2 >> 8) & 0xff;
+      dst[7] = d2 & 0xff;
+    }
 }
 
 int
