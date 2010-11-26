@@ -1,3 +1,19 @@
+2010-11-26  Niels Möller  <nisse@lysator.liu.se>
+
+	Reapplied optimizations (150% speedup on x86_32) and other fixes,
+	relicensing them as LGPL.
+	* blowfish.c (do_encrypt): Renamed, to...
+	(encrypt): ...new name.
+	(F): Added context argument. Shift input explicitly, instead of
+	reading individual bytes via memory.
+	(R): Added context argument.
+	(encrypt): Deleted a bunch of local variables. Using the context
+	pointer for everything should consume less registers.
+	(decrypt): Likewise.
+	(initial_ctx): Arrange constants into a struct, to simplify key
+	setup.
+	(blowfish_set_key): Some simplification.
+
 2010-11-26  Simon Josefsson  <simon@josefsson.org>
 
 	* blowfish.c: New version ported from libgcrypt. License changed
@@ -323,7 +339,7 @@
 	* blowfish.c (initial_ctx): Deleted status value.
 	(blowfish_encrypt): Ignore status attribute.
 	(blowfish_decrypt): Likewise.
-	(blowfish_set_key): return result from weak key check, without
+	(blowfish_set_key): Return result from weak key check, without
 	setting the status attribute.
 
 	* blowfish.h (enum blowfish_error): Deleted.
