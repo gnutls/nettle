@@ -134,8 +134,8 @@ Josefsson. Released under the LGPL.
 
 @item BLOWFISH
 The implementation of the BLOWFISH cipher is written by Werner Koch,
-copyright owned by the Free Software Foundation. Also hacked by Ray
-Dassen and @value{AUTHOR}. Released under the GPL.
+copyright owned by the Free Software Foundation. Also hacked by Simon
+Josefsson and Niels Möller. Released under the LGPL.
 
 @item CAMELLIA
 The C implementation is by Nippon Telegraph and Telephone Corporation

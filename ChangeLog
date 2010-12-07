@@ -1,3 +1,7 @@
+2010-12-07  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle.texinfo (Copyright): Updated info on blowfish.
+
 2010-11-26  Niels Möller  <nisse@lysator.liu.se>
 
 	Reapplied optimizations (150% speedup on x86_32) and other fixes,
