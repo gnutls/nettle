@@ -70,8 +70,6 @@ dsa_public_key_from_der_iterator(struct dsa_public_key *pub,
 	  && mpz_sgn(pub->y) > 0);
 }
 
-/* FIXME: Rename this and the next function to something
-   openssl-specific? */
 int
 dsa_openssl_private_key_from_der_iterator(struct dsa_public_key *pub,
 					  struct dsa_private_key *priv,
