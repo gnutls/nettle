@@ -1,3 +1,13 @@
+2010-12-14  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle-types.h: Deleted some unnecessary parenthesis from
+	function typedefs.
+	(nettle_realloc_func): Moved typedef here...
+	* realloc.h: ...from here.
+
+	* buffer.c (nettle_buffer_init_realloc): Use an explicit pointer
+	for realloc argument.
+
 2010-12-07  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle.texinfo (Copyright): Updated info on blowfish.
