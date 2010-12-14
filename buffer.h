@@ -52,7 +52,7 @@ nettle_buffer_init(struct nettle_buffer *buffer);
 void
 nettle_buffer_init_realloc(struct nettle_buffer *buffer,
 			   void *realloc_ctx,
-			   nettle_realloc_func realloc);
+			   nettle_realloc_func *realloc);
 
 /* Initializes a buffer of fix size */
 void
