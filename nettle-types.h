@@ -30,17 +30,19 @@ extern "C" {
 #endif
 
 /* Randomness. Used by key generation and dsa signature creation. */
-typedef void (nettle_random_func)(void *ctx,
-				  unsigned length, uint8_t *dst);
+typedef void nettle_random_func(void *ctx,
+				unsigned length, uint8_t *dst);
 
 /* Progress report function, mainly for key generation. */
-typedef void (nettle_progress_func)(void *ctx,
-				    int c);
+typedef void nettle_progress_func(void *ctx, int c);
+
+/* Realloc function, used by struct nettle_buffer. */
+typedef void *nettle_realloc_func(void *ctx, void *p, unsigned length);
 
 /* Ciphers */
-typedef void (nettle_set_key_func)(void *ctx,
-				   unsigned length,
-				   const uint8_t *key);
+typedef void nettle_set_key_func(void *ctx,
+				 unsigned length,
+				 const uint8_t *key);
 
 /* Uses a void * for cipher contexts.
 
@@ -48,37 +50,37 @@ typedef void (nettle_set_key_func)(void *ctx,
    context, but we use the same typedef for stream ciphers where the
    internal state changes during the encryption. */
 
-typedef void (nettle_crypt_func)(void *ctx,
-				 unsigned length, uint8_t *dst,
-				 const uint8_t *src);
+typedef void nettle_crypt_func(void *ctx,
+			       unsigned length, uint8_t *dst,
+			       const uint8_t *src);
 
 /* Hash algorithms */
-typedef void (nettle_hash_init_func)(void *ctx);
-typedef void (nettle_hash_update_func)(void *ctx,
-				       unsigned length,
-				       const uint8_t *src);
-typedef void (nettle_hash_digest_func)(void *ctx,
-				       unsigned length, uint8_t *dst);
+typedef void nettle_hash_init_func(void *ctx);
+typedef void nettle_hash_update_func(void *ctx,
+				     unsigned length,
+				     const uint8_t *src);
+typedef void nettle_hash_digest_func(void *ctx,
+				     unsigned length, uint8_t *dst);
 
 /* ASCII armor codecs. NOTE: Experimental and subject to change. */
 
-typedef unsigned (nettle_armor_length_func)(unsigned length);
-typedef void (nettle_armor_init_func)(void *ctx);
+typedef unsigned nettle_armor_length_func(unsigned length);
+typedef void nettle_armor_init_func(void *ctx);
 
-typedef unsigned (nettle_armor_encode_update_func)(void *ctx,
-						   uint8_t *dst,
-						   unsigned src_length,
-						   const uint8_t *src);
+typedef unsigned nettle_armor_encode_update_func(void *ctx,
+						 uint8_t *dst,
+						 unsigned src_length,
+						 const uint8_t *src);
 
-typedef unsigned (nettle_armor_encode_final_func)(void *ctx, uint8_t *dst);
+typedef unsigned nettle_armor_encode_final_func(void *ctx, uint8_t *dst);
 
-typedef int (nettle_armor_decode_update_func)(void *ctx,
-					      unsigned *dst_length,
-					      uint8_t *dst,
-					      unsigned src_length,
-					      const uint8_t *src);
+typedef int nettle_armor_decode_update_func(void *ctx,
+					    unsigned *dst_length,
+					    uint8_t *dst,
+					    unsigned src_length,
+					    const uint8_t *src);
 
-typedef int (nettle_armor_decode_final_func)(void *ctx);
+typedef int nettle_armor_decode_final_func(void *ctx);
 
 #ifdef __cplusplus
 }
