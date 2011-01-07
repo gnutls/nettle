@@ -1,5 +1,8 @@
 2011-01-07  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/Makefile.in (check): Add ../.lib to PATH, since that's
+	where w*ndows looks for dlls.
+
 	* testsuite/testutils.c (test_cipher_stream): More debug output on
 	failure.
 
