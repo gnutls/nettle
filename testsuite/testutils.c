@@ -321,12 +321,22 @@ test_cipher_stream(const struct nettle_cipher *cipher,
 	  if (data[i + block] != 0x17)
 	    FAIL();
 	}
+
       cipher->encrypt(ctx, length - i, data + i, cleartext + i);
       if (data[length] != 0x17)
 	FAIL();
       
       if (!MEMEQ(length, data, ciphertext))
-	FAIL();
+	{
+	  fprintf(stderr, "Encrypt failed, block size %d\nInput:", block);
+	  print_hex(length, cleartext);
+	  fprintf(stderr, "\nOutput: ");
+	  print_hex(length, data);
+	  fprintf(stderr, "\nExpected:");
+	  print_hex(length, ciphertext);
+	  fprintf(stderr, "\n");
+	  FAIL();	    
+	}
     }
   
   cipher->set_decrypt_key(ctx, key_length, key);
@@ -336,7 +346,16 @@ test_cipher_stream(const struct nettle_cipher *cipher,
     FAIL();
 
   if (!MEMEQ(length, data, cleartext))
-    FAIL();
+    {
+      fprintf(stderr, "Decrypt failed\nInput:");
+      print_hex(length, ciphertext);
+      fprintf(stderr, "\nOutput: ");
+      print_hex(length, data);
+      fprintf(stderr, "\nExpected:");
+      print_hex(length, cleartext);
+      fprintf(stderr, "\n");
+      FAIL();	    
+    }
 
   free(ctx);
   free(data);
