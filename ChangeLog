@@ -1,3 +1,8 @@
+2011-01-07  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/testutils.c (test_cipher_stream): More debug output on
+	failure.
+
 2010-12-14  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle-types.h: Deleted some unnecessary parenthesis from
