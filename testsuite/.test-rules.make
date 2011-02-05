@@ -76,6 +76,9 @@ cbc-test$(EXEEXT): cbc-test.$(OBJEXT)
 ctr-test$(EXEEXT): ctr-test.$(OBJEXT)
 	$(LINK) ctr-test.$(OBJEXT) $(TEST_OBJS) -o ctr-test$(EXEEXT)
 
+gcm-test$(EXEEXT): gcm-test.$(OBJEXT)
+	$(LINK) gcm-test.$(OBJEXT) $(TEST_OBJS) -o gcm-test$(EXEEXT)
+
 hmac-test$(EXEEXT): hmac-test.$(OBJEXT)
 	$(LINK) hmac-test.$(OBJEXT) $(TEST_OBJS) -o hmac-test$(EXEEXT)
 
