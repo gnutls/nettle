@@ -106,6 +106,19 @@ test_cipher_ctr(const struct nettle_cipher *cipher,
 		const uint8_t *iv);
 
 void
+test_cipher_gcm(const struct nettle_cipher *cipher,
+		unsigned key_length,
+		const uint8_t *key,
+		unsigned auth_length,
+		const uint8_t *authtext,
+		unsigned length,
+		const uint8_t *cleartext,
+		const uint8_t *ciphertext,
+		unsigned iv_length,
+		const uint8_t *iv,
+		const uint8_t *digest);
+
+void
 test_cipher_stream(const struct nettle_cipher *cipher,
 		   unsigned key_length,
 		   const uint8_t *key,
