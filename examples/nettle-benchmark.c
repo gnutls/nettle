@@ -43,6 +43,7 @@
 #include "cast128.h"
 #include "cbc.h"
 #include "des.h"
+#include "gcm.h"
 #include "memxor.h"
 #include "serpent.h"
 #include "sha.h"
@@ -344,6 +345,28 @@ time_hash(const struct nettle_hash *hash)
 }
 
 static void
+time_gmac(void)
+{
+  static uint8_t data[BENCH_BLOCK];
+  struct bench_hash_info info;
+  struct gcm_ctx gcm;
+  struct aes_ctx aes;
+  uint8_t key[16];
+  uint8_t iv[GCM_IV_SIZE];
+
+  aes_set_encrypt_key(&aes, sizeof(key), key);
+  gcm_set_key(&gcm, &aes, (nettle_crypt_func *) aes_encrypt);
+  gcm_set_iv(&gcm, sizeof(iv), iv);
+
+  info.ctx = &gcm;
+  info.update = (nettle_hash_update_func *) gcm_auth;
+  info.data = data;
+
+  display("gmac", "auth", GCM_BLOCK_SIZE,
+	  time_function(bench_hash, &info));
+}
+
+static void
 time_cipher(const struct nettle_cipher *cipher)
 {
   void *ctx = xalloc(cipher->context_size);
@@ -560,6 +583,13 @@ main(int argc, char **argv)
       if (!alg || strstr(hashes[i]->name, alg))
 	time_hash(hashes[i]);
     }
+
+  if (!alg || strstr ("gmac", alg))
+    {
+      time_gmac();
+      printf("\n");
+    }
+
   for (i = 0; ciphers[i]; i++)
     if (!alg || strstr(ciphers[i]->name, alg))
       time_cipher(ciphers[i]);
