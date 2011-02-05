@@ -1,5 +1,22 @@
 2011-02-05  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/nettle-benchmark.c (time_gmac): New function.
+	(main): Call time_gmac.
+
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Added gcm-test.c.
+
+	* testsuite/testutils.c (test_cipher_gcm): New function,
+	contributed by Nikos Mavrogiannopoulos.
+
+	* testsuite/gcm-test.c: New file, contributed by Nikos
+	Mavrogiannopoulos.
+
+	* Makefile.in (nettle_SOURCES): Added gcm.c.
+	(HEADERS): Added gcm.h.
+
+	* gcm.c: New file, contributed by Nikos Mavrogiannopoulos.
+	* gcm.h: New file, contributed by Nikos Mavrogiannopoulos.
+
 	* macros.h (INCREMENT): New macro, moved from ctr.c. Deleted third
 	argument.
 	* ctr.c: Use INCREMENT macro from macros.h, deleted local version.
