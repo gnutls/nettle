@@ -21,7 +21,7 @@ TS_NETTLE_SOURCES = aes-test.c arcfour-test.c arctwo-test.c \
 		    sha384-test.c sha512-test.c \
 		    serpent-test.c twofish-test.c \
 		    knuth-lfib-test.c \
-		    cbc-test.c ctr-test.c hmac-test.c \
+		    cbc-test.c ctr-test.c gcm-test.c hmac-test.c \
 		    buffer-test.c yarrow-test.c
 
 TS_HOGWEED_SOURCES = sexp-test.c sexp-format-test.c \
