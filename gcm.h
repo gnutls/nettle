@@ -58,7 +58,7 @@ struct gcm_ctx {
   /* Hashing subkey */
   uint8_t h[GCM_BLOCK_SIZE];
 #if GCM_TABLE_BITS
-  uint8_t h[1 << GCM_TABLE_BITS][GCM_BLOCK_SIZE];
+  uint8_t h_table[1 << GCM_TABLE_BITS][GCM_BLOCK_SIZE];
 #endif
   /* Per-message state, depending on the iv */
   /* Original counter block */
