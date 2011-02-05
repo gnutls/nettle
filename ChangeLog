@@ -1,3 +1,9 @@
+2011-02-05  Niels Möller  <nisse@lysator.liu.se>
+
+	* macros.h (INCREMENT): New macro, moved from ctr.c. Deleted third
+	argument.
+	* ctr.c: Use INCREMENT macro from macros.h, deleted local version.
+
 2011-01-07  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/Makefile.in (check): Add ../.lib to PATH, since that's

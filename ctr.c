@@ -33,18 +33,9 @@
 
 #include "ctr.h"
 
+#include "macros.h"
 #include "memxor.h"
 #include "nettle-internal.h"
-
-#define INCREMENT(size, counter, i)		\
-do {						\
-  if (++(ctr)[(size) - 1] == 0)			\
-    {						\
-      unsigned i = size - 1;			\
-      while (i > 0 && ++(ctr)[--i] == 0)	\
-	;					\
-    }						\
-} while (0)
   
 void
 ctr_crypt(void *ctx, nettle_crypt_func f,
@@ -61,7 +52,7 @@ ctr_crypt(void *ctx, nettle_crypt_func f,
 	{
 	  f(ctx, block_size, dst, ctr);
 	  memxor(dst, src, block_size);
-	  INCREMENT(block_size, ctr, i);
+	  INCREMENT(block_size, ctr);
 	}
     }
   else
@@ -70,7 +61,7 @@ ctr_crypt(void *ctx, nettle_crypt_func f,
 	{
 	  f(ctx, block_size, buffer, ctr);
 	  memxor3(dst, src, buffer, block_size);
-	  INCREMENT(block_size, ctr, i);
+	  INCREMENT(block_size, ctr);
 	}      
     }
   if (length > 0)
@@ -79,6 +70,6 @@ ctr_crypt(void *ctx, nettle_crypt_func f,
 
       f(ctx, block_size, buffer, ctr);
       memxor3(dst, src, buffer, length);
-      INCREMENT(block_size, ctr, i);
+      INCREMENT(block_size, ctr);
     }
 }

@@ -119,4 +119,16 @@ do {						\
 		  (dst) += (blocksize),		\
 		  (src) += (blocksize)) )
 
+/* Requires that size >= 2 */
+#define INCREMENT(size, ctr)			\
+  do {						\
+    unsigned increment_i = (size) - 1;		\
+    if (++(ctr)[increment_i] == 0)		\
+      {						\
+	while (++(ctr)[--increment_i] == 0	\
+	       && increment_i > 0)		\
+	  ;					\
+      }						\
+  } while (0)
+
 #endif /* NETTLE_MACROS_H_INCLUDED */
