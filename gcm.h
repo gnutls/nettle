@@ -97,7 +97,7 @@ gcm_digest(struct gcm_ctx *ctx, void *cipher, nettle_crypt_func *f,
 	   unsigned length, uint8_t *digest);
 
 #if 0
-/* FIXME: IS this macrology useful? */
+/* FIXME: Is this macrology useful? */
 #define GCM_KEY(type) \
 { type cipher; struct gcm_ctx gcm; }
 
