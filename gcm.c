@@ -15,9 +15,6 @@
  * 
  * Contributed by Nikos Mavrogiannopoulos
  *
- * A few functions copied from Tom S. Dennis' libtomcrypt, which is in
- * the public domain.
- *
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at your
@@ -48,12 +45,16 @@
 #include "nettle-internal.h"
 #include "macros.h"
 
+#define GHASH_POLYNOMIAL 0xE1
+
 /* Big-endian shift right. The argument must be properly aligned for
    word accesses. */
+/* FIXME: Move the reduction/wraparound into this functions as
+   well. */
 static void
-gcm_rightshift (uint8_t *a)
+gcm_rightshift (uint8_t *x)
 {
-  unsigned long *w = (unsigned long *) a;
+  unsigned long *w = (unsigned long *) x;
 
   /* Shift uses big-endian representation. */
 #if WORDS_BIGENDIAN
@@ -88,39 +89,34 @@ gcm_rightshift (uint8_t *a)
 # endif
 #endif /* ! WORDS_BIGENDIAN */
 }
-/* The function gcm_gf_mul was copied from
- * libtomcrypt, which is under public domain. 
- * Written by Tom S. Dennis.
- */
 
-/**
-  GCM GF multiplier (internal use only) bitserial
-  @param a   First value (and destination)
-  @param b   Second value
- */
+/* Sets a <- a * b mod r, using the plain bitwise algorithm from the
+   specification. */
 static void
-gcm_gf_mul (uint8_t * a, const uint8_t * b)
+gcm_gf_mul (uint8_t *x, const uint8_t *y)
 {
-  static const uint8_t mask[] =
-    { 0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01 };
-  static const uint8_t poly[] = { 0x00, 0xE1 };
+  uint8_t V[GCM_BLOCK_SIZE];
+  uint8_t Z[GCM_BLOCK_SIZE];
 
-  uint8_t Z[16], V[16];
-  unsigned x, z;
+  unsigned i;
+  memcpy(V, x, sizeof(V));
+  memset(Z, 0, sizeof(Z));
 
-  memset (Z, 0, 16);
-  memcpy (V, a, 16);
-  for (x = 0; x < 128; x++)
+  for (i = 0; i < GCM_BLOCK_SIZE; i++)
     {
-      if (b[x >> 3] & mask[x & 7])
-        {
-          memxor (Z, V, 16);
-        }
-      z = V[15] & 0x01;
-      gcm_rightshift (V);
-      V[0] ^= poly[z];
+      uint8_t b = y[i];
+      unsigned j;
+      for (j = 0; j < 8; j++, b <<= 1)
+	{
+	  int mask;
+	  if (b & 0x80)
+	    memxor(Z, V, sizeof(V));
+	  mask = - (V[15] & 1);
+	  gcm_rightshift(V);
+	  V[0] ^= mask & GHASH_POLYNOMIAL;
+	}
     }
-  memcpy (a, Z, 16);
+  memcpy (x, Z, sizeof(Z));
 }
 
 /* Increment the rightmost 32 bits. */
