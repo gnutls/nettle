@@ -48,22 +48,50 @@
 #include "nettle-internal.h"
 #include "macros.h"
 
-/* The gcm_rightshift and gcm_gf_mul was copied from
+/* Big-endian shift right. The argument must be properly aligned for
+   word accesses. */
+static void
+gcm_rightshift (uint8_t *a)
+{
+  unsigned long *w = (unsigned long *) a;
+
+  /* Shift uses big-endian representation. */
+#if WORDS_BIGENDIAN
+# if SIZEOF_LONG == 4
+  w[3] = (w[3] >> 1) | ((w[2] & 1) << 31);
+  w[2] = (w[2] >> 1) | ((w[1] & 1) << 31);
+  w[1] = (w[1] >> 1) | ((w[0] & 1) << 31);
+  w[0] = (w[0] >> 1);
+# elif SIZEOF_LONG == 8
+  w[1] = (w[1] >> 1) | ((w[0] & 1) << 63);
+  w[0] = (w[0] >> 1);
+# else
+#  error Unsupported word size. */
+#endif
+#else /* ! WORDS_BIGENDIAN */
+# if SIZEOF_LONG == 4
+#define RSHIFT_WORD(x) \
+  ((((x) & 0xfefefefeUL) >> 1) \
+   | (((x) & 0x01010101) << 15))
+  w[3] = RSHIFT_WORD(w[3]) | ((w[2] >> 17) & 0x80);
+  w[2] = RSHIFT_WORD(w[2]) | ((w[1] >> 17) & 0x80);
+  w[1] = RSHIFT_WORD(w[1]) | ((w[0] >> 17) & 0x80);
+  w[0] = RSHIFT_WORD(w[0]);
+# elif SIZEOF_LONG == 8
+#define RSHIFT_WORD(x) \
+  ((((x) & 0xfefefefefefefefeUL) >> 1) \
+   | (((x) & 0x0101010101010101UL) << 15))
+  w[1] = RSHIFT_WORD(w[1]) | ((w[0] >> 49) & 0x80);
+  w[0] = RSHIFT_WORD(w[0]);
+# else
+#  error Unsupported word size. */
+# endif
+#endif /* ! WORDS_BIGENDIAN */
+}
+/* The function gcm_gf_mul was copied from
  * libtomcrypt, which is under public domain. 
  * Written by Tom S. Dennis.
  */
-
-/* FIXME: Change representation so we can to word-sized shifts? */
-static void
-gcm_rightshift (uint8_t * a)
-{
-  int x;
-  for (x = 15; x > 0; x--)
-    {
-      a[x] = (a[x] >> 1) | ((a[x - 1] << 7) & 0x80);
-    }
-  a[0] >>= 1;
-}
 
 /**
   GCM GF multiplier (internal use only) bitserial
