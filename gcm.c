@@ -47,25 +47,26 @@
 
 #define GHASH_POLYNOMIAL 0xE1
 
-/* Big-endian shift right. The argument must be properly aligned for
-   word accesses. */
-/* FIXME: Move the reduction/wraparound into this functions as
-   well. */
+/* Multiplication by 010...0; a big-endian shift right. If the bit
+   shifted out is one, the defining polynomial is added to cancel it
+   out. */
 static void
 gcm_rightshift (uint8_t *x)
 {
   unsigned long *w = (unsigned long *) x;
-
+  long mask;
   /* Shift uses big-endian representation. */
 #if WORDS_BIGENDIAN
 # if SIZEOF_LONG == 4
+  mask = - (w[3] & 1);
   w[3] = (w[3] >> 1) | ((w[2] & 1) << 31);
   w[2] = (w[2] >> 1) | ((w[1] & 1) << 31);
   w[1] = (w[1] >> 1) | ((w[0] & 1) << 31);
-  w[0] = (w[0] >> 1);
+  w[0] = (w[0] >> 1) ^ (mask & (GHASH_POLYNOMIAL << 24)); 
 # elif SIZEOF_LONG == 8
+  mask = - (w[1] & 1);
   w[1] = (w[1] >> 1) | ((w[0] & 1) << 63);
-  w[0] = (w[0] >> 1);
+  w[0] = (w[0] >> 1) ^ (mask & (GHASH_POLYNOMIAL << 56));
 # else
 #  error Unsupported word size. */
 #endif
@@ -74,16 +75,18 @@ gcm_rightshift (uint8_t *x)
 #define RSHIFT_WORD(x) \
   ((((x) & 0xfefefefeUL) >> 1) \
    | (((x) & 0x01010101) << 15))
+  mask = - ((w[3] >> 24) & 1);
   w[3] = RSHIFT_WORD(w[3]) | ((w[2] >> 17) & 0x80);
   w[2] = RSHIFT_WORD(w[2]) | ((w[1] >> 17) & 0x80);
   w[1] = RSHIFT_WORD(w[1]) | ((w[0] >> 17) & 0x80);
-  w[0] = RSHIFT_WORD(w[0]);
+  w[0] = RSHIFT_WORD(w[0]) ^ (mask & GHASH_POLYNOMIAL);
 # elif SIZEOF_LONG == 8
 #define RSHIFT_WORD(x) \
   ((((x) & 0xfefefefefefefefeUL) >> 1) \
    | (((x) & 0x0101010101010101UL) << 15))
+  mask = - ((w[1] >> 56) & 1);
   w[1] = RSHIFT_WORD(w[1]) | ((w[0] >> 49) & 0x80);
-  w[0] = RSHIFT_WORD(w[0]);
+  w[0] = RSHIFT_WORD(w[0]) ^ (mask & GHASH_POLYNOMIAL);
 # else
 #  error Unsupported word size. */
 # endif
@@ -108,12 +111,10 @@ gcm_gf_mul (uint8_t *x, const uint8_t *y)
       unsigned j;
       for (j = 0; j < 8; j++, b <<= 1)
 	{
-	  int mask;
 	  if (b & 0x80)
 	    memxor(Z, V, sizeof(V));
-	  mask = - (V[15] & 1);
+	  
 	  gcm_rightshift(V);
-	  V[0] ^= mask & GHASH_POLYNOMIAL;
 	}
     }
   memcpy (x, Z, sizeof(Z));
