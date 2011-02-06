@@ -1,5 +1,24 @@
 2011-02-06  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.in (TARGETS): Added gcmdata.
+	(gcmdata): New rule.
+
+	Introduced 4-bit tables. Gives gmac performance of 45 cycles per
+	byte (still on intel x86_64).
+	* gcm.c (gcm_gf_shift): Renamed. Tweaked little-endian masks.
+	(gcm_rightshift): ... old name.
+	(gcm_gf_mul): New argument for the output. Added length argument
+	for one of the inputs (implicitly padding with zeros).
+	(shift_table): New table (in 4-bit and 8-bit versions), generated
+	by gcmdata.
+	(gcm_gf_shift_chunk): New function shifting 4 bits at
+	a time.
+	(gcm_gf_mul_chunk): New function processing 4 bits at a time.
+	(gcm_set_key): Generation of 4-bit key table.
+	(gcm_hash): Use tables, when available.
+
+	* gcmdata.c (main): New file.
+
 	* gcm.c (gcm_rightshift): Moved the reduction of the shifted out
 	bit here.
 	(gcm_gf_mul): Updated for gcm_rightshift change. Improves gmac
