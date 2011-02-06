@@ -1,11 +1,17 @@
 2011-02-06  Niels Möller  <nisse@lysator.liu.se>
 
+	* gcm.c (gcm_rightshift): Moved the reduction of the shifted out
+	bit here.
+	(gcm_gf_mul): Updated for gcm_rightshift change. Improves gmac
+	performance to 181 cycles/byte.
+
+	* gcm.c (gcm_gf_mul): Rewrote. Still uses the bitwise algorithm from the
+	specification, but with separate byte and bit loops. Improves gmac
+	performance a bit further, to 227 cycles/byte.
+
 	* gcm.c (gcm_rightshift): Complete rewrite, to use word rather
 	than byte operations. Improves gmac performance from 830 cycles /
 	byte to (still poor) 268 cycles per byte on intel x86_64.
-	(gcm_gf_mul): Rewrote. Still uses the bitwise algorithm from the
-	specification, but with separate byte and bit loops. Improves gmac
-	performance a bit further, to 227 cycles/byte.
 
 2011-02-05  Niels Möller  <nisse@lysator.liu.se>
 
