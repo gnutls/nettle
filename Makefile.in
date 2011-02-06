@@ -23,7 +23,7 @@ PRE_CPPFLAGS = -I.
 LIBTARGETS = libnettle.a @IF_HOGWEED@ libhogweed.a
 SHLIBTARGETS = $(LIBNETTLE_FORLINK) @IF_HOGWEED@ $(LIBHOGWEED_FORLINK)
 
-TARGETS = aesdata$(EXEEXT) desdata$(EXEEXT) shadata$(EXEEXT) \
+TARGETS = aesdata$(EXEEXT) desdata$(EXEEXT) shadata$(EXEEXT) gcmdata$(EXEEXT)\
 	  $(LIBTARGETS) @IF_SHARED@ $(SHLIBTARGETS)
 
 DOCTARGETS = nettle.info nettle.html nettle.pdf
@@ -179,6 +179,9 @@ desdata$(EXEEXT): desdata.$(OBJEXT)
 
 shadata$(EXEEXT): shadata.$(OBJEXT)
 	$(LINK) shadata.$(OBJEXT) $(LIBS) -lm -o shadata$(EXEEXT)
+
+gcmdata$(EXEEXT): gcmdata.$(OBJEXT)
+	$(LINK) gcmdata.$(OBJEXT) $(LIBS) -o gcmdata$(EXEEXT)
 
 # .$(OBJEXT)$(EXEEXT):
 # 	$(LINK) $< $(LIBS) -o $@
