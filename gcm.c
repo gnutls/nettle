@@ -47,6 +47,21 @@
 
 #define GHASH_POLYNOMIAL 0xE1
 
+/* Like memxor, but for fixed length and aligned operands. */
+static void
+gcm_gf_add (uint8_t *r, const uint8_t *x, const uint8_t *y)
+{
+  unsigned long *rw = (unsigned long *) r;
+  unsigned long *xw = (unsigned long *) x;
+  unsigned long *yw = (unsigned long *) y;
+
+  rw[0] = xw[0] ^ yw[0];
+  rw[1] = xw[1] ^ yw[1];
+#if SIZEOF_LONG == 4
+  rw[2] = xw[2] ^ yw[2];
+  rw[3] = xw[3] ^ yw[3];
+#endif      
+}
 /* Multiplication by 010...0; a big-endian shift right. If the bit
    shifted out is one, the defining polynomial is added to cancel it
    out. The argument must be properly aligned for word accesses. */
@@ -114,7 +129,7 @@ gcm_gf_mul (uint8_t *r, const uint8_t *x, unsigned yn, const uint8_t *y)
       for (j = 0; j < 8; j++, b <<= 1)
 	{
 	  if (b & 0x80)
-	    memxor(Z, V, sizeof(V));
+	    gcm_gf_add(Z, Z, V);
 	  
 	  gcm_gf_shift(V);
 	}
@@ -238,9 +253,9 @@ gcm_gf_mul_chunk (uint8_t *x, const uint8_t *h, uint8_t table[16][16])
       uint8_t b = x[i];
 
       gcm_gf_shift_chunk(Z);
-      memxor(Z, table[b & 0xf], GCM_BLOCK_SIZE);
+      gcm_gf_add(Z, Z, table[b & 0xf]);
       gcm_gf_shift_chunk(Z);
-      memxor(Z, table[b >> 4], GCM_BLOCK_SIZE);
+      gcm_gf_add(Z, Z, table[b >> 4]);
     }
   memcpy (x, Z, sizeof(Z));
 }
@@ -291,14 +306,15 @@ gcm_gf_mul_chunk (uint8_t *x, const uint8_t *h, uint8_t table[16][16])
   uint8_t Z[GCM_BLOCK_SIZE];
   unsigned i;
 
-  memset(Z, 0, sizeof(Z));
+  memcpy(Z, table[x[GCM_BLOCK_SIZE-1]], GCM_BLOCK_SIZE);
 
-  for (i = GCM_BLOCK_SIZE; i-- > 0;)
+  for (i = GCM_BLOCK_SIZE-2; i > 0; i--)
     {
       gcm_gf_shift_chunk(Z);
-      memxor(Z, table[x[i]], GCM_BLOCK_SIZE);
+      gcm_gf_add(Z, Z, table[x[i]]);
     }
-  memcpy (x, Z, sizeof(Z));
+  gcm_gf_shift_chunk(Z);
+  gcm_gf_add(x, Z, table[x[0]]);
 }
 
 #else /* GCM_TABLE_BITS != 8 */
