@@ -283,8 +283,7 @@ gcm_gf_shift_chunk(uint8_t *x)
 #endif
 #else /* ! WORDS_BIGENDIAN */
 # if SIZEOF_LONG == 4
-#define RSHIFT_WORD(x) \
-  reduce = shift_table[(w[3] >> 56) & 0xff];
+  reduce = shift_table[(w[3] >> 24) & 0xff];
   w[3] = (w[3] << 8) | (w[2] >> 24);
   w[2] = (w[2] << 8) | (w[1] >> 24);
   w[1] = (w[1] << 8) | (w[0] >> 24);
