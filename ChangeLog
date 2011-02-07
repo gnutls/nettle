@@ -1,6 +1,12 @@
 2011-02-07  Niels Möller  <nisse@lysator.liu.se>
 
-	Introduced 4-bit tables. If enabled, gives gmac performance of 19
+	* gcm.c (gcm_gf_mul_chunk): Special case first and last iteration.
+	(gcm_gf_add): New function, a special case of memxor. Use it for
+	all memxor calls with word-aligned 16 byte blocks. Improves
+	performance to 152 cycles/byte with no tables, 28 cycles per byte
+	with 4-bit tables and 10.5 cycles per byte with 8-bit tables.
+
+	Introduced 8-bit tables. If enabled, gives gmac performance of 19
 	cycles per byte (still on intel x86_64).
 	* gcm.c (gcm_gf_shift_chunk): New implementation for 8-bit tables.
 	(gcm_gf_mul_chunk): Likewise.
