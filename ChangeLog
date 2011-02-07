@@ -1,5 +1,11 @@
 2011-02-07  Niels Möller  <nisse@lysator.liu.se>
 
+	Introduced 4-bit tables. If enabled, gives gmac performance of 19
+	cycles per byte (still on intel x86_64).
+	* gcm.c (gcm_gf_shift_chunk): New implementation for 8-bit tables.
+	(gcm_gf_mul_chunk): Likewise.
+	(gcm_set_key): Generate 8-bit tables.
+
 	* Makefile.in (SOURCES): Added gcmdata.c.
 
 	* gcm.h (GCM_TABLE_BITS): Set to 4.
