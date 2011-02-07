@@ -1,3 +1,7 @@
+2011-02-07  Niels Möller  <nisse@lysator.liu.se>
+
+	* gcm.h (GCM_TABLE_BITS): Set to 4.
+
 2011-02-06  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in (TARGETS): Added gcmdata.
