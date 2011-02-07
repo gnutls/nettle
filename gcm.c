@@ -244,7 +244,66 @@ gcm_gf_mul_chunk (uint8_t *x, const uint8_t *h, uint8_t table[16][16])
     }
   memcpy (x, Z, sizeof(Z));
 }
-#endif /* GCM_TABLE_BITS == 4 */
+#elif GCM_TABLE_BITS == 8
+static void
+gcm_gf_shift_chunk(uint8_t *x)
+{
+  unsigned long *w = (unsigned long *) x;
+  unsigned long reduce;
+
+  /* Shift uses big-endian representation. */
+#if WORDS_BIGENDIAN
+# if SIZEOF_LONG == 4
+  reduce = shift_table[w[3] & 0xff];
+  w[3] = (w[3] >> 8) | ((w[2] & 0xff) << 24);
+  w[2] = (w[2] >> 8) | ((w[1] & 0xff) << 24);
+  w[1] = (w[1] >> 8) | ((w[0] & 0xff) << 24);
+  w[0] = (w[0] >> 8) ^ (reduce << 16);
+# elif SIZEOF_LONG == 8
+  reduce = shift_table[w[3] & 0xff];
+  w[1] = (w[1] >> 8) | ((w[0] & 0xff) << 56);
+  w[0] = (w[0] >> 8) ^ (reduce << 48);
+# else
+#  error Unsupported word size. */
+#endif
+#else /* ! WORDS_BIGENDIAN */
+# if SIZEOF_LONG == 4
+#define RSHIFT_WORD(x) \
+  reduce = shift_table[(w[3] >> 56) & 0xff];
+  w[3] = (w[3] << 8) | (w[2] >> 24);
+  w[2] = (w[2] << 8) | (w[1] >> 24);
+  w[1] = (w[1] << 8) | (w[0] >> 24);
+  w[0] = (w[0] << 8) ^ reduce;
+# elif SIZEOF_LONG == 8
+  reduce = shift_table[(w[1] >> 56) & 0xff];
+  w[1] = (w[1] << 8) | (w[0] >> 56);
+  w[0] = (w[0] << 8) ^ reduce;
+# else
+#  error Unsupported word size. */
+# endif
+#endif /* ! WORDS_BIGENDIAN */
+}
+
+/* FIXME: Table should be const. */
+static void
+gcm_gf_mul_chunk (uint8_t *x, const uint8_t *h, uint8_t table[16][16])
+{
+  uint8_t Z[GCM_BLOCK_SIZE];
+  unsigned i;
+
+  memset(Z, 0, sizeof(Z));
+
+  for (i = GCM_BLOCK_SIZE; i-- > 0;)
+    {
+      gcm_gf_shift_chunk(Z);
+      memxor(Z, table[x[i]], GCM_BLOCK_SIZE);
+    }
+  memcpy (x, Z, sizeof(Z));
+}
+
+#else /* GCM_TABLE_BITS != 8 */
+#error Unsupported table size. 
+#endif /* GCM_TABLE_BITS != 8 */
 #endif /* GCM_TABLE_BITS */
 
 /* Increment the rightmost 32 bits. */
@@ -265,15 +324,23 @@ gcm_set_key(struct gcm_ctx *ctx,
 #if GCM_TABLE_BITS == 4
   {
     unsigned i;
-    for (i = 0; i < 16; i++)
+    for (i = 0; i < 0x10; i++)
       {
-	uint8_t x;
-	x = i << 4;
+	uint8_t x = i << 4;
+	gcm_gf_mul(ctx->h_table[i], ctx->h, 1, &x);
+      }
+  }
+#elif GCM_TABLE_BITS == 8
+  {
+    unsigned i;
+    for (i = 0; i < 0x100; i++)
+      {
+	uint8_t x = i;
 	gcm_gf_mul(ctx->h_table[i], ctx->h, 1, &x);
       }
   }
 #else
-  abort();
+#error Unsupported table size
 #endif
 #endif /* GCM_TABLE_BITS */
 }
