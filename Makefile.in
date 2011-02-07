@@ -117,7 +117,7 @@ HEADERS = aes.h arcfour.h arctwo.h asn1.h bignum.h blowfish.h \
 
 INSTALL_HEADERS = $(HEADERS) nettle-stdint.h
 
-SOURCES = $(nettle_SOURCES) $(hogweed_SOURCES) aesdata.c desdata.c shadata.c
+SOURCES = $(nettle_SOURCES) $(hogweed_SOURCES) aesdata.c desdata.c shadata.c gcmdata.c
 
 DISTFILES = $(SOURCES) $(HEADERS) .bootstrap aclocal.m4 configure.ac \
 	configure stamp-h.in \
