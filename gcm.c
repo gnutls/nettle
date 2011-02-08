@@ -45,7 +45,7 @@
 #include "nettle-internal.h"
 #include "macros.h"
 
-#define GHASH_POLYNOMIAL 0xE1
+#define GHASH_POLYNOMIAL 0xE1UL
 
 static void
 gcm_gf_add (union gcm_block *r, const union gcm_block *x, const union gcm_block *y)
@@ -65,6 +65,7 @@ gcm_gf_shift (union gcm_block *x)
 {
   unsigned long *w = x->w;
   long mask;
+
   /* Shift uses big-endian representation. */
 #if WORDS_BIGENDIAN
 # if SIZEOF_LONG == 4
@@ -112,8 +113,8 @@ gcm_gf_mul (union gcm_block *r, const union gcm_block *x, unsigned yn, const uin
 {
   union gcm_block V;
   union gcm_block Z;
-
   unsigned i;
+
   memcpy(V.b, x, sizeof(V));
   memset(Z.b, 0, sizeof(Z));
 
@@ -204,8 +205,8 @@ gcm_gf_shift_chunk(union gcm_block *x)
   w[1] = (w[1] >> 4) | ((w[0] & 0xf) << 28);
   w[0] = (w[0] >> 4) ^ (reduce << 16);
 # elif SIZEOF_LONG == 8
-  reduce = shift_table[w[3] & 0xf];
-  w[1] = (w[1] >> 4) | ((w[0] & 0xf) << 63);
+  reduce = shift_table[w[1] & 0xf];
+  w[1] = (w[1] >> 4) | ((w[0] & 0xf) << 60);
   w[0] = (w[0] >> 4) ^ (reduce << 48);
 # else
 #  error Unsupported word size. */
@@ -269,7 +270,7 @@ gcm_gf_shift_chunk(union gcm_block *x)
   w[1] = (w[1] >> 8) | ((w[0] & 0xff) << 24);
   w[0] = (w[0] >> 8) ^ (reduce << 16);
 # elif SIZEOF_LONG == 8
-  reduce = shift_table[w[3] & 0xff];
+  reduce = shift_table[w[1] & 0xff];
   w[1] = (w[1] >> 8) | ((w[0] & 0xff) << 56);
   w[0] = (w[0] >> 8) ^ (reduce << 48);
 # else
