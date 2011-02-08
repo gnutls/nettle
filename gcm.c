@@ -47,28 +47,23 @@
 
 #define GHASH_POLYNOMIAL 0xE1
 
-/* Like memxor, but for fixed length and aligned operands. */
 static void
-gcm_gf_add (uint8_t *r, const uint8_t *x, const uint8_t *y)
+gcm_gf_add (union gcm_block *r, const union gcm_block *x, const union gcm_block *y)
 {
-  unsigned long *rw = (unsigned long *) r;
-  unsigned long *xw = (unsigned long *) x;
-  unsigned long *yw = (unsigned long *) y;
-
-  rw[0] = xw[0] ^ yw[0];
-  rw[1] = xw[1] ^ yw[1];
+  r->w[0] = x->w[0] ^ y->w[0];
+  r->w[1] = x->w[1] ^ y->w[1];
 #if SIZEOF_LONG == 4
-  rw[2] = xw[2] ^ yw[2];
-  rw[3] = xw[3] ^ yw[3];
+  r->w[2] = x->w[2] ^ y->w[2];
+  r->w[3] = x->w[3] ^ y->w[3];
 #endif      
 }
 /* Multiplication by 010...0; a big-endian shift right. If the bit
    shifted out is one, the defining polynomial is added to cancel it
-   out. The argument must be properly aligned for word accesses. */
+   out. */
 static void
-gcm_gf_shift (uint8_t *x)
+gcm_gf_shift (union gcm_block *x)
 {
-  unsigned long *w = (unsigned long *) x;
+  unsigned long *w = x->w;
   long mask;
   /* Shift uses big-endian representation. */
 #if WORDS_BIGENDIAN
@@ -113,14 +108,14 @@ gcm_gf_shift (uint8_t *x)
    specification. y may be shorter than a full block, missing bytes
    are assumed zero. */
 static void
-gcm_gf_mul (uint8_t *r, const uint8_t *x, unsigned yn, const uint8_t *y)
+gcm_gf_mul (union gcm_block *r, const union gcm_block *x, unsigned yn, const uint8_t *y)
 {
-  uint8_t V[GCM_BLOCK_SIZE];
-  uint8_t Z[GCM_BLOCK_SIZE];
+  union gcm_block V;
+  union gcm_block Z;
 
   unsigned i;
-  memcpy(V, x, sizeof(V));
-  memset(Z, 0, sizeof(Z));
+  memcpy(V.b, x, sizeof(V));
+  memset(Z.b, 0, sizeof(Z));
 
   for (i = 0; i < yn; i++)
     {
@@ -129,12 +124,12 @@ gcm_gf_mul (uint8_t *r, const uint8_t *x, unsigned yn, const uint8_t *y)
       for (j = 0; j < 8; j++, b <<= 1)
 	{
 	  if (b & 0x80)
-	    gcm_gf_add(Z, Z, V);
+	    gcm_gf_add(&Z, &Z, &V);
 	  
-	  gcm_gf_shift(V);
+	  gcm_gf_shift(&V);
 	}
     }
-  memcpy (r, Z, sizeof(Z));
+  memcpy (r->b, Z.b, sizeof(Z));
 }
 
 #if GCM_TABLE_BITS
@@ -195,9 +190,9 @@ shift_table[0x100] = {
 #if GCM_TABLE_BITS == 4
 
 static void
-gcm_gf_shift_chunk(uint8_t *x)
+gcm_gf_shift_chunk(union gcm_block *x)
 {
-  unsigned long *w = (unsigned long *) x;
+  unsigned long *w = x->w;
   unsigned long reduce;
 
   /* Shift uses big-endian representation. */
@@ -239,31 +234,30 @@ gcm_gf_shift_chunk(uint8_t *x)
 #endif /* ! WORDS_BIGENDIAN */
 }
 
-/* FIXME: Table should be const. */
 static void
-gcm_gf_mul_chunk (uint8_t *x, const uint8_t *h, uint8_t table[16][16])
+gcm_gf_mul_chunk (union gcm_block *x, const union gcm_block *h, const union gcm_block *table)
 {
-  uint8_t Z[GCM_BLOCK_SIZE];
+  union gcm_block Z;
   unsigned i;
 
-  memset(Z, 0, sizeof(Z));
+  memset(Z.b, 0, sizeof(Z));
 
   for (i = GCM_BLOCK_SIZE; i-- > 0;)
     {
-      uint8_t b = x[i];
+      uint8_t b = x->b[i];
 
-      gcm_gf_shift_chunk(Z);
-      gcm_gf_add(Z, Z, table[b & 0xf]);
-      gcm_gf_shift_chunk(Z);
-      gcm_gf_add(Z, Z, table[b >> 4]);
+      gcm_gf_shift_chunk(&Z);
+      gcm_gf_add(&Z, &Z, &table[b & 0xf]);
+      gcm_gf_shift_chunk(&Z);
+      gcm_gf_add(&Z, &Z, &table[b >> 4]);
     }
-  memcpy (x, Z, sizeof(Z));
+  memcpy (x->b, Z.b, sizeof(Z));
 }
 #elif GCM_TABLE_BITS == 8
 static void
-gcm_gf_shift_chunk(uint8_t *x)
+gcm_gf_shift_chunk(union gcm_block *x)
 {
-  unsigned long *w = (unsigned long *) x;
+  unsigned long *w = x->w;
   unsigned long reduce;
 
   /* Shift uses big-endian representation. */
@@ -298,22 +292,21 @@ gcm_gf_shift_chunk(uint8_t *x)
 #endif /* ! WORDS_BIGENDIAN */
 }
 
-/* FIXME: Table should be const. */
 static void
-gcm_gf_mul_chunk (uint8_t *x, const uint8_t *h, uint8_t table[16][16])
+gcm_gf_mul_chunk (union gcm_block *x, const union gcm_block *h, const union gcm_block *table)
 {
-  uint8_t Z[GCM_BLOCK_SIZE];
+  union gcm_block Z;
   unsigned i;
 
-  memcpy(Z, table[x[GCM_BLOCK_SIZE-1]], GCM_BLOCK_SIZE);
+  memcpy(Z.b, table[x->b[GCM_BLOCK_SIZE-1]].b, GCM_BLOCK_SIZE);
 
   for (i = GCM_BLOCK_SIZE-2; i > 0; i--)
     {
-      gcm_gf_shift_chunk(Z);
-      gcm_gf_add(Z, Z, table[x[i]]);
+      gcm_gf_shift_chunk(&Z);
+      gcm_gf_add(&Z, &Z, &table[x->b[i]]);
     }
-  gcm_gf_shift_chunk(Z);
-  gcm_gf_add(x, Z, table[x[0]]);
+  gcm_gf_shift_chunk(&Z);
+  gcm_gf_add(x, &Z, &table[x->b[0]]);
 }
 
 #else /* GCM_TABLE_BITS != 8 */
@@ -322,7 +315,7 @@ gcm_gf_mul_chunk (uint8_t *x, const uint8_t *h, uint8_t table[16][16])
 #endif /* GCM_TABLE_BITS */
 
 /* Increment the rightmost 32 bits. */
-#define INC32(block) INCREMENT(4, (block) + GCM_BLOCK_SIZE - 4)
+#define INC32(block) INCREMENT(4, (block.b) + GCM_BLOCK_SIZE - 4)
 
 /* Initialization of GCM.
  * @ctx: The context of GCM
@@ -333,8 +326,8 @@ void
 gcm_set_key(struct gcm_ctx *ctx,
 	    void *cipher, nettle_crypt_func f)
 {
-  memset (ctx->h, 0, sizeof (ctx->h));
-  f (cipher, GCM_BLOCK_SIZE, ctx->h, ctx->h);  /* H */
+  memset (ctx->h.b, 0, sizeof (ctx->h));
+  f (cipher, GCM_BLOCK_SIZE, ctx->h.b, ctx->h.b);  /* H */
 #if GCM_TABLE_BITS
 #if GCM_TABLE_BITS == 4
   {
@@ -342,7 +335,7 @@ gcm_set_key(struct gcm_ctx *ctx,
     for (i = 0; i < 0x10; i++)
       {
 	uint8_t x = i << 4;
-	gcm_gf_mul(ctx->h_table[i], ctx->h, 1, &x);
+	gcm_gf_mul(&ctx->h_table[i], &ctx->h, 1, &x);
       }
   }
 #elif GCM_TABLE_BITS == 8
@@ -351,7 +344,7 @@ gcm_set_key(struct gcm_ctx *ctx,
     for (i = 0; i < 0x100; i++)
       {
 	uint8_t x = i;
-	gcm_gf_mul(ctx->h_table[i], ctx->h, 1, &x);
+	gcm_gf_mul(&ctx->h_table[i], &ctx->h, 1, &x);
       }
   }
 #else
@@ -370,17 +363,17 @@ gcm_set_iv(struct gcm_ctx *ctx, unsigned length, const uint8_t* iv)
   /* FIXME: remove the iv size limitation */
   assert (length == GCM_IV_SIZE);
 
-  memcpy (ctx->iv, iv, GCM_BLOCK_SIZE - 4);
-  ctx->iv[GCM_BLOCK_SIZE - 4] = 0;
-  ctx->iv[GCM_BLOCK_SIZE - 3] = 0;
-  ctx->iv[GCM_BLOCK_SIZE - 2] = 0;
-  ctx->iv[GCM_BLOCK_SIZE - 1] = 1;
+  memcpy (ctx->iv.b, iv, GCM_BLOCK_SIZE - 4);
+  ctx->iv.b[GCM_BLOCK_SIZE - 4] = 0;
+  ctx->iv.b[GCM_BLOCK_SIZE - 3] = 0;
+  ctx->iv.b[GCM_BLOCK_SIZE - 2] = 0;
+  ctx->iv.b[GCM_BLOCK_SIZE - 1] = 1;
 
-  memcpy (ctx->ctr, ctx->iv, GCM_BLOCK_SIZE);
+  memcpy (ctx->ctr.b, ctx->iv.b, GCM_BLOCK_SIZE);
   INC32 (ctx->ctr);
 
   /* Reset the rest of the message-dependent state. */
-  memset(ctx->x, 0, sizeof(ctx->x));
+  memset(ctx->x.b, 0, sizeof(ctx->x));
   ctx->auth_size = ctx->data_size = 0;
 }
 
@@ -390,20 +383,20 @@ gcm_hash(struct gcm_ctx *ctx, unsigned length, const uint8_t *data)
   for (; length >= GCM_BLOCK_SIZE;
        length -= GCM_BLOCK_SIZE, data += GCM_BLOCK_SIZE)
     {
-      memxor (ctx->x, data, GCM_BLOCK_SIZE);
+      memxor (ctx->x.b, data, GCM_BLOCK_SIZE);
 #if GCM_TABLE_BITS
-      gcm_gf_mul_chunk (ctx->x, ctx->h, ctx->h_table);
+      gcm_gf_mul_chunk (&ctx->x, &ctx->h, ctx->h_table);
 #else
-      gcm_gf_mul (ctx->x, ctx->x, GCM_BLOCK_SIZE, ctx->h);
+      gcm_gf_mul (&ctx->x, &ctx->x, GCM_BLOCK_SIZE, ctx->h.b);
 #endif
     }
   if (length > 0)
     {
-      memxor (ctx->x, data, length);
+      memxor (ctx->x.b, data, length);
 #if GCM_TABLE_BITS
-      gcm_gf_mul_chunk (ctx->x, ctx->h, ctx->h_table);
+      gcm_gf_mul_chunk (&ctx->x, &ctx->h, ctx->h_table);
 #else
-      gcm_gf_mul (ctx->x, ctx->x, GCM_BLOCK_SIZE, ctx->h);
+      gcm_gf_mul (&ctx->x, &ctx->x, GCM_BLOCK_SIZE, ctx->h.b);
 #endif
     }
 }
@@ -433,7 +426,7 @@ gcm_crypt(struct gcm_ctx *ctx, void *cipher, nettle_crypt_func *f,
            (length -= GCM_BLOCK_SIZE,
 	    src += GCM_BLOCK_SIZE, dst += GCM_BLOCK_SIZE))
         {
-          f (cipher, GCM_BLOCK_SIZE, dst, ctx->ctr);
+          f (cipher, GCM_BLOCK_SIZE, dst, ctx->ctr.b);
           memxor (dst, src, GCM_BLOCK_SIZE);
           INC32 (ctx->ctr);
         }
@@ -444,7 +437,7 @@ gcm_crypt(struct gcm_ctx *ctx, void *cipher, nettle_crypt_func *f,
            (length -= GCM_BLOCK_SIZE,
 	    src += GCM_BLOCK_SIZE, dst += GCM_BLOCK_SIZE))
         {
-          f (cipher, GCM_BLOCK_SIZE, buffer, ctx->ctr);
+          f (cipher, GCM_BLOCK_SIZE, buffer, ctx->ctr.b);
           memxor3 (dst, src, buffer, GCM_BLOCK_SIZE);
           INC32 (ctx->ctr);
         }
@@ -452,7 +445,7 @@ gcm_crypt(struct gcm_ctx *ctx, void *cipher, nettle_crypt_func *f,
   if (length > 0)
     {
       /* A final partial block */
-      f (cipher, GCM_BLOCK_SIZE, buffer, ctx->ctr);
+      f (cipher, GCM_BLOCK_SIZE, buffer, ctx->ctr.b);
       memxor3 (dst, src, buffer, length);
       INC32 (ctx->ctr);
     }
@@ -499,8 +492,8 @@ gcm_digest(struct gcm_ctx *ctx, void *cipher, nettle_crypt_func *f,
 
   gcm_hash(ctx, GCM_BLOCK_SIZE, buffer);
 
-  f (cipher, GCM_BLOCK_SIZE, buffer, ctx->iv);
-  memxor3 (digest, ctx->x, buffer, length);
+  f (cipher, GCM_BLOCK_SIZE, buffer, ctx->iv.b);
+  memxor3 (digest, ctx->x.b, buffer, length);
 
   return;
 }

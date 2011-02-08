@@ -53,20 +53,27 @@ extern "C" {
 
 #define GCM_TABLE_BITS 4
 
+/* To make sure that we have proper alignment. */
+union gcm_block
+{
+  uint8_t b[GCM_BLOCK_SIZE];
+  unsigned long w[1];
+};
+
 struct gcm_ctx {
   /* Key-dependent state. */
   /* Hashing subkey */
-  uint8_t h[GCM_BLOCK_SIZE];
+  union gcm_block h;
 #if GCM_TABLE_BITS
-  uint8_t h_table[1 << GCM_TABLE_BITS][GCM_BLOCK_SIZE];
+  union gcm_block h_table[1 << GCM_TABLE_BITS];
 #endif
   /* Per-message state, depending on the iv */
   /* Original counter block */
-  uint8_t iv[GCM_BLOCK_SIZE];
+  union gcm_block iv;
   /* Updated for each block. */
-  uint8_t ctr[GCM_BLOCK_SIZE];
+  union gcm_block ctr;
   /* Hashing state */
-  uint8_t x[GCM_BLOCK_SIZE];
+  union gcm_block x;
   uint64_t auth_size;
   uint64_t data_size;
 };
