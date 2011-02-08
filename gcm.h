@@ -63,10 +63,7 @@ union gcm_block
 struct gcm_ctx {
   /* Key-dependent state. */
   /* Hashing subkey */
-  union gcm_block h;
-#if GCM_TABLE_BITS
-  union gcm_block h_table[1 << GCM_TABLE_BITS];
-#endif
+  union gcm_block h[1 << GCM_TABLE_BITS];
   /* Per-message state, depending on the iv */
   /* Original counter block */
   union gcm_block iv;
