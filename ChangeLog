@@ -1,5 +1,20 @@
 2011-02-08  Niels Möller  <nisse@lysator.liu.se>
 
+	* gcm.c (gcm_gf_shift): Added a separate result argument.
+	(gcm_gf_mul): Compile bitwise version only when GCM_TABLE_BITS ==
+	0. Simplified interface with just two arguments pointing to
+	complete blocks.
+	(gcm_gf_shift_4, gcm_gf_shift_8): Renamed table-based functions, from...
+	(gcm_gf_shift_chunk): ... old name.
+	(gcm_gf_mul): Renamed both table-based versions and made the
+	argument types compatible with the bitwise gcm_gf_mul.
+	(gcm_gf_mul_chunk): ... the old name.
+	(gcm_set_key): Initialize the table using adds and shifts only.
+	When GCM_TABLE_BITS > 0, this eliminates the only use of the
+	bitwise multiplication.
+	(gcm_hash): Simplified, now that we have the same interface for
+	gcm_gf_mul, regardless of table size.
+
 	* gcm.c	(GHASH_POLYNOMIAL): Use unsigned long for this constant.
 	(gcm_gf_shift_chunk): Fixed bugs for the big endian 64-bit case,
 	e.g., sparc64. For both 4-bit and 8-bit tables.
