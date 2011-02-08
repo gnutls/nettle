@@ -1,5 +1,7 @@
 2011-02-08  Niels Möller  <nisse@lysator.liu.se>
 
+	* gcm.h (struct gcm_ctx): The hash key is now always an array,
+	named h, with array size depending on GCM_TABLE_BITS.
 	* gcm.c (gcm_gf_shift): Added a separate result argument.
 	(gcm_gf_mul): Compile bitwise version only when GCM_TABLE_BITS ==
 	0. Simplified interface with just two arguments pointing to
