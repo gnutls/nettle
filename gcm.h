@@ -93,7 +93,8 @@ gcm_set_key(struct gcm_key *key,
 	    void *cipher, nettle_crypt_func *f);
 
 void
-gcm_set_iv(struct gcm_ctx *ctx, unsigned length, const uint8_t *iv);
+gcm_set_iv(struct gcm_ctx *ctx, const struct gcm_key *key,
+	   unsigned length, const uint8_t *iv);
 
 void
 gcm_auth(struct gcm_ctx *ctx, const struct gcm_key *key,

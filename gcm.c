@@ -347,30 +347,6 @@ gcm_set_key(struct gcm_key *key,
 #endif
 }
 
-/*
- * @length: The size of the iv (fixed for now to GCM_NONCE_SIZE)
- * @iv: The iv
- */
-void
-gcm_set_iv(struct gcm_ctx *ctx, unsigned length, const uint8_t* iv)
-{
-  /* FIXME: remove the iv size limitation */
-  assert (length == GCM_IV_SIZE);
-
-  memcpy (ctx->iv.b, iv, GCM_BLOCK_SIZE - 4);
-  ctx->iv.b[GCM_BLOCK_SIZE - 4] = 0;
-  ctx->iv.b[GCM_BLOCK_SIZE - 3] = 0;
-  ctx->iv.b[GCM_BLOCK_SIZE - 2] = 0;
-  ctx->iv.b[GCM_BLOCK_SIZE - 1] = 1;
-
-  memcpy (ctx->ctr.b, ctx->iv.b, GCM_BLOCK_SIZE);
-  INC32 (ctx->ctr);
-
-  /* Reset the rest of the message-dependent state. */
-  memset(ctx->x.b, 0, sizeof(ctx->x));
-  ctx->auth_size = ctx->data_size = 0;
-}
-
 static void
 gcm_hash(const struct gcm_key *key, union gcm_block *x,
 	 unsigned length, const uint8_t *data)
@@ -386,6 +362,52 @@ gcm_hash(const struct gcm_key *key, union gcm_block *x,
       memxor (x->b, data, length);
       gcm_gf_mul (x, key->h);
     }
+}
+
+static void
+gcm_hash_sizes(const struct gcm_key *key, union gcm_block *x,
+		 uint64_t auth_size, uint64_t data_size)
+{
+  uint8_t buffer[GCM_BLOCK_SIZE];
+
+  data_size *= 8;
+  auth_size *= 8;
+
+  WRITE_UINT64 (buffer, auth_size);
+  WRITE_UINT64 (buffer + 8, data_size);
+
+  gcm_hash(key, x, GCM_BLOCK_SIZE, buffer);
+}
+
+/*
+ * @length: The size of the iv (fixed for now to GCM_NONCE_SIZE)
+ * @iv: The iv
+ */
+void
+gcm_set_iv(struct gcm_ctx *ctx, const struct gcm_key *key,
+	   unsigned length, const uint8_t *iv)
+{
+  if (length == GCM_IV_SIZE)
+    {
+      memcpy (ctx->iv.b, iv, GCM_BLOCK_SIZE - 4);
+      ctx->iv.b[GCM_BLOCK_SIZE - 4] = 0;
+      ctx->iv.b[GCM_BLOCK_SIZE - 3] = 0;
+      ctx->iv.b[GCM_BLOCK_SIZE - 2] = 0;
+      ctx->iv.b[GCM_BLOCK_SIZE - 1] = 1;
+    }
+  else
+    {
+      memset(ctx->iv.b, 0, GCM_BLOCK_SIZE);
+      gcm_hash(key, &ctx->iv, length, iv);
+      gcm_hash_sizes(key, &ctx->iv, 0, length);
+    }
+
+  memcpy (ctx->ctr.b, ctx->iv.b, GCM_BLOCK_SIZE);
+  INC32 (ctx->ctr);
+
+  /* Reset the rest of the message-dependent state. */
+  memset(ctx->x.b, 0, sizeof(ctx->x));
+  ctx->auth_size = ctx->data_size = 0;
 }
 
 void
@@ -472,13 +494,7 @@ gcm_digest(struct gcm_ctx *ctx, const struct gcm_key *key,
 
   assert (length <= GCM_BLOCK_SIZE);
 
-  ctx->data_size *= 8;
-  ctx->auth_size *= 8;
-
-  WRITE_UINT64 (buffer, ctx->auth_size);
-  WRITE_UINT64 (buffer + 8, ctx->data_size);
-
-  gcm_hash(key, &ctx->x, GCM_BLOCK_SIZE, buffer);
+  gcm_hash_sizes(key, &ctx->x, ctx->auth_size, ctx->data_size);
 
   f (cipher, GCM_BLOCK_SIZE, buffer, ctx->iv.b);
   memxor3 (digest, ctx->x.b, buffer, length);
