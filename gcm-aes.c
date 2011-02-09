@@ -36,7 +36,7 @@ void
 gcm_aes_set_iv(struct gcm_aes_ctx *ctx,
 	       unsigned length, const uint8_t *iv)
 {
-  gcm_set_iv(&ctx->gcm, length, iv);
+  gcm_set_iv(&ctx->gcm, &ctx->key, length, iv);
 }
 
 /* FIXME: Rename to gcm_aes_update, for consistency with other hash
