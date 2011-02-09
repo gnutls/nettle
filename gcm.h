@@ -34,7 +34,7 @@
 #ifndef NETTLE_GCM_H_INCLUDED
 #define NETTLE_GCM_H_INCLUDED
 
-#include "nettle-types.h"
+#include "aes.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -48,6 +48,13 @@ extern "C" {
 #define gcm_decrypt nettle_gcm_decrypt
 #define gcm_digest nettle_gcm_digest
 
+#define gcm_aes_set_key nettle_gcm_aes_set_key
+#define gcm_aes_set_iv nettle_gcm_aes_set_iv
+#define gcm_aes_auth nettle_gcm_aes_auth
+#define gcm_aes_encrypt nettle_gcm_aes_encrypt
+#define gcm_aes_decrypt nettle_gcm_aes_decrypt
+#define gcm_aes_digest nettle_gcm_aes_digest
+
 #define GCM_BLOCK_SIZE 16
 #define GCM_IV_SIZE (GCM_BLOCK_SIZE - 4)
 
@@ -60,11 +67,14 @@ union gcm_block
   unsigned long w[1];
 };
 
-struct gcm_ctx {
-  /* Key-dependent state. */
-  /* Hashing subkey */
+/* Hashing subkey */
+struct gcm_key
+{
   union gcm_block h[1 << GCM_TABLE_BITS];
-  /* Per-message state, depending on the iv */
+};
+  
+/* Per-message state, depending on the iv */
+struct gcm_ctx {
   /* Original counter block */
   union gcm_block iv;
   /* Updated for each block. */
@@ -79,52 +89,56 @@ struct gcm_ctx {
    nettle_crypt_func, which also rules out using that abstraction for
    arcfour. */
 void
-gcm_set_key(struct gcm_ctx *ctx,
+gcm_set_key(struct gcm_key *key,
 	    void *cipher, nettle_crypt_func *f);
 
 void
 gcm_set_iv(struct gcm_ctx *ctx, unsigned length, const uint8_t *iv);
 
 void
-gcm_auth(struct gcm_ctx *ctx, unsigned length, const uint8_t *data);
+gcm_auth(struct gcm_ctx *ctx, const struct gcm_key *key,
+	 unsigned length, const uint8_t *data);
 
 void
-gcm_encrypt(struct gcm_ctx *ctx, void *cipher, nettle_crypt_func *f,
+gcm_encrypt(struct gcm_ctx *ctx, const struct gcm_key *key,
+	    void *cipher, nettle_crypt_func *f,
 	    unsigned length, uint8_t *dst, const uint8_t *src);
 
 void
-gcm_decrypt(struct gcm_ctx *ctx, void *cipher, nettle_crypt_func *f,
+gcm_decrypt(struct gcm_ctx *ctx, const struct gcm_key *key,
+	    void *cipher, nettle_crypt_func *f,
 	    unsigned length, uint8_t *dst, const uint8_t *src);
 
 void
-gcm_digest(struct gcm_ctx *ctx, void *cipher, nettle_crypt_func *f,
+gcm_digest(struct gcm_ctx *ctx, const struct gcm_key *key,
+	   void *cipher, nettle_crypt_func *f,
 	   unsigned length, uint8_t *digest);
 
-#if 0
-/* FIXME: Is this macrology useful? */
-#define GCM_KEY(type) \
-{ type cipher; struct gcm_ctx gcm; }
+/* Convenience macrology (not sure how useful it is) */
+
+/* All-in-one context, with cipher, hash subkey, and message state. */
+#define GCM_CTX(type) \
+{ type cipher; struct gcm_key key; struct gcm_ctx gcm; }
 
 #define GCM_SET_KEY(ctx, set_key, encrypt, length, data)	\
   do {								\
     (set_key)(&(ctx)->cipher, (length), (data));		\
-    gcm_set_key(&(ctx)->gcm, &(ctx)->cipher, (encrypt));	\
+    gcm_set_key(&(ctx)->key, &(ctx)->cipher, (encrypt));	\
   } while (0)
 
 #define GCM_AUTH(ctx, encrypt, length, data)	    \
-  gcm_auth((ctx)->gcm, &(ctx)->cipher, (encrypt),   \
-	   (length), (data))
+  gcm_auth(&(ctx)->gcm, &(ctx)->key, (length), (data))
 
 #define GCM_ENCRYPT(ctx, encrypt, length, dst, src)       \
-  gcm_encrypt((ctx)->gcm, &(ctx)->cipher, (encrypt),	  \
+  gcm_encrypt(&(ctx)->gcm, &(ctx)->key, &(ctx)->cipher, (encrypt),	\
 	      (length), (dst), (src))
 
-#define GCM_DECRYPT(ctx, key, encrypt, length, dst, src)       \
-  gcm_decrypt((ctx)->gcm, &(ctx)->cipher, (encrypt),	       \
+#define GCM_DECRYPT(ctx, encrypt, length, dst, src)       \
+  gcm_decrypt(&(ctx)->gcm,  &(ctx)->key, &(ctx)->cipher, (encrypt),	\
 	      (length), (dst), (src))
 
-#define GCM_DIGEST(ctx, key, encrypt, length, digest)		\
-  gcm_digest((ctx)->gcm, &(ctx)->cipher, (encrypt),		\
+#define GCM_DIGEST(ctx, encrypt, length, digest)		\
+  gcm_digest(&(ctx)->gcm, &(ctx)->key, &(ctx)->cipher, (encrypt),		\
 	     (length), (digest))
 
 struct gcm_aes_ctx GCM_CTX(struct aes_ctx);
@@ -137,6 +151,8 @@ void
 gcm_aes_set_iv(struct gcm_aes_ctx *ctx,
 	       unsigned length, const uint8_t *iv);
 
+/* FIXME: Rename to gcm_aes_update, for consistency with other hash
+   and mac functions? */
 void
 gcm_aes_auth(struct gcm_aes_ctx *ctx,
 	     unsigned length, const uint8_t *data);
@@ -150,9 +166,7 @@ gcm_aes_decrypt(struct gcm_aes_ctx *ctx,
 		unsigned length, uint8_t *dst, const uint8_t *src);
 
 void
-gcm_aes_digest(struct gcm_aes_ctx *ctx,
-	       unsigned length, uint8_t *digest);
-#endif
+gcm_aes_digest(struct gcm_aes_ctx *ctx, unsigned length, uint8_t *digest);
 
 #ifdef __cplusplus
 }

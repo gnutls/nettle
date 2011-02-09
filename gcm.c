@@ -322,7 +322,7 @@ gcm_gf_mul (union gcm_block *x, const union gcm_block *table)
  * @f: The underlying cipher encryption function
  */
 void
-gcm_set_key(struct gcm_ctx *ctx,
+gcm_set_key(struct gcm_key *key,
 	    void *cipher, nettle_crypt_func f)
 {
   /* Middle element if GCM_TABLE_BITS > 0, otherwise the first
@@ -330,19 +330,19 @@ gcm_set_key(struct gcm_ctx *ctx,
   unsigned i = (1<<GCM_TABLE_BITS)/2;
 
   /* H */  
-  memset(ctx->h[0].b, 0, GCM_BLOCK_SIZE);
-  f (cipher, GCM_BLOCK_SIZE, ctx->h[i].b, ctx->h[0].b);
+  memset(key->h[0].b, 0, GCM_BLOCK_SIZE);
+  f (cipher, GCM_BLOCK_SIZE, key->h[i].b, key->h[0].b);
   
 #if GCM_TABLE_BITS
   /* Algorithm 3 from the gcm paper. First do powers of two, then do
      the rest by adding. */
   while (i /= 2)
-    gcm_gf_shift(&ctx->h[i], &ctx->h[2*i]);
+    gcm_gf_shift(&key->h[i], &key->h[2*i]);
   for (i = 2; i < 1<<GCM_TABLE_BITS; i *= 2)
     {
       unsigned j;
       for (j = 1; j < i; j++)
-	gcm_gf_add(&ctx->h[i+j], &ctx->h[i],&ctx->h[j]);
+	gcm_gf_add(&key->h[i+j], &key->h[i],&key->h[j]);
     }
 #endif
 }
@@ -372,37 +372,37 @@ gcm_set_iv(struct gcm_ctx *ctx, unsigned length, const uint8_t* iv)
 }
 
 static void
-gcm_hash(struct gcm_ctx *ctx, unsigned length, const uint8_t *data)
+gcm_hash(const struct gcm_key *key, union gcm_block *x,
+	 unsigned length, const uint8_t *data)
 {
   for (; length >= GCM_BLOCK_SIZE;
        length -= GCM_BLOCK_SIZE, data += GCM_BLOCK_SIZE)
     {
-      memxor (ctx->x.b, data, GCM_BLOCK_SIZE);
-      gcm_gf_mul (&ctx->x, ctx->h);
+      memxor (x->b, data, GCM_BLOCK_SIZE);
+      gcm_gf_mul (x, key->h);
     }
   if (length > 0)
     {
-      memxor (ctx->x.b, data, length);
-      gcm_gf_mul (&ctx->x, ctx->h);
+      memxor (x->b, data, length);
+      gcm_gf_mul (x, key->h);
     }
 }
 
 void
-gcm_auth(struct gcm_ctx *ctx,
+gcm_auth(struct gcm_ctx *ctx, const struct gcm_key *key,
 	 unsigned length, const uint8_t *data)
 {
   assert(ctx->auth_size % GCM_BLOCK_SIZE == 0);
   assert(ctx->data_size % GCM_BLOCK_SIZE == 0);
 
-  gcm_hash(ctx, length, data);
+  gcm_hash(key, &ctx->x, length, data);
 
   ctx->auth_size += length;
 }
 
 static void
 gcm_crypt(struct gcm_ctx *ctx, void *cipher, nettle_crypt_func *f,
-	  unsigned length,
-	   uint8_t *dst, const uint8_t *src)
+	  unsigned length, uint8_t *dst, const uint8_t *src)
 {
   uint8_t buffer[GCM_BLOCK_SIZE];
 
@@ -438,32 +438,34 @@ gcm_crypt(struct gcm_ctx *ctx, void *cipher, nettle_crypt_func *f,
 }
 
 void
-gcm_encrypt (struct gcm_ctx *ctx, void *cipher, nettle_crypt_func *f,
-	     unsigned length,
-             uint8_t *dst, const uint8_t *src)
+gcm_encrypt (struct gcm_ctx *ctx, const struct gcm_key *key,
+	     void *cipher, nettle_crypt_func *f,
+	     unsigned length, uint8_t *dst, const uint8_t *src)
 {
   assert(ctx->data_size % GCM_BLOCK_SIZE == 0);
 
   gcm_crypt(ctx, cipher, f, length, dst, src);
-  gcm_hash(ctx, length, dst);
+  gcm_hash(key, &ctx->x, length, dst);
 
   ctx->data_size += length;
 }
 
 void
-gcm_decrypt(struct gcm_ctx *ctx, void *cipher, nettle_crypt_func *f,
+gcm_decrypt(struct gcm_ctx *ctx, const struct gcm_key *key,
+	    void *cipher, nettle_crypt_func *f,
 	    unsigned length, uint8_t *dst, const uint8_t *src)
 {
   assert(ctx->data_size % GCM_BLOCK_SIZE == 0);
 
-  gcm_hash(ctx, length, src);
+  gcm_hash(key, &ctx->x, length, src);
   gcm_crypt(ctx, cipher, f, length, dst, src);
 
   ctx->data_size += length;
 }
 
 void
-gcm_digest(struct gcm_ctx *ctx, void *cipher, nettle_crypt_func *f,
+gcm_digest(struct gcm_ctx *ctx, const struct gcm_key *key,
+	   void *cipher, nettle_crypt_func *f,
 	   unsigned length, uint8_t *digest)
 {
   uint8_t buffer[GCM_BLOCK_SIZE];
@@ -476,7 +478,7 @@ gcm_digest(struct gcm_ctx *ctx, void *cipher, nettle_crypt_func *f,
   WRITE_UINT64 (buffer, ctx->auth_size);
   WRITE_UINT64 (buffer + 8, ctx->data_size);
 
-  gcm_hash(ctx, GCM_BLOCK_SIZE, buffer);
+  gcm_hash(key, &ctx->x, GCM_BLOCK_SIZE, buffer);
 
   f (cipher, GCM_BLOCK_SIZE, buffer, ctx->iv.b);
   memxor3 (digest, ctx->x.b, buffer, length);
