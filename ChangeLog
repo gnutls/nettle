@@ -1,5 +1,15 @@
 2011-02-09  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/gcm-test.c (test_main): Enabled testcases 5 and 6,
+	with different IV lengths.
+
+	* gcm-aes.c (gcm_aes_set_iv): Updated for gcm_set_iv change.
+
+	* gcm.c (gcm_hash_sizes): New function.
+	(gcm_set_iv): Added support for IVs of arbitrary size. Needed
+	another argument, for the hash subkey.
+	(gcm_digest): Use gcm_hash_sizes.
+
 	* examples/nettle-benchmark.c (time_gmac): Use gcm_aes interface.
 
 	* testsuite/gcm-test.c (test_gcm_aes): New function, replacing
