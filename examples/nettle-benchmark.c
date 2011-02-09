@@ -349,17 +349,15 @@ time_gmac(void)
 {
   static uint8_t data[BENCH_BLOCK];
   struct bench_hash_info info;
-  struct gcm_ctx gcm;
-  struct aes_ctx aes;
+  struct gcm_aes_ctx ctx;
   uint8_t key[16];
   uint8_t iv[GCM_IV_SIZE];
 
-  aes_set_encrypt_key(&aes, sizeof(key), key);
-  gcm_set_key(&gcm, &aes, (nettle_crypt_func *) aes_encrypt);
-  gcm_set_iv(&gcm, sizeof(iv), iv);
+  gcm_aes_set_key(&ctx, sizeof(key), key);
+  gcm_aes_set_iv(&ctx, sizeof(iv), iv);
 
-  info.ctx = &gcm;
-  info.update = (nettle_hash_update_func *) gcm_auth;
+  info.ctx = &ctx;
+  info.update = (nettle_hash_update_func *) gcm_aes_auth;
   info.data = data;
 
   display("gmac", "auth", GCM_BLOCK_SIZE,
