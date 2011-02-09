@@ -60,7 +60,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 camellia-table.c camellia-meta.c \
 		 cast128.c cast128-meta.c \
 		 blowfish.c \
-		 cbc.c ctr.c gcm.c \
+		 cbc.c ctr.c gcm.c gcm-aes.c \
 		 des.c \
 		 des3.c des-compat.c \
 		 hmac.c hmac-md5.c hmac-sha1.c \
