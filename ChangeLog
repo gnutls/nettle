@@ -1,5 +1,14 @@
 2011-02-09  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/nettle-benchmark.c (time_gmac): Use gcm_aes interface.
+
+	* testsuite/gcm-test.c (test_gcm_aes): New function, replacing
+	test_cipher_gcm and using the new gcm_aes interface.
+	(test_main): Updated to use test_gcm_aes.
+	* testsuite/testutils.c (test_cipher_gcm): Deleted function.
+
+	* Makefile.in (nettle_SOURCES): Added gcm-aes.c.
+
 	* gcm.c (gcm_set_key): Replaced context argument by a struct
 	gcm_key *.
 	(gcm_hash): Replaced context argument by a struct gcm_key * and a
