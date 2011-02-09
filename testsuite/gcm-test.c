@@ -113,8 +113,6 @@ test_main(void)
 	       HL("cafebabefacedbaddecaf888"),
 	       H("5bc94fbc3221a5db94fae95ae7121a47"));
 
-#if 0
-  /* Unsupported IV size. */
   /* Test case 5 */
   test_gcm_aes(HL("feffe9928665731c6d6a8f9467308308"),
 	       HL("feedfacedeadbeeffeedfacedeadbeef"
@@ -123,11 +121,11 @@ test_main(void)
 		  "86a7a9531534f7da2e4c303d8a318a72"
 		  "1c3c0c95956809532fcf0e2449a6b525"
 		  "b16aedf5aa0de657ba637b39"),
-	       HL("cafebabefacedbad"),
 	       H("61353b4c2806934a777ff51fa22a4755"
 		 "699b2a714fcdc6f83766e5f97b6c7423"
 		 "73806900e49f24b22b097544d4896b42"
 		 "4989b5e1ebac0f07c23f4598"),
+	       HL("cafebabefacedbad"),
 	       H("3612d2e79e3b0785561be14aaca2fccb"));
 
   /* Test case 6 */
@@ -149,7 +147,6 @@ test_main(void)
 	       H("619cc5aefffe0bfa462af43c1699d050"));
   
 
-#endif
   SUCCESS();
 }
 
