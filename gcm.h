@@ -64,7 +64,7 @@ extern "C" {
 union gcm_block
 {
   uint8_t b[GCM_BLOCK_SIZE];
-  unsigned long w[1];
+  unsigned long w[GCM_BLOCK_SIZE / sizeof(unsigned long)];
 };
 
 /* Hashing subkey */

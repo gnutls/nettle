@@ -1,5 +1,7 @@
 2011-02-10  Niels Möller  <nisse@lysator.liu.se>
 
+	* gcm.h (union gcm_block): Use correct length for w array.
+
 	* testsuite/gcm-test.c (test_main): Added the rest of the
 	testcases from the spec.
 
