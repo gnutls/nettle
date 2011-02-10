@@ -31,6 +31,7 @@
 #include <assert.h>
 #include <errno.h>
 #include <math.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -94,16 +95,31 @@ static double frequency = 0.0;
 #define BENCH_ITERATIONS 10
 #endif
 
+static void
+die(const char *format, ...)
+{
+  va_list args;
+  va_start(args, format);
+  vfprintf(stderr, format, args);
+  va_end(args);
+
+  exit(EXIT_FAILURE);
+}
+
 static double overhead = 0.0; 
 
 #if HAVE_CLOCK_GETTIME && defined CLOCK_PROCESS_CPUTIME_ID
 #define TIME_TYPE struct timespec
-#define TIME_START(start) clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &(start))
-#define TIME_END(elapsed, start) do {				\
-    struct timespec _time_end_after;				\
-    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &_time_end_after);	\
-    (elapsed) = _time_end_after.tv_sec - (start).tv_sec		\
-      + 1e-9 * (_time_end_after.tv_nsec - (start).tv_nsec);	\
+#define TIME_START(start) do {					\
+    if (clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &(start)) < 0)	\
+      die("clock_gettime failed: %s\n", strerror(errno));	\
+  }  while (0)
+#define TIME_END(elapsed, start) do {					\
+    struct timespec _time_end_after;					\
+    if (clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &_time_end_after) < 0)	\
+      die("clock_gettime failed: %s\n", strerror(errno));		\
+    (elapsed) = _time_end_after.tv_sec - (start).tv_sec			\
+      + 1e-9 * (_time_end_after.tv_nsec - (start).tv_nsec);		\
   } while (0)
 #else /* !HAVE_CLOCK_GETTIME */
 #define TIME_TYPE clock_t
