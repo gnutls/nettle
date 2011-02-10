@@ -65,7 +65,7 @@ test_main(void)
 {
   /* 
    * GCM-AES Test Vectors from
-   * htt://www.cryptobarn.com/papers/gcm-spec.pdf
+   * http://www.cryptobarn.com/papers/gcm-spec.pdf
    */
 
   /* Test case 1 */
