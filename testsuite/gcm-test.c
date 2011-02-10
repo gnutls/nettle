@@ -146,7 +146,99 @@ test_main(void)
 		  "16aedbf5a0de6a57a637b39b"),
 	       H("619cc5aefffe0bfa462af43c1699d050"));
   
+  /* Test case 7 */
+  test_gcm_aes(HL("00000000000000000000000000000000"
+		  "0000000000000000"),
+	       HL(""),
+	       HL(""),
+	       H(""),
+	       HL("000000000000000000000000"),
+	       H("cd33b28ac773f74ba00ed1f312572435"));
 
+  /* Test case 8 */
+  test_gcm_aes(HL("00000000000000000000000000000000"
+		  "0000000000000000"),
+	       HL(""),
+	       HL("00000000000000000000000000000000"),
+	       H("98e7247c07f0fe411c267e4384b0f600"),
+	       HL("000000000000000000000000"),
+	       H("2ff58d80033927ab8ef4d4587514f0fb"));
+
+  /* Test case 9 */
+  test_gcm_aes(HL("feffe9928665731c6d6a8f9467308308"
+		  "feffe9928665731c"),
+	       HL(""),
+	       HL("d9313225f88406e5a55909c5aff5269a"
+		  "86a7a9531534f7da2e4c303d8a318a72"
+		  "1c3c0c95956809532fcf0e2449a6b525"
+		  "b16aedf5aa0de657ba637b391aafd255"),
+	       H("3980ca0b3c00e841eb06fac4872a2757"
+		  "859e1ceaa6efd984628593b40ca1e19c"
+		  "7d773d00c144c525ac619d18c84a3f47"
+		  "18e2448b2fe324d9ccda2710acade256"),
+	       HL("cafebabefacedbaddecaf888"),
+	       H("9924a7c8587336bfb118024db8674a14"));
+
+  /* Test case 10 */
+  test_gcm_aes(HL("feffe9928665731c6d6a8f9467308308"
+		  "feffe9928665731c"),
+	       HL("feedfacedeadbeeffeedfacedeadbeef"
+		  "abaddad2"),
+	       HL("d9313225f88406e5a55909c5aff5269a"
+		  "86a7a9531534f7da2e4c303d8a318a72"
+		  "1c3c0c95956809532fcf0e2449a6b525"
+		  "b16aedf5aa0de657ba637b39"),
+	       H("3980ca0b3c00e841eb06fac4872a2757"
+		 "859e1ceaa6efd984628593b40ca1e19c"
+		 "7d773d00c144c525ac619d18c84a3f47"
+		 "18e2448b2fe324d9ccda2710"),
+	       HL("cafebabefacedbaddecaf888"),
+	       H("2519498e80f1478f37ba55bd6d27618c"));
+
+  /* Test case 11 */
+  test_gcm_aes(HL("feffe9928665731c6d6a8f9467308308"
+		  "feffe9928665731c"),
+	       HL("feedfacedeadbeeffeedfacedeadbeef"
+		  "abaddad2"),
+	       HL("d9313225f88406e5a55909c5aff5269a"
+		  "86a7a9531534f7da2e4c303d8a318a72"
+		  "1c3c0c95956809532fcf0e2449a6b525"
+		  "b16aedf5aa0de657ba637b39"),
+	       H("0f10f599ae14a154ed24b36e25324db8"
+		 "c566632ef2bbb34f8347280fc4507057"
+		 "fddc29df9a471f75c66541d4d4dad1c9"
+		 "e93a19a58e8b473fa0f062f7"),
+	       HL("cafebabefacedbad"),
+	       H("65dcc57fcf623a24094fcca40d3533f8"));
+#if 0
+  /* Test case 12 */
+  test_gcm_aes(
+	       );
+
+  /* Test case 13 */
+  test_gcm_aes(
+	       );
+
+  /* Test case 14 */
+  test_gcm_aes(
+	       );
+
+  /* Test case 15 */
+  test_gcm_aes(
+	       );
+
+  /* Test case 16 */
+  test_gcm_aes(
+	       );
+
+  /* Test case 17 */
+  test_gcm_aes(
+	       );
+
+  /* Test case 18 */
+  test_gcm_aes(
+	       );
+#endif
   SUCCESS();
 }
 
