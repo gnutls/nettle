@@ -1,5 +1,8 @@
 2011-02-10  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/nettle-benchmark.c (die): New function.
+	(TIME_END, TIME_START): Check return value from clock_gettime.
+
 	* gcm.h (union gcm_block): Use correct length for w array.
 
 	* testsuite/gcm-test.c (test_main): Added the rest of the
