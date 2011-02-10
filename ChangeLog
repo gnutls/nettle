@@ -1,4 +1,15 @@
 2011-02-10  Niels Möller  <nisse@lysator.liu.se>
+	
+	* examples/nettle-benchmark.c (cgt_works_p): New function.
+	(cgt_time_start): Likewise.
+	(cgt_time_end): Likewise.
+	(clock_time_start): Likewise.
+	(clock_time_end): Likewise.
+	(time_function): Read clock via function pointers time_start and
+	time_end, so we can select method at runtime.
+	(xalloc): Use die function.
+	(main): Choose timing function. If available, try clock_gettime,
+	and fall back to clock if it doesn't exist.
 
 	* examples/nettle-benchmark.c (die): New function.
 	(TIME_END, TIME_START): Check return value from clock_gettime.
