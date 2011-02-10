@@ -1,5 +1,9 @@
 2011-02-10  Niels Möller  <nisse@lysator.liu.se>
-	
+
+	* x86_64/memxor.asm: New file. Improves performance by 22% for the
+	unaligned01 case and 35% for the unaligned12 case, benchmarked on
+	Intel SU1400.
+
 	* examples/nettle-benchmark.c (cgt_works_p): New function.
 	(cgt_time_start): Likewise.
 	(cgt_time_end): Likewise.
