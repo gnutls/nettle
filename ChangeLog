@@ -1,3 +1,8 @@
+2011-02-10  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/gcm-test.c (test_main): Added the rest of the
+	testcases from the spec.
+
 2011-02-09  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/gcm-test.c (test_main): Enabled testcases 5 and 6,
