@@ -109,24 +109,56 @@ die(const char *format, ...)
 static double overhead = 0.0; 
 
 #if HAVE_CLOCK_GETTIME && defined CLOCK_PROCESS_CPUTIME_ID
-#define TIME_TYPE struct timespec
-#define TIME_START(start) do {					\
-    if (clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &(start)) < 0)	\
-      die("clock_gettime failed: %s\n", strerror(errno));	\
-  }  while (0)
-#define TIME_END(elapsed, start) do {					\
-    struct timespec _time_end_after;					\
-    if (clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &_time_end_after) < 0)	\
-      die("clock_gettime failed: %s\n", strerror(errno));		\
-    (elapsed) = _time_end_after.tv_sec - (start).tv_sec			\
-      + 1e-9 * (_time_end_after.tv_nsec - (start).tv_nsec);		\
-  } while (0)
+#define TRY_CLOCK_GETTIME 1
+struct timespec cgt_start;
+
+static int
+cgt_works_p(void)
+{
+  struct timespec now;
+  return clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &now) == 0;
+}
+
+static void
+cgt_time_start(void)
+{
+  if (clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &cgt_start) < 0)
+    die("clock_gettime failed: %s\n", strerror(errno));
+}
+
+static double
+cgt_time_end(void)
+{
+    struct timespec end;
+    if (clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end) < 0)
+      die("clock_gettime failed: %s\n", strerror(errno));
+
+    return end.tv_sec - cgt_start.tv_sec
+      + 1e-9 * (end.tv_nsec - cgt_start.tv_nsec);
+}
+
+static void (*time_start)(void);
+static double (*time_end)(void);
+
 #else /* !HAVE_CLOCK_GETTIME */
-#define TIME_TYPE clock_t
-#define TIME_START(start) ((start) = clock)
-#define TIME_END(elapsed, start) \
-  ((elapsed) = (double) (clock() - (start)) / CLOCKS_PER_SEC)
+#define TRY_CLOCK_GETTIME 0
+#define time_start clock_time_start
+#define time_end clock_time_end
 #endif /* !HAVE_CLOCK_GETTIME */
+
+static clock_t clock_start;
+
+static void
+clock_time_start(void)
+{
+  clock_start = clock();
+}
+
+static double
+clock_time_end(void)
+{
+  return (double) (clock() - (clock_start)) / CLOCKS_PER_SEC;
+}
 
 /* Returns second per function call */
 static double
@@ -137,12 +169,12 @@ time_function(void (*f)(void *arg), void *arg)
 
   for (ncalls = 10 ;;)
     {
-      TIME_TYPE start;
       unsigned i;
-      TIME_START(start);
+
+      time_start();
       for (i = 0; i < ncalls; i++)
 	f(arg);
-      TIME_END(elapsed, start);
+      elapsed = time_end();
       if (elapsed > BENCH_INTERVAL)
 	break;
       else if (elapsed < BENCH_INTERVAL / 10)
@@ -288,10 +320,7 @@ xalloc(size_t size)
 {
   void *p = malloc(size);
   if (!p)
-    {
-      fprintf(stderr, "Virtual memory exhausted.\n");
-      abort();
-    }
+    die("Virtual memory exhausted.\n");
 
   return p;
 }
@@ -580,6 +609,20 @@ main(int argc, char **argv)
 
   alg = argv[optind];
 
+  /* Choose timing function */
+#if TRY_CLOCK_GETTIME
+  if (cgt_works_p())
+    {
+      time_start = cgt_time_start;
+      time_end = cgt_time_end;
+    }
+  else
+    {
+      fprintf(stderr, "clock_gettime not working, falling back to clock\n");
+      time_start = clock_time_start;
+      time_end = clock_time_end;
+    }
+#endif
   bench_sha1_compress();
 
   time_overhead();
