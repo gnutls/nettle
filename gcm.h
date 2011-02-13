@@ -43,14 +43,14 @@ extern "C" {
 /* Name mangling */
 #define gcm_set_key nettle_gcm_set_key
 #define gcm_set_iv nettle_gcm_set_iv
-#define gcm_auth nettle_gcm_auth
+#define gcm_update nettle_gcm_update
 #define gcm_encrypt nettle_gcm_encrypt
 #define gcm_decrypt nettle_gcm_decrypt
 #define gcm_digest nettle_gcm_digest
 
 #define gcm_aes_set_key nettle_gcm_aes_set_key
 #define gcm_aes_set_iv nettle_gcm_aes_set_iv
-#define gcm_aes_auth nettle_gcm_aes_auth
+#define gcm_aes_update nettle_gcm_aes_update
 #define gcm_aes_encrypt nettle_gcm_aes_encrypt
 #define gcm_aes_decrypt nettle_gcm_aes_decrypt
 #define gcm_aes_digest nettle_gcm_aes_digest
@@ -97,8 +97,8 @@ gcm_set_iv(struct gcm_ctx *ctx, const struct gcm_key *key,
 	   unsigned length, const uint8_t *iv);
 
 void
-gcm_auth(struct gcm_ctx *ctx, const struct gcm_key *key,
-	 unsigned length, const uint8_t *data);
+gcm_update(struct gcm_ctx *ctx, const struct gcm_key *key,
+	   unsigned length, const uint8_t *data);
 
 void
 gcm_encrypt(struct gcm_ctx *ctx, const struct gcm_key *key,
@@ -127,8 +127,8 @@ gcm_digest(struct gcm_ctx *ctx, const struct gcm_key *key,
     gcm_set_key(&(ctx)->key, &(ctx)->cipher, (encrypt));	\
   } while (0)
 
-#define GCM_AUTH(ctx, encrypt, length, data)	    \
-  gcm_auth(&(ctx)->gcm, &(ctx)->key, (length), (data))
+#define GCM_UPDATE(ctx, encrypt, length, data)	    \
+  gcm_update(&(ctx)->gcm, &(ctx)->key, (length), (data))
 
 #define GCM_ENCRYPT(ctx, encrypt, length, dst, src)       \
   gcm_encrypt(&(ctx)->gcm, &(ctx)->key, &(ctx)->cipher, (encrypt),	\
@@ -152,11 +152,9 @@ void
 gcm_aes_set_iv(struct gcm_aes_ctx *ctx,
 	       unsigned length, const uint8_t *iv);
 
-/* FIXME: Rename to gcm_aes_update, for consistency with other hash
-   and mac functions? */
 void
-gcm_aes_auth(struct gcm_aes_ctx *ctx,
-	     unsigned length, const uint8_t *data);
+gcm_aes_update(struct gcm_aes_ctx *ctx,
+	       unsigned length, const uint8_t *data);
 
 void
 gcm_aes_encrypt(struct gcm_aes_ctx *ctx,

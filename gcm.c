@@ -411,11 +411,11 @@ gcm_set_iv(struct gcm_ctx *ctx, const struct gcm_key *key,
 }
 
 void
-gcm_auth(struct gcm_ctx *ctx, const struct gcm_key *key,
-	 unsigned length, const uint8_t *data)
+gcm_update(struct gcm_ctx *ctx, const struct gcm_key *key,
+	   unsigned length, const uint8_t *data)
 {
   assert(ctx->auth_size % GCM_BLOCK_SIZE == 0);
-  assert(ctx->data_size % GCM_BLOCK_SIZE == 0);
+  assert(ctx->data_size == 0);
 
   gcm_hash(key, &ctx->x, length, data);
 

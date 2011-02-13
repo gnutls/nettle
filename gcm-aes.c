@@ -39,13 +39,11 @@ gcm_aes_set_iv(struct gcm_aes_ctx *ctx,
   gcm_set_iv(&ctx->gcm, &ctx->key, length, iv);
 }
 
-/* FIXME: Rename to gcm_aes_update, for consistency with other hash
-   and mac functions? */
 void
-gcm_aes_auth(struct gcm_aes_ctx *ctx, unsigned length, const uint8_t *data)
+gcm_aes_update(struct gcm_aes_ctx *ctx, unsigned length, const uint8_t *data)
 {
-  GCM_AUTH(ctx, (nettle_crypt_func *) aes_encrypt,
-	   length, data);
+  GCM_UPDATE(ctx, (nettle_crypt_func *) aes_encrypt,
+	     length, data);
 }
 
 void
