@@ -58,7 +58,7 @@ extern "C" {
 #define GCM_BLOCK_SIZE 16
 #define GCM_IV_SIZE (GCM_BLOCK_SIZE - 4)
 
-#define GCM_TABLE_BITS 4
+#define GCM_TABLE_BITS 8
 
 /* To make sure that we have proper alignment. */
 union gcm_block
