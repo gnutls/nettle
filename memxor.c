@@ -71,7 +71,7 @@ memxor_common_alignment (word_t *dst, const word_t *src, size_t n)
     }
 }
 
-/* XOR *un-aligned* src-area onto aligned dst area. n is numer of
+/* XOR *un-aligned* src-area onto aligned dst area. n is number of
    words, not bytes. Assumes we can read complete words at the start
    and end of the src operand. */
 static void
