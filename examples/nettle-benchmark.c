@@ -390,23 +390,37 @@ time_hash(const struct nettle_hash *hash)
 }
 
 static void
-time_gmac(void)
+time_gcm(void)
 {
   static uint8_t data[BENCH_BLOCK];
-  struct bench_hash_info info;
+  struct bench_hash_info hinfo;
+  struct bench_cipher_info cinfo;
   struct gcm_aes_ctx ctx;
+
   uint8_t key[16];
   uint8_t iv[GCM_IV_SIZE];
 
   gcm_aes_set_key(&ctx, sizeof(key), key);
   gcm_aes_set_iv(&ctx, sizeof(iv), iv);
 
-  info.ctx = &ctx;
-  info.update = (nettle_hash_update_func *) gcm_aes_auth;
-  info.data = data;
+  hinfo.ctx = &ctx;
+  hinfo.update = (nettle_hash_update_func *) gcm_aes_update;
+  hinfo.data = data;
+  
+  display("gcm-aes", "update", GCM_BLOCK_SIZE,
+	  time_function(bench_hash, &hinfo));
+  
+  cinfo.ctx = &ctx;
+  cinfo.crypt = (nettle_crypt_func *) gcm_aes_encrypt;
+  cinfo.data = data;
 
-  display("gmac", "auth", GCM_BLOCK_SIZE,
-	  time_function(bench_hash, &info));
+  display("gcm-aes", "encrypt", GCM_BLOCK_SIZE,
+	  time_function(bench_cipher, &cinfo));
+
+  cinfo.crypt = (nettle_crypt_func *) gcm_aes_decrypt;
+
+  display("gcm-aes", "decrypt", GCM_BLOCK_SIZE,
+	  time_function(bench_cipher, &cinfo));
 }
 
 static void
@@ -636,20 +650,18 @@ main(int argc, char **argv)
     }
   
   for (i = 0; hashes[i]; i++)
-    {
-      if (!alg || strstr(hashes[i]->name, alg))
-	time_hash(hashes[i]);
-    }
-
-  if (!alg || strstr ("gmac", alg))
-    {
-      time_gmac();
-      printf("\n");
-    }
+    if (!alg || strstr(hashes[i]->name, alg))
+      time_hash(hashes[i]);
 
   for (i = 0; ciphers[i]; i++)
     if (!alg || strstr(ciphers[i]->name, alg))
       time_cipher(ciphers[i]);
+
+  if (!alg || strstr ("gcm", alg))
+    {
+      printf("\n");
+      time_gcm();
+    }
 
   return 0;
 }
