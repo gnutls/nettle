@@ -32,8 +32,9 @@
 #include <stdlib.h>
 
 #include "nettle-internal.h"
-#include "des.h"
 #include "blowfish.h"
+#include "des.h"
+#include "gcm.h"
 
 /* DES uses a different signature for the key set function. We ignore
    the return value incicating weak keys. */
@@ -75,3 +76,10 @@ nettle_des3 = {
    blowfish_set_key has no return value. */
 const struct nettle_cipher
 nettle_blowfish128 = _NETTLE_CIPHER(blowfish, BLOWFISH, 128);
+
+const struct nettle_aead
+nettle_gcm_aes128 = _NETTLE_AEAD(gcm, GCM, aes, 128);
+const struct nettle_aead
+nettle_gcm_aes192 = _NETTLE_AEAD(gcm, GCM, aes, 192);
+const struct nettle_aead
+nettle_gcm_aes256 = _NETTLE_AEAD(gcm, GCM, aes, 256);
