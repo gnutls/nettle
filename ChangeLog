@@ -1,3 +1,8 @@
+2011-02-14  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/gcm-test.c (test_gcm_aes): Updated for gcm_aes_auth to
+	gcm_aes_update renaming.
+
 2011-02-13  Niels Möller  <nisse@lysator.liu.se>
 
 	* gcm.h (GCM_UPDATE): Renamed, from...
