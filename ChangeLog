@@ -1,5 +1,19 @@
 2011-02-14  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/gcm-test.c (test_gcm_aes): Deleted function, replaced
+	by test_aead.
+	(test_main): Use test_aead.
+
+	* testsuite/testutils.c (test_aead): New function, replacing
+	test_gcm_aes and before that test_cipher_gcm.
+
+	* nettle-internal.c (nettle_gcm_aes128): New const struct.
+	(nettle_gcm_aes192): Likewise.
+	(nettle_gcm_aes256): Likewise.
+
+	* nettle-internal.h (struct nettle_aead): Tentative interface for
+	authenticated encryption with associated data.
+
 	* examples/nettle-benchmark.c (time_gcm): Renamed. Updated for
 	gcm_aes_auth to gcm_aes_update renaming. Benchmark both encryption
 	and hashing.
