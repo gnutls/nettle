@@ -85,11 +85,11 @@ struct nettle_cipher
   (nettle_crypt_func *) name##_crypt,			\
 }
 
-#define _NETTLE_CIPHER_FIX(name, NAME, keysize) {	\
+#define _NETTLE_CIPHER_FIX(name, NAME) {	\
   #name,						\
   sizeof(struct name##_ctx),				\
   NAME##_BLOCK_SIZE,					\
-  keysize / 8,						\
+  NAME##_KEY_SIZE,					\
   (nettle_set_key_func *) name##_set_key,		\
   (nettle_set_key_func *) name##_set_key,		\
   (nettle_crypt_func *) name##_encrypt,			\
