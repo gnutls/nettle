@@ -60,6 +60,33 @@ object-oriented wrapper for your favorite language or application.
 * Nettle soup::                 For the serious nettle hacker.
 * Installation::                How to install Nettle.
 * Index::                       Function and concept index.
+
+@detailmenu
+ --- The Detailed Node Listing ---
+
+Reference
+
+* Hash functions::              
+* Cipher functions::            
+* Cipher modes::                
+* Keyed hash functions::        
+* Public-key algorithms::       
+* Randomness::                  
+* Miscellaneous functions::     
+* Compatibility functions::     
+
+Cipher modes
+
+* CBC::                         
+* CTR::                         
+* GCM::                         
+
+Public-key algorithms
+
+* RSA::                         The RSA public key algorithm.
+* DSA::                         The DSA digital signature algorithm.
+
+@end detailmenu
 @end menu
 
 @end ifnottex
@@ -635,8 +662,8 @@ This function also resets the context in the same way as
 
 Nettle includes a struct including information about the supported hash
 functions. It is defined in @file{<nettle/nettle-meta.h>}, and is used
-by Nettle's implementation of @acronym{HMAC} @pxref{Keyed hash
-functions}.
+by Nettle's implementation of @acronym{HMAC} (@pxref{Keyed hash
+functions}).
 
 @deftp {Meta struct} @code{struct nettle_hash} name context_size digest_size block_size init update digest
 The last three attributes are function pointers, of types
@@ -714,8 +741,8 @@ changes to the message.
 
 It is recommended to @emph{always} use an authentication mechanism in
 addition to encrypting the messages. Popular choices are Message
-Authentication Codes like @acronym{HMAC-SHA1} @pxref{Keyed hash
-functions}, or digital signatures like @acronym{RSA}.
+Authentication Codes like @acronym{HMAC-SHA1} (@pxref{Keyed hash
+functions}), or digital signatures like @acronym{RSA}.
 
 Some ciphers have so called ``weak keys'', keys that results in
 undesirable structure after the key setup processing, and should be
@@ -1314,17 +1341,29 @@ ones without weak keys or other oddities.
 @comment  node-name,  next,  previous,  up
 @section Cipher modes
 
-Cipher modes of operation specifies the procedure to use when
-encrypting a message that is larger than the cipher's block size. As
-explained in @xref{Cipher functions}, splitting the message into blocks
-and processing them independently with the block cipher (Electronic Code
+Cipher modes of operation specifies the procedure to use when encrypting
+a message that is larger than the cipher's block size. As explained in
+@xref{Cipher functions}, splitting the message into blocks and
+processing them independently with the block cipher (Electronic Code
 Book mode, @acronym{ECB}) leaks information. Besides @acronym{ECB},
-Nettle provides two other modes of operation: Cipher Block Chaining
-(@acronym{CBC}) and Counter mode (@acronym{CTR}). @acronym{CBC} is
-widely used, but there are a few subtle issues of information leakage.
-@acronym{CTR} was standardized more recently, and is believed to be more
-secure.
+Nettle provides three other modes of operation: Cipher Block Chaining
+(@acronym{CBC}), Counter mode (@acronym{CTR}), and Galois/Counter mode
+(@acronym{gcm}). @acronym{CBC} is widely used, but there are a few
+subtle issues of information leakage. @acronym{CTR} and @acronym{GCM}
+were standardized more recently, and are believed to be more secure.
+@acronym{GCM} includes message authentication; for the other modes, one
+should always use a @acronym{MAC} (@pxref{Keyed hash functions}) or
+signature to authenticate the message.
 
+@menu
+* CBC::                         
+* CTR::                         
+* GCM::                         
+@end menu
+
+
+@node CBC, CTR, Cipher modes, Cipher modes
+@comment  node-name,  next,  previous,  up
 @subsection Cipher Block Chaining
 
 @cindex Cipher Block Chaining
@@ -1416,6 +1455,8 @@ These macros use some tricks to make the compiler display a warning if
 the types of @var{f} and @var{ctx} don't match, e.g. if you try to use
 an @code{struct aes_ctx} context with the @code{des_encrypt} function.
 
+@node CTR, GCM, CBC, Cipher modes
+@comment  node-name,  next,  previous,  up
 @subsection Counter mode
 
 @cindex Counter Mode
@@ -1489,6 +1530,92 @@ argument is an encryption function following Nettle's conventions. The
 last three arguments define the source and destination area for the
 operation.
 @end deffn
+
+@node GCM,  , CTR, Cipher modes
+@comment  node-name,  next,  previous,  up
+@subsection Galois counter mode
+
+@cindex Galois Counter Mode
+@cindex GCM
+
+Galois counter mode is the combination of counter mode with message
+authentication based on universal hashing. The main objective of the
+design is to provide high performance for hardware implementations,
+where other popular @acronym{MAC} algorithms (@pxref{Keyed hash
+functions} becomes a bottleneck for high-speed hardware implementations.
+It was proposed by David A. McGrew and John Viega in 2005, and
+recommended by NIST in 2007,
+@uref{http://csrc.nist.gov/publications/nistpubs/800-38D/SP-800-38D.pdf,
+NIST Special Publication 800-38D}. It is constructed on top of a block
+cipher which must have a block size of 128 bits.
+
+@acronym{GCM} is applied to messages of arbitrary length. The inputs
+are:
+
+@itemize
+@item 
+A key, which can be used for many messages.
+@item 
+An initialization vector (@acronym{IV}) which @emph{must} be unique for
+each message.
+@item
+Additional authenticated data, which is to be included in the message
+authentication, but not encrypted. May be empty.
+@item
+The plaintext. Maybe empty.
+@end itemize
+
+The outputs are a ciphertext, of the same length as the plaintext, and a
+message digest of length 128 bits. Nettle's support for @acronym{GCM}
+consists of a low-level general interface, some convenience macros, and
+specific functions for @acronym{GCM} using @acronym{AES} as the
+underlying cipher. These interfaces are defined in @file{<nettle/gcm.h>}
+
+@subsubsection General @acronym{GCM} interface
+
+@deftp {Contect struct} {struct gcm_key}
+Message independent hash subkey, and related tables.
+@end deftp
+
+@deftp {Context struct} {struct gcm_ctx}
+Holds state corresponding to a particular message.
+@end deftp
+
+@defvr Constant GCM_BLOCK_SIZE
+@acronym{GCM}'s block size, 16.
+@end defvr
+
+@defvr Constant GCM_IV_SIZE
+Recommended size of the @acronym{IV}. Other sizes are allowed.
+@end defvr
+
+@deftypefun void gcm_set_key (struct gcm_key *@var{key}, void *@var{cipher}, nettle_crypt_func *@var{f});
+@end deftypefun
+
+@deftypefun void gcm_set_iv (struct gcm_ctx *@var{ctx}, const struct gcm_key *@var{key}, unsigned @var{length}, const uint8_t *@var{iv});
+@end deftypefun
+
+@deftypefun void gcm_update (struct gcm_ctx *@var{ctx}, const struct gcm_key *@var{key}, unsigned @var{length}, const uint8_t *@var{data});
+@end deftypefun
+
+@deftypefun void gcm_encrypt (struct gcm_ctx *@var{ctx}, const struct gcm_key *@var{key} void *@var{cipher}, nettle_crypt_func *@var{f}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src});
+@deftypefunx void gcm_decrypt (struct gcm_ctx *@var{ctx}, const struct gcm_key *@var{key}, void *@var{cipher}, nettle_crypt_func *@var{f}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src});
+@end deftypefun
+
+@deftypefun void gcm_digest (struct gcm_ctx *@var{ctx}, const struct gcm_key *@var{key}, void *@var{cipher}, nettle_crypt_func *@var{f}, unsigned @var{length}, uint8_t *@var{digest});
+@end deftypefun
+
+To encrypt a message using @acronym{GCM}, first initialize a context for
+the underlying block cipher with a key to use for encryption. Then call
+the above functions in the following order: @code{gcm_set_key},
+@code{gcm_set_iv}, @code{gcm_update}, @code{gcm_encrypt},
+@code{gcm_digest}. The decryption procedure is analogous, just calling
+@code{gcm_decrypt} instead of @code{gcm_encrypt} (note that
+@acronym{GCM} decryption still uses the encryption function of the
+underlying block cipher). To process the next message, using the same
+key, call @code{gcm_set_iv} with a new @acronym{iv}.
+
+@c XXX
 
 
 @node Keyed hash functions, Public-key algorithms, Cipher modes, Reference
@@ -2278,6 +2405,7 @@ of things like the current time, process id, and host name.
 
 However, such a generator is inadequate for cryptography, for at least
 two reasons:
+
 
 @itemize
 
