@@ -26,7 +26,7 @@ test_gcm_aes(unsigned key_length,
   gcm_aes_set_iv(&ctx, iv_length, iv);
 
   if (auth_length)
-    gcm_aes_auth(&ctx, auth_length, authtext);
+    gcm_aes_update(&ctx, auth_length, authtext);
     
   if (length)
     gcm_aes_encrypt(&ctx, length, data, cleartext);
@@ -44,7 +44,7 @@ test_gcm_aes(unsigned key_length,
   gcm_aes_set_iv(&ctx, iv_length, iv);
 
   if (auth_length)
-    gcm_aes_auth(&ctx, auth_length, authtext);
+    gcm_aes_update(&ctx, auth_length, authtext);
     
   if (length)
     gcm_aes_decrypt(&ctx, length, data, data);
