@@ -1,5 +1,8 @@
 2011-02-14  Niels Möller  <nisse@lysator.liu.se>
 
+	* nettle.texinfo: Split node on cipher modes, and started on
+	the GCM documentation.
+
 	* testsuite/gcm-test.c (test_gcm_aes): Deleted function, replaced
 	by test_aead.
 	(test_main): Use test_aead.
