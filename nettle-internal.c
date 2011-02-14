@@ -35,32 +35,24 @@
 #include "des.h"
 #include "blowfish.h"
 
-/* DES uses a different signature for the key set function.
- * And we have to adjust parity. */
+/* DES uses a different signature for the key set function. We ignore
+   the return value incicating weak keys. */
 static void
-des_set_key_hack(void *c, unsigned length, const uint8_t *key)
+des_set_key_hack(void *ctx, unsigned length, const uint8_t *key)
 {
-  struct des_ctx *ctx = c;
-  uint8_t pkey[DES_KEY_SIZE];
-  
   assert(length == DES_KEY_SIZE);
-  des_fix_parity(DES_KEY_SIZE, pkey, key);
-  if (!des_set_key(ctx, pkey))
-    abort();
+  des_set_key(ctx, key);
 }
 
 static void
-des3_set_key_hack(void *c, unsigned length, const uint8_t *key)
+des3_set_key_hack(void *ctx, unsigned length, const uint8_t *key)
 {
-  struct des3_ctx *ctx = c;
-  uint8_t pkey[DES3_KEY_SIZE];
-  
   assert(length == DES3_KEY_SIZE);
-  des_fix_parity(DES3_KEY_SIZE, pkey, key);
-  if (!des3_set_key(ctx, pkey))
-    abort();
+  des3_set_key(ctx, key);
 }
 
+/* NOTE: A bit ugly. Ignores weak keys, and pretends the set:key
+   functions have no return value. */
 const struct nettle_cipher
 nettle_des = {
   "des", sizeof(struct des_ctx),
@@ -79,7 +71,7 @@ nettle_des3 = {
  (nettle_crypt_func *) des3_decrypt
 };
 
-/* NOTE: This is not as nice as one might think, as it will crash if
- * we try to encrypt something with a weak key. */
+/* NOTE: This is not as nice as one might think, as we pretend
+   blowfish_set_key has no return value. */
 const struct nettle_cipher
 nettle_blowfish128 = _NETTLE_CIPHER(blowfish, BLOWFISH, 128);
