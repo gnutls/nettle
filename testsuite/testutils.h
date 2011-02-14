@@ -22,6 +22,9 @@
 
 #include "nettle-meta.h"
 
+/* Forward declare */
+struct nettle_aead;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -112,6 +115,19 @@ test_cipher_stream(const struct nettle_cipher *cipher,
 		   unsigned length,
 		   const uint8_t *cleartext,
 		   const uint8_t *ciphertext);
+
+void
+test_aead(const struct nettle_aead *aead,
+	  unsigned key_length,
+	  const uint8_t *key,
+	  unsigned auth_length,
+	  const uint8_t *authtext,
+	  unsigned length,
+	  const uint8_t *cleartext,
+	  const uint8_t *ciphertext,
+	  unsigned iv_length,
+	  const uint8_t *iv,
+	  const uint8_t *digest);
 
 void
 test_hash(const struct nettle_hash *hash,

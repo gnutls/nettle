@@ -4,8 +4,8 @@
 
 #include "cbc.h"
 #include "ctr.h"
-#include "gcm.h"
 #include "knuth-lfib.h"
+#include "nettle-internal.h"
 
 #include <ctype.h>
 #include <stdio.h>
@@ -360,6 +360,66 @@ test_cipher_stream(const struct nettle_cipher *cipher,
 
   free(ctx);
   free(data);
+}
+
+void
+test_aead(const struct nettle_aead *aead,
+	  unsigned key_length,
+	  const uint8_t *key,
+	  unsigned auth_length,
+	  const uint8_t *authtext,
+	  unsigned length,
+	  const uint8_t *cleartext,
+	  const uint8_t *ciphertext,
+	  unsigned iv_length,
+	  const uint8_t *iv,
+	  const uint8_t *digest)
+{
+  void *ctx = xalloc(aead->context_size);
+  uint8_t *data = xalloc(length);
+  uint8_t *buffer = xalloc(aead->block_size);
+
+  /* encryption */
+  memset(buffer, 0, aead->block_size);
+  aead->set_key(ctx, key_length, key);
+
+  aead->set_iv(ctx, iv_length, iv);
+
+  if (auth_length)
+    aead->update(ctx, auth_length, authtext);
+    
+  if (length)
+    aead->encrypt(ctx, length, data, cleartext);
+
+  aead->digest(ctx, aead->block_size, buffer);
+
+  if (!MEMEQ(length, data, ciphertext))
+    FAIL();
+
+  if (!MEMEQ(aead->block_size, buffer, digest))
+    FAIL();
+
+  /* decryption */
+  memset(buffer, 0, aead->block_size);
+  aead->set_iv(ctx, iv_length, iv);
+
+  if (auth_length)
+    aead->update(ctx, auth_length, authtext);
+    
+  if (length)
+    aead->decrypt(ctx, length, data, data);
+
+  aead->digest(ctx, aead->block_size, buffer);
+
+  if (!MEMEQ(length, data, cleartext))
+    FAIL();
+
+  if (!MEMEQ(aead->block_size, buffer, digest))
+    FAIL();
+
+  free(ctx);
+  free(data);
+  free(buffer);
 }
 
 void
