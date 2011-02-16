@@ -1,5 +1,9 @@
 2011-02-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* cbc.h (CBC_ENCRYPT): Avoid using NULL; we don't ensure that it
+	is defined.
+	(CBC_DECRYPT): Likewise.
+
 	* gcm-aes.c (gcm_aes_set_iv): Use GCM_SET_IV.
 	(gcm_aes_set_key): Deleted cast.
 	(gcm_aes_encrypt): Likewise.
