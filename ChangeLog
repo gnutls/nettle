@@ -1,3 +1,20 @@
+2011-02-16  Niels Möller  <nisse@lysator.liu.se>
+
+	* gcm-aes.c (gcm_aes_set_iv): Use GCM_SET_IV.
+	(gcm_aes_set_key): Deleted cast.
+	(gcm_aes_encrypt): Likewise.
+	(gcm_aes_decrypt): Likewise.
+	(gcm_aes_digest): Likewise.
+	(gcm_aes_update): One less argument to GCM_UPDATE.
+
+	* gcm.h (GCM_SET_KEY): Added cast to nettle_crypt_func *. Help
+	compiler type checking despite this cast.
+	(GCM_ENCRYPT): Likewise.
+	(GCM_DECRYPT): Likewise.
+	(GCM_DIGEST): Likewise.
+	(GCM_SET_IV): New macro, for completeness.
+	(GCM_UPDATE): Deleted unused argument encrypt.
+
 2011-02-14  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle.texinfo: Split node on cipher modes, and started on

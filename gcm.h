@@ -121,26 +121,38 @@ gcm_digest(struct gcm_ctx *ctx, const struct gcm_key *key,
 #define GCM_CTX(type) \
 { type cipher; struct gcm_key key; struct gcm_ctx gcm; }
 
+/* NOTE: Avoid using NULL, as we don't include anything defining it. */
 #define GCM_SET_KEY(ctx, set_key, encrypt, length, data)	\
   do {								\
     (set_key)(&(ctx)->cipher, (length), (data));		\
-    gcm_set_key(&(ctx)->key, &(ctx)->cipher, (encrypt));	\
+    if (0) (encrypt)(&(ctx)->cipher, 0, (void *)0, (void *)0);	\
+    gcm_set_key(&(ctx)->key, &(ctx)->cipher,			\
+		(nettle_crypt_func *) (encrypt));		\
   } while (0)
 
-#define GCM_UPDATE(ctx, encrypt, length, data)	    \
+#define GCM_SET_IV(ctx, length, data)				\
+  gcm_set_iv(&(ctx)->gcm, &(ctx)->key, (length), (data))
+
+#define GCM_UPDATE(ctx, length, data)			\
   gcm_update(&(ctx)->gcm, &(ctx)->key, (length), (data))
 
-#define GCM_ENCRYPT(ctx, encrypt, length, dst, src)       \
-  gcm_encrypt(&(ctx)->gcm, &(ctx)->key, &(ctx)->cipher, (encrypt),	\
-	      (length), (dst), (src))
+#define GCM_ENCRYPT(ctx, encrypt, length, dst, src)			\
+  (0 ? (encrypt)(&(ctx)->cipher, 0, (void *)0, (void *)0)		\
+     : gcm_encrypt(&(ctx)->gcm, &(ctx)->key, &(ctx)->cipher,		\
+		   (nettle_crypt_func *) (encrypt),			\
+		   (length), (dst), (src)))
 
-#define GCM_DECRYPT(ctx, encrypt, length, dst, src)       \
-  gcm_decrypt(&(ctx)->gcm,  &(ctx)->key, &(ctx)->cipher, (encrypt),	\
-	      (length), (dst), (src))
+#define GCM_DECRYPT(ctx, encrypt, length, dst, src)			\
+  (0 ? (encrypt)(&(ctx)->cipher, 0, (void *)0, (void *)0)		\
+     : gcm_decrypt(&(ctx)->gcm,  &(ctx)->key, &(ctx)->cipher,		\
+		   (nettle_crypt_func *) (encrypt),			\
+		   (length), (dst), (src)))
 
-#define GCM_DIGEST(ctx, encrypt, length, digest)		\
-  gcm_digest(&(ctx)->gcm, &(ctx)->key, &(ctx)->cipher, (encrypt),		\
-	     (length), (digest))
+#define GCM_DIGEST(ctx, encrypt, length, digest)			\
+  (0 ? (encrypt)(&(ctx)->cipher, 0, (void *)0, (void *)0)		\
+     : gcm_digest(&(ctx)->gcm, &(ctx)->key, &(ctx)->cipher,		\
+		  (nettle_crypt_func *) (encrypt),			\
+		  (length), (digest)))
 
 struct gcm_aes_ctx GCM_CTX(struct aes_ctx);
 
