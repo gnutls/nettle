@@ -1,3 +1,8 @@
+2011-02-18  Niels Möller  <nisse@lysator.liu.se>
+
+	* arcfour.c (arcfour_stream): Deleted function. It's not very
+	useful, and neither documented nor tested.
+
 2011-02-16  Niels Möller  <nisse@lysator.liu.se>
 
 	* cbc.h (CBC_ENCRYPT): Avoid using NULL; we don't ensure that it

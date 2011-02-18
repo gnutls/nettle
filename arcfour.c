@@ -56,23 +56,3 @@ arcfour_set_key(struct arcfour_ctx *ctx,
   ctx->i = ctx->j = 0;
 }
 
-void
-arcfour_stream(struct arcfour_ctx *ctx,
-	       unsigned length, uint8_t *dst)
-{
-  register uint8_t i, j;
-  register int si, sj;
-
-  i = ctx->i; j = ctx->j;
-  while(length--)
-    {
-      i++; i &= 0xff;
-      si = ctx->S[i];
-      j += si; j &= 0xff;
-      sj = ctx->S[i] = ctx->S[j];
-      ctx->S[j] = si;
-      *dst++ = ctx->S[ (si + sj) & 0xff ];
-    }
-  ctx->i = i; ctx->j = j;
-}
-
