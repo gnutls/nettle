@@ -1349,7 +1349,9 @@ Book mode, @acronym{ECB}) leaks information. Besides @acronym{ECB},
 Nettle provides three other modes of operation: Cipher Block Chaining
 (@acronym{CBC}), Counter mode (@acronym{CTR}), and Galois/Counter mode
 (@acronym{gcm}). @acronym{CBC} is widely used, but there are a few
-subtle issues of information leakage. @acronym{CTR} and @acronym{GCM}
+subtle issues of information leakage, see, e.g.,
+@uref{http://www.kb.cert.org/vuls/id/958563, @acronym{SSH} @acronym{CBC}
+vulnerability}. @acronym{CTR} and @acronym{GCM}
 were standardized more recently, and are believed to be more secure.
 @acronym{GCM} includes message authentication; for the other modes, one
 should always use a @acronym{MAC} (@pxref{Keyed hash functions}) or
