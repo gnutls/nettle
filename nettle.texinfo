@@ -1328,11 +1328,6 @@ struct, which is of size @code{context_size}.
 @deftypevrx {Constant Struct} {struct nettle_cipher} nettle_twofish192
 @deftypevrx {Constant Struct} {struct nettle_cipher} nettle_twofish256
 
-@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_arctwo40;
-@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_arctwo64;
-@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_arctwo128;
-@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_arctwo_gutmann128;
-
 Nettle includes such structs for all the @emph{regular} ciphers, i.e.
 ones without weak keys or other oddities.
 @end deftypevr
