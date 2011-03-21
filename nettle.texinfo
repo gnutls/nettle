@@ -898,7 +898,7 @@ standards.
 @end deftp
 
 @defvr Constant ARCTWO_BLOCK_SIZE
-The AES block-size, 8
+The ARCTWO block-size, 8
 @end defvr
 
 @defvr Constant ARCTWO_MIN_KEY_SIZE
