@@ -82,6 +82,15 @@ gcm-test$(EXEEXT): gcm-test.$(OBJEXT)
 hmac-test$(EXEEXT): hmac-test.$(OBJEXT)
 	$(LINK) hmac-test.$(OBJEXT) $(TEST_OBJS) -o hmac-test$(EXEEXT)
 
+meta-hash-test$(EXEEXT): meta-hash-test.$(OBJEXT)
+	$(LINK) meta-hash-test.$(OBJEXT) $(TEST_OBJS) -o meta-hash-test$(EXEEXT)
+
+meta-cipher-test$(EXEEXT): meta-cipher-test.$(OBJEXT)
+	$(LINK) meta-cipher-test.$(OBJEXT) $(TEST_OBJS) -o meta-cipher-test$(EXEEXT)
+
+meta-armor-test$(EXEEXT): meta-armor-test.$(OBJEXT)
+	$(LINK) meta-armor-test.$(OBJEXT) $(TEST_OBJS) -o meta-armor-test$(EXEEXT)
+
 buffer-test$(EXEEXT): buffer-test.$(OBJEXT)
 	$(LINK) buffer-test.$(OBJEXT) $(TEST_OBJS) -o buffer-test$(EXEEXT)
 
