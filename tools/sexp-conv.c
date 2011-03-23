@@ -54,19 +54,6 @@
 
 #define BUG_ADDRESS "nettle-bugs@lists.lysator.liu.se"
 
-static void *
-xalloc(size_t size)
-{
-  void *p = malloc(size);
-  if (!p)
-    {
-      fprintf(stderr, "Virtual memory exhausted.\n");
-      abort();
-    }
-
-  return p;
-}
-
 
 /* Conversion functions. */
 
