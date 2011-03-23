@@ -1,3 +1,25 @@
+2011-03-23  Niels Möller  <nisse@lysator.liu.se>
+
+	Contributed by Daniel Kahn Gillmor:
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Added
+	meta-hash-test.c, meta-cipher-test.c, and meta-armor-test.c.
+
+	* testsuite/meta-hash-test.c: New file.
+	* testsuite/meta-cipher-test.c: New file.
+	* testsuite/meta-armor-test.c: New file.
+
+	* nettle.texinfo: Document nettle_hashes and nettle_ciphers.
+
+	* nettle-meta.h: Declare algorithm lists nettle_ciphers,
+	nettle_hashes, nettle_armors.
+
+	* Makefile.in (nettle_SOURCES): Added nettle-meta-hashes.c,
+	nettle-meta-ciphers.c, and nettle-meta-armors.c.
+
+	* nettle-meta-armors.c: New file.
+	* nettle-meta-ciphers.c: New file.
+	* nettle-meta-hashes.c: New file.
+
 2011-02-18  Niels Möller  <nisse@lysator.liu.se>
 
 	* arcfour.c (arcfour_stream): Deleted function. It's not very

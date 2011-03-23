@@ -96,6 +96,9 @@ struct nettle_cipher
   (nettle_crypt_func *) name##_decrypt,			\
 }
 
+/* null-terminated list of ciphers implemented by this version of nettle */
+extern const struct nettle_cipher * const nettle_ciphers[];
+
 extern const struct nettle_cipher nettle_aes128;
 extern const struct nettle_cipher nettle_aes192;
 extern const struct nettle_cipher nettle_aes256;
@@ -148,6 +151,9 @@ struct nettle_hash
  (nettle_hash_update_func *) name##_update,	\
  (nettle_hash_digest_func *) name##_digest	\
 } 
+
+/* null-terminated list of digests implemented by this version of nettle */
+extern const struct nettle_hash * const nettle_hashes[];
 
 extern const struct nettle_hash nettle_md2;
 extern const struct nettle_hash nettle_md4;
@@ -206,6 +212,9 @@ struct nettle_armor
   (nettle_armor_decode_update_func *) name##_decode_update,	\
   (nettle_armor_decode_final_func *) name##_decode_final,	\
 }
+
+/* null-terminated list of armor schemes implemented by this version of nettle */
+extern const struct nettle_armor * const nettle_armors[];
 
 extern const struct nettle_armor nettle_base64;
 extern const struct nettle_armor nettle_base16;
