@@ -572,14 +572,6 @@ convert_file(struct nettle_buffer *buffer,
     }
 }
 
-enum {
-  OPT_PRIVATE_RSA = RSA_PRIVATE_KEY,
-  OPT_PUBLIC_RSA = RSA_PUBLIC_KEY,
-  OPT_PRIVATE_DSA = DSA_PRIVATE_KEY,
-  OPT_PUBLIC_KEY = GENERAL_PUBLIC_KEY,
-  OPT_HELP = 0x300,
-};
-
 int
 main(int argc, char **argv)
 {
@@ -587,6 +579,14 @@ main(int argc, char **argv)
   enum object_type type = 0;
   int base64 = 0;
   int c;
+
+  enum {
+    OPT_HELP = 0x300,
+    OPT_PRIVATE_RSA = RSA_PRIVATE_KEY,
+    OPT_PUBLIC_RSA = RSA_PUBLIC_KEY,
+    OPT_PRIVATE_DSA = DSA_PRIVATE_KEY,
+    OPT_PUBLIC_KEY = GENERAL_PUBLIC_KEY,
+  };
   
   static const struct option options[] =
     {
