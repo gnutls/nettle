@@ -1,5 +1,8 @@
 2011-03-23  Niels Möller  <nisse@lysator.liu.se>
 
+	* tools/sexp-conv.c (xalloc): Deleted function, now it's in misc.c
+	instead.
+
 	* configure.ac: Use LSH_FUNC_STRERROR.
 
 	* tools/Makefile.in (TARGETS): Added nettle-hash, and related
