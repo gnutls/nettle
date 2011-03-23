@@ -1,5 +1,7 @@
 2011-03-23  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac: Use LSH_FUNC_STRERROR.
+
 	* tools/Makefile.in (TARGETS): Added nettle-hash, and related
 	build rules.
 	(SOURCES): Added nettle-hash.c.
