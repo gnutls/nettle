@@ -437,6 +437,7 @@ AC_CHECK_HEADERS([openssl/blowfish.h openssl/des.h openssl/cast.h openssl/aes.h]
  break])
 
 LSH_FUNC_ALLOCA
+LSH_FUNC_STRERROR
 
 # Needed by the supplied memcmp.c
 AC_C_BIGENDIAN
