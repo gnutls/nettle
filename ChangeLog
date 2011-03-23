@@ -1,5 +1,18 @@
 2011-03-23  Niels Möller  <nisse@lysator.liu.se>
 
+	* tools/Makefile.in (TARGETS): Added nettle-hash, and related
+	build rules.
+	(SOURCES): Added nettle-hash.c.
+
+	* tools/misc.c (xalloc): New function.
+
+	* tools/pkcs1-conv.c (main): Made the OPT_* constants local, and
+	fixed numerical values to start with non-ASCII 0x300.
+
+	* tools/nettle-hash.c: New file.
+
+2011-03-23  Niels Möller  <nisse@lysator.liu.se>
+
 	Contributed by Daniel Kahn Gillmor:
 	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Added
 	meta-hash-test.c, meta-cipher-test.c, and meta-armor-test.c.
