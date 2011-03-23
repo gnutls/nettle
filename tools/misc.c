@@ -50,6 +50,19 @@ werror(const char *format, ...)
   va_end(args);
 }
 
+void *
+xalloc(size_t size)
+{
+  void *p = malloc(size);
+  if (!p)
+    {
+      fprintf(stderr, "Virtual memory exhausted.\n");
+      abort();
+    }
+
+  return p;
+}
+
 const char
 sexp_token_chars[0x80] =
   {

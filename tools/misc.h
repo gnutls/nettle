@@ -43,6 +43,9 @@ werror(const char *format, ...)
 #endif
      ;
 
+void *
+xalloc(size_t size);
+
 enum sexp_mode
   {
     SEXP_CANONICAL = 0,
