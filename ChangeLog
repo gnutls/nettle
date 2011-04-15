@@ -1,3 +1,16 @@
+2011-04-15  Niels Möller  <nisse@lysator.liu.se>
+
+	Reverted broken byte-order change from 2001-06-17:
+	* serpent.c (serpent_set_key): Use correct byteorder.
+	(serpent_encrypt): Likewise.
+	(serpent_decrypt): Likewise.
+
+	* testsuite/serpent-test.c (decode_hex_reverse): New function.
+	(RH, RHL): New macros.
+	(test_main): Byte reverse inputs and outputs for the testvectors
+	taken from the serpent submission package. Enable test vectors
+	from http://www.cs.technion.ac.il/~biham/Reports/Serpent/.
+
 2011-03-23  Niels Möller  <nisse@lysator.liu.se>
 
 	* tools/sexp-conv.c (xalloc): Deleted function, now it's in misc.c
