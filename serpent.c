@@ -8,8 +8,8 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 1998, 2000, 2001, Ross Anderson, Eli Biham, Lars
- *                                 Knudsen, Rafael R. Sevilla, Niels Möller
+ * Copyright (C) 1998, 2000, 2001, 2011,
+ * Ross Anderson, Eli Biham, Lars Knudsen, Rafael R. Sevilla, Niels Möller
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -56,26 +56,23 @@ serpent_set_key(struct serpent_ctx *ctx,
   assert(key_size >= SERPENT_MIN_KEY_SIZE);
   assert(key_size <= SERPENT_MAX_KEY_SIZE);
 
-  for (i = key_size, j = 0;
-       (i >= 4);
-       i-=4, j++)
+  for (i = 0; key_size >= 4; key_size -= 4, key += 4, i++)
     {
-      assert(j<8);
-      /* Read the key in the reverse direction. Why? */
-      w[j] = READ_UINT32(key + i - 4);
+      assert(i < 8);
+      w[i] = LE_READ_UINT32 (key);
     }
 
-    if (j < 8)
+  if (i < 8)
     {
-      /* Pad key, "aabbccddeeff" -> 0xccddeeff, 0x01aabb" */
+      /* Pad key, "aabbcc" -> "aabbcc0100...00" -> 0x01ccbbaa*/
       uint32_t partial = 0x01;
-      while (i)
-	partial = (partial << 8 ) | *key++;
-      w[j++] = partial;
+      while (key_size > 0)
+	partial = (partial << 8 ) | key[--key_size];
 
-      while (j < 8)
-	w[j++] = 0;
-    }  
+      w[i++] = partial;
+      while (i < 8)
+	w[i++] = 0;
+    }
 
   for(i=8; i<16; i++)
     w[i]=ROL(w[i-8]^w[i-5]^w[i-3]^w[i-1]^PHI^(i-8),11);
@@ -133,11 +130,10 @@ serpent_encrypt(const struct serpent_ctx *ctx,
 
   FOR_BLOCKS(length, dst, plain, SERPENT_BLOCK_SIZE)
     {
-      /* Why the reverse order? */
-      x0=READ_UINT32(plain + 12);
-      x1=READ_UINT32(plain + 8);
-      x2=READ_UINT32(plain + 4);
-      x3=READ_UINT32(plain);
+      x0 = LE_READ_UINT32(plain);
+      x1 = LE_READ_UINT32(plain + 4);
+      x2 = LE_READ_UINT32(plain + 8);
+      x3 = LE_READ_UINT32(plain + 12);
 
       /* Start to encrypt the plaintext x */
       keying(x0, x1, x2, x3, ctx->keys[ 0]);
@@ -239,12 +235,10 @@ serpent_encrypt(const struct serpent_ctx *ctx,
       keying(x0, x1, x2, x3, ctx->keys[32]);
 
       /* The ciphertext is now in x */
-
-      /* Why the reverse order? */
-      WRITE_UINT32(dst, x3);
-      WRITE_UINT32(dst+4, x2);
-      WRITE_UINT32(dst+8, x1);
-      WRITE_UINT32(dst+12, x0);
+      LE_WRITE_UINT32(dst, x0);
+      LE_WRITE_UINT32(dst+4, x1);
+      LE_WRITE_UINT32(dst+8, x2);
+      LE_WRITE_UINT32(dst+12, x3);
     }
 }
 
@@ -258,11 +252,10 @@ serpent_decrypt(const struct serpent_ctx *ctx,
 
   FOR_BLOCKS(length, dst, cipher, SERPENT_BLOCK_SIZE)
     {
-      /* Why the reverse order? */
-      x0 = READ_UINT32(cipher + 12);
-      x1 = READ_UINT32(cipher + 8);
-      x2 = READ_UINT32(cipher + 4);
-      x3 = READ_UINT32(cipher);
+      x0 = LE_READ_UINT32(cipher);
+      x1 = LE_READ_UINT32(cipher + 4);
+      x2 = LE_READ_UINT32(cipher + 8);
+      x3 = LE_READ_UINT32(cipher + 12);
       
       /* Start to decrypt the ciphertext x */
       keying(x0, x1, x2, x3, ctx->keys[32]);
@@ -364,11 +357,9 @@ serpent_decrypt(const struct serpent_ctx *ctx,
       keying(x0, x1, x2, x3, ctx->keys[ 0]);
 
       /* The plaintext is now in x */
-
-      /* Why the reverse order? */
-      WRITE_UINT32(dst, x3);
-      WRITE_UINT32(dst+4, x2);
-      WRITE_UINT32(dst+8, x1);
-      WRITE_UINT32(dst+12, x0);
+      LE_WRITE_UINT32(dst, x0);
+      LE_WRITE_UINT32(dst+4, x1);
+      LE_WRITE_UINT32(dst+8, x2);
+      LE_WRITE_UINT32(dst+12, x3);
     }
 }
