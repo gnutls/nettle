@@ -54,31 +54,14 @@ list_algorithms (void)
 static const struct nettle_hash *
 find_algorithm (const char *name)
 {
-  size_t length = strlen (name);
   const struct nettle_hash *alg;
-  const struct nettle_hash *found = NULL;
   unsigned i;
   
   for (i = 0; (alg = nettle_hashes[i]); i++)
-    {
-      if (!strncmp(name, alg->name, length))
-	{
-	  /* Luckily, no valid algorithm name is a prefix of any
-	     other, so we don't need to handle exact matches
-	     specially. */
-	     
-	  if (found)
-	    die("Hash algorithm `%s' is ambiguous (%s or %s or ...?).\n"
-		"Use nettle-hash --list to list all available algorithms.\n",
-		name, alg->name, found->name);
-	  found = alg;
-	}
-    }
-  if (!found)
-    die("Hash algorithm `%s' is not supported.\n"
-	"Use nettle-hash --list to list all available algorithms.\n",
-	name);
-  return found;
+    if (!strcmp(name, alg->name))
+      return alg;
+
+  return NULL;
 }
 
 /* Also in examples/io.c */
@@ -143,6 +126,9 @@ digest_file(const struct nettle_hash *alg,
   return 1;
 }
 
+/* FIXME: Be more compatible with md5sum and sha1sum. Options -c
+   (check), -b (binary), -t (text), and output format with hex hash
+   sum, optional star (meaning binary mode), and file name. */
 int
 main (int argc, char **argv)
 {
