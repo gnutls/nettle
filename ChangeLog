@@ -1,3 +1,7 @@
+2011-04-27  Niels Möller  <nisse@lysator.liu.se>
+
+	* tools/nettle-hash.c (find_algorithm): Require exact match.
+
 2011-04-15  Niels Möller  <nisse@lysator.liu.se>
 
 	Reverted broken byte-order change from 2001-06-17:
