@@ -35,7 +35,6 @@ extern "C" {
 /* Name mangling */
 #define arcfour_set_key nettle_arcfour_set_key
 #define arcfour_crypt nettle_arcfour_crypt
-#define arcfour_stream nettle_arcfour_stream
 
 /* Minimum and maximum keysizes, and a reasonable default. In
  * octets.*/
