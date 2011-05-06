@@ -8,6 +8,8 @@
 
 	* configure.ac: New configure option --enable-gcov.
 
+	* arcfour.h (arcfour_stream): Deleted obsolete define.
+	
 2011-04-27  Niels Möller  <nisse@lysator.liu.se>
 
 	* tools/nettle-hash.c (find_algorithm): Require exact match.
