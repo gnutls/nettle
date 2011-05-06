@@ -55,7 +55,11 @@ AC_ARG_ENABLE(pic,
 AC_ARG_ENABLE(openssl,
   AC_HELP_STRING([--disable-openssl], [Do not include openssl glue in the benchmark program]),,
   [enable_openssl=yes])
-  
+
+AC_ARG_ENABLE(gcov,
+  AC_HELP_STRING([--enable-gcov], [Instrument for gcov (requires a modern gcc)]),,
+  [enable_gcov=no])
+
 LSH_RPATH_INIT([`echo $with_lib_path | sed 's/:/ /g'` \
     `echo $exec_prefix | sed "s@^NONE@$prefix/lib@g" | sed "s@^NONE@$ac_default_prefix/lib@g"` \
     /usr/local/lib /sw/local/lib /sw/lib \
@@ -272,6 +276,22 @@ case "$host_os" in
     LIBHOGWEED_LINK='$(CC) -dynamiclib $(LDFLAGS)'
     LIBHOGWEED_LIBS=''
     ;;
+  solaris*)
+    # Sun's ld uses -h to set the soname, and this option is passed
+    # through by both Sun's compiler and gcc. Might not work with GNU
+    # ld, but it's unusual to use GNU ld on Solaris.
+    LIBNETTLE_FORLINK=libnettle.so
+    LIBNETTLE_SONAME='$(LIBNETTLE_FORLINK).$(LIBNETTLE_MAJOR)'
+    LIBNETTLE_FILE='$(LIBNETTLE_SONAME).$(LIBNETTLE_MINOR)'
+    LIBNETTLE_LINK='$(CC) $(LDFLAGS) -G -h $(LIBNETTLE_SONAME)'
+    LIBNETTLE_LIBS=''
+
+    LIBHOGWEED_FORLINK=libhogweed.so
+    LIBHOGWEED_SONAME='$(LIBHOGWEED_FORLINK).$(LIBHOGWEED_MAJOR)'
+    LIBHOGWEED_FILE='$(LIBHOGWEED_SONAME).$(LIBHOGWEED_MINOR)'
+    LIBHOGWEED_LINK='$(CC) $(LDFLAGS) -L. -G -h $(LIBHOGWEED_SONAME)'
+    LIBHOGWEED_LIBS='-lnettle -lgmp'
+    ;;
   *)
     LIBNETTLE_FORLINK=libnettle.so
     LIBNETTLE_SONAME='$(LIBNETTLE_FORLINK).$(LIBNETTLE_MAJOR)'
@@ -423,6 +443,10 @@ AC_SUBST(LIBHOGWEED_LINK)
 AC_SUBST(LIBHOGWEED_LIBS)
 
 AC_PATH_PROG(M4, m4, m4)
+
+if test "x$enable_gcov" = "xyes"; then
+  CFLAGS="$CFLAGS -ftest-coverage -fprofile-arcs"
+fi
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
