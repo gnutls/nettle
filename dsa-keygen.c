@@ -106,7 +106,7 @@ dsa_generate_keypair(struct dsa_public_key *pub,
   if (progress)
     progress (progress_ctx, 'g');
 
-  mpz_init_set(r, pub->q);
+  mpz_set(r, pub->q);
   mpz_sub_ui(r, r, 2);
   nettle_mpz_random(key->x, random_ctx, random, r);
 

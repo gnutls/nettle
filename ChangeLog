@@ -1,3 +1,8 @@
+2011-05-21  Niels Möller  <nisse@lysator.liu.se>
+
+	* dsa-keygen.c (dsa_generate_keypair): Avoid double init of mpz
+	variable. Spotted by Nikos Mavrogiannopoulos.
+
 2011-05-06  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Fix link flags for shared libraries on Solaris,
