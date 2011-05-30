@@ -1,7 +1,7 @@
 ABI, according to http://www.x86-64.org/documentation/abi-0.99.pdf:
 
 Up to 6 integer and pointer arguments are passed in registers. Nine
-registers, %rax, %rcx, %rdx, %rsi, %rdi and %r8-%r12 can be used
+registers, %rax, %rcx, %rdx, %rsi, %rdi and %r8-%r11 can be used
 freely. Integers and pointers are returned in %rax.
 
 Registers	May be		Argument
