@@ -25,6 +25,26 @@ decode_hex_reverse (const char *hex)
 int
 test_main(void)
 {
+  /* From libgcrypt */
+  test_cipher(&nettle_serpent128,
+	      HL("0000000000000000 0000000000000000"),
+	      HL("D29D576FCEA3A3A7 ED9099F29273D78E"),
+	      H("B2288B968AE8B086 48D1CE9606FD992D"));
+  test_cipher(&nettle_serpent192,
+	      HL("0000000000000000 0000000000000000 0000000000000000"),
+	      HL("D29D576FCEABA3A7 ED9899F2927BD78E"),
+	      H("130E353E1037C224 05E8FAEFB2C3C3E9"));
+  test_cipher(&nettle_serpent256,
+	      HL("0000000000000000 0000000000000000"
+		 "0000000000000000 0000000000000000"),
+	      HL("D095576FCEA3E3A7 ED98D9F29073D78E"),
+	      H("B90EE5862DE69168 F2BDD5125B45472B"));
+  test_cipher(&nettle_serpent256,
+	      HL("0000000000000000 0000000000000000"
+		 "0000000000000000 0000000000000000"),
+	      HL("0000000001000000 0200000003000000"),
+	      H("2061A42782BD52EC 691EC383B03BA77C"));
+
   /* The first test for each key size from the ecb_vk.txt and ecb_vt.txt
    * files in the serpent package. */
 
