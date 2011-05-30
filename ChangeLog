@@ -1,3 +1,8 @@
+2011-05-30  Simon Josefsson  <simon@josefsson.org>
+
+	* testsuite/serpent-test.c (test_main): Add test vectors from
+	libgcrypt.
+
 2011-05-21  Niels Möller  <nisse@lysator.liu.se>
 
 	* dsa-keygen.c (dsa_generate_keypair): Avoid double init of mpz
@@ -14,7 +19,7 @@
 	* configure.ac: New configure option --enable-gcov.
 
 	* arcfour.h (arcfour_stream): Deleted obsolete define.
-	
+
 2011-04-27  Niels Möller  <nisse@lysator.liu.se>
 
 	* tools/nettle-hash.c (find_algorithm): Require exact match.
@@ -534,7 +539,7 @@
 	rsa_sha512_verify and rsa_sha512_verify_digest.
 
 	* camellia.h (struct camellia_ctx): Eliminate the two unused
-	subkeys, and renumber the remaining ones.	
+	subkeys, and renumber the remaining ones.
 	* camellia-crypt-internal.c (_camellia_crypt): Updated for
 	renumbered subkeys.
 	* camellia-set-encrypt-key.c (camellia_set_encrypt_key): Likewise.
