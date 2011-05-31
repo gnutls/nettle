@@ -1,3 +1,8 @@
+2011-05-31  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/serpent-test.c (test_main): Added some tests for
+	padding of keys of length which is not a multiple of four bytes.
+
 2011-05-30  Simon Josefsson  <simon@josefsson.org>
 
 	* testsuite/serpent-test.c (test_main): Add test vectors from
