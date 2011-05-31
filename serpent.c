@@ -60,11 +60,6 @@ typedef uint32_t serpent_block_t[4];
    than 256 bits, it is padded.  */
 typedef uint32_t serpent_key_t[8];
 
-#define byte_swap_32(x) \
-  (0 \
-   | (((x) & 0xff000000) >> 24) | (((x) & 0x00ff0000) >>  8) \
-   | (((x) & 0x0000ff00) <<  8) | (((x) & 0x000000ff) << 24))
-
 #define rol(x,n) ((((uint32_t)(x))<<(n))|	\
                   (((uint32_t)(x))>>(32-(n))))
 #define ror(x,n) ((((uint32_t)(x))<<(32-(n)))|	\
@@ -593,24 +588,25 @@ serpent_key_prepare (const uint8_t * key, unsigned int key_length,
 {
   unsigned int i;
 
+  assert (key_length <= SERPENT_MAX_KEY_SIZE);
+  
   /* Copy key.  */
-  for (i = 0; i < key_length / 4; i++)
-    {
-#ifdef WORDS_BIGENDIAN
-      key_prepared[i] = byte_swap_32 (((uint32_t *) key)[i]);
-#else
-      key_prepared[i] = ((uint32_t *) key)[i];
-#endif
-    }
+  for (i = 0; key_length >= 4; key_length -=4, key += 4)
+    key_prepared[i++] = LE_READ_UINT32(key);
 
   if (i < 8)
     {
-      /* Key must be padded according to the Serpent
-         specification.  */
-      key_prepared[i] = 0x00000001;
+      /* Key must be padded according to the Serpent specification.
+         "aabbcc" -> "aabbcc0100...00" -> 0x01ccbbaa. */
+      uint32_t pad = 0x01;
+      
+      while (key_length > 0)
+	pad = pad << 8 | key[--key_length];
 
-      for (i++; i < 8; i++)
-	key_prepared[i] = 0;
+      key_prepared[i++] = pad;
+
+      while (i < 8)
+	key_prepared[i++] = 0;
     }
 }
 

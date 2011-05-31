@@ -1,3 +1,9 @@
+2011-05-31  Niels Möller  <nisse@lysator.liu.se>
+
+	* serpent.c (byte_swap_32): Deleted macro.
+	(serpent_key_prepare): Use LE_READ_UINT32. Don't require aligned
+	input, and support arbitrary key sizes.
+
 2011-05-30  Simon Josefsson  <simon@josefsson.org>
 
 	* serpent.c: Rewrite, based on libgcrypt code.  License changed
