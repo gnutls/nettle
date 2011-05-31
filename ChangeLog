@@ -1,3 +1,10 @@
+2011-05-30  Simon Josefsson  <simon@josefsson.org>
+
+	* serpent.c: Rewrite, based on libgcrypt code.  License changed
+	from GPL to LGPL.
+	* serpent_sboxes.h: Removed.
+	* Makefile.in: Drop serpent_sboxes.h.
+
 2011-05-31  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/serpent-test.c (test_main): Added some tests for

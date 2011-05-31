@@ -128,7 +128,7 @@ DISTFILES = $(SOURCES) $(HEADERS) .bootstrap aclocal.m4 configure.ac \
 	README AUTHORS COPYING COPYING.LIB INSTALL NEWS TODO ChangeLog \
 	memxor.c $(des_headers) descore.README \
 	aes-internal.h camellia-internal.h cast128_sboxes.h desinfo.h desCode.h \
-	serpent_sboxes.h nettle-internal.h nettle-write.h prime-list.h \
+	nettle-internal.h nettle-write.h prime-list.h \
 	asm.m4 \
 	nettle.texinfo nettle.info nettle.html nettle.pdf sha-example.c
 
