@@ -1,5 +1,8 @@
 2011-05-31  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/serpent-test.c (test_main): Enabled test with short,
+	40-bit, key.
+
 	* serpent.c (byte_swap_32): Deleted macro.
 	(serpent_key_prepare): Use LE_READ_UINT32. Don't require aligned
 	input, and support arbitrary key sizes.
