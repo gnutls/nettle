@@ -140,5 +140,44 @@ test_main(void)
 	      HL("EA024714AD5C4D84EA024714AD5C4D84"),
 	      H("3E507730776B93FDEA661235E1DD99F0"));
 
+  /* Test key padding. We use nettle_serpent256, which actually works
+     also with key sizes smaller than 32 bytes. */
+  test_cipher(&nettle_serpent256,
+	      HL("00112233440100000000000000000000"
+		 "00000000000000000000000000000000"),
+	      HL("0000000001000000 0200000003000000"),
+	      H("C1415AC653FD7C7F D917482EE8EBFE25"));
+#if 0
+  /* Currrently, key sizes smaller than SERPENT_MIN_KEY_SIZE bytes
+     (128 bits) are not supported. */
+  test_cipher(&nettle_serpent256,
+	      HL("0011223344"),
+	      HL("0000000001000000 0200000003000000"),
+	      H("C1415AC653FD7C7F D917482EE8EBFE25"));
+#endif
+  test_cipher(&nettle_serpent256,
+	      HL("00112233445566778899aabbccddeeff"
+		 "00010000000000000000000000000000"),
+	      HL("0000000001000000 0200000003000000"),
+	      H("8EB9C958EAFFDF42 009755D7B6458838"));
+
+  test_cipher(&nettle_serpent256,
+	      HL("00112233445566778899aabbccddeeff"
+		 "00"),
+	      HL("0000000001000000 0200000003000000"),
+	      H("8EB9C958EAFFDF42 009755D7B6458838"));
+
+  test_cipher(&nettle_serpent256,
+	      HL("00112233445566778899aabbccddeeff"
+		 "00112201000000000000000000000000"),
+	      HL("0000000001000000 0200000003000000"),
+	      H("C8A078D8212AC96D 9060E30EC5CBB5C7"));
+
+  test_cipher(&nettle_serpent256,
+	      HL("00112233445566778899aabbccddeeff"
+		 "001122"),
+	      HL("0000000001000000 0200000003000000"),
+	      H("C8A078D8212AC96D 9060E30EC5CBB5C7"));
+
   SUCCESS();
 }
