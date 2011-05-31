@@ -147,14 +147,14 @@ test_main(void)
 		 "00000000000000000000000000000000"),
 	      HL("0000000001000000 0200000003000000"),
 	      H("C1415AC653FD7C7F D917482EE8EBFE25"));
-#if 0
+
   /* Currrently, key sizes smaller than SERPENT_MIN_KEY_SIZE bytes
      (128 bits) are not supported. */
   test_cipher(&nettle_serpent256,
 	      HL("0011223344"),
 	      HL("0000000001000000 0200000003000000"),
 	      H("C1415AC653FD7C7F D917482EE8EBFE25"));
-#endif
+
   test_cipher(&nettle_serpent256,
 	      HL("00112233445566778899aabbccddeeff"
 		 "00010000000000000000000000000000"),
