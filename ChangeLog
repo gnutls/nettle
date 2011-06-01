@@ -1,3 +1,15 @@
+2011-06-01  Niels Möller  <nisse@lysator.liu.se>
+
+	* serpent.c: Added do { ... } while (0) around block macros.
+	(serpent_key_t): Deleted array typedef.
+	(ROL32, ROR32): Renamed macros, were rol and ror.
+	(KS_RECURRENCE, KS): New macros.
+	(serpent_key_pad): Renamed, from...
+	(serpent_key_prepare): ...old name.
+	(serpent_subkeys_generate): Deleted function.
+	(serpent_set_key): Rewrote the generation of subkeys. Reduced both
+	temporary storage and code size (less unrolling)
+
 2011-05-31  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/serpent-test.c (test_main): Enabled test with short,

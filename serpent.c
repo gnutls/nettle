@@ -8,6 +8,7 @@
 
 /* nettle, low-level cryptographics library
  *
+ * Copyright (C) 2011  Niels Möller
  * Copyright (C) 2010, 2011  Simon Josefsson
  * Copyright (C) 2003, 2004, 2005 Free Software Foundation, Inc.
  *  
@@ -56,13 +57,10 @@
 /* Serpent works on 128 bit blocks.  */
 typedef uint32_t serpent_block_t[4];
 
-/* Serpent key, provided by the user.  If the original key is shorter
-   than 256 bits, it is padded.  */
-typedef uint32_t serpent_key_t[8];
-
-#define rol(x,n) ((((uint32_t)(x))<<(n))|	\
+/* FIXME: Unify ROL macros used here, in camellia.c and cast128.c. */
+#define ROL32(x,n) ((((uint32_t)(x))<<(n))|	\
                   (((uint32_t)(x))>>(32-(n))))
-#define ror(x,n) ((((uint32_t)(x))<<(32-(n)))|	\
+#define ROR32(x,n) ((((uint32_t)(x))<<(32-(n)))|	\
                   (((uint32_t)(x))>>(n)))
 
 /* These are the S-Boxes of Serpent.  They are copied from Serpents
@@ -82,7 +80,7 @@ typedef uint32_t serpent_key_t[8];
    are welcome to use Serpent for any application."  */
 
 #define SBOX0(a, b, c, d, w, x, y, z) \
-  { \
+  do { \
     uint32_t t02, t03, t05, t06, t07, t08, t09; \
     uint32_t t11, t12, t13, t14, t15, t17, t01; \
     t01 = b   ^ c  ; \
@@ -103,10 +101,10 @@ typedef uint32_t serpent_key_t[8];
     w   =     ~ t15; \
     t17 = w   ^ t14; \
     x   = t12 ^ t17; \
-  }
+  } while (0)
 
 #define SBOX0_INVERSE(a, b, c, d, w, x, y, z) \
-  { \
+  do { \
     uint32_t t02, t03, t04, t05, t06, t08, t09, t10; \
     uint32_t t12, t13, t14, t15, t17, t18, t01; \
     t01 = c   ^ d  ; \
@@ -128,10 +126,10 @@ typedef uint32_t serpent_key_t[8];
     t17 = t05 & t13; \
     t18 = t14 | t17; \
     w   = t15 ^ t18; \
-  }
+  } while (0)
 
 #define SBOX1(a, b, c, d, w, x, y, z) \
-  { \
+  do { \
     uint32_t t02, t03, t04, t05, t06, t07, t08; \
     uint32_t t10, t11, t12, t13, t16, t17, t01; \
     t01 = a   | d  ; \
@@ -152,10 +150,10 @@ typedef uint32_t serpent_key_t[8];
     t16 = t10 | x  ; \
     t17 = t05 & t16; \
     w   = c   ^ t17; \
-  }
+  } while (0)
 
 #define SBOX1_INVERSE(a, b, c, d, w, x, y, z) \
-  { \
+  do { \
     uint32_t t02, t03, t04, t05, t06, t07, t08; \
     uint32_t t09, t10, t11, t14, t15, t17, t01; \
     t01 = a   ^ b  ; \
@@ -176,10 +174,10 @@ typedef uint32_t serpent_key_t[8];
     z   = t01 ^ t04; \
     t17 = c   ^ t15; \
     w   = t14 ^ t17; \
-  }
+  } while (0)
 
 #define SBOX2(a, b, c, d, w, x, y, z) \
-  { \
+  do {					   \
     uint32_t t02, t03, t05, t06, t07, t08; \
     uint32_t t09, t10, t12, t13, t14, t01; \
     t01 = a   | c  ; \
@@ -198,10 +196,10 @@ typedef uint32_t serpent_key_t[8];
     t14 = b   ^ t13; \
     z   =     ~ t09; \
     y   = t12 ^ t14; \
-  }
+  } while (0)
 
 #define SBOX2_INVERSE(a, b, c, d, w, x, y, z) \
-  { \
+  do {						\
     uint32_t t02, t03, t04, t06, t07, t08, t09; \
     uint32_t t10, t11, t12, t15, t16, t17, t01; \
     t01 = a   ^ d  ; \
@@ -222,10 +220,10 @@ typedef uint32_t serpent_key_t[8];
     t16 = w   ^ x  ; \
     t17 = t10 ^ t15; \
     y   = t16 ^ t17; \
-  }
+  } while (0)
 
 #define SBOX3(a, b, c, d, w, x, y, z) \
-  { \
+  do {						\
     uint32_t t02, t03, t04, t05, t06, t07, t08; \
     uint32_t t09, t10, t11, t13, t14, t15, t01; \
     t01 = a   ^ c  ; \
@@ -246,10 +244,10 @@ typedef uint32_t serpent_key_t[8];
     y   = t08 ^ t11; \
     w   = t14 ^ t15; \
     x   = t05 ^ t04; \
-  }
+  } while (0)
 
 #define SBOX3_INVERSE(a, b, c, d, w, x, y, z) \
-  { \
+  do { \
     uint32_t t02, t03, t04, t05, t06, t07, t09; \
     uint32_t t11, t12, t13, t14, t16, t01; \
     t01 = c   | d  ; \
@@ -269,10 +267,10 @@ typedef uint32_t serpent_key_t[8];
     x   = b   ^ t12; \
     t16 = b   | t13; \
     z   = t14 ^ t16; \
-  }
+  } while (0)
 
 #define SBOX4(a, b, c, d, w, x, y, z) \
-  { \
+  do { \
     uint32_t t02, t03, t04, t05, t06, t08, t09; \
     uint32_t t10, t11, t12, t13, t14, t15, t16, t01; \
     t01 = a   | b  ; \
@@ -294,10 +292,10 @@ typedef uint32_t serpent_key_t[8];
     y   = t13 ^ t08; \
     x   = t15 ^ t16; \
     w   =     ~ t14; \
-  }
+  } while (0)
 
 #define SBOX4_INVERSE(a, b, c, d, w, x, y, z) \
-  { \
+  do { \
     uint32_t t02, t03, t04, t05, t06, t07, t09; \
     uint32_t t10, t11, t12, t13, t15, t01; \
     t01 = b   | d  ; \
@@ -317,10 +315,10 @@ typedef uint32_t serpent_key_t[8];
     t15 = a   ^ t04; \
     y   = t11 ^ t13; \
     w   = t15 ^ t09; \
-  }
+  } while (0)
 
 #define SBOX5(a, b, c, d, w, x, y, z) \
-  { \
+  do { \
     uint32_t t02, t03, t04, t05, t07, t08, t09; \
     uint32_t t10, t11, t12, t13, t14, t01; \
     t01 = b   ^ d  ; \
@@ -340,10 +338,10 @@ typedef uint32_t serpent_key_t[8];
     y   = t09 ^ t13; \
     x   = t07 ^ t08; \
     z   = t12 ^ t14; \
-  }
+  } while (0)
 
 #define SBOX5_INVERSE(a, b, c, d, w, x, y, z) \
-  { \
+  do { \
     uint32_t t02, t03, t04, t05, t07, t08, t09; \
     uint32_t t10, t12, t13, t15, t16, t01; \
     t01 = a   & d  ; \
@@ -363,10 +361,10 @@ typedef uint32_t serpent_key_t[8];
     t15 = t02 ^ t13; \
     t16 = b   ^ d  ; \
     y   = t16 ^ t15; \
-  }
+  } while (0)
 
 #define SBOX6(a, b, c, d, w, x, y, z) \
-  { \
+  do { \
     uint32_t t02, t03, t04, t05, t07, t08, t09, t10; \
     uint32_t t11, t12, t13, t15, t17, t18, t01; \
     t01 = a   & d  ; \
@@ -388,10 +386,10 @@ typedef uint32_t serpent_key_t[8];
     t17 = a   ^ b  ; \
     t18 = y   ^ t15; \
     w   = t17 ^ t18; \
-  }
+  } while (0)
 
 #define SBOX6_INVERSE(a, b, c, d, w, x, y, z) \
-  { \
+  do { \
     uint32_t t02, t03, t04, t05, t06, t07, t08, t09; \
     uint32_t t12, t13, t14, t15, t16, t17, t01; \
     t01 = a   ^ c  ; \
@@ -413,10 +411,10 @@ typedef uint32_t serpent_key_t[8];
     t17 = a   ^ x  ; \
     z   = t17 ^ t15; \
     y   = t16 ^ t14; \
-  }
+  } while (0)
 
 #define SBOX7(a, b, c, d, w, x, y, z) \
-  { \
+  do { \
     uint32_t t02, t03, t04, t05, t06, t08, t09, t10; \
     uint32_t t11, t13, t14, t15, t16, t17, t01; \
     t01 = a   & c  ; \
@@ -438,10 +436,10 @@ typedef uint32_t serpent_key_t[8];
     t17 = t02 | t14; \
     w   = t15 ^ t17; \
     y   = a   ^ t16; \
-  }
+  } while (0)
 
 #define SBOX7_INVERSE(a, b, c, d, w, x, y, z) \
-  { \
+  do { \
     uint32_t t02, t03, t04, t06, t07, t08, t09; \
     uint32_t t10, t11, t13, t14, t15, t16, t01; \
     t01 = a   & b  ; \
@@ -462,7 +460,7 @@ typedef uint32_t serpent_key_t[8];
     t16 = t01 | t10; \
     w   = t13 ^ t15; \
     y   = t14 ^ t16; \
-  }
+  } while (0)
 
 /* XOR BLOCK1 into BLOCK0.  */
 #define BLOCK_XOR(block0, block1) \
@@ -502,97 +500,115 @@ typedef uint32_t serpent_key_t[8];
 
 /* Apply the linear transformation to BLOCK.  */
 #define LINEAR_TRANSFORMATION(block)                  \
-  {                                                   \
-    block[0] = rol (block[0], 13);                    \
-    block[2] = rol (block[2], 3);                     \
+  do {                                                   \
+    block[0] = ROL32 (block[0], 13);                    \
+    block[2] = ROL32 (block[2], 3);                     \
     block[1] = block[1] ^ block[0] ^ block[2];        \
     block[3] = block[3] ^ block[2] ^ (block[0] << 3); \
-    block[1] = rol (block[1], 1);                     \
-    block[3] = rol (block[3], 7);                     \
+    block[1] = ROL32 (block[1], 1);                     \
+    block[3] = ROL32 (block[3], 7);                     \
     block[0] = block[0] ^ block[1] ^ block[3];        \
     block[2] = block[2] ^ block[3] ^ (block[1] << 7); \
-    block[0] = rol (block[0], 5);                     \
-    block[2] = rol (block[2], 22);                    \
-  }
+    block[0] = ROL32 (block[0], 5);                     \
+    block[2] = ROL32 (block[2], 22);                    \
+  } while (0)
 
 /* Apply the inverse linear transformation to BLOCK.  */
 #define LINEAR_TRANSFORMATION_INVERSE(block)          \
-  {                                                   \
-    block[2] = ror (block[2], 22);                    \
-    block[0] = ror (block[0] , 5);                    \
+  do {                                                   \
+    block[2] = ROR32 (block[2], 22);                    \
+    block[0] = ROR32 (block[0] , 5);                    \
     block[2] = block[2] ^ block[3] ^ (block[1] << 7); \
     block[0] = block[0] ^ block[1] ^ block[3];        \
-    block[3] = ror (block[3], 7);                     \
-    block[1] = ror (block[1], 1);                     \
+    block[3] = ROR32 (block[3], 7);                     \
+    block[1] = ROR32 (block[1], 1);                     \
     block[3] = block[3] ^ block[2] ^ (block[0] << 3); \
     block[1] = block[1] ^ block[0] ^ block[2];        \
-    block[2] = ror (block[2], 3);                     \
-    block[0] = ror (block[0], 13);                    \
-  }
+    block[2] = ROR32 (block[2], 3);                     \
+    block[0] = ROR32 (block[0], 13);                    \
+  } while (0)
 
 /* Apply a Serpent round to BLOCK, using the SBOX number WHICH and the
    subkeys contained in SUBKEYS.  Use BLOCK_TMP as temporary storage.
    This macro increments `round'.  */
 #define ROUND(which, subkeys, block, block_tmp) \
-  {                                             \
+  do {                                             \
     BLOCK_XOR (block, subkeys[round]);          \
     round++;                                    \
     SBOX (which, block, block_tmp, 0);          \
     LINEAR_TRANSFORMATION (block_tmp);          \
     BLOCK_COPY (block, block_tmp);              \
-  }
+  } while (0)
 
 /* Apply the last Serpent round to BLOCK, using the SBOX number WHICH
    and the subkeys contained in SUBKEYS.  Use BLOCK_TMP as temporary
    storage.  The result will be stored in BLOCK_TMP.  This macro
    increments `round'.  */
 #define ROUND_LAST(which, subkeys, block, block_tmp) \
-  {                                                  \
+  do {                                                  \
     BLOCK_XOR (block, subkeys[round]);               \
     round++;                                         \
     SBOX (which, block, block_tmp, 0);               \
     BLOCK_XOR (block_tmp, subkeys[round]);           \
     round++;                                         \
-  }
+  } while (0)
 
 /* Apply an inverse Serpent round to BLOCK, using the SBOX number
    WHICH and the subkeys contained in SUBKEYS.  Use BLOCK_TMP as
    temporary storage.  This macro increments `round'.  */
 #define ROUND_INVERSE(which, subkey, block, block_tmp) \
-  {                                                    \
+  do {                                                    \
     LINEAR_TRANSFORMATION_INVERSE (block);             \
     SBOX_INVERSE (which, block, block_tmp, 0);         \
     BLOCK_XOR (block_tmp, subkey[round]);              \
     round--;                                           \
     BLOCK_COPY (block, block_tmp);                     \
-  }
+  } while (0)
 
 /* Apply the first Serpent round to BLOCK, using the SBOX number WHICH
    and the subkeys contained in SUBKEYS.  Use BLOCK_TMP as temporary
    storage.  The result will be stored in BLOCK_TMP.  This macro
    increments `round'.  */
 #define ROUND_FIRST_INVERSE(which, subkeys, block, block_tmp) \
-  {                                                           \
+  do {                                                           \
     BLOCK_XOR (block, subkeys[round]);                        \
     round--;                                                  \
     SBOX_INVERSE (which, block, block_tmp, 0);                \
     BLOCK_XOR (block_tmp, subkeys[round]);                    \
     round--;                                                  \
-  }
+  } while (0)
 
-/* Convert the user provided key KEY of KEY_LENGTH bytes into the
-   internally used format.  */
+/* Note: Increments k */
+#define KS_RECURRENCE(w, i, k)						\
+  do {									\
+    uint32_t _wn = (w)[(i)] ^ (w)[((i)+3)&7] ^ w[((i)+5)&7]		\
+      ^ w[((i)+7)&7] ^ PHI ^ (k)++;					\
+    ((w)[(i)] = ROL32(_wn, 11));					\
+  } while (0)
+
+/* Note: Increments k four times and keys once */
+#define KS(keys, s, w, i, k)					\
+  do {								\
+    KS_RECURRENCE(w, (i), (k));					\
+    KS_RECURRENCE(w, (i)+1, (k));				\
+    KS_RECURRENCE(w, (i)+2, (k));				\
+    KS_RECURRENCE(w, (i)+3, (k));				\
+    SBOX##s(w[(i)],w[(i)+1],w[(i)+2],w[(i)+3],			\
+	    (*keys)[0],(*keys)[1],(*keys)[2],(*keys)[3]);	\
+    (keys)++;							\
+  } while (0)
+
+/* Pad user key and convert to an array of 8 uint32_t. */
 static void
-serpent_key_prepare (const uint8_t * key, unsigned int key_length,
-		     serpent_key_t key_prepared)
+serpent_key_pad (const uint8_t *key, unsigned int key_length,
+		 uint32_t *w)
 {
   unsigned int i;
 
   assert (key_length <= SERPENT_MAX_KEY_SIZE);
   
-  /* Copy key.  */
   for (i = 0; key_length >= 4; key_length -=4, key += 4)
-    key_prepared[i++] = LE_READ_UINT32(key);
+    w[i++] = LE_READ_UINT32(key);
 
   if (i < 8)
     {
@@ -603,69 +619,11 @@ serpent_key_prepare (const uint8_t * key, unsigned int key_length,
       while (key_length > 0)
 	pad = pad << 8 | key[--key_length];
 
-      key_prepared[i++] = pad;
+      w[i++] = pad;
 
       while (i < 8)
-	key_prepared[i++] = 0;
+	w[i++] = 0;
     }
-}
-
-/* Derive the 33 subkeys from KEY and store them in SUBKEYS.  */
-static void
-serpent_subkeys_generate (serpent_key_t key, struct serpent_ctx *ctx)
-{
-  uint32_t w_real[140];		/* The `prekey'.  */
-  uint32_t k[132];
-  uint32_t *w = &w_real[8];
-  int i, j;
-
-  /* Initialize with key values.  */
-  for (i = 0; i < 8; i++)
-    w[i - 8] = key[i];
-
-  /* Expand to intermediate key using the affine recurrence.  */
-  for (i = 0; i < 132; i++)
-    w[i] = rol (w[i - 8] ^ w[i - 5] ^ w[i - 3] ^ w[i - 1] ^ PHI ^ i, 11);
-
-  /* Calculate subkeys via S-Boxes, in bitslice mode.  */
-  SBOX (3, w, k, 0);
-  SBOX (2, w, k, 4);
-  SBOX (1, w, k, 8);
-  SBOX (0, w, k, 12);
-  SBOX (7, w, k, 16);
-  SBOX (6, w, k, 20);
-  SBOX (5, w, k, 24);
-  SBOX (4, w, k, 28);
-  SBOX (3, w, k, 32);
-  SBOX (2, w, k, 36);
-  SBOX (1, w, k, 40);
-  SBOX (0, w, k, 44);
-  SBOX (7, w, k, 48);
-  SBOX (6, w, k, 52);
-  SBOX (5, w, k, 56);
-  SBOX (4, w, k, 60);
-  SBOX (3, w, k, 64);
-  SBOX (2, w, k, 68);
-  SBOX (1, w, k, 72);
-  SBOX (0, w, k, 76);
-  SBOX (7, w, k, 80);
-  SBOX (6, w, k, 84);
-  SBOX (5, w, k, 88);
-  SBOX (4, w, k, 92);
-  SBOX (3, w, k, 96);
-  SBOX (2, w, k, 100);
-  SBOX (1, w, k, 104);
-  SBOX (0, w, k, 108);
-  SBOX (7, w, k, 112);
-  SBOX (6, w, k, 116);
-  SBOX (5, w, k, 120);
-  SBOX (4, w, k, 124);
-  SBOX (3, w, k, 128);
-
-  /* Renumber subkeys.  */
-  for (i = 0; i < ROUNDS + 1; i++)
-    for (j = 0; j < 4; j++)
-      ctx->keys[i][j] = k[4 * i + j];
 }
 
 /* Initialize CONTEXT with the key KEY of KEY_LENGTH bits.  */
@@ -673,10 +631,34 @@ void
 serpent_set_key (struct serpent_ctx *ctx,
 		 unsigned length, const uint8_t * key)
 {
-  serpent_key_t key_prepared;
+  uint32_t w[8];
+  uint32_t (*keys)[4];
+  unsigned k;
+  
+  serpent_key_pad (key, length, w);
 
-  serpent_key_prepare (key, length, key_prepared);
-  serpent_subkeys_generate (key_prepared, ctx);
+  /* Derive the 33 subkeys from KEY and store them in SUBKEYS. We do
+     the recurrence in the key schedule using W as a circular buffer
+     of just 8 uint32_t. */
+
+  /* FIXME: Would be better to invoke SBOX with scalar variables as
+     arguments, no arrays. To do that, unpack w into separate
+     variables, use temporary variables as the SBOX destination. */
+
+  for (keys = ctx->keys, k = 0; k < 128;)
+    {
+      KS(keys, 3, w, 0, k);
+      KS(keys, 2, w, 4, k);
+      KS(keys, 1, w, 0, k);
+      KS(keys, 0, w, 4, k);
+      KS(keys, 7, w, 0, k);
+      KS(keys, 6, w, 4, k);
+      KS(keys, 5, w, 0, k);
+      KS(keys, 4, w, 4, k);
+    }
+  KS(keys, 3, w, 0, k);
+  assert (k == 132);
+  assert (keys == ctx->keys + 33);
 }
 
 void
