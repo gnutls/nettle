@@ -48,14 +48,8 @@
 
 #include "macros.h"
 
-/* Number of rounds per Serpent encrypt/decrypt operation.  */
-#define ROUNDS 32
-
 /* Magic number, used during generating of the subkeys.  */
 #define PHI 0x9E3779B9
-
-/* Serpent works on 128 bit blocks.  */
-typedef uint32_t serpent_block_t[4];
 
 /* FIXME: Unify ROL macros used here, in camellia.c and cast128.c. */
 #define ROL32(x,n) ((((uint32_t)(x))<<(n))|	\
@@ -79,6 +73,9 @@ typedef uint32_t serpent_block_t[4];
    (GPL), although some comments in the code still say otherwise. You
    are welcome to use Serpent for any application."  */
 
+/* FIXME: Except when used within the key schedule, the inputs are not
+   used after the substitution, and hence we could allow them to be
+   destroyed. Can this freedom be used to optimize the sboxes? */
 #define SBOX0(a, b, c, d, w, x, y, z) \
   do { \
     uint32_t t02, t03, t05, t06, t07, t08, t09; \
@@ -462,122 +459,63 @@ typedef uint32_t serpent_block_t[4];
     y   = t14 ^ t16; \
   } while (0)
 
-/* XOR BLOCK1 into BLOCK0.  */
-#define BLOCK_XOR(block0, block1) \
-  {                               \
-    block0[0] ^= block1[0];       \
-    block0[1] ^= block1[1];       \
-    block0[2] ^= block1[2];       \
-    block0[3] ^= block1[3];       \
-  }
-
-/* Copy BLOCK_SRC to BLOCK_DST.  */
-#define BLOCK_COPY(block_dst, block_src) \
-  {                                      \
-    block_dst[0] = block_src[0];         \
-    block_dst[1] = block_src[1];         \
-    block_dst[2] = block_src[2];         \
-    block_dst[3] = block_src[3];         \
-  }
-
-/* Apply SBOX number WHICH to to the block found in ARRAY0 at index
-   INDEX, writing the output to the block found in ARRAY1 at index
-   INDEX.  */
-#define SBOX(which, array0, array1, index)            \
-  SBOX##which (array0[index + 0], array0[index + 1],  \
-               array0[index + 2], array0[index + 3],  \
-               array1[index + 0], array1[index + 1],  \
-               array1[index + 2], array1[index + 3]);
-
-/* Apply inverse SBOX number WHICH to to the block found in ARRAY0 at
-   index INDEX, writing the output to the block found in ARRAY1 at
-   index INDEX.  */
-#define SBOX_INVERSE(which, array0, array1, index)              \
-  SBOX##which##_INVERSE (array0[index + 0], array0[index + 1],  \
-                         array0[index + 2], array0[index + 3],  \
-                         array1[index + 0], array1[index + 1],  \
-                         array1[index + 2], array1[index + 3]);
-
-/* Apply the linear transformation to BLOCK.  */
-#define LINEAR_TRANSFORMATION(block)                  \
+/* In-place linear transformation.  */
+#define LINEAR_TRANSFORMATION(x0,x1,x2,x3)		 \
   do {                                                   \
-    block[0] = ROL32 (block[0], 13);                    \
-    block[2] = ROL32 (block[2], 3);                     \
-    block[1] = block[1] ^ block[0] ^ block[2];        \
-    block[3] = block[3] ^ block[2] ^ (block[0] << 3); \
-    block[1] = ROL32 (block[1], 1);                     \
-    block[3] = ROL32 (block[3], 7);                     \
-    block[0] = block[0] ^ block[1] ^ block[3];        \
-    block[2] = block[2] ^ block[3] ^ (block[1] << 7); \
-    block[0] = ROL32 (block[0], 5);                     \
-    block[2] = ROL32 (block[2], 22);                    \
+    x0 = ROL32 (x0, 13);                    \
+    x2 = ROL32 (x2, 3);                     \
+    x1 = x1 ^ x0 ^ x2;        \
+    x3 = x3 ^ x2 ^ (x0 << 3); \
+    x1 = ROL32 (x1, 1);                     \
+    x3 = ROL32 (x3, 7);                     \
+    x0 = x0 ^ x1 ^ x3;        \
+    x2 = x2 ^ x3 ^ (x1 << 7); \
+    x0 = ROL32 (x0, 5);                     \
+    x2 = ROL32 (x2, 22);                    \
   } while (0)
 
-/* Apply the inverse linear transformation to BLOCK.  */
-#define LINEAR_TRANSFORMATION_INVERSE(block)          \
+/* In-place inverse linear transformation.  */
+#define LINEAR_TRANSFORMATION_INVERSE(x0,x1,x2,x3)	 \
   do {                                                   \
-    block[2] = ROR32 (block[2], 22);                    \
-    block[0] = ROR32 (block[0] , 5);                    \
-    block[2] = block[2] ^ block[3] ^ (block[1] << 7); \
-    block[0] = block[0] ^ block[1] ^ block[3];        \
-    block[3] = ROR32 (block[3], 7);                     \
-    block[1] = ROR32 (block[1], 1);                     \
-    block[3] = block[3] ^ block[2] ^ (block[0] << 3); \
-    block[1] = block[1] ^ block[0] ^ block[2];        \
-    block[2] = ROR32 (block[2], 3);                     \
-    block[0] = ROR32 (block[0], 13);                    \
+    x2 = ROR32 (x2, 22);                    \
+    x0 = ROR32 (x0 , 5);                    \
+    x2 = x2 ^ x3 ^ (x1 << 7); \
+    x0 = x0 ^ x1 ^ x3;        \
+    x3 = ROR32 (x3, 7);                     \
+    x1 = ROR32 (x1, 1);                     \
+    x3 = x3 ^ x2 ^ (x0 << 3); \
+    x1 = x1 ^ x0 ^ x2;        \
+    x2 = ROR32 (x2, 3);                     \
+    x0 = ROR32 (x0, 13);                    \
   } while (0)
 
-/* Apply a Serpent round to BLOCK, using the SBOX number WHICH and the
-   subkeys contained in SUBKEYS.  Use BLOCK_TMP as temporary storage.
-   This macro increments `round'.  */
-#define ROUND(which, subkeys, block, block_tmp) \
-  do {                                             \
-    BLOCK_XOR (block, subkeys[round]);          \
-    round++;                                    \
-    SBOX (which, block, block_tmp, 0);          \
-    LINEAR_TRANSFORMATION (block_tmp);          \
-    BLOCK_COPY (block, block_tmp);              \
+#define KEYXOR(x0,x1,x2,x3, subkey)		       \
+  do {						       \
+    (x0) ^= (subkey)[0];			       \
+    (x1) ^= (subkey)[1];			       \
+    (x2) ^= (subkey)[2];			       \
+    (x3) ^= (subkey)[3];			       \
   } while (0)
 
-/* Apply the last Serpent round to BLOCK, using the SBOX number WHICH
-   and the subkeys contained in SUBKEYS.  Use BLOCK_TMP as temporary
-   storage.  The result will be stored in BLOCK_TMP.  This macro
-   increments `round'.  */
-#define ROUND_LAST(which, subkeys, block, block_tmp) \
-  do {                                                  \
-    BLOCK_XOR (block, subkeys[round]);               \
-    round++;                                         \
-    SBOX (which, block, block_tmp, 0);               \
-    BLOCK_XOR (block_tmp, subkeys[round]);           \
-    round++;                                         \
+/* Round inputs are x0,x1,x2,x3 (destroyed), and round outputs are
+   y0,y1,y2,y3. */
+#define ROUND(which, subkey, x0,x1,x2,x3, y0,y1,y2,y3) \
+  do {						       \
+    KEYXOR(x0,x1,x2,x3, subkey);		       \
+    SBOX##which(x0,x1,x2,x3, y0,y1,y2,y3);	       \
+    LINEAR_TRANSFORMATION(y0,y1,y2,y3);		       \
   } while (0)
 
-/* Apply an inverse Serpent round to BLOCK, using the SBOX number
-   WHICH and the subkeys contained in SUBKEYS.  Use BLOCK_TMP as
-   temporary storage.  This macro increments `round'.  */
-#define ROUND_INVERSE(which, subkey, block, block_tmp) \
-  do {                                                    \
-    LINEAR_TRANSFORMATION_INVERSE (block);             \
-    SBOX_INVERSE (which, block, block_tmp, 0);         \
-    BLOCK_XOR (block_tmp, subkey[round]);              \
-    round--;                                           \
-    BLOCK_COPY (block, block_tmp);                     \
+/* Round inputs are x0,x1,x2,x3 (destroyed), and round outputs are
+   y0,y1,y2,y3. */
+#define ROUND_INVERSE(which, subkey, x0,x1,x2,x3, y0,y1,y2,y3) \
+  do {							       \
+    LINEAR_TRANSFORMATION_INVERSE (x0,x1,x2,x3);	       \
+    SBOX##which##_INVERSE(x0,x1,x2,x3, y0,y1,y2,y3);	       \
+    KEYXOR(y0,y1,y2,y3, subkey);			       \
   } while (0)
 
-/* Apply the first Serpent round to BLOCK, using the SBOX number WHICH
-   and the subkeys contained in SUBKEYS.  Use BLOCK_TMP as temporary
-   storage.  The result will be stored in BLOCK_TMP.  This macro
-   increments `round'.  */
-#define ROUND_FIRST_INVERSE(which, subkeys, block, block_tmp) \
-  do {                                                           \
-    BLOCK_XOR (block, subkeys[round]);                        \
-    round--;                                                  \
-    SBOX_INVERSE (which, block, block_tmp, 0);                \
-    BLOCK_XOR (block_tmp, subkeys[round]);                    \
-    round--;                                                  \
-  } while (0)
-
+/* Key schedule */
 /* Note: Increments k */
 #define KS_RECURRENCE(w, i, k)						\
   do {									\
@@ -645,9 +583,13 @@ serpent_set_key (struct serpent_ctx *ctx,
      arguments, no arrays. To do that, unpack w into separate
      variables, use temporary variables as the SBOX destination. */
 
-  for (keys = ctx->keys, k = 0; k < 128;)
+  keys = ctx->keys;
+  k = 0;
+  for (;;)
     {
       KS(keys, 3, w, 0, k);
+      if (k == 132)
+	break;
       KS(keys, 2, w, 4, k);
       KS(keys, 1, w, 0, k);
       KS(keys, 0, w, 4, k);
@@ -656,8 +598,6 @@ serpent_set_key (struct serpent_ctx *ctx,
       KS(keys, 5, w, 0, k);
       KS(keys, 4, w, 4, k);
     }
-  KS(keys, 3, w, 0, k);
-  assert (k == 132);
   assert (keys == ctx->keys + 33);
 }
 
@@ -666,54 +606,39 @@ serpent_encrypt (const struct serpent_ctx *ctx,
 		 unsigned length, uint8_t * dst, const uint8_t * src)
 {
   FOR_BLOCKS (length, dst, src, SERPENT_BLOCK_SIZE)
-  {
-    serpent_block_t b, b_next;
-    int round = 0;
+    {
+      uint32_t x0,x1,x2,x3, y0,y1,y2,y3;
+      unsigned k;
 
-    b[0] = LE_READ_UINT32 (src);
-    b[1] = LE_READ_UINT32 (src + 4);
-    b[2] = LE_READ_UINT32 (src + 8);
-    b[3] = LE_READ_UINT32 (src + 12);
+      x0 = LE_READ_UINT32 (src);
+      x1 = LE_READ_UINT32 (src + 4);
+      x2 = LE_READ_UINT32 (src + 8);
+      x3 = LE_READ_UINT32 (src + 12);
 
-    ROUND (0, ctx->keys, b, b_next);
-    ROUND (1, ctx->keys, b, b_next);
-    ROUND (2, ctx->keys, b, b_next);
-    ROUND (3, ctx->keys, b, b_next);
-    ROUND (4, ctx->keys, b, b_next);
-    ROUND (5, ctx->keys, b, b_next);
-    ROUND (6, ctx->keys, b, b_next);
-    ROUND (7, ctx->keys, b, b_next);
-    ROUND (0, ctx->keys, b, b_next);
-    ROUND (1, ctx->keys, b, b_next);
-    ROUND (2, ctx->keys, b, b_next);
-    ROUND (3, ctx->keys, b, b_next);
-    ROUND (4, ctx->keys, b, b_next);
-    ROUND (5, ctx->keys, b, b_next);
-    ROUND (6, ctx->keys, b, b_next);
-    ROUND (7, ctx->keys, b, b_next);
-    ROUND (0, ctx->keys, b, b_next);
-    ROUND (1, ctx->keys, b, b_next);
-    ROUND (2, ctx->keys, b, b_next);
-    ROUND (3, ctx->keys, b, b_next);
-    ROUND (4, ctx->keys, b, b_next);
-    ROUND (5, ctx->keys, b, b_next);
-    ROUND (6, ctx->keys, b, b_next);
-    ROUND (7, ctx->keys, b, b_next);
-    ROUND (0, ctx->keys, b, b_next);
-    ROUND (1, ctx->keys, b, b_next);
-    ROUND (2, ctx->keys, b, b_next);
-    ROUND (3, ctx->keys, b, b_next);
-    ROUND (4, ctx->keys, b, b_next);
-    ROUND (5, ctx->keys, b, b_next);
-    ROUND (6, ctx->keys, b, b_next);
+      for (k = 0; ; k += 8)
+	{
+	  ROUND (0, ctx->keys[k+0], x0,x1,x2,x3, y0,y1,y2,y3);
+	  ROUND (1, ctx->keys[k+1], y0,y1,y2,y3, x0,x1,x2,x3);
+	  ROUND (2, ctx->keys[k+2], x0,x1,x2,x3, y0,y1,y2,y3);
+	  ROUND (3, ctx->keys[k+3], y0,y1,y2,y3, x0,x1,x2,x3);
+	  ROUND (4, ctx->keys[k+4], x0,x1,x2,x3, y0,y1,y2,y3);
+	  ROUND (5, ctx->keys[k+5], y0,y1,y2,y3, x0,x1,x2,x3);
+	  ROUND (6, ctx->keys[k+6], x0,x1,x2,x3, y0,y1,y2,y3);
+	  if (k == 24)
+	    break;
+	  ROUND (7, ctx->keys[k+7], y0,y1,y2,y3, x0,x1,x2,x3);
+	}
 
-    ROUND_LAST (7, ctx->keys, b, b_next);
-
-    LE_WRITE_UINT32 (dst, b_next[0]);
-    LE_WRITE_UINT32 (dst + 4, b_next[1]);
-    LE_WRITE_UINT32 (dst + 8, b_next[2]);
-    LE_WRITE_UINT32 (dst + 12, b_next[3]);
-  }
+      /* Special final round, using two subkeys. */
+      KEYXOR (y0,y1,y2,y3, ctx->keys[31]);
+      SBOX7 (y0,y1,y2,y3, x0,x1,x2,x3);
+      KEYXOR (x0,x1,x2,x3, ctx->keys[32]);
+    
+      LE_WRITE_UINT32 (dst, x0);
+      LE_WRITE_UINT32 (dst + 4, x1);
+      LE_WRITE_UINT32 (dst + 8, x2);
+      LE_WRITE_UINT32 (dst + 12, x3);
+    }
 }
 
 void
@@ -721,52 +646,39 @@ serpent_decrypt (const struct serpent_ctx *ctx,
 		 unsigned length, uint8_t * dst, const uint8_t * src)
 {
   FOR_BLOCKS (length, dst, src, SERPENT_BLOCK_SIZE)
-  {
-    serpent_block_t b, b_next;
-    int round = ROUNDS;
+    {
+      uint32_t x0,x1,x2,x3, y0,y1,y2,y3;
+      unsigned k;
 
-    b_next[0] = LE_READ_UINT32 (src);
-    b_next[1] = LE_READ_UINT32 (src + 4);
-    b_next[2] = LE_READ_UINT32 (src + 8);
-    b_next[3] = LE_READ_UINT32 (src + 12);
+      x0 = LE_READ_UINT32 (src);
+      x1 = LE_READ_UINT32 (src + 4);
+      x2 = LE_READ_UINT32 (src + 8);
+      x3 = LE_READ_UINT32 (src + 12);
 
-    ROUND_FIRST_INVERSE (7, ctx->keys, b_next, b);
+      /* Inverse of special round */
+      KEYXOR (x0,x1,x2,x3, ctx->keys[32]);
+      SBOX7_INVERSE (x0,x1,x2,x3, y0,y1,y2,y3);
+      KEYXOR (y0,y1,y2,y3, ctx->keys[31]);
 
-    ROUND_INVERSE (6, ctx->keys, b, b_next);
-    ROUND_INVERSE (5, ctx->keys, b, b_next);
-    ROUND_INVERSE (4, ctx->keys, b, b_next);
-    ROUND_INVERSE (3, ctx->keys, b, b_next);
-    ROUND_INVERSE (2, ctx->keys, b, b_next);
-    ROUND_INVERSE (1, ctx->keys, b, b_next);
-    ROUND_INVERSE (0, ctx->keys, b, b_next);
-    ROUND_INVERSE (7, ctx->keys, b, b_next);
-    ROUND_INVERSE (6, ctx->keys, b, b_next);
-    ROUND_INVERSE (5, ctx->keys, b, b_next);
-    ROUND_INVERSE (4, ctx->keys, b, b_next);
-    ROUND_INVERSE (3, ctx->keys, b, b_next);
-    ROUND_INVERSE (2, ctx->keys, b, b_next);
-    ROUND_INVERSE (1, ctx->keys, b, b_next);
-    ROUND_INVERSE (0, ctx->keys, b, b_next);
-    ROUND_INVERSE (7, ctx->keys, b, b_next);
-    ROUND_INVERSE (6, ctx->keys, b, b_next);
-    ROUND_INVERSE (5, ctx->keys, b, b_next);
-    ROUND_INVERSE (4, ctx->keys, b, b_next);
-    ROUND_INVERSE (3, ctx->keys, b, b_next);
-    ROUND_INVERSE (2, ctx->keys, b, b_next);
-    ROUND_INVERSE (1, ctx->keys, b, b_next);
-    ROUND_INVERSE (0, ctx->keys, b, b_next);
-    ROUND_INVERSE (7, ctx->keys, b, b_next);
-    ROUND_INVERSE (6, ctx->keys, b, b_next);
-    ROUND_INVERSE (5, ctx->keys, b, b_next);
-    ROUND_INVERSE (4, ctx->keys, b, b_next);
-    ROUND_INVERSE (3, ctx->keys, b, b_next);
-    ROUND_INVERSE (2, ctx->keys, b, b_next);
-    ROUND_INVERSE (1, ctx->keys, b, b_next);
-    ROUND_INVERSE (0, ctx->keys, b, b_next);
-
-    LE_WRITE_UINT32 (dst, b_next[0]);
-    LE_WRITE_UINT32 (dst + 4, b_next[1]);
-    LE_WRITE_UINT32 (dst + 8, b_next[2]);
-    LE_WRITE_UINT32 (dst + 12, b_next[3]);
-  }
+      k = 24;
+      goto start;
+      while (k > 0)
+	{
+	  k -= 8;
+	  ROUND_INVERSE (7, ctx->keys[k+7], x0,x1,x2,x3, y0,y1,y2,y3);
+	start:
+	  ROUND_INVERSE (6, ctx->keys[k+6], y0,y1,y2,y3, x0,x1,x2,x3);
+	  ROUND_INVERSE (5, ctx->keys[k+5], x0,x1,x2,x3, y0,y1,y2,y3);
+	  ROUND_INVERSE (4, ctx->keys[k+4], y0,y1,y2,y3, x0,x1,x2,x3);
+	  ROUND_INVERSE (3, ctx->keys[k+3], x0,x1,x2,x3, y0,y1,y2,y3);
+	  ROUND_INVERSE (2, ctx->keys[k+2], y0,y1,y2,y3, x0,x1,x2,x3);
+	  ROUND_INVERSE (1, ctx->keys[k+1], x0,x1,x2,x3, y0,y1,y2,y3);
+	  ROUND_INVERSE (0, ctx->keys[k], y0,y1,y2,y3, x0,x1,x2,x3);
+	}
+      
+      LE_WRITE_UINT32 (dst, x0);
+      LE_WRITE_UINT32 (dst + 4, x1);
+      LE_WRITE_UINT32 (dst + 8, x2);
+      LE_WRITE_UINT32 (dst + 12, x3);
+    }
 }

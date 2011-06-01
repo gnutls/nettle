@@ -1,5 +1,19 @@
 2011-06-01  Niels Möller  <nisse@lysator.liu.se>
 
+	* serpent.c (ROUNDS): Deleted macro.
+	(serpent_block_t): Deleted array typedef.
+	(KEYXOR): New macro, replacing BLOCK_XOR.
+	(BLOCK_COPY, SBOX, SBOX_INVERSE): Deleted macros.
+	(LINEAR_TRANSFORMATION): Use four separate arguments.
+	(LINEAR_TRANSFORMATION_INVERSE): Likewise.
+	(ROUND): Take separate arguments for all input and output words.
+	(ROUND_INVERSE): Likewise.
+	(ROUND_LAST, ROUND_FIRST_INVERSE): Deleted macros.
+	(serpent_set_key): Moved loop termination test.
+	(serpent_encrypt): Rewrote with unrolling of just eight rounds,
+	and without serpent_block_t.
+	(serpent_decrypt): Likewise.
+
 	* serpent.c: Added do { ... } while (0) around block macros.
 	(serpent_key_t): Deleted array typedef.
 	(ROL32, ROR32): Renamed macros, were rol and ror.
