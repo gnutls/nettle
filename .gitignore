@@ -36,6 +36,7 @@ core
 /*.tar.gz
 /*.tar.gz.asc
 /.lib
+/autom4te.cache
 /Makefile
 /aesdata
 /config.cache
