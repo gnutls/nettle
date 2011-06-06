@@ -1,5 +1,15 @@
 2011-06-06  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.in (DISTFILES): Added serpent-internal.h.
+	(nettle_SOURCES): Replaced serpent.c by serpent-set-key.c,
+	serpent-encrypt.c, and serpent-decrypt.c.
+
+	* serpent.c: Replaced by several new files.
+	* serpent-set-key.c: New file.
+	* serpent-encrypt.c: New file.
+	* serpent-decrypt.c: New file.
+	* serpent-internal.h: New file.
+
 	* serpent.c [HAVE_NATIVE_64_BIT]: Process two blocks at a time in
 	parallel. Measured speedup of 10%--25% (higher for encryption) on
 	x86_64.
