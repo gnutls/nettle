@@ -43,6 +43,7 @@
 #endif
 
 #include <assert.h>
+#include <limits.h>
 
 #include "serpent.h"
 
@@ -52,10 +53,7 @@
 #define PHI 0x9E3779B9
 
 /* FIXME: Unify ROL macros used here, in camellia.c and cast128.c. */
-#define ROL32(x,n) ((((uint32_t)(x))<<(n))|	\
-                  (((uint32_t)(x))>>(32-(n))))
-#define ROR32(x,n) ((((uint32_t)(x))<<(32-(n)))|	\
-                  (((uint32_t)(x))>>(n)))
+#define ROL32(x,n) ((((x))<<(n)) | (((x))>>(32-(n))))
 
 /* These are the S-Boxes of Serpent.  They are copied from Serpents
    reference implementation (the optimized one, contained in
@@ -76,10 +74,10 @@
 /* FIXME: Except when used within the key schedule, the inputs are not
    used after the substitution, and hence we could allow them to be
    destroyed. Can this freedom be used to optimize the sboxes? */
-#define SBOX0(a, b, c, d, w, x, y, z) \
+#define SBOX0(type, a, b, c, d, w, x, y, z)	\
   do { \
-    uint32_t t02, t03, t05, t06, t07, t08, t09; \
-    uint32_t t11, t12, t13, t14, t15, t17, t01; \
+    type t02, t03, t05, t06, t07, t08, t09; \
+    type t11, t12, t13, t14, t15, t17, t01; \
     t01 = b   ^ c  ; \
     t02 = a   | d  ; \
     t03 = a   ^ b  ; \
@@ -100,10 +98,10 @@
     x   = t12 ^ t17; \
   } while (0)
 
-#define SBOX0_INVERSE(a, b, c, d, w, x, y, z) \
+#define SBOX0_INVERSE(type, a, b, c, d, w, x, y, z)	\
   do { \
-    uint32_t t02, t03, t04, t05, t06, t08, t09, t10; \
-    uint32_t t12, t13, t14, t15, t17, t18, t01; \
+    type t02, t03, t04, t05, t06, t08, t09, t10;	\
+    type t12, t13, t14, t15, t17, t18, t01; \
     t01 = c   ^ d  ; \
     t02 = a   | b  ; \
     t03 = b   | c  ; \
@@ -125,10 +123,10 @@
     w   = t15 ^ t18; \
   } while (0)
 
-#define SBOX1(a, b, c, d, w, x, y, z) \
+#define SBOX1(type, a, b, c, d, w, x, y, z)	\
   do { \
-    uint32_t t02, t03, t04, t05, t06, t07, t08; \
-    uint32_t t10, t11, t12, t13, t16, t17, t01; \
+    type t02, t03, t04, t05, t06, t07, t08; \
+    type t10, t11, t12, t13, t16, t17, t01; \
     t01 = a   | d  ; \
     t02 = c   ^ d  ; \
     t03 =     ~ b  ; \
@@ -149,10 +147,10 @@
     w   = c   ^ t17; \
   } while (0)
 
-#define SBOX1_INVERSE(a, b, c, d, w, x, y, z) \
+#define SBOX1_INVERSE(type, a, b, c, d, w, x, y, z) \
   do { \
-    uint32_t t02, t03, t04, t05, t06, t07, t08; \
-    uint32_t t09, t10, t11, t14, t15, t17, t01; \
+    type t02, t03, t04, t05, t06, t07, t08; \
+    type t09, t10, t11, t14, t15, t17, t01; \
     t01 = a   ^ b  ; \
     t02 = b   | d  ; \
     t03 = a   & c  ; \
@@ -173,10 +171,10 @@
     w   = t14 ^ t17; \
   } while (0)
 
-#define SBOX2(a, b, c, d, w, x, y, z) \
+#define SBOX2(type, a, b, c, d, w, x, y, z) \
   do {					   \
-    uint32_t t02, t03, t05, t06, t07, t08; \
-    uint32_t t09, t10, t12, t13, t14, t01; \
+    type t02, t03, t05, t06, t07, t08; \
+    type t09, t10, t12, t13, t14, t01; \
     t01 = a   | c  ; \
     t02 = a   ^ b  ; \
     t03 = d   ^ t01; \
@@ -195,10 +193,10 @@
     y   = t12 ^ t14; \
   } while (0)
 
-#define SBOX2_INVERSE(a, b, c, d, w, x, y, z) \
+#define SBOX2_INVERSE(type, a, b, c, d, w, x, y, z) \
   do {						\
-    uint32_t t02, t03, t04, t06, t07, t08, t09; \
-    uint32_t t10, t11, t12, t15, t16, t17, t01; \
+    type t02, t03, t04, t06, t07, t08, t09; \
+    type t10, t11, t12, t15, t16, t17, t01; \
     t01 = a   ^ d  ; \
     t02 = c   ^ d  ; \
     t03 = a   & c  ; \
@@ -219,10 +217,10 @@
     y   = t16 ^ t17; \
   } while (0)
 
-#define SBOX3(a, b, c, d, w, x, y, z) \
+#define SBOX3(type, a, b, c, d, w, x, y, z) \
   do {						\
-    uint32_t t02, t03, t04, t05, t06, t07, t08; \
-    uint32_t t09, t10, t11, t13, t14, t15, t01; \
+    type t02, t03, t04, t05, t06, t07, t08; \
+    type t09, t10, t11, t13, t14, t15, t01; \
     t01 = a   ^ c  ; \
     t02 = a   | d  ; \
     t03 = a   & d  ; \
@@ -243,10 +241,10 @@
     x   = t05 ^ t04; \
   } while (0)
 
-#define SBOX3_INVERSE(a, b, c, d, w, x, y, z) \
+#define SBOX3_INVERSE(type, a, b, c, d, w, x, y, z) \
   do { \
-    uint32_t t02, t03, t04, t05, t06, t07, t09; \
-    uint32_t t11, t12, t13, t14, t16, t01; \
+    type t02, t03, t04, t05, t06, t07, t09; \
+    type t11, t12, t13, t14, t16, t01; \
     t01 = c   | d  ; \
     t02 = a   | d  ; \
     t03 = c   ^ t02; \
@@ -266,10 +264,10 @@
     z   = t14 ^ t16; \
   } while (0)
 
-#define SBOX4(a, b, c, d, w, x, y, z) \
+#define SBOX4(type, a, b, c, d, w, x, y, z) \
   do { \
-    uint32_t t02, t03, t04, t05, t06, t08, t09; \
-    uint32_t t10, t11, t12, t13, t14, t15, t16, t01; \
+    type t02, t03, t04, t05, t06, t08, t09; \
+    type t10, t11, t12, t13, t14, t15, t16, t01; \
     t01 = a   | b  ; \
     t02 = b   | c  ; \
     t03 = a   ^ t02; \
@@ -291,10 +289,10 @@
     w   =     ~ t14; \
   } while (0)
 
-#define SBOX4_INVERSE(a, b, c, d, w, x, y, z) \
+#define SBOX4_INVERSE(type, a, b, c, d, w, x, y, z) \
   do { \
-    uint32_t t02, t03, t04, t05, t06, t07, t09; \
-    uint32_t t10, t11, t12, t13, t15, t01; \
+    type t02, t03, t04, t05, t06, t07, t09; \
+    type t10, t11, t12, t13, t15, t01; \
     t01 = b   | d  ; \
     t02 = c   | d  ; \
     t03 = a   & t01; \
@@ -314,10 +312,10 @@
     w   = t15 ^ t09; \
   } while (0)
 
-#define SBOX5(a, b, c, d, w, x, y, z) \
+#define SBOX5(type, a, b, c, d, w, x, y, z) \
   do { \
-    uint32_t t02, t03, t04, t05, t07, t08, t09; \
-    uint32_t t10, t11, t12, t13, t14, t01; \
+    type t02, t03, t04, t05, t07, t08, t09; \
+    type t10, t11, t12, t13, t14, t01; \
     t01 = b   ^ d  ; \
     t02 = b   | d  ; \
     t03 = a   & t01; \
@@ -337,10 +335,10 @@
     z   = t12 ^ t14; \
   } while (0)
 
-#define SBOX5_INVERSE(a, b, c, d, w, x, y, z) \
+#define SBOX5_INVERSE(type, a, b, c, d, w, x, y, z) \
   do { \
-    uint32_t t02, t03, t04, t05, t07, t08, t09; \
-    uint32_t t10, t12, t13, t15, t16, t01; \
+    type t02, t03, t04, t05, t07, t08, t09; \
+    type t10, t12, t13, t15, t16, t01; \
     t01 = a   & d  ; \
     t02 = c   ^ t01; \
     t03 = a   ^ d  ; \
@@ -360,10 +358,10 @@
     y   = t16 ^ t15; \
   } while (0)
 
-#define SBOX6(a, b, c, d, w, x, y, z) \
+#define SBOX6(type, a, b, c, d, w, x, y, z) \
   do { \
-    uint32_t t02, t03, t04, t05, t07, t08, t09, t10; \
-    uint32_t t11, t12, t13, t15, t17, t18, t01; \
+    type t02, t03, t04, t05, t07, t08, t09, t10;	\
+    type t11, t12, t13, t15, t17, t18, t01; \
     t01 = a   & d  ; \
     t02 = b   ^ c  ; \
     t03 = a   ^ d  ; \
@@ -385,10 +383,10 @@
     w   = t17 ^ t18; \
   } while (0)
 
-#define SBOX6_INVERSE(a, b, c, d, w, x, y, z) \
+#define SBOX6_INVERSE(type, a, b, c, d, w, x, y, z) \
   do { \
-    uint32_t t02, t03, t04, t05, t06, t07, t08, t09; \
-    uint32_t t12, t13, t14, t15, t16, t17, t01; \
+    type t02, t03, t04, t05, t06, t07, t08, t09; \
+    type t12, t13, t14, t15, t16, t17, t01;	     \
     t01 = a   ^ c  ; \
     t02 =     ~ c  ; \
     t03 = b   & t01; \
@@ -410,10 +408,10 @@
     y   = t16 ^ t14; \
   } while (0)
 
-#define SBOX7(a, b, c, d, w, x, y, z) \
+#define SBOX7(type, a, b, c, d, w, x, y, z) \
   do { \
-    uint32_t t02, t03, t04, t05, t06, t08, t09, t10; \
-    uint32_t t11, t13, t14, t15, t16, t17, t01; \
+    type t02, t03, t04, t05, t06, t08, t09, t10;	\
+    type t11, t13, t14, t15, t16, t17, t01; \
     t01 = a   & c  ; \
     t02 =     ~ d  ; \
     t03 = a   & t02; \
@@ -435,10 +433,10 @@
     y   = a   ^ t16; \
   } while (0)
 
-#define SBOX7_INVERSE(a, b, c, d, w, x, y, z) \
+#define SBOX7_INVERSE(type, a, b, c, d, w, x, y, z) \
   do { \
-    uint32_t t02, t03, t04, t06, t07, t08, t09; \
-    uint32_t t10, t11, t13, t14, t15, t16, t01; \
+    type t02, t03, t04, t06, t07, t08, t09; \
+    type t10, t11, t13, t14, t15, t16, t01; \
     t01 = a   & b  ; \
     t02 = a   | b  ; \
     t03 = c   | t01; \
@@ -477,16 +475,16 @@
 /* In-place inverse linear transformation.  */
 #define LINEAR_TRANSFORMATION_INVERSE(x0,x1,x2,x3)	 \
   do {                                                   \
-    x2 = ROR32 (x2, 22);                    \
-    x0 = ROR32 (x0 , 5);                    \
+    x2 = ROL32 (x2, 10);                    \
+    x0 = ROL32 (x0, 27);                    \
     x2 = x2 ^ x3 ^ (x1 << 7); \
     x0 = x0 ^ x1 ^ x3;        \
-    x3 = ROR32 (x3, 7);                     \
-    x1 = ROR32 (x1, 1);                     \
+    x3 = ROL32 (x3, 25);                     \
+    x1 = ROL32 (x1, 31);                     \
     x3 = x3 ^ x2 ^ (x0 << 3); \
     x1 = x1 ^ x0 ^ x2;        \
-    x2 = ROR32 (x2, 3);                     \
-    x0 = ROR32 (x0, 13);                    \
+    x2 = ROL32 (x2, 29);                     \
+    x0 = ROL32 (x0, 19);                    \
   } while (0)
 
 #define KEYXOR(x0,x1,x2,x3, subkey)		       \
@@ -502,7 +500,7 @@
 #define ROUND(which, subkey, x0,x1,x2,x3, y0,y1,y2,y3) \
   do {						       \
     KEYXOR(x0,x1,x2,x3, subkey);		       \
-    SBOX##which(x0,x1,x2,x3, y0,y1,y2,y3);	       \
+    SBOX##which(uint32_t, x0,x1,x2,x3, y0,y1,y2,y3);	       \
     LINEAR_TRANSFORMATION(y0,y1,y2,y3);		       \
   } while (0)
 
@@ -511,9 +509,72 @@
 #define ROUND_INVERSE(which, subkey, x0,x1,x2,x3, y0,y1,y2,y3) \
   do {							       \
     LINEAR_TRANSFORMATION_INVERSE (x0,x1,x2,x3);	       \
-    SBOX##which##_INVERSE(x0,x1,x2,x3, y0,y1,y2,y3);	       \
+    SBOX##which##_INVERSE(uint32_t, x0,x1,x2,x3, y0,y1,y2,y3);	       \
     KEYXOR(y0,y1,y2,y3, subkey);			       \
   } while (0)
+
+#if HAVE_NATIVE_64_BIT
+/* Operate independently on both halves of a 64-bit word. */
+#define ROL64(x,n) \
+  (((x) << (n) & ~(((1L << (n))-1) << 32)) \
+   |(((x) >> (32-(n))) & ~(((1L << (32-(n)))-1) << (n))))
+
+#define KEYXOR64(x0,x1,x2,x3, subkey)		       \
+  do {						       \
+    uint64_t _sk;				       \
+    _sk = (subkey)[0]; _sk |= _sk << 32; (x0) ^= _sk;    \
+    _sk = (subkey)[1]; _sk |= _sk << 32; (x1) ^= _sk;    \
+    _sk = (subkey)[2]; _sk |= _sk << 32; (x2) ^= _sk;    \
+    _sk = (subkey)[3]; _sk |= _sk << 32; (x3) ^= _sk;    \
+  } while (0)
+
+#define RSHIFT64(x,n) \
+  ( ((x) << (n)) & ~(((1L << n) - 1) << 32))
+
+#define LINEAR_TRANSFORMATION64(x0,x1,x2,x3)		 \
+  do {                                                   \
+    x0 = ROL64 (x0, 13);                    \
+    x2 = ROL64 (x2, 3);                     \
+    x1 = x1 ^ x0 ^ x2;        \
+    x3 = x3 ^ x2 ^ RSHIFT64(x0, 3);	    \
+    x1 = ROL64 (x1, 1);                     \
+    x3 = ROL64 (x3, 7);                     \
+    x0 = x0 ^ x1 ^ x3;        \
+    x2 = x2 ^ x3 ^ RSHIFT64(x1, 7);	    \
+    x0 = ROL64 (x0, 5);                     \
+    x2 = ROL64 (x2, 22);                    \
+  } while (0)
+
+/* In-place inverse linear transformation.  */
+#define LINEAR_TRANSFORMATION64_INVERSE(x0,x1,x2,x3)	 \
+  do {                                                   \
+    x2 = ROL64 (x2, 10);                    \
+    x0 = ROL64 (x0, 27);                    \
+    x2 = x2 ^ x3 ^ RSHIFT64(x1, 7); \
+    x0 = x0 ^ x1 ^ x3;        \
+    x3 = ROL64 (x3, 25);                     \
+    x1 = ROL64 (x1, 31);                     \
+    x3 = x3 ^ x2 ^ RSHIFT64(x0, 3); \
+    x1 = x1 ^ x0 ^ x2;        \
+    x2 = ROL64 (x2, 29);                     \
+    x0 = ROL64 (x0, 19);                    \
+  } while (0)
+
+#define ROUND64(which, subkey, x0,x1,x2,x3, y0,y1,y2,y3) \
+  do {						       \
+    KEYXOR64(x0,x1,x2,x3, subkey);		       \
+    SBOX##which(uint64_t, x0,x1,x2,x3, y0,y1,y2,y3);	       \
+    LINEAR_TRANSFORMATION64(y0,y1,y2,y3);		       \
+  } while (0)
+
+#define ROUND64_INVERSE(which, subkey, x0,x1,x2,x3, y0,y1,y2,y3) \
+  do {							       \
+    LINEAR_TRANSFORMATION64_INVERSE (x0,x1,x2,x3);	       \
+    SBOX##which##_INVERSE(uint64_t, x0,x1,x2,x3, y0,y1,y2,y3);	       \
+    KEYXOR64(y0,y1,y2,y3, subkey);			       \
+  } while (0)
+
+#endif
 
 /* Key schedule */
 /* Note: Increments k */
@@ -531,7 +592,7 @@
     KS_RECURRENCE(w, (i)+1, (k));				\
     KS_RECURRENCE(w, (i)+2, (k));				\
     KS_RECURRENCE(w, (i)+3, (k));				\
-    SBOX##s(w[(i)],w[(i)+1],w[(i)+2],w[(i)+3],			\
+    SBOX##s(uint32_t, w[(i)],w[(i)+1],w[(i)+2],w[(i)+3],		\
 	    (*keys)[0],(*keys)[1],(*keys)[2],(*keys)[3]);	\
     (keys)++;							\
   } while (0)
@@ -605,7 +666,13 @@ void
 serpent_encrypt (const struct serpent_ctx *ctx,
 		 unsigned length, uint8_t * dst, const uint8_t * src)
 {
-  FOR_BLOCKS (length, dst, src, SERPENT_BLOCK_SIZE)
+  assert( !(length % SERPENT_BLOCK_SIZE));
+  
+#if HAVE_NATIVE_64_BIT
+  if (length & SERPENT_BLOCK_SIZE)
+#else
+  while (length >= SERPENT_BLOCK_SIZE)
+#endif
     {
       uint32_t x0,x1,x2,x3, y0,y1,y2,y3;
       unsigned k;
@@ -631,21 +698,76 @@ serpent_encrypt (const struct serpent_ctx *ctx,
 
       /* Special final round, using two subkeys. */
       KEYXOR (y0,y1,y2,y3, ctx->keys[31]);
-      SBOX7 (y0,y1,y2,y3, x0,x1,x2,x3);
+      SBOX7 (uint32_t, y0,y1,y2,y3, x0,x1,x2,x3);
       KEYXOR (x0,x1,x2,x3, ctx->keys[32]);
     
       LE_WRITE_UINT32 (dst, x0);
       LE_WRITE_UINT32 (dst + 4, x1);
       LE_WRITE_UINT32 (dst + 8, x2);
       LE_WRITE_UINT32 (dst + 12, x3);
+
+      src += SERPENT_BLOCK_SIZE;
+      dst += SERPENT_BLOCK_SIZE;
+      length -= SERPENT_BLOCK_SIZE;
     }
+#if HAVE_NATIVE_64_BIT
+  FOR_BLOCKS(length, dst, src, 2*SERPENT_BLOCK_SIZE)
+    {
+      uint64_t x0,x1,x2,x3, y0,y1,y2,y3;
+      unsigned k;
+
+      x0 = LE_READ_UINT32 (src);
+      x1 = LE_READ_UINT32 (src + 4);
+      x2 = LE_READ_UINT32 (src + 8);
+      x3 = LE_READ_UINT32 (src + 12);
+
+      x0 <<= 32; x0 |= LE_READ_UINT32 (src + 16);
+      x1 <<= 32; x1 |= LE_READ_UINT32 (src + 20);
+      x2 <<= 32; x2 |= LE_READ_UINT32 (src + 24);
+      x3 <<= 32; x3 |= LE_READ_UINT32 (src + 28);
+
+      for (k = 0; ; k += 8)
+	{
+	  ROUND64 (0, ctx->keys[k+0], x0,x1,x2,x3, y0,y1,y2,y3);
+	  ROUND64 (1, ctx->keys[k+1], y0,y1,y2,y3, x0,x1,x2,x3);
+	  ROUND64 (2, ctx->keys[k+2], x0,x1,x2,x3, y0,y1,y2,y3);
+	  ROUND64 (3, ctx->keys[k+3], y0,y1,y2,y3, x0,x1,x2,x3);
+	  ROUND64 (4, ctx->keys[k+4], x0,x1,x2,x3, y0,y1,y2,y3);
+	  ROUND64 (5, ctx->keys[k+5], y0,y1,y2,y3, x0,x1,x2,x3);
+	  ROUND64 (6, ctx->keys[k+6], x0,x1,x2,x3, y0,y1,y2,y3);
+	  if (k == 24)
+	    break;
+	  ROUND64 (7, ctx->keys[k+7], y0,y1,y2,y3, x0,x1,x2,x3);
+	}
+
+      /* Special final round, using two subkeys. */
+      KEYXOR64 (y0,y1,y2,y3, ctx->keys[31]);
+      SBOX7 (uint64_t, y0,y1,y2,y3, x0,x1,x2,x3);
+      KEYXOR64 (x0,x1,x2,x3, ctx->keys[32]);
+    
+      LE_WRITE_UINT32 (dst + 16, x0);
+      LE_WRITE_UINT32 (dst + 20, x1);
+      LE_WRITE_UINT32 (dst + 24, x2);
+      LE_WRITE_UINT32 (dst + 28, x3);
+      x0 >>= 32; LE_WRITE_UINT32 (dst, x0);
+      x1 >>= 32; LE_WRITE_UINT32 (dst + 4, x1);
+      x2 >>= 32; LE_WRITE_UINT32 (dst + 8, x2);
+      x3 >>= 32; LE_WRITE_UINT32 (dst + 12, x3);
+    }
+#endif /* HAVE_NATIVE_64_BIT */
 }
 
 void
 serpent_decrypt (const struct serpent_ctx *ctx,
 		 unsigned length, uint8_t * dst, const uint8_t * src)
 {
-  FOR_BLOCKS (length, dst, src, SERPENT_BLOCK_SIZE)
+  assert( !(length % SERPENT_BLOCK_SIZE));
+
+#if HAVE_NATIVE_64_BIT
+  if (length & SERPENT_BLOCK_SIZE)
+#else
+  while (length >= SERPENT_BLOCK_SIZE)
+#endif
     {
       uint32_t x0,x1,x2,x3, y0,y1,y2,y3;
       unsigned k;
@@ -657,16 +779,16 @@ serpent_decrypt (const struct serpent_ctx *ctx,
 
       /* Inverse of special round */
       KEYXOR (x0,x1,x2,x3, ctx->keys[32]);
-      SBOX7_INVERSE (x0,x1,x2,x3, y0,y1,y2,y3);
+      SBOX7_INVERSE (uint32_t, x0,x1,x2,x3, y0,y1,y2,y3);
       KEYXOR (y0,y1,y2,y3, ctx->keys[31]);
 
       k = 24;
-      goto start;
+      goto start32;
       while (k > 0)
 	{
 	  k -= 8;
 	  ROUND_INVERSE (7, ctx->keys[k+7], x0,x1,x2,x3, y0,y1,y2,y3);
-	start:
+	start32:
 	  ROUND_INVERSE (6, ctx->keys[k+6], y0,y1,y2,y3, x0,x1,x2,x3);
 	  ROUND_INVERSE (5, ctx->keys[k+5], x0,x1,x2,x3, y0,y1,y2,y3);
 	  ROUND_INVERSE (4, ctx->keys[k+4], y0,y1,y2,y3, x0,x1,x2,x3);
@@ -680,5 +802,56 @@ serpent_decrypt (const struct serpent_ctx *ctx,
       LE_WRITE_UINT32 (dst + 4, x1);
       LE_WRITE_UINT32 (dst + 8, x2);
       LE_WRITE_UINT32 (dst + 12, x3);
+
+      src += SERPENT_BLOCK_SIZE;
+      dst += SERPENT_BLOCK_SIZE;
+      length -= SERPENT_BLOCK_SIZE;
     }
+#if HAVE_NATIVE_64_BIT
+  FOR_BLOCKS(length, dst, src, 2*SERPENT_BLOCK_SIZE)
+    {
+      uint64_t x0,x1,x2,x3, y0,y1,y2,y3;
+      unsigned k;
+
+      x0 = LE_READ_UINT32 (src);
+      x1 = LE_READ_UINT32 (src + 4);
+      x2 = LE_READ_UINT32 (src + 8);
+      x3 = LE_READ_UINT32 (src + 12);
+
+      x0 <<= 32; x0 |= LE_READ_UINT32 (src + 16);
+      x1 <<= 32; x1 |= LE_READ_UINT32 (src + 20);
+      x2 <<= 32; x2 |= LE_READ_UINT32 (src + 24);
+      x3 <<= 32; x3 |= LE_READ_UINT32 (src + 28);
+
+      /* Inverse of special round */
+      KEYXOR64 (x0,x1,x2,x3, ctx->keys[32]);
+      SBOX7_INVERSE (uint64_t, x0,x1,x2,x3, y0,y1,y2,y3);
+      KEYXOR64 (y0,y1,y2,y3, ctx->keys[31]);
+
+      k = 24;
+      goto start64;
+      while (k > 0)
+	{
+	  k -= 8;
+	  ROUND64_INVERSE (7, ctx->keys[k+7], x0,x1,x2,x3, y0,y1,y2,y3);
+	start64:
+	  ROUND64_INVERSE (6, ctx->keys[k+6], y0,y1,y2,y3, x0,x1,x2,x3);
+	  ROUND64_INVERSE (5, ctx->keys[k+5], x0,x1,x2,x3, y0,y1,y2,y3);
+	  ROUND64_INVERSE (4, ctx->keys[k+4], y0,y1,y2,y3, x0,x1,x2,x3);
+	  ROUND64_INVERSE (3, ctx->keys[k+3], x0,x1,x2,x3, y0,y1,y2,y3);
+	  ROUND64_INVERSE (2, ctx->keys[k+2], y0,y1,y2,y3, x0,x1,x2,x3);
+	  ROUND64_INVERSE (1, ctx->keys[k+1], x0,x1,x2,x3, y0,y1,y2,y3);
+	  ROUND64_INVERSE (0, ctx->keys[k], y0,y1,y2,y3, x0,x1,x2,x3);
+	}
+    
+      LE_WRITE_UINT32 (dst + 16, x0);
+      LE_WRITE_UINT32 (dst + 20, x1);
+      LE_WRITE_UINT32 (dst + 24, x2);
+      LE_WRITE_UINT32 (dst + 28, x3);
+      x0 >>= 32; LE_WRITE_UINT32 (dst, x0);
+      x1 >>= 32; LE_WRITE_UINT32 (dst + 4, x1);
+      x2 >>= 32; LE_WRITE_UINT32 (dst + 8, x2);
+      x3 >>= 32; LE_WRITE_UINT32 (dst + 12, x3);
+    }
+#endif /* HAVE_NATIVE_64_BIT */  
 }

@@ -1,3 +1,9 @@
+2011-06-06  Niels Möller  <nisse@lysator.liu.se>
+
+	* serpent.c [HAVE_NATIVE_64_BIT]: Process two blocks at a time in
+	parallel. Measured speedup of 10%--25% (higher for encryption) on
+	x86_64.
+
 2011-06-01  Niels Möller  <nisse@lysator.liu.se>
 
 	* serpent.c (ROUNDS): Deleted macro.
