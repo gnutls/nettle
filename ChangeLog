@@ -2,6 +2,7 @@
 
 	* serpent-encrypt.c (SBOX0): Renamed arguments. Eliminated
 	temporaries.
+	(SBOX1): Likewise.
 
 2011-06-06  Niels Möller  <nisse@lysator.liu.se>
 
