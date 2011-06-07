@@ -94,6 +94,7 @@
     y1 ^= x3;						\
   } while (0)
 
+/* FIXME: Arrange for some overlap between inputs and outputs? */
 /* S1: 15 12  2  7  9  0  5 10  1 11 14  8  6 13  3  4 */
 #define SBOX1(type, x0, x1, x2, x3, y0, y1, y2, y3)	\
   do {							\
@@ -117,27 +118,26 @@
     y0 ^= x2;						\
   } while (0)
 
+/* FIXME: Arrange for some overlap between inputs and outputs? */
 /* S2:  8  6  7  9  3 12 10 15 13  1 14  4  0 11  5  2 */
-#define SBOX2(type, a, b, c, d, w, x, y, z) \
-  do {					   \
-    type t02, t03, t05, t06, t07, t08; \
-    type t09, t10, t12, t13, t14, t01; \
-    t01 = a   | c  ; \
-    t02 = a   ^ b  ; \
-    t03 = d   ^ t01; \
-    w   = t02 ^ t03; \
-    t05 = c   ^ w  ; \
-    t06 = b   ^ t05; \
-    t07 = b   | t05; \
-    t08 = t01 & t06; \
-    t09 = t03 ^ t07; \
-    t10 = t02 | t09; \
-    x   = t10 ^ t08; \
-    t12 = a   | d  ; \
-    t13 = t09 ^ x  ; \
-    t14 = b   ^ t13; \
-    z   =     ~ t09; \
-    y   = t12 ^ t14; \
+#define SBOX2(type, x0, x1, x2, x3, y0, y1, y2, y3)	\
+  do {							\
+    y2  = x0 | x2;					\
+    y1  = x0 ^ x1;					\
+    y3  = x3 ^ y2;					\
+    y0  = y1 ^ y3;					\
+    x3 |= x0;						\
+    x2 ^= y0;						\
+    x0  = x1 ^ x2;					\
+    x2 |= x1;						\
+    x0 &= y2;						\
+    y3 ^= x2;						\
+    y1 |= y3;						\
+    y1 ^= x0;						\
+    y2  = y3 ^ y1;					\
+    y2 ^= x1;						\
+    y3  = ~ y3;						\
+    y2 ^= x3;						\
   } while (0)
 
 /* S3:  0 15 11  8 12  9  6  3 13  1  2  4 10  7  5 14 */
