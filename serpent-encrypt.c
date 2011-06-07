@@ -71,28 +71,27 @@
    destroyed. Can this freedom be used to optimize the sboxes? */
 
 /* S0:  3  8 15  1 10  6  5 11 14 13  4  2  7  0  9 12 */
-#define SBOX0(type, a, b, c, d, w, x, y, z)	\
-  do { \
-    type t02, t03, t05, t06, t07, t08, t09; \
-    type t11, t12, t13, t14, t15, t17, t01; \
-    t01 = b   ^ c  ; \
-    t02 = a   | d  ; \
-    t03 = a   ^ b  ; \
-    z   = t02 ^ t01; \
-    t05 = c   | z  ; \
-    t06 = a   ^ d  ; \
-    t07 = b   | c  ; \
-    t08 = d   & t05; \
-    t09 = t03 & t07; \
-    y   = t09 ^ t08; \
-    t11 = t09 & y  ; \
-    t12 = c   ^ d  ; \
-    t13 = t07 ^ t11; \
-    t14 = b   & t06; \
-    t15 = t06 ^ t13; \
-    w   =     ~ t15; \
-    t17 = w   ^ t14; \
-    x   = t12 ^ t17; \
+/* Could easily let y0, y1 overlap with x0, x1, and possibly also x2 and y2 */
+#define SBOX0(type, x0, x1, x2, x3, y0, y1, y2, y3)	\
+  do {							\
+    y3  = x1 ^ x2;					\
+    y0  = x0 | x3;					\
+    y1  = x0 ^ x1;					\
+    y3 ^= y0;						\
+    y2  = x2 | y3;					\
+    x0 ^= x3;						\
+    y2 &= x3;						\
+    x3 ^= x2;						\
+    x2 |= x1;						\
+    y0  = y1 & x2;					\
+    y2 ^= y0;						\
+    y0 &= y2;						\
+    y0 ^= x2;						\
+    x1 &= x0;						\
+    y0 ^= x0;						\
+    y0  = ~ y0;						\
+    y1  = y0 ^ x1;					\
+    y1 ^= x3;						\
   } while (0)
 
 /* S1: 15 12  2  7  9  0  5 10  1 11 14  8  6 13  3  4 */
