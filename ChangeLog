@@ -4,6 +4,7 @@
 	temporaries.
 	(SBOX1): Likewise.
 	(SBOX2): Likewise.
+	(SBOX3): Likewise.
 
 2011-06-06  Niels Möller  <nisse@lysator.liu.se>
 
