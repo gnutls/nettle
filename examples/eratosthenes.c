@@ -124,7 +124,7 @@ vector_clear_bits (unsigned long *vector, unsigned long step,
 static unsigned
 find_first_one (unsigned long x)
 {  
-  unsigned table[0x101] =
+  static const unsigned char table[0x101] =
     {
      15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
