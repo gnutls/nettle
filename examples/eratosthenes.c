@@ -145,10 +145,11 @@ find_first_one (unsigned long x)
       7,
     };
 
+  unsigned i = 0;
+
   /* Isolate least significant bit */
   x &= -x;
 
-  unsigned i = 0;
 #if NEED_HANDLE_LARGE_LONG
 #ifndef SIZEOF_LONG
   /* Can not be tested by the preprocessor. May generate warnings
