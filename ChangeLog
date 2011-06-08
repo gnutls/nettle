@@ -1,3 +1,10 @@
+2011-06-08  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/eratosthenes.c (find_first_one): Fixed c99-style
+	declaration. Reported by Sebastian Reitenbach.
+	(find_first_one): Declare the lookup table as static const, and
+	use unsigned char rather than unsigned..
+
 2011-06-07  Niels Möller  <nisse@lysator.liu.se>
 
 	* serpent-encrypt.c (SBOX0): Renamed arguments. Eliminated
