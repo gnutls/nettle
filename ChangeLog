@@ -1,11 +1,12 @@
 2011-06-09  Niels Möller  <nisse@lysator.liu.se>
 
+	* serpent-encrypt.c (SBOX4): Renamed arguments. Eliminated
+	temporaries.
+
 	* configure.ac (LIBNETTLE_LINK, LIBHOGWEED_LINK): Cygwin fix, from
 	Vincent Torri.
 
 2011-06-08  Niels Möller  <nisse@lysator.liu.se>
-
-	* serpent-encrypt.c (SBOX4): Renamed arguments.
 
 	* examples/eratosthenes.c (find_first_one): Fixed c99-style
 	declaration. Reported by Sebastian Reitenbach.
