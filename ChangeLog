@@ -1,3 +1,8 @@
+2011-06-10  Niels Möller  <nisse@lysator.liu.se>
+
+	* serpent-encrypt.c (SBOX5): Renamed arguments. Eliminated
+	temporaries.
+
 2011-06-09  Niels Möller  <nisse@lysator.liu.se>
 
 	* serpent-encrypt.c (SBOX4): Renamed arguments. Eliminated
