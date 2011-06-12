@@ -186,29 +186,30 @@ fi
 
 # Select assembler code
 asm_path=
-case "$host_cpu" in
-  [i?86* | k[5-8]* | pentium* | athlon])
-    asm_path=x86
-    ;;
-  [x86_64 | amd64])
-    if test "$ABI" = 64 ; then
-      asm_path=x86_64
-    else
+if test "x$enable_assembler" = xyes ; then
+  case "$host_cpu" in
+    [i?86* | k[5-8]* | pentium* | athlon])
       asm_path=x86
-    fi
-    ;;
-  *sparc*)
-    if test "$ABI" = 64 ; then
-      asm_path=sparc64
-    else
-      asm_path=sparc32
-    fi
-    ;;
-  *)
-    enable_assembler=no
-    ;;
-esac
-
+      ;;
+    [x86_64 | amd64])
+      if test "$ABI" = 64 ; then
+	asm_path=x86_64
+      else
+	asm_path=x86
+      fi
+      ;;
+    *sparc*)
+      if test "$ABI" = 64 ; then
+	asm_path=sparc64
+      else
+	asm_path=sparc32
+      fi
+      ;;
+    *)
+      enable_assembler=no
+      ;;
+  esac
+fi
 # echo "enable_assembler: $enable_assembler, asm_path: $asm_path"
 
 if test "x$enable_assembler" = xyes ; then
@@ -593,3 +594,15 @@ AC_CONFIG_FILES([tools/Makefile testsuite/Makefile examples/Makefile])
 
 AC_OUTPUT
 
+AC_MSG_NOTICE([summary of build options:
+
+  Version:           ${PACKAGE_STRING}
+  Host type:         ${host}
+  ABI:               ${ABI}
+  Assembly files:    ${asm_path:-none}
+  Install prefix:    ${prefix}
+  Library directory: ${libdir}
+  Compiler:          ${CC}
+  Shared libraries:  ${enable_shared}
+  Public key crypto: ${enable_public_key}
+])

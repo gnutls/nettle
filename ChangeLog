@@ -1,3 +1,8 @@
+2011-06-12  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Display summary at the end oc configure..
+	(asm_path): Set only if enable_assember is yes.
+
 2011-06-10  Niels Möller  <nisse@lysator.liu.se>
 
 	* serpent-encrypt.c (SBOX5): Renamed arguments. Eliminated
