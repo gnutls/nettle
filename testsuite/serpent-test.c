@@ -179,5 +179,35 @@ test_main(void)
 	      HL("0000000001000000 0200000003000000"),
 	      H("C8A078D8212AC96D 9060E30EC5CBB5C7"));
 
+  /* Test with multiple blocks. */
+  test_cipher(&nettle_serpent128,
+	      HL("e87450aa0fd87293fd0371483a459bd2"),
+	      HL("a78a7a8d392f629d bd13674c8dce6fa2"),
+	      H("b3d488986c80dea7 c5ebdab4907871c9"));
+  test_cipher(&nettle_serpent128,
+	      HL("e87450aa0fd87293fd0371483a459bd2"),
+	      HL("a78a7a8d392f629d bd13674c8dce6fa2"
+		 "930c74dec02a11d8 c80d90b5e5c887a7"),
+	      H("b3d488986c80dea7 c5ebdab4907871c9"
+		"a4b92b13b79afb37 5518b01bfd706a37"));
+  test_cipher(&nettle_serpent128,
+	      HL("e87450aa0fd87293fd0371483a459bd2"),
+	      HL("a78a7a8d392f629d bd13674c8dce6fa2"
+		 "930c74dec02a11d8 c80d90b5e5c887a7"
+		 "83c92a921b5b2028 d9cb313a5f07ab09"),
+	      H("b3d488986c80dea7 c5ebdab4907871c9"
+		"a4b92b13b79afb37 5518b01bfd706a37"
+		"8e44c2d463df4531 165461699edbad03"));
+  test_cipher(&nettle_serpent128,
+	      HL("e87450aa0fd87293fd0371483a459bd2"),
+	      HL("a78a7a8d392f629d bd13674c8dce6fa2"
+		 "930c74dec02a11d8 c80d90b5e5c887a7"
+		 "83c92a921b5b2028 d9cb313a5f07ab09"
+		 "672eadf1624a2ed0 c42d1b08b076f75a"),
+	      H("b3d488986c80dea7 c5ebdab4907871c9"
+		"a4b92b13b79afb37 5518b01bfd706a37"
+		"8e44c2d463df4531 165461699edbad03"
+		"30ac8c52697102ae 3b725dba79ceb250"));
+  
   SUCCESS();
 }
