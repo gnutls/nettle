@@ -1,5 +1,10 @@
 2011-06-12  Niels Möller  <nisse@lysator.liu.se>
 
+	* serpent-encrypt.c (SBOX6): Renamed arguments. Eliminated
+	temporaries.
+	(SBOX7): Likewise.
+	(All SBOX-macros): Deleted type argument, and updated users.
+
 	* configure.ac: Display summary at the end oc configure..
 	(asm_path): Set only if enable_assember is yes.
 

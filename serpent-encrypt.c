@@ -72,7 +72,7 @@
 
 /* S0:  3  8 15  1 10  6  5 11 14 13  4  2  7  0  9 12 */
 /* Could easily let y0, y1 overlap with x0, x1, and possibly also x2 and y2 */
-#define SBOX0(type, x0, x1, x2, x3, y0, y1, y2, y3)	\
+#define SBOX0(x0, x1, x2, x3, y0, y1, y2, y3)	\
   do {							\
     y3  = x1 ^ x2;					\
     y0  = x0 | x3;					\
@@ -96,7 +96,7 @@
 
 /* FIXME: Arrange for some overlap between inputs and outputs? */
 /* S1: 15 12  2  7  9  0  5 10  1 11 14  8  6 13  3  4 */
-#define SBOX1(type, x0, x1, x2, x3, y0, y1, y2, y3)	\
+#define SBOX1(x0, x1, x2, x3, y0, y1, y2, y3)	\
   do {							\
     y1  = x0 | x3;					\
     y2  = x2 ^ x3;					\
@@ -120,7 +120,7 @@
 
 /* FIXME: Arrange for some overlap between inputs and outputs? */
 /* S2:  8  6  7  9  3 12 10 15 13  1 14  4  0 11  5  2 */
-#define SBOX2(type, x0, x1, x2, x3, y0, y1, y2, y3)	\
+#define SBOX2(x0, x1, x2, x3, y0, y1, y2, y3)	\
   do {							\
     y2  = x0 | x2;					\
     y1  = x0 ^ x1;					\
@@ -162,7 +162,7 @@
      y0  = t14 ^ t15;
      y1  = t05 ^ t04;
 */
-#define SBOX3(type, x0, x1, x2, x3, y0, y1, y2, y3)	\
+#define SBOX3(x0, x1, x2, x3, y0, y1, y2, y3)	\
   do {							\
     y2  = x0 ^ x2;					\
     y0  = x0 | x3;					\
@@ -207,7 +207,7 @@
     y1  = t15 ^ t16;
     y0  =     ~ t14;
 */
-#define SBOX4(type, x0, x1, x2, x3, y0, y1, y2, y3)	\
+#define SBOX4(x0, x1, x2, x3, y0, y1, y2, y3)	\
   do {							\
     y3  = x0 | x1;					\
     y2  = x1 | x2;					\
@@ -250,7 +250,7 @@
     y1  = t07 ^ t08;
     y3  = t12 ^ t14;
 */
-#define SBOX5(type, x0, x1, x2, x3, y0, y1, y2, y3)	\
+#define SBOX5(x0, x1, x2, x3, y0, y1, y2, y3)	\
   do {							\
     y0  = x1 | x3;					\
     y0 ^= x2;						\
@@ -272,55 +272,98 @@
   } while (0)
 
 /* S6:  7  2 12  5  8  4  6 11 14  9  1 15 13  3 10  0 */
-#define SBOX6(type, a, b, c, d, w, x, y, z) \
-  do { \
-    type t02, t03, t04, t05, t07, t08, t09, t10;	\
-    type t11, t12, t13, t15, t17, t18, t01; \
-    t01 = a   & d  ; \
-    t02 = b   ^ c  ; \
-    t03 = a   ^ d  ; \
-    t04 = t01 ^ t02; \
-    t05 = b   | c  ; \
-    x   =     ~ t04; \
-    t07 = t03 & t05; \
-    t08 = b   & x  ; \
-    t09 = a   | c  ; \
-    t10 = t07 ^ t08; \
-    t11 = b   | d  ; \
-    t12 = c   ^ t11; \
-    t13 = t09 ^ t10; \
-    y   =     ~ t13; \
-    t15 = x   & t03; \
-    z   = t12 ^ t07; \
-    t17 = a   ^ b  ; \
-    t18 = y   ^ t15; \
-    w   = t17 ^ t18; \
+/* Original single-assignment form:
+    t01 = x0  & x3;
+    t02 = x1  ^ x2;
+    t03 = x0  ^ x3;
+    t04 = t01 ^ t02;
+    t05 = x1  | x2;
+    y1  =     ~ t04;
+    t07 = t03 & t05;
+    t08 = x1  & y1;
+    t09 = x0  | x2;
+    t10 = t07 ^ t08;
+    t11 = x1  | x3;
+    t12 = x2  ^ t11;
+    t13 = t09 ^ t10;
+    y2  =     ~ t13;
+    t15 = y1  & t03;
+    y3  = t12 ^ t07;
+    t17 = x0  ^ x1;
+    t18 = y2  ^ t15;
+    y0  = t17 ^ t18;
+*/
+#define SBOX6(x0, x1, x2, x3, y0, y1, y2, y3)	\
+  do {							\
+    y0  = x0 ^ x3;					\
+    y1  = x0 & x3;					\
+    y2  = x0 | x2;					\
+    x3 |= x1;						\
+    x3 ^= x2;						\
+    x0 ^= x1;						\
+    y3  = x1 | x2;					\
+    x2 ^= x1;						\
+    y3 &= y0;						\
+    y1 ^= x2;						\
+    y1  = ~y1;						\
+    y0 &= y1;						\
+    x1 &= y1;						\
+    x1 ^= y3;						\
+    y3 ^= x3;						\
+    y2 ^= x1;						\
+    y2  = ~y2;						\
+    y0 ^= y2;						\
+    y0 ^= x0;						\
   } while (0)
 
 /* S7:  1 13 15  0 14  8  2 11  7  4 12 10  9  3  5  6 */
-#define SBOX7(type, a, b, c, d, w, x, y, z) \
-  do { \
-    type t02, t03, t04, t05, t06, t08, t09, t10;	\
-    type t11, t13, t14, t15, t16, t17, t01; \
-    t01 = a   & c  ; \
-    t02 =     ~ d  ; \
-    t03 = a   & t02; \
-    t04 = b   | t01; \
-    t05 = a   & b  ; \
-    t06 = c   ^ t04; \
-    z   = t03 ^ t06; \
-    t08 = c   | z  ; \
-    t09 = d   | t05; \
-    t10 = a   ^ t08; \
-    t11 = t04 & z  ; \
-    x   = t09 ^ t10; \
-    t13 = b   ^ x  ; \
-    t14 = t01 ^ x  ; \
-    t15 = c   ^ t05; \
-    t16 = t11 | t13; \
-    t17 = t02 | t14; \
-    w   = t15 ^ t17; \
-    y   = a   ^ t16; \
+/* Original single-assignment form:
+    t01 = x0  & x2;
+    t02 =     ~ x3;
+    t03 = x0  & t02;
+    t04 = x1  | t01;
+    t05 = x0  & x1;
+    t06 = x2  ^ t04;
+    y3  = t03 ^ t06;
+    t08 = x2  | y3;
+    t09 = x3  | t05;
+    t10 = x0  ^ t08;
+    t11 = t04 & y3;
+    y1  = t09 ^ t10;
+    t13 = x1  ^ y1;
+    t14 = t01 ^ y1;
+    t15 = x2  ^ t05;
+    t16 = t11 | t13;
+    t17 = t02 | t14;
+    y0  = t15 ^ t17;
+    y2  = x0  ^ t16;
+*/
+/* It appears impossible to do this with only 8 registers. We
+   recompute t02, and t04 (if we have spare registers, hopefully the
+   compiler can recognize it them as common subexpressions). */
+#define SBOX7(x0, x1, x2, x3, y0, y1, y2, y3)	\
+  do {							\
+    y0  = x0 & x2;					\
+    y3  = x1 | y0; /* t04 */				\
+    y3 ^= x2;						\
+    y1  = ~x3;     /* t02 */				\
+    y1 &= x0;						\
+    y3 ^= y1;						\
+    y1  = x2 | y3;					\
+    y1 ^= x0;						\
+    y2  = x0 & x1;					\
+    x2 ^= y2;						\
+    y2 |= x3;						\
+    y1 ^= y2;						\
+    y2  = x1 | y0; /* t04 */				\
+    y2 &= y3;						\
+    x1 ^= y1;						\
+    y2 |= x1;						\
+    y2 ^= x0;						\
+    y0 ^= y1;						\
+    x3  = ~x3;     /* t02 */				\
+    y0 |= x3;						\
+    y0 ^= x2;						\
   } while (0)
 
 /* In-place linear transformation.  */
@@ -343,7 +386,7 @@
 #define ROUND(which, subkey, x0,x1,x2,x3, y0,y1,y2,y3) \
   do {						       \
     KEYXOR(x0,x1,x2,x3, subkey);		       \
-    SBOX##which(uint32_t, x0,x1,x2,x3, y0,y1,y2,y3);	       \
+    SBOX##which(x0,x1,x2,x3, y0,y1,y2,y3);	       \
     LINEAR_TRANSFORMATION(y0,y1,y2,y3);		       \
   } while (0)
 
@@ -366,7 +409,7 @@
 #define ROUND64(which, subkey, x0,x1,x2,x3, y0,y1,y2,y3) \
   do {						       \
     KEYXOR64(x0,x1,x2,x3, subkey);		       \
-    SBOX##which(uint64_t, x0,x1,x2,x3, y0,y1,y2,y3);	       \
+    SBOX##which(x0,x1,x2,x3, y0,y1,y2,y3);	       \
     LINEAR_TRANSFORMATION64(y0,y1,y2,y3);		       \
   } while (0)
 
@@ -408,7 +451,7 @@ serpent_encrypt (const struct serpent_ctx *ctx,
 
       /* Special final round, using two subkeys. */
       KEYXOR (y0,y1,y2,y3, ctx->keys[31]);
-      SBOX7 (uint32_t, y0,y1,y2,y3, x0,x1,x2,x3);
+      SBOX7 (y0,y1,y2,y3, x0,x1,x2,x3);
       KEYXOR (x0,x1,x2,x3, ctx->keys[32]);
     
       LE_WRITE_UINT32 (dst, x0);
@@ -452,7 +495,7 @@ serpent_encrypt (const struct serpent_ctx *ctx,
 
       /* Special final round, using two subkeys. */
       KEYXOR64 (y0,y1,y2,y3, ctx->keys[31]);
-      SBOX7 (uint64_t, y0,y1,y2,y3, x0,x1,x2,x3);
+      SBOX7 (y0,y1,y2,y3, x0,x1,x2,x3);
       KEYXOR64 (x0,x1,x2,x3, ctx->keys[32]);
     
       LE_WRITE_UINT32 (dst + 16, x0);
