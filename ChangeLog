@@ -1,5 +1,8 @@
 2011-06-12  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/serpent-test.c (test_main): Added tests with multiple
+	blocks at a time.
+
 	* serpent-encrypt.c (SBOX6): Renamed arguments. Eliminated
 	temporaries.
 	(SBOX7): Likewise.
