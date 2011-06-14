@@ -296,9 +296,6 @@ define(<LT>, <
 	.text
 	ALIGN(4)
 PROLOGUE(nettle_serpent_encrypt)
-	test	N, N
-	jz	.Lend
-
         C save all registers that need to be saved
 	push	%rbx
 	push	%rbp
@@ -309,7 +306,11 @@ PROLOGUE(nettle_serpent_encrypt)
 	lea	(SRC, N), SRC
 	lea	(DST, N), DST
 	neg	N
-	
+	jz	.Lend
+
+	C Point at the final subkey.
+	lea	512(CTX), CTX
+
 C The single-block loop here is slightly slower than the double-block
 C loop in serpent-encrypt.c.
 
@@ -319,8 +320,13 @@ C loop in serpent-encrypt.c.
 	movl	8(SRC, N), x2
 	movl	12(SRC, N), x3
 
-	xor	CNT, CNT
+	mov	$-512, CNT
+	jmp	.Lround_start
+	
+	ALIGN(4)
 .Lround_loop:
+	LT(x0,x1,x2,x3)
+.Lround_start:
 	xor	  (CTX, CNT), x0
 	xor	 4(CTX, CNT), x1
 	xor	 8(CTX, CNT), x2
@@ -376,13 +382,9 @@ C loop in serpent-encrypt.c.
 	xor	124(CTX, CNT), y3
 	SBOX7(y0,y1,y2,y3, x0,x1,x2,x3)
 	add	$128, CNT
-	C FIXME: Offset CTX and CNT, so we can jump out when CNT == 0
-	cmp	$512, CNT
-	je	.Lfinal_round
-	LT(x0,x1,x2,x3)
-	jmp	.Lround_loop
+	jnz	.Lround_loop
 
-.Lfinal_round:
+	C Apply final subkey.
 	xor	  (CTX, CNT), x0
 	xor	 4(CTX, CNT), x1
 	xor	 8(CTX, CNT), x2
@@ -394,12 +396,11 @@ C loop in serpent-encrypt.c.
 	movl	x3, 12(DST, N)
 	add	$16, N
 	jnc	.Lblock_loop
-	
 
+.Lend:
 	pop	%r14
 	pop	%r13
 	pop	%r12
 	pop	%rbp
 	pop	%rbx
-.Lend:
 	ret
