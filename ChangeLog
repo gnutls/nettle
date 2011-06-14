@@ -1,5 +1,7 @@
 2011-06-14  Niels Möller  <nisse@lysator.liu.se>
 
+	* x86_64/serpent-encrypt.asm: Slight simplification of loop logic.
+
 	* x86_64/serpent-encrypt.asm: New file.
 
 2011-06-12  Niels Möller  <nisse@lysator.liu.se>
