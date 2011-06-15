@@ -159,13 +159,26 @@ if test "x$ABI" != xstandard ; then
       *:solaris*:64|*:sunos*:64)
 	libdir='${exec_prefix}/lib/64'
 	;;
-      # According to the fhs, all architectures except IA64
-      # puts 32-bit libraries in lib, and 64-bit in lib64.
-      *:linux*:32)
-	libdir='${exec_prefix}/lib'
-	;;
-      *:linux*:64)
-	libdir='${exec_prefix}/lib64'
+      # Linux conventions are a mess... According to the Linux File
+      # Hierarchy Standard, all architectures except IA64 puts 32-bit
+      # libraries in lib, and 64-bit in lib64. Some distributions,
+      # e.g., Fedora and Gentoo, adhere to this standard, while at
+      # least Debian has decided to put 64-bit libraries in lib and
+      # 32-bit libraries in lib32.
+      
+      # We try to figure out the convention, except if we're cross
+      # compiling. We use lib${ABI} if /usr/lib${ABI} exists and
+      # appears to not be a symlink to a different name.
+      *:linux*:32|*:linux*:64)
+	if test "$cross_compiling" = yes ; then
+          AC_MSG_WARN([Cross compiling for linux. Can't guess if libraries go in lib${ABI} or lib.]); dnl '
+	else
+	  # The dash builtin pwd tries to be "helpful" and remember
+	  # symlink names. Use /bin/pwd instead.
+	  test -d /usr/lib${ABI} \
+	    && (cd /usr/lib${ABI} && /bin/pwd | grep >/dev/null "/lib${ABI}"'$') \
+	    && libdir='${exec_prefix}/'"lib${ABI}"
+	fi
 	;;
       # On freebsd, it seems 32-bit libraries are in lib32,
       # and 64-bit in lib. Don't know about "kfreebsd", does
@@ -177,7 +190,7 @@ if test "x$ABI" != xstandard ; then
 	libdir='${exec_prefix}/lib'
 	;;
       *)
-        AC_MSG_WARN([Don't know where to install $ABI-bit libraries on this system.]); #'
+        AC_MSG_WARN([Don't know where to install $ABI-bit libraries on this system.]); dnl '
 
     esac
     AC_MSG_NOTICE([Libraries to be installed in $libdir.])
