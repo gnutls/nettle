@@ -70,195 +70,195 @@
    used after the substitution, and hence we could allow them to be
    destroyed. Can this freedom be used to optimize the sboxes? */
 
-#define SBOX0_INVERSE(type, a, b, c, d, w, x, y, z)	\
+#define SBOX0_INVERSE(type, x0, x1, x2, x3, y0, y1, y2, y3)	\
   do { \
     type t02, t03, t04, t05, t06, t08, t09, t10;	\
     type t12, t13, t14, t15, t17, t18, t01; \
-    t01 = c   ^ d  ; \
-    t02 = a   | b  ; \
-    t03 = b   | c  ; \
-    t04 = c   & t01; \
+    t01 = x2  ^ x3  ; \
+    t02 = x0  | x1  ; \
+    t03 = x1  | x2  ; \
+    t04 = x2  & t01; \
     t05 = t02 ^ t01; \
-    t06 = a   | t04; \
-    y   =     ~ t05; \
-    t08 = b   ^ d  ; \
+    t06 = x0  | t04; \
+    y2  =     ~ t05; \
+    t08 = x1  ^ x3  ; \
     t09 = t03 & t08; \
-    t10 = d   | y  ; \
-    x   = t09 ^ t06; \
-    t12 = a   | t05; \
-    t13 = x   ^ t12; \
+    t10 = x3  | y2  ; \
+    y1  = t09 ^ t06; \
+    t12 = x0  | t05; \
+    t13 = y1  ^ t12; \
     t14 = t03 ^ t10; \
-    t15 = a   ^ c  ; \
-    z   = t14 ^ t13; \
+    t15 = x0  ^ x2  ; \
+    y3  = t14 ^ t13; \
     t17 = t05 & t13; \
     t18 = t14 | t17; \
-    w   = t15 ^ t18; \
+    y0  = t15 ^ t18; \
   } while (0)
 
-#define SBOX1_INVERSE(type, a, b, c, d, w, x, y, z) \
+#define SBOX1_INVERSE(type, x0, x1, x2, x3, y0, y1, y2, y3) \
   do { \
     type t02, t03, t04, t05, t06, t07, t08; \
     type t09, t10, t11, t14, t15, t17, t01; \
-    t01 = a   ^ b  ; \
-    t02 = b   | d  ; \
-    t03 = a   & c  ; \
-    t04 = c   ^ t02; \
-    t05 = a   | t04; \
+    t01 = x0  ^ x1  ; \
+    t02 = x1  | x3  ; \
+    t03 = x0  & x2  ; \
+    t04 = x2  ^ t02; \
+    t05 = x0  | t04; \
     t06 = t01 & t05; \
-    t07 = d   | t03; \
-    t08 = b   ^ t06; \
+    t07 = x3  | t03; \
+    t08 = x1  ^ t06; \
     t09 = t07 ^ t06; \
     t10 = t04 | t03; \
-    t11 = d   & t08; \
-    y   =     ~ t09; \
-    x   = t10 ^ t11; \
-    t14 = a   | y  ; \
-    t15 = t06 ^ x  ; \
-    z   = t01 ^ t04; \
-    t17 = c   ^ t15; \
-    w   = t14 ^ t17; \
+    t11 = x3  & t08; \
+    y2  =     ~ t09; \
+    y1  = t10 ^ t11; \
+    t14 = x0  | y2  ; \
+    t15 = t06 ^ y1  ; \
+    y3  = t01 ^ t04; \
+    t17 = x2  ^ t15; \
+    y0  = t14 ^ t17; \
   } while (0)
 
-#define SBOX2_INVERSE(type, a, b, c, d, w, x, y, z) \
+#define SBOX2_INVERSE(type, x0, x1, x2, x3, y0, y1, y2, y3) \
   do {						\
     type t02, t03, t04, t06, t07, t08, t09; \
     type t10, t11, t12, t15, t16, t17, t01; \
-    t01 = a   ^ d  ; \
-    t02 = c   ^ d  ; \
-    t03 = a   & c  ; \
-    t04 = b   | t02; \
-    w   = t01 ^ t04; \
-    t06 = a   | c  ; \
-    t07 = d   | w  ; \
-    t08 =     ~ d  ; \
-    t09 = b   & t06; \
+    t01 = x0  ^ x3  ; \
+    t02 = x2  ^ x3  ; \
+    t03 = x0  & x2  ; \
+    t04 = x1  | t02; \
+    y0  = t01 ^ t04; \
+    t06 = x0  | x2  ; \
+    t07 = x3  | y0  ; \
+    t08 =     ~ x3  ; \
+    t09 = x1  & t06; \
     t10 = t08 | t03; \
-    t11 = b   & t07; \
+    t11 = x1  & t07; \
     t12 = t06 & t02; \
-    z   = t09 ^ t10; \
-    x   = t12 ^ t11; \
-    t15 = c   & z  ; \
-    t16 = w   ^ x  ; \
+    y3  = t09 ^ t10; \
+    y1  = t12 ^ t11; \
+    t15 = x2  & y3  ; \
+    t16 = y0  ^ y1  ; \
     t17 = t10 ^ t15; \
-    y   = t16 ^ t17; \
+    y2  = t16 ^ t17; \
   } while (0)
 
-#define SBOX3_INVERSE(type, a, b, c, d, w, x, y, z) \
+#define SBOX3_INVERSE(type, x0, x1, x2, x3, y0, y1, y2, y3) \
   do { \
     type t02, t03, t04, t05, t06, t07, t09; \
     type t11, t12, t13, t14, t16, t01; \
-    t01 = c   | d  ; \
-    t02 = a   | d  ; \
-    t03 = c   ^ t02; \
-    t04 = b   ^ t02; \
-    t05 = a   ^ d  ; \
+    t01 = x2  | x3  ; \
+    t02 = x0  | x3  ; \
+    t03 = x2  ^ t02; \
+    t04 = x1  ^ t02; \
+    t05 = x0  ^ x3  ; \
     t06 = t04 & t03; \
-    t07 = b   & t01; \
-    y   = t05 ^ t06; \
-    t09 = a   ^ t03; \
-    w   = t07 ^ t03; \
-    t11 = w   | t05; \
+    t07 = x1  & t01; \
+    y2  = t05 ^ t06; \
+    t09 = x0  ^ t03; \
+    y0  = t07 ^ t03; \
+    t11 = y0  | t05; \
     t12 = t09 & t11; \
-    t13 = a   & y  ; \
+    t13 = x0  & y2  ; \
     t14 = t01 ^ t05; \
-    x   = b   ^ t12; \
-    t16 = b   | t13; \
-    z   = t14 ^ t16; \
+    y1  = x1  ^ t12; \
+    t16 = x1  | t13; \
+    y3  = t14 ^ t16; \
   } while (0)
 
-#define SBOX4_INVERSE(type, a, b, c, d, w, x, y, z) \
+#define SBOX4_INVERSE(type, x0, x1, x2, x3, y0, y1, y2, y3) \
   do { \
     type t02, t03, t04, t05, t06, t07, t09; \
     type t10, t11, t12, t13, t15, t01; \
-    t01 = b   | d  ; \
-    t02 = c   | d  ; \
-    t03 = a   & t01; \
-    t04 = b   ^ t02; \
-    t05 = c   ^ d  ; \
+    t01 = x1  | x3  ; \
+    t02 = x2  | x3  ; \
+    t03 = x0  & t01; \
+    t04 = x1  ^ t02; \
+    t05 = x2  ^ x3  ; \
     t06 =     ~ t03; \
-    t07 = a   & t04; \
-    x   = t05 ^ t07; \
-    t09 = x   | t06; \
-    t10 = a   ^ t07; \
+    t07 = x0  & t04; \
+    y1  = t05 ^ t07; \
+    t09 = y1  | t06; \
+    t10 = x0  ^ t07; \
     t11 = t01 ^ t09; \
-    t12 = d   ^ t04; \
-    t13 = c   | t10; \
-    z   = t03 ^ t12; \
-    t15 = a   ^ t04; \
-    y   = t11 ^ t13; \
-    w   = t15 ^ t09; \
+    t12 = x3  ^ t04; \
+    t13 = x2  | t10; \
+    y3  = t03 ^ t12; \
+    t15 = x0  ^ t04; \
+    y2  = t11 ^ t13; \
+    y0  = t15 ^ t09; \
   } while (0)
 
-#define SBOX5_INVERSE(type, a, b, c, d, w, x, y, z) \
+#define SBOX5_INVERSE(type, x0, x1, x2, x3, y0, y1, y2, y3) \
   do { \
     type t02, t03, t04, t05, t07, t08, t09; \
     type t10, t12, t13, t15, t16, t01; \
-    t01 = a   & d  ; \
-    t02 = c   ^ t01; \
-    t03 = a   ^ d  ; \
-    t04 = b   & t02; \
-    t05 = a   & c  ; \
-    w   = t03 ^ t04; \
-    t07 = a   & w  ; \
-    t08 = t01 ^ w  ; \
-    t09 = b   | t05; \
-    t10 =     ~ b  ; \
-    x   = t08 ^ t09; \
+    t01 = x0  & x3  ; \
+    t02 = x2  ^ t01; \
+    t03 = x0  ^ x3  ; \
+    t04 = x1  & t02; \
+    t05 = x0  & x2  ; \
+    y0  = t03 ^ t04; \
+    t07 = x0  & y0  ; \
+    t08 = t01 ^ y0  ; \
+    t09 = x1  | t05; \
+    t10 =     ~ x1  ; \
+    y1  = t08 ^ t09; \
     t12 = t10 | t07; \
-    t13 = w   | x  ; \
-    z   = t02 ^ t12; \
+    t13 = y0  | y1  ; \
+    y3  = t02 ^ t12; \
     t15 = t02 ^ t13; \
-    t16 = b   ^ d  ; \
-    y   = t16 ^ t15; \
+    t16 = x1  ^ x3  ; \
+    y2  = t16 ^ t15; \
   } while (0)
 
-#define SBOX6_INVERSE(type, a, b, c, d, w, x, y, z) \
+#define SBOX6_INVERSE(type, x0, x1, x2, x3, y0, y1, y2, y3) \
   do { \
     type t02, t03, t04, t05, t06, t07, t08, t09; \
     type t12, t13, t14, t15, t16, t17, t01;	     \
-    t01 = a   ^ c  ; \
-    t02 =     ~ c  ; \
-    t03 = b   & t01; \
-    t04 = b   | t02; \
-    t05 = d   | t03; \
-    t06 = b   ^ d  ; \
-    t07 = a   & t04; \
-    t08 = a   | t02; \
+    t01 = x0  ^ x2  ; \
+    t02 =     ~ x2  ; \
+    t03 = x1  & t01; \
+    t04 = x1  | t02; \
+    t05 = x3  | t03; \
+    t06 = x1  ^ x3  ; \
+    t07 = x0  & t04; \
+    t08 = x0  | t02; \
     t09 = t07 ^ t05; \
-    x   = t06 ^ t08; \
-    w   =     ~ t09; \
-    t12 = b   & w  ; \
+    y1  = t06 ^ t08; \
+    y0  =     ~ t09; \
+    t12 = x1  & y0  ; \
     t13 = t01 & t05; \
     t14 = t01 ^ t12; \
     t15 = t07 ^ t13; \
-    t16 = d   | t02; \
-    t17 = a   ^ x  ; \
-    z   = t17 ^ t15; \
-    y   = t16 ^ t14; \
+    t16 = x3  | t02; \
+    t17 = x0  ^ y1  ; \
+    y3  = t17 ^ t15; \
+    y2  = t16 ^ t14; \
   } while (0)
 
-#define SBOX7_INVERSE(type, a, b, c, d, w, x, y, z) \
+#define SBOX7_INVERSE(type, x0, x1, x2, x3, y0, y1, y2, y3) \
   do { \
     type t02, t03, t04, t06, t07, t08, t09; \
     type t10, t11, t13, t14, t15, t16, t01; \
-    t01 = a   & b  ; \
-    t02 = a   | b  ; \
-    t03 = c   | t01; \
-    t04 = d   & t02; \
-    z   = t03 ^ t04; \
-    t06 = b   ^ t04; \
-    t07 = d   ^ z  ; \
+    t01 = x0  & x1  ; \
+    t02 = x0  | x1  ; \
+    t03 = x2  | t01; \
+    t04 = x3  & t02; \
+    y3  = t03 ^ t04; \
+    t06 = x1  ^ t04; \
+    t07 = x3  ^ y3  ; \
     t08 =     ~ t07; \
     t09 = t06 | t08; \
-    t10 = b   ^ d  ; \
-    t11 = a   | d  ; \
-    x   = a   ^ t09; \
-    t13 = c   ^ t06; \
-    t14 = c   & t11; \
-    t15 = d   | x  ; \
+    t10 = x1  ^ x3  ; \
+    t11 = x0  | x3  ; \
+    y1  = x0  ^ t09; \
+    t13 = x2  ^ t06; \
+    t14 = x2  & t11; \
+    t15 = x3  | y1  ; \
     t16 = t01 | t10; \
-    w   = t13 ^ t15; \
-    y   = t14 ^ t16; \
+    y0  = t13 ^ t15; \
+    y2  = t14 ^ t16; \
   } while (0)
 
 /* In-place inverse linear transformation.  */
