@@ -66,10 +66,6 @@
    (GPL), although some comments in the code still say otherwise. You
    are welcome to use Serpent for any application."  */
 
-/* FIXME: Except when used within the key schedule, the inputs are not
-   used after the substitution, and hence we could allow them to be
-   destroyed. Can this freedom be used to optimize the sboxes? */
-
 /* S0:  3  8 15  1 10  6  5 11 14 13  4  2  7  0  9 12 */
 /* Could easily let y0, y1 overlap with x0, x1, and possibly also x2 and y2 */
 #define SBOX0(x0, x1, x2, x3, y0, y1, y2, y3)	\
@@ -98,24 +94,24 @@
 /* S1: 15 12  2  7  9  0  5 10  1 11 14  8  6 13  3  4 */
 /* Original single-assignment form:
    
-     t01 = x0  | x3;   0
-     t02 = x2  ^ x3;   0
-     t03 =     ~ x1;   0
-     t04 = x0  ^ x2;   0
-     t05 = x0  | t03;  0
-     t06 = x3  & t04;  0
-     t07 = t01 & t02;  0
-     t08 = x1  | t06;  0
-     y2  = t02 ^ t05;  0
-     t10 = t07 ^ t08;  0
-     t11 = t01 ^ t10;  0
-     t12 = y2  ^ t11;  0
-     t13 = x1  & x3;   0
+     t01 = x0  | x3;
+     t02 = x2  ^ x3;
+     t03 =     ~ x1;
+     t04 = x0  ^ x2;
+     t05 = x0  | t03;
+     t06 = x3  & t04;
+     t07 = t01 & t02;
+     t08 = x1  | t06;
+     y2  = t02 ^ t05;
+     t10 = t07 ^ t08;
+     t11 = t01 ^ t10;
+     t12 = y2  ^ t11;
+     t13 = x1  & x3;
      y3  =     ~ t10;
-     y1  = t13 ^ t12;  0
-     t16 = t10 | y1;   0
-     t17 = t05 & t16;  0
-     y0  = x2  ^ t17;  0
+     y1  = t13 ^ t12;
+     t16 = t10 | y1;
+     t17 = t05 & t16;
+     y0  = x2  ^ t17;
 */
 #define SBOX1(x0, x1, x2, x3, y0, y1, y2, y3)		\
   do {							\
