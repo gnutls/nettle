@@ -66,6 +66,7 @@
    (GPL), although some comments in the code still say otherwise. You
    are welcome to use Serpent for any application."  */
 
+/* S0 inverse:  13  3 11  0 10  6  5 12  1 14  4  7 15  9  8  2 */
 /* Original single-assignment form:
 
      t01 = x2  ^ x3;
@@ -111,28 +112,47 @@
     y0 ^= x1;							\
   } while (0)
 
+/* S1 inverse:   5  8  2 14 15  6 12  3 11  4  7  9  1 13 10  0 */
+/* Original single-assignment form:
+     t01 = x0  ^ x1;
+     t02 = x1  | x3;
+     t03 = x0  & x2;
+     t04 = x2  ^ t02;
+     t05 = x0  | t04;
+     t06 = t01 & t05;
+     t07 = x3  | t03;
+     t08 = x1  ^ t06;
+     t09 = t07 ^ t06;
+     t10 = t04 | t03;
+     t11 = x3  & t08;
+     y2  =     ~ t09;
+     y1  = t10 ^ t11;
+     t14 = x0  | y2;
+     t15 = t06 ^ y1;
+     y3  = t01 ^ t04;
+     t17 = x2  ^ t15;
+     y0  = t14 ^ t17;
+*/
 #define SBOX1_INVERSE(type, x0, x1, x2, x3, y0, y1, y2, y3) \
-  do { \
-    type t02, t03, t04, t05, t06, t07, t08; \
-    type t09, t10, t11, t14, t15, t17, t01; \
-    t01 = x0  ^ x1; \
-    t02 = x1  | x3; \
-    t03 = x0  & x2; \
-    t04 = x2  ^ t02; \
-    t05 = x0  | t04; \
-    t06 = t01 & t05; \
-    t07 = x3  | t03; \
-    t08 = x1  ^ t06; \
-    t09 = t07 ^ t06; \
-    t10 = t04 | t03; \
-    t11 = x3  & t08; \
-    y2  =     ~ t09; \
-    y1  = t10 ^ t11; \
-    t14 = x0  | y2; \
-    t15 = t06 ^ y1; \
-    y3  = t01 ^ t04; \
-    t17 = x2  ^ t15; \
-    y0  = t14 ^ t17; \
+  do {							    \
+    y1  = x1 | x3;					    \
+    y1 ^= x2;						    \
+    y3  = x0 ^ x1;					    \
+    y0  = x0 | y1;					    \
+    y0 &= y3;						    \
+    x1 ^= y0;						    \
+    y3 ^= y1;						    \
+    x1 &= x3;						    \
+    y2  = x0 & x2;					    \
+    y1 |= y2;						    \
+    y2 |= x3;						    \
+    y2 ^= y0;						    \
+    y2  = ~ y2;						    \
+    y1 ^= x1;						    \
+    y0 ^= y1;						    \
+    y0 ^= x2;						    \
+    x0 |= y2;						    \
+    y0 ^= x0;						    \
   } while (0)
 
 #define SBOX2_INVERSE(type, x0, x1, x2, x3, y0, y1, y2, y3) \
