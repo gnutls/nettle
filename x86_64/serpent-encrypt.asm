@@ -41,6 +41,12 @@ define(<Y1>, <%xmm5>)
 define(<Y2>, <%xmm6>)
 define(<Y3>, <%xmm7>)
 
+define(<MINUS1>, <%xmm8>)
+define(<T0>, <%xmm9>)
+define(<T1>, <%xmm10>)
+define(<T2>, <%xmm11>)
+define(<T3>, <%xmm12>)
+
 C Arguments
 define(<CTX>, <%rdi>)
 define(<N>, <%rsi>)
@@ -48,9 +54,9 @@ define(<DST>, <%rdx>)
 define(<SRC>, <%rcx>)
 
 define(<CNT>, <%r13>)
-define(<TMP>, <%r14d>)	C 32-bit temporary
+define(<TMP32>, <%r14d>)
 
-C Sbox macros. Inputs $1 - $4 (destroyed), outputs $5 - $8
+C SBOX macros. Inputs $1 - $4 (destroyed), outputs $5 - $8
 
 define(<SBOX0>, <
 	mov	$2, $8	C y3  = x1 ^ x2
@@ -160,6 +166,7 @@ define(<SBOX3>, <
 	mov	$1, $5
 	xor	$2, $5
 >)
+
 define(<SBOX4>, <
 	mov	$1, $8
 	or	$2, $8
@@ -272,20 +279,349 @@ define(<LT>, <
 	rol	<$>3, $3
 	xor	$1, $2
 	xor	$3, $2
-	mov	$1, TMP
-	shl	<$>3, TMP
+	mov	$1, TMP32
+	shl	<$>3, TMP32
 	xor	$3, $4
-	xor	TMP, $4
+	xor	TMP32, $4
 	rol	$2
 	rol	<$>7, $4
 	xor	$2, $1
 	xor	$4, $1
-	mov	$2, TMP
-	shl	<$>7, TMP
+	mov	$2, TMP32
+	shl	<$>7, TMP32
 	xor	$4, $3
-	xor	TMP, $3
+	xor	TMP32, $3
 	rol	<$>5, $1
 	rol	<$>22, $3
+>)
+
+C Parallel operation on four blocks at a time.
+
+C pnot instruction is missing. For lack of a spare register, XOR with
+C constant in memory.
+	
+define(<PNOT>, <
+	pxor	MINUS1, $1
+>)
+
+define(<WSBOX0>, <
+	movdqa	$2, $8	C y3  = x1 ^ x2
+	pxor 	$3, $8
+	movdqa	$1, $5	C y0  = x0 | x3
+	por	$4, $5
+	movdqa	$1, $6	C y1  = x0 ^ x1
+	pxor	$2, $6
+	pxor	$5, $8	C y3 ^= y0
+	movdqa	$3, $7	C y2  = x2 | y3
+	por	$8, $7
+	pxor	$4, $1	C x0 ^= x3
+	pand	$4, $7	C y2 &= x3
+	pxor	$3, $4	C x3 ^= x2
+	por	$2, $3	C x2 |= x1
+	movdqa	$6, $5	C y0  = y1 & x2
+	pand	$3, $5
+	pxor	$5, $7	C y2 ^= y0
+	pand	$7, $5	C y0 &= y2
+	pxor	$3, $5	C y0 ^= x2
+	pand	$1, $2	C x1 &= x0
+	pxor	$1, $5	C y0 ^= x0
+	PNOT($5)	C y0  = ~y0
+	movdqa	$5, $6	C y1  = y0 ^ x1
+	pxor	$2, $6
+	pxor	$4, $6	C y1 ^= x3
+>)
+
+define(<WSBOX1>, <
+	movdqa	$1, $6	C y1  = x0 | x3
+	por	$4, $6 
+	movdqa	$3, $7	C y2  = x2 ^ x3
+	pxor	$4, $7
+	movdqa	$2, $5	C y0  = ~x1
+	PNOT($5)
+	movdqa	$1, $8	C y3  = x0 ^ x2
+	pxor	$3, $8
+	por	$1, $5	C y0 |= x0
+	pand	$4, $8	C y3 &= x3
+	movdqa	$6, $1	C x0  = y1 & y2
+	pand	$7, $1
+	por	$2, $8	C y3 |= x1
+	pxor	$5, $7	C y2 ^= y0
+	pxor	$1, $8	C y3 ^= x0
+	movdqa	$6, $1	C x0  = y1 ^ y3
+	pxor	$8, $1
+	pxor	$7, $1	C x0 ^= y2
+	movdqa	$2, $6	C y1  = x1 & x3
+	pand	$4, $6
+	pxor	$1, $6	C y1 ^= x0
+	movdqa	$6, $4	C x3  = y1 | y3
+	por	$8, $4
+	PNOT($8)	C y3  = ~y3
+	pand 	$4, $5	C y0 &= x3
+	pxor	$3, $5	C y0 ^= x2
+>)
+
+define(<WSBOX2>, <
+	movdqa	$1, $7	C y2 = x1 | x2
+	por	$3, $7
+	movdqa	$1, $6
+	pxor	$2, $6
+	movdqa	$4, $8
+	pxor	$7, $8
+	movdqa	$6, $5
+	pxor	$8, $5
+	por	$1, $4
+	pxor	$5, $3
+	movdqa	$2, $1
+	pxor	$3, $1
+	por	$2, $3
+	pand	$7, $1
+	pxor	$3, $8
+	por	$8, $6
+	pxor	$1, $6
+	movdqa	$8, $7
+	pxor	$6, $7
+	pxor	$2, $7
+	PNOT($8)
+	pxor	$4, $7
+>)
+
+define(<WSBOX3>, <
+	movdqa	$1, $6
+	pxor	$3, $6
+	movdqa	$1, $5
+	por	$4, $5
+	movdqa	$1, $8
+	pand	$4, $8
+	pand	$5, $6
+	por	$2, $8
+	movdqa	$1, $7
+	pand	$2, $7
+	por	$3, $7
+	movdqa	$4, $3
+	pxor	$6, $3
+	pxor	$8, $6
+	por	$3, $1
+	pxor	$2, $3
+	pand	$4, $8
+	pxor	$8, $5
+	movdqa	$7, $8
+	pxor	$3, $8
+	pxor	$5, $7
+	por	$8, $4
+	pand	$4, $2
+	movdqa	$1, $5
+	pxor	$2, $5
+>)
+
+define(<WSBOX4>, <
+	movdqa	$1, $8
+	por	$2, $8
+	movdqa	$2, $7
+	por	$3, $7
+	pxor	$1, $7
+	pand	$4, $8
+	movdqa	$2, $5
+	pxor	$4, $5
+	por	$7, $4
+	pand	$4, $1
+	pand	$3, $2
+	pxor	$8, $3
+	pxor	$7, $8
+	por	$2, $7
+	movdqa	$8, $6
+	pand	$5, $6
+	pxor	$6, $7
+	pxor	$5, $6
+	por	$2, $6
+	pxor	$1, $6
+	pand	$4, $5
+	pxor	$3, $5
+	PNOT($5)
+>)
+
+define(<WSBOX5>, <
+	movdqa	$2, $5
+	por	$4, $5
+	pxor	$3, $5
+	movdqa	$2, $3
+	pxor	$4, $3
+	movdqa	$1, $7
+	pxor	$3, $7
+	pand	$3, $1
+	pxor	$1, $5
+	movdqa	$2, $8
+	por	$7, $8
+	por	$5, $2
+	PNOT($5)
+	por	$5, $1
+	pxor	$3, $8
+	pxor	$1, $8
+	movdqa	$4, $6
+	por	$5, $6
+	pxor	$6, $4
+	pxor	$7, $6
+	por	$4, $7
+	pxor	$2, $7
+>)
+
+define(<WSBOX6>, <
+	movdqa	$1, $5
+	pxor	$4, $5
+	movdqa	$1, $6
+	pand	$4, $6
+	movdqa	$1, $7
+	por	$3, $7
+	por	$2, $4
+	pxor	$3, $4
+	pxor	$2, $1
+	movdqa	$2, $8
+	por	$3, $8
+	pxor	$2, $3
+	pand	$5, $8
+	pxor	$3, $6
+	PNOT($6)
+	pand	$6, $5
+	pand	$6, $2
+	pxor	$8, $2
+	pxor	$4, $8
+	pxor	$2, $7
+	PNOT($7)
+	pxor	$7, $5
+	pxor	$1, $5
+>)
+
+define(<WSBOX7>, <
+	movdqa	$1, $5
+	pand	$3, $5
+	movdqa	$2, $8
+	por	$5, $8	C t04
+	pxor	$3, $8
+	movdqa	$4, $6
+	pandn	$1, $6	C t02 implicit
+	pxor	$6, $8
+	movdqa	$3, $6
+	por	$8, $6
+	pxor	$1, $6
+	movdqa	$1, $7
+	pand	$2, $7
+	pxor	$7, $3
+	por	$4, $7
+	pxor	$7, $6
+	movdqa	$2, $7
+	por	$5, $7	C t04
+	pand	$8, $7
+	pxor	$6, $2
+	por	$2, $7
+	pxor	$1, $7
+	pxor	$6, $5
+	PNOT($4)	C t02
+	por	$4, $5
+	pxor	$3, $5
+>)
+
+C WROL(count, w)
+define(<WROL>, <
+	movdqa	$2, T0
+	pslld	<$>$1, $2
+	psrld	<$>eval(32 - $1), T0
+	por	T0, $2
+>)
+
+C WLT(x0, x1, x2, x3)
+define(<WLT>, <
+	WROL(13, $1)
+	WROL(3, $3)
+	pxor	$1, $2
+	pxor	$3, $2
+	movdqa	$1, T0
+	pslld	<$>3, T0
+	pxor	$3, $4
+	pxor	T0, $4
+	WROL(1, $2)
+	WROL(7, $4)
+	pxor	$2, $1
+	pxor	$4, $1
+	movdqa	$2, T0
+	pslld	<$>7, T0
+	pxor	$4, $3
+	pxor	T0, $3
+	WROL(5, $1)
+	WROL(22, $3)
+>)
+
+C Note: Diagrams use little-endian representation, with least
+C significant word to the left.
+	
+C Transpose values from:
+C     +----+----+----+----+
+C x0: | a0 | a1 | a2 | a3 |
+C x1: | b0 | b1 | b2 | b3 |
+C x2: | c0 | c1 | c2 | c3 |
+C x3: | d0 | d1 | d2 | d3 |
+C     +----+----+----+----+
+C To:
+C     +----+----+----+----+
+C x0: | a0 | b0 | c0 | d0 |
+C x1: | a1 | b1 | c1 | d1 |
+C x2: | a2 | b2 | c2 | d2 |
+C x3: | a3 | b3 | c3 | d3 |
+C     +----+----+----+----+
+
+define(<WTRANSPOSE>, <
+	movdqa		$1, T0
+	punpcklqdq	$3, T0			C |a0 a1 c0 c1|
+	punpckhqdq	$3, $1			C |a2 a3 c2 c3|
+	pshufd		<$>0xd8, T0, T0		C |a0 c0 a1 c1|
+	pshufd		<$>0xd8, $1, T1		C |a2 c2 a3 c3|
+	
+	movdqa		$2, T2
+	punpcklqdq	$4, T2			C |b0 b1 d0 11|
+	punpckhqdq	$4, $2			C |b2 b3 d2 d3|
+	pshufd		<$>0xd8, T2, T2		C |b0 d0 b1 d1|
+	pshufd		<$>0xd8, $2, T3		C |b2 d2 b3 d3|
+
+	movdqa		T0, $1
+	punpckldq	T2, $1			C |a0 b0 c0 d0|
+	movdqa		T0, $2
+	punpckhdq	T2, $2			C |a1 b1 c1 d1|
+
+	movdqa		T1, $3
+	punpckldq	T3, $3			C |a2 b2 c2 d2|
+	movdqa		T1, $4
+	punpckhdq	T3, $4			C |a3 b3 c3 d3|
+>)
+
+C Copy subkeys, from:
+C
+C     +----+----+----+----+
+C k0: | s3 | s2 | s1 | s0 |
+C     +----+----+----+----+
+C To:
+C     +----+----+----+----+
+C k0: | s0 | s0 | s0 | s0 |
+C k1: | s1 | s1 | s1 | s1 |
+C k2: | s2 | s2 | s2 | s2 |
+C k3: | s3 | s3 | s3 | s3 |
+C     +----+----+----+----+
+	
+dnl define(<WCOPY>, <
+dnl 	pshufd	$55, $1, $2
+dnl 	pshufd	$aa, $1, $3
+dnl 	pshufd	$ff, $1, $4
+dnl 	pshufd	$00, $1, $1
+dnl >)
+
+C FIXME: Arrange 16-byte alignment, so we can use movaps?
+define(<WKEYXOR>, <
+	movups	$1(CTX, CNT), T0
+	pshufd	<$>0x55, T0, T1
+	pshufd	<$>0xaa, T0, T2
+	pxor	T1, $3
+	pxor	T2, $4
+	pshufd	<$>0xff, T0, T1
+	pshufd	<$>0x00, T0, T0
+	pxor	T1, $5
+	pxor	T0, $2
 >)
 
 	.file "aes-serpent-encrypt.asm"
@@ -311,9 +647,86 @@ PROLOGUE(nettle_serpent_encrypt)
 	C Point at the final subkey.
 	lea	512(CTX), CTX
 
+	cmp	$-64, N
+	ja	.Lwide_end
+
+	pcmpeqd	MINUS1, MINUS1
+
+.Lwblock_loop:
+	movups	(SRC, N), X0
+	movups	16(SRC, N), X1
+	movups	32(SRC, N), X2
+	movups	48(SRC, N), X3
+
+	WTRANSPOSE(X0, X1, X2, X3)
+
+	mov	$-512, CNT
+	jmp	.Lwround_start
+
+	ALIGN(4)
+.Lwround_loop:
+	WLT(X0,X1,X2,X3)
+.Lwround_start:
+	WKEYXOR(, X0,X1,X2,X3)
+	WSBOX0(X0,X1,X2,X3, Y0,Y1,Y2,Y3)
+	WLT(Y0,Y1,Y2,Y3)
+
+	WKEYXOR(16, Y0,Y1,Y2,Y3)
+	WSBOX1(Y0,Y1,Y2,Y3, X0,X1,X2,X3)
+	WLT(X0,X1,X2,X3)
+
+	WKEYXOR(32, X0,X1,X2,X3)
+	WSBOX2(X0,X1,X2,X3, Y0,Y1,Y2,Y3)
+	WLT(Y0,Y1,Y2,Y3)
+
+	WKEYXOR(48, Y0,Y1,Y2,Y3)
+	WSBOX3(Y0,Y1,Y2,Y3, X0,X1,X2,X3)
+	WLT(X0,X1,X2,X3)
+
+	WKEYXOR(64, X0,X1,X2,X3)
+	WSBOX4(X0,X1,X2,X3, Y0,Y1,Y2,Y3)
+	WLT(Y0,Y1,Y2,Y3)
+
+	WKEYXOR(80, Y0,Y1,Y2,Y3)
+	WSBOX5(Y0,Y1,Y2,Y3, X0,X1,X2,X3)
+	WLT(X0,X1,X2,X3)
+
+	WKEYXOR(96, X0,X1,X2,X3)
+	WSBOX6(X0,X1,X2,X3, Y0,Y1,Y2,Y3)
+	WLT(Y0,Y1,Y2,Y3)
+
+	WKEYXOR(112, Y0,Y1,Y2,Y3)
+	WSBOX7(Y0,Y1,Y2,Y3, X0,X1,X2,X3)
+	add	$128, CNT
+	jnz	.Lwround_loop
+
+	C FIXME CNT known to be zero, no index register needed
+	WKEYXOR(, X0,X1,X2,X3)
+
+	WTRANSPOSE(X0,X1,X2,X3)
+
+	movups	X0, (DST, N)
+	movups	X1, 16(DST, N)
+	movups	X2, 32(DST, N)
+	movups	X3, 48(DST, N)
+
+	C FIXME: Adjust N, so we can use just jnc without an extra cmp.
+	add	$64, N
+	jz	.Lend
+
+	cmp	$-64, N
+	jbe	.Lwblock_loop
+
+.Lwide_end:
+
+
 C The single-block loop here is slightly slower than the double-block
 C loop in serpent-encrypt.c.
 
+C FIXME: Should use non-sse2 code only if we have a sngle block left.
+C With two or three blocks, it should be better to do them in
+C parallell.
+	
 .Lblock_loop:
 	movl	(SRC, N), x0
 	movl	4(SRC, N), x1
