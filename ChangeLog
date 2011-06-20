@@ -1,3 +1,11 @@
+2011-06-20  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/serpent-encrypt.asm: Added an SSE2 loop, doing four
+	blocks at a time in parallel.
+
+	* testsuite/serpent-test.c (test_main): Added some more multiple
+	block tests.
+
 2011-06-15  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac (libdir): On 64-bit Linux, we used to assume that
