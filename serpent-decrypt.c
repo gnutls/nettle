@@ -66,33 +66,49 @@
    (GPL), although some comments in the code still say otherwise. You
    are welcome to use Serpent for any application."  */
 
-/* FIXME: Except when used within the key schedule, the inputs are not
-   used after the substitution, and hence we could allow them to be
-   destroyed. Can this freedom be used to optimize the sboxes? */
+/* Original single-assignment form:
 
+     t01 = x2  ^ x3;
+     t02 = x0  | x1;
+     t03 = x1  | x2;
+     t04 = x2  & t01;
+     t05 = t02 ^ t01;
+     t06 = x0  | t04;
+     y2  =     ~ t05;
+     t08 = x1  ^ x3;
+     t09 = t03 & t08;
+     t10 = x3  | y2;
+     y1  = t09 ^ t06;
+     t12 = x0  | t05;
+     t13 = y1  ^ t12;
+     t14 = t03 ^ t10;
+     t15 = x0  ^ x2;
+     y3  = t14 ^ t13;
+     t17 = t05 & t13;
+     t18 = t14 | t17;
+     y0  = t15 ^ t18;
+*/
 #define SBOX0_INVERSE(type, x0, x1, x2, x3, y0, y1, y2, y3)	\
-  do { \
-    type t02, t03, t04, t05, t06, t08, t09, t10;	\
-    type t12, t13, t14, t15, t17, t18, t01; \
-    t01 = x2  ^ x3; \
-    t02 = x0  | x1; \
-    t03 = x1  | x2; \
-    t04 = x2  & t01; \
-    t05 = t02 ^ t01; \
-    t06 = x0  | t04; \
-    y2  =     ~ t05; \
-    t08 = x1  ^ x3; \
-    t09 = t03 & t08; \
-    t10 = x3  | y2; \
-    y1  = t09 ^ t06; \
-    t12 = x0  | t05; \
-    t13 = y1  ^ t12; \
-    t14 = t03 ^ t10; \
-    t15 = x0  ^ x2; \
-    y3  = t14 ^ t13; \
-    t17 = t05 & t13; \
-    t18 = t14 | t17; \
-    y0  = t15 ^ t18; \
+  do {								\
+    y0  = x0 ^ x2;						\
+    y2  = x0 | x1;						\
+    y1  = x2 ^ x3;						\
+    y2 ^= y1;							\
+    y1 &= x2;							\
+    x2 |= x1;							\
+    x1 ^= x3;							\
+    y1 |= x0;							\
+    x1 &= x2;							\
+    y1 ^= x1;							\
+    x0 |= y2;							\
+    x0 ^= y1;							\
+    x1  = y2 & x0;						\
+    y2  = ~ y2;							\
+    x3 |= y2;							\
+    x3 ^= x2;							\
+    y3  = x3 ^ x0;						\
+    x1 |= x3;							\
+    y0 ^= x1;							\
   } while (0)
 
 #define SBOX1_INVERSE(type, x0, x1, x2, x3, y0, y1, y2, y3) \
