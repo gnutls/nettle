@@ -96,7 +96,28 @@
 
 /* FIXME: Arrange for some overlap between inputs and outputs? */
 /* S1: 15 12  2  7  9  0  5 10  1 11 14  8  6 13  3  4 */
-#define SBOX1(x0, x1, x2, x3, y0, y1, y2, y3)	\
+/* Original single-assignment form:
+   
+     t01 = x0  | x3;   0
+     t02 = x2  ^ x3;   0
+     t03 =     ~ x1;   0
+     t04 = x0  ^ x2;   0
+     t05 = x0  | t03;  0
+     t06 = x3  & t04;  0
+     t07 = t01 & t02;  0
+     t08 = x1  | t06;  0
+     y2  = t02 ^ t05;  0
+     t10 = t07 ^ t08;  0
+     t11 = t01 ^ t10;  0
+     t12 = y2  ^ t11;  0
+     t13 = x1  & x3;   0
+     y3  =     ~ t10;
+     y1  = t13 ^ t12;  0
+     t16 = t10 | y1;   0
+     t17 = t05 & t16;  0
+     y0  = x2  ^ t17;  0
+*/
+#define SBOX1(x0, x1, x2, x3, y0, y1, y2, y3)		\
   do {							\
     y1  = x0 | x3;					\
     y2  = x2 ^ x3;					\
@@ -112,7 +133,7 @@
     x0 ^= y2;						\
     y1  = x1 & x3;					\
     y1 ^= x0;						\
-    x3  = y3 | y1;					\
+    x3  = y1 | y3;					\
     y3  = ~ y3;						\
     y0 &= x3;						\
     y0 ^= x2;						\
