@@ -2,6 +2,9 @@
 
 	* serpent-decrypt.c (SBOX3_INVERSE): Eliminated temporaries.
 	(SBOX4_INVERSE): Likewise.
+	(SBOX5_INVERSE): Likewise.
+	(SBOX6_INVERSE): Likewise.
+	(SBOX7_INVERSE): Likewise.
 
 2011-06-20  Niels Möller  <nisse@lysator.liu.se>
 
