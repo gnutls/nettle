@@ -1,4 +1,14 @@
+2011-06-21  Niels Möller  <nisse@lysator.liu.se>
+
+	* serpent-decrypt.c (SBOX3_INVERSE): Eliminated temporaries.
+	(SBOX4_INVERSE): Likewise.
+
 2011-06-20  Niels Möller  <nisse@lysator.liu.se>
+
+	* serpent-decrypt.c: Renamed arguments in sbox macros.
+	(SBOX0_INVERSE): Eliminated temporaries.
+	(SBOX1_INVERSE): Likewise.
+	(SBOX2_INVERSE): Likewise.
 
 	* x86_64/serpent-encrypt.asm: Added an SSE2 loop, doing four
 	blocks at a time in parallel.
