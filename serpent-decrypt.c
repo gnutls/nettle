@@ -388,27 +388,25 @@
      y2  = t14 ^ t16;
 */
 #define SBOX7_INVERSE(type, x0, x1, x2, x3, y0, y1, y2, y3) \
-  do { \
-    type t02, t03, t04, t06, t07, t08, t09; \
-    type t10, t11, t13, t14, t15, t16, t01; \
-    t01 = x0  & x1; \
-    t02 = x0  | x1; \
-    t03 = x2  | t01; \
-    t04 = x3  & t02; \
-    y3  = t03 ^ t04; \
-    t06 = x1  ^ t04; \
-    t07 = x3  ^ y3; \
-    t08 =     ~ t07; \
-    t09 = t06 | t08; \
-    t10 = x1  ^ x3; \
-    t11 = x0  | x3; \
-    y1  = x0  ^ t09; \
-    t13 = x2  ^ t06; \
-    t14 = x2  & t11; \
-    t15 = x3  | y1; \
-    t16 = t01 | t10; \
-    y0  = t13 ^ t15; \
-    y2  = t14 ^ t16; \
+  do {							    \
+    y3  = x0 & x1;					    \
+    y2  = x1 ^ x3;					    \
+    y2 |= y3;						    \
+    y1  = x0 | x3;					    \
+    y1 &= x2;						    \
+    y2 ^= y1;						    \
+    y3 |= x2;						    \
+    y0  = x0 | x1;					    \
+    y0 &= x3;						    \
+    y3 ^= y0;						    \
+    y0 ^= x1;						    \
+    y1  = x3 ^ y3;					    \
+    y1  = ~ y1;						    \
+    y1 |= y0;						    \
+    y0 ^= x2;						    \
+    y1 ^= x0;						    \
+    x3 |= y1;						    \
+    y0 ^= x3;						    \
   } while (0)
 
 /* In-place inverse linear transformation.  */
