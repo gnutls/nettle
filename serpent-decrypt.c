@@ -198,52 +198,108 @@
     y2 ^= x2;							\
   } while (0)
 
+/* S3 inverse:   0  9 10  7 11 14  6 13  3  5 12  2  4  8 15  1 */
+/* Original single-assignment form:
+     t01 = x2  | x3;
+     t02 = x0  | x3;
+     t03 = x2  ^ t02;
+     t04 = x1  ^ t02;
+     t05 = x0  ^ x3;
+     t06 = t04 & t03;
+     t07 = x1  & t01;
+     y2  = t05 ^ t06;
+     t09 = x0  ^ t03;
+     y0  = t07 ^ t03;
+     t11 = y0  | t05;
+     t12 = t09 & t11;
+     t13 = x0  & y2;
+     t14 = t01 ^ t05;
+     y1  = x1  ^ t12;
+     t16 = x1  | t13;
+     y3  = t14 ^ t16;
+*/
 #define SBOX3_INVERSE(type, x0, x1, x2, x3, y0, y1, y2, y3) \
-  do { \
-    type t02, t03, t04, t05, t06, t07, t09; \
-    type t11, t12, t13, t14, t16, t01; \
-    t01 = x2  | x3; \
-    t02 = x0  | x3; \
-    t03 = x2  ^ t02; \
-    t04 = x1  ^ t02; \
-    t05 = x0  ^ x3; \
-    t06 = t04 & t03; \
-    t07 = x1  & t01; \
-    y2  = t05 ^ t06; \
-    t09 = x0  ^ t03; \
-    y0  = t07 ^ t03; \
-    t11 = y0  | t05; \
-    t12 = t09 & t11; \
-    t13 = x0  & y2; \
-    t14 = t01 ^ t05; \
-    y1  = x1  ^ t12; \
-    t16 = x1  | t13; \
-    y3  = t14 ^ t16; \
+  do {							    \
+    y3  = x2 | x3;					    \
+    y0  = x1 & y3;					    \
+    y2  = x0 | x3;					    \
+    y1  = x2 ^ y2;					    \
+    y0 ^= y1;						    \
+    x3 ^= x0;						    \
+    y3 ^= x3;						    \
+    y2 ^= x1;						    \
+    y2 &= y1;						    \
+    y2 ^= x3;						    \
+    y1 ^= x0;						    \
+    x3 |= y0;						    \
+    y1 &= x3;						    \
+    y1 ^= x1;						    \
+    x0 &= y2;						    \
+    x0 |= x1;						    \
+    y3 ^= x0;						    \
   } while (0)
 
+/* S4 inverse:   5  0  8  3 10  9  7 14  2 12 11  6  4 15 13  1 */
+/* Original single-assignment form:
+     t01 = x1  | x3;
+     t02 = x2  | x3;
+     t03 = x0  & t01;
+     t04 = x1  ^ t02;
+     t05 = x2  ^ x3;
+     t06 =     ~ t03;
+     t07 = x0  & t04;
+     y1  = t05 ^ t07;
+     t09 = y1  | t06;
+     t10 = x0  ^ t07;
+     t11 = t01 ^ t09;
+     t12 = x3  ^ t04;
+     t13 = x2  | t10;
+     y3  = t03 ^ t12;
+     t15 = x0  ^ t04;
+     y2  = t11 ^ t13;
+     y0  = t15 ^ t09;
+*/
 #define SBOX4_INVERSE(type, x0, x1, x2, x3, y0, y1, y2, y3) \
-  do { \
-    type t02, t03, t04, t05, t06, t07, t09; \
-    type t10, t11, t12, t13, t15, t01; \
-    t01 = x1  | x3; \
-    t02 = x2  | x3; \
-    t03 = x0  & t01; \
-    t04 = x1  ^ t02; \
-    t05 = x2  ^ x3; \
-    t06 =     ~ t03; \
-    t07 = x0  & t04; \
-    y1  = t05 ^ t07; \
-    t09 = y1  | t06; \
-    t10 = x0  ^ t07; \
-    t11 = t01 ^ t09; \
-    t12 = x3  ^ t04; \
-    t13 = x2  | t10; \
-    y3  = t03 ^ t12; \
-    t15 = x0  ^ t04; \
-    y2  = t11 ^ t13; \
-    y0  = t15 ^ t09; \
+  do {							    \
+    y1  = x2 ^ x3;					    \
+    y2  = x2 | x3;					    \
+    y2 ^= x1;						    \
+    x1 |= x3;						    \
+    y0  = x0 ^ y2;					    \
+    x3 ^= y2;						    \
+    y2 &= x0;						    \
+    y1 ^= y2;						    \
+    y2 ^= x0;						    \
+    y2 |= x2;						    \
+    x0 &=  x1;						    \
+    y3  = x0 ^ x3;					    \
+    x0  = ~ x0;						    \
+    x0 |= y1;						    \
+    y0 ^= x0;						    \
+    x0 ^= x1;						    \
+    y2 ^= x0;						    \
   } while (0)
 
+/* S5 inverse:   8 15  2  9  4  1 13 14 11  6  5  3  7 12 10  0 */
+/* Original single-assignment form:
+     t01 = x0  & x3;
+     t02 = x2  ^ t01;
+     t03 = x0  ^ x3;
+     t04 = x1  & t02;
+     t05 = x0  & x2;
+     y0  = t03 ^ t04;
+     t07 = x0  & y0;
+     t08 = t01 ^ y0;
+     t09 = x1  | t05;
+     t10 =     ~ x1;
+     y1  = t08 ^ t09;
+     t12 = t10 | t07;
+     t13 = y0  | y1;
+     y3  = t02 ^ t12;
+     t15 = t02 ^ t13;
+     t16 = x1  ^ x3;
+     y2  = t16 ^ t15;
+*/
 #define SBOX5_INVERSE(type, x0, x1, x2, x3, y0, y1, y2, y3) \
   do { \
     type t02, t03, t04, t05, t07, t08, t09; \
@@ -267,6 +323,28 @@
     y2  = t16 ^ t15; \
   } while (0)
 
+/* S6 inverse:  15 10  1 13  5  3  6  0  4  9 14  7  2 12  8 11 */
+/* Original single-assignment form:
+     t01 = x0  ^ x2;
+     t02 =     ~ x2;
+     t03 = x1  & t01;
+     t04 = x1  | t02;
+     t05 = x3  | t03;
+     t06 = x1  ^ x3;
+     t07 = x0  & t04;
+     t08 = x0  | t02;
+     t09 = t07 ^ t05;
+     y1  = t06 ^ t08;
+     y0  =     ~ t09;
+     t12 = x1  & y0;
+     t13 = t01 & t05;
+     t14 = t01 ^ t12;
+     t15 = t07 ^ t13;
+     t16 = x3  | t02;
+     t17 = x0  ^ y1;
+     y3  = t17 ^ t15;
+     y2  = t16 ^ t14;
+ */
 #define SBOX6_INVERSE(type, x0, x1, x2, x3, y0, y1, y2, y3) \
   do { \
     type t02, t03, t04, t05, t06, t07, t08, t09; \
@@ -292,6 +370,27 @@
     y2  = t16 ^ t14; \
   } while (0)
 
+/* S7 inverse:   3  0  6 13  9 14 15  8  5 12 11  7 10  1  4  2 */
+/* Original single-assignment form:
+     t01 = x0  & x1;
+     t02 = x0  | x1;
+     t03 = x2  | t01;
+     t04 = x3  & t02;
+     y3  = t03 ^ t04;
+     t06 = x1  ^ t04;
+     t07 = x3  ^ y3;
+     t08 =     ~ t07;
+     t09 = t06 | t08;
+     t10 = x1  ^ x3;
+     t11 = x0  | x3;
+     y1  = x0  ^ t09;
+     t13 = x2  ^ t06;
+     t14 = x2  & t11;
+     t15 = x3  | y1;
+     t16 = t01 | t10;
+     y0  = t13 ^ t15;
+     y2  = t14 ^ t16;
+*/
 #define SBOX7_INVERSE(type, x0, x1, x2, x3, y0, y1, y2, y3) \
   do { \
     type t02, t03, t04, t06, t07, t08, t09; \
