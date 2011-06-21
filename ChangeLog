@@ -5,6 +5,7 @@
 	(SBOX5_INVERSE): Likewise.
 	(SBOX6_INVERSE): Likewise.
 	(SBOX7_INVERSE): Likewise.
+	(All SBOX_INVERSE-macros): Deleted type argument, and updated users.
 
 2011-06-20  Niels Möller  <nisse@lysator.liu.se>
 

@@ -89,7 +89,7 @@
      t18 = t14 | t17;
      y0  = t15 ^ t18;
 */
-#define SBOX0_INVERSE(type, x0, x1, x2, x3, y0, y1, y2, y3)	\
+#define SBOX0_INVERSE(x0, x1, x2, x3, y0, y1, y2, y3)		\
   do {								\
     y0  = x0 ^ x2;						\
     y2  = x0 | x1;						\
@@ -133,7 +133,7 @@
      t17 = x2  ^ t15;
      y0  = t14 ^ t17;
 */
-#define SBOX1_INVERSE(type, x0, x1, x2, x3, y0, y1, y2, y3) \
+#define SBOX1_INVERSE(x0, x1, x2, x3, y0, y1, y2, y3)	    \
   do {							    \
     y1  = x1 | x3;					    \
     y1 ^= x2;						    \
@@ -176,7 +176,7 @@
      t17 = t10 ^ t15;
      y2  = t16 ^ t17;
 */
-#define SBOX2_INVERSE(type, x0, x1, x2, x3, y0, y1, y2, y3)	\
+#define SBOX2_INVERSE(x0, x1, x2, x3, y0, y1, y2, y3)		\
   do {								\
     y0  = x0 ^ x3;						\
     y2  = x2 ^ x3;						\
@@ -218,7 +218,7 @@
      t16 = x1  | t13;
      y3  = t14 ^ t16;
 */
-#define SBOX3_INVERSE(type, x0, x1, x2, x3, y0, y1, y2, y3) \
+#define SBOX3_INVERSE(x0, x1, x2, x3, y0, y1, y2, y3)	    \
   do {							    \
     y3  = x2 | x3;					    \
     y0  = x1 & y3;					    \
@@ -259,7 +259,7 @@
      y2  = t11 ^ t13;
      y0  = t15 ^ t09;
 */
-#define SBOX4_INVERSE(type, x0, x1, x2, x3, y0, y1, y2, y3) \
+#define SBOX4_INVERSE(x0, x1, x2, x3, y0, y1, y2, y3)	    \
   do {							    \
     y1  = x2 ^ x3;					    \
     y2  = x2 | x3;					    \
@@ -300,7 +300,7 @@
      t16 = x1  ^ x3;
      y2  = t16 ^ t15;
 */
-#define SBOX5_INVERSE(type, x0, x1, x2, x3, y0, y1, y2, y3) \
+#define SBOX5_INVERSE(x0, x1, x2, x3, y0, y1, y2, y3)	    \
   do {							    \
     y1  = x0 & x3;					    \
     y3  = x2 ^ y1;					    \
@@ -343,7 +343,7 @@
      y3  = t17 ^ t15;
      y2  = t16 ^ t14;
  */
-#define SBOX6_INVERSE(type, x0, x1, x2, x3, y0, y1, y2, y3) \
+#define SBOX6_INVERSE(x0, x1, x2, x3, y0, y1, y2, y3)	    \
   do {							    \
     y2  = x0 ^ x2;					    \
     x2  = ~ x2;						    \
@@ -387,7 +387,7 @@
      y0  = t13 ^ t15;
      y2  = t14 ^ t16;
 */
-#define SBOX7_INVERSE(type, x0, x1, x2, x3, y0, y1, y2, y3) \
+#define SBOX7_INVERSE(x0, x1, x2, x3, y0, y1, y2, y3)	    \
   do {							    \
     y3  = x0 & x1;					    \
     y2  = x1 ^ x3;					    \
@@ -429,7 +429,7 @@
 #define ROUND_INVERSE(which, subkey, x0,x1,x2,x3, y0,y1,y2,y3) \
   do {							       \
     LINEAR_TRANSFORMATION_INVERSE (x0,x1,x2,x3);	       \
-    SBOX##which##_INVERSE(uint32_t, x0,x1,x2,x3, y0,y1,y2,y3);	       \
+    SBOX##which##_INVERSE(x0,x1,x2,x3, y0,y1,y2,y3);	       \
     KEYXOR(y0,y1,y2,y3, subkey);			       \
   } while (0)
 
@@ -453,7 +453,7 @@
 #define ROUND64_INVERSE(which, subkey, x0,x1,x2,x3, y0,y1,y2,y3) \
   do {							       \
     LINEAR_TRANSFORMATION64_INVERSE (x0,x1,x2,x3);	       \
-    SBOX##which##_INVERSE(uint64_t, x0,x1,x2,x3, y0,y1,y2,y3);	       \
+    SBOX##which##_INVERSE(x0,x1,x2,x3, y0,y1,y2,y3);	       \
     KEYXOR64(y0,y1,y2,y3, subkey);			       \
   } while (0)
 
@@ -481,7 +481,7 @@ serpent_decrypt (const struct serpent_ctx *ctx,
 
       /* Inverse of special round */
       KEYXOR (x0,x1,x2,x3, ctx->keys[32]);
-      SBOX7_INVERSE (uint32_t, x0,x1,x2,x3, y0,y1,y2,y3);
+      SBOX7_INVERSE (x0,x1,x2,x3, y0,y1,y2,y3);
       KEYXOR (y0,y1,y2,y3, ctx->keys[31]);
 
       k = 24;
@@ -527,7 +527,7 @@ serpent_decrypt (const struct serpent_ctx *ctx,
 
       /* Inverse of special round */
       KEYXOR64 (x0,x1,x2,x3, ctx->keys[32]);
-      SBOX7_INVERSE (uint64_t, x0,x1,x2,x3, y0,y1,y2,y3);
+      SBOX7_INVERSE (x0,x1,x2,x3, y0,y1,y2,y3);
       KEYXOR64 (y0,y1,y2,y3, ctx->keys[31]);
 
       k = 24;
