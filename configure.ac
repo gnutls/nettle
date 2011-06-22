@@ -174,9 +174,9 @@ if test "x$ABI" != xstandard ; then
           AC_MSG_WARN([Cross compiling for linux. Can't guess if libraries go in lib${ABI} or lib.]); dnl '
 	else
 	  # The dash builtin pwd tries to be "helpful" and remember
-	  # symlink names. Use /bin/pwd instead.
+	  # symlink names. Use -P option, and hope it's portable enough.
 	  test -d /usr/lib${ABI} \
-	    && (cd /usr/lib${ABI} && /bin/pwd | grep >/dev/null "/lib${ABI}"'$') \
+	    && (cd /usr/lib${ABI} && pwd -P | grep >/dev/null "/lib${ABI}"'$') \
 	    && libdir='${exec_prefix}/'"lib${ABI}"
 	fi
 	;;
@@ -231,7 +231,8 @@ if test "x$enable_assembler" = xyes ; then
     found=no
     for tmp_f in aes-encrypt-internal.asm aes-decrypt-internal.asm \
 		 arcfour-crypt.asm camellia-crypt-internal.asm \
-		 md5-compress.asm memxor.asm sha1-compress.asm machine.m4; do
+		 md5-compress.asm memxor.asm serpent-encrypt.asm \
+		 sha1-compress.asm machine.m4; do
 #       echo "Looking for $srcdir/$asm_path/$tmp_f"
       if test -f "$srcdir/$asm_path/$tmp_f"; then
 #        echo found
