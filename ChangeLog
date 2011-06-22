@@ -1,3 +1,8 @@
+2011-06-22  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Use pwd -P when examining lib directories.
+	Link in serpent-encrypt.asm, if found.
+
 2011-06-21  Niels Möller  <nisse@lysator.liu.se>
 
 	* serpent-decrypt.c (SBOX3_INVERSE): Eliminated temporaries.
@@ -43,7 +48,7 @@
 	(SBOX7): Likewise.
 	(All SBOX-macros): Deleted type argument, and updated users.
 
-	* configure.ac: Display summary at the end oc configure..
+	* configure.ac: Display summary at the end of configure..
 	(asm_path): Set only if enable_assember is yes.
 
 2011-06-10  Niels Möller  <nisse@lysator.liu.se>
