@@ -624,7 +624,7 @@ define(<WKEYXOR>, <
 	pxor	T0, $2
 >)
 
-	.file "aes-serpent-encrypt.asm"
+	.file "serpent-encrypt.asm"
 	
 	C serpent_encrypt(struct serpent_context *ctx, 
 	C	          unsigned length, uint8_t *dst,
