@@ -7,7 +7,7 @@
 @syncodeindex fn cp
 @c %**end of header
 
-@set UPDATED-FOR 2.1
+@set UPDATED-FOR 2.2
 @set AUTHOR Niels Möller
 
 @copying
@@ -127,14 +127,10 @@ put it to use.
 @comment  node-name,  next,  previous,  up
 @chapter Copyright
 
-Nettle is distributed under the GNU General Public License (GPL) (see
-the file COPYING for details). However, most of the individual files
-are dual licensed under less restrictive licenses like the GNU Lesser
-General Public License (LGPL), or are in the public domain. This means
-that if you don't use the parts of nettle that are GPL-only, you have
-the option to use the Nettle library just as if it were licensed under
-the LGPL. To find the current status of particular files, you have to
-read the copyright notices at the top of the files.
+Nettle is distributed under the GNU Lesser General Public License
+(LGPL), see the file COPYING.LIB for details. A few of the individual
+files are in the public domain. To find the current status of particular
+files, you have to read the copyright notices at the top of the files.
 
 This manual is in the public domain. You may freely copy it in whole or
 in part, e.g., into documentation of programs that build on Nettle.
@@ -166,8 +162,8 @@ Josefsson and Niels Möller. Released under the LGPL.
 
 @item CAMELLIA
 The C implementation is by Nippon Telegraph and Telephone Corporation
-(NTT), heavily modified by @value{AUTHOR}. Assembler for x86 by
-@value{AUTHOR}. Released under the LGPL.
+(NTT), heavily modified by @value{AUTHOR}. Assembler for x86 and x86_64
+by @value{AUTHOR}. Released under the LGPL.
 
 @item CAST128
 The implementation of the CAST128 cipher is written by Steve Reid.
@@ -192,9 +188,10 @@ It has been hacked some more by Andrew Kuchling and @value{AUTHOR}.
 Released into the public domain.
 
 @item SERPENT
-The implementation of the SERPENT cipher is written by Ross Anderson,
-Eli Biham, and Lars Knudsen, adapted to LSH by Rafael Sevilla, and to
-Nettle by @value{AUTHOR}. Released under the GPL.
+The implementation of the SERPENT is based on the code in libgcrypt,
+copyright owned by the Free Software Foundation. Adapted to Nettle by
+Simon Josefsson and heavily modified by Niels Möller. Assembly for
+x86_64 by Niels Möller. Released under the LGPL.
 
 @item SHA1
 The C implementation of the SHA1 message digest is written by Peter
