@@ -1,17 +1,52 @@
 NEWS for the 2.2 release
 
+	Licensing change:
+     	
 	* Relicensed as LGPL v2.1 or later.
 
+	* Replaced blowfish and serpent implementation. New code is
+          based on the LGPLed code in libgcrypt.
+
+	New features:
+
 	* Support for Galois/Counter Mode (GCM).
+
+	* New interface for enumerating (most) available algorithms,
+	  contributed by Daniel Kahn Gillmor.
+
+	* New tool nettle-hash. Can generate hash digests using any
+	  supported hash function, with output compatible to programs
+	  like md5sum. Checking (like md5sum -c) not yet implemented.
+
+	Bug fixes:
+
+	* The old serpent code had a byte order bug (introduced by
+	  yours truly about ten years ago). New serpent implementation
+	  does not interoperate with earlier versions of nettle.
+
+	* Fixed ABI-dependent libdir default for linux-based systems
+	  which do not follow the conventions Linux File Hierarchy
+	  Standard, e.g., Debian GNU/linux.
+
+	Optimizations:
 	
+	* x86_64 implemention of serpent_encrypt (serpent_decrypt not
+          yet done).
+
+	* x86_64 implemention of camellia.
+
 	* Faster memxor.
+
+	Miscellaneous:
 
 	* In command line tools, don't use -? for requesting help,
           since it's a bit dangerous without shell quoting. Use long
           option --help instead.
 
-	* Interface cleanup. 
-	
+	The shared library names are libnettle.so.4.1 and
+	libhogweed.so.2.1, with sonames libnettle.so.4 and
+	libhogweed.so.2.
+
 NEWS for the 2.1 release
 
 	*Important*: this release breaks source and binary
