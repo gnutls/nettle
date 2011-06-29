@@ -43,6 +43,7 @@
 #include "blowfish.h"
 #include "cast128.h"
 #include "cbc.h"
+#include "ctr.h"
 #include "des.h"
 #include "gcm.h"
 #include "memxor.h"
@@ -267,6 +268,15 @@ bench_cbc_decrypt(void *arg)
   cbc_decrypt(info->ctx, info->crypt,
 	      info->block_size, info->iv,
 	      BENCH_BLOCK, info->data, info->data);
+}
+
+static void
+bench_ctr(void *arg)
+{
+  struct bench_cbc_info *info = arg;
+  ctr_crypt(info->ctx, info->crypt,
+	    info->block_size, info->iv,
+	    BENCH_BLOCK, info->data, info->data);
 }
 
 /* Set data[i] = floor(sqrt(i)) */
@@ -499,6 +509,24 @@ time_cipher(const struct nettle_cipher *cipher)
 	display(cipher->name, "CBC decrypt", cipher->block_size,
 		time_function(bench_cbc_decrypt, &info));
       }
+
+      /* Do CTR mode */
+      {
+        struct bench_cbc_info info;
+	info.ctx = ctx;
+	info.crypt = cipher->encrypt;
+	info.data = data;
+	info.block_size = cipher->block_size;
+	info.iv = iv;
+    
+        memset(iv, 0, sizeof(iv));
+    
+        cipher->set_encrypt_key(ctx, cipher->key_size, key);
+
+	display(cipher->name, "CTR", cipher->block_size,
+		time_function(bench_ctr, &info));	
+      }
+      
       free(iv);
     }
   free(ctx);
