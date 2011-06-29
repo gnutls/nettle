@@ -280,7 +280,16 @@ test_cipher_ctr(const struct nettle_cipher *cipher,
 	    length, data, cleartext);
 
   if (!MEMEQ(length, data, ciphertext))
-    FAIL();
+    {
+      fprintf(stderr, "CTR encrypt failed:\nInput:");
+      print_hex(length, cleartext);
+      fprintf(stderr, "\nOutput: ");
+      print_hex(length, data);
+      fprintf(stderr, "\nExpected:");
+      print_hex(length, ciphertext);
+      fprintf(stderr, "\n");
+      FAIL();
+    }
 
   memcpy(ctr, ictr, cipher->block_size);
 
@@ -289,7 +298,16 @@ test_cipher_ctr(const struct nettle_cipher *cipher,
 	    length, data, data);
 
   if (!MEMEQ(length, data, cleartext))
-    FAIL();
+    {
+      fprintf(stderr, "CTR decrypt failed:\nInput:");
+      print_hex(length, ciphertext);
+      fprintf(stderr, "\nOutput: ");
+      print_hex(length, data);
+      fprintf(stderr, "\nExpected:");
+      print_hex(length, cleartext);
+      fprintf(stderr, "\n");
+      FAIL();
+    }
 
   free(ctx);
   free(data);
