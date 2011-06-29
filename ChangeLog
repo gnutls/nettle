@@ -1,5 +1,8 @@
 2011-06-29  Niels Möller  <nisse@lysator.liu.se>
 
+	* x86_64/serpent-decrypt.asm: Wrote main (32-bit) loop.
+	(SBOX0I, SBOX1I, SBOX7I): Fixed bugs.
+
 	* nettle.texinfo (Copyright): Updated for license change to
 	LGPLv2+. Updated copyriight info on serpent.
 
