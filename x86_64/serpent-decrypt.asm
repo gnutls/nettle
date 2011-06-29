@@ -75,7 +75,7 @@ define(<SBOX0I>, <
 	or	$7, $1
 	xor	$6, $1
 	mov	$7, $2
-	xor	$1, $2
+	and	$1, $2
 	not	$7
 	or	$7, $4
 	xor	$3, $4
@@ -88,7 +88,7 @@ define(<SBOX0I>, <
 define(<SBOX1I>, <
 	mov	$2, $6
 	or	$4, $6
-	xor	$6, $3
+	xor	$3, $6
 	mov	$1, $8
 	xor	$2, $8
 	mov	$1, $5
@@ -245,7 +245,7 @@ define(<SBOX7I>, <
 	or	$8, $7
 	mov	$1, $6
 	or	$4, $6
-	and	$4, $6
+	and	$3, $6
 	xor	$6, $7
 	or	$3, $8
 	mov	$1, $5
@@ -310,7 +310,76 @@ PROLOGUE(nettle_serpent_decrypt)
 	movl	8(SRC, N), x2
 	movl	12(SRC, N), x3
 
-	
+	xor	512(CTX), x0
+	xor	516(CTX), x1
+	xor	520(CTX), x2
+	xor	524(CTX), x3
+
+	mov	$384, CNT
+	jmp	.Lround_start
+
+	ALIGN(4)
+.Lround_loop:
+	LTI(x0,x1,x2,x3)
+.Lround_start:
+	SBOX7I(x0,x1,x2,x3, y0,y1,y2,y3)
+	xor	112(CTX, CNT), y0
+	xor	116(CTX, CNT), y1
+	xor	120(CTX, CNT), y2
+	xor	124(CTX, CNT), y3
+
+	LTI(y0,y1,y2,y3)
+	SBOX6I(y0,y1,y2,y3, x0,x1,x2,x3)
+	xor	 96(CTX, CNT), x0
+	xor	100(CTX, CNT), x1
+	xor	104(CTX, CNT), x2
+	xor	108(CTX, CNT), x3
+
+	LTI(x0,x1,x2,x3)
+	SBOX5I(x0,x1,x2,x3, y0,y1,y2,y3)
+	xor	80(CTX, CNT), y0
+	xor	84(CTX, CNT), y1
+	xor	88(CTX, CNT), y2
+	xor	92(CTX, CNT), y3
+
+	LTI(y0,y1,y2,y3)
+	SBOX4I(y0,y1,y2,y3, x0,x1,x2,x3)
+	xor	64(CTX, CNT), x0
+	xor	68(CTX, CNT), x1
+	xor	72(CTX, CNT), x2
+	xor	76(CTX, CNT), x3
+
+	LTI(x0,x1,x2,x3)
+	SBOX3I(x0,x1,x2,x3, y0,y1,y2,y3)
+	xor	48(CTX, CNT), y0
+	xor	52(CTX, CNT), y1
+	xor	56(CTX, CNT), y2
+	xor	60(CTX, CNT), y3
+
+	LTI(y0,y1,y2,y3)
+	SBOX2I(y0,y1,y2,y3, x0,x1,x2,x3)
+	xor	32(CTX, CNT), x0
+	xor	36(CTX, CNT), x1
+	xor	40(CTX, CNT), x2
+	xor	44(CTX, CNT), x3
+
+	C FIXME: Goes wrong in this round.
+	LTI(x0,x1,x2,x3)
+	SBOX1I(x0,x1,x2,x3, y0,y1,y2,y3)
+	xor	16(CTX, CNT), y0
+	xor	20(CTX, CNT), y1
+	xor	24(CTX, CNT), y2
+	xor	28(CTX, CNT), y3
+
+	LTI(y0,y1,y2,y3)
+	SBOX0I(y0,y1,y2,y3, x0,x1,x2,x3)
+	xor	  (CTX, CNT), x0
+	xor	 4(CTX, CNT), x1
+	xor	 8(CTX, CNT), x2
+	xor	12(CTX, CNT), x3
+	sub	$128, CNT
+	jnc	.Lround_loop
+
 	movl	x0, (DST, N)
 	movl	x1, 4(DST, N)
 	movl	x2, 8(DST, N)
