@@ -1,3 +1,9 @@
+2011-06-29  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac (LIBNETTLE_MINOR): Updated library version number
+	to 4.1.
+	(LIBHOGWEED_MINOR): And to 2.1.
+
 2011-06-22  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Use pwd -P when examining lib directories.
