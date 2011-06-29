@@ -357,7 +357,7 @@
 */
 /* It appears impossible to do this with only 8 registers. We
    recompute t02, and t04 (if we have spare registers, hopefully the
-   compiler can recognize it them as common subexpressions). */
+   compiler can recognize them as common subexpressions). */
 #define SBOX7(x0, x1, x2, x3, y0, y1, y2, y3)	\
   do {							\
     y0  = x0 & x2;					\
