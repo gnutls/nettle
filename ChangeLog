@@ -1,5 +1,20 @@
 2011-06-29  Niels Möller  <nisse@lysator.liu.se>
 
+	* nettle.texinfo (Copyright): Updated for license change to
+	LGPLv2+. Updated copyriight info on serpent.
+
+	* NEWS: Updated information for nettle-2.2.
+
+	* x86_64/serpent-decrypt.asm: New file.
+
+	* x86_64/serpent-encrypt.asm: Fixed .file pseudo op.
+
+	* testsuite/testutils.c (test_cipher_ctr): Display more info on
+	failure.
+
+	* examples/nettle-benchmark.c (bench_ctr): New function.
+	(time_cipher): Also benchmark CTR mode.
+
 	* configure.ac (LIBNETTLE_MINOR): Updated library version number
 	to 4.1.
 	(LIBHOGWEED_MINOR): And to 2.1.
