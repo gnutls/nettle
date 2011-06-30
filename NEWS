@@ -2,7 +2,7 @@ NEWS for the 2.2 release
 
 	Licensing change:
      	
-	* Relicensed as LGPL v2.1 or later.
+	* Relicensed as LGPL v2.1 or later (user's option).
 
 	* Replaced blowfish and serpent implementation. New code is
           based on the LGPLed code in libgcrypt.
@@ -15,8 +15,9 @@ NEWS for the 2.2 release
 	  contributed by Daniel Kahn Gillmor.
 
 	* New tool nettle-hash. Can generate hash digests using any
-	  supported hash function, with output compatible to programs
-	  like md5sum. Checking (like md5sum -c) not yet implemented.
+	  supported hash function, with output compatible with md5sum
+	  and friends from GNU coreutils. Checking (like md5sum -c)
+	  not yet implemented.
 
 	Bug fixes:
 
@@ -24,14 +25,13 @@ NEWS for the 2.2 release
 	  yours truly about ten years ago). New serpent implementation
 	  does not interoperate with earlier versions of nettle.
 
-	* Fixed ABI-dependent libdir default for linux-based systems
-	  which do not follow the conventions Linux File Hierarchy
-	  Standard, e.g., Debian GNU/linux.
+	* Fixed ABI-dependent libdir default for Linux-based systems
+	  which do not follow the Linux File Hierarchy Standard, e.g.,
+	  Debian GNU/Linux.
 
 	Optimizations:
 	
-	* x86_64 implemention of serpent_encrypt (serpent_decrypt not
-          yet done).
+	* x86_64 implemention of serpent.
 
 	* x86_64 implemention of camellia.
 
@@ -39,9 +39,9 @@ NEWS for the 2.2 release
 
 	Miscellaneous:
 
-	* In command line tools, don't use -? for requesting help,
-          since it's a bit dangerous without shell quoting. Use long
-          option --help instead.
+	* In command line tools, no longer support -? for requesting
+          help, since using it without shell quoting is a dangerous
+          habit. Use long option --help instead.
 
 	The shared library names are libnettle.so.4.1 and
 	libhogweed.so.2.1, with sonames libnettle.so.4 and
