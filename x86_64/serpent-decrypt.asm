@@ -16,7 +16,9 @@ C You should have received a copy of the GNU Lesser General Public License
 C along with the nettle library; see the file COPYING.LIB.  If not, write to
 C the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 C MA 02111-1307, USA.
-	
+
+include_src(<x86_64/serpent.m4>)
+
 C Register usage:
 
 C Single block serpent state, two copies
@@ -284,6 +286,236 @@ define(<LTI>, <
 	rol	<$>19, $1
 >)
 
+define(<PNOT>, <
+	pxor	MINUS1, $1
+>)
+
+define(<WSBOX0I>, <
+	movdqa	$1, $5
+	pxor	$3, $5
+	movdqa	$1, $7
+	por	$2, $7
+	movdqa	$3, $6
+	pxor	$4, $6
+	pxor	$6, $7
+	pand	$3, $6
+	por	$2, $3
+	pxor	$4, $2
+	por	$1, $6
+	pand	$3, $2
+	pxor	$2, $6
+	por	$7, $1
+	pxor	$6, $1
+	movdqa	$7, $2
+	pand	$1, $2
+	PNOT($7)
+	por	$7, $4
+	pxor	$3, $4
+	movdqa	$1, $8
+	pxor	$4, $8
+	por	$4, $2
+	pxor	$2, $5
+>)
+
+define(<WSBOX1I>, <
+	movdqa	$2, $6
+	por	$4, $6
+	pxor	$3, $6
+	movdqa	$1, $8
+	pxor	$2, $8
+	movdqa	$1, $5
+	por	$6, $5
+	pand	$8, $5
+	pxor	$5, $2
+	pxor	$6, $8
+	pand	$4, $2
+	movdqa	$1, $7
+	pand	$3, $7
+	por	$7, $6
+	por	$4, $7
+	pxor	$5, $7
+	PNOT($7)
+	pxor	$2, $6
+	pxor	$6, $5
+	pxor	$3, $5
+	por	$7, $1
+	pxor	$1, $5
+>)
+
+define(<WSBOX2I>, <
+	movdqa	$1, $5
+	pxor	$4, $5
+	movdqa	$3, $7
+	pxor	$4, $7
+	movdqa	$2, $6
+	por	$7, $6
+	pxor	$6, $5
+	movdqa	$4, $6
+	por	$5, $6
+	pand	$2, $6
+	PNOT($4)
+	movdqa	$1, $8
+	por	$3, $8
+	pand	$8, $7
+	pxor	$7, $6
+	pand	$2, $8
+	pand	$3, $1
+	por	$4, $1
+	pxor	$1, $8
+	pand	$8, $3
+	pxor	$1, $3
+	movdqa	$5, $7
+	pxor	$6, $7
+	pxor	$3, $7
+>)
+
+define(<WSBOX3I>, <
+	movdqa	$3, $8
+	por	$4, $8
+	movdqa	$2, $5
+	pand	$8, $5
+	movdqa	$1, $7
+	por	$4, $7
+	movdqa	$3, $6
+	pxor	$7, $6
+	pxor	$6, $5
+	pxor	$1, $4
+	pxor	$4, $8
+	pxor	$2, $7
+	pand	$6, $7
+	pxor	$4, $7
+	pxor	$1, $6
+	por	$5, $4
+	pand	$4, $6
+	pxor	$2, $6
+	pand	$7, $1
+	por	$2, $1
+	pxor	$1, $8
+>)
+
+define(<WSBOX4I>, <
+	movdqa	$3, $6
+	pxor	$4, $6
+	movdqa	$3, $7
+	por	$4, $7
+	pxor	$2, $7
+	por	$4, $2
+	movdqa	$1, $5
+	pxor	$7, $5
+	pxor	$7, $4
+	pand	$1, $7
+	pxor	$7, $6
+	pxor	$1, $7
+	por	$3, $7
+	pand	$2, $1
+	movdqa	$1, $8
+	pxor	$4, $8
+	PNOT($1)
+	por	$6, $1
+	pxor	$1, $5
+	pxor	$2, $1
+	pxor	$1, $7
+>)
+
+define(<WSBOX5I>, <
+	movdqa	$1, $6
+	pand	$4, $6
+	movdqa	$3, $8
+	pxor	$6, $8
+	movdqa	$2, $5
+	pand	$8, $5
+	movdqa	$1, $7
+	pxor	$4, $7
+	pxor	$2, $4
+	pxor	$7, $5
+	pand	$1, $3
+	pand	$5, $1
+	por	$2, $3
+	pxor	$5, $6
+	pxor	$3, $6
+	movdqa	$5, $7
+	por	$6, $7
+	pxor	$8, $7
+	pxor	$4, $7
+	PNOT($2)
+	por	$1, $2
+	pxor	$2, $8
+>)
+
+define(<WSBOX6I>, <
+	movdqa	$1, $7
+	pxor	$3, $7
+	PNOT($3)
+	movdqa	$2, $5
+	pxor	$4, $5
+	movdqa	$1, $6
+	por	$3, $6
+	pxor	$5, $6
+	movdqa	$2, $8
+	pand	$7, $8
+	por	$4, $8
+	por	$3, $4
+	por	$2, $3
+	pand	$1, $3
+	movdqa	$3, $5
+	pxor	$8, $5
+	PNOT($5)
+	pand	$7, $8
+	pxor	$3, $8
+	pxor	$6, $1
+	pxor	$1, $8
+	pand	$5, $2
+	pxor	$2, $7
+	pxor	$4, $7
+>)
+
+define(<WSBOX7I>, <
+	movdqa	$1, $8
+	pand	$2, $8
+	movdqa	$2, $7
+	pxor	$4, $7
+	por	$8, $7
+	movdqa	$1, $6
+	por	$4, $6
+	pand	$3, $6
+	pxor	$6, $7
+	por	$3, $8
+	movdqa	$1, $5
+	por	$2, $5
+	pand	$4, $5
+	pxor	$5, $8
+	pxor	$2, $5
+	movdqa	$4, $6
+	pxor	$8, $6
+	PNOT($6)
+	por	$5, $6
+	pxor	$3, $5
+	pxor	$1, $6
+	por	$6, $4
+	pxor	$4, $5
+>)
+
+define(<WLTI>, <
+	WROL(10, $3)
+	WROL(27, $1)
+	movdqa	$2, T0
+	pslld	<$>7, T0
+	pxor	$4, $3
+	pxor	T0, $3
+	pxor	$2, $1
+	pxor	$4, $1
+	WROL(25, $4)
+	WROL(31, $2)
+	movdqa	$1, T0
+	pslld	<$>3, T0
+	pxor	$3, $4
+	pxor	T0, $4
+	pxor	$1, $2
+	pxor	$3, $2
+	WROL(29, $3)
+	WROL(19, $1)
+>)
+
 	.file "serpent-decrypt.asm"
 	
 	C serpent_decrypt(struct serpent_context *ctx, 
@@ -303,6 +535,79 @@ PROLOGUE(nettle_serpent_decrypt)
 	lea	(DST, N), DST
 	neg	N
 	jz	.Lend
+
+	cmp	$-64, N
+	ja	.Lblock_loop
+
+	pcmpeqd	MINUS1, MINUS1
+
+.Lwblock_loop:
+	movups	(SRC, N), X0
+	movups	16(SRC, N), X1
+	movups	32(SRC, N), X2
+	movups	48(SRC, N), X3
+
+	WTRANSPOSE(X0,X1,X2,X3)
+
+	mov	$384, CNT
+
+	C FIXME: CNT known, no index register needed
+	WKEYXOR(128, X0,X1,X2,X3)
+
+	jmp	.Lwround_start
+
+	ALIGN(4)
+
+.Lwround_loop:
+	WLTI(X0,X1,X2,X3)
+.Lwround_start:
+	WSBOX7I(X0,X1,X2,X3, Y0,Y1,Y2,Y3)
+	WKEYXOR(112, Y0,Y1,Y2,Y3)
+
+	WLTI(Y0,Y1,Y2,Y3)
+	WSBOX6I(Y0,Y1,Y2,Y3, X0,X1,X2,X3)
+	WKEYXOR(96, X0,X1,X2,X3)
+	
+	WLTI(X0,X1,X2,X3)
+	WSBOX5I(X0,X1,X2,X3, Y0,Y1,Y2,Y3)
+	WKEYXOR(80, Y0,Y1,Y2,Y3)
+
+	WLTI(Y0,Y1,Y2,Y3)
+	WSBOX4I(Y0,Y1,Y2,Y3, X0,X1,X2,X3)
+	WKEYXOR(64, X0,X1,X2,X3)
+	
+	WLTI(X0,X1,X2,X3)
+	WSBOX3I(X0,X1,X2,X3, Y0,Y1,Y2,Y3)
+	WKEYXOR(48, Y0,Y1,Y2,Y3)
+
+	WLTI(Y0,Y1,Y2,Y3)
+	WSBOX2I(Y0,Y1,Y2,Y3, X0,X1,X2,X3)
+	WKEYXOR(32, X0,X1,X2,X3)
+	
+	WLTI(X0,X1,X2,X3)
+	WSBOX1I(X0,X1,X2,X3, Y0,Y1,Y2,Y3)
+	WKEYXOR(16, Y0,Y1,Y2,Y3)
+
+	WLTI(Y0,Y1,Y2,Y3)
+	WSBOX0I(Y0,Y1,Y2,Y3, X0,X1,X2,X3)
+	WKEYXOR(, X0,X1,X2,X3)
+
+	sub	$128, CNT
+	jnc	.Lwround_loop
+
+	WTRANSPOSE(X0,X1,X2,X3)
+
+	movups	X0, (DST, N)
+	movups	X1, 16(DST, N)
+	movups	X2, 32(DST, N)
+	movups	X3, 48(DST, N)
+
+	C FIXME: Adjust N, so we can use just jnc without an extra cmp.
+	add	$64, N
+	jz	.Lend
+
+	cmp	$-64, N
+	jbe	.Lwblock_loop
 
 .Lblock_loop:
 	movl	(SRC, N), x0
@@ -363,7 +668,6 @@ PROLOGUE(nettle_serpent_decrypt)
 	xor	40(CTX, CNT), x2
 	xor	44(CTX, CNT), x3
 
-	C FIXME: Goes wrong in this round.
 	LTI(x0,x1,x2,x3)
 	SBOX1I(x0,x1,x2,x3, y0,y1,y2,y3)
 	xor	16(CTX, CNT), y0
