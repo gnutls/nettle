@@ -16,7 +16,9 @@ C You should have received a copy of the GNU Lesser General Public License
 C along with the nettle library; see the file COPYING.LIB.  If not, write to
 C the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 C MA 02111-1307, USA.
-	
+
+include_src(<x86_64/serpent.m4>)
+
 C Register usage:
 
 C Single block serpent state, two copies
@@ -519,14 +521,6 @@ define(<WSBOX7>, <
 	pxor	$3, $5
 >)
 
-C WROL(count, w)
-define(<WROL>, <
-	movdqa	$2, T0
-	pslld	<$>$1, $2
-	psrld	<$>eval(32 - $1), T0
-	por	T0, $2
->)
-
 C WLT(x0, x1, x2, x3)
 define(<WLT>, <
 	WROL(13, $1)
@@ -547,81 +541,6 @@ define(<WLT>, <
 	pxor	T0, $3
 	WROL(5, $1)
 	WROL(22, $3)
->)
-
-C Note: Diagrams use little-endian representation, with least
-C significant word to the left.
-	
-C Transpose values from:
-C     +----+----+----+----+
-C x0: | a0 | a1 | a2 | a3 |
-C x1: | b0 | b1 | b2 | b3 |
-C x2: | c0 | c1 | c2 | c3 |
-C x3: | d0 | d1 | d2 | d3 |
-C     +----+----+----+----+
-C To:
-C     +----+----+----+----+
-C x0: | a0 | b0 | c0 | d0 |
-C x1: | a1 | b1 | c1 | d1 |
-C x2: | a2 | b2 | c2 | d2 |
-C x3: | a3 | b3 | c3 | d3 |
-C     +----+----+----+----+
-
-define(<WTRANSPOSE>, <
-	movdqa		$1, T0
-	punpcklqdq	$3, T0			C |a0 a1 c0 c1|
-	punpckhqdq	$3, $1			C |a2 a3 c2 c3|
-	pshufd		<$>0xd8, T0, T0		C |a0 c0 a1 c1|
-	pshufd		<$>0xd8, $1, T1		C |a2 c2 a3 c3|
-	
-	movdqa		$2, T2
-	punpcklqdq	$4, T2			C |b0 b1 d0 11|
-	punpckhqdq	$4, $2			C |b2 b3 d2 d3|
-	pshufd		<$>0xd8, T2, T2		C |b0 d0 b1 d1|
-	pshufd		<$>0xd8, $2, T3		C |b2 d2 b3 d3|
-
-	movdqa		T0, $1
-	punpckldq	T2, $1			C |a0 b0 c0 d0|
-	movdqa		T0, $2
-	punpckhdq	T2, $2			C |a1 b1 c1 d1|
-
-	movdqa		T1, $3
-	punpckldq	T3, $3			C |a2 b2 c2 d2|
-	movdqa		T1, $4
-	punpckhdq	T3, $4			C |a3 b3 c3 d3|
->)
-
-C Copy subkeys, from:
-C
-C     +----+----+----+----+
-C k0: | s3 | s2 | s1 | s0 |
-C     +----+----+----+----+
-C To:
-C     +----+----+----+----+
-C k0: | s0 | s0 | s0 | s0 |
-C k1: | s1 | s1 | s1 | s1 |
-C k2: | s2 | s2 | s2 | s2 |
-C k3: | s3 | s3 | s3 | s3 |
-C     +----+----+----+----+
-	
-dnl define(<WCOPY>, <
-dnl 	pshufd	$55, $1, $2
-dnl 	pshufd	$aa, $1, $3
-dnl 	pshufd	$ff, $1, $4
-dnl 	pshufd	$00, $1, $1
-dnl >)
-
-C FIXME: Arrange 16-byte alignment, so we can use movaps?
-define(<WKEYXOR>, <
-	movups	$1(CTX, CNT), T0
-	pshufd	<$>0x55, T0, T1
-	pshufd	<$>0xaa, T0, T2
-	pxor	T1, $3
-	pxor	T2, $4
-	pshufd	<$>0xff, T0, T1
-	pshufd	<$>0x00, T0, T0
-	pxor	T1, $5
-	pxor	T0, $2
 >)
 
 	.file "serpent-encrypt.asm"
@@ -648,7 +567,7 @@ PROLOGUE(nettle_serpent_encrypt)
 	lea	512(CTX), CTX
 
 	cmp	$-64, N
-	ja	.Lwide_end
+	ja	.Lblock_loop
 
 	pcmpeqd	MINUS1, MINUS1
 
@@ -700,7 +619,7 @@ PROLOGUE(nettle_serpent_encrypt)
 	add	$128, CNT
 	jnz	.Lwround_loop
 
-	C FIXME CNT known to be zero, no index register needed
+	C FIXME: CNT known to be zero, no index register needed
 	WKEYXOR(, X0,X1,X2,X3)
 
 	WTRANSPOSE(X0,X1,X2,X3)
@@ -717,13 +636,10 @@ PROLOGUE(nettle_serpent_encrypt)
 	cmp	$-64, N
 	jbe	.Lwblock_loop
 
-.Lwide_end:
-
-
 C The single-block loop here is slightly slower than the double-block
 C loop in serpent-encrypt.c.
 
-C FIXME: Should use non-sse2 code only if we have a sngle block left.
+C FIXME: Should use non-sse2 code only if we have a single block left.
 C With two or three blocks, it should be better to do them in
 C parallell.
 	
