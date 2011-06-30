@@ -1,3 +1,13 @@
+2011-06-30  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/serpent-decrypt.asm: Added an SSE2 loop, doing four
+	blocks at a time in parallel.
+
+	* x86_64/serpent-encrypt.asm: Include serpent.m4. Deleted a
+	redundant label.
+
+	* x86_64/serpent.m4: New file, with serpent-related macros.
+
 2011-06-29  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86_64/serpent-decrypt.asm: Wrote main (32-bit) loop.
