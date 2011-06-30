@@ -1,5 +1,7 @@
 2011-06-30  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac: Link in serpent-decrypt.asm, if found.
+
 	* x86_64/serpent-decrypt.asm: Added an SSE2 loop, doing four
 	blocks at a time in parallel.
 
