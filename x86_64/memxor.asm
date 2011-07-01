@@ -78,7 +78,6 @@ PROLOGUE(memxor3)
 	jnz	.Lalign_loop
 
 .Laligned:
-ifelse(x,x,<
 	C Check for the case that AP and BP have the same alignment,
 	C but different from DST.
 	mov	AP, TMP
@@ -117,6 +116,8 @@ ifelse(x,x,<
 	jz	.Ldone
 	jmp 	.Lshift_next
 
+	ALIGN(4)
+
 .Lshift_loop:
 	mov	8(AP, N), S0
 	xor	8(BP, N), S0
@@ -154,7 +155,6 @@ C 	jz	.Ldone
 	jmp	.Lfinal_loop
 	
 .Lno_shift_case:
->)
 	C Next destination word is -8(DST, N)
 	C Setup for unrolling
 	test	$8, N
