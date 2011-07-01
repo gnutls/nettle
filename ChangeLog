@@ -1,5 +1,9 @@
 2011-07-01  Niels Möller  <nisse@lysator.liu.se>
 
+	* ctr.c (ctr_crypt): Reorganized to call the encryption function
+	with several blocks at a time. Handle the case of a single block
+	specially.
+
 	* x86_64/memxor.asm: Added ALIGN for shifting loop. Deleted
 	obsolete ifelse.
 
