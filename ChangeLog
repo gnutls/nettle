@@ -1,5 +1,9 @@
 2011-07-01  Niels Möller  <nisse@lysator.liu.se>
 
+	* cbc.c	(CBC_BUFFER_LIMIT): Reduced to 512 bytes.
+	(cbc_decrypt): For in-place operation, use overlapping memxor3 and
+	eliminate a memcpy.
+
 	* ctr.c (ctr_crypt): Reorganized to call the encryption function
 	with several blocks at a time. Handle the case of a single block
 	specially.
