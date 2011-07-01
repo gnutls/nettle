@@ -35,7 +35,8 @@ NEWS for the 2.2 release
 
 	* x86_64 implemention of camellia.
 
-	* Faster memxor.
+	* Optimized memxor using word rather than byte operations.
+          Both generic C and x86_64 assembler.
 
 	Miscellaneous:
 

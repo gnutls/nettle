@@ -1,3 +1,8 @@
+2011-07-01  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/memxor.asm: Added ALIGN for shifting loop. Deleted
+	obsolete ifelse.
+
 2011-06-30  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Link in serpent-decrypt.asm, if found.
