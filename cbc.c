@@ -52,28 +52,8 @@ cbc_encrypt(void *ctx, nettle_crypt_func f,
     }
 }
 
-/* Requires that dst != src */
-static void
-cbc_decrypt_internal(void *ctx, nettle_crypt_func f,
-		     unsigned block_size, uint8_t *iv,
-		     unsigned length, uint8_t *dst,
-		     const uint8_t *src)
-{
-  assert(length);
-  assert( !(length % block_size) );
-  assert(src != dst);
-  
-  /* Decrypt in ECB mode */
-  f(ctx, length, dst, src);
-
-  /* XOR the cryptotext, shifted one block */
-  memxor(dst, iv, block_size);
-  memxor(dst + block_size, src, length - block_size);
-  memcpy(iv, src + length - block_size, block_size);
-}
-
 /* Don't allocate any more space than this on the stack */
-#define CBC_BUFFER_LIMIT 4096
+#define CBC_BUFFER_LIMIT 512
 
 void
 cbc_decrypt(void *ctx, nettle_crypt_func f,
@@ -87,19 +67,28 @@ cbc_decrypt(void *ctx, nettle_crypt_func f,
     return;
 
   if (src != dst)
-    cbc_decrypt_internal(ctx, f, block_size, iv,
-			 length, dst, src);
+    {
+      /* Decrypt in ECB mode */
+      f(ctx, length, dst, src);
+
+      /* XOR the cryptotext, shifted one block */
+      memxor(dst, iv, block_size);
+      memxor(dst + block_size, src, length - block_size);
+      memcpy(iv, src + length - block_size, block_size);
+    }
+
   else
     {
-      /* We need a copy of the ciphertext, so we can't ECB decrypt in
-       * place.
-       *
-       * If length is small, we allocate a complete copy of src on the
-       * stack. Otherwise, we allocate a block of size at most
-       * CBC_BUFFER_LIMIT, and process that amount of data at a
-       * time.
-       *
-       * NOTE: We assume that block_size <= CBC_BUFFER_LIMIT. */
+      /* For in-place CBC, we decrypt into a temporary buffer of size
+       * at most CBC_BUFFER_LIMIT, and process that amount of data at
+       * a time. */
+      
+      /* NOTE: We assume that block_size <= CBC_BUFFER_LIMIT, and we
+	 depend on memxor3 working from the end of the area, allowing
+	 certain overlapping operands. */ 
+
+      TMP_DECL(buffer, uint8_t, CBC_BUFFER_LIMIT);
+      TMP_DECL(initial_iv, uint8_t, NETTLE_MAX_CIPHER_BLOCK_SIZE);
 
       unsigned buffer_size;
 
@@ -109,23 +98,29 @@ cbc_decrypt(void *ctx, nettle_crypt_func f,
 	buffer_size
 	  = CBC_BUFFER_LIMIT - (CBC_BUFFER_LIMIT % block_size);
 
-      {
-	TMP_DECL(buffer, uint8_t, CBC_BUFFER_LIMIT);
-	TMP_ALLOC(buffer, buffer_size);
+      TMP_ALLOC(buffer, buffer_size);
+      TMP_ALLOC(initial_iv, block_size);
 
-	for ( ; length > buffer_size;
-	      length -= buffer_size, dst += buffer_size, src += buffer_size)
-	  {
-	    memcpy(buffer, src, buffer_size);
-	    cbc_decrypt_internal(ctx, f, block_size, iv,
-				 buffer_size, dst, buffer);
-	  }
-	/* Now, we have at most CBC_BUFFER_LIMIT octets left */
-	memcpy(buffer, src, length);
-	
-	cbc_decrypt_internal(ctx, f, block_size, iv,
-			     length, dst, buffer);
-      }
+      for ( ; length > buffer_size;
+	    length -= buffer_size, src += buffer_size, dst += buffer_size)
+	{
+	  f(ctx, buffer_size, buffer, src);
+	  memcpy(initial_iv, iv, block_size);
+	  memcpy(iv, src + buffer_size - block_size, block_size);
+	  memxor3(dst + block_size, buffer + block_size, src,
+		  buffer_size - block_size);
+	  memxor3(dst, buffer, initial_iv, block_size);
+	}
+
+      f(ctx, length, buffer, src);
+      memcpy(initial_iv, iv, block_size);
+      /* Copies last block */
+      memcpy(iv, src + length - block_size, block_size);
+      /* Writes all but first block, reads all but last block. */
+      memxor3(dst + block_size, buffer + block_size, src,
+	      length - block_size);
+      /* Writes first block. */
+      memxor3(dst, buffer, initial_iv, block_size);
     }
 }
 
