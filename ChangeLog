@@ -1,3 +1,11 @@
+2011-07-07  Niels Möller  <nisse@lysator.liu.se>
+
+	* tools/misc.h (werror): Removed incorrect noreturn attribute from
+	declaration.
+
+	* examples/io.c (read_file): Bug fix, in dependence of initial
+	size on max_size.
+
 2011-07-01  Niels Möller  <nisse@lysator.liu.se>
 
 	* cbc.c	(CBC_BUFFER_LIMIT): Reduced to 512 bytes.
