@@ -141,13 +141,11 @@ nettle_PURE_OBJS = $(nettle_OBJS:.$(OBJEXT)=.p$(OBJEXT))
 hogweed_OBJS = $(hogweed_SOURCES:.c=.$(OBJEXT))
 hogweed_PURE_OBJS = $(hogweed_OBJS:.$(OBJEXT)=.p$(OBJEXT))
 
-# FIXME: Do we really need to delete the archive first?
 libnettle.a: $(nettle_OBJS)
 	-rm -f $@
 	$(AR) $(ARFLAGS) $@ $(nettle_OBJS)
 	$(RANLIB) $@
 
-# FIXME: Do we really need to delete the archive first?
 libhogweed.a: $(hogweed_OBJS)
 	-rm -f $@
 	$(AR) $(ARFLAGS) $@ $(hogweed_OBJS)
