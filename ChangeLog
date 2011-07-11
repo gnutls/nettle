@@ -1,5 +1,9 @@
 2011-07-11  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac: Changed version number to 2.3.
+
+	* Released nettle-2.2.
+
 	* Makefile.in (DISTFILES): Distribute COPYING.LIB, not COPYING,
 
 2011-07-07  Niels Möller  <nisse@lysator.liu.se>
