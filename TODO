@@ -13,17 +13,5 @@ and CFB. Suggested by Rafael 'Dido' Sevilla. References:
 
 Valgrind reports errors on the des-compat test program. Investigate.
 
-
-Change the convention for declaring function pointers. Instead of for
-example
-
-  typedef void *
-  nettle_realloc_func(void *ctx, void *p, unsigned length);
-
-use
-
-  typedef void
-  nettle_realloc_func(void *ctx, void *p, unsigned length);
-
 The make rules for building position independent *_p.o files doesn't
 get dependencies right.
