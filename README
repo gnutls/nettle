@@ -25,25 +25,15 @@ What is Nettle? A quote from the introduction in the Nettle Manual:
   of the library.
 
 Nettle is free software; you can redistribute it and/or modify it under
-the terms of the GNU General Public License as published by the Free
-Software Foundation. See the file COPYING for details. Most, but not
-all, of Nettle can also be used under the terms of the GNU Lesser
-General Public License; please read the Copyright section of the
-manual if you want to exercise this option.
+the terms of the GNU Lesser General Public License as published by the Free
+Software Foundation. See the file COPYING.LIB for details.
 
 Build nettle with the usual ./configure && make && make check && make
 install. Read the manual. Mail me if you have any questions or
 suggestions.
 
-You can also build Nettle from cvs, using
-
-  cvs -d :pserver:anonymous@cvs.lysator.liu.se:/cvsroot/lsh login
-  [ empty password ]
-  cvs -d :pserver:anonymous@cvs.lysator.liu.se:/cvsroot/lsh co nettle
-
-If you get it from cvs, you need to build it with
-
-  ./.bootstrap && ./configure && make && make check
+You can also build Nettle from cvs, see
+http://www.lysator.liu.se/~nisse/nettle/ for current instructions.
 
 You may want to subscribe to the nettle-bugs mailing list. See
 <URL: http://lists.lysator.liu.se/mailman/listinfo/nettle-bugs>.
