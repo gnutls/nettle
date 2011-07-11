@@ -1,3 +1,7 @@
+2011-07-11  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (DISTFILES): Distribute COPYING.LIB, not COPYING,
+
 2011-07-07  Niels Möller  <nisse@lysator.liu.se>
 
 	* tools/misc.h (werror): Removed incorrect noreturn attribute from
