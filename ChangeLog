@@ -1,3 +1,7 @@
+2011-07-17  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle-internal.h: Added missing extern declarations.
+
 2011-07-11  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Changed version number to 2.3.
