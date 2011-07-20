@@ -1,3 +1,9 @@
+2011-07-20  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Generate nettle.pc and hogweed.pc.
+
+	* nettle.pc.in, hogweed.pc.in: New files.
+
 2011-07-17  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle-internal.h: Added missing extern declarations.

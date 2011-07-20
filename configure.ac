@@ -606,6 +606,7 @@ fi
 
 AC_CONFIG_FILES([config.make config.m4 Makefile])
 AC_CONFIG_FILES([tools/Makefile testsuite/Makefile examples/Makefile])
+AC_CONFIG_FILES([nettle.pc hogweed.pc])
 
 AC_OUTPUT
 
