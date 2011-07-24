@@ -366,7 +366,7 @@ gcm_hash(const struct gcm_key *key, union gcm_block *x,
 
 static void
 gcm_hash_sizes(const struct gcm_key *key, union gcm_block *x,
-		 uint64_t auth_size, uint64_t data_size)
+	       uint64_t auth_size, uint64_t data_size)
 {
   uint8_t buffer[GCM_BLOCK_SIZE];
 
