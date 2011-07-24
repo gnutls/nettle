@@ -1,3 +1,13 @@
+2011-07-24  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (PKGCONFIG_FILES, pkgconfigdir): New variables.
+	(DISTFILES): Added nettle.pc.in and hogweed.pc.in.
+	(nettle.pc, hogweed.pc): New targets (invoking config.status).
+	(install-pkgconfig, uninstall-pkgconfig): New targets.
+	(install-here): Depend on install-pkgconfig.
+	(uninstall-here): Depend on uninstall-pkgconfig.
+	(distclean-here): Delete nettle.pc and hogweed.pc.
+
 2011-07-20  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Generate nettle.pc and hogweed.pc.

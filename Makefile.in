@@ -28,6 +28,9 @@ TARGETS = aesdata$(EXEEXT) desdata$(EXEEXT) shadata$(EXEEXT) gcmdata$(EXEEXT)\
 
 DOCTARGETS = nettle.info nettle.html nettle.pdf
 
+PKGCONFIG_FILES = nettle.pc @IF_HOGWEED@ hogweed.pc
+pkgconfigdir = $(libdir)/pkgconfig
+
 all check install uninstall:
 	$(MAKE) $@-here
 	set -e; for d in $(SUBDIRS); do \
@@ -127,6 +130,7 @@ DISTFILES = $(SOURCES) $(HEADERS) .bootstrap aclocal.m4 configure.ac \
 	config.guess config.sub install-sh texinfo.tex \
 	config.h.in config.m4.in config.make.in	Makefile.in \
 	README AUTHORS COPYING.LIB INSTALL NEWS TODO ChangeLog \
+	nettle.pc.in hogweed.pc.in \
 	memxor.c $(des_headers) descore.README \
 	aes-internal.h camellia-internal.h serpent-internal.h \
 	cast128_sboxes.h desinfo.h desCode.h \
@@ -264,8 +268,14 @@ config.make: config.make.in config.status
 config.m4: config.m4.in config.status
 	./config.status $@
 
+nettle.pc: nettle.pc.in config.status
+	./config.status $@
+
+hogweed.pc: hogweed.pc.in config.status
+	./config.status $@
+
 # Installation
-install-here: install-info install-headers install-static \
+install-here: install-info install-headers install-static install-pkgconfig \
 	@IF_SHARED@ install-shared-nettle @IF_HOGWEED@ install-shared-hogweed
 
 install-static: $(LIBTARGETS)
@@ -315,9 +325,15 @@ install-headers: $(INSTALL_HEADERS)
 	    $(INSTALL_DATA) "$(srcdir)/$$f" $(DESTDIR)$(includedir)/nettle ; \
 	  fi ; done
 
+install-pkgconfig: $(PKGCONFIG_FILES)
+	$(MKDIR_P) $(DESTDIR)$(pkgconfigdir)
+	for f in $(PKGCONFIG_FILES) ; do \
+	  $(INSTALL_DATA) "$$f" $(DESTDIR)$(pkgconfigdir) ; \
+	done
+
 # Uninstall
 uninstall-here: uninstall-info uninstall-headers uninstall-static \
-	        @IF_SHARED@ uninstall-shared
+		uninstall-pkgconfig @IF_SHARED@ uninstall-shared
 
 uninstall-static:
 	for f in $(LIBTARGETS) ; do \
@@ -348,6 +364,11 @@ uninstall-shared-hogweed:
 	rm -f $(DESTDIR)$(libdir)/$(LIBHOGWEED_FILE)
 	[ -z "$(LIBHOGWEED_SONAME)" ] \
 		|| rm -f $(LIBHOGWEED_SONAME) $(LIBHOGWEED_FORLINK)
+
+uninstall-pkgconfig:
+	for f in $(PKGCONFIG_FILES) ; do \
+	  rm -f $(DESTDIR)$(pkgconfigdir)/$$f ; \
+	done
 
 # Distribution
 distdir = $(PACKAGE_NAME)-$(PACKAGE_VERSION)
@@ -424,7 +445,9 @@ clean-here:
 
 distclean-here: clean-here
 	-rm -f config.h stamp-h config.log config.status machine.m4 \
-	config.make config.m4 Makefile nettle-stdint.h *.asm *.d
+	config.make config.m4 Makefile nettle-stdint.h \
+	nettle.pc hogweed.pc \
+	*.asm *.d
 
 maintainer-clean-here:
 	-rm -f $(DOCTARGETS) *.dvi *.ps
