@@ -808,14 +808,14 @@ is mainly useful for applications which needs to both encrypt and
 decrypt using the @emph{same} key.
 @end deftypefun
 
-@deftypefun void aes_encrypt (struct aes_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
+@deftypefun void aes_encrypt (struct aes_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Encryption function. @var{length} must be an integral multiple of the
 block size. If it is more than one block, the data is processed in ECB
 mode. @code{src} and @code{dst} may be equal, but they must not overlap
 in any other way.
 @end deftypefun
 
-@deftypefun void aes_decrypt (struct aes_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
+@deftypefun void aes_decrypt (struct aes_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Analogous to @code{aes_encrypt}
 @end deftypefun
 
@@ -871,7 +871,7 @@ Initialize the cipher. The same function is used for both encryption and
 decryption. 
 @end deftypefun
 
-@deftypefun void arcfour_crypt (struct arcfour_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
+@deftypefun void arcfour_crypt (struct arcfour_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Encrypt some data. The same function is used for both encryption and
 decryption. Unlike the block ciphers, this function modifies the
 context, so you can split the data into arbitrary chunks and encrypt
@@ -929,14 +929,14 @@ convenience, @code{ekb = 0} has the same effect as @code{ekb = 1024}.
 @code{arctwo_set_key_ekb(ctx, length, key, 1024)}
 @end deftypefun
 
-@deftypefun void arctwo_encrypt (struct arctwo_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
+@deftypefun void arctwo_encrypt (struct arctwo_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Encryption function. @var{length} must be an integral multiple of the
 block size. If it is more than one block, the data is processed in ECB
 mode. @code{src} and @code{dst} may be equal, but they must not
 overlap in any other way.
 @end deftypefun
 
-@deftypefun void arctwo_decrypt (struct arctwo_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
+@deftypefun void arctwo_decrypt (struct arctwo_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Analogous to @code{arctwo_encrypt}
 @end deftypefun
 
@@ -975,14 +975,14 @@ weak keys can ignore the return value.
 crash with an assert violation.
 @end deftypefun
 
-@deftypefun void blowfish_encrypt (struct blowfish_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
+@deftypefun void blowfish_encrypt (struct blowfish_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Encryption function. @var{length} must be an integral multiple of the
 block size. If it is more than one block, the data is processed in ECB
 mode. @code{src} and @code{dst} may be equal, but they must not overlap
 in any other way.
 @end deftypefun
 
-@deftypefun void blowfish_decrypt (struct blowfish_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
+@deftypefun void blowfish_decrypt (struct blowfish_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Analogous to @code{blowfish_encrypt}
 @end deftypefun
 
@@ -1035,7 +1035,7 @@ is mainly useful for applications which needs to both encrypt and
 decrypt using the @emph{same} key.
 @end deftypefun
 
-@deftypefun void camellia_crypt (struct camellia_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
+@deftypefun void camellia_crypt (struct camellia_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 The same function is used for both encryption and decryption.
 @var{length} must be an integral multiple of the block size. If it is
 more than one block, the data is processed in ECB mode. @code{src} and
@@ -1072,14 +1072,14 @@ Initialize the cipher. The same function is used for both encryption and
 decryption. 
 @end deftypefun
 
-@deftypefun void cast128_encrypt (struct cast128_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
+@deftypefun void cast128_encrypt (struct cast128_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Encryption function. @var{length} must be an integral multiple of the
 block size. If it is more than one block, the data is processed in ECB
 mode. @code{src} and @code{dst} may be equal, but they must not overlap
 in any other way.
 @end deftypefun
 
-@deftypefun void cast128_decrypt (struct cast128_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
+@deftypefun void cast128_decrypt (struct cast128_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Analogous to @code{cast128_encrypt}
 @end deftypefun
 
@@ -1117,14 +1117,14 @@ for good keys and 0 for weak keys. Applications that don't care about
 weak keys can ignore the return value.
 @end deftypefun
 
-@deftypefun void des_encrypt (struct des_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
+@deftypefun void des_encrypt (struct des_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Encryption function. @var{length} must be an integral multiple of the
 block size. If it is more than one block, the data is processed in ECB
 mode. @code{src} and @code{dst} may be equal, but they must not overlap
 in any other way.
 @end deftypefun
 
-@deftypefun void des_decrypt (struct des_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
+@deftypefun void des_decrypt (struct des_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Analogous to @code{des_encrypt}
 @end deftypefun
 
@@ -1196,14 +1196,14 @@ value.
 For random-looking strings, you can use @code{des_fix_parity} to adjust
 the parity bits before calling @code{des3_set_key}.
 
-@deftypefun void des3_encrypt (struct des3_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
+@deftypefun void des3_encrypt (struct des3_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Encryption function. @var{length} must be an integral multiple of the
 block size. If it is more than one block, the data is processed in ECB
 mode. @code{src} and @code{dst} may be equal, but they must not overlap
 in any other way.
 @end deftypefun
 
-@deftypefun void des3_decrypt (struct des3_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
+@deftypefun void des3_decrypt (struct des3_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Analogous to @code{des_encrypt}
 @end deftypefun
 
@@ -1238,14 +1238,14 @@ Initialize the cipher. The same function is used for both encryption and
 decryption. 
 @end deftypefun
 
-@deftypefun void serpent_encrypt (struct serpent_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
+@deftypefun void serpent_encrypt (struct serpent_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Encryption function. @var{length} must be an integral multiple of the
 block size. If it is more than one block, the data is processed in ECB
 mode. @code{src} and @code{dst} may be equal, but they must not overlap
 in any other way.
 @end deftypefun
 
-@deftypefun void serpent_decrypt (struct serpent_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
+@deftypefun void serpent_decrypt (struct serpent_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Analogous to @code{serpent_encrypt}
 @end deftypefun
 
@@ -1278,14 +1278,14 @@ Initialize the cipher. The same function is used for both encryption and
 decryption. 
 @end deftypefun
 
-@deftypefun void twofish_encrypt (struct twofish_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
+@deftypefun void twofish_encrypt (struct twofish_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Encryption function. @var{length} must be an integral multiple of the
 block size. If it is more than one block, the data is processed in ECB
 mode. @code{src} and @code{dst} may be equal, but they must not overlap
 in any other way.
 @end deftypefun
 
-@deftypefun void twofish_decrypt (struct twofish_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{dst}, uint8_t *@var{src})
+@deftypefun void twofish_decrypt (struct twofish_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Analogous to @code{twofish_encrypt}
 @end deftypefun
 

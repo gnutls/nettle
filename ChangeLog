@@ -1,3 +1,8 @@
+2011-08-10  Niels Möller  <nisse@amfibolit.hack.org>
+
+	* nettle.texinfo: Fixed mis-placed const in various prototypes.
+	Spotted by Tatsuhiro Tsujikawa.
+
 2011-07-24  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in (PKGCONFIG_FILES, pkgconfigdir): New variables.
