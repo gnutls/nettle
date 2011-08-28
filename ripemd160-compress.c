@@ -21,21 +21,14 @@
 
 #include "ripemd160.h"
 
+#include "macros.h"
+
 /****************
- * Rotate the 32 bit unsigned integer X by N bits left/right
+ * Rotate the 32 bit unsigned integer X by N bits left
  */
-#if defined(__GNUC__) && defined(__i386__)
-static inline uint32_t
-rol(uint32_t x, int n)
-{
-  __asm__("roll %%cl,%0"
-    :"=r" (x)
-    :"0" (x),"c" (n));
-  return x;
-}
-#else
-#define rol(x,n) ( ((x) << (n)) | ((x) >> (32-(n))) )
-#endif
+
+#define ROL32(x,n) ( ((x) << (n)) | ((x) >> (32-(n))) )
+
 
 /****************
  * Transform the message X which consists of 16 32-bit-words
@@ -45,29 +38,18 @@ _nettle_ripemd160_compress(uint32_t *state, const uint8_t *data)
 {
   register uint32_t a,b,c,d,e;
   uint32_t aa,bb,cc,dd,ee,t;
-#ifdef WORDS_BIGENDIAN
   uint32_t x[16];
+
+#ifdef WORDS_BIGENDIAN
   {
     int i;
-    uint8_t *p2, *p1;
-    for (i=0, p1=data, p2=(uint8_t*)x; i < 16; i++, p2 += 4 )
-    {
-      p2[3] = *p1++;
-      p2[2] = *p1++;
-      p2[1] = *p1++;
-      p2[0] = *p1++;
-    }
+    for (i=0; i < 16; i++, data += 4 )
+      x[i] = LE_READ_UINT32(data);
   }
 #else
-  /* This version is better because it is always aligned;
-   * The performance penalty on a 586-100 is about 6% which
-   * is acceptable - because the data is more local it might
-   * also be possible that this is faster on some machines.
-   * This function (when compiled with -02 on gcc 2.7.2)
-   * executes on a 586-100 (39.73 bogomips) at about 1900kb/sec;
-   * [measured with a 4MB data and "gpgm --print-md rmd160"] */
-  uint32_t x[16];
-  memcpy(x, data, 64);
+  /* memcpy seems a bit faster. Benchmarked on Intel SU4100, it makes
+     the entire update function roughly 6% faster. */
+  memcpy(x, data, sizeof(x));
 #endif
 
 
@@ -87,8 +69,8 @@ _nettle_ripemd160_compress(uint32_t *state, const uint8_t *data)
 #define F3(x,y,z)   ( ((x) & (z)) | ((y) & ~(z)) )
 #define F4(x,y,z)   ( (x) ^ ((y) | ~(z)) )
 #define R(a,b,c,d,e,f,k,r,s) do { t = a + f(b,c,d) + k + x[r]; \
-          a = rol(t,s) + e;        \
-          c = rol(c,10);         \
+          a = ROL32(t,s) + e;        \
+          c = ROL32(c,10);         \
         } while(0)
 
   /* left lane */
