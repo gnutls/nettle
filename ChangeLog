@@ -1,5 +1,15 @@
 2011-08-28  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.in (nettle_SOURCES): Added write-le32.c.
+
+	* md5.c (md5_digest): Use _nettle_write_le32.
+
+	* write-le32.c (_nettle_write_le32): New file and function.
+
+	* ripemd160-compress.c (ROL32): Renamed macro (was "rol"). Deleted
+	x86 version using inline assembly; at least gcc-4.4.5 recognizes
+	shift-and-or expressions which are in fact rotations.
+
 	* configure.ac (LIBNETTLE_MINOR): Bumped library version, to 4.2.
 
 	* testsuite/meta-hash-test.c: Updated for the addition of
