@@ -158,6 +158,7 @@ extern const struct nettle_hash * const nettle_hashes[];
 extern const struct nettle_hash nettle_md2;
 extern const struct nettle_hash nettle_md4;
 extern const struct nettle_hash nettle_md5;
+extern const struct nettle_hash nettle_ripemd160;
 extern const struct nettle_hash nettle_sha1;
 extern const struct nettle_hash nettle_sha224;
 extern const struct nettle_hash nettle_sha256;
