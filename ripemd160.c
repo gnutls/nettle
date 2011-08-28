@@ -25,8 +25,11 @@
 
 #include "ripemd160.h"
 
+#include "macros.h"
+#include "nettle-write.h"
+
 /*********************************
- * RIPEMD-160 is not patented, see (as of 25.10.97)
+ * RIPEMD-160 is not patented, see (as of 2011-08-28)
  *   http://www.esat.kuleuven.ac.be/~bosselae/ripemd160.html
  * Note that the code uses Little Endian byteorder, which is good for
  * 386 etc, but we must add some conversion when used on a big endian box.
@@ -155,30 +158,30 @@ void
 ripemd160_update(struct ripemd160_ctx *ctx, unsigned length, const uint8_t *data)
 {
   if(ctx->index == 64)  /* flush the buffer */
-  {
-    _nettle_ripemd160_compress(ctx->digest, ctx->block);
-    ctx->index = 0;
-    ctx->nblocks++;
-  }
+    {
+      _nettle_ripemd160_compress(ctx->digest, ctx->block);
+      ctx->index = 0;
+      ctx->nblocks++;
+    }
   if(!data)
     return;
   if(ctx->index)
-  {
-    for(; length && ctx->index < 64; length--)
-      ctx->block[ctx->index++] = *data++;
-    ripemd160_update(ctx, 0, NULL);
-    if(!length)
-      return;
-  }
+    {
+      for(; length && ctx->index < 64; length--)
+	ctx->block[ctx->index++] = *data++;
+      ripemd160_update(ctx, 0, NULL);
+      if(!length)
+	return;
+    }
 
   while( length >= 64 )
-  {
-    _nettle_ripemd160_compress(ctx->digest, data);
-    ctx->index = 0;
-    ctx->nblocks++;
-    length -= 64;
-    data += 64;
-  }
+    {
+      _nettle_ripemd160_compress(ctx->digest, data);
+      ctx->index = 0;
+      ctx->nblocks++;
+      length -= 64;
+      data += 64;
+    }
   for(; length && ctx->index < 64; length--)
     ctx->block[ctx->index++] = *data++;
 }
@@ -207,43 +210,23 @@ ripemd160_final(struct ripemd160_ctx *ctx)
   msb |= t >> 29;
 
   if( ctx->index < 56 )  /* enough room */
-  {
-    ctx->block[ctx->index++] = 0x80; /* pad */
-    while( ctx->index < 56 )
-      ctx->block[ctx->index++] = 0;  /* pad */
-  }
+    {
+      ctx->block[ctx->index++] = 0x80; /* pad */
+      while( ctx->index < 56 )
+	ctx->block[ctx->index++] = 0;  /* pad */
+    }
   else  /* need one extra block */
-  {
-    ctx->block[ctx->index++] = 0x80; /* pad character */
-    while( ctx->index < 64 )
-      ctx->block[ctx->index++] = 0;
-    ripemd160_update(ctx, 0, NULL);  /* flush */;
-    memset(ctx->block, 0, 56 ); /* fill next block with zeroes */
-  }
+    {
+      ctx->block[ctx->index++] = 0x80; /* pad character */
+      while( ctx->index < 64 )
+	ctx->block[ctx->index++] = 0;
+      ripemd160_update(ctx, 0, NULL);  /* flush */;
+      memset(ctx->block, 0, 56 ); /* fill next block with zeroes */
+    }
   /* append the 64 bit count */
-  ctx->block[56] = lsb;
-  ctx->block[57] = lsb >>  8;
-  ctx->block[58] = lsb >> 16;
-  ctx->block[59] = lsb >> 24;
-  ctx->block[60] = msb;
-  ctx->block[61] = msb >>  8;
-  ctx->block[62] = msb >> 16;
-  ctx->block[63] = msb >> 24;
+  LE_WRITE_UINT32(ctx->block + 56, lsb);
+  LE_WRITE_UINT32(ctx->block + 60, msb);
   _nettle_ripemd160_compress(ctx->digest, ctx->block);
-
-  p = ctx->block;
-#ifdef WORDS_BIGENDIAN
-#define X(a) do { *p++ = ctx->digest[a]    ; *p++ = ctx->digest[a] >> 8; \
-  *p++ = ctx->digest[a] >> 16; *p++ = ctx->digest[a] >> 24; } while(0)
-#else /* little endian */
-#define X(a) do { *(uint32_t*)p = ctx->digest[a] ; p += 4; } while(0)
-#endif
-  X(0);
-  X(1);
-  X(2);
-  X(3);
-  X(4);
-#undef X
 }
 
 void
@@ -252,6 +235,6 @@ ripemd160_digest(struct ripemd160_ctx *ctx, unsigned length, uint8_t *digest)
   assert(length <= RIPEMD160_DIGEST_SIZE);
 
   ripemd160_final(ctx);
-  memcpy(digest, ctx->block, length);
+  _nettle_write_le32(length, digest, ctx->digest);
   ripemd160_init(ctx);
 }
