@@ -1,5 +1,7 @@
 2011-08-28  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac (LIBNETTLE_MINOR): Bumped library version, to 4.2.
+
 	* testsuite/meta-hash-test.c: Updated for the addition of
 	ripemd-160.
 
