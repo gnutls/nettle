@@ -36,6 +36,7 @@
 #include "md5.h"
 
 #include "macros.h"
+#include "nettle-write.h"
 
 static void
 md5_final(struct md5_ctx *ctx);
@@ -97,34 +98,11 @@ void
 md5_digest(struct md5_ctx *ctx,
 	   unsigned length,
 	   uint8_t *digest)
-{
-  unsigned i;
-  unsigned words;
-  unsigned leftover;
-  
+{  
   assert(length <= MD5_DIGEST_SIZE);
 
   md5_final(ctx);
-  
-  words = length / 4;
-  leftover = length % 4;
-  
-  /* Little endian order */
-  for (i = 0; i < words; i++, digest += 4)
-    LE_WRITE_UINT32(digest, ctx->digest[i]);
-
-  if (leftover)
-    {
-      uint32_t word;
-      unsigned j;
-
-      assert(i < _MD5_DIGEST_LENGTH);
-      
-      /* Still least significant byte first. */
-      for (word = ctx->digest[i], j = 0; j < leftover;
-	   j++, word >>= 8)
-	digest[j] = word & 0xff;
-    }
+  _nettle_write_le32(length, digest, ctx->digest);
   md5_init(ctx);
 }
 
