@@ -1,5 +1,14 @@
 2011-08-28  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/meta-hash-test.c: Updated for the addition of
+	ripemd-160.
+
+	* testsuite/.test-rules.make: Added rule for ripemd160-test.
+
+	* examples/nettle-benchmark.c (main): Benchmark ripemd-160.
+
+2011-08-28  Niels Möller  <nisse@lysator.liu.se>
+
 	RIPEMD-160 hash function. Ported from libgcrypt by Andres Mejia.
 	* testsuite/ripemd160-test.c: New file.
 	* ripemd160.h: New file.
