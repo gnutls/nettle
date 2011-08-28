@@ -1,3 +1,19 @@
+2011-08-28  Niels Möller  <nisse@lysator.liu.se>
+
+	RIPEMD-160 hash function. Ported from libgcrypt by Andres Mejia.
+	* testsuite/ripemd160-test.c: New file.
+	* ripemd160.h: New file.
+	* nettle-meta.h: Declare nettle_ripemd160.
+	* ripemd160.c: New file, ported from libgcrypt.
+	* ripemd160-compress.c: Likewise.
+	* ripemd160-meta.c: New file.
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Added
+	ripemd160-test.c.
+	* nettle-meta-hashes.c (nettle_hashes): Added nettle_ripemd160.
+	* Makefile.in (nettle_SOURCES): Added ripemd160.c,
+	ripemd160-compress.c, and ripemd160-meta.c.
+	(HEADERS): Added ripemd160.h.
+
 2011-08-10  Niels Möller  <nisse@amfibolit.hack.org>
 
 	* nettle.texinfo: Fixed mis-placed const in various prototypes.
