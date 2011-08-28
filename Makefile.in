@@ -82,7 +82,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 buffer.c buffer-init.c realloc.c \
 		 nettle-meta-hashes.c nettle-meta-ciphers.c \
 		 nettle-meta-armors.c \
-		 nettle-internal.c write-be32.c
+		 nettle-internal.c write-be32.c write-le32.c
 
 hogweed_SOURCES = sexp.c sexp-format.c \
 		  sexp-transport.c sexp-transport-format.c \
