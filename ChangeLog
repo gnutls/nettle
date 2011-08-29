@@ -1,5 +1,53 @@
 2011-08-29  Niels Möller  <nisse@lysator.liu.se>
 
+	* sha256.c (sha256_update): Updated MD_UPDATE call for new
+	conventions.
+	(sha256_write_digest): Use MD_PAD rather than MD_FINAL, and insert
+	the length manually.
+	* sha512.c: Analogous changes.
+
+	* sha1.c (COMPRESS): New macro.
+	(sha1_update): Updated MD_UPDATE call for new conventions.
+	(sha1_digest): Use MD_PAD rather than MD_FINAL, and insert the
+	length manually.
+
+	* ripemd160.c (ripemd160_init): Use memcpy for initializing the
+	state vector.
+	(COMPRESS): New macro.
+	(ripemd160_update): Use MD_UPDATE.
+	(ripemd160_digest): Inline ripemd160_final processing. Use MD_PAD
+	and _nettle_write_le32.
+	(ripemd160_final): Deleted function.
+
+	* ripemd160.h (struct ripemd160_ctx): Use a 64-bit block count.
+	Renamed digest to state.
+
+	* md5.c (md5_init): Use memcpy for initializing the state vector.
+	(COMPRESS): New macro, wrapping _nettle_md5_compress.
+	(md5_update): Use MD_UPDATE.
+	(md5_digest): Inline md5_final processing. Use MD_PAD and
+	_nettle_write_le32.
+	(md5_final): Deleted.
+
+	* md5.h (struct md5_ctx): Renamed some fields, for consistency.
+
+	* md4.h (struct md4_ctx): Renamed some fields, for consistency.
+
+	* md4.c (md4_init): Use memcpy for initializing the state vector.
+	(md4_update): Use MD_UPDATE.
+	(md4_digest): Inline md4_final processing, using MD_PAD. Use
+	_nettle_write_le32.
+	(md4_block): Renamed, to...
+	(md4_compress): ... new name. Take ctx pinter as argument.
+	(md4_final): Deleted function.
+
+	* md2.c (md2_update): Use MD_UPDATE.
+
+	* macros.h (MD_UPDATE): Added incr argument. Invoke compression
+	function with ctx pointer as argument, rather than ctx->state.
+	(MD_FINAL): Just pad, don't store length field. Renamed to MD_PAD.
+	(MD_PAD): Analogous change of compression invocations.
+
 	* sha512.c: (COMPRESS): New macro wrapping _nettle_sha512_compress.
 	(sha512_update): Use MD_UPDATE.
 	(sha512_final): Deleted function.
