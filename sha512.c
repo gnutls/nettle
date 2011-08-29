@@ -104,6 +104,8 @@ K[80] =
   0x5FCB6FAB3AD6FAECULL,0x6C44198C4A475817ULL,
 };
 
+#define COMPRESS(digest, data) (_nettle_sha512_compress((digest), (data), K))
+
 void
 sha512_init(struct sha512_ctx *ctx)
 {
@@ -133,87 +135,11 @@ sha512_init(struct sha512_ctx *ctx)
   ctx->index = 0;
 }
 
-#define SHA512_INCR(ctx) ((ctx)->count_high += !++(ctx)->count_low)
-
 void
 sha512_update(struct sha512_ctx *ctx,
-	      unsigned length, const uint8_t *buffer)
+	      unsigned length, const uint8_t *data)
 {
-  if (ctx->index)
-    { /* Try to fill partial block */
-      unsigned left = SHA512_DATA_SIZE - ctx->index;
-      if (length < left)
-	{
-	  memcpy(ctx->block + ctx->index, buffer, length);
-	  ctx->index += length;
-	  return; /* Finished */
-	}
-      else
-	{
-	  memcpy(ctx->block + ctx->index, buffer, left);
-
-	  _nettle_sha512_compress(ctx->state, ctx->block, K);
-	  SHA512_INCR(ctx);
-
-	  buffer += left;
-	  length -= left;
-	}
-    }
-  while (length >= SHA512_DATA_SIZE)
-    {
-      _nettle_sha512_compress(ctx->state, buffer, K);
-      SHA512_INCR(ctx);
-
-      buffer += SHA512_DATA_SIZE;
-      length -= SHA512_DATA_SIZE;
-    }
-
-  /* Buffer leftovers */
-  memcpy(ctx->block, buffer, length);
-  ctx->index = length;
-}
-
-/* Final wrapup - pad to SHA1_DATA_SIZE-byte boundary with the bit pattern
-   1 0* (64-bit count of bits processed, MSB-first) */
-
-static void
-sha512_final(struct sha512_ctx *ctx)
-{
-  uint64_t bitcount_high;
-  uint64_t bitcount_low;
-  int i;
-
-  i = ctx->index;
-  
-  /* Set the first char of padding to 0x80.  This is safe since there is
-     always at least one byte free */
-
-  assert(i < SHA512_DATA_SIZE);
-  ctx->block[i++] = 0x80;
-
-  if (i > (SHA512_DATA_SIZE-16))
-    { /* No room for length in this block. Process it and
-       * pad with another one */
-      memset(ctx->block + i, 0, SHA512_DATA_SIZE - i);
-      _nettle_sha512_compress(ctx->state, ctx->block, K);
-
-      i = 0;
-    }
-
-  if (i < (SHA512_DATA_SIZE - 16))
-    memset(ctx->block + i, 0, (SHA512_DATA_SIZE - 16) - i);
-
-  /* There are 1024 = 2^10 bits in one block */
-  bitcount_high = (ctx->count_high << 10) | (ctx->count_low >> 54);
-  bitcount_low = (ctx->count_low << 10) | (ctx->index << 3);
-
-  /* This is slightly inefficient, as the numbers are converted to
-     big-endian format, and will be converted back by the compression
-     function. It's probably not worth the effort to fix this. */
-  WRITE_UINT64(ctx->block + (SHA512_DATA_SIZE - 16), bitcount_high);
-  WRITE_UINT64(ctx->block + (SHA512_DATA_SIZE - 8), bitcount_low);
-
-  _nettle_sha512_compress(ctx->state, ctx->block, K);
+  MD_UPDATE (ctx, length, data, COMPRESS);
 }
 
 static void
@@ -224,8 +150,11 @@ sha512_write_digest(struct sha512_ctx *ctx,
   unsigned i;
   unsigned words;
   unsigned leftover;
+
+  assert(length <= SHA512_DIGEST_SIZE);
   
-  sha512_final(ctx);
+  /* There are 1024 = 2^10 bits in one block */
+  MD_FINAL(ctx, 64, 10, COMPRESS, WRITE_UINT64);
   
   words = length / 8;
   leftover = length % 8;
