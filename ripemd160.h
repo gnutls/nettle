@@ -47,8 +47,8 @@ extern "C" {
 
 struct ripemd160_ctx
 {
-  uint32_t digest[_RIPEMD160_DIGEST_LENGTH];
-  uint32_t nblocks;
+  uint32_t state[_RIPEMD160_DIGEST_LENGTH];
+  uint32_t count_low, count_high;         /* 64-bit block count */
   uint8_t block[RIPEMD160_DATA_SIZE];
   unsigned int index;
 };
