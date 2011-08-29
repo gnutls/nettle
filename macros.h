@@ -185,7 +185,10 @@ do {						\
     ;									\
   } while (0)
 
-#define MD_PAD(ctx, bits, shift, f, write)				\
+/* Final wrapup - pad to block boundary with the bit pattern
+   1 0* (count of bits processed) */
+
+#define MD_FINAL(ctx, bits, shift, f, write)				\
   do {									\
     unsigned __md_i;							\
     uint##bits##_t __md_low, __md_high;					\
