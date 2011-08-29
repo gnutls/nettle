@@ -141,15 +141,20 @@
 void
 ripemd160_init(struct ripemd160_ctx *ctx)
 {
-  ctx->digest[0] = 0x67452301;
-  ctx->digest[1] = 0xEFCDAB89;
-  ctx->digest[2] = 0x98BADCFE;
-  ctx->digest[3] = 0x10325476;
-  ctx->digest[4] = 0xC3D2E1F0;
-  memset(&ctx->block, 0, sizeof(ctx->block));
-  ctx->nblocks = 0;
+  static const uint32_t iv[_RIPEMD160_DIGEST_LENGTH] =
+    {
+      0x67452301,
+      0xEFCDAB89,
+      0x98BADCFE,
+      0x10325476,
+      0xC3D2E1F0,
+    };
+  memcpy(ctx->state, iv, sizeof(ctx->state));
+  ctx->count_low = ctx->count_high = 0;
   ctx->index = 0;
 }
+
+#define COMPRESS(ctx, data) (_nettle_ripemd160_compress((ctx)->state, (data)))
 
 /* Update the message digest with the contents
  * of DATA with length LENGTH.
@@ -157,84 +162,27 @@ ripemd160_init(struct ripemd160_ctx *ctx)
 void
 ripemd160_update(struct ripemd160_ctx *ctx, unsigned length, const uint8_t *data)
 {
-  if(ctx->index == 64)  /* flush the buffer */
-    {
-      _nettle_ripemd160_compress(ctx->digest, ctx->block);
-      ctx->index = 0;
-      ctx->nblocks++;
-    }
-  if(!data)
-    return;
-  if(ctx->index)
-    {
-      for(; length && ctx->index < 64; length--)
-	ctx->block[ctx->index++] = *data++;
-      ripemd160_update(ctx, 0, NULL);
-      if(!length)
-	return;
-    }
-
-  while( length >= 64 )
-    {
-      _nettle_ripemd160_compress(ctx->digest, data);
-      ctx->index = 0;
-      ctx->nblocks++;
-      length -= 64;
-      data += 64;
-    }
-  for(; length && ctx->index < 64; length--)
-    ctx->block[ctx->index++] = *data++;
-}
-
-/* The routine terminates the computation */
-static void
-ripemd160_final(struct ripemd160_ctx *ctx)
-{
-  uint32_t t, msb, lsb;
-  uint8_t *p;
-
-  ripemd160_update(ctx, 0, NULL); /* flush */;
-
-  t = ctx->nblocks;
-  /* multiply by 64 to make a byte count */
-  lsb = t << 6;
-  msb = t >> 26;
-  /* add the count */
-  t = lsb;
-  if( (lsb += ctx->index) < t )
-    msb++;
-  /* multiply by 8 to make a bit count */
-  t = lsb;
-  lsb <<= 3;
-  msb <<= 3;
-  msb |= t >> 29;
-
-  if( ctx->index < 56 )  /* enough room */
-    {
-      ctx->block[ctx->index++] = 0x80; /* pad */
-      while( ctx->index < 56 )
-	ctx->block[ctx->index++] = 0;  /* pad */
-    }
-  else  /* need one extra block */
-    {
-      ctx->block[ctx->index++] = 0x80; /* pad character */
-      while( ctx->index < 64 )
-	ctx->block[ctx->index++] = 0;
-      ripemd160_update(ctx, 0, NULL);  /* flush */;
-      memset(ctx->block, 0, 56 ); /* fill next block with zeroes */
-    }
-  /* append the 64 bit count */
-  LE_WRITE_UINT32(ctx->block + 56, lsb);
-  LE_WRITE_UINT32(ctx->block + 60, msb);
-  _nettle_ripemd160_compress(ctx->digest, ctx->block);
+  MD_UPDATE(ctx, length, data, COMPRESS, MD_INCR(ctx));
 }
 
 void
 ripemd160_digest(struct ripemd160_ctx *ctx, unsigned length, uint8_t *digest)
 {
+  uint32_t high, low;
+
   assert(length <= RIPEMD160_DIGEST_SIZE);
 
-  ripemd160_final(ctx);
-  _nettle_write_le32(length, digest, ctx->digest);
+  MD_PAD(ctx, 8, COMPRESS);
+
+  /* There are 2^9 bits in one block */
+  high = (ctx->count_high << 9) | (ctx->count_low >> 23);
+  low = (ctx->count_low << 9) | (ctx->index << 3);
+									\
+  /* append the 64 bit count */
+  LE_WRITE_UINT32(ctx->block + 56, low);
+  LE_WRITE_UINT32(ctx->block + 60, high);
+  _nettle_ripemd160_compress(ctx->state, ctx->block);
+
+  _nettle_write_le32(length, digest, ctx->state);
   ripemd160_init(ctx);
 }
