@@ -45,8 +45,8 @@ extern "C" {
 
 struct md5_ctx
 {
-  uint32_t digest[_MD5_DIGEST_LENGTH];
-  uint32_t count_l, count_h;    /* Block count */
+  uint32_t state[_MD5_DIGEST_LENGTH];
+  uint32_t count_low, count_high; /* Block count */
   uint8_t block[MD5_DATA_SIZE]; /* Block buffer */
   unsigned index;               /* Into buffer */
 };
