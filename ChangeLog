@@ -1,8 +1,38 @@
+2011-08-29  Niels Möller  <nisse@lysator.liu.se>
+
+	* sha512.c: (COMPRESS): New macro wrapping _nettle_sha512_compress.
+	(sha512_update): Use MD_UPDATE.
+	(sha512_final): Deleted function.
+	(sha512_write_digest): Use MD_FINAL.
+
+	* sha256.c (COMPRESS): New macro wrapping _nettle_sha256_compress.
+	(SHA256_INCR): Deleted macro.
+	(sha256_update): Use MD_UPDATE.
+	(sha256_final): Deleted function.
+	(sha256_write_digest): New function, replacing sha256_final, and
+	using MD_FINAL.
+	(sha256_digest): Use sha256_write_digest.
+	(sha224_digest): Likewise.
+
+	* tools/nettle-hash.c (list_algorithms): Fixed typo in header.
+
+	* sha1.c (SHA1_DATA_LENGTH): Deleted unused macro.
+	(sha1_init): Use memcpy to initialize the state vector.
+	(SHA1_INCR): Deleted macro.
+	(sha1_update): Use MD_UPDATE macro, to reduce code duplication.
+	(sha1_digest): Use MD_FINAL macro.
+	(sha1_final): Deleted function.
+
+	* sha.h (struct sha1_ctx): Renamed attribute digest to state.
+
+	* macros.h (MD_UPDATE): New macro.
+	(MD_FINAL): New macro.
+
 2011-08-28  Niels Möller  <nisse@lysator.liu.se>
 
 	* ripemd160.c (ripemd160_final): Use LE_WRITE_UINT32. Deleted byte
 	swapping at the end, leaving it to ripemd160_digest.
-	(ripemd160_digest): Use _nettle_write_le32. 
+	(ripemd160_digest): Use _nettle_write_le32.
 
 	* Makefile.in (nettle_SOURCES): Added write-le32.c.
 

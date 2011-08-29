@@ -1,3 +1,11 @@
+NEWS for the 2.3 release
+
+	Misc:
+
+	* In the context struct sha1_ctx renamed the attribute
+	  "digest" to "state". Applications should not peek inside
+	  this struct, and the ABI is unchanged.
+
 NEWS for the 2.2 release
 
 	Licensing change:
