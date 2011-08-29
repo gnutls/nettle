@@ -43,12 +43,13 @@ extern "C" {
 /* Digest is kept internally as 4 32-bit words. */
 #define _MD4_DIGEST_LENGTH 4
 
+/* FIXME: Identical to md5_ctx */
 struct md4_ctx
 {
-  uint32_t digest[_MD4_DIGEST_LENGTH];
-  uint32_t count_l, count_h;    /* Block count */
-  uint8_t block[MD4_DATA_SIZE]; /* Block buffer */
-  unsigned index;               /* Into buffer */
+  uint32_t state[_MD4_DIGEST_LENGTH];
+  uint32_t count_low, count_high;	/* Block count */
+  uint8_t block[MD4_DATA_SIZE];		/* Block buffer */
+  unsigned index;			/* Into buffer */
 };
 
 void
