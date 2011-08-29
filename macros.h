@@ -135,7 +135,6 @@ do {						\
 /* Helper macro for Merkle-Damgård hash functions. Assumes the context
    structs includes the following fields:
 
-     xxx state [...];			// State for the compression function
      xxx count_low, count_high;		// Two word block count
      uint8_t block[...];		// Buffer holding one block
      unsigned int index;		// Index into block
@@ -148,7 +147,7 @@ do {						\
 
 /* Takes the compression function f as argument. NOTE: also clobbers
    length and data. */
-#define MD_UPDATE(ctx, length, data, f)					\
+#define MD_UPDATE(ctx, length, data, f, incr)				\
   do {									\
     if ((ctx)->index)							\
       {									\
@@ -164,17 +163,17 @@ do {						\
 	  {								\
 	    memcpy((ctx)->block + (ctx)->index, (data), __md_left);	\
 									\
-	    f((ctx)->state, (ctx)->block);				\
-	    MD_INCR(ctx);						\
+	    f((ctx), (ctx)->block);					\
+	    (incr);							\
 									\
 	    (data) += __md_left;					\
 	    (length) -= __md_left;					\
 	  }								\
-	} \
+      }									\
     while ((length) >= sizeof((ctx)->block))				\
       {									\
-	f((ctx)->state, (data));					\
-	MD_INCR(ctx);							\
+	f((ctx), (data));						\
+	(incr);								\
 									\
 	(data) += sizeof((ctx)->block);					\
 	(length) -= sizeof((ctx)->block);				\
@@ -185,13 +184,12 @@ do {						\
     ;									\
   } while (0)
 
-/* Final wrapup - pad to block boundary with the bit pattern
-   1 0* (count of bits processed) */
-
-#define MD_FINAL(ctx, bits, shift, f, write)				\
+/* Pads the block to a block boundary with the bit pattern 1 0*,
+   leaving size octets for the length field at the end. If needed,
+   compresses the block and starts a new one. */
+#define MD_PAD(ctx, size, f)						\
   do {									\
     unsigned __md_i;							\
-    uint##bits##_t __md_low, __md_high;					\
     __md_i = (ctx)->index;						\
 									\
     /* Set the first char of padding to 0x80. This is safe since there	\
@@ -205,25 +203,12 @@ do {						\
 	   pad with another one */					\
 	memset((ctx)->block + __md_i, 0, sizeof((ctx)->block) - __md_i); \
 									\
-	f((ctx)->state, (ctx)->block);					\
+	f((ctx), (ctx)->block);						\
 	__md_i = 0;							\
       }									\
     memset((ctx)->block + __md_i, 0,					\
-	   sizeof((ctx)->block) - 2*sizeof((ctx)->count_low) - __md_i); \
+	   sizeof((ctx)->block) - (size) - __md_i);			\
     									\
-    /* There are 2^shift bits in one block */				\
-    __md_high = ((ctx)->count_high << (shift))				\
-      | ((ctx)->count_low >> ((bits) - (shift)));			\
-    __md_low = ((ctx)->count_low << (shift)) | ((ctx)->index << 3);	\
-									\
-    write((ctx)->block							\
-	  + sizeof((ctx)->block) - 2*sizeof((ctx)->count_low),		\
-	  __md_high);					       \
-    write((ctx)->block							\
-	  + sizeof((ctx)->block) - sizeof((ctx)->count_low),		\
-	  __md_low);							\
-									\
-    f((ctx)->state, (ctx)->block);					\
   } while (0)
 
 #endif /* NETTLE_MACROS_H_INCLUDED */
