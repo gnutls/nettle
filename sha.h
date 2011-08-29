@@ -57,7 +57,7 @@ extern "C" {
 
 struct sha1_ctx
 {
-  uint32_t digest[_SHA1_DIGEST_LENGTH];   /* Message digest */
+  uint32_t state[_SHA1_DIGEST_LENGTH];    /* State variables */
   uint32_t count_low, count_high;         /* 64-bit block count */
   uint8_t block[SHA1_DATA_SIZE];          /* SHA1 data buffer */
   unsigned int index;                     /* index into buffer */
