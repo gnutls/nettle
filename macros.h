@@ -131,4 +131,96 @@ do {						\
       }						\
   } while (0)
 
+
+/* Helper macro for Merkle-Damgård hash functions. Assumes the context
+   structs includes the following fields:
+
+     xxx state [...];			// State for the compression function
+     xxx count_low, count_high;		// Two word block count
+     uint8_t block[...];		// Buffer holding one block
+     unsigned int index;		// Index into block
+*/
+
+/* FIXME: Should probably switch to using uint64_t for the count, but
+   due to alignment and byte order that may be an ABI change. */
+
+#define MD_INCR(ctx) ((ctx)->count_high += !++(ctx)->count_low)
+
+/* Takes the compression function f as argument. NOTE: also clobbers
+   length and data. */
+#define MD_UPDATE(ctx, length, data, f)					\
+  do {									\
+    if ((ctx)->index)							\
+      {									\
+	/* Try to fill partial block */					\
+	unsigned __md_left = sizeof((ctx)->block) - (ctx)->index;	\
+	if ((length) < __md_left)					\
+	  {								\
+	    memcpy((ctx)->block + (ctx)->index, (data), (length));	\
+	    (ctx)->index += (length);					\
+	    goto __md_done; /* Finished */				\
+	  }								\
+	else								\
+	  {								\
+	    memcpy((ctx)->block + (ctx)->index, (data), __md_left);	\
+									\
+	    f((ctx)->state, (ctx)->block);				\
+	    MD_INCR(ctx);						\
+									\
+	    (data) += __md_left;					\
+	    (length) -= __md_left;					\
+	  }								\
+	} \
+    while ((length) >= sizeof((ctx)->block))				\
+      {									\
+	f((ctx)->state, (data));					\
+	MD_INCR(ctx);							\
+									\
+	(data) += sizeof((ctx)->block);					\
+	(length) -= sizeof((ctx)->block);				\
+      }									\
+    memcpy ((ctx)->block, (data), (length));				\
+    (ctx)->index = (length);						\
+  __md_done:								\
+    ;									\
+  } while (0)
+
+#define MD_PAD(ctx, bits, shift, f, write)				\
+  do {									\
+    unsigned __md_i;							\
+    uint##bits##_t __md_low, __md_high;					\
+    __md_i = (ctx)->index;						\
+									\
+    /* Set the first char of padding to 0x80. This is safe since there	\
+       is always at least one byte free */				\
+									\
+    assert(__md_i < sizeof((ctx)->block));					\
+    (ctx)->block[__md_i++] = 0x80;						\
+									\
+    if (__md_i > (sizeof((ctx)->block) - 2*sizeof((ctx)->count_low)))	\
+      { /* No room for length in this block. Process it and		\
+	   pad with another one */					\
+	memset((ctx)->block + __md_i, 0, sizeof((ctx)->block) - __md_i); \
+									\
+	f((ctx)->state, (ctx)->block);					\
+	__md_i = 0;							\
+      }									\
+    memset((ctx)->block + __md_i, 0,					\
+	   sizeof((ctx)->block) - 2*sizeof((ctx)->count_low) - __md_i); \
+    									\
+    /* There are 2^shift bits in one block */				\
+    __md_high = ((ctx)->count_high << (shift))				\
+      | ((ctx)->count_low >> ((bits) - (shift)));			\
+    __md_low = ((ctx)->count_low << (shift)) | ((ctx)->index << 3);	\
+									\
+    write((ctx)->block							\
+	  + sizeof((ctx)->block) - 2*sizeof((ctx)->count_low),		\
+	  __md_high);					       \
+    write((ctx)->block							\
+	  + sizeof((ctx)->block) - sizeof((ctx)->count_low),		\
+	  __md_low);							\
+									\
+    f((ctx)->state, (ctx)->block);					\
+  } while (0)
+
 #endif /* NETTLE_MACROS_H_INCLUDED */
