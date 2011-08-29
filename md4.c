@@ -36,6 +36,7 @@
 #include "md4.h"
 
 #include "macros.h"
+#include "nettle-write.h"
 
 /* A block, treated as a sequence of 32-bit words. */
 #define MD4_DATA_LENGTH 16
@@ -44,21 +45,23 @@ static void
 md4_transform(uint32_t *digest, const uint32_t *data);
 
 static void
-md4_block(struct md4_ctx *ctx, const uint8_t *block);
+md4_compress(struct md4_ctx *ctx, const uint8_t *block);
 
-static void
-md4_final(struct md4_ctx *ctx);
-
+/* FIXME: Could be an alias for md5_init */
 void
 md4_init(struct md4_ctx *ctx)
 {
   /* Same constants as for md5. */
-  ctx->digest[0] = 0x67452301;
-  ctx->digest[1] = 0xefcdab89;
-  ctx->digest[2] = 0x98badcfe;
-  ctx->digest[3] = 0x10325476;
+  const uint32_t iv[_MD4_DIGEST_LENGTH] =
+    {
+      0x67452301,
+      0xefcdab89,
+      0x98badcfe,
+      0x10325476,
+    };
+  memcpy(ctx->state, iv, sizeof(ctx->state));
   
-  ctx->count_l = ctx->count_h = 0;
+  ctx->count_low = ctx->count_high = 0;
   ctx->index = 0;
 }
 
@@ -67,33 +70,7 @@ md4_update(struct md4_ctx *ctx,
 	   unsigned length,
 	   const uint8_t *data)
 {
-  if (ctx->index)
-    {
-      /* Try to fill partial block */
-      unsigned left = MD4_DATA_SIZE - ctx->index;
-      if (length < left)
-	{
-	  memcpy(ctx->block + ctx->index, data, length);
-	  ctx->index += length;
-	  return; /* Finished */
-	}
-      else
-	{
-	  memcpy(ctx->block + ctx->index, data, left);
-	  md4_block(ctx, ctx->block);
-	  data += left;
-	  length -= left;
-	}
-    }
-  while (length >= MD4_DATA_SIZE)
-    {
-      md4_block(ctx, data);
-      data += MD4_DATA_SIZE;
-      length -= MD4_DATA_SIZE;
-    }
-  if ((ctx->index = length))     /* This assignment is intended */
-    /* Buffer leftovers */
-    memcpy(ctx->block, data, length);
+  MD_UPDATE(ctx, length, data, md4_compress, MD_INCR(ctx));
 }
 
 void
@@ -101,33 +78,23 @@ md4_digest(struct md4_ctx *ctx,
 	   unsigned length,
 	   uint8_t *digest)
 {
+  uint32_t data[MD4_DATA_LENGTH];
   unsigned i;
-  unsigned words;
-  unsigned leftover;
-  
+
   assert(length <= MD4_DIGEST_SIZE);
 
-  md4_final(ctx);
-  
-  words = length / 4;
-  leftover = length % 4;
-  
-  /* Little endian order */
-  for (i = 0; i < words; i++, digest += 4)
-    LE_WRITE_UINT32(digest, ctx->digest[i]);
+  MD_PAD(ctx, 8, md4_compress);
+  for (i = 0; i < MD4_DATA_LENGTH - 2; i++)
+    data[i] = LE_READ_UINT32(ctx->block + 4*i);
 
-  if (leftover)
-    {
-      uint32_t word;
-      unsigned j;
+  /* There are 512 = 2^9 bits in one block 
+   * Little-endian order => Least significant word first */
 
-      assert(i < _MD4_DIGEST_LENGTH);
-      
-      /* Still least significant byte first. */
-      for (word = ctx->digest[i], j = 0; j < leftover;
-	   j++, word >>= 8)
-	digest[j] = word & 0xff;
-    }
+  data[MD4_DATA_LENGTH-1] = (ctx->count_high << 9) | (ctx->count_low >> 23);
+  data[MD4_DATA_LENGTH-2] = (ctx->count_low << 9) | (ctx->index << 3);
+  md4_transform(ctx->state, data);
+
+  _nettle_write_le32(length, digest, ctx->state);
   md4_init(ctx);
 }
 
@@ -208,65 +175,14 @@ md4_transform(uint32_t *digest, const uint32_t *data)
 }
 
 static void
-md4_block(struct md4_ctx *ctx, const uint8_t *block)
+md4_compress(struct md4_ctx *ctx, const uint8_t *block)
 {
   uint32_t data[MD4_DATA_LENGTH];
   unsigned i;
   
-  /* Update block count */
-  if (!++ctx->count_l)
-    ++ctx->count_h;
-
   /* Endian independent conversion */
   for (i = 0; i<16; i++, block += 4)
     data[i] = LE_READ_UINT32(block);
 
-  md4_transform(ctx->digest, data);
-}
-
-/* Final wrapup - pad to MD4_DATA_SIZE-byte boundary with the bit
- * pattern 1 0* (64-bit count of bits processed, LSB-first) */
-
-static void
-md4_final(struct md4_ctx *ctx)
-{
-  uint32_t data[MD4_DATA_LENGTH];
-  unsigned i;
-  unsigned words;
-  
-  i = ctx->index;
-
-  /* Set the first char of padding to 0x80. This is safe since there
-   * is always at least one byte free */
-  assert(i < MD4_DATA_SIZE);
-  ctx->block[i++] = 0x80;
-
-  /* Fill rest of word */
-  for( ; i & 3; i++)
-    ctx->block[i] = 0;
-
-  /* i is now a multiple of the word size 4 */
-  words = i >> 2;
-  for (i = 0; i < words; i++)
-    data[i] = LE_READ_UINT32(ctx->block + 4*i);
-  
-  if (words > (MD4_DATA_LENGTH-2))
-    { /* No room for length in this block. Process it and
-       * pad with another one */
-      for (i = words ; i < MD4_DATA_LENGTH; i++)
-	data[i] = 0;
-      md4_transform(ctx->digest, data);
-      for (i = 0; i < (MD4_DATA_LENGTH-2); i++)
-	data[i] = 0;
-    }
-  else
-    for (i = words ; i < MD4_DATA_LENGTH - 2; i++)
-      data[i] = 0;
-  
-  /* There are 512 = 2^9 bits in one block 
-   * Little-endian order => Least significant word first */
-
-  data[MD4_DATA_LENGTH-1] = (ctx->count_h << 9) | (ctx->count_l >> 23);
-  data[MD4_DATA_LENGTH-2] = (ctx->count_l << 9) | (ctx->index << 3);
-  md4_transform(ctx->digest, data);
+  md4_transform(ctx->state, data);
 }
