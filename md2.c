@@ -98,16 +98,6 @@ md2_transform(struct md2_ctx *ctx, const uint8_t *data)
     }
 }
 
-#if 0
-static void
-md2_final(struct md2_ctx *ctx)
-{
-  unsigned left = MD2_DATA_SIZE - ctx->index;
-  memset(ctx->block + ctx->index, left, left);
-  md2_transform(ctx, ctx->block);
-}
-#endif
-
 void
 md2_init(struct md2_ctx *ctx)
 {
@@ -119,33 +109,7 @@ md2_update(struct md2_ctx *ctx,
 	   unsigned length,
 	   const uint8_t *data)
 {
-  if (ctx->index)
-    {
-      /* Try to fill partial block */
-      unsigned left = MD2_DATA_SIZE - ctx->index;
-      if (length < left)
-	{
-	  memcpy(ctx->block + ctx->index, data, length);
-	  ctx->index += length;
-	  return; /* Finished */
-	}
-      else
-	{
-	  memcpy(ctx->block + ctx->index, data, left);
-	  md2_transform(ctx, ctx->block);
-	  data += left;
-	  length -= left;
-	}
-    }
-  while (length >= MD2_DATA_SIZE)
-    {
-      md2_transform(ctx, data);
-      data += MD2_DATA_SIZE;
-      length -= MD2_DATA_SIZE;
-    }
-  if ((ctx->index = length))     /* This assignment is intended */
-    /* Buffer leftovers */
-    memcpy(ctx->block, data, length);
+  MD_UPDATE(ctx, length, data, md2_transform, (void)0);
 }
 
 void
