@@ -72,11 +72,13 @@ sha1_init(struct sha1_ctx *ctx)
   ctx->index = 0;
 }
 
+#define COMPRESS(ctx, data) (_nettle_sha1_compress((ctx)->state, data))
+
 void
 sha1_update(struct sha1_ctx *ctx,
 	    unsigned length, const uint8_t *data)
 {
-  MD_UPDATE (ctx, length, data, _nettle_sha1_compress);
+  MD_UPDATE (ctx, length, data, COMPRESS, MD_INCR(ctx));
 }
 	  
 void
@@ -84,10 +86,21 @@ sha1_digest(struct sha1_ctx *ctx,
 	    unsigned length,
 	    uint8_t *digest)
 {
+  uint32_t high, low;
+
   assert(length <= SHA1_DIGEST_SIZE);
 
+  MD_PAD(ctx, 8, COMPRESS);
+
   /* There are 512 = 2^9 bits in one block */  
-  MD_FINAL(ctx, 32, 9, _nettle_sha1_compress, WRITE_UINT32);
+  high = (ctx->count_high << 9) | (ctx->count_low >> 23);
+  low = (ctx->count_low << 9) | (ctx->index << 3);
+
+  /* append the 64 bit count */
+  WRITE_UINT32(ctx->block + (SHA1_DATA_SIZE - 8), high);
+  WRITE_UINT32(ctx->block + (SHA1_DATA_SIZE - 4), low);
+  _nettle_sha1_compress(ctx->state, ctx->block);
+
   _nettle_write_be32(length, digest, ctx->state);
   sha1_init(ctx);
 }
