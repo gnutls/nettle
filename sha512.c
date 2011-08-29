@@ -104,7 +104,7 @@ K[80] =
   0x5FCB6FAB3AD6FAECULL,0x6C44198C4A475817ULL,
 };
 
-#define COMPRESS(digest, data) (_nettle_sha512_compress((digest), (data), K))
+#define COMPRESS(ctx, data) (_nettle_sha512_compress((ctx)->state, (data), K))
 
 void
 sha512_init(struct sha512_ctx *ctx)
@@ -139,7 +139,7 @@ void
 sha512_update(struct sha512_ctx *ctx,
 	      unsigned length, const uint8_t *data)
 {
-  MD_UPDATE (ctx, length, data, COMPRESS);
+  MD_UPDATE (ctx, length, data, COMPRESS, MD_INCR(ctx));
 }
 
 static void
@@ -147,15 +147,27 @@ sha512_write_digest(struct sha512_ctx *ctx,
 		    unsigned length,
 		    uint8_t *digest)
 {
+  uint64_t high, low;
+
   unsigned i;
   unsigned words;
   unsigned leftover;
 
   assert(length <= SHA512_DIGEST_SIZE);
-  
-  /* There are 1024 = 2^10 bits in one block */
-  MD_FINAL(ctx, 64, 10, COMPRESS, WRITE_UINT64);
-  
+
+  MD_PAD(ctx, 16, COMPRESS);
+
+  /* There are 1024 = 2^10 bits in one block */  
+  high = (ctx->count_high << 10) | (ctx->count_low >> 54);
+  low = (ctx->count_low << 10) | (ctx->index << 3);
+
+  /* This is slightly inefficient, as the numbers are converted to
+     big-endian format, and will be converted back by the compression
+     function. It's probably not worth the effort to fix this. */
+  WRITE_UINT64(ctx->block + (SHA512_DATA_SIZE - 16), high);
+  WRITE_UINT64(ctx->block + (SHA512_DATA_SIZE - 8), low);
+  COMPRESS(ctx, ctx->block);
+
   words = length / 8;
   leftover = length % 8;
 
