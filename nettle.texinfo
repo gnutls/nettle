@@ -462,6 +462,43 @@ This function also resets the context in the same way as
 @code{md4_init}.
 @end deftypefun
 
+@subsection @acronym{RIPEMD160}
+
+RIPEMD160 is a hash function designed by Hans Dobbertin, Antoon
+Bosselaers, and Bart Preneel, as a strengthened version of RIPEMD
+(which, like MD4 and MD5, fails the collision-resistance requirement).
+It produces message digests of 160 bits, or 20 octets. Nettle defined
+RIPEMD160 in @file{nettle/ripemd160.h}.
+
+@deftp {Context struct} {struct ripemd160_ctx}
+@end deftp
+
+@defvr Constant RIPEMD160_DIGEST_SIZE
+The size of an RIPEMD160 digest, i.e. 20.
+@end defvr
+
+@defvr Constant RIPEMD160_DATA_SIZE
+The internal block size of RIPEMD160.
+@end defvr
+
+@deftypefun void ripemd160_init (struct ripemd160_ctx *@var{ctx})
+Initialize the RIPEMD160 state.
+@end deftypefun
+
+@deftypefun void ripemd160_update (struct ripemd160_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+Hash some more data.
+@end deftypefun
+
+@deftypefun void ripemd160_digest (struct ripemd160_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing it
+to @var{digest}. @var{length} may be smaller than
+@code{RIPEMD160_DIGEST_SIZE}, in which case only the first @var{length}
+octets of the digest are written.
+
+This function also resets the context in the same way as
+@code{ripemd160_init}.
+@end deftypefun
+
 @subsection @acronym{SHA1}
 
 SHA1 is a hash function specified by @dfn{NIST} (The U.S. National Institute
@@ -673,6 +710,7 @@ The last three attributes are function pointers, of types
 @deftypevr {Constant Struct} {struct nettle_hash} nettle_md2
 @deftypevrx {Constant Struct} {struct nettle_hash} nettle_md4
 @deftypevrx {Constant Struct} {struct nettle_hash} nettle_md5
+@deftypevrx {Constant Struct} {struct nettle_hash} nettle_ripemd160
 @deftypevrx {Constant Struct} {struct nettle_hash} nettle_sha1
 @deftypevrx {Constant Struct} {struct nettle_hash} nettle_sha224
 @deftypevrx {Constant Struct} {struct nettle_hash} nettle_sha256
