@@ -66,7 +66,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 cbc.c ctr.c gcm.c gcm-aes.c \
 		 des.c \
 		 des3.c des-compat.c \
-		 hmac.c hmac-md5.c hmac-sha1.c \
+		 hmac.c hmac-md5.c hmac-ripemd160.c hmac-sha1.c \
 		 hmac-sha224.c hmac-sha256.c hmac-sha384.c hmac-sha512.c \
 		 knuth-lfib.c \
 		 md2.c md2-meta.c md4.c md4-meta.c \
