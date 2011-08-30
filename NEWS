@@ -1,10 +1,30 @@
 NEWS for the 2.3 release
 
-	Misc:
+	* Support for the ripemd-160 hash function.
 
-	* In the context struct sha1_ctx renamed the attribute
-	  "digest" to "state". Applications should not peek inside
-	  this struct, and the ABI is unchanged.
+	* Generates and installs nettle.pc and hogweed.pc files, for
+          use with pkg-config. Feedback appreciated. For projects
+          using autoconf, the traditional non-pkg-config ways of
+          detecting libraries, and setting LIBS and LDFLAGS, is still
+          recommended.
+
+	* Fixed a bug which made the testsuite fail in the GCM test on
+	  certain platforms. Should not affect any documented features
+	  of the library.
+
+	* Reorganization of the code for the various Merkle-Damgård
+	  hash functions. Some fields in the context structs for md4,
+	  md5 and sha1 have been renamed, for consistency.
+	  Applications should not peek inside these structs, and the
+	  ABI is unchanged.
+	  
+	* In the manual, fixed mis-placed const in certain function
+          prototypes.
+
+	The library is intended to be binary compatible with
+	nettle-2.2. The shared library names are libnettle.so.4.2 and
+	libhogweed.so.2.1, with sonames still libnettle.so.4 and
+	libhogweed.so.2.
 
 NEWS for the 2.2 release
 
