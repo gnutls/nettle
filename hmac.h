@@ -103,6 +103,22 @@ hmac_md5_digest(struct hmac_md5_ctx *ctx,
 		unsigned length, uint8_t *digest);
 
 
+/* hmac-ripemd160 */
+struct hmac_ripemd160_ctx HMAC_CTX(struct ripemd160_ctx);
+
+void
+hmac_ripemd160_set_key(struct hmac_ripemd160_ctx *ctx,
+		       unsigned key_length, const uint8_t *key);
+
+void
+hmac_ripemd160_update(struct hmac_ripemd160_ctx *ctx,
+		      unsigned length, const uint8_t *data);
+
+void
+hmac_ripemd160_digest(struct hmac_ripemd160_ctx *ctx,
+		      unsigned length, uint8_t *digest);
+
+
 /* hmac-sha1 */
 struct hmac_sha1_ctx HMAC_CTX(struct sha1_ctx);
 
