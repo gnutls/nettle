@@ -29,6 +29,7 @@
 #include "nettle-meta.h"
 
 #include "md5.h"
+#include "ripemd160.h"
 #include "sha.h"
 
 #ifdef __cplusplus
@@ -42,6 +43,9 @@ extern "C" {
 #define hmac_md5_set_key nettle_hmac_md5_set_key
 #define hmac_md5_update nettle_hmac_md5_update
 #define hmac_md5_digest nettle_hmac_md5_digest
+#define hmac_ripemd160_set_key nettle_hmac_ripemd160_set_key
+#define hmac_ripemd160_update nettle_hmac_ripemd160_update
+#define hmac_ripemd160_digest nettle_hmac_ripemd160_digest
 #define hmac_sha1_set_key nettle_hmac_sha1_set_key
 #define hmac_sha1_update nettle_hmac_sha1_update
 #define hmac_sha1_digest nettle_hmac_sha1_digest
