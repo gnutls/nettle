@@ -16,6 +16,7 @@ test_main(void)
 {
   struct hmac_md5_ctx md5;
   struct hmac_sha1_ctx sha1;
+  struct hmac_ripemd160_ctx ripemd160;
   struct hmac_sha224_ctx sha224;
   struct hmac_sha256_ctx sha256;
   struct hmac_sha384_ctx sha384;
@@ -127,7 +128,80 @@ test_main(void)
 	    LDATA("monkey monkey monkey monkey"),
 	    LDATA("12345678901234567890123456789012345678901234567890123456789012345678901234567890"),
 	    H("939dd45512ee3a594b6654f6b8de27f7"));
-  
+
+  /* Test vectors for ripemd160, from
+     http://homes.esat.kuleuven.be/~bosselae/ripemd160.html */
+  HMAC_TEST(ripemd160, RIPEMD160_DIGEST_SIZE,
+	    HL("00112233445566778899aabbccddeeff01234567"),
+	    LDATA(""),
+	    H("cf387677bfda8483e63b57e06c3b5ecd8b7fc055"));
+
+  HMAC_TEST(ripemd160, RIPEMD160_DIGEST_SIZE,
+	    HL("00112233445566778899aabbccddeeff01234567"),
+	    LDATA("a"),
+	    H("0d351d71b78e36dbb7391c810a0d2b6240ddbafc"));
+
+  HMAC_TEST(ripemd160, RIPEMD160_DIGEST_SIZE,
+	    HL("00112233445566778899aabbccddeeff01234567"),
+	    LDATA("abc"),
+	    H("f7ef288cb1bbcc6160d76507e0a3bbf712fb67d6"));
+
+  HMAC_TEST(ripemd160, RIPEMD160_DIGEST_SIZE,
+	    HL("00112233445566778899aabbccddeeff01234567"),
+	    LDATA("message digest"),
+	    H("f83662cc8d339c227e600fcd636c57d2571b1c34"));
+
+  HMAC_TEST(ripemd160, RIPEMD160_DIGEST_SIZE,
+	    HL("00112233445566778899aabbccddeeff01234567"),
+	    LDATA("abcdefghijklmnopqrstuvwxyz"),
+	    H("843d1c4eb880ac8ac0c9c95696507957d0155ddb"));
+
+  HMAC_TEST(ripemd160, RIPEMD160_DIGEST_SIZE,
+	    HL("00112233445566778899aabbccddeeff01234567"),
+	    LDATA("abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"),
+	    H("60f5ef198a2dd5745545c1f0c47aa3fb5776f881"));
+
+  HMAC_TEST(ripemd160, RIPEMD160_DIGEST_SIZE,
+	    HL("00112233445566778899aabbccddeeff01234567"),
+	    LDATA("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"),
+	    H("e49c136a9e5627e0681b808a3b97e6a6e661ae79"));
+
+  /* Other key */
+  HMAC_TEST(ripemd160, RIPEMD160_DIGEST_SIZE,
+	    HL("0123456789abcdeffedcba987654321000112233"),
+	    LDATA(""),
+	    H("fe69a66c7423eea9c8fa2eff8d9dafb4f17a62f5"));
+
+  HMAC_TEST(ripemd160, RIPEMD160_DIGEST_SIZE,
+	    HL("0123456789abcdeffedcba987654321000112233"),
+	    LDATA("a"),
+	    H("85743e899bc82dbfa36faaa7a25b7cfd372432cd"));
+
+  HMAC_TEST(ripemd160, RIPEMD160_DIGEST_SIZE,
+	    HL("0123456789abcdeffedcba987654321000112233"),
+	    LDATA("abc"),
+	    H("6e4afd501fa6b4a1823ca3b10bd9aa0ba97ba182"));
+
+  HMAC_TEST(ripemd160, RIPEMD160_DIGEST_SIZE,
+	    HL("0123456789abcdeffedcba987654321000112233"),
+	    LDATA("message digest"),
+	    H("2e066e624badb76a184c8f90fba053330e650e92"));
+
+  HMAC_TEST(ripemd160, RIPEMD160_DIGEST_SIZE,
+	    HL("0123456789abcdeffedcba987654321000112233"),
+	    LDATA("abcdefghijklmnopqrstuvwxyz"),
+	    H("07e942aa4e3cd7c04dedc1d46e2e8cc4c741b3d9"));
+
+  HMAC_TEST(ripemd160, RIPEMD160_DIGEST_SIZE,
+	    HL("0123456789abcdeffedcba987654321000112233"),
+	    LDATA("abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"),
+	    H("b6582318ddcfb67a53a67d676b8ad869aded629a"));
+
+  HMAC_TEST(ripemd160, RIPEMD160_DIGEST_SIZE,
+	    HL("0123456789abcdeffedcba987654321000112233"),
+	    LDATA("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"),
+	    H("f1be3ee877703140d34f97ea1ab3a07c141333e2"));
+
   /* Test vectors for sha1, from RFC-2202 */
 
   /* sha1 - 1 */
