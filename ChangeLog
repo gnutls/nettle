@@ -1,3 +1,11 @@
+2011-08-30  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/hmac-test.c: Added tests for hmac-ripemd160.
+
+	* hmac.h: Declare hmac-ripemd160 related functions.
+
+	* Makefile.in (nettle_SOURCES): Added hmac-ripemd160.c.
+
 2011-08-30  Niels Möller  <nisse@amfibolit.hack.org>
 
 	* nettle.texinfo (Hash functions): Document ripemd-160.
