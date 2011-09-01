@@ -7,14 +7,14 @@
 @syncodeindex fn cp
 @c %**end of header
 
-@set UPDATED-FOR 2.2
+@set UPDATED-FOR 2.3
 @set AUTHOR Niels Möller
 
 @copying
 This manual is for the Nettle library (version @value{UPDATED-FOR}), a
 low-level cryptographic library.
 
-Originally written 2001 by @value{AUTHOR}, updated 2010.
+Originally written 2001 by @value{AUTHOR}, updated 2011.
 
 @quotation
 This manual is placed in the public domain. You may freely copy it, in
@@ -1829,11 +1829,11 @@ very useful.
 
 Nettle's @acronym{HMAC} functions are defined in @file{<nettle/hmac.h>}.
 There are abstract functions that use a pointer to a @code{struct
-nettle_hash} to represent the underlying hash function and @code{void
-*} pointers that point to three different context structs for that hash
+nettle_hash} to represent the underlying hash function and @code{void *}
+pointers that point to three different context structs for that hash
 function. There are also concrete functions for @acronym{HMAC-MD5},
-@acronym{HMAC-SHA1}, @acronym{HMAC-SHA256}, and @acronym{HMAC-SHA512}.
-First, the abstract functions:
+@acronym{HMAC-RIPEMD160} @acronym{HMAC-SHA1}, @acronym{HMAC-SHA256}, and
+@acronym{HMAC-SHA512}. First, the abstract functions:
 
 @deftypefun void hmac_set_key (void *@var{outer}, void *@var{inner}, void *@var{state}, const struct nettle_hash *@var{H}, unsigned @var{length}, const uint8_t *@var{key})
 Initializes the three context structs from the key. The @var{outer} and
@@ -1925,6 +1925,28 @@ Process some more data.
 @deftypefun void hmac_md5_digest (struct hmac_md5_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
 Extracts the @acronym{MAC}, writing it to @var{digest}. @var{length} may be smaller than
 @code{MD5_DIGEST_SIZE}, in which case only the first @var{length}
+octets of the @acronym{MAC} are written.
+
+This function also resets the context for processing new messages, with
+the same key.
+@end deftypefun
+
+@subsubsection @acronym{HMAC-RIPEMD160}
+
+@deftp {Context struct} {struct hmac_ripemd160_ctx}
+@end deftp
+
+@deftypefun void hmac_ripemd160_set_key (struct hmac_ripemd160_ctx *@var{ctx}, unsigned @var{key_length}, const uint8_t *@var{key})
+Initializes the context with the key.
+@end deftypefun
+
+@deftypefun void hmac_ripemd160_update (struct hmac_ripemd160_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+Process some more data.
+@end deftypefun
+
+@deftypefun void hmac_ripemd160_digest (struct hmac_ripemd160_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+Extracts the @acronym{MAC}, writing it to @var{digest}. @var{length} may be smaller than
+@code{RIPEMD160_DIGEST_SIZE}, in which case only the first @var{length}
 octets of the @acronym{MAC} are written.
 
 This function also resets the context for processing new messages, with
