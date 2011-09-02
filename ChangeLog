@@ -1,3 +1,9 @@
+2011-09-02  Niels Möller  <nisse@amfibolit.hack.org>
+
+	* configure.ac: Changed version number to 2.4.
+
+	* Released nettle-2.3.
+
 2011-08-30  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/hmac-test.c: Added tests for hmac-ripemd160.
