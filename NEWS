@@ -12,7 +12,7 @@ NEWS for the 2.3 release
 	  certain platforms. Should not affect any documented features
 	  of the library.
 
-	* Reorganization of the code for the various Merkle-DamgÃ¥rd
+	* Reorganization of the code for the various Merkle-Damgård
 	  hash functions. Some fields in the context structs for md4,
 	  md5 and sha1 have been renamed, for consistency.
 	  Applications should not peek inside these structs, and the
