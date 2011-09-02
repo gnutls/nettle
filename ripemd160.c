@@ -1,5 +1,9 @@
-/* ripemd160.c  -  RIPE-MD160
+/* ripemd160.c  -  RIPE-MD160 */
+
+/* nettle, low-level cryptographics library
+ *
  * Copyright (C) 1998, 2001, 2002, 2003 Free Software Foundation, Inc.
+ * Copyright (C) 2011 Niels Möller
  *
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by

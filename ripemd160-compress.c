@@ -1,4 +1,7 @@
-/* ripemd160-compress.c  -  RIPE-MD160 (Transform function)
+/* ripemd160-compress.c  -  RIPE-MD160 (Transform function) */
+
+/* nettle, low-level cryptographics library
+ *
  * Copyright (C) 1998, 2001, 2002, 2003 Free Software Foundation, Inc.
  *
  * The nettle library is free software; you can redistribute it and/or modify
