@@ -1,5 +1,8 @@
 2011-09-03  Niels Möller  <nisse@lysator.liu.se>
 
+	* gcm-aes.c: Include config.h.
+	* tools/nettle-lfib-stream.c: Likewise.
+
 	* ripemd160-compress.c: Added missing include of config.h. Needed
 	for correct operation on big-endian systems.
 
