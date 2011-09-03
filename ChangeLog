@@ -1,5 +1,13 @@
 2011-09-03  Niels Möller  <nisse@lysator.liu.se>
 
+	* x86/camellia-crypt-internal.asm: Use "l"-suffix on instructions
+	more consistently. Reportedly, freebsd and netbsd systems with
+	clang are more picky about this.
+
+	* configure.ac: Changed version number to 2.5.
+
+	* Released nettle-2.4.
+
 	* configure.ac (LIBNETTLE_MINOR): Bumped library version, to 4.3.
 
 	* gcm-aes.c: Include config.h.
