@@ -1,5 +1,7 @@
 2011-09-03  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac (LIBNETTLE_MINOR): Bumped library version, to 4.3.
+
 	* gcm-aes.c: Include config.h.
 	* tools/nettle-lfib-stream.c: Likewise.
 
