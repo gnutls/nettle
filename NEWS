@@ -1,3 +1,14 @@
+NEWS for the 2.4 release
+
+	This is a bugfix release only. It turned out ripemd160 in the
+	2.3 release was broken on all big-endian systems, due to a
+	missing include of config.h. nettle-2.4 fixes this.
+
+	The library is intended to be binary compatible with
+	nettle-2.2 and nettle-2.3. The shared library names are
+	libnettle.so.4.3 and libhogweed.so.2.1, with sonames still
+	libnettle.so.4 and libhogweed.so.2.
+	
 NEWS for the 2.3 release
 
 	* Support for the ripemd-160 hash function.

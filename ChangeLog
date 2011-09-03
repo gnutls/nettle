@@ -1,3 +1,8 @@
+2011-09-03  Niels Möller  <nisse@lysator.liu.se>
+
+	* ripemd160-compress.c: Added missing include of config.h. Needed
+	for correct operation on big-endian systems.
+
 2011-09-02  Niels Möller  <nisse@amfibolit.hack.org>
 
 	* configure.ac: Changed version number to 2.4.
