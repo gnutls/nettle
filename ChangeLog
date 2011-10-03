@@ -1,3 +1,13 @@
+2011-10-03  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/memxor.asm: Implemented sse2-loop. Configured at compile
+	time, and currently disabled.
+
+	* testsuite/testutils.h (ASSERT): Write message to stderr.
+
+	* testsuite/memxor-test.c: Use 16-byte alignment for "fully
+	aligned" operands.
+
 2011-09-03  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86/camellia-crypt-internal.asm: Use "l"-suffix on instructions
