@@ -221,6 +221,12 @@ test_dsa_key(struct dsa_public_key *pub,
 #define SKIP() exit(77)
 #define SUCCESS() return EXIT_SUCCESS
 
-#define ASSERT(x) do { if (!(x)) FAIL(); } while(0)
+#define ASSERT(x) do {							\
+    if (!(x))								\
+      {									\
+	fprintf(stderr, "Assert failed %d: %s\n", __LINE__, #x);	\
+	FAIL();								\
+      }									\
+  } while(0)
 
 #endif /* NETTLE_TESTUTILS_H_INCLUDED */
