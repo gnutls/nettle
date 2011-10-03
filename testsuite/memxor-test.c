@@ -2,19 +2,20 @@
 #include "memxor.h"
 
 #define MAX_SIZE 256
+#define ALIGN_SIZE 16
 
 static uint8_t *
 set_align(uint8_t *buf, unsigned align)
 {
   unsigned offset;
-  /* An extra redzon char at the beginning */
+  /* An extra redzone char at the beginning */
   buf++;
-  offset = (uintptr_t) (buf) % sizeof(unsigned long);
+  offset = (uintptr_t) (buf) % ALIGN_SIZE;
 
   if (offset < align)
     buf += (align - offset);
   else if (offset > align)
-    buf += (align + sizeof(unsigned long) - offset);
+    buf += (align + ALIGN_SIZE - offset);
 
   return buf;  
 }
@@ -23,8 +24,8 @@ static void
 test_memxor (const uint8_t *a, const uint8_t *b, const uint8_t *c,
 	     size_t size, unsigned align_dst, unsigned align_src)
 {
-  uint8_t dst_buf[MAX_SIZE + sizeof(unsigned long) + 1];
-  uint8_t src_buf[MAX_SIZE + sizeof(unsigned long) + 1];
+  uint8_t dst_buf[MAX_SIZE + ALIGN_SIZE + 1];
+  uint8_t src_buf[MAX_SIZE + ALIGN_SIZE + 1];
 
   uint8_t *dst = set_align (dst_buf, align_dst);
   uint8_t *src = set_align (src_buf, align_src);
@@ -49,9 +50,9 @@ static void
 test_memxor3 (const uint8_t *ain, const uint8_t *bin, const uint8_t *c,
 	      size_t size, unsigned align_dst, unsigned align_a, unsigned align_b)
 {
-  uint8_t dst_buf[MAX_SIZE + sizeof(unsigned long) + 1];
-  uint8_t a_buf[MAX_SIZE + sizeof(unsigned long) + 1];
-  uint8_t b_buf[MAX_SIZE + sizeof(unsigned long) + 1];
+  uint8_t dst_buf[MAX_SIZE + ALIGN_SIZE + 1];
+  uint8_t a_buf[MAX_SIZE + ALIGN_SIZE + 1];
+  uint8_t b_buf[MAX_SIZE + ALIGN_SIZE + 1];
 
   uint8_t *dst = set_align (dst_buf, align_dst);
   uint8_t *a = set_align (a_buf, align_a);
@@ -133,14 +134,14 @@ test_main(void)
     17, 23, 24, 25, 30, 31, 32, 33, 34, 35, 36, 37,
     250, 251, 252, 253,254, 255, 256, -1
   };
-
+  
   unsigned i, align_dst, align_a, align_b;
   for (i = 0; size[i] >= 0; i++)
-    for (align_dst = 0; align_dst < sizeof(unsigned long); align_dst++)
-      for (align_a = 0; align_a < sizeof(unsigned long); align_a++)
+    for (align_dst = 0; align_dst < ALIGN_SIZE; align_dst++)
+      for (align_a = 0; align_a < ALIGN_SIZE; align_a++)
 	{
 	  test_memxor (a, b, c, size[i], align_dst, align_a);
-	  for (align_b = 0; align_b < sizeof(unsigned long); align_b++)
+	  for (align_b = 0; align_b < ALIGN_SIZE; align_b++)
 	    test_memxor3 (a, b, c, size[i], align_dst, align_a, align_b);
 	}
 
