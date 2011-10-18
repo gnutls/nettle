@@ -1,3 +1,8 @@
+2011-10-18  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Improved setup för darwin shared libraries.
+	Patch contributed by Ryan Schmidt.
+
 2011-10-03  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86_64/memxor.asm: Implemented sse2-loop. Configured at compile

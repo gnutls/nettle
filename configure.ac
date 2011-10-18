@@ -281,16 +281,16 @@ case "$host_os" in
     ;;
   darwin*)
     LIBNETTLE_FORLINK=libnettle.dylib
-    LIBNETTLE_SONAME='$(LIBNETTLE_FORLINK).$(LIBNETTLE_MAJOR)'
-    LIBNETTLE_FILE='$(LIBNETTLE_SONAME).$(LIBNETTLE_MINOR)'
-    LIBNETTLE_LINK='$(CC) -dynamiclib $(LDFLAGS)'
+    LIBNETTLE_SONAME='libnettle.$(LIBNETTLE_MAJOR).dylib'
+    LIBNETTLE_FILE='libnettle.$(LIBNETTLE_MAJOR).$(LIBNETTLE_MINOR).dylib'
+    LIBNETTLE_LINK='$(CC) -dynamiclib $(LDFLAGS) -install_name ${libdir}/$(LIBNETTLE_SONAME) -compatibility_version $(LIBNETTLE_MAJOR) -current_version $(LIBNETTLE_MAJOR).$(LIBNETTLE_MINOR)'
     LIBNETTLE_LIBS=''
 
     LIBHOGWEED_FORLINK=libhogweed.dylib
-    LIBHOGWEED_SONAME='$(LIBHOGWEED_FORLINK).$(LIBHOGWEED_MAJOR)'
-    LIBHOGWEED_FILE='$(LIBHOGWEED_SONAME).$(LIBHOGWEED_MINOR)'
-    LIBHOGWEED_LINK='$(CC) -dynamiclib $(LDFLAGS)'
-    LIBHOGWEED_LIBS=''
+    LIBHOGWEED_SONAME='libhogweed.$(LIBHOGWEED_MAJOR).dylib'
+    LIBHOGWEED_FILE='libhogweed.$(LIBHOGWEED_MAJOR).$(LIBHOGWEED_MINOR).dylib'
+    LIBHOGWEED_LINK='$(CC) -dynamiclib -L. $(LDFLAGS) -install_name ${libdir}/$(LIBHOGWEED_SONAME) -compatibility_version $(LIBHOGWEED_MAJOR) -current_version $(LIBHOGWEED_MAJOR).$(LIBHOGWEED_MINOR)'
+    LIBHOGWEED_LIBS='-lnettle -gmp'
     ;;
   solaris*)
     # Sun's ld uses -h to set the soname, and this option is passed
