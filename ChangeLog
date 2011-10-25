@@ -1,3 +1,8 @@
+2011-10-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac (LIBHOGWEED_LIBS): cygwin fix, added
+	libnettle.dll.a. Reported by Volker Zell.
+
 2011-10-18  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Improved setup för darwin shared libraries.

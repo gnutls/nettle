@@ -277,7 +277,7 @@ case "$host_os" in
     LIBHOGWEED_SONAME=''
     LIBHOGWEED_FILE='libhogweed.dll.a'
     LIBHOGWEED_LINK='$(CC) $(LDFLAGS) -shared -Wl,--out-implib=$(LIBHOGWEED_FILE) -Wl,--export-all-symbols -Wl,--enable-auto-import -Wl,--whole-archive'
-    LIBHOGWEED_LIBS='-Wl,--no-whole-archive $(LIBS)'
+    LIBHOGWEED_LIBS='-Wl,--no-whole-archive $(LIBS) libnettle.dll.a'
     ;;
   darwin*)
     LIBNETTLE_FORLINK=libnettle.dylib
