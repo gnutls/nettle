@@ -1,3 +1,8 @@
+2011-10-31  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac (LIBHOGWEED_LIBS): Typo fix for the darwin case.
+	Spotted by Martin Storsjö.
+
 2011-10-25  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac (LIBHOGWEED_LIBS): cygwin fix, added

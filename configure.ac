@@ -290,7 +290,7 @@ case "$host_os" in
     LIBHOGWEED_SONAME='libhogweed.$(LIBHOGWEED_MAJOR).dylib'
     LIBHOGWEED_FILE='libhogweed.$(LIBHOGWEED_MAJOR).$(LIBHOGWEED_MINOR).dylib'
     LIBHOGWEED_LINK='$(CC) -dynamiclib -L. $(LDFLAGS) -install_name ${libdir}/$(LIBHOGWEED_SONAME) -compatibility_version $(LIBHOGWEED_MAJOR) -current_version $(LIBHOGWEED_MAJOR).$(LIBHOGWEED_MINOR)'
-    LIBHOGWEED_LIBS='-lnettle -gmp'
+    LIBHOGWEED_LIBS='-lnettle -lgmp'
     ;;
   solaris*)
     # Sun's ld uses -h to set the soname, and this option is passed
