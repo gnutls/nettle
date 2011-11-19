@@ -25,6 +25,7 @@ SHLIBTARGETS = $(LIBNETTLE_FORLINK) @IF_HOGWEED@ $(LIBHOGWEED_FORLINK)
 
 TARGETS = aesdata$(EXEEXT) desdata$(EXEEXT) shadata$(EXEEXT) gcmdata$(EXEEXT)\
 	  $(LIBTARGETS) @IF_SHARED@ $(SHLIBTARGETS)
+IMPLICIT_TARGETS = @IF_DLL@ $(LIBNETTLE_FILE) $(LIBHOGWEED_FILE)
 
 DOCTARGETS = nettle.info nettle.html nettle.pdf
 
@@ -455,7 +456,7 @@ distcheck: dist
 	$(rm_distcheck)
 
 clean-here:
-	-rm -f $(TARGETS) *.$(OBJEXT) *.p$(OBJEXT) *.s
+	-rm -f $(TARGETS) $(IMPLICIT_TARGETS) *.$(OBJEXT) *.p$(OBJEXT) *.s
 	-rm -rf .lib
 
 distclean-here: clean-here

@@ -1,7 +1,11 @@
 2011-11-19  Niels Möller  <nisse@lysator.liu.se>
 
 	Cygwin/mingw32 improvements contributed by Martin Storsjö:
-	* configure.ac: Setup installation of dll files in $bindir.
+	* Makefile.in (IMPLICIT_TARGETS): New variable for DLL link
+	libraries.
+	(clean-here): Delete the DLL import libraries.
+
+	* configure.ac: Setup installation of DLL files in $bindir.
 	(IF_DLL, LIBNETTLE_FILE_SRC, LIBHOGWEED_FILE_SRC): New
 	substitutions.
 
@@ -10,7 +14,7 @@
 	(LIBHOGWEED_FILE_SRC): Likewise.
 
 	* Makefile.in (install-dll-nettle, uninstall-dll-nettle): New
-	target for installing the dll file in $bindir.
+	target for installing the DLL file in $bindir.
 	(install-shared-nettle): Conditionally
 	depend on install-dll-nettle. Use LIBNETTLE_FILE_SRC.
 	(uninstall-shared-nettle): Conditionally depend on
