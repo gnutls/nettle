@@ -285,17 +285,25 @@ install-static: $(LIBTARGETS)
 	  $(INSTALL_DATA) $$f $(DESTDIR)$(libdir) ; \
 	done
 
-install-shared-nettle: $(LIBNETTLE_FORLINK)
+install-dll-nettle:
+	$(MKDIR_P) $(DESTDIR)$(bindir)
+	$(INSTALL_DATA) $(LIBNETTLE_FORLINK) $(DESTDIR)$(bindir)/$(LIBNETTLE_FORLINK)
+
+install-shared-nettle: $(LIBNETTLE_FORLINK) @IF_DLL@ install-dll-nettle
 	$(MKDIR_P) $(DESTDIR)$(libdir)
-	$(INSTALL_DATA) $(LIBNETTLE_FORLINK) $(DESTDIR)$(libdir)/$(LIBNETTLE_FILE)
+	$(INSTALL_DATA) $(LIBNETTLE_FILE_SRC) $(DESTDIR)$(libdir)/$(LIBNETTLE_FILE)
 	[ -z "$(LIBNETTLE_SONAME)" ] \
                 || (cd $(DESTDIR)$(libdir) \
 		&& ln -sf $(LIBNETTLE_FILE) $(LIBNETTLE_SONAME) \
 		&& ln -sf $(LIBNETTLE_FILE) $(LIBNETTLE_FORLINK))
 
-install-shared-hogweed: $(LIBHOGWEED_FORLINK)
+install-dll-hogweed:
+	$(MKDIR_P) $(DESTDIR)$(bindir)
+	$(INSTALL_DATA) $(LIBHOGWEED_FORLINK) $(DESTDIR)$(bindir)/$(LIBHOGWEED_FORLINK)
+
+install-shared-hogweed: $(LIBHOGWEED_FORLINK) @IF_DLL@ install-dll-hogweed
 	$(MKDIR_P) $(DESTDIR)$(libdir)
-	$(INSTALL_DATA) $(LIBHOGWEED_FORLINK) $(DESTDIR)$(libdir)/$(LIBHOGWEED_FILE)
+	$(INSTALL_DATA) $(LIBHOGWEED_FILE_SRC) $(DESTDIR)$(libdir)/$(LIBHOGWEED_FILE)
 	[ -z "$(LIBHOGWEED_SONAME)" ] \
                 || (cd $(DESTDIR)$(libdir) \
 		&& ln -sf $(LIBHOGWEED_FILE) $(LIBHOGWEED_SONAME) \
@@ -356,12 +364,18 @@ uninstall-info:
 # FIXME: Leaves the links around
 uninstall-shared: uninstall-shared-nettle @IF_HOGWEED@ uninstall-shared-hogweed
 
-uninstall-shared-nettle:
+uninstall-dll-nettle:
+	rm -f $(DESTDIR)$(bindir)/$(LIBNETTLE_FORLINK)
+
+uninstall-shared-nettle: @IF_DLL@ uninstall-dll-nettle
 	rm -f $(DESTDIR)$(libdir)/$(LIBNETTLE_FILE)
 	[ -z "$(LIBNETTLE_SONAME)" ] \
 		|| rm -f $(LIBNETTLE_SONAME) $(LIBNETTLE_FORLINK)
 
-uninstall-shared-hogweed:
+uninstall-dll-hogweed:
+	rm -f $(DESTDIR)$(bindir)/$(LIBHOGWEED_FORLINK)
+
+uninstall-shared-hogweed: @IF_DLL@ uninstall-dll-hogweed
 	rm -f $(DESTDIR)$(libdir)/$(LIBHOGWEED_FILE)
 	[ -z "$(LIBHOGWEED_SONAME)" ] \
 		|| rm -f $(LIBHOGWEED_SONAME) $(LIBHOGWEED_FORLINK)

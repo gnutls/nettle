@@ -252,8 +252,16 @@ LSH_CCPIC
 
 SHLIBCFLAGS="$CCPIC"
 
+IF_DLL='#'
+LIBNETTLE_FILE_SRC='$(LIBNETTLE_FORLINK)'
+LIBHOGWEED_FILE_SRC='$(LIBHOGWEED_FORLINK)'
+
 case "$host_os" in
   mingw32*|cygwin*)
+    # The actual DLLs, e.g. libnettle-$major-$minor.dll, are normally
+    # installed into the bin dir (or more exactly $libdir/../bin, for
+    # automake), while libnettle.dll.a, which is a stub file for
+    # linking to the DLL, is installed into the lib dir.
     case "$host_os" in
       mingw32*)
         LIBNETTLE_FORLINK='libnettle-$(LIBNETTLE_MAJOR)-$(LIBNETTLE_MINOR).dll'
@@ -266,13 +274,16 @@ case "$host_os" in
     esac
     LIBNETTLE_SONAME=''
     LIBNETTLE_FILE='libnettle.dll.a'
+    LIBNETTLE_FILE_SRC='$(LIBNETTLE_FILE)'
     LIBNETTLE_LINK='$(CC) $(LDFLAGS) -shared -Wl,--out-implib=$(LIBNETTLE_FILE) -Wl,--export-all-symbols -Wl,--enable-auto-import -Wl,--whole-archive'
     LIBNETTLE_LIBS='-Wl,--no-whole-archive $(LIBS)'
 
     LIBHOGWEED_SONAME=''
     LIBHOGWEED_FILE='libhogweed.dll.a'
+    LIBHOGWEED_FILE_SRC='$(LIBHOGWEED_FILE)'
     LIBHOGWEED_LINK='$(CC) $(LDFLAGS) -shared -Wl,--out-implib=$(LIBHOGWEED_FILE) -Wl,--export-all-symbols -Wl,--enable-auto-import -Wl,--whole-archive'
     LIBHOGWEED_LIBS='-Wl,--no-whole-archive $(LIBS) libnettle.dll.a'
+    IF_DLL=''
     ;;
   darwin*)
     LIBNETTLE_FORLINK=libnettle.dylib
@@ -442,6 +453,7 @@ AC_SUBST(LIBNETTLE_MINOR)
 AC_SUBST(LIBNETTLE_FORLINK)
 AC_SUBST(LIBNETTLE_SONAME)
 AC_SUBST(LIBNETTLE_FILE)
+AC_SUBST(LIBNETTLE_FILE_SRC)
 AC_SUBST(LIBNETTLE_LINK)
 AC_SUBST(LIBNETTLE_LIBS)
 
@@ -450,6 +462,7 @@ AC_SUBST(LIBHOGWEED_MINOR)
 AC_SUBST(LIBHOGWEED_FORLINK)
 AC_SUBST(LIBHOGWEED_SONAME)
 AC_SUBST(LIBHOGWEED_FILE)
+AC_SUBST(LIBHOGWEED_FILE_SRC)
 AC_SUBST(LIBHOGWEED_LINK)
 AC_SUBST(LIBHOGWEED_LIBS)
 
@@ -538,6 +551,7 @@ fi
 
 AC_SUBST(IF_HOGWEED)
 AC_SUBST(IF_SHARED)
+AC_SUBST(IF_DLL)
 
 OPENSSL_LIBFLAGS=''
 

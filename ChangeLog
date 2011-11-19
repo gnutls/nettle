@@ -1,6 +1,22 @@
 2011-11-19  Niels Möller  <nisse@lysator.liu.se>
 
-	From Martin Storsjö:
+	Cygwin/mingw32 improvements contributed by Martin Storsjö:
+	* configure.ac: Setup installation of dll files in $bindir.
+	(IF_DLL, LIBNETTLE_FILE_SRC, LIBHOGWEED_FILE_SRC): New
+	substitutions.
+
+	* config.make.in (LIBNETTLE_FILE_SRC): Substitute new autoconf
+	variable.
+	(LIBHOGWEED_FILE_SRC): Likewise.
+
+	* Makefile.in (install-dll-nettle, uninstall-dll-nettle): New
+	target for installing the dll file in $bindir.
+	(install-shared-nettle): Conditionally
+	depend on install-dll-nettle. Use LIBNETTLE_FILE_SRC.
+	(uninstall-shared-nettle): Conditionally depend on
+	install-dll-nettle.
+	(various hogweed targets): Analogous changes.
+
 	* configure.ac: Unify shared lib setup for cygwin and mingw.
 
 2011-10-31  Niels Möller  <nisse@lysator.liu.se>
