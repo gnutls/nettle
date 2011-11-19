@@ -1,3 +1,8 @@
+2011-11-19  Niels Möller  <nisse@lysator.liu.se>
+
+	From Martin Storsjö:
+	* configure.ac: Unify shared lib setup for cygwin and mingw.
+
 2011-10-31  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac (LIBHOGWEED_LIBS): Typo fix for the darwin case.
