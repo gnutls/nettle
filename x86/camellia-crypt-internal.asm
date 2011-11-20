@@ -173,9 +173,9 @@ PROLOGUE(_nettle_camellia_crypt)
 	subl	$8, TMP
 	movl	TMP, FRAME_CNT
 	C 	Whitening using first subkey 
-	xorl	4(KEY), L0
-	xorl	8(KEY), H0
-	addl	$12, KEY
+	addl	$ALIGNOF_UINT64_T + 8, KEY
+	xorl	-8(KEY), L0
+	xorl	-4(KEY), H0
 
 	movl	FRAME_TABLE, T
 
