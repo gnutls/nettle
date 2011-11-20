@@ -479,6 +479,10 @@ AC_TYPE_UID_T
 AC_TYPE_SIZE_T
 AC_HEADER_TIME
 AC_CHECK_SIZEOF(long)
+AC_CHECK_ALIGNOF(uint64_t)
+
+ALIGNOF_UINT64_T="$ac_cv_alignof_uint64_t"
+AC_SUBST(ALIGNOF_UINT64_T)
 
 AC_CHECK_HEADERS([openssl/blowfish.h openssl/des.h openssl/cast.h openssl/aes.h],,
 [enable_openssl=no
