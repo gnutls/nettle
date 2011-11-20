@@ -1,3 +1,14 @@
+2011-11-20  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86/camellia-crypt-internal.asm: Take ALIGNOF_UINT64_T into
+	account when getting the offset for the subkeys. Differs between
+	w32 and other systems. w32 problem identified by Martin Storsjö.
+
+	* config.m4.in: Define ALIGNOF_UINT64_T (from configure).
+
+	* configure.ac: Check alignment of uint64_t, and also use AC_SUBST
+	for use in config.m4.in.
+
 2011-11-19  Niels Möller  <nisse@lysator.liu.se>
 
 	Cygwin/mingw32 improvements contributed by Martin Storsjö:
