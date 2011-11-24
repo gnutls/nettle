@@ -55,8 +55,8 @@
 #if HAVE_NATIVE_64_BIT
 /* Operate independently on both halves of a 64-bit word. */
 #define ROL64(x,n) \
-  (((x) << (n) & ~(((1L << (n))-1) << 32)) \
-   |(((x) >> (32-(n))) & ~(((1L << (32-(n)))-1) << (n))))
+  (((x) << (n) & ~((((uint64_t) 1 << (n))-1) << 32)) \
+   |(((x) >> (32-(n))) & ~((((uint64_t) 1 << (32-(n)))-1) << (n))))
 
 #define KEYXOR64(x0,x1,x2,x3, subkey)		       \
   do {						       \
@@ -68,7 +68,7 @@
   } while (0)
 
 #define RSHIFT64(x,n) \
-  ( ((x) << (n)) & ~(((1L << n) - 1) << 32))
+  ( ((x) << (n)) & ~((((uint64_t) 1 << (n)) - 1) << 32))
 #endif /* HAVE_NATIVE_64_BIT */
 
 #endif /* NETTLE_SERPENT_INTERNAL_H_INCLUDED */
