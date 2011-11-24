@@ -14,7 +14,7 @@ print_nl () {
 
 test_advanced () {
     print_raw "$1" test.in
-    if ../tools/sexp-conv -s advanced <test.in >test1.out ; then
+    if $EMULATOR ../tools/sexp-conv -s advanced <test.in | tr -d '\r' >test1.out ; then
 	true
     else
 	exit 1
@@ -30,7 +30,7 @@ test_advanced () {
 
 test_advanced_hex () {
     print_raw "$1" test.in
-    if ../tools/sexp-conv -s hex <test.in >test1.out ; then
+    if $EMULATOR ../tools/sexp-conv -s hex <test.in | tr -d '\r' >test1.out ; then
 	true
     else
 	exit 1
@@ -46,7 +46,7 @@ test_advanced_hex () {
 
 test_transport () {
     print_raw "$1" test.in
-    if ../tools/sexp-conv -s transport <test.in >test1.out ; then
+    if $EMULATOR ../tools/sexp-conv -s transport <test.in | tr -d '\r' >test1.out ; then
 	true
     else
 	exit 1
@@ -62,7 +62,7 @@ test_transport () {
 
 test_canonical () {
     print_raw "$1" test.in
-    if ../tools/sexp-conv -s canonical <test.in >test1.out ; then
+    if $EMULATOR ../tools/sexp-conv -s canonical <test.in >test1.out ; then
 	true
     else
 	exit 1

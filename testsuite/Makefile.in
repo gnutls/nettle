@@ -89,7 +89,7 @@ $(TARGETS) $(EXTRA_TARGETS): testutils.$(OBJEXT) \
 # The PATH update is for locating dlls on w*ndows.
 check: $(TS_ALL) $(srcdir)/run-tests
 	LD_LIBRARY_PATH=../.lib PATH="../.lib:$$PATH" srcdir="$(srcdir)" \
-	  $(srcdir)/run-tests $(TS_ALL)
+	  EMULATOR="$(EMULATOR)" $(srcdir)/run-tests $(TS_ALL)
 
 
 Makefile: $(srcdir)/Makefile.in ../config.status
