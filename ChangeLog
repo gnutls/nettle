@@ -1,16 +1,18 @@
 2011-11-24  Niels Möller  <nisse@lysator.liu.se>
 
 	From Martin Storsjö:
+	* testsuite/symbols-test: Use $NM, falling back to nm if undefined.
+	* testsuite/Makefile.in (check): Pass $(NM) in the environment of
+	run-tests.
+	* config.make.in (NM): Set NM.
+
 	* testsuite/sexp-conv-test: Use $EMULATOR when running test
 	programs. Also ignore \r for output in the non-canonical output
 	formats.
-
 	* testsuite/Makefile.in (check): Pass $(EMULATOR) in the
 	environment of run-tests.
-
 	* configure.ac (EMULATOR): New substituted variable. Set to wine
 	or wine64 when cross compiling for windows, otherwise empty.
-
 	* config.make.in (EMULATOR): Set from autoconf value.
 
 2011-11-20  Niels Möller  <nisse@lysator.liu.se>
