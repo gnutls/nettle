@@ -273,15 +273,16 @@ case "$host_os" in
         LIBHOGWEED_FORLINK='cyghogweed-$(LIBHOGWEED_MAJOR)-$(LIBHOGWEED_MINOR).dll'
         ;;
     esac
-    # FIXME: Support native compilation using mingw on windows.
-    case "$ABI" in
-    64)
-        EMULATOR=wine64
-        ;;
-    *)
-        EMULATOR=wine
-        ;;
-    esac
+    if test "x$cross_compiling" = xyes ; then
+	case "$ABI" in
+	    64)
+		EMULATOR=wine64
+		;;
+	    *)
+		EMULATOR=wine
+		;;
+	esac
+    fi
     LIBNETTLE_SONAME=''
     LIBNETTLE_FILE='libnettle.dll.a'
     LIBNETTLE_FILE_SRC='$(LIBNETTLE_FILE)'
