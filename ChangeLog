@@ -1,6 +1,18 @@
 2011-11-24  Niels Möller  <nisse@lysator.liu.se>
 
 	From Martin Storsjö:
+	* examples/Makefile.in (check): Pass $(EMULATOR) and $(EXEEXT) in
+	the environment of run-tests.
+	* examples/rsa-encrypt-test: Use $EXEEXT and $EMULATOR.
+	* examples/rsa-sign-test: Likewise.
+	* examples/rsa-verify-test: Likewise.
+	* examples/setup-env: Likewise.
+
+	* testsuite/Makefile.in (check): Pass $(EXEEXT) in the environment of
+	run-tests.
+	* testsuite/pkcs1-conv-test: Use $EXEEXT and $EMULATOR. Ignore \r
+	in rsa-sign output.
+
 	* examples/rsa-decrypt.c (main) [WIN32]: Set stdout/stdin to
 	binary mode.
 	* examples/rsa-encrypt.c (main): Likewise.
