@@ -1,6 +1,7 @@
 #! /bin/sh
 
-rm -rf testkey testkey.pub testsignature testsignature2 testdata \
+rm -rf testkey testkey.pub testsignature testsignature2 \
+    testdata testtmp \
     testciphertext testcleartext
 
 

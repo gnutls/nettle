@@ -75,7 +75,8 @@ $(TARGETS) : io.$(OBJEXT) ../libnettle.a
 
 check: $(TS_ALL)
 	LD_LIBRARY_PATH=../.lib srcdir="$(srcdir)" \
-	  "$(srcdir)"/run-tests $(TS_ALL)
+	  EMULATOR="$(EMULATOR)" EXEEXT="$(EXEEXT)" \
+          "$(srcdir)"/run-tests $(TS_ALL)
 
 Makefile: $(srcdir)/Makefile.in ../config.status
 	cd .. && $(SHELL) ./config.status examples/$@

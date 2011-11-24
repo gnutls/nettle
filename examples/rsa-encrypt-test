@@ -6,13 +6,13 @@ fi
 
 data="$srcdir/nettle-benchmark.c"
 
-if [ -x rsa-encrypt ] ; then
-  if ./rsa-encrypt -r rsa-decrypt testkey.pub < "$data" > testciphertext ; then
+if [ -x rsa-encrypt$EXEEXT ] ; then
+  if $EMULATOR ./rsa-encrypt -r rsa-decrypt$EXEEXT testkey.pub < "$data" > testciphertext ; then
     :
   else
     exit 1
   fi
-  if ./rsa-decrypt testkey < testciphertext > testcleartext ; then
+  if $EMULATOR ./rsa-decrypt testkey < testciphertext > testcleartext ; then
     :
   else
     exit 1

@@ -2,6 +2,6 @@
 
 set -e
 
-if [ -x rsa-keygen ] ; then
-  ./rsa-keygen -r rsa-decrypt -o testkey || exit 1
+if [ -x rsa-keygen$EXEEXT ] ; then
+  $EMULATOR ./rsa-keygen -r rsa-decrypt$EXEEXT -o testkey || exit 1
 fi
