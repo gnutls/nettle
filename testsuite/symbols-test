@@ -6,7 +6,7 @@ if [ -z "$srcdir" ] ; then
   srcdir=`pwd`
 fi
 
-# FIXME: Check libhogweed.a too.
+: ${NM:=nm}
 
 # * nm on aix seems to generate bogus outbut including random binary
 #   data. Using -g is a workaround to get rid of that. But nm -g
@@ -16,7 +16,7 @@ fi
 # * gcc on x86 generates functions like __i686.get_pc_thunk.bx in pic
 #   code.
 
-( nm -g ../libnettle.a || nm ../libnettle.a ) \
+( $NM -g ../libnettle.a || $NM ../libnettle.a ) \
     | grep ' [DRT] ' | egrep -v '( |^)\.?_?(_?nettle_|memxor)|get_pc_thunk' \
     | sort -k3 > test1.out
 
@@ -27,7 +27,7 @@ if [ -s test1.out ] ; then
 fi
 
 if [ -s ../libhogweed.a ] ; then
-    ( nm -g ../libhogweed.a || nm ../libhogweed.a ) \
+    ( $NM -g ../libhogweed.a || $NM ../libhogweed.a ) \
 	| grep ' [DRT] ' | egrep -v '( |^)\.?_?_?nettle_|get_pc_thunk' \
 	| sort -k3 > test1.out
 
