@@ -31,6 +31,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#ifdef WIN32
+#include <fcntl.h>
+#endif
 
 /* string.h must be included before gmp.h */
 #include "bignum.h"
@@ -212,6 +215,11 @@ main(int argc, char **argv)
 
   rsa_session_set_encrypt_key(&ctx, &info);
   
+#ifdef WIN32
+  setmode(0, O_BINARY);
+  setmode(1, O_BINARY);
+#endif
+
   write_version(stdout);
   
   mpz_init(x);

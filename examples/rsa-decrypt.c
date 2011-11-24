@@ -31,6 +31,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#ifdef WIN32
+#include <fcntl.h>
+#endif
 
 /* string.h must be included before gmp.h */
 #include "aes.h"
@@ -210,6 +213,11 @@ main(int argc, char **argv)
       werror("Invalid key\n");
       return EXIT_FAILURE;
     }
+
+#ifdef WIN32
+  setmode(0, O_BINARY);
+  setmode(1, O_BINARY);
+#endif
 
   if (!read_version(stdin))
     {
