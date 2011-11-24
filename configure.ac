@@ -255,6 +255,7 @@ SHLIBCFLAGS="$CCPIC"
 IF_DLL='#'
 LIBNETTLE_FILE_SRC='$(LIBNETTLE_FORLINK)'
 LIBHOGWEED_FILE_SRC='$(LIBHOGWEED_FORLINK)'
+EMULATOR=''
 
 case "$host_os" in
   mingw32*|cygwin*)
@@ -270,6 +271,15 @@ case "$host_os" in
       cygwin*)
         LIBNETTLE_FORLINK='cygnettle-$(LIBNETTLE_MAJOR)-$(LIBNETTLE_MINOR).dll'
         LIBHOGWEED_FORLINK='cyghogweed-$(LIBHOGWEED_MAJOR)-$(LIBHOGWEED_MINOR).dll'
+        ;;
+    esac
+    # FIXME: Support native compilation using mingw on windows.
+    case "$ABI" in
+    64)
+        EMULATOR=wine64
+        ;;
+    *)
+        EMULATOR=wine
         ;;
     esac
     LIBNETTLE_SONAME=''
@@ -445,6 +455,7 @@ AC_SUBST(ASM_ELF_STYLE)
 AC_SUBST(ASM_TYPE_FUNCTION)
 AC_SUBST(ASM_MARK_NOEXEC_STACK)
 AC_SUBST(ASM_ALIGN_LOG)
+AC_SUBST(EMULATOR)
 
 AC_SUBST(SHLIBCFLAGS)
 
