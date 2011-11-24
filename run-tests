@@ -41,7 +41,11 @@ env_program () {
 test_program () {
   testname=`basename "$1" .exe`
   testname=`basename "$testname" -test`
-  "$1" $testflags
+  if [ -z "$EMULATOR" ] || head -1 "$1" | grep '^#!' > /dev/null; then
+    "$1" $testflags
+  else
+    "$EMULATOR" "$1" $testflags
+  fi
   case "$?" in
       0)
     	echo PASS: $testname
