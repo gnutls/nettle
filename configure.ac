@@ -579,7 +579,7 @@ if test x$enable_openssl = xyes ; then
 fi
 
 AH_TEMPLATE([WITH_OPENSSL],
-	    [Define if you have openssl's libcrypto (used for benchmarking)])
+	    [Define if you have openssl's libcrypto (used for benchmarking)]) dnl'
 
 if test x$enable_openssl = xyes ; then
   AC_DEFINE(WITH_OPENSSL)
@@ -587,10 +587,13 @@ fi
 
 AC_SUBST(OPENSSL_LIBFLAGS)
 
-# Choose strategy for Camellia round
 AH_BOTTOM(
-[/* Needs include of <limits.h> before use. */
-#define HAVE_NATIVE_64_BIT (SIZEOF_LONG * CHAR_BIT >= 64)
+[#if defined(__x86_64__) || defined(__arch64__)
+# define HAVE_NATIVE_64_BIT 1
+#else
+/* Needs include of <limits.h> before use. */
+# define HAVE_NATIVE_64_BIT (SIZEOF_LONG * CHAR_BIT >= 64)
+#endif
 ])
 
 # clock_gettime is in librt on *-*-osf5.1 and on glibc, so add -lrt to
