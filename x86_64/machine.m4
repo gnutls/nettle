@@ -42,3 +42,106 @@ define(<XREG>,<ifelse(
 	$1, %r13, %r13d,
 	$1, %r14, %r14d,
 	$1, %r15, %r15d)>)dnl
+
+dnl W64_ENTRY(nargs, xmm_used)
+define(<W64_ENTRY>, <
+  changequote([,])dnl
+  ifelse(<<<<<<<<<<<<<<< ignored; only for balancing)
+  ifelse(W64_ABI,yes,[
+    ifelse(eval($2 > 6), 1, [
+      sub	[$]eval(8 + 16*($2 - 6)), %rsp
+      movdqa	%xmm6, 0(%rsp)
+    ])
+    ifelse(eval($2 > 7), 1, [
+      movdqa	%xmm7, 16(%rsp)
+    ])
+    ifelse(eval($2 > 8), 1, [
+      movdqa	%xmm8, 32(%rsp)
+    ])
+    ifelse(eval($2 > 9), 1, [
+      movdqa	%xmm9, 48(%rsp)
+    ])
+    ifelse(eval($2 > 10), 1, [
+      movdqa	%xmm10, 64(%rsp)
+    ])
+    ifelse(eval($2 > 11), 1, [
+      movdqa	%xmm11, 80(%rsp)
+    ])
+    ifelse(eval($2 > 12), 1, [
+      movdqa	%xmm12, 96(%rsp)
+    ])
+    ifelse(eval($2 > 13), 1, [
+      movdqa	%xmm13, 112(%rsp)
+    ])
+    ifelse(eval($2 > 14), 1, [
+      movdqa	%xmm14, 128(%rsp)
+    ])
+    ifelse(eval($2 > 15), 1, [
+      movdqa	%xmm15, 144(%rsp)
+    ])
+    ifelse(eval($1 >= 1), 1, [
+      push	%rdi
+      mov	%rcx, %rdi
+    ])
+    ifelse(eval($1 >= 2), 1, [
+      push	%rsi
+      mov	%rdx, %rsi
+    ])
+    ifelse(eval($1 >= 3), 1, [
+      mov	%r8, %rdx
+    ])
+    ifelse(eval($1 >= 4), 1, [
+      mov	%r9, %rcx
+    ])
+    ifelse(eval($1 >= 5), 1, [
+      mov	56(%rsp), %r8
+    ])
+  ])
+  changequote(<,>)dnl
+>)
+
+dnl W64_EXIT(nargs, xmm_used)
+define(<W64_EXIT>, <
+  changequote([,])dnl
+  ifelse(<<<<<<<<<<<< ignored; only for balancing)
+  ifelse(W64_ABI,yes,[
+    ifelse(eval($1 >= 2), 1, [
+      pop	%rsi
+    ])
+    ifelse(eval($1 >= 1), 1, [
+      pop	%rdi
+    ])
+    ifelse(eval($2 > 15), 1, [
+      movdqa	144(%rsp), %xmm15
+    ])
+    ifelse(eval($2 > 14), 1, [
+      movdqa	128(%rsp), %xmm14
+    ])
+    ifelse(eval($2 > 13), 1, [
+      movdqa	112(%rsp), %xmm13
+    ])
+    ifelse(eval($2 > 12), 1, [
+      movdqa	96(%rsp), %xmm12
+    ])
+    ifelse(eval($2 > 11), 1, [
+      movdqa	80(%rsp), %xmm11
+    ])
+    ifelse(eval($2 > 10), 1, [
+      movdqa	64(%rsp), %xmm10
+    ])
+    ifelse(eval($2 > 9), 1, [
+      movdqa	48(%rsp), %xmm9
+    ])
+    ifelse(eval($2 > 8), 1, [
+      movdqa	32(%rsp), %xmm8
+    ])
+    ifelse(eval($2 > 7), 1, [
+      movdqa	16(%rsp), %xmm7
+    ])
+    ifelse(eval($2 > 6), 1, [
+      movdqa	0(%rsp), %xmm6
+      add	[$]eval(8 + 16*($2 - 6)), %rsp
+    ])
+  ])
+  changequote(<,>)dnl
+>)
