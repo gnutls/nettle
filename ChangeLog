@@ -1,3 +1,10 @@
+2011-11-25  Niels Möller  <nisse@lysator.liu.se>
+
+	From Martin Storsjö:
+	* configure.ac (W64_ABI): New variable, set when compiling for
+	64-bit M$ windows.
+	* config.m4.in (W64_ABI): Define, from configure substitution.
+
 2011-11-24  Niels Möller  <nisse@lysator.liu.se>
 
 	From Martin Storsjö:

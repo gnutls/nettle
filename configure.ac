@@ -256,6 +256,7 @@ IF_DLL='#'
 LIBNETTLE_FILE_SRC='$(LIBNETTLE_FORLINK)'
 LIBHOGWEED_FILE_SRC='$(LIBHOGWEED_FORLINK)'
 EMULATOR=''
+W64_ABI=no
 
 case "$host_os" in
   mingw32*|cygwin*)
@@ -282,6 +283,9 @@ case "$host_os" in
 		EMULATOR=wine
 		;;
 	esac
+    fi
+    if test "x$ABI" = x64 ; then
+        W64_ABI=yes
     fi
     LIBNETTLE_SONAME=''
     LIBNETTLE_FILE='libnettle.dll.a'
@@ -456,6 +460,7 @@ AC_SUBST(ASM_ELF_STYLE)
 AC_SUBST(ASM_TYPE_FUNCTION)
 AC_SUBST(ASM_MARK_NOEXEC_STACK)
 AC_SUBST(ASM_ALIGN_LOG)
+AC_SUBST(W64_ABI)
 AC_SUBST(EMULATOR)
 
 AC_SUBST(SHLIBCFLAGS)
