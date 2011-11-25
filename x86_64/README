@@ -48,6 +48,6 @@ Registers	May be		Argument
 %r15		
 
 Additional arguments are passed on the stack. "backing store" on the
-stack for the four register arguments is also required. %xmm6 and
-%xmm7 are callee-saved. The "long" type is just 32 bits. Nettle
+stack for the four register arguments is also required. %xmm6 to
+%xmm15 are callee-saved. The "long" type is just 32 bits. Nettle
 currently does *NOT* support this ABI.
