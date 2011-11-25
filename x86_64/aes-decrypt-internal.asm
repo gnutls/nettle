@@ -55,6 +55,7 @@ define(<TMP>,<%rbp>)
 	.text
 	ALIGN(4)
 PROLOGUE(_nettle_aes_decrypt)
+	W64_ENTRY(5, 0)
 	test	PARAM_LENGTH, PARAM_LENGTH
 	jz	.Lend
 
@@ -129,5 +130,6 @@ PROLOGUE(_nettle_aes_decrypt)
 	pop	%rbp
 	pop	%rbx
 .Lend:
+	W64_EXIT(5, 0)
 	ret
 EPILOGUE(_nettle_aes_decrypt)

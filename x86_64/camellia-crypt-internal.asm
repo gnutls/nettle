@@ -125,6 +125,7 @@ C	xorl	XREG(TMP), XREG($1)
 	ALIGN(4)
 PROLOGUE(_nettle_camellia_crypt)
 
+	W64_ENTRY(5, 0)
 	test	LENGTH, LENGTH
 	jz	.Lend
 
@@ -182,5 +183,6 @@ PROLOGUE(_nettle_camellia_crypt)
 	pop	%rbp
 	pop	%rbx
 .Lend:
+	W64_EXIT(5, 0)
 	ret
 EPILOGUE(_nettle_camellia_crypt)

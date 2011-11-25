@@ -40,6 +40,7 @@ define(<USE_SSE2>, <no>)
 	ALIGN(4)
 
 PROLOGUE(memxor)
+	W64_ENTRY(3, 0)
 	mov	%rdx, %r10
 	mov	%rdi, %rdx
 	jmp 	.Lmemxor3_entry
@@ -50,6 +51,7 @@ EPILOGUE(memxor)
 	ALIGN(4)
 	
 PROLOGUE(memxor3)
+	W64_ENTRY(4, 0)
 	C %cl needed for shift count, so move away N
 	mov	%rcx, N
 .Lmemxor3_entry:
@@ -200,6 +202,8 @@ C 	jz	.Ldone
 	xor	(BP, N), TMP
 	mov	TMP, (DST, N)
 
+	C ENTRY might have been 3 args, too, but it doesn't matter for the exit
+	W64_EXIT(4, 0)
 	ret
 
 .Lfinal:
@@ -214,6 +218,8 @@ C 	jz	.Ldone
 	jnc	.Lfinal_loop
 
 .Ldone:
+	C ENTRY might have been 3 args, too, but it doesn't matter for the exit
+	W64_EXIT(4, 0)
 	ret
 
 ifelse(USE_SSE2, yes, <
@@ -247,6 +253,8 @@ ifelse(USE_SSE2, yes, <
 	movdqu	(BP), %xmm1
 	pxor	%xmm0, %xmm1
 	movdqa	%xmm1, (DST)
+	C ENTRY might have been 3 args, too, but it doesn't matter for the exit
+	W64_EXIT(4, 0)
 	ret
 >)	
 	

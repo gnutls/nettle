@@ -525,6 +525,7 @@ define(<WLTI>, <
 	ALIGN(4)
 PROLOGUE(nettle_serpent_decrypt)
         C save all registers that need to be saved
+	W64_ENTRY(4, 13)
 	push	%rbx
 	push	%rbp
 	push	%r12
@@ -697,4 +698,5 @@ PROLOGUE(nettle_serpent_decrypt)
 	pop	%r12
 	pop	%rbp
 	pop	%rbx
+	W64_EXIT(4, 13)
 	ret

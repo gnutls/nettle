@@ -3,6 +3,7 @@
 	From Martin Storsjö:
 	* x86_64/machine.m4 (W64_ENTRY, W64_EXIT): New macros for
 	supporting W64 ABI.
+	* x86_64: Updated all assembly files to use them.
 
 	* configure.ac (W64_ABI): New variable, set when compiling for
 	W64 ABI (64-bit M$ windows).
