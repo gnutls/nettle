@@ -1,3 +1,8 @@
+2012-01-07  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/Makefile.in (check): Add ../.lb to PATH, like in
+	testsuite/Makefile. Needed for w*ndows. Reported by Eli Zaretskii.
+
 2011-11-25  Niels Möller  <nisse@lysator.liu.se>
 
 	From Martin Storsjö:
