@@ -74,7 +74,7 @@ $(TARGETS) : io.$(OBJEXT) ../libnettle.a
 
 
 check: $(TS_ALL)
-	LD_LIBRARY_PATH=../.lib srcdir="$(srcdir)" \
+	LD_LIBRARY_PATH=../.lib PATH="../.lib:$$PATH" srcdir="$(srcdir)" \
 	  EMULATOR="$(EMULATOR)" EXEEXT="$(EXEEXT)" \
           "$(srcdir)"/run-tests $(TS_ALL)
 
