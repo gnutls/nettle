@@ -608,7 +608,7 @@ AH_BOTTOM(
 
 old_LIBS="$LIBS"
 AC_SEARCH_LIBS(clock_gettime, rt, [
-  AC_DEFINE([HAVE_CLOCK_GETTIME],1,[Define to 1 if you have the `clock_gettime' function])])
+  AC_DEFINE([HAVE_CLOCK_GETTIME],1,[Define if clock_gettime is available])])
 BENCH_LIBS="$LIBS"
 LIBS="$old_LIBS"
 
