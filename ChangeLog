@@ -1,6 +1,6 @@
 2012-01-07  Niels Möller  <nisse@lysator.liu.se>
 
-	* examples/Makefile.in (check): Add ../.lb to PATH, like in
+	* examples/Makefile.in (check): Add ../.lib to PATH, like in
 	testsuite/Makefile. Needed for w*ndows. Reported by Eli Zaretskii.
 
 2011-11-25  Niels Möller  <nisse@lysator.liu.se>
@@ -39,7 +39,7 @@
 	on w64.
 
 	* serpent-internal.h (ROL64): Use (uint64_t) 1 rather than 1L, for
-	systems. Needed for M$ w64.
+	M$ w64.
 	(RSHIFT64): Likewise. Also added a missing parenthesis.
 
 2011-11-24  Niels Möller  <nisse@lysator.liu.se>
