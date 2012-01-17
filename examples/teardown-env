@@ -6,6 +6,6 @@ rm -rf testkey testkey.pub testsignature testsignature2 \
 
 case "$EMULATOR" in
     wine*)
-	rm `find . -type l -name '*.dll'`
+	find . -type l -name '*.dll' -exec rm -f '{}' ';'
 	;;
 esac
