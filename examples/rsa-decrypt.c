@@ -215,8 +215,8 @@ main(int argc, char **argv)
     }
 
 #ifdef WIN32
-  setmode(0, O_BINARY);
-  setmode(1, O_BINARY);
+  _setmode(0, O_BINARY);
+  _setmode(1, O_BINARY);
 #endif
 
   if (!read_version(stdin))

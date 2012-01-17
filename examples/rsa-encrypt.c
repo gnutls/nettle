@@ -216,8 +216,8 @@ main(int argc, char **argv)
   rsa_session_set_encrypt_key(&ctx, &info);
   
 #ifdef WIN32
-  setmode(0, O_BINARY);
-  setmode(1, O_BINARY);
+  _setmode(0, O_BINARY);
+  _setmode(1, O_BINARY);
 #endif
 
   write_version(stdout);
