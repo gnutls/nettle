@@ -1,5 +1,19 @@
 2012-01-17  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/rsa-decrypt.c (main): Use _setmode rather than setmode,
+	suggested by Eli Zaretskii. Affects windows builds only.
+	* examples/rsa-encrypt.c: Likewise.
+
+	* Makefile.in ($(LIBNETTLE_FORLINK)): Always create a .lib symlink
+	to the library file. Use LN_S.
+	($(LIBHOGWEED_FORLINK)): Likewise.
+
+	(install-shared-nettle): Use LN_S.
+	(install-shared-hogweed): Likewise.
+
+	* configure.ac: Use AC_PROG_LN_S.
+	* config.make.in (LN_S): New substitution.
+
 	* testsuite/setup-env: New file. Wine workaround. Can't get
 	../.lib into wine's dll search path, so create additional
 	symlinks.
