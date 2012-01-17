@@ -161,18 +161,26 @@ libhogweed.a: $(hogweed_OBJS)
 	$(COMPILE) $(CCPIC_MAYBE) -c $< \
 	&& $(DEP_PROCESS)
 
-# Rules building shared libraries
+# Rules building shared libraries.
 $(LIBNETTLE_FORLINK): $(nettle_PURE_OBJS)
 	$(LIBNETTLE_LINK) $(nettle_PURE_OBJS) -o $@ $(LIBNETTLE_LIBS)
 	-mkdir .lib 2>/dev/null
-	[ -z "$(LIBNETTLE_SONAME)" ] || (cd .lib \
-          && ln -sf ../$(LIBNETTLE_FORLINK) $(LIBNETTLE_SONAME))
+	(cd .lib \
+          && rm -f $(LIBNETTLE_FORLINK) \
+	  && $(LN_S) ../$(LIBNETTLE_FORLINK) $(LIBNETTLE_FORLINK) \
+	  && [ -n "$(LIBNETTLE_SONAME)"] \
+	  || { rm -f $(LIBNETTLE_SONAME) \
+	       && $(LN_S) $(LIBNETTLE_FORLINK) $(LIBNETTLE_SONAME) ; } )
 
 $(LIBHOGWEED_FORLINK): $(hogweed_PURE_OBJS) $(LIBNETTLE_FORLINK)
 	$(LIBHOGWEED_LINK) $(hogweed_PURE_OBJS) -o $@ $(LIBHOGWEED_LIBS)
 	-mkdir .lib 2>/dev/null
-	[ -z "$(LIBHOGWEED_SONAME)" ] || (cd .lib \
-          && ln -sf ../$(LIBHOGWEED_FORLINK) $(LIBHOGWEED_SONAME))
+	(cd .lib \
+          && rm -f $(LIBHOGWEED_FORLINK) \
+	  && $(LN_S) ../$(LIBHOGWEED_FORLINK) $(LIBHOGWEED_FORLINK) \
+	  && [ -n "$(LIBHOGWEED_SONAME)"] \
+	  || { rm -f $(LIBHOGWEED_SONAME) \
+	       && $(LN_S) $(LIBHOGWEED_FORLINK) $(LIBHOGWEED_SONAME) ; } )
 
 .c.p$(OBJEXT):
 	$(COMPILE) $(SHLIBCFLAGS) -c $< -o $@ \
@@ -295,8 +303,9 @@ install-shared-nettle: $(LIBNETTLE_FORLINK) @IF_DLL@ install-dll-nettle
 	$(INSTALL_DATA) $(LIBNETTLE_FILE_SRC) $(DESTDIR)$(libdir)/$(LIBNETTLE_FILE)
 	[ -z "$(LIBNETTLE_SONAME)" ] \
                 || (cd $(DESTDIR)$(libdir) \
-		&& ln -sf $(LIBNETTLE_FILE) $(LIBNETTLE_SONAME) \
-		&& ln -sf $(LIBNETTLE_FILE) $(LIBNETTLE_FORLINK))
+		&& rm -f $(LIBNETTLE_SONAME) $(LIBNETTLE_FORLINK) \
+		&& $(LN_S) $(LIBNETTLE_FILE) $(LIBNETTLE_SONAME) \
+		&& $(LN_S) $(LIBNETTLE_FILE) $(LIBNETTLE_FORLINK))
 
 install-dll-hogweed:
 	$(MKDIR_P) $(DESTDIR)$(bindir)
@@ -307,8 +316,9 @@ install-shared-hogweed: $(LIBHOGWEED_FORLINK) @IF_DLL@ install-dll-hogweed
 	$(INSTALL_DATA) $(LIBHOGWEED_FILE_SRC) $(DESTDIR)$(libdir)/$(LIBHOGWEED_FILE)
 	[ -z "$(LIBHOGWEED_SONAME)" ] \
                 || (cd $(DESTDIR)$(libdir) \
-		&& ln -sf $(LIBHOGWEED_FILE) $(LIBHOGWEED_SONAME) \
-		&& ln -sf $(LIBHOGWEED_FILE) $(LIBHOGWEED_FORLINK))
+		&& rm -f $(LIBHOGWEED_SONAME) $(LIBHOGWEED_FORLINK) \
+		&& $(LN_S) $(LIBHOGWEED_FILE) $(LIBHOGWEED_SONAME) \
+		&& $(LN_S) $(LIBHOGWEED_FILE) $(LIBHOGWEED_FORLINK))
 
 # I'd like to use makes VPATH search to locate the files to be
 # installed. But it seems most make programs don't set $<, $^, $? and

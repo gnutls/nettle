@@ -53,6 +53,7 @@ AUTOHEADER = autoheader
 M4 = @M4@
 MAKEINFO = makeinfo
 RANLIB = @RANLIB@
+LN_S = @LN_S@
 
 prefix	=	@prefix@
 exec_prefix =	@exec_prefix@
