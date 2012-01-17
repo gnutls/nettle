@@ -4,4 +4,8 @@ rm -rf testkey testkey.pub testsignature testsignature2 \
     testdata testtmp \
     testciphertext testcleartext
 
-
+case "$EMULATOR" in
+    wine*)
+	rm `find . -type l -name '*.dll'`
+	;;
+esac
