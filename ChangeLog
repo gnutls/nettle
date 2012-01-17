@@ -1,5 +1,7 @@
 2012-01-17  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/Makefile.in (DISTFILES): Added setup-env.
+
 	* examples/rsa-decrypt.c (main): Use _setmode rather than setmode,
 	suggested by Eli Zaretskii. Affects windows builds only.
 	* examples/rsa-encrypt.c: Likewise.
@@ -17,7 +19,8 @@
 	* testsuite/setup-env: New file. Wine workaround. Can't get
 	../.lib into wine's dll search path, so create additional
 	symlinks.
-	* testsuite/teardown-env: ...and delete them here.
+	* testsuite/teardown-env: ...and delete them here. Also delete
+	file testtmp.
 	* examples/setup-env: Similar links setup here.
 	* examples/teardown-env: ... and deleted.
 
