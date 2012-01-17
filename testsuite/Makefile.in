@@ -48,7 +48,7 @@ EXTRA_TARGETS = $(EXTRA_SOURCES:.c=$(EXEEXT))
 SOURCES = $(TS_SOURCES) testutils.c
 
 DISTFILES = $(SOURCES) $(EXTRA_SOURCES) cxx-test.cxx Makefile.in .test-rules.make \
-	$(TS_SH) run-tests teardown-env \
+	$(TS_SH) run-tests setup-env teardown-env \
 	gold-bug.txt testutils.h
 
 all: $(TARGETS) $(EXTRA_TARGETS)
