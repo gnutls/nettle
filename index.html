@@ -1,64 +1,85 @@
-<html>
-<head><title>Nettle - a low-level crypto library</title></head>
-<body bgcolor="white" text="black" link="darkblue" alink="red" vlink="darkblue">
+<?xml version="1.0" encoding="utf-8"?> <!-- -*-mode: xml; sgml-indent-data: t; -*- -->
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type"
+	content="text/html; charset=utf-8"/>
+  <title>Nettle - a low-level crypto library</title>
+</head>
+<body style='bgcolor="white"; text="black"; link="darkblue"; alink="red"; vlink="darkblue"'>
 <h1>Nettle - a low-level cryptographic library</h1>
 
 <blockquote>
+<p>
   Nettle is a cryptographic library that is designed to fit easily in more
   or less any context: In crypto toolkits for object-oriented languages
   (C++, Python, Pike, ...), in applications like LSH or GNUPG, or even in
   kernel space.
+</p>
 </blockquote>
 
 <h2> Documentation </h2>
 
-A complete manual is included if you download the Nettle source code.
-You can also <a href="nettle.html">read the manual online</a>.
+<p>
+  A complete manual is included if you download the Nettle source code.
+  You can also <a href="nettle.html">read the manual online</a>.
+</p>
 
 <h2> Download </h2>
 
-Get the latest version by <a
-href="http://www.lysator.liu.se/~nisse/archive/">http</a> or <a
-href="ftp://ftp.lysator.liu.se/pub/security/lsh">ftp</a>.
+<p>
+  Get the latest version by <a
+    href="http://www.lysator.liu.se/~nisse/archive/">http</a> or <a
+    href="ftp://ftp.lysator.liu.se/pub/security/lsh">ftp</a>.
+</p>
 
 <h2> Language bindings </h2>
 
 <p> I'm aware of nettle-bindings for the following higher-level
-  languages.
-  <dl>
-    <dt> <a href="http://pike.ida.liu.se">Pike</a></dt>
-    <dd> An object-oriented interpreted language with C-like syntax.
-      Nettle bindings are included with the official distribution.</dd>
-    <dt> <a href='http://www.yellowbank.com/code/PostgreSQL/y_crypto/'>PostgreSQL</a></dt>
-    <dd> Bindings for the Postgres database, by Ron Peterson </dd>
-    <dt> <a href='http://marcomaggi.github.com/nausicaa.html'>R6RS
+  languages.</p>
+<dl>
+  <dt> <a href="http://pike.ida.liu.se">Pike</a></dt>
+  <dd> An object-oriented interpreted language with C-like syntax.
+    Nettle bindings are included with the official distribution.</dd>
+  <dt> <a href='http://www.yellowbank.com/code/PostgreSQL/y_crypto/'>PostgreSQL</a></dt>
+  <dd> Bindings for the Postgres database, by Ron Peterson </dd>
+  <dt> <a href='http://marcomaggi.github.com/nausicaa.html'>R6RS
 	Scheme</a></dt>
-    <dd> Scheme bindings by Marco Maggi, supporting multiple R6RS implementations.</dd>
-    <dt> TCL </dt>
-    <dd> Included in the chiark-tcl debian package by Ian Jackson (not
-      sure if/how it's distributed outside of debian). </dd>
-  </dl>
+  <dd> Scheme bindings by Marco Maggi, supporting multiple R6RS implementations.</dd>
+  <dt> TCL </dt>
+  <dd> Included in the chiark-tcl debian package by Ian Jackson (not
+    sure if/how it's distributed outside of debian). </dd>
+</dl>
+<p>
   Mail me for corrections or additions to this list.
 </p>
 
-<h2> CVS access </h2>
+<h2> GIT access </h2>
 
-As some shared but crucial files are not stored in the Nettle corner
-of the CVS repository, the recommended way of CVS access is to check
-out the entire LSH tree, as per the instructions at the <a
-href="http://www.lysator.liu.se/~nisse/lsh">LSH home page</a>, run the
-top-level <tt>./.bootstrap</tt> script (which sets up a few important
-symlinks and runs .bootstrap scripts in subdirectories), and then
-descend into the <tt>nettle</tt> directory for a standard
-<tt>./configure && make</tt> there.
+<p> 
+  As some shared but crucial files are not stored in the Nettle corner
+  of the GIT repository, the recommended way of GIT access is to check
+  out the entire LSH tree, as per the instructions at the <a
+    href="http://www.lysator.liu.se/~nisse/lsh">LSH home page</a>, run the
+  top-level <tt>./.bootstrap</tt> script (which sets up a few important
+  symlinks and runs .bootstrap scripts in subdirectories), and then
+  descend into the <tt>nettle</tt> directory for a standard
+  <tt>./configure && make</tt> there.
+</p>
+<p>
+  A separate repository for Nettle is planned.
+</p>
 
 <h2> Contact </h2>
 
-Send mail to the <a
-href='http://lists.lysator.liu.se/mailman/listinfo/nettle-bugs'><tt>nettle-bugs</tt>
-mailinglist</a> or directly to me at <a
-href="mailto:nisse@lysator.liu.se"><tt>Niels Möller &lt;nisse@lysator.liu.se&gt;</tt></a>
-if you have any questions.
-
+<p>
+  Send mail to
+  the <a href='http://lists.lysator.liu.se/mailman/listinfo/nettle-bugs'><tt>nettle-bugs</tt>
+  mailinglist</a> or directly to me
+  at <a href="mailto:nisse@lysator.liu.se"><tt>Niels Möller
+  &lt;nisse@lysator.liu.se&gt;</tt></a> if you have any questions.
+</p>
 </body>
 </html>

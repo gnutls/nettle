@@ -1,5 +1,8 @@
 2012-02-18  Niels Möller  <nisse@lysator.liu.se>
 
+	* index.html: Converted to xhtml (from lsh repository,
+	change dated 2012-02-03).
+
 	* nettle.texinfo: Updated charset declaration.
 	* misc/plan.html: Likewise.
 
