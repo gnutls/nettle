@@ -2,7 +2,7 @@
 @c %**start of header
 @setfilename nettle.info
 @settitle Nettle: a low-level cryptographic library
-@documentencoding ISO-8859-1
+@documentencoding UTF-8
 @footnotestyle separate
 @syncodeindex fn cp
 @c %**end of header
