@@ -36,6 +36,7 @@ core
 /*.tar.gz
 /*.tar.gz.asc
 /.lib
+/*.asm
 /autom4te.cache
 /Makefile
 /aesdata
@@ -47,7 +48,10 @@ core
 /config.make
 /config.status
 /configure
+/*.pc
+/machine.m4
 /desdata
+/gcmdata
 /keymap.h
 /nettle-stdint.h
 /nettle.aux

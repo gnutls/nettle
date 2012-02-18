@@ -2,6 +2,8 @@
 /Makefile
 /eratosthenes
 /nettle-benchmark
+/next-prime
+/random-prime
 /rsa-decrypt
 /rsa-encrypt
 /rsa-keygen
