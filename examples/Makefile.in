@@ -18,20 +18,23 @@ RSA_TARGETS = rsa-keygen$(EXEEXT) rsa-sign$(EXEEXT) \
 TARGETS = nettle-benchmark$(EXEEXT) eratosthenes$(EXEEXT) @IF_HOGWEED@ $(RSA_TARGETS) next-prime$(EXEEXT) random-prime$(EXEEXT)
 SOURCES = nettle-benchmark.c eratosthenes.c next-prime.c random-prime.c \
 	nettle-openssl.c \
-	io.c read_rsa_key.c getopt.c getopt1.c \
+	io.c read_rsa_key.c \
 	rsa-encrypt.c rsa-decrypt.c rsa-keygen.c rsa-sign.c rsa-verify.c
 
-GETOPT_OBJS = getopt.$(OBJEXT) getopt1.$(OBJEXT)
+GETOPT_OBJS = ../getopt.$(OBJEXT) ../getopt1.$(OBJEXT)
 
 TS_ALL = rsa-sign-test rsa-verify-test rsa-encrypt-test
 
-DISTFILES= $(SOURCES) Makefile.in $(TS_ALL) run-tests setup-env teardown-env \
-	io.h rsa-session.h getopt.h
+DISTFILES= $(SOURCES) Makefile.in $(TS_ALL) setup-env teardown-env \
+	io.h rsa-session.h
 
 all: $(TARGETS)
 
 .c.$(OBJEXT):
 	$(COMPILE) -c $< && $(DEP_PROCESS)
+
+$(getopt_OBJS):
+	( cd .. && $(MAKE) $@ )
 
 # For Solaris and BSD make, we have to use an explicit rule for each executable
 next-prime$(EXEEXT): next-prime.$(OBJEXT) $(GETOPT_OBJS) ../libhogweed.a
@@ -76,7 +79,7 @@ $(TARGETS) : io.$(OBJEXT) ../libnettle.a
 check: $(TS_ALL)
 	LD_LIBRARY_PATH=../.lib PATH="../.lib:$$PATH" srcdir="$(srcdir)" \
 	  EMULATOR="$(EMULATOR)" EXEEXT="$(EXEEXT)" \
-          "$(srcdir)"/run-tests $(TS_ALL)
+          "$(top_srcdir)"/run-tests $(TS_ALL)
 
 Makefile: $(srcdir)/Makefile.in ../config.status
 	cd .. && $(SHELL) ./config.status examples/$@

@@ -1,5 +1,17 @@
 2012-02-18  Niels Möller  <nisse@lysator.liu.se>
 
+	* run-tests, getopt.c, getopt1.c, getopt.h: These files were moved
+	to the top-level in the conversion to an independent git
+	repository. They used to be symlinks to lsh files, from the
+	subdirectories which use them.
+
+	* Makefile.in: Build and distribute getopt files. Distribute
+	run-tests script.
+	* examples/Makefile.in: Adapt to getopt files and the run-tests
+	script now located in the parent directory.
+	* testsuite/Makefile.in: Likewise.
+	* tools/Makefile.in: Likewise.
+
 	* index.html: Converted to xhtml (from lsh repository, change
 	dated 2012-02-03). Updated git instructions.
 
