@@ -59,17 +59,20 @@
 <h2> GIT access </h2>
 
 <p> 
-  As some shared but crucial files are not stored in the Nettle corner
-  of the GIT repository, the recommended way of GIT access is to check
-  out the entire LSH tree, as per the instructions at the <a
-    href="http://www.lysator.liu.se/~nisse/lsh">LSH home page</a>, run the
-  top-level <tt>./.bootstrap</tt> script (which sets up a few important
-  symlinks and runs .bootstrap scripts in subdirectories), and then
-  descend into the <tt>nettle</tt> directory for a standard
-  <tt>./configure && make</tt> there.
+  The public git repository for Nettle is located at <a
+  href='http://git.lysator.liu.se/nettle'>git.lysator.liu.se</a>.
+  After checkout, you need to run the <tt>.bootstrap</tt> script
+  before the standard <tt>./configure &amp;&amp; make</tt>.
 </p>
 <p>
-  A separate repository for Nettle is planned.
+  Earlier, Nettle was version controlled as part of the LSH
+  repository. When converted to the current repository, the history of
+  all files has been maintained as far as practical. But since the
+  directory organization used to be a bit different, building old
+  versions of Nettle from the current git repository does not work out
+  of the box. To do that, you have to check out historic versions from
+  the <a href='http://git.lysator.liu.se/lsh'>LSH repository</a>
+  instead.
 </p>
 
 <h2> Contact </h2>
