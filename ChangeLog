@@ -1137,7 +1137,7 @@
 	function passing the sbox table to _camellia_crypt.
 	* camellia-crypt-internal.c (_camellia_crypt): New file, with main
 	encrypt/decrypt function.
-	* Makefile.in (nettle_SOURCES): Updated list of camellia source files.	
+	* Makefile.in (nettle_SOURCES): Updated list of camellia source files.
 	(DISTFILES): Added camellia-internal.h.
 
 2010-07-20  Niels Möller  <nisse@lysator.liu.se>
