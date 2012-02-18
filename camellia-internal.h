@@ -6,7 +6,7 @@
 /* Copyright (C) 2006,2007
  * NTT (Nippon Telegraph and Telephone Corporation).
  *
- * Copyright (C) 2010 Niels Möller
+ * Copyright (C) 2010 Niels MÃ¶ller
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public

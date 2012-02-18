@@ -6,7 +6,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2001, 2005 Niels Möller
+ * Copyright (C) 2001, 2005 Niels MÃ¶ller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -25,7 +25,7 @@
  */
 
 /* Based on public domain code hacked by Colin Plumb, Andrew Kuchling, and
- * Niels Möller. */
+ * Niels MÃ¶ller. */
 
 
 #if HAVE_CONFIG_H

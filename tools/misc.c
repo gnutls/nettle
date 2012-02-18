@@ -2,7 +2,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2002, 2003 Niels Möller
+ * Copyright (C) 2002, 2003 Niels MÃ¶ller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -75,7 +75,7 @@ sexp_token_chars[0x80] =
     1,1,1,1,1,1,1,1, 1,1,1,0,0,1,0,0,
     /* @ A ... O */
     0,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,	
-    /* P ...             Z [ \ ] ^ _ */
+    /* P ...             Z [ \Â ] ^ _ */
     1,1,1,1,1,1,1,1, 1,1,1,0,0,0,0,1,
     /* ` a, ... o */
     0,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,	

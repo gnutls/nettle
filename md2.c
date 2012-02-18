@@ -5,7 +5,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2003 Niels Möller, Andreas Sigfridsson
+ * Copyright (C) 2003 Niels MÃ¶ller, Andreas Sigfridsson
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -24,7 +24,7 @@
  */
 
 /* This code originates from the Python Cryptography Toolkit, version 1.0.1.
-   Further hacked by Andreas Sigfridsson and Niels Möller. Original license:
+   Further hacked by Andreas Sigfridsson and Niels MÃ¶ller. Original license:
 
    ===================================================================
    Distribute and use freely; there are no restrictions on further

@@ -8,7 +8,7 @@
  * Copyright (C) 2004 Simon Josefsson
  * Copyright (C) 2003 Nikos Mavroyanopoulos
  * Copyright (C) 2004 Free Software Foundation, Inc.
- * Copyright (C) 2004 Niels Möller
+ * Copyright (C) 2004 Niels MÃ¶ller
  *
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -29,7 +29,7 @@
 /* This implementation was written by Nikos Mavroyanopoulos for GNUTLS
  * as a Libgcrypt module (gnutls/lib/x509/rc2.c) and later adapted for
  * direct use by Libgcrypt by Werner Koch and later adapted for direct
- * use by Nettle by Simon Josefsson and Niels Möller.
+ * use by Nettle by Simon Josefsson and Niels MÃ¶ller.
  *
  * The implementation here is based on Peter Gutmann's RRC.2 paper and
  * RFC 2268.

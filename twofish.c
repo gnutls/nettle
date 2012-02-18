@@ -10,7 +10,7 @@
  * Copyright (C) 1999 J.H.M. Dassen (Ray) <jdassen@wi.LeidenUniv.nl>
  *
  * Integrated with the nettle library,
- * Copyright (C) 2001 Niels Möller
+ * Copyright (C) 2001 Niels MÃ¶ller
  */
 
 /* nettle, low-level cryptographics library

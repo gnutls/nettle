@@ -1,6 +1,6 @@
 C nettle, low-level cryptographics library
 C 
-C Copyright (C) 2001, 2002, 2005, 2008 Rafael R. Sevilla, Niels Möller
+C Copyright (C) 2001, 2002, 2005, 2008 Rafael R. Sevilla, Niels MÃ¶ller
 C  
 C The nettle library is free software; you can redistribute it and/or modify
 C it under the terms of the GNU Lesser General Public License as published by

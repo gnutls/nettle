@@ -8,7 +8,7 @@
 @c %**end of header
 
 @set UPDATED-FOR 2.3
-@set AUTHOR Niels Möller
+@set AUTHOR Niels MÃ¶ller
 
 @copying
 This manual is for the Nettle library (version @value{UPDATED-FOR}), a
@@ -158,7 +158,7 @@ Josefsson. Released under the LGPL.
 @item BLOWFISH
 The implementation of the BLOWFISH cipher is written by Werner Koch,
 copyright owned by the Free Software Foundation. Also hacked by Simon
-Josefsson and Niels Möller. Released under the LGPL.
+Josefsson and Niels MÃ¶ller. Released under the LGPL.
 
 @item CAMELLIA
 The C implementation is by Nippon Telegraph and Telephone Corporation
@@ -195,8 +195,8 @@ Nettle by Andres Mejia. Released under the LGPL.
 @item SERPENT
 The implementation of the SERPENT cipher is based on the code in libgcrypt,
 copyright owned by the Free Software Foundation. Adapted to Nettle by
-Simon Josefsson and heavily modified by Niels Möller. Assembly for
-x86_64 by Niels Möller. Released under the LGPL.
+Simon Josefsson and heavily modified by Niels MÃ¶ller. Assembly for
+x86_64 by Niels MÃ¶ller. Released under the LGPL.
 
 @item SHA1
 The C implementation of the SHA1 message digest is written by Peter
@@ -2961,27 +2961,27 @@ Serve with boiled egg-halves.
 @c And the original Swedish version.
 @ignore
 
-Recept på nässelsoppa
+Recept pÃ¥ nÃ¤sselsoppa
 4 portioner
 
-1 l färska nässlor
-2 msk smör
-3 msk vetemjöl
-1 l kött- eller grönsaksbuljong
+1 l fÃ¤rska nÃ¤sslor
+2 msk smÃ¶r
+3 msk vetemjÃ¶l
+1 l kÃ¶tt- eller grÃ¶nsaksbuljong
 1/2 tsk salt
 1-2 krm peppar
-(lite grädde eller mjölk)
+(lite grÃ¤dde eller mjÃ¶lk)
 
-Plocka 1 liter färska nässlor. Använd handskar! Helst små och späda
-skott, men topparna av större nässlor går också bra.
+Plocka 1 liter fÃ¤rska nÃ¤sslor. AnvÃ¤nd handskar! Helst smÃ¥ och spÃ¤da
+skott, men topparna av stÃ¶rre nÃ¤sslor gÃ¥r ocksÃ¥ bra.
 
-Skölj nässlorna väl. Förväll dem ca 10 minuter i lätt saltat vatten.
-Häll av och spara spadet. Hacka nässlorna. Smält smöret, rör i mjöl och
-späd med buljong och nässelspad. Lägg i de hackade nässlorna. Om så
-önskas, häll i en skvätt mjölk eller grädde. Koka några minuter, och
-smaksätt med salt och peppar.
+SkÃ¶lj nÃ¤sslorna vÃ¤l. FÃ¶rvÃ¤ll dem ca 10 minuter i lÃ¤tt saltat vatten.
+HÃ¤ll av och spara spadet. Hacka nÃ¤sslorna. SmÃ¤lt smÃ¶ret, rÃ¶r i mjÃ¶l och
+spÃ¤d med buljong och nÃ¤sselspad. LÃ¤gg i de hackade nÃ¤sslorna. Om sÃ¥
+Ã¶nskas, hÃ¤ll i en skvÃ¤tt mjÃ¶lk eller grÃ¤dde. Koka nÃ¥gra minuter, och
+smaksÃ¤tt med salt och peppar.
 
-Servera med kokta ägghalvor.
+Servera med kokta Ã¤gghalvor.
 @end ignore
 
 @node Installation, Index, Nettle soup, Top

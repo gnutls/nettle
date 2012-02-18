@@ -7,7 +7,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2002 Niels Möller
+ * Copyright (C) 2002 Niels MÃ¶ller
  *
  * Includes code copied verbatim from Knuth's TAOCP.
  *  

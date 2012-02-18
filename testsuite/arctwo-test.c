@@ -1,7 +1,7 @@
 /* nettle, low-level cryptographics library
  *
  * Copyright (C) 2004 Simon Josefsson
- * Copyright (C) 2004 Niels Möller
+ * Copyright (C) 2004 Niels MÃ¶ller
  *
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by

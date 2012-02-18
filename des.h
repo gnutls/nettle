@@ -5,7 +5,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 1992, 2001, Dana L. How, Niels Möller
+ * Copyright (C) 1992, 2001, Dana L. How, Niels MÃ¶ller
  * 
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -29,7 +29,7 @@
  *	Please see the file `../lib/descore.README' for the complete copyright
  *	notice.
  *
- * Slightly edited by Niels Möller, 1997
+ * Slightly edited by Niels MÃ¶ller, 1997
  */
 
 #ifndef NETTLE_DES_H_INCLUDED

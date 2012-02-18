@@ -8,7 +8,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2011  Niels Möller
+ * Copyright (C) 2011  Niels MÃ¶ller
  * Copyright (C) 2010, 2011  Simon Josefsson
  * Copyright (C) 2003, 2004, 2005 Free Software Foundation, Inc.
  *  
