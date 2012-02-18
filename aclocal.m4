@@ -523,7 +523,6 @@ dnl Remember, if the system already had a valid <stdint.h>, the generated
 dnl file will include it directly. No need for fuzzy HAVE_STDINT_H things...
 dnl
 dnl @, (status: used on new platforms) (see http://ac-archive.sf.net/gstdint/)
-dnl @version $Id$
 dnl @author  Guido Draheim <guidod@gmx.de> 
 
 AC_DEFUN([AX_CREATE_STDINT_H],

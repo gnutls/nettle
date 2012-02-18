@@ -1,2 +1,1 @@
-[attr]binary -text -crlf -diff -ident
-* text ident
+* text -ident

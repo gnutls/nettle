@@ -1,6 +1,4 @@
 /*
- * $Id$
- *
  *	CAST-128 in C
  *	Written by Steve Reid <sreid@sea-to-sky.net>
  *	100% Public Domain - no warranty

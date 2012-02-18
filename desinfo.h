@@ -3,7 +3,7 @@
  * Tables describing DES rather than just this implementation.
  * These are used in desdata but NOT in runtime code.
  *
- * $Id$ */
+ */
 
 /*	des - fast & portable DES encryption & decryption.
  *	Copyright (C) 1992  Dana L. How

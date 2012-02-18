@@ -1,6 +1,6 @@
 /* desCode.h
  *
- * $Id$ */
+ */
 
 /*	des - fast & portable DES encryption & decryption.
  *	Copyright (C) 1992  Dana L. How

@@ -2,7 +2,7 @@
  *
  * Generate tables used by des.c and desCode.h.
  *
- * $Id$ */
+ */
 
 /*
  *	des - fast & portable DES encryption & decryption.
