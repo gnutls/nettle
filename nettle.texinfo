@@ -72,6 +72,7 @@ Reference
 * Keyed hash functions::        
 * Public-key algorithms::       
 * Randomness::                  
+* Ascii encoding::              
 * Miscellaneous functions::     
 * Compatibility functions::     
 
@@ -311,6 +312,7 @@ This chapter describes all the Nettle functions, grouped by family.
 * Keyed hash functions::        
 * Public-key algorithms::       
 * Randomness::                  
+* Ascii encoding::              
 * Miscellaneous functions::     
 * Compatibility functions::     
 @end menu
@@ -2564,7 +2566,7 @@ Returns one on success, and zero on failure. The function will fail if
 small.
 @end deftypefun
 
-@node Randomness, Miscellaneous functions, Public-key algorithms, Reference
+@node Randomness, Ascii encoding, Public-key algorithms, Reference
 @comment  node-name,  next,  previous,  up
 @section Randomness
 
@@ -2885,7 +2887,159 @@ Returns an entropy estimate, in bits, suitable for calling
 @code{yarrow256_update}. Usually, 0, 1 or 2 bits.
 @end deftypefun
 
-@node Miscellaneous functions, Compatibility functions, Randomness, Reference
+@node Ascii encoding, Miscellaneous functions, Randomness, Reference
+@comment  node-name,  next,  previous,  up
+@section Ascii encoding
+
+Encryption will transform your data from text into binary format, and that
+may be a problem if you want, for example, to send the data as if it was
+plain text in an email (or store it along with descriptive text in a
+file). You may then use an encoding from binary to text: each binary byte
+is translated into a number of bytes of plain text.
+
+A base-N encoding of data is one representation of data that only uses N
+different symbols (instead of the 256 possible values of a byte).
+
+The base64 encoding will always use alphanumeric (upper and lower case)
+characters and the '+', '/' and '=' symbols to represent the data. Four
+output characters are generated for each three bytes of input. In case
+the length of the input is not a multiple of three, padding characters
+are added at the end.
+
+The base16 encoding, also known as ``hexadecimal'', uses the decimal
+digits and the letters from A to F. Two hexadecimal digits are generated
+for each input byte. Base16 may be useful if you want to use the data
+for filenames or URLs, for example.
+
+Nettle supports both base64 and base16 encoding and decoding.
+
+Encoding and decoding uses a context struct to maintain its state (with
+the exception of base16 encoding, which doesn't need any). To encode or
+decode the your data, first initialize the context, then call the update
+function as many times as necessary, and complete the operation by
+calling the final function.
+
+The following functions can be used to perform base64 encoding and decoding.
+They are defined in @file{<nettle/base64.h>}.
+
+@deftp {Context struct} {struct base64_encode_ctx}
+@end deftp
+
+@deftypefun {void} base64_encode_init (struct base64_encode_ctx *@var{ctx})
+Initializes a base64 context. This is necessary before starting an encoding
+session.
+@end deftypefun
+
+
+@deftypefun {unsigned} base64_encode_single (struct base64_encode_ctx *@var{ctx}, uint8_t *@var{dst}, uint8_t @var{src})
+Encodes a single byte. Returns amount of output (always 1 or 2).
+@end deftypefun
+
+@deffn Macro BASE64_ENCODE_LENGTH (@var{length})
+The maximum number of output bytes when passing @var{length} input bytes
+to @code{base64_encode_update}.
+@end deffn
+
+@deftypefun {unsigned} base64_encode_update (struct base64_encode_ctx *@var{ctx}, uint8_t *@var{dst}, unsigned @var{length}, const uint8_t *@var{src})
+After @var{ctx} is initialized, this function may be called to encode @var{length}
+bytes from @var{src}. The result will be placed in @var{dst}, and the return value
+will be the number of bytes generated. Note that @var{dst} must be at least of size
+BASE64_ENCODE_LENGTH(@var{length}).
+@end deftypefun
+
+@defvr Constant BASE64_ENCODE_FINAL_LENGTH
+The maximum amount of output from @code{base64_encode_final}.
+@end defvr
+
+@deftypefun {unsigned} base64_encode_final (struct base64_encode_ctx *@var{ctx}, uint8_t *@var{dst})
+After calling base64_encode_update one or more times, this function
+should be called to generate the final output bytes, including any
+needed paddding. The return value is the number of output bytes
+generated.
+@end deftypefun
+
+@deftp {Context struct} {struct base64_decode_ctx}
+@end deftp
+
+@deftypefun {void} base64_decode_init (struct base64_decode_ctx *@var{ctx})
+Initializes a base64 decoding context. This is necessary before starting a decoding
+session.
+@end deftypefun
+
+@deftypefun {int} base64_decode_single (struct base64_decode_ctx *@var{ctx}, uint8_t *@var{dst}, uint8_t @var{src})
+Decodes a single byte (@var{src}) and stores the result in @var{dst}.
+Returns amount of output (0 or 1), or -1 on errors.
+@end deftypefun
+
+@deffn Macro BASE64_DECODE_LENGTH (@var{length})
+The maximum number of output bytes when passing @var{length} input bytes
+to @code{base64_decode_update}.
+@end deffn
+
+@deftypefun {void} base64_decode_update (struct base64_decode_ctx *@var{ctx}, unsigned *@var{dst_length}, uint8_t *@var{dst}, unsigned @var{src_length}, const uint8_t *@var{src})
+After @var{ctx} is initialized, this function may be called to decode @var{src_length}
+bytes from @var{src}. @var{dst} should point to an area of size at least
+BASE64_DECODE_LENGTH(@var{length}), and for sanity checking, @var{dst_length}
+should be initialized to the size of that area before the call.
+@var{dst_length} is updated to the amount of decoded output. The function will return
+1 on success and 0 on error.
+@end deftypefun
+
+@deftypefun {int} base64_decode_final (struct base64_decode_ctx *@var{ctx})
+Check that final padding is correct. Returns 1 on success, and 0 on
+error.
+@end deftypefun
+
+Similarly to the base64 functions, the following functions perform base16 encoding,
+and are defined in @file{<nettle/base16.h>}. Note that there is no encoding context
+necessary for doing base16 encoding.
+
+@deftypefun {void} base16_encode_single (uint8_t *@var{dst}, uint8_t @var{src})
+Encodes a single byte. Always stores two digits in @var{dst}[0] and @var{dst}[1].
+@end deftypefun
+
+@deffn Macro BASE16_ENCODE_LENGTH (@var{length})
+The number of output bytes when passing @var{length} input bytes to
+@code{base16_encode_update}.
+@end deffn
+
+@deftypefun {void} base16_encode_update (uint8_t *@var{dst}, unsigned @var{length}, const uint8_t *@var{src})
+Always stores BASE16_ENCODE_LENGTH(@var{length}) digits in @var{dst}.
+@end deftypefun
+
+@deftp {Context struct} {struct base16_decode_ctx}
+@end deftp
+
+@deftypefun {void} base16_decode_init (struct base16_decode_ctx *@var{ctx})
+Initializes a base16 decoding context. This is necessary before starting a decoding
+session.
+@end deftypefun
+
+@deftypefun {int} base16_decode_single (struct base16_decode_ctx *@var{ctx}, uint8_t *@var{dst}, uint8_t @var{src})
+Decodes a single byte from @var{src} into @var{dst}. Returns amount of output (0 or 1), or -1 on errors.
+@end deftypefun
+
+@deffn Macro BASE16_DECODE_LENGTH (@var{length})
+The maximum number of output bytes when passing @var{length} input bytes
+to @code{base16_decode_update}.
+@end deffn
+
+@deftypefun {int} base16_decode_update (struct base16_decode_ctx *@var{ctx}, unsigned *@var{dst_length}, uint8_t *@var{dst}, unsigned @var{src_length}, const uint8_t *@var{src})
+After @var{ctx} is initialized, this function may be called to decode @var{src_length}
+bytes from @var{src}. @var{dst} should point to an area of size at least
+BASE16_DECODE_LENGTH(@var{length}), and for sanity checking, @var{dst_length}
+should be initialized to the size of that area before the call.
+@var{dst_length} is updated to the amount of decoded output. The function will return
+1 on success and 0 on error.
+@end deftypefun
+
+@deftypefun {int} base16_decode_final (struct base16_decode_ctx *@var{ctx})
+Checks that the end of data is correct (i.e., an even number of
+hexadecimal digits have been seen). Returns 1 on success, and 0 on
+error.
+@end deftypefun
+
+@node Miscellaneous functions, Compatibility functions, Ascii encoding, Reference
 @comment  node-name,  next,  previous,  up
 @section Miscellaneous functions
 

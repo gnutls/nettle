@@ -1,3 +1,9 @@
+2012-02-27  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle.texinfo: Documentation for base16 and base64 encoding.
+	Text contributed by Jeronimo Pellegrini
+	<pellegrini@mpcnet.com.br>, back in April 2006.
+
 2012-02-18  Niels Möller  <nisse@lysator.liu.se>
 
 	* run-tests, getopt.c, getopt1.c, getopt.h: These files were moved
