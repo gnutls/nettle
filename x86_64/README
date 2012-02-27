@@ -24,7 +24,7 @@ Registers	May be		Argument
 %r14		
 %r15		
 
-w64 ABI, according to
+W64 ABI, according to
 http://msdn.microsoft.com/en-us/library/9z1stfyw.aspx:
 
 Registers	May be		Argument
@@ -51,3 +51,15 @@ Additional arguments are passed on the stack. "backing store" on the
 stack for the four register arguments is also required. %xmm6 to
 %xmm15 are callee-saved. The "long" type is just 32 bits. Nettle
 currently does *NOT* support this ABI.
+
+If we have five arguments, and push the additional callee-save
+registers %rdi and %rsi on the stack, we get a stack frame like
+
+56(%rsp): Fifth argument
+48(%rsp): Space for fourth argument
+40(%rsp): Space for third argument
+32(%rsp): Space for second argument
+24(%rsp): Space for first argument
+16(%rsp): Return address
+8(%rsp): Saved %rsi
+(%rsp) : Saved %rdi
