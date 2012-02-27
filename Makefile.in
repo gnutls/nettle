@@ -249,7 +249,7 @@ des.$(OBJEXT): des.c des.h $(des_headers)
 	  && test -s $@T && mv -f $@T $@
 
 .texinfo.dvi:
-	cd $(srcdir) && texi2dvi `basename "$<"`
+	cd $(srcdir) && texi2dvi -b `basename "$<"`
 
 .dvi.ps:
 	cd $(srcdir) && dvips -Ppdf -G0 -o `basename "$<" .dvi`.ps `basename "$<"`
