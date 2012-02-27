@@ -1,5 +1,7 @@
 2012-02-27  Niels Möller  <nisse@lysator.liu.se>
 
+	* list-obj-sizes.awk: Recognize elf64 objects.
+
 	* Makefile.in (.texinfo.dvi): Pass -b option to texi2dvi.
 
 	* Makefile.in (TARGETS): Added twofishdata.
