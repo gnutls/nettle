@@ -1,3 +1,8 @@
+2012-03-04  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac (LIBNETTLE_MINOR): Bumped library version, to 4.4.
+	(LIBHOGWEED_MINOR): And to 2.2.
+
 2012-02-27  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle.texinfo: Documentation for base16 and base64 encoding.
