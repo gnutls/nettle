@@ -32,7 +32,7 @@ Build nettle with the usual ./configure && make && make check && make
 install. Read the manual. Mail me if you have any questions or
 suggestions.
 
-You can also build Nettle from cvs, see
+You can also build Nettle from git, see
 http://www.lysator.liu.se/~nisse/nettle/ for current instructions.
 
 You may want to subscribe to the nettle-bugs mailing list. See
