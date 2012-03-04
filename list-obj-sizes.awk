@@ -46,7 +46,7 @@ BEGIN {
       printf "Filter: %s\n", filter;
 }
 
-/elf32/ {
+/elf32|elf64/ {
   output();
   if ($1 ~ filter)
     {

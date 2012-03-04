@@ -27,7 +27,8 @@ getopt_SOURCES = getopt.c getopt1.c
 
 getopt_TARGETS = $(getopt_SOURCES:.c=.$(OBJEXT))
 
-TARGETS = aesdata$(EXEEXT) desdata$(EXEEXT) shadata$(EXEEXT) gcmdata$(EXEEXT) \
+TARGETS = aesdata$(EXEEXT) desdata$(EXEEXT) twofishdata$(EXEEXT) \
+	  shadata$(EXEEXT) gcmdata$(EXEEXT) \
 	  $(getopt_TARGETS) \
 	  $(LIBTARGETS) @IF_SHARED@ $(SHLIBTARGETS)
 IMPLICIT_TARGETS = @IF_DLL@ $(LIBNETTLE_FILE) $(LIBHOGWEED_FILE)
@@ -131,7 +132,7 @@ HEADERS = aes.h arcfour.h arctwo.h asn1.h bignum.h blowfish.h \
 INSTALL_HEADERS = $(HEADERS) nettle-stdint.h
 
 SOURCES = $(nettle_SOURCES) $(hogweed_SOURCES) $(getopt_SOURCES) \
-	  aesdata.c desdata.c shadata.c gcmdata.c
+	  aesdata.c desdata.c twofishdata.c shadata.c gcmdata.c
 
 DISTFILES = $(SOURCES) $(HEADERS) getopt.h .bootstrap run-tests \
 	aclocal.m4 configure.ac \
@@ -200,6 +201,9 @@ aesdata$(EXEEXT): aesdata.$(OBJEXT)
 desdata$(EXEEXT): desdata.$(OBJEXT)
 	$(LINK) desdata.$(OBJEXT) $(LIBS) -o desdata$(EXEEXT)
 
+twofishdata$(EXEEXT): twofishdata.$(OBJEXT)
+	$(LINK) twofishdata.$(OBJEXT) $(LIBS) -o twofishdata$(EXEEXT)
+
 shadata$(EXEEXT): shadata.$(OBJEXT)
 	$(LINK) shadata.$(OBJEXT) $(LIBS) -lm -o shadata$(EXEEXT)
 
@@ -245,7 +249,7 @@ des.$(OBJEXT): des.c des.h $(des_headers)
 	  && test -s $@T && mv -f $@T $@
 
 .texinfo.dvi:
-	cd $(srcdir) && texi2dvi `basename "$<"`
+	cd $(srcdir) && texi2dvi -b `basename "$<"`
 
 .dvi.ps:
 	cd $(srcdir) && dvips -Ppdf -G0 -o `basename "$<" .dvi`.ps `basename "$<"`

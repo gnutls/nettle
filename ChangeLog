@@ -5,6 +5,20 @@
 
 2012-02-27  Niels Möller  <nisse@lysator.liu.se>
 
+	* list-obj-sizes.awk: Recognize elf64 objects.
+
+	* Makefile.in (.texinfo.dvi): Pass -b option to texi2dvi.
+
+	* Makefile.in (TARGETS): Added twofishdata.
+	(SOURCES): Added twofishdata.c.
+	(twofishdata): New rule.
+
+	* twofish.c (q0, q1): Made const, and reformatted to match the
+	twofishdata program.
+
+	* twofishdata.c: Resurrected old file. Used to be called
+	generate_q.c, when the twofish code was contributed back in 1999.
+
 	* nettle.texinfo: Documentation for base16 and base64 encoding.
 	Text contributed by Jeronimo Pellegrini
 	<pellegrini@mpcnet.com.br>, back in April 2006.
