@@ -44,8 +44,8 @@ AC_ARG_ENABLE(assembler,
   [enable_assembler=yes])
 
 AC_ARG_ENABLE(shared,
-  AC_HELP_STRING([--enable-shared], [Build a shared library]),,
-  [enable_shared=no])
+  AC_HELP_STRING([--disable-shared], [Do not build any shared library]),,
+  [enable_shared=yes])
 
 AC_ARG_ENABLE(pic,
   AC_HELP_STRING([--disable-pic],
