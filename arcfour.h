@@ -58,10 +58,6 @@ arcfour_crypt(struct arcfour_ctx *ctx,
 	      unsigned length, uint8_t *dst,
 	      const uint8_t *src);
 
-void
-arcfour_stream(struct arcfour_ctx *ctx,
-	       unsigned length, uint8_t *dst);
-
 #ifdef __cplusplus
 }
 #endif
