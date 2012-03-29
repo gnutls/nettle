@@ -49,6 +49,9 @@ memxor-test$(EXEEXT): memxor-test.$(OBJEXT)
 ripemd160-test$(EXEEXT): ripemd160-test.$(OBJEXT)
 	$(LINK) ripemd160-test.$(OBJEXT) $(TEST_OBJS) -o ripemd160-test$(EXEEXT)
 
+salsa20-test$(EXEEXT): salsa20-test.$(OBJEXT)
+	$(LINK) salsa20-test.$(OBJEXT) $(TEST_OBJS) -o salsa20-test$(EXEEXT)
+
 sha1-test$(EXEEXT): sha1-test.$(OBJEXT)
 	$(LINK) sha1-test.$(OBJEXT) $(TEST_OBJS) -o sha1-test$(EXEEXT)
 

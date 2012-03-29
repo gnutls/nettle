@@ -1,5 +1,13 @@
 2012-03-29  Niels Möller  <nisse@lysator.liu.se>
 
+	Implementation of Salsa20, contributed by Simon Josefsson.
+	* salsa20.h: New file.
+	* salsa20.c: New file.
+	* Makefile.in (nettle_SOURCES): Added salsa20.c
+	(HEADERS): Added salsa20.h.
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Added salsa20-test.c.
+	* testsuite/salsa20-test.c: New test case.
+
 	* Makefile.in (soname links): Adding missing space before ].
 
 2012-03-23  Niels Möller  <nisse@lysator.liu.se>

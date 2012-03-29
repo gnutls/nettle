@@ -36,6 +36,7 @@
 /rsa-keygen-test
 /rsa-test
 /rsa2sexp-test
+/salsa20-test
 /serpent-test
 /sexp-format-test
 /sexp-test

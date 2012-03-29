@@ -18,6 +18,7 @@ TS_NETTLE_SOURCES = aes-test.c arcfour-test.c arctwo-test.c \
 		    md2-test.c md4-test.c md5-test.c md5-compat-test.c \
 		    memxor-test.c \
 		    ripemd160-test.c \
+		    salsa20-test.c \
 		    sha1-test.c sha224-test.c sha256-test.c \
 		    sha384-test.c sha512-test.c \
 		    serpent-test.c twofish-test.c \
