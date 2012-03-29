@@ -1,7 +1,7 @@
 NEWS for the 2.5 release
 
 	* Various portability fixes for MacOS and M$ Windows. A lot of
-	  this work done by Martin Storsjö.
+	  this work done by Martin StorsjÃ¶.
 
 	* In particular, Nettle now hopefully works on 64-bit Windows
 	  builds, "W64", including the x86_64 assemby code.
@@ -47,7 +47,7 @@ NEWS for the 2.3 release
 	  certain platforms. Should not affect any documented features
 	  of the library.
 
-	* Reorganization of the code for the various Merkle-Damgård
+	* Reorganization of the code for the various Merkle-DamgÃ¥rd
 	  hash functions. Some fields in the context structs for md4,
 	  md5 and sha1 have been renamed, for consistency.
 	  Applications should not peek inside these structs, and the
