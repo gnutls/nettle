@@ -176,7 +176,7 @@ $(LIBNETTLE_FORLINK): $(nettle_PURE_OBJS)
 	(cd .lib \
           && rm -f $(LIBNETTLE_FORLINK) \
 	  && $(LN_S) ../$(LIBNETTLE_FORLINK) $(LIBNETTLE_FORLINK) \
-	  && [ -n "$(LIBNETTLE_SONAME)"] \
+	  && [ -n "$(LIBNETTLE_SONAME)" ] \
 	  || { rm -f $(LIBNETTLE_SONAME) \
 	       && $(LN_S) $(LIBNETTLE_FORLINK) $(LIBNETTLE_SONAME) ; } )
 
@@ -186,7 +186,7 @@ $(LIBHOGWEED_FORLINK): $(hogweed_PURE_OBJS) $(LIBNETTLE_FORLINK)
 	(cd .lib \
           && rm -f $(LIBHOGWEED_FORLINK) \
 	  && $(LN_S) ../$(LIBHOGWEED_FORLINK) $(LIBHOGWEED_FORLINK) \
-	  && [ -n "$(LIBHOGWEED_SONAME)"] \
+	  && [ -n "$(LIBHOGWEED_SONAME)" ] \
 	  || { rm -f $(LIBHOGWEED_SONAME) \
 	       && $(LN_S) $(LIBHOGWEED_FORLINK) $(LIBHOGWEED_SONAME) ; } )
 

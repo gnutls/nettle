@@ -1,3 +1,7 @@
+2012-03-29  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (soname links): Adding missing space before ].
+
 2012-03-23  Niels Möller  <nisse@lysator.liu.se>
 
 	* arcfour.h (arcfour_stream): Deleted obsolete prototype.
