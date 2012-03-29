@@ -18,6 +18,11 @@
 
 	* configure.ac (enable_shared): Build shared libraries by default.
 
+2012-03-04  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac (LIBNETTLE_MINOR): Bumped library version, to 4.4.
+	(LIBHOGWEED_MINOR): And to 2.2.
+
 2012-02-27  Niels Möller  <nisse@lysator.liu.se>
 
 	* list-obj-sizes.awk: Recognize elf64 objects.
