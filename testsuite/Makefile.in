@@ -67,7 +67,11 @@ all: $(TARGETS) $(EXTRA_TARGETS)
 # explicit rule for each and every executable.
 
 LIB_HOGWEED = @IF_HOGWEED@ -lhogweed
-TEST_OBJS = testutils.$(OBJEXT) $(LIB_HOGWEED) -lnettle $(LIBS)
+TEST_OBJS = testutils.$(OBJEXT) ../nettle-internal.$(OBJEXT) \
+	    $(LIB_HOGWEED) -lnettle $(LIBS)
+
+../nettle-internal.$(OBJEXT):
+	( cd .. && $(MAKE) $@ )
 
 .PHONY: test-rules
 test-rules:
@@ -84,7 +88,7 @@ test-rules:
 
 include $(srcdir)/.test-rules.make
 
-$(TARGETS) $(EXTRA_TARGETS): testutils.$(OBJEXT) \
+$(TARGETS) $(EXTRA_TARGETS): testutils.$(OBJEXT) ../nettle-internal.$(OBJEXT) \
 	../libnettle.a @IF_HOGWEED@ ../libhogweed.a
 
 # The PATH update is for locating dlls on w*ndows.

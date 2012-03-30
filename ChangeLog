@@ -1,6 +1,12 @@
 2012-03-30  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in (soname link): Fixed logic.
+	(nettle_SOURCES): Removed nettle-internal.c, so that it's not
+	parrt of the library...
+	(internal_SOURCES): ...and put it here.
+	* testsuite/Makefile.in (TEST_OBJS): Added ../nettle-internal.o.
+	* examples/Makefile.in (BENCH_OBJS): New variable, to simplify the
+	nettle-benchmark rule. Also link with ../nettle-internal.o.
 
 2012-03-29  Niels Möller  <nisse@lysator.liu.se>
 

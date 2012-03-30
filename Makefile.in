@@ -24,12 +24,14 @@ LIBTARGETS = libnettle.a @IF_HOGWEED@ libhogweed.a
 SHLIBTARGETS = $(LIBNETTLE_FORLINK) @IF_HOGWEED@ $(LIBHOGWEED_FORLINK)
 
 getopt_SOURCES = getopt.c getopt1.c
-
 getopt_TARGETS = $(getopt_SOURCES:.c=.$(OBJEXT))
+
+internal_SOURCES = nettle-internal.c
+internal_TARGETS = $(internal_SOURCES:.c=.$(OBJEXT))
 
 TARGETS = aesdata$(EXEEXT) desdata$(EXEEXT) twofishdata$(EXEEXT) \
 	  shadata$(EXEEXT) gcmdata$(EXEEXT) \
-	  $(getopt_TARGETS) \
+	  $(getopt_TARGETS) $(internal_TARGETS) \
 	  $(LIBTARGETS) @IF_SHARED@ $(SHLIBTARGETS)
 IMPLICIT_TARGETS = @IF_DLL@ $(LIBNETTLE_FILE) $(LIBHOGWEED_FILE)
 
@@ -90,7 +92,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 buffer.c buffer-init.c realloc.c \
 		 nettle-meta-hashes.c nettle-meta-ciphers.c \
 		 nettle-meta-armors.c \
-		 nettle-internal.c write-be32.c write-le32.c
+		 write-be32.c write-le32.c
 
 hogweed_SOURCES = sexp.c sexp-format.c \
 		  sexp-transport.c sexp-transport-format.c \
@@ -132,7 +134,8 @@ HEADERS = aes.h arcfour.h arctwo.h asn1.h bignum.h blowfish.h \
 
 INSTALL_HEADERS = $(HEADERS) nettle-stdint.h
 
-SOURCES = $(nettle_SOURCES) $(hogweed_SOURCES) $(getopt_SOURCES) \
+SOURCES = $(nettle_SOURCES) $(hogweed_SOURCES) \
+	  $(getopt_SOURCES) $(internal_SOURCES) \
 	  aesdata.c desdata.c twofishdata.c shadata.c gcmdata.c
 
 DISTFILES = $(SOURCES) $(HEADERS) getopt.h .bootstrap run-tests \

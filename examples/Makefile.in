@@ -33,7 +33,7 @@ all: $(TARGETS)
 .c.$(OBJEXT):
 	$(COMPILE) -c $< && $(DEP_PROCESS)
 
-$(getopt_OBJS):
+$(getopt_OBJS) ../nettle-internal.$(OBJEXT):
 	( cd .. && $(MAKE) $@ )
 
 # For Solaris and BSD make, we have to use an explicit rule for each executable
@@ -69,9 +69,10 @@ rsa-decrypt$(EXEEXT): rsa-decrypt.$(OBJEXT) read_rsa_key.$(OBJEXT)
 eratosthenes$(EXEEXT): eratosthenes.$(OBJEXT) $(GETOPT_OBJS)
 	$(LINK) eratosthenes.$(OBJEXT) $(GETOPT_OBJS) -o eratosthenes$(EXEEXT)
 
-nettle-benchmark$(EXEEXT): nettle-benchmark.$(OBJEXT) nettle-openssl.$(OBJEXT) $(GETOPT_OBJS)
-	$(LINK) nettle-benchmark.$(OBJEXT) nettle-openssl.$(OBJEXT) io.$(OBJEXT) $(GETOPT_OBJS) \
-	-lnettle $(BENCH_LIBS) $(OPENSSL_LIBFLAGS) -o nettle-benchmark$(EXEEXT)
+BENCH_OBJS = nettle-benchmark.$(OBJEXT) nettle-openssl.$(OBJEXT) \
+	$(GETOPT_OBJS) ../nettle-internal.$(OBJEXT)
+nettle-benchmark$(EXEEXT): $(BENCH_OBJS)
+	$(LINK) $(BENCH_OBJS) -lnettle $(BENCH_LIBS) $(OPENSSL_LIBFLAGS) -o nettle-benchmark$(EXEEXT)
 
 $(TARGETS) : io.$(OBJEXT) ../libnettle.a
 
