@@ -433,6 +433,23 @@ time_gcm(void)
 	  time_function(bench_cipher, &cinfo));
 }
 
+static int
+prefix_p(const char *prefix, const char *s)
+{
+  size_t i;
+  for (i = 0; prefix[i]; i++)
+    if (prefix[i] != s[i])
+      return 0;
+  return 1;
+}
+
+static int
+block_cipher_p(const struct nettle_cipher *cipher)
+{
+  /* Don't use nettle cbc and ctr for openssl ciphers. */
+  return cipher->block_size > 0 && !prefix_p("openssl", cipher->name);
+}
+
 static void
 time_cipher(const struct nettle_cipher *cipher)
 {
@@ -472,8 +489,7 @@ time_cipher(const struct nettle_cipher *cipher)
 	    time_function(bench_cipher, &info));
   }
 
-  /* Don't use nettle cbc to benchmark openssl ciphers */
-  if (cipher->block_size && cipher->name[0] != 'o')
+  if (block_cipher_p(cipher))
     {
       uint8_t *iv = xalloc(cipher->block_size);
       
@@ -619,6 +635,7 @@ main(int argc, char **argv)
       &nettle_des3,
       &nettle_serpent256,
       &nettle_twofish128, &nettle_twofish192, &nettle_twofish256,
+      &nettle_salsa20,
       NULL
     };
 

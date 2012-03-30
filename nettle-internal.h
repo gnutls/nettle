@@ -59,9 +59,10 @@ extern const struct nettle_cipher nettle_des3;
 
 extern const struct nettle_cipher nettle_blowfish128;
 
-/* Glue to openssl, for comparative benchmarking. The corresponding
- * code is not included in the nettle library, as that would make the
- * shared library depend on openssl. Instead, look at
+/* For benchmarking only, sets no iv and lies about the block size. */
+extern const struct nettle_cipher nettle_salsa20;
+
+/* Glue to openssl, for comparative benchmarking. Code in
  * examples/nettle-openssl.c. */
 extern const struct nettle_cipher nettle_openssl_aes128;
 extern const struct nettle_cipher nettle_openssl_aes192;

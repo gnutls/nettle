@@ -35,9 +35,10 @@
 #include "blowfish.h"
 #include "des.h"
 #include "gcm.h"
+#include "salsa20.h"
 
 /* DES uses a different signature for the key set function. We ignore
-   the return value incicating weak keys. */
+   the return value indicating weak keys. */
 static void
 des_set_key_hack(void *ctx, unsigned length, const uint8_t *key)
 {
@@ -76,6 +77,25 @@ nettle_des3 = {
    blowfish_set_key has no return value. */
 const struct nettle_cipher
 nettle_blowfish128 = _NETTLE_CIPHER(blowfish, BLOWFISH, 128);
+
+/* Sets a fix zero iv. For benchmarking only. */
+static void
+salsa20_set_key_hack(void *ctx, unsigned length, const uint8_t *key)
+{
+  static const uint8_t iv[SALSA20_IV_SIZE];
+  salsa20_set_key (ctx, length, key);
+  salsa20_set_iv (ctx, SALSA20_IV_SIZE, iv);
+}
+
+/* Claim zero block size, to classify as a stream cipher. */
+const struct nettle_cipher
+nettle_salsa20 = {
+  "salsa20", sizeof(struct salsa20_ctx),
+  0, SALSA20_KEY_SIZE,
+  salsa20_set_key_hack, salsa20_set_key_hack,
+  (nettle_crypt_func *) salsa20_crypt,
+  (nettle_crypt_func *) salsa20_crypt
+};
 
 const struct nettle_aead
 nettle_gcm_aes128 = _NETTLE_AEAD(gcm, GCM, aes, 128);

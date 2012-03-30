@@ -1,5 +1,13 @@
 2012-03-30  Niels Möller  <nisse@lysator.liu.se>
 
+	* nettle-internal.c (nettle_salsa20): Cipher struct for
+	benchmarking only. Sets a fix zero IV, and ignores block size.
+	* nettle-internal.h (nettle_salsa20): Declare it.
+
+	* examples/nettle-benchmark.c (block_cipher_p): New function.
+	(time_cipher): Use block_cipher_p.
+	(main): Include salsa20 in benchmark.
+
 	* Makefile.in (soname link): Fixed logic.
 	(nettle_SOURCES): Removed nettle-internal.c, so that it's not
 	parrt of the library...
