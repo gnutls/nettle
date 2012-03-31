@@ -38,9 +38,6 @@
 /* A block, treated as a sequence of 32-bit words. */
 #define SHA256_DATA_LENGTH 16
 
-#define ROTR(n,x) ((x)>>(n) | ((x)<<(32-(n))))
-#define SHR(n,x) ((x)>>(n))
-
 /* The SHA256 functions. The Choice function is the same as the SHA1
    function f1, and the majority function is the same as the SHA1 f3
    function. They can be optimized to save one boolean operation each
@@ -52,11 +49,11 @@
 /* #define Majority(x,y,z) ( ((x) & (y)) ^ ((x) & (z)) ^ ((y) & (z)) ) */
 #define Majority(x,y,z) ( ((x) & (y)) ^ ((z) & ((x) ^ (y))) )
 
-#define S0(x) (ROTR(2,(x)) ^ ROTR(13,(x)) ^ ROTR(22,(x))) 
-#define S1(x) (ROTR(6,(x)) ^ ROTR(11,(x)) ^ ROTR(25,(x)))
+#define S0(x) (ROTL32(30,(x)) ^ ROTL32(19,(x)) ^ ROTL32(10,(x))) 
+#define S1(x) (ROTL32(26,(x)) ^ ROTL32(21,(x)) ^ ROTL32(7,(x)))
 
-#define s0(x) (ROTR(7,(x)) ^ ROTR(18,(x)) ^ SHR(3,(x)))
-#define s1(x) (ROTR(17,(x)) ^ ROTR(19,(x)) ^ SHR(10,(x)))
+#define s0(x) (ROTL32(25,(x)) ^ ROTL32(14,(x)) ^ ((x) >> 3))
+#define s1(x) (ROTL32(15,(x)) ^ ROTL32(13,(x)) ^ ((x) >> 10))
 
 /* The initial expanding function.  The hash function is defined over an
    64-word expanded input array W, where the first 16 are copies of the input

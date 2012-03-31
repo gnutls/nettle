@@ -30,6 +30,10 @@
 
 	* sha1-compress.c (ROTL): Deleted macro, use ROTL32 instead.
 
+	* sha256-compress.c (ROTR): Deleted macro. Replaced by ROTL32,
+	with complemented shift count.
+	(SHR): Deleted macro, use plain shift operator instead.
+
 2012-03-30  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle-internal.c (nettle_salsa20): Cipher struct for
