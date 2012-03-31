@@ -2,6 +2,9 @@
 
 	* salsa20.c: (salsa20_set_iv): Deleted size argument, only one
 	size allowed.
+	(U8TO32_LITTLE): Deleted macro. Use LE_READ_UINT32 instead, which
+	avoids unaligned reads.
+
 	* nettle-internal.c (salsa20_set_key_hack): Updated salsa20_set_iv
 	call.
 	* testsuite/salsa20-test.c (test_salsa20): Deleted iv_length

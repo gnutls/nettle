@@ -49,7 +49,6 @@
 #define U32TO32_LITTLE(v) (v)
 #endif
 
-#define U8TO32_LITTLE(p) U32TO32_LITTLE(((uint32_t*)(p))[0])
 #define U32TO8_LITTLE(p, v) (((uint32_t*)(p))[0] = U32TO32_LITTLE(v))
 
 static void salsa20_wordtobyte(uint8_t output[SALSA20_BLOCK_SIZE],const uint32_t input[_SALSA20_INPUT_LENGTH])
@@ -107,31 +106,31 @@ salsa20_set_key(struct salsa20_ctx *ctx,
 
   assert (length == SALSA20_MIN_KEY_SIZE || length == SALSA20_MAX_KEY_SIZE);
 
-  ctx->input[1] = U8TO32_LITTLE(key + 0);
-  ctx->input[2] = U8TO32_LITTLE(key + 4);
-  ctx->input[3] = U8TO32_LITTLE(key + 8);
-  ctx->input[4] = U8TO32_LITTLE(key + 12);
+  ctx->input[1] = LE_READ_UINT32(key + 0);
+  ctx->input[2] = LE_READ_UINT32(key + 4);
+  ctx->input[3] = LE_READ_UINT32(key + 8);
+  ctx->input[4] = LE_READ_UINT32(key + 12);
   if (length == SALSA20_MAX_KEY_SIZE) { /* recommended */
     key += 16;
     constants = sigma;
   } else { /* kbits == 128 */
     constants = tau;
   }
-  ctx->input[11] = U8TO32_LITTLE(key + 0);
-  ctx->input[12] = U8TO32_LITTLE(key + 4);
-  ctx->input[13] = U8TO32_LITTLE(key + 8);
-  ctx->input[14] = U8TO32_LITTLE(key + 12);
-  ctx->input[0] = U8TO32_LITTLE(constants + 0);
-  ctx->input[5] = U8TO32_LITTLE(constants + 4);
-  ctx->input[10] = U8TO32_LITTLE(constants + 8);
-  ctx->input[15] = U8TO32_LITTLE(constants + 12);
+  ctx->input[11] = LE_READ_UINT32(key + 0);
+  ctx->input[12] = LE_READ_UINT32(key + 4);
+  ctx->input[13] = LE_READ_UINT32(key + 8);
+  ctx->input[14] = LE_READ_UINT32(key + 12);
+  ctx->input[0]  = LE_READ_UINT32(constants + 0);
+  ctx->input[5]  = LE_READ_UINT32(constants + 4);
+  ctx->input[10] = LE_READ_UINT32(constants + 8);
+  ctx->input[15] = LE_READ_UINT32(constants + 12);
 }
 
 void
 salsa20_set_iv(struct salsa20_ctx *ctx, const uint8_t *iv)
 {
-  ctx->input[6] = U8TO32_LITTLE(iv + 0);
-  ctx->input[7] = U8TO32_LITTLE(iv + 4);
+  ctx->input[6] = LE_READ_UINT32(iv + 0);
+  ctx->input[7] = LE_READ_UINT32(iv + 4);
   ctx->input[8] = 0;
   ctx->input[9] = 0;
 }
