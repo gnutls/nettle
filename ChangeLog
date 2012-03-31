@@ -28,6 +28,8 @@
 	* serpent-encrypt.c: Likewise.
 	* serpent-set-key.c: Likewise.
 
+	* sha1-compress.c (ROTL): Deleted macro, use ROTL32 instead.
+
 2012-03-30  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle-internal.c (nettle_salsa20): Cipher struct for

@@ -86,10 +86,6 @@
 #define K3  0x8F1BBCDCL                                 /* Rounds 40-59 */
 #define K4  0xCA62C1D6L                                 /* Rounds 60-79 */
 
-/* 32-bit rotate left - kludged with shifts */
-
-#define ROTL(n,X)  ( ( (X) << (n) ) | ( (X) >> ( 32 - (n) ) ) )
-
 /* The initial expanding function.  The hash function is defined over an
    80-word expanded input array W, where the first 16 are copies of the input
    data, and the remaining 64 are defined by
@@ -105,15 +101,15 @@
    for this information */
 
 #define expand(W,i) ( W[ i & 15 ] = \
-		      ROTL( 1, ( W[ i & 15 ] ^ W[ (i - 14) & 15 ] ^ \
-				 W[ (i - 8) & 15 ] ^ W[ (i - 3) & 15 ] ) ) )
+		      ROTL32( 1, ( W[ i & 15 ] ^ W[ (i - 14) & 15 ] ^ \
+				   W[ (i - 8) & 15 ] ^ W[ (i - 3) & 15 ] ) ) )
 
 
 /* The prototype SHA sub-round.  The fundamental sub-round is:
 
-        a' = e + ROTL( 5, a ) + f( b, c, d ) + k + data;
+        a' = e + ROTL32( 5, a ) + f( b, c, d ) + k + data;
         b' = a;
-        c' = ROTL( 30, b );
+        c' = ROTL32( 30, b );
         d' = c;
         e' = d;
 
@@ -123,7 +119,7 @@
    the next 20 values from the W[] array each time */
 
 #define subRound(a, b, c, d, e, f, k, data) \
-    ( e += ROTL( 5, a ) + f( b, c, d ) + k + data, b = ROTL( 30, b ) )
+    ( e += ROTL32( 5, a ) + f( b, c, d ) + k + data, b = ROTL32( 30, b ) )
 
 /* Perform the SHA transformation.  Note that this code, like MD5, seems to
    break some optimizing compilers due to the complexity of the expressions
