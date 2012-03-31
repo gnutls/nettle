@@ -45,11 +45,8 @@
  *  macros
  */
 
-/* Rotation of 32-bit values. */
-#define ROL32(bits, x) (((x) << (bits)) | ((x) >> (32 - (bits))))
-
 /* Destructive rotation of 128 bit values. */
-#define ROL128(bits, xl, xr) do {		\
+#define ROTL128(bits, xl, xr) do {		\
     uint64_t __rol128_t = (xl);			     \
     (xl) = ((xl) << (bits)) | ((xr) >> (64 - (bits)));	   \
     (xr) = ((xr) << (bits)) | (__rol128_t >> (64 - (bits)));	\

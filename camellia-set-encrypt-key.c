@@ -70,7 +70,7 @@
       ^ CAMELLIA_SP3033((__i >> 40) & 0xff)	\
       ^ CAMELLIA_SP4404((__i >> 32) & 0xff);	\
     __yl ^= __yr;				\
-    __yr = ROL32(24, __yr);			\
+    __yr = ROTL32(24, __yr);			\
     __yr ^= __yl;				\
     (y) = ((uint64_t) __yl << 32) | __yr;	\
   } while (0)
@@ -80,7 +80,7 @@
     uint32_t __t, __w;                         \
     __t = (x) >> 32;                           \
     __w = __t ^(x);                            \
-    __w = ROL32(8, __w);                       \
+    __w = ROTL32(8, __w);                       \
     (x) = ((uint64_t) __w << 32) | (__t ^ __w);        \
   } while (0)
 #endif
@@ -107,17 +107,17 @@ camellia_set_encrypt_key(struct camellia_ctx *ctx,
        * generate KL dependent subkeys
        */
       subkey[0] = k0; subkey[1] = k1;
-      ROL128(15, k0, k1);
+      ROTL128(15, k0, k1);
       subkey[4] = k0; subkey[5] = k1;
-      ROL128(30, k0, k1);
+      ROTL128(30, k0, k1);
       subkey[10] = k0; subkey[11] = k1;
-      ROL128(15, k0, k1);
+      ROTL128(15, k0, k1);
       subkey[13] = k1;
-      ROL128(17, k0, k1);
+      ROTL128(17, k0, k1);
       subkey[16] = k0; subkey[17] = k1;
-      ROL128(17, k0, k1);
+      ROTL128(17, k0, k1);
       subkey[18] = k0; subkey[19] = k1;
-      ROL128(17, k0, k1);
+      ROTL128(17, k0, k1);
       subkey[22] = k0; subkey[23] = k1;
 
       /* generate KA. D1 is k0, d2 is k1. */
@@ -144,17 +144,17 @@ camellia_set_encrypt_key(struct camellia_ctx *ctx,
 
       /* generate KA dependent subkeys */
       subkey[2] = k0; subkey[3] = k1;
-      ROL128(15, k0, k1);
+      ROTL128(15, k0, k1);
       subkey[6] = k0; subkey[7] = k1;
-      ROL128(15, k0, k1);
+      ROTL128(15, k0, k1);
       subkey[8] = k0; subkey[9] = k1;
-      ROL128(15, k0, k1);
+      ROTL128(15, k0, k1);
       subkey[12] = k0;
-      ROL128(15, k0, k1);
+      ROTL128(15, k0, k1);
       subkey[14] = k0; subkey[15] = k1;
-      ROL128(34, k0, k1);
+      ROTL128(34, k0, k1);
       subkey[20] = k0; subkey[21] = k1;
-      ROL128(17, k0, k1);
+      ROTL128(17, k0, k1);
       subkey[24] = k0; subkey[25] = k1;
     }
   else
@@ -173,25 +173,25 @@ camellia_set_encrypt_key(struct camellia_ctx *ctx,
 	}
       /* generate KL dependent subkeys */
       subkey[0] = k0; subkey[1] = k1;
-      ROL128(45, k0, k1);
+      ROTL128(45, k0, k1);
       subkey[12] = k0; subkey[13] = k1;
-      ROL128(15, k0, k1);
+      ROTL128(15, k0, k1);
       subkey[16] = k0; subkey[17] = k1;
-      ROL128(17, k0, k1);
+      ROTL128(17, k0, k1);
       subkey[22] = k0; subkey[23] = k1;
-      ROL128(34, k0, k1);
+      ROTL128(34, k0, k1);
       subkey[30] = k0; subkey[31] = k1;
 
       /* generate KR dependent subkeys */
-      ROL128(15, k2, k3);
+      ROTL128(15, k2, k3);
       subkey[4] = k2; subkey[5] = k3;
-      ROL128(15, k2, k3);
+      ROTL128(15, k2, k3);
       subkey[8] = k2; subkey[9] = k3;
-      ROL128(30, k2, k3);
+      ROTL128(30, k2, k3);
       subkey[18] = k2; subkey[19] = k3;
-      ROL128(34, k2, k3);
+      ROTL128(34, k2, k3);
       subkey[26] = k2; subkey[27] = k3;
-      ROL128(34, k2, k3);
+      ROTL128(34, k2, k3);
 
       /* generate KA */
       /* The construction of KA is done as
@@ -230,22 +230,22 @@ camellia_set_encrypt_key(struct camellia_ctx *ctx,
       k2 ^= w;
 
       /* generate KA dependent subkeys */
-      ROL128(15, k0, k1);
+      ROTL128(15, k0, k1);
       subkey[6] = k0; subkey[7] = k1;
-      ROL128(30, k0, k1);
+      ROTL128(30, k0, k1);
       subkey[14] = k0; subkey[15] = k1;
-      ROL128(32, k0, k1);
+      ROTL128(32, k0, k1);
       subkey[24] = k0; subkey[25] = k1;
-      ROL128(17, k0, k1);
+      ROTL128(17, k0, k1);
       subkey[28] = k0; subkey[29] = k1;
 
       /* generate KB dependent subkeys */
       subkey[2] = k2; subkey[3] = k3;
-      ROL128(30, k2, k3);
+      ROTL128(30, k2, k3);
       subkey[10] = k2; subkey[11] = k3;
-      ROL128(30, k2, k3);
+      ROTL128(30, k2, k3);
       subkey[20] = k2; subkey[21] = k3;
-      ROL128(51, k2, k3);
+      ROTL128(51, k2, k3);
       subkey[32] = k2; subkey[33] = k3;
     }
 
@@ -264,7 +264,7 @@ camellia_set_encrypt_key(struct camellia_ctx *ctx,
 	 and xor the result into the 32 high bits, but it still generates
 	 worse code than for explicit 32-bit operations. */
       kw2 ^= (kw2 & ~subkey[i+1]) << 32;
-      dw = (kw2 & subkey[i+1]) >> 32; kw2 ^= ROL32(1, dw); 
+      dw = (kw2 & subkey[i+1]) >> 32; kw2 ^= ROTL32(1, dw); 
 
       subkey[i+3] ^= kw2;
       subkey[i+5] ^= kw2;
@@ -281,7 +281,7 @@ camellia_set_encrypt_key(struct camellia_ctx *ctx,
       subkey[i+4] ^= kw4;
       subkey[i+2] ^= kw4;
       kw4 ^= (kw4 & ~subkey[i]) << 32;
-      dw = (kw4 & subkey[i]) >> 32; kw4 ^= ROL32(1, dw);      
+      dw = (kw4 & subkey[i]) >> 32; kw4 ^= ROTL32(1, dw);      
     }
 
   subkey[6] ^= kw4;
@@ -302,7 +302,7 @@ camellia_set_encrypt_key(struct camellia_ctx *ctx,
     {
       tl = (subkey[i+2] >> 32) ^ (subkey[i+2] & ~subkey[i]);
       dw = tl & (subkey[i] >> 32);
-      tr = subkey[i+2] ^ ROL32(1, dw);
+      tr = subkey[i+2] ^ ROTL32(1, dw);
       ctx->keys[i-2] = subkey[i-2] ^ ( ((uint64_t) tl << 32) | tr);
 
       ctx->keys[i-1] = subkey[i];
@@ -310,7 +310,7 @@ camellia_set_encrypt_key(struct camellia_ctx *ctx,
 
       tl = (subkey[i-1] >> 32) ^ (subkey[i-1] & ~subkey[i+1]);
       dw = tl & (subkey[i+1] >> 32);
-      tr = subkey[i-1] ^ ROL32(1, dw);
+      tr = subkey[i-1] ^ ROTL32(1, dw);
       ctx->keys[i+1] = subkey[i+3] ^ ( ((uint64_t) tl << 32) | tr);
 
       ctx->keys[i+2] = subkey[i+2] ^ subkey[i+4];

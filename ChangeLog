@@ -5,6 +5,11 @@
 	* aes-set-encrypt-key.c: Include macros.h.
 	(aes_set_encrypt_key): Use ROTL32.
 	* aes-internal.h (ROTBYTE, ROTRBYTE): Deleted macros.
+	* camellia-internal.h (ROL32): Deleted macro.
+	(ROTL128): Renamed for consistency, from...
+	(ROL128): ... old name.
+	* camellia-crypt-internal.c: Updated for renamed rotation macros.
+	* camellia-set-encrypt-key.c: Likewise.
 
 2012-03-30  Niels Möller  <nisse@lysator.liu.se>
 
