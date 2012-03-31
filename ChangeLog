@@ -10,6 +10,9 @@
 	(ROL128): ... old name.
 	* camellia-crypt-internal.c: Updated for renamed rotation macros.
 	* camellia-set-encrypt-key.c: Likewise.
+	* cast128.c (ROL): Deleted macro.
+	(F1, F2, F3): Updated to use ROTL32 (reversed order of arguments).
+	Also added proper do { ... } while (0) wrappers.
 
 2012-03-30  Niels Möller  <nisse@lysator.liu.se>
 

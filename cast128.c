@@ -50,22 +50,22 @@
 #define U8c(x) ( (uint8_t) ((x>>8)&0xff) )
 #define U8d(x) ( (uint8_t) ((x)&0xff) )
 
-/* Circular left shift */
-#define ROL(x, n) ( ((x)<<(n)) | ((x)>>(32-(n))) )
-
 /* CAST-128 uses three different round functions */
-#define F1(l, r, i) \
-	t = ROL(ctx->keys[i] + r, ctx->keys[i+16]); \
-	l ^= ((cast_sbox1[U8a(t)] ^ cast_sbox2[U8b(t)]) \
-	 - cast_sbox3[U8c(t)]) + cast_sbox4[U8d(t)];
-#define F2(l, r, i) \
-	t = ROL(ctx->keys[i] ^ r, ctx->keys[i+16]); \
-	l ^= ((cast_sbox1[U8a(t)] - cast_sbox2[U8b(t)]) \
-	 + cast_sbox3[U8c(t)]) ^ cast_sbox4[U8d(t)];
-#define F3(l, r, i) \
-	t = ROL(ctx->keys[i] - r, ctx->keys[i+16]); \
-	l ^= ((cast_sbox1[U8a(t)] + cast_sbox2[U8b(t)]) \
-	 ^ cast_sbox3[U8c(t)]) - cast_sbox4[U8d(t)];
+#define F1(l, r, i) do {				\
+    t = ROTL32(ctx->keys[i+16], ctx->keys[i] + r);	\
+    l ^= ((cast_sbox1[U8a(t)] ^ cast_sbox2[U8b(t)])	\
+	  - cast_sbox3[U8c(t)]) + cast_sbox4[U8d(t)];	\
+  } while (0)
+#define F2(l, r, i) do {				\
+    t = ROTL32( ctx->keys[i+16], ctx->keys[i] ^ r);	\
+    l ^= ((cast_sbox1[U8a(t)] - cast_sbox2[U8b(t)])	\
+	  + cast_sbox3[U8c(t)]) ^ cast_sbox4[U8d(t)];	\
+  } while (0)
+#define F3(l, r, i) do { \
+    t = ROTL32(ctx->keys[i+16], ctx->keys[i] - r);	\
+    l ^= ((cast_sbox1[U8a(t)] + cast_sbox2[U8b(t)])	\
+	  ^ cast_sbox3[U8c(t)]) - cast_sbox4[U8d(t)];	\
+  } while (0)
 
 
 /***** Encryption Function *****/
