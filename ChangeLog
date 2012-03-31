@@ -1,5 +1,10 @@
 2012-03-31  Niels Möller  <nisse@lysator.liu.se>
 
+	* salsa20.c (ROTL32): Deleted macro, use the one from macros.h
+	instead, with reversed order of arguments.
+	(ROTATE, XOR, PLUS, PLUSONE): Deleted macros, use ROTL32 and
+	builtin operators directly.
+
 	Unification of rotation macros.
 	* macros.h (ROTL32): New macro, to replace (almost) all other
 	rotation macros.
