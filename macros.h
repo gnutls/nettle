@@ -119,6 +119,8 @@ do {						\
 		  (dst) += (blocksize),		\
 		  (src) += (blocksize)) )
 
+#define ROTL32(n,x) ((((x))<<(n)) | (((x))>>(32-(n))))
+
 /* Requires that size >= 2 */
 #define INCREMENT(size, ctr)			\
   do {						\
