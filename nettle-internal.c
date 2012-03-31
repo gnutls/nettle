@@ -84,7 +84,7 @@ salsa20_set_key_hack(void *ctx, unsigned length, const uint8_t *key)
 {
   static const uint8_t iv[SALSA20_IV_SIZE];
   salsa20_set_key (ctx, length, key);
-  salsa20_set_iv (ctx, SALSA20_IV_SIZE, iv);
+  salsa20_set_iv (ctx, iv);
 }
 
 /* Claim zero block size, to classify as a stream cipher. */

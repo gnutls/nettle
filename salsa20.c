@@ -128,10 +128,8 @@ salsa20_set_key(struct salsa20_ctx *ctx,
 }
 
 void
-salsa20_set_iv(struct salsa20_ctx *ctx, unsigned length, const uint8_t *iv)
+salsa20_set_iv(struct salsa20_ctx *ctx, const uint8_t *iv)
 {
-  assert (length == SALSA20_IV_SIZE);
-
   ctx->input[6] = U8TO32_LITTLE(iv + 0);
   ctx->input[7] = U8TO32_LITTLE(iv + 4);
   ctx->input[8] = 0;

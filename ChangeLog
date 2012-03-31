@@ -1,5 +1,12 @@
 2012-03-31  Niels Möller  <nisse@lysator.liu.se>
 
+	* salsa20.c: (salsa20_set_iv): Deleted size argument, only one
+	size allowed.
+	* nettle-internal.c (salsa20_set_key_hack): Updated salsa20_set_iv
+	call.
+	* testsuite/salsa20-test.c (test_salsa20): Deleted iv_length
+	argument, updated all calls.
+
 	* salsa20.h (SALSA20_BLOCK_SIZE): New constant.
 	(_SALSA20_INPUT_LENGTH): New constant.
 	* salsa20.c: Use these constants.
