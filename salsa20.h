@@ -43,12 +43,24 @@ extern "C" {
 #define SALSA20_MIN_KEY_SIZE 16
 #define SALSA20_MAX_KEY_SIZE 32
 #define SALSA20_KEY_SIZE 32
+#define SALSA20_BLOCK_SIZE 64
 
 #define SALSA20_IV_SIZE 8
 
+#define _SALSA20_INPUT_LENGTH 16
+
 struct salsa20_ctx
 {
-    uint32_t input[16];
+  /* Indices 1-4 and 11-14 holds the key (two identical copies for the
+     shorter key size), indices 0, 5, 10, 15 are constant, indices 6, 7
+     are the IV, and indices 8, 9 are the block counter:
+
+     C K K K
+     K C I I
+     B B C K
+     K K K C
+  */
+  uint32_t input[_SALSA20_INPUT_LENGTH];
 };
 
 void

@@ -52,12 +52,12 @@
 #define U8TO32_LITTLE(p) U32TO32_LITTLE(((uint32_t*)(p))[0])
 #define U32TO8_LITTLE(p, v) (((uint32_t*)(p))[0] = U32TO32_LITTLE(v))
 
-static void salsa20_wordtobyte(uint8_t output[64],const uint32_t input[16])
+static void salsa20_wordtobyte(uint8_t output[SALSA20_BLOCK_SIZE],const uint32_t input[_SALSA20_INPUT_LENGTH])
 {
-  uint32_t x[16];
+  uint32_t x[_SALSA20_INPUT_LENGTH];
   int i;
 
-  for (i = 0;i < 16;++i) x[i] = input[i];
+  for (i = 0;i < _SALSA20_INPUT_LENGTH;++i) x[i] = input[i];
   for (i = 20;i > 0;i -= 2) {
     x[ 4] ^= ROTL32( 7, x[ 0] + x[12]);
     x[ 8] ^= ROTL32( 9, x[ 4] + x[ 0]);
@@ -92,12 +92,12 @@ static void salsa20_wordtobyte(uint8_t output[64],const uint32_t input[16])
     x[14] ^= ROTL32(13, x[13] + x[12]);
     x[15] ^= ROTL32(18, x[14] + x[13]);
   }
-  for (i = 0;i < 16;++i) x[i] = x[i] + input[i];
-  for (i = 0;i < 16;++i) U32TO8_LITTLE(output + 4 * i,x[i]);
+  for (i = 0;i < _SALSA20_INPUT_LENGTH;++i) x[i] = x[i] + input[i];
+  for (i = 0;i < _SALSA20_INPUT_LENGTH;++i) U32TO8_LITTLE(output + 4 * i,x[i]);
 }
 
-static const char sigma[16] = "expand 32-byte k";
-static const char tau[16] = "expand 16-byte k";
+static const char sigma[_SALSA20_INPUT_LENGTH] = "expand 32-byte k";
+static const char tau[_SALSA20_INPUT_LENGTH] = "expand 16-byte k";
 
 void
 salsa20_set_key(struct salsa20_ctx *ctx,
@@ -144,7 +144,7 @@ salsa20_crypt(struct salsa20_ctx *ctx,
 	      uint8_t *c,
 	      const uint8_t *m)
 {
-  uint8_t output[64];
+  uint8_t output[SALSA20_BLOCK_SIZE];
   unsigned i;
 
   if (!length) return;
@@ -155,13 +155,13 @@ salsa20_crypt(struct salsa20_ctx *ctx,
       ctx->input[9]++;
       /* stopping at 2^70 length per nonce is user's responsibility */
     }
-    if (length <= 64) {
+    if (length <= SALSA20_BLOCK_SIZE) {
       for (i = 0;i < length;++i) c[i] = m[i] ^ output[i];
       return;
     }
-    for (i = 0;i < 64;++i) c[i] = m[i] ^ output[i];
-    length -= 64;
-    c += 64;
-    m += 64;
+    for (i = 0;i < SALSA20_BLOCK_SIZE;++i) c[i] = m[i] ^ output[i];
+    length -= SALSA20_BLOCK_SIZE;
+    c += SALSA20_BLOCK_SIZE;
+    m += SALSA20_BLOCK_SIZE;
   }
 }
