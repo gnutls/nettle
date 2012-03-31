@@ -7,6 +7,14 @@
 	(salsa20_set_key): Rearranged slightly, to avoid unnecessary
 	byte-to-word conversions.
 
+	(LE_SWAP32): Renamed macro from...
+	(U32TO32_LITTLE): ... old name.
+	(U32TO8_LITTLE): Deleted macro.
+	(salsa20_wordtobyte): Renamed function to...
+	(salsa20_hash): ... new name. Changed output argument from byte
+	array to word array. Use memxor3, which brings a considerable
+	performance gain.
+
 	* nettle-internal.c (salsa20_set_key_hack): Updated salsa20_set_iv
 	call.
 	* testsuite/salsa20-test.c (test_salsa20): Deleted iv_length

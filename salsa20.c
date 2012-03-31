@@ -34,29 +34,29 @@
 #endif
 
 #include <assert.h>
+#include <string.h>
 
 #include "salsa20.h"
 
 #include "macros.h"
-
-#define SWAP32(v)				\
-  ((ROTL32(8,  v) & 0x00FF00FFUL) |		\
-   (ROTL32(24, v) & 0xFF00FF00UL))
+#include "memxor.h"
 
 #ifdef WORDS_BIGENDIAN
-#define U32TO32_LITTLE(v) SWAP32(v)
+#define LE_SWAP32(v)
+  ((ROTL32(8,  v) & 0x00FF00FFUL) |		\
+   (ROTL32(24, v) & 0xFF00FF00UL))
 #else
-#define U32TO32_LITTLE(v) (v)
+#define LE_SWAP32(v) (v)
 #endif
 
-#define U32TO8_LITTLE(p, v) (((uint32_t*)(p))[0] = U32TO32_LITTLE(v))
-
-static void salsa20_wordtobyte(uint8_t output[SALSA20_BLOCK_SIZE],const uint32_t input[_SALSA20_INPUT_LENGTH])
+static void
+salsa20_hash(uint32_t *output, const uint32_t *input)
 {
   uint32_t x[_SALSA20_INPUT_LENGTH];
   int i;
 
-  for (i = 0;i < _SALSA20_INPUT_LENGTH;++i) x[i] = input[i];
+  memcpy (x, input, sizeof (x));
+
   for (i = 20;i > 0;i -= 2) {
     x[ 4] ^= ROTL32( 7, x[ 0] + x[12]);
     x[ 8] ^= ROTL32( 9, x[ 4] + x[ 0]);
@@ -91,8 +91,14 @@ static void salsa20_wordtobyte(uint8_t output[SALSA20_BLOCK_SIZE],const uint32_t
     x[14] ^= ROTL32(13, x[13] + x[12]);
     x[15] ^= ROTL32(18, x[14] + x[13]);
   }
-  for (i = 0;i < _SALSA20_INPUT_LENGTH;++i) x[i] = x[i] + input[i];
-  for (i = 0;i < _SALSA20_INPUT_LENGTH;++i) U32TO8_LITTLE(output + 4 * i,x[i]);
+  for (i = 0;i < _SALSA20_INPUT_LENGTH;++i)
+    {
+      uint32_t t = x[i] + input[i];
+      /* NOTE: We return a word array of byte-swapped values, rather
+	 than using a byte array and LE_WRITE_UINT32, to avoid having
+	 to care about unaligned bytes. */
+      output[i] = LE_SWAP32 (t);
+    }
 }
 
 void
@@ -149,24 +155,27 @@ salsa20_crypt(struct salsa20_ctx *ctx,
 	      uint8_t *c,
 	      const uint8_t *m)
 {
-  uint8_t output[SALSA20_BLOCK_SIZE];
-  unsigned i;
+  uint32_t output[_SALSA20_INPUT_LENGTH];
 
-  if (!length) return;
-  for (;;) {
-    salsa20_wordtobyte(output,ctx->input);
-    ctx->input[8]++;
-    if (!ctx->input[8]) {
-      ctx->input[9]++;
+  if (!length)
+    return;
+  
+  for (;;)
+    {
+      salsa20_hash(output,ctx->input);
+      ctx->input[9] += (++ctx->input[8] == 0);
+
       /* stopping at 2^70 length per nonce is user's responsibility */
-    }
-    if (length <= SALSA20_BLOCK_SIZE) {
-      for (i = 0;i < length;++i) c[i] = m[i] ^ output[i];
-      return;
-    }
-    for (i = 0;i < SALSA20_BLOCK_SIZE;++i) c[i] = m[i] ^ output[i];
-    length -= SALSA20_BLOCK_SIZE;
-    c += SALSA20_BLOCK_SIZE;
-    m += SALSA20_BLOCK_SIZE;
+      
+      if (length <= SALSA20_BLOCK_SIZE)
+	{
+	  memxor3 (c, m, (uint8_t *) output, length);
+	  return;
+	}
+      memxor3 (c, m, (uint8_t *) output, SALSA20_BLOCK_SIZE);
+
+      length -= SALSA20_BLOCK_SIZE;
+      c += SALSA20_BLOCK_SIZE;
+      m += SALSA20_BLOCK_SIZE;
   }
 }
