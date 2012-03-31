@@ -38,8 +38,7 @@
 /* A block, treated as a sequence of 64-bit words. */
 #define SHA512_DATA_LENGTH 16
 
-#define ROTR(n,x) ((x)>>(n) | ((x)<<(64-(n))))
-#define SHR(n,x) ((x)>>(n))
+#define ROTL64(n,x) ((x)<<(n) | ((x)>>(64-(n))))
 
 /* The SHA512 functions. The Choice function is the same as the SHA1
    function f1, and the majority function is the same as the SHA1 f3
@@ -48,11 +47,11 @@
 #define Choice(x,y,z)   ( (z) ^ ( (x) & ( (y) ^ (z) ) ) ) 
 #define Majority(x,y,z) ( ((x) & (y)) ^ ((z) & ((x) ^ (y))) )
 
-#define S0(x) (ROTR(28,(x)) ^ ROTR(34,(x)) ^ ROTR(39,(x))) 
-#define S1(x) (ROTR(14,(x)) ^ ROTR(18,(x)) ^ ROTR(41,(x)))
+#define S0(x) (ROTL64(36,(x)) ^ ROTL64(30,(x)) ^ ROTL64(25,(x))) 
+#define S1(x) (ROTL64(50,(x)) ^ ROTL64(46,(x)) ^ ROTL64(23,(x)))
 
-#define s0(x) (ROTR(1,(x)) ^ ROTR(8,(x)) ^ SHR(7,(x)))
-#define s1(x) (ROTR(19,(x)) ^ ROTR(61,(x)) ^ SHR(6,(x)))
+#define s0(x) (ROTL64(63,(x)) ^ ROTL64(56,(x)) ^ ((x) >> 7))
+#define s1(x) (ROTL64(45,(x)) ^ ROTL64(3,(x)) ^ ((x) >> 6))
 
 /* The initial expanding function. The hash function is defined over
    an 64-word expanded input array W, where the first 16 are copies of

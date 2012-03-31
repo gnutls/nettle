@@ -34,6 +34,11 @@
 	with complemented shift count.
 	(SHR): Deleted macro, use plain shift operator instead.
 
+	* sha512-compress.c (ROTR): Deleted macro, replaced by...
+	(ROTL64): ...new macro, with complemented shift count
+	(SHR): Deleted macro, use plain shift operator instead.
+	(S0, S1, s0, s1): Updated accordingly.
+
 2012-03-30  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle-internal.c (nettle_salsa20): Cipher struct for
