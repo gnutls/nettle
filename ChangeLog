@@ -4,6 +4,8 @@
 	size allowed.
 	(U8TO32_LITTLE): Deleted macro. Use LE_READ_UINT32 instead, which
 	avoids unaligned reads.
+	(salsa20_set_key): Rearranged slightly, to avoid unnecessary
+	byte-to-word conversions.
 
 	* nettle-internal.c (salsa20_set_key_hack): Updated salsa20_set_iv
 	call.
