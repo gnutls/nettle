@@ -13,6 +13,8 @@
 	* cast128.c (ROL): Deleted macro.
 	(F1, F2, F3): Updated to use ROTL32 (reversed order of arguments).
 	Also added proper do { ... } while (0) wrappers.
+	* ripemd160-compress.c (ROL32): Deleted macro.
+	(R): Updated to use ROTL32 (reversed order of arguments).
 
 2012-03-30  Niels Möller  <nisse@lysator.liu.se>
 

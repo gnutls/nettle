@@ -30,12 +30,6 @@
 
 #include "macros.h"
 
-/****************
- * Rotate the 32 bit unsigned integer X by N bits left
- */
-
-#define ROL32(x,n) ( ((x) << (n)) | ((x) >> (32-(n))) )
-
 
 /****************
  * Transform the message X which consists of 16 32-bit-words
@@ -76,8 +70,8 @@ _nettle_ripemd160_compress(uint32_t *state, const uint8_t *data)
 #define F3(x,y,z)   ( ((x) & (z)) | ((y) & ~(z)) )
 #define F4(x,y,z)   ( (x) ^ ((y) | ~(z)) )
 #define R(a,b,c,d,e,f,k,r,s) do { t = a + f(b,c,d) + k + x[r]; \
-          a = ROL32(t,s) + e;        \
-          c = ROL32(c,10);         \
+          a = ROTL32(s,t) + e;        \
+          c = ROTL32(10,c);         \
         } while(0)
 
   /* left lane */
