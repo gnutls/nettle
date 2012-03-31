@@ -1,5 +1,6 @@
 2012-03-31  Niels Möller  <nisse@lysator.liu.se>
 
+	Unification of rotation macros.
 	* macros.h (ROTL32): New macro, to replace (almost) all other
 	rotation macros.
 
