@@ -32,6 +32,7 @@
 #include <assert.h>
 
 #include "aes-internal.h"
+#include "macros.h"
 
 static unsigned
 xtime(unsigned x)
@@ -83,7 +84,7 @@ aes_set_encrypt_key(struct aes_ctx *ctx,
       temp = ctx->keys[i-1];
       if (i % nk == 0)
 	{
-	  temp = SUBBYTE(ROTBYTE(temp), aes_sbox) ^ rcon;
+	  temp = SUBBYTE(ROTL32(24, temp), aes_sbox) ^ rcon;
 	  rcon = (uint32_t)xtime((uint8_t)rcon&0xff);
 	}
       else if (nk > 6 && (i%nk) == 4)

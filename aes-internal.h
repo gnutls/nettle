@@ -63,8 +63,6 @@ _aes_decrypt(const struct aes_ctx *ctx,
 	     const uint8_t *src);
 
 /* Macros */
-#define ROTBYTE(x) (((x) >> 8) | (((x) & 0xff) << 24))
-#define ROTRBYTE(x) (((x) << 8) | (((x) >> 24) & 0xff))
 #define SUBBYTE(x, box) (((box)[((x) & 0xff)]) | \
                         ((box)[(((x) >> 8) & 0xff)] << 8) | \
                         ((box)[(((x) >> 16) & 0xff)] << 16) | \

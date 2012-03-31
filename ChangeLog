@@ -2,6 +2,9 @@
 
 	* macros.h (ROTL32): New macro, to replace (almost) all other
 	rotation macros.
+	* aes-set-encrypt-key.c: Include macros.h.
+	(aes_set_encrypt_key): Use ROTL32.
+	* aes-internal.h (ROTBYTE, ROTRBYTE): Deleted macros.
 
 2012-03-30  Niels Möller  <nisse@lysator.liu.se>
 
