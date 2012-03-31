@@ -41,9 +41,6 @@
 #ifndef NETTLE_SERPENT_INTERNAL_H_INCLUDED
 #define NETTLE_SERPENT_INTERNAL_H_INCLUDED
 
-/* FIXME: Unify ROL macros used here, in camellia.c and cast128.c. */
-#define ROL32(x,n) ((((x))<<(n)) | (((x))>>(32-(n))))
-
 #define KEYXOR(x0,x1,x2,x3, subkey)		       \
   do {						       \
     (x0) ^= (subkey)[0];			       \
@@ -54,7 +51,7 @@
 
 #if HAVE_NATIVE_64_BIT
 /* Operate independently on both halves of a 64-bit word. */
-#define ROL64(x,n) \
+#define ROTL64(n,x) \
   (((x) << (n) & ~((((uint64_t) 1 << (n))-1) << 32)) \
    |(((x) >> (32-(n))) & ~((((uint64_t) 1 << (32-(n)))-1) << (n))))
 
@@ -67,7 +64,7 @@
     _sk = (subkey)[3]; _sk |= _sk << 32; (x3) ^= _sk;    \
   } while (0)
 
-#define RSHIFT64(x,n) \
+#define RSHIFT64(n,x) \
   ( ((x) << (n)) & ~((((uint64_t) 1 << (n)) - 1) << 32))
 #endif /* HAVE_NATIVE_64_BIT */
 

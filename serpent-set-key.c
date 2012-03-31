@@ -270,7 +270,7 @@
   do {									\
     uint32_t _wn = (w)[(i)] ^ (w)[((i)+3)&7] ^ w[((i)+5)&7]		\
       ^ w[((i)+7)&7] ^ PHI ^ (k)++;					\
-    ((w)[(i)] = ROL32(_wn, 11));					\
+    ((w)[(i)] = ROTL32(11, _wn));					\
   } while (0)
 
 /* Note: Increments k four times and keys once */

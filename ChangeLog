@@ -2,9 +2,11 @@
 
 	* macros.h (ROTL32): New macro, to replace (almost) all other
 	rotation macros.
+
 	* aes-set-encrypt-key.c: Include macros.h.
 	(aes_set_encrypt_key): Use ROTL32.
 	* aes-internal.h (ROTBYTE, ROTRBYTE): Deleted macros.
+
 	* camellia-internal.h (ROL32): Deleted macro.
 	(ROTL128): Renamed for consistency, from...
 	(ROL128): ... old name.
@@ -13,8 +15,18 @@
 	* cast128.c (ROL): Deleted macro.
 	(F1, F2, F3): Updated to use ROTL32 (reversed order of arguments).
 	Also added proper do { ... } while (0) wrappers.
+
 	* ripemd160-compress.c (ROL32): Deleted macro.
 	(R): Updated to use ROTL32 (reversed order of arguments).
+
+	* serpent-internal.h (ROL32): Deleted macro.
+	(ROTL64): Renamed (from ROL64) and reorderd arguments, for
+	consistency.
+	(RSHIFT64): Reordered arguments, for consistency.
+	* serpent-decrypt.c: Updated for renamed rotation macros, with
+	reversed argument order.
+	* serpent-encrypt.c: Likewise.
+	* serpent-set-key.c: Likewise.
 
 2012-03-30  Niels Möller  <nisse@lysator.liu.se>
 

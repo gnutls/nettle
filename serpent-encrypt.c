@@ -386,16 +386,16 @@
 /* In-place linear transformation.  */
 #define LINEAR_TRANSFORMATION(x0,x1,x2,x3)		 \
   do {                                                   \
-    x0 = ROL32 (x0, 13);                    \
-    x2 = ROL32 (x2, 3);                     \
+    x0 = ROTL32 (13, x0);                    \
+    x2 = ROTL32 (3, x2);                     \
     x1 = x1 ^ x0 ^ x2;        \
     x3 = x3 ^ x2 ^ (x0 << 3); \
-    x1 = ROL32 (x1, 1);                     \
-    x3 = ROL32 (x3, 7);                     \
+    x1 = ROTL32 (1, x1);                     \
+    x3 = ROTL32 (7, x3);                     \
     x0 = x0 ^ x1 ^ x3;        \
     x2 = x2 ^ x3 ^ (x1 << 7); \
-    x0 = ROL32 (x0, 5);                     \
-    x2 = ROL32 (x2, 22);                    \
+    x0 = ROTL32 (5, x0);                     \
+    x2 = ROTL32 (22, x2);                    \
   } while (0)
 
 /* Round inputs are x0,x1,x2,x3 (destroyed), and round outputs are
@@ -411,16 +411,16 @@
 
 #define LINEAR_TRANSFORMATION64(x0,x1,x2,x3)		 \
   do {                                                   \
-    x0 = ROL64 (x0, 13);                    \
-    x2 = ROL64 (x2, 3);                     \
+    x0 = ROTL64 (13, x0);                    \
+    x2 = ROTL64 (3, x2);                     \
     x1 = x1 ^ x0 ^ x2;        \
-    x3 = x3 ^ x2 ^ RSHIFT64(x0, 3);	    \
-    x1 = ROL64 (x1, 1);                     \
-    x3 = ROL64 (x3, 7);                     \
+    x3 = x3 ^ x2 ^ RSHIFT64(3, x0);	    \
+    x1 = ROTL64 (1, x1);                     \
+    x3 = ROTL64 (7, x3);                     \
     x0 = x0 ^ x1 ^ x3;        \
-    x2 = x2 ^ x3 ^ RSHIFT64(x1, 7);	    \
-    x0 = ROL64 (x0, 5);                     \
-    x2 = ROL64 (x2, 22);                    \
+    x2 = x2 ^ x3 ^ RSHIFT64(7, x1);	    \
+    x0 = ROTL64 (5, x0);                     \
+    x2 = ROTL64 (22, x2);                    \
   } while (0)
 
 #define ROUND64(which, subkey, x0,x1,x2,x3, y0,y1,y2,y3) \
