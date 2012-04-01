@@ -49,6 +49,13 @@
 #define LE_SWAP32(v) (v)
 #endif
 
+#define QROUND(x0, x1, x2, x3) do { \
+  x1 ^= ROTL32(7, x0 + x3);	    \
+  x2 ^= ROTL32(9, x1 + x0);	    \
+  x3 ^= ROTL32(13, x2 + x1);	    \
+  x0 ^= ROTL32(18, x3 + x2);	    \
+  } while(0)
+
 static void
 salsa20_hash(uint32_t *output, const uint32_t *input)
 {
@@ -58,38 +65,15 @@ salsa20_hash(uint32_t *output, const uint32_t *input)
   memcpy (x, input, sizeof (x));
 
   for (i = 20;i > 0;i -= 2) {
-    x[ 4] ^= ROTL32( 7, x[ 0] + x[12]);
-    x[ 8] ^= ROTL32( 9, x[ 4] + x[ 0]);
-    x[12] ^= ROTL32(13, x[ 8] + x[ 4]);
-    x[ 0] ^= ROTL32(18, x[12] + x[ 8]);
-    x[ 9] ^= ROTL32( 7, x[ 5] + x[ 1]);
-    x[13] ^= ROTL32( 9, x[ 9] + x[ 5]);
-    x[ 1] ^= ROTL32(13, x[13] + x[ 9]);
-    x[ 5] ^= ROTL32(18, x[ 1] + x[13]);
-    x[14] ^= ROTL32( 7, x[10] + x[ 6]);
-    x[ 2] ^= ROTL32( 9, x[14] + x[10]);
-    x[ 6] ^= ROTL32(13, x[ 2] + x[14]);
-    x[10] ^= ROTL32(18, x[ 6] + x[ 2]);
-    x[ 3] ^= ROTL32( 7, x[15] + x[11]);
-    x[ 7] ^= ROTL32( 9, x[ 3] + x[15]);
-    x[11] ^= ROTL32(13, x[ 7] + x[ 3]);
-    x[15] ^= ROTL32(18, x[11] + x[ 7]);
-    x[ 1] ^= ROTL32( 7, x[ 0] + x[ 3]);
-    x[ 2] ^= ROTL32( 9, x[ 1] + x[ 0]);
-    x[ 3] ^= ROTL32(13, x[ 2] + x[ 1]);
-    x[ 0] ^= ROTL32(18, x[ 3] + x[ 2]);
-    x[ 6] ^= ROTL32( 7, x[ 5] + x[ 4]);
-    x[ 7] ^= ROTL32( 9, x[ 6] + x[ 5]);
-    x[ 4] ^= ROTL32(13, x[ 7] + x[ 6]);
-    x[ 5] ^= ROTL32(18, x[ 4] + x[ 7]);
-    x[11] ^= ROTL32( 7, x[10] + x[ 9]);
-    x[ 8] ^= ROTL32( 9, x[11] + x[10]);
-    x[ 9] ^= ROTL32(13, x[ 8] + x[11]);
-    x[10] ^= ROTL32(18, x[ 9] + x[ 8]);
-    x[12] ^= ROTL32( 7, x[15] + x[14]);
-    x[13] ^= ROTL32( 9, x[12] + x[15]);
-    x[14] ^= ROTL32(13, x[13] + x[12]);
-    x[15] ^= ROTL32(18, x[14] + x[13]);
+    QROUND(x[0], x[4], x[8], x[12]);
+    QROUND(x[5], x[9], x[13], x[1]);
+    QROUND(x[10], x[14], x[2], x[6]);
+    QROUND(x[15], x[3], x[7], x[11]);
+
+    QROUND(x[0], x[1], x[2], x[3]);
+    QROUND(x[5], x[6], x[7], x[4]);
+    QROUND(x[10], x[11], x[8], x[9]);
+    QROUND(x[15], x[12], x[13], x[14]);
   }
   for (i = 0;i < _SALSA20_INPUT_LENGTH;++i)
     {
