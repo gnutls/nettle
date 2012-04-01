@@ -42,7 +42,7 @@
 #include "memxor.h"
 
 #ifdef WORDS_BIGENDIAN
-#define LE_SWAP32(v)
+#define LE_SWAP32(v)				\
   ((ROTL32(8,  v) & 0x00FF00FFUL) |		\
    (ROTL32(24, v) & 0xFF00FF00UL))
 #else

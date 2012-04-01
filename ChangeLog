@@ -1,3 +1,7 @@
+2012-04-01  Niels Möller  <nisse@lysator.liu.se>
+
+	* salsa20.c (LE_SWAP32): Typo fix for big-endian case.
+
 2012-03-31  Niels Möller  <nisse@lysator.liu.se>
 
 	* salsa20.c: (salsa20_set_iv): Deleted size argument, only one
