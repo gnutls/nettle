@@ -104,7 +104,7 @@ static uint8_t q1(uint8_t x)
 int
 main(void)
 {
-  unsigned i, j;
+  unsigned i;
 
   printf("static const uint8_t q0[256] = {");
   for (i = 0; i < 256; i++) {
