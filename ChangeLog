@@ -1,3 +1,10 @@
+2012-04-09  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (hogweed_SOURCES): Added pkcs1-decrypt.c.
+	* rsa-decrypt.c (rsa_decrypt): Use pkcs1_decrypt.
+	* pkcs1-decrypt.c (pkcs1_decrypt): New file and function,
+	extracted from rsa_decrypt.
+
 2012-04-01  Niels Möller  <nisse@lysator.liu.se>
 
 	* salsa20.c (LE_SWAP32): Typo fix for big-endian case.

@@ -1,6 +1,5 @@
-/* rsa-decrypt.c
+/* pkcs1-decrypt.c
  *
- * The RSA publickey algorithm. PKCS#1 encryption.
  */
 
 /* nettle, low-level cryptographics library
@@ -27,22 +26,47 @@
 # include "config.h"
 #endif
 
-#include "rsa.h"
+#include <string.h>
 
 #include "pkcs1.h"
 
+#include "bignum.h"
+#include "nettle-internal.h"
+
 int
-rsa_decrypt(const struct rsa_private_key *key,
-	    unsigned *length, uint8_t *message,
-	    const mpz_t gibberish)
+pkcs1_decrypt (unsigned key_size,
+	       const mpz_t m,
+	       unsigned *length, uint8_t *message)
 {
-  mpz_t m;
-  int res;
+  TMP_DECL(em, uint8_t, NETTLE_MAX_BIGNUM_BITS / 8);
+  uint8_t *terminator;
+  unsigned padding;
+  unsigned message_length;
+  
+  TMP_ALLOC(em, key_size);
+  nettle_mpz_get_str_256(key_size, em, m);
 
-  mpz_init(m);
-  rsa_compute_root(key, m, gibberish);
+  /* Check format */
+  if (em[0] || em[1] != 2)
+    return 0;
 
-  res = pkcs1_decrypt (key->size, m, length, message);
-  mpz_clear(m);
-  return res;
+  terminator = memchr(em + 2, 0, key_size - 2);
+
+  if (!terminator)
+    return 0;
+  
+  padding = terminator - (em + 2);
+  if (padding < 8)
+    return 0;
+
+  message_length = key_size - 3 - padding;
+
+  if (*length < message_length)
+    return 0;
+  
+  memcpy(message, terminator + 1, message_length);
+  *length = message_length;
+
+  return 1;
 }
+	       
