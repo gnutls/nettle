@@ -16,7 +16,8 @@ test_main(void)
 
   uint8_t *decrypted;
   unsigned decrypted_length;
-  
+  uint8_t after;
+
   mpz_t gibberish;
 
   rsa_private_key_init(&key);
@@ -45,6 +46,9 @@ test_main(void)
   
   decrypted = xalloc(msg_length + 1);
 
+  knuth_lfib_random (&lfib, msg_length + 1, decrypted);
+  after = decrypted[msg_length];
+  
   decrypted_length = msg_length - 1;
   ASSERT(!rsa_decrypt(&key, &decrypted_length, decrypted, gibberish));
 
@@ -52,12 +56,28 @@ test_main(void)
   ASSERT(rsa_decrypt(&key, &decrypted_length, decrypted, gibberish));
   ASSERT(decrypted_length == msg_length);
   ASSERT(MEMEQ(msg_length, msg, decrypted));
+  ASSERT(decrypted[msg_length] == after);
+
+  knuth_lfib_random (&lfib, msg_length + 1, decrypted);
+  after = decrypted[msg_length];
 
   decrypted_length = key.size;
   ASSERT(rsa_decrypt(&key, &decrypted_length, decrypted, gibberish));
   ASSERT(decrypted_length == msg_length);
   ASSERT(MEMEQ(msg_length, msg, decrypted));
+  ASSERT(decrypted[msg_length] == after);
   
+  knuth_lfib_random (&lfib, msg_length + 1, decrypted);
+  after = decrypted[msg_length];
+
+  decrypted_length = msg_length;
+  ASSERT(rsa_decrypt_tr(&pub, &key,
+			&lfib, (nettle_random_func *) knuth_lfib_random,
+			&decrypted_length, decrypted, gibberish));
+  ASSERT(decrypted_length == msg_length);
+  ASSERT(MEMEQ(msg_length, msg, decrypted));
+  ASSERT(decrypted[msg_length] == after);
+
   rsa_private_key_clear(&key);
   rsa_public_key_clear(&pub);
   mpz_clear(gibberish);

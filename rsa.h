@@ -32,9 +32,6 @@
 #include "md5.h"
 #include "sha.h"
 
-/* For nettle_random_func */
-#include "nettle-meta.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -64,6 +61,7 @@ extern "C" {
 #define rsa_sha512_verify_digest nettle_rsa_sha512_verify_digest
 #define rsa_encrypt nettle_rsa_encrypt
 #define rsa_decrypt nettle_rsa_decrypt
+#define rsa_decrypt_tr nettle_rsa_decrypt_tr
 #define rsa_compute_root nettle_rsa_compute_root
 #define rsa_generate_keypair nettle_rsa_generate_keypair
 #define rsa_keypair_to_sexp nettle_rsa_keypair_to_sexp
@@ -260,7 +258,7 @@ rsa_sha512_verify_digest(const struct rsa_public_key *key,
 int
 rsa_encrypt(const struct rsa_public_key *key,
 	    /* For padding */
-	    void *random_ctx, nettle_random_func random,
+	    void *random_ctx, nettle_random_func *random,
 	    unsigned length, const uint8_t *cleartext,
 	    mpz_t cipher);
 
@@ -273,6 +271,14 @@ int
 rsa_decrypt(const struct rsa_private_key *key,
 	    unsigned *length, uint8_t *cleartext,
 	    const mpz_t ciphertext);
+
+/* Timing-resistant version, using randomized RSA blinding. */
+int
+rsa_decrypt_tr(const struct rsa_public_key *pub,
+	       const struct rsa_private_key *key,
+	       void *random_ctx, nettle_random_func *random,	       
+	       unsigned *length, uint8_t *message,
+	       const mpz_t gibberish);
 
 /* Compute x, the e:th root of m. Calling it with x == m is allowed. */
 void
@@ -287,8 +293,8 @@ int
 rsa_generate_keypair(struct rsa_public_key *pub,
 		     struct rsa_private_key *key,
 
-		     void *random_ctx, nettle_random_func random,
-		     void *progress_ctx, nettle_progress_func progress,
+		     void *random_ctx, nettle_random_func *random,
+		     void *progress_ctx, nettle_progress_func *progress,
 
 		     /* Desired size of modulo, in bits */
 		     unsigned n_size,

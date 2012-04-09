@@ -1,5 +1,16 @@
 2012-04-09  Niels Möller  <nisse@lysator.liu.se>
 
+	Timing resistant RSA decryption, based on RSA blinding code
+	contributed by Nikos Mavrogiannopoulos.
+	* rsa-decrypt-tr.c (rsa_decrypt_tr): New function.
+	(rsa_blind): Helper function.
+	(rsa_unblind): Helper function.
+	* rsa.h: Declare rsa_decrypt_tr. Some cleanups, no longer include
+	nettle-meta.h, more consistent declrations of function pointer
+	arguments.
+	* testsuite/rsa-encrypt-test.c (test_main): Test rsa_encrypt_tr.
+	Check for writes past the end of the message area.
+
 	* Makefile.in (hogweed_SOURCES): Added pkcs1-decrypt.c.
 	* rsa-decrypt.c (rsa_decrypt): Use pkcs1_decrypt.
 	* pkcs1-decrypt.c (pkcs1_decrypt): New file and function,
