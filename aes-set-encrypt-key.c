@@ -34,26 +34,16 @@
 #include "aes-internal.h"
 #include "macros.h"
 
-static unsigned
-xtime(unsigned x)
-{
-  assert (x < 0x100);
-
-  x <<= 1;
-  if (x & 0x100)
-    x ^= 0x11b;
-
-  assert (x < 0x100);
-
-  return x;
-}
-
 void
 aes_set_encrypt_key(struct aes_ctx *ctx,
 		    unsigned keysize, const uint8_t *key)
 {
+  static const uint8_t rcon[10] = {
+    0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80,0x1b,0x36,
+  };
   unsigned nk, nr, i, lastkey;
-  uint32_t temp, rcon;
+  uint32_t temp;
+  const uint8_t *rp;
 
   assert(keysize >= AES_MIN_KEY_SIZE);
   assert(keysize <= AES_MAX_KEY_SIZE);
@@ -72,25 +62,19 @@ aes_set_encrypt_key(struct aes_ctx *ctx,
 
   lastkey = (AES_BLOCK_SIZE/4) * (nr + 1);
   ctx->nrounds = nr;
-  rcon = 1;
-  for (i=0; i<nk; i++)
-    {
-      ctx->keys[i] = key[i*4] + (key[i*4+1]<<8) + (key[i*4+2]<<16) +
-	(key[i*4+3]<<24);
-    }
+
+  for (i=0, rp = rcon; i<nk; i++)
+    ctx->keys[i] = LE_READ_UINT32(key + i*4);
 
   for (i=nk; i<lastkey; i++)
     {
       temp = ctx->keys[i-1];
       if (i % nk == 0)
-	{
-	  temp = SUBBYTE(ROTL32(24, temp), aes_sbox) ^ rcon;
-	  rcon = (uint32_t)xtime((uint8_t)rcon&0xff);
-	}
+	temp = SUBBYTE(ROTL32(24, temp), aes_sbox) ^ *rp++;
+
       else if (nk > 6 && (i%nk) == 4)
-	{
-	  temp = SUBBYTE(temp, aes_sbox);
-	}
+	temp = SUBBYTE(temp, aes_sbox);
+
       ctx->keys[i] = ctx->keys[i-nk] ^ temp;
     }
 }

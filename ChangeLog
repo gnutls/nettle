@@ -1,5 +1,9 @@
 2012-04-13  Niels Möller  <nisse@lysator.liu.se>
 
+	* aes-set-encrypt-key.c (aes_set_encrypt_key): Use LE_READ_UINT32.
+	Tabulate the needed "round constants".
+	(xtime): Deleted function.
+
 	* aes-internal.h (SUBBYTE): Cast to uint32_t. Use B0, ..., B3
 	macros.
 
