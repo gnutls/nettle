@@ -63,16 +63,16 @@ _aes_decrypt(const struct aes_ctx *ctx,
 	     const uint8_t *src);
 
 /* Macros */
-#define SUBBYTE(x, box) (((box)[((x) & 0xff)]) | \
-                        ((box)[(((x) >> 8) & 0xff)] << 8) | \
-                        ((box)[(((x) >> 16) & 0xff)] << 16) | \
-                        ((box)[(((x) >> 24) & 0xff)] << 24))
-
 /* Get the byte with index 0, 1, 2 and 3 */
 #define B0(x) ((x) & 0xff)
 #define B1(x) (((x) >> 8) & 0xff)
 #define B2(x) (((x) >> 16) & 0xff)
 #define B3(x) (((x) >> 24) & 0xff)
+
+#define SUBBYTE(x, box) ((uint32_t)(box)[B0(x)]		\
+		      | ((uint32_t)(box)[B1(x)] << 8)	\
+		      | ((uint32_t)(box)[B2(x)] << 16)	\
+		      | ((uint32_t)(box)[B3(x)] << 24))
 
 #define AES_ROUND(T, w0, w1, w2, w3, k)		\
 ((  T->table[0][ B0(w0) ]			\

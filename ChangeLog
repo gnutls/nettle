@@ -1,3 +1,8 @@
+2012-04-13  Niels Möller  <nisse@lysator.liu.se>
+
+	* aes-internal.h (SUBBYTE): Cast to uint32_t. Use B0, ..., B3
+	macros.
+
 2012-04-09  Niels Möller  <nisse@lysator.liu.se>
 
 	Timing resistant RSA decryption, based on RSA blinding code
