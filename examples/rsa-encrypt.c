@@ -26,6 +26,7 @@
 # include "config.h"
 #endif
 
+#include <assert.h>
 #include <ctype.h>
 #include <errno.h>
 #include <stdlib.h>
@@ -93,35 +94,54 @@ write_bignum(FILE *f, mpz_t x)
   return res;
 }
 
+#define BLOCK_SIZE (AES_BLOCK_SIZE * 100)
+
 static int
 process_file(struct rsa_session *ctx,
 	     FILE *in, FILE *out)
 {
-  uint8_t buffer[AES_BLOCK_SIZE * 100];
-  unsigned leftover;
-  unsigned padding;
-
-  padding = leftover = 0;
+  uint8_t buffer[BLOCK_SIZE + SHA1_DIGEST_SIZE];
 
   for (;;)
     {
-      size_t size = fread(buffer, 1, sizeof(buffer), in);
-      if (ferror(in))
-	{
-	  werror("Reading input failed: %s\n", strerror(errno));
-	  return 0;
-	}
-
+      size_t size = fread(buffer, 1, BLOCK_SIZE, in);
       hmac_sha1_update(&ctx->hmac, size, buffer);
-      if (size < sizeof(buffer))
+
+      if (size < BLOCK_SIZE)
 	{
-	  /* Setting padding != ends the loop */
+	  unsigned leftover;
+	  unsigned padding;
+
+	  if (ferror(in))
+	    {
+	      werror("Reading input failed: %s\n", strerror(errno));
+	      return 0;
+	    }
+	  
 	  leftover = size % AES_BLOCK_SIZE;
 	  padding = AES_BLOCK_SIZE - leftover;
-	  size -= leftover;
 
-	  if (!size)
-	    break;
+	  assert (size + padding <= BLOCK_SIZE);
+	  
+	  if (padding > 1)
+	    yarrow256_random(&ctx->yarrow, padding - 1, buffer + size);
+
+	  size += padding;
+
+	  buffer[size - 1] = padding;
+	  CBC_ENCRYPT(&ctx->aes, aes_encrypt, size, buffer, buffer);
+
+	  assert (size + SHA1_DIGEST_SIZE <= sizeof(buffer));
+
+	  hmac_sha1_digest(&ctx->hmac, SHA1_DIGEST_SIZE, buffer + size);
+	  size += SHA1_DIGEST_SIZE;
+
+	  if (!write_string(out, size, buffer))
+	    {
+	      werror("Writing output failed: %s\n", strerror(errno));
+	      return 0;
+	    }
+	  return 1;
 	}
 
       CBC_ENCRYPT(&ctx->aes, aes_encrypt, size, buffer, buffer);
@@ -130,29 +150,16 @@ process_file(struct rsa_session *ctx,
 	  werror("Writing output failed: %s\n", strerror(errno));
 	  return 0;
 	}
-
-      if (padding)
-	{
-	  if (leftover)
-	    memcpy(buffer, buffer + size, leftover);
-
-	  break;
-	}
     }
-  if (padding > 1)
-    yarrow256_random(&ctx->yarrow, padding - 1, buffer + leftover);
+}
 
-  buffer[AES_BLOCK_SIZE - 1] = padding;
-  CBC_ENCRYPT(&ctx->aes, aes_encrypt, AES_BLOCK_SIZE, buffer, buffer);
-  hmac_sha1_digest(&ctx->hmac, SHA1_DIGEST_SIZE, buffer + AES_BLOCK_SIZE);
-
-  if (!write_string(out, AES_BLOCK_SIZE + SHA1_DIGEST_SIZE, buffer))
-    {
-      werror("Writing output failed: %s\n", strerror(errno));
-      return 0;
-    }
-
-  return 1;
+static void
+usage (FILE *out)
+{
+  fprintf (out, "Usage: rsa-encrypt [OPTIONS] PUBLIC-KEY < cleartext\n"
+	   "Options:\n"
+	   "   -r, --random=FILE   seed file for randomness generator\n"
+	   "       --help          display this help\n");  
 }
 
 int
@@ -167,8 +174,17 @@ main(int argc, char **argv)
   int c;
   const char *random_name = NULL;
 
-  /* FIXME: --help option. */
-  while ( (c = getopt(argc, argv, "o:r:")) != -1)
+  enum { OPT_HELP = 300 };
+  
+  static const struct option options[] =
+    {
+      /* Name, args, flag, val */
+      { "help", no_argument, NULL, OPT_HELP },
+      { "random", required_argument, NULL, 'r' },
+      { NULL, 0, NULL, 0}
+    };
+  
+  while ( (c = getopt_long(argc, argv, "o:r:", options, NULL)) != -1)
     switch (c)
       {
       case 'r':
@@ -178,6 +194,9 @@ main(int argc, char **argv)
       case '?':
 	return EXIT_FAILURE;
 
+      case OPT_HELP:
+	usage(stdout);
+	return EXIT_SUCCESS;
       default:
 	abort();
       }
@@ -187,7 +206,7 @@ main(int argc, char **argv)
 
   if (argc != 1)
     {
-      werror("Usage: rsa-encrypt [-r random-file] PUBLIC-KEY < cleartext\n");
+      usage (stderr);
       return EXIT_FAILURE;
     }
 

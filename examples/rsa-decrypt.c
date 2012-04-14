@@ -123,9 +123,12 @@ process_file(struct rsa_session *ctx,
   unsigned padding;
 
   size = fread(buffer, 1, BUF_FINAL, in);
-  if (size < BUF_FINAL || ferror(in))
+  if (size < BUF_FINAL)
     {
-      werror("Reading input failed: %s\n", strerror(errno));
+      if (ferror(in))
+	werror("Reading input failed: %s\n", strerror(errno));
+      else
+	werror("Unexpected EOF on input.\n");
       return 0;
     }
 
@@ -133,7 +136,7 @@ process_file(struct rsa_session *ctx,
     {
       size = fread(buffer + BUF_FINAL, 1, BUF_SIZE, in);
 
-      if (ferror(in))
+      if (size < BUF_SIZE && ferror(in))
 	{
 	  werror("Reading input failed: %s\n", strerror(errno));
 	  return 0;

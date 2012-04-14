@@ -1,5 +1,12 @@
 2012-04-14  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/rsa-encrypt.c (process_file): Reorganized fread loop.
+	(usage): New function.
+	(main): Implemented --help option.
+
+	* examples/rsa-decrypt.c (process_file): Improved error message
+	for too short input file.
+
 	* aes-set-decrypt-key.c (gf2_log, gf2_exp): Deleted tables.
 	(mult, inv_mix_column): Deleted functions.
 	(mtable): New table.
