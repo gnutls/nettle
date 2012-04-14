@@ -1,5 +1,7 @@
 2012-04-14  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/io.c (write_file): Use write_string.
+
 	* examples/Makefile.in (base64enc): New target. Also added missing
 	io.o dependency to several other targets.
 

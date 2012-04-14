@@ -132,28 +132,24 @@ read_file(const char *name, unsigned max_size, char **contents)
 }
 
 int
-write_file(const char *name, unsigned size, const char *buffer)
-{
-  FILE *f = fopen(name, "wb");
-  unsigned res;
-  
-  if (!f)
-    return 0;
-
-  res = fwrite(buffer, 1, size, f);
-  
-  if (res < size)
-    res = 0;
-
-  return fclose(f) == 0 && res > 0;
-}
-
-int
 write_string(FILE *f, unsigned size, const char *buffer)
 {
   size_t res = fwrite(buffer, 1, size, f);
 
   return res == size;
+}
+
+int
+write_file(const char *name, unsigned size, const char *buffer)
+{
+  FILE *f = fopen(name, "wb");
+  int res;
+  
+  if (!f)
+    return 0;
+
+  res = write_string(f, size, buffer);
+  return fclose(f) == 0 && res;
 }
 
 int
