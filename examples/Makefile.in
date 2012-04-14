@@ -16,13 +16,15 @@ BENCH_LIBS = @BENCH_LIBS@
 RSA_TARGETS = rsa-keygen$(EXEEXT) rsa-sign$(EXEEXT) \
 	      rsa-verify$(EXEEXT) rsa-encrypt$(EXEEXT) rsa-decrypt$(EXEEXT)
 
+ENC_TARGETS = base16enc$(EXEEXT) base16dec$(EXEEXT) \
+	      base64enc$(EXEEXT) base64dec$(EXEEXT)
 TARGETS = nettle-benchmark$(EXEEXT) eratosthenes$(EXEEXT) \
-	  base64enc$(EXEEXT) base64dec$(EXEEXT) @IF_HOGWEED@ $(RSA_TARGETS) next-prime$(EXEEXT) random-prime$(EXEEXT)
+	  $(ENC_TARGETS) @IF_HOGWEED@ $(RSA_TARGETS) next-prime$(EXEEXT) random-prime$(EXEEXT)
 SOURCES = nettle-benchmark.c eratosthenes.c next-prime.c random-prime.c \
 	nettle-openssl.c \
 	io.c read_rsa_key.c \
 	rsa-encrypt.c rsa-decrypt.c rsa-keygen.c rsa-sign.c rsa-verify.c \
-	base64enc.c base64dec.c
+	base16enc.c base64enc.c base64dec.c
 
 
 GETOPT_OBJS = ../getopt.$(OBJEXT) ../getopt1.$(OBJEXT)
@@ -69,6 +71,14 @@ rsa-encrypt$(EXEEXT): rsa-encrypt.$(OBJEXT) io.$(OBJEXT) read_rsa_key.$(OBJEXT) 
 rsa-decrypt$(EXEEXT): rsa-decrypt.$(OBJEXT) io.$(OBJEXT) read_rsa_key.$(OBJEXT)
 	$(LINK) rsa-decrypt.$(OBJEXT) io.$(OBJEXT) read_rsa_key.$(OBJEXT) \
 	-lhogweed -lnettle $(LIBS) -o rsa-decrypt$(EXEEXT)
+
+base16enc$(EXEEXT): base16enc.$(OBJEXT) io.$(OBJEXT)
+	$(LINK) base16enc.$(OBJEXT) io.$(OBJEXT) \
+	-lnettle $(LIBS) -o base16enc$(EXEEXT)
+
+base16dec$(EXEEXT): base16dec.$(OBJEXT) io.$(OBJEXT)
+	$(LINK) base16dec.$(OBJEXT) io.$(OBJEXT) \
+	-lnettle $(LIBS) -o base16dec$(EXEEXT)
 
 base64enc$(EXEEXT): base64enc.$(OBJEXT) io.$(OBJEXT)
 	$(LINK) base64enc.$(OBJEXT) io.$(OBJEXT) \
