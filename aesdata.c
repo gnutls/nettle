@@ -28,6 +28,7 @@ uint8_t gf2_exp[0x100];
 
 uint32_t dtable[4][0x100];
 uint32_t itable[4][0x100];
+uint32_t mtable[4][0x100];
 
 static unsigned
 xtime(unsigned x)
@@ -137,6 +138,24 @@ compute_itable(void)
     }
 }
 
+/* Used for key inversion, inverse mix column. No sbox. */
+static void
+compute_mtable(void)
+{
+  unsigned i;
+  for (i = 0; i<0x100; i++)
+    {
+      unsigned j;
+      uint32_t t = ( (mult(i, 0xb) << 24)
+		   | (mult(i, 0xd) << 16)
+		   | (mult(i, 0x9) << 8)
+		   | (mult(i, 0xe) ));
+      
+      for (j = 0; j<4; j++, t = (t << 8) | (t >> 24))
+	mtable[j][i] = t;
+    }
+}
+
 static void
 display_byte_table(const char *name, uint8_t *table)
 {
@@ -200,7 +219,10 @@ main(int argc, char **argv)
 
       compute_itable();
       display_table("itable", itable);
-  
+
+      compute_mtable();
+      display_table("mtable", mtable);
+
       return 0;
     }
   else if (argc == 2)

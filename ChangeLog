@@ -1,3 +1,14 @@
+2012-04-14  Niels Möller  <nisse@lysator.liu.se>
+
+	* aes-set-decrypt-key.c (gf2_log, gf2_exp): Deleted tables.
+	(mult, inv_mix_column): Deleted functions.
+	(mtable): New table.
+	(MIX_COLUMN): New macro.
+	(aes_invert_key): Use MIX_COLUMN and mtable.
+
+	* aesdata.c (compute_mtable): New table, for the inv mix column
+	operation in aes_invert_key.
+
 2012-04-13  Niels Möller  <nisse@lysator.liu.se>
 
 	* aes-set-encrypt-key.c (aes_set_encrypt_key): Use LE_READ_UINT32.
