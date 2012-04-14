@@ -1,17 +1,17 @@
 /* base64enc -- an encoder for base64
  *
  * Copyright (C) 2006, 2012 Jeronimo Pellegrini, Niels Möller
- *  
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at your
  * option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with the nettle library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
@@ -41,17 +41,18 @@
  * Reads bytes from standard input and writes base64-encoded
  * on standard output.
  */
-int main(int argc UNUSED, char **argv UNUSED)
+int
+main(int argc UNUSED, char **argv UNUSED)
 {
   struct base64_encode_ctx b64_ctx;
-  
+
   /* Init the context: */
   base64_encode_init(&b64_ctx);
 
 #ifdef WIN32
   _setmode(0, O_BINARY);
 #endif
-  
+
   for (;;)
     {
       /* "buffer" will hold the bytes from disk: */
