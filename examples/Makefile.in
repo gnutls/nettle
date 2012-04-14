@@ -15,11 +15,15 @@ BENCH_LIBS = @BENCH_LIBS@
 
 RSA_TARGETS = rsa-keygen$(EXEEXT) rsa-sign$(EXEEXT) \
 	      rsa-verify$(EXEEXT) rsa-encrypt$(EXEEXT) rsa-decrypt$(EXEEXT)
-TARGETS = nettle-benchmark$(EXEEXT) eratosthenes$(EXEEXT) @IF_HOGWEED@ $(RSA_TARGETS) next-prime$(EXEEXT) random-prime$(EXEEXT)
+
+TARGETS = nettle-benchmark$(EXEEXT) eratosthenes$(EXEEXT) \
+	  base64enc$(EXEEXT) @IF_HOGWEED@ $(RSA_TARGETS) next-prime$(EXEEXT) random-prime$(EXEEXT)
 SOURCES = nettle-benchmark.c eratosthenes.c next-prime.c random-prime.c \
 	nettle-openssl.c \
 	io.c read_rsa_key.c \
-	rsa-encrypt.c rsa-decrypt.c rsa-keygen.c rsa-sign.c rsa-verify.c
+	rsa-encrypt.c rsa-decrypt.c rsa-keygen.c rsa-sign.c rsa-verify.c \
+	base64enc.c
+
 
 GETOPT_OBJS = ../getopt.$(OBJEXT) ../getopt1.$(OBJEXT)
 
@@ -41,30 +45,34 @@ next-prime$(EXEEXT): next-prime.$(OBJEXT) $(GETOPT_OBJS) ../libhogweed.a
 	$(LINK) next-prime.$(OBJEXT) $(GETOPT_OBJS) \
 	-lhogweed -lnettle $(LIBS) -o next-prime$(EXEEXT)
 
-random-prime$(EXEEXT): random-prime.$(OBJEXT) $(GETOPT_OBJS) ../libhogweed.a
+random-prime$(EXEEXT): random-prime.$(OBJEXT) io.$(OBJEXT) $(GETOPT_OBJS) ../libhogweed.a
 	$(LINK) random-prime.$(OBJEXT) io.$(OBJEXT) $(GETOPT_OBJS) \
 	-lhogweed -lnettle $(LIBS) -o random-prime$(EXEEXT)
 
-rsa-keygen$(EXEEXT): rsa-keygen.$(OBJEXT) $(GETOPT_OBJS)
+rsa-keygen$(EXEEXT): rsa-keygen.$(OBJEXT) io.$(OBJEXT) $(GETOPT_OBJS)
 	$(LINK) rsa-keygen.$(OBJEXT) io.$(OBJEXT) $(GETOPT_OBJS) \
 	-lhogweed -lnettle $(LIBS) -o rsa-keygen$(EXEEXT)
 
-rsa-sign$(EXEEXT): rsa-sign.$(OBJEXT) read_rsa_key.$(OBJEXT)
+rsa-sign$(EXEEXT): rsa-sign.$(OBJEXT) io.$(OBJEXT) read_rsa_key.$(OBJEXT)
 	$(LINK) rsa-sign.$(OBJEXT) io.$(OBJEXT) read_rsa_key.$(OBJEXT) \
 	-lhogweed -lnettle $(LIBS) -o rsa-sign$(EXEEXT)
 
-rsa-verify$(EXEEXT): rsa-verify.$(OBJEXT) read_rsa_key.$(OBJEXT)
+rsa-verify$(EXEEXT): rsa-verify.$(OBJEXT) io.$(OBJEXT) read_rsa_key.$(OBJEXT)
 	$(LINK) rsa-verify.$(OBJEXT) io.$(OBJEXT) read_rsa_key.$(OBJEXT) \
 	-lhogweed -lnettle $(LIBS) -o rsa-verify$(EXEEXT)
 
-rsa-encrypt$(EXEEXT): rsa-encrypt.$(OBJEXT) read_rsa_key.$(OBJEXT) $(GETOPT_OBJS)
+rsa-encrypt$(EXEEXT): rsa-encrypt.$(OBJEXT) io.$(OBJEXT) read_rsa_key.$(OBJEXT) $(GETOPT_OBJS)
 	$(LINK) rsa-encrypt.$(OBJEXT) io.$(OBJEXT) read_rsa_key.$(OBJEXT) \
 	$(GETOPT_OBJS) \
 	-lhogweed -lnettle $(LIBS) -o rsa-encrypt$(EXEEXT)
 
-rsa-decrypt$(EXEEXT): rsa-decrypt.$(OBJEXT) read_rsa_key.$(OBJEXT)
+rsa-decrypt$(EXEEXT): rsa-decrypt.$(OBJEXT) io.$(OBJEXT) read_rsa_key.$(OBJEXT)
 	$(LINK) rsa-decrypt.$(OBJEXT) io.$(OBJEXT) read_rsa_key.$(OBJEXT) \
 	-lhogweed -lnettle $(LIBS) -o rsa-decrypt$(EXEEXT)
+
+base64enc$(EXEEXT): base64enc.$(OBJEXT) io.$(OBJEXT)
+	$(LINK) base64enc.$(OBJEXT) io.$(OBJEXT) \
+	-lnettle $(LIBS) -o base64enc$(EXEEXT)
 
 eratosthenes$(EXEEXT): eratosthenes.$(OBJEXT) $(GETOPT_OBJS)
 	$(LINK) eratosthenes.$(OBJEXT) $(GETOPT_OBJS) -o eratosthenes$(EXEEXT)

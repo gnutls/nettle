@@ -1,5 +1,11 @@
 2012-04-14  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/Makefile.in (base64enc): New target. Also added missing
+	io.o dependency to several other targets.
+
+	* examples/base64enc.c: New file, based on example code
+	contributed by Jeronimo Pellegrini.
+
 	* examples/rsa-encrypt.c (process_file): Reorganized fread loop.
 	(usage): New function.
 	(main): Implemented --help option.
