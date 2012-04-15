@@ -1,3 +1,8 @@
+2012-04-15  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/salsa20-test.c (test_salsa20_stream): New function.
+	(test_main): Tests for encrypting more than one block at a time.
+
 2012-04-14  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/io.c (write_file): Use write_string.
