@@ -26,6 +26,23 @@ define(<HREG>,<ifelse(
 	$1, %rcx, %ch,
 	$1, %rdx, %dh)>)dnl
 
+define(<WREG>,<ifelse(
+	$1, %rax, %ax,
+	$1, %rbx, %bx,
+	$1, %rcx, %cx,
+	$1, %rdx, %dx,
+	$1, %rsi, %si,
+	$1, %rdi, %di,
+	$1, %rbp, %bp,
+	$1, %r8, %r8w,
+	$1, %r9, %r9w,
+	$1, %r10, %r10w,
+	$1, %r11, %r11w,
+	$1, %r12, %r12w,
+	$1, %r13, %r13w,
+	$1, %r14, %r14w,
+	$1, %r15, %r15w)>)dnl
+
 define(<XREG>,<ifelse(
 	$1, %rax, %eax,
 	$1, %rbx, %ebx,

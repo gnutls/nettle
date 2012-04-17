@@ -1,5 +1,7 @@
 2012-04-17  Niels Möller  <nisse@lysator.liu.se>
 
+	* x86_64/machine.m4 (WREG): New macro.
+
 	* salsa20.c (salsa20_hash): Deleted function, inlined into
 	salsa20_crypt.
 	(salsa20_set_key, salsa20_set_iv): Moved, to...
