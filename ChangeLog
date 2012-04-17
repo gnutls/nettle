@@ -1,5 +1,9 @@
 2012-04-17  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/salsa20-test.c (test_salsa20_stream): Check that
+	salsa20_crypt doesn't write beyond the given destination area.
+	(test_salsa20): Likewise.
+
 	* salsa20-crypt.c: Renamed file, from...
 	* salsa20.c: ... old name.
 

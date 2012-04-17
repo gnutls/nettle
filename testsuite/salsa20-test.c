@@ -27,15 +27,19 @@ test_salsa20_stream(unsigned key_length,
 {
   struct salsa20_ctx ctx;
   uint8_t data[STREAM_LENGTH + 1];
-  uint8_t stream[STREAM_LENGTH];
+  uint8_t stream[STREAM_LENGTH + 1];
   uint8_t xor[SALSA20_BLOCK_SIZE];
   unsigned j;
 
   salsa20_set_key(&ctx, key_length, key);
   salsa20_set_iv(&ctx, iv);
-  memset(stream, 0, STREAM_LENGTH);
+  memset(stream, 0, STREAM_LENGTH + 1);
   salsa20_crypt(&ctx, STREAM_LENGTH, stream, stream);
-
+  if (stream[STREAM_LENGTH])
+    {
+      fprintf(stderr, "Stream of %d bytes wrote too much!\n", STREAM_LENGTH);
+      FAIL();
+    }
   if (!MEMEQ (64, stream, ciphertext))
     {
       fprintf(stderr, "Error failed, offset 0:\n");
@@ -100,7 +104,7 @@ test_salsa20_stream(unsigned key_length,
 	}
       if (!memzero_p (data + j, STREAM_LENGTH + 1 - j))
 	{
-	  fprintf(stderr, "Encrypt failed for length, %u wrote too much:\n", j);
+	  fprintf(stderr, "Encrypt failed for length %u, wrote too much:\n", j);
 	  fprintf(stderr, "\nOutput: ");
 	  print_hex(STREAM_LENGTH + 1 - j, data + j);
 	  fprintf(stderr, "\n");
@@ -118,12 +122,19 @@ test_salsa20(unsigned key_length,
 	     const uint8_t *ciphertext)
 {
   struct salsa20_ctx ctx;
-  uint8_t *data = xalloc(length);
+  uint8_t *data = xalloc(length + 1);
 
   salsa20_set_key(&ctx, key_length, key);
   salsa20_set_iv(&ctx, iv);
+  data[length] = 17;
   salsa20_crypt(&ctx, length, data, cleartext);
-
+  if (data[length] != 17)
+    {
+      fprintf(stderr, "Encrypt of %u bytes wrote too much!\nInput:", length);
+      print_hex(length, cleartext);
+      fprintf(stderr, "\n");
+      FAIL();
+    }
   if (!MEMEQ(length, data, ciphertext))
     {
       fprintf(stderr, "Encrypt failed:\nInput:");
