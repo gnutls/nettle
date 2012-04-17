@@ -1,3 +1,10 @@
+2012-04-17  Niels Möller  <nisse@lysator.liu.se>
+
+	* salsa20.c (salsa20_hash): Deleted function, inlined into
+	salsa20_crypt.
+	(salsa20_set_key, salsa20_set_iv): Moved, to...
+	* salsa20-set-key.c: ...new file.
+
 2012-04-15  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/salsa20-test.c (test_salsa20_stream): New function.
