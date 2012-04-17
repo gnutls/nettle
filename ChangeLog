@@ -1,5 +1,8 @@
 2012-04-17  Niels Möller  <nisse@lysator.liu.se>
 
+	* salsa20-crypt.c: Renamed file, from...
+	* salsa20.c: ... old name.
+
 	* x86_64/machine.m4 (WREG): New macro.
 
 	* salsa20.c (salsa20_hash): Deleted function, inlined into

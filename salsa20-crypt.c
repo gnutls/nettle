@@ -1,4 +1,4 @@
-/* salsa20.c
+/* salsa20-crypt.c
  *
  * The Salsa20 stream cipher.
  */
