@@ -1,3 +1,7 @@
+2012-04-18  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/salsa20-crypt.asm: New file.
+
 2012-04-17  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/salsa20-test.c (test_salsa20_stream): Check that
