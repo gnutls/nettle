@@ -4,7 +4,7 @@
 #
 #   objdump -h libnettle.a
 
-function hex2int (hex) {
+function hex2int (hex, n, i) {
   n = 0;
   hex = tolower(hex);
   for (i = 1; i<=length(hex); i++)
@@ -18,7 +18,7 @@ function hex2int (hex) {
 function output () {
   if (name)
     {
-      printf "%25s %6x   %6x   %6x\n", name, text_size, data_size, rodata_size;
+      printf "%25s %6d   %6d   %6d\n", name, text_size, data_size, rodata_size;
       text_total += text_size;
       data_total += data_size;
       rodata_total += rodata_size; 
@@ -63,5 +63,5 @@ BEGIN {
 
 END {
   output();
-  printf "%25s %6x   %6x   %6x\n", "TOTAL", text_total, data_total, rodata_total;
+  printf "%25s %6d   %6d   %6d\n", "TOTAL", text_total, data_total, rodata_total;
 }
