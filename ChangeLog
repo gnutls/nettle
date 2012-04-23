@@ -1,3 +1,9 @@
+2012-04-23  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle-internal.h (NETTLE_MAX_BIGNUM_SIZE): New constant. Based
+	on NETTLE_MAX_BIGNUM_BITS, rounded upwards. Replaced all uses of
+	NETTLE_MAX_BIGNUM_BITS.
+
 2012-04-19  Niels Möller  <nisse@lysator.liu.se>
 
 	* list-obj-sizes.awk: Use decimal rather than hexadecimal output.

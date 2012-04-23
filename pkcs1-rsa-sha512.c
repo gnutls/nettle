@@ -62,7 +62,7 @@ sha512_prefix[] =
 int
 pkcs1_rsa_sha512_encode(mpz_t m, unsigned size, struct sha512_ctx *hash)
 {
-  TMP_DECL(em, uint8_t, NETTLE_MAX_BIGNUM_BITS / 8);
+  TMP_DECL(em, uint8_t, NETTLE_MAX_BIGNUM_SIZE);
   TMP_ALLOC(em, size);
 
   if (pkcs1_signature_prefix(size, em,
@@ -82,7 +82,7 @@ pkcs1_rsa_sha512_encode(mpz_t m, unsigned size, struct sha512_ctx *hash)
 int
 pkcs1_rsa_sha512_encode_digest(mpz_t m, unsigned size, const uint8_t *digest)
 {
-  TMP_DECL(em, uint8_t, NETTLE_MAX_BIGNUM_BITS / 8);
+  TMP_DECL(em, uint8_t, NETTLE_MAX_BIGNUM_SIZE);
   TMP_ALLOC(em, size);
 
   if (pkcs1_signature_prefix(size, em,

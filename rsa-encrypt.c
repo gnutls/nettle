@@ -43,7 +43,7 @@ rsa_encrypt(const struct rsa_public_key *key,
 	    unsigned length, const uint8_t *message,
 	    mpz_t gibbberish)
 {
-  TMP_DECL(em, uint8_t, NETTLE_MAX_BIGNUM_BITS / 8);
+  TMP_DECL(em, uint8_t, NETTLE_MAX_BIGNUM_SIZE);
   unsigned padding;
   unsigned i;
   

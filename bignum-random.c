@@ -38,7 +38,7 @@ nettle_mpz_random_size(mpz_t x,
 		       unsigned bits)
 {
   unsigned length = (bits + 7) / 8;
-  TMP_DECL(data, uint8_t, NETTLE_MAX_BIGNUM_BITS / 8);
+  TMP_DECL(data, uint8_t, NETTLE_MAX_BIGNUM_SIZE);
   TMP_ALLOC(data, length);
 
   random(ctx, length, data);
