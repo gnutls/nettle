@@ -8,13 +8,13 @@
       type="text/css" href="todo.css" media="all"/>
     <meta http-equiv="Content-Type"
       content="text/html; charset=utf-8"/>
-<title>TODO for the nettle-2.2 release</title>
+<title>TODO for coming nettle-2.2 releases</title>
 </head>
 <body>
-  <h1> Plans for the Nettle-2.2 release </h1>
+  <h1> Release plans </h1>
   <p> This is an attempt at defining a development target for
-  Nettle-2.2, inspired by similar pages for recent GMP releases.
-  [Last updated 2011-07-01]</p>
+  Nettle-2.5, inspired by similar pages for recent GMP releases.
+  [Last updated 2012-04-29]</p>
   <h2> Color codes </h2>
   <p class='should'>
     This really ought to be done before release
@@ -28,42 +28,65 @@
   <p class='postponed'>
     Leave for some later release!
   </p>
-  <h2> License change </h2>
-  <p class='done'>
-    Replace remaining GPLd code: serpent and blowfish.
+
+  <h1> Plan for the Nettle-2.5 release </h1>
+  <h2> RSA blinding </h2>
+  <p class='wish'>
+    Add tentative interface, as suggested by Nikos.
   </p>
-  <p class='done'>
-    Decide which flavor of LGPL to use: LGPLv2+, LGPLv3+, or dual
-    license LGPLv3+ and GPLv2. Leaning towards the simplest option, LGPLv2+.
-  </p>
-  
   <h2> Documentation </h2>
-  <p class='done'>
-    Update documentation regarding license change and serpent
-    copyrights.
+  <p class='should'>
+    Update documentation with info on Salsa20.
   </p>
-  <p class='done'>
+  <p class='should'>
     Update NEWS file.
   </p>
   <h2> Bug fixes </h2>
   <p class='done'>
-    Fix the libdir defaults for linux x86_64 (I think the following
-    should work in most cases for for both debian and fhs conventions:
-    When building for $ABI (32 or 64), check if /usr/lib$ABI exists.
-    If so, install there, otherwise in $prefix/lib. Possibly bail out
-    with an error if neither /usr/lib32 nor /usr/lib64 exists).
+    Various w64 fixes, mostly by Martin Storsjö.
   </p>
-  <h2> Miscellaneous </h2>
-  <p class='postponed'>
-    Convert all files to utf-8.
+  <h2> Testing </h2>
+  <p> Since xenofarm isn't up and running, do some manual testing:
   </p>
-  <p class='postponed'>
+  <ul>
+    <li class='should'> x86_64-gnu-linux</li>
+    <li class='should'> x86_64-freebsd</li>
+    <li class='should'> x86-gnu-linux</li>
+    <li class='should'> x86-freebsd</li>
+    <li class='should'> x86-w*ndows (using cross compiler and wine)</li>
+    <li class='wish'> x86_64-w*ndows (seems a bit harder to get
+    mingw64 and wine64 working)</li>
+    <li class='should'> sparc32-solaris10</li>
+    <li class='should'> sparc64-solaris10</li>
+  </ul>
+
+  <h1> Plans for nettle-3.0 </h1>
+
+  <h2> Interface changes </h2>
+  <p class='should'>
     Change the type of all lengths from <tt>unsigned</tt>
     to <tt>size_t</tt>. An ABI change on most 64-bit platforms.
   </p>
-  <p class='postponed'>
-    Migrate repository from <tt>cvs</tt> to <tt>git</tt> (or
-    possibly <tt>hg</tt>).
+  <p class='should'>
+    For Merkle-Damgaard hash functions, separate the state and the
+    buffering. E.g., when using then for HMAC keyed "inner" and
+    "outer" states.
+  </p>
+  <p class='should'>
+    Use the nettle_cipher abstraction only for block ciphers (in
+    particular, exclude arcfour). Use a const for the ctx argument to
+    nettle_crypt_func.
+  </p>
+  <p class='should'>
+    Consider making a public interface similar to nettle_aead? With
+    the above change, it can't use nettle_crypt_func.
+  </p>
+  <p class='should'>
+    Reorganize private key operations. Need to support RSA with and
+    without blinding, and DSA occording to spec and some deterministic
+    variant (putty), and possibly also smartcard versions where the
+    private key is not available to the library. And without an
+    explosion of the number of functions.
   </p>
 </body>
 </html>
