@@ -8,14 +8,13 @@
       type="text/css" href="todo.css" media="all"/>
     <meta http-equiv="Content-Type"
       content="text/html; charset=utf-8"/>
-<title>TODO for coming nettle-2.2 releases</title>
+<title>TODO for coming releases</title>
 </head>
 <body>
-  <h1> Release plans </h1>
+  <h1> Nettle release plans </h1>
   <p> This is an attempt at defining a development target for
-  Nettle-2.5, inspired by similar pages for recent GMP releases.
-  [Last updated 2012-04-29]</p>
-  <h2> Color codes </h2>
+  Nettle-2.5, inspired by similar pages for recent GMP releases. [Last
+  updated 2012-04-30]</p>
   <p class='should'>
     This really ought to be done before release
   </p>
@@ -32,7 +31,8 @@
   <h1> Plan for the Nettle-2.5 release </h1>
   <h2> RSA blinding </h2>
   <p class='wish'>
-    Add tentative interface, as suggested by Nikos.
+    Add tentative interface, as suggested by Nikos. Don't try yet to
+    get blinding variants of <em>all</em> signature functions.
   </p>
   <h2> Documentation </h2>
   <p class='should'>
@@ -45,6 +45,10 @@
   <p class='done'>
     Various w64 fixes, mostly by Martin Storsjö.
   </p>
+  <p class='wish'>
+    Workaround for uint8_fast_t gnutls/gnulib incompatibilty on SunOS 5.8.
+  </p>
+  
   <h2> Testing </h2>
   <p> Since xenofarm isn't up and running, do some manual testing:
   </p>
@@ -69,23 +73,23 @@
   </p>
   <p class='should'>
     For Merkle-Damgaard hash functions, separate the state and the
-    buffering. E.g., when using then for HMAC keyed "inner" and
-    "outer" states.
+    buffering. E.g., when using them for HMAC keyed "inner" and
+    "outer" states, we now get three buffers but we only need one.
   </p>
   <p class='should'>
     Use the nettle_cipher abstraction only for block ciphers (in
     particular, exclude arcfour). Use a const for the ctx argument to
     nettle_crypt_func.
   </p>
-  <p class='should'>
+  <p class='wish'>
     Consider making a public interface similar to nettle_aead? With
     the above change, it can't use nettle_crypt_func.
   </p>
   <p class='should'>
     Reorganize private key operations. Need to support RSA with and
-    without blinding, and DSA occording to spec and some deterministic
-    variant (putty), and possibly also smartcard versions where the
-    private key is not available to the library. And without an
+    without blinding, and DSA according to spec and some deterministic
+    variant (like putty), and possibly also smartcard versions where
+    the private key is not available to the library. And without an
     explosion of the number of functions.
   </p>
 </body>
