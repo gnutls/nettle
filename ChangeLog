@@ -1,3 +1,10 @@
+2012-05-07  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle-types.h (_STDINT_HAVE_INT_FAST32_T): Define here, to
+	force nettle-stdint.h to not try to define the int_fast*_t types.
+	Avoids compilation gnutls problems on SunOS-5.8, where the
+	definitions here collide with gnulib's.
+
 2012-04-23  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle-internal.h (NETTLE_MAX_BIGNUM_SIZE): New constant. Based
