@@ -1,3 +1,8 @@
+2012-05-09  Niels Möller  <nisse@lysator.liu.se>
+
+	* rsa-decrypt-tr.c (rsa_decrypt_tr): Added missing mpz_clear,
+	spotted by Nikos Mavrogiannopoulos.
+
 2012-05-07  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle-types.h (_STDINT_HAVE_INT_FAST32_T): Define here, to

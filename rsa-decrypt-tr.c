@@ -86,7 +86,8 @@ rsa_decrypt_tr(const struct rsa_public_key *pub,
   rsa_blind (pub, random_ctx, random, m, ri);
   rsa_compute_root(key, m, m);
   rsa_unblind (pub, m, ri);
-  
+  mpz_clear (ri);
+
   res = pkcs1_decrypt (key->size, m, length, message);
   mpz_clear(m);
   return res;
