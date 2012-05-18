@@ -43,6 +43,7 @@ extern "C" {
 #define pkcs1_rsa_sha256_encode_digest nettle_pkcs1_rsa_sha256_encode_digest
 #define pkcs1_rsa_sha512_encode nettle_pkcs1_rsa_sha512_encode
 #define pkcs1_rsa_sha512_encode_digest nettle_pkcs1_rsa_sha512_encode_digest
+#define pkcs1_encrypt nettle_pkcs1_encrypt
 #define pkcs1_decrypt nettle_pkcs1_decrypt
 
 struct md5_ctx;
@@ -56,6 +57,13 @@ pkcs1_signature_prefix(unsigned size,
 		       unsigned id_size,
 		       const uint8_t *id,
 		       unsigned digest_size);
+
+int
+pkcs1_encrypt (unsigned key_size,
+	       /* For padding */
+	       void *random_ctx, nettle_random_func random,
+	       unsigned length, const uint8_t *message,
+	       mpz_t m);
 
 int
 pkcs1_decrypt (unsigned key_size,

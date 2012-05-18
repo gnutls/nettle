@@ -1,4 +1,4 @@
-/* rsa_encrypt.c
+/* rsa-encrypt.c
  *
  * The RSA publickey algorithm. PKCS#1 encryption.
  */
@@ -27,57 +27,23 @@
 # include "config.h"
 #endif
 
-#include <assert.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "rsa.h"
 
-#include "bignum.h"
-#include "nettle-internal.h"
+#include "pkcs1.h"
 
 int
 rsa_encrypt(const struct rsa_public_key *key,
 	    /* For padding */
 	    void *random_ctx, nettle_random_func random,
 	    unsigned length, const uint8_t *message,
-	    mpz_t gibbberish)
+	    mpz_t gibberish)
 {
-  TMP_DECL(em, uint8_t, NETTLE_MAX_BIGNUM_SIZE);
-  unsigned padding;
-  unsigned i;
-  
-  /* The message is encoded as a string of the same length as the
-   * modulo n, of the form
-   *
-   *   00 02 pad 00 message
-   *
-   * where padding should be at least 8 pseudorandomly generated
-   * *non-zero* octets. */
-     
-  if (length + 11 > key->size)
-    /* Message too long for this key. */
+  if (pkcs1_encrypt (key->size, random_ctx, random,
+		     length, message, gibberish))
+    {
+      mpz_powm(gibberish, gibberish, key->e, key->n);
+      return 1;
+    }
+  else
     return 0;
-
-  /* At least 8 octets of random padding */
-  padding = key->size - length - 3;
-  assert(padding >= 8);
-  
-  TMP_ALLOC(em, key->size - 1);
-  em[0] = 2;
-
-  random(random_ctx, padding, em + 1);
-
-  /* Replace 0-octets with 1 */
-  for (i = 0; i<padding; i++)
-    if (!em[i+1])
-      em[i+1] = 1;
-
-  em[padding+1] = 0;
-  memcpy(em + padding + 2, message, length);
-
-  nettle_mpz_set_str_256_u(gibbberish, key->size - 1, em);
-  mpz_powm(gibbberish, gibbberish, key->e, key->n);
-
-  return 1;  
 }

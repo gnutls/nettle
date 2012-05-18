@@ -1,3 +1,8 @@
+2012-05-18  Niels Möller  <nisse@lysator.liu.se>
+
+	* pkcs1-encrypt.c (pkcs1_encrypt): New file and function.
+	* rsa-encrypt.c (rsa_encrypt): Use pkcs1_encrypt.
+
 2012-05-09  Niels Möller  <nisse@lysator.liu.se>
 
 	* rsa-decrypt-tr.c (rsa_decrypt_tr): Added missing mpz_clear,
