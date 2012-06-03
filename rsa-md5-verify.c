@@ -42,10 +42,9 @@ rsa_md5_verify(const struct rsa_public_key *key,
   int res;
   mpz_t m;
 
-  assert(key->size > 0);
   mpz_init(m);
 
-  res = (pkcs1_rsa_md5_encode(m, key->size - 1, hash)
+  res = (pkcs1_rsa_md5_encode(m, key->size, hash)
 	 && _rsa_verify(key, m, s));
 
   mpz_clear(m);
@@ -61,10 +60,9 @@ rsa_md5_verify_digest(const struct rsa_public_key *key,
   int res;
   mpz_t m;
 
-  assert(key->size > 0);
   mpz_init(m);
   
-  res = (pkcs1_rsa_md5_encode_digest(m, key->size - 1, digest)
+  res = (pkcs1_rsa_md5_encode_digest(m, key->size, digest)
 	 && _rsa_verify(key, m, s));
 
   mpz_clear(m);

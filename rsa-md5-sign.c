@@ -39,9 +39,7 @@ rsa_md5_sign(const struct rsa_private_key *key,
              struct md5_ctx *hash,
              mpz_t s)
 {
-  assert(key->size > 0);
-
-  if (pkcs1_rsa_md5_encode(s, key->size - 1, hash))
+  if (pkcs1_rsa_md5_encode(s, key->size, hash))
     {
       rsa_compute_root(key, s, s);
       return 1;
@@ -58,9 +56,7 @@ rsa_md5_sign_digest(const struct rsa_private_key *key,
 		    const uint8_t *digest,
 		    mpz_t s)
 {
-  assert(key->size > 0);
-
-  if (pkcs1_rsa_md5_encode_digest(s, key->size - 1, digest))
+  if (pkcs1_rsa_md5_encode_digest(s, key->size, digest))
     {
       rsa_compute_root(key, s, s);
       return 1;

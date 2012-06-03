@@ -60,18 +60,20 @@ sha256_prefix[] =
 };
 
 int
-pkcs1_rsa_sha256_encode(mpz_t m, unsigned size, struct sha256_ctx *hash)
+pkcs1_rsa_sha256_encode(mpz_t m, unsigned key_size, struct sha256_ctx *hash)
 {
+  uint8_t *p;
   TMP_DECL(em, uint8_t, NETTLE_MAX_BIGNUM_SIZE);
-  TMP_ALLOC(em, size);
+  TMP_ALLOC(em, key_size);
 
-  if (pkcs1_signature_prefix(size, em,
+  p = pkcs1_signature_prefix(key_size, em,
 			     sizeof(sha256_prefix),
 			     sha256_prefix,
-			     SHA256_DIGEST_SIZE))
+			     SHA256_DIGEST_SIZE);
+  if (p)
     {
-      sha256_digest(hash, SHA256_DIGEST_SIZE, em + size - SHA256_DIGEST_SIZE);
-      nettle_mpz_set_str_256_u(m, size, em);
+      sha256_digest(hash, SHA256_DIGEST_SIZE, p);
+      nettle_mpz_set_str_256_u(m, key_size, em);
       return 1;
     }
   else
@@ -79,18 +81,20 @@ pkcs1_rsa_sha256_encode(mpz_t m, unsigned size, struct sha256_ctx *hash)
 }
 
 int
-pkcs1_rsa_sha256_encode_digest(mpz_t m, unsigned size, const uint8_t *digest)
+pkcs1_rsa_sha256_encode_digest(mpz_t m, unsigned key_size, const uint8_t *digest)
 {
+  uint8_t *p;
   TMP_DECL(em, uint8_t, NETTLE_MAX_BIGNUM_SIZE);
-  TMP_ALLOC(em, size);
+  TMP_ALLOC(em, key_size);
 
-  if (pkcs1_signature_prefix(size, em,
+  p = pkcs1_signature_prefix(key_size, em,
 			     sizeof(sha256_prefix),
 			     sha256_prefix,
-			     SHA256_DIGEST_SIZE))
+			     SHA256_DIGEST_SIZE);
+  if (p)
     {
-      memcpy(em + size - SHA256_DIGEST_SIZE, digest, SHA256_DIGEST_SIZE);
-      nettle_mpz_set_str_256_u(m, size, em);
+      memcpy(p, digest, SHA256_DIGEST_SIZE);
+      nettle_mpz_set_str_256_u(m, key_size, em);
       return 1;
     }
   else

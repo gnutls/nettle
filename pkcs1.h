@@ -51,8 +51,8 @@ struct sha1_ctx;
 struct sha256_ctx;
 struct sha512_ctx;
 
-int
-pkcs1_signature_prefix(unsigned size,
+uint8_t *
+pkcs1_signature_prefix(unsigned key_size,
 		       uint8_t *buffer,
 		       unsigned id_size,
 		       const uint8_t *id,

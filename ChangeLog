@@ -1,3 +1,14 @@
+2012-06-03  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/pkcs1-test.c (test_main): Include leading zero in
+	expected result.
+
+	* pkcs1.c (pkcs1_signature_prefix): Return pointer to where the
+	digest should be written. Let the size input be the key size in
+	octets, rather then key size - 1.
+	* pkcs1-rsa-*.c: Updated for above.
+	* rsa-*-sign.c, rsa-*-verify.c: Pass key->size, not key->size - 1.
+
 2012-05-18  Niels Möller  <nisse@lysator.liu.se>
 
 	* pkcs1-encrypt.c (pkcs1_encrypt): New file and function.
