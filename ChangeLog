@@ -1,3 +1,10 @@
+2012-06-09  Niels Möller  <nisse@lysator.liu.se>
+
+	* rsa.h (_rsa_blind, _rsa_unblind): Declare functions.
+	* rsa-blind.c (_rsa_blind, _rsa_unblind): Functions moved to a
+	separate file, renamed and made non-static. Moved from...
+	* rsa-decrypt-tr.c: ... here.
+
 2012-06-03  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/pkcs1-test.c (test_main): Include leading zero in

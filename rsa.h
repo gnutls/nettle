@@ -73,6 +73,8 @@ extern "C" {
 #define rsa_keypair_to_openpgp nettle_rsa_keypair_to_openpgp
 #define _rsa_verify _nettle_rsa_verify
 #define _rsa_check_size _nettle_rsa_check_size
+#define _rsa_blind _nettle_rsa_blind
+#define _rsa_unblind _nettle_rsa_unblind
 
 /* This limit is somewhat arbitrary. Technically, the smallest modulo
    which makes sense at all is 15 = 3*5, phi(15) = 8, size 4 bits. But
@@ -382,6 +384,13 @@ _rsa_verify(const struct rsa_public_key *key,
 
 unsigned
 _rsa_check_size(mpz_t n);
+
+void
+_rsa_blind (const struct rsa_public_key *pub,
+	    void *random_ctx, nettle_random_func random,
+	    mpz_t c, mpz_t ri);
+void
+_rsa_unblind (const struct rsa_public_key *pub, mpz_t c, const mpz_t ri);
 
 #ifdef __cplusplus
 }

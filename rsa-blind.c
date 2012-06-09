@@ -1,7 +1,6 @@
-/* rsa-decrypt-tr.c
+/* rsa-blind.c
  *
- * RSA decryption, using randomized RSA blinding to be more resistant
- * to timing attacks.
+ * RSA blinding. It is used for timing resistant decryption or signing.
  */
 
 /* nettle, low-level cryptographics library
@@ -31,27 +30,40 @@
 #include "rsa.h"
 
 #include "bignum.h"
-#include "pkcs1.h"
 
-int
-rsa_decrypt_tr(const struct rsa_public_key *pub,
-	       const struct rsa_private_key *key,
-	       void *random_ctx, nettle_random_func random,
-	       unsigned *length, uint8_t *message,
-	       const mpz_t gibberish)
+/* Blinds the c, by computing c *= r^e (mod n), for a random r. Also
+   returns the inverse (ri), for use by rsa_unblind. */
+void
+_rsa_blind (const struct rsa_public_key *pub,
+	    void *random_ctx, nettle_random_func random,
+	    mpz_t c, mpz_t ri)
 {
-  mpz_t m, ri;
-  int res;
+  mpz_t r;
 
-  mpz_init_set(m, gibberish);
-  mpz_init (ri);
+  mpz_init(r);
 
-  _rsa_blind (pub, random_ctx, random, m, ri);
-  rsa_compute_root(key, m, m);
-  _rsa_unblind (pub, m, ri);
-  mpz_clear (ri);
+  /* c = c*(r^e)
+   * ri = r^(-1)
+   */
+  do 
+    {
+      nettle_mpz_random(r, random_ctx, random, pub->n);
+      /* invert r */
+    }
+  while (!mpz_invert (ri, r, pub->n));
 
-  res = pkcs1_decrypt (key->size, m, length, message);
-  mpz_clear(m);
-  return res;
+  /* c = c*(r^e) mod n */
+  mpz_powm(r, r, pub->e, pub->n);
+  mpz_mul(c, c, r);
+  mpz_fdiv_r(c, c, pub->n);
+
+  mpz_clear(r);
+}
+
+/* c *= ri mod n */
+void
+_rsa_unblind (const struct rsa_public_key *pub, mpz_t c, const mpz_t ri)
+{
+  mpz_mul(c, c, ri);
+  mpz_fdiv_r(c, c, pub->n);
 }
