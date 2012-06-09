@@ -131,9 +131,9 @@
 	(rsa_blind): Helper function.
 	(rsa_unblind): Helper function.
 	* rsa.h: Declare rsa_decrypt_tr. Some cleanups, no longer include
-	nettle-meta.h, more consistent declrations of function pointer
+	nettle-meta.h, more consistent declarations of function pointer
 	arguments.
-	* testsuite/rsa-encrypt-test.c (test_main): Test rsa_encrypt_tr.
+	* testsuite/rsa-encrypt-test.c (test_main): Test rsa_decrypt_tr.
 	Check for writes past the end of the message area.
 
 	* Makefile.in (hogweed_SOURCES): Added pkcs1-decrypt.c.
