@@ -24,7 +24,7 @@ SOURCES = nettle-benchmark.c eratosthenes.c next-prime.c random-prime.c \
 	nettle-openssl.c \
 	io.c read_rsa_key.c \
 	rsa-encrypt.c rsa-decrypt.c rsa-keygen.c rsa-sign.c rsa-verify.c \
-	base16enc.c base64enc.c base64dec.c
+	base16enc.c base16dec.c base64enc.c base64dec.c
 
 
 GETOPT_OBJS = ../getopt.$(OBJEXT) ../getopt1.$(OBJEXT)

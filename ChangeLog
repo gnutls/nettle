@@ -1,5 +1,8 @@
 2012-06-09  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/Makefile.in (SOURCES): Added base16dec.c, forgotten
+	earlier.
+
 	General pkcs1 signatures, with a "DigestInfo" input. Suggested by
 	Nikos Mavrogiannopoulos.
 	* Makefile.in (hogweed_SOURCES): Added pkcs1-rsa-digest.c,
