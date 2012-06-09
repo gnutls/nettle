@@ -35,6 +35,7 @@ extern "C" {
 
 /* Name mangling */
 #define pkcs1_signature_prefix nettle_pkcs1_signature_prefix
+#define pkcs1_rsa_digest_encode nettle_pkcs1_rsa_digest_encode
 #define pkcs1_rsa_md5_encode nettle_pkcs1_rsa_md5_encode
 #define pkcs1_rsa_md5_encode_digest nettle_pkcs1_rsa_md5_encode_digest
 #define pkcs1_rsa_sha1_encode nettle_pkcs1_rsa_sha1_encode
@@ -69,6 +70,10 @@ int
 pkcs1_decrypt (unsigned key_size,
 	       const mpz_t m,
 	       unsigned *length, uint8_t *message);
+
+int
+pkcs1_rsa_digest_encode(mpz_t m, unsigned key_size,
+			unsigned di_length, const uint8_t *digest_info);
 
 int
 pkcs1_rsa_md5_encode(mpz_t m, unsigned length, struct md5_ctx *hash);

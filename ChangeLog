@@ -1,5 +1,20 @@
 2012-06-09  Niels Möller  <nisse@lysator.liu.se>
 
+	General pkcs1 signatures, with a "DigestInfo" input. Suggested by
+	Nikos Mavrogiannopoulos.
+	* Makefile.in (hogweed_SOURCES): Added pkcs1-rsa-digest.c,
+	rsa-pkcs1-sign.c, rsa-pkcs1-sign-tr.c, and rsa-pkcs1-verify.c.
+
+	* pkcs1-rsa-digest.c (pkcs1_rsa_digest_encode): New file and
+	function.
+	* pkcs1.h: Declare it.
+
+	* rsa-pkcs1-verify.c (rsa_pkcs1_verify): New file and function.
+	* rsa-pkcs1-sign.c (rsa_pkcs1_sign): New file and function.
+	* rsa-pkcs1-sign-tr.c (rsa_pkcs1_sign_tr): New file and function,
+	contributed by Nikos Mavrogiannopoulos.
+	* rsa.h: Declare new functions.
+
 	* rsa.h (_rsa_blind, _rsa_unblind): Declare functions.
 	* rsa-blind.c (_rsa_blind, _rsa_unblind): Functions moved to a
 	separate file, renamed and made non-static. Moved from...

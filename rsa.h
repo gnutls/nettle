@@ -43,6 +43,9 @@ extern "C" {
 #define rsa_private_key_init nettle_rsa_private_key_init
 #define rsa_private_key_clear nettle_rsa_private_key_clear
 #define rsa_private_key_prepare nettle_rsa_private_key_prepare
+#define rsa_pkcs1_verify nettle_rsa_pkcs1_verify
+#define rsa_pkcs1_sign nettle_rsa_pkcs1_sign
+#define rsa_pkcs1_sign_tr nettle_rsa_pkcs1_sign_tr
 #define rsa_md5_sign nettle_rsa_md5_sign
 #define rsa_md5_verify nettle_rsa_md5_verify
 #define rsa_sha1_sign nettle_rsa_sha1_sign
@@ -168,6 +171,22 @@ rsa_private_key_prepare(struct rsa_private_key *key);
 
 
 /* PKCS#1 style signatures */
+int
+rsa_pkcs1_sign(const struct rsa_private_key *key,
+	       unsigned length, const uint8_t *digest_info,
+	       mpz_t s);
+
+int
+rsa_pkcs1_sign_tr(const struct rsa_public_key *pub,
+  	          const struct rsa_private_key *key,
+	          void *random_ctx, nettle_random_func random,
+	          unsigned length, const uint8_t *digest_info,
+   	          mpz_t s);
+int
+rsa_pkcs1_verify(const struct rsa_public_key *key,
+		 unsigned length, const uint8_t *digest_info,
+		 const mpz_t signature);
+
 int
 rsa_md5_sign(const struct rsa_private_key *key,
              struct md5_ctx *hash,

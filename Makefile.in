@@ -100,9 +100,10 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  bignum-random.c bignum-random-prime.c \
 		  sexp2bignum.c \
 		  pkcs1.c pkcs1-encrypt.c pkcs1-decrypt.c \
-		  pkcs1-rsa-md5.c pkcs1-rsa-sha1.c \
+		  pkcs1-rsa-digest.c pkcs1-rsa-md5.c pkcs1-rsa-sha1.c \
 		  pkcs1-rsa-sha256.c pkcs1-rsa-sha512.c \
 		  rsa.c rsa-sign.c rsa-verify.c \
+		  rsa-pkcs1-sign.c rsa-pkcs1-sign-tr.c rsa-pkcs1-verify.c \
 		  rsa-md5-sign.c rsa-md5-verify.c \
 		  rsa-sha1-sign.c rsa-sha1-verify.c \
 		  rsa-sha256-sign.c rsa-sha256-verify.c \
