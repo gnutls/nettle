@@ -1,14 +1,37 @@
 NEWS for the 2.5 release
 
+	This release includes important portability fixes for Windows
+	and MacOS. There are also a few new features.
+	
+	* Warning: The undocumented, internal, function
+	  pkcs1_signature_prefix is changed. Since this is an internal
+	  function, this is not considered a change of ABI or API.
+	  Programs explicitly using this function will break.
+
+	New features:
+
+	* Support for the salsa20 block cipher, including x86_64
+          assembler. Originally contributed by Simon Josefsson, based
+          on the reference implementation, then further optimized.
+
+	* Tentative interface for timing-resistant RSA functions,
+          contributed by Nikos Mavrogiannopoulos.
+
+	* A more general interface for PKCS#1 signatures, taking the
+          input in the form of a "DigestInfo". Suggested by Nikos
+          Mavrogiannopoulos.
+
+	Miscellaneous:
+	
 	* Various portability fixes for MacOS and M$ Windows. A lot of
 	  this work done by Martin Storsjö.
 
 	* In particular, Nettle now hopefully works on 64-bit Windows
-	  builds, "W64", including the x86_64 assemby code.
+	  builds, "W64", including the x86_64 assembly code.
 
-	* Documentation for the base16 and base64 functions. Was
-	  contributed by Jeronimo Pellegrini back in 2006, but
-	  unfortunately forgotten until now.
+	* Documentation and example programs for the base16 and base64
+	  functions. Was contributed by Jeronimo Pellegrini back in
+	  2006, but unfortunately forgotten until now.
 
 	* The nettle repository has been migrated from cvs to git,
 	  with a public repository at
