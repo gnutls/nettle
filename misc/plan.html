@@ -14,7 +14,7 @@
   <h1> Nettle release plans </h1>
   <p> This is an attempt at defining a development target for
   Nettle-2.5, inspired by similar pages for recent GMP releases. [Last
-  updated 2012-04-30]</p>
+  updated 2012-06-09]</p>
   <p class='should'>
     This really ought to be done before release
   </p>
@@ -30,7 +30,7 @@
 
   <h1> Plan for the Nettle-2.5 release </h1>
   <h2> RSA blinding </h2>
-  <p class='wish'>
+  <p class='done'>
     Add tentative interface, as suggested by Nikos. Don't try yet to
     get blinding variants of <em>all</em> signature functions.
   </p>
@@ -45,17 +45,24 @@
   <p class='done'>
     Various w64 fixes, mostly by Martin Storsjö.
   </p>
-  <p class='wish'>
+  <p class='done'>
     Workaround for uint8_fast_t gnutls/gnulib incompatibilty on SunOS 5.8.
   </p>
-  
+
+  <h2> Other </h2>
+  <p class='should'> The interface of the internal function
+  <tt>pkcs1_signature_prefix</tt> has changed. Consider renaming it to
+  <tt>_pkcs1_signature_prefix</tt>, to clearly mark it internal and
+  also make applications using it fail more predictably at compile or
+  link time.</p>
+
   <h2> Testing </h2>
   <p> Since xenofarm isn't up and running, do some manual testing:
   </p>
   <ul>
-    <li class='should'> x86_64-gnu-linux</li>
+    <li class='done'> x86_64-gnu-linux</li>
     <li class='should'> x86_64-freebsd</li>
-    <li class='should'> x86-gnu-linux</li>
+    <li class='done'> x86-gnu-linux</li>
     <li class='should'> x86-freebsd</li>
     <li class='should'> x86-w*ndows (using cross compiler and wine)</li>
     <li class='wish'> x86_64-w*ndows (seems a bit harder to get
