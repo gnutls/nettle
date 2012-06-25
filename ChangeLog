@@ -1,3 +1,9 @@
+2012-06-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/des-compat-test.c (test_main): Disable declarations of
+	disabled functions and variables, to avoid warnings. No verbose
+	output unless verbose flag is set.
+
 2012-06-09  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/Makefile.in (SOURCES): Added base16dec.c, forgotten

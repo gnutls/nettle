@@ -287,9 +287,11 @@ unsigned char cbc_cksum_data[8]={0x1D,0x26,0x93,0x97,0xf7,0xfe,0x62,0xb4};
 
 #ifndef NOPROTO
 static char *pt(const unsigned char *p);
+#if 0
 static int cfb_test(int bits, unsigned char *cfb_cipher);
 static int cfb64_test(unsigned char *cfb_cipher);
 static int ede_cfb64_test(unsigned char *cfb_cipher);
+#endif
 #else
 static char *pt();
 static int cfb_test();
@@ -306,12 +308,14 @@ test_main(void)
 	des_cblock cbc_in[5];
 	des_cblock cbc_out[5];
 	DES_LONG cs;
-	unsigned char qret[4][4],cret[8];
+	unsigned char cret[8];
+#if 0
+	unsigned char qret[4][4];
 	DES_LONG lqret[4];
 	int num;
 	char *str;
-
-	printf("Doing ecb\n");
+#endif
+	if (verbose) printf("Doing ecb\n");
 	for (i=0; i<NUM_TESTS; i++)
 		{
 		if ((j=des_key_sched(&key_data[i], ks)) != 0)
@@ -341,7 +345,7 @@ test_main(void)
 		}
 
 #ifndef LIBDES_LIT
-	printf("Doing ede ecb\n");
+	if (verbose) printf("Doing ede ecb\n");
 	for (i=0; i<(NUM_TESTS-1); i++)
 		{
 		if ((j=des_key_sched(&key_data[i], ks)) != 0)
@@ -383,7 +387,7 @@ test_main(void)
 		}
 #endif
 
-	printf("Doing cbc\n");
+	if (verbose) printf("Doing cbc\n");
 	if ((j=des_key_sched(&cbc_key, ks)) != 0)
 		{
 		printf("Key error %d\n",j);
@@ -410,7 +414,7 @@ test_main(void)
 
 #ifndef LIBDES_LIT
 #if 0
-	printf("Doing desx cbc\n");
+	if (verbose) printf("Doing desx cbc\n");
 	if ((j=des_key_sched((C_Block *)cbc_key,ks)) != 0)
 		{
 		printf("Key error %d\n",j);
@@ -440,7 +444,7 @@ test_main(void)
 #endif
 #endif /* LIBDES_LIT */
 
-	printf("Doing ede cbc\n");
+	if (verbose) printf("Doing ede cbc\n");
 	if ((j=des_key_sched(&cbc_key,ks)) != 0)
 		{
 		printf("Key error %d\n",j);
@@ -631,7 +635,7 @@ plain[8+4], plain[8+5], plain[8+6], plain[8+7]);
 		}
 #endif
         
-	printf("Doing cbc_cksum\n");
+	if (verbose) printf("Doing cbc_cksum\n");
 	des_key_sched(&cbc_key,ks);
 	cs=des_cbc_cksum(cbc_data[0], &cret,
 		sizeof(cbc_data), ks, &cbc_iv);
