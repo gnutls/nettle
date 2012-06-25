@@ -40,11 +40,11 @@
  * total size equals the octet size of n.
  */
 uint8_t *
-pkcs1_signature_prefix(unsigned key_size,
-		       uint8_t *buffer,
-		       unsigned id_size,
-		       const uint8_t *id,
-		       unsigned digest_size)
+_pkcs1_signature_prefix(unsigned key_size,
+			uint8_t *buffer,
+			unsigned id_size,
+			const uint8_t *id,
+			unsigned digest_size)
 {
   unsigned j;
   

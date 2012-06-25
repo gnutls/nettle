@@ -68,10 +68,10 @@ pkcs1_rsa_md5_encode(mpz_t m, unsigned key_size, struct md5_ctx *hash)
   TMP_DECL(em, uint8_t, NETTLE_MAX_BIGNUM_SIZE);
   TMP_ALLOC(em, key_size);
 
-  p = pkcs1_signature_prefix(key_size, em,
-			     sizeof(md5_prefix),
-			     md5_prefix,
-			     MD5_DIGEST_SIZE);
+  p = _pkcs1_signature_prefix(key_size, em,
+			      sizeof(md5_prefix),
+			      md5_prefix,
+			      MD5_DIGEST_SIZE);
   if (p)
     {
       md5_digest(hash, MD5_DIGEST_SIZE, p);
@@ -89,10 +89,10 @@ pkcs1_rsa_md5_encode_digest(mpz_t m, unsigned key_size, const uint8_t *digest)
   TMP_DECL(em, uint8_t, NETTLE_MAX_BIGNUM_SIZE);
   TMP_ALLOC(em, key_size);
 
-  p = pkcs1_signature_prefix(key_size, em,
-			     sizeof(md5_prefix),
-			     md5_prefix,
-			     MD5_DIGEST_SIZE);
+  p = _pkcs1_signature_prefix(key_size, em,
+			      sizeof(md5_prefix),
+			      md5_prefix,
+			      MD5_DIGEST_SIZE);
   if (p)
     {
       memcpy(p, digest, MD5_DIGEST_SIZE);

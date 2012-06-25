@@ -38,8 +38,8 @@ pkcs1_rsa_digest_encode(mpz_t m, unsigned key_size,
   TMP_DECL(em, uint8_t, NETTLE_MAX_BIGNUM_SIZE);
   TMP_ALLOC(em, key_size);
 
-  if (pkcs1_signature_prefix(key_size, em,
-			     di_length, digest_info, 0))
+  if (_pkcs1_signature_prefix(key_size, em,
+			      di_length, digest_info, 0))
     {
       nettle_mpz_set_str_256_u(m, key_size, em);
       return 1;

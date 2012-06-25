@@ -1,5 +1,8 @@
 2012-06-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* pkcs1.c (_pkcs1_signature_prefix): Renamed function, adding a
+	leading underscore. Updated all callers.
+
 	* bignum-next-prime.c (nettle_next_prime): Consistently use the
 	type nettle_random_func * (rather then just nettle_random_func)
 	when passing the function pointer as argument. Similar change for

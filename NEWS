@@ -4,9 +4,11 @@ NEWS for the 2.5 release
 	and MacOS. There are also a few new features.
 	
 	* Warning: The undocumented, internal, function
-	  pkcs1_signature_prefix is changed. Since this is an internal
-	  function, this is not considered a change of ABI or API.
-	  Programs explicitly using this function will break.
+	  pkcs1_signature_prefix has been renamed to
+	  _pkcs1_signature_prefix, and with slightly different
+	  behavior. Since this is an internal function, this is not
+	  considered a change of ABI or API. Programs explicitly using
+	  this function will break.
 
 	New features:
 

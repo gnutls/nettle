@@ -34,7 +34,7 @@ extern "C" {
 #endif
 
 /* Name mangling */
-#define pkcs1_signature_prefix nettle_pkcs1_signature_prefix
+#define _pkcs1_signature_prefix _nettle_pkcs1_signature_prefix
 #define pkcs1_rsa_digest_encode nettle_pkcs1_rsa_digest_encode
 #define pkcs1_rsa_md5_encode nettle_pkcs1_rsa_md5_encode
 #define pkcs1_rsa_md5_encode_digest nettle_pkcs1_rsa_md5_encode_digest
@@ -53,11 +53,11 @@ struct sha256_ctx;
 struct sha512_ctx;
 
 uint8_t *
-pkcs1_signature_prefix(unsigned key_size,
-		       uint8_t *buffer,
-		       unsigned id_size,
-		       const uint8_t *id,
-		       unsigned digest_size);
+_pkcs1_signature_prefix(unsigned key_size,
+			uint8_t *buffer,
+			unsigned id_size,
+			const uint8_t *id,
+			unsigned digest_size);
 
 int
 pkcs1_encrypt (unsigned key_size,
