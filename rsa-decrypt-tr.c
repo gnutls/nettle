@@ -36,7 +36,7 @@
 int
 rsa_decrypt_tr(const struct rsa_public_key *pub,
 	       const struct rsa_private_key *key,
-	       void *random_ctx, nettle_random_func random,
+	       void *random_ctx, nettle_random_func *random,
 	       unsigned *length, uint8_t *message,
 	       const mpz_t gibberish)
 {

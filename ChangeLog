@@ -1,5 +1,31 @@
 2012-06-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* bignum-next-prime.c (nettle_next_prime): Consistently use the
+	type nettle_random_func * (rather then just nettle_random_func)
+	when passing the function pointer as argument. Similar change for
+	nettle_progress_func. Should have been done for the 2.0 release,
+	but a few arguments were overlooked.
+	* bignum-random-prime.c (_nettle_generate_pocklington_prime)
+	(nettle_random_prime): Likewise.
+	* bignum-random.c (nettle_mpz_random_size, nettle_mpz_random):
+	Likewise.
+	* dsa-keygen.c (dsa_generate_keypair): Likewise.
+	* dsa-sha1-sign.c (dsa_sha1_sign_digest, dsa_sha1_sign): Likewise.
+	* dsa-sha256-sign.c (dsa_sha256_sign_digest, dsa_sha256_sign):
+	Likewise.
+	* dsa-sign.c (_dsa_sign): Likewise.
+	* pkcs1-encrypt.c (pkcs1_encrypt): Likewise.
+	* rsa-blind.c (_rsa_blind): Likewise.
+	* rsa-decrypt-tr.c (rsa_decrypt_tr): Likewise.
+	* rsa-encrypt.c (rsa_encrypt): Likewise.
+	* rsa-keygen.c (rsa_generate_keypair): Likewise.
+	* rsa-pkcs1-sign-tr.c (rsa_pkcs1_sign_tr): Likewise.
+
+	* cbc.c (cbc_encrypt, cbc_decrypt): Similarly, use the type
+	nettle_crypt_func * rather than just nettle_crypt_func.
+	* ctr.c (ctr_crypt): Likewise.
+	* gcm.c (gcm_set_key): Likewise.
+
 	* testsuite/des-compat-test.c (test_main): Disable declarations of
 	disabled functions and variables, to avoid warnings. No verbose
 	output unless verbose flag is set.

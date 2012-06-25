@@ -39,7 +39,7 @@
 int
 pkcs1_encrypt (unsigned key_size,
 	       /* For padding */
-	       void *random_ctx, nettle_random_func random,
+	       void *random_ctx, nettle_random_func *random,
 	       unsigned length, const uint8_t *message,
 	       mpz_t m)
 {

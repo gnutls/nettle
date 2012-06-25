@@ -260,7 +260,7 @@ miller_rabin_pocklington(mpz_t n, mpz_t nm1, mpz_t nm1dq, mpz_t a)
 void
 _nettle_generate_pocklington_prime (mpz_t p, mpz_t r,
 				    unsigned bits, int top_bits_set, 
-				    void *ctx, nettle_random_func random, 
+				    void *ctx, nettle_random_func *random, 
 				    const mpz_t p0,
 				    const mpz_t q,
 				    const mpz_t p0q)
@@ -345,8 +345,8 @@ _nettle_generate_pocklington_prime (mpz_t p, mpz_t r,
    the variant in fips186-3). */
 void
 nettle_random_prime(mpz_t p, unsigned bits, int top_bits_set,
-		    void *random_ctx, nettle_random_func random,
-		    void *progress_ctx, nettle_progress_func progress)
+		    void *random_ctx, nettle_random_func *random,
+		    void *progress_ctx, nettle_progress_func *progress)
 {
   assert (bits >= 3);
   if (bits <= 10)

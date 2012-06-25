@@ -32,7 +32,7 @@
 int
 dsa_sha1_sign_digest(const struct dsa_public_key *pub,
 		     const struct dsa_private_key *key,
-		     void *random_ctx, nettle_random_func random,
+		     void *random_ctx, nettle_random_func *random,
 		     const uint8_t *digest,
 		     struct dsa_signature *signature)
 {
@@ -44,7 +44,7 @@ dsa_sha1_sign_digest(const struct dsa_public_key *pub,
 int
 dsa_sha1_sign(const struct dsa_public_key *pub,
 	      const struct dsa_private_key *key,
-	      void *random_ctx, nettle_random_func random,
+	      void *random_ctx, nettle_random_func *random,
 	      struct sha1_ctx *hash,
 	      struct dsa_signature *signature)
 {

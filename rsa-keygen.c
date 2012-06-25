@@ -45,8 +45,8 @@
 int
 rsa_generate_keypair(struct rsa_public_key *pub,
 		     struct rsa_private_key *key,
-		     void *random_ctx, nettle_random_func random,
-		     void *progress_ctx, nettle_progress_func progress,
+		     void *random_ctx, nettle_random_func *random,
+		     void *progress_ctx, nettle_progress_func *progress,
 		     unsigned n_size,
 		     unsigned e_size)
 {

@@ -37,7 +37,7 @@
 #include "nettle-internal.h"
 
 void
-cbc_encrypt(void *ctx, nettle_crypt_func f,
+cbc_encrypt(void *ctx, nettle_crypt_func *f,
 	    unsigned block_size, uint8_t *iv,
 	    unsigned length, uint8_t *dst,
 	    const uint8_t *src)
@@ -56,7 +56,7 @@ cbc_encrypt(void *ctx, nettle_crypt_func f,
 #define CBC_BUFFER_LIMIT 512
 
 void
-cbc_decrypt(void *ctx, nettle_crypt_func f,
+cbc_decrypt(void *ctx, nettle_crypt_func *f,
 	    unsigned block_size, uint8_t *iv,
 	    unsigned length, uint8_t *dst,
 	    const uint8_t *src)

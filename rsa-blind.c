@@ -35,7 +35,7 @@
    returns the inverse (ri), for use by rsa_unblind. */
 void
 _rsa_blind (const struct rsa_public_key *pub,
-	    void *random_ctx, nettle_random_func random,
+	    void *random_ctx, nettle_random_func *random,
 	    mpz_t c, mpz_t ri)
 {
   mpz_t r;

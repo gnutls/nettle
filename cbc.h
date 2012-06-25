@@ -37,13 +37,13 @@ extern "C" {
 #define cbc_decrypt nettle_cbc_decrypt
 
 void
-cbc_encrypt(void *ctx, nettle_crypt_func f,
+cbc_encrypt(void *ctx, nettle_crypt_func *f,
 	    unsigned block_size, uint8_t *iv,
 	    unsigned length, uint8_t *dst,
 	    const uint8_t *src);
 
 void
-cbc_decrypt(void *ctx, nettle_crypt_func f,
+cbc_decrypt(void *ctx, nettle_crypt_func *f,
 	    unsigned block_size, uint8_t *iv,
 	    unsigned length, uint8_t *dst,
 	    const uint8_t *src);

@@ -34,7 +34,7 @@
 
 void
 nettle_mpz_random_size(mpz_t x,
-		       void *ctx, nettle_random_func random,
+		       void *ctx, nettle_random_func *random,
 		       unsigned bits)
 {
   unsigned length = (bits + 7) / 8;
@@ -52,7 +52,7 @@ nettle_mpz_random_size(mpz_t x,
 /* Returns a random number x, 0 <= x < n */
 void
 nettle_mpz_random(mpz_t x,
-		  void *ctx, nettle_random_func random,
+		  void *ctx, nettle_random_func *random,
 		  const mpz_t n)
 {
   /* NOTE: This leaves some bias, which may be bad for DSA. A better

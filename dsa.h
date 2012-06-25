@@ -32,9 +32,6 @@
 
 #include "sha.h"
 
-/* For nettle_random_func */
-#include "nettle-meta.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -152,14 +149,14 @@ dsa_signature_clear(struct dsa_signature *signature);
 int
 dsa_sha1_sign(const struct dsa_public_key *pub,
 	      const struct dsa_private_key *key,
-	      void *random_ctx, nettle_random_func random,
+	      void *random_ctx, nettle_random_func *random,
 	      struct sha1_ctx *hash,
 	      struct dsa_signature *signature);
 
 int
 dsa_sha256_sign(const struct dsa_public_key *pub,
 		const struct dsa_private_key *key,
-		void *random_ctx, nettle_random_func random,
+		void *random_ctx, nettle_random_func *random,
 		struct sha256_ctx *hash,
 		struct dsa_signature *signature);
 
@@ -176,13 +173,13 @@ dsa_sha256_verify(const struct dsa_public_key *key,
 int
 dsa_sha1_sign_digest(const struct dsa_public_key *pub,
 		     const struct dsa_private_key *key,
-		     void *random_ctx, nettle_random_func random,
+		     void *random_ctx, nettle_random_func *random,
 		     const uint8_t *digest,
 		     struct dsa_signature *signature);
 int
 dsa_sha256_sign_digest(const struct dsa_public_key *pub,
 		       const struct dsa_private_key *key,
-		       void *random_ctx, nettle_random_func random,
+		       void *random_ctx, nettle_random_func *random,
 		       const uint8_t *digest,
 		       struct dsa_signature *signature);
 
@@ -202,9 +199,9 @@ int
 dsa_generate_keypair(struct dsa_public_key *pub,
 		     struct dsa_private_key *key,
 
-		     void *random_ctx, nettle_random_func random,
+		     void *random_ctx, nettle_random_func *random,
 
-		     void *progress_ctx, nettle_progress_func progress,
+		     void *progress_ctx, nettle_progress_func *progress,
 		     unsigned p_bits, unsigned q_bits);
 
 /* Keys in sexp form. */
@@ -277,7 +274,7 @@ dsa_openssl_private_key_from_der(struct dsa_public_key *pub,
 int
 _dsa_sign(const struct dsa_public_key *pub,
 	  const struct dsa_private_key *key,
-	  void *random_ctx, nettle_random_func random,
+	  void *random_ctx, nettle_random_func *random,
 	  unsigned digest_size,
 	  const uint8_t *digest,
 	  struct dsa_signature *signature);

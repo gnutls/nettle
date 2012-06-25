@@ -323,7 +323,7 @@ gcm_gf_mul (union gcm_block *x, const union gcm_block *table)
  */
 void
 gcm_set_key(struct gcm_key *key,
-	    void *cipher, nettle_crypt_func f)
+	    void *cipher, nettle_crypt_func *f)
 {
   /* Middle element if GCM_TABLE_BITS > 0, otherwise the first
      element */
