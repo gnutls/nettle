@@ -27,7 +27,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <nettle/base64.h>
+#include "base64.h"
 
 #include "io.h"
 

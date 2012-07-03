@@ -1,5 +1,11 @@
 2012-07-03  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/base16dec.c: Don't #include files using <nettle/...>,
+	we don't want to pick up installed versions.
+	* examples/base16enc.c: Likewise.
+	* examples/base64dec.c: Likewise.
+	* examples/base64enc.c: Likewise
+
 	* nettle.texinfo (Cipher functions): Document Salsa20.
 
 2012-06-25  Niels Möller  <nisse@lysator.liu.se>

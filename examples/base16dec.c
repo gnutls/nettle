@@ -27,7 +27,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <nettle/base16.h>
+#include "base16.h"
 
 #include "io.h"
 
