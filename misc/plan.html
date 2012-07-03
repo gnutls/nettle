@@ -35,7 +35,7 @@
     get blinding variants of <em>all</em> signature functions.
   </p>
   <h2> Documentation </h2>
-  <p class='should'>
+  <p class='done'>
     Update documentation with info on Salsa20.
   </p>
   <p class='should'>
@@ -50,8 +50,8 @@
   </p>
 
   <h2> Other </h2>
-  <p class='should'> The interface of the internal function
-  <tt>pkcs1_signature_prefix</tt> has changed. Consider renaming it to
+  <p class='done'> The interface of the internal function
+  <tt>pkcs1_signature_prefix</tt> has changed. Rename it to
   <tt>_pkcs1_signature_prefix</tt>, to clearly mark it internal and
   also make applications using it fail more predictably at compile or
   link time.</p>
@@ -91,6 +91,9 @@
   <p class='wish'>
     Consider making a public interface similar to nettle_aead? With
     the above change, it can't use nettle_crypt_func.
+  </p>
+  <p class='wish'>
+    Make it possible to build nettle and hogweed using mini-gmp.
   </p>
   <p class='should'>
     Reorganize private key operations. Need to support RSA with and
