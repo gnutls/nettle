@@ -5,7 +5,8 @@
 	Needed for cross-compiling with --host=i586-mingw32msvc.
 
 	* examples/base16dec.c: Don't #include files using <nettle/...>,
-	we don't want to pick up installed versions.
+	we don't want to pick up installed versions. On windows, include
+	<fcntl.h>, needed for _setmode.
 	* examples/base16enc.c: Likewise.
 	* examples/base64dec.c: Likewise.
 	* examples/base64enc.c: Likewise
