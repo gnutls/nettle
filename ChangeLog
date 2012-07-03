@@ -1,3 +1,7 @@
+2012-07-03  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle.texinfo (Cipher functions): Document Salsa20.
+
 2012-06-25  Niels Möller  <nisse@lysator.liu.se>
 
 	* pkcs1.c (_pkcs1_signature_prefix): Renamed function, adding a

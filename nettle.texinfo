@@ -193,6 +193,12 @@ The implementation of RIPEMD160 message digest is based on the code in
 libgcrypt, copyright owned by the Free Software Foundation. Ported to
 Nettle by Andres Mejia. Released under the LGPL.
 
+@item SALSA20
+The C implementation of SALSA20 is based on D. J. Bernstein's reference
+implementation, adapted to Nettle by Simon Josefsson, and heavily
+modified by Niels Möller. Assembly for x86_64 by Niels Möller. Released
+under the LGPL.
+
 @item SERPENT
 The implementation of the SERPENT cipher is based on the code in libgcrypt,
 copyright owned by the Free Software Foundation. Adapted to Nettle by
@@ -1252,6 +1258,74 @@ in any other way.
 Analogous to @code{des_encrypt}
 @end deftypefun
 
+@subsection Salsa20
+Salsa20 is a fairly recent stream cipher designed by D. J. Bernstein. It
+is built on the observation that a cryptographic hash function can be
+used for encryption: Form the hash input from the secret key and a
+counter, xor the hash output and the first block of the plaintext, then
+increment the counter to process the next block (similar to CTR mode, see
+@pxref{CTR}). Bernstein defined an encryption algorithm, Snuffle,
+in this way to ridicule United States export restrictions which treated hash
+functions as nice and harmless, but ciphers as dangerous munitions.
+
+Salsa20 uses the same idea, but with a new specialized hash function to
+mix key, block counter, and a couple of constants (input and output are
+the same size, making it not directly applicable for use as a general
+hash function). It's also designed for speed; on x86_64, it is currently
+the fastest cipher offered by nettle. It uses a block size of 512 bits
+(64 octets) and there are two specified key sizes, 128 and 256 bits (16
+and 32 octets).
+
+When using Salsa20 to process a message, one specifies both a key and a
+@dfn{nonce}, the latter playing a similar rôle to the initialization
+vector (@acronym{IV}) used with @acronym{CBC} or @acronym{CTR} mode. For
+this reason, Nettle uses the term @acronym{IV} to refer to the Salsa20
+nonce. One can use the same key for several messages, provided one uses
+a unique random @acronym{iv} for each message. The @acronym{iv} is 64
+bits (8 octets). The block counter is initialized to zero for each
+message, and is also 64 bits (8 octets). Nettle defines Salsa20 in
+@file{<nettle/salsa20.h>}.
+
+@deftp {Context struct} {struct salsa20_ctx}
+@end deftp
+
+@defvr Constant SALSA20_MIN_KEY_SIZE
+@defvrx Constant SALSA20_MAX_KEY_SIZE
+The two supported key sizes, 16 and 32 octets.
+@end defvr
+
+@defvr Constant SALSA20_KEY_SIZE
+Recommended key size, 32.
+@end defvr
+
+@defvr Constant SALSA20_BLOCK_SIZE
+Salsa20 block size, 64.
+@end defvr
+
+@defvr Constant SALSA20_IV_SIZE
+Size of the @acronym{IV}, 8.
+@end defvr
+
+@deftypefun void salsa20_set_key (struct salsa20_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
+Initialize the cipher. The same function is used for both encryption and
+decryption. Before using the cipher, you @emph{must} also call
+@code{salsa20_set_iv}, see below.
+@end deftypefun
+
+@deftypefun void salsa20_set_iv (struct salsa20_ctx *@var{ctx}, const uint8_t *@var{iv})
+Sets the @acronym{IV}. It is always of size @code{SALSA20_IV_SIZE}, 8
+octets. This function also initializes the block counter, setting it to
+zero.
+@end deftypefun
+
+@deftypefun void salsa20_crypt (struct salsa20_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+Encrypts or decrypts the data of a message, using salsa20. When a
+message is encrypted using a sequence of calls to @code{salsa20_crypt},
+all but the last call @emph{must} use a length that is a multiple of
+@code{SALSA20_BLOCK_SIZE}.
+
+@end deftypefun
+
 @subsection SERPENT
 SERPENT is one of the AES finalists, designed by Ross Anderson, Eli
 Biham and Lars Knudsen. Thus, the interface and properties are similar
@@ -1540,7 +1614,7 @@ C_n = E_k(IC + n - 1) [1..m] XOR M_n
 @end example
 
 The @acronym{IC} is the initial value for the counter, it plays a
-similar role as the @acronym{IV} for @acronym{CBC}. When adding,
+similar rôle as the @acronym{IV} for @acronym{CBC}. When adding,
 @code{IC + x}, @acronym{IC} is interpreted as an integer, in network
 byte order. For the last block, @code{E_k(IC + n - 1) [1..m]} means that
 the cipher output is truncated to @code{m} bytes.
