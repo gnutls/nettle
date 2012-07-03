@@ -1,5 +1,9 @@
 2012-07-03  Niels Möller  <nisse@lysator.liu.se>
 
+	* aclocal.m4 (LSH_FUNC_ALLOCA): In the config.h boilerplate,
+	include malloc.h if it exists, also when compiling with gcc.
+	Needed for cross-compiling with --host=i586-mingw32msvc.
+
 	* examples/base16dec.c: Don't #include files using <nettle/...>,
 	we don't want to pick up installed versions.
 	* examples/base16enc.c: Likewise.

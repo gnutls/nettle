@@ -369,6 +369,11 @@ char *alloca ();
 #else /* defined __GNUC__ */
 # if HAVE_ALLOCA_H
 #  include <alloca.h>
+# else
+/* Needed for alloca on windows, also with gcc */
+#  if HAVE_MALLOC_H
+#   include <malloc.h>
+#  endif
 # endif
 #endif
 ])])
