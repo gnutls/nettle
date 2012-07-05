@@ -104,7 +104,7 @@
 
 	* nettle-types.h (_STDINT_HAVE_INT_FAST32_T): Define here, to
 	force nettle-stdint.h to not try to define the int_fast*_t types.
-	Avoids compilation gnutls problems on SunOS-5.8, where the
+	Avoids compilation problems with gnutls on SunOS-5.8, where the
 	definitions here collide with gnulib's.
 
 2012-04-23  Niels Möller  <nisse@lysator.liu.se>
@@ -289,7 +289,7 @@
 
 	* Makefile.in (soname link): Fixed logic.
 	(nettle_SOURCES): Removed nettle-internal.c, so that it's not
-	parrt of the library...
+	part of the library...
 	(internal_SOURCES): ...and put it here.
 	* testsuite/Makefile.in (TEST_OBJS): Added ../nettle-internal.o.
 	* examples/Makefile.in (BENCH_OBJS): New variable, to simplify the
