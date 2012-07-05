@@ -237,13 +237,19 @@ PROLOGUE(nettle_salsa20_crypt)
 	and	$-16, POS
 	test	$8, LENGTH
 	jz	.Llt8
-	movq	T0, T64
+	C This "movd" instruction should assemble to
+	C 66 49 0f 7e e0          movq   %xmm4,%r8
+	C Apparently, assemblers treat movd and movq (with the
+	C arguments we use) in the same way, except for osx, which
+	C barfs at movq.
+	movd	T0, T64
 	xor	(SRC, POS), T64
 	mov	T64, (DST, POS)
 	lea	8(POS), POS
 	pshufd	$0xee, T0, T0		C 10 11 10 11
 .Llt8:
-	movq	T0, T64
+	C And this is also really a movq.
+	movd	T0, T64
 	test	$4, LENGTH
 	jz	.Llt4
 	mov	XREG(T64), XREG(COUNT)
