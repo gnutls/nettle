@@ -7,7 +7,7 @@
 @syncodeindex fn cp
 @c %**end of header
 
-@set UPDATED-FOR 2.3
+@set UPDATED-FOR 2.5
 @set AUTHOR Niels Möller
 
 @copying
@@ -195,9 +195,9 @@ Nettle by Andres Mejia. Released under the LGPL.
 
 @item SALSA20
 The C implementation of SALSA20 is based on D. J. Bernstein's reference
-implementation, adapted to Nettle by Simon Josefsson, and heavily
-modified by Niels Möller. Assembly for x86_64 by Niels Möller. Released
-under the LGPL.
+implementation (in the public domain), adapted to Nettle by Simon
+Josefsson, and heavily modified by Niels Möller. Assembly for x86_64 by
+Niels Möller. Released under the LGPL.
 
 @item SERPENT
 The implementation of the SERPENT cipher is based on the code in libgcrypt,
@@ -3226,16 +3226,13 @@ make install
 @end example
 
 @noindent
-to install in the default location, @file{/usr/local}. The library files
-are installed in @file{/use/local/lib/libnettle.a}
-@file{/use/local/lib/libhogweed.a} and the include files are installed
-in @file{/use/local/include/nettle/}.
+to install in under the default prefix, @file{/usr/local}.
 
 To get a list of configure options, use @code{./configure --help}.
 
-By default, only static libraries are built and installed. To also build
-and install shared libraries, use the @option{ --enable-shared} option
-to @command{./configure}.
+By default, both static and shared libraries are built and installed. To
+omit building the shared libraries, use the @option{ --disable-shared}
+option to @command{./configure}.
 
 Using GNU make is recommended. For other make programs, in particular
 BSD make, you may have to use the @option{--disable-dependency-tracking}
