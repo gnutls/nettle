@@ -31,17 +31,26 @@ NEWS for the 2.5 release
           input in the form of a "DigestInfo". Suggested by Nikos
           Mavrogiannopoulos.
 
-	Miscellaneous:
+	Configuration:
 	
+	* Building of shared libraries (./configure --enable-shared)
+          is now enabled by default.
+
 	* Various portability fixes for MacOS and M$ Windows. A lot of
 	  this work done by Martin Storsjö.
 
 	* In particular, Nettle now hopefully works on 64-bit Windows
 	  builds, "W64", including the x86_64 assembly code.
 
+	Miscellaneous:
+	
 	* Documentation and example programs for the base16 and base64
 	  functions. Was contributed by Jeronimo Pellegrini back in
 	  2006, but unfortunately forgotten until now.
+
+	* Use an additional table to avoid GF2^8 multiplications in
+	  aes_invert_key (mainly used by aes_set_decrypt_key). Also
+	  tabulate round constants in aes_set_encrypt_key.
 
 	* The nettle repository has been migrated from cvs to git,
 	  with a public repository at
@@ -49,10 +58,6 @@ NEWS for the 2.5 release
 	  the LSH repository, a few files have been moved around.
 	  While at it, files have also been converted from latin-1 to
 	  utf-8.
-
-	* Use an additional table to avoid GF2^8 multiplications in
-	  aes_invert_key (mainly used by aes_set_decrypt_key). Also
-	  tabulate round constants in aes_set_encrypt_key.
 
 	The libraries are intended to be binary compatible with
 	nettle-2.2 and later. The shared library names are
