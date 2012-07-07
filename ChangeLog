@@ -1,5 +1,7 @@
 2012-07-07  Niels Möller  <nisse@lysator.liu.se>
 
+	Copyright headers: Updated FSF address. Patch from David Woodhouse.
+
 	* examples/Makefile.in (BENCH_LIBS): Added -lm, needed for the
 	ldexp function. Reported by Anthony G. Basile.
 

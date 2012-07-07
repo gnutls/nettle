@@ -14,8 +14,8 @@ C License for more details.
 C 
 C You should have received a copy of the GNU Lesser General Public License
 C along with the nettle library; see the file COPYING.LIB.  If not, write to
-C the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
-C MA 02111-1307, USA.
+C the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+C MA 02111-1301, USA.
 	
 C WROL(count, w)
 define(<WROL>, <
