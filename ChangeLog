@@ -1,5 +1,7 @@
 2012-07-07  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac: Changed version number to 2.6.
+
 	* Released nettle-2.5.
 
 2012-07-05  Niels Möller  <nisse@lysator.liu.se>
