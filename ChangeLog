@@ -1,5 +1,8 @@
 2012-07-07  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/Makefile.in (BENCH_LIBS): Added -lm, needed for the
+	ldexp function. Reported by Anthony G. Basile.
+
 	* configure.ac: Changed version number to 2.6.
 
 	* Released nettle-2.5.
