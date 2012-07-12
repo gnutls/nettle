@@ -23,9 +23,14 @@ define(<EPILOGUE>,
 <.size C_NAME($1), . - C_NAME($1)>,<>)>)
 
 dnl Argument to ALIGN is always logarithmic
-dnl Can't use << operator with our choice of quote characters...
+
+dnl Need changequote to be able to use the << operator (using **
+dnl instead is not portable, and is not supported by openbsd m4).
 define(<ALIGN>,
-<.align ifelse(ALIGN_LOG,yes,$1,eval(2 ** $1))>)
+<changequote([,])dnl
+.align ifelse(ALIGN_LOG,yes,$1,eval(1 << $1))dnl >> balance
+changequote(<,>)dnl
+>)
 
 dnl Struct defining macros
 

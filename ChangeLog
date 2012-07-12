@@ -1,3 +1,8 @@
+2012-07-12  Niels Möller  <nisse@lysator.liu.se>
+
+	* asm.m4 (ALIGN): Use << operator rather than **, with m4 eval.
+	The latter is not supported by BSD m4.
+
 2012-07-07  Niels Möller  <nisse@lysator.liu.se>
 
 	Copyright headers: Updated FSF address. Patch from David Woodhouse.
