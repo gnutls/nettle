@@ -1429,10 +1429,10 @@ struct, which is of size @code{context_size}.
 @deftypevrx {Constant Struct} {struct nettle_cipher} nettle_aes192
 @deftypevrx {Constant Struct} {struct nettle_cipher} nettle_aes256
 
-@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_arctwo40;
-@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_arctwo64;
-@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_arctwo128;
-@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_arctwo_gutmann128;
+@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_arctwo40
+@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_arctwo64
+@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_arctwo128
+@deftypevrx {Constant Struct} {struct nettle_cipher} nettle_arctwo_gutmann128
 
 @deftypevrx {Constant Struct} {struct nettle_cipher} nettle_arcfour128
 
