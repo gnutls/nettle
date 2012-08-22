@@ -61,7 +61,7 @@ AC_ARG_ENABLE(gcov,
   [enable_gcov=no])
 
 AC_ARG_ENABLE(documentation,
-  AC_HELP_STRING([--enable-documentation], [Generate TeX documentation (default=auto)]),,
+  AC_HELP_STRING([--disable-documentation], [Omit building and installing the documentation. (default=auto)]),,
   [enable_documentation=auto])
 
 LSH_RPATH_INIT([`echo $with_lib_path | sed 's/:/ /g'` \
