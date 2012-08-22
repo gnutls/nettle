@@ -60,6 +60,10 @@ AC_ARG_ENABLE(gcov,
   AC_HELP_STRING([--enable-gcov], [Instrument for gcov (requires a modern gcc)]),,
   [enable_gcov=no])
 
+AC_ARG_ENABLE(documentation,
+  AC_HELP_STRING([--enable-documentation], [Generate TeX documentation (default=auto)]),,
+  [enable_documentation=auto])
+
 LSH_RPATH_INIT([`echo $with_lib_path | sed 's/:/ /g'` \
     `echo $exec_prefix | sed "s@^NONE@$prefix/lib@g" | sed "s@^NONE@$ac_default_prefix/lib@g"` \
     /usr/local/lib /sw/local/lib /sw/lib \
@@ -572,8 +576,31 @@ else
   IF_SHARED='#'
 fi
 
+# Documentation tools
+if test "x$enable_documentation" != "xno"; then
+  AC_PATH_PROG(MAKEINFO, makeinfo, not-found)
+
+  if test "x$MAKEINFO" != "xnot-found"; then
+    enable_documentation=yes
+    AC_SUBST(MAKEINFO)
+  else
+    if test "x$enable_documentation" == "xauto" ; then
+      enable_documentation=no
+    else
+      AC_MSG_ERROR([Cannot find 'makeinfo', required for documentation.])
+    fi
+  fi
+fi
+
+if test "x$enable_documentation" = "xyes" ; then
+  IF_DOCUMENTATION=''
+else
+  IF_DOCUMENTATION='#'
+fi
+
 AC_SUBST(IF_HOGWEED)
 AC_SUBST(IF_SHARED)
+AC_SUBST(IF_DOCUMENTATION)
 AC_SUBST(IF_DLL)
 
 OPENSSL_LIBFLAGS=''
@@ -656,4 +683,5 @@ AC_MSG_NOTICE([summary of build options:
   Compiler:          ${CC}
   Shared libraries:  ${enable_shared}
   Public key crypto: ${enable_public_key}
+  Documentation:     ${enable_documentation}
 ])

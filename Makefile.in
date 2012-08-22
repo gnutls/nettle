@@ -35,7 +35,7 @@ TARGETS = aesdata$(EXEEXT) desdata$(EXEEXT) twofishdata$(EXEEXT) \
 	  $(LIBTARGETS) @IF_SHARED@ $(SHLIBTARGETS)
 IMPLICIT_TARGETS = @IF_DLL@ $(LIBNETTLE_FILE) $(LIBHOGWEED_FILE)
 
-DOCTARGETS = nettle.info nettle.html nettle.pdf
+DOCTARGETS = @IF_DOCUMENTATION@ nettle.info nettle.html nettle.pdf
 
 PKGCONFIG_FILES = nettle.pc @IF_HOGWEED@ hogweed.pc
 pkgconfigdir = $(libdir)/pkgconfig
@@ -302,7 +302,8 @@ hogweed.pc: hogweed.pc.in config.status
 	./config.status $@
 
 # Installation
-install-here: install-info install-headers install-static install-pkgconfig \
+install-doc: @IF_DOCUMENTATION@ install-info
+install-here: install-doc install-headers install-static install-pkgconfig \
 	@IF_SHARED@ install-shared-nettle @IF_HOGWEED@ install-shared-hogweed
 
 install-static: $(LIBTARGETS)

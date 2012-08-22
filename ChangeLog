@@ -1,3 +1,11 @@
+2012-08-22  Niels Möller  <nisse@lysator.liu.se>
+
+	From Sam Thursfield <sam.thursfield@codethink.co.uk>:
+	* configure.ac: Make documentation optional, to avoid requiring
+	TeX. New option --disable-documentation, and Makefile substitution
+	IF_DOCUMENTATION.
+	* Makefile.in: Use IF_DOCUMENTATION.
+
 2012-07-12  Niels Möller  <nisse@lysator.liu.se>
 
 	* asm.m4 (ALIGN): Use << operator rather than **, with m4 eval.
