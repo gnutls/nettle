@@ -1,3 +1,12 @@
+2012-09-07  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/nettle-benchmark.c (die): Add NORETURN attribute. Patch
+	from Tim Rühsen.
+	* tools/misc.h (die, werror): Use PRINTF_STYLE and NORETURN macros
+	for attributes. Patch from Tim Rühsen.
+
+	* examples/io.h (werror): Use PRINTF_STYLE macro.
+
 2012-08-22  Niels Möller  <nisse@lysator.liu.se>
 
 	From Sam Thursfield <sam.thursfield@codethink.co.uk>:

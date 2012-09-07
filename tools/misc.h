@@ -28,19 +28,10 @@
 #endif
 
 void
-die(const char *format, ...)
-#if __GNUC___
-     __attribute__((__format__ (__printf__,1, 2)))
-     __attribute__((__noreturn__))
-#endif
-     ;
+die(const char *format, ...) PRINTF_STYLE (1, 2) NORETURN;
 
 void
-werror(const char *format, ...)
-#if __GNUC___
-     __attribute__((__format__ (__printf__,1, 2)))
-#endif
-     ;
+werror(const char *format, ...) PRINTF_STYLE (1, 2);
 
 void *
 xalloc(size_t size);

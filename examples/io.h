@@ -37,11 +37,7 @@ void *
 xalloc(size_t size);
 
 void
-werror(const char *format, ...)
-#if __GNUC___
-     __attribute__((__format__ (__printf__,1, 2)))
-#endif
-     ;
+werror(const char *format, ...) PRINTF_STYLE(1, 2);
 
 /* If size is > 0, read at most that many bytes. If size == 0,
  * read until EOF. Allocates the buffer dynamically. */

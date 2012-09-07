@@ -96,7 +96,7 @@ static double frequency = 0.0;
 #define BENCH_ITERATIONS 10
 #endif
 
-static void
+static void NORETURN
 die(const char *format, ...)
 {
   va_list args;
