@@ -1,5 +1,8 @@
 2012-09-10  Niels Möller  <nisse@lysator.liu.se>
 
+	* desdata.c: Don't declare printf, include <stdio.h> instead. Also
+	deleted casts of printf return value.
+
 	From Tim Rühsen:
 	* examples/nettle-benchmark.c (die): Use PRINTF_STYLE attribute.
 	* pgp-encode.c (pgp_put_rsa_sha1_signature): Deleted unused variable.

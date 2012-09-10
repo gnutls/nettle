@@ -15,6 +15,8 @@
 # include "config.h"
 #endif
 
+#include <stdio.h>
+
 #include	"desinfo.h"
 
 #include	"desCode.h"
@@ -62,8 +64,6 @@ int sorder[] = {
 	7, 5, 3, 1, 6, 4, 2, 0,
 };
 
-int printf(const char *, ...);
-
 int
 main(int argc UNUSED, char **argv UNUSED)
 {
@@ -77,7 +77,7 @@ main(int argc UNUSED, char **argv UNUSED)
 	 */
 
 case 'p':
-	(void)printf(
+	printf(
 "/* automagically produced - do not fuss with this information */\n\n");
 
 	/* store parity information */
@@ -99,9 +99,9 @@ case 'p':
 
 	/* print it out */
 	for ( i = 0; i < 256; i++ ) {
-		(void)printf("%d,", b[i]);
+		printf("%d,", b[i]);
 		if ( (i & 31) == 31 )
-			(void)printf("\n");
+			printf("\n");
 	}
 
 	break;
@@ -112,7 +112,7 @@ case 'p':
 	 */
 
 case 'r':
-	(void)printf("/* automagically made - do not fuss with this */\n\n");
+	printf("/* automagically made - do not fuss with this */\n\n");
 
 	/* KL specifies the initial key bit positions */
 	for (i = 0; i < 56; i++)
@@ -136,11 +136,11 @@ case 'r':
 			m = ksr[KC[korder[j]] - 1];
 			m = (m / 8) * 7 + (m % 8) - 1;
 			m = 55 - m;
-			(void)printf(" %2ld,", (long) m);
+			printf(" %2ld,", (long) m);
 			if ((j % 12) == 11)
-				(void)printf("\n");
+				printf("\n");
 		}
-		(void)printf("\n");
+		printf("\n");
 	}
 
 	break;
@@ -151,7 +151,7 @@ case 'r':
 	 */
 
 case 'k':
-	(void)printf("/* automagically made - do not fuss with this */\n\n");
+	printf("/* automagically made - do not fuss with this */\n\n");
 
 	for ( i = 0; i <= 7 ; i++ ) {
 		s = sorder[i];
@@ -183,11 +183,11 @@ case 'k':
 			/* rotate right (alg keeps everything rotated by 1) */
 			ROR(m, 1, 31);
 			/* print it out */
-			(void)printf(" 0x%08lx,", (long) m);
+			printf(" 0x%08lx,", (long) m);
 			if ( ( d & 3 ) == 3 )
-				(void)printf("\n");
+				printf("\n");
 		}
-		(void)printf("\n");
+		printf("\n");
 	}
 
 	break;
