@@ -1,6 +1,7 @@
 2012-09-10  Niels Möller  <nisse@lysator.liu.se>
 
 	From Tim Rühsen:
+	* examples/nettle-benchmark.c (die): Use PRINTF_STYLE attribute.
 	* pgp-encode.c (pgp_put_rsa_sha1_signature): Deleted unused variable.
 	* rsa2openpgp.c (rsa_keypair_to_openpgp): Likewise.
 	* examples/base16enc.c (main): Deleted useless allocations.
