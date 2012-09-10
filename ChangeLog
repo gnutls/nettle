@@ -1,3 +1,8 @@
+2012-09-10  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/base16enc.c (main): Deleted useless allocations. Patch
+	from Tim Rühsen.
+
 2012-09-07  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/nettle-benchmark.c (die): Add NORETURN attribute. Patch

@@ -48,20 +48,6 @@ int
 main(int argc UNUSED, char **argv UNUSED)
 {
 
-  /* "buffer" will hold the bytes from disk: */
-  uint8_t * buffer = (uint8_t *) malloc (CHUNK_SIZE * sizeof(uint8_t));
-  if (buffer == NULL) {
-    fprintf (stderr, "Cannot allocate read buffer.\n");
-    return EXIT_FAILURE;
-  }
-
-  /* "result" will hold bytes before output: */
-  uint8_t * result = (uint8_t *) malloc (ENCODED_SIZE * sizeof(uint8_t));
-  if (result == NULL) {
-    fprintf (stderr, "Cannot allocate write buffer.\n");
-    return EXIT_FAILURE;
-  }
-
 #ifdef WIN32
   _setmode(0, O_BINARY);
 #endif
