@@ -1,5 +1,8 @@
 2012-09-10  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/io.c (read_file): Explicitly treat an empty file as an
+	error. Rearrange loop, check for short fread return value.
+
 	* desdata.c: Don't declare printf, include <stdio.h> instead. Also
 	deleted casts of printf return value.
 

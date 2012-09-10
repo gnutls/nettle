@@ -71,8 +71,7 @@ werror(const char *format, ...)
 unsigned
 read_file(const char *name, unsigned max_size, char **contents)
 {
-  unsigned size;
-  unsigned done;
+  unsigned size, done;
   char *buffer;
   FILE *f;
     
@@ -82,21 +81,10 @@ read_file(const char *name, unsigned max_size, char **contents)
       werror("Opening `%s' failed: %s\n", name, strerror(errno));
       return 0;
     }
-  buffer = NULL;
 
-  if (max_size && max_size < 100)
-    size = max_size;
-  else
-    size = 100;
+  size = 100;
 
-  /* FIXME: The use of feof and ferror in this loop is a bit confused
-     (but I think it is still correct). We should check the return
-     value of fread, and call feof and/or ferror when we get a short
-     item count. */	
-
-  for (done = 0;
-       (!max_size || done < max_size) && !feof(f);
-       size *= 2)
+  for (buffer = NULL, done = 0;; size *= 2)
     {
       char *p;
 
@@ -118,8 +106,25 @@ read_file(const char *name, unsigned max_size, char **contents)
       buffer = p;
       done += fread(buffer + done, 1, size - done, f);
 
-      if (ferror(f))
-	goto fail;
+      if (done < size)
+	{
+	  /* Short count means EOF or read error */
+	  if (ferror(f))
+	    {
+	      fprintf (stderr, "Reading `%s' failed: %s\n",
+		       name, strerror(errno));
+
+	      goto fail;
+	    }
+	  if (done == 0)
+	    /* Treat empty file as error */
+	    goto fail;
+
+	  break;
+	}
+
+      if (size == max_size)
+	break;
     }
   
   fclose(f);

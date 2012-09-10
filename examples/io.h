@@ -39,8 +39,11 @@ xalloc(size_t size);
 void
 werror(const char *format, ...) PRINTF_STYLE(1, 2);
 
-/* If size is > 0, read at most that many bytes. If size == 0,
- * read until EOF. Allocates the buffer dynamically. */
+/* If size is > 0, read at most that many bytes. If size == 0, read
+ * until EOF. Allocates the buffer dynamically. An empty file is
+ * treated as an error; return value is zero, and no space is
+ * allocated. The returned data is NUL-terminated, for convenience. */
+
 unsigned
 read_file(const char *name, unsigned size, char **buffer);
 
