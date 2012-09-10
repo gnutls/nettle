@@ -246,7 +246,6 @@ pgp_put_rsa_sha1_signature(struct nettle_buffer *buffer,
   unsigned hash_end;
   unsigned sub_packet_start;
   uint8_t trailer[6];
-  uint8_t digest16[2];
   mpz_t s;
   
   /* Signature packet. The packet could reasonably be both smaller and

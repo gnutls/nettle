@@ -64,7 +64,6 @@ rsa_keypair_to_openpgp(struct nettle_buffer *buffer,
   time_t now = time(NULL);
 
   unsigned key_start;
-  unsigned key_length;
   unsigned userid_start;
   
   struct sha1_ctx key_hash;
