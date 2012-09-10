@@ -399,5 +399,9 @@ main (int argc, char **argv)
 	    printf("%lu\n", n);
 	}
     }
+
+  free(sieve);
+  free(block);
+
   return EXIT_SUCCESS;
 }
