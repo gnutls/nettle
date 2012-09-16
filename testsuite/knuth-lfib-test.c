@@ -1,7 +1,7 @@
 #include "testutils.h"
 #include "knuth-lfib.h"
 
-int
+void
 test_main(void)
 {
   struct knuth_lfib_ctx ctx;
@@ -15,8 +15,5 @@ test_main(void)
     knuth_lfib_get_array(&ctx, 1009, a);
 
   x = knuth_lfib_get(&ctx);
-  if (x != 461390032)
-    FAIL();
-
-  SUCCESS();
+  ASSERT (x == 461390032);
 }

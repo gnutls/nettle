@@ -8,7 +8,7 @@ progress(void *ctx UNUSED, int c)
   fputc(c, stderr);
 }
 
-int
+void
 test_main(void)
 {
   struct rsa_public_key pub;
@@ -26,11 +26,11 @@ test_main(void)
   /* Generate a 1024 bit key with random e */
   knuth_lfib_init(&lfib, 13);
 
-  if (!rsa_generate_keypair(&pub, &key,
-			    &lfib, (nettle_random_func *) knuth_lfib_random,
-			    NULL, verbose ? progress : NULL,
-			    1024, 50))
-    FAIL();
+  ASSERT (rsa_generate_keypair(&pub, &key,
+			       &lfib,
+			       (nettle_random_func *) knuth_lfib_random,
+			       NULL, verbose ? progress : NULL,
+			       1024, 50));
 
   test_rsa_key(&pub, &key);
   
@@ -48,11 +48,11 @@ test_main(void)
   knuth_lfib_init(&lfib, 17);
 
   mpz_set_ui(pub.e, 17);
-  if (!rsa_generate_keypair(&pub, &key,
-			    &lfib, (nettle_random_func *) knuth_lfib_random,
-			    NULL, verbose ? progress : NULL,
-			    2000, 0))
-    FAIL();
+  ASSERT (rsa_generate_keypair(&pub, &key,
+			       &lfib,
+			       (nettle_random_func *) knuth_lfib_random,
+			       NULL, verbose ? progress : NULL,
+			       2000, 0));
 
   test_rsa_key(&pub, &key);
 
@@ -74,6 +74,4 @@ test_main(void)
   rsa_private_key_clear(&key);
   rsa_public_key_clear(&pub);
   mpz_clear(expected);
-
-  SUCCESS();
 }

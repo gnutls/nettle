@@ -299,7 +299,7 @@ static int cfb64_test();
 static int ede_cfb64_test();
 #endif
 
-int
+void
 test_main(void)
 	{
 	int i,j,err=0;
@@ -741,8 +741,7 @@ plain[8+4], plain[8+5], plain[8+6], plain[8+7]);
 		}
 	printf("\n");
 #endif
-	exit(err);
-	return(0);
+	ASSERT (err == 0);
 	}
 
 static char *pt(p)

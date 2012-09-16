@@ -22,7 +22,7 @@ const char* ciphers[] = {
   "twofish256"
 };
 
-int
+void
 test_main(void)
 {
   int i,j;
@@ -38,6 +38,5 @@ test_main(void)
   while (NULL != nettle_ciphers[j])
     j++;
   ASSERT(j == count); /* we are not missing testing any ciphers */
-  SUCCESS();
 }
   

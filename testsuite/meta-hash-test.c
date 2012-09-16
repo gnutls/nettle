@@ -13,7 +13,7 @@ const char* hashes[] = {
   "sha512"
 };
 
-int
+void
 test_main(void)
 {
   int i,j;
@@ -29,6 +29,5 @@ test_main(void)
   while (NULL != nettle_hashes[j])
     j++;
   ASSERT(j == count); /* we are not missing testing any hashes */
-  SUCCESS();
 }
   

@@ -1,6 +1,6 @@
 #include "testutils.h"
 
-int
+void
 test_main(void)
 {
   struct rsa_public_key pub;
@@ -102,8 +102,7 @@ test_main(void)
   
   mpz_set_str(pub.e, "3f1a012d", 16);
 
-  if (!rsa_public_key_prepare(&pub))
-    FAIL();
+  ASSERT (rsa_public_key_prepare(&pub));
   
   mpz_set_str(key.p,
 	      "0b73c990eeda0a2a" "2c26416052c85560" "0c5c0f5ce86a8326"
@@ -130,11 +129,8 @@ test_main(void)
 	      "05e1831619db2f10" "bb9b6a8fd5c95df2" "eb78f303ea0c0cc8"
 	      "06", 16);
 
-  if (!rsa_private_key_prepare(&key))
-    FAIL();
-
-  if (pub.size != key.size)
-    FAIL();
+  ASSERT (rsa_private_key_prepare(&key));
+  ASSERT (pub.size == key.size);
 
   /* Test md5 signatures */
   mpz_set_str(expected,
@@ -177,6 +173,4 @@ test_main(void)
   rsa_private_key_clear(&key);
   rsa_public_key_clear(&pub);
   mpz_clear(expected);
-
-  SUCCESS();
 }

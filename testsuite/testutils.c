@@ -46,7 +46,38 @@ xalloc(size_t size)
   return p;
 }
 
-unsigned
+static struct tstring *tstring_first = NULL;
+
+struct tstring *
+tstring_alloc (unsigned length)
+{
+  struct tstring *s = xalloc(sizeof(struct tstring) + length - 1);
+  s->length = length;
+  s->next = tstring_first;
+  tstring_first = s;
+  return s;
+}
+
+void
+tstring_clear(void)
+{
+  while (tstring_first)
+    {
+      struct tstring *s = tstring_first;
+      tstring_first = s->next;
+      free(s);
+    }
+}
+
+struct tstring *
+tstring_data(unsigned length, const char *data)
+{
+  struct tstring *s = tstring_alloc (length);
+  memcpy (s->data, data, length);
+  return s;
+}
+
+static unsigned
 decode_hex_length(const char *h)
 {
   const unsigned char *hex = (const unsigned char *) h;
@@ -67,7 +98,7 @@ decode_hex_length(const char *h)
   return count / 2;  
 }
 
-int
+static void
 decode_hex(uint8_t *dst, const char *h)
 {  
   const unsigned char *hex = (const unsigned char *) h;
@@ -81,41 +112,39 @@ decode_hex(uint8_t *dst, const char *h)
       hex++;
 
     if (!*hex)
-      return 1;
+      return;
 
     high = hex_digits[*hex++];
-    if (high < 0)
-      return 0;
+    ASSERT (high >= 0);
 
     while (*hex && isspace(*hex))
       hex++;
 
-    if (!*hex)
-      return 0;
+    ASSERT (*hex);
 
     low = hex_digits[*hex++];
-    if (low < 0)
-      return 0;
+    ASSERT (low >= 0);
 
     dst[i++] = (high << 4) | low;
   }
 }
 
-const uint8_t *
-decode_hex_dup(const char *hex)
+struct tstring *
+tstring_hex(const char *hex)
 {
-  uint8_t *p;
+  struct tstring *s;
   unsigned length = decode_hex_length(hex);
 
-  p = xalloc(length);
+  s = tstring_alloc(length);
 
-  if (decode_hex(p, hex))
-    return p;
-  else
-    {
-      free(p);
-      return NULL;
-    }
+  decode_hex(s->data, hex);
+  return s;
+}
+
+void
+tstring_print_hex(const struct tstring *s)
+{
+  print_hex (s->length, s->data);
 }
 
 void
@@ -158,45 +187,49 @@ main(int argc, char **argv)
 	}
     }
 
-  return test_main();
+  test_main();
+
+  tstring_clear();
+  return EXIT_SUCCESS;
 }
 
 void
 test_cipher(const struct nettle_cipher *cipher,
-	    unsigned key_length,
-	    const uint8_t *key,
-	    unsigned length,
-	    const uint8_t *cleartext,
-	    const uint8_t *ciphertext)
+	    const struct tstring *key,
+	    const struct tstring *cleartext,
+	    const struct tstring *ciphertext)
 {
   void *ctx = xalloc(cipher->context_size);
-  uint8_t *data = xalloc(length);
+  uint8_t *data = xalloc(cleartext->length);
+  unsigned length;
+  ASSERT (cleartext->length == ciphertext->length);
+  length = cleartext->length;
 
-  cipher->set_encrypt_key(ctx, key_length, key);
-  cipher->encrypt(ctx, length, data, cleartext);
+  cipher->set_encrypt_key(ctx, key->length, key->data);
+  cipher->encrypt(ctx, length, data, cleartext->data);
 
-  if (!MEMEQ(length, data, ciphertext))
+  if (!MEMEQ(length, data, ciphertext->data))
     {
       fprintf(stderr, "Encrypt failed:\nInput:");
-      print_hex(length, cleartext);
+      tstring_print_hex(cleartext);
       fprintf(stderr, "\nOutput: ");
       print_hex(length, data);
       fprintf(stderr, "\nExpected:");
-      print_hex(length, ciphertext);
+      tstring_print_hex(ciphertext);
       fprintf(stderr, "\n");
       FAIL();
     }
-  cipher->set_decrypt_key(ctx, key_length, key);
+  cipher->set_decrypt_key(ctx, key->length, key->data);
   cipher->decrypt(ctx, length, data, data);
 
-  if (!MEMEQ(length, data, cleartext))
+  if (!MEMEQ(length, data, cleartext->data))
     {
       fprintf(stderr, "Decrypt failed:\nInput:");
-      print_hex(length, ciphertext);
+      tstring_print_hex(ciphertext);
       fprintf(stderr, "\nOutput: ");
       print_hex(length, data);
       fprintf(stderr, "\nExpected:");
-      print_hex(length, cleartext);
+      tstring_print_hex(cleartext);
       fprintf(stderr, "\n");
       FAIL();
     }
@@ -207,53 +240,59 @@ test_cipher(const struct nettle_cipher *cipher,
 
 void
 test_cipher_cbc(const struct nettle_cipher *cipher,
-		unsigned key_length,
-		const uint8_t *key,
-		unsigned length,
-		const uint8_t *cleartext,
-		const uint8_t *ciphertext,
-		const uint8_t *iiv)
+		const struct tstring *key,
+		const struct tstring *cleartext,
+		const struct tstring *ciphertext,
+		const struct tstring *iiv)
 {
   void *ctx = xalloc(cipher->context_size);
-  uint8_t *data = xalloc(length);
+  uint8_t *data;
   uint8_t *iv = xalloc(cipher->block_size);
-  
-  cipher->set_encrypt_key(ctx, key_length, key);
-  memcpy(iv, iiv, cipher->block_size);
+  unsigned length;
+
+  ASSERT (cleartext->length == ciphertext->length);
+  length = cleartext->length;
+
+  ASSERT (iiv->length == cipher->block_size);
+
+  data = xalloc(length);  
+  cipher->set_encrypt_key(ctx, key->length, key->data);
+  memcpy(iv, iiv->data, cipher->block_size);
 
   cbc_encrypt(ctx, cipher->encrypt,
 	      cipher->block_size, iv,
-	      length, data, cleartext);
+	      length, data, cleartext->data);
 
-  if (!MEMEQ(length, data, ciphertext))
+  if (!MEMEQ(length, data, ciphertext->data))
     {
       fprintf(stderr, "CBC encrypt failed:\nInput:");
-      print_hex(length, cleartext);
+      tstring_print_hex(cleartext);
       fprintf(stderr, "\nOutput: ");
       print_hex(length, data);
       fprintf(stderr, "\nExpected:");
-      print_hex(length, ciphertext);
+      tstring_print_hex(ciphertext);
       fprintf(stderr, "\n");
       FAIL();
     }
-  cipher->set_decrypt_key(ctx, key_length, key);
-  memcpy(iv, iiv, cipher->block_size);
+  cipher->set_decrypt_key(ctx, key->length, key->data);
+  memcpy(iv, iiv->data, cipher->block_size);
 
   cbc_decrypt(ctx, cipher->decrypt,
 	      cipher->block_size, iv,
 	      length, data, data);
 
-  if (!MEMEQ(length, data, cleartext))
+  if (!MEMEQ(length, data, cleartext->data))
     {
       fprintf(stderr, "CBC decrypt failed:\nInput:");
-      print_hex(length, ciphertext);
+      tstring_print_hex(ciphertext);
       fprintf(stderr, "\nOutput: ");
       print_hex(length, data);
       fprintf(stderr, "\nExpected:");
-      print_hex(length, cleartext);
+      tstring_print_hex(cleartext);
       fprintf(stderr, "\n");
       FAIL();
     }
+
   free(ctx);
   free(data);
   free(iv);
@@ -261,50 +300,56 @@ test_cipher_cbc(const struct nettle_cipher *cipher,
 
 void
 test_cipher_ctr(const struct nettle_cipher *cipher,
-		unsigned key_length,
-		const uint8_t *key,
-		unsigned length,
-		const uint8_t *cleartext,
-		const uint8_t *ciphertext,
-		const uint8_t *ictr)
+		const struct tstring *key,
+		const struct tstring *cleartext,
+		const struct tstring *ciphertext,
+		const struct tstring *ictr)
 {
   void *ctx = xalloc(cipher->context_size);
-  uint8_t *data = xalloc(length);
+  uint8_t *data;
   uint8_t *ctr = xalloc(cipher->block_size);
+  unsigned length;
+
+  ASSERT (cleartext->length == ciphertext->length);
+  length = cleartext->length;
+
+  ASSERT (ictr->length == cipher->block_size);
   
-  cipher->set_encrypt_key(ctx, key_length, key);
-  memcpy(ctr, ictr, cipher->block_size);
+  data = xalloc(length);  
+
+  cipher->set_encrypt_key(ctx, key->length, key->data);
+  memcpy(ctr, ictr->data, cipher->block_size);
 
   ctr_crypt(ctx, cipher->encrypt,
 	    cipher->block_size, ctr,
-	    length, data, cleartext);
+	    length, data, cleartext->data);
 
-  if (!MEMEQ(length, data, ciphertext))
+  if (!MEMEQ(length, data, ciphertext->data))
     {
       fprintf(stderr, "CTR encrypt failed:\nInput:");
-      print_hex(length, cleartext);
+      tstring_print_hex(cleartext);
       fprintf(stderr, "\nOutput: ");
       print_hex(length, data);
       fprintf(stderr, "\nExpected:");
-      print_hex(length, ciphertext);
+      tstring_print_hex(ciphertext);
       fprintf(stderr, "\n");
       FAIL();
     }
 
-  memcpy(ctr, ictr, cipher->block_size);
+  memcpy(ctr, ictr->data, cipher->block_size);
 
   ctr_crypt(ctx, cipher->encrypt,
 	    cipher->block_size, ctr,
 	    length, data, data);
 
-  if (!MEMEQ(length, data, cleartext))
+  if (!MEMEQ(length, data, cleartext->data))
     {
       fprintf(stderr, "CTR decrypt failed:\nInput:");
-      print_hex(length, ciphertext);
+      tstring_print_hex(ciphertext);
       fprintf(stderr, "\nOutput: ");
       print_hex(length, data);
       fprintf(stderr, "\nExpected:");
-      print_hex(length, cleartext);
+      tstring_print_hex(cleartext);
       fprintf(stderr, "\n");
       FAIL();
     }
@@ -316,62 +361,63 @@ test_cipher_ctr(const struct nettle_cipher *cipher,
 
 void
 test_cipher_stream(const struct nettle_cipher *cipher,
-		   unsigned key_length,
-		   const uint8_t *key,
-		   unsigned length,
-		   const uint8_t *cleartext,
-		   const uint8_t *ciphertext)
+		   const struct tstring *key,
+		   const struct tstring *cleartext,
+		   const struct tstring *ciphertext)
 {
   unsigned block;
   
   void *ctx = xalloc(cipher->context_size);
-  uint8_t *data = xalloc(length + 1);
-  
+  uint8_t *data;
+  unsigned length;
+
+  ASSERT (cleartext->length == ciphertext->length);
+  length = cleartext->length;
+
+  data = xalloc(length + 1);
+
   for (block = 1; block <= length; block++)
     {
       unsigned i;
 
       memset(data, 0x17, length + 1);
-      cipher->set_encrypt_key(ctx, key_length, key);
+      cipher->set_encrypt_key(ctx, key->length, key->data);
 
       for (i = 0; i + block < length; i += block)
 	{
-	  cipher->encrypt(ctx, block, data + i, cleartext + i);
-	  if (data[i + block] != 0x17)
-	    FAIL();
+	  cipher->encrypt(ctx, block, data + i, cleartext->data + i);
+	  ASSERT (data[i + block] == 0x17);
 	}
 
-      cipher->encrypt(ctx, length - i, data + i, cleartext + i);
-      if (data[length] != 0x17)
-	FAIL();
+      cipher->encrypt(ctx, length - i, data + i, cleartext->data + i);
+      ASSERT (data[length] == 0x17);
       
-      if (!MEMEQ(length, data, ciphertext))
+      if (!MEMEQ(length, data, ciphertext->data))
 	{
 	  fprintf(stderr, "Encrypt failed, block size %d\nInput:", block);
-	  print_hex(length, cleartext);
+	  tstring_print_hex(cleartext);
 	  fprintf(stderr, "\nOutput: ");
 	  print_hex(length, data);
 	  fprintf(stderr, "\nExpected:");
-	  print_hex(length, ciphertext);
+	  tstring_print_hex(ciphertext);
 	  fprintf(stderr, "\n");
 	  FAIL();	    
 	}
     }
   
-  cipher->set_decrypt_key(ctx, key_length, key);
+  cipher->set_decrypt_key(ctx, key->length, key->data);
   cipher->decrypt(ctx, length, data, data);
 
-  if (data[length] != 0x17)
-    FAIL();
+  ASSERT (data[length] == 0x17);
 
-  if (!MEMEQ(length, data, cleartext))
+  if (!MEMEQ(length, data, cleartext->data))
     {
       fprintf(stderr, "Decrypt failed\nInput:");
-      print_hex(length, ciphertext);
+      tstring_print_hex(ciphertext);
       fprintf(stderr, "\nOutput: ");
       print_hex(length, data);
       fprintf(stderr, "\nExpected:");
-      print_hex(length, cleartext);
+      tstring_print_hex(cleartext);
       fprintf(stderr, "\n");
       FAIL();	    
     }
@@ -382,58 +428,56 @@ test_cipher_stream(const struct nettle_cipher *cipher,
 
 void
 test_aead(const struct nettle_aead *aead,
-	  unsigned key_length,
-	  const uint8_t *key,
-	  unsigned auth_length,
-	  const uint8_t *authtext,
-	  unsigned length,
-	  const uint8_t *cleartext,
-	  const uint8_t *ciphertext,
-	  unsigned iv_length,
-	  const uint8_t *iv,
-	  const uint8_t *digest)
+	  const struct tstring *key,
+	  const struct tstring *authtext,
+	  const struct tstring *cleartext,
+	  const struct tstring *ciphertext,
+	  const struct tstring *iv,
+	  const struct tstring *digest)
 {
   void *ctx = xalloc(aead->context_size);
-  uint8_t *data = xalloc(length);
+  uint8_t *data;
   uint8_t *buffer = xalloc(aead->block_size);
+  unsigned length;
 
+  ASSERT (cleartext->length == ciphertext->length);
+  length = cleartext->length;
+
+  ASSERT (digest->length == aead->block_size);
+
+  data = xalloc(length);
+  
   /* encryption */
   memset(buffer, 0, aead->block_size);
-  aead->set_key(ctx, key_length, key);
+  aead->set_key(ctx, key->length, key->data);
 
-  aead->set_iv(ctx, iv_length, iv);
+  aead->set_iv(ctx, iv->length, iv->data);
 
-  if (auth_length)
-    aead->update(ctx, auth_length, authtext);
+  if (authtext->length)
+    aead->update(ctx, authtext->length, authtext->data);
     
   if (length)
-    aead->encrypt(ctx, length, data, cleartext);
+    aead->encrypt(ctx, length, data, cleartext->data);
 
   aead->digest(ctx, aead->block_size, buffer);
 
-  if (!MEMEQ(length, data, ciphertext))
-    FAIL();
-
-  if (!MEMEQ(aead->block_size, buffer, digest))
-    FAIL();
+  ASSERT(MEMEQ(length, data, ciphertext->data));
+  ASSERT(MEMEQ(aead->block_size, buffer, digest->data));
 
   /* decryption */
   memset(buffer, 0, aead->block_size);
-  aead->set_iv(ctx, iv_length, iv);
+  aead->set_iv(ctx, iv->length, iv->data);
 
-  if (auth_length)
-    aead->update(ctx, auth_length, authtext);
+  if (authtext->length)
+    aead->update(ctx, authtext->length, authtext->data);
     
   if (length)
     aead->decrypt(ctx, length, data, data);
 
   aead->digest(ctx, aead->block_size, buffer);
 
-  if (!MEMEQ(length, data, cleartext))
-    FAIL();
-
-  if (!MEMEQ(aead->block_size, buffer, digest))
-    FAIL();
+  ASSERT(MEMEQ(length, data, cleartext->data));
+  ASSERT(MEMEQ(aead->block_size, buffer, digest->data));
 
   free(ctx);
   free(data);
@@ -442,31 +486,29 @@ test_aead(const struct nettle_aead *aead,
 
 void
 test_hash(const struct nettle_hash *hash,
-	  unsigned length,
-	  const uint8_t *data,
-	  const uint8_t *digest)
+	  const struct tstring *msg,
+	  const struct tstring *digest)
 {
   void *ctx = xalloc(hash->context_size);
   uint8_t *buffer = xalloc(hash->digest_size);
 
+  ASSERT (digest->length == hash->digest_size);
+
   hash->init(ctx);
-  hash->update(ctx, length, data);
+  hash->update(ctx, msg->length, msg->data);
   hash->digest(ctx, hash->digest_size, buffer);
 
-  if (!MEMEQ(hash->digest_size, digest, buffer))
-    FAIL();
+  ASSERT(MEMEQ(hash->digest_size, digest->data, buffer));
 
   memset(buffer, 0, hash->digest_size);
 
   hash->init(ctx);
-  hash->update(ctx, length, data);
+  hash->update(ctx, msg->length, msg->data);
   hash->digest(ctx, hash->digest_size - 1, buffer);
 
-  if (!MEMEQ(hash->digest_size - 1, digest, buffer))
-    FAIL();
+  ASSERT(MEMEQ(hash->digest_size - 1, digest->data, buffer));
 
-  if (buffer[hash->digest_size - 1])
-    FAIL();
+  ASSERT(buffer[hash->digest_size - 1] == 0);
 
   free(ctx);
   free(buffer);
@@ -476,12 +518,14 @@ void
 test_hash_large(const struct nettle_hash *hash,
 		unsigned count, unsigned length,
 		uint8_t c,
-		const uint8_t *digest)
+		const struct tstring *digest)
 {
   void *ctx = xalloc(hash->context_size);
   uint8_t *buffer = xalloc(hash->digest_size);
   uint8_t *data = xalloc(length);
   unsigned i;
+
+  ASSERT (digest->length == hash->digest_size);
 
   memset(data, c, length);
 
@@ -492,30 +536,11 @@ test_hash_large(const struct nettle_hash *hash,
 
   print_hex(hash->digest_size, buffer);
 
-  if (!MEMEQ(hash->digest_size, digest, buffer))
-    FAIL();
+  ASSERT (MEMEQ(hash->digest_size, digest->data, buffer));
 
   free(ctx);
   free(buffer);
   free(data);
-}
-
-void
-test_mac(const struct nettle_mac *mac,
-	 unsigned key_length, const uint8_t *key,
-	 unsigned msg_length, const uint8_t *msg,
-	 const uint8_t *digest)
-{
-  void *ctx = xalloc(mac->context_size);
-  uint8_t *buffer = xalloc(mac->digest_size);
-
-  mac->set_key(ctx, key_length, key);
-  mac->update(ctx, msg_length, msg);
-  mac->digest(ctx, mac->digest_size, buffer);
-  ASSERT(MEMEQ(mac->digest_size, digest, buffer));
-
-  free(ctx);
-  free(buffer);
 }
 
 void
@@ -544,11 +569,8 @@ test_armor(const struct nettle_armor *armor,
   done += armor->encode_final(encode, buffer + done);
   ASSERT(done == ascii_length);
 
-  if (!MEMEQ(ascii_length, buffer, ascii))
-    FAIL();
-
-  if (0x33 != buffer[strlen(ascii)])
-    FAIL();  
+  ASSERT (MEMEQ(ascii_length, buffer, ascii));
+  ASSERT (0x33 == buffer[strlen(ascii)]);
 
   armor->decode_init(decode);
   done = armor->decode_length(ascii_length);
@@ -557,11 +579,8 @@ test_armor(const struct nettle_armor *armor,
   ASSERT(done == data_length);
   ASSERT(armor->decode_final(decode));
   
-  if (!MEMEQ(data_length, check, data))
-    FAIL();
-
-  if (0x55 != check[data_length])
-    FAIL();
+  ASSERT (MEMEQ(data_length, check, data));
+  ASSERT (0x55 == check[data_length]);
 
   free(buffer);
   free(check);
@@ -582,8 +601,9 @@ mpz_togglebit (mpz_t x, unsigned long int bit)
 #endif /* HAVE_LIBGMP */
 
 #if WITH_HOGWEED
+
 #define SIGN(key, hash, msg, signature) do {		\
-  hash##_update(&hash, LDATA(msg));			\
+  hash##_update(&hash, LDATA(msg));		\
   ASSERT(rsa_##hash##_sign(key, &hash, signature));	\
 } while(0)
 
@@ -641,8 +661,7 @@ test_rsa_set_key_1(struct rsa_public_key *pub,
 	      "e545fbb4cf", 16);
   mpz_set_str(pub->e, "0db2ad57", 16);
 
-  if (!rsa_public_key_prepare(pub))
-    FAIL();
+  ASSERT (rsa_public_key_prepare(pub));
   
   /* d is not used */
 #if 0  
@@ -680,11 +699,8 @@ test_rsa_set_key_1(struct rsa_public_key *pub,
 	      "e2df9607cee95fa8" "daec7a389a7d9afc" "8dd21fef9d83805a"
 	      "40d46f49676a2f6b" "2926f70c572c00", 16);
 
-  if (!rsa_private_key_prepare(key))
-    FAIL();
-
-  if (pub->size != key->size)
-    FAIL();
+  ASSERT (rsa_private_key_prepare(key));
+  ASSERT (pub->size == key->size);
 }
 
 void
@@ -707,25 +723,20 @@ test_rsa_md5(struct rsa_public_key *pub,
       fprintf(stderr, "\n");
     }
 
-  if (mpz_cmp(signature, expected))
-    FAIL();
+  ASSERT (mpz_cmp(signature, expected) == 0);
   
   /* Try bad data */
-  if (VERIFY(pub, md5,
-	     "The magick words are squeamish ossifrage", signature))
-    FAIL();
+  ASSERT (!VERIFY(pub, md5,
+		  "The magick words are squeamish ossifrage", signature));
 
   /* Try correct data */
-  if (!VERIFY(pub, md5,
-	      "The magic words are squeamish ossifrage", signature))
-    FAIL();
+  ASSERT (VERIFY(pub, md5,
+		 "The magic words are squeamish ossifrage", signature));
 
   /* Try bad signature */
   mpz_togglebit(signature, 17);
-
-  if (VERIFY(pub, md5,
-	     "The magic words are squeamish ossifrage", signature))
-    FAIL();
+  ASSERT (!VERIFY(pub, md5,
+		  "The magic words are squeamish ossifrage", signature));
 
   mpz_clear(signature);
 }
@@ -750,25 +761,20 @@ test_rsa_sha1(struct rsa_public_key *pub,
       fprintf(stderr, "\n");
     }
 
-  if (mpz_cmp(signature, expected))
-    FAIL();
+  ASSERT (mpz_cmp(signature, expected) == 0);
   
   /* Try bad data */
-  if (VERIFY(pub, sha1,
-	     "The magick words are squeamish ossifrage", signature))
-    FAIL();
+  ASSERT (!VERIFY(pub, sha1,
+		  "The magick words are squeamish ossifrage", signature));
 
   /* Try correct data */
-  if (!VERIFY(pub, sha1,
-	      "The magic words are squeamish ossifrage", signature))
-    FAIL();
+  ASSERT (VERIFY(pub, sha1,
+		 "The magic words are squeamish ossifrage", signature));
 
   /* Try bad signature */
   mpz_togglebit(signature, 17);
-
-  if (VERIFY(pub, sha1,
-	     "The magic words are squeamish ossifrage", signature))
-    FAIL();
+  ASSERT (!VERIFY(pub, sha1,
+		  "The magic words are squeamish ossifrage", signature));
 
   mpz_clear(signature);
 }
@@ -793,25 +799,20 @@ test_rsa_sha256(struct rsa_public_key *pub,
       fprintf(stderr, "\n");
     }
 
-  if (mpz_cmp(signature, expected))
-    FAIL();
+  ASSERT (mpz_cmp(signature, expected) == 0);
   
   /* Try bad data */
-  if (VERIFY(pub, sha256,
-	     "The magick words are squeamish ossifrage", signature))
-    FAIL();
+  ASSERT (!VERIFY(pub, sha256,
+		  "The magick words are squeamish ossifrage", signature));
 
   /* Try correct data */
-  if (!VERIFY(pub, sha256,
-	      "The magic words are squeamish ossifrage", signature))
-    FAIL();
+  ASSERT (VERIFY(pub, sha256,
+		 "The magic words are squeamish ossifrage", signature));
 
   /* Try bad signature */
   mpz_togglebit(signature, 17);
-
-  if (VERIFY(pub, sha256,
-	     "The magic words are squeamish ossifrage", signature))
-    FAIL();
+  ASSERT (!VERIFY(pub, sha256,
+		  "The magic words are squeamish ossifrage", signature));
 
   mpz_clear(signature);
 }
@@ -836,25 +837,20 @@ test_rsa_sha512(struct rsa_public_key *pub,
       fprintf(stderr, "\n");
     }
 
-  if (mpz_cmp(signature, expected))
-    FAIL();
+  ASSERT (mpz_cmp(signature, expected) == 0);
   
   /* Try bad data */
-  if (VERIFY(pub, sha512,
-	     "The magick words are squeamish ossifrage", signature))
-    FAIL();
+  ASSERT (!VERIFY(pub, sha512,
+		  "The magick words are squeamish ossifrage", signature));
 
   /* Try correct data */
-  if (!VERIFY(pub, sha512,
-	      "The magic words are squeamish ossifrage", signature))
-    FAIL();
+  ASSERT (VERIFY(pub, sha512,
+		 "The magic words are squeamish ossifrage", signature));
 
   /* Try bad signature */
   mpz_togglebit(signature, 17);
-
-  if (VERIFY(pub, sha512,
-	     "The magic words are squeamish ossifrage", signature))
-    FAIL();
+  ASSERT (!VERIFY(pub, sha512,
+		  "The magic words are squeamish ossifrage", signature));
 
   mpz_clear(signature);
 }
@@ -896,14 +892,12 @@ test_rsa_key(struct rsa_public_key *pub,
 
   /* Check n = p q */
   mpz_mul(tmp, key->p, key->q);
-  if (mpz_cmp(tmp, pub->n))
-    FAIL();
+  ASSERT (mpz_cmp(tmp, pub->n)== 0);
 
   /* Check c q = 1 mod p */
   mpz_mul(tmp, key->c, key->q);
   mpz_fdiv_r(tmp, tmp, key->p);
-  if (mpz_cmp_ui(tmp, 1))
-    FAIL();
+  ASSERT (mpz_cmp_ui(tmp, 1) == 0);
 
   /* Check ed = 1 (mod phi) */
   mpz_sub_ui(phi, key->p, 1);
@@ -913,22 +907,19 @@ test_rsa_key(struct rsa_public_key *pub,
 
   mpz_mul(tmp, pub->e, key->d);
   mpz_fdiv_r(tmp, tmp, phi);
-  if (mpz_cmp_ui(tmp, 1))
-    FAIL();
+  ASSERT (mpz_cmp_ui(tmp, 1) == 0);
 
   /* Check a e = 1 (mod (p-1) ) */
   mpz_sub_ui(phi, key->p, 1);
   mpz_mul(tmp, pub->e, key->a);
   mpz_fdiv_r(tmp, tmp, phi);
-  if (mpz_cmp_ui(tmp, 1))
-    FAIL();
+  ASSERT (mpz_cmp_ui(tmp, 1) == 0);
   
   /* Check b e = 1 (mod (q-1) ) */
   mpz_sub_ui(phi, key->q, 1);
   mpz_mul(tmp, pub->e, key->b);
   mpz_fdiv_r(tmp, tmp, phi);
-  if (mpz_cmp_ui(tmp, 1))
-    FAIL();
+  ASSERT (mpz_cmp_ui(tmp, 1) == 0);
   
   mpz_clear(tmp); mpz_clear(phi);
 }
@@ -966,26 +957,24 @@ test_dsa160(const struct dsa_public_key *pub,
     }
 
   if (expected)
-    if (mpz_cmp (signature.r, expected->r)
-	|| mpz_cmp (signature.s, expected->s))
-      FAIL();
+    ASSERT (mpz_cmp (signature.r, expected->r) == 0
+	    && mpz_cmp (signature.s, expected->s) == 0);
   
   /* Try bad data */
-  if (DSA_VERIFY(pub, sha1,
-		 "The magick words are squeamish ossifrage", &signature))
-    FAIL();
+  ASSERT (!DSA_VERIFY(pub, sha1,
+		      "The magick words are squeamish ossifrage",
+		      &signature));
 
   /* Try correct data */
-  if (!DSA_VERIFY(pub, sha1,
-		 "The magic words are squeamish ossifrage", &signature))
-    FAIL();
+  ASSERT (DSA_VERIFY(pub, sha1,
+		     "The magic words are squeamish ossifrage",
+		     &signature));
 
   /* Try bad signature */
   mpz_togglebit(signature.r, 17);
-
-  if (DSA_VERIFY(pub, sha1,
-		 "The magic words are squeamish ossifrage", &signature))
-    FAIL();
+  ASSERT (!DSA_VERIFY(pub, sha1,
+		      "The magic words are squeamish ossifrage",
+		      &signature));
 
   dsa_signature_clear(&signature);
 }
@@ -1018,26 +1007,24 @@ test_dsa256(const struct dsa_public_key *pub,
     }
 
   if (expected)
-    if (mpz_cmp (signature.r, expected->r)
-	|| mpz_cmp (signature.s, expected->s))
-      FAIL();
+    ASSERT (mpz_cmp (signature.r, expected->r) == 0
+	    && mpz_cmp (signature.s, expected->s) == 0);
   
   /* Try bad data */
-  if (DSA_VERIFY(pub, sha256,
-		 "The magick words are squeamish ossifrage", &signature))
-    FAIL();
+  ASSERT (!DSA_VERIFY(pub, sha256,
+		      "The magick words are squeamish ossifrage",
+		      &signature));
 
   /* Try correct data */
-  if (!DSA_VERIFY(pub, sha256,
-		 "The magic words are squeamish ossifrage", &signature))
-    FAIL();
+  ASSERT (DSA_VERIFY(pub, sha256,
+		     "The magic words are squeamish ossifrage",
+		     &signature));
 
   /* Try bad signature */
   mpz_togglebit(signature.r, 17);
-
-  if (DSA_VERIFY(pub, sha256,
-		 "The magic words are squeamish ossifrage", &signature))
-    FAIL();
+  ASSERT (!DSA_VERIFY(pub, sha256,
+		      "The magic words are squeamish ossifrage",
+		      &signature));
 
   dsa_signature_clear(&signature);
 }
@@ -1069,6 +1056,8 @@ test_dsa_key(struct dsa_public_key *pub,
   
   mpz_powm(t, pub->g, key->x, pub->p);
   ASSERT(0 == mpz_cmp(t, pub->y));
+
+  mpz_clear(t);
 };
 
 #endif /* WITH_HOGWEED */

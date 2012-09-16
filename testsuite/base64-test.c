@@ -1,7 +1,7 @@
 #include "testutils.h"
 #include "base64.h"
 
-int
+void
 test_main(void)
 {
   ASSERT(BASE64_ENCODE_LENGTH(0) == 0);   /* At most   4 bits */
@@ -45,6 +45,4 @@ test_main(void)
     
     ASSERT(MEMEQ(9, buffer, "HelloG8=x"));
   }
-  
-  SUCCESS();
 }

@@ -8,7 +8,7 @@ progress(void *ctx UNUSED, int c)
   fputc(c, stderr);
 }
 
-int
+void
 test_main(void)
 {
   struct dsa_public_key pub;
@@ -21,26 +21,24 @@ test_main(void)
 
   knuth_lfib_init(&lfib, 13);
 
-  if (!dsa_generate_keypair(&pub, &key,
-			    &lfib, (nettle_random_func *) knuth_lfib_random,
-			    NULL, verbose ? progress : NULL,
-			    1024, 160))
-    FAIL();
+  ASSERT (dsa_generate_keypair(&pub, &key,
+			       &lfib,
+			       (nettle_random_func *) knuth_lfib_random,
+			       NULL, verbose ? progress : NULL,
+			       1024, 160));
 
   test_dsa_key(&pub, &key, 160);
   test_dsa160(&pub, &key, NULL);
 
-  if (!dsa_generate_keypair(&pub, &key,
-			    &lfib, (nettle_random_func *) knuth_lfib_random,
-			    NULL, verbose ? progress : NULL,
-			    2048, 256))
-    FAIL();
+  ASSERT (dsa_generate_keypair(&pub, &key,
+			       &lfib,
+			       (nettle_random_func *) knuth_lfib_random,
+			       NULL, verbose ? progress : NULL,
+			       2048, 256));
 
   test_dsa_key(&pub, &key, 256);
   test_dsa256(&pub, &key, NULL);
   
   dsa_public_key_clear(&pub);
   dsa_private_key_clear(&key);
-  
-  SUCCESS();
 }

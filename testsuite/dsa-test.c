@@ -1,6 +1,6 @@
 #include "testutils.h"
 
-int
+void
 test_main(void)
 {
   struct dsa_public_key pub;
@@ -101,5 +101,4 @@ test_main(void)
   dsa_public_key_clear(&pub);
   dsa_private_key_clear(&key);
   dsa_signature_clear(&expected);
-  SUCCESS();
 }

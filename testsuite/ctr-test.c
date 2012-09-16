@@ -2,7 +2,7 @@
 #include "aes.h"
 #include "ctr.h"
 
-int
+void
 test_main(void)
 {
   /* From NIST spec 800-38a on AES modes,
@@ -14,45 +14,43 @@ test_main(void)
 
   /* F.5.1  CTR-AES128.Encrypt */
   test_cipher_ctr(&nettle_aes128,
-		  HL("2b7e151628aed2a6abf7158809cf4f3c"),
-		  HL("6bc1bee22e409f96e93d7e117393172a"
-		     "ae2d8a571e03ac9c9eb76fac45af8e51"
-		     "30c81c46a35ce411e5fbc1191a0a52ef"
-		     "f69f2445df4f9b17ad2b417be66c3710"),
-		  H("874d6191b620e3261bef6864990db6ce"
-		    "9806f66b7970fdff8617187bb9fffdff"
-		    "5ae4df3edbd5d35e5b4f09020db03eab"
-		    "1e031dda2fbe03d1792170a0f3009cee"),
-		  H("f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff"));
+		  SHEX("2b7e151628aed2a6abf7158809cf4f3c"),
+		  SHEX("6bc1bee22e409f96e93d7e117393172a"
+		       "ae2d8a571e03ac9c9eb76fac45af8e51"
+		       "30c81c46a35ce411e5fbc1191a0a52ef"
+		       "f69f2445df4f9b17ad2b417be66c3710"),
+		  SHEX("874d6191b620e3261bef6864990db6ce"
+		       "9806f66b7970fdff8617187bb9fffdff"
+		       "5ae4df3edbd5d35e5b4f09020db03eab"
+		       "1e031dda2fbe03d1792170a0f3009cee"),
+		  SHEX("f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff"));
 
   /* F.5.3  CTR-AES192.Encrypt */
   test_cipher_ctr(&nettle_aes192,
-		  HL("8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b"),
-		  HL("6bc1bee22e409f96e93d7e117393172a"
-		     "ae2d8a571e03ac9c9eb76fac45af8e51"
-		     "30c81c46a35ce411e5fbc1191a0a52ef"
-		     "f69f2445df4f9b17ad2b417be66c3710"),
-		  H("1abc932417521ca24f2b0459fe7e6e0b"
-		     "090339ec0aa6faefd5ccc2c6f4ce8e94"
-		     "1e36b26bd1ebc670d1bd1d665620abf7"
-		     "4f78a7f6d29809585a97daec58c6b050"),
-		  H("f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff"));
+		  SHEX("8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b"),
+		  SHEX("6bc1bee22e409f96e93d7e117393172a"
+		       "ae2d8a571e03ac9c9eb76fac45af8e51"
+		       "30c81c46a35ce411e5fbc1191a0a52ef"
+		       "f69f2445df4f9b17ad2b417be66c3710"),
+		  SHEX("1abc932417521ca24f2b0459fe7e6e0b"
+		       "090339ec0aa6faefd5ccc2c6f4ce8e94"
+		       "1e36b26bd1ebc670d1bd1d665620abf7"
+		       "4f78a7f6d29809585a97daec58c6b050"),
+		  SHEX("f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff"));
 
   /* F.5.5  CTR-AES256.Encrypt */
   test_cipher_ctr(&nettle_aes256,
-		  HL("603deb1015ca71be2b73aef0857d7781"
-		     "1f352c073b6108d72d9810a30914dff4"),
-		  HL("6bc1bee22e409f96e93d7e117393172a"
-		     "ae2d8a571e03ac9c9eb76fac45af8e51"
-		     "30c81c46a35ce411e5fbc1191a0a52ef"
-		     "f69f2445df4f9b17ad2b417be66c3710"),
-		  H("601ec313775789a5b7a7f504bbf3d228"
-		     "f443e3ca4d62b59aca84e990cacaf5c5"
-		     "2b0930daa23de94ce87017ba2d84988d"
-		     "dfc9c58db67aada613c2dd08457941a6"),
-		  H("f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff"));
-
-  SUCCESS();
+		  SHEX("603deb1015ca71be2b73aef0857d7781"
+		       "1f352c073b6108d72d9810a30914dff4"),
+		  SHEX("6bc1bee22e409f96e93d7e117393172a"
+		       "ae2d8a571e03ac9c9eb76fac45af8e51"
+		       "30c81c46a35ce411e5fbc1191a0a52ef"
+		       "f69f2445df4f9b17ad2b417be66c3710"),
+		  SHEX("601ec313775789a5b7a7f504bbf3d228"
+		       "f443e3ca4d62b59aca84e990cacaf5c5"
+		       "2b0930daa23de94ce87017ba2d84988d"
+		       "dfc9c58db67aada613c2dd08457941a6"),
+		  SHEX("f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff"));
 }
 
 /*

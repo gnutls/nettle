@@ -1,7 +1,7 @@
 #include "testutils.h"
 #include "buffer.h"
 
-int
+void
 test_main(void)
 {
   struct nettle_buffer buffer;
@@ -24,6 +24,4 @@ test_main(void)
   ASSERT(buffer.size == 3);
 
   ASSERT(!nettle_buffer_write(&buffer, LDATA("bar")));
-
-  SUCCESS();
 }

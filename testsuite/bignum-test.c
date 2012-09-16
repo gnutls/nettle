@@ -11,27 +11,24 @@
 #include "bignum.h"
 
 static void
-test_bignum(const char *hex, unsigned length, const uint8_t *base256)
+test_bignum(const char *hex, const struct tstring *base256)
 {
   mpz_t a;
   mpz_t b;
   uint8_t *buf;
   
   mpz_init_set_str(a, hex, 16);
-  nettle_mpz_init_set_str_256_s(b, length, base256);
+  nettle_mpz_init_set_str_256_s(b, base256->length, base256->data);
 
-  if (mpz_cmp(a, b))
-    FAIL();
+  ASSERT(mpz_cmp(a, b) == 0);
 
-  buf = xalloc(length + 1);
-  memset(buf, 17, length + 1);
+  buf = xalloc(base256->length + 1);
+  memset(buf, 17, base256->length + 1);
 
-  nettle_mpz_get_str_256(length, buf, a);
-  if (!MEMEQ(length, buf, base256))
-    FAIL();
+  nettle_mpz_get_str_256(base256->length, buf, a);
+  ASSERT(MEMEQ(base256->length, buf, base256->data));
 
-  if (buf[length] != 17)
-    FAIL();
+  ASSERT(buf[base256->length] == 17);
 
   mpz_clear(a); mpz_clear(b);
   free(buf);
@@ -49,7 +46,7 @@ test_size(long x, unsigned size)
 #endif /* HAVE_LIBGMP */
 
 
-int
+void
 test_main(void)
 {
 #if HAVE_LIBGMP
@@ -78,19 +75,18 @@ test_main(void)
   test_size(- 0x8000, 2); /*   8000 */
   test_size(- 0x8001, 3); /* ff7fff */
 
-  test_bignum("0", HL("00"));
-  test_bignum("010203040506", HL("010203040506"));
-  test_bignum("80010203040506", HL("0080010203040506"));
+  test_bignum("0", SHEX("00"));
+  test_bignum("010203040506", SHEX("010203040506"));
+  test_bignum("80010203040506", SHEX("0080010203040506"));
 
-  test_bignum(   "-1", HL(    "ff"));
-  test_bignum(  "-7f", HL(    "81"));
-  test_bignum(  "-80", HL(    "80"));
-  test_bignum(  "-81", HL(  "ff7f"));
-  test_bignum("-7fff", HL(  "8001"));
-  test_bignum("-8000", HL(  "8000"));
-  test_bignum("-8001", HL("ff7fff"));
+  test_bignum(   "-1", SHEX(    "ff"));
+  test_bignum(  "-7f", SHEX(    "81"));
+  test_bignum(  "-80", SHEX(    "80"));
+  test_bignum(  "-81", SHEX(  "ff7f"));
+  test_bignum("-7fff", SHEX(  "8001"));
+  test_bignum("-8000", SHEX(  "8000"));
+  test_bignum("-8001", SHEX("ff7fff"));
   
-  SUCCESS();
 #else /* !HAVE_LIBGMP */
   SKIP();
 #endif /* !HAVE_LIBGMP */

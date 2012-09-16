@@ -1,5 +1,49 @@
 2012-09-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/: Overhaul of testsuite, affecting almost all files.
+	+ Use struct tstring for allocated strings, and deallocate before
+	exit.
+	+ Changed most test functions to take struct tstring as arguments.
+	+ Made all test_main return on success.
+
+	* testsuite/testutils.h (struct tstring): New struct type.
+	(H2, HL, MEMEQH, SUCCESS): Deleted macros.
+	(SHEX, SDATA): New macros.
+	(H): Redefined to track storage.
+
+	* testsuite/testutils.c (tstring_alloc): New function.
+	(tstring_clear): New function.
+	(tstring_data): New function.
+	(tstring_hex): New function.
+	(tstring_print_hex): New function.
+	(decode_hex_length): Made static.
+	(decode_hex): Made static. No return value, abort on error.
+	(main): Expect test_main to return, and call tstring_clear before
+	exit.
+	(test_dsa_key): Added missing mpz_clear.
+	(test_mac): Deleted unused function.
+
+	* testsuite/rsa2sexp-test.c (test_main): Added missing
+	nettle_buffer_clear.
+
+	* testsuite/yarrow-test.c (open_file): Don't leak filename.
+	(test_main): fclose input file properly.
+
+	* testsuite/sexp-format-test.c (test_main): Added missing calls to
+	nettle_buffer_clear and mpz_clear.
+
+	* testsuite/serpent-test.c (tstring_hex_reverse): New function,
+	replacing...
+	(decode_hex_reverse): ... deleted function.
+	(RHEX): New macro, replacing...
+	(RH, RHL): ... deleted macros.
+
+	* testsuite/rsa2sexp-test.c (test_main): Added missing
+	nettle_buffer_clear.
+
+	* testsuite/random-prime-test.c (test_main): Added missing
+	mpz_clear.
+
 	* realloc.c (nettle_realloc): Only call libc realloc if length >
 	0, otherwise call free. Fixes a small memory leak.
 	(nettle_xrealloc): Likewise.

@@ -5,7 +5,7 @@
 #include "md5.h"
 
 /* Test C++ linkage */
-int
+void
 test_main(void)
 {
   struct md5_ctx md5;
@@ -15,9 +15,8 @@ test_main(void)
   md5_update (&md5, 14, reinterpret_cast<const uint8_t *> ("message digest"));
   md5_digest (&md5, MD5_DIGEST_SIZE, digest);
 
-  if (!MEMEQH (MD5_DIGEST_SIZE, digest,
-	       "F96B697D7CB7938D 525A2F31AAF161D0"))
-    FAIL();
+  ASSERT (MEMEQ (MD5_DIGEST_SIZE, digest,
+		 H("F96B697D7CB7938D 525A2F31AAF161D0")));
 
 #if WITH_PUBLIC_KEY
 
@@ -40,8 +39,7 @@ test_main(void)
 	      "e545fbb4cf", 16);
   mpz_set_str(pub.e, "0db2ad57", 16);
 
-  if (!rsa_public_key_prepare(&pub))
-    FAIL();
+  ASSERT (rsa_public_key_prepare(&pub));
 
   mpz_set_str(key.p,
 	      "0a66399919be4b4d" "e5a78c5ea5c85bf9" "aba8c013cb4a8732"
@@ -68,11 +66,9 @@ test_main(void)
 	      "e2df9607cee95fa8" "daec7a389a7d9afc" "8dd21fef9d83805a"
 	      "40d46f49676a2f6b" "2926f70c572c00", 16);
 
-  if (!rsa_private_key_prepare(&key))
-    FAIL();
+  ASSERT (rsa_private_key_prepare(&key));
 
-  if (pub.size != key.size)
-    FAIL();
+  ASSERT (pub.size == key.size);
   
   mpz_set_str(expected,
 	      "53bf517009fa956e" "3daa6adc95e8663d" "3759002f488bbbad"
@@ -93,16 +89,12 @@ test_main(void)
   /* Verify it */
   md5_update (&md5, 39, reinterpret_cast<const uint8_t *>
 	      ("The magic words are squeamish ossifrage"));
-  if (!rsa_md5_verify (&pub, &md5, signature))
-    FAIL();
+  ASSERT (rsa_md5_verify (&pub, &md5, signature));
 
   /* Try bad data */
   md5_update (&md5, 39, reinterpret_cast<const uint8_t *>
 	      ("The magik words are squeamish ossifrage"));
-  if (rsa_md5_verify (&pub, &md5, signature))
-    FAIL();
+  ASSERT (!rsa_md5_verify (&pub, &md5, signature));
   
 #endif /* WITH_PUBLIC_KEY */
-
-  SUCCESS();
 }

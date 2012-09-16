@@ -45,17 +45,20 @@ open_file(const char *name)
   const char *srcdir = getenv("srcdir");
   if (srcdir && srcdir[0])
     {
-      /* Leaks this name, but that doesn't matter. */
+      FILE *f;
       char *buf = xalloc(strlen(name) + strlen(srcdir) + 10);
       sprintf(buf, "%s/%s", srcdir, name);
-      name = buf;
+
+      f = fopen(buf, "r");
+      free(buf);
+      return f;
     }
 
   /* Opens the file in text mode. */
   return fopen(name, "r");
 }
 
-int
+void
 test_main(void)
 {
   FILE *input;
@@ -72,16 +75,16 @@ test_main(void)
   uint8_t seed_file[YARROW256_SEED_FILE_SIZE];
 
   const uint8_t *expected_output
-    = decode_hex_dup("dd304aacac3dc95e 70d684a642967c89"
-		     "58501f7c8eb88b79 43b2ffccde6f0f79");
+    = H("dd304aacac3dc95e 70d684a642967c89"
+	"58501f7c8eb88b79 43b2ffccde6f0f79");
 
   const uint8_t *expected_input
-    = decode_hex_dup("e0596cf006025506 65d1195f32a87e4a"
-		     "5c354910dfbd0a31 e2105b262f5ce3d8");
+    = H("e0596cf006025506 65d1195f32a87e4a"
+	"5c354910dfbd0a31 e2105b262f5ce3d8");
 
   const uint8_t *expected_seed_file
-    = decode_hex_dup("b03518f32b1084dd 983e6a445d47bb6f"
-		     "13bb7b998740d570 503d6aaa62e28901");
+    = H("b03518f32b1084dd 983e6a445d47bb6f"
+	"13bb7b998740d570 503d6aaa62e28901");
   
   unsigned c; unsigned t;
 
@@ -107,7 +110,7 @@ test_main(void)
     printf("source 0 entropy: %d\n",
 	   sources[0].estimate[YARROW_SLOW]);
   
-  assert(!yarrow256_is_seeded(&yarrow));
+  ASSERT(!yarrow256_is_seeded(&yarrow));
 
   input = open_file("gold-bug.txt");
 
@@ -115,7 +118,7 @@ test_main(void)
     {
       fprintf(stderr, "Couldn't open `gold-bug.txt', errno = %d\n",
               errno);
-      return EXIT_FAILURE;
+      FAIL();
     }
   
   while (get_event(input, &input_hash, &c, &t))
@@ -155,6 +158,8 @@ test_main(void)
         }
     }
 
+  fclose(input);
+
   if (verbose)
     {
       printf("\n");
@@ -177,11 +182,7 @@ test_main(void)
       printf("\n");
     }
   
-  if (memcmp(digest, expected_input, sizeof(digest)))
-    {
-      fprintf(stderr, "Failed.\n");
-      return EXIT_FAILURE;
-    }
+  ASSERT (memcmp(digest, expected_input, sizeof(digest)) == 0);
 
   yarrow256_random(&yarrow, sizeof(seed_file), seed_file);
   if (verbose)
@@ -191,11 +192,7 @@ test_main(void)
       printf("\n");
     }
 
-  if (memcmp(seed_file, expected_seed_file, sizeof(seed_file)))
-    {
-      fprintf(stderr, "Failed.\n");
-      return EXIT_FAILURE;
-    }
+  ASSERT (memcmp(seed_file, expected_seed_file, sizeof(seed_file)) == 0);
   
   if (verbose)
     {
@@ -211,11 +208,5 @@ test_main(void)
       printf("\n");
     }
   
-  if (memcmp(digest, expected_output, sizeof(digest)))
-    {
-      fprintf(stderr, "Failed.\n");
-      return EXIT_FAILURE;
-    }
-  
-  return EXIT_SUCCESS;
+  ASSERT (memcmp(digest, expected_output, sizeof(digest)) == 0);
 }

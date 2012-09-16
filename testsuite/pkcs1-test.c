@@ -2,7 +2,7 @@
 
 #include "pkcs1.h"
 
-int
+void
 test_main(void)
 {
   uint8_t buffer[16];
@@ -13,6 +13,4 @@ test_main(void)
 			  3, "abc", 0);
 
   ASSERT(MEMEQ(sizeof(buffer), buffer, expected));
-
-  SUCCESS();
 }

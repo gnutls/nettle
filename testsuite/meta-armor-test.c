@@ -6,7 +6,7 @@ const char* armors[] = {
   "base64"
 };
 
-int
+void
 test_main(void)
 {
   int i,j;
@@ -22,6 +22,5 @@ test_main(void)
   while (NULL != nettle_armors[j])
     j++;
   ASSERT(j == count); /* we are not missing testing any armors */
-  SUCCESS();
 }
   

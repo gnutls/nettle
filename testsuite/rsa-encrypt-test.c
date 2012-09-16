@@ -3,7 +3,7 @@
 #include "rsa.h"
 #include "knuth-lfib.h"
 
-int
+void
 test_main(void)
 {
   struct rsa_public_key pub;
@@ -82,6 +82,5 @@ test_main(void)
   rsa_public_key_clear(&pub);
   mpz_clear(gibberish);
   free(decrypted);
-  SUCCESS();
 }
   

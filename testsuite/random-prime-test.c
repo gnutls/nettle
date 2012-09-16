@@ -2,7 +2,7 @@
 
 #include "knuth-lfib.h"
 
-int
+void
 test_main(void)
 {
   struct knuth_lfib_ctx lfib;
@@ -24,5 +24,5 @@ test_main(void)
       ASSERT (mpz_probab_prime_p(p, 25));
     }
 
-  SUCCESS();
+  mpz_clear(p);
 }

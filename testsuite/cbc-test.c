@@ -35,8 +35,7 @@ test_cbc_bulk(void)
 
   CBC_ENCRYPT(&aes, aes_encrypt, CBC_BULK_DATA, cipher, clear);
 
-  if (cipher[CBC_BULK_DATA] != 17)
-    FAIL();
+  ASSERT(cipher[CBC_BULK_DATA] == 17);
 
   if (verbose)
     {
@@ -45,16 +44,14 @@ test_cbc_bulk(void)
       printf("\n");
     }
 
-  if (!MEMEQ(AES_BLOCK_SIZE, aes.iv, end_iv))
-    FAIL();
+  ASSERT(MEMEQ(AES_BLOCK_SIZE, aes.iv, end_iv));
   
   /* Decrypt, in place */
   aes_set_decrypt_key(&aes.ctx, 32, key);
   CBC_SET_IV(&aes, start_iv);
   CBC_DECRYPT(&aes, aes_decrypt, CBC_BULK_DATA, cipher, cipher);
 
-  if (cipher[CBC_BULK_DATA] != 17)
-    FAIL();
+  ASSERT(cipher[CBC_BULK_DATA] == 17);
 
   if (verbose)
     {
@@ -63,18 +60,13 @@ test_cbc_bulk(void)
       printf("\n");
     }
 
-  if (!MEMEQ(AES_BLOCK_SIZE, aes.iv, end_iv))
-    FAIL();
-
-  if (!MEMEQ(CBC_BULK_DATA, clear, cipher))
-    FAIL();
+  ASSERT (MEMEQ(AES_BLOCK_SIZE, aes.iv, end_iv));
+  ASSERT (MEMEQ(CBC_BULK_DATA, clear, cipher));
 }
 
-int
+void
 test_main(void)
 {
-  static const uint8_t msg[2 * AES_BLOCK_SIZE] = "Listen, I'll say this only once!";
-  
   /* Intermediate values:
    *   iv XOR first message block:
    *       "a5 ce 55 d4 21 15 a1 c6 4a a4 0c b2 ca a6 d1 37"
@@ -87,16 +79,16 @@ test_main(void)
    */
 
   test_cipher_cbc(&nettle_aes256,
-		  HL("8d ae 93 ff fc 78 c9 44"
-		     "2a bd 0c 1e 68 bc a6 c7"
-		     "05 c7 84 e3 5a a9 11 8b"
-		     "d3 16 aa 54 9b 44 08 9e"),
-		  2 * AES_BLOCK_SIZE, msg,
-		  H("1f 94 fc 85 f2 36 21 06"
-		    "4a ea e3 c9 cc 38 01 0e"
-		    "7b f6 5f c5 02 59 2e 71"
-		    "af bf 34 87 c0 36 2a 16"),
-		  H("e9 a7 26 a0 44 7b 8d e6  03 83 60 de ea d5 b0 4e"));
+		  SHEX("8d ae 93 ff fc 78 c9 44"
+		       "2a bd 0c 1e 68 bc a6 c7"
+		       "05 c7 84 e3 5a a9 11 8b"
+		       "d3 16 aa 54 9b 44 08 9e"),
+		  SDATA("Listen, I'll say this only once!"),
+		  SHEX("1f 94 fc 85 f2 36 21 06"
+		       "4a ea e3 c9 cc 38 01 0e"
+		       "7b f6 5f c5 02 59 2e 71"
+		       "af bf 34 87 c0 36 2a 16"),
+		  SHEX("e9 a7 26 a0 44 7b 8d e6  03 83 60 de ea d5 b0 4e"));
 
   /* From NIST spec 800-38a on AES modes.
    *
@@ -112,16 +104,16 @@ test_main(void)
    *   8521f2fd3c8eef2cdc3da7e5c44ea206 
    */
   test_cipher_cbc(&nettle_aes128,
-		  HL("2b7e151628aed2a6abf7158809cf4f3c"),
-		  HL("6bc1bee22e409f96e93d7e117393172a"
-		     "ae2d8a571e03ac9c9eb76fac45af8e51"
-		     "30c81c46a35ce411e5fbc1191a0a52ef"
-		     "f69f2445df4f9b17ad2b417be66c3710"),
-		  H("7649abac8119b246cee98e9b12e9197d"
-		    "5086cb9b507219ee95db113a917678b2"
-		    "73bed6b8e3c1743b7116e69e22229516"
-		    "3ff1caa1681fac09120eca307586e1a7"),
-		  H("000102030405060708090a0b0c0d0e0f"));
+		  SHEX("2b7e151628aed2a6abf7158809cf4f3c"),
+		  SHEX("6bc1bee22e409f96e93d7e117393172a"
+		       "ae2d8a571e03ac9c9eb76fac45af8e51"
+		       "30c81c46a35ce411e5fbc1191a0a52ef"
+		       "f69f2445df4f9b17ad2b417be66c3710"),
+		  SHEX("7649abac8119b246cee98e9b12e9197d"
+		       "5086cb9b507219ee95db113a917678b2"
+		       "73bed6b8e3c1743b7116e69e22229516"
+		       "3ff1caa1681fac09120eca307586e1a7"),
+		  SHEX("000102030405060708090a0b0c0d0e0f"));
   
   /* F.2.3 CBC-AES192.Encrypt */
   
@@ -134,17 +126,17 @@ test_main(void)
    */
 
   test_cipher_cbc(&nettle_aes192,
-		  HL("8e73b0f7da0e6452c810f32b809079e5"
-		     "62f8ead2522c6b7b"),
-		  HL("6bc1bee22e409f96e93d7e117393172a"
-		     "ae2d8a571e03ac9c9eb76fac45af8e51"
-		     "30c81c46a35ce411e5fbc1191a0a52ef"
-		     "f69f2445df4f9b17ad2b417be66c3710"),
-		  H("4f021db243bc633d7178183a9fa071e8"
-		    "b4d9ada9ad7dedf4e5e738763f69145a"
-		    "571b242012fb7ae07fa9baac3df102e0"
-		    "08b0e27988598881d920a9e64f5615cd"),
-		  H("000102030405060708090a0b0c0d0e0f"));
+		  SHEX("8e73b0f7da0e6452c810f32b809079e5"
+		       "62f8ead2522c6b7b"),
+		  SHEX("6bc1bee22e409f96e93d7e117393172a"
+		       "ae2d8a571e03ac9c9eb76fac45af8e51"
+		       "30c81c46a35ce411e5fbc1191a0a52ef"
+		       "f69f2445df4f9b17ad2b417be66c3710"),
+		  SHEX("4f021db243bc633d7178183a9fa071e8"
+		       "b4d9ada9ad7dedf4e5e738763f69145a"
+		       "571b242012fb7ae07fa9baac3df102e0"
+		       "08b0e27988598881d920a9e64f5615cd"),
+		  SHEX("000102030405060708090a0b0c0d0e0f"));
    
   /* F.2.5 CBC-AES256.Encrypt */
 
@@ -157,21 +149,19 @@ test_main(void)
    */
 
   test_cipher_cbc(&nettle_aes256,
-		  HL("603deb1015ca71be2b73aef0857d7781"
-		     "1f352c073b6108d72d9810a30914dff4"),
-		  HL("6bc1bee22e409f96e93d7e117393172a"
-		     "ae2d8a571e03ac9c9eb76fac45af8e51"
-		     "30c81c46a35ce411e5fbc1191a0a52ef"
-		     "f69f2445df4f9b17ad2b417be66c3710"),
-		  H("f58c4c04d6e5f1ba779eabfb5f7bfbd6"
-		    "9cfc4e967edb808d679f777bc6702c7d"
-		    "39f23369a9d9bacfa530e26304231461"
-		    "b2eb05e2c39be9fcda6c19078c6a9d1b"),
-		  H("000102030405060708090a0b0c0d0e0f"));
+		  SHEX("603deb1015ca71be2b73aef0857d7781"
+		       "1f352c073b6108d72d9810a30914dff4"),
+		  SHEX("6bc1bee22e409f96e93d7e117393172a"
+		       "ae2d8a571e03ac9c9eb76fac45af8e51"
+		       "30c81c46a35ce411e5fbc1191a0a52ef"
+		       "f69f2445df4f9b17ad2b417be66c3710"),
+		  SHEX("f58c4c04d6e5f1ba779eabfb5f7bfbd6"
+		       "9cfc4e967edb808d679f777bc6702c7d"
+		       "39f23369a9d9bacfa530e26304231461"
+		       "b2eb05e2c39be9fcda6c19078c6a9d1b"),
+		  SHEX("000102030405060708090a0b0c0d0e0f"));
 
   test_cbc_bulk();
-   
-  SUCCESS();
 }
 
 /*

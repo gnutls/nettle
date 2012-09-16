@@ -1,7 +1,7 @@
 #include "testutils.h"
 #include "base16.h"
 
-int
+void
 test_main(void)
 {
   ASSERT(BASE16_ENCODE_LENGTH(0) == 0);
@@ -21,7 +21,5 @@ test_main(void)
   test_armor(&nettle_base16, 4, "Hell", "48656c6c");
   test_armor(&nettle_base16, 5, "Hello", "48656c6c6f");
   test_armor(&nettle_base16, 6, "Hello", "48656c6c6f00");
-  
-  SUCCESS();
 }
   

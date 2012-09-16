@@ -75,7 +75,7 @@ test_memxor3 (const uint8_t *ain, const uint8_t *bin, const uint8_t *c,
   ASSERT (dst[size] == 17);
 }
 
-int
+void
 test_main(void)
 {
   const uint8_t *a = H("ecc8737f 38f2f9e8 86b9d84c 42a9c7ef"
@@ -144,6 +144,4 @@ test_main(void)
 	  for (align_b = 0; align_b < ALIGN_SIZE; align_b++)
 	    test_memxor3 (a, b, c, size[i], align_dst, align_a, align_b);
 	}
-
-  SUCCESS();
 }

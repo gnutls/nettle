@@ -7,7 +7,7 @@
 # include "bignum.h"
 #endif
 
-int
+void
 test_main(void)
 {
   struct nettle_buffer buffer;
@@ -26,6 +26,7 @@ test_main(void)
     
     ASSERT(buffer.size == strlen(e));
     ASSERT(MEMEQ(buffer.size, buffer.contents, e));
+    nettle_buffer_clear(&buffer);
   }
   {
     const uint8_t e[] = "{KDM6Zm9vKDM6YmFyMTc6eHh4eHh4eHh4eHh4eHh4eHgpKQ==}";
@@ -41,6 +42,7 @@ test_main(void)
     
     ASSERT(buffer.size == strlen(e));
     ASSERT(MEMEQ(buffer.size, buffer.contents, e));
+    nettle_buffer_clear(&buffer);
   }
   {
     const uint8_t e[] = "1:\0""1:a2:bc3:def4:ghij5:\x00\xDE\xAD\xBE\xEF";
@@ -52,6 +54,7 @@ test_main(void)
     
     ASSERT(buffer.size == LLENGTH(e));
     ASSERT(MEMEQ(buffer.size, buffer.contents, e));
+    nettle_buffer_clear(&buffer);
   }
 
   {
@@ -64,6 +67,7 @@ test_main(void)
     
     ASSERT(buffer.size == strlen(e));
     ASSERT(MEMEQ(buffer.size, buffer.contents, e));
+    nettle_buffer_clear(&buffer);
   }
 
   {
@@ -75,6 +79,7 @@ test_main(void)
 	   == strlen(e));
 
     ASSERT(MEMEQ(buffer.size, buffer.contents, e));
+    nettle_buffer_clear(&buffer);
   }
 
   /* Try literals */
@@ -92,6 +97,7 @@ test_main(void)
     
     ASSERT(buffer.size == strlen(e));
     ASSERT(MEMEQ(buffer.size, buffer.contents, e));
+    nettle_buffer_clear(&buffer);
   }
   {
     const uint8_t e[] = "(3:foo(3:bar17:xxxxxxxxxxxxxxxxx))";
@@ -107,6 +113,7 @@ test_main(void)
     
     ASSERT(buffer.size == strlen(e));
     ASSERT(MEMEQ(buffer.size, buffer.contents, e));
+    nettle_buffer_clear(&buffer);
   }
 
   /* Literal parenthesis */
@@ -122,6 +129,7 @@ test_main(void)
     
     ASSERT(buffer.size == strlen(e));
     ASSERT(MEMEQ(buffer.size, buffer.contents, e));
+    nettle_buffer_clear(&buffer);
   }
   
 #if HAVE_LIBGMP
@@ -132,8 +140,6 @@ test_main(void)
     
     const uint8_t e[] =
       "(3:foo(3:bar1:\xff""11:abcdefghijk13:\0\x81""abcdefghijk))";
-
-    nettle_buffer_clear(&buffer);
 
     mpz_init_set_si(x, -1);
     nettle_mpz_init_set_str_256_u(y, 11, "abcdefghijk");
@@ -153,8 +159,8 @@ test_main(void)
 
     nettle_buffer_clear(&buffer);
     mpz_clear(x);
+    mpz_clear(y);
+    mpz_clear(z);
   }
 #endif /* HAVE_LIBGMP */
-
-  SUCCESS();
 }

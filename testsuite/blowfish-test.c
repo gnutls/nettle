@@ -2,16 +2,14 @@
 #include "nettle-internal.h"
 #include "blowfish.h"
 
-int
+void
 test_main(void)
 {
   /* 208 bit key. Test from GNUPG. */
   test_cipher(&nettle_blowfish128,
-	      26, "abcdefghijklmnopqrstuvwxyz",
-	      BLOWFISH_BLOCK_SIZE, "BLOWFISH",
-	      H("32 4E D0 FE F4 13 A2 03"));
-
-  SUCCESS();
+	      SDATA("abcdefghijklmnopqrstuvwxyz"),
+	      SDATA("BLOWFISH"),
+	      SHEX("32 4E D0 FE F4 13 A2 03"));
 }
 /* FIXME: All values below are bogus. */
 #if 0
