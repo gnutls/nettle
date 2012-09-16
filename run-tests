@@ -44,7 +44,7 @@ test_program () {
   if [ -z "$EMULATOR" ] || head -1 "$1" | grep '^#!' > /dev/null; then
     "$1" $testflags
   else
-    "$EMULATOR" "$1" $testflags
+    $EMULATOR "$1" $testflags
   fi
   case "$?" in
       0)

@@ -1,5 +1,8 @@
 2012-09-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* run-tests (test_program): Don't quote $EMULATOR; allow it to
+	expand to program and arguments (e.g., valgrind).
+
 	* tools/pkcs1-conv.c (convert_public_key): Added missing calls to
 	dsa_public_key_clear and rsa_public_key_clear.
 	(main): Added missing nettle_buffer_clear.
