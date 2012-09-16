@@ -1,5 +1,9 @@
 2012-09-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* realloc.c (nettle_realloc): Only call libc realloc if length >
+	0, otherwise call free. Fixes a small memory leak.
+	(nettle_xrealloc): Likewise.
+
 	* run-tests (test_program): Don't quote $EMULATOR; allow it to
 	expand to program and arguments (e.g., valgrind).
 

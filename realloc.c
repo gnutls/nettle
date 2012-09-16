@@ -31,20 +31,32 @@
 
 #include "realloc.h"
 
+/* NOTE: Calling libc realloc with size == 0 is not required to
+   totally free the object, it is allowed to return a valid
+   pointer. */
 void *
 nettle_realloc(void *ctx UNUSED, void *p, unsigned length)
 {
-  return realloc(p, length);
+  if (length > 0)
+    return realloc(p, length);
+
+  free(p);
+  return NULL;
 }
 
 void *
 nettle_xrealloc(void *ctx UNUSED, void *p, unsigned length)
 {
-  void *n = realloc(p, length);
-  if (length && !n)
+  if (length > 0)
     {
-      fprintf(stderr, "Virtual memory exhausted.\n");
-      abort();
+      void *n = realloc(p, length);
+      if (!n)
+	{
+	  fprintf(stderr, "Virtual memory exhausted.\n");
+	  abort();
+	}
+      return n;
     }
-  return n;
+  free(p);
+  return NULL;
 }
