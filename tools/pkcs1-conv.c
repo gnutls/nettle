@@ -415,6 +415,7 @@ convert_public_key(struct nettle_buffer *buffer, unsigned length, const uint8_t 
 		      nettle_buffer_reset(buffer);
 		      res = dsa_keypair_to_sexp(buffer, NULL, &pub, NULL) > 0;
 		    }
+		  dsa_public_key_clear(&pub);
 		}
 	      if (!res)
 		werror("SubjectPublicKeyInfo: Invalid DSA key.\n");
@@ -438,6 +439,7 @@ convert_public_key(struct nettle_buffer *buffer, unsigned length, const uint8_t 
 		      nettle_buffer_reset(buffer);
 		      res = rsa_keypair_to_sexp(buffer, NULL, &pub, NULL) > 0;
 		    }
+		  rsa_public_key_clear(&pub);
 		}
 	      if (!res)
 		werror("SubjectPublicKeyInfo: Invalid RSA key.\n");
@@ -448,7 +450,7 @@ convert_public_key(struct nettle_buffer *buffer, unsigned length, const uint8_t 
     }
   else
     werror("SubjectPublicKeyInfo: Invalid object.\n");
-  
+
   return res;
 }
 
@@ -656,5 +658,7 @@ main(int argc, char **argv)
 	  fclose(f);
 	}
     }
+  nettle_buffer_clear (&buffer);
+
   return EXIT_SUCCESS;
 }
