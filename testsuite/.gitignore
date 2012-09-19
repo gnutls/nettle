@@ -29,6 +29,7 @@
 /meta-armor-test
 /meta-cipher-test
 /meta-hash-test
+/pbkdf2-test
 /pkcs1-test
 /random-prime-test
 /ripemd160-test

@@ -88,6 +88,9 @@ gcm-test$(EXEEXT): gcm-test.$(OBJEXT)
 hmac-test$(EXEEXT): hmac-test.$(OBJEXT)
 	$(LINK) hmac-test.$(OBJEXT) $(TEST_OBJS) -o hmac-test$(EXEEXT)
 
+pbkdf2-test$(EXEEXT): pbkdf2-test.$(OBJEXT)
+	$(LINK) pbkdf2-test.$(OBJEXT) $(TEST_OBJS) -o pbkdf2-test$(EXEEXT)
+
 meta-hash-test$(EXEEXT): meta-hash-test.$(OBJEXT)
 	$(LINK) meta-hash-test.$(OBJEXT) $(TEST_OBJS) -o meta-hash-test$(EXEEXT)
 

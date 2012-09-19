@@ -70,6 +70,7 @@ Reference
 * Cipher functions::            
 * Cipher modes::                
 * Keyed hash functions::        
+* Key derivation functions::    
 * Public-key algorithms::       
 * Randomness::                  
 * Ascii encoding::              
@@ -199,6 +200,10 @@ implementation (in the public domain), adapted to Nettle by Simon
 Josefsson, and heavily modified by Niels Möller. Assembly for x86_64 by
 Niels Möller. Released under the LGPL.
 
+@item PBKDF2
+The C implementation of PBKDF2 is based on earlier work for Shishi and
+GnuTLS by Simon Josefsson.  Released under the LGPL.
+
 @item SERPENT
 The implementation of the SERPENT cipher is based on the code in libgcrypt,
 copyright owned by the Free Software Foundation. Adapted to Nettle by
@@ -316,6 +321,7 @@ This chapter describes all the Nettle functions, grouped by family.
 * Cipher functions::            
 * Cipher modes::                
 * Keyed hash functions::        
+* Key derivation functions::    
 * Public-key algorithms::       
 * Randomness::                  
 * Ascii encoding::              
@@ -1852,7 +1858,7 @@ only the first @var{length} octets of the digest are written.
 
 
 
-@node Keyed hash functions, Public-key algorithms, Cipher modes, Reference
+@node Keyed hash functions, Key derivation functions, Cipher modes, Reference
 @comment  node-name,  next,  previous,  up
 @section Keyed Hash Functions
 
@@ -2102,7 +2108,40 @@ This function also resets the context for processing new messages, with
 the same key.
 @end deftypefun
 
-@node Public-key algorithms, Randomness, Keyed hash functions, Reference
+@node Key derivation functions, Public-key algorithms, Keyed hash functions, Reference
+@comment  node-name,  next,  previous,  up
+@section Key derivation Functions
+
+@cindex Key Derivation Function
+@cindex Password Based Key Derivation Function
+@cindex PKCS #5
+@cindex KDF
+@cindex PBKDF
+
+A @dfn{key derivation function} (@acronym{KDF}) is a function that from
+a given symmetric key derives other symmetric keys.  A sub-class of KDFs
+is the @dfn{password-based key derivation functions} (@acronym{PBKDFs}),
+which take as input a password or passphrase, and its purpose is
+typically to strengthen it and protect against certain pre-computation
+attacks by using salting and expensive computation.  The most well known
+PBKDF is the @code{PKCS #5 PBKDF2} described in @cite{RFC 2898} which
+uses a pseudorandom function such as @acronym{HMAC-SHA1}.
+
+Nettle's @acronym{PBKDF2} function is defined in @file{<nettle/pbkdf2.h>}.
+It contains a function:
+
+@deftypefun void pbkdf2 (void *mac_ctx, unsigned digest_size, nettle_hash_update_func *update, nettle_hash_digest_func *digest, unsigned length, uint8_t *dst, unsigned iterations, unsigned salt_length, const uint8_t *salt)
+Derive symmetric key from a password according to PKCS #5 PBKDF2.  The
+PRF is assumed to have been initialized and this function will call the
+@var{update} and @var{digest} functions passing the @var{mac_ctx}
+context parameter as an argument in order to compute digest of size
+@var{digest_size}.  Inputs are the salt @var{salt} of length
+@var{salt_length}, the iteration counter @var{iterations} (> 0), and the
+desired derived output length @var{length}.  The output buffer is
+@var{dst} which must have room for at least @var{length} octets.
+@end deftypefun
+
+@node Public-key algorithms, Randomness, Key derivation functions, Reference
 @comment  node-name,  next,  previous,  up
 @section Public-key algorithms
 

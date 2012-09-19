@@ -1,3 +1,20 @@
+2012-09-19  Niels Möller  <nisse@lysator.liu.se>
+
+	* pbkdf2.h (PBKDF2): New macro.
+	* testsuite/pbkdf2-test.c: Use it.
+
+2012-09-12  Simon Josefsson  <simon@josefsson.org>
+
+	* NEWS: Mention addition of PBKDF2.
+	* pbkdf2.c (pbkdf2): New file and function.
+	* pbkdf2.h: Declare it.
+	* Makefile.in (nettle_SOURCES): Add pbkdf2.c.
+	(HEADERS): Add pbkdf2.h.
+	* nettle.texinfo (Key derivation functions): New section.
+	* testsuite/pbkdf2-test.c: New test case.
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Add pbkdf2-test.c.
+	* testsuite/.test-rules.make (pbkdf2-test): New target.
+
 2012-09-16  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/: Overhaul of testsuite, affecting almost all files.
