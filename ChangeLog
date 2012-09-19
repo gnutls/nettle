@@ -1,5 +1,8 @@
 2012-09-19  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/meta-hash-test.c (test_main): Validate
+	NETTLE_MAX_HASH_DIGEST_SIZE.
+
 	* pbkdf2.h (PBKDF2): New macro.
 	* testsuite/pbkdf2-test.c: Use it.
 

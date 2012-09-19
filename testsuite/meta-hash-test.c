@@ -1,4 +1,5 @@
 #include "testutils.h"
+#include "nettle-internal.h"
 #include "nettle-meta.h"
 
 const char* hashes[] = {
@@ -29,5 +30,7 @@ test_main(void)
   while (NULL != nettle_hashes[j])
     j++;
   ASSERT(j == count); /* we are not missing testing any hashes */
+  for (j = 0; NULL != nettle_hashes[j]; j++)
+    ASSERT(nettle_hashes[j]->digest_size <= NETTLE_MAX_HASH_DIGEST_SIZE);
 }
   
