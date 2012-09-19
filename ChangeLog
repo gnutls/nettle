@@ -1,5 +1,9 @@
 2012-09-19  Niels Möller  <nisse@lysator.liu.se>
 
+	From Tim Rühsen:
+	* examples/rsa-encrypt.c (main): Added missing mpz_clear.
+	* examples/rsa-keygen.c (main): Added missing deallocation.
+
 	* testsuite/meta-hash-test.c (test_main): Validate
 	NETTLE_MAX_HASH_DIGEST_SIZE.
 

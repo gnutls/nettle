@@ -160,5 +160,11 @@ main(int argc, char **argv)
       return EXIT_FAILURE;
     }
 
+  nettle_buffer_clear(&priv_buffer);
+  nettle_buffer_clear(&pub_buffer);
+  rsa_public_key_clear(&pub);
+  rsa_private_key_clear(&priv);
+  free (pub_name);
+  
   return EXIT_SUCCESS;
 }

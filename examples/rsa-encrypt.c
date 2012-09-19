@@ -253,11 +253,13 @@ main(int argc, char **argv)
     }
 
   write_bignum(stdout, x);
-  
+
+  mpz_clear (x);
+
   if (!process_file(&ctx,
 		    stdin, stdout))
     return EXIT_FAILURE;
-  
+
   rsa_public_key_clear(&key);
 
   return EXIT_SUCCESS;
