@@ -46,7 +46,7 @@ pbkdf2 (void *mac_ctx, unsigned digest_size,
 
 #define PBKDF2(ctx, digest_size, update, digest,			\
 	       length, dst, iterations, salt_length, salt)		\
-  (0 ? ((update)((ctx), 0, (const uint8_t *) 0),			\
+  (0 ? ((update)((ctx), 0, (uint8_t *) 0),				\
 	(digest)((ctx), 0, (uint8_t *) 0))				\
    : pbkdf2 ((ctx), (digest_size),					\
 	     (nettle_hash_update_func *)(update),			\
