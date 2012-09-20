@@ -91,8 +91,8 @@ fi
 AC_PROG_CXX
 
 AC_LANG_PUSH(C++)
-AC_TRY_COMPILE([],[return 0;],[CXX_TESTS='cxx-test$(EXEEXT)'], [CXX_TESTS=''])
-AC_SUBST([CXX_TESTS])
+AC_TRY_COMPILE([],[return 0;],[IF_CXX=''], [IF_CXX='#'])
+AC_SUBST([IF_CXX])
 AC_LANG_POP
 
 AC_PROG_MAKE_SET
@@ -121,8 +121,8 @@ if test x$enable_dependency_tracking = xyes ; then
   # actually needed.
 
   AC_CONFIG_COMMANDS([dummy-dep-files],
-  [(cd "$srcdir" && find . -name '*.c' -print) \
- | sed 's/\.c$//' | (while read f; do echo > "$f.o.d"; echo > "$f.po.d"; done)
+  [(cd "$srcdir" && find . '(' -name '*.c' -o -name '*.cxx' ')' -print) \
+ | sed 's/\.c\(xx\|\)$//' | (while read f; do echo > "$f.o.d"; echo > "$f.po.d"; done)
 ])
 fi
 

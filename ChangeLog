@@ -1,3 +1,11 @@
+2012-09-20  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: New substitution IF_CXX, replacing CXX_TESTS.
+	(dummy-dep-files): Handle .cxx files.
+
+	* testsuite/Makefile.in: Use IF_CXX. Include dependency file for
+	cxx-test.o.
+
 2012-09-19  Niels Möller  <nisse@lysator.liu.se>
 
 	From Tim Rühsen:
