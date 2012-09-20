@@ -1,5 +1,8 @@
 2012-09-20  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/Makefile.in (VALGRIND): New variable, to make valgrind
+	checking easier.
+
 	* configure.ac: New substitution IF_CXX, replacing CXX_TESTS.
 	(dummy-dep-files): Handle .cxx files.
 

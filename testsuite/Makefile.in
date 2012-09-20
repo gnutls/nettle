@@ -95,6 +95,13 @@ include $(srcdir)/.test-rules.make
 $(TARGETS) $(EXTRA_TARGETS): testutils.$(OBJEXT) ../nettle-internal.$(OBJEXT) \
 	../libnettle.a @IF_HOGWEED@ ../libhogweed.a
 
+# For use as, e.g.,
+#
+#   make check EMULATOR='$(VALGRIND)'
+#   make check EMULATOR='$(VALGRIND) --log-fd=3' 3>valgrind.log
+
+VALGRIND = valgrind --error-exitcode=1 --leak-check=full --show-reachable=yes
+
 # The PATH update is for locating dlls on w*ndows.
 check: $(TS_ALL)
 	LD_LIBRARY_PATH=../.lib PATH="../.lib:$$PATH" srcdir="$(srcdir)" \
