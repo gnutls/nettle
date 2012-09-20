@@ -38,12 +38,12 @@
 #include "nettle-internal.h"
 
 void
-pbkdf2 (void *mac_ctx, unsigned digest_size,
+pbkdf2 (void *mac_ctx,
 	nettle_hash_update_func *update,
 	nettle_hash_digest_func *digest,
-	unsigned length, uint8_t *dst,
-	unsigned iterations,
-	unsigned salt_length, const uint8_t *salt)
+	unsigned digest_size, unsigned iterations,
+	unsigned salt_length, const uint8_t *salt,
+	unsigned length, uint8_t *dst)
 {
   TMP_DECL(U, uint8_t, NETTLE_MAX_HASH_DIGEST_SIZE);
   TMP_DECL(T, uint8_t, NETTLE_MAX_HASH_DIGEST_SIZE);

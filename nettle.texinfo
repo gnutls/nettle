@@ -2130,7 +2130,7 @@ uses a pseudorandom function such as @acronym{HMAC-SHA1}.
 Nettle's @acronym{PBKDF2} function is defined in @file{<nettle/pbkdf2.h>}.
 It contains a function:
 
-@deftypefun void pbkdf2 (void *mac_ctx, unsigned digest_size, nettle_hash_update_func *update, nettle_hash_digest_func *digest, unsigned length, uint8_t *dst, unsigned iterations, unsigned salt_length, const uint8_t *salt)
+@deftypefun void pbkdf2 (void *mac_ctx, nettle_hash_update_func *update, nettle_hash_digest_func *digest, unsigned digest_size, unsigned iterations, unsigned salt_length, const uint8_t *salt, unsigned length, uint8_t *dst)
 Derive symmetric key from a password according to PKCS #5 PBKDF2.  The
 PRF is assumed to have been initialized and this function will call the
 @var{update} and @var{digest} functions passing the @var{mac_ctx}

@@ -37,21 +37,22 @@ extern "C"
 #define pbkdf2 nettle_pbkdf2
 
 void
-pbkdf2 (void *mac_ctx, unsigned digest_size,
+pbkdf2 (void *mac_ctx,
 	nettle_hash_update_func *update,
 	nettle_hash_digest_func *digest,
-	unsigned length, uint8_t *dst,
-	unsigned iterations,
-	unsigned salt_length, const uint8_t *salt);
+	unsigned digest_size, unsigned iterations,
+	unsigned salt_length, const uint8_t *salt,
+	unsigned length, uint8_t *dst);
 
-#define PBKDF2(ctx, digest_size, update, digest,			\
-	       length, dst, iterations, salt_length, salt)		\
+#define PBKDF2(ctx, update, digest, digest_size,			\
+	       iterations, salt_length, salt, length, dst)		\
   (0 ? ((update)((ctx), 0, (uint8_t *) 0),				\
 	(digest)((ctx), 0, (uint8_t *) 0))				\
-   : pbkdf2 ((ctx), (digest_size),					\
+   : pbkdf2 ((ctx),							\
 	     (nettle_hash_update_func *)(update),			\
 	     (nettle_hash_digest_func *)(digest),			\
-	     (length), (dst), (iterations), (salt_length), (salt)))
+	     (digest_size), (iterations),				\
+	     (salt_length), (salt), (length), (dst)))
 
 #ifdef __cplusplus
 }

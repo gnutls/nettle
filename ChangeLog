@@ -1,5 +1,12 @@
 2012-09-20  Niels Möller  <nisse@lysator.liu.se>
 
+	* pbkdf2.c (pbkdf2): Reordered arguments, for consistency.
+	* pbkdf2.h (PBKDF2): Analogous reordering.
+	* testsuite/pbkdf2-test.c: Adapted to new argument order. Also use
+	LDATA for the salt.
+	* nettle.texinfo (Key derivation functions): Updated documented
+	pbkdf2 prototype.
+
 	* testsuite/Makefile.in (VALGRIND): New variable, to make valgrind
 	checking easier.
 
