@@ -1275,12 +1275,15 @@ in this way to ridicule United States export restrictions which treated hash
 functions as nice and harmless, but ciphers as dangerous munitions.
 
 Salsa20 uses the same idea, but with a new specialized hash function to
-mix key, block counter, and a couple of constants (input and output are
-the same size, making it not directly applicable for use as a general
-hash function). It's also designed for speed; on x86_64, it is currently
-the fastest cipher offered by nettle. It uses a block size of 512 bits
-(64 octets) and there are two specified key sizes, 128 and 256 bits (16
-and 32 octets).
+mix key, block counter, and a couple of constants. It's also designed
+for speed; on x86_64, it is currently the fastest cipher offered by
+nettle. It uses a block size of 512 bits (64 octets) and there are two
+specified key sizes, 128 and 256 bits (16 and 32 octets).
+
+@strong{Caution:} The hash function used in Salsa20 is @emph{not}
+directly applicable for use as a general hash function. It's @emph{not}
+collision resistant if arbitrary inputs are allowed, and furthermore,
+the input and output is of fixed size.
 
 When using Salsa20 to process a message, one specifies both a key and a
 @dfn{nonce}, the latter playing a similar rôle to the initialization

@@ -1,3 +1,8 @@
+2012-09-21  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle.texinfo (Cipher functions): Stress that the salsa20 hash
+	function is not suitable as a general hash function.
+
 2012-09-20  Simon Josefsson  <simon@josefsson.org>
 
 	* pbkdf2-hmac-sha1.c, pbkdf2-hmac-sha256.c: New files.
