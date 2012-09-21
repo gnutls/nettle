@@ -2123,12 +2123,19 @@ a given symmetric key derives other symmetric keys.  A sub-class of KDFs
 is the @dfn{password-based key derivation functions} (@acronym{PBKDFs}),
 which take as input a password or passphrase, and its purpose is
 typically to strengthen it and protect against certain pre-computation
-attacks by using salting and expensive computation.  The most well known
-PBKDF is the @code{PKCS #5 PBKDF2} described in @cite{RFC 2898} which
-uses a pseudorandom function such as @acronym{HMAC-SHA1}.
+attacks by using salting and expensive computation.
 
-Nettle's @acronym{PBKDF2} function is defined in @file{<nettle/pbkdf2.h>}.
-It contains a function:
+@subsection @acronym{PBKDF2}
+The most well known PBKDF is the @code{PKCS #5 PBKDF2} described in
+@cite{RFC 2898} which uses a pseudorandom function such as
+@acronym{HMAC-SHA1}.
+
+Nettle's @acronym{PBKDF2} functions are defined in
+@file{<nettle/pbkdf2.h>}.  There is an abstract function that operate on
+any PRF implemented via the @code{nettle_hash_update_func},
+@code{nettle_hash_digest_func} interfaces.  There is also helper macros
+and concrete functions PBKDF2-HMAC-SHA1 and PBKDF2-HMAC-SHA256.  First,
+the abstract function:
 
 @deftypefun void pbkdf2 (void *mac_ctx, nettle_hash_update_func *update, nettle_hash_digest_func *digest, unsigned digest_size, unsigned iterations, unsigned salt_length, const uint8_t *salt, unsigned length, uint8_t *dst)
 Derive symmetric key from a password according to PKCS #5 PBKDF2.  The
@@ -2139,6 +2146,44 @@ context parameter as an argument in order to compute digest of size
 @var{salt_length}, the iteration counter @var{iterations} (> 0), and the
 desired derived output length @var{length}.  The output buffer is
 @var{dst} which must have room for at least @var{length} octets.
+@end deftypefun
+
+Like for CBC and HMAC, there is a macros to help use the functions
+correctly.
+
+@deffn Macro PBKDF2 (@var{ctx}, @var{update}, @var{digest}, @var{digest_size}, @var{iterations}, @var{salt_length}, @var{salt}, @var{length}, @var{dst})
+@var{ctx} is a pointer to a context struct passed to the @var{update}
+and @var{digest} functions (of the types @code{nettle_hash_update_func}
+and @code{nettle_hash_digest_func} respectively) to implement the
+underlying PRF with digest size of @var{digest_size}.  Inputs are the
+salt @var{salt} of length @var{salt_length}, the iteration counter
+@var{iterations} (> 0), and the desired derived output length
+@var{length}.  The output buffer is @var{dst} which must have room for
+at least @var{length} octets.
+@end deffn
+
+@subsection Concrete @acronym{PBKDF2} functions
+Now we come to the specialized @acronym{PBKDF2} functions, which are
+easier to use than the general @acronym{PBKDF2} function.
+
+@subsubsection @acronym{PBKDF2-HMAC-SHA1}
+
+@deftypefun void pbkdf2_hmac_sha1 (unsigned @var{key_length}, const uint8_t *@var{key}, unsigned @var{iterations}, unsigned @var{salt_length}, const uint8_t *@var{salt}, unsigned @var{length}, uint8_t *@var{dst})
+PBKDF2 with HMAC-SHA1.  Derive @var{length} bytes of key into buffer
+@var{dst} using the password @var{key} of length @var{key_length} and
+salt @var{salt} of length @var{salt_length}, with iteration counter
+@var{iterations} (> 0).  The output buffer is @var{dst} which must have
+room for at least @var{length} octets.
+@end deftypefun
+
+@subsubsection @acronym{PBKDF2-HMAC-SHA256}
+
+@deftypefun void pbkdf2_hmac_sha256 (unsigned @var{key_length}, const uint8_t *@var{key}, unsigned @var{iterations}, unsigned @var{salt_length}, const uint8_t *@var{salt}, unsigned @var{length}, uint8_t *@var{dst})
+PBKDF2 with HMAC-SHA256.  Derive @var{length} bytes of key into buffer
+@var{dst} using the password @var{key} of length @var{key_length} and
+salt @var{salt} of length @var{salt_length}, with iteration counter
+@var{iterations} (> 0).  The output buffer is @var{dst} which must have
+room for at least @var{length} octets.
 @end deftypefun
 
 @node Public-key algorithms, Randomness, Key derivation functions, Reference

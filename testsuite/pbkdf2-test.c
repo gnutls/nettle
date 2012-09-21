@@ -12,6 +12,14 @@
     ASSERT(dk[expect->length] == 17);					\
   } while (0)
 
+#define PBKDF2_HMAC_TEST(f, key, c, salt, expect)			\
+  do {									\
+    dk[expect->length] = 17;						\
+    f (key, c, salt, expect->length, dk);				\
+    ASSERT(MEMEQ (expect->length, dk, expect->data));			\
+    ASSERT(dk[expect->length] == 17);					\
+  } while (0)
+
 #define MAX_DKLEN 25
 
 void
@@ -69,4 +77,13 @@ test_main (void)
   PBKDF2_TEST (&sha256ctx, hmac_sha256_update, hmac_sha256_digest,
 	       SHA256_DIGEST_SIZE, 80000, LDATA("NaCl"),
 	       SHEX("4ddcd8f60b98be21830cee5ef22701f9"));
+
+  /* Test convenience functions. */
+
+  PBKDF2_HMAC_TEST(pbkdf2_hmac_sha1, LDATA("password"), 1, LDATA("salt"),
+		   SHEX("0c60c80f961f0e71f3a9b524af6012062fe037a6"));
+
+  PBKDF2_HMAC_TEST(pbkdf2_hmac_sha256, LDATA("passwd"), 1, LDATA("salt"),
+		   SHEX("55ac046e56e3089fec1691c22544b605"));
+
 }

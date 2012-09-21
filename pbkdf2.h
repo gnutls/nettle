@@ -35,6 +35,8 @@ extern "C"
 
 /* Namespace mangling */
 #define pbkdf2 nettle_pbkdf2
+#define pbkdf2_hmac_sha1 nettle_pbkdf2_hmac_sha1
+#define pbkdf2_hmac_sha256 nettle_pbkdf2_hmac_sha256
 
 void
 pbkdf2 (void *mac_ctx,
@@ -53,6 +55,20 @@ pbkdf2 (void *mac_ctx,
 	     (nettle_hash_digest_func *)(digest),			\
 	     (digest_size), (iterations),				\
 	     (salt_length), (salt), (length), (dst)))
+
+/* PBKDF2 with specific PRFs. */
+
+void
+pbkdf2_hmac_sha1 (unsigned key_length, const uint8_t *key,
+		  unsigned iterations,
+		  unsigned salt_length, const uint8_t *salt,
+		  unsigned length, uint8_t *dst);
+
+void
+pbkdf2_hmac_sha256 (unsigned key_length, const uint8_t *key,
+		    unsigned iterations,
+		    unsigned salt_length, const uint8_t *salt,
+		    unsigned length, uint8_t *dst);
 
 #ifdef __cplusplus
 }

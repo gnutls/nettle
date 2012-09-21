@@ -1,3 +1,12 @@
+2012-09-20  Simon Josefsson  <simon@josefsson.org>
+
+	* pbkdf2-hmac-sha1.c, pbkdf2-hmac-sha256.c: New files.
+	* pbkdf2.h (pbkdf2_hmac_sha1, pbkdf2_hmac_sha256): New prototypes.
+	* Makefile.in (nettle_SOURCES): Add pbkdf2-hmac-sha1.c and
+	pbkdf2-hmac-sha256.c.
+	* nettle.texinfo (Key derivation functions): Improve.
+	* testsuite/pbkdf2-test.c (test_main): Test new functions.
+
 2012-09-20  Niels Möller  <nisse@lysator.liu.se>
 
 	* pbkdf2.c (pbkdf2): Reordered arguments, for consistency.
