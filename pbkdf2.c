@@ -5,7 +5,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2012 Simon Josefsson
+ * Copyright (C) 2012 Simon Josefsson, Niels Möller
  *
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -48,47 +48,44 @@ pbkdf2 (void *mac_ctx,
   TMP_DECL(U, uint8_t, NETTLE_MAX_HASH_DIGEST_SIZE);
   TMP_DECL(T, uint8_t, NETTLE_MAX_HASH_DIGEST_SIZE);
   
-  unsigned int u;
-  unsigned int l;
-  unsigned int r;
-  unsigned int i;
-  char tmp[4];
+  unsigned i;
 
-  if (iterations == 0)
-    return;
+  assert (iterations > 0);
 
   if (length == 0)
     return;
 
-  l = ((length - 1) / digest_size) + 1;
-  r = length - (l - 1) * digest_size;
-
   TMP_ALLOC (U, digest_size);
   TMP_ALLOC (T, digest_size);
 
-  for (i = 1; i <= l; i++)
+  for (i = 1;;
+       i++, dst += digest_size, length -= digest_size)
     {
-      memset (T, 0, digest_size);
+      uint8_t tmp[4];
+      uint8_t *prev;
+      unsigned u;
+      
+      WRITE_UINT32 (tmp, i);
+      
+      update (mac_ctx, salt_length, salt);
+      update (mac_ctx, sizeof(tmp), tmp);
+      digest (mac_ctx, digest_size, T);
 
-      for (u = 1; u <= iterations; u++)
+      prev = T;
+      
+      for (u = 1; u < iterations; u++, prev = U)
 	{
-	  if (u == 1)
-	    {
-	      WRITE_UINT32 (tmp, i);
-
-	      update (mac_ctx, salt_length, salt);
-	      update (mac_ctx, 4, tmp);
-	    }
-	  else
-	    {
-	      update (mac_ctx, digest_size, U);
-	    }
-
+	  update (mac_ctx, digest_size, prev);
 	  digest (mac_ctx, digest_size, U);
 
 	  memxor (T, U, digest_size);
 	}
 
-      memcpy (dst + (i - 1) * digest_size, T, i == l ? r : digest_size);
+      if (length <= digest_size)
+	{
+	  memcpy (dst, T, length);
+	  return;
+	}
+      memcpy (dst, T, digest_size);
     }
 }

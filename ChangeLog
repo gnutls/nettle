@@ -1,5 +1,8 @@
 2012-09-21  Niels Möller  <nisse@lysator.liu.se>
 
+	* pbkdf2.c (pbkdf2): assert that iterations > 0. Reorganized
+	loops.
+
 	* nettle.texinfo (Cipher functions): Stress that the salsa20 hash
 	function is not suitable as a general hash function.
 
