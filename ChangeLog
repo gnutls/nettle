@@ -1,3 +1,12 @@
+2012-09-23  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (nettle_SOURCES): Added salsa20-core-internal.c.
+
+	* salsa20-core-internal.c (_salsa20_core): New file and function,
+	extracted from salsa20_crypt.
+	* salsa20.h (_salsa20_core): Declare it.
+	* salsa20-crypt.c (salsa20_crypt): Use _salsa20_core.
+
 2012-09-21  Niels Möller  <nisse@lysator.liu.se>
 
 	* pbkdf2.c (pbkdf2): assert that iterations > 0. Reorganized

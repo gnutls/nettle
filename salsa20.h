@@ -37,6 +37,7 @@ extern "C" {
 #define salsa20_set_key nettle_salsa20_set_key
 #define salsa20_set_iv nettle_salsa20_set_iv
 #define salsa20_crypt nettle_salsa20_crypt
+#define _salsa20_core _nettle_salsa20_core
 
 /* Minimum and maximum keysizes, and a reasonable default. In
  * octets.*/
@@ -74,6 +75,9 @@ void
 salsa20_crypt(struct salsa20_ctx *ctx,
 	      unsigned length, uint8_t *dst,
 	      const uint8_t *src);
+
+void
+_salsa20_core(uint32_t *dst, const uint32_t *src, unsigned rounds);
 
 #ifdef __cplusplus
 }
