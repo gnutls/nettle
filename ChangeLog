@@ -1,3 +1,9 @@
+2012-10-03  Niels Möller  <nisse@lysator.liu.se>
+
+	From: Nikos Mavrogiannopoulos:
+	* testsuite/testutils.c (test_hash): On failure, print the
+	expected and returned hash values.
+
 2012-09-23  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in (nettle_SOURCES): Added salsa20-core-internal.c.

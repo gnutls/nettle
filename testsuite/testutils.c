@@ -498,7 +498,14 @@ test_hash(const struct nettle_hash *hash,
   hash->update(ctx, msg->length, msg->data);
   hash->digest(ctx, hash->digest_size, buffer);
 
-  ASSERT(MEMEQ(hash->digest_size, digest->data, buffer));
+  if (MEMEQ(hash->digest_size, digest->data, buffer) == 0)
+    {
+      fprintf(stdout, "\nGot:\n");
+      print_hex(hash->digest_size, buffer);
+      fprintf(stdout, "\nExpected:\n");
+      print_hex(hash->digest_size, digest->data);
+      abort();
+    }
 
   memset(buffer, 0, hash->digest_size);
 
