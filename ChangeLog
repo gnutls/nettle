@@ -1,3 +1,8 @@
+2012-10-26  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac (LIBNETTLE_LINK, LIBHOGWEED_LIBS): Add $(CFLAGS) on
+	the link command line. Reported by Dennis Clarke.
+
 2012-10-03  Niels Möller  <nisse@lysator.liu.se>
 
 	From: Nikos Mavrogiannopoulos:

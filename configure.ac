@@ -296,13 +296,13 @@ case "$host_os" in
     LIBNETTLE_SONAME=''
     LIBNETTLE_FILE='libnettle.dll.a'
     LIBNETTLE_FILE_SRC='$(LIBNETTLE_FILE)'
-    LIBNETTLE_LINK='$(CC) $(LDFLAGS) -shared -Wl,--out-implib=$(LIBNETTLE_FILE) -Wl,--export-all-symbols -Wl,--enable-auto-import -Wl,--whole-archive'
+    LIBNETTLE_LINK='$(CC) $(CFLAGS) $(LDFLAGS) -shared -Wl,--out-implib=$(LIBNETTLE_FILE) -Wl,--export-all-symbols -Wl,--enable-auto-import -Wl,--whole-archive'
     LIBNETTLE_LIBS='-Wl,--no-whole-archive $(LIBS)'
 
     LIBHOGWEED_SONAME=''
     LIBHOGWEED_FILE='libhogweed.dll.a'
     LIBHOGWEED_FILE_SRC='$(LIBHOGWEED_FILE)'
-    LIBHOGWEED_LINK='$(CC) $(LDFLAGS) -shared -Wl,--out-implib=$(LIBHOGWEED_FILE) -Wl,--export-all-symbols -Wl,--enable-auto-import -Wl,--whole-archive'
+    LIBHOGWEED_LINK='$(CC) $(CFLAGS) $(LDFLAGS) -shared -Wl,--out-implib=$(LIBHOGWEED_FILE) -Wl,--export-all-symbols -Wl,--enable-auto-import -Wl,--whole-archive'
     LIBHOGWEED_LIBS='-Wl,--no-whole-archive $(LIBS) libnettle.dll.a'
     IF_DLL=''
     ;;
@@ -310,13 +310,13 @@ case "$host_os" in
     LIBNETTLE_FORLINK=libnettle.dylib
     LIBNETTLE_SONAME='libnettle.$(LIBNETTLE_MAJOR).dylib'
     LIBNETTLE_FILE='libnettle.$(LIBNETTLE_MAJOR).$(LIBNETTLE_MINOR).dylib'
-    LIBNETTLE_LINK='$(CC) -dynamiclib $(LDFLAGS) -install_name ${libdir}/$(LIBNETTLE_SONAME) -compatibility_version $(LIBNETTLE_MAJOR) -current_version $(LIBNETTLE_MAJOR).$(LIBNETTLE_MINOR)'
+    LIBNETTLE_LINK='$(CC) $(CFLAGS) -dynamiclib $(LDFLAGS) -install_name ${libdir}/$(LIBNETTLE_SONAME) -compatibility_version $(LIBNETTLE_MAJOR) -current_version $(LIBNETTLE_MAJOR).$(LIBNETTLE_MINOR)'
     LIBNETTLE_LIBS=''
 
     LIBHOGWEED_FORLINK=libhogweed.dylib
     LIBHOGWEED_SONAME='libhogweed.$(LIBHOGWEED_MAJOR).dylib'
     LIBHOGWEED_FILE='libhogweed.$(LIBHOGWEED_MAJOR).$(LIBHOGWEED_MINOR).dylib'
-    LIBHOGWEED_LINK='$(CC) -dynamiclib -L. $(LDFLAGS) -install_name ${libdir}/$(LIBHOGWEED_SONAME) -compatibility_version $(LIBHOGWEED_MAJOR) -current_version $(LIBHOGWEED_MAJOR).$(LIBHOGWEED_MINOR)'
+    LIBHOGWEED_LINK='$(CC) $(CFLAGS) -dynamiclib -L. $(LDFLAGS) -install_name ${libdir}/$(LIBHOGWEED_SONAME) -compatibility_version $(LIBHOGWEED_MAJOR) -current_version $(LIBHOGWEED_MAJOR).$(LIBHOGWEED_MINOR)'
     LIBHOGWEED_LIBS='-lnettle -lgmp'
     ;;
   solaris*)
@@ -326,26 +326,26 @@ case "$host_os" in
     LIBNETTLE_FORLINK=libnettle.so
     LIBNETTLE_SONAME='$(LIBNETTLE_FORLINK).$(LIBNETTLE_MAJOR)'
     LIBNETTLE_FILE='$(LIBNETTLE_SONAME).$(LIBNETTLE_MINOR)'
-    LIBNETTLE_LINK='$(CC) $(LDFLAGS) -G -h $(LIBNETTLE_SONAME)'
+    LIBNETTLE_LINK='$(CC) $(CFLAGS) $(LDFLAGS) -G -h $(LIBNETTLE_SONAME)'
     LIBNETTLE_LIBS=''
 
     LIBHOGWEED_FORLINK=libhogweed.so
     LIBHOGWEED_SONAME='$(LIBHOGWEED_FORLINK).$(LIBHOGWEED_MAJOR)'
     LIBHOGWEED_FILE='$(LIBHOGWEED_SONAME).$(LIBHOGWEED_MINOR)'
-    LIBHOGWEED_LINK='$(CC) $(LDFLAGS) -L. -G -h $(LIBHOGWEED_SONAME)'
+    LIBHOGWEED_LINK='$(CC) $(CFLAGS) $(LDFLAGS) -L. -G -h $(LIBHOGWEED_SONAME)'
     LIBHOGWEED_LIBS='-lnettle -lgmp'
     ;;
   *)
     LIBNETTLE_FORLINK=libnettle.so
     LIBNETTLE_SONAME='$(LIBNETTLE_FORLINK).$(LIBNETTLE_MAJOR)'
     LIBNETTLE_FILE='$(LIBNETTLE_SONAME).$(LIBNETTLE_MINOR)'
-    LIBNETTLE_LINK='$(CC) $(LDFLAGS) -shared -Wl,-soname=$(LIBNETTLE_SONAME)'
+    LIBNETTLE_LINK='$(CC) $(CFLAGS) $(LDFLAGS) -shared -Wl,-soname=$(LIBNETTLE_SONAME)'
     LIBNETTLE_LIBS=''
 
     LIBHOGWEED_FORLINK=libhogweed.so
     LIBHOGWEED_SONAME='$(LIBHOGWEED_FORLINK).$(LIBHOGWEED_MAJOR)'
     LIBHOGWEED_FILE='$(LIBHOGWEED_SONAME).$(LIBHOGWEED_MINOR)'
-    LIBHOGWEED_LINK='$(CC) $(LDFLAGS) -L. -shared -Wl,-soname=$(LIBHOGWEED_SONAME)'
+    LIBHOGWEED_LINK='$(CC) $(CFLAGS) $(LDFLAGS) -L. -shared -Wl,-soname=$(LIBHOGWEED_SONAME)'
     # Requested by debian, to make linking with only -lhogweed work
     # (does not work in general, e.g., with static linking all of
     # -lhogweed -lgmp -lnettle are still required). Also makes dlopen
