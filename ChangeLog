@@ -1,5 +1,11 @@
 2012-10-27  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/Makefile.in (TS_SOURCES, CXX_SOURCES): Include sources
+	unconditionally.
+	(TS_CXX): Moved @IF_CXX@ conditional here.
+	(DISTFILES): Use $(SOURCES), which now includes all C source
+	files. testutils.c was lost in a the 2012-09-20 change.
+
 	* x86_64/salsa20-crypt.asm: Include x86_64/salsa20.m4.
 	Make all exits go via .Lend and W64_EXIT.
 

@@ -34,25 +34,23 @@ TS_HOGWEED_SOURCES = sexp-test.c sexp-format-test.c \
 		     rsa-test.c rsa-encrypt-test.c rsa-keygen-test.c \
 		     dsa-test.c dsa-keygen-test.c
 
-TS_SOURCES = $(TS_NETTLE_SOURCES) @IF_HOGWEED@ $(TS_HOGWEED_SOURCES)
-CXX_SOURCES = @IF_CXX@ cxx-test.cxx
+TS_SOURCES = $(TS_NETTLE_SOURCES) $(TS_HOGWEED_SOURCES)
+CXX_SOURCES = cxx-test.cxx
 
 TS_NETTLE = $(TS_NETTLE_SOURCES:.c=$(EXEEXT))
 TS_HOGWEED = $(TS_HOGWEED_SOURCES:.c=$(EXEEXT))
 TS_C = $(TS_NETTLE) @IF_HOGWEED@ $(TS_HOGWEED)
-TS_CXX = $(CXX_SOURCES:.cxx=$(EXEEXT))
+TS_CXX = @IF_CXX@ $(CXX_SOURCES:.cxx=$(EXEEXT))
 TARGETS = $(TS_C) $(TS_CXX)
 TS_SH = sexp-conv-test pkcs1-conv-test symbols-test
 TS_ALL = $(TARGETS) $(TS_SH)
 EXTRA_SOURCES = sha1-huge-test.c
 EXTRA_TARGETS = $(EXTRA_SOURCES:.c=$(EXEEXT))
 
-# C source files to be built
+# Includes all C source files, regardless of configuration
 SOURCES = $(TS_SOURCES) $(EXTRA_SOURCES) testutils.c
 
-# Includes all C source files, regardless of configuration
-DISTFILES = $(TS_NETTLE_SOURCES) $(TS_HOGWEED_SOURCES) \
-	    $(EXTRA_SOURCES) cxx-test.cxx Makefile.in .test-rules.make \
+DISTFILES = $(SOURCES) $(CXX_SOURCES) Makefile.in .test-rules.make \
 	    $(TS_SH) setup-env teardown-env \
 	    gold-bug.txt testutils.h
 
@@ -127,5 +125,7 @@ distclean: clean
 tags:
 	etags -o $(srcdir)/TAGS --include $(top_srcdir) $(srcdir)/*.c $(srcdir)/*.h
 
+# Includes dependency files for everything, including objects which
+# the current configuration will not build.
 DEP_FILES = $(SOURCES:.c=.$(OBJEXT).d) $(CXX_SOURCES:.cxx=.$(OBJEXT).d)
 @DEP_INCLUDE@ $(DEP_FILES)
