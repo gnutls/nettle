@@ -34,6 +34,8 @@ define(<M0110>, <%xmm7>)
 define(<M0011>, <%xmm8>)
 define(<COUNT>, <%rax>)
 
+include_src(<x86_64/salsa20.m4>)
+
 C Possible improvements:
 C 
 C Do two blocks (or more) at a time in parallel, to avoid limitations
@@ -43,52 +45,7 @@ C Avoid redoing the permutation of the input for each block (all but
 C the two counter words are constant). Could also keep the input in
 C registers.
 
-C QROUND(x0, x1, x2, x3)
-define(<QROUND>, <
-	movaps	$4, T0		C 0
-	paddd	$1, T0		C 1
-	movaps	T0, T1		C 2
-	pslld	<$>7, T0	C 2
-	psrld	<$>25, T1	C 3
-	pxor	T0, $2		C 3
-	pxor	T1, $2		C 4
-
-	movaps	$1, T0		C 0
-	paddd	$2, T0		C 5
-	movaps	T0, T1		C 6
-	pslld	<$>9, T0	C 6
-	psrld	<$>23, T1	C 7
-	pxor	T0, $3		C 7
-	pxor	T1, $3		C 8
-
-	movaps	$2, T0		C 0
-	paddd	$3, T0		C 9
-	movaps	T0, T1		C 10
-	pslld	<$>13, T0	C 10
-	psrld	<$>19, T1	C 11
-	pxor	T0, $4		C 11
-	pxor	T1, $4		C 12
-
-	movaps	$3, T0		C 0
-	paddd	$4, T0		C 13
-	movaps	T0, T1		C 14
-	pslld	<$>18, T0	C 14
-	psrld	<$>14, T1	C 15
-	pxor	T0, $1		C 15
-	pxor	T1, $1		C 16
->)
-
-C SWAP(x0, x1, mask)
-C Swaps bits in x0 and x1, with bits selected by the mask
-define(<SWAP>, <
-	movaps	$1, T0
-	pxor	$2, $1
-	pand	$3, $1
-	pxor	$1, $2
-	pxor	T0, $1
->)
-
-	.file "salsa20.asm"
+	.file "salsa20-crypt.asm"
 	
 	C salsa20_crypt(struct salsa20_ctx *ctx, unsigned length,
 	C		uint8_t *dst, const uint8_t *src)
@@ -115,18 +72,18 @@ PROLOGUE(nettle_salsa20_crypt)
 
 	C On input, each xmm register is one row. We start with
 	C
-	C	 0  1  2  3
-	C	 4  5  6  7
-	C	 8  9 10 11
-	C	12 13 14 15
+	C	 0  1  2  3     C K K K
+	C	 4  5  6  7	K C I I
+	C	 8  9 10 11	B B C K
+	C	12 13 14 15	K K K C
 	C
 	C Diagrams are in little-endian order, with least significant word to
 	C the left. We rotate the columns, to get instead
 	C
-	C	 0  5 10 15
-	C	 4  9 14  3
-	C	 8 13  2  7
-	C	12  1  6 11
+	C	 0  5 10 15	C C C C
+	C	 4  9 14  3	K B K K
+	C	 8 13  2  7	B K K I
+	C	12  1  6 11	K K I K
 	C 
 	C The original rows are now diagonals.
 	SWAP(X0, X1, M0101)
@@ -267,10 +224,10 @@ PROLOGUE(nettle_salsa20_crypt)
 	shr	$16, XREG(T64)
 .Llt2:
 	test	$1, LENGTH
-	jz	.Lpartial_done
+	jz	.Lend
 	xor	(SRC, POS), LREG(T64)
 	mov	LREG(T64), (DST, POS)
-.Lpartial_done:
-	ret
+
+	jmp	.Lend
 
 EPILOGUE(nettle_salsa20_crypt)

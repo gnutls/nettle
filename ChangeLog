@@ -1,3 +1,11 @@
+2012-10-27  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/salsa20-crypt.asm: Include x86_64/salsa20.m4.
+	Make all exits go via .Lend and W64_EXIT.
+
+	* x86_64/salsa20.m4: New file, extracted from
+	x86_64/salsa20-crypt.asm.
+
 2012-10-26  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac (LIBNETTLE_LINK, LIBHOGWEED_LIBS): Add $(CFLAGS) on
