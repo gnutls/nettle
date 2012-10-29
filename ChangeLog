@@ -1,3 +1,9 @@
+2012-10-29  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/salsa20-core-internal.asm: New file.
+	* configure.ac: Added salsa20-core-internal.asm.
+	* examples/nettle-benchmark.c (bench_salsa20_core): New function.
+
 2012-10-27  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/Makefile.in (TS_SOURCES, CXX_SOURCES): Include sources

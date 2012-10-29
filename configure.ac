@@ -237,7 +237,8 @@ if test "x$enable_assembler" = xyes ; then
     found=no
     for tmp_f in aes-encrypt-internal.asm aes-decrypt-internal.asm \
 		 arcfour-crypt.asm camellia-crypt-internal.asm \
-		 md5-compress.asm memxor.asm salsa20-crypt.asm \
+		 md5-compress.asm memxor.asm \
+		 salsa20-crypt.asm salsa20-core-internal.asm \
 		 serpent-encrypt.asm serpent-decrypt.asm \
 		 sha1-compress.asm machine.m4; do
 #       echo "Looking for $srcdir/$asm_path/$tmp_f"

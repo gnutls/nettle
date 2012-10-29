@@ -47,6 +47,7 @@
 #include "des.h"
 #include "gcm.h"
 #include "memxor.h"
+#include "salsa20.h"
 #include "serpent.h"
 #include "sha.h"
 #include "twofish.h"
@@ -563,10 +564,10 @@ compare_double(const void *ap, const void *bp)
 }
 
 /* Try to get accurate cycle times for assembler functions. */
+#if WITH_CYCLE_COUNTER
 static void
 bench_sha1_compress(void)
 {
-#if WITH_CYCLE_COUNTER
   uint32_t state[_SHA1_DIGEST_LENGTH];
   uint8_t data[BENCH_ITERATIONS * SHA1_DATA_SIZE];
   uint32_t start_lo, start_hi, end_lo, end_hi;
@@ -594,8 +595,41 @@ bench_sha1_compress(void)
 
   qsort(count, 5, sizeof(double), compare_double);
   printf("sha1_compress: %.2f cycles\n\n", count[2] / BENCH_ITERATIONS);  
-#endif
 }
+
+static void
+bench_salsa20_core(void)
+{
+  uint32_t state[_SALSA20_INPUT_LENGTH];
+  uint32_t start_lo, start_hi, end_lo, end_hi;
+
+  double count[5];
+  
+  uint8_t *p;
+  unsigned i, j;
+
+  for (j = 0; j < 5; j++)
+    {
+      i = 0;
+      GET_CYCLE_COUNTER(start_hi, start_lo);
+      for (; i < BENCH_ITERATIONS; i++)
+	_nettle_salsa20_core(state, state, 20);
+
+      GET_CYCLE_COUNTER(end_hi, end_lo);
+
+      end_hi -= (start_hi + (start_lo > end_lo));
+      end_lo -= start_lo;
+
+      count[j] = ldexp(end_hi, 32) + end_lo;
+    }
+
+  qsort(count, 5, sizeof(double), compare_double);
+  printf("salsa20_core: %.2f cycles\n\n", count[2] / BENCH_ITERATIONS);  
+}
+#else
+#define bench_sha1_compress()
+#define bench_salsa20_core()
+#endif
 
 #if WITH_OPENSSL
 # define OPENSSL(x) x,
@@ -684,7 +718,7 @@ main(int argc, char **argv)
     }
 #endif
   bench_sha1_compress();
-
+  bench_salsa20_core();
   time_overhead();
 
   header();
