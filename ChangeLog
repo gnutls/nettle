@@ -1,5 +1,11 @@
 2012-10-29  Niels Möller  <nisse@lysator.liu.se>
 
+	From Martin Storsjö:
+	* configure.ac (dummy-dep-files): Avoid non-posix \|-operator in
+	sed regexp.
+
+2012-10-29  Niels Möller  <nisse@lysator.liu.se>
+
 	* x86_64/salsa20-core-internal.asm: New file.
 	* configure.ac: Added salsa20-core-internal.asm.
 	* examples/nettle-benchmark.c (bench_salsa20_core): New function.
