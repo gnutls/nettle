@@ -27,7 +27,7 @@ NEWS for the 2.5 release
 
 	New features:
 
-	* Support for the salsa20 block cipher, including x86_64
+	* Support for the salsa20 stream cipher, including x86_64
           assembler. Originally contributed by Simon Josefsson, based
           on the reference implementation, then further optimized.
 
