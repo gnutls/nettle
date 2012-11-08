@@ -64,7 +64,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 aes-encrypt-internal.c aes-encrypt.c aes-encrypt-table.c \
 		 aes-set-encrypt-key.c aes-set-decrypt-key.c aes-meta.c \
 		 arcfour.c arcfour-crypt.c arcfour-meta.c \
-		 arctwo.c arctwo-meta.c \
+		 arctwo.c arctwo-meta.c gosthash94-meta.c \
 		 base16-encode.c base16-decode.c base16-meta.c \
                  base64-encode.c base64-decode.c base64-meta.c \
 		 camellia-crypt.c camellia-crypt-internal.c \
@@ -81,6 +81,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 knuth-lfib.c \
 		 md2.c md2-meta.c md4.c md4-meta.c \
 		 md5.c md5-compress.c md5-compat.c md5-meta.c \
+		 gosthash94.c \
 		 ripemd160.c ripemd160-compress.c ripemd160-meta.c \
 		 salsa20-core-internal.c \
 		 salsa20-crypt.c salsa20-set-key.c \
@@ -129,6 +130,7 @@ HEADERS = aes.h arcfour.h arctwo.h asn1.h bignum.h blowfish.h \
 	  knuth-lfib.h \
 	  macros.h \
 	  md2.h md4.h \
+	  gosthash94.h \
 	  md5.h md5-compat.h \
 	  memxor.h \
 	  nettle-meta.h nettle-types.h \

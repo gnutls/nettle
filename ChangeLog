@@ -1,3 +1,18 @@
+2012-11-08  Niels Möller  <nisse@lysator.liu.se>
+
+	Gost hash function, ported from Aleksey Kravchenko's rhash library
+	by Nikos Mavrogiannopoulos.
+	* gosthash94.c: New file.
+	* gosthash94.h: New file.
+	* gosthash94-meta.c: New file.
+	* nettle-meta.h (nettle_gosthash94): Declare.
+	* Makefile.in (nettle_SOURCES): Added gosthash94.c and
+	gosthash94-meta.c.
+	(HEADERS): Added gosthash94.h.
+	* testsuite/gosthash94-test.c: New file.
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Added
+	gosthash94-test.c.
+
 2012-10-29  Niels Möller  <nisse@lysator.liu.se>
 
 	From Martin Storsjö:

@@ -46,6 +46,9 @@ md5-compat-test$(EXEEXT): md5-compat-test.$(OBJEXT)
 memxor-test$(EXEEXT): memxor-test.$(OBJEXT)
 	$(LINK) memxor-test.$(OBJEXT) $(TEST_OBJS) -o memxor-test$(EXEEXT)
 
+gosthash94-test$(EXEEXT): gosthash94-test.$(OBJEXT)
+	$(LINK) gosthash94-test.$(OBJEXT) $(TEST_OBJS) -o gosthash94-test$(EXEEXT)
+
 ripemd160-test$(EXEEXT): ripemd160-test.$(OBJEXT)
 	$(LINK) ripemd160-test.$(OBJEXT) $(TEST_OBJS) -o ripemd160-test$(EXEEXT)
 
@@ -88,9 +91,6 @@ gcm-test$(EXEEXT): gcm-test.$(OBJEXT)
 hmac-test$(EXEEXT): hmac-test.$(OBJEXT)
 	$(LINK) hmac-test.$(OBJEXT) $(TEST_OBJS) -o hmac-test$(EXEEXT)
 
-pbkdf2-test$(EXEEXT): pbkdf2-test.$(OBJEXT)
-	$(LINK) pbkdf2-test.$(OBJEXT) $(TEST_OBJS) -o pbkdf2-test$(EXEEXT)
-
 meta-hash-test$(EXEEXT): meta-hash-test.$(OBJEXT)
 	$(LINK) meta-hash-test.$(OBJEXT) $(TEST_OBJS) -o meta-hash-test$(EXEEXT)
 
@@ -105,6 +105,9 @@ buffer-test$(EXEEXT): buffer-test.$(OBJEXT)
 
 yarrow-test$(EXEEXT): yarrow-test.$(OBJEXT)
 	$(LINK) yarrow-test.$(OBJEXT) $(TEST_OBJS) -o yarrow-test$(EXEEXT)
+
+pbkdf2-test$(EXEEXT): pbkdf2-test.$(OBJEXT)
+	$(LINK) pbkdf2-test.$(OBJEXT) $(TEST_OBJS) -o pbkdf2-test$(EXEEXT)
 
 sexp-test$(EXEEXT): sexp-test.$(OBJEXT)
 	$(LINK) sexp-test.$(OBJEXT) $(TEST_OBJS) -o sexp-test$(EXEEXT)
