@@ -735,14 +735,14 @@ The last three attributes are function pointers, of types
 @deftypevrx {Constant Struct} {struct nettle_hash} nettle_sha256
 @deftypevrx {Constant Struct} {struct nettle_hash} nettle_sha384
 @deftypevrx {Constant Struct} {struct nettle_hash} nettle_sha512
-
 These are all the hash functions that Nettle implements.
+@end deftypevr
 
-Nettle also exports a list of all these hashes.  This list can be used
-to dynamically enumerate or search the supported algorithms:
+Nettle also exports a list of all these hashes.
 
-@deftypevr {Constant Struct} {struct nettle_hash **} nettle_hashes
-
+@deftypevr {Constant Array} {struct nettle_hash **} nettle_hashes
+This list can be used to dynamically enumerate or search the supported
+algorithms. NULL-terminated.
 @end deftypevr
 
 @node Cipher functions, Cipher modes, Hash functions, Reference
@@ -1458,16 +1458,16 @@ struct, which is of size @code{context_size}.
 @deftypevrx {Constant Struct} {struct nettle_cipher} nettle_twofish128
 @deftypevrx {Constant Struct} {struct nettle_cipher} nettle_twofish192
 @deftypevrx {Constant Struct} {struct nettle_cipher} nettle_twofish256
-
 Nettle includes such structs for all the @emph{regular} ciphers, i.e.
 ones without weak keys or other oddities.
+@end deftypevr
 
 Nettle also exports a list of all these ciphers without weak keys or
-other oddities.  This list can be used to dynamically enumerate or
-search the supported algorithms:
+other oddities.
 
-@deftypevr {Constant Struct} {struct nettle_cipher **} nettle_ciphers
-
+@deftypevr {Constant Array} {struct nettle_cipher **} nettle_ciphers
+This list can be used to dynamically enumerate or search the supported
+algorithms. NULL-terminated.
 @end deftypevr
 
 @node Cipher modes, Keyed hash functions, Cipher functions, Reference
