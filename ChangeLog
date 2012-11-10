@@ -1,3 +1,8 @@
+2012-11-10  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle.texinfo (nettle_hashes, nettle_ciphers): Use deftypevr,
+	not deftypevrx. Spotted by Nikos Mavrogiannopoulos.
+
 2012-11-08  Niels Möller  <nisse@lysator.liu.se>
 
 	Gost hash function, ported from Aleksey Kravchenko's rhash library

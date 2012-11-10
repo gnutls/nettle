@@ -741,7 +741,7 @@ These are all the hash functions that Nettle implements.
 Nettle also exports a list of all these hashes.  This list can be used
 to dynamically enumerate or search the supported algorithms:
 
-@deftypevrx {Constant Struct} {struct nettle_hash **} nettle_hashes
+@deftypevr {Constant Struct} {struct nettle_hash **} nettle_hashes
 
 @end deftypevr
 
@@ -1466,7 +1466,7 @@ Nettle also exports a list of all these ciphers without weak keys or
 other oddities.  This list can be used to dynamically enumerate or
 search the supported algorithms:
 
-@deftypevrx {Constant Struct} {struct nettle_cipher **} nettle_ciphers
+@deftypevr {Constant Struct} {struct nettle_cipher **} nettle_ciphers
 
 @end deftypevr
 
