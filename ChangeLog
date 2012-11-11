@@ -3,6 +3,7 @@
 	From Nikos Mavrogiannopoulos:
 	* nettle.texinfo (Hash functions): Added documentation for
 	gosthash94.
+	* examples/nettle-benchmark.c (main): Benchmark gosthash94.
 
 2012-11-10  Niels Möller  <nisse@lysator.liu.se>
 

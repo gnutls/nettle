@@ -605,7 +605,6 @@ bench_salsa20_core(void)
 
   double count[5];
   
-  uint8_t *p;
   unsigned i, j;
 
   for (j = 0; j < 5; j++)
@@ -651,7 +650,7 @@ main(int argc, char **argv)
       &nettle_sha1, OPENSSL(&nettle_openssl_sha1)
       &nettle_sha224, &nettle_sha256,
       &nettle_sha384, &nettle_sha512,
-      &nettle_ripemd160,
+      &nettle_ripemd160, &nettle_gosthash94,
       NULL
     };
 
