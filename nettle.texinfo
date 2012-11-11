@@ -220,6 +220,11 @@ released under the LGPL.
 Written by @value{AUTHOR}, using Peter Gutmann's SHA1 code as a model. 
 Released under the LGPL.
 
+@item GOSTHASH94
+The C implementation of the GOST94 message digest is written by 
+Aleksey Kravchenko and was ported from the rhash library by Nikos
+Mavrogiannopoulos. It is released under the MIT license.
+
 @item TWOFISH
 The implementation of the TWOFISH cipher is written by Ruud de Rooij.
 Released under the LGPL.
@@ -711,6 +716,43 @@ This function also resets the context in the same way as
 @code{sha384_init}.
 @end deftypefun
 
+@subsection @acronym{GOSTHASH94}
+
+The GOST94 or GOST R 34.11-94 hash algorithm is a Soviet-era algorithm 
+used in Russian government standards (see @cite{RFC 4357}).
+It outputs message digests of 256 bits, or 32 octets.
+Nettle defines GOSTHASH94 in @file{<nettle/gosthash94.h>}.
+
+@deftp {Context struct} {struct gosthash94_ctx}
+@end deftp
+
+@defvr Constant GOSTHASH94_DIGEST_SIZE
+The size of an GOSTHASH94 digest, i.e. 32.
+@end defvr
+
+@defvr Constant GOSTHASH94_DATA_SIZE
+The internal block size of GOSTHASH94, i.e., 32.
+@end defvr
+
+@deftypefun void gosthash94_init (struct gosthash94_ctx *@var{ctx})
+Initialize the GOSTHASH94 state.
+@end deftypefun
+
+@deftypefun void gosthash94_update (struct gosthash94_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+Hash some more data.
+@end deftypefun
+
+@deftypefun void gosthash94_digest (struct gosthash94_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing it
+to @var{digest}. @var{length} may be smaller than
+@code{GOSTHASH94_DIGEST_SIZE}, in which case only the first @var{length}
+octets of the digest are written.
+
+This function also resets the context in the same way as
+@code{gosthash94_init}.
+@end deftypefun
+
+
 @subsection @code{struct nettle_hash}
 
 Nettle includes a struct including information about the supported hash
@@ -735,6 +777,7 @@ The last three attributes are function pointers, of types
 @deftypevrx {Constant Struct} {struct nettle_hash} nettle_sha256
 @deftypevrx {Constant Struct} {struct nettle_hash} nettle_sha384
 @deftypevrx {Constant Struct} {struct nettle_hash} nettle_sha512
+@deftypevrx {Constant Struct} {struct nettle_hash} nettle_gosthash94
 These are all the hash functions that Nettle implements.
 @end deftypevr
 
