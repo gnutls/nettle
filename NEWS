@@ -5,6 +5,12 @@ NEWS for the 2.6 release
 	* Support for PKCS #5 PBKDF2.  Contributed by Simon Josefsson.
           Specification in RFC 2898 and test vectors in RFC 6070.
 
+	* Support for GOST R 34.11-94 hash algorithm. Ported from librhash 
+	  by Nikos Mavrogiannopoulos. Written by Aleksey Kravchenko.
+	  More information in RFC4357. Test vectors taken from the GOST
+	  hash wikipedia page.
+          
+
 NEWS for the 2.5 release
 
 	This release includes important portability fixes for Windows
