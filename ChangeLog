@@ -1,5 +1,7 @@
 2012-11-12  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/nettle-benchmark.c (main): Benchmark sha3_256.
+
 	* sha3-permute.c: New file. Permutation function for sha3, aka
 	Keccak.
 	* sha3.h: New header file.
