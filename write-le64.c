@@ -1,11 +1,8 @@
-/* nettle-write.h
- *
- * Prototypes for some internal functions to write out word-sized data
- * to byte arrays. */
+/* write-le64.c */
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2010 Niels Möller
+ * Copyright (C) 2001, 2011, 2012 Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -23,25 +20,39 @@
  * MA 02111-1301, USA.
  */
 
-#ifndef NETTLE_WRITE_H_INCLUDED
-#define NETTLE_WRITE_H_INCLUDED
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
 
-#include "nettle-stdint.h"
+#include "nettle-write.h"
 
-/* Write the word array at SRC to the byte array at DST, using little
-   endian (le) or big endian (be) byte order, and truncating the
-   result to LENGTH bytes. */
-
-/* FIXME: Use a macro shortcut to memcpy for native endianness. */
-void
-_nettle_write_be32(unsigned length, uint8_t *dst,
-		   uint32_t *src);
-void
-_nettle_write_le32(unsigned length, uint8_t *dst,
-		   uint32_t *src);
+#include "macros.h"
 
 void
 _nettle_write_le64(unsigned length, uint8_t *dst,
-		   uint64_t *src);
+		   uint64_t *src)
+{
+  unsigned i;
+  unsigned words;
+  unsigned leftover;
+  
+  words = length / 8;
+  leftover = length % 8;
 
-#endif /* NETTLE_WRITE_H_INCLUDED */
+  for (i = 0; i < words; i++, dst += 8)
+    LE_WRITE_UINT64(dst, src[i]);
+
+  if (leftover)
+    {
+      uint64_t word;
+      
+      word = src[i];
+
+      do
+	{
+	  *dst++ = word & 0xff;
+	  word >>= 8;
+	}
+      while (--leftover);
+    }
+}

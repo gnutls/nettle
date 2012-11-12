@@ -1,5 +1,11 @@
 2012-11-12  Niels Möller  <nisse@lysator.liu.se>
 
+	* macros.h (LE_WRITE_UINT64): New macro.
+	* write-le64.c (_nettle_write_le64): New file and function.
+	* nettle-write.h (_nettle_write_le64): Declare. Also deleted
+	declaration of non-existent _nettle_write_be64.
+	* Makefile.in (nettle_SOURCES): Added write-le64.c.
+
 	* macros.h (ROTL64): New macro, moved from...
 	* sha512-compress.c (ROTL64): ... old location, deleted.
 
