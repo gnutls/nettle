@@ -51,7 +51,7 @@
 
 #if HAVE_NATIVE_64_BIT
 /* Operate independently on both halves of a 64-bit word. */
-#define ROTL64(n,x) \
+#define DROTL32(n,x) \
   (((x) << (n) & ~((((uint64_t) 1 << (n))-1) << 32)) \
    |(((x) >> (32-(n))) & ~((((uint64_t) 1 << (32-(n)))-1) << (n))))
 
@@ -64,7 +64,7 @@
     _sk = (subkey)[3]; _sk |= _sk << 32; (x3) ^= _sk;    \
   } while (0)
 
-#define RSHIFT64(n,x) \
+#define DRSHIFT32(n,x) \
   ( ((x) << (n)) & ~((((uint64_t) 1 << (n)) - 1) << 32))
 #endif /* HAVE_NATIVE_64_BIT */
 

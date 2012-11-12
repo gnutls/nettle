@@ -438,16 +438,16 @@
 /* In-place inverse linear transformation.  */
 #define LINEAR_TRANSFORMATION64_INVERSE(x0,x1,x2,x3)	 \
   do {                                                   \
-    x2 = ROTL64 (10, x2);                    \
-    x0 = ROTL64 (27, x0);                    \
-    x2 = x2 ^ x3 ^ RSHIFT64(7, x1); \
+    x2 = DROTL32 (10, x2);                    \
+    x0 = DROTL32 (27, x0);                    \
+    x2 = x2 ^ x3 ^ DRSHIFT32(7, x1); \
     x0 = x0 ^ x1 ^ x3;        \
-    x3 = ROTL64 (25, x3);                     \
-    x1 = ROTL64 (31, x1);                     \
-    x3 = x3 ^ x2 ^ RSHIFT64(3, x0); \
+    x3 = DROTL32 (25, x3);                     \
+    x1 = DROTL32 (31, x1);                     \
+    x3 = x3 ^ x2 ^ DRSHIFT32(3, x0); \
     x1 = x1 ^ x0 ^ x2;        \
-    x2 = ROTL64 (29, x2);                     \
-    x0 = ROTL64 (19, x0);                    \
+    x2 = DROTL32 (29, x2);                     \
+    x0 = DROTL32 (19, x0);                    \
   } while (0)
 
 #define ROUND64_INVERSE(which, subkey, x0,x1,x2,x3, y0,y1,y2,y3) \

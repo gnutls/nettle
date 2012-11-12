@@ -411,16 +411,16 @@
 
 #define LINEAR_TRANSFORMATION64(x0,x1,x2,x3)		 \
   do {                                                   \
-    x0 = ROTL64 (13, x0);                    \
-    x2 = ROTL64 (3, x2);                     \
+    x0 = DROTL32 (13, x0);                    \
+    x2 = DROTL32 (3, x2);                     \
     x1 = x1 ^ x0 ^ x2;        \
-    x3 = x3 ^ x2 ^ RSHIFT64(3, x0);	    \
-    x1 = ROTL64 (1, x1);                     \
-    x3 = ROTL64 (7, x3);                     \
+    x3 = x3 ^ x2 ^ DRSHIFT32(3, x0);	    \
+    x1 = DROTL32 (1, x1);                     \
+    x3 = DROTL32 (7, x3);                     \
     x0 = x0 ^ x1 ^ x3;        \
-    x2 = x2 ^ x3 ^ RSHIFT64(7, x1);	    \
-    x0 = ROTL64 (5, x0);                     \
-    x2 = ROTL64 (22, x2);                    \
+    x2 = x2 ^ x3 ^ DRSHIFT32(7, x1);	    \
+    x0 = DROTL32 (5, x0);                     \
+    x2 = DROTL32 (22, x2);                    \
   } while (0)
 
 #define ROUND64(which, subkey, x0,x1,x2,x3, y0,y1,y2,y3) \

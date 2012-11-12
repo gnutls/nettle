@@ -1,3 +1,13 @@
+2012-11-12  Niels Möller  <nisse@lysator.liu.se>
+
+	* serpent-internal.h [HAVE_NATIVE_64_BIT] (DROTL32): Renamed from...
+	(ROTL64): ... old name.
+	(DRSHIFT32): Renamed from ...
+	(RSHIFT64): ... old name.
+	* serpent-encrypt.c (LINEAR_TRANSFORMATION64): Updated for above
+	renames.
+	* serpent-decrypt.c (LINEAR_TRANSFORMATION64_INVERSE): Likewise.
+
 2012-11-11  Niels Möller  <nisse@lysator.liu.se>
 
 	From Nikos Mavrogiannopoulos:
