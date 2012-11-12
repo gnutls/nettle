@@ -38,8 +38,6 @@
 /* A block, treated as a sequence of 64-bit words. */
 #define SHA512_DATA_LENGTH 16
 
-#define ROTL64(n,x) ((x)<<(n) | ((x)>>(64-(n))))
-
 /* The SHA512 functions. The Choice function is the same as the SHA1
    function f1, and the majority function is the same as the SHA1 f3
    function, and the same as for SHA256. */
