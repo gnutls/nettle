@@ -21,6 +21,7 @@ TS_NETTLE_SOURCES = aes-test.c arcfour-test.c arctwo-test.c \
 		    salsa20-test.c \
 		    sha1-test.c sha224-test.c sha256-test.c \
 		    sha384-test.c sha512-test.c \
+		    sha3-permute-test.c sha3-256-test.c \
 		    serpent-test.c twofish-test.c \
 		    knuth-lfib-test.c \
 		    cbc-test.c ctr-test.c gcm-test.c hmac-test.c \
@@ -52,7 +53,7 @@ SOURCES = $(TS_SOURCES) $(EXTRA_SOURCES) testutils.c
 
 DISTFILES = $(SOURCES) $(CXX_SOURCES) Makefile.in .test-rules.make \
 	    $(TS_SH) setup-env teardown-env \
-	    gold-bug.txt testutils.h
+	    gold-bug.txt testutils.h sha3.awk
 
 all: $(TARGETS) $(EXTRA_TARGETS)
 

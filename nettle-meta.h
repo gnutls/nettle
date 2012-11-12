@@ -165,6 +165,7 @@ extern const struct nettle_hash nettle_sha224;
 extern const struct nettle_hash nettle_sha256;
 extern const struct nettle_hash nettle_sha384;
 extern const struct nettle_hash nettle_sha512;
+extern const struct nettle_hash nettle_sha3_256;
 
 struct nettle_armor
 {

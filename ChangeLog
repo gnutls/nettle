@@ -1,5 +1,22 @@
 2012-11-12  Niels Möller  <nisse@lysator.liu.se>
 
+	* sha3-permute.c: New file. Permutation function for sha3, aka
+	Keccak.
+	* sha3.h: New header file.
+	* sha3.c: New file, absorption and padding for sha3.
+	* sha3-256.c: New file.
+	* sha3-256-meta.c: New file.
+	* nettle-meta.h (nettle_sha3_256): Declare.
+	* Makefile.in (nettle_SOURCES): Added sha3 files.
+	(HEADERS): Added sha3.h.
+	* testsuite/sha3.awk: New file. Script to extract test vectors.
+	* testsuite/sha3-256-test.c: New file.
+	* testsuite/sha3-permute-test.c: New file.
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Added
+	sha3-permute-test.c and sha3-256-test.c.
+	(DISTFILES): Added sha3.awk.
+	* testsuite/.test-rules.make: Added sha3 targets.
+
 	* macros.h (LE_WRITE_UINT64): New macro.
 	* write-le64.c (_nettle_write_le64): New file and function.
 	* nettle-write.h (_nettle_write_le64): Declare. Also deleted
