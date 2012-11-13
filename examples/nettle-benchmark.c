@@ -50,6 +50,7 @@
 #include "salsa20.h"
 #include "serpent.h"
 #include "sha.h"
+#include "sha3.h"
 #include "twofish.h"
 
 #include "nettle-meta.h"
@@ -550,6 +551,8 @@ time_cipher(const struct nettle_cipher *cipher)
   free(key);
 }
 
+/* Try to get accurate cycle times for assembler functions. */
+#if WITH_CYCLE_COUNTER
 static int
 compare_double(const void *ap, const void *bp)
 {
@@ -563,71 +566,63 @@ compare_double(const void *ap, const void *bp)
     return 0;
 }
 
-/* Try to get accurate cycle times for assembler functions. */
-#if WITH_CYCLE_COUNTER
+#define TIME_CYCLES(t, code) do {				\
+  double tc_count[5];						\
+  uint32_t tc_start_lo, tc_start_hi, tc_end_lo, tc_end_hi;	\
+  unsigned tc_i, tc_j;						\
+  for (tc_j = 0; tc_j < 5; tc_j++)				\
+    {								\
+      tc_i = 0;							\
+      GET_CYCLE_COUNTER(tc_start_hi, tc_start_lo);		\
+      for (; tc_i < BENCH_ITERATIONS; tc_i++)			\
+	{ code; }						\
+								\
+      GET_CYCLE_COUNTER(tc_end_hi, tc_end_lo);			\
+								\
+      tc_end_hi -= (tc_start_hi + (tc_start_lo > tc_end_lo));	\
+      tc_end_lo -= tc_start_lo;					\
+								\
+      tc_count[tc_j] = ldexp(tc_end_hi, 32) + tc_end_lo;	\
+    }								\
+  qsort(tc_count, 5, sizeof(double), compare_double);		\
+  (t) = tc_count[2] / BENCH_ITERATIONS;				\
+} while (0)
+
 static void
 bench_sha1_compress(void)
 {
   uint32_t state[_SHA1_DIGEST_LENGTH];
-  uint8_t data[BENCH_ITERATIONS * SHA1_DATA_SIZE];
-  uint32_t start_lo, start_hi, end_lo, end_hi;
+  uint8_t data[SHA1_DATA_SIZE];
+  double t;
 
-  double count[5];
-  
-  uint8_t *p;
-  unsigned i, j;
+  TIME_CYCLES (t, _nettle_sha1_compress(state, data));
 
-  for (j = 0; j < 5; j++)
-    {
-      i = 0;
-      p = data;
-      GET_CYCLE_COUNTER(start_hi, start_lo);
-      for (; i < BENCH_ITERATIONS; i++, p += SHA1_DATA_SIZE)
-	_nettle_sha1_compress(state, p);
-
-      GET_CYCLE_COUNTER(end_hi, end_lo);
-
-      end_hi -= (start_hi + (start_lo > end_lo));
-      end_lo -= start_lo;
-
-      count[j] = ldexp(end_hi, 32) + end_lo;
-    }
-
-  qsort(count, 5, sizeof(double), compare_double);
-  printf("sha1_compress: %.2f cycles\n\n", count[2] / BENCH_ITERATIONS);  
+  printf("sha1_compress: %.2f cycles\n", t);  
 }
 
 static void
 bench_salsa20_core(void)
 {
   uint32_t state[_SALSA20_INPUT_LENGTH];
-  uint32_t start_lo, start_hi, end_lo, end_hi;
+  double t;
 
-  double count[5];
-  
-  unsigned i, j;
+  TIME_CYCLES (t, _nettle_salsa20_core(state, state, 20));
+  printf("salsa20_core: %.2f cycles\n", t);  
+}
 
-  for (j = 0; j < 5; j++)
-    {
-      i = 0;
-      GET_CYCLE_COUNTER(start_hi, start_lo);
-      for (; i < BENCH_ITERATIONS; i++)
-	_nettle_salsa20_core(state, state, 20);
+static void
+bench_sha3_permute(void)
+{
+  struct sha3_state state;
+  double t;
 
-      GET_CYCLE_COUNTER(end_hi, end_lo);
-
-      end_hi -= (start_hi + (start_lo > end_lo));
-      end_lo -= start_lo;
-
-      count[j] = ldexp(end_hi, 32) + end_lo;
-    }
-
-  qsort(count, 5, sizeof(double), compare_double);
-  printf("salsa20_core: %.2f cycles\n\n", count[2] / BENCH_ITERATIONS);  
+  TIME_CYCLES (t, sha3_permute (&state));
+  printf("sha3_permute: %.2f cycles (%.2f / round)\n", t, t / 24.0);
 }
 #else
 #define bench_sha1_compress()
 #define bench_salsa20_core()
+#define bench_sha3_permute()
 #endif
 
 #if WITH_OPENSSL
@@ -719,6 +714,8 @@ main(int argc, char **argv)
 #endif
   bench_sha1_compress();
   bench_salsa20_core();
+  bench_sha3_permute();
+  printf("\n");
   time_overhead();
 
   header();

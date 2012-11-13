@@ -1,3 +1,10 @@
+2012-11-13  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/nettle-benchmark.c (TIME_CYCLES): New macro.
+	(bench_sha1_compress, bench_salsa20_core): Use it.
+	(bench_sha3_permute): New function.
+	(main): Call bench_sha3_permute.
+
 2012-11-12  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/nettle-benchmark.c (main): Benchmark sha3_256.
