@@ -47,6 +47,15 @@ sha3_permute (struct sha3_state *state)
       18,  2, 61, 56, 14,
     };
 
+  static const unsigned char perm[25] =
+    {
+       0,10,20, 5,15,
+      16, 1,11,21, 6,
+       7,17, 2,12,22,
+      23, 8,18, 3,13,
+      14,24, 9,19, 4
+    };
+
   static const uint64_t rc[SHA3_ROUNDS] = {
     0x0000000000000001, 0x0000000000008082,
     0x800000000000808A, 0x8000000080008000,
@@ -62,39 +71,47 @@ sha3_permute (struct sha3_state *state)
     0x0000000080000001, 0x8000000080008008,
   };
   unsigned i;
+
+#define A state->a
+
   for (i = 0; i < SHA3_ROUNDS; i++)
     {
       uint64_t C[5], D[5], B[25];
       unsigned x, y;
 
       /* theta step */
-      for (x = 0; x < 5; x++)
-	C[x] = state->a[x] ^ state->a[5+x] ^ state->a[10+x]
-	  ^ state->a[15+x] ^ state->a[20+x];
-      for (x = 0; x < 5; x++)
-	/* Use the simplest indexing expressions in the argument to
-	   the ROTL64 macro */
-	D[(x+4)%5] = C[(x+3)%5] ^ ROTL64(1, C[x]);
-      for (x = 0; x < 5; x++)
-	for (y = 0; y < 5; y++)
-	  state->a[x +5*y] ^= D[x];
+      C[0] = A[0] ^ A[5+0] ^ A[10+0] ^ A[15+0] ^ A[20+0];
+      C[1] = A[1] ^ A[5+1] ^ A[10+1] ^ A[15+1] ^ A[20+1];
+      C[2] = A[2] ^ A[5+2] ^ A[10+2] ^ A[15+2] ^ A[20+2];
+      C[3] = A[3] ^ A[5+3] ^ A[10+3] ^ A[15+3] ^ A[20+3];
+      C[4] = A[4] ^ A[5+4] ^ A[10+4] ^ A[15+4] ^ A[20+4];
 
-      /* rho step */
-      for (x = 0; x < 25; x++)
-	state->a[x] = ROTL64 (rot[x], state->a[x]);
-      
-      /* pi step */
+      D[0] = C[4] ^ ROTL64(1, C[1]);
+      D[1] = C[0] ^ ROTL64(1, C[2]);
+      D[2] = C[1] ^ ROTL64(1, C[3]);
+      D[3] = C[2] ^ ROTL64(1, C[4]);
+      D[4] = C[3] ^ ROTL64(1, C[0]);
+
       for (x = 0; x < 5; x++)
-	for (y = 0; y < 5; y++)
-	  /* B[y,2*x+3*y] = B[y+5*(2*x + 3*y)]= B[10*x + 16*y] */
-	  B[(10*x+16*y) % 25] = state->a[x+5*y];
+	for (y = 0; y < 25; y += 5)
+	  A[y + x] ^= D[x];
+
+      /* rho and pi steps */
+      for (x = 0; x < 25; x++)
+	B[perm[x]] = ROTL64 (rot[x], A[x]);
 
       /* chi step */
-      for (x = 0; x < 5; x++)
-	for (y = 0; y < 5; y++)
-	  state->a[x+5*y] = B[x+5*y] ^ (~B[(x+1)%5 + 5*y] & B[(x+2)%5+5*y]);
-
+      for (y = 0; y < 25; y += 5)
+	{
+	  A[y]   = B[y]   ^ (~B[y+1] & B[y+2]);
+	  A[y+1] = B[y+1] ^ (~B[y+2] & B[y+3]);
+	  A[y+2] = B[y+2] ^ (~B[y+3] & B[y+4]);
+	  A[y+3] = B[y+3] ^ (~B[y+4] & B[y+0]);
+	  A[y+4] = B[y+4] ^ (~B[y+0] & B[y+1]);
+	}
+	  
       /* iota step */
-      state->a[0] ^= rc[i];
+      A[0] ^= rc[i];
     }
+#undef A
 }

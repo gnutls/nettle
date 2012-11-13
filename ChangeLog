@@ -1,5 +1,9 @@
 2012-11-13  Niels Möller  <nisse@lysator.liu.se>
 
+	* sha3-permute.c (sha3_permute): Micro optimizations. Partial
+	unrolling. Use lookup table for the permutation. On an x86_64,
+	execution time reduced from appr. 13000 cycles to appr. 6000.
+
 	* examples/nettle-benchmark.c (TIME_CYCLES): New macro.
 	(bench_sha1_compress, bench_salsa20_core): Use it.
 	(bench_sha3_permute): New function.
