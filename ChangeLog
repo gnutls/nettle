@@ -1,5 +1,8 @@
 2012-11-15  Niels Möller  <nisse@lysator.liu.se>
 
+	* sha3-permute.c (sha3_permute): Use ULL suffix on round
+	constants. Avoid passing shift count 0 to ROTL64.
+
 	* sha3.c (sha3_absorb): Fixed big-endian code. Need macros.h.
 
 	* macros.h (LE_READ_UINT64): New macro.
