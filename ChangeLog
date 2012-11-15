@@ -1,5 +1,7 @@
 2012-11-15  Niels Möller  <nisse@lysator.liu.se>
 
+	* sha3.c (sha3_absorb): Fixed big-endian code. Need macros.h.
+
 	* macros.h (LE_READ_UINT64): New macro.
 
 2012-11-13  Niels Möller  <nisse@lysator.liu.se>

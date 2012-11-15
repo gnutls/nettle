@@ -32,6 +32,7 @@
 
 #include "sha3.h"
 
+#include "macros.h"
 #include "memxor.h"
 
 static void
@@ -41,7 +42,7 @@ sha3_absorb (struct sha3_state *state, unsigned length, const uint8_t *data)
 #if WORDS_BIGENDIAN
   {    
     uint64_t *p;
-    for (p = &state->a[0][0]; length > 0; p++, length -= 8, data += 8)
+    for (p = state->a; length > 0; p++, length -= 8, data += 8)
       *p ^= LE_READ_UINT64 (data);
   }
 #else /* !WORDS_BIGENDIAN */
