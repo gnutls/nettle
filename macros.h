@@ -87,6 +87,16 @@ do {						\
 } while(0)
 
 /* And the other, little-endian, byteorder */
+#define LE_READ_UINT64(p)			\
+(  (((uint64_t) (p)[7]) << 56)			\
+ | (((uint64_t) (p)[6]) << 48)			\
+ | (((uint64_t) (p)[5]) << 40)			\
+ | (((uint64_t) (p)[4]) << 32)			\
+ | (((uint64_t) (p)[3]) << 24)			\
+ | (((uint64_t) (p)[2]) << 16)			\
+ | (((uint64_t) (p)[1]) << 8)			\
+ |  ((uint64_t) (p)[0]))
+
 #define LE_WRITE_UINT64(p, i)			\
 do {						\
   (p)[7] = ((i) >> 56) & 0xff;			\
