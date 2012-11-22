@@ -6304,7 +6304,7 @@
 
 	* testsuite/Makefile.am: Added bignum-test.
 
-	* testsuite/run-tests (test_program): Check the xit code more
+	* testsuite/run-tests (test_program): Check the exit code more
 	carefully, and treat 77 as skip. This convention was borrowed from
 	autotest.
 
