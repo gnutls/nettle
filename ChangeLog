@@ -1,3 +1,9 @@
+2012-11-28  Niels Möller  <nisse@lysator.liu.se>
+
+	From Fredrik Thulin:
+	* testsuite/pbkdf2-test.c (test_main): Add PBKDF2-HMAC-SHA512 test
+	cases.
+
 2012-11-15  Niels Möller  <nisse@lysator.liu.se>
 
 	* sha3-permute.c (sha3_permute): Use ULL suffix on round
