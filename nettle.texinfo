@@ -2194,7 +2194,7 @@ desired derived output length @var{length}.  The output buffer is
 @var{dst} which must have room for at least @var{length} octets.
 @end deftypefun
 
-Like for CBC and HMAC, there is a macros to help use the functions
+Like for CBC and HMAC, there is a macro to help use the function
 correctly.
 
 @deffn Macro PBKDF2 (@var{ctx}, @var{update}, @var{digest}, @var{digest_size}, @var{iterations}, @var{salt_length}, @var{salt}, @var{length}, @var{dst})
