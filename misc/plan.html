@@ -13,8 +13,8 @@
 <body>
   <h1> Nettle release plans </h1>
   <p> This is an attempt at defining a development target for
-  Nettle-2.5, inspired by similar pages for recent GMP releases. [Last
-  updated 2012-06-09]</p>
+  Nettle-2.6, inspired by similar pages for recent GMP releases. [Last
+  updated 2012-11-29]</p>
   <p class='should'>
     This really ought to be done before release
   </p>
@@ -28,47 +28,28 @@
     Leave for some later release!
   </p>
 
-  <h1> Plan for the Nettle-2.5 release </h1>
-  <h2> RSA blinding </h2>
-  <p class='done'>
-    Add tentative interface, as suggested by Nikos. Don't try yet to
-    get blinding variants of <em>all</em> signature functions.
-  </p>
+  <h1> Plan for the Nettle-2.6 release </h1>
   <h2> Documentation </h2>
-  <p class='done'>
-    Update documentation with info on Salsa20.
+  <p class='should'>
+    Update documentation with info on SHA3.
   </p>
   <p class='should'>
     Update NEWS file.
   </p>
-  <h2> Bug fixes </h2>
-  <p class='done'>
-    Various w64 fixes, mostly by Martin Storsjö.
-  </p>
-  <p class='done'>
-    Workaround for uint8_fast_t gnutls/gnulib incompatibilty on SunOS 5.8.
-  </p>
-
-  <h2> Other </h2>
-  <p class='done'> The interface of the internal function
-  <tt>pkcs1_signature_prefix</tt> has changed. Rename it to
-  <tt>_pkcs1_signature_prefix</tt>, to clearly mark it internal and
-  also make applications using it fail more predictably at compile or
-  link time.</p>
 
   <h2> Testing </h2>
   <p> Since xenofarm isn't up and running, do some manual testing:
   </p>
   <ul>
-    <li class='done'> x86_64-gnu-linux</li>
-    <li class='done'> x86_64-freebsd</li>
-    <li class='done'> x86-gnu-linux</li>
-    <li class='done'> x86-freebsd</li>
-    <li class='done'> x86-w*ndows (using cross compiler and wine)</li>
+    <li class='should'> x86_64-gnu-linux</li>
+    <li class='should'> x86_64-freebsd</li>
+    <li class='should'> x86-gnu-linux</li>
+    <li class='should'> x86-freebsd</li>
+    <li class='should'> x86-w*ndows (using cross compiler and wine)</li>
     <li class='wish'> x86_64-w*ndows (seems a bit harder to get
     mingw64 and wine64 working)</li>
-    <li class='done'> sparc32-solaris10</li>
-    <li class='done'> sparc64-solaris10</li>
+    <li class='should'> sparc32-solaris10</li>
+    <li class='should'> sparc64-solaris10</li>
   </ul>
 
   <h1> Plans for nettle-3.0 </h1>
@@ -77,6 +58,17 @@
   <p class='should'>
     Change the type of all lengths from <tt>unsigned</tt>
     to <tt>size_t</tt>. An ABI change on most 64-bit platforms.
+  </p>
+  <p class='should'>
+    Change argument type of memxor and memxor3 from uint8_t * to void
+    * (like modern memcpy). Consider them unconditionally part of the
+    nettle library, with nettle_ prefix on the symbols, and no
+    AC_REPLACE_FUNCS.
+  </p>
+  <p class='should'>
+    Rename sha256 to sha2_256, and similar for other sha2 functions.
+    Split sha.h into sha1.h and sha2.h. For backwards compatibility,
+    keep sha.h with old names as aliases.
   </p>
   <p class='should'>
     For Merkle-Damgaard hash functions, separate the state and the
