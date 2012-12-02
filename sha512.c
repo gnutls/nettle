@@ -35,7 +35,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "sha.h"
+#include "sha2.h"
 
 #include "macros.h"
 

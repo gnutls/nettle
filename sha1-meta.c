@@ -26,7 +26,7 @@
 
 #include "nettle-meta.h"
 
-#include "sha.h"
+#include "sha1.h"
 
 const struct nettle_hash nettle_sha1
 = _NETTLE_HASH(sha1, SHA1);

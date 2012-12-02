@@ -30,7 +30,8 @@
 
 #include "md5.h"
 #include "ripemd160.h"
-#include "sha.h"
+#include "sha1.h"
+#include "sha2.h"
 
 #ifdef __cplusplus
 extern "C" {

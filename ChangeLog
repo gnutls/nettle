@@ -1,6 +1,7 @@
 2012-12-02  Niels Möller  <nisse@lysator.liu.se>
 
-	Split sha.h into new files sha1.h and sha2.h.
+	Split sha.h into new files sha1.h and sha2.h. Replaced all
+	internal usage of sha.h in all files.
 	* sha.h: Kept for compatibility, just includes both new files.
 	* sha1.h: New file.
 	* sha2.h: New file.

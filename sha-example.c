@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <nettle/sha.h>
+#include <nettle/sha1.h>
 
 #define BUF_SIZE 1000
 

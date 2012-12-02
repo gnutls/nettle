@@ -49,7 +49,8 @@
 #include "memxor.h"
 #include "salsa20.h"
 #include "serpent.h"
-#include "sha.h"
+#include "sha1.h"
+#include "sha2.h"
 #include "sha3.h"
 #include "twofish.h"
 

@@ -30,7 +30,8 @@
 
 #include "nettle-types.h"
 
-#include "sha.h"
+#include "sha1.h"
+#include "sha2.h"
 
 #ifdef __cplusplus
 extern "C" {
