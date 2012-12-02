@@ -1,6 +1,5 @@
 #include "testutils.h"
 #include "hmac.h"
-#include "sha.h"
 #include "pbkdf2.h"
 
 /* NOTE: The salt argument is expected to expand to length, data */

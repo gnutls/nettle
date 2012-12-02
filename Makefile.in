@@ -137,7 +137,7 @@ HEADERS = aes.h arcfour.h arctwo.h asn1.h bignum.h blowfish.h \
 	  nettle-meta.h nettle-types.h \
 	  pgp.h pkcs1.h realloc.h ripemd160.h rsa.h rsa-compat.h \
 	  salsa20.h sexp.h \
-	  serpent.h sha.h sha3.h twofish.h \
+	  serpent.h sha.h sha1.h sha2.h sha3.h twofish.h \
 	  yarrow.h
 
 INSTALL_HEADERS = $(HEADERS) nettle-stdint.h

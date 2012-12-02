@@ -27,7 +27,7 @@
 #define NETTLE_YARROW_H_INCLUDED
 
 #include "aes.h"
-#include "sha.h"
+#include "sha2.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,5 +1,4 @@
 #include "testutils.h"
-#include "sha.h"
 
 void
 test_main(void)

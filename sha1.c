@@ -44,7 +44,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "sha.h"
+#include "sha1.h"
 
 #include "macros.h"
 #include "nettle-write.h"
