@@ -1,5 +1,10 @@
 2012-12-03  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac: Added sha3-permute.asm.
+
+	* x86_64/sha3-permute.asm: New file. 30% speedup over current C
+	code, 4300 cycles.
+
 	* nettle.texinfo (Hash functions): Split into several sections,
 	separating recommended hash functions and legacy hash functions.
 	Document sha3-256.

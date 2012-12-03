@@ -240,7 +240,7 @@ if test "x$enable_assembler" = xyes ; then
 		 md5-compress.asm memxor.asm \
 		 salsa20-crypt.asm salsa20-core-internal.asm \
 		 serpent-encrypt.asm serpent-decrypt.asm \
-		 sha1-compress.asm machine.m4; do
+		 sha1-compress.asm sha3-permute.asm machine.m4; do
 #       echo "Looking for $srcdir/$asm_path/$tmp_f"
       if test -f "$srcdir/$asm_path/$tmp_f"; then
 #        echo found
