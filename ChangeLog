@@ -1,5 +1,8 @@
 2012-12-03  Niels Möller  <nisse@lysator.liu.se>
 
+	* sha3-permute.c (sha3_permute): Optimized, to reduce number of
+	passes over the data. 20% speedup on x86_64, 4700 cycles.
+
 	* configure.ac: Added sha3-permute.asm.
 
 	* x86_64/sha3-permute.asm: New file. 30% speedup over current C

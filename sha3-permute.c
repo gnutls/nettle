@@ -38,22 +38,41 @@
 void
 sha3_permute (struct sha3_state *state)
 {
-  static const unsigned char rot[25] =
-    {
-       0,  1, 62, 28, 27,
-      36, 44,  6, 55, 20,
-       3, 10, 43, 25, 39,
-      41, 45, 15, 21,  8,
-      18,  2, 61, 56, 14,
-    };
-
-  static const unsigned char perm[25] =
-    {
+  /* Original permutation:
+     
        0,10,20, 5,15,
       16, 1,11,21, 6,
        7,17, 2,12,22,
       23, 8,18, 3,13,
       14,24, 9,19, 4
+
+     Rotation counts:
+
+       0,  1, 62, 28, 27,
+      36, 44,  6, 55, 20,
+       3, 10, 43, 25, 39,
+      41, 45, 15, 21,  8,
+      18,  2, 61, 56, 14,
+  */
+
+  /* Inverse permutation, to generate the output array in order. */
+  static const unsigned char iperm[25] =
+    {
+      0, 6, 12, 18, 24,
+      3, 9, 10, 16, 22,
+      1, 7, 13, 19, 20,
+      4, 5, 11, 17, 23,
+      2, 8, 14, 15, 21
+    };
+
+  /* Correspondingly permuted rotation counts. */
+  static const unsigned char irot[25] =
+    {
+       0, 44, 43, 21, 14,
+      28, 20,  3, 45, 61,
+       1,  6, 25,  8, 18,      
+      27, 36, 10, 15, 56,
+      62, 55, 39, 41,  2
     };
 
   static const uint64_t rc[SHA3_ROUNDS] = {
@@ -71,21 +90,22 @@ sha3_permute (struct sha3_state *state)
     0X0000000080000001ULL, 0X8000000080008008ULL,
   };
   unsigned i;
-
+  uint64_t C[5];
+  
 #define A state->a
+
+  C[0] = A[0] ^ A[5+0] ^ A[10+0] ^ A[15+0] ^ A[20+0];
+  C[1] = A[1] ^ A[5+1] ^ A[10+1] ^ A[15+1] ^ A[20+1];
+  C[2] = A[2] ^ A[5+2] ^ A[10+2] ^ A[15+2] ^ A[20+2];
+  C[3] = A[3] ^ A[5+3] ^ A[10+3] ^ A[15+3] ^ A[20+3];
+  C[4] = A[4] ^ A[5+4] ^ A[10+4] ^ A[15+4] ^ A[20+4];
 
   for (i = 0; i < SHA3_ROUNDS; i++)
     {
-      uint64_t C[5], D[5], B[25];
+      uint64_t D[5], B[25];
       unsigned x, y;
 
       /* theta step */
-      C[0] = A[0] ^ A[5+0] ^ A[10+0] ^ A[15+0] ^ A[20+0];
-      C[1] = A[1] ^ A[5+1] ^ A[10+1] ^ A[15+1] ^ A[20+1];
-      C[2] = A[2] ^ A[5+2] ^ A[10+2] ^ A[15+2] ^ A[20+2];
-      C[3] = A[3] ^ A[5+3] ^ A[10+3] ^ A[15+3] ^ A[20+3];
-      C[4] = A[4] ^ A[5+4] ^ A[10+4] ^ A[15+4] ^ A[20+4];
-
       D[0] = C[4] ^ ROTL64(1, C[1]);
       D[1] = C[0] ^ ROTL64(1, C[2]);
       D[2] = C[1] ^ ROTL64(1, C[3]);
@@ -94,25 +114,35 @@ sha3_permute (struct sha3_state *state)
 
       for (x = 0; x < 5; x++)
 	for (y = 0; y < 25; y += 5)
-	  A[y + x] ^= D[x];
+	  B[y + x] = A[y + x] ^ D[x];
 
-      /* rho and pi steps */
-      B[0] = A[0]; /* NOTE: ROTL64 doesn't work with shift count 0 */
-      for (x = 1; x < 25; x++)
-	B[perm[x]] = ROTL64 (rot[x], A[x]);
+      /* rho, pi, chi ant iota steps */
+      D[0] = B[0];
+      D[1] = ROTL64 (irot[1], B[iperm[1]]);
+      D[2] = ROTL64 (irot[2], B[iperm[2]]);
+      D[3] = ROTL64 (irot[3], B[iperm[3]]);
+      D[4] = ROTL64 (irot[4], B[iperm[4]]);
 
-      /* chi step */
-      for (y = 0; y < 25; y += 5)
+      A[0] = C[0] = D[0] ^(~D[1] & D[2]) ^ rc[i];
+      A[1] = C[1] = D[1] ^(~D[2] & D[3]);
+      A[2] = C[2] = D[2] ^(~D[3] & D[4]);
+      A[3] = C[3] = D[3] ^(~D[4] & D[0]);
+      A[4] = C[4] = D[4] ^(~D[0] & D[1]);
+
+      for (y = 5; y < 25; y += 5)
 	{
-	  A[y]   = B[y]   ^ (~B[y+1] & B[y+2]);
-	  A[y+1] = B[y+1] ^ (~B[y+2] & B[y+3]);
-	  A[y+2] = B[y+2] ^ (~B[y+3] & B[y+4]);
-	  A[y+3] = B[y+3] ^ (~B[y+4] & B[y+0]);
-	  A[y+4] = B[y+4] ^ (~B[y+0] & B[y+1]);
+	  D[0] = ROTL64 (irot[y],   B[iperm[y]]);
+	  D[1] = ROTL64 (irot[y+1], B[iperm[y+1]]);
+	  D[2] = ROTL64 (irot[y+2], B[iperm[y+2]]);
+	  D[3] = ROTL64 (irot[y+3], B[iperm[y+3]]);
+	  D[4] = ROTL64 (irot[y+4], B[iperm[y+4]]);
+
+	  C[0] ^= (A[y] = D[0]   ^ (~D[1] & D[2]));
+	  C[1] ^= (A[y+1] = D[1] ^ (~D[2] & D[3]));
+	  C[2] ^= (A[y+2] = D[2] ^ (~D[3] & D[4]));
+	  C[3] ^= (A[y+3] = D[3] ^ (~D[4] & D[0]));
+	  C[4] ^= (A[y+4] = D[4] ^ (~D[0] & D[1]));
 	}
-	  
-      /* iota step */
-      A[0] ^= rc[i];
     }
 #undef A
 }
