@@ -7,14 +7,14 @@
 @syncodeindex fn cp
 @c %**end of header
 
-@set UPDATED-FOR 2.5
+@set UPDATED-FOR 2.6
 @set AUTHOR Niels Möller
 
 @copying
 This manual is for the Nettle library (version @value{UPDATED-FOR}), a
 low-level cryptographic library.
 
-Originally written 2001 by @value{AUTHOR}, updated 2011.
+Originally written 2001 by @value{AUTHOR}, updated 2012.
 
 @quotation
 This manual is placed in the public domain. You may freely copy it, in
@@ -220,6 +220,9 @@ released under the LGPL.
 Written by @value{AUTHOR}, using Peter Gutmann's SHA1 code as a model. 
 Released under the LGPL.
 
+@item SHA3-256
+Written by @value{AUTHOR}. Released under the LGPL.
+
 @item GOSTHASH94
 The C implementation of the GOST94 message digest is written by 
 Aleksey Kravchenko and was ported from the rhash library by Nikos
@@ -294,7 +297,7 @@ Nettle.
 On a typical Unix system, this program can be compiled and linked with
 the command line 
 @example
-cc sha-example.c -o sha-example -lnettle
+gcc sha-example.c -o sha-example -lnettle
 @end example
 
 @node Linking, Reference, Example, Top
@@ -336,6 +339,7 @@ This chapter describes all the Nettle functions, grouped by family.
 
 @node Hash functions, Cipher functions, Reference, Reference
 @comment  node-name,  next,  previous,  up
+
 @section Hash functions
 @cindex Hash function
 A cryptographic @dfn{hash function} is a function that takes variable
@@ -365,12 +369,235 @@ unique ids to documents, and many other things.
 
 The most commonly used hash functions are MD5 and SHA1. Unfortunately,
 both these fail the collision-resistance requirement; cryptologists have
-found ways to construct colliding inputs. The recommended hash function
-for new applications is SHA256, even though it uses a structure similar
-to MD5 and SHA1. Constructing better hash functions is an urgent research
-problem.
+found ways to construct colliding inputs. The recommended hash functions
+for new applications are SHA2 (with main variants SHA256 and SHA512). At
+the time of this writing (December 2012), the winner of the NIST SHA3
+competition has recently been announced, and the new SHA3 (earlier known
+as Keccak) and other top SHA3 candidates may also be reasonable
+alternatives.
 
-@subsection @acronym{MD5}
+@menu
+* Recommended hash functions::
+* Legacy hash functions::
+* nettle_hash abstraction::
+@end menu
+
+@node Recommended hash functions, Legacy hash functions,, Hash functions
+@comment  node-name,  next,  previous,  up
+@subsection Recommended hash functions
+
+The following hash functions have no known weaknesses, and are suitable
+for new applications. The SHA2 family of hash functions were specified
+by @dfn{NIST}, intended as a replacement for @acronym{SHA1}.
+
+@subsubsection @acronym{SHA256}
+
+SHA256 is a member of the SHA2 family. It outputs hash values of 256
+bits, or 32 octets. Nettle defines SHA256 in @file{<nettle/sha2.h>}.
+
+@deftp {Context struct} {struct sha256_ctx}
+@end deftp
+
+@defvr Constant SHA256_DIGEST_SIZE
+The size of an SHA256 digest, i.e. 32.
+@end defvr
+
+@defvr Constant SHA256_DATA_SIZE
+The internal block size of SHA256. Useful for some special constructions,
+in particular HMAC-SHA256.
+@end defvr
+
+@deftypefun void sha256_init (struct sha256_ctx *@var{ctx})
+Initialize the SHA256 state.
+@end deftypefun
+
+@deftypefun void sha256_update (struct sha256_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+Hash some more data.
+@end deftypefun
+
+@deftypefun void sha256_digest (struct sha256_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing it
+to @var{digest}. @var{length} may be smaller than
+@code{SHA256_DIGEST_SIZE}, in which case only the first @var{length}
+octets of the digest are written.
+
+This function also resets the context in the same way as
+@code{sha256_init}.
+@end deftypefun
+
+Earlier versions of nettle defined SHA256 in the header file
+@file{<nettle/sha.h>}, which is now deprecated, but kept for
+compatibility.
+
+@subsubsection @acronym{SHA224}
+
+SHA224 is a variant of SHA256, with a different initial state, and with
+the output truncated to 224 bits, or 28 octets. Nettle defines SHA224 in
+@file{<nettle/sha2.h>} (and in @file{<nettle/sha.h>}, for backwards
+compatibility).
+
+@deftp {Context struct} {struct sha224_ctx}
+@end deftp
+
+@defvr Constant SHA224_DIGEST_SIZE
+The size of an SHA224 digest, i.e. 28.
+@end defvr
+
+@defvr Constant SHA224_DATA_SIZE
+The internal block size of SHA224. Useful for some special constructions,
+in particular HMAC-SHA224.
+@end defvr
+
+@deftypefun void sha224_init (struct sha224_ctx *@var{ctx})
+Initialize the SHA224 state.
+@end deftypefun
+
+@deftypefun void sha224_update (struct sha224_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+Hash some more data.
+@end deftypefun
+
+@deftypefun void sha224_digest (struct sha224_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing it
+to @var{digest}. @var{length} may be smaller than
+@code{SHA224_DIGEST_SIZE}, in which case only the first @var{length}
+octets of the digest are written.
+
+This function also resets the context in the same way as
+@code{sha224_init}.
+@end deftypefun
+
+@subsubsection @acronym{SHA512}
+
+SHA512 is a larger sibling to SHA256, with a very similar structure but
+with both the output and the internal variables of twice the size. The
+internal variables are 64 bits rather than 32, making it significantly
+slower on 32-bit computers. It outputs hash values of 512 bits, or 64
+octets. Nettle defines SHA512 in @file{<nettle/sha2.h>} (and in
+@file{<nettle/sha.h>}, for backwards compatibility).
+
+@deftp {Context struct} {struct sha512_ctx}
+@end deftp
+
+@defvr Constant SHA512_DIGEST_SIZE
+The size of an SHA512 digest, i.e. 64.
+@end defvr
+
+@defvr Constant SHA512_DATA_SIZE
+The internal block size of SHA512. Useful for some special constructions,
+in particular HMAC-SHA512.
+@end defvr
+
+@deftypefun void sha512_init (struct sha512_ctx *@var{ctx})
+Initialize the SHA512 state.
+@end deftypefun
+
+@deftypefun void sha512_update (struct sha512_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+Hash some more data.
+@end deftypefun
+
+@deftypefun void sha512_digest (struct sha512_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing it
+to @var{digest}. @var{length} may be smaller than
+@code{SHA512_DIGEST_SIZE}, in which case only the first @var{length}
+octets of the digest are written.
+
+This function also resets the context in the same way as
+@code{sha512_init}.
+@end deftypefun
+
+@subsubsection @acronym{SHA384}
+
+SHA384 is a variant of SHA512, with a different initial state, and with
+the output truncated to 384 bits, or 48 octets. Nettle defines SHA384 in
+@file{<nettle/sha2.h>} (and in @file{<nettle/sha.h>}, for backwards
+compatibility).
+
+@deftp {Context struct} {struct sha384_ctx}
+@end deftp
+
+@defvr Constant SHA384_DIGEST_SIZE
+The size of an SHA384 digest, i.e. 48.
+@end defvr
+
+@defvr Constant SHA384_DATA_SIZE
+The internal block size of SHA384. Useful for some special constructions,
+in particular HMAC-SHA384.
+@end defvr
+
+@deftypefun void sha384_init (struct sha384_ctx *@var{ctx})
+Initialize the SHA384 state.
+@end deftypefun
+
+@deftypefun void sha384_update (struct sha384_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+Hash some more data.
+@end deftypefun
+
+@deftypefun void sha384_digest (struct sha384_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing it
+to @var{digest}. @var{length} may be smaller than
+@code{SHA384_DIGEST_SIZE}, in which case only the first @var{length}
+octets of the digest are written.
+
+This function also resets the context in the same way as
+@code{sha384_init}.
+@end deftypefun
+
+@subsubsection @acronym{SHA3-256}
+
+The SHA3 hash functions were specified by NIST in repsonse to weaknesses
+in SHA1, and doubts about SHA2 hashfunctions which structurally are very
+similar to SHA1. The standard is a result of a competition, where the
+winning design, also known as Keccak, was designed by Guido Bertoni,
+Joan Daemen, Michaël Peeters and Gilles Van Assche. It is structurally
+very different from all widely used earlier hash functions. Nettle's
+current implementation is pretty slow.
+
+Nettle defines SHA3-256 in @file{<nettle/sha3.h>}.
+
+@deftp {Context struct} {struct sha3_224_ctx}
+@end deftp
+
+@defvr Constant SHA3_256_DIGEST_SIZE
+The size of an SHA3_256 digest, i.e. 32.
+@end defvr
+
+@defvr Constant SHA3_256_DATA_SIZE
+The internal block size of SHA3_256.
+@end defvr
+
+@deftypefun void sha3_256_init (struct sha3_256_ctx *@var{ctx})
+Initialize the SHA3-256 state.
+@end deftypefun
+
+@deftypefun void sha3_256_update (struct sha3_256_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+Hash some more data.
+@end deftypefun
+
+@deftypefun void sha3_256_digest (struct sha3_256_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing it
+to @var{digest}. @var{length} may be smaller than
+@code{SHA3_256_DIGEST_SIZE}, in which case only the first @var{length}
+octets of the digest are written.
+
+This function also resets the context in the same way as
+@code{sha3_256_init}.
+@end deftypefun
+
+@node Legacy hash functions, nettle_hash abstraction, Recommended hash functions, Hash functions
+@comment  node-name,  next,  previous,  up
+@subsection Legacy hash functions
+
+The hash functions in this section all have some known weaknesses, and
+should be avoided for new applications. These hash functions are mainly
+useful for compatibility with old applications and protocols. Some are
+still considered safe as building blocks for particular constructions,
+e.g., there seems to be no known attacks against HMAC-SHA1 or even
+HMAC-MD5. In some important cases, use of a ``legacy'' hash function
+does not in itself make the application insecure; if a known weakness is
+relevant depends on how the hash function is used, and on the threat
+model.
+
+@subsubsection @acronym{MD5}
 
 MD5 is a message digest function constructed by Ronald Rivest, and
 described in @cite{RFC 1321}. It outputs message digests of 128 bits, or
@@ -414,7 +641,7 @@ hash new data.
 
 To start over, you can call @code{md5_init} at any time.
 
-@subsection @acronym{MD2}
+@subsubsection @acronym{MD2}
 
 MD2 is another hash function of Ronald Rivest's, described in
 @cite{RFC 1319}. It outputs message digests of 128 bits, or 16 octets.
@@ -449,7 +676,7 @@ This function also resets the context in the same way as
 @code{md2_init}.
 @end deftypefun
 
-@subsection @acronym{MD4}
+@subsubsection @acronym{MD4}
 
 MD4 is a predecessor of MD5, described in @cite{RFC 1320}. Like MD5, it
 is constructed by Ronald Rivest. It outputs message digests of 128 bits,
@@ -486,7 +713,7 @@ This function also resets the context in the same way as
 @code{md4_init}.
 @end deftypefun
 
-@subsection @acronym{RIPEMD160}
+@subsubsection @acronym{RIPEMD160}
 
 RIPEMD160 is a hash function designed by Hans Dobbertin, Antoon
 Bosselaers, and Bart Preneel, as a strengthened version of RIPEMD
@@ -523,13 +750,12 @@ This function also resets the context in the same way as
 @code{ripemd160_init}.
 @end deftypefun
 
-@subsection @acronym{SHA1}
+@subsubsection @acronym{SHA1}
 
-SHA1 is a hash function specified by @dfn{NIST} (The U.S. National Institute
-for Standards and Technology). It outputs hash values of 160 bits, or 20
-octets. Nettle defines SHA1 in @file{<nettle/sha.h>}.
-
-The functions are analogous to the MD5 ones.
+SHA1 is a hash function specified by @dfn{NIST} (The U.S. National
+Institute for Standards and Technology). It outputs hash values of 160
+bits, or 20 octets. Nettle defines SHA1 in @file{<nettle/sha1.h>} (and
+in @file{<nettle/sha.h>}, for backwards compatibility).
 
 @deftp {Context struct} {struct sha1_ctx}
 @end deftp
@@ -561,162 +787,8 @@ This function also resets the context in the same way as
 @code{sha1_init}.
 @end deftypefun
 
-@subsection @acronym{SHA256}
 
-SHA256 is another hash function specified by @dfn{NIST}, intended as a
-replacement for @acronym{SHA1}, generating larger digests. It outputs
-hash values of 256 bits, or 32 octets. Nettle defines SHA256 in
-@file{<nettle/sha.h>}.
-
-The functions are analogous to the MD5 ones.
-
-@deftp {Context struct} {struct sha256_ctx}
-@end deftp
-
-@defvr Constant SHA256_DIGEST_SIZE
-The size of an SHA256 digest, i.e. 32.
-@end defvr
-
-@defvr Constant SHA256_DATA_SIZE
-The internal block size of SHA256. Useful for some special constructions,
-in particular HMAC-SHA256.
-@end defvr
-
-@deftypefun void sha256_init (struct sha256_ctx *@var{ctx})
-Initialize the SHA256 state.
-@end deftypefun
-
-@deftypefun void sha256_update (struct sha256_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
-Hash some more data.
-@end deftypefun
-
-@deftypefun void sha256_digest (struct sha256_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
-Performs final processing and extracts the message digest, writing it
-to @var{digest}. @var{length} may be smaller than
-@code{SHA256_DIGEST_SIZE}, in which case only the first @var{length}
-octets of the digest are written.
-
-This function also resets the context in the same way as
-@code{sha256_init}.
-@end deftypefun
-
-@subsection @acronym{SHA224}
-
-SHA224 is a variant of SHA256, with a different initial state, and with
-the output truncated to 224 bits, or 28 octets. Nettle defines SHA224 in
-@file{<nettle/sha.h>}.
-
-The functions are analogous to the MD5 ones.
-
-@deftp {Context struct} {struct sha224_ctx}
-@end deftp
-
-@defvr Constant SHA224_DIGEST_SIZE
-The size of an SHA224 digest, i.e. 28.
-@end defvr
-
-@defvr Constant SHA224_DATA_SIZE
-The internal block size of SHA224. Useful for some special constructions,
-in particular HMAC-SHA224.
-@end defvr
-
-@deftypefun void sha224_init (struct sha224_ctx *@var{ctx})
-Initialize the SHA224 state.
-@end deftypefun
-
-@deftypefun void sha224_update (struct sha224_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
-Hash some more data.
-@end deftypefun
-
-@deftypefun void sha224_digest (struct sha224_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
-Performs final processing and extracts the message digest, writing it
-to @var{digest}. @var{length} may be smaller than
-@code{SHA224_DIGEST_SIZE}, in which case only the first @var{length}
-octets of the digest are written.
-
-This function also resets the context in the same way as
-@code{sha224_init}.
-@end deftypefun
-
-@subsection @acronym{SHA512}
-
-SHA512 is a larger sibling to SHA256, with a very similar structure but
-with both the output and the internal variables of twice the size. The
-internal variables are 64 bits rather than 32, making it significantly
-slower on 32-bit computers. It outputs hash values of 512 bits, or 64
-octets. Nettle defines SHA512 in @file{<nettle/sha.h>}.
-
-The functions are analogous to the MD5 ones.
-
-@deftp {Context struct} {struct sha512_ctx}
-@end deftp
-
-@defvr Constant SHA512_DIGEST_SIZE
-The size of an SHA512 digest, i.e. 64.
-@end defvr
-
-@defvr Constant SHA512_DATA_SIZE
-The internal block size of SHA512. Useful for some special constructions,
-in particular HMAC-SHA512.
-@end defvr
-
-@deftypefun void sha512_init (struct sha512_ctx *@var{ctx})
-Initialize the SHA512 state.
-@end deftypefun
-
-@deftypefun void sha512_update (struct sha512_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
-Hash some more data.
-@end deftypefun
-
-@deftypefun void sha512_digest (struct sha512_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
-Performs final processing and extracts the message digest, writing it
-to @var{digest}. @var{length} may be smaller than
-@code{SHA512_DIGEST_SIZE}, in which case only the first @var{length}
-octets of the digest are written.
-
-This function also resets the context in the same way as
-@code{sha512_init}.
-@end deftypefun
-
-@subsection @acronym{SHA384}
-
-SHA384 is a variant of SHA512, with a different initial state, and with
-the output truncated to 384 bits, or 48 octets. Nettle defines SHA384 in
-@file{<nettle/sha.h>}.
-
-The functions are analogous to the MD5 ones.
-
-@deftp {Context struct} {struct sha384_ctx}
-@end deftp
-
-@defvr Constant SHA384_DIGEST_SIZE
-The size of an SHA384 digest, i.e. 48.
-@end defvr
-
-@defvr Constant SHA384_DATA_SIZE
-The internal block size of SHA384. Useful for some special constructions,
-in particular HMAC-SHA384.
-@end defvr
-
-@deftypefun void sha384_init (struct sha384_ctx *@var{ctx})
-Initialize the SHA384 state.
-@end deftypefun
-
-@deftypefun void sha384_update (struct sha384_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
-Hash some more data.
-@end deftypefun
-
-@deftypefun void sha384_digest (struct sha384_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
-Performs final processing and extracts the message digest, writing it
-to @var{digest}. @var{length} may be smaller than
-@code{SHA384_DIGEST_SIZE}, in which case only the first @var{length}
-octets of the digest are written.
-
-This function also resets the context in the same way as
-@code{sha384_init}.
-@end deftypefun
-
-@subsection @acronym{GOSTHASH94}
+@subsubsection @acronym{GOSTHASH94}
 
 The GOST94 or GOST R 34.11-94 hash algorithm is a Soviet-era algorithm 
 used in Russian government standards (see @cite{RFC 4357}).
@@ -752,8 +824,9 @@ This function also resets the context in the same way as
 @code{gosthash94_init}.
 @end deftypefun
 
-
-@subsection @code{struct nettle_hash}
+@node nettle_hash abstraction,, Legacy hash functions, Hash functions
+@comment  node-name,  next,  previous,  up
+@subsection The nettle_hash abstraction
 
 Nettle includes a struct including information about the supported hash
 functions. It is defined in @file{<nettle/nettle-meta.h>}, and is used
@@ -777,6 +850,7 @@ The last three attributes are function pointers, of types
 @deftypevrx {Constant Struct} {struct nettle_hash} nettle_sha256
 @deftypevrx {Constant Struct} {struct nettle_hash} nettle_sha384
 @deftypevrx {Constant Struct} {struct nettle_hash} nettle_sha512
+@deftypevrx {Constant Struct} {struct nettle_hash} nettle_sha3_256
 @deftypevrx {Constant Struct} {struct nettle_hash} nettle_gosthash94
 These are all the hash functions that Nettle implements.
 @end deftypevr
@@ -2528,7 +2602,7 @@ example if if @var{n_size} is too small, or if @var{e_size} is zero and
 
 @node DSA,  , RSA, Public-key algorithms
 @comment  node-name,  next,  previous,  up
-@subsection Nettle's @acronym{DSA} support
+@subsection @acronym{DSA}
 
 The @acronym{DSA} digital signature algorithm is more complex than
 @acronym{RSA}. It was specified during the early 1990s, and in 1994 NIST

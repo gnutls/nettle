@@ -1,3 +1,9 @@
+2012-12-03  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle.texinfo (Hash functions): Split into several sections,
+	separating recommended hash functions and legacy hash functions.
+	Document sha3-256.
+
 2012-12-02  Niels Möller  <nisse@lysator.liu.se>
 
 	Split sha.h into new files sha1.h and sha2.h. Replaced all
