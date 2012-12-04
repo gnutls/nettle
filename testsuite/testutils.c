@@ -5,6 +5,7 @@
 #include "cbc.h"
 #include "ctr.h"
 #include "knuth-lfib.h"
+#include "macros.h"
 #include "nettle-internal.h"
 
 #include <ctype.h>
@@ -308,13 +309,26 @@ test_cipher_ctr(const struct nettle_cipher *cipher,
   void *ctx = xalloc(cipher->context_size);
   uint8_t *data;
   uint8_t *ctr = xalloc(cipher->block_size);
+  uint8_t *octr = xalloc(cipher->block_size);
   unsigned length;
+  unsigned low, nblocks;
 
   ASSERT (cleartext->length == ciphertext->length);
   length = cleartext->length;
 
   ASSERT (ictr->length == cipher->block_size);
-  
+
+  /* Compute expected counter value after the operation. */
+  nblocks = (length + cipher->block_size - 1) / cipher->block_size;
+  ASSERT (nblocks < 0x100);
+
+  memcpy (octr, ictr->data, cipher->block_size - 1);
+  low = ictr->data[cipher->block_size - 1] + nblocks;
+  octr[cipher->block_size - 1] = low;
+
+  if (low >= 0x100)
+    INCREMENT (cipher->block_size - 1, octr);
+
   data = xalloc(length);  
 
   cipher->set_encrypt_key(ctx, key->length, key->data);
@@ -336,6 +350,8 @@ test_cipher_ctr(const struct nettle_cipher *cipher,
       FAIL();
     }
 
+  ASSERT (MEMEQ (cipher->block_size, ctr, octr));
+
   memcpy(ctr, ictr->data, cipher->block_size);
 
   ctr_crypt(ctx, cipher->encrypt,
@@ -354,8 +370,11 @@ test_cipher_ctr(const struct nettle_cipher *cipher,
       FAIL();
     }
 
+  ASSERT (MEMEQ (cipher->block_size, ctr, octr));
+
   free(ctx);
   free(data);
+  free(octr);
   free(ctr);
 }
 

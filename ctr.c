@@ -82,16 +82,7 @@ ctr_crypt(void *ctx, nettle_crypt_func *f,
     }
   else
     {
-      if (length <= block_size)
-	{
-	  TMP_DECL(buffer, uint8_t, NETTLE_MAX_CIPHER_BLOCK_SIZE);
-	  TMP_ALLOC(buffer, block_size);
-
-	  f(ctx, block_size, buffer, ctr);
-	  INCREMENT(block_size, ctr);
-	  memxor3(dst, src, buffer, length);
-	}
-      else
+      if (length > block_size)
 	{
 	  TMP_DECL(buffer, uint8_t, NBLOCKS * NETTLE_MAX_CIPHER_BLOCK_SIZE);
 	  unsigned chunk = NBLOCKS * block_size;
@@ -123,6 +114,15 @@ ctr_crypt(void *ctx, nettle_crypt_func *f,
 	      f(ctx, chunk, buffer, buffer);
 	      memxor3(dst, src, buffer, length);
 	    }
+	}
+      else if (length > 0)
+      	{
+	  TMP_DECL(buffer, uint8_t, NETTLE_MAX_CIPHER_BLOCK_SIZE);
+	  TMP_ALLOC(buffer, block_size);
+
+	  f(ctx, block_size, buffer, ctr);
+	  INCREMENT(block_size, ctr);
+	  memxor3(dst, src, buffer, length);
 	}
     }
 }

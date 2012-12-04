@@ -12,6 +12,13 @@ test_main(void)
    * F.5  CTR Example Vectors
    */
 
+  /* Zero-length data. Exposes bug reported by Tim Kosse, where
+     ctr_crypt increment the ctr when it shouldn't. */
+  test_cipher_ctr(&nettle_aes128,
+		  SHEX("2b7e151628aed2a6abf7158809cf4f3c"),
+		  SHEX(""), SHEX(""),
+		  SHEX("f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff"));
+  
   /* F.5.1  CTR-AES128.Encrypt */
   test_cipher_ctr(&nettle_aes128,
 		  SHEX("2b7e151628aed2a6abf7158809cf4f3c"),
