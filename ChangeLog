@@ -1,3 +1,8 @@
+2012-12-09  Niels Möller  <nisse@lysator.liu.se>
+
+	* sha3-permute.c (sha3_permute): Rewrote to do permutation in
+	place. 80% speedup on x86_64, 2500 cycles.
+
 2012-12-04  Niels Möller  <nisse@lysator.liu.se>
 
 	* ctr.c (ctr_crypt): Fix bug reported by Tim Kosse. Don't
