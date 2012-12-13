@@ -20,41 +20,59 @@ C MA 02111-1301, USA.
 define(<CTX>, <%rdi>)		C 25 64-bit values, 200 bytes.
 define(<COUNT>, <%r8>)		C Avoid clobbering %rsi, for W64.
 
-define(<C01>, <%xmm0>)
-define(<C23>, <%xmm1>)
-define(<C4>, <%rdx>)
+define(<A00>,  <%rax>)
+define(<A0102>, <%xmm0>)
+define(<A0304>, <%xmm1>)
 
-define(<T01>, <%xmm2>)
-define(<T23>, <%xmm3>)
-define(<T4>, <%r9>)
-define(<D12>, <%xmm4>)
-define(<D34>, <%xmm5>)
-define(<D0>, <%r10>)
-define(<T40>, <%xmm6>)
-define(<D43>, <%xmm7>)
+define(<A05>,  <%rcx>)
+define(<A0607>, <%xmm2>)
+define(<A0809>, <%xmm3>)
+	
+define(<A10>,  <%rdx>)
+define(<A1112>, <%xmm4>)
+define(<A1314>, <%xmm5>)
 
-define(<RC_END>, <%r11>)
+define(<A15>,  <%rbp>)
+define(<A1617>, <%xmm6>)
+define(<A1819>, <%xmm7>)
+	
+define(<A20>,  <%r9>)
+define(<A2122>, <%xmm8>)
+define(<A2324>, <%xmm9>)
 
-define(<FRAME_SIZE>, <200>)
+define(<C0>, <%r10>)
+define(<C12>, <%xmm10>)
+define(<C34>, <%xmm11>)
+
+define(<D0>, <%r11>)
+define(<D12>, <%xmm12>)
+define(<D34>, <%xmm13>)
+
+C Wide temporaries
+define(<W0>, <%xmm14>)
+define(<W1>, <%xmm15>)
+define(<W2>, <%xmm12>)		C Overlap D12
+define(<W3>, <%xmm13>)		C Overlap D34
+
+define(<T0>, <%r12>)
+define(<T1>, <%r13>)
+define(<T2>, <%r11>)		C Overlap D0
+define(<T3>, <%r10>)		C Overlap C0
+
+define(<RC>, <%r14>)
 
 define(<OFFSET>, <ifelse($1,0,,eval(8*$1))>)
-define(<A>, <OFFSET($1)(CTX)>)
-define(<B>, <OFFSET($1)(%rsp)>)
+define(<STATE>, <OFFSET($1)(CTX)>)
 
-	C FIXME: Possible optimizations.
+define(<SWAP64>, <pshufd	<$>0x4e,>)
 
-	C * Compute the parity vector C at the end of the chi step.
-	C   This avoids one pass over the data.
-	
-	C * Micro optimizations with register use and scheduling.
-
-	C * Try different order during the permutation step, maybe
-	C   doing sequential writes rather than sequential reads.
-
-	C * Try to do the permutation and the chi step, without
-	C   storing intermediate values? That would reducing the
-	C   number of passes over the data. We still need a copy, but
-	C   we would let the theta step produce that copy.
+C ROTL64(rot, register, temp)
+C Caller needs to or together the result.
+define(<ROTL64>, <
+	movdqa	$2, $3
+	psllq	<$>$1, $2
+	psrlq	<$>eval(64-$1), $3
+>)
 
 	.file "sha3-permute.asm"
 	
@@ -62,351 +80,416 @@ define(<B>, <OFFSET($1)(%rsp)>)
 	.text
 	ALIGN(4)
 PROLOGUE(nettle_sha3_permute)
-	W64_ENTRY(1, 8)
-	subq	$FRAME_SIZE, %rsp
-	movl	$24, XREG(COUNT)
-	negq	COUNT
+	W64_ENTRY(1, 16)
+	push	%rbp
+	push	%r12
+	push	%r13
+	push	%r14
 
-	lea 	.rc_end(%rip), RC_END
+	movl	$24, XREG(COUNT)
+	lea	.rc-8(%rip), RC
+	movq	STATE(0), A00
+	movups	STATE(1), A0102
+	movups	STATE(3), A0304
+	movq	A00, C0
+
+	movq	STATE(5), A05
+	movdqa	A0102, C12
+	movups	STATE(6), A0607
+	movdqa	A0304, C34
+	movups	STATE(8), A0809
+	xorq	A05, C0
+	
+	movq	STATE(10), A10
+	pxor	A0607, C12
+	movups	STATE(11), A1112
+	pxor	A0809, C34
+	movups	STATE(13), A1314
+	xorq	A10, C0
+
+	movq	STATE(15), A15
+	pxor	A1112, C12
+	movups	STATE(16), A1617
+	pxor	A1314, C34
+	movups	STATE(18), A1819
+	xorq	A15, C0
+
+	movq	STATE(20), A20
+	pxor	A1617, C12
+	movups	STATE(21), A2122
+	pxor	A1819, C34
+	movups	STATE(23), A2324
+	xorq	A20, C0
+	pxor	A2122, C12
+	pxor	A2324, C34
+	
 	ALIGN(4)
 .Loop:
-	C theta step
-	C Compute parity vector C[0,...,4].
-	movups	A(0), C01
-	movups	A(2), C23
-	movq	A(4), C4
+	C The theta step. Combine parity bits, then xor to state.
+	C D0 = C4 ^ (C1 <<< 1)
+	C D1 = C0 ^ (C2 <<< 1)
+	C D2 = C1 ^ (C3 <<< 1)
+	C D3 = C2 ^ (C4 <<< 1)
+	C D4 = C3 ^ (C0 <<< 1)
 
-	movups	A(5), T01
-	movups	A(7), T23
-	xorq	A(9), C4	C C[4] ^= A[9]
-
-	pxor	T01, C01	C C[0,1] ^= A[5,6]
-	movups	A(10), T01
-	pxor	T23, C23	C C[2,3] ^= A[7,8]
-	movups	A(12), T23
-	xorq	A(14), C4	C C[4] ^= A[14]
-
-	pxor	T01, C01	C C[0,1] ^= A[10,11]
-	movups	A(15), T01
-	pxor	T23, C23	C C[2,3] ^= A[12,13]
-	movups	A(17), T23
-	xorq	A(19), C4	C C[4] ^= A[19]
-
-	pxor	T01, C01	C C[0,1] ^= A[15,16]
-	movups	A(20), T01
-	pxor	T23, C23	C C[2,3] ^= A[17,18]
-	movups	A(22), T23
-	xorq	A(24), C4	C C[4] ^= A[24]
-
-	pxor	T01, C01	C C[0,1] ^= A[20,21]
-	pxor	T23, C23	C C[2,3] ^= A[22,23]
-
-	C Combine parity bits:
-	C D[0] = C[4] ^ ROTL64(1, C[1])
-	C D[1,2] = C[0,1] ^ ROTL64(1, C[2,3])
-	C D[3,4] = C[2,3] ^ ROTL64(1, C[4,0])
+	C Shift the words around, putting (C0, C1) in D12, (C2, C3) in
+	C   D34, and (C4, C0) in C34.
 	
-	C Copy to D0, D12, D34, rotate original
-	movdqa	C01, D12
-	movdqa	C23, D34
-	movdqa	C01, T01
-	movdqa	C23, T23
-	psllq	$1, T01
-	psllq	$1, T23
-	psrlq	$63, C01
-	psrlq	$63, C23
-	movq	C4, D0
-	rolq	$1, C4
-	por	T01, C01
-	por	T23, C23
+	C Notes on "unpack" instructions:
+	C   punpckhqdq 01, 23 gives 31
+	C   punpcklqdq 01, 23 gives 20
 
-	C Move around, putting
-	C  T4 <-- ROTL(1,C1), T40 <-- ROTL(1,C[4,0])
-	movq	C4, T40
-	punpcklqdq	C01, T40
-	psrldq	$8, C01
-	movd	C01, T4			C Really a movq!
+	SWAP64	C34, C34		C Holds C4, C3
+	movdqa	C12, D34
+	movq	C0, D12
+	punpcklqdq	C12, D12	C Holds C0, C1
+	punpckhqdq	C34, D34	C Holds C2, C3
+	punpcklqdq	D12, C34	C Holds	C4, C0
+	movq	C34, D0
+	movq	C12, T0
+	rolq	$1, T0
+	xorq	T0, D0
 
-	pxor	C23, D12
-	xorq	T4, D0
-	pxor	T40, D34
-
-	C xor D on top of state
-	xorq	D0, A(0)
-	movups	A(1), T01
-	movups	A(3), T23
-	pxor	D12, T01
-	pxor	D34, T23
-	movups	T01, A(1)
-	movups	T23, A(3)
+	C Can use C12 as temporary
+	movdqa	D34, W0
+	movdqa	D34, W1
+	psllq	$1, W0
+	psrlq	$63, W1
+	pxor	W0, D12
+	pxor	W1, D12		C Done D12
 	
-	xorq	D0, A(5)
-	movups	A(6), T01
-	movups	A(8), T23
-	pxor	D12, T01
-	pxor	D34, T23
-	movups	T01, A(6)
-	movups	T23, A(8)
+	movdqa	C34, C12
+	psrlq	$63, C34
+	psllq	$1, C12
+	pxor	C34, D34
+	pxor	C12, D34	C Done D34
 
-	xorq	D0, A(10)
-	movups	A(11), T01
-	movups	A(13), T23
-	pxor	D12, T01
-	pxor	D34, T23
-	movups	T01, A(11)
-	movups	T23, A(13)
+	xorq	D0, A00
+	xorq	D0, A05
+	xorq	D0, A10
+	xorq	D0, A15
+	xorq	D0, A20
+	pxor	D12, A0102
+	pxor	D12, A0607
+	pxor	D12, A1112
+	pxor	D12, A1617
+	pxor	D12, A2122
+	pxor	D34, A0304
+	pxor	D34, A0809
+	pxor	D34, A1314
+	pxor	D34, A1819
+	pxor	D34, A2324
 
-	xorq	D0, A(15)
-	movups	A(16), T01
-	movups	A(18), T23
-	pxor	D12, T01
-	pxor	D34, T23
-	movups	T01, A(16)
-	movups	T23, A(18)
+	C theta step done, no C, D or W temporaries alive.
 
-	xorq	D0, A(20)
-	movups	A(21), T01
-	movups	A(23), T23
-	pxor	D12, T01
-	pxor	D34, T23
-	movups	T01, A(21)
-	movups	T23, A(23)
-
-	C rho and pi steps: Rotate and permute
-	movq	A(0), C4	C rot  0, perm 0
-	movq	A(1), T4	C rot  1, perm 10
-	movq	C4, B(0)
-	rolq	$1, T4
-	movq	A(2), C4	C rot 62, perm 20
-	movq	T4, B(10)
-	rolq	$62, C4	
-	movq	A(3), T4	C rot 28, perm 5
-	movq	C4, B(20)
-	rolq	$28, T4
-	movq	A(4), C4	C rot 27, perm 15
-	movq	T4, B(5)	
-	rolq	$27, C4	
-	movq	A(5), T4	C rot 36, perm 16
-	movq	C4, B(15)
-	rolq	$36, T4
-	movq	A(6), C4	C rot 44, perm  1
-	movq	T4, B(16)
-	rolq	$44, C4	
-	movq	A(7), T4	C rot  6, perm 11
-	movq	C4, B(1)
-	rolq	$6, T4
-	movq	A(8), C4	C rot 55, perm 21
-	movq	T4, B(11)
-	rolq	$55, C4	
-	movq	A(9), T4	C rot 20, perm  6
-	movq	C4, B(21)
-	rolq	$20, T4
-	movq	A(10), C4	C rot  3, perm  7
-	movq	T4, B(6)
-	rolq	$3, C4	
-	movq	A(11), T4	C rot 10, perm 17
-	movq	C4, B(7)
-	rolq	$10, T4
-	movq	A(12), C4	C rot 43, perm  2
-	movq	T4, B(17)
-	rolq	$43, C4	
-	movq	A(13), T4	C rot 25, perm 12
-	movq	C4, B(2)
-	rolq	$25, T4
-	movq	A(14), C4	C rot 39, perm 22
-	movq	T4, B(12)
-	rolq	$39, C4	
-	movq	A(15), T4	C rot 41, perm 23
-	movq	C4, B(22)
-	rolq	$41, T4
-	movq	A(16), C4	C rot 45, perm  8
-	movq	T4, B(23)
-	rolq	$45, C4	
-	movq	A(17), T4	C rot 15, perm 18
-	movq	C4, B(8)
-	rolq	$15, T4
-	movq	A(18), C4	C rot 21, perm  3
-	movq	T4, B(18)
-	rolq	$21, C4	
-	movq	A(19), T4	C rot  8, perm 13
-	movq	C4, B(3)
-	rolq	$8, T4
-	movq	A(20), C4	C rot 18, perm 14
-	movq	T4, B(13)
-	rolq	$18, C4	
-	movq	A(21), T4	C rot  2, perm 24
-	movq	C4, B(14)
-	rolq	$2, T4
-	movq	A(22), C4	C rot 61, perm  9
-	movq	T4, B(24)
-	rolq	$61, C4	
-	movq	A(23), T4	C rot 56, perm 19
-	movq	C4, B(9)
-	rolq	$56, T4
-	movq	A(24), C4	C rot 14, perm  4
-	movq	T4, B(19)
-	rolq	$14, C4	
-	movq	C4, B(4)
-
-	C chi step
-	C Read with some overlap, pairs C01, D12, D34
-	C Then also construct pairs C23 and T40.
-
-	C We do the operations as
-	C A01 = B01 ^ (~B12 & B23)
-	C A12 = B12 ^ (~B23 & B34)
-	C A34 = B34 ^ (~B40 & B01)
-
-	C Where we store only the low 64 bits of A01, and add in the
-	C round key if applicable.
+	C rho and pi steps. When doing the permutations, also
+	C transpose the matrix.
 	
-	movups	B(0), C01
-	movups	B(1), D12
-	movups	B(3), D34
+	C The combined permutation + transpose gives the following
+	C cycles (rotation counts in parenthesis)
+	C   0 <- 0(0)
+	C   1 <- 3(28) <- 4(27) <- 2(62) <- 1(1)
+	C   5 <- 6(44) <- 9(20) <- 8(55) <- 5(36)
+	C   7 <- 7(6)
+	C   10 <- 12(43) <- 13(25) <- 11(10) <- 10(3)
+	C   14 <- 14(39)
+	C   15 <- 18(21) <- 17(15) <- 19(8) <- 15(41)
+	C   16 <- 16(45)
+	C   20 <- 24(14) <- 21(2) <- 22(61) <- 20(18)
+	C   23 <- 23(56)
 
-	pshufd	$0x4e, D34, D43
-	movdqa 	D43, T40
-	punpcklqdq	C01, T40	C Get 40
-	movdqa	D12, 	C23
-	punpckhqdq	D43, C23	C Get 23
+	C Do the 1,2,3,4 row. First rotate, then permute.
+	movdqa	A0102, W0
+	movdqa	A0102, W1
+	movdqa	A0102, W2
+	psllq	$1, A0102
+	psrlq	$63, W0
+	psllq	$62, W1
+	por	A0102, W0	C rotl 1  (A01)
+	psrlq	$2, W2
+	por	W1, W2		C rotl 62 (A02)
 
-	pandn	C01, T40
-	pxor	D34, T40
-	movups	T40, A(3)
+	movdqa	A0304, A0102
+	movdqa	A0304, W1
+	psllq	$28, A0102
+	psrlq	$36, W1
+	por	W1, A0102	C rotl 28 (A03)
+	movdqa	A0304, W1
+	psllq	$27, A0304
+	psrlq	$37, W1
+	por	W1, A0304	C rotl 27 (A04)
+	
+	punpcklqdq	W0, A0102
+	punpckhqdq	W2, A0304
 
-	movdqa	D12, T40
-	pandn	C23, T40
-	pxor	C01, T40
+	C 5 <- 6(44) <- 9(20) <- 8(55) <- 5(36)
+	C 7 <- 7(6)
+        C      __   _______
+	C  _ L'  ` L_    __`
+	C |5|    |6|7|  |8|9|
+	C   `-_________-^`-^
+	
+	rolq	$36, A05
+	movq	A05, W0
+	movq	A0607, A05
+	rolq	$44, A05		C Done A05
+	ROTL64(6, A0607, W1)
+	por	A0607, W1
+	movdqa	A0809, A0607
+	ROTL64(20, A0607, W2)
+	por	W2, A0607
+	punpckhqdq	W1, A0607	C Done A0607
+	ROTL64(55, A0809, W1)
+	por	A0809, W1
+	movdqa W0, A0809
+	punpcklqdq	W1, A0809	C Done 0809
 
-	movd	T40, T4		C Really movq!
-	xorq	(RC_END, COUNT, 8), T4
-	movq	T4, A(0)
+	C   10 <- 12(43) <- 13(25) <- 11(10) <- 10(3)
+	C   14 <- 14(39)
+        C      _____   ___
+	C  __L'   __`_L_  `_____
+	C |10|   |11|12|  |13|14|
+	C   `-___-^`-______-^ 
+	C
 
-	pandn	D34, C23
-	pxor	D12, C23
-	movups	C23, A(1)
+	rolq	$42, A10		C 42 + 25 = 3 (mod 64)
+	SWAP64	A1112, W0
+	movq	A10, A1112
+	movq	W0, A10
+	rolq	$43, A10		C Done A10
 
+	punpcklqdq	A1314, A1112
+	ROTL64(25, A1112, W1)
+	por	W1, A1112		C Done A1112
+	ROTL64(39, A1314, W2)
+	por	A1314, W2
+	ROTL64(10, W0, A1314)
+	por	W0, A1314
+	punpckhqdq	W2, A1314	C Done A1314
+	
+	
+	C   15 <- 18(21) <- 17(15) <- 19(8) <- 15(41)
+	C   16 <- 16(45)
+	C      _____________
+	C     /         _______
+	C  _L'    ____L'    |  `_
+	C |15|   |16|17|   |18|19|
+	C   \        `_____-^   ^
+	C    \_________________/
 
-	movups	B(5), C01
-	movups	B(6), D12
-	movups	B(8), D34
+	SWAP64	A1819, W0
+	rolq	$41, A15
+	movq	A15, W1
+	movq	A1819, A15
+	rolq	$21, A15		C Done A15
+	SWAP64	A1617, A1819
+	ROTL64(45, A1617, W2)
+	por	W2, A1617
+	ROTL64(8, W0, W3)
+	por	W3, W0
+	punpcklqdq	W0, A1617	C Done A1617
+	ROTL64(15, A1819, W2)
+	por	W2, A1819
+	punpcklqdq	W1, A1819	C Done A1819
+	
+	C   20 <- 24(14) <- 21(2) <- 22(61) <- 20(18)
+	C   23 <- 23(56)
+	C      _______________
+	C     /               \
+	C  _L'    _L'\_     ___`_
+	C |20|   |21|22|   |23|24|
+	C   \     `__ ^________-^
+	C    \_______/
 
-	pshufd	$0x4e, D34, D43
-	movdqa 	D43, T40
-	punpcklqdq	C01, T40	C Get 40
-	movdqa	D12, 	C23
-	punpckhqdq	D43, C23	C Get 23
+	rolq	$18, A20
+	movq	A20, W0
+	SWAP64	A2324, W1
+	movd	W1, A20
+	rolq	$14, A20		C Done A20
+	ROTL64(56, A2324, W1)
+	por	W1, A2324
+	
+	movdqa	A2122, W2
+	ROTL64(2, W2, W1)
+	por	W1, W2
+	punpcklqdq	W2, A2324	C Done A2324
 
-	pandn	C01, T40
-	pxor	D34, T40
-	movups	T40, A(8)
+	ROTL64(61, A2122, W1)
+	por	W1, A2122
+	psrldq	$8, A2122
+	punpcklqdq	W0, A2122	C Done A2122
 
-	movdqa	D12, T40
-	pandn	C23, T40
-	pxor	C01, T40
+	C chi step. With the transposed matrix, applied independently
+	C to each column.
+	movq	A05, T0
+	notq	T0
+	andq	A10, T0
+	movq	A10, T1
+	notq	T1
+	andq	A15, T1
+	movq	A15, T2
+	notq	T2
+	andq	A20, T2
+	xorq	T2, A10
+	movq	A20, T3
+	notq	T3
+	andq	A00, T3
+	xorq	T3, A15
+	movq	A00, T2
+	notq	T2
+	andq	A05, T2
+	xorq	T2, A20
+	xorq	T0, A00
+	xorq	T1, A05
 
-	movq	T40, A(5)
+	movdqa	A0607, W0
+	pandn	A1112, W0
+	movdqa	A1112, W1
+	pandn	A1617, W1
+	movdqa	A1617, W2
+	pandn	A2122, W2
+	pxor	W2, A1112
+	movdqa	A2122, W3
+	pandn	A0102, W3
+	pxor	W3, A1617
+	movdqa	A0102, W2
+	pandn	A0607, W2
+	pxor	W2, A2122
+	pxor	W0, A0102
+	pxor	W1, A0607
 
-	pandn	D34, C23
-	pxor	D12, C23
-	movups	C23, A(6)
+	movdqa	A0809, W0
+	pandn	A1314, W0
+	movdqa	A1314, W1
+	pandn	A1819, W1
+	movdqa	A1819, W2
+	pandn	A2324, W2
+	pxor	W2, A1314
+	movdqa	A2324, W3
+	pandn	A0304, W3
+	pxor	W3, A1819
+	movdqa	A0304, W2
+	pandn	A0809, W2
+	pxor	W2, A2324
+	pxor	W0, A0304
+	pxor	W1, A0809
 
+	xorq	(RC, COUNT, 8), A00
 
-	movups	B(10), C01
-	movups	B(11), D12
-	movups	B(13), D34
+	C Transpose.
+	C Swap (A05, A10) <->  A0102, and (A15, A20) <->  A0304,
+	C and also copy to C12 and C34 while at it.
+	
+	movq	A05, C12
+	movq	A15, C34
+	movq	A10, W0
+	movq	A20, W1
+	movq	A00, C0
+	punpcklqdq	W0, C12
+	punpcklqdq	W1, C34
+	movq	A0102, A05
+	movq	A0304, A15
+	psrldq	$8, A0102
+	psrldq	$8, A0304
+	xorq	A05, C0
+	xorq	A15, C0
+	movq	A0102, A10
+	movq	A0304, A20
 
-	pshufd	$0x4e, D34, D43
-	movdqa 	D43, T40
-	punpcklqdq	C01, T40	C Get 40
-	movdqa	D12, 	C23
-	punpckhqdq	D43, C23	C Get 23
+	movdqa	C12, A0102
+	movdqa	C34, A0304
 
-	pandn	C01, T40
-	pxor	D34, T40
-	movups	T40, A(13)
+	C Transpose (A0607, A1112)
+	movdqa	A0607, W0
+	punpcklqdq	A1112, A0607
+	xorq	A10, C0
+	xorq	A20, C0
+	punpckhqdq	W0, A1112
+	SWAP64	A1112, A1112
 
-	movdqa	D12, T40
-	pandn	C23, T40
-	pxor	C01, T40
+	C Transpose (A1819, A2324)
+	movdqa	A1819, W0
+	punpcklqdq	A2324, A1819
+	pxor	A0607, C12
+	pxor	A1112, C12
+	punpckhqdq	W0, A2324
+	SWAP64	A2324, A2324
 
-	movq	T40, A(10)
+	C Transpose (A0809, A1314) and (A1617, A2122), and swap
+	movdqa	A0809, W0
+	movdqa	A1314, W1
+	movdqa	A1617, A0809
+	movdqa	A2122, A1314
+	pxor	A1819, C34
+	pxor	A2324, C34
+	punpcklqdq	A2122, A0809
+	punpckhqdq	A1617, A1314
+	SWAP64	A1314, A1314
+	movdqa	W0, A1617
+	movdqa	W1, A2122
+	pxor	A0809, C34
+	pxor	A1314, C34
+	punpcklqdq	W1, A1617
+	punpckhqdq	W0, A2122
+	SWAP64	A2122, A2122
 
-	pandn	D34, C23
-	pxor	D12, C23
-	movups	C23, A(11)
-
-
-	movups	B(15), C01
-	movups	B(16), D12
-	movups	B(18), D34
-
-	pshufd	$0x4e, D34, D43
-	movdqa 	D43, T40
-	punpcklqdq	C01, T40	C Get 40
-	movdqa	D12, 	C23
-	punpckhqdq	D43, C23	C Get 23
-
-	pandn	C01, T40
-	pxor	D34, T40
-	movups	T40, A(18)
-
-	movdqa	D12, T40
-	pandn	C23, T40
-	pxor	C01, T40
-
-	movq	T40, A(15)
-
-	pandn	D34, C23
-	pxor	D12, C23
-	movups	C23, A(16)
-
-
-	movups	B(20), C01
-	movups	B(21), D12
-	movups	B(23), D34
-
-	pshufd	$0x4e, D34, D43
-	movdqa 	D43, T40
-	punpcklqdq	C01, T40	C Get 40
-	movdqa	D12, 	C23
-	punpckhqdq	D43, C23	C Get 23
-
-	pandn	C01, T40
-	pxor	D34, T40
-	movups	T40, A(23)
-
-	movdqa	D12, T40
-	pandn	C23, T40
-	pxor	C01, T40
-
-	movq	T40, A(20)
-
-	pandn	D34, C23
-	pxor	D12, C23
-	movups	C23, A(21)
-
-
-	incq	COUNT
+	decl	XREG(COUNT)
+	pxor	A1617, C12
+	pxor	A2122, C12
 	jnz	.Loop
 
-	addq	$FRAME_SIZE, %rsp
-	W64_EXIT(1, 8)
+	movq	A00, STATE(0)
+	movups	A0102, STATE(1)
+	movups	A0304, STATE(3)
+
+	movq	A05, STATE(5)
+	movups	A0607, STATE(6)
+	movups	A0809, STATE(8)
+		               
+	movq	A10, STATE(10)
+	movups	A1112, STATE(11)
+	movups	A1314, STATE(13)
+		               
+	movq	A15, STATE(15)
+	movups	A1617, STATE(16)
+	movups	A1819, STATE(18)
+		               
+	movq	A20, STATE(20)
+	movups	A2122, STATE(21)
+	movups	A2324, STATE(23)
+
+	pop	%r14
+	pop	%r13
+	pop	%r12
+	pop	%rbp
+	W64_EXIT(1, 16)
 	ret
 
 EPILOGUE(nettle_sha3_permute)
 
 ALIGN(4)
-	.quad	0x0000000000000001, 0X0000000000008082
-	.quad	0X800000000000808A, 0X8000000080008000
-	.quad	0X000000000000808B, 0X0000000080000001
-	.quad	0X8000000080008081, 0X8000000000008009
-	.quad	0X000000000000008A, 0X0000000000000088
-	.quad	0X0000000080008009, 0X000000008000000A
-	.quad	0X000000008000808B, 0X800000000000008B
-	.quad	0X8000000000008089, 0X8000000000008003
-	.quad	0X8000000000008002, 0X8000000000000080
-	.quad	0X000000000000800A, 0X800000008000000A
-	.quad	0X8000000080008081, 0X8000000000008080
-	.quad	0X0000000080000001, 0X8000000080008008
-.rc_end:
+.rc:	C In reverse order
+	.quad	0x8000000080008008
+	.quad	0x0000000080000001
+	.quad	0x8000000000008080
+	.quad	0x8000000080008081
+	.quad	0x800000008000000A
+	.quad	0x000000000000800A
+	.quad	0x8000000000000080
+	.quad	0x8000000000008002
+	.quad	0x8000000000008003
+	.quad	0x8000000000008089
+	.quad	0x800000000000008B
+	.quad	0x000000008000808B
+	.quad	0x000000008000000A
+	.quad	0x0000000080008009
+	.quad	0x0000000000000088
+	.quad	0x000000000000008A
+	.quad	0x8000000000008009
+	.quad	0x8000000080008081
+	.quad	0x0000000080000001
+	.quad	0x000000000000808B
+	.quad	0x8000000080008000
+	.quad	0x800000000000808A
+	.quad	0x0000000000008082
+	.quad	0x0000000000000001
