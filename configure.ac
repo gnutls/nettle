@@ -43,6 +43,10 @@ AC_ARG_ENABLE(assembler,
   AC_HELP_STRING([--disable-assembler],[Disable assembler code]),,
   [enable_assembler=yes])
 
+AC_ARG_ENABLE(static,
+  AC_HELP_STRING([--disable-static], [Do not build any static library]),,
+  [enable_static=yes])
+
 AC_ARG_ENABLE(shared,
   AC_HELP_STRING([--disable-shared], [Do not build any shared library]),,
   [enable_shared=yes])
@@ -572,6 +576,12 @@ else
   IF_HOGWEED='#'
 fi
 
+if test "x$enable_static" = xyes ; then
+  IF_STATIC=''
+else
+  IF_STATIC='#'
+fi
+
 if test "x$enable_shared" = xyes ; then
   IF_SHARED=''
 else
@@ -601,6 +611,7 @@ else
 fi
 
 AC_SUBST(IF_HOGWEED)
+AC_SUBST(IF_STATIC)
 AC_SUBST(IF_SHARED)
 AC_SUBST(IF_DOCUMENTATION)
 AC_SUBST(IF_DLL)
@@ -683,6 +694,7 @@ AC_MSG_NOTICE([summary of build options:
   Install prefix:    ${prefix}
   Library directory: ${libdir}
   Compiler:          ${CC}
+  Static libraries:  ${enable_static}
   Shared libraries:  ${enable_shared}
   Public key crypto: ${enable_public_key}
   Documentation:     ${enable_documentation}

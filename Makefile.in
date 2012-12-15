@@ -20,8 +20,8 @@ include config.make
 
 PRE_CPPFLAGS = -I.
 # FIXME: Add configuration of LIBEXT?
-LIBTARGETS = libnettle.a @IF_HOGWEED@ libhogweed.a
-SHLIBTARGETS = $(LIBNETTLE_FORLINK) @IF_HOGWEED@ $(LIBHOGWEED_FORLINK)
+LIBTARGETS = @IF_STATIC@ libnettle.a @IF_HOGWEED@ libhogweed.a
+SHLIBTARGETS = @IF_SHARED@ $(LIBNETTLE_FORLINK) @IF_HOGWEED@ $(LIBHOGWEED_FORLINK)
 
 getopt_SOURCES = getopt.c getopt1.c
 getopt_TARGETS = $(getopt_SOURCES:.c=.$(OBJEXT))
@@ -32,7 +32,7 @@ internal_TARGETS = $(internal_SOURCES:.c=.$(OBJEXT))
 TARGETS = aesdata$(EXEEXT) desdata$(EXEEXT) twofishdata$(EXEEXT) \
 	  shadata$(EXEEXT) gcmdata$(EXEEXT) \
 	  $(getopt_TARGETS) $(internal_TARGETS) \
-	  $(LIBTARGETS) @IF_SHARED@ $(SHLIBTARGETS)
+	  $(LIBTARGETS) $(SHLIBTARGETS)
 IMPLICIT_TARGETS = @IF_DLL@ $(LIBNETTLE_FILE) $(LIBHOGWEED_FILE)
 
 DOCTARGETS = @IF_DOCUMENTATION@ nettle.info nettle.html nettle.pdf
