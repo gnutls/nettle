@@ -1084,7 +1084,7 @@ test_dsa_key(struct dsa_public_key *pub,
   ASSERT(0 == mpz_cmp(t, pub->y));
 
   mpz_clear(t);
-};
+}
 
 #endif /* WITH_HOGWEED */
 

@@ -744,14 +744,13 @@ plain[8+4], plain[8+5], plain[8+6], plain[8+7]);
 	ASSERT (err == 0);
 	}
 
-static char *pt(p)
-const unsigned char *p;
+static char *pt(const unsigned char *p)
 	{
 	static char bufs[10][20];
 	static int bnum=0;
 	char *ret;
 	int i;
-	static char *f="0123456789ABCDEF";
+	static const char *f="0123456789ABCDEF";
 
 	ret= &(bufs[bnum++][0]);
 	bnum%=10;
