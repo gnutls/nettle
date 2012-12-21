@@ -8,8 +8,14 @@
 
 2012-12-15  Niels Möller  <nisse@lysator.liu.se>
 
+	Based on a patch from Alon Bar-Lev:
+	* Makefile.in (LIBTARGETS, SHLIBTARGET): Define as empty if static
+	or shared libraries, respectively, are disabled.
+	(TARGETS): Deleted @IF_SHARED@ conditional, now in the definition
+	of SHLIBTARGET.
+
 	From Alon Bar-Lev:
-	* configure.ac: Check for ar program.
+	* configure.ac: Check for ar program. New option --disable-static.
 	* config.make.in (AR): Use configured value.
 
 2012-12-13  Niels Möller  <nisse@lysator.liu.se>
