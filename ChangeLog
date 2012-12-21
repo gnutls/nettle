@@ -15,7 +15,7 @@
 2012-12-13  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86_64/sha3-permute.asm: Rewrote, to keep all state in
-	registers. 2400 cycles on x86_&4, only slightly faster than the
+	registers. 2400 cycles on x86_64, only slightly faster than the
 	current C code.
 
 2012-12-09  Niels Möller  <nisse@lysator.liu.se>
