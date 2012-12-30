@@ -17,6 +17,12 @@ C along with the nettle library; see the file COPYING.LIB.  If not, write to
 C the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 C MA 02111-1301, USA.
 
+C NOTE: This code is currently unused. It gives a modest speedup on
+C Intel processors, running at roughly two instructions per cycle, and
+C a large slowdown on AMD processors, running at only a single
+C instruction per cycle. Maybe it can be rewritten to not move data
+C back and forth between xmm registers and regular 64-bit registers.
+
 define(<CTX>, <%rdi>)		C 25 64-bit values, 200 bytes.
 define(<COUNT>, <%r8>)		C Avoid clobbering %rsi, for W64.
 
