@@ -73,8 +73,17 @@ sha512-test$(EXEEXT): sha512-test.$(OBJEXT)
 sha3-permute-test$(EXEEXT): sha3-permute-test.$(OBJEXT)
 	$(LINK) sha3-permute-test.$(OBJEXT) $(TEST_OBJS) -o sha3-permute-test$(EXEEXT)
 
+sha3-224-test$(EXEEXT): sha3-224-test.$(OBJEXT)
+	$(LINK) sha3-224-test.$(OBJEXT) $(TEST_OBJS) -o sha3-224-test$(EXEEXT)
+
 sha3-256-test$(EXEEXT): sha3-256-test.$(OBJEXT)
 	$(LINK) sha3-256-test.$(OBJEXT) $(TEST_OBJS) -o sha3-256-test$(EXEEXT)
+
+sha3-384-test$(EXEEXT): sha3-384-test.$(OBJEXT)
+	$(LINK) sha3-384-test.$(OBJEXT) $(TEST_OBJS) -o sha3-384-test$(EXEEXT)
+
+sha3-512-test$(EXEEXT): sha3-512-test.$(OBJEXT)
+	$(LINK) sha3-512-test.$(OBJEXT) $(TEST_OBJS) -o sha3-512-test$(EXEEXT)
 
 serpent-test$(EXEEXT): serpent-test.$(OBJEXT)
 	$(LINK) serpent-test.$(OBJEXT) $(TEST_OBJS) -o serpent-test$(EXEEXT)

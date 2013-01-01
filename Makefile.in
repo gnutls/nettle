@@ -88,7 +88,9 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 sha1.c sha1-compress.c sha1-meta.c \
 		 sha256.c sha256-compress.c sha224-meta.c sha256-meta.c \
 		 sha512.c sha512-compress.c sha384-meta.c sha512-meta.c \
-		 sha3.c sha3-permute.c sha3-256.c sha3-256-meta.c \
+		 sha3.c sha3-permute.c \
+		 sha3-224.c sha3-224-meta.c sha3-256.c sha3-256-meta.c \
+		 sha3-384.c sha3-384-meta.c sha3-512.c sha3-512-meta.c\
 		 serpent-set-key.c serpent-encrypt.c serpent-decrypt.c \
 		 serpent-meta.c \
 		 twofish.c twofish-meta.c \

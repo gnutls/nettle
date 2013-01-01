@@ -35,9 +35,18 @@ extern "C" {
 #define sha3_permute nettle_sha3_permute
 #define _sha3_update _nettle_sha3_update
 #define _sha3_pad _nettle_sha3_pad
+#define sha3_224_init nettle_sha3_224_init
+#define sha3_224_update nettle_sha3_224_update
+#define sha3_224_digest nettle_sha3_224_digest
 #define sha3_256_init nettle_sha3_256_init
 #define sha3_256_update nettle_sha3_256_update
 #define sha3_256_digest nettle_sha3_256_digest
+#define sha3_384_init nettle_sha3_384_init
+#define sha3_384_update nettle_sha3_384_update
+#define sha3_384_digest nettle_sha3_384_digest
+#define sha3_512_init nettle_sha3_512_init
+#define sha3_512_update nettle_sha3_512_update
+#define sha3_512_digest nettle_sha3_512_digest
 
 /* The sha3 state is a 5x5 matrix of 64-bit words. In the notation of
    Keccak description, S[x,y] is element x + 5*y, so if x is
@@ -87,6 +96,19 @@ struct sha3_224_ctx
   uint8_t block[SHA3_224_DATA_SIZE];
 };
 
+void
+sha3_224_init (struct sha3_224_ctx *ctx);
+
+void
+sha3_224_update (struct sha3_224_ctx *ctx,
+		 unsigned length,
+		 const uint8_t *data);
+
+void
+sha3_224_digest(struct sha3_224_ctx *ctx,
+		unsigned length,
+		uint8_t *digest);
+
 struct sha3_256_ctx
 {
   struct sha3_state state;
@@ -114,12 +136,38 @@ struct sha3_384_ctx
   uint8_t block[SHA3_384_DATA_SIZE];
 };
 
+void
+sha3_384_init (struct sha3_384_ctx *ctx);
+
+void
+sha3_384_update (struct sha3_384_ctx *ctx,
+		 unsigned length,
+		 const uint8_t *data);
+
+void
+sha3_384_digest(struct sha3_384_ctx *ctx,
+		unsigned length,
+		uint8_t *digest);
+
 struct sha3_512_ctx
 {
   struct sha3_state state;
   unsigned index;
   uint8_t block[SHA3_512_DATA_SIZE];
 };
+
+void
+sha3_512_init (struct sha3_512_ctx *ctx);
+
+void
+sha3_512_update (struct sha3_512_ctx *ctx,
+		 unsigned length,
+		 const uint8_t *data);
+
+void
+sha3_512_digest(struct sha3_512_ctx *ctx,
+		unsigned length,
+		uint8_t *digest);
 
 #ifdef __cplusplus
 }

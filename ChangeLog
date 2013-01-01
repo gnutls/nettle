@@ -1,5 +1,18 @@
 2012-12-30  Niels Möller  <nisse@lysator.liu.se>
 
+	* sha3-224.c, sha3-224-meta.c: New files.
+	* sha3-384.c, sha3-384-meta.c: New files.
+	* sha3-512.c, sha3-512-meta.c: New files.
+	* sha3.h: Prototypes for sha3 with sizes 224, 384 and 512.
+	* nettle-meta.h: Declare nettle_sha3_224, nettle_sha3_384 and
+	nettle_sha3_512.
+	* Makefile.in (nettle_SOURCES): Added new sha3 files.
+
+	* testsuite/sha3-224-test.c: New file.
+	* testsuite/sha3-384-test.c: New file.
+	* testsuite/sha3-512-test.c: New file.
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Added new sha3 test files.
+
 	* configure.ac: Disabled use of sha3-permute.asm.
 
 2012-12-20  Niels Möller  <nisse@lysator.liu.se>
