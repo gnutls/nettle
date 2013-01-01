@@ -216,11 +216,11 @@ Gutmann, and hacked some more by Andrew Kuchling and @value{AUTHOR}.
 Released into the public domain. Assembler for x86 by @value{AUTHOR},
 released under the LGPL.
 
-@item SHA224, SHA256, SHA384, and SHA512
+@item SHA2
 Written by @value{AUTHOR}, using Peter Gutmann's SHA1 code as a model. 
 Released under the LGPL.
 
-@item SHA3-256
+@item SHA3
 Written by @value{AUTHOR}. Released under the LGPL.
 
 @item GOSTHASH94
@@ -399,7 +399,7 @@ bits, or 32 octets. Nettle defines SHA256 in @file{<nettle/sha2.h>}.
 @end deftp
 
 @defvr Constant SHA256_DIGEST_SIZE
-The size of an SHA256 digest, i.e. 32.
+The size of a SHA256 digest, i.e. 32.
 @end defvr
 
 @defvr Constant SHA256_DATA_SIZE
@@ -440,7 +440,7 @@ compatibility).
 @end deftp
 
 @defvr Constant SHA224_DIGEST_SIZE
-The size of an SHA224 digest, i.e. 28.
+The size of a SHA224 digest, i.e. 28.
 @end defvr
 
 @defvr Constant SHA224_DATA_SIZE
@@ -479,7 +479,7 @@ octets. Nettle defines SHA512 in @file{<nettle/sha2.h>} (and in
 @end deftp
 
 @defvr Constant SHA512_DIGEST_SIZE
-The size of an SHA512 digest, i.e. 64.
+The size of a SHA512 digest, i.e. 64.
 @end defvr
 
 @defvr Constant SHA512_DATA_SIZE
@@ -516,7 +516,7 @@ compatibility).
 @end deftp
 
 @defvr Constant SHA384_DIGEST_SIZE
-The size of an SHA384 digest, i.e. 48.
+The size of a SHA384 digest, i.e. 48.
 @end defvr
 
 @defvr Constant SHA384_DATA_SIZE
@@ -828,7 +828,7 @@ RIPEMD160 in @file{nettle/ripemd160.h}.
 @end deftp
 
 @defvr Constant RIPEMD160_DIGEST_SIZE
-The size of an RIPEMD160 digest, i.e. 20.
+The size of a RIPEMD160 digest, i.e. 20.
 @end defvr
 
 @defvr Constant RIPEMD160_DATA_SIZE
@@ -864,7 +864,7 @@ in @file{<nettle/sha.h>}, for backwards compatibility).
 @end deftp
 
 @defvr Constant SHA1_DIGEST_SIZE
-The size of an SHA1 digest, i.e. 20.
+The size of a SHA1 digest, i.e. 20.
 @end defvr
 
 @defvr Constant SHA1_DATA_SIZE
@@ -902,7 +902,7 @@ Nettle defines GOSTHASH94 in @file{<nettle/gosthash94.h>}.
 @end deftp
 
 @defvr Constant GOSTHASH94_DIGEST_SIZE
-The size of an GOSTHASH94 digest, i.e. 32.
+The size of a GOSTHASH94 digest, i.e. 32.
 @end defvr
 
 @defvr Constant GOSTHASH94_DATA_SIZE
