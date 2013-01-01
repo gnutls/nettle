@@ -1,5 +1,8 @@
 2013-01-01  Niels Möller  <nisse@lysator.liu.se>
 
+	* nettle.texinfo (Recommended hash functions): Document additional
+	sha3 functions.
+
 	* examples/nettle-benchmark.c (main): Benchmark additional sha3
 	functions.
 
