@@ -39,8 +39,14 @@ all: $(TARGETS)
 .c.$(OBJEXT):
 	$(COMPILE) -c $< && $(DEP_PROCESS)
 
-$(getopt_OBJS) ../nettle-internal.$(OBJEXT):
-	( cd .. && $(MAKE) $@ )
+# NOTE: If we required GNU make, we could use a single rule with $(@F)
+# or $(notdir $@)
+../getopt.$(OBJEXT):
+	( cd .. && $(MAKE) getopt.$(OBJEXT))
+../getopt1.$(OBJEXT):
+	( cd .. && $(MAKE) getopt1.$(OBJEXT))
+../nettle-internal.$(OBJEXT):
+	( cd .. && $(MAKE) nettle-internal.$(OBJEXT))
 
 # For Solaris and BSD make, we have to use an explicit rule for each executable
 next-prime$(EXEEXT): next-prime.$(OBJEXT) $(GETOPT_OBJS) ../libhogweed.a

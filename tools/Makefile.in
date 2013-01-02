@@ -53,8 +53,12 @@ nettle-hash$(EXEEXT): $(nettle_hash_OBJS) ../libnettle.a
 .c.$(OBJEXT):
 	$(COMPILE) -c $< && $(DEP_PROCESS)
 
-$(getopt_OBJS):
-	( cd .. && $(MAKE) $@ )
+# NOTE: If we required GNU make, we could use a single rule with $(@F)
+# or $(notdir $@)
+../getopt.$(OBJEXT):
+	( cd .. && $(MAKE) getopt.$(OBJEXT))
+../getopt1.$(OBJEXT):
+	( cd .. && $(MAKE) getopt1.$(OBJEXT))
 
 Makefile: $(srcdir)/Makefile.in ../config.status
 	cd .. && $(SHELL) ./config.status tools/$@

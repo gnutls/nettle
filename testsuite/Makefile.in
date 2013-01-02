@@ -75,7 +75,7 @@ TEST_OBJS = testutils.$(OBJEXT) ../nettle-internal.$(OBJEXT) \
 	    $(LIB_HOGWEED) -lnettle $(LIBS)
 
 ../nettle-internal.$(OBJEXT):
-	( cd .. && $(MAKE) $@ )
+	( cd .. && $(MAKE) nettle-internal.$(OBJEXT) )
 
 .PHONY: test-rules
 test-rules:
