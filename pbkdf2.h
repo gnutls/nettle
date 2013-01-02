@@ -1,4 +1,4 @@
-/* pbkdf2.c
+/* pbkdf2.h
  *
  * PKCS #5 password-based key derivation function PBKDF2, see RFC 2898.
  */

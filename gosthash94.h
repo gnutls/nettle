@@ -51,8 +51,8 @@
  * Ported to nettle by Nikos Mavrogiannopoulos.
  */
 
-#ifndef NETTLE_GOST_H_INCLUDED
-#define NETTLE_GOST_H_INCLUDED
+#ifndef NETTLE_GOSTHASH94_H_INCLUDED
+#define NETTLE_GOSTHASH94_H_INCLUDED
 
 #include "nettle-types.h"
 
@@ -85,4 +85,4 @@ void gosthash94_digest(struct gosthash94_ctx *ctx,
 }
 #endif
 
-#endif /* NETTLE_GOST_H_INCLUDED */
+#endif /* NETTLE_GOSTHASH94_H_INCLUDED */
