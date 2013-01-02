@@ -1,5 +1,8 @@
 2013-01-02  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac (LIBNETTLE_MINOR): Bumped library version, to 4.5.
+	(LIBHOGWEED_MINOR): And to 2.3.
+
 	* examples/Makefile.in: Explicit rules for building objects in
 	parent directory.
 	* tools/Makefile.in: Likewise.

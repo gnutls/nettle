@@ -62,6 +62,11 @@ NEWS for the 2.6 release
 	SHA2) refer to 256-bit SHA2 as "SHA-256" or "SHA256" rather
 	than "SHA2-256".
 
+	The libraries are intended to be binary compatible with
+	nettle-2.2 and later. The shared library names are
+	libnettle.so.4.5 and libhogweed.so.2.3, with sonames still
+	libnettle.so.4 and libhogweed.so.2
+
 NEWS for the 2.5 release
 
 	This release includes important portability fixes for Windows
