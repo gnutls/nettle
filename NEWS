@@ -1,15 +1,66 @@
 NEWS for the 2.6 release
 
+	Bug fixes:
+
+	* Fixed a bug in ctr_crypt. For zero length (which should be a
+	  NOP), it sometimes incremented the counter. Reported by Tim
+	  Kosse.
+
+	* Fixed a small memory leak in nettle_realloc and
+          nettle_xrealloc.
+
 	New features:
 
-	* Support for PKCS #5 PBKDF2.  Contributed by Simon Josefsson.
+	* Support for PKCS #5 PBKDF2. Contributed by Simon Josefsson.
           Specification in RFC 2898 and test vectors in RFC 6070.
 
 	* Support for GOST R 34.11-94 hash algorithm. Ported from librhash 
 	  by Nikos Mavrogiannopoulos. Written by Aleksey Kravchenko.
 	  More information in RFC4357. Test vectors taken from the GOST
 	  hash wikipedia page.
-          
+
+	* Support for SHA3.
+	  
+	Miscellaneous:
+
+	* The include file <nettle/sha.h> has been split into
+          <nettle/sha1.h> and <nettle/sha2.h>. For now, sha.h is kept
+          for backwards compatibility and it simply includes both
+          files, but applications are encouraged to use the new names.
+          The new SHA3 functions are declared in <nettle/sha3.h>.
+
+	* Testsuite can be run under valgrind, using
+
+	  make check EMULATOR='$(VALGRIND)'
+
+	  For this to work, test programs and other executables now
+	  deallocate storage.
+	  
+	* New configure options --disable-documentation and
+          --disable-static. Contributed by Sam Thursfield and Alon
+	  Bar-Lev, respectively.
+	  
+	* The section on hash functions in the manual is split into
+          separate nodes for recommended hash functions and legacy
+          hash functions.
+
+	* Various smaller improvements, most of them portability
+          fixes. Credits go to David Woodhouse, Tim Rühsen, Martin
+          Storsjö, Nikos Mavrogiannopoulos, Fredrik Thulin and Dennis
+          Clarke.
+
+	Finally, a note on the naming of the various "SHA" hash
+	functions. Naming is a bit inconsistent; we have, e.g.,
+
+	  SHA1: sha1_digest
+	  SHA2: sha256_digest   (not sha2_256_digest)
+	  SHA3: sha3_256_digest
+
+	Renaming the SHA2 functions to make Nettle's naming more
+	consistent has been considered, but the current naming follows
+	common usage. Most documents (including the specification for
+	SHA2) refer to 256-bit SHA2 as "SHA-256" or "SHA256" rather
+	than "SHA2-256".
 
 NEWS for the 2.5 release
 
