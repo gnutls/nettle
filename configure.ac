@@ -380,7 +380,7 @@ if test x$enable_assembler = xyes ; then
   [ # Default is no underscore
     nettle_cv_asm_underscore=no
     AC_COMPILE_IFELSE(
-      [int a_global_symbol;],
+      [AC_LANG_SOURCE([int a_global_symbol;])],
       [ $NM conftest.$OBJEXT >conftest.out
         if grep _a_global_symbol conftest.out >/dev/null ; then
           nettle_cv_asm_underscore=yes

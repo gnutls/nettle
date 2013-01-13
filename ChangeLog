@@ -1,3 +1,7 @@
+2013-01-12  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Use AC_LANG_SOURCE.
+
 2013-01-02  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac (LIBNETTLE_MINOR): Bumped library version, to 4.5.
