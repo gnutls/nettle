@@ -11,16 +11,17 @@ NEWS for the 2.6 release
 
 	New features:
 
-	* Support for PKCS #5 PBKDF2. Contributed by Simon Josefsson.
+	* Support for PKCS #5 PBKDF2, to generate a key from a
+          password or passphrase. Contributed by Simon Josefsson.
           Specification in RFC 2898 and test vectors in RFC 6070.
-
-	* Support for GOST R 34.11-94 hash algorithm. Ported from librhash 
-	  by Nikos Mavrogiannopoulos. Written by Aleksey Kravchenko.
-	  More information in RFC4357. Test vectors taken from the GOST
-	  hash wikipedia page.
 
 	* Support for SHA3.
 	  
+	* Support for the GOST R 34.11-94 hash algorithm. Ported from
+	  librhash by Nikos Mavrogiannopoulos. Written by Aleksey
+	  Kravchenko. More information in RFC4357. Test vectors taken
+	  from the GOST hash wikipedia page.
+
 	Miscellaneous:
 
 	* The include file <nettle/sha.h> has been split into
