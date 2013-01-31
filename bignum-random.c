@@ -75,11 +75,12 @@ nettle_mpz_random(mpz_t x,
    */
 
   /* Add a few bits extra, to decrease the bias from the final modulo
-   * operation. */
+   * operation. NIST FIPS 186-3 specifies 64 extra bits, for use with
+   * DSA. */
 
   nettle_mpz_random_size(x, 
 			 ctx, random,
-			 mpz_sizeinbase(n, 2) + 16);
+			 mpz_sizeinbase(n, 2) + 64);
   
   mpz_fdiv_r(x, x, n);
 }
