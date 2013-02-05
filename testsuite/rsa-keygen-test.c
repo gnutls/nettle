@@ -33,14 +33,14 @@ test_main(void)
 			       1024, 50));
 
   test_rsa_key(&pub, &key);
-  
+
   mpz_set_str(expected,
-	      "2554579b857a9da3" "409dbd65c994b701" "aabf7347a78bd730"
-	      "1525b5f511f326dd" "c05e1fd6c282faed" "6c79a4eb30539f10"
-	      "46db024fe33174f5" "441da5fa175bf781" "8f7117c86cdacf9a"
-	      "4589c048cc013eca" "7536d0868aca610a" "c20718e3fec3e835"
-	      "f6c2fd920cba1be9" "e94a6c7238d9b2ee" "67ecc9f3d4a9a487"
-	      "042190b66582b36a", 16);
+	      "31ee088024b66f28" "e182fa07e60f7864" "636eea21cf74c804"
+	      "02a9c29ebd00933d" "8fae3ddf029d18e0" "1b5498c70a4b68fd"
+	      "d3135748424e8caf" "43ee86068f250c92" "8da001d09f68c433"
+	      "96f2c2a42eaed7e5" "8934a052faa38b2c" "f2ac04cc91bd0d15"
+	      "4f60b16dc9045b08" "2ea1372717fd7f9c" "1e9cc383b7d5b909"
+	      "72e3126df060ef79" , 16);
 
   test_rsa_md5(&pub, &key, expected);
 
@@ -57,17 +57,17 @@ test_main(void)
   test_rsa_key(&pub, &key);
 
   mpz_set_str(expected,
-	      "8c57dfb754270179" "600aced45b45490a" "56715da51f8d029d"
-	      "057b58187670f9e4" "1a2da64cd3435483" "16b26c860ca97aed"
-	      "fd3ebf5e3dd97226" "1d1b5536da483863" "f9ad5f47437e7a2a"
-	      "0119bb0045c64f5a" "cb634d7aff7051b4" "3d01b1c8bc13cc93"
-	      "0799d57ada86394f" "1286b5ae9480d167" "8f48e9e78bf3ea4f"
-	      "1ed9a9e381c8f046" "3a25bf30238e7c59" "1c9998255141f628"
-	      "68e8a01871587152" "38df08281894a5b9" "e9026b55337f9f29"
-	      "240793935b05162b" "8fa8d2390d7cb407" "52413dd5f7bccdad"
-	      "232e1c27bae30548" "09797991e13dee5d" "c688985433e63050"
-	      "6d9a171e144ef442" "eb001166bd95bcdd" "92b3c2e0bd4012a2"
-	      "2dd05cb032f6ab6b" "dd7c", 16);
+	      "892ef7cda3b0b501" "85de20b93340316e" "b35ac9c193f1f5a3"
+	      "9e6c1c327b9c36b8" "d4f1d41653b48fbd" "0c49e48bbdc46ced"
+	      "13b3f6426e8a1780" "55b9077ba59ce748" "a325563c3b4bdf78"
+	      "acdcdd556f5de3cf" "70257c3b334ba360" "5625ebda869c8058"
+	      "b95b40c1e75eb91b" "776e83c0224757c6" "b61266cb1739df1a"
+	      "c7fcc09194c575b5" "af4f3eb8e3aa3900" "22b72fb6e950c355"
+	      "88743bab32c3a214" "ea5865e2f5c41d67" "12e745496890fc9d"
+	      "7944a759f39d7b57" "e365d8d3f6ac2dd4" "052b6a2e58a6af82"
+	      "b0d67e7fe09045d9" "bc965e260cf3c9a9" "3bfaa09bdd076dc2"
+	      "c0ab48ce5b67105c" "cad90dcfc11cd713" "e64478d2d7ea42dd"
+	      "fd040793c487588d" "6218" , 16);
 
   test_rsa_sha1(&pub, &key, expected);
   

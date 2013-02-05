@@ -1,3 +1,10 @@
+2013-02-05  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/rsa-keygen-test.c (test_main): Updated expected
+	signatures, after the nettle_mpz_random change below.
+	* testsuite/dsa-test.c (test_main): Likewise. Also fixed the
+	dsa256 test to actually use the expected signature.
+
 2013-01-31  Niels Möller  <nisse@lysator.liu.se>
 
 	* bignum-random.c (nettle_mpz_random): Increased number of extra

@@ -39,8 +39,8 @@ test_main(void)
 
   test_dsa_key(&pub, &key, 160);
 
-  mpz_set_str(expected.r, "373999e9ee0a84a9983e528ee266938091e4c55c", 16);
-  mpz_set_str(expected.s, "8017d54592bde7353f6558b3090d12ed8367e2ba", 16);
+  mpz_set_str(expected.r, "180342f8d4fb5bd0311ebf205bdee6e556014eaf", 16);
+  mpz_set_str(expected.s, "392dc6566b2735531a8460966171464ef7ddfe12", 16);
 
   test_dsa160(&pub, &key, &expected);
 
@@ -90,13 +90,13 @@ test_main(void)
   test_dsa_key(&pub, &key, 256); 
 
   mpz_set_str(expected.r,
-	      "af30ed0383ea9eaca2fe6244adb86b5ffa80b62cd1687571"
-	      "eb75c2a4fff413fb", 16);
+	      "03fe95c9dbbe1be019d7914e45c37c70"
+	      "0f499f559312a59f3bc5037f51d3f74c", 16);
   mpz_set_str(expected.s,
-	      "2761c5340430a9b003cd8ba72b1c2cd68644bfa23ae4c40f"
-	      "9250dee3ef0e7c35", 16);
+	      "839dbee8d30e6b0cc349528f900f30ee"
+	      "6d4ce9864332d07c87b5a98bd75dbdbb", 16);
 
-  test_dsa256(&pub, &key, NULL);
+  test_dsa256(&pub, &key, &expected);
 
   dsa_public_key_clear(&pub);
   dsa_private_key_clear(&key);
