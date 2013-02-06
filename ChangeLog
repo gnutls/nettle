@@ -1,5 +1,9 @@
 2013-02-06  Niels Möller  <nisse@lysator.liu.se>
 
+	* armv7/README: New file.
+	* armv7/machine.m4: New (empty) file.
+	* armv7/memxor.asm: Initial assembly implementation.
+
 	* config.m4.in: Substitute ASM_TYPE_PROGBITS as TYPE_PROGBITS.
 
 	* config.make.in: Added .s to the suffix list.
@@ -17,6 +21,7 @@
 	(ASM_TYPE_PROGBITS): New substituted variable, set in the same way
 	as ASM_TYPE_FUNCTION.
 	(ASM_MARK_NOEXEC_STACK): Use TYPE_PROGBITS.
+	(asm_path): Set up asm_path for armv7.
 
 	* asm.m4: Use changecom to disable m4 quoting. Use divert to
 	suppress output.

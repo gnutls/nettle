@@ -1,0 +1,41 @@
+Currently, code in this directory is written for arm cortex-a9.
+
+ABI gnueabi(hf) (not depending on the floating point conventions)
+
+Registers	May be		Argument
+		clobbered	number
+
+r0		Y		1
+r1		Y		2
+r2		Y		3
+r3		Y		4
+r4		N
+r5		N
+r6		N
+r7		N
+r8		N
+r9 (sl)
+r10		N
+r11		N
+r12 (ip)	Y
+r13 (sp)
+r14 (lr)
+r15 (pc)
+
+q0 (d0, d1)	Y		1 (for "hf" abi)
+q1 (d2, d3)	Y		2
+q2 (d4, d5)	Y		3
+q3 (d6, d7)	Y		4
+q4 (d8, d9)	N
+q5 (d10, d11)	N
+q6 (d12, d13)	N
+q7 (d14, d15)	N
+q8 (d16, d17)	Y
+q9 (d18, d19)	Y
+q10 (d20, d21)	Y
+q11 (d22, d23)	Y
+q12 (d24, d25)	Y
+q13 (d26, d27)	Y
+q14 (d28, d29)	Y
+q15 (d30, d31)	Y
+		    

@@ -229,6 +229,9 @@ if test "x$enable_assembler" = xyes ; then
 	asm_path=sparc32
       fi
       ;;
+    armv7l*)
+      asm_path=armv7
+      ;;
     *)
       enable_assembler=no
       ;;
