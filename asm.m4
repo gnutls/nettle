@@ -1,9 +1,13 @@
+divert(-1)
 changequote(<,>)dnl
 dnl (progn (modify-syntax-entry ?< "(>") (modify-syntax-entry ?> ")<") )
 
 dnl FORTRAN style comment character
 define(<C>, <
 dnl>)dnl
+dnl Disable m4 comment processing, since the default, #, is used for
+dnl constants on some architectures, in particular ARM.
+changecom()dnl
 
 dnl Including files from the srcdir
 define(<include_src>, <include(srcdir/$1)>)dnl
@@ -23,9 +27,11 @@ define(<EPILOGUE>,
 <.size C_NAME($1), . - C_NAME($1)>,<>)>)
 
 dnl Argument to ALIGN is always logarithmic
+dnl FIXME: the << operator is not supported by Solaris m4,
+dnl and ** is not supported by OpenBSD m4.
+dnl We should switch to non-logarithmic ALIGN instead.
 
-dnl Need changequote to be able to use the << operator (using **
-dnl instead is not portable, and is not supported by openbsd m4).
+dnl Need changequote to be able to use the << operator.
 define(<ALIGN>,
 <changequote([,])dnl
 .align ifelse(ALIGN_LOG,yes,$1,eval(1 << $1))dnl >> balance
@@ -68,3 +74,5 @@ STRUCTURE(AES)
   STRUCT(TABLE1, AES_TABLE_SIZE)
   STRUCT(TABLE2, AES_TABLE_SIZE)
   STRUCT(TABLE3, AES_TABLE_SIZE)
+
+divert
