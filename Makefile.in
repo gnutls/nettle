@@ -241,17 +241,15 @@ $(des_headers): desdata.c
 
 des.$(OBJEXT): des.c des.h $(des_headers)
 
-.asm.$(OBJEXT):
-	$(M4) $(srcdir)/asm.m4 machine.m4 config.m4 \
-		$< >$*.s
-	$(COMPILE) $(CCPIC_MAYBE) -c $*.s
-	echo "$@ : $< $(srcdir)/asm.m4 machine.m4 config.m4" >$@.d 
+.asm.s:
+	$(M4) $(srcdir)/asm.m4 machine.m4 config.m4 $< >$@T \
+	&& test -s $@T && mv -f $@T $@
 
-.asm.p$(OBJEXT):
-	$(M4) $(srcdir)/asm.m4 machine.m4 config.m4 \
-		$< >$*.s
-	$(COMPILE) $(SHLIBCFLAGS) -c $*.s -o $@
-	echo "$@ : $< $(srcdir)/asm.m4 machine.m4 config.m4" >$@.d 
+.s.$(OBJEXT):
+	$(COMPILE) $(CCPIC_MAYBE) -c $<
+
+.s.p$(OBJEXT):
+	$(COMPILE) $(SHLIBCFLAGS) -c $< -o $@
 
 # Texinfo rules
 .texinfo.info:
@@ -507,5 +505,5 @@ maintainer-clean-here:
 tags-here:	
 	etags -o $(srcdir)/TAGS $(srcdir)/*.c $(srcdir)/*.h
 
-DEP_FILES = $(SOURCES:.c=.$(OBJEXT).d) $(SOURCES:.c=.p$(OBJEXT).d)
+DEP_FILES = $(SOURCES:.c=.$(OBJEXT).d) $(SOURCES:.c=.p$(OBJEXT).d) asm.d
 @DEP_INCLUDE@ $(DEP_FILES)

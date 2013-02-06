@@ -235,11 +235,11 @@ if test "x$enable_assembler" = xyes ; then
   esac
 fi
 # echo "enable_assembler: $enable_assembler, asm_path: $asm_path"
+asm_file_list=""
 
 if test "x$enable_assembler" = xyes ; then
   if test -n "$asm_path"; then
     AC_MSG_NOTICE([Looking for assembler files in $asm_path/.])
-    found=no
     for tmp_f in aes-encrypt-internal.asm aes-decrypt-internal.asm \
 		 arcfour-crypt.asm camellia-crypt-internal.asm \
 		 md5-compress.asm memxor.asm \
@@ -249,16 +249,32 @@ if test "x$enable_assembler" = xyes ; then
 #       echo "Looking for $srcdir/$asm_path/$tmp_f"
       if test -f "$srcdir/$asm_path/$tmp_f"; then
 #        echo found
-        found=yes
+	asm_file_list="$asm_file_list $tmp_f"
         AC_CONFIG_LINKS($tmp_f:$asm_path/$tmp_f)
       fi
     done
-    if test "$found" = no; then
+    if test -z "$asm_file_list"; then
       enable_assembler=no
       AC_MSG_WARN([No assembler files found.])
     fi
   fi
 fi
+
+# Besides getting correct dependencies, the explicit rules also tell
+# make that the .s files "ought to exist", so they are preferred over
+# .c files.
+AC_CONFIG_COMMANDS([asm.d],
+    [ for f in $asm_file_list
+      do
+        case $f in
+	  *.asm)
+	    echo "`basename $f .asm`.s : $f "'$(srcdir)/asm.m4 machine.m4 config.m4'
+	    ;;
+	esac
+      done > asm.d
+    ],
+    [ asm_file_list="$asm_file_list" ]
+)
 
 LSH_CCPIC
 

@@ -1,5 +1,16 @@
 2013-02-06  Niels Möller  <nisse@lysator.liu.se>
 
+	* config.make.in: Added .s to the suffix list.
+
+	* Makefile.in (.asm.s): Use a separate make target for .asm
+	preprocessing. Include asm.d, which the corresponding
+	dependencies.
+
+	* configure.ac (asm_file_list): Collect assembly files into this
+	variable.
+	(asm.d): Make config.status write dependencies for .s files into
+	asm.d.
+
 	* asm.m4: Use changecom to disable m4 quoting. Use divert to
 	suppress output.
 
