@@ -131,14 +131,36 @@ PROLOGUE(memxor)
 	b	.Lmemxor_bytes
 
 .Lmemxor_same:
+	tst	N, #4
+	it	ne
+	subne	N, #4
+	bne	.Lmemxor_same_loop
+
 	ldr	r3, [SRC], #+4
 	ldr	r4, [DST]
 	eor	r3, r4
 	str	r3, [DST], #+4
+	
+	subs	N, #8
+	bcc	.Lmemxor_same_end
 
-	subs	N, #4
-	bcs	.Lmemxor_same
-	adds	N, #4
+.Lmemxor_same_loop:
+	C 6 cycles per iteration, 0.75 cycles/byte
+	ldr	r4, [SRC, #+4]
+	ldr	r3, [SRC], #+8
+	ldr	r6, [DST, #+4]
+	ldr	r5, [DST]
+	
+	eor	r4, r6
+	eor	r3, r5
+	subs	N, #8
+	
+	str	r4, [DST, #+4]
+	str	r3, [DST], #+8
+	bcs	.Lmemxor_same_loop
+	
+.Lmemxor_same_end:
+	adds	N, #8
 	beq	.Lmemxor_done
 	b	.Lmemxor_bytes
 EPILOGUE(memxor)

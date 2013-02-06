@@ -1,5 +1,8 @@
 2013-02-06  Niels Möller  <nisse@lysator.liu.se>
 
+	* armv7/memxor.asm (memxor): Optimized aligned case, now runs at
+	0.75 cycles/byte.
+
 	* armv7/README: New file.
 	* armv7/machine.m4: New (empty) file.
 	* armv7/memxor.asm: Initial assembly implementation.
