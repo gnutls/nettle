@@ -232,10 +232,9 @@ PROLOGUE(memxor3)
 	mov	r4, AP
 	mov	AP, BP
 	mov	BP, r4
-	mov	BCNT, ACNT
 
 .Lmemxor3_au:
-	C FIXME: Switch roles of A and B
+	C NOTE: We have the relevant shift count in ACNT, not BCNT
 
 	C AP is aligned, BP is not
 	C           v original SRC
@@ -247,7 +246,7 @@ PROLOGUE(memxor3)
 	C
 	C With little-endian, we need to do
 	C DST[i-i] ^= (SRC[i-i] >> CNT) ^ (SRC[i] << TNC)
-	rsb	BTNC, BCNT, #32
+	rsb	ATNC, ACNT, #32
 	bic	BP, #3
 
 	ldr	r4, [BP]
@@ -261,14 +260,14 @@ PROLOGUE(memxor3)
 .Lmemxor3_au_loop:
 	ldr	r5, [BP, #-4]!
 	ldr	r6, [AP, #-4]!
-	eor	r6, r6, r4, lsl BTNC
-	eor	r6, r6, r5, lsr BCNT
+	eor	r6, r6, r4, lsl ATNC
+	eor	r6, r6, r5, lsr ACNT
 	str	r6, [DST, #-4]!
 .Lmemxor3_au_odd:
 	ldr	r4, [BP, #-4]!
 	ldr	r6, [AP, #-4]!
-	eor	r6, r6, r5, lsl BTNC
-	eor	r6, r6, r4, lsr BCNT
+	eor	r6, r6, r5, lsl ATNC
+	eor	r6, r6, r4, lsr ACNT
 	str	r6, [DST, #-4]!
 	subs	N, #8
 	bcs	.Lmemxor3_au_loop
@@ -277,10 +276,7 @@ PROLOGUE(memxor3)
 
 	C Leftover bytes in r4, low end
 	ldr	r5, [AP, #-4]
-	C FIXME: Do this with a single shift/rotate?
-	lsr	r5, BTNC
-	eor	r4, r5
-	ror	r4, BCNT
+	eor	r4, r5, r4, lsl ATNC
 
 .Lmemxor3_au_leftover:
 	C Store a byte at a time
@@ -288,14 +284,14 @@ PROLOGUE(memxor3)
 	strb	r4, [DST, #-1]!
 	subs	N, #1
 	beq	.Lmemxor3_done
-	subs	BCNT, #8
+	subs	ACNT, #8
 	sub	AP, #1
 	bne	.Lmemxor3_au_leftover
 	b	.Lmemxor3_bytes
 
 .Lmemxor3_a_aligned:
-	ands	BCNT, BP, #3
-	lsl	BCNT, #3
+	ands	ACNT, BP, #3
+	lsl	ACNT, #3
 	bne	.Lmemxor3_au ;
 
 	C a, b and dst all have the same alignment.
