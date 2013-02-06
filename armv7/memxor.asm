@@ -295,16 +295,40 @@ PROLOGUE(memxor3)
 	bne	.Lmemxor3_au ;
 
 	C a, b and dst all have the same alignment.
+	sub	AP, #4
+	sub	BP, #4
+	sub	DST, #4
+	tst	N, #4
+	it	ne
+	subne	N, #4
+	bne	.Lmemxor3_aligned_word_loop
 
-.Lmemxor3_aligned_word_loop:
-	ldr	r4, [AP, #-4]!
-	ldr	r5, [BP, #-4]!
+	ldr	r4, [AP], #-4
+	ldr	r5, [BP], #-4
 	eor	r4, r5
-	str	r4, [DST, #-4]!
-	subs	N, #4
+	str	r4, [DST], #-4
+	subs	N, #8
+	bcc	.Lmemxor3_aligned_word_end
+	
+.Lmemxor3_aligned_word_loop:
+	ldr	r4, [AP, #-4]
+	ldr	r5, [AP], #-8
+	ldr	r6, [BP, #-4]
+	ldr	r7, [BP], #-8
+
+	eor	r4, r6
+	eor	r5, r7
+	subs	N, #8
+	str	r4, [DST, #-4]
+	str	r5, [DST], #-8
+
 	bcs	.Lmemxor3_aligned_word_loop
-	adds	N, #4
+.Lmemxor3_aligned_word_end:
+	adds	N, #8
 	beq	.Lmemxor3_done
+	add	AP, #4
+	add	BP, #4
+	add	DST, #4
 	b	.Lmemxor3_bytes
 
 .Lmemxor3_uu:
