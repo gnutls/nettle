@@ -478,9 +478,7 @@ foo:
 ],
        [nettle_cv_asm_align_log=yes],
        [nettle_cv_asm_align_log=no])])
-  if test x$nettle_cv_asm_align_log = xyes ; then
-    ASM_ALIGN_LOG='yes'
-  fi
+  ASM_ALIGN_LOG="$nettle_cv_asm_align_log"
 fi
 
 AC_SUBST(ASM_SYMBOL_PREFIX)

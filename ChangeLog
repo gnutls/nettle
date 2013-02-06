@@ -10,6 +10,7 @@
 	variable.
 	(asm.d): Make config.status write dependencies for .s files into
 	asm.d.
+	(ASM_ALIGN_LOG): Set to "no" when appropriate.
 
 	* asm.m4: Use changecom to disable m4 quoting. Use divert to
 	suppress output.
