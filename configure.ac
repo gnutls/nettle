@@ -386,7 +386,9 @@ AC_SUBST([CCPIC_MAYBE])
 
 ASM_SYMBOL_PREFIX=''
 ASM_ELF_STYLE='no'
-ASM_TYPE_FUNCTION=''
+# GNU as default is to use @
+ASM_TYPE_FUNCTION='@function'
+ASM_TYPE_PROGBITS='@progbits'
 ASM_MARK_NOEXEC_STACK=''
 ASM_ALIGN_LOG=''
 
@@ -408,29 +410,6 @@ if test x$enable_assembler = xyes ; then
       [AC_MSG_WARN([test program with a single global could not be compiled!?])])])
   if test x$nettle_cv_asm_underscore = xyes ; then
     ASM_SYMBOL_PREFIX='_'
-  fi
-
-  AC_CACHE_CHECK([if we should use a .note.GNU-stack section],
-  nettle_cv_asm_gnu_stack,
-  [ # Default
-    nettle_cv_asm_gnu_stack=no
-
-    cat >conftest.c <<EOF
-int foo() { return 0; }
-EOF
-    nettle_compile="$CC $CFLAGS $CPPFLAGS -c conftest.c >conftest.out 2>&1"
-    if AC_TRY_EVAL(nettle_compile); then
-      cat conftest.out >&AC_FD_CC
-      $OBJDUMP -x conftest.o | grep '\.note\.GNU-stack' > /dev/null \
-      && nettle_cv_asm_gnu_stack=yes
-    else
-      cat conftest.out >&AC_FD_CC
-      echo "configure: failed program was:" >&AC_FD_CC
-      cat conftest.s >&AC_FD_CC
-    fi
-    rm -f conftest.*])
-  if test x$nettle_cv_asm_gnu_stack = xyes ; then
-    ASM_MARK_NOEXEC_STACK='.section .note.GNU-stack,"",@progbits'
   fi
 
   AC_CACHE_CHECK([for ELF-style .type,%function pseudo-ops],
@@ -465,12 +444,38 @@ foo:
   if test x$nettle_cv_asm_type_percent_function = xyes ; then
     ASM_ELF_STYLE='yes'
     ASM_TYPE_FUNCTION='%function'
+    ASM_TYPE_PROGBITS='%progbits'
   else
     if test x$nettle_cv_asm_type_hash_function = xyes ; then
       ASM_ELF_STYLE='yes'
       ASM_TYPE_FUNCTION='#function'
+      ASM_TYPE_PROGBITS='#progbits'
     fi
   fi
+
+  AC_CACHE_CHECK([if we should use a .note.GNU-stack section],
+  nettle_cv_asm_gnu_stack,
+  [ # Default
+    nettle_cv_asm_gnu_stack=no
+
+    cat >conftest.c <<EOF
+int foo() { return 0; }
+EOF
+    nettle_compile="$CC $CFLAGS $CPPFLAGS -c conftest.c >conftest.out 2>&1"
+    if AC_TRY_EVAL(nettle_compile); then
+      cat conftest.out >&AC_FD_CC
+      $OBJDUMP -x conftest.o | grep '\.note\.GNU-stack' > /dev/null \
+      && nettle_cv_asm_gnu_stack=yes
+    else
+      cat conftest.out >&AC_FD_CC
+      echo "configure: failed program was:" >&AC_FD_CC
+      cat conftest.s >&AC_FD_CC
+    fi
+    rm -f conftest.*])
+  if test x$nettle_cv_asm_gnu_stack = xyes ; then
+    ASM_MARK_NOEXEC_STACK='.section .note.GNU-stack,"",TYPE_PROGBITS'
+  fi
+
   AC_CACHE_CHECK([if .align assembly directive is logarithmic],
     [nettle_cv_asm_align_log],
     [GMP_TRY_ASSEMBLE([
@@ -484,6 +489,7 @@ fi
 AC_SUBST(ASM_SYMBOL_PREFIX)
 AC_SUBST(ASM_ELF_STYLE)
 AC_SUBST(ASM_TYPE_FUNCTION)
+AC_SUBST(ASM_TYPE_PROGBITS)
 AC_SUBST(ASM_MARK_NOEXEC_STACK)
 AC_SUBST(ASM_ALIGN_LOG)
 AC_SUBST(W64_ABI)

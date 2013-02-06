@@ -1,5 +1,7 @@
 2013-02-06  Niels Möller  <nisse@lysator.liu.se>
 
+	* config.m4.in: Substitute ASM_TYPE_PROGBITS as TYPE_PROGBITS.
+
 	* config.make.in: Added .s to the suffix list.
 
 	* Makefile.in (.asm.s): Use a separate make target for .asm
@@ -11,6 +13,10 @@
 	(asm.d): Make config.status write dependencies for .s files into
 	asm.d.
 	(ASM_ALIGN_LOG): Set to "no" when appropriate.
+	(ASM_TYPE_FUNCTION): Default to "@function".
+	(ASM_TYPE_PROGBITS): New substituted variable, set in the same way
+	as ASM_TYPE_FUNCTION.
+	(ASM_MARK_NOEXEC_STACK): Use TYPE_PROGBITS.
 
 	* asm.m4: Use changecom to disable m4 quoting. Use divert to
 	suppress output.
