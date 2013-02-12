@@ -1,5 +1,9 @@
 Currently, code in this directory is written for arm cortex-a9.
 
+For efficient loads and stores, use ldmia, stmia and friends. Can do
+two loads or stores per cycle with 8-byte aligned addresses, or three
+loads or stores in two cycles, regardless of alignment.
+
 ABI gnueabi(hf) (not depending on the floating point conventions)
 
 Registers	May be		Argument
