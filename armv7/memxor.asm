@@ -18,6 +18,12 @@ C along with the nettle library; see the file COPYING.LIB.  If not, write to
 C the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 C MA 02111-1301, USA.
 
+C Possible speedups:
+C
+C The ldm instruction can do load two registers per cycle,
+C if the address is two-word aligned. Or three registers in two
+C cycles, regardless of alignment.
+
 C Register usage:
 
 define(<DST>, <r0>)
@@ -131,38 +137,49 @@ PROLOGUE(memxor)
 	b	.Lmemxor_bytes
 
 .Lmemxor_same:
-	tst	N, #4
-	it	ne
-	subne	N, #4
-	bne	.Lmemxor_same_loop
+	subs	N, #8
+	bcc	.Lmemxor_same_end
+
+.Lmemxor_same_loop:
+	C 8 cycles per iteration, 0.67 cycles/byte
+	ldmia	SRC!, {r3, r4, r5}
+	ldmia	DST, {r6, r7, r12}
+	subs	N, #12
+	eor	r3, r6
+	eor	r4, r7
+	eor	r5, r12
+	stmia	DST!, {r3, r4, r5}
+	bcs	.Lmemxor_same_loop
+	
+.Lmemxor_same_end:
+	C We have 0-11 bytes left to do, and N holds number of bytes -12.
+	adds	N, #4
+	bcc	.Lmemxor_same_lt_8
+	C Do 8 bytes more, leftover is in N
+	ldmia	SRC!, {r3, r4}
+	ldmia	DST, {r6, r7}
+	eor	r3, r6
+	eor	r4, r7
+	stmia	DST!, {r3, r4}
+	beq	.Lmemxor_done
+	b	.Lmemxor_bytes
+
+.Lmemxor_same_lt_8:
+	adds	N, #4
+	bcc	.Lmemxor_same_lt_4
 
 	ldr	r3, [SRC], #+4
 	ldr	r4, [DST]
 	eor	r3, r4
 	str	r3, [DST], #+4
-	
-	subs	N, #8
-	bcc	.Lmemxor_same_end
-
-.Lmemxor_same_loop:
-	C 6 cycles per iteration, 0.75 cycles/byte
-	ldr	r4, [SRC, #+4]
-	ldr	r3, [SRC], #+8
-	ldr	r6, [DST, #+4]
-	ldr	r5, [DST]
-	
-	eor	r4, r6
-	eor	r3, r5
-	subs	N, #8
-	
-	str	r4, [DST, #+4]
-	str	r3, [DST], #+8
-	bcs	.Lmemxor_same_loop
-	
-.Lmemxor_same_end:
-	adds	N, #8
 	beq	.Lmemxor_done
 	b	.Lmemxor_bytes
+
+.Lmemxor_same_lt_4:
+	adds	N, #4
+	beq	.Lmemxor_done
+	b	.Lmemxor_bytes
+	
 EPILOGUE(memxor)
 
 define(<DST>, <r0>)
