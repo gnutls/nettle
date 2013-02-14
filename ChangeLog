@@ -1,3 +1,9 @@
+2013-02-14  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/rsa-keygen.c (uint_arg): New function.
+	(main): New options -s and -e, to specify key size and public
+	exponent. Increased default key size to 2048.
+
 2013-02-12  Niels Möller  <nisse@lysator.liu.se>
 
 	* armv7/memxor.asm (memxor): Optimized aligned case, using 3-way
