@@ -1,5 +1,8 @@
 2013-02-14  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac: Find GMP's GMP_NUMB_BITS. Substitute in Makefile.
+	* config.make.in (GMP_NUMB_BITS): New variable.
+
 	* examples/rsa-keygen.c (uint_arg): New function.
 	(main): New options -s and -e, to specify key size and public
 	exponent. Increased default key size to 2048.

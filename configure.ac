@@ -587,6 +587,20 @@ Support for public key algorithms will be unavailable.])]
 # Add -R flags needed to run programs linked with gmp
 LSH_RPATH_FIX
 
+# Check for gmp limb size
+nettle_cv_gmp_numb_bits=0
+if test "$enable_public_key" = yes; then
+  AC_MSG_CHECKING([for GMP limb size])
+  AC_COMPUTE_INT(nettle_cv_gmp_numb_bits, [GMP_NUMB_BITS],
+      [#include <gmp.h>],
+      [AC_MSG_FAILURE([cannot find value of GMP_NUMB_BITS])])
+
+  AC_MSG_RESULT([$nettle_cv_gmp_numb_bits bits])
+fi
+
+GMP_NUMB_BITS="$nettle_cv_gmp_numb_bits"
+AC_SUBST([GMP_NUMB_BITS])
+
 AH_TEMPLATE([HAVE_MPZ_POWM_SEC], [Define if mpz_powm_sec is available (appeared in GMP-5)])
 AC_CHECK_FUNC(__gmpz_powm_sec, [AC_DEFINE(HAVE_MPZ_POWM_SEC)])
 
