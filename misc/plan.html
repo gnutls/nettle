@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?> <!-- -*-mode: xml; sgml-indent-data: t; -*- -->
+<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html 
      PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
@@ -28,11 +28,8 @@
     Leave for some later release!
   </p>
 
-  <h1> Plan for the Nettle-2.6 release </h1>
+  <h1> Plan for the Nettle-2.7 release </h1>
   <h2> Documentation </h2>
-  <p class='done'>
-    Update documentation with info on SHA3.
-  </p>
   <p class='should'>
     Update NEWS file.
   </p>
@@ -72,11 +69,6 @@
     AC_REPLACE_FUNCS.
   </p>
   <p class='should'>
-    Rename sha256 to sha2_256, and similar for other sha2 functions.
-    Split sha.h into sha1.h and sha2.h. For backwards compatibility,
-    keep sha.h with old names as aliases.
-  </p>
-  <p class='should'>
     For Merkle-Damgaard hash functions, separate the state and the
     buffering. E.g., when using them for HMAC keyed "inner" and
     "outer" states, we now get three buffers but we only need one.
@@ -99,6 +91,10 @@
     variant (like putty), and possibly also smartcard versions where
     the private key is not available to the library. And without an
     explosion of the number of functions.
+  </p>
+  <p class='should'>
+    Make the assembly ALIGN-macro non-logarithmic, reusing the m4 log2
+    macro in GMP.
   </p>
 </body>
 </html>
