@@ -169,6 +169,9 @@ ecc-modinv-test$(EXEEXT): ecc-modinv-test.$(OBJEXT)
 ecc-redc-test$(EXEEXT): ecc-redc-test.$(OBJEXT)
 	$(LINK) ecc-redc-test.$(OBJEXT) $(TEST_OBJS) -o ecc-redc-test$(EXEEXT)
 
+ecc-mul-g-test$(EXEEXT): ecc-mul-g-test.$(OBJEXT)
+	$(LINK) ecc-mul-g-test.$(OBJEXT) $(TEST_OBJS) -o ecc-mul-g-test$(EXEEXT)
+
 sha1-huge-test$(EXEEXT): sha1-huge-test.$(OBJEXT)
 	$(LINK) sha1-huge-test.$(OBJEXT) $(TEST_OBJS) -o sha1-huge-test$(EXEEXT)
 

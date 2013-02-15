@@ -19,6 +19,7 @@
 # include "rsa.h"
 # include "dsa.h"
 # include "ecc-curve.h"
+# include "ecc.h"
 # include "ecc-internal.h"
 # include "gmp-glue.h"
 #endif
@@ -150,6 +151,9 @@ test_armor(const struct nettle_armor *armor,
            const uint8_t *ascii);
 
 #if WITH_HOGWEED
+mp_limb_t *
+xalloc_limbs (mp_size_t n);
+
 void
 test_rsa_set_key_1(struct rsa_public_key *pub,
 		   struct rsa_private_key *key);
@@ -194,6 +198,12 @@ test_dsa_key(struct dsa_public_key *pub,
 	     unsigned q_size);
 
 extern const struct ecc_curve * const ecc_curves[];
+
+void
+test_ecc_mul_a (unsigned curve, unsigned n, const mp_limb_t *p);
+
+void
+test_ecc_mul_j (unsigned curve, unsigned n, const mp_limb_t *p);
 
 #endif /* WITH_HOGWEED */
   

@@ -8,6 +8,7 @@
 #include "macros.h"
 #include "nettle-internal.h"
 
+#include <assert.h>
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -628,6 +629,12 @@ mpz_togglebit (mpz_t x, unsigned long int bit)
 
 #if WITH_HOGWEED
 
+mp_limb_t *
+xalloc_limbs (mp_size_t n)
+{
+  return xalloc (n * sizeof (mp_limb_t));
+}
+
 #define SIGN(key, hash, msg, signature) do {		\
   hash##_update(&hash, LDATA(msg));		\
   ASSERT(rsa_##hash##_sign(key, &hash, signature));	\
@@ -1094,6 +1101,125 @@ const struct ecc_curve * const ecc_curves[] = {
   &nettle_secp_521r1,
   NULL
 };
+
+static int
+test_mpn (const char *ref, const mp_limb_t *xp, mp_size_t n)
+{
+  mpz_t r;
+  int res;
+
+  mpz_init_set_str (r, ref, 16);
+  while (n > 0 && xp[n-1] == 0)
+    n--;
+  
+  res = (_mpz_cmp_limbs (r, xp, n) == 0);
+  mpz_clear (r);
+  return res;
+}
+
+struct ecc_ref_point
+{
+  const char *x;
+  const char *y;
+};
+
+static void
+test_ecc_point (const struct ecc_curve *ecc,
+		const struct ecc_ref_point *ref,
+		const mp_limb_t *p)
+{
+  if (! (test_mpn (ref->x, p, ecc->size)
+	 && test_mpn (ref->y, p + ecc->size, ecc->size) ))
+    {
+      gmp_fprintf (stderr, "Incorrect point!\n"
+		   "got: x = %Nx\n"
+		   "     y = %Nx\n"
+		   "ref: x = %s\n"
+		   "     y = %s\n",
+		   p, ecc->size, p + ecc->size, ecc->size,
+		   ref->x, ref->y);
+      abort();
+    }
+}
+
+void
+test_ecc_mul_a (unsigned curve, unsigned n, const mp_limb_t *p)
+{
+  /* For each curve, the points 2 g, 3 g and 4 g */
+  static const struct ecc_ref_point ref[5][3] = {
+    { { "dafebf5828783f2ad35534631588a3f629a70fb16982a888",
+	"dd6bda0d993da0fa46b27bbc141b868f59331afa5c7e93ab" },
+      { "76e32a2557599e6edcd283201fb2b9aadfd0d359cbb263da",
+	"782c37e372ba4520aa62e0fed121d49ef3b543660cfd05fd" },
+      { "35433907297cc378b0015703374729d7a4fe46647084e4ba",
+	"a2649984f2135c301ea3acb0776cd4f125389b311db3be32" }
+    },
+    { { "706a46dc76dcb76798e60e6d89474788d16dc18032d268fd1a704fa6",
+	"1c2b76a7bc25e7702a704fa986892849fca629487acf3709d2e4e8bb" },
+      { "df1b1d66a551d0d31eff822558b9d2cc75c2180279fe0d08fd896d04",
+	"a3f7f03cadd0be444c0aa56830130ddf77d317344e1af3591981a925" },
+      { "ae99feebb5d26945b54892092a8aee02912930fa41cd114e40447301",
+	"482580a0ec5bc47e88bc8c378632cd196cb3fa058a7114eb03054c9" },
+    },
+    { { "7cf27b188d034f7e8a52380304b51ac3c08969e277f21b35a60b48fc47669978",
+	"7775510db8ed040293d9ac69f7430dbba7dade63ce982299e04b79d227873d1" },
+      { "5ecbe4d1a6330a44c8f7ef951d4bf165e6c6b721efada985fb41661bc6e7fd6c",
+	"8734640c4998ff7e374b06ce1a64a2ecd82ab036384fb83d9a79b127a27d5032" },
+      { "e2534a3532d08fbba02dde659ee62bd0031fe2db785596ef509302446b030852",
+	"e0f1575a4c633cc719dfee5fda862d764efc96c3f30ee0055c42c23f184ed8c6" },
+    },
+    { { "8d999057ba3d2d969260045c55b97f089025959a6f434d651d207d19fb96e9e"
+	"4fe0e86ebe0e64f85b96a9c75295df61",
+	"8e80f1fa5b1b3cedb7bfe8dffd6dba74b275d875bc6cc43e904e505f256ab425"
+	"5ffd43e94d39e22d61501e700a940e80" },
+      { "77a41d4606ffa1464793c7e5fdc7d98cb9d3910202dcd06bea4f240d3566da6"
+	"b408bbae5026580d02d7e5c70500c831",
+	"c995f7ca0b0c42837d0bbe9602a9fc998520b41c85115aa5f7684c0edc111eac"
+	"c24abd6be4b5d298b65f28600a2f1df1" },
+      { "138251cd52ac9298c1c8aad977321deb97e709bd0b4ca0aca55dc8ad51dcfc9d"
+	"1589a1597e3a5120e1efd631c63e1835",
+	"cacae29869a62e1631e8a28181ab56616dc45d918abc09f3ab0e63cf792aa4dc"
+	"ed7387be37bba569549f1c02b270ed67" },
+    },
+    { { "43"
+	"3c219024277e7e682fcb288148c282747403279b1ccc06352c6e5505d769be97"
+	"b3b204da6ef55507aa104a3a35c5af41cf2fa364d60fd967f43e3933ba6d783d",
+	"f4"
+	"bb8cc7f86db26700a7f3eceeeed3f0b5c6b5107c4da97740ab21a29906c42dbb"
+	"b3e377de9f251f6b93937fa99a3248f4eafcbe95edc0f4f71be356d661f41b02"
+      },
+      { "1a7"
+	"3d352443de29195dd91d6a64b5959479b52a6e5b123d9ab9e5ad7a112d7a8dd1"
+	"ad3f164a3a4832051da6bd16b59fe21baeb490862c32ea05a5919d2ede37ad7d",
+	"13e"
+	"9b03b97dfa62ddd9979f86c6cab814f2f1557fa82a9d0317d2f8ab1fa355ceec"
+	"2e2dd4cf8dc575b02d5aced1dec3c70cf105c9bc93a590425f588ca1ee86c0e5" },
+      { "35"
+	"b5df64ae2ac204c354b483487c9070cdc61c891c5ff39afc06c5d55541d3ceac"
+	"8659e24afe3d0750e8b88e9f078af066a1d5025b08e5a5e2fbc87412871902f3",
+	"82"
+	"096f84261279d2b673e0178eb0b4abb65521aef6e6e32e1b5ae63fe2f19907f2"
+	"79f283e54ba385405224f750a95b85eebb7faef04699d1d9e21f47fc346e4d0d" },
+    }
+  };
+  assert (curve < 5);
+  assert (n >= 2 && n <= 4);
+  test_ecc_point (ecc_curves[curve], &ref[curve][n-2], p);
+}
+
+void
+test_ecc_mul_j (unsigned curve, unsigned n, const mp_limb_t *p)
+{
+  const struct ecc_curve *ecc = ecc_curves[curve];
+  mp_limb_t *np = xalloc_limbs (ecc_size_a (ecc));
+  mp_limb_t *scratch = xalloc_limbs (ecc_j_to_a_itch(ecc));
+  ecc_j_to_a (ecc, 1, np, p, scratch);
+
+  test_ecc_mul_a (curve, n, np);
+
+  free (np);
+  free (scratch);
+}
 
 #endif /* WITH_HOGWEED */
 

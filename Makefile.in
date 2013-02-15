@@ -127,12 +127,14 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  gmp-glue.c cnd-copy.c \
 		  ecc-mod.c ecc-generic-modp.c ecc-generic-modq.c \
 		  ecc-modp.c ecc-modq.c ecc-generic-redc.c \
-		  ecc-192.c ecc-224.c ecc-256.c ecc-384.c ecc-521.c
+		  ecc-192.c ecc-224.c ecc-256.c ecc-384.c ecc-521.c \
+		  ecc-size.c ecc-j-to-a.c ecc-dup-jj.c ecc-add-jja.c \
+		  ecc-mul-g.c
 
 HEADERS = aes.h arcfour.h arctwo.h asn1.h bignum.h blowfish.h \
 	  base16.h base64.h buffer.h camellia.h cast128.h \
 	  cbc.h ctr.h \
-	  des.h des-compat.h dsa.h ecc-curve.h \
+	  des.h des-compat.h dsa.h ecc-curve.h ecc.h \
 	  gcm.h gosthash94.h hmac.h \
 	  knuth-lfib.h \
 	  macros.h \

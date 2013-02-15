@@ -1,5 +1,25 @@
 2013-02-15  Niels Möller  <nisse@lysator.liu.se>
 
+	Integrate ecc_mul_g.
+	* ecc.h: New file.
+	* ecc-j-to-a.c: New file.
+	* ecc-size.c: New file.
+	* ecc-add-jja.c: New file.
+	* ecc-dup-jj.c: New file.
+	* ecc-mul-g.c: New file.
+	* sec-tabselect.c: New file.
+	* Makefile.in (hogweed_SOURCES): Added new files.
+	(HEADERS): Added ecc.h
+	* testsuite/ecc-mul-g-test.c: New file.
+	* testsuite/Makefile.in (TS_HOGWEED_SOURCES): Added
+	ecc-mul-g-test.c.
+	* testsuite/testutils.c (xalloc_limbs): New function.
+	(test_mpn): New function.
+	(test_ecc_point): New function.
+	(test_ecc_mul_a): New function.
+	(test_ecc_mul_j): New function.
+	* testsuite/testutils.h: Corresponding declarations.
+
 	Integrate ECC internals.
 	* ecc-curve.h: New file.
 	* ecc-internal.h: New file.
