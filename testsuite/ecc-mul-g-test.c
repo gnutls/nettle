@@ -9,16 +9,16 @@ test_main (void)
 
   gmp_randinit_default (state);
   mpz_init (r);
-  
+
   for (i = 0; ecc_curves[i]; i++)
     {
       const struct ecc_curve *ecc = ecc_curves[i];
-      mp_size_t size= ecc_size (ecc);
+      mp_size_t size = ecc_size (ecc);
       mp_limb_t *p = xalloc_limbs (ecc_size_j (ecc));
       mp_limb_t *q = xalloc_limbs (ecc_size_j (ecc));
       mp_limb_t *n = xalloc_limbs (size);
       mp_limb_t *scratch = xalloc_limbs (ecc_mul_g_itch (ecc));
-      
+
       mpn_zero (n, size);
 
       n[0] = 1;
@@ -53,6 +53,6 @@ test_main (void)
       free (q);
       free (scratch);
     }
-  mpz_clear (r); 
+  mpz_clear (r);
   gmp_randclear (state);
 }
