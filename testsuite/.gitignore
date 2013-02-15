@@ -18,7 +18,13 @@
 /des3-test
 /dsa-keygen-test
 /dsa-test
+/ecc-mod-test
+/ecc-modinv-test
+/ecc-mul-a-test
+/ecc-mul-g-test
+/ecc-redc-test
 /gcm-test
+/gosthash94-test
 /hmac-test
 /knuth-lfib-test
 /md2-test
@@ -46,6 +52,11 @@
 /sha1-test
 /sha224-test
 /sha256-test
+/sha3-224-test
+/sha3-256-test
+/sha3-384-test
+/sha3-512-test
+/sha3-permute-test
 /sha384-test
 /sha512-test
 /twofish-test

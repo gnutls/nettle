@@ -1,5 +1,9 @@
 /*.d
 /Makefile
+/base16dec
+/base16enc
+/base64dec
+/base64enc
 /eratosthenes
 /nettle-benchmark
 /next-prime
