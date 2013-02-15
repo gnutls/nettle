@@ -1,5 +1,9 @@
 2013-02-15  Niels Möller  <nisse@lysator.liu.se>
 
+	* gmp-glue.c: New file, mpn <-> mpz conversions.
+	* gmp-glue.h: New file.
+	* Makefile.in: Added to hogweed_SOURCES and DISTFILES, respectively.
+
 	* eccdata.c: New program, for generating ECC-related tables.
 	* Makefile.in (ecc-192.h, ecc-224.h, ecc-256.h, ecc-384.h)
 	(ecc-512.h): New generated files.
