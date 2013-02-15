@@ -1,3 +1,9 @@
+2013-02-15  Niels Möller  <nisse@lysator.liu.se>
+
+	* eccdata.c: New program, for generating ECC-related tables.
+	* Makefile.in (ecc-192.h, ecc-224.h, ecc-256.h, ecc-384.h)
+	(ecc-512.h): New generated files.
+
 2013-02-14  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Find GMP's GMP_NUMB_BITS. Substitute in Makefile.

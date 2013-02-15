@@ -30,7 +30,7 @@ internal_SOURCES = nettle-internal.c
 internal_TARGETS = $(internal_SOURCES:.c=.$(OBJEXT))
 
 TARGETS = aesdata$(EXEEXT) desdata$(EXEEXT) twofishdata$(EXEEXT) \
-	  shadata$(EXEEXT) gcmdata$(EXEEXT) \
+	  shadata$(EXEEXT) gcmdata$(EXEEXT) eccdata$(EXEEXT) \
 	  $(getopt_TARGETS) $(internal_TARGETS) \
 	  $(LIBTARGETS) $(SHLIBTARGETS)
 IMPLICIT_TARGETS = @IF_DLL@ $(LIBNETTLE_FILE) $(LIBHOGWEED_FILE)
@@ -146,7 +146,7 @@ INSTALL_HEADERS = $(HEADERS) nettle-stdint.h
 
 SOURCES = $(nettle_SOURCES) $(hogweed_SOURCES) \
 	  $(getopt_SOURCES) $(internal_SOURCES) \
-	  aesdata.c desdata.c twofishdata.c shadata.c gcmdata.c
+	  aesdata.c desdata.c twofishdata.c shadata.c gcmdata.c eccdata.c
 
 DISTFILES = $(SOURCES) $(HEADERS) getopt.h .bootstrap run-tests \
 	aclocal.m4 configure.ac \
@@ -224,8 +224,8 @@ shadata$(EXEEXT): shadata.$(OBJEXT)
 gcmdata$(EXEEXT): gcmdata.$(OBJEXT)
 	$(LINK) gcmdata.$(OBJEXT) $(LIBS) -o gcmdata$(EXEEXT)
 
-# .$(OBJEXT)$(EXEEXT):
-# 	$(LINK) $< $(LIBS) -o $@
+eccdata$(EXEEXT): eccdata.$(OBJEXT)
+	$(LINK) eccdata.$(OBJEXT) $(LIBS) -o eccdata$(EXEEXT)
 
 # desCore rules
 # It seems using $(srcdir)/ doesn't work with GNU make 3.79.1
@@ -240,6 +240,64 @@ $(des_headers): desdata.c
 	  test -s $${f}T && mv -f $${f}T $$f
 
 des.$(OBJEXT): des.c des.h $(des_headers)
+
+# Generate ECC files.
+# Some possible choices for 192:
+#	k = 15, c = 4,  64 entries,  ~3 KB
+#	k = 20, c = 6, 128 entries,  ~6 KB
+#	k = 10, c = 6, 256 entries, ~12 KB
+#	k =  7, c = 6, 320 entries, ~15 KB
+#	k =  9, c = 7, 512 entries, ~24 KB
+ecc-192.h: eccdata.stamp
+	./eccdata$(EXEEXT) 192 7 6 $(GMP_NUMB_BITS) > $@T && mv $@T $@
+# Some possible choices for 224:
+#	k = 18, c = 4,  64 entries,  ~4 KB
+#	k = 24, c = 6, 128 entries,  ~8 KB
+#	k = 12, c = 6, 256 entries, ~16 KB
+#	k =  8, c = 6, 320 entries, ~20 KB
+#	k = 10, c = 7, 512 entries, ~32 KB
+ecc-224.h: eccdata.stamp
+	./eccdata$(EXEEXT) 224 12 6 $(GMP_NUMB_BITS) > $@T && mv $@T $@
+# Some possible choices for 256:
+#	k = 20, c = 4,  64 entries,  ~4 KB
+#	k = 27, c = 6, 128 entries,  ~8 KB
+#	k = 14, c = 6, 256 entries, ~16 KB
+#	k =  9, c = 6, 320 entries, ~20 KB
+#	k = 12, c = 7, 512 entries, ~32 KB
+ecc-256.h: eccdata.stamp
+	./eccdata$(EXEEXT) 256 14 6 $(GMP_NUMB_BITS) > $@T && mv $@T $@
+# Some possible choices for 384:
+#	k = 31, c = 4,  64 entries,  ~6 KB
+#	k = 41, c = 6, 128 entries, ~12 KB
+#	k = 20, c = 6, 256 entries, ~24 KB
+#	k = 14, c = 6, 320 entries, ~30 KB
+#	k = 18, c = 7, 512 entries, ~48 KB
+ecc-384.h: eccdata.stamp
+	./eccdata$(EXEEXT) 384 41 6 $(GMP_NUMB_BITS) > $@T && mv $@T $@
+# Some possible choices for 521:
+#	k = 42, c = 4,  64 entries,  ~9 KB
+#	k = 56, c = 6, 128 entries, ~18 KB
+#	k = 28, c = 6, 256 entries, ~35 KB
+#	k = 19, c = 6, 320 entries, ~44 KB
+#	k = 24, c = 7, 512 entries, ~70 KB
+ecc-521.h: eccdata.stamp
+	./eccdata$(EXEEXT) 521 56 6 $(GMP_NUMB_BITS) > $@T && mv $@T $@
+
+eccdata.stamp: eccdata.c
+	$(MAKE) eccdata$(EXEEXT)
+	echo stamp > eccdata.stamp
+
+ecc-192.$(OBJEXT): ecc-192.h
+ecc-224.$(OBJEXT): ecc-224.h
+ecc-256.$(OBJEXT): ecc-256.h
+ecc-384.$(OBJEXT): ecc-384.h
+ecc-521.$(OBJEXT): ecc-521.h
+
+ecc-192.p$(OBJEXT): ecc-192.h
+ecc-224.p$(OBJEXT): ecc-224.h
+ecc-256.p$(OBJEXT): ecc-256.h
+ecc-384.p$(OBJEXT): ecc-384.h
+ecc-521.p$(OBJEXT): ecc-521.h
 
 .asm.s:
 	$(M4) $(srcdir)/asm.m4 machine.m4 config.m4 $< >$@T \
@@ -490,7 +548,8 @@ distcheck: dist
 	$(rm_distcheck)
 
 clean-here:
-	-rm -f $(TARGETS) $(IMPLICIT_TARGETS) *.$(OBJEXT) *.p$(OBJEXT) *.s
+	-rm -f $(TARGETS) $(IMPLICIT_TARGETS) *.$(OBJEXT) *.p$(OBJEXT) *.s \
+		ecc-192.h ecc-224.h ecc-256.h ecc-384.h ecc-521.h eccdata.stamp
 	-rm -rf .lib
 
 distclean-here: clean-here
