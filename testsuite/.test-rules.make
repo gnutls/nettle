@@ -172,6 +172,9 @@ ecc-redc-test$(EXEEXT): ecc-redc-test.$(OBJEXT)
 ecc-mul-g-test$(EXEEXT): ecc-mul-g-test.$(OBJEXT)
 	$(LINK) ecc-mul-g-test.$(OBJEXT) $(TEST_OBJS) -o ecc-mul-g-test$(EXEEXT)
 
+ecc-mul-a-test$(EXEEXT): ecc-mul-a-test.$(OBJEXT)
+	$(LINK) ecc-mul-a-test.$(OBJEXT) $(TEST_OBJS) -o ecc-mul-a-test$(EXEEXT)
+
 sha1-huge-test$(EXEEXT): sha1-huge-test.$(OBJEXT)
 	$(LINK) sha1-huge-test.$(OBJEXT) $(TEST_OBJS) -o sha1-huge-test$(EXEEXT)
 

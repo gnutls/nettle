@@ -1,5 +1,14 @@
 2013-02-15  Niels Möller  <nisse@lysator.liu.se>
 
+	Integrate ecc_mul_a.
+	* ecc-a-to-j.c: New file.
+	* ecc-add-jjj.c: New file.
+	* ecc-mul-a.c: New file.
+	* Makefile.in (hogweed_SOURCES): Added new files.
+	* testsuite/ecc-mul-a-test.c: New file.
+	* testsuite/Makefile.in (TS_HOGWEED_SOURCES): Added
+	ecc-mul-a-test.c.
+
 	* testsuite/testutils.c: Removed redundant includes.
 	(die): New function.
 
