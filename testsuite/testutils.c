@@ -1086,5 +1086,14 @@ test_dsa_key(struct dsa_public_key *pub,
   mpz_clear(t);
 }
 
+const struct ecc_curve * const ecc_curves[] = {
+  &nettle_secp_192r1,
+  &nettle_secp_224r1,
+  &nettle_secp_256r1,
+  &nettle_secp_384r1,
+  &nettle_secp_521r1,
+  NULL
+};
+
 #endif /* WITH_HOGWEED */
 

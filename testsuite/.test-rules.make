@@ -160,6 +160,15 @@ dsa-test$(EXEEXT): dsa-test.$(OBJEXT)
 dsa-keygen-test$(EXEEXT): dsa-keygen-test.$(OBJEXT)
 	$(LINK) dsa-keygen-test.$(OBJEXT) $(TEST_OBJS) -o dsa-keygen-test$(EXEEXT)
 
+ecc-mod-test$(EXEEXT): ecc-mod-test.$(OBJEXT)
+	$(LINK) ecc-mod-test.$(OBJEXT) $(TEST_OBJS) -o ecc-mod-test$(EXEEXT)
+
+ecc-modinv-test$(EXEEXT): ecc-modinv-test.$(OBJEXT)
+	$(LINK) ecc-modinv-test.$(OBJEXT) $(TEST_OBJS) -o ecc-modinv-test$(EXEEXT)
+
+ecc-redc-test$(EXEEXT): ecc-redc-test.$(OBJEXT)
+	$(LINK) ecc-redc-test.$(OBJEXT) $(TEST_OBJS) -o ecc-redc-test$(EXEEXT)
+
 sha1-huge-test$(EXEEXT): sha1-huge-test.$(OBJEXT)
 	$(LINK) sha1-huge-test.$(OBJEXT) $(TEST_OBJS) -o sha1-huge-test$(EXEEXT)
 

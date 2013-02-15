@@ -1,5 +1,35 @@
 2013-02-15  Niels Möller  <nisse@lysator.liu.se>
 
+	Integrate ECC internals.
+	* ecc-curve.h: New file.
+	* ecc-internal.h: New file.
+	* cnd-copy.c: New file.
+	* ecc-192.c: New file.
+	* ecc-224.c: New file.
+	* ecc-256.c: New file.
+	* ecc-384.c: New file.
+	* ecc-521.c: New file.
+	* ecc-generic-modp.c: New file.
+	* ecc-generic-modq.c: New file.
+	* ecc-generic-redc.c: New file.
+	* ecc-mod.c: New file.
+	* ecc-modp.c: New file.
+	* ecc-modq.c: New file.
+	* sec-add-1.c: New file.
+	* sec-modinv.c: New file.
+	* sec-sub-1.c: New file.
+	* Makefile.in (hogweed_SOURCES): Added new files.
+	(HEADERS): Added ecc-curve.h.
+	(DISTFILES): Added ecc-internal.h.
+	* testsuite/ecc-mod-test.c: New file.
+	* testsuite/ecc-modinv-test.c: New file.
+	* testsuite/ecc-redc-test.c: New file.
+	* testsuite/testutils.c (ecc_curves): New constant array.
+	* testsuite/testutils.h: Include ecc-related headers. Declare
+	ecc_curves array.
+	* testsuite/Makefile.in (TS_HOGWEED_SOURCES): Added ecc-mod-test.c
+	ecc-modinv-test.c ecc-redc-test.c.
+
 	* gmp-glue.c: New file, mpn <-> mpz conversions.
 	* gmp-glue.h: New file.
 	* Makefile.in: Added to hogweed_SOURCES and DISTFILES, respectively.

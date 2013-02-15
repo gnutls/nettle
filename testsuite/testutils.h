@@ -18,6 +18,9 @@
 #if WITH_HOGWEED
 # include "rsa.h"
 # include "dsa.h"
+# include "ecc-curve.h"
+# include "ecc-internal.h"
+# include "gmp-glue.h"
 #endif
 
 #include "nettle-meta.h"
@@ -189,6 +192,8 @@ void
 test_dsa_key(struct dsa_public_key *pub,
 	     struct dsa_private_key *key,
 	     unsigned q_size);
+
+extern const struct ecc_curve * const ecc_curves[];
 
 #endif /* WITH_HOGWEED */
   
