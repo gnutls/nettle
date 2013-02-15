@@ -56,7 +56,7 @@ ecc_384_modp (const struct ecc_curve *ecc, mp_limb_t *rp)
   cy = sec_add_1 (rp + 12, rp + 12, 3, cy);
 
   bw = mpn_sub_n (rp + 5, rp + 5, rp + 16, 8);
-  bw = sub_1_sec (rp + 13, rp + 13, 3, bw);
+  bw = sec_sub_1 (rp + 13, rp + 13, 3, bw);
 
   cy += mpn_add_n (rp + 7, rp + 7, rp + 16, 8);
   cy = sec_add_1 (rp + 15, rp + 15, 1, cy);
@@ -73,7 +73,7 @@ ecc_384_modp (const struct ecc_curve *ecc, mp_limb_t *rp)
   cy = sec_add_1 (rp + 5, rp + 5, 3, cy);
   
   bw = mpn_sub_n (rp + 1, rp + 1, rp + 12, 5);
-  bw = sub_1_sec (rp + 6, rp + 6, 6, bw);
+  bw = sec_sub_1 (rp + 6, rp + 6, 6, bw);
   
   cy += mpn_add_n (rp + 3, rp + 3, rp + 12, 5);
   cy = sec_add_1 (rp + 8, rp + 8, 1, cy);
