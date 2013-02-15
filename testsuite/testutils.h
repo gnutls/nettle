@@ -7,9 +7,10 @@
 
 #include "nettle-types.h"
 
-#include <string.h>
+#include <stdarg.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #if HAVE_LIBGMP
 # include "bignum.h"
@@ -32,6 +33,9 @@ struct nettle_aead;
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+void
+die(const char *format, ...) PRINTF_STYLE (1, 2) NORETURN;
 
 void *
 xalloc(size_t size);

@@ -10,9 +10,6 @@
 
 #include <assert.h>
 #include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 /* -1 means invalid */
 static const signed char hex_digits[0x100] =
@@ -34,6 +31,21 @@ static const signed char hex_digits[0x100] =
     -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
     -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
   };
+
+void
+die(const char *format, ...)
+{
+  va_list args;
+  va_start(args, format);
+#if WITH_HOGWEED
+  gmp_vfprintf(stderr, format, args);
+#else
+  vfprintf(stderr, format, args);
+#endif
+  va_end(args);
+
+  abort ();
+}
 
 void *
 xalloc(size_t size)

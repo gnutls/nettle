@@ -1,5 +1,8 @@
 2013-02-15  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/testutils.c: Removed redundant includes.
+	(die): New function.
+
 	Integrate ecc_mul_g.
 	* ecc.h: New file.
 	* ecc-j-to-a.c: New file.
