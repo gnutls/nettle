@@ -23,6 +23,8 @@
 /ecc-mul-a-test
 /ecc-mul-g-test
 /ecc-redc-test
+/ecdsa-sign-test
+/ecdsa-verify-test
 /gcm-test
 /gosthash94-test
 /hmac-test

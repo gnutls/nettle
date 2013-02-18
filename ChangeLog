@@ -1,6 +1,11 @@
 2013-02-18  Niels Möller  <nisse@lysator.liu.se>
 
-	* testsuite/testutils.h (SHEX): Deleted const cast.
+	* testsuite/ecdsa-verify-test.c: New testcase.
+	* testsuite/ecdsa-sign-test.c: New testcase.
+	* testsuite/Makefile.in (TS_HOGWEED_SOURCES): Added
+	ecdsa-sign-test.c and ecdsa-verify-test.c.
+	* testsuite/testutils.h: Include ecdsa.h.
+	(SHEX): Deleted const cast.
 
 	* ecc-point.c: New file, struct ecc_point abstraction.
 	* ecc-scalar.c: New file, struct ecc_scalar abstraction.

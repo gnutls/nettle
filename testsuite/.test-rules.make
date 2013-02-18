@@ -175,6 +175,12 @@ ecc-mul-g-test$(EXEEXT): ecc-mul-g-test.$(OBJEXT)
 ecc-mul-a-test$(EXEEXT): ecc-mul-a-test.$(OBJEXT)
 	$(LINK) ecc-mul-a-test.$(OBJEXT) $(TEST_OBJS) -o ecc-mul-a-test$(EXEEXT)
 
+ecdsa-sign-test$(EXEEXT): ecdsa-sign-test.$(OBJEXT)
+	$(LINK) ecdsa-sign-test.$(OBJEXT) $(TEST_OBJS) -o ecdsa-sign-test$(EXEEXT)
+
+ecdsa-verify-test$(EXEEXT): ecdsa-verify-test.$(OBJEXT)
+	$(LINK) ecdsa-verify-test.$(OBJEXT) $(TEST_OBJS) -o ecdsa-verify-test$(EXEEXT)
+
 sha1-huge-test$(EXEEXT): sha1-huge-test.$(OBJEXT)
 	$(LINK) sha1-huge-test.$(OBJEXT) $(TEST_OBJS) -o sha1-huge-test$(EXEEXT)
 

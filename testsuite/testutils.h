@@ -22,6 +22,7 @@
 # include "ecc-curve.h"
 # include "ecc.h"
 # include "ecc-internal.h"
+# include "ecdsa.h"
 # include "gmp-glue.h"
 #endif
 
