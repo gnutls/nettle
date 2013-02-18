@@ -1,5 +1,7 @@
 2013-02-18  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/testutils.h (SHEX): Deleted const cast.
+
 	* ecc-point.c: New file, struct ecc_point abstraction.
 	* ecc-scalar.c: New file, struct ecc_scalar abstraction.
 	* ecc-random.c (ecc_modq_random, ecc_scalar_random): New file, new

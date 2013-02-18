@@ -216,7 +216,7 @@ test_ecc_mul_j (unsigned curve, unsigned n, const mp_limb_t *p);
 #define LDATA(x) LLENGTH(x), x
 #define LDUP(x) strlen(x), strdup(x)
 
-#define SHEX(x) ((const struct tstring *) tstring_hex(x))
+#define SHEX(x) (tstring_hex(x))
 #define SDATA(x) ((const struct tstring *)tstring_data(LLENGTH(x), x))
 #define H(x) (SHEX(x)->data)
 
