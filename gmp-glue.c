@@ -25,6 +25,7 @@
 #endif
 
 #include <assert.h>
+#include <stdlib.h>
 
 #include "gmp-glue.h"
 
@@ -135,6 +136,13 @@ _mpz_done_limbs (mpz_ptr x, mp_size_t n)
   SIZ (x) = n;
 }
 
+void
+_mpz_set_mpn (mpz_t r, const mp_limb_t *xp, mp_size_t xn)
+{
+  mpn_copyi (_mpz_write_limbs (r, xn), xp, xn);
+  _mpz_done_limbs (r, xn);
+}
+
 /* Needs some ugly casts. */
 mpz_srcptr
 _mpz_init_mpn (mpz_ptr x, const mp_limb_t *xp, mp_size_t xs)
@@ -147,4 +155,56 @@ _mpz_init_mpn (mpz_ptr x, const mp_limb_t *xp, mp_size_t xs)
   x->_mp_alloc = 0;
   x->_mp_d = (mp_limb_t *) xp;
   return x;
+}
+
+void
+_mpn_set_base256 (mp_limb_t *rp, mp_size_t rn,
+		 const uint8_t *xp, size_t xn)
+{
+  size_t xi;
+  mp_limb_t out;
+  unsigned bits;
+  for (xi = xn, out = bits = 0; xi > 0 && rn > 0; )
+    {
+      mp_limb_t in = xp[--xi];
+      out |= (in << bits) & GMP_NUMB_MASK;
+      bits += 8;
+      if (bits >= GMP_NUMB_BITS)
+	{
+	  *rp++ = out;
+	  rn--;
+
+	  bits -= GMP_NUMB_BITS;
+	  out = in >> (8 - bits);
+	}
+    }
+  if (rn > 0)
+    {
+      *rp++ = out;
+      if (--rn > 0)
+	mpn_zero (rp, rn);
+    }
+}
+
+mp_limb_t *
+_gmp_alloc_limbs (mp_size_t n)
+{
+
+  void *(*alloc_func)(size_t);
+
+  assert (n > 0);
+
+  mp_get_memory_functions (&alloc_func, NULL, NULL);
+  return (mp_limb_t *) alloc_func ( (size_t) n * sizeof(mp_limb_t));
+}
+
+void
+_gmp_free_limbs (mp_limb_t *p, mp_size_t n)
+{
+  void (*free_func)(void *, size_t);
+  assert (n > 0);
+  assert (p != 0);
+  mp_get_memory_functions (NULL, NULL, &free_func);
+
+  free_func (p, (size_t) n * sizeof(mp_limb_t));
 }

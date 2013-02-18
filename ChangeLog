@@ -1,5 +1,11 @@
 2013-02-18  Niels Möller  <nisse@lysator.liu.se>
 
+	* gmp-glue.c (_mpz_set_mpn): New convenience function.
+	(_mpn_set_base256): New function.
+	(_gmp_alloc_limbs): New function.
+	(_gmp_free_limbs): New function.
+	* gmp-glue.h: Corresponding declarations. Include nettle-stdinh.h.
+
 	* examples/Makefile.in (HOGWEED_TARGETS): Renamed, was
 	RSA_TARGETS. Added ecc-benchmark$(EXEEXT).
 	(SOURCES): Added ecc-benchmark.c.
