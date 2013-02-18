@@ -1,5 +1,20 @@
 2013-02-18  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-point.c: New file, struct ecc_point abstraction.
+	* ecc-scalar.c: New file, struct ecc_scalar abstraction.
+	* ecc-random.c (ecc_modq_random, ecc_scalar_random): New file, new
+	functions.
+	* ecc-hash.c (ecc_hash): New file and function.
+	* ecc-ecdsa-sign.c: New file, low-level signing interface.
+	* ecc-ecdsa-verify.c: New file, low-level ecdsa verify.
+	* ecdsa-sign.c: (ecdsa_sign): New file and function.
+	* ecdsa-verify.c (ecdsa_verify): New file and function.
+	* ecdsa.h: New header file.
+	* ecc.h: Declare ecc_point and ecc_scalar functions.
+	* ecc-internal.h: Added declarations.
+	* Makefile.in (hogweed_SOURCES): Added new source files.
+	(HEADERS): Added ecdsa.h.
+
 	* gmp-glue.c (_mpz_set_mpn): New convenience function.
 	(_mpn_set_base256): New function.
 	(_gmp_alloc_limbs): New function.

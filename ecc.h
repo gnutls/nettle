@@ -25,15 +25,25 @@
 #ifndef NETTLE_ECC_H_INCLUDED
 #define NETTLE_ECC_H_INCLUDED
 
-#include <stdint.h>
-
 #include <gmp.h>
+
+#include "nettle-types.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /* Name mangling */
+#define ecc_point_init nettle_ecc_point_init
+#define ecc_point_clear nettle_ecc_point_clear
+#define ecc_point_set nettle_ecc_point_set
+#define ecc_point_get nettle_ecc_point_get
+#define ecc_scalar_init nettle_ecc_scalar_init
+#define ecc_scalar_clear nettle_ecc_scalar_clear
+#define ecc_scalar_set nettle_ecc_scalar_set
+#define ecc_scalar_get nettle_ecc_scalar_get
+#define ecc_scalar_random nettle_ecc_scalar_random
+#define ecc_point_mul nettle_ecc_point_mul
 #define ecc_size nettle_ecc_size
 #define ecc_size_a nettle_ecc_size_a
 #define ecc_size_j nettle_ecc_size_j
@@ -57,6 +67,60 @@ extern "C" {
 
 struct ecc_curve;
 
+/* High level interface, for ECDSA, DH, etc */
+
+/* Represents a point on the ECC curve */
+struct ecc_point
+{
+  const struct ecc_curve *ecc;
+  /* Allocated using the same allocation function as GMP. */
+  mp_limb_t *p;
+};
+
+/* Represents a non-zero scalar, an element of Z_q^*, where q is the
+   group order of the curve. */
+struct ecc_scalar
+{
+  const struct ecc_curve *ecc;
+  /* Allocated using the same allocation function as GMP. */
+  mp_limb_t *p;
+};
+
+void
+ecc_point_init (struct ecc_point *p, const struct ecc_curve *ecc);
+void
+ecc_point_clear (struct ecc_point *p);
+
+/* Fails and returns zero if the point is not on the curve. */
+int
+ecc_point_set (struct ecc_point *p, const mpz_t x, const mpz_t y);
+void
+ecc_point_get (const struct ecc_point *p, mpz_t x, mpz_t y);
+
+void
+ecc_scalar_init (struct ecc_scalar *s, const struct ecc_curve *ecc);
+void
+ecc_scalar_clear (struct ecc_scalar *s);
+
+/* Fails and returns zero if the scalar is not in the proper range. */
+int
+ecc_scalar_set (struct ecc_scalar *s, const mpz_t z);
+void
+ecc_scalar_get (const struct ecc_scalar *s, mpz_t z);
+/* Generates a random scalar, suitable as an ECDSA private key or a
+   ECDH exponent. */
+void
+ecc_scalar_random (struct ecc_scalar *s,
+		   void *random_ctx, nettle_random_func *random);
+
+/* Computes r = n p */
+void
+ecc_point_mul (struct ecc_point *r, const struct ecc_scalar *n,
+	       const struct ecc_point *p);
+
+
+/* Low-level interface */
+  
 /* Points on a curve are represented as arrays of mp_limb_t. For some
    curves, point coordinates are represented in montgomery form. We
    use either affine coordinates x,y, or Jacobian coordinates X, Y, Z,

@@ -27,6 +27,7 @@
 
 #include <gmp.h>
 
+#include "nettle-types.h"
 #include "ecc-curve.h"
 
 /* Name mangling */
@@ -45,12 +46,16 @@
 #define ecc_modq_mul _nettle_ecc_modq_mul
 #define ecc_modq_add _nettle_ecc_modq_add
 #define ecc_modq_inv _nettle_ecc_modq_inv
-#define ecc_mod _nettle_ecc_mod 
+#define ecc_modq_random _nettle_ecc_modq_random
+#define ecc_mod _nettle_ecc_mod
+#define ecc_hash _nettle_ecc_hash
 #define cnd_copy _nettle_cnd_copy
 #define sec_add_1 _nettle_sec_add_1
 #define sec_sub_1 _nettle_sec_sub_1
 #define sec_tabselect _nettle_sec_tabselect
 #define sec_modinv _nettle_sec_modinv
+
+#define ECC_MAX_SIZE ((521 + GMP_NUMB_BITS - 1) / GMP_NUMB_BITS)
 
 /* Window size for ecc_mul_a. Using 4 bits seems like a good choice,
    for both Intel x86_64 and ARM Cortex A9. For the larger curves, of
@@ -185,9 +190,18 @@ ecc_modq_inv (const struct ecc_curve *ecc, mp_limb_t *rp, mp_limb_t *ap,
 	      mp_limb_t *scratch);
 
 void
+ecc_modq_random (const struct ecc_curve *ecc, mp_limb_t *xp,
+		 void *ctx, nettle_random_func *random, mp_limb_t *scratch);
+
+void
 ecc_mod (mp_limb_t *rp, mp_size_t rn, mp_size_t mn,
 	 const mp_limb_t *bp, mp_size_t bn,
 	 const mp_limb_t *b_shifted, unsigned shift);
+
+void
+ecc_hash (const struct ecc_curve *ecc,
+	  mp_limb_t *hp,
+	  unsigned length, const uint8_t *digest);
 
 #define cnd_add_n(cnd, rp, ap, n)		\
   mpn_addmul_1 ((rp), (ap), (n), (cnd) != 0)
@@ -228,8 +242,10 @@ sec_modinv (mp_limb_t *vp, mp_limb_t *ap, mp_size_t n,
 #define ECC_MUL_A_ITCH(size) \
   (((3 << ECC_MUL_A_WBITS) + 11) * (size))
 #endif
-#define _ECDSA_SIGN_ITCH(size) (12*(size))
-#define _ECDSA_VERIFY_ITCH(size) \
+#define ECC_ECDSA_SIGN_ITCH(size) (12*(size))
+#define ECC_ECDSA_VERIFY_ITCH(size) \
   (6*(size) + ECC_MUL_A_ITCH ((size)))
+#define ECC_MODQ_RANDOM_ITCH(size) (size)
+#define ECC_HASH_ITCH(size) (1+(size))
 
 #endif /* NETTLE_ECC_INTERNAL_H_INCLUDED */
