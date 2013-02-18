@@ -4,6 +4,7 @@
 /base16enc
 /base64dec
 /base64enc
+/ecc-benchmark
 /eratosthenes
 /nettle-benchmark
 /next-prime

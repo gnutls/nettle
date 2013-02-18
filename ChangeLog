@@ -1,3 +1,12 @@
+2013-02-18  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/Makefile.in (HOGWEED_TARGETS): Renamed, was
+	RSA_TARGETS. Added ecc-benchmark$(EXEEXT).
+	(SOURCES): Added ecc-benchmark.c.
+	(ecc-benchmark$(EXEEXT)): New target.
+
+	* examples/ecc-benchmark.c: New file, benchmarking ecc primitives.
+
 2013-02-15  Niels Möller  <nisse@lysator.liu.se>
 
 	Integrate ecc_mul_a.

@@ -13,14 +13,17 @@ PRE_LDFLAGS = -L..
 OPENSSL_LIBFLAGS = @OPENSSL_LIBFLAGS@
 BENCH_LIBS = @BENCH_LIBS@ -lm
 
-RSA_TARGETS = rsa-keygen$(EXEEXT) rsa-sign$(EXEEXT) \
-	      rsa-verify$(EXEEXT) rsa-encrypt$(EXEEXT) rsa-decrypt$(EXEEXT)
+HOGWEED_TARGETS = rsa-keygen$(EXEEXT) rsa-sign$(EXEEXT) \
+	      rsa-verify$(EXEEXT) rsa-encrypt$(EXEEXT) rsa-decrypt$(EXEEXT) \
+	      next-prime$(EXEEXT) random-prime$(EXEEXT) ecc-benchmark$(EXEEXT)
 
 ENC_TARGETS = base16enc$(EXEEXT) base16dec$(EXEEXT) \
 	      base64enc$(EXEEXT) base64dec$(EXEEXT)
 TARGETS = nettle-benchmark$(EXEEXT) eratosthenes$(EXEEXT) \
-	  $(ENC_TARGETS) @IF_HOGWEED@ $(RSA_TARGETS) next-prime$(EXEEXT) random-prime$(EXEEXT)
-SOURCES = nettle-benchmark.c eratosthenes.c next-prime.c random-prime.c \
+	  $(ENC_TARGETS) @IF_HOGWEED@ $(HOGWEED_TARGETS)
+
+SOURCES = nettle-benchmark.c ecc-benchmark.c \
+	eratosthenes.c next-prime.c random-prime.c \
 	nettle-openssl.c \
 	io.c read_rsa_key.c \
 	rsa-encrypt.c rsa-decrypt.c rsa-keygen.c rsa-sign.c rsa-verify.c \
@@ -101,6 +104,10 @@ BENCH_OBJS = nettle-benchmark.$(OBJEXT) nettle-openssl.$(OBJEXT) \
 	$(GETOPT_OBJS) ../nettle-internal.$(OBJEXT)
 nettle-benchmark$(EXEEXT): $(BENCH_OBJS)
 	$(LINK) $(BENCH_OBJS) -lnettle $(BENCH_LIBS) $(OPENSSL_LIBFLAGS) -o nettle-benchmark$(EXEEXT)
+
+ecc-benchmark$(EXEEXT): ecc-benchmark.$(OBJEXT)
+	$(LINK) ecc-benchmark.$(OBJEXT) -lhogweed -lnettle $(BENCH_LIBS) $(LIBS) \
+	-o ecc-benchmark$(EXEEXT)
 
 $(TARGETS) : io.$(OBJEXT) ../libnettle.a
 
