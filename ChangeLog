@@ -1,3 +1,11 @@
+2013-02-19  Niels Möller  <nisse@lysator.liu.se>
+
+	* armv7/memxor.asm (memxor): Software pipelining for the aligned case.
+	(memxor3): Use 3-way unrolling also for aligned memxor3.
+	Both loops benchmarked at 7 cycles (0.58 cycles per byte), but
+	memxor3 seems to have a strange dependency on instruction
+	alignment.
+
 2013-02-12  Niels Möller  <nisse@lysator.liu.se>
 
 	* armv7/memxor.asm (memxor): Optimized aligned case, using 3-way
