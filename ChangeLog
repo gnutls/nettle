@@ -1,3 +1,11 @@
+2013-02-19  Niels Möller  <nisse@lysator.liu.se>
+
+	* armv7/memxor.asm (memxor): Software pipelining for the aligned
+	case. Runs at 6 cycles (0.5 cycles per byte). Delayed push of
+	registers until we know how many registers we need.
+	(memxor3): Use 3-way unrolling also for aligned memxor3.
+	Runs at 8 cycles (0.67 cycles per byte)
+
 2013-02-14  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/rsa-keygen.c (uint_arg): New function.
