@@ -30,7 +30,7 @@ define(<DST>, <r0>)
 define(<SRC>, <r1>)
 define(<N>, <r2>)
 define(<CNT>, <r6>)
-define(<TNC>, <r7>)
+define(<TNC>, <r12>)
 
 	.syntax unified
 
@@ -43,10 +43,7 @@ define(<TNC>, <r7>)
 	.align 4
 PROLOGUE(memxor)
 	cmp	N, #0
-	beq	.Lmemxor_ret
-
-	C FIXME: Delay push until we know how many registers we need.
-	push	{r4,r5,r6,r7,r8,r10,r11,r14}	C lr is the link register
+	beq	.Lmemxor_done
 
 	cmp	N, #7
 	bcs	.Lmemxor_large
@@ -54,21 +51,19 @@ PROLOGUE(memxor)
 	C Simple byte loop
 .Lmemxor_bytes:
 	ldrb	r3, [SRC], #+1
-	ldrb	r4, [DST]
-	eor	r3, r4
+	ldrb	r12, [DST]
+	eor	r3, r12
 	strb	r3, [DST], #+1
 	subs	N, #1
 	bne	.Lmemxor_bytes
 
 .Lmemxor_done:
-	pop	{r4,r5,r6,r7,r8,r10,r11,r14}
-.Lmemxor_ret:
 	bx	lr
 
 .Lmemxor_align_loop:
 	ldrb	r3, [SRC], #+1
-	ldrb	r4, [DST]
-	eor	r3, r4
+	ldrb	r12, [DST]
+	eor	r3, r12
 	strb	r3, [DST], #+1
 	sub	N, #1
 
@@ -79,7 +74,7 @@ PROLOGUE(memxor)
 	C We have at least 4 bytes left to do here.
 	sub	N, #4
 
-	ands	CNT, SRC, #3
+	ands	r3, SRC, #3
 	beq	.Lmemxor_same
 
 	C Different alignment case.
@@ -93,7 +88,9 @@ PROLOGUE(memxor)
 	C With little-endian, we need to do
 	C DST[i] ^= (SRC[i] >> CNT) ^ (SRC[i+1] << TNC)
 
-	lsl	CNT, #3
+	push	{r4,r5,r6}
+	
+	lsl	CNT, r3, #3
 	bic	SRC, #3
 	rsb	TNC, CNT, #32
 
@@ -120,12 +117,15 @@ PROLOGUE(memxor)
 	subs	N, #8
 	bcs	.Lmemxor_word_loop
 	adds	N, #8
-	beq	.Lmemxor_done
+	beq	.Lmemxor_odd_done
 
 	C We have TNC/8 left-over bytes in r4, high end
 	lsr	r4, CNT
 	ldr	r3, [DST]
 	eor	r3, r4
+
+	pop	{r4,r5,r6}
+
 	C Store bytes, one by one.
 .Lmemxor_leftover:
 	strb	r3, [DST], #+1
@@ -134,10 +134,14 @@ PROLOGUE(memxor)
 	subs	TNC, #8
 	lsr	r3, #8
 	bne	.Lmemxor_leftover
-
 	b	.Lmemxor_bytes
+.Lmemxor_odd_done:
+	pop	{r4,r5,r6}
+	bx	lr
 
 .Lmemxor_same:
+	push	{r4,r5,r6,r7,r8,r10,r11,r14}	C lr is the link register
+
 	subs	N, #8
 	bcc	.Lmemxor_same_end
 
@@ -154,8 +158,9 @@ PROLOGUE(memxor)
 	ldmia	r14!, {r6, r7, r8}
 	bcc	.Lmemxor_same_wind_down
 
-	C 7 cycles per iteration, 0.58 cycles/byte
-	C Loopmixer could perhaps get it down to 6 cycles.
+	C 6 cycles per iteration, 0.50 cycles/byte. For this speed,
+	C loop starts at offset 0x11c in the object file.
+
 .Lmemxor_same_loop:
 	C r10-r12 contains values to be stored at DST
 	C r6-r8 contains values read from r14, in advance
@@ -188,16 +193,18 @@ PROLOGUE(memxor)
 	eor	r3, r6
 	eor	r4, r7
 	stmia	DST!, {r3, r4}
+	pop	{r4,r5,r6,r7,r8,r10,r11,r14}
 	beq	.Lmemxor_done
 	b	.Lmemxor_bytes
 
 .Lmemxor_same_lt_8:
+	pop	{r4,r5,r6,r7,r8,r10,r11,r14}
 	adds	N, #4
 	bcc	.Lmemxor_same_lt_4
 
 	ldr	r3, [SRC], #+4
-	ldr	r4, [DST]
-	eor	r3, r4
+	ldr	r12, [DST]
+	eor	r3, r12
 	str	r3, [DST], #+4
 	beq	.Lmemxor_done
 	b	.Lmemxor_bytes
@@ -342,10 +349,12 @@ PROLOGUE(memxor3)
 	subs	N, #8
 	bcc	.Lmemxor3_aligned_word_end
 
-	C This loop runs at 7 cycles per iteration, but it seems to
-	C have a strange alignment requirement. For this speed, the
-	C loop started at offset 0x2ac in the object file, and all
-	C other offsets made it slower.
+	C This loop runs at 8 cycles per iteration. It has been
+	C observed running at only 7 cycles, for this speed, the loop
+	C started at offset 0x2ac in the object file.
+
+	C FIXME: consider software pipelining, similarly to the memxor
+	C loop.
 	
 .Lmemxor3_aligned_word_loop:
 	ldmdb	AP!, {r4,r5,r6}

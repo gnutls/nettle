@@ -1,10 +1,10 @@
 2013-02-19  Niels Möller  <nisse@lysator.liu.se>
 
-	* armv7/memxor.asm (memxor): Software pipelining for the aligned case.
+	* armv7/memxor.asm (memxor): Software pipelining for the aligned
+	case. Runs at 6 cycles (0.5 cycles per byte). Delayed push of
+	registers until we know how many registers we need.
 	(memxor3): Use 3-way unrolling also for aligned memxor3.
-	Both loops benchmarked at 7 cycles (0.58 cycles per byte), but
-	memxor3 seems to have a strange dependency on instruction
-	alignment.
+	Runs at 8 cycles (0.67 cycles per byte)
 
 2013-02-12  Niels Möller  <nisse@lysator.liu.se>
 
