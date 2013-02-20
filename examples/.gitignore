@@ -6,6 +6,7 @@
 /base64enc
 /ecc-benchmark
 /eratosthenes
+/hogweed-benchmark
 /nettle-benchmark
 /next-prime
 /random-prime

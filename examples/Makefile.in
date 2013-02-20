@@ -15,14 +15,15 @@ BENCH_LIBS = @BENCH_LIBS@ -lm
 
 HOGWEED_TARGETS = rsa-keygen$(EXEEXT) rsa-sign$(EXEEXT) \
 	      rsa-verify$(EXEEXT) rsa-encrypt$(EXEEXT) rsa-decrypt$(EXEEXT) \
-	      next-prime$(EXEEXT) random-prime$(EXEEXT) ecc-benchmark$(EXEEXT)
+	      next-prime$(EXEEXT) random-prime$(EXEEXT) \
+	      hogweed-benchmark$(EXEEXT) ecc-benchmark$(EXEEXT)
 
 ENC_TARGETS = base16enc$(EXEEXT) base16dec$(EXEEXT) \
 	      base64enc$(EXEEXT) base64dec$(EXEEXT)
 TARGETS = nettle-benchmark$(EXEEXT) eratosthenes$(EXEEXT) \
 	  $(ENC_TARGETS) @IF_HOGWEED@ $(HOGWEED_TARGETS)
 
-SOURCES = nettle-benchmark.c ecc-benchmark.c \
+SOURCES = nettle-benchmark.c hogweed-benchmark.c ecc-benchmark.c \
 	eratosthenes.c next-prime.c random-prime.c \
 	nettle-openssl.c \
 	io.c read_rsa_key.c \
@@ -108,6 +109,11 @@ nettle-benchmark$(EXEEXT): $(BENCH_OBJS)
 ecc-benchmark$(EXEEXT): ecc-benchmark.$(OBJEXT)
 	$(LINK) ecc-benchmark.$(OBJEXT) -lhogweed -lnettle $(BENCH_LIBS) $(LIBS) \
 	-o ecc-benchmark$(EXEEXT)
+
+hogweed-benchmark$(EXEEXT): hogweed-benchmark.$(OBJEXT)
+	$(LINK) hogweed-benchmark.$(OBJEXT) \
+	-lhogweed -lnettle $(BENCH_LIBS) $(LIBS) $(OPENSSL_LIBFLAGS) \
+	-o hogweed-benchmark$(EXEEXT)
 
 $(TARGETS) : io.$(OBJEXT) ../libnettle.a
 

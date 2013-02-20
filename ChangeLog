@@ -1,5 +1,12 @@
 2013-02-20  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/Makefile.in (HOGWEED_TARGETS): Added
+	hogweed-benchmark$(EXEEXT).
+	(SOURCES): Added hogweed-benchmark.c.
+	(hogweed-benchmark$(EXEEXT)): New target.
+
+	* examples/hogweed-benchmark.c: New file.
+
 	* ecdsa-keygen.c (ecdsa_generate_keypair): New file and function.
 	* Makefile.in (hogweed_SOURCES): Added ecdsa-keygen.c.
 	* testsuite/ecdsa-keygen-test.c: New testcase.
