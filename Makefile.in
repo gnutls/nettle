@@ -133,7 +133,7 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  ecc-mul-g.c ecc-mul-a.c ecc-hash.c ecc-random.c \
 		  ecc-point.c ecc-scalar.c \
 		  ecc-ecdsa-sign.c ecdsa-sign.c \
-		  ecc-ecdsa-verify.c ecdsa-verify.c
+		  ecc-ecdsa-verify.c ecdsa-verify.c ecdsa-keygen.c
 
 HEADERS = aes.h arcfour.h arctwo.h asn1.h bignum.h blowfish.h \
 	  base16.h base64.h buffer.h camellia.h cast128.h \
