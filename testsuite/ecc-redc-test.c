@@ -10,19 +10,19 @@ ref_redc (mp_limb_t *rp, const mp_limb_t *ap, const mp_limb_t *mp, mp_size_t mn)
   mpz_init (t);
   mpz_setbit (t, mn * GMP_NUMB_BITS);
 
-  _mpz_init_mpn (m, mp, mn);
+  mpz_roinit_n (m, mp, mn);
 
   an = 2*mn;
   while (an > 0 && ap[an-1] == 0)
     an--;
 
-  _mpz_init_mpn (a, ap, an);
+  mpz_roinit_n (a, ap, an);
   
   mpz_invert (t, t, m);
   mpz_mul (t, t, a);
   mpz_mod (t, t, m);
 
-  _mpz_copy_limbs (rp, t, mn);
+  mpz_limbs_copy (rp, t, mn);
 
   mpz_clear (t);
 }
@@ -59,7 +59,7 @@ test_main (void)
 	  else
 	    mpz_urandomb (r, state, 2*ecc->size * GMP_NUMB_BITS);
 
-	  _mpz_copy_limbs (a, r, 2*ecc->size);
+	  mpz_limbs_copy (a, r, 2*ecc->size);
 
 	  ref_redc (ref, a, ecc->p, ecc->size);
 

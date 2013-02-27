@@ -72,7 +72,7 @@ ecc_modq_random (const struct ecc_curve *ecc, mp_limb_t *xp,
       random (ctx, nbytes, buf);
       buf[0] &= 0xff >> (nbytes * 8 - ecc->bit_size);
 
-      _mpn_set_base256 (xp, ecc->size, buf, nbytes);
+      mpn_set_base256 (xp, ecc->size, buf, nbytes);
     }
   while (!ecdsa_in_range (ecc, xp, scratch));
 }

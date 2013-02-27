@@ -47,7 +47,7 @@ ecc_hash (const struct ecc_curve *ecc,
   if (length > ((unsigned) ecc->bit_size + 7) / 8)
     length = (ecc->bit_size + 7) / 8;
 
-  _mpn_set_base256 (hp, ecc->size + 1, digest, length);
+  mpn_set_base256 (hp, ecc->size + 1, digest, length);
 
   if (8 * length > ecc->bit_size)
     /* We got a few extra bits, at the low end. Discard them. */

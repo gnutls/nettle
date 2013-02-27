@@ -23,15 +23,15 @@ test_ecdsa (const struct ecc_curve *ecc,
   mpz_init_set_str (z, sz, 16);
   mpz_init_set_str (k, sk, 16);
 
-  ecc_ecdsa_sign (ecc, _mpz_read_limbs_n (z, ecc->size),
-		  _mpz_read_limbs_n (k, ecc->size),
+  ecc_ecdsa_sign (ecc, mpz_limbs_read_n (z, ecc->size),
+		  mpz_limbs_read_n (k, ecc->size),
 		  h->length, h->data, rp, sp, scratch);
 
   mpz_set_str (ref.r, r, 16);
   mpz_set_str (ref.s, s, 16);
 
-  if (_mpz_cmp_limbs (ref.r, rp, ecc->size) != 0
-      || _mpz_cmp_limbs (ref.s, sp, ecc->size) != 0)
+  if (mpz_limbs_cmp (ref.r, rp, ecc->size) != 0
+      || mpz_limbs_cmp (ref.s, sp, ecc->size) != 0)
     {
       fprintf (stderr, "_ecdsa_sign failed, bit_size = %u\n", ecc->bit_size);
       gmp_fprintf (stderr, "r     = %Nx\n", rp, ecc->size);

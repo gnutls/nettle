@@ -44,8 +44,8 @@ ecdsa_sign (const struct ecc_scalar *key,
   /* At most 936 bytes. */
   TMP_DECL(k, mp_limb_t, ECC_MAX_SIZE + ECC_ECDSA_SIGN_ITCH (ECC_MAX_SIZE));
   mp_limb_t size = key->ecc->size;
-  mp_limb_t *rp = _mpz_write_limbs (signature->r, size);
-  mp_limb_t *sp = _mpz_write_limbs (signature->s, size);
+  mp_limb_t *rp = mpz_limbs_write (signature->r, size);
+  mp_limb_t *sp = mpz_limbs_write (signature->s, size);
 
   TMP_ALLOC (k, size + ECC_ECDSA_SIGN_ITCH (size));
 
@@ -56,8 +56,8 @@ ecdsa_sign (const struct ecc_scalar *key,
       ecc_modq_random (key->ecc, k, random_ctx, random, k + size);
       ecc_ecdsa_sign (key->ecc, key->p, k, digest_length, digest,
 		   rp, sp, k + size);
-      _mpz_done_limbs (signature->r, size);
-      _mpz_done_limbs (signature->s, size);
+      mpz_limbs_finish (signature->r, size);
+      mpz_limbs_finish (signature->s, size);
     }
   while (mpz_sgn (signature->r) == 0 || mpz_sgn (signature->s) == 0);
 }

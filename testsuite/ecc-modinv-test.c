@@ -54,7 +54,7 @@ test_main (void)
 	  else
 	    mpz_urandomb (r, state, ecc->size * GMP_NUMB_BITS);
 
-	  _mpz_copy_limbs (a, r, ecc->size);
+	  mpz_limbs_copy (a, r, ecc->size);
 
 	  if (!ref_modinv (ref, a, ecc->p, ecc->size))
 	    {
@@ -78,7 +78,7 @@ test_main (void)
 	      abort ();
 	    }
 
-	  _mpz_copy_limbs (a, r, ecc->size);
+	  mpz_limbs_copy (a, r, ecc->size);
 
 	  if (!ref_modinv (ref, a, ecc->q, ecc->size))
 	    {

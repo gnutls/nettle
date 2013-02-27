@@ -69,7 +69,7 @@ test_main (void)
 	    mpz_urandomb (r, state, size * GMP_NUMB_BITS);
 
 	  /* Reduce so that (almost surely) n < q */
-	  _mpz_copy_limbs (n, r, size);
+	  mpz_limbs_copy (n, r, size);
 	  n[size - 1] %= ecc->q[size - 1];
 
 	  ecc_mul_a (ecc, 1, p, n, ecc->g, scratch);

@@ -29,6 +29,8 @@
 
 #include "gmp-glue.h"
 
+#if !GMP_HAVE_mpz_limbs_read
+
 /* This implementation tries to make a minimal use of GMP internals.
    We access and _mp_size and _mp_d, but not _mp_alloc. */
 
@@ -51,8 +53,63 @@
 
 #define MPZ_NEWALLOC MPZ_REALLOC
 
+/* Read access to mpz numbers. */
+
+/* Return limb pointer, for read-only operations. Use mpz_size to get
+   the number of limbs. */
+const mp_limb_t *
+mpz_limbs_read (mpz_srcptr x)
+{
+  return PTR (x);
+}
+
+/* Write access to mpz numbers. */
+
+/* Get a limb pointer for writing, previous contents may be
+   destroyed. */
+mp_limb_t *
+mpz_limbs_write (mpz_ptr x, mp_size_t n)
+{
+  assert (n > 0);
+  return MPZ_NEWALLOC (x, n);
+}
+
+/* Get a limb pointer for writing, previous contents is intact. */
+mp_limb_t *
+mpz_limbs_modify (mpz_ptr x, mp_size_t n)
+{
+  assert (n > 0);
+  return MPZ_REALLOC (x, n);
+}
+
+void
+mpz_limbs_finish (mpz_ptr x, mp_size_t n)
+{
+  assert (n >= 0);
+  MPN_NORMALIZE (PTR(x), n);
+
+  SIZ (x) = n;
+}
+
+/* Needs some ugly casts. */
+mpz_srcptr
+mpz_roinit_n (mpz_ptr x, const mp_limb_t *xp, mp_size_t xs)
+{
+  mp_size_t xn = ABS (xs);
+  
+  MPN_NORMALIZE (xp, xn);
+
+  x->_mp_size = xs < 0 ? -xn : xn;
+  x->_mp_alloc = 0;
+  x->_mp_d = (mp_limb_t *) xp;
+  return x;
+}
+#endif /* !GMP_HAVE_mpz_limbs_read */
+
+/* Additional convenience functions. */
+
 int
-_mpz_cmp_limbs (mpz_srcptr a, const mp_limb_t *bp, mp_size_t bn)
+mpz_limbs_cmp (mpz_srcptr a, const mp_limb_t *bp, mp_size_t bn)
 {
   mp_size_t an = SIZ (a);
   if (an < bn)
@@ -65,100 +122,45 @@ _mpz_cmp_limbs (mpz_srcptr a, const mp_limb_t *bp, mp_size_t bn)
   return mpn_cmp (PTR(a), bp, an);
 }
 
-
-/* Read access to mpz numbers. */
-
-/* Return limb pointer, for read-only operations. Use mpz_size to get
-   the number of limbs. */
-const mp_limb_t *
-_mpz_read_limbs (mpz_srcptr x)
-{
-  return PTR (x);
-}
-
 /* Get a pointer to an n limb area, for read-only operation. n must be
    greater or equal to the current size, and the mpz is zero-padded if
    needed. */
 const mp_limb_t *
-_mpz_read_limbs_n (mpz_ptr x, mp_size_t n)
+mpz_limbs_read_n (mpz_ptr x, mp_size_t n)
 {
-  mp_size_t xn = ABSIZ (x);
-
+  mp_size_t xn = mpz_size (x);
+  mp_ptr xp;
+  
   assert (xn <= n);
 
-  if (xn < n)
-    {
-      /* Makes an unnecessary realloc if allocation is already large
-	 enough. */
-      mpz_realloc (x, n);
-      mpn_zero (PTR(x) + xn, n - xn);
-    }
+  xp = mpz_limbs_modify (x, n);
 
-  return PTR(x);
+  if (xn < n)
+    mpn_zero (xp + xn, n - xn);
+
+  return xp;
 }
 
 void
-_mpz_copy_limbs (mp_limb_t *xp, mpz_srcptr x, mp_size_t n)
+mpz_limbs_copy (mp_limb_t *xp, mpz_srcptr x, mp_size_t n)
 {
-  mp_size_t xn = ABSIZ (x);
+  mp_size_t xn = mpz_size (x);
 
   assert (xn <= n);
-  mpn_copyi (xp, PTR(x), xn);
+  mpn_copyi (xp, mpz_limbs_read (x), xn);
   if (xn < n)
     mpn_zero (xp + xn, n - xn);
 }
 
-/* Write access to mpz numbers. */
-
-/* Get a limb pointer for writing, previous contents may be
-   destroyed. */
-mp_limb_t *
-_mpz_write_limbs (mpz_ptr x, mp_size_t n)
+void
+mpz_set_n (mpz_t r, const mp_limb_t *xp, mp_size_t xn)
 {
-  assert (n > 0);
-  return MPZ_NEWALLOC (x, n);
-}
-
-/* Get a limb pointer for writing, previous contents is intact. */
-mp_limb_t *
-_mpz_modify_limbs (mpz_ptr x, mp_size_t n)
-{
-  assert (n > 0);
-  return MPZ_REALLOC (x, n);
+  mpn_copyi (mpz_limbs_write (r, xn), xp, xn);
+  mpz_limbs_finish (r, xn);
 }
 
 void
-_mpz_done_limbs (mpz_ptr x, mp_size_t n)
-{
-  assert (n >= 0);
-  MPN_NORMALIZE (PTR(x), n);
-
-  SIZ (x) = n;
-}
-
-void
-_mpz_set_mpn (mpz_t r, const mp_limb_t *xp, mp_size_t xn)
-{
-  mpn_copyi (_mpz_write_limbs (r, xn), xp, xn);
-  _mpz_done_limbs (r, xn);
-}
-
-/* Needs some ugly casts. */
-mpz_srcptr
-_mpz_init_mpn (mpz_ptr x, const mp_limb_t *xp, mp_size_t xs)
-{
-  mp_size_t xn = ABS (xs);
-  
-  MPN_NORMALIZE (xp, xn);
-
-  x->_mp_size = xs < 0 ? -xn : xn;
-  x->_mp_alloc = 0;
-  x->_mp_d = (mp_limb_t *) xp;
-  return x;
-}
-
-void
-_mpn_set_base256 (mp_limb_t *rp, mp_size_t rn,
+mpn_set_base256 (mp_limb_t *rp, mp_size_t rn,
 		 const uint8_t *xp, size_t xn)
 {
   size_t xi;
@@ -187,7 +189,7 @@ _mpn_set_base256 (mp_limb_t *rp, mp_size_t rn,
 }
 
 mp_limb_t *
-_gmp_alloc_limbs (mp_size_t n)
+gmp_alloc_limbs (mp_size_t n)
 {
 
   void *(*alloc_func)(size_t);
@@ -199,7 +201,7 @@ _gmp_alloc_limbs (mp_size_t n)
 }
 
 void
-_gmp_free_limbs (mp_limb_t *p, mp_size_t n)
+gmp_free_limbs (mp_limb_t *p, mp_size_t n)
 {
   void (*free_func)(void *, size_t);
   assert (n > 0);

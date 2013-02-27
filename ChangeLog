@@ -1,3 +1,11 @@
+2013-02-27  Niels Möller  <nisse@lysator.liu.se>
+
+	* gmp-glue.h: Check if GMP provides mpz_limbs_read (expected in
+	next release).
+	* gmp-glue.c: Use GMP's mpz_limbs_read and friends if available.
+	Renamed all functions for consistency with GMP. Updated all
+	callers.
+
 2013-02-20  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/Makefile.in (HOGWEED_TARGETS): Added

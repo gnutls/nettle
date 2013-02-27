@@ -20,16 +20,16 @@ ecc_valid_p (struct ecc_point *pub)
   mpz_init (lhs);
   mpz_init (rhs);
 
-  _mpz_init_mpn (x, pub->p, size);
-  _mpz_init_mpn (y, pub->p + size, size);
+  mpz_roinit_n (x, pub->p, size);
+  mpz_roinit_n (y, pub->p + size, size);
 
   mpz_mul (lhs, y, y);
   mpz_mul (rhs, x, x);
   mpz_sub_ui (rhs, rhs, 3);
   mpz_mul (rhs, rhs, x);
-  mpz_add (rhs, rhs, _mpz_init_mpn (t, pub->ecc->b, size));
+  mpz_add (rhs, rhs, mpz_roinit_n (t, pub->ecc->b, size));
 
-  res = mpz_congruent_p (lhs, rhs, _mpz_init_mpn (t, pub->ecc->p, size));
+  res = mpz_congruent_p (lhs, rhs, mpz_roinit_n (t, pub->ecc->p, size));
   
   mpz_clear (lhs);
   mpz_clear (rhs);

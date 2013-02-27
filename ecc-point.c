@@ -34,13 +34,13 @@ void
 ecc_point_init (struct ecc_point *p, const struct ecc_curve *ecc)
 {
   p->ecc = ecc;
-  p->p = _gmp_alloc_limbs (2*ecc->size);
+  p->p = gmp_alloc_limbs (2*ecc->size);
 }
 
 void
 ecc_point_clear (struct ecc_point *p)
 {
-  _gmp_free_limbs (p->p, 2*p->ecc->size);
+  gmp_free_limbs (p->p, 2*p->ecc->size);
 }
 
 int
@@ -53,8 +53,8 @@ ecc_point_set (struct ecc_point *p, const mpz_t x, const mpz_t y)
 
   size = p->ecc->size;
   
-  if (mpz_sgn (x) < 0 || _mpz_cmp_limbs (x, p->ecc->p, size) >= 0
-      || mpz_sgn (y) < 0 || _mpz_cmp_limbs (y, p->ecc->p, size) >= 0)
+  if (mpz_sgn (x) < 0 || mpz_limbs_cmp (x, p->ecc->p, size) >= 0
+      || mpz_sgn (y) < 0 || mpz_limbs_cmp (y, p->ecc->p, size) >= 0)
     return 0;
 
   mpz_init (lhs);
@@ -65,9 +65,9 @@ ecc_point_set (struct ecc_point *p, const mpz_t x, const mpz_t y)
   mpz_mul (rhs, x, x);
   mpz_sub_ui (rhs, rhs, 3);
   mpz_mul (rhs, rhs, x);
-  mpz_add (rhs, rhs, _mpz_init_mpn (t, p->ecc->b, size));
+  mpz_add (rhs, rhs, mpz_roinit_n (t, p->ecc->b, size));
 
-  res = mpz_congruent_p (lhs, rhs, _mpz_init_mpn (t, p->ecc->p, size));
+  res = mpz_congruent_p (lhs, rhs, mpz_roinit_n (t, p->ecc->p, size));
 
   mpz_clear (lhs);
   mpz_clear (rhs);
@@ -75,8 +75,8 @@ ecc_point_set (struct ecc_point *p, const mpz_t x, const mpz_t y)
   if (!res)
     return 0;
 
-  _mpz_copy_limbs (p->p, x, size);
-  _mpz_copy_limbs (p->p + size, y, size);
+  mpz_limbs_copy (p->p, x, size);
+  mpz_limbs_copy (p->p + size, y, size);
 
   return 1;
 }
@@ -85,6 +85,6 @@ void
 ecc_point_get (const struct ecc_point *p, mpz_t x, mpz_t y)
 {
   mp_size_t size = p->ecc->size;
-  _mpz_set_mpn (x, p->p, size);
-  _mpz_set_mpn (y, p->p + size, size);
+  mpz_set_n (x, p->p, size);
+  mpz_set_n (y, p->p + size, size);
 }

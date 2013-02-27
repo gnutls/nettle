@@ -36,7 +36,7 @@ test_main (void)
 	  else
 	    mpz_urandomb (r, state, 2*ecc->size * GMP_NUMB_BITS);
 
-	  _mpz_copy_limbs (a, r, 2*ecc->size);
+	  mpz_limbs_copy (a, r, 2*ecc->size);
 
 	  ref_mod (ref, a, ecc->p, ecc->size);
 

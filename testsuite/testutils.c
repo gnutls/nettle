@@ -1124,7 +1124,7 @@ test_mpn (const char *ref, const mp_limb_t *xp, mp_size_t n)
   while (n > 0 && xp[n-1] == 0)
     n--;
   
-  res = (_mpz_cmp_limbs (r, xp, n) == 0);
+  res = (mpz_limbs_cmp (r, xp, n) == 0);
   mpz_clear (r);
   return res;
 }

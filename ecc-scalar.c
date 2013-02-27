@@ -34,13 +34,13 @@ void
 ecc_scalar_init (struct ecc_scalar *s, const struct ecc_curve *ecc)
 {
   s->ecc = ecc;
-  s->p = _gmp_alloc_limbs (ecc->size);
+  s->p = gmp_alloc_limbs (ecc->size);
 }
 
 void
 ecc_scalar_clear (struct ecc_scalar *s)
 {
-  _gmp_free_limbs (s->p, s->ecc->size);
+  gmp_free_limbs (s->p, s->ecc->size);
 }
 
 int
@@ -48,15 +48,15 @@ ecc_scalar_set (struct ecc_scalar *s, const mpz_t z)
 {
   mp_size_t size = s->ecc->size;
 
-  if (mpz_sgn (z) <= 0 || _mpz_cmp_limbs (z, s->ecc->q, size) >= 0)
+  if (mpz_sgn (z) <= 0 || mpz_limbs_cmp (z, s->ecc->q, size) >= 0)
     return 0;
 
-  _mpz_copy_limbs (s->p, z, size);
+  mpz_limbs_copy (s->p, z, size);
   return 1;
 }
 
 void
 ecc_scalar_get (const struct ecc_scalar *s, mpz_t z)
 {
-  _mpz_set_mpn (z, s->p, s->ecc->size);  
+  mpz_set_n (z, s->p, s->ecc->size);  
 }

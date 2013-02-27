@@ -43,7 +43,7 @@ ecdsa_verify (const struct ecc_point *pub,
   /* For ECC_MUL_A_WBITS == 0, at most 1512 bytes. With
      ECC_MUL_A_WBITS == 4, currently needs 67 * ecc->size, at most
      4824 bytes. Don't use stack allocation for this. */
-  mp_limb_t *scratch = _gmp_alloc_limbs (itch);
+  mp_limb_t *scratch = gmp_alloc_limbs (itch);
   int res;
 
 #define rp scratch
@@ -54,12 +54,12 @@ ecdsa_verify (const struct ecc_point *pub,
       || mpz_sgn (signature->s) <= 0 || mpz_size (signature->s) > size)
     return 0;
   
-  _mpz_copy_limbs (rp, signature->r, size);
-  _mpz_copy_limbs (sp, signature->s, size);
+  mpz_limbs_copy (rp, signature->r, size);
+  mpz_limbs_copy (sp, signature->s, size);
 
   res = ecc_ecdsa_verify (pub->ecc, pub->p, length, digest, rp, sp, scratch_out);
 
-  _gmp_free_limbs (scratch, itch);
+  gmp_free_limbs (scratch, itch);
 
   return res;
 #undef rp
