@@ -114,7 +114,7 @@ ecc_384_modp (const struct ecc_curve *ecc, mp_limb_t *rp)
   /* Reduce from 9 to 6 limbs */
   tp[0] = 0;
   mpn_copyi (tp + 1, rp + 6, 2);
-  tp[3] = rp[8] -= mpn_sub_n (tp, tp, rp + 6, 3);
+  tp[3] = rp[8] - mpn_sub_n (tp, tp, rp + 6, 3);
   tp[4] = mpn_lshift (tp, tp, 4, 32);
 
   cy = mpn_add_n (rp, rp, rp + 6, 3);

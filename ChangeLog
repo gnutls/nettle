@@ -1,5 +1,8 @@
 2013-02-27  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-384.c (ecc_384_modp): Fixed typo which broke carry handling
+	in the 64-bit version.
+
 	* examples/ecc-benchmark.c (bench_add_jjj): Typo fix, benchmark
 	the right function.
 
