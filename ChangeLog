@@ -2,6 +2,7 @@
 
 	* ecc-192.c: Check HAVE_NATIVE_ecc_192_modp, and use native
 	version if available.
+	(ecc_192_modp): Fixed carry handling bug in 32-bit version.
 
 	* x86_64/ecc-192-modp.asm: New file.
 

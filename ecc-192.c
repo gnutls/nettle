@@ -66,7 +66,7 @@ ecc_192_modp (const struct ecc_curve *ecc UNUSED, mp_limb_t *rp)
   cy = sec_add_1 (rp + 5, rp + 5, 1, cy);
   
   assert (cy <= 1);
-  cy = cnd_add_n (cy, rp, ecc_Bmodp, 3);
+  cy = cnd_add_n (cy, rp, ecc_Bmodp, 6);
   assert (cy == 0);  
 }
 #elif GMP_NUMB_BITS == 64
