@@ -209,7 +209,7 @@ static void
 bench_add_jjj (void *p)
 {
   struct ecc_ctx *ctx = (struct ecc_ctx *) p;
-  ecc_add_jja (ctx->ecc, ctx->rp, ctx->ap, ctx->bp, ctx->tp);
+  ecc_add_jjj (ctx->ecc, ctx->rp, ctx->ap, ctx->bp, ctx->tp);
 }
 
 static void

@@ -1,5 +1,8 @@
 2013-02-27  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/ecc-benchmark.c (bench_add_jjj): Typo fix, benchmark
+	the right function.
+
 	* gmp-glue.h: Check if GMP provides mpz_limbs_read (expected in
 	next release).
 	* gmp-glue.c: Use GMP's mpz_limbs_read and friends if available.
