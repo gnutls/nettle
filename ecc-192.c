@@ -36,9 +36,15 @@
 
 #include "ecc-192.h"
 
+#if HAVE_NATIVE_ecc_192_modp
+
+#define ecc_192_modp nettle_ecc_192_modp
+void
+ecc_192_modp (const struct ecc_curve *ecc, mp_limb_t *rp);
+
 /* Use that p = 2^{192} - 2^64 - 1, to eliminate 128 bits at a time. */
 
-#if GMP_NUMB_BITS == 32
+#elif GMP_NUMB_BITS == 32
 /* p is 6 limbs, p = B^6 - B^2 - 1 */
 static void
 ecc_192_modp (const struct ecc_curve *ecc UNUSED, mp_limb_t *rp)
@@ -89,7 +95,7 @@ ecc_192_modp (const struct ecc_curve *ecc UNUSED, mp_limb_t *rp)
 }
   
 #else
-#define ecc_192_modp ecc_generoc_modp
+#define ecc_192_modp ecc_generic_modp
 #endif
 
 const struct ecc_curve nettle_secp_192r1 =
