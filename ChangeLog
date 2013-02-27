@@ -1,5 +1,7 @@
 2013-02-27  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/ecc-mod-test.c: Increased test count.
+
 	* ecc-384.c (ecc_384_modp): Fixed typo which broke carry handling
 	in the 64-bit version.
 

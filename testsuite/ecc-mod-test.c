@@ -9,7 +9,7 @@ ref_mod (mp_limb_t *rp, const mp_limb_t *ap, const mp_limb_t *mp, mp_size_t mn)
 
 #define MAX_ECC_SIZE (1 + 521 / GMP_NUMB_BITS)
 #define MAX_SIZE (2*MAX_ECC_SIZE)
-#define COUNT 500
+#define COUNT 50000
 
 void
 test_main (void)
