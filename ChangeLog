@@ -1,5 +1,13 @@
 2013-02-27  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac (OPT_ASM_SOURCES): New substituted variable.
+	(asm_replace_list, asm_optional_list): New variables. For files in
+	asm_optional_list, also add them to OPT_ASM_SOURCES and define
+	appropriate HAVE_NATIVE_* symbols found.
+
+	* Makefile.in (OPT_ASM_SOURCES): New variable. Used for setting
+	hogweed_OBJS and hogweed_PURE_OBJS.
+
 	* testsuite/ecc-mod-test.c: Increased test count.
 
 	* ecc-384.c (ecc_384_modp): Fixed typo which broke carry handling
