@@ -20,50 +20,53 @@ C MA 02111-1301, USA.
 	.file "ecc-192-modp.asm"
 
 define(<RP>, <%rsi>)
-define(<T1>, <%rdi>) C Overlaps unused ecc input
-define(<T2>, <%rcx>)
-define(<T3>, <%rdx>)
-define(<T4>, <%r8>)
-define(<T5>, <%r9>)
-define(<T6>, <%r10>)
+define(<T0>, <%rdi>) C Overlaps unused ecc input
+define(<T1>, <%rcx>)
+define(<T2>, <%rdx>)
+define(<T3>, <%r8>)
+define(<H>, <%r9>)
+define(<C1>, <%r10>)
+define(<C2>, <%r11>)
 
 	C ecc_192_modp (const struct ecc_curve *ecc, mp_limb_t *rp)
 	.text
 	ALIGN(4)
 PROLOGUE(nettle_ecc_192_modp)
 	W64_ENTRY(2, 0)
-	C First: (B+1)*{r5, r4} < B^3 + B^2 - B
-	mov	32(RP), T1
-	mov	40(RP), T2
-	mov	T2, T3
-	xor	T4, T4
-	add	T1, T2
-	adc	$0, T3
-	adc	$0, T4
+	mov	16(RP), T2
+	mov	24(RP), T3
+	mov	40(RP), H
+	xor	C1, C1
+	xor	C2, C2
 
-	add	8(RP), T1
-	adc	16(RP), T2
-	adc	24(RP), T3
-	adc	$0, T4
-	C Sum is < 2B^4 + B^3 - B - 1, so {T4, T3} < 3B
+	add	H, T2
+	adc	H, T3
+	C Carry to be added in at T1 and T2
+	setc	LREG(C2)
+	
+	mov	8(RP), T1
+	mov	32(RP), H
+	adc	H, T1
+	adc	H, T2
+	C Carry to be added in at T0 and T1
+	setc	LREG(C1)
+	
+	mov	(RP), T0
+	adc	T3, T0
+	adc	T3, T1
+	adc	$0, C2
 
-	C Next: (B+1) * {T4, T3} < 3B^2 + 2B
-	mov	T4, T5
-	add	T3, T4
-	adc	$0, T5
+	C Add in C1 and C2
+	add	C1, T1
+	adc	C2, T2
+	setc	LREG(C1)
 
-	xor	T6, T6
-	add	(RP), T3
-	adc	T4, T1
-	adc	T5, T2
-	adc	$0, T6
-
-	C Fold in final carry.
-	add	T6, T3
-	adc	T6, T1
+	C Fold final carry.
+	adc	$0, T0
+	adc	C1, T1
 	adc	$0, T2
 
-	mov	T3, (RP)
+	mov	T0, (RP)
 	mov	T1, 8(RP)
 	mov	T2, 16(RP)
 

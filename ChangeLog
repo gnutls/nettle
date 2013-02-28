@@ -1,5 +1,8 @@
 2013-02-28  Niels Möller  <nisse@lysator.liu.se>
 
+	* x86_64/ecc-192-modp.asm: Reorganized to reduce number of
+	additions. Use setc instruction.
+
 	* examples/Makefile.in: Let $(HOGWEED_TARGETS) depend on
 	../libhogweed.a.
 
