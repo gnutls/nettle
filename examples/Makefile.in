@@ -53,11 +53,11 @@ all: $(TARGETS)
 	( cd .. && $(MAKE) nettle-internal.$(OBJEXT))
 
 # For Solaris and BSD make, we have to use an explicit rule for each executable
-next-prime$(EXEEXT): next-prime.$(OBJEXT) $(GETOPT_OBJS) ../libhogweed.a
+next-prime$(EXEEXT): next-prime.$(OBJEXT) $(GETOPT_OBJS)
 	$(LINK) next-prime.$(OBJEXT) $(GETOPT_OBJS) \
 	-lhogweed -lnettle $(LIBS) -o next-prime$(EXEEXT)
 
-random-prime$(EXEEXT): random-prime.$(OBJEXT) io.$(OBJEXT) $(GETOPT_OBJS) ../libhogweed.a
+random-prime$(EXEEXT): random-prime.$(OBJEXT) io.$(OBJEXT) $(GETOPT_OBJS)
 	$(LINK) random-prime.$(OBJEXT) io.$(OBJEXT) $(GETOPT_OBJS) \
 	-lhogweed -lnettle $(LIBS) -o random-prime$(EXEEXT)
 
@@ -116,7 +116,7 @@ hogweed-benchmark$(EXEEXT): hogweed-benchmark.$(OBJEXT)
 	-o hogweed-benchmark$(EXEEXT)
 
 $(TARGETS) : io.$(OBJEXT) ../libnettle.a
-
+$(HOGWEED_TARGETS): ../libhogweed.a
 
 check: $(TS_ALL)
 	LD_LIBRARY_PATH=../.lib PATH="../.lib:$$PATH" srcdir="$(srcdir)" \
