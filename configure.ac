@@ -250,7 +250,7 @@ asm_replace_list="aes-encrypt-internal.asm aes-decrypt-internal.asm \
 asm_optional_list=""
 
 if test "x$enable_public_key" = "xyes" ; then
-  asm_optional_list="$asm_search_list ecc-192-modp.asm ecc-256-redc.asm"
+  asm_optional_list="$asm_search_list ecc-192-modp.asm ecc-224-modp.asm ecc-256-redc.asm"
 fi
 
 OPT_ASM_SOURCES=""
@@ -278,7 +278,7 @@ if test "x$enable_assembler" = xyes ; then
 	done <<EOF
 [`sed -n 's/[^ 	]*PROLOGUE(_*\(nettle_\)*\([^)]*\)).*$/\2/p' < "$srcdir/$asm_path/$tmp_o"`]
 EOF
-	OPT_ASM_SOURCES="$OPT_SOURCES $tmp_o"
+	OPT_ASM_SOURCES="$OPT_ASM_SOURCES $tmp_o"
       fi
     done	
     if test -z "$asm_file_list"; then

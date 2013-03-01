@@ -1,3 +1,8 @@
+2013-03-01  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac (asm_optional_list): Added ecc-224-modp.asm.
+	(OPT_ASM_SOURCES): Fixed assignment.
+
 2013-02-28  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86_64/ecc-192-modp.asm: Reorganized to reduce number of
