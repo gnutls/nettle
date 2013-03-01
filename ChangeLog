@@ -1,5 +1,7 @@
 2013-03-01  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/ecc-redc-test.c: Increased test count.
+
 	* ecc-224.c: Check HAVE_NATIVE_ecc_224_modp, and use native
 	version if available.
 
