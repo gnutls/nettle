@@ -30,7 +30,17 @@
 
 #include "ecc-internal.h"
 
+#if HAVE_NATIVE_ecc_224_modp
+
+#define USE_REDC 0
+#define ecc_224_modp nettle_ecc_224_modp
+void
+ecc_224_modp (const struct ecc_curve *ecc, mp_limb_t *rp);
+
+#else
 #define USE_REDC (ECC_REDC_SIZE != 0)
+#define ecc_224_modp ecc_generic_modp
+#endif
 
 #include "ecc-224.h"
 
@@ -49,9 +59,9 @@ const struct ecc_curve nettle_secp_224r1 =
   ecc_q,
   ecc_g,
   ecc_redc_g,
-  ecc_generic_modp,
+  ecc_224_modp,
   ecc_generic_redc,
-  USE_REDC ? ecc_generic_redc : ecc_generic_modp,
+  USE_REDC ? ecc_generic_redc : ecc_224_modp,
   ecc_generic_modq,
   ecc_Bmodp,
   ecc_Bmodp_shifted,

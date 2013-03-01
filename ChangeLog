@@ -1,5 +1,11 @@
 2013-03-01  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-224.c: Check HAVE_NATIVE_ecc_224_modp, and use native
+	version if available.
+
+	* armv7/ecc-224-modp.asm: New file, 4.5 time speedup over C
+	version.
+
 	* configure.ac (asm_optional_list): Added ecc-224-modp.asm.
 	(OPT_ASM_SOURCES): Fixed assignment.
 
