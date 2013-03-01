@@ -1,10 +1,13 @@
 2013-03-01  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-256.c: Check HAVE_NATIVE_ecc_256_redc, and use native
+	version if available.
+	* armv7/ecc-256-redc.asm: New file, 4 time speedup over C version.
+
 	* testsuite/ecc-redc-test.c: Increased test count.
 
 	* ecc-224.c: Check HAVE_NATIVE_ecc_224_modp, and use native
 	version if available.
-
 	* armv7/ecc-224-modp.asm: New file, 4.5 time speedup over C
 	version.
 

@@ -32,9 +32,17 @@
 
 #include "ecc-internal.h"
 
-#define USE_REDC (ECC_REDC_SIZE != 0)
+#define USE_REDC (HAVE_NATIVE_ecc_256_redc || ECC_REDC_SIZE != 0)
 
 #include "ecc-256.h"
+
+#if HAVE_NATIVE_ecc_256_redc
+# define ecc_256_redc nettle_ecc_256_redc
+void
+ecc_256_redc (const struct ecc_curve *ecc, mp_limb_t *rp);
+#else /* !HAVE_NATIVE_ecc_256_redc */
+# define ecc_256_redc ecc_generic_redc
+#endif
 
 #if ECC_BMODP_SIZE < ECC_LIMB_SIZE
 #define ecc_256_modp ecc_generic_modp
@@ -213,8 +221,8 @@ const struct ecc_curve nettle_secp_256r1 =
   ecc_g,
   ecc_redc_g,
   ecc_256_modp,
-  ecc_generic_redc,
-  USE_REDC ? ecc_generic_redc : ecc_generic_modp,
+  ecc_256_redc,
+  USE_REDC ? ecc_256_redc : ecc_256_modp,
   ecc_256_modq,
   ecc_Bmodp,
   ecc_Bmodp_shifted,
