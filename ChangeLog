@@ -1,3 +1,7 @@
+2013-03-03  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-256.c: Fixed definition of USE_REDC.
+
 2013-03-01  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-256.c: Check HAVE_NATIVE_ecc_256_redc, and use native

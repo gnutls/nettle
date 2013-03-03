@@ -32,7 +32,11 @@
 
 #include "ecc-internal.h"
 
-#define USE_REDC (HAVE_NATIVE_ecc_256_redc || ECC_REDC_SIZE != 0)
+#if HAVE_NATIVE_ecc_256_redc
+# define USE_REDC 1
+#else
+# define USE_REDC (ECC_REDC_SIZE != 0)
+#endif
 
 #include "ecc-256.h"
 
