@@ -36,13 +36,18 @@
 
 #include "ecc-384.h"
 
+#if HAVE_NATIVE_ecc_384_modp
+#define ecc_384_modp nettle_ecc_384_modp
+void
+ecc_384_modp (const struct ecc_curve *ecc, mp_limb_t *rp);
+#elif GMP_NUMB_BITS == 32
+
 /* Use that 2^{384} = 2^{128} + 2^{96} - 2^{32} + 1, and eliminate 256
    bits at a time.
 
    We can get carry == 2 in the first iteration, and I think *only* in
    the first iteration. */
 
-#if GMP_NUMB_BITS == 32
 /* p is 12 limbs, and B^12 - p = B^4 + B^3 - B + 1. We can eliminate
    almost 8 at a time. Do only 7, to avoid additional carry
    propagation, followed by 5. */

@@ -250,7 +250,7 @@ asm_replace_list="aes-encrypt-internal.asm aes-decrypt-internal.asm \
 asm_optional_list=""
 
 if test "x$enable_public_key" = "xyes" ; then
-  asm_optional_list="$asm_search_list ecc-192-modp.asm ecc-224-modp.asm ecc-256-redc.asm"
+  asm_optional_list="ecc-192-modp.asm ecc-224-modp.asm ecc-256-redc.asm ecc-384-modp.asm"
 fi
 
 OPT_ASM_SOURCES=""
