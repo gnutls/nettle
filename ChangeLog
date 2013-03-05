@@ -1,8 +1,14 @@
+2013-03-05  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac (asm_optional_list): Added ecc-521-modp.asm.
+	* ecc-521.c: Check HAVE_NATIVE_ecc_521_modp, and use native
+	version if available.
+	* armv7/ecc-521-modp.asm: New file, 2 time speedup over C version.
+
 2013-03-04  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac (asm_optional_list): Added ecc-384-modp.asm. Deleted
 	bogus reference to $asm_search_list.
-
 	* ecc-384.c: Check HAVE_NATIVE_ecc_384_modp, and use native
 	version if available.
 	* armv7/ecc-384-modp.asm: New file, 3 time speedup over C version.

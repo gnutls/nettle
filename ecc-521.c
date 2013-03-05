@@ -34,6 +34,13 @@
 
 #include "ecc-521.h"
 
+#if HAVE_NATIVE_ecc_521_modp
+#define ecc_521_modp nettle_ecc_521_modp
+void
+ecc_521_modp (const struct ecc_curve *ecc, mp_limb_t *rp);
+
+#else
+
 #define B_SHIFT (521 % GMP_NUMB_BITS)
 #define BMODP_SHIFT (GMP_NUMB_BITS - B_SHIFT)
 #define BMODP ((mp_limb_t) 1 << BMODP_SHIFT)
@@ -56,6 +63,7 @@ ecc_521_modp (const struct ecc_curve *ecc UNUSED, mp_limb_t *rp)
 			 & (((mp_limb_t) 1 << B_SHIFT)-1))
     + sec_add_1 (rp, rp, ECC_LIMB_SIZE - 1, hi);
 }
+#endif
 
 const struct ecc_curve nettle_secp_521r1 =
 {
