@@ -153,7 +153,7 @@ PROLOGUE(nettle_ecc_384_modp)
 
 	C Fold high limbs, we need to add in
 	C
-	C F4 F4 -F4 F4 H H -H H
+	C F4 F4 0 -F4 F4 H H 0 -H H
 	C
 	C We always have F4 >= 0, but we can have H < 0.
 	C Sign extension gets tricky when F4 = 0 and H < 0.
@@ -163,7 +163,7 @@ PROLOGUE(nettle_ecc_384_modp)
 
 	C     H  H  0 -H  H
 	C  ----------------
-	C  S F4 F3 F2 F1 F0
+	C  S  H F3 F2 F1 F0
 	C
 	C Define S = H >> 31 (asr), we then have
 	C
@@ -171,7 +171,7 @@ PROLOGUE(nettle_ecc_384_modp)
 	C  F1 = S - H
 	C  F2 = - [H > 0]
 	C  F3 = H - [H > 0]
-	C  F4 = H + S
+	C   H = H + S
 	C 
 	C And we get underflow in S - H iff H > 0
 
