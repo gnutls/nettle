@@ -1,3 +1,8 @@
+2013-03-06  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/ecc-224-modp.asm: New file, 5 time speedup over C
+	version.
+
 2013-03-05  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac (asm_optional_list): Added ecc-521-modp.asm.
