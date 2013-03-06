@@ -1,5 +1,6 @@
 2013-03-06  Niels Möller  <nisse@lysator.liu.se>
 
+	* x86_64/ecc-256-redc.asm: New file, 2.5 time speedup.
 	* x86_64/ecc-224-modp.asm: New file, 5 time speedup over C
 	version.
 
