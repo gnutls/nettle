@@ -111,7 +111,10 @@ mpz_roinit_n (mpz_ptr x, const mp_limb_t *xp, mp_size_t xs)
 int
 mpz_limbs_cmp (mpz_srcptr a, const mp_limb_t *bp, mp_size_t bn)
 {
-  mp_size_t an = SIZ (a);
+  mp_size_t an = mpz_size (a);
+  assert (mpz_sgn (a) >= 0);
+  assert (bn >= 0);
+
   if (an < bn)
     return -1;
   if (an > bn)
@@ -119,7 +122,7 @@ mpz_limbs_cmp (mpz_srcptr a, const mp_limb_t *bp, mp_size_t bn)
   if (an == 0)
     return 0;
 
-  return mpn_cmp (PTR(a), bp, an);
+  return mpn_cmp (mpz_limbs_read(a), bp, an);
 }
 
 /* Get a pointer to an n limb area, for read-only operation. n must be

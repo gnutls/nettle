@@ -1,5 +1,7 @@
 2013-03-07  Niels Möller  <nisse@lysator.liu.se>
 
+	* gmp-glue.c (mpz_limbs_cmp): Don't use PTR and SIZ macros.
+
 	* Makefile.in (aesdata, desdata, twofishdata, shadata, gcmdata)
 	(eccdata): Arrange for compiling these programs for running on the
 	build system, also when cross compiling everything else.
