@@ -1,5 +1,17 @@
 2013-03-07  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.in (aesdata, desdata, twofishdata, shadata, gcmdata)
+	(eccdata): Arrange for compiling these programs for running on the
+	build system, also when cross compiling everything else.
+
+	* config.make.in (CC_FOR_BUILD, EXEEXT_FOR_BUILD): New variables.
+
+	* configure.ac: Use GMP_PROG_CC_FOR_BUILD and
+	GMP_PROG_EXEEXT_FOR_BUILD.
+
+	* aclocal.m4 (GMP_PROG_CC_FOR_BUILD, GMP_PROG_CC_FOR_BUILD_WORKS)
+	(GMP_PROG_EXEEXT_FOR_BUILD): New macros, based on GMP's.
+
 	* aesdata.c: Deleted includes of config.h and nettle-types.h. Use
 	unsigned char and unsigned long instead of stdint.h types.
 

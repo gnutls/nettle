@@ -118,6 +118,10 @@ AC_PROG_MKDIR_P
 
 AC_PROG_LN_S
 
+# Compiler tests for the build system
+GMP_PROG_CC_FOR_BUILD
+GMP_PROG_EXEEXT_FOR_BUILD
+
 LSH_DEPENDENCY_TRACKING
 
 if test x$enable_dependency_tracking = xyes ; then

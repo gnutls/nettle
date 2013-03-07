@@ -221,24 +221,32 @@ $(LIBHOGWEED_FORLINK): $(hogweed_PURE_OBJS) $(LIBNETTLE_FORLINK)
 	$(COMPILE) $(SHLIBCFLAGS) -c $< -o $@ \
 	&& $(DEP_PROCESS)
 
-# For Solaris and BSD make, we have to use an explicit rule for each executable
-aesdata$(EXEEXT): aesdata.$(OBJEXT)
-	$(LINK) aesdata.$(OBJEXT) $(LIBS) -o aesdata$(EXEEXT)
+# For Solaris and BSD make, we have to use an explicit rule for each
+# executable. Avoid object file targets to make it easy to run the
+# right compiler.
+aesdata$(EXEEXT_FOR_BUILD): aesdata.c
+	$(CC_FOR_BUILD) `test -f aesdata.c || echo '$(srcdir)/'`aesdata.c \
+	-o aesdata$(EXEEXT_FOR_BUILD)
 
-desdata$(EXEEXT): desdata.$(OBJEXT)
-	$(LINK) desdata.$(OBJEXT) $(LIBS) -o desdata$(EXEEXT)
+desdata$(EXEEXT_FOR_BUILD): desdata.c
+	$(CC_FOR_BUILD) `test -f desdata.c || echo '$(srcdir)/'`desdata.c \
+	-o desdata$(EXEEXT_FOR_BUILD)
 
-twofishdata$(EXEEXT): twofishdata.$(OBJEXT)
-	$(LINK) twofishdata.$(OBJEXT) $(LIBS) -o twofishdata$(EXEEXT)
+twofishdata$(EXEEXT_FOR_BUILD): twofishdata.c
+	$(CC_FOR_BUILD) `test -f twofishdata.c || echo '$(srcdir)/'`twofishdata.c \
+	-o twofishdata$(EXEEXT_FOR_BUILD)
 
-shadata$(EXEEXT): shadata.$(OBJEXT)
-	$(LINK) shadata.$(OBJEXT) $(LIBS) -lm -o shadata$(EXEEXT)
+shadata$(EXEEXT_FOR_BUILD): shadata.c
+	$(CC_FOR_BUILD) `test -f shadata.c || echo '$(srcdir)/'`shadata.c -lm \
+	-o shadata$(EXEEXT_FOR_BUILD)
 
-gcmdata$(EXEEXT): gcmdata.$(OBJEXT)
-	$(LINK) gcmdata.$(OBJEXT) $(LIBS) -o gcmdata$(EXEEXT)
+gcmdata$(EXEEXT_FOR_BUILD): gcmdata.c
+	$(CC_FOR_BUILD) `test -f gcmdata.c || echo '$(srcdir)/'`gcmdata.c \
+	-o gcmdata$(EXEEXT_FOR_BUILD)
 
-eccdata$(EXEEXT): eccdata.$(OBJEXT)
-	$(LINK) eccdata.$(OBJEXT) $(LIBS) -o eccdata$(EXEEXT)
+eccdata$(EXEEXT_FOR_BUILD): eccdata.c
+	$(CC_FOR_BUILD) `test -f eccdata.c || echo '$(srcdir)/'`eccdata.c -lgmp \
+	-o eccdata$(EXEEXT_FOR_BUILD)
 
 # desCore rules
 # It seems using $(srcdir)/ doesn't work with GNU make 3.79.1
