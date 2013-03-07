@@ -1,5 +1,19 @@
 2013-03-07  Niels Möller  <nisse@lysator.liu.se>
 
+	* aesdata.c: Deleted includes of config.h and nettle-types.h. Use
+	unsigned char and unsigned long instead of stdint.h types.
+
+	* desdata.c: Deleted includes of config.h and desCode.h.
+	(main): Return 1 on invalid argument. Don't use ROR macro. Use
+	unsigned long instead of uint32_t, and make it work if unsigned
+	long is larger than 32 bits.
+
+	* gcmdata.c: Deleted include of config.h and use UNUSED macro.
+	* shadata.c: Likewise.
+
+	* twofishdata.c: Deleted include of nettle-types.h. Use unsigned
+	char instead of stdint.h types.
+
 	* x86_64/ecc-521-modp.asm: New file. 2.4 time speedup.
 
 2013-03-06  Niels Möller  <nisse@lysator.liu.se>
