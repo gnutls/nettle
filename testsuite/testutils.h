@@ -7,9 +7,10 @@
 
 #include "nettle-types.h"
 
-#include <string.h>
+#include <stdarg.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #if HAVE_LIBGMP
 # include "bignum.h"
@@ -18,6 +19,11 @@
 #if WITH_HOGWEED
 # include "rsa.h"
 # include "dsa.h"
+# include "ecc-curve.h"
+# include "ecc.h"
+# include "ecc-internal.h"
+# include "ecdsa.h"
+# include "gmp-glue.h"
 #endif
 
 #include "nettle-meta.h"
@@ -28,6 +34,9 @@ struct nettle_aead;
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+void
+die(const char *format, ...) PRINTF_STYLE (1, 2) NORETURN;
 
 void *
 xalloc(size_t size);
@@ -147,6 +156,9 @@ test_armor(const struct nettle_armor *armor,
            const uint8_t *ascii);
 
 #if WITH_HOGWEED
+mp_limb_t *
+xalloc_limbs (mp_size_t n);
+
 void
 test_rsa_set_key_1(struct rsa_public_key *pub,
 		   struct rsa_private_key *key);
@@ -190,6 +202,14 @@ test_dsa_key(struct dsa_public_key *pub,
 	     struct dsa_private_key *key,
 	     unsigned q_size);
 
+extern const struct ecc_curve * const ecc_curves[];
+
+void
+test_ecc_mul_a (unsigned curve, unsigned n, const mp_limb_t *p);
+
+void
+test_ecc_mul_j (unsigned curve, unsigned n, const mp_limb_t *p);
+
 #endif /* WITH_HOGWEED */
   
 /* LDATA needs to handle NUL characters. */
@@ -197,7 +217,7 @@ test_dsa_key(struct dsa_public_key *pub,
 #define LDATA(x) LLENGTH(x), x
 #define LDUP(x) strlen(x), strdup(x)
 
-#define SHEX(x) ((const struct tstring *) tstring_hex(x))
+#define SHEX(x) (tstring_hex(x))
 #define SDATA(x) ((const struct tstring *)tstring_data(LLENGTH(x), x))
 #define H(x) (SHEX(x)->data)
 

@@ -160,6 +160,30 @@ dsa-test$(EXEEXT): dsa-test.$(OBJEXT)
 dsa-keygen-test$(EXEEXT): dsa-keygen-test.$(OBJEXT)
 	$(LINK) dsa-keygen-test.$(OBJEXT) $(TEST_OBJS) -o dsa-keygen-test$(EXEEXT)
 
+ecc-mod-test$(EXEEXT): ecc-mod-test.$(OBJEXT)
+	$(LINK) ecc-mod-test.$(OBJEXT) $(TEST_OBJS) -o ecc-mod-test$(EXEEXT)
+
+ecc-modinv-test$(EXEEXT): ecc-modinv-test.$(OBJEXT)
+	$(LINK) ecc-modinv-test.$(OBJEXT) $(TEST_OBJS) -o ecc-modinv-test$(EXEEXT)
+
+ecc-redc-test$(EXEEXT): ecc-redc-test.$(OBJEXT)
+	$(LINK) ecc-redc-test.$(OBJEXT) $(TEST_OBJS) -o ecc-redc-test$(EXEEXT)
+
+ecc-mul-g-test$(EXEEXT): ecc-mul-g-test.$(OBJEXT)
+	$(LINK) ecc-mul-g-test.$(OBJEXT) $(TEST_OBJS) -o ecc-mul-g-test$(EXEEXT)
+
+ecc-mul-a-test$(EXEEXT): ecc-mul-a-test.$(OBJEXT)
+	$(LINK) ecc-mul-a-test.$(OBJEXT) $(TEST_OBJS) -o ecc-mul-a-test$(EXEEXT)
+
+ecdsa-sign-test$(EXEEXT): ecdsa-sign-test.$(OBJEXT)
+	$(LINK) ecdsa-sign-test.$(OBJEXT) $(TEST_OBJS) -o ecdsa-sign-test$(EXEEXT)
+
+ecdsa-verify-test$(EXEEXT): ecdsa-verify-test.$(OBJEXT)
+	$(LINK) ecdsa-verify-test.$(OBJEXT) $(TEST_OBJS) -o ecdsa-verify-test$(EXEEXT)
+
+ecdsa-keygen-test$(EXEEXT): ecdsa-keygen-test.$(OBJEXT)
+	$(LINK) ecdsa-keygen-test.$(OBJEXT) $(TEST_OBJS) -o ecdsa-keygen-test$(EXEEXT)
+
 sha1-huge-test$(EXEEXT): sha1-huge-test.$(OBJEXT)
 	$(LINK) sha1-huge-test.$(OBJEXT) $(TEST_OBJS) -o sha1-huge-test$(EXEEXT)
 

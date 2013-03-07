@@ -1,3 +1,245 @@
+2013-03-07  Niels Möller  <nisse@lysator.liu.se>
+
+	* gmp-glue.c (mpz_limbs_cmp): Don't use PTR and SIZ macros.
+
+	* Makefile.in (aesdata, desdata, twofishdata, shadata, gcmdata)
+	(eccdata): Arrange for compiling these programs for running on the
+	build system, also when cross compiling everything else.
+
+	* config.make.in (CC_FOR_BUILD, EXEEXT_FOR_BUILD): New variables.
+
+	* configure.ac: Use GMP_PROG_CC_FOR_BUILD and
+	GMP_PROG_EXEEXT_FOR_BUILD.
+
+	* aclocal.m4 (GMP_PROG_CC_FOR_BUILD, GMP_PROG_CC_FOR_BUILD_WORKS)
+	(GMP_PROG_EXEEXT_FOR_BUILD): New macros, based on GMP's.
+
+	* aesdata.c: Deleted includes of config.h and nettle-types.h. Use
+	unsigned char and unsigned long instead of stdint.h types.
+
+	* desdata.c: Deleted includes of config.h and desCode.h.
+	(main): Return 1 on invalid argument. Don't use ROR macro. Use
+	unsigned long instead of uint32_t, and make it work if unsigned
+	long is larger than 32 bits.
+
+	* gcmdata.c: Deleted include of config.h and use UNUSED macro.
+	* shadata.c: Likewise.
+
+	* twofishdata.c: Deleted include of nettle-types.h. Use unsigned
+	char instead of stdint.h types.
+
+	* x86_64/ecc-521-modp.asm: New file. 2.4 time speedup.
+
+2013-03-06  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/ecc-384-modp.asm: New file, 3 time speedup.
+	* x86_64/ecc-256-redc.asm: New file, 2.5 time speedup.
+	* x86_64/ecc-224-modp.asm: New file, 5 time speedup over C
+	version.
+
+2013-03-05  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac (asm_optional_list): Added ecc-521-modp.asm.
+	* ecc-521.c: Check HAVE_NATIVE_ecc_521_modp, and use native
+	version if available.
+	* armv7/ecc-521-modp.asm: New file, 2 time speedup over C version.
+
+2013-03-04  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac (asm_optional_list): Added ecc-384-modp.asm. Deleted
+	bogus reference to $asm_search_list.
+	* ecc-384.c: Check HAVE_NATIVE_ecc_384_modp, and use native
+	version if available.
+	* armv7/ecc-384-modp.asm: New file, 3 time speedup over C version.
+
+2013-03-03  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-256.c: Fixed definition of USE_REDC.
+
+2013-03-01  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-256.c: Check HAVE_NATIVE_ecc_256_redc, and use native
+	version if available.
+	* armv7/ecc-256-redc.asm: New file, 4 time speedup over C version.
+
+	* testsuite/ecc-redc-test.c: Increased test count.
+
+	* ecc-224.c: Check HAVE_NATIVE_ecc_224_modp, and use native
+	version if available.
+	* armv7/ecc-224-modp.asm: New file, 4.5 time speedup over C
+	version.
+
+	* configure.ac (asm_optional_list): Added ecc-224-modp.asm.
+	(OPT_ASM_SOURCES): Fixed assignment.
+
+2013-02-28  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/ecc-192-modp.asm: Reorganized to reduce number of
+	additions. Use setc instruction.
+
+	* examples/Makefile.in: Let $(HOGWEED_TARGETS) depend on
+	../libhogweed.a.
+
+	* armv7/ecc-192-modp.asm: New file. 2.5 time speedup over C
+	version.
+
+2013-02-27  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-192.c: Check HAVE_NATIVE_ecc_192_modp, and use native
+	version if available.
+	(ecc_192_modp): Fixed carry handling bug in 32-bit version.
+
+	* x86_64/ecc-192-modp.asm: New file. 3.8 times speedup over C
+	version.
+
+	* configure.ac (OPT_ASM_SOURCES): New substituted variable.
+	(asm_replace_list, asm_optional_list): New variables. For files in
+	asm_optional_list, also add them to OPT_ASM_SOURCES and define
+	appropriate HAVE_NATIVE_* symbols found.
+
+	* Makefile.in (OPT_ASM_SOURCES): New variable. Used for setting
+	hogweed_OBJS and hogweed_PURE_OBJS.
+
+	* testsuite/ecc-mod-test.c: Increased test count.
+
+	* ecc-384.c (ecc_384_modp): Fixed typo which broke carry handling
+	in the 64-bit version.
+
+	* examples/ecc-benchmark.c (bench_add_jjj): Typo fix, benchmark
+	the right function.
+
+	* gmp-glue.h: Check if GMP provides mpz_limbs_read (expected in
+	next release).
+	* gmp-glue.c: Use GMP's mpz_limbs_read and friends if available.
+	Renamed all functions for consistency with GMP. Updated all
+	callers.
+
+2013-02-20  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/Makefile.in (HOGWEED_TARGETS): Added
+	hogweed-benchmark$(EXEEXT).
+	(SOURCES): Added hogweed-benchmark.c.
+	(hogweed-benchmark$(EXEEXT)): New target.
+
+	* examples/hogweed-benchmark.c: New file.
+
+	* ecdsa-keygen.c (ecdsa_generate_keypair): New file and function.
+	* Makefile.in (hogweed_SOURCES): Added ecdsa-keygen.c.
+	* testsuite/ecdsa-keygen-test.c: New testcase.
+	* testsuite/Makefile.in (TS_HOGWEED_SOURCES): Added
+	ecdsa-keygen-test.c.
+
+	* nettle-internal.h (TMP_ALLOC): Added missing parentheses.
+
+2013-02-18  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/ecdsa-verify-test.c: New testcase.
+	* testsuite/ecdsa-sign-test.c: New testcase.
+	* testsuite/Makefile.in (TS_HOGWEED_SOURCES): Added
+	ecdsa-sign-test.c and ecdsa-verify-test.c.
+	* testsuite/testutils.h: Include ecdsa.h.
+	(SHEX): Deleted const cast.
+
+	* ecc-point.c: New file, struct ecc_point abstraction.
+	* ecc-scalar.c: New file, struct ecc_scalar abstraction.
+	* ecc-random.c (ecc_modq_random, ecc_scalar_random): New file, new
+	functions.
+	* ecc-hash.c (ecc_hash): New file and function.
+	* ecc-ecdsa-sign.c: New file, low-level signing interface.
+	* ecc-ecdsa-verify.c: New file, low-level ecdsa verify.
+	* ecdsa-sign.c: (ecdsa_sign): New file and function.
+	* ecdsa-verify.c (ecdsa_verify): New file and function.
+	* ecdsa.h: New header file.
+	* ecc.h: Declare ecc_point and ecc_scalar functions.
+	* ecc-internal.h: Added declarations.
+	* Makefile.in (hogweed_SOURCES): Added new source files.
+	(HEADERS): Added ecdsa.h.
+
+	* gmp-glue.c (_mpz_set_mpn): New convenience function.
+	(_mpn_set_base256): New function.
+	(_gmp_alloc_limbs): New function.
+	(_gmp_free_limbs): New function.
+	* gmp-glue.h: Corresponding declarations. Include nettle-stdinh.h.
+
+	* examples/Makefile.in (HOGWEED_TARGETS): Renamed, was
+	RSA_TARGETS. Added ecc-benchmark$(EXEEXT).
+	(SOURCES): Added ecc-benchmark.c.
+	(ecc-benchmark$(EXEEXT)): New target.
+
+	* examples/ecc-benchmark.c: New file, benchmarking ecc primitives.
+
+2013-02-15  Niels Möller  <nisse@lysator.liu.se>
+
+	Integrate ecc_mul_a.
+	* ecc-a-to-j.c: New file.
+	* ecc-add-jjj.c: New file.
+	* ecc-mul-a.c: New file.
+	* Makefile.in (hogweed_SOURCES): Added new files.
+	* testsuite/ecc-mul-a-test.c: New file.
+	* testsuite/Makefile.in (TS_HOGWEED_SOURCES): Added
+	ecc-mul-a-test.c.
+
+	* testsuite/testutils.c: Removed redundant includes.
+	(die): New function.
+
+	Integrate ecc_mul_g.
+	* ecc.h: New file.
+	* ecc-j-to-a.c: New file.
+	* ecc-size.c: New file.
+	* ecc-add-jja.c: New file.
+	* ecc-dup-jj.c: New file.
+	* ecc-mul-g.c: New file.
+	* sec-tabselect.c: New file.
+	* Makefile.in (hogweed_SOURCES): Added new files.
+	(HEADERS): Added ecc.h
+	* testsuite/ecc-mul-g-test.c: New file.
+	* testsuite/Makefile.in (TS_HOGWEED_SOURCES): Added
+	ecc-mul-g-test.c.
+	* testsuite/testutils.c (xalloc_limbs): New function.
+	(test_mpn): New function.
+	(test_ecc_point): New function.
+	(test_ecc_mul_a): New function.
+	(test_ecc_mul_j): New function.
+	* testsuite/testutils.h: Corresponding declarations.
+
+	Integrate ECC internals.
+	* ecc-curve.h: New file.
+	* ecc-internal.h: New file.
+	* cnd-copy.c: New file.
+	* ecc-192.c: New file.
+	* ecc-224.c: New file.
+	* ecc-256.c: New file.
+	* ecc-384.c: New file.
+	* ecc-521.c: New file.
+	* ecc-generic-modp.c: New file.
+	* ecc-generic-modq.c: New file.
+	* ecc-generic-redc.c: New file.
+	* ecc-mod.c: New file.
+	* ecc-modp.c: New file.
+	* ecc-modq.c: New file.
+	* sec-add-1.c: New file.
+	* sec-modinv.c: New file.
+	* sec-sub-1.c: New file.
+	* Makefile.in (hogweed_SOURCES): Added new files.
+	(HEADERS): Added ecc-curve.h.
+	(DISTFILES): Added ecc-internal.h.
+	* testsuite/ecc-mod-test.c: New file.
+	* testsuite/ecc-modinv-test.c: New file.
+	* testsuite/ecc-redc-test.c: New file.
+	* testsuite/testutils.c (ecc_curves): New constant array.
+	* testsuite/testutils.h: Include ecc-related headers. Declare
+	ecc_curves array.
+	* testsuite/Makefile.in (TS_HOGWEED_SOURCES): Added ecc-mod-test.c
+	ecc-modinv-test.c ecc-redc-test.c.
+
+	* gmp-glue.c: New file, mpn <-> mpz conversions.
+	* gmp-glue.h: New file.
+	* Makefile.in: Added to hogweed_SOURCES and DISTFILES, respectively.
+
+	* eccdata.c: New program, for generating ECC-related tables.
+	* Makefile.in (ecc-192.h, ecc-224.h, ecc-256.h, ecc-384.h)
+	(ecc-512.h): New generated files.
+
 2013-02-19  Niels Möller  <nisse@lysator.liu.se>
 
 	* armv7/memxor.asm (memxor): Software pipelining for the aligned
@@ -7,6 +249,9 @@
 	Runs at 8 cycles (0.67 cycles per byte)
 
 2013-02-14  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Find GMP's GMP_NUMB_BITS. Substitute in Makefile.
+	* config.make.in (GMP_NUMB_BITS): New variable.
 
 	* examples/rsa-keygen.c (uint_arg): New function.
 	(main): New options -s and -e, to specify key size and public

@@ -118,6 +118,10 @@ AC_PROG_MKDIR_P
 
 AC_PROG_LN_S
 
+# Compiler tests for the build system
+GMP_PROG_CC_FOR_BUILD
+GMP_PROG_EXEEXT_FOR_BUILD
+
 LSH_DEPENDENCY_TRACKING
 
 if test x$enable_dependency_tracking = xyes ; then
@@ -237,31 +241,73 @@ if test "x$enable_assembler" = xyes ; then
       ;;
   esac
 fi
-# echo "enable_assembler: $enable_assembler, asm_path: $asm_path"
+
+# Files which replace a C source file (or otherwise don't correspond
+# to a new object file).
+asm_replace_list="aes-encrypt-internal.asm aes-decrypt-internal.asm \
+		arcfour-crypt.asm camellia-crypt-internal.asm \
+		md5-compress.asm memxor.asm \
+		salsa20-crypt.asm salsa20-core-internal.asm \
+		serpent-encrypt.asm serpent-decrypt.asm \
+		sha1-compress.asm machine.m4"
+# Assembler files which generate additional object files if they are used.
+asm_optional_list=""
+
+if test "x$enable_public_key" = "xyes" ; then
+  asm_optional_list="ecc-192-modp.asm ecc-224-modp.asm ecc-256-redc.asm \
+      ecc-384-modp.asm ecc-521-modp.asm"
+fi
+
+OPT_ASM_SOURCES=""
+
 asm_file_list=""
 
 if test "x$enable_assembler" = xyes ; then
   if test -n "$asm_path"; then
     AC_MSG_NOTICE([Looking for assembler files in $asm_path/.])
-    for tmp_f in aes-encrypt-internal.asm aes-decrypt-internal.asm \
-		 arcfour-crypt.asm camellia-crypt-internal.asm \
-		 md5-compress.asm memxor.asm \
-		 salsa20-crypt.asm salsa20-core-internal.asm \
-		 serpent-encrypt.asm serpent-decrypt.asm \
-		 sha1-compress.asm machine.m4; do
-#       echo "Looking for $srcdir/$asm_path/$tmp_f"
+    for tmp_f in $asm_replace_list ; do
       if test -f "$srcdir/$asm_path/$tmp_f"; then
-#        echo found
 	asm_file_list="$asm_file_list $tmp_f"
         AC_CONFIG_LINKS($tmp_f:$asm_path/$tmp_f)
       fi
     done
+    dnl Workaround for AC_CONFIG_LINKS, which complains if we use the
+    dnl same destination argument $tmp_f multiple times.
+    for tmp_o in $asm_optional_list ; do
+      if test -f "$srcdir/$asm_path/$tmp_o"; then
+	asm_file_list="$asm_file_list $tmp_o"
+        AC_CONFIG_LINKS($tmp_o:$asm_path/$tmp_o)
+	while read tmp_func ; do
+	  AC_DEFINE_UNQUOTED(HAVE_NATIVE_$tmp_func)
+	  eval HAVE_NATIVE_$tmp_func=yes
+	done <<EOF
+[`sed -n 's/[^ 	]*PROLOGUE(_*\(nettle_\)*\([^)]*\)).*$/\2/p' < "$srcdir/$asm_path/$tmp_o"`]
+EOF
+	OPT_ASM_SOURCES="$OPT_ASM_SOURCES $tmp_o"
+      fi
+    done	
     if test -z "$asm_file_list"; then
       enable_assembler=no
       AC_MSG_WARN([No assembler files found.])
     fi
   fi
 fi
+
+AC_SUBST([OPT_ASM_SOURCES])
+
+AH_VERBATIM([HAVE_NATIVE],
+[/* Define to 1 each of the following for which a native (ie. CPU specific)
+    implementation of the corresponding routine exists.  */
+#undef HAVE_NATIVE_ecc_192_modp
+#undef HAVE_NATIVE_ecc_192_redc
+#undef HAVE_NATIVE_ecc_224_modp
+#undef HAVE_NATIVE_ecc_224_redc
+#undef HAVE_NATIVE_ecc_256_modp
+#undef HAVE_NATIVE_ecc_256_redc
+#undef HAVE_NATIVE_ecc_384_modp
+#undef HAVE_NATIVE_ecc_384_redc
+#undef HAVE_NATIVE_ecc_521_modp
+#undef HAVE_NATIVE_ecc_521_redc])
 
 # Besides getting correct dependencies, the explicit rules also tell
 # make that the .s files "ought to exist", so they are preferred over
@@ -586,6 +632,20 @@ Support for public key algorithms will be unavailable.])]
 
 # Add -R flags needed to run programs linked with gmp
 LSH_RPATH_FIX
+
+# Check for gmp limb size
+nettle_cv_gmp_numb_bits=0
+if test "$enable_public_key" = yes; then
+  AC_MSG_CHECKING([for GMP limb size])
+  AC_COMPUTE_INT(nettle_cv_gmp_numb_bits, [GMP_NUMB_BITS],
+      [#include <gmp.h>],
+      [AC_MSG_FAILURE([cannot find value of GMP_NUMB_BITS])])
+
+  AC_MSG_RESULT([$nettle_cv_gmp_numb_bits bits])
+fi
+
+GMP_NUMB_BITS="$nettle_cv_gmp_numb_bits"
+AC_SUBST([GMP_NUMB_BITS])
 
 AH_TEMPLATE([HAVE_MPZ_POWM_SEC], [Define if mpz_powm_sec is available (appeared in GMP-5)])
 AC_CHECK_FUNC(__gmpz_powm_sec, [AC_DEFINE(HAVE_MPZ_POWM_SEC)])

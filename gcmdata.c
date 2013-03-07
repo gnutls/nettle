@@ -26,9 +26,6 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02111-1301, USA.
  */
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -50,7 +47,7 @@ reduce(unsigned x)
 }
 
 int
-main(int argc UNUSED, char **argv UNUSED)
+main(int argc, char **argv)
 {
   unsigned i;
   printf("4-bit table:\n");

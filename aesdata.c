@@ -1,13 +1,7 @@
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
-
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
-#include "nettle-types.h"
 
 #if 1
 # define BYTE_FORMAT "0x%02x"
@@ -17,18 +11,18 @@
 # define BYTE_COLUMNS 0x10
 #endif
 
-#define WORD_FORMAT "0x%08x"
+#define WORD_FORMAT "0x%08lx"
 #define WORD_COLUMNS 4
 
-uint8_t sbox[0x100];
-uint8_t isbox[0x100];
+unsigned char sbox[0x100];
+unsigned char isbox[0x100];
 
-uint8_t gf2_log[0x100];
-uint8_t gf2_exp[0x100];
+unsigned char gf2_log[0x100];
+unsigned char gf2_exp[0x100];
 
-uint32_t dtable[4][0x100];
-uint32_t itable[4][0x100];
-uint32_t mtable[4][0x100];
+unsigned long dtable[4][0x100];
+unsigned long itable[4][0x100];
+unsigned long mtable[4][0x100];
 
 static unsigned
 xtime(unsigned x)
@@ -109,7 +103,7 @@ compute_dtable(void)
     {
       unsigned s = sbox[i];
       unsigned j;
-      uint32_t t  =( ( (s ^ xtime(s)) << 24)
+      unsigned long t  =( ( (s ^ xtime(s)) << 24)
 		     | (s << 16) | (s << 8)
 		     | xtime(s) );
 
@@ -128,10 +122,10 @@ compute_itable(void)
     {
       unsigned s = isbox[i];
       unsigned j;
-      uint32_t t = ( (mult(s, 0xb) << 24)
-		   | (mult(s, 0xd) << 16)
-		   | (mult(s, 0x9) << 8)
-		   | (mult(s, 0xe) ));
+      unsigned long t = ( (mult(s, 0xb) << 24)
+			| (mult(s, 0xd) << 16)
+			| (mult(s, 0x9) << 8)
+			| (mult(s, 0xe) ));
       
       for (j = 0; j<4; j++, t = (t << 8) | (t >> 24))
 	itable[j][i] = t;
@@ -146,10 +140,10 @@ compute_mtable(void)
   for (i = 0; i<0x100; i++)
     {
       unsigned j;
-      uint32_t t = ( (mult(i, 0xb) << 24)
-		   | (mult(i, 0xd) << 16)
-		   | (mult(i, 0x9) << 8)
-		   | (mult(i, 0xe) ));
+      unsigned long t = ( (mult(i, 0xb) << 24)
+			| (mult(i, 0xd) << 16)
+			| (mult(i, 0x9) << 8)
+			| (mult(i, 0xe) ));
       
       for (j = 0; j<4; j++, t = (t << 8) | (t >> 24))
 	mtable[j][i] = t;
@@ -157,7 +151,7 @@ compute_mtable(void)
 }
 
 static void
-display_byte_table(const char *name, uint8_t *table)
+display_byte_table(const char *name, unsigned char *table)
 {
   unsigned i, j;
 
@@ -174,7 +168,7 @@ display_byte_table(const char *name, uint8_t *table)
 }
 
 static void
-display_table(const char *name, uint32_t table[][0x100])
+display_table(const char *name, unsigned long table[][0x100])
 {
   unsigned i, j, k;
   
