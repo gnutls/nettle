@@ -1,3 +1,9 @@
+2013-03-08  Niels Möller  <nisse@lysator.liu.se>
+
+	* armv7/aes-decrypt-internal.asm: New file, 15% speedup.
+	* armv7/aes-encrypt-internal.asm: New file, 25% speedup.
+	* armv7/aes.m4: New file.
+
 2013-03-07  Niels Möller  <nisse@lysator.liu.se>
 
 	* gmp-glue.c (mpz_limbs_cmp): Don't use PTR and SIZ macros.
