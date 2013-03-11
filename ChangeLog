@@ -1,5 +1,9 @@
 2013-03-11  Niels Möller  <nisse@lysator.liu.se>
 
+	* armv7/sha256-compress.asm: New file, 25% speedup.
+
+	* configure.ac (asm_replace_list): Added sha256-compress.asm.
+
 	* sha256-compress.c (ROUND): Eliminated a temporary.
 
 	* armv7/sha1-compress.asm: New file, 9% speedup.
