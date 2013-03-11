@@ -1,5 +1,7 @@
 2013-03-11  Niels Möller  <nisse@lysator.liu.se>
 
+	* armv7/sha1-compress.asm: New file, 9% speedup.
+
 	* testsuite/testutils.c (test_hash): Test different alignments for
 	the hash input.
 
