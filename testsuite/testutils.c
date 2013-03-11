@@ -523,6 +523,8 @@ test_hash(const struct nettle_hash *hash,
 {
   void *ctx = xalloc(hash->context_size);
   uint8_t *buffer = xalloc(hash->digest_size);
+  uint8_t *input;
+  unsigned offset;
 
   ASSERT (digest->length == hash->digest_size);
 
@@ -549,8 +551,25 @@ test_hash(const struct nettle_hash *hash,
 
   ASSERT(buffer[hash->digest_size - 1] == 0);
 
+  input = xalloc (msg->length + 16);
+  for (offset = 0; offset < 16; offset++)
+    {
+      memset (input, 0, msg->length + 16);
+      memcpy (input + offset, msg->data, msg->length);
+      hash->update (ctx, msg->length, input + offset);
+      hash->digest (ctx, hash->digest_size, buffer);
+      if (MEMEQ(hash->digest_size, digest->data, buffer) == 0)
+	{
+	  fprintf(stdout, "hash input address: %p\nGot:\n", input + offset);
+	  print_hex(hash->digest_size, buffer);
+	  fprintf(stdout, "\nExpected:\n");
+	  print_hex(hash->digest_size, digest->data);
+	  abort();
+	}      
+    }
   free(ctx);
   free(buffer);
+  free(input);
 }
 
 void

@@ -1,3 +1,8 @@
+2013-03-11  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/testutils.c (test_hash): Test different alignments for
+	the hash input.
+
 2013-03-08  Niels Möller  <nisse@lysator.liu.se>
 
 	* armv7/aes-decrypt-internal.asm: New file, 15% speedup.
