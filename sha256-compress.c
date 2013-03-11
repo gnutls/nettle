@@ -27,6 +27,19 @@
 # include "config.h"
 #endif
 
+#ifndef SHA256_DEBUG
+# define SHA256_DEBUG 0
+#endif
+
+#if SHA256_DEBUG
+# include <stdio.h>
+# define DEBUG(i) \
+  fprintf(stderr, "%2d: %8x %8x %8x %8x %8x %8x %8x %8x\n", \
+	  i, A, B, C, D ,E, F, G, H)
+#else
+# define DEBUG(i)
+#endif
+
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
@@ -121,36 +134,37 @@ _nettle_sha256_compress(uint32_t *state, const uint8_t *input, const uint32_t *k
   /* Heavy mangling */
   /* First 16 subrounds that act on the original data */
 
+  DEBUG(-1);
   for (i = 0, d = data; i<16; i+=8, k += 8, d+= 8)
     {
-      ROUND(A, B, C, D, E, F, G, H, k[0], d[0]);
-      ROUND(H, A, B, C, D, E, F, G, k[1], d[1]);
+      ROUND(A, B, C, D, E, F, G, H, k[0], d[0]); DEBUG(i);
+      ROUND(H, A, B, C, D, E, F, G, k[1], d[1]); DEBUG(i+1);
       ROUND(G, H, A, B, C, D, E, F, k[2], d[2]);
       ROUND(F, G, H, A, B, C, D, E, k[3], d[3]);
       ROUND(E, F, G, H, A, B, C, D, k[4], d[4]);
       ROUND(D, E, F, G, H, A, B, C, k[5], d[5]);
-      ROUND(C, D, E, F, G, H, A, B, k[6], d[6]);
-      ROUND(B, C, D, E, F, G, H, A, k[7], d[7]);
+      ROUND(C, D, E, F, G, H, A, B, k[6], d[6]); DEBUG(i+6);
+      ROUND(B, C, D, E, F, G, H, A, k[7], d[7]); DEBUG(i+7);
     }
   
   for (; i<64; i += 16, k+= 16)
     {
-      ROUND(A, B, C, D, E, F, G, H, k[ 0], EXPAND(data,  0));
-      ROUND(H, A, B, C, D, E, F, G, k[ 1], EXPAND(data,  1));
-      ROUND(G, H, A, B, C, D, E, F, k[ 2], EXPAND(data,  2));
-      ROUND(F, G, H, A, B, C, D, E, k[ 3], EXPAND(data,  3));
-      ROUND(E, F, G, H, A, B, C, D, k[ 4], EXPAND(data,  4));
-      ROUND(D, E, F, G, H, A, B, C, k[ 5], EXPAND(data,  5));
-      ROUND(C, D, E, F, G, H, A, B, k[ 6], EXPAND(data,  6));
-      ROUND(B, C, D, E, F, G, H, A, k[ 7], EXPAND(data,  7));
-      ROUND(A, B, C, D, E, F, G, H, k[ 8], EXPAND(data,  8));
-      ROUND(H, A, B, C, D, E, F, G, k[ 9], EXPAND(data,  9));
-      ROUND(G, H, A, B, C, D, E, F, k[10], EXPAND(data, 10));
-      ROUND(F, G, H, A, B, C, D, E, k[11], EXPAND(data, 11));
-      ROUND(E, F, G, H, A, B, C, D, k[12], EXPAND(data, 12));
-      ROUND(D, E, F, G, H, A, B, C, k[13], EXPAND(data, 13));
-      ROUND(C, D, E, F, G, H, A, B, k[14], EXPAND(data, 14));
-      ROUND(B, C, D, E, F, G, H, A, k[15], EXPAND(data, 15));
+      ROUND(A, B, C, D, E, F, G, H, k[ 0], EXPAND(data,  0)); DEBUG(i);
+      ROUND(H, A, B, C, D, E, F, G, k[ 1], EXPAND(data,  1)); DEBUG(i+1);
+      ROUND(G, H, A, B, C, D, E, F, k[ 2], EXPAND(data,  2)); DEBUG(i+2);
+      ROUND(F, G, H, A, B, C, D, E, k[ 3], EXPAND(data,  3)); DEBUG(i+3);
+      ROUND(E, F, G, H, A, B, C, D, k[ 4], EXPAND(data,  4)); DEBUG(i+4);
+      ROUND(D, E, F, G, H, A, B, C, k[ 5], EXPAND(data,  5)); DEBUG(i+5);
+      ROUND(C, D, E, F, G, H, A, B, k[ 6], EXPAND(data,  6)); DEBUG(i+6);
+      ROUND(B, C, D, E, F, G, H, A, k[ 7], EXPAND(data,  7)); DEBUG(i+7);
+      ROUND(A, B, C, D, E, F, G, H, k[ 8], EXPAND(data,  8)); DEBUG(i+8);
+      ROUND(H, A, B, C, D, E, F, G, k[ 9], EXPAND(data,  9)); DEBUG(i+9);
+      ROUND(G, H, A, B, C, D, E, F, k[10], EXPAND(data, 10)); DEBUG(i+10);
+      ROUND(F, G, H, A, B, C, D, E, k[11], EXPAND(data, 11)); DEBUG(i+11);
+      ROUND(E, F, G, H, A, B, C, D, k[12], EXPAND(data, 12)); DEBUG(i+12);
+      ROUND(D, E, F, G, H, A, B, C, k[13], EXPAND(data, 13)); DEBUG(i+13);
+      ROUND(C, D, E, F, G, H, A, B, k[14], EXPAND(data, 14)); DEBUG(i+14);
+      ROUND(B, C, D, E, F, G, H, A, k[15], EXPAND(data, 15)); DEBUG(i+15);
     }
 
   /* Update state */
@@ -162,4 +176,9 @@ _nettle_sha256_compress(uint32_t *state, const uint8_t *input, const uint32_t *k
   state[5] += F;
   state[6] += G;
   state[7] += H;
+#if SHA256_DEBUG
+  fprintf(stderr, "99: %8x %8x %8x %8x %8x %8x %8x %8x\n",
+	  state[0], state[1], state[2], state[3],
+	  state[4], state[5], state[6], state[7]);
+#endif
 }
