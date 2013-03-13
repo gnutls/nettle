@@ -1,5 +1,9 @@
 2013-03-13  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac (asm_replace_list): Added sha512-compress.asm.
+	* x86_64/machine.m4 (OFFSET64): New macro.
+	* x86_64/sha512-compress.asm: New file, 20% speedup.
+
 	* sha512-compress.c (ROUND): Eliminated a temporary, analogous to
 	sha256 change below.
 
