@@ -85,10 +85,10 @@
 
 /* It's crucial that DATA is only used once, as that argument will
  * have side effects. */
-#define ROUND(a,b,c,d,e,f,g,h,k,data) do {		\
-  uint64_t T = h + S1(e) + Choice(e,f,g) + k + data;	\
-  d += T;						\
-  h = T + S0(a) + Majority(a,b,c);			\
+#define ROUND(a,b,c,d,e,f,g,h,k,data) do {	\
+  h += S1(e) + Choice(e,f,g) + k + data;	\
+  d += h;					\
+  h += S0(a) + Majority(a,b,c);			\
 } while (0)
 
 void

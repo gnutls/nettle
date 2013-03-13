@@ -1,5 +1,8 @@
 2013-03-13  Niels Möller  <nisse@lysator.liu.se>
 
+	* sha512-compress.c (ROUND): Eliminated a temporary, analogous to
+	sha256 change below.
+
 	* x86_64/sha256-compress.asm: New file, 16% speedup (benchmarked
 	on intel i5).
 
