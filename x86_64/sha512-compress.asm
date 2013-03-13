@@ -111,7 +111,7 @@ define(<NOEXPN>, <
 >)
 
 	C void
-	C _nettle_sha512_compress(uint32_t *state, const uint8_t *input, const uint32_t *k)
+	C _nettle_sha512_compress(uint64_t *state, const uint8_t *input, const uint64_t *k)
 
 	.text
 	ALIGN(4)
