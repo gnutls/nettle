@@ -141,38 +141,44 @@ define(<NOEXPN>, <
 PROLOGUE(_nettle_sha512_compress)
 	push	{r4,r5,r6,r7,r8,r10,r14}
 	sub	sp, sp, #128
-
-	C Load data up front. FIXME: Use aligned vld1, and vshl.
-
-	ands	SHIFT, INPUT, #3
-	and	INPUT, INPUT, $-4
+	
+	ands	SHIFT, INPUT, #7
+	and	INPUT, INPUT, #-8
+	vld1.8	{d0}, [INPUT :64]
+	addne	INPUT, INPUT, #8
+	addeq	SHIFT, SHIFT, #8
 	lsl	SHIFT, SHIFT, #3
-	mov	I0, #0
-	movne	I0, #-1
-	lsl	I1, I0, SHIFT
-	uadd8	I0, I0, I1		C Sets APSR.GE bits
-	ldr	I0, [INPUT]
-	addne	INPUT, INPUT, #4
+
+	C Put right shift in d2 and d3, aka q1
+	neg	SHIFT, SHIFT
+	vmov.i32	d2, #0
+	vmov.32		d2[0], SHIFT
+	vmov		d3, d2
+	C Put left shift in d4 and d5, aka q2
+	add		SHIFT, SHIFT, #64
+	vmov.i32	d4, #0
+	vmov.32		d4[0], SHIFT
+	vmov		d5, d4
+	vshl.u64	d0, d0, d2
 
 	mov	DST, sp
-	mov	COUNT, #8
+	mov	COUNT, #4
 .Lcopy:
-	ldm	INPUT!, {I1,I2,I3,I4}
-	sel	IT, I0, I1
-	ror	IT, IT, SHIFT
-	sel	I0, I1, I2
-	ror	I0, I0, SHIFT
-	rev	I0, I0
-	rev	I1, IT
-	sel	IT, I2, I3
-	ror	IT, IT, SHIFT
-	sel	I2, I3, I4
-	ror	I2, I2, SHIFT
-	rev	I2, I2
-	rev	I3, IT
+	C Set w[i] <-- w[i-1] >> RSHIFT + w[i] << LSHIFT
+	vld1.8		{d16,d17,d18,d19}, [INPUT :64]!
+	vshl.u64	q3, q8, q1	C Right shift
+	vshl.u64	q8, q8, q2	C Left shift
+	veor		d16, d16, d0
+	veor		d17, d17, d6
+	vrev64.8	q8, q8
+	vshl.u64	q0, q9, q1	C Right shift
+	vshl.u64	q9, q9, q2	C Left shift
+	veor		d18, d18, d7
+	veor		d19, d19, d0
+	vrev64.8	q9, q9
 	subs	COUNT, COUNT, #1
-	stm	DST!, {I0,I1,I2,I3}
-	mov	I0, I4
+	vst1.64		{d16,d17,d18,d19}, [DST]!
+	vmov		d0, d1
 	bne	.Lcopy
 
 	mov	COUNT,#2
