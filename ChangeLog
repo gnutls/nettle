@@ -1,5 +1,9 @@
 2013-03-14  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac (asm_replace_list): Added sha3-permute.asm,
+	revering 2012-12-30 change. 34% speedup on intel i5, from 2190
+	cycles for the C implementation down to 1630.
+
 	* armv7/sha512-compress.asm: Optimized. Keep expanded data in
 	registers, exploit parallelism. Another 70% speedup.
 
