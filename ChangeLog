@@ -1,3 +1,8 @@
+2013-03-14  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/sha512-test.c (test_main): Additional test vectors,
+	including some longer than 128 bytes.
+
 2013-03-13  Niels Möller  <nisse@lysator.liu.se>
 
 	* armv7/sha512-compress.asm: New file, using neon instructions.
