@@ -1,3 +1,7 @@
+2013-03-15  Niels Möller  <nisse@lysator.liu.se>
+
+	* armv7/machine.m4 (QREG): New macro.
+
 2013-03-14  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac (asm_replace_list): Added sha3-permute.asm,
