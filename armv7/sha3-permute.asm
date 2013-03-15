@@ -134,62 +134,40 @@ PROLOGUE(nettle_sha3_permute)
 	veor	QREG(C3), QREG(C3), QREG(A18)
 	veor	QREG(C3), QREG(C3), QREG(A23)
 
-	C	FIXME: Can we make use of 128-bit xors?
-	C	One more register would help. Or the VSLI instruction?
 	C 	D0 = C4 ^ (C1 <<< 1)
-	vshl.i64	T0, C1, #1
-	vshr.u64	T1, C1, #63
-	veor		T0, T0, C4
-	veor		T0, T0, T1
-	veor		A0, A0, T0
-	veor		A5, A5, T0
-	veor		A10, A10, T0
-	veor		A15, A15, T0
-	veor		A20, A20, T0
-
+	C 	NOTE: Using ROL macro (and vsli) is slightly slower.
+ 	vshl.i64	T0, C1, #1
+ 	vshr.u64	T1, C1, #63
+	veor	T0, T0, C4
+	veor	T0, T0, T1
+	vmov	T1, T0
+	veor	A0, A0, T0
+	veor	QREG(A5), QREG(A5), QREG(T0)
+	veor	QREG(A15), QREG(A15), QREG(T0)
+	
 	C 	D1 = C0 ^ (C2 <<< 1)
-	vshl.i64	T0, C2, #1
-	vshr.u64	T1, C2, #63
-	veor		T0, T0, C0
-	veor		T0, T0, T1
-	veor		A1, A1, T0
-	veor		A6, A6, T0
-	veor		A11, A11, T0
-	veor		A16, A16, T0
-	veor		A21, A21, T0
-
 	C 	D2 = C1 ^ (C3 <<< 1)
-	vshl.i64	T0, C3, #1
-	vshr.u64	T1, C3, #63
-	veor		T0, T0, C1
-	veor		T0, T0, T1
-	veor		A2, A2, T0
-	veor		A7, A7, T0
-	veor		A12, A12, T0
-	veor		A17, A17, T0
-	veor		A22, A22, T0
+	ROL(T0, C2, 1)
+	ROL(T1, C3, 1)
+	veor	T0, T0, C0
+	veor	T1, T1, C1
+	veor	QREG(A1), QREG(A1), QREG(T0)
+	veor	QREG(A6), QREG(A6), QREG(T0)
+	veor	QREG(A11), QREG(A11), QREG(T0)
+	veor	QREG(A16), QREG(A16), QREG(T0)
+	veor	QREG(A21), QREG(A21), QREG(T0)
 
 	C 	D3 = C2 ^ (C4 <<< 1)
-	vshl.i64	T0, C4, #1
-	vshr.u64	T1, C4, #63
-	veor		T0, T0, C2
-	veor		T0, T0, T1
-	veor		A3, A3, T0
-	veor		A8, A8, T0
-	veor		A13, A13, T0
-	veor		A18, A18, T0
-	veor		A23, A23, T0
-
 	C 	D4 = C3 ^ (C0 <<< 1)
-	vshl.i64	T0, C0, #1
-	vshr.u64	T1, C0, #63
-	veor		T0, T0, C3
-	veor		T0, T0, T1
-	veor		A4, A4, T0
-	veor		A9, A9, T0
-	veor		A14, A14, T0
-	veor		A19, A19, T0
-	veor		A24, A24, T0
+	ROL(T0, C4, 1)
+	ROL(T1, C0, 1)
+	veor	T0, T0, C2
+	veor	T1, T1, C3
+	veor	QREG(A3), QREG(A3), QREG(T0)
+	veor	QREG(A8), QREG(A8), QREG(T0)
+	veor	QREG(A13), QREG(A13), QREG(T0)
+	veor	QREG(A18), QREG(A18), QREG(T0)
+	veor	QREG(A23), QREG(A23), QREG(T0)
 
 	ROL( T0,  A1,  1)
 	ROL( A1,  A6, 44)
