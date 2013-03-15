@@ -215,7 +215,7 @@ PROLOGUE(nettle_sha3_permute)
 	ROL(A17, A11, 10)
 	ROL(A11,  A7,  6)
 	ROL( A7, A10,  3)
-	vmov	A10, T0
+	C New A10 value left in T0
 
 	vbic	C0, A2, A1
 	vbic	C1, A3, A2
@@ -242,10 +242,10 @@ PROLOGUE(nettle_sha3_permute)
 	vbic	C0, A12, A11
 	vbic	C1, A13, A12
 	vbic	C2, A14, A13
-	vbic	C3, A10, A14
-	vbic	C4, A11, A10
+	vbic	C3, T0, A14
+	vbic	C4, A11, T0
 
-	veor	A10, A10, C0
+	veor	A10, T0, C0
 	veor	QREG(A11), QREG(A11), QREG(C1)
 	veor	QREG(A13), QREG(A13), QREG(C3)
 
