@@ -1,5 +1,7 @@
 2013-03-15  Niels Möller  <nisse@lysator.liu.se>
 
+	* armv7/sha3-permute.asm: New file. 4.5 time speedup.
+
 	* armv7/machine.m4 (QREG): New macro.
 
 2013-03-14  Niels Möller  <nisse@lysator.liu.se>
