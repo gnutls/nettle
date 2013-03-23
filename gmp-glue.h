@@ -33,6 +33,12 @@
 #define GMP_HAVE_mpz_limbs_read 0
 #endif
 
+#ifdef mpn_copyd
+#define GMP_HAVE_mpn_copyd 1
+#else
+#define GMP_HAVE_mpn_copyd 0
+#endif
+
 /* Name mangling. */
 #if !GMP_HAVE_mpz_limbs_read
 #define mpz_limbs_read _nettle_mpz_limbs_read
@@ -40,6 +46,12 @@
 #define mpz_limbs_modify _nettle_mpz_limbs_modify
 #define mpz_limbs_finish _nettle_mpz_limbs_finish
 #define mpz_roinit_n _nettle_mpz_roinit_n
+#endif
+
+#if !GMP_HAVE_mpn_copyd
+#define mpn_copyd _nettle_mpn_copyd
+#define mpn_copyi _nettle_mpn_copyi
+#define mpn_zero  _nettle_mpn_zero
 #endif
 
 #define mpz_limbs_cmp _nettle_mpz_limbs_cmp
@@ -91,6 +103,20 @@ mpz_srcptr
 mpz_roinit_n (mpz_ptr x, const mp_limb_t *xp, mp_size_t xs);
 
 #endif /* !GMP_HAVE_mpz_limbs_read */
+
+#if !GMP_HAVE_mpn_copyd
+/* Copy elements, backwards */
+void
+mpn_copyd (mp_ptr dst, mp_srcptr src, mp_size_t n);
+
+/* Copy elements, forwards */
+void
+mpn_copyi (mp_ptr dst, mp_srcptr src, mp_size_t n);
+
+/* Zero elements */
+void
+mpn_zero (mp_ptr ptr, mp_size_t n);
+#endif /* !GMP_HAVE_mpn_copyd */
 
 /* Convenience functions */
 int

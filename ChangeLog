@@ -1,5 +1,9 @@
 2013-04-04  Niels Möller  <nisse@lysator.liu.se>
 
+	From Martin Storsjö. Fallback functions for older GMP releases.
+	* gmp-glue.c (mpn_copyd, mpn_copyi, mpn_zero): New functions.
+	* gmp-glue.h: Declare them.
+
 	* gmp-glue.h (cnd_add_n, cnd_sub_n): Moved here, define in terms
 	of mpn_cnd_add_n and mpn_sub_n if available, otherwise in terms of
 	mpn_addmul_1 and mpn_submul_1. This seems to be an improvement for
