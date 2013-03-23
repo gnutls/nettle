@@ -34,12 +34,12 @@
 
 #include <time.h>
 
-#include <nettle/dsa.h>
-#include <nettle/rsa.h>
+#include "dsa.h"
+#include "rsa.h"
 
-#include <nettle/nettle-meta.h>
-#include <nettle/sexp.h>
-#include <nettle/knuth-lfib.h>
+#include "nettle-meta.h"
+#include "sexp.h"
+#include "knuth-lfib.h"
 
 #include "../ecdsa.h"
 #include "../ecc-internal.h"

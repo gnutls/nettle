@@ -1,5 +1,5 @@
 #include "testutils.h"
-#include <nettle/knuth-lfib.h>
+#include "knuth-lfib.h"
 
 /* Check if y^2 = x^3 - 3x + b */
 static int
