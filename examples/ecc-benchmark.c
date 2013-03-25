@@ -35,6 +35,8 @@
 
 #include <time.h>
 
+#include "timing.h"
+
 #include "../ecc.h"
 #include "../ecc-internal.h"
 #include "../gmp-glue.h"
@@ -70,24 +72,6 @@ xalloc_limbs (mp_size_t size)
   return xalloc (size * sizeof(mp_limb_t));
 }
 
-inline static void
-time_start(struct timespec *start)
-{
-  if (clock_gettime(CLOCK_PROCESS_CPUTIME_ID, start) < 0)
-    die("clock_gettime failed: %s\n", strerror(errno));
-}
-
-static inline double
-time_end(struct timespec *start)
-{
-  struct timespec end;
-  if (clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end) < 0)
-    die("clock_gettime failed: %s\n", strerror(errno));
-
-  return end.tv_sec - start->tv_sec
-    + 1e-9 * (end.tv_nsec - start->tv_nsec);
-}
-
 /* Returns second per function call */
 static double
 time_function(void (*f)(void *arg), void *arg)
@@ -100,12 +84,11 @@ time_function(void (*f)(void *arg), void *arg)
   for (ncalls = 10 ;;)
     {
       unsigned i;
-      struct timespec t;
 
-      time_start(&t);
+      time_start();
       for (i = 0; i < ncalls; i++)
 	f(arg);
-      elapsed = time_end(&t);
+      elapsed = time_end();
       if (elapsed > BENCH_INTERVAL)
 	break;
       else if (elapsed < BENCH_INTERVAL / 10)
@@ -293,6 +276,7 @@ main (int argc UNUSED, char **argv UNUSED)
 {
   unsigned i;
 
+  time_init();
   printf ("%4s %6s %6s %6s %6s %6s %6s %6s %6s %6s %6s (us)\n",
 	  "size", "modp", "redc", "modq", "modinv", "mi_gcd",
 	  "dup_jj", "ad_jja", "ad_jjj",

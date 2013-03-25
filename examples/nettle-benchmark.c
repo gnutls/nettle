@@ -38,6 +38,8 @@
 
 #include <time.h>
 
+#include "timing.h"
+
 #include "aes.h"
 #include "arcfour.h"
 #include "blowfish.h"
@@ -111,58 +113,6 @@ die(const char *format, ...)
 }
 
 static double overhead = 0.0; 
-
-#if HAVE_CLOCK_GETTIME && defined CLOCK_PROCESS_CPUTIME_ID
-#define TRY_CLOCK_GETTIME 1
-struct timespec cgt_start;
-
-static int
-cgt_works_p(void)
-{
-  struct timespec now;
-  return clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &now) == 0;
-}
-
-static void
-cgt_time_start(void)
-{
-  if (clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &cgt_start) < 0)
-    die("clock_gettime failed: %s\n", strerror(errno));
-}
-
-static double
-cgt_time_end(void)
-{
-    struct timespec end;
-    if (clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end) < 0)
-      die("clock_gettime failed: %s\n", strerror(errno));
-
-    return end.tv_sec - cgt_start.tv_sec
-      + 1e-9 * (end.tv_nsec - cgt_start.tv_nsec);
-}
-
-static void (*time_start)(void);
-static double (*time_end)(void);
-
-#else /* !HAVE_CLOCK_GETTIME */
-#define TRY_CLOCK_GETTIME 0
-#define time_start clock_time_start
-#define time_end clock_time_end
-#endif /* !HAVE_CLOCK_GETTIME */
-
-static clock_t clock_start;
-
-static void
-clock_time_start(void)
-{
-  clock_start = clock();
-}
-
-static double
-clock_time_end(void)
-{
-  return (double) (clock() - (clock_start)) / CLOCKS_PER_SEC;
-}
 
 /* Returns second per function call */
 static double
@@ -700,20 +650,7 @@ main(int argc, char **argv)
 
   alg = argv[optind];
 
-  /* Choose timing function */
-#if TRY_CLOCK_GETTIME
-  if (cgt_works_p())
-    {
-      time_start = cgt_time_start;
-      time_end = cgt_time_end;
-    }
-  else
-    {
-      fprintf(stderr, "clock_gettime not working, falling back to clock\n");
-      time_start = clock_time_start;
-      time_end = clock_time_end;
-    }
-#endif
+  time_init();
   bench_sha1_compress();
   bench_salsa20_core();
   bench_sha3_permute();
