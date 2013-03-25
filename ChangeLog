@@ -1,8 +1,10 @@
 2013-03-25  Niels Möller  <nisse@lysator.liu.se>
 
 	From Martin Storsjö:
+	* examples/hogweed-benchmark.c: Include local headers.
+	* testsuite/ecdsa-keygen-test.c: Likewise.
 	* x86_64/sha3-permute.asm: Workaround for Apple's assembler; write
-	movq instructinos as movd.
+	movq instructions as movd.
 
 	* Makefile.in (hogweed_PURE_OBJS): Don't include OPT_ASM_SOURCES
 	twice.
