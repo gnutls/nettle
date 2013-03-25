@@ -1,5 +1,9 @@
 2013-03-25  Niels Möller  <nisse@lysator.liu.se>
 
+	From Martin Storsjö:
+	* x86_64/sha3-permute.asm: Workaround for Apple's assembler; write
+	movq instructinos as movd.
+
 	* Makefile.in (hogweed_PURE_OBJS): Don't include OPT_ASM_SOURCES
 	twice.
 
