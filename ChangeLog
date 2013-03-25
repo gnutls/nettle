@@ -1,5 +1,10 @@
 2013-03-25  Niels Möller  <nisse@lysator.liu.se>
 
+	From Nikos Mavrogiannopoulos:
+	* salsa20r12-crypt.c (salsa20r12_crypt): New file and function.
+	* salsa20.h (salsa20r12_crypt): Declare.
+	* Makefile.in (nettle_SOURCES): Added salsa20r12-crypt.c.
+
 	From Martin Storsjö:
 	* examples/hogweed-benchmark.c: Include local headers.
 	* testsuite/ecdsa-keygen-test.c: Likewise.
