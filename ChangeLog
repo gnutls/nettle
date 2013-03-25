@@ -1,5 +1,15 @@
 2013-03-25  Niels Möller  <nisse@lysator.liu.se>
 
+	From Martin Storsjö:
+	* examples/timing.c: New file, extracted from nettle-benchmark.c.
+	* examples/timing.h: New file.
+	* examples/Makefile.in (SOURCES): Added timing.c.
+	(DISTFILES): Added timing.h.
+	(BENCH_OBJS, ECC_BENCH_OBJS, HOGWEED_BENCH_OBJS): Added timing.o.
+	* examples/nettle-benchmark.c: Use timing.h.
+	* examples/hogweed-benchmark.c: Likewise.
+	* examples/ecc-benchmark.c: Likewise.
+
 	From Nikos Mavrogiannopoulos:
 	* salsa20r12-crypt.c (salsa20r12_crypt): New file and function.
 	* salsa20.h (salsa20r12_crypt): Declare.
