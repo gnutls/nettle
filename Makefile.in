@@ -180,7 +180,7 @@ nettle_OBJS = $(nettle_SOURCES:.c=.$(OBJEXT)) $(LIBOBJS)
 nettle_PURE_OBJS = $(nettle_OBJS:.$(OBJEXT)=.p$(OBJEXT))
 
 hogweed_OBJS = $(hogweed_SOURCES:.c=.$(OBJEXT)) $(OPT_ASM_SOURCES:.asm=.$(OBJEXT))
-hogweed_PURE_OBJS = $(hogweed_OBJS:.$(OBJEXT)=.p$(OBJEXT)) $(OPT_ASM_SOURCES:.asm=.p$(OBJEXT))
+hogweed_PURE_OBJS = $(hogweed_OBJS:.$(OBJEXT)=.p$(OBJEXT))
 
 libnettle.a: $(nettle_OBJS)
 	-rm -f $@

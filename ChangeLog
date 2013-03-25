@@ -1,3 +1,8 @@
+2013-03-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (hogweed_PURE_OBJS): Don't include OPT_ASM_SOURCES
+	twice.
+
 2013-03-15  Niels Möller  <nisse@lysator.liu.se>
 
 	* armv7/sha3-permute.asm: New file. 4.5 time speedup.
