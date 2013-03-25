@@ -54,6 +54,10 @@
 #define mpn_zero  _nettle_mpn_zero
 #endif
 
+#ifndef mpn_sqr
+#define mpn_sqr(rp, ap, n) mpn_mul_n((rp), (ap), (ap), (n))
+#endif
+
 #define mpz_limbs_cmp _nettle_mpz_limbs_cmp
 #define mpz_limbs_read_n _nettle_mpz_limbs_read_n
 #define mpz_limbs_copy _nettle_mpz_limbs_copy
