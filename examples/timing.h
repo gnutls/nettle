@@ -1,4 +1,4 @@
-/* timing.c */
+/* timing.h */
 
 /* nettle, low-level cryptographics library
  *
