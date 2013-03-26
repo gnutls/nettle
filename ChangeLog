@@ -1,3 +1,7 @@
+2013-03-26  Niels Möller  <nisse@lysator.liu.se>
+
+	* armv7/salsa20-core-internal.asm: New file. 45% speedup.
+
 2013-03-25  Niels Möller  <nisse@lysator.liu.se>
 
 	From Martin Storsjö:
