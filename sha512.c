@@ -1,8 +1,8 @@
 /* sha512.c
  *
- * The sha512 hash function FIXME: Add the SHA384 variant.
+ * The sha512 hash function.
  *
- * See http://csrc.nist.gov/publications/fips/fips180-2/fips180-2.pdf
+ * See http://csrc.nist.gov/publications/fips/fips180-4/fips-180-4.pdf
  */
 
 /* nettle, low-level cryptographics library
