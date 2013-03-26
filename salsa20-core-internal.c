@@ -40,6 +40,28 @@
 
 #include "macros.h"
 
+#ifndef SALSA20_DEBUG
+# define SALSA20_DEBUG 0
+#endif
+
+#if SALSA20_DEBUG
+# include <stdio.h>
+# define DEBUG(i) do {				\
+    unsigned debug_j;				\
+    for (debug_j = 0; debug_j < 16; debug_j++)	\
+      {						\
+	if (debug_j == 0)			\
+	  fprintf(stderr, "%2d:", (i));		\
+	else if (debug_j % 4 == 0)		\
+	  fprintf(stderr, "\n   ");		\
+	fprintf(stderr, " %8x", x[debug_j]);	\
+      }						\
+    fprintf(stderr, "\n");			\
+  } while (0)
+#else
+# define DEBUG(i)
+#endif
+
 #ifdef WORDS_BIGENDIAN
 #define LE_SWAP32(v)				\
   ((ROTL32(8,  v) & 0x00FF00FFUL) |		\
@@ -66,16 +88,19 @@ _salsa20_core(uint32_t *dst, const uint32_t *src, unsigned rounds)
   memcpy (x, src, sizeof(x));
   for (i = 0; i < rounds;i += 2)
     {
+      DEBUG (i);
       QROUND(x[0], x[4], x[8], x[12]);
       QROUND(x[5], x[9], x[13], x[1]);
       QROUND(x[10], x[14], x[2], x[6]);
       QROUND(x[15], x[3], x[7], x[11]);
 
+      DEBUG (i+1);
       QROUND(x[0], x[1], x[2], x[3]);
       QROUND(x[5], x[6], x[7], x[4]);
       QROUND(x[10], x[11], x[8], x[9]);
       QROUND(x[15], x[12], x[13], x[14]);
     }
+  DEBUG (i);
 
   for (i = 0; i < _SALSA20_INPUT_LENGTH; i++)
     {
