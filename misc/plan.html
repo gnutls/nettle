@@ -13,8 +13,8 @@
 <body>
   <h1> Nettle release plans </h1>
   <p> This is an attempt at defining a development target for
-  Nettle-2.6, inspired by similar pages for recent GMP releases. [Last
-  updated 2013-01-01]</p>
+  Nettle-2.7, inspired by similar pages for recent GMP releases. [Last
+  updated 2013-04-02]</p>
   <p class='should'>
     This really ought to be done before release
   </p>
@@ -29,7 +29,30 @@
   </p>
 
   <h1> Plan for the Nettle-2.7 release </h1>
+  <h2> Code </h2>
+  <p class='should'>
+    Support older GMP versions, as far as practical.
+  </p>
+  <p class='should'>
+    Make use of GMP's mpn_cnd_add_n and mpn_sub_n (which will be
+    available in the next GMP release).
+  </p>
+  <p class='should'>
+    Rewrite x86_64/sha3-permute.asm. Moves between xmm registers and
+    regular registers kill performance at least on some AMD
+    processors.
+  </p>
+  <p class='wish'>
+    Include UMAC. Needs a serious effort to produce test vectors.
+  </p>
+  
   <h2> Documentation </h2>
+  <p class='should'>
+    Document new ECC functions.
+  </p>
+  <p class='should'>
+    Document salsa20r12.
+  </p>
   <p class='should'>
     Update NEWS file.
   </p>
@@ -39,18 +62,28 @@
     Ensure that <tt>make install</tt> without a preceding
     <tt>make</tt> works.
   </p>
+  <p class='wish'>
+    Make the assembly ALIGN-macro non-logarithmic, reusing the m4 log2
+    macro in GMP. Current macros have the problem that in m4 eval,
+    <tt>&lt;&lt;</tt> is not supported by Solaris, while <tt>**</tt>
+    is not supported by OpenBSD.
+  </p>
 
   <h2> Testing </h2>
   <p> Since xenofarm isn't up and running, do some manual testing:
   </p>
   <ul>
-    <li class='should'> x86_64-gnu-linux</li>
+    <li class='should'> x86_64-linux-gnu</li>
     <li class='should'> x86_64-freebsd</li>
-    <li class='should'> x86-gnu-linux</li>
+    <li class='should'> x86-linux-gnu</li>
     <li class='should'> x86-freebsd</li>
     <li class='should'> x86-w*ndows (using cross compiler and wine)</li>
-    <li class='wish'> x86_64-w*ndows (seems a bit harder to get
-    mingw64 and wine64 working)</li>
+    <li class='wish'> x86_64-w*ndows (seems a bit harder since 64-bit
+    wine is not yet available in debian)</li>
+    <li class='should'> x86-darwin (needs help from Nettle users)</li>
+    <li class='should'> x86_64-darwin (needs help from Nettle users)</li>
+    <li class='should'> armv7-linux-gnu (pandaboard test platform)</li>
+    <li class='wish'> armv7-android (possible test platform: N10 tablet)</li>
     <li class='should'> sparc32-solaris10</li>
     <li class='should'> sparc64-solaris10</li>
   </ul>
@@ -91,10 +124,6 @@
     variant (like putty), and possibly also smartcard versions where
     the private key is not available to the library. And without an
     explosion of the number of functions.
-  </p>
-  <p class='should'>
-    Make the assembly ALIGN-macro non-logarithmic, reusing the m4 log2
-    macro in GMP.
   </p>
 </body>
 </html>
