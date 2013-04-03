@@ -116,11 +116,15 @@ test_salsa20_stream(const struct tstring *key,
     }
 }
 
+typedef void salsa20_func(struct salsa20_ctx *ctx,
+			  unsigned length, uint8_t *dst,
+			  const uint8_t *src);
 static void
-test_salsa20(const struct tstring *key,
-	     const struct tstring *iv,
-	     const struct tstring *cleartext,
-	     const struct tstring *ciphertext)
+_test_salsa20(salsa20_func *crypt,
+	      const struct tstring *key,
+	      const struct tstring *iv,
+	      const struct tstring *cleartext,
+	      const struct tstring *ciphertext)
 {
   struct salsa20_ctx ctx;
   uint8_t *data;
@@ -136,7 +140,7 @@ test_salsa20(const struct tstring *key,
   salsa20_set_key(&ctx, key->length, key->data);
   salsa20_set_iv(&ctx, iv->data);
   data[length] = 17;
-  salsa20_crypt(&ctx, length, data, cleartext->data);
+  crypt(&ctx, length, data, cleartext->data);
   if (data[length] != 17)
     {
       fprintf(stderr, "Encrypt of %u bytes wrote too much!\nInput:", length);
@@ -157,7 +161,7 @@ test_salsa20(const struct tstring *key,
     }
   salsa20_set_key(&ctx, key->length, key->data);
   salsa20_set_iv(&ctx, iv->data);
-  salsa20_crypt(&ctx, length, data, data);
+  crypt(&ctx, length, data, data);
 
   if (!MEMEQ(length, data, cleartext->data))
     {
@@ -173,10 +177,50 @@ test_salsa20(const struct tstring *key,
 
   free(data);
 }
+
+#define test_salsa20(key, iv, cleartext, ciphertext) \
+  _test_salsa20 (salsa20_crypt, (key), (iv), (cleartext), (ciphertext))
+
+#define test_salsa20r12(key, iv, cleartext, ciphertext) \
+  _test_salsa20 (salsa20r12_crypt, (key), (iv), (cleartext), (ciphertext))
+
   
 void
 test_main(void)
 {
+  /* http://www.ecrypt.eu.org/stream/svn/viewcvs.cgi/ecrypt/trunk/submissions/salsa20/reduced/12-rounds/verified.test-vectors?logsort=rev&rev=210&view=markup */
+  test_salsa20r12(SHEX("80000000 00000000 00000000 00000000"),
+		  SHEX("00000000 00000000"),
+		  SHEX("00000000 00000000"),
+		  SHEX("FC207DBF C76C5E17"));
+
+  test_salsa20r12(SHEX("00400000 00000000 00000000 00000000"),
+		  SHEX("00000000 00000000"),
+		  SHEX("00000000 00000000"),
+		  SHEX("6C11A3F9 5FEC7F48"));
+
+  test_salsa20r12(SHEX("09090909090909090909090909090909"),
+		  SHEX("0000000000000000"),
+		  SHEX("00000000 00000000"),
+		  SHEX("78E11FC3 33DEDE88"));
+
+  test_salsa20r12(SHEX("1B1B1B1B1B1B1B1B1B1B1B1B1B1B1B1B"),
+		  SHEX("00000000 00000000"),
+		  SHEX("00000000 00000000"),
+		  SHEX("A6747461 1DF551FF"));
+
+  test_salsa20r12(SHEX("80000000000000000000000000000000"
+		       "00000000000000000000000000000000"),
+		  SHEX("00000000 00000000"),
+		  SHEX("00000000 00000000"),
+		  SHEX("AFE411ED 1C4E07E4"));
+
+  test_salsa20r12(SHEX("0053A6F94C9FF24598EB3E91E4378ADD"
+		       "3083D6297CCF2275C81B6EC11467BA0D"),
+		  SHEX("0D74DB42A91077DE"),
+		  SHEX("00000000 00000000"),
+		  SHEX("52E20CF8 775AE882"));
+
   /* http://www.ecrypt.eu.org/stream/svn/viewcvs.cgi/ecrypt/trunk/submissions/salsa20/full/verified.test-vectors?logsort=rev&rev=210&view=markup */
 
   test_salsa20(SHEX("80000000 00000000 00000000 00000000"),
@@ -260,7 +304,7 @@ test_main(void)
 			   "4CD6D2E1B750D5E011D1DF2E80F7210A"));
 }
 
-/* Intermediate values for the first test case.
+/* Intermediate values for the first salsa20 test case.
  0: 61707865       80        0        0
            0 3120646e        0        0
            0        0 79622d36       80

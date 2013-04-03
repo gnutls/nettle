@@ -1,3 +1,8 @@
+2013-04-03  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/salsa20-test.c (test_main): Tests for salsa20r12,
+	contributed by Nikos Mavrogiannopoulos.
+
 2013-03-26  Niels Möller  <nisse@lysator.liu.se>
 
 	* armv7/salsa20-core-internal.asm: New file. 45% speedup.
