@@ -1,5 +1,11 @@
 2013-04-03  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-point-mul-g.c (ecc_point_mul_g): New file and function.
+	* ecc-point-mul.c (ecc_point_mul): New file and function.
+	* ecc.h: Updated declarations and name mangling.
+	* Makefile.in (hogweed_SOURCES): Added ecc-point-mul.c and
+	ecc-point-mul-g.c.
+
 	* testsuite/salsa20-test.c (test_main): Tests for salsa20r12,
 	contributed by Nikos Mavrogiannopoulos.
 

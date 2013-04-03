@@ -38,6 +38,8 @@ extern "C" {
 #define ecc_point_clear nettle_ecc_point_clear
 #define ecc_point_set nettle_ecc_point_set
 #define ecc_point_get nettle_ecc_point_get
+#define ecc_point_mul nettle_ecc_point_mul
+#define ecc_point_mul_g nettle_ecc_point_mul_g
 #define ecc_scalar_init nettle_ecc_scalar_init
 #define ecc_scalar_clear nettle_ecc_scalar_clear
 #define ecc_scalar_set nettle_ecc_scalar_set
@@ -117,6 +119,10 @@ ecc_scalar_random (struct ecc_scalar *s,
 void
 ecc_point_mul (struct ecc_point *r, const struct ecc_scalar *n,
 	       const struct ecc_point *p);
+
+/* Computes r = n g */
+void
+ecc_point_mul_g (struct ecc_point *r, const struct ecc_scalar *n);
 
 
 /* Low-level interface */
