@@ -84,6 +84,8 @@ void
 ecc_point_get (const struct ecc_point *p, mpz_t x, mpz_t y)
 {
   mp_size_t size = p->ecc->size;
-  mpz_set_n (x, p->p, size);
-  mpz_set_n (y, p->p + size, size);
+  if (x)
+    mpz_set_n (x, p->p, size);
+  if (y)
+    mpz_set_n (y, p->p + size, size);
 }

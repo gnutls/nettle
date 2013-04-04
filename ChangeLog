@@ -1,5 +1,8 @@
 2013-04-04  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-point.c (ecc_point_get): Allow NULL x or y, ignore
+	corresponding coordinate.
+
 	* nettle.texinfo (Elliptic curves): Document high-level ECDSA
 	support.
 
