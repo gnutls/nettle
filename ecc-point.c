@@ -28,7 +28,6 @@
 
 #include "ecc.h"
 #include "ecc-internal.h"
-#include "gmp-glue.h"
 
 void
 ecc_point_init (struct ecc_point *p, const struct ecc_curve *ecc)

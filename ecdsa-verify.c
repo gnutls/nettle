@@ -31,7 +31,6 @@
 
 #include "ecdsa.h"
 #include "ecc-internal.h"
-#include "gmp-glue.h"
 
 int
 ecdsa_verify (const struct ecc_point *pub,

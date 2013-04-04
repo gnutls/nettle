@@ -30,7 +30,6 @@
 
 #include "ecc.h"
 #include "ecc-internal.h"
-#include "gmp-glue.h"
 
 void
 ecc_point_mul (struct ecc_point *r, const struct ecc_scalar *n,

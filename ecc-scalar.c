@@ -28,7 +28,6 @@
 
 #include "ecc.h"
 #include "ecc-internal.h"
-#include "gmp-glue.h"
 
 void
 ecc_scalar_init (struct ecc_scalar *s, const struct ecc_curve *ecc)

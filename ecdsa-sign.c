@@ -31,7 +31,6 @@
 
 #include "ecdsa.h"
 #include "ecc-internal.h"
-#include "gmp-glue.h"
 #include "nettle-internal.h"
 
 void

@@ -29,6 +29,7 @@
 
 #include "nettle-types.h"
 #include "ecc-curve.h"
+#include "gmp-glue.h"
 
 /* Name mangling */
 #define ecc_generic_modp _nettle_ecc_generic_modp
@@ -202,12 +203,6 @@ void
 ecc_hash (const struct ecc_curve *ecc,
 	  mp_limb_t *hp,
 	  unsigned length, const uint8_t *digest);
-
-#define cnd_add_n(cnd, rp, ap, n)		\
-  mpn_addmul_1 ((rp), (ap), (n), (cnd) != 0)
-
-#define cnd_sub_n(cnd, rp, ap, n)		\
-  mpn_submul_1 ((rp), (ap), (n), (cnd) != 0)
 
 void
 cnd_copy (int cnd, mp_limb_t *rp, const mp_limb_t *ap, mp_size_t n);

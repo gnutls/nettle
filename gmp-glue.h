@@ -50,6 +50,15 @@
 #define gmp_alloc_limbs _nettle_gmp_alloc_limbs
 #define gmp_free_limbs _nettle_gmp_free_limbs
 
+/* Use only in-place operations, so we can fall back to addmul_1/submul_1 */
+#ifdef mpn_cnd_add_n
+# define cnd_add_n(cnd, rp, ap, n) mpn_cnd_add_n ((cnd), (rp), (rp), (ap), (n))
+# define cnd_sub_n(cnd, rp, ap, n) mpn_cnd_sub_n ((cnd), (rp), (rp), (ap), (n))
+#else
+# define cnd_add_n(cnd, rp, ap, n) mpn_addmul_1 ((rp), (ap), (n), (cnd) != 0)
+# define cnd_sub_n(cnd, rp, ap, n) mpn_submul_1 ((rp), (ap), (n), (cnd) != 0)
+#endif
+
 /* Some functions for interfacing between mpz and mpn code. Signs of
    the mpz numbers are generally ignored. */
 

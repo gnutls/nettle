@@ -1,3 +1,14 @@
+2013-04-04  Niels Möller  <nisse@lysator.liu.se>
+
+	* gmp-glue.h (cnd_add_n, cnd_sub_n): Moved here, define in terms
+	of mpn_cnd_add_n and mpn_sub_n if available, otherwise in terms of
+	mpn_addmul_1 and mpn_submul_1. This seems to be an improvement for
+	subtraction, but more questionable for addition.
+
+	* ecc-internal.h: Include gmp-glue.h. Deleted corresponding
+	include in all files using ecc-internal.h.
+	(cnd_add_n, cnd_sub_n): Moved from here.
+
 2013-04-03  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-point-mul-g.c (ecc_point_mul_g): New file and function.

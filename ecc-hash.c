@@ -27,7 +27,6 @@
 #endif
 
 #include "ecc-internal.h"
-#include "gmp-glue.h"
 
 /* Convert hash value to an integer. If the digest is larger than
    the ecc bit size, then we must truncate it and use the leftmost
