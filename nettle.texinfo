@@ -7,14 +7,14 @@
 @syncodeindex fn cp
 @c %**end of header
 
-@set UPDATED-FOR 2.6
+@set UPDATED-FOR 2.7
 @set AUTHOR Niels Möller
 
 @copying
 This manual is for the Nettle library (version @value{UPDATED-FOR}), a
 low-level cryptographic library.
 
-Originally written 2001 by @value{AUTHOR}, updated 2012.
+Originally written 2001 by @value{AUTHOR}, updated 2013.
 
 @quotation
 This manual is placed in the public domain. You may freely copy it, in
@@ -22,6 +22,12 @@ whole or in part, with or without modification. Attribution is
 appreciated, but not required.
 @end quotation
 @end copying
+
+@ifnottex
+@macro pmod {m} 
+(mod \m\)
+@end macro
+@end ifnottex
 
 @titlepage
 @title Nettle Manual
@@ -73,7 +79,7 @@ Reference
 * Key derivation functions::    
 * Public-key algorithms::       
 * Randomness::                  
-* Ascii encoding::              
+* ASCII encoding::              
 * Miscellaneous functions::     
 * Compatibility functions::     
 
@@ -87,6 +93,7 @@ Public-key algorithms
 
 * RSA::                         The RSA public key algorithm.
 * DSA::                         The DSA digital signature algorithm.
+* Elliptic curves::             Elliptic curves and ECDSA
 
 @end detailmenu
 @end menu
@@ -189,7 +196,7 @@ The implementation of the MD5 message digest is written by Colin Plumb.
 It has been hacked some more by Andrew Kuchling and @value{AUTHOR}.
 Released into the public domain.
 
-@item RIPMED160
+@item RIPEMD160
 The implementation of RIPEMD160 message digest is based on the code in
 libgcrypt, copyright owned by the Free Software Foundation. Ported to
 Nettle by Andres Mejia. Released under the LGPL.
@@ -239,6 +246,11 @@ for bignum operations.
 @item DSA
 Written by @value{AUTHOR}, released under the LGPL. Uses the GMP library
 for bignum operations.
+
+@item ECDSA
+Written by @value{AUTHOR}, released under the LGPL. Uses the GMP library
+for bignum operations. Development of Nettle's ECC support was funded by
+Internetfonden.
 @end table
 
 @node Conventions, Example, Copyright, Top
@@ -287,7 +299,7 @@ functions which can fail, return one on success and zero on failure.
 @chapter Example
 
 A simple example program that reads a file from standard input and
-writes its SHA1 checksum on standard output should give the flavor of
+writes its SHA1 check-sum on standard output should give the flavor of
 Nettle.
 
 @example
@@ -332,7 +344,7 @@ This chapter describes all the Nettle functions, grouped by family.
 * Key derivation functions::    
 * Public-key algorithms::       
 * Randomness::                  
-* Ascii encoding::              
+* ASCII encoding::              
 * Miscellaneous functions::     
 * Compatibility functions::     
 @end menu
@@ -544,7 +556,7 @@ This function also resets the context in the same way as
 
 @subsubsection @acronym{SHA3-224}
 
-The SHA3 hash functions were specified by NIST in repsonse to weaknesses
+The SHA3 hash functions were specified by NIST in response to weaknesses
 in SHA1, and doubts about SHA2 hash functions which structurally are
 very similar to SHA1. The standard is a result of a competition, where
 the winner, also known as Keccak, was designed by Guido Bertoni, Joan
@@ -1929,7 +1941,7 @@ underlying cipher. These interfaces are defined in @file{<nettle/gcm.h>}
 @subsubsection General @acronym{GCM} interface
 
 @deftp {Context struct} {struct gcm_key}
-Message independent hash subkey, and related tables.
+Message independent hash sub-key, and related tables.
 @end deftp
 
 @deftp {Context struct} {struct gcm_ctx}
@@ -1994,7 +2006,7 @@ The following macros are defined.
 
 @deffn Macro GCM_CTX (@var{context_type})
 This defines an all-in-one context struct, including the context of the
-underlying cipher, the hash subkey, and the per-message state. It expands
+underlying cipher, the hash sub-key, and the per-message state. It expands
 to
 @example
 @{
@@ -2350,7 +2362,7 @@ attacks by using salting and expensive computation.
 
 @subsection @acronym{PBKDF2}
 The most well known PBKDF is the @code{PKCS #5 PBKDF2} described in
-@cite{RFC 2898} which uses a pseudorandom function such as
+@cite{RFC 2898} which uses a pseudo-random function such as
 @acronym{HMAC-SHA1}.
 
 Nettle's @acronym{PBKDF2} functions are defined in
@@ -2488,6 +2500,7 @@ key, and to no others''.
 @menu
 * RSA::                         The RSA public key algorithm.
 * DSA::                         The DSA digital signature algorithm.
+* Elliptic curves::             Elliptic curves and ECDSA
 @end menu
 
 @node RSA, DSA, Public-key algorithms, Public-key algorithms
@@ -2507,14 +2520,14 @@ It's remarkably simple to describe the trapdoor function behind
 F(x) = x^e mod n
 @end example
 
-I.e. raise x to the @code{e}:th power, while discarding all multiples of
+I.e. raise x to the @code{e}'th power, while discarding all multiples of
 @code{n}. The pair of numbers @code{n} and @code{e} is the public key.
 @code{e} can be quite small, even @code{e = 3} has been used, although
 slightly larger numbers are recommended. @code{n} should be about 1000
 bits or larger.
 
 If @code{n} is large enough, and properly chosen, the inverse of F,
-the computation of @code{e}:th roots modulo @code{n}, is very difficult.
+the computation of @code{e}'th roots modulo @code{n}, is very difficult.
 But, where's the trapdoor?
 
 Let's first look at how @acronym{RSA} key-pairs are generated. First
@@ -2703,7 +2716,7 @@ example if if @var{n_size} is too small, or if @var{e_size} is zero and
 @code{pub->e} is an even number.
 @end deftypefun
 
-@node DSA,  , RSA, Public-key algorithms
+@node DSA, Elliptic curves, RSA, Public-key algorithms
 @comment  node-name,  next,  previous,  up
 @subsection @acronym{DSA}
 
@@ -2712,11 +2725,11 @@ The @acronym{DSA} digital signature algorithm is more complex than
 published @acronym{FIPS} 186 which is the authoritative specification.
 Sometimes @acronym{DSA} is referred to using the acronym @acronym{DSS},
 for Digital Signature Standard. The most recent revision of the
-specification, FIPS186-3, was issueed in 2009, and it adds support for
+specification, FIPS186-3, was issued in 2009, and it adds support for
 larger hash functions than @acronym{sha1}.
 
 For @acronym{DSA}, the underlying mathematical problem is the
-computation of discreet logarithms. The public key consists of a large
+computation of discrete logarithms. The public key consists of a large
 prime @code{p}, a small prime @code{q} which is a factor of @code{p-1},
 a number @code{g} which generates a subgroup of order @code{q} modulo
 @code{p}, and an element @code{y} in that subgroup.
@@ -2759,7 +2772,7 @@ difficult group structure. One good algorithm is Pollard-rho, which has
 complexity @code{sqrt(q)}.
 
 The important point is that security depends on the size of @emph{both}
-@code{p} and @code{q}, and they should be choosen so that the difficulty
+@code{p} and @code{q}, and they should be chosen so that the difficulty
 of both discrete logarithm methods are comparable. Today, the security
 margin of the original @acronym{DSA} may be uncomfortably small. Using a
 @code{p} of 1024 bits implies that cracking using the number field sieve
@@ -2937,7 +2950,7 @@ to @code{p_bits = 1024}. Non-standard sizes are possible, in particular
 can not in general be expected to support such keys. Also note that
 using very large @var{p_bits}, with @var{q_bits} fixed at 160, doesn't
 make much sense, because the security is also limited by the size of the
-smaller prime. Using a larger @code{q_bits} requires switchign to a
+smaller prime. Using a larger @code{q_bits} requires switching to a
 larger hash function. To generate @acronym{DSA} keys for use with
 @acronym{SHA256}, use @code{q_bits = 256} and, e.g., @code{p_bits =
 2048}.
@@ -2947,7 +2960,159 @@ Returns one on success, and zero on failure. The function will fail if
 small.
 @end deftypefun
 
-@node Randomness, Ascii encoding, Public-key algorithms, Reference
+@node Elliptic curves,, DSA, Public-key algorithms
+@comment  node-name,  next,  previous,  up
+@subsection @acronym{Elliptic curves}
+
+For cryptographic purposes, an elliptic curve is a mathematical group of
+points, and computing logarithms in this group is computationally
+difficult problem. Nettle uses additive notation for elliptic curve
+groups. If @math{P} and @math{Q} are two points, and @math{k} is an
+integer, the point sum, @math{P + Q}, and the multiple @math{k P} can be
+computed efficiently, but given only two points @math{P} and @math{Q},
+finding an integer @math{k} such that @math{Q = k P} is the elliptic
+curve discrete logarithm problem.
+
+Nettle supports standard curves which are all of the form @math{y^2 =
+x^3 - 3 x + b @pmod{p}}, i.e., the points have coordinates @math{(x,y)},
+both considered as integers modulo a specified prime @math{p}. Curves
+are represented as a @code{struct ecc_curve}. Supported curves are
+declared in @file{<nettle/ecc-curve.h>}, e.g., @code{nettle_secp_256r1}
+for a standardized curve using the 256-bit prime @math{p = 2^{256} -
+2^{224} + 2^{192} + 2^{96} - 1}. The contents of these structs is not
+visible to nettle users. The ``bitsize of the curve'' is used as a
+shorthand for the bitsize of the curve's prime @math{p}, e.g., 256 bits
+for @code{nettle_secp_256r1}.
+
+@subsubsection Side-channel silence
+Nettle's implementation of the elliptic curve operations is intended to
+be side-channel silent. The side-channel attacks considered are:
+
+@itemize
+@item Timing attacks
+If the timing of operations depends on secret values, an attacker
+interacting with your system can measure the response time, and infer
+information about your secrets, e.g., a private signature key.
+
+@item Attacks using memory caches
+Assume you have some secret data on a multi-user system, and that this
+data is properly protected so that other users get no direct access to
+it. If you have a process operating on the secret data, and this process
+does memory accesses depending on the data, e.g, an internal lookup
+table in some cryptographic algorithm, an attacker running a separate
+process on the same system may use behavior of internal CPU caches to
+get information about your secrets.
+@end itemize
+
+Nettle's ECC implementation is designed to be @dfn{side-channel silent},
+and not leak any information to these attacks. Timing and memory
+accesses depend only on the size of the input data and its location in
+memory, not on the actual data bits. This implies a performance penalty
+in several of the building blocks.
+
+@subsection ECDSA
+
+ECDSA is a variant of the DSA digital signature scheme (@pxref{DSA}),
+which works over an elliptic curve group rather than over a (subgroup
+of) integers modulo @math{p}. Like DSA, creating a signature requires a unique
+random nonce (repeating the nonce with two different messages reveals
+the private key, and any leak or bias in the generation of the nonce
+also leaks information about the key).
+
+Unlike DSA, signatures are in general not tied to any particular hash
+function or even hash size. Any hash function can be used, and the hash
+value is truncated or padded as needed to get a size matching the curve
+being used. It is recommended to use a strong cryptographic hash
+function with digest size close to the bit size of the curve, e.g.,
+SHA256 is a reasonable choice when using ECDSA signature over the curve
+secp256r1. A protocol or application using ECDSA has to specify which
+curve and which hash function to use, or provide some mechanism for
+negotiating.
+
+Nettle defines ECDSA in @file{<nettle/ecdsa.h>}. We first need
+to define the data types used to represent public and private keys.
+
+@deftp {struct} {struct ecc_point}
+Represents a point on an elliptic curve. In particular, it is used to
+represent an ECDSA public key.
+@end deftp
+
+@deftypefun void ecc_point_init (struct ecc_point *@var{p}, const structecc_curve *@var{ecc})
+Initializes @var{p} to represent points on the given curve @var{ecc}.
+Allocates storage for the coordinates, using the same allocation
+functions as GMP.
+@end deftypefun
+
+@deftypefun void ecc_point_clear (struct ecc_point *@var{p})
+Deallocate storage.
+@end deftypefun
+
+@deftypefun int ecc_point_set (struct ecc_point *@var{p}, const mpz_t @var{x}, const mpz_t @var{y})
+Check that the given coordinates represent a point on the curve. If so,
+the coordinates are copied and converted to internal representation, and
+the function returns 1. Otherwise, it returns 0. Currently, the
+infinity point (or zero point, with additive notation) i snot allowed.
+@end deftypefun
+
+@deftypefun void ecc_point_get (const struct ecc_point *@var{p}, mpz_t @var{x}, mpz_t @var{y})
+Extracts the coordinate of the point @var{p}. The output parameters
+@var{x} or @var{y} may be NULL if the caller doesn't want that
+coordinate.
+@end deftypefun
+
+@deftp {struct} {struct ecc_scalar}
+Represents an integer in the range @math{0 < x < group order}, where the
+``group order'' refers to the order of an ECC group. In particular, it
+is used to represent an ECDSA private key.
+@end deftp
+
+@deftypefun void ecc_scalar_init (struct ecc_scalar *@var{s}, const struct ecc_curve *@var{ecc})
+Initializes @var{s} to represent a scalar suitable for the given curve
+@var{ecc}. Allocates storage using the same allocation functions as GMP.
+@end deftypefun
+
+@deftypefun void ecc_scalar_clear (struct ecc_scalar *@var{s})
+Deallocate storage.
+@end deftypefun
+
+@deftypefun int ecc_scalar_set (struct ecc_scalar *@var{s}, const mpz_t @var{z})
+Check that @var{z} is in the correct range. If so, copies the value to
+@var{s} and returns 1, otherwise returns 0.
+@end deftypefun
+
+@deftypefun void ecc_scalar_get (const struct ecc_scalar *@var{s}, mpz_t @var{z})
+Extracts the scalar, in GMP @code{mpz_t} representation.
+@end deftypefun
+
+To create and verify ECDSA signatures, the following functions are used.
+
+@deftypefun void ecdsa_sign (const struct ecc_scalar *@var{key}, void *@var{random_ctx}, nettle_random_func *@var{random}, unsigned @var{digest_length}, const uint8_t *@var{digest}, struct dsa_signature *@var{signature})
+Uses the private key @var{key} to create a signature on @var{digest}.
+@var{random_ctx} and @var{random} is a randomness generator.
+@code{random(random_ctx, length, dst)} should generate @code{length}
+random octets and store them at @code{dst}. The signature is stored in
+@var{signature}, in the same was as for plain DSA.
+@end deftypefun
+
+@deftypefun int ecdsa_verify (const struct ecc_point *@var{pub}, unsigned @var{length}, const uint8_t *@var{digest}, const struct dsa_signature *@var{signature})
+Uses the public key @var{pub} to verify that @var{signature} is a valid
+signature for the message digest @var{digest} (of @var{length} octets).
+Returns 1 if the signature is valid, otherwise 0.
+@end deftypefun
+
+Finally, to generation of new an ECDSA key pairs
+
+@deftypefun void ecdsa_generate_keypair (struct ecc_point *@var{pub}, struct ecc_scalar *@var{key}, void *@var{random_ctx}, nettle_random_func *@var{random});
+@var{pub} and @var{key} is where the resulting key pair is stored. The
+structs should be initialized, for the desired ECC curve, before you call this function.
+
+@var{random_ctx} and @var{random} is a randomness generator.
+@code{random(random_ctx, length, dst)} should generate @code{length}
+random octets and store them at @code{dst}. For advice, see
+@xref{Randomness}.
+@end deftypefun
+
+@node Randomness, ASCII encoding, Public-key algorithms, Reference
 @comment  node-name,  next,  previous,  up
 @section Randomness
 
@@ -3184,7 +3349,7 @@ Information about a single source.
 @end deftp
 
 @defvr Constant YARROW256_SEED_FILE_SIZE
-Recommanded size of the Yarrow-256 seed file.
+Recommended size of the Yarrow-256 seed file.
 @end defvr
 
 @deftypefun void yarrow256_init (struct yarrow256_ctx *@var{ctx}, unsigned @var{nsources}, struct yarrow_source *@var{sources})
@@ -3268,9 +3433,9 @@ Returns an entropy estimate, in bits, suitable for calling
 @code{yarrow256_update}. Usually, 0, 1 or 2 bits.
 @end deftypefun
 
-@node Ascii encoding, Miscellaneous functions, Randomness, Reference
+@node ASCII encoding, Miscellaneous functions, Randomness, Reference
 @comment  node-name,  next,  previous,  up
-@section Ascii encoding
+@section ASCII encoding
 
 Encryption will transform your data from text into binary format, and that
 may be a problem if you want, for example, to send the data as if it was
@@ -3420,7 +3585,7 @@ hexadecimal digits have been seen). Returns 1 on success, and 0 on
 error.
 @end deftypefun
 
-@node Miscellaneous functions, Compatibility functions, Ascii encoding, Reference
+@node Miscellaneous functions, Compatibility functions, ASCII encoding, Reference
 @comment  node-name,  next,  previous,  up
 @section Miscellaneous functions
 
@@ -3581,4 +3746,11 @@ End:
 @c  LocalWords:  DSA gmp FIPS DSS libdes OpenSSL ARCTWO Josefsson Nikos Andreas
 @c  LocalWords:  Mavroyanopoulos Sigfridsson Comstedt interoperability Sparc IC
 @c  LocalWords:  DES FIXME Rivest's plaintext ciphertext CTR XORed timestamp
-@c  LocalWords:  XORs cryptologists
+@c  LocalWords:  XORs cryptologists libnettle libhogweed GCM ECDSA NTT
+@c  LocalWords:  toolkits BLOWFISH Möller RIPEMD libgcrypt PBKDF Shishi
+@c  LocalWords:  GnuTLS Gutmann's GOSTHASH GOST Aleksey Kravchenko ECC
+@c  LocalWords:  rhash Mavrogiannopoulos Internetfonden Keccak Bertoni
+@c  LocalWords:  Michaël Peeters Assche Dobbertin Antoon Bosselaers KDF
+@c  LocalWords:  Preneel rôle McGrew Viega KDFs PBKDFs passphrase PRF
+@c  LocalWords:  th deallocate pre bitsize multi lookup secp startup
+@c  LocalWords:  typedef typedef

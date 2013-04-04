@@ -1,5 +1,8 @@
 2013-04-04  Niels Möller  <nisse@lysator.liu.se>
 
+	* nettle.texinfo (Elliptic curves): Document high-level ECDSA
+	support.
+
 	From Martin Storsjö. Fallback functions for older GMP releases.
 	* gmp-glue.c (mpn_copyd, mpn_copyi, mpn_zero): New functions.
 	* gmp-glue.h: Declare them.
