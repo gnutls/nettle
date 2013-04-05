@@ -250,7 +250,7 @@ for bignum operations.
 @item ECDSA
 Written by @value{AUTHOR}, released under the LGPL. Uses the GMP library
 for bignum operations. Development of Nettle's ECC support was funded by
-Internetfonden.
+the .SE Internet Fund.
 @end table
 
 @node Conventions, Example, Copyright, Top
@@ -3749,7 +3749,7 @@ End:
 @c  LocalWords:  XORs cryptologists libnettle libhogweed GCM ECDSA NTT
 @c  LocalWords:  toolkits BLOWFISH Möller RIPEMD libgcrypt PBKDF Shishi
 @c  LocalWords:  GnuTLS Gutmann's GOSTHASH GOST Aleksey Kravchenko ECC
-@c  LocalWords:  rhash Mavrogiannopoulos Internetfonden Keccak Bertoni
+@c  LocalWords:  rhash Mavrogiannopoulos Keccak Bertoni
 @c  LocalWords:  Michaël Peeters Assche Dobbertin Antoon Bosselaers KDF
 @c  LocalWords:  Preneel rôle McGrew Viega KDFs PBKDFs passphrase PRF
 @c  LocalWords:  th deallocate pre bitsize multi lookup secp startup

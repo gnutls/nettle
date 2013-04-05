@@ -20,7 +20,7 @@
  * MA 02111-1301, USA.
  */
 
-/* Development of Nettle's ECC support was funded by Internetfonden. */
+/* Development of Nettle's ECC support was funded by the .SE Internet Fund. */
 
 #ifndef NETTLE_ECC_INTERNAL_H_INCLUDED
 #define NETTLE_ECC_INTERNAL_H_INCLUDED

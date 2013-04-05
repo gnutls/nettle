@@ -22,7 +22,7 @@
  * MA 02111-1301, USA.
  */
 
-/* Development of Nettle's ECC support was funded by Internetfonden. */
+/* Development of Nettle's ECC support was funded by the .SE Internet Fund. */
 
 #include <assert.h>
 #include <stdio.h>
