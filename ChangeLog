@@ -1,3 +1,9 @@
+2013-04-06  Niels Möller  <nisse@lysator.liu.se>
+
+	From Edgar E. Iglesias:
+	* sha3.c (_sha3_update): Fix condition for when the block buffer
+	is full.
+
 2013-04-04  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-point.c (ecc_point_get): Allow NULL x or y, ignore
