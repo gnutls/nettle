@@ -1,3 +1,11 @@
+NEWS for the 2.7 release
+
+	Bug fixes:
+
+	* Fixed a bug in the buffer handling for incremental sha3
+	  hashing, with a possible buffer overflow. Patch by Edgar
+	  E. Iglesias.
+
 NEWS for the 2.6 release
 
 	Bug fixes:
