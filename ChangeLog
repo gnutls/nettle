@@ -1,5 +1,18 @@
 2013-04-11  Niels Möller  <nisse@lysator.liu.se>
 
+	Initial implementation of umac.
+	* umac.h: New file.
+	* umac-nh.c: New file.
+	* umac-nh-n.c: New file.
+	* umac-poly64.c: New file.
+	* umac-poly128.c: New file.
+	* umac-l2.c: New file.
+	* umac-l3.c: New file.
+	* Makefile.in (nettle_SOURCES): Added umac source files.
+	(HEADERS): Added umac.h.
+	* testsuite/umac-test.c: New file.
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Added umac-test.c.
+
 	* ecc-mul-a.c (ecc_mul_a): Avoid using mp_bitcnt_t, for
 	compatibility with older GMP versions.
 	* ecc-mul-g.c (ecc_mul_g): Likewise.

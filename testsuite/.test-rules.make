@@ -106,6 +106,9 @@ gcm-test$(EXEEXT): gcm-test.$(OBJEXT)
 hmac-test$(EXEEXT): hmac-test.$(OBJEXT)
 	$(LINK) hmac-test.$(OBJEXT) $(TEST_OBJS) -o hmac-test$(EXEEXT)
 
+umac-test$(EXEEXT): umac-test.$(OBJEXT)
+	$(LINK) umac-test.$(OBJEXT) $(TEST_OBJS) -o umac-test$(EXEEXT)
+
 meta-hash-test$(EXEEXT): meta-hash-test.$(OBJEXT)
 	$(LINK) meta-hash-test.$(OBJEXT) $(TEST_OBJS) -o meta-hash-test$(EXEEXT)
 

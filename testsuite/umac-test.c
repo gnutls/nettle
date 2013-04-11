@@ -1,0 +1,313 @@
+#include "testutils.h"
+#include "umac.h"
+
+static void
+test_umac (const struct tstring *key,
+	   const struct tstring *nonce,
+	   const struct tstring *msg,
+	   unsigned length,
+	   const struct tstring *ref32,
+	   const struct tstring *ref64,
+	   const struct tstring *ref128)
+{
+  struct umac32_ctx ctx32;
+  struct umac64_ctx ctx64;
+  struct umac96_ctx ctx96;
+  struct umac128_ctx ctx128;
+
+  unsigned i;
+  uint8_t tag[16];
+
+  ASSERT (key->length == UMAC_KEY_SIZE);
+  ASSERT (ref32->length == 4);
+  ASSERT (ref64->length == 8);
+  ASSERT (ref128->length == 16);
+
+  umac32_set_key (&ctx32, key->data);
+  umac32_set_nonce (&ctx32, nonce->length, nonce->data);
+
+  for (i = length; i > msg->length; i-= msg->length)
+    umac32_update (&ctx32, msg->length, msg->data);
+  umac32_update (&ctx32, i, msg->data);
+
+  umac32_digest (&ctx32, 4, tag);
+  if (memcmp (tag, ref32->data, 4) != 0)
+    {
+      printf ("umac32 failed\n");
+      printf ("msg: "); print_hex (msg->length, msg->data);
+      printf ("length: %u\n", length);
+      printf ("tag: "); print_hex (4, tag);
+      printf ("ref: "); print_hex (ref32->length, ref32->data);
+      abort ();
+    }
+
+  umac64_set_key (&ctx64, key->data);
+  umac64_set_nonce (&ctx64, nonce->length, nonce->data);
+
+  for (i = length; i > msg->length; i-= msg->length)
+    umac64_update (&ctx64, msg->length, msg->data);
+  umac64_update (&ctx64, i, msg->data);
+
+  umac64_digest (&ctx64, 8, tag);
+  if (memcmp (tag, ref64->data, 8) != 0)
+    {
+      printf ("umac64 failed\n");
+      printf ("msg: "); print_hex (msg->length, msg->data);
+      printf ("length: %u\n", length);
+      printf ("tag: "); print_hex (8, tag);
+      printf ("ref: "); print_hex (ref64->length, ref64->data);
+      abort ();
+    }
+
+  umac96_set_key (&ctx96, key->data);
+  umac96_set_nonce (&ctx96, nonce->length, nonce->data);
+
+  for (i = length; i > msg->length; i-= msg->length)
+    umac96_update (&ctx96, msg->length, msg->data);
+  umac96_update (&ctx96, i, msg->data);
+
+  umac96_digest (&ctx96, 12, tag);
+  if (memcmp (tag, ref128->data, 12) != 0)
+    {
+      printf ("umac96 failed\n");
+      printf ("msg: "); print_hex (msg->length, msg->data);
+      printf ("length: %u\n", length);
+      printf ("tag: "); print_hex (12, tag);
+      printf ("ref: "); print_hex (12, ref128->data);
+      abort ();
+    }
+
+  umac128_set_key (&ctx128, key->data);
+  umac128_set_nonce (&ctx128, nonce->length, nonce->data);
+
+  for (i = length; i > msg->length; i-= msg->length)
+    umac128_update (&ctx128, msg->length, msg->data);
+  umac128_update (&ctx128, i, msg->data);
+
+  umac128_digest (&ctx128, 16, tag);
+  if (memcmp (tag, ref128->data, 16) != 0)
+    {
+      printf ("umac128 failed\n");
+      printf ("msg: "); print_hex (msg->length, msg->data);
+      printf ("length: %u\n", length);
+      printf ("tag: "); print_hex (16, tag);
+      printf ("ref: "); print_hex (ref128->length, ref128->data);
+      abort ();
+    }
+}
+
+void
+test_main(void)
+{
+  /* From RFC 4418 (except that it lacks the last 32 bits of 128-bit
+     tags) */
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("bcdefghi"),
+	     SDATA(""), 0,
+	     SHEX("113145FB"),
+	     SHEX("6E155FAD26900BE1"),
+	     SHEX("32fedb100c79ad58f07ff7643cc60465"));
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("bcdefghi"),
+	     SDATA("a"), 3,
+	     SHEX("3B91D102"),
+	     SHEX("44B5CB542F220104"),
+	     SHEX("185e4fe905cba7bd85e4c2dc3d117d8d"));
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("bcdefghi"),
+	     SDATA("a"), 1<<10,
+	     SHEX("599B350B"),
+	     SHEX("26BF2F5D60118BD9"),
+	     SHEX("7a54abe04af82d60fb298c3cbd195bcb"));
+
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("bcdefghi"),
+	     SDATA("aaaaaaaa"), 1<<15,
+	     SHEX("58DCF532"),
+	     SHEX("27F8EF643B0D118D"),
+	     SHEX("7b136bd911e4b734286ef2be501f2c3c"));
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("bcdefghi"),
+	     SDATA("aaaaaaaa"), 1<<20,
+	     SHEX("DB6364D1"),
+	     SHEX("A4477E87E9F55853"),
+	     SHEX("f8acfa3ac31cfeea047f7b115b03bef5"));
+  /* Needs POLY128 */
+  /* For the 'a' * 2^25 testcase, see errata
+     http://fastcrypto.org/umac/rfc4418.errata.txt */
+  test_umac (SDATA("abcdefghijklmnop"), SDATA ("bcdefghi"),
+	     SDATA ("aaaaaaaa"), 1<<25,
+	     SHEX("85EE5CAE"),
+	     SHEX("FACA46F856E9B45F"),
+	     SHEX("a621c2457c0012e64f3fdae9e7e1870c"));
+  test_umac (SDATA("abcdefghijklmnop"), SDATA ("bcdefghi"),
+	     SDATA ("abc"), 3,
+	     SHEX("ABF3A3A0"),
+	     SHEX("D4D7B9F6BD4FBFCF"),
+	     SHEX("883c3d4b97a61976ffcf232308cba5a5"));
+  test_umac (SDATA("abcdefghijklmnop"), SDATA ("bcdefghi"),
+	     SDATA ("abc"), 1500,
+	     SHEX("ABEB3C8B"),
+	     SHEX("D4CF26DDEFD5C01A"),
+	     SHEX("8824a260c53c66a36c9260a62cb83aa1"));
+
+  /* Tests exercising various sizes of nonce and data: All nonce
+     lengths from 1 to 16 bytes. Data sizes chosen for testing for
+     various off-by-one errors,
+
+       0, 1, 2, 3, 4,
+       1020, 1021, 1022, 1023, 1024, 1025, 1026, 1027,
+       2046, 2047, 2048, 2049, 2050
+       16777212, 16777213, 16777214, 16777215, 16777216, 16777217,
+       16778239, 16778240, 16778241, 16778242, 16778243, 16778244
+  */
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("b"),
+	     SDATA("defdefdefdefdef"), 0,
+	     SHEX("3a58486b"),
+	     SHEX("9e38f67da91a08d9"),
+	     SHEX("9e38f67da91a08d9c980f4db4089c877"));
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("bc"),
+	     SDATA("defdefdefdefdef"), 1,
+	     SHEX("d86b1512"),
+	     SHEX("fb0e207971b8e66a"),
+	     SHEX("ef406c2ec70d0222f59e860eabb79ed0"));
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("bcd"),
+	     SDATA("defdefdefdefdef"), 2,
+	     SHEX("1ae6e02d"),
+	     SHEX("1ae6e02d73aa9ab2"),
+	     SHEX("1ae6e02d73aa9ab2a27fb89e014dc07b"));
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("bcde"),
+	     SDATA("defdefdefdefdef"), 3,
+	     SHEX("e8c1eb59"),
+	     SHEX("c81cf22342e84302"),
+	     SHEX("82626d0d575e01038e5e2cc6408216f5"));
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("bcdef"),
+	     SDATA("defdefdefdefdef"), 4,
+	     SHEX("8950f0d3"),
+	     SHEX("aba003e7bd673cc3"),
+	     SHEX("aba003e7bd673cc368ba8513cecf2e7c"));
+
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("bcdefg"),
+	     SDATA("defdefdefdefdef"), 1020,
+	     SHEX("7412167c"),
+	     SHEX("f98828a161bb4ae3"),
+	     SHEX("d8b4811f747d588d7a913360960de7cf"));
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("bcdefgh"),
+	     SDATA("defdefdefdefdef"), 1021,
+	     SHEX("2d54936b"),
+	     SHEX("2d54936be5bff72d"),
+	     SHEX("2d54936be5bff72d2e1052361163b474"));
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("bcdefghi"),
+	     SDATA("defdefdefdefdef"), 1022,
+	     SHEX("53ca8dd2"),
+	     SHEX("2cee9784556387b3"),
+	     SHEX("700513397f8a210a98938d3e7ac3bd88"));
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("bcdefghij"),
+	     SDATA("defdefdefdefdef"), 1023,
+	     SHEX("26cc58df"),
+	     SHEX("24ac4284ca371f42"),
+	     SHEX("24ac4284ca371f4280f60bd274633d67"));
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("bcdefghijk"),
+	     SDATA("defdefdefdefdef"), 1024,
+	     SHEX("3cada45a"),
+	     SHEX("64c6a0fd14615a76"),
+	     SHEX("abc223116cedd2db5af365e641a97539"));
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("bcdefghijkl"),
+	     SDATA("defdefdefdefdef"), 1025,
+	     SHEX("93251e18"),
+	     SHEX("93251e18e56bbdc4"),
+	     SHEX("93251e18e56bbdc457de556f95c59931"));
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("bcdefghijklm"),
+	     SDATA("defdefdefdefdef"), 1026,
+	     SHEX("24a4c3ab"),
+	     SHEX("5d98bd8dfaf16352"),
+	     SHEX("c1298672e52386753383a15ed58c0e42"));
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("bcdefghijklmn"),
+	     SDATA("defdefdefdefdef"), 1027,
+	     SHEX("e7e98945"),
+	     SHEX("5b0557c9fdcf661b"),
+	     SHEX("5b0557c9fdcf661b1758efc603516ebe"));
+
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("bcdefghijklmno"),
+	     SDATA("defdefdefdefdef"), 2046,
+	     SHEX("e12ddc9f"),
+	     SHEX("65e85d47447c2277"),
+	     SHEX("16bb5183017826ed47c9995c1e5834f3"));
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("bcdefghijklmnop"),
+	     SDATA("defdefdefdefdef"), 2047,
+	     SHEX("34d723a6"),
+	     SHEX("34d723a6cb1676d3"),
+	     SHEX("34d723a6cb1676d3547a5064dc5b0a37"));
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("bcdefghijklmnopq"),
+	     SDATA("defdefdefdefdef"), 2048,
+	     SHEX("21fd8802"),
+	     SHEX("3968d5d0af147884"),
+	     SHEX("84565620def1e3a614d274e87626f215"));
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("b"),
+	     SDATA("defdefdefdefdef"), 2049,
+	     SHEX("097e5abd"),
+	     SHEX("ad1ee4ab606061c5"),
+	     SHEX("ad1ee4ab606061c55e0d2ecfee59940a"));
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("bc"),
+	     SDATA("defdefdefdefdef"), 2050,
+	     SHEX("a03a7fe9"),
+	     SHEX("835f4a8242100055"),
+	     SHEX("971106d5f4a5e41dce40a91704cfe1f3"));
+
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("bcd"),
+	     SDATA("defdefdefdefdef"), 16777212,
+	     SHEX("7ef41cf3"),
+	     SHEX("7ef41cf351960aaf"),
+	     SHEX("7ef41cf351960aaf729bb19fcee7d8c4"));
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("bcde"),
+	     SDATA("defdefdefdefdef"), 16777213,
+	     SHEX("8bf81932"),
+	     SHEX("ab250048807ff640"),
+	     SHEX("e15b9f6695c9b441de035e9b10b8ac32"));
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("bcdef"),
+	     SDATA("defdefdefdefdef"), 16777214,
+	     SHEX("ddb2f0ab"),
+	     SHEX("ff42039fcfe1248e"),
+	     SHEX("ff42039fcfe1248e36c19efed14d7140"));
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("bcdefg"),
+	     SDATA("defdefdefdefdef"), 16777215,
+	     SHEX("e67ad507"),
+	     SHEX("6be0ebda623d76df"),
+	     SHEX("4adc426477fb64b1ce5afd76d505f048"));
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("bcdefgh"),
+	     SDATA("defdefdefdefdef"), 16777216,
+	     SHEX("42d8562a"),
+	     SHEX("42d8562a224a9e9a"),
+	     SHEX("42d8562a224a9e9a75c2f85d39462d07"));
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("bcdefghi"),
+	     SDATA("defdefdefdefdef"), 16777217,
+	     SHEX("486b138d"),
+	     SHEX("374f09dbb0b84b88"),
+	     SHEX("6ba48d669a51ed3195ebc2aa562ee71b"));
+
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("bcdefghij"),
+	     SDATA("defdefdefdefdef"), 16778239,
+	     SHEX("850cb2c5"),
+	     SHEX("876ca89ed045777b"),
+	     SHEX("876ca89ed045777bf7efa7934e1758c2"));
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("bcdefghijk"),
+	     SDATA("defdefdefdefdef"), 16778240,
+	     SHEX("b9fc4f81"),
+	     SHEX("e1974b26fb35f2c6"),
+	     SHEX("2e93c8ca83b97a6b1a21082e2a4c540d"));
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("bcdefghijkl"),
+	     SDATA("defdefdefdefdef"), 16778241,
+	     SHEX("ffced8f2"),
+	     SHEX("ffced8f2494d85bf"),
+	     SHEX("ffced8f2494d85bf0cb39408ddfe0295"));
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("bcdefghijklm"),
+	     SDATA("defdefdefdefdef"), 16778242,
+	     SHEX("1c99c5fb"),
+	     SHEX("65a5bbdda3b85368"),
+	     SHEX("f9148022bc6ab64f019e9db83704c17b"));
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("bcdefghijklmn"),
+	     SDATA("defdefdefdefdef"), 16778243,
+	     SHEX("ec304be9"),
+	     SHEX("50dc9565fbfc4884"),
+	     SHEX(" 50dc9565fbfc48844a4be34403804605"));
+  test_umac (SDATA("abcdefghijklmnop"), SDATA("bcdefghijklmno"),
+	     SDATA("defdefdefdefdef"), 16778244,
+	     SHEX("8034e26f"),
+	     SHEX("04f163b7c2d5d849"),
+	     SHEX("77a26f7387d1dcd39378a3220652cff7"));
+}
