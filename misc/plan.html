@@ -30,10 +30,10 @@
 
   <h1> Plan for the Nettle-2.7 release </h1>
   <h2> Code </h2>
-  <p class='should'>
+  <p class='done'>
     Support older GMP versions, as far as practical.
   </p>
-  <p class='should'>
+  <p class='done'>
     Make use of GMP's mpn_cnd_add_n and mpn_sub_n (which will be
     available in the next GMP release).
   </p>
@@ -50,7 +50,7 @@
   </p>
   
   <h2> Documentation </h2>
-  <p class='should'>
+  <p class='done'>
     Document new ECC functions.
   </p>
   <p class='should'>
@@ -91,7 +91,10 @@
     <li class='should'> sparc64-solaris10</li>
   </ul>
 
-  <h1> Plans for nettle-3.0 </h1>
+  <h1> Plans for nettle-2.8 </h1>
+
+  <p> nettle-2.8 is intended to be a minor API cleanup, with few new
+  features. </p>
 
   <h2> Interface changes </h2>
   <p class='should'>
@@ -104,6 +107,19 @@
     nettle library, with nettle_ prefix on the symbols, and no
     AC_REPLACE_FUNCS.
   </p>
+  <p class='should'>
+    Use the type <tt>uint64_t</tt> for 64-bit block counts in all hash
+    functions.
+  </p>
+  <p class='should'>
+    Move some internal-use macros from macros.h to nettle-internal.h.
+  </p>
+  
+  <h1> Plans for nettle-3.0 </h1>
+
+  <p> These are some larger API changes under consideration. </p>
+
+  <h2> Interface changes </h2>
   <p class='should'>
     For Merkle-Damgaard hash functions, separate the state and the
     buffering. E.g., when using them for HMAC keyed "inner" and
