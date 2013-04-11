@@ -72,7 +72,9 @@ sec_modinv (mp_limb_t *vp, mp_limb_t *ap, mp_size_t n,
 #define dp (scratch + n)
 #define up (scratch + 2*n)
 
-  mp_bitcnt_t i;
+  /* Avoid the mp_bitcnt_t type for compatibility with older GMP
+     versions. */  
+  unsigned i;
 
   /* Maintain
 

@@ -1,5 +1,11 @@
 2013-04-11  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-mul-a.c (ecc_mul_a): Avoid using mp_bitcnt_t, for
+	compatibility with older GMP versions.
+	* ecc-mul-g.c (ecc_mul_g): Likewise.
+	* eccdata.c (ecc_mul_binary): Likewise.
+	* sec-modinv.c (sec_modinv): Likewise.
+
 	* x86_64/sha3-permute.asm: Go via memory for moves between general
 	registers and xmm registers.
 
