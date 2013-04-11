@@ -221,7 +221,7 @@ void
 _umac_l3_init (unsigned size, uint64_t *k);
 
 uint32_t
-_umac_l3 (const uint64_t *key_1, uint32_t key_2, const uint64_t *m);
+_umac_l3 (const uint64_t *key, const uint64_t *m);
 
 #ifdef __cplusplus
 }

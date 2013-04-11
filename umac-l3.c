@@ -74,11 +74,11 @@ umac_l3_word (const uint64_t *k, uint64_t w)
 }
 
 uint32_t
-_umac_l3 (const uint64_t *key_1, uint32_t key_2, const uint64_t *m)
+_umac_l3 (const uint64_t *key, const uint64_t *m)
 {
-  uint32_t y = (umac_l3_word (key_1, m[0])
-		+ umac_l3_word (key_1 + 4, m[1])) % P;
-  y ^= key_2;
+  uint32_t y = (umac_l3_word (key, m[0])
+		+ umac_l3_word (key + 4, m[1])) % P;
+
 #if !WORDS_BIGENDIAN
   y = ((ROTL32(8,  y) & 0x00FF00FFUL)
        | (ROTL32(24, y) & 0xFF00FF00UL));

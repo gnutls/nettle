@@ -125,9 +125,10 @@ umac64_digest (struct umac64_ctx *ctx,
     }
 
   _umac_l2_final (ctx->l2_key, ctx->l2_state, 2, ctx->count, ctx->l1_out);
-  tag[0] = pad[0] ^ _umac_l3 (ctx->l3_key1, ctx->l3_key2[0], ctx->l2_state);
-  tag[1] = pad[1] ^ _umac_l3 (ctx->l3_key1 + 8, ctx->l3_key2[1],
-			      ctx->l2_state + 2);
+  tag[0] = pad[0] ^ ctx->l3_key2[0] ^ _umac_l3 (ctx->l3_key1,
+						ctx->l2_state);
+  tag[1] = pad[1] ^ ctx->l3_key2[1] ^ _umac_l3 (ctx->l3_key1 + 8,
+						ctx->l2_state + 2);
   memcpy (digest, tag, length);
 
   /* Reinitialize */

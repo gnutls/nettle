@@ -90,8 +90,8 @@ _umac_set_key (uint32_t *l1_key, uint32_t *l2_key,
   umac_kdf (aes, 3, size * sizeof(uint64_t), (uint8_t *) l3_key1);
   _umac_l3_init (size, l3_key1);
 
+  /* No need to byteswap these subkeys. */
   umac_kdf (aes, 4, n * sizeof(uint32_t), (uint8_t *) l3_key2);
-  BE_SWAP32_N (n, l3_key2);
 
   umac_kdf (aes, 0, UMAC_KEY_SIZE, buffer);
   aes_set_encrypt_key (aes, UMAC_KEY_SIZE, buffer);

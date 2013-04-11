@@ -1,5 +1,14 @@
 2013-04-11  Niels Möller  <nisse@lysator.liu.se>
 
+	* umac-set-key.c (_umac_set_key): Drop byteswapping of l3_key2, it
+	can be xored directly to the pad in native byteorder.
+	* umac-l3.c (_umac_l3): Drop key_2 argument, let caller do that
+	xor. Updated all callers.
+	* umac32.c (umac32_digest): Adapt to l3 changes.
+	* umac64.c (umac64_digest): Likewise.
+	* umac96.c (umac96_digest): Likewise.
+	* umac128.c (umac128_digest): Likewise.
+
 	Initial implementation of umac.
 	* umac.h: New file.
 	* umac-nh.c: New file.

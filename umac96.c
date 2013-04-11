@@ -115,7 +115,8 @@ umac96_digest (struct umac96_ctx *ctx,
 
   _umac_l2_final (ctx->l2_key, ctx->l2_state, 3, ctx->count, ctx->l1_out);
   for (i = 0; i < 3; i++)
-    tag[i] ^= _umac_l3 (ctx->l3_key1 + 8*i, ctx->l3_key2[i], ctx->l2_state + 2*i);
+    tag[i] ^= ctx->l3_key2[i] ^ _umac_l3 (ctx->l3_key1 + 8*i,
+					  ctx->l2_state + 2*i);
 
   memcpy (digest, tag, length);
 

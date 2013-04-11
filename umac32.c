@@ -122,7 +122,7 @@ umac32_digest (struct umac32_ctx *ctx,
     }
 
   _umac_l2_final (ctx->l2_key, ctx->l2_state, 1, ctx->count, ctx->l1_out);
-  pad ^= _umac_l3 (ctx->l3_key1, ctx->l3_key2[0], ctx->l2_state);
+  pad ^= ctx->l3_key2[0] ^ _umac_l3 (ctx->l3_key1, ctx->l2_state);
   memcpy (digest, &pad, length);
 
   /* Reinitialize */
