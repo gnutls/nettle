@@ -25,14 +25,39 @@
 # include "config.h"
 #endif
 
-#include "umac.h"
+#include <assert.h>
+#include <string.h>
 
-/* FIXME: Single pass over the input */
+#include "umac.h"
+#include "macros.h"
+
 void
 _umac_nh_n (uint64_t *out, unsigned n, const uint32_t *key,
 	    unsigned length, const uint8_t *msg)
 {
-  unsigned i;
-   for (i = 0; i < n; i++)
-     out[i] = _umac_nh (key + 4*i, length, msg);
+  assert (length > 0);
+  assert (length <= 1024);
+  assert (length % 32 == 0);
+
+  memset(out, 0, n*sizeof(*out));
+  
+  for (;length > 0; length -= 32, msg += 32, key += 8)
+    {
+      uint32_t a0, a1, b0, b1;
+      unsigned i;
+      a0 = LE_READ_UINT32 (msg);
+      a1 = LE_READ_UINT32 (msg + 4);
+      b0 = LE_READ_UINT32 (msg + 16);
+      b1 = LE_READ_UINT32 (msg + 20);
+      for (i = 0; i < n; i++)
+	out[i] += (uint64_t) (a0 + key[0+4*i]) * (b0 + key[4+4*i])
+	  + (uint64_t) (a1 + key[1+4*i]) * (b1 + key[5+4*i]);
+      a0 = LE_READ_UINT32 (msg + 8);
+      a1 = LE_READ_UINT32 (msg + 12);
+      b0 = LE_READ_UINT32 (msg + 24);
+      b1 = LE_READ_UINT32 (msg + 28);
+      for (i = 0; i < n; i++)
+	out[i] += (uint64_t) (a0 + key[2+4*i]) * (b0 + key[6+4*i])
+	  + (uint64_t) (a1 + key[3+4*i]) * (b1 + key[7+4*i]);      
+    }
 }

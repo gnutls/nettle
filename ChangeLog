@@ -1,5 +1,8 @@
 2013-04-11  Niels Möller  <nisse@lysator.liu.se>
 
+	* umac-nh-n.c (_umac_nh_n): Rewrote as a single pass over the
+	message data.
+
 	* examples/nettle-benchmark.c (time_umac): New function.
 	(main): Call it.
 
