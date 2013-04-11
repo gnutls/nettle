@@ -55,6 +55,7 @@
 #include "sha2.h"
 #include "sha3.h"
 #include "twofish.h"
+#include "umac.h"
 
 #include "nettle-meta.h"
 #include "nettle-internal.h"
@@ -350,6 +351,51 @@ time_hash(const struct nettle_hash *hash)
 	  time_function(bench_hash, &info));
 
   free(info.ctx);
+}
+
+static void
+time_umac(void)
+{
+  static uint8_t data[BENCH_BLOCK];
+  struct bench_hash_info info;
+  struct umac32_ctx ctx32;
+  struct umac64_ctx ctx64;
+  struct umac96_ctx ctx96;
+  struct umac128_ctx ctx128;
+  
+  uint8_t key[16];
+
+  umac32_set_key (&ctx32, key);
+  info.ctx = &ctx32;
+  info.update = (nettle_hash_update_func *) umac32_update;
+  info.data = data;
+
+  display("umac32", "update", UMAC_BLOCK_SIZE,
+	  time_function(bench_hash, &info));
+
+  umac64_set_key (&ctx64, key);
+  info.ctx = &ctx64;
+  info.update = (nettle_hash_update_func *) umac64_update;
+  info.data = data;
+
+  display("umac64", "update", UMAC_BLOCK_SIZE,
+	  time_function(bench_hash, &info));
+
+  umac96_set_key (&ctx96, key);
+  info.ctx = &ctx96;
+  info.update = (nettle_hash_update_func *) umac96_update;
+  info.data = data;
+
+  display("umac96", "update", UMAC_BLOCK_SIZE,
+	  time_function(bench_hash, &info));
+
+  umac128_set_key (&ctx128, key);
+  info.ctx = &ctx128;
+  info.update = (nettle_hash_update_func *) umac128_update;
+  info.data = data;
+
+  display("umac128", "update", UMAC_BLOCK_SIZE,
+	  time_function(bench_hash, &info));
 }
 
 static void
@@ -668,6 +714,9 @@ main(int argc, char **argv)
   for (i = 0; hashes[i]; i++)
     if (!alg || strstr(hashes[i]->name, alg))
       time_hash(hashes[i]);
+
+  if (!alg || strstr ("umac", alg))
+    time_umac();
 
   for (i = 0; ciphers[i]; i++)
     if (!alg || strstr(ciphers[i]->name, alg))

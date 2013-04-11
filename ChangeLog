@@ -1,5 +1,8 @@
 2013-04-11  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/nettle-benchmark.c (time_umac): New function.
+	(main): Call it.
+
 	* umac-set-key.c (_umac_set_key): Drop byteswapping of l3_key2, it
 	can be xored directly to the pad in native byteorder.
 	* umac-l3.c (_umac_l3): Drop key_2 argument, let caller do that
