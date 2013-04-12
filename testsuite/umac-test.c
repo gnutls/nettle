@@ -1,6 +1,41 @@
 #include "testutils.h"
 #include "umac.h"
 
+/* FIXME: Missing tests:
+
+   Getting to unlikely cases in the poly64 and poly128 operations.
+
+   Nonce increment and pad caching.   
+*/
+
+static void
+update (void *ctx, nettle_hash_update_func *f,
+	const struct tstring *msg,
+	unsigned length)
+{
+  for (; length > msg->length; length -= msg->length)
+    f(ctx, msg->length, msg->data);
+  f(ctx, length, msg->data);
+}
+	
+static void
+check_digest (const char *name, void *ctx, nettle_hash_digest_func *f,
+	      const struct tstring *msg, unsigned length,
+	      unsigned tag_length, const uint8_t *ref)
+{
+  uint8_t tag[16];
+  f(ctx, tag_length, tag);
+  if (memcmp (tag, ref, tag_length) != 0)
+    {
+      printf ("%s failed\n", name);
+      printf ("msg: "); print_hex (msg->length, msg->data);
+      printf ("length: %u\n", length);
+      printf ("tag: "); print_hex (tag_length, tag);
+      printf ("ref: "); print_hex (tag_length, ref);
+      abort ();
+    }
+  
+}
 static void
 test_umac (const struct tstring *key,
 	   const struct tstring *nonce,
@@ -15,9 +50,6 @@ test_umac (const struct tstring *key,
   struct umac96_ctx ctx96;
   struct umac128_ctx ctx128;
 
-  unsigned i;
-  uint8_t tag[16];
-
   ASSERT (key->length == UMAC_KEY_SIZE);
   ASSERT (ref32->length == 4);
   ASSERT (ref64->length == 8);
@@ -26,73 +58,99 @@ test_umac (const struct tstring *key,
   umac32_set_key (&ctx32, key->data);
   umac32_set_nonce (&ctx32, nonce->length, nonce->data);
 
-  for (i = length; i > msg->length; i-= msg->length)
-    umac32_update (&ctx32, msg->length, msg->data);
-  umac32_update (&ctx32, i, msg->data);
+  update(&ctx32, (nettle_hash_update_func *) umac32_update, msg, length);
 
-  umac32_digest (&ctx32, 4, tag);
-  if (memcmp (tag, ref32->data, 4) != 0)
-    {
-      printf ("umac32 failed\n");
-      printf ("msg: "); print_hex (msg->length, msg->data);
-      printf ("length: %u\n", length);
-      printf ("tag: "); print_hex (4, tag);
-      printf ("ref: "); print_hex (ref32->length, ref32->data);
-      abort ();
-    }
+  check_digest ("umac32", &ctx32, (nettle_hash_digest_func *) umac32_digest,
+		msg, length, 4, ref32->data);
 
   umac64_set_key (&ctx64, key->data);
   umac64_set_nonce (&ctx64, nonce->length, nonce->data);
 
-  for (i = length; i > msg->length; i-= msg->length)
-    umac64_update (&ctx64, msg->length, msg->data);
-  umac64_update (&ctx64, i, msg->data);
+  update(&ctx64, (nettle_hash_update_func *) umac64_update, msg, length);
 
-  umac64_digest (&ctx64, 8, tag);
-  if (memcmp (tag, ref64->data, 8) != 0)
-    {
-      printf ("umac64 failed\n");
-      printf ("msg: "); print_hex (msg->length, msg->data);
-      printf ("length: %u\n", length);
-      printf ("tag: "); print_hex (8, tag);
-      printf ("ref: "); print_hex (ref64->length, ref64->data);
-      abort ();
-    }
+  check_digest ("umac64", &ctx64, (nettle_hash_digest_func *) umac64_digest,
+		msg, length, 8, ref64->data);
 
   umac96_set_key (&ctx96, key->data);
   umac96_set_nonce (&ctx96, nonce->length, nonce->data);
 
-  for (i = length; i > msg->length; i-= msg->length)
-    umac96_update (&ctx96, msg->length, msg->data);
-  umac96_update (&ctx96, i, msg->data);
+  update(&ctx96, (nettle_hash_update_func *) umac96_update, msg, length);
 
-  umac96_digest (&ctx96, 12, tag);
-  if (memcmp (tag, ref128->data, 12) != 0)
-    {
-      printf ("umac96 failed\n");
-      printf ("msg: "); print_hex (msg->length, msg->data);
-      printf ("length: %u\n", length);
-      printf ("tag: "); print_hex (12, tag);
-      printf ("ref: "); print_hex (12, ref128->data);
-      abort ();
-    }
+  check_digest ("umac96", &ctx96, (nettle_hash_digest_func *) umac96_digest,
+		msg, length, 12, ref128->data);
 
   umac128_set_key (&ctx128, key->data);
   umac128_set_nonce (&ctx128, nonce->length, nonce->data);
 
-  for (i = length; i > msg->length; i-= msg->length)
-    umac128_update (&ctx128, msg->length, msg->data);
-  umac128_update (&ctx128, i, msg->data);
+  update(&ctx128, (nettle_hash_update_func *) umac128_update, msg, length);
 
-  umac128_digest (&ctx128, 16, tag);
-  if (memcmp (tag, ref128->data, 16) != 0)
+  check_digest ("umac128", &ctx128, (nettle_hash_digest_func *) umac128_digest,
+		msg, length, 16, ref128->data);
+}
+
+static void
+test_align (const struct tstring *key,
+	   const struct tstring *nonce,
+	   const struct tstring *msg,
+	   unsigned length,
+	   const struct tstring *ref32,
+	   const struct tstring *ref64,
+	   const struct tstring *ref128)
+{
+  uint8_t *buffer = xalloc(length + 16);
+  unsigned offset;
+  for (offset = 0; offset < 16; offset++)
     {
-      printf ("umac128 failed\n");
-      printf ("msg: "); print_hex (msg->length, msg->data);
-      printf ("length: %u\n", length);
-      printf ("tag: "); print_hex (16, tag);
-      printf ("ref: "); print_hex (ref128->length, ref128->data);
-      abort ();
+      struct umac32_ctx ctx32;
+      struct umac64_ctx ctx64;
+      struct umac96_ctx ctx96;
+      struct umac128_ctx ctx128;
+
+      uint8_t *input;
+      unsigned i;
+
+      memset(buffer, 17, length + 16);
+      input = buffer + offset;
+
+      for (i = 0; i + msg->length < length; i += msg->length)
+	memcpy (input + i, msg->data, msg->length);
+      memcpy (input + i, msg->data, length - i);
+
+      umac32_set_key (&ctx32, key->data);
+      umac32_set_nonce (&ctx32, nonce->length, nonce->data);
+
+      umac32_update(&ctx32, length, input);
+
+      check_digest ("umac32 (alignment)",
+		    &ctx32, (nettle_hash_digest_func *) umac32_digest,
+		    msg, length, 4, ref32->data);
+
+      umac64_set_key (&ctx64, key->data);
+      umac64_set_nonce (&ctx64, nonce->length, nonce->data);
+  
+      umac64_update(&ctx64, length, input);
+
+      check_digest ("umac64 (alignment)",
+		    &ctx64, (nettle_hash_digest_func *) umac64_digest,
+		    msg, length, 8, ref64->data);
+
+      umac96_set_key (&ctx96, key->data);
+      umac96_set_nonce (&ctx96, nonce->length, nonce->data);
+
+      umac96_update(&ctx96, length, input);
+
+      check_digest ("umac96 (alignment)",
+		    &ctx96, (nettle_hash_digest_func *) umac96_digest,
+		    msg, length, 12, ref128->data);
+
+      umac128_set_key (&ctx128, key->data);
+      umac128_set_nonce (&ctx128, nonce->length, nonce->data);
+
+      umac128_update(&ctx128, length, input);
+
+      check_digest ("umac128 (alignment)",
+		    &ctx128, (nettle_hash_digest_func *) umac128_digest,
+		    msg, length, 16, ref128->data);
     }
 }
 
@@ -223,6 +281,14 @@ test_main(void)
 	     SHEX("5b0557c9fdcf661b"),
 	     SHEX("5b0557c9fdcf661b1758efc603516ebe"));
 
+  /* Test varying the alignment of the buffer eventually passed to
+     _umac_nh and _umac_nh_n. */
+  test_align (SDATA("abcdefghijklmnop"), SDATA("bcdefghijk"),
+	      SDATA("defdefdefdefdef"), 1024,
+	      SHEX("3cada45a"),
+	      SHEX("64c6a0fd14615a76"),
+	      SHEX("abc223116cedd2db5af365e641a97539"));
+  
   test_umac (SDATA("abcdefghijklmnop"), SDATA("bcdefghijklmno"),
 	     SDATA("defdefdefdefdef"), 2046,
 	     SHEX("e12ddc9f"),

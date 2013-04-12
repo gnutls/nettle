@@ -1,3 +1,8 @@
+2013-04-12  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/umac-test.c: Test different alignments for the
+	message.
+
 2013-04-11  Niels Möller  <nisse@lysator.liu.se>
 
 	* umac-nh-n.c (_umac_nh_n): Rewrote as a single pass over the
