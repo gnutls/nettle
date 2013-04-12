@@ -30,7 +30,7 @@ define(<QB>, <q1>)
 define(<DM>, <d16>)
 define(<QLEFT>, <q9>)
 define(<QRIGHT>, <q10>)
-define(<QACC>, <q11>)
+define(<QY>, <q11>)
 define(<QT0>, <q12>)
 define(<QT1>, <q13>)
 define(<QK0>, <q14>)
@@ -59,7 +59,7 @@ PROLOGUE(_nettle_umac_nh)
 	vmov.i32 D0REG(QLEFT)[0], SHIFT
 	vmov.32	 D1REG(QLEFT), D0REG(QLEFT)
 
-	vmov.i64 QACC, #0
+	vmov.i64 QY, #0
 
 	vshl.u64 DM, DM, D0REG(QRIGHT)
 .Loop:
@@ -78,14 +78,12 @@ PROLOGUE(_nettle_umac_nh)
 	vld1.i32 {QK0, QK1}, [KEY]!
 	vadd.i32 QA, QA, QK0
 	vadd.i32 QB, QB, QK1
-	vmull.u32 QT0, D0REG(QA), D0REG(QB)
-	vmull.u32 QT1, D1REG(QA), D1REG(QB)
 	subs	LENGTH, LENGTH, #32
-	vadd.i64 QACC, QACC, QT0
-	vadd.i64 QACC, QACC, QT1
+	vmlal.u32 QY, D0REG(QA), D0REG(QB)
+	vmlal.u32 QY, D1REG(QA), D1REG(QB)
 	bhi	.Loop
 
-	vadd.i64 D0REG(QACC), D0REG(QACC), D1REG(QACC)
-	vmov	r0, r1, D0REG(QACC)
+	vadd.i64 D0REG(QY), D0REG(QY), D1REG(QY)
+	vmov	r0, r1, D0REG(QY)
 	bx	lr
 EPILOGUE(_nettle_umac_nh)
