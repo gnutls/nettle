@@ -1,5 +1,8 @@
 2013-04-12  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac (asm_replace_list): Added umac-nh.asm and
+	umac-nh-n.asm.
+
 	* testsuite/umac-test.c: Test different alignments for the
 	message.
 
