@@ -1,5 +1,8 @@
 2013-04-12  Niels Möller  <nisse@lysator.liu.se>
 
+	* armv7/umac-nh.asm: New file. 2.1 time speedup.
+	* armv7/machine.m4 (D0REG, D1REG): New macros.
+
 	* configure.ac (asm_replace_list): Added umac-nh.asm and
 	umac-nh-n.asm.
 
