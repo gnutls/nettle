@@ -152,6 +152,7 @@ test_align (const struct tstring *key,
 		    &ctx128, (nettle_hash_digest_func *) umac128_digest,
 		    msg, length, 16, ref128->data);
     }
+  free (buffer);
 }
 
 void

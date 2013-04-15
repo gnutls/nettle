@@ -1,3 +1,7 @@
+2013-04-15  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/umac-test.c (test_align): Fixed memory leak.
+
 2013-04-12  Niels Möller  <nisse@lysator.liu.se>
 
 	* armv7/umac-nh.asm: New file. 2.4 time speedup.
