@@ -1,5 +1,7 @@
 2013-04-15  Niels Möller  <nisse@lysator.liu.se>
 
+	* x86_64/umac-nh.asm: New file. 4.4 time speedup.
+
 	* armv7/umac-nh-n.asm: New file. 2.0-2.3 time speedup.
 
 	* testsuite/umac-test.c (test_align): Fixed memory leak.
