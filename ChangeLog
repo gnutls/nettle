@@ -1,5 +1,7 @@
 2013-04-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.in (distdir): Include files from armv7 subdirectory.
+
 	* x86_64/umac-nh-n.asm: New file, 3.5 time speedup.
 
 	* umac32.c (umac32_digest): Fix nonce caching.
