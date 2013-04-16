@@ -1,5 +1,9 @@
 2013-04-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.in (TARGETS): Deleted eccdata, it should be build only
+	when public key support is enabled.
+	(clean-here): Exlicitly list it here.
+
 	* asm.m4 (m4_log2): New macro, similar to the one in gmp.
 	(ALIGN): Changed to take alignment in bytes. Updated all callers,
 	currently used only in x86 and x86_64 files.

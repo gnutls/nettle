@@ -32,7 +32,7 @@ internal_SOURCES = nettle-internal.c
 internal_TARGETS = $(internal_SOURCES:.c=.$(OBJEXT))
 
 TARGETS = aesdata$(EXEEXT) desdata$(EXEEXT) twofishdata$(EXEEXT) \
-	  shadata$(EXEEXT) gcmdata$(EXEEXT) eccdata$(EXEEXT) \
+	  shadata$(EXEEXT) gcmdata$(EXEEXT) \
 	  $(getopt_TARGETS) $(internal_TARGETS) \
 	  $(LIBTARGETS) $(SHLIBTARGETS)
 IMPLICIT_TARGETS = @IF_DLL@ $(LIBNETTLE_FILE) $(LIBHOGWEED_FILE)
@@ -573,7 +573,8 @@ distcheck: dist
 
 clean-here:
 	-rm -f $(TARGETS) $(IMPLICIT_TARGETS) *.$(OBJEXT) *.p$(OBJEXT) *.s \
-		ecc-192.h ecc-224.h ecc-256.h ecc-384.h ecc-521.h eccdata.stamp
+		ecc-192.h ecc-224.h ecc-256.h ecc-384.h ecc-521.h \
+		eccdata$(EXEEXT) eccdata.stamp
 	-rm -rf .lib
 
 distclean-here: clean-here
