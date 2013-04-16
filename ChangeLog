@@ -1,5 +1,8 @@
 2013-04-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/umac-test.c (test_incr): New function.
+	(test_main): Test nonce increment.
+
 	* misc/umac/umac.py: UMAC reference implementation.
 	* misc/umac/rijndael.py: AES implementation used by umac.py.
 	* misc/umac/mkvectors: Script to generate UMAC test vectors.
