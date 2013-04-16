@@ -9,6 +9,7 @@ import rijndael
 import struct
 import fileinput
 import sys
+import binascii
 
 if len(sys.argv) < 3:
 	sys.stderr.write('Usage: umac [taglen] [nonce]\n')
@@ -116,9 +117,7 @@ class umac:
 				res += (a & 0xffff) * self.L3Key[i][0][j]
 				a >>= 16
 			self.L3Out.append(((res % P36) & M32) ^ self.L3Key[i][1])
-		print "L1Out:", self.L1Out
-		print "L2Out:", L2Out
-		print "L3Out:", self.L3Out
+
 	def umacUpdate(self, inString):
 		self.uhashUpdate(inString)
 	
@@ -135,6 +134,9 @@ class umac:
 		self.L1Out = [ list() for i in xrange(self.iters) ] # A sequence of empty lists
 		self.L3Out = list()
 		return result
+
+if nonce[0] == "#":
+	nonce = binascii.unhexlify(nonce[1:])
 
 u = umac('abcdefghijklmnop', taglen)
 

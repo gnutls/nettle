@@ -8,7 +8,11 @@ vector () {
     data="$3"
     echo "nonce:" $nonce
     echo "msg length:" $length
-    echo "data (repeated):" $data
+    if [ $length != "`expr length "$data"`" ] ; then
+	echo "data (repeated):" $data
+    else
+	echo "data:" $data
+    fi
     for tag_len in 32 64 96 128 ; do
 	tag=`python repeat.py "$data" "$length" | python umac.py "$tag_len" "$nonce"`
 	echo "tag$tag_len:" $tag
@@ -65,3 +69,22 @@ vector ${NONCE:0:11} 16778241 $DATA
 vector ${NONCE:0:12} 16778242 $DATA
 vector ${NONCE:0:13} 16778243 $DATA
 vector ${NONCE:0:14} 16778244 $DATA
+
+vector '#00000000000000000000000000000000' 4 zero
+vector '#00000000000000000000000000000001' 4 zero
+vector '#00000000000000000000000000000002' 4 zero
+vector '#00000000000000000000000000000003' 4 zero
+vector '#00000000000000000000000000000004' 4 zero
+vector '#00000000000000000000000000000005' 4 zero
+
+vector 'a' 7 nonce-a
+vector 'b' 7 nonce-a
+vector 'c' 7 nonce-a
+vector 'd' 7 nonce-a
+vector 'e' 7 nonce-a
+
+vector '#beafcafe' 15 nonce-beaf-cafe
+vector '#beafcaff' 15 nonce-beaf-cafe
+vector '#beafcb00' 15 nonce-beaf-cafe
+vector '#beafcb01' 15 nonce-beaf-cafe
+vector '#beafcb02' 15 nonce-beaf-cafe

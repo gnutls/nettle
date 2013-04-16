@@ -1,5 +1,10 @@
 2013-04-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* misc/umac/umac.py: UMAC reference implementation.
+	* misc/umac/rijndael.py: AES implementation used by umac.py.
+	* misc/umac/mkvectors: Script to generate UMAC test vectors.
+	* misc/umac/vectors.out: Generated test vectors.
+
 	* umac32.c (umac32_digest): Fix nonce increment, use INCREMENT
 	macro.
 	* umac64.c (umac64_digest): Likewise.
