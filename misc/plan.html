@@ -117,6 +117,17 @@
   <p class='should'>
     Move some internal-use macros from macros.h to nettle-internal.h.
   </p>
+
+  <h2> Build system </h2>
+  <p class='should'>
+    Stop using the nonstandard <tt>.po</tt> extension,
+    using <tt>.p.o</tt> or some subdirectory instead. Also drop
+    <tt>CCPIC_MAYBE</tt>, and let the static libraries depend on the
+    right object files.
+  </p>
+  <p class='should'>
+    Delay building of test programs until <tt>make check</tt>.
+  </p>
   
   <h1> Plans for nettle-3.0 </h1>
 
