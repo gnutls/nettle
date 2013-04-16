@@ -508,6 +508,10 @@
 	* bignum-random.c (nettle_mpz_random): Increased number of extra
 	bits to 64, following FIPS 186-3.
 
+2013-01-16  Niels Möller  <nisse@lysator.liu.se>
+
+	Released nettle-2.6.
+
 2013-01-12  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Use AC_LANG_SOURCE.
