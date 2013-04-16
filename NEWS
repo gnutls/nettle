@@ -1,10 +1,43 @@
 NEWS for the 2.7 release
 
+	This release includes an implementation of elliptic curve
+	cryptography (ECC) and optimizations for the ARM architecture.
+	This work was generously funded by the .SE Internet Fund.
+
 	Bug fixes:
 
-	* Fixed a bug in the buffer handling for incremental sha3
+	* Fixed a bug in the buffer handling for incremental SHA3
 	  hashing, with a possible buffer overflow. Patch by Edgar
 	  E. Iglesias.
+
+	New features:
+
+	* Support for ECDSA signatures. Elliptic curve operations over
+	  the following curves: secp192r1, secp224r1, secp256r1,
+	  secp384r1 and secp521r1, including x86_64 and ARM assembly
+	  for the most important primitives.
+	  
+	* Support for UMAC, including x86_64 and ARM assembly.
+
+	Optimizations:
+
+	* ARM assembly code for several additional algorithms,
+	  including AES, Salsa20, and the SHA family of hash
+	  functions. 
+
+	* x86_64 assembly for SHA256, SHA512, and SHA3. (SHA3 assembly
+          was included in the 2.6 release, but disabled due to poor
+          performance on some AMD processors. Hopefully, that
+          performance problem is fixed now).
+	
+	The ARM code was tested and benchmarked on Cortex-A9. Some of
+	the functions use "neon" instructions, which are not available
+	on all ARM processors. Feedback appreciated.
+	  
+	The libraries are intended to be binary compatible with
+	nettle-2.2 and later. The shared library names are
+	libnettle.so.4.6 and libhogweed.so.2.4, with sonames still
+	libnettle.so.4 and libhogweed.so.2.
 
 NEWS for the 2.6 release
 
