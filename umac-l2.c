@@ -84,7 +84,6 @@ _umac_l2(const uint32_t *key, uint64_t *state, unsigned n,
 	    state[2*i+1] = 1;
 
 	    _umac_poly128 (key, state + 2*i, 0, y);
-	    memcpy (prev, m, n * sizeof(*m));
 	  }
       memcpy (prev, m, n * sizeof(*m));
     }
