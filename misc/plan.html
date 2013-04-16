@@ -37,15 +37,15 @@
     Make use of GMP's mpn_cnd_add_n and mpn_sub_n (which will be
     available in the next GMP release).
   </p>
-  <p class='should'>
+  <p class='done'>
     Implement <tt>ecc_point_mul</tt> and <tt>ecc_point_mul_g</tt>.
   </p>  
-  <p class='should'>
+  <p class='done'>
     Rewrite x86_64/sha3-permute.asm. Moves between xmm registers and
     regular registers kill performance at least on some AMD
-    processors.
+    processors. (Not rewritten, only moves changed to go via memory).
   </p>
-  <p class='wish'>
+  <p class='done'>
     Include UMAC. Needs a serious effort to produce test vectors.
   </p>
   
@@ -55,6 +55,9 @@
   </p>
   <p class='should'>
     Document salsa20r12.
+  </p>
+  <p class='should'>
+    Document umac.
   </p>
   <p class='should'>
     Update NEWS file.
