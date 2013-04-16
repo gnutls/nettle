@@ -108,12 +108,7 @@ umac128_digest (struct umac128_ctx *ctx,
   aes_encrypt (&ctx->pdf_key, AES_BLOCK_SIZE,
 	       (uint8_t *) tag, ctx->nonce);
 
-  /* Increment nonce */
-  i = ctx->nonce_length - 1;
-  if (++ctx->nonce[i] == 0)
-    while (i > 0)
-      if (++ctx->nonce[--i] == 0)
-	break;
+  INCREMENT (ctx->nonce_length, ctx->nonce);
 
   _umac_l2_final (ctx->l2_key, ctx->l2_state, 4, ctx->count, ctx->l1_out);
   for (i = 0; i < 4; i++)

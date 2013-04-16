@@ -1,5 +1,11 @@
 2013-04-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* umac32.c (umac32_digest): Fix nonce increment, use INCREMENT
+	macro.
+	* umac64.c (umac64_digest): Likewise.
+	* umac96.c (umac96_digest): Likewise.
+	* umac128.c (umac128_digest): Likewise.
+
 	* macros.h (INCREMENT): Allow size == 1.
 
 2013-04-15  Niels Möller  <nisse@lysator.liu.se>

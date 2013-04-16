@@ -118,10 +118,8 @@ umac64_digest (struct umac64_ctx *ctx,
       ctx->nonce_low = 0;
       ctx->nonce[i] += 2;
 
-      if (ctx->nonce[i] == 0)
-	while (i > 0)
-	  if (++ctx->nonce[--i] == 0)
-	    break;
+      if (ctx->nonce[i] == 0 && i > 0)
+	INCREMENT (i, ctx->nonce);
     }
 
   _umac_l2_final (ctx->l2_key, ctx->l2_state, 2, ctx->count, ctx->l1_out);
