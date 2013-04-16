@@ -1,5 +1,8 @@
 2013-04-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* umac-set-key.c (BE_SWAP32_N): Fixed dummy definition used for
+	big-endian systems.
+
 	* Makefile.in (TARGETS): Deleted eccdata, it should be build only
 	when public key support is enabled.
 	(clean-here): Exlicitly list it here.

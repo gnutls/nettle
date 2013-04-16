@@ -53,7 +53,7 @@ umac_kdf (struct aes_ctx *aes, unsigned index, unsigned length, uint8_t *dst)
 
 #if WORDS_BIGENDIAN
 #define BE_SWAP32(x) x
-#define BE_SWAP32_N(x)
+#define BE_SWAP32_N(n, x)
 #else
 #define BE_SWAP32(x)				\
   ((ROTL32(8,  x) & 0x00FF00FFUL) |		\
