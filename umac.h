@@ -81,39 +81,47 @@ extern "C" {
   /* Input to the pdf_key, zero-padded and low bits	\
      cleared if appropriate. */				\
   uint8_t nonce[AES_BLOCK_SIZE];			\
-  unsigned short nonce_length; /* For incrementing */	\
-  /* Buffering */					\
-  /* Complete blocks processed */			\
-  unsigned count;					\
-  unsigned index;					\
-  uint8_t block[UMAC_BLOCK_SIZE];
+  unsigned short nonce_length /* For incrementing */
 
+  /* Buffering */ 
+#define _UMAC_BUFFER					\
+  /* Complete blocks processed */			\
+  unsigned index;					\
+  uint64_t count;					\
+  uint8_t block[UMAC_BLOCK_SIZE]
+  
 #define _UMAC_NONCE_CACHED 0x80
 
 struct umac32_ctx
 {
   _UMAC_STATE(1);
-  unsigned short nonce_low; /* Low bits, plus some flag for the pad cache. */
+  /* Low bits and cache flag. */
+  unsigned short nonce_low;
   /* Previous padding block */
   uint32_t pad_cache[AES_BLOCK_SIZE / 4];
+  _UMAC_BUFFER;
 };
 
 struct umac64_ctx
 {
   _UMAC_STATE(2);
-  int nonce_low; /* Low bits, plus some flag for the pad cache. */
+  /* Low bit and cache flag. */
+  unsigned short nonce_low;
   /* Previous padding block */
   uint32_t pad_cache[AES_BLOCK_SIZE/4];
+  _UMAC_BUFFER;
 };
 
 struct umac96_ctx
 {
   _UMAC_STATE(3);
+  _UMAC_BUFFER;
 };
 
 struct umac128_ctx
 {
   _UMAC_STATE(4);
+  _UMAC_BUFFER;
 };
 
 /* The _set_key function initialize the nonce to zero. */
@@ -211,11 +219,11 @@ _umac_l2_init (unsigned size, uint32_t *k);
 
 void
 _umac_l2(const uint32_t *key, uint64_t *state, unsigned n,
-	 unsigned count, uint64_t *prev, const uint64_t *m);
+	 uint64_t count, uint64_t *prev, const uint64_t *m);
 
 void
 _umac_l2_final(const uint32_t *key, uint64_t *state, unsigned n,
-	       unsigned count, uint64_t *prev);
+	       uint64_t count, uint64_t *prev);
 
 void
 _umac_l3_init (unsigned size, uint64_t *k);
