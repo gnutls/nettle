@@ -67,8 +67,7 @@ umac64_set_nonce (struct umac64_ctx *ctx,
     _umac_nh_n (__umac64_y, 2, ctx->l1_key, UMAC_BLOCK_SIZE, block);	\
     __umac64_y[0] += 8*UMAC_BLOCK_SIZE;					\
     __umac64_y[1] += 8*UMAC_BLOCK_SIZE;					\
-    _umac_l2 (ctx->l2_key, ctx->l2_state, 2, ctx->count++,		\
-	      ctx->l1_out, __umac64_y);					\
+    _umac_l2 (ctx->l2_key, ctx->l2_state, 2, ctx->count++, __umac64_y);	\
   } while (0)
 
 void
@@ -99,8 +98,7 @@ umac64_digest (struct umac64_ctx *ctx,
       _umac_nh_n (y, 2, ctx->l1_key, ctx->index + pad, ctx->block);
       y[0] += 8 * ctx->index;
       y[1] += 8 * ctx->index;
-      _umac_l2 (ctx->l2_key, ctx->l2_state, 2, ctx->count++,
-		ctx->l1_out, y);
+      _umac_l2 (ctx->l2_key, ctx->l2_state, 2, ctx->count++, y);
     }
   assert (ctx->count > 0);
   if ( !(ctx->nonce_low & _UMAC_NONCE_CACHED))
@@ -124,7 +122,7 @@ umac64_digest (struct umac64_ctx *ctx,
 	INCREMENT (i, ctx->nonce);
     }
 
-  _umac_l2_final (ctx->l2_key, ctx->l2_state, 2, ctx->count, ctx->l1_out);
+  _umac_l2_final (ctx->l2_key, ctx->l2_state, 2, ctx->count);
   tag[0] = pad[0] ^ ctx->l3_key2[0] ^ _umac_l3 (ctx->l3_key1,
 						ctx->l2_state);
   tag[1] = pad[1] ^ ctx->l3_key2[1] ^ _umac_l3 (ctx->l3_key1 + 8,

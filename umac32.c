@@ -66,8 +66,7 @@ umac32_set_nonce (struct umac32_ctx *ctx,
     uint64_t __umac32_y							\
       = _umac_nh (ctx->l1_key, UMAC_BLOCK_SIZE, block)			\
       + 8*UMAC_BLOCK_SIZE ;						\
-    _umac_l2 (ctx->l2_key, ctx->l2_state, 1, ctx->count++,		\
-	      ctx->l1_out, &__umac32_y);				\
+    _umac_l2 (ctx->l2_key, ctx->l2_state, 1, ctx->count++, &__umac32_y); \
   } while (0)
 
 void
@@ -96,8 +95,7 @@ umac32_digest (struct umac32_ctx *ctx,
 
       y = _umac_nh (ctx->l1_key, ctx->index + pad, ctx->block)
 	+ 8 * ctx->index;
-      _umac_l2 (ctx->l2_key, ctx->l2_state, 1, ctx->count++,
-		ctx->l1_out, &y);
+      _umac_l2 (ctx->l2_key, ctx->l2_state, 1, ctx->count++, &y);
     }
   assert (ctx->count > 0);
   if ( !(ctx->nonce_low & _UMAC_NONCE_CACHED))
@@ -122,7 +120,7 @@ umac32_digest (struct umac32_ctx *ctx,
 	INCREMENT (i, ctx->nonce);
     }
 
-  _umac_l2_final (ctx->l2_key, ctx->l2_state, 1, ctx->count, ctx->l1_out);
+  _umac_l2_final (ctx->l2_key, ctx->l2_state, 1, ctx->count);
   pad ^= ctx->l3_key2[0] ^ _umac_l3 (ctx->l3_key1, ctx->l2_state);
   memcpy (digest, &pad, length);
 

@@ -66,8 +66,7 @@ umac128_set_nonce (struct umac128_ctx *ctx,
     __umac128_y[1] += 8*UMAC_BLOCK_SIZE;				\
     __umac128_y[2] += 8*UMAC_BLOCK_SIZE;				\
     __umac128_y[3] += 8*UMAC_BLOCK_SIZE;				\
-    _umac_l2 (ctx->l2_key, ctx->l2_state, 4, ctx->count++,		\
-	      ctx->l1_out, __umac128_y);				\
+    _umac_l2 (ctx->l2_key, ctx->l2_state, 4, ctx->count++, __umac128_y); \
   } while (0)
 
 void
@@ -100,8 +99,7 @@ umac128_digest (struct umac128_ctx *ctx,
       y[1] += 8 * ctx->index;
       y[2] += 8 * ctx->index;
       y[3] += 8 * ctx->index;
-      _umac_l2 (ctx->l2_key, ctx->l2_state, 4, ctx->count++,
-		ctx->l1_out, y);
+      _umac_l2 (ctx->l2_key, ctx->l2_state, 4, ctx->count++, y);
     }
   assert (ctx->count > 0);
 
@@ -110,7 +108,7 @@ umac128_digest (struct umac128_ctx *ctx,
 
   INCREMENT (ctx->nonce_length, ctx->nonce);
 
-  _umac_l2_final (ctx->l2_key, ctx->l2_state, 4, ctx->count, ctx->l1_out);
+  _umac_l2_final (ctx->l2_key, ctx->l2_state, 4, ctx->count);
   for (i = 0; i < 4; i++)
     tag[i] ^= ctx->l3_key2[i] ^ _umac_l3 (ctx->l3_key1 + 8*i,
 					  ctx->l2_state + 2*i);

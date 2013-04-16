@@ -73,11 +73,10 @@ extern "C" {
   uint32_t l3_key2[(n)];				\
   /* AES cipher for encrypting the nonce */		\
   struct aes_ctx pdf_key;				\
-  /* Buffer l1 output for one block.			\
-     FIXME: Make part of l2 state? */			\
-  uint64_t l1_out[(n)];					\
-  /* For both poly64-hashing and poly128 hashing */	\
-  uint64_t l2_state[2*(n)];				\
+  /* The l2_state consists of 2*n uint64_t, for poly64	\
+     and poly128 hashing, followed by n additional	\
+     uint64_t used as an input buffer. */		\
+  uint64_t l2_state[3*(n)];				\
   /* Input to the pdf_key, zero-padded and low bits	\
      cleared if appropriate. */				\
   uint8_t nonce[AES_BLOCK_SIZE];			\
@@ -219,11 +218,11 @@ _umac_l2_init (unsigned size, uint32_t *k);
 
 void
 _umac_l2(const uint32_t *key, uint64_t *state, unsigned n,
-	 uint64_t count, uint64_t *prev, const uint64_t *m);
+	 uint64_t count, const uint64_t *m);
 
 void
 _umac_l2_final(const uint32_t *key, uint64_t *state, unsigned n,
-	       uint64_t count, uint64_t *prev);
+	       uint64_t count);
 
 void
 _umac_l3_init (unsigned size, uint64_t *k);

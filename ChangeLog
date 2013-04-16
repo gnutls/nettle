@@ -1,11 +1,13 @@
 2013-04-16  Niels Möller  <nisse@lysator.liu.se>
 
-	* umac-l2.c (_umac_l2): Deleted redundant memcpy.
-
 	* umac.h (umac32_ctx, umac64_ctx, umac96_ctx, umac128_ctx): Make
 	block count an uint64_t. Reorder some elements to put short values
 	together.
 	* umac-l2.c (_umac_l2, _umac_l2_final): Make count argument an uint64_t.
+	(_umac_l2): Deleted redundant memcpy.
+	(_umac_l2, _umac_l2_final): Store input buffer at end of the
+	poly64/poly128 state. Deleted l1_out from corresponding context
+	structs, and updated all callers.
 
 	* configure.ac: Changed version number to 2.7.
 	(LIBNETTLE_MINOR): Bumped library version, to 4.6

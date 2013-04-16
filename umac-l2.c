@@ -57,8 +57,9 @@ _umac_l2_init (unsigned size, uint32_t *k)
 
 void
 _umac_l2(const uint32_t *key, uint64_t *state, unsigned n,
-	 uint64_t count, uint64_t *prev, const uint64_t *m)
+	 uint64_t count, const uint64_t *m)
 {
+  uint64_t *prev = state + 2*n;
   unsigned i;
 
   if (count == 0)
@@ -94,8 +95,9 @@ _umac_l2(const uint32_t *key, uint64_t *state, unsigned n,
 
 void
 _umac_l2_final(const uint32_t *key, uint64_t *state, unsigned n,
-	       uint64_t count, uint64_t *prev)
+	       uint64_t count)
 {
+  uint64_t *prev = state + 2*n;
   unsigned i;
 
   assert (count > 0);
