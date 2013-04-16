@@ -1,5 +1,9 @@
 2013-04-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac: Changed version number to 2.7.
+	(LIBNETTLE_MINOR): Bumped library version, to 4.6
+	(LIBHOGWEED_MINOR): And to 2.4
+
 	* Makefile.in (distdir): Include files from armv7 subdirectory.
 
 	* x86_64/umac-nh-n.asm: New file, 3.5 time speedup.
