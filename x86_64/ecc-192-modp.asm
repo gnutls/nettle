@@ -30,7 +30,7 @@ define(<C2>, <%r11>)
 
 	C ecc_192_modp (const struct ecc_curve *ecc, mp_limb_t *rp)
 	.text
-	ALIGN(4)
+	ALIGN(16)
 PROLOGUE(nettle_ecc_192_modp)
 	W64_ENTRY(2, 0)
 	mov	16(RP), T2

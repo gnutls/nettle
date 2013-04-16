@@ -53,7 +53,7 @@ define(<TMP>,<%rbp>)
 	C	       unsigned length, uint8_t *dst,
 	C	       uint8_t *src)
 	.text
-	ALIGN(4)
+	ALIGN(16)
 PROLOGUE(_nettle_aes_encrypt)
 	W64_ENTRY(5, 0)
 	test	PARAM_LENGTH, PARAM_LENGTH
@@ -81,7 +81,7 @@ PROLOGUE(_nettle_aes_encrypt)
 	subl	$1, COUNT
 
 	add	$16,KEY		C  point to next key
-	ALIGN(4)
+	ALIGN(16)
 .Lround_loop:
 	AES_ROUND(TABLE, SA,SB,SC,SD, TA, TMP)
 	AES_ROUND(TABLE, SB,SC,SD,SA, TB, TMP)

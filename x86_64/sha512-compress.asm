@@ -114,7 +114,7 @@ define(<NOEXPN>, <
 	C _nettle_sha512_compress(uint64_t *state, const uint8_t *input, const uint64_t *k)
 
 	.text
-	ALIGN(4)
+	ALIGN(16)
 
 PROLOGUE(_nettle_sha512_compress)
 	W64_ENTRY(3, 0)
@@ -137,7 +137,7 @@ PROLOGUE(_nettle_sha512_compress)
 	mov	48(STATE), SG
 	mov	56(STATE), SH
 	xor	COUNT, COUNT
-	ALIGN(4)
+	ALIGN(16)
 
 .Loop1:
 	NOEXPN(0) ROUND(SA,SB,SC,SD,SE,SF,SG,SH,0)

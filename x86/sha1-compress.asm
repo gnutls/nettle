@@ -160,7 +160,7 @@ PROLOGUE(_nettle_sha1_compress)
 
 	C Loop-mixed to 520 cycles (for the complete function call) on
 	C AMD K7.
-ALIGN(5)
+ALIGN(32)
 	mov	88(%esp), T2
 	mov	OFFSET(2)(T2), %ecx
 	mov	OFFSET(0)(T2), %eax

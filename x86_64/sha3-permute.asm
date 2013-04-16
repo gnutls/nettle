@@ -94,7 +94,7 @@ define(<ROTL64>, <
 	
 	C sha3_permute(struct sha3_state *ctx)
 	.text
-	ALIGN(4)
+	ALIGN(16)
 PROLOGUE(nettle_sha3_permute)
 	W64_ENTRY(1, 16)
 	push	%rbp
@@ -139,7 +139,7 @@ PROLOGUE(nettle_sha3_permute)
 	pxor	A2122, C12
 	pxor	A2324, C34
 	
-	ALIGN(4)
+	ALIGN(16)
 .Loop:
 	C The theta step. Combine parity bits, then xor to state.
 	C D0 = C4 ^ (C1 <<< 1)
@@ -483,7 +483,7 @@ PROLOGUE(nettle_sha3_permute)
 
 EPILOGUE(nettle_sha3_permute)
 
-ALIGN(4)
+ALIGN(16)
 .rc:	C In reverse order
 	.quad	0x8000000080008008
 	.quad	0x0000000080000001

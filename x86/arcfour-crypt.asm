@@ -23,7 +23,7 @@ C MA 02111-1301, USA.
 	C               unsigned length, uint8_t *dst,
 	C               const uint8_t *src)
 	.text
-	ALIGN(4)
+	ALIGN(16)
 PROLOGUE(nettle_arcfour_crypt)
 	C save all registers that need to be saved
 	pushl	%ebx		C  12(%esp)
@@ -63,7 +63,7 @@ C Register usage:
 	sarl	$1, %edx
 	jc	.Lloop_odd
 	
-	ALIGN(4)
+	ALIGN(16)
 .Lloop:
 	movb	(%ebp, %eax), %cl	C  si.
 	addb    %cl, %bl

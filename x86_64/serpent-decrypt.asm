@@ -522,7 +522,7 @@ define(<WLTI>, <
 	C	          unsigned length, uint8_t *dst,
 	C	          const uint8_t *src)
 	.text
-	ALIGN(4)
+	ALIGN(16)
 PROLOGUE(nettle_serpent_decrypt)
         C save all registers that need to be saved
 	W64_ENTRY(4, 13)
@@ -557,7 +557,7 @@ PROLOGUE(nettle_serpent_decrypt)
 
 	jmp	.Lwround_start
 
-	ALIGN(4)
+	ALIGN(16)
 
 .Lwround_loop:
 	WLTI(X0,X1,X2,X3)
@@ -624,7 +624,7 @@ PROLOGUE(nettle_serpent_decrypt)
 	mov	$384, CNT
 	jmp	.Lround_start
 
-	ALIGN(4)
+	ALIGN(16)
 .Lround_loop:
 	LTI(x0,x1,x2,x3)
 .Lround_start:

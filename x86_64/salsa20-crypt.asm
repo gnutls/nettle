@@ -50,7 +50,7 @@ C registers.
 	C salsa20_crypt(struct salsa20_ctx *ctx, unsigned length,
 	C		uint8_t *dst, const uint8_t *src)
 	.text
-	ALIGN(4)
+	ALIGN(16)
 PROLOGUE(nettle_salsa20_crypt)
 	W64_ENTRY(4, 9)	
 
@@ -92,7 +92,7 @@ PROLOGUE(nettle_salsa20_crypt)
 	SWAP(X0, X2, M0011)	
 
 	movl	$10, XREG(COUNT)
-	ALIGN(4)
+	ALIGN(16)
 .Loop:
 	QROUND(X0, X1, X2, X3)
 	C For the row operations, we first rotate the rows, to get

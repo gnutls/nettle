@@ -1,4 +1,3 @@
-C -*- mode: asm; asm-comment-char: ?C; -*-  
 C nettle, low-level cryptographics library
 C 
 C Copyright (C) 2010, Niels Möller
@@ -37,7 +36,7 @@ define(<USE_SSE2>, <no>)
 
 	C memxor(uint8_t *dst, const uint8_t *src, size_t n)
 	C 	          %rdi               %rsi      %rdx
-	ALIGN(4)
+	ALIGN(16)
 
 PROLOGUE(memxor)
 	W64_ENTRY(3, 0)
@@ -48,7 +47,7 @@ EPILOGUE(memxor)
 
 	C memxor3(uint8_t *dst, const uint8_t *a, const uint8_t *b, size_t n)
 	C 	          %rdi              %rsi              %rdx      %rcx
-	ALIGN(4)
+	ALIGN(16)
 	
 PROLOGUE(memxor3)
 	W64_ENTRY(4, 0)
@@ -124,7 +123,7 @@ ifelse(USE_SSE2, yes, <
 	jz	.Ldone
 	jmp 	.Lshift_next
 
-	ALIGN(4)
+	ALIGN(16)
 
 .Lshift_loop:
 	mov	8(AP, N), S0
@@ -177,7 +176,7 @@ C 	jz	.Ldone
 	
 	jmp	.Lword_next
 
-	ALIGN(4)
+	ALIGN(16)
 
 .Lword_loop:
 	mov	8(AP, N), TMP
@@ -234,7 +233,7 @@ ifelse(USE_SSE2, yes, <
 	mov	TMP, (DST, N)
 	jmp	.Lsse2_next
 
-	ALIGN(4)
+	ALIGN(16)
 .Lsse2_loop:
 	movdqu	(AP, N), %xmm0
 	movdqu	(BP, N), %xmm1

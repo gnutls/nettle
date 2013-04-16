@@ -49,7 +49,7 @@ C aligned.
 	C umac_nh_n(uint64_t *out, unsigned n, const uint32_t *key,
 	C	    unsigned length, const uint8_t *msg)
 	.text
-	ALIGN(4)
+	ALIGN(16)
 PROLOGUE(_nettle_umac_nh_n)
 	W64_ENTRY(5, 14)
 	pxor	XY0, XY0

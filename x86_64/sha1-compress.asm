@@ -123,7 +123,7 @@ C adding, and then rotating back.
 	C _nettle_sha1_compress(uint32_t *state, uint8_t *input)
 	
 	.text
-	ALIGN(4)
+	ALIGN(16)
 PROLOGUE(_nettle_sha1_compress)
 	C save all registers that need to be saved
 	W64_ENTRY(2, 0)

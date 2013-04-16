@@ -34,7 +34,7 @@ include_src(<x86_64/salsa20.m4>)
 
 	C _salsa20_core(uint32_t *dst, const uint32_t *src, unsigned rounds)
 	.text
-	ALIGN(4)
+	ALIGN(16)
 PROLOGUE(_nettle_salsa20_core)
 	W64_ENTRY(3, 9)	
 
@@ -58,7 +58,7 @@ PROLOGUE(_nettle_salsa20_core)
 
 	shrl	$1, XREG(COUNT)
 
-	ALIGN(4)
+	ALIGN(16)
 .Loop:
 	QROUND(X0, X1, X2, X3)
 	pshufd	$0x93, X1, X1	C	11 00 01 10 (least sign. left)

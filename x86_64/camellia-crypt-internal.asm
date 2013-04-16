@@ -1,4 +1,3 @@
-C -*- mode: asm; asm-comment-char: ?C; -*-  
 C nettle, low-level cryptographics library
 C 
 C Copyright (C) 2010, Niels Möller
@@ -122,7 +121,7 @@ C	xorl	XREG(TMP), XREG($1)
 	C	          unsigned length, uint8_t *dst,
 	C	          uint8_t *src)
 	.text
-	ALIGN(4)
+	ALIGN(16)
 PROLOGUE(_nettle_camellia_crypt)
 
 	W64_ENTRY(5, 0)

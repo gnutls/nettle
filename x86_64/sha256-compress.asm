@@ -114,7 +114,7 @@ define(<NOEXPN>, <
 	C _nettle_sha256_compress(uint32_t *state, const uint8_t *input, const uint32_t *k)
 
 	.text
-	ALIGN(4)
+	ALIGN(16)
 
 PROLOGUE(_nettle_sha256_compress)
 	W64_ENTRY(3, 0)
@@ -137,7 +137,7 @@ PROLOGUE(_nettle_sha256_compress)
 	movl	24(STATE), SG
 	movl	28(STATE), SH
 	xor	COUNT, COUNT
-	ALIGN(4)
+	ALIGN(16)
 
 .Loop1:
 	NOEXPN(0) ROUND(SA,SB,SC,SD,SE,SF,SG,SH,0)

@@ -26,16 +26,17 @@ define(<EPILOGUE>,
 <ifelse(ELF_STYLE,yes,
 <.size C_NAME($1), . - C_NAME($1)>,<>)>)
 
-dnl Argument to ALIGN is always logarithmic
-dnl FIXME: the << operator is not supported by Solaris m4,
-dnl and ** is not supported by OpenBSD m4.
-dnl We should switch to non-logarithmic ALIGN instead.
+define(<m4_log2>, <m4_log2_internal($1,1,0)>)
+define(<m4_log2_internal>,
+<ifelse($3, 10, <not-a-power-of-two>,
+$1, $2, $3,
+<m4_log2_internal($1, eval(2*$2), eval(1 + $3))>)>)
 
-dnl Need changequote to be able to use the << operator.
+dnl Argument to ALIGN is always in bytes, and converted to a
+dnl logarithmic .align if necessary.
+
 define(<ALIGN>,
-<changequote([,])dnl
-.align ifelse(ALIGN_LOG,yes,$1,eval(1 << $1))dnl >> balance
-changequote(<,>)dnl
+<.align ifelse(ALIGN_LOG,yes,<m4_log2($1)>,$1)
 >)
 
 dnl Struct defining macros
