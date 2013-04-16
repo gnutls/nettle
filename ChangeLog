@@ -1,5 +1,8 @@
 2013-04-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* umac32.c (umac32_digest): Fix nonce caching.
+	* umac64.c (umac64_digest): Likewise.
+
 	* testsuite/umac-test.c (test_incr): New function.
 	(test_main): Test nonce increment.
 
