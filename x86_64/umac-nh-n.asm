@@ -40,6 +40,7 @@ define(<XY1>, <%xmm13>)
 
 C Copy [0,1,2,3] to [1,1,3,3]
 define(<HI2LO>, <pshufd	<$>0xf5,>)
+
 C FIXME: Would be nice if we could force the key array to be 16-byte
 C aligned.
 
@@ -61,7 +62,7 @@ PROLOGUE(_nettle_umac_nh_n)
 	movups	16(KEY), XT2
 	movups	32(KEY), XK2	
 	lea	48(KEY), KEY
-	C Leave XK2 untuched, and put permuted keys in XK0, XK1, XT2, XT3
+	C Leave XK2 untouched, and put permuted keys in XK0, XK1, XT2, XT3
 	movaps	XK0, XT0
 	movaps	XK0, XK1
 	
