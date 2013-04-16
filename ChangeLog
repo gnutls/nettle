@@ -1,3 +1,7 @@
+2013-04-16  Niels Möller  <nisse@lysator.liu.se>
+
+	* macros.h (INCREMENT): Allow size == 1.
+
 2013-04-15  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86_64/umac-nh.asm: New file. 4.4 time speedup.
