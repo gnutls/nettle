@@ -1,5 +1,7 @@
 2013-04-17  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.in (eccdata): Depend on mini-gmp files. Drop -lgmp.
+
 	* eccdata.c: Use mini-gmp, to avoid gmp dependency and associated
 	configure tests for the *build* system. Replaced mpz_submul_ui by
 	mpz_mul_ui + mpz_sub, and gmp_printf and gmp_fprintf by calls to
