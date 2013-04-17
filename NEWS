@@ -19,6 +19,9 @@ NEWS for the 2.7 release
 	  
 	* Support for UMAC, including x86_64 and ARM assembly.
 
+	* Support for 12-round salsa20, "salsa20r12", as specified by
+	  eSTREAM. Contributed by Nikos Mavrogiannopoulos.
+	
 	Optimizations:
 
 	* ARM assembly code for several additional algorithms,
