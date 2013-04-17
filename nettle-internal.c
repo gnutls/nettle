@@ -97,6 +97,15 @@ nettle_salsa20 = {
   (nettle_crypt_func *) salsa20_crypt
 };
 
+const struct nettle_cipher
+nettle_salsa20r12 = {
+  "salsa20r12", sizeof(struct salsa20_ctx),
+  0, SALSA20_KEY_SIZE,
+  salsa20_set_key_hack, salsa20_set_key_hack,
+  (nettle_crypt_func *) salsa20r12_crypt,
+  (nettle_crypt_func *) salsa20r12_crypt
+};
+
 const struct nettle_aead
 nettle_gcm_aes128 = _NETTLE_AEAD(gcm, GCM, aes, 128);
 const struct nettle_aead

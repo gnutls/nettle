@@ -62,6 +62,7 @@ extern const struct nettle_cipher nettle_blowfish128;
 
 /* For benchmarking only, sets no iv and lies about the block size. */
 extern const struct nettle_cipher nettle_salsa20;
+extern const struct nettle_cipher nettle_salsa20r12;
 
 /* Glue to openssl, for comparative benchmarking. Code in
  * examples/nettle-openssl.c. */

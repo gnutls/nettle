@@ -1,5 +1,11 @@
 2013-04-17  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/nettle-benchmark.c (main): Benchmark salsa20r12.
+
+	* nettle-internal.c (nettle_salsa20r12): Cipher struct for
+	benchmarking only.
+	* nettle-internal.h (nettle_salsa20): Declare it.
+
 	* Makefile.in (eccdata): Depend on mini-gmp files. Drop -lgmp.
 
 	* eccdata.c: Use mini-gmp, to avoid gmp dependency and associated
