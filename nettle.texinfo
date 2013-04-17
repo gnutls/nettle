@@ -182,6 +182,11 @@ Released into the public domain.
 The implementation of the DES cipher is written by Dana L. How, and
 released under the LGPL.
 
+@item GOSTHASH94
+The C implementation of the GOST94 message digest is written by 
+Aleksey Kravchenko and was ported from the rhash library by Nikos
+Mavrogiannopoulos. It is released under the MIT license.
+
 @item MD2
 The implementation of MD2 is written by Andrew Kuchling, and hacked
 some by Andreas Sigfridsson and @value{AUTHOR}. Python Cryptography
@@ -196,6 +201,10 @@ The implementation of the MD5 message digest is written by Colin Plumb.
 It has been hacked some more by Andrew Kuchling and @value{AUTHOR}.
 Released into the public domain.
 
+@item PBKDF2
+The C implementation of PBKDF2 is based on earlier work for Shishi and
+GnuTLS by Simon Josefsson.  Released under the LGPL.
+
 @item RIPEMD160
 The implementation of RIPEMD160 message digest is based on the code in
 libgcrypt, copyright owned by the Free Software Foundation. Ported to
@@ -204,12 +213,8 @@ Nettle by Andres Mejia. Released under the LGPL.
 @item SALSA20
 The C implementation of SALSA20 is based on D. J. Bernstein's reference
 implementation (in the public domain), adapted to Nettle by Simon
-Josefsson, and heavily modified by Niels Möller. Assembly for x86_64 by
-Niels Möller. Released under the LGPL.
-
-@item PBKDF2
-The C implementation of PBKDF2 is based on earlier work for Shishi and
-GnuTLS by Simon Josefsson.  Released under the LGPL.
+Josefsson, and heavily modified by Niels Möller. Assembly for x86_64 and
+ARM by Niels Möller. Released under the LGPL.
 
 @item SERPENT
 The implementation of the SERPENT cipher is based on the code in libgcrypt,
@@ -220,8 +225,8 @@ x86_64 by Niels Möller. Released under the LGPL.
 @item SHA1
 The C implementation of the SHA1 message digest is written by Peter
 Gutmann, and hacked some more by Andrew Kuchling and @value{AUTHOR}.
-Released into the public domain. Assembler for x86 by @value{AUTHOR},
-released under the LGPL.
+Released into the public domain. Assembler for x86, x86_64 and ARM by
+@value{AUTHOR}, released under the LGPL.
 
 @item SHA2
 Written by @value{AUTHOR}, using Peter Gutmann's SHA1 code as a model. 
@@ -230,14 +235,12 @@ Released under the LGPL.
 @item SHA3
 Written by @value{AUTHOR}. Released under the LGPL.
 
-@item GOSTHASH94
-The C implementation of the GOST94 message digest is written by 
-Aleksey Kravchenko and was ported from the rhash library by Nikos
-Mavrogiannopoulos. It is released under the MIT license.
-
 @item TWOFISH
 The implementation of the TWOFISH cipher is written by Ruud de Rooij.
 Released under the LGPL.
+
+@item UMAC
+Written by @value{AUTHOR}. Released under the LGPL.
 
 @item RSA
 Written by @value{AUTHOR}, released under the LGPL. Uses the GMP library
@@ -1564,7 +1567,18 @@ Encrypts or decrypts the data of a message, using salsa20. When a
 message is encrypted using a sequence of calls to @code{salsa20_crypt},
 all but the last call @emph{must} use a length that is a multiple of
 @code{SALSA20_BLOCK_SIZE}.
+@end deftypefun
 
+The full salsa20 cipher uses 20 rounds of mixing. Variants of Salsa20
+with fewer rounds are possible, and the 12-round variant is specified by
+eSTREAM, see @url{http://www.ecrypt.eu.org/stream/finallist.html}.
+Nettle calls this variant @code{salsa20r12}. It uses the same context
+struct and key setup as the full salsa20 cipher, but a separate function
+for encryption and decryption.
+
+@deftypefun void salsa20r12_crypt (struct salsa20_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+Encrypts or decrypts the data of a message, using salsa20 reduced to 12
+rounds.
 @end deftypefun
 
 @subsection SERPENT
