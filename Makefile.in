@@ -247,7 +247,7 @@ gcmdata$(EXEEXT_FOR_BUILD): gcmdata.c
 	$(CC_FOR_BUILD) `test -f gcmdata.c || echo '$(srcdir)/'`gcmdata.c \
 	-o gcmdata$(EXEEXT_FOR_BUILD)
 
-eccdata$(EXEEXT_FOR_BUILD): eccdata.c
+eccdata$(EXEEXT_FOR_BUILD): eccdata.c mini-gmp.c mini-gmp.h
 	$(CC_FOR_BUILD) `test -f eccdata.c || echo '$(srcdir)/'`eccdata.c -lgmp \
 	-o eccdata$(EXEEXT_FOR_BUILD)
 

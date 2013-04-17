@@ -1,3 +1,12 @@
+2013-04-17  Niels Möller  <nisse@lysator.liu.se>
+
+	* eccdata.c: Use mini-gmp, to avoid gmp dependency and associated
+	configure tests for the *build* system. Replaced mpz_submul_ui by
+	mpz_mul_ui + mpz_sub, and gmp_printf and gmp_fprintf by calls to
+	mpz_out_str.
+
+	* mini-gmp.h, mini-gmp.c: New files, copied from gmp-5.1.1.
+
 2013-04-16  Niels Möller  <nisse@lysator.liu.se>
 
 	* umac-set-key.c (BE_SWAP32_N): Fixed dummy definition used for

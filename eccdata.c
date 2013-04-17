@@ -29,7 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <gmp.h>
+#include "mini-gmp.c"
 
 /* Affine coordinates, for simplicity. Infinity point represented as x
    == y == 0. */
@@ -142,7 +142,9 @@ ecc_dup (const struct ecc_curve *ecc,
 
       /* x' = t^2 - 2 x */
       mpz_mul (x, t, t);
-      mpz_submul_ui (x, p->x, 2);
+      /* mpz_submul_ui (x, p->x, 2); not available in mini-gmp */
+      mpz_mul_ui (m, p->x, 2);
+      mpz_sub (x, x, m);
       mpz_mod (x, x, ecc->p);
 
       /* y' = (x - x') * t - y */
@@ -551,8 +553,15 @@ ecc_mul_pippenger (const struct ecc_curve *ecc,
       {									\
 	fprintf (stderr, "%s:%d: ASSERT_EQUAL (%s, %s) failed.\n",	\
 		 __FILE__, __LINE__, #p, #q);				\
-	gmp_fprintf (stderr, "p = (%Zx,\n     %Zx)\n", (p)->x, (p)->y); \
-	gmp_fprintf (stderr, "q = (%Zx,\n     %Zx)\n", (q)->x, (q)->y); \
+	fprintf (stderr, "p = (");					\
+	mpz_out_str (stderr, 16, (p)->x);				\
+	fprintf (stderr, ",\n     ");					\
+	mpz_out_str (stderr, 16, (p)->y);				\
+	fprintf (stderr, ")\nq = (");					\
+	mpz_out_str (stderr, 16, (q)->x);				\
+	fprintf (stderr, ",\n     ");					\
+	mpz_out_str (stderr, 16, (q)->y);				\
+	fprintf (stderr, ")\n");					\
 	abort();							\
       }									\
   } while (0)
@@ -562,7 +571,11 @@ ecc_mul_pippenger (const struct ecc_curve *ecc,
       {									\
 	fprintf (stderr, "%s:%d: ASSERT_ZERO (%s) failed.\n",		\
 		 __FILE__, __LINE__, #p);				\
-	gmp_fprintf (stderr, "p = (%Zx,\n     %Zx)\n", (p)->x, (p)->y); \
+	fprintf (stderr, "p = (");					\
+	mpz_out_str (stderr, 16, (p)->x);				\
+	fprintf (stderr, ",\n     ");					\
+	mpz_out_str (stderr, 16, (p)->y);				\
+	fprintf (stderr, ")\n");					\
 	abort();							\
       }									\
   } while (0)
@@ -581,25 +594,48 @@ ecc_curve_check (const struct ecc_curve *ecc)
   if (ecc->ref)
     ASSERT_EQUAL (&p, &ecc->ref[0]);
   else
-    gmp_fprintf (stderr, "g2 = %Zx\n     %Zx\n", p.x, p.y);
-
+    {
+      fprintf (stderr, "g2 = ");
+      mpz_out_str (stderr, 16, p.x);
+      fprintf (stderr, "\n     ");
+      mpz_out_str (stderr, 16, p.y);
+      fprintf (stderr, "\n");
+    }
   ecc_add (ecc, &q, &p, &ecc->g);
   if (ecc->ref)
     ASSERT_EQUAL (&q, &ecc->ref[1]);
   else
-    gmp_fprintf (stderr, "g3 = %Zx\n     %Zx\n", q.x, q.y);
+    {
+      fprintf (stderr, "g3 = ");
+      mpz_out_str (stderr, 16, q.x);
+      fprintf (stderr, "\n     ");
+      mpz_out_str (stderr, 16, q.y);
+      fprintf (stderr, "\n");
+    }
 
   ecc_add (ecc, &q, &q, &ecc->g);
   if (ecc->ref)
     ASSERT_EQUAL (&q, &ecc->ref[2]);
   else
-    gmp_fprintf (stderr, "g4 = %Zx\n     %Zx\n", q.x, q.y);
+    {
+      fprintf (stderr, "g4 = ");
+      mpz_out_str (stderr, 16, q.x);
+      fprintf (stderr, "\n     ");
+      mpz_out_str (stderr, 16, q.y);
+      fprintf (stderr, "\n");
+    }
 
   ecc_dup (ecc, &q, &p);
   if (ecc->ref)
     ASSERT_EQUAL (&q, &ecc->ref[2]);
   else
-    gmp_fprintf (stderr, "g4 = %Zx\n     %Zx\n", q.x, q.y);
+    {
+      fprintf (stderr, "g4 = ");
+      mpz_out_str (stderr, 16, q.x);
+      fprintf (stderr, "\n     ");
+      mpz_out_str (stderr, 16, q.y);
+      fprintf (stderr, "\n");
+    }
 
   ecc_mul_binary (ecc, &p, ecc->q, &ecc->g);
   ASSERT_ZERO (&p);
@@ -639,7 +675,9 @@ output_digits (const mpz_t x,
 	printf("\n ");
       
       mpz_and (limb, mask, t);
-      gmp_printf (" 0x%Zx%s,", limb, suffix);
+      printf (" 0x");
+      mpz_out_str (stdout, 16, limb);
+      printf ("%s,", suffix);
       mpz_tdiv_q_2exp (t, t, bits_per_limb);
     }
 
