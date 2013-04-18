@@ -61,8 +61,12 @@ extern "C" {
 #include "nettle-types.h"
 #include "aes.h"
 
-#define UMAC_BLOCK_SIZE 1024
 #define UMAC_KEY_SIZE 16
+#define UMAC32_DIGEST_SIZE 4
+#define UMAC64_DIGEST_SIZE 8
+#define UMAC96_DIGEST_SIZE 12
+#define UMAC128_DIGEST_SIZE 16
+#define UMAC_BLOCK_SIZE 1024
 
 /* Subkeys and state for UMAC with tag size 32*n bits. */
 #define _UMAC_STATE(n)					\

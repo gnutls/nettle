@@ -1,3 +1,8 @@
+2013-04-18  Niels Möller  <nisse@lysator.liu.se>
+
+	* umac.h (UMAC32_DIGEST_SIZE, UMAC64_DIGEST_SIZE)
+	(UMAC96_DIGEST_SIZE, UMAC128_DIGEST_SIZE): New constants.
+
 2013-04-17  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/nettle-benchmark.c (main): Benchmark salsa20r12.
