@@ -1071,7 +1071,7 @@ keys. Nettle defines AES in @file{<nettle/aes.h>}.
 @end deftp
 
 @defvr Constant AES_BLOCK_SIZE
-The AES block-size, 16
+The AES block-size, 16.
 @end defvr
 
 @defvr Constant AES_MIN_KEY_SIZE
@@ -1081,7 +1081,7 @@ The AES block-size, 16
 @end defvr
 
 @defvr Constant AES_KEY_SIZE
-Default AES key size, 32
+Default AES key size, 32.
 @end defvr
 
 @deftypefun void aes_set_encrypt_key (struct aes_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
@@ -1147,15 +1147,15 @@ Nettle defines ARCFOUR in @file{<nettle/arcfour.h>}.
 @end deftp
 
 @defvr Constant ARCFOUR_MIN_KEY_SIZE
-Minimum key size, 1
+Minimum key size, 1.
 @end defvr
 
 @defvr Constant ARCFOUR_MAX_KEY_SIZE
-Maximum key size, 256
+Maximum key size, 256.
 @end defvr
 
 @defvr Constant ARCFOUR_KEY_SIZE
-Default ARCFOUR key size, 16
+Default ARCFOUR key size, 16.
 @end defvr
 
 @deftypefun void arcfour_set_key (struct arcfour_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
@@ -1193,7 +1193,7 @@ standards.
 @end deftp
 
 @defvr Constant ARCTWO_BLOCK_SIZE
-The ARCTWO block-size, 8
+The ARCTWO block-size, 8.
 @end defvr
 
 @defvr Constant ARCTWO_MIN_KEY_SIZE
@@ -1203,7 +1203,7 @@ The ARCTWO block-size, 8
 @end defvr
 
 @defvr Constant ARCTWO_KEY_SIZE
-Default ARCTWO key size, 8
+Default ARCTWO key size, 8.
 @end defvr
 
 @deftypefun void arctwo_set_key_ekb (struct arctwo_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key}, unsigned @var{ekb})
@@ -1242,19 +1242,19 @@ has some weak keys. Nettle defines BLOWFISH in @file{<nettle/blowfish.h>}.
 @end deftp
 
 @defvr Constant BLOWFISH_BLOCK_SIZE
-The BLOWFISH block-size, 8
+The BLOWFISH block-size, 8.
 @end defvr
 
 @defvr Constant BLOWFISH_MIN_KEY_SIZE
-Minimum BLOWFISH key size, 8
+Minimum BLOWFISH key size, 8.
 @end defvr
 
 @defvr Constant BLOWFISH_MAX_KEY_SIZE
-Maximum BLOWFISH key size, 56
+Maximum BLOWFISH key size, 56.
 @end defvr
 
 @defvr Constant BLOWFISH_KEY_SIZE
-Default BLOWFISH key size, 16
+Default BLOWFISH key size, 16.
 @end defvr
 
 @deftypefun int blowfish_set_key (struct blowfish_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
@@ -1298,7 +1298,7 @@ is 128 bits (16 octets), and the supported key sizes are 128, 192, and
 @end deftp
 
 @defvr Constant CAMELLIA_BLOCK_SIZE
-The CAMELLIA block-size, 16
+The CAMELLIA block-size, 16.
 @end defvr
 
 @defvr Constant CAMELLIA_MIN_KEY_SIZE
@@ -1308,7 +1308,7 @@ The CAMELLIA block-size, 16
 @end defvr
 
 @defvr Constant CAMELLIA_KEY_SIZE
-Default CAMELLIA key size, 32
+Default CAMELLIA key size, 32.
 @end defvr
 
 @deftypefun void camellia_set_encrypt_key (struct camellia_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
@@ -1344,19 +1344,19 @@ Nettle defines cast128 in @file{<nettle/cast128.h>}.
 @end deftp
 
 @defvr Constant CAST128_BLOCK_SIZE
-The CAST128 block-size, 8
+The CAST128 block-size, 8.
 @end defvr
 
 @defvr Constant CAST128_MIN_KEY_SIZE
-Minimum CAST128 key size, 5
+Minimum CAST128 key size, 5.
 @end defvr
 
 @defvr Constant CAST128_MAX_KEY_SIZE
-Maximum CAST128 key size, 16
+Maximum CAST128 key size, 16.
 @end defvr
 
 @defvr Constant CAST128_KEY_SIZE
-Default CAST128 key size, 16
+Default CAST128 key size, 16.
 @end defvr
 
 @deftypefun void cast128_set_key (struct cast128_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
@@ -1395,11 +1395,11 @@ DES also has some weak keys. Nettle defines DES in @file{<nettle/des.h>}.
 @end deftp
 
 @defvr Constant DES_BLOCK_SIZE
-The DES block-size, 8
+The DES block-size, 8.
 @end defvr
 
 @defvr Constant DES_KEY_SIZE
-DES key size, 8
+DES key size, 8.
 @end defvr
 
 @deftypefun int des_set_key (struct des_ctx *@var{ctx}, const uint8_t *@var{key})
@@ -1470,11 +1470,11 @@ triple-DES, it is defined in the same place as plain DES,
 @end deftp
 
 @defvr Constant DES3_BLOCK_SIZE
-The DES3 block-size is the same as DES_BLOCK_SIZE, 8
+The DES3 block-size is the same as DES_BLOCK_SIZE, 8.
 @end defvr
 
 @defvr Constant DES3_KEY_SIZE
-DES key size, 24
+DES key size, 24.
 @end defvr
 
 @deftypefun int des3_set_key (struct des3_ctx *@var{ctx}, const uint8_t *@var{key})
@@ -1592,19 +1592,19 @@ larger ones. Nettle defines SERPENT in @file{<nettle/serpent.h>}.
 @end deftp
 
 @defvr Constant SERPENT_BLOCK_SIZE
-The SERPENT block-size, 16
+The SERPENT block-size, 16.
 @end defvr
 
 @defvr Constant SERPENT_MIN_KEY_SIZE
-Minimum SERPENT key size, 16
+Minimum SERPENT key size, 16.
 @end defvr
 
 @defvr Constant SERPENT_MAX_KEY_SIZE
-Maximum SERPENT key size, 32
+Maximum SERPENT key size, 32.
 @end defvr
 
 @defvr Constant SERPENT_KEY_SIZE
-Default SERPENT key size, 32
+Default SERPENT key size, 32.
 @end defvr
 
 @deftypefun void serpent_set_key (struct serpent_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
@@ -1632,19 +1632,19 @@ Nettle defines it in @file{<nettle/twofish.h>}.
 @end deftp
 
 @defvr Constant TWOFISH_BLOCK_SIZE
-The TWOFISH block-size, 16
+The TWOFISH block-size, 16.
 @end defvr
 
 @defvr Constant TWOFISH_MIN_KEY_SIZE
-Minimum TWOFISH key size, 16
+Minimum TWOFISH key size, 16.
 @end defvr
 
 @defvr Constant TWOFISH_MAX_KEY_SIZE
-Maximum TWOFISH key size, 32
+Maximum TWOFISH key size, 32.
 @end defvr
 
 @defvr Constant TWOFISH_KEY_SIZE
-Default TWOFISH key size, 32
+Default TWOFISH key size, 32.
 @end defvr
 
 @deftypefun void twofish_set_key (struct twofish_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
