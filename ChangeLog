@@ -1,5 +1,7 @@
 2013-04-18  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac: Recognize cpu type "arm*", not just "armv7*'.
+
 	* arm/aes-encrypt-internal.asm: Updated include of aes.m4.
 	* arm/aes-decrypt-internal.asm: Likewise.
 

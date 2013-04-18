@@ -237,7 +237,7 @@ if test "x$enable_assembler" = xyes ; then
 	asm_path=sparc32
       fi
       ;;
-    armv7l*)
+    arm*)
       NETTLE_CHECK_ARM_NEON
 
       asm_path=arm
