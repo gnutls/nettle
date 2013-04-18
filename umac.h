@@ -88,8 +88,8 @@ extern "C" {
 
   /* Buffering */ 
 #define _UMAC_BUFFER					\
-  /* Complete blocks processed */			\
   unsigned index;					\
+  /* Complete blocks processed */			\
   uint64_t count;					\
   uint8_t block[UMAC_BLOCK_SIZE]
   
