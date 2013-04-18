@@ -34,8 +34,10 @@ NEWS for the 2.7 release
           performance problem is fixed now).
 	
 	The ARM code was tested and benchmarked on Cortex-A9. Some of
-	the functions use "neon" instructions, which are not available
-	on all ARM processors. Feedback appreciated.
+	the functions use "neon" instructions. The configure script
+	decides if neon instructions can be used, and the command line
+	options --enable-arm-neon and --disable-arm-neon can be used
+	to override its choice. Feedback appreciated.
 	  
 	The libraries are intended to be binary compatible with
 	nettle-2.2 and later. The shared library names are
