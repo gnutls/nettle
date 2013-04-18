@@ -2358,6 +2358,119 @@ This function also resets the context for processing new messages, with
 the same key.
 @end deftypefun
 
+@subsection @acronym{UMAC}
+@cindex UMAC
+
+@acronym{UMAC} is a message authentication code based on universal
+hashing, and designed for high performance on modern processors (in
+contrast to GCM, @xref{GCM}, which is designed primarily for hardware
+performance). On processors with good integer multiplication
+performance, it can be 10 times faster than SHA256 and SHA512.
+@acronym{UMAC} is specified in @cite{RFC 4418}.
+
+The secret key is always 128 bits (16 octets). The key is used as an
+encryption key for the @acronym{AES} block cipher. This cipher is used
+in counter mode to generate various internal subkeys needed in
+@acronym{UMAC}. Messages are of arbitrary size, and for each message,
+@acronym{UMAC} also needs a unique nonce. Nonce values must not be
+reused for two messages with the same key, but they need not be kept
+secret.
+
+The nonce must be at least one octet, and at most 16; nonces shorter
+than 16 octets are zero-padded. Nettle's implementation of
+@acronym{UMAC} increments the nonce for automatically each message, so
+explicitly setting the nonce for each message is optional. This
+auto-increment uses network byte order and it takes the length of the
+nonce into acount. E.g., if the initial nonce is ``abc'' (3 octets),
+this value is zero-padded to 16 octets for the first message. For the
+next message, the nonce is incremented to ``abd'', and this incremented
+value is zero-padded to 16 octets.
+
+@acronym{UMAC} is defined in four variants, for different output sizes:
+32 bits (4 octest), 64 bits (8 octets), 96 bits (12 octets) and 128 bits
+(16 octets), corresponding to different tradeoffs between speed and
+security. Using a shorter output size sometimes (but not always!) gives
+the same result as using a longer output size and truncating the result.
+So it is important to use the right variant. For consistency with other
+hash and @acronym{MAC} functions, Nettle's @code{_digest} functions for
+@acronym{UMAC} accept a length parameter so that the output can be
+truncated to any desired size, but it is recommended to stick to the
+specified output size and select the @acronym{umac} variant
+corresponding to the desired size.
+
+The internal block size of @acronym{UMAC} is 1024 octets, and it also
+generates more than 1024 bytes of subkeys. This makes the size of the
+context struct a bit larger than other hash functions and @acronym{MAC}
+algorithms in Nettle.
+
+Nettle defines @acronym{UMAC} in @file{<nettle/umac.h>}.
+
+@deftp {Context struct} {struct umac32_ctx}
+@deftpx {Context struct} {struct umac64_ctx}
+@deftpx {Context struct} {struct umac96_ctx}
+@deftpx {Context struct} {struct umac128_ctx}
+Each @acronym{UMAC} variant uses its own context struct.
+@end deftp
+
+@defvr Constant UMAC_KEY_SIZE
+The UMAC key size, 16.
+@end defvr
+@defvr Constant UMAC32_DIGEST_SIZE
+The size of an UMAC32 digest, 4.
+@end defvr
+@defvr Constant UMAC64_DIGEST_SIZE
+The size of an UMAC64 digest, 8.
+@end defvr
+@defvr Constant UMAC96_DIGEST_SIZE
+The size of an UMAC96 digest, 12.
+@end defvr
+@defvr Constant UMAC128_DIGEST_SIZE
+The size of an UMAC128 digest, 16.
+@end defvr
+@defvr Constant UMAC128_DATA_SIZE
+The internal block size of UMAC.
+@end defvr
+
+@deftypefun void umac32_set_key (struct umac32_ctx *@var{ctx}, const uint8_t *@var{key})
+@deftypefunx void umac64_set_key (struct umac64_ctx *@var{ctx}, const uint8_t *@var{key})
+@deftypefunx void umac96_set_key (struct umac96_ctx *@var{ctx}, const uint8_t *@var{key})
+@deftypefunx void umac128_set_key (struct umac128_ctx *@var{ctx}, const uint8_t *@var{key})
+These functions initialize the @acronym{UMAC} context struct. They also
+initialize the nonce to zero (with length 16, for auto-increment).
+@end deftypefun
+
+@deftypefun void umac32_set_nonce (struct umac32_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{nonce})
+@deftypefunx void umac64_set_nonce (struct umac64_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{nonce})
+@deftypefunx void umac96_set_nonce (struct umac96_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{nonce})
+@deftypefunx void umac128_set_nonce (struct umac128_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{nonce})
+Sets the nonce to be used for the next message. In general, nonces
+should be set before processing of the message. This is not strictly
+required for @acronym{UMAC} (the nonce only affects the final processing
+generating the digest), but it is nevertheless recommended that this
+function is called @emph{before} the first @code{_update} call for the
+message.
+@end deftypefun
+
+@deftypefun void umac32_update (struct umac32_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+@deftypefunx void umac64_update (struct umac64_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+@deftypefunx void umac96_update (struct umac96_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+@deftypefunx void umac128_update (struct umac128_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+These functions are called zero or more times to process the message.
+@end deftypefun
+
+@deftypefun void umac32_digest (struct umac32_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+@deftypefunx void umac64_digest (struct umac64_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+@deftypefunx void umac96_digest (struct umac96_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+@deftypefunx void umac128_digest (struct umac128_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+Extracts the @acronym{MAC} of the message, writing it to @var{digest}.
+@var{length} is usually equal to the specified output size, but if you
+provide a smaller value, only the first @var{length} octets of the
+@acronym{MAC} are written. These functions reset the context for
+processing of a new message with the same key. The nonce is incremented
+as described above, the new value is used unless you call the
+@code{_set_nonce} function explicitly for each message.
+@end deftypefun
+
 @node Key derivation functions, Public-key algorithms, Keyed hash functions, Reference
 @comment  node-name,  next,  previous,  up
 @section Key derivation Functions

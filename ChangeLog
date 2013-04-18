@@ -1,5 +1,7 @@
 2013-04-18  Niels Möller  <nisse@lysator.liu.se>
 
+	* nettle.texinfo (Keyed hash functions): Document UMAC.
+
 	* umac.h (UMAC32_DIGEST_SIZE, UMAC64_DIGEST_SIZE)
 	(UMAC96_DIGEST_SIZE, UMAC128_DIGEST_SIZE): New constants.
 	(UMAC_DATA_SIZE): New name, for consistency with hash functions.
