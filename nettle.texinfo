@@ -61,7 +61,7 @@ object-oriented wrapper for your favorite language or application.
 * Copyright::                   Your rights.
 * Conventions::                 General interface conventions.
 * Example::                     An example program.
-* Linking::                     Linking with the libnettle and libhogweed.
+* Linking::                     Linking with libnettle and libhogweed.
 * Reference::                   All Nettle functions and features.
 * Nettle soup::                 For the serious nettle hacker.
 * Installation::                How to install Nettle.
@@ -2144,6 +2144,7 @@ Keyed hash functions are typically a lot faster than digital signatures
 as well.
 
 @subsection @acronym{HMAC}
+@cindex HMAC
 
 One can build keyed hash functions from ordinary hash functions. Older
 constructions simply concatenate secret key and message and hashes that, but
