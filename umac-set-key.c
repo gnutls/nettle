@@ -78,7 +78,7 @@ _umac_set_key (uint32_t *l1_key, uint32_t *l2_key,
 
   aes_set_encrypt_key (aes, UMAC_KEY_SIZE, key);
 
-  size = UMAC_BLOCK_SIZE / 4 + 4*(n-1);
+  size = UMAC_DATA_SIZE / 4 + 4*(n-1);
   umac_kdf (aes, 1, size * sizeof(uint32_t), (uint8_t *) l1_key);
   BE_SWAP32_N (size, l1_key);
 

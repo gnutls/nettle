@@ -61,11 +61,11 @@ umac128_set_nonce (struct umac128_ctx *ctx,
 
 #define UMAC128_BLOCK(ctx, block) do {					\
     uint64_t __umac128_y[4];						\
-    _umac_nh_n (__umac128_y, 4, ctx->l1_key, UMAC_BLOCK_SIZE, block);	\
-    __umac128_y[0] += 8*UMAC_BLOCK_SIZE;				\
-    __umac128_y[1] += 8*UMAC_BLOCK_SIZE;				\
-    __umac128_y[2] += 8*UMAC_BLOCK_SIZE;				\
-    __umac128_y[3] += 8*UMAC_BLOCK_SIZE;				\
+    _umac_nh_n (__umac128_y, 4, ctx->l1_key, UMAC_DATA_SIZE, block);	\
+    __umac128_y[0] += 8*UMAC_DATA_SIZE;					\
+    __umac128_y[1] += 8*UMAC_DATA_SIZE;					\
+    __umac128_y[2] += 8*UMAC_DATA_SIZE;					\
+    __umac128_y[3] += 8*UMAC_DATA_SIZE;					\
     _umac_l2 (ctx->l2_key, ctx->l2_state, 4, ctx->count++, __umac128_y); \
   } while (0)
 

@@ -370,7 +370,7 @@ time_umac(void)
   info.update = (nettle_hash_update_func *) umac32_update;
   info.data = data;
 
-  display("umac32", "update", UMAC_BLOCK_SIZE,
+  display("umac32", "update", UMAC_DATA_SIZE,
 	  time_function(bench_hash, &info));
 
   umac64_set_key (&ctx64, key);
@@ -378,7 +378,7 @@ time_umac(void)
   info.update = (nettle_hash_update_func *) umac64_update;
   info.data = data;
 
-  display("umac64", "update", UMAC_BLOCK_SIZE,
+  display("umac64", "update", UMAC_DATA_SIZE,
 	  time_function(bench_hash, &info));
 
   umac96_set_key (&ctx96, key);
@@ -386,7 +386,7 @@ time_umac(void)
   info.update = (nettle_hash_update_func *) umac96_update;
   info.data = data;
 
-  display("umac96", "update", UMAC_BLOCK_SIZE,
+  display("umac96", "update", UMAC_DATA_SIZE,
 	  time_function(bench_hash, &info));
 
   umac128_set_key (&ctx128, key);
@@ -394,7 +394,7 @@ time_umac(void)
   info.update = (nettle_hash_update_func *) umac128_update;
   info.data = data;
 
-  display("umac128", "update", UMAC_BLOCK_SIZE,
+  display("umac128", "update", UMAC_DATA_SIZE,
 	  time_function(bench_hash, &info));
 }
 

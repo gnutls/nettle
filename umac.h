@@ -66,11 +66,11 @@ extern "C" {
 #define UMAC64_DIGEST_SIZE 8
 #define UMAC96_DIGEST_SIZE 12
 #define UMAC128_DIGEST_SIZE 16
-#define UMAC_BLOCK_SIZE 1024
+#define UMAC_DATA_SIZE 1024
 
 /* Subkeys and state for UMAC with tag size 32*n bits. */
 #define _UMAC_STATE(n)					\
-  uint32_t l1_key[UMAC_BLOCK_SIZE/4 + 4*((n)-1)];	\
+  uint32_t l1_key[UMAC_DATA_SIZE/4 + 4*((n)-1)];	\
   /* Keys in 32-bit pieces, high first */		\
   uint32_t l2_key[6*(n)];				\
   uint64_t l3_key1[8*(n)];				\
@@ -91,7 +91,7 @@ extern "C" {
   unsigned index;					\
   /* Complete blocks processed */			\
   uint64_t count;					\
-  uint8_t block[UMAC_BLOCK_SIZE]
+  uint8_t block[UMAC_DATA_SIZE]
   
 #define _UMAC_NONCE_CACHED 0x80
 
