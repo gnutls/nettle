@@ -68,6 +68,10 @@ AC_ARG_ENABLE(documentation,
   AC_HELP_STRING([--disable-documentation], [Omit building and installing the documentation. (default=auto)]),,
   [enable_documentation=auto])
 
+AC_ARG_ENABLE(arm-neon,
+  AC_HELP_STRING([--enable-arm-neon], [Enable ARM Neon assembly. (default=auto)]),,
+  [enable_arm_neon=auto])
+
 LSH_RPATH_INIT([`echo $with_lib_path | sed 's/:/ /g'` \
     `echo $exec_prefix | sed "s@^NONE@$prefix/lib@g" | sed "s@^NONE@$ac_default_prefix/lib@g"` \
     /usr/local/lib /sw/local/lib /sw/lib \
@@ -234,7 +238,12 @@ if test "x$enable_assembler" = xyes ; then
       fi
       ;;
     armv7l*)
-      asm_path=armv7
+      NETTLE_CHECK_ARM_NEON
+
+      asm_path=arm
+      if test "x$enable_arm_neon" = xyes ; then
+	asm_path="arm/neon $asm_path"
+      fi
       ;;
     *)
       enable_assembler=no
@@ -266,27 +275,33 @@ asm_file_list=""
 
 if test "x$enable_assembler" = xyes ; then
   if test -n "$asm_path"; then
-    AC_MSG_NOTICE([Looking for assembler files in $asm_path/.])
+    AC_MSG_NOTICE([Looking for assembler files in $asm_path.])
     for tmp_f in $asm_replace_list ; do
-      if test -f "$srcdir/$asm_path/$tmp_f"; then
-	asm_file_list="$asm_file_list $tmp_f"
-        AC_CONFIG_LINKS($tmp_f:$asm_path/$tmp_f)
-      fi
+      for asm_dir in $asm_path ; do
+        if test -f "$srcdir/$asm_dir/$tmp_f"; then
+	  asm_file_list="$asm_file_list $tmp_f"
+          AC_CONFIG_LINKS($tmp_f:$asm_dir/$tmp_f)
+	  break
+        fi
+      done
     done
     dnl Workaround for AC_CONFIG_LINKS, which complains if we use the
     dnl same destination argument $tmp_f multiple times.
     for tmp_o in $asm_optional_list ; do
-      if test -f "$srcdir/$asm_path/$tmp_o"; then
-	asm_file_list="$asm_file_list $tmp_o"
-        AC_CONFIG_LINKS($tmp_o:$asm_path/$tmp_o)
-	while read tmp_func ; do
-	  AC_DEFINE_UNQUOTED(HAVE_NATIVE_$tmp_func)
-	  eval HAVE_NATIVE_$tmp_func=yes
-	done <<EOF
-[`sed -n 's/[^ 	]*PROLOGUE(_*\(nettle_\)*\([^)]*\)).*$/\2/p' < "$srcdir/$asm_path/$tmp_o"`]
+      for asm_dir in $asm_path ; do
+	if test -f "$srcdir/$asm_dir/$tmp_o"; then
+	  asm_file_list="$asm_file_list $tmp_o"
+	  AC_CONFIG_LINKS($tmp_o:$asm_dir/$tmp_o)
+	  while read tmp_func ; do
+	    AC_DEFINE_UNQUOTED(HAVE_NATIVE_$tmp_func)
+	    eval HAVE_NATIVE_$tmp_func=yes
+	  done <<EOF
+[`sed -n 's/[^ 	]*PROLOGUE(_*\(nettle_\)*\([^)]*\)).*$/\2/p' < "$srcdir/$asm_dir/$tmp_o"`]
 EOF
-	OPT_ASM_SOURCES="$OPT_ASM_SOURCES $tmp_o"
-      fi
+	  OPT_ASM_SOURCES="$OPT_ASM_SOURCES $tmp_o"
+	  break
+	fi
+      done
     done	
     if test -z "$asm_file_list"; then
       enable_assembler=no

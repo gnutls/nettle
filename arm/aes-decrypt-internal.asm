@@ -17,13 +17,11 @@ C along with the nettle library; see the file COPYING.LIB.  If not, write to
 C the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 C MA 02111-1301, USA.
 
-include_src(<armv7/aes.m4>)
+include_src(<arm/aes.m4>)
 
-C	Benchmarked at at 693, 824, 950 cycles/block on cortex A9,
-C	for 128, 192 and 256 bit key sizes.
-
-C	Possible improvements: More efficient load and store with
-C	aligned accesses. Better scheduling.
+C	Benchmarked at at 785, 914, 1051 cycles/block on cortex A9,
+C	for 128, 192 and 256 bit key sizes. Unclear why it is slower
+C	than _aes_encrypt.
 
 define(<CTX>, <r0>)
 define(<TABLE>, <r1>)
@@ -45,15 +43,15 @@ define(<X2>, <r12>)
 define(<X3>, <r14>)	C lr
 
 
-	.file "aes-encrypt-internal.asm"
+	.file "aes-decrypt-internal.asm"
 	
-	C _aes_encrypt(struct aes_context *ctx, 
+	C _aes_decrypt(struct aes_context *ctx, 
 	C	       const struct aes_table *T,
 	C	       unsigned length, uint8_t *dst,
 	C	       uint8_t *src)
 	.text
 	.align 2
-PROLOGUE(_nettle_aes_encrypt)
+PROLOGUE(_nettle_aes_decrypt)
 	teq	LENGTH, #0
 	beq	.Lend
 	ldr	SRC, [sp]
@@ -74,21 +72,21 @@ PROLOGUE(_nettle_aes_encrypt)
 	.align 2
 .Lround_loop:
 	C	Transform X -> W
-	AES_ENCRYPT_ROUND(X0, X1, X2, X3, W0, W1, W2, W3, KEY)
+	AES_DECRYPT_ROUND(X0, X1, X2, X3, W0, W1, W2, W3, KEY)
 	
 .Lentry:
 	subs	ROUND, ROUND,#2
 	C	Transform W -> X
-	AES_ENCRYPT_ROUND(W0, W1, W2, W3, X0, X1, X2, X3, KEY)
+	AES_DECRYPT_ROUND(W0, W1, W2, W3, X0, X1, X2, X3, KEY)
 
 	bne	.Lround_loop
 
 	sub	TABLE, TABLE, #AES_TABLE0
 	C	Final round
-	AES_FINAL_ROUND(X0, X1, X2, X3, KEY, W0)
-	AES_FINAL_ROUND(X1, X2, X3, X0, KEY, W1)
-	AES_FINAL_ROUND(X2, X3, X0, X1, KEY, W2)
-	AES_FINAL_ROUND(X3, X0, X1, X2, KEY, W3)
+	AES_FINAL_ROUND(X0, X3, X2, X1, KEY, W0)
+	AES_FINAL_ROUND(X1, X0, X3, X2, KEY, W1)
+	AES_FINAL_ROUND(X2, X1, X0, X3, KEY, W2)
+	AES_FINAL_ROUND(X3, X2, X1, X0, KEY, W3)
 
 	pop	{LENGTH, DST, SRC}
 	
@@ -104,4 +102,4 @@ PROLOGUE(_nettle_aes_encrypt)
 	
 .Lend:
 	bx	lr
-EPILOGUE(_nettle_aes_encrypt)
+EPILOGUE(_nettle_aes_decrypt)

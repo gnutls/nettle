@@ -516,7 +516,7 @@ distdir: $(DISTFILES)
 	  else cp "$(srcdir)/$$f" "$(distdir)" ; \
 	  fi ; \
 	done
-	set -e; for d in sparc32 sparc64 x86 x86_64 armv7 ; do \
+	set -e; for d in sparc32 sparc64 x86 x86_64 arm arm/neon ; do \
 	  mkdir "$(distdir)/$$d" ; \
 	  cp $(srcdir)/$$d/*.asm $(srcdir)/$$d/*.m4 "$(distdir)/$$d" ; \
 	done

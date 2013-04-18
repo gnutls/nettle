@@ -1,5 +1,23 @@
 2013-04-18  Niels Möller  <nisse@lysator.liu.se>
 
+	* arm/aes-encrypt-internal.asm: Updated include of aes.m4.
+	* arm/aes-decrypt-internal.asm: Likewise.
+
+	* Makefile.in (distdir): Updated for ARM reorganization.
+
+	* configure.ac (asm_path): Generalized, can now be a list of
+	directories. On ARM, check for neon instructions, and add arm/neon
+	if appropriate. New command line options
+	--enable-arm-neon/--disable-arm-neon, for overriding the default.
+
+	arm/neon: New subdirectory, for assembly files making use of neon
+	instructions.
+
+	arm: Renamed directory, from...
+	armv7: ...old name.
+
+	* aclocal.m4 (NETTLE_CHECK_ARM_NEON): New macro.
+
 	* nettle.texinfo (Keyed hash functions): Document UMAC.
 
 	* umac.h (UMAC32_DIGEST_SIZE, UMAC64_DIGEST_SIZE)

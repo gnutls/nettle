@@ -608,6 +608,37 @@ fi
 AC_SUBST(EXEEXT_FOR_BUILD,$gmp_cv_prog_exeext_for_build)
 ])
 
+dnl NETTLE_CHECK_ARM_NEON
+dnl ---------------------
+dnl Check if ARM Neon instructinos should be used.
+dnl Obeys enable_arn_neon, which should be set earlier.
+AC_DEFUN([NETTLE_CHECK_ARM_NEON],
+[if test "$enable_arm_neon" = auto ; then
+  if test "$cross_compiling" = yes ; then
+    dnl Check if compiler/assembler accepts it,
+    dnl without an explicit .fpu neon directive.
+    AC_CACHE_CHECK([if assembler accepts Neon instructions],
+      nettle_cv_asm_arm_neon,
+      [GMP_TRY_ASSEMBLE([
+.text
+foo:
+	vmlal.u32	q1, d0, d1
+],
+      [nettle_cv_asm_arm_neon=yes],
+      [nettle_cv_asm_arm_neon=no])])
+    enable_arm_neon="$nettle_cv_asm_arm_neon"
+  else
+    AC_MSG_CHECKING([if /proc/cpuinfo claims neon support])
+    if grep '^Features.*:.* neon' /proc/cpuinfo >/dev/null ; then
+      enable_arm_neon=yes
+    else
+      enable_arm_neon=no
+    fi
+    AC_MSG_RESULT($enable_arm_neon)
+  fi
+fi
+])
+
 dnl @synopsis AX_CREATE_STDINT_H [( HEADER-TO-GENERATE [, HEADERS-TO-CHECK])]
 dnl
 dnl the "ISO C9X: 7.18 Integer types <stdint.h>" section requires the
