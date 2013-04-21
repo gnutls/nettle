@@ -610,8 +610,8 @@ AC_SUBST(EXEEXT_FOR_BUILD,$gmp_cv_prog_exeext_for_build)
 
 dnl NETTLE_CHECK_ARM_NEON
 dnl ---------------------
-dnl Check if ARM Neon instructinos should be used.
-dnl Obeys enable_arn_neon, which should be set earlier.
+dnl Check if ARM Neon instructions should be used.
+dnl Obeys enable_arm_neon, which should be set earlier.
 AC_DEFUN([NETTLE_CHECK_ARM_NEON],
 [if test "$enable_arm_neon" = auto ; then
   if test "$cross_compiling" = yes ; then
