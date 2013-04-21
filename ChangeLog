@@ -1,3 +1,8 @@
+2013-04-21  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (DISTFILES): Added mini-gmp.c and mini-gmp.h.
+	(distdir): Use find, for identifying assembly files to copy.
+
 2013-04-18  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Recognize cpu type "arm*", not just "armv7*'.
