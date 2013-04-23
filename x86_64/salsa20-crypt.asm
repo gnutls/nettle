@@ -224,10 +224,11 @@ PROLOGUE(nettle_salsa20_crypt)
 	shr	$16, XREG(T64)
 .Llt2:
 	test	$1, LENGTH
-	jz	.Lend
+	jz	.Lret
 	xor	(SRC, POS), LREG(T64)
 	mov	LREG(T64), (DST, POS)
 
-	jmp	.Lend
+.Lret:
+	ret
 
 EPILOGUE(nettle_salsa20_crypt)
