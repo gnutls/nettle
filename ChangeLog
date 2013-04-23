@@ -1,3 +1,8 @@
+2013-04-23  Niels Möller  <nisse@lysator.liu.se>
+
+	From Martin Storsjö:
+	* Makefile.in: Consistently use EXEEXT_FOR_BUILD.
+
 2013-04-21  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in (DISTFILES): Added mini-gmp.c and mini-gmp.h.
