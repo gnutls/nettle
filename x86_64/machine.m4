@@ -67,7 +67,7 @@ define(<XREG>,<ifelse(
 dnl W64_ENTRY(nargs, xmm_used)
 define(<W64_ENTRY>, <
   changequote([,])dnl
-  ifelse(<<<<<<<<<<<<<<< ignored; only for balancing)
+  ifelse(<<<<<<<<<<<<<<<< ignored; only for balancing)
   ifelse(W64_ABI,yes,[
     ifelse(eval($2 > 6), 1, [
       sub	[$]eval(8 + 16*($2 - 6)), %rsp
@@ -115,7 +115,11 @@ define(<W64_ENTRY>, <
       mov	%r9, %rcx
     ])
     ifelse(eval($1 >= 5), 1, [
-      mov	56(%rsp), %r8
+      ifelse(eval($2 > 6), 1, [
+        mov	eval(8 + 16*($2 - 6) + 56)(%rsp), %r8
+      ], [
+        mov	56(%rsp), %r8
+      ])
     ])
   ])
   changequote(<,>)dnl

@@ -7,7 +7,9 @@
 	within this subfunction.
 	* x86_64/machine.m4 (W64_ENTRY): Use movdqu instead of movdqa for
 	saving xmm registers, since the stack is not guaranteed to be
-	16-byte aligned on win64.
+	16-byte aligned on win64. Take pushed xmm registers into account
+	when reading the fifth parameter from the stack.
+
 	* Makefile.in: Consistently use EXEEXT_FOR_BUILD.
 
 2013-04-21  Niels Möller  <nisse@lysator.liu.se>
