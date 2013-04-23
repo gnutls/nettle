@@ -63,6 +63,7 @@
 /sha384-test
 /sha512-test
 /twofish-test
+/umac-test
 /yarrow-test
 
 /test.in
