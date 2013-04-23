@@ -2,7 +2,8 @@ NEWS for the 2.7 release
 
 	This release includes an implementation of elliptic curve
 	cryptography (ECC) and optimizations for the ARM architecture.
-	This work was generously funded by the .SE Internet Fund.
+	This work was done at the offices of South Pole AB, and
+	generously funded by the .SE Internet Fund.
 
 	Bug fixes:
 
