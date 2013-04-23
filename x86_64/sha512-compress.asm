@@ -192,5 +192,6 @@ PROLOGUE(_nettle_sha512_compress)
 	mov	176(%rsp),%r15
 
 	add	$184, %rsp
+	W64_EXIT(3, 0)
 	ret
 EPILOGUE(_nettle_sha512_compress)

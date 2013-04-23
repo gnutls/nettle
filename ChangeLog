@@ -1,6 +1,8 @@
 2013-04-23  Niels Möller  <nisse@lysator.liu.se>
 
 	From Martin Storsjö:
+	* x86_64/sha256-compress.asm: Add forgotten W64_EXIT.
+	* x86_64/sha512-compress.asm: Likewise.
 	* x86_64/salsa20-crypt.asm (Lpartial): Don't return via W64_EXIT
 	within this subfunction.
 	* x86_64/machine.m4 (W64_ENTRY): Use movdqu instead of movdqa for
