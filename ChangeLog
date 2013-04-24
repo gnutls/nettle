@@ -1,3 +1,7 @@
+2013-04-24  Niels Möller  <nisse@lysator.liu.se>
+
+	* Released nettle-2.7.
+
 2013-04-23  Niels Möller  <nisse@lysator.liu.se>
 
 	From Martin Storsjö:
@@ -602,7 +606,7 @@
 
 2013-01-16  Niels Möller  <nisse@lysator.liu.se>
 
-	Released nettle-2.6.
+	* Released nettle-2.6.
 
 2013-01-12  Niels Möller  <nisse@lysator.liu.se>
 
