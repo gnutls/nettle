@@ -1,5 +1,13 @@
 2013-04-24  Niels Möller  <nisse@lysator.liu.se>
 
+	* memxor.h: Updated prototypes. Drop include of nettle-types.h.
+
+	* memxor.c: Include nettle-types.h, for uintptr_t. Replace all
+	internal uses of uint8_t by plain char.
+	(memxor): Use void * rather than uint8_t * for
+	arguments.
+	(memxor3): Likewise.
+
 	* x86_64/memxor.asm: Added nettle_ prefix to symbols.
 	* arm/memxor.asm: Likewise.
 
