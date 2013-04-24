@@ -39,7 +39,7 @@ define(<TNC>, <r12>)
 	.text
 	.arm
 
-	C memxor(uint8_t *dst, const uint8_t *src, size_t n)
+	C memxor(void *dst, const void *src, size_t n)
 	.align 4
 PROLOGUE(nettle_memxor)
 	cmp	N, #0
@@ -229,7 +229,7 @@ define(<ATNC>, <r10>)
 define(<BCNT>, <r11>)
 define(<BTNC>, <r12>)
 
-	C memxor3(uint8_t *dst, const uint8_t *a, const uint8_t *b, size_t n)
+	C memxor3(void *dst, const void *a, const void *b, size_t n)
 	.align 2
 PROLOGUE(nettle_memxor3)
 	cmp	N, #0

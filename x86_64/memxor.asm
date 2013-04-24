@@ -34,7 +34,7 @@ define(<USE_SSE2>, <no>)
 
 	.text
 
-	C memxor(uint8_t *dst, const uint8_t *src, size_t n)
+	C memxor(void *dst, const void *src, size_t n)
 	C 	          %rdi               %rsi      %rdx
 	ALIGN(16)
 
@@ -45,7 +45,7 @@ PROLOGUE(nettle_memxor)
 	jmp 	.Lmemxor3_entry
 EPILOGUE(nettle_memxor)
 
-	C memxor3(uint8_t *dst, const uint8_t *a, const uint8_t *b, size_t n)
+	C memxor3(void *dst, const void *a, const void *b, size_t n)
 	C 	          %rdi              %rsi              %rdx      %rcx
 	ALIGN(16)
 	
