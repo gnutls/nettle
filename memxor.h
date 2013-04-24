@@ -12,6 +12,10 @@
 extern "C" {
 #endif
 
+/* Name mangling */
+#define memxor nettle_memxor
+#define memxor3 nettle_memxor3
+
 uint8_t *memxor(uint8_t *dst, const uint8_t *src, size_t n);
 uint8_t *memxor3(uint8_t *dst, const uint8_t *a, const uint8_t *b, size_t n);
 

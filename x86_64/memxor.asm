@@ -38,18 +38,18 @@ define(<USE_SSE2>, <no>)
 	C 	          %rdi               %rsi      %rdx
 	ALIGN(16)
 
-PROLOGUE(memxor)
+PROLOGUE(nettle_memxor)
 	W64_ENTRY(3, 0)
 	mov	%rdx, %r10
 	mov	%rdi, %rdx
 	jmp 	.Lmemxor3_entry
-EPILOGUE(memxor)
+EPILOGUE(nettle_memxor)
 
 	C memxor3(uint8_t *dst, const uint8_t *a, const uint8_t *b, size_t n)
 	C 	          %rdi              %rsi              %rdx      %rcx
 	ALIGN(16)
 	
-PROLOGUE(memxor3)
+PROLOGUE(nettle_memxor3)
 	W64_ENTRY(4, 0)
 	C %cl needed for shift count, so move away N
 	mov	%rcx, N
@@ -258,4 +258,4 @@ ifelse(USE_SSE2, yes, <
 >)	
 	
 
-EPILOGUE(memxor3)
+EPILOGUE(nettle_memxor3)

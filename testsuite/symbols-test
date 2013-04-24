@@ -17,7 +17,7 @@ fi
 #   code.
 
 ( $NM -g ../libnettle.a || $NM ../libnettle.a ) \
-    | grep ' [DRT] ' | egrep -v '( |^)\.?_?(_?nettle_|memxor)|get_pc_thunk' \
+    | grep ' [DRT] ' | egrep -v '( |^)\.?_?(_?nettle_)|get_pc_thunk' \
     | sort -k3 > test1.out
 
 if [ -s test1.out ] ; then

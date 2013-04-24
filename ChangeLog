@@ -1,5 +1,14 @@
 2013-04-24  Niels Möller  <nisse@lysator.liu.se>
 
+	* x86_64/memxor.asm: Added nettle_ prefix to symbols.
+	* arm/memxor.asm: Likewise.
+
+	* testsuite/symbols-test: Don't allow memxor functions without
+	nettle prefix,
+
+	* memxor.h (memxor3): Added name mangling to add "nettle_" prefix
+	to memxor and memxor3 symbols.
+
 	* Makefile.in (nettle_OBJS): Deleted $(LIBOBJS), and also deleted
 	LIBOBJS substitution.
 	(nettle_SOURCES): Added memxor.c, to include it in the library

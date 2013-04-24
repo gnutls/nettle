@@ -41,7 +41,7 @@ define(<TNC>, <r12>)
 
 	C memxor(uint8_t *dst, const uint8_t *src, size_t n)
 	.align 4
-PROLOGUE(memxor)
+PROLOGUE(nettle_memxor)
 	cmp	N, #0
 	beq	.Lmemxor_done
 
@@ -214,7 +214,7 @@ PROLOGUE(memxor)
 	beq	.Lmemxor_done
 	b	.Lmemxor_bytes
 	
-EPILOGUE(memxor)
+EPILOGUE(nettle_memxor)
 
 define(<DST>, <r0>)
 define(<AP>, <r1>)
@@ -231,7 +231,7 @@ define(<BTNC>, <r12>)
 
 	C memxor3(uint8_t *dst, const uint8_t *a, const uint8_t *b, size_t n)
 	.align 2
-PROLOGUE(memxor3)
+PROLOGUE(nettle_memxor3)
 	cmp	N, #0
 	beq	.Lmemxor3_ret
 
@@ -485,4 +485,4 @@ PROLOGUE(memxor3)
 	add	AP, AP,	ACNT, lsr #3
 	add	BP, BP, BCNT, lsr #3
 	b	.Lmemxor3_bytes
-EPILOGUE(memxor3)
+EPILOGUE(nettle_memxor3)
