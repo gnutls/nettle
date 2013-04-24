@@ -1,5 +1,8 @@
 2013-04-24  Niels Möller  <nisse@lysator.liu.se>
 
+	* nettle.texinfo (Miscellaneous functions): Updated memxor
+	prototype. Document memxor3.
+
 	* salsa20-crypt.c (salsa20_crypt): Deleted cast of memxor
 	argument, no longer needed.
 	* salsa20r12-crypt.c (salsa20r12_crypt): Likewise.

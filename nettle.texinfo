@@ -3717,11 +3717,17 @@ error.
 @comment  node-name,  next,  previous,  up
 @section Miscellaneous functions
 
-@deftypefun {uint8_t *} memxor (uint8_t *@var{dst}, const uint8_t *@var{src}, size_t @var{n})
+@deftypefun {void *} memxor (void *@var{dst}, const void *@var{src}, size_t @var{n})
 XORs the source area on top of the destination area. The interface
 doesn't follow the Nettle conventions, because it is intended to be
 similar to the ANSI-C @code{memcpy} function.
 @end deftypefun
+
+@deftypefun {void *} memxor3 (void *@var{dst}, const void *@var{a}, const void *@var{b}, size_t @var{n})
+Like @code{memxor}, but takes two source areas and separate
+destination area.
+@end deftypefun
+
 
 @code{memxor} is declared in @file{<nettle/memxor.h>}.
 
