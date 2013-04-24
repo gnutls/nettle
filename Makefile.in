@@ -5,8 +5,6 @@
 srcdir = @srcdir@
 VPATH = @srcdir@
 
-LIBOBJS = @LIBOBJS@
-
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -84,6 +82,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 knuth-lfib.c \
 		 md2.c md2-meta.c md4.c md4-meta.c \
 		 md5.c md5-compress.c md5-compat.c md5-meta.c \
+		 memxor.c \
 		 gosthash94.c \
 		 ripemd160.c ripemd160-compress.c ripemd160-meta.c \
 		 salsa20-core-internal.c \
@@ -180,7 +179,7 @@ DISTFILES = $(SOURCES) $(HEADERS) getopt.h .bootstrap run-tests \
 	nettle.texinfo nettle.info nettle.html nettle.pdf sha-example.c
 
 # Rules building static libraries
-nettle_OBJS = $(nettle_SOURCES:.c=.$(OBJEXT)) $(LIBOBJS)
+nettle_OBJS = $(nettle_SOURCES:.c=.$(OBJEXT))
 nettle_PURE_OBJS = $(nettle_OBJS:.$(OBJEXT)=.p$(OBJEXT))
 
 hogweed_OBJS = $(hogweed_SOURCES:.c=.$(OBJEXT)) $(OPT_ASM_SOURCES:.asm=.$(OBJEXT))

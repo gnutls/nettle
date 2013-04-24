@@ -1,5 +1,12 @@
 2013-04-24  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.in (nettle_OBJS): Deleted $(LIBOBJS), and also deleted
+	LIBOBJS substitution.
+	(nettle_SOURCES): Added memxor.c, to include it in the library
+	unconditionally.
+
+	* configure.ac: Deleted AC_REPLACE_FUNCS for memxor.
+
 	* Released nettle-2.7.
 
 2013-04-23  Niels Möller  <nisse@lysator.liu.se>
