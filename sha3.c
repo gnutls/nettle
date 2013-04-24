@@ -46,7 +46,7 @@ sha3_absorb (struct sha3_state *state, unsigned length, const uint8_t *data)
       *p ^= LE_READ_UINT64 (data);
   }
 #else /* !WORDS_BIGENDIAN */
-  memxor ((uint8_t *) state->a, data, length);
+  memxor (state->a, data, length);
 #endif
 
   sha3_permute (state);

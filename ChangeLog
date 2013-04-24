@@ -1,5 +1,10 @@
 2013-04-24  Niels Möller  <nisse@lysator.liu.se>
 
+	* salsa20-crypt.c (salsa20_crypt): Deleted cast of memxor
+	argument, no longer needed.
+	* salsa20r12-crypt.c (salsa20r12_crypt): Likewise.
+	* sha3.c (sha3_absorb): Likewise.
+
 	* memxor.h: Updated prototypes. Drop include of nettle-types.h.
 
 	* memxor.c: Include nettle-types.h, for uintptr_t. Replace all

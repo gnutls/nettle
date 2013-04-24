@@ -61,10 +61,10 @@ salsa20_crypt(struct salsa20_ctx *ctx,
       
       if (length <= SALSA20_BLOCK_SIZE)
 	{
-	  memxor3 (c, m, (uint8_t *) x, length);
+	  memxor3 (c, m, x, length);
 	  return;
 	}
-      memxor3 (c, m, (uint8_t *) x, SALSA20_BLOCK_SIZE);
+      memxor3 (c, m, x, SALSA20_BLOCK_SIZE);
 
       length -= SALSA20_BLOCK_SIZE;
       c += SALSA20_BLOCK_SIZE;
