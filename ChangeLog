@@ -1,3 +1,8 @@
+2013-04-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/hogweed-benchmark.c: Add benchmarking of OpenSSL's RSA
+	functions.
+
 2013-04-24  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle.texinfo (Miscellaneous functions): Updated memxor
