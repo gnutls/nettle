@@ -1,5 +1,10 @@
 2013-04-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac: Changed version number, to 2.8.
+	(LIBNETTLE_MAJOR): Bumped major number, following
+	nettle_memxor ABI break.
+	(LIBNETTLE_MINOR): Reset to zero.
+
 	* examples/hogweed-benchmark.c: Add benchmarking of OpenSSL's RSA
 	functions.
 	(all functions): Deleted unneeded casts.
