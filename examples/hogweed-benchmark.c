@@ -52,7 +52,6 @@
 #include <openssl/ec.h>
 #include <openssl/ecdsa.h>
 #include <openssl/objects.h>
-#include <openssl/err.h>
 #endif
 
 #define BENCH_INTERVAL 0.1
@@ -235,7 +234,7 @@ bench_rsa_init (unsigned size)
 static void
 bench_rsa_sign (void *p)
 {
-  struct rsa_ctx *ctx = (struct rsa_ctx *) p;
+  struct rsa_ctx *ctx = p;
 
   mpz_t s;
   mpz_init (s);
@@ -246,16 +245,15 @@ bench_rsa_sign (void *p)
 static void
 bench_rsa_verify (void *p)
 {
-  struct rsa_ctx *ctx = (struct rsa_ctx *) p;
-  int res = rsa_sha256_verify_digest (&ctx->pub, ctx->digest, ctx->s);
-  if (!res)
+  struct rsa_ctx *ctx = p;
+  if (! rsa_sha256_verify_digest (&ctx->pub, ctx->digest, ctx->s))
     die ("Internal error, rsa_sha256_verify_digest failed.\n");
 }
 
 static void
 bench_rsa_clear (void *p)
 {
-  struct rsa_ctx *ctx = (struct rsa_ctx *) p;
+  struct rsa_ctx *ctx = p;
 
   rsa_public_key_clear (&ctx->pub);
   rsa_private_key_clear (&ctx->key);
@@ -320,7 +318,7 @@ bench_dsa_init (unsigned size)
 static void
 bench_dsa_sign (void *p)
 {
-  struct dsa_ctx *ctx = (struct dsa_ctx *) p;
+  struct dsa_ctx *ctx = p;
   struct dsa_signature s;
 
   dsa_signature_init (&s);
@@ -333,16 +331,15 @@ bench_dsa_sign (void *p)
 static void
 bench_dsa_verify (void *p)
 {
-  struct dsa_ctx *ctx = (struct dsa_ctx *) p;
-  int res = dsa_sha1_verify_digest (&ctx->pub, ctx->digest, &ctx->s);
-  if (!res)
+  struct dsa_ctx *ctx = p;
+  if (! dsa_sha1_verify_digest (&ctx->pub, ctx->digest, &ctx->s))
     die ("Internal error, dsa_sha1_verify_digest failed.\n");
 }
 
 static void
 bench_dsa_clear (void *p)
 {
-  struct dsa_ctx *ctx = (struct dsa_ctx *) p;
+  struct dsa_ctx *ctx = p;
   dsa_public_key_clear (&ctx->pub);
   dsa_private_key_clear (&ctx->key);
   dsa_signature_clear (&ctx->s);
@@ -458,7 +455,7 @@ bench_ecdsa_init (unsigned size)
 static void
 bench_ecdsa_sign (void *p)
 {
-  struct ecdsa_ctx *ctx = (struct ecdsa_ctx *) p;
+  struct ecdsa_ctx *ctx = p;
   struct dsa_signature s;
 
   dsa_signature_init (&s);
@@ -472,18 +469,17 @@ bench_ecdsa_sign (void *p)
 static void
 bench_ecdsa_verify (void *p)
 {
-  struct ecdsa_ctx *ctx = (struct ecdsa_ctx *) p;
-  int res = ecdsa_verify (&ctx->pub, 
-			  ctx->digest_size, ctx->digest,
-			  &ctx->s);
-  if (!res)
+  struct ecdsa_ctx *ctx = p;
+  if (! ecdsa_verify (&ctx->pub, 
+		      ctx->digest_size, ctx->digest,
+		      &ctx->s))
     die ("Internal error, _ecdsa_verify failed.\n");    
 }
 
 static void
 bench_ecdsa_clear (void *p)
 {
-  struct ecdsa_ctx *ctx = (struct ecdsa_ctx *) p;
+  struct ecdsa_ctx *ctx = p;
 
   ecc_point_clear (&ctx->pub);
   ecc_scalar_clear (&ctx->key);
@@ -515,7 +511,7 @@ bench_openssl_rsa_init (unsigned size)
 
   if (! RSA_sign (NID_sha1, ctx->digest, SHA1_DIGEST_SIZE,
 		  ctx->ref, &ctx->siglen, ctx->key))
-    die ("OpenSSL RSA_sign failed: error = %ld.\n", ERR_get_error());
+    die ("OpenSSL RSA_sign failed.\n");
 
   return ctx;
 }
@@ -523,27 +519,27 @@ bench_openssl_rsa_init (unsigned size)
 static void
 bench_openssl_rsa_sign (void *p)
 {
-  const struct openssl_rsa_ctx *ctx = (const struct openssl_rsa_ctx *) p;
+  const struct openssl_rsa_ctx *ctx = p;
   unsigned siglen;
 
   if (! RSA_sign (NID_sha1, ctx->digest, SHA1_DIGEST_SIZE,
 		  ctx->signature, &siglen, ctx->key))
-    die ("OpenSSL RSA_sign failed: error = %ld.\n", ERR_get_error());
+    die ("OpenSSL RSA_sign failed.\n");
 }
 
 static void
 bench_openssl_rsa_verify (void *p)
 {
-  const struct openssl_rsa_ctx *ctx = (const struct openssl_rsa_ctx *) p;
+  const struct openssl_rsa_ctx *ctx = p;
   if (! RSA_verify (NID_sha1, ctx->digest, SHA1_DIGEST_SIZE,
 		    ctx->ref, ctx->siglen, ctx->key))
-    die ("OpenSSL RSA_verify failed: error = %ld.\n", ERR_get_error());    
+    die ("OpenSSL RSA_verify failed.\n");    
 }
 
 static void
 bench_openssl_rsa_clear (void *p)
 {
-  struct openssl_rsa_ctx *ctx = (struct openssl_rsa_ctx *) p;
+  struct openssl_rsa_ctx *ctx = p;
   RSA_free (ctx->key);
   free (ctx->ref);
   free (ctx->signature);
@@ -612,7 +608,7 @@ bench_openssl_ecdsa_init (unsigned size)
 static void
 bench_openssl_ecdsa_sign (void *p)
 {
-  const struct openssl_ecdsa_ctx *ctx = (const struct openssl_ecdsa_ctx *) p;
+  const struct openssl_ecdsa_ctx *ctx = p;
   ECDSA_SIG *sig = ECDSA_do_sign (ctx->digest, ctx->digest_length, ctx->key);
   ECDSA_SIG_free (sig);
 }
@@ -620,16 +616,15 @@ bench_openssl_ecdsa_sign (void *p)
 static void
 bench_openssl_ecdsa_verify (void *p)
 {
-  const struct openssl_ecdsa_ctx *ctx = (const struct openssl_ecdsa_ctx *) p;
-  int res = ECDSA_do_verify (ctx->digest, ctx->digest_length,
-			     ctx->signature, ctx->key);
-  if (res != 1)
+  const struct openssl_ecdsa_ctx *ctx = p;
+  if (ECDSA_do_verify (ctx->digest, ctx->digest_length,
+			 ctx->signature, ctx->key) != 1)
     die ("Openssl ECDSA_do_verify failed.\n");      
 }
 static void
 bench_openssl_ecdsa_clear (void *p)
 {
-  struct openssl_ecdsa_ctx *ctx = (struct openssl_ecdsa_ctx *) p;
+  struct openssl_ecdsa_ctx *ctx = p;
   ECDSA_SIG_free (ctx->signature);
   EC_KEY_free (ctx->key);
   free (ctx->digest);

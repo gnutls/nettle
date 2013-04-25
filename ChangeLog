@@ -2,6 +2,7 @@
 
 	* examples/hogweed-benchmark.c: Add benchmarking of OpenSSL's RSA
 	functions.
+	(all functions): Deleted unneeded casts.
 
 2013-04-24  Niels Möller  <nisse@lysator.liu.se>
 
