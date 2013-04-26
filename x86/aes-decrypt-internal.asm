@@ -57,7 +57,7 @@ C %edi is a temporary, often used as an accumulator.
 	
 	C _aes_decrypt(struct aes_context *ctx, 
 	C	       const struct aes_table *T,
-	C	       unsigned length, uint8_t *dst,
+	C	       size_t length, uint8_t *dst,
 	C	       uint8_t *src)
 	.text
 	ALIGN(16)

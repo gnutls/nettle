@@ -1,4 +1,3 @@
-C -*- mode: asm; asm-comment-char: ?C; -*-  
 C nettle, low-level cryptographics library
 C 
 C Copyright (C) 2002, 2005 Niels Möller
@@ -64,7 +63,7 @@ define(<FRAME_SIZE>, 192)
 	.file "arcfour-crypt.asm"
 
 	C arcfour_crypt(struct arcfour_ctx *ctx,
-	C               unsigned length, uint8_t *dst,
+	C               size_t length, uint8_t *dst,
 	C               const uint8_t *src)
 
 	.section	".text"

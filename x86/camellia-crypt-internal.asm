@@ -138,7 +138,7 @@ define(<FLINV>, <
 	
 	C _camellia_crypt(struct camellia_context *ctx, 
 	C	          const struct camellia_table *T,
-	C	          unsigned length, uint8_t *dst,
+	C	          size_t length, uint8_t *dst,
 	C	          uint8_t *src)
 	.text
 	ALIGN(16)

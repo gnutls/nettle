@@ -20,7 +20,7 @@ C MA 02111-1301, USA.
 	.file "arcfour-crypt.asm"
 
 	C arcfour_crypt(struct arcfour_ctx *ctx,
-	C               unsigned length, uint8_t *dst,
+	C               size_t length, uint8_t *dst,
 	C               const uint8_t *src)
 	.text
 	ALIGN(16)

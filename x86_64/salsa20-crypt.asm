@@ -47,7 +47,7 @@ C registers.
 
 	.file "salsa20-crypt.asm"
 	
-	C salsa20_crypt(struct salsa20_ctx *ctx, unsigned length,
+	C salsa20_crypt(struct salsa20_ctx *ctx, size_t length,
 	C		uint8_t *dst, const uint8_t *src)
 	.text
 	ALIGN(16)

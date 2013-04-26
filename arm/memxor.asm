@@ -1,4 +1,3 @@
-C -*- mode: asm; asm-comment-char: ?C; -*-
 C nettle, low-level cryptographics library
 C
 C Copyright (C) 2013, Niels Möller

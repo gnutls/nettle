@@ -117,7 +117,7 @@ test_salsa20_stream(const struct tstring *key,
 }
 
 typedef void salsa20_func(struct salsa20_ctx *ctx,
-			  unsigned length, uint8_t *dst,
+			  size_t length, uint8_t *dst,
 			  const uint8_t *src);
 static void
 _test_salsa20(salsa20_func *crypt,

@@ -47,7 +47,7 @@ define(<X3>, <r14>)	C lr
 	
 	C _aes_decrypt(struct aes_context *ctx, 
 	C	       const struct aes_table *T,
-	C	       unsigned length, uint8_t *dst,
+	C	       size_t length, uint8_t *dst,
 	C	       uint8_t *src)
 	.text
 	.align 2

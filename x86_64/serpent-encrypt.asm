@@ -546,7 +546,7 @@ define(<WLT>, <
 	.file "serpent-encrypt.asm"
 	
 	C serpent_encrypt(struct serpent_context *ctx, 
-	C	          unsigned length, uint8_t *dst,
+	C	          size_t length, uint8_t *dst,
 	C	          const uint8_t *src)
 	.text
 	ALIGN(16)
