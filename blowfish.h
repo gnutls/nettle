@@ -58,15 +58,15 @@ struct blowfish_ctx
  * On error, returns 0 and sets ctx->status to BLOWFISH_WEAK_KEY. */
 int
 blowfish_set_key(struct blowfish_ctx *ctx,
-                 unsigned length, const uint8_t *key);
+                 size_t length, const uint8_t *key);
 
 void
 blowfish_encrypt(const struct blowfish_ctx *ctx,
-                 unsigned length, uint8_t *dst,
+                 size_t length, uint8_t *dst,
                  const uint8_t *src);
 void
 blowfish_decrypt(const struct blowfish_ctx *ctx,
-                 unsigned length, uint8_t *dst,
+                 size_t length, uint8_t *dst,
                  const uint8_t *src);
 
 #ifdef __cplusplus

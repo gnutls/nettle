@@ -85,7 +85,7 @@ static const uint8_t arctwo_sbox[] = {
 
 void
 arctwo_encrypt (struct arctwo_ctx *ctx,
-		unsigned length, uint8_t *dst, const uint8_t *src)
+		size_t length, uint8_t *dst, const uint8_t *src)
 {
   FOR_BLOCKS (length, dst, src, ARCTWO_BLOCK_SIZE)
   {
@@ -130,7 +130,7 @@ arctwo_encrypt (struct arctwo_ctx *ctx,
 
 void
 arctwo_decrypt (struct arctwo_ctx *ctx,
-		unsigned length, uint8_t *dst, const uint8_t *src)
+		size_t length, uint8_t *dst, const uint8_t *src)
 {
   FOR_BLOCKS (length, dst, src, ARCTWO_BLOCK_SIZE)
   {
@@ -176,9 +176,9 @@ arctwo_decrypt (struct arctwo_ctx *ctx,
 
 void
 arctwo_set_key_ekb (struct arctwo_ctx *ctx,
-		    unsigned length, const uint8_t *key, unsigned ekb)
+		    size_t length, const uint8_t *key, unsigned ekb)
 {
-  unsigned i;
+  size_t i;
   /* Expanded key, treated as octets */
   uint8_t S[128];
   uint8_t x;
@@ -217,14 +217,14 @@ arctwo_set_key_ekb (struct arctwo_ctx *ctx,
 }
 
 void
-arctwo_set_key (struct arctwo_ctx *ctx, unsigned length, const uint8_t *key)
+arctwo_set_key (struct arctwo_ctx *ctx, size_t length, const uint8_t *key)
 {
   arctwo_set_key_ekb (ctx, length, key, 8 * length);
 }
 
 void
 arctwo_set_key_gutmann (struct arctwo_ctx *ctx,
-			unsigned length, const uint8_t *key)
+			size_t length, const uint8_t *key)
 {
   arctwo_set_key_ekb (ctx, length, key, 0);
 }

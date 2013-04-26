@@ -68,18 +68,18 @@ des_set_key(struct des_ctx *ctx, const uint8_t *key);
 
 void
 des_encrypt(const struct des_ctx *ctx,
-	    unsigned length, uint8_t *dst,
+	    size_t length, uint8_t *dst,
 	    const uint8_t *src);
 void
 des_decrypt(const struct des_ctx *ctx,
-	    unsigned length, uint8_t *dst,
+	    size_t length, uint8_t *dst,
 	    const uint8_t *src);
 
 int
-des_check_parity(unsigned length, const uint8_t *key);
+des_check_parity(size_t length, const uint8_t *key);
 
 void
-des_fix_parity(unsigned length, uint8_t *dst,
+des_fix_parity(size_t length, uint8_t *dst,
 	       const uint8_t *src);
 
 #define DES3_KEY_SIZE 24
@@ -97,11 +97,11 @@ des3_set_key(struct des3_ctx *ctx, const uint8_t *key);
 
 void
 des3_encrypt(const struct des3_ctx *ctx,
-	     unsigned length, uint8_t *dst,
+	     size_t length, uint8_t *dst,
 	     const uint8_t *src);
 void
 des3_decrypt(const struct des3_ctx *ctx,
-	     unsigned length, uint8_t *dst,
+	     size_t length, uint8_t *dst,
 	     const uint8_t *src);
 
 #ifdef __cplusplus

@@ -161,7 +161,7 @@ aes_invert_key(struct aes_ctx *dst,
 
 void
 aes_set_decrypt_key(struct aes_ctx *ctx,
-		    unsigned keysize, const uint8_t *key)
+		    size_t keysize, const uint8_t *key)
 {
   /* We first create subkeys for encryption,
    * then modify the subkeys for decryption. */

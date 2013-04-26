@@ -434,7 +434,7 @@
 
 void
 serpent_encrypt (const struct serpent_ctx *ctx,
-		 unsigned length, uint8_t * dst, const uint8_t * src)
+		 size_t length, uint8_t * dst, const uint8_t * src)
 {
   assert( !(length % SERPENT_BLOCK_SIZE));
   

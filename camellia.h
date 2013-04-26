@@ -61,11 +61,11 @@ struct camellia_ctx
 
 void
 camellia_set_encrypt_key(struct camellia_ctx *ctx,
-			 unsigned length, const uint8_t *key);
+			 size_t length, const uint8_t *key);
 
 void
 camellia_set_decrypt_key(struct camellia_ctx *ctx,
-			 unsigned length, const uint8_t *key);
+			 size_t length, const uint8_t *key);
 
 void
 camellia_invert_key(struct camellia_ctx *dst,
@@ -73,7 +73,7 @@ camellia_invert_key(struct camellia_ctx *dst,
   
 void
 camellia_crypt(const struct camellia_ctx *ctx,
-	       unsigned length, uint8_t *dst,
+	       size_t length, uint8_t *dst,
 	       const uint8_t *src);
 #ifdef  __cplusplus
 }

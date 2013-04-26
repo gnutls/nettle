@@ -44,7 +44,7 @@ typedef void *nettle_realloc_func(void *ctx, void *p, unsigned length);
 
 /* Ciphers */
 typedef void nettle_set_key_func(void *ctx,
-				 unsigned length,
+				 size_t length,
 				 const uint8_t *key);
 
 /* Uses a void * for cipher contexts.
@@ -54,7 +54,7 @@ typedef void nettle_set_key_func(void *ctx,
    internal state changes during the encryption. */
 
 typedef void nettle_crypt_func(void *ctx,
-			       unsigned length, uint8_t *dst,
+			       size_t length, uint8_t *dst,
 			       const uint8_t *src);
 
 /* Hash algorithms */

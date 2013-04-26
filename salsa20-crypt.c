@@ -42,7 +42,7 @@
 
 void
 salsa20_crypt(struct salsa20_ctx *ctx,
-	      unsigned length,
+	      size_t length,
 	      uint8_t *c,
 	      const uint8_t *m)
 {

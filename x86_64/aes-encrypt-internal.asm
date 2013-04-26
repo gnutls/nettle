@@ -33,14 +33,14 @@ define(<TC>,<%r12d>)
 
 define(<CTX>,	<%rdi>)
 define(<TABLE>,	<%rsi>)
-define(<PARAM_LENGTH>,<%edx>)		C Length is only 32 bits
+define(<PARAM_LENGTH>,<%rdx>)
 define(<PARAM_DST>,	<%rcx>)
 define(<SRC>,	<%r8>)
 
 define(<DST>, <%r9>) 
 define(<KEY>,<%r14>)
 define(<COUNT>,	<%r15d>)
-define(<BLOCK_COUNT>, <%r13d>)
+define(<BLOCK_COUNT>, <%r13>)
 
 C Must correspond to an old-style register, for movzb from %ah--%dh to
 C work.
@@ -50,7 +50,7 @@ define(<TMP>,<%rbp>)
 	
 	C _aes_encrypt(struct aes_context *ctx, 
 	C	       const struct aes_table *T,
-	C	       unsigned length, uint8_t *dst,
+	C	       size_t length, uint8_t *dst,
 	C	       uint8_t *src)
 	.text
 	ALIGN(16)
@@ -68,8 +68,8 @@ PROLOGUE(_nettle_aes_encrypt)
 	push	%r15	
 
 	mov	PARAM_DST, DST
-	movl	PARAM_LENGTH, BLOCK_COUNT
-	shrl	$4, BLOCK_COUNT
+	mov	PARAM_LENGTH, BLOCK_COUNT
+	shr	$4, BLOCK_COUNT
 .Lblock_loop:
 	mov	CTX,KEY
 	
@@ -119,7 +119,7 @@ PROLOGUE(_nettle_aes_encrypt)
 	AES_STORE(TA,TB,TC,SD, KEY, DST)
 	
 	add	$16, DST
-	decl	BLOCK_COUNT
+	dec	BLOCK_COUNT
 
 	jnz	.Lblock_loop
 

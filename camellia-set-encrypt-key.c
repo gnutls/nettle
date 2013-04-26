@@ -87,7 +87,7 @@
 
 void
 camellia_set_encrypt_key(struct camellia_ctx *ctx,
-			 unsigned length, const uint8_t *key)
+			 size_t length, const uint8_t *key)
 {
   uint64_t k0, k1;
 

@@ -35,7 +35,7 @@
 void
 _nettle_aes_decrypt(const struct aes_ctx *ctx,
 		    const struct aes_table *T,
-		    unsigned length, uint8_t *dst,
+		    size_t length, uint8_t *dst,
 		    const uint8_t *src)
 {
   FOR_BLOCKS(length, dst, src, AES_BLOCK_SIZE)

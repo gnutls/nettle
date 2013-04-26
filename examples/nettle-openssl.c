@@ -52,21 +52,21 @@
 /* AES */
 static nettle_set_key_func openssl_aes_set_encrypt_key;
 static void
-openssl_aes_set_encrypt_key(void *ctx, unsigned length, const uint8_t *key)
+openssl_aes_set_encrypt_key(void *ctx, size_t length, const uint8_t *key)
 {
   AES_set_encrypt_key(key, length * 8, ctx);
 }
 
 static nettle_set_key_func openssl_aes_set_decrypt_key;
 static void
-openssl_aes_set_decrypt_key(void *ctx, unsigned length, const uint8_t *key)
+openssl_aes_set_decrypt_key(void *ctx, size_t length, const uint8_t *key)
 {
   AES_set_decrypt_key(key, length * 8, ctx);
 }
 
 static nettle_crypt_func openssl_aes_encrypt;
 static void
-openssl_aes_encrypt(void *ctx, unsigned length,
+openssl_aes_encrypt(void *ctx, size_t length,
 		    uint8_t *dst, const uint8_t *src)
 {
   assert (!(length % AES_BLOCK_SIZE));
@@ -81,7 +81,7 @@ openssl_aes_encrypt(void *ctx, unsigned length,
 
 static nettle_crypt_func openssl_aes_decrypt;
 static void
-openssl_aes_decrypt(void *ctx, unsigned length,
+openssl_aes_decrypt(void *ctx, size_t length,
 		    uint8_t *dst, const uint8_t *src)
 {
   assert (!(length % AES_BLOCK_SIZE));
@@ -127,14 +127,14 @@ nettle_openssl_aes256 = {
 /* Arcfour */
 static nettle_set_key_func openssl_arcfour_set_key;
 static void
-openssl_arcfour_set_key(void *ctx, unsigned length, const uint8_t *key)
+openssl_arcfour_set_key(void *ctx, size_t length, const uint8_t *key)
 {
   RC4_set_key(ctx, length, key);
 }
 
 static nettle_crypt_func openssl_arcfour_crypt;
 static void
-openssl_arcfour_crypt(void *ctx, unsigned length,
+openssl_arcfour_crypt(void *ctx, size_t length,
 		      uint8_t *dst, const uint8_t *src)
 {
   RC4(ctx, length, src, dst);
@@ -151,14 +151,14 @@ nettle_openssl_arcfour128 = {
 /* Blowfish */
 static nettle_set_key_func openssl_bf_set_key;
 static void
-openssl_bf_set_key(void *ctx, unsigned length, const uint8_t *key)
+openssl_bf_set_key(void *ctx, size_t length, const uint8_t *key)
 {
   BF_set_key(ctx, length, key);
 }
 
 static nettle_crypt_func openssl_bf_encrypt;
 static void
-openssl_bf_encrypt(void *ctx, unsigned length,
+openssl_bf_encrypt(void *ctx, size_t length,
 		   uint8_t *dst, const uint8_t *src)
 {
   assert (!(length % BF_BLOCK));
@@ -173,7 +173,7 @@ openssl_bf_encrypt(void *ctx, unsigned length,
 
 static nettle_crypt_func openssl_bf_decrypt;
 static void
-openssl_bf_decrypt(void *ctx, unsigned length,
+openssl_bf_decrypt(void *ctx, size_t length,
 		   uint8_t *dst, const uint8_t *src)
 {
   assert (!(length % BF_BLOCK));
@@ -198,7 +198,7 @@ nettle_openssl_blowfish128 = {
 /* DES */
 static nettle_set_key_func openssl_des_set_key;
 static void
-openssl_des_set_key(void *ctx, unsigned length, const uint8_t *key)
+openssl_des_set_key(void *ctx, size_t length, const uint8_t *key)
 {
   assert(length == 8);  
   /* Not sure what "unchecked" means. We want to ignore parity bits,
@@ -212,7 +212,7 @@ openssl_des_set_key(void *ctx, unsigned length, const uint8_t *key)
 
 static nettle_crypt_func openssl_des_encrypt;
 static void
-openssl_des_encrypt(void *ctx, unsigned length,
+openssl_des_encrypt(void *ctx, size_t length,
 		    uint8_t *dst, const uint8_t *src)
 {
   assert (!(length % DES_BLOCK_SIZE));
@@ -227,7 +227,7 @@ openssl_des_encrypt(void *ctx, unsigned length,
 
 static nettle_crypt_func openssl_des_decrypt;
 static void
-openssl_des_decrypt(void *ctx, unsigned length,
+openssl_des_decrypt(void *ctx, size_t length,
 		    uint8_t *dst, const uint8_t *src)
 {
   assert (!(length % DES_BLOCK_SIZE));
@@ -252,14 +252,14 @@ nettle_openssl_des = {
 /* Cast128 */
 static nettle_set_key_func openssl_cast_set_key;
 static void
-openssl_cast_set_key(void *ctx, unsigned length, const uint8_t *key)
+openssl_cast_set_key(void *ctx, size_t length, const uint8_t *key)
 {
   CAST_set_key(ctx, length, key);
 }
 
 static nettle_crypt_func openssl_cast_encrypt;
 static void
-openssl_cast_encrypt(void *ctx, unsigned length,
+openssl_cast_encrypt(void *ctx, size_t length,
 		     uint8_t *dst, const uint8_t *src)
 {
   assert (!(length % CAST_BLOCK));
@@ -274,7 +274,7 @@ openssl_cast_encrypt(void *ctx, unsigned length,
 
 static nettle_crypt_func openssl_cast_decrypt;
 static void
-openssl_cast_decrypt(void *ctx, unsigned length,
+openssl_cast_decrypt(void *ctx, size_t length,
 		     uint8_t *dst, const uint8_t *src)
 {
   assert (!(length % CAST_BLOCK));

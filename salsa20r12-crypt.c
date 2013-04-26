@@ -42,9 +42,9 @@
 
 void
 salsa20r12_crypt(struct salsa20_ctx *ctx,
-	      unsigned length,
-	      uint8_t *c,
-	      const uint8_t *m)
+		 size_t length,
+		 uint8_t *c,
+		 const uint8_t *m)
 {
   uint32_t x[_SALSA20_INPUT_LENGTH];
 

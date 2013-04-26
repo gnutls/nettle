@@ -38,8 +38,8 @@ extern "C" {
 
 void
 ctr_crypt(void *ctx, nettle_crypt_func *f,
-	  unsigned block_size, uint8_t *ctr,
-	  unsigned length, uint8_t *dst,
+	  size_t block_size, uint8_t *ctr,
+	  size_t length, uint8_t *dst,
 	  const uint8_t *src);
 
 #define CTR_CTX(type, size) \

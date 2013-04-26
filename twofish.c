@@ -275,7 +275,7 @@ h(int k, uint8_t x, uint32_t l0, uint32_t l1, uint32_t l2, uint32_t l3)
 
 void
 twofish_set_key(struct twofish_ctx *context,
-		unsigned keysize, const uint8_t *key)
+		size_t keysize, const uint8_t *key)
 {
   uint8_t key_copy[32];
   uint32_t m[8], s[4], t;
@@ -338,7 +338,7 @@ twofish_set_key(struct twofish_ctx *context,
 
 void
 twofish_encrypt(const struct twofish_ctx *context,
-		unsigned length,
+		size_t length,
 		uint8_t *ciphertext,
 		const uint8_t *plaintext)
 {
@@ -408,7 +408,7 @@ twofish_encrypt(const struct twofish_ctx *context,
 
 void
 twofish_decrypt(const struct twofish_ctx *context,
-		unsigned length,
+		size_t length,
 		uint8_t *plaintext,
 		const uint8_t *ciphertext)
 

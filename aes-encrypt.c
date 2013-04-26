@@ -36,7 +36,7 @@
    For PIC code, the details can be complex and system dependent. */
 void
 aes_encrypt(const struct aes_ctx *ctx,
-	    unsigned length, uint8_t *dst,
+	    size_t length, uint8_t *dst,
 	    const uint8_t *src)
 {
   assert(!(length % AES_BLOCK_SIZE) );

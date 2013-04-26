@@ -54,7 +54,7 @@ camellia_invert_key(struct camellia_ctx *dst,
 
 void
 camellia_set_decrypt_key(struct camellia_ctx *ctx,
-			 unsigned length, const uint8_t *key)
+			 size_t length, const uint8_t *key)
 {
   camellia_set_encrypt_key(ctx, length, key);
   camellia_invert_key(ctx, ctx);

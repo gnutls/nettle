@@ -321,7 +321,7 @@ decrypt (const struct blowfish_ctx *ctx, uint32_t * ret_xl, uint32_t * ret_xr)
 
 void
 blowfish_encrypt (const struct blowfish_ctx *ctx,
-		  unsigned length, uint8_t * dst, const uint8_t * src)
+		  size_t length, uint8_t * dst, const uint8_t * src)
 {
   FOR_BLOCKS (length, dst, src, BLOWFISH_BLOCK_SIZE)
     {
@@ -343,7 +343,7 @@ blowfish_encrypt (const struct blowfish_ctx *ctx,
 
 void
 blowfish_decrypt (const struct blowfish_ctx *ctx,
-		  unsigned length, uint8_t * dst, const uint8_t * src)
+		  size_t length, uint8_t * dst, const uint8_t * src)
 {
   FOR_BLOCKS (length, dst, src, BLOWFISH_BLOCK_SIZE)
     {
@@ -365,7 +365,7 @@ blowfish_decrypt (const struct blowfish_ctx *ctx,
 
 int
 blowfish_set_key (struct blowfish_ctx *ctx,
-		  unsigned length, const uint8_t * key)
+		  size_t length, const uint8_t * key)
 {
   int i, j;
   uint32_t data, datal, datar;

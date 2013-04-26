@@ -72,7 +72,7 @@
 
 void
 cast128_encrypt(const struct cast128_ctx *ctx,
-		unsigned length, uint8_t *dst,
+		size_t length, uint8_t *dst,
 		const uint8_t *src)
 {
   FOR_BLOCKS(length, dst, src, CAST128_BLOCK_SIZE)
@@ -116,7 +116,7 @@ cast128_encrypt(const struct cast128_ctx *ctx,
 
 void
 cast128_decrypt(const struct cast128_ctx *ctx,
-		unsigned length, uint8_t *dst,
+		size_t length, uint8_t *dst,
 		const uint8_t *src)
 {
   FOR_BLOCKS(length, dst, src, CAST128_BLOCK_SIZE)
@@ -161,7 +161,7 @@ cast128_decrypt(const struct cast128_ctx *ctx,
 
 void
 cast128_set_key(struct cast128_ctx *ctx,
-		unsigned keybytes, const uint8_t *rawkey)
+		size_t keybytes, const uint8_t *rawkey)
 {
   uint32_t t[4], z[4], x[4];
   unsigned i;

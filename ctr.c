@@ -41,8 +41,8 @@
 
 void
 ctr_crypt(void *ctx, nettle_crypt_func *f,
-	  unsigned block_size, uint8_t *ctr,
-	  unsigned length, uint8_t *dst,
+	  size_t block_size, uint8_t *ctr,
+	  size_t length, uint8_t *dst,
 	  const uint8_t *src)
 {
   if (src != dst)
@@ -55,7 +55,7 @@ ctr_crypt(void *ctx, nettle_crypt_func *f,
 	}
       else
 	{
-	  unsigned left;
+	  size_t left;
 	  uint8_t *p;	  
 
 	  for (p = dst, left = length;
@@ -85,7 +85,7 @@ ctr_crypt(void *ctx, nettle_crypt_func *f,
       if (length > block_size)
 	{
 	  TMP_DECL(buffer, uint8_t, NBLOCKS * NETTLE_MAX_CIPHER_BLOCK_SIZE);
-	  unsigned chunk = NBLOCKS * block_size;
+	  size_t chunk = NBLOCKS * block_size;
 
 	  TMP_ALLOC(buffer, chunk);
 

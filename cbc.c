@@ -38,8 +38,8 @@
 
 void
 cbc_encrypt(void *ctx, nettle_crypt_func *f,
-	    unsigned block_size, uint8_t *iv,
-	    unsigned length, uint8_t *dst,
+	    size_t block_size, uint8_t *iv,
+	    size_t length, uint8_t *dst,
 	    const uint8_t *src)
 {
   assert(!(length % block_size));
@@ -57,8 +57,8 @@ cbc_encrypt(void *ctx, nettle_crypt_func *f,
 
 void
 cbc_decrypt(void *ctx, nettle_crypt_func *f,
-	    unsigned block_size, uint8_t *iv,
-	    unsigned length, uint8_t *dst,
+	    size_t block_size, uint8_t *iv,
+	    size_t length, uint8_t *dst,
 	    const uint8_t *src)
 {
   assert(!(length % block_size));
@@ -90,7 +90,7 @@ cbc_decrypt(void *ctx, nettle_crypt_func *f,
       TMP_DECL(buffer, uint8_t, CBC_BUFFER_LIMIT);
       TMP_DECL(initial_iv, uint8_t, NETTLE_MAX_CIPHER_BLOCK_SIZE);
 
-      unsigned buffer_size;
+      size_t buffer_size;
 
       if (length <= CBC_BUFFER_LIMIT)
 	buffer_size = length;

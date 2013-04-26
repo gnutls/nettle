@@ -53,13 +53,13 @@ struct aes_table
 void
 _aes_encrypt(const struct aes_ctx *ctx,
 	     const struct aes_table *T,
-	     unsigned length, uint8_t *dst,
+	     size_t length, uint8_t *dst,
 	     const uint8_t *src);
 
 void
 _aes_decrypt(const struct aes_ctx *ctx,
 	     const struct aes_table *T,
-	     unsigned length, uint8_t *dst,
+	     size_t length, uint8_t *dst,
 	     const uint8_t *src);
 
 /* Macros */

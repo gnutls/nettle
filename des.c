@@ -65,9 +65,9 @@ parity_16[16] =
 #define PARITY(x) (parity_16[(x)&0xf] ^ parity_16[((x)>>4) & 0xf])
 
 int
-des_check_parity(unsigned length, const uint8_t *key)
+des_check_parity(size_t length, const uint8_t *key)
 {
-  unsigned i;
+  size_t i;
   for (i = 0; i<length; i++)
     if (!PARITY(key[i]))
       return 0;
@@ -76,10 +76,10 @@ des_check_parity(unsigned length, const uint8_t *key)
 }
 
 void
-des_fix_parity(unsigned length, uint8_t *dst,
+des_fix_parity(size_t length, uint8_t *dst,
 	       const uint8_t *src)
 {
-  unsigned i;
+  size_t i;
   for (i = 0; i<length; i++)
     dst[i] = src[i] ^ PARITY(src[i]) ^ 1;
 }
@@ -265,7 +265,7 @@ des_set_key(struct des_ctx *ctx, const uint8_t *key)
 
 void
 des_encrypt(const struct des_ctx *ctx,
-	    unsigned length, uint8_t *dst,
+	    size_t length, uint8_t *dst,
 	    const uint8_t *src)
 {
   assert(!(length % DES_BLOCK_SIZE));
@@ -281,7 +281,7 @@ des_encrypt(const struct des_ctx *ctx,
 
 void
 des_decrypt(const struct des_ctx *ctx,
-	    unsigned length, uint8_t *dst,
+	    size_t length, uint8_t *dst,
 	    const uint8_t *src)
 {
   assert(!(length % DES_BLOCK_SIZE));

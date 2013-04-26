@@ -316,7 +316,7 @@ serpent_key_pad (const uint8_t *key, unsigned int key_length,
 /* Initialize CONTEXT with the key KEY of KEY_LENGTH bits.  */
 void
 serpent_set_key (struct serpent_ctx *ctx,
-		 unsigned length, const uint8_t * key)
+		 size_t length, const uint8_t * key)
 {
   uint32_t w[8];
   uint32_t (*keys)[4];

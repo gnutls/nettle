@@ -59,11 +59,11 @@ struct aes_ctx
 
 void
 aes_set_encrypt_key(struct aes_ctx *ctx,
-		    unsigned length, const uint8_t *key);
+		    size_t length, const uint8_t *key);
 
 void
 aes_set_decrypt_key(struct aes_ctx *ctx,
-		   unsigned length, const uint8_t *key);
+		   size_t length, const uint8_t *key);
 
 void
 aes_invert_key(struct aes_ctx *dst,
@@ -71,11 +71,11 @@ aes_invert_key(struct aes_ctx *dst,
 
 void
 aes_encrypt(const struct aes_ctx *ctx,
-	    unsigned length, uint8_t *dst,
+	    size_t length, uint8_t *dst,
 	    const uint8_t *src);
 void
 aes_decrypt(const struct aes_ctx *ctx,
-	    unsigned length, uint8_t *dst,
+	    size_t length, uint8_t *dst,
 	    const uint8_t *src);
 
 #ifdef __cplusplus

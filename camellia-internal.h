@@ -63,7 +63,7 @@ struct camellia_table
 void
 _camellia_crypt(const struct camellia_ctx *ctx,
 		const struct camellia_table *T,
-		unsigned length, uint8_t *dst,
+		size_t length, uint8_t *dst,
 		const uint8_t *src);
 
 extern const struct camellia_table _camellia_table;

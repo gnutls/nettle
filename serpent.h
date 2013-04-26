@@ -63,15 +63,15 @@ struct serpent_ctx
 
 void
 serpent_set_key(struct serpent_ctx *ctx,
-                unsigned length, const uint8_t *key);
+                size_t length, const uint8_t *key);
 
 void
 serpent_encrypt(const struct serpent_ctx *ctx,
-                unsigned length, uint8_t *dst,
+                size_t length, uint8_t *dst,
                 const uint8_t *src);
 void
 serpent_decrypt(const struct serpent_ctx *ctx,
-                unsigned length, uint8_t *dst,
+                size_t length, uint8_t *dst,
                 const uint8_t *src);
 
 #ifdef __cplusplus

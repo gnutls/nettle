@@ -38,14 +38,14 @@ extern "C" {
 
 void
 cbc_encrypt(void *ctx, nettle_crypt_func *f,
-	    unsigned block_size, uint8_t *iv,
-	    unsigned length, uint8_t *dst,
+	    size_t block_size, uint8_t *iv,
+	    size_t length, uint8_t *dst,
 	    const uint8_t *src);
 
 void
 cbc_decrypt(void *ctx, nettle_crypt_func *f,
-	    unsigned block_size, uint8_t *iv,
-	    unsigned length, uint8_t *dst,
+	    size_t block_size, uint8_t *iv,
+	    size_t length, uint8_t *dst,
 	    const uint8_t *src);
 
 #define CBC_CTX(type, size) \

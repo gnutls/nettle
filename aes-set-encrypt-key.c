@@ -36,7 +36,7 @@
 
 void
 aes_set_encrypt_key(struct aes_ctx *ctx,
-		    unsigned keysize, const uint8_t *key)
+		    size_t keysize, const uint8_t *key)
 {
   static const uint8_t rcon[10] = {
     0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80,0x1b,0x36,

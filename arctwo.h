@@ -57,23 +57,23 @@ struct arctwo_ctx
    as an explicit argument. 0 means maximum key bits. */
 void
 arctwo_set_key_ekb (struct arctwo_ctx *ctx,
-		    unsigned length, const uint8_t * key, unsigned ekb);
+		    size_t length, const uint8_t * key, unsigned ekb);
 
 /* Equvivalent to arctwo_set_key_ekb, with ekb = 8 * length */
 void
-arctwo_set_key (struct arctwo_ctx *ctx, unsigned length, const uint8_t *key);
+arctwo_set_key (struct arctwo_ctx *ctx, size_t length, const uint8_t *key);
 
 /* Equvivalent to arctwo_set_key_ekb, with ekb = 1024 */
 void
 arctwo_set_key_gutmann (struct arctwo_ctx *ctx,
-			unsigned length, const uint8_t *key);
+			size_t length, const uint8_t *key);
 
 void
 arctwo_encrypt (struct arctwo_ctx *ctx,
-		unsigned length, uint8_t *dst, const uint8_t *src);
+		size_t length, uint8_t *dst, const uint8_t *src);
 void
 arctwo_decrypt (struct arctwo_ctx *ctx,
-		unsigned length, uint8_t *dst, const uint8_t *src);
+		size_t length, uint8_t *dst, const uint8_t *src);
 
 #ifdef __cplusplus
 }

@@ -68,19 +68,19 @@ struct salsa20_ctx
 
 void
 salsa20_set_key(struct salsa20_ctx *ctx,
-		unsigned length, const uint8_t *key);
+		size_t length, const uint8_t *key);
 
 void
 salsa20_set_iv(struct salsa20_ctx *ctx, const uint8_t *iv);
 
 void
 salsa20_crypt(struct salsa20_ctx *ctx,
-	      unsigned length, uint8_t *dst,
+	      size_t length, uint8_t *dst,
 	      const uint8_t *src);
 
 void
 salsa20r12_crypt(struct salsa20_ctx *ctx,
-		 unsigned length, uint8_t *dst,
+		 size_t length, uint8_t *dst,
 		 const uint8_t *src);
 
 void

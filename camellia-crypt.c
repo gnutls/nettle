@@ -36,8 +36,8 @@
    For PIC code, the details can be complex and system dependent. */
 void
 camellia_crypt(const struct camellia_ctx *ctx,
-		 unsigned length, uint8_t *dst,
-	    const uint8_t *src)
+	       size_t length, uint8_t *dst,
+	       const uint8_t *src)
 {
   assert(!(length % CAMELLIA_BLOCK_SIZE) );
   _camellia_crypt(ctx, &_camellia_table,

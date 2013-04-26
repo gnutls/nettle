@@ -94,7 +94,7 @@ gcm_set_key(struct gcm_key *key,
 
 void
 gcm_set_iv(struct gcm_ctx *ctx, const struct gcm_key *key,
-	   unsigned length, const uint8_t *iv);
+	   size_t length, const uint8_t *iv);
 
 void
 gcm_update(struct gcm_ctx *ctx, const struct gcm_key *key,
@@ -103,12 +103,12 @@ gcm_update(struct gcm_ctx *ctx, const struct gcm_key *key,
 void
 gcm_encrypt(struct gcm_ctx *ctx, const struct gcm_key *key,
 	    void *cipher, nettle_crypt_func *f,
-	    unsigned length, uint8_t *dst, const uint8_t *src);
+	    size_t length, uint8_t *dst, const uint8_t *src);
 
 void
 gcm_decrypt(struct gcm_ctx *ctx, const struct gcm_key *key,
 	    void *cipher, nettle_crypt_func *f,
-	    unsigned length, uint8_t *dst, const uint8_t *src);
+	    size_t length, uint8_t *dst, const uint8_t *src);
 
 void
 gcm_digest(struct gcm_ctx *ctx, const struct gcm_key *key,
@@ -158,11 +158,11 @@ struct gcm_aes_ctx GCM_CTX(struct aes_ctx);
 
 void
 gcm_aes_set_key(struct gcm_aes_ctx *ctx,
-		unsigned length, const uint8_t *key);
+		size_t length, const uint8_t *key);
 
 void
 gcm_aes_set_iv(struct gcm_aes_ctx *ctx,
-	       unsigned length, const uint8_t *iv);
+	       size_t length, const uint8_t *iv);
 
 void
 gcm_aes_update(struct gcm_aes_ctx *ctx,
@@ -170,11 +170,11 @@ gcm_aes_update(struct gcm_aes_ctx *ctx,
 
 void
 gcm_aes_encrypt(struct gcm_aes_ctx *ctx,
-		unsigned length, uint8_t *dst, const uint8_t *src);
+		size_t length, uint8_t *dst, const uint8_t *src);
 
 void
 gcm_aes_decrypt(struct gcm_aes_ctx *ctx,
-		unsigned length, uint8_t *dst, const uint8_t *src);
+		size_t length, uint8_t *dst, const uint8_t *src);
 
 void
 gcm_aes_digest(struct gcm_aes_ctx *ctx, unsigned length, uint8_t *digest);

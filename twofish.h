@@ -60,15 +60,15 @@ struct twofish_ctx
 
 void
 twofish_set_key(struct twofish_ctx *ctx,
-		unsigned length, const uint8_t *key);
+		size_t length, const uint8_t *key);
 
 void
 twofish_encrypt(const struct twofish_ctx *ctx,
-		unsigned length, uint8_t *dst,
+		size_t length, uint8_t *dst,
 		const uint8_t *src);
 void
 twofish_decrypt(const struct twofish_ctx *ctx,
-		unsigned length, uint8_t *dst,
+		size_t length, uint8_t *dst,
 		const uint8_t *src);
 
 #ifdef __cplusplus

@@ -33,7 +33,7 @@
 
 void
 arcfour_crypt(struct arcfour_ctx *ctx,
-	      unsigned length, uint8_t *dst,
+	      size_t length, uint8_t *dst,
 	      const uint8_t *src)
 {
   register uint8_t i, j;

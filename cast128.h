@@ -59,15 +59,15 @@ struct cast128_ctx
 
 void
 cast128_set_key(struct cast128_ctx *ctx,
-		unsigned length, const uint8_t *key);
+		size_t length, const uint8_t *key);
 
 void
 cast128_encrypt(const struct cast128_ctx *ctx,
-		unsigned length, uint8_t *dst,
+		size_t length, uint8_t *dst,
 		const uint8_t *src);
 void
 cast128_decrypt(const struct cast128_ctx *ctx,
-		unsigned length, uint8_t *dst,
+		size_t length, uint8_t *dst,
 		const uint8_t *src);
 
 #ifdef __cplusplus

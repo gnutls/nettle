@@ -30,14 +30,14 @@
 #include "gcm.h"
 
 void
-gcm_aes_set_key(struct gcm_aes_ctx *ctx, unsigned length, const uint8_t *key)
+gcm_aes_set_key(struct gcm_aes_ctx *ctx, size_t length, const uint8_t *key)
 {
   GCM_SET_KEY(ctx, aes_set_encrypt_key, aes_encrypt, length, key);
 }
 
 void
 gcm_aes_set_iv(struct gcm_aes_ctx *ctx,
-	       unsigned length, const uint8_t *iv)
+	       size_t length, const uint8_t *iv)
 {
   GCM_SET_IV(ctx, length, iv);
 }
@@ -50,14 +50,14 @@ gcm_aes_update(struct gcm_aes_ctx *ctx, unsigned length, const uint8_t *data)
 
 void
 gcm_aes_encrypt(struct gcm_aes_ctx *ctx,
-		unsigned length, uint8_t *dst, const uint8_t *src)
+		size_t length, uint8_t *dst, const uint8_t *src)
 {
   GCM_ENCRYPT(ctx, aes_encrypt, length, dst, src);
 }
 
 void
 gcm_aes_decrypt(struct gcm_aes_ctx *ctx,
-		unsigned length, uint8_t *dst, const uint8_t *src)
+		size_t length, uint8_t *dst, const uint8_t *src)
 {
   GCM_DECRYPT(ctx, aes_encrypt, length, dst, src);
 }

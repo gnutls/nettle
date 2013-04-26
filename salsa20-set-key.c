@@ -41,7 +41,7 @@
 
 void
 salsa20_set_key(struct salsa20_ctx *ctx,
-		unsigned length, const uint8_t *key)
+		size_t length, const uint8_t *key)
 {
   static const uint32_t sigma[4] = {
     /* "expand 32-byte k" */

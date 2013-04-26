@@ -35,7 +35,7 @@
 
 void
 arcfour_set_key(struct arcfour_ctx *ctx,
-		unsigned length, const uint8_t *key)
+		size_t length, const uint8_t *key)
 {
   unsigned i, j, k;
   

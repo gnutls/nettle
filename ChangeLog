@@ -1,3 +1,9 @@
+2013-04-26  Niels Möller  <nisse@lysator.liu.se>
+
+	* Many files: Use size_t rather than unsigned for data sizes.
+	* x86_64/aes-encrypt-internal.asm: Accept 64-bit length.
+	* x86_64/aes-decrypt-internal.asm: Likewise.
+
 2013-04-25  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Changed version number, to 2.8.

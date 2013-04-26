@@ -40,14 +40,14 @@
 /* DES uses a different signature for the key set function. We ignore
    the return value indicating weak keys. */
 static void
-des_set_key_hack(void *ctx, unsigned length, const uint8_t *key)
+des_set_key_hack(void *ctx, size_t length, const uint8_t *key)
 {
   assert(length == DES_KEY_SIZE);
   des_set_key(ctx, key);
 }
 
 static void
-des3_set_key_hack(void *ctx, unsigned length, const uint8_t *key)
+des3_set_key_hack(void *ctx, size_t length, const uint8_t *key)
 {
   assert(length == DES3_KEY_SIZE);
   des3_set_key(ctx, key);
@@ -80,7 +80,7 @@ nettle_blowfish128 = _NETTLE_CIPHER(blowfish, BLOWFISH, 128);
 
 /* Sets a fix zero iv. For benchmarking only. */
 static void
-salsa20_set_key_hack(void *ctx, unsigned length, const uint8_t *key)
+salsa20_set_key_hack(void *ctx, size_t length, const uint8_t *key)
 {
   static const uint8_t iv[SALSA20_IV_SIZE];
   salsa20_set_key (ctx, length, key);
