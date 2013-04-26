@@ -202,7 +202,7 @@ ecc_mod (mp_limb_t *rp, mp_size_t rn, mp_size_t mn,
 void
 ecc_hash (const struct ecc_curve *ecc,
 	  mp_limb_t *hp,
-	  unsigned length, const uint8_t *digest);
+	  size_t length, const uint8_t *digest);
 
 void
 cnd_copy (int cnd, mp_limb_t *rp, const mp_limb_t *ap, mp_size_t n);

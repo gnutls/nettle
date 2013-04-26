@@ -34,7 +34,7 @@
 
 int
 ecdsa_verify (const struct ecc_point *pub,
-	      unsigned length, const uint8_t *digest,
+	      size_t length, const uint8_t *digest,
 	      const struct dsa_signature *signature)
 {
   mp_limb_t size = pub->ecc->size;

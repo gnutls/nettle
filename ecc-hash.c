@@ -41,9 +41,9 @@
 void
 ecc_hash (const struct ecc_curve *ecc,
 	  mp_limb_t *hp,
-	  unsigned length, const uint8_t *digest)
+	  size_t length, const uint8_t *digest)
 {
-  if (length > ((unsigned) ecc->bit_size + 7) / 8)
+  if (length > ((size_t) ecc->bit_size + 7) / 8)
     length = (ecc->bit_size + 7) / 8;
 
   mpn_set_base256 (hp, ecc->size + 1, digest, length);

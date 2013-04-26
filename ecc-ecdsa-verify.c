@@ -62,7 +62,7 @@ ecc_ecdsa_verify_itch (const struct ecc_curve *ecc)
 int
 ecc_ecdsa_verify (const struct ecc_curve *ecc,
 		  const mp_limb_t *pp, /* Public key */
-		  unsigned length, const uint8_t *digest,
+		  size_t length, const uint8_t *digest,
 		  const mp_limb_t *rp, const mp_limb_t *sp,
 		  mp_limb_t *scratch)
 {

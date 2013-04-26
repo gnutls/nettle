@@ -48,7 +48,7 @@ ecc_ecdsa_sign (const struct ecc_curve *ecc,
 		/* Random nonce, must be invertible mod ecc group
 		   order. */
 		const mp_limb_t *kp,
-		unsigned length, const uint8_t *digest,
+		size_t length, const uint8_t *digest,
 		mp_limb_t *rp, mp_limb_t *sp,
 		mp_limb_t *scratch)
 {

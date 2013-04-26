@@ -36,7 +36,7 @@
 void
 ecdsa_sign (const struct ecc_scalar *key,
 	    void *random_ctx, nettle_random_func *random,
-	    unsigned digest_length,
+	    size_t digest_length,
 	    const uint8_t *digest,
 	    struct dsa_signature *signature)
 {

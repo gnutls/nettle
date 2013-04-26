@@ -48,13 +48,13 @@ extern "C" {
 void
 ecdsa_sign (const struct ecc_scalar *key,
 	    void *random_ctx, nettle_random_func *random,
-	    unsigned digest_length,
+	    size_t digest_length,
 	    const uint8_t *digest,
 	    struct dsa_signature *signature);
 
 int
 ecdsa_verify (const struct ecc_point *pub,
-	      unsigned length, const uint8_t *digest,
+	      size_t length, const uint8_t *digest,
 	      const struct dsa_signature *signature);
 
 void
@@ -72,7 +72,7 @@ ecc_ecdsa_sign (const struct ecc_curve *ecc,
 		/* Random nonce, must be invertible mod ecc group
 		   order. */
 		const mp_limb_t *kp,
-		unsigned length, const uint8_t *digest,
+		size_t length, const uint8_t *digest,
 		mp_limb_t *rp, mp_limb_t *sp,
 		mp_limb_t *scratch);
 
@@ -82,7 +82,7 @@ ecc_ecdsa_verify_itch (const struct ecc_curve *ecc);
 int
 ecc_ecdsa_verify (const struct ecc_curve *ecc,
 		  const mp_limb_t *pp, /* Public key */
-		  unsigned length, const uint8_t *digest,
+		  size_t length, const uint8_t *digest,
 		  const mp_limb_t *rp, const mp_limb_t *sp,
 		  mp_limb_t *scratch);
 
