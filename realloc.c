@@ -35,7 +35,7 @@
    totally free the object, it is allowed to return a valid
    pointer. */
 void *
-nettle_realloc(void *ctx UNUSED, void *p, unsigned length)
+nettle_realloc(void *ctx UNUSED, void *p, size_t length)
 {
   if (length > 0)
     return realloc(p, length);
@@ -45,7 +45,7 @@ nettle_realloc(void *ctx UNUSED, void *p, unsigned length)
 }
 
 void *
-nettle_xrealloc(void *ctx UNUSED, void *p, unsigned length)
+nettle_xrealloc(void *ctx UNUSED, void *p, size_t length)
 {
   if (length > 0)
     {

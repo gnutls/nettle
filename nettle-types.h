@@ -40,7 +40,7 @@ typedef void nettle_random_func(void *ctx,
 typedef void nettle_progress_func(void *ctx, int c);
 
 /* Realloc function, used by struct nettle_buffer. */
-typedef void *nettle_realloc_func(void *ctx, void *p, unsigned length);
+typedef void *nettle_realloc_func(void *ctx, void *p, size_t length);
 
 /* Ciphers */
 typedef void nettle_set_key_func(void *ctx,
