@@ -65,7 +65,7 @@ main(int argc UNUSED, char **argv UNUSED)
   for (;;)
     {
       int nbytes; /* Number of bytes read frmo disk at each iteration */
-      unsigned decoded_bytes; /* Bytes actually generated at each iteration */
+      size_t decoded_bytes; /* Bytes actually generated at each iteration */
 
       nbytes = fread(buffer, 1, CHUNK_SIZE, stdin);
 

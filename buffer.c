@@ -35,13 +35,13 @@
 
 int
 nettle_buffer_grow(struct nettle_buffer *buffer,
-		   unsigned length)
+		   size_t length)
 {
   assert(buffer->size <= buffer->alloc);
   
   if (buffer->size + length > buffer->alloc)
     {
-      unsigned alloc;
+      size_t alloc;
       uint8_t *p;
       
       if (!buffer->realloc)
@@ -72,7 +72,7 @@ nettle_buffer_init_realloc(struct nettle_buffer *buffer,
 
 void
 nettle_buffer_init_size(struct nettle_buffer *buffer,
-			unsigned length, uint8_t *space)
+			size_t length, uint8_t *space)
 {
   buffer->contents = space;
   buffer->alloc = length;
@@ -100,7 +100,7 @@ nettle_buffer_reset(struct nettle_buffer *buffer)
 
 uint8_t *
 nettle_buffer_space(struct nettle_buffer *buffer,
-		    unsigned length)
+		    size_t length)
 {
   uint8_t *p;
 
@@ -114,7 +114,7 @@ nettle_buffer_space(struct nettle_buffer *buffer,
      
 int
 nettle_buffer_write(struct nettle_buffer *buffer,
-		    unsigned length, const uint8_t *data)
+		    size_t length, const uint8_t *data)
 {
   uint8_t *p = nettle_buffer_space(buffer, length);
   if (p)

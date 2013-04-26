@@ -29,25 +29,29 @@
 #include "base16.h"
 
 /* Same as the macros with the same name */
-static unsigned
-base16_encode_length(unsigned length)
+static nettle_armor_length_func base16_encode_length;
+static size_t
+base16_encode_length(size_t length)
 {
   return BASE16_ENCODE_LENGTH(length);
 }
 
-static unsigned
-base16_decode_length(unsigned length)
+static nettle_armor_length_func base16_decode_length;
+static size_t
+base16_decode_length(size_t length)
 {
   return BASE16_DECODE_LENGTH(length);
 }
 
+static nettle_armor_init_func base16_encode_init;
 static void
-base16_encode_init(void *ctx)
-{ (void) ctx; }
+base16_encode_init(void *ctx UNUSED)
+{ }
 
-static unsigned
+static nettle_armor_encode_update_func base16_encode_update_wrapper;
+static size_t
 base16_encode_update_wrapper(void *ctx UNUSED, uint8_t *dst,
-			     unsigned length, const uint8_t *src)
+			     size_t length, const uint8_t *src)
 {
   base16_encode_update(dst, length, src);
   return BASE16_ENCODE_LENGTH(length);
@@ -56,9 +60,12 @@ base16_encode_update_wrapper(void *ctx UNUSED, uint8_t *dst,
 #undef base16_encode_update
 #define base16_encode_update base16_encode_update_wrapper
 
-static unsigned
-base16_encode_final(void *ctx, uint8_t *dst)
-{ (void) ctx; (void) dst; return 0; }
+static nettle_armor_encode_final_func base16_encode_final;
+static size_t
+base16_encode_final(void *ctx UNUSED, uint8_t *dst UNUSED)
+{
+  return 0;
+}
 
 
 #define BASE16_ENCODE_FINAL_LENGTH 0

@@ -114,13 +114,13 @@ base64_decode_single(struct base64_decode_ctx *ctx,
 
 int
 base64_decode_update(struct base64_decode_ctx *ctx,
-		     unsigned *dst_length,
+		     size_t *dst_length,
 		     uint8_t *dst,
-		     unsigned src_length,
+		     size_t src_length,
 		     const uint8_t *src)
 {
-  unsigned done;
-  unsigned i;
+  size_t done;
+  size_t i;
 
   assert(*dst_length >= BASE64_DECODE_LENGTH(src_length));
   

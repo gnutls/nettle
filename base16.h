@@ -54,7 +54,7 @@ base16_encode_single(uint8_t *dst,
 /* Always stores BASE16_ENCODE_LENGTH(length) digits in dst. */
 void
 base16_encode_update(uint8_t *dst,
-		     unsigned length,
+		     size_t length,
 		     const uint8_t *src);
 
 
@@ -90,9 +90,9 @@ base16_decode_single(struct base16_decode_ctx *ctx,
  * too small. FIXME: Return some error instead? */
 int
 base16_decode_update(struct base16_decode_ctx *ctx,
-		     unsigned *dst_length,
+		     size_t *dst_length,
 		     uint8_t *dst,
-		     unsigned src_length,
+		     size_t src_length,
 		     const uint8_t *src);
 
 /* Returns 1 on success. */

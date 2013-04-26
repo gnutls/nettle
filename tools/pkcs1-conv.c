@@ -128,9 +128,9 @@ pem_ws[33] = {
 
 /* Returns 1 on match, otherwise 0. */ 
 static int
-match_pem_start(unsigned length, const uint8_t *line,
-		unsigned *marker_start,
-		unsigned *marker_length)
+match_pem_start(size_t length, const uint8_t *line,
+		size_t *marker_start,
+		size_t *marker_length)
 {
   while (length > 0 && PEM_IS_SPACE(line[length - 1]))
     length--;
@@ -152,8 +152,8 @@ match_pem_start(unsigned length, const uint8_t *line,
 /* Returns 1 on match, -1 if the line is of the right form except for
    the marker, otherwise 0. */ 
 static int
-match_pem_end(unsigned length, const uint8_t *line,
-	      unsigned marker_length,
+match_pem_end(size_t length, const uint8_t *line,
+	      size_t marker_length,
 	      const uint8_t *marker)
 {
   while (length > 0 && PEM_IS_SPACE(line[length - 1]))
@@ -178,10 +178,10 @@ match_pem_end(unsigned length, const uint8_t *line,
 struct pem_info
 {
   /* The FOO part in "-----BEGIN FOO-----" */
-  unsigned marker_start;
-  unsigned marker_length;
-  unsigned data_start;
-  unsigned data_length;
+  size_t marker_start;
+  size_t marker_length;
+  size_t data_start;
+  size_t data_length;
 };
 
 static int
@@ -211,7 +211,7 @@ read_pem(struct nettle_buffer *buffer, FILE *f,
 
   for (;;)
     {
-      unsigned line_start = buffer->size;
+      size_t line_start = buffer->size;
 
       if (read_line(buffer, f) != 1)
 	return 0;
@@ -236,7 +236,7 @@ read_pem(struct nettle_buffer *buffer, FILE *f,
 
 static int
 decode_base64(struct nettle_buffer *buffer,
-	      unsigned start, unsigned *length)
+	      size_t start, size_t *length)
 {
   struct base64_decode_ctx ctx;
   
@@ -257,7 +257,7 @@ decode_base64(struct nettle_buffer *buffer,
 }
 
 static int
-convert_rsa_public_key(struct nettle_buffer *buffer, unsigned length, const uint8_t *data)
+convert_rsa_public_key(struct nettle_buffer *buffer, size_t length, const uint8_t *data)
 {
   struct rsa_public_key pub;
   int res;
@@ -281,7 +281,7 @@ convert_rsa_public_key(struct nettle_buffer *buffer, unsigned length, const uint
 }
 
 static int
-convert_rsa_private_key(struct nettle_buffer *buffer, unsigned length, const uint8_t *data)
+convert_rsa_private_key(struct nettle_buffer *buffer, size_t length, const uint8_t *data)
 {
   struct rsa_public_key pub;
   struct rsa_private_key priv;
@@ -309,7 +309,7 @@ convert_rsa_private_key(struct nettle_buffer *buffer, unsigned length, const uin
 }
 
 static int
-convert_dsa_private_key(struct nettle_buffer *buffer, unsigned length, const uint8_t *data)
+convert_dsa_private_key(struct nettle_buffer *buffer, size_t length, const uint8_t *data)
 {
   struct dsa_public_key pub;
   struct dsa_private_key priv;
@@ -338,7 +338,7 @@ convert_dsa_private_key(struct nettle_buffer *buffer, unsigned length, const uin
 
 /* Returns 1 on success, 0 on error, and -1 for unsupported algorithms. */
 static int
-convert_public_key(struct nettle_buffer *buffer, unsigned length, const uint8_t *data)
+convert_public_key(struct nettle_buffer *buffer, size_t length, const uint8_t *data)
 {
   /* SubjectPublicKeyInfo ::= SEQUENCE {
          algorithm		AlgorithmIdentifier,
@@ -459,7 +459,7 @@ convert_public_key(struct nettle_buffer *buffer, unsigned length, const uint8_t 
 static int
 convert_type(struct nettle_buffer *buffer,
 	     enum object_type type,
-	     unsigned length, const uint8_t *data)
+	     size_t length, const uint8_t *data)
 {
   int res;
   

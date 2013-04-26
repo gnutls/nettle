@@ -65,7 +65,7 @@ main(int argc UNUSED, char **argv UNUSED)
   for (;;)
     {
       int nbytes; /* Number of bytes read frmo disk at each iteration */
-      unsigned decoded_bytes; /* Bytes actually generated at each iteration */
+      size_t decoded_bytes; /* Bytes actually generated at each iteration */
 
       nbytes = fread(buffer, 1, CHUNK_SIZE, stdin);
 
@@ -75,30 +75,30 @@ main(int argc UNUSED, char **argv UNUSED)
 	  return EXIT_FAILURE;
 	}
       
-    decoded_bytes = BASE16_DECODE_LENGTH(nbytes);
+      decoded_bytes = BASE16_DECODE_LENGTH(nbytes);
 
-    /* Decodes one chunk: */
-    if (!base16_decode_update(&b16_ctx, &decoded_bytes, result, nbytes, buffer))
-      {
-	werror ("Error decoding input (not base16?)\n");
-	return EXIT_FAILURE;
-      }
+      /* Decodes one chunk: */
+      if (!base16_decode_update(&b16_ctx, &decoded_bytes, result, nbytes, buffer))
+	{
+	  werror ("Error decoding input (not base16?)\n");
+	  return EXIT_FAILURE;
+	}
 
-    if (!write_string (stdout, decoded_bytes, result))
-      {
-	werror ("Error writing file: %s\n", strerror(errno));
-	return EXIT_FAILURE;
-      }
-    if (nbytes < CHUNK_SIZE)
-      {
-	/* Check if decoding finalized OK: */
-	if (!base16_decode_final(&b16_ctx))
-	  {
-	    werror("Decoding did not finish properly.\n");
-	    return EXIT_FAILURE;
-	  }
-	break;
-      }
+      if (!write_string (stdout, decoded_bytes, result))
+	{
+	  werror ("Error writing file: %s\n", strerror(errno));
+	  return EXIT_FAILURE;
+	}
+      if (nbytes < CHUNK_SIZE)
+	{
+	  /* Check if decoding finalized OK: */
+	  if (!base16_decode_final(&b16_ctx))
+	    {
+	      werror("Decoding did not finish properly.\n");
+	      return EXIT_FAILURE;
+	    }
+	  break;
+	}
     }
 
   if (fflush (stdout) != 0)

@@ -47,11 +47,11 @@ base16_encode_single(uint8_t *dst,
 /* Always stores BASE16_ENCODE_LENGTH(length) digits in dst. */
 void
 base16_encode_update(uint8_t *dst,
-		     unsigned length,
+		     size_t length,
 		     const uint8_t *src)
 {
-  unsigned i;
+  size_t i;
   
-  for (i = 0, dst; i<length; i++, dst += 2)
+  for (i = 0; i<length; i++, dst += 2)
     base16_encode_single(dst, src[i]);
 }

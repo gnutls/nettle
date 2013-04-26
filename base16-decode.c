@@ -93,17 +93,17 @@ base16_decode_single(struct base16_decode_ctx *ctx,
 
 int
 base16_decode_update(struct base16_decode_ctx *ctx,
-		     unsigned *dst_length,
+		     size_t *dst_length,
 		     uint8_t *dst,
-		     unsigned src_length,
+		     size_t src_length,
 		     const uint8_t *src)
 {
-  unsigned done;
-  unsigned i;
+  size_t done;
+  size_t i;
 
   assert(*dst_length >= BASE16_DECODE_LENGTH(src_length));
   
-  for (i = 0, done = 0; i<src_length; i++)
+  for (i = done = 0; i<src_length; i++)
     switch(base16_decode_single(ctx, dst + done, src[i]))
       {
       case -1:

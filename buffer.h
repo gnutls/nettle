@@ -36,13 +36,13 @@ struct nettle_buffer
 {
   uint8_t *contents;
   /* Allocated size */
-  unsigned alloc;
+  size_t alloc;
 
   void *realloc_ctx;
   nettle_realloc_func *realloc;
 
   /* Current size */
-  unsigned size;
+  size_t size;
 };
 
 /* Initializes a buffer that uses plain realloc */
@@ -57,7 +57,7 @@ nettle_buffer_init_realloc(struct nettle_buffer *buffer,
 /* Initializes a buffer of fix size */
 void
 nettle_buffer_init_size(struct nettle_buffer *buffer,
-			unsigned length, uint8_t *space);
+			size_t length, uint8_t *space);
 
 void
 nettle_buffer_clear(struct nettle_buffer *buffer);
@@ -68,7 +68,7 @@ nettle_buffer_reset(struct nettle_buffer *buffer);
 
 int
 nettle_buffer_grow(struct nettle_buffer *buffer,
-		   unsigned length);
+		   size_t length);
 
 #define NETTLE_BUFFER_PUTC(buffer, c) \
 ( (((buffer)->size < (buffer)->alloc) || nettle_buffer_grow((buffer), 1)) \
@@ -76,7 +76,7 @@ nettle_buffer_grow(struct nettle_buffer *buffer,
 
 int
 nettle_buffer_write(struct nettle_buffer *buffer,
-		    unsigned length, const uint8_t *data);
+		    size_t length, const uint8_t *data);
 
 /* Like nettle_buffer_write, but instead of copying data to the
  * buffer, it returns a pointer to the area where the caller can copy
@@ -84,7 +84,7 @@ nettle_buffer_write(struct nettle_buffer *buffer,
  * reallocate the buffer. */
 uint8_t *
 nettle_buffer_space(struct nettle_buffer *buffer,
-		    unsigned length);
+		    size_t length);
 
 /* Copy the contents of SRC to the end of DST. */
 int

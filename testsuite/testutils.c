@@ -607,12 +607,12 @@ test_armor(const struct nettle_armor *armor,
            const uint8_t *data,
            const uint8_t *ascii)
 {
-  unsigned ascii_length = strlen(ascii);
+  size_t ascii_length = strlen(ascii);
   uint8_t *buffer = xalloc(1 + ascii_length);
   uint8_t *check = xalloc(1 + armor->decode_length(ascii_length));
   void *encode = xalloc(armor->encode_context_size);
   void *decode = xalloc(armor->decode_context_size);
-  unsigned done;
+  size_t done;
 
   ASSERT(ascii_length
 	 <= (armor->encode_length(data_length) + armor->encode_final_length));

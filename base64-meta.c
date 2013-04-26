@@ -29,14 +29,16 @@
 #include "base64.h"
 
 /* Same as the macros with the same name */
-static unsigned
-base64_encode_length(unsigned length)
+static nettle_armor_length_func base64_encode_length;
+static size_t
+base64_encode_length(size_t length)
 {
   return BASE64_ENCODE_LENGTH(length);
 }
 
-static unsigned
-base64_decode_length(unsigned length)
+static nettle_armor_length_func base64_decode_length;
+static size_t
+base64_decode_length(size_t length)
 {
   return BASE64_DECODE_LENGTH(length);
 }

@@ -32,13 +32,13 @@
 #include "base64.h"
 #include "buffer.h"
 
-unsigned
+size_t
 sexp_transport_vformat(struct nettle_buffer *buffer,
 		       const char *format, va_list args)
 {
-  unsigned start = 0;
-  unsigned length;
-  unsigned base64_length;
+  size_t start = 0;
+  size_t length;
+  size_t base64_length;
 
   if (buffer)
     {
@@ -70,11 +70,11 @@ sexp_transport_vformat(struct nettle_buffer *buffer,
   return base64_length + 2;
 }
 
-unsigned
+size_t
 sexp_transport_format(struct nettle_buffer *buffer,
 		      const char *format, ...)
 {
-  unsigned done;
+  size_t done;
   va_list args;
 
   va_start(args, format);

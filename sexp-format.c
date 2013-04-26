@@ -40,14 +40,14 @@
 
 static unsigned
 format_prefix(struct nettle_buffer *buffer,
-	      unsigned length)
+	      size_t length)
 {
-  unsigned digit = 1;
+  size_t digit = 1;
   unsigned prefix_length = 1;
   
   for (;;)
     {
-      unsigned next = digit * 10;
+      size_t next = digit * 10;
       if (next > length)
 	break;
 
@@ -68,9 +68,9 @@ format_prefix(struct nettle_buffer *buffer,
   return prefix_length + 1;
 }
 
-static unsigned
+static size_t
 format_string(struct nettle_buffer *buffer,
-	      unsigned length, const uint8_t *s)
+	      size_t length, const uint8_t *s)
 {
   unsigned prefix_length = format_prefix(buffer, length);
   if (!prefix_length)
@@ -82,11 +82,11 @@ format_string(struct nettle_buffer *buffer,
   return prefix_length + length;
 }
 
-unsigned
+size_t
 sexp_vformat(struct nettle_buffer *buffer, const char *format, va_list args)
 {
   unsigned nesting = 0;
-  unsigned done = 0;
+  size_t done = 0;
 
   for (;;)
     switch (*format++)
@@ -94,8 +94,8 @@ sexp_vformat(struct nettle_buffer *buffer, const char *format, va_list args)
       default:
 	{
 	  const char *start = format - 1;
-	  unsigned length = 1 + strcspn(format, "()% \t");
-	  unsigned output_length = format_string(buffer, length, start);
+	  size_t length = 1 + strcspn(format, "()% \t");
+	  size_t output_length = format_string(buffer, length, start);
 	  if (!output_length)
 	    return 0;
 	  
@@ -154,8 +154,8 @@ sexp_vformat(struct nettle_buffer *buffer, const char *format, va_list args)
 	    case 's':
 	      {
 		const char *s;
-		unsigned length;
-		unsigned output_length;
+		size_t length;
+		size_t output_length;
 		
 		if (nul_flag)
 		  {
@@ -164,7 +164,7 @@ sexp_vformat(struct nettle_buffer *buffer, const char *format, va_list args)
 		  }
 		else
 		  {
-		    length = va_arg(args, unsigned);
+		    length = va_arg(args, size_t);
 		    s = va_arg(args, const char *);
 		  }
 		
@@ -178,8 +178,8 @@ sexp_vformat(struct nettle_buffer *buffer, const char *format, va_list args)
 	    case 't':
 	      {
 		const char *s;
-		unsigned length;
-		unsigned output_length;
+		size_t length;
+		size_t output_length;
 		
 		if (nul_flag)
 		  {
@@ -191,7 +191,7 @@ sexp_vformat(struct nettle_buffer *buffer, const char *format, va_list args)
 		  }
 		else
 		  {
-		    length = va_arg(args, unsigned);
+		    length = va_arg(args, size_t);
 		    s = va_arg(args, const char *);
 		    if (!s)
 		      break;
@@ -218,7 +218,7 @@ sexp_vformat(struct nettle_buffer *buffer, const char *format, va_list args)
 	    case 'l':
 	      {
 		const char *s;
-		unsigned length;
+		size_t length;
 		
 		if (nul_flag)
 		  {
@@ -227,7 +227,7 @@ sexp_vformat(struct nettle_buffer *buffer, const char *format, va_list args)
 		  }
 		else
 		  {
-		    length = va_arg(args, unsigned);
+		    length = va_arg(args, size_t);
 		    s = va_arg(args, const char *);
 		  }
 
@@ -291,7 +291,7 @@ sexp_vformat(struct nettle_buffer *buffer, const char *format, va_list args)
 	    case 'b':
 	      {
 		const MP_INT *n = va_arg(args, const MP_INT *);
-		unsigned length;
+		size_t length;
 		unsigned prefix_length;
 	      
 		length = nettle_mpz_sizeinbase_256_s(n);
@@ -319,11 +319,11 @@ sexp_vformat(struct nettle_buffer *buffer, const char *format, va_list args)
       }
 }
 
-unsigned
+size_t
 sexp_format(struct nettle_buffer *buffer, const char *format, ...)
 {
   va_list args;
-  unsigned done;
+  size_t done;
   
   va_start(args, format);
   done = sexp_vformat(buffer, format, args);

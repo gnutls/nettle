@@ -32,7 +32,7 @@ test_main(void)
     /* Test overlapping areas */
     uint8_t buffer[] = "Helloxxxx";
     struct base64_decode_ctx ctx;
-    unsigned dst_length;
+    size_t dst_length;
     
     ASSERT(BASE64_ENCODE_RAW_LENGTH(5) == 8);
     base64_encode_raw(buffer, 5, buffer);

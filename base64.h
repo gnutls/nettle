@@ -71,22 +71,22 @@ void
 base64_encode_init(struct base64_encode_ctx *ctx);
 
 /* Encodes a single byte. Returns amount of output (always 1 or 2). */
-unsigned
+size_t
 base64_encode_single(struct base64_encode_ctx *ctx,
 		     uint8_t *dst,
 		     uint8_t src);
 
 /* Returns the number of output characters. DST should point to an
  * area of size at least BASE64_ENCODE_LENGTH(length). */
-unsigned
+size_t
 base64_encode_update(struct base64_encode_ctx *ctx,
 		     uint8_t *dst,
-		     unsigned length,
+		     size_t length,
 		     const uint8_t *src);
 
 /* DST should point to an area of size at least
  * BASE64_ENCODE_FINAL_LENGTH */
-unsigned
+size_t
 base64_encode_final(struct base64_encode_ctx *ctx,
 		    uint8_t *dst);
 
@@ -96,7 +96,7 @@ base64_encode_final(struct base64_encode_ctx *ctx,
  * Generates exactly BASE64_ENCODE_RAW_LENGTH(length) bytes of output.
  * Supports overlapped operation, if src <= dst. */
 void
-base64_encode_raw(uint8_t *dst, unsigned length, const uint8_t *src);
+base64_encode_raw(uint8_t *dst, size_t length, const uint8_t *src);
 
 void
 base64_encode_group(uint8_t *dst, uint32_t group);
@@ -137,9 +137,9 @@ base64_decode_single(struct base64_decode_ctx *ctx,
  * too small. FIXME: Return some error instead? */
 int
 base64_decode_update(struct base64_decode_ctx *ctx,
-		     unsigned *dst_length,
+		     size_t *dst_length,
 		     uint8_t *dst,
-		     unsigned src_length,
+		     size_t src_length,
 		     const uint8_t *src);
 
 /* Returns 1 on success. */

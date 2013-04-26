@@ -39,7 +39,7 @@ static const uint8_t encode_table[64] =
 #define ENCODE(x) (encode_table[0x3F & (x)])
 
 void
-base64_encode_raw(uint8_t *dst, unsigned length, const uint8_t *src)
+base64_encode_raw(uint8_t *dst, size_t length, const uint8_t *src)
 {
   const uint8_t *in = src + length;
   uint8_t *out = dst + BASE64_ENCODE_RAW_LENGTH(length);
@@ -140,7 +140,7 @@ base64_encode_init(struct base64_encode_ctx *ctx)
 }
 
 /* Encodes a single byte. */
-unsigned
+size_t
 base64_encode_single(struct base64_encode_ctx *ctx,
 		     uint8_t *dst,
 		     uint8_t src)
@@ -165,16 +165,16 @@ base64_encode_single(struct base64_encode_ctx *ctx,
 
 /* Returns the number of output characters. DST should point to an
  * area of size at least BASE64_ENCODE_LENGTH(length). */
-unsigned
+size_t
 base64_encode_update(struct base64_encode_ctx *ctx,
 		     uint8_t *dst,
-		     unsigned length,
+		     size_t length,
 		     const uint8_t *src)
 {
-  unsigned done = 0;
-  unsigned left = length;
+  size_t done = 0;
+  size_t left = length;
   unsigned left_over;
-  unsigned bulk;
+  size_t bulk;
   
   while (ctx->bits && left)
     {
@@ -208,7 +208,7 @@ base64_encode_update(struct base64_encode_ctx *ctx,
 
 /* DST should point to an area of size at least
  * BASE64_ENCODE_FINAL_SIZE */
-unsigned
+size_t
 base64_encode_final(struct base64_encode_ctx *ctx,
 		    uint8_t *dst)
 {

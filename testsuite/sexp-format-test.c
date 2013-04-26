@@ -62,7 +62,7 @@ test_main(void)
     
     nettle_buffer_init(&buffer);  
     ASSERT(sexp_format(&buffer, "(%0s%l)",
-		       "foo", 7, "(4:bar)")
+		       "foo", (size_t) 7, "(4:bar)")
 	   == strlen(e));
     
     ASSERT(buffer.size == strlen(e));
@@ -121,10 +121,10 @@ test_main(void)
     const uint8_t e[] = ")3:foo(3:bar";
 
     nettle_buffer_init(&buffer);
-    ASSERT(sexp_format(&buffer, "%)foo%(%s", 3, "bar")
+    ASSERT(sexp_format(&buffer, "%)foo%(%s", (size_t) 3, "bar")
 	   == strlen(e));
     
-    ASSERT(sexp_format(NULL, "%)foo%(%s", 3, "bar")
+    ASSERT(sexp_format(NULL, "%)foo%(%s", (size_t) 3, "bar")
 	   == strlen(e));
     
     ASSERT(buffer.size == strlen(e));

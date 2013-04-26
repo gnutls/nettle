@@ -57,7 +57,7 @@ sexp_iterator_init(struct sexp_iterator *iterator,
 
 static int
 sexp_iterator_simple(struct sexp_iterator *iterator,
-		     unsigned *size,
+		     size_t *size,
 		     const uint8_t **string)
 {
   unsigned length = 0;
@@ -156,7 +156,7 @@ sexp_iterator_parse(struct sexp_iterator *iterator)
 
 int
 sexp_iterator_first(struct sexp_iterator *iterator,
-		    unsigned length, const uint8_t *input)
+		    size_t length, const uint8_t *input)
 {
   sexp_iterator_init(iterator, length, input);
   return sexp_iterator_parse(iterator);
@@ -232,9 +232,9 @@ sexp_iterator_exit_lists(struct sexp_iterator *iterator,
 
 const uint8_t *
 sexp_iterator_subexpr(struct sexp_iterator *iterator,
-		      unsigned *length)
+		      size_t *length)
 {
-  unsigned start = iterator->start;
+  size_t start = iterator->start;
   if (!sexp_iterator_next(iterator))
     return 0;
 
@@ -251,7 +251,7 @@ sexp_iterator_get_uint32(struct sexp_iterator *iterator,
       && iterator->atom_length
       && iterator->atom[0] < 0x80)
     {
-      unsigned length = iterator->atom_length;
+      size_t length = iterator->atom_length;
       const uint8_t *p = iterator->atom;
 
       /* Skip leading zeros. */

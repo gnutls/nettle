@@ -37,13 +37,13 @@
 /* NOTE: Decodes the input string in place */
 int
 sexp_transport_iterator_first(struct sexp_iterator *iterator,
-			      unsigned length, uint8_t *input)
+			      size_t length, uint8_t *input)
 {
   /* We first base64 decode any transport encoded sexp at the start of
    * the input. */
 
-  unsigned in = 0;
-  unsigned out = 0;
+  size_t in = 0;
+  size_t out = 0;
 
   while (in < length)
     switch(input[in])
@@ -64,8 +64,8 @@ sexp_transport_iterator_first(struct sexp_iterator *iterator,
 	{
 	  /* Found transport encoding */
 	  struct base64_decode_ctx ctx;
-	  unsigned coded_length;
-	  unsigned end;
+	  size_t coded_length;
+	  size_t end;
 
 	  for (end = ++in; end < length && input[end] != '}'; end++)
 	    ;
