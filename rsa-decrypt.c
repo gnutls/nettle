@@ -33,7 +33,7 @@
 
 int
 rsa_decrypt(const struct rsa_private_key *key,
-	    unsigned *length, uint8_t *message,
+	    size_t *length, uint8_t *message,
 	    const mpz_t gibberish)
 {
   mpz_t m;

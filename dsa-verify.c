@@ -35,7 +35,7 @@
 
 int
 _dsa_verify(const struct dsa_public_key *key,
-	    unsigned digest_size,
+	    size_t digest_size,
 	    const uint8_t *digest,
 	    const struct dsa_signature *signature)
 {

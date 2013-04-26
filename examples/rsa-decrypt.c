@@ -198,7 +198,7 @@ main(int argc, char **argv)
   struct rsa_session ctx;
   struct rsa_session_info session;
 
-  unsigned length;
+  size_t length;
   mpz_t x;
 
   mpz_init(x);

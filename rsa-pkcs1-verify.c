@@ -33,7 +33,7 @@
 
 int
 rsa_pkcs1_verify(const struct rsa_public_key *key,
-		 unsigned length, const uint8_t *digest_info,
+		 size_t length, const uint8_t *digest_info,
 		 const mpz_t s)
 {
   int res;

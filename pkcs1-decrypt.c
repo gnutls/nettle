@@ -34,14 +34,14 @@
 #include "nettle-internal.h"
 
 int
-pkcs1_decrypt (unsigned key_size,
+pkcs1_decrypt (size_t key_size,
 	       const mpz_t m,
-	       unsigned *length, uint8_t *message)
+	       size_t *length, uint8_t *message)
 {
   TMP_DECL(em, uint8_t, NETTLE_MAX_BIGNUM_SIZE);
   uint8_t *terminator;
-  unsigned padding;
-  unsigned message_length;
+  size_t padding;
+  size_t message_length;
 
   TMP_ALLOC(em, key_size);
   nettle_mpz_get_str_256(key_size, em, m);

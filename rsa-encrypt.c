@@ -35,7 +35,7 @@ int
 rsa_encrypt(const struct rsa_public_key *key,
 	    /* For padding */
 	    void *random_ctx, nettle_random_func *random,
-	    unsigned length, const uint8_t *message,
+	    size_t length, const uint8_t *message,
 	    mpz_t gibberish)
 {
   if (pkcs1_encrypt (key->size, random_ctx, random,

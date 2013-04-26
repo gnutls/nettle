@@ -35,7 +35,7 @@ int
 rsa_pkcs1_sign_tr(const struct rsa_public_key *pub,
   	          const struct rsa_private_key *key,
 	          void *random_ctx, nettle_random_func *random,
-	          unsigned length, const uint8_t *digest_info,
+	          size_t length, const uint8_t *digest_info,
    	          mpz_t s)
 {
   mpz_t ri;

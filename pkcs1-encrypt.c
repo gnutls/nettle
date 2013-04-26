@@ -37,15 +37,15 @@
 #include "nettle-internal.h"
 
 int
-pkcs1_encrypt (unsigned key_size,
+pkcs1_encrypt (size_t key_size,
 	       /* For padding */
 	       void *random_ctx, nettle_random_func *random,
-	       unsigned length, const uint8_t *message,
+	       size_t length, const uint8_t *message,
 	       mpz_t m)
 {
   TMP_DECL(em, uint8_t, NETTLE_MAX_BIGNUM_SIZE);
-  unsigned padding;
-  unsigned i;
+  size_t padding;
+  size_t i;
 
   /* The message is encoded as a string of the same length as the
    * modulo n, of the form

@@ -238,13 +238,13 @@ int
 dsa_sha1_keypair_from_sexp(struct dsa_public_key *pub,
 			   struct dsa_private_key *priv,
 			   unsigned p_max_bits,
-			   unsigned length, const uint8_t *expr);
+			   size_t length, const uint8_t *expr);
 
 int
 dsa_sha256_keypair_from_sexp(struct dsa_public_key *pub,
 			     struct dsa_private_key *priv,
 			     unsigned p_max_bits,
-			     unsigned length, const uint8_t *expr);
+			     size_t length, const uint8_t *expr);
 
 /* Keys in X.509 andd OpenSSL format. */
 struct asn1_der_iterator;
@@ -276,13 +276,13 @@ int
 _dsa_sign(const struct dsa_public_key *pub,
 	  const struct dsa_private_key *key,
 	  void *random_ctx, nettle_random_func *random,
-	  unsigned digest_size,
+	  size_t digest_size,
 	  const uint8_t *digest,
 	  struct dsa_signature *signature);
 
 int
 _dsa_verify(const struct dsa_public_key *key,
-	    unsigned digest_size,
+	    size_t digest_size,
 	    const uint8_t *digest,
 	    const struct dsa_signature *signature);
 

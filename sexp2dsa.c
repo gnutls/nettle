@@ -78,7 +78,7 @@ int
 dsa_sha1_keypair_from_sexp(struct dsa_public_key *pub,
 			   struct dsa_private_key *priv,
 			   unsigned p_max_bits, 
-			   unsigned length, const uint8_t *expr)
+			   size_t length, const uint8_t *expr)
 {
   struct sexp_iterator i;
 
@@ -92,7 +92,7 @@ int
 dsa_sha256_keypair_from_sexp(struct dsa_public_key *pub,
 			     struct dsa_private_key *priv,
 			     unsigned p_max_bits, 
-			     unsigned length, const uint8_t *expr)
+			     size_t length, const uint8_t *expr)
 {
   struct sexp_iterator i;
 

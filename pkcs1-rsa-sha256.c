@@ -60,7 +60,7 @@ sha256_prefix[] =
 };
 
 int
-pkcs1_rsa_sha256_encode(mpz_t m, unsigned key_size, struct sha256_ctx *hash)
+pkcs1_rsa_sha256_encode(mpz_t m, size_t key_size, struct sha256_ctx *hash)
 {
   uint8_t *p;
   TMP_DECL(em, uint8_t, NETTLE_MAX_BIGNUM_SIZE);
@@ -81,7 +81,7 @@ pkcs1_rsa_sha256_encode(mpz_t m, unsigned key_size, struct sha256_ctx *hash)
 }
 
 int
-pkcs1_rsa_sha256_encode_digest(mpz_t m, unsigned key_size, const uint8_t *digest)
+pkcs1_rsa_sha256_encode_digest(mpz_t m, size_t key_size, const uint8_t *digest)
 {
   uint8_t *p;
   TMP_DECL(em, uint8_t, NETTLE_MAX_BIGNUM_SIZE);

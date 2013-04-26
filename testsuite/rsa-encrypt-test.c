@@ -12,10 +12,10 @@ test_main(void)
 
   /* FIXME: How is this spelled? */
   const uint8_t *msg = "Squemish ossifrage";
-  unsigned msg_length;
+  size_t msg_length;
 
   uint8_t *decrypted;
-  unsigned decrypted_length;
+  size_t decrypted_length;
   uint8_t after;
 
   mpz_t gibberish;
@@ -30,7 +30,7 @@ test_main(void)
   msg_length = strlen(msg);
 
   if (verbose)
-    fprintf(stderr, "msg: `%s', length = %d\n", msg, msg_length);
+    fprintf(stderr, "msg: `%s', length = %d\n", msg, (int) msg_length);
   
   ASSERT(rsa_encrypt(&pub,
 		     &lfib, (nettle_random_func *) knuth_lfib_random,

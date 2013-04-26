@@ -60,44 +60,44 @@ _pkcs1_signature_prefix(unsigned key_size,
 			unsigned digest_size);
 
 int
-pkcs1_encrypt (unsigned key_size,
+pkcs1_encrypt (size_t key_size,
 	       /* For padding */
 	       void *random_ctx, nettle_random_func *random,
-	       unsigned length, const uint8_t *message,
+	       size_t length, const uint8_t *message,
 	       mpz_t m);
 
 int
-pkcs1_decrypt (unsigned key_size,
+pkcs1_decrypt (size_t key_size,
 	       const mpz_t m,
-	       unsigned *length, uint8_t *message);
+	       size_t *length, uint8_t *message);
 
 int
-pkcs1_rsa_digest_encode(mpz_t m, unsigned key_size,
-			unsigned di_length, const uint8_t *digest_info);
+pkcs1_rsa_digest_encode(mpz_t m, size_t key_size,
+			size_t di_length, const uint8_t *digest_info);
 
 int
-pkcs1_rsa_md5_encode(mpz_t m, unsigned length, struct md5_ctx *hash);
+pkcs1_rsa_md5_encode(mpz_t m, size_t length, struct md5_ctx *hash);
 
 int
-pkcs1_rsa_md5_encode_digest(mpz_t m, unsigned length, const uint8_t *digest);
+pkcs1_rsa_md5_encode_digest(mpz_t m, size_t length, const uint8_t *digest);
 
 int
-pkcs1_rsa_sha1_encode(mpz_t m, unsigned length, struct sha1_ctx *hash);
+pkcs1_rsa_sha1_encode(mpz_t m, size_t length, struct sha1_ctx *hash);
 
 int
-pkcs1_rsa_sha1_encode_digest(mpz_t m, unsigned length, const uint8_t *digest);
+pkcs1_rsa_sha1_encode_digest(mpz_t m, size_t length, const uint8_t *digest);
 
 int
-pkcs1_rsa_sha256_encode(mpz_t m, unsigned length, struct sha256_ctx *hash);
+pkcs1_rsa_sha256_encode(mpz_t m, size_t length, struct sha256_ctx *hash);
 
 int
-pkcs1_rsa_sha256_encode_digest(mpz_t m, unsigned length, const uint8_t *digest);
+pkcs1_rsa_sha256_encode_digest(mpz_t m, size_t length, const uint8_t *digest);
 
 int
-pkcs1_rsa_sha512_encode(mpz_t m, unsigned length, struct sha512_ctx *hash);
+pkcs1_rsa_sha512_encode(mpz_t m, size_t length, struct sha512_ctx *hash);
 
 int
-pkcs1_rsa_sha512_encode_digest(mpz_t m, unsigned length, const uint8_t *digest);
+pkcs1_rsa_sha512_encode_digest(mpz_t m, size_t length, const uint8_t *digest);
 
 #ifdef __cplusplus
 }

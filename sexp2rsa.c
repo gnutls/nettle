@@ -89,7 +89,7 @@ int
 rsa_keypair_from_sexp(struct rsa_public_key *pub,
 		      struct rsa_private_key *priv,
 		      unsigned limit, 
-		      unsigned length, const uint8_t *expr)
+		      size_t length, const uint8_t *expr)
 {
   struct sexp_iterator i;
   static const uint8_t * const names[3]

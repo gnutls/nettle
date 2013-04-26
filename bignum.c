@@ -46,7 +46,7 @@
  */
 
 /* Including extra sign bit, if needed. Also one byte for zero. */
-unsigned
+size_t
 nettle_mpz_sizeinbase_256_s(const mpz_t x)
 {
   if (mpz_sgn(x) >= 0)
@@ -54,7 +54,7 @@ nettle_mpz_sizeinbase_256_s(const mpz_t x)
   else
     {
       /* We'll output ~~x, so we need as many bits as for ~x */
-      unsigned size;
+      size_t size;
       mpz_t c;
 
       mpz_init(c);
@@ -66,24 +66,24 @@ nettle_mpz_sizeinbase_256_s(const mpz_t x)
     }
 }
 
-unsigned
+size_t
 nettle_mpz_sizeinbase_256_u(const mpz_t x)
 {
   return (mpz_sizeinbase(x,2) + 7) / 8;
 }
 
 static void
-nettle_mpz_to_octets(unsigned length, uint8_t *s,
+nettle_mpz_to_octets(size_t length, uint8_t *s,
 		     const mpz_t x, uint8_t sign)
 {
   uint8_t *dst = s + length - 1;
-  unsigned size = mpz_size(x);
-  unsigned i;
+  size_t size = mpz_size(x);
+  size_t i;
   
   for (i = 0; i<size; i++)
     {
       mp_limb_t limb = mpz_getlimbn(x, i);
-      unsigned j;
+      size_t j;
 
       for (j = 0; length && j < sizeof(mp_limb_t); j++)
         {
@@ -98,7 +98,7 @@ nettle_mpz_to_octets(unsigned length, uint8_t *s,
 }
 
 void
-nettle_mpz_get_str_256(unsigned length, uint8_t *s, const mpz_t x)
+nettle_mpz_get_str_256(size_t length, uint8_t *s, const mpz_t x)
 {
   if (!length)
     {
@@ -134,9 +134,9 @@ nettle_mpz_get_str_256(unsigned length, uint8_t *s, const mpz_t x)
 #else
 static void
 nettle_mpz_from_octets(mpz_t x,
-		       unsigned length, const uint8_t *s)
+		       size_t length, const uint8_t *s)
 {
-  unsigned i;
+  size_t i;
 
   mpz_set_ui(x, 0);
 
@@ -150,14 +150,14 @@ nettle_mpz_from_octets(mpz_t x,
 
 void
 nettle_mpz_set_str_256_u(mpz_t x,
-			 unsigned length, const uint8_t *s)
+			 size_t length, const uint8_t *s)
 {
   nettle_mpz_from_octets(x, length, s);
 }
 
 void
 nettle_mpz_init_set_str_256_u(mpz_t x,
-			      unsigned length, const uint8_t *s)
+			      size_t length, const uint8_t *s)
 {
   mpz_init(x);
   nettle_mpz_from_octets(x, length, s);
@@ -165,7 +165,7 @@ nettle_mpz_init_set_str_256_u(mpz_t x,
 
 void
 nettle_mpz_set_str_256_s(mpz_t x,
-			 unsigned length, const uint8_t *s)
+			 size_t length, const uint8_t *s)
 {
   if (!length)
     {
@@ -188,7 +188,7 @@ nettle_mpz_set_str_256_s(mpz_t x,
 
 void
 nettle_mpz_init_set_str_256_s(mpz_t x,
-			      unsigned length, const uint8_t *s)
+			      size_t length, const uint8_t *s)
 {
   mpz_init(x);
   nettle_mpz_set_str_256_s(x, length, s);
