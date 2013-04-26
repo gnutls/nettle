@@ -32,10 +32,10 @@
 #include "hmac.h"
 
 void
-pbkdf2_hmac_sha256 (unsigned key_length, const uint8_t *key,
-		  unsigned iterations,
-		  unsigned salt_length, const uint8_t *salt,
-		  unsigned length, uint8_t *dst)
+pbkdf2_hmac_sha256 (size_t key_length, const uint8_t *key,
+		    unsigned iterations,
+		    size_t salt_length, const uint8_t *salt,
+		    size_t length, uint8_t *dst)
 {
   struct hmac_sha256_ctx sha256ctx;
 

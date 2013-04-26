@@ -41,9 +41,9 @@ void
 pbkdf2 (void *mac_ctx,
 	nettle_hash_update_func *update,
 	nettle_hash_digest_func *digest,
-	unsigned digest_size, unsigned iterations,
-	unsigned salt_length, const uint8_t *salt,
-	unsigned length, uint8_t *dst)
+	size_t digest_size, unsigned iterations,
+	size_t salt_length, const uint8_t *salt,
+	size_t length, uint8_t *dst)
 {
   TMP_DECL(U, uint8_t, NETTLE_MAX_HASH_DIGEST_SIZE);
   TMP_DECL(T, uint8_t, NETTLE_MAX_HASH_DIGEST_SIZE);

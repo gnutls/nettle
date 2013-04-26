@@ -42,9 +42,9 @@ void
 pbkdf2 (void *mac_ctx,
 	nettle_hash_update_func *update,
 	nettle_hash_digest_func *digest,
-	unsigned digest_size, unsigned iterations,
-	unsigned salt_length, const uint8_t *salt,
-	unsigned length, uint8_t *dst);
+	size_t digest_size, unsigned iterations,
+	size_t salt_length, const uint8_t *salt,
+	size_t length, uint8_t *dst);
 
 #define PBKDF2(ctx, update, digest, digest_size,			\
 	       iterations, salt_length, salt, length, dst)		\
@@ -59,16 +59,16 @@ pbkdf2 (void *mac_ctx,
 /* PBKDF2 with specific PRFs. */
 
 void
-pbkdf2_hmac_sha1 (unsigned key_length, const uint8_t *key,
+pbkdf2_hmac_sha1 (size_t key_length, const uint8_t *key,
 		  unsigned iterations,
-		  unsigned salt_length, const uint8_t *salt,
-		  unsigned length, uint8_t *dst);
+		  size_t salt_length, const uint8_t *salt,
+		  size_t length, uint8_t *dst);
 
 void
-pbkdf2_hmac_sha256 (unsigned key_length, const uint8_t *key,
+pbkdf2_hmac_sha256 (size_t key_length, const uint8_t *key,
 		    unsigned iterations,
-		    unsigned salt_length, const uint8_t *salt,
-		    unsigned length, uint8_t *dst);
+		    size_t salt_length, const uint8_t *salt,
+		    size_t length, uint8_t *dst);
 
 #ifdef __cplusplus
 }

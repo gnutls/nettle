@@ -32,10 +32,10 @@
 #include "hmac.h"
 
 void
-pbkdf2_hmac_sha1 (unsigned key_length, const uint8_t *key,
+pbkdf2_hmac_sha1 (size_t key_length, const uint8_t *key,
 		  unsigned iterations,
-		  unsigned salt_length, const uint8_t *salt,
-		  unsigned length, uint8_t *dst)
+		  size_t salt_length, const uint8_t *salt,
+		  size_t length, uint8_t *dst)
 {
   struct hmac_sha1_ctx sha1ctx;
 
