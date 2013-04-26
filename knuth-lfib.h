@@ -61,12 +61,12 @@ knuth_lfib_get(struct knuth_lfib_ctx *ctx);
 /* Get an array of numbers */
 void
 knuth_lfib_get_array(struct knuth_lfib_ctx *ctx,
-		     unsigned n, uint32_t *a);
+		     size_t n, uint32_t *a);
 
 /* Get an array of octets. */
 void
 knuth_lfib_random(struct knuth_lfib_ctx *ctx,
-		  unsigned n, uint8_t *dst);
+		  size_t n, uint8_t *dst);
 
 #ifdef __cplusplus
 }

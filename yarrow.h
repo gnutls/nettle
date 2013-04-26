@@ -87,17 +87,17 @@ yarrow256_init(struct yarrow256_ctx *ctx,
 
 void
 yarrow256_seed(struct yarrow256_ctx *ctx,
-	       unsigned length,
+	       size_t length,
 	       const uint8_t *seed_file);
 
 /* Returns 1 on reseed */
 int
 yarrow256_update(struct yarrow256_ctx *ctx,
 		 unsigned source, unsigned entropy,
-		 unsigned length, const uint8_t *data);
+		 size_t length, const uint8_t *data);
 
 void
-yarrow256_random(struct yarrow256_ctx *ctx, unsigned length, uint8_t *dst);
+yarrow256_random(struct yarrow256_ctx *ctx, size_t length, uint8_t *dst);
 
 int
 yarrow256_is_seeded(struct yarrow256_ctx *ctx);

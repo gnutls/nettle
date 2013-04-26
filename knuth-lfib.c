@@ -117,7 +117,7 @@ knuth_lfib_get(struct knuth_lfib_ctx *ctx)
 /* NOTE: Not at all optimized. */
 void
 knuth_lfib_get_array(struct knuth_lfib_ctx *ctx,
-		     unsigned n, uint32_t *a)
+		     size_t n, uint32_t *a)
 {
   unsigned i;
   
@@ -128,7 +128,7 @@ knuth_lfib_get_array(struct knuth_lfib_ctx *ctx,
 /* NOTE: Not at all optimized. */
 void
 knuth_lfib_random(struct knuth_lfib_ctx *ctx,
-		  unsigned n, uint8_t *dst)
+		  size_t n, uint8_t *dst)
 {
   /* Use 24 bits from each number, xoring together some of the
      bits. */

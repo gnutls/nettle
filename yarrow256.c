@@ -101,7 +101,7 @@ yarrow256_init(struct yarrow256_ctx *ctx,
 
 void
 yarrow256_seed(struct yarrow256_ctx *ctx,
-	       unsigned length,
+	       size_t length,
 	       const uint8_t *seed_file)
 {
   assert(length > 0);
@@ -228,7 +228,7 @@ yarrow256_slow_reseed(struct yarrow256_ctx *ctx)
 int
 yarrow256_update(struct yarrow256_ctx *ctx,
 		 unsigned source_index, unsigned entropy,
-		 unsigned length, const uint8_t *data)
+		 size_t length, const uint8_t *data)
 {
   enum yarrow_pool_id current;
   struct yarrow_source *source;
@@ -315,7 +315,7 @@ yarrow_gate(struct yarrow256_ctx *ctx)
 }
 
 void
-yarrow256_random(struct yarrow256_ctx *ctx, unsigned length, uint8_t *dst)
+yarrow256_random(struct yarrow256_ctx *ctx, size_t length, uint8_t *dst)
 {
   assert(ctx->seeded);
 
