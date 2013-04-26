@@ -103,9 +103,9 @@ dsa_openssl_private_key_from_der_iterator(struct dsa_public_key *pub,
 
 int
 dsa_openssl_private_key_from_der(struct dsa_public_key *pub,
-		     struct dsa_private_key *priv,
-		     unsigned p_max_bits,
-		     unsigned length, const uint8_t *data)
+				 struct dsa_private_key *priv,
+				 unsigned p_max_bits,
+				 size_t length, const uint8_t *data)
 {
   struct asn1_der_iterator i;
   enum asn1_iterator_result res;

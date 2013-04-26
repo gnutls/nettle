@@ -386,7 +386,7 @@ int
 rsa_keypair_from_der(struct rsa_public_key *pub,
 		     struct rsa_private_key *priv,
 		     unsigned limit, 
-		     unsigned length, const uint8_t *data);
+		     size_t length, const uint8_t *data);
 
 /* OpenPGP format. Experimental interface, subject to change. */
 int

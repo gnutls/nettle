@@ -268,7 +268,7 @@ int
 dsa_openssl_private_key_from_der(struct dsa_public_key *pub,
 				 struct dsa_private_key *priv,
 				 unsigned p_max_bits, 
-				 unsigned length, const uint8_t *data);
+				 size_t length, const uint8_t *data);
 
 
 /* Internal functions. */

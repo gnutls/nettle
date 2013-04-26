@@ -87,7 +87,7 @@ enum {
  * first element. */
 static void
 asn1_der_iterator_init(struct asn1_der_iterator *iterator,
-		       unsigned length, const uint8_t *input)
+		       size_t length, const uint8_t *input)
 {
   iterator->buffer_length = length;
   iterator->buffer = input;
@@ -133,7 +133,7 @@ asn1_der_iterator_next(struct asn1_der_iterator *i)
       if (LEFT(i) < k)
 	return ASN1_ITERATOR_ERROR;
 
-      if (k > sizeof(unsigned))
+      if (k > sizeof(i->length))
 	return ASN1_ITERATOR_ERROR;
 
       i->pos += k;
@@ -164,7 +164,7 @@ asn1_der_iterator_next(struct asn1_der_iterator *i)
 
 enum asn1_iterator_result
 asn1_der_iterator_first(struct asn1_der_iterator *i,
-			unsigned length, const uint8_t *input)
+			size_t length, const uint8_t *input)
 {
   asn1_der_iterator_init(i, length, input);
   return asn1_der_iterator_next(i);
@@ -216,7 +216,7 @@ asn1_der_get_uint32(struct asn1_der_iterator *i,
   /* Big endian, two's complement, minimum number of octets (except 0,
      which is encoded as a single octet */
   uint32_t value = 0;
-  unsigned length = i->length;
+  size_t length = i->length;
   unsigned k;
 
   if (!length || length > 5)

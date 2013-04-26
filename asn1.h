@@ -93,23 +93,23 @@ enum asn1_iterator_result
 /* Parsing DER objects. */
 struct asn1_der_iterator
 {
-  unsigned buffer_length;
+  size_t buffer_length;
   const uint8_t *buffer;
 
   /* Next object to parse. */
-  unsigned pos;
+  size_t pos;
 
   enum asn1_type type;
 
   /* Pointer to the current object */
-  unsigned length;
+  size_t length;
   const uint8_t *data;
 };
 
 /* Initializes the iterator. */
 enum asn1_iterator_result
 asn1_der_iterator_first(struct asn1_der_iterator *iterator,
-			unsigned length, const uint8_t *input);
+			size_t length, const uint8_t *input);
 
 enum asn1_iterator_result
 asn1_der_iterator_next(struct asn1_der_iterator *iterator);
