@@ -140,43 +140,43 @@ umac128_set_key (struct umac128_ctx *ctx, const uint8_t *key);
 /* Optional, if not used, messages get incrementing nonces starting from zero. */
 void
 umac32_set_nonce (struct umac32_ctx *ctx,
-		  unsigned nonce_length, const uint8_t *nonce);
+		  size_t nonce_length, const uint8_t *nonce);
 void
 umac64_set_nonce (struct umac64_ctx *ctx,
-		  unsigned nonce_length, const uint8_t *nonce);
+		  size_t nonce_length, const uint8_t *nonce);
 void
 umac96_set_nonce (struct umac96_ctx *ctx,
-		  unsigned nonce_length, const uint8_t *nonce);
+		  size_t nonce_length, const uint8_t *nonce);
 void
 umac128_set_nonce (struct umac128_ctx *ctx,
-		   unsigned nonce_length, const uint8_t *nonce);
+		   size_t nonce_length, const uint8_t *nonce);
 
 void
 umac32_update (struct umac32_ctx *ctx,
-	       unsigned length, const uint8_t *data);
+	       size_t length, const uint8_t *data);
 void
 umac64_update (struct umac64_ctx *ctx,
-	       unsigned length, const uint8_t *data);
+	       size_t length, const uint8_t *data);
 void
 umac96_update (struct umac96_ctx *ctx,
-	       unsigned length, const uint8_t *data);
+	       size_t length, const uint8_t *data);
 void
 umac128_update (struct umac128_ctx *ctx,
-		unsigned length, const uint8_t *data);
+		size_t length, const uint8_t *data);
 
 /* The _digest functions increment the nonce */
 void
 umac32_digest (struct umac32_ctx *ctx,
-	       unsigned length, uint8_t *digest);
+	       size_t length, uint8_t *digest);
 void
 umac64_digest (struct umac64_ctx *ctx,
-	       unsigned length, uint8_t *digest);
+	       size_t length, uint8_t *digest);
 void
 umac96_digest (struct umac96_ctx *ctx,
-	       unsigned length, uint8_t *digest);
+	       size_t length, uint8_t *digest);
 void
 umac128_digest (struct umac128_ctx *ctx,
-		unsigned length, uint8_t *digest);
+		size_t length, uint8_t *digest);
 
 
 /* Internal functions */

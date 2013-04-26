@@ -42,7 +42,7 @@ sha3_384_init (struct sha3_384_ctx *ctx)
 
 void
 sha3_384_update (struct sha3_384_ctx *ctx,
-		 unsigned length,
+		 size_t length,
 		 const uint8_t *data)
 {
   ctx->index = _sha3_update (&ctx->state, SHA3_384_DATA_SIZE, ctx->block,
@@ -51,7 +51,7 @@ sha3_384_update (struct sha3_384_ctx *ctx,
 
 void
 sha3_384_digest(struct sha3_384_ctx *ctx,
-		unsigned length,
+		size_t length,
 		uint8_t *digest)
 {
   _sha3_pad (&ctx->state, SHA3_384_DATA_SIZE, ctx->block, ctx->index);

@@ -31,21 +31,21 @@
 
 void
 hmac_ripemd160_set_key(struct hmac_ripemd160_ctx *ctx,
-		       unsigned key_length, const uint8_t *key)
+		       size_t key_length, const uint8_t *key)
 {
   HMAC_SET_KEY(ctx, &nettle_ripemd160, key_length, key);
 }
 
 void
 hmac_ripemd160_update(struct hmac_ripemd160_ctx *ctx,
-		      unsigned length, const uint8_t *data)
+		      size_t length, const uint8_t *data)
 {
   ripemd160_update(&ctx->state, length, data);
 }
 
 void
 hmac_ripemd160_digest(struct hmac_ripemd160_ctx *ctx,
-		      unsigned length, uint8_t *digest)
+		      size_t length, uint8_t *digest)
 {
   HMAC_DIGEST(ctx, &nettle_ripemd160, length, digest);
 }

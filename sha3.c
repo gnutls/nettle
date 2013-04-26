@@ -56,7 +56,7 @@ unsigned
 _sha3_update (struct sha3_state *state,
 	      unsigned block_size, uint8_t *block,
 	      unsigned pos,
-	      unsigned length, const uint8_t *data)
+	      size_t length, const uint8_t *data)
 {
   if (pos > 0)
     {

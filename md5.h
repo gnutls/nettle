@@ -56,12 +56,12 @@ md5_init(struct md5_ctx *ctx);
 
 void
 md5_update(struct md5_ctx *ctx,
-	   unsigned length,
+	   size_t length,
 	   const uint8_t *data);
 
 void
 md5_digest(struct md5_ctx *ctx,
-	   unsigned length,
+	   size_t length,
 	   uint8_t *digest);
 
 /* Internal compression function. STATE points to 4 uint32_t words,

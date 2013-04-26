@@ -87,14 +87,14 @@ sha256_init(struct sha256_ctx *ctx)
 
 void
 sha256_update(struct sha256_ctx *ctx,
-	      unsigned length, const uint8_t *data)
+	      size_t length, const uint8_t *data)
 {
   MD_UPDATE (ctx, length, data, COMPRESS, MD_INCR(ctx));
 }
 
 static void
 sha256_write_digest(struct sha256_ctx *ctx,
-		    unsigned length,
+		    size_t length,
 		    uint8_t *digest)
 {
   uint32_t high, low;
@@ -119,7 +119,7 @@ sha256_write_digest(struct sha256_ctx *ctx,
 
 void
 sha256_digest(struct sha256_ctx *ctx,
-	      unsigned length,
+	      size_t length,
 	      uint8_t *digest)
 {
   sha256_write_digest(ctx, length, digest);
@@ -149,7 +149,7 @@ sha224_init(struct sha256_ctx *ctx)
 
 void
 sha224_digest(struct sha256_ctx *ctx,
-	      unsigned length,
+	      size_t length,
 	      uint8_t *digest)
 {
   sha256_write_digest(ctx, length, digest);

@@ -43,7 +43,7 @@
 void
 hmac_set_key(void *outer, void *inner, void *state,
 	     const struct nettle_hash *hash,
-	     unsigned key_length, const uint8_t *key)
+	     size_t key_length, const uint8_t *key)
 {
   TMP_DECL(pad, uint8_t, NETTLE_MAX_HASH_BLOCK_SIZE);
   TMP_ALLOC(pad, hash->block_size);
@@ -85,7 +85,7 @@ hmac_set_key(void *outer, void *inner, void *state,
 void
 hmac_update(void *state,
 	    const struct nettle_hash *hash,
-	    unsigned length, const uint8_t *data)
+	    size_t length, const uint8_t *data)
 {
   hash->update(state, length, data);
 }
@@ -93,7 +93,7 @@ hmac_update(void *state,
 void
 hmac_digest(const void *outer, const void *inner, void *state,
 	    const struct nettle_hash *hash, 	    
-	    unsigned length, uint8_t *dst)
+	    size_t length, uint8_t *dst)
 {
   TMP_DECL(digest, uint8_t, NETTLE_MAX_HASH_DIGEST_SIZE);
   TMP_ALLOC(digest, hash->digest_size);

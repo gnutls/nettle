@@ -67,7 +67,7 @@ unsigned
 _sha3_update (struct sha3_state *state,
 	      unsigned block_size, uint8_t *block,
 	      unsigned pos,
-	      unsigned length, const uint8_t *data);
+	      size_t length, const uint8_t *data);
 void
 _sha3_pad (struct sha3_state *state,
 	   unsigned block_size, uint8_t *block, unsigned pos);
@@ -101,12 +101,12 @@ sha3_224_init (struct sha3_224_ctx *ctx);
 
 void
 sha3_224_update (struct sha3_224_ctx *ctx,
-		 unsigned length,
+		 size_t length,
 		 const uint8_t *data);
 
 void
 sha3_224_digest(struct sha3_224_ctx *ctx,
-		unsigned length,
+		size_t length,
 		uint8_t *digest);
 
 struct sha3_256_ctx
@@ -121,12 +121,12 @@ sha3_256_init (struct sha3_256_ctx *ctx);
 
 void
 sha3_256_update (struct sha3_256_ctx *ctx,
-		 unsigned length,
+		 size_t length,
 		 const uint8_t *data);
 
 void
 sha3_256_digest(struct sha3_256_ctx *ctx,
-		unsigned length,
+		size_t length,
 		uint8_t *digest);
 
 struct sha3_384_ctx
@@ -141,12 +141,12 @@ sha3_384_init (struct sha3_384_ctx *ctx);
 
 void
 sha3_384_update (struct sha3_384_ctx *ctx,
-		 unsigned length,
+		 size_t length,
 		 const uint8_t *data);
 
 void
 sha3_384_digest(struct sha3_384_ctx *ctx,
-		unsigned length,
+		size_t length,
 		uint8_t *digest);
 
 struct sha3_512_ctx
@@ -161,12 +161,12 @@ sha3_512_init (struct sha3_512_ctx *ctx);
 
 void
 sha3_512_update (struct sha3_512_ctx *ctx,
-		 unsigned length,
+		 size_t length,
 		 const uint8_t *data);
 
 void
 sha3_512_digest(struct sha3_512_ctx *ctx,
-		unsigned length,
+		size_t length,
 		uint8_t *digest);
 
 #ifdef __cplusplus

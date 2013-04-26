@@ -43,7 +43,7 @@ gcm_aes_set_iv(struct gcm_aes_ctx *ctx,
 }
 
 void
-gcm_aes_update(struct gcm_aes_ctx *ctx, unsigned length, const uint8_t *data)
+gcm_aes_update(struct gcm_aes_ctx *ctx, size_t length, const uint8_t *data)
 {
   GCM_UPDATE(ctx, length, data);
 }
@@ -64,7 +64,7 @@ gcm_aes_decrypt(struct gcm_aes_ctx *ctx,
 
 void
 gcm_aes_digest(struct gcm_aes_ctx *ctx,
-	       unsigned length, uint8_t *digest)
+	       size_t length, uint8_t *digest)
 {
   GCM_DIGEST(ctx, aes_encrypt, length, digest);
   

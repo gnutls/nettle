@@ -77,9 +77,9 @@ struct gosthash94_ctx
 
 void gosthash94_init(struct gosthash94_ctx *ctx);
 void gosthash94_update(struct gosthash94_ctx *ctx,
-		       unsigned length, const uint8_t *msg);
+		       size_t length, const uint8_t *msg);
 void gosthash94_digest(struct gosthash94_ctx *ctx,
-		       unsigned length, uint8_t *result);
+		       size_t length, uint8_t *result);
 
 #ifdef __cplusplus
 }

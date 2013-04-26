@@ -58,12 +58,12 @@ ripemd160_init(struct ripemd160_ctx *ctx);
 
 void
 ripemd160_update(struct ripemd160_ctx *ctx,
-		 unsigned length,
+		 size_t length,
 		 const uint8_t *data);
 
 void
 ripemd160_digest(struct ripemd160_ctx *ctx,
-		 unsigned length,
+		 size_t length,
 		 uint8_t *digest);
 
 /* Internal compression function. STATE points to 5 uint32_t words,

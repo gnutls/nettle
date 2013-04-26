@@ -48,7 +48,7 @@ umac128_set_key (struct umac128_ctx *ctx, const uint8_t *key)
 
 void
 umac128_set_nonce (struct umac128_ctx *ctx,
-		  unsigned nonce_length, const uint8_t *nonce)
+		   size_t nonce_length, const uint8_t *nonce)
 {
   assert (nonce_length > 0);
   assert (nonce_length <= AES_BLOCK_SIZE);
@@ -71,7 +71,7 @@ umac128_set_nonce (struct umac128_ctx *ctx,
 
 void
 umac128_update (struct umac128_ctx *ctx,
-	       unsigned length, const uint8_t *data)
+		size_t length, const uint8_t *data)
 {
   MD_UPDATE (ctx, length, data, UMAC128_BLOCK, (void)0);
 }
@@ -79,7 +79,7 @@ umac128_update (struct umac128_ctx *ctx,
 
 void
 umac128_digest (struct umac128_ctx *ctx,
-	       unsigned length, uint8_t *digest)
+		size_t length, uint8_t *digest)
 {
   uint32_t tag[4];
   unsigned i;

@@ -98,7 +98,7 @@ gcm_set_iv(struct gcm_ctx *ctx, const struct gcm_key *key,
 
 void
 gcm_update(struct gcm_ctx *ctx, const struct gcm_key *key,
-	   unsigned length, const uint8_t *data);
+	   size_t length, const uint8_t *data);
 
 void
 gcm_encrypt(struct gcm_ctx *ctx, const struct gcm_key *key,
@@ -113,7 +113,7 @@ gcm_decrypt(struct gcm_ctx *ctx, const struct gcm_key *key,
 void
 gcm_digest(struct gcm_ctx *ctx, const struct gcm_key *key,
 	   void *cipher, nettle_crypt_func *f,
-	   unsigned length, uint8_t *digest);
+	   size_t length, uint8_t *digest);
 
 /* Convenience macrology (not sure how useful it is) */
 
@@ -166,7 +166,7 @@ gcm_aes_set_iv(struct gcm_aes_ctx *ctx,
 
 void
 gcm_aes_update(struct gcm_aes_ctx *ctx,
-	       unsigned length, const uint8_t *data);
+	       size_t length, const uint8_t *data);
 
 void
 gcm_aes_encrypt(struct gcm_aes_ctx *ctx,
@@ -177,7 +177,7 @@ gcm_aes_decrypt(struct gcm_aes_ctx *ctx,
 		size_t length, uint8_t *dst, const uint8_t *src);
 
 void
-gcm_aes_digest(struct gcm_aes_ctx *ctx, unsigned length, uint8_t *digest);
+gcm_aes_digest(struct gcm_aes_ctx *ctx, size_t length, uint8_t *digest);
 
 #ifdef __cplusplus
 }

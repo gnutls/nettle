@@ -349,7 +349,7 @@ gcm_set_key(struct gcm_key *key,
 
 static void
 gcm_hash(const struct gcm_key *key, union gcm_block *x,
-	 unsigned length, const uint8_t *data)
+	 size_t length, const uint8_t *data)
 {
   for (; length >= GCM_BLOCK_SIZE;
        length -= GCM_BLOCK_SIZE, data += GCM_BLOCK_SIZE)
@@ -412,7 +412,7 @@ gcm_set_iv(struct gcm_ctx *ctx, const struct gcm_key *key,
 
 void
 gcm_update(struct gcm_ctx *ctx, const struct gcm_key *key,
-	   unsigned length, const uint8_t *data)
+	   size_t length, const uint8_t *data)
 {
   assert(ctx->auth_size % GCM_BLOCK_SIZE == 0);
   assert(ctx->data_size == 0);
@@ -488,7 +488,7 @@ gcm_decrypt(struct gcm_ctx *ctx, const struct gcm_key *key,
 void
 gcm_digest(struct gcm_ctx *ctx, const struct gcm_key *key,
 	   void *cipher, nettle_crypt_func *f,
-	   unsigned length, uint8_t *digest)
+	   size_t length, uint8_t *digest)
 {
   uint8_t buffer[GCM_BLOCK_SIZE];
 

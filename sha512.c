@@ -137,14 +137,14 @@ sha512_init(struct sha512_ctx *ctx)
 
 void
 sha512_update(struct sha512_ctx *ctx,
-	      unsigned length, const uint8_t *data)
+	      size_t length, const uint8_t *data)
 {
   MD_UPDATE (ctx, length, data, COMPRESS, MD_INCR(ctx));
 }
 
 static void
 sha512_write_digest(struct sha512_ctx *ctx,
-		    unsigned length,
+		    size_t length,
 		    uint8_t *digest)
 {
   uint64_t high, low;
@@ -188,7 +188,7 @@ sha512_write_digest(struct sha512_ctx *ctx,
 
 void
 sha512_digest(struct sha512_ctx *ctx,
-	      unsigned length,
+	      size_t length,
 	      uint8_t *digest)
 {
   assert(length <= SHA512_DIGEST_SIZE);
@@ -229,7 +229,7 @@ sha384_init(struct sha512_ctx *ctx)
 
 void
 sha384_digest(struct sha512_ctx *ctx,
-	      unsigned length,
+	      size_t length,
 	      uint8_t *digest)
 {
   assert(length <= SHA384_DIGEST_SIZE);

@@ -106,7 +106,7 @@ md2_init(struct md2_ctx *ctx)
 
 void
 md2_update(struct md2_ctx *ctx,
-	   unsigned length,
+	   size_t length,
 	   const uint8_t *data)
 {
   MD_UPDATE(ctx, length, data, md2_transform, (void)0);
@@ -114,7 +114,7 @@ md2_update(struct md2_ctx *ctx,
 
 void
 md2_digest(struct md2_ctx *ctx,
-	   unsigned length,
+	   size_t length,
 	   uint8_t *digest)
 {
   unsigned left;

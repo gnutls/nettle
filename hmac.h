@@ -64,19 +64,19 @@ extern "C" {
 void
 hmac_set_key(void *outer, void *inner, void *state,
 	     const struct nettle_hash *hash,
-	     unsigned length, const uint8_t *key);
+	     size_t length, const uint8_t *key);
 
 /* This function is not strictly needed, it's s just the same as the
  * hash update function. */
 void
 hmac_update(void *state,
 	    const struct nettle_hash *hash,
-	    unsigned length, const uint8_t *data);
+	    size_t length, const uint8_t *data);
 
 void
 hmac_digest(const void *outer, const void *inner, void *state,
 	    const struct nettle_hash *hash,
-	    unsigned length, uint8_t *digest);
+	    size_t length, uint8_t *digest);
 
 
 #define HMAC_CTX(type) \
@@ -97,15 +97,15 @@ struct hmac_md5_ctx HMAC_CTX(struct md5_ctx);
 
 void
 hmac_md5_set_key(struct hmac_md5_ctx *ctx,
-		 unsigned key_length, const uint8_t *key);
+		 size_t key_length, const uint8_t *key);
 
 void
 hmac_md5_update(struct hmac_md5_ctx *ctx,
-		unsigned length, const uint8_t *data);
+		size_t length, const uint8_t *data);
 
 void
 hmac_md5_digest(struct hmac_md5_ctx *ctx,
-		unsigned length, uint8_t *digest);
+		size_t length, uint8_t *digest);
 
 
 /* hmac-ripemd160 */
@@ -113,15 +113,15 @@ struct hmac_ripemd160_ctx HMAC_CTX(struct ripemd160_ctx);
 
 void
 hmac_ripemd160_set_key(struct hmac_ripemd160_ctx *ctx,
-		       unsigned key_length, const uint8_t *key);
+		       size_t key_length, const uint8_t *key);
 
 void
 hmac_ripemd160_update(struct hmac_ripemd160_ctx *ctx,
-		      unsigned length, const uint8_t *data);
+		      size_t length, const uint8_t *data);
 
 void
 hmac_ripemd160_digest(struct hmac_ripemd160_ctx *ctx,
-		      unsigned length, uint8_t *digest);
+		      size_t length, uint8_t *digest);
 
 
 /* hmac-sha1 */
@@ -129,71 +129,71 @@ struct hmac_sha1_ctx HMAC_CTX(struct sha1_ctx);
 
 void
 hmac_sha1_set_key(struct hmac_sha1_ctx *ctx,
-		  unsigned key_length, const uint8_t *key);
+		  size_t key_length, const uint8_t *key);
 
 void
 hmac_sha1_update(struct hmac_sha1_ctx *ctx,
-		 unsigned length, const uint8_t *data);
+		 size_t length, const uint8_t *data);
 
 void
 hmac_sha1_digest(struct hmac_sha1_ctx *ctx,
-		 unsigned length, uint8_t *digest);
+		 size_t length, uint8_t *digest);
 
 /* hmac-sha256 */
 struct hmac_sha256_ctx HMAC_CTX(struct sha256_ctx);
 
 void
 hmac_sha256_set_key(struct hmac_sha256_ctx *ctx,
-		    unsigned key_length, const uint8_t *key);
+		    size_t key_length, const uint8_t *key);
 
 void
 hmac_sha256_update(struct hmac_sha256_ctx *ctx,
-		   unsigned length, const uint8_t *data);
+		   size_t length, const uint8_t *data);
 
 void
 hmac_sha256_digest(struct hmac_sha256_ctx *ctx,
-		   unsigned length, uint8_t *digest);
+		   size_t length, uint8_t *digest);
 
 /* hmac-sha224 */
 #define hmac_sha224_ctx hmac_sha256_ctx
 
 void
 hmac_sha224_set_key(struct hmac_sha224_ctx *ctx,
-		    unsigned key_length, const uint8_t *key);
+		    size_t key_length, const uint8_t *key);
 
 #define hmac_sha224_update nettle_hmac_sha256_update
 
 void
 hmac_sha224_digest(struct hmac_sha224_ctx *ctx,
-		   unsigned length, uint8_t *digest);
+		   size_t length, uint8_t *digest);
 
 /* hmac-sha512 */
 struct hmac_sha512_ctx HMAC_CTX(struct sha512_ctx);
 
 void
 hmac_sha512_set_key(struct hmac_sha512_ctx *ctx,
-		    unsigned key_length, const uint8_t *key);
+		    size_t key_length, const uint8_t *key);
 
 void
 hmac_sha512_update(struct hmac_sha512_ctx *ctx,
-		   unsigned length, const uint8_t *data);
+		   size_t length, const uint8_t *data);
 
 void
 hmac_sha512_digest(struct hmac_sha512_ctx *ctx,
-		   unsigned length, uint8_t *digest);
+		   size_t length, uint8_t *digest);
 
 /* hmac-sha384 */
 #define hmac_sha384_ctx hmac_sha512_ctx
 
 void
 hmac_sha384_set_key(struct hmac_sha512_ctx *ctx,
-		    unsigned key_length, const uint8_t *key);
+		    size_t key_length, const uint8_t *key);
 
 #define hmac_sha384_update nettle_hmac_sha512_update
 
 void
 hmac_sha384_digest(struct hmac_sha512_ctx *ctx,
-		   unsigned length, uint8_t *digest);
+		   size_t length, uint8_t *digest);
 
 #ifdef __cplusplus
 }

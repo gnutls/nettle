@@ -83,12 +83,12 @@ struct nettle_aead
 {
   const char *name;
   
-  unsigned context_size;
+  size_t context_size;
   /* Block size of the input, and the size of the output digest */
-  unsigned block_size;
+  size_t block_size;
 
   /* Suggested key size; other sizes are sometimes possible. */
-  unsigned key_size;
+  size_t key_size;
 
   nettle_set_key_func *set_key;
   nettle_set_key_func *set_iv;

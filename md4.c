@@ -67,7 +67,7 @@ md4_init(struct md4_ctx *ctx)
 
 void
 md4_update(struct md4_ctx *ctx,
-	   unsigned length,
+	   size_t length,
 	   const uint8_t *data)
 {
   MD_UPDATE(ctx, length, data, md4_compress, MD_INCR(ctx));
@@ -75,7 +75,7 @@ md4_update(struct md4_ctx *ctx,
 
 void
 md4_digest(struct md4_ctx *ctx,
-	   unsigned length,
+	   size_t length,
 	   uint8_t *digest)
 {
   uint32_t data[MD4_DATA_LENGTH];

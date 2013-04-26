@@ -308,8 +308,8 @@ openssl_md5_init(void *ctx)
 static nettle_hash_update_func openssl_md5_update;
 static void
 openssl_md5_update(void *ctx,
-		    unsigned length,
-		    const uint8_t *src)
+		   size_t length,
+		   const uint8_t *src)
 {
   MD5_Update(ctx, src, length);
 }
@@ -317,7 +317,7 @@ openssl_md5_update(void *ctx,
 static nettle_hash_digest_func openssl_md5_digest;
 static void
 openssl_md5_digest(void *ctx,
-		    unsigned length, uint8_t *dst)
+		   size_t length, uint8_t *dst)
 {
   assert(length == SHA_DIGEST_LENGTH);
   MD5_Final(dst, ctx);
@@ -344,7 +344,7 @@ openssl_sha1_init(void *ctx)
 static nettle_hash_update_func openssl_sha1_update;
 static void
 openssl_sha1_update(void *ctx,
-		    unsigned length,
+		    size_t length,
 		    const uint8_t *src)
 {
   SHA1_Update(ctx, src, length);
@@ -353,7 +353,7 @@ openssl_sha1_update(void *ctx,
 static nettle_hash_digest_func openssl_sha1_digest;
 static void
 openssl_sha1_digest(void *ctx,
-		    unsigned length, uint8_t *dst)
+		    size_t length, uint8_t *dst)
 {
   assert(length == SHA_DIGEST_LENGTH);
   SHA1_Final(dst, ctx);

@@ -165,13 +165,13 @@ ripemd160_init(struct ripemd160_ctx *ctx)
  * of DATA with length LENGTH.
  */
 void
-ripemd160_update(struct ripemd160_ctx *ctx, unsigned length, const uint8_t *data)
+ripemd160_update(struct ripemd160_ctx *ctx, size_t length, const uint8_t *data)
 {
   MD_UPDATE(ctx, length, data, COMPRESS, MD_INCR(ctx));
 }
 
 void
-ripemd160_digest(struct ripemd160_ctx *ctx, unsigned length, uint8_t *digest)
+ripemd160_digest(struct ripemd160_ctx *ctx, size_t length, uint8_t *digest)
 {
   uint32_t high, low;
 

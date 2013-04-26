@@ -57,7 +57,7 @@ md5_init(struct md5_ctx *ctx)
 
 void
 md5_update(struct md5_ctx *ctx,
-	   unsigned length,
+	   size_t length,
 	   const uint8_t *data)
 {
   MD_UPDATE(ctx, length, data, COMPRESS, MD_INCR(ctx));
@@ -65,7 +65,7 @@ md5_update(struct md5_ctx *ctx,
 
 void
 md5_digest(struct md5_ctx *ctx,
-	   unsigned length,
+	   size_t length,
 	   uint8_t *digest)
 {
   uint32_t high, low;

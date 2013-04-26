@@ -57,12 +57,12 @@ md4_init(struct md4_ctx *ctx);
 
 void
 md4_update(struct md4_ctx *ctx,
-	   unsigned length,
+	   size_t length,
 	   const uint8_t *data);
 
 void
 md4_digest(struct md4_ctx *ctx,
-	   unsigned length,
+	   size_t length,
 	   uint8_t *digest);
 
 

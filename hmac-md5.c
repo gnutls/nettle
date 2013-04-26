@@ -31,21 +31,21 @@
 
 void
 hmac_md5_set_key(struct hmac_md5_ctx *ctx,
-		 unsigned key_length, const uint8_t *key)
+		 size_t key_length, const uint8_t *key)
 {
   HMAC_SET_KEY(ctx, &nettle_md5, key_length, key);
 }
 
 void
 hmac_md5_update(struct hmac_md5_ctx *ctx,
-		unsigned length, const uint8_t *data)
+		size_t length, const uint8_t *data)
 {
   md5_update(&ctx->state, length, data);
 }
 
 void
 hmac_md5_digest(struct hmac_md5_ctx *ctx,
-		unsigned length, uint8_t *digest)
+		size_t length, uint8_t *digest)
 {
   HMAC_DIGEST(ctx, &nettle_md5, length, digest);
 }

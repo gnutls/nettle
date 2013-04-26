@@ -60,10 +60,10 @@ typedef void nettle_crypt_func(void *ctx,
 /* Hash algorithms */
 typedef void nettle_hash_init_func(void *ctx);
 typedef void nettle_hash_update_func(void *ctx,
-				     unsigned length,
+				     size_t length,
 				     const uint8_t *src);
 typedef void nettle_hash_digest_func(void *ctx,
-				     unsigned length, uint8_t *dst);
+				     size_t length, uint8_t *dst);
 
 /* ASCII armor codecs. NOTE: Experimental and subject to change. */
 

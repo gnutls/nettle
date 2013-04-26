@@ -65,12 +65,12 @@ sha256_init(struct sha256_ctx *ctx);
 
 void
 sha256_update(struct sha256_ctx *ctx,
-	      unsigned length,
+	      size_t length,
 	      const uint8_t *data);
 
 void
 sha256_digest(struct sha256_ctx *ctx,
-	      unsigned length,
+	      size_t length,
 	      uint8_t *digest);
 
 /* Internal compression function. STATE points to 8 uint32_t words,
@@ -93,7 +93,7 @@ sha224_init(struct sha256_ctx *ctx);
 
 void
 sha224_digest(struct sha256_ctx *ctx,
-	      unsigned length,
+	      size_t length,
 	      uint8_t *digest);
 
 
@@ -118,12 +118,12 @@ sha512_init(struct sha512_ctx *ctx);
 
 void
 sha512_update(struct sha512_ctx *ctx,
-	      unsigned length,
+	      size_t length,
 	      const uint8_t *data);
 
 void
 sha512_digest(struct sha512_ctx *ctx,
-	      unsigned length,
+	      size_t length,
 	      uint8_t *digest);
 
 /* Internal compression function. STATE points to 8 uint64_t words,
@@ -146,7 +146,7 @@ sha384_init(struct sha512_ctx *ctx);
 
 void
 sha384_digest(struct sha512_ctx *ctx,
-	      unsigned length,
+	      size_t length,
 	      uint8_t *digest);
 
 #ifdef __cplusplus
