@@ -37,13 +37,13 @@ struct nettle_cipher
 {
   const char *name;
   
-  size_t context_size;
+  unsigned context_size;
   
   /* Zero for stream ciphers */
-  size_t block_size;
+  unsigned block_size;
 
   /* Suggested key size; other sizes are sometimes possible. */
-  size_t key_size;
+  unsigned key_size;
 
   nettle_set_key_func *set_encrypt_key;
   nettle_set_key_func *set_decrypt_key;
