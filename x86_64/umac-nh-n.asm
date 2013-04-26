@@ -47,7 +47,7 @@ C aligned.
 	.file "umac-nh-n.asm"
 	
 	C umac_nh_n(uint64_t *out, unsigned n, const uint32_t *key,
-	C	    size_t length, const uint8_t *msg)
+	C	    unsigned length, const uint8_t *msg)
 	.text
 	ALIGN(16)
 PROLOGUE(_nettle_umac_nh_n)
