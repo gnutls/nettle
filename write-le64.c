@@ -29,11 +29,11 @@
 #include "macros.h"
 
 void
-_nettle_write_le64(unsigned length, uint8_t *dst,
+_nettle_write_le64(size_t length, uint8_t *dst,
 		   uint64_t *src)
 {
-  unsigned i;
-  unsigned words;
+  size_t i;
+  size_t words;
   unsigned leftover;
   
   words = length / 8;
