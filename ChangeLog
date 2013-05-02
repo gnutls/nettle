@@ -1,5 +1,9 @@
 2013-05-02  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/testutils.c (mpz_combit): Renamed. Define only if not
+	provided GMP. Updated all uses.
+	(mpz_togglebit): ... old name.
+
 	* sexp-format.c (sexp_vformat): Use type mpz_srcptr rather
 	than the old MP_INT *.
 

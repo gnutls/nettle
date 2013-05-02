@@ -647,19 +647,19 @@ test_armor(const struct nettle_armor *armor,
   free(decode);
 }
 
-#if HAVE_LIBGMP
-/* Missing in current gmp */
+#if WITH_HOGWEED
+
+#ifndef mpz_combit
+/* Missing in older gmp */
 static void
-mpz_togglebit (mpz_t x, unsigned long int bit)
+mpz_combit (mpz_t x, unsigned long int bit)
 {
   if (mpz_tstbit(x, bit))
     mpz_clrbit(x, bit);
   else
     mpz_setbit(x, bit);
 }
-#endif /* HAVE_LIBGMP */
-
-#if WITH_HOGWEED
+#endif
 
 mp_limb_t *
 xalloc_limbs (mp_size_t n)
@@ -799,7 +799,7 @@ test_rsa_md5(struct rsa_public_key *pub,
 		 "The magic words are squeamish ossifrage", signature));
 
   /* Try bad signature */
-  mpz_togglebit(signature, 17);
+  mpz_combit(signature, 17);
   ASSERT (!VERIFY(pub, md5,
 		  "The magic words are squeamish ossifrage", signature));
 
@@ -837,7 +837,7 @@ test_rsa_sha1(struct rsa_public_key *pub,
 		 "The magic words are squeamish ossifrage", signature));
 
   /* Try bad signature */
-  mpz_togglebit(signature, 17);
+  mpz_combit(signature, 17);
   ASSERT (!VERIFY(pub, sha1,
 		  "The magic words are squeamish ossifrage", signature));
 
@@ -875,7 +875,7 @@ test_rsa_sha256(struct rsa_public_key *pub,
 		 "The magic words are squeamish ossifrage", signature));
 
   /* Try bad signature */
-  mpz_togglebit(signature, 17);
+  mpz_combit(signature, 17);
   ASSERT (!VERIFY(pub, sha256,
 		  "The magic words are squeamish ossifrage", signature));
 
@@ -913,7 +913,7 @@ test_rsa_sha512(struct rsa_public_key *pub,
 		 "The magic words are squeamish ossifrage", signature));
 
   /* Try bad signature */
-  mpz_togglebit(signature, 17);
+  mpz_combit(signature, 17);
   ASSERT (!VERIFY(pub, sha512,
 		  "The magic words are squeamish ossifrage", signature));
 
@@ -1036,7 +1036,7 @@ test_dsa160(const struct dsa_public_key *pub,
 		     &signature));
 
   /* Try bad signature */
-  mpz_togglebit(signature.r, 17);
+  mpz_combit(signature.r, 17);
   ASSERT (!DSA_VERIFY(pub, sha1,
 		      "The magic words are squeamish ossifrage",
 		      &signature));
@@ -1086,7 +1086,7 @@ test_dsa256(const struct dsa_public_key *pub,
 		     &signature));
 
   /* Try bad signature */
-  mpz_togglebit(signature.r, 17);
+  mpz_combit(signature.r, 17);
   ASSERT (!DSA_VERIFY(pub, sha256,
 		      "The magic words are squeamish ossifrage",
 		      &signature));
