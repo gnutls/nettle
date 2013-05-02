@@ -63,7 +63,7 @@ xalloc(size_t size)
 static struct tstring *tstring_first = NULL;
 
 struct tstring *
-tstring_alloc (unsigned length)
+tstring_alloc (size_t length)
 {
   struct tstring *s = xalloc(sizeof(struct tstring) + length - 1);
   s->length = length;
@@ -84,19 +84,19 @@ tstring_clear(void)
 }
 
 struct tstring *
-tstring_data(unsigned length, const char *data)
+tstring_data(size_t length, const char *data)
 {
   struct tstring *s = tstring_alloc (length);
   memcpy (s->data, data, length);
   return s;
 }
 
-static unsigned
+static size_t
 decode_hex_length(const char *h)
 {
   const unsigned char *hex = (const unsigned char *) h;
-  unsigned count;
-  unsigned i;
+  size_t count;
+  size_t i;
   
   for (count = i = 0; hex[i]; i++)
     {
@@ -116,7 +116,7 @@ static void
 decode_hex(uint8_t *dst, const char *h)
 {  
   const unsigned char *hex = (const unsigned char *) h;
-  unsigned i = 0;
+  size_t i = 0;
   
   for (;;)
   {
@@ -147,7 +147,7 @@ struct tstring *
 tstring_hex(const char *hex)
 {
   struct tstring *s;
-  unsigned length = decode_hex_length(hex);
+  size_t length = decode_hex_length(hex);
 
   s = tstring_alloc(length);
 
@@ -162,9 +162,9 @@ tstring_print_hex(const struct tstring *s)
 }
 
 void
-print_hex(unsigned length, const uint8_t *data)
+print_hex(size_t length, const uint8_t *data)
 {
-  unsigned i;
+  size_t i;
   
   for (i = 0; i < length; i++)
     {
@@ -215,7 +215,7 @@ test_cipher(const struct nettle_cipher *cipher,
 {
   void *ctx = xalloc(cipher->context_size);
   uint8_t *data = xalloc(cleartext->length);
-  unsigned length;
+  size_t length;
   ASSERT (cleartext->length == ciphertext->length);
   length = cleartext->length;
 
@@ -262,7 +262,7 @@ test_cipher_cbc(const struct nettle_cipher *cipher,
   void *ctx = xalloc(cipher->context_size);
   uint8_t *data;
   uint8_t *iv = xalloc(cipher->block_size);
-  unsigned length;
+  size_t length;
 
   ASSERT (cleartext->length == ciphertext->length);
   length = cleartext->length;
@@ -323,8 +323,8 @@ test_cipher_ctr(const struct nettle_cipher *cipher,
   uint8_t *data;
   uint8_t *ctr = xalloc(cipher->block_size);
   uint8_t *octr = xalloc(cipher->block_size);
-  unsigned length;
-  unsigned low, nblocks;
+  size_t length, nblocks;
+  unsigned low;
 
   ASSERT (cleartext->length == ciphertext->length);
   length = cleartext->length;
@@ -397,11 +397,11 @@ test_cipher_stream(const struct nettle_cipher *cipher,
 		   const struct tstring *cleartext,
 		   const struct tstring *ciphertext)
 {
-  unsigned block;
+  size_t block;
   
   void *ctx = xalloc(cipher->context_size);
   uint8_t *data;
-  unsigned length;
+  size_t length;
 
   ASSERT (cleartext->length == ciphertext->length);
   length = cleartext->length;
@@ -410,7 +410,7 @@ test_cipher_stream(const struct nettle_cipher *cipher,
 
   for (block = 1; block <= length; block++)
     {
-      unsigned i;
+      size_t i;
 
       memset(data, 0x17, length + 1);
       cipher->set_encrypt_key(ctx, key->length, key->data);
@@ -426,7 +426,8 @@ test_cipher_stream(const struct nettle_cipher *cipher,
       
       if (!MEMEQ(length, data, ciphertext->data))
 	{
-	  fprintf(stderr, "Encrypt failed, block size %d\nInput:", block);
+	  fprintf(stderr, "Encrypt failed, block size %lu\nInput:",
+		  (unsigned long) block);
 	  tstring_print_hex(cleartext);
 	  fprintf(stderr, "\nOutput: ");
 	  print_hex(length, data);
@@ -470,7 +471,7 @@ test_aead(const struct nettle_aead *aead,
   void *ctx = xalloc(aead->context_size);
   uint8_t *data;
   uint8_t *buffer = xalloc(aead->block_size);
-  unsigned length;
+  size_t length;
 
   ASSERT (cleartext->length == ciphertext->length);
   length = cleartext->length;
@@ -574,14 +575,14 @@ test_hash(const struct nettle_hash *hash,
 
 void
 test_hash_large(const struct nettle_hash *hash,
-		unsigned count, unsigned length,
+		size_t count, size_t length,
 		uint8_t c,
 		const struct tstring *digest)
 {
   void *ctx = xalloc(hash->context_size);
   uint8_t *buffer = xalloc(hash->digest_size);
   uint8_t *data = xalloc(length);
-  unsigned i;
+  size_t i;
 
   ASSERT (digest->length == hash->digest_size);
 
@@ -603,7 +604,7 @@ test_hash_large(const struct nettle_hash *hash,
 
 void
 test_armor(const struct nettle_armor *armor,
-           unsigned data_length,
+           size_t data_length,
            const uint8_t *data,
            const uint8_t *ascii)
 {

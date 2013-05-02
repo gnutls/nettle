@@ -9,7 +9,7 @@ test_invert(const struct tstring *key,
   struct aes_ctx encrypt;
   struct aes_ctx decrypt;
   uint8_t *data = xalloc(cleartext->length);
-  unsigned length;
+  size_t length;
   ASSERT (cleartext->length == ciphertext->length);
   length = cleartext->length;
 

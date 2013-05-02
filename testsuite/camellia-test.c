@@ -9,7 +9,7 @@ test_invert(const struct tstring *key,
   struct camellia_ctx encrypt;
   struct camellia_ctx decrypt;
   uint8_t *data;
-  unsigned length;
+  size_t length;
 
   ASSERT (cleartext->length == ciphertext->length);
   length = cleartext->length;

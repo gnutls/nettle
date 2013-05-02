@@ -43,18 +43,18 @@ xalloc(size_t size);
 
 struct tstring {
   struct tstring *next;
-  unsigned length;
+  size_t length;
   uint8_t data[1];
 };
 
 struct tstring *
-tstring_alloc (unsigned length);
+tstring_alloc (size_t length);
 
 void
 tstring_clear(void);
 
 struct tstring *
-tstring_data(unsigned length, const char *data);
+tstring_data(size_t length, const char *data);
 
 struct tstring *
 tstring_hex(const char *hex);
@@ -65,7 +65,7 @@ tstring_print_hex(const struct tstring *s);
 /* Decodes a NUL-terminated hex string. */
 
 void
-print_hex(unsigned length, const uint8_t *data);
+print_hex(size_t length, const uint8_t *data);
 
 /* The main program */
 void
@@ -145,13 +145,13 @@ test_hash(const struct nettle_hash *hash,
 
 void
 test_hash_large(const struct nettle_hash *hash,
-		unsigned count, unsigned length,
+		size_t count, size_t length,
 		uint8_t c,
 		const struct tstring *digest);
 
 void
 test_armor(const struct nettle_armor *armor,
-           unsigned data_length,
+           size_t data_length,
            const uint8_t *data,
            const uint8_t *ascii);
 

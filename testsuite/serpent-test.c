@@ -6,7 +6,7 @@ tstring_hex_reverse (const char *hex)
 {
   struct tstring *s = tstring_hex (hex);
   uint8_t *p;
-  unsigned length, i;
+  size_t length, i;
 
   length = s->length;
   p = s->data;

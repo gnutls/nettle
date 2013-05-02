@@ -31,7 +31,7 @@ test_arctwo(unsigned ekb,
 {
   struct arctwo_ctx ctx;
   uint8_t *data;
-  unsigned length;
+  size_t length;
 
   ASSERT (cleartext->length == ciphertext->length);
   length = cleartext->length;
