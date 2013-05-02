@@ -1,3 +1,8 @@
+2013-05-02  Niels Möller  <nisse@lysator.liu.se>
+
+	* sexp-format.c (sexp_vformat): Use type mpz_srcptr rather
+	than the old MP_INT *.
+
 2013-04-26  Niels Möller  <nisse@lysator.liu.se>
 
 	* Many files: Use size_t rather than unsigned for data sizes.

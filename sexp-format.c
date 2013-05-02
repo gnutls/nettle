@@ -290,7 +290,7 @@ sexp_vformat(struct nettle_buffer *buffer, const char *format, va_list args)
 	      }
 	    case 'b':
 	      {
-		const MP_INT *n = va_arg(args, const MP_INT *);
+		mpz_srcptr n = va_arg(args, mpz_srcptr);
 		size_t length;
 		unsigned prefix_length;
 	      
