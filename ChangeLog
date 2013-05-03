@@ -1,3 +1,12 @@
+2013-05-03  Niels Möller  <nisse@lysator.liu.se>
+
+	* cast128.c: Adapt to new struct cast128_ctx.
+	(cast128_set_key): Rewrite, eliminating lots of conditions and
+	some false warnings.
+
+	* cast128.h (struct cast128_ctx): Separate the small 5-bit
+	rotation subkeys and the larger 32-bit masking subkeys.
+
 2013-05-02  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/testutils.c (mpz_combit): Renamed. Define only if not

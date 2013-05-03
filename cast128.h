@@ -53,8 +53,10 @@ extern "C" {
 
 struct cast128_ctx
 {
-  uint32_t keys[32];  /* Key, after expansion */
-  unsigned rounds;    /* Number of rounds to use, 12 or 16 */
+  unsigned rounds;  /* Number of rounds to use, 12 or 16 */
+  /* Expanded key, rotations (5 bits only) and 32-bit masks. */
+  unsigned char Kr[16];
+  uint32_t Km[16];
 };
 
 void
