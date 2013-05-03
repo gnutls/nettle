@@ -28,83 +28,17 @@
     Leave for some later release!
   </p>
 
-  <h1> Plan for the Nettle-2.7 release </h1>
-  <h2> Code </h2>
-  <p class='done'>
-    Support older GMP versions, as far as practical.
-  </p>
-  <p class='done'>
-    Make use of GMP's mpn_cnd_add_n and mpn_sub_n (which will be
-    available in the next GMP release).
-  </p>
-  <p class='done'>
-    Implement <tt>ecc_point_mul</tt> and <tt>ecc_point_mul_g</tt>.
-  </p>  
-  <p class='done'>
-    Rewrite x86_64/sha3-permute.asm. Moves between xmm registers and
-    regular registers kill performance at least on some AMD
-    processors. (Not rewritten, only moves changed to go via memory).
-  </p>
-  <p class='done'>
-    Include UMAC. Needs a serious effort to produce test vectors.
-  </p>
-  
-  <h2> Documentation </h2>
-  <p class='done'>
-    Document new ECC functions.
-  </p>
-  <p class='done'>
-    Document salsa20r12.
-  </p>
-  <p class='done'>
-    Document umac.
-  </p>
-  <p class='done'>
-    Update NEWS file.
-  </p>
-
-  <h2> Build system </h2>
-  <p class='done'>
-    Ensure that <tt>make install</tt> without a preceding
-    <tt>make</tt> works.
-  </p>
-  <p class='done'>
-    Make the assembly ALIGN-macro non-logarithmic, reusing the m4 log2
-    macro in GMP. Current macros have the problem that in m4 eval,
-    <tt>&lt;&lt;</tt> is not supported by Solaris, while <tt>**</tt>
-    is not supported by OpenBSD.
-  </p>
-
-  <h2> Testing </h2>
-  <p> Since xenofarm isn't up and running, do some manual testing:
-  </p>
-  <ul>
-    <li class='done'> x86_64-linux-gnu</li>
-    <li class='should'> x86_64-freebsd</li>
-    <li class='done'> x86-linux-gnu</li>
-    <li class='should'> x86-freebsd</li>
-    <li class='done'> x86-w*ndows (using cross compiler and wine)</li>
-    <li class='wish'> x86_64-w*ndows (seems a bit harder since 64-bit
-    wine is not yet available in debian)</li>
-    <li class='should'> x86-darwin (needs help from Nettle users)</li>
-    <li class='should'> x86_64-darwin (needs help from Nettle users)</li>
-    <li class='done'> armv7-linux-gnu (pandaboard test platform)</li>
-    <li class='wish'> armv7-android (possible test platform: N10 tablet)</li>
-    <li class='done'> sparc32-solaris10</li>
-    <li class='done'> sparc64-solaris10</li>
-  </ul>
-
   <h1> Plans for nettle-2.8 </h1>
 
   <p> nettle-2.8 is intended to be a minor API cleanup, with few new
   features. </p>
 
   <h2> Interface changes </h2>
-  <p class='should'>
+  <p class='done'>
     Change the type of all lengths from <tt>unsigned</tt>
     to <tt>size_t</tt>. An ABI change on most 64-bit platforms.
   </p>
-  <p class='should'>
+  <p class='done'>
     Change argument type of memxor and memxor3 from uint8_t * to void
     * (like modern memcpy). Consider them unconditionally part of the
     nettle library, with nettle_ prefix on the symbols, and no
@@ -116,6 +50,12 @@
   </p>
   <p class='should'>
     Move some internal-use macros from macros.h to nettle-internal.h.
+  </p>
+  <p class='should'>
+    Do separate aes128_ctx, etc, with smaller allocation for subkeys.
+  </p>
+  <p class='should'>
+    Don't require initialization of *dst_length for base*_decode_update.
   </p>
 
   <h2> Build system </h2>
@@ -129,6 +69,25 @@
     Delay building of test programs until <tt>make check</tt>.
   </p>
   
+  <h2> Testing </h2>
+  <p> Since xenofarm isn't up and running, do some manual testing:
+  </p>
+  <ul>
+    <li class='should'> x86_64-linux-gnu</li>
+    <li class='should'> x86_64-freebsd</li>
+    <li class='should'> x86-linux-gnu</li>
+    <li class='should'> x86-freebsd</li>
+    <li class='should'> x86-w*ndows (using cross compiler and wine)</li>
+    <li class='wish'> x86_64-w*ndows (seems a bit harder since 64-bit
+    wine is not yet available in debian)</li>
+    <li class='should'> x86-darwin (needs help from Nettle users)</li>
+    <li class='should'> x86_64-darwin (needs help from Nettle users)</li>
+    <li class='should'> armv7-linux-gnu (pandaboard test platform)</li>
+    <li class='wish'> armv7-android (possible test platform: N10 tablet)</li>
+    <li class='should'> sparc32-solaris10</li>
+    <li class='should'> sparc64-solaris10</li>
+  </ul>
+
   <h1> Plans for nettle-3.0 </h1>
 
   <p> These are some larger API changes under consideration. </p>
