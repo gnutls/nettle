@@ -38,3 +38,21 @@ define(<AES_FINAL_ROUND_V6>, <
 	ldr	T0, [$5], #+4
 	eor	$6, $6, T0
 >)
+
+C AES_FINAL_ROUND_V5(a,b,c,d,key,res,mask)
+C Avoids the uxtb instruction, introduced in ARMv6.
+C The mask argument should hold the constant 0xff
+define(<AES_FINAL_ROUND_V5>, <
+	and	T0, $7, $1
+	ldrb	$6, [TABLE, T0]
+	and	T0, $7, $2, ror #8
+	ldrb	T0, [TABLE, T0]
+	eor	$6, $6, T0, lsl #8
+	and	T0, $7, $3, ror #16
+	ldrb	T0, [TABLE, T0]
+	eor	$6, $6, T0, lsl #16
+	ldrb	T0, [TABLE, $4, lsr #24]
+	eor	$6, $6, T0, lsl #24
+	ldr	T0, [$5], #+4
+	eor	$6, T0
+>)

@@ -1,7 +1,11 @@
 2013-05-16  Niels Möller  <nisse@lysator.liu.se>
 
-	* arm/aes.m4 (AES_FINAL_ROUND_V6): New name, updated callers.
-	(AES_FINAL_ROUND_): ... old name. Also eliminated one uxtb
+	* arm/aes-encrypt-internal.asm: New file, for pre-v6 processors.
+	* arm/aes-decrypt-internal.asm: New file, likewise.
+
+	* arm/aes.m4 (AES_FINAL_ROUND_V5): Variant without using uxtb.
+	(AES_FINAL_ROUND_V6): New name, updated callers.
+	(AES_FINAL_ROUND): ... old name. Also eliminated one uxtb
 	instruction.
 	(AES_ENCRYPT_ROUND, AES_DECRYPT): Moved macros to the
 	files using them.
