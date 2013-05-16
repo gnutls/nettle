@@ -45,6 +45,69 @@ define(<X2>, <r12>)
 define(<X3>, <r14>)	C lr
 
 
+C 53 instr.
+C It's tempting to use eor with rotation, but that's slower.
+C AES_ENCRYPT_ROUND(x0,x1,x2,x3,w0,w1,w2,w3,key)
+define(<AES_ENCRYPT_ROUND>, <
+	uxtb	T0, $1 
+	ldr	$5, [TABLE, T0, lsl #2]
+	uxtb	T0, $2
+	ldr	$6, [TABLE, T0, lsl #2]
+	uxtb	T0, $3
+	ldr	$7, [TABLE, T0, lsl #2]
+	uxtb	T0, $4
+	ldr	$8, [TABLE, T0, lsl #2]
+
+	uxtb	T0, $2, ror #8
+	add	TABLE, TABLE, #1024
+	ldr	T0, [TABLE, T0, lsl #2]
+	eor	$5, $5, T0
+	uxtb	T0, $3, ror #8
+	ldr	T0, [TABLE, T0, lsl #2]
+	eor	$6, $6, T0
+	uxtb	T0, $4, ror #8
+	ldr	T0, [TABLE, T0, lsl #2]
+	eor	$7, $7, T0
+	uxtb	T0, $1, ror #8
+	ldr	T0, [TABLE, T0, lsl #2]
+	eor	$8, $8, T0
+
+	uxtb	T0, $3, ror #16
+	add	TABLE, TABLE, #1024
+	ldr	T0, [TABLE, T0, lsl #2]
+	eor	$5, $5, T0
+	uxtb	T0, $4, ror #16
+	ldr	T0, [TABLE, T0, lsl #2]
+	eor	$6, $6, T0
+	uxtb	T0, $1, ror #16
+	ldr	T0, [TABLE, T0, lsl #2]
+	eor	$7, $7, T0
+	uxtb	T0, $2, ror #16
+	ldr	T0, [TABLE, T0, lsl #2]
+	eor	$8, $8, T0
+
+	uxtb	T0, $4, ror #24
+	add	TABLE, TABLE, #1024
+	ldr	T0, [TABLE, T0, lsl #2]
+	eor	$5, $5, T0
+	uxtb	T0, $1, ror #24
+	ldr	T0, [TABLE, T0, lsl #2]
+	eor	$6, $6, T0
+	uxtb	T0, $2, ror #24
+	ldr	T0, [TABLE, T0, lsl #2]
+	eor	$7, $7, T0
+	uxtb	T0, $3, ror #24
+	ldr	T0, [TABLE, T0, lsl #2]
+
+	ldm	$9!, {$1,$2,$3,$4}
+	eor	$8, $8, T0
+	sub	TABLE, TABLE, #3072
+	eor	$5, $5, $1
+	eor	$6, $6, $2
+	eor	$7, $7, $3
+	eor	$8, $8, $4
+>)
+
 	.file "aes-encrypt-internal.asm"
 	
 	C _aes_encrypt(struct aes_context *ctx, 
