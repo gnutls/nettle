@@ -23,8 +23,8 @@ define(<AES_STORE>, <
 	strb	$2, [$1], #+1
 >)
 
-C AES_FINAL_ROUND(a,b,c,d,key,res)
-define(<AES_FINAL_ROUND>, <
+C AES_FINAL_ROUND_V6(a,b,c,d,key,res)
+define(<AES_FINAL_ROUND_V6>, <
 	uxtb	T0, $1
 	ldrb	$6, [TABLE, T0]
 	uxtb	T0, $2, ror #8
