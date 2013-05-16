@@ -52,13 +52,14 @@ define(<X3>, <r14>)	C lr
 	C	       size_t length, uint8_t *dst,
 	C	       uint8_t *src)
 	.text
-	.align 2
+	ALIGN(4)
 PROLOGUE(_nettle_aes_encrypt)
 	teq	LENGTH, #0
 	beq	.Lend
 	ldr	SRC, [sp]
 
 	push	{r4,r5,r6,r7,r8,r10,r11,lr}
+	ALIGN(16)
 .Lblock_loop:
 	mov	KEY, CTX
 	AES_LOAD(SRC,KEY,W0)
@@ -71,7 +72,7 @@ PROLOGUE(_nettle_aes_encrypt)
 	add	TABLE, TABLE, #AES_TABLE0
 
 	b	.Lentry
-	.align 2
+	ALIGN(16)
 .Lround_loop:
 	C	Transform X -> W
 	AES_ENCRYPT_ROUND(X0, X1, X2, X3, W0, W1, W2, W3, KEY)

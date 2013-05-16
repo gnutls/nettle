@@ -1,3 +1,10 @@
+2013-05-16  Niels Möller  <nisse@lysator.liu.se>
+
+	* arm/v6/aes-encrypt-internal.asm: Use ALIGN macro. Use 16-byte
+	alignment for loops.
+	* arm/v6/aes-decrypt-internal.asm: Likewise. Also added a nop
+	which mysteriously improves benchmark performance on Cortex-A9.
+
 2013-05-15  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac (asm_path): Handle armv6 and armv7 differently from
