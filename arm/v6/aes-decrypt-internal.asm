@@ -19,10 +19,6 @@ C MA 02111-1301, USA.
 
 include_src(<arm/aes.m4>)
 
-C	Benchmarked at at 785, 914, 1051 cycles/block on cortex A9,
-C	for 128, 192 and 256 bit key sizes. Unclear why it is slower
-C	than _aes_encrypt.
-
 define(<CTX>, <r0>)
 define(<TABLE>, <r1>)
 define(<LENGTH>, <r2>)
@@ -119,7 +115,7 @@ PROLOGUE(_nettle_aes_decrypt)
 
 	push	{r4,r5,r6,r7,r8,r10,r11,lr}
 	nop	C For some mysterious reason, taking out this nop
-		C slows this function down on Cortex-A9.
+		C slows this function down by 10(!) % on Cortex-A9.
 	ALIGN(16)
 .Lblock_loop:
 	mov	KEY, CTX

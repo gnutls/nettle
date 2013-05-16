@@ -2,6 +2,7 @@
 
 	* arm/aes.m4 (AES_ENCRYPT_ROUND, AES_DECRYPT): Moved macros to the
 	files using them.
+	(AES_FINAL_ROUND): Eliminated one uxtb instruction.
 
 	* arm/v6/aes-encrypt-internal.asm: Use ALIGN macro. Use 16-byte
 	alignment for loops.

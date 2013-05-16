@@ -33,9 +33,8 @@ define(<AES_FINAL_ROUND>, <
 	uxtb	T0, $3, ror #16
 	ldrb	T0, [TABLE, T0]
 	eor	$6, $6, T0, lsl #16
-	uxtb	T0, $4, ror #24
-	ldrb	T0, [TABLE, T0]
+	ldrb	T0, [TABLE, $4, lsr #24]
 	eor	$6, $6, T0, lsl #24
 	ldr	T0, [$5], #+4
-	eor	$6, T0
+	eor	$6, $6, T0
 >)

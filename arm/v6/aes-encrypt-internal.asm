@@ -19,7 +19,7 @@ C MA 02111-1301, USA.
 
 include_src(<arm/aes.m4>)
 
-C	Benchmarked at at 693, 824, 950 cycles/block on cortex A9,
+C	Benchmarked at at 680, 818, 929 cycles/block on cortex A9,
 C	for 128, 192 and 256 bit key sizes.
 
 C	Possible improvements: More efficient load and store with
