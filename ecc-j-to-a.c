@@ -46,6 +46,7 @@ ecc_j_to_a (const struct ecc_curve *ecc,
 #define up   (scratch + ecc->size)
 #define iz2p (scratch + ecc->size)
 #define iz3p (scratch + 2*ecc->size)
+#define izBp (scratch + 3*ecc->size)
 #define tp    scratch
 
   mp_limb_t cy;
@@ -72,11 +73,11 @@ ecc_j_to_a (const struct ecc_curve *ecc,
       if (flags & 1)
 	{
 	  /* Divide this common factor by B */
-	  mpn_copyi (iz3p, izp, ecc->size);
-	  mpn_zero (iz3p + ecc->size, ecc->size);
-	  ecc->redc (ecc, iz3p);
-      
-	  ecc_modp_mul (ecc, iz2p, izp, iz3p);
+	  mpn_copyi (izBp, izp, ecc->size);
+	  mpn_zero (izBp + ecc->size, ecc->size);
+	  ecc->redc (ecc, izBp);
+
+	  ecc_modp_mul (ecc, iz2p, izp, izBp);
 	}
       else
 	ecc_modp_sqr (ecc, iz2p, izp);	
