@@ -5,7 +5,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2002 Niels Möller
+ * Copyright (C) 2002, 2013 Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -342,6 +342,6 @@ aes_decrypt(const struct aes_ctx *ctx,
 	    const uint8_t *src)
 {
   assert(!(length % AES_BLOCK_SIZE) );
-  _aes_decrypt(ctx, &_aes_decrypt_table,
+  _aes_decrypt(ctx->nrounds, ctx->keys, &_aes_decrypt_table,
 	       length, dst, src);
 }

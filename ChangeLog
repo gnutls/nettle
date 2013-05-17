@@ -1,5 +1,11 @@
 2013-05-17  Niels Möller  <nisse@lysator.liu.se>
 
+	* aes-encrypt-internal.c (_nettle_aes_encrypt): Take rounds and
+	subkeys as separate arguments, not a struct aes_ctx *. Updated
+	callers.
+	* aes-decrypt-internal.c (_nettle_aes_decrypt): Likewise.
+	* aes-internal.h: Updated prototypes.
+
 	* macros.h (ROTL32, ROTL64): Avoid undefined behaviour for zero
 	rotation count. Unfortunately makes CAST128 a bit slower with
 	gcc-4.6.3.

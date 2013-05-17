@@ -51,13 +51,13 @@ struct aes_table
 };
 
 void
-_aes_encrypt(const struct aes_ctx *ctx,
+_aes_encrypt(unsigned rounds, const uint32_t *keys,
 	     const struct aes_table *T,
 	     size_t length, uint8_t *dst,
 	     const uint8_t *src);
 
 void
-_aes_decrypt(const struct aes_ctx *ctx,
+_aes_decrypt(unsigned rounds, const uint32_t *keys,
 	     const struct aes_table *T,
 	     size_t length, uint8_t *dst,
 	     const uint8_t *src);
