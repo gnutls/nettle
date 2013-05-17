@@ -1,3 +1,9 @@
+2013-05-17  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-j-to-a.c (ecc_j_to_a): Fixed ecc_modp_mul call, to avoid
+	invalid overlap of arguments to mpn_mul_n. Problem tracked down by
+	Magnus Holmgren.
+
 2013-05-16  Niels Möller  <nisse@lysator.liu.se>
 
 	* arm/aes-encrypt-internal.asm: New file, for pre-v6 processors.
