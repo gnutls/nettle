@@ -342,6 +342,6 @@ aes_decrypt(const struct aes_ctx *ctx,
 	    const uint8_t *src)
 {
   assert(!(length % AES_BLOCK_SIZE) );
-  _aes_decrypt(ctx->nrounds, ctx->keys, &_aes_decrypt_table,
+  _aes_decrypt(ctx->rounds, ctx->keys, &_aes_decrypt_table,
 	       length, dst, src);
 }

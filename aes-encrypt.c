@@ -40,6 +40,6 @@ aes_encrypt(const struct aes_ctx *ctx,
 	    const uint8_t *src)
 {
   assert(!(length % AES_BLOCK_SIZE) );
-  _aes_encrypt(ctx->nrounds, ctx->keys, &_aes_encrypt_table,
+  _aes_encrypt(ctx->rounds, ctx->keys, &_aes_encrypt_table,
 	       length, dst, src);
 }

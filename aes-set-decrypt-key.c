@@ -126,10 +126,10 @@ void
 aes_invert_key(struct aes_ctx *dst,
 	       const struct aes_ctx *src)
 {
-  unsigned nrounds;
+  unsigned rounds;
   unsigned i;
 
-  nrounds = src->nrounds;
+  rounds = src->rounds;
 
   /* Reverse the order of subkeys, in groups of 4. */
   /* FIXME: Instead of reordering the subkeys, change the access order
@@ -138,7 +138,7 @@ aes_invert_key(struct aes_ctx *dst,
     {
       unsigned j, k;
 
-      for (i = 0, j = nrounds * 4;
+      for (i = 0, j = rounds * 4;
 	   i < j;
 	   i += 4, j -= 4)
 	for (k = 0; k<4; k++)
@@ -148,14 +148,14 @@ aes_invert_key(struct aes_ctx *dst,
     {
       unsigned k;
 
-      dst->nrounds = nrounds;
-      for (i = 0; i <= nrounds * 4; i += 4)
+      dst->rounds = rounds;
+      for (i = 0; i <= rounds * 4; i += 4)
 	for (k = 0; k < 4; k++)
-	  dst->keys[i+k] = src->keys[nrounds * 4 - i + k];
+	  dst->keys[i+k] = src->keys[rounds * 4 - i + k];
     }
 
   /* Transform all subkeys but the first and last. */
-  for (i = 4; i < 4 * nrounds; i++)
+  for (i = 4; i < 4 * rounds; i++)
     MIX_COLUMN (mtable, dst->keys[i]);
 }
 

@@ -53,8 +53,8 @@ extern "C" {
    sizes? */
 struct aes_ctx
 {
+  unsigned rounds;  /* number of rounds to use for our key size */
   uint32_t keys[60];  /* maximum size of key schedule */
-  unsigned  nrounds;  /* number of rounds to use for our key size */
 };
 
 void

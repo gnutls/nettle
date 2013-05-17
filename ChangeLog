@@ -1,5 +1,10 @@
 2013-05-17  Niels Möller  <nisse@lysator.liu.se>
 
+	* aes.h (struct aes_ctx): Renamed nrounds to rounds, and moved
+	first in the structure.
+	* aes-set-encrypt-key.c (aes_set_encrypt_key): Updated for renaming.
+	* aes-set-decrypt-key.c (aes_invert_key): Likewise.
+
 	* aes-encrypt-internal.c (_nettle_aes_encrypt): Take rounds and
 	subkeys as separate arguments, not a struct aes_ctx *. Updated
 	callers.

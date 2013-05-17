@@ -61,7 +61,7 @@ aes_set_encrypt_key(struct aes_ctx *ctx,
   }
 
   lastkey = (AES_BLOCK_SIZE/4) * (nr + 1);
-  ctx->nrounds = nr;
+  ctx->rounds = nr;
 
   for (i=0, rp = rcon; i<nk; i++)
     ctx->keys[i] = LE_READ_UINT32(key + i*4);
