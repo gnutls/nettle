@@ -1,5 +1,9 @@
 2013-05-17  Niels Möller  <nisse@lysator.liu.se>
 
+	* macros.h (ROTL32, ROTL64): Avoid undefined behaviour for zero
+	rotation count. Unfortunately makes CAST128 a bit slower with
+	gcc-4.6.3.
+
 	* ecc-j-to-a.c (ecc_j_to_a): Fixed ecc_modp_mul call, to avoid
 	invalid overlap of arguments to mpn_mul_n. Problem tracked down by
 	Magnus Holmgren.

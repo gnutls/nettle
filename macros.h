@@ -141,9 +141,11 @@ do {						\
 		  (dst) += (blocksize),		\
 		  (src) += (blocksize)) )
 
-#define ROTL32(n,x) (((x)<<(n)) | ((x)>>(32-(n))))
-
-#define ROTL64(n,x) (((x)<<(n)) | ((x)>>(64-(n))))
+/* The masking of the right shift is needed to allow n == 0 (using
+   just 32 - n and 64 - n results in undefined behaviour). */
+#define ROTL32(n,x) (((x)<<(n)) | ((x)>>((-(n)&31))))
+  
+#define ROTL64(n,x) (((x)<<(n)) | ((x)>>((-(n))&63)))
 
 /* Requires that size > 0 */
 #define INCREMENT(size, ctr)			\
