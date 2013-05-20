@@ -1,6 +1,7 @@
 C nettle, low-level cryptographics library
 C 
-C Copyright (C) 2001, 2002, 2005, 2008 Rafael R. Sevilla, Niels Möller
+C Copyright (C) 2001, 2002, 2005, Rafael R. Sevilla, Niels Möller
+C Copyright (C) 2008, 2013 Niels Möller
 C  
 C The nettle library is free software; you can redistribute it and/or modify
 C it under the terms of the GNU Lesser General Public License as published by
@@ -31,16 +32,17 @@ define(<TA>,<%r10d>)
 define(<TB>,<%r11d>)
 define(<TC>,<%r12d>)
 
-define(<CTX>,	<%rdi>)
-define(<TABLE>,	<%rsi>)
-define(<PARAM_LENGTH>,<%rdx>)
-define(<PARAM_DST>,	<%rcx>)
-define(<SRC>,	<%r8>)
+C Input argument
+define(<ROUNDS>, <%rdi>)
+define(<KEYS>,	<%rsi>)
+define(<PARAM_TABLE>,	<%rdx>)
+define(<PARAM_LENGTH>,<%rcx>)
+define(<DST>,	<%r8>)
+define(<SRC>,	<%r9>)
 
-define(<DST>, <%r9>) 
-define(<KEY>,<%r14>)
-define(<COUNT>,	<%r15d>)
-define(<BLOCK_COUNT>, <%r13>)
+define(<TABLE>, <%r13>) 
+define(<LENGTH>,<%r14>)
+define(<KEY>,	<%r15>)
 
 C Must correspond to an old-style register, for movzb from %ah--%dh to
 C work.
@@ -48,14 +50,14 @@ define(<TMP>,<%rbp>)
 
 	.file "aes-encrypt-internal.asm"
 	
-	C _aes_encrypt(struct aes_context *ctx, 
+	C _aes_encrypt(unsigned rounds, const uint32_t *keys,
 	C	       const struct aes_table *T,
 	C	       size_t length, uint8_t *dst,
 	C	       uint8_t *src)
 	.text
 	ALIGN(16)
 PROLOGUE(_nettle_aes_encrypt)
-	W64_ENTRY(5, 0)
+	W64_ENTRY(6, 0)
 	test	PARAM_LENGTH, PARAM_LENGTH
 	jz	.Lend
 
@@ -67,20 +69,21 @@ PROLOGUE(_nettle_aes_encrypt)
 	push	%r14
 	push	%r15	
 
-	mov	PARAM_DST, DST
-	mov	PARAM_LENGTH, BLOCK_COUNT
-	shr	$4, BLOCK_COUNT
+	subl	$1, XREG(ROUNDS)
+	push	ROUNDS		C Rounds at (%rsp) 
+	
+	mov	PARAM_TABLE, TABLE
+	mov	PARAM_LENGTH, LENGTH
+	shr	$4, LENGTH
 .Lblock_loop:
-	mov	CTX,KEY
+	mov	KEYS, KEY
 	
 	AES_LOAD(SA, SB, SC, SD, SRC, KEY)
 	add	$16, SRC	C Increment src pointer
 
-	C  get number of rounds to do from ctx struct	
-	movl	AES_NROUNDS (CTX), COUNT
-	subl	$1, COUNT
+	movl	(%rsp), XREG(ROUNDS)
 
-	add	$16,KEY		C  point to next key
+	add	$16, KEY	C  point to next key
 	ALIGN(16)
 .Lround_loop:
 	AES_ROUND(TABLE, SA,SB,SC,SD, TA, TMP)
@@ -97,8 +100,8 @@ PROLOGUE(_nettle_aes_encrypt)
 	xorl	8(KEY),SC
 	xorl	12(KEY),SD
 
-	add	$16,KEY	C  point to next key
-	decl	COUNT
+	add	$16, KEY	C  point to next key
+	decl	XREG(ROUNDS)
 	jnz	.Lround_loop
 
 	C last round
@@ -108,28 +111,29 @@ PROLOGUE(_nettle_aes_encrypt)
 	AES_FINAL_ROUND(SD,SA,SB,SC, TABLE, SD, TMP)
 
 	C S-box substitution
-	mov	$3, COUNT
+	mov	$3, XREG(ROUNDS)
 .Lsubst:
 	AES_SUBST_BYTE(TA,TB,TC,SD, TABLE, TMP)
 
-	decl	COUNT
+	decl	XREG(ROUNDS)
 	jnz	.Lsubst
 
 	C Add last subkey, and store encrypted data
 	AES_STORE(TA,TB,TC,SD, KEY, DST)
 	
 	add	$16, DST
-	dec	BLOCK_COUNT
+	dec	LENGTH
 
 	jnz	.Lblock_loop
 
-	pop	%r15	
+	lea	8(%rsp), %rsp	C Drop ROUNDS
+	pop	%r15
 	pop	%r14
 	pop	%r13
 	pop	%r12
 	pop	%rbp
 	pop	%rbx
 .Lend:
-	W64_EXIT(5, 0)
+	W64_EXIT(6, 0)
 	ret
 EPILOGUE(_nettle_aes_encrypt)
