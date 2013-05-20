@@ -1,5 +1,9 @@
 2013-05-20  Niels Möller  <nisse@lysator.liu.se>
 
+	* arm/v6/sha1-compress.asm: Moved into v6 directory, since it uses
+	the v6 instruction uadd8, sel and rev.
+	* arm/v6/sha256-compress.asm: Likewise.
+
 	* nettle-types.h: Include <stddef.h>, for size_t.
 
 2013-05-17  Niels Möller  <nisse@lysator.liu.se>
