@@ -142,7 +142,8 @@ do {						\
 		  (src) += (blocksize)) )
 
 /* The masking of the right shift is needed to allow n == 0 (using
-   just 32 - n and 64 - n results in undefined behaviour). */
+   just 32 - n and 64 - n results in undefined behaviour). Most uses
+   of these macros use a constant and non-zero rotation count. */
 #define ROTL32(n,x) (((x)<<(n)) | ((x)>>((-(n)&31))))
   
 #define ROTL64(n,x) (((x)<<(n)) | ((x)>>((-(n))&63)))
