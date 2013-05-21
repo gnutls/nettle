@@ -1,3 +1,48 @@
+NEWS for the 2.7.1 release
+
+	This is a bugfix release.
+
+	Bug fixes:
+
+	* Fixed a bug in the new ECC code. The ecc_j_to_a function
+	  called GMP:s mpn_mul_n (via ecc_modp_mul) with overlapping
+	  input and output arguments, which is not supported.
+
+	* The assembly files for SHA1, SHA256 and AES depend on ARMv6
+          instructions, breaking nettle-2.7 for pre-v6 ARM processors.
+          The configure script now enables those assembly files only
+          when building for ARMv6 or later.
+	  
+	* Use a more portable C expression for rotations. The
+	  previous version used the following "standard" expression
+	  for 32-bit rotation:
+
+	    (x << n) | (x >> (32 - n))
+
+	  But this gives undefined behavior (according to the C
+	  specification) for n = 0. The rotate expression is replaced
+	  by the more portable:
+
+	    (x << n) | (x >> ((-n)&31))
+
+	  This change affects only CAST128, which uses non-constant
+	  rotation counts. Unfortunately, the new expression is poorly
+	  optimized by released versions of gcc, making CAST128 a bit
+	  slower. This is being fixed by the gcc hackers, see
+	  http://gcc.gnu.org/bugzilla/show_bug.cgi?id=57157.
+	  
+	The following problem has been reported, but is *not* fixed in
+	this release:
+
+	* ARM assembly files use instruction syntax which is not
+          supported by all assemblers. Workaround: Use a current
+          version of GNU as, or configure with --disable-assembler.
+
+	The libraries are intended to be binary compatible with
+	nettle-2.2 and later. The shared library names are
+	libnettle.so.4.7 and libhogweed.so.2.5, with sonames still
+	libnettle.so.4 and libhogweed.so.2.
+
 NEWS for the 2.7 release
 
 	This release includes an implementation of elliptic curve
