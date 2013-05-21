@@ -1,3 +1,9 @@
+2013-05-21  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Changed version number to 2.7.1.
+	(LIBHOGWEED_MINOR): Bumped library version, to 4.7.
+	(LIBHOGWEED_MINOR): And to 2.5.
+
 2013-05-17  Niels Möller  <nisse@lysator.liu.se>
 
 	From master branch:
