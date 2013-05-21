@@ -1,5 +1,10 @@
 2013-05-21  Niels Möller  <nisse@lysator.liu.se>
 
+	* sparc32/aes-encrypt-internal.asm: Adapted to new interface.
+	* sparc32/aes-decrypt-internal.asm: Likewise.
+	* sparc64/aes-encrypt-internal.asm: Likewise.
+	* sparc64/aes-decrypt-internal.asm: Likewise.
+
 	* x86/aes-encrypt-internal.asm: Adapted to new interface.
 	* x86/aes-decrypt-internal.asm: Likewise.
 

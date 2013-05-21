@@ -1,6 +1,6 @@
 C nettle, low-level cryptographics library
 C 
-C Copyright (C) 2002, 2005 Niels Möller
+C Copyright (C) 2002, 2005, 2013 Niels Möller
 C  
 C The nettle library is free software; you can redistribute it and/or modify
 C it under the terms of the GNU Lesser General Public License as published by
@@ -20,11 +20,12 @@ C MA 02111-1301, USA.
 include_src(<sparc32/aes.m4>)
 
 C	Arguments
-define(<CTX>,	<%i0>)
-define(<T>,	<%i1>)
-define(<LENGTH>,<%i2>)
-define(<DST>,	<%i3>)
-define(<SRC>,	<%i4>)
+define(<ROUNDS>,<%i0>)
+define(<KEYS>,	<%i1>)
+define(<T>,	<%i2>)
+define(<LENGTH>,<%i3>)
+define(<DST>,	<%i4>)
+define(<SRC>,	<%i5>)
 
 C	AES state, two copies for unrolling
 
@@ -40,7 +41,7 @@ define(<X3>,	<%l7>)
 
 C	%o0-%03 are used for loop invariants T0-T3
 define(<KEY>,	<%o4>)
-define(<ROUND>, <%o5>)
+define(<COUNT>, <%o5>)
 
 C %g1, %g2, %g3 are TMP1, TMP2 and TMP3
 
@@ -58,7 +59,7 @@ define(<FRAME_SIZE>, 104)
 
 	.file "aes-encrypt-internal.asm"
 
-	C _aes_encrypt(struct aes_context *ctx, 
+	C _aes_encrypt(unsigned rounds, const uint32_t *keys,
 	C	       const struct aes_table *T,
 	C	       size_t length, uint8_t *dst,
 	C	       uint8_t *src)
@@ -79,22 +80,23 @@ PROLOGUE(_nettle_aes_encrypt)
 	add	T, AES_TABLE2, T2
 	add	T, AES_TABLE3, T3
 
+	C	Must be even, and includes the final round
+	srl	ROUNDS, 1, ROUNDS
+	C	Last two rounds handled specially
+	sub	ROUNDS, 1, ROUNDS
+
 .Lblock_loop:
 	C  Read src, and add initial subkey
-	add	CTX, AES_KEYS, KEY
+	mov	KEYS, KEY
 	AES_LOAD(0, SRC, KEY, W0)
 	AES_LOAD(1, SRC, KEY, W1)
 	AES_LOAD(2, SRC, KEY, W2)
 	AES_LOAD(3, SRC, KEY, W3)
 
-	C	Must be even, and includes the final round
-	ld	[AES_NROUNDS + CTX], ROUND
+	mov	ROUNDS, COUNT
 	add	SRC, 16, SRC
 	add	KEY, 16, KEY
 
-	srl	ROUND, 1, ROUND
-	C	Last two rounds handled specially
-	sub	ROUND, 1, ROUND
 .Lround_loop:
 	C The AES_ROUND macro uses T0,... T3
 	C	Transform W -> X
@@ -109,7 +111,7 @@ PROLOGUE(_nettle_aes_encrypt)
 	AES_ROUND(6, X2, X3, X0, X1, KEY, W2)
 	AES_ROUND(7, X3, X0, X1, X2, KEY, W3)
 
-	subcc	ROUND, 1, ROUND
+	subcc	COUNT, 1, COUNT
 	bne	.Lround_loop
 	add	KEY, 32, KEY
 
