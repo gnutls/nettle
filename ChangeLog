@@ -1,5 +1,15 @@
 2013-05-21  Niels Möller  <nisse@lysator.liu.se>
 
+	From master (2013-05-15):
+	* configure.ac (asm_path): Handle armv6 and armv7 differently from
+	older ARMs. Add the arm/v6 directory to asm_path when appropriate.
+
+	* arm/v6/aes-encrypt-internal.asm: Moved into v6 directory. Uses
+	the uxtb instruction which is not available for older ARMs.
+	* arm/v6/aes-decrypt-internal.asm: Likewise.
+
+2013-05-21  Niels Möller  <nisse@lysator.liu.se>
+
 	* configure.ac: Changed version number to 2.7.1.
 	(LIBHOGWEED_MINOR): Bumped library version, to 4.7.
 	(LIBHOGWEED_MINOR): And to 2.5.
