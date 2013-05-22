@@ -1,5 +1,21 @@
 2013-05-22  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.in (nettle_SOURCES): Added aes-invert-internal.c and
+	aes-set-key-internal.c.
+
+	* aes.h (AES128_KEY_SIZE, _AES128_ROUNDS): New constants.
+	Similarly also for aes192 and aes256.
+
+	* aes-internal.h: Declare new functions.
+
+	* aes-set-key-internal.c (_aes_set_key): New file and funxtion
+	extracted from aes_set_encrypt_key.
+	* aes-set-encrypt-key.c (aes_set_encrypt_key): Use _aes_set_key.
+
+	* aes-invert-internal.c (_aes_invert): New file and function,
+	extracted from aes_invert_key.
+	* aes-set-decrypt-key.c (aes_invert_key): Use _aes_invert.
+
 	* arm/v6/aes-encrypt-internal.asm: Adapted to new interface.
 	Unfortunately, 4% slowdown on Cortex-A9, for unknown reason.
 	* arm/v6/aes-decrypt-internal.asm: Likewise.

@@ -1,13 +1,13 @@
-/* aes-set-decrypt-key.c
+/* aes-set-key-internal.c
  *
- * Inverse key setup for the aes/rijndael block cipher.
+ * Key setup for the aes/rijndael block cipher.
  */
 
 /* nettle, low-level cryptographics library
  *
  * Copyright (C) 2000, 2001, 2002 Rafael R. Sevilla, Niels Möller
  * Copyright (C) 2013 Niels Möller
- *  
+ * 
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at your
@@ -31,22 +31,33 @@
 #endif
 
 #include "aes-internal.h"
+#include "macros.h"
 
 void
-aes_invert_key(struct aes_ctx *dst,
-	       const struct aes_ctx *src)
+_aes_set_key(unsigned nr, unsigned nk,
+	     uint32_t *subkeys, const uint8_t *key)
 {
-  _aes_invert (src->rounds, dst->keys, src->keys);
-  dst->rounds = src->rounds;
-}
+  static const uint8_t rcon[10] = {
+    0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80,0x1b,0x36,
+  };
+  const uint8_t *rp;
+  unsigned lastkey, i;
+  uint32_t t;
 
-void
-aes_set_decrypt_key(struct aes_ctx *ctx,
-		    size_t keysize, const uint8_t *key)
-{
-  /* We first create subkeys for encryption,
-   * then modify the subkeys for decryption. */
-  aes_set_encrypt_key(ctx, keysize, key);
-  aes_invert_key(ctx, ctx);
-}
+  lastkey = (AES_BLOCK_SIZE/4) * (nr + 1);
+  
+  for (i=0, rp = rcon; i<nk; i++)
+    subkeys[i] = LE_READ_UINT32(key + i*4);
 
+  for (i=nk; i<lastkey; i++)
+    {
+      t = subkeys[i-1];
+      if (i % nk == 0)
+	t = SUBBYTE(ROTL32(24, t), aes_sbox) ^ *rp++;
+
+      else if (nk > 6 && (i%nk) == 4)
+	t = SUBBYTE(t, aes_sbox);
+
+      subkeys[i] = subkeys[i-nk] ^ t;
+    }  
+}

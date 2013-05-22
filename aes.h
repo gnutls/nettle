@@ -41,20 +41,24 @@ extern "C" {
 
 #define AES_BLOCK_SIZE 16
 
+#define AES128_KEY_SIZE 16
+#define AES192_KEY_SIZE 24
+#define AES256_KEY_SIZE 32
+#define _AES128_ROUNDS 10
+#define _AES192_ROUNDS 12
+#define _AES256_ROUNDS 14
+
 /* Variable key size between 128 and 256 bits. But the only valid
  * values are 16 (128 bits), 24 (192 bits) and 32 (256 bits). */
-#define AES_MIN_KEY_SIZE 16
-#define AES_MAX_KEY_SIZE 32
+#define AES_MIN_KEY_SIZE AES128_KEY_SIZE
+#define AES_MAX_KEY_SIZE AES256_KEY_SIZE
 
 #define AES_KEY_SIZE 32
 
-/* FIXME: Change to put nrounds first, to make it possible to use a
-   truncated ctx struct, with less subkeys, for the shorter key
-   sizes? */
 struct aes_ctx
 {
   unsigned rounds;  /* number of rounds to use for our key size */
-  uint32_t keys[60];  /* maximum size of key schedule */
+  uint32_t keys[4*(_AES256_ROUNDS + 1)];  /* maximum size of key schedule */
 };
 
 void
