@@ -1,3 +1,11 @@
+2013-05-22  Niels Möller  <nisse@lysator.liu.se>
+
+	* arm/v6/aes-encrypt-internal.asm: Adapted to new interface.
+	Unfortunately, 4% slowdown on Cortex-A9, for unknown reason.
+	* arm/v6/aes-decrypt-internal.asm: Likewise.
+	* arm/aes-encrypt-internal.asm: Adapted to new interface.
+	* arm/aes-decrypt-internal.asm: Likewise.
+
 2013-05-21  Niels Möller  <nisse@lysator.liu.se>
 
 	* sparc32/aes-encrypt-internal.asm: Adapted to new interface.

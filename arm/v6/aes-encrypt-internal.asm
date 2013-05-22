@@ -19,31 +19,39 @@ C MA 02111-1301, USA.
 
 include_src(<arm/aes.m4>)
 
-C	Benchmarked at at 680, 818, 929 cycles/block on cortex A9,
+C	Benchmarked at at 706, 870, 963 cycles/block on cortex A9,
 C	for 128, 192 and 256 bit key sizes.
 
 C	Possible improvements: More efficient load and store with
 C	aligned accesses. Better scheduling.
 
-define(<CTX>, <r0>)
-define(<TABLE>, <r1>)
-define(<LENGTH>, <r2>)
-define(<DST>, <r3>)
-define(<SRC>, <r12>)
+define(<PARAM_ROUNDS>, <r0>)
+define(<PARAM_KEYS>, <r1>)
+define(<TABLE>, <r2>)
+define(<LENGTH>, <r3>)
+C On stack: DST, SRC
 
 define(<W0>, <r4>)
 define(<W1>, <r5>)
 define(<W2>, <r6>)
 define(<W3>, <r7>)
 define(<T0>, <r8>)
-define(<KEY>, <r10>)
-define(<ROUND>, <r11>)
+define(<COUNT>, <r10>)
+define(<KEY>, <r11>)
 
-define(<X0>, <r2>)	C Overlaps LENGTH, SRC, DST
-define(<X1>, <r3>)
+define(<X0>, <r0>)	C Overlaps PARAM_ROUNDS and PARAM_KEYS
+define(<X1>, <r1>)
 define(<X2>, <r12>)
 define(<X3>, <r14>)	C lr
 
+define(<FRAME_ROUNDS>>,  <[sp]>)
+define(<FRAME_KEYS>,  <[sp, #+4]>)
+C 8 saved registers
+define(<FRAME_DST>,  <[sp, #+40]>)
+define(<FRAME_SRC>,  <[sp, #+44]>)
+
+define(<SRC>, <%r12>)	C Overlap registers used in inner loop.
+define(<DST>, <COUNT>)
 
 C 53 instr.
 C It's tempting to use eor with rotation, but that's slower.
@@ -110,7 +118,7 @@ define(<AES_ENCRYPT_ROUND>, <
 
 	.file "aes-encrypt-internal.asm"
 	
-	C _aes_encrypt(struct aes_context *ctx, 
+	C _aes_encrypt(unsigned rounds, const uint32_t *keys,
 	C	       const struct aes_table *T,
 	C	       size_t length, uint8_t *dst,
 	C	       uint8_t *src)
@@ -119,20 +127,23 @@ define(<AES_ENCRYPT_ROUND>, <
 PROLOGUE(_nettle_aes_encrypt)
 	teq	LENGTH, #0
 	beq	.Lend
-	ldr	SRC, [sp]
 
-	push	{r4,r5,r6,r7,r8,r10,r11,lr}
+	ldr	SRC, [sp, #+4]
+
+	push	{r0,r1, r4,r5,r6,r7,r8,r10,r11,lr}
+
 	ALIGN(16)
 .Lblock_loop:
-	mov	KEY, CTX
+	ldm	sp, {COUNT, KEY}
+
+	add	TABLE, TABLE, #AES_TABLE0
+
 	AES_LOAD(SRC,KEY,W0)
 	AES_LOAD(SRC,KEY,W1)
 	AES_LOAD(SRC,KEY,W2)
 	AES_LOAD(SRC,KEY,W3)
 
-	push	{LENGTH, DST, SRC}
-	ldr	ROUND, [CTX, #+AES_NROUNDS]
-	add	TABLE, TABLE, #AES_TABLE0
+	str	SRC, FRAME_SRC
 
 	b	.Lentry
 	ALIGN(16)
@@ -141,29 +152,34 @@ PROLOGUE(_nettle_aes_encrypt)
 	AES_ENCRYPT_ROUND(X0, X1, X2, X3, W0, W1, W2, W3, KEY)
 	
 .Lentry:
-	subs	ROUND, ROUND,#2
+	subs	COUNT, COUNT,#2
 	C	Transform W -> X
 	AES_ENCRYPT_ROUND(W0, W1, W2, W3, X0, X1, X2, X3, KEY)
 
 	bne	.Lround_loop
 
 	sub	TABLE, TABLE, #AES_TABLE0
+
 	C	Final round
+	ldr	DST, FRAME_DST
+
 	AES_FINAL_ROUND_V6(X0, X1, X2, X3, KEY, W0)
 	AES_FINAL_ROUND_V6(X1, X2, X3, X0, KEY, W1)
 	AES_FINAL_ROUND_V6(X2, X3, X0, X1, KEY, W2)
 	AES_FINAL_ROUND_V6(X3, X0, X1, X2, KEY, W3)
 
-	pop	{LENGTH, DST, SRC}
+	ldr	SRC, FRAME_SRC
 	
 	AES_STORE(DST,W0)
 	AES_STORE(DST,W1)
 	AES_STORE(DST,W2)
 	AES_STORE(DST,W3)
 
+	str	DST, FRAME_DST
 	subs	LENGTH, LENGTH, #16
 	bhi	.Lblock_loop
 
+	add	sp, sp, #8	C Drop saved r0, r1
 	pop	{r4,r5,r6,r7,r8,r10,r11,pc}
 	
 .Lend:
