@@ -31,13 +31,15 @@ NEWS for the 2.7.1 release
 	  slower. This is being fixed by the gcc hackers, see
 	  http://gcc.gnu.org/bugzilla/show_bug.cgi?id=57157.
 	  
-	The following problem has been reported, but is *not* fixed in
-	this release:
+	The following problems have been reported, but are *not* fixed
+	in this release:
 
 	* ARM assembly files use instruction syntax which is not
           supported by all assemblers. Workaround: Use a current
           version of GNU as, or configure with --disable-assembler.
 
+	* Configuring with --disable-static doesn't work on windows.
+	
 	The libraries are intended to be binary compatible with
 	nettle-2.2 and later. The shared library names are
 	libnettle.so.4.7 and libhogweed.so.2.5, with sonames still
