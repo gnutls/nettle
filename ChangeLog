@@ -1,3 +1,8 @@
+2013-05-21  Niels Möller  <nisse@lysator.liu.se>
+
+	From nettle-2.7-fixes branch:
+	* Makefile.in (distdir): Distribute files in arm/v6 subdirectory.
+
 2013-05-20  Niels Möller  <nisse@lysator.liu.se>
 
 	* arm/v6/sha1-compress.asm: Moved into v6 directory, since it uses
