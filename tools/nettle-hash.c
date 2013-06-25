@@ -108,7 +108,7 @@ digest_file(const struct nettle_hash *alg,
   else
     {
       unsigned i;
-      char *hex = xalloc(BASE16_ENCODE_LENGTH(8) + 1);
+      char hex[BASE16_ENCODE_LENGTH(8) + 1];
       for (i = 0; i + 8 < digest_length; i += 8)
 	{
 	  base16_encode_update(hex, 8, digest + i);
@@ -118,7 +118,6 @@ digest_file(const struct nettle_hash *alg,
       base16_encode_update(hex, digest_length - i, digest + i);
       hex[BASE16_ENCODE_LENGTH(digest_length - i)] = 0;
       printf("%s %s\n", hex, alg->name);
-      free(hex);
     }
   
   free(digest);
