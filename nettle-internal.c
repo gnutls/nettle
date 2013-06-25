@@ -119,3 +119,6 @@ const struct nettle_cipher nettle_unified_aes128
 
 const struct nettle_cipher nettle_unified_aes192
 = _NETTLE_CIPHER_SEP(aes, AES, 192);
+
+const struct nettle_cipher nettle_unified_aes256
+= _NETTLE_CIPHER_SEP(aes, AES, 256);

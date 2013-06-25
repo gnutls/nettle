@@ -48,6 +48,11 @@ extern "C" {
 #define aes192_invert_key nettle_aes192invert_key
 #define aes192_encrypt nettle_aes192encrypt
 #define aes192_decrypt nettle_aes192decrypt
+#define aes256_set_encrypt_key nettle_aes256_set_encrypt_key
+#define aes256_set_decrypt_key nettle_aes256_set_decrypt_key
+#define aes256_invert_key nettle_aes256_invert_key
+#define aes256_encrypt nettle_aes256_encrypt
+#define aes256_decrypt nettle_aes256_decrypt
 
 #define AES_BLOCK_SIZE 16
 
@@ -133,6 +138,27 @@ aes192_encrypt(const struct aes192_ctx *ctx,
 	       const uint8_t *src);
 void
 aes192_decrypt(const struct aes192_ctx *ctx,
+	       size_t length, uint8_t *dst,
+	       const uint8_t *src);
+
+struct aes256_ctx
+{
+  uint32_t keys[4 * (_AES256_ROUNDS + 1)];
+};
+
+void
+aes256_set_encrypt_key(struct aes256_ctx *ctx, const uint8_t *key);
+void
+aes256_set_decrypt_key(struct aes256_ctx *ctx, const uint8_t *key);
+void
+aes256_invert_key(struct aes256_ctx *dst,
+		  const struct aes256_ctx *src);
+void
+aes256_encrypt(const struct aes256_ctx *ctx,
+	       size_t length, uint8_t *dst,
+	       const uint8_t *src);
+void
+aes256_decrypt(const struct aes256_ctx *ctx,
 	       size_t length, uint8_t *dst,
 	       const uint8_t *src);
 

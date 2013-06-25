@@ -1,5 +1,9 @@
 2013-06-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* aes-meta.c: Deleted file.
+
+	Analogous changes for new aes192 and aes256 interface.
+
 	* aes.h (struct aes128_ctx): New aes128 declarations.
 	* aes-decrypt.c (aes128_decrypt): New function.
 	* aes-encrypt.c (aes128_encrypt): New function.
@@ -15,8 +19,6 @@
 	AES interface.
 	* testsuite/aes-test.c (test_cipher2): New function.
 	(test_main): Test both nettle_aes128 and nettle_unified_aes128.
-
-	Analogous changes för aes192.
 
 2013-05-22  Niels Möller  <nisse@lysator.liu.se>
 

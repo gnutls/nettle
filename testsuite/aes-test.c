@@ -90,25 +90,25 @@ test_main(void)
 	       SHEX("2D33EEF2C0430A8A 9EBF45E809C40BB6"),
 	       SHEX("DFF4945E0336DF4C 1C56BC700EFF837F"));
 
-  /* 256 bit keys */  
-  test_cipher(&nettle_aes256,
-	      SHEX("0001020305060708 0A0B0C0D0F101112"
-		   "14151617191A1B1C 1E1F202123242526"),
-	      SHEX("834EADFCCAC7E1B30664B1ABA44815AB"),
-	      SHEX("1946DABF6A03A2A2 C3D0B05080AED6FC"));
+  /* 256 bit keys */
+  test_cipher2(&nettle_aes256, &nettle_unified_aes256,
+	       SHEX("0001020305060708 0A0B0C0D0F101112"
+		    "14151617191A1B1C 1E1F202123242526"),
+	       SHEX("834EADFCCAC7E1B30664B1ABA44815AB"),
+	       SHEX("1946DABF6A03A2A2 C3D0B05080AED6FC"));
 
   
   /* This test case has been problematic with the CBC test case */
-  test_cipher(&nettle_aes256,
-	      SHEX("8d ae 93 ff fc 78 c9 44"
-		   "2a bd 0c 1e 68 bc a6 c7"
-		   "05 c7 84 e3 5a a9 11 8b"
-		   "d3 16 aa 54 9b 44 08 9e"),
-	      SHEX("a5 ce 55 d4 21 15 a1 c6 4a a4 0c b2 ca a6 d1 37"),
-	      /* In the cbc test, I once got the bad value
-	       *   "b2 a0 6c d2 2f df 7d 2c  26 d2 42 88 8f 20 74 a2" */
-	      SHEX("1f 94 fc 85 f2 36 21 06"
-		   "4a ea e3 c9 cc 38 01 0e"));
+  test_cipher2(&nettle_aes256, &nettle_unified_aes256,
+	       SHEX("8d ae 93 ff fc 78 c9 44"
+		    "2a bd 0c 1e 68 bc a6 c7"
+		    "05 c7 84 e3 5a a9 11 8b"
+		    "d3 16 aa 54 9b 44 08 9e"),
+	       SHEX("a5 ce 55 d4 21 15 a1 c6 4a a4 0c b2 ca a6 d1 37"),
+	       /* In the cbc test, I once got the bad value
+		*   "b2 a0 6c d2 2f df 7d 2c  26 d2 42 88 8f 20 74 a2" */
+	       SHEX("1f 94 fc 85 f2 36 21 06"
+		    "4a ea e3 c9 cc 38 01 0e"));
   
   /* From draft NIST spec on AES modes.
    *
@@ -141,17 +141,17 @@ test_main(void)
 		    "9a4b41ba738d6c72fb16691603c18e0e"));
 
   /* F.1.5 ECB-AES256-Encrypt */
-  test_cipher(&nettle_aes256,
-	      SHEX("603deb1015ca71be2b73aef0857d7781"
-		   "1f352c073b6108d72d9810a30914dff4"),
-	      SHEX("6bc1bee22e409f96e93d7e117393172a"
-		   "ae2d8a571e03ac9c9eb76fac45af8e51" 
-		   "30c81c46a35ce411e5fbc1191a0a52ef"
-		   "f69f2445df4f9b17ad2b417be66c3710"),
-	      SHEX("f3eed1bdb5d2a03c064b5a7e3db181f8"
-		   "591ccb10d410ed26dc5ba74a31362870"
-		   "b6ed21b99ca6f4f9f153e7b1beafed1d"
-		   "23304b7a39f9f3ff067d8d8f9e24ecc7"));
+  test_cipher2(&nettle_aes256, &nettle_unified_aes256,
+	       SHEX("603deb1015ca71be2b73aef0857d7781"
+		    "1f352c073b6108d72d9810a30914dff4"),
+	       SHEX("6bc1bee22e409f96e93d7e117393172a"
+		    "ae2d8a571e03ac9c9eb76fac45af8e51" 
+		    "30c81c46a35ce411e5fbc1191a0a52ef"
+		    "f69f2445df4f9b17ad2b417be66c3710"),
+	       SHEX("f3eed1bdb5d2a03c064b5a7e3db181f8"
+		    "591ccb10d410ed26dc5ba74a31362870"
+		    "b6ed21b99ca6f4f9f153e7b1beafed1d"
+		    "23304b7a39f9f3ff067d8d8f9e24ecc7"));
 
   /* Test aes_invert_key with src != dst */
   test_invert(SHEX("0001020305060708 0A0B0C0D0F101112"),

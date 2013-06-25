@@ -63,3 +63,13 @@ aes192_encrypt(const struct aes192_ctx *ctx,
   _aes_encrypt(_AES192_ROUNDS, ctx->keys, &_aes_encrypt_table,
 	       length, dst, src);
 }
+
+void
+aes256_encrypt(const struct aes256_ctx *ctx,
+	       size_t length, uint8_t *dst,
+	       const uint8_t *src)
+{
+  assert(!(length % AES_BLOCK_SIZE) );
+  _aes_encrypt(_AES256_ROUNDS, ctx->keys, &_aes_encrypt_table,
+	       length, dst, src);
+}
