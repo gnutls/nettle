@@ -1,5 +1,7 @@
 2013-06-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/gcm-test.c: Deleted redundant include of aes.h.
+
 	* testsuite/testutils.c (test_aead): Allow digest size smaller
 	than the block size.
 
