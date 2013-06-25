@@ -13,8 +13,8 @@
 <body>
   <h1> Nettle release plans </h1>
   <p> This is an attempt at defining a development target for
-  Nettle-2.7, inspired by similar pages for recent GMP releases. [Last
-  updated 2013-04-02]</p>
+  Nettle-2.8, inspired by similar pages for recent GMP releases. [Last
+  updated 2013-06-25]</p>
   <p class='should'>
     This really ought to be done before release
   </p>
@@ -56,6 +56,14 @@
   </p>
   <p class='should'>
     Don't require initialization of *dst_length for base*_decode_update.
+  </p>
+  <p class='should'>
+    Rename gcm "iv" to "nonce". Keep old names for backwards
+    compatibility.
+  </p>
+  <p class='wish'>
+    Add <a href='http://www.cs.ucdavis.edu/~rogaway/papers/eax.pdf'>EAX</a>
+    mode?
   </p>
 
   <h2> Build system </h2>
