@@ -66,8 +66,6 @@ werror(const char *format, ...)
     }
 }
 
-#define MIN(a,b) (((a) < (b)) ? (a) : (b))
-
 unsigned
 read_file(const char *name, unsigned max_size, char **contents)
 {

@@ -1,3 +1,7 @@
+2013-06-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/io.c (MIN): Deleted unused macro.
+
 2013-05-21  Niels Möller  <nisse@lysator.liu.se>
 
 	From nettle-2.7-fixes branch:
