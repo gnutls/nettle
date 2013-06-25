@@ -38,6 +38,11 @@ extern "C" {
 #define aes_invert_key nettle_aes_invert_key
 #define aes_encrypt nettle_aes_encrypt
 #define aes_decrypt nettle_aes_decrypt
+#define aes128_set_encrypt_key nettle_aes128set_encrypt_key
+#define aes128_set_decrypt_key nettle_aes128set_decrypt_key
+#define aes128_invert_key nettle_aes128invert_key
+#define aes128_encrypt nettle_aes128encrypt
+#define aes128_decrypt nettle_aes128decrypt
 
 #define AES_BLOCK_SIZE 16
 
@@ -52,6 +57,8 @@ extern "C" {
  * values are 16 (128 bits), 24 (192 bits) and 32 (256 bits). */
 #define AES_MIN_KEY_SIZE AES128_KEY_SIZE
 #define AES_MAX_KEY_SIZE AES256_KEY_SIZE
+
+/* Older nettle-2.7 interface */
 
 #define AES_KEY_SIZE 32
 
@@ -81,6 +88,27 @@ void
 aes_decrypt(const struct aes_ctx *ctx,
 	    size_t length, uint8_t *dst,
 	    const uint8_t *src);
+
+struct aes128_ctx
+{
+  uint32_t keys[4 * (_AES128_ROUNDS + 1)];
+};
+
+void
+aes128_set_encrypt_key(struct aes128_ctx *ctx, const uint8_t *key);
+void
+aes128_set_decrypt_key(struct aes128_ctx *ctx, const uint8_t *key);
+void
+aes128_invert_key(struct aes128_ctx *dst,
+		  const struct aes128_ctx *src);
+void
+aes128_encrypt(const struct aes128_ctx *ctx,
+	       size_t length, uint8_t *dst,
+	       const uint8_t *src);
+void
+aes128_decrypt(const struct aes128_ctx *ctx,
+	       size_t length, uint8_t *dst,
+	       const uint8_t *src);
 
 #ifdef __cplusplus
 }

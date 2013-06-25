@@ -1,5 +1,6 @@
 #include "testutils.h"
 #include "aes.h"
+#include "nettle-internal.h"
 
 static void
 test_invert(const struct tstring *key,
@@ -45,29 +46,42 @@ test_invert(const struct tstring *key,
   free (data);
 }
 
+static void
+test_cipher2(const struct nettle_cipher *c1,
+	     const struct nettle_cipher *c2,	     
+	     const struct tstring *key,
+	     const struct tstring *cleartext,
+	     const struct tstring *ciphertext)
+{
+  test_cipher (c1, key, cleartext, ciphertext);
+  test_cipher (c2, key, cleartext, ciphertext);
+}
+
 void
 test_main(void)
 {
-  /* 128 bit keys */
-  test_cipher(&nettle_aes128, 
-	      SHEX("0001020305060708 0A0B0C0D0F101112"),
-	      SHEX("506812A45F08C889 B97F5980038B8359"),
-	      SHEX("D8F532538289EF7D 06B506A4FD5BE9C9"));
-  
-  test_cipher(&nettle_aes128, 
-	      SHEX("14151617191A1B1C 1E1F202123242526"),
-	      SHEX("5C6D71CA30DE8B8B 00549984D2EC7D4B"),
-	      SHEX("59AB30F4D4EE6E4F F9907EF65B1FB68C"));
+  /* Test both the new interface and the older unified interface. */
 
-  test_cipher(&nettle_aes128, 
-	      SHEX("28292A2B2D2E2F30 323334353738393A"),
-	      SHEX("53F3F4C64F8616E4 E7C56199F48F21F6"),
-	      SHEX("BF1ED2FCB2AF3FD4 1443B56D85025CB1"));
+  /* 128 bit keys */
+  test_cipher2(&nettle_aes128, &nettle_unified_aes128,
+	       SHEX("0001020305060708 0A0B0C0D0F101112"),
+	       SHEX("506812A45F08C889 B97F5980038B8359"),
+	       SHEX("D8F532538289EF7D 06B506A4FD5BE9C9"));
   
-  test_cipher(&nettle_aes128, 
-	      SHEX("A0A1A2A3A5A6A7A8 AAABACADAFB0B1B2"),
-	      SHEX("F5F4F7F684878689 A6A7A0A1D2CDCCCF"),
-	      SHEX("CE52AF650D088CA5 59425223F4D32694"));
+  test_cipher2(&nettle_aes128, &nettle_unified_aes128,
+	       SHEX("14151617191A1B1C 1E1F202123242526"),
+	       SHEX("5C6D71CA30DE8B8B 00549984D2EC7D4B"),
+	       SHEX("59AB30F4D4EE6E4F F9907EF65B1FB68C"));
+
+  test_cipher2(&nettle_aes128, &nettle_unified_aes128,
+	       SHEX("28292A2B2D2E2F30 323334353738393A"),
+	       SHEX("53F3F4C64F8616E4 E7C56199F48F21F6"),
+	       SHEX("BF1ED2FCB2AF3FD4 1443B56D85025CB1"));
+  
+  test_cipher2(&nettle_aes128, &nettle_unified_aes128,
+	       SHEX("A0A1A2A3A5A6A7A8 AAABACADAFB0B1B2"),
+	       SHEX("F5F4F7F684878689 A6A7A0A1D2CDCCCF"),
+	       SHEX("CE52AF650D088CA5 59425223F4D32694"));
 
   /* 192 bit keys */
   
@@ -104,16 +118,16 @@ test_main(void)
    * F.1.1 ECB-AES128-Encrypt
    */
 
-  test_cipher(&nettle_aes128,
-	      SHEX("2b7e151628aed2a6abf7158809cf4f3c"),
-	      SHEX("6bc1bee22e409f96e93d7e117393172a"
-		   "ae2d8a571e03ac9c9eb76fac45af8e51"
-		   "30c81c46a35ce411e5fbc1191a0a52ef"
-		   "f69f2445df4f9b17ad2b417be66c3710"),
-	      SHEX("3ad77bb40d7a3660a89ecaf32466ef97"
-		   "f5d3d58503b9699de785895a96fdbaaf"
-		   "43b1cd7f598ece23881b00e3ed030688"
-		   "7b0c785e27e8ad3f8223207104725dd4"));
+  test_cipher2(&nettle_aes128, &nettle_unified_aes128,
+	       SHEX("2b7e151628aed2a6abf7158809cf4f3c"),
+	       SHEX("6bc1bee22e409f96e93d7e117393172a"
+		    "ae2d8a571e03ac9c9eb76fac45af8e51"
+		    "30c81c46a35ce411e5fbc1191a0a52ef"
+		    "f69f2445df4f9b17ad2b417be66c3710"),
+	       SHEX("3ad77bb40d7a3660a89ecaf32466ef97"
+		    "f5d3d58503b9699de785895a96fdbaaf"
+		    "43b1cd7f598ece23881b00e3ed030688"
+		    "7b0c785e27e8ad3f8223207104725dd4"));
 
   /* F.1.3 ECB-AES192-Encrypt */
 

@@ -1,3 +1,21 @@
+2013-06-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* aes.h (struct aes128_ctx): New aes128 declarations.
+	* aes-decrypt.c (aes128_decrypt): New function.
+	* aes-encrypt.c (aes128_encrypt): New function.
+	* aes128-meta.c: New file.
+	* aes128-set-encrypt-key.c (aes128_set_encrypt_key): New file and
+	function.
+	* aes128-set-decrypt-key.c (aes128_set_decrypt_key)
+	(aes128_invert_key): New file and functions.
+	* Makefile.in (nettle_SOURCES): Added aes128-set-encrypt-key.c,
+	aes128-set-decrypt-key.c and aes128-meta.c.
+
+	* nettle-internal.c (nettle_unified_aes128): For testing the old
+	AES interface.
+	* testsuite/aes-test.c (test_cipher2): New function.
+	(test_main): Test both nettle_aes128 and nettle_unified_aes128.
+
 2013-05-22  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in (nettle_SOURCES): Added aes-invert-internal.c and

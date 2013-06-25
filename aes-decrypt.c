@@ -345,3 +345,13 @@ aes_decrypt(const struct aes_ctx *ctx,
   _aes_decrypt(ctx->rounds, ctx->keys, &_aes_decrypt_table,
 	       length, dst, src);
 }
+
+void
+aes128_decrypt(const struct aes128_ctx *ctx,
+	       size_t length, uint8_t *dst,
+	       const uint8_t *src)
+{
+  assert(!(length % AES_BLOCK_SIZE) );
+  _aes_decrypt(_AES128_ROUNDS, ctx->keys, &_aes_decrypt_table,
+	       length, dst, src);
+}

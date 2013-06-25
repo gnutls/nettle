@@ -64,6 +64,8 @@ extern const struct nettle_cipher nettle_blowfish128;
 extern const struct nettle_cipher nettle_salsa20;
 extern const struct nettle_cipher nettle_salsa20r12;
 
+extern const struct nettle_cipher nettle_unified_aes128;
+
 /* Glue to openssl, for comparative benchmarking. Code in
  * examples/nettle-openssl.c. */
 extern const struct nettle_cipher nettle_openssl_aes128;
