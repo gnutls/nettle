@@ -16,6 +16,8 @@
 	* testsuite/aes-test.c (test_cipher2): New function.
 	(test_main): Test both nettle_aes128 and nettle_unified_aes128.
 
+	Analogous changes för aes192.
+
 2013-05-22  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in (nettle_SOURCES): Added aes-invert-internal.c and

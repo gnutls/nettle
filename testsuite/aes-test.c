@@ -84,15 +84,13 @@ test_main(void)
 	       SHEX("CE52AF650D088CA5 59425223F4D32694"));
 
   /* 192 bit keys */
-  
-  test_cipher(&nettle_aes192, 
-	      SHEX("0001020305060708 0A0B0C0D0F101112"
-		   "14151617191A1B1C"),
-	      SHEX("2D33EEF2C0430A8A 9EBF45E809C40BB6"),
-	      SHEX("DFF4945E0336DF4C 1C56BC700EFF837F"));
+  test_cipher2(&nettle_aes192, &nettle_unified_aes192, 
+	       SHEX("0001020305060708 0A0B0C0D0F101112"
+		    "14151617191A1B1C"),
+	       SHEX("2D33EEF2C0430A8A 9EBF45E809C40BB6"),
+	       SHEX("DFF4945E0336DF4C 1C56BC700EFF837F"));
 
-  /* 256 bit keys */
-  
+  /* 256 bit keys */  
   test_cipher(&nettle_aes256,
 	      SHEX("0001020305060708 0A0B0C0D0F101112"
 		   "14151617191A1B1C 1E1F202123242526"),
@@ -131,16 +129,16 @@ test_main(void)
 
   /* F.1.3 ECB-AES192-Encrypt */
 
-  test_cipher(&nettle_aes192,
-	      SHEX("8e73b0f7da0e6452c810f32b809079e5 62f8ead2522c6b7b"),
-	      SHEX("6bc1bee22e409f96e93d7e117393172a"
-		   "ae2d8a571e03ac9c9eb76fac45af8e51"
-		   "30c81c46a35ce411e5fbc1191a0a52ef"
-		   "f69f2445df4f9b17ad2b417be66c3710"),
-	      SHEX("bd334f1d6e45f25ff712a214571fa5cc"
-		   "974104846d0ad3ad7734ecb3ecee4eef"
-		   "ef7afd2270e2e60adce0ba2face6444e"
-		   "9a4b41ba738d6c72fb16691603c18e0e"));
+  test_cipher2(&nettle_aes192, &nettle_unified_aes192, 
+	       SHEX("8e73b0f7da0e6452c810f32b809079e5 62f8ead2522c6b7b"),
+	       SHEX("6bc1bee22e409f96e93d7e117393172a"
+		    "ae2d8a571e03ac9c9eb76fac45af8e51"
+		    "30c81c46a35ce411e5fbc1191a0a52ef"
+		    "f69f2445df4f9b17ad2b417be66c3710"),
+	       SHEX("bd334f1d6e45f25ff712a214571fa5cc"
+		    "974104846d0ad3ad7734ecb3ecee4eef"
+		    "ef7afd2270e2e60adce0ba2face6444e"
+		    "9a4b41ba738d6c72fb16691603c18e0e"));
 
   /* F.1.5 ECB-AES256-Encrypt */
   test_cipher(&nettle_aes256,

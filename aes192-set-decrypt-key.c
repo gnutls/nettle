@@ -1,8 +1,11 @@
-/* aes-meta.c */
+/* aes192-set-decrypt-key.c
+ *
+ * Key setup for the aes/rijndael block cipher.
+ */
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2002 Niels Möller
+ * Copyright (C) 2013, Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -24,9 +27,20 @@
 # include "config.h"
 #endif
 
-#include "nettle-meta.h"
+#include <assert.h>
 
-#include "aes.h"
+#include "aes-internal.h"
+#include "macros.h"
 
-const struct nettle_cipher nettle_aes256
-= _NETTLE_CIPHER_SEP(aes, AES, 256);
+void
+aes192_invert_key (struct aes192_ctx *dst, const struct aes192_ctx *src)
+{
+  _aes_invert (_AES192_ROUNDS, dst->keys, src->keys); 
+}
+
+void
+aes192_set_decrypt_key(struct aes192_ctx *ctx, const uint8_t *key)
+{
+  aes192_set_encrypt_key (ctx, key);
+  aes192_invert_key (ctx, ctx);
+}

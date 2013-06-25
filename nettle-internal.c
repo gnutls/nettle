@@ -117,3 +117,5 @@ nettle_gcm_aes256 = _NETTLE_AEAD(gcm, GCM, aes, 256);
 const struct nettle_cipher nettle_unified_aes128
 = _NETTLE_CIPHER_SEP(aes, AES, 128);
 
+const struct nettle_cipher nettle_unified_aes192
+= _NETTLE_CIPHER_SEP(aes, AES, 192);

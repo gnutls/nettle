@@ -5,7 +5,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2001 Niels Möller
+ * Copyright (C) 2001, 2013 Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -43,6 +43,11 @@ extern "C" {
 #define aes128_invert_key nettle_aes128invert_key
 #define aes128_encrypt nettle_aes128encrypt
 #define aes128_decrypt nettle_aes128decrypt
+#define aes192_set_encrypt_key nettle_aes192set_encrypt_key
+#define aes192_set_decrypt_key nettle_aes192set_decrypt_key
+#define aes192_invert_key nettle_aes192invert_key
+#define aes192_encrypt nettle_aes192encrypt
+#define aes192_decrypt nettle_aes192decrypt
 
 #define AES_BLOCK_SIZE 16
 
@@ -107,6 +112,27 @@ aes128_encrypt(const struct aes128_ctx *ctx,
 	       const uint8_t *src);
 void
 aes128_decrypt(const struct aes128_ctx *ctx,
+	       size_t length, uint8_t *dst,
+	       const uint8_t *src);
+
+struct aes192_ctx
+{
+  uint32_t keys[4 * (_AES192_ROUNDS + 1)];
+};
+
+void
+aes192_set_encrypt_key(struct aes192_ctx *ctx, const uint8_t *key);
+void
+aes192_set_decrypt_key(struct aes192_ctx *ctx, const uint8_t *key);
+void
+aes192_invert_key(struct aes192_ctx *dst,
+		  const struct aes192_ctx *src);
+void
+aes192_encrypt(const struct aes192_ctx *ctx,
+	       size_t length, uint8_t *dst,
+	       const uint8_t *src);
+void
+aes192_decrypt(const struct aes192_ctx *ctx,
 	       size_t length, uint8_t *dst,
 	       const uint8_t *src);
 
