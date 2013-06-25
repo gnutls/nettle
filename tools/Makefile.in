@@ -18,7 +18,8 @@ PRE_CPPFLAGS = -I.. -I$(top_srcdir)
 PRE_LDFLAGS = -L..
 
 HOGWEED_TARGETS = pkcs1-conv$(EXEEXT)
-TARGETS = sexp-conv$(EXEEXT) nettle-hash$(EXEEXT) nettle-lfib-stream$(EXEEXT) \
+TARGETS = sexp-conv$(EXEEXT) nettle-hash$(EXEEXT) nettle-pbkdf2$(EXEEXT) \
+	  nettle-lfib-stream$(EXEEXT) \
 	  @IF_HOGWEED@ $(HOGWEED_TARGETS)
 
 all: $(TARGETS)
@@ -28,6 +29,7 @@ getopt_OBJS = ../getopt.$(OBJEXT) ../getopt1.$(OBJEXT)
 sexp_conv_SOURCES = sexp-conv.c input.c output.c parse.c misc.c
 pkcs1_conv_SOURCES = pkcs1-conv.c misc.c
 nettle_hash_SOURCES = nettle-hash.c misc.c
+nettle_pbkdf2_SOURCES = nettle-pbkdf2.c misc.c
 
 SOURCES = $(sexp_conv_SOURCES) nettle-hash.c nettle-lfib-stream.c pkcs1-conv.c
 
@@ -47,7 +49,11 @@ pkcs1-conv$(EXEEXT): $(pkcs1_conv_OBJS) ../libnettle.a ../libhogweed.a
 # FIXME: Avoid linking with gmp
 nettle_hash_OBJS = $(nettle_hash_SOURCES:.c=.$(OBJEXT)) $(getopt_OBJS)
 nettle-hash$(EXEEXT): $(nettle_hash_OBJS) ../libnettle.a
-	$(LINK) $(nettle_hash_OBJS) -lnettle $(LIBS) -o $@
+	$(LINK) $(nettle_hash_OBJS) -lnettle -o $@
+
+nettle_pbkdf2_OBJS = $(nettle_pbkdf2_SOURCES:.c=.$(OBJEXT)) $(getopt_OBJS)
+nettle-pbkdf2$(EXEEXT): $(nettle_pbkdf2_OBJS) ../libnettle.a
+	$(LINK) $(nettle_pbkdf2_OBJS) -lnettle -o $@
 
 
 .c.$(OBJEXT):

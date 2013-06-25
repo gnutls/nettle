@@ -47,7 +47,7 @@ TS_HOGWEED = $(TS_HOGWEED_SOURCES:.c=$(EXEEXT))
 TS_C = $(TS_NETTLE) @IF_HOGWEED@ $(TS_HOGWEED)
 TS_CXX = @IF_CXX@ $(CXX_SOURCES:.cxx=$(EXEEXT))
 TARGETS = $(TS_C) $(TS_CXX)
-TS_SH = sexp-conv-test pkcs1-conv-test symbols-test
+TS_SH = sexp-conv-test pkcs1-conv-test nettle-pbkdf2-test symbols-test
 TS_ALL = $(TARGETS) $(TS_SH)
 EXTRA_SOURCES = sha1-huge-test.c
 EXTRA_TARGETS = $(EXTRA_SOURCES:.c=$(EXEEXT))

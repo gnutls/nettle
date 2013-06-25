@@ -1,5 +1,11 @@
 2013-06-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* tools/nettle-pbkdf2.c: New command line tool.
+	* tools/Makefile.in (TARGETS): Added nettle-pbkdf2.
+	(nettle-pbkdf2$(EXEEXT)): New target.
+	* testsuite/nettle-pbkdf2-test: New test case.
+	* testsuite/Makefile.in (TS_SH): Added nettle-pbkdf2-test.
+
 	* tools/nettle-hash.c (digest_file): Use stack allocation for the
 	small hex output buffer.
 
