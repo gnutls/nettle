@@ -1,5 +1,8 @@
 2013-06-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/testutils.c (test_aead): Allow digest size smaller
+	than the block size.
+
 	* tools/nettle-pbkdf2.c: New command line tool.
 	* tools/Makefile.in (TARGETS): Added nettle-pbkdf2.
 	(nettle-pbkdf2$(EXEEXT)): New target.

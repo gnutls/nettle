@@ -476,7 +476,7 @@ test_aead(const struct nettle_aead *aead,
   ASSERT (cleartext->length == ciphertext->length);
   length = cleartext->length;
 
-  ASSERT (digest->length == aead->block_size);
+  ASSERT (digest->length <= aead->block_size);
 
   data = xalloc(length);
   
@@ -492,10 +492,10 @@ test_aead(const struct nettle_aead *aead,
   if (length)
     aead->encrypt(ctx, length, data, cleartext->data);
 
-  aead->digest(ctx, aead->block_size, buffer);
+  aead->digest(ctx, digest->length, buffer);
 
   ASSERT(MEMEQ(length, data, ciphertext->data));
-  ASSERT(MEMEQ(aead->block_size, buffer, digest->data));
+  ASSERT(MEMEQ(digest->length, buffer, digest->data));
 
   /* decryption */
   memset(buffer, 0, aead->block_size);
@@ -507,10 +507,10 @@ test_aead(const struct nettle_aead *aead,
   if (length)
     aead->decrypt(ctx, length, data, data);
 
-  aead->digest(ctx, aead->block_size, buffer);
+  aead->digest(ctx, digest->length, buffer);
 
   ASSERT(MEMEQ(length, data, cleartext->data));
-  ASSERT(MEMEQ(aead->block_size, buffer, digest->data));
+  ASSERT(MEMEQ(digest->length, buffer, digest->data));
 
   free(ctx);
   free(data);
