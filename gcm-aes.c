@@ -1,4 +1,4 @@
-/* gcm_aes.c
+/* gcm-aes.c
  *
  * Galois counter mode using AES as the underlying cipher.
  */
