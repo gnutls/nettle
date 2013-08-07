@@ -101,8 +101,8 @@ umac96_digest (struct umac96_ctx *ctx,
     }
   assert (ctx->count > 0);
 
-  aes_encrypt (&ctx->pdf_key, AES_BLOCK_SIZE,
-	       (uint8_t *) tag, ctx->nonce);
+  aes128_encrypt (&ctx->pdf_key, AES_BLOCK_SIZE,
+		  (uint8_t *) tag, ctx->nonce);
 
   INCREMENT (ctx->nonce_length, ctx->nonce);
 

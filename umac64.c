@@ -103,8 +103,8 @@ umac64_digest (struct umac64_ctx *ctx,
   assert (ctx->count > 0);
   if ( !(ctx->nonce_low & _UMAC_NONCE_CACHED))
     {
-      aes_encrypt (&ctx->pdf_key, AES_BLOCK_SIZE,
-		   (uint8_t *) ctx->pad_cache, ctx->nonce);
+      aes128_encrypt (&ctx->pdf_key, AES_BLOCK_SIZE,
+		      (uint8_t *) ctx->pad_cache, ctx->nonce);
       ctx->nonce_low |= _UMAC_NONCE_CACHED;
     }
   pad = ctx->pad_cache + 2*(ctx->nonce_low & 1);

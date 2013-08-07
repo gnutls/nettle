@@ -1,3 +1,12 @@
+2013-08-07  Niels Möller  <nisse@lysator.liu.se>
+
+	* umac.h (_UMAC_STATE): Use struct aes128_ctx, not aes_ctx.
+	* umac-set-key.c (umac_kdf, _umac_set_key): Use aes128 interface.
+	* umac32.c (umac32_digest): Likewise.
+	* umac64.c (umac64_digest): Likewise.
+	* umac96.c (umac96_digest): Likewise.
+	* umac128.c (umac128_digest): Likewise.
+
 2013-06-25  Niels Möller  <nisse@lysator.liu.se>
 
 	* aes-meta.c: Deleted file.
