@@ -118,7 +118,7 @@ yarrow_generate_block(struct yarrow256_ctx *ctx,
 {
   unsigned i;
 
-  aes_encrypt(&ctx->key, sizeof(ctx->counter), block, ctx->counter);
+  aes256_encrypt(&ctx->key, sizeof(ctx->counter), block, ctx->counter);
 
   /* Increment counter, treating it as a big-endian number. This is
    * machine independent, and follows appendix B of the NIST
@@ -190,12 +190,12 @@ yarrow256_fast_reseed(struct yarrow256_ctx *ctx)
   /* Iterate */
   yarrow_iterate(digest);
 
-  aes_set_encrypt_key(&ctx->key, sizeof(digest), digest);
+  aes256_set_encrypt_key(&ctx->key, digest);
   ctx->seeded = 1;
 
   /* Derive new counter value */
   memset(ctx->counter, 0, sizeof(ctx->counter));
-  aes_encrypt(&ctx->key, sizeof(ctx->counter), ctx->counter, ctx->counter);
+  aes256_encrypt(&ctx->key, sizeof(ctx->counter), ctx->counter, ctx->counter);
   
   /* Reset estimates. */
   for (i = 0; i<ctx->nsources; i++)
@@ -305,13 +305,13 @@ yarrow256_update(struct yarrow256_ctx *ctx,
 static void
 yarrow_gate(struct yarrow256_ctx *ctx)
 {
-  uint8_t key[AES_MAX_KEY_SIZE];
+  uint8_t key[AES256_KEY_SIZE];
   unsigned i;
 
   for (i = 0; i < sizeof(key); i+= AES_BLOCK_SIZE)
     yarrow_generate_block(ctx, key + i);
 
-  aes_set_encrypt_key(&ctx->key, sizeof(key), key);
+  aes256_set_encrypt_key(&ctx->key, key);
 }
 
 void

@@ -1,3 +1,8 @@
+2013-08-13  Niels Möller  <nisse@lysator.liu.se>
+
+	* yarrow.h (struct yarrow256_ctx): Use aes256_ctx, not aes_ctx.
+	* yarrow256.c: Adapted to use new aes256 interface.
+
 2013-08-07  Niels Möller  <nisse@lysator.liu.se>
 
 	* umac.h (_UMAC_STATE): Use struct aes128_ctx, not aes_ctx.
