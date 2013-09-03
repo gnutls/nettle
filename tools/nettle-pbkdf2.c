@@ -146,7 +146,7 @@ main (int argc, char **argv)
   
   password_length = fread (password, 1, sizeof(password), stdin);
   if (password_length == sizeof(password))
-    die ("Password input to long. Current limit is %d characters.\n",
+    die ("Password input too long. Current limit is %d characters.\n",
 	 (int) sizeof(password) - 1);
   if (ferror (stdin))
     die ("Reading password input failed: %s.\n", strerror (errno));
