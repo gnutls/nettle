@@ -12,7 +12,8 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = $(INSTALL_PROGRAM) -s
 MKDIR_P = @MKDIR_P@
 
-OPT_ASM_SOURCES = @OPT_ASM_SOURCES@
+OPT_ASM_NETTLE_SOURCES = @OPT_ASM_NETTLE_SOURCES@
+OPT_ASM_HOGWEED_SOURCES = @OPT_ASM_HOGWEED_SOURCES@
 
 SUBDIRS = tools testsuite examples
 
@@ -179,10 +180,10 @@ DISTFILES = $(SOURCES) $(HEADERS) getopt.h .bootstrap run-tests \
 	nettle.texinfo nettle.info nettle.html nettle.pdf sha-example.c
 
 # Rules building static libraries
-nettle_OBJS = $(nettle_SOURCES:.c=.$(OBJEXT))
+nettle_OBJS = $(nettle_SOURCES:.c=.$(OBJEXT)) $(OPT_ASM_NETTLE_SOURCES:.asm=.$(OBJEXT))
 nettle_PURE_OBJS = $(nettle_OBJS:.$(OBJEXT)=.p$(OBJEXT))
 
-hogweed_OBJS = $(hogweed_SOURCES:.c=.$(OBJEXT)) $(OPT_ASM_SOURCES:.asm=.$(OBJEXT))
+hogweed_OBJS = $(hogweed_SOURCES:.c=.$(OBJEXT)) $(OPT_ASM_HOGWEED_SOURCES:.asm=.$(OBJEXT))
 hogweed_PURE_OBJS = $(hogweed_OBJS:.$(OBJEXT)=.p$(OBJEXT))
 
 libnettle.a: $(nettle_OBJS)

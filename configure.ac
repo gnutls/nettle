@@ -266,14 +266,15 @@ asm_replace_list="aes-encrypt-internal.asm aes-decrypt-internal.asm \
 		sha3-permute.asm umac-nh.asm umac-nh-n.asm machine.m4"
 
 # Assembler files which generate additional object files if they are used.
-asm_optional_list=""
-
+asm_nettle_optional_list="gcm-gf-mul-8.asm"
+asm_hogweed_optional_list=""
 if test "x$enable_public_key" = "xyes" ; then
-  asm_optional_list="ecc-192-modp.asm ecc-224-modp.asm ecc-256-redc.asm \
-      ecc-384-modp.asm ecc-521-modp.asm"
+  asm_hogweed_optional_list="ecc-192-modp.asm ecc-224-modp.asm \
+    ecc-256-redc.asm ecc-384-modp.asm ecc-521-modp.asm"
 fi
 
-OPT_ASM_SOURCES=""
+OPT_ASM_NETTLE_SOURCES=""
+OPT_ASM_HOGWEED_SOURCES=""
 
 asm_file_list=""
 
@@ -291,18 +292,34 @@ if test "x$enable_assembler" = xyes ; then
     done
     dnl Workaround for AC_CONFIG_LINKS, which complains if we use the
     dnl same destination argument $tmp_f multiple times.
-    for tmp_o in $asm_optional_list ; do
+    for tmp_n in $asm_nettle_optional_list ; do
       for asm_dir in $asm_path ; do
-	if test -f "$srcdir/$asm_dir/$tmp_o"; then
-	  asm_file_list="$asm_file_list $tmp_o"
-	  AC_CONFIG_LINKS($tmp_o:$asm_dir/$tmp_o)
+	if test -f "$srcdir/$asm_dir/$tmp_n"; then
+	  asm_file_list="$asm_file_list $tmp_n"
+	  AC_CONFIG_LINKS($tmp_n:$asm_dir/$tmp_n)
 	  while read tmp_func ; do
 	    AC_DEFINE_UNQUOTED(HAVE_NATIVE_$tmp_func)
 	    eval HAVE_NATIVE_$tmp_func=yes
 	  done <<EOF
-[`sed -n 's/[^ 	]*PROLOGUE(_*\(nettle_\)*\([^)]*\)).*$/\2/p' < "$srcdir/$asm_dir/$tmp_o"`]
+[`sed -n 's/[^ 	]*PROLOGUE(_*\(nettle_\)*\([^)]*\)).*$/\2/p' < "$srcdir/$asm_dir/$tmp_n"`]
 EOF
-	  OPT_ASM_SOURCES="$OPT_ASM_SOURCES $tmp_o"
+	  OPT_ASM_NETTLE_SOURCES="$OPT_ASM_NETTLE_SOURCES $tmp_n"
+	  break
+	fi
+      done
+    done	
+    for tmp_h in $asm_hogweed_optional_list ; do
+      for asm_dir in $asm_path ; do
+	if test -f "$srcdir/$asm_dir/$tmp_h"; then
+	  asm_file_list="$asm_file_list $tmp_h"
+	  AC_CONFIG_LINKS($tmp_h:$asm_dir/$tmp_h)
+	  while read tmp_func ; do
+	    AC_DEFINE_UNQUOTED(HAVE_NATIVE_$tmp_func)
+	    eval HAVE_NATIVE_$tmp_func=yes
+	  done <<EOF
+[`sed -n 's/[^ 	]*PROLOGUE(_*\(nettle_\)*\([^)]*\)).*$/\2/p' < "$srcdir/$asm_dir/$tmp_h"`]
+EOF
+	  OPT_ASM_HOGWEED_SOURCES="$OPT_ASM_HOGWEED_SOURCES $tmp_h"
 	  break
 	fi
       done
@@ -314,7 +331,8 @@ EOF
   fi
 fi
 
-AC_SUBST([OPT_ASM_SOURCES])
+AC_SUBST([OPT_ASM_NETTLE_SOURCES])
+AC_SUBST([OPT_ASM_HOGWEED_SOURCES])
 
 AH_VERBATIM([HAVE_NATIVE],
 [/* Define to 1 each of the following for which a native (ie. CPU specific)
@@ -328,7 +346,8 @@ AH_VERBATIM([HAVE_NATIVE],
 #undef HAVE_NATIVE_ecc_384_modp
 #undef HAVE_NATIVE_ecc_384_redc
 #undef HAVE_NATIVE_ecc_521_modp
-#undef HAVE_NATIVE_ecc_521_redc])
+#undef HAVE_NATIVE_ecc_521_redc
+#undef HAVE_NATIVE_gcm_gf_mul_8])
 
 # Besides getting correct dependencies, the explicit rules also tell
 # make that the .s files "ought to exist", so they are preferred over

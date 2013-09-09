@@ -1,3 +1,14 @@
+2013-09-09  Niels Möller  <nisse@lysator.liu.se>
+
+	* gcm.c [HAVE_NATIVE_gcm_gf_mul_8]: Make use of (optional)
+	assembly implementation.
+
+	* configure.ac: Support optional assembly files for both nettle
+	and hogweed. Replaced OPT_ASM_SOURCES with OPT_ASM_NETTLE_SOURCES,
+	OPT_ASM_HOGWEED_SOURCES, and asm_optional_list with
+	asm_nettle_optional_list and asm_hogweed_optional_list.
+	(asm_nettle_optional_list): Added gcm-gf-mul-8.asm.
+
 2013-06-25  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/gcm-test.c: Deleted redundant include of aes.h.

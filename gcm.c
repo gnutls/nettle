@@ -214,6 +214,12 @@ gcm_gf_mul (union gcm_block *x, const union gcm_block *table)
   memcpy (x->b, Z.b, sizeof(Z));
 }
 # elif GCM_TABLE_BITS == 8
+#  if HAVE_NATIVE_gcm_gf_mul_8
+
+#define gcm_gf_mul _nettle_gcm_gf_mul_8
+void
+gcm_gf_mul (union gcm_block *x, const union gcm_block *y);
+#  else /* !HAVE_NATIVE_gcm_gf_mul_8 */
 static const uint16_t
 shift_table[0x100] = {
   W(00,00),W(01,c2),W(03,84),W(02,46),W(07,08),W(06,ca),W(04,8c),W(05,4e),
@@ -304,7 +310,7 @@ gcm_gf_mul (union gcm_block *x, const union gcm_block *table)
   gcm_gf_shift_8(&Z);
   gcm_gf_add(x, &Z, &table[x->b[0]]);
 }
-
+#  endif /* ! HAVE_NATIVE_gcm_gf_mul_8 */
 # else /* GCM_TABLE_BITS != 8 */
 #  error Unsupported table size. 
 # endif /* GCM_TABLE_BITS != 8 */
