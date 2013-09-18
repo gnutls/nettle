@@ -117,8 +117,8 @@ hogweed-benchmark$(EXEEXT): $(HOGWEED_BENCH_OBJS)
 	-lhogweed -lnettle $(BENCH_LIBS) $(LIBS) $(OPENSSL_LIBFLAGS) \
 	-o hogweed-benchmark$(EXEEXT)
 
-$(TARGETS) : io.$(OBJEXT) ../libnettle.a
-$(HOGWEED_TARGETS): ../libhogweed.a
+$(TARGETS) : io.$(OBJEXT) ../libnettle.stamp
+$(HOGWEED_TARGETS): ../libhogweed.stamp
 
 check: $(TS_ALL)
 	LD_LIBRARY_PATH=../.lib PATH="../.lib:$$PATH" srcdir="$(srcdir)" \

@@ -1,3 +1,14 @@
+2013-09-18  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in: New stampfiles, libnettle.stamp and
+	libhogweed.stamp, updated when both static and shared libraries
+	are rebuilt. Used as link dependencies in subdirectories.
+	* examples/Makefile.in: Make executable targets depend on
+	../libnettle.stamp and libhogweed.stamp, not directly on the
+	static library files.
+	* testsuite/Makefile.in: Likewise.
+	* tools/Makefile.in: Likewise.
+
 2013-09-09  Niels Möller  <nisse@lysator.liu.se>
 
 	* gcm.c [HAVE_NATIVE_gcm_gf_mul_8]: Make use of (optional)

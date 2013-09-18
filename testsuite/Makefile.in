@@ -96,7 +96,7 @@ test-rules:
 include $(srcdir)/.test-rules.make
 
 $(TARGETS) $(EXTRA_TARGETS): testutils.$(OBJEXT) ../nettle-internal.$(OBJEXT) \
-	../libnettle.a @IF_HOGWEED@ ../libhogweed.a
+	../libnettle.stamp @IF_HOGWEED@ ../libhogweed.stamp
 
 # For use as, e.g.,
 #

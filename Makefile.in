@@ -190,11 +190,13 @@ libnettle.a: $(nettle_OBJS)
 	-rm -f $@
 	$(AR) $(ARFLAGS) $@ $(nettle_OBJS)
 	$(RANLIB) $@
+	echo nettle > libnettle.stamp
 
 libhogweed.a: $(hogweed_OBJS)
 	-rm -f $@
 	$(AR) $(ARFLAGS) $@ $(hogweed_OBJS)
 	$(RANLIB) $@
+	echo hogweed > libhogweed.stamp
 
 .c.$(OBJEXT):
 	$(COMPILE) $(CCPIC_MAYBE) -c $< \
@@ -210,6 +212,7 @@ $(LIBNETTLE_FORLINK): $(nettle_PURE_OBJS)
 	  && [ -z "$(LIBNETTLE_SONAME)" ] \
 	  || { rm -f $(LIBNETTLE_SONAME) \
 	       && $(LN_S) $(LIBNETTLE_FORLINK) $(LIBNETTLE_SONAME) ; } )
+	echo nettle > libnettle.stamp
 
 $(LIBHOGWEED_FORLINK): $(hogweed_PURE_OBJS) $(LIBNETTLE_FORLINK)
 	$(LIBHOGWEED_LINK) $(hogweed_PURE_OBJS) -o $@ $(LIBHOGWEED_LIBS)
@@ -220,6 +223,7 @@ $(LIBHOGWEED_FORLINK): $(hogweed_PURE_OBJS) $(LIBNETTLE_FORLINK)
 	  && [ -z "$(LIBHOGWEED_SONAME)" ] \
 	  || { rm -f $(LIBHOGWEED_SONAME) \
 	       && $(LN_S) $(LIBHOGWEED_FORLINK) $(LIBHOGWEED_SONAME) ; } )
+	echo hogweed > libhogweed.stamp
 
 .c.p$(OBJEXT):
 	$(COMPILE) $(SHLIBCFLAGS) -c $< -o $@ \
@@ -577,7 +581,7 @@ clean-here:
 	-rm -f $(TARGETS) $(IMPLICIT_TARGETS) *.$(OBJEXT) *.p$(OBJEXT) *.s \
 		ecc-192.h ecc-224.h ecc-256.h ecc-384.h ecc-521.h \
 		eccdata$(EXEEXT_FOR_BUILD) eccdata.stamp
-	-rm -rf .lib
+	-rm -rf .lib libnettle.stamp libhogweed.stamp
 
 distclean-here: clean-here
 	-rm -f config.h stamp-h config.log config.status machine.m4 \
