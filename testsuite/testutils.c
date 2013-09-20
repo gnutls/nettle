@@ -65,9 +65,11 @@ static struct tstring *tstring_first = NULL;
 struct tstring *
 tstring_alloc (size_t length)
 {
-  struct tstring *s = xalloc(sizeof(struct tstring) + length - 1);
+  struct tstring *s = xalloc(sizeof(struct tstring) + length);
   s->length = length;
   s->next = tstring_first;
+  /* NUL-terminate, for convenience. */
+  s->data[length] = '\0';
   tstring_first = s;
   return s;
 }

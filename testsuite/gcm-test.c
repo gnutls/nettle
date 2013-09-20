@@ -1,5 +1,29 @@
 #include "testutils.h"
 #include "nettle-internal.h"
+#include "gcm.h"
+
+static void
+test_gcm_hash (const struct tstring *msg, const struct tstring *ref)
+{
+  struct gcm_aes_ctx ctx;
+  const uint8_t z16[16] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
+  uint8_t digest[16];
+
+  ASSERT (ref->length == sizeof(digest));
+  gcm_aes_set_key (&ctx, 16, z16);
+  gcm_aes_set_iv (&ctx, 16, z16);
+  gcm_aes_update (&ctx, msg->length, msg->data);
+  gcm_aes_digest (&ctx, sizeof(digest), digest);
+  if (!MEMEQ (ref->length, ref->data, digest))
+    {
+      fprintf (stderr, "gcm_hash failed, msg: %s\nOutput: ", msg->data);
+      print_hex (16, digest);
+      fprintf(stderr, "Expected:");
+      tstring_print_hex(ref);
+      fprintf(stderr, "\n");
+      FAIL();
+    }
+}
 
 void
 test_main(void)
@@ -272,5 +296,44 @@ test_main(void)
 		 "c3c0c95156809539fcf0e2429a6b5254"
 		 "16aedbf5a0de6a57a637b39b"),
 	    SHEX("a44a8266ee1c8eb0c8b5d4cf5ae9f19a"));
+
+  /* Test gcm_hash, with varying message size, keys and iv all zero.
+     Not compared to any other implementation. */
+  test_gcm_hash (SDATA("a"),
+		 SHEX("1521c9a442bbf63b 2293a21d4874a5fd"));
+  test_gcm_hash (SDATA("ab"),
+		 SHEX("afb4592d2c7c1687 37f27271ee30412a"));
+  test_gcm_hash (SDATA("abc"), 
+		 SHEX("9543ca3e1662ba03 9a921ec2a20769be"));
+  test_gcm_hash (SDATA("abcd"),
+		 SHEX("8f041cc12bcb7e1b 0257a6da22ee1185"));
+  test_gcm_hash (SDATA("abcde"),
+		 SHEX("0b2376e5fed58ffb 717b520c27cd5c35"));
+  test_gcm_hash (SDATA("abcdef"), 
+		 SHEX("9679497a1eafa161 4942963380c1a76f"));
+  test_gcm_hash (SDATA("abcdefg"),
+		 SHEX("83862e40339536bc 723d9817f7df8282"));
+  test_gcm_hash (SDATA("abcdefgh"), 
+		 SHEX("b73bcc4d6815c4dc d7424a04e61b87c5"));
+  test_gcm_hash (SDATA("abcdefghi"), 
+		 SHEX("8e7846a383f0b3b2 07b01160a5ef993d"));
+  test_gcm_hash (SDATA("abcdefghij"),
+		 SHEX("37651643b6f8ecac 4ea1b320e6ea308c"));
+  test_gcm_hash (SDATA("abcdefghijk"), 
+		 SHEX("c1ce10106ee23286 f00513f55e2226b0"));
+  test_gcm_hash (SDATA("abcdefghijkl"),
+		 SHEX("c6a3e32a90196cdf b2c7a415d637e6ca"));
+  test_gcm_hash (SDATA("abcdefghijklm"), 
+		 SHEX("6cca29389d4444fa 3d20e65497088fd8"));
+  test_gcm_hash (SDATA("abcdefghijklmn"),
+		 SHEX("19476a997ec0a824 2022db0f0e8455ce"));
+  test_gcm_hash (SDATA("abcdefghijklmno"), 
+		 SHEX("f66931cee7eadcbb d42753c3ac3c4c16"));
+  test_gcm_hash (SDATA("abcdefghijklmnop"),
+		 SHEX("a79699ce8bed61f9 b8b1b4c5abb1712e"));
+  test_gcm_hash (SDATA("abcdefghijklmnopq"), 
+		 SHEX("65f8245330febf15 6fd95e324304c258"));
+  test_gcm_hash (SDATA("abcdefghijklmnopqr"),
+		 SHEX("d07259e85d4fc998 5a662eed41c8ed1d"));
 }
 

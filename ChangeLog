@@ -1,3 +1,10 @@
+2013-09-20  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/gcm-test.c: Added tests with associated data of
+	varying size.
+
+	* testsuite/testutils.c (tstring_alloc): Add NUL-termination.
+
 2013-09-18  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in: New stampfiles, libnettle.stamp and
