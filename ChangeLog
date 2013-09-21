@@ -1,3 +1,8 @@
+2013-09-21  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (des.po): Add same dependencies as for des.o.
+	Reported by Vincent Torri.
+
 2013-09-20  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/gcm-test.c: Added tests with associated data of

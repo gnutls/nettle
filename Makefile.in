@@ -269,6 +269,7 @@ $(des_headers): desdata.c
 	  test -s $${f}T && mv -f $${f}T $$f
 
 des.$(OBJEXT): des.c des.h $(des_headers)
+des.p$(OBJEXT): des.c des.h $(des_headers)
 
 # Generate ECC files.
 # Some possible choices for 192:
