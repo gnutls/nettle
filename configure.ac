@@ -266,7 +266,7 @@ asm_replace_list="aes-encrypt-internal.asm aes-decrypt-internal.asm \
 		sha3-permute.asm umac-nh.asm umac-nh-n.asm machine.m4"
 
 # Assembler files which generate additional object files if they are used.
-asm_nettle_optional_list="gcm-gf-mul-8.asm"
+asm_nettle_optional_list="gcm-hash8.asm"
 asm_hogweed_optional_list=""
 if test "x$enable_public_key" = "xyes" ; then
   asm_hogweed_optional_list="ecc-192-modp.asm ecc-224-modp.asm \
@@ -347,7 +347,7 @@ AH_VERBATIM([HAVE_NATIVE],
 #undef HAVE_NATIVE_ecc_384_redc
 #undef HAVE_NATIVE_ecc_521_modp
 #undef HAVE_NATIVE_ecc_521_redc
-#undef HAVE_NATIVE_gcm_gf_mul_8])
+#undef HAVE_NATIVE_gcm_hash8])
 
 # Besides getting correct dependencies, the explicit rules also tell
 # make that the .s files "ought to exist", so they are preferred over

@@ -1,3 +1,13 @@
+2013-09-22  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/gcm-hash8.asm: New file.
+	* x86_64/gcm-gf-mul-8.asm: Deleted.
+
+	* configure.ac (asm_nettle_optional_list): Look for gcm-hash8.asm,
+	not gcm-gf-mul-8.asm.
+	* gcm.c [HAVE_NATIVE_gcm_hash8]: Make use of (optional) assembly
+	implementation.
+
 2013-09-21  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in (des.po): Add same dependencies as for des.o.

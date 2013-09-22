@@ -1,17 +1,17 @@
 C nettle, low-level cryptographics library
-C 
+C
 C Copyright (C) 2013, Niels Möller
-C  
+C
 C The nettle library is free software; you can redistribute it and/or modify
 C it under the terms of the GNU Lesser General Public License as published by
 C the Free Software Foundation; either version 2.1 of the License, or (at your
 C option) any later version.
-C 
+C
 C The nettle library is distributed in the hope that it will be useful, but
 C WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 C or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
 C License for more details.
-C 
+C
 C You should have received a copy of the GNU Lesser General Public License
 C along with the nettle library; see the file COPYING.LIB.  If not, write to
 C the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -19,47 +19,51 @@ C MA 02111-1301, USA.
 
 C Register usage:
 
-define(<XP>, <%rdi>)
-define(<TABLE>, <%rsi>)
-define(<XW>, <%rax>)
-define(<CNT>, <%ecx>)
-define(<Z0>, <%rdx>)
-define(<Z1>, <%r8>)
-define(<T0>, <%r9>)
-define(<T1>, <%r10>)
-define(<T2>, <%r11>)
-define(<SHIFT_TABLE>, <%rbx>)
-	
-C The C code is 12.5 c/byte, slower than sha1 (10.6), while this code runs
-C at 10.2, slightly faster. Benchmarked on a low-end AMD E-350.
+define(<KEY>, <%rdi>)
+define(<XP>, <%rsi>)
+define(<LENGTH>, <%rdx>)
+define(<SRC>, <%rcx>)
+define(<X0>, <%rax>)
+define(<X1>, <%rbx>)
+define(<CNT>, <%ebp>)
+define(<T0>, <%r8>)
+define(<T1>, <%r9>)
+define(<T2>, <%r10>)
+define(<Z0>, <%r11>)
+define(<Z1>, <%r12>)
+define(<SHIFT_TABLE>, <%r13>)
 
-	.file "gcm-gf-mul-8.asm"
-	
-	C void _gcm_gf_mul_8(union gcm_block *x, const union gcm_block *table)
+	.file "gcm-hash8.asm"
+
+	C void gcm_hash (const struct gcm_key *key, union gcm_block *x,
+	C                size_t length, const uint8_t *data)
+
 	.text
 	ALIGN(16)
-PROLOGUE(_nettle_gcm_gf_mul_8)
-	W64_ENTRY(2, 0)
+PROLOGUE(_nettle_gcm_hash8)
+	W64_ENTRY(4, 0)
 	push	%rbx
-	mov	8(XP), XW
-	rol	$8, XW
-	movzbl	LREG(XW), XREG(T0)
-	shl	$4, T0
-	mov	(TABLE, T0), Z0
-	mov	8(TABLE, T0), Z1
+	push	%rbp
+	push	%r12
+	push	%r13
+	sub	$16, LENGTH
 	lea	.Lshift_table(%rip), SHIFT_TABLE
-	movl	$7, CNT
-	call	.Lmul_word
-	mov	(XP), XW
-	movl	$8, CNT
-	call	.Lmul_word
-	mov	Z0, (XP)
-	mov	Z1, 8(XP)
-	W64_EXIT(2, 0)
-	pop	%rbx
-	ret
+	mov	(XP), X0
+	mov	8(XP), X1
+	jc	.Lfinal
+ALIGN(16)
+.Lblock_loop:
 
-.Lmul_word:
+	xor (SRC), X0
+	xor 8(SRC), X1
+
+.Lblock_mul:
+	rol	$8, X1
+	movzbl	LREG(X1), XREG(T1)
+	shl	$4, T1
+	mov	(KEY, T1), Z0
+	mov	8(KEY, T1), Z1
+
 	C shift Z1, Z0, transforming
 	C +-----------------------+-----------------------+
 	C |15 14 13 12 11 10 09 08|07 06 05 04 03 02 01 00|
@@ -70,25 +74,118 @@ PROLOGUE(_nettle_gcm_gf_mul_8)
 	C +-----------------------+-----------------+-----+
 	C                               xor         |T[15]|
 	C                                           +-----+
+
+	mov	$7, CNT
+
+ALIGN(16)
+.Loop_X1:
 	mov	Z1, T1
-	mov	Z0, T0
-	shl	$8, Z1		C Use shld?
-	shl	$8, Z0
 	shr	$56, T1
+	shl	$8, Z1
+	mov	Z0, T0
+	shl	$8, Z0
 	shr	$56, T0
 	movzwl	(SHIFT_TABLE, T1, 2), XREG(T1)
-	rol	$8, XW
-	add	T0, Z1
 	xor	T1, Z0
-	movzbl	LREG(XW), XREG(T2)
+	rol	$8, X1
+	movzbl	LREG(X1), XREG(T2)
 	shl	$4, T2
-	xor	(TABLE, T2), Z0
-	xor	8(TABLE, T2), Z1
+	xor	(KEY, T2), Z0
+	add	T0, Z1
+	xor	8(KEY, T2), Z1
 	decl	CNT
-	jne	.Lmul_word
+	jne	.Loop_X1
+
+	mov	$7, CNT
+
+ALIGN(16)
+.Loop_X0:
+	mov	Z1, T1
+	shr	$56, T1
+	shl	$8, Z1
+	mov	Z0, T0
+	shl	$8, Z0
+	shr	$56, T0
+	movzwl	(SHIFT_TABLE, T1, 2), XREG(T1)
+	xor	T1, Z0
+	rol	$8, X0
+	movzbl	LREG(X0), XREG(T2)
+	shl	$4, T2
+	xor	(KEY, T2), Z0
+	add	T0, Z1
+	xor	8(KEY, T2), Z1
+	decl	CNT
+	jne	.Loop_X0
+
+	mov	Z1, T1
+	shr	$56, T1
+	shl	$8, Z1
+	mov	Z0, T0
+	shl	$8, Z0
+	shr	$56, T0
+	movzwl	(SHIFT_TABLE, T1, 2), XREG(T1)
+	xor	T1, Z0
+	rol	$8, X0
+	movzbl	LREG(X0), XREG(T2)
+	shl	$4, T2
+	mov	(KEY, T2), X0
+	xor	Z0, X0
+	add	T0, Z1
+	mov	8(KEY, T2), X1
+	xor	Z1, X1
+
+	add	$16, SRC
+	sub	$16, LENGTH
+	jnc	.Lblock_loop
+
+.Lfinal:
+	add	$16, LENGTH
+	jnz	.Lpartial
+
+	mov	X0, (XP)
+	mov	X1, 8(XP)
+
+	pop	%r13
+	pop	%r12
+	pop	%rbp
+	pop	%rbx
+	W64_EXIT(2, 0)
 	ret
-	
-EPILOGUE(_nettle_gcm_gf_mul_8)
+
+.Lpartial:
+	C Read and xor partial block, then jump back into the loop
+	C with LENGTH == 0.
+
+	cmp	$8, LENGTH
+	jc	.Llt8
+
+	C 	8 <= LENGTH < 16
+	xor	(SRC), X0
+	add	$8, SRC
+	sub	$8, LENGTH
+	jz	.Lblock_mul
+	call	.Lread_bytes
+	xor	T0, X1
+	jmp	.Lblock_mul
+
+.Llt8:	C 0 < LENGTH < 8
+	call	.Lread_bytes
+	xor	T0, X0
+	jmp	.Lblock_mul
+
+C Read 0 < LENGTH < 8 bytes at SRC, result in T0
+.Lread_bytes:
+	xor	T0, T0
+	sub	$1, SRC
+ALIGN(16)
+.Lread_loop:
+	shl	$8, T0
+	orb	(SRC, LENGTH), LREG(T0)
+.Lread_next:
+	sub	$1, LENGTH
+	jnz	.Lread_loop
+	ret
+EPILOGUE(_nettle_gcm_hash8)
 
 define(<W>, <0x$2$1>)
 	.section .rodata
@@ -126,5 +223,3 @@ define(<W>, <0x$2$1>)
 .hword W(a7,d0),W(a6,12),W(a4,54),W(a5,96),W(a0,d8),W(a1,1a),W(a3,5c),W(a2,9e)
 .hword W(b5,e0),W(b4,22),W(b6,64),W(b7,a6),W(b2,e8),W(b3,2a),W(b1,6c),W(b0,ae)
 .hword W(bb,f0),W(ba,32),W(b8,74),W(b9,b6),W(bc,f8),W(bd,3a),W(bf,7c),W(be,be)
-	
-	
