@@ -197,7 +197,7 @@ sha512_digest(struct sha512_ctx *ctx,
   sha512_init(ctx);
 }
 
-/* sha384 variant. FIXME: Move to separate file? */
+/* sha384 variant. */
 void
 sha384_init(struct sha512_ctx *ctx)
 {

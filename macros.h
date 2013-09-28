@@ -108,7 +108,7 @@ do {						\
   (p)[1] = ((i) >> 8) & 0xff;			\
   (p)[0] = (i) & 0xff;				\
 } while (0)
-    
+
 #define LE_READ_UINT32(p)			\
 (  (((uint32_t) (p)[3]) << 24)			\
  | (((uint32_t) (p)[2]) << 16)			\
@@ -145,7 +145,7 @@ do {						\
    just 32 - n and 64 - n results in undefined behaviour). Most uses
    of these macros use a constant and non-zero rotation count. */
 #define ROTL32(n,x) (((x)<<(n)) | ((x)>>((-(n)&31))))
-  
+
 #define ROTL64(n,x) (((x)<<(n)) | ((x)>>((-(n))&63)))
 
 /* Requires that size > 0 */
@@ -222,8 +222,8 @@ do {						\
     /* Set the first char of padding to 0x80. This is safe since there	\
        is always at least one byte free */				\
 									\
-    assert(__md_i < sizeof((ctx)->block));					\
-    (ctx)->block[__md_i++] = 0x80;						\
+    assert(__md_i < sizeof((ctx)->block));				\
+    (ctx)->block[__md_i++] = 0x80;					\
 									\
     if (__md_i > (sizeof((ctx)->block) - (size)))			\
       { /* No room for length in this block. Process it and		\
@@ -235,7 +235,7 @@ do {						\
       }									\
     memset((ctx)->block + __md_i, 0,					\
 	   sizeof((ctx)->block) - (size) - __md_i);			\
-    									\
+									\
   } while (0)
 
 #endif /* NETTLE_MACROS_H_INCLUDED */

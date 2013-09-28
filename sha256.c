@@ -126,7 +126,7 @@ sha256_digest(struct sha256_ctx *ctx,
   sha256_init(ctx);
 }
 
-/* sha224 variant. FIXME: Move to seperate file? */
+/* sha224 variant. */
 
 void
 sha224_init(struct sha256_ctx *ctx)

@@ -67,5 +67,4 @@ gcm_aes_digest(struct gcm_aes_ctx *ctx,
 	       size_t length, uint8_t *digest)
 {
   GCM_DIGEST(ctx, aes_encrypt, length, digest);
-  
 }
