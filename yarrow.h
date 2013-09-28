@@ -72,7 +72,7 @@ struct yarrow256_ctx
   int seeded;
 
   /* The current key and counter block */
-  struct aes_ctx key;
+  struct aes256_ctx key;
   uint8_t counter[AES_BLOCK_SIZE];
 
   /* The entropy sources */

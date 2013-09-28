@@ -5,7 +5,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2001 Niels Möller
+ * Copyright (C) 2001, 2013 Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -29,6 +29,8 @@
 #include "aes.h"
 
 /* Name mangling */
+#define _aes_set_key _nettle_aes_set_key
+#define _aes_invert _nettle_aes_invert
 #define _aes_encrypt _nettle_aes_encrypt
 #define _aes_decrypt _nettle_aes_decrypt
 #define _aes_encrypt_table _nettle_aes_encrypt_table
@@ -51,13 +53,20 @@ struct aes_table
 };
 
 void
-_aes_encrypt(const struct aes_ctx *ctx,
+_aes_set_key(unsigned nr, unsigned nk,
+	     uint32_t *subkeys, const uint8_t *key);
+
+void
+_aes_invert(unsigned rounds, uint32_t *dst, const uint32_t *src);
+
+void
+_aes_encrypt(unsigned rounds, const uint32_t *keys,
 	     const struct aes_table *T,
 	     size_t length, uint8_t *dst,
 	     const uint8_t *src);
 
 void
-_aes_decrypt(const struct aes_ctx *ctx,
+_aes_decrypt(unsigned rounds, const uint32_t *keys,
 	     const struct aes_table *T,
 	     size_t length, uint8_t *dst,
 	     const uint8_t *src);

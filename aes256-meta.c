@@ -1,11 +1,7 @@
-/* aes-set-decrypt-key.c
- *
- * Inverse key setup for the aes/rijndael block cipher.
- */
+/* aes256-meta.c */
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2000, 2001, 2002 Rafael R. Sevilla, Niels Möller
  * Copyright (C) 2013 Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
@@ -24,29 +20,38 @@
  * MA 02111-1301, USA.
  */
 
-/* Originally written by Rafael R. Sevilla <dido@pacific.net.ph> */
-
 #if HAVE_CONFIG_H
 # include "config.h"
 #endif
 
-#include "aes-internal.h"
+#include <assert.h>
 
-void
-aes_invert_key(struct aes_ctx *dst,
-	       const struct aes_ctx *src)
+#include "nettle-meta.h"
+
+#include "aes.h"
+
+static nettle_set_key_func aes256_set_encrypt_key_wrapper;
+static nettle_set_key_func aes256_set_decrypt_key_wrapper;
+
+static void
+aes256_set_encrypt_key_wrapper (void *ctx, size_t length, const uint8_t *key)
 {
-  _aes_invert (src->rounds, dst->keys, src->keys);
-  dst->rounds = src->rounds;
+  assert (length == AES256_KEY_SIZE);
+  aes256_set_encrypt_key (ctx, key);
 }
 
-void
-aes_set_decrypt_key(struct aes_ctx *ctx,
-		    size_t keysize, const uint8_t *key)
+static void
+aes256_set_decrypt_key_wrapper (void *ctx, size_t length, const uint8_t *key)
 {
-  /* We first create subkeys for encryption,
-   * then modify the subkeys for decryption. */
-  aes_set_encrypt_key(ctx, keysize, key);
-  aes_invert_key(ctx, ctx);
+  assert (length == AES256_KEY_SIZE);
+  aes256_set_decrypt_key (ctx, key);
 }
 
+const struct nettle_cipher nettle_aes256 =
+  { "aes256", sizeof(struct aes256_ctx),
+    AES_BLOCK_SIZE, AES256_KEY_SIZE,
+    aes256_set_encrypt_key_wrapper,
+    aes256_set_decrypt_key_wrapper,
+    (nettle_crypt_func *) aes256_encrypt,
+    (nettle_crypt_func *) aes256_decrypt
+  };

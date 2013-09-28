@@ -1,8 +1,8 @@
-/* aes-meta.c */
+/* aes192-meta.c */
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2002 Niels Möller
+ * Copyright (C) 2013 Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -24,15 +24,34 @@
 # include "config.h"
 #endif
 
+#include <assert.h>
+
 #include "nettle-meta.h"
 
 #include "aes.h"
 
-const struct nettle_cipher nettle_aes128
-= _NETTLE_CIPHER_SEP(aes, AES, 128);
+static nettle_set_key_func aes192_set_encrypt_key_wrapper;
+static nettle_set_key_func aes192_set_decrypt_key_wrapper;
 
-const struct nettle_cipher nettle_aes192
-= _NETTLE_CIPHER_SEP(aes, AES, 192);
+static void
+aes192_set_encrypt_key_wrapper (void *ctx, size_t length, const uint8_t *key)
+{
+  assert (length == AES192_KEY_SIZE);
+  aes192_set_encrypt_key (ctx, key);
+}
 
-const struct nettle_cipher nettle_aes256
-= _NETTLE_CIPHER_SEP(aes, AES, 256);
+static void
+aes192_set_decrypt_key_wrapper (void *ctx, size_t length, const uint8_t *key)
+{
+  assert (length == AES192_KEY_SIZE);
+  aes192_set_decrypt_key (ctx, key);
+}
+
+const struct nettle_cipher nettle_aes192 =
+  { "aes192", sizeof(struct aes192_ctx),
+    AES_BLOCK_SIZE, AES192_KEY_SIZE,
+    aes192_set_encrypt_key_wrapper,
+    aes192_set_decrypt_key_wrapper,
+    (nettle_crypt_func *) aes192_encrypt,
+    (nettle_crypt_func *) aes192_decrypt
+  };

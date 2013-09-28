@@ -5,7 +5,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2002 Niels Möller
+ * Copyright (C) 2002, 2013 Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -342,6 +342,36 @@ aes_decrypt(const struct aes_ctx *ctx,
 	    const uint8_t *src)
 {
   assert(!(length % AES_BLOCK_SIZE) );
-  _aes_decrypt(ctx, &_aes_decrypt_table,
+  _aes_decrypt(ctx->rounds, ctx->keys, &_aes_decrypt_table,
+	       length, dst, src);
+}
+
+void
+aes128_decrypt(const struct aes128_ctx *ctx,
+	       size_t length, uint8_t *dst,
+	       const uint8_t *src)
+{
+  assert(!(length % AES_BLOCK_SIZE) );
+  _aes_decrypt(_AES128_ROUNDS, ctx->keys, &_aes_decrypt_table,
+	       length, dst, src);
+}
+
+void
+aes192_decrypt(const struct aes192_ctx *ctx,
+	       size_t length, uint8_t *dst,
+	       const uint8_t *src)
+{
+  assert(!(length % AES_BLOCK_SIZE) );
+  _aes_decrypt(_AES192_ROUNDS, ctx->keys, &_aes_decrypt_table,
+	       length, dst, src);
+}
+
+void
+aes256_decrypt(const struct aes256_ctx *ctx,
+	       size_t length, uint8_t *dst,
+	       const uint8_t *src)
+{
+  assert(!(length % AES_BLOCK_SIZE) );
+  _aes_decrypt(_AES256_ROUNDS, ctx->keys, &_aes_decrypt_table,
 	       length, dst, src);
 }

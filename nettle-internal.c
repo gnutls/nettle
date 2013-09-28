@@ -112,3 +112,13 @@ const struct nettle_aead
 nettle_gcm_aes192 = _NETTLE_AEAD(gcm, GCM, aes, 192);
 const struct nettle_aead
 nettle_gcm_aes256 = _NETTLE_AEAD(gcm, GCM, aes, 256);
+
+/* Old, unified, interface */
+const struct nettle_cipher nettle_unified_aes128
+= _NETTLE_CIPHER_SEP(aes, AES, 128);
+
+const struct nettle_cipher nettle_unified_aes192
+= _NETTLE_CIPHER_SEP(aes, AES, 192);
+
+const struct nettle_cipher nettle_unified_aes256
+= _NETTLE_CIPHER_SEP(aes, AES, 256);

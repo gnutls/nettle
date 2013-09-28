@@ -64,7 +64,14 @@ all-here: $(TARGETS) $(DOCTARGETS)
 
 nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 aes-encrypt-internal.c aes-encrypt.c aes-encrypt-table.c \
-		 aes-set-encrypt-key.c aes-set-decrypt-key.c aes-meta.c \
+		 aes-invert-internal.c aes-set-key-internal.c \
+		 aes-set-encrypt-key.c aes-set-decrypt-key.c \
+		 aes128-set-encrypt-key.c aes128-set-decrypt-key.c \
+		 aes128-meta.c \
+		 aes192-set-encrypt-key.c aes192-set-decrypt-key.c \
+		 aes192-meta.c \
+		 aes256-set-encrypt-key.c aes256-set-decrypt-key.c \
+		 aes256-meta.c \
 		 arcfour.c arcfour-crypt.c arcfour-meta.c \
 		 arctwo.c arctwo-meta.c gosthash94-meta.c \
 		 base16-encode.c base16-decode.c base16-meta.c \

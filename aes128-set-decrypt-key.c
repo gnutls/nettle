@@ -1,12 +1,11 @@
-/* aes-set-decrypt-key.c
+/* aes128-set-decrypt-key.c
  *
- * Inverse key setup for the aes/rijndael block cipher.
+ * Key setup for the aes/rijndael block cipher.
  */
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2000, 2001, 2002 Rafael R. Sevilla, Niels Möller
- * Copyright (C) 2013 Niels Möller
+ * Copyright (C) 2013, Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -24,29 +23,24 @@
  * MA 02111-1301, USA.
  */
 
-/* Originally written by Rafael R. Sevilla <dido@pacific.net.ph> */
-
 #if HAVE_CONFIG_H
 # include "config.h"
 #endif
 
+#include <assert.h>
+
 #include "aes-internal.h"
+#include "macros.h"
 
 void
-aes_invert_key(struct aes_ctx *dst,
-	       const struct aes_ctx *src)
+aes128_invert_key (struct aes128_ctx *dst, const struct aes128_ctx *src)
 {
-  _aes_invert (src->rounds, dst->keys, src->keys);
-  dst->rounds = src->rounds;
+  _aes_invert (_AES128_ROUNDS, dst->keys, src->keys); 
 }
 
 void
-aes_set_decrypt_key(struct aes_ctx *ctx,
-		    size_t keysize, const uint8_t *key)
+aes128_set_decrypt_key(struct aes128_ctx *ctx, const uint8_t *key)
 {
-  /* We first create subkeys for encryption,
-   * then modify the subkeys for decryption. */
-  aes_set_encrypt_key(ctx, keysize, key);
-  aes_invert_key(ctx, ctx);
+  aes128_set_encrypt_key (ctx, key);
+  aes128_invert_key (ctx, ctx);
 }
-

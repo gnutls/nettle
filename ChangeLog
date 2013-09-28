@@ -1,5 +1,100 @@
 2013-09-28  Niels Möller  <nisse@lysator.liu.se>
 
+	* Merge aes-reorg branch. Changes below,
+	dated 2013-05-17 - 2013-08-13.
+
+2013-08-13  Niels Möller  <nisse@lysator.liu.se>
+
+	* yarrow.h (struct yarrow256_ctx): Use aes256_ctx, not aes_ctx.
+	* yarrow256.c: Adapted to use new aes256 interface.
+
+2013-08-07  Niels Möller  <nisse@lysator.liu.se>
+
+	* umac.h (_UMAC_STATE): Use struct aes128_ctx, not aes_ctx.
+	* umac-set-key.c (umac_kdf, _umac_set_key): Use aes128 interface.
+	* umac32.c (umac32_digest): Likewise.
+	* umac64.c (umac64_digest): Likewise.
+	* umac96.c (umac96_digest): Likewise.
+	* umac128.c (umac128_digest): Likewise.
+
+2013-06-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* aes-meta.c: Deleted file.
+
+	Analogous changes for new aes192 and aes256 interface.
+
+	* aes.h (struct aes128_ctx): New aes128 declarations.
+	* aes-decrypt.c (aes128_decrypt): New function.
+	* aes-encrypt.c (aes128_encrypt): New function.
+	* aes128-meta.c: New file.
+	* aes128-set-encrypt-key.c (aes128_set_encrypt_key): New file and
+	function.
+	* aes128-set-decrypt-key.c (aes128_set_decrypt_key)
+	(aes128_invert_key): New file and functions.
+	* Makefile.in (nettle_SOURCES): Added aes128-set-encrypt-key.c,
+	aes128-set-decrypt-key.c and aes128-meta.c.
+
+	* nettle-internal.c (nettle_unified_aes128): For testing the old
+	AES interface.
+	* testsuite/aes-test.c (test_cipher2): New function.
+	(test_main): Test both nettle_aes128 and nettle_unified_aes128.
+
+2013-05-22  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (nettle_SOURCES): Added aes-invert-internal.c and
+	aes-set-key-internal.c.
+
+	* aes.h (AES128_KEY_SIZE, _AES128_ROUNDS): New constants.
+	Similarly also for aes192 and aes256.
+
+	* aes-internal.h: Declare new functions.
+
+	* aes-set-key-internal.c (_aes_set_key): New file and funxtion
+	extracted from aes_set_encrypt_key.
+	* aes-set-encrypt-key.c (aes_set_encrypt_key): Use _aes_set_key.
+
+	* aes-invert-internal.c (_aes_invert): New file and function,
+	extracted from aes_invert_key.
+	* aes-set-decrypt-key.c (aes_invert_key): Use _aes_invert.
+
+	* arm/v6/aes-encrypt-internal.asm: Adapted to new interface.
+	Unfortunately, 4% slowdown on Cortex-A9, for unknown reason.
+	* arm/v6/aes-decrypt-internal.asm: Likewise.
+	* arm/aes-encrypt-internal.asm: Adapted to new interface.
+	* arm/aes-decrypt-internal.asm: Likewise.
+
+2013-05-21  Niels Möller  <nisse@lysator.liu.se>
+
+	* sparc32/aes-encrypt-internal.asm: Adapted to new interface.
+	* sparc32/aes-decrypt-internal.asm: Likewise.
+	* sparc64/aes-encrypt-internal.asm: Likewise.
+	* sparc64/aes-decrypt-internal.asm: Likewise.
+
+	* x86/aes-encrypt-internal.asm: Adapted to new interface.
+	* x86/aes-decrypt-internal.asm: Likewise.
+
+2013-05-20  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/aes-encrypt-internal.asm: Adapted to new interface.
+	* x86_64/aes-decrypt-internal.asm: Likewise.
+
+2013-05-17  Niels Möller  <nisse@lysator.liu.se>
+
+	* aes.h (struct aes_ctx): Renamed nrounds to rounds, and moved
+	first in the structure.
+	* aes-set-encrypt-key.c (aes_set_encrypt_key): Updated for renaming.
+	* aes-set-decrypt-key.c (aes_invert_key): Likewise.
+
+	* aes-encrypt-internal.c (_nettle_aes_encrypt): Take rounds and
+	subkeys as separate arguments, not a struct aes_ctx *. Updated
+	callers.
+	* aes-decrypt-internal.c (_nettle_aes_decrypt): Likewise.
+	* aes-internal.h: Updated prototypes.
+
+	* Start of aes-reorg changes.
+
+2013-09-28  Niels Möller  <nisse@lysator.liu.se>
+
 	* md4.h (struct md4_ctx): Use single uint64_t variable for block
 	count.
 	* md4.c: Use new block count variable.

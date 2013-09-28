@@ -1,6 +1,7 @@
 C nettle, low-level cryptographics library
 C 
 C Copyright (C) 2001, 2002, 2005 Rafael R. Sevilla, Niels Möller
+C Copyright (C) 2013, Niels Möller
 C  
 C The nettle library is free software; you can redistribute it and/or modify
 C it under the terms of the GNU Lesser General Public License as published by
@@ -32,11 +33,12 @@ define(<T>,<%ebp>)
 define(<TMP>,<%edi>)
 define(<KEY>,<%esi>)
 
-define(<FRAME_CTX>,	<40(%esp)>)
-define(<FRAME_TABLE>,	<44(%esp)>)
-define(<FRAME_LENGTH>,	<48(%esp)>)
-define(<FRAME_DST>,	<52(%esp)>)
-define(<FRAME_SRC>,	<56(%esp)>)
+define(<PARAM_ROUNDS>,	<40(%esp)>)
+define(<PARAM_KEYS>,	<44(%esp)>)
+define(<PARAM_TABLE>,	<48(%esp)>)
+define(<PARAM_LENGTH>,	<52(%esp)>)
+define(<PARAM_DST>,	<56(%esp)>)
+define(<PARAM_SRC>,	<60(%esp)>)
 
 define(<FRAME_KEY>,	<16(%esp)>)
 define(<FRAME_COUNT>,	<12(%esp)>)
@@ -55,7 +57,7 @@ C %edi is a temporary, often used as an accumulator.
 
 	.file "aes-encrypt-internal.asm"
 	
-	C _aes_encrypt(struct aes_context *ctx, 
+	C _aes_encrypt(unsigned rounds, const uint32_t *keys,
 	C	       const struct aes_table *T,
 	C	       size_t length, uint8_t *dst,
 	C	       uint8_t *src)
@@ -70,24 +72,21 @@ PROLOGUE(_nettle_aes_encrypt)
 
 	subl	$20, %esp	C  loop counter and save area for the key pointer
 
-	movl	FRAME_LENGTH, %ebp
+	movl	PARAM_LENGTH, %ebp
 	testl	%ebp,%ebp
 	jz	.Lend
 
-	shrl	$4, FRAME_LENGTH
-
+	shrl	$4, PARAM_LENGTH
+	subl	$1, PARAM_ROUNDS
 .Lblock_loop:
-	movl	FRAME_CTX,KEY	C  address of context struct ctx
+	movl	PARAM_KEYS, KEY	C  address of subkeys
 	
-	movl	FRAME_SRC,TMP	C  address of plaintext
+	movl	PARAM_SRC, TMP	C  address of plaintext
 	AES_LOAD(SA, SB, SC, SD, TMP, KEY)
-	addl	$16, FRAME_SRC	C Increment src pointer
-	movl	FRAME_TABLE, T
+	addl	$16, PARAM_SRC	C Increment src pointer
+	movl	PARAM_TABLE, T
 
-	C  get number of rounds to do from ctx struct	
-	movl	AES_NROUNDS (KEY),TMP
-	subl	$1,TMP
-
+	movl	PARAM_ROUNDS, TMP
 	C Loop counter on stack
 	movl	TMP, FRAME_COUNT
 
@@ -146,12 +145,12 @@ PROLOGUE(_nettle_aes_encrypt)
 	jnz	.Lsubst
 
 	C Add last subkey, and store encrypted data
-	movl	FRAME_DST,TMP
+	movl	PARAM_DST,TMP
 	movl	FRAME_KEY, KEY
 	AES_STORE(SA,SB,SC,SD, KEY, TMP)
 	
-	addl	$16, FRAME_DST		C Increment destination pointer
-	decl	FRAME_LENGTH
+	addl	$16, PARAM_DST		C Increment destination pointer
+	decl	PARAM_LENGTH
 
 	jnz	.Lblock_loop
 

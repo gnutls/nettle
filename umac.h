@@ -61,7 +61,7 @@ extern "C" {
 #include "nettle-types.h"
 #include "aes.h"
 
-#define UMAC_KEY_SIZE 16
+#define UMAC_KEY_SIZE AES128_KEY_SIZE
 #define UMAC32_DIGEST_SIZE 4
 #define UMAC64_DIGEST_SIZE 8
 #define UMAC96_DIGEST_SIZE 12
@@ -76,7 +76,7 @@ extern "C" {
   uint64_t l3_key1[8*(n)];				\
   uint32_t l3_key2[(n)];				\
   /* AES cipher for encrypting the nonce */		\
-  struct aes_ctx pdf_key;				\
+  struct aes128_ctx pdf_key;				\
   /* The l2_state consists of 2*n uint64_t, for poly64	\
      and poly128 hashing, followed by n additional	\
      uint64_t used as an input buffer. */		\
@@ -192,7 +192,7 @@ umac128_digest (struct umac128_ctx *ctx,
 void
 _umac_set_key (uint32_t *l1_key, uint32_t *l2_key,
 	       uint64_t *l3_key1, uint32_t *l3_key2,
-	       struct aes_ctx *pad, const uint8_t *key, unsigned n);
+	       struct aes128_ctx *pad, const uint8_t *key, unsigned n);
 
 uint64_t
 _umac_nh (const uint32_t *key, unsigned length, const uint8_t *msg);
