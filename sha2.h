@@ -55,7 +55,7 @@ extern "C" {
 struct sha256_ctx
 {
   uint32_t state[_SHA256_DIGEST_LENGTH];    /* State variables */
-  uint32_t count_low, count_high;           /* 64-bit block count */
+  uint64_t count;                           /* 64-bit block count */
   uint8_t block[SHA256_DATA_SIZE];          /* SHA256 data buffer */
   unsigned int index;                       /* index into buffer */
 };

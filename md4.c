@@ -61,7 +61,7 @@ md4_init(struct md4_ctx *ctx)
     };
   memcpy(ctx->state, iv, sizeof(ctx->state));
   
-  ctx->count_low = ctx->count_high = 0;
+  ctx->count = 0;
   ctx->index = 0;
 }
 
@@ -70,7 +70,7 @@ md4_update(struct md4_ctx *ctx,
 	   size_t length,
 	   const uint8_t *data)
 {
-  MD_UPDATE(ctx, length, data, md4_compress, MD_INCR(ctx));
+  MD_UPDATE(ctx, length, data, md4_compress, ctx->count++);
 }
 
 void
@@ -78,6 +78,7 @@ md4_digest(struct md4_ctx *ctx,
 	   size_t length,
 	   uint8_t *digest)
 {
+  uint64_t bit_count;
   uint32_t data[MD4_DATA_LENGTH];
   unsigned i;
 
@@ -89,9 +90,9 @@ md4_digest(struct md4_ctx *ctx,
 
   /* There are 512 = 2^9 bits in one block 
    * Little-endian order => Least significant word first */
-
-  data[MD4_DATA_LENGTH-1] = (ctx->count_high << 9) | (ctx->count_low >> 23);
-  data[MD4_DATA_LENGTH-2] = (ctx->count_low << 9) | (ctx->index << 3);
+  bit_count = (ctx->count << 9) | (ctx->index << 3);
+  data[MD4_DATA_LENGTH-2] = bit_count;
+  data[MD4_DATA_LENGTH-1] = bit_count >> 32;
   md4_transform(ctx->state, data);
 
   _nettle_write_le32(length, digest, ctx->state);

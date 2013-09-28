@@ -1,5 +1,13 @@
 2013-09-28  Niels Möller  <nisse@lysator.liu.se>
 
+	* md4.h (struct md4_ctx): Use single uint64_t variable for block
+	count.
+	* md4.c: Use new block count variable.
+	* md5.c, md5.h (struct md5_ctx): Likewise.
+	* ripemd160.c, ripemd160.h (struct ripemd160_ctx): Likewise.
+	* sha1.c, sha1.h (struct sha1_ctx): Likewise.
+	* sha256.c, sha2.h (struct sha256_ctx): Likewise.
+
 	* testsuite/testutils.c (test_hash_large): Added simple progress
 	indicator.
 

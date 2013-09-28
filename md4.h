@@ -47,7 +47,7 @@ extern "C" {
 struct md4_ctx
 {
   uint32_t state[_MD4_DIGEST_LENGTH];
-  uint32_t count_low, count_high;	/* Block count */
+  uint64_t count;			/* Block count */
   uint8_t block[MD4_DATA_SIZE];		/* Block buffer */
   unsigned index;			/* Into buffer */
 };

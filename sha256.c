@@ -79,7 +79,7 @@ sha256_init(struct sha256_ctx *ctx)
   memcpy(ctx->state, H0, sizeof(H0));
 
   /* Initialize bit count */
-  ctx->count_low = ctx->count_high = 0;
+  ctx->count = 0;
   
   /* Initialize buffer */
   ctx->index = 0;
@@ -89,7 +89,7 @@ void
 sha256_update(struct sha256_ctx *ctx,
 	      size_t length, const uint8_t *data)
 {
-  MD_UPDATE (ctx, length, data, COMPRESS, MD_INCR(ctx));
+  MD_UPDATE (ctx, length, data, COMPRESS, ctx->count++);
 }
 
 static void
@@ -97,21 +97,19 @@ sha256_write_digest(struct sha256_ctx *ctx,
 		    size_t length,
 		    uint8_t *digest)
 {
-  uint32_t high, low;
+  uint64_t bit_count;
 
   assert(length <= SHA256_DIGEST_SIZE);
 
   MD_PAD(ctx, 8, COMPRESS);
 
   /* There are 512 = 2^9 bits in one block */  
-  high = (ctx->count_high << 9) | (ctx->count_low >> 23);
-  low = (ctx->count_low << 9) | (ctx->index << 3);
+  bit_count = (ctx->count << 9) | (ctx->index << 3);
 
   /* This is slightly inefficient, as the numbers are converted to
      big-endian format, and will be converted back by the compression
      function. It's probably not worth the effort to fix this. */
-  WRITE_UINT32(ctx->block + (SHA256_DATA_SIZE - 8), high);
-  WRITE_UINT32(ctx->block + (SHA256_DATA_SIZE - 4), low);
+  WRITE_UINT64(ctx->block + (SHA256_DATA_SIZE - 8), bit_count);
   COMPRESS(ctx, ctx->block);
 
   _nettle_write_be32(length, digest, ctx->state);
@@ -141,7 +139,7 @@ sha224_init(struct sha256_ctx *ctx)
   memcpy(ctx->state, H0, sizeof(H0));
 
   /* Initialize bit count */
-  ctx->count_low = ctx->count_high = 0;
+  ctx->count = 0;
   
   /* Initialize buffer */
   ctx->index = 0;

@@ -162,14 +162,11 @@ do {						\
 /* Helper macro for Merkle-Damgård hash functions. Assumes the context
    structs includes the following fields:
 
-     xxx count_low, count_high;		// Two word block count
      uint8_t block[...];		// Buffer holding one block
      unsigned int index;		// Index into block
 */
 
-/* FIXME: Should probably switch to using uint64_t for the count, but
-   due to alignment and byte order that may be an ABI change. */
-
+/* Currently used by sha512 (and sha384) only. */
 #define MD_INCR(ctx) ((ctx)->count_high += !++(ctx)->count_low)
 
 /* Takes the compression function f as argument. NOTE: also clobbers
