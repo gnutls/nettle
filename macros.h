@@ -225,7 +225,7 @@ do {						\
     assert(__md_i < sizeof((ctx)->block));					\
     (ctx)->block[__md_i++] = 0x80;						\
 									\
-    if (__md_i > (sizeof((ctx)->block) - 2*sizeof((ctx)->count_low)))	\
+    if (__md_i > (sizeof((ctx)->block) - (size)))			\
       { /* No room for length in this block. Process it and		\
 	   pad with another one */					\
 	memset((ctx)->block + __md_i, 0, sizeof((ctx)->block) - __md_i); \

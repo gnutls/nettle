@@ -1,3 +1,8 @@
+2013-09-28  Niels Möller  <nisse@lysator.liu.se>
+
+	* macros.h (MD_PAD): Use size argument, don't depend on
+	sizeof of the count field(s).
+
 2013-09-22  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86_64/gcm-hash8.asm: New file.
