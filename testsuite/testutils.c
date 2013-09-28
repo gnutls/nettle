@@ -592,7 +592,13 @@ test_hash_large(const struct nettle_hash *hash,
 
   hash->init(ctx);
   for (i = 0; i < count; i++)
-    hash->update(ctx, length, data);
+    {
+      hash->update(ctx, length, data);
+      if (i % (count / 50) == 0)
+	fprintf (stderr, ".");
+    }
+  fprintf (stderr, "\n");
+  
   hash->digest(ctx, hash->digest_size, buffer);
 
   print_hex(hash->digest_size, buffer);

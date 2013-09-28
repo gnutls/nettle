@@ -1,5 +1,8 @@
 2013-09-28  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/testutils.c (test_hash_large): Added simple progress
+	indicator.
+
 	* macros.h (MD_PAD): Use size argument, don't depend on
 	sizeof of the count field(s).
 
