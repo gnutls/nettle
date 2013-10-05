@@ -14,7 +14,7 @@
   <h1> Nettle release plans </h1>
   <p> This is an attempt at defining a development target for
   Nettle-2.8, inspired by similar pages for recent GMP releases. [Last
-  updated 2013-06-25]</p>
+  updated 2013-10-05]</p>
   <p class='should'>
     This really ought to be done before release
   </p>
@@ -51,8 +51,12 @@
   <p class='should'>
     Move some internal-use macros from macros.h to nettle-internal.h.
   </p>
-  <p class='should'>
+  <p class='done'>
     Do separate aes128_ctx, etc, with smaller allocation for subkeys.
+  </p>
+  <p class='wish'>
+    Consider doing the same separation for camellia, cast128, and
+    twofish, which also use fewer subkeys for shorter key sizes.
   </p>
   <p class='should'>
     Don't require initialization of *dst_length for base*_decode_update.
@@ -61,14 +65,19 @@
     Rename gcm "iv" to "nonce". Keep old names for backwards
     compatibility.
   </p>
-  <p class='wish'>
+
+  <h2> New features </h2>
+  <p class='done'>
     Add <a href='http://www.cs.ucdavis.edu/~rogaway/papers/eax.pdf'>EAX</a >
     mode?
   </p>
-
+  
   <h2> Documentation </h2>
   <p class='should'>
     Document new AES interface.
+  </p>
+  <p class='should'>
+    Document new EAX mode.
   </p>
   
   <h2> Build system </h2>
@@ -80,6 +89,9 @@
   </p>
   <p class='should'>
     Delay building of test programs until <tt>make check</tt>.
+  </p>
+  <p class='done'>
+    Fix dependency problems with <tt>--disable-static</tt>.
   </p>
   
   <h2> Testing </h2>
