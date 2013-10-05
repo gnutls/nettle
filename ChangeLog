@@ -1,5 +1,20 @@
 2013-10-05  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.in (nettle_SOURCES): Added eax.c.
+	(HEADERS): Added eax.h.
+
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Added eax-test.c.
+
+	* testsuite/eax-test.c: New file.
+
+	* nettle-internal.c (nettle_eax_aes128): New aead algorithm.
+	(eax_aes128_set_key, eax_aes128_set_nonce, eax_aes128_update)
+	(eax_aes128_encrypt, eax_aes128_decrypt, eax_aes128_digest): New
+	functions.
+
+	* eax.c: New file.
+	* eax.h: New file.
+
 	* aes.h: Fixed type in name mangling for new aes functions.
 
 2013-09-28  Niels Möller  <nisse@lysator.liu.se>

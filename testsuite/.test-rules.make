@@ -103,6 +103,9 @@ ctr-test$(EXEEXT): ctr-test.$(OBJEXT)
 gcm-test$(EXEEXT): gcm-test.$(OBJEXT)
 	$(LINK) gcm-test.$(OBJEXT) $(TEST_OBJS) -o gcm-test$(EXEEXT)
 
+eax-test$(EXEEXT): eax-test.$(OBJEXT)
+	$(LINK) eax-test.$(OBJEXT) $(TEST_OBJS) -o eax-test$(EXEEXT)
+
 hmac-test$(EXEEXT): hmac-test.$(OBJEXT)
 	$(LINK) hmac-test.$(OBJEXT) $(TEST_OBJS) -o hmac-test$(EXEEXT)
 

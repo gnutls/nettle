@@ -34,6 +34,7 @@
 #include "nettle-internal.h"
 #include "blowfish.h"
 #include "des.h"
+#include "eax.h"
 #include "gcm.h"
 #include "salsa20.h"
 
@@ -122,3 +123,57 @@ const struct nettle_cipher nettle_unified_aes192
 
 const struct nettle_cipher nettle_unified_aes256
 = _NETTLE_CIPHER_SEP(aes, AES, 256);
+
+/* eax-aes128 */
+void
+eax_aes128_set_key(struct eax_aes128_ctx *ctx, size_t length,
+		   const uint8_t *key)
+{
+  assert (length == AES128_KEY_SIZE);
+  aes128_set_encrypt_key (&ctx->cipher, key);
+  eax_set_key (&ctx->key, &ctx->cipher,
+	       (nettle_crypt_func *) aes128_encrypt);
+
+  /* Can't use EAX_SET_KEY due to aes128_set_encrypt_key /
+     nettle_crypt_func impedance mismatch */
+}
+
+void
+eax_aes128_set_nonce(struct eax_aes128_ctx *ctx,
+		     size_t length, const uint8_t *iv)
+{
+  EAX_SET_NONCE(ctx, aes128_encrypt, length, iv);
+}
+
+void
+eax_aes128_update(struct eax_aes128_ctx *ctx, size_t length, const uint8_t *data)
+{
+  EAX_UPDATE(ctx, aes128_encrypt, length, data);
+}
+
+void
+eax_aes128_encrypt(struct eax_aes128_ctx *ctx,
+		size_t length, uint8_t *dst, const uint8_t *src)
+{
+  EAX_ENCRYPT(ctx, aes128_encrypt, length, dst, src);
+}
+
+void
+eax_aes128_decrypt(struct eax_aes128_ctx *ctx,
+		size_t length, uint8_t *dst, const uint8_t *src)
+{
+  EAX_DECRYPT(ctx, aes128_encrypt, length, dst, src);
+}
+
+void
+eax_aes128_digest(struct eax_aes128_ctx *ctx,
+	       size_t length, uint8_t *digest)
+{
+  EAX_DIGEST(ctx, aes128_encrypt, length, digest);
+}
+
+/* FIXME: Rename to set_nonce, in struct nettle_aead. */
+#define eax_aes128_set_iv eax_aes128_set_nonce
+
+const struct nettle_aead
+nettle_eax_aes128 = _NETTLE_AEAD_FIX(eax, EAX, aes128, 128);
