@@ -135,9 +135,9 @@ define(<FLINV>, <
 	xorl	TMP, $1
 >)
 
-.file "camellia-encrypt-internal.asm"
+.file "camellia-crypt-internal.asm"
 	
-	C _camellia_crypt(unsigned rounds, const uint64_t *keys, 
+	C _camellia_crypt(unsigned rounds, const uint64_t *keys,
 	C	          const struct camellia_table *T,
 	C	          size_t length, uint8_t *dst,
 	C	          uint8_t *src)

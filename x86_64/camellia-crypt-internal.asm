@@ -115,7 +115,7 @@ C	xorl	XREG(TMP), XREG($1)
 	xor	TMP, $1	
 >)
 
-	.file "camellia-encrypt-internal.asm"
+	.file "camellia-crypt-internal.asm"
 	
 	C _camellia_crypt(unsigned rounds, const uint64_t *keys, 
 	C	          const struct camellia_table *T,

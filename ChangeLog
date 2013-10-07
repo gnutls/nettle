@@ -5,7 +5,8 @@
 	* camellia-internal.h (_camellia_crypt): Updated prototype.
 	* camellia-crypt-internal.c (_camellia_crypt): Take separate
 	arguments for rounds and subkey array.
-	* x86_64/camellia-crypt-internal.asm: Likewise.
+	* x86_64/camellia-crypt-internal.asm: Likewise.	Also corrected
+	.file pseudo-ops.
 	* x86/camellia-crypt-internal.asm: Likewise.
 
 2013-10-05  Niels Möller  <nisse@lysator.liu.se>
