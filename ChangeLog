@@ -1,5 +1,9 @@
 2013-10-07  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac: Delete check for ALIGNOF_UINT64_T, no longer
+	needed.
+	* config.m4.in: Likewise delete ALIGNOF_UINT64_T.
+
 	* camellia-crypt.c (camellia_crypt): Updated call to
 	_camellia_crypt.
 	* camellia-internal.h (_camellia_crypt): Updated prototype.
