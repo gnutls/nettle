@@ -26,16 +26,17 @@ C Camellia-256  543  461
 
 C Register usage:
 
-define(<CTX>, <%rdi>)
-define(<TABLE>, <%rsi>)
-define(<LENGTH>, <%rdx>)
-define(<DST>, <%rcx>)
-define(<SRC>, <%r8>)
+define(<ROUNDS>, <%rdi>)
+define(<KEYS>, <%rsi>)
+define(<TABLE>, <%rdx>)
+define(<LENGTH>, <%rcx>)
+define(<DST>, <%r8>)
+define(<SRC>, <%r9>)
 
 C Camellia state
 define(<I0>, <%rax>)
 define(<I1>, <%rbx>) C callee-save
-define(<KEY>, <%r9>)
+define(<KEY>, <%r13>) C callee-save
 define(<TMP>, <%rbp>) C callee-save
 define(<CNT>, <%r10>)
 define(<IL>,  <%r11>)
@@ -116,7 +117,7 @@ C	xorl	XREG(TMP), XREG($1)
 
 	.file "camellia-encrypt-internal.asm"
 	
-	C _camellia_crypt(struct camellia_context *ctx, 
+	C _camellia_crypt(unsigned rounds, const uint64_t *keys, 
 	C	          const struct camellia_table *T,
 	C	          size_t length, uint8_t *dst,
 	C	          uint8_t *src)
@@ -131,7 +132,8 @@ PROLOGUE(_nettle_camellia_crypt)
 	push	%rbx
 	push	%rbp
 	push	%r12
-	
+	push	%r13
+	sub	$8, ROUNDS
 .Lblock_loop:
 	C Load data, note that we'll happily do unaligned loads
 	mov	(SRC), I0
@@ -139,13 +141,12 @@ PROLOGUE(_nettle_camellia_crypt)
 	mov	8(SRC), I1
 	bswap	I1
 	add	$16, SRC
-	mov	CTX, KEY
-	movl	(KEY), XREG(CNT)
-	sub	$8, CNT
+	mov	XREG(ROUNDS), XREG(CNT)
+	mov	KEYS, KEY
 
 	C 	Whitening using first subkey 
-	xor	8(KEY), I0
-	add	$16, KEY
+	xor	(KEY), I0
+	add	$8, KEY
 
 	ROUND(I0, I1, 0)
 	ROUND(I1, I0, 8)
@@ -178,6 +179,7 @@ PROLOGUE(_nettle_camellia_crypt)
 
 	ja	.Lblock_loop
 
+	pop	%r13
 	pop	%r12
 	pop	%rbp
 	pop	%rbx

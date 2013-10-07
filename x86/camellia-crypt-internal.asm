@@ -40,11 +40,12 @@ define(<FRAME_H1>,	<12(%esp)>)
 define(<FRAME_CNT>,	<16(%esp)>)
 	
 C Arguments on stack.
-define(<FRAME_CTX>,	<40(%esp)>)
-define(<FRAME_TABLE>,	<44(%esp)>)
-define(<FRAME_LENGTH>,	<48(%esp)>)
-define(<FRAME_DST>,	<52(%esp)>)
-define(<FRAME_SRC>,	<56(%esp)>)
+define(<FRAME_ROUNDS>,	<40(%esp)>)
+define(<FRAME_KEYS>,	<44(%esp)>)
+define(<FRAME_TABLE>,	<48(%esp)>)
+define(<FRAME_LENGTH>,	<52(%esp)>)
+define(<FRAME_DST>,	<56(%esp)>)
+define(<FRAME_SRC>,	<60(%esp)>)
 
 define(<SP1110>, <(T,$1,4)>)
 define(<SP0222>, <1024(T,$1,4)>)
@@ -136,7 +137,7 @@ define(<FLINV>, <
 
 .file "camellia-encrypt-internal.asm"
 	
-	C _camellia_crypt(struct camellia_context *ctx, 
+	C _camellia_crypt(unsigned rounds, const uint64_t *keys, 
 	C	          const struct camellia_table *T,
 	C	          size_t length, uint8_t *dst,
 	C	          uint8_t *src)
@@ -167,14 +168,13 @@ PROLOGUE(_nettle_camellia_crypt)
 	movl	12(TMP), L1
 	bswap	L1
 	addl	$16, FRAME_SRC
-	movl	FRAME_CTX, KEY
-	movl	(KEY), TMP
+	movl	FRAME_KEYS, KEY
+	movl	FRAME_ROUNDS, TMP
 	subl	$8, TMP
 	movl	TMP, FRAME_CNT
-	C 	Whitening using first subkey 
-	addl	$ALIGNOF_UINT64_T + 8, KEY
-	xorl	-8(KEY), L0
-	xorl	-4(KEY), H0
+	xorl	(KEY), L0
+	xorl	4(KEY), H0
+	addl	$8, KEY
 
 	movl	FRAME_TABLE, T
 

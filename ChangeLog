@@ -1,3 +1,13 @@
+2013-10-07  Niels Möller  <nisse@lysator.liu.se>
+
+	* camellia-crypt.c (camellia_crypt): Updated call to
+	_camellia_crypt.
+	* camellia-internal.h (_camellia_crypt): Updated prototype.
+	* camellia-crypt-internal.c (_camellia_crypt): Take separate
+	arguments for rounds and subkey array.
+	* x86_64/camellia-crypt-internal.asm: Likewise.
+	* x86/camellia-crypt-internal.asm: Likewise.
+
 2013-10-05  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in (nettle_SOURCES): Added eax.c.

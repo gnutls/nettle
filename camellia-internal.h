@@ -61,7 +61,7 @@ struct camellia_table
 };
 
 void
-_camellia_crypt(const struct camellia_ctx *ctx,
+_camellia_crypt(unsigned rounds, const uint64_t *keys,
 		const struct camellia_table *T,
 		size_t length, uint8_t *dst,
 		const uint8_t *src);

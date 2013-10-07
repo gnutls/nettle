@@ -40,6 +40,7 @@ camellia_crypt(const struct camellia_ctx *ctx,
 	       const uint8_t *src)
 {
   assert(!(length % CAMELLIA_BLOCK_SIZE) );
-  _camellia_crypt(ctx, &_camellia_table,
+  _camellia_crypt(ctx->nkeys, ctx->keys,
+		  &_camellia_table,
 		  length, dst, src);
 }
