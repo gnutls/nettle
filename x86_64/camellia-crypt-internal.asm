@@ -26,7 +26,7 @@ C Camellia-256  543  461
 
 C Register usage:
 
-define(<ROUNDS>, <%rdi>)
+define(<NKEYS>, <%rdi>)
 define(<KEYS>, <%rsi>)
 define(<TABLE>, <%rdx>)
 define(<LENGTH>, <%rcx>)
@@ -117,7 +117,7 @@ C	xorl	XREG(TMP), XREG($1)
 
 	.file "camellia-crypt-internal.asm"
 	
-	C _camellia_crypt(unsigned rounds, const uint64_t *keys, 
+	C _camellia_crypt(unsigned nkeys, const uint64_t *keys, 
 	C	          const struct camellia_table *T,
 	C	          size_t length, uint8_t *dst,
 	C	          uint8_t *src)
@@ -133,7 +133,7 @@ PROLOGUE(_nettle_camellia_crypt)
 	push	%rbp
 	push	%r12
 	push	%r13
-	sub	$8, ROUNDS
+	sub	$8, NKEYS
 .Lblock_loop:
 	C Load data, note that we'll happily do unaligned loads
 	mov	(SRC), I0
@@ -141,7 +141,7 @@ PROLOGUE(_nettle_camellia_crypt)
 	mov	8(SRC), I1
 	bswap	I1
 	add	$16, SRC
-	mov	XREG(ROUNDS), XREG(CNT)
+	mov	XREG(NKEYS), XREG(CNT)
 	mov	KEYS, KEY
 
 	C 	Whitening using first subkey 

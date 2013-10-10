@@ -1,8 +1,8 @@
-/* camellia-meta.c */
+/* camellia256-meta.c */
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2010 Niels Möller
+ * Copyright (C) 2010, 2013 Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -24,15 +24,31 @@
 # include "config.h"
 #endif
 
+#include <assert.h>
+
 #include "nettle-meta.h"
 
 #include "camellia.h"
 
-const struct nettle_cipher nettle_camellia128
-= _NETTLE_CIPHER_SEP_SET_KEY(camellia, CAMELLIA, 128);
+static void
+camellia256_set_encrypt_key_wrapper (void *ctx, size_t length, const uint8_t *key)
+{
+  assert (length == CAMELLIA256_KEY_SIZE);
+  camellia256_set_encrypt_key (ctx, key);
+}
 
-const struct nettle_cipher nettle_camellia192
-= _NETTLE_CIPHER_SEP_SET_KEY(camellia, CAMELLIA, 192);
+static void
+camellia256_set_decrypt_key_wrapper (void *ctx, size_t length, const uint8_t *key)
+{
+  assert (length == CAMELLIA256_KEY_SIZE);
+  camellia256_set_decrypt_key (ctx, key);
+}
 
-const struct nettle_cipher nettle_camellia256
-= _NETTLE_CIPHER_SEP_SET_KEY(camellia, CAMELLIA, 256);
+const struct nettle_cipher nettle_camellia256 =
+  { "camellia256", sizeof(struct camellia256_ctx),
+    CAMELLIA_BLOCK_SIZE, CAMELLIA256_KEY_SIZE,
+    camellia256_set_encrypt_key_wrapper,
+    camellia256_set_decrypt_key_wrapper,
+    (nettle_crypt_func *) camellia256_crypt,
+    (nettle_crypt_func *) camellia256_crypt
+  };

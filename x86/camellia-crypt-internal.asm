@@ -40,7 +40,7 @@ define(<FRAME_H1>,	<12(%esp)>)
 define(<FRAME_CNT>,	<16(%esp)>)
 	
 C Arguments on stack.
-define(<FRAME_ROUNDS>,	<40(%esp)>)
+define(<FRAME_NKEYS>,	<40(%esp)>)
 define(<FRAME_KEYS>,	<44(%esp)>)
 define(<FRAME_TABLE>,	<48(%esp)>)
 define(<FRAME_LENGTH>,	<52(%esp)>)
@@ -137,7 +137,7 @@ define(<FLINV>, <
 
 .file "camellia-crypt-internal.asm"
 	
-	C _camellia_crypt(unsigned rounds, const uint64_t *keys,
+	C _camellia_crypt(unsigned nkeys, const uint64_t *keys,
 	C	          const struct camellia_table *T,
 	C	          size_t length, uint8_t *dst,
 	C	          uint8_t *src)
@@ -169,7 +169,7 @@ PROLOGUE(_nettle_camellia_crypt)
 	bswap	L1
 	addl	$16, FRAME_SRC
 	movl	FRAME_KEYS, KEY
-	movl	FRAME_ROUNDS, TMP
+	movl	FRAME_NKEYS, TMP
 	subl	$8, TMP
 	movl	TMP, FRAME_CNT
 	xorl	(KEY), L0

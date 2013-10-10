@@ -123,7 +123,7 @@
 #endif
 
 void
-_camellia_crypt(unsigned rounds,
+_camellia_crypt(unsigned nkeys,
 		const uint64_t *keys,
 		const struct camellia_table *T,
 		size_t length, uint8_t *dst,
@@ -149,7 +149,7 @@ _camellia_crypt(unsigned rounds,
       CAMELLIA_ROUNDSM(T, i0, keys[5], i1);
       CAMELLIA_ROUNDSM(T, i1, keys[6], i0);
       
-      for (i = 0; i < rounds - 8; i+= 8)
+      for (i = 0; i < nkeys - 8; i+= 8)
 	{
 	  CAMELLIA_FL(i0, keys[i+7]);
 	  CAMELLIA_FLINV(i1, keys[i+8]);

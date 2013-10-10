@@ -1,11 +1,11 @@
-/* camellia-set-decrypt-key.c
+/* camellia256-set-decrypt-key.c
  *
  * Inverse key setup for the camellia block cipher.
  */
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2010 Niels Möller
+ * Copyright (C) 2010, 2013 Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -27,35 +27,27 @@
 # include "config.h"
 #endif
 
-#include "camellia.h"
-
-#define SWAP(a, b) \
-do { uint64_t t_swap = (a); (a) = (b); (b) = t_swap; } while(0)
+#include "camellia-internal.h"
 
 void
-camellia_invert_key(struct camellia_ctx *dst,
-		    const struct camellia_ctx *src)
+camellia256_invert_key(struct camellia256_ctx *dst,
+		       const struct camellia256_ctx *src)
 {
-  unsigned nkeys = src->nkeys;
-  unsigned i;
-  if (dst == src)
-    {
-      for (i = 0; i < nkeys - 1 - i; i++)
-	SWAP(dst->keys[i], dst->keys[nkeys - 1 - i]);
-    }
-  else
-    {
-      dst->nkeys = nkeys;
-
-      for (i = 0; i < nkeys; i++)
-	dst->keys[i] = src->keys[nkeys - 1 - i];
-    }
+  _camellia_invert_key (_CAMELLIA256_NKEYS, dst->keys, src->keys);
 }
 
 void
-camellia_set_decrypt_key(struct camellia_ctx *ctx,
-			 size_t length, const uint8_t *key)
+camellia256_set_decrypt_key(struct camellia256_ctx *ctx,
+			    const uint8_t *key)
 {
-  camellia_set_encrypt_key(ctx, length, key);
-  camellia_invert_key(ctx, ctx);
+  camellia256_set_encrypt_key(ctx, key);
+  camellia256_invert_key(ctx, ctx);
+}
+
+void
+camellia192_set_decrypt_key(struct camellia256_ctx *ctx,
+			    const uint8_t *key)
+{
+  camellia192_set_encrypt_key(ctx, key);
+  camellia256_invert_key(ctx, ctx);
 }
