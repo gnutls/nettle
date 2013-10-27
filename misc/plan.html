@@ -55,8 +55,8 @@
     Do separate aes128_ctx, etc, with smaller allocation for subkeys.
   </p>
   <p class='wish'>
-    Consider doing the same separation for camellia, cast128, and
-    twofish, which also use fewer subkeys for shorter key sizes.
+    Consider doing the same separation for camellia (and possibly
+    cast128), which also use fewer subkeys for shorter key sizes.
   </p>
   <p class='should'>
     Don't require initialization of *dst_length for base*_decode_update.
@@ -92,6 +92,9 @@
   </p>
   <p class='done'>
     Fix dependency problems with <tt>--disable-static</tt>.
+  </p>
+  <p class='should'>
+    Make the time consuming ecc_curve_check in eccdata.c optional.
   </p>
   
   <h2> Testing </h2>
