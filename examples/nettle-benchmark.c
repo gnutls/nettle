@@ -56,6 +56,7 @@
 #include "sha3.h"
 #include "twofish.h"
 #include "umac.h"
+#include "poly1305-aes.h"
 
 #include "nettle-meta.h"
 #include "nettle-internal.h"
@@ -399,6 +400,23 @@ time_umac(void)
 }
 
 static void
+time_poly1305_aes(void)
+{
+  static uint8_t data[BENCH_BLOCK];
+  struct bench_hash_info info;
+  struct poly1305_aes_ctx ctx;
+  uint8_t key[32];
+
+  poly1305_aes_set_key (&ctx, key);
+  info.ctx = &ctx;
+  info.update = (nettle_hash_update_func *) poly1305_aes_update;
+  info.data = data;
+
+  display("poly1305-aes", "update", 1024,
+	  time_function(bench_hash, &info));
+}
+
+static void
 time_gcm(void)
 {
   static uint8_t data[BENCH_BLOCK];
@@ -717,6 +735,9 @@ main(int argc, char **argv)
 
   if (!alg || strstr ("umac", alg))
     time_umac();
+
+  if (!alg || strstr ("poly1305-aes", alg))
+    time_poly1305_aes();
 
   for (i = 0; ciphers[i]; i++)
     if (!alg || strstr(ciphers[i]->name, alg))

@@ -1,3 +1,18 @@
+2013-11-08  Nikos Mavrogiannopoulos  <nmav@gnutls.org>
+
+	* poly1305.h: New file.
+	* poly1305.c: New file.
+	* poly1305-aes.h: New file.
+	* poly1305-aes.c: New file.
+	* Makefile.in (nettle_SOURCES): Added poly1305-aes.c and poly1305.c.
+	(HEADERS): Added poly1305-aes.h and poly1305.h.
+
+	* testsuite/poly1305-test.c: New file.
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Added poly1305-test.c.
+
+	* examples/nettle-benchmark.c (time_poly1305_aes): New function.
+	(main): Benchmark poly1305.
+
 2013-10-05  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in (nettle_SOURCES): Added eax.c.

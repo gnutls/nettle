@@ -106,6 +106,9 @@ gcm-test$(EXEEXT): gcm-test.$(OBJEXT)
 eax-test$(EXEEXT): eax-test.$(OBJEXT)
 	$(LINK) eax-test.$(OBJEXT) $(TEST_OBJS) -o eax-test$(EXEEXT)
 
+poly1305-test$(EXEEXT): poly1305-test.$(OBJEXT)
+	$(LINK) poly1305-test.$(OBJEXT) $(TEST_OBJS) -o poly1305-test$(EXEEXT)
+
 hmac-test$(EXEEXT): hmac-test.$(OBJEXT)
 	$(LINK) hmac-test.$(OBJEXT) $(TEST_OBJS) -o hmac-test$(EXEEXT)
 

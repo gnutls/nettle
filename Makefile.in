@@ -103,6 +103,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 serpent-set-key.c serpent-encrypt.c serpent-decrypt.c \
 		 serpent-meta.c \
 		 twofish.c twofish-meta.c \
+		 poly1305-aes.c poly1305.c \
 		 umac-nh.c umac-nh-n.c umac-l2.c umac-l3.c \
 		 umac-poly64.c umac-poly128.c umac-set-key.c \
 		 umac32.c umac64.c umac96.c umac128.c \
@@ -162,7 +163,7 @@ HEADERS = aes.h arcfour.h arctwo.h asn1.h bignum.h blowfish.h \
 	  pgp.h pkcs1.h realloc.h ripemd160.h rsa.h rsa-compat.h \
 	  salsa20.h sexp.h \
 	  serpent.h sha.h sha1.h sha2.h sha3.h twofish.h \
-	  umac.h yarrow.h
+	  umac.h yarrow.h poly1305-aes.h poly1305.h
 
 INSTALL_HEADERS = $(HEADERS) nettle-stdint.h
 
