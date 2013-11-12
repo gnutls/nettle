@@ -103,7 +103,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 serpent-set-key.c serpent-encrypt.c serpent-decrypt.c \
 		 serpent-meta.c \
 		 twofish.c twofish-meta.c \
-		 poly1305-aes.c poly1305.c \
+		 poly1305-aes.c poly1305.c poly1305-internal.c \
 		 umac-nh.c umac-nh-n.c umac-l2.c umac-l3.c \
 		 umac-poly64.c umac-poly128.c umac-set-key.c \
 		 umac32.c umac64.c umac96.c umac128.c \

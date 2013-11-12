@@ -1,3 +1,8 @@
+2013-11-12  Niels Möller  <nisse@lysator.liu.se>
+
+	* poly1305-internal.c: New file, for poly1305 functions depending
+	on the internal mod (2^130 - 5) representation.
+
 2013-11-08  Nikos Mavrogiannopoulos  <nmav@gnutls.org>
 
 	* poly1305.h: New file.
