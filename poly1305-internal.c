@@ -66,26 +66,20 @@ poly1305_set_key(struct poly1305_ctx *ctx, const uint8_t key[16])
   ctx->h4 = 0;
 }
 
-
-void
-poly1305_block (struct poly1305_ctx *ctx, const uint8_t m[16])
+static void
+poly1305_block_internal (struct poly1305_ctx *ctx,
+			 uint32_t t0, uint32_t t1, uint32_t t2, uint32_t t3,
+			 uint32_t t4)
 {
-  uint32_t t0,t1,t2,t3;
   uint32_t b;
   uint64_t t[5];
   uint64_t c;
-
-  /* full blocks */
-  t0 = LE_READ_UINT32(m);
-  t1 = LE_READ_UINT32(m+4);
-  t2 = LE_READ_UINT32(m+8);
-  t3 = LE_READ_UINT32(m+12);
 
   ctx->h0 += t0 & 0x3ffffff;
   ctx->h1 += ((((uint64_t)t1 << 32) | t0) >> 26) & 0x3ffffff;
   ctx->h2 += ((((uint64_t)t2 << 32) | t1) >> 20) & 0x3ffffff;
   ctx->h3 += ((((uint64_t)t3 << 32) | t2) >> 14) & 0x3ffffff;
-  ctx->h4 += (t3 >> 8) | (1 << 24);
+  ctx->h4 += (t3 >> 8) | (t4 << 24);
 
   /* poly1305_donna_mul: */
   t[0]  = mul32x32_64(ctx->h0,ctx->r0) + mul32x32_64(ctx->h1,ctx->s4) + mul32x32_64(ctx->h2,ctx->s3) + mul32x32_64(ctx->h3,ctx->s2) + mul32x32_64(ctx->h4,ctx->s1);
@@ -103,53 +97,48 @@ poly1305_block (struct poly1305_ctx *ctx, const uint8_t m[16])
 }
 
 void
+poly1305_block (struct poly1305_ctx *ctx, const uint8_t m[16])
+{
+  uint32_t t0,t1,t2,t3;
+
+  /* full blocks */
+  t0 = LE_READ_UINT32(m);
+  t1 = LE_READ_UINT32(m+4);
+  t2 = LE_READ_UINT32(m+8);
+  t3 = LE_READ_UINT32(m+12);
+
+  poly1305_block_internal (ctx, t0, t1, t2, t3, 1);
+}
+
+void
 poly1305_digest (struct poly1305_ctx *ctx,
  		 size_t length, uint8_t *digest)
 {
-  uint32_t t0,t1,t2,t3;
   uint32_t b, nb;
-  size_t j;
-  uint64_t t[5];
   uint64_t f0,f1,f2,f3;
   uint32_t g0,g1,g2,g3,g4;
-  uint64_t c;
-  uint8_t mp[16];
   uint8_t td[16];
 
   /* final bytes */
   /* poly1305_donna_atmost15bytes: */
-  if (!ctx->index) goto poly1305_donna_finish;
+  if (ctx->index > 0)
+    {
+      uint32_t t0,t1,t2,t3;
+      size_t j;
+      uint8_t mp[16];
 
-  for (j = 0; j < ctx->index; j++) mp[j] = ctx->block[j];
-  mp[j++] = 1;
-  for (; j < 16; j++)	mp[j] = 0;
+      for (j = 0; j < ctx->index; j++) mp[j] = ctx->block[j];
+      mp[j++] = 1;
+      for (; j < 16; j++)	mp[j] = 0;
 
-  t0 = LE_READ_UINT32(mp);
-  t1 = LE_READ_UINT32(mp+4);
-  t2 = LE_READ_UINT32(mp+8);
-  t3 = LE_READ_UINT32(mp+12);
+      t0 = LE_READ_UINT32(mp);
+      t1 = LE_READ_UINT32(mp+4);
+      t2 = LE_READ_UINT32(mp+8);
+      t3 = LE_READ_UINT32(mp+12);
 
-  ctx->h0 += t0 & 0x3ffffff;
-  ctx->h1 += ((((uint64_t)t1 << 32) | t0) >> 26) & 0x3ffffff;
-  ctx->h2 += ((((uint64_t)t2 << 32) | t1) >> 20) & 0x3ffffff;
-  ctx->h3 += ((((uint64_t)t3 << 32) | t2) >> 14) & 0x3ffffff;
-  ctx->h4 += (t3 >> 8);
+      poly1305_block_internal (ctx, t0, t1, t2, t3, 0);
+    }
 
-  /* poly1305_donna_mul: */
-  t[0]  = mul32x32_64(ctx->h0,ctx->r0) + mul32x32_64(ctx->h1,ctx->s4) + mul32x32_64(ctx->h2,ctx->s3) + mul32x32_64(ctx->h3,ctx->s2) + mul32x32_64(ctx->h4,ctx->s1);
-  t[1]  = mul32x32_64(ctx->h0,ctx->r1) + mul32x32_64(ctx->h1,ctx->r0) + mul32x32_64(ctx->h2,ctx->s4) + mul32x32_64(ctx->h3,ctx->s3) + mul32x32_64(ctx->h4,ctx->s2);
-  t[2]  = mul32x32_64(ctx->h0,ctx->r2) + mul32x32_64(ctx->h1,ctx->r1) + mul32x32_64(ctx->h2,ctx->r0) + mul32x32_64(ctx->h3,ctx->s4) + mul32x32_64(ctx->h4,ctx->s3);
-  t[3]  = mul32x32_64(ctx->h0,ctx->r3) + mul32x32_64(ctx->h1,ctx->r2) + mul32x32_64(ctx->h2,ctx->r1) + mul32x32_64(ctx->h3,ctx->r0) + mul32x32_64(ctx->h4,ctx->s4);
-  t[4]  = mul32x32_64(ctx->h0,ctx->r4) + mul32x32_64(ctx->h1,ctx->r3) + mul32x32_64(ctx->h2,ctx->r2) + mul32x32_64(ctx->h3,ctx->r1) + mul32x32_64(ctx->h4,ctx->r0);
-
-  ctx->h0 = (uint32_t)t[0] & 0x3ffffff; c =           (t[0] >> 26);
-  t[1] += c;      ctx->h1 = (uint32_t)t[1] & 0x3ffffff; b = (uint32_t)(t[1] >> 26);
-  t[2] += b;      ctx->h2 = (uint32_t)t[2] & 0x3ffffff; b = (uint32_t)(t[2] >> 26);
-  t[3] += b;      ctx->h3 = (uint32_t)t[3] & 0x3ffffff; b = (uint32_t)(t[3] >> 26);
-  t[4] += b;      ctx->h4 = (uint32_t)t[4] & 0x3ffffff; b = (uint32_t)(t[4] >> 26);
-  ctx->h0 += b * 5;
-
- poly1305_donna_finish:
   b = ctx->h0 >> 26; ctx->h0 = ctx->h0 & 0x3ffffff;
   ctx->h1 +=     b; b = ctx->h1 >> 26; ctx->h1 = ctx->h1 & 0x3ffffff;
   ctx->h2 +=     b; b = ctx->h2 >> 26; ctx->h2 = ctx->h2 & 0x3ffffff;

@@ -2,6 +2,8 @@
 
 	* poly1305-internal.c: New file, for poly1305 functions depending
 	on the internal mod (2^130 - 5) representation.
+	(poly1305_block_internal): New helper function.
+	(poly1305_block, poly1305_digest): Use it.
 
 2013-11-08  Nikos Mavrogiannopoulos  <nmav@gnutls.org>
 
