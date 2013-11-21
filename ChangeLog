@@ -1,3 +1,14 @@
+2013-11-21  Niels Möller  <nisse@lysator.liu.se>
+
+	* poly1305.h (POLY1305_DIGEST): Pass the encrypted nonce as an
+	additional argument to poly1305_digest.
+	(struct poly1305_ctx): Introduce unions, to support either 26-bit
+	or 64-bit implementation.
+
+	* poly1305-internal.c (poly1305_digest): Added s argument.
+
+	* poly1305.c (poly1305_set_s): Deleted function.
+
 2013-11-12  Niels Möller  <nisse@lysator.liu.se>
 
 	* poly1305-internal.c: New file, for poly1305 functions depending

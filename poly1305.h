@@ -37,11 +37,23 @@ extern "C" {
 #include "nettle-types.h"
 
 struct poly1305_ctx {
-  uint32_t h0; uint32_t h1; uint32_t h2; uint32_t h3; uint32_t h4;
-  uint32_t r0; uint32_t r1; uint32_t r2; uint32_t r3; uint32_t r4;
-  uint32_t s1; uint32_t s2; uint32_t s3; uint32_t s4;
+  /* Key, 128-bit value and some cached multiples. */
+  union
+  {
+    uint32_t r32[6];
+    uint64_t r64[3];
+  } r;
+  uint32_t s32[3];
+  /* State, represented as words of 26, 32 or 64 bits, depending on
+     implementation. */
+  /* High bits, first to maintain alignment. */
+  uint32_t hh;
+  union
+  {
+    uint32_t h32[4];
+    uint64_t h64[2];
+  } h;
 
-  uint8_t s[16]; /* typically AES_k(nonce) */
   uint8_t nonce[16];
   uint8_t block[16];
   unsigned index;
@@ -53,15 +65,15 @@ struct poly1305_ctx {
 
 #define poly1305_set_key nettle_poly1305_set_key
 #define poly1305_set_nonce nettle_poly1305_set_nonce
-#define poly1305_set_s nettle_poly1305_set_s
-#define poly1305_block nettle_poly1305_round
+#define poly1305_block nettle_poly1305_block
 #define poly1305_digest nettle_poly1305_digest
 
 void poly1305_set_key(struct poly1305_ctx *ctx, const uint8_t key[16]);
 void poly1305_set_nonce (struct poly1305_ctx *ctx, const uint8_t * nonce);
-void poly1305_set_s (struct poly1305_ctx *ctx, const uint8_t *s);
 void poly1305_block (struct poly1305_ctx *ctx, const uint8_t m[16]);
-void poly1305_digest (struct poly1305_ctx *ctx, size_t length, uint8_t *digest);
+
+void poly1305_digest (struct poly1305_ctx *ctx,
+		      size_t length, uint8_t *digest, const uint8_t *s);
 
 #define POLY1305_SET_KEY(ctx, set_key, key)	\
   do {						\
@@ -85,8 +97,7 @@ void poly1305_digest (struct poly1305_ctx *ctx, size_t length, uint8_t *digest);
   do { 								\
     uint8_t _ts[16]; 						\
     (encrypt)(&(ctx)->cipher, 16, _ts, (ctx)->pctx.nonce);	\
-    poly1305_set_s(&(ctx)->pctx, _ts);				\
-    poly1305_digest (&(ctx)->pctx, (length), (digest)); 	\
+    poly1305_digest (&(ctx)->pctx, (length), (digest), _ts); 	\
     INCREMENT (16, (ctx)->pctx.nonce); 				\
     (ctx)->pctx.index = 0; 					\
   } while(0);

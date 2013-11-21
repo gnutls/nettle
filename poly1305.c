@@ -31,9 +31,3 @@ poly1305_set_nonce (struct poly1305_ctx *ctx, const uint8_t * nonce)
 {
   memcpy (ctx->nonce, nonce, 16);
 }
-
-void
-poly1305_set_s (struct poly1305_ctx *ctx, const uint8_t * s)
-{
-  memcpy (ctx->s, s, 16);
-}

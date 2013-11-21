@@ -38,6 +38,22 @@
 
 #define mul32x32_64(a,b) ((uint64_t)(a) * (b))
 
+#define r0 r.r32[0]
+#define r1 r.r32[1]
+#define r2 r.r32[2]
+#define r3 r.r32[3]
+#define r4 r.r32[4]
+#define s1 r.r32[5]
+#define s2 r.s32[0]
+#define s3 r.s32[1]
+#define s4 r.s32[2]
+
+#define h0 h.h32[0]
+#define h1 h.h32[1]
+#define h2 h.h32[2]
+#define h3 h.h32[3]
+#define h4 hh
+
 void
 poly1305_set_key(struct poly1305_ctx *ctx, const uint8_t key[16])
 {
@@ -112,7 +128,8 @@ poly1305_block (struct poly1305_ctx *ctx, const uint8_t m[16])
 
 void
 poly1305_digest (struct poly1305_ctx *ctx,
- 		 size_t length, uint8_t *digest)
+ 		 size_t length, uint8_t *digest,
+		 const uint8_t *s)
 {
   uint32_t b, nb;
   uint64_t f0,f1,f2,f3;
@@ -161,10 +178,10 @@ poly1305_digest (struct poly1305_ctx *ctx,
   ctx->h3 = (ctx->h3 & nb) | (g3 & b);
   ctx->h4 = (ctx->h4 & nb) | (g4 & b);
 
-  f0 = ((ctx->h0      ) | (ctx->h1 << 26)) + (uint64_t)LE_READ_UINT32(ctx->s);
-  f1 = ((ctx->h1 >>  6) | (ctx->h2 << 20)) + (uint64_t)LE_READ_UINT32(ctx->s+4);
-  f2 = ((ctx->h2 >> 12) | (ctx->h3 << 14)) + (uint64_t)LE_READ_UINT32(ctx->s+8);
-  f3 = ((ctx->h3 >> 18) | (ctx->h4 <<  8)) + (uint64_t)LE_READ_UINT32(ctx->s+12);
+  f0 = ((ctx->h0      ) | (ctx->h1 << 26)) + (uint64_t)LE_READ_UINT32(s);
+  f1 = ((ctx->h1 >>  6) | (ctx->h2 << 20)) + (uint64_t)LE_READ_UINT32(s+4);
+  f2 = ((ctx->h2 >> 12) | (ctx->h3 << 14)) + (uint64_t)LE_READ_UINT32(s+8);
+  f3 = ((ctx->h3 >> 18) | (ctx->h4 <<  8)) + (uint64_t)LE_READ_UINT32(s+12);
 
   LE_WRITE_UINT32(td, f0);
   f1 += (f0 >> 32);
