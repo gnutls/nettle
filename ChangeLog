@@ -1,5 +1,12 @@
 2013-11-21  Niels Möller  <nisse@lysator.liu.se>
 
+	* x86_64/poly1305-internal.asm: New file. Almost a factor of two
+	speedup.
+
+	* configure.ac (asm_replace_list): Added poly1305-internal.asm.
+
+	* asm.m4: Define struct ffsets for 64-bit poly1305_ctx.
+
 	* poly1305.h (POLY1305_DIGEST): Pass the encrypted nonce as an
 	additional argument to poly1305_digest.
 	(struct poly1305_ctx): Introduce unions, to support either 26-bit
