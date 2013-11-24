@@ -39,6 +39,15 @@ test_main(void)
   test_dsa_key(&pub, &key, 256);
   test_dsa256(&pub, &key, NULL);
   
+  ASSERT (dsa_generate_keypair(&pub, &key,
+			       &lfib,
+			       (nettle_random_func *) knuth_lfib_random,
+			       NULL, verbose ? progress : NULL,
+			       2048, 224));
+
+  test_dsa_key(&pub, &key, 224);
+  test_dsa256(&pub, &key, NULL);
+  
   dsa_public_key_clear(&pub);
   dsa_private_key_clear(&key);
 }

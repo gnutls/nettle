@@ -1,3 +1,20 @@
+2013-11-24  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/dsa-keygen-test.c (test_main): Test generating a
+	key with 224-bit q.
+
+	* dsa-verify.c (_dsa_verify): Use _dsa_hash.
+
+	* dsa-sign.c (_dsa_sign): Use _dsa_hash. Fix memory leak in
+	error case, spotted by Nikos.
+
+	* dsa-keygen.c (dsa_generate_keypair): Allow q_bits == 224.
+
+	* dsa-hash.c (_dsa_hash): New file and function. Allows digest
+	sizes not matching the bitsize of q.
+	* dsa.h (_dsa_hash): Declare it.
+	* Makefile.in (hogweed_SOURCES): Added dsa-hash.c.
+
 2013-11-23  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Check also for openssl/ecdsa.h.

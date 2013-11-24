@@ -45,9 +45,6 @@ _dsa_verify(const struct dsa_public_key *key,
 
   int res;
 
-  if (mpz_sizeinbase(key->q, 2) != 8 * digest_size)
-    return 0;
-
   /* Check that r and s are in the proper range */
   if (mpz_sgn(signature->r) <= 0 || mpz_cmp(signature->r, key->q) >= 0)
     return 0;
@@ -71,7 +68,7 @@ _dsa_verify(const struct dsa_public_key *key,
   mpz_init(v);
 
   /* The message digest */
-  nettle_mpz_set_str_256_u(tmp, digest_size, digest);
+  _dsa_hash (tmp, mpz_sizeinbase (key->q, 2), digest_size, digest);
   
   /* v = g^{w * h (mod q)} (mod p)  */
   mpz_mul(tmp, tmp, w);

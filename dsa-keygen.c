@@ -36,7 +36,7 @@
 #include "nettle-internal.h"
 
 
-/* Valid sizes, according to FIPS 186-3 are (1024, 160), (2048. 224),
+/* Valid sizes, according to FIPS 186-3 are (1024, 160), (2048, 224),
    (2048, 256), (3072, 256). Currenty, we use only q_bits of 160 or
    256. */
 int
@@ -56,6 +56,7 @@ dsa_generate_keypair(struct dsa_public_key *pub,
       if (p_bits < DSA_SHA1_MIN_P_BITS)
 	return 0;
       break;
+    case 224:
     case 256:
       if (p_bits < DSA_SHA256_MIN_P_BITS)
 	return 0;

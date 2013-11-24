@@ -46,14 +46,8 @@ _dsa_sign(const struct dsa_public_key *pub,
   mpz_t k;
   mpz_t h;
   mpz_t tmp;
-
-  /* Require precise match of bitsize of q and hash size. The general
-     description of DSA in FIPS186-3 allows both larger and smaller q;
-     in the the latter case, the hash must be truncated to the right
-     number of bits. */
-  if (mpz_sizeinbase(pub->q, 2) != 8 * digest_size)
-    return 0;
-
+  int res;
+  
   /* Select k, 0<k<q, randomly */
   mpz_init_set(tmp, pub->q);
   mpz_sub_ui(tmp, tmp, 1);
@@ -68,23 +62,26 @@ _dsa_sign(const struct dsa_public_key *pub,
 
   /* Compute hash */
   mpz_init(h);
-  nettle_mpz_set_str_256_u(h, digest_size, digest);
+  _dsa_hash (h, mpz_sizeinbase(pub->q, 2), digest_size, digest);
 
   /* Compute k^-1 (mod q) */
-  if (!mpz_invert(k, k, pub->q))
+  if (mpz_invert(k, k, pub->q))
+    {
+      /* Compute signature s = k^-1 (h + xr) (mod q) */
+      mpz_mul(tmp, signature->r, key->x);
+      mpz_fdiv_r(tmp, tmp, pub->q);
+      mpz_add(tmp, tmp, h);
+      mpz_mul(tmp, tmp, k);
+      mpz_fdiv_r(signature->s, tmp, pub->q);
+      res = 1;
+    }
+  else
     /* What do we do now? The key is invalid. */
-    return 0;
-
-  /* Compute signature s = k^-1 (h + xr) (mod q) */
-  mpz_mul(tmp, signature->r, key->x);
-  mpz_fdiv_r(tmp, tmp, pub->q);
-  mpz_add(tmp, tmp, h);
-  mpz_mul(tmp, tmp, k);
-  mpz_fdiv_r(signature->s, tmp, pub->q);
+    res = 0;
 
   mpz_clear(k);
   mpz_clear(h);
   mpz_clear(tmp);
 
-  return 1;
+  return res;
 }

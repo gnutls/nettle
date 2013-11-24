@@ -62,6 +62,7 @@ extern "C" {
 #define dsa_public_key_from_der_iterator nettle_dsa_public_key_from_der_iterator
 #define dsa_openssl_private_key_from_der_iterator nettle_dsa_openssl_private_key_from_der_iterator 
 #define dsa_openssl_private_key_from_der nettle_openssl_provate_key_from_der
+#define _dsa_hash _nettle_dsa_hash
 #define _dsa_sign _nettle_dsa_sign
 #define _dsa_verify _nettle_dsa_verify
 
@@ -272,6 +273,10 @@ dsa_openssl_private_key_from_der(struct dsa_public_key *pub,
 
 
 /* Internal functions. */
+void
+_dsa_hash (mpz_t h, unsigned bit_size,
+	   size_t length, const uint8_t *digest);
+
 int
 _dsa_sign(const struct dsa_public_key *pub,
 	  const struct dsa_private_key *key,
