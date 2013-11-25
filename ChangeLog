@@ -1,5 +1,8 @@
 2013-11-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/testutils.c (test_dsa_sign, test_dsa_verify): New
+	functions, supporting arbitrary digest size.
+
 	* testsuite/testutils.h (ASSERT): Improved failure message.
 
 	* dsa-verify.c (dsa_verify): Renamed, from _dsa_verify.

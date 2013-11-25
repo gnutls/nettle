@@ -1103,6 +1103,101 @@ test_dsa256(const struct dsa_public_key *pub,
 }
 
 void
+test_dsa_sign(const struct dsa_public_key *pub,
+	      const struct dsa_private_key *key,
+	      const struct nettle_hash *hash,
+	      const struct dsa_signature *expected)
+{
+  void *ctx = xalloc (hash->context_size);
+  uint8_t *digest = xalloc (hash->digest_size);
+  uint8_t *bad_digest = xalloc (hash->digest_size);
+  struct dsa_signature signature;
+  struct knuth_lfib_ctx lfib;
+  
+  dsa_signature_init(&signature);
+  knuth_lfib_init(&lfib, 1111);
+
+  hash->init(ctx);
+  
+  hash->update(ctx, LDATA("The magic words are squeamish ossifrage"));
+  hash->digest(ctx, hash->digest_size, digest);
+  ASSERT (dsa_sign(pub, key,
+		   &lfib, (nettle_random_func *) knuth_lfib_random,
+		   hash->digest_size, digest, &signature));
+  
+  if (verbose)
+    {
+      fprintf(stderr, "dsa-%s signature: ", hash->name);
+      mpz_out_str(stderr, 16, signature.r);
+      fprintf(stderr, ", ");
+      mpz_out_str(stderr, 16, signature.s);
+      fprintf(stderr, "\n");
+    }
+
+  if (expected)
+    ASSERT (mpz_cmp (signature.r, expected->r) == 0
+	    && mpz_cmp (signature.s, expected->s) == 0);
+  
+  /* Try correct data */
+  ASSERT (dsa_verify(pub, hash->digest_size, digest,
+		     &signature));
+  /* Try bad data */
+  hash->update(ctx, LDATA("The magick words are squeamish ossifrage"));
+  hash->digest(ctx, hash->digest_size, bad_digest);
+  
+  ASSERT (!dsa_verify(pub, hash->digest_size, bad_digest,
+		      &signature));
+
+  /* Try bad signature */
+  mpz_combit(signature.r, 17);
+  ASSERT (!dsa_verify(pub, hash->digest_size, digest,
+		      &signature));
+
+  free (ctx);
+  free (digest);
+  free (bad_digest);
+  dsa_signature_clear(&signature);
+}
+
+void
+test_dsa_verify(const struct dsa_public_key *pub,
+		const struct nettle_hash *hash,
+		struct tstring *msg,
+		const struct dsa_signature *ref)
+{
+  void *ctx = xalloc (hash->context_size);
+  uint8_t *digest = xalloc (hash->digest_size);
+  struct dsa_signature signature;
+
+  dsa_signature_init (&signature);
+
+  hash->init(ctx);
+  
+  hash->update (ctx, msg->length, msg->data);
+  hash->digest (ctx, hash->digest_size, digest);
+
+  mpz_set (signature.r, ref->r);
+  mpz_set (signature.s, ref->s);
+
+  ASSERT (dsa_verify (pub, hash->digest_size, digest,
+		      &signature));
+
+  /* Try bad signature */
+  mpz_combit(signature.r, 17);
+  ASSERT (!dsa_verify (pub, hash->digest_size, digest,
+		       &signature));
+  
+  /* Try bad data */
+  digest[hash->digest_size / 2-1] ^= 8;
+  ASSERT (!dsa_verify (pub, hash->digest_size, digest,
+		       ref));
+
+  free (ctx);
+  free (digest);
+  dsa_signature_clear(&signature);  
+}
+
+void
 test_dsa_key(struct dsa_public_key *pub,
 	     struct dsa_private_key *key,
 	     unsigned q_size)

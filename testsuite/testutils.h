@@ -198,6 +198,18 @@ test_dsa256(const struct dsa_public_key *pub,
 	    const struct dsa_signature *expected);
 
 void
+test_dsa_sign(const struct dsa_public_key *pub,
+	      const struct dsa_private_key *key,
+	      const struct nettle_hash *hash,
+	      const struct dsa_signature *expected);
+
+void
+test_dsa_verify(const struct dsa_public_key *pub,
+		const struct nettle_hash *hash,
+		struct tstring *msg,
+		const struct dsa_signature *ref);
+
+void
 test_dsa_key(struct dsa_public_key *pub,
 	     struct dsa_private_key *key,
 	     unsigned q_size);
