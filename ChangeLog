@@ -1,5 +1,7 @@
 2013-11-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/testutils.h (ASSERT): Improved failure message.
+
 	* dsa-verify.c (dsa_verify): Renamed, from _dsa_verify.
 	* dsa-sign.c (dsa_sign): Renamed, from _dsa_sign.
 

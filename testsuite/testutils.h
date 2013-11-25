@@ -229,7 +229,8 @@ test_ecc_mul_j (unsigned curve, unsigned n, const mp_limb_t *p);
 #define ASSERT(x) do {							\
     if (!(x))								\
       {									\
-	fprintf(stderr, "Assert failed %d: %s\n", __LINE__, #x);	\
+	fprintf(stderr, "Assert failed: %s:%d: %s\n", \
+		__FILE__, __LINE__, #x);					\
 	FAIL();								\
       }									\
   } while(0)
