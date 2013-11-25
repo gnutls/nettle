@@ -1,3 +1,8 @@
+2013-11-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* dsa-verify.c (dsa_verify): Renamed, from _dsa_verify.
+	* dsa-sign.c (dsa_sign): Renamed, from _dsa_sign.
+
 2013-11-24  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/dsa-keygen-test.c (test_main): Test generating a

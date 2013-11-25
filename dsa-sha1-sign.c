@@ -36,8 +36,8 @@ dsa_sha1_sign_digest(const struct dsa_public_key *pub,
 		     const uint8_t *digest,
 		     struct dsa_signature *signature)
 {
-  return _dsa_sign(pub, key, random_ctx, random,
-		   SHA1_DIGEST_SIZE, digest, signature);
+  return dsa_sign(pub, key, random_ctx, random,
+		  SHA1_DIGEST_SIZE, digest, signature);
 }
 
 
@@ -51,6 +51,6 @@ dsa_sha1_sign(const struct dsa_public_key *pub,
   uint8_t digest[SHA1_DIGEST_SIZE];
   sha1_digest(hash, sizeof(digest), digest);
 
-  return _dsa_sign(pub, key, random_ctx, random,
-		   sizeof(digest), digest, signature);
+  return dsa_sign(pub, key, random_ctx, random,
+		  sizeof(digest), digest, signature);
 }

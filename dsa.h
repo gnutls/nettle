@@ -48,6 +48,8 @@ extern "C" {
 #define dsa_sha1_verify nettle_dsa_sha1_verify
 #define dsa_sha256_sign nettle_dsa_sha256_sign
 #define dsa_sha256_verify nettle_dsa_sha256_verify
+#define dsa_sign nettle_dsa_sign
+#define dsa_verify nettle_dsa_verify
 #define dsa_sha1_sign_digest nettle_dsa_sha1_sign_digest
 #define dsa_sha1_verify_digest nettle_dsa_sha1_verify_digest
 #define dsa_sha256_sign_digest nettle_dsa_sha256_sign_digest
@@ -63,8 +65,6 @@ extern "C" {
 #define dsa_openssl_private_key_from_der_iterator nettle_dsa_openssl_private_key_from_der_iterator 
 #define dsa_openssl_private_key_from_der nettle_openssl_provate_key_from_der
 #define _dsa_hash _nettle_dsa_hash
-#define _dsa_sign _nettle_dsa_sign
-#define _dsa_verify _nettle_dsa_verify
 
 #define DSA_SHA1_MIN_P_BITS 512
 #define DSA_SHA1_Q_OCTETS 20
@@ -173,6 +173,22 @@ dsa_sha256_verify(const struct dsa_public_key *key,
 		  const struct dsa_signature *signature);
 
 int
+dsa_sign(const struct dsa_public_key *pub,
+	 const struct dsa_private_key *key,
+	 void *random_ctx, nettle_random_func *random,
+	 size_t digest_size,
+	 const uint8_t *digest,
+	 struct dsa_signature *signature);
+
+int
+dsa_verify(const struct dsa_public_key *key,
+	   size_t digest_size,
+	   const uint8_t *digest,
+	   const struct dsa_signature *signature);
+
+/* Maybe obsolete these functions? One can just as well call dsa_sign
+   and dsa_verify directly, all that matters is the digest size. */
+int
 dsa_sha1_sign_digest(const struct dsa_public_key *pub,
 		     const struct dsa_private_key *key,
 		     void *random_ctx, nettle_random_func *random,
@@ -276,20 +292,6 @@ dsa_openssl_private_key_from_der(struct dsa_public_key *pub,
 void
 _dsa_hash (mpz_t h, unsigned bit_size,
 	   size_t length, const uint8_t *digest);
-
-int
-_dsa_sign(const struct dsa_public_key *pub,
-	  const struct dsa_private_key *key,
-	  void *random_ctx, nettle_random_func *random,
-	  size_t digest_size,
-	  const uint8_t *digest,
-	  struct dsa_signature *signature);
-
-int
-_dsa_verify(const struct dsa_public_key *key,
-	    size_t digest_size,
-	    const uint8_t *digest,
-	    const struct dsa_signature *signature);
 
 #ifdef __cplusplus
 }

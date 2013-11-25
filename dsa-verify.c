@@ -34,10 +34,10 @@
 #include "bignum.h"
 
 int
-_dsa_verify(const struct dsa_public_key *key,
-	    size_t digest_size,
-	    const uint8_t *digest,
-	    const struct dsa_signature *signature)
+dsa_verify(const struct dsa_public_key *key,
+	   size_t digest_size,
+	   const uint8_t *digest,
+	   const struct dsa_signature *signature)
 {
   mpz_t w;
   mpz_t tmp;

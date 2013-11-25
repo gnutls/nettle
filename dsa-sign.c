@@ -36,12 +36,12 @@
 
 
 int
-_dsa_sign(const struct dsa_public_key *pub,
-	  const struct dsa_private_key *key,
-	  void *random_ctx, nettle_random_func *random,
-	  size_t digest_size,
-	  const uint8_t *digest,
-	  struct dsa_signature *signature)
+dsa_sign(const struct dsa_public_key *pub,
+	 const struct dsa_private_key *key,
+	 void *random_ctx, nettle_random_func *random,
+	 size_t digest_size,
+	 const uint8_t *digest,
+	 struct dsa_signature *signature)
 {
   mpz_t k;
   mpz_t h;
