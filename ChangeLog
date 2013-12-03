@@ -1,3 +1,8 @@
+2013-12-03  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/md5-compress.asm: New file, similar to the x86 version.
+	35% speedup.
+
 2013-11-25  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/testutils.c (test_dsa_sign, test_dsa_verify): New
