@@ -1,5 +1,8 @@
 2013-12-03  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac (dummy-dep-files): Don't overwrite any existing
+	dependency files.
+
 	* x86_64/md5-compress.asm: New file, similar to the x86 version.
 	35% speedup.
 
