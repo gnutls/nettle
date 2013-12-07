@@ -11,6 +11,9 @@
 
 2013-11-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/dsa-test.c (test_main): Additional tests from NIST
+	test vectors.
+
 	* testsuite/testutils.c (test_dsa_sign, test_dsa_verify): New
 	functions, supporting arbitrary digest size.
 
