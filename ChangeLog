@@ -1,3 +1,8 @@
+2013-12-14  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/gcm-hash8.asm: Use .short rather than .hword, for
+	compatibility with apple's assembler.
+
 2013-12-03  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86_64/sha1-compress.asm: Reorganized, to get closer to the x86
