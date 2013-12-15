@@ -1,3 +1,8 @@
+2013-12-15  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle-internal.h (NETTLE_MAX_BIGNUM_BITS)
+	(NETTLE_MAX_BIGNUM_SIZE): Deleted arbitrary limits.
+
 2013-12-15  Nikos Mavrogiannopoulos <nmav@redhat.com>
 
 	Introduced TMP_GMP_ALLOC macro for temporary allocations of
