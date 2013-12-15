@@ -34,7 +34,7 @@
 #include "pkcs1.h"
 
 #include "bignum.h"
-#include "nettle-internal.h"
+#include "gmp-glue.h"
 
 int
 pkcs1_encrypt (size_t key_size,
@@ -43,7 +43,7 @@ pkcs1_encrypt (size_t key_size,
 	       size_t length, const uint8_t *message,
 	       mpz_t m)
 {
-  TMP_DECL(em, uint8_t, NETTLE_MAX_BIGNUM_SIZE);
+  TMP_GMP_DECL(em, uint8_t);
   size_t padding;
   size_t i;
 
@@ -63,7 +63,7 @@ pkcs1_encrypt (size_t key_size,
   padding = key_size - length - 3;
   assert(padding >= 8);
   
-  TMP_ALLOC(em, key_size - 1);
+  TMP_GMP_ALLOC(em, key_size - 1);
   em[0] = 2;
 
   random(random_ctx, padding, em + 1);
@@ -77,5 +77,7 @@ pkcs1_encrypt (size_t key_size,
   memcpy(em + padding + 2, message, length);
 
   nettle_mpz_set_str_256_u(m, key_size - 1, em);
+
+  TMP_GMP_FREE(em);
   return 1;
 }

@@ -1,3 +1,24 @@
+2013-12-15  Nikos Mavrogiannopoulos <nmav@redhat.com>
+
+	Introduced TMP_GMP_ALLOC macro for temporary allocations of
+	potentially large data, e.g, sized as an RSA key.
+	* gmp-glue.h (TMP_GMP_DECL, TMP_GMP_ALLOC, TMP_GMP_FREE): New
+	macros.
+	* gmp-glue.c (gmp_alloc, gmp_free): New functions.
+	* bignum-next-prime.c (nettle_next_prime): Use TMP_GMP_ALLOC.
+	* bignum-random.c (nettle_mpz_random_size): Likewise.
+	* pkcs1-decrypt.c (pkcs1_decrypt): Likewise.
+	* pkcs1-encrypt.c (pkcs1_encrypt): Likewise.
+	* pkcs1-rsa-digest.c (pkcs1_rsa_digest_encode): Likewise.
+	* pkcs1-rsa-sha512.c (pkcs1_rsa_sha512_encode)
+	(pkcs1_rsa_sha512_encode_digest): Likewise.
+	* pkcs1-rsa-sha256.c (pkcs1_rsa_sha256_encode)
+	(pkcs1_rsa_sha256_encode_digest): Likewise.
+	* pkcs1-rsa-sha1.c (pkcs1_rsa_sha1_encode)
+	(pkcs1_rsa_sha1_encode_digest): Likewise.
+	* pkcs1-rsa-md5.c (pkcs1_rsa_md5_encode)
+	(pkcs1_rsa_md5_encode_digest): Likewise.
+
 2013-12-14  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86_64/gcm-hash8.asm: Use .short rather than .hword, for

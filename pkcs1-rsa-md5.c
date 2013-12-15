@@ -36,7 +36,7 @@
 #include "bignum.h"
 #include "pkcs1.h"
 
-#include "nettle-internal.h"
+#include "gmp-glue.h"
 
 /* From pkcs-1v2
  *
@@ -65,8 +65,9 @@ int
 pkcs1_rsa_md5_encode(mpz_t m, size_t key_size, struct md5_ctx *hash)
 {
   uint8_t *p;
-  TMP_DECL(em, uint8_t, NETTLE_MAX_BIGNUM_SIZE);
-  TMP_ALLOC(em, key_size);
+  TMP_GMP_DECL(em, uint8_t);
+
+  TMP_GMP_ALLOC(em, key_size);
 
   p = _pkcs1_signature_prefix(key_size, em,
 			      sizeof(md5_prefix),
@@ -76,18 +77,23 @@ pkcs1_rsa_md5_encode(mpz_t m, size_t key_size, struct md5_ctx *hash)
     {
       md5_digest(hash, MD5_DIGEST_SIZE, p);
       nettle_mpz_set_str_256_u(m, key_size, em);
+      TMP_GMP_FREE(em);
       return 1;
     }
   else
-    return 0;
+    {
+      TMP_GMP_FREE(em);
+      return 0;
+    }
 }
 
 int
 pkcs1_rsa_md5_encode_digest(mpz_t m, size_t key_size, const uint8_t *digest)
 {
   uint8_t *p;
-  TMP_DECL(em, uint8_t, NETTLE_MAX_BIGNUM_SIZE);
-  TMP_ALLOC(em, key_size);
+  TMP_GMP_DECL(em, uint8_t);
+
+  TMP_GMP_ALLOC(em, key_size);
 
   p = _pkcs1_signature_prefix(key_size, em,
 			      sizeof(md5_prefix),
@@ -97,8 +103,12 @@ pkcs1_rsa_md5_encode_digest(mpz_t m, size_t key_size, const uint8_t *digest)
     {
       memcpy(p, digest, MD5_DIGEST_SIZE);
       nettle_mpz_set_str_256_u(m, key_size, em);
+      TMP_GMP_FREE(em);
       return 1;
     }
   else
-    return 0;
+    {
+      TMP_GMP_FREE(em);
+      return 0;
+    }
 }

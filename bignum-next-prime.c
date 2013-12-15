@@ -31,8 +31,7 @@
 #include <stdlib.h>
 
 #include "bignum.h"
-
-#include "nettle-internal.h"
+#include "gmp-glue.h"
 
 /* From gmp.h */
 /* Test for gcc >= maj.min, as per __GNUC_PREREQ in glibc */
@@ -77,9 +76,8 @@ nettle_next_prime(mpz_t p, mpz_t n, unsigned count, unsigned prime_limit,
 		  void *progress_ctx, nettle_progress_func *progress)
 {
   mpz_t tmp;
-  TMP_DECL(moduli, unsigned, NUMBER_OF_PRIMES);
-  
   unsigned difference;
+  TMP_GMP_DECL(moduli, unsigned);
 
   if (prime_limit > NUMBER_OF_PRIMES)
     prime_limit = NUMBER_OF_PRIMES;
@@ -112,7 +110,8 @@ nettle_next_prime(mpz_t p, mpz_t n, unsigned count, unsigned prime_limit,
      between the 5760 odd numbers in this interval that have no factor
      in common with 15015.
    */
-  TMP_ALLOC(moduli, prime_limit);
+  TMP_GMP_ALLOC(moduli, prime_limit);
+
   {
     unsigned i;
     for (i = 0; i < prime_limit; i++)
@@ -159,4 +158,5 @@ nettle_next_prime(mpz_t p, mpz_t n, unsigned count, unsigned prime_limit,
 #endif
     }
   mpz_clear(tmp);
+  TMP_GMP_FREE(moduli);
 }

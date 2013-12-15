@@ -30,7 +30,7 @@
 #include <stdlib.h>
 
 #include "bignum.h"
-#include "nettle-internal.h"
+#include "gmp-glue.h"
 
 void
 nettle_mpz_random_size(mpz_t x,
@@ -38,15 +38,17 @@ nettle_mpz_random_size(mpz_t x,
 		       unsigned bits)
 {
   unsigned length = (bits + 7) / 8;
-  TMP_DECL(data, uint8_t, NETTLE_MAX_BIGNUM_SIZE);
-  TMP_ALLOC(data, length);
+  TMP_GMP_DECL(data, uint8_t);
+
+  TMP_GMP_ALLOC(data, length);
 
   random(ctx, length, data);
-
   nettle_mpz_set_str_256_u(x, length, data);
 
   if (bits % 8)
     mpz_fdiv_r_2exp(x, x, bits);
+  
+  TMP_GMP_FREE(data);
 }
 
 /* Returns a random number x, 0 <= x < n */

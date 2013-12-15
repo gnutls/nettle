@@ -3,7 +3,8 @@
 /* nettle, low-level cryptographics library
  *
  * Copyright (C) 2013 Niels Möller
- *  
+ * Copyright (C) 2013 Red Hat
+ *
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at your
@@ -65,6 +66,17 @@
 #define mpn_set_base256 _nettle_mpn_set_base256
 #define gmp_alloc_limbs _nettle_gmp_alloc_limbs
 #define gmp_free_limbs _nettle_gmp_free_limbs
+#define gmp_free _nettle_gmp_free
+#define gmp_alloc _nettle_gmp_alloc
+
+#define TMP_GMP_DECL(name, type) type *name;	\
+  size_t tmp_##name##_size
+#define TMP_GMP_ALLOC(name, size) do {					\
+    tmp_##name##_size = (size);						\
+    (name) = gmp_alloc(sizeof (*name) * (size));	\
+  } while (0)
+#define TMP_GMP_FREE(name) (gmp_free(name, tmp_##name##_size))
+
 
 /* Use only in-place operations, so we can fall back to addmul_1/submul_1 */
 #ifdef mpn_cnd_add_n
@@ -155,5 +167,7 @@ gmp_alloc_limbs (mp_size_t n);
 void
 gmp_free_limbs (mp_limb_t *p, mp_size_t n);
 
+void *gmp_alloc(size_t n);
+void gmp_free(void *p, size_t n);
 
 #endif /* NETTLE_GMP_GLUE_H_INCLUDED */

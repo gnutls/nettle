@@ -3,7 +3,8 @@
 /* nettle, low-level cryptographics library
  *
  * Copyright (C) 2013 Niels Möller
- *  
+ * Copyright (C) 2013 Red Hat
+ *
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at your
@@ -238,4 +239,26 @@ gmp_free_limbs (mp_limb_t *p, mp_size_t n)
   mp_get_memory_functions (NULL, NULL, &free_func);
 
   free_func (p, (size_t) n * sizeof(mp_limb_t));
+}
+
+void *
+gmp_alloc(size_t n)
+{
+  void *(*alloc_func)(size_t);
+  assert (n > 0);
+
+  mp_get_memory_functions(&alloc_func, NULL, NULL);
+
+  return alloc_func (n);
+}
+
+void
+gmp_free(void *p, size_t n)
+{
+  void (*free_func)(void *, size_t);
+  assert (n > 0);
+  assert (p != 0);
+  mp_get_memory_functions (NULL, NULL, &free_func);
+
+  free_func (p, (size_t) n);
 }

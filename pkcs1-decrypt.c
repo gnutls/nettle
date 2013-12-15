@@ -31,42 +31,58 @@
 #include "pkcs1.h"
 
 #include "bignum.h"
-#include "nettle-internal.h"
+#include "gmp-glue.h"
 
 int
 pkcs1_decrypt (size_t key_size,
 	       const mpz_t m,
 	       size_t *length, uint8_t *message)
 {
-  TMP_DECL(em, uint8_t, NETTLE_MAX_BIGNUM_SIZE);
+  TMP_GMP_DECL(em, uint8_t);
   uint8_t *terminator;
   size_t padding;
   size_t message_length;
+  int ret;
 
-  TMP_ALLOC(em, key_size);
+  TMP_GMP_ALLOC(em, key_size);
   nettle_mpz_get_str_256(key_size, em, m);
 
   /* Check format */
   if (em[0] || em[1] != 2)
-    return 0;
+    {
+      ret = 0;
+      goto cleanup;
+    }
 
   terminator = memchr(em + 2, 0, key_size - 2);
 
   if (!terminator)
-    return 0;
+    {
+      ret = 0;
+      goto cleanup;
+    }
   
   padding = terminator - (em + 2);
   if (padding < 8)
-    return 0;
+    {
+      ret = 0;
+      goto cleanup;
+    }
 
   message_length = key_size - 3 - padding;
 
   if (*length < message_length)
-    return 0;
+    {
+      ret = 0;
+      goto cleanup;
+    }
   
   memcpy(message, terminator + 1, message_length);
   *length = message_length;
 
-  return 1;
+  ret = 1;
+cleanup:
+  TMP_GMP_FREE(em);
+  return ret;
 }
 	       
