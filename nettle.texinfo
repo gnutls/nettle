@@ -3029,6 +3029,7 @@ function, although the implementation of @acronym{DSA} with
 @acronym{SHA256} should be considered somewhat experimental due to lack
 of official test vectors and interoperability testing.
 
+@c FIXME: Update for new DSA interface
 @deftypefun int dsa_sha1_sign (const struct dsa_public_key *@var{pub}, const struct dsa_private_key *@var{key}, void *@var{random_ctx}, nettle_random_func @var{random}, struct sha1_ctx *@var{hash}, struct dsa_signature *@var{signature})
 @deftypefunx int dsa_sha1_sign_digest (const struct dsa_public_key *@var{pub}, const struct dsa_private_key *@var{key}, void *@var{random_ctx}, nettle_random_func @var{random}, const uint8_t *@var{digest}, struct dsa_signature *@var{signature})
 @deftypefunx int dsa_sha256_sign (const struct dsa_public_key *@var{pub}, const struct dsa_private_key *@var{key}, void *@var{random_ctx}, nettle_random_func @var{random}, struct sha256_ctx *@var{hash}, struct dsa_signature *@var{signature})
