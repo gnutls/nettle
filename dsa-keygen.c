@@ -33,7 +33,6 @@
 #include "dsa.h"
 
 #include "bignum.h"
-#include "nettle-internal.h"
 
 
 /* Valid sizes, according to FIPS 186-3 are (1024, 160), (2048, 224),
