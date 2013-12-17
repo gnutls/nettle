@@ -1,4 +1,4 @@
-2013-12-12  Niels Möller  <nisse@lysator.liu.se>
+2013-12-17  Niels Möller  <nisse@lysator.liu.se>
 
 	* bignum-random-prime.c (_nettle_generate_pocklington_prime): Use
 	stronger variants of Pocklington's theorem, to allow p0 of size
