@@ -332,10 +332,19 @@ EOF
       AC_MSG_WARN([No assembler files found.])
     fi
   fi
+  case "$host_os" in
+    darwin*)
+      ASM_RODATA='.section __TEXT,__const'
+      ;;
+    *)
+      ASM_RODATA='.section .rodata'
+      ;;
+  esac
 fi
 
 AC_SUBST([OPT_ASM_NETTLE_SOURCES])
 AC_SUBST([OPT_ASM_HOGWEED_SOURCES])
+AC_SUBST([ASM_RODATA])
 
 AH_VERBATIM([HAVE_NATIVE],
 [/* Define to 1 each of the following for which a native (ie. CPU specific)

@@ -1,5 +1,10 @@
 2013-12-17  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac (ASM_RODATA): New substituted variable. Needed for
+	portability to darwin.
+	* config.m4.in: Define RODATA, using configure variable ASM_RODATA
+	* x86_64/gcm-hash8.asm: Use RODATA macro.
+
 	* bignum-random-prime.c (_nettle_generate_pocklington_prime): Use
 	stronger variants of Pocklington's theorem, to allow p0 of size
 	down to bits/3.

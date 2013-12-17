@@ -188,7 +188,7 @@ ALIGN(16)
 EPILOGUE(_nettle_gcm_hash8)
 
 define(<W>, <0x$2$1>)
-	.section .rodata
+	RODATA
 	ALIGN(2)
 .Lshift_table:
 .short W(00,00),W(01,c2),W(03,84),W(02,46),W(07,08),W(06,ca),W(04,8c),W(05,4e)
