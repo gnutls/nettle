@@ -167,7 +167,8 @@ prime_by_size[9] = {
 };
 
 /* Combined Miller-Rabin test to the base a, and checking the
-   conditions from Pocklington's theorem. */
+   conditions from Pocklington's theorem, nm1dq holds (n-1)/q, with q
+   prime. */
 static int
 miller_rabin_pocklington(mpz_t n, mpz_t nm1, mpz_t nm1dq, mpz_t a)
 {
@@ -229,34 +230,93 @@ miller_rabin_pocklington(mpz_t n, mpz_t nm1, mpz_t nm1dq, mpz_t a)
   return is_prime;
 }
 
-/* The algorithm is based on the following special case of
-   Pocklington's theorem:
+/* The most basic variant of Pocklingtons theorem:
 
-   Assume that n = 1 + f q, where q is a prime, q > sqrt(n) - 1. If we
-   can find an a such that
+   Assume that q^e | (n-1), with q prime. If we can find an a such that
 
      a^{n-1} = 1 (mod n)
-     gcd(a^f - 1, n) = 1
+     gcd(a^{(n-1)/q} - 1, n) = 1
 
-   then n is prime.
+   then any prime divisor p of n satisfies p = 1 (mod q^e).
 
-   Proof: Assume that n is composite, with smallest prime factor p <=
-   sqrt(n). Since q is prime, and q > sqrt(n) - 1 >= p - 1, q and p-1
-   are coprime, so that we can define u = q^{-1} (mod (p-1)). The
-   assumption a^{n-1} = 1 (mod n) implies that also a^{n-1} = 1 (mod
-   p). Since p is prime, we have a^{(p-1)} = 1 (mod p). Now, r =
-   (n-1)/q = (n-1) u (mod (p-1)), and it follows that a^r = a^{(n-1)
-   u} = 1 (mod p). Then p is a common factor of a^r - 1 and n. This
-   contradicts gcd(a^r - 1, n) = 1, and concludes the proof.
+   Proof (Cohen, 8.3.2): Assume p is a prime factor of n. The central
+   idea of the proof is to consider the order, modulo p, of a. Denote
+   this by d.
 
-   If n is specified as k bits, we need q of size ceil(k/2) + 1 bits
-   (or more) to make the theorem apply.
+   a^{n-1} = 1 (mod n) implies a^{n-1} = 1 (mod p), hence d | (n-1).
+   Next, the condition gcd(a^{(n-1)/q} - 1, n) = 1 implies that
+   a^{(n-1)/q} != 1, hence d does not divide (n-1)/q. Since q is
+   prime, this means that q^e | d.
+
+   Finally, we have a^{p-1} = 1 (mod p), hence d | (p-1). So q^e | d |
+   (p-1), which gives the desired result: p = 1 (mod q^e).
+
+
+   * Variant, slightly stronger than Fact 4.59, HAC:
+
+   Assume n = 1 + 2rq, q an odd prime, r <= 2q, and 
+
+     a^{n-1} = 1 (mod n)
+     gcd(a^{(n-1)/q} - 1, n) = 1
+
+   Then n is prime.
+
+   Proof: By Pocklington's theorem, any prime factor p satisfies p = 1
+   (mod q). Neither 1 or q+1 are primes, hence p >= 1 + 2q. If n is
+   composite, we have n >= (1+2q)^2. But the assumption r <= 2q
+   implies n <= 1 + 4q^2, a contradiction.
+
+   In bits, the requirement is that #n <= 2 #q, then
+
+     r = (n-1)/2q < 2^{#n - #q} <= 2^#q = 2 2^{#q-1}< 2 q
+
+
+   * Another variant with an extra test (Variant of Fact 4.42, HAC):
+
+   Assume n = 1 + 2rq, n odd, q an odd prime, 8 q^3 >= n
+
+     a^{n-1} = 1 (mod n)
+     gcd(a^{(n-1)/q} - 1, n) = 1
+
+   Also let x = floor(r / 2q), y = r mod 2q, 
+
+   If y^2 - 4x is not a square, then n is prime.
+
+   Proof (adapted from Maurer, Journal of Cryptology, 8 (1995)):
+
+   Assume n is composite. There are at most two factors, both odd,
+
+     n = (1+2m_1 q)(1+2m_2 q) = 1 + 4 m_1 m_2 q^2 + 2 (m_1 + m_2) q
+     
+   where we can assume m_1 >= m_2. Then the bound n <= 8 q^3 implies m_1
+   m_2 < 2q, restricting (m_1, m_2) to the domain 0 < m_2 <
+   sqrt(2q), 0 < m_1 < 2q / m_2.
+
+   We have the bound
+
+     m_1 + m_2 < 2q / m_2 + m_2 <= 2q + 1 (maximum value for m_2 = 1)
+
+   And the case m_1 = 2q, m_2 = 1 can be excluded, because it gives n
+   > 8q^3. So in fact, m_1 + m_2 < 2q.
+
+   Next, write r = (n-1)/2q = 2 m_1 m_2 q + m_1 + m_2.
+   
+   If follows that m_1 + m_2 = y and m_1 m_2 = x. m_1 and m_2 are
+   thus the roots of the equation
+
+     m^2 - y m + x = 0
+
+   which has integer roots iff y^2 - 4 x is the square of an integer.
+
+   In bits, the requirement is that #n <= 3 #q, then
+
+     n < 2^#n <= 2^{3 #q} = 8 2^{3 (#q-1)} < 8 q^3
 */
 
 /* Generate a prime number p of size bits with 2 p0q dividing (p-1).
-   p0 must be of size >= ceil(bits/2) + 1. The extra factor q can be
-   omitted. If top_bits_set is one, the top most two bits are one,
-   suitable for RSA primes. */
+   p0 must be of size >= ceil(bits/3). The extra factor q can be
+   omitted. If top_bits_set is one, the topmost two bits are set to
+   one, suitable for RSA primes. Also returns r = (p-1)/q. */
 void
 _nettle_generate_pocklington_prime (mpz_t p, mpz_t r,
 				    unsigned bits, int top_bits_set, 
@@ -265,14 +325,33 @@ _nettle_generate_pocklington_prime (mpz_t p, mpz_t r,
 				    const mpz_t q,
 				    const mpz_t p0q)
 {
-  mpz_t r_min, r_range, pm1,a;
-  
-  assert (2*mpz_sizeinbase (p0, 2) > bits + 1);
+  mpz_t r_min, r_range, pm1, a, e;
+  int need_square_test;
+  unsigned p0_bits;
+  mpz_t x, y, p04;
+
+  p0_bits = mpz_sizeinbase (p0, 2);
+
+  assert (bits <= 3*p0_bits);
+  assert (bits > p0_bits);
+
+  need_square_test = (bits > 2 * p0_bits);
 
   mpz_init (r_min);
   mpz_init (r_range);
   mpz_init (pm1);
   mpz_init (a);
+
+  if (need_square_test)
+    {
+      mpz_init (x);
+      mpz_init (y);
+      mpz_init (p04);
+      mpz_mul_2exp (p04, p0, 2);
+    }
+
+  if (q)
+    mpz_init (e);
 
   if (top_bits_set)
     {
@@ -293,6 +372,7 @@ _nettle_generate_pocklington_prime (mpz_t p, mpz_t r,
       mpz_fdiv_q (r_range, r_range, p0q);
       mpz_add_ui (r_min, r_range, 1);
     }
+
   for (;;)
     {
       uint8_t buf[1];
@@ -319,25 +399,54 @@ _nettle_generate_pocklington_prime (mpz_t p, mpz_t r,
 
       if (q)
 	{
-	  mpz_t e;
-	  int is_prime;
-	  
-	  mpz_init (e);
-
 	  mpz_mul (e, r, q);
-	  is_prime = miller_rabin_pocklington(p, pm1, e, a);
-	  mpz_clear (e);
+	  if (!miller_rabin_pocklington(p, pm1, e, a))
+	    continue;
 
-	  if (is_prime)
-	    break;
+	  if (need_square_test)
+	    {
+	      /* Our e corresponds to 2r in the theorem */
+	      mpz_tdiv_qr (x, y, e, p04);
+	      goto square_test;
+	    }
 	}
-      else if (miller_rabin_pocklington(p, pm1, r, a))
-	break;
+      else
+	{
+	  if (!miller_rabin_pocklington(p, pm1, r, a))
+	    continue;
+	  if (need_square_test)
+	    {
+	      mpz_tdiv_qr (x, y, r, p04);
+	    square_test:
+	      /* We have r' = 2r, x = floor (r/2q) = floor(r'/2q),
+		 and y' = r' - x 4q = 2 (r - x 2q) = 2y.
+
+		 Then y^2 - 4x is a square iff y'^2 - 16 x is a
+		 square. */
+		 
+	      mpz_mul (y, y, y);
+	      mpz_submul_ui (y, x, 16);
+	      if (mpz_perfect_square_p (y))
+		continue;
+	    }
+	}
+
+      /* If we passed all the tests, we have found a prime. */
+      break;
     }
   mpz_clear (r_min);
   mpz_clear (r_range);
   mpz_clear (pm1);
   mpz_clear (a);
+
+  if (need_square_test)
+    {
+      mpz_clear (x);
+      mpz_clear (y);
+      mpz_clear (p04);
+    }
+  if (q)
+    mpz_clear (e);
 }
 
 /* Generate random prime of a given size. Maurer's algorithm (Alg.
