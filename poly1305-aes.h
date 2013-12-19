@@ -39,7 +39,6 @@ extern "C" {
 
 #define poly1305_aes_set_key nettle_poly1305_aes_set_key
 #define poly1305_aes_set_nonce nettle_poly1305_aes_set_nonce
-#define poly1305_aes_update nettle_poly1305_aes_update
 #define poly1305_aes_digest nettle_poly1305_aes_digest
 
 struct poly1305_aes_ctx POLY1305_CTX(struct aes_ctx);
@@ -53,9 +52,8 @@ void
 poly1305_aes_set_nonce (struct poly1305_aes_ctx *ctx,
 		        const uint8_t *nonce);
 
-void
-poly1305_aes_update (struct poly1305_aes_ctx *ctx,
-		     size_t length, const uint8_t *data);
+#define poly1305_aes_update \
+  (*(void(*)(struct poly1305_aes_ctx *, size_t, const uint8_t *))&poly1305_update)
 
 /* The _digest functions increment the nonce */
 void

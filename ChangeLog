@@ -1,3 +1,15 @@
+2013-12-19  Niels Möller  <nisse@lysator.liu.se>
+
+	* poly1305-aes.h (poly1305_aes_update): Define as an alias for
+	poly1305_update, using preprocessor and a type cast.
+
+	* poly1305-aes.c (poly1305_aes_update): Deleted function.
+
+	* poly1305.h (poly1305_update): Declare.
+	(_POLY1305_BLOCK, POLY1305_UPDATE): Deleted macros.
+
+	* poly1305.c (poly1305_update): New function.
+
 2013-11-21  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86_64/poly1305-internal.asm: New file. Almost a factor of two

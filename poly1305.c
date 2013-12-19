@@ -26,8 +26,16 @@
 
 #include "poly1305.h"
 
+#include "macros.h"
+
 void
 poly1305_set_nonce (struct poly1305_ctx *ctx, const uint8_t * nonce)
 {
   memcpy (ctx->nonce, nonce, 16);
+}
+
+void
+poly1305_update (struct poly1305_ctx *ctx, size_t length, const uint8_t *data)
+{
+  MD_UPDATE (ctx, length, data, poly1305_block, (void) 0);
 }

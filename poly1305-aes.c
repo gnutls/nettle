@@ -41,13 +41,6 @@ poly1305_aes_set_nonce (struct poly1305_aes_ctx *ctx,
 }
 
 void
-poly1305_aes_update (struct poly1305_aes_ctx *ctx,
-		     size_t length, const uint8_t * data)
-{
-  POLY1305_UPDATE(ctx, length, data);
-}
-
-void
 poly1305_aes_digest (struct poly1305_aes_ctx *ctx,
 		     size_t length, uint8_t * digest)
 {

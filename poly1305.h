@@ -30,9 +30,7 @@
 extern "C" {
 #endif
 
-/* Low level functions/macros for the poly1305 construction.
- * For the macros to be useful include macros.h
- */
+/* Low level functions/macros for the poly1305 construction. */
 
 #include "nettle-types.h"
 
@@ -46,7 +44,7 @@ struct poly1305_ctx {
   uint32_t s32[3];
   /* State, represented as words of 26, 32 or 64 bits, depending on
      implementation. */
-  /* High bits, first to maintain alignment. */
+  /* High bits first, to maintain alignment. */
   uint32_t hh;
   union
   {
@@ -65,13 +63,14 @@ struct poly1305_ctx {
 
 #define poly1305_set_key nettle_poly1305_set_key
 #define poly1305_set_nonce nettle_poly1305_set_nonce
+#define poly1305_update nettle_poly1305_update
 #define poly1305_block nettle_poly1305_block
 #define poly1305_digest nettle_poly1305_digest
 
 void poly1305_set_key(struct poly1305_ctx *ctx, const uint8_t key[16]);
 void poly1305_set_nonce (struct poly1305_ctx *ctx, const uint8_t * nonce);
 void poly1305_block (struct poly1305_ctx *ctx, const uint8_t m[16]);
-
+void poly1305_update (struct poly1305_ctx *ctx, size_t size, const uint8_t *data);
 void poly1305_digest (struct poly1305_ctx *ctx,
 		      size_t length, uint8_t *digest, const uint8_t *s);
 
@@ -84,14 +83,6 @@ void poly1305_digest (struct poly1305_ctx *ctx,
 
 #define POLY1305_SET_NONCE(ctx, data)		\
   poly1305_set_nonce(&(ctx)->pctx, (data))
-
-#define _POLY1305_BLOCK(ctx, block) do {	\
-    poly1305_block(ctx, block);			\
-  } while (0)
-
-
-#define POLY1305_UPDATE(ctx, length, data)			\
-  MD_UPDATE (&(ctx)->pctx, (length), (data), _POLY1305_BLOCK, (void) 0)
 
 #define POLY1305_DIGEST(ctx, encrypt, length, digest)		\
   do { 								\
