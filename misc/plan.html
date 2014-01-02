@@ -14,7 +14,7 @@
   <h1> Nettle release plans </h1>
   <p> This is an attempt at defining a development target for
   Nettle-2.8, inspired by similar pages for recent GMP releases. [Last
-  updated 2013-10-05]</p>
+  updated 2014-01-02]</p>
   <p class='should'>
     This really ought to be done before release
   </p>
@@ -30,7 +30,7 @@
 
   <h1> Plans for nettle-2.8 </h1>
 
-  <p> nettle-2.8 is intended to be a minor API cleanup, with few new
+  <p> nettle-2.8 is intended to be an API cleanup, with few new
   features. </p>
 
   <h2> Interface changes </h2>
@@ -65,19 +65,43 @@
     Rename gcm "iv" to "nonce". Keep old names for backwards
     compatibility.
   </p>
-
+  <p class='should'>
+    New DSA interface, with a separate struct dsa_params.
+  </p>
+  
   <h2> New features </h2>
   <p class='done'>
     Add <a href='http://www.cs.ucdavis.edu/~rogaway/papers/eax.pdf'>EAX</a >
     mode?
   </p>
-  
+  <p class='should'>
+    Add poly1305.
+  </p>
+  <p class='should'>
+    Add chacha.
+  </p>
+  <p class='should'>
+    Add ecc_bitsize function.
+  </p>
+  <p class='wish'>
+    Add functions for converting ECC points to and from ANSI x9.62.
+  </p>
+  <p class='wish'>
+    Use side-channel silent GMP functions for RSA and DSA. May require
+    additional interface changes, to use mpn functions.
+  </p>
   <h2> Documentation </h2>
   <p class='should'>
     Document new AES interface.
   </p>
   <p class='should'>
     Document new EAX mode.
+  </p>
+  <p class='should'>
+    Document new DSA interface.
+  </p>
+  <p class='should'>
+    Document poly1305.
   </p>
   
   <h2> Build system </h2>
