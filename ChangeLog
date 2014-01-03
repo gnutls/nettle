@@ -1,3 +1,8 @@
+2014-01-03  Niels Möller  <nisse@lysator.liu.se>
+
+	* shadata.c (main): Zero-pad output values to 8 hex digits.
+	* sha256.c (K): Updated table.
+
 2013-12-17  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac (ASM_RODATA): New substituted variable. Needed for
