@@ -1943,7 +1943,7 @@ each message.
 Additional authenticated data, which is to be included in the message
 authentication, but not encrypted. May be empty.
 @item
-The plaintext. Maybe empty.
+The plaintext. May be empty.
 @end itemize
 
 The outputs are a ciphertext, of the same length as the plaintext, and a
