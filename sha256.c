@@ -129,7 +129,7 @@ sha256_digest(struct sha256_ctx *ctx,
 void
 sha224_init(struct sha256_ctx *ctx)
 {
-  /* Initial values. I's unclear how they are chosen. */
+  /* Initial values. Low 32 bits of the initial values for sha384. */
   static const uint32_t H0[_SHA256_DIGEST_LENGTH] =
   {
     0xc1059ed8, 0x367cd507, 0x3070dd17, 0xf70e5939,

@@ -57,7 +57,7 @@ sha1_init(struct sha1_ctx *ctx)
      can initialize with a single memcpy. */
   static const uint32_t iv[_SHA1_DIGEST_LENGTH] = 
     {
-      /* SHA initial values */
+      /* SHA initial values, first 4 identical to md5's. */
       0x67452301L,
       0xEFCDAB89L,
       0x98BADCFEL,
