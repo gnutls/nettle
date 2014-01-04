@@ -1,3 +1,8 @@
+2014-01-04  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/Makefile.in (VALGRIND): Added --partial-loads-ok=yes,
+	needed for the way unaligned data is handled in, e.g., memxor.
+
 2014-01-03  Niels Möller  <nisse@lysator.liu.se>
 
 	* shadata.c (main): Zero-pad output values to 8 hex digits.
