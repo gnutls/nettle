@@ -1,5 +1,10 @@
 2014-01-04  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/memxor-test.c [HAVE_VALGRIND_MEMCHECK_H] (test_mark):
+	New function.
+	(test_memxor, test_memxor3): Use test_mark to tell valgrind the
+	start and end of src and destination areas.
+
 	* configure.ac: Check for valgrind/memcheck.h.
 
 	* testsuite/Makefile.in (VALGRIND): Added --partial-loads-ok=yes,
