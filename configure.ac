@@ -638,6 +638,8 @@ AC_CHECK_HEADERS([openssl/blowfish.h openssl/des.h openssl/cast.h openssl/aes.h 
 [enable_openssl=no
  break])
 
+AC_CHECK_HEADERS([valgrind/memcheck.h])
+
 LSH_FUNC_ALLOCA
 LSH_FUNC_STRERROR
 
