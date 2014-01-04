@@ -1,5 +1,9 @@
 2014-01-04  Niels Möller  <nisse@lysator.liu.se>
 
+	* config.guess: Updated to 2014-01-01 version, from
+	git://git.sv.gnu.org/config.git.
+	* config.sub: Likewise.
+
 	* testsuite/memxor-test.c [HAVE_VALGRIND_MEMCHECK_H] (test_mark):
 	New function.
 	(test_memxor, test_memxor3): Use test_mark to tell valgrind the
