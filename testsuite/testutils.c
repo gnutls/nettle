@@ -1102,6 +1102,7 @@ test_dsa256(const struct dsa_public_key *pub,
   dsa_signature_clear(&signature);
 }
 
+#if 0
 void
 test_dsa_sign(const struct dsa_public_key *pub,
 	      const struct dsa_private_key *key,
@@ -1158,6 +1159,7 @@ test_dsa_sign(const struct dsa_public_key *pub,
   free (bad_digest);
   dsa_signature_clear(&signature);
 }
+#endif
 
 void
 test_dsa_verify(const struct dsa_public_key *pub,
@@ -1179,18 +1181,21 @@ test_dsa_verify(const struct dsa_public_key *pub,
   mpz_set (signature.r, ref->r);
   mpz_set (signature.s, ref->s);
 
-  ASSERT (dsa_verify (pub, hash->digest_size, digest,
-		      &signature));
+  ASSERT (_dsa_verify ((struct dsa_params *) pub, pub->y,
+		       hash->digest_size, digest,
+		       &signature));
 
   /* Try bad signature */
   mpz_combit(signature.r, 17);
-  ASSERT (!dsa_verify (pub, hash->digest_size, digest,
-		       &signature));
+  ASSERT (!_dsa_verify ((struct dsa_params *) pub, pub->y,
+			hash->digest_size, digest,
+			&signature));
   
   /* Try bad data */
   digest[hash->digest_size / 2-1] ^= 8;
-  ASSERT (!dsa_verify (pub, hash->digest_size, digest,
-		       ref));
+  ASSERT (!_dsa_verify ((struct dsa_params *) pub, pub->y,
+			hash->digest_size, digest,
+			ref));
 
   free (ctx);
   free (digest);

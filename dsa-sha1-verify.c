@@ -36,7 +36,8 @@ dsa_sha1_verify_digest(const struct dsa_public_key *key,
 		       const uint8_t *digest,
 		       const struct dsa_signature *signature)
 {
-  return dsa_verify(key, SHA1_DIGEST_SIZE, digest, signature);
+  return _dsa_verify((const struct dsa_params *) key, key->y,
+		     SHA1_DIGEST_SIZE, digest, signature);
 }
 
 int
@@ -47,5 +48,6 @@ dsa_sha1_verify(const struct dsa_public_key *key,
   uint8_t digest[SHA1_DIGEST_SIZE];
   sha1_digest(hash, sizeof(digest), digest);
 
-  return dsa_verify(key, sizeof(digest), digest, signature);
+  return _dsa_verify((const struct dsa_params *) key, key->y,
+		     sizeof(digest), digest, signature);
 }

@@ -1,3 +1,32 @@
+2014-01-04  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/testutils.c (test_dsa_sign): #if:ed out, unused.
+	(test_dsa_verify): Use _dsa_verify.
+
+	* dsa-verify.c (_dsa_verify): New function, with a struct
+	dsa_params * as a separate argument.
+	(dsa_verify): Use _dsa_verify.
+	* dsa-sha1-verify.c (dsa_sha1_verify_digest, dsa_sha1_verify): Use
+	_dsa_verify.
+	* dsa-sha256-verify.c (dsa_sha256_verify_digest)
+	(dsa_sha256_verify): Likewise.
+
+	* dsa-sign.c (_dsa_sign): New function, with struct dsa_params *
+	as a separate argument.
+	(dsa_sign): Use _dsa_sign.
+	* dsa-sha1-sign.c (dsa_sha1_sign_digest, dsa_sha1_sign): Use
+	_dsa_sign, cast the struct dsa_public_key * input to a struct
+	dsa_params *.
+	* dsa-sha256-sign.c (dsa_sha256_sign_digest, dsa_sha256_sign):
+	Likewise.
+
+	* dsa.c (dsa_params_init, dsa_params_clear): New functions.
+	(dsa_value_init, dsa_value_clear): New functions.
+	(dsa_public_key_init): Use dsa_params_init.
+	(dsa_public_key_clear): Use dsa_params_clear.
+
+	* dsa.h (dsa_params, dsa_value): New structs.
+
 2014-01-03  Niels Möller  <nisse@lysator.liu.se>
 
 	* shadata.c (main): Zero-pad output values to 8 hex digits.

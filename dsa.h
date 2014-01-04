@@ -38,6 +38,10 @@ extern "C" {
 #endif
 
 /* Name mangling */
+#define dsa_params_init nettle_dsa_params_init
+#define dsa_params_clear nettle_dsa_params_clear
+#define dsa_value_init nettle_dsa_value_init
+#define dsa_value_clear nettle_dsa_value_clear
 #define dsa_public_key_init nettle_dsa_public_key_init
 #define dsa_public_key_clear nettle_dsa_public_key_clear
 #define dsa_private_key_init nettle_dsa_private_key_init
@@ -50,6 +54,8 @@ extern "C" {
 #define dsa_sha256_verify nettle_dsa_sha256_verify
 #define dsa_sign nettle_dsa_sign
 #define dsa_verify nettle_dsa_verify
+#define _dsa_sign _nettle_dsa_sign
+#define _dsa_verify _nettle_dsa_verify
 #define dsa_sha1_sign_digest nettle_dsa_sha1_sign_digest
 #define dsa_sha1_verify_digest nettle_dsa_sha1_verify_digest
 #define dsa_sha256_sign_digest nettle_dsa_sha256_sign_digest
@@ -66,6 +72,7 @@ extern "C" {
 #define dsa_openssl_private_key_from_der nettle_openssl_provate_key_from_der
 #define _dsa_hash _nettle_dsa_hash
 
+/* For FIPS approved parameters */
 #define DSA_SHA1_MIN_P_BITS 512
 #define DSA_SHA1_Q_OCTETS 20
 #define DSA_SHA1_Q_BITS 160
@@ -73,8 +80,9 @@ extern "C" {
 #define DSA_SHA256_MIN_P_BITS 1024
 #define DSA_SHA256_Q_OCTETS 32
 #define DSA_SHA256_Q_BITS 256
-  
-struct dsa_public_key
+
+/* Tentative new DSA interface */
+struct dsa_params
 {  
   /* Modulo */
   mpz_t p;
@@ -84,7 +92,83 @@ struct dsa_public_key
 
   /* Generator */
   mpz_t g;
+};
+
+struct dsa_signature
+{
+  mpz_t r;
+  mpz_t s;
+};
+
+struct dsa_value
+{
+  const struct dsa_params *params;
+  /* For private keys, represents an exponent (0 < x < q). For public
+     keys, represents a group element, 0 < x < p) */
+  mpz_t x;
+};
+
+void
+dsa_params_init (struct dsa_params *params);
+
+void
+dsa_params_clear (struct dsa_params *params);
+
+void
+dsa_value_init (struct dsa_value *value, const struct dsa_params *params);
+
+void
+dsa_value_clear (struct dsa_value *value);
+
+/* Calls mpz_init to initialize bignum storage. */
+void
+dsa_signature_init(struct dsa_signature *signature);
+
+/* Calls mpz_clear to deallocate bignum storage. */
+void
+dsa_signature_clear(struct dsa_signature *signature);
+
+int
+dsa_sign(const struct dsa_value *key,
+	 void *random_ctx, nettle_random_func *random,
+	 size_t digest_size,
+	 const uint8_t *digest,
+	 struct dsa_signature *signature);
+
+int
+dsa_verify(const struct dsa_value *pub,
+	   size_t digest_size,
+	   const uint8_t *digest,
+	   const struct dsa_signature *signature);
+
+void
+dsa_generate_params (struct dsa_params *params,
+
+		     void *random_ctx, nettle_random_func *random,
+
+		     void *progress_ctx, nettle_progress_func *progress,
+		     unsigned p_bits, unsigned q_bits);
+
+#if 0
+int
+dsa_generate_keypair (struct dsa_value *pub,
+		      struct dsa_value *key,
+
+		      void *random_ctx, nettle_random_func *random);
+#endif
+
+/* Old nettle interface, kept for backwards compatibility */
   
+struct dsa_public_key
+{
+  /* Same as struct dsa_params, but can't use that struct here without
+     breaking backwards compatibility. Layout must be identical, since
+     this is cast to a struct dsa_param pointer for calling _dsa_sign
+     and _dsa_verify */
+  mpz_t p;
+  mpz_t q;
+  mpz_t g;
+
   /* Public value */
   mpz_t y;
 };
@@ -94,12 +178,6 @@ struct dsa_private_key
   /* Unlike an rsa public key, private key operations will need both
    * the private and the public information. */
   mpz_t x;
-};
-
-struct dsa_signature
-{
-  mpz_t r;
-  mpz_t s;
 };
 
 /* Signing a message works as follows:
@@ -139,15 +217,6 @@ dsa_private_key_init(struct dsa_private_key *key);
 void
 dsa_private_key_clear(struct dsa_private_key *key);
 
-/* Calls mpz_init to initialize bignum storage. */
-void
-dsa_signature_init(struct dsa_signature *signature);
-
-/* Calls mpz_clear to deallocate bignum storage. */
-void
-dsa_signature_clear(struct dsa_signature *signature);
-
-
 int
 dsa_sha1_sign(const struct dsa_public_key *pub,
 	      const struct dsa_private_key *key,
@@ -172,22 +241,6 @@ dsa_sha256_verify(const struct dsa_public_key *key,
 		  struct sha256_ctx *hash,
 		  const struct dsa_signature *signature);
 
-int
-dsa_sign(const struct dsa_public_key *pub,
-	 const struct dsa_private_key *key,
-	 void *random_ctx, nettle_random_func *random,
-	 size_t digest_size,
-	 const uint8_t *digest,
-	 struct dsa_signature *signature);
-
-int
-dsa_verify(const struct dsa_public_key *key,
-	   size_t digest_size,
-	   const uint8_t *digest,
-	   const struct dsa_signature *signature);
-
-/* Maybe obsolete these functions? One can just as well call dsa_sign
-   and dsa_verify directly, all that matters is the digest size. */
 int
 dsa_sha1_sign_digest(const struct dsa_public_key *pub,
 		     const struct dsa_private_key *key,
@@ -292,6 +345,21 @@ dsa_openssl_private_key_from_der(struct dsa_public_key *pub,
 void
 _dsa_hash (mpz_t h, unsigned bit_size,
 	   size_t length, const uint8_t *digest);
+
+int
+_dsa_sign(const struct dsa_params *params,
+	  const mpz_t key,
+	  void *random_ctx, nettle_random_func *random,
+	  size_t digest_size,
+	  const uint8_t *digest,
+	  struct dsa_signature *signature);
+
+int
+_dsa_verify(const struct dsa_params *params,
+	    const mpz_t pub,
+	    size_t digest_size,
+	    const uint8_t *digest,
+	    const struct dsa_signature *signature);
 
 #ifdef __cplusplus
 }
