@@ -50,7 +50,8 @@
 #define GHASH_POLYNOMIAL 0xE1UL
 
 static void
-gcm_gf_add (union gcm_block *r, const union gcm_block *x, const union gcm_block *y)
+gcm_gf_add (union nettle_block16 *r,
+	    const union nettle_block16 *x, const union nettle_block16 *y)
 {
   r->w[0] = x->w[0] ^ y->w[0];
   r->w[1] = x->w[1] ^ y->w[1];
@@ -63,7 +64,7 @@ gcm_gf_add (union gcm_block *r, const union gcm_block *x, const union gcm_block 
    shifted out is one, the defining polynomial is added to cancel it
    out. r == x is allowed. */
 static void
-gcm_gf_shift (union gcm_block *r, const union gcm_block *x)
+gcm_gf_shift (union nettle_block16 *r, const union nettle_block16 *x)
 {
   long mask;
 
@@ -111,10 +112,10 @@ gcm_gf_shift (union gcm_block *r, const union gcm_block *x)
    specification. y may be shorter than a full block, missing bytes
    are assumed zero. */
 static void
-gcm_gf_mul (union gcm_block *x, const union gcm_block *y)
+gcm_gf_mul (union nettle_block16 *x, const union nettle_block16 *y)
 {
-  union gcm_block V;
-  union gcm_block Z;
+  union nettle_block16 V;
+  union nettle_block16 Z;
   unsigned i;
 
   memcpy(V.b, x, sizeof(V));
@@ -150,7 +151,7 @@ shift_table[0x10] = {
 };
 
 static void
-gcm_gf_shift_4(union gcm_block *x)
+gcm_gf_shift_4(union nettle_block16 *x)
 {
   unsigned long *w = x->w;
   unsigned long reduce;
@@ -195,9 +196,9 @@ gcm_gf_shift_4(union gcm_block *x)
 }
 
 static void
-gcm_gf_mul (union gcm_block *x, const union gcm_block *table)
+gcm_gf_mul (union nettle_block16 *x, const union nettle_block16 *table)
 {
-  union gcm_block Z;
+  union nettle_block16 Z;
   unsigned i;
 
   memset(Z.b, 0, sizeof(Z));
@@ -218,7 +219,7 @@ gcm_gf_mul (union gcm_block *x, const union gcm_block *table)
 
 #define gcm_hash _nettle_gcm_hash8
 void
-_nettle_gcm_hash8 (const struct gcm_key *key, union gcm_block *x,
+_nettle_gcm_hash8 (const struct gcm_key *key, union nettle_block16 *x,
 		   size_t length, const uint8_t *data);
 #  else /* !HAVE_NATIVE_gcm_hash8 */
 static const uint16_t
@@ -258,7 +259,7 @@ shift_table[0x100] = {
 };
 
 static void
-gcm_gf_shift_8(union gcm_block *x)
+gcm_gf_shift_8(union nettle_block16 *x)
 {
   unsigned long *w = x->w;
   unsigned long reduce;
@@ -296,9 +297,9 @@ gcm_gf_shift_8(union gcm_block *x)
 }
 
 static void
-gcm_gf_mul (union gcm_block *x, const union gcm_block *table)
+gcm_gf_mul (union nettle_block16 *x, const union nettle_block16 *table)
 {
-  union gcm_block Z;
+  union nettle_block16 Z;
   unsigned i;
 
   memcpy(Z.b, table[x->b[GCM_BLOCK_SIZE-1]].b, GCM_BLOCK_SIZE);
@@ -356,7 +357,7 @@ gcm_set_key(struct gcm_key *key,
 
 #ifndef gcm_hash
 static void
-gcm_hash(const struct gcm_key *key, union gcm_block *x,
+gcm_hash(const struct gcm_key *key, union nettle_block16 *x,
 	 size_t length, const uint8_t *data)
 {
   for (; length >= GCM_BLOCK_SIZE;
@@ -374,7 +375,7 @@ gcm_hash(const struct gcm_key *key, union gcm_block *x,
 #endif /* !gcm_hash */
 
 static void
-gcm_hash_sizes(const struct gcm_key *key, union gcm_block *x,
+gcm_hash_sizes(const struct gcm_key *key, union nettle_block16 *x,
 	       uint64_t auth_size, uint64_t data_size)
 {
   uint8_t buffer[GCM_BLOCK_SIZE];

@@ -34,6 +34,13 @@
 extern "C" {
 #endif
 
+/* An aligned 16-byte block. */
+union nettle_block16
+{
+  uint8_t b[16];
+  unsigned long w[16 / sizeof(unsigned long)];
+};
+
 /* Randomness. Used by key generation and dsa signature creation. */
 typedef void nettle_random_func(void *ctx,
 				size_t length, uint8_t *dst);

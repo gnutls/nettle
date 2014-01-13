@@ -60,27 +60,20 @@ extern "C" {
 
 #define GCM_TABLE_BITS 8
 
-/* To make sure that we have proper alignment. */
-union gcm_block
-{
-  uint8_t b[GCM_BLOCK_SIZE];
-  unsigned long w[GCM_BLOCK_SIZE / sizeof(unsigned long)];
-};
-
 /* Hashing subkey */
 struct gcm_key
 {
-  union gcm_block h[1 << GCM_TABLE_BITS];
+  union nettle_block16 h[1 << GCM_TABLE_BITS];
 };
   
 /* Per-message state, depending on the iv */
 struct gcm_ctx {
   /* Original counter block */
-  union gcm_block iv;
+  union nettle_block16 iv;
   /* Updated for each block. */
-  union gcm_block ctr;
+  union nettle_block16 ctr;
   /* Hashing state */
-  union gcm_block x;
+  union nettle_block16 x;
   uint64_t auth_size;
   uint64_t data_size;
 };
