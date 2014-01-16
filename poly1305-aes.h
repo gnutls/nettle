@@ -41,7 +41,7 @@ extern "C" {
 #define poly1305_aes_set_nonce nettle_poly1305_aes_set_nonce
 #define poly1305_aes_digest nettle_poly1305_aes_digest
 
-struct poly1305_aes_ctx POLY1305_CTX(struct aes_ctx);
+struct poly1305_aes_ctx POLY1305_CTX(struct aes128_ctx);
 
 /* The _set_key function initialize the nonce to zero. */
 void

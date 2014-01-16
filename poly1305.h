@@ -1,4 +1,4 @@
-/* poly1305-aes.h
+/* poly1305.h
  *
  * Poly1305 message authentication code.
  */
@@ -77,7 +77,7 @@ void poly1305_digest (struct poly1305_ctx *ctx,
 #define POLY1305_SET_KEY(ctx, set_key, key)	\
   do {						\
     poly1305_set_key(&(ctx)->pctx, (key+16));	\
-    (set_key)(&(ctx)->cipher, 16, (key));	\
+    (set_key)(&(ctx)->cipher, (key));		\
     (ctx)->pctx.index = 0;			\
   } while (0)
 

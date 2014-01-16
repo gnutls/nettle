@@ -30,7 +30,7 @@
 void
 poly1305_aes_set_key (struct poly1305_aes_ctx *ctx, const uint8_t * key)
 {
-  POLY1305_SET_KEY(ctx, aes_set_encrypt_key, key);
+  POLY1305_SET_KEY(ctx, aes128_set_encrypt_key, key);
 }
 
 void
@@ -44,5 +44,5 @@ void
 poly1305_aes_digest (struct poly1305_aes_ctx *ctx,
 		     size_t length, uint8_t * digest)
 {
-  POLY1305_DIGEST(ctx, aes_encrypt, length, digest);
+  POLY1305_DIGEST(ctx, aes128_encrypt, length, digest);
 }

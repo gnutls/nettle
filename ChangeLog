@@ -1,3 +1,12 @@
+2014-01-16  Niels Möller  <nisse@lysator.liu.se>
+
+	* poly1305-aes.h (struct poly1305_aes_ctx): Replace struct aes_ctx
+	by struct aes128_ctx.
+	* poly1305-aes.c (poly1305_aes_set_key, poly1305_aes_digest):
+	Update to use aes128_* functions.
+	* poly1305.h (POLY1305_SET_KEY): Drop key size argument when
+	calling set_key.
+
 2013-12-19  Niels Möller  <nisse@lysator.liu.se>
 
 	* poly1305-aes.h (poly1305_aes_update): Define as an alias for
