@@ -6,6 +6,7 @@
 /* nettle, low-level cryptographics library
  *
  * Copyright (C) 2013 Nikos Mavrogiannopoulos
+ * Copyright (C) 2013, 2014 Niels Möller
  *
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -26,13 +27,20 @@
 #ifndef NETTLE_POLY1305_H_INCLUDED
 #define NETTLE_POLY1305_H_INCLUDED
 
+#include "nettle-types.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* Low level functions/macros for the poly1305 construction. */
+/* Name mangling */
+#define poly1305_set_key nettle_poly1305_set_key
+#define poly1305_set_nonce nettle_poly1305_set_nonce
+#define poly1305_update nettle_poly1305_update
+#define poly1305_block nettle_poly1305_block
+#define poly1305_digest nettle_poly1305_digest
 
-#include "nettle-types.h"
+/* Low level functions/macros for the poly1305 construction. */
 
 struct poly1305_ctx {
   /* Key, 128-bit value and some cached multiples. */
@@ -57,22 +65,16 @@ struct poly1305_ctx {
   unsigned index;
 };
 
-/* All-in-one context, with cipher, and state. Cipher must have a 128-bit block */
-#define POLY1305_CTX(type) \
-{ struct poly1305_ctx pctx; type cipher; }
-
-#define poly1305_set_key nettle_poly1305_set_key
-#define poly1305_set_nonce nettle_poly1305_set_nonce
-#define poly1305_update nettle_poly1305_update
-#define poly1305_block nettle_poly1305_block
-#define poly1305_digest nettle_poly1305_digest
-
 void poly1305_set_key(struct poly1305_ctx *ctx, const uint8_t key[16]);
 void poly1305_set_nonce (struct poly1305_ctx *ctx, const uint8_t * nonce);
 void poly1305_block (struct poly1305_ctx *ctx, const uint8_t m[16]);
 void poly1305_update (struct poly1305_ctx *ctx, size_t size, const uint8_t *data);
 void poly1305_digest (struct poly1305_ctx *ctx,
 		      size_t length, uint8_t *digest, const uint8_t *s);
+
+/* All-in-one context, with cipher, and state. Cipher must have a 128-bit block */
+#define POLY1305_CTX(type) \
+{ struct poly1305_ctx pctx; type cipher; }
 
 #define POLY1305_SET_KEY(ctx, set_key, key)	\
   do {						\
@@ -92,7 +94,6 @@ void poly1305_digest (struct poly1305_ctx *ctx,
     INCREMENT (16, (ctx)->pctx.nonce); 				\
     (ctx)->pctx.index = 0; 					\
   } while(0);
-
 
 
 #ifdef __cplusplus
