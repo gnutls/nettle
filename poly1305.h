@@ -27,7 +27,7 @@
 #ifndef NETTLE_POLY1305_H_INCLUDED
 #define NETTLE_POLY1305_H_INCLUDED
 
-#include "nettle-types.h"
+#include "aes.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -40,7 +40,15 @@ extern "C" {
 #define poly1305_block nettle_poly1305_block
 #define poly1305_digest nettle_poly1305_digest
 
+#define poly1305_aes_set_key nettle_poly1305_aes_set_key
+#define poly1305_aes_set_nonce nettle_poly1305_aes_set_nonce
+#define poly1305_aes_digest nettle_poly1305_aes_digest
+
 /* Low level functions/macros for the poly1305 construction. */
+
+#define POLY1305_DIGEST_SIZE 16
+#define POLY1305_BLOCK_SIZE 16
+#define POLY1305_KEY_SIZE 16
 
 struct poly1305_ctx {
   /* Key, 128-bit value and some cached multiples. */
@@ -60,41 +68,47 @@ struct poly1305_ctx {
     uint64_t h64[2];
   } h;
 
-  uint8_t nonce[16];
-  uint8_t block[16];
+  uint8_t nonce[POLY1305_BLOCK_SIZE];
+  uint8_t block[POLY1305_BLOCK_SIZE];
   unsigned index;
 };
 
-void poly1305_set_key(struct poly1305_ctx *ctx, const uint8_t key[16]);
+void poly1305_set_key(struct poly1305_ctx *ctx, const uint8_t key[POLY1305_KEY_SIZE]);
 void poly1305_set_nonce (struct poly1305_ctx *ctx, const uint8_t * nonce);
-void poly1305_block (struct poly1305_ctx *ctx, const uint8_t m[16]);
+void poly1305_block (struct poly1305_ctx *ctx, const uint8_t m[POLY1305_BLOCK_SIZE]);
 void poly1305_update (struct poly1305_ctx *ctx, size_t size, const uint8_t *data);
 void poly1305_digest (struct poly1305_ctx *ctx,
 		      size_t length, uint8_t *digest, const uint8_t *s);
 
-/* All-in-one context, with cipher, and state. Cipher must have a 128-bit block */
-#define POLY1305_CTX(type) \
-{ struct poly1305_ctx pctx; type cipher; }
+/* poly1305-aes */
 
-#define POLY1305_SET_KEY(ctx, set_key, key)	\
-  do {						\
-    poly1305_set_key(&(ctx)->pctx, (key+16));	\
-    (set_key)(&(ctx)->cipher, (key));		\
-    (ctx)->pctx.index = 0;			\
-  } while (0)
+#define POLY1305_AES_KEY_SIZE 32
+#define POLY1305_AES_DIGEST_SIZE 16
 
-#define POLY1305_SET_NONCE(ctx, data)		\
-  poly1305_set_nonce(&(ctx)->pctx, (data))
+struct poly1305_aes_ctx
+{
+  /* Must be first element, for the poly1305_aes_update cast to work. */
+  struct poly1305_ctx pctx;
+  struct aes128_ctx aes;
+};
 
-#define POLY1305_DIGEST(ctx, encrypt, length, digest)		\
-  do { 								\
-    uint8_t _ts[16]; 						\
-    (encrypt)(&(ctx)->cipher, 16, _ts, (ctx)->pctx.nonce);	\
-    poly1305_digest (&(ctx)->pctx, (length), (digest), _ts); 	\
-    INCREMENT (16, (ctx)->pctx.nonce); 				\
-    (ctx)->pctx.index = 0; 					\
-  } while(0);
+/* Also initialize the nonce to zero. */
+void
+poly1305_aes_set_key (struct poly1305_aes_ctx *ctx, const uint8_t *key);
 
+/* Optional, if not used, messages get incrementing nonces starting from zero. */
+void
+poly1305_aes_set_nonce (struct poly1305_aes_ctx *ctx,
+		        const uint8_t *nonce);
+
+/* An alias, nothing aes-specific. */
+#define poly1305_aes_update \
+  (*(void(*)(struct poly1305_aes_ctx *, size_t, const uint8_t *))&poly1305_update)
+
+/* Also increments the nonce */
+void
+poly1305_aes_digest (struct poly1305_aes_ctx *ctx,
+	       	     size_t length, uint8_t *digest);
 
 #ifdef __cplusplus
 }

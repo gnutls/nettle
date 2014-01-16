@@ -1,6 +1,7 @@
 /* nettle, low-level cryptographics library
  *
  * Copyright (C) 2013 Nikos Mavrogiannopoulos
+ * Copyright (C) 2014 Niels Möller
  *
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -23,26 +24,32 @@
 #endif
 
 #include <string.h>
+
+#include "poly1305.h"
 #include "macros.h"
-#include "nettle-types.h"
-#include "poly1305-aes.h"
 
 void
 poly1305_aes_set_key (struct poly1305_aes_ctx *ctx, const uint8_t * key)
 {
-  POLY1305_SET_KEY(ctx, aes128_set_encrypt_key, key);
+  aes128_set_encrypt_key(&ctx->aes, (key));
+  poly1305_set_key(&ctx->pctx, (key+16));
+  ctx->pctx.index = 0;
 }
 
 void
 poly1305_aes_set_nonce (struct poly1305_aes_ctx *ctx,
 			const uint8_t * nonce)
 {
-  POLY1305_SET_NONCE(ctx, nonce);
+  poly1305_set_nonce(&ctx->pctx, nonce);
 }
 
 void
 poly1305_aes_digest (struct poly1305_aes_ctx *ctx,
 		     size_t length, uint8_t * digest)
 {
-  POLY1305_DIGEST(ctx, aes128_encrypt, length, digest);
+  uint8_t s[POLY1305_BLOCK_SIZE];
+  aes128_encrypt(&ctx->aes, POLY1305_BLOCK_SIZE, s, ctx->pctx.nonce);
+  poly1305_digest (&ctx->pctx, length, digest, s);
+  INCREMENT (16, (ctx)->pctx.nonce);
+  (ctx)->pctx.index = 0;
 }

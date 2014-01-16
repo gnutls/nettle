@@ -1,5 +1,5 @@
 #include "testutils.h"
-#include "poly1305-aes.h"
+#include "poly1305.h"
 
 static void
 update (void *ctx, nettle_hash_update_func *f,

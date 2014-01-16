@@ -1,5 +1,23 @@
 2014-01-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* poly1305-aes.c: Include poly1305.c. Rewrite functions without
+	using the POLY1305_* macros.
+
+	* Makefile.in (HEADERS): Deleted poly1305-aes.h.
+
+	* poly1305.h (POLY1305_CTX, POLY1305_SET_KEY, POLY1305_SET_NONCE)
+	(POLY1305_DIGEST): Deleted macros. Only implemented variant is
+	poly1305-aes.
+	(POLY1305_DIGEST_SIZE, POLY1305_BLOCK_SIZE, POLY1305_KEY_SIZE):
+	New constants.
+	(POLY1305_AES_KEY_SIZE, POLY1305_AES_DIGEST_SIZE): Moved here,
+	from poly1305-aes.h.
+	(struct poly1305_aes_ctx): Likewise.
+	(poly1305_aes_set_key, poly1305_aes_set_nonce)
+	(poly1305_aes_update, poly1305_aes_digest): Likewise.
+	* poly1305-aes.h: Deleted file, declarations moved to poly1305.h.
+	Update all users.
+
 	* poly1305-internal.c (s2, s3, s4): Fixed macros.
 
 	* poly1305-aes.h (struct poly1305_aes_ctx): Replace struct aes_ctx

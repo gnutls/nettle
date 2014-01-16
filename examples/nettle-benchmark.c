@@ -56,7 +56,7 @@
 #include "sha3.h"
 #include "twofish.h"
 #include "umac.h"
-#include "poly1305-aes.h"
+#include "poly1305.h"
 
 #include "nettle-meta.h"
 #include "nettle-internal.h"
