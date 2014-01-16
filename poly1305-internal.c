@@ -44,9 +44,9 @@
 #define r3 r.r32[3]
 #define r4 r.r32[4]
 #define s1 r.r32[5]
-#define s2 r.s32[0]
-#define s3 r.s32[1]
-#define s4 r.s32[2]
+#define s2 s32[0]
+#define s3 s32[1]
+#define s4 s32[2]
 
 #define h0 h.h32[0]
 #define h1 h.h32[1]

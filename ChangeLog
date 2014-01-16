@@ -1,5 +1,7 @@
 2014-01-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* poly1305-internal.c (s2, s3, s4): Fixed macros.
+
 	* poly1305-aes.h (struct poly1305_aes_ctx): Replace struct aes_ctx
 	by struct aes128_ctx.
 	* poly1305-aes.c (poly1305_aes_set_key, poly1305_aes_digest):
