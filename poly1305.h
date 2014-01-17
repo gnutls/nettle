@@ -35,7 +35,6 @@ extern "C" {
 
 /* Name mangling */
 #define poly1305_set_key nettle_poly1305_set_key
-#define poly1305_set_nonce nettle_poly1305_set_nonce
 #define poly1305_update nettle_poly1305_update
 #define poly1305_block nettle_poly1305_block
 #define poly1305_digest nettle_poly1305_digest
@@ -68,13 +67,11 @@ struct poly1305_ctx {
     uint64_t h64[2];
   } h;
 
-  uint8_t nonce[POLY1305_BLOCK_SIZE];
   uint8_t block[POLY1305_BLOCK_SIZE];
   unsigned index;
 };
 
 void poly1305_set_key(struct poly1305_ctx *ctx, const uint8_t key[POLY1305_KEY_SIZE]);
-void poly1305_set_nonce (struct poly1305_ctx *ctx, const uint8_t * nonce);
 void poly1305_block (struct poly1305_ctx *ctx, const uint8_t m[POLY1305_BLOCK_SIZE]);
 void poly1305_update (struct poly1305_ctx *ctx, size_t size, const uint8_t *data);
 void poly1305_digest (struct poly1305_ctx *ctx,
@@ -84,11 +81,13 @@ void poly1305_digest (struct poly1305_ctx *ctx,
 
 #define POLY1305_AES_KEY_SIZE 32
 #define POLY1305_AES_DIGEST_SIZE 16
+#define POLY1305_AES_NONCE_SIZE 16
 
 struct poly1305_aes_ctx
 {
   /* Must be first element, for the poly1305_aes_update cast to work. */
   struct poly1305_ctx pctx;
+  uint8_t nonce[POLY1305_BLOCK_SIZE];
   struct aes128_ctx aes;
 };
 

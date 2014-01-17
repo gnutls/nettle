@@ -1,3 +1,13 @@
+2014-01-17  Niels Möller  <nisse@lysator.liu.se>
+
+	* poly1305.h (struct poly1305_ctx): Moved nonce field from here...
+	(struct poly1305_aes_ctx): ... to here.
+	* poly1305-aes.c (poly1305_aes_set_nonce, poly1305_aes_digest):
+	Updated for above.
+	* poly1305.c (poly1305_set_nonce): Deleted function.
+	* asm.m4: Delete nonce also from the assembly definition of struct
+	poly1305_ctx.
+
 2014-01-16  Niels Möller  <nisse@lysator.liu.se>
 
 	* poly1305-aes.c: Include poly1305.c. Rewrite functions without

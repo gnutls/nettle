@@ -40,7 +40,7 @@ void
 poly1305_aes_set_nonce (struct poly1305_aes_ctx *ctx,
 			const uint8_t * nonce)
 {
-  poly1305_set_nonce(&ctx->pctx, nonce);
+  memcpy (ctx->nonce, nonce, POLY1305_AES_NONCE_SIZE);
 }
 
 void
@@ -48,8 +48,8 @@ poly1305_aes_digest (struct poly1305_aes_ctx *ctx,
 		     size_t length, uint8_t * digest)
 {
   uint8_t s[POLY1305_BLOCK_SIZE];
-  aes128_encrypt(&ctx->aes, POLY1305_BLOCK_SIZE, s, ctx->pctx.nonce);
+  aes128_encrypt(&ctx->aes, POLY1305_BLOCK_SIZE, s, ctx->nonce);
   poly1305_digest (&ctx->pctx, length, digest, s);
-  INCREMENT (16, (ctx)->pctx.nonce);
-  (ctx)->pctx.index = 0;
+  INCREMENT (16, ctx->nonce);
+  ctx->pctx.index = 0;
 }
