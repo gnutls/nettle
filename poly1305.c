@@ -28,8 +28,10 @@
 
 #include "macros.h"
 
+#define COMPRESS(ctx, data) poly1305_block((ctx), (data), 1)
+
 void
 poly1305_update (struct poly1305_ctx *ctx, size_t length, const uint8_t *data)
 {
-  MD_UPDATE (ctx, length, data, poly1305_block, (void) 0);
+  MD_UPDATE (ctx, length, data, COMPRESS, (void) 0);
 }

@@ -2,9 +2,11 @@
  *
  * Placed by the author under public domain or the MIT license.
  * (see https://github.com/floodyberry/poly1305-donna )
- * Modified for nettle by Nikos Mavrogiannopoulos.
+ * Modified for nettle by Nikos Mavrogiannopoulos and Niels Möller.
  *
  * Copyright: 2012-2013 Andrew M. (floodyberry)
+ * Copyright: 2013 Nikos Mavrogiannopoulos
+ * Copyright: 2013 Niels Möller
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the
@@ -30,6 +32,7 @@
 #include "config.h"
 #endif
 
+#include <assert.h>
 #include <string.h>
 
 #include "poly1305.h"
@@ -82,20 +85,24 @@ poly1305_set_key(struct poly1305_ctx *ctx, const uint8_t key[16])
   ctx->h4 = 0;
 }
 
-static void
-poly1305_block_internal (struct poly1305_ctx *ctx,
-			 uint32_t t0, uint32_t t1, uint32_t t2, uint32_t t3,
-			 uint32_t t4)
+void
+poly1305_block (struct poly1305_ctx *ctx, const uint8_t m[16], unsigned t4)
 {
+  uint32_t t0,t1,t2,t3;
   uint32_t b;
   uint64_t t[5];
   uint64_t c;
+
+  t0 = LE_READ_UINT32(m);
+  t1 = LE_READ_UINT32(m+4);
+  t2 = LE_READ_UINT32(m+8);
+  t3 = LE_READ_UINT32(m+12);
 
   ctx->h0 += t0 & 0x3ffffff;
   ctx->h1 += ((((uint64_t)t1 << 32) | t0) >> 26) & 0x3ffffff;
   ctx->h2 += ((((uint64_t)t2 << 32) | t1) >> 20) & 0x3ffffff;
   ctx->h3 += ((((uint64_t)t3 << 32) | t2) >> 14) & 0x3ffffff;
-  ctx->h4 += (t3 >> 8) | (t4 << 24);
+  ctx->h4 += (t3 >> 8) | ((uint32_t) t4 << 24);
 
   /* poly1305_donna_mul: */
   t[0]  = mul32x32_64(ctx->h0,ctx->r0) + mul32x32_64(ctx->h1,ctx->s4) + mul32x32_64(ctx->h2,ctx->s3) + mul32x32_64(ctx->h3,ctx->s2) + mul32x32_64(ctx->h4,ctx->s1);
@@ -113,20 +120,6 @@ poly1305_block_internal (struct poly1305_ctx *ctx,
 }
 
 void
-poly1305_block (struct poly1305_ctx *ctx, const uint8_t m[16])
-{
-  uint32_t t0,t1,t2,t3;
-
-  /* full blocks */
-  t0 = LE_READ_UINT32(m);
-  t1 = LE_READ_UINT32(m+4);
-  t2 = LE_READ_UINT32(m+8);
-  t3 = LE_READ_UINT32(m+12);
-
-  poly1305_block_internal (ctx, t0, t1, t2, t3, 1);
-}
-
-void
 poly1305_digest (struct poly1305_ctx *ctx,
  		 size_t length, uint8_t *digest,
 		 const uint8_t *s)
@@ -140,20 +133,13 @@ poly1305_digest (struct poly1305_ctx *ctx,
   /* poly1305_donna_atmost15bytes: */
   if (ctx->index > 0)
     {
-      uint32_t t0,t1,t2,t3;
-      size_t j;
-      uint8_t mp[16];
+      assert (ctx->index < POLY1305_BLOCK_SIZE);
 
-      for (j = 0; j < ctx->index; j++) mp[j] = ctx->block[j];
-      mp[j++] = 1;
-      for (; j < 16; j++)	mp[j] = 0;
+      ctx->block[ctx->index] = 1;
+      memset (ctx->block + ctx->index + 1,
+	      0, POLY1305_BLOCK_SIZE - 1 - ctx->index);
 
-      t0 = LE_READ_UINT32(mp);
-      t1 = LE_READ_UINT32(mp+4);
-      t2 = LE_READ_UINT32(mp+8);
-      t3 = LE_READ_UINT32(mp+12);
-
-      poly1305_block_internal (ctx, t0, t1, t2, t3, 0);
+      poly1305_block (ctx, ctx->block, 0);
     }
 
   b = ctx->h0 >> 26; ctx->h0 = ctx->h0 & 0x3ffffff;

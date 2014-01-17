@@ -1,5 +1,16 @@
 2014-01-17  Niels Möller  <nisse@lysator.liu.se>
 
+	* poly1305-internal.c (poly1305_block): Additional argument with
+	the high bit.
+	(poly1305_block_internal): Deleted function, code moved into the
+	poly1305_block.
+	(poly1305_digest): Simplified padding code, call poly1305_block
+	with high bit 0.
+	* poly1305.h (poly1305_block): Update prototype.
+	* poly1305.c (poly1305_update): Call poly1305_block with high bit 1.
+	* x86_64/poly1305-internal.asm (poly1305_block): Handle new
+	argument.
+
 	* poly1305.h (struct poly1305_ctx): Moved nonce field from here...
 	(struct poly1305_aes_ctx): ... to here.
 	* poly1305-aes.c (poly1305_aes_set_nonce, poly1305_aes_digest):

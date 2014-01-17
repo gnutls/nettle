@@ -75,12 +75,12 @@ C So we get
 C
 C  x_0 r_0 + x_1 (5/4 r_1) + B (x_0 r_1 + x_1 r_0 + x_2 5/4 r_1 + B x_2 r_0)	
 
-	C poly1305_block (struct poly1305_ctx *ctx, const uint8_t m[16])
+	C poly1305_block (struct poly1305_ctx *ctx, const uint8_t m[16], unsigned hi)
 	
 PROLOGUE(nettle_poly1305_block)
 	mov	(%rsi), T0
 	mov	8(%rsi), T1
-	mov	$1,	T2
+	mov	XREG(%rdx),	XREG(T2)
 C FIXME: Support windows ABI 
 	C Registers:
 	C Inputs:  CTX, T0, T1, T2,

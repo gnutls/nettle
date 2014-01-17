@@ -72,7 +72,8 @@ struct poly1305_ctx {
 };
 
 void poly1305_set_key(struct poly1305_ctx *ctx, const uint8_t key[POLY1305_KEY_SIZE]);
-void poly1305_block (struct poly1305_ctx *ctx, const uint8_t m[POLY1305_BLOCK_SIZE]);
+void poly1305_block (struct poly1305_ctx *ctx, const uint8_t m[POLY1305_BLOCK_SIZE],
+		     unsigned high);
 void poly1305_update (struct poly1305_ctx *ctx, size_t size, const uint8_t *data);
 void poly1305_digest (struct poly1305_ctx *ctx,
 		      size_t length, uint8_t *digest, const uint8_t *s);
