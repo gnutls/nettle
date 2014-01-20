@@ -86,7 +86,7 @@ poly1305_set_key(struct poly1305_ctx *ctx, const uint8_t key[16])
 }
 
 void
-poly1305_block (struct poly1305_ctx *ctx, const uint8_t m[16], unsigned t4)
+_poly1305_block (struct poly1305_ctx *ctx, const uint8_t m[16], unsigned t4)
 {
   uint32_t t0,t1,t2,t3;
   uint32_t b;
@@ -119,28 +119,13 @@ poly1305_block (struct poly1305_ctx *ctx, const uint8_t m[16], unsigned t4)
   ctx->h0 += b * 5;
 }
 
+/* Adds digest to the nonce */
 void
-poly1305_digest (struct poly1305_ctx *ctx,
- 		 size_t length, uint8_t *digest,
-		 const uint8_t *s)
+poly1305_digest (struct poly1305_ctx *ctx, uint8_t *s)
 {
   uint32_t b, nb;
   uint64_t f0,f1,f2,f3;
   uint32_t g0,g1,g2,g3,g4;
-  uint8_t td[16];
-
-  /* final bytes */
-  /* poly1305_donna_atmost15bytes: */
-  if (ctx->index > 0)
-    {
-      assert (ctx->index < POLY1305_BLOCK_SIZE);
-
-      ctx->block[ctx->index] = 1;
-      memset (ctx->block + ctx->index + 1,
-	      0, POLY1305_BLOCK_SIZE - 1 - ctx->index);
-
-      poly1305_block (ctx, ctx->block, 0);
-    }
 
   b = ctx->h0 >> 26; ctx->h0 = ctx->h0 & 0x3ffffff;
   ctx->h1 +=     b; b = ctx->h1 >> 26; ctx->h1 = ctx->h1 & 0x3ffffff;
@@ -169,13 +154,17 @@ poly1305_digest (struct poly1305_ctx *ctx,
   f2 = ((ctx->h2 >> 12) | (ctx->h3 << 14)) + (uint64_t)LE_READ_UINT32(s+8);
   f3 = ((ctx->h3 >> 18) | (ctx->h4 <<  8)) + (uint64_t)LE_READ_UINT32(s+12);
 
-  LE_WRITE_UINT32(td, f0);
+  LE_WRITE_UINT32(s, f0);
   f1 += (f0 >> 32);
-  LE_WRITE_UINT32(&td[4], f1);
+  LE_WRITE_UINT32(s+4, f1);
   f2 += (f1 >> 32);
-  LE_WRITE_UINT32(&td[8], f2);
+  LE_WRITE_UINT32(s+8, f2);
   f3 += (f2 >> 32);
-  LE_WRITE_UINT32(&td[12], f3);
+  LE_WRITE_UINT32(s+12, f3);
 
-  memcpy(digest, td, length);
+  ctx->h0 = 0;
+  ctx->h1 = 0;
+  ctx->h2 = 0;
+  ctx->h3 = 0;
+  ctx->h4 = 0;
 }

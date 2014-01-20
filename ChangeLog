@@ -1,3 +1,29 @@
+2014-01-20  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/poly1305-internal.asm: Update to new interface.
+	poly1305_digest much simplified.
+
+	* poly1305.h (struct poly1305_ctx): Moved block and index
+	fields...
+	(struct poly1305_aes_ctx): ... to here.
+	* asm.m4: Delete also from the assembly definition of struct
+	poly1305_ctx.
+
+	* poly1305-internal.c (poly1305_digest): Don't do final padding
+	here, leave that to caller. Add digest to the provided nonce s,
+	and deleted length and dst arguments. Also reset h0-h4 to zero
+	when done.
+	(_poly1305_block): Renamed, from...
+	(poly1305_block): ...old name.
+
+	* poly1305-aes.c (poly1305_aes_update): New function.
+	(poly1305_aes_digest): Update for poly1305_digest changes, do
+	final padding here.
+
+	* poly1305.c (poly1305_update): Deleted file and function. Moved
+	to poly1305-aes.c.
+	* Makefile.in (nettle_SOURCES): Deleted poly1305.c.
+
 2014-01-17  Niels Möller  <nisse@lysator.liu.se>
 
 	* poly1305-internal.c (poly1305_block): Additional argument with

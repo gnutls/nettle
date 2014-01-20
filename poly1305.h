@@ -35,12 +35,12 @@ extern "C" {
 
 /* Name mangling */
 #define poly1305_set_key nettle_poly1305_set_key
-#define poly1305_update nettle_poly1305_update
-#define poly1305_block nettle_poly1305_block
 #define poly1305_digest nettle_poly1305_digest
+#define _poly1305_block _nettle_poly1305_block
 
 #define poly1305_aes_set_key nettle_poly1305_aes_set_key
 #define poly1305_aes_set_nonce nettle_poly1305_aes_set_nonce
+#define poly1305_aes_update nettle_poly1305_aes_update
 #define poly1305_aes_digest nettle_poly1305_aes_digest
 
 /* Low level functions/macros for the poly1305 construction. */
@@ -66,17 +66,15 @@ struct poly1305_ctx {
     uint32_t h32[4];
     uint64_t h64[2];
   } h;
-
-  uint8_t block[POLY1305_BLOCK_SIZE];
-  unsigned index;
 };
 
+/* Low-level internal interface. */
 void poly1305_set_key(struct poly1305_ctx *ctx, const uint8_t key[POLY1305_KEY_SIZE]);
-void poly1305_block (struct poly1305_ctx *ctx, const uint8_t m[POLY1305_BLOCK_SIZE],
-		     unsigned high);
-void poly1305_update (struct poly1305_ctx *ctx, size_t size, const uint8_t *data);
-void poly1305_digest (struct poly1305_ctx *ctx,
-		      size_t length, uint8_t *digest, const uint8_t *s);
+/* Extracts digest, and adds it to s, the encrypted nonce. */
+void poly1305_digest (struct poly1305_ctx *ctx, uint8_t *s);
+/* Internal function. Process one block. */
+void _poly1305_block (struct poly1305_ctx *ctx, const uint8_t m[POLY1305_BLOCK_SIZE],
+		      unsigned high);
 
 /* poly1305-aes */
 
@@ -86,8 +84,11 @@ void poly1305_digest (struct poly1305_ctx *ctx,
 
 struct poly1305_aes_ctx
 {
-  /* Must be first element, for the poly1305_aes_update cast to work. */
+  /* Keep aes context last, to make it possible to use a general
+     poly1305_update if other variants are added. */
   struct poly1305_ctx pctx;
+  uint8_t block[POLY1305_BLOCK_SIZE];
+  unsigned index;
   uint8_t nonce[POLY1305_BLOCK_SIZE];
   struct aes128_ctx aes;
 };
@@ -101,9 +102,10 @@ void
 poly1305_aes_set_nonce (struct poly1305_aes_ctx *ctx,
 		        const uint8_t *nonce);
 
-/* An alias, nothing aes-specific. */
-#define poly1305_aes_update \
-  (*(void(*)(struct poly1305_aes_ctx *, size_t, const uint8_t *))&poly1305_update)
+/* Update is not aes-specific, but since this is the only implemented
+   variant, we need no more general poly1305_update. */
+void
+poly1305_aes_update (struct poly1305_aes_ctx *ctx, size_t length, const uint8_t *data);
 
 /* Also increments the nonce */
 void
