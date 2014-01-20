@@ -1,6 +1,6 @@
 2014-01-20  Niels Möller  <nisse@lysator.liu.se>
 
-	Merged poly1305-changes (starting at 2013-11-08).
+	Merged poly1305 changes (starting at 2013-11-08).
 	* x86_64/poly1305-internal.asm: Update to new interface.
 	poly1305_digest much simplified.
 
@@ -48,7 +48,7 @@
 
 2014-01-16  Niels Möller  <nisse@lysator.liu.se>
 
-	* poly1305-aes.c: Include poly1305.c. Rewrite functions without
+	* poly1305-aes.c: Include poly1305.h. Rewrite functions without
 	using the POLY1305_* macros.
 
 	* Makefile.in (HEADERS): Deleted poly1305-aes.h.
