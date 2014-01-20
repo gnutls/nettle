@@ -1,3 +1,22 @@
+2014-01-20  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (nettle_SOURCES): Added salsa20-set-nonce.c,
+	salsa20-128-set-key.c, and salsa20-256-set-key.c.
+
+	* salsa20.h: Declare new functions.
+	(SALSA20_128_KEY_SIZE, SALSA20_256_KEY_SIZE): New constants.
+	(salsa20_set_iv): Define as an alias for salsa20_set_nonce.
+
+	* salsa20-set-key.c (salsa20_set_key): Use salsa20_128_set_key and
+	salsa20_256_set_key.
+	(salsa20_set_iv): Renamed and moved...
+	* salsa20-set-nonce.c (salsa20_set_nonce): ... new file, new name.
+
+	* salsa20-256-set-key.c (salsa20_256_set_key): New file and
+	function.
+	* salsa20-128-set-key.c (salsa20_128_set_key): New file and
+	function.
+
 2014-01-13  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle-types.h (union nettle_block16): New type, replacing union

@@ -1,4 +1,4 @@
-/* salsa20-set-key.c
+/* salsa20-set-nonce.c
  *
  * The Salsa20 stream cipher.
  */
@@ -33,25 +33,15 @@
 # include "config.h"
 #endif
 
-#include <stdlib.h>
-
 #include "salsa20.h"
 
 #include "macros.h"
 
 void
-salsa20_set_key(struct salsa20_ctx *ctx,
-		size_t length, const uint8_t *key)
+salsa20_set_nonce(struct salsa20_ctx *ctx, const uint8_t *nonce)
 {
-  switch (length)
-    {
-    case SALSA20_128_KEY_SIZE:
-      salsa20_128_set_key (ctx, key);
-      break;
-    case SALSA20_256_KEY_SIZE:
-      salsa20_256_set_key (ctx, key);
-      break;
-    default:
-      abort();
-    }
+  ctx->input[6] = LE_READ_UINT32(nonce + 0);
+  ctx->input[7] = LE_READ_UINT32(nonce + 4);
+  ctx->input[8] = 0;
+  ctx->input[9] = 0;
 }

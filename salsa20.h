@@ -35,20 +35,27 @@ extern "C" {
 
 /* Name mangling */
 #define salsa20_set_key nettle_salsa20_set_key
-#define salsa20_set_iv nettle_salsa20_set_iv
+#define salsa20_128_set_key nettle_salsa20_128_set_key
+#define salsa20_256_set_key nettle_salsa20_256_set_key
+#define salsa20_set_nonce nettle_salsa20_set_nonce
 #define salsa20_crypt nettle_salsa20_crypt
 #define _salsa20_core _nettle_salsa20_core
 
 #define salsa20r12_crypt nettle_salsa20r12_crypt
 
-/* Minimum and maximum keysizes, and a reasonable default. In
- * octets.*/
+/* Alias for backwards compatibility */
+#define salsa20_set_iv nettle_salsa20_set_nonce
+
+/* In octets.*/
+#define SALSA20_128_KEY_SIZE 16
+#define SALSA20_256_KEY_SIZE 32
+#define SALSA20_BLOCK_SIZE 64
+#define SALSA20_IV_SIZE 8
+
+/* Aliases */
 #define SALSA20_MIN_KEY_SIZE 16
 #define SALSA20_MAX_KEY_SIZE 32
 #define SALSA20_KEY_SIZE 32
-#define SALSA20_BLOCK_SIZE 64
-
-#define SALSA20_IV_SIZE 8
 
 #define _SALSA20_INPUT_LENGTH 16
 
@@ -65,6 +72,11 @@ struct salsa20_ctx
   */
   uint32_t input[_SALSA20_INPUT_LENGTH];
 };
+
+void
+salsa20_128_set_key(struct salsa20_ctx *ctx, const uint8_t *key);
+void
+salsa20_256_set_key(struct salsa20_ctx *ctx, const uint8_t *key);
 
 void
 salsa20_set_key(struct salsa20_ctx *ctx,

@@ -1,11 +1,11 @@
-/* salsa20-set-key.c
- *
+/*
  * The Salsa20 stream cipher.
  */
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2012 Simon Josefsson, Niels Möller
+ * Copyright (C) 2012 Simon Josefsson
+ * Copyright (C) 2012-2014 Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -33,25 +33,26 @@
 # include "config.h"
 #endif
 
-#include <stdlib.h>
-
 #include "salsa20.h"
 
 #include "macros.h"
 
 void
-salsa20_set_key(struct salsa20_ctx *ctx,
-		size_t length, const uint8_t *key)
+salsa20_256_set_key(struct salsa20_ctx *ctx, const uint8_t *key)
 {
-  switch (length)
-    {
-    case SALSA20_128_KEY_SIZE:
-      salsa20_128_set_key (ctx, key);
-      break;
-    case SALSA20_256_KEY_SIZE:
-      salsa20_256_set_key (ctx, key);
-      break;
-    default:
-      abort();
-    }
+  ctx->input[1] = LE_READ_UINT32(key + 0);
+  ctx->input[2] = LE_READ_UINT32(key + 4);
+  ctx->input[3] = LE_READ_UINT32(key + 8);
+  ctx->input[4] = LE_READ_UINT32(key + 12);
+
+  ctx->input[11] = LE_READ_UINT32(key + 16);
+  ctx->input[12] = LE_READ_UINT32(key + 20);
+  ctx->input[13] = LE_READ_UINT32(key + 24);
+  ctx->input[14] = LE_READ_UINT32(key + 28);
+
+  /* "expand 32-byte k" */
+  ctx->input[0]  = 0x61707865;
+  ctx->input[5]  = 0x3320646e;
+  ctx->input[10] = 0x79622d32;
+  ctx->input[15] = 0x6b206574;
 }
