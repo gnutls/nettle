@@ -1,5 +1,134 @@
 2014-01-20  Niels Möller  <nisse@lysator.liu.se>
 
+	Merged poly1305-changes (starting at 2013-11-08).
+	* x86_64/poly1305-internal.asm: Update to new interface.
+	poly1305_digest much simplified.
+
+	* poly1305.h (struct poly1305_ctx): Moved block and index
+	fields...
+	(struct poly1305_aes_ctx): ... to here.
+	* asm.m4: Delete also from the assembly definition of struct
+	poly1305_ctx.
+
+	* poly1305-internal.c (poly1305_digest): Don't do final padding
+	here, leave that to caller. Add digest to the provided nonce s,
+	and deleted length and dst arguments. Also reset h0-h4 to zero
+	when done.
+	(_poly1305_block): Renamed, from...
+	(poly1305_block): ...old name.
+
+	* poly1305-aes.c (poly1305_aes_update): New function.
+	(poly1305_aes_digest): Update for poly1305_digest changes, do
+	final padding here.
+
+	* poly1305.c (poly1305_update): Deleted file and function. Moved
+	to poly1305-aes.c.
+	* Makefile.in (nettle_SOURCES): Deleted poly1305.c.
+
+2014-01-17  Niels Möller  <nisse@lysator.liu.se>
+
+	* poly1305-internal.c (poly1305_block): Additional argument with
+	the high bit.
+	(poly1305_block_internal): Deleted function, code moved into the
+	poly1305_block.
+	(poly1305_digest): Simplified padding code, call poly1305_block
+	with high bit 0.
+	* poly1305.h (poly1305_block): Update prototype.
+	* poly1305.c (poly1305_update): Call poly1305_block with high bit 1.
+	* x86_64/poly1305-internal.asm (poly1305_block): Handle new
+	argument.
+
+	* poly1305.h (struct poly1305_ctx): Moved nonce field from here...
+	(struct poly1305_aes_ctx): ... to here.
+	* poly1305-aes.c (poly1305_aes_set_nonce, poly1305_aes_digest):
+	Updated for above.
+	* poly1305.c (poly1305_set_nonce): Deleted function.
+	* asm.m4: Delete nonce also from the assembly definition of struct
+	poly1305_ctx.
+
+2014-01-16  Niels Möller  <nisse@lysator.liu.se>
+
+	* poly1305-aes.c: Include poly1305.c. Rewrite functions without
+	using the POLY1305_* macros.
+
+	* Makefile.in (HEADERS): Deleted poly1305-aes.h.
+
+	* poly1305.h (POLY1305_CTX, POLY1305_SET_KEY, POLY1305_SET_NONCE)
+	(POLY1305_DIGEST): Deleted macros. Only implemented variant is
+	poly1305-aes.
+	(POLY1305_DIGEST_SIZE, POLY1305_BLOCK_SIZE, POLY1305_KEY_SIZE):
+	New constants.
+	(POLY1305_AES_KEY_SIZE, POLY1305_AES_DIGEST_SIZE): Moved here,
+	from poly1305-aes.h.
+	(struct poly1305_aes_ctx): Likewise.
+	(poly1305_aes_set_key, poly1305_aes_set_nonce)
+	(poly1305_aes_update, poly1305_aes_digest): Likewise.
+	* poly1305-aes.h: Deleted file, declarations moved to poly1305.h.
+	Update all users.
+
+	* poly1305-internal.c (s2, s3, s4): Fixed macros.
+
+	* poly1305-aes.h (struct poly1305_aes_ctx): Replace struct aes_ctx
+	by struct aes128_ctx.
+	* poly1305-aes.c (poly1305_aes_set_key, poly1305_aes_digest):
+	Update to use aes128_* functions.
+	* poly1305.h (POLY1305_SET_KEY): Drop key size argument when
+	calling set_key.
+
+2013-12-19  Niels Möller  <nisse@lysator.liu.se>
+
+	* poly1305-aes.h (poly1305_aes_update): Define as an alias for
+	poly1305_update, using preprocessor and a type cast.
+
+	* poly1305-aes.c (poly1305_aes_update): Deleted function.
+
+	* poly1305.h (poly1305_update): Declare.
+	(_POLY1305_BLOCK, POLY1305_UPDATE): Deleted macros.
+
+	* poly1305.c (poly1305_update): New function.
+
+2013-11-21  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/poly1305-internal.asm: New file. Almost a factor of two
+	speedup.
+
+	* configure.ac (asm_replace_list): Added poly1305-internal.asm.
+
+	* asm.m4: Define struct ffsets for 64-bit poly1305_ctx.
+
+	* poly1305.h (POLY1305_DIGEST): Pass the encrypted nonce as an
+	additional argument to poly1305_digest.
+	(struct poly1305_ctx): Introduce unions, to support either 26-bit
+	or 64-bit implementation.
+
+	* poly1305-internal.c (poly1305_digest): Added s argument.
+
+	* poly1305.c (poly1305_set_s): Deleted function.
+
+2013-11-12  Niels Möller  <nisse@lysator.liu.se>
+
+	* poly1305-internal.c: New file, for poly1305 functions depending
+	on the internal mod (2^130 - 5) representation.
+	(poly1305_block_internal): New helper function.
+	(poly1305_block, poly1305_digest): Use it.
+
+2013-11-08  Nikos Mavrogiannopoulos  <nmav@gnutls.org>
+
+	* poly1305.h: New file.
+	* poly1305.c: New file.
+	* poly1305-aes.h: New file.
+	* poly1305-aes.c: New file.
+	* Makefile.in (nettle_SOURCES): Added poly1305-aes.c and poly1305.c.
+	(HEADERS): Added poly1305-aes.h and poly1305.h.
+
+	* testsuite/poly1305-test.c: New file.
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Added poly1305-test.c.
+
+	* examples/nettle-benchmark.c (time_poly1305_aes): New function.
+	(main): Benchmark poly1305.
+
+2014-01-20  Niels Möller  <nisse@lysator.liu.se>
+
 	* Makefile.in (nettle_SOURCES): Added salsa20-set-nonce.c,
 	salsa20-128-set-key.c, and salsa20-256-set-key.c.
 
