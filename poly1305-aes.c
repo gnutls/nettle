@@ -47,7 +47,8 @@ poly1305_aes_set_nonce (struct poly1305_aes_ctx *ctx,
 #define COMPRESS(ctx, data) _poly1305_block(&(ctx)->pctx, (data), 1)
 
 void
-poly1305_aes_update (struct poly1305_aes_ctx *ctx, size_t length, const uint8_t *data)
+poly1305_aes_update (struct poly1305_aes_ctx *ctx,
+		     size_t length, const uint8_t *data)
 {
   MD_UPDATE (ctx, length, data, COMPRESS, (void) 0);
 }
@@ -56,7 +57,7 @@ void
 poly1305_aes_digest (struct poly1305_aes_ctx *ctx,
 		     size_t length, uint8_t *digest)
 {
-  uint8_t s[POLY1305_BLOCK_SIZE];
+  union nettle_block16 s;
   /* final bytes */
   if (ctx->index > 0)
     {
@@ -68,10 +69,10 @@ poly1305_aes_digest (struct poly1305_aes_ctx *ctx,
 
       _poly1305_block (&ctx->pctx, ctx->block, 0);
     }
-  aes128_encrypt(&ctx->aes, POLY1305_BLOCK_SIZE, s, ctx->nonce);
+  aes128_encrypt(&ctx->aes, POLY1305_BLOCK_SIZE, s.b, ctx->nonce);
   
-  poly1305_digest (&ctx->pctx, s);
-  memcpy (digest, s, length);
+  poly1305_digest (&ctx->pctx, &s);
+  memcpy (digest, s.b, length);
 
   INCREMENT (16, ctx->nonce);
   ctx->index = 0;

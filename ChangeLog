@@ -1,5 +1,10 @@
 2014-01-20  Niels Möller  <nisse@lysator.liu.se>
 
+	* poly1305-internal.c (poly1305_digest): Use union nettle_block16
+	for s argument.
+	* poly1305-aes.c (poly1305_aes_digest): Update for poly1305_digest
+	change.
+
 	Merged poly1305 changes (starting at 2013-11-08).
 	* x86_64/poly1305-internal.asm: Update to new interface.
 	poly1305_digest much simplified.

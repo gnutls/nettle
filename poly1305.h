@@ -71,9 +71,9 @@ struct poly1305_ctx {
 /* Low-level internal interface. */
 void poly1305_set_key(struct poly1305_ctx *ctx, const uint8_t key[POLY1305_KEY_SIZE]);
 /* Extracts digest, and adds it to s, the encrypted nonce. */
-void poly1305_digest (struct poly1305_ctx *ctx, uint8_t *s);
+void poly1305_digest (struct poly1305_ctx *ctx, union nettle_block16 *s);
 /* Internal function. Process one block. */
-void _poly1305_block (struct poly1305_ctx *ctx, const uint8_t m[POLY1305_BLOCK_SIZE],
+void _poly1305_block (struct poly1305_ctx *ctx, const uint8_t *m,
 		      unsigned high);
 
 /* poly1305-aes */
