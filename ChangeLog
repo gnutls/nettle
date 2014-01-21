@@ -1,3 +1,60 @@
+2014-01-21  Niels Möller  <nisse@lysator.liu.se>
+
+	Merged camellia-reorg changes (starting at 2013-10-07).
+
+2013-10-10  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (nettle_SOURCES): Updated list of camellia files.
+
+	* testsuite/camellia-test.c (test_invert): Updated for new
+	camellia interface.
+
+	* camellia.h: Reorganized camellia interface, with distinct
+	context structs and functions for camellia128 and camellia256.
+
+	* camellia-meta.c: Deleted file.
+	* camellia256-meta.c: New file.
+	* camellia192-meta.c: New file.
+	* camellia128-meta.c: New file.
+
+	* camellia-set-decrypt-key.c: Deleted file, code moved to:
+	* camellia128-set-decrypt-key.c: New file.
+	(camellia128_invert_key, camellia128_set_decrypt_key): New
+	functions.
+	* camellia256-set-decrypt-key.c: New file.
+	(camellia256_invert_key, camellia256_set_decrypt_key)
+	(camellia192_set_decrypt_key): New functions.
+	* camellia-invert-key.c (_camellia_invert_key): New file and
+	function.
+
+	* camellia-set-encrypt-key.c: Deleted file, code moved to:
+	* camellia128-set-encrypt-key.c: New file.
+	(camellia128_set_encrypt_key): New function.
+	* camellia256-set-encrypt-key.c: New file.
+	(_camellia256_set_encrypt_key, camellia256_set_encrypt_key)
+	(camellia192_set_encrypt_key): New functions.
+	* camellia-absorb.c (_camellia_absorb): New file and function.
+	* camellia-internal.h: Moved key schedule macros here.
+
+	* camellia-crypt.c: Deleted file, code moved to:
+	* camellia128-crypt.c (camellia128_crypt): New file and function.
+	* camellia256-crypt.c (camellia256_crypt): New file and function.
+
+2013-10-07  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Delete check for ALIGNOF_UINT64_T, no longer
+	needed.
+	* config.m4.in: Likewise delete ALIGNOF_UINT64_T.
+
+	* camellia-crypt.c (camellia_crypt): Updated call to
+	_camellia_crypt.
+	* camellia-internal.h (_camellia_crypt): Updated prototype.
+	* camellia-crypt-internal.c (_camellia_crypt): Take separate
+	arguments for rounds and subkey array.
+	* x86_64/camellia-crypt-internal.asm: Likewise.	Also corrected
+	.file pseudo-ops.
+	* x86/camellia-crypt-internal.asm: Likewise.
+
 2014-01-20  Niels Möller  <nisse@lysator.liu.se>
 
 	* poly1305-internal.c (poly1305_digest): Use union nettle_block16

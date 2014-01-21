@@ -76,9 +76,15 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 arctwo.c arctwo-meta.c gosthash94-meta.c \
 		 base16-encode.c base16-decode.c base16-meta.c \
                  base64-encode.c base64-decode.c base64-meta.c \
-		 camellia-crypt.c camellia-crypt-internal.c \
-		 camellia-set-encrypt-key.c camellia-set-decrypt-key.c \
-		 camellia-table.c camellia-meta.c \
+		 camellia-crypt-internal.c camellia-table.c \
+		 camellia-absorb.c camellia-invert-key.c \
+		 camellia128-set-encrypt-key.c camellia128-crypt.c \
+		 camellia128-set-decrypt-key.c \
+		 camellia128-meta.c \
+		 camellia192-meta.c \
+		 camellia256-set-encrypt-key.c camellia256-crypt.c \
+		 camellia256-set-decrypt-key.c \
+		 camellia256-meta.c \
 		 cast128.c cast128-meta.c \
 		 blowfish.c \
 		 cbc.c ctr.c gcm.c gcm-aes.c \

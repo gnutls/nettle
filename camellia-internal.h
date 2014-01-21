@@ -39,6 +39,8 @@
 
 /* Name mangling */
 #define _camellia_crypt _nettle_camellia_crypt
+#define _camellia_absorb _nettle_camellia_absorb
+#define _camellia_invert_key _nettle_camellia_invert_key
 #define _camellia_table _nettle_camellia_table
 
 /*
@@ -60,11 +62,64 @@ struct camellia_table
   uint32_t sp4404[256];
 };
 
+/* key constants */
+
+#define SIGMA1 0xA09E667F3BCC908BULL
+#define SIGMA2 0xB67AE8584CAA73B2ULL
+#define SIGMA3 0xC6EF372FE94F82BEULL
+#define SIGMA4 0x54FF53A5F1D36F1CULL
+#define SIGMA5 0x10E527FADE682D1DULL
+#define SIGMA6 0xB05688C2B3E6C1FDULL
+
+#define CAMELLIA_SP1110(INDEX) (_nettle_camellia_table.sp1110[(int)(INDEX)])
+#define CAMELLIA_SP0222(INDEX) (_nettle_camellia_table.sp0222[(int)(INDEX)])
+#define CAMELLIA_SP3033(INDEX) (_nettle_camellia_table.sp3033[(int)(INDEX)])
+#define CAMELLIA_SP4404(INDEX) (_nettle_camellia_table.sp4404[(int)(INDEX)])
+
+#define CAMELLIA_F(x, k, y) do {		\
+    uint32_t __yl, __yr;			\
+    uint64_t __i = (x) ^ (k);			\
+    __yl					\
+      = CAMELLIA_SP1110( __i & 0xff)		\
+      ^ CAMELLIA_SP0222((__i >> 24) & 0xff)	\
+      ^ CAMELLIA_SP3033((__i >> 16) & 0xff)	\
+      ^ CAMELLIA_SP4404((__i >> 8) & 0xff);	\
+    __yr					\
+      = CAMELLIA_SP1110( __i >> 56)		\
+      ^ CAMELLIA_SP0222((__i >> 48) & 0xff)	\
+      ^ CAMELLIA_SP3033((__i >> 40) & 0xff)	\
+      ^ CAMELLIA_SP4404((__i >> 32) & 0xff);	\
+    __yl ^= __yr;				\
+    __yr = ROTL32(24, __yr);			\
+    __yr ^= __yl;				\
+    (y) = ((uint64_t) __yl << 32) | __yr;	\
+  } while (0)
+
+#if ! HAVE_NATIVE_64_BIT
+#define CAMELLIA_F_HALF_INV(x) do {            \
+    uint32_t __t, __w;                         \
+    __t = (x) >> 32;                           \
+    __w = __t ^(x);                            \
+    __w = ROTL32(8, __w);                       \
+    (x) = ((uint64_t) __w << 32) | (__t ^ __w);        \
+  } while (0)
+#endif
+
 void
-_camellia_crypt(const struct camellia_ctx *ctx,
+_camellia_crypt(unsigned nkeys, const uint64_t *keys,
 		const struct camellia_table *T,
 		size_t length, uint8_t *dst,
 		const uint8_t *src);
+
+/* The initial NKEYS + 2 subkeys in SUBKEY are reduced to the final
+   NKEYS subkeys stored in DST. SUBKEY data is modified in the
+   process. */
+void
+_camellia_absorb(unsigned nkeys, uint64_t *dst, uint64_t *subkey);
+
+void
+_camellia_invert_key(unsigned nkeys,
+		     uint64_t *dst, const uint64_t *src);
 
 extern const struct camellia_table _camellia_table;
 

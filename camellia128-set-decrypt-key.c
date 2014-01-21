@@ -1,11 +1,11 @@
-/* camellia-encrypt.c
+/* camellia128-set-decrypt-key.c
  *
- * Crypt function for the camellia block cipher.
+ * Inverse key setup for the camellia block cipher.
  */
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2010 Niels Möller
+ * Copyright (C) 2010, 2013 Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -27,19 +27,19 @@
 # include "config.h"
 #endif
 
-#include <assert.h>
-
 #include "camellia-internal.h"
 
-/* The main point on this function is to help the assembler
-   implementations of _nettle_camellia_crypt to get the table pointer.
-   For PIC code, the details can be complex and system dependent. */
 void
-camellia_crypt(const struct camellia_ctx *ctx,
-	       size_t length, uint8_t *dst,
-	       const uint8_t *src)
+camellia128_invert_key(struct camellia128_ctx *dst,
+		       const struct camellia128_ctx *src)
 {
-  assert(!(length % CAMELLIA_BLOCK_SIZE) );
-  _camellia_crypt(ctx, &_camellia_table,
-		  length, dst, src);
+  _camellia_invert_key (_CAMELLIA128_NKEYS, dst->keys, src->keys);
+}
+
+void
+camellia128_set_decrypt_key(struct camellia128_ctx *ctx,
+			    const uint8_t *key)
+{
+  camellia128_set_encrypt_key(ctx, key);
+  camellia128_invert_key(ctx, ctx);
 }
