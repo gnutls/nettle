@@ -1,3 +1,8 @@
+2014-01-23  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/gcm-test.c (test_main): Use the correct
+	nettle_gcm_aes128/192/256 object.
+
 2014-01-21  Niels Möller  <nisse@lysator.liu.se>
 
 	Merged camellia-reorg changes (starting at 2013-10-07).

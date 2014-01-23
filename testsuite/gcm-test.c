@@ -116,9 +116,9 @@ test_main(void)
 		 "c3c0c95156809539fcf0e2429a6b5254"
 		 "16aedbf5a0de6a57a637b39b"),
 	    SHEX("619cc5aefffe0bfa462af43c1699d050"));
-  
+
   /* Test case 7 */
-  test_aead(&nettle_gcm_aes128,
+  test_aead(&nettle_gcm_aes192,
 	    SHEX("00000000000000000000000000000000"
 		 "0000000000000000"),
 	    SHEX(""),
@@ -128,7 +128,7 @@ test_main(void)
 	    SHEX("cd33b28ac773f74ba00ed1f312572435"));
 
   /* Test case 8 */
-  test_aead(&nettle_gcm_aes128,
+  test_aead(&nettle_gcm_aes192,
 	    SHEX("00000000000000000000000000000000"
 		 "0000000000000000"),
 	    SHEX(""),
@@ -138,7 +138,7 @@ test_main(void)
 	    SHEX("2ff58d80033927ab8ef4d4587514f0fb"));
 
   /* Test case 9 */
-  test_aead(&nettle_gcm_aes128,
+  test_aead(&nettle_gcm_aes192,
 	    SHEX("feffe9928665731c6d6a8f9467308308"
 		 "feffe9928665731c"),
 	    SHEX(""),
@@ -154,7 +154,7 @@ test_main(void)
 	    SHEX("9924a7c8587336bfb118024db8674a14"));
 
   /* Test case 10 */
-  test_aead(&nettle_gcm_aes128,
+  test_aead(&nettle_gcm_aes192,
 	    SHEX("feffe9928665731c6d6a8f9467308308"
 		 "feffe9928665731c"),
 	    SHEX("feedfacedeadbeeffeedfacedeadbeef"
@@ -171,7 +171,7 @@ test_main(void)
 	    SHEX("2519498e80f1478f37ba55bd6d27618c"));
 
   /* Test case 11 */
-  test_aead(&nettle_gcm_aes128,
+  test_aead(&nettle_gcm_aes192,
 	    SHEX("feffe9928665731c6d6a8f9467308308"
 		 "feffe9928665731c"),
 	    SHEX("feedfacedeadbeeffeedfacedeadbeef"
@@ -188,7 +188,7 @@ test_main(void)
 	    SHEX("65dcc57fcf623a24094fcca40d3533f8"));
 
   /* Test case 12 */
-  test_aead(&nettle_gcm_aes128,
+  test_aead(&nettle_gcm_aes192,
 	    SHEX("feffe9928665731c6d6a8f9467308308"
 		 "feffe9928665731c"),
 	    SHEX("feedfacedeadbeeffeedfacedeadbeef"
@@ -208,7 +208,7 @@ test_main(void)
 	    SHEX("dcf566ff291c25bbb8568fc3d376a6d9"));
 
   /* Test case 13 */
-  test_aead(&nettle_gcm_aes128,
+  test_aead(&nettle_gcm_aes256,
 	    SHEX("00000000000000000000000000000000"
 		 "00000000000000000000000000000000"),
 	    SHEX(""),
@@ -218,7 +218,7 @@ test_main(void)
 	    SHEX("530f8afbc74536b9a963b4f1c4cb738b"));
 
   /* Test case 14 */
-  test_aead(&nettle_gcm_aes128,
+  test_aead(&nettle_gcm_aes256,
 	    SHEX("00000000000000000000000000000000"
 		 "00000000000000000000000000000000"),
 	    SHEX(""),
@@ -228,7 +228,7 @@ test_main(void)
 	    SHEX("d0d1c8a799996bf0265b98b5d48ab919"));
 
   /* Test case 15 */
-  test_aead(&nettle_gcm_aes128,
+  test_aead(&nettle_gcm_aes256,
 	    SHEX("feffe9928665731c6d6a8f9467308308"
 		 "feffe9928665731c6d6a8f9467308308"),
 	    SHEX(""),
@@ -244,7 +244,7 @@ test_main(void)
 	    SHEX("b094dac5d93471bdec1a502270e3cc6c"));
 
   /* Test case 16 */
-  test_aead(&nettle_gcm_aes128,
+  test_aead(&nettle_gcm_aes256,
 	    SHEX("feffe9928665731c6d6a8f9467308308"
 		 "feffe9928665731c6d6a8f9467308308"),
 	    SHEX("feedfacedeadbeeffeedfacedeadbeef"
@@ -261,7 +261,7 @@ test_main(void)
 	    SHEX("76fc6ece0f4e1768cddf8853bb2d551b"));
 
   /* Test case 17 */
-  test_aead(&nettle_gcm_aes128,
+  test_aead(&nettle_gcm_aes256,
 	    SHEX("feffe9928665731c6d6a8f9467308308"
 		 "feffe9928665731c6d6a8f9467308308"),
 	    SHEX("feedfacedeadbeeffeedfacedeadbeef"
@@ -278,7 +278,7 @@ test_main(void)
 	    SHEX("3a337dbf46a792c45e454913fe2ea8f2"));
 
   /* Test case 18 */
-  test_aead(&nettle_gcm_aes128,
+  test_aead(&nettle_gcm_aes256,
 	    SHEX("feffe9928665731c6d6a8f9467308308"
 		 "feffe9928665731c6d6a8f9467308308"),
 	    SHEX("feedfacedeadbeeffeedfacedeadbeef"
