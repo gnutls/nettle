@@ -115,9 +115,9 @@ gcm_digest(struct gcm_ctx *ctx, const struct gcm_key *key,
 { type cipher; struct gcm_key key; struct gcm_ctx gcm; }
 
 /* NOTE: Avoid using NULL, as we don't include anything defining it. */
-#define GCM_SET_KEY(ctx, set_key, encrypt, length, data)	\
+#define GCM_SET_KEY(ctx, set_key, encrypt, key)			\
   do {								\
-    (set_key)(&(ctx)->cipher, (length), (data));		\
+    (set_key)(&(ctx)->cipher, (key));				\
     if (0) (encrypt)(&(ctx)->cipher, 0, (void *)0, (void *)0);	\
     gcm_set_key(&(ctx)->key, &(ctx)->cipher,			\
 		(nettle_crypt_func *) (encrypt));		\

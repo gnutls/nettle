@@ -1,3 +1,9 @@
+2014-01-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* gcm.h (GCM_SET_KEY): Deleted length argument.
+	* gcm-aes.c (gcm_aes_set_key): Use aes_set_encrypt_key and
+	gcm_set_key, can no longer use GCM_SET_KEY macro.
+
 2014-01-23  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/gcm-test.c (test_main): Use the correct
