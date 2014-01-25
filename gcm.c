@@ -7,9 +7,6 @@
  * http://www.cryptobarn.com/papers/gcm-spec.pdf.
  */
 
-/* NOTE: Tentative interface, subject to change. No effort will be
-   made to avoid incompatible changes. */
-
 /* nettle, low-level cryptographics library
  *
  * Copyright (C) 2011 Niels Möller
@@ -389,10 +386,7 @@ gcm_hash_sizes(const struct gcm_key *key, union nettle_block16 *x,
   gcm_hash(key, x, GCM_BLOCK_SIZE, buffer);
 }
 
-/*
- * @length: The size of the iv (fixed for now to GCM_NONCE_SIZE)
- * @iv: The iv
- */
+/* NOTE: The key is needed only if length != GCM_IV_SIZE */
 void
 gcm_set_iv(struct gcm_ctx *ctx, const struct gcm_key *key,
 	   size_t length, const uint8_t *iv)
