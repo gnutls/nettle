@@ -107,12 +107,16 @@ nettle_salsa20r12 = {
   (nettle_crypt_func *) salsa20r12_crypt
 };
 
+#define gcm_aes128_set_nonce gcm_aes128_set_iv
+#define gcm_aes192_set_nonce gcm_aes192_set_iv
+#define gcm_aes256_set_nonce gcm_aes256_set_iv
 const struct nettle_aead
-nettle_gcm_aes128 = _NETTLE_AEAD(gcm, GCM, aes, 128);
+nettle_gcm_aes128 = _NETTLE_AEAD(gcm, GCM, aes128, 128);
 const struct nettle_aead
-nettle_gcm_aes192 = _NETTLE_AEAD(gcm, GCM, aes, 192);
+nettle_gcm_aes192 = _NETTLE_AEAD(gcm, GCM, aes192, 192);
 const struct nettle_aead
-nettle_gcm_aes256 = _NETTLE_AEAD(gcm, GCM, aes, 256);
+nettle_gcm_aes256 = _NETTLE_AEAD(gcm, GCM, aes256, 256);
+
 
 /* Old, unified, interface */
 const struct nettle_cipher nettle_unified_aes128
@@ -172,8 +176,5 @@ eax_aes128_digest(struct eax_aes128_ctx *ctx,
   EAX_DIGEST(ctx, aes128_encrypt, length, digest);
 }
 
-/* FIXME: Rename to set_nonce, in struct nettle_aead. */
-#define eax_aes128_set_iv eax_aes128_set_nonce
-
 const struct nettle_aead
-nettle_eax_aes128 = _NETTLE_AEAD_FIX(eax, EAX, aes128, 128);
+nettle_eax_aes128 = _NETTLE_AEAD(eax, EAX, aes128, 128);

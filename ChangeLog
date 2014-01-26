@@ -1,3 +1,32 @@
+2014-01-26  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle-internal.h (_NETTLE_AEAD_FIX): Renamed to...
+	(_NETTLE_AEAD): ... new name, and deleted old definition. Also use
+	_set_nonce instead of _set_iv.
+	* nettle-internal.c (nettle_gcm_aes128, nettle_gcm_aes192)
+	(nettle_gcm_aes256): Define in terms of new interface.
+	(nettle_eax_aes128): Updated for _NETTLE_AEAD changes.
+
+	* testsuite/gcm-test.c (test_gcm_hash): Likewise use struct
+	gcm_aes128_ctx.
+	(test_main): Added a testcase using the old interface based on
+	struct gcm_aes_ctx.
+
+	* examples/nettle-benchmark.c (time_gcm): Update to use new struct
+	gcm_aes128_ctx. Also use name "gcm-aes128" in output.
+
+	* gcm.h: New interface for gcm_aes128, gcm_aes192, gcm_aes256,
+	using the new AES interface.
+	(GCM_CTX): Reorder fields, putting the cipher context
+	last.
+
+	* Makefile.in (nettle_SOURCES): Added gcm-aes128.c, gcm-aes192.c,
+	and gcm-aes256.c.
+
+	* gcm-aes128.c: New file.
+	* gcm-aes192.c: New file
+	* gcm-aes256.c: New file.
+
 2014-01-25  Niels Möller  <nisse@lysator.liu.se>
 
 	* gcm.h (GCM_SET_KEY): Deleted length argument.

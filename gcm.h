@@ -5,13 +5,10 @@
  *
  */
 
-/* NOTE: Tentative interface, subject to change. No effort will be
-   made to avoid incompatible changes. */
-
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2011 Niels Möller
  * Copyright (C) 2011 Katholieke Universiteit Leuven
+ * Copyright (C) 2011, 2014 Niels Möller
  * 
  * Contributed by Nikos Mavrogiannopoulos
  *
@@ -48,6 +45,27 @@ extern "C" {
 #define gcm_decrypt nettle_gcm_decrypt
 #define gcm_digest nettle_gcm_digest
 
+#define gcm_aes128_set_key nettle_gcm_aes128_set_key
+#define gcm_aes128_set_iv nettle_gcm_aes128_set_iv
+#define gcm_aes128_update nettle_gcm_aes128_update
+#define gcm_aes128_encrypt nettle_gcm_aes128_encrypt
+#define gcm_aes128_decrypt nettle_gcm_aes128_decrypt
+#define gcm_aes128_digest nettle_gcm_aes128_digest
+
+#define gcm_aes192_set_key nettle_gcm_aes192_set_key
+#define gcm_aes192_set_iv nettle_gcm_aes192_set_iv
+#define gcm_aes192_update nettle_gcm_aes192_update
+#define gcm_aes192_encrypt nettle_gcm_aes192_encrypt
+#define gcm_aes192_decrypt nettle_gcm_aes192_decrypt
+#define gcm_aes192_digest nettle_gcm_aes192_digest
+
+#define gcm_aes256_set_key nettle_gcm_aes256_set_key
+#define gcm_aes256_set_iv nettle_gcm_aes256_set_iv
+#define gcm_aes256_update nettle_gcm_aes256_update
+#define gcm_aes256_encrypt nettle_gcm_aes256_encrypt
+#define gcm_aes256_decrypt nettle_gcm_aes256_decrypt
+#define gcm_aes256_digest nettle_gcm_aes256_digest
+
 #define gcm_aes_set_key nettle_gcm_aes_set_key
 #define gcm_aes_set_iv nettle_gcm_aes_set_iv
 #define gcm_aes_update nettle_gcm_aes_update
@@ -65,7 +83,7 @@ struct gcm_key
 {
   union nettle_block16 h[1 << GCM_TABLE_BITS];
 };
-  
+
 /* Per-message state, depending on the iv */
 struct gcm_ctx {
   /* Original counter block */
@@ -109,10 +127,9 @@ gcm_digest(struct gcm_ctx *ctx, const struct gcm_key *key,
 	   size_t length, uint8_t *digest);
 
 /* Convenience macrology (not sure how useful it is) */
-
-/* All-in-one context, with cipher, hash subkey, and message state. */
+/* All-in-one context, with hash subkey, message state, and cipher. */
 #define GCM_CTX(type) \
-{ type cipher; struct gcm_key key; struct gcm_ctx gcm; }
+  { struct gcm_key key; struct gcm_ctx gcm; type cipher; }
 
 /* NOTE: Avoid using NULL, as we don't include anything defining it. */
 #define GCM_SET_KEY(ctx, set_key, encrypt, key)			\
@@ -147,6 +164,84 @@ gcm_digest(struct gcm_ctx *ctx, const struct gcm_key *key,
 		  (nettle_crypt_func *) (encrypt),			\
 		  (length), (digest)))
 
+struct gcm_aes128_ctx GCM_CTX(struct aes128_ctx);
+
+void
+gcm_aes128_set_key(struct gcm_aes128_ctx *ctx,
+		   size_t length, const uint8_t *key);
+
+/* FIXME: Define _update and _set_iv as some kind of aliaes,
+   there's nothing aes-specific. */
+void
+gcm_aes128_update (struct gcm_aes128_ctx *ctx,
+		   size_t length, const uint8_t *data);
+void
+gcm_aes128_set_iv (struct gcm_aes128_ctx *ctx,
+		   size_t length, const uint8_t *iv);
+
+void
+gcm_aes128_encrypt(struct gcm_aes128_ctx *ctx,
+		   size_t length, uint8_t *dst, const uint8_t *src);
+
+void
+gcm_aes128_decrypt(struct gcm_aes128_ctx *ctx,
+		   size_t length, uint8_t *dst, const uint8_t *src);
+
+void
+gcm_aes128_digest(struct gcm_aes128_ctx *ctx,
+		  size_t length, uint8_t *digest);
+
+struct gcm_aes192_ctx GCM_CTX(struct aes192_ctx);
+
+void
+gcm_aes192_set_key(struct gcm_aes192_ctx *ctx,
+		   size_t length, const uint8_t *key);
+
+void
+gcm_aes192_update (struct gcm_aes192_ctx *ctx,
+		   size_t length, const uint8_t *data);
+void
+gcm_aes192_set_iv (struct gcm_aes192_ctx *ctx,
+		   size_t length, const uint8_t *iv);
+
+void
+gcm_aes192_encrypt(struct gcm_aes192_ctx *ctx,
+		   size_t length, uint8_t *dst, const uint8_t *src);
+
+void
+gcm_aes192_decrypt(struct gcm_aes192_ctx *ctx,
+		   size_t length, uint8_t *dst, const uint8_t *src);
+
+void
+gcm_aes192_digest(struct gcm_aes192_ctx *ctx,
+		  size_t length, uint8_t *digest);
+
+struct gcm_aes256_ctx GCM_CTX(struct aes256_ctx);
+
+void
+gcm_aes256_set_key(struct gcm_aes256_ctx *ctx,
+		   size_t length, const uint8_t *key);
+
+void
+gcm_aes256_update (struct gcm_aes256_ctx *ctx,
+		   size_t length, const uint8_t *data);
+void
+gcm_aes256_set_iv (struct gcm_aes256_ctx *ctx,
+		   size_t length, const uint8_t *iv);
+
+void
+gcm_aes256_encrypt(struct gcm_aes256_ctx *ctx,
+		   size_t length, uint8_t *dst, const uint8_t *src);
+
+void
+gcm_aes256_decrypt(struct gcm_aes256_ctx *ctx,
+		   size_t length, uint8_t *dst, const uint8_t *src);
+
+void
+gcm_aes256_digest(struct gcm_aes256_ctx *ctx,
+		  size_t length, uint8_t *digest);
+
+/* Old aes interface, for backwards compatibility */
 struct gcm_aes_ctx GCM_CTX(struct aes_ctx);
 
 void

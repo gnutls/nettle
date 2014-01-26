@@ -5,15 +5,15 @@
 static void
 test_gcm_hash (const struct tstring *msg, const struct tstring *ref)
 {
-  struct gcm_aes_ctx ctx;
+  struct gcm_aes128_ctx ctx;
   const uint8_t z16[16] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
   uint8_t digest[16];
 
   ASSERT (ref->length == sizeof(digest));
-  gcm_aes_set_key (&ctx, 16, z16);
-  gcm_aes_set_iv (&ctx, 16, z16);
-  gcm_aes_update (&ctx, msg->length, msg->data);
-  gcm_aes_digest (&ctx, sizeof(digest), digest);
+  gcm_aes128_set_key (&ctx, 16, z16);
+  gcm_aes128_set_iv (&ctx, 16, z16);
+  gcm_aes128_update (&ctx, msg->length, msg->data);
+  gcm_aes128_digest (&ctx, sizeof(digest), digest);
   if (!MEMEQ (ref->length, ref->data, digest))
     {
       fprintf (stderr, "gcm_hash failed, msg: %s\nOutput: ", msg->data);
@@ -24,6 +24,27 @@ test_gcm_hash (const struct tstring *msg, const struct tstring *ref)
       FAIL();
     }
 }
+
+static void
+gcm_aes128_set_key_wrapper (void *ctx, size_t length, const uint8_t *key)
+{
+  ASSERT (length == AES128_KEY_SIZE);
+  gcm_aes_set_key (ctx, length, key);
+}
+static const struct nettle_aead
+nettle_gcm_unified_aes128 = {
+  "gcm-aes128",
+  sizeof (struct gcm_aes_ctx),
+  GCM_BLOCK_SIZE,
+  AES128_KEY_SIZE,
+  gcm_aes128_set_key_wrapper,
+  (nettle_set_key_func *) gcm_aes_set_iv,
+  (nettle_hash_update_func *) gcm_aes_update,
+  (nettle_crypt_func *) gcm_aes_encrypt,
+  (nettle_crypt_func *) gcm_aes_decrypt,
+  (nettle_hash_digest_func *) gcm_aes_digest
+};
+    
 
 void
 test_main(void)
@@ -100,6 +121,25 @@ test_main(void)
 
   /* Test case 6 */
   test_aead(&nettle_gcm_aes128,
+	    SHEX("feffe9928665731c6d6a8f9467308308"),
+	    SHEX("feedfacedeadbeeffeedfacedeadbeef"
+		 "abaddad2"),
+	    SHEX("d9313225f88406e5a55909c5aff5269a"
+		 "86a7a9531534f7da2e4c303d8a318a72"
+		 "1c3c0c95956809532fcf0e2449a6b525"
+		 "b16aedf5aa0de657ba637b39"),
+	    SHEX("8ce24998625615b603a033aca13fb894"
+		 "be9112a5c3a211a8ba262a3cca7e2ca7"
+		 "01e4a9a4fba43c90ccdcb281d48c7c6f"
+		 "d62875d2aca417034c34aee5"),
+	    SHEX("9313225df88406e555909c5aff5269aa"
+		 "6a7a9538534f7da1e4c303d2a318a728"
+		 "c3c0c95156809539fcf0e2429a6b5254"
+		 "16aedbf5a0de6a57a637b39b"),
+	    SHEX("619cc5aefffe0bfa462af43c1699d050"));
+
+  /* Same test, but with old gcm_aes interface */
+  test_aead(&nettle_gcm_unified_aes128,
 	    SHEX("feffe9928665731c6d6a8f9467308308"),
 	    SHEX("feedfacedeadbeeffeedfacedeadbeef"
 		 "abaddad2"),

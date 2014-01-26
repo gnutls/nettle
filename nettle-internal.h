@@ -103,25 +103,12 @@ struct nettle_aead
 };
 
 #define _NETTLE_AEAD(type, TYPE, name, key_size) {	\
-  #type "-" #name #key_size,				\
-  sizeof(struct type##_##name##_ctx),			\
-  TYPE##_BLOCK_SIZE,					\
-  key_size / 8,						\
-  (nettle_set_key_func *) type##_##name##_set_key,	\
-  (nettle_set_key_func *) type##_##name##_set_iv,	\
-  (nettle_hash_update_func *) type##_##name##_update,	\
-  (nettle_crypt_func *) type##_##name##_encrypt,	\
-  (nettle_crypt_func *) type##_##name##_decrypt,	\
-  (nettle_hash_digest_func *) type##_##name##_digest,	\
-}
-
-#define _NETTLE_AEAD_FIX(type, TYPE, name, key_size) {	\
   #type "-" #name,				\
   sizeof(struct type##_##name##_ctx),			\
   TYPE##_BLOCK_SIZE,					\
   key_size / 8,						\
   (nettle_set_key_func *) type##_##name##_set_key,	\
-  (nettle_set_key_func *) type##_##name##_set_iv,	\
+  (nettle_set_key_func *) type##_##name##_set_nonce,	\
   (nettle_hash_update_func *) type##_##name##_update,	\
   (nettle_crypt_func *) type##_##name##_encrypt,	\
   (nettle_crypt_func *) type##_##name##_decrypt,	\

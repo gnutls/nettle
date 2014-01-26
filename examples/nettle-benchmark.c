@@ -422,31 +422,31 @@ time_gcm(void)
   static uint8_t data[BENCH_BLOCK];
   struct bench_hash_info hinfo;
   struct bench_cipher_info cinfo;
-  struct gcm_aes_ctx ctx;
+  struct gcm_aes128_ctx ctx;
 
-  uint8_t key[16];
+  uint8_t key[AES128_KEY_SIZE];
   uint8_t iv[GCM_IV_SIZE];
 
-  gcm_aes_set_key(&ctx, sizeof(key), key);
-  gcm_aes_set_iv(&ctx, sizeof(iv), iv);
+  gcm_aes128_set_key(&ctx, sizeof(key), key);
+  gcm_aes128_set_iv(&ctx, sizeof(iv), iv);
 
   hinfo.ctx = &ctx;
-  hinfo.update = (nettle_hash_update_func *) gcm_aes_update;
+  hinfo.update = (nettle_hash_update_func *) gcm_aes128_update;
   hinfo.data = data;
   
-  display("gcm-aes", "update", GCM_BLOCK_SIZE,
+  display("gcm-aes128", "update", GCM_BLOCK_SIZE,
 	  time_function(bench_hash, &hinfo));
   
   cinfo.ctx = &ctx;
-  cinfo.crypt = (nettle_crypt_func *) gcm_aes_encrypt;
+  cinfo.crypt = (nettle_crypt_func *) gcm_aes128_encrypt;
   cinfo.data = data;
 
-  display("gcm-aes", "encrypt", GCM_BLOCK_SIZE,
+  display("gcm-aes128", "encrypt", GCM_BLOCK_SIZE,
 	  time_function(bench_cipher, &cinfo));
 
-  cinfo.crypt = (nettle_crypt_func *) gcm_aes_decrypt;
+  cinfo.crypt = (nettle_crypt_func *) gcm_aes128_decrypt;
 
-  display("gcm-aes", "decrypt", GCM_BLOCK_SIZE,
+  display("gcm-aes128", "decrypt", GCM_BLOCK_SIZE,
 	  time_function(bench_cipher, &cinfo));
 }
 
