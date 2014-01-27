@@ -1,5 +1,8 @@
 2014-01-27  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac (asm_replace_list): Added chacha-core-internal.asm.
+	* x86_64/chacha-core-internal.asm: New file.
+
 	* examples/nettle-benchmark.c (main): Add benchmarking of chacha.
 	* nettle-internal.c (nettle_chacha): New const struct, for the
 	benchmark.

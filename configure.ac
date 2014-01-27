@@ -263,6 +263,7 @@ fi
 asm_replace_list="aes-encrypt-internal.asm aes-decrypt-internal.asm \
 		arcfour-crypt.asm camellia-crypt-internal.asm \
 		md5-compress.asm memxor.asm poly1305-internal.asm \
+		chacha-core-internal.asm \
 		salsa20-crypt.asm salsa20-core-internal.asm \
 		serpent-encrypt.asm serpent-decrypt.asm \
 		sha1-compress.asm sha256-compress.asm sha512-compress.asm \
