@@ -1,5 +1,8 @@
 2014-01-27  Niels Möller  <nisse@lysator.liu.se>
 
+	* x86_64/chacha-core-internal.asm: Use pshufhw + pshuflw for the
+	16-bit rotate.
+
 	* configure.ac (asm_replace_list): Added chacha-core-internal.asm.
 	* x86_64/chacha-core-internal.asm: New file.
 

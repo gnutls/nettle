@@ -26,15 +26,27 @@ define(<X2>, <%xmm2>)
 define(<X3>, <%xmm3>)
 define(<T0>, <%xmm4>)
 define(<T1>, <%xmm5>)
-	
+
+define(<USE_PSHUFW>, <yes>)
+
+C ROTL_BY_16(REG, TMP)
+ifelse(USE_PSHUFW, <yes>, <
+define(<ROTL_BY_16>, <
+	pshufhw	<$>0xb1, $1, $1
+	pshuflw	<$>0xb1, $1, $1
+>)>, <
+define(<ROTL_BY_16>, <
+	pslld	<$>16, $1
+	psrld	<$>16, $2
+	por	$2, $1
+>)
+>)
 C QROUND
 define(<QROUND>, <
 	paddd	X1, X0
 	pxor	X0, X3
 	movaps	X3, T0
-	pslld	<$>16, X3
-	psrld	<$>16, T0
-	por	T0, X3
+	ROTL_BY_16(X3, T0)
 
 	paddd	X3, X2
 	pxor	X2, X1
