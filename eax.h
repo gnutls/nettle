@@ -57,16 +57,16 @@ extern "C" {
 /* Values independent of message and nonce */
 struct eax_key
 {
-  uint8_t pad_block[EAX_BLOCK_SIZE];
-  uint8_t pad_partial[EAX_BLOCK_SIZE];
+  union nettle_block16 pad_block;
+  union nettle_block16 pad_partial;
 };
 
 struct eax_ctx
 {
-  uint8_t omac_nonce[EAX_BLOCK_SIZE];
-  uint8_t omac_data[EAX_BLOCK_SIZE];
-  uint8_t omac_message[EAX_BLOCK_SIZE];
-  uint8_t ctr[EAX_BLOCK_SIZE];
+  union nettle_block16 omac_nonce;
+  union nettle_block16 omac_data;
+  union nettle_block16 omac_message;
+  union nettle_block16 ctr;
 };
 
 void

@@ -1,5 +1,10 @@
 2014-01-27  Niels Möller  <nisse@lysator.liu.se>
 
+	* eax.h (struct eax_key, struct eax_ctx): Use union
+	nettle_block16, for alignment.
+	* eax.c: Updated everything to use nettle_block16.
+	(block16_xor): New function.
+
 	* examples/nettle-benchmark.c (time_eax): New function.
 	(main): Use it.
 
