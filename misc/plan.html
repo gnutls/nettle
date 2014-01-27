@@ -14,7 +14,7 @@
   <h1> Nettle release plans </h1>
   <p> This is an attempt at defining a development target for
   Nettle-2.8, inspired by similar pages for recent GMP releases. [Last
-  updated 2014-01-02]</p>
+  updated 2014-01-27]</p>
   <p class='should'>
     This really ought to be done before release
   </p>
@@ -55,18 +55,28 @@
     Do separate aes128_ctx, etc, with smaller allocation for subkeys.
   </p>
   <p class='wish'>
-    Consider doing the same separation for camellia (and possibly
-    cast128), which also use fewer subkeys for shorter key sizes.
+    <span class='done'>Do the same separation for camellia, which also
+    use fewer subkeys for shorter key
+    sizes.</span> <span class='postponed'>(And possibly also for
+    cast128).</span>
   </p>
   <p class='should'>
     Don't require initialization of *dst_length for base*_decode_update.
   </p>
   <p class='should'>
-    Rename gcm "iv" to "nonce". Keep old names for backwards
-    compatibility.
+    New DSA interface, with a separate struct dsa_params.
   </p>
   <p class='should'>
-    New DSA interface, with a separate struct dsa_params.
+    Drop key size argument from <tt>nettle_set_key_func</tt>.
+  </p>
+  <p class='should'>
+    Use the nettle_cipher abstraction only for block ciphers (in
+    particular, exclude arcfour). Use a const for the ctx argument to
+    nettle_crypt_func.
+  </p>
+  <p class='wish'>
+    Consider making a public interface similar to nettle_aead? With
+    the above change, it can't use nettle_crypt_func.
   </p>
   
   <h2> New features </h2>
@@ -74,10 +84,10 @@
     Add <a href='http://www.cs.ucdavis.edu/~rogaway/papers/eax.pdf'>EAX</a >
     mode?
   </p>
-  <p class='should'>
+  <p class='done'>
     Add poly1305.
   </p>
-  <p class='should'>
+  <p class='done'>
     Add chacha.
   </p>
   <p class='should'>
@@ -102,6 +112,9 @@
   </p>
   <p class='should'>
     Document poly1305.
+  </p>
+  <p class='should'>
+    Document chacha.
   </p>
   
   <h2> Build system </h2>
@@ -152,15 +165,6 @@
     For Merkle-Damgaard hash functions, separate the state and the
     buffering. E.g., when using them for HMAC keyed "inner" and
     "outer" states, we now get three buffers but we only need one.
-  </p>
-  <p class='should'>
-    Use the nettle_cipher abstraction only for block ciphers (in
-    particular, exclude arcfour). Use a const for the ctx argument to
-    nettle_crypt_func.
-  </p>
-  <p class='wish'>
-    Consider making a public interface similar to nettle_aead? With
-    the above change, it can't use nettle_crypt_func.
   </p>
   <p class='wish'>
     Make it possible to build nettle and hogweed using mini-gmp.
