@@ -86,8 +86,11 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 camellia256-set-decrypt-key.c \
 		 camellia256-meta.c \
 		 cast128.c cast128-meta.c \
-		 blowfish.c \
-		 cbc.c ctr.c gcm.c \
+		 blowfish.c cbc.c \
+		 chacha-crypt.c chacha-core-internal.c \
+		 chacha-set-iv.c chacha-set-key.c \
+		 chacha128-set-key.c chacha256-set-key.c \
+		 ctr.c gcm.c \
 		 gcm-aes.c gcm-aes128.c gcm-aes192.c gcm-aes256.c \
 		 des.c des3.c des-compat.c eax.c \
 		 hmac.c hmac-md5.c hmac-ripemd160.c hmac-sha1.c \
@@ -159,7 +162,7 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 
 HEADERS = aes.h arcfour.h arctwo.h asn1.h bignum.h blowfish.h \
 	  base16.h base64.h buffer.h camellia.h cast128.h \
-	  cbc.h ctr.h \
+	  cbc.h chacha.h ctr.h \
 	  des.h des-compat.h dsa.h eax.h ecc-curve.h ecc.h ecdsa.h \
 	  gcm.h gosthash94.h hmac.h \
 	  knuth-lfib.h \

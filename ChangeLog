@@ -1,3 +1,19 @@
+2014-01-27  Niels Möller  <nisse@lysator.liu.se>
+
+	Chacha implementation, based on contribution by Joachim
+	Strömbergson.
+	* chacha.h: New file.
+	* chacha256-set-key.c (chacha256_set_key): New file and function.
+	* chacha128-set-key.c (chacha128_set_key): New file and function.
+	* chacha-set-key.c (chacha_set_key): New file and function.
+	* chacha-set-iv.c (chacha_set_iv): New file and function.
+	* chacha-core-internal.c (_chacha_core): New file and function.
+	* chacha-crypt.c (chacha_crypt): New file and function.
+	* Makefile.in (nettle_SOURCES): Added chacha files.
+	(HEADERS): Added chacha.h.
+	* testsuite/chacha-test.c: New file.
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Added chacha-test.c.
+
 2014-01-26  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle-internal.h (_NETTLE_AEAD_FIX): Renamed to...

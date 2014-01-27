@@ -22,6 +22,9 @@ base64-test$(EXEEXT): base64-test.$(OBJEXT)
 camellia-test$(EXEEXT): camellia-test.$(OBJEXT)
 	$(LINK) camellia-test.$(OBJEXT) $(TEST_OBJS) -o camellia-test$(EXEEXT)
 
+chacha-test$(EXEEXT): chacha-test.$(OBJEXT)
+	$(LINK) chacha-test.$(OBJEXT) $(TEST_OBJS) -o chacha-test$(EXEEXT)
+
 des-test$(EXEEXT): des-test.$(OBJEXT)
 	$(LINK) des-test.$(OBJEXT) $(TEST_OBJS) -o des-test$(EXEEXT)
 
