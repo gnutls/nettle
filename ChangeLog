@@ -1,5 +1,9 @@
 2014-01-27  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/nettle-benchmark.c (main): Add benchmarking of chacha.
+	* nettle-internal.c (nettle_chacha): New const struct, for the
+	benchmark.
+
 	Chacha implementation, based on contribution by Joachim
 	Strömbergson.
 	* chacha.h: New file.

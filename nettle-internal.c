@@ -36,6 +36,7 @@
 #include "des.h"
 #include "eax.h"
 #include "gcm.h"
+#include "chacha.h"
 #include "salsa20.h"
 
 /* DES uses a different signature for the key set function. We ignore
@@ -78,6 +79,25 @@ nettle_des3 = {
    blowfish_set_key has no return value. */
 const struct nettle_cipher
 nettle_blowfish128 = _NETTLE_CIPHER(blowfish, BLOWFISH, 128);
+
+/* Sets a fix zero iv. For benchmarking only. */
+static void
+chacha_set_key_hack(void *ctx, size_t length, const uint8_t *key)
+{
+  static const uint8_t iv[CHACHA_IV_SIZE];
+  chacha_set_key (ctx, length, key);
+  chacha_set_iv (ctx, iv);
+}
+
+/* Claim zero block size, to classify as a stream cipher. */
+const struct nettle_cipher
+nettle_chacha = {
+  "chacha", sizeof(struct chacha_ctx),
+  0, CHACHA_KEY_SIZE,
+  chacha_set_key_hack, chacha_set_key_hack,
+  (nettle_crypt_func *) chacha_crypt,
+  (nettle_crypt_func *) chacha_crypt
+};
 
 /* Sets a fix zero iv. For benchmarking only. */
 static void

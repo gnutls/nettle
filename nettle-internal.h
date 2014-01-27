@@ -61,6 +61,7 @@ extern const struct nettle_cipher nettle_des3;
 extern const struct nettle_cipher nettle_blowfish128;
 
 /* For benchmarking only, sets no iv and lies about the block size. */
+extern const struct nettle_cipher nettle_chacha;
 extern const struct nettle_cipher nettle_salsa20;
 extern const struct nettle_cipher nettle_salsa20r12;
 
