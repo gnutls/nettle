@@ -6,7 +6,7 @@
  
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2001, 2010 Niels Möller
+ * Copyright (C) 2001, 2010, 2014 Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -450,6 +450,40 @@ time_gcm(void)
 	  time_function(bench_cipher, &cinfo));
 }
 
+static void
+time_eax(void)
+{
+  static uint8_t data[BENCH_BLOCK];
+  struct bench_hash_info hinfo;
+  struct bench_cipher_info cinfo;
+  struct eax_aes128_ctx ctx;
+
+  uint8_t key[AES128_KEY_SIZE];
+  uint8_t iv[EAX_BLOCK_SIZE];
+
+  eax_aes128_set_key (&ctx, sizeof(key), key);
+  eax_aes128_set_nonce(&ctx, sizeof(iv), iv);
+
+  hinfo.ctx = &ctx;
+  hinfo.update = (nettle_hash_update_func *) eax_aes128_update;
+  hinfo.data = data;
+
+  display("eax-aes128", "update", GCM_BLOCK_SIZE,
+         time_function(bench_hash, &hinfo));
+
+  cinfo.ctx = &ctx;
+  cinfo.crypt = (nettle_crypt_func *) eax_aes128_encrypt;
+  cinfo.data = data;
+
+  display("eax-aes128", "encrypt", GCM_BLOCK_SIZE,
+	  time_function(bench_cipher, &cinfo));
+
+  cinfo.crypt = (nettle_crypt_func *) eax_aes128_decrypt;
+
+  display("eax-aes128", "decrypt", GCM_BLOCK_SIZE,
+	  time_function(bench_cipher, &cinfo));
+}
+
 static int
 prefix_p(const char *prefix, const char *s)
 {
@@ -747,6 +781,12 @@ main(int argc, char **argv)
     {
       printf("\n");
       time_gcm();
+    }
+
+  if (!alg || strstr ("eax", alg))
+    {
+      printf("\n");
+      time_eax();
     }
 
   return 0;
