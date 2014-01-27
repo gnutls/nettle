@@ -7,17 +7,17 @@
  *
  * Copyright (C) 2013 Joachim Strömbergson
  * Copyright (C) 2012, 2014 Niels Möller
- *  
+ *
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at your
  * option) any later version.
- * 
+ *
  * The nettle library is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
  * License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with the nettle library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -37,7 +37,7 @@ test_chacha(const struct tstring *key, const struct tstring *iv,
   /* FIXME: For rounds == 20, use crypt function, support more than
      one block, and test various short lengths. */
   uint32_t out[_CHACHA_STATE_LENGTH];
-  
+
   struct chacha_ctx ctx;
 
   ASSERT (expected->length == CHACHA_BLOCK_SIZE);
@@ -77,6 +77,7 @@ test_main(void)
 		    "b64ab8e72b8deb85 cd6aea7cb6089a10"
 		    "1824beeb08814a42 8aab1fa2c816081b"),
 	       8);
+
   test_chacha (SHEX("0000000000000000 0000000000000000"),
 	       SHEX("0000000000000000"),
 	       SHEX("e1047ba9476bf8ff 312c01b4345a7d8c"
@@ -179,7 +180,7 @@ test_main(void)
 		    "3e0fb640d76ff9c3 b9cd99996e6e38fa"
 		    "d13f0e31c82244d3 3abbc1b11e8bf12d"),
 	       8);
-	       
+
   test_chacha (SHEX("ffffffffffffffff ffffffffffffffff"),
 	       SHEX("ffffffffffffffff"),
 	       SHEX("60e349e60c38b328 c4baab90d44a7c72"
@@ -187,7 +188,7 @@ test_main(void)
 		    "83d5597d7a616258 ec3c5d5b30e1c5c8"
 		    "5c5dfe2f92423b8e 36870f3185b6add9"),
 	       12);
-  
+
   test_chacha (SHEX("ffffffffffffffff ffffffffffffffff"),
 	       SHEX("ffffffffffffffff"),
 	       SHEX("992947c3966126a0 e660a3e95db048de"
@@ -195,7 +196,7 @@ test_main(void)
 		    "399e4760b262f9d5 3f26d8dd19e56f5c"
 		    "506ae0c3619fa67f b0c408106d0203ee"),
 	       20);
-  
+
   test_chacha (SHEX("ffffffffffffffff ffffffffffffffff"
 		    "ffffffffffffffff ffffffffffffffff"),
 	       SHEX("ffffffffffffffff"),
@@ -248,7 +249,7 @@ test_main(void)
 		    "3815d7a4cc09dbf5 882a3433d743aced"
 		    "48136ebab7329950 6855c0f5437a36c6"),
 	       8);
-	       
+
   test_chacha (SHEX("aaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaa"),
 	       SHEX("aaaaaaaaaaaaaaaa"),
 	       SHEX("057fe84fead13c24 b76bb2a6fdde66f2"
@@ -256,7 +257,7 @@ test_main(void)
 		    "fe4d3193a1036b70 d7fb864f01453641"
 		    "851029ecdb60ac38 79f56496f16213f4"),
 	       12);
-	       
+
   test_chacha (SHEX("aaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaa"),
 	       SHEX("aaaaaaaaaaaaaaaa"),
 	       SHEX("fc79acbd58526103 862776aab20f3b7d"
@@ -264,7 +265,7 @@ test_main(void)
 		    "de5de548c1b7d083 efd9e3052319e0c6"
 		    "254141da04a6586d f800f64d46b01c87"),
 	       20);
-	       
+
   test_chacha (SHEX("aaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaa"
 		    "aaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaa"),
 	       SHEX("aaaaaaaaaaaaaaaa"),
@@ -273,7 +274,7 @@ test_main(void)
 		    "c43c748a970888f8 248393a09d43e0b7"
 		    "e164bc4d0b0fb240 a2d72115c4808906"),
 	       20);
-	       
+
   /* TC7: Sequence patterns in key and IV. */
   test_chacha (SHEX("0011223344556677 8899aabbccddeeff"),
 	       SHEX("0f1e2d3c4b5a6978"),
