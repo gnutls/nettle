@@ -2,7 +2,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2002 Niels Möller
+ * Copyright (C) 2002, 2014 Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -28,11 +28,20 @@
 
 #include "serpent.h"
 
+#define SERPENT(bits) {					\
+  "serpent" #bits,					\
+  sizeof(struct serpent_ctx),				\
+  SERPENT_BLOCK_SIZE,					\
+  SERPENT ## bits ##_KEY_SIZE,				\
+  (nettle_set_key_func *) serpent ## bits ## _set_key,	\
+  (nettle_set_key_func *) serpent ## bits ## _set_key,	\
+  (nettle_crypt_func *) serpent_encrypt,		\
+  (nettle_crypt_func *) serpent_decrypt			\
+}
+
 const struct nettle_cipher nettle_serpent128
-= _NETTLE_CIPHER(serpent, SERPENT, 128);
-
+= SERPENT(128);
 const struct nettle_cipher nettle_serpent192
-= _NETTLE_CIPHER(serpent, SERPENT, 192);
-
+= SERPENT(192);
 const struct nettle_cipher nettle_serpent256
-= _NETTLE_CIPHER(serpent, SERPENT, 256);
+= SERPENT(256);

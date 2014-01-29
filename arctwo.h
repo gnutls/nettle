@@ -6,7 +6,7 @@
 /* nettle, low-level cryptographics library
  *
  * Copyright (C) 2004 Simon Josefsson
- * Copyright (C) 2002, 2004 Niels Möller
+ * Copyright (C) 2002, 2004, 2014 Niels Möller
  *
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -36,9 +36,13 @@ extern "C" {
 /* Name mangling */
 #define arctwo_set_key nettle_arctwo_set_key
 #define arctwo_set_key_ekb nettle_arctwo_set_key_ekb
+#define arctwo_set_key_gutmann nettle_arctwo_set_key_gutmann
+#define arctwo40_set_key nettle_arctwo40_set_key
+#define arctwo64_set_key nettle_arctwo64_set_key
+#define arctwo128_set_key nettle_arctwo128_set_key
+#define arctwo128_set_key_gutmann nettle_arctwo128_set_key_gutmann
 #define arctwo_encrypt nettle_arctwo_encrypt
 #define arctwo_decrypt nettle_arctwo_decrypt
-#define arctwo_set_key_gutmann nettle_arctwo_set_key_gutmann
 
 #define ARCTWO_BLOCK_SIZE 8
 
@@ -62,11 +66,20 @@ arctwo_set_key_ekb (struct arctwo_ctx *ctx,
 /* Equvivalent to arctwo_set_key_ekb, with ekb = 8 * length */
 void
 arctwo_set_key (struct arctwo_ctx *ctx, size_t length, const uint8_t *key);
+void
+arctwo40_set_key (struct arctwo_ctx *ctx, const uint8_t *key);
+void
+arctwo64_set_key (struct arctwo_ctx *ctx, const uint8_t *key);
+void
+arctwo128_set_key (struct arctwo_ctx *ctx, const uint8_t *key);
 
 /* Equvivalent to arctwo_set_key_ekb, with ekb = 1024 */
 void
 arctwo_set_key_gutmann (struct arctwo_ctx *ctx,
 			size_t length, const uint8_t *key);
+void
+arctwo128_set_key_gutmann (struct arctwo_ctx *ctx,
+			   const uint8_t *key);
 
 void
 arctwo_encrypt (struct arctwo_ctx *ctx,

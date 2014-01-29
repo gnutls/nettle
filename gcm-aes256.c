@@ -32,9 +32,8 @@
 #include "gcm.h"
 
 void
-gcm_aes256_set_key(struct gcm_aes256_ctx *ctx, size_t length, const uint8_t *key)
+gcm_aes256_set_key(struct gcm_aes256_ctx *ctx, const uint8_t *key)
 {
-  assert (length == AES256_KEY_SIZE);
   GCM_SET_KEY(ctx, aes256_set_encrypt_key, aes256_encrypt, key);
 }
 

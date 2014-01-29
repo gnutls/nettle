@@ -5,7 +5,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2001 Niels Möller
+ * Copyright (C) 2001, 2014 Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -40,6 +40,9 @@ extern "C" {
 
 /* Name mangling */
 #define twofish_set_key nettle_twofish_set_key
+#define twofish128_set_key nettle_twofish128_set_key
+#define twofish192_set_key nettle_twofish192_set_key
+#define twofish256_set_key nettle_twofish256_set_key
 #define twofish_encrypt nettle_twofish_encrypt
 #define twofish_decrypt nettle_twofish_decrypt
 
@@ -51,6 +54,9 @@ extern "C" {
 #define TWOFISH_MAX_KEY_SIZE 32
 
 #define TWOFISH_KEY_SIZE 32
+#define TWOFISH128_KEY_SIZE 16
+#define TWOFISH192_KEY_SIZE 24
+#define TWOFISH256_KEY_SIZE 32
 
 struct twofish_ctx
 {
@@ -61,6 +67,12 @@ struct twofish_ctx
 void
 twofish_set_key(struct twofish_ctx *ctx,
 		size_t length, const uint8_t *key);
+void
+twofish128_set_key(struct twofish_ctx *context, const uint8_t *key);
+void
+twofish192_set_key(struct twofish_ctx *context, const uint8_t *key);
+void
+twofish256_set_key(struct twofish_ctx *context, const uint8_t *key);
 
 void
 twofish_encrypt(const struct twofish_ctx *ctx,

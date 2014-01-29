@@ -8,7 +8,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2011  Niels Möller
+ * Copyright (C) 2011, 2014  Niels Möller
  * Copyright (C) 2010, 2011  Simon Josefsson
  * Copyright (C) 2003, 2004, 2005 Free Software Foundation, Inc.
  *  
@@ -313,7 +313,7 @@ serpent_key_pad (const uint8_t *key, unsigned int key_length,
     }
 }
 
-/* Initialize CONTEXT with the key KEY of KEY_LENGTH bits.  */
+/* Initialize CONTEXT with the key KEY of LENGTH bytes.  */
 void
 serpent_set_key (struct serpent_ctx *ctx,
 		 size_t length, const uint8_t * key)
@@ -348,4 +348,22 @@ serpent_set_key (struct serpent_ctx *ctx,
       KS(keys, 4, w, 4, k);
     }
   assert (keys == ctx->keys + 33);
+}
+
+void
+serpent128_set_key (struct serpent_ctx *ctx, const uint8_t *key)
+{
+  serpent_set_key (ctx, SERPENT128_KEY_SIZE, key);
+}
+
+void
+serpent192_set_key (struct serpent_ctx *ctx, const uint8_t *key)
+{
+  serpent_set_key (ctx, SERPENT192_KEY_SIZE, key);
+}
+
+void
+serpent256_set_key (struct serpent_ctx *ctx, const uint8_t *key)
+{
+  serpent_set_key (ctx, SERPENT256_KEY_SIZE, key);
 }

@@ -5,7 +5,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2001 Niels Möller
+ * Copyright (C) 2001, 2014 Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -56,3 +56,8 @@ arcfour_set_key(struct arcfour_ctx *ctx,
   ctx->i = ctx->j = 0;
 }
 
+void
+arcfour128_set_key(struct arcfour_ctx *ctx, const uint8_t *key)
+{
+  arcfour_set_key (ctx, ARCFOUR128_KEY_SIZE, key);
+}

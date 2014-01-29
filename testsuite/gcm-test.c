@@ -10,7 +10,7 @@ test_gcm_hash (const struct tstring *msg, const struct tstring *ref)
   uint8_t digest[16];
 
   ASSERT (ref->length == sizeof(digest));
-  gcm_aes128_set_key (&ctx, 16, z16);
+  gcm_aes128_set_key (&ctx, z16);
   gcm_aes128_set_iv (&ctx, 16, z16);
   gcm_aes128_update (&ctx, msg->length, msg->data);
   gcm_aes128_digest (&ctx, sizeof(digest), digest);
@@ -26,10 +26,9 @@ test_gcm_hash (const struct tstring *msg, const struct tstring *ref)
 }
 
 static void
-gcm_aes128_set_key_wrapper (void *ctx, size_t length, const uint8_t *key)
+gcm_unified_aes128_set_key (void *ctx, uint8_t *key)
 {
-  ASSERT (length == AES128_KEY_SIZE);
-  gcm_aes_set_key (ctx, length, key);
+  gcm_aes_set_key (ctx, AES128_KEY_SIZE, key);
 }
 static const struct nettle_aead
 nettle_gcm_unified_aes128 = {
@@ -37,8 +36,8 @@ nettle_gcm_unified_aes128 = {
   sizeof (struct gcm_aes_ctx),
   GCM_BLOCK_SIZE,
   AES128_KEY_SIZE,
-  gcm_aes128_set_key_wrapper,
-  (nettle_set_key_func *) gcm_aes_set_iv,
+  (nettle_set_key_func *) gcm_unified_aes128_set_key,
+  (nettle_hash_update_func *) gcm_aes_set_iv,
   (nettle_hash_update_func *) gcm_aes_update,
   (nettle_crypt_func *) gcm_aes_encrypt,
   (nettle_crypt_func *) gcm_aes_decrypt,

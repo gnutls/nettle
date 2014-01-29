@@ -2,7 +2,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2010, 2013 Niels Möller
+ * Copyright (C) 2010, 2013, 2014 Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -30,25 +30,11 @@
 
 #include "camellia.h"
 
-static void
-camellia128_set_encrypt_key_wrapper (void *ctx, size_t length, const uint8_t *key)
-{
-  assert (length == CAMELLIA128_KEY_SIZE);
-  camellia128_set_encrypt_key (ctx, key);
-}
-
-static void
-camellia128_set_decrypt_key_wrapper (void *ctx, size_t length, const uint8_t *key)
-{
-  assert (length == CAMELLIA128_KEY_SIZE);
-  camellia128_set_decrypt_key (ctx, key);
-}
-
 const struct nettle_cipher nettle_camellia128 =
   { "camellia128", sizeof(struct camellia128_ctx),
     CAMELLIA_BLOCK_SIZE, CAMELLIA128_KEY_SIZE,
-    camellia128_set_encrypt_key_wrapper,
-    camellia128_set_decrypt_key_wrapper,
+    (nettle_set_key_func *) camellia128_set_encrypt_key,
+    (nettle_set_key_func *) camellia128_set_decrypt_key,
     (nettle_crypt_func *) camellia128_crypt,
     (nettle_crypt_func *) camellia128_crypt
   };

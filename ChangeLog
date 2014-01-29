@@ -1,3 +1,92 @@
+2014-01-29  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle-types.h (typedef nettle_set_key_func): Deleted length
+	argument.
+
+	* arctwo.c (arctwo40_set_key, arctwo64_set_key)
+	(arctwo128_set_key, arctwo128_set_key_gutmann): New functions.
+	* arctwo.h: Declare them.
+	* arctwo-meta.c (ARCTWO): New macro.
+	(nettle_arctwo40, nettle_arctwo64, nettle_arctwo128)
+	(nettle_arctwo_gutmann128): Use new _set_key functions.
+
+	* arcfour.h (ARCFOUR128_KEY_SIZE): New constant.
+	* arcfour.c (arcfour128_set_key): New function.
+	* arcfour-meta.c (nettle_arcfour128): Use arcfour128_set_key and
+	ARCFOUR128_KEY_SIZE.
+
+	* cast128.c (cast5_set_key): Renamed, was cast128_set_key.
+	(cast128_set_key): New definition, with fixed key size.
+	* cast128.h (CAST128_MIN_KEY_SIZE, CAST128_MAX_KEY_SIZE): Renamed
+	constants, to...
+	(CAST5_MIN_KEY_SIZE, CAST5_MAX_KEY_SIZE): ... new names.
+
+	* eax.h (EAX_SET_KEY): Deleted length argument.
+
+	* aes128-meta.c: Deleted _set_key wrappers.
+	* aes192-meta.c: Likewise.
+	* aes256-meta.c: Likewise.
+	* camellia128-meta.c: Likewise.
+	* camellia192-meta.c: Likewise.
+	* camellia256-meta.c: Likewise.
+
+	* gcm-aes128.c (gcm_aes128_set_key): Deleted length argument.
+	* gcm-aes192.c (gcm_aes192_set_key): Likewise.
+	* gcm-aes256.c (gcm_aes256_set_key): Likewise.
+	* gcm.h: Updated prototypes.
+
+	* serpent-set-key.c (serpent128_set_key, serpent192_set_key)
+	(serpent256_set_key): New functions.
+	* serpent.h: Declare new functions.
+	(SERPENT128_KEY_SIZE, SERPENT192_KEY_SIZE)
+	(SERPENT256_KEY_SIZE): New constants.
+	* serpent-meta.c (SERPENT): New macro.
+	(nettle_serpent128, nettle_serpent192, nettle_serpent256): Use new
+	_set_key functions.
+
+	* twofish-set-key.c (twofish128_set_key, twofish192_set_key)
+	(twofish256_set_key): New functions.
+	* twofish.h: Declare new functions.
+	(TWOFISH128_KEY_SIZE, TWOFISH192_KEY_SIZE)
+	(TWOFISH256_KEY_SIZE): New constants.
+	* twofish-meta.c (TWOFISH): New macro.
+	(nettle_twofish128, nettle_twofish192, nettle_twofish256): Use new
+	_set_key functions.
+
+	* nettle-internal.h (struct nettle_aead): Use
+	nettle_hash_update_func for the set_iv function pointer.
+
+	* nettle-internal.c (des_set_key_hack, des3_set_key_hack): Deleted
+	wrapper functions.
+	(chacha_set_key_hack): Deleted length argument. Use
+	chacha256_set_key.
+	(salsa20_set_key_hack): Deleted length argument. Use
+	salsa20_256_set_key.
+	(nettle_unified_aes128, nettle_unified_aes192)
+	(nettle_unified_aes256): Deleted, moved to test program.
+	(eax_aes128_set_key): Deleted length argument. Use EAX_SET_KEY.
+
+	* examples/nettle-benchmark.c: Updated for _set_key changes.
+	* examples/nettle-openssl.c: Likewise.
+	* testsuite/testutils.c: Likewise.
+	* testsuite/gcm-test.c: Likewise.
+
+	* testsuite/aes-test.c (UNIFIED_AES): New macro. Moved glue for
+	testing the old aes interface (struct aes_ctx) here.
+
+	* testsuite/arcfour-test.c (test_arcfour): New function, for key
+	sizes != 128 bits.
+	(test_main): Use it.
+
+	* testsuite/blowfish-test.c (test_blowfish): New function.
+	(test_main): Use it. Also deleted old #if:ed out code.
+
+	* testsuite/cast128-test.c (test_cast5): New function.
+	(test_main): Use it, for 40-bit and 80-bit tests.
+
+	* testsuite/serpent-test.c (test_serpent): New function.
+	(test_main): Use it.
+
 2014-01-27  Niels Möller  <nisse@lysator.liu.se>
 
 	* eax.h (struct eax_key, struct eax_ctx): Use union

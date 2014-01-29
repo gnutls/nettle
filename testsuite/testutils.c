@@ -221,7 +221,8 @@ test_cipher(const struct nettle_cipher *cipher,
   ASSERT (cleartext->length == ciphertext->length);
   length = cleartext->length;
 
-  cipher->set_encrypt_key(ctx, key->length, key->data);
+  ASSERT (key->length == cipher->key_size);
+  cipher->set_encrypt_key(ctx, key->data);
   cipher->encrypt(ctx, length, data, cleartext->data);
 
   if (!MEMEQ(length, data, ciphertext->data))
@@ -235,7 +236,7 @@ test_cipher(const struct nettle_cipher *cipher,
       fprintf(stderr, "\n");
       FAIL();
     }
-  cipher->set_decrypt_key(ctx, key->length, key->data);
+  cipher->set_decrypt_key(ctx, key->data);
   cipher->decrypt(ctx, length, data, data);
 
   if (!MEMEQ(length, data, cleartext->data))
@@ -269,10 +270,11 @@ test_cipher_cbc(const struct nettle_cipher *cipher,
   ASSERT (cleartext->length == ciphertext->length);
   length = cleartext->length;
 
+  ASSERT (key->length == cipher->key_size);
   ASSERT (iiv->length == cipher->block_size);
 
   data = xalloc(length);  
-  cipher->set_encrypt_key(ctx, key->length, key->data);
+  cipher->set_encrypt_key(ctx, key->data);
   memcpy(iv, iiv->data, cipher->block_size);
 
   cbc_encrypt(ctx, cipher->encrypt,
@@ -290,7 +292,7 @@ test_cipher_cbc(const struct nettle_cipher *cipher,
       fprintf(stderr, "\n");
       FAIL();
     }
-  cipher->set_decrypt_key(ctx, key->length, key->data);
+  cipher->set_decrypt_key(ctx, key->data);
   memcpy(iv, iiv->data, cipher->block_size);
 
   cbc_decrypt(ctx, cipher->decrypt,
@@ -331,6 +333,7 @@ test_cipher_ctr(const struct nettle_cipher *cipher,
   ASSERT (cleartext->length == ciphertext->length);
   length = cleartext->length;
 
+  ASSERT (key->length == cipher->key_size);
   ASSERT (ictr->length == cipher->block_size);
 
   /* Compute expected counter value after the operation. */
@@ -346,7 +349,7 @@ test_cipher_ctr(const struct nettle_cipher *cipher,
 
   data = xalloc(length);  
 
-  cipher->set_encrypt_key(ctx, key->length, key->data);
+  cipher->set_encrypt_key(ctx, key->data);
   memcpy(ctr, ictr->data, cipher->block_size);
 
   ctr_crypt(ctx, cipher->encrypt,
@@ -393,6 +396,7 @@ test_cipher_ctr(const struct nettle_cipher *cipher,
   free(ctr);
 }
 
+#if 0
 void
 test_cipher_stream(const struct nettle_cipher *cipher,
 		   const struct tstring *key,
@@ -460,6 +464,7 @@ test_cipher_stream(const struct nettle_cipher *cipher,
   free(ctx);
   free(data);
 }
+#endif
 
 void
 test_aead(const struct nettle_aead *aead,
@@ -478,13 +483,14 @@ test_aead(const struct nettle_aead *aead,
   ASSERT (cleartext->length == ciphertext->length);
   length = cleartext->length;
 
+  ASSERT (key->length == aead->key_size);
   ASSERT (digest->length <= aead->block_size);
 
   data = xalloc(length);
   
   /* encryption */
   memset(buffer, 0, aead->block_size);
-  aead->set_key(ctx, key->length, key->data);
+  aead->set_key(ctx, key->data);
 
   aead->set_iv(ctx, iv->length, iv->data);
 

@@ -6,7 +6,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2002 Niels Möller
+ * Copyright (C) 2002, 2014 Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -39,29 +39,14 @@
 #include "chacha.h"
 #include "salsa20.h"
 
-/* DES uses a different signature for the key set function. We ignore
-   the return value indicating weak keys. */
-static void
-des_set_key_hack(void *ctx, size_t length, const uint8_t *key)
-{
-  assert(length == DES_KEY_SIZE);
-  des_set_key(ctx, key);
-}
-
-static void
-des3_set_key_hack(void *ctx, size_t length, const uint8_t *key)
-{
-  assert(length == DES3_KEY_SIZE);
-  des3_set_key(ctx, key);
-}
-
-/* NOTE: A bit ugly. Ignores weak keys, and pretends the set:key
+/* NOTE: A bit ugly. Ignores weak keys, and pretends the set_key
    functions have no return value. */
 const struct nettle_cipher
 nettle_des = {
   "des", sizeof(struct des_ctx),
   DES_BLOCK_SIZE, DES_KEY_SIZE,
-  des_set_key_hack, des_set_key_hack,
+  (nettle_set_key_func *) des_set_key,
+  (nettle_set_key_func *) des_set_key,
   (nettle_crypt_func *) des_encrypt,
   (nettle_crypt_func *) des_decrypt
 };
@@ -70,7 +55,8 @@ const struct nettle_cipher
 nettle_des3 = {
  "des3", sizeof(struct des3_ctx),
  DES3_BLOCK_SIZE, DES3_KEY_SIZE,
- des3_set_key_hack, des3_set_key_hack,
+ (nettle_set_key_func *) des3_set_key,
+ (nettle_set_key_func *) des3_set_key,
  (nettle_crypt_func *) des3_encrypt,
  (nettle_crypt_func *) des3_decrypt
 };
@@ -82,10 +68,10 @@ nettle_blowfish128 = _NETTLE_CIPHER(blowfish, BLOWFISH, 128);
 
 /* Sets a fix zero iv. For benchmarking only. */
 static void
-chacha_set_key_hack(void *ctx, size_t length, const uint8_t *key)
+chacha_set_key_hack(void *ctx, const uint8_t *key)
 {
   static const uint8_t iv[CHACHA_IV_SIZE];
-  chacha_set_key (ctx, length, key);
+  chacha256_set_key (ctx, key);
   chacha_set_iv (ctx, iv);
 }
 
@@ -93,7 +79,7 @@ chacha_set_key_hack(void *ctx, size_t length, const uint8_t *key)
 const struct nettle_cipher
 nettle_chacha = {
   "chacha", sizeof(struct chacha_ctx),
-  0, CHACHA_KEY_SIZE,
+  0, CHACHA256_KEY_SIZE,
   chacha_set_key_hack, chacha_set_key_hack,
   (nettle_crypt_func *) chacha_crypt,
   (nettle_crypt_func *) chacha_crypt
@@ -101,10 +87,10 @@ nettle_chacha = {
 
 /* Sets a fix zero iv. For benchmarking only. */
 static void
-salsa20_set_key_hack(void *ctx, size_t length, const uint8_t *key)
+salsa20_set_key_hack(void *ctx, const uint8_t *key)
 {
   static const uint8_t iv[SALSA20_IV_SIZE];
-  salsa20_set_key (ctx, length, key);
+  salsa20_256_set_key (ctx, key);
   salsa20_set_iv (ctx, iv);
 }
 
@@ -112,7 +98,7 @@ salsa20_set_key_hack(void *ctx, size_t length, const uint8_t *key)
 const struct nettle_cipher
 nettle_salsa20 = {
   "salsa20", sizeof(struct salsa20_ctx),
-  0, SALSA20_KEY_SIZE,
+  0, SALSA20_256_KEY_SIZE,
   salsa20_set_key_hack, salsa20_set_key_hack,
   (nettle_crypt_func *) salsa20_crypt,
   (nettle_crypt_func *) salsa20_crypt
@@ -121,7 +107,7 @@ nettle_salsa20 = {
 const struct nettle_cipher
 nettle_salsa20r12 = {
   "salsa20r12", sizeof(struct salsa20_ctx),
-  0, SALSA20_KEY_SIZE,
+  0, SALSA20_256_KEY_SIZE,
   salsa20_set_key_hack, salsa20_set_key_hack,
   (nettle_crypt_func *) salsa20r12_crypt,
   (nettle_crypt_func *) salsa20r12_crypt
@@ -138,28 +124,13 @@ const struct nettle_aead
 nettle_gcm_aes256 = _NETTLE_AEAD(gcm, GCM, aes256, 256);
 
 
-/* Old, unified, interface */
-const struct nettle_cipher nettle_unified_aes128
-= _NETTLE_CIPHER_SEP(aes, AES, 128);
-
-const struct nettle_cipher nettle_unified_aes192
-= _NETTLE_CIPHER_SEP(aes, AES, 192);
-
-const struct nettle_cipher nettle_unified_aes256
-= _NETTLE_CIPHER_SEP(aes, AES, 256);
-
 /* eax-aes128 */
 void
-eax_aes128_set_key(struct eax_aes128_ctx *ctx, size_t length,
-		   const uint8_t *key)
+eax_aes128_set_key(struct eax_aes128_ctx *ctx, const uint8_t *key)
 {
-  assert (length == AES128_KEY_SIZE);
-  aes128_set_encrypt_key (&ctx->cipher, key);
-  eax_set_key (&ctx->key, &ctx->cipher,
-	       (nettle_crypt_func *) aes128_encrypt);
-
-  /* Can't use EAX_SET_KEY due to aes128_set_encrypt_key /
-     nettle_crypt_func impedance mismatch */
+  EAX_SET_KEY(ctx,
+	      aes128_set_encrypt_key, aes128_encrypt,
+	      key);
 }
 
 void

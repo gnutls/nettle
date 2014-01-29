@@ -5,7 +5,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2001 Niels Möller
+ * Copyright (C) 2001, 2014 Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -33,6 +33,7 @@ extern "C" {
 #endif
 
 /* Name mangling */
+#define arcfour128_set_key nettle_arcfour128_set_key
 #define arcfour_set_key nettle_arcfour_set_key
 #define arcfour_crypt nettle_arcfour_crypt
 
@@ -41,6 +42,7 @@ extern "C" {
 #define ARCFOUR_MIN_KEY_SIZE 1
 #define ARCFOUR_MAX_KEY_SIZE 256
 #define ARCFOUR_KEY_SIZE 16
+#define ARCFOUR128_KEY_SIZE 16
 
 struct arcfour_ctx
 {
@@ -52,6 +54,9 @@ struct arcfour_ctx
 void
 arcfour_set_key(struct arcfour_ctx *ctx,
 		size_t length, const uint8_t *key);
+
+void
+arcfour128_set_key(struct arcfour_ctx *ctx, const uint8_t *key);
 
 void
 arcfour_crypt(struct arcfour_ctx *ctx,

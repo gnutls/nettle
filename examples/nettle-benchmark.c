@@ -427,7 +427,7 @@ time_gcm(void)
   uint8_t key[AES128_KEY_SIZE];
   uint8_t iv[GCM_IV_SIZE];
 
-  gcm_aes128_set_key(&ctx, sizeof(key), key);
+  gcm_aes128_set_key(&ctx, key);
   gcm_aes128_set_iv(&ctx, sizeof(iv), iv);
 
   hinfo.ctx = &ctx;
@@ -461,7 +461,7 @@ time_eax(void)
   uint8_t key[AES128_KEY_SIZE];
   uint8_t iv[EAX_BLOCK_SIZE];
 
-  eax_aes128_set_key (&ctx, sizeof(key), key);
+  eax_aes128_set_key (&ctx, key);
   eax_aes128_set_nonce(&ctx, sizeof(iv), iv);
 
   hinfo.ctx = &ctx;
@@ -521,7 +521,7 @@ time_cipher(const struct nettle_cipher *cipher)
     info.data = data;
     
     init_key(cipher->key_size, key);
-    cipher->set_encrypt_key(ctx, cipher->key_size, key);
+    cipher->set_encrypt_key(ctx, key);
 
     display(cipher->name, "ECB encrypt", cipher->block_size,
 	    time_function(bench_cipher, &info));
@@ -534,7 +534,7 @@ time_cipher(const struct nettle_cipher *cipher)
     info.data = data;
     
     init_key(cipher->key_size, key);
-    cipher->set_decrypt_key(ctx, cipher->key_size, key);
+    cipher->set_decrypt_key(ctx, key);
 
     display(cipher->name, "ECB decrypt", cipher->block_size,
 	    time_function(bench_cipher, &info));
@@ -555,7 +555,7 @@ time_cipher(const struct nettle_cipher *cipher)
     
         memset(iv, 0, sizeof(iv));
     
-        cipher->set_encrypt_key(ctx, cipher->key_size, key);
+        cipher->set_encrypt_key(ctx, key);
 
 	display(cipher->name, "CBC encrypt", cipher->block_size,
 		time_function(bench_cbc_encrypt, &info));
@@ -571,7 +571,7 @@ time_cipher(const struct nettle_cipher *cipher)
     
         memset(iv, 0, sizeof(iv));
 
-        cipher->set_decrypt_key(ctx, cipher->key_size, key);
+        cipher->set_decrypt_key(ctx, key);
 
 	display(cipher->name, "CBC decrypt", cipher->block_size,
 		time_function(bench_cbc_decrypt, &info));
@@ -588,7 +588,7 @@ time_cipher(const struct nettle_cipher *cipher)
     
         memset(iv, 0, sizeof(iv));
     
-        cipher->set_encrypt_key(ctx, cipher->key_size, key);
+        cipher->set_encrypt_key(ctx, key);
 
 	display(cipher->name, "CTR", cipher->block_size,
 		time_function(bench_ctr, &info));	

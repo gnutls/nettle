@@ -102,9 +102,9 @@ eax_digest (struct eax_ctx *eax, const struct eax_key *key,
 #define EAX_CTX(type) \
   { struct eax_key key; struct eax_ctx eax; type cipher; }
 
-#define EAX_SET_KEY(ctx, set_key, encrypt, length, data)		\
+#define EAX_SET_KEY(ctx, set_key, encrypt, data)			\
   do {									\
-    (set_key)(&(ctx)->cipher, (length), (data));			\
+    (set_key)(&(ctx)->cipher, (data));					\
     if (0) (encrypt) (&(ctx)->cipher, 0, (void *) 0, (void *) 0);	\
     eax_set_key (&(ctx)->key, &(ctx)->cipher, (nettle_crypt_func *) encrypt); \
   } while (0)

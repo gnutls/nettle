@@ -8,7 +8,7 @@
  * Copyright (C) 2004 Simon Josefsson
  * Copyright (C) 2003 Nikos Mavroyanopoulos
  * Copyright (C) 2004 Free Software Foundation, Inc.
- * Copyright (C) 2004 Niels Möller
+ * Copyright (C) 2004, 2014 Niels Möller
  *
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -227,4 +227,27 @@ arctwo_set_key_gutmann (struct arctwo_ctx *ctx,
 			size_t length, const uint8_t *key)
 {
   arctwo_set_key_ekb (ctx, length, key, 0);
+}
+
+void
+arctwo40_set_key (struct arctwo_ctx *ctx, const uint8_t *key)
+{
+  arctwo_set_key_ekb (ctx, 5, key, 40);
+}
+void
+arctwo64_set_key (struct arctwo_ctx *ctx, const uint8_t *key)
+{
+  arctwo_set_key_ekb (ctx, 8, key, 64);
+}
+
+void
+arctwo128_set_key (struct arctwo_ctx *ctx, const uint8_t *key)
+{
+  arctwo_set_key_ekb (ctx, 16, key, 128);
+}
+void
+arctwo128_set_key_gutmann (struct arctwo_ctx *ctx,
+			   const uint8_t *key)
+{
+  arctwo_set_key_ekb (ctx, 16, key, 1024);
 }
