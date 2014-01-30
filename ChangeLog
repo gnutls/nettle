@@ -1,5 +1,7 @@
 2014-01-30  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.in (nettle_SOURCES): Arrange in alphabetic order.
+
 	* nettle.texinfo: Updated, document size_t for length arguments.
 	Document new AES and Camellia interfaces.
 

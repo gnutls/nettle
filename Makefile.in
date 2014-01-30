@@ -73,9 +73,10 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 aes256-set-encrypt-key.c aes256-set-decrypt-key.c \
 		 aes256-meta.c \
 		 arcfour.c arcfour-crypt.c arcfour-meta.c \
-		 arctwo.c arctwo-meta.c gosthash94-meta.c \
+		 arctwo.c arctwo-meta.c blowfish.c \
 		 base16-encode.c base16-decode.c base16-meta.c \
-                 base64-encode.c base64-decode.c base64-meta.c \
+		 base64-encode.c base64-decode.c base64-meta.c \
+		 buffer.c buffer-init.c \
 		 camellia-crypt-internal.c camellia-table.c \
 		 camellia-absorb.c camellia-invert-key.c \
 		 camellia128-set-encrypt-key.c camellia128-crypt.c \
@@ -85,22 +86,25 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 camellia256-set-encrypt-key.c camellia256-crypt.c \
 		 camellia256-set-decrypt-key.c \
 		 camellia256-meta.c \
-		 cast128.c cast128-meta.c \
-		 blowfish.c cbc.c \
+		 cast128.c cast128-meta.c cbc.c \
 		 chacha-crypt.c chacha-core-internal.c \
 		 chacha-set-iv.c chacha-set-key.c \
 		 chacha128-set-key.c chacha256-set-key.c \
 		 ctr.c gcm.c \
-		 gcm-aes.c gcm-aes128.c gcm-aes192.c gcm-aes256.c \
 		 des.c des3.c des-compat.c eax.c \
+		 gcm-aes.c gcm-aes128.c gcm-aes192.c gcm-aes256.c \
+		 gosthash94.c gosthash94-meta.c \
 		 hmac.c hmac-md5.c hmac-ripemd160.c hmac-sha1.c \
 		 hmac-sha224.c hmac-sha256.c hmac-sha384.c hmac-sha512.c \
-		 pbkdf2.c pbkdf2-hmac-sha1.c pbkdf2-hmac-sha256.c \
 		 knuth-lfib.c \
 		 md2.c md2-meta.c md4.c md4-meta.c \
 		 md5.c md5-compress.c md5-compat.c md5-meta.c \
 		 memxor.c \
-		 gosthash94.c \
+		 nettle-meta-armors.c nettle-meta-ciphers.c \
+		 nettle-meta-hashes.c \
+		 pbkdf2.c pbkdf2-hmac-sha1.c pbkdf2-hmac-sha256.c \
+		 poly1305-aes.c poly1305-internal.c \
+		 realloc.c \
 		 ripemd160.c ripemd160-compress.c ripemd160-meta.c \
 		 salsa20-core-internal.c \
 		 salsa20-crypt.c salsa20r12-crypt.c salsa20-set-key.c \
@@ -115,15 +119,11 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 serpent-set-key.c serpent-encrypt.c serpent-decrypt.c \
 		 serpent-meta.c \
 		 twofish.c twofish-meta.c \
-		 poly1305-aes.c poly1305-internal.c \
 		 umac-nh.c umac-nh-n.c umac-l2.c umac-l3.c \
 		 umac-poly64.c umac-poly128.c umac-set-key.c \
 		 umac32.c umac64.c umac96.c umac128.c \
-		 yarrow256.c yarrow_key_event.c \
-		 buffer.c buffer-init.c realloc.c \
-		 nettle-meta-hashes.c nettle-meta-ciphers.c \
-		 nettle-meta-armors.c \
-		 write-be32.c write-le32.c write-le64.c
+		 write-be32.c write-le32.c write-le64.c \
+		 yarrow256.c yarrow_key_event.c
 
 hogweed_SOURCES = sexp.c sexp-format.c \
 		  sexp-transport.c sexp-transport-format.c \
