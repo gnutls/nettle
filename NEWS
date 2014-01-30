@@ -1,3 +1,106 @@
+NEWS for the 2.8 release
+
+	This release includes several interface changes. It is not
+	binary compatible with earlier versions. It is mostly
+	source-level (API) compatible, with a couple of
+	incompatibilities noted below.
+
+	Interface changes:
+
+	* For the many _set_key functions, it is now consider the
+          normal case to have a fixed key size, with no key_size
+          arguments. _set_key functions with a length parameter are
+          provided only for algorithms with a truly variable keysize,
+          and where it makes sense for backwards compatibility.
+
+	* New AES and Camellia interfaces. There are now separate
+          context structs for each key size, e.g., aes128_ctx and
+          camellia256_ctx, and corresponding new functions. The old
+          interface, with struct aes_ctx and struct camellia_ctx is
+          kept for backwards compatibility, but might be removed in
+          later versions.
+
+	* The type of most length arguments is changed from unsigned
+          to size_t. The memxor functions have their pointer arguments
+          changed from uint8_t * to void *, for consistency with
+          related libc functions.
+
+	* DSA: Support a wider range for the size of q. XXX Also
+          interface changes.
+	
+	Bug fixes:
+
+	* Building with ./configure --disable-static now works.
+	
+	New features:
+
+	* Support for poly1305-aes MAC.
+
+	* Support for the Chacha stream cipher.
+
+	* Support for EAX mode.
+
+	Optimizations:
+
+	* New x86_64 assembly for GCM and MD5. Modest speedups on the
+          order of 10%-20%.
+	
+	Miscellaneous:
+
+	* Use GMP's allocation functions for temporary storage related
+	  to bignums, to avoid potentially large stack allocations.
+	
+	* The portability fix for the rotation macros, mentioned in
+	  NEWS for 2.7.1, actually didn't make it into that release.
+	  It is included now.
+
+NEWS for the 2.7.1 release
+
+        This is a bugfix release.
+
+        Bug fixes:
+
+        * Fixed a bug in the new ECC code. The ecc_j_to_a function
+          called GMP:s mpn_mul_n (via ecc_modp_mul) with overlapping
+          input and output arguments, which is not supported.
+
+        * The assembly files for SHA1, SHA256 and AES depend on ARMv6
+          instructions, breaking nettle-2.7 for pre-v6 ARM processors.
+          The configure script now enables those assembly files only
+          when building for ARMv6 or later.
+          
+        * Use a more portable C expression for rotations. The
+          previous version used the following "standard" expression
+          for 32-bit rotation:
+
+            (x << n) | (x >> (32 - n))
+
+          But this gives undefined behavior (according to the C
+          specification) for n = 0. The rotate expression is replaced
+          by the more portable:
+
+            (x << n) | (x >> ((-n)&31))
+
+          This change affects only CAST128, which uses non-constant
+          rotation counts. Unfortunately, the new expression is poorly
+          optimized by released versions of gcc, making CAST128 a bit
+          slower. This is being fixed by the gcc hackers, see
+          http://gcc.gnu.org/bugzilla/show_bug.cgi?id=57157.
+          
+        The following problems have been reported, but are *not* fixed
+        in this release:
+
+        * ARM assembly files use instruction syntax which is not
+          supported by all assemblers. Workaround: Use a current
+          version of GNU as, or configure with --disable-assembler.
+
+        * Configuring with --disable-static doesn't work on windows.
+        
+        The libraries are intended to be binary compatible with
+        nettle-2.2 and later. The shared library names are
+        libnettle.so.4.7 and libhogweed.so.2.5, with sonames still
+        libnettle.so.4 and libhogweed.so.2.
+	
 NEWS for the 2.7 release
 
 	This release includes an implementation of elliptic curve
