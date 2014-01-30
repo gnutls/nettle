@@ -1,3 +1,7 @@
+2014-01-30  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-size.c (ecc_bit_size): New function.
+
 2014-01-27  Niels Möller  <nisse@lysator.liu.se>
 
 	* eax.h (struct eax_key, struct eax_ctx): Use union

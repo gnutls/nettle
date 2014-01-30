@@ -29,6 +29,12 @@
 #include "ecc.h"
 #include "ecc-internal.h"
 
+unsigned
+ecc_bit_size (const struct ecc_curve *ecc)
+{
+  return ecc->bit_size;
+}
+
 mp_size_t
 ecc_size (const struct ecc_curve *ecc)
 {

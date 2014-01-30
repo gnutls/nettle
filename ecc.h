@@ -46,6 +46,7 @@ extern "C" {
 #define ecc_scalar_get nettle_ecc_scalar_get
 #define ecc_scalar_random nettle_ecc_scalar_random
 #define ecc_point_mul nettle_ecc_point_mul
+#define ecc_bit_size nettle_ecc_bit_size
 #define ecc_size nettle_ecc_size
 #define ecc_size_a nettle_ecc_size_a
 #define ecc_size_j nettle_ecc_size_j
@@ -139,7 +140,9 @@ ecc_point_mul_g (struct ecc_point *r, const struct ecc_scalar *n);
    support infinity as an input or output.
 */
 
-/* FIXME: Also provided some compile time constants? */
+/* Returns the bit size of a single coordinate (and of the prime p). */
+unsigned
+ecc_bit_size (const struct ecc_curve *ecc);
 
 /* Returns the size of a single coordinate. */
 mp_size_t
