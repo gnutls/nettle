@@ -285,7 +285,7 @@ like @code{FOO_BLOCK_SIZE} (a constant) and @code{foo_set_key} (a
 function).
 
 In all functions, strings are represented with an explicit length, of
-type @code{unsigned}, and a pointer of type @code{uint8_t *} or
+type @code{size_t}, and a pointer of type @code{uint8_t *} or
 @code{const uint8_t *}. For functions that transform one string to
 another, the argument order is length, destination pointer and source
 pointer. Source and destination areas are of the same length. Source and
@@ -426,11 +426,11 @@ in particular HMAC-SHA256.
 Initialize the SHA256 state.
 @end deftypefun
 
-@deftypefun void sha256_update (struct sha256_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+@deftypefun void sha256_update (struct sha256_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
 Hash some more data.
 @end deftypefun
 
-@deftypefun void sha256_digest (struct sha256_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+@deftypefun void sha256_digest (struct sha256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
 Performs final processing and extracts the message digest, writing it
 to @var{digest}. @var{length} may be smaller than
 @code{SHA256_DIGEST_SIZE}, in which case only the first @var{length}
@@ -467,11 +467,11 @@ in particular HMAC-SHA224.
 Initialize the SHA224 state.
 @end deftypefun
 
-@deftypefun void sha224_update (struct sha224_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+@deftypefun void sha224_update (struct sha224_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
 Hash some more data.
 @end deftypefun
 
-@deftypefun void sha224_digest (struct sha224_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+@deftypefun void sha224_digest (struct sha224_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
 Performs final processing and extracts the message digest, writing it
 to @var{digest}. @var{length} may be smaller than
 @code{SHA224_DIGEST_SIZE}, in which case only the first @var{length}
@@ -506,11 +506,11 @@ in particular HMAC-SHA512.
 Initialize the SHA512 state.
 @end deftypefun
 
-@deftypefun void sha512_update (struct sha512_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+@deftypefun void sha512_update (struct sha512_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
 Hash some more data.
 @end deftypefun
 
-@deftypefun void sha512_digest (struct sha512_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+@deftypefun void sha512_digest (struct sha512_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
 Performs final processing and extracts the message digest, writing it
 to @var{digest}. @var{length} may be smaller than
 @code{SHA512_DIGEST_SIZE}, in which case only the first @var{length}
@@ -543,11 +543,11 @@ in particular HMAC-SHA384.
 Initialize the SHA384 state.
 @end deftypefun
 
-@deftypefun void sha384_update (struct sha384_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+@deftypefun void sha384_update (struct sha384_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
 Hash some more data.
 @end deftypefun
 
-@deftypefun void sha384_digest (struct sha384_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+@deftypefun void sha384_digest (struct sha384_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
 Performs final processing and extracts the message digest, writing it
 to @var{digest}. @var{length} may be smaller than
 @code{SHA384_DIGEST_SIZE}, in which case only the first @var{length}
@@ -585,11 +585,11 @@ The internal block size of SHA3_224.
 Initialize the SHA3-224 state.
 @end deftypefun
 
-@deftypefun void sha3_224_update (struct sha3_224_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+@deftypefun void sha3_224_update (struct sha3_224_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
 Hash some more data.
 @end deftypefun
 
-@deftypefun void sha3_224_digest (struct sha3_224_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+@deftypefun void sha3_224_digest (struct sha3_224_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
 Performs final processing and extracts the message digest, writing it
 to @var{digest}. @var{length} may be smaller than
 @code{SHA3_224_DIGEST_SIZE}, in which case only the first @var{length}
@@ -620,11 +620,11 @@ The internal block size of SHA3_256.
 Initialize the SHA3-256 state.
 @end deftypefun
 
-@deftypefun void sha3_256_update (struct sha3_256_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+@deftypefun void sha3_256_update (struct sha3_256_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
 Hash some more data.
 @end deftypefun
 
-@deftypefun void sha3_256_digest (struct sha3_256_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+@deftypefun void sha3_256_digest (struct sha3_256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
 Performs final processing and extracts the message digest, writing it
 to @var{digest}. @var{length} may be smaller than
 @code{SHA3_256_DIGEST_SIZE}, in which case only the first @var{length}
@@ -654,11 +654,11 @@ The internal block size of SHA3_384.
 Initialize the SHA3-384 state.
 @end deftypefun
 
-@deftypefun void sha3_384_update (struct sha3_384_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+@deftypefun void sha3_384_update (struct sha3_384_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
 Hash some more data.
 @end deftypefun
 
-@deftypefun void sha3_384_digest (struct sha3_384_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+@deftypefun void sha3_384_digest (struct sha3_384_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
 Performs final processing and extracts the message digest, writing it
 to @var{digest}. @var{length} may be smaller than
 @code{SHA3_384_DIGEST_SIZE}, in which case only the first @var{length}
@@ -688,11 +688,11 @@ The internal block size of SHA3_512.
 Initialize the SHA3-512 state.
 @end deftypefun
 
-@deftypefun void sha3_512_update (struct sha3_512_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+@deftypefun void sha3_512_update (struct sha3_512_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
 Hash some more data.
 @end deftypefun
 
-@deftypefun void sha3_512_digest (struct sha3_512_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+@deftypefun void sha3_512_digest (struct sha3_512_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
 Performs final processing and extracts the message digest, writing it
 to @var{digest}. @var{length} may be smaller than
 @code{SHA3_512_DIGEST_SIZE}, in which case only the first @var{length}
@@ -737,11 +737,11 @@ in particular HMAC-MD5.
 Initialize the MD5 state.
 @end deftypefun
 
-@deftypefun void md5_update (struct md5_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+@deftypefun void md5_update (struct md5_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
 Hash some more data.
 @end deftypefun
 
-@deftypefun void md5_digest (struct md5_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+@deftypefun void md5_digest (struct md5_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
 Performs final processing and extracts the message digest, writing it
 to @var{digest}. @var{length} may be smaller than
 @code{MD5_DIGEST_SIZE}, in which case only the first @var{length}
@@ -780,11 +780,11 @@ The internal block size of MD2.
 Initialize the MD2 state.
 @end deftypefun
 
-@deftypefun void md2_update (struct md2_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+@deftypefun void md2_update (struct md2_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
 Hash some more data.
 @end deftypefun
 
-@deftypefun void md2_digest (struct md2_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+@deftypefun void md2_digest (struct md2_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
 Performs final processing and extracts the message digest, writing it
 to @var{digest}. @var{length} may be smaller than
 @code{MD2_DIGEST_SIZE}, in which case only the first @var{length}
@@ -817,11 +817,11 @@ The internal block size of MD4.
 Initialize the MD4 state.
 @end deftypefun
 
-@deftypefun void md4_update (struct md4_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+@deftypefun void md4_update (struct md4_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
 Hash some more data.
 @end deftypefun
 
-@deftypefun void md4_digest (struct md4_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+@deftypefun void md4_digest (struct md4_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
 Performs final processing and extracts the message digest, writing it
 to @var{digest}. @var{length} may be smaller than
 @code{MD4_DIGEST_SIZE}, in which case only the first @var{length}
@@ -854,11 +854,11 @@ The internal block size of RIPEMD160.
 Initialize the RIPEMD160 state.
 @end deftypefun
 
-@deftypefun void ripemd160_update (struct ripemd160_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+@deftypefun void ripemd160_update (struct ripemd160_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
 Hash some more data.
 @end deftypefun
 
-@deftypefun void ripemd160_digest (struct ripemd160_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+@deftypefun void ripemd160_digest (struct ripemd160_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
 Performs final processing and extracts the message digest, writing it
 to @var{digest}. @var{length} may be smaller than
 @code{RIPEMD160_DIGEST_SIZE}, in which case only the first @var{length}
@@ -891,11 +891,11 @@ in particular HMAC-SHA1.
 Initialize the SHA1 state.
 @end deftypefun
 
-@deftypefun void sha1_update (struct sha1_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+@deftypefun void sha1_update (struct sha1_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
 Hash some more data.
 @end deftypefun
 
-@deftypefun void sha1_digest (struct sha1_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+@deftypefun void sha1_digest (struct sha1_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
 Performs final processing and extracts the message digest, writing it
 to @var{digest}. @var{length} may be smaller than
 @code{SHA1_DIGEST_SIZE}, in which case only the first @var{length}
@@ -928,11 +928,11 @@ The internal block size of GOSTHASH94, i.e., 32.
 Initialize the GOSTHASH94 state.
 @end deftypefun
 
-@deftypefun void gosthash94_update (struct gosthash94_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+@deftypefun void gosthash94_update (struct gosthash94_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
 Hash some more data.
 @end deftypefun
 
-@deftypefun void gosthash94_digest (struct gosthash94_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+@deftypefun void gosthash94_digest (struct gosthash94_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
 Performs final processing and extracts the message digest, writing it
 to @var{digest}. @var{length} may be smaller than
 @code{GOSTHASH94_DIGEST_SIZE}, in which case only the first @var{length}
@@ -1063,52 +1063,77 @@ between cipher designers. The winning design, also known as RIJNDAEL,
 was constructed by Joan Daemen and Vincent Rijnmen.
 
 Like all the AES candidates, the winning design uses a block size of 128
-bits, or 16 octets, and variable key-size, 128, 192 and 256 bits (16, 24
-and 32 octets) being the allowed key sizes. It does not have any weak
-keys. Nettle defines AES in @file{<nettle/aes.h>}.
+bits, or 16 octets, and three possible key-size, 128, 192 and 256 bits
+(16, 24 and 32 octets) being the allowed key sizes. It does not have any
+weak keys. Nettle defines AES in @file{<nettle/aes.h>}, and there is one
+context struct for each key size. (Earlier versions of Nettle used a
+single context struct, @code{struct aes_ctx}, for all key sizes. This
+interface kept for backwards compatibility).
  
+@deftp {Context struct} {struct aes128_ctx}
+@deftpx {Context struct} {struct aes192_ctx}
+@deftpx {Context struct} {struct aes256_ctx}
+@end deftp
+
 @deftp {Context struct} {struct aes_ctx}
+Alternative struct, for the old AES interface.
 @end deftp
 
 @defvr Constant AES_BLOCK_SIZE
 The AES block-size, 16.
 @end defvr
 
-@defvr Constant AES_MIN_KEY_SIZE
-@end defvr
-
-@defvr Constant AES_MAX_KEY_SIZE
+@defvr Constant AES128_KEY_SIZE
+@defvrx Constant AES192_KEY_SIZE
+@defvrx Constant AES256_KEY_SIZE
+@defvrx Constant AES_MIN_KEY_SIZE
+@defvrx Constant AES_MAX_KEY_SIZE
 @end defvr
 
 @defvr Constant AES_KEY_SIZE
 Default AES key size, 32.
 @end defvr
 
-@deftypefun void aes_set_encrypt_key (struct aes_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
-@deftypefunx void aes_set_decrypt_key (struct aes_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
+@deftypefun void aes128_set_encrypt_key (struct aes128_ctx *@var{ctx}, const uint8_t *@var{key})
+@deftypefunx void aes128_set_decrypt_key (struct aes128_ctx *@var{ctx}, const uint8_t *@var{key})
+@deftypefunx void aes192_set_encrypt_key (struct aes192_ctx *@var{ctx}, const uint8_t *@var{key})
+@deftypefunx void aes192_set_decrypt_key (struct aes192_ctx *@var{ctx}, const uint8_t *@var{key})
+@deftypefunx void aes256_set_encrypt_key (struct aes256_ctx *@var{ctx}, const uint8_t *@var{key})
+@deftypefunx void aes256_set_decrypt_key (struct aes256_ctx *@var{ctx}, const uint8_t *@var{key})
+@deftypefunx void aes_set_encrypt_key (struct aes_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{key})
+@deftypefunx void aes_set_decrypt_key (struct aes_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{key})
 Initialize the cipher, for encryption or decryption, respectively.
 @end deftypefun
 
-@deftypefun void aes_invert_key (struct aes_ctx *@var{dst}, const struct aes_ctx *@var{src})
+@deftypefun void aes128_invert_key (struct aes128_ctx *@var{dst}, const struct aes128_ctx *@var{src})
+@deftypefunx void aes192_invert_key (struct aes192_ctx *@var{dst}, const struct aes192_ctx *@var{src})
+@deftypefunx void aes256_invert_key (struct aes256_ctx *@var{dst}, const struct aes256_ctx *@var{src})
+@deftypefunx void aes_invert_key (struct aes_ctx *@var{dst}, const struct aes_ctx *@var{src})
 Given a context @var{src} initialized for encryption, initializes the
 context struct @var{dst} for decryption, using the same key. If the same
 context struct is passed for both @code{src} and @code{dst}, it is
-converted in place. Calling @code{aes_set_encrypt_key} and
-@code{aes_invert_key} is more efficient than calling
-@code{aes_set_encrypt_key} and @code{aes_set_decrypt_key}. This function
-is mainly useful for applications which needs to both encrypt and
-decrypt using the @emph{same} key.
+converted in place. These functions are mainly useful for applications
+which needs to both encrypt and decrypt using the @emph{same} key,
+because calling, e.g., @code{aes128_set_encrypt_key} and
+@code{aes128_invert_key}, is more efficient than calling
+@code{aes128_set_encrypt_key} and @code{aes128_set_decrypt_key}.
 @end deftypefun
 
-@deftypefun void aes_encrypt (struct aes_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun void aes128_encrypt (struct aes128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void aes192_encrypt (struct aes192_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void aes256_encrypt (struct aes256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void aes_encrypt (struct aes_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Encryption function. @var{length} must be an integral multiple of the
 block size. If it is more than one block, the data is processed in ECB
 mode. @code{src} and @code{dst} may be equal, but they must not overlap
 in any other way.
 @end deftypefun
 
-@deftypefun void aes_decrypt (struct aes_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
-Analogous to @code{aes_encrypt}
+@deftypefun void aes128_decrypt (struct aes128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void aes192_decrypt (struct aes192_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void aes256_decrypt (struct aes256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void aes_decrypt (struct aes_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+Analogous to the encryption functions above.
 @end deftypefun
 
 @subsection ARCFOUR
@@ -1126,7 +1151,7 @@ is recommended to discard the first 512 bytes of the key stream.
 /* A more robust key setup function for ARCFOUR */
 void
 arcfour_set_key_hashed(struct arcfour_ctx *ctx,
-                       unsigned length, const uint8_t *key)
+                       size_t length, const uint8_t *key)
 @{
   struct sha256_ctx hash;
   uint8_t digest[SHA256_DIGEST_SIZE];
@@ -1158,12 +1183,12 @@ Maximum key size, 256.
 Default ARCFOUR key size, 16.
 @end defvr
 
-@deftypefun void arcfour_set_key (struct arcfour_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
+@deftypefun void arcfour_set_key (struct arcfour_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{key})
 Initialize the cipher. The same function is used for both encryption and
 decryption. 
 @end deftypefun
 
-@deftypefun void arcfour_crypt (struct arcfour_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun void arcfour_crypt (struct arcfour_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Encrypt some data. The same function is used for both encryption and
 decryption. Unlike the block ciphers, this function modifies the
 context, so you can split the data into arbitrary chunks and encrypt
@@ -1206,9 +1231,9 @@ The ARCTWO block-size, 8.
 Default ARCTWO key size, 8.
 @end defvr
 
-@deftypefun void arctwo_set_key_ekb (struct arctwo_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key}, unsigned @var{ekb})
-@deftypefunx void arctwo_set_key (struct arctwo_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
-@deftypefunx void arctwo_set_key_gutmann (struct arctwo_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
+@deftypefun void arctwo_set_key_ekb (struct arctwo_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{key}, unsigned @var{ekb})
+@deftypefunx void arctwo_set_key (struct arctwo_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{key})
+@deftypefunx void arctwo_set_key_gutmann (struct arctwo_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{key})
 Initialize the cipher. The same function is used for both encryption
 and decryption. The first function is the most general one, which lets
 you provide both the variable size key, and the desired effective key
@@ -1221,14 +1246,14 @@ convenience, @code{ekb = 0} has the same effect as @code{ekb = 1024}.
 @code{arctwo_set_key_ekb(ctx, length, key, 1024)}
 @end deftypefun
 
-@deftypefun void arctwo_encrypt (struct arctwo_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun void arctwo_encrypt (struct arctwo_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Encryption function. @var{length} must be an integral multiple of the
 block size. If it is more than one block, the data is processed in ECB
 mode. @code{src} and @code{dst} may be equal, but they must not
 overlap in any other way.
 @end deftypefun
 
-@deftypefun void arctwo_decrypt (struct arctwo_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun void arctwo_decrypt (struct arctwo_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Analogous to @code{arctwo_encrypt}
 @end deftypefun
 
@@ -1257,7 +1282,7 @@ Maximum BLOWFISH key size, 56.
 Default BLOWFISH key size, 16.
 @end defvr
 
-@deftypefun int blowfish_set_key (struct blowfish_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
+@deftypefun int blowfish_set_key (struct blowfish_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{key})
 Initialize the cipher. The same function is used for both encryption and
 decryption. Checks for weak keys, returning 1
 for good keys and 0 for weak keys. Applications that don't care about
@@ -1267,14 +1292,14 @@ weak keys can ignore the return value.
 crash with an assert violation.
 @end deftypefun
 
-@deftypefun void blowfish_encrypt (struct blowfish_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun void blowfish_encrypt (struct blowfish_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Encryption function. @var{length} must be an integral multiple of the
 block size. If it is more than one block, the data is processed in ECB
 mode. @code{src} and @code{dst} may be equal, but they must not overlap
 in any other way.
 @end deftypefun
 
-@deftypefun void blowfish_decrypt (struct blowfish_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun void blowfish_decrypt (struct blowfish_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Analogous to @code{blowfish_encrypt}
 @end deftypefun
 
@@ -1292,42 +1317,65 @@ statement has some limitations which seem problematic for free software.
 
 Camellia uses a the same block size and key sizes as AES: The block size
 is 128 bits (16 octets), and the supported key sizes are 128, 192, and
-256 bits. Nettle defines Camellia in @file{<nettle/camellia.h>}.
+256 bits. The variants with 192 and 256 bit keys are identical, except
+for the key setup. Nettle defines Camellia in
+@file{<nettle/camellia.h>}, and there is one context struct for each key
+size. (Earlier versions of Nettle used a single context struct,
+@code{struct camellia_ctx}, for all key sizes. This interface kept for
+backwards compatibility).
+
+@deftp {Context struct} {struct camellia128_ctx}
+@deftpx {Context struct} {struct camellia192_ctx}
+@deftpx {Context struct} {struct camellia256_ctx}
+Contexts structs. Actually, @code{camellia192_ctx} is an alias for
+@code{camellia256_ctx}.
+@end deftp
 
 @deftp {Context struct} {struct camellia_ctx}
+Alternative struct, for the old Camellia interface.
 @end deftp
 
 @defvr Constant CAMELLIA_BLOCK_SIZE
 The CAMELLIA block-size, 16.
 @end defvr
 
-@defvr Constant CAMELLIA_MIN_KEY_SIZE
-@end defvr
-
-@defvr Constant CAMELLIA_MAX_KEY_SIZE
+@defvr Constant CAMELLIA128_KEY_SIZE
+@defvrx Constant CAMELLIA192_KEY_SIZE
+@defvrx Constant CAMELLIA256_KEY_SIZE
+@defvrx Constant CAMELLIA_MIN_KEY_SIZE
+@defvrx Constant CAMELLIA_MAX_KEY_SIZE
 @end defvr
 
 @defvr Constant CAMELLIA_KEY_SIZE
 Default CAMELLIA key size, 32.
 @end defvr
 
-@deftypefun void camellia_set_encrypt_key (struct camellia_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
-@deftypefunx void camellia_set_decrypt_key (struct camellia_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
+@deftypefun void camellia128_set_encrypt_key (struct camellia128_ctx *@var{ctx}, const uint8_t *@var{key})
+@deftypefunx void camellia128_set_decrypt_key (struct camellia128_ctx *@var{ctx}, const uint8_t *@var{key})
+@deftypefunx void camellia192_set_encrypt_key (struct camellia192_ctx *@var{ctx}, const uint8_t *@var{key})
+@deftypefunx void camellia192_set_decrypt_key (struct camellia192_ctx *@var{ctx}, const uint8_t *@var{key})
+@deftypefunx void camellia256_set_encrypt_key (struct camellia256_ctx *@var{ctx}, const uint8_t *@var{key})
+@deftypefunx void camellia256_set_decrypt_key (struct camellia256_ctx *@var{ctx}, const uint8_t *@var{key})
+@deftypefunx void camellia_set_encrypt_key (struct camellia_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{key})
+@deftypefunx void camellia_set_decrypt_key (struct camellia_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{key})
 Initialize the cipher, for encryption or decryption, respectively.
 @end deftypefun
 
-@deftypefun void camellia_invert_key (struct camellia_ctx *@var{dst}, const struct camellia_ctx *@var{src})
+@deftypefun void camellia128_invert_key (struct camellia128_ctx *@var{dst}, const struct camellia128_ctx *@var{src})
+@deftypefunx void camellia192_invert_key (struct camellia192_ctx *@var{dst}, const struct camellia192_ctx *@var{src})
+@deftypefunx void camellia256_invert_key (struct camellia256_ctx *@var{dst}, const struct camellia256_ctx *@var{src})
+@deftypefunx void camellia_invert_key (struct camellia_ctx *@var{dst}, const struct camellia_ctx *@var{src})
 Given a context @var{src} initialized for encryption, initializes the
 context struct @var{dst} for decryption, using the same key. If the same
 context struct is passed for both @code{src} and @code{dst}, it is
-converted in place. Calling @code{camellia_set_encrypt_key} and
-@code{camellia_invert_key} is more efficient than calling
-@code{camellia_set_encrypt_key} and @code{camellia_set_decrypt_key}. This function
-is mainly useful for applications which needs to both encrypt and
-decrypt using the @emph{same} key.
+converted in place. These functions are mainly useful for applications
+which needs to both encrypt and decrypt using the @emph{same} key.
 @end deftypefun
 
-@deftypefun void camellia_crypt (struct camellia_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun void camellia128_crypt (struct camellia128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void camellia192_crypt (struct camellia192_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void camellia256_crypt (struct camellia256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void camellia_crypt (struct camellia_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 The same function is used for both encryption and decryption.
 @var{length} must be an integral multiple of the block size. If it is
 more than one block, the data is processed in ECB mode. @code{src} and
@@ -1359,19 +1407,19 @@ Maximum CAST128 key size, 16.
 Default CAST128 key size, 16.
 @end defvr
 
-@deftypefun void cast128_set_key (struct cast128_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
+@deftypefun void cast128_set_key (struct cast128_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{key})
 Initialize the cipher. The same function is used for both encryption and
 decryption. 
 @end deftypefun
 
-@deftypefun void cast128_encrypt (struct cast128_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun void cast128_encrypt (struct cast128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Encryption function. @var{length} must be an integral multiple of the
 block size. If it is more than one block, the data is processed in ECB
 mode. @code{src} and @code{dst} may be equal, but they must not overlap
 in any other way.
 @end deftypefun
 
-@deftypefun void cast128_decrypt (struct cast128_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun void cast128_decrypt (struct cast128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Analogous to @code{cast128_encrypt}
 @end deftypefun
 
@@ -1409,23 +1457,23 @@ for good keys and 0 for weak keys. Applications that don't care about
 weak keys can ignore the return value.
 @end deftypefun
 
-@deftypefun void des_encrypt (struct des_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun void des_encrypt (struct des_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Encryption function. @var{length} must be an integral multiple of the
 block size. If it is more than one block, the data is processed in ECB
 mode. @code{src} and @code{dst} may be equal, but they must not overlap
 in any other way.
 @end deftypefun
 
-@deftypefun void des_decrypt (struct des_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun void des_decrypt (struct des_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Analogous to @code{des_encrypt}
 @end deftypefun
 
-@deftypefun int des_check_parity (unsigned @var{length}, const uint8_t *@var{key});
+@deftypefun int des_check_parity (size_t @var{length}, const uint8_t *@var{key});
 Checks that the given key has correct, odd, parity. Returns 1 for
 correct parity, and 0 for bad parity.
 @end deftypefun
 
-@deftypefun void des_fix_parity (unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun void des_fix_parity (size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Adjusts the parity bits to match DES's requirements. You need this
 function if you have created a random-looking string by a key agreement
 protocol, and want to use it as a DES key. @var{dst} and @var{src} may
@@ -1488,14 +1536,14 @@ value.
 For random-looking strings, you can use @code{des_fix_parity} to adjust
 the parity bits before calling @code{des3_set_key}.
 
-@deftypefun void des3_encrypt (struct des3_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun void des3_encrypt (struct des3_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Encryption function. @var{length} must be an integral multiple of the
 block size. If it is more than one block, the data is processed in ECB
 mode. @code{src} and @code{dst} may be equal, but they must not overlap
 in any other way.
 @end deftypefun
 
-@deftypefun void des3_decrypt (struct des3_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun void des3_decrypt (struct des3_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Analogous to @code{des_encrypt}
 @end deftypefun
 
@@ -1550,7 +1598,7 @@ Salsa20 block size, 64.
 Size of the @acronym{IV}, 8.
 @end defvr
 
-@deftypefun void salsa20_set_key (struct salsa20_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
+@deftypefun void salsa20_set_key (struct salsa20_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{key})
 Initialize the cipher. The same function is used for both encryption and
 decryption. Before using the cipher, you @emph{must} also call
 @code{salsa20_set_iv}, see below.
@@ -1562,7 +1610,7 @@ octets. This function also initializes the block counter, setting it to
 zero.
 @end deftypefun
 
-@deftypefun void salsa20_crypt (struct salsa20_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun void salsa20_crypt (struct salsa20_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Encrypts or decrypts the data of a message, using salsa20. When a
 message is encrypted using a sequence of calls to @code{salsa20_crypt},
 all but the last call @emph{must} use a length that is a multiple of
@@ -1576,7 +1624,7 @@ Nettle calls this variant @code{salsa20r12}. It uses the same context
 struct and key setup as the full salsa20 cipher, but a separate function
 for encryption and decryption.
 
-@deftypefun void salsa20r12_crypt (struct salsa20_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun void salsa20r12_crypt (struct salsa20_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Encrypts or decrypts the data of a message, using salsa20 reduced to 12
 rounds.
 @end deftypefun
@@ -1607,19 +1655,19 @@ Maximum SERPENT key size, 32.
 Default SERPENT key size, 32.
 @end defvr
 
-@deftypefun void serpent_set_key (struct serpent_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
+@deftypefun void serpent_set_key (struct serpent_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{key})
 Initialize the cipher. The same function is used for both encryption and
 decryption. 
 @end deftypefun
 
-@deftypefun void serpent_encrypt (struct serpent_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun void serpent_encrypt (struct serpent_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Encryption function. @var{length} must be an integral multiple of the
 block size. If it is more than one block, the data is processed in ECB
 mode. @code{src} and @code{dst} may be equal, but they must not overlap
 in any other way.
 @end deftypefun
 
-@deftypefun void serpent_decrypt (struct serpent_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun void serpent_decrypt (struct serpent_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Analogous to @code{serpent_encrypt}
 @end deftypefun
 
@@ -1647,19 +1695,19 @@ Maximum TWOFISH key size, 32.
 Default TWOFISH key size, 32.
 @end defvr
 
-@deftypefun void twofish_set_key (struct twofish_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
+@deftypefun void twofish_set_key (struct twofish_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{key})
 Initialize the cipher. The same function is used for both encryption and
 decryption. 
 @end deftypefun
 
-@deftypefun void twofish_encrypt (struct twofish_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun void twofish_encrypt (struct twofish_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Encryption function. @var{length} must be an integral multiple of the
 block size. If it is more than one block, the data is processed in ECB
 mode. @code{src} and @code{dst} may be equal, but they must not overlap
 in any other way.
 @end deftypefun
 
-@deftypefun void twofish_decrypt (struct twofish_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun void twofish_decrypt (struct twofish_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Analogous to @code{twofish_encrypt}
 @end deftypefun
 
@@ -1778,15 +1826,15 @@ Block Chaining (@acronym{CBC}) mode, one for encryption and one for
 decryption. These functions uses @code{void *} to pass cipher contexts
 around.
 
-@deftypefun {void} cbc_encrypt (void *@var{ctx}, nettle_crypt_func @var{f}, unsigned @var{block_size}, uint8_t *@var{iv}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
-@deftypefunx {void} cbc_decrypt (void *@var{ctx}, void (*@var{f})(), unsigned @var{block_size}, uint8_t *@var{iv}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun {void} cbc_encrypt (void *@var{ctx}, nettle_crypt_func @var{f}, size_t @var{block_size}, uint8_t *@var{iv}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx {void} cbc_decrypt (void *@var{ctx}, void (*@var{f})(), size_t @var{block_size}, uint8_t *@var{iv}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 
 Applies the encryption or decryption function @var{f} in @acronym{CBC}
 mode. The final ciphertext block processed is copied into @var{iv}
 before returning, so that large message be processed be a sequence of
 calls to @code{cbc_encrypt}. The function @var{f} is of type
 
-@code{void f (void *@var{ctx}, unsigned @var{length}, uint8_t @var{dst},
+@code{void f (void *@var{ctx}, size_t @var{length}, uint8_t @var{dst},
 const uint8_t *@var{src})},
 
 @noindent and the @code{cbc_encrypt} and @code{cbc_decrypt} functions pass their
@@ -1874,7 +1922,7 @@ similar rôle as the @acronym{IV} for @acronym{CBC}. When adding,
 byte order. For the last block, @code{E_k(IC + n - 1) [1..m]} means that
 the cipher output is truncated to @code{m} bytes.
 
-@deftypefun {void} ctr_crypt (void *@var{ctx}, nettle_crypt_func @var{f}, unsigned @var{block_size}, uint8_t *@var{ctr}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun {void} ctr_crypt (void *@var{ctx}, nettle_crypt_func @var{f}, size_t @var{block_size}, uint8_t *@var{ctr}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 
 Applies the encryption function @var{f} in @acronym{CTR} mode. Note that
 for @acronym{CTR} mode, encryption and decryption is the same operation,
@@ -1976,28 +2024,28 @@ underlying cipher, which must have been previously initialized for
 encryption, and @var{f} is the encryption function.
 @end deftypefun
 
-@deftypefun void gcm_set_iv (struct gcm_ctx *@var{ctx}, const struct gcm_key *@var{key}, unsigned @var{length}, const uint8_t *@var{iv})
+@deftypefun void gcm_set_iv (struct gcm_ctx *@var{ctx}, const struct gcm_key *@var{key}, size_t @var{length}, const uint8_t *@var{iv})
 Initializes @var{ctx} using the given @acronym{IV}. The @var{key}
 argument is actually needed only if @var{length} differs from
 @code{GCM_IV_SIZE}.
 @end deftypefun
 
-@deftypefun void gcm_update (struct gcm_ctx *@var{ctx}, const struct gcm_key *@var{key}, unsigned @var{length}, const uint8_t *@var{data})
+@deftypefun void gcm_update (struct gcm_ctx *@var{ctx}, const struct gcm_key *@var{key}, size_t @var{length}, const uint8_t *@var{data})
 Provides associated data to be authenticated. If used, must be called
 before @code{gcm_encrypt} or @code{gcm_decrypt}. All but the last call
 for each message @emph{must} use a length that is a multiple of the
 block size.
 @end deftypefun
 
-@deftypefun void gcm_encrypt (struct gcm_ctx *@var{ctx}, const struct gcm_key *@var{key} void *@var{cipher}, nettle_crypt_func *@var{f}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
-@deftypefunx void gcm_decrypt (struct gcm_ctx *@var{ctx}, const struct gcm_key *@var{key}, void *@var{cipher}, nettle_crypt_func *@var{f}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun void gcm_encrypt (struct gcm_ctx *@var{ctx}, const struct gcm_key *@var{key} void *@var{cipher}, nettle_crypt_func *@var{f}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void gcm_decrypt (struct gcm_ctx *@var{ctx}, const struct gcm_key *@var{key}, void *@var{cipher}, nettle_crypt_func *@var{f}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Encrypts or decrypts the data of a message. @var{cipher} is the context
 struct for the underlying cipher and @var{f} is the encryption function.
 All but the last call for each message @emph{must} use a length that is
 a multiple of the block size.
 @end deftypefun
 
-@deftypefun void gcm_digest (struct gcm_ctx *@var{ctx}, const struct gcm_key *@var{key}, void *@var{cipher}, nettle_crypt_func *@var{f}, unsigned @var{length}, uint8_t *@var{digest})
+@deftypefun void gcm_digest (struct gcm_ctx *@var{ctx}, const struct gcm_key *@var{key}, void *@var{cipher}, nettle_crypt_func *@var{f}, size_t @var{length}, uint8_t *@var{digest})
 Extracts the message digest (also known ``authentication tag''). This is
 the final operation when processing a message. @var{length} is usually
 equal to @code{GCM_BLOCK_SIZE}, but if you provide a smaller value,
@@ -2074,31 +2122,31 @@ The following functions implement the common case of @acronym{GCM} using
 The context struct, defined using @code{GCM_CTX}.
 @end deftp
 
-@deftypefun void gcm_aes_set_key (struct gcm_aes_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{key})
+@deftypefun void gcm_aes_set_key (struct gcm_aes_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{key})
 Initializes @var{ctx} using the given key. All valid @acronym{AES} key
 sizes can be used.
 @end deftypefun
 
-@deftypefun void gcm_aes_set_iv (struct gcm_aes_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{iv})
+@deftypefun void gcm_aes_set_iv (struct gcm_aes_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{iv})
 Initializes the per-message state, using the given @acronym{IV}.
 @end deftypefun
 
-@deftypefun void gcm_aes_update (struct gcm_aes_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+@deftypefun void gcm_aes_update (struct gcm_aes_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
 Provides associated data to be authenticated. If used, must be called
 before @code{gcm_aes_encrypt} or @code{gcm_aes_decrypt}. All but the last call
 for each message @emph{must} use a length that is a multiple of the
 block size.
 @end deftypefun
 
-@deftypefun void gcm_aes_encrypt (struct gcm_aes_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
-@deftypefunx void gcm_aes_decrypt (struct gcm_aes_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun void gcm_aes_encrypt (struct gcm_aes_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void gcm_aes_decrypt (struct gcm_aes_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Encrypts or decrypts the data of a message. All but the last call for
 each message @emph{must} use a length that is a multiple of the block
 size.
 
 @end deftypefun
 
-@deftypefun void gcm_aes_digest (struct gcm_aes_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+@deftypefun void gcm_aes_digest (struct gcm_aes_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
 Extracts the message digest (also known ``authentication tag''). This is
 the final operation when processing a message. @var{length} is usually
 equal to @code{GCM_BLOCK_SIZE}, but if you provide a smaller value,
@@ -2172,21 +2220,21 @@ function. There are also concrete functions for @acronym{HMAC-MD5},
 @acronym{HMAC-RIPEMD160} @acronym{HMAC-SHA1}, @acronym{HMAC-SHA256}, and
 @acronym{HMAC-SHA512}. First, the abstract functions:
 
-@deftypefun void hmac_set_key (void *@var{outer}, void *@var{inner}, void *@var{state}, const struct nettle_hash *@var{H}, unsigned @var{length}, const uint8_t *@var{key})
+@deftypefun void hmac_set_key (void *@var{outer}, void *@var{inner}, void *@var{state}, const struct nettle_hash *@var{H}, size_t @var{length}, const uint8_t *@var{key})
 Initializes the three context structs from the key. The @var{outer} and
 @var{inner} contexts corresponds to the subkeys @code{k_o} and
 @code{k_i}. @var{state} is used for hashing the message, and is
 initialized as a copy of the @var{inner} context.
 @end deftypefun
 
-@deftypefun void hmac_update (void *@var{state}, const struct nettle_hash *@var{H}, unsigned @var{length}, const uint8_t *@var{data})
+@deftypefun void hmac_update (void *@var{state}, const struct nettle_hash *@var{H}, size_t @var{length}, const uint8_t *@var{data})
 This function is called zero or more times to process the message.
 Actually, @code{hmac_update(state, H, length, data)} is equivalent to
 @code{H->update(state, length, data)}, so if you wish you can use the
 ordinary update function of the underlying hash function instead.
 @end deftypefun
 
-@deftypefun void hmac_digest (const void *@var{outer}, const void *@var{inner}, void *@var{state}, const struct nettle_hash *@var{H}, unsigned @var{length}, uint8_t *@var{digest})
+@deftypefun void hmac_digest (const void *@var{outer}, const void *@var{inner}, void *@var{state}, const struct nettle_hash *@var{H}, size_t @var{length}, uint8_t *@var{digest})
 Extracts the @acronym{MAC} of the message, writing it to @var{digest}.
 @var{outer} and @var{inner} are not modified. @var{length} is usually
 equal to @code{H->digest_size}, but if you provide a smaller value,
@@ -2251,15 +2299,15 @@ easier to use than the general @acronym{HMAC} functions.
 @deftp {Context struct} {struct hmac_md5_ctx}
 @end deftp
 
-@deftypefun void hmac_md5_set_key (struct hmac_md5_ctx *@var{ctx}, unsigned @var{key_length}, const uint8_t *@var{key})
+@deftypefun void hmac_md5_set_key (struct hmac_md5_ctx *@var{ctx}, size_t @var{key_length}, const uint8_t *@var{key})
 Initializes the context with the key.
 @end deftypefun
 
-@deftypefun void hmac_md5_update (struct hmac_md5_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+@deftypefun void hmac_md5_update (struct hmac_md5_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
 Process some more data.
 @end deftypefun
 
-@deftypefun void hmac_md5_digest (struct hmac_md5_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+@deftypefun void hmac_md5_digest (struct hmac_md5_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
 Extracts the @acronym{MAC}, writing it to @var{digest}. @var{length} may be smaller than
 @code{MD5_DIGEST_SIZE}, in which case only the first @var{length}
 octets of the @acronym{MAC} are written.
@@ -2273,15 +2321,15 @@ the same key.
 @deftp {Context struct} {struct hmac_ripemd160_ctx}
 @end deftp
 
-@deftypefun void hmac_ripemd160_set_key (struct hmac_ripemd160_ctx *@var{ctx}, unsigned @var{key_length}, const uint8_t *@var{key})
+@deftypefun void hmac_ripemd160_set_key (struct hmac_ripemd160_ctx *@var{ctx}, size_t @var{key_length}, const uint8_t *@var{key})
 Initializes the context with the key.
 @end deftypefun
 
-@deftypefun void hmac_ripemd160_update (struct hmac_ripemd160_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+@deftypefun void hmac_ripemd160_update (struct hmac_ripemd160_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
 Process some more data.
 @end deftypefun
 
-@deftypefun void hmac_ripemd160_digest (struct hmac_ripemd160_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+@deftypefun void hmac_ripemd160_digest (struct hmac_ripemd160_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
 Extracts the @acronym{MAC}, writing it to @var{digest}. @var{length} may be smaller than
 @code{RIPEMD160_DIGEST_SIZE}, in which case only the first @var{length}
 octets of the @acronym{MAC} are written.
@@ -2295,15 +2343,15 @@ the same key.
 @deftp {Context struct} {struct hmac_sha1_ctx}
 @end deftp
 
-@deftypefun void hmac_sha1_set_key (struct hmac_sha1_ctx *@var{ctx}, unsigned @var{key_length}, const uint8_t *@var{key})
+@deftypefun void hmac_sha1_set_key (struct hmac_sha1_ctx *@var{ctx}, size_t @var{key_length}, const uint8_t *@var{key})
 Initializes the context with the key.
 @end deftypefun
 
-@deftypefun void hmac_sha1_update (struct hmac_sha1_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+@deftypefun void hmac_sha1_update (struct hmac_sha1_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
 Process some more data.
 @end deftypefun
 
-@deftypefun void hmac_sha1_digest (struct hmac_sha1_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+@deftypefun void hmac_sha1_digest (struct hmac_sha1_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
 Extracts the @acronym{MAC}, writing it to @var{digest}. @var{length} may be smaller than
 @code{SHA1_DIGEST_SIZE}, in which case only the first @var{length}
 octets of the @acronym{MAC} are written.
@@ -2318,15 +2366,15 @@ the same key.
 @deftp {Context struct} {struct hmac_sha256_ctx}
 @end deftp
 
-@deftypefun void hmac_sha256_set_key (struct hmac_sha256_ctx *@var{ctx}, unsigned @var{key_length}, const uint8_t *@var{key})
+@deftypefun void hmac_sha256_set_key (struct hmac_sha256_ctx *@var{ctx}, size_t @var{key_length}, const uint8_t *@var{key})
 Initializes the context with the key.
 @end deftypefun
 
-@deftypefun void hmac_sha256_update (struct hmac_sha256_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+@deftypefun void hmac_sha256_update (struct hmac_sha256_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
 Process some more data.
 @end deftypefun
 
-@deftypefun void hmac_sha256_digest (struct hmac_sha256_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+@deftypefun void hmac_sha256_digest (struct hmac_sha256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
 Extracts the @acronym{MAC}, writing it to @var{digest}. @var{length} may be smaller than
 @code{SHA256_DIGEST_SIZE}, in which case only the first @var{length}
 octets of the @acronym{MAC} are written.
@@ -2341,15 +2389,15 @@ the same key.
 @deftp {Context struct} {struct hmac_sha512_ctx}
 @end deftp
 
-@deftypefun void hmac_sha512_set_key (struct hmac_sha512_ctx *@var{ctx}, unsigned @var{key_length}, const uint8_t *@var{key})
+@deftypefun void hmac_sha512_set_key (struct hmac_sha512_ctx *@var{ctx}, size_t @var{key_length}, const uint8_t *@var{key})
 Initializes the context with the key.
 @end deftypefun
 
-@deftypefun void hmac_sha512_update (struct hmac_sha512_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+@deftypefun void hmac_sha512_update (struct hmac_sha512_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
 Process some more data.
 @end deftypefun
 
-@deftypefun void hmac_sha512_digest (struct hmac_sha512_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+@deftypefun void hmac_sha512_digest (struct hmac_sha512_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
 Extracts the @acronym{MAC}, writing it to @var{digest}. @var{length} may be smaller than
 @code{SHA512_DIGEST_SIZE}, in which case only the first @var{length}
 octets of the @acronym{MAC} are written.
@@ -2439,10 +2487,10 @@ These functions initialize the @acronym{UMAC} context struct. They also
 initialize the nonce to zero (with length 16, for auto-increment).
 @end deftypefun
 
-@deftypefun void umac32_set_nonce (struct umac32_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{nonce})
-@deftypefunx void umac64_set_nonce (struct umac64_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{nonce})
-@deftypefunx void umac96_set_nonce (struct umac96_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{nonce})
-@deftypefunx void umac128_set_nonce (struct umac128_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{nonce})
+@deftypefun void umac32_set_nonce (struct umac32_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{nonce})
+@deftypefunx void umac64_set_nonce (struct umac64_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{nonce})
+@deftypefunx void umac96_set_nonce (struct umac96_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{nonce})
+@deftypefunx void umac128_set_nonce (struct umac128_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{nonce})
 Sets the nonce to be used for the next message. In general, nonces
 should be set before processing of the message. This is not strictly
 required for @acronym{UMAC} (the nonce only affects the final processing
@@ -2451,17 +2499,17 @@ function is called @emph{before} the first @code{_update} call for the
 message.
 @end deftypefun
 
-@deftypefun void umac32_update (struct umac32_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
-@deftypefunx void umac64_update (struct umac64_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
-@deftypefunx void umac96_update (struct umac96_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
-@deftypefunx void umac128_update (struct umac128_ctx *@var{ctx}, unsigned @var{length}, const uint8_t *@var{data})
+@deftypefun void umac32_update (struct umac32_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
+@deftypefunx void umac64_update (struct umac64_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
+@deftypefunx void umac96_update (struct umac96_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
+@deftypefunx void umac128_update (struct umac128_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
 These functions are called zero or more times to process the message.
 @end deftypefun
 
-@deftypefun void umac32_digest (struct umac32_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
-@deftypefunx void umac64_digest (struct umac64_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
-@deftypefunx void umac96_digest (struct umac96_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
-@deftypefunx void umac128_digest (struct umac128_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{digest})
+@deftypefun void umac32_digest (struct umac32_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+@deftypefunx void umac64_digest (struct umac64_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+@deftypefunx void umac96_digest (struct umac96_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+@deftypefunx void umac128_digest (struct umac128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
 Extracts the @acronym{MAC} of the message, writing it to @var{digest}.
 @var{length} is usually equal to the specified output size, but if you
 provide a smaller value, only the first @var{length} octets of the
@@ -2500,7 +2548,7 @@ any PRF implemented via the @code{nettle_hash_update_func},
 and concrete functions PBKDF2-HMAC-SHA1 and PBKDF2-HMAC-SHA256.  First,
 the abstract function:
 
-@deftypefun void pbkdf2 (void *mac_ctx, nettle_hash_update_func *update, nettle_hash_digest_func *digest, unsigned digest_size, unsigned iterations, unsigned salt_length, const uint8_t *salt, unsigned length, uint8_t *dst)
+@deftypefun void pbkdf2 (void *mac_ctx, nettle_hash_update_func *update, nettle_hash_digest_func *digest, size_t digest_size, unsigned iterations, size_t salt_length, const uint8_t *salt, size_t length, uint8_t *dst)
 Derive symmetric key from a password according to PKCS #5 PBKDF2.  The
 PRF is assumed to have been initialized and this function will call the
 @var{update} and @var{digest} functions passing the @var{mac_ctx}
@@ -2531,7 +2579,7 @@ easier to use than the general @acronym{PBKDF2} function.
 
 @subsubsection @acronym{PBKDF2-HMAC-SHA1}
 
-@deftypefun void pbkdf2_hmac_sha1 (unsigned @var{key_length}, const uint8_t *@var{key}, unsigned @var{iterations}, unsigned @var{salt_length}, const uint8_t *@var{salt}, unsigned @var{length}, uint8_t *@var{dst})
+@deftypefun void pbkdf2_hmac_sha1 (size_t @var{key_length}, const uint8_t *@var{key}, unsigned @var{iterations}, size_t @var{salt_length}, const uint8_t *@var{salt}, size_t @var{length}, uint8_t *@var{dst})
 PBKDF2 with HMAC-SHA1.  Derive @var{length} bytes of key into buffer
 @var{dst} using the password @var{key} of length @var{key_length} and
 salt @var{salt} of length @var{salt_length}, with iteration counter
@@ -2541,7 +2589,7 @@ room for at least @var{length} octets.
 
 @subsubsection @acronym{PBKDF2-HMAC-SHA256}
 
-@deftypefun void pbkdf2_hmac_sha256 (unsigned @var{key_length}, const uint8_t *@var{key}, unsigned @var{iterations}, unsigned @var{salt_length}, const uint8_t *@var{salt}, unsigned @var{length}, uint8_t *@var{dst})
+@deftypefun void pbkdf2_hmac_sha256 (size_t @var{key_length}, const uint8_t *@var{key}, unsigned @var{iterations}, size_t @var{salt_length}, const uint8_t *@var{salt}, size_t @var{length}, uint8_t *@var{dst})
 PBKDF2 with HMAC-SHA256.  Derive @var{length} bytes of key into buffer
 @var{dst} using the password @var{key} of length @var{key_length} and
 salt @var{salt} of length @var{salt_length}, with iteration counter
@@ -3215,7 +3263,7 @@ Extracts the scalar, in GMP @code{mpz_t} representation.
 
 To create and verify ECDSA signatures, the following functions are used.
 
-@deftypefun void ecdsa_sign (const struct ecc_scalar *@var{key}, void *@var{random_ctx}, nettle_random_func *@var{random}, unsigned @var{digest_length}, const uint8_t *@var{digest}, struct dsa_signature *@var{signature})
+@deftypefun void ecdsa_sign (const struct ecc_scalar *@var{key}, void *@var{random_ctx}, nettle_random_func *@var{random}, size_t @var{digest_length}, const uint8_t *@var{digest}, struct dsa_signature *@var{signature})
 Uses the private key @var{key} to create a signature on @var{digest}.
 @var{random_ctx} and @var{random} is a randomness generator.
 @code{random(random_ctx, length, dst)} should generate @code{length}
@@ -3223,7 +3271,7 @@ random octets and store them at @code{dst}. The signature is stored in
 @var{signature}, in the same was as for plain DSA.
 @end deftypefun
 
-@deftypefun int ecdsa_verify (const struct ecc_point *@var{pub}, unsigned @var{length}, const uint8_t *@var{digest}, const struct dsa_signature *@var{signature})
+@deftypefun int ecdsa_verify (const struct ecc_point *@var{pub}, size_t @var{length}, const uint8_t *@var{digest}, const struct dsa_signature *@var{signature})
 Uses the public key @var{pub} to verify that @var{signature} is a valid
 signature for the message digest @var{digest} (of @var{length} octets).
 Returns 1 if the signature is valid, otherwise 0.
@@ -3487,7 +3535,7 @@ possible to call it with @var{nsources}=0 and @var{sources}=NULL, if
 you don't need the update features.
 @end deftypefun
 
-@deftypefun void yarrow256_seed (struct yarrow256_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{seed_file})
+@deftypefun void yarrow256_seed (struct yarrow256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{seed_file})
 Seeds Yarrow-256 from a previous seed file. @var{length} should be at least
 @code{YARROW256_SEED_FILE_SIZE}, but it can be larger.
 
@@ -3498,7 +3546,7 @@ possible for several processes to read the seed file at about the same
 time, access must be coordinated using some locking mechanism.
 @end deftypefun
 
-@deftypefun int yarrow256_update (struct yarrow256_ctx *@var{ctx}, unsigned @var{source}, unsigned @var{entropy}, unsigned @var{length}, const uint8_t *@var{data})
+@deftypefun int yarrow256_update (struct yarrow256_ctx *@var{ctx}, unsigned @var{source}, unsigned @var{entropy}, size_t @var{length}, const uint8_t *@var{data})
 Updates the generator with data from source @var{SOURCE} (an index that
 must be smaller than the number of sources). @var{entropy} is your
 estimated lower bound for the entropy in the data, measured in bits.
@@ -3511,7 +3559,7 @@ seed file may want to generate new seed data with
 function returns 0.
 @end deftypefun
 
-@deftypefun void yarrow256_random (struct yarrow256_ctx *@var{ctx}, unsigned @var{length}, uint8_t *@var{dst})
+@deftypefun void yarrow256_random (struct yarrow256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst})
 Generates @var{length} octets of output. The generator must be seeded
 before you call this function.
 
@@ -3606,7 +3654,7 @@ session.
 @end deftypefun
 
 
-@deftypefun {unsigned} base64_encode_single (struct base64_encode_ctx *@var{ctx}, uint8_t *@var{dst}, uint8_t @var{src})
+@deftypefun {size_t} base64_encode_single (struct base64_encode_ctx *@var{ctx}, uint8_t *@var{dst}, uint8_t @var{src})
 Encodes a single byte. Returns amount of output (always 1 or 2).
 @end deftypefun
 
@@ -3615,7 +3663,7 @@ The maximum number of output bytes when passing @var{length} input bytes
 to @code{base64_encode_update}.
 @end deffn
 
-@deftypefun {unsigned} base64_encode_update (struct base64_encode_ctx *@var{ctx}, uint8_t *@var{dst}, unsigned @var{length}, const uint8_t *@var{src})
+@deftypefun {size_t} base64_encode_update (struct base64_encode_ctx *@var{ctx}, uint8_t *@var{dst}, size_t @var{length}, const uint8_t *@var{src})
 After @var{ctx} is initialized, this function may be called to encode @var{length}
 bytes from @var{src}. The result will be placed in @var{dst}, and the return value
 will be the number of bytes generated. Note that @var{dst} must be at least of size
@@ -3626,7 +3674,7 @@ BASE64_ENCODE_LENGTH(@var{length}).
 The maximum amount of output from @code{base64_encode_final}.
 @end defvr
 
-@deftypefun {unsigned} base64_encode_final (struct base64_encode_ctx *@var{ctx}, uint8_t *@var{dst})
+@deftypefun {size_t} base64_encode_final (struct base64_encode_ctx *@var{ctx}, uint8_t *@var{dst})
 After calling base64_encode_update one or more times, this function
 should be called to generate the final output bytes, including any
 needed paddding. The return value is the number of output bytes
@@ -3651,7 +3699,7 @@ The maximum number of output bytes when passing @var{length} input bytes
 to @code{base64_decode_update}.
 @end deffn
 
-@deftypefun {void} base64_decode_update (struct base64_decode_ctx *@var{ctx}, unsigned *@var{dst_length}, uint8_t *@var{dst}, unsigned @var{src_length}, const uint8_t *@var{src})
+@deftypefun {void} base64_decode_update (struct base64_decode_ctx *@var{ctx}, size_t *@var{dst_length}, uint8_t *@var{dst}, size_t @var{src_length}, const uint8_t *@var{src})
 After @var{ctx} is initialized, this function may be called to decode @var{src_length}
 bytes from @var{src}. @var{dst} should point to an area of size at least
 BASE64_DECODE_LENGTH(@var{length}), and for sanity checking, @var{dst_length}
@@ -3678,7 +3726,7 @@ The number of output bytes when passing @var{length} input bytes to
 @code{base16_encode_update}.
 @end deffn
 
-@deftypefun {void} base16_encode_update (uint8_t *@var{dst}, unsigned @var{length}, const uint8_t *@var{src})
+@deftypefun {void} base16_encode_update (uint8_t *@var{dst}, size_t @var{length}, const uint8_t *@var{src})
 Always stores BASE16_ENCODE_LENGTH(@var{length}) digits in @var{dst}.
 @end deftypefun
 
@@ -3699,7 +3747,7 @@ The maximum number of output bytes when passing @var{length} input bytes
 to @code{base16_decode_update}.
 @end deffn
 
-@deftypefun {int} base16_decode_update (struct base16_decode_ctx *@var{ctx}, unsigned *@var{dst_length}, uint8_t *@var{dst}, unsigned @var{src_length}, const uint8_t *@var{src})
+@deftypefun {int} base16_decode_update (struct base16_decode_ctx *@var{ctx}, size_t *@var{dst_length}, uint8_t *@var{dst}, size_t @var{src_length}, const uint8_t *@var{src})
 After @var{ctx} is initialized, this function may be called to decode @var{src_length}
 bytes from @var{src}. @var{dst} should point to an area of size at least
 BASE16_DECODE_LENGTH(@var{length}), and for sanity checking, @var{dst_length}
