@@ -4,6 +4,7 @@
 	Document new AES and Camellia interfaces.
 
 	* ecc-size.c (ecc_bit_size): New function.
+	* ecc.h (ecc_bit_size): Declare it.
 
 2014-01-27  Niels Möller  <nisse@lysator.liu.se>
 
