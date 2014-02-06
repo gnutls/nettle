@@ -5,7 +5,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2002 Niels Möller
+ * Copyright (C) 2002, 2014 Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -51,17 +51,6 @@ struct nettle_cipher
   nettle_crypt_func *encrypt;
   nettle_crypt_func *decrypt;
 };
-
-#define _NETTLE_CIPHER(name, NAME, key_size) {	\
-  #name #key_size,				\
-  sizeof(struct name##_ctx),			\
-  NAME##_BLOCK_SIZE,				\
-  key_size / 8,					\
-  (nettle_set_key_func *) name##_set_key,	\
-  (nettle_set_key_func *) name##_set_key,	\
-  (nettle_crypt_func *) name##_encrypt,		\
-  (nettle_crypt_func *) name##_decrypt,		\
-}
 
 /* null-terminated list of ciphers implemented by this version of nettle */
 extern const struct nettle_cipher * const nettle_ciphers[];

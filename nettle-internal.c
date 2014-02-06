@@ -64,7 +64,14 @@ nettle_des3 = {
 /* NOTE: This is not as nice as one might think, as we pretend
    blowfish_set_key has no return value. */
 const struct nettle_cipher
-nettle_blowfish128 = _NETTLE_CIPHER(blowfish, BLOWFISH, 128);
+nettle_blowfish128 =
+  { "blowfish128", sizeof(struct blowfish_ctx),
+    BLOWFISH_BLOCK_SIZE, BLOWFISH128_KEY_SIZE,
+    (nettle_set_key_func *) blowfish128_set_key,
+    (nettle_set_key_func *) blowfish128_set_key,
+    (nettle_crypt_func *) blowfish_encrypt,
+    (nettle_crypt_func *) blowfish_decrypt
+  };
 
 /* Sets a fix zero iv. For benchmarking only. */
 static void

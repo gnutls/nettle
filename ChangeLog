@@ -1,13 +1,16 @@
 2014-02-06  Niels Möller  <nisse@lysator.liu.se>
 
+	* nettle-meta.h (_NETTLE_CIPHER_SEP, _NETTLE_CIPHER_SEP_SET_KEY)
+	(_NETTLE_CIPHER_FIX, _NETTLE_CIPHER): Deleted unused macros.
+
+	* nettle-internal.c (nettle_blowfish128): Deleted only use of
+	_NETTLE_CIPHER.
+
 	* blowfish.c (blowfish128_set_key): New function.
 	* blowfish.h (BLOWFISH128_KEY_SIZE): New constant.
 
 	* cast128-meta.c (nettle_cast128): Deleted only use of
 	_NETTLE_CIPHER_FIX.
-
-	* nettle-meta.h (_NETTLE_CIPHER_SEP, _NETTLE_CIPHER_SEP_SET_KEY)
-	(_NETTLE_CIPHER_FIX): Deleted unused macros.
 
 	* examples/nettle-benchmark.c (time_cipher): Fixed memset calls.
 
