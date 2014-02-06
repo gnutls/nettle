@@ -553,7 +553,7 @@ time_cipher(const struct nettle_cipher *cipher)
 	info.block_size = cipher->block_size;
 	info.iv = iv;
     
-        memset(iv, 0, sizeof(iv));
+        memset(iv, 0, sizeof(cipher->block_size));
     
         cipher->set_encrypt_key(ctx, key);
 
@@ -569,7 +569,7 @@ time_cipher(const struct nettle_cipher *cipher)
 	info.block_size = cipher->block_size;
 	info.iv = iv;
     
-        memset(iv, 0, sizeof(iv));
+        memset(iv, 0, sizeof(cipher->block_size));
 
         cipher->set_decrypt_key(ctx, key);
 
@@ -586,7 +586,7 @@ time_cipher(const struct nettle_cipher *cipher)
 	info.block_size = cipher->block_size;
 	info.iv = iv;
     
-        memset(iv, 0, sizeof(iv));
+        memset(iv, 0, sizeof(cipher->block_size));
     
         cipher->set_encrypt_key(ctx, key);
 
