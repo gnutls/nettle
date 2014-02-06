@@ -63,28 +63,6 @@ struct nettle_cipher
   (nettle_crypt_func *) name##_decrypt,		\
 }
 
-#define _NETTLE_CIPHER_SEP(name, NAME, key_size) {	\
-  #name #key_size,					\
-  sizeof(struct name##_ctx),				\
-  NAME##_BLOCK_SIZE,					\
-  key_size / 8,						\
-  (nettle_set_key_func *) name##_set_encrypt_key,	\
-  (nettle_set_key_func *) name##_set_decrypt_key,	\
-  (nettle_crypt_func *) name##_encrypt,			\
-  (nettle_crypt_func *) name##_decrypt,			\
-}
-
-#define _NETTLE_CIPHER_SEP_SET_KEY(name, NAME, key_size) {\
-  #name #key_size,					\
-  sizeof(struct name##_ctx),				\
-  NAME##_BLOCK_SIZE,					\
-  key_size / 8,						\
-  (nettle_set_key_func *) name##_set_encrypt_key,	\
-  (nettle_set_key_func *) name##_set_decrypt_key,	\
-  (nettle_crypt_func *) name##_crypt,			\
-  (nettle_crypt_func *) name##_crypt,			\
-}
-
 #define _NETTLE_CIPHER_FIX(name, NAME) {	\
   #name,						\
   sizeof(struct name##_ctx),				\

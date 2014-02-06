@@ -1,5 +1,8 @@
 2014-02-06  Niels Möller  <nisse@lysator.liu.se>
 
+	* nettle-meta.h (_NETTLE_CIPHER_SEP, _NETTLE_CIPHER_SEP_SET_KEY):
+	Deleted unused macros.
+
 	* examples/nettle-benchmark.c (time_cipher): Fixed memset calls.
 
 2014-01-30  Niels Möller  <nisse@lysator.liu.se>
