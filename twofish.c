@@ -10,7 +10,7 @@
  * Copyright (C) 1999 J.H.M. Dassen (Ray) <jdassen@wi.LeidenUniv.nl>
  *
  * Integrated with the nettle library,
- * Copyright (C) 2001 Niels Möller
+ * Copyright (C) 2001, 2014 Niels Möller
  */
 
 /* nettle, low-level cryptographics library
@@ -324,6 +324,22 @@ twofish_set_key(struct twofish_ctx *context,
 				    s[1] >> (i*8),
 				    s[2] >> (i*8),
 				    s[3] >> (i*8));
+}
+
+void
+twofish128_set_key(struct twofish_ctx *context, const uint8_t *key)
+{
+  twofish_set_key (context, TWOFISH128_KEY_SIZE, key);
+}
+void
+twofish192_set_key(struct twofish_ctx *context, const uint8_t *key)
+{
+  twofish_set_key (context, TWOFISH192_KEY_SIZE, key);
+}
+void
+twofish256_set_key(struct twofish_ctx *context, const uint8_t *key)
+{
+  twofish_set_key (context, TWOFISH256_KEY_SIZE, key);
 }
 
 /* Encrypt blocks of 16 bytes of data with the twofish algorithm.

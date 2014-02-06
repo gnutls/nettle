@@ -11,7 +11,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2001 Niels Möller
+ * Copyright (C) 2001, 2014 Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -39,6 +39,7 @@ extern "C" {
 #endif
 
 /* Name mangling */
+#define cast5_set_key nettle_cast5_set_key
 #define cast128_set_key nettle_cast128_set_key
 #define cast128_encrypt nettle_cast128_encrypt
 #define cast128_decrypt nettle_cast128_decrypt
@@ -46,8 +47,8 @@ extern "C" {
 #define CAST128_BLOCK_SIZE 8
 
 /* Variable key size between 40 and 128. */
-#define CAST128_MIN_KEY_SIZE 5
-#define CAST128_MAX_KEY_SIZE 16
+#define CAST5_MIN_KEY_SIZE 5
+#define CAST5_MAX_KEY_SIZE 16
 
 #define CAST128_KEY_SIZE 16
 
@@ -59,9 +60,13 @@ struct cast128_ctx
   uint32_t Km[16];
 };
 
+/* Using variable key size. */
 void
-cast128_set_key(struct cast128_ctx *ctx,
-		size_t length, const uint8_t *key);
+cast5_set_key(struct cast128_ctx *ctx,
+	      size_t length, const uint8_t *key);
+
+void
+cast128_set_key(struct cast128_ctx *ctx, const uint8_t *key);
 
 void
 cast128_encrypt(const struct cast128_ctx *ctx,

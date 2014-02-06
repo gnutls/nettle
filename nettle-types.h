@@ -2,7 +2,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2005 Niels Möller
+ * Copyright (C) 2005, 2014 Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -52,9 +52,7 @@ typedef void nettle_progress_func(void *ctx, int c);
 typedef void *nettle_realloc_func(void *ctx, void *p, size_t length);
 
 /* Ciphers */
-typedef void nettle_set_key_func(void *ctx,
-				 size_t length,
-				 const uint8_t *key);
+typedef void nettle_set_key_func(void *ctx, const uint8_t *key);
 
 /* Uses a void * for cipher contexts.
 

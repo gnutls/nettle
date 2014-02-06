@@ -46,6 +46,61 @@ test_invert(const struct tstring *key,
   free (data);
 }
 
+/* Old, unified, interface */
+static nettle_set_key_func unified_aes128_set_encrypt_key;
+static nettle_set_key_func unified_aes128_set_encrypt_key;
+static nettle_set_key_func unified_aes192_set_encrypt_key;
+static nettle_set_key_func unified_aes192_set_encrypt_key;
+static nettle_set_key_func unified_aes256_set_encrypt_key;
+static nettle_set_key_func unified_aes256_set_encrypt_key;
+static void
+unified_aes128_set_encrypt_key (void *ctx, const uint8_t *key)
+{
+  aes_set_encrypt_key (ctx, AES128_KEY_SIZE, key);
+}
+static void
+unified_aes128_set_decrypt_key (void *ctx, const uint8_t *key)
+{
+  aes_set_decrypt_key (ctx, AES128_KEY_SIZE, key);
+}
+
+static void
+unified_aes192_set_encrypt_key (void *ctx, const uint8_t *key)
+{
+  aes_set_encrypt_key (ctx, AES192_KEY_SIZE, key);
+}
+static void
+unified_aes192_set_decrypt_key (void *ctx, const uint8_t *key)
+{
+  aes_set_decrypt_key (ctx, AES192_KEY_SIZE, key);
+}
+
+static void
+unified_aes256_set_encrypt_key (void *ctx, const uint8_t *key)
+{
+  aes_set_encrypt_key (ctx, AES256_KEY_SIZE, key);
+}
+static void
+unified_aes256_set_decrypt_key (void *ctx, const uint8_t *key)
+{
+  aes_set_decrypt_key (ctx, AES256_KEY_SIZE, key);
+}
+
+#define UNIFIED_AES(bits) {			\
+  "unified-aes" #bits, sizeof(struct aes_ctx),	\
+  AES_BLOCK_SIZE, AES ## bits ## _KEY_SIZE,	\
+  unified_aes ## bits ##_set_encrypt_key,	\
+  unified_aes ## bits ##_set_decrypt_key,	\
+  (nettle_crypt_func *) aes_encrypt,		\
+  (nettle_crypt_func *) aes_decrypt,		\
+}
+const struct nettle_cipher nettle_unified_aes128
+= UNIFIED_AES(128);
+const struct nettle_cipher nettle_unified_aes192
+= UNIFIED_AES(192);
+const struct nettle_cipher nettle_unified_aes256
+= UNIFIED_AES(256);
+
 static void
 test_cipher2(const struct nettle_cipher *c1,
 	     const struct nettle_cipher *c2,	     

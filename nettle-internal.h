@@ -6,7 +6,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2002 Niels Möller
+ * Copyright (C) 2002, 2014 Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -96,7 +96,7 @@ struct nettle_aead
   size_t key_size;
 
   nettle_set_key_func *set_key;
-  nettle_set_key_func *set_iv;
+  nettle_hash_update_func *set_iv;
   nettle_hash_update_func *update;
   nettle_crypt_func *encrypt;
   nettle_crypt_func *decrypt;
@@ -104,12 +104,12 @@ struct nettle_aead
 };
 
 #define _NETTLE_AEAD(type, TYPE, name, key_size) {	\
-  #type "-" #name,				\
+  #type "-" #name,					\
   sizeof(struct type##_##name##_ctx),			\
   TYPE##_BLOCK_SIZE,					\
   key_size / 8,						\
   (nettle_set_key_func *) type##_##name##_set_key,	\
-  (nettle_set_key_func *) type##_##name##_set_nonce,	\
+  (nettle_hash_update_func *) type##_##name##_set_nonce,\
   (nettle_hash_update_func *) type##_##name##_update,	\
   (nettle_crypt_func *) type##_##name##_encrypt,	\
   (nettle_crypt_func *) type##_##name##_decrypt,	\
@@ -136,8 +136,7 @@ extern const struct nettle_aead nettle_gcm_twofish256;
 struct eax_aes128_ctx EAX_CTX(struct aes128_ctx);
 
 void
-eax_aes128_set_key(struct eax_aes128_ctx *ctx,
-		   size_t length, const uint8_t *key);
+eax_aes128_set_key(struct eax_aes128_ctx *ctx, const uint8_t *key);
 
 void
 eax_aes128_set_nonce(struct eax_aes128_ctx *ctx,

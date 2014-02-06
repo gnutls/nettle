@@ -2,7 +2,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2013 Niels Möller
+ * Copyright (C) 2013, 2014 Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -30,28 +30,11 @@
 
 #include "aes.h"
 
-static nettle_set_key_func aes192_set_encrypt_key_wrapper;
-static nettle_set_key_func aes192_set_decrypt_key_wrapper;
-
-static void
-aes192_set_encrypt_key_wrapper (void *ctx, size_t length, const uint8_t *key)
-{
-  assert (length == AES192_KEY_SIZE);
-  aes192_set_encrypt_key (ctx, key);
-}
-
-static void
-aes192_set_decrypt_key_wrapper (void *ctx, size_t length, const uint8_t *key)
-{
-  assert (length == AES192_KEY_SIZE);
-  aes192_set_decrypt_key (ctx, key);
-}
-
 const struct nettle_cipher nettle_aes192 =
   { "aes192", sizeof(struct aes192_ctx),
     AES_BLOCK_SIZE, AES192_KEY_SIZE,
-    aes192_set_encrypt_key_wrapper,
-    aes192_set_decrypt_key_wrapper,
+    (nettle_set_key_func *) aes192_set_encrypt_key,
+    (nettle_set_key_func *) aes192_set_decrypt_key,
     (nettle_crypt_func *) aes192_encrypt,
     (nettle_crypt_func *) aes192_decrypt
   };

@@ -167,8 +167,7 @@ gcm_digest(struct gcm_ctx *ctx, const struct gcm_key *key,
 struct gcm_aes128_ctx GCM_CTX(struct aes128_ctx);
 
 void
-gcm_aes128_set_key(struct gcm_aes128_ctx *ctx,
-		   size_t length, const uint8_t *key);
+gcm_aes128_set_key(struct gcm_aes128_ctx *ctx, const uint8_t *key);
 
 /* FIXME: Define _update and _set_iv as some kind of aliaes,
    there's nothing aes-specific. */
@@ -194,8 +193,7 @@ gcm_aes128_digest(struct gcm_aes128_ctx *ctx,
 struct gcm_aes192_ctx GCM_CTX(struct aes192_ctx);
 
 void
-gcm_aes192_set_key(struct gcm_aes192_ctx *ctx,
-		   size_t length, const uint8_t *key);
+gcm_aes192_set_key(struct gcm_aes192_ctx *ctx, const uint8_t *key);
 
 void
 gcm_aes192_update (struct gcm_aes192_ctx *ctx,
@@ -219,8 +217,7 @@ gcm_aes192_digest(struct gcm_aes192_ctx *ctx,
 struct gcm_aes256_ctx GCM_CTX(struct aes256_ctx);
 
 void
-gcm_aes256_set_key(struct gcm_aes256_ctx *ctx,
-		   size_t length, const uint8_t *key);
+gcm_aes256_set_key(struct gcm_aes256_ctx *ctx, const uint8_t *key);
 
 void
 gcm_aes256_update (struct gcm_aes256_ctx *ctx,

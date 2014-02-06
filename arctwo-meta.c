@@ -3,6 +3,7 @@
 /* nettle, low-level cryptographics library
  *
  * Copyright (C) 2004 Simon Josefsson
+ * Copyright (C) 2014 Niels Möller
  *
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -28,21 +29,28 @@
 
 #include "arctwo.h"
 
+#define ARCTWO(bits) {					\
+  "arctwo" #bits, sizeof (struct arctwo_ctx),		\
+  ARCTWO_BLOCK_SIZE, bits/8,				\
+  (nettle_set_key_func *) arctwo ## bits ## _set_key,	\
+  (nettle_set_key_func *) arctwo ## bits ## _set_key,	\
+  (nettle_crypt_func *) arctwo_encrypt,			\
+  (nettle_crypt_func *) arctwo_decrypt,			\
+}
 const struct nettle_cipher nettle_arctwo40
-= _NETTLE_CIPHER (arctwo, ARCTWO, 40);
-
+= ARCTWO(40);
 const struct nettle_cipher nettle_arctwo64
-= _NETTLE_CIPHER (arctwo, ARCTWO, 64);
-
+= ARCTWO(64);
 const struct nettle_cipher nettle_arctwo128
-= _NETTLE_CIPHER (arctwo, ARCTWO, 128);
+= ARCTWO(128);
 
-/* Map Gutmann variant. */
-#define arctwo_gutmann_ctx arctwo_ctx
-#define arctwo_gutmann_encrypt arctwo_encrypt
-#define arctwo_gutmann_decrypt arctwo_decrypt
-#define arctwo_gutmann_ctx arctwo_ctx
-#define arctwo_gutmann_set_key arctwo_set_key_gutmann
-
-const struct nettle_cipher nettle_arctwo_gutmann128
-= _NETTLE_CIPHER (arctwo_gutmann, ARCTWO, 128);
+/* Gutmann variant. */
+const struct nettle_cipher nettle_arctwo_gutmann128 =
+  {
+    "arctwo_gutmann128", sizeof (struct arctwo_ctx),
+    ARCTWO_BLOCK_SIZE, 16,
+    (nettle_set_key_func *) arctwo128_set_key_gutmann,
+    (nettle_set_key_func *) arctwo128_set_key_gutmann,
+    (nettle_crypt_func *) arctwo_encrypt,
+    (nettle_crypt_func *) arctwo_decrypt,
+  };

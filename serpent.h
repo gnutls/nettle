@@ -39,6 +39,9 @@ extern "C" {
 
 /* Name mangling */
 #define serpent_set_key nettle_serpent_set_key
+#define serpent128_set_key nettle_serpent128_set_key
+#define serpent192_set_key nettle_serpent192_set_key
+#define serpent256_set_key nettle_serpent256_set_key
 #define serpent_encrypt nettle_serpent_encrypt
 #define serpent_decrypt nettle_serpent_decrypt
 
@@ -56,6 +59,10 @@ extern "C" {
 #define SERPENT_MIN_KEY_SIZE 16
 #define SERPENT_MAX_KEY_SIZE 32
 
+#define SERPENT128_KEY_SIZE 16
+#define SERPENT192_KEY_SIZE 24
+#define SERPENT256_KEY_SIZE 32
+
 struct serpent_ctx
 {
   uint32_t keys[33][4];  /* key schedule */
@@ -64,6 +71,12 @@ struct serpent_ctx
 void
 serpent_set_key(struct serpent_ctx *ctx,
                 size_t length, const uint8_t *key);
+void
+serpent128_set_key(struct serpent_ctx *ctx, const uint8_t *key);
+void
+serpent192_set_key(struct serpent_ctx *ctx, const uint8_t *key);
+void
+serpent256_set_key(struct serpent_ctx *ctx, const uint8_t *key);
 
 void
 serpent_encrypt(const struct serpent_ctx *ctx,

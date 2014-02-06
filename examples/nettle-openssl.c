@@ -50,18 +50,43 @@
 
 
 /* AES */
-static nettle_set_key_func openssl_aes_set_encrypt_key;
+static nettle_set_key_func openssl_aes128_set_encrypt_key;
+static nettle_set_key_func openssl_aes128_set_decrypt_key;
+static nettle_set_key_func openssl_aes192_set_encrypt_key;
+static nettle_set_key_func openssl_aes192_set_decrypt_key;
+static nettle_set_key_func openssl_aes256_set_encrypt_key;
+static nettle_set_key_func openssl_aes256_set_decrypt_key;
 static void
-openssl_aes_set_encrypt_key(void *ctx, size_t length, const uint8_t *key)
+openssl_aes128_set_encrypt_key(void *ctx, const uint8_t *key)
 {
-  AES_set_encrypt_key(key, length * 8, ctx);
+  AES_set_encrypt_key(key, 128, ctx);
+}
+static void
+openssl_aes128_set_decrypt_key(void *ctx, const uint8_t *key)
+{
+  AES_set_decrypt_key(key, 128, ctx);
 }
 
-static nettle_set_key_func openssl_aes_set_decrypt_key;
 static void
-openssl_aes_set_decrypt_key(void *ctx, size_t length, const uint8_t *key)
+openssl_aes192_set_encrypt_key(void *ctx, const uint8_t *key)
 {
-  AES_set_decrypt_key(key, length * 8, ctx);
+  AES_set_encrypt_key(key, 192, ctx);
+}
+static void
+openssl_aes192_set_decrypt_key(void *ctx, const uint8_t *key)
+{
+  AES_set_decrypt_key(key, 192, ctx);
+}
+
+static void
+openssl_aes256_set_encrypt_key(void *ctx, const uint8_t *key)
+{
+  AES_set_encrypt_key(key, 256, ctx);
+}
+static void
+openssl_aes256_set_decrypt_key(void *ctx, const uint8_t *key)
+{
+  AES_set_decrypt_key(key, 256, ctx);
 }
 
 static nettle_crypt_func openssl_aes_encrypt;
@@ -98,7 +123,7 @@ const struct nettle_cipher
 nettle_openssl_aes128 = {
   "openssl aes128", sizeof(AES_KEY),
   16, 16,
-  openssl_aes_set_encrypt_key, openssl_aes_set_decrypt_key,
+  openssl_aes128_set_encrypt_key, openssl_aes128_set_decrypt_key,
   openssl_aes_encrypt, openssl_aes_decrypt
 };
 
@@ -109,7 +134,7 @@ nettle_openssl_aes192 = {
    * (as openssl cipher + nettle cbc is somewhat pointless to
    * benchmark). */
   16, 24,
-  openssl_aes_set_encrypt_key, openssl_aes_set_decrypt_key,
+  openssl_aes192_set_encrypt_key, openssl_aes192_set_decrypt_key,
   openssl_aes_encrypt, openssl_aes_decrypt
 };
 
@@ -120,16 +145,16 @@ nettle_openssl_aes256 = {
    * (as openssl cipher + nettle cbc is somewhat pointless to
    * benchmark). */
   16, 32,
-  openssl_aes_set_encrypt_key, openssl_aes_set_decrypt_key,
+  openssl_aes256_set_encrypt_key, openssl_aes256_set_decrypt_key,
   openssl_aes_encrypt, openssl_aes_decrypt
 };
 
 /* Arcfour */
-static nettle_set_key_func openssl_arcfour_set_key;
+static nettle_set_key_func openssl_arcfour128_set_key;
 static void
-openssl_arcfour_set_key(void *ctx, size_t length, const uint8_t *key)
+openssl_arcfour128_set_key(void *ctx, const uint8_t *key)
 {
-  RC4_set_key(ctx, length, key);
+  RC4_set_key(ctx, 16, key);
 }
 
 static nettle_crypt_func openssl_arcfour_crypt;
@@ -144,16 +169,16 @@ const struct nettle_cipher
 nettle_openssl_arcfour128 = {
   "openssl arcfour128", sizeof(RC4_KEY),
   0, 16,
-  openssl_arcfour_set_key, openssl_arcfour_set_key,
+  openssl_arcfour128_set_key, openssl_arcfour128_set_key,
   openssl_arcfour_crypt, openssl_arcfour_crypt
 };
 
 /* Blowfish */
-static nettle_set_key_func openssl_bf_set_key;
+static nettle_set_key_func openssl_bf128_set_key;
 static void
-openssl_bf_set_key(void *ctx, size_t length, const uint8_t *key)
+openssl_bf128_set_key(void *ctx, const uint8_t *key)
 {
-  BF_set_key(ctx, length, key);
+  BF_set_key(ctx, 16, key);
 }
 
 static nettle_crypt_func openssl_bf_encrypt;
@@ -190,7 +215,7 @@ const struct nettle_cipher
 nettle_openssl_blowfish128 = {
   "openssl bf128", sizeof(BF_KEY),
   8, 16,
-  openssl_bf_set_key, openssl_bf_set_key,
+  openssl_bf128_set_key, openssl_bf128_set_key,
   openssl_bf_encrypt, openssl_bf_decrypt
 };
 
@@ -198,9 +223,8 @@ nettle_openssl_blowfish128 = {
 /* DES */
 static nettle_set_key_func openssl_des_set_key;
 static void
-openssl_des_set_key(void *ctx, size_t length, const uint8_t *key)
+openssl_des_set_key(void *ctx, const uint8_t *key)
 {
-  assert(length == 8);  
   /* Not sure what "unchecked" means. We want to ignore parity bits,
      but it would still make sense to check for weak keys. */
   /* Explicit cast used as I don't want to care about openssl's broken
@@ -250,11 +274,11 @@ nettle_openssl_des = {
 
 
 /* Cast128 */
-static nettle_set_key_func openssl_cast_set_key;
+static nettle_set_key_func openssl_cast128_set_key;
 static void
-openssl_cast_set_key(void *ctx, size_t length, const uint8_t *key)
+openssl_cast128_set_key(void *ctx, const uint8_t *key)
 {
-  CAST_set_key(ctx, length, key);
+  CAST_set_key(ctx, 16, key);
 }
 
 static nettle_crypt_func openssl_cast_encrypt;
@@ -291,7 +315,7 @@ const struct nettle_cipher
 nettle_openssl_cast128 = {
   "openssl cast128", sizeof(CAST_KEY),
   8, CAST_KEY_LENGTH,
-  openssl_cast_set_key, openssl_cast_set_key,
+  openssl_cast128_set_key, openssl_cast128_set_key,
   openssl_cast_encrypt, openssl_cast_decrypt
 };
 
