@@ -13,10 +13,18 @@ NEWS for the 2.8 release
           provided only for algorithms with a truly variable keysize,
           and where it makes sense for backwards compatibility.
 
+	  INCOMPATIBLE CHANGE: cast128_set_key no longer accepts a key size
+	  argument. The old function is available under the new name.
+	  cast5_set_key.
+
+	  INCOMPATIBLE CHANGE: The function typedef
+	  nettle_set_key_func no longer accepts a key size argument.
+	  In particular, this affects users of struct nettle_cipher.
+
 	* New AES and Camellia interfaces. There are now separate
           context structs for each key size, e.g., aes128_ctx and
           camellia256_ctx, and corresponding new functions. The old
-          interface, with struct aes_ctx and struct camellia_ctx is
+          interface, with struct aes_ctx and struct camellia_ctx, is
           kept for backwards compatibility, but might be removed in
           later versions.
 

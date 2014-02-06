@@ -1,5 +1,7 @@
 2014-02-06  Niels Möller  <nisse@lysator.liu.se>
 
+	* NEWS: List _set_key incompatibilities.
+
 	* nettle-meta.h (_NETTLE_CIPHER_SEP, _NETTLE_CIPHER_SEP_SET_KEY)
 	(_NETTLE_CIPHER_FIX, _NETTLE_CIPHER): Deleted unused macros.
 
