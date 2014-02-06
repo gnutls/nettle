@@ -9,6 +9,7 @@
 
 /* nettle, low-level cryptographics library
  *
+ * Copyright (C) 2014 Niels Möller
  * Copyright (C) 2010  Simon Josefsson
  * Copyright (C) 1998, 2001, 2002, 2003 Free Software Foundation, Inc.
  *  
@@ -411,4 +412,10 @@ blowfish_set_key (struct blowfish_ctx *ctx,
     }
 
   return 1;
+}
+
+int
+blowfish128_set_key(struct blowfish_ctx *ctx, const uint8_t *key)
+{
+  return blowfish_set_key (ctx, BLOWFISH128_KEY_SIZE, key);
 }

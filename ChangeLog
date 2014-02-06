@@ -1,5 +1,8 @@
 2014-02-06  Niels Möller  <nisse@lysator.liu.se>
 
+	* blowfish.c (blowfish128_set_key): New function.
+	* blowfish.h (BLOWFISH128_KEY_SIZE): New constant.
+
 	* cast128-meta.c (nettle_cast128): Deleted only use of
 	_NETTLE_CIPHER_FIX.
 

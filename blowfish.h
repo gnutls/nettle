@@ -5,8 +5,9 @@
 
 /* nettle, low-level cryptographics library
  *
+ * Copyright (C) 2014 Niels Möller
  * Copyright (C) 1998, 2001 FSF, Ray Dassen, Niels Möller
- *  
+ *
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at your
@@ -34,6 +35,7 @@ extern "C" {
 
 /* Name mangling */
 #define blowfish_set_key nettle_blowfish_set_key
+#define blowfish128_set_key nettle_blowfish128_set_key
 #define blowfish_encrypt nettle_blowfish_encrypt
 #define blowfish_decrypt nettle_blowfish_decrypt
 
@@ -46,6 +48,8 @@ extern "C" {
 /* Default to 128 bits */
 #define BLOWFISH_KEY_SIZE 16
 
+#define BLOWFISH128_KEY_SIZE 16
+
 #define _BLOWFISH_ROUNDS 16
 
 struct blowfish_ctx
@@ -54,11 +58,12 @@ struct blowfish_ctx
   uint32_t p[_BLOWFISH_ROUNDS+2];
 };
 
-/* On success, returns 1 and sets ctx->status to BLOWFISH_OK (zero).
- * On error, returns 0 and sets ctx->status to BLOWFISH_WEAK_KEY. */
+/* Returns 0 for weak keys, otherwise 1. */
 int
 blowfish_set_key(struct blowfish_ctx *ctx,
                  size_t length, const uint8_t *key);
+int
+blowfish128_set_key(struct blowfish_ctx *ctx, const uint8_t *key);
 
 void
 blowfish_encrypt(const struct blowfish_ctx *ctx,
