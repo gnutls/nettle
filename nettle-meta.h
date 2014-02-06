@@ -63,17 +63,6 @@ struct nettle_cipher
   (nettle_crypt_func *) name##_decrypt,		\
 }
 
-#define _NETTLE_CIPHER_FIX(name, NAME) {	\
-  #name,						\
-  sizeof(struct name##_ctx),				\
-  NAME##_BLOCK_SIZE,					\
-  NAME##_KEY_SIZE,					\
-  (nettle_set_key_func *) name##_set_key,		\
-  (nettle_set_key_func *) name##_set_key,		\
-  (nettle_crypt_func *) name##_encrypt,			\
-  (nettle_crypt_func *) name##_decrypt,			\
-}
-
 /* null-terminated list of ciphers implemented by this version of nettle */
 extern const struct nettle_cipher * const nettle_ciphers[];
 

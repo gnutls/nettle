@@ -28,5 +28,11 @@
 
 #include "cast128.h"
 
-const struct nettle_cipher nettle_cast128
-= _NETTLE_CIPHER_FIX(cast128, CAST128);
+const struct nettle_cipher nettle_cast128 =
+  { "cast128", sizeof(struct cast128_ctx),
+    CAST128_BLOCK_SIZE, CAST128_KEY_SIZE,
+    (nettle_set_key_func *) cast128_set_key,
+    (nettle_set_key_func *) cast128_set_key,
+    (nettle_crypt_func *) cast128_encrypt,
+    (nettle_crypt_func *) cast128_decrypt
+  };
