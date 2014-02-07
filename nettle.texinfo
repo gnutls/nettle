@@ -3700,12 +3700,11 @@ to @code{base64_decode_update}.
 @end deffn
 
 @deftypefun {void} base64_decode_update (struct base64_decode_ctx *@var{ctx}, size_t *@var{dst_length}, uint8_t *@var{dst}, size_t @var{src_length}, const uint8_t *@var{src})
-After @var{ctx} is initialized, this function may be called to decode @var{src_length}
-bytes from @var{src}. @var{dst} should point to an area of size at least
-BASE64_DECODE_LENGTH(@var{length}), and for sanity checking, @var{dst_length}
-should be initialized to the size of that area before the call.
-@var{dst_length} is updated to the amount of decoded output. The function will return
-1 on success and 0 on error.
+After @var{ctx} is initialized, this function may be called to decode
+@var{src_length} bytes from @var{src}. @var{dst} should point to an area
+of size at least BASE64_DECODE_LENGTH(@var{src_length}). The amount of data
+generated is returned in *@var{dst_length}. Returns 1 on success
+and 0 on error.
 @end deftypefun
 
 @deftypefun {int} base64_decode_final (struct base64_decode_ctx *@var{ctx})
@@ -3748,12 +3747,11 @@ to @code{base16_decode_update}.
 @end deffn
 
 @deftypefun {int} base16_decode_update (struct base16_decode_ctx *@var{ctx}, size_t *@var{dst_length}, uint8_t *@var{dst}, size_t @var{src_length}, const uint8_t *@var{src})
-After @var{ctx} is initialized, this function may be called to decode @var{src_length}
-bytes from @var{src}. @var{dst} should point to an area of size at least
-BASE16_DECODE_LENGTH(@var{length}), and for sanity checking, @var{dst_length}
-should be initialized to the size of that area before the call.
-@var{dst_length} is updated to the amount of decoded output. The function will return
-1 on success and 0 on error.
+After @var{ctx} is initialized, this function may be called to decode
+@var{src_length} bytes from @var{src}. @var{dst} should point to an area
+of size at least BASE16_DECODE_LENGTH(@var{src_length}). The amount of data
+generated is returned in *@var{dst_length}. Returns 1 on success
+and 0 on error.
 @end deftypefun
 
 @deftypefun {int} base16_decode_final (struct base16_decode_ctx *@var{ctx})

@@ -1,5 +1,9 @@
 2014-02-07  Niels Möller  <nisse@lysator.liu.se>
 
+	* nettle.texinfo (ASCII encoding): Document that
+	base16_encode_update and base64_encode_update now uses dst_length
+	as an output only.
+
 	* testsuite/base64-test.c (test_main): Updated
 	base64_decode_update test case.
 
