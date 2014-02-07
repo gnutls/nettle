@@ -52,8 +52,6 @@ extern "C" {
 
 #define EAX_BLOCK_SIZE 16
 
-/* FIXME: Ensure nice alignment. See gcm.h, union gcm_block. */
-
 /* Values independent of message and nonce */
 struct eax_key
 {
