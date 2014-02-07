@@ -1,5 +1,8 @@
 2014-02-07  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/base64-test.c (test_main): Updated
+	base64_decode_update test case.
+
 	* sexp-transport.c (sexp_transport_iterator_first): For
 	base64_decode_update, omit initialization of coded_length.
 

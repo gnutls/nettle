@@ -39,7 +39,7 @@ test_main(void)
     ASSERT(MEMEQ(9, buffer, "SGVsbG8=x"));
 
     base64_decode_init(&ctx);
-    dst_length = 8;
+    dst_length = 0; /* Output parameter only. */
     ASSERT(base64_decode_update(&ctx, &dst_length, buffer, 8, buffer));
     ASSERT(dst_length == 5);
     
