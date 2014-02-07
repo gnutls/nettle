@@ -122,8 +122,6 @@ base64_decode_update(struct base64_decode_ctx *ctx,
   size_t done;
   size_t i;
 
-  assert(*dst_length >= BASE64_DECODE_LENGTH(src_length));
-  
   for (i = 0, done = 0; i<src_length; i++)
     switch(base64_decode_single(ctx, dst + done, src[i]))
       {

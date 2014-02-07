@@ -101,8 +101,6 @@ base16_decode_update(struct base16_decode_ctx *ctx,
   size_t done;
   size_t i;
 
-  assert(*dst_length >= BASE16_DECODE_LENGTH(src_length));
-  
   for (i = done = 0; i<src_length; i++)
     switch(base16_decode_single(ctx, dst + done, src[i]))
       {

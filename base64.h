@@ -128,13 +128,8 @@ base64_decode_single(struct base64_decode_ctx *ctx,
 		     uint8_t src);
 
 /* Returns 1 on success, 0 on error. DST should point to an area of
- * size at least BASE64_DECODE_LENGTH(length), and for sanity
- * checking, *DST_LENGTH should be initialized to the size of that
- * area before the call. *DST_LENGTH is updated to the amount of
- * decoded output. */
-
-/* Currently results in an assertion failure if *DST_LENGTH is
- * too small. FIXME: Return some error instead? */
+ * size at least BASE64_DECODE_LENGTH(length). The amount of data
+ * generated is returned in *DST_LENGTH. */
 int
 base64_decode_update(struct base64_decode_ctx *ctx,
 		     size_t *dst_length,

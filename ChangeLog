@@ -1,3 +1,9 @@
+2014-02-07  Niels Möller  <nisse@lysator.liu.se>
+
+	* base64-decode.c (base64_decode_update): Use *dst_length for
+	output only. Don't require callers to pass a sane value.
+	* base16-decode.c (base16_decode_update): Likewise.
+
 2014-02-06  Niels Möller  <nisse@lysator.liu.se>
 
 	* NEWS: List _set_key incompatibilities.
