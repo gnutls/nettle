@@ -5,6 +5,8 @@
 
 	* sexp-transport.c (sexp_transport_iterator_first): For
 	base64_decode_update, omit initialization of coded_length.
+	* examples/base64dec.c (main): Likewise.
+	* examples/base16dec.c (main): Likewise, for base16_decode_update.
 
 	* base64-decode.c (base64_decode_update): Use *dst_length for
 	output only. Don't require callers to pass a sane value.

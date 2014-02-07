@@ -75,8 +75,6 @@ main(int argc UNUSED, char **argv UNUSED)
 	  return EXIT_FAILURE;
 	}
       
-      decoded_bytes = BASE16_DECODE_LENGTH(nbytes);
-
       /* Decodes one chunk: */
       if (!base16_decode_update(&b16_ctx, &decoded_bytes, result, nbytes, buffer))
 	{

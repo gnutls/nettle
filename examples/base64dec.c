@@ -75,8 +75,6 @@ main(int argc UNUSED, char **argv UNUSED)
 	  return EXIT_FAILURE;
 	}
 
-      decoded_bytes = BASE64_DECODE_LENGTH(nbytes);
-
       /* Decodes one chunk: */
       if (!base64_decode_update(&b64_ctx, &decoded_bytes, result, nbytes, buffer))
 	{
