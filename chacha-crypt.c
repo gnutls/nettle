@@ -60,7 +60,7 @@ chacha_crypt(struct chacha_ctx *ctx,
 
       _chacha_core (x, ctx->state, CHACHA_ROUNDS);
 
-      ctx->state[9] += (++ctx->state[8] == 0);
+      ctx->state[13] += (++ctx->state[12] == 0);
 
       /* stopping at 2^70 length per nonce is user's responsibility */
       
