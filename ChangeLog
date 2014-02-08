@@ -1,5 +1,10 @@
 2014-02-08  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/chacha-test.c (test_chacha): For 20 rounds, use
+	chacha_crypt, and test varying the message length.
+	(test_main): Add second key stream block, for all testcases with
+	20 rounds.
+
 	* chacha-crypt.c (chacha_crypt): Fixed block counter update.
 
 2014-02-07  Niels Möller  <nisse@lysator.liu.se>

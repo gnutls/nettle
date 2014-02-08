@@ -32,35 +32,67 @@ static void
 test_chacha(const struct tstring *key, const struct tstring *iv,
 	    const struct tstring *expected, unsigned rounds)
 {
-  /* Uses the _chacha_core function to be able to test different
-     numbers of rounds. */
-  /* FIXME: For rounds == 20, use crypt function, support more than
-     one block, and test various short lengths. */
-  uint32_t out[_CHACHA_STATE_LENGTH];
-
   struct chacha_ctx ctx;
-
-  ASSERT (expected->length == CHACHA_BLOCK_SIZE);
 
   chacha_set_key (&ctx, key->length, key->data);
   ASSERT (iv->length == CHACHA_IV_SIZE);
-  chacha_set_iv(&ctx, iv->data);
 
-  _chacha_core (out, ctx.state, rounds);
-
-  if (!MEMEQ(CHACHA_BLOCK_SIZE, out, expected->data))
+  if (rounds == 20)
     {
-      printf("Error, expected:\n");
-      tstring_print_hex (expected);
-      printf("Got:\n");
-      print_hex(CHACHA_BLOCK_SIZE, (uint8_t *) out);
-      FAIL ();
+      uint8_t *data = xalloc (expected->length + 2);
+      data++;
+      size_t length;
+
+      for (length = 1; length <= expected->length; length++)
+	{
+	  data[-1] = 17;
+	  memset (data, 0, length);
+	  data[length] = 17;
+	  chacha_set_iv(&ctx, iv->data);
+	  chacha_crypt (&ctx, length, data, data);
+
+	  ASSERT (data[-1] == 17);
+	  ASSERT (data[length] == 17);
+	  if (!MEMEQ(length, data, expected->data))
+	    {
+	      printf("Error, length %u, expected:\n", (unsigned) length);
+	      print_hex (length, expected->data);
+	      printf("Got:\n");
+	      print_hex(length, data);
+	      FAIL ();
+	    }
+	}
+      if (verbose)
+	{
+	  printf("Result after encryption:\n");
+	  print_hex(expected->length, data);
+	}
+      free (data - 1);
     }
-
-  if (verbose)
+  else
     {
-      printf("Result after encryption:\n");
-      print_hex(CHACHA_BLOCK_SIZE, (uint8_t *) out);
+      /* Uses the _chacha_core function to be able to test different
+	 numbers of rounds. */
+      uint32_t out[_CHACHA_STATE_LENGTH];
+      ASSERT (expected->length == CHACHA_BLOCK_SIZE);
+
+      chacha_set_iv(&ctx, iv->data);
+      _chacha_core (out, ctx.state, rounds);
+
+      if (!MEMEQ(CHACHA_BLOCK_SIZE, out, expected->data))
+	{
+	  printf("Error, expected:\n");
+	  tstring_print_hex (expected);
+	  printf("Got:\n");
+	  print_hex(CHACHA_BLOCK_SIZE, (uint8_t *) out);
+	  FAIL ();
+	}
+
+      if (verbose)
+	{
+	  printf("Result after encryption:\n");
+	  print_hex(CHACHA_BLOCK_SIZE, (uint8_t *) out);
+	}
     }
 }
 
@@ -91,7 +123,12 @@ test_main(void)
 	       SHEX("89670952608364fd 00b2f90936f031c8"
 		    "e756e15dba04b849 3d00429259b20f46"
 		    "cc04f111246b6c2c e066be3bfb32d9aa"
-		    "0fddfbc12123d4b9 e44f34dca05a103f"),
+		    "0fddfbc12123d4b9 e44f34dca05a103f"
+
+		    "6cd135c2878c832b 5896b134f6142a9d"
+		    "4d8d0d8f1026d20a 0a81512cbce6e975"
+		    "8a7143d021978022 a384141a80cea306"
+		    "2f41f67a752e66ad 3411984c787e30ad"),
 	       20);
 
   test_chacha (SHEX("0000000000000000 0000000000000000"
@@ -100,7 +137,12 @@ test_main(void)
 	       SHEX("76b8e0ada0f13d90 405d6ae55386bd28"
 		    "bdd219b8a08ded1a a836efcc8b770dc7"
 		    "da41597c5157488d 7724e03fb8d84a37"
-		    "6a43b8f41518a11c c387b669b2ee6586"),
+		    "6a43b8f41518a11c c387b669b2ee6586"
+
+		    "9f07e7be5551387a 98ba977c732d080d"
+		    "cb0f29a048e36569 12c6533e32ee7aed"
+		    "29b721769ce64e43 d57133b074d839d5"
+		    "31ed1f28510afb45 ace10a1f4b794d6f"),
 	       20);
 
 
@@ -126,7 +168,12 @@ test_main(void)
 	       SHEX("ae56060d04f5b597 897ff2af1388dbce"
 		    "ff5a2a4920335dc1 7a3cb1b1b10fbe70"
 		    "ece8f4864d8c7cdf 0076453a8291c7db"
-		    "eb3aa9c9d10e8ca3 6be4449376ed7c42"),
+		    "eb3aa9c9d10e8ca3 6be4449376ed7c42"
+
+		    "fc3d471c34a36fbb f616bc0a0e7c5230"
+		    "30d944f43ec3e78d d6a12466547cb4f7"
+		    "b3cebd0a5005e762 e562d1375b7ac445"
+		    "93a991b85d1a60fb a2035dfaa2a642d5"),
 	       20);
 
   test_chacha (SHEX("0100000000000000 0000000000000000"
@@ -135,7 +182,12 @@ test_main(void)
 	       SHEX("c5d30a7ce1ec1193 78c84f487d775a85"
 		    "42f13ece238a9455 e8229e888de85bbd"
 		    "29eb63d0a17a5b99 9b52da22be4023eb"
-		    "07620a54f6fa6ad8 737b71eb0464dac0"),
+		    "07620a54f6fa6ad8 737b71eb0464dac0"
+
+		    "10f656e6d1fd5505 3e50c4875c9930a3"
+		    "3f6d0263bd14dfd6 ab8c70521c19338b"
+		    "2308b95cf8d0bb7d 202d2102780ea352"
+		    "8f1cb48560f76b20 f382b942500fceac"),
 	       20);
 
   /* TC3: Single bit in IV set. All zero key */
@@ -160,7 +212,12 @@ test_main(void)
 	       SHEX("1663879eb3f2c994 9e2388caa343d361"
 		    "bb132771245ae6d0 27ca9cb010dc1fa7"
 		    "178dc41f8278bc1f 64b3f12769a24097"
-		    "f40d63a86366bdb3 6ac08abe60c07fe8"),
+		    "f40d63a86366bdb3 6ac08abe60c07fe8"
+
+		    "b057375c89144408 cc744624f69f7f4c"
+		    "cbd93366c92fc4df cada65f1b959d8c6"
+		    "4dfc50de711fb464 16c2553cc60f21bb"
+		    "fd006491cb17888b 4fb3521c4fdd8745"),
 	       20);
 
   test_chacha (SHEX("0000000000000000 0000000000000000"
@@ -169,7 +226,12 @@ test_main(void)
 	       SHEX("ef3fdfd6c61578fb f5cf35bd3dd33b80"
 		    "09631634d21e42ac 33960bd138e50d32"
 		    "111e4caf237ee53c a8ad6426194a8854"
-		    "5ddc497a0b466e7d 6bbdb0041b2f586b"),
+		    "5ddc497a0b466e7d 6bbdb0041b2f586b"
+
+		    "5305e5e44aff19b2 35936144675efbe4"
+		    "409eb7e8e5f1430f 5f5836aeb49bb532"
+		    "8b017c4b9dc11f8a 03863fa803dc71d5"
+		    "726b2b6b31aa3270 8afe5af1d6b69058"),
 	       20);
 
   /* TC4: All bits in key and IV are set. */
@@ -194,7 +256,12 @@ test_main(void)
 	       SHEX("992947c3966126a0 e660a3e95db048de"
 		    "091fb9e0185b1e41 e41015bb7ee50150"
 		    "399e4760b262f9d5 3f26d8dd19e56f5c"
-		    "506ae0c3619fa67f b0c408106d0203ee"),
+		    "506ae0c3619fa67f b0c408106d0203ee"
+
+		    "40ea3cfa61fa32a2 fda8d1238a2135d9"
+		    "d4178775240f9900 7064a6a7f0c731b6"
+		    "7c227c52ef796b6b ed9f9059ba0614bc"
+		    "f6dd6e38917f3b15 0e576375be50ed67"),
 	       20);
 
   test_chacha (SHEX("ffffffffffffffff ffffffffffffffff"
@@ -203,7 +270,12 @@ test_main(void)
 	       SHEX("d9bf3f6bce6ed0b5 4254557767fb5744"
 		    "3dd4778911b60605 5c39cc25e674b836"
 		    "3feabc57fde54f79 0c52c8ae43240b79"
-		    "d49042b777bfd6cb 80e931270b7f50eb"),
+		    "d49042b777bfd6cb 80e931270b7f50eb"
+
+		    "5bac2acd86a836c5 dc98c116c1217ec3"
+		    "1d3a63a9451319f0 97f3b4d6dab07787"
+		    "19477d24d24b403a 12241d7cca064f79"
+		    "0f1d51ccaff6b166 7d4bbca1958c4306"),
 	       20);
 
   /* TC5: Every even bit set in key and IV. */
@@ -229,7 +301,11 @@ test_main(void)
 		    "3b26b0ead9f57dd0 9927837bc3067e4b"
 		    "6bf299ad81f7f50c 8da83c7810bfc17b"
 		    "b6f4813ab6c32695 7045fd3fd5e19915"
-		    ),
+
+		    "ec744a6b9bf8cbdc b36d8b6a5499c68a"
+		    "08ef7be6cc1e93f2 f5bcd2cad4e47c18"
+		    "a3e5d94b5666382c 6d130d822dd56aac"
+		    "b0f8195278e7b292 495f09868ddf12cc"),
 	       20);
 
   test_chacha (SHEX("5555555555555555 5555555555555555"
@@ -238,7 +314,12 @@ test_main(void)
 	       SHEX("bea9411aa453c543 4a5ae8c92862f564"
 		    "396855a9ea6e22d6 d3b50ae1b3663311"
 		    "a4a3606c671d605c e16c3aece8e61ea1"
-		    "45c59775017bee2f a6f88afc758069f7"),
+		    "45c59775017bee2f a6f88afc758069f7"
+
+		    "e0b8f676e644216f 4d2a3422d7fa36c6"
+		    "c4931aca950e9da4 2788e6d0b6d1cd83"
+		    "8ef652e97b145b14 871eae6c6804c700"
+		    "4db5ac2fce4c68c7 26d004b10fcaba86"),
 	       20);
 
   /* TC6: Every odd bit set in key and IV. */
@@ -263,7 +344,12 @@ test_main(void)
 	       SHEX("fc79acbd58526103 862776aab20f3b7d"
 		    "8d3149b2fab65766 299316b6e5b16684"
 		    "de5de548c1b7d083 efd9e3052319e0c6"
-		    "254141da04a6586d f800f64d46b01c87"),
+		    "254141da04a6586d f800f64d46b01c87"
+
+		    "1f05bc67e07628eb e6f6865a2177e0b6"
+		    "6a558aa7cc1e8ff1 a98d27f7071f8335"
+		    "efce4537bb0ef7b5 73b32f32765f2900"
+		    "7da53bba62e7a44d 006f41eb28fe15d6"),
 	       20);
 
   test_chacha (SHEX("aaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaa"
@@ -272,7 +358,12 @@ test_main(void)
 	       SHEX("9aa2a9f656efde5a a7591c5fed4b35ae"
 		    "a2895dec7cb4543b 9e9f21f5e7bcbcf3"
 		    "c43c748a970888f8 248393a09d43e0b7"
-		    "e164bc4d0b0fb240 a2d72115c4808906"),
+		    "e164bc4d0b0fb240 a2d72115c4808906"
+
+		    "72184489440545d0 21d97ef6b693dfe5"
+		    "b2c132d47e6f041c 9063651f96b623e6"
+		    "2a11999a23b6f7c4 61b2153026ad5e86"
+		    "6a2e597ed07b8401 dec63a0934c6b2a9"),
 	       20);
 
   /* TC7: Sequence patterns in key and IV. */
@@ -297,7 +388,12 @@ test_main(void)
 	       SHEX("d1abf630467eb4f6 7f1cfb47cd626aae"
 		    "8afedbbe4ff8fc5f e9cfae307e74ed45"
 		    "1f1404425ad2b545 69d5f18148939971"
-		    "abb8fafc88ce4ac7 fe1c3d1f7a1eb7ca"),
+		    "abb8fafc88ce4ac7 fe1c3d1f7a1eb7ca"
+
+		    "e76ca87b61a97135 41497760dd9ae059"
+		    "350cad0dcedfaa80 a883119a1a6f987f"
+		    "d1ce91fd8ee08280 34b411200a9745a2"
+		    "85554475d12afc04 887fef3516d12a2c"),
 	       20);
 
   test_chacha (SHEX("0011223344556677 8899aabbccddeeff"
@@ -331,7 +427,12 @@ test_main(void)
 	      SHEX("826abdd84460e2e9 349f0ef4af5b179b"
 		   "426e4b2d109a9c5b b44000ae51bea90a"
 		   "496beeef62a76850 ff3f0402c4ddc99f"
-		   "6db07f151c1c0dfa c2e56565d6289625"),
+		   "6db07f151c1c0dfa c2e56565d6289625"
+
+		   "5b23132e7b469c7b fb88fa95d44ca5ae"
+		   "3e45e848a4108e98 bad7a9eb15512784"
+		   "a6a9e6e591dce674 120acaf9040ff50f"
+		   "f3ac30ccfb5e1420 4f5e4268b90a8804"),
 	      20);
 
   test_chacha(SHEX("c46ec1b18ce8a878 725a37e780dfb735"
@@ -340,6 +441,11 @@ test_main(void)
 	      SHEX("f63a89b75c2271f9 368816542ba52f06"
 		   "ed49241792302b00 b5e8f80ae9a473af"
 		   "c25b218f519af0fd d406362e8d69de7f"
-		   "54c604a6e00f353f 110f771bdca8ab92"),
+		   "54c604a6e00f353f 110f771bdca8ab92"
+
+		   "e5fbc34e60a1d9a9 db17345b0a402736"
+		   "853bf910b060bdf1 f897b6290f01d138"
+		   "ae2c4c90225ba9ea 14d518f55929dea0"
+		   "98ca7a6ccfe61227 053c84e49a4a3332"),
 	      20);
 }
