@@ -29,13 +29,13 @@
 #include "chacha.h"
 
 static void
-test_chacha(const struct tstring *key, const struct tstring *iv,
+test_chacha(const struct tstring *key, const struct tstring *nonce,
 	    const struct tstring *expected, unsigned rounds)
 {
   struct chacha_ctx ctx;
 
   chacha_set_key (&ctx, key->length, key->data);
-  ASSERT (iv->length == CHACHA_IV_SIZE);
+  ASSERT (nonce->length == CHACHA_NONCE_SIZE);
 
   if (rounds == 20)
     {
@@ -48,7 +48,7 @@ test_chacha(const struct tstring *key, const struct tstring *iv,
 	  data[-1] = 17;
 	  memset (data, 0, length);
 	  data[length] = 17;
-	  chacha_set_iv(&ctx, iv->data);
+	  chacha_set_nonce(&ctx, nonce->data);
 	  chacha_crypt (&ctx, length, data, data);
 
 	  ASSERT (data[-1] == 17);
@@ -76,7 +76,7 @@ test_chacha(const struct tstring *key, const struct tstring *iv,
       uint32_t out[_CHACHA_STATE_LENGTH];
       ASSERT (expected->length == CHACHA_BLOCK_SIZE);
 
-      chacha_set_iv(&ctx, iv->data);
+      chacha_set_nonce(&ctx, nonce->data);
       _chacha_core (out, ctx.state, rounds);
 
       if (!MEMEQ(CHACHA_BLOCK_SIZE, out, expected->data))

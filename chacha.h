@@ -39,7 +39,7 @@ extern "C" {
 #define chacha_set_key nettle_chacha_set_key
 #define chacha128_set_key nettle_chacha128_set_key
 #define chacha256_set_key nettle_chacha256_set_key
-#define chacha_set_iv nettle_chacha_set_iv
+#define chacha_set_nonce nettle_chacha_set_nonce
 #define chacha_crypt nettle_chacha_crypt
 #define _chacha_core _nettle_chacha_core
 
@@ -50,7 +50,7 @@ extern "C" {
 
 #define CHACHA_BLOCK_SIZE 64
 
-#define CHACHA_IV_SIZE 8
+#define CHACHA_NONCE_SIZE 8
 
 #define _CHACHA_STATE_LENGTH 16
 
@@ -81,7 +81,7 @@ chacha_set_key(struct chacha_ctx *ctx,
 	       size_t length, const uint8_t *key);
 
 void
-chacha_set_iv(struct chacha_ctx *ctx, const uint8_t *iv);
+chacha_set_nonce(struct chacha_ctx *ctx, const uint8_t *nonce);
 
 void
 chacha_crypt(struct chacha_ctx *ctx, size_t length, 

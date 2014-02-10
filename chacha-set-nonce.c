@@ -1,6 +1,6 @@
-/* chacha-set-iv.c
+/* chacha-set-nonce.c
  *
- * Setting the IV the ChaCha stream cipher.
+ * Setting the nonce the ChaCha stream cipher.
  * Based on the Salsa20 implementation in Nettle.
  */
 
@@ -44,10 +44,10 @@
 #include "macros.h"
 
 void
-chacha_set_iv(struct chacha_ctx *ctx, const uint8_t *iv)
+chacha_set_nonce(struct chacha_ctx *ctx, const uint8_t *nonce)
 {
   ctx->state[12] = 0;
   ctx->state[13] = 0;
-  ctx->state[14] = LE_READ_UINT32(iv + 0);
-  ctx->state[15] = LE_READ_UINT32(iv + 4);
+  ctx->state[14] = LE_READ_UINT32(nonce + 0);
+  ctx->state[15] = LE_READ_UINT32(nonce + 4);
 }

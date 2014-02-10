@@ -88,7 +88,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 camellia256-meta.c \
 		 cast128.c cast128-meta.c cbc.c \
 		 chacha-crypt.c chacha-core-internal.c \
-		 chacha-set-iv.c chacha-set-key.c \
+		 chacha-set-key.c chacha-set-nonce.c \
 		 chacha128-set-key.c chacha256-set-key.c \
 		 ctr.c gcm.c \
 		 des.c des3.c des-compat.c eax.c \

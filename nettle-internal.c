@@ -77,9 +77,9 @@ nettle_blowfish128 =
 static void
 chacha_set_key_hack(void *ctx, const uint8_t *key)
 {
-  static const uint8_t iv[CHACHA_IV_SIZE];
+  static const uint8_t nonce[CHACHA_NONCE_SIZE];
   chacha256_set_key (ctx, key);
-  chacha_set_iv (ctx, iv);
+  chacha_set_nonce (ctx, nonce);
 }
 
 /* Claim zero block size, to classify as a stream cipher. */

@@ -1,3 +1,9 @@
+2014-02-10  Niels Möller  <nisse@lysator.liu.se>
+
+	* chacha-set-nonce.c (chacha_set_nonce): Renamed file and
+	function, updated callers and Makefile.in.
+	* chacha-set-iv.c (chacha_set_iv): ... from old names.
+
 2014-02-08  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/chacha-test.c (test_chacha): For 20 rounds, use
