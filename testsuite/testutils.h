@@ -131,11 +131,12 @@ test_cipher_stream(const struct nettle_cipher *cipher,
 
 void
 test_aead(const struct nettle_aead *aead,
+	  nettle_hash_update_func *set_nonce,
 	  const struct tstring *key,
 	  const struct tstring *authtext,
 	  const struct tstring *cleartext,
 	  const struct tstring *ciphertext,
-	  const struct tstring *iv,
+	  const struct tstring *nonce,
 	  const struct tstring *digest);
 
 void

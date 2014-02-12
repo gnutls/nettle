@@ -82,55 +82,6 @@ extern const struct nettle_cipher nettle_openssl_cast128;
 extern const struct nettle_hash nettle_openssl_md5;
 extern const struct nettle_hash nettle_openssl_sha1;
 
-/* Tentative interface for "authenticated encryption with associated
-   data" algorithms. Should be moved to nettle-meta.h when stable. */
-struct nettle_aead
-{
-  const char *name;
-  
-  size_t context_size;
-  /* Block size of the input, and the size of the output digest */
-  size_t block_size;
-
-  /* Suggested key size; other sizes are sometimes possible. */
-  size_t key_size;
-
-  nettle_set_key_func *set_key;
-  nettle_hash_update_func *set_iv;
-  nettle_hash_update_func *update;
-  nettle_crypt_func *encrypt;
-  nettle_crypt_func *decrypt;
-  nettle_hash_digest_func *digest;
-};
-
-#define _NETTLE_AEAD(type, TYPE, name, key_size) {	\
-  #type "-" #name,					\
-  sizeof(struct type##_##name##_ctx),			\
-  TYPE##_BLOCK_SIZE,					\
-  key_size / 8,						\
-  (nettle_set_key_func *) type##_##name##_set_key,	\
-  (nettle_hash_update_func *) type##_##name##_set_nonce,\
-  (nettle_hash_update_func *) type##_##name##_update,	\
-  (nettle_crypt_func *) type##_##name##_encrypt,	\
-  (nettle_crypt_func *) type##_##name##_decrypt,	\
-  (nettle_hash_digest_func *) type##_##name##_digest,	\
-}
-
-extern const struct nettle_aead nettle_gcm_aes128;
-extern const struct nettle_aead nettle_gcm_aes192;
-extern const struct nettle_aead nettle_gcm_aes256;
-
-extern const struct nettle_aead nettle_gcm_camellia128;
-extern const struct nettle_aead nettle_gcm_camellia192;
-extern const struct nettle_aead nettle_gcm_camellia256;
-
-extern const struct nettle_aead nettle_gcm_serpent128;
-extern const struct nettle_aead nettle_gcm_serpent192;
-extern const struct nettle_aead nettle_gcm_serpent256;
-
-extern const struct nettle_aead nettle_gcm_twofish128;
-extern const struct nettle_aead nettle_gcm_twofish192;
-extern const struct nettle_aead nettle_gcm_twofish256;
 
 /* Tentative interface. */
 struct eax_aes128_ctx EAX_CTX(struct aes128_ctx);

@@ -1,5 +1,30 @@
 2014-02-12  Niels Möller  <nisse@lysator.liu.se>
 
+	* nettle-meta.h (struct nettle_aead): New generalized version
+	if this struct.
+	(nettle_gcm_aes128, nettle_gcm_aes192, nettle_gcm_aes256)
+	(nettle_eax_aes128): Declare, moved from nettle-internal.h.
+	* nettle-internal.h (struct nettle_aead): Deleted struct, moved to
+	nettle-meta.h. Deleted declarations of unused instances.
+	(_NETTLE_AEAD): Deleted macro.
+	* nettle-internal.c (nettle_eax_aes128): Updated for new
+	nettle_aead struct.
+	(nettle_gcm_aes128, nettle_gcm_aes192, nettle_gcm_aes256):
+	Deleted, moved to new files.
+	* gcm-aes128-meta.c (nettle_gcm_aes128): Moved to new file,
+	updated for new nettle_aead struct.
+	* gcm-aes192-meta.c (nettle_gcm_aes192): Likewise.
+	* gcm-aes256-meta.c (nettle_gcm_aes256): Likewise.
+	* testsuite/testutils.c (test_aead): Take alternative set_nonce
+	function as argument, and use it when nonce size differs from
+	aead->nonce_length.
+	* testsuite/testutils.h (test_aead): Updated prototype.
+	* testsuite/gcm-test.c (nettle_gcm_unified_aes128): Updated for
+	new nettle_aead struct.
+	(test_main): Pass additional argument to test_aead.
+	* testsuite/eax-test.c (test_main): Pass additional NULL argument
+	to test_aead.
+
 	* eax.h (EAX_DIGEST_SIZE): New constant.
 	* gcm.h (GCM_DIGEST_SIZE): Likewise.
 

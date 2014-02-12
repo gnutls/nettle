@@ -25,19 +25,27 @@ test_gcm_hash (const struct tstring *msg, const struct tstring *ref)
     }
 }
 
+static nettle_set_key_func gcm_unified_aes128_set_key;
+static nettle_set_key_func gcm_unified_aes128_set_iv;
 static void
-gcm_unified_aes128_set_key (void *ctx, uint8_t *key)
+gcm_unified_aes128_set_key (void *ctx, const uint8_t *key)
 {
   gcm_aes_set_key (ctx, AES128_KEY_SIZE, key);
+}
+static void
+gcm_unified_aes128_set_iv (void *ctx, const uint8_t *iv)
+{
+  gcm_aes_set_iv (ctx, GCM_IV_SIZE, iv);
 }
 static const struct nettle_aead
 nettle_gcm_unified_aes128 = {
   "gcm-aes128",
   sizeof (struct gcm_aes_ctx),
-  GCM_BLOCK_SIZE,
-  AES128_KEY_SIZE,
+  GCM_BLOCK_SIZE, AES128_KEY_SIZE,
+  GCM_IV_SIZE, GCM_DIGEST_SIZE,
   (nettle_set_key_func *) gcm_unified_aes128_set_key,
-  (nettle_hash_update_func *) gcm_aes_set_iv,
+  (nettle_set_key_func *) gcm_unified_aes128_set_key,
+  (nettle_set_key_func *) gcm_unified_aes128_set_iv,
   (nettle_hash_update_func *) gcm_aes_update,
   (nettle_crypt_func *) gcm_aes_encrypt,
   (nettle_crypt_func *) gcm_aes_decrypt,
@@ -54,7 +62,7 @@ test_main(void)
    */
 
   /* Test case 1 */
-  test_aead(&nettle_gcm_aes128,
+  test_aead(&nettle_gcm_aes128, NULL,
 	    SHEX("00000000000000000000000000000000"),	/* key */
 	    SHEX(""),					/* auth data */ 
 	    SHEX(""),					/* plaintext */
@@ -63,7 +71,7 @@ test_main(void)
 	    SHEX("58e2fccefa7e3061367f1d57a4e7455a"));	/* tag */
 
   /* Test case 2 */
-  test_aead(&nettle_gcm_aes128,
+  test_aead(&nettle_gcm_aes128, NULL,
 	    SHEX("00000000000000000000000000000000"),
 	    SHEX(""),
 	    SHEX("00000000000000000000000000000000"),
@@ -72,7 +80,7 @@ test_main(void)
 	    SHEX("ab6e47d42cec13bdf53a67b21257bddf"));
 
   /* Test case 3 */
-  test_aead(&nettle_gcm_aes128,
+  test_aead(&nettle_gcm_aes128, NULL,
 	    SHEX("feffe9928665731c6d6a8f9467308308"),
 	    SHEX(""),
 	    SHEX("d9313225f88406e5a55909c5aff5269a"
@@ -87,7 +95,7 @@ test_main(void)
 	    SHEX("4d5c2af327cd64a62cf35abd2ba6fab4"));
 
   /* Test case 4 */
-  test_aead(&nettle_gcm_aes128,
+  test_aead(&nettle_gcm_aes128, NULL,
 	    SHEX("feffe9928665731c6d6a8f9467308308"),
 	    SHEX("feedfacedeadbeeffeedfacedeadbeef"
 		 "abaddad2"),
@@ -104,6 +112,7 @@ test_main(void)
 
   /* Test case 5 */
   test_aead(&nettle_gcm_aes128,
+	    (nettle_hash_update_func *) gcm_aes128_set_iv,
 	    SHEX("feffe9928665731c6d6a8f9467308308"),
 	    SHEX("feedfacedeadbeeffeedfacedeadbeef"
 		 "abaddad2"),
@@ -120,6 +129,7 @@ test_main(void)
 
   /* Test case 6 */
   test_aead(&nettle_gcm_aes128,
+	    (nettle_hash_update_func *) gcm_aes128_set_iv,
 	    SHEX("feffe9928665731c6d6a8f9467308308"),
 	    SHEX("feedfacedeadbeeffeedfacedeadbeef"
 		 "abaddad2"),
@@ -139,6 +149,7 @@ test_main(void)
 
   /* Same test, but with old gcm_aes interface */
   test_aead(&nettle_gcm_unified_aes128,
+	    (nettle_hash_update_func *) gcm_aes_set_iv,
 	    SHEX("feffe9928665731c6d6a8f9467308308"),
 	    SHEX("feedfacedeadbeeffeedfacedeadbeef"
 		 "abaddad2"),
@@ -157,7 +168,7 @@ test_main(void)
 	    SHEX("619cc5aefffe0bfa462af43c1699d050"));
 
   /* Test case 7 */
-  test_aead(&nettle_gcm_aes192,
+  test_aead(&nettle_gcm_aes192, NULL,
 	    SHEX("00000000000000000000000000000000"
 		 "0000000000000000"),
 	    SHEX(""),
@@ -167,7 +178,7 @@ test_main(void)
 	    SHEX("cd33b28ac773f74ba00ed1f312572435"));
 
   /* Test case 8 */
-  test_aead(&nettle_gcm_aes192,
+  test_aead(&nettle_gcm_aes192, NULL,
 	    SHEX("00000000000000000000000000000000"
 		 "0000000000000000"),
 	    SHEX(""),
@@ -177,7 +188,7 @@ test_main(void)
 	    SHEX("2ff58d80033927ab8ef4d4587514f0fb"));
 
   /* Test case 9 */
-  test_aead(&nettle_gcm_aes192,
+  test_aead(&nettle_gcm_aes192, NULL,
 	    SHEX("feffe9928665731c6d6a8f9467308308"
 		 "feffe9928665731c"),
 	    SHEX(""),
@@ -193,7 +204,7 @@ test_main(void)
 	    SHEX("9924a7c8587336bfb118024db8674a14"));
 
   /* Test case 10 */
-  test_aead(&nettle_gcm_aes192,
+  test_aead(&nettle_gcm_aes192, NULL,
 	    SHEX("feffe9928665731c6d6a8f9467308308"
 		 "feffe9928665731c"),
 	    SHEX("feedfacedeadbeeffeedfacedeadbeef"
@@ -211,6 +222,7 @@ test_main(void)
 
   /* Test case 11 */
   test_aead(&nettle_gcm_aes192,
+	    (nettle_hash_update_func *) gcm_aes192_set_iv,
 	    SHEX("feffe9928665731c6d6a8f9467308308"
 		 "feffe9928665731c"),
 	    SHEX("feedfacedeadbeeffeedfacedeadbeef"
@@ -228,6 +240,7 @@ test_main(void)
 
   /* Test case 12 */
   test_aead(&nettle_gcm_aes192,
+	    (nettle_hash_update_func *) gcm_aes192_set_iv,
 	    SHEX("feffe9928665731c6d6a8f9467308308"
 		 "feffe9928665731c"),
 	    SHEX("feedfacedeadbeeffeedfacedeadbeef"
@@ -247,7 +260,7 @@ test_main(void)
 	    SHEX("dcf566ff291c25bbb8568fc3d376a6d9"));
 
   /* Test case 13 */
-  test_aead(&nettle_gcm_aes256,
+  test_aead(&nettle_gcm_aes256, NULL,
 	    SHEX("00000000000000000000000000000000"
 		 "00000000000000000000000000000000"),
 	    SHEX(""),
@@ -257,7 +270,7 @@ test_main(void)
 	    SHEX("530f8afbc74536b9a963b4f1c4cb738b"));
 
   /* Test case 14 */
-  test_aead(&nettle_gcm_aes256,
+  test_aead(&nettle_gcm_aes256, NULL,
 	    SHEX("00000000000000000000000000000000"
 		 "00000000000000000000000000000000"),
 	    SHEX(""),
@@ -267,7 +280,7 @@ test_main(void)
 	    SHEX("d0d1c8a799996bf0265b98b5d48ab919"));
 
   /* Test case 15 */
-  test_aead(&nettle_gcm_aes256,
+  test_aead(&nettle_gcm_aes256, NULL,
 	    SHEX("feffe9928665731c6d6a8f9467308308"
 		 "feffe9928665731c6d6a8f9467308308"),
 	    SHEX(""),
@@ -283,7 +296,7 @@ test_main(void)
 	    SHEX("b094dac5d93471bdec1a502270e3cc6c"));
 
   /* Test case 16 */
-  test_aead(&nettle_gcm_aes256,
+  test_aead(&nettle_gcm_aes256, NULL,
 	    SHEX("feffe9928665731c6d6a8f9467308308"
 		 "feffe9928665731c6d6a8f9467308308"),
 	    SHEX("feedfacedeadbeeffeedfacedeadbeef"
@@ -301,6 +314,7 @@ test_main(void)
 
   /* Test case 17 */
   test_aead(&nettle_gcm_aes256,
+	    (nettle_hash_update_func *) gcm_aes256_set_iv,
 	    SHEX("feffe9928665731c6d6a8f9467308308"
 		 "feffe9928665731c6d6a8f9467308308"),
 	    SHEX("feedfacedeadbeeffeedfacedeadbeef"
@@ -318,6 +332,7 @@ test_main(void)
 
   /* Test case 18 */
   test_aead(&nettle_gcm_aes256,
+	    (nettle_hash_update_func *) gcm_aes256_set_iv,
 	    SHEX("feffe9928665731c6d6a8f9467308308"
 		 "feffe9928665731c6d6a8f9467308308"),
 	    SHEX("feedfacedeadbeeffeedfacedeadbeef"

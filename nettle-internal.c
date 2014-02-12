@@ -120,16 +120,6 @@ nettle_salsa20r12 = {
   (nettle_crypt_func *) salsa20r12_crypt
 };
 
-#define gcm_aes128_set_nonce gcm_aes128_set_iv
-#define gcm_aes192_set_nonce gcm_aes192_set_iv
-#define gcm_aes256_set_nonce gcm_aes256_set_iv
-const struct nettle_aead
-nettle_gcm_aes128 = _NETTLE_AEAD(gcm, GCM, aes128, 128);
-const struct nettle_aead
-nettle_gcm_aes192 = _NETTLE_AEAD(gcm, GCM, aes192, 192);
-const struct nettle_aead
-nettle_gcm_aes256 = _NETTLE_AEAD(gcm, GCM, aes256, 256);
-
 
 /* eax-aes128 */
 void
@@ -174,5 +164,26 @@ eax_aes128_digest(struct eax_aes128_ctx *ctx,
   EAX_DIGEST(ctx, aes128_encrypt, length, digest);
 }
 
+/* FIXME: Reasonable default? */
+#define EAX_IV_SIZE 16
+
+static nettle_set_key_func eax_aes128_set_nonce_wrapper;
+static void
+eax_aes128_set_nonce_wrapper (void *ctx, const uint8_t *nonce)
+{
+  eax_aes128_set_nonce (ctx, EAX_IV_SIZE, nonce);
+}
+
 const struct nettle_aead
-nettle_eax_aes128 = _NETTLE_AEAD(eax, EAX, aes128, 128);
+nettle_eax_aes128 =
+  { "eax_aes128", sizeof(struct eax_aes128_ctx),
+    EAX_BLOCK_SIZE, AES128_KEY_SIZE,
+    EAX_IV_SIZE, EAX_DIGEST_SIZE,
+    (nettle_set_key_func *) eax_aes128_set_key,
+    (nettle_set_key_func *) eax_aes128_set_key,
+    eax_aes128_set_nonce_wrapper,
+    (nettle_hash_update_func *) eax_aes128_update,
+    (nettle_crypt_func *) eax_aes128_encrypt,
+    (nettle_crypt_func *) eax_aes128_decrypt,
+    (nettle_hash_digest_func *) eax_aes128_digest
+  };

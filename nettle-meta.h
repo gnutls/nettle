@@ -126,6 +126,31 @@ extern const struct nettle_hash nettle_sha3_256;
 extern const struct nettle_hash nettle_sha3_384;
 extern const struct nettle_hash nettle_sha3_512;
 
+struct nettle_aead
+{
+  const char *name;
+  
+  unsigned context_size;
+  /* Block size for encrypt and decrypt. */
+  unsigned block_size;
+  unsigned key_size;
+  unsigned nonce_size;
+  unsigned digest_size;
+
+  nettle_set_key_func *set_encrypt_key;
+  nettle_set_key_func *set_decrypt_key;
+  nettle_set_key_func *set_nonce;
+  nettle_hash_update_func *update;
+  nettle_crypt_func *encrypt;
+  nettle_crypt_func *decrypt;
+  /* FIXME: Drop length argument? */
+  nettle_hash_digest_func *digest;
+};
+
+extern const struct nettle_aead nettle_gcm_aes128;
+extern const struct nettle_aead nettle_gcm_aes192;
+extern const struct nettle_aead nettle_gcm_aes256;
+
 struct nettle_armor
 {
   const char *name;

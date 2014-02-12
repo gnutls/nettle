@@ -468,11 +468,12 @@ test_cipher_stream(const struct nettle_cipher *cipher,
 
 void
 test_aead(const struct nettle_aead *aead,
+	  nettle_hash_update_func *set_nonce,
 	  const struct tstring *key,
 	  const struct tstring *authtext,
 	  const struct tstring *cleartext,
 	  const struct tstring *ciphertext,
-	  const struct tstring *iv,
+	  const struct tstring *nonce,
 	  const struct tstring *digest)
 {
   void *ctx = xalloc(aead->context_size);
@@ -490,9 +491,15 @@ test_aead(const struct nettle_aead *aead,
   
   /* encryption */
   memset(buffer, 0, aead->block_size);
-  aead->set_key(ctx, key->data);
+  aead->set_encrypt_key(ctx, key->data);
 
-  aead->set_iv(ctx, iv->length, iv->data);
+  if (nonce->length != aead->nonce_size)
+    {
+      ASSERT (set_nonce);
+      set_nonce (ctx, nonce->length, nonce->data);
+    }
+  else
+    aead->set_nonce(ctx, nonce->data);
 
   if (authtext->length)
     aead->update(ctx, authtext->length, authtext->data);
@@ -507,7 +514,16 @@ test_aead(const struct nettle_aead *aead,
 
   /* decryption */
   memset(buffer, 0, aead->block_size);
-  aead->set_iv(ctx, iv->length, iv->data);
+
+  aead->set_decrypt_key(ctx, key->data);
+
+  if (nonce->length != aead->nonce_size)
+    {
+      ASSERT (set_nonce);
+      set_nonce (ctx, nonce->length, nonce->data);
+    }
+  else
+    aead->set_nonce(ctx, nonce->data);
 
   if (authtext->length)
     aead->update(ctx, authtext->length, authtext->data);
