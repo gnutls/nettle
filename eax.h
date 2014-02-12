@@ -51,6 +51,7 @@ extern "C" {
    this in naming? */
 
 #define EAX_BLOCK_SIZE 16
+#define EAX_DIGEST_SIZE 16
 
 /* Values independent of message and nonce */
 struct eax_key

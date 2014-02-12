@@ -1,3 +1,8 @@
+2014-02-12  Niels Möller  <nisse@lysator.liu.se>
+
+	* eax.h (EAX_DIGEST_SIZE): New constant.
+	* gcm.h (GCM_DIGEST_SIZE): Likewise.
+
 2014-02-10  Niels Möller  <nisse@lysator.liu.se>
 
 	* chacha-set-nonce.c (chacha_set_nonce): Renamed file and
