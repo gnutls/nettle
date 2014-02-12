@@ -1,5 +1,19 @@
 2014-02-12  Niels Möller  <nisse@lysator.liu.se>
 
+	* chacha-poly1305.h: New file.
+	* chacha-poly1305.c: New file.
+	* chacha-poly1305-meta.c (nettle_chacha_poly1305): New file, new
+	aead algorithm.
+	* nettle-meta.h (nettle_chacha_poly1305): Declare.
+
+	* Makefile.in (nettle_SOURCES): Added chacha-poly1305.c and
+	chacha-poly1305-meta.c.
+	(HEADERS): Added chacha-poly1305.h.
+
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Added
+	chacha-poly1305-test.c.
+	* testsuite/chacha-poly1305-test.c: New file.
+
 	* nettle-meta.h (struct nettle_aead): New generalized version
 	if this struct.
 	(nettle_gcm_aes128, nettle_gcm_aes192, nettle_gcm_aes256)

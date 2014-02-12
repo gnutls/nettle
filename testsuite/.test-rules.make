@@ -112,6 +112,9 @@ eax-test$(EXEEXT): eax-test.$(OBJEXT)
 poly1305-test$(EXEEXT): poly1305-test.$(OBJEXT)
 	$(LINK) poly1305-test.$(OBJEXT) $(TEST_OBJS) -o poly1305-test$(EXEEXT)
 
+chacha-poly1305-test$(EXEEXT): chacha-poly1305-test.$(OBJEXT)
+	$(LINK) chacha-poly1305-test.$(OBJEXT) $(TEST_OBJS) -o chacha-poly1305-test$(EXEEXT)
+
 hmac-test$(EXEEXT): hmac-test.$(OBJEXT)
 	$(LINK) hmac-test.$(OBJEXT) $(TEST_OBJS) -o hmac-test$(EXEEXT)
 

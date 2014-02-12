@@ -26,7 +26,7 @@ TS_NETTLE_SOURCES = aes-test.c arcfour-test.c arctwo-test.c \
 		    serpent-test.c twofish-test.c \
 		    knuth-lfib-test.c \
 		    cbc-test.c ctr-test.c gcm-test.c eax-test.c \
-		    poly1305-test.c \
+		    poly1305-test.c chacha-poly1305-test.c \
 		    hmac-test.c umac-test.c \
 		    meta-hash-test.c meta-cipher-test.c meta-armor-test.c \
 		    buffer-test.c yarrow-test.c pbkdf2-test.c
