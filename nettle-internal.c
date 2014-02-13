@@ -34,8 +34,6 @@
 #include "nettle-internal.h"
 #include "blowfish.h"
 #include "des.h"
-#include "eax.h"
-#include "gcm.h"
 #include "chacha.h"
 #include "salsa20.h"
 
@@ -120,70 +118,3 @@ nettle_salsa20r12 = {
   (nettle_crypt_func *) salsa20r12_crypt
 };
 
-
-/* eax-aes128 */
-void
-eax_aes128_set_key(struct eax_aes128_ctx *ctx, const uint8_t *key)
-{
-  EAX_SET_KEY(ctx,
-	      aes128_set_encrypt_key, aes128_encrypt,
-	      key);
-}
-
-void
-eax_aes128_set_nonce(struct eax_aes128_ctx *ctx,
-		     size_t length, const uint8_t *iv)
-{
-  EAX_SET_NONCE(ctx, aes128_encrypt, length, iv);
-}
-
-void
-eax_aes128_update(struct eax_aes128_ctx *ctx, size_t length, const uint8_t *data)
-{
-  EAX_UPDATE(ctx, aes128_encrypt, length, data);
-}
-
-void
-eax_aes128_encrypt(struct eax_aes128_ctx *ctx,
-		size_t length, uint8_t *dst, const uint8_t *src)
-{
-  EAX_ENCRYPT(ctx, aes128_encrypt, length, dst, src);
-}
-
-void
-eax_aes128_decrypt(struct eax_aes128_ctx *ctx,
-		size_t length, uint8_t *dst, const uint8_t *src)
-{
-  EAX_DECRYPT(ctx, aes128_encrypt, length, dst, src);
-}
-
-void
-eax_aes128_digest(struct eax_aes128_ctx *ctx,
-	       size_t length, uint8_t *digest)
-{
-  EAX_DIGEST(ctx, aes128_encrypt, length, digest);
-}
-
-/* FIXME: Reasonable default? */
-#define EAX_IV_SIZE 16
-
-static nettle_set_key_func eax_aes128_set_nonce_wrapper;
-static void
-eax_aes128_set_nonce_wrapper (void *ctx, const uint8_t *nonce)
-{
-  eax_aes128_set_nonce (ctx, EAX_IV_SIZE, nonce);
-}
-
-const struct nettle_aead
-nettle_eax_aes128 =
-  { "eax_aes128", sizeof(struct eax_aes128_ctx),
-    EAX_BLOCK_SIZE, AES128_KEY_SIZE,
-    EAX_IV_SIZE, EAX_DIGEST_SIZE,
-    (nettle_set_key_func *) eax_aes128_set_key,
-    (nettle_set_key_func *) eax_aes128_set_key,
-    eax_aes128_set_nonce_wrapper,
-    (nettle_hash_update_func *) eax_aes128_update,
-    (nettle_crypt_func *) eax_aes128_encrypt,
-    (nettle_crypt_func *) eax_aes128_decrypt,
-    (nettle_hash_digest_func *) eax_aes128_digest
-  };

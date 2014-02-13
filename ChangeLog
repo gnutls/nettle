@@ -1,5 +1,21 @@
 2014-02-13  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.in (nettle_SOURCES): Added eax-aes128.c
+	eax-aes128-meta.c.
+	* examples/nettle-benchmark.c: Include eax.h.
+	* nettle-meta.h (nettle_eax_aes128): Declare, moved from
+	nettle-internal.h.
+	* eax.h: Declare eax_aes128_ctx and related functions. Moved from
+	nettle-internal.h
+	(EAX_IV_SIZE): New constant.
+	* eax-aes128-meta.c (nettle_eax_aes128): Moved definition to new
+	file.
+	* eax-aes128.c (eax_aes128_set_key, eax_aes128_set_nonce)
+	(eax_aes128_update, eax_aes128_encrypt, eax_aes128_decrypt)
+	(eax_aes128_digest): Moved functions to a new file.
+	* nettle-internal.c: ... from old location.
+	* nettle-internal.h: Moved eax declarations elsewhere.
+
 	* tools/nettle-pbkdf2.c (main): Added missing deallocation.
 
 2014-02-12  Niels Möller  <nisse@lysator.liu.se>

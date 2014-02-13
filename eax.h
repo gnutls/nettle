@@ -40,18 +40,20 @@ extern "C" {
 #define eax_decrypt nettle_eax_decrypt
 #define eax_digest nettle_eax_digest
 
-#define eax_aes_set_key nettle_eax_aes_set_key
-#define eax_aes_set_nonce nettle_eax_aes_set_nonce
-#define eax_aes_update nettle_eax_aes_update
-#define eax_aes_encrypt nettle_eax_aes_encrypt
-#define eax_aes_decrypt nettle_eax_aes_decrypt
-#define eax_aes_digest nettle_eax_aes_digest
+#define eax_aes128_set_key nettle_eax_aes128_set_key
+#define eax_aes128_set_nonce nettle_eax_aes128_set_nonce
+#define eax_aes128_update nettle_eax_aes128_update
+#define eax_aes128_encrypt nettle_eax_aes128_encrypt
+#define eax_aes128_decrypt nettle_eax_aes128_decrypt
+#define eax_aes128_digest nettle_eax_aes128_digest
 
 /* Restricted to block ciphers with 128 bit block size. FIXME: Reflect
    this in naming? */
 
 #define EAX_BLOCK_SIZE 16
 #define EAX_DIGEST_SIZE 16
+/* FIXME: Reasonable default? */
+#define EAX_IV_SIZE 16
 
 /* Values independent of message and nonce */
 struct eax_key
@@ -137,6 +139,30 @@ eax_digest (struct eax_ctx *eax, const struct eax_key *key,
    : eax_digest (&(ctx)->eax, &(ctx)->key,				\
 		 &(ctx)->cipher, (nettle_crypt_func *) (encrypt),	\
 		 (length), (digest)))
+
+struct eax_aes128_ctx EAX_CTX(struct aes128_ctx);
+
+void
+eax_aes128_set_key(struct eax_aes128_ctx *ctx, const uint8_t *key);
+
+void
+eax_aes128_set_nonce(struct eax_aes128_ctx *ctx,
+		     size_t length, const uint8_t *iv);
+
+void
+eax_aes128_update(struct eax_aes128_ctx *ctx,
+		  size_t length, const uint8_t *data);
+
+void
+eax_aes128_encrypt(struct eax_aes128_ctx *ctx,
+		   size_t length, uint8_t *dst, const uint8_t *src);
+
+void
+eax_aes128_decrypt(struct eax_aes128_ctx *ctx,
+		   size_t length, uint8_t *dst, const uint8_t *src);
+
+void
+eax_aes128_digest(struct eax_aes128_ctx *ctx, size_t length, uint8_t *digest);
 
 #ifdef __cplusplus
 }

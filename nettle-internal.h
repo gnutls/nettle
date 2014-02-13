@@ -29,8 +29,6 @@
 
 #include "nettle-meta.h"
 
-#include "eax.h"
-
 /* Temporary allocation, for systems that don't support alloca. Note
  * that the allocation requests should always be reasonably small, so
  * that they can fit on the stack. For non-alloca systems, we use a
@@ -81,33 +79,5 @@ extern const struct nettle_cipher nettle_openssl_cast128;
 
 extern const struct nettle_hash nettle_openssl_md5;
 extern const struct nettle_hash nettle_openssl_sha1;
-
-
-/* Tentative interface. */
-struct eax_aes128_ctx EAX_CTX(struct aes128_ctx);
-
-void
-eax_aes128_set_key(struct eax_aes128_ctx *ctx, const uint8_t *key);
-
-void
-eax_aes128_set_nonce(struct eax_aes128_ctx *ctx,
-		     size_t length, const uint8_t *iv);
-
-void
-eax_aes128_update(struct eax_aes128_ctx *ctx,
-		  size_t length, const uint8_t *data);
-
-void
-eax_aes128_encrypt(struct eax_aes128_ctx *ctx,
-		   size_t length, uint8_t *dst, const uint8_t *src);
-
-void
-eax_aes128_decrypt(struct eax_aes128_ctx *ctx,
-		   size_t length, uint8_t *dst, const uint8_t *src);
-
-void
-eax_aes128_digest(struct eax_aes128_ctx *ctx, size_t length, uint8_t *digest);
-
-extern const struct nettle_aead nettle_eax_aes128;
 
 #endif /* NETTLE_INTERNAL_H_INCLUDED */

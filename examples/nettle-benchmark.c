@@ -47,6 +47,7 @@
 #include "cbc.h"
 #include "ctr.h"
 #include "des.h"
+#include "eax.h"
 #include "gcm.h"
 #include "memxor.h"
 #include "salsa20.h"

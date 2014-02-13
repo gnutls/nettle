@@ -151,6 +151,7 @@ extern const struct nettle_aead nettle_gcm_aes128;
 extern const struct nettle_aead nettle_gcm_aes192;
 extern const struct nettle_aead nettle_gcm_aes256;
 extern const struct nettle_aead nettle_chacha_poly1305;
+extern const struct nettle_aead nettle_eax_aes128;
 
 struct nettle_armor
 {
