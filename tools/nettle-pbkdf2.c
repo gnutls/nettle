@@ -173,6 +173,8 @@ main (int argc, char **argv)
       hex[BASE16_ENCODE_LENGTH(output_length - i)] = 0;
       printf("%s\n", hex);
     }
+  free (output);
+
   if (fflush(stdout) != 0 )
     die("Write failed: %s\n", STRERROR(errno));
 
