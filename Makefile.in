@@ -62,7 +62,9 @@ dvi installcheck uninstallcheck:
 
 all-here: $(TARGETS) $(DOCTARGETS)
 
-nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
+nettle_SOURCES = aead-decrypt.c aead-decrypt-msg.c \
+		 aead-encrypt.c aead-encrypt-msg.c \
+		 aes-decrypt-internal.c aes-decrypt.c \
 		 aes-encrypt-internal.c aes-encrypt.c aes-encrypt-table.c \
 		 aes-invert-internal.c aes-set-key-internal.c \
 		 aes-set-encrypt-key.c aes-set-decrypt-key.c \
@@ -164,7 +166,7 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  ecc-ecdsa-sign.c ecdsa-sign.c \
 		  ecc-ecdsa-verify.c ecdsa-verify.c ecdsa-keygen.c
 
-HEADERS = aes.h arcfour.h arctwo.h asn1.h bignum.h blowfish.h \
+HEADERS = aead.h aes.h arcfour.h arctwo.h asn1.h bignum.h blowfish.h \
 	  base16.h base64.h buffer.h camellia.h cast128.h \
 	  cbc.h chacha.h chacha-poly1305.h ctr.h \
 	  des.h des-compat.h dsa.h eax.h ecc-curve.h ecc.h ecdsa.h \
