@@ -416,6 +416,104 @@ test_main(void)
 	         "c3c0c95156809539fcf0e2429a6b525416aedbf5a0de6a57a637b39b"),		/* IV */
 	    SHEX("ceae5569b2af8641572622731aed3e53"));	/* tag */
 
+  /* gcm-camellia256 */
+
+  /* Test case 13 */
+  test_aead(&nettle_gcm_camellia256,
+	    (nettle_hash_update_func *) gcm_camellia256_set_iv,
+	    SHEX("0000000000000000 0000000000000000"
+		 "0000000000000000 0000000000000000"),	/* key */
+	    SHEX(""),	/* auth data */
+	    SHEX(""),	/* plaintext */
+	    SHEX(""),	/* ciphertext */
+	    SHEX("000000000000000000000000"),	/* iv */
+	    SHEX("9cdb269b5d293bc5db9c55b057d9b591"));	/* tag */
+
+  /* Test case 14 */
+  test_aead(&nettle_gcm_camellia256,
+	    (nettle_hash_update_func *) gcm_camellia256_set_iv,
+	    SHEX("0000000000000000 0000000000000000"
+		 "0000000000000000 0000000000000000"),	/* key */
+	    SHEX(""),	/* auth data */
+	    SHEX("0000000000000000 0000000000000000"),	/* plaintext */
+	    SHEX("3d4b2cde666761ba 5dfb305178e667fb"),	/* ciphertext */
+	    SHEX("000000000000000000000000"),	/* iv */
+	    SHEX("284b63bb143c40ce100fb4dea6bb617b"));	/* tag */
+
+  /* Test case 15 */
+  test_aead(&nettle_gcm_camellia256,
+	    (nettle_hash_update_func *) gcm_camellia256_set_iv,
+	    SHEX("feffe9928665731c 6d6a8f9467308308"
+		 "feffe9928665731c 6d6a8f9467308308"),	/* key */
+	    SHEX(""),	/* auth data */
+	    SHEX("d9313225f88406e5 a55909c5aff5269a"
+		 "86a7a9531534f7da 2e4c303d8a318a72"
+		 "1c3c0c9595680953 2fcf0e2449a6b525"
+		 "b16aedf5aa0de657 ba637b391aafd255"),	/* plaintext */
+	    SHEX("ad142c11579dd95e 41f3c1f324dabc25"
+		 "5864d920f1b65759 d8f560d4948d4477"
+		 "58dfdcf77aa9f625 81c7ff572a037f81"
+		 "0cb1a9c4b3ca6ed6 38179b776549e092"),	/* ciphertext */
+	    SHEX("cafebabefacedbaddecaf888"),	/* iv */
+	    SHEX("c912686270a2b9966415fca3be75c468"));	/* tag */
+
+  /* Test case 16 */
+  test_aead(&nettle_gcm_camellia256,
+	    (nettle_hash_update_func *) gcm_camellia256_set_iv,
+	    SHEX("feffe9928665731c 6d6a8f9467308308"
+		 "feffe9928665731c 6d6a8f9467308308"),	/* key */
+	    SHEX("feedfacedeadbeef feedfacedeadbeef"
+		 "abaddad2"),	/* auth data */
+	    SHEX("d9313225f88406e5 a55909c5aff5269a"
+		 "86a7a9531534f7da 2e4c303d8a318a72"
+		 "1c3c0c9595680953 2fcf0e2449a6b525"
+		 "b16aedf5aa0de657 ba637b39"),	/* plaintext */
+	    SHEX("ad142c11579dd95e 41f3c1f324dabc25"
+		 "5864d920f1b65759 d8f560d4948d4477"
+		 "58dfdcf77aa9f625 81c7ff572a037f81"
+		 "0cb1a9c4b3ca6ed6 38179b77"),	/* ciphertext */
+	    SHEX("cafebabefacedbaddecaf888"),	/* iv */
+	    SHEX("4e4b178d8fe26fdc95e2e7246dd94bec"));	/* tag */
+
+  /* Test case 17 */
+  test_aead(&nettle_gcm_camellia256,
+	    (nettle_hash_update_func *) gcm_camellia256_set_iv,
+	    SHEX("feffe9928665731c 6d6a8f9467308308"
+		 "feffe9928665731c 6d6a8f9467308308"),	/* key */
+	    SHEX("feedfacedeadbeef feedfacedeadbeef"
+		 "abaddad2"),	/* auth data */
+	    SHEX("d9313225f88406e5 a55909c5aff5269a"
+		 "86a7a9531534f7da 2e4c303d8a318a72"
+		 "1c3c0c9595680953 2fcf0e2449a6b525"
+		 "b16aedf5aa0de657 ba637b39"),	/* plaintext */
+	    SHEX("6ca95fbb7d16577a 9ef2fded94dc85b5"
+		 "d40c629f6bef2c64 9888e3cbb0ededc7"
+		 "810c04b12c2983bb bbc482e16e45c921"
+		 "5ae12c15c55f2f48 09d06652"),	/* ciphertext */
+	    SHEX("cafebabefacedbad"),	/* iv */
+	    SHEX("e6472b8ebd331bfcc7c0fa63ce094461"));	/* tag */
+
+  /* Test case 18 */
+  test_aead(&nettle_gcm_camellia256,
+	    (nettle_hash_update_func *) gcm_camellia256_set_iv,
+	    SHEX("feffe9928665731c 6d6a8f9467308308"
+		 "feffe9928665731c 6d6a8f9467308308"),	/* key */
+	    SHEX("feedfacedeadbeef feedfacedeadbeef"
+		 "abaddad2"),	/* auth data */
+	    SHEX("d9313225f88406e5 a55909c5aff5269a"
+		 "86a7a9531534f7da 2e4c303d8a318a72"
+		 "1c3c0c9595680953 2fcf0e2449a6b525"
+		 "b16aedf5aa0de657 ba637b39"),	/* plaintext */
+	    SHEX("e0cddd7564d09c4d c522dd65949262bb"
+		 "f9dcdb07421cf67f 3032becb7253c284"
+		 "a16e5bf0f556a308 043f53fab9eebb52"
+		 "6be7f7ad33d697ac 77c67862"),	/* ciphertext */
+	    SHEX("9313225df88406e5 55909c5aff5269aa"
+		 "6a7a9538534f7da1 e4c303d2a318a728"
+		 "c3c0c95156809539 fcf0e2429a6b5254"
+		 "16aedbf5a0de6a57 a637b39b"),	/* iv */
+	    SHEX("5791883f822013f8bd136fc36fb9946b"));	/* tag */
+
   /* Test gcm_hash, with varying message size, keys and iv all zero.
      Not compared to any other implementation. */
   test_gcm_hash (SDATA("a"),

@@ -1,5 +1,14 @@
 2014-02-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* gcm.h: Declarations for gcm-camellia256.
+	* gcm-camellia256.c: New file.
+	* gcm-camellia256-meta.c: New file.
+	* nettle-meta.h (nettle_gcm_camellia256): Declare.
+	* Makefile.in (nettle_SOURCES): Added gcm-camellia256.c and
+	gcm-camellia256-meta.c.
+	* testsuite/gcm-test.c (test_main): Test cases for
+	nettle_gcm_camellia256.
+
 	* gcm.h: Include camellia.h. Declarations for gcm-camellia128.
 	* gcm-camellia128.c: New file.
 	* gcm-camellia128-meta.c: New file.
