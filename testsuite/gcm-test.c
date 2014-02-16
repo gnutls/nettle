@@ -351,6 +351,71 @@ test_main(void)
 		 "16aedbf5a0de6a57a637b39b"),
 	    SHEX("a44a8266ee1c8eb0c8b5d4cf5ae9f19a"));
 
+
+
+  /* 
+   * GCM-Camellia Test Vectors obtained from the authors
+   */
+
+  /* Test case 1 */
+  test_aead(&nettle_gcm_camellia128,
+	    (nettle_hash_update_func *) gcm_camellia128_set_iv,
+	    SHEX("00000000000000000000000000000000"),	/* key */
+	    SHEX(""),					/* auth data */ 
+	    SHEX(""),					/* plaintext */
+	    SHEX(""),					/* ciphertext*/
+	    SHEX("000000000000000000000000"),		/* IV */
+	    SHEX("f5574acc3148dfcb9015200631024df9"));	/* tag */
+
+  /* Test case 3 */
+  test_aead(&nettle_gcm_camellia128,
+	    (nettle_hash_update_func *) gcm_camellia128_set_iv,
+	    SHEX("feffe9928665731c6d6a8f9467308308"),	/* key */
+	    SHEX(""),					/* auth data */ 
+	    SHEX("d9313225f88406e5a55909c5aff5269a86a7a9531534f7da2e4c303d8a318a72"
+	         "1c3c0c95956809532fcf0e2449a6b525b16aedf5aa0de657ba637b391aafd255"),					/* plaintext */
+	    SHEX("d0d94a13b632f337a0cc9955b94fa020c815f903aab12f1efaf2fe9d90f729a6"
+	         "cccbfa986ef2ff2c33de418d9a2529091cf18fe652c1cfde13f8260614bab815"),					/* ciphertext*/
+	    SHEX("cafebabefacedbaddecaf888"),		/* IV */
+	    SHEX("86e318012dd8329dc9dae6a170f61b24"));	/* tag */
+
+  /* Test case 4 */
+  test_aead(&nettle_gcm_camellia128,
+	    (nettle_hash_update_func *) gcm_camellia128_set_iv,
+	    SHEX("feffe9928665731c6d6a8f9467308308"),	/* key */
+	    SHEX("feedfacedeadbeeffeedfacedeadbeefabaddad2"),					/* auth data */ 
+	    SHEX("d9313225f88406e5a55909c5aff5269a86a7a9531534f7da2e4c303d8a318a72"
+	         "1c3c0c95956809532fcf0e2449a6b525b16aedf5aa0de657ba637b39"),					/* plaintext */
+	    SHEX("d0d94a13b632f337a0cc9955b94fa020c815f903aab12f1efaf2fe9d90f729a6"
+	         "cccbfa986ef2ff2c33de418d9a2529091cf18fe652c1cfde13f82606"),					/* ciphertext*/
+	    SHEX("cafebabefacedbaddecaf888"),		/* IV */
+	    SHEX("9f458869431576ea6a095456ec6b8101"));	/* tag */
+
+  /* Test case 5 */
+  test_aead(&nettle_gcm_camellia128,
+	    (nettle_hash_update_func *) gcm_camellia128_set_iv,
+	    SHEX("feffe9928665731c6d6a8f9467308308"),	/* key */
+	    SHEX("feedfacedeadbeeffeedfacedeadbeefabaddad2"),					/* auth data */ 
+	    SHEX("d9313225f88406e5a55909c5aff5269a86a7a9531534f7da2e4c303d8a318a72"
+	         "1c3c0c95956809532fcf0e2449a6b525b16aedf5aa0de657ba637b39"),					/* plaintext */
+	    SHEX("28fd7434d5cd424a5353818fc21a982460d20cf632eb1e6c4fbfca17d5abcf6a"
+	         "52111086162fe9570e7774c7a912aca3dfa10067ddaad40688645bdd"),					/* ciphertext*/
+	    SHEX("cafebabefacedbad"),		/* IV */
+	    SHEX("e86f8f2e730c49d536f00fb5225d28b1"));	/* tag */
+
+  /* Test case 6 */
+  test_aead(&nettle_gcm_camellia128,
+	    (nettle_hash_update_func *) gcm_camellia128_set_iv,
+	    SHEX("feffe9928665731c6d6a8f9467308308"),	/* key */
+	    SHEX("feedfacedeadbeeffeedfacedeadbeefabaddad2"),					/* auth data */ 
+	    SHEX("d9313225f88406e5a55909c5aff5269a86a7a9531534f7da2e4c303d8a318a72"
+	         "1c3c0c95956809532fcf0e2449a6b525b16aedf5aa0de657ba637b39"),					/* plaintext */
+	    SHEX("2e582b8417c93f2ff4f6f7ee3c361e4496e710ee12433baa964987d02f42953e"
+	         "402e6f4af407fe08cd2f35123696014c34db19128df4056faebcd647"),					/* ciphertext*/
+	    SHEX("9313225df88406e555909c5aff5269aa6a7a9538534f7da1e4c303d2a318a728"
+	         "c3c0c95156809539fcf0e2429a6b525416aedbf5a0de6a57a637b39b"),		/* IV */
+	    SHEX("ceae5569b2af8641572622731aed3e53"));	/* tag */
+
   /* Test gcm_hash, with varying message size, keys and iv all zero.
      Not compared to any other implementation. */
   test_gcm_hash (SDATA("a"),

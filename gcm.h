@@ -32,6 +32,7 @@
 #define NETTLE_GCM_H_INCLUDED
 
 #include "aes.h"
+#include "camellia.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -72,6 +73,13 @@ extern "C" {
 #define gcm_aes_encrypt nettle_gcm_aes_encrypt
 #define gcm_aes_decrypt nettle_gcm_aes_decrypt
 #define gcm_aes_digest nettle_gcm_aes_digest
+
+#define gcm_camellia128_set_key nettle_gcm_camellia128_set_key
+#define gcm_camellia128_set_iv nettle_gcm_camellia128_set_iv
+#define gcm_camellia128_update nettle_gcm_camellia128_update
+#define gcm_camellia128_encrypt nettle_gcm_camellia128_encrypt
+#define gcm_camellia128_decrypt nettle_gcm_camellia128_decrypt
+#define gcm_camellia128_digest nettle_gcm_camellia128_digest
 
 #define GCM_BLOCK_SIZE 16
 #define GCM_IV_SIZE (GCM_BLOCK_SIZE - 4)
@@ -264,6 +272,23 @@ gcm_aes_decrypt(struct gcm_aes_ctx *ctx,
 void
 gcm_aes_digest(struct gcm_aes_ctx *ctx, size_t length, uint8_t *digest);
 
+
+struct gcm_camellia128_ctx GCM_CTX(struct camellia128_ctx);
+
+void gcm_camellia128_set_key(struct gcm_camellia128_ctx *ctx,
+			     const uint8_t *key);
+void gcm_camellia128_set_iv(struct gcm_camellia128_ctx *ctx,
+			    size_t length, const uint8_t *iv);
+void gcm_camellia128_update(struct gcm_camellia128_ctx *ctx,
+			    size_t length, const uint8_t *data);
+void gcm_camellia128_encrypt(struct gcm_camellia128_ctx *ctx,
+			     size_t length, uint8_t *dst, const uint8_t *src);
+void gcm_camellia128_decrypt(struct gcm_camellia128_ctx *ctx,
+			     size_t length, uint8_t *dst, const uint8_t *src);
+void gcm_camellia128_digest(struct gcm_camellia128_ctx *ctx,
+			    size_t length, uint8_t *digest);
+
+  
 #ifdef __cplusplus
 }
 #endif

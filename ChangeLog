@@ -1,3 +1,14 @@
+2014-02-16  Niels Möller  <nisse@lysator.liu.se>
+
+	* gcm.h: Include camellia.h. Declarations for gcm-camellia128.
+	* gcm-camellia128.c: New file.
+	* gcm-camellia128-meta.c: New file.
+	* nettle-meta.h (nettle_gcm_camellia128): Declare.
+	* Makefile.in (nettle_SOURCES): Added gcm-camellia128.c and
+	gcm-camellia128-meta.c.
+	* testsuite/gcm-test.c (test_main): Test cases for
+	nettle_gcm_camellia128. From Nikos Mavrogiannopoulos.
+
 2014-02-13  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in (nettle_SOURCES): Added eax-aes128.c
