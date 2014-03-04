@@ -37,14 +37,12 @@ extern "C" {
 
 /* Name mangling */
 #define chacha_set_key nettle_chacha_set_key
-#define chacha128_set_key nettle_chacha128_set_key
 #define chacha256_set_key nettle_chacha256_set_key
 #define chacha_set_nonce nettle_chacha_set_nonce
 #define chacha_crypt nettle_chacha_crypt
 #define _chacha_core _nettle_chacha_core
 
 /* Possible keysizes, and a reasonable default. In octets. */
-#define CHACHA128_KEY_SIZE 16
 #define CHACHA256_KEY_SIZE 32
 #define CHACHA_KEY_SIZE 32
 
@@ -69,9 +67,6 @@ struct chacha_ctx
   */
   uint32_t state[_CHACHA_STATE_LENGTH];
 };
-
-void
-chacha128_set_key(struct chacha_ctx *ctx, const uint8_t *key);
 
 void
 chacha256_set_key(struct chacha_ctx *ctx, const uint8_t *key);

@@ -33,9 +33,6 @@ chacha_set_key(struct chacha_ctx *ctx, size_t length, const uint8_t *key)
     {
     default:
       abort ();
-    case CHACHA128_KEY_SIZE:
-      chacha128_set_key (ctx, key);
-      break;
     case CHACHA256_KEY_SIZE:
       chacha256_set_key (ctx, key);
       break;

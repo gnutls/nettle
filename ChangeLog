@@ -1,3 +1,14 @@
+2014-03-04  Niels Möller  <nisse@lysator.liu.se>
+
+	* chacha128-set-key.c (chacha128_set_key): Deleted file and
+	function. Support for 128-bit chacha keys may be reintroduced
+	later, if really needed.
+	* chacha.h: Deleted chacha128-related declarations.
+	* chacha-set-key.c (chacha_set_key): Drop support for 128-bit
+	keys.
+	* testsuite/chacha-test.c (test_main): #if:ed out all tests with
+	128-bit keys.
+
 2014-02-16  Niels Möller  <nisse@lysator.liu.se>
 
 	* gcm.h: Declarations for gcm-camellia256.
