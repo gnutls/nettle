@@ -1,5 +1,8 @@
 2014-03-04  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/chacha-test.c (test_main): Additional test cases, for
+	256-bit keys.
+
 	* Makefile.in (nettle_SOURCES): Deleted chacha128-set-key.c and
 	chacha256-set-key.c.
 

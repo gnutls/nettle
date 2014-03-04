@@ -135,6 +135,34 @@ test_main(void)
   test_chacha (SHEX("0000000000000000 0000000000000000"
 		    "0000000000000000 0000000000000000"),
 	       SHEX("0000000000000000"),
+	       SHEX("3e00ef2f895f40d6 7f5bb8e81f09a5a1"
+		    "2c840ec3ce9a7f3b 181be188ef711a1e"
+		    "984ce172b9216f41 9f445367456d5619"
+		    "314a42a3da86b001 387bfdb80e0cfe42"
+
+		    /* "d2aefa0deaa5c151 bf0adb6c01f2a5ad"
+		    "c0fd581259f9a2aa dcf20f8fd566a26b"
+		    "5032ec38bbc5da98 ee0c6f568b872a65"
+		    "a08abf251deb21bb 4b56e5d8821e68aa" */),
+	       8);
+
+  test_chacha (SHEX("0000000000000000 0000000000000000"
+		    "0000000000000000 0000000000000000"),
+	       SHEX("0000000000000000"),
+	       SHEX("9bf49a6a0755f953 811fce125f2683d5"
+		    "0429c3bb49e07414 7e0089a52eae155f"
+		    "0564f879d27ae3c0 2ce82834acfa8c79"
+		    "3a629f2ca0de6919 610be82f411326be"
+
+		    /* "0bd58841203e74fe 86fc71338ce0173d"
+		    "c628ebb719bdcbcc 151585214cc089b4"
+		    "42258dcda14cf111 c602b8971b8cc843"
+		    "e91e46ca905151c0 2744a6b017e69316" */),
+	       12);
+
+  test_chacha (SHEX("0000000000000000 0000000000000000"
+		    "0000000000000000 0000000000000000"),
+	       SHEX("0000000000000000"),
 	       SHEX("76b8e0ada0f13d90 405d6ae55386bd28"
 		    "bdd219b8a08ded1a a836efcc8b770dc7"
 		    "da41597c5157488d 7724e03fb8d84a37"
@@ -145,7 +173,6 @@ test_main(void)
 		    "29b721769ce64e43 d57133b074d839d5"
 		    "31ed1f28510afb45 ace10a1f4b794d6f"),
 	       20);
-
 
   /* TC2: Single bit in key set. All zero IV */
 #if 0
@@ -178,6 +205,24 @@ test_main(void)
 		    "93a991b85d1a60fb a2035dfaa2a642d5"),
 	       20);
 #endif
+  test_chacha (SHEX("0100000000000000 0000000000000000"
+		    "0000000000000000 0000000000000000"),
+	       SHEX("0000000000000000"),
+	       SHEX("cf5ee9a0494aa961 3e05d5ed725b804b"
+		    "12f4a465ee635acc 3a311de8740489ea"
+		    "289d04f43c7518db 56eb4433e498a123"
+		    "8cd8464d3763ddbb 9222ee3bd8fae3c8"),
+	       8);
+
+  test_chacha (SHEX("0100000000000000 0000000000000000"
+		    "0000000000000000 0000000000000000"),
+	       SHEX("0000000000000000"),
+	       SHEX("12056e595d56b0f6 eef090f0cd25a209"
+		    "49248c2790525d0f 930218ff0b4ddd10"
+		    "a6002239d9a454e2 9e107a7d06fefdfe"
+		    "f0210feba044f9f2 9b1772c960dc29c0"),
+	       12);
+
   test_chacha (SHEX("0100000000000000 0000000000000000"
 		    "0000000000000000 0000000000000000"),
 	       SHEX("0000000000000000"),
@@ -226,6 +271,24 @@ test_main(void)
   test_chacha (SHEX("0000000000000000 0000000000000000"
 		    "0000000000000000 0000000000000000"),
 	       SHEX("0100000000000000"),
+	       SHEX("2b8f4bb3798306ca 5130d47c4f8d4ed1"
+		    "3aa0edccc1be6942 090faeeca0d7599b"
+		    "7ff0fe616bb25aa0 153ad6fdc88b9549"
+		    "03c22426d478b97b 22b8f9b1db00cf06"),
+	       8);
+
+  test_chacha (SHEX("0000000000000000 0000000000000000"
+		    "0000000000000000 0000000000000000"),
+	       SHEX("0100000000000000"),
+	       SHEX("64b8bdf87b828c4b 6dbaf7ef698de03d"
+		    "f8b33f635714418f 9836ade59be12969"
+		    "46c953a0f38ecffc 9ecb98e81d5d99a5"
+		    "edfc8f9a0a45b9e4 1ef3b31f028f1d0f"),
+	       12);
+
+  test_chacha (SHEX("0000000000000000 0000000000000000"
+		    "0000000000000000 0000000000000000"),
+	       SHEX("0100000000000000"),
 	       SHEX("ef3fdfd6c61578fb f5cf35bd3dd33b80"
 		    "09631634d21e42ac 33960bd138e50d32"
 		    "111e4caf237ee53c a8ad6426194a8854"
@@ -268,6 +331,24 @@ test_main(void)
 		    "f6dd6e38917f3b15 0e576375be50ed67"),
 	       20);
 #endif
+  test_chacha (SHEX("ffffffffffffffff ffffffffffffffff"
+		    "ffffffffffffffff ffffffffffffffff"),
+	       SHEX("ffffffffffffffff"),
+	       SHEX("e163bbf8c9a739d1 8925ee8362dad2cd"
+		    "c973df05225afb2a a26396f2a9849a4a"
+		    "445e0547d31c1623 c537df4ba85c70a9"
+		    "884a35bcbf3dfab0 77e98b0f68135f54"),
+	       8);
+
+  test_chacha (SHEX("ffffffffffffffff ffffffffffffffff"
+		    "ffffffffffffffff ffffffffffffffff"),
+	       SHEX("ffffffffffffffff"),
+	       SHEX("04bf88dae8e47a22 8fa47b7e6379434b"
+		    "a664a7d28f4dab84 e5f8b464add20c3a"
+		    "caa69c5ab221a23a 57eb5f345c96f4d1"
+		    "322d0a2ff7a9cd43 401cd536639a615a"),
+	       12);
+
   test_chacha (SHEX("ffffffffffffffff ffffffffffffffff"
 		    "ffffffffffffffff ffffffffffffffff"),
 	       SHEX("ffffffffffffffff"),
@@ -316,6 +397,24 @@ test_main(void)
   test_chacha (SHEX("5555555555555555 5555555555555555"
 		    "5555555555555555 5555555555555555"),
 	       SHEX("5555555555555555"),
+	       SHEX("7cb78214e4d3465b 6dc62cf7a1538c88"
+		    "996952b4fb72cb61 05f1243ce3442e29"
+		    "75a59ebcd2b2a598 290d7538491fe65b"
+		    "dbfefd060d887981 20a70d049dc2677d"),
+	       8);
+
+  test_chacha (SHEX("5555555555555555 5555555555555555"
+		    "5555555555555555 5555555555555555"),
+	       SHEX("5555555555555555"),
+	       SHEX("a600f07727ff93f3 da00dd74cc3e8bfb"
+		    "5ca7302f6a0a2944 953de00450eecd40"
+		    "b860f66049f2eaed 63b2ef39cc310d2c"
+		    "488f5d9a241b615d c0ab70f921b91b95"),
+	       12);
+
+  test_chacha (SHEX("5555555555555555 5555555555555555"
+		    "5555555555555555 5555555555555555"),
+	       SHEX("5555555555555555"),
 	       SHEX("bea9411aa453c543 4a5ae8c92862f564"
 		    "396855a9ea6e22d6 d3b50ae1b3663311"
 		    "a4a3606c671d605c e16c3aece8e61ea1"
@@ -358,6 +457,24 @@ test_main(void)
 		    "7da53bba62e7a44d 006f41eb28fe15d6"),
 	       20);
 #endif
+  test_chacha (SHEX("aaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaa"
+		    "aaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaa"),
+	       SHEX("aaaaaaaaaaaaaaaa"),
+	       SHEX("40f9ab86c8f9a1a0 cdc05a75e5531b61"
+		    "2d71ef7f0cf9e387 df6ed6972f0aae21"
+		    "311aa581f816c90e 8a99de990b6b95aa"
+		    "c92450f4e1127126 67b804c99e9c6eda"),
+	       8);
+
+  test_chacha (SHEX("aaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaa"
+		    "aaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaa"),
+	       SHEX("aaaaaaaaaaaaaaaa"),
+	       SHEX("856505b01d3b47aa e03d6a97aa0f033a"
+		    "9adcc94377babd86 08864fb3f625b6e3"
+		    "14f086158f9f725d 811eeb953b7f7470"
+		    "76e4c3f639fa841f ad6c9a709e621397"),
+	       12);
+
   test_chacha (SHEX("aaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaa"
 		    "aaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaa"),
 	       SHEX("aaaaaaaaaaaaaaaa"),
@@ -412,6 +529,29 @@ test_main(void)
 		    "120e0e22f6d5f9ff a7407d4a21b695d9"),
 	       8);
 
+  test_chacha (SHEX("0011223344556677 8899aabbccddeeff"
+		    "ffeeddccbbaa9988 7766554433221100"),
+	       SHEX("0f1e2d3c4b5a6978"),
+	       SHEX("7ed12a3a63912ae9 41ba6d4c0d5e862e"
+		    "568b0e5589346935 505f064b8c2698db"
+		    "f7d850667d8e67be 639f3b4f6a16f92e"
+		    "65ea80f6c7429445 da1fc2c1b9365040"),
+	       12);
+
+  test_chacha (SHEX("0011223344556677 8899aabbccddeeff"
+		    "ffeeddccbbaa9988 7766554433221100"),
+	       SHEX("0f1e2d3c4b5a6978"),
+	       SHEX("9fadf409c00811d0 0431d67efbd88fba"
+		    "59218d5d6708b1d6 85863fabbb0e961e"
+		    "ea480fd6fb532bfd 494b215101505742"
+		    "3ab60a63fe4f55f7 a212e2167ccab931"
+
+		    "fbfd29cf7bc1d279 eddf25dd316bb884"
+		    "3d6edee0bd1ef121 d12fa17cbc2c574c"
+		    "ccab5e275167b08b d686f8a09df87ec3"
+		    "ffb35361b94ebfa1 3fec0e4889d18da5"),
+	       20);
+
   /* TC8: hashed string patterns */
 #if 0
   test_chacha(SHEX("c46ec1b18ce8a878 725a37e780dfb735"),
@@ -443,6 +583,24 @@ test_main(void)
 		   "f3ac30ccfb5e1420 4f5e4268b90a8804"),
 	      20);
 #endif
+  test_chacha(SHEX("c46ec1b18ce8a878 725a37e780dfb735"
+		   "1f68ed2e194c79fb c6aebee1a667975d"),
+	      SHEX("1ada31d5cf688221"),
+	      SHEX("838751b42d8ddd8a 3d77f48825a2ba75"
+		   "2cf4047cb308a597 8ef274973be374c9"
+		   "6ad848065871417b 08f034e681fe46a9"
+		   "3f7d5c61d1306614 d4aaf257a7cff08b"),
+	      8);
+
+  test_chacha(SHEX("c46ec1b18ce8a878 725a37e780dfb735"
+		   "1f68ed2e194c79fb c6aebee1a667975d"),
+	      SHEX("1ada31d5cf688221"),
+	      SHEX("1482072784bc6d06 b4e73bdc118bc010"
+		   "3c7976786ca918e0 6986aa251f7e9cc1"
+		   "b2749a0a16ee83b4 242d2e99b08d7c20"
+		   "092b80bc466c8728 3b61b1b39d0ffbab"),
+	      12);
+
   test_chacha(SHEX("c46ec1b18ce8a878 725a37e780dfb735"
 		   "1f68ed2e194c79fb c6aebee1a667975d"),
 	      SHEX("1ada31d5cf688221"),
