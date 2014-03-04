@@ -44,10 +44,17 @@ NEWS for the 2.8 release
 
 	* Support for poly1305-aes MAC.
 
-	* Support for the Chacha stream cipher.
+	* Experimental support for the Chacha stream cipher and the
+          chacha-poly1305 AEAD mode. Specifications are still in
+          flux, and future releases may do incompatible changes to
+          track standardization. Currently uses 256-bit key and 64-bit
+          nonce.
 
 	* Support for EAX mode.
 
+	* New interfaces for mechanisms providing authenticated
+	  encryption with associated data (AEAD).
+	
 	Optimizations:
 
 	* New x86_64 assembly for GCM and MD5. Modest speedups on the
