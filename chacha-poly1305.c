@@ -40,7 +40,7 @@ void
 chacha_poly1305_set_key (struct chacha_poly1305_ctx *ctx,
 			 const uint8_t *key)
 {
-  chacha256_set_key (&ctx->chacha, key);
+  chacha_set_key (&ctx->chacha, key);
 }
 
 void

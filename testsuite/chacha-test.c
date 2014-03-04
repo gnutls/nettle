@@ -34,7 +34,8 @@ test_chacha(const struct tstring *key, const struct tstring *nonce,
 {
   struct chacha_ctx ctx;
 
-  chacha_set_key (&ctx, key->length, key->data);
+  ASSERT (key->length == CHACHA_KEY_SIZE);
+  chacha_set_key (&ctx, key->data);
   ASSERT (nonce->length == CHACHA_NONCE_SIZE);
 
   if (rounds == 20)

@@ -1,5 +1,15 @@
 2014-03-04  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.in (nettle_SOURCES): Deleted chacha128-set-key.c and
+	chacha256-set-key.c.
+
+	* chacha.h (CHACHA256_KEY_SIZE): Deleted.
+	(chacha_set_key): Updated prototype.
+	* chacha256-set-key.c (chacha256_set_key): Deleted file and
+	function, moved to...
+	* chacha-set-key.c (chacha_set_key): Do 256-bit keys only. Deleted
+	length argument. Updated all callers.
+
 	* chacha128-set-key.c (chacha128_set_key): Deleted file and
 	function. Support for 128-bit chacha keys may be reintroduced
 	later, if really needed.

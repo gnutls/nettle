@@ -76,7 +76,7 @@ static void
 chacha_set_key_hack(void *ctx, const uint8_t *key)
 {
   static const uint8_t nonce[CHACHA_NONCE_SIZE];
-  chacha256_set_key (ctx, key);
+  chacha_set_key (ctx, key);
   chacha_set_nonce (ctx, nonce);
 }
 
@@ -84,7 +84,7 @@ chacha_set_key_hack(void *ctx, const uint8_t *key)
 const struct nettle_cipher
 nettle_chacha = {
   "chacha", sizeof(struct chacha_ctx),
-  0, CHACHA256_KEY_SIZE,
+  0, CHACHA_KEY_SIZE,
   chacha_set_key_hack, chacha_set_key_hack,
   (nettle_crypt_func *) chacha_crypt,
   (nettle_crypt_func *) chacha_crypt

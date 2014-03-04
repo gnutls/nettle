@@ -26,15 +26,24 @@
 
 #include "chacha.h"
 
+#include "macros.h"
+
 void
-chacha_set_key(struct chacha_ctx *ctx, size_t length, const uint8_t *key)
+chacha_set_key(struct chacha_ctx *ctx, const uint8_t *key)
 {
-  switch (length)
-    {
-    default:
-      abort ();
-    case CHACHA256_KEY_SIZE:
-      chacha256_set_key (ctx, key);
-      break;
-    }
+  static const uint32_t sigma[4] = {
+    /* "expand 32-byte k" */
+    0x61707865, 0x3320646e, 0x79622d32, 0x6b206574
+  };
+  ctx->state[4] = LE_READ_UINT32(key + 0);
+  ctx->state[5] = LE_READ_UINT32(key + 4);
+  ctx->state[6] = LE_READ_UINT32(key + 8);
+  ctx->state[7] = LE_READ_UINT32(key + 12);
+
+  ctx->state[8]  = LE_READ_UINT32(key + 16);
+  ctx->state[9]  = LE_READ_UINT32(key + 20);
+  ctx->state[10] = LE_READ_UINT32(key + 24);
+  ctx->state[11] = LE_READ_UINT32(key + 28);
+
+  memcpy (ctx->state, sigma, sizeof(sigma));
 }
