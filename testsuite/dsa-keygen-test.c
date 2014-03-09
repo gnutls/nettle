@@ -21,7 +21,7 @@ test_main(void)
 
   knuth_lfib_init(&lfib, 13);
 
-  ASSERT (dsa_generate_keypair(&pub, &key,
+  ASSERT (dsa_generate_keypair_old(&pub, &key,
 			       &lfib,
 			       (nettle_random_func *) knuth_lfib_random,
 			       NULL, verbose ? progress : NULL,
@@ -30,7 +30,7 @@ test_main(void)
   test_dsa_key(&pub, &key, 160);
   test_dsa160(&pub, &key, NULL);
 
-  ASSERT (dsa_generate_keypair(&pub, &key,
+  ASSERT (dsa_generate_keypair_old(&pub, &key,
 			       &lfib,
 			       (nettle_random_func *) knuth_lfib_random,
 			       NULL, verbose ? progress : NULL,
@@ -39,7 +39,7 @@ test_main(void)
   test_dsa_key(&pub, &key, 256);
   test_dsa256(&pub, &key, NULL);
   
-  ASSERT (dsa_generate_keypair(&pub, &key,
+  ASSERT (dsa_generate_keypair_old(&pub, &key,
 			       &lfib,
 			       (nettle_random_func *) knuth_lfib_random,
 			       NULL, verbose ? progress : NULL,

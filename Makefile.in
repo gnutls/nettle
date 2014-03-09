@@ -129,7 +129,9 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  rsa-encrypt.c rsa-decrypt.c rsa-decrypt-tr.c \
 		  rsa-keygen.c rsa-compat.c rsa-blind.c \
 		  rsa2sexp.c sexp2rsa.c \
-		  dsa.c dsa-sign.c dsa-verify.c dsa-keygen.c dsa-hash.c \
+		  dsa.c dsa-gen-params.c \
+		  dsa-sign.c dsa-verify.c dsa-keygen.c dsa-keygen-old.c \
+		  dsa-hash.c \
 		  dsa-sha1-sign.c dsa-sha1-verify.c \
 		  dsa-sha256-sign.c dsa-sha256-verify.c  \
 		  dsa2sexp.c sexp2dsa.c \

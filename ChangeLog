@@ -1,3 +1,23 @@
+2014-03-09  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (hogweed_SOURCES): Added dsa-gen-params.c and
+	dsa-keygen-old.c.
+
+	* testsuite/dsa-keygen-test.c (test_main): Updated to use
+	dsa_generate_keypair_old.
+
+	* dsa.h: Update declarations for key generation functions.
+
+	* dsa-keygen.c (dsa_generate_keypair): New interface, generating
+	only a keypair, and no new parameters.
+
+	* dsa-keygen-old.c (dsa_generate_keypair_old): Implement old
+	dsa_generate_keypair interface, based on dsa_generate_params and
+	dsa_generate_keypair.
+
+	* dsa-gen-params.c (dsa_generate_params): New file and function,
+	extracted from DSA key generation.
+
 2014-01-04  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/testutils.c (test_dsa_sign): #if:ed out, unused.

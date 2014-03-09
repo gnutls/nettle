@@ -36,25 +36,51 @@
 
 
 /* Valid sizes, according to FIPS 186-3 are (1024, 160), (2048, 224),
-   (2048, 256), (3072, 256). Currenty, we use only q_bits of 160 or
-   256. */
-void
-dsa_generate_keypair (struct dsa_value *pub,
-		      struct dsa_value *key,
-
-		      void *random_ctx, nettle_random_func *random)
+   (2048, 256), (3072, 256). */
+int
+dsa_generate_keypair_old(struct dsa_public_key *pub,
+			 struct dsa_private_key *key,
+			 void *random_ctx, nettle_random_func *random,
+			 void *progress_ctx, nettle_progress_func *progress,
+			 unsigned p_bits, unsigned q_bits)
 {
-  const struct dsa_params *params;
-  mpz_t r;
+  struct dsa_params *params;
+  struct dsa_value vpub;
+  struct dsa_value vkey;
+  
+  switch (q_bits)
+    {
+    case 160:
+      if (p_bits < DSA_SHA1_MIN_P_BITS)
+	return 0;
+      break;
+    case 224:
+    case 256:
+      if (p_bits < DSA_SHA256_MIN_P_BITS)
+	return 0;
+      break;
+    default:
+      return 0;
+    }
 
-  assert (pub->params == key->params);
-  params = pub->params;
+  /* NOTE: Depends on identical layout! */
+  params = (struct dsa_params *) pub;
 
-  mpz_init_set(r, params->q);
-  mpz_sub_ui(r, r, 2);
-  nettle_mpz_random(key->x, random_ctx, random, r);
+  if (!dsa_generate_params (params,
+			    random_ctx, random,
+			    progress_ctx, progress,
+			    p_bits, q_bits))
+    return 0;
 
-  mpz_add_ui(key->x, key->x, 1);
-  mpz_powm(pub->x, params->g, key->x, params->p);
-  mpz_clear (r);
+  dsa_value_init (&vpub, params);
+  dsa_value_init (&vkey, params);
+  
+  dsa_generate_keypair (&vpub, &vkey, random_ctx, random);
+  mpz_swap (pub->y, vpub.x);
+  mpz_swap (key->x, vkey.x);
+
+  dsa_value_clear (&vpub);
+  dsa_value_clear (&vkey);
+
+  return 1;
 }

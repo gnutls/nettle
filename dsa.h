@@ -5,7 +5,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2002 Niels Möller
+ * Copyright (C) 2002, 2013, 2014 Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -60,7 +60,9 @@ extern "C" {
 #define dsa_sha1_verify_digest nettle_dsa_sha1_verify_digest
 #define dsa_sha256_sign_digest nettle_dsa_sha256_sign_digest
 #define dsa_sha256_verify_digest nettle_dsa_sha256_verify_digest
+#define dsa_generate_params nettle_dsa_generate_params
 #define dsa_generate_keypair nettle_dsa_generate_keypair
+#define dsa_generate_keypair_old nettle_dsa_generate_keypair_old
 #define dsa_signature_from_sexp nettle_dsa_signature_from_sexp
 #define dsa_keypair_to_sexp nettle_dsa_keypair_to_sexp
 #define dsa_keypair_from_sexp_alist nettle_dsa_keypair_from_sexp_alist
@@ -141,21 +143,17 @@ dsa_verify(const struct dsa_value *pub,
 	   const uint8_t *digest,
 	   const struct dsa_signature *signature);
 
-void
+int
 dsa_generate_params (struct dsa_params *params,
-
 		     void *random_ctx, nettle_random_func *random,
-
 		     void *progress_ctx, nettle_progress_func *progress,
 		     unsigned p_bits, unsigned q_bits);
 
-#if 0
-int
+void
 dsa_generate_keypair (struct dsa_value *pub,
 		      struct dsa_value *key,
 
 		      void *random_ctx, nettle_random_func *random);
-#endif
 
 /* Old nettle interface, kept for backwards compatibility */
   
@@ -267,13 +265,12 @@ dsa_sha256_verify_digest(const struct dsa_public_key *key,
 /* Key generation */
 
 int
-dsa_generate_keypair(struct dsa_public_key *pub,
-		     struct dsa_private_key *key,
+dsa_generate_keypair_old(struct dsa_public_key *pub,
+			 struct dsa_private_key *key,
 
-		     void *random_ctx, nettle_random_func *random,
-
-		     void *progress_ctx, nettle_progress_func *progress,
-		     unsigned p_bits, unsigned q_bits);
+			 void *random_ctx, nettle_random_func *random,
+			 void *progress_ctx, nettle_progress_func *progress,
+			 unsigned p_bits, unsigned q_bits);
 
 /* Keys in sexp form. */
 
