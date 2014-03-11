@@ -1,16 +1,31 @@
 2014-03-11  Niels Möller  <nisse@lysator.liu.se>
 
-	* tools/pkcs1-conv.c (convert_dsa_private_key): Use new DSA
+	* examples/hogweed-benchmark.c: Update dsa benchmarking to use new
+	DSA interface.
+
+	* dsa.h: Updated prototypes.
+
+	* sexp2dsa.c (dsa_sha1_keypair_from_sexp)
+	(dsa_sha256_keypair_from_sexp): Converted to new DSA interface.
+	(dsa_keypair_from_sexp_alist): Converted to new DSA
+	interface. Allow q_size == 0, meaning any q < p is allowed.
+	Additional validity checks.
+
+	* der2dsa.c (dsa_params_from_der_iterator): Likewise.
+	(dsa_public_key_from_der_iterator): Converted to new DSA
+	interface. Also check that the public value is in the correct
+	range.
+	(dsa_openssl_private_key_from_der_iterator): Converted
+	to new DSA interface. Additional validity checks.
+	(dsa_openssl_private_key_from_der): Converted to new DSA
 	interface.
 
-	* dsa.h (dsa_openssl_private_key_from_der_iterator)
-	(dsa_openssl_private_key_from_der, dsa_keypair_to_sexp): Updated
-	prototypes.
+	* tools/pkcs1-conv.c (convert_dsa_private_key): Use new DSA
+	interface.
+	(convert_public_key): Likewise.
 
-	* der2dsa.c (dsa_openssl_private_key_from_der_iterator): Converted
-	to new DSA interface. This is an API change.
-	(dsa_openssl_private_key_from_der): Likewise.
-	* dsa2sexp.c (dsa_keypair_to_sexp): Likewise.
+	* dsa2sexp.c (dsa_keypair_to_sexp): Converted to new DSA
+	interface.
 
 2014-03-09  Niels Möller  <nisse@lysator.liu.se>
 

@@ -40,9 +40,10 @@
  && asn1_der_get_bignum((i), (x), (l))			\
  && mpz_sgn((x)) > 0)
 
+/* If q_bits > 0, q is required to be of exactly this size. */
 int
-dsa_params_from_der_iterator(struct dsa_public_key *pub,
-			     unsigned p_max_bits,
+dsa_params_from_der_iterator(struct dsa_params *params,
+			     unsigned max_bits, unsigned q_bits,
 			     struct asn1_der_iterator *i)
 {
   /* Dss-Parms ::= SEQUENCE {
@@ -51,25 +52,34 @@ dsa_params_from_der_iterator(struct dsa_public_key *pub,
 	 g  INTEGER
      }
   */
-  return (i->type == ASN1_INTEGER
-	  && asn1_der_get_bignum(i, pub->p, p_max_bits)
-	  && mpz_sgn(pub->p) > 0
-	  && GET(i, pub->q, DSA_SHA1_Q_BITS)
-	  && GET(i, pub->g, p_max_bits)
-	  && asn1_der_iterator_next(i) == ASN1_ITERATOR_END);
+  if (i->type == ASN1_INTEGER
+      && asn1_der_get_bignum(i, params->p, max_bits)
+      && mpz_sgn(params->p) > 0)
+    {
+      unsigned p_bits = mpz_sizeinbase (params->p, 2);
+      return (GET(i, params->q, q_bits ? q_bits : p_bits)
+	      && (q_bits == 0 || mpz_sizeinbase(params->q, 2) == q_bits)
+	      && mpz_cmp (params->q, params->p) < 0
+	      && GET(i, params->g, p_bits)
+	      && mpz_cmp (params->g, params->p) < 0
+	      && asn1_der_iterator_next(i) == ASN1_ITERATOR_END);
+    }
+  else
+    return 0;
 }
 
 int
-dsa_public_key_from_der_iterator(struct dsa_public_key *pub,
-				 unsigned p_max_bits,
+dsa_public_key_from_der_iterator(struct dsa_value *pub,
 				 struct asn1_der_iterator *i)
 {
   /* DSAPublicKey ::= INTEGER
   */
 
   return (i->type == ASN1_INTEGER
-	  && asn1_der_get_bignum(i, pub->y, p_max_bits)
-	  && mpz_sgn(pub->y) > 0);
+	  && asn1_der_get_bignum(i, pub->x,
+				 mpz_sizeinbase (pub->params->p, 2))
+	  && mpz_sgn(pub->x) > 0
+	  && mpz_cmp(pub->x, pub->params->p) < 0);    
 }
 
 int
@@ -93,17 +103,24 @@ dsa_openssl_private_key_from_der_iterator(struct dsa_params *params,
 
   assert (pub->params == params);
   assert (priv->params == params);
-  return (i->type == ASN1_SEQUENCE
+  if (i->type == ASN1_SEQUENCE
 	  && asn1_der_decode_constructed_last(i) == ASN1_ITERATOR_PRIMITIVE
 	  && i->type == ASN1_INTEGER
 	  && asn1_der_get_uint32(i, &version)
 	  && version == 0
-	  && GET(i, params->p, p_max_bits)
-	  && GET(i, params->q, DSA_SHA1_Q_BITS)
-	  && GET(i, params->g, p_max_bits)
-	  && GET(i, pub->x, p_max_bits)
-	  && GET(i, priv->x, DSA_SHA1_Q_BITS)
-	  && asn1_der_iterator_next(i) == ASN1_ITERATOR_END);
+      && GET(i, params->p, p_max_bits))
+    {
+      unsigned p_bits = mpz_sizeinbase (params->p, 2);
+      return (GET(i, params->q, DSA_SHA1_Q_BITS)
+	      && GET(i, params->g, p_bits)
+	      && mpz_cmp (params->g, params->p) < 0
+	      && GET(i, pub->x, p_bits)
+	      && mpz_cmp (pub->x, params->p) < 0
+	      && GET(i, priv->x, DSA_SHA1_Q_BITS)
+	      && asn1_der_iterator_next(i) == ASN1_ITERATOR_END);
+    }
+  else
+    return 0;
 }
 
 int

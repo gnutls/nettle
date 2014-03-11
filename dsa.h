@@ -291,9 +291,10 @@ dsa_signature_from_sexp(struct dsa_signature *rs,
 			unsigned q_bits);
 
 int
-dsa_keypair_from_sexp_alist(struct dsa_public_key *pub,
-			    struct dsa_private_key *priv,
-			    unsigned p_max_bits,
+dsa_keypair_from_sexp_alist(struct dsa_params *params,
+			    struct dsa_value *pub,
+			    struct dsa_value *priv,
+			    unsigned max_bits,
 			    unsigned q_bits,
 			    struct sexp_iterator *i);
 
@@ -302,14 +303,16 @@ dsa_keypair_from_sexp_alist(struct dsa_public_key *pub,
  * the public key. */
 /* Keys must be initialized before calling this function, as usual. */
 int
-dsa_sha1_keypair_from_sexp(struct dsa_public_key *pub,
-			   struct dsa_private_key *priv,
+dsa_sha1_keypair_from_sexp(struct dsa_params *params,
+			   struct dsa_value *pub,
+			   struct dsa_value *priv,
 			   unsigned p_max_bits,
 			   size_t length, const uint8_t *expr);
 
 int
-dsa_sha256_keypair_from_sexp(struct dsa_public_key *pub,
-			     struct dsa_private_key *priv,
+dsa_sha256_keypair_from_sexp(struct dsa_params *params,
+			     struct dsa_value *pub,
+			     struct dsa_value *priv,
 			     unsigned p_max_bits,
 			     size_t length, const uint8_t *expr);
 
@@ -317,12 +320,11 @@ dsa_sha256_keypair_from_sexp(struct dsa_public_key *pub,
 struct asn1_der_iterator;
 
 int
-dsa_params_from_der_iterator(struct dsa_public_key *pub,
-			     unsigned p_max_bits,
+dsa_params_from_der_iterator(struct dsa_params *params,
+			     unsigned max_bits, unsigned q_bits,
 			     struct asn1_der_iterator *i);
 int
-dsa_public_key_from_der_iterator(struct dsa_public_key *pub,
-				 unsigned p_max_bits,
+dsa_public_key_from_der_iterator(struct dsa_value *pub,
 				 struct asn1_der_iterator *i);
 
 int

@@ -407,17 +407,20 @@ convert_public_key(struct nettle_buffer *buffer, size_t length, const uint8_t *d
 	      if (asn1_der_iterator_next(&j) == ASN1_ITERATOR_CONSTRUCTED
 		  && asn1_der_decode_constructed_last(&j) == ASN1_ITERATOR_PRIMITIVE)
 		{
-		  struct dsa_public_key pub;
+		  struct dsa_params params;
+		  struct dsa_value pub;
 
-		  dsa_public_key_init(&pub);
+		  dsa_params_init (&params);
+		  dsa_value_init (&pub, &params);
 
-		  if (dsa_params_from_der_iterator(&pub, 0, &i)
-		      && dsa_public_key_from_der_iterator(&pub, 0, &j))
+		  if (dsa_params_from_der_iterator(&params, 0, 0, &i)
+		      && dsa_public_key_from_der_iterator(&pub, &j))
 		    {
 		      nettle_buffer_reset(buffer);
 		      res = dsa_keypair_to_sexp(buffer, NULL, &pub, NULL) > 0;
 		    }
-		  dsa_public_key_clear(&pub);
+		  dsa_value_clear(&pub);
+		  dsa_params_clear(&params);
 		}
 	      if (!res)
 		werror("SubjectPublicKeyInfo: Invalid DSA key.\n");
