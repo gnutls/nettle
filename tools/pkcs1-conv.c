@@ -4,7 +4,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2005, 2009 Niels Möller, Magnus Holmgren
+ * Copyright (C) 2005, 2009, 2014 Niels Möller, Magnus Holmgren
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -311,14 +311,16 @@ convert_rsa_private_key(struct nettle_buffer *buffer, size_t length, const uint8
 static int
 convert_dsa_private_key(struct nettle_buffer *buffer, size_t length, const uint8_t *data)
 {
-  struct dsa_public_key pub;
-  struct dsa_private_key priv;
+  struct dsa_params params;
+  struct dsa_value pub;
+  struct dsa_value priv;
   int res;
-  
-  dsa_public_key_init(&pub);
-  dsa_private_key_init(&priv);
 
-  if (dsa_openssl_private_key_from_der(&pub, &priv, 0,
+  dsa_params_init (&params);
+  dsa_value_init (&pub, &params);
+  dsa_value_init (&priv, &params);
+
+  if (dsa_openssl_private_key_from_der(&params, &pub, &priv, 0,
 				       length, data))
     {
       /* Reuses the buffer */
@@ -330,9 +332,9 @@ convert_dsa_private_key(struct nettle_buffer *buffer, size_t length, const uint8
       werror("Invalid OpenSSL private key.\n");
       res = 0;
     }
-  dsa_public_key_clear(&pub);
-  dsa_private_key_clear(&priv);
-
+  dsa_value_clear (&pub);
+  dsa_value_clear (&priv);
+  dsa_params_clear (&params);
   return res;
 }
 

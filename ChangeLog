@@ -1,3 +1,17 @@
+2014-03-11  Niels Möller  <nisse@lysator.liu.se>
+
+	* tools/pkcs1-conv.c (convert_dsa_private_key): Use new DSA
+	interface.
+
+	* dsa.h (dsa_openssl_private_key_from_der_iterator)
+	(dsa_openssl_private_key_from_der, dsa_keypair_to_sexp): Updated
+	prototypes.
+
+	* der2dsa.c (dsa_openssl_private_key_from_der_iterator): Converted
+	to new DSA interface. This is an API change.
+	(dsa_openssl_private_key_from_der): Likewise.
+	* dsa2sexp.c (dsa_keypair_to_sexp): Likewise.
+
 2014-03-09  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in (hogweed_SOURCES): Added dsa-gen-params.c and

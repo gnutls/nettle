@@ -4,7 +4,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2002, 2009 Niels Möller, Magnus Holmgren
+ * Copyright (C) 2002, 2009, 2014 Niels Möller, Magnus Holmgren
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -26,6 +26,8 @@
 # include "config.h"
 #endif
 
+#include <assert.h>
+
 #include "dsa.h"
 
 #include "sexp.h"
@@ -33,22 +35,26 @@
 int
 dsa_keypair_to_sexp(struct nettle_buffer *buffer,
 		    const char *algorithm_name,
-		    const struct dsa_public_key *pub,
-		    const struct dsa_private_key *priv)
+		    const struct dsa_value *pub,
+		    const struct dsa_value *priv)
 {
+  const struct dsa_params *params = pub->params;
   if (!algorithm_name)
     algorithm_name = "dsa";
-  
+
   if (priv)
-    return sexp_format(buffer,
-		       "(private-key(%0s(p%b)(q%b)"
+    {
+      assert (priv->params == params);
+      return sexp_format(buffer,
+			 "(private-key(%0s(p%b)(q%b)"
 		       "(g%b)(y%b)(x%b)))",
-		       algorithm_name, pub->p, pub->q,
-		       pub->g, pub->y, priv->x);
+			 algorithm_name, params->p, params->q,
+			 params->g, pub->x, priv->x);
+    }
   else
     return sexp_format(buffer,
 		       "(public-key(%0s(p%b)(q%b)"
 		       "(g%b)(y%b)))",
-		       algorithm_name, pub->p, pub->q,
-		       pub->g, pub->y);
+		       algorithm_name, params->p, params->q,
+		       params->g, pub->x);
 }

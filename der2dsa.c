@@ -5,7 +5,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2005, 2009 Niels Möller, Magnus Holmgren
+ * Copyright (C) 2005, 2009, 2014 Niels Möller, Magnus Holmgren
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -26,6 +26,8 @@
 #if HAVE_CONFIG_H
 # include "config.h"
 #endif
+
+#include <assert.h>
 
 #include "dsa.h"
 
@@ -71,8 +73,9 @@ dsa_public_key_from_der_iterator(struct dsa_public_key *pub,
 }
 
 int
-dsa_openssl_private_key_from_der_iterator(struct dsa_public_key *pub,
-					  struct dsa_private_key *priv,
+dsa_openssl_private_key_from_der_iterator(struct dsa_params *params,
+					  struct dsa_value *pub,
+					  struct dsa_value *priv,
 					  unsigned p_max_bits,
 					  struct asn1_der_iterator *i)
 {
@@ -87,23 +90,26 @@ dsa_openssl_private_key_from_der_iterator(struct dsa_public_key *pub,
   */
 
   uint32_t version;
-  
+
+  assert (pub->params == params);
+  assert (priv->params == params);
   return (i->type == ASN1_SEQUENCE
 	  && asn1_der_decode_constructed_last(i) == ASN1_ITERATOR_PRIMITIVE
 	  && i->type == ASN1_INTEGER
 	  && asn1_der_get_uint32(i, &version)
 	  && version == 0
-	  && GET(i, pub->p, p_max_bits)
-	  && GET(i, pub->q, DSA_SHA1_Q_BITS)
-	  && GET(i, pub->g, p_max_bits)
-	  && GET(i, pub->y, p_max_bits)
+	  && GET(i, params->p, p_max_bits)
+	  && GET(i, params->q, DSA_SHA1_Q_BITS)
+	  && GET(i, params->g, p_max_bits)
+	  && GET(i, pub->x, p_max_bits)
 	  && GET(i, priv->x, DSA_SHA1_Q_BITS)
 	  && asn1_der_iterator_next(i) == ASN1_ITERATOR_END);
 }
 
 int
-dsa_openssl_private_key_from_der(struct dsa_public_key *pub,
-				 struct dsa_private_key *priv,
+dsa_openssl_private_key_from_der(struct dsa_params *params,
+				 struct dsa_value *pub,
+				 struct dsa_value *priv,
 				 unsigned p_max_bits,
 				 size_t length, const uint8_t *data)
 {
@@ -113,5 +119,6 @@ dsa_openssl_private_key_from_der(struct dsa_public_key *pub,
   res = asn1_der_iterator_first(&i, length, data);
 
   return (res == ASN1_ITERATOR_CONSTRUCTED
-	  && dsa_openssl_private_key_from_der_iterator(pub, priv, p_max_bits, &i));
+	  && dsa_openssl_private_key_from_der_iterator(params, pub, priv,
+						       p_max_bits, &i));
 }
