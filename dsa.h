@@ -155,6 +155,96 @@ dsa_generate_keypair (struct dsa_value *pub,
 
 		      void *random_ctx, nettle_random_func *random);
 
+/* Keys in sexp form. */
+
+struct nettle_buffer;
+
+/* Generates a public-key expression if PRIV is NULL .*/
+int
+dsa_keypair_to_sexp(struct nettle_buffer *buffer,
+		    const char *algorithm_name, /* NULL means "dsa" */
+		    const struct dsa_value *pub,
+		    const struct dsa_value *priv);
+
+struct sexp_iterator;
+
+int
+dsa_signature_from_sexp(struct dsa_signature *rs,
+			struct sexp_iterator *i,
+			unsigned q_bits);
+
+int
+dsa_keypair_from_sexp_alist(struct dsa_params *params,
+			    struct dsa_value *pub,
+			    struct dsa_value *priv,
+			    unsigned max_bits,
+			    unsigned q_bits,
+			    struct sexp_iterator *i);
+
+/* If PRIV is NULL, expect a public-key expression. If PUB is NULL,
+ * expect a private key expression and ignore the parts not needed for
+ * the public key. */
+/* Keys must be initialized before calling this function, as usual. */
+int
+dsa_sha1_keypair_from_sexp(struct dsa_params *params,
+			   struct dsa_value *pub,
+			   struct dsa_value *priv,
+			   unsigned p_max_bits,
+			   size_t length, const uint8_t *expr);
+
+int
+dsa_sha256_keypair_from_sexp(struct dsa_params *params,
+			     struct dsa_value *pub,
+			     struct dsa_value *priv,
+			     unsigned p_max_bits,
+			     size_t length, const uint8_t *expr);
+
+/* Keys in X.509 andd OpenSSL format. */
+struct asn1_der_iterator;
+
+int
+dsa_params_from_der_iterator(struct dsa_params *params,
+			     unsigned max_bits, unsigned q_bits,
+			     struct asn1_der_iterator *i);
+int
+dsa_public_key_from_der_iterator(struct dsa_value *pub,
+				 struct asn1_der_iterator *i);
+
+int
+dsa_openssl_private_key_from_der_iterator(struct dsa_params *params,
+					  struct dsa_value *pub,
+					  struct dsa_value *priv,
+					  unsigned p_max_bits,
+					  struct asn1_der_iterator *i);
+
+int
+dsa_openssl_private_key_from_der(struct dsa_params *params,
+				 struct dsa_value *pub,
+				 struct dsa_value *priv,
+				 unsigned p_max_bits,
+				 size_t length, const uint8_t *data);
+
+
+/* Internal functions. */
+void
+_dsa_hash (mpz_t h, unsigned bit_size,
+	   size_t length, const uint8_t *digest);
+
+int
+_dsa_sign(const struct dsa_params *params,
+	  const mpz_t key,
+	  void *random_ctx, nettle_random_func *random,
+	  size_t digest_size,
+	  const uint8_t *digest,
+	  struct dsa_signature *signature);
+
+int
+_dsa_verify(const struct dsa_params *params,
+	    const mpz_t pub,
+	    size_t digest_size,
+	    const uint8_t *digest,
+	    const struct dsa_signature *signature);
+
 /* Old nettle interface, kept for backwards compatibility */
   
 struct dsa_public_key
@@ -271,96 +361,6 @@ dsa_generate_keypair_old(struct dsa_public_key *pub,
 			 void *random_ctx, nettle_random_func *random,
 			 void *progress_ctx, nettle_progress_func *progress,
 			 unsigned p_bits, unsigned q_bits);
-
-/* Keys in sexp form. */
-
-struct nettle_buffer;
-
-/* Generates a public-key expression if PRIV is NULL .*/
-int
-dsa_keypair_to_sexp(struct nettle_buffer *buffer,
-		    const char *algorithm_name, /* NULL means "dsa" */
-		    const struct dsa_value *pub,
-		    const struct dsa_value *priv);
-
-struct sexp_iterator;
-
-int
-dsa_signature_from_sexp(struct dsa_signature *rs,
-			struct sexp_iterator *i,
-			unsigned q_bits);
-
-int
-dsa_keypair_from_sexp_alist(struct dsa_params *params,
-			    struct dsa_value *pub,
-			    struct dsa_value *priv,
-			    unsigned max_bits,
-			    unsigned q_bits,
-			    struct sexp_iterator *i);
-
-/* If PRIV is NULL, expect a public-key expression. If PUB is NULL,
- * expect a private key expression and ignore the parts not needed for
- * the public key. */
-/* Keys must be initialized before calling this function, as usual. */
-int
-dsa_sha1_keypair_from_sexp(struct dsa_params *params,
-			   struct dsa_value *pub,
-			   struct dsa_value *priv,
-			   unsigned p_max_bits,
-			   size_t length, const uint8_t *expr);
-
-int
-dsa_sha256_keypair_from_sexp(struct dsa_params *params,
-			     struct dsa_value *pub,
-			     struct dsa_value *priv,
-			     unsigned p_max_bits,
-			     size_t length, const uint8_t *expr);
-
-/* Keys in X.509 andd OpenSSL format. */
-struct asn1_der_iterator;
-
-int
-dsa_params_from_der_iterator(struct dsa_params *params,
-			     unsigned max_bits, unsigned q_bits,
-			     struct asn1_der_iterator *i);
-int
-dsa_public_key_from_der_iterator(struct dsa_value *pub,
-				 struct asn1_der_iterator *i);
-
-int
-dsa_openssl_private_key_from_der_iterator(struct dsa_params *params,
-					  struct dsa_value *pub,
-					  struct dsa_value *priv,
-					  unsigned p_max_bits,
-					  struct asn1_der_iterator *i);
-
-int
-dsa_openssl_private_key_from_der(struct dsa_params *params,
-				 struct dsa_value *pub,
-				 struct dsa_value *priv,
-				 unsigned p_max_bits,
-				 size_t length, const uint8_t *data);
-
-
-/* Internal functions. */
-void
-_dsa_hash (mpz_t h, unsigned bit_size,
-	   size_t length, const uint8_t *digest);
-
-int
-_dsa_sign(const struct dsa_params *params,
-	  const mpz_t key,
-	  void *random_ctx, nettle_random_func *random,
-	  size_t digest_size,
-	  const uint8_t *digest,
-	  struct dsa_signature *signature);
-
-int
-_dsa_verify(const struct dsa_params *params,
-	    const mpz_t pub,
-	    size_t digest_size,
-	    const uint8_t *digest,
-	    const struct dsa_signature *signature);
 
 #ifdef __cplusplus
 }
