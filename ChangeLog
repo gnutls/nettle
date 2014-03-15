@@ -1,5 +1,9 @@
 2014-03-15  Niels Möller  <nisse@lysator.liu.se>
 
+	* salsa20.h (SALSA20_NONCE_SIZE): Renamed constant, old name
+	SALSA20_IV_SIZE kept as an alias.
+	(salsa20_set_nonce): Update prototype for the 2014-01-20 rename.
+
 	* Makefile.in (.asm.s): Add dependencies.
 	(.s.o, .s.po): Empty any dependency .d file.
 

@@ -50,7 +50,8 @@ extern "C" {
 #define SALSA20_128_KEY_SIZE 16
 #define SALSA20_256_KEY_SIZE 32
 #define SALSA20_BLOCK_SIZE 64
-#define SALSA20_IV_SIZE 8
+#define SALSA20_NONCE_SIZE 8
+#define SALSA20_IV_SIZE SALSA20_NONCE_SIZE
 
 /* Aliases */
 #define SALSA20_MIN_KEY_SIZE 16
@@ -83,8 +84,8 @@ salsa20_set_key(struct salsa20_ctx *ctx,
 		size_t length, const uint8_t *key);
 
 void
-salsa20_set_iv(struct salsa20_ctx *ctx, const uint8_t *iv);
-
+salsa20_set_nonce(struct salsa20_ctx *ctx, const uint8_t *iv);
+  
 void
 salsa20_crypt(struct salsa20_ctx *ctx,
 	      size_t length, uint8_t *dst,
