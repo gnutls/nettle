@@ -235,6 +235,28 @@ bench_ctr(void *arg)
 	    BENCH_BLOCK, info->data, info->data);
 }
 
+struct bench_aead_info
+{
+  void *ctx;
+  nettle_crypt_func *crypt;
+  nettle_hash_update_func *update;
+  uint8_t *data;
+};
+
+static void
+bench_aead_crypt(void *arg)
+{
+  const struct bench_aead_info *info = arg;
+  info->crypt (info->ctx, BENCH_BLOCK, info->data, info->data);
+}
+
+static void
+bench_aead_update(void *arg)
+{
+  const struct bench_aead_info *info = arg;
+  info->update (info->ctx, BENCH_BLOCK, info->data);
+}
+
 /* Set data[i] = floor(sqrt(i)) */
 static void
 init_data(uint8_t *data)
@@ -255,6 +277,15 @@ init_key(unsigned length,
   unsigned i;
   for (i = 0; i<length; i++)
     key[i] = i;
+}
+
+static void
+init_nonce(unsigned length,
+	   uint8_t *nonce)
+{
+  unsigned i;
+  for (i = 0; i<length; i++)
+    nonce[i] = 3*i;
 }
 
 static void
@@ -417,74 +448,6 @@ time_poly1305_aes(void)
 	  time_function(bench_hash, &info));
 }
 
-static void
-time_gcm(void)
-{
-  static uint8_t data[BENCH_BLOCK];
-  struct bench_hash_info hinfo;
-  struct bench_cipher_info cinfo;
-  struct gcm_aes128_ctx ctx;
-
-  uint8_t key[AES128_KEY_SIZE];
-  uint8_t iv[GCM_IV_SIZE];
-
-  gcm_aes128_set_key(&ctx, key);
-  gcm_aes128_set_iv(&ctx, sizeof(iv), iv);
-
-  hinfo.ctx = &ctx;
-  hinfo.update = (nettle_hash_update_func *) gcm_aes128_update;
-  hinfo.data = data;
-  
-  display("gcm-aes128", "update", GCM_BLOCK_SIZE,
-	  time_function(bench_hash, &hinfo));
-  
-  cinfo.ctx = &ctx;
-  cinfo.crypt = (nettle_crypt_func *) gcm_aes128_encrypt;
-  cinfo.data = data;
-
-  display("gcm-aes128", "encrypt", GCM_BLOCK_SIZE,
-	  time_function(bench_cipher, &cinfo));
-
-  cinfo.crypt = (nettle_crypt_func *) gcm_aes128_decrypt;
-
-  display("gcm-aes128", "decrypt", GCM_BLOCK_SIZE,
-	  time_function(bench_cipher, &cinfo));
-}
-
-static void
-time_eax(void)
-{
-  static uint8_t data[BENCH_BLOCK];
-  struct bench_hash_info hinfo;
-  struct bench_cipher_info cinfo;
-  struct eax_aes128_ctx ctx;
-
-  uint8_t key[AES128_KEY_SIZE];
-  uint8_t iv[EAX_BLOCK_SIZE];
-
-  eax_aes128_set_key (&ctx, key);
-  eax_aes128_set_nonce(&ctx, sizeof(iv), iv);
-
-  hinfo.ctx = &ctx;
-  hinfo.update = (nettle_hash_update_func *) eax_aes128_update;
-  hinfo.data = data;
-
-  display("eax-aes128", "update", GCM_BLOCK_SIZE,
-         time_function(bench_hash, &hinfo));
-
-  cinfo.ctx = &ctx;
-  cinfo.crypt = (nettle_crypt_func *) eax_aes128_encrypt;
-  cinfo.data = data;
-
-  display("eax-aes128", "encrypt", GCM_BLOCK_SIZE,
-	  time_function(bench_cipher, &cinfo));
-
-  cinfo.crypt = (nettle_crypt_func *) eax_aes128_decrypt;
-
-  display("eax-aes128", "decrypt", GCM_BLOCK_SIZE,
-	  time_function(bench_cipher, &cinfo));
-}
-
 static int
 prefix_p(const char *prefix, const char *s)
 {
@@ -601,6 +564,71 @@ time_cipher(const struct nettle_cipher *cipher)
   free(key);
 }
 
+static void
+time_aead(const struct nettle_aead *aead)
+{
+  void *ctx = xalloc(aead->context_size);
+  uint8_t *key = xalloc(aead->key_size);
+  uint8_t *nonce = xalloc(aead->nonce_size);
+  static uint8_t data[BENCH_BLOCK];
+
+  printf("\n");
+  
+  init_data(data);
+  if (aead->set_nonce)
+    init_nonce (aead->nonce_size, nonce);
+
+  {
+    /* Decent initializers are a GNU extension, so don't use it here. */
+    struct bench_aead_info info;
+    info.ctx = ctx;
+    info.crypt = aead->encrypt;
+    info.data = data;
+    
+    init_key(aead->key_size, key);
+    aead->set_encrypt_key(ctx, key);
+    if (aead->set_nonce)
+      aead->set_nonce (ctx, nonce);
+
+    display(aead->name, "encrypt", aead->block_size,
+	    time_function(bench_aead_crypt, &info));
+  }
+  
+  {
+    struct bench_aead_info info;
+    info.ctx = ctx;
+    info.crypt = aead->decrypt;
+    info.data = data;
+    
+    init_key(aead->key_size, key);
+    aead->set_decrypt_key(ctx, key);
+    if (aead->set_nonce)
+      aead->set_nonce (ctx, nonce);
+
+    display(aead->name, "decrypt", aead->block_size,
+	    time_function(bench_aead_crypt, &info));
+  }
+
+  if (aead->update)
+    {
+      struct bench_aead_info info;
+      info.ctx = ctx;
+      info.update = aead->update;
+      info.data = data;
+
+      aead->set_encrypt_key(ctx, key);
+
+      if (aead->set_nonce)
+	aead->set_nonce (ctx, nonce);
+    
+      display(aead->name, "update", aead->block_size,
+	      time_function(bench_aead_update, &info));
+    }
+  free(ctx);
+  free(key);
+  free(nonce);
+}
+
 /* Try to get accurate cycle times for assembler functions. */
 #if WITH_CYCLE_COUNTER
 static int
@@ -715,7 +743,18 @@ main(int argc, char **argv)
       &nettle_des3,
       &nettle_serpent256,
       &nettle_twofish128, &nettle_twofish192, &nettle_twofish256,
-      &nettle_salsa20, &nettle_salsa20r12, &nettle_chacha,
+      NULL
+    };
+
+  const struct nettle_aead *aeads[] =
+    {
+      &nettle_gcm_aes128,
+      &nettle_gcm_aes192,
+      &nettle_gcm_aes256,
+      &nettle_gcm_camellia128,
+      &nettle_gcm_camellia256,
+      &nettle_eax_aes128,
+      &nettle_chacha_poly1305,
       NULL
     };
 
@@ -778,17 +817,9 @@ main(int argc, char **argv)
     if (!alg || strstr(ciphers[i]->name, alg))
       time_cipher(ciphers[i]);
 
-  if (!alg || strstr ("gcm", alg))
-    {
-      printf("\n");
-      time_gcm();
-    }
-
-  if (!alg || strstr ("eax", alg))
-    {
-      printf("\n");
-      time_eax();
-    }
+  for (i = 0; aeads[i]; i++)
+    if (!alg || strstr(aeads[i]->name, alg))
+      time_aead(aeads[i]);
 
   return 0;
 }

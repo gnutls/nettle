@@ -1,5 +1,12 @@
 2014-03-15  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/nettle-benchmark.c (struct bench_aead_info): New
+	struct.
+	(bench_aead_crypt, bench_aead_update, init_nonce, time_aead): New
+	functions, for benchmarking aead algorithms.
+	(time_gcm, time_eax): Deleted functions.
+	(main): Use time_aead to benchmark gcm, eax and chacha-poly1305.
+
 	* salsa20.h (SALSA20_NONCE_SIZE): Renamed constant, old name
 	SALSA20_IV_SIZE kept as an alias.
 	(salsa20_set_nonce): Update prototype for the 2014-01-20 rename.
