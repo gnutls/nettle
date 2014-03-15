@@ -1,3 +1,8 @@
+2014-03-15  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (.asm.s): Add dependencies.
+	(.s.o, .s.po): Empty any dependency .d file.
+
 2014-03-04  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/chacha-test.c (test_main): Additional test cases, for

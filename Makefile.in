@@ -353,15 +353,17 @@ ecc-256.p$(OBJEXT): ecc-256.h
 ecc-384.p$(OBJEXT): ecc-384.h
 ecc-521.p$(OBJEXT): ecc-521.h
 
-.asm.s:
+.asm.s: $(srcdir)/asm.m4 machine.m4 config.m4
 	$(M4) $(srcdir)/asm.m4 machine.m4 config.m4 $< >$@T \
 	&& test -s $@T && mv -f $@T $@
 
 .s.$(OBJEXT):
 	$(COMPILE) $(CCPIC_MAYBE) -c $<
+	@echo > $@.d
 
 .s.p$(OBJEXT):
 	$(COMPILE) $(SHLIBCFLAGS) -c $< -o $@
+	@echo > $@.d
 
 # Texinfo rules
 .texinfo.info:
