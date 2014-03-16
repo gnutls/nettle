@@ -1,3 +1,14 @@
+2014-03-16  Niels Möller  <nisse@lysator.liu.se>
+
+	* arcfour-meta.c: Deleted file.
+	* nettle-meta.h (nettle_arcfour128): Deleted declaration.
+	* nettle-meta-ciphers.c (nettle_ciphers): Deleted
+	nettle_arcfour128 from list.
+	* Makefile.in (nettle_SOURCES): Deleted arcfour-meta.c.
+	* examples/nettle-openssl.c (nettle_openssl_arcfour128): Deleted.
+	* testsuite/meta-cipher-test.c: Adjust test for removal of
+	nettle_arcfour128.
+
 2014-03-15  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/nettle-benchmark.c (struct bench_aead_info): New

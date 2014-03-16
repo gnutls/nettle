@@ -31,7 +31,6 @@ const struct nettle_cipher * const nettle_ciphers[] = {
   &nettle_aes128,
   &nettle_aes192,
   &nettle_aes256,
-  &nettle_arcfour128,
   &nettle_camellia128,
   &nettle_camellia192,
   &nettle_camellia256,

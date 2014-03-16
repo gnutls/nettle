@@ -735,7 +735,6 @@ main(int argc, char **argv)
       OPENSSL(&nettle_openssl_aes128)
       OPENSSL(&nettle_openssl_aes192)
       OPENSSL(&nettle_openssl_aes256)
-      &nettle_arcfour128, OPENSSL(&nettle_openssl_arcfour128)
       &nettle_blowfish128, OPENSSL(&nettle_openssl_blowfish128)
       &nettle_camellia128, &nettle_camellia192, &nettle_camellia256,
       &nettle_cast128, OPENSSL(&nettle_openssl_cast128)
