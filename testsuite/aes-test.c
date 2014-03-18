@@ -91,8 +91,8 @@ unified_aes256_set_decrypt_key (void *ctx, const uint8_t *key)
   AES_BLOCK_SIZE, AES ## bits ## _KEY_SIZE,	\
   unified_aes ## bits ##_set_encrypt_key,	\
   unified_aes ## bits ##_set_decrypt_key,	\
-  (nettle_crypt_func *) aes_encrypt,		\
-  (nettle_crypt_func *) aes_decrypt,		\
+  (nettle_cipher_func *) aes_encrypt,		\
+  (nettle_cipher_func *) aes_decrypt,		\
 }
 const struct nettle_cipher nettle_unified_aes128
 = UNIFIED_AES(128);

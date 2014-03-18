@@ -111,12 +111,9 @@ struct gcm_ctx {
   uint64_t data_size;
 };
 
-/* FIXME: Should use const for the cipher context. Then needs const for
-   nettle_crypt_func, which also rules out using that abstraction for
-   arcfour. */
 void
 gcm_set_key(struct gcm_key *key,
-	    void *cipher, nettle_crypt_func *f);
+	    const void *cipher, nettle_cipher_func *f);
 
 void
 gcm_set_iv(struct gcm_ctx *ctx, const struct gcm_key *key,
@@ -128,17 +125,17 @@ gcm_update(struct gcm_ctx *ctx, const struct gcm_key *key,
 
 void
 gcm_encrypt(struct gcm_ctx *ctx, const struct gcm_key *key,
-	    void *cipher, nettle_crypt_func *f,
+	    const void *cipher, nettle_cipher_func *f,
 	    size_t length, uint8_t *dst, const uint8_t *src);
 
 void
 gcm_decrypt(struct gcm_ctx *ctx, const struct gcm_key *key,
-	    void *cipher, nettle_crypt_func *f,
+	    const void *cipher, nettle_cipher_func *f,
 	    size_t length, uint8_t *dst, const uint8_t *src);
 
 void
 gcm_digest(struct gcm_ctx *ctx, const struct gcm_key *key,
-	   void *cipher, nettle_crypt_func *f,
+	   const void *cipher, nettle_cipher_func *f,
 	   size_t length, uint8_t *digest);
 
 /* Convenience macrology (not sure how useful it is) */
@@ -152,7 +149,7 @@ gcm_digest(struct gcm_ctx *ctx, const struct gcm_key *key,
     (set_key)(&(ctx)->cipher, (key));				\
     if (0) (encrypt)(&(ctx)->cipher, 0, (void *)0, (void *)0);	\
     gcm_set_key(&(ctx)->key, &(ctx)->cipher,			\
-		(nettle_crypt_func *) (encrypt));		\
+		(nettle_cipher_func *) (encrypt));		\
   } while (0)
 
 #define GCM_SET_IV(ctx, length, data)				\
@@ -164,19 +161,19 @@ gcm_digest(struct gcm_ctx *ctx, const struct gcm_key *key,
 #define GCM_ENCRYPT(ctx, encrypt, length, dst, src)			\
   (0 ? (encrypt)(&(ctx)->cipher, 0, (void *)0, (void *)0)		\
      : gcm_encrypt(&(ctx)->gcm, &(ctx)->key, &(ctx)->cipher,		\
-		   (nettle_crypt_func *) (encrypt),			\
+		   (nettle_cipher_func *) (encrypt),			\
 		   (length), (dst), (src)))
 
 #define GCM_DECRYPT(ctx, encrypt, length, dst, src)			\
   (0 ? (encrypt)(&(ctx)->cipher, 0, (void *)0, (void *)0)		\
      : gcm_decrypt(&(ctx)->gcm,  &(ctx)->key, &(ctx)->cipher,		\
-		   (nettle_crypt_func *) (encrypt),			\
+		   (nettle_cipher_func *) (encrypt),			\
 		   (length), (dst), (src)))
 
 #define GCM_DIGEST(ctx, encrypt, length, digest)			\
   (0 ? (encrypt)(&(ctx)->cipher, 0, (void *)0, (void *)0)		\
      : gcm_digest(&(ctx)->gcm, &(ctx)->key, &(ctx)->cipher,		\
-		  (nettle_crypt_func *) (encrypt),			\
+		  (nettle_cipher_func *) (encrypt),			\
 		  (length), (digest)))
 
 struct gcm_aes128_ctx GCM_CTX(struct aes128_ctx);

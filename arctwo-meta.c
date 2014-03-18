@@ -34,8 +34,8 @@
   ARCTWO_BLOCK_SIZE, bits/8,				\
   (nettle_set_key_func *) arctwo ## bits ## _set_key,	\
   (nettle_set_key_func *) arctwo ## bits ## _set_key,	\
-  (nettle_crypt_func *) arctwo_encrypt,			\
-  (nettle_crypt_func *) arctwo_decrypt,			\
+  (nettle_cipher_func *) arctwo_encrypt,			\
+  (nettle_cipher_func *) arctwo_decrypt,			\
 }
 const struct nettle_cipher nettle_arctwo40
 = ARCTWO(40);
@@ -51,6 +51,6 @@ const struct nettle_cipher nettle_arctwo_gutmann128 =
     ARCTWO_BLOCK_SIZE, 16,
     (nettle_set_key_func *) arctwo128_set_key_gutmann,
     (nettle_set_key_func *) arctwo128_set_key_gutmann,
-    (nettle_crypt_func *) arctwo_encrypt,
-    (nettle_crypt_func *) arctwo_decrypt,
+    (nettle_cipher_func *) arctwo_encrypt,
+    (nettle_cipher_func *) arctwo_decrypt,
   };

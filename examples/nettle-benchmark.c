@@ -186,7 +186,7 @@ bench_hash(void *arg)
 struct bench_cipher_info
 {
   void *ctx;
-  nettle_crypt_func *crypt;
+  nettle_cipher_func *crypt;
   uint8_t *data;
 };
 
@@ -200,7 +200,7 @@ bench_cipher(void *arg)
 struct bench_cbc_info
 {
   void *ctx;
-  nettle_crypt_func *crypt;
+  nettle_cipher_func *crypt;
  
   uint8_t *data;
   

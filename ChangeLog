@@ -1,3 +1,16 @@
+2014-03-18  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle-types.h (nettle_cipher_func): New typedef, similar to
+	nettle_crypt_func, but with a const context, intended for block
+	ciphers.
+	* nettle-meta.h (struct nettle_cipher): Use the nettle_cipher_func
+	type.
+	* Many other files affected: aes*-meta.c, camellia*-meta.c,
+	cast128-meta.c, serpent-meta.c, twofish-meta.c, cbc.[ch],
+	ctr.[ch], ctr.[ch], des-compat.c, eax.[ch], gcm*.[ch],
+	nettle-internal.*, testsuite/aes-test.c,
+	examples/nettle-benchmark.c, examples/nettle-openssl.c.
+
 2014-03-16  Niels Möller  <nisse@lysator.liu.se>
 
 	* chacha-set-key.c: Include string.h.

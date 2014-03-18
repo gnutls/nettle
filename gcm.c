@@ -328,7 +328,7 @@ gcm_gf_mul (union nettle_block16 *x, const union nettle_block16 *table)
  */
 void
 gcm_set_key(struct gcm_key *key,
-	    void *cipher, nettle_crypt_func *f)
+	    const void *cipher, nettle_cipher_func *f)
 {
   /* Middle element if GCM_TABLE_BITS > 0, otherwise the first
      element */
@@ -427,7 +427,7 @@ gcm_update(struct gcm_ctx *ctx, const struct gcm_key *key,
 }
 
 static void
-gcm_crypt(struct gcm_ctx *ctx, void *cipher, nettle_crypt_func *f,
+gcm_crypt(struct gcm_ctx *ctx, const void *cipher, nettle_cipher_func *f,
 	  size_t length, uint8_t *dst, const uint8_t *src)
 {
   uint8_t buffer[GCM_BLOCK_SIZE];
@@ -465,7 +465,7 @@ gcm_crypt(struct gcm_ctx *ctx, void *cipher, nettle_crypt_func *f,
 
 void
 gcm_encrypt (struct gcm_ctx *ctx, const struct gcm_key *key,
-	     void *cipher, nettle_crypt_func *f,
+	     const void *cipher, nettle_cipher_func *f,
 	     size_t length, uint8_t *dst, const uint8_t *src)
 {
   assert(ctx->data_size % GCM_BLOCK_SIZE == 0);
@@ -478,7 +478,7 @@ gcm_encrypt (struct gcm_ctx *ctx, const struct gcm_key *key,
 
 void
 gcm_decrypt(struct gcm_ctx *ctx, const struct gcm_key *key,
-	    void *cipher, nettle_crypt_func *f,
+	    const void *cipher, nettle_cipher_func *f,
 	    size_t length, uint8_t *dst, const uint8_t *src)
 {
   assert(ctx->data_size % GCM_BLOCK_SIZE == 0);
@@ -491,7 +491,7 @@ gcm_decrypt(struct gcm_ctx *ctx, const struct gcm_key *key,
 
 void
 gcm_digest(struct gcm_ctx *ctx, const struct gcm_key *key,
-	   void *cipher, nettle_crypt_func *f,
+	   const void *cipher, nettle_cipher_func *f,
 	   size_t length, uint8_t *digest)
 {
   uint8_t buffer[GCM_BLOCK_SIZE];

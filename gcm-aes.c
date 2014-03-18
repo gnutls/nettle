@@ -34,7 +34,7 @@ gcm_aes_set_key(struct gcm_aes_ctx *ctx, size_t length, const uint8_t *key)
 {
   aes_set_encrypt_key (&ctx->cipher, length, key);
   gcm_set_key (&ctx->key, &ctx->cipher,
-	       (nettle_crypt_func *) aes_encrypt);
+	       (nettle_cipher_func *) aes_encrypt);
 }
 
 void

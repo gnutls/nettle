@@ -35,8 +35,8 @@
   SERPENT ## bits ##_KEY_SIZE,				\
   (nettle_set_key_func *) serpent ## bits ## _set_key,	\
   (nettle_set_key_func *) serpent ## bits ## _set_key,	\
-  (nettle_crypt_func *) serpent_encrypt,		\
-  (nettle_crypt_func *) serpent_decrypt			\
+  (nettle_cipher_func *) serpent_encrypt,		\
+  (nettle_cipher_func *) serpent_decrypt			\
 }
 
 const struct nettle_cipher nettle_serpent128

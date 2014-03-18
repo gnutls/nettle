@@ -89,9 +89,9 @@ openssl_aes256_set_decrypt_key(void *ctx, const uint8_t *key)
   AES_set_decrypt_key(key, 256, ctx);
 }
 
-static nettle_crypt_func openssl_aes_encrypt;
+static nettle_cipher_func openssl_aes_encrypt;
 static void
-openssl_aes_encrypt(void *ctx, size_t length,
+openssl_aes_encrypt(const void *ctx, size_t length,
 		    uint8_t *dst, const uint8_t *src)
 {
   assert (!(length % AES_BLOCK_SIZE));
@@ -104,9 +104,9 @@ openssl_aes_encrypt(void *ctx, size_t length,
     }
 }
 
-static nettle_crypt_func openssl_aes_decrypt;
+static nettle_cipher_func openssl_aes_decrypt;
 static void
-openssl_aes_decrypt(void *ctx, size_t length,
+openssl_aes_decrypt(const void *ctx, size_t length,
 		    uint8_t *dst, const uint8_t *src)
 {
   assert (!(length % AES_BLOCK_SIZE));
@@ -157,9 +157,9 @@ openssl_bf128_set_key(void *ctx, const uint8_t *key)
   BF_set_key(ctx, 16, key);
 }
 
-static nettle_crypt_func openssl_bf_encrypt;
+static nettle_cipher_func openssl_bf_encrypt;
 static void
-openssl_bf_encrypt(void *ctx, size_t length,
+openssl_bf_encrypt(const void *ctx, size_t length,
 		   uint8_t *dst, const uint8_t *src)
 {
   assert (!(length % BF_BLOCK));
@@ -172,9 +172,9 @@ openssl_bf_encrypt(void *ctx, size_t length,
     }
 }
 
-static nettle_crypt_func openssl_bf_decrypt;
+static nettle_cipher_func openssl_bf_decrypt;
 static void
-openssl_bf_decrypt(void *ctx, size_t length,
+openssl_bf_decrypt(const void *ctx, size_t length,
 		   uint8_t *dst, const uint8_t *src)
 {
   assert (!(length % BF_BLOCK));
@@ -210,30 +210,32 @@ openssl_des_set_key(void *ctx, const uint8_t *key)
 
 #define DES_BLOCK_SIZE 8
 
-static nettle_crypt_func openssl_des_encrypt;
+static nettle_cipher_func openssl_des_encrypt;
 static void
-openssl_des_encrypt(void *ctx, size_t length,
+openssl_des_encrypt(const void *ctx, size_t length,
 		    uint8_t *dst, const uint8_t *src)
 {
   assert (!(length % DES_BLOCK_SIZE));
   while (length)
     {
-      DES_ecb_encrypt((void *) src, (void *) dst, ctx, DES_ENCRYPT);
+      DES_ecb_encrypt((void *) src, (void *) dst,
+		      (void *) ctx, DES_ENCRYPT);
       length -= DES_BLOCK_SIZE;
       dst += DES_BLOCK_SIZE;
       src += DES_BLOCK_SIZE;
     }
 }
 
-static nettle_crypt_func openssl_des_decrypt;
+static nettle_cipher_func openssl_des_decrypt;
 static void
-openssl_des_decrypt(void *ctx, size_t length,
+openssl_des_decrypt(const void *ctx, size_t length,
 		    uint8_t *dst, const uint8_t *src)
 {
   assert (!(length % DES_BLOCK_SIZE));
   while (length)
     {
-      DES_ecb_encrypt((void *) src, (void *) dst, ctx, DES_DECRYPT);
+      DES_ecb_encrypt((void *) src, (void *) dst,
+		      (void *) ctx, DES_DECRYPT);
       length -= DES_BLOCK_SIZE;
       dst += DES_BLOCK_SIZE;
       src += DES_BLOCK_SIZE;
@@ -257,9 +259,9 @@ openssl_cast128_set_key(void *ctx, const uint8_t *key)
   CAST_set_key(ctx, 16, key);
 }
 
-static nettle_crypt_func openssl_cast_encrypt;
+static nettle_cipher_func openssl_cast_encrypt;
 static void
-openssl_cast_encrypt(void *ctx, size_t length,
+openssl_cast_encrypt(const void *ctx, size_t length,
 		     uint8_t *dst, const uint8_t *src)
 {
   assert (!(length % CAST_BLOCK));
@@ -272,9 +274,9 @@ openssl_cast_encrypt(void *ctx, size_t length,
     }
 }
 
-static nettle_crypt_func openssl_cast_decrypt;
+static nettle_cipher_func openssl_cast_decrypt;
 static void
-openssl_cast_decrypt(void *ctx, size_t length,
+openssl_cast_decrypt(const void *ctx, size_t length,
 		     uint8_t *dst, const uint8_t *src)
 {
   assert (!(length % CAST_BLOCK));

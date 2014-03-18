@@ -37,13 +37,13 @@ extern "C" {
 #define cbc_decrypt nettle_cbc_decrypt
 
 void
-cbc_encrypt(void *ctx, nettle_crypt_func *f,
+cbc_encrypt(const void *ctx, nettle_cipher_func *f,
 	    size_t block_size, uint8_t *iv,
 	    size_t length, uint8_t *dst,
 	    const uint8_t *src);
 
 void
-cbc_decrypt(void *ctx, nettle_crypt_func *f,
+cbc_decrypt(const void *ctx, nettle_cipher_func *f,
 	    size_t block_size, uint8_t *iv,
 	    size_t length, uint8_t *dst,
 	    const uint8_t *src);
@@ -58,16 +58,16 @@ memcpy((ctx)->iv, (data), sizeof((ctx)->iv))
 #define CBC_ENCRYPT(self, f, length, dst, src)		\
 (0 ? ((f)(&(self)->ctx, 0, (void *)0, (void *)0))			\
    : cbc_encrypt((void *) &(self)->ctx,			\
-                 (nettle_crypt_func *) (f),		\
+		 (nettle_cipher_func *) (f),		\
 		 sizeof((self)->iv), (self)->iv,	\
-                 (length), (dst), (src)))
+		 (length), (dst), (src)))
 
 #define CBC_DECRYPT(self, f, length, dst, src)		\
 (0 ? ((f)(&(self)->ctx, 0, (void *)0, (void *)0))			\
    : cbc_decrypt((void *) &(self)->ctx,			\
-                 (nettle_crypt_func *) (f),		\
+		 (nettle_cipher_func *) (f),		\
 		 sizeof((self)->iv), (self)->iv,	\
-                 (length), (dst), (src)))
+		 (length), (dst), (src)))
 
 #ifdef __cplusplus
 }

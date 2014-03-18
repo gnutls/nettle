@@ -48,8 +48,8 @@ struct nettle_cipher
   nettle_set_key_func *set_encrypt_key;
   nettle_set_key_func *set_decrypt_key;
 
-  nettle_crypt_func *encrypt;
-  nettle_crypt_func *decrypt;
+  nettle_cipher_func *encrypt;
+  nettle_cipher_func *decrypt;
 };
 
 /* null-terminated list of ciphers implemented by this version of nettle */

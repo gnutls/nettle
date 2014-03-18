@@ -58,21 +58,20 @@ extern const struct nettle_cipher nettle_des3;
 
 extern const struct nettle_cipher nettle_blowfish128;
 
-/* For benchmarking only, sets no iv and lies about the block size. */
-extern const struct nettle_cipher nettle_chacha;
-extern const struct nettle_cipher nettle_salsa20;
-extern const struct nettle_cipher nettle_salsa20r12;
-
 extern const struct nettle_cipher nettle_unified_aes128;
 extern const struct nettle_cipher nettle_unified_aes192;
 extern const struct nettle_cipher nettle_unified_aes256;
+
+/* Stream ciphers treated as aead algorithms with no authentication. */
+extern const struct nettle_aead nettle_chacha;
+extern const struct nettle_aead nettle_salsa20;
+extern const struct nettle_aead nettle_salsa20r12;
 
 /* Glue to openssl, for comparative benchmarking. Code in
  * examples/nettle-openssl.c. */
 extern const struct nettle_cipher nettle_openssl_aes128;
 extern const struct nettle_cipher nettle_openssl_aes192;
 extern const struct nettle_cipher nettle_openssl_aes256;
-extern const struct nettle_cipher nettle_openssl_arcfour128;
 extern const struct nettle_cipher nettle_openssl_blowfish128;
 extern const struct nettle_cipher nettle_openssl_des;
 extern const struct nettle_cipher nettle_openssl_cast128;

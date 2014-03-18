@@ -35,6 +35,6 @@ const struct nettle_cipher nettle_aes128 =
     AES_BLOCK_SIZE, AES128_KEY_SIZE,
     (nettle_set_key_func *) aes128_set_encrypt_key,
     (nettle_set_key_func *) aes128_set_decrypt_key,
-    (nettle_crypt_func *) aes128_encrypt,
-    (nettle_crypt_func *) aes128_decrypt
+    (nettle_cipher_func *) aes128_encrypt,
+    (nettle_cipher_func *) aes128_decrypt
   };

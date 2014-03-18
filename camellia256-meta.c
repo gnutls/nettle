@@ -35,6 +35,6 @@ const struct nettle_cipher nettle_camellia256 =
     CAMELLIA_BLOCK_SIZE, CAMELLIA256_KEY_SIZE,
     (nettle_set_key_func *) camellia256_set_encrypt_key,
     (nettle_set_key_func *) camellia256_set_decrypt_key,
-    (nettle_crypt_func *) camellia256_crypt,
-    (nettle_crypt_func *) camellia256_crypt
+    (nettle_cipher_func *) camellia256_crypt,
+    (nettle_cipher_func *) camellia256_crypt
   };

@@ -33,6 +33,6 @@ const struct nettle_cipher nettle_cast128 =
     CAST128_BLOCK_SIZE, CAST128_KEY_SIZE,
     (nettle_set_key_func *) cast128_set_key,
     (nettle_set_key_func *) cast128_set_key,
-    (nettle_crypt_func *) cast128_encrypt,
-    (nettle_crypt_func *) cast128_decrypt
+    (nettle_cipher_func *) cast128_encrypt,
+    (nettle_cipher_func *) cast128_decrypt
   };

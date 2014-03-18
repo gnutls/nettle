@@ -40,7 +40,7 @@
 #define NBLOCKS 4
 
 void
-ctr_crypt(void *ctx, nettle_crypt_func *f,
+ctr_crypt(const void *ctx, nettle_cipher_func *f,
 	  size_t block_size, uint8_t *ctr,
 	  size_t length, uint8_t *dst,
 	  const uint8_t *src)

@@ -56,7 +56,7 @@ block16_xor (union nettle_block16 *dst, const union nettle_block16 *src)
 
 static void
 omac_update (union nettle_block16 *state, const struct eax_key *key,
-	     void *cipher, nettle_crypt_func *f,
+	     const void *cipher, nettle_cipher_func *f,
 	     size_t length, const uint8_t *data)
 {
   for (; length >= EAX_BLOCK_SIZE;
@@ -79,7 +79,7 @@ omac_update (union nettle_block16 *state, const struct eax_key *key,
 
 static void
 omac_final (union nettle_block16 *state, const struct eax_key *key,
-	    void *cipher, nettle_crypt_func *f)
+	    const void *cipher, nettle_cipher_func *f)
 {
   block16_xor (state, &key->pad_block);
   f (cipher, EAX_BLOCK_SIZE, state->b, state->b);
@@ -100,7 +100,7 @@ gf2_double (uint8_t *r, const uint8_t *a)
 }
 
 void
-eax_set_key (struct eax_key *key, void *cipher, nettle_crypt_func *f)
+eax_set_key (struct eax_key *key, const void *cipher, nettle_cipher_func *f)
 {
   static const union nettle_block16 zero_block;
   f (cipher, EAX_BLOCK_SIZE, key->pad_block.b, zero_block.b);
@@ -111,7 +111,7 @@ eax_set_key (struct eax_key *key, void *cipher, nettle_crypt_func *f)
 
 void
 eax_set_nonce (struct eax_ctx *eax, const struct eax_key *key,
-	       void *cipher, nettle_crypt_func *f,
+	       const void *cipher, nettle_cipher_func *f,
 	       size_t nonce_length, const uint8_t *nonce)
 {
   omac_init (&eax->omac_nonce, 0);
@@ -125,7 +125,7 @@ eax_set_nonce (struct eax_ctx *eax, const struct eax_key *key,
 
 void
 eax_update (struct eax_ctx *eax, const struct eax_key *key,
-	    void *cipher, nettle_crypt_func *f,
+	    const void *cipher, nettle_cipher_func *f,
 	    size_t data_length, const uint8_t *data)
 {
   omac_update (&eax->omac_data, key, cipher, f, data_length, data);
@@ -133,7 +133,7 @@ eax_update (struct eax_ctx *eax, const struct eax_key *key,
 
 void
 eax_encrypt (struct eax_ctx *eax, const struct eax_key *key,
-	     void *cipher, nettle_crypt_func *f,
+	     const void *cipher, nettle_cipher_func *f,
 	     size_t length, uint8_t *dst, const uint8_t *src)
 {
   ctr_crypt (cipher, f, EAX_BLOCK_SIZE, eax->ctr.b, length, dst, src);
@@ -142,7 +142,7 @@ eax_encrypt (struct eax_ctx *eax, const struct eax_key *key,
 
 void
 eax_decrypt (struct eax_ctx *eax, const struct eax_key *key,
-	     void *cipher, nettle_crypt_func *f,
+	     const void *cipher, nettle_cipher_func *f,
 	     size_t length, uint8_t *dst, const uint8_t *src)
 {
   omac_update (&eax->omac_message, key, cipher, f, length, src);
@@ -151,7 +151,7 @@ eax_decrypt (struct eax_ctx *eax, const struct eax_key *key,
 
 void
 eax_digest (struct eax_ctx *eax, const struct eax_key *key,
-	    void *cipher, nettle_crypt_func *f,
+	    const void *cipher, nettle_cipher_func *f,
 	    size_t length, uint8_t *digest)
 {
   assert (length > 0);

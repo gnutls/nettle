@@ -37,7 +37,7 @@ extern "C" {
 #define ctr_crypt nettle_ctr_crypt
 
 void
-ctr_crypt(void *ctx, nettle_crypt_func *f,
+ctr_crypt(const void *ctx, nettle_cipher_func *f,
 	  size_t block_size, uint8_t *ctr,
 	  size_t length, uint8_t *dst,
 	  const uint8_t *src);
@@ -51,9 +51,9 @@ memcpy((ctx)->ctr, (data), sizeof((ctx)->ctr))
 #define CTR_CRYPT(self, f, length, dst, src)		\
 (0 ? ((f)(&(self)->ctx, 0, NULL, NULL))			\
    : ctr_crypt((void *) &(self)->ctx,			\
-               (nettle_crypt_func *) (f),		\
+	       (nettle_cipher_func *) (f),		\
 	       sizeof((self)->ctr), (self)->ctr,	\
-               (length), (dst), (src)))
+	       (length), (dst), (src)))
 
 #ifdef __cplusplus
 }

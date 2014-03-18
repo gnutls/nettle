@@ -113,13 +113,13 @@ des_ncbc_encrypt(const_des_cblock *src, des_cblock *dst, long length,
   switch (enc)
     {
     case DES_ENCRYPT:
-      nettle_cbc_encrypt(ctx, (nettle_crypt_func *) des_encrypt,
+      nettle_cbc_encrypt(ctx, (nettle_cipher_func *) des_encrypt,
 			 DES_BLOCK_SIZE, *iv,
 			 length, *dst, *src);
       break;
     case DES_DECRYPT:
       nettle_cbc_decrypt(ctx,
-			 (nettle_crypt_func *) des_decrypt,
+			 (nettle_cipher_func *) des_decrypt,
 			 DES_BLOCK_SIZE, *iv,
 			 length, *dst, *src);
       break;
@@ -166,12 +166,12 @@ des_ede3_cbc_encrypt(const_des_cblock *src, des_cblock *dst, long length,
   switch (enc)
     {
     case DES_ENCRYPT:
-      nettle_cbc_encrypt(&keys, (nettle_crypt_func *) des_compat_des3_encrypt,
+      nettle_cbc_encrypt(&keys, (nettle_cipher_func *) des_compat_des3_encrypt,
 			 DES_BLOCK_SIZE, *iv,
 			 length, *dst, *src);
       break;
     case DES_DECRYPT:
-      nettle_cbc_decrypt(&keys, (nettle_crypt_func *) des_compat_des3_decrypt,
+      nettle_cbc_decrypt(&keys, (nettle_cipher_func *) des_compat_des3_decrypt,
 			 DES_BLOCK_SIZE, *iv,
 			 length, *dst, *src);
       break;

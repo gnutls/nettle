@@ -54,12 +54,14 @@ typedef void *nettle_realloc_func(void *ctx, void *p, size_t length);
 /* Ciphers */
 typedef void nettle_set_key_func(void *ctx, const uint8_t *key);
 
-/* Uses a void * for cipher contexts.
+/* For block ciphers, const context. */
+typedef void nettle_cipher_func(const void *ctx,
+				size_t length, uint8_t *dst,
+				const uint8_t *src);
 
-   For block ciphers it would make sense with a const void * for the
-   context, but we use the same typedef for stream ciphers where the
-   internal state changes during the encryption. */
 
+/* Uses a void * for cipher contexts. Used for crypt operations where
+   the internal state changes during the encryption. */
 typedef void nettle_crypt_func(void *ctx,
 			       size_t length, uint8_t *dst,
 			       const uint8_t *src);

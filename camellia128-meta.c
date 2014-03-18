@@ -35,6 +35,6 @@ const struct nettle_cipher nettle_camellia128 =
     CAMELLIA_BLOCK_SIZE, CAMELLIA128_KEY_SIZE,
     (nettle_set_key_func *) camellia128_set_encrypt_key,
     (nettle_set_key_func *) camellia128_set_decrypt_key,
-    (nettle_crypt_func *) camellia128_crypt,
-    (nettle_crypt_func *) camellia128_crypt
+    (nettle_cipher_func *) camellia128_crypt,
+    (nettle_cipher_func *) camellia128_crypt
   };

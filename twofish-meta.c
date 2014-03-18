@@ -35,8 +35,8 @@
   TWOFISH ## bits ## _KEY_SIZE,				\
   (nettle_set_key_func *) twofish ## bits ## _set_key,	\
   (nettle_set_key_func *) twofish ## bits ## _set_key,	\
-  (nettle_crypt_func *) twofish_encrypt,		\
-  (nettle_crypt_func *) twofish_decrypt			\
+  (nettle_cipher_func *) twofish_encrypt,		\
+  (nettle_cipher_func *) twofish_decrypt			\
 }
 
 const struct nettle_cipher nettle_twofish128

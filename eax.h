@@ -71,31 +71,31 @@ struct eax_ctx
 };
 
 void
-eax_set_key (struct eax_key *key, void *cipher, nettle_crypt_func *f);
+eax_set_key (struct eax_key *key, const void *cipher, nettle_cipher_func *f);
 
 void
 eax_set_nonce (struct eax_ctx *eax, const struct eax_key *key,
-	       void *cipher, nettle_crypt_func *f,
+	       const void *cipher, nettle_cipher_func *f,
 	       size_t nonce_length, const uint8_t *nonce);
 
 void
 eax_update (struct eax_ctx *eax, const struct eax_key *key,
-	    void *cipher, nettle_crypt_func *f,
+	    const void *cipher, nettle_cipher_func *f,
 	    size_t data_length, const uint8_t *data);
 
 void
 eax_encrypt (struct eax_ctx *eax, const struct eax_key *key,
-	     void *cipher, nettle_crypt_func *f,
+	     const void *cipher, nettle_cipher_func *f,
 	     size_t length, uint8_t *dst, const uint8_t *src);
 
 void
 eax_decrypt (struct eax_ctx *eax, const struct eax_key *key,
-	     void *cipher, nettle_crypt_func *f,
+	     const void *cipher, nettle_cipher_func *f,
 	     size_t length, uint8_t *dst, const uint8_t *src);
 
 void
 eax_digest (struct eax_ctx *eax, const struct eax_key *key,
-	    void *cipher, nettle_crypt_func *f,
+	    const  void *cipher, nettle_cipher_func *f,
 	    size_t length, uint8_t *digest);
 
 /* Put the cipher last, to get cipher-independent offsets for the EAX
@@ -107,37 +107,37 @@ eax_digest (struct eax_ctx *eax, const struct eax_key *key,
   do {									\
     (set_key)(&(ctx)->cipher, (data));					\
     if (0) (encrypt) (&(ctx)->cipher, 0, (void *) 0, (void *) 0);	\
-    eax_set_key (&(ctx)->key, &(ctx)->cipher, (nettle_crypt_func *) encrypt); \
+    eax_set_key (&(ctx)->key, &(ctx)->cipher, (nettle_cipher_func *) encrypt); \
   } while (0)
 
 #define EAX_SET_NONCE(ctx, encrypt, length, nonce) \
   (0 ? (encrypt) (&(ctx)->cipher, 0, (void *) 0, (void *) 0)	\
    : eax_set_nonce (&(ctx)->eax, &(ctx)->key,			\
-		    &(ctx)->cipher, (nettle_crypt_func *) (encrypt),	\
+		    &(ctx)->cipher, (nettle_cipher_func *) (encrypt),	\
 		    (length), (nonce)))
 
 #define EAX_UPDATE(ctx, encrypt, length, data)				\
   (0 ? (encrypt) (&(ctx)->cipher, 0, (void *) 0, (void *) 0)		\
    : eax_update (&(ctx)->eax, &(ctx)->key,				\
-		 &(ctx)->cipher, (nettle_crypt_func *) (encrypt),	\
+		 &(ctx)->cipher, (nettle_cipher_func *) (encrypt),	\
 		 (length), (data)))
 
 #define EAX_ENCRYPT(ctx, encrypt, length, dst, src)			\
   (0 ? (encrypt) (&(ctx)->cipher, 0, (void *) 0, (void *) 0)		\
    : eax_encrypt (&(ctx)->eax, &(ctx)->key,				\
-		 &(ctx)->cipher, (nettle_crypt_func *) (encrypt),	\
+		 &(ctx)->cipher, (nettle_cipher_func *) (encrypt),	\
 		  (length), (dst), (src)))
 
 #define EAX_DECRYPT(ctx, encrypt, length, dst, src)			\
   (0 ? (encrypt) (&(ctx)->cipher, 0, (void *) 0, (void *) 0)		\
    : eax_decrypt (&(ctx)->eax, &(ctx)->key,				\
-		 &(ctx)->cipher, (nettle_crypt_func *) (encrypt),	\
+		 &(ctx)->cipher, (nettle_cipher_func *) (encrypt),	\
 		  (length), (dst), (src)))
 
 #define EAX_DIGEST(ctx, encrypt, length, digest)			\
   (0 ? (encrypt) (&(ctx)->cipher, 0, (void *) 0, (void *) 0)		\
    : eax_digest (&(ctx)->eax, &(ctx)->key,				\
-		 &(ctx)->cipher, (nettle_crypt_func *) (encrypt),	\
+		 &(ctx)->cipher, (nettle_cipher_func *) (encrypt),	\
 		 (length), (digest)))
 
 struct eax_aes128_ctx EAX_CTX(struct aes128_ctx);
