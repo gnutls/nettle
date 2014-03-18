@@ -69,10 +69,10 @@
   <p class='done'>
     Drop key size argument from <tt>nettle_set_key_func</tt>.
   </p>
-  <p class='should'>
+  <p class='done'>
     Use the nettle_cipher abstraction only for block ciphers (in
-    particular, exclude arcfour). Use a const for the ctx argument to
-    nettle_crypt_func.
+    particular, exclude arcfour). Introduce nettle_cipher_func, with
+    const for the ctx argument.
   </p>
   <p class='wish'>
     Consider making a public interface similar to nettle_aead? With
