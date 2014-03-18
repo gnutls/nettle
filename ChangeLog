@@ -1,5 +1,14 @@
 2014-03-18  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/nettle-benchmark.c (main): Add benchmarking of arcfour,
+	salsa20 and chacha, via time_aead.
+
+	* nettle-internal.c (nettle_arcfour128): Define, as a struct
+	nettle_aead (with NULL set_nonce, update, and digest methods).
+	* examples/nettle-openssl.c (nettle_openssl_arcfour128): Likewise.
+	* nettle-internal.h (nettle_arcfour128)
+	(nettle_openssl_arcfour128): Declare.
+
 	* nettle-types.h (nettle_cipher_func): New typedef, similar to
 	nettle_crypt_func, but with a const context, intended for block
 	ciphers.

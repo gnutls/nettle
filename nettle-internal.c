@@ -32,6 +32,7 @@
 #include <stdlib.h>
 
 #include "nettle-internal.h"
+#include "arcfour.h"
 #include "blowfish.h"
 #include "des.h"
 #include "chacha.h"
@@ -71,6 +72,17 @@ nettle_blowfish128 =
     (nettle_cipher_func *) blowfish_decrypt
   };
 
+const struct nettle_aead
+nettle_arcfour128 = {
+  "arcfour128", sizeof(struct arcfour_ctx),
+  1, ARCFOUR128_KEY_SIZE, 0, 0,
+  (nettle_set_key_func *) arcfour128_set_key,
+  (nettle_set_key_func *) arcfour128_set_key,
+  NULL, NULL,
+  (nettle_crypt_func *) arcfour_crypt,
+  (nettle_crypt_func *) arcfour_crypt,
+  NULL,  
+};
 
 const struct nettle_aead
 nettle_chacha = {
@@ -113,4 +125,3 @@ nettle_salsa20r12 = {
   (nettle_crypt_func *) salsa20r12_crypt,
   NULL,
 };
-

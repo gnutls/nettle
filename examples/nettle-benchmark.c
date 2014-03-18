@@ -747,6 +747,10 @@ main(int argc, char **argv)
 
   const struct nettle_aead *aeads[] =
     {
+      /* Stream ciphers */
+      &nettle_arcfour128, OPENSSL(&nettle_openssl_arcfour128)
+      &nettle_salsa20, &nettle_salsa20r12, &nettle_chacha,
+      /* Proper AEAD algorithme. */
       &nettle_gcm_aes128,
       &nettle_gcm_aes192,
       &nettle_gcm_aes256,

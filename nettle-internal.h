@@ -63,6 +63,7 @@ extern const struct nettle_cipher nettle_unified_aes192;
 extern const struct nettle_cipher nettle_unified_aes256;
 
 /* Stream ciphers treated as aead algorithms with no authentication. */
+extern const struct nettle_aead nettle_arcfour128;
 extern const struct nettle_aead nettle_chacha;
 extern const struct nettle_aead nettle_salsa20;
 extern const struct nettle_aead nettle_salsa20r12;
@@ -75,6 +76,7 @@ extern const struct nettle_cipher nettle_openssl_aes256;
 extern const struct nettle_cipher nettle_openssl_blowfish128;
 extern const struct nettle_cipher nettle_openssl_des;
 extern const struct nettle_cipher nettle_openssl_cast128;
+extern const struct nettle_aead nettle_openssl_arcfour128;
 
 extern const struct nettle_hash nettle_openssl_md5;
 extern const struct nettle_hash nettle_openssl_sha1;
