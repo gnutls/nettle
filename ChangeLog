@@ -1,7 +1,12 @@
 2014-03-20  Niels Möller  <nisse@lysator.liu.se>
 
 	From Joachim Strömbergson:
-	* sha512.c (K): Indentation fix. 
+	* sha512.c (K): Indentation fix.
+	(sha512_224_init, sha512_224_digest, sha512_256_init)
+	(sha512_256_digest): New functions.
+	* sha2.h: Add prototypes.
+	(sha512_224_update, sha512_256_update): New aliases for
+	sha512_update.
 
 2014-03-18  Niels Möller  <nisse@lysator.liu.se>
 
