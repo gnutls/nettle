@@ -11,6 +11,7 @@
 /camellia-test
 /cast128-test
 /cbc-test
+/ccm-test
 /ctr-test
 /cxx-test
 /des-compat-test

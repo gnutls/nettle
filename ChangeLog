@@ -1,3 +1,16 @@
+2014-03-23  Niels Möller  <nisse@lysator.liu.se>
+
+	From Owen Kirby:
+	* ccm.c: New file.
+	* ccm.h: New file.
+	* ccm-aes128.c: New file.
+	* ccm-aes192.c: New file.
+	* ccm-aes256.c: New file.
+	* Makefile.in (nettle_SOURCES): Added ccm source files.
+	(HEADERS): Added ccm.h.
+	* testsuite/ccm-test.c: New file.
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Added ccm-test.c.
+
 2014-03-20  Niels Möller  <nisse@lysator.liu.se>
 
 	From Joachim Strömbergson:
