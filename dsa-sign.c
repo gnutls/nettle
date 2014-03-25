@@ -36,12 +36,12 @@
 
 
 int
-_dsa_sign(const struct dsa_params *params,
-	  const mpz_t key,
-	  void *random_ctx, nettle_random_func *random,
-	  size_t digest_size,
-	  const uint8_t *digest,
-	  struct dsa_signature *signature)
+dsa_sign(const struct dsa_params *params,
+	 const mpz_t key,
+	 void *random_ctx, nettle_random_func *random,
+	 size_t digest_size,
+	 const uint8_t *digest,
+	 struct dsa_signature *signature)
 {
   mpz_t k;
   mpz_t h;
@@ -84,16 +84,4 @@ _dsa_sign(const struct dsa_params *params,
   mpz_clear(tmp);
 
   return res;
-}
-
-int
-dsa_sign(const struct dsa_value *key,
-	 void *random_ctx, nettle_random_func *random,
-	 size_t digest_size,
-	 const uint8_t *digest,
-	 struct dsa_signature *signature)
-{
-  return _dsa_sign (key->params, key->x,
-		    random_ctx, random,
-		    digest_size, digest, signature);
 }

@@ -266,8 +266,8 @@ bench_rsa_clear (void *p)
 struct dsa_ctx
 {
   struct dsa_params params;
-  struct dsa_value pub;
-  struct dsa_value key;
+  mpz_t pub;
+  mpz_t key;
   struct knuth_lfib_ctx lfib;
   struct dsa_signature s;
   uint8_t *digest;
@@ -294,8 +294,8 @@ bench_dsa_init (unsigned size)
   ctx = xalloc(sizeof(*ctx));
 
   dsa_params_init (&ctx->params);
-  dsa_value_init (&ctx->pub, &ctx->params);
-  dsa_value_init (&ctx->key, &ctx->params);
+  mpz_init (ctx->pub);
+  mpz_init (ctx->key);
   dsa_signature_init (&ctx->s);
   knuth_lfib_init (&ctx->lfib, 1);
 
@@ -305,12 +305,12 @@ bench_dsa_init (unsigned size)
   if (! (sexp_transport_iterator_first (&i, sizeof(dsa1024) - 1, dsa1024)
 	 && sexp_iterator_check_type (&i, "private-key")
 	 && sexp_iterator_check_type (&i, "dsa")
-	 && dsa_keypair_from_sexp_alist (&ctx->params, &ctx->pub, &ctx->key, 0, DSA_SHA1_Q_BITS, &i)) )
+	 && dsa_keypair_from_sexp_alist (&ctx->params, ctx->pub, ctx->key, 0, DSA_SHA1_Q_BITS, &i)) )
     die ("Internal error.\n");
 
   ctx->digest = hash_string (&nettle_sha1, 3, "foo");
 
-  dsa_sign (&ctx->key,
+  dsa_sign (&ctx->params, ctx->key,
 	    &ctx->lfib, (nettle_random_func *)knuth_lfib_random,
 	    SHA1_DIGEST_SIZE, ctx->digest, &ctx->s);
 
@@ -324,7 +324,7 @@ bench_dsa_sign (void *p)
   struct dsa_signature s;
 
   dsa_signature_init (&s);
-  dsa_sign (&ctx->key,
+  dsa_sign (&ctx->params, ctx->key,
 	    &ctx->lfib, (nettle_random_func *)knuth_lfib_random,
 	    SHA1_DIGEST_SIZE, ctx->digest, &s);
   dsa_signature_clear (&s);
@@ -334,7 +334,7 @@ static void
 bench_dsa_verify (void *p)
 {
   struct dsa_ctx *ctx = p;
-  if (! dsa_verify (&ctx->pub, SHA1_DIGEST_SIZE, ctx->digest, &ctx->s))
+  if (! dsa_verify (&ctx->params, ctx->pub, SHA1_DIGEST_SIZE, ctx->digest, &ctx->s))
     die ("Internal error, dsa_sha1_verify_digest failed.\n");
 }
 
@@ -342,9 +342,9 @@ static void
 bench_dsa_clear (void *p)
 {
   struct dsa_ctx *ctx = p;
-  dsa_value_clear (&ctx->pub);
-  dsa_value_clear (&ctx->key);
   dsa_params_clear (&ctx->params);
+  mpz_clear (ctx->pub);
+  mpz_clear (ctx->key);
   dsa_signature_clear (&ctx->s);
   free (ctx->digest);
   free (ctx);

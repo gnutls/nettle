@@ -1,4 +1,4 @@
-/* dsa-keygen.c
+/* dsa-compat-keygen.c
  *
  * Generation of DSA keypairs
  */
@@ -30,7 +30,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
-#include "dsa.h"
+#include "dsa-compat.h"
 
 #include "bignum.h"
 
@@ -38,16 +38,14 @@
 /* Valid sizes, according to FIPS 186-3 are (1024, 160), (2048, 224),
    (2048, 256), (3072, 256). */
 int
-dsa_generate_keypair_old(struct dsa_public_key *pub,
-			 struct dsa_private_key *key,
-			 void *random_ctx, nettle_random_func *random,
-			 void *progress_ctx, nettle_progress_func *progress,
-			 unsigned p_bits, unsigned q_bits)
+dsa_compat_generate_keypair(struct dsa_public_key *pub,
+			    struct dsa_private_key *key,
+			    void *random_ctx, nettle_random_func *random,
+			    void *progress_ctx, nettle_progress_func *progress,
+			    unsigned p_bits, unsigned q_bits)
 {
   struct dsa_params *params;
-  struct dsa_value vpub;
-  struct dsa_value vkey;
-  
+
   switch (q_bits)
     {
     case 160:
@@ -72,15 +70,7 @@ dsa_generate_keypair_old(struct dsa_public_key *pub,
 			    p_bits, q_bits))
     return 0;
 
-  dsa_value_init (&vpub, params);
-  dsa_value_init (&vkey, params);
-  
-  dsa_generate_keypair (&vpub, &vkey, random_ctx, random);
-  mpz_swap (pub->y, vpub.x);
-  mpz_swap (key->x, vkey.x);
-
-  dsa_value_clear (&vpub);
-  dsa_value_clear (&vkey);
+  dsa_generate_keypair_new (params, pub->y, key->x, random_ctx, random);
 
   return 1;
 }

@@ -312,29 +312,30 @@ static int
 convert_dsa_private_key(struct nettle_buffer *buffer, size_t length, const uint8_t *data)
 {
   struct dsa_params params;
-  struct dsa_value pub;
-  struct dsa_value priv;
+  mpz_t pub;
+  mpz_t priv;
   int res;
 
   dsa_params_init (&params);
-  dsa_value_init (&pub, &params);
-  dsa_value_init (&priv, &params);
+  mpz_init (pub);
+  mpz_init (priv);
 
-  if (dsa_openssl_private_key_from_der(&params, &pub, &priv, 0,
+  if (dsa_openssl_private_key_from_der(&params, pub, priv, 0,
 				       length, data))
     {
       /* Reuses the buffer */
       nettle_buffer_reset(buffer);
-      res = dsa_keypair_to_sexp(buffer, NULL, &pub, &priv);
+      res = dsa_keypair_to_sexp(buffer, NULL, &params, pub, priv);
     }
   else
     {
       werror("Invalid OpenSSL private key.\n");
       res = 0;
     }
-  dsa_value_clear (&pub);
-  dsa_value_clear (&priv);
   dsa_params_clear (&params);
+  mpz_clear (pub);
+  mpz_clear (priv);
+
   return res;
 }
 
@@ -408,19 +409,19 @@ convert_public_key(struct nettle_buffer *buffer, size_t length, const uint8_t *d
 		  && asn1_der_decode_constructed_last(&j) == ASN1_ITERATOR_PRIMITIVE)
 		{
 		  struct dsa_params params;
-		  struct dsa_value pub;
+		  mpz_t pub;
 
 		  dsa_params_init (&params);
-		  dsa_value_init (&pub, &params);
+		  mpz_init (pub);
 
 		  if (dsa_params_from_der_iterator(&params, 0, 0, &i)
-		      && dsa_public_key_from_der_iterator(&pub, &j))
+		      && dsa_public_key_from_der_iterator(&params, pub, &j))
 		    {
 		      nettle_buffer_reset(buffer);
-		      res = dsa_keypair_to_sexp(buffer, NULL, &pub, NULL) > 0;
+		      res = dsa_keypair_to_sexp(buffer, NULL, &params, pub, NULL) > 0;
 		    }
-		  dsa_value_clear(&pub);
 		  dsa_params_clear(&params);
+		  mpz_clear(pub);
 		}
 	      if (!res)
 		werror("SubjectPublicKeyInfo: Invalid DSA key.\n");

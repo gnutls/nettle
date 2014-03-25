@@ -35,26 +35,25 @@
 int
 dsa_keypair_to_sexp(struct nettle_buffer *buffer,
 		    const char *algorithm_name,
-		    const struct dsa_value *pub,
-		    const struct dsa_value *priv)
+		    const struct dsa_params *params,
+                    const mpz_t pub,
+                    const mpz_t priv)
 {
-  const struct dsa_params *params = pub->params;
   if (!algorithm_name)
     algorithm_name = "dsa";
 
   if (priv)
     {
-      assert (priv->params == params);
       return sexp_format(buffer,
 			 "(private-key(%0s(p%b)(q%b)"
 		       "(g%b)(y%b)(x%b)))",
 			 algorithm_name, params->p, params->q,
-			 params->g, pub->x, priv->x);
+			 params->g, pub, priv);
     }
   else
     return sexp_format(buffer,
 		       "(public-key(%0s(p%b)(q%b)"
 		       "(g%b)(y%b)))",
 		       algorithm_name, params->p, params->q,
-		       params->g, pub->x);
+		       params->g, pub);
 }

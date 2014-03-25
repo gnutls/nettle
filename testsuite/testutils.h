@@ -18,12 +18,15 @@
 
 #if WITH_HOGWEED
 # include "rsa.h"
-# include "dsa.h"
+# include "dsa-compat.h"
 # include "ecc-curve.h"
 # include "ecc.h"
 # include "ecc-internal.h"
 # include "ecdsa.h"
 # include "gmp-glue.h"
+
+/* Undo some dsa-compat name mangling */
+#undef dsa_generate_keypair
 #endif
 
 #include "nettle-meta.h"
@@ -198,20 +201,23 @@ test_dsa256(const struct dsa_public_key *pub,
 	    const struct dsa_signature *expected);
 
 void
-test_dsa_sign(const struct dsa_public_key *pub,
-	      const struct dsa_private_key *key,
+test_dsa_sign(const struct dsa_params *params,
+	      const mpz_t pub,
+	      const mpz_t key,
 	      const struct nettle_hash *hash,
 	      const struct dsa_signature *expected);
 
 void
-test_dsa_verify(const struct dsa_public_key *pub,
+test_dsa_verify(const struct dsa_params *params,
+		const mpz_t pub,
 		const struct nettle_hash *hash,
 		struct tstring *msg,
 		const struct dsa_signature *ref);
 
 void
-test_dsa_key(struct dsa_public_key *pub,
-	     struct dsa_private_key *key,
+test_dsa_key(const struct dsa_params *params,
+	     const mpz_t pub,
+	     const mpz_t key,
 	     unsigned q_size);
 
 extern const struct ecc_curve * const ecc_curves[];

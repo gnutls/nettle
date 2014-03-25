@@ -69,23 +69,24 @@ dsa_params_from_der_iterator(struct dsa_params *params,
 }
 
 int
-dsa_public_key_from_der_iterator(struct dsa_value *pub,
+dsa_public_key_from_der_iterator(const struct dsa_params *params,
+				 mpz_t pub,
 				 struct asn1_der_iterator *i)
 {
   /* DSAPublicKey ::= INTEGER
   */
 
   return (i->type == ASN1_INTEGER
-	  && asn1_der_get_bignum(i, pub->x,
-				 mpz_sizeinbase (pub->params->p, 2))
-	  && mpz_sgn(pub->x) > 0
-	  && mpz_cmp(pub->x, pub->params->p) < 0);    
+	  && asn1_der_get_bignum(i, pub,
+				 mpz_sizeinbase (params->p, 2))
+	  && mpz_sgn(pub) > 0
+	  && mpz_cmp(pub, params->p) < 0);
 }
 
 int
 dsa_openssl_private_key_from_der_iterator(struct dsa_params *params,
-					  struct dsa_value *pub,
-					  struct dsa_value *priv,
+					  mpz_t pub,
+					  mpz_t priv,
 					  unsigned p_max_bits,
 					  struct asn1_der_iterator *i)
 {
@@ -101,8 +102,6 @@ dsa_openssl_private_key_from_der_iterator(struct dsa_params *params,
 
   uint32_t version;
 
-  assert (pub->params == params);
-  assert (priv->params == params);
   if (i->type == ASN1_SEQUENCE
 	  && asn1_der_decode_constructed_last(i) == ASN1_ITERATOR_PRIMITIVE
 	  && i->type == ASN1_INTEGER
@@ -114,9 +113,9 @@ dsa_openssl_private_key_from_der_iterator(struct dsa_params *params,
       return (GET(i, params->q, DSA_SHA1_Q_BITS)
 	      && GET(i, params->g, p_bits)
 	      && mpz_cmp (params->g, params->p) < 0
-	      && GET(i, pub->x, p_bits)
-	      && mpz_cmp (pub->x, params->p) < 0
-	      && GET(i, priv->x, DSA_SHA1_Q_BITS)
+	      && GET(i, pub, p_bits)
+	      && mpz_cmp (pub, params->p) < 0
+	      && GET(i, priv, DSA_SHA1_Q_BITS)
 	      && asn1_der_iterator_next(i) == ASN1_ITERATOR_END);
     }
   else
@@ -125,8 +124,8 @@ dsa_openssl_private_key_from_der_iterator(struct dsa_params *params,
 
 int
 dsa_openssl_private_key_from_der(struct dsa_params *params,
-				 struct dsa_value *pub,
-				 struct dsa_value *priv,
+				 mpz_t pub,
+				 mpz_t priv,
 				 unsigned p_max_bits,
 				 size_t length, const uint8_t *data)
 {

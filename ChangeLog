@@ -1,3 +1,18 @@
+2014-03-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* dsa.h: Deleted old interface (moved to dsa-compat.h).
+	(struct dsa_value): Deleted. Updated many files.
+
+	* Makefile.in (hogweed_SOURCES): Add dsa-compat.c and
+	dsa-compat-keygen.c, remove dsa-keygen-old.c.
+	(HEADERS): Add dsa-compat.h.
+
+	* dsa-compat.c: New file.
+	* dsa-compat.h: New file. Include in corresponding C files.
+
+	* dsa-compat-keygen.c: Renamed file, ...
+	* dsa-keygen-old.c: ... old name.
+
 2014-03-11  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/hogweed-benchmark.c: Update dsa benchmarking to use new

@@ -27,7 +27,6 @@
 # include "config.h"
 #endif
 
-#include <assert.h>
 #include <stdlib.h>
 
 #include "dsa.h"
@@ -39,22 +38,18 @@
    (2048, 256), (3072, 256). Currenty, we use only q_bits of 160 or
    256. */
 void
-dsa_generate_keypair (struct dsa_value *pub,
-		      struct dsa_value *key,
+dsa_generate_keypair (const struct dsa_params *params,
+		      mpz_t pub, mpz_t key,
 
 		      void *random_ctx, nettle_random_func *random)
 {
-  const struct dsa_params *params;
   mpz_t r;
-
-  assert (pub->params == key->params);
-  params = pub->params;
 
   mpz_init_set(r, params->q);
   mpz_sub_ui(r, r, 2);
-  nettle_mpz_random(key->x, random_ctx, random, r);
+  nettle_mpz_random(key, random_ctx, random, r);
 
-  mpz_add_ui(key->x, key->x, 1);
-  mpz_powm(pub->x, params->g, key->x, params->p);
+  mpz_add_ui(key, key, 1);
+  mpz_powm(pub, params->g, key, params->p);
   mpz_clear (r);
 }

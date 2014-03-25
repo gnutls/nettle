@@ -21,31 +21,31 @@ test_main(void)
 
   knuth_lfib_init(&lfib, 13);
 
-  ASSERT (dsa_generate_keypair_old(&pub, &key,
+  ASSERT (dsa_compat_generate_keypair(&pub, &key,
 			       &lfib,
 			       (nettle_random_func *) knuth_lfib_random,
 			       NULL, verbose ? progress : NULL,
 			       1024, 160));
 
-  test_dsa_key(&pub, &key, 160);
+  test_dsa_key((const struct dsa_params *) &pub, pub.y, key.x, 160);
   test_dsa160(&pub, &key, NULL);
 
-  ASSERT (dsa_generate_keypair_old(&pub, &key,
+  ASSERT (dsa_compat_generate_keypair(&pub, &key,
 			       &lfib,
 			       (nettle_random_func *) knuth_lfib_random,
 			       NULL, verbose ? progress : NULL,
 			       2048, 256));
 
-  test_dsa_key(&pub, &key, 256);
+  test_dsa_key((const struct dsa_params *) &pub, pub.y, key.x, 256);
   test_dsa256(&pub, &key, NULL);
   
-  ASSERT (dsa_generate_keypair_old(&pub, &key,
+  ASSERT (dsa_compat_generate_keypair(&pub, &key,
 			       &lfib,
 			       (nettle_random_func *) knuth_lfib_random,
 			       NULL, verbose ? progress : NULL,
 			       2048, 224));
 
-  test_dsa_key(&pub, &key, 224);
+  test_dsa_key((const struct dsa_params *) &pub, pub.y, key.x, 224);
   test_dsa256(&pub, &key, NULL);
   
   dsa_public_key_clear(&pub);

@@ -34,7 +34,7 @@
 #include "bignum.h"
 
 int
-_dsa_verify(const struct dsa_params *params,
+dsa_verify(const struct dsa_params *params,
 	   const mpz_t key,
 	   size_t digest_size,
 	   const uint8_t *digest,
@@ -96,15 +96,4 @@ _dsa_verify(const struct dsa_params *params,
   mpz_clear(v);
 
   return res;
-}
-
-int
-dsa_verify(const struct dsa_value *pub,
-	   size_t digest_size,
-	   const uint8_t *digest,
-	   const struct dsa_signature *signature)
-{
-  return _dsa_verify (pub->params, pub->x,
-		      digest_size, digest,
-		      signature);
 }

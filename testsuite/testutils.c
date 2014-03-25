@@ -1162,7 +1162,8 @@ test_dsa_sign(const struct dsa_public_key *pub,
 #endif
 
 void
-test_dsa_verify(const struct dsa_public_key *pub,
+test_dsa_verify(const struct dsa_params *params,
+		const mpz_t pub,
 		const struct nettle_hash *hash,
 		struct tstring *msg,
 		const struct dsa_signature *ref)
@@ -1181,21 +1182,21 @@ test_dsa_verify(const struct dsa_public_key *pub,
   mpz_set (signature.r, ref->r);
   mpz_set (signature.s, ref->s);
 
-  ASSERT (_dsa_verify ((struct dsa_params *) pub, pub->y,
+  ASSERT (dsa_verify (params, pub,
 		       hash->digest_size, digest,
 		       &signature));
 
   /* Try bad signature */
   mpz_combit(signature.r, 17);
-  ASSERT (!_dsa_verify ((struct dsa_params *) pub, pub->y,
-			hash->digest_size, digest,
-			&signature));
+  ASSERT (!dsa_verify (params, pub,
+		       hash->digest_size, digest,
+		       &signature));
   
   /* Try bad data */
   digest[hash->digest_size / 2-1] ^= 8;
-  ASSERT (!_dsa_verify ((struct dsa_params *) pub, pub->y,
-			hash->digest_size, digest,
-			ref));
+  ASSERT (!dsa_verify (params, pub,
+		       hash->digest_size, digest,
+		       ref));
 
   free (ctx);
   free (digest);
@@ -1203,32 +1204,33 @@ test_dsa_verify(const struct dsa_public_key *pub,
 }
 
 void
-test_dsa_key(struct dsa_public_key *pub,
-	     struct dsa_private_key *key,
+test_dsa_key(const struct dsa_params *params,
+	     const mpz_t pub,
+	     const mpz_t key,
 	     unsigned q_size)
 {
   mpz_t t;
 
   mpz_init(t);
 
-  ASSERT(mpz_sizeinbase(pub->q, 2) == q_size);
-  ASSERT(mpz_sizeinbase(pub->p, 2) >= DSA_SHA1_MIN_P_BITS);
+  ASSERT(mpz_sizeinbase(params->q, 2) == q_size);
+  ASSERT(mpz_sizeinbase(params->p, 2) >= DSA_SHA1_MIN_P_BITS);
   
-  ASSERT(mpz_probab_prime_p(pub->p, 10));
+  ASSERT(mpz_probab_prime_p(params->p, 10));
 
-  ASSERT(mpz_probab_prime_p(pub->q, 10));
+  ASSERT(mpz_probab_prime_p(params->q, 10));
 
-  mpz_fdiv_r(t, pub->p, pub->q);
+  mpz_fdiv_r(t, params->p, params->q);
 
   ASSERT(0 == mpz_cmp_ui(t, 1));
 
-  ASSERT(mpz_cmp_ui(pub->g, 1) > 0);
+  ASSERT(mpz_cmp_ui(params->g, 1) > 0);
   
-  mpz_powm(t, pub->g, pub->q, pub->p);
+  mpz_powm(t, params->g, params->q, params->p);
   ASSERT(0 == mpz_cmp_ui(t, 1));
   
-  mpz_powm(t, pub->g, key->x, pub->p);
-  ASSERT(0 == mpz_cmp(t, pub->y));
+  mpz_powm(t, params->g, key, params->p);
+  ASSERT(0 == mpz_cmp(t, pub));
 
   mpz_clear(t);
 }

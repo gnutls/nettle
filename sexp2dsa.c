@@ -49,8 +49,8 @@ do {						\
 
 int
 dsa_keypair_from_sexp_alist(struct dsa_params *params,
-			    struct dsa_value *pub,
-			    struct dsa_value *priv,
+			    mpz_t pub,
+			    mpz_t priv,
 			    unsigned p_max_bits,
 			    unsigned q_bits,
 			    struct sexp_iterator *i)
@@ -60,7 +60,7 @@ dsa_keypair_from_sexp_alist(struct dsa_params *params,
   struct sexp_iterator values[5];
   unsigned nvalues = priv ? 5 : 4;
   unsigned p_bits;
-  assert (pub->params == params);
+
   if (!sexp_iterator_assoc(i, nvalues, names, values))
     return 0;
 
@@ -74,15 +74,14 @@ dsa_keypair_from_sexp_alist(struct dsa_params *params,
   GET(params->g, p_bits, &values[2]);
   if (mpz_cmp (params->g, params->p) >= 0)
     return 0;
-  GET(pub->x, p_bits, &values[3]);
-  if (mpz_cmp (pub->x, params->p) >= 0)
+  GET(pub, p_bits, &values[3]);
+  if (mpz_cmp (pub, params->p) >= 0)
     return 0;
 
   if (priv)
     {
-      assert (priv->params == params);
-      GET(priv->x, mpz_sizeinbase (params->q, 2), &values[4]);
-      if (mpz_cmp (priv->x, params->q) >= 0)
+      GET(priv, mpz_sizeinbase (params->q, 2), &values[4]);
+      if (mpz_cmp (priv, params->q) >= 0)
 	return 0;
     }
 
@@ -91,8 +90,8 @@ dsa_keypair_from_sexp_alist(struct dsa_params *params,
 
 int
 dsa_sha1_keypair_from_sexp(struct dsa_params *params,
-			   struct dsa_value *pub,
-			   struct dsa_value *priv,
+			   mpz_t pub,
+			   mpz_t priv,
 			   unsigned p_max_bits, 
 			   size_t length, const uint8_t *expr)
 {
@@ -107,8 +106,8 @@ dsa_sha1_keypair_from_sexp(struct dsa_params *params,
 
 int
 dsa_sha256_keypair_from_sexp(struct dsa_params *params,
-			     struct dsa_value *pub,
-			     struct dsa_value *priv,
+			     mpz_t pub,
+			     mpz_t priv,
 			     unsigned p_max_bits, 
 			     size_t length, const uint8_t *expr)
 {
