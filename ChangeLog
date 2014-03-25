@@ -1,5 +1,8 @@
 2014-03-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/dsa-keygen-test.c (test_main): Do dsa_param cast once,
+	and assign to variable.
+
 	* dsa.h: Deleted old interface (moved to dsa-compat.h).
 	(struct dsa_value): Deleted. Updated many files.
 
