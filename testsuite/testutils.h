@@ -27,6 +27,7 @@
 
 /* Undo some dsa-compat name mangling */
 #undef dsa_generate_keypair
+#define dsa_generate_keypair nettle_dsa_generate_keypair
 #endif
 
 #include "nettle-meta.h"
