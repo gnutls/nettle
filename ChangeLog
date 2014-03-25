@@ -1,7 +1,8 @@
 2014-03-25  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/dsa-keygen-test.c (test_main): Do dsa_param cast once,
-	and assign to variable.
+	and assign to variable. Test dsa_generate_params and
+	dsa_generate_keypair with a large q; p_bits = 1024, q_bits = 768.
 
 	* dsa.h: Deleted old interface (moved to dsa-compat.h).
 	(struct dsa_value): Deleted. Updated many files.

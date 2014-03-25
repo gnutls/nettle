@@ -49,6 +49,21 @@ test_main(void)
 
   test_dsa_key(params, pub.y, key.x, 224);
   test_dsa256(&pub, &key, NULL);
+
+
+  /* Test with large q */
+  if (!dsa_generate_params (params,
+			    &lfib,
+			    (nettle_random_func *) knuth_lfib_random,
+			    NULL, verbose ? progress : NULL,
+			    1024, 768))
+    FAIL();
+
+  dsa_generate_keypair (params, pub.y, key.x,
+			&lfib,
+			(nettle_random_func *) knuth_lfib_random);
+  test_dsa_key(params, pub.y, key.x, 768);
+  test_dsa256(&pub, &key, NULL);
   
   dsa_public_key_clear(&pub);
   dsa_private_key_clear(&key);
