@@ -5,6 +5,7 @@
 /* nettle, low-level cryptographics library
  *
  * Copyright (C) 2005, 2009 Niels Möller, Magnus Holmgren
+ * Copyright (C) 2014 Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -311,29 +312,30 @@ convert_rsa_private_key(struct nettle_buffer *buffer, size_t length, const uint8
 static int
 convert_dsa_private_key(struct nettle_buffer *buffer, size_t length, const uint8_t *data)
 {
-  struct dsa_public_key pub;
-  struct dsa_private_key priv;
+  struct dsa_params params;
+  mpz_t pub;
+  mpz_t priv;
   int res;
-  
-  dsa_public_key_init(&pub);
-  dsa_private_key_init(&priv);
 
-  if (dsa_openssl_private_key_from_der(&pub, &priv, 0,
+  dsa_params_init (&params);
+  mpz_init (pub);
+  mpz_init (priv);
+
+  if (dsa_openssl_private_key_from_der(&params, pub, priv, 0,
 				       length, data))
     {
       /* Reuses the buffer */
       nettle_buffer_reset(buffer);
-      res = dsa_keypair_to_sexp(buffer, NULL,
-				(const struct dsa_params *) &pub,
-				pub.y, priv.x);
+      res = dsa_keypair_to_sexp(buffer, NULL, &params, pub, priv);
     }
   else
     {
       werror("Invalid OpenSSL private key.\n");
       res = 0;
     }
-  dsa_public_key_clear(&pub);
-  dsa_private_key_clear(&priv);
+  dsa_params_clear (&params);
+  mpz_clear (pub);
+  mpz_clear (priv);
 
   return res;
 }
@@ -407,19 +409,21 @@ convert_public_key(struct nettle_buffer *buffer, size_t length, const uint8_t *d
 	      if (asn1_der_iterator_next(&j) == ASN1_ITERATOR_CONSTRUCTED
 		  && asn1_der_decode_constructed_last(&j) == ASN1_ITERATOR_PRIMITIVE)
 		{
-		  struct dsa_public_key pub;
+		  struct dsa_params params;
+		  mpz_t pub;
 
-		  dsa_public_key_init(&pub);
+		  dsa_params_init (&params);
+		  mpz_init (pub);
 
-		  if (dsa_params_from_der_iterator(&pub, 0, &i)
-		      && dsa_public_key_from_der_iterator(&pub, 0, &j))
+		  if (dsa_params_from_der_iterator(&params, 0, 0, &i)
+		      && dsa_public_key_from_der_iterator(&params, pub, &j))
 		    {
 		      nettle_buffer_reset(buffer);
 		      res = dsa_keypair_to_sexp(buffer, NULL,
-						(const struct dsa_params *) &pub,
-						pub.y, NULL) > 0;
+						&params, pub, NULL) > 0;
 		    }
-		  dsa_public_key_clear(&pub);
+		  dsa_params_clear(&params);
+		  mpz_clear(pub);
 		}
 	      if (!res)
 		werror("SubjectPublicKeyInfo: Invalid DSA key.\n");

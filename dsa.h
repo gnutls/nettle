@@ -293,23 +293,26 @@ dsa_sha256_keypair_from_sexp(struct dsa_params *params,
 struct asn1_der_iterator;
 
 int
-dsa_params_from_der_iterator(struct dsa_public_key *pub,
-			     unsigned p_max_bits,
-			     struct asn1_der_iterator *i);
+dsa_params_from_der_iterator(struct dsa_params *params,
+			     unsigned max_bits, unsigned q_bits,
+ 			     struct asn1_der_iterator *i);
+
 int
-dsa_public_key_from_der_iterator(struct dsa_public_key *pub,
-				 unsigned p_max_bits,
+dsa_public_key_from_der_iterator(const struct dsa_params *params,
+				 mpz_t pub,
 				 struct asn1_der_iterator *i);
 
 int
-dsa_openssl_private_key_from_der_iterator(struct dsa_public_key *pub,
-					  struct dsa_private_key *priv,
+dsa_openssl_private_key_from_der_iterator(struct dsa_params *params,
+					  mpz_t pub,
+					  mpz_t priv,
 					  unsigned p_max_bits,
 					  struct asn1_der_iterator *i);
 
 int
-dsa_openssl_private_key_from_der(struct dsa_public_key *pub,
-				 struct dsa_private_key *priv,
+dsa_openssl_private_key_from_der(struct dsa_params *params,
+				 mpz_t pub,
+				 mpz_t priv,
 				 unsigned p_max_bits, 
 				 size_t length, const uint8_t *data);
 

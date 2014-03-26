@@ -1,5 +1,19 @@
 2014-03-26  Niels Möller  <nisse@lysator.liu.se>
 
+	* der2dsa.c (dsa_params_from_der_iterator): Converted to new DSA
+	interface. Allow q_size == 0, meaning any q < p is allowed.
+	Additional validity checks.
+	(dsa_public_key_from_der_iterator): Converted to new DSA
+	interface. Also check that the public value is in the correct
+	range.
+	(dsa_openssl_private_key_from_der_iterator): Converted
+	to new DSA interface. Additional validity checks.
+	(dsa_openssl_private_key_from_der): Converted to new DSA
+	interface.
+	* tools/pkcs1-conv.c (convert_dsa_private_key): Update to use
+	struct dsa_params, and adapt to the der decoding changes.
+	(convert_public_key): Likewise.
+
 	* examples/hogweed-benchmark.c: Update dsa benchmarking to use new
 	DSA interface.
 
