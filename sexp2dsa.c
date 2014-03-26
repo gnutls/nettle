@@ -47,8 +47,9 @@ do {						\
  */
 
 int
-dsa_keypair_from_sexp_alist(struct dsa_public_key *pub,
-			    struct dsa_private_key *priv,
+dsa_keypair_from_sexp_alist(struct dsa_params *params,
+			    mpz_t pub,
+			    mpz_t priv,
 			    unsigned p_max_bits,
 			    unsigned q_bits,
 			    struct sexp_iterator *i)
@@ -57,26 +58,39 @@ dsa_keypair_from_sexp_alist(struct dsa_public_key *pub,
     = { "p", "q", "g", "y", "x" };
   struct sexp_iterator values[5];
   unsigned nvalues = priv ? 5 : 4;
-  
+  unsigned p_bits;
+
   if (!sexp_iterator_assoc(i, nvalues, names, values))
     return 0;
 
-  if (priv)
-    GET(priv->x, q_bits, &values[4]);
-  
-  GET(pub->p, p_max_bits, &values[0]);
-  GET(pub->q, q_bits, &values[1]);
-  if (mpz_sizeinbase(pub->q, 2) != q_bits)
+  GET(params->p, p_max_bits, &values[0]);
+  p_bits = mpz_sizeinbase (params->p, 2);
+  GET(params->q, q_bits ? q_bits : p_bits, &values[1]);
+  if (q_bits > 0 && mpz_sizeinbase(params->q, 2) != q_bits)
     return 0;
-  GET(pub->g, p_max_bits, &values[2]);
-  GET(pub->y, p_max_bits, &values[3]);
-  
+  if (mpz_cmp (params->q, params->p) >= 0)
+    return 0;
+  GET(params->g, p_bits, &values[2]);
+  if (mpz_cmp (params->g, params->p) >= 0)
+    return 0;
+  GET(pub, p_bits, &values[3]);
+  if (mpz_cmp (pub, params->p) >= 0)
+    return 0;
+
+  if (priv)
+    {
+      GET(priv, mpz_sizeinbase (params->q, 2), &values[4]);
+      if (mpz_cmp (priv, params->q) >= 0)
+	return 0;
+    }
+
   return 1;
 }
 
 int
-dsa_sha1_keypair_from_sexp(struct dsa_public_key *pub,
-			   struct dsa_private_key *priv,
+dsa_sha1_keypair_from_sexp(struct dsa_params *params,
+			   mpz_t pub,
+			   mpz_t priv,
 			   unsigned p_max_bits, 
 			   size_t length, const uint8_t *expr)
 {
@@ -85,12 +99,14 @@ dsa_sha1_keypair_from_sexp(struct dsa_public_key *pub,
   return sexp_iterator_first(&i, length, expr)
     && sexp_iterator_check_type(&i, priv ? "private-key" : "public-key")
     && sexp_iterator_check_type(&i, "dsa")
-    && dsa_keypair_from_sexp_alist(pub, priv, p_max_bits, DSA_SHA1_Q_BITS, &i);
+    && dsa_keypair_from_sexp_alist(params, pub, priv,
+				   p_max_bits, DSA_SHA1_Q_BITS, &i);
 }
 
 int
-dsa_sha256_keypair_from_sexp(struct dsa_public_key *pub,
-			     struct dsa_private_key *priv,
+dsa_sha256_keypair_from_sexp(struct dsa_params *params,
+			     mpz_t pub,
+			     mpz_t priv,
 			     unsigned p_max_bits, 
 			     size_t length, const uint8_t *expr)
 {
@@ -99,7 +115,8 @@ dsa_sha256_keypair_from_sexp(struct dsa_public_key *pub,
   return sexp_iterator_first(&i, length, expr)
     && sexp_iterator_check_type(&i, priv ? "private-key" : "public-key")
     && sexp_iterator_check_type(&i, "dsa-sha256")
-    && dsa_keypair_from_sexp_alist(pub, priv, p_max_bits, DSA_SHA256_Q_BITS, &i);
+    && dsa_keypair_from_sexp_alist(params, pub, priv,
+				   p_max_bits, DSA_SHA256_Q_BITS, &i);
 }
 
 int

@@ -256,8 +256,9 @@ dsa_signature_from_sexp(struct dsa_signature *rs,
 			unsigned q_bits);
 
 int
-dsa_keypair_from_sexp_alist(struct dsa_public_key *pub,
-			    struct dsa_private_key *priv,
+dsa_keypair_from_sexp_alist(struct dsa_params *params,
+			    mpz_t pub,
+			    mpz_t priv,
 			    unsigned p_max_bits,
 			    unsigned q_bits,
 			    struct sexp_iterator *i);
@@ -267,14 +268,16 @@ dsa_keypair_from_sexp_alist(struct dsa_public_key *pub,
  * the public key. */
 /* Keys must be initialized before calling this function, as usual. */
 int
-dsa_sha1_keypair_from_sexp(struct dsa_public_key *pub,
-			   struct dsa_private_key *priv,
+dsa_sha1_keypair_from_sexp(struct dsa_params *params,
+			   mpz_t pub,
+			   mpz_t priv,
 			   unsigned p_max_bits,
 			   size_t length, const uint8_t *expr);
 
 int
-dsa_sha256_keypair_from_sexp(struct dsa_public_key *pub,
-			     struct dsa_private_key *priv,
+dsa_sha256_keypair_from_sexp(struct dsa_params *params,
+			     mpz_t pub,
+			     mpz_t priv,
 			     unsigned p_max_bits,
 			     size_t length, const uint8_t *expr);
 

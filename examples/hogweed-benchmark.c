@@ -303,7 +303,9 @@ bench_dsa_init (unsigned size)
   if (! (sexp_transport_iterator_first (&i, sizeof(dsa1024) - 1, dsa1024)
 	 && sexp_iterator_check_type (&i, "private-key")
 	 && sexp_iterator_check_type (&i, "dsa")
-	 && dsa_keypair_from_sexp_alist (&ctx->pub, &ctx->key, 0, DSA_SHA1_Q_BITS, &i)) )
+	 && dsa_keypair_from_sexp_alist ((struct dsa_params *) &ctx->pub,
+					 ctx->pub.y, ctx->key.x,
+					 0, DSA_SHA1_Q_BITS, &i)) )
     die ("Internal error.\n");
 
   ctx->digest = hash_string (&nettle_sha1, 3, "foo");

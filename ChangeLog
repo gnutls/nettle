@@ -1,5 +1,11 @@
 2014-03-26  Niels Möller  <nisse@lysator.liu.se>
 
+	* sexp2dsa.c (dsa_keypair_from_sexp_alist): Converted to new DSA
+	interface. Allow q_size == 0, meaning any q < p is allowed.
+	Additional validity checks.
+	(dsa_sha1_keypair_from_sexp, dsa_sha256_keypair_from_sexp):
+	Converted to new DSA interface.
+
 	* dsa2sexp.c (dsa_keypair_to_sexp): Converted to new DSA
 	interface.
 	* tools/pkcs1-conv.c: Updated uses of dsa_keypair_to_sexp.
