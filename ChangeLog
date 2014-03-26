@@ -1,3 +1,8 @@
+2014-03-26  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/testutils.c (test_dsa_sign): #if out, currently
+	unused.
+
 2014-03-23  Niels Möller  <nisse@lysator.liu.se>
 
 	From Owen Kirby:

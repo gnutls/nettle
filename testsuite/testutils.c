@@ -1124,6 +1124,7 @@ test_dsa256(const struct dsa_public_key *pub,
   dsa_signature_clear(&signature);
 }
 
+#if 0
 void
 test_dsa_sign(const struct dsa_public_key *pub,
 	      const struct dsa_private_key *key,
@@ -1180,6 +1181,7 @@ test_dsa_sign(const struct dsa_public_key *pub,
   free (bad_digest);
   dsa_signature_clear(&signature);
 }
+#endif
 
 void
 test_dsa_verify(const struct dsa_public_key *pub,
