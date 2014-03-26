@@ -323,7 +323,9 @@ convert_dsa_private_key(struct nettle_buffer *buffer, size_t length, const uint8
     {
       /* Reuses the buffer */
       nettle_buffer_reset(buffer);
-      res = dsa_keypair_to_sexp(buffer, NULL, &pub, &priv);
+      res = dsa_keypair_to_sexp(buffer, NULL,
+				(const struct dsa_params *) &pub,
+				pub.y, priv.x);
     }
   else
     {
@@ -413,7 +415,9 @@ convert_public_key(struct nettle_buffer *buffer, size_t length, const uint8_t *d
 		      && dsa_public_key_from_der_iterator(&pub, 0, &j))
 		    {
 		      nettle_buffer_reset(buffer);
-		      res = dsa_keypair_to_sexp(buffer, NULL, &pub, NULL) > 0;
+		      res = dsa_keypair_to_sexp(buffer, NULL,
+						(const struct dsa_params *) &pub,
+						pub.y, NULL) > 0;
 		    }
 		  dsa_public_key_clear(&pub);
 		}

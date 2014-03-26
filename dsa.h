@@ -244,8 +244,9 @@ struct nettle_buffer;
 int
 dsa_keypair_to_sexp(struct nettle_buffer *buffer,
 		    const char *algorithm_name, /* NULL means "dsa" */
-		    const struct dsa_public_key *pub,
-		    const struct dsa_private_key *priv);
+		    const struct dsa_params *params,
+		    const mpz_t pub,
+		    const mpz_t priv);
 
 struct sexp_iterator;
 

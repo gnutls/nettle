@@ -1,5 +1,9 @@
 2014-03-26  Niels Möller  <nisse@lysator.liu.se>
 
+	* dsa2sexp.c (dsa_keypair_to_sexp): Converted to new DSA
+	interface.
+	* tools/pkcs1-conv.c: Updated uses of dsa_keypair_to_sexp.
+
 	* dsa.h (struct dsa_params): New struct.
 
 	* dsa-sign.c (dsa_sign): Use struct dsa_params, with key as a
