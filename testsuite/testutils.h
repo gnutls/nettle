@@ -205,14 +205,16 @@ test_dsa_sign(const struct dsa_public_key *pub,
 	      const struct dsa_signature *expected);
 
 void
-test_dsa_verify(const struct dsa_public_key *pub,
+test_dsa_verify(const struct dsa_params *params,
+		const mpz_t pub,
 		const struct nettle_hash *hash,
 		struct tstring *msg,
 		const struct dsa_signature *ref);
 
 void
-test_dsa_key(struct dsa_public_key *pub,
-	     struct dsa_private_key *key,
+test_dsa_key(const struct dsa_params *params,
+	     const mpz_t pub,
+	     const mpz_t key,
 	     unsigned q_size);
 
 extern const struct ecc_curve * const ecc_curves[];

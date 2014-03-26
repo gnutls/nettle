@@ -5,7 +5,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2002 Niels Möller
+ * Copyright (C) 2002, 2013, 2014 Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -66,6 +66,7 @@ extern "C" {
 #define dsa_openssl_private_key_from_der nettle_openssl_provate_key_from_der
 #define _dsa_hash _nettle_dsa_hash
 
+/* For FIPS approved parameters */
 #define DSA_SHA1_MIN_P_BITS 512
 #define DSA_SHA1_Q_OCTETS 20
 #define DSA_SHA1_Q_BITS 160
@@ -73,7 +74,19 @@ extern "C" {
 #define DSA_SHA256_MIN_P_BITS 1024
 #define DSA_SHA256_Q_OCTETS 32
 #define DSA_SHA256_Q_BITS 256
-  
+
+struct dsa_params
+{  
+  /* Modulo */
+  mpz_t p;
+
+  /* Group order */
+  mpz_t q;
+
+  /* Generator */
+  mpz_t g;
+};
+
 struct dsa_public_key
 {  
   /* Modulo */
@@ -173,15 +186,16 @@ dsa_sha256_verify(const struct dsa_public_key *key,
 		  const struct dsa_signature *signature);
 
 int
-dsa_sign(const struct dsa_public_key *pub,
-	 const struct dsa_private_key *key,
+dsa_sign(const struct dsa_params *params,
+	 const mpz_t x,
 	 void *random_ctx, nettle_random_func *random,
 	 size_t digest_size,
 	 const uint8_t *digest,
 	 struct dsa_signature *signature);
 
 int
-dsa_verify(const struct dsa_public_key *key,
+dsa_verify(const struct dsa_params *params,
+	   const mpz_t y,
 	   size_t digest_size,
 	   const uint8_t *digest,
 	   const struct dsa_signature *signature);

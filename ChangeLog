@@ -1,5 +1,28 @@
 2014-03-26  Niels Möller  <nisse@lysator.liu.se>
 
+	* dsa.h (struct dsa_params): New struct.
+
+	* dsa-sign.c (dsa_sign): Use struct dsa_params, with key as a
+	separate mpz_t.
+	* dsa-verify.c (dsa_verify): Likewise.
+	* dsa-sha1-verify.c (dsa_sha1_verify_digest, dsa_sha1_verify): Use
+	dsa_verify, cast the struct dsa_public_key * input to a struct
+	dsa_params *
+	* dsa-sha256-verify.c (dsa_sha256_verify_digest)
+	(dsa_sha256_verify): Likewise.
+	* dsa-sha1-sign.c (dsa_sha1_sign_digest, dsa_sha1_sign): Likewise
+	use dsa_sign, with a cast from struct dsa_public_key * to struct
+	dsa_params *.
+	* dsa-sha256-sign.c (dsa_sha256_sign_digest, dsa_sha256_sign):
+	Likewise.
+
+	* testsuite/testutils.c (test_dsa_verify): Use struct dsa_params.
+	(test_dsa_key): Likewise.
+	* testsuite/dsa-test.c (test_main): Adapt to test_dsa_key and
+	test_dsa_verify changes.
+	* testsuite/dsa-keygen-test.c (test_main): Adapt to
+	test_dsa_key change.
+
 	* testsuite/testutils.c (test_dsa_sign): #if out, currently
 	unused.
 

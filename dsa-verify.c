@@ -34,7 +34,8 @@
 #include "bignum.h"
 
 int
-dsa_verify(const struct dsa_public_key *key,
+dsa_verify(const struct dsa_params *params,
+	   const mpz_t y,
 	   size_t digest_size,
 	   const uint8_t *digest,
 	   const struct dsa_signature *signature)
@@ -46,10 +47,10 @@ dsa_verify(const struct dsa_public_key *key,
   int res;
 
   /* Check that r and s are in the proper range */
-  if (mpz_sgn(signature->r) <= 0 || mpz_cmp(signature->r, key->q) >= 0)
+  if (mpz_sgn(signature->r) <= 0 || mpz_cmp(signature->r, params->q) >= 0)
     return 0;
 
-  if (mpz_sgn(signature->s) <= 0 || mpz_cmp(signature->s, key->q) >= 0)
+  if (mpz_sgn(signature->s) <= 0 || mpz_cmp(signature->s, params->q) >= 0)
     return 0;
 
   mpz_init(w);
@@ -58,7 +59,7 @@ dsa_verify(const struct dsa_public_key *key,
 
   /* NOTE: In gmp-2, mpz_invert sometimes generates negative inverses,
    * so we need gmp-3 or better. */
-  if (!mpz_invert(w, signature->s, key->q))
+  if (!mpz_invert(w, signature->s, params->q))
     {
       mpz_clear(w);
       return 0;
@@ -68,25 +69,25 @@ dsa_verify(const struct dsa_public_key *key,
   mpz_init(v);
 
   /* The message digest */
-  _dsa_hash (tmp, mpz_sizeinbase (key->q, 2), digest_size, digest);
+  _dsa_hash (tmp, mpz_sizeinbase (params->q, 2), digest_size, digest);
   
   /* v = g^{w * h (mod q)} (mod p)  */
   mpz_mul(tmp, tmp, w);
-  mpz_fdiv_r(tmp, tmp, key->q);
+  mpz_fdiv_r(tmp, tmp, params->q);
 
-  mpz_powm(v, key->g, tmp, key->p);
+  mpz_powm(v, params->g, tmp, params->p);
 
   /* y^{w * r (mod q) } (mod p) */
   mpz_mul(tmp, signature->r, w);
-  mpz_fdiv_r(tmp, tmp, key->q);
+  mpz_fdiv_r(tmp, tmp, params->q);
 
-  mpz_powm(tmp, key->y, tmp, key->p);
+  mpz_powm(tmp, y, tmp, params->p);
 
   /* v = (g^{w * h} * y^{w * r} (mod p) ) (mod q) */
   mpz_mul(v, v, tmp);
-  mpz_fdiv_r(v, v, key->p);
+  mpz_fdiv_r(v, v, params->p);
 
-  mpz_fdiv_r(v, v, key->q);
+  mpz_fdiv_r(v, v, params->q);
 
   res = !mpz_cmp(v, signature->r);
 
