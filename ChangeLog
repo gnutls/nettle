@@ -1,5 +1,8 @@
 2014-03-26  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/hogweed-benchmark.c: Update dsa benchmarking to use new
+	DSA interface.
+
 	* dsa.c (dsa_params_init, dsa_params_clear): New functions.
 	(dsa_public_key_init): Use dsa_params_init.
 	(dsa_public_key_clear): Use dsa_params_clear.

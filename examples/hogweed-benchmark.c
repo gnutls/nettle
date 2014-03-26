@@ -2,7 +2,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2013 Niels Möller
+ * Copyright (C) 2013, 2014 Niels Möller
  *
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -264,9 +264,10 @@ bench_rsa_clear (void *p)
 }
 
 struct dsa_ctx
-{  
-  struct dsa_public_key pub;
-  struct dsa_private_key key;
+{
+  struct dsa_params params;
+  mpz_t pub;
+  mpz_t key;
   struct knuth_lfib_ctx lfib;
   struct dsa_signature s;
   uint8_t *digest;
@@ -292,8 +293,9 @@ bench_dsa_init (unsigned size)
 
   ctx = xalloc(sizeof(*ctx));
 
-  dsa_public_key_init (&ctx->pub);
-  dsa_private_key_init (&ctx->key);
+  dsa_params_init (&ctx->params);
+  mpz_init (ctx->pub);
+  mpz_init (ctx->key);
   dsa_signature_init (&ctx->s);
   knuth_lfib_init (&ctx->lfib, 1);
 
@@ -303,16 +305,15 @@ bench_dsa_init (unsigned size)
   if (! (sexp_transport_iterator_first (&i, sizeof(dsa1024) - 1, dsa1024)
 	 && sexp_iterator_check_type (&i, "private-key")
 	 && sexp_iterator_check_type (&i, "dsa")
-	 && dsa_keypair_from_sexp_alist ((struct dsa_params *) &ctx->pub,
-					 ctx->pub.y, ctx->key.x,
+	 && dsa_keypair_from_sexp_alist (&ctx->params, ctx->pub, ctx->key,
 					 0, DSA_SHA1_Q_BITS, &i)) )
     die ("Internal error.\n");
 
   ctx->digest = hash_string (&nettle_sha1, 3, "foo");
 
-  dsa_sha1_sign_digest (&ctx->pub, &ctx->key,
-			&ctx->lfib, (nettle_random_func *)knuth_lfib_random,
-			ctx->digest, &ctx->s);
+  dsa_sign (&ctx->params, ctx->key,
+	    &ctx->lfib, (nettle_random_func *)knuth_lfib_random,
+	    SHA1_DIGEST_SIZE, ctx->digest, &ctx->s);
 
   return ctx;
 }
@@ -324,9 +325,9 @@ bench_dsa_sign (void *p)
   struct dsa_signature s;
 
   dsa_signature_init (&s);
-  dsa_sha1_sign_digest (&ctx->pub, &ctx->key,
-			&ctx->lfib, (nettle_random_func *)knuth_lfib_random,
-			ctx->digest, &s);
+  dsa_sign (&ctx->params, ctx->key,
+	    &ctx->lfib, (nettle_random_func *)knuth_lfib_random,
+	    SHA1_DIGEST_SIZE, ctx->digest, &s);
   dsa_signature_clear (&s);
 }
 
@@ -334,7 +335,7 @@ static void
 bench_dsa_verify (void *p)
 {
   struct dsa_ctx *ctx = p;
-  if (! dsa_sha1_verify_digest (&ctx->pub, ctx->digest, &ctx->s))
+  if (! dsa_verify (&ctx->params, ctx->pub, SHA1_DIGEST_SIZE, ctx->digest, &ctx->s))
     die ("Internal error, dsa_sha1_verify_digest failed.\n");
 }
 
@@ -342,8 +343,9 @@ static void
 bench_dsa_clear (void *p)
 {
   struct dsa_ctx *ctx = p;
-  dsa_public_key_clear (&ctx->pub);
-  dsa_private_key_clear (&ctx->key);
+  dsa_params_clear (&ctx->params);
+  mpz_clear (ctx->pub);
+  mpz_clear (ctx->key);
   dsa_signature_clear (&ctx->s);
   free (ctx->digest);
   free (ctx);
