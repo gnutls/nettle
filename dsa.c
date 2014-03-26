@@ -32,20 +32,32 @@
 #include "bignum.h"
 
 void
+dsa_params_init (struct dsa_params *params)
+{
+  mpz_init(params->p);
+  mpz_init(params->q);
+  mpz_init(params->g);
+}
+
+void
+dsa_params_clear (struct dsa_params *params)
+{
+  mpz_clear(params->p);
+  mpz_clear(params->q);
+  mpz_clear(params->g);
+}
+
+void
 dsa_public_key_init(struct dsa_public_key *key)
 {
-  mpz_init(key->p);
-  mpz_init(key->q);
-  mpz_init(key->g);
+  dsa_params_init ((struct dsa_params *) key);
   mpz_init(key->y);
 }
 
 void
 dsa_public_key_clear(struct dsa_public_key *key)
 {
-  mpz_clear(key->p);
-  mpz_clear(key->q);
-  mpz_clear(key->g);
+  dsa_params_clear ((struct dsa_params *) key);
   mpz_clear(key->y);
 }
 

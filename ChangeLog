@@ -1,5 +1,9 @@
 2014-03-26  Niels Möller  <nisse@lysator.liu.se>
 
+	* dsa.c (dsa_params_init, dsa_params_clear): New functions.
+	(dsa_public_key_init): Use dsa_params_init.
+	(dsa_public_key_clear): Use dsa_params_clear.
+
 	* sexp2dsa.c (dsa_keypair_from_sexp_alist): Converted to new DSA
 	interface. Allow q_size == 0, meaning any q < p is allowed.
 	Additional validity checks.

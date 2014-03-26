@@ -38,6 +38,8 @@ extern "C" {
 #endif
 
 /* Name mangling */
+#define dsa_params_init nettle_dsa_params_init
+#define dsa_params_clear nettle_dsa_params_clear
 #define dsa_public_key_init nettle_dsa_public_key_init
 #define dsa_public_key_clear nettle_dsa_public_key_clear
 #define dsa_private_key_init nettle_dsa_private_key_init
@@ -86,6 +88,12 @@ struct dsa_params
   /* Generator */
   mpz_t g;
 };
+
+void
+dsa_params_init (struct dsa_params *params);
+
+void
+dsa_params_clear (struct dsa_params *params);
 
 struct dsa_public_key
 {  
