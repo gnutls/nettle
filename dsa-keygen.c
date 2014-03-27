@@ -5,7 +5,7 @@
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2002 Niels Möller
+ * Copyright (C) 2002, 2014 Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -36,8 +36,7 @@
 
 
 /* Valid sizes, according to FIPS 186-3 are (1024, 160), (2048, 224),
-   (2048, 256), (3072, 256). Currenty, we use only q_bits of 160 or
-   256. */
+   (2048, 256), (3072, 256). */
 int
 dsa_generate_keypair(struct dsa_public_key *pub,
 		     struct dsa_private_key *key,
@@ -45,9 +44,8 @@ dsa_generate_keypair(struct dsa_public_key *pub,
 		     void *progress_ctx, nettle_progress_func *progress,
 		     unsigned p_bits, unsigned q_bits)
 {
-  mpz_t p0, p0q, r;
-  unsigned p0_bits;
-  unsigned a;
+  struct dsa_params *params;
+  mpz_t r;
 
   switch (q_bits)
     {
@@ -64,49 +62,16 @@ dsa_generate_keypair(struct dsa_public_key *pub,
       return 0;
     }
 
-  mpz_init (p0);
-  mpz_init (p0q);
-  mpz_init (r);
+  /* NOTE: Depends on identical layout! */
+  params = (struct dsa_params *) pub;
 
-  nettle_random_prime (pub->q, q_bits, 0, random_ctx, random,
-		       progress_ctx, progress);
-
-  p0_bits = (p_bits + 3)/2;
+  if (!dsa_generate_params (params,
+			    random_ctx, random,
+			    progress_ctx, progress,
+			    p_bits, q_bits))
+    return 0;
   
-  nettle_random_prime (p0, p0_bits, 0,
-		       random_ctx, random,
-		       progress_ctx, progress);
-
-  if (progress)
-    progress (progress_ctx, 'q');
-  
-  /* Generate p = 2 r q p0 + 1, such that 2^{n-1} < p < 2^n.
-   *
-   * We select r in the range i + 1 < r <= 2i, with i = floor (2^{n-2} / (p0 q). */
-
-  mpz_mul (p0q, p0, pub->q);
-
-  _nettle_generate_pocklington_prime (pub->p, r, p_bits, 0,
-				      random_ctx, random,
-				      p0, pub->q, p0q);
-
-  if (progress)
-    progress (progress_ctx, 'p');
-
-  mpz_mul (r, r, p0);
-
-  for (a = 2; ; a++)
-    {
-      mpz_set_ui (pub->g, a);
-      mpz_powm (pub->g, pub->g, r, pub->p);
-      if (mpz_cmp_ui (pub->g, 1) != 0)
-	break;
-    }
-
-  if (progress)
-    progress (progress_ctx, 'g');
-
-  mpz_set(r, pub->q);
+  mpz_init_set(r, pub->q);
   mpz_sub_ui(r, r, 2);
   nettle_mpz_random(key->x, random_ctx, random, r);
 
@@ -117,8 +82,6 @@ dsa_generate_keypair(struct dsa_public_key *pub,
   if (progress)
     progress (progress_ctx, '\n');
   
-  mpz_clear (p0);
-  mpz_clear (p0q);
   mpz_clear (r);
 
   return 1;

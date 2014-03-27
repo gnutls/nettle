@@ -1,3 +1,9 @@
+2014-03-27  Niels Möller  <nisse@lysator.liu.se>
+
+	* dsa-gen-params.c (dsa_generate_params): New file and function,
+	extracted from DSA key generation.
+	* dsa-keygen.c (dsa_generate_keypair): Use dsa_generate_params.
+
 2014-03-26  Niels Möller  <nisse@lysator.liu.se>
 
 	* der2dsa.c (dsa_params_from_der_iterator): Converted to new DSA

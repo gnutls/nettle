@@ -56,6 +56,7 @@ extern "C" {
 #define dsa_sha1_verify_digest nettle_dsa_sha1_verify_digest
 #define dsa_sha256_sign_digest nettle_dsa_sha256_sign_digest
 #define dsa_sha256_verify_digest nettle_dsa_sha256_verify_digest
+#define dsa_generate_params nettle_dsa_generate_params
 #define dsa_generate_keypair nettle_dsa_generate_keypair
 #define dsa_signature_from_sexp nettle_dsa_signature_from_sexp
 #define dsa_keypair_to_sexp nettle_dsa_keypair_to_sexp
@@ -234,6 +235,12 @@ dsa_sha256_verify_digest(const struct dsa_public_key *key,
 			 const struct dsa_signature *signature);
 
 /* Key generation */
+
+int
+dsa_generate_params(struct dsa_params *params,
+		    void *random_ctx, nettle_random_func *random,
+		    void *progress_ctx, nettle_progress_func *progress,
+		    unsigned p_bits, unsigned q_bits);
 
 int
 dsa_generate_keypair(struct dsa_public_key *pub,
