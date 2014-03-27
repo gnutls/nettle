@@ -30,9 +30,6 @@
 
 #include "nettle-types.h"
 
-#include "sha1.h"
-#include "sha2.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -40,22 +37,10 @@ extern "C" {
 /* Name mangling */
 #define dsa_params_init nettle_dsa_params_init
 #define dsa_params_clear nettle_dsa_params_clear
-#define dsa_public_key_init nettle_dsa_public_key_init
-#define dsa_public_key_clear nettle_dsa_public_key_clear
-#define dsa_private_key_init nettle_dsa_private_key_init
-#define dsa_private_key_clear nettle_dsa_private_key_clear
 #define dsa_signature_init nettle_dsa_signature_init
 #define dsa_signature_clear nettle_dsa_signature_clear
-#define dsa_sha1_sign nettle_dsa_sha1_sign
-#define dsa_sha1_verify nettle_dsa_sha1_verify
-#define dsa_sha256_sign nettle_dsa_sha256_sign
-#define dsa_sha256_verify nettle_dsa_sha256_verify
 #define dsa_sign nettle_dsa_sign
 #define dsa_verify nettle_dsa_verify
-#define dsa_sha1_sign_digest nettle_dsa_sha1_sign_digest
-#define dsa_sha1_verify_digest nettle_dsa_sha1_verify_digest
-#define dsa_sha256_sign_digest nettle_dsa_sha256_sign_digest
-#define dsa_sha256_verify_digest nettle_dsa_sha256_verify_digest
 #define dsa_generate_params nettle_dsa_generate_params
 #define dsa_generate_keypair nettle_dsa_generate_keypair
 #define dsa_signature_from_sexp nettle_dsa_signature_from_sexp
@@ -96,70 +81,11 @@ dsa_params_init (struct dsa_params *params);
 void
 dsa_params_clear (struct dsa_params *params);
 
-struct dsa_public_key
-{  
-  /* Modulo */
-  mpz_t p;
-
-  /* Group order */
-  mpz_t q;
-
-  /* Generator */
-  mpz_t g;
-  
-  /* Public value */
-  mpz_t y;
-};
-
-struct dsa_private_key
-{
-  /* Unlike an rsa public key, private key operations will need both
-   * the private and the public information. */
-  mpz_t x;
-};
-
 struct dsa_signature
 {
   mpz_t r;
   mpz_t s;
 };
-
-/* Signing a message works as follows:
- *
- * Store the private key in a dsa_private_key struct.
- *
- * Initialize a hashing context, by callling
- *   sha1_init
- *
- * Hash the message by calling
- *   sha1_update
- *
- * Create the signature by calling
- *   dsa_sha1_sign
- *
- * The signature is represented as a struct dsa_signature. This call also
- * resets the hashing context.
- *
- * When done with the key and signature, don't forget to call
- * dsa_signature_clear.
- */
-
-/* Calls mpz_init to initialize bignum storage. */
-void
-dsa_public_key_init(struct dsa_public_key *key);
-
-/* Calls mpz_clear to deallocate bignum storage. */
-void
-dsa_public_key_clear(struct dsa_public_key *key);
-
-
-/* Calls mpz_init to initialize bignum storage. */
-void
-dsa_private_key_init(struct dsa_private_key *key);
-
-/* Calls mpz_clear to deallocate bignum storage. */
-void
-dsa_private_key_clear(struct dsa_private_key *key);
 
 /* Calls mpz_init to initialize bignum storage. */
 void
@@ -168,31 +94,6 @@ dsa_signature_init(struct dsa_signature *signature);
 /* Calls mpz_clear to deallocate bignum storage. */
 void
 dsa_signature_clear(struct dsa_signature *signature);
-
-
-int
-dsa_sha1_sign(const struct dsa_public_key *pub,
-	      const struct dsa_private_key *key,
-	      void *random_ctx, nettle_random_func *random,
-	      struct sha1_ctx *hash,
-	      struct dsa_signature *signature);
-
-int
-dsa_sha256_sign(const struct dsa_public_key *pub,
-		const struct dsa_private_key *key,
-		void *random_ctx, nettle_random_func *random,
-		struct sha256_ctx *hash,
-		struct dsa_signature *signature);
-
-int
-dsa_sha1_verify(const struct dsa_public_key *key,
-		struct sha1_ctx *hash,
-		const struct dsa_signature *signature);
-
-int
-dsa_sha256_verify(const struct dsa_public_key *key,
-		  struct sha256_ctx *hash,
-		  const struct dsa_signature *signature);
 
 int
 dsa_sign(const struct dsa_params *params,
@@ -209,30 +110,6 @@ dsa_verify(const struct dsa_params *params,
 	   const uint8_t *digest,
 	   const struct dsa_signature *signature);
 
-/* Maybe obsolete these functions? One can just as well call dsa_sign
-   and dsa_verify directly, all that matters is the digest size. */
-int
-dsa_sha1_sign_digest(const struct dsa_public_key *pub,
-		     const struct dsa_private_key *key,
-		     void *random_ctx, nettle_random_func *random,
-		     const uint8_t *digest,
-		     struct dsa_signature *signature);
-int
-dsa_sha256_sign_digest(const struct dsa_public_key *pub,
-		       const struct dsa_private_key *key,
-		       void *random_ctx, nettle_random_func *random,
-		       const uint8_t *digest,
-		       struct dsa_signature *signature);
-
-int
-dsa_sha1_verify_digest(const struct dsa_public_key *key,
-		       const uint8_t *digest,
-		       const struct dsa_signature *signature);
-
-int
-dsa_sha256_verify_digest(const struct dsa_public_key *key,
-			 const uint8_t *digest,
-			 const struct dsa_signature *signature);
 
 /* Key generation */
 
@@ -241,15 +118,6 @@ dsa_generate_params(struct dsa_params *params,
 		    void *random_ctx, nettle_random_func *random,
 		    void *progress_ctx, nettle_progress_func *progress,
 		    unsigned p_bits, unsigned q_bits);
-
-int
-dsa_generate_keypair(struct dsa_public_key *pub,
-		     struct dsa_private_key *key,
-
-		     void *random_ctx, nettle_random_func *random,
-
-		     void *progress_ctx, nettle_progress_func *progress,
-		     unsigned p_bits, unsigned q_bits);
 
 /* Keys in sexp form. */
 
@@ -302,7 +170,7 @@ struct asn1_der_iterator;
 int
 dsa_params_from_der_iterator(struct dsa_params *params,
 			     unsigned max_bits, unsigned q_bits,
- 			     struct asn1_der_iterator *i);
+			     struct asn1_der_iterator *i);
 
 int
 dsa_public_key_from_der_iterator(const struct dsa_params *params,
@@ -320,7 +188,7 @@ int
 dsa_openssl_private_key_from_der(struct dsa_params *params,
 				 mpz_t pub,
 				 mpz_t priv,
-				 unsigned p_max_bits, 
+				 unsigned p_max_bits,
 				 size_t length, const uint8_t *data);
 
 

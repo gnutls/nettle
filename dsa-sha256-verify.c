@@ -27,7 +27,7 @@
 # include "config.h"
 #endif
 
-#include "dsa.h"
+#include "dsa-compat.h"
 
 int
 dsa_sha256_verify_digest(const struct dsa_public_key *key,

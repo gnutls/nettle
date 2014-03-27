@@ -1,11 +1,12 @@
-/* dsa-sha1-verify.c
+/* dsa-compat.c
  *
- * The original DSA publickey algorithm, using SHA-1.
+ * The DSA publickey algorithm, old interface.
  */
+
 
 /* nettle, low-level cryptographics library
  *
- * Copyright (C) 2002, 2003, 2010 Niels Möller
+ * Copyright (C) 2002 Niels Möller
  *  
  * The nettle library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -29,23 +30,29 @@
 
 #include "dsa-compat.h"
 
-int
-dsa_sha1_verify_digest(const struct dsa_public_key *key,
-		       const uint8_t *digest,
-		       const struct dsa_signature *signature)
+void
+dsa_public_key_init(struct dsa_public_key *key)
 {
-  return dsa_verify((const struct dsa_params *) key, key->y,
-		    SHA1_DIGEST_SIZE, digest, signature);
+  dsa_params_init ((struct dsa_params *) key);
+  mpz_init(key->y);
 }
 
-int
-dsa_sha1_verify(const struct dsa_public_key *key,
-		struct sha1_ctx *hash,
-		const struct dsa_signature *signature)
+void
+dsa_public_key_clear(struct dsa_public_key *key)
 {
-  uint8_t digest[SHA1_DIGEST_SIZE];
-  sha1_digest(hash, sizeof(digest), digest);
+  dsa_params_clear ((struct dsa_params *) key);
+  mpz_clear(key->y);
+}
 
-  return dsa_verify((const struct dsa_params *) key, key->y,
-		    sizeof(digest), digest, signature);
+
+void
+dsa_private_key_init(struct dsa_private_key *key)
+{
+  mpz_init(key->x);
+}
+
+void
+dsa_private_key_clear(struct dsa_private_key *key)
+{
+  mpz_clear(key->x);
 }

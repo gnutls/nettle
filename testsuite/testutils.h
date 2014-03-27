@@ -18,7 +18,7 @@
 
 #if WITH_HOGWEED
 # include "rsa.h"
-# include "dsa.h"
+# include "dsa-compat.h"
 # include "ecc-curve.h"
 # include "ecc.h"
 # include "ecc-internal.h"

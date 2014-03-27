@@ -30,7 +30,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
-#include "dsa.h"
+#include "dsa-compat.h"
 
 #include "bignum.h"
 

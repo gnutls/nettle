@@ -1,4 +1,4 @@
-/* dsa.h
+/* dsa.c
  *
  * The DSA publickey algorithm.
  */
@@ -46,34 +46,6 @@ dsa_params_clear (struct dsa_params *params)
   mpz_clear(params->q);
   mpz_clear(params->g);
 }
-
-void
-dsa_public_key_init(struct dsa_public_key *key)
-{
-  dsa_params_init ((struct dsa_params *) key);
-  mpz_init(key->y);
-}
-
-void
-dsa_public_key_clear(struct dsa_public_key *key)
-{
-  dsa_params_clear ((struct dsa_params *) key);
-  mpz_clear(key->y);
-}
-
-
-void
-dsa_private_key_init(struct dsa_private_key *key)
-{
-  mpz_init(key->x);
-}
-
-void
-dsa_private_key_clear(struct dsa_private_key *key)
-{
-  mpz_clear(key->x);
-}
-
 
 void
 dsa_signature_init(struct dsa_signature *signature)

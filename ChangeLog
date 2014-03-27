@@ -1,5 +1,14 @@
 2014-03-27  Niels Möller  <nisse@lysator.liu.se>
 
+	* dsa-compat.c (dsa_public_key_init, dsa_public_key_clear)
+	(dsa_private_key_init, dsa_private_key_clear): : Move deprecated
+	DSA functions to a separate file...
+	* dsa.c: ...from here.
+	* dsa-compat.h: New file, declaring deprecated DSA interface.
+	Include in corresponding C files.
+	* Makefile.in (hogweed_SOURCES): Add dsa-compat.c.
+	(HEADERS): Add dsa-compat.h.
+
 	* dsa-gen-params.c (dsa_generate_params): New file and function,
 	extracted from DSA key generation.
 	* dsa-keygen.c (dsa_generate_keypair): Use dsa_generate_params.
