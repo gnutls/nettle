@@ -24,6 +24,10 @@
 # include "ecc-internal.h"
 # include "ecdsa.h"
 # include "gmp-glue.h"
+
+/* Undo some dsa-compat name mangling */
+#undef dsa_generate_keypair
+#define dsa_generate_keypair nettle_dsa_generate_keypair
 #endif
 
 #include "nettle-meta.h"
@@ -198,11 +202,13 @@ test_dsa256(const struct dsa_public_key *pub,
 	    const struct dsa_private_key *key,
 	    const struct dsa_signature *expected);
 
+#if 0
 void
 test_dsa_sign(const struct dsa_public_key *pub,
 	      const struct dsa_private_key *key,
 	      const struct nettle_hash *hash,
 	      const struct dsa_signature *expected);
+#endif
 
 void
 test_dsa_verify(const struct dsa_params *params,
