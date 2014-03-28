@@ -1,3 +1,10 @@
+2014-03-28  Niels Möller  <nisse@lysator.liu.se>
+
+	* dsa-keygen.c (dsa_generate_keypair): New interface, generating
+	only a keypair, and no new parameters.
+	* dsa-compat-keygen.c (dsa_compat_generate_keypair): New file.
+	Moved old key generation function here. Use dsa_generate_keypair.
+
 2014-03-27  Niels Möller  <nisse@lysator.liu.se>
 
 	* dsa-compat.c (dsa_public_key_init, dsa_public_key_clear)

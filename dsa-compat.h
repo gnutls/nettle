@@ -49,7 +49,6 @@
 /* Switch meaning of dsa_generate_keypair */
 #undef dsa_generate_keypair
 #define dsa_generate_keypair nettle_dsa_compat_generate_keypair
-#define dsa_generate_keypair_new nettle_dsa_generate_keypair
 
 #ifdef __cplusplus
 extern "C" {

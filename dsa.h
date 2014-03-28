@@ -119,6 +119,11 @@ dsa_generate_params(struct dsa_params *params,
 		    void *progress_ctx, nettle_progress_func *progress,
 		    unsigned p_bits, unsigned q_bits);
 
+void
+dsa_generate_keypair (const struct dsa_params *params,
+		      mpz_t pub, mpz_t key,
+		      void *random_ctx, nettle_random_func *random);
+
 /* Keys in sexp form. */
 
 struct nettle_buffer;
