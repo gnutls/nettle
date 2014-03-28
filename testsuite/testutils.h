@@ -25,7 +25,7 @@
 # include "ecdsa.h"
 # include "gmp-glue.h"
 
-/* Undo some dsa-compat name mangling */
+/* Undo dsa-compat name mangling */
 #undef dsa_generate_keypair
 #define dsa_generate_keypair nettle_dsa_generate_keypair
 #endif
