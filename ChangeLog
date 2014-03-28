@@ -2,6 +2,9 @@
 
 	* testsuite/dsa-keygen-test.c (test_main): Explicitly use
 	dsa_compat_generate_keypair.
+	(test_main): Test dsa_generate_params and dsa_generate_keypair
+	with a large q; p_bits = 1024, q_bits = 768.
+
 	* testsuite/testutils.h: Undo dsa-compat.h name mangling.
 
 	* dsa-keygen.c (dsa_generate_keypair): New interface, generating
