@@ -315,8 +315,9 @@ miller_rabin_pocklington(mpz_t n, mpz_t nm1, mpz_t nm1dq, mpz_t a)
 
 /* Generate a prime number p of size bits with 2 p0q dividing (p-1).
    p0 must be of size >= ceil(bits/3). The extra factor q can be
-   omitted. If top_bits_set is one, the topmost two bits are set to
-   one, suitable for RSA primes. Also returns r = (p-1)/q. */
+   omitted (then p0 and p0q should be equal). If top_bits_set is one,
+   the topmost two bits are set to one, suitable for RSA primes. Also
+   returns r = (p-1)/p0q. */
 void
 _nettle_generate_pocklington_prime (mpz_t p, mpz_t r,
 				    unsigned bits, int top_bits_set, 
