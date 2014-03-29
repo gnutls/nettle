@@ -650,7 +650,7 @@
 
 	* configure.ac (asm_replace_list): Added poly1305-internal.asm.
 
-	* asm.m4: Define struct ffsets for 64-bit poly1305_ctx.
+	* asm.m4: Define struct offsets for 64-bit poly1305_ctx.
 
 	* poly1305.h (POLY1305_DIGEST): Pass the encrypted nonce as an
 	additional argument to poly1305_digest.
@@ -834,7 +834,7 @@
 	* eax.c: New file.
 	* eax.h: New file.
 
-	* aes.h: Fixed type in name mangling for new aes functions.
+	* aes.h: Fixed typo in name mangling for new aes functions.
 
 2013-09-28  Niels Möller  <nisse@lysator.liu.se>
 

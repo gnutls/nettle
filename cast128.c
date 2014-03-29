@@ -227,7 +227,7 @@ cast5_set_key(struct cast128_ctx *ctx,
 
   x0 = READ_UINT32 (key);
 
-  /* Read final work, possibly zero-padded. */
+  /* Read final word, possibly zero-padded. */
   switch (length & 3)
     {
     case 0:
