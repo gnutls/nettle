@@ -2884,7 +2884,7 @@
 	(SBOX0I, SBOX1I, SBOX7I): Fixed bugs.
 
 	* nettle.texinfo (Copyright): Updated for license change to
-	LGPLv2+. Updated copyriight info on serpent.
+	LGPLv2+. Updated copyright info on serpent.
 
 	* NEWS: Updated information for nettle-2.2.
 
