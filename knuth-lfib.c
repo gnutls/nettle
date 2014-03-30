@@ -1,31 +1,44 @@
 /* knuth-lfib.c
- *
- * A "lagged fibonacci" pseudorandomness generator.
- *
- * Described in Knuth, TAOCP, 3.6
- */
 
-/* nettle, low-level cryptographics library
- *
- * Copyright (C) 2002 Niels Möller
- *
- * Includes code copied verbatim from Knuth's TAOCP.
- *  
- * The nettle library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at your
- * option) any later version.
- * 
- * The nettle library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
- * License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with the nettle library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02111-1301, USA.
- */
+   The "lagged fibonacci" pseudorandomness generator, described in
+   Knuth, TAoCP, 3.6
+
+   Copyright (C) 2002 Niels Möller
+ 
+   This file is part of GNU Nettle.
+
+   GNU Nettle is free software: you can redistribute it and/or
+   modify it under the terms of either:
+
+     * the GNU Lesser General Public License as published by the Free
+       Software Foundation; either version 3 of the License, or (at your
+       option) any later version.
+
+   or
+
+     * the GNU General Public License as published by the Free
+       Software Foundation; either version 2 of the License, or (at your
+       option) any later version.
+
+   or both in parallel, as here.
+
+   GNU Nettle is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+
+   You should have received copies of the GNU General Public License and
+   the GNU Lesser General Public License along with this program.  If
+   not, see http://www.gnu.org/licenses/.
+*/
+
+/* This file includes code copied verbatim from Knuth's TAoCP.
+   Technically, doing that probably requires asking for the author's
+   explicit permission. I'd expect such a request to be granted, but I
+   haven't asked, because I don't want to distract him from more
+   important and interesting work. */
+
+
 
 /* NOTE: This generator is totally inappropriate for cryptographic
  * applications. It is useful for generating deterministic but
