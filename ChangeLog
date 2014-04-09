@@ -1,5 +1,7 @@
 2014-04-09  Niels Möller  <nisse@lysator.liu.se>
 
+	* sha512.c (sha512_256_digest): Typo fix, call sha512_256_init.
+
 	* testsuite/testutils.c (test_hash): Removed redundant init call.
 	Tests that digest implies init.
 
