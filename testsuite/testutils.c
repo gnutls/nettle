@@ -568,7 +568,6 @@ test_hash(const struct nettle_hash *hash,
 
   memset(buffer, 0, hash->digest_size);
 
-  hash->init(ctx);
   hash->update(ctx, msg->length, msg->data);
   hash->digest(ctx, hash->digest_size - 1, buffer);
 
