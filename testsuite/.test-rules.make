@@ -73,6 +73,12 @@ sha384-test$(EXEEXT): sha384-test.$(OBJEXT)
 sha512-test$(EXEEXT): sha512-test.$(OBJEXT)
 	$(LINK) sha512-test.$(OBJEXT) $(TEST_OBJS) -o sha512-test$(EXEEXT)
 
+sha512-224-test$(EXEEXT): sha512-224-test.$(OBJEXT)
+	$(LINK) sha512-224-test.$(OBJEXT) $(TEST_OBJS) -o sha512-224-test$(EXEEXT)
+
+sha512-256-test$(EXEEXT): sha512-256-test.$(OBJEXT)
+	$(LINK) sha512-256-test.$(OBJEXT) $(TEST_OBJS) -o sha512-256-test$(EXEEXT)
+
 sha3-permute-test$(EXEEXT): sha3-permute-test.$(OBJEXT)
 	$(LINK) sha3-permute-test.$(OBJEXT) $(TEST_OBJS) -o sha3-permute-test$(EXEEXT)
 
@@ -100,9 +106,6 @@ knuth-lfib-test$(EXEEXT): knuth-lfib-test.$(OBJEXT)
 cbc-test$(EXEEXT): cbc-test.$(OBJEXT)
 	$(LINK) cbc-test.$(OBJEXT) $(TEST_OBJS) -o cbc-test$(EXEEXT)
 
-ccm-test$(EXEEXT): ccm-test.$(OBJEXT)
-	$(LINK) ccm-test.$(OBJEXT) $(TEST_OBJS) -o ccm-test$(EXEEXT)
-
 ctr-test$(EXEEXT): ctr-test.$(OBJEXT)
 	$(LINK) ctr-test.$(OBJEXT) $(TEST_OBJS) -o ctr-test$(EXEEXT)
 
@@ -111,6 +114,9 @@ gcm-test$(EXEEXT): gcm-test.$(OBJEXT)
 
 eax-test$(EXEEXT): eax-test.$(OBJEXT)
 	$(LINK) eax-test.$(OBJEXT) $(TEST_OBJS) -o eax-test$(EXEEXT)
+
+ccm-test$(EXEEXT): ccm-test.$(OBJEXT)
+	$(LINK) ccm-test.$(OBJEXT) $(TEST_OBJS) -o ccm-test$(EXEEXT)
 
 poly1305-test$(EXEEXT): poly1305-test.$(OBJEXT)
 	$(LINK) poly1305-test.$(OBJEXT) $(TEST_OBJS) -o poly1305-test$(EXEEXT)

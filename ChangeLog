@@ -1,5 +1,9 @@
 2014-04-09  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/sha512-224-test.c: New file.
+	* testsuite/sha512-256-test.c: New file.
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Added new files.
+
 	* nettle-meta.h (nettle_sha512_224, nettle_sha512_256): Declare.
 	* sha512-224-meta.c (nettle_sha512_224): New file, new nettle_hash.
 	* sha512-256-meta.c (nettle_sha512_256): New file, new nettle_hash.
