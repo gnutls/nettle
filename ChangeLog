@@ -1,5 +1,9 @@
 2014-04-09  Niels Möller  <nisse@lysator.liu.se>
 
+	* nettle-meta.h (nettle_sha512_224, nettle_sha512_256): Declare.
+	* sha512-224-meta.c (nettle_sha512_224): New file, new nettle_hash.
+	* sha512-256-meta.c (nettle_sha512_256): New file, new nettle_hash.
+
 	* sha2.h (SHA512_224_DIGEST_SIZE, SHA512_224_DATA_SIZE)
 	(SHA512_256_DIGEST_SIZE, SHA512_256_DATA_SIZE): New constants.
 
