@@ -1,5 +1,8 @@
 2014-04-09  Niels Möller  <nisse@lysator.liu.se>
 
+	* sha2.h (SHA512_224_DIGEST_SIZE, SHA512_224_DATA_SIZE)
+	(SHA512_256_DIGEST_SIZE, SHA512_256_DATA_SIZE): New constants.
+
 	* sha512.c (sha512_256_digest): Typo fix, call sha512_256_init.
 
 	* testsuite/testutils.c (test_hash): Removed redundant init call.

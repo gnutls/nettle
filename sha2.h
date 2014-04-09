@@ -156,6 +156,9 @@ sha384_digest(struct sha512_ctx *ctx,
 
 /* SHA512_224 and SHA512_256, two truncated versions of SHA512 
    with different initial states. */
+
+#define SHA512_224_DIGEST_SIZE 28
+#define SHA512_224_DATA_SIZE SHA512_DATA_SIZE
 void
 sha512_224_init(struct sha512_ctx *ctx);
 
@@ -166,6 +169,8 @@ sha512_224_digest(struct sha512_ctx *ctx,
                   size_t length,
                   uint8_t *digest);
 
+#define SHA512_256_DIGEST_SIZE 32
+#define SHA512_256_DATA_SIZE SHA512_DATA_SIZE
 void
 sha512_256_init(struct sha512_ctx *ctx);
 
