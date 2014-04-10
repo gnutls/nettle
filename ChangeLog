@@ -1,3 +1,10 @@
+2014-04-10  Niels Möller  <nisse@lysator.liu.se>
+
+	From Nikos Mavrogiannopoulos:
+	* examples/hogweed-benchmark.c (bench_openssl_ecdsa_init): Support
+	for secp192r1 and secp256r1.
+	(alg_list): Add them.
+
 2014-04-09  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/nettle-benchmark.c (main): Benchmark sha512_224 and

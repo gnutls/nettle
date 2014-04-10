@@ -564,28 +564,23 @@ bench_openssl_ecdsa_init (unsigned size)
 {
   struct openssl_ecdsa_ctx *ctx = xalloc (sizeof (*ctx));
 
-  /* Apparently, secp192r1 and secp256r1 are missing */
   switch (size)
     {
-#if 0
     case 192:
-      ctx->key = EC_KEY_new_by_curve_name (NID_secp192r1);
+      ctx->key = EC_KEY_new_by_curve_name (NID_X9_62_prime192v1);
       ctx->digest_length = 24; /* truncated */
       ctx->digest = hash_string (&nettle_sha224, 3, "abc");
       break;
-#endif
     case 224:
       ctx->key = EC_KEY_new_by_curve_name (NID_secp224r1);
       ctx->digest_length = SHA224_DIGEST_SIZE;
       ctx->digest = hash_string (&nettle_sha224, 3, "abc");
       break;
-#if 0
     case 256:
-      ctx->key = EC_KEY_new_by_curve_name (NID_secp256r1);
+      ctx->key = EC_KEY_new_by_curve_name (NID_X9_62_prime256v1);
       ctx->digest_length = SHA256_DIGEST_SIZE;
       ctx->digest = hash_string (&nettle_sha256, 3, "abc");
       break;
-#endif
     case 384:
       ctx->key = EC_KEY_new_by_curve_name (NID_secp384r1);
       ctx->digest_length = SHA384_DIGEST_SIZE;
@@ -653,7 +648,9 @@ struct alg alg_list[] = {
   { "ecdsa",  384, bench_ecdsa_init, bench_ecdsa_sign, bench_ecdsa_verify, bench_ecdsa_clear },
   { "ecdsa",  521, bench_ecdsa_init, bench_ecdsa_sign, bench_ecdsa_verify, bench_ecdsa_clear },
 #if WITH_OPENSSL
+  { "ecdsa (openssl)",  192, bench_openssl_ecdsa_init, bench_openssl_ecdsa_sign, bench_openssl_ecdsa_verify, bench_openssl_ecdsa_clear },
   { "ecdsa (openssl)",  224, bench_openssl_ecdsa_init, bench_openssl_ecdsa_sign, bench_openssl_ecdsa_verify, bench_openssl_ecdsa_clear },
+  { "ecdsa (openssl)",  256, bench_openssl_ecdsa_init, bench_openssl_ecdsa_sign, bench_openssl_ecdsa_verify, bench_openssl_ecdsa_clear },
   { "ecdsa (openssl)",  384, bench_openssl_ecdsa_init, bench_openssl_ecdsa_sign, bench_openssl_ecdsa_verify, bench_openssl_ecdsa_clear },
   { "ecdsa (openssl)",  521, bench_openssl_ecdsa_init, bench_openssl_ecdsa_sign, bench_openssl_ecdsa_verify, bench_openssl_ecdsa_clear },
 #endif
