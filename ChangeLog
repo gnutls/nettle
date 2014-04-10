@@ -1,3 +1,24 @@
+2014-04-09  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/nettle-benchmark.c (main): Benchmark sha512_224 and
+	sha512_256.
+
+	* testsuite/sha512-224-test.c: New file.
+	* testsuite/sha512-256-test.c: New file.
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Added new files.
+
+	* nettle-meta.h (nettle_sha512_224, nettle_sha512_256): Declare.
+	* sha512-224-meta.c (nettle_sha512_224): New file, new nettle_hash.
+	* sha512-256-meta.c (nettle_sha512_256): New file, new nettle_hash.
+
+	* sha2.h (SHA512_224_DIGEST_SIZE, SHA512_224_DATA_SIZE)
+	(SHA512_256_DIGEST_SIZE, SHA512_256_DATA_SIZE): New constants.
+
+	* sha512.c (sha512_256_digest): Typo fix, call sha512_256_init.
+
+	* testsuite/testutils.c (test_hash): Removed redundant init call.
+	Tests that digest implies init.
+
 2014-03-28  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/dsa-keygen-test.c (test_main): Explicitly use

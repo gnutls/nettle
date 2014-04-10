@@ -302,5 +302,5 @@ sha512_256_digest(struct sha512_ctx *ctx,
   assert(length <= SHA256_DIGEST_SIZE);
 
   sha512_write_digest(ctx, length, digest);
-  sha512_224_init(ctx);
+  sha512_256_init(ctx);
 }
