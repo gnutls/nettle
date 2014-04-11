@@ -49,8 +49,8 @@ block16_xor (union nettle_block16 *dst, const union nettle_block16 *src)
   dst->w[0] ^= src->w[0];
   dst->w[1] ^= src->w[1];
 #if SIZEOF_LONG == 4
-  dst->w[2] = src->w[2];
-  dst->w[3] = src->w[3];
+  dst->w[2] ^= src->w[2];
+  dst->w[3] ^= src->w[3];
 #endif
 }
 
