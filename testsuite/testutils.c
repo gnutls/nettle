@@ -478,19 +478,19 @@ test_aead(const struct nettle_aead *aead,
 {
   void *ctx = xalloc(aead->context_size);
   uint8_t *data;
-  uint8_t *buffer = xalloc(aead->block_size);
+  uint8_t *buffer = xalloc(aead->digest_size);
   size_t length;
 
   ASSERT (cleartext->length == ciphertext->length);
   length = cleartext->length;
 
   ASSERT (key->length == aead->key_size);
-  ASSERT (digest->length <= aead->block_size);
+  ASSERT (digest->length <= aead->digest_size);
 
   data = xalloc(length);
   
   /* encryption */
-  memset(buffer, 0, aead->block_size);
+  memset(buffer, 0, aead->digest_size);
   aead->set_encrypt_key(ctx, key->data);
 
   if (nonce->length != aead->nonce_size)
@@ -513,7 +513,7 @@ test_aead(const struct nettle_aead *aead,
   ASSERT(MEMEQ(digest->length, buffer, digest->data));
 
   /* decryption */
-  memset(buffer, 0, aead->block_size);
+  memset(buffer, 0, aead->digest_size);
 
   aead->set_decrypt_key(ctx, key->data);
 
