@@ -31,7 +31,7 @@ pkcs1_conv_SOURCES = pkcs1-conv.c misc.c
 nettle_hash_SOURCES = nettle-hash.c misc.c
 nettle_pbkdf2_SOURCES = nettle-pbkdf2.c misc.c
 
-SOURCES = $(sexp_conv_SOURCES) nettle-hash.c nettle-lfib-stream.c pkcs1-conv.c
+SOURCES = $(sexp_conv_SOURCES) nettle-hash.c nettle-lfib-stream.c pkcs1-conv.c nettle-pbkdf2.c
 
 DISTFILES = $(SOURCES) Makefile.in input.h misc.h output.h parse.h
 

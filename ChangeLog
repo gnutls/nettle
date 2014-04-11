@@ -1,3 +1,9 @@
+2014-04-11  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (DISTFILES): Deleted memxor.c, already included via
+	nettle_SOURCES.
+	* tools/Makefile.in (SOURCES): Add nettle-pbkdf2.c.
+
 2014-04-10  Niels Möller  <nisse@lysator.liu.se>
 
 	From Nikos Mavrogiannopoulos:
