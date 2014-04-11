@@ -1,73 +1,125 @@
-NEWS for the 2.8 release
+NEWS for the Nettle 3.0 release
 
-	This release includes several interface changes. It is not
-	binary compatible with earlier versions. It is mostly
-	source-level (API) compatible, with a couple of
+	This is a major release, including several interface changes,
+	and new features, some of which are a bit experimental.
+	Feedback is highly appreciated.
+
+	It is *not* binary (ABI) compatible with earlier versions. It
+	is mostly source-level (API) compatible, with a couple of
 	incompatibilities noted below.
+
+	There may be some problems in the new interfaces and new
+	features which really need incompatible fixes. It is likely
+	that there will be an update in the form of a 3.1 release in
+	the not too distant future, with small but incompatible
+	changes, and if that happens, bugfix-only releases 3.0.x are
+	unlikely. Users and applications which desire better API and
+	ABI stability are advised to stay with nettle-2.7.x (latest
+	version is now 2.7.1) until the dust settles.
 
 	Interface changes:
 
 	* For the many _set_key functions, it is now consider the
-          normal case to have a fixed key size, with no key_size
-          arguments. _set_key functions with a length parameter are
-          provided only for algorithms with a truly variable keysize,
-          and where it makes sense for backwards compatibility.
+	  normal case to have a fixed key size, with no key_size
+	  arguments. _set_key functions with a length parameter are
+	  provided only for algorithms with a truly variable keysize,
+	  and where it makes sense for backwards compatibility.
 
-	  INCOMPATIBLE CHANGE: cast128_set_key no longer accepts a key size
-	  argument. The old function is available under the new name.
-	  cast5_set_key.
+	  INCOMPATIBLE CHANGE: cast128_set_key no longer accepts a key
+	  size argument. The old function is available under a new
+	  name, cast5_set_key.
 
 	  INCOMPATIBLE CHANGE: The function typedef
 	  nettle_set_key_func no longer accepts a key size argument.
 	  In particular, this affects users of struct nettle_cipher.
 
+	* The nettle_cipher abstraction (in nettle-meta.h) is
+	  restricted to block ciphers only. The encrypt and decrypt
+	  functions now take a const argument for the context.
+
+	  INCOMPATIBLE CHANGE: nettle_arcfour, i.e., the nettle_cipher
+	  abstraction for the arcfour stream cipher, is deleted.
+
+	  INCOMPATIBLE CHANGE: New type, nettle_cipher_func, for the
+	  encrypt and decrypt fields of struct nettle_cipher.
+
+	* New DSA interface, with a separate struct dsa_param to
+	  represent the underlying group, and generalized dsa_sign and
+	  dsa_verify functions which don't care about the hash
+	  function used. Limited backwards compatibility provided in
+	  dsa-compat.h.
+
+	  INCOMPATIBLE CHANGE: Declarations of the old interface,
+	  e.g., struct dsa_public_key, dsa_sha1_sign, etc, is moved to
+	  dsa-compat.h.
+
+	  INCOMPATIBLE CHANGE: The various key conversion functions,
+	  e.g., dsa_keypair_to_sexp, all use the new DSA interface, with
+	  no backwards compatible functions.
+
+	  INCOMPATIBLE CHANGE: dsa_generate_keypair also uses the new
+	  interface. dsa-compat.h declares a function
+	  dsa_compate_generate_keypair, implementing the old
+	  interface, and #defines dsa_generate_keypair to refer to
+	  this backwards compatible function.
+
 	* New AES and Camellia interfaces. There are now separate
-          context structs for each key size, e.g., aes128_ctx and
-          camellia256_ctx, and corresponding new functions. The old
-          interface, with struct aes_ctx and struct camellia_ctx, is
-          kept for backwards compatibility, but might be removed in
-          later versions.
+	  context structs for each key size, e.g., aes128_ctx and
+	  camellia256_ctx, and corresponding new functions. The old
+	  interface, with struct aes_ctx and struct camellia_ctx, is
+	  kept for backwards compatibility, but might be removed in
+	  later versions.
 
 	* The type of most length arguments is changed from unsigned
-          to size_t. The memxor functions have their pointer arguments
-          changed from uint8_t * to void *, for consistency with
-          related libc functions.
+	  to size_t. The memxor functions have their pointer arguments
+	  changed from uint8_t * to void *, for consistency with
+	  related libc functions.
 
-	* DSA: Support a wider range for the size of q. XXX Also
-          interface changes.
-	
 	Bug fixes:
 
 	* Building with ./configure --disable-static now works.
-	
+
+	* Use GMP's allocation functions for temporary storage related
+	  to bignums, to avoid potentially large stack allocations.
+
 	New features:
 
 	* Support for poly1305-aes MAC.
 
 	* Experimental support for the Chacha stream cipher and the
-          chacha-poly1305 AEAD mode. Specifications are still in
-          flux, and future releases may do incompatible changes to
-          track standardization. Currently uses 256-bit key and 64-bit
-          nonce.
+	  chacha-poly1305 AEAD mode. Specifications are still in
+	  flux, and future releases may do incompatible changes to
+	  track standardization. Currently uses 256-bit key and 64-bit
+	  nonce.
 
 	* Support for EAX mode.
 
-	* New interfaces for mechanisms providing authenticated
-	  encryption with associated data (AEAD).
-	
+	* Support for CCM mode. Contributed by Owen Kirby.
+
+	* Support for additional variants of SHA512 with output size
+	  of 224 and 256 bits. Contributed by Joachim Strömbergson.
+
+	* New interface, struct nettle_aead, for mechanisms providing
+	  authenticated encryption with associated data (AEAD).
+
+	* DSA: Support a wider range for the size of q and a wider
+	  range for the digest size.
+
 	Optimizations:
 
 	* New x86_64 assembly for GCM and MD5. Modest speedups on the
-          order of 10%-20%.
-	
+	  order of 10%-20%.
+
 	Miscellaneous:
 
-	* Use GMP's allocation functions for temporary storage related
-	  to bignums, to avoid potentially large stack allocations.
-	
 	* The portability fix for the rotation macros, mentioned in
 	  NEWS for 2.7.1, actually didn't make it into that release.
 	  It is included now.
+
+	* cast128_set_key rewritten for clarity, also eliminating a
+	  couple of compiler warnings.
+
+	* New command line tool nettle-pbkdf2.
 
 NEWS for the 2.7.1 release
 
