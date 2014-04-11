@@ -1,5 +1,7 @@
 2014-04-11  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac: Skip GMP tests if public key support is disabled.
+
 	* eax.c (block16_xor): Fixed bug effecting 32-bit platforms.
 
 	* Makefile.in (DISTFILES): Deleted memxor.c, already included via
