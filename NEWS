@@ -80,6 +80,9 @@ NEWS for the Nettle 3.0 release
 	* The nettle_next_prime function has been deleted.
 	  Applications should use GMP's mpz_nextprime instead.
 
+	* Deleted the RSAREF compatibility, including the header file
+	  rsa-compat.h and everything declared therein.
+
 	Bug fixes:
 
 	* Building with ./configure --disable-static now works.

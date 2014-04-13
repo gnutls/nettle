@@ -1,5 +1,10 @@
 2014-04-13  Niels Möller  <nisse@lysator.liu.se>
 
+	* rsa-compat.c: Deleted file.
+	* rsa-compat.h: Deleted file.
+	* Makefile.in (hogweed_SOURCES): Deleted rsa-compat.c.
+	(HEADERS): Deleted rsa-compat.h.
+
 	* examples/next-prime.c: Deleted file.
 	* bignum-next-prime.c (nettle_next_prime): Deleted file and
 	function.
