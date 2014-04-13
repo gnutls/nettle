@@ -1,3 +1,18 @@
+2014-04-12  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle.texinfo (Copyright): Updated licensing info.
+	* README: Likewise.
+
+	* Makefile.in (DISTFILES): Distribute new COPYING* files.
+
+	* COPYING.LESSERv3: New file.
+	* COPYINGv3: New file.
+	* COPYING.LIB: Deleted.
+	* COPYINGv2: New name for GPL version 2 file.
+	* COPYING: Old name, deleted.
+
+	* Update license headers for LGPL3+ and GPL2+ dual licensing.
+
 2014-04-11  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/testutils.c (test_aead): Use aead->digest_size.

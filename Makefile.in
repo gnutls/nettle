@@ -197,7 +197,8 @@ DISTFILES = $(SOURCES) $(HEADERS) getopt.h .bootstrap run-tests \
 	configure stamp-h.in \
 	config.guess config.sub install-sh texinfo.tex \
 	config.h.in config.m4.in config.make.in	Makefile.in \
-	README AUTHORS COPYING.LIB INSTALL NEWS TODO ChangeLog \
+	README AUTHORS COPYING.LESSERv3 COPYINGv2 COPYINGv3 \
+	INSTALL NEWS TODO ChangeLog \
 	nettle.pc.in hogweed.pc.in \
 	$(des_headers) descore.README \
 	aes-internal.h camellia-internal.h serpent-internal.h \

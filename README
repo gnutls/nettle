@@ -1,4 +1,4 @@
-What is Nettle? A quote from the introduction in the Nettle Manual:
+What is GNU Nettle? A quote from the introduction in the Nettle Manual:
 
   Nettle is a cryptographic library that is designed to fit easily in more
   or less any context: In crypto toolkits for object-oriented languages
@@ -24,9 +24,9 @@ What is Nettle? A quote from the introduction in the Nettle Manual:
   language, and LSH, which both use an object-oriented abstraction on top
   of the library.
 
-Nettle is free software; you can redistribute it and/or modify it
-under the terms of the GNU Lesser General Public License as published
-by the Free Software Foundation. See the file COPYING.LIB for details.
+GNU Nettle is free software; you can redistribute it and/or modify it
+under the terms contained in the files COPYING* (see the manual for
+information on how these licenses apply).
 
 If you have downloaded a Nettle release, build it with the usual
 ./configure && make && make check && make install (see the INSTALL

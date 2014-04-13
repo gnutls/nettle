@@ -136,51 +136,58 @@ put it to use.
 @comment  node-name,  next,  previous,  up
 @chapter Copyright
 
-Nettle is distributed under the GNU Lesser General Public License
-(LGPL), see the file COPYING.LIB for details. A few of the individual
-files are in the public domain. To find the current status of particular
-files, you have to read the copyright notices at the top of the files.
+Nettle is dual licenced under the GNU General Public License version 2
+or later, and the GNU Lesser General Public License version 3 or later.
+When using Nettle, you must comply fully with all conditions of at least
+one of these licenses. A few of the individual files are licensed under
+more permissive terms, or in the public domain. To find the current
+status of particular files, you have to read the copyright notices at
+the top of the files.
 
 This manual is in the public domain. You may freely copy it in whole or
 in part, e.g., into documentation of programs that build on Nettle.
 Attribution, as well as contribution of improvements to the text, is of
 course appreciated, but it is not required.
 
-A list of the supported algorithms, their origins and licenses:
+A list of the supported algorithms, their origins, and exceptions to the
+above licensing:
 
 @table @emph
 @item AES
 The implementation of the AES cipher (also known as rijndael) is written
 by Rafael Sevilla. Assembler for x86 by Rafael Sevilla and
-@value{AUTHOR}, Sparc assembler by @value{AUTHOR}. Released under the
-LGPL.
+@value{AUTHOR}, Sparc assembler by @value{AUTHOR}.
 
 @item ARCFOUR
 The implementation of the ARCFOUR (also known as RC4) cipher is written
-by @value{AUTHOR}. Released under the LGPL.
+by @value{AUTHOR}.
 
 @item ARCTWO
 The implementation of the ARCTWO (also known as RC2) cipher is written
 by Nikos Mavroyanopoulos and modified by Werner Koch and Simon
-Josefsson. Released under the LGPL.
+Josefsson.
 
 @item BLOWFISH
 The implementation of the BLOWFISH cipher is written by Werner Koch,
 copyright owned by the Free Software Foundation. Also hacked by Simon
-Josefsson and Niels Möller. Released under the LGPL.
+Josefsson and Niels Möller.
 
 @item CAMELLIA
 The C implementation is by Nippon Telegraph and Telephone Corporation
 (NTT), heavily modified by @value{AUTHOR}. Assembler for x86 and x86_64
-by @value{AUTHOR}. Released under the LGPL.
+by @value{AUTHOR}.
 
 @item CAST128
 The implementation of the CAST128 cipher is written by Steve Reid.
 Released into the public domain.
 
+@item CHACHA
+Implemented by Joachim Strömbergson, based on the implementation of
+SALSA20 (see below). Assembly for x86_64 by Niels Möller.
+
 @item DES
 The implementation of the DES cipher is written by Dana L. How, and
-released under the LGPL.
+released under the LGPL, version 2 or later.
 
 @item GOSTHASH94
 The C implementation of the GOST94 message digest is written by 
@@ -203,24 +210,29 @@ Released into the public domain.
 
 @item PBKDF2
 The C implementation of PBKDF2 is based on earlier work for Shishi and
-GnuTLS by Simon Josefsson.  Released under the LGPL.
+GnuTLS by Simon Josefsson.
 
 @item RIPEMD160
 The implementation of RIPEMD160 message digest is based on the code in
 libgcrypt, copyright owned by the Free Software Foundation. Ported to
-Nettle by Andres Mejia. Released under the LGPL.
+Nettle by Andres Mejia.
 
 @item SALSA20
 The C implementation of SALSA20 is based on D. J. Bernstein's reference
 implementation (in the public domain), adapted to Nettle by Simon
 Josefsson, and heavily modified by Niels Möller. Assembly for x86_64 and
-ARM by Niels Möller. Released under the LGPL.
+ARM by Niels Möller.
 
 @item SERPENT
 The implementation of the SERPENT cipher is based on the code in libgcrypt,
 copyright owned by the Free Software Foundation. Adapted to Nettle by
 Simon Josefsson and heavily modified by Niels Möller. Assembly for
-x86_64 by Niels Möller. Released under the LGPL.
+x86_64 by Niels Möller.
+
+@item POLY1305
+Based on the implementation by Andrew M. (floodyberry), modified by
+Nikos Mavrogiannopoulos and Niels Möller. Assembly for x86_64 by Niels
+Möller.
 
 @item SHA1
 The C implementation of the SHA1 message digest is written by Peter
@@ -230,30 +242,25 @@ Released into the public domain. Assembler for x86, x86_64 and ARM by
 
 @item SHA2
 Written by @value{AUTHOR}, using Peter Gutmann's SHA1 code as a model. 
-Released under the LGPL.
 
 @item SHA3
-Written by @value{AUTHOR}. Released under the LGPL.
+Written by @value{AUTHOR}.
 
 @item TWOFISH
 The implementation of the TWOFISH cipher is written by Ruud de Rooij.
-Released under the LGPL.
 
 @item UMAC
-Written by @value{AUTHOR}. Released under the LGPL.
+Written by @value{AUTHOR}.
 
 @item RSA
-Written by @value{AUTHOR}, released under the LGPL. Uses the GMP library
-for bignum operations.
+Written by @value{AUTHOR}. Uses the GMP library for bignum operations.
 
 @item DSA
-Written by @value{AUTHOR}, released under the LGPL. Uses the GMP library
-for bignum operations.
+Written by @value{AUTHOR}. Uses the GMP library for bignum operations.
 
 @item ECDSA
-Written by @value{AUTHOR}, released under the LGPL. Uses the GMP library
-for bignum operations. Development of Nettle's ECC support was funded by
-the .SE Internet Fund.
+Written by @value{AUTHOR}. Uses the GMP library for bignum operations.
+Development of Nettle's ECC support was funded by the .SE Internet Fund.
 @end table
 
 @node Conventions, Example, Copyright, Top
