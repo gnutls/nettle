@@ -1,3 +1,15 @@
+2014-04-13  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/next-prime.c: Deleted file.
+	* bignum-next-prime.c (nettle_next_prime): Deleted file and
+	function.
+	* prime-list.h: Deleted file.
+	* bignum.h (nettle_next_prime): Deleted prototype.
+	* Makefile.in (hogweed_SOURCES): Deleted bignum-next-prime.c.
+	(DISTFILES): Deleted prime-list.h.
+	* examples/Makefile.in (HOGWEED_TARGETS): Deleted next-prime, and
+	corresponding make target.
+
 2014-04-12  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle.texinfo (Copyright): Updated licensing info.

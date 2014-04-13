@@ -90,10 +90,6 @@ nettle_mpz_random(mpz_t x,
 		  const mpz_t n);
 
 void
-nettle_next_prime(mpz_t p, mpz_t n, unsigned count, unsigned prime_limit,
-		  void *progress_ctx, nettle_progress_func *progress);
-
-void
 nettle_random_prime(mpz_t p, unsigned bits, int top_bits_set,
 		    void *ctx, nettle_random_func *random,
 		    void *progress_ctx, nettle_progress_func *progress);

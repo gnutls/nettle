@@ -75,6 +75,11 @@ NEWS for the Nettle 3.0 release
 	  changed from uint8_t * to void *, for consistency with
 	  related libc functions.
 
+	Removed features:
+
+	* The nettle_next_prime function has been deleted.
+	  Applications should use GMP's mpz_nextprime instead.
+
 	Bug fixes:
 
 	* Building with ./configure --disable-static now works.
