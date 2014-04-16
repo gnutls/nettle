@@ -1,5 +1,9 @@
 2014-04-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/eratosthenes.c (vector_alloc): Use sizeof(*vector)
+	instead of explicit type in malloc call.
+	(vector_init): Make constant explicitly unsigned long.
+
 	* tools/input.c (sexp_get_quoted_char): Deleted useless for loop.
 
 2014-04-13  Niels Möller  <nisse@lysator.liu.se>

@@ -93,7 +93,7 @@ static unsigned long *
 vector_alloc(unsigned long size)
 {
   unsigned long end = (size + BITS_PER_LONG - 1) / BITS_PER_LONG;
-  unsigned long *vector = malloc (end * sizeof(long));
+  unsigned long *vector = malloc (end * sizeof(*vector));
 
   if (!vector)
     {
@@ -110,7 +110,7 @@ vector_init(unsigned long *vector, unsigned long size)
   unsigned long i;
 
   for (i = 0; i < end; i++)
-    vector[i] = ~0;
+    vector[i] = ~0UL;
 }
 
 static void
