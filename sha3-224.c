@@ -45,7 +45,7 @@
 void
 sha3_224_init (struct sha3_224_ctx *ctx)
 {
-  memset (&ctx->state, 0, offsetof (struct sha3_224_ctx, block));
+  memset (ctx, 0, offsetof (struct sha3_224_ctx, block));
 }
 
 void

@@ -1,5 +1,11 @@
 2014-04-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* sha3-224.c (sha3_224_init): Pass pointer to context struct, not
+	pointer to first element, to memset.
+	* sha3-256.c (sha3_256_init): Likewise.
+	* sha3-384.c (sha3_384_init): Likewise.
+	* sha3-512.c (sha3_512_init): Likewise.
+
 	* examples/eratosthenes.c (vector_alloc): Use sizeof(*vector)
 	instead of explicit type in malloc call.
 	(vector_init): Make constant explicitly unsigned long.
