@@ -150,41 +150,40 @@ sexp_get_quoted_char(struct sexp_input *input)
 {
   sexp_next_char(input);
 
-  for (;;)
-    switch (input->c)
-      {
-      default:
-	return 1;
-      case '\"':
-	return 0;
-      case '\\':
-	sexp_next_char(input);
+  switch (input->c)
+    {
+    default:
+      return 1;
+    case '\"':
+      return 0;
+    case '\\':
+      sexp_next_char(input);
 	
-	switch (input->c)
-	  {
-	  case 'b': input->c = '\b'; return 1;
-	  case 't': input->c = '\t'; return 1;
-	  case 'n': input->c = '\n'; return 1;
-	  case 'f': input->c = '\f'; return 1;
-	  case 'r': input->c = '\r'; return 1;
-	  case '\\': input->c = '\\'; return 1;
-	  case 'o':
-	  case 'x':
-	    /* FIXME: Not implemnted */
-	    abort();
-	  case '\n':
-	    if (sexp_next_char(input) == '\r')
-	      sexp_next_char(input);
+      switch (input->c)
+	{
+	case 'b': input->c = '\b'; return 1;
+	case 't': input->c = '\t'; return 1;
+	case 'n': input->c = '\n'; return 1;
+	case 'f': input->c = '\f'; return 1;
+	case 'r': input->c = '\r'; return 1;
+	case '\\': input->c = '\\'; return 1;
+	case 'o':
+	case 'x':
+	  /* FIXME: Not implemnted */
+	  abort();
+	case '\n':
+	  if (sexp_next_char(input) == '\r')
+	    sexp_next_char(input);
 
-	    break;
-	  case '\r':
-	    if (sexp_next_char(input) == '\n')
-	      sexp_next_char(input);
+	  break;
+	case '\r':
+	  if (sexp_next_char(input) == '\n')
+	    sexp_next_char(input);
 
-	    break;
-	  }
-	return 1;
-      }
+	  break;
+	}
+      return 1;
+    }
 }
 
 static void
