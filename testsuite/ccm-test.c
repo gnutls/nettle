@@ -120,7 +120,6 @@ test_cipher_ccm(const struct nettle_cipher *cipher,
   ASSERT (cleartext->length <= ciphertext->length);
   ASSERT ((cleartext->length + CCM_BLOCK_SIZE) >= ciphertext->length);
   tlength = ciphertext->length - cleartext->length;
-  if (!authdata) repeat = 0;
 
   de_data = xalloc(cleartext->length);
   en_data = xalloc(ciphertext->length);

@@ -1,5 +1,8 @@
 2014-04-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/ccm-test.c (test_cipher_ccm): Deleted check for NULL
+	authdata.
+
 	* sha3-224.c (sha3_224_init): Pass pointer to context struct, not
 	pointer to first element, to memset.
 	* sha3-256.c (sha3_256_init): Likewise.
