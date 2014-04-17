@@ -24,7 +24,7 @@ TARGETS = nettle-benchmark$(EXEEXT) eratosthenes$(EXEEXT) \
 	  $(ENC_TARGETS) @IF_HOGWEED@ $(HOGWEED_TARGETS)
 
 SOURCES = nettle-benchmark.c hogweed-benchmark.c ecc-benchmark.c \
-	eratosthenes.c next-prime.c random-prime.c \
+	eratosthenes.c random-prime.c \
 	nettle-openssl.c \
 	io.c read_rsa_key.c \
 	rsa-encrypt.c rsa-decrypt.c rsa-keygen.c rsa-sign.c rsa-verify.c \

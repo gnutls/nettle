@@ -1,3 +1,8 @@
+2014-04-17  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/Makefile.in (SOURCES): Deleted next-prime.c (forgotten
+	in 2014-04-13 change).
+
 2014-04-16  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/ccm-test.c (test_cipher_ccm): Deleted check for NULL
