@@ -249,7 +249,7 @@ sha384_digest(struct sha512_ctx *ctx,
 
 /* sha-512/224 variant. */
 void
-sha512_224_init(struct sha512_ctx *ctx)
+sha512_224_init(struct sha512_224_ctx *ctx)
 {
   static const uint64_t H0[_SHA512_DIGEST_LENGTH] =
   {
@@ -269,7 +269,7 @@ sha512_224_init(struct sha512_ctx *ctx)
 }
 
 void
-sha512_224_digest(struct sha512_ctx *ctx,
+sha512_224_digest(struct sha512_224_ctx *ctx,
 	      size_t length,
 	      uint8_t *digest)
 {
@@ -282,7 +282,7 @@ sha512_224_digest(struct sha512_ctx *ctx,
 
 /* sha-512/256 variant. */
 void
-sha512_256_init(struct sha512_ctx *ctx)
+sha512_256_init(struct sha512_256_ctx *ctx)
 {
   static const uint64_t H0[_SHA512_DIGEST_LENGTH] =
     {
@@ -302,7 +302,7 @@ sha512_256_init(struct sha512_ctx *ctx)
 }
 
 void
-sha512_256_digest(struct sha512_ctx *ctx,
+sha512_256_digest(struct sha512_256_ctx *ctx,
 	      size_t length,
 	      uint8_t *digest)
 {

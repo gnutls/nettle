@@ -167,25 +167,29 @@ sha384_digest(struct sha512_ctx *ctx,
 
 #define SHA512_224_DIGEST_SIZE 28
 #define SHA512_224_DATA_SIZE SHA512_DATA_SIZE
+#define sha512_224_ctx sha512_ctx
+
 void
-sha512_224_init(struct sha512_ctx *ctx);
+sha512_224_init(struct sha512_224_ctx *ctx);
 
 #define sha512_224_update nettle_sha512_update
 
 void
-sha512_224_digest(struct sha512_ctx *ctx,
+sha512_224_digest(struct sha512_224_ctx *ctx,
                   size_t length,
                   uint8_t *digest);
 
 #define SHA512_256_DIGEST_SIZE 32
 #define SHA512_256_DATA_SIZE SHA512_DATA_SIZE
+#define sha512_256_ctx sha512_ctx
+
 void
-sha512_256_init(struct sha512_ctx *ctx);
+sha512_256_init(struct sha512_256_ctx *ctx);
 
 #define sha512_256_update nettle_sha512_update
 
 void
-sha512_256_digest(struct sha512_ctx *ctx,
+sha512_256_digest(struct sha512_256_ctx *ctx,
                   size_t length,
                   uint8_t *digest);
   
