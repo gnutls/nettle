@@ -1,5 +1,8 @@
 2014-04-22  Niels Möller  <nisse@lysator.liu.se>
 
+	* nettle.texinfo (Recommended hash functions): Document additional
+	sha512 variants.
+
 	* sha2.h (sha512_224_ctx, sha512_256_ctx): New aliases for the
 	sha512_ctx struct tag.
 

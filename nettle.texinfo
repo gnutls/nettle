@@ -505,8 +505,8 @@ The size of a SHA512 digest, i.e. 64.
 @end defvr
 
 @defvr Constant SHA512_DATA_SIZE
-The internal block size of SHA512. Useful for some special constructions,
-in particular HMAC-SHA512.
+The internal block size of SHA512, 128. Useful for some special
+constructions, in particular HMAC-SHA512.
 @end defvr
 
 @deftypefun void sha512_init (struct sha512_ctx *@var{ctx})
@@ -527,41 +527,59 @@ This function also resets the context in the same way as
 @code{sha512_init}.
 @end deftypefun
 
-@subsubsection @acronym{SHA384}
+@subsubsection @acronym{SHA384 and other variants of SHA512}
 
-SHA384 is a variant of SHA512, with a different initial state, and with
-the output truncated to 384 bits, or 48 octets. Nettle defines SHA384 in
-@file{<nettle/sha2.h>} (and in @file{<nettle/sha.h>}, for backwards
-compatibility).
+Several variants of SHA512 have been defined, with a different initial
+state, and with the output truncated to shorter length than 512 bits.
+Naming is a bit confused, these algorithms are call SHA512-224,
+SHA512-256 and SHA384, for output sizes of 224, 256 and 384 bits,
+respectively. Nettle defines these in @file{<nettle/sha2.h>} (and in
+@file{<nettle/sha.h>}, for backwards compatibility).
 
-@deftp {Context struct} {struct sha384_ctx}
+@deftp {Context struct} {struct sha512_224_ctx}
+@deftpx {Context struct} {struct sha512_256_ctx}
+@deftpx {Context struct} {struct sha384_ctx}
+These context structs are all the same as sha512_ctx. They are defined as
+simple preprocessor aliases, which may cause some problems if used as
+identifiers for other purposes. So avoid doing that.
 @end deftp
 
-@defvr Constant SHA384_DIGEST_SIZE
-The size of a SHA384 digest, i.e. 48.
+@defvr Constant SHA512_224_DIGEST_SIZE
+@defvrx Constant SHA512_256_DIGEST_SIZE
+@defvrx Constant SHA384_DIGEST_SIZE
+The digest sizes for each variant, i.e., 28, 32, and 48, respectively.
 @end defvr
 
-@defvr Constant SHA384_DATA_SIZE
-The internal block size of SHA384. Useful for some special constructions,
-in particular HMAC-SHA384.
+@defvr Constant SHA512_224_DATA_SIZE
+@defvrx Constant SHA512_256_DATA_SIZE
+@defvrx Constant SHA384_DATA_SIZE
+The internal block size, same as SHA512_DATA_SIZE, i.e., 128. Useful for
+some special constructions, in particular HMAC-SHA384.
 @end defvr
 
-@deftypefun void sha384_init (struct sha384_ctx *@var{ctx})
-Initialize the SHA384 state.
+@deftypefun void sha512_224_init (struct sha512_224_ctx *@var{ctx})
+@deftypefunx void sha512_256_init (struct sha512_256_ctx *@var{ctx})
+@deftypefunx void sha384_init (struct sha384_ctx *@var{ctx})
+Initialize the context struct.
 @end deftypefun
 
-@deftypefun void sha384_update (struct sha384_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
-Hash some more data.
+@deftypefun void sha512_224_update (struct sha512_224_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
+@deftypefunx void sha512_256_update (struct sha512_256_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
+@deftypefunx void sha384_update (struct sha384_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
+Hash some more data. These are all aliases for sha512_update, which does
+the same thing.
 @end deftypefun
 
-@deftypefun void sha384_digest (struct sha384_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Performs final processing and extracts the message digest, writing it
-to @var{digest}. @var{length} may be smaller than
-@code{SHA384_DIGEST_SIZE}, in which case only the first @var{length}
-octets of the digest are written.
+@deftypefun void sha512_224_digest (struct sha512_224_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+@deftypefunx void sha512_256_digest (struct sha512_256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+@deftypefunx void sha384_digest (struct sha384_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing it to
+@var{digest}. @var{length} may be smaller than the specified digest
+size, in which case only the first @var{length} octets of the digest are
+written.
 
-This function also resets the context in the same way as
-@code{sha384_init}.
+These function also reset the context in the same way as the
+corresponding init function.
 @end deftypefun
 
 @subsubsection @acronym{SHA3-224}
