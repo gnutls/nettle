@@ -2433,17 +2433,17 @@ secret.
 
 The nonce must be at least one octet, and at most 16; nonces shorter
 than 16 octets are zero-padded. Nettle's implementation of
-@acronym{UMAC} increments the nonce for automatically each message, so
+@acronym{UMAC} increments the nonce automatically for each message, so
 explicitly setting the nonce for each message is optional. This
 auto-increment uses network byte order and it takes the length of the
-nonce into acount. E.g., if the initial nonce is ``abc'' (3 octets),
+nonce into account. E.g., if the initial nonce is ``abc'' (3 octets),
 this value is zero-padded to 16 octets for the first message. For the
 next message, the nonce is incremented to ``abd'', and this incremented
 value is zero-padded to 16 octets.
 
 @acronym{UMAC} is defined in four variants, for different output sizes:
-32 bits (4 octest), 64 bits (8 octets), 96 bits (12 octets) and 128 bits
-(16 octets), corresponding to different tradeoffs between speed and
+32 bits (4 octets), 64 bits (8 octets), 96 bits (12 octets) and 128 bits
+(16 octets), corresponding to different trade-offs between speed and
 security. Using a shorter output size sometimes (but not always!) gives
 the same result as using a longer output size and truncating the result.
 So it is important to use the right variant. For consistency with other
@@ -2482,7 +2482,7 @@ The size of an UMAC96 digest, 12.
 @defvr Constant UMAC128_DIGEST_SIZE
 The size of an UMAC128 digest, 16.
 @end defvr
-@defvr Constant UMAC128_DATA_SIZE
+@defvr Constant UMAC_DATA_SIZE
 The internal block size of UMAC.
 @end defvr
 
