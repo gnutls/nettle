@@ -88,6 +88,7 @@ Cipher modes
 * CBC::                         
 * CTR::                         
 * GCM::                         
+* CCM::
 
 Public-key algorithms
 
@@ -1816,6 +1817,7 @@ signature to authenticate the message.
 * CBC::                         
 * CTR::                         
 * GCM::                         
+* CCM::                         
 @end menu
 
 
@@ -1988,7 +1990,7 @@ last three arguments define the source and destination area for the
 operation.
 @end deffn
 
-@node GCM,  , CTR, Cipher modes
+@node GCM, CCM, CTR, Cipher modes
 @comment  node-name,  next,  previous,  up
 @subsection Galois counter mode
 
@@ -2181,7 +2183,245 @@ equal to @code{GCM_BLOCK_SIZE}, but if you provide a smaller value,
 only the first @var{length} octets of the digest are written.
 @end deftypefun
 
+@node CCM,  , GCM, Cipher modes
+@comment  node-name,  next,  previous,  up
+@subsection Counter with CBC-MAC mode
 
+@cindex Counter with CBC-MAC Mode
+@cindex CCM Mode
+
+CCM mode is the combination of counter mode with message authentication
+based on cipher block chaining. It is constructed on top of a block
+cipher which must have a block size of 128 bits. @acronym{CCM} mode is
+recommended by NIST in
+@uref{http://csrc.nist.gov/publications/nistpubs/800-38C/SP800-38C_updated-July20_2007.pdf,
+NIST Special Publication 800-38C}. Nettle's support for CCM consists of
+a low-level general interface, a message encryption and authentication
+interface, and specific functions for CCM using AES as the underlying
+block cipher. These interfaces are defined in @file{<nettle/ccm.h>}
+
+The inputs to @acronym{CCM} are:
+@itemize
+@item
+A key, which can be used for many messages.
+@item
+A parameter @var{L} which determines the size of the nonce and the maximum
+length of message data which can be processed by @acronym{CCM}.
+@item
+A tag length, which must be a multiple of 4 bytes up to a maximum of one block.
+@item
+A nonce which @emph{must} be unique for each message.
+@item
+Optional authenticated data, which is to be included in the message
+authentication, but not encrypted.
+@item
+The plaintext. May be empty.
+@end itemize
+
+The outputs from @acronym{CCM} are:
+@itemize
+@item
+The ciphertext of the same length as the plaintext.
+@item
+An encrypted authentication tag, up to one block on length.
+@end itemize
+
+@c FIXME: Focus on the nonce size, set by the caller.
+The parameter @var{L} determines the size of the counter that is used
+for the message length, such that the maximum message length in bytes is
+given by @code{maxlength = (1 << L) - 1}. However increasing @var{L}
+also restricts the size of the nonce such that @code{noncelength =
+CCM_BLOCK_SIZE - 1 - L}, and throughout this interface the parameter
+@var{L} is provided implicitly by the nonce length.
+
+@acronym{CCM} mode encryption operates as follows:
+@itemize
+@item The nonce and message length are concatenated to create
+@code{B_0 = flags | nonce | mlength}
+
+@item The authenticated data and plaintext is formatted into the string
+@code{B = L(adata) | adata | padding | plaintext | padding} with
+@code{padding} being the shortest string of zero bytes such that the
+length of the string is a multiple of the block size, and
+@code{L(adata)} is an encoding of the length of @code{adata}.
+
+@item The string @code{B} is separated into blocks @code{B_1} ...
+@code{B_n}
+@item The authentication tag @code{T} is calculated as
+@code{T=0, for i=0 to n, do T = E_k(B_i XOR T)}
+
+@item An initial counter is then initialized from the nonce to create
+@code{IC = flags | nonce | padding}, where @code{padding} is the
+shortest string of zero bytes such that @code{IC} is exactly one block
+in length.
+
+@item The authentication tag is encrypted using using @acronym{CTR} mode:
+@code{MAC = E_k(IC) XOR T}
+
+@item The plaintext is then encrypted using @acronym{CTR} mode with an
+initial counter of @code{IC+1}.
+@end itemize
+
+@acronym{CCM} mode decryption operates similarly, except that the
+ciphertext and @acronym{MAC} are first decrypted using CTR mode to
+retreive the plaintext and authentication tag. The authentication tag
+can then be recalucated from the authenticated data and plantext, and
+compared to the value in the message to check for authenticity.
+
+@subsubsection General @acronym{CCM} interface
+
+For all of the functions in the @acronym{CCM} interface, @var{cipher} is
+the context struct for the underlying cipher and @var{f} is the
+encryption function. The cipher's encryption key must be set before
+calling any of the @acronym{CCM} functions. The cipher's decryption
+function and key are never used.
+
+@deftp {Context struct} {struct ccm_ctx}
+Holds state corresponding to a particular message.
+@end deftp
+
+@defvr Constant CCM_BLOCK_SIZE
+@acronym{CCM}'s block size, 16.
+@end defvr
+
+@deftypefun void ccm_set_nonce (struct ccm_ctx *@var{ctx}, const void *@var{cipher}, nettle_crypt_func *@var{f}, size_t @var{noncelen}, const uint8_t *@var{nonce}, size_t @var{authlen}, size_t @var{msglen}, size_t @var{taglen})
+Initializes @var{ctx} using the given nonce and the sizes of the
+authenticated data, message, and @acronym{MAC} to be processed.
+@end deftypefun
+
+@deftypefun void ccm_update (struct ccm_ctx *@var{ctx}, const void *@var{cipher}, nettle_crypt_func *@var{f}, size_t @var{length}, const uint8_t *@var{data})
+Provides associated data to be authenticated. Must be called after
+@code{ccm_set_nonce}, and before @code{ccm_encrypt}, @code{ccm_decrypt}, or
+@code{ccm_digest}.
+@end deftypefun
+
+@deftypefun void ccm_encrypt (struct ccm_ctx *@var{ctx}, const void *@var{cipher}, nettle_crypt_func *@var{f}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void ccm_decrypt (struct ccm_ctx *@var{ctx}, const void *@var{cipher}, nettle_crypt_func *@var{f}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+Encrypts or decrypts the message data. Must be called after
+@code{ccm_set_nonce} and before @code{ccm_digest}. All but the last call
+for each message @emph{must} use a length that is a multiple of the
+block size.
+@end deftypefun
+
+@deftypefun void ccm_digest (struct ccm_ctx *@var{ctx}, const void *@var{cipher}, nettle_crypt_func *@var{f}, size_t @var{length}, uint8_t *@var{digest})
+Extracts the message digest (also known ``authentication tag''). This is
+the final operation when processing a message. @var{length} is usually
+equal to the @var{taglen} parameter supplied to @code{ccm_set_nonce},
+but if you provide a smaller value, only the first @var{length} octets
+of the digest are written.
+@end deftypefun
+
+To encrypt a message using the general @acronym{CCM} interface, set the
+message nonce and length using @code{ccm_set_nonce} and then call
+@code{ccm_update} to generate the digest of any authenticated data.
+After all of the authenticated data has been digested use
+@code{ccm_encrypt} to encrypt the plaintext. Finally, use
+@code{ccm_digest} to return the encrypted @acronym{MAC}.
+
+To decrypt a message, use @code{ccm_set_nonce} and @code{ccm_update} the
+same as you would for encryption, and then call @code{ccm_decrypt} to
+decrypt the ciphertext. After decrypting the ciphertext
+@code{ccm_digest} will return the encrypted @acronym{MAC} which should
+be identical to the @acronym{MAC} in the received message.
+
+@subsubsection @acronym{CCM} message interface
+
+The @acronym{CCM} message fuctions provides a simple interface that will
+perform authentication and message encryption in a single function call.
+The length of the cleartext is given by @var{mlength} and the length of
+the ciphertext is given by @var{clength}, always exactly @var{tlength}
+bytes longer than the corresponding plaintext. The length argument
+passed to a function is always the size for the result, @var{clength}
+for the encryption functions, and @var{mlength} for the decryption
+functions.
+
+@deftypefun void ccm_encrypt_message (void *@var{cipher}, nettle_crypt_func *@var{f}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{tlength}, size_t @var{clength}, uint8_t *@var{dst}, const uint8_t *@var{src})
+Computes the message digest from the @var{adata} and @var{src}
+parameters, encrypts the plaintext from @var{src}, appends the encrypted
+@acronym{MAC} to ciphertext and outputs it to @var{dst}.
+@end deftypefun
+
+@deftypefun int ccm_decrypt_message (void *@var{cipher}, nettle_crypt_func *@var{f}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{tlength}, size_t @var{mlength}, uint8_t *@var{dst}, const uint8_t *@var{src})
+Decrypts the ciphertext from @var{src}, outputs the plaintext to
+@var{dst}, recalculates the @acronym{MAC} from @var{adata} and the
+plaintext, and compares it to the final @var{tlength} bytes of
+@var{src}. If the values of the received and calculated @acronym{MAC}s
+are equal, this will return 1 indicating a valid and authenticated
+message. Otherwise, this function will return zero.
+@end deftypefun
+
+@subsubsection @acronym{CCM}-@acronym{AES} interface
+
+The @acronym{AES} @acronym{CCM} functions provide an API for using
+@acronym{CCM} mode with the @acronym{AES} block ciphers. The parameters
+all have the same meaning as the general and message interfaces, except
+that the @var{cipher}, @var{f}, and @var{ctx} parameters are replaced
+with an @acronym{AES} context structure, and a set-key function must be
+called before using any of the other functions in this interface.
+
+@deftp {Context struct} {struct ccm_aes128_ctx}
+Holds state corresponding to a particular message encrypted using the
+AES-128 block cipher.
+@end deftp
+
+@deftp {Context struct} {struct ccm_aes192_ctx}
+Holds state corresponding to a particular message encrypted using the
+AES-192 block cipher.
+@end deftp
+
+@deftp {Context struct} {struct ccm_aes256_ctx}
+Holds state corresponding to a particular message encrypted using the
+AES-256 block cipher.
+@end deftp
+
+@deftypefun void ccm_aes128_set_key (struct ccm_aes128_ctx *@var{ctx}, const uint8_t *@var{key})
+@deftypefunx void ccm_aes192_set_key (struct ccm_aes192_ctx *@var{ctx}, const uint8_t *@var{key})
+@deftypefunx void ccm_aes256_set_key (struct ccm_aes256_ctx *@var{ctx}, const uint8_t *@var{key})
+Initializes the encryption key for the AES block cipher. One of these
+functions must be called before any of the other functions in the
+@acronym{AES} @acronym{CCM} interface.
+@end deftypefun
+
+@deftypefun void ccm_aes128_set_nonce (struct ccm_aes128_ctx *@var{ctx}, size_t @var{noncelen}, const uint8_t *@var{nonce}, size_t @var{authlen}, size_t @var{msglen}, size_t @var{taglen})
+@deftypefunx void ccm_aes192_set_nonce (struct ccm_aes192_ctx *@var{ctx}, size_t @var{noncelen}, const uint8_t *@var{nonce}, size_t @var{authlen}, size_t @var{msglen}, size_t @var{taglen})
+@deftypefunx void ccm_aes256_set_nonce (struct ccm_aes256_ctx *@var{ctx}, size_t @var{noncelen}, const uint8_t *@var{nonce}, size_t @var{authlen}, size_t @var{msglen}, size_t @var{taglen})
+These are identical to @code{ccm_set_nonce}, except that @var{cipher},
+@var{f}, and @var{ctx} are replaced with a context structure.
+@end deftypefun
+
+@deftypefun void ccm_aes128_update (struct ccm_aes128_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
+@deftypefunx void ccm_aes192_update (struct ccm_aes192_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
+@deftypefunx void ccm_aes256_update (struct ccm_aes256_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
+These are identical to @code{ccm_set_update}, except that @var{cipher},
+@var{f}, and @var{ctx} are replaced with a context structure.
+@end deftypefun
+
+@deftypefun void ccm_aes128_encrypt (struct ccm_aes128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void ccm_aes192_encrypt (struct ccm_aes192_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void ccm_aes256_encrypt (struct ccm_aes256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void ccm_aes128_decrypt (struct ccm_aes128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void ccm_aes192_decrypt (struct ccm_aes192_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void ccm_aes256_decrypt (struct ccm_aes256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+These are identical to @code{ccm_set_encrypt} and @code{ccm_set_decrypt}, except
+that @var{cipher}, @var{f}, and @var{ctx} are replaced with a context structure.
+@end deftypefun
+
+@deftypefun void ccm_aes128_digest (struct ccm_aes128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+@deftypefunx void ccm_aes192_digest (struct ccm_aes192_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+@deftypefunx void ccm_aes256_digest (struct ccm_aes256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+These are identical to @code{ccm_set_digest}, except that @var{cipher},
+@var{f}, and @var{ctx} are replaced with a context structure.
+@end deftypefun
+
+@deftypefun void ccm_aes128_encrypt_message (struct ccm_aes128_ctx *@var{ctx}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{tlength}, size_t @var{clength}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void ccm_aes192_encrypt_message (struct ccm_aes192_ctx *@var{ctx}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{tlength}, size_t @var{clength}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void ccm_aes256_encrypt_message (struct ccm_aes256_ctx *@var{ctx}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{tlength}, size_t @var{clength}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx int ccm_aes128_decrypt_message (struct ccm_aes128_ctx *@var{ctx}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{tlength}, size_t @var{mlength}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx int ccm_aes192_decrypt_message (struct ccm_aes192_ctx *@var{ctx}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{tlength}, size_t @var{mlength}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx int ccm_aes192_decrypt_message (struct ccm_aes256_ctx *@var{ctx}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{tlength}, size_t @var{mlength}, uint8_t *@var{dst}, const uint8_t *@var{src})
+These are identical to @code{ccm_encrypt_message} and @code{ccm_decrypt_message}
+except that @var{cipher} and @var{f} are replaced with a context structure.
+@end deftypefun
 
 @node Keyed hash functions, Key derivation functions, Cipher modes, Reference
 @comment  node-name,  next,  previous,  up
