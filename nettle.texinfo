@@ -295,9 +295,12 @@ In all functions, strings are represented with an explicit length, of
 type @code{size_t}, and a pointer of type @code{uint8_t *} or
 @code{const uint8_t *}. For functions that transform one string to
 another, the argument order is length, destination pointer and source
-pointer. Source and destination areas are of the same length. Source and
-destination may be the same, so that you can process strings in place,
-but they @emph{must not} overlap in any other way.
+pointer. Source and destination areas are usually of the same length.
+When they differ, e.g., for @code{ccm_encrypt_message}, the length
+argument specifies the size of the destination area. Source and
+destination pointers may be equal, so that you can process strings in
+place, but source and destination areas @emph{must not} overlap in any
+other way.
 
 Many of the functions lack return value and can never fail. Those
 functions which can fail, return one on success and zero on failure.
@@ -547,7 +550,7 @@ identifiers for other purposes. So avoid doing that.
 @defvr Constant SHA512_224_DIGEST_SIZE
 @defvrx Constant SHA512_256_DIGEST_SIZE
 @defvrx Constant SHA384_DIGEST_SIZE
-The digest sizes for each variant, i.e., 28, 32, and 48, respectively.
+The digest size for each variant, i.e., 28, 32, and 48, respectively.
 @end defvr
 
 @defvr Constant SHA512_224_DATA_SIZE
