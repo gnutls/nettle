@@ -46,13 +46,15 @@ extern "C" {
 #define md2_digest nettle_md2_digest
 
 #define MD2_DIGEST_SIZE 16
-#define MD2_DATA_SIZE 16
+#define MD2_BLOCK_SIZE 16
+/* For backwards compatibility */
+#define MD2_DATA_SIZE MD2_BLOCK_SIZE
 
 struct md2_ctx
 {
-  uint8_t C[MD2_DATA_SIZE];
-  uint8_t X[3 * MD2_DATA_SIZE];
-  uint8_t block[MD2_DATA_SIZE]; /* Block buffer */
+  uint8_t C[MD2_BLOCK_SIZE];
+  uint8_t X[3 * MD2_BLOCK_SIZE];
+  uint8_t block[MD2_BLOCK_SIZE]; /* Block buffer */
   unsigned index;               /* Into buffer */
 };
 

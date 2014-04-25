@@ -533,7 +533,7 @@ gosthash94_update (struct gosthash94_ctx *ctx,
     /* fill partial block */
     if (index)
       {
-          unsigned left = GOSTHASH94_DATA_SIZE - index;
+          unsigned left = GOSTHASH94_BLOCK_SIZE - index;
           memcpy (ctx->message + index, msg, (length < left ? length : left));
           if (length < left)
               return;
@@ -543,11 +543,11 @@ gosthash94_update (struct gosthash94_ctx *ctx,
           msg += left;
           length -= left;
       }
-    while (length >= GOSTHASH94_DATA_SIZE)
+    while (length >= GOSTHASH94_BLOCK_SIZE)
       {
           gost_compute_sum_and_hash (ctx, msg);
-          msg += GOSTHASH94_DATA_SIZE;
-          length -= GOSTHASH94_DATA_SIZE;
+          msg += GOSTHASH94_BLOCK_SIZE;
+          length -= GOSTHASH94_BLOCK_SIZE;
       }
     if (length)
       {

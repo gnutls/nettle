@@ -46,7 +46,9 @@ extern "C" {
 #define md5_digest nettle_md5_digest
 
 #define MD5_DIGEST_SIZE 16
-#define MD5_DATA_SIZE 64
+#define MD5_BLOCK_SIZE 64
+/* For backwards compatibility */
+#define MD5_DATA_SIZE MD5_BLOCK_SIZE
 
 /* Digest is kept internally as 4 32-bit words. */
 #define _MD5_DIGEST_LENGTH 4
@@ -55,7 +57,7 @@ struct md5_ctx
 {
   uint32_t state[_MD5_DIGEST_LENGTH];
   uint64_t count;               /* Block count */
-  uint8_t block[MD5_DATA_SIZE]; /* Block buffer */
+  uint8_t block[MD5_BLOCK_SIZE]; /* Block buffer */
   unsigned index;               /* Into buffer */
 };
 

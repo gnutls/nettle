@@ -92,7 +92,7 @@ sha1_digest(struct sha1_ctx *ctx,
   bit_count = (ctx->count << 9) | (ctx->index << 3);
 
   /* append the 64 bit count */
-  WRITE_UINT64(ctx->block + (SHA1_DATA_SIZE - 8), bit_count);
+  WRITE_UINT64(ctx->block + (SHA1_BLOCK_SIZE - 8), bit_count);
   _nettle_sha1_compress(ctx->state, ctx->block);
 
   _nettle_write_be32(length, digest, ctx->state);

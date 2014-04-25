@@ -1,5 +1,9 @@
 2014-04-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* All hash-related files: Renamed all _DATA_SIZE constants to
+	_BLOCK_SIZE, for consistency. Old names kept for backwards
+	compatibility. 
+
 	* nettle.texinfo (CCM): Documentation for CCM mode, contributed by
 	Owen Kirby.
 

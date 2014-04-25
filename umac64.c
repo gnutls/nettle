@@ -72,9 +72,9 @@ umac64_set_nonce (struct umac64_ctx *ctx,
 
 #define UMAC64_BLOCK(ctx, block) do {					\
     uint64_t __umac64_y[2];						\
-    _umac_nh_n (__umac64_y, 2, ctx->l1_key, UMAC_DATA_SIZE, block);	\
-    __umac64_y[0] += 8*UMAC_DATA_SIZE;					\
-    __umac64_y[1] += 8*UMAC_DATA_SIZE;					\
+    _umac_nh_n (__umac64_y, 2, ctx->l1_key, UMAC_BLOCK_SIZE, block);	\
+    __umac64_y[0] += 8*UMAC_BLOCK_SIZE;					\
+    __umac64_y[1] += 8*UMAC_BLOCK_SIZE;					\
     _umac_l2 (ctx->l2_key, ctx->l2_state, 2, ctx->count++, __umac64_y);	\
   } while (0)
 

@@ -428,7 +428,7 @@ bits, or 32 octets. Nettle defines SHA256 in @file{<nettle/sha2.h>}.
 The size of a SHA256 digest, i.e. 32.
 @end defvr
 
-@defvr Constant SHA256_DATA_SIZE
+@defvr Constant SHA256_BLOCK_SIZE
 The internal block size of SHA256. Useful for some special constructions,
 in particular HMAC-SHA256.
 @end defvr
@@ -469,7 +469,7 @@ compatibility).
 The size of a SHA224 digest, i.e. 28.
 @end defvr
 
-@defvr Constant SHA224_DATA_SIZE
+@defvr Constant SHA224_BLOCK_SIZE
 The internal block size of SHA224. Useful for some special constructions,
 in particular HMAC-SHA224.
 @end defvr
@@ -508,7 +508,7 @@ octets. Nettle defines SHA512 in @file{<nettle/sha2.h>} (and in
 The size of a SHA512 digest, i.e. 64.
 @end defvr
 
-@defvr Constant SHA512_DATA_SIZE
+@defvr Constant SHA512_BLOCK_SIZE
 The internal block size of SHA512, 128. Useful for some special
 constructions, in particular HMAC-SHA512.
 @end defvr
@@ -554,10 +554,10 @@ identifiers for other purposes. So avoid doing that.
 The digest size for each variant, i.e., 28, 32, and 48, respectively.
 @end defvr
 
-@defvr Constant SHA512_224_DATA_SIZE
-@defvrx Constant SHA512_256_DATA_SIZE
-@defvrx Constant SHA384_DATA_SIZE
-The internal block size, same as SHA512_DATA_SIZE, i.e., 128. Useful for
+@defvr Constant SHA512_224_BLOCK_SIZE
+@defvrx Constant SHA512_256_BLOCK_SIZE
+@defvrx Constant SHA384_BLOCK_SIZE
+The internal block size, same as SHA512_BLOCK_SIZE, i.e., 128. Useful for
 some special constructions, in particular HMAC-SHA384.
 @end defvr
 
@@ -606,7 +606,7 @@ Nettle defines SHA3-224 in @file{<nettle/sha3.h>}.
 The size of a SHA3_224 digest, i.e., 28.
 @end defvr
 
-@defvr Constant SHA3_224_DATA_SIZE
+@defvr Constant SHA3_224_BLOCK_SIZE
 The internal block size of SHA3_224.
 @end defvr
 
@@ -641,7 +641,7 @@ Nettle defines SHA3-256 in @file{<nettle/sha3.h>}.
 The size of a SHA3_256 digest, i.e., 32.
 @end defvr
 
-@defvr Constant SHA3_256_DATA_SIZE
+@defvr Constant SHA3_256_BLOCK_SIZE
 The internal block size of SHA3_256.
 @end defvr
 
@@ -675,7 +675,7 @@ Nettle defines SHA3-384 in @file{<nettle/sha3.h>}.
 The size of a SHA3_384 digest, i.e., 48.
 @end defvr
 
-@defvr Constant SHA3_384_DATA_SIZE
+@defvr Constant SHA3_384_BLOCK_SIZE
 The internal block size of SHA3_384.
 @end defvr
 
@@ -709,7 +709,7 @@ Nettle defines SHA3-512 in @file{<nettle/sha3.h>}.
 The size of a SHA3_512 digest, i.e. 64.
 @end defvr
 
-@defvr Constant SHA3_512_DATA_SIZE
+@defvr Constant SHA3_512_BLOCK_SIZE
 The internal block size of SHA3_512.
 @end defvr
 
@@ -757,7 +757,7 @@ described in @cite{RFC 1321}. It outputs message digests of 128 bits, or
 The size of an MD5 digest, i.e. 16.
 @end defvr
 
-@defvr Constant MD5_DATA_SIZE
+@defvr Constant MD5_BLOCK_SIZE
 The internal block size of MD5. Useful for some special constructions,
 in particular HMAC-MD5.
 @end defvr
@@ -801,7 +801,7 @@ Nettle defines MD2 in @file{<nettle/md2.h>}.
 The size of an MD2 digest, i.e. 16.
 @end defvr
 
-@defvr Constant MD2_DATA_SIZE
+@defvr Constant MD2_BLOCK_SIZE
 The internal block size of MD2.
 @end defvr
 
@@ -838,7 +838,7 @@ existing applications and protocols.
 The size of an MD4 digest, i.e. 16.
 @end defvr
 
-@defvr Constant MD4_DATA_SIZE
+@defvr Constant MD4_BLOCK_SIZE
 The internal block size of MD4.
 @end defvr
 
@@ -875,7 +875,7 @@ RIPEMD160 in @file{nettle/ripemd160.h}.
 The size of a RIPEMD160 digest, i.e. 20.
 @end defvr
 
-@defvr Constant RIPEMD160_DATA_SIZE
+@defvr Constant RIPEMD160_BLOCK_SIZE
 The internal block size of RIPEMD160.
 @end defvr
 
@@ -911,7 +911,7 @@ in @file{<nettle/sha.h>}, for backwards compatibility).
 The size of a SHA1 digest, i.e. 20.
 @end defvr
 
-@defvr Constant SHA1_DATA_SIZE
+@defvr Constant SHA1_BLOCK_SIZE
 The internal block size of SHA1. Useful for some special constructions,
 in particular HMAC-SHA1.
 @end defvr
@@ -949,7 +949,7 @@ Nettle defines GOSTHASH94 in @file{<nettle/gosthash94.h>}.
 The size of a GOSTHASH94 digest, i.e. 32.
 @end defvr
 
-@defvr Constant GOSTHASH94_DATA_SIZE
+@defvr Constant GOSTHASH94_BLOCK_SIZE
 The internal block size of GOSTHASH94, i.e., 32.
 @end defvr
 
@@ -2743,7 +2743,7 @@ The size of an UMAC96 digest, 12.
 @defvr Constant UMAC128_DIGEST_SIZE
 The size of an UMAC128 digest, 16.
 @end defvr
-@defvr Constant UMAC_DATA_SIZE
+@defvr Constant UMAC_BLOCK_SIZE
 The internal block size of UMAC.
 @end defvr
 

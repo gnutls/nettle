@@ -53,7 +53,7 @@ sha3_384_update (struct sha3_384_ctx *ctx,
 		 size_t length,
 		 const uint8_t *data)
 {
-  ctx->index = _sha3_update (&ctx->state, SHA3_384_DATA_SIZE, ctx->block,
+  ctx->index = _sha3_update (&ctx->state, SHA3_384_BLOCK_SIZE, ctx->block,
 			     ctx->index, length, data);
 }
 
@@ -62,7 +62,7 @@ sha3_384_digest(struct sha3_384_ctx *ctx,
 		size_t length,
 		uint8_t *digest)
 {
-  _sha3_pad (&ctx->state, SHA3_384_DATA_SIZE, ctx->block, ctx->index);
+  _sha3_pad (&ctx->state, SHA3_384_BLOCK_SIZE, ctx->block, ctx->index);
   _nettle_write_le64 (length, digest, ctx->state.a);
   sha3_384_init (ctx);
 }

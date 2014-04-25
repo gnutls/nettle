@@ -41,7 +41,7 @@ const struct nettle_hash nettle_sha512_224 =
   {
     "sha512-224", sizeof(struct sha512_ctx),
     SHA512_224_DIGEST_SIZE,
-    SHA512_224_DATA_SIZE,
+    SHA512_224_BLOCK_SIZE,
     (nettle_hash_init_func *) sha512_224_init,
     (nettle_hash_update_func *) sha512_224_update,
     (nettle_hash_digest_func *) sha512_224_digest

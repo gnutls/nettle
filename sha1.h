@@ -48,7 +48,9 @@ extern "C" {
 /* SHA1 */
 
 #define SHA1_DIGEST_SIZE 20
-#define SHA1_DATA_SIZE 64
+#define SHA1_BLOCK_SIZE 64
+/* For backwards compatibility */
+#define SHA1_DATA_SIZE SHA1_BLOCK_SIZE
 
 /* Digest is kept internally as 5 32-bit words. */
 #define _SHA1_DIGEST_LENGTH 5
@@ -57,7 +59,7 @@ struct sha1_ctx
 {
   uint32_t state[_SHA1_DIGEST_LENGTH];    /* State variables */
   uint64_t count;                         /* 64-bit block count */
-  uint8_t block[SHA1_DATA_SIZE];          /* SHA1 data buffer */
+  uint8_t block[SHA1_BLOCK_SIZE];         /* SHA1 data buffer */
   unsigned int index;                     /* index into buffer */
 };
 

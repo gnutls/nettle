@@ -56,10 +56,16 @@ extern "C" {
 #define sha512_256_init   nettle_sha512_256_init
 #define sha512_256_digest nettle_sha512_256_digest
 
+/* For backwards compatibility */
+#define SHA224_DATA_SIZE SHA256_BLOCK_SIZE
+#define SHA256_DATA_SIZE SHA256_BLOCK_SIZE
+#define SHA512_DATA_SIZE SHA512_BLOCK_SIZE
+#define SHA384_DATA_SIZE SHA512_BLOCK_SIZE
+
 /* SHA256 */
 
 #define SHA256_DIGEST_SIZE 32
-#define SHA256_DATA_SIZE 64
+#define SHA256_BLOCK_SIZE 64
 
 /* Digest is kept internally as 8 32-bit words. */
 #define _SHA256_DIGEST_LENGTH 8
@@ -68,7 +74,7 @@ struct sha256_ctx
 {
   uint32_t state[_SHA256_DIGEST_LENGTH];    /* State variables */
   uint64_t count;                           /* 64-bit block count */
-  uint8_t block[SHA256_DATA_SIZE];          /* SHA256 data buffer */
+  uint8_t block[SHA256_BLOCK_SIZE];          /* SHA256 data buffer */
   unsigned int index;                       /* index into buffer */
 };
 
@@ -95,7 +101,7 @@ _nettle_sha256_compress(uint32_t *state, const uint8_t *data, const uint32_t *k)
 /* SHA224, a truncated SHA256 with different initial state. */
 
 #define SHA224_DIGEST_SIZE 28
-#define SHA224_DATA_SIZE SHA256_DATA_SIZE
+#define SHA224_BLOCK_SIZE SHA256_BLOCK_SIZE
 #define sha224_ctx sha256_ctx
 
 void
@@ -112,7 +118,7 @@ sha224_digest(struct sha256_ctx *ctx,
 /* SHA512 */
 
 #define SHA512_DIGEST_SIZE 64
-#define SHA512_DATA_SIZE 128
+#define SHA512_BLOCK_SIZE 128
 
 /* Digest is kept internally as 8 64-bit words. */
 #define _SHA512_DIGEST_LENGTH 8
@@ -121,7 +127,7 @@ struct sha512_ctx
 {
   uint64_t state[_SHA512_DIGEST_LENGTH];    /* State variables */
   uint64_t count_low, count_high;           /* 128-bit block count */
-  uint8_t block[SHA512_DATA_SIZE];          /* SHA512 data buffer */
+  uint8_t block[SHA512_BLOCK_SIZE];          /* SHA512 data buffer */
   unsigned int index;                       /* index into buffer */
 };
 
@@ -148,7 +154,7 @@ _nettle_sha512_compress(uint64_t *state, const uint8_t *data, const uint64_t *k)
 /* SHA384, a truncated SHA512 with different initial state. */
 
 #define SHA384_DIGEST_SIZE 48
-#define SHA384_DATA_SIZE SHA512_DATA_SIZE
+#define SHA384_BLOCK_SIZE SHA512_BLOCK_SIZE
 #define sha384_ctx sha512_ctx
 
 void
@@ -166,7 +172,7 @@ sha384_digest(struct sha512_ctx *ctx,
    with different initial states. */
 
 #define SHA512_224_DIGEST_SIZE 28
-#define SHA512_224_DATA_SIZE SHA512_DATA_SIZE
+#define SHA512_224_BLOCK_SIZE SHA512_BLOCK_SIZE
 #define sha512_224_ctx sha512_ctx
 
 void
@@ -180,7 +186,7 @@ sha512_224_digest(struct sha512_224_ctx *ctx,
                   uint8_t *digest);
 
 #define SHA512_256_DIGEST_SIZE 32
-#define SHA512_256_DATA_SIZE SHA512_DATA_SIZE
+#define SHA512_256_BLOCK_SIZE SHA512_BLOCK_SIZE
 #define sha512_256_ctx sha512_ctx
 
 void

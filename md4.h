@@ -46,7 +46,9 @@ extern "C" {
 #define md4_digest nettle_md4_digest
 
 #define MD4_DIGEST_SIZE 16
-#define MD4_DATA_SIZE 64
+#define MD4_BLOCK_SIZE 64
+/* For backwards compatibility */
+#define MD4_DATA_SIZE MD4_BLOCK_SIZE
 
 /* Digest is kept internally as 4 32-bit words. */
 #define _MD4_DIGEST_LENGTH 4
@@ -56,7 +58,7 @@ struct md4_ctx
 {
   uint32_t state[_MD4_DIGEST_LENGTH];
   uint64_t count;			/* Block count */
-  uint8_t block[MD4_DATA_SIZE];		/* Block buffer */
+  uint8_t block[MD4_BLOCK_SIZE];	/* Block buffer */
   unsigned index;			/* Into buffer */
 };
 

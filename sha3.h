@@ -85,23 +85,28 @@ _sha3_pad (struct sha3_state *state,
    size). */
 
 #define SHA3_224_DIGEST_SIZE 28
-#define SHA3_224_DATA_SIZE 144
+#define SHA3_224_BLOCK_SIZE 144
 
 #define SHA3_256_DIGEST_SIZE 32
-#define SHA3_256_DATA_SIZE 136
+#define SHA3_256_BLOCK_SIZE 136
 
 #define SHA3_384_DIGEST_SIZE 48
-#define SHA3_384_DATA_SIZE 104
+#define SHA3_384_BLOCK_SIZE 104
 
 #define SHA3_512_DIGEST_SIZE 64
-#define SHA3_512_DATA_SIZE 72
+#define SHA3_512_BLOCK_SIZE 72
 
+/* For backwards compatibility */
+#define SHA3_224_DATA_SIZE SHA3_224_BLOCK_SIZE
+#define SHA3_256_DATA_SIZE SHA3_256_BLOCK_SIZE
+#define SHA3_384_DATA_SIZE SHA3_384_BLOCK_SIZE
+#define SHA3_512_DATA_SIZE SHA3_512_BLOCK_SIZE
 
 struct sha3_224_ctx
 {
   struct sha3_state state;
   unsigned index;
-  uint8_t block[SHA3_224_DATA_SIZE];
+  uint8_t block[SHA3_224_BLOCK_SIZE];
 };
 
 void
@@ -121,7 +126,7 @@ struct sha3_256_ctx
 {
   struct sha3_state state;
   unsigned index;
-  uint8_t block[SHA3_256_DATA_SIZE];
+  uint8_t block[SHA3_256_BLOCK_SIZE];
 };
 
 void
@@ -141,7 +146,7 @@ struct sha3_384_ctx
 {
   struct sha3_state state;
   unsigned index;
-  uint8_t block[SHA3_384_DATA_SIZE];
+  uint8_t block[SHA3_384_BLOCK_SIZE];
 };
 
 void
@@ -161,7 +166,7 @@ struct sha3_512_ctx
 {
   struct sha3_state state;
   unsigned index;
-  uint8_t block[SHA3_512_DATA_SIZE];
+  uint8_t block[SHA3_512_BLOCK_SIZE];
 };
 
 void

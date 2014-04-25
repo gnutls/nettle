@@ -72,14 +72,16 @@ extern "C" {
 #define gosthash94_update nettle_gosthash94_update
 #define gosthash94_digest nettle_gosthash94_digest
 
-#define GOSTHASH94_DATA_SIZE 32
+#define GOSTHASH94_BLOCK_SIZE 32
 #define GOSTHASH94_DIGEST_SIZE 32
+/* For backwards compatibility */
+#define GOSTHASH94_DATA_SIZE GOSTHASH94_BLOCK_SIZE
 
 struct gosthash94_ctx
 {
   uint32_t hash[8]; /* algorithm 256-bit state */
   uint32_t sum[8];  /* sum of processed message blocks */
-  uint8_t message[GOSTHASH94_DATA_SIZE]; /* 256-bit buffer for leftovers */
+  uint8_t message[GOSTHASH94_BLOCK_SIZE]; /* 256-bit buffer for leftovers */
   uint64_t length;  /* number of processed bytes */
 };
 

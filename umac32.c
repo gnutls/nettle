@@ -72,8 +72,8 @@ umac32_set_nonce (struct umac32_ctx *ctx,
 
 #define UMAC32_BLOCK(ctx, block) do {					\
     uint64_t __umac32_y							\
-      = _umac_nh (ctx->l1_key, UMAC_DATA_SIZE, block)			\
-      + 8*UMAC_DATA_SIZE ;						\
+      = _umac_nh (ctx->l1_key, UMAC_BLOCK_SIZE, block)			\
+      + 8*UMAC_BLOCK_SIZE ;						\
     _umac_l2 (ctx->l2_key, ctx->l2_state, 1, ctx->count++, &__umac32_y); \
   } while (0)
 

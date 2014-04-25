@@ -410,7 +410,7 @@ time_umac(void)
   info.update = (nettle_hash_update_func *) umac32_update;
   info.data = data;
 
-  display("umac32", "update", UMAC_DATA_SIZE,
+  display("umac32", "update", UMAC_BLOCK_SIZE,
 	  time_function(bench_hash, &info));
 
   umac64_set_key (&ctx64, key);
@@ -418,7 +418,7 @@ time_umac(void)
   info.update = (nettle_hash_update_func *) umac64_update;
   info.data = data;
 
-  display("umac64", "update", UMAC_DATA_SIZE,
+  display("umac64", "update", UMAC_BLOCK_SIZE,
 	  time_function(bench_hash, &info));
 
   umac96_set_key (&ctx96, key);
@@ -426,7 +426,7 @@ time_umac(void)
   info.update = (nettle_hash_update_func *) umac96_update;
   info.data = data;
 
-  display("umac96", "update", UMAC_DATA_SIZE,
+  display("umac96", "update", UMAC_BLOCK_SIZE,
 	  time_function(bench_hash, &info));
 
   umac128_set_key (&ctx128, key);
@@ -434,7 +434,7 @@ time_umac(void)
   info.update = (nettle_hash_update_func *) umac128_update;
   info.data = data;
 
-  display("umac128", "update", UMAC_DATA_SIZE,
+  display("umac128", "update", UMAC_BLOCK_SIZE,
 	  time_function(bench_hash, &info));
 }
 
@@ -677,7 +677,7 @@ static void
 bench_sha1_compress(void)
 {
   uint32_t state[_SHA1_DIGEST_LENGTH];
-  uint8_t data[SHA1_DATA_SIZE];
+  uint8_t data[SHA1_BLOCK_SIZE];
   double t;
 
   TIME_CYCLES (t, _nettle_sha1_compress(state, data));

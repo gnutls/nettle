@@ -87,21 +87,21 @@ md2_transform(struct md2_ctx *ctx, const uint8_t *data)
   unsigned i;
   uint8_t t;
   
-  memcpy(ctx->X + 16, data, MD2_DATA_SIZE);
+  memcpy(ctx->X + 16, data, MD2_BLOCK_SIZE);
 
   for (i = 0, t = ctx->C[15];
-       i<MD2_DATA_SIZE; i++)
+       i<MD2_BLOCK_SIZE; i++)
     {
-      ctx->X[2 * MD2_DATA_SIZE + i]
-	= ctx->X[i] ^ ctx->X[MD2_DATA_SIZE + i];
+      ctx->X[2 * MD2_BLOCK_SIZE + i]
+	= ctx->X[i] ^ ctx->X[MD2_BLOCK_SIZE + i];
       t = (ctx->C[i] ^= S[data[i]^t]);
     }
   for (i = t = 0;
-       i< MD2_DATA_SIZE + 2;
+       i< MD2_BLOCK_SIZE + 2;
        t = (t + i) & 0xff, i++)
     {
       unsigned j;
-      for (j = 0; j < 3 * MD2_DATA_SIZE; j++)
+      for (j = 0; j < 3 * MD2_BLOCK_SIZE; j++)
 	t = (ctx->X[j] ^= S[t]);
     }
 }
@@ -129,7 +129,7 @@ md2_digest(struct md2_ctx *ctx,
   
   assert(length <= MD2_DIGEST_SIZE);
 
-  left = MD2_DATA_SIZE - ctx->index;
+  left = MD2_BLOCK_SIZE - ctx->index;
   memset(ctx->block + ctx->index, left, left);
   md2_transform(ctx, ctx->block);
   

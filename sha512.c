@@ -172,8 +172,8 @@ sha512_write_digest(struct sha512_ctx *ctx,
   /* This is slightly inefficient, as the numbers are converted to
      big-endian format, and will be converted back by the compression
      function. It's probably not worth the effort to fix this. */
-  WRITE_UINT64(ctx->block + (SHA512_DATA_SIZE - 16), high);
-  WRITE_UINT64(ctx->block + (SHA512_DATA_SIZE - 8), low);
+  WRITE_UINT64(ctx->block + (SHA512_BLOCK_SIZE - 16), high);
+  WRITE_UINT64(ctx->block + (SHA512_BLOCK_SIZE - 8), low);
   COMPRESS(ctx, ctx->block);
 
   words = length / 8;

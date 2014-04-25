@@ -116,7 +116,7 @@ sha256_write_digest(struct sha256_ctx *ctx,
   /* This is slightly inefficient, as the numbers are converted to
      big-endian format, and will be converted back by the compression
      function. It's probably not worth the effort to fix this. */
-  WRITE_UINT64(ctx->block + (SHA256_DATA_SIZE - 8), bit_count);
+  WRITE_UINT64(ctx->block + (SHA256_BLOCK_SIZE - 8), bit_count);
   COMPRESS(ctx, ctx->block);
 
   _nettle_write_be32(length, digest, ctx->state);
