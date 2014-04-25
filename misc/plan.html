@@ -48,7 +48,7 @@
     Use the type <tt>uint64_t</tt> for 64-bit block counts in all hash
     functions.
   </p>
-  <p class='should'>
+  <p class='postponed'>
     Move some internal-use macros from macros.h to nettle-internal.h.
   </p>
   <p class='done'>
@@ -104,8 +104,14 @@
   <p class='done'>
     Document new AES and Camellia interface.
   </p>
+  <p class='done'>
+    Document additional sha512 variants.
+  </p>
   <p class='should'>
     Document new EAX mode.
+  </p>
+  <p class='done'>
+    Document new CCM mode.
   </p>
   <p class='should'>
     Document new DSA interface.
@@ -126,6 +132,10 @@
     using <tt>.p.o</tt> or some subdirectory instead. Also drop
     <tt>CCPIC_MAYBE</tt>, and let the static libraries depend on the
     right object files.
+  </p>
+  <p class='should'>
+    Reconsider assembly make rules, going back to a .asm.o: rule might
+    work better with Solaris' make.
   </p>
   <p class='should'>
     Delay building of test programs until <tt>make check</tt>.
