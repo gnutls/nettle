@@ -105,10 +105,10 @@ ccm_aes192_decrypt_message(struct ccm_aes192_ctx *ctx,
 			   size_t nlength, const uint8_t *nonce,
 			   size_t alength, const uint8_t *adata,
 			   size_t tlength,
-			   size_t clength, uint8_t *dst, const uint8_t *src)
+			   size_t mlength, uint8_t *dst, const uint8_t *src)
 {
   return ccm_decrypt_message(&ctx->cipher,
 			     (nettle_cipher_func *) aes192_encrypt,
 			     nlength, nonce, alength, adata,
-			     tlength, clength, dst, src);
+			     tlength, mlength, dst, src);
 }

@@ -1,3 +1,14 @@
+2014-04-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/ccm-test.c (test_cipher_ccm): And tests.
+
+	* ccm.c (ccm_decrypt_message): Change length argument, should now
+	be clear text (dst) length.
+	* ccm-aes128.c (ccm_aes128_decrypt_message): Likewise.
+	* ccm-aes192.c (ccm_aes192_decrypt_message): Likewise.
+	* ccm-aes256.c (ccm_aes256_decrypt_message): Likewise.
+	* ccm.h: Updated prototypes.
+
 2014-04-22  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle.texinfo (Recommended hash functions): Document additional

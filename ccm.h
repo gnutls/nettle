@@ -150,7 +150,7 @@ ccm_decrypt_message(const void *cipher, nettle_cipher_func *f,
 		    size_t nlength, const uint8_t *nonce,
 		    size_t alength, const uint8_t *adata,
 		    size_t tlength,
-		    size_t clength, uint8_t *dst, const uint8_t *src);
+		    size_t mlength, uint8_t *dst, const uint8_t *src);
 
 /* CCM Mode with AES-128 */
 struct ccm_aes128_ctx {
@@ -194,7 +194,7 @@ ccm_aes128_decrypt_message(struct ccm_aes128_ctx *ctx,
 			   size_t nlength, const uint8_t *nonce,
 			   size_t alength, const uint8_t *adata,
 			   size_t tlength,
-			   size_t clength, uint8_t *dst, const uint8_t *src);
+			   size_t mlength, uint8_t *dst, const uint8_t *src);
 
 struct ccm_aes192_ctx {
     struct ccm_ctx      ccm;
@@ -238,7 +238,7 @@ ccm_aes192_decrypt_message(struct ccm_aes192_ctx *ctx,
 			   size_t nlength, const uint8_t *nonce,
 			   size_t alength, const uint8_t *adata,
 			   size_t tlength,
-			   size_t clength, uint8_t *dst, const uint8_t *src);
+			   size_t mlength, uint8_t *dst, const uint8_t *src);
 
 /* CCM Mode with AES-256 */
 struct ccm_aes256_ctx {
@@ -282,7 +282,7 @@ ccm_aes256_decrypt_message(struct ccm_aes256_ctx *ctx,
 			   size_t nlength, const uint8_t *nonce,
 			   size_t alength, const uint8_t *adata,
 			   size_t tlength,
-			   size_t clength, uint8_t *dst, const uint8_t *src);
+			   size_t mlength, uint8_t *dst, const uint8_t *src);
 
 #ifdef __cplusplus
 }

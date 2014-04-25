@@ -250,14 +250,13 @@ int
 ccm_decrypt_message(const void *cipher, nettle_cipher_func *f,
 		    size_t nlength, const uint8_t *nonce,
 		    size_t alength, const uint8_t *adata, size_t tlength,
-		    size_t clength, uint8_t *dst, const uint8_t *src)
+		    size_t mlength, uint8_t *dst, const uint8_t *src)
 {
   struct ccm_ctx ctx;
   uint8_t tag[CCM_BLOCK_SIZE];
-  assert(clength >= tlength);
-  ccm_set_nonce(&ctx, cipher, f, nlength, nonce, alength, clength-tlength, tlength);
+  ccm_set_nonce(&ctx, cipher, f, nlength, nonce, alength, mlength, tlength);
   ccm_update(&ctx, cipher, f, alength, adata);
-  ccm_decrypt(&ctx, cipher, f, clength-tlength, dst, src);
+  ccm_decrypt(&ctx, cipher, f, mlength, dst, src);
   ccm_digest(&ctx, cipher, f, tlength, tag);
-  return (memcmp(tag, src + (clength-tlength), tlength) == 0);
+  return (memcmp(tag, src + mlength, tlength) == 0);
 }
