@@ -3,6 +3,7 @@
 	* nettle.texinfo (GCM): Document GCM_DIGEST_SIZE.
 	(UMAC): Document new UMAC constants.
 	(Keyed hash functions): Make HMAC and UMAC their own info nodes.
+	(EAX): Document EAX.
 
 	* umac.h (UMAC_MIN_NONCE_SIZE, UMAC_MAX_NONCE_SIZE): New
 	constants.

@@ -1827,6 +1827,7 @@ signature to authenticate the message.
 @menu
 * CBC::                         
 * CTR::                         
+* EAX::                         
 * GCM::                         
 * CCM::                         
 @end menu
@@ -1925,7 +1926,7 @@ These macros use some tricks to make the compiler display a warning if
 the types of @var{f} and @var{ctx} don't match, e.g. if you try to use
 an @code{struct aes_ctx} context with the @code{des_encrypt} function.
 
-@node CTR, GCM, CBC, Cipher modes
+@node CTR, EAX, CBC, Cipher modes
 @comment  node-name,  next,  previous,  up
 @subsection Counter mode
 
@@ -2001,7 +2002,190 @@ last three arguments define the source and destination area for the
 operation.
 @end deffn
 
-@node GCM, CCM, CTR, Cipher modes
+@node EAX, GCM, CTR, Cipher modes
+@comment  node-name,  next,  previous,  up
+@subsection EAX
+
+The @acronym{EAX} mode combines @acronym{CTR} mode encryption,
+@xref{CTR}, with a message authentication based on @acronym{CBC},
+@xref{CBC}. It is defined on top of a block cipher, and only the
+encryption function of this cipher is used. The implementation in Nettle
+is restricted to ciphers with a block size of 128 bits (16 octets).
+@acronym{EAX} was defined as a reaction to the @acronym{CCM} mode,
+@xref{CCM}, which uses the same primitives but has some undesirable and
+inelegant properties.
+
+The @acronym{EAX} mode provides both encryption and authentication. For
+@acronym{EAX} encryption, the inputs are:
+
+@itemize
+@item
+The key, which can be used for many messages.
+@item 
+A nonce, of arbitrary size, which must be unique for each message using
+the same key.
+@item
+Additional associated data to be authenticated, but not included in the
+message.
+@item
+The cleartext message to be encrypted.
+@end itemize
+
+The outputs are:
+
+@itemize
+@item
+A ciphertext, of the same size as the cleartext.
+@item
+An authentication tag, or digest, of size up to one block of the
+underlying cipher.
+@end itemize
+
+Usually, the authentication tag should be appended at the end of the
+ciphertext, producing an encrypted message which is slightly longer than
+the cleartext.
+
+Nettle's support for @acronym{EAX} consists of a low-level general
+interface, some convenience macros, and specific functions for
+@acronym{EAX} using @acronym{AES}128 as the underlying cipher. These
+interfaces are defined in @file{<nettle/eax.h>}
+
+@subsubsection General @acronym{EAX} interface
+
+@deftp {Context struct} {struct eax_key}
+@acronym{EAX} state which depends only on the key, but not on the nonce
+or the message.
+@end deftp
+
+@deftp {Context struct} {struct eax_ctx}
+Holds state corresponding to a particular message.
+@end deftp
+
+@defvr Constant EAX_BLOCK_SIZE
+@acronym{EAX}'s block size, 16.
+@end defvr
+
+@defvr Constant EAX_DIGEST_SIZE
+Size of the @acronym{EAX} digest, also 16.
+@end defvr
+
+@deftypefun void eax_set_key (struct eax_key *@var{key}, const void *@var{cipher}, nettle_cipher_func *@var{f})
+Initializes @var{key}. @var{cipher} gives a context struct for the
+underlying cipher, which must have been previously initialized for
+encryption, and @var{f} is the encryption function.
+@end deftypefun
+
+@deftypefun void eax_set_nonce (struct eax_ctx *@var{eax}, const struct eax_key *@var{key}, const void *@var{cipher}, nettle_cipher_func *@var{f}, size_t @var{nonce_length}, const uint8_t *@var{nonce})
+Initializes @var{ctx} for processing a new message, using the given
+nonce.
+@end deftypefun
+
+@deftypefun void eax_update (struct eax_ctx *@var{eax}, const struct eax_key *@var{key}, const void *@var{cipher}, nettle_cipher_func *@var{f}, size_t @var{data_length}, const uint8_t *@var{data})
+Process associated data for authentication. All but the last call for
+each message @emph{must} use a length that is a multiple of the block
+size. Unlike many other AEAD constructions, for @acronym{EAX} it's not
+necessary to complete the processing of all associated data before
+encrypting or decrypting the message data.
+@end deftypefun
+
+@deftypefun void eax_encrypt (struct eax_ctx *@var{eax}, const struct eax_key *@var{key}, const void *@var{cipher}, nettle_cipher_func *@var{f}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void eax_decrypt (struct eax_ctx *@var{eax}, const struct eax_key *@var{key}, const void *@var{cipher}, nettle_cipher_func *@var{f}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+Encrypts or decrypts the data of a message. @var{cipher} is the context
+struct for the underlying cipher and @var{f} is the encryption function.
+All but the last call for each message @emph{must} use a length that is
+a multiple of the block size.
+@end deftypefun
+
+@deftypefun void eax_digest (struct eax_ctx *@var{eax}, const struct eax_key *@var{key}, const void *@var{cipher}, nettle_cipher_func *@var{f}, size_t @var{length}, uint8_t *@var{digest});
+Extracts the message digest (also known ``authentication tag''). This is
+the final operation when processing a message. If @var{length} is
+smaller than @code{EAX_DIGEST_SIZE}, only the first @var{length} octets
+of the digest are written.
+@end deftypefun
+
+
+@subsubsection @acronym{EAX} helper macros
+
+The following macros are defined.
+
+@deffn Macro EAX_CTX (@var{context_type})
+This defines an all-in-one context struct, including the context of the
+underlying cipher and all @acronym{EAX} state. It expands
+to
+@example
+@{
+   struct eax_key key;
+   struct eax_ctx eax;
+   context_type cipher;
+@}
+@end example
+@end deffn
+
+For all these macros, @var{ctx}, is a context struct as defined by
+@code{EAX_CTX}, and @var{encrypt} is the encryption function of the
+underlying cipher.
+
+@deffn Macro EAX_SET_KEY (@var{ctx}, @var{set_key}, @var{encrypt}, @var{key})
+@var{set_key} is the function for setting the encryption key for the
+underlying cipher, and @var{key} is the key.
+@end deffn
+
+@deffn Macro EAX_SET_NONCE (@var{ctx}, @var{encrypt}, @var{length}, @var{nonce})
+Sets the nonce to be used for the message.
+@end deffn
+
+@deffn Macro EAX_UPDATE (@var{ctx}, @var{encrypt}, @var{length}, @var{data})
+Process associated data for authentication.
+@end deffn
+
+@deffn Macro EAX_ENCRYPT (@var{ctx}, @var{encrypt}, @var{length}, @var{dst}, @var{src})
+@deffnx Macro EAX_DECRYPT (@var{ctx}, @var{encrypt}, @var{length}, @var{dst}, @var{src})
+Process message data for encryption or decryption.
+@end deffn
+
+@deffn Macro EAX_DIGEST (@var{ctx}, @var{encrypt}, @var{length}, @var{digest})
+Extract te authentication tag for the message.
+@end deffn
+
+
+@subsubsection @acronym{EAX}-@acronym{AES}128 interface
+
+The following functions implement @acronym{EAX} using @acronym{AES}-128
+as the underlying cipher.
+
+@deftp {Context struct} {struct eax_aes128_ctx}
+The context struct, defined using @code{EAX_CTX}.
+@end deftp
+
+@deftypefun void eax_aes128_set_key (struct eax_aes128_ctx *@var{ctx}, const uint8_t *@var{key})
+Initializes @var{ctx} using the given key.
+@end deftypefun
+
+@deftypefun void eax_aes128_set_nonce (struct eax_aes128_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{iv})
+Initializes the per-message state, using the given nonce.
+@end deftypefun
+
+@deftypefun void eax_aes128_update (struct eax_aes128_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
+Process associated data for authentication. All but the last call for
+each message @emph{must} use a length that is a multiple of the block
+size.
+@end deftypefun
+
+@deftypefun void eax_aes128_encrypt (struct eax_aes128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void eax_aes128_decrypt (struct eax_aes128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+Encrypts or decrypts the data of a message. All but the last call for
+each message @emph{must} use a length that is a multiple of the block
+size.
+@end deftypefun
+
+@deftypefun void eax_aes128_digest (struct eax_aes128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest});
+Extracts the message digest (also known ``authentication tag''). This is
+the final operation when processing a message. If @var{length} is
+smaller than @code{EAX_DIGEST_SIZE}, only the first @var{length} octets
+of the digest are written.
+@end deftypefun
+
+@node GCM, CCM, EAX, Cipher modes
 @comment  node-name,  next,  previous,  up
 @subsection Galois counter mode
 
