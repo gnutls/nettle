@@ -83,12 +83,23 @@ Reference
 * Miscellaneous functions::     
 * Compatibility functions::     
 
+Hash functions
+
+* Recommended hash functions::
+* Legacy hash functions::
+* nettle_hash abstraction::
+
 Cipher modes
 
 * CBC::                         
 * CTR::                         
 * GCM::                         
-* CCM::
+* CCM::                         
+
+Keyed Hash Functions
+
+* HMAC::
+* UMAC::
 
 Public-key algorithms
 
@@ -2463,6 +2474,14 @@ Bob.
 Keyed hash functions are typically a lot faster than digital signatures
 as well.
 
+@menu
+* HMAC::
+* UMAC::
+@end menu
+
+@node HMAC, UMAC, Keyed hash functions, Keyed hash functions
+@comment  node-name,  next,  previous,  up
+
 @subsection @acronym{HMAC}
 @cindex HMAC
 
@@ -2677,6 +2696,9 @@ octets of the @acronym{MAC} are written.
 This function also resets the context for processing new messages, with
 the same key.
 @end deftypefun
+
+@node UMAC,  , HMAC, Keyed hash functions
+@comment  node-name,  next,  previous,  up
 
 @subsection @acronym{UMAC}
 @cindex UMAC
