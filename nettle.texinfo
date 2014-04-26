@@ -2044,6 +2044,10 @@ Holds state corresponding to a particular message.
 @acronym{GCM}'s block size, 16.
 @end defvr
 
+@defvr Constant GCM_DIGEST_SIZE
+Size of the @acronym{GCM} digest, also 16.
+@end defvr
+
 @defvr Constant GCM_IV_SIZE
 Recommended size of the @acronym{IV}, 12. Other sizes are allowed.
 @end defvr
@@ -2078,7 +2082,7 @@ a multiple of the block size.
 @deftypefun void gcm_digest (struct gcm_ctx *@var{ctx}, const struct gcm_key *@var{key}, void *@var{cipher}, nettle_crypt_func *@var{f}, size_t @var{length}, uint8_t *@var{digest})
 Extracts the message digest (also known ``authentication tag''). This is
 the final operation when processing a message. @var{length} is usually
-equal to @code{GCM_BLOCK_SIZE}, but if you provide a smaller value,
+equal to @code{GCM_DIGEST_SIZE}, but if you provide a smaller value,
 only the first @var{length} octets of the digest are written.
 @end deftypefun
 
@@ -2730,6 +2734,11 @@ Each @acronym{UMAC} variant uses its own context struct.
 
 @defvr Constant UMAC_KEY_SIZE
 The UMAC key size, 16.
+@end defvr
+@defvr Constant UMAC_MIN_NONCE_SIZE
+@defvrx Constant UMAC_MAX_NONCE_SIZE
+The the minimum and maximum sizes for an UMAC nonce, 1 and 16,
+respectively.
 @end defvr
 @defvr Constant UMAC32_DIGEST_SIZE
 The size of an UMAC32 digest, 4.
