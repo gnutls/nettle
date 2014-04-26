@@ -75,6 +75,8 @@ extern "C" {
 #define UMAC96_DIGEST_SIZE 12
 #define UMAC128_DIGEST_SIZE 16
 #define UMAC_BLOCK_SIZE 1024
+#define UMAC_MIN_NONCE_SIZE 1
+#define UMAC_MAX_NONCE_SIZE AES_BLOCK_SIZE
 /* For backwards compatibility */
 #define UMAC_DATA_SIZE UMAC_BLOCK_SIZE
 
