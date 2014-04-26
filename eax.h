@@ -103,7 +103,7 @@ eax_decrypt (struct eax_ctx *eax, const struct eax_key *key,
 
 void
 eax_digest (struct eax_ctx *eax, const struct eax_key *key,
-	    const  void *cipher, nettle_cipher_func *f,
+	    const void *cipher, nettle_cipher_func *f,
 	    size_t length, uint8_t *digest);
 
 /* Put the cipher last, to get cipher-independent offsets for the EAX
