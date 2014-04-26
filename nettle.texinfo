@@ -7,14 +7,14 @@
 @syncodeindex fn cp
 @c %**end of header
 
-@set UPDATED-FOR 2.7
+@set UPDATED-FOR 3.0
 @set AUTHOR Niels Möller
 
 @copying
 This manual is for the Nettle library (version @value{UPDATED-FOR}), a
 low-level cryptographic library.
 
-Originally written 2001 by @value{AUTHOR}, updated 2013.
+Originally written 2001 by @value{AUTHOR}, updated 2014.
 
 @quotation
 This manual is placed in the public domain. You may freely copy it, in
@@ -993,10 +993,10 @@ functions}).
 
 @deftp {Meta struct} @code{struct nettle_hash} name context_size digest_size block_size init update digest
 The last three attributes are function pointers, of types
-@code{nettle_hash_init_func}, @code{nettle_hash_update_func}, and
-@code{nettle_hash_digest_func}. The first argument to these functions is
+@code{nettle_hash_init_func *}, @code{nettle_hash_update_func *}, and
+@code{nettle_hash_digest_func *}. The first argument to these functions is
 @code{void *} pointer to a context struct, which is of size
-@code{context_size}. 
+@code{context_size}.
 @end deftp
 
 @deftypevr {Constant Struct} {struct nettle_hash} nettle_md2
@@ -1756,15 +1756,14 @@ Analogous to @code{twofish_encrypt}
 @subsection @code{struct nettle_cipher}
 
 Nettle includes a struct including information about some of the more
-regular cipher functions. It should be considered a little experimental,
-but can be useful for applications that need a simple way to handle
-various algorithms. Nettle defines these structs in
-@file{<nettle/nettle-meta.h>}. 
+regular cipher functions. It can be useful for applications that need a
+simple way to handle various algorithms. Nettle defines these structs in
+@file{<nettle/nettle-meta.h>}.
 
 @deftp {Meta struct} @code{struct nettle_cipher} name context_size block_size key_size set_encrypt_key set_decrypt_key encrypt decrypt
 The last four attributes are function pointers, of types
-@code{nettle_set_key_func} and @code{nettle_crypt_func}. The first
-argument to these functions is a @code{void *} pointer to a context
+@code{nettle_set_key_func *} and @code{nettle_cipher_func *}. The first
+argument to these functions is a @code{const void *} pointer to a context
 struct, which is of size @code{context_size}.
 @end deftp
 
@@ -1868,8 +1867,8 @@ Block Chaining (@acronym{CBC}) mode, one for encryption and one for
 decryption. These functions uses @code{void *} to pass cipher contexts
 around.
 
-@deftypefun {void} cbc_encrypt (void *@var{ctx}, nettle_crypt_func @var{f}, size_t @var{block_size}, uint8_t *@var{iv}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
-@deftypefunx {void} cbc_decrypt (void *@var{ctx}, void (*@var{f})(), size_t @var{block_size}, uint8_t *@var{iv}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun {void} cbc_encrypt (const void *@var{ctx}, nettle_cipher_func *@var{f}, size_t @var{block_size}, uint8_t *@var{iv}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx {void} cbc_decrypt (const void *@var{ctx}, nettle_cipher_func *@var{f}, size_t @var{block_size}, uint8_t *@var{iv}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 
 Applies the encryption or decryption function @var{f} in @acronym{CBC}
 mode. The final ciphertext block processed is copied into @var{iv}
@@ -1964,7 +1963,7 @@ similar rôle as the @acronym{IV} for @acronym{CBC}. When adding,
 byte order. For the last block, @code{E_k(IC + n - 1) [1..m]} means that
 the cipher output is truncated to @code{m} bytes.
 
-@deftypefun {void} ctr_crypt (void *@var{ctx}, nettle_crypt_func @var{f}, size_t @var{block_size}, uint8_t *@var{ctr}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun {void} ctr_crypt (const void *@var{ctx}, nettle_cipher_func *@var{f}, size_t @var{block_size}, uint8_t *@var{ctr}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 
 Applies the encryption function @var{f} in @acronym{CTR} mode. Note that
 for @acronym{CTR} mode, encryption and decryption is the same operation,
@@ -2247,7 +2246,7 @@ Size of the @acronym{GCM} digest, also 16.
 Recommended size of the @acronym{IV}, 12. Other sizes are allowed.
 @end defvr
 
-@deftypefun void gcm_set_key (struct gcm_key *@var{key}, void *@var{cipher}, nettle_crypt_func *@var{f})
+@deftypefun void gcm_set_key (struct gcm_key *@var{key}, const void *@var{cipher}, nettle_cipher_func *@var{f})
 Initializes @var{key}. @var{cipher} gives a context struct for the
 underlying cipher, which must have been previously initialized for
 encryption, and @var{f} is the encryption function.
@@ -2266,15 +2265,15 @@ for each message @emph{must} use a length that is a multiple of the
 block size.
 @end deftypefun
 
-@deftypefun void gcm_encrypt (struct gcm_ctx *@var{ctx}, const struct gcm_key *@var{key} void *@var{cipher}, nettle_crypt_func *@var{f}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
-@deftypefunx void gcm_decrypt (struct gcm_ctx *@var{ctx}, const struct gcm_key *@var{key}, void *@var{cipher}, nettle_crypt_func *@var{f}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun void gcm_encrypt (struct gcm_ctx *@var{ctx}, const struct gcm_key *@var{key}, const void *@var{cipher}, nettle_cipher_func *@var{f}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void gcm_decrypt (struct gcm_ctx *@var{ctx}, const struct gcm_key *@var{key}, const void *@var{cipher}, nettle_cipher_func *@var{f}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Encrypts or decrypts the data of a message. @var{cipher} is the context
 struct for the underlying cipher and @var{f} is the encryption function.
 All but the last call for each message @emph{must} use a length that is
 a multiple of the block size.
 @end deftypefun
 
-@deftypefun void gcm_digest (struct gcm_ctx *@var{ctx}, const struct gcm_key *@var{key}, void *@var{cipher}, nettle_crypt_func *@var{f}, size_t @var{length}, uint8_t *@var{digest})
+@deftypefun void gcm_digest (struct gcm_ctx *@var{ctx}, const struct gcm_key *@var{key}, const void *@var{cipher}, nettle_cipher_func *@var{f}, size_t @var{length}, uint8_t *@var{digest})
 Extracts the message digest (also known ``authentication tag''). This is
 the final operation when processing a message. @var{length} is usually
 equal to @code{GCM_DIGEST_SIZE}, but if you provide a smaller value,
@@ -2483,26 +2482,26 @@ Holds state corresponding to a particular message.
 @acronym{CCM}'s block size, 16.
 @end defvr
 
-@deftypefun void ccm_set_nonce (struct ccm_ctx *@var{ctx}, const void *@var{cipher}, nettle_crypt_func *@var{f}, size_t @var{noncelen}, const uint8_t *@var{nonce}, size_t @var{authlen}, size_t @var{msglen}, size_t @var{taglen})
+@deftypefun void ccm_set_nonce (struct ccm_ctx *@var{ctx}, const void *@var{cipher}, nettle_cipher_func *@var{f}, size_t @var{noncelen}, const uint8_t *@var{nonce}, size_t @var{authlen}, size_t @var{msglen}, size_t @var{taglen})
 Initializes @var{ctx} using the given nonce and the sizes of the
 authenticated data, message, and @acronym{MAC} to be processed.
 @end deftypefun
 
-@deftypefun void ccm_update (struct ccm_ctx *@var{ctx}, const void *@var{cipher}, nettle_crypt_func *@var{f}, size_t @var{length}, const uint8_t *@var{data})
+@deftypefun void ccm_update (struct ccm_ctx *@var{ctx}, const void *@var{cipher}, nettle_cipher_func *@var{f}, size_t @var{length}, const uint8_t *@var{data})
 Provides associated data to be authenticated. Must be called after
 @code{ccm_set_nonce}, and before @code{ccm_encrypt}, @code{ccm_decrypt}, or
 @code{ccm_digest}.
 @end deftypefun
 
-@deftypefun void ccm_encrypt (struct ccm_ctx *@var{ctx}, const void *@var{cipher}, nettle_crypt_func *@var{f}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
-@deftypefunx void ccm_decrypt (struct ccm_ctx *@var{ctx}, const void *@var{cipher}, nettle_crypt_func *@var{f}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun void ccm_encrypt (struct ccm_ctx *@var{ctx}, const void *@var{cipher}, nettle_cipher_func *@var{f}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void ccm_decrypt (struct ccm_ctx *@var{ctx}, const void *@var{cipher}, nettle_cipher_func *@var{f}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Encrypts or decrypts the message data. Must be called after
 @code{ccm_set_nonce} and before @code{ccm_digest}. All but the last call
 for each message @emph{must} use a length that is a multiple of the
 block size.
 @end deftypefun
 
-@deftypefun void ccm_digest (struct ccm_ctx *@var{ctx}, const void *@var{cipher}, nettle_crypt_func *@var{f}, size_t @var{length}, uint8_t *@var{digest})
+@deftypefun void ccm_digest (struct ccm_ctx *@var{ctx}, const void *@var{cipher}, nettle_cipher_func *@var{f}, size_t @var{length}, uint8_t *@var{digest})
 Extracts the message digest (also known ``authentication tag''). This is
 the final operation when processing a message. @var{length} is usually
 equal to the @var{taglen} parameter supplied to @code{ccm_set_nonce},
@@ -2534,13 +2533,13 @@ passed to a function is always the size for the result, @var{clength}
 for the encryption functions, and @var{mlength} for the decryption
 functions.
 
-@deftypefun void ccm_encrypt_message (void *@var{cipher}, nettle_crypt_func *@var{f}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{tlength}, size_t @var{clength}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun void ccm_encrypt_message (void *@var{cipher}, nettle_cipher_func *@var{f}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{tlength}, size_t @var{clength}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Computes the message digest from the @var{adata} and @var{src}
 parameters, encrypts the plaintext from @var{src}, appends the encrypted
 @acronym{MAC} to ciphertext and outputs it to @var{dst}.
 @end deftypefun
 
-@deftypefun int ccm_decrypt_message (void *@var{cipher}, nettle_crypt_func *@var{f}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{tlength}, size_t @var{mlength}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun int ccm_decrypt_message (void *@var{cipher}, nettle_cipher_func *@var{f}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{tlength}, size_t @var{mlength}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Decrypts the ciphertext from @var{src}, outputs the plaintext to
 @var{dst}, recalculates the @acronym{MAC} from @var{adata} and the
 plaintext, and compares it to the final @var{tlength} bytes of

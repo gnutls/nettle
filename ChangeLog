@@ -1,6 +1,7 @@
 2014-04-26  Niels Möller  <nisse@lysator.liu.se>
 
-	* nettle.texinfo (GCM): Document GCM_DIGEST_SIZE.
+	* nettle.texinfo: Update for introduction of nettle_cipher_func.
+	(GCM): Document GCM_DIGEST_SIZE.
 	(UMAC): Document new UMAC constants.
 	(Keyed hash functions): Make HMAC and UMAC their own info nodes.
 	(EAX): Document EAX.
