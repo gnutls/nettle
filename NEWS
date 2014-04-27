@@ -75,6 +75,10 @@ NEWS for the Nettle 3.0 release
 	  changed from uint8_t * to void *, for consistency with
 	  related libc functions.
 
+	* For hash functions, the constants *_DATA_SIZE have been
+	  renamed to *_BLOCK_SIZE. Old names kept for backwards
+	  compatibility.
+
 	Removed features:
 
 	* The nettle_next_prime function has been deleted.
