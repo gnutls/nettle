@@ -1842,17 +1842,59 @@ messages. This family of building blocks are therefore called
 The aim is to provide building blocks that it is easier for designers of
 protocols and applications to use correctly. There is also some
 potential for improved performance, if encryption and authentication can
-be done in a single step, although that ptotential is not realized for
+be done in a single step, although that potential is not realized for
 the constructions currently supported by Nettle.
+
+For encryption, the inputs are:
+
+@itemize
+@item
+The key, which can be used for many messages.
+@item 
+A nonce, which must be unique for each message using the same key.
+@item
+Additional associated data to be authenticated, but not included in the
+message.
+@item
+The cleartext message to be encrypted.
+@end itemize
+
+The outputs are:
+
+@itemize
+@item
+The ciphertext, of the same size as the cleartext.
+@item
+A digest or ``authentication tag''.
+@end itemize
+
+Decryption works the same, but with cleartext and ciphertext
+interchanged. All currently supported @acronym{AEAD} algorithms always
+use the encryption function of the underlying block cipher, for both
+encryption and decryption.
+
+Usually, the authentication tag should be appended at the end of the
+ciphertext, producing an encrypted message which is slightly longer than
+the cleartext. However, Nettle's low level @acronym{AEAD} functions
+produce the authentication tag as a separate output for both encryption
+and decryption.
+
+Both associated data and the message data (cleartext or ciphertext) can
+be processed incrementally. In general, all associated data must be
+processed before the message data, and all calls but the last one must
+use a length that is a multiple of he block size, although some
+@acronym{AEAD} may implement more liberal conventions. The @acronym{CCM}
+mode is a bit special in that it requires the message lengths up front,
+other @acronym{AEAD} constructions don't have this restriction.
 
 The supported @acronym{AEAD} constructions are Galois/Counter mode
 (@acronym{GCM}), @acronym{EAX}, and Counter with
-@acronym{CBC}-@acronym{MAC} (@acronym{CCM}). Of these, I recommend
-@acronym{EAX}. There are some weaknesses in @acronym{GCM}
-authentication, see
+@acronym{CBC}-@acronym{MAC} (@acronym{CCM}). There are some weaknesses
+in @acronym{GCM} authentication, see
 @uref{http://csrc.nist.gov/groups/ST/toolkit/BCM/documents/comments/CWC-GCM/Ferguson2.pdf}.
-@acronym{CCM} and @acronym{EAX} use the same building blocks, but
-the @acronym{EAX} design is simpler.
+@acronym{CCM} and @acronym{EAX} use the same building blocks, but the
+@acronym{EAX} design is cleaner and avoids a couple of inconveniences of
+@acronym{CCM}. Therefore, @acronym{EAX} seems like a good choice.
 
 @menu
 * CBC::                         
@@ -2036,48 +2078,20 @@ operation.
 @comment  node-name,  next,  previous,  up
 @subsection EAX
 
-The @acronym{EAX} mode combines @acronym{CTR} mode encryption,
-@xref{CTR}, with a message authentication based on @acronym{CBC},
-@xref{CBC}. It is defined on top of a block cipher, and only the
-encryption function of this cipher is used. The implementation in Nettle
-is restricted to ciphers with a block size of 128 bits (16 octets).
+The @acronym{EAX} mode is an @acronym{AEAD} mode whichcombines
+@acronym{CTR} mode encryption, @xref{CTR}, with a message authentication
+based on @acronym{CBC}, @xref{CBC}. The implementation in Nettle is
+restricted to ciphers with a block size of 128 bits (16 octets).
 @acronym{EAX} was defined as a reaction to the @acronym{CCM} mode,
 @xref{CCM}, which uses the same primitives but has some undesirable and
 inelegant properties.
 
-The @acronym{EAX} mode provides both encryption and authentication. For
-@acronym{EAX} encryption, the inputs are:
-
-@itemize
-@item
-The key, which can be used for many messages.
-@item 
-A nonce, of arbitrary size, which must be unique for each message using
-the same key.
-@item
-Additional associated data to be authenticated, but not included in the
-message.
-@item
-The cleartext message to be encrypted.
-@end itemize
-
-The outputs are:
-
-@itemize
-@item
-A ciphertext, of the same size as the cleartext.
-@item
-An authentication tag, or digest, of size up to one block of the
-underlying cipher.
-@end itemize
-
-Usually, the authentication tag should be appended at the end of the
-ciphertext, producing an encrypted message which is slightly longer than
-the cleartext.
+@acronym{EAX} supports arbitrary nonce size; it's even possible to use
+an empty nonce in case only a single message is encrypted for each key. 
 
 Nettle's support for @acronym{EAX} consists of a low-level general
 interface, some convenience macros, and specific functions for
-@acronym{EAX} using @acronym{AES}128 as the underlying cipher. These
+@acronym{EAX} using @acronym{AES}-128 as the underlying cipher. These
 interfaces are defined in @file{<nettle/eax.h>}
 
 @subsubsection General @acronym{EAX} interface
@@ -2222,13 +2236,13 @@ of the digest are written.
 @cindex Galois Counter Mode
 @cindex GCM
 
-Galois counter mode is the combination of counter mode with message
-authentication based on universal hashing. The main objective of the
-design is to provide high performance for hardware implementations,
-where other popular @acronym{MAC} algorithms (@pxref{Keyed hash
-functions} becomes a bottleneck for high-speed hardware implementations.
-It was proposed by David A. McGrew and John Viega in 2005, and
-recommended by NIST in 2007,
+Galois counter mode is an @acronym{AEAD} constructions combining counter
+mode with message authentication based on universal hashing. The main
+objective of the design is to provide high performance for hardware
+implementations, where other popular @acronym{MAC} algorithms
+(@pxref{Keyed hash functions} become a bottleneck for high-speed
+hardware implementations. It was proposed by David A. McGrew and John
+Viega in 2005, and recommended by NIST in 2007,
 @uref{http://csrc.nist.gov/publications/nistpubs/800-38D/SP-800-38D.pdf,
 NIST Special Publication 800-38D}. It is constructed on top of a block
 cipher which must have a block size of 128 bits.
@@ -2237,27 +2251,10 @@ The authentication in @acronym{GCM} has some known weaknesses, see
 @uref{http://csrc.nist.gov/groups/ST/toolkit/BCM/documents/comments/CWC-GCM/Ferguson2.pdf}.
 In particular, don't use @acronym{GCM} with short authentication tags.
 
-@acronym{GCM} is applied to messages of arbitrary length. The inputs
-are:
-
-@itemize
-@item 
-A key, which can be used for many messages.
-@item 
-An initialization vector (@acronym{IV}) which @emph{must} be unique for
-each message.
-@item
-Additional authenticated data, which is to be included in the message
-authentication, but not encrypted. May be empty.
-@item
-The plaintext. May be empty.
-@end itemize
-
-The outputs are a ciphertext, of the same length as the plaintext, and a
-message digest of length 128 bits. Nettle's support for @acronym{GCM}
-consists of a low-level general interface, some convenience macros, and
-specific functions for @acronym{GCM} using @acronym{AES} as the
-underlying cipher. These interfaces are defined in @file{<nettle/gcm.h>}
+Nettle's support for @acronym{GCM} consists of a low-level general
+interface, some convenience macros, and specific functions for
+@acronym{GCM} using @acronym{AES} as the underlying cipher. These
+interfaces are defined in @file{<nettle/gcm.h>}
 
 @subsubsection General @acronym{GCM} interface
 
@@ -2278,7 +2275,7 @@ Size of the @acronym{GCM} digest, also 16.
 @end defvr
 
 @defvr Constant GCM_IV_SIZE
-Recommended size of the @acronym{IV}, 12. Other sizes are allowed.
+Recommended size of the @acronym{IV}, 12. Arbitrary sizes are allowed.
 @end defvr
 
 @deftypefun void gcm_set_key (struct gcm_key *@var{key}, const void *@var{cipher}, nettle_cipher_func *@var{f})
@@ -2423,9 +2420,10 @@ only the first @var{length} octets of the digest are written.
 @cindex Counter with CBC-MAC Mode
 @cindex CCM Mode
 
-CCM mode is the combination of counter mode with message authentication
-based on cipher block chaining. It is constructed on top of a block
-cipher which must have a block size of 128 bits. @acronym{CCM} mode is
+@acronym{CCM} mode is a combination of counter mode with message
+authentication based on cipher block chaining, the same building blocks
+as @acronym{EAX}, @pxref{EAX}. It is constructed on top of a block cipher
+which must have a block size of 128 bits. @acronym{CCM} mode is
 recommended by NIST in
 @uref{http://csrc.nist.gov/publications/nistpubs/800-38C/SP800-38C_updated-July20_2007.pdf,
 NIST Special Publication 800-38C}. Nettle's support for CCM consists of
