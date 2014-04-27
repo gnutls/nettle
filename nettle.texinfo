@@ -2253,8 +2253,8 @@ In particular, don't use @acronym{GCM} with short authentication tags.
 
 Nettle's support for @acronym{GCM} consists of a low-level general
 interface, some convenience macros, and specific functions for
-@acronym{GCM} using @acronym{AES} as the underlying cipher. These
-interfaces are defined in @file{<nettle/gcm.h>}
+@acronym{GCM} using @acronym{AES} or Camellia as the underlying cipher.
+These interfaces are defined in @file{<nettle/gcm.h>}
 
 @subsubsection General @acronym{GCM} interface
 
@@ -2332,25 +2332,25 @@ underlying cipher, the hash sub-key, and the per-message state. It expands
 to
 @example
 @{
-   context_type cipher;
    struct gcm_key key; 
    struct gcm_ctx gcm;
+   context_type cipher;
 @}
 @end example
 @end deffn
 
 Example use:
 @example
-struct gcm_aes_ctx GCM_CTX(struct aes_ctx);
+struct gcm_aes128_ctx GCM_CTX(struct aes128_ctx);
 @end example
 
 The following macros operate on context structs of this form.
 
-@deffn Macro GCM_SET_KEY (@var{ctx}, @var{set_key}, @var{encrypt}, @var{length}, @var{data})
+@deffn Macro GCM_SET_KEY (@var{ctx}, @var{set_key}, @var{encrypt}, @var{key})
 First argument, @var{ctx}, is a context struct as defined
 by @code{GCM_CTX}. @var{set_key} and @var{encrypt} are functions for
 setting the encryption key and for encrypting data using the underlying
-cipher. @var{length} and @var{data} give the key.
+cipher.
 @end deffn
 
 @deffn Macro GCM_SET_IV (@var{ctx}, @var{length}, @var{data})
@@ -2369,48 +2369,126 @@ struct as defined by @code{GCM_CTX}
 @deffnx Macro GCM_DIGEST (@var{ctx}, @var{encrypt}, @var{length}, @var{digest})
 Simpler way to call @code{gcm_encrypt}, @code{gcm_decrypt} or
 @code{gcm_digest}. First argument is a context struct as defined by
-@code{GCM_CTX}. Second argument, @var{encrypt}, is a pointer to the
-encryption function of the underlying cipher.
+@code{GCM_CTX}. Second argument, @var{encrypt}, is the encryption
+function of the underlying cipher.
 @end deffn
 
 @subsubsection @acronym{GCM}-@acronym{AES} interface
 
 The following functions implement the common case of @acronym{GCM} using
-@acronym{AES} as the underlying cipher.
+@acronym{AES} as the underlying cipher. The variants with a specific
+@acronym{AES} flavor are recommended, while the fucntinos using
+@code{struct gcm_aes_ctx} are kept for compatibility with older versiosn
+of Nettle.
 
-@deftp {Context struct} {struct gcm_aes_ctx}
-The context struct, defined using @code{GCM_CTX}.
+@deftp {Context struct} {struct gcm_aes128_ctx}
+@deftpx {Context struct} {struct gcm_aes192_ctx}
+@deftpx {Context struct} {struct gcm_aes256_ctx}
+Context structs, defined using @code{GCM_CTX}.
 @end deftp
 
-@deftypefun void gcm_aes_set_key (struct gcm_aes_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{key})
-Initializes @var{ctx} using the given key. All valid @acronym{AES} key
-sizes can be used.
+@deftp {Context struct} {struct gcm_aes_ctx}
+Alternative context struct, usign the old @acronym{AES} interface.
+@end deftp
+
+@deftypefun void gcm_aes128_set_key (struct gcm_aes128_ctx *@var{ctx}, const uint8_t *@var{key})
+@deftypefunx void gcm_aes192_set_key (struct gcm_aes192_ctx *@var{ctx}, const uint8_t *@var{key})
+@deftypefunx void gcm_aes256_set_key (struct gcm_aes256_ctx *@var{ctx}, const uint8_t *@var{key})
+Initializes @var{ctx} using the given key.
 @end deftypefun
 
-@deftypefun void gcm_aes_set_iv (struct gcm_aes_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{iv})
+@deftypefun void gcm_aes_set_key (struct gcm_aes_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{key})
+Corresponding function, using the old @acronym{AES} interface. All valid
+@acronym{AES} key sizes can be used.
+@end deftypefun
+
+@deftypefun void gcm_aes128_set_iv (struct gcm_aes128_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{iv})
+@deftypefunx void gcm_aes192_set_iv (struct gcm_aes192_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{iv})
+@deftypefunx void gcm_aes256_set_iv (struct gcm_aes256_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{iv})
+@deftypefunx void gcm_aes_set_iv (struct gcm_aes_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{iv})
 Initializes the per-message state, using the given @acronym{IV}.
 @end deftypefun
 
-@deftypefun void gcm_aes_update (struct gcm_aes_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
+@deftypefun void gcm_aes128_update (struct gcm_aes128_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
+@deftypefunx void gcm_aes192_update (struct gcm_aes192_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
+@deftypefunx void gcm_aes256_update (struct gcm_aes256_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
+@deftypefunx void gcm_aes_update (struct gcm_aes_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
 Provides associated data to be authenticated. If used, must be called
-before @code{gcm_aes_encrypt} or @code{gcm_aes_decrypt}. All but the last call
-for each message @emph{must} use a length that is a multiple of the
-block size.
+before @code{gcm_aes_encrypt} or @code{gcm_aes_decrypt}. All but the
+last call for each message @emph{must} use a length that is a multiple
+of the block size.
 @end deftypefun
 
-@deftypefun void gcm_aes_encrypt (struct gcm_aes_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun void gcm_aes128_encrypt (struct gcm_aes128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void gcm_aes192_encrypt (struct gcm_aes192_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void gcm_aes256_encrypt (struct gcm_aes256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void gcm_aes_encrypt (struct gcm_aes_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void gcm_aes128_decrypt (struct gcm_aes128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void gcm_aes192_decrypt (struct gcm_aes192_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+Encrypts or decrypts the data of a message. All but the last call for
+@deftypefunx void gcm_aes256_decrypt (struct gcm_aes256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 @deftypefunx void gcm_aes_decrypt (struct gcm_aes_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Encrypts or decrypts the data of a message. All but the last call for
 each message @emph{must} use a length that is a multiple of the block
 size.
-
 @end deftypefun
 
-@deftypefun void gcm_aes_digest (struct gcm_aes_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+@deftypefun void gcm_aes128_digest (struct gcm_aes128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+@deftypefunx void gcm_aes192_digest (struct gcm_aes192_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+@deftypefunx void gcm_aes256_digest (struct gcm_aes256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+@deftypefunx void gcm_aes_digest (struct gcm_aes_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
 Extracts the message digest (also known ``authentication tag''). This is
-the final operation when processing a message. @var{length} is usually
-equal to @code{GCM_BLOCK_SIZE}, but if you provide a smaller value,
-only the first @var{length} octets of the digest are written.
+the final operation when processing a message. It's strongly recommended
+that @var{length} is @code{GCM_DIGEST_SIZE}, but if you provide a smaller
+value, only the first @var{length} octets of the digest are written.
+@end deftypefun
+
+@subsubsection @acronym{GCM}-Camellia interface
+
+The following functions implement the case of @acronym{GCM} using
+Camellia as the underlying cipher.
+
+@deftp {Context struct} {struct gcm_camellia128_ctx}
+@deftpx {Context struct} {struct gcm_camellia256_ctx}
+Context structs, defined using @code{GCM_CTX}.
+@end deftp
+
+@deftypefun void gcm_camellia128_set_key (struct gcm_camellia128_ctx *@var{ctx}, const uint8_t *@var{key})
+@deftypefunx void gcm_camellia256_set_key (struct gcm_camellia256_ctx *@var{ctx}, const uint8_t *@var{key})
+Initializes @var{ctx} using the given key.
+@end deftypefun
+
+@deftypefun void gcm_camellia128_set_iv (struct gcm_camellia128_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{iv})
+@deftypefunx void gcm_camellia256_set_iv (struct gcm_camellia256_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{iv})
+Initializes the per-message state, using the given @acronym{IV}.
+@end deftypefun
+
+@deftypefun void gcm_camellia128_update (struct gcm_camellia128_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
+@deftypefunx void gcm_camellia256_update (struct gcm_camellia256_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
+Provides associated data to be authenticated. If used, must be called
+before @code{gcm_camellia_encrypt} or @code{gcm_camellia_decrypt}. All but the
+last call for each message @emph{must} use a length that is a multiple
+of the block size.
+@end deftypefun
+
+@deftypefun void gcm_camellia128_encrypt (struct gcm_camellia128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void gcm_camellia256_encrypt (struct gcm_camellia256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void gcm_camellia128_decrypt (struct gcm_camellia128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+Encrypts or decrypts the data of a message. All but the last call for
+@deftypefunx void gcm_camellia256_decrypt (struct gcm_camellia256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+Encrypts or decrypts the data of a message. All but the last call for
+each message @emph{must} use a length that is a multiple of the block
+size.
+@end deftypefun
+
+@deftypefun void gcm_camellia128_digest (struct gcm_camellia128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+@deftypefunx void gcm_camellia192_digest (struct gcm_camellia192_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+@deftypefunx void gcm_camellia256_digest (struct gcm_camellia256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+@deftypefunx void gcm_camellia_digest (struct gcm_camellia_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+Extracts the message digest (also known ``authentication tag''). This is
+the final operation when processing a message. It's strongly recommended
+that @var{length} is @code{GCM_DIGEST_SIZE}, but if you provide a smaller
+value, only the first @var{length} octets of the digest are written.
 @end deftypefun
 
 @node CCM,  , GCM, Cipher modes

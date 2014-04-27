@@ -1,6 +1,8 @@
 2014-04-27  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle.texinfo (Cipher modes): Subsection on AEAD constructions.
+	(GCM): Update GCM documentation, including functions for
+	gcm_aes128, gcm_camellia128, ...
 
 2014-04-26  Niels Möller  <nisse@lysator.liu.se>
 
