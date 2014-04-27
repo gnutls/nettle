@@ -1811,17 +1811,48 @@ Cipher modes of operation specifies the procedure to use when encrypting
 a message that is larger than the cipher's block size. As explained in
 @xref{Cipher functions}, splitting the message into blocks and
 processing them independently with the block cipher (Electronic Code
-Book mode, @acronym{ECB}) leaks information. Besides @acronym{ECB},
-Nettle provides three other modes of operation: Cipher Block Chaining
-(@acronym{CBC}), Counter mode (@acronym{CTR}), and Galois/Counter mode
-(@acronym{GCM}). @acronym{CBC} is widely used, but there are a few
-subtle issues of information leakage, see, e.g.,
+Book mode, @acronym{ECB}), leaks information.
+
+Besides @acronym{ECB}, Nettle provides a two other modes of operation:
+Cipher Block Chaining (@acronym{CBC}), Counter mode (@acronym{CTR}), and
+a couple of AEAD modes (see below). @acronym{CBC} is widely used, but
+there are a few subtle issues of information leakage, see, e.g.,
 @uref{http://www.kb.cert.org/vuls/id/958563, @acronym{SSH} @acronym{CBC}
-vulnerability}. @acronym{CTR} and @acronym{GCM}
-were standardized more recently, and are believed to be more secure.
-@acronym{GCM} includes message authentication; for the other modes, one
-should always use a @acronym{MAC} (@pxref{Keyed hash functions}) or
-signature to authenticate the message.
+vulnerability}. Today, @acronym{CTR} is usually preferred over @acronym{CBC}.
+
+Modes like @acronym{CBC} and @acronym{CTR} provide @emph{no} message
+authentication, and should always be used together with a @acronym{MAC}
+(@pxref{Keyed hash functions}) or signature to authenticate the message.
+
+@subsection Authenticated encryption with associated data
+@cindex AEAD
+@cindex Authenticated encryption
+
+Since there are some subtle design choices to be made when combining a
+block cipher mode with out authentication with a @acronym{MAC}. In
+recent years, several constructions that combine encryption and
+authentication have been defined. These constructions typically also
+have an additional input, the ``associated data'', which is
+authenticated but not included with the message. A simple example is an
+implicit message number which is available at both sender and receiver,
+and which needs authentication in order to detect deletions or replay of
+messages. This family of building blocks are therefore called
+@acronym{AEAD}, Authenticated encryption with associated data.
+
+The aim is to provide building blocks that it is easier for designers of
+protocols and applications to use correctly. There is also some
+potential for improved performance, if encryption and authentication can
+be done in a single step, although that ptotential is not realized for
+the constructions currently supported by Nettle.
+
+The supported @acronym{AEAD} constructions are Galois/Counter mode
+(@acronym{GCM}), @acronym{EAX}, and Counter with
+@acronym{CBC}-@acronym{MAC} (@acronym{CCM}). Of these, I recommend
+@acronym{EAX}. There are some weaknesses in @acronym{GCM}
+authentication, see
+@uref{http://csrc.nist.gov/groups/ST/toolkit/BCM/documents/comments/CWC-GCM/Ferguson2.pdf}.
+@acronym{CCM} and @acronym{EAX} use the same building blocks, but
+the @acronym{EAX} design is simpler.
 
 @menu
 * CBC::                         
@@ -2202,6 +2233,10 @@ recommended by NIST in 2007,
 NIST Special Publication 800-38D}. It is constructed on top of a block
 cipher which must have a block size of 128 bits.
 
+The authentication in @acronym{GCM} has some known weaknesses, see
+@uref{http://csrc.nist.gov/groups/ST/toolkit/BCM/documents/comments/CWC-GCM/Ferguson2.pdf}.
+In particular, don't use @acronym{GCM} with short authentication tags.
+
 @acronym{GCM} is applied to messages of arbitrary length. The inputs
 are:
 
@@ -2275,9 +2310,9 @@ a multiple of the block size.
 
 @deftypefun void gcm_digest (struct gcm_ctx *@var{ctx}, const struct gcm_key *@var{key}, const void *@var{cipher}, nettle_cipher_func *@var{f}, size_t @var{length}, uint8_t *@var{digest})
 Extracts the message digest (also known ``authentication tag''). This is
-the final operation when processing a message. @var{length} is usually
-equal to @code{GCM_DIGEST_SIZE}, but if you provide a smaller value,
-only the first @var{length} octets of the digest are written.
+the final operation when processing a message. It's strongly recommended
+that @var{length} is @code{GCM_DIGEST_SIZE}, but if you provide a smaller
+value, only the first @var{length} octets of the digest are written.
 @end deftypefun
 
 To encrypt a message using @acronym{GCM}, first initialize a context for

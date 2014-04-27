@@ -1,3 +1,7 @@
+2014-04-27  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle.texinfo (Cipher modes): Subsection on AEAD constructions.
+
 2014-04-26  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle.texinfo: Update for introduction of nettle_cipher_func.
