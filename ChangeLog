@@ -1,3 +1,13 @@
+2014-04-30  Niels Möller  <nisse@lysator.liu.se>
+
+	* ccm.c (CCM_IV_MAX_SIZE, CCM_IV_MIN_SIZE): Deleted, replaced by
+	public constants CCM_MIN_NONCE_SIZE and CCM_MAX_NONCE_SIZE.
+	(ccm_build_iv): Updated for above rename.
+	(CCM_L_MAX_SIZE): Deleted, no longer used.
+
+	* ccm.h (CCM_MIN_NONCE_SIZE, CCM_MAX_NONCE_SIZE): New constants.
+	(CCM_MAX_MSG_SIZE): New macro.
+
 2014-04-27  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle.texinfo (Cipher modes): Subsection on AEAD constructions.

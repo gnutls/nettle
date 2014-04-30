@@ -89,6 +89,16 @@ extern "C" {
 
 /* For CCM, the block size of the block cipher shall be 128 bits. */
 #define CCM_BLOCK_SIZE  16
+#define CCM_MIN_NONCE_SIZE 7
+#define CCM_MAX_NONCE_SIZE 14
+
+/* Maximum cleartext message size, as a function of the nonce size N.
+   The length field is L octets, with L = 15 - N, and then the maximum
+   size M = 2^{8L} - 1. */
+#define CCM_MAX_MSG_SIZE(N)			\
+  ((sizeof(size_t) + (N) <= 15)			\
+   ? ~(size_t) 0				\
+   : ((size_t) 1 << (8*(15 - N))) - 1)
 
 /* Per-message state */
 struct ccm_ctx {

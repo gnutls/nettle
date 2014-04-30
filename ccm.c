@@ -68,9 +68,6 @@
 #define CCM_OFFSET_FLAGS    0
 #define CCM_OFFSET_NONCE    1
 #define CCM_L_SIZE(_nlen_)  (CCM_BLOCK_SIZE - CCM_OFFSET_NONCE - (_nlen_))
-#define CCM_L_MAX_SIZE      (CCM_FLAG_L+1)
-#define CCM_IV_MAX_SIZE     (CCM_BLOCK_SIZE - CCM_OFFSET_NONCE - 1)
-#define CCM_IV_MIN_SIZE     (CCM_BLOCK_SIZE - CCM_OFFSET_NONCE - CCM_L_MAX_SIZE)
 
 /*
  * The data input to the CBC-MAC: L(a) | adata | padding | plaintext | padding
@@ -104,8 +101,8 @@ ccm_build_iv(uint8_t *iv, size_t noncelen, const uint8_t *nonce,
   unsigned int i;
 
   /* Sanity check the nonce length. */
-  assert(noncelen >= CCM_IV_MIN_SIZE);
-  assert(noncelen <= CCM_IV_MAX_SIZE);
+  assert(noncelen >= CCM_MIN_NONCE_SIZE);
+  assert(noncelen <= CCM_MAX_NONCE_SIZE);
 
   /* Generate the IV */
   iv[CCM_OFFSET_FLAGS] = flags | CCM_FLAG_SET_L(CCM_L_SIZE(noncelen));
