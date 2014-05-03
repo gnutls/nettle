@@ -1,5 +1,9 @@
 2014-05-03  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac: Check for SIZEOF_SIZE_T.
+	* ccm.c (ccm_set_nonce): Skip code for 64-bit encoding when size_t
+	is only 32 bits.
+
 	* nettle.texinfo (CCM): Document new ccm macros and constants.
 	Describe ccm restrictions.
 

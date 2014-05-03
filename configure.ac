@@ -630,6 +630,7 @@ AC_TYPE_UID_T
 AC_TYPE_SIZE_T
 AC_HEADER_TIME
 AC_CHECK_SIZEOF(long)
+AC_CHECK_SIZEOF(size_t)
 
 AC_CHECK_HEADERS([openssl/blowfish.h openssl/des.h openssl/cast.h openssl/aes.h openssl/ecdsa.h],,
 [enable_openssl=no

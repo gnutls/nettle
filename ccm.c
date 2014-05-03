@@ -135,6 +135,7 @@ ccm_set_nonce(struct ccm_ctx *ctx, const void *cipher, nettle_cipher_func *f,
   /* Encrypt B0 (with the adata flag), and input L(a) to the CBC-MAC. */
   ctx->tag.b[CCM_OFFSET_FLAGS] |= CCM_FLAG_ADATA;
   f(cipher, CCM_BLOCK_SIZE, ctx->tag.b, ctx->tag.b);
+#if SIZEOF_SIZE_T > 4
   if (authlen >= (0x01ULL << 32)) {
     /* Encode L(a) as 0xff || 0xff || <64-bit integer> */
     ctx->tag.b[ctx->blength++] ^= 0xff;
@@ -146,13 +147,15 @@ ccm_set_nonce(struct ccm_ctx *ctx, const void *cipher, nettle_cipher_func *f,
     ctx->tag.b[ctx->blength++] ^= (authlen >> 24) & 0xff;
     ctx->tag.b[ctx->blength++] ^= (authlen >> 16) & 0xff;
   }
-  else if (authlen >= ((0x1ULL << 16) - (0x1ULL << 8))) {
-    /* Encode L(a) as 0xff || 0xfe || <32-bit integer> */
-    ctx->tag.b[ctx->blength++] ^= 0xff;
-    ctx->tag.b[ctx->blength++] ^= 0xfe;
-    ctx->tag.b[ctx->blength++] ^= (authlen >> 24) & 0xff;
-    ctx->tag.b[ctx->blength++] ^= (authlen >> 16) & 0xff;
-  }
+  else
+#endif
+    if (authlen >= ((0x1ULL << 16) - (0x1ULL << 8))) {
+      /* Encode L(a) as 0xff || 0xfe || <32-bit integer> */
+      ctx->tag.b[ctx->blength++] ^= 0xff;
+      ctx->tag.b[ctx->blength++] ^= 0xfe;
+      ctx->tag.b[ctx->blength++] ^= (authlen >> 24) & 0xff;
+      ctx->tag.b[ctx->blength++] ^= (authlen >> 16) & 0xff;
+    }
   ctx->tag.b[ctx->blength++] ^= (authlen >> 8) & 0xff;
   ctx->tag.b[ctx->blength++] ^= (authlen >> 0) & 0xff;
 }
