@@ -2507,41 +2507,14 @@ recommended by NIST in
 NIST Special Publication 800-38C}. Nettle's support for CCM consists of
 a low-level general interface, a message encryption and authentication
 interface, and specific functions for CCM using AES as the underlying
-block cipher. These interfaces are defined in @file{<nettle/ccm.h>}
+block cipher. These interfaces are defined in @file{<nettle/ccm.h>}.
 
-The inputs to @acronym{CCM} are:
-@itemize
-@item
-A key, which can be used for many messages.
-@item
-A parameter @var{L} which determines the size of the nonce and the maximum
-length of message data which can be processed by @acronym{CCM}.
-@item
-A tag length, which must be a multiple of 4 bytes up to a maximum of one block.
-@item
-A nonce which @emph{must} be unique for each message.
-@item
-Optional authenticated data, which is to be included in the message
-authentication, but not encrypted.
-@item
-The plaintext. May be empty.
-@end itemize
-
-The outputs from @acronym{CCM} are:
-@itemize
-@item
-The ciphertext of the same length as the plaintext.
-@item
-An encrypted authentication tag, up to one block on length.
-@end itemize
-
-@c FIXME: Focus on the nonce size, set by the caller.
-The parameter @var{L} determines the size of the counter that is used
-for the message length, such that the maximum message length in bytes is
-given by @code{maxlength = (1 << L) - 1}. However increasing @var{L}
-also restricts the size of the nonce such that @code{noncelength =
-CCM_BLOCK_SIZE - 1 - L}, and throughout this interface the parameter
-@var{L} is provided implicitly by the nonce length.
+In @acronym{CCM}, the length of the message must be known before
+processing. The maximum message size depends on the size of the nonce,
+since the message size is encoded in a field which must fit in a single
+block, together with the nonce and a flag byte. E.g., with a nonce size
+of 12 octets, there are three octets left for encoding the message
+length, the maximum message length is @math{2^24 - 1} octets.
 
 @acronym{CCM} mode encryption operates as follows:
 @itemize
@@ -2592,6 +2565,21 @@ Holds state corresponding to a particular message.
 @defvr Constant CCM_BLOCK_SIZE
 @acronym{CCM}'s block size, 16.
 @end defvr
+
+@defvr Constant CCM_DIGEST_SIZE
+Size of the @acronym{CCM} digest, 16.
+@end defvr
+
+@defvr Constant CCM_MIN_NONCE_SIZE
+@defvrx Constant CCM_MAX_NONCE_SIZE
+The the minimum and maximum sizes for an @acronym{CCM} nonce, 7 and 14,
+respectively.
+@end defvr
+
+@deffn Macro CCM_MAX_MSG_SIZE (@var{nonce_size})
+The largest allowed plaintext length, when using @acronym{CCM} with a
+nonce of the given size.
+@end deffn
 
 @deftypefun void ccm_set_nonce (struct ccm_ctx *@var{ctx}, const void *@var{cipher}, nettle_cipher_func *@var{f}, size_t @var{noncelen}, const uint8_t *@var{nonce}, size_t @var{authlen}, size_t @var{msglen}, size_t @var{taglen})
 Initializes @var{ctx} using the given nonce and the sizes of the

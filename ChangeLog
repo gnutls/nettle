@@ -1,5 +1,8 @@
 2014-05-03  Niels Möller  <nisse@lysator.liu.se>
 
+	* nettle.texinfo (CCM): Document new ccm macros and constants.
+	Describe ccm restrictions.
+
 	* ccm.h (CCM_DIGEST_SIZE): New constant.
 
 2014-04-30  Niels Möller  <nisse@lysator.liu.se>
