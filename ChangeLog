@@ -1,3 +1,7 @@
+2014-05-03  Niels Möller  <nisse@lysator.liu.se>
+
+	* ccm.h (CCM_DIGEST_SIZE): New constant.
+
 2014-04-30  Niels Möller  <nisse@lysator.liu.se>
 
 	* ccm.c (CCM_IV_MAX_SIZE, CCM_IV_MIN_SIZE): Deleted, replaced by

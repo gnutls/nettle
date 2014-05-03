@@ -89,6 +89,7 @@ extern "C" {
 
 /* For CCM, the block size of the block cipher shall be 128 bits. */
 #define CCM_BLOCK_SIZE  16
+#define CCM_DIGEST_SIZE 16
 #define CCM_MIN_NONCE_SIZE 7
 #define CCM_MAX_NONCE_SIZE 14
 
