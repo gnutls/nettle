@@ -1,6 +1,7 @@
 2014-05-04  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle.texinfo (DSA): Document new DSA interface.
+	(Salsa20): Update salsa20 docs.
 
 2014-05-03  Niels Möller  <nisse@lysator.liu.se>
 

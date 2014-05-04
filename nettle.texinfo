@@ -1610,19 +1610,18 @@ the input and output is of fixed size.
 
 When using Salsa20 to process a message, one specifies both a key and a
 @dfn{nonce}, the latter playing a similar rôle to the initialization
-vector (@acronym{IV}) used with @acronym{CBC} or @acronym{CTR} mode. For
-this reason, Nettle uses the term @acronym{IV} to refer to the Salsa20
-nonce. One can use the same key for several messages, provided one uses
-a unique random @acronym{iv} for each message. The @acronym{iv} is 64
-bits (8 octets). The block counter is initialized to zero for each
-message, and is also 64 bits (8 octets). Nettle defines Salsa20 in
+vector (@acronym{IV}) used with @acronym{CBC} or @acronym{CTR} mode. One
+can use the same key for several messages, provided one uses a unique
+random @acronym{iv} for each message. The @acronym{iv} is 64 bits (8
+octets). The block counter is initialized to zero for each message, and
+is also 64 bits (8 octets). Nettle defines Salsa20 in
 @file{<nettle/salsa20.h>}.
 
 @deftp {Context struct} {struct salsa20_ctx}
 @end deftp
 
-@defvr Constant SALSA20_MIN_KEY_SIZE
-@defvrx Constant SALSA20_MAX_KEY_SIZE
+@defvr Constant SALSA20_128_KEY_SIZE
+@defvrx Constant SALSA20_256_KEY_SIZE
 The two supported key sizes, 16 and 32 octets.
 @end defvr
 
@@ -1634,18 +1633,23 @@ Recommended key size, 32.
 Salsa20 block size, 64.
 @end defvr
 
-@defvr Constant SALSA20_IV_SIZE
-Size of the @acronym{IV}, 8.
+@defvr Constant SALSA20_NONCE_SIZE
+Size of the nonce, 8.
 @end defvr
 
-@deftypefun void salsa20_set_key (struct salsa20_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{key})
+@deftypefun void salsa20_128_set_key (struct salsa20_ctx *@var{ctx}, const uint8_t *@var{key})
+@deftypefunx void salsa20_256_set_key (struct salsa20_ctx *@var{ctx}, const uint8_t *@var{key})
+@deftypefunx void salsa20_set_key (struct salsa20_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{key})
 Initialize the cipher. The same function is used for both encryption and
-decryption. Before using the cipher, you @emph{must} also call
-@code{salsa20_set_iv}, see below.
+decryption. @code{salsa20_128_set_key} and @code{salsa20_128_set_key}
+use a fix key size each, 16 and 32 octets, respectively. The function
+@code{salsa20_set_key} is provided for backwards compatibility, and the
+@var{length} argument must be either 16 or 32. Before using the cipher,
+you @emph{must} also call @code{salsa20_set_nonce}, see below.
 @end deftypefun
 
-@deftypefun void salsa20_set_iv (struct salsa20_ctx *@var{ctx}, const uint8_t *@var{iv})
-Sets the @acronym{IV}. It is always of size @code{SALSA20_IV_SIZE}, 8
+@deftypefun void salsa20_set_nonce (struct salsa20_ctx *@var{ctx}, const uint8_t *@var{nonce})
+Sets the nonce. It is always of size @code{SALSA20_NONCE_SIZE}, 8
 octets. This function also initializes the block counter, setting it to
 zero.
 @end deftypefun
