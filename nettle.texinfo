@@ -1463,6 +1463,46 @@ in any other way.
 Analogous to @code{cast128_encrypt}
 @end deftypefun
 
+@subsection ChaCha
+
+ChaCha is a variant of the stream cipher Salsa20, also designed by D. J.
+Bernstein. For more information on Salsa20, see below. Nettle defines
+Chacha in @file{<nettle/chacha.h>}.
+
+@deftp {Context struct} {struct chacha_ctx}
+@end deftp
+
+@defvr Constant CHACHA_KEY_SIZE
+ChaCha key size, 32.
+@end defvr
+
+@defvr Constant CHACHA_BLOCK_SIZE
+ChaCha block size, 64.
+@end defvr
+
+@defvr Constant CHACHA_NONCE_SIZE
+Size of the nonce, 8.
+@end defvr
+
+@deftypefun void chacha_set_key (struct chacha_ctx *@var{ctx}, const uint8_t *@var{key})
+Initialize the cipher. The same function is used for both encryption and
+decryption. Before using the cipher,
+you @emph{must} also call @code{chacha_set_nonce}, see below.
+@end deftypefun
+
+@deftypefun void chacha_set_nonce (struct chacha_ctx *@var{ctx}, const uint8_t *@var{nonce})
+Sets the nonce. It is always of size @code{CHACHA_NONCE_SIZE}, 8
+octets. This function also initializes the block counter, setting it to
+zero.
+@end deftypefun
+
+@deftypefun void chacha_crypt (struct chacha_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+Encrypts or decrypts the data of a message, using ChaCha. When a
+message is encrypted using a sequence of calls to @code{chacha_crypt},
+all but the last call @emph{must} use a length that is a multiple of
+@code{CHACHA_BLOCK_SIZE}.
+@end deftypefun
+
 @subsection DES
 DES is the old Data Encryption Standard, specified by NIST. It uses a
 block size of 64 bits (8 octets), and a key size of 56 bits. However,
