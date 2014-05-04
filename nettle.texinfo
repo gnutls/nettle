@@ -3607,11 +3607,117 @@ key.
 Like for @acronym{RSA}, Nettle represents @acronym{DSA} keys using two
 structures, containing values of type @code{mpz_t}. For information on
 how to customize allocation, see @xref{Custom Allocation,,GMP
-Allocation,gmp, GMP Manual}.
+Allocation,gmp, GMP Manual}. Nettle's @acronym{DSA} interface is defined
+in @file{<nettle/dsa.h>}.
 
-Most of the @acronym{DSA} functions are very similar to the
-corresponding @acronym{RSA} functions, but there are a few differences
-pointed out below. For a start, there are no functions corresponding to
+A @acronym{DSA} group is represented using the following struct.
+
+@deftp {Context struct} {dsa_params} p q g
+Parameters of the @acronym{DSA} group.
+@end deftp
+
+@deftypefun void dsa_params_init (struct dsa_params *@var{params})
+Calls @code{mpz_init} on all numbers in the struct.
+@end deftypefun
+
+@deftypefun void dsa_params_clear (struct dsa_params *@var{params}params)
+Calls @code{mpz_clear} on all numbers in the struct.
+@end deftypefun
+
+@deftypefun int dsa_generate_params (struct dsa_params *@var{params}, void *@var{random_ctx}, nettle_random_func *@var{random}, void *@var{progress_ctx}, nettle_progress_func *@var{progress}, unsigned @var{p_bits}, unsigned @var{q_bits})
+Generates paramaters of a new group. The @var{params} struct should be
+initialized before you call this function.
+
+@var{random_ctx} and @var{random} is a randomness generator.
+@code{random(random_ctx, length, dst)} should generate @code{length}
+random octets and store them at @code{dst}. For advice, see
+@xref{Randomness}.
+
+@var{progress} and @var{progress_ctx} can be used to get callbacks
+during the key generation process, in order to uphold an illusion of
+progress. @var{progress} can be NULL, in that case there are no
+callbacks.
+
+@var{p_bits} and @var{q_bits} are the desired sizes of @code{p} and
+@code{q}. To generate keys that conform to the original @acronym{DSA}
+standard, you must use @code{q_bits = 160} and select @var{p_bits} of
+the form @code{p_bits = 512 + l*64}, for @code{0 <= l <= 8}, where the
+smaller sizes are no longer recommended, so you should most likely stick
+to @code{p_bits = 1024}. Non-standard sizes are possible, in particular
+@code{p_bits} larger than 1024, although @acronym{DSA} implementations
+can not in general be expected to support such keys. Also note that
+using very large @var{p_bits}, with @var{q_bits} fixed at 160, doesn't
+make much sense, because the security is also limited by the size of the
+smaller prime. To generate @acronym{DSA} keys for use with
+@acronym{SHA256}, use @code{q_bits = 256} and, e.g., @code{p_bits =
+2048}.
+
+Returns one on success, and zero on failure. The function will fail if
+@var{q_bits} is too small, or too close to @var{p_bits}.
+@end deftypefun
+
+Signatures are represented using the structure below.
+
+@deftp {Context struct} {dsa_signature} r s
+@end deftp
+
+@deftypefun void dsa_signature_init (struct dsa_signature *@var{signature})
+@deftypefunx void dsa_signature_clear (struct dsa_signature *@var{signature})
+You must call @code{dsa_signature_init} before creating or using a
+signature, and call @code{dsa_signature_clear} when you are finished
+with it.
+@end deftypefun
+
+Keys are represented as bignums, of type @code{mpz_t}. A public keys
+represent a group element, and is of the same size as @code{p}, while a
+private key is an exponent, of the same size as @code{q}.
+
+@deftypefun int dsa_sign (const struct dsa_params *@var{params}, const mpz_t @var{x}, void *@var{random_ctx}, nettle_random_func *@var{random}, size_t @var{digest_size}, const uint8_t *@var{digest}, struct dsa_signature *@var{signature})
+Creates a signature from the given hash digest, using the private key
+@var{x}. @var{random_ctx} and @var{random} is a randomness generator.
+@code{random(random_ctx, length, dst)} should generate @code{length}
+random octets and store them at @code{dst}. For advice, see
+@xref{Randomness}. Returns one on success, or zero on failure. Signing
+can fail only if the key is invalid, so that inversion modulo @code{q}
+fails.
+@end deftypefun
+
+@deftypefun int dsa_verify (const struct dsa_params *@var{params}, const mpz_t @var{y}, size_t @var{digest_size}, const uint8_t *@var{digest}, const struct dsa_signature *@var{signature})
+Verifies a signature, using the public key y. Returns 1 if the signature
+is valid, otherwise 0.
+@end deftypefun
+
+To generate a keypair, first generate a @acronym{DSA} group using
+@code{dsa_generate_params}. A keypair in this group is then created
+using
+
+@deftypefun void dsa_generate_keypair (const struct dsa_params *@var{params}, mpz_t @var{pub}, mpz_t @var{key}, void *@var{random_ctx}, nettle_random_func *@var{random})
+Generates a new keypair, using the group @var{params}. The public key is
+stored in @var{pub}, and the private key in @var{key}. Both variables
+must be initialized using @code{mpz_init} before this call.
+
+@var{random_ctx} and @var{random} is a randomness generator.
+@code{random(random_ctx, length, dst)} should generate @code{length}
+random octets and store them at @code{dst}. For advice, see
+@xref{Randomness}.
+@end deftypefun
+
+@subsection Old, deprecated, @acronym{DSA} interface
+
+Versions before nettle-3.0 used a different interface for @acronym{DSA}
+signatures, where the group parameters and the public key was packed
+together as @code{struct dsa_public_key}. Most of this interface is kept
+for backwards compatibility, and declared in @file{nettle/dsa-compat.h}.
+Below is the old documentation. The old and new interface use distinct
+names and don't confict, with one exception: The key generation
+function. The @file{nettle/dsa-compat.h} redefines
+@code{dsa_generate_keypair} as an alias for
+@code{dsa_compat_generate_keypair}, compatible with the old interface
+and documented below.
+
+The old @acronym{DSA} functions are very similar to the corresponding
+@acronym{RSA} functions, but there are a few differences pointed out
+below. For a start, there are no functions corresponding to
 @code{rsa_public_key_prepare} and @code{rsa_private_key_prepare}.
 
 @deftp {Context struct} {dsa_public_key} p q g y
@@ -3637,18 +3743,8 @@ deallocated by calling one of
 Calls @code{mpz_clear} on all numbers in the key struct.
 @end deftypefun
 
-Signatures are represented using the structure below, and need to be
-initialized and cleared in the same way as the key structs.
-
-@deftp {Context struct} {dsa_signature} r s
-@end deftp
-
-@deftypefun void dsa_signature_init (struct dsa_signature *@var{signature})
-@deftypefunx void dsa_signature_clear (struct dsa_signature *@var{signature})
-You must call @code{dsa_signature_init} before creating or using a
-signature, and call @code{dsa_signature_clear} when you are finished
-with it.
-@end deftypefun
+Signatures are represented using @code{struct dsa_signature}, described
+earlier.
 
 For signing, you need to provide both the public and the private key
 (unlike @acronym{RSA}, where the private key struct includes all
@@ -3658,7 +3754,6 @@ function, although the implementation of @acronym{DSA} with
 @acronym{SHA256} should be considered somewhat experimental due to lack
 of official test vectors and interoperability testing.
 
-@c FIXME: Update for new DSA interface
 @deftypefun int dsa_sha1_sign (const struct dsa_public_key *@var{pub}, const struct dsa_private_key *@var{key}, void *@var{random_ctx}, nettle_random_func @var{random}, struct sha1_ctx *@var{hash}, struct dsa_signature *@var{signature})
 @deftypefunx int dsa_sha1_sign_digest (const struct dsa_public_key *@var{pub}, const struct dsa_private_key *@var{key}, void *@var{random_ctx}, nettle_random_func @var{random}, const uint8_t *@var{digest}, struct dsa_signature *@var{signature})
 @deftypefunx int dsa_sha256_sign (const struct dsa_public_key *@var{pub}, const struct dsa_private_key *@var{key}, void *@var{random_ctx}, nettle_random_func @var{random}, struct sha256_ctx *@var{hash}, struct dsa_signature *@var{signature})
@@ -3684,7 +3779,7 @@ Verifies a signature. Returns 1 if the signature is valid, otherwise 0.
 Key generation uses mostly the same parameters as the corresponding
 @acronym{RSA} function.
 
-@deftypefun int dsa_generate_keypair (struct dsa_public_key *@var{pub}, struct dsa_private_key *@var{key}, void *@var{random_ctx}, nettle_random_func @var{random}, void *@var{progress_ctx}, nettle_progress_func @var{progress}, unsigned @var{p_bits}, unsigned @var{q_bits})
+@deftypefun int dsa_compat_generate_keypair (struct dsa_public_key *@var{pub}, struct dsa_private_key *@var{key}, void *@var{random_ctx}, nettle_random_func @var{random}, void *@var{progress_ctx}, nettle_progress_func @var{progress}, unsigned @var{p_bits}, unsigned @var{q_bits})
 @var{pub} and @var{key} is where the resulting key pair is stored. The
 structs should be initialized before you call this function. 
 
@@ -3699,23 +3794,7 @@ progress. @var{progress} can be NULL, in that case there are no
 callbacks.
 
 @var{p_bits} and @var{q_bits} are the desired sizes of @code{p} and
-@code{q}. To generate keys that conform to the original @acronym{DSA}
-standard, you must use @code{q_bits = 160} and select @var{p_bits} of
-the form @code{p_bits = 512 + l*64}, for @code{0 <= l <= 8}, where the
-smaller sizes are no longer recommended, so you should most likely stick
-to @code{p_bits = 1024}. Non-standard sizes are possible, in particular
-@code{p_bits} larger than 1024, although @acronym{DSA} implementations
-can not in general be expected to support such keys. Also note that
-using very large @var{p_bits}, with @var{q_bits} fixed at 160, doesn't
-make much sense, because the security is also limited by the size of the
-smaller prime. Using a larger @code{q_bits} requires switching to a
-larger hash function. To generate @acronym{DSA} keys for use with
-@acronym{SHA256}, use @code{q_bits = 256} and, e.g., @code{p_bits =
-2048}.
-
-Returns one on success, and zero on failure. The function will fail if
-@var{q_bits} is neither 160 nor 256, or if @var{p_bits} is unreasonably
-small.
+@code{q}. See @code{dsa_generate_keypair} for details.
 @end deftypefun
 
 @node Elliptic curves,, DSA, Public-key algorithms
