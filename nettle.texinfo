@@ -1467,7 +1467,7 @@ Analogous to @code{cast128_encrypt}
 
 ChaCha is a variant of the stream cipher Salsa20, also designed by D. J.
 Bernstein. For more information on Salsa20, see below. Nettle defines
-Chacha in @file{<nettle/chacha.h>}.
+ChaCha in @file{<nettle/chacha.h>}.
 
 @deftp {Context struct} {struct chacha_ctx}
 @end deftp
