@@ -1947,7 +1947,7 @@ in @acronym{GCM} authentication, see
 * GCM::                         
 * CCM::                         
 @end menu
-
+@c FIXME: chacha-poly1305
 
 @node CBC, CTR, Cipher modes, Cipher modes
 @comment  node-name,  next,  previous,  up
@@ -2803,6 +2803,7 @@ as well.
 @menu
 * HMAC::
 * UMAC::
+* POLY1305::
 @end menu
 
 @node HMAC, UMAC, Keyed hash functions, Keyed hash functions
@@ -3023,7 +3024,7 @@ This function also resets the context for processing new messages, with
 the same key.
 @end deftypefun
 
-@node UMAC,  , HMAC, Keyed hash functions
+@node UMAC, POLY1305 , HMAC, Keyed hash functions
 @comment  node-name,  next,  previous,  up
 
 @subsection @acronym{UMAC}
@@ -3068,8 +3069,8 @@ corresponding to the desired size.
 
 The internal block size of @acronym{UMAC} is 1024 octets, and it also
 generates more than 1024 bytes of subkeys. This makes the size of the
-context struct a bit larger than other hash functions and @acronym{MAC}
-algorithms in Nettle.
+context struct quite a bit larger than other hash functions and
+@acronym{MAC} algorithms in Nettle.
 
 Nettle defines @acronym{UMAC} in @file{<nettle/umac.h>}.
 
@@ -3143,6 +3144,72 @@ processing of a new message with the same key. The nonce is incremented
 as described above, the new value is used unless you call the
 @code{_set_nonce} function explicitly for each message.
 @end deftypefun
+
+@node POLY1305,, UMAC, Keyed hash functions
+@comment  node-name,  next,  previous,  up
+@subsection Poly1305
+
+Poly1305-AES is a message authentication code designed by D. J.
+Bernstein. It treats the message as a polynomial modulo the prime number
+@math{2^130 - 5}.
+
+The key, 256 bits, consists of two parts, where the first half is an
+@acronym{AES}-128 key, and the second half specifies the point where the
+polynomial is evaluated. Of the latter half, 22 bits are set to zero, to
+enable high-performance implementation, leaving 106 bits for specifying
+an evaluation point @code{r}. For each message, one must also provide a
+128-bit nonce. The nonce is encrypted using the @acronym{AES} key, and
+that's the only thing @acronym{AES} is used for.
+
+The message is split into 128-bit chunks (with final chunk possibly
+being shorter), each read as a little-endian integer. Each chunk has a
+one-bit appended at the high end. The resulting integers are treated as
+polynomial coefficients modulo @math{2^130 - 5}, and the polynomial is
+evaluated at the point @code{r}. Finally, this value is reduced modulo
+@math{2^128}, and added (also modulo @math{2^128}) to the encrypted
+nonce, to produce an 128-bit authenticator for the message. See
+@uref{http://cr.yp.to/mac/poly1305-20050329.pdf} for further details.
+
+@ FIXME: Refer to chacha-poly1305
+Clearly, variants using a different cipher than @acronym{AES} could be
+defined. Nettle defines Poly1305 in @file{nettle/poly1305.h}.
+
+@defvr Constant POLY1305_AES_KEY_SIZE
+Key size, 32 octets.
+@end defvr
+
+@defvr Constant POLY1305_AES_DIGEST_SIZE
+Size of the digest or ``authenticator'', 16 octets.
+@end defvr
+
+@defvr Constant POLY1305_AES_NONCE_SIZE
+Nonce size, 16 octets.
+@end defvr
+
+@deftp {Context struct} {struct poly1305_aes_ctx}
+The poly1305-aes context struct.
+@end deftp
+
+@deftypefun void poly1305_aes_set_key (struct poly1305_aes_ctx *@var{ctx}, const uint8_t *@var{key})
+Initialize the context struct. Also sets the nonce to zero.
+@end deftypefun
+
+@deftypefun void poly1305_aes_set_nonce (struct poly1305_aes_ctx *@var{ctx}, const uint8_t *@var{nonce})
+Sets the nonce. Calling this function is optional, since the nonce is
+incremented automatically for each message.
+@end deftypefun
+
+@deftypefun void poly1305_aes_update (struct poly1305_aes_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
+Process more data.
+@end deftypefun
+
+@deftypefun void poly1305_aes_digest (struct poly1305_aes_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+Extracts the digest. If @var{length} is smaller than
+@code{POLY1305_AES_DIGEST_SIZE}, only the first @var{length} octets are
+written. Also increments the nonce, and prepares the context for
+processing a new message.
+@end deftypefun
+
 
 @node Key derivation functions, Public-key algorithms, Keyed hash functions, Reference
 @comment  node-name,  next,  previous,  up
