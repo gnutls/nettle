@@ -365,6 +365,7 @@ This chapter describes all the Nettle functions, grouped by family.
 * Hash functions::              
 * Cipher functions::            
 * Cipher modes::                
+* Authenticated encryption::
 * Keyed hash functions::        
 * Key derivation functions::    
 * Public-key algorithms::       
@@ -1847,7 +1848,7 @@ This list can be used to dynamically enumerate or search the supported
 algorithms. NULL-terminated.
 @end deftypevr
 
-@node Cipher modes, Keyed hash functions, Cipher functions, Reference
+@node Cipher modes, Authenticated encryption, Cipher functions, Reference
 @comment  node-name,  next,  previous,  up
 @section Cipher modes
 
@@ -1868,84 +1869,9 @@ Modes like @acronym{CBC} and @acronym{CTR} provide @emph{no} message
 authentication, and should always be used together with a @acronym{MAC}
 (@pxref{Keyed hash functions}) or signature to authenticate the message.
 
-@subsection Authenticated encryption with associated data
-@cindex AEAD
-@cindex Authenticated encryption
-
-Since there are some subtle design choices to be made when combining a
-block cipher mode with out authentication with a @acronym{MAC}. In
-recent years, several constructions that combine encryption and
-authentication have been defined. These constructions typically also
-have an additional input, the ``associated data'', which is
-authenticated but not included with the message. A simple example is an
-implicit message number which is available at both sender and receiver,
-and which needs authentication in order to detect deletions or replay of
-messages. This family of building blocks are therefore called
-@acronym{AEAD}, Authenticated encryption with associated data.
-
-The aim is to provide building blocks that it is easier for designers of
-protocols and applications to use correctly. There is also some
-potential for improved performance, if encryption and authentication can
-be done in a single step, although that potential is not realized for
-the constructions currently supported by Nettle.
-
-For encryption, the inputs are:
-
-@itemize
-@item
-The key, which can be used for many messages.
-@item 
-A nonce, which must be unique for each message using the same key.
-@item
-Additional associated data to be authenticated, but not included in the
-message.
-@item
-The cleartext message to be encrypted.
-@end itemize
-
-The outputs are:
-
-@itemize
-@item
-The ciphertext, of the same size as the cleartext.
-@item
-A digest or ``authentication tag''.
-@end itemize
-
-Decryption works the same, but with cleartext and ciphertext
-interchanged. All currently supported @acronym{AEAD} algorithms always
-use the encryption function of the underlying block cipher, for both
-encryption and decryption.
-
-Usually, the authentication tag should be appended at the end of the
-ciphertext, producing an encrypted message which is slightly longer than
-the cleartext. However, Nettle's low level @acronym{AEAD} functions
-produce the authentication tag as a separate output for both encryption
-and decryption.
-
-Both associated data and the message data (cleartext or ciphertext) can
-be processed incrementally. In general, all associated data must be
-processed before the message data, and all calls but the last one must
-use a length that is a multiple of he block size, although some
-@acronym{AEAD} may implement more liberal conventions. The @acronym{CCM}
-mode is a bit special in that it requires the message lengths up front,
-other @acronym{AEAD} constructions don't have this restriction.
-
-The supported @acronym{AEAD} constructions are Galois/Counter mode
-(@acronym{GCM}), @acronym{EAX}, and Counter with
-@acronym{CBC}-@acronym{MAC} (@acronym{CCM}). There are some weaknesses
-in @acronym{GCM} authentication, see
-@uref{http://csrc.nist.gov/groups/ST/toolkit/BCM/documents/comments/CWC-GCM/Ferguson2.pdf}.
-@acronym{CCM} and @acronym{EAX} use the same building blocks, but the
-@acronym{EAX} design is cleaner and avoids a couple of inconveniences of
-@acronym{CCM}. Therefore, @acronym{EAX} seems like a good choice.
-
 @menu
 * CBC::                         
 * CTR::                         
-* EAX::                         
-* GCM::                         
-* CCM::                         
 @end menu
 @c FIXME: chacha-poly1305
 
@@ -2042,7 +1968,7 @@ These macros use some tricks to make the compiler display a warning if
 the types of @var{f} and @var{ctx} don't match, e.g. if you try to use
 an @code{struct aes_ctx} context with the @code{des_encrypt} function.
 
-@node CTR, EAX, CBC, Cipher modes
+@node CTR, , CBC, Cipher modes
 @comment  node-name,  next,  previous,  up
 @subsection Counter mode
 
@@ -2118,7 +2044,89 @@ last three arguments define the source and destination area for the
 operation.
 @end deffn
 
-@node EAX, GCM, CTR, Cipher modes
+@node Authenticated encryption, Keyed hash functions, Cipher modes, Reference
+@comment  node-name,  next,  previous,  up
+
+@section Authenticated encryption with associated data
+@cindex AEAD
+@cindex Authenticated encryption
+
+Since there are some subtle design choices to be made when combining a
+block cipher mode with out authentication with a @acronym{MAC}. In
+recent years, several constructions that combine encryption and
+authentication have been defined. These constructions typically also
+have an additional input, the ``associated data'', which is
+authenticated but not included with the message. A simple example is an
+implicit message number which is available at both sender and receiver,
+and which needs authentication in order to detect deletions or replay of
+messages. This family of building blocks are therefore called
+@acronym{AEAD}, Authenticated encryption with associated data.
+
+The aim is to provide building blocks that it is easier for designers of
+protocols and applications to use correctly. There is also some
+potential for improved performance, if encryption and authentication can
+be done in a single step, although that potential is not realized for
+the constructions currently supported by Nettle.
+
+For encryption, the inputs are:
+
+@itemize
+@item
+The key, which can be used for many messages.
+@item 
+A nonce, which must be unique for each message using the same key.
+@item
+Additional associated data to be authenticated, but not included in the
+message.
+@item
+The cleartext message to be encrypted.
+@end itemize
+
+The outputs are:
+
+@itemize
+@item
+The ciphertext, of the same size as the cleartext.
+@item
+A digest or ``authentication tag''.
+@end itemize
+
+Decryption works the same, but with cleartext and ciphertext
+interchanged. All currently supported @acronym{AEAD} algorithms always
+use the encryption function of the underlying block cipher, for both
+encryption and decryption.
+
+Usually, the authentication tag should be appended at the end of the
+ciphertext, producing an encrypted message which is slightly longer than
+the cleartext. However, Nettle's low level @acronym{AEAD} functions
+produce the authentication tag as a separate output for both encryption
+and decryption.
+
+Both associated data and the message data (cleartext or ciphertext) can
+be processed incrementally. In general, all associated data must be
+processed before the message data, and all calls but the last one must
+use a length that is a multiple of he block size, although some
+@acronym{AEAD} may implement more liberal conventions. The @acronym{CCM}
+mode is a bit special in that it requires the message lengths up front,
+other @acronym{AEAD} constructions don't have this restriction.
+
+The supported @acronym{AEAD} constructions are Galois/Counter mode
+(@acronym{GCM}), @acronym{EAX}, and Counter with
+@acronym{CBC}-@acronym{MAC} (@acronym{CCM}). There are some weaknesses
+in @acronym{GCM} authentication, see
+@uref{http://csrc.nist.gov/groups/ST/toolkit/BCM/documents/comments/CWC-GCM/Ferguson2.pdf}.
+@acronym{CCM} and @acronym{EAX} use the same building blocks, but the
+@acronym{EAX} design is cleaner and avoids a couple of inconveniences of
+@acronym{CCM}. Therefore, @acronym{EAX} seems like a good conservative
+choice.
+
+@menu
+* EAX::                         
+* GCM::                         
+* CCM::                         
+@end menu
+
+@node EAX, GCM, Authenticated encryption, Authenticated encryption
 @comment  node-name,  next,  previous,  up
 @subsection EAX
 
@@ -2273,7 +2281,7 @@ smaller than @code{EAX_DIGEST_SIZE}, only the first @var{length} octets
 of the digest are written.
 @end deftypefun
 
-@node GCM, CCM, EAX, Cipher modes
+@node GCM, CCM, EAX, Authenticated encryption
 @comment  node-name,  next,  previous,  up
 @subsection Galois counter mode
 
@@ -2535,7 +2543,7 @@ that @var{length} is @code{GCM_DIGEST_SIZE}, but if you provide a smaller
 value, only the first @var{length} octets of the digest are written.
 @end deftypefun
 
-@node CCM,  , GCM, Cipher modes
+@node CCM,  , GCM, Authenticated encryption
 @comment  node-name,  next,  previous,  up
 @subsection Counter with CBC-MAC mode
 
@@ -2764,7 +2772,7 @@ These are identical to @code{ccm_encrypt_message} and @code{ccm_decrypt_message}
 except that @var{cipher} and @var{f} are replaced with a context structure.
 @end deftypefun
 
-@node Keyed hash functions, Key derivation functions, Cipher modes, Reference
+@node Keyed hash functions, Key derivation functions, Authenticated encryption, Reference
 @comment  node-name,  next,  previous,  up
 @section Keyed Hash Functions
 
