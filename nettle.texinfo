@@ -3453,7 +3453,7 @@ from the message in the same way as above. Then @code{s^e mod n} is
 computed, the operation returns true if and only if the result equals
 @code{x}.
 
-@subsection Nettle's @acronym{RSA} support
+@subsubsection Nettle's @acronym{RSA} support
 
 Nettle represents @acronym{RSA} keys using two structures that contain
 large numbers (of type @code{mpz_t}).
@@ -3721,7 +3721,7 @@ randomness source is a serious disadvantage. If you ever use the same
 @code{k} (and @code{r}) for two different message, you leak your private
 key.
 
-@subsection Nettle's @acronym{DSA} support
+@subsubsection Nettle's @acronym{DSA} support
 
 Like for @acronym{RSA}, Nettle represents @acronym{DSA} keys using two
 structures, containing values of type @code{mpz_t}. For information on
@@ -3821,7 +3821,7 @@ random octets and store them at @code{dst}. For advice, see
 @xref{Randomness}.
 @end deftypefun
 
-@subsection Old, deprecated, @acronym{DSA} interface
+@subsubsection Old, deprecated, @acronym{DSA} interface
 
 Versions before nettle-3.0 used a different interface for @acronym{DSA}
 signatures, where the group parameters and the public key was packed
@@ -3966,7 +3966,7 @@ accesses depend only on the size of the input data and its location in
 memory, not on the actual data bits. This implies a performance penalty
 in several of the building blocks.
 
-@subsection ECDSA
+@subsubsection ECDSA
 
 ECDSA is a variant of the DSA digital signature scheme (@pxref{DSA}),
 which works over an elliptic curve group rather than over a (subgroup

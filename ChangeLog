@@ -1,8 +1,9 @@
 2014-05-05  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle.texinfo (POLY1305): Document poly1305-aes.
-	(Authenticated encryption): Make Authenticated encryption a
-	separate section.
+	(Authenticated encryption): Move AEAD algorithms to their own
+	section.
+	(RSA, DSA, ECDSA): Change some subsections to subsubsections.
 
 2014-05-04  Niels Möller  <nisse@lysator.liu.se>
 
