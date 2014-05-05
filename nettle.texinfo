@@ -1860,8 +1860,9 @@ Book mode, @acronym{ECB}), leaks information.
 
 Besides @acronym{ECB}, Nettle provides a two other modes of operation:
 Cipher Block Chaining (@acronym{CBC}), Counter mode (@acronym{CTR}), and
-a couple of AEAD modes (see below). @acronym{CBC} is widely used, but
-there are a few subtle issues of information leakage, see, e.g.,
+a couple of @acronym{AEAD} modes (@pxref{Authenticated encryption}).
+@acronym{CBC} is widely used, but there are a few subtle issues of
+information leakage, see, e.g.,
 @uref{http://www.kb.cert.org/vuls/id/958563, @acronym{SSH} @acronym{CBC}
 vulnerability}. Today, @acronym{CTR} is usually preferred over @acronym{CBC}.
 
@@ -1873,7 +1874,6 @@ authentication, and should always be used together with a @acronym{MAC}
 * CBC::                         
 * CTR::                         
 @end menu
-@c FIXME: chacha-poly1305
 
 @node CBC, CTR, Cipher modes, Cipher modes
 @comment  node-name,  next,  previous,  up
@@ -2111,19 +2111,22 @@ mode is a bit special in that it requires the message lengths up front,
 other @acronym{AEAD} constructions don't have this restriction.
 
 The supported @acronym{AEAD} constructions are Galois/Counter mode
-(@acronym{GCM}), @acronym{EAX}, and Counter with
+(@acronym{GCM}), @acronym{EAX}, ChaCha-Poly1305, and Counter with
 @acronym{CBC}-@acronym{MAC} (@acronym{CCM}). There are some weaknesses
 in @acronym{GCM} authentication, see
 @uref{http://csrc.nist.gov/groups/ST/toolkit/BCM/documents/comments/CWC-GCM/Ferguson2.pdf}.
 @acronym{CCM} and @acronym{EAX} use the same building blocks, but the
 @acronym{EAX} design is cleaner and avoids a couple of inconveniences of
 @acronym{CCM}. Therefore, @acronym{EAX} seems like a good conservative
-choice.
+choice. The more recent ChaCha-Poly1305 may also be an attractive but
+less conservative alternative, in particular if performance is
+important.
 
 @menu
 * EAX::                         
 * GCM::                         
 * CCM::                         
+* ChaCha-Poly1305::
 @end menu
 
 @node EAX, GCM, Authenticated encryption, Authenticated encryption
@@ -2179,9 +2182,9 @@ nonce.
 @deftypefun void eax_update (struct eax_ctx *@var{eax}, const struct eax_key *@var{key}, const void *@var{cipher}, nettle_cipher_func *@var{f}, size_t @var{data_length}, const uint8_t *@var{data})
 Process associated data for authentication. All but the last call for
 each message @emph{must} use a length that is a multiple of the block
-size. Unlike many other AEAD constructions, for @acronym{EAX} it's not
-necessary to complete the processing of all associated data before
-encrypting or decrypting the message data.
+size. Unlike many other @acronym{AEAD} constructions, for @acronym{EAX}
+it's not necessary to complete the processing of all associated data
+before encrypting or decrypting the message data.
 @end deftypefun
 
 @deftypefun void eax_encrypt (struct eax_ctx *@var{eax}, const struct eax_key *@var{key}, const void *@var{cipher}, nettle_cipher_func *@var{f}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
@@ -2543,7 +2546,7 @@ that @var{length} is @code{GCM_DIGEST_SIZE}, but if you provide a smaller
 value, only the first @var{length} octets of the digest are written.
 @end deftypefun
 
-@node CCM,  , GCM, Authenticated encryption
+@node CCM, ChaCha-Poly1305, GCM, Authenticated encryption
 @comment  node-name,  next,  previous,  up
 @subsection Counter with CBC-MAC mode
 
@@ -2772,6 +2775,86 @@ These are identical to @code{ccm_encrypt_message} and @code{ccm_decrypt_message}
 except that @var{cipher} and @var{f} are replaced with a context structure.
 @end deftypefun
 
+@node ChaCha-Poly1305, , CCM, Authenticated encryption
+@comment  node-name,  next,  previous,  up
+@subsection ChaCha-Poly1305
+
+ChaCha-Poly1305 is a combination of the ChaCha stream cipher and the
+poly1305 message authentication code (@pxref{Poly1305}). It originates
+from the NaCl cryptographic library by D. J. Bernstein et al, which
+defines a similar construction but with Salsa20 instead of ChaCha. At
+the time of this writing, there's no authoritative specification for
+ChaCha-Poly1305. Nettle implements it using the original
+definition of ChaCha, with 64 bits (8 octets) each for the nonce and the
+block counter. Some protocols prefer to use nonces of 12 bytes, and it's
+a small change to ChaCha to use the upper 32 bits of the block counter
+as a nonce, instead limiting message size to @math{2^32} blocks or 256
+GBytes, but this variant is not yet supported.
+
+For ChaCha-Poly1305, the ChaCha cipher is initialized with a key, of 256
+bits, and a per-message nonce. The first block of the key stream
+(counter all zero) is set aside for the authentication subkeys. Of this
+64-octet block, the first 16 octets specify the poly1305 evaluation
+point, and the next 16 bytes specify the value to add in for the final
+digest. The final 32 bytes of this block are unused. Note that unlike
+poly1305-aes, the evaluation point depends on the nonce. This is
+preferable, because it leaks less information in case the attacker for
+some reason is lucky enough to forge a valid authentication tag, and
+observe (from the receiver's behaviour) that the forgery succeeded.
+
+The ChaCha key stream, starting with counter value 1, is then used to
+encrypt the message. For authentication, poly1305 is applied to the
+concatenation of the associated data, the cryptotext, and the lengths of
+the associated data and the message, each a 64-bit number (eight octets,
+little-endian). Nettle defines ChaCha-Poly1305 in
+@file{<nettle/chacha-poly1305.h>}.
+
+@defvr Constant CHACHA_POLY1305_BLOCK_SIZE
+Same as the ChaCha block size, 64.
+@end defvr
+
+@defvr Constant CHACHA_POLY1305_KEY_SIZE
+ChaCha-Poly1305 key size, 32.
+@end defvr
+
+@defvr Constant CHACHA_POLY1305_NONCE_SIZE
+Same as the ChaCha nonce size, 16.
+@end defvr
+
+@defvr Constant CHACHA_POLY1305_DIGEST_SIZE
+Digest size, 16.
+@end defvr
+
+@deftp {Context struct} {struct chacha_poly1305_ctx}
+@end deftp
+
+@deftypefun void chacha_poly1305_set_key (struct chacha_poly1305_ctx *@var{ctx}, const uint8_t *@var{key})
+Initializes @var{ctx} using the given key. Before using the context, you
+@emph{must} also call @code{chacha_poly1305_set_nonce}, see below.
+@end deftypefun
+
+@deftypefun void chacha_poly1305_set_nonce (struct chacha_poly1305_ctx *@var{ctx}, const uint8_t *@var{nonce})
+Initializes the per-message state, using the given nonce.
+@end deftypefun
+
+@deftypefun void chacha_poly1305_update (struct chacha_poly1305_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
+Process associated data for authentication.
+@end deftypefun
+
+@deftypefun void chacha_poly1305_encrypt (struct chacha_poly1305_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void chacha_poly1305_decrypt (struct chacha_poly1305_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+Encrypts or decrypts the data of a message. All but the last call for
+each message @emph{must} use a length that is a multiple of the block
+size.
+@end deftypefun
+
+@deftypefun void chacha_poly1305_digest (struct chacha_poly1305_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+Extracts the message digest (also known ``authentication tag''). This is
+the final operation when processing a message. If @var{length} is
+smaller than @code{CHACHA_POLY1305_DIGEST_SIZE}, only the first
+@var{length} octets of the digest are written.
+@end deftypefun
+
 @node Keyed hash functions, Key derivation functions, Authenticated encryption, Reference
 @comment  node-name,  next,  previous,  up
 @section Keyed Hash Functions
@@ -2811,7 +2894,7 @@ as well.
 @menu
 * HMAC::
 * UMAC::
-* POLY1305::
+* Poly1305::
 @end menu
 
 @node HMAC, UMAC, Keyed hash functions, Keyed hash functions
@@ -3032,7 +3115,7 @@ This function also resets the context for processing new messages, with
 the same key.
 @end deftypefun
 
-@node UMAC, POLY1305 , HMAC, Keyed hash functions
+@node UMAC, Poly1305 , HMAC, Keyed hash functions
 @comment  node-name,  next,  previous,  up
 
 @subsection @acronym{UMAC}
@@ -3153,11 +3236,11 @@ as described above, the new value is used unless you call the
 @code{_set_nonce} function explicitly for each message.
 @end deftypefun
 
-@node POLY1305,, UMAC, Keyed hash functions
+@node Poly1305,, UMAC, Keyed hash functions
 @comment  node-name,  next,  previous,  up
 @subsection Poly1305
 
-Poly1305-AES is a message authentication code designed by D. J.
+Poly1305-@acronym{AES} is a message authentication code designed by D. J.
 Bernstein. It treats the message as a polynomial modulo the prime number
 @math{2^130 - 5}.
 
@@ -3178,9 +3261,10 @@ evaluated at the point @code{r}. Finally, this value is reduced modulo
 nonce, to produce an 128-bit authenticator for the message. See
 @uref{http://cr.yp.to/mac/poly1305-20050329.pdf} for further details.
 
-@ FIXME: Refer to chacha-poly1305
 Clearly, variants using a different cipher than @acronym{AES} could be
-defined. Nettle defines Poly1305 in @file{nettle/poly1305.h}.
+defined. Another variant is the ChaCha-Poly1305 @acronym{AEAD}
+construction (@pxref{ChaCha-Poly1305}). Nettle defines
+Poly1305-@acronym{AES} in @file{nettle/poly1305.h}.
 
 @defvr Constant POLY1305_AES_KEY_SIZE
 Key size, 32 octets.

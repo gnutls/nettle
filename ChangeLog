@@ -4,6 +4,7 @@
 	(Authenticated encryption): Move AEAD algorithms to their own
 	section.
 	(RSA, DSA, ECDSA): Change some subsections to subsubsections.
+	(ChaCha-Poly1305): Document ChaCha-Poly1305.
 
 2014-05-04  Niels Möller  <nisse@lysator.liu.se>
 
