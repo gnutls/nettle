@@ -44,6 +44,8 @@
 
 #define CHACHA_ROUNDS 20
 
+/* FIXME: Also set nonce to zero, and implement nonce
+   auto-increment? */
 void
 chacha_poly1305_set_key (struct chacha_poly1305_ctx *ctx,
 			 const uint8_t *key)
