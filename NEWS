@@ -96,20 +96,20 @@ NEWS for the Nettle 3.0 release
 
 	New features:
 
-	* Support for poly1305-aes MAC.
+	* Support for Poly1305-AES MAC.
 
-	* Experimental support for the Chacha stream cipher and the
-	  chacha-poly1305 AEAD mode. Specifications are still in
-	  flux, and future releases may do incompatible changes to
-	  track standardization. Currently uses 256-bit key and 64-bit
-	  nonce.
+	* Support for the ChaCha stream cipher and EXPERIMENTAL
+	  support for the ChaCha-Poly1305 AEAD mode. Specifications
+	  are still in flux, and future releases may do incompatible
+	  changes to track standardization. Currently uses 256-bit key
+	  and 64-bit nonce.
 
 	* Support for EAX mode.
 
 	* Support for CCM mode. Contributed by Owen Kirby.
 
-	* Support for additional variants of SHA512 with output size
-	  of 224 and 256 bits. Contributed by Joachim Strömbergson.
+	* Additional variants of SHA512 with output size of 224 and
+	  256 bits. Contributed by Joachim Strömbergson.
 
 	* New interface, struct nettle_aead, for mechanisms providing
 	  authenticated encryption with associated data (AEAD).
@@ -123,6 +123,12 @@ NEWS for the Nettle 3.0 release
 	  order of 10%-20%.
 
 	Miscellaneous:
+
+	* SHA3 is now documented as EXPERIMENTAL. Nettle currently
+	  implements SHA3 as specified at the time Keccak won the SHA3
+	  competition. However, the final standard specified by NIST
+	  is likely to be incompatible, in which case future releases
+	  may do incompatible changes to track standardization.
 
 	* The portability fix for the rotation macros, mentioned in
 	  NEWS for 2.7.1, actually didn't make it into that release.
