@@ -602,12 +602,21 @@ corresponding init function.
 
 The SHA3 hash functions were specified by NIST in response to weaknesses
 in SHA1, and doubts about SHA2 hash functions which structurally are
-very similar to SHA1. The standard is a result of a competition, where
-the winner, also known as Keccak, was designed by Guido Bertoni, Joan
+very similar to SHA1. SHA3 is a result of a competition, where the
+winner, also known as Keccak, was designed by Guido Bertoni, Joan
 Daemen, Michaël Peeters and Gilles Van Assche. It is structurally very
 different from all widely used earlier hash functions. Like SHA2, there
 are several variants, with output sizes of 224, 256, 384 and 512 bits
 (28, 32, 48 and 64 octets, respectively).
+
+Nettle's implementation of SHA3 should be considered
+@strong{experimental}. It is based on the design from the competition.
+Unfortunately, it is likely that when the standard is finalized, there
+will be small changes making Nettle's current implementation
+incompatible with the standard. Nettle's implementation may need
+incompatible changes to track standardization. Latest standard draft, at
+the time of writing, is at
+@uref{http://csrc.nist.gov/publications/drafts/fips-202/fips_202_draft.pdf}.
 
 Nettle defines SHA3-224 in @file{<nettle/sha3.h>}.
 
@@ -2121,8 +2130,7 @@ in @acronym{GCM} authentication, see
 @acronym{EAX} design is cleaner and avoids a couple of inconveniences of
 @acronym{CCM}. Therefore, @acronym{EAX} seems like a good conservative
 choice. The more recent ChaCha-Poly1305 may also be an attractive but
-less conservative alternative, in particular if performance is
-important.
+more adventurous alternative, in particular if performance is important.
 
 @menu
 * EAX::                         
@@ -2782,14 +2790,17 @@ except that @var{cipher} and @var{f} are replaced with a context structure.
 ChaCha-Poly1305 is a combination of the ChaCha stream cipher and the
 poly1305 message authentication code (@pxref{Poly1305}). It originates
 from the NaCl cryptographic library by D. J. Bernstein et al, which
-defines a similar construction but with Salsa20 instead of ChaCha. At
-the time of this writing, there's no authoritative specification for
-ChaCha-Poly1305. Nettle implements it using the original
+defines a similar construction but with Salsa20 instead of ChaCha. 
+
+Nettle's implementation ChaCha-Poly1305 should be considered
+@strong{experimental}. At the time of this writing, there is no
+authoritative specification for ChaCha-Poly1305, and a couple of
+different incompatible variants. Nettle implements it using the original
 definition of ChaCha, with 64 bits (8 octets) each for the nonce and the
 block counter. Some protocols prefer to use nonces of 12 bytes, and it's
 a small change to ChaCha to use the upper 32 bits of the block counter
 as a nonce, instead limiting message size to @math{2^32} blocks or 256
-GBytes, but this variant is not yet supported.
+GBytes, but that variant is currently not supported.
 
 For ChaCha-Poly1305, the ChaCha cipher is initialized with a key, of 256
 bits, and a per-message nonce. The first block of the key stream
