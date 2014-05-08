@@ -513,16 +513,21 @@ elif test -n "$HOST_CC"; then
   GMP_PROG_CC_FOR_BUILD_WORKS($HOST_CC,
     [CC_FOR_BUILD=$HOST_CC],
     [AC_MSG_ERROR([Specified HOST_CC doesn't seem to work])])
-elif test $cross_compiling = no ; then
-  CC_FOR_BUILD="$CC"
 else
-  for i in cc gcc c89 c99; do
-    GMP_PROG_CC_FOR_BUILD_WORKS($i,
-      [CC_FOR_BUILD=$i
-       break])
-  done
-  if test -z "$CC_FOR_BUILD"; then
-    AC_MSG_ERROR([Cannot find a build system compiler])
+  if test $cross_compiling = no ; then
+    CC_FOR_BUILD="$CC"  
+  else
+    for i in gcc cc c89 c99; do
+      GMP_PROG_CC_FOR_BUILD_WORKS($i,
+        [CC_FOR_BUILD=$i
+         break])
+    done
+    if test -z "$CC_FOR_BUILD"; then
+      AC_MSG_ERROR([Cannot find a build system compiler])
+    fi
+  fi
+  if test "$CC_FOR_BUILD" = gcc ; then
+    CC_FOR_BUILD="$CC_FOR_BUILD -O"
   fi
 fi
 

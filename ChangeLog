@@ -1,3 +1,8 @@
+2014-05-08  Niels Möller  <nisse@lysator.liu.se>
+
+	* aclocal.m4 (GMP_PROG_CC_FOR_BUILD): If CC_FOR_BUILD is gcc, add
+	-O option. This makes eccdata twice as fast.
+
 2014-05-06  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle.texinfo: Document SHA3 and ChaCha-Poly1305 as
