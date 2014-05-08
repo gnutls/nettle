@@ -1,5 +1,7 @@
 2014-05-08  Niels Möller  <nisse@lysator.liu.se>
 
+	* nettle.texinfo (nettle_aead abstraction): Document nettle_aead.
+
 	* Makefile.in (nettle_SOURCES): Added nettle-meta-aeads.c.
 	* nettle-meta.h (nettle_aeads): Declare array.
 	* nettle-meta-aeads.c (nettle_aeads): New file, new array.

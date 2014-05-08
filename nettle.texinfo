@@ -994,7 +994,9 @@ This function also resets the context in the same way as
 
 @node nettle_hash abstraction,, Legacy hash functions, Hash functions
 @comment  node-name,  next,  previous,  up
-@subsection The nettle_hash abstraction
+@subsection The @code{struct nettle_hash} abstraction
+@cindex nettle_hash
+@cindex nettle_hashes
 
 Nettle includes a struct including information about the supported hash
 functions. It is defined in @file{<nettle/nettle-meta.h>}, and is used
@@ -1809,7 +1811,9 @@ Analogous to @code{twofish_encrypt}
 
 @c @node nettle_cipher, Cipher Block Chaining, Cipher functions, Reference
 @c @comment  node-name,  next,  previous,  up
-@subsection @code{struct nettle_cipher}
+@subsection The @code{struct nettle_cipher} abstraction
+@cindex nettle_cipher
+@cindex nettle_ciphers
 
 Nettle includes a struct including information about some of the more
 regular cipher functions. It can be useful for applications that need a
@@ -2137,6 +2141,7 @@ more adventurous alternative, in particular if performance is important.
 * GCM::                         
 * CCM::                         
 * ChaCha-Poly1305::
+* nettle_aead abstraction::
 @end menu
 
 @node EAX, GCM, Authenticated encryption, Authenticated encryption
@@ -2783,7 +2788,7 @@ These are identical to @code{ccm_encrypt_message} and @code{ccm_decrypt_message}
 except that @var{cipher} and @var{f} are replaced with a context structure.
 @end deftypefun
 
-@node ChaCha-Poly1305, , CCM, Authenticated encryption
+@node ChaCha-Poly1305, nettle_aead abstraction, CCM, Authenticated encryption
 @comment  node-name,  next,  previous,  up
 @subsection ChaCha-Poly1305
 
@@ -2865,6 +2870,39 @@ the final operation when processing a message. If @var{length} is
 smaller than @code{CHACHA_POLY1305_DIGEST_SIZE}, only the first
 @var{length} octets of the digest are written.
 @end deftypefun
+
+@node nettle_aead abstraction, , ChaCha-Poly1305, Authenticated encryption
+@comment  node-name,  next,  previous,  up
+@subsection The @code{struct nettle_aead} abstraction
+@cindex nettle_aead
+@cindex nettle_aeads
+
+Nettle includes a struct including information about the supported hash
+functions. It is defined in @file{<nettle/nettle-meta.h>}.
+
+@deftp {Meta struct} @code{struct nettle_aead} name context_size block_size key_size nonce_size digest_size set_encrypt_key set_decrypt_key set_nonce update encrypt decrypt digest
+The last seven attributes are function pointers.
+@end deftp
+
+@deftypevr {Constant Struct} {struct nettle_aead} nettle_gcm_aes128
+@deftypevrx {Constant Struct} {struct nettle_aead} nettle_gcm_aes192
+@deftypevrx {Constant Struct} {struct nettle_aead} nettle_gcm_aes256
+@deftypevrx {Constant Struct} {struct nettle_aead} nettle_gcm_camellia128
+@deftypevrx {Constant Struct} {struct nettle_aead} nettle_gcm_camellia256
+@deftypevrx {Constant Struct} {struct nettle_aead} nettle_eax_aes128
+@deftypevrx {Constant Struct} {struct nettle_aead} nettle_chacha_poly1305
+These are most of the @acronym{AEAD} constructions that Nettle
+implements. Note that @acronym{CCM} is missing; it requirement that the
+message size is specified in advance makes it incompatible with the
+@code{nettle_aead} abstraction.
+@end deftypevr
+
+Nettle also exports a list of all these constructions.
+
+@deftypevr {Constant Array} {struct nettle_aead **} nettle_aeads
+This list can be used to dynamically enumerate or search the supported
+algorithms. NULL-terminated.
+@end deftypevr
 
 @node Keyed hash functions, Key derivation functions, Authenticated encryption, Reference
 @comment  node-name,  next,  previous,  up
