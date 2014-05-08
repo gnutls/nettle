@@ -136,6 +136,9 @@ meta-hash-test$(EXEEXT): meta-hash-test.$(OBJEXT)
 meta-cipher-test$(EXEEXT): meta-cipher-test.$(OBJEXT)
 	$(LINK) meta-cipher-test.$(OBJEXT) $(TEST_OBJS) -o meta-cipher-test$(EXEEXT)
 
+meta-aead-test$(EXEEXT): meta-aead-test.$(OBJEXT)
+	$(LINK) meta-aead-test.$(OBJEXT) $(TEST_OBJS) -o meta-aead-test$(EXEEXT)
+
 meta-armor-test$(EXEEXT): meta-armor-test.$(OBJEXT)
 	$(LINK) meta-armor-test.$(OBJEXT) $(TEST_OBJS) -o meta-armor-test$(EXEEXT)
 

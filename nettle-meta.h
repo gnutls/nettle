@@ -155,6 +155,10 @@ struct nettle_aead
   nettle_hash_digest_func *digest;
 };
 
+/* null-terminated list of aead constructions implemented by this
+   version of nettle */
+extern const struct nettle_aead * const nettle_aeads[];
+
 extern const struct nettle_aead nettle_gcm_aes128;
 extern const struct nettle_aead nettle_gcm_aes192;
 extern const struct nettle_aead nettle_gcm_aes256;

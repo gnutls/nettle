@@ -28,7 +28,8 @@ TS_NETTLE_SOURCES = aes-test.c arcfour-test.c arctwo-test.c \
 		    cbc-test.c ctr-test.c gcm-test.c eax-test.c ccm-test.c \
 		    poly1305-test.c chacha-poly1305-test.c \
 		    hmac-test.c umac-test.c \
-		    meta-hash-test.c meta-cipher-test.c meta-armor-test.c \
+		    meta-hash-test.c meta-cipher-test.c\
+		    meta-aead-test.c meta-armor-test.c \
 		    buffer-test.c yarrow-test.c pbkdf2-test.c
 
 TS_HOGWEED_SOURCES = sexp-test.c sexp-format-test.c \
