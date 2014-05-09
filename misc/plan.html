@@ -13,7 +13,7 @@
 <body>
   <h1> Nettle release plans </h1>
   <p> This is an attempt at defining a development target for
-  Nettle-2.8, inspired by similar pages for recent GMP releases. [Last
+  Nettle-3.0, inspired by similar pages for recent GMP releases. [Last
   updated 2014-05-08]</p>
   <p class='should'>
     This really ought to be done before release
@@ -28,9 +28,9 @@
     Leave for some later release!
   </p>
 
-  <h1> Plans for nettle-2.8 </h1>
+  <h1> Plans for nettle-3.0 </h1>
 
-  <p> nettle-2.8 is intended to be an API cleanup, with few new
+  <p> nettle-3.0 is intended primarily as an API cleanup, with few new
   features. </p>
 
   <h2> Interface changes </h2>
@@ -93,10 +93,10 @@
   <p class='done'>
     Add ecc_bit_size function.
   </p>
-  <p class='wish'>
+  <p class='postponed'>
     Add functions for converting ECC points to and from ANSI x9.62.
   </p>
-  <p class='wish'>
+  <p class='postponed'>
     Use side-channel silent GMP functions for RSA and DSA. May require
     additional interface changes, to use mpn functions.
   </p>
@@ -137,7 +137,7 @@
     Reconsider assembly make rules, going back to a .asm.o: rule might
     work better with Solaris' make.
   </p>
-  <p class='should'>
+  <p class='done'>
     Delay building of test programs until <tt>make check</tt>.
   </p>
   <p class='done'>
@@ -152,6 +152,7 @@
   <p> Since xenofarm isn't up and running, do some manual testing:
   </p>
   <ul>
+    <li class='should'> Test with gmp-6.0.0 </li>
     <li class='should'> x86_64-linux-gnu</li>
     <li class='should'> x86_64-freebsd</li>
     <li class='should'> x86-linux-gnu</li>
