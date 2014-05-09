@@ -62,7 +62,7 @@ DISTFILES = $(SOURCES) $(CXX_SOURCES) Makefile.in .test-rules.make \
 	    $(TS_SH) setup-env teardown-env \
 	    gold-bug.txt testutils.h sha3.awk
 
-all: $(TARGETS) $(EXTRA_TARGETS)
+all: $(EXTRA_TARGETS)
 
 .c.$(OBJEXT):
 	$(COMPILE) -c $< && $(DEP_PROCESS)

@@ -1,3 +1,8 @@
+2014-05-09  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/Makefile.in (all): Drop dependency on $(TARGETS), to
+	delay building of test programs until make check.
+
 2014-05-08  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle.texinfo (nettle_aead abstraction): Document nettle_aead.
