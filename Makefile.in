@@ -191,7 +191,8 @@ SOURCES = $(nettle_SOURCES) $(hogweed_SOURCES) \
 	  $(getopt_SOURCES) $(internal_SOURCES) \
 	  aesdata.c desdata.c twofishdata.c shadata.c gcmdata.c eccdata.c
 
-DISTFILES = $(SOURCES) $(HEADERS) getopt.h .bootstrap run-tests \
+DISTFILES = $(SOURCES) $(HEADERS) getopt.h getopt_int.h \
+	.bootstrap run-tests \
 	aclocal.m4 configure.ac \
 	configure stamp-h.in \
 	config.guess config.sub install-sh texinfo.tex \

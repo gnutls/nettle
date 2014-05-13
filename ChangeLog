@@ -3,6 +3,12 @@
 	* testsuite/nettle-pbkdf2-test: Avoid the bash construction
 	${#foo}.
 
+	* getopt.c: Copied from glibc tree, tag glibc-2.19.
+	* getopt.h: Likewise.
+	* getopt1.c: Likewise.
+	* getopt_int.h: New file, also copied from glibc.
+	* Makefile.in (DISTFILES): Added getopt_int.h.
+
 2014-05-09  Niels Möller  <nisse@lysator.liu.se>
 
 	* mini-gmp.c: Updated, use version from gmp-6.0.0.
