@@ -9,7 +9,9 @@ test_pbkdf2 () {
     salt="$2"
     iters="$3"
     expected="$4"
-    length=`expr ${#expected} / 2`
+    # Relies on division rounding down; breaks if
+    # $expected contains more than one space.
+    length=`expr "$expected" : '.*' / 2`
 
     printf "%s" "$password" | $EMULATOR ../tools/nettle-pbkdf2 \
 	-i "$iters" -l "$length" "$salt" > test1.out

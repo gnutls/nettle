@@ -1,3 +1,8 @@
+2014-05-14  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/nettle-pbkdf2-test: Avoid the bash construction
+	${#foo}.
+
 2014-05-09  Niels Möller  <nisse@lysator.liu.se>
 
 	* mini-gmp.c: Updated, use version from gmp-6.0.0.
