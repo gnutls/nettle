@@ -6,8 +6,10 @@ NEWS for the Nettle 3.0 release
 
 	It is *not* binary (ABI) compatible with earlier versions. It
 	is mostly source-level (API) compatible, with a couple of
-	incompatibilities noted below.
-
+	incompatibilities noted below. The shared library names are
+	libnettle.so.5.0 and libhogweed.so.3.0, with sonames
+	libnettle.so.5 and libhogweed.so.3.
+	
 	There may be some problems in the new interfaces and new
 	features which really need incompatible fixes. It is likely
 	that there will be an update in the form of a 3.1 release in
@@ -59,7 +61,7 @@ NEWS for the Nettle 3.0 release
 
 	  INCOMPATIBLE CHANGE: dsa_generate_keypair also uses the new
 	  interface. dsa-compat.h declares a function
-	  dsa_compate_generate_keypair, implementing the old
+	  dsa_compat_generate_keypair, implementing the old
 	  interface, and #defines dsa_generate_keypair to refer to
 	  this backwards compatible function.
 

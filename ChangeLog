@@ -1,7 +1,12 @@
 2014-05-15  Niels Möller  <nisse@lysator.liu.se>
 
+	* NEWS: Updated with library version numbers.
+
 	* configure.ac (dummy-dep-files): Use simpler and more portable
 	sed expression. Problem reported by Peter Eriksson.
+	(LIBHOGWEED_MAJOR): Bumped shared library version to 3.0.
+	(LIBHOGWEED_MINOR): Reset to zero. Also increased the package
+	version number to 3.0.
 
 	* getopt.c: Don't use gettext.
 

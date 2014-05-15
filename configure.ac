@@ -2,7 +2,7 @@ dnl -*- mode: shell-script; sh-indentation: 2; -*-
 
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([nettle], [2.8], [nettle-bugs@lists.lysator.liu.se])
+AC_INIT([nettle], [3.0], [nettle-bugs@lists.lysator.liu.se])
 AC_PREREQ(2.61)
 AC_CONFIG_SRCDIR([arcfour.c])
 # Needed to stop autoconf from looking for files in parent directories.
@@ -13,8 +13,8 @@ AC_CONFIG_HEADER([config.h])
 LIBNETTLE_MAJOR=5
 LIBNETTLE_MINOR=0
 
-LIBHOGWEED_MAJOR=2
-LIBHOGWEED_MINOR=4
+LIBHOGWEED_MAJOR=3
+LIBHOGWEED_MINOR=0
 
 AC_CANONICAL_HOST
 
