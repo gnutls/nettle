@@ -68,8 +68,9 @@
 #ifdef _LIBC
 # include <libintl.h>
 #else
-# include "gettext.h"
-# define _(msgid) gettext (msgid)
+/* The glibc version includes "gettext.h" here, but Nettle currently doesn't
+   have that. */
+# define _(msgid) msgid
 #endif
 
 #if defined _LIBC

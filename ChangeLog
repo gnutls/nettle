@@ -1,3 +1,7 @@
+2014-05-15  Niels Möller  <nisse@lysator.liu.se>
+
+	* getopt.c: Don't use gettext.
+
 2014-05-14  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/nettle-pbkdf2-test: Avoid the bash construction
