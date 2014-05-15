@@ -135,7 +135,7 @@ if test x$enable_dependency_tracking = xyes ; then
 
   AC_CONFIG_COMMANDS([dummy-dep-files],
   [(cd "$srcdir" && find . '(' -name '*.c' -o -name '*.cxx' ')' -print) \
- | sed 's/\.c\(xx\)\{0,1\}$//' | (while read f; do \
+ | sed 's/\.cx*$//' | (while read f; do \
       test -f "$f.o.d" || echo > "$f.o.d"; \
       test -f "$f.po.d" || echo > "$f.po.d"; \
    done)

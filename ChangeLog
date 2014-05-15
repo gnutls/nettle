@@ -1,5 +1,8 @@
 2014-05-15  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac (dummy-dep-files): Use simpler and more portable
+	sed expression. Problem reported by Peter Eriksson.
+
 	* getopt.c: Don't use gettext.
 
 2014-05-14  Niels Möller  <nisse@lysator.liu.se>
