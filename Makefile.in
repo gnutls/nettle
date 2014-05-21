@@ -292,9 +292,9 @@ des_headers = rotors.h keymap.h
 
 # Generate DES headers.
 $(des_headers): desdata.c
-	$(MAKE) desdata$(EXEEXT)
+	$(MAKE) desdata$(EXEEXT_FOR_BUILD)
 	f="$(srcdir)/`basename $@`"; \
-	  ./desdata$(EXEEXT) $(@F) > $${f}T; \
+	  ./desdata$(EXEEXT_FOR_BUILD) $(@F) > $${f}T; \
 	  test -s $${f}T && mv -f $${f}T $$f
 
 des.$(OBJEXT): des.c des.h $(des_headers)
