@@ -10,6 +10,7 @@ TAGS
 *.obj
 *.so
 *.exe
+*.dll
 core
 /*.d
 /*.po
