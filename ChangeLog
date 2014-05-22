@@ -1,3 +1,8 @@
+2014-05-22  Niels Möller  <nisse@lysator.liu.se>
+
+	From Claudio Bley:
+	* Makefile.in ($(des_headers)): Use the EXEEXT_FOR_BUILD.
+
 2014-05-15  Niels Möller  <nisse@lysator.liu.se>
 
 	* NEWS: Updated with library version numbers.
