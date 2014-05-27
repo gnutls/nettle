@@ -183,6 +183,21 @@ bench_modinv_gcd (void *p)
   modinv_gcd (ctx->ecc, ctx->rp, ctx->rp + ctx->ecc->size, ctx->tp);  
 }
 
+#ifdef mpn_sec_powm
+static void
+bench_modinv_powm (void *p)
+{
+  struct ecc_ctx *ctx = (struct ecc_ctx *) p;
+  const struct ecc_curve *ecc = ctx->ecc;
+  mp_size_t size = ecc->size;
+  
+  mpn_sub_1 (ctx->rp + size, ecc->p, size, 2);
+  mpn_sec_powm (ctx->rp, ctx->ap, size,
+		ctx->rp + size, ecc->bit_size,
+		ecc->p, size, ctx->tp);
+}
+#endif
+
 static void
 bench_dup_jj (void *p)
 {
@@ -222,17 +237,27 @@ static void
 bench_curve (const struct ecc_curve *ecc)
 {
   struct ecc_ctx ctx;  
-  double modp, redc, modq, modinv, modinv_gcd,
+  double modp, redc, modq, modinv, modinv_gcd, modinv_powm,
     dup_jj, add_jja, add_jjj,
     mul_g, mul_a;
 
   mp_limb_t mask;
+  mp_size_t itch;
 
   ctx.ecc = ecc;
   ctx.rp = xalloc_limbs (3*ecc->size);
   ctx.ap = xalloc_limbs (3*ecc->size);
   ctx.bp = xalloc_limbs (3*ecc->size);
-  ctx.tp = xalloc_limbs (ECC_MUL_A_ITCH (ecc->size));
+  itch = ECC_MUL_A_ITCH (ecc->size);
+#ifdef mpn_sec_powm
+  {
+    mp_size_t powm_itch
+      = mpn_sec_powm_itch (ecc->size, ecc->bit_size, ecc->size);
+    if (powm_itch > itch)
+      itch = powm_itch;
+  }
+#endif
+  ctx.tp = xalloc_limbs (itch);
 
   mpn_random (ctx.ap, 3*ecc->size);
   mpn_random (ctx.bp, 3*ecc->size);
@@ -252,6 +277,11 @@ bench_curve (const struct ecc_curve *ecc)
 
   modinv = time_function (bench_modinv, &ctx);
   modinv_gcd = time_function (bench_modinv_gcd, &ctx);
+#ifdef mpn_sec_powm
+  modinv_powm = time_function (bench_modinv_powm, &ctx);
+#else
+  modinv_powm = 0;
+#endif
   dup_jj = time_function (bench_dup_jj, &ctx);
   add_jja = time_function (bench_add_jja, &ctx);
   add_jjj = time_function (bench_add_jjj, &ctx);
@@ -263,9 +293,9 @@ bench_curve (const struct ecc_curve *ecc)
   free (ctx.bp);
   free (ctx.tp);
 
-  printf ("%4d %6.4f %6.4f %6.4f %6.2f %6.3f %6.3f %6.3f %6.3f %6.1f %6.1f\n",
+  printf ("%4d %6.4f %6.4f %6.4f %6.2f %6.3f %6.2f %6.3f %6.3f %6.3f %6.1f %6.1f\n",
 	  ecc->bit_size, 1e6 * modp, 1e6 * redc, 1e6 * modq,
-	  1e6 * modinv, 1e6 * modinv_gcd,
+	  1e6 * modinv, 1e6 * modinv_gcd, 1e6 * modinv_powm,
 	  1e6 * dup_jj, 1e6 * add_jja, 1e6 * add_jjj,
 	  1e6 * mul_g, 1e6 * mul_a);
 }
@@ -286,8 +316,8 @@ main (int argc UNUSED, char **argv UNUSED)
   unsigned i;
 
   time_init();
-  printf ("%4s %6s %6s %6s %6s %6s %6s %6s %6s %6s %6s (us)\n",
-	  "size", "modp", "redc", "modq", "modinv", "mi_gcd",
+  printf ("%4s %6s %6s %6s %6s %6s %6s %6s %6s %6s %6s %6s (us)\n",
+	  "size", "modp", "redc", "modq", "modinv", "mi_gcd", "mi_pow",
 	  "dup_jj", "ad_jja", "ad_jjj",
 	  "mul_g", "mul_a");
   for (i = 0; i < numberof (curves); i++)

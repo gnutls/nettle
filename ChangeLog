@@ -1,3 +1,10 @@
+2014-05-27  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/ecc-benchmark.c: If mpn_sec_powm is available,
+	benchmark it, for modinv.
+	(bench_modinv_powm): New function.
+	(bench_curve): Use it.
+
 2014-05-22  Niels Möller  <nisse@lysator.liu.se>
 
 	From Claudio Bley:
