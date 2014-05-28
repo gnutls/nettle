@@ -1,3 +1,10 @@
+2014-05-28  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac (LIBHOGWEED_LIBS): Be explicit and link
+	libhogweed.so with libnettle.so, not -lnettle.
+	(LIBHOGWEED_LINK): Drop -L. flag, no longer needed, and previously
+	not at the correct position in the link command line.
+
 2014-05-27  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/ecc-benchmark.c: If mpn_sec_powm is available,

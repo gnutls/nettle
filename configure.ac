@@ -456,8 +456,8 @@ case "$host_os" in
     LIBHOGWEED_FORLINK=libhogweed.so
     LIBHOGWEED_SONAME='$(LIBHOGWEED_FORLINK).$(LIBHOGWEED_MAJOR)'
     LIBHOGWEED_FILE='$(LIBHOGWEED_SONAME).$(LIBHOGWEED_MINOR)'
-    LIBHOGWEED_LINK='$(CC) $(CFLAGS) $(LDFLAGS) -L. -G -h $(LIBHOGWEED_SONAME)'
-    LIBHOGWEED_LIBS='-lnettle -lgmp'
+    LIBHOGWEED_LINK='$(CC) $(CFLAGS) $(LDFLAGS) -G -h $(LIBHOGWEED_SONAME)'
+    LIBHOGWEED_LIBS='libnettle.so -lgmp'
     ;;
   *)
     LIBNETTLE_FORLINK=libnettle.so
@@ -469,13 +469,12 @@ case "$host_os" in
     LIBHOGWEED_FORLINK=libhogweed.so
     LIBHOGWEED_SONAME='$(LIBHOGWEED_FORLINK).$(LIBHOGWEED_MAJOR)'
     LIBHOGWEED_FILE='$(LIBHOGWEED_SONAME).$(LIBHOGWEED_MINOR)'
-    LIBHOGWEED_LINK='$(CC) $(CFLAGS) $(LDFLAGS) -L. -shared -Wl,-soname=$(LIBHOGWEED_SONAME)'
+    LIBHOGWEED_LINK='$(CC) $(CFLAGS) $(LDFLAGS) -shared -Wl,-soname=$(LIBHOGWEED_SONAME)'
     # Requested by debian, to make linking with only -lhogweed work
     # (does not work in general, e.g., with static linking all of
     # -lhogweed -lgmp -lnettle are still required). Also makes dlopen
     # of libhogweed.so work, without having to use RTLD_GLOBAL.
-    # Depends on -L. above, to locate nettle.so.
-    LIBHOGWEED_LIBS='-lnettle -lgmp'
+    LIBHOGWEED_LIBS='libnettle.so -lgmp'
     ;;
 esac
 
