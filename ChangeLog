@@ -1,5 +1,8 @@
 2014-05-28  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/nettle-pbkdf2-test: Delete carriage return characters
+	from output.
+
 	* configure.ac (LIBHOGWEED_LIBS): Be explicit and link
 	libhogweed.so with libnettle.so, not -lnettle.
 	(LIBHOGWEED_LINK): Drop -L. flag, no longer needed, and previously
