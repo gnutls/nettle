@@ -1,5 +1,11 @@
 2014-05-31  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac: Check for COFF type directives.
+	(ASM_COFF_STYLE): New substituted variable.
+	* config.m4.in: Set COFF_STYLE from configure.
+	* asm.m4 (PROLOGUE): Use COFF type directive, if enabled by
+	configure. Fixes problem with windows dll linking.
+
 	* asm.m4: Deleted unused offsets for struct aes_ctx.
 
 2014-05-28  Niels Möller  <nisse@lysator.liu.se>

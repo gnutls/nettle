@@ -487,6 +487,7 @@ AC_SUBST([CCPIC_MAYBE])
 
 ASM_SYMBOL_PREFIX=''
 ASM_ELF_STYLE='no'
+ASM_COFF_STYLE='no'
 # GNU as default is to use @
 ASM_TYPE_FUNCTION='@function'
 ASM_TYPE_PROGBITS='@progbits'
@@ -554,6 +555,23 @@ foo:
     fi
   fi
 
+  AC_CACHE_CHECK([for COFF-style .type directive],
+    [nettle_cv_asm_coff_type],
+      [GMP_TRY_ASSEMBLE([
+.text
+.globl _foo
+.def _foo
+.scl 2
+.type 32
+.endef
+_foo:
+],
+        [nettle_cv_asm_coff_type=yes],
+        [nettle_cv_asm_coff_type=no])])
+  if test "x$nettle_cv_asm_coff_type" = "xyes" ; then
+    ASM_COFF_STYLE=yes
+  fi
+
   AC_CACHE_CHECK([if we should use a .note.GNU-stack section],
   nettle_cv_asm_gnu_stack,
   [ # Default
@@ -589,6 +607,7 @@ fi
 
 AC_SUBST(ASM_SYMBOL_PREFIX)
 AC_SUBST(ASM_ELF_STYLE)
+AC_SUBST(ASM_COFF_STYLE)
 AC_SUBST(ASM_TYPE_FUNCTION)
 AC_SUBST(ASM_TYPE_PROGBITS)
 AC_SUBST(ASM_MARK_NOEXEC_STACK)

@@ -19,6 +19,13 @@ define(<PROLOGUE>,
 <.globl C_NAME($1)
 .type C_NAME($1),TYPE_FUNCTION
 C_NAME($1):>,
+COFF_STYLE, <yes>,
+<.globl C_NAME($1)
+.def C_NAME($1)
+.scl 2
+.type 32
+.endef
+C_NAME($1):>,
 <.globl C_NAME($1)
 C_NAME($1):>)>)
 
