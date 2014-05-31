@@ -61,11 +61,7 @@ STRUCTURE(ARCFOUR)
   UCHAR(I)
   UCHAR(J)
 
-dnl Offsets in aes_ctx and aes_table
-STRUCTURE(AES)
-  STRUCT(KEYS, 4*60)
-  UNSIGNED(NROUNDS)
-
+dnl Offsets in aes_table
 define(AES_SBOX_SIZE,	256)dnl
 define(AES_TABLE_SIZE,	1024)dnl
 

@@ -1,3 +1,7 @@
+2014-05-31  Niels Möller  <nisse@lysator.liu.se>
+
+	* asm.m4: Deleted unused offsets for struct aes_ctx.
+
 2014-05-28  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/nettle-pbkdf2-test: Delete carriage return characters
