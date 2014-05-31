@@ -506,7 +506,7 @@ if test x$enable_assembler = xyes ; then
         elif grep a_global_symbol conftest.out >/dev/null ; then
           nettle_cv_asm_underscore=no
         else
-          AC_MSG_WARN([nm doesn't list a_global_symbol at all])
+          AC_MSG_WARN([nm does not list a_global_symbol at all])
 	fi],
       [AC_MSG_WARN([test program with a single global could not be compiled!?])])])
   if test x$nettle_cv_asm_underscore = xyes ; then
