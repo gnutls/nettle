@@ -1,3 +1,13 @@
+2014-06-01  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/gcm-hash8.asm: Pass correct argument count to W64_EXIT.
+	* x86_64/camellia-crypt-internal.asm: Pass correct argument count
+	to W64_ENTRY and W64_EXIT.
+
+	* x86_64/machine.m4 [W64_ABI]: Fix for the case of 6 function
+	arguments. Also push %rdi unconditionally, and use aligned
+	accesses for save and restore %xmm registers (movdqa).
+
 2014-05-31  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Check for COFF type directives.

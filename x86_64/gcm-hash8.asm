@@ -162,7 +162,7 @@ ALIGN(16)
 	pop	%r12
 	pop	%rbp
 	pop	%rbx
-	W64_EXIT(2, 0)
+	W64_EXIT(4, 0)
 	ret
 
 .Lpartial:
