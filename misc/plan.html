@@ -14,7 +14,7 @@
   <h1> Nettle release plans </h1>
   <p> This is an attempt at defining a development target for
   Nettle-3.0, inspired by similar pages for recent GMP releases. [Last
-  updated 2014-05-08]</p>
+  updated 2014-06-01]</p>
   <p class='should'>
     This really ought to be done before release
   </p>
@@ -127,15 +127,16 @@
   <p class='done'>
     Update config.guess and config.sub. Needed for ppc64le support.    
   </p>
-  <p class='should'>
+  <p class='postponed'>
     Stop using the nonstandard <tt>.po</tt> extension,
     using <tt>.p.o</tt> or some subdirectory instead. Also drop
     <tt>CCPIC_MAYBE</tt>, and let the static libraries depend on the
     right object files.
   </p>
-  <p class='should'>
+  <p class='postponed'>
     Reconsider assembly make rules, going back to a .asm.o: rule might
-    work better with Solaris' make.
+    work better with Solaris' make. Alternatively, simply drop support
+    for non-GNU make programs.
   </p>
   <p class='done'>
     Delay building of test programs until <tt>make check</tt>.
@@ -152,34 +153,39 @@
   <p> Since xenofarm isn't up and running, do some manual testing:
   </p>
   <ul>
-    <li class='should'> Test with gmp-6.0.0 </li>
-    <li class='should'> x86_64-linux-gnu</li>
+    <li class='done'> Test with gmp-6.0.0 </li>
+    <li class='done'> x86_64-linux-gnu</li>
+    <li class='done'> x86-linux-gnu</li>
     <li class='should'> x86_64-freebsd</li>
-    <li class='should'> x86-linux-gnu</li>
     <li class='should'> x86-freebsd</li>
-    <li class='should'> x86-w*ndows (using cross compiler and wine)</li>
-    <li class='wish'> x86_64-w*ndows (seems a bit harder since 64-bit
-    wine is not yet available in debian)</li>
+    <li class='done'> x86-w*ndows (using cross compiler and wine)</li>
+    <li class='done'> x86_64-w*ndows (using cross compiler and wine)</li>
     <li class='should'> x86-darwin (needs help from Nettle users)</li>
     <li class='should'> x86_64-darwin (needs help from Nettle users)</li>
     <li class='should'> armv7-linux-gnu (pandaboard test platform)</li>
     <li class='wish'> armv7-android (possible test platform: N10 tablet)</li>
-    <li class='should'> sparc32-solaris10</li>
-    <li class='should'> sparc64-solaris10</li>
+    <li class='done'> sparc32-solaris10</li>
+    <li class='done'> sparc64-solaris10</li>
   </ul>
 
-  <h1> Plans for nettle-3.0 </h1>
+  <h1> Changes under consideration for later releases </h1>
 
-  <p> These are some larger API changes under consideration. </p>
+  <p> These are some other changes under consideration. </p>
+
+  <h2> New features </h2>
+  <p class='should'>
+    Make it possible to build nettle and hogweed using mini-gmp.
+  </p>
+  <p class='should'>
+    Fat binary, selecting code at runtime depending on cpu
+    capabilities.
+  </p>
 
   <h2> Interface changes </h2>
   <p class='should'>
     For Merkle-Damgaard hash functions, separate the state and the
     buffering. E.g., when using them for HMAC keyed "inner" and
     "outer" states, we now get three buffers but we only need one.
-  </p>
-  <p class='wish'>
-    Make it possible to build nettle and hogweed using mini-gmp.
   </p>
   <p class='should'>
     Reorganize private key operations. Need to support RSA with and
