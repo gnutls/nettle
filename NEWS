@@ -96,6 +96,8 @@ NEWS for the Nettle 3.0 release
 	* Use GMP's allocation functions for temporary storage related
 	  to bignums, to avoid potentially large stack allocations.
 
+	* Fixes for shared libraries on M$ Windows.
+
 	New features:
 
 	* Support for Poly1305-AES MAC.
