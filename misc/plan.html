@@ -14,7 +14,7 @@
   <h1> Nettle release plans </h1>
   <p> This is an attempt at defining a development target for
   Nettle-3.0, inspired by similar pages for recent GMP releases. [Last
-  updated 2014-06-01]</p>
+  updated 2014-06-02]</p>
   <p class='should'>
     This really ought to be done before release
   </p>
@@ -160,9 +160,9 @@
     <li class='should'> x86-freebsd</li>
     <li class='done'> x86-w*ndows (using cross compiler and wine)</li>
     <li class='done'> x86_64-w*ndows (using cross compiler and wine)</li>
-    <li class='should'> x86-darwin (needs help from Nettle users)</li>
-    <li class='should'> x86_64-darwin (needs help from Nettle users)</li>
-    <li class='should'> armv7-linux-gnu (pandaboard test platform)</li>
+    <li class='done'> x86-darwin (needs help from Nettle users)</li>
+    <li class='done'> x86_64-darwin (needs help from Nettle users)</li>
+    <li class='done'> armv7-linux-gnu (pandaboard test platform)</li>
     <li class='wish'> armv7-android (possible test platform: N10 tablet)</li>
     <li class='done'> sparc32-solaris10</li>
     <li class='done'> sparc64-solaris10</li>
@@ -179,6 +179,9 @@
   <p class='should'>
     Fat binary, selecting code at runtime depending on cpu
     capabilities.
+  </p>
+  <p class='should'>
+    Side-channel silent mem_equalp.
   </p>
 
   <h2> Interface changes </h2>
