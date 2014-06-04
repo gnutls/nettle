@@ -89,6 +89,13 @@ NEWS for the Nettle 3.0 release
 	* Deleted the RSAREF compatibility, including the header file
 	  rsa-compat.h and everything declared therein.
 
+	* Also under consideration for removal is des-compat.h and
+	  everything declared therein. This implements a subset of the
+	  old libdes/ssleay/openssl interface for DES and triple-DES,
+	  and it is poorly tested. If anyone uses this interface,
+	  please speak up! Otherwise, it will likely be removed in the
+	  next release.
+	
 	Bug fixes:
 
 	* Building with ./configure --disable-static now works.

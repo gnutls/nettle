@@ -1,5 +1,8 @@
 2014-06-04  Niels Möller  <nisse@lysator.liu.se>
 
+	* NEWS: List des-compat.h as a candidate for removal in the next
+	release.
+
 	* testsuite/des-compat-test.c (test_main): Fixed out of bounds
 	memory read, reported by Nikos Mavrogiannopoulos.
 
