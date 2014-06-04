@@ -34,6 +34,9 @@
 #ifndef NETTLE_WRITE_H_INCLUDED
 #define NETTLE_WRITE_H_INCLUDED
 
+/* For size_t */
+#include <stddef.h>
+
 #include "nettle-stdint.h"
 
 /* Write the word array at SRC to the byte array at DST, using little

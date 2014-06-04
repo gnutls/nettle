@@ -1,5 +1,8 @@
 2014-06-04  Niels Möller  <nisse@lysator.liu.se>
 
+	* nettle-write.h: Include <stddef.h>, fixing compilation on
+	freebsd.
+
 	* aclocal.m4 (ac_stdint): Fixed "unsinged" typo, spotted by Andy
 	Goth.
 
