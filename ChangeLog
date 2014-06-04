@@ -1,3 +1,8 @@
+2014-06-04  Niels Möller  <nisse@lysator.liu.se>
+
+	* aclocal.m4 (ac_stdint): Fixed "unsinged" typo, spotted by Andy
+	Goth.
+
 2014-06-01  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86_64/gcm-hash8.asm: Pass correct argument count to W64_EXIT.
