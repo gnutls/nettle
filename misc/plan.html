@@ -14,7 +14,7 @@
   <h1> Nettle release plans </h1>
   <p> This is an attempt at defining a development target for
   Nettle-3.0, inspired by similar pages for recent GMP releases. [Last
-  updated 2014-06-02]</p>
+  updated 2014-06-04]</p>
   <p class='should'>
     This really ought to be done before release
   </p>
@@ -156,8 +156,9 @@
     <li class='done'> Test with gmp-6.0.0 </li>
     <li class='done'> x86_64-linux-gnu</li>
     <li class='done'> x86-linux-gnu</li>
-    <li class='should'> x86_64-freebsd</li>
-    <li class='should'> x86-freebsd</li>
+    <li class='done'> x86_64-freebsd</li>
+    <li class='postponed'> x86-freebsd (building with -m32 on a 64-bit
+      system doesn't work due to broken header files).</li>
     <li class='done'> x86-w*ndows (using cross compiler and wine)</li>
     <li class='done'> x86_64-w*ndows (using cross compiler and wine)</li>
     <li class='done'> x86-darwin (needs help from Nettle users)</li>
@@ -196,6 +197,10 @@
     variant (like putty), and possibly also smartcard versions where
     the private key is not available to the library. And without an
     explosion of the number of functions.
+  </p>
+  <h2> Miscellaneous </h2>
+  <p class='should'>
+    Update AX_CREATE_STDINT_H to the latest version.
   </p>
 </body>
 </html>
