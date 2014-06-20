@@ -521,6 +521,7 @@ bench_openssl_rsa_init (unsigned size)
   ctx->ref = xalloc (RSA_size (ctx->key));
   ctx->signature = xalloc (RSA_size (ctx->key));
   ctx->digest = hash_string (&nettle_sha1, 3, "foo");
+  RSA_blinding_off(ctx->key);
 
   if (! RSA_sign (NID_sha1, ctx->digest, SHA1_DIGEST_SIZE,
 		  ctx->ref, &ctx->siglen, ctx->key))
