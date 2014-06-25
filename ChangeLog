@@ -1,5 +1,10 @@
 2014-06-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/ecdsa-keygen-test.c (test_main): Use printf,
+	mpz_out_str and write_mpn instead of gmp_fprintf.
+	* testsuite/ecdsa-sign-test.c (test_ecdsa): Likewise.
+	* testsuite/ecdsa-verify-test.c (test_ecdsa): Likewise.
+
 	* dsa.h: Include bignum.h instead of gmp.h.
 	* ecc-internal.h: Likewise.
 	* ecc.h: Likewise.

@@ -71,11 +71,13 @@ test_main (void)
 
       if (verbose)
 	{
-	  gmp_fprintf (stderr,
-		       "Public key:\nx = %Nx\ny = %Nx\n",
-		       pub.p, ecc->size, pub.p + ecc->size, ecc->size);
-	  gmp_fprintf (stderr,
-		       "Private key: %Nx\n", key.p, ecc->size);
+	  fprintf (stderr, "Public key:\nx = ");
+	  write_mpn (stderr, 16, pub.p, ecc->size);
+	  fprintf (stderr, "\ny = ");
+	  write_mpn (stderr, 16, pub.p + ecc->size, ecc->size);
+	  fprintf (stderr, "\nPrivate key: ");
+	  write_mpn (stderr, 16, key.p, ecc->size);
+	  fprintf (stderr, "\n");
 	}
       if (!ecc_valid_p (&pub))
 	die ("ecdsa_generate_keypair produced an invalid point.\n");

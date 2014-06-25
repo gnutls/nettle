@@ -34,10 +34,15 @@ test_ecdsa (const struct ecc_curve *ecc,
       || mpz_limbs_cmp (ref.s, sp, ecc->size) != 0)
     {
       fprintf (stderr, "_ecdsa_sign failed, bit_size = %u\n", ecc->bit_size);
-      gmp_fprintf (stderr, "r     = %Nx\n", rp, ecc->size);
-      gmp_fprintf (stderr, "s     = %Nx\n", sp, ecc->size);
-      gmp_fprintf (stderr, "ref.r = %Zx\n", ref.r);
-      gmp_fprintf (stderr, "ref.s = %Zx\n", ref.s);
+      fprintf (stderr, "r     = ");
+      write_mpn (stderr, 16, rp, ecc->size);
+      fprintf (stderr, "\ns     = ");
+      write_mpn (stderr, 16, sp, ecc->size);
+      fprintf (stderr, "\nref.r = ");
+      mpz_out_str (stderr, 16, ref.r);
+      fprintf (stderr, "\nref.s = ");
+      mpz_out_str (stderr, 16, ref.s);
+      fprintf (stderr, "\n");
       abort();
     }
 

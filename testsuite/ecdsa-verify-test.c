@@ -29,12 +29,17 @@ test_ecdsa (const struct ecc_curve *ecc,
     {
       fprintf (stderr, "ecdsa_verify failed with valid signature.\n");
     fail:
-      fprintf (stderr, "bit_size = %u\n", ecc->bit_size);
-      gmp_fprintf (stderr, "x = %Zx\n", x);
-      gmp_fprintf (stderr, "y = %Zx\ndigest ", y);
+      fprintf (stderr, "bit_size = %u\nx = ", ecc->bit_size);
+      mpz_out_str (stderr, 16, x);
+      fprintf (stderr, "\ny = ");
+      mpz_out_str (stderr, 16, y);
+      fprintf (stderr, "\ndigest ");
       print_hex (h->length, h->data);
-      gmp_fprintf (stderr, "r = %Zx\n", signature.r);
-      gmp_fprintf (stderr, "s = %Zx\n", signature.s);
+      fprintf (stderr, "r = ");
+      mpz_out_str (stderr, 16, signature.r);
+      fprintf (stderr, "\ns = ");
+      mpz_out_str (stderr, 16, signature.s);
+      fprintf (stderr, "\n");
       abort();
     }
 
