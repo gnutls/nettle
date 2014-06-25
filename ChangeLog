@@ -1,5 +1,8 @@
 2014-06-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/testutils.c (die): Use plain vfprintf, not
+	gmp_vfprintf.
+
 	* der-iterator.c: Deleted HAVE_LIBGMP conditionals.
 
 2014-06-07  Niels Möller  <nisse@lysator.liu.se>

@@ -37,11 +37,7 @@ die(const char *format, ...)
 {
   va_list args;
   va_start(args, format);
-#if WITH_HOGWEED
-  gmp_vfprintf(stderr, format, args);
-#else
   vfprintf(stderr, format, args);
-#endif
   va_end(args);
 
   abort ();
