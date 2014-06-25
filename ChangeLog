@@ -2,6 +2,9 @@
 
 	* testsuite/testutils.c (die): Use plain vfprintf, not
 	gmp_vfprintf.
+	(write_mpn): New function.
+	(test_ecc_point): Use it, replacing gmp_fprintf.
+	* testsuite/testutils.h (write_mpn): Declare it.
 
 	* der-iterator.c: Deleted HAVE_LIBGMP conditionals.
 

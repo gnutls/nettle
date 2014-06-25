@@ -165,6 +165,9 @@ mp_limb_t *
 xalloc_limbs (mp_size_t n);
 
 void
+write_mpn (FILE *f, int base, const mp_limb_t *xp, mp_size_t n);
+
+void
 test_rsa_set_key_1(struct rsa_public_key *pub,
 		   struct rsa_private_key *key);
 

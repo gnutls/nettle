@@ -1282,6 +1282,13 @@ struct ecc_ref_point
   const char *y;
 };
 
+void
+write_mpn (FILE *f, int base, const mp_limb_t *xp, mp_size_t n)
+{
+  mpz_t t;
+  mpz_out_str (f, base, mpz_roinit_n (t,xp, n));
+}
+
 static void
 test_ecc_point (const struct ecc_curve *ecc,
 		const struct ecc_ref_point *ref,
@@ -1290,13 +1297,16 @@ test_ecc_point (const struct ecc_curve *ecc,
   if (! (test_mpn (ref->x, p, ecc->size)
 	 && test_mpn (ref->y, p + ecc->size, ecc->size) ))
     {
-      gmp_fprintf (stderr, "Incorrect point!\n"
-		   "got: x = %Nx\n"
-		   "     y = %Nx\n"
-		   "ref: x = %s\n"
-		   "     y = %s\n",
-		   p, ecc->size, p + ecc->size, ecc->size,
-		   ref->x, ref->y);
+      fprintf (stderr, "Incorrect point!\n"
+	       "got: x = ");
+      write_mpn (stderr, 16, p, ecc->size);
+      fprintf (stderr, "\n"
+	       "     y = ");
+      write_mpn (stderr, 16, p + ecc->size, ecc->size);
+      fprintf (stderr, "\n"
+	       "ref: x = %s\n"
+	       "     y = %s\n",
+	       ref->x, ref->y);
       abort();
     }
 }
