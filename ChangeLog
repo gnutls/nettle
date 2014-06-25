@@ -1,5 +1,12 @@
 2014-06-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* dsa.h: Include bignum.h instead of gmp.h.
+	* ecc-internal.h: Likewise.
+	* ecc.h: Likewise.
+	* gmp-glue.h: Likewise.
+	* pkcs1.h: Likewise.
+	* rsa.h: Likewise.
+
 	* testsuite/testutils.c (die): Use plain vfprintf, not
 	gmp_vfprintf.
 	(write_mpn): New function.

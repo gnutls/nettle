@@ -34,9 +34,8 @@
 #ifndef NETTLE_ECC_INTERNAL_H_INCLUDED
 #define NETTLE_ECC_INTERNAL_H_INCLUDED
 
-#include <gmp.h>
-
 #include "nettle-types.h"
+#include "bignum.h"
 #include "ecc-curve.h"
 #include "gmp-glue.h"
 

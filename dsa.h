@@ -34,9 +34,8 @@
 #ifndef NETTLE_DSA_H_INCLUDED
 #define NETTLE_DSA_H_INCLUDED
 
-#include <gmp.h>
-
 #include "nettle-types.h"
+#include "bignum.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -34,8 +34,8 @@
 #ifndef NETTLE_PKCS1_H_INCLUDED
 #define NETTLE_PKCS1_H_INCLUDED
 
-#include <gmp.h>
 #include "nettle-types.h"
+#include "bignum.h"
 
 #ifdef __cplusplus
 extern "C" {

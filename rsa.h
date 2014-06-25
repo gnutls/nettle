@@ -34,8 +34,8 @@
 #ifndef NETTLE_RSA_H_INCLUDED
 #define NETTLE_RSA_H_INCLUDED
 
-#include <gmp.h>
 #include "nettle-types.h"
+#include "bignum.h"
 
 #include "md5.h"
 #include "sha1.h"

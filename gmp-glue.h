@@ -33,9 +33,7 @@
 #ifndef NETTLE_GMP_GLUE_H_INCLUDED
 #define NETTLE_GMP_GLUE_H_INCLUDED
 
-#include <gmp.h>
-
-#include "nettle-stdint.h"
+#include "bignum.h"
 
 #ifdef mpz_limbs_read
 #define GMP_HAVE_mpz_limbs_read 1
