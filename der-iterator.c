@@ -38,9 +38,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
-#if HAVE_LIBGMP
 #include "bignum.h"
-#endif
 
 #include "asn1.h"
 
@@ -254,7 +252,9 @@ asn1_der_get_uint32(struct asn1_der_iterator *i,
   return 1;
 }
 
-#if HAVE_LIBGMP
+/* NOTE: This is the only function in this file which needs bignums.
+   One could split this file in two, one in libnettle and one in
+   libhogweed. */
 int
 asn1_der_get_bignum(struct asn1_der_iterator *i,
 		    mpz_t x, unsigned max_bits)
@@ -277,4 +277,3 @@ asn1_der_get_bignum(struct asn1_der_iterator *i,
 
   return 1;
 }
-#endif /* HAVE_LIBGMP */
