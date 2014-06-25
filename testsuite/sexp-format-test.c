@@ -3,7 +3,7 @@
 
 #include "buffer.h"
 
-#if HAVE_LIBGMP
+#if WITH_HOGWEED
 # include "bignum.h"
 #endif
 
@@ -132,7 +132,7 @@ test_main(void)
     nettle_buffer_clear(&buffer);
   }
   
-#if HAVE_LIBGMP
+#if WITH_HOGWEED
   {
     mpz_t x;
     mpz_t y;
@@ -162,5 +162,5 @@ test_main(void)
     mpz_clear(y);
     mpz_clear(z);
   }
-#endif /* HAVE_LIBGMP */
+#endif /* WITH_HOGWEED */
 }

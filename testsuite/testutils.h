@@ -12,10 +12,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#if HAVE_LIBGMP
-# include "bignum.h"
-#endif
-
 #if WITH_HOGWEED
 # include "rsa.h"
 # include "dsa-compat.h"

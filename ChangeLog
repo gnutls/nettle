@@ -1,5 +1,10 @@
 2014-06-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/bignum-test.c: Use WITH_HOGWEED instead of HAVE_LIBGMP
+	for preprocessor conditionals.
+	* testsuite/testutils.h: Likewise.
+	* testsuite/sexp-format-test.c: Likewise.
+
 	* testsuite/ecdsa-keygen-test.c (test_main): Use printf,
 	mpz_out_str and write_mpn instead of gmp_fprintf.
 	* testsuite/ecdsa-sign-test.c (test_ecdsa): Likewise.
