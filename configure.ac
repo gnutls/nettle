@@ -72,6 +72,17 @@ AC_ARG_ENABLE(arm-neon,
   AC_HELP_STRING([--enable-arm-neon], [Enable ARM Neon assembly. (default=auto)]),,
   [enable_arm_neon=auto])
 
+AC_ARG_ENABLE(mini-gmp,
+  AC_HELP_STRING([--enable-mini-gmp], [Enable mini-gmp, used instead of libgmp.]),,
+  [enable_mini_gmp=no])
+
+if test "x$enable_mini_gmp" = xyes ; then
+  NETTLE_USE_MINI_GMP=1
+else
+  NETTLE_USE_MINI_GMP=0
+fi
+AC_SUBST([NETTLE_USE_MINI_GMP])
+
 LSH_RPATH_INIT([`echo $with_lib_path | sed 's/:/ /g'` \
     `echo $exec_prefix | sed "s@^NONE@$prefix/lib@g" | sed "s@^NONE@$ac_default_prefix/lib@g"` \
     /usr/local/lib /sw/local/lib /sw/lib \
@@ -441,7 +452,7 @@ case "$host_os" in
     LIBHOGWEED_SONAME='libhogweed.$(LIBHOGWEED_MAJOR).dylib'
     LIBHOGWEED_FILE='libhogweed.$(LIBHOGWEED_MAJOR).$(LIBHOGWEED_MINOR).dylib'
     LIBHOGWEED_LINK='$(CC) $(CFLAGS) -dynamiclib -L. $(LDFLAGS) -install_name ${libdir}/$(LIBHOGWEED_SONAME) -compatibility_version $(LIBHOGWEED_MAJOR) -current_version $(LIBHOGWEED_MAJOR).$(LIBHOGWEED_MINOR)'
-    LIBHOGWEED_LIBS='-lnettle -lgmp'
+    LIBHOGWEED_LIBS='-lnettle $(LIBS)'
     ;;
   solaris*)
     # Sun's ld uses -h to set the soname, and this option is passed
@@ -457,7 +468,7 @@ case "$host_os" in
     LIBHOGWEED_SONAME='$(LIBHOGWEED_FORLINK).$(LIBHOGWEED_MAJOR)'
     LIBHOGWEED_FILE='$(LIBHOGWEED_SONAME).$(LIBHOGWEED_MINOR)'
     LIBHOGWEED_LINK='$(CC) $(CFLAGS) $(LDFLAGS) -G -h $(LIBHOGWEED_SONAME)'
-    LIBHOGWEED_LIBS='libnettle.so -lgmp'
+    LIBHOGWEED_LIBS='libnettle.so $(LIBS)'
     ;;
   *)
     LIBNETTLE_FORLINK=libnettle.so
@@ -474,7 +485,7 @@ case "$host_os" in
     # (does not work in general, e.g., with static linking all of
     # -lhogweed -lgmp -lnettle are still required). Also makes dlopen
     # of libhogweed.so work, without having to use RTLD_GLOBAL.
-    LIBHOGWEED_LIBS='libnettle.so -lgmp'
+    LIBHOGWEED_LIBS='libnettle.so $(LIBS)'
     ;;
 esac
 
@@ -693,20 +704,30 @@ fi
 
 # Checks for libraries
 if test "x$enable_public_key" = "xyes" ; then
-  AC_CHECK_LIB(gmp, __gmpz_getlimbn,,
-      [AC_MSG_WARN(
-  [GNU MP not found, or not 3.1 or up, see http://gmplib.org/.
-  Support for public key algorithms will be unavailable.])]
-      enable_public_key=no)
-
-  # Add -R flags needed to run programs linked with gmp
-  LSH_RPATH_FIX
+  if test "x$enable_mini_gmp" = "xno" ; then
+    AC_CHECK_LIB(gmp, __gmpz_getlimbn,,
+        [AC_MSG_WARN(
+    [GNU MP not found, or not 3.1 or up, see http://gmplib.org/.
+    Support for public key algorithms will be unavailable.])]
+        enable_public_key=no)
+  
+    # Add -R flags needed to run programs linked with gmp
+    LSH_RPATH_FIX
+  fi
 fi
 
+nettle_cv_gmp_numb_bits=0
 if test "x$enable_public_key" = "xyes" ; then
   # Check for gmp limb size
-  nettle_cv_gmp_numb_bits=0
-  if test "$enable_public_key" = yes; then
+  if test "x$enable_mini_gmp" = "xyes" ; then
+    AC_MSG_CHECKING([for mini-gmp limb size])
+    # With mini-gmp, mp_limb_t is always unsigned long.
+    AC_COMPUTE_INT(nettle_cv_gmp_numb_bits, [(sizeof(unsigned long) * CHAR_BIT)],
+        [#include <limits.h>],
+        [AC_MSG_FAILURE([cannot find value of GMP_NUMB_BITS])])
+  
+    AC_MSG_RESULT([$nettle_cv_gmp_numb_bits bits])
+  else
     AC_MSG_CHECKING([for GMP limb size])
     AC_COMPUTE_INT(nettle_cv_gmp_numb_bits, [GMP_NUMB_BITS],
         [#include <gmp.h>],
@@ -714,13 +735,10 @@ if test "x$enable_public_key" = "xyes" ; then
   
     AC_MSG_RESULT([$nettle_cv_gmp_numb_bits bits])
   fi
-  
-  GMP_NUMB_BITS="$nettle_cv_gmp_numb_bits"
-  AC_SUBST([GMP_NUMB_BITS])
-  
-  AH_TEMPLATE([HAVE_MPZ_POWM_SEC], [Define if mpz_powm_sec is available (appeared in GMP-5)])
-  AC_CHECK_FUNC(__gmpz_powm_sec, [AC_DEFINE(HAVE_MPZ_POWM_SEC)])
 fi
+
+GMP_NUMB_BITS="$nettle_cv_gmp_numb_bits"
+AC_SUBST([GMP_NUMB_BITS])
 
 AH_TEMPLATE([WITH_HOGWEED], [Defined if public key features are enabled])
 
@@ -765,11 +783,18 @@ else
   IF_DOCUMENTATION='#'
 fi
 
+if test "x$enable_mini_gmp" = "xyes" ; then
+  IF_MINI_GMP=''
+else
+  IF_MINI_GMP='#'
+fi
+  
 AC_SUBST(IF_HOGWEED)
 AC_SUBST(IF_STATIC)
 AC_SUBST(IF_SHARED)
 AC_SUBST(IF_DOCUMENTATION)
 AC_SUBST(IF_DLL)
+AC_SUBST(IF_MINI_GMP)
 
 OPENSSL_LIBFLAGS=''
 
@@ -834,7 +859,7 @@ if test x$GCC = xyes ; then
 # inttypes.h.
 fi
 
-AC_CONFIG_FILES([config.make config.m4 Makefile])
+AC_CONFIG_FILES([config.make config.m4 Makefile bignum.h])
 AC_CONFIG_FILES([tools/Makefile testsuite/Makefile examples/Makefile])
 AC_CONFIG_FILES([nettle.pc hogweed.pc])
 
@@ -852,5 +877,6 @@ AC_MSG_NOTICE([summary of build options:
   Static libraries:  ${enable_static}
   Shared libraries:  ${enable_shared}
   Public key crypto: ${enable_public_key}
+  Using mini-gmp:    ${enable_mini_gmp}
   Documentation:     ${enable_documentation}
 ])

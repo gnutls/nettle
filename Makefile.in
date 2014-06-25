@@ -15,11 +15,15 @@ MKDIR_P = @MKDIR_P@
 OPT_ASM_NETTLE_SOURCES = @OPT_ASM_NETTLE_SOURCES@
 OPT_ASM_HOGWEED_SOURCES = @OPT_ASM_HOGWEED_SOURCES@
 
+OPT_HOGWEED_SOURCES = @IF_MINI_GMP@ mini-gmp.c
+
 SUBDIRS = tools testsuite examples
 
 include config.make
 
-PRE_CPPFLAGS = -I.
+# $(srcdir) is needed for includes in bignum.h.
+PRE_CPPFLAGS = -I. -I$(srcdir)
+
 # FIXME: Add configuration of LIBEXT?
 LIBTARGETS = @IF_STATIC@ libnettle.a @IF_HOGWEED@ libhogweed.a
 SHLIBTARGETS = @IF_SHARED@ $(LIBNETTLE_FORLINK) @IF_HOGWEED@ $(LIBHOGWEED_FORLINK)
@@ -165,9 +169,10 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  ecc-mul-g.c ecc-mul-a.c ecc-hash.c ecc-random.c \
 		  ecc-point.c ecc-scalar.c ecc-point-mul.c ecc-point-mul-g.c \
 		  ecc-ecdsa-sign.c ecdsa-sign.c \
-		  ecc-ecdsa-verify.c ecdsa-verify.c ecdsa-keygen.c
+		  ecc-ecdsa-verify.c ecdsa-verify.c ecdsa-keygen.c \
+		  $(OPT_HOGWEED_SOURCES)
 
-HEADERS = aes.h arcfour.h arctwo.h asn1.h bignum.h blowfish.h \
+HEADERS = aes.h arcfour.h arctwo.h asn1.h blowfish.h \
 	  base16.h base64.h buffer.h camellia.h cast128.h \
 	  cbc.h ccm.h chacha.h chacha-poly1305.h ctr.h \
 	  des.h des-compat.h dsa.h dsa-compat.h eax.h \
@@ -185,7 +190,7 @@ HEADERS = aes.h arcfour.h arctwo.h asn1.h bignum.h blowfish.h \
 	  serpent.h sha.h sha1.h sha2.h sha3.h twofish.h \
 	  umac.h yarrow.h poly1305.h
 
-INSTALL_HEADERS = $(HEADERS) nettle-stdint.h
+INSTALL_HEADERS = $(HEADERS) nettle-stdint.h bignum.h @IF_MINI_GMP@ mini-gmp.h
 
 SOURCES = $(nettle_SOURCES) $(hogweed_SOURCES) \
 	  $(getopt_SOURCES) $(internal_SOURCES) \
@@ -194,7 +199,7 @@ SOURCES = $(nettle_SOURCES) $(hogweed_SOURCES) \
 DISTFILES = $(SOURCES) $(HEADERS) getopt.h getopt_int.h \
 	.bootstrap run-tests \
 	aclocal.m4 configure.ac \
-	configure stamp-h.in \
+	configure stamp-h.in bignum.h.in \
 	config.guess config.sub install-sh texinfo.tex \
 	config.h.in config.m4.in config.make.in	Makefile.in \
 	README AUTHORS COPYING.LESSERv3 COPYINGv2 COPYINGv3 \
@@ -411,6 +416,9 @@ stamp-h: config.h.in config.status
 	./config.status config.h
 	echo timestamp > stamp-h
 
+bignum.h: bignum.h.in config.status
+	./config.status $@
+
 Makefile: Makefile.in config.status
 	./config.status $@
 
@@ -617,7 +625,7 @@ clean-here:
 
 distclean-here: clean-here
 	-rm -f config.h stamp-h config.log config.status machine.m4 \
-	config.make config.m4 Makefile nettle-stdint.h \
+	config.make config.m4 Makefile nettle-stdint.h bignum.h \
 	nettle.pc hogweed.pc \
 	*.asm *.d
 

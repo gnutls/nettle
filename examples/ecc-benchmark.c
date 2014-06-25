@@ -108,6 +108,7 @@ time_function(void (*f)(void *arg), void *arg)
   return elapsed / ncalls;
 }
 
+#if !NETTLE_USE_MINI_GMP
 static int
 modinv_gcd (const struct ecc_curve *ecc,
 	    mp_limb_t *rp, mp_limb_t *ap, mp_limb_t *tp)
@@ -134,6 +135,7 @@ modinv_gcd (const struct ecc_curve *ecc,
   mpn_copyi (rp, sp, size);
   return 1;
 }
+#endif
 
 struct ecc_ctx {
   const struct ecc_curve *ecc;
@@ -175,6 +177,7 @@ bench_modinv (void *p)
   ecc_modp_inv (ctx->ecc, ctx->rp, ctx->rp + ctx->ecc->size, ctx->tp);
 }
 
+#if !NETTLE_USE_MINI_GMP
 static void
 bench_modinv_gcd (void *p)
 {
@@ -182,6 +185,7 @@ bench_modinv_gcd (void *p)
   mpn_copyi (ctx->rp + ctx->ecc->size, ctx->ap, ctx->ecc->size);
   modinv_gcd (ctx->ecc, ctx->rp, ctx->rp + ctx->ecc->size, ctx->tp);  
 }
+#endif
 
 #ifdef mpn_sec_powm
 static void
@@ -233,6 +237,16 @@ bench_mul_a (void *p)
   ecc_mul_a (ctx->ecc, 1, ctx->rp, ctx->ap, ctx->bp, ctx->tp);
 }
 
+#if NETTLE_USE_MINI_GMP
+static void
+mpn_random (mp_limb_t *xp, mp_size_t n)
+{
+  mp_size_t i;
+  for (i = 0; i < n; i++)
+    xp[i] = rand();
+}
+#endif
+
 static void
 bench_curve (const struct ecc_curve *ecc)
 {
@@ -276,7 +290,11 @@ bench_curve (const struct ecc_curve *ecc)
   modq = time_function (bench_modq, &ctx);
 
   modinv = time_function (bench_modinv, &ctx);
+#if !NETTLE_USE_MINI_GMP
   modinv_gcd = time_function (bench_modinv_gcd, &ctx);
+#else
+  modinv_gcd = 0;
+#endif
 #ifdef mpn_sec_powm
   modinv_powm = time_function (bench_modinv_powm, &ctx);
 #else

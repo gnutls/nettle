@@ -1,5 +1,43 @@
 2014-06-25  Niels Möller  <nisse@lysator.liu.se>
 
+	Support for building with mini-gmp instead of the real GMP.
+	* configure.ac: New command line option --enable-mini-gmp. Also
+	disable all libgmp-related checks when enabled.
+	(NETTLE_USE_MINI_GMP): New substituted variable.
+	(LIBHOGWEED_LIBS): Use $(LIBS) instead of -lgmp.
+	(IF_MINI_GMP): New Makefile conditional.
+	(GMP_NUMB_BITS): Alternative test for the mini-gmp case.
+	Substituted also in bignum.h.
+	(HAVE_MPZ_POWM_SEC): Drop this unused check.
+
+	* bignum.h: Renamed, to...
+	* bignum.h.in: New name.
+	(NETTLE_USE_MINI_GMP): Substituted by configure.
+	(GMP_NUMB_BITS): Substituted by configure, for the mini-gmp case.
+
+	* Makefile.in (OPT_HOGWEED_SOURCES): New variable, value
+	conditional on @IF_MINI_GMP@.
+	(hogweed_SOURCES): Add $(OPT_HOGWEED_SOURCES).
+	(PRE_CPPFLAGS): Add -I$(srcdir).
+	(HEADERS): Delete bignum.h.
+	(INSTALL_HEADERS): Add bignum.h. Also add mini-gmp.h, if mini-gmp
+	is enabled.
+	(DISTFILES): Added bignum.h.in.
+	(bignum.h): New target.
+	(distclean-here): Delete bignum.h.
+
+	* examples/ecc-benchmark.c (modinv_gcd) [NETTLE_USE_MINI_GMP]:
+	Disable this benchmark.
+	(mpn_random) [NETTLE_USE_MINI_GMP]: Provide a simple implementation.
+
+	* testsuite/ecc-mod-test.c [NETTLE_USE_MINI_GMP]: Skip test, it
+	depends on gmp_randstate_t.
+	* testsuite/ecc-modinv-test.c [NETTLE_USE_MINI_GMP]: Likewise.
+	* testsuite/ecc-mul-a-test.c [NETTLE_USE_MINI_GMP]: Likewise.
+	* testsuite/ecc-mul-g-test.c [NETTLE_USE_MINI_GMP]: Likewise.
+	* testsuite/ecc-redc-test.c [NETTLE_USE_MINI_GMP]: Likewise.
+
+	Various preparations for mini-gmp support.
 	* testsuite/bignum-test.c: Use WITH_HOGWEED instead of HAVE_LIBGMP
 	for preprocessor conditionals.
 	* testsuite/testutils.h: Likewise.

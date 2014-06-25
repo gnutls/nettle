@@ -1,5 +1,13 @@
 #include "testutils.h"
 
+#if NETTLE_USE_MINI_GMP
+void
+test_main (void)
+{
+  SKIP();
+}
+#else /* ! NETTLE_USE_MINI_GMP */
+
 void
 test_main (void)
 {
@@ -56,3 +64,4 @@ test_main (void)
   mpz_clear (r);
   gmp_randclear (state);
 }
+#endif /* ! NETTLE_USE_MINI_GMP */
