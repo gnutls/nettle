@@ -11,6 +11,7 @@ TAGS
 *.so
 *.exe
 *.dll
+*.dylib
 core
 /*.d
 /*.po
@@ -20,6 +21,7 @@ core
 /.lib
 /*.asm
 /Makefile
+/bignum.h
 /config.cache
 /config.h
 /config.h.in
@@ -37,7 +39,7 @@ core
 /aesdata
 /desdata
 /eccdata
-/eccdata.stamp
+/*.stamp
 /gcmdata
 /shadata
 /twofishdata
