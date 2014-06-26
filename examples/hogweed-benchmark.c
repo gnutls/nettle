@@ -146,6 +146,11 @@ bench_alg (const struct alg *alg)
   void *ctx;
 
   ctx = alg->init(alg->size);
+  if (ctx == NULL)
+    {
+      printf("%15s %4d N/A\n", alg->name, alg->size);
+      return;
+    }
 
   sign = time_function (alg->sign, ctx);
   verify = time_function (alg->verify, ctx);
@@ -604,7 +609,10 @@ bench_openssl_ecdsa_init (unsigned size)
     default:
       die ("Internal error.\n");
     }
-  assert (ctx->key);
+
+  /* This curve isn't supported in this build of openssl */
+  if (ctx->key == NULL)
+    return NULL;
 
   if (!EC_KEY_generate_key( ctx->key))
     die ("Openssl EC_KEY_generate_key failed.\n");
