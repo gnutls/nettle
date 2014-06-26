@@ -13,6 +13,6 @@ URL: http://www.lysator.liu.se/~nisse/nettle
 Version: @PACKAGE_VERSION@
 Requires.private: nettle
 Libs: -L${libdir} -lhogweed
-Libs.private: -lgmp
+Libs.private: @LIBS@
 Cflags: -I${includedir}
 
