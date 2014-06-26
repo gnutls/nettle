@@ -757,8 +757,10 @@ fi
 
 if test "x$enable_shared" = xyes ; then
   IF_SHARED=''
+  IF_NOT_SHARED='#'
 else
   IF_SHARED='#'
+  IF_NOT_SHARED=''
 fi
 
 # Documentation tools
@@ -792,6 +794,7 @@ fi
 AC_SUBST(IF_HOGWEED)
 AC_SUBST(IF_STATIC)
 AC_SUBST(IF_SHARED)
+AC_SUBST(IF_NOT_SHARED)
 AC_SUBST(IF_DOCUMENTATION)
 AC_SUBST(IF_DLL)
 AC_SUBST(IF_MINI_GMP)
