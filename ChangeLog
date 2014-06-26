@@ -1,3 +1,18 @@
+2014-06-26  Niels Möller  <nisse@lysator.liu.se>
+
+	From Martin Storsjö:
+	* configure.ac (IF_NOT_SHARED): New substituted variable.
+	* hogweed.pc.in: Use @LIBS@, instead of hardcoding -lgmp. When
+	shared libraries are disabled, move needed libraries from
+	Requires.private: to Requires: and from Libs.private: to Libs:.
+
+ 	From Nikos Mavrogiannopoulos.
+	* examples/hogweed-benchmark.c (bench_alg): Tolerate alg->init
+	returning NULL.
+	(bench_openssl_ecdsa_init): Return NULL if
+	EC_KEY_new_by_curve_name fails, indicating the curve is not
+	supported.
+
 2014-06-25  Niels Möller  <nisse@lysator.liu.se>
 
 	Support for building with mini-gmp instead of the real GMP.
