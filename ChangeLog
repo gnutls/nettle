@@ -1,3 +1,9 @@
+2014-06-30  Niels Möller  <nisse@lysator.liu.se>
+
+	* camellia-absorb.c: Include <limits.h>, needed for correct use of
+	HAVE_NATIVE_64_BIT. Reported and debugged by Magnus Holmgren.
+	Fixes debian build failure on s390x.
+
 2014-06-26  Niels Möller  <nisse@lysator.liu.se>
 
 	From Martin Storsjö:
@@ -15,7 +21,8 @@
 
 2014-06-25  Niels Möller  <nisse@lysator.liu.se>
 
-	Support for building with mini-gmp instead of the real GMP.
+	Support for building with mini-gmp instead of the real GMP. Loosely
+	based on work by Nikos Mavrogiannopoulos.
 	* configure.ac: New command line option --enable-mini-gmp. Also
 	disable all libgmp-related checks when enabled.
 	(NETTLE_USE_MINI_GMP): New substituted variable.

@@ -47,6 +47,9 @@
 # include "config.h"
 #endif
 
+/* For CHAR_BIT, needed by HAVE_NATIVE_64_BIT */
+#include <limits.h>
+
 #include "camellia-internal.h"
 
 #include "macros.h"
