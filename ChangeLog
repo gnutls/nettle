@@ -2,6 +2,14 @@
 
 	* eccdata.c (ecc_dup): Use mpz_submul_ui, now available in
 	mini-gmp.
+	(ecc_type): New enum, for Weierstrass and Montgomery curves
+	(ecc_curve): New field type.
+	(ecc_dup): Support montgomery curves.
+	(ecc_add): Likewise.
+	(ecc_curve_init_str): New argument, for the curve type.
+	(ecc_curve_init): Pass curve type to all ecc_curve_init_str calls.
+	Recognize curve25519, for bit_size 255.
+	(output_modulo): Deleted assert, which isn't true for curve25519.
 
 2014-06-30  Niels Möller  <nisse@lysator.liu.se>
 

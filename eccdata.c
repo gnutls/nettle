@@ -41,22 +41,30 @@
 #include "mini-gmp.c"
 
 /* Affine coordinates, for simplicity. Infinity point represented as x
-   == y == 0. */
+   == y == 0. FIXME: Doesn't quite work for Montgomery curves, where
+   (0,0) is a normal finite point. Shouldn't occur in these
+   computations, though. */
 struct ecc_point
 {
   mpz_t x;
   mpz_t y;
 };
 
-/* Represents an elliptic curve of the form
+enum ecc_type
+  {
+    /* y^2 = x^3 - 3x + b (mod p) */
+    ECC_TYPE_WEIERSTRASS,
+    /* y^2 = x^3 + b x^2 + x */
+    ECC_TYPE_MONTGOMERY
+  };
 
-     y^2 = x^3 - 3x + b (mod p)
-*/
 struct ecc_curve
 {
   unsigned bit_size;
   unsigned pippenger_k;
   unsigned pippenger_c;
+
+  enum ecc_type type;
 
   /* Prime */
   mpz_t p;
@@ -122,6 +130,7 @@ ecc_set (struct ecc_point *r, const struct ecc_point *p)
   mpz_set (r->y, p->y);
 }
 
+/* Needs to support in-place operation. */
 static void
 ecc_dup (const struct ecc_curve *ecc,
 	 struct ecc_point *r, const struct ecc_point *p)
@@ -132,7 +141,7 @@ ecc_dup (const struct ecc_curve *ecc,
   else
     {
       mpz_t m, t, x, y;
-  
+
       mpz_init (m);
       mpz_init (t);
       mpz_init (x);
@@ -142,16 +151,33 @@ ecc_dup (const struct ecc_curve *ecc,
       mpz_mul_ui (m, p->y, 2);
       mpz_invert (m, m, ecc->p);
 
-      /* t = 3 (x^2 - 1) * m */
-      mpz_mul (t, p->x, p->x);
-      mpz_mod (t, t, ecc->p);
-      mpz_sub_ui (t, t, 1);
-      mpz_mul_ui (t, t, 3);
+      switch (ecc->type)
+	{
+	case ECC_TYPE_WEIERSTRASS:
+	  /* t = 3 (x^2 - 1) * m */
+	  mpz_mul (t, p->x, p->x);
+	  mpz_mod (t, t, ecc->p);
+	  mpz_sub_ui (t, t, 1);
+	  mpz_mul_ui (t, t, 3);
+	  break;
+	case ECC_TYPE_MONTGOMERY:
+	  /* t = (3 x^2 + 2 b x + 1) m = [x(3x+2b)+1] m */
+	  mpz_mul_ui (t, ecc->b, 2);
+	  mpz_addmul_ui (t, p->x, 3);
+	  mpz_mul (t, t, p->x);
+	  mpz_mod (t, t, ecc->p);
+	  mpz_add_ui (t, t, 1);
+	  break;
+	}
       mpz_mul (t, t, m);
+      mpz_mod (t, t, ecc->p);
 
       /* x' = t^2 - 2 x */
       mpz_mul (x, t, t);
       mpz_submul_ui (x, p->x, 2);
+      if (ecc->type == ECC_TYPE_MONTGOMERY)
+	mpz_sub (x, x, ecc->b);
+
       mpz_mod (x, x, ecc->p);
 
       /* y' = (x - x') * t - y */
@@ -206,6 +232,9 @@ ecc_add (const struct ecc_curve *ecc,
       mpz_mul (x, t, t);
       mpz_sub (x, x, p->x);
       mpz_sub (x, x, q->x);
+      /* This appears to be the only difference between formulas. */
+      if (ecc->type == ECC_TYPE_MONTGOMERY)
+	mpz_sub (x, x, ecc->b);
       mpz_mod (x, x, ecc->p);
 
       /* y' = (x - x') * t - y */
@@ -272,10 +301,12 @@ ecc_set_str (struct ecc_point *p,
 }
 
 static void
-ecc_curve_init_str (struct ecc_curve *ecc,
+ecc_curve_init_str (struct ecc_curve *ecc, enum ecc_type type,
 		    const char *p, const char *b, const char *q,
 		    const char *gx, const char *gy)
 {
+  ecc->type = type;
+
   mpz_init_set_str (ecc->p, p, 16);
   mpz_init_set_str (ecc->b, b, 16);
   mpz_init_set_str (ecc->q, q, 16);
@@ -295,7 +326,7 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
   switch (bit_size)
     {
     case 192:      
-      ecc_curve_init_str (ecc,
+      ecc_curve_init_str (ecc, ECC_TYPE_WEIERSTRASS,
 			  /* p = 2^{192} - 2^{64} - 1 */
 			  "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFE"
 			  "FFFFFFFFFFFFFFFF",
@@ -326,7 +357,7 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 
       break;
     case 224:
-      ecc_curve_init_str (ecc,
+      ecc_curve_init_str (ecc, ECC_TYPE_WEIERSTRASS,
 			  /* p = 2^{224} - 2^{96} + 1 */
 			  "ffffffffffffffffffffffffffffffff"
 			  "000000000000000000000001",
@@ -358,7 +389,7 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 
       break;
     case 256:
-      ecc_curve_init_str (ecc,
+      ecc_curve_init_str (ecc, ECC_TYPE_WEIERSTRASS,
 			  /* p = 2^{256} - 2^{224} + 2^{192} + 2^{96} - 1 */
 			  "FFFFFFFF000000010000000000000000"
 			  "00000000FFFFFFFFFFFFFFFFFFFFFFFF",
@@ -390,7 +421,7 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 
       break;
     case 384:
-      ecc_curve_init_str (ecc,
+      ecc_curve_init_str (ecc, ECC_TYPE_WEIERSTRASS,
 			  /* p = 2^{384} - 2^{128} - 2^{96} + 2^{32} - 1 */
 			  "ffffffffffffffffffffffffffffffff"
 			  "fffffffffffffffffffffffffffffffe"
@@ -427,7 +458,7 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 
       break;
     case 521:
-      ecc_curve_init_str (ecc,			  
+      ecc_curve_init_str (ecc, ECC_TYPE_WEIERSTRASS,
 			  "1ff" /* p = 2^{521} - 1 */
 			  "ffffffffffffffffffffffffffffffff"
 			  "ffffffffffffffffffffffffffffffff"
@@ -472,6 +503,62 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 		   "82096f84261279d2b673e0178eb0b4abb65521aef6e6e32e1b5ae63fe2f19907f279f283e54ba385405224f750a95b85eebb7faef04699d1d9e21f47fc346e4d0d");
 
       break;
+    case 255:
+      /* curve25519, y^2 = x^3 + 486662 x^2 + x (mod p), with p = 2^{255} - 19.
+
+	 Acccording to http://cr.yp.to/papers.html#newelliptic, this
+	 is birationally equivalent to the Edwards curve
+
+	   x^2 + y^2 = 1 + (121665/121666) x^2 y^2 (mod p).
+
+	 And since the constant is not a square, the Edwards formulas
+	 should be "complete", with no special cases needed for
+	 doubling, neutral element, negatives, etc.
+
+	 Generator is x = 9, with y coordinate
+	 14781619447589544791020593568409986887264606134616475288964881837755586237401,
+	 according to
+
+	   x = Mod(9, 2^255-19); sqrt(x^3 + 486662*x^2 + x)
+
+	 in PARI/GP. Also, in PARI notation,
+
+	   curve25519 = Mod([0, 486662, 0, 1, 0], 2^255-19)
+       */
+      ecc_curve_init_str (ecc, ECC_TYPE_MONTGOMERY,
+			  "7fffffffffffffffffffffffffffffff"
+			  "ffffffffffffffffffffffffffffffed",
+			  "76d06",
+			  /* Order of the subgroup is 2^252 +
+			     27742317777372353535851937790883648493 */
+			  "10000000000000000000000000000000"
+			  "14def9dea2f79cd65812631a5cf5d3ed",
+			  "9",
+			  /* y coordinate from PARI/GP
+			     x = Mod(9, 2^255-19); sqrt(x^3 + 486662*x^2 + x)
+			  */
+			  "20ae19a1b8a086b4e01edd2c7748d14c"
+			  "923d4d7e6d7c61b229e9c5a27eced3d9");
+      ecc->ref = ecc_alloc (3);
+      ecc_set_str (&ecc->ref[0], /* 2 g */
+		   "20d342d51873f1b7d9750c687d157114"
+		   "8f3f5ced1e350b5c5cae469cdd684efb",
+		   "13b57e011700e8ae050a00945d2ba2f3"
+		   "77659eb28d8d391ebcd70465c72df563");
+      ecc_set_str (&ecc->ref[1], /* 3 g */
+		   "1c12bc1a6d57abe645534d91c21bba64"
+		   "f8824e67621c0859c00a03affb713c12",
+		   "2986855cbe387eaeaceea446532c338c"
+		   "536af570f71ef7cf75c665019c41222b");
+
+      ecc_set_str (&ecc->ref[2], /* 4 g */
+		   "79ce98b7e0689d7de7d1d074a15b315f"
+		   "fe1805dfcd5d2a230fee85e4550013ef",
+		   "75af5bf4ebdc75c8fe26873427d275d7"
+		   "3c0fb13da361077a565539f46de1c30");
+
+      break;
+
     default:
       fprintf (stderr, "No known curve for size %d\n", bit_size);
       exit(EXIT_FAILURE);     
@@ -756,8 +843,6 @@ output_modulo (const char *name, const mpz_t x,
   mpz_mod (mod, mod, x);
 
   bits = mpz_sizeinbase (mod, 2);
-  assert (bits <= size * bits_per_limb - 32);
-
   output_bignum (name, mod, size, bits_per_limb);
   
   mpz_clear (mod);
