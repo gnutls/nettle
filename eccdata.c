@@ -151,9 +151,7 @@ ecc_dup (const struct ecc_curve *ecc,
 
       /* x' = t^2 - 2 x */
       mpz_mul (x, t, t);
-      /* mpz_submul_ui (x, p->x, 2); not available in mini-gmp */
-      mpz_mul_ui (m, p->x, 2);
-      mpz_sub (x, x, m);
+      mpz_submul_ui (x, p->x, 2);
       mpz_mod (x, x, ecc->p);
 
       /* y' = (x - x') * t - y */
