@@ -98,7 +98,7 @@ test_main (void)
 	      abort ();
 	    }
 
-	  if (ecc->Bmodp_size < ecc->size)
+	  if (ecc->Bmodq_size < ecc->size)
 	    {
 	      mpn_copyi (m, a, 2*ecc->size);
 	      ecc_generic_modq (ecc, m);
