@@ -1,3 +1,20 @@
+2014-07-04  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-25519.c: New file.
+	(ecc_25519_modp): New function.
+	(nettle_curve25519): New curve.
+
+	* ecc-curve.h (nettle_curve25519): Declare it.
+
+	* Makefile.in (hogweed_SOURCES): Added ecc-25519.c.
+	(ecc-25519.h): New generated file. Add as explicit dependency for
+	ecc-25519.o.
+
+	* testsuite/ecc-mod-test.c (test_curve): New function, extracted
+	from test_main. Tolerate NULL modq function pointer.
+	(test_main): Use test_curve, iterate over supported curves, and
+	also test curve_25519 for the new modp function.
+
 2014-07-02  Niels Möller  <nisse@lysator.liu.se>
 
 	* eccdata.c (ecc_dup): Use mpz_submul_ui, now available in

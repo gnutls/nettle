@@ -164,6 +164,7 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  ecc-mod.c ecc-generic-modp.c ecc-generic-modq.c \
 		  ecc-modp.c ecc-modq.c ecc-generic-redc.c \
 		  ecc-192.c ecc-224.c ecc-256.c ecc-384.c ecc-521.c \
+		  ecc-25519.c \
 		  ecc-size.c ecc-j-to-a.c ecc-a-to-j.c \
 		  ecc-dup-jj.c ecc-add-jja.c ecc-add-jjj.c \
 		  ecc-mul-g.c ecc-mul-a.c ecc-hash.c ecc-random.c \
@@ -347,6 +348,9 @@ ecc-384.h: eccdata.stamp
 ecc-521.h: eccdata.stamp
 	./eccdata$(EXEEXT_FOR_BUILD) 521 56 6 $(GMP_NUMB_BITS) > $@T && mv $@T $@
 
+ecc-25519.h: eccdata.stamp
+	./eccdata$(EXEEXT_FOR_BUILD) 255 14 6 $(GMP_NUMB_BITS) > $@T && mv $@T $@
+
 eccdata.stamp: eccdata.c
 	$(MAKE) eccdata$(EXEEXT_FOR_BUILD)
 	echo stamp > eccdata.stamp
@@ -356,12 +360,14 @@ ecc-224.$(OBJEXT): ecc-224.h
 ecc-256.$(OBJEXT): ecc-256.h
 ecc-384.$(OBJEXT): ecc-384.h
 ecc-521.$(OBJEXT): ecc-521.h
+ecc-25519.$(OBJEXT): ecc-25519.h
 
 ecc-192.p$(OBJEXT): ecc-192.h
 ecc-224.p$(OBJEXT): ecc-224.h
 ecc-256.p$(OBJEXT): ecc-256.h
 ecc-384.p$(OBJEXT): ecc-384.h
 ecc-521.p$(OBJEXT): ecc-521.h
+ecc-25519.p$(OBJEXT): ecc-25519.h
 
 .asm.s: $(srcdir)/asm.m4 machine.m4 config.m4
 	$(M4) $(srcdir)/asm.m4 machine.m4 config.m4 $< >$@T \

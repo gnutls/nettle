@@ -529,8 +529,10 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 			  "7fffffffffffffffffffffffffffffff"
 			  "ffffffffffffffffffffffffffffffed",
 			  "76d06",
-			  /* Order of the subgroup is 2^252 +
-			     27742317777372353535851937790883648493 */
+			  /* Order of the subgroup is 2^252 + q_0, where
+			     q_0 = 27742317777372353535851937790883648493,
+			     125 bits.
+			  */
 			  "10000000000000000000000000000000"
 			  "14def9dea2f79cd65812631a5cf5d3ed",
 			  "9",
