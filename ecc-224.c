@@ -1,4 +1,4 @@
-/* ecc-224.c.c
+/* ecc-224.c
 
    Compile time constant (but machine dependent) tables.
 

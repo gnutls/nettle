@@ -1,4 +1,4 @@
-/* ecc-384.c.c
+/* ecc-384.c
 
    Compile time constant (but machine dependent) tables.
 

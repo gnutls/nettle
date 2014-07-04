@@ -1,4 +1,4 @@
-/* md4.h
+/* md4.c
 
    The MD4 hash function, described in RFC 1320.
 

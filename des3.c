@@ -1,4 +1,4 @@
-/* des3.h
+/* des3.c
 
    Triple DES cipher. Three key encrypt-decrypt-encrypt.
 

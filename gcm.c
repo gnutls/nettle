@@ -1,4 +1,4 @@
-/* gcm.h
+/* gcm.c
 
    Galois counter mode, specified by NIST,
    http://csrc.nist.gov/publications/nistpubs/800-38D/SP-800-38D.pdf

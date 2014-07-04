@@ -1,4 +1,4 @@
-/* chacha-poly1305.h
+/* chacha-poly1305.c
 
    AEAD mechanism based on chacha and poly1305.
 

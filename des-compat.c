@@ -1,4 +1,4 @@
-/* des-compat.h
+/* des-compat.c
 
    The des block cipher, old libdes/openssl-style interface.
 
