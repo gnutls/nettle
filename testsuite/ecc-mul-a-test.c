@@ -11,11 +11,11 @@ test_main (void)
 void
 test_main (void)
 {
-  gmp_randstate_t state;
+  gmp_randstate_t rands;
   mpz_t r;
   unsigned i;
 
-  gmp_randinit_default (state);
+  gmp_randinit_default (rands);
   mpz_init (r);
   
   for (i = 0; ecc_curves[i]; i++)
@@ -72,9 +72,9 @@ test_main (void)
       for (j = 0; j < 100; j++)
 	{
 	  if (j & 1)
-	    mpz_rrandomb (r, state, size * GMP_NUMB_BITS);
+	    mpz_rrandomb (r, rands, size * GMP_NUMB_BITS);
 	  else
-	    mpz_urandomb (r, state, size * GMP_NUMB_BITS);
+	    mpz_urandomb (r, rands, size * GMP_NUMB_BITS);
 
 	  /* Reduce so that (almost surely) n < q */
 	  mpz_limbs_copy (n, r, size);
@@ -106,6 +106,6 @@ test_main (void)
       free (scratch);
     }
   mpz_clear (r); 
-  gmp_randclear (state);
+  gmp_randclear (rands);
 }
 #endif /* ! NETTLE_USE_MINI_GMP */

@@ -40,7 +40,7 @@ ref_modinv (mp_limb_t *rp, const mp_limb_t *ap, const mp_limb_t *mp, mp_size_t m
 void
 test_main (void)
 {
-  gmp_randstate_t state;
+  gmp_randstate_t rands;
   mp_limb_t a[MAX_ECC_SIZE];
   mp_limb_t ai[MAX_ECC_SIZE];
   mp_limb_t ref[MAX_ECC_SIZE];
@@ -48,7 +48,7 @@ test_main (void)
   unsigned i;
   mpz_t r;
 
-  gmp_randinit_default (state);
+  gmp_randinit_default (rands);
   mpz_init (r);
   
   for (i = 0; ecc_curves[i]; i++)
@@ -58,9 +58,9 @@ test_main (void)
       for (j = 0; j < COUNT; j++)
 	{
 	  if (j & 1)
-	    mpz_rrandomb (r, state, ecc->size * GMP_NUMB_BITS);
+	    mpz_rrandomb (r, rands, ecc->size * GMP_NUMB_BITS);
 	  else
-	    mpz_urandomb (r, state, ecc->size * GMP_NUMB_BITS);
+	    mpz_urandomb (r, rands, ecc->size * GMP_NUMB_BITS);
 
 	  mpz_limbs_copy (a, r, ecc->size);
 
@@ -110,7 +110,7 @@ test_main (void)
 	    }
 	}
     }
-  gmp_randclear (state);
+  gmp_randclear (rands);
   mpz_clear (r);
 }
 #endif /* ! NETTLE_USE_MINI_GMP */

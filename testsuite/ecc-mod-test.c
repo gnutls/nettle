@@ -22,14 +22,14 @@ ref_mod (mp_limb_t *rp, const mp_limb_t *ap, const mp_limb_t *mp, mp_size_t mn)
 void
 test_main (void)
 {
-  gmp_randstate_t state;
+  gmp_randstate_t rands;
   mp_limb_t a[MAX_SIZE];
   mp_limb_t m[MAX_SIZE];
   mp_limb_t ref[MAX_SIZE];
   unsigned i;
   mpz_t r;
 
-  gmp_randinit_default (state);
+  gmp_randinit_default (rands);
   
   mpz_init (r);
   
@@ -40,9 +40,9 @@ test_main (void)
       for (j = 0; j < COUNT; j++)
 	{
 	  if (j & 1)
-	    mpz_rrandomb (r, state, 2*ecc->size * GMP_NUMB_BITS);
+	    mpz_rrandomb (r, rands, 2*ecc->size * GMP_NUMB_BITS);
 	  else
-	    mpz_urandomb (r, state, 2*ecc->size * GMP_NUMB_BITS);
+	    mpz_urandomb (r, rands, 2*ecc->size * GMP_NUMB_BITS);
 
 	  mpz_limbs_copy (a, r, 2*ecc->size);
 
@@ -119,6 +119,6 @@ test_main (void)
     }
 
   mpz_clear (r);
-  gmp_randclear (state);
+  gmp_randclear (rands);
 }
 #endif /* ! NETTLE_USE_MINI_GMP */

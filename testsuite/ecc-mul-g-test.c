@@ -11,11 +11,11 @@ test_main (void)
 void
 test_main (void)
 {
-  gmp_randstate_t state;
+  gmp_randstate_t rands;
   mpz_t r;
   unsigned i;
 
-  gmp_randinit_default (state);
+  gmp_randinit_default (rands);
   mpz_init (r);
 
   for (i = 0; ecc_curves[i]; i++)
@@ -62,6 +62,6 @@ test_main (void)
       free (scratch);
     }
   mpz_clear (r);
-  gmp_randclear (state);
+  gmp_randclear (rands);
 }
 #endif /* ! NETTLE_USE_MINI_GMP */
