@@ -1,3 +1,8 @@
+2014-07-06  Niels Möller  <nisse@lysator.liu.se>
+
+	* eccdata.c: Use separate is_zero flag to represent the neutral
+	element.
+
 2014-07-04  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-25519.c: New file.

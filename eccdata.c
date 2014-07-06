@@ -40,12 +40,11 @@
 
 #include "mini-gmp.c"
 
-/* Affine coordinates, for simplicity. Infinity point represented as x
-   == y == 0. FIXME: Doesn't quite work for Montgomery curves, where
-   (0,0) is a normal finite point. Shouldn't occur in these
-   computations, though. */
+/* Affine coordinates, for simplicity. Infinity point, i.e., te
+   neutral group element, is represented as is_zero. */
 struct ecc_point
 {
+  int is_zero;
   mpz_t x;
   mpz_t y;
 };
@@ -107,25 +106,26 @@ ecc_clear (struct ecc_point *p)
 static int
 ecc_zero_p (const struct ecc_point *p)
 {
-  return mpz_sgn (p->x) == 0 && mpz_sgn (p->y) == 0;
+  return p->is_zero;
 }
 
 static int
 ecc_equal_p (const struct ecc_point *p, const struct ecc_point *q)
 {
-  return mpz_cmp (p->x, q->x) == 0 && mpz_cmp (p->y, q->y) == 0;
+  return p->is_zero ? q->is_zero
+    : !q->is_zero && mpz_cmp (p->x, q->x) == 0 && mpz_cmp (p->y, q->y) == 0;
 }
 
 static void
 ecc_set_zero (struct ecc_point *r)
 {
-  mpz_set_ui (r->x, 0);
-  mpz_set_ui (r->y, 0);
+  r->is_zero = 1;
 }
 
 static void
 ecc_set (struct ecc_point *r, const struct ecc_point *p)
 {
+  r->is_zero = p->is_zero;
   mpz_set (r->x, p->x);
   mpz_set (r->y, p->y);
 }
@@ -186,9 +186,10 @@ ecc_dup (const struct ecc_curve *ecc,
       mpz_sub (y, y, p->y);
       mpz_mod (y, y, ecc->p);
 
+      r->is_zero = 0;
       mpz_swap (x, r->x);
       mpz_swap (y, r->y);
-  
+
       mpz_clear (m);
       mpz_clear (t);
       mpz_clear (x);
@@ -243,6 +244,7 @@ ecc_add (const struct ecc_curve *ecc,
       mpz_sub (y, y, p->y);
       mpz_mod (y, y, ecc->p);
 
+      r->is_zero = 0;
       mpz_swap (x, r->x);
       mpz_swap (y, r->y);
 
@@ -296,6 +298,7 @@ static void
 ecc_set_str (struct ecc_point *p,
 	     const char *x, const char *y)
 {
+  p->is_zero = 0;
   mpz_set_str (p->x, x, 16);
   mpz_set_str (p->y, y, 16);  
 }
@@ -506,7 +509,7 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
     case 255:
       /* curve25519, y^2 = x^3 + 486662 x^2 + x (mod p), with p = 2^{255} - 19.
 
-	 Acccording to http://cr.yp.to/papers.html#newelliptic, this
+	 According to http://cr.yp.to/papers.html#newelliptic, this
 	 is birationally equivalent to the Edwards curve
 
 	   x^2 + y^2 = 1 + (121665/121666) x^2 y^2 (mod p).
@@ -644,20 +647,30 @@ ecc_mul_pippenger (const struct ecc_curve *ecc,
   mpz_clear (n);
 }
 
+static void
+ecc_point_out (FILE *f, const struct ecc_point *p)
+{
+  if (p->is_zero)
+    fprintf (f, "zero");
+  else
+    {
+	fprintf (stderr, "(");
+	mpz_out_str (stderr, 16, p->x);
+	fprintf (stderr, ",\n     ");
+	mpz_out_str (stderr, 16, (p)->y);
+	fprintf (stderr, ")");
+    }
+}
 #define ASSERT_EQUAL(p, q) do {						\
     if (!ecc_equal_p (p, q))						\
       {									\
 	fprintf (stderr, "%s:%d: ASSERT_EQUAL (%s, %s) failed.\n",	\
 		 __FILE__, __LINE__, #p, #q);				\
-	fprintf (stderr, "p = (");					\
-	mpz_out_str (stderr, 16, (p)->x);				\
-	fprintf (stderr, ",\n     ");					\
-	mpz_out_str (stderr, 16, (p)->y);				\
-	fprintf (stderr, ")\nq = (");					\
-	mpz_out_str (stderr, 16, (q)->x);				\
-	fprintf (stderr, ",\n     ");					\
-	mpz_out_str (stderr, 16, (q)->y);				\
-	fprintf (stderr, ")\n");					\
+	fprintf (stderr, "p = ");					\
+	ecc_point_out (stderr, (p));					\
+	fprintf (stderr, "\nq = ");					\
+	ecc_point_out (stderr, (q));					\
+	fprintf (stderr, "\n");						\
 	abort();							\
       }									\
   } while (0)
@@ -667,11 +680,9 @@ ecc_mul_pippenger (const struct ecc_curve *ecc,
       {									\
 	fprintf (stderr, "%s:%d: ASSERT_ZERO (%s) failed.\n",		\
 		 __FILE__, __LINE__, #p);				\
-	fprintf (stderr, "p = (");					\
-	mpz_out_str (stderr, 16, (p)->x);				\
-	fprintf (stderr, ",\n     ");					\
-	mpz_out_str (stderr, 16, (p)->y);				\
-	fprintf (stderr, ")\n");					\
+	fprintf (stderr, "p = ");					\
+	ecc_point_out (stderr, (p));					\
+	fprintf (stderr, "\n");						\
 	abort();							\
       }									\
   } while (0)
