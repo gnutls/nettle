@@ -2,7 +2,7 @@
 
    Generate compile time constant (but machine dependent) tables.
 
-   Copyright (C) 2013 Niels Möller
+   Copyright (C) 2013, 2014 Niels Möller
 
    This file is part of GNU Nettle.
 
@@ -41,7 +41,7 @@
 #include "mini-gmp.c"
 
 /* Affine coordinates, for simplicity. Infinity point, i.e., te
-   neutral group element, is represented as is_zero. */
+   neutral group element, is represented using the is_zero flag. */
 struct ecc_point
 {
   int is_zero;
@@ -72,6 +72,15 @@ struct ecc_curve
   /* Curve order */
   mpz_t q;
   struct ecc_point g;
+
+  /* Non-zero if we want elements represented as point s(u, v) on an
+     equivalent Edwards curve, using
+
+      u = t x / y
+      v = (x-1) / (x+1)
+  */
+  int use_edwards;
+  mpz_t t;
 
   /* Table for pippenger's algorithm.
      Element
@@ -306,7 +315,8 @@ ecc_set_str (struct ecc_point *p,
 static void
 ecc_curve_init_str (struct ecc_curve *ecc, enum ecc_type type,
 		    const char *p, const char *b, const char *q,
-		    const char *gx, const char *gy)
+		    const char *gx, const char *gy,
+		    const char *t)
 {
   ecc->type = type;
 
@@ -321,6 +331,12 @@ ecc_curve_init_str (struct ecc_curve *ecc, enum ecc_type type,
   ecc->table = NULL;
 
   ecc->ref = NULL;
+
+  mpz_init (ecc->t);
+
+  ecc->use_edwards = (t != NULL);
+  if (ecc->use_edwards)
+    mpz_set_str (ecc->t, t, 16);
 }
 
 static void
@@ -344,7 +360,8 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 			  "f4ff0afd82ff1012",
 
 			  "07192b95ffc8da78631011ed6b24cdd5"
-			  "73f977a11e794811");
+			  "73f977a11e794811",
+			  NULL);
       ecc->ref = ecc_alloc (3);
       ecc_set_str (&ecc->ref[0], /* 2 g */
 		   "dafebf5828783f2ad35534631588a3f629a70fb16982a888",
@@ -375,7 +392,8 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 			  "56c21122343280d6115c1d21",
 
 			  "bd376388b5f723fb4c22dfe6cd4375a0"
-			  "5a07476444d5819985007e34");
+			  "5a07476444d5819985007e34",
+			  NULL);
 
       ecc->ref = ecc_alloc (3);
       ecc_set_str (&ecc->ref[0], /* 2 g */
@@ -407,7 +425,8 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 			  "77037D812DEB33A0F4A13945D898C296",
 
 			  "4FE342E2FE1A7F9B8EE7EB4A7C0F9E16"
-			  "2BCE33576B315ECECBB6406837BF51F5");
+			  "2BCE33576B315ECECBB6406837BF51F5",
+			  NULL);
 
       ecc->ref = ecc_alloc (3);
       ecc_set_str (&ecc->ref[0], /* 2 g */
@@ -444,7 +463,8 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 			  
 			  "3617de4a96262c6f5d9e98bf9292dc29"
 			  "f8f41dbd289a147ce9da3113b5f0b8c0"
-			  "0a60b1ce1d7e819d7a431d7c90ea0e5f");
+			  "0a60b1ce1d7e819d7a431d7c90ea0e5f",
+			  NULL);
 
       ecc->ref = ecc_alloc (3);
       ecc_set_str (&ecc->ref[0], /* 2 g */
@@ -490,7 +510,8 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 			  "39296a789a3bc0045c8a5fb42c7d1bd9"
 			  "98f54449579b446817afbd17273e662c"
 			  "97ee72995ef42640c550b9013fad0761"
-			  "353c7086a272c24088be94769fd16650");
+			  "353c7086a272c24088be94769fd16650",
+			  NULL);
 
       ecc->ref = ecc_alloc (3);
       ecc_set_str (&ecc->ref[0], /* 2 g */
@@ -543,7 +564,12 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 			     x = Mod(9, 2^255-19); sqrt(x^3 + 486662*x^2 + x)
 			  */
 			  "20ae19a1b8a086b4e01edd2c7748d14c"
-			  "923d4d7e6d7c61b229e9c5a27eced3d9");
+			  "923d4d7e6d7c61b229e9c5a27eced3d9",
+			  /* (121665/121666) mod p, from PARI/GP
+			     c = Mod(121665, p); c / (c+1)
+			  */
+			  "2dfc9311d490018c7338bf8688861767"
+			  "ff8ff5b2bebe27548a14b235eca6874a");
       ecc->ref = ecc_alloc (3);
       ecc_set_str (&ecc->ref[0], /* 2 g */
 		   "20d342d51873f1b7d9750c687d157114"
@@ -803,43 +829,67 @@ output_bignum (const char *name, const mpz_t x,
 }
 
 static void
-output_point (const char *name, const struct ecc_point *p,
+output_point (const char *name, const struct ecc_curve *ecc,
+	      const struct ecc_point *p, int use_redc,
 	      unsigned size, unsigned bits_per_limb)
 {
-  if (name)
-    printf("static const mp_limb_t %s[%u] = {", name, 2*size);
+  mpz_t x, y, t;
 
-  output_digits (p->x, size, bits_per_limb);
-  output_digits (p->y, size, bits_per_limb);
-
-  if (name)
-    printf("\n};\n");
-}
-
-static void
-output_point_redc (const char *name, const struct ecc_curve *ecc,
-		   const struct ecc_point *p,
-		   unsigned size, unsigned bits_per_limb)
-{
-  mpz_t t;
+  mpz_init (x);
+  mpz_init (y);
   mpz_init (t);
-
+ 
   if (name)
     printf("static const mp_limb_t %s[%u] = {", name, 2*size);
-    
-  mpz_mul_2exp (t, p->x, size * bits_per_limb);
-  mpz_mod (t, t, ecc->p);
-      
-  output_digits (t, size, bits_per_limb);
 
-  mpz_mul_2exp (t, p->y, size * bits_per_limb);
-  mpz_mod (t, t, ecc->p);
+  if (ecc->use_edwards)
+    {
+      if (ecc_zero_p (p))
+	{
+	  mpz_set_si (x, 0);
+	  mpz_set_si (y, 1);
+	}
+      else if (!mpz_sgn (p->y))
+	{
+	  assert (!mpz_sgn (p->x));
+	  mpz_set_si (x, 0);
+	  mpz_set_si (y, -1);
+	}
+      else
+	{
+	  mpz_invert (x, p->y, ecc->p);
+	  mpz_mul (x, x, p->x);
+	  mpz_mul (x, x, ecc->t);	 
+	  mpz_mod (x, x, ecc->p);
+
+	  mpz_sub_ui (y, p->x, 1);
+	  mpz_add_ui (t, p->x, 1);
+	  mpz_invert (t, t, ecc->p);
+	  mpz_mul (y, y, t);
+	  mpz_mod (y, y, ecc->p);
+	}
+    }
+  else
+    {
+      mpz_set (x, p->x);
+      mpz_set (y, p->y);
+    }
+  if (use_redc)
+    {
+      mpz_mul_2exp (x, x, size * bits_per_limb);
+      mpz_mod (x, x, ecc->p);
+      mpz_mul_2exp (y, y, size * bits_per_limb);
+      mpz_mod (y, y, ecc->p);
+    }
       
-  output_digits (t, size, bits_per_limb);
+  output_digits (x, size, bits_per_limb);
+  output_digits (y, size, bits_per_limb);
 
   if (name)
     printf("\n};\n");
 
+  mpz_clear (x);
+  mpz_clear (y);
   mpz_clear (t);
 }
 
@@ -882,8 +932,8 @@ output_curve (const struct ecc_curve *ecc, unsigned bits_per_limb)
   output_bignum ("ecc_p", ecc->p, limb_size, bits_per_limb);
   output_bignum ("ecc_b", ecc->b, limb_size, bits_per_limb);
   output_bignum ("ecc_q", ecc->q, limb_size, bits_per_limb);
-  output_point ("ecc_g", &ecc->g, limb_size, bits_per_limb);
-  output_point_redc ("ecc_redc_g", ecc, &ecc->g, limb_size, bits_per_limb);
+  output_point ("ecc_g", ecc, &ecc->g, 0, limb_size, bits_per_limb);
+  output_point ("ecc_redc_g", ecc, &ecc->g, 1, limb_size, bits_per_limb);
   
   bits = output_modulo ("ecc_Bmodp", ecc->p, limb_size, bits_per_limb);
   printf ("#define ECC_BMODP_SIZE %u\n",
@@ -976,7 +1026,7 @@ output_curve (const struct ecc_curve *ecc, unsigned bits_per_limb)
   printf ("static const mp_limb_t ecc_table[%lu] = {",
 	 (unsigned long) (2*ecc->table_size * limb_size));
   for (i = 0; i < ecc->table_size; i++)
-    output_point_redc (NULL, ecc, &ecc->table[i], limb_size, bits_per_limb);
+    output_point (NULL, ecc, &ecc->table[i], 1, limb_size, bits_per_limb);
 
   printf("\n};\n");
 
@@ -988,7 +1038,7 @@ output_curve (const struct ecc_curve *ecc, unsigned bits_per_limb)
   printf ("static const mp_limb_t ecc_table[%lu] = {",
 	 (unsigned long) (2*ecc->table_size * limb_size));
   for (i = 0; i < ecc->table_size; i++)
-    output_point (NULL, &ecc->table[i], limb_size, bits_per_limb);
+    output_point (NULL, ecc, &ecc->table[i], 0, limb_size, bits_per_limb);
 
   printf("\n};\n");
   printf ("#endif\n");

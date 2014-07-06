@@ -2,6 +2,11 @@
 
 	* eccdata.c: Use separate is_zero flag to represent the neutral
 	element.
+	(output_point, output_point_redc): Unified to a single function,
+	with a use_redc flag argument. Also support conversion to Edwards
+	form.
+	(ecc_curve_init_str): New argument for Edwards curve conversion
+	constant.
 
 2014-07-04  Niels Möller  <nisse@lysator.liu.se>
 
