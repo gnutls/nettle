@@ -58,8 +58,6 @@ extern "C" {
 #define ecc_size nettle_ecc_size
 #define ecc_size_a nettle_ecc_size_a
 #define ecc_size_j nettle_ecc_size_j
-#define ecc_a_to_a_itch nettle_ecc_a_to_a_itch
-#define ecc_a_to_a nettle_ecc_a_to_a
 #define ecc_a_to_j nettle_ecc_a_to_j
 #define ecc_j_to_a_itch nettle_ecc_j_to_a_itch
 #define ecc_j_to_a nettle_ecc_j_to_a
@@ -167,15 +165,6 @@ ecc_size_j (const struct ecc_curve *ecc);
 /* FIXME: Rename the low-level (and side-channel silent) functions to
    _ecc_*, and provide public ecc_* functions which handle the
    infinity points properly? */
-
-/* Converts the affine coordinates of a point into montgomery form, if
-   used for this curve. */
-mp_size_t
-ecc_a_to_a_itch (const struct ecc_curve *ecc);
-void
-ecc_a_to_a (const struct ecc_curve *ecc,
-	    mp_limb_t *r, const mp_limb_t *p,
-	    mp_limb_t *scratch);
 
 /* Converts a point P in affine coordinates into a point R in jacobian
    coordinates. If INITIAL is non-zero, and the curve uses montgomery
