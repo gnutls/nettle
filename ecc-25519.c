@@ -60,6 +60,10 @@ ecc_25519_modp(const struct ecc_curve *ecc UNUSED, mp_limb_t *rp)
     + sec_add_1 (rp, rp, ECC_LIMB_SIZE - 1, 19 * cy);
 }
 
+/* We'll also need square roots, see
+   http://www.math.vt.edu/people/brown/doc/sqrts.pdf for a description
+   of Shanks-Tonelli. The needed quadratic non-residue is 3. */
+
 const struct ecc_curve nettle_curve25519 =
 {
   255,
