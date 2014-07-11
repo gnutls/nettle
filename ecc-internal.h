@@ -107,6 +107,9 @@ struct ecc_curve
   const mp_limb_t *g;
   /* Generator with coordinates in Montgomery form. */
   const mp_limb_t *redc_g;
+  /* If non-NULL, the constant needed for transformation to the
+     equivalent Edwards curve. */
+  const mp_limb_t *edwards_root;
 
   ecc_mod_func *modp;
   ecc_mod_func *redc;

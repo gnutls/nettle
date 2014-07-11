@@ -122,6 +122,7 @@ const struct ecc_curve nettle_secp_192r1 =
   ecc_q,
   ecc_g,
   ecc_redc_g,
+  NULL,
   ecc_192_modp,
   ecc_generic_redc,
   ecc_192_modp,

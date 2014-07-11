@@ -75,6 +75,7 @@ const struct ecc_curve nettle_curve25519 =
   ecc_q,
   ecc_g,
   ecc_redc_g,
+  ecc_edwards,
   ecc_25519_modp,
   NULL,
   ecc_25519_modp,

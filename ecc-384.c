@@ -161,6 +161,7 @@ const struct ecc_curve nettle_secp_384r1 =
   ecc_q,
   ecc_g,
   ecc_redc_g,
+  NULL,
   ecc_384_modp,
   ECC_REDC_SIZE != 0 ? ecc_generic_redc : NULL,
   ecc_384_modp,

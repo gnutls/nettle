@@ -68,6 +68,7 @@ const struct ecc_curve nettle_secp_224r1 =
   ecc_q,
   ecc_g,
   ecc_redc_g,
+  NULL,
   ecc_224_modp,
   ecc_generic_redc,
   USE_REDC ? ecc_generic_redc : ecc_224_modp,

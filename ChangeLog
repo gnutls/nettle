@@ -1,5 +1,14 @@
 2014-07-11  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-internal.h (struct ecc_curve): New constant edwards_root.
+	* ecc-192.c (nettle_secp_192r1): Updated accordingly, additional
+	NULL pointer.
+	* ecc-224.c (nettle_secp_224r1): Likewise.
+	* ecc-256.c (nettle_secp_256r1): Likewise.
+	* ecc-384.c (nettle_secp_384r1): Likewise.
+	* ecc-521.c (nettle_secp_521r1): Likewise.
+	* ecc-25519.c (nettle_curve25519): Initialize new constant.
+
 	* eccdata.c (ecc_curve_init): For curve 25519, use correct
 	constant for edwards coordinate transform, and output the constant
 	as ecc_edwards.
