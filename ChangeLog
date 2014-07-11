@@ -1,5 +1,9 @@
 2014-07-11  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/curve25519-dup-test.c: New testcase.
+	* testsuite/Makefile.in (TS_HOGWEED_SOURCES): Added
+	curve25519-dup-test.c.
+
 	* testsuite/testutils.c (test_ecc_point): Made non-static.
 	* testsuite/testutils.h (struct ecc_ref_point): Moved here, from
 	testutils.h.

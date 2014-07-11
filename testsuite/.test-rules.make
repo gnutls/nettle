@@ -187,6 +187,9 @@ dsa-test$(EXEEXT): dsa-test.$(OBJEXT)
 dsa-keygen-test$(EXEEXT): dsa-keygen-test.$(OBJEXT)
 	$(LINK) dsa-keygen-test.$(OBJEXT) $(TEST_OBJS) -o dsa-keygen-test$(EXEEXT)
 
+curve25519-dup-test$(EXEEXT): curve25519-dup-test.$(OBJEXT)
+	$(LINK) curve25519-dup-test.$(OBJEXT) $(TEST_OBJS) -o curve25519-dup-test$(EXEEXT)
+
 ecc-mod-test$(EXEEXT): ecc-mod-test.$(OBJEXT)
 	$(LINK) ecc-mod-test.$(OBJEXT) $(TEST_OBJS) -o ecc-mod-test$(EXEEXT)
 
