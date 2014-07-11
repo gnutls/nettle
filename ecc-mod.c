@@ -40,7 +40,7 @@
 #include "ecc-internal.h"
 
 /* Computes r mod m, where m is of size mn. bp holds B^mn mod m, as mn
-   limbs, but the upper mn - bn libms are zero. */
+   limbs, but the upper mn - bn limbs are zero. */
 void
 ecc_mod (mp_limb_t *rp, mp_size_t rn, mp_size_t mn,
 	 const mp_limb_t *bp, mp_size_t bn,
