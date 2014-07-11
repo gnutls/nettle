@@ -1,0 +1,152 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{url}
+
+\author{Niels Möller}
+\title{Notes on ECC formulas}
+
+\begin{document}
+
+\maketitle
+
+\section{Weierstrass curve}
+
+Consider only the special case
+\begin{equation*}
+  y^2 = x^3 - 3x + b (mod p)     
+\end{equation*}
+See \url{http://www.hyperelliptic.org/EFD/g1p/auto-shortw.html}.
+
+Affine formulas for duplication, $(x_2, y_2) = 2(x_1, y_1)$:
+\begin{align*}
+  t &=  (2y)^{-1} 3 (x_1^2 - 1) \\
+  x_2 &= t^2 - 2 x_1 \\
+  y_2 &= (x_1 - x_2) * t - y_1
+\end{align*}
+Affine formulas for addition, $(x_3, y_3) = (x_1, y_1) + (x_2,
+y_2)$:
+\begin{align}
+  t &= (x_2 - x_1)^{-1} (y_2 - y_1) \\
+  x_3 &= t^2 - x_1 - x_2 \\
+  y_3 &= (x_1 - x_3) t - y_1
+\end{align}
+
+\section{Montgomery curve}
+
+Consider the special case
+\begin{equation*}
+  y^2 = x^3 + b x^2 + x  
+\end{equation*}
+See \url{http://www.hyperelliptic.org/EFD/g1p/auto-montgom.html}.
+
+Affine formulas for duplication, $(x_2, y_2) = 2(x_1, y_1)$:
+\begin{align*}
+  t &= (2 y_1)^{-1} (3 x_1^2 + 2b x_1 + 1) \\
+  x_2 &= t^2 - b - 2 x_1 \\
+  y_2 &= (3 x_1 + b) t - t^3 - y_1 \\
+  &= (3 x_1 + b - t^2) t - y_1 \\
+  &= (x_1 - x_2) t - y_1
+\end{align*}
+So the computation is very similar to the Weierstraß case, differing
+only in the formula for $t$, and the $b$ term in $x_2$.
+
+Affine formulas for addition, $(x_3, y_3) = (x_1, y_1) + (x_2,
+y_2)$:
+\begin{align*}
+  t &= (x_2 - x_1)^{-1} (y_2 - y_1) \\
+  x_3 &= t^2 - b - x_1 - x_2 \\
+  y_3 &= (2 x_1 + x_2 + b) t - t^3 - y_1 \\
+  &= (2 x_1 + x_2 + b - t^2) t - y_1 \\
+  &= (x_1 - x_3) t - y_1
+\end{align*}
+Again, very similar to the Weierstraß formulas, with only an
+additional $b$ term in the formula for $x_3$.
+
+\section{Edwards curve}
+
+For an Edwards curve, we consider the special case
+\begin{equation*}
+  x^2 + y^2 = 1 + d x^2 y^2
+\end{equation*}
+See \url{http://cr.yp.to/papers.html#newelliptic}.
+
+Affine formulas for addition, $(x_3, y_3) = (x_1, y_1) + (x_2,
+y_2)$:
+\begin{align*}
+  t &= d x_1 x_2 y_1 y_2 \\
+  x_3 &= (1 + t)^{-1} (x_1 y_2 + y_1 x_2) \\
+  y_3 &= (1 - t)^{-1} (y_1 y_2 - x_1 x_2)
+\end{align*}
+With homogeneous coordinates $(X_1, Y_1, Z_1)$ etc., D.~J.~Bernstein
+suggests the formulas
+\begin{align*}
+  A &= Z_1 Z_2 \\
+  B &= A^2 \\
+  C &= X_1 X_2 \\
+  D &= Y_1 Y_2 \\
+  E &= d C D \\
+  F &= B - E \\
+  G &= B + E \\
+  X_3 &= A F [(X_1 + Y_1)(X_2 + Y_2) - C - D] \\
+  Y_3 &= A G (D - C) \\
+  Z_3 &= F G
+\end{align*}
+This works also for doubling, but a more efficient variant is
+\begin{align*}
+  B &= (X_1 + Y_1)^2 \\
+  C &= X_1^2 \\
+  D &= Y_1^2 \\
+  E &= C + D \\
+  H &= Z_1^2 \\
+  J &= E - 2H \\
+  X_3 &= (B - E) J \\
+  Y_3 &= E (C - D) \\
+  Z_3 &= E J
+\end{align*}
+
+\section{Curve25519}
+
+Curve25519 is defined as the Montgomery curve
+\begin{equation*}
+  y^2 = x^3 + b x^2 + x \pmod p
+\end{equation*}
+with $b = 486662$ and $p = 2^{255} -19$. It is equivalent to the
+Edwards curve
+\begin{equation*}
+  u^2 + v^2 = 1 + d u^2 v^2 \pmod p
+\end{equation*}
+with $d = (121665/121666) \bmod p$. The equivalence is given by
+mapping $P = (x,y)$ to $P' = (u, v)$, as follows.
+\begin{itemize}
+\item $P = \infty$ corresponds to $P' = (0, 1)$
+\item $P = (0, 0)$ corresponds to $P' = (0, -1)$
+\item Otherwise, for all other points on the curve. First note that $x
+  \neq -1$ (since then the right hand side is a not a quadratic
+  residue), and that $y \neq 0$ (since $y = 0$ and $x \neq 0$ implies
+  that $x^2 + bx + 1 = 0$, or $(x + b/2)^2 = (b/2)^2 - 1$, which also
+  isn't a quadratic residue). The correspondence is then given by
+  \begin{align*}
+    u &= \sqrt{b} \, x / y \\
+    v &= (x-1) / (x+1)
+  \end{align*}
+\end{itemize}
+
+The inverse transformation is
+\begin{align*}
+  x &= (1+v) / (1-v) \\
+  y &= \sqrt{b} x / u 
+\end{align*}
+If the Edwards coordinates are represented using homogeneous
+coordinates, $u = U/W$ and $v = V/W$, then
+\begin{align*}
+  x &= \frac{W+V}{W-V} \\
+  y &= \sqrt{b} \frac{(W+V) W}{(W-V) U} 
+\end{align*}
+so we need to invert the value $(W-V) U$.
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

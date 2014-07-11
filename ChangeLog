@@ -1,5 +1,7 @@
 2014-07-11  Niels Möller  <nisse@lysator.liu.se>
 
+	* misc/ecc-formulas.tex: Some ECC notes.
+
 	* testsuite/curve25519-dup-test.c: New testcase.
 	* testsuite/Makefile.in (TS_HOGWEED_SOURCES): Added
 	curve25519-dup-test.c.
