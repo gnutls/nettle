@@ -565,11 +565,10 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 			  */
 			  "20ae19a1b8a086b4e01edd2c7748d14c"
 			  "923d4d7e6d7c61b229e9c5a27eced3d9",
-			  /* (121665/121666) mod p, from PARI/GP
-			     c = Mod(121665, p); c / (c+1)
-			  */
-			  "2dfc9311d490018c7338bf8688861767"
-			  "ff8ff5b2bebe27548a14b235eca6874a");
+			  /* sqrt(486664) mod p, from PARI/GP
+			     sqrt(Mod(486664, p)) */
+			  "141b0b6806563d503de05885280b5910"
+			  "9ca5ee38d7b56c9c165db7106377bbd8");
       ecc->ref = ecc_alloc (3);
       ecc_set_str (&ecc->ref[0], /* 2 g */
 		   "20d342d51873f1b7d9750c687d157114"
@@ -995,7 +994,10 @@ output_curve (const struct ecc_curve *ecc, unsigned bits_per_limb)
   mpz_add_ui (t, ecc->q, 1);
   mpz_fdiv_q_2exp (t, t, 1);
   output_bignum ("ecc_qp1h", t, limb_size, bits_per_limb);  
-  
+
+  if (ecc->use_edwards)
+    output_bignum ("ecc_edwards", ecc->t, limb_size, bits_per_limb);
+
   /* Trailing zeros in p+1 correspond to trailing ones in p. */
   redc_limbs = mpz_scan0 (ecc->p, 0) / bits_per_limb;
   if (redc_limbs > 0)
