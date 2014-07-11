@@ -1276,12 +1276,6 @@ test_mpn (const char *ref, const mp_limb_t *xp, mp_size_t n)
   return res;
 }
 
-struct ecc_ref_point
-{
-  const char *x;
-  const char *y;
-};
-
 void
 write_mpn (FILE *f, int base, const mp_limb_t *xp, mp_size_t n)
 {
@@ -1289,7 +1283,7 @@ write_mpn (FILE *f, int base, const mp_limb_t *xp, mp_size_t n)
   mpz_out_str (f, base, mpz_roinit_n (t,xp, n));
 }
 
-static void
+void
 test_ecc_point (const struct ecc_curve *ecc,
 		const struct ecc_ref_point *ref,
 		const mp_limb_t *p)

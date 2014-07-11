@@ -1,5 +1,10 @@
 2014-07-11  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/testutils.c (test_ecc_point): Made non-static.
+	* testsuite/testutils.h (struct ecc_ref_point): Moved here, from
+	testutils.h.
+	(test_ecc_point): Declare it.
+
 	* ecc-dup-eh.c (ecc_dup_eh, ecc_dup_eh_itch): New file, new functions.
 	* ecc-eh-to-a.c (ecc_eh_to_a, ecc_eh_to_a_itch): New file, new
 	functions.
