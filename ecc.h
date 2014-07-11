@@ -61,14 +61,16 @@ extern "C" {
 #define ecc_a_to_j nettle_ecc_a_to_j
 #define ecc_j_to_a_itch nettle_ecc_j_to_a_itch
 #define ecc_j_to_a nettle_ecc_j_to_a
-#define ecc_dup_ja_itch nettle_ecc_dup_ja_itch
-#define ecc_dup_ja nettle_ecc_dup_ja
+#define ecc_eh_to_a_itch nettle_ecc_eh_to_a_itch
+#define ecc_eh_to_a nettle_ecc_eh_to_a
 #define ecc_dup_jj_itch nettle_ecc_dup_jj_itch
 #define ecc_dup_jj nettle_ecc_dup_jj
 #define ecc_add_jja_itch nettle_ecc_add_jja_itch
 #define ecc_add_jja nettle_ecc_add_jja
 #define ecc_add_jjj_itch nettle_ecc_add_jjj_itch
 #define ecc_add_jjj nettle_ecc_add_jjj
+#define ecc_dup_eh_itch nettle_ecc_dup_eh_itch
+#define ecc_dup_eh nettle_ecc_dup_eh
 #define ecc_mul_g_itch nettle_ecc_mul_g_itch
 #define ecc_mul_g nettle_ecc_mul_g
 #define ecc_mul_a_itch nettle_ecc_mul_a_itch
@@ -186,17 +188,18 @@ ecc_j_to_a (const struct ecc_curve *ecc,
 	    mp_limb_t *r, const mp_limb_t *p,
 	    mp_limb_t *scratch);
 
-/* Group operations */
+/* Converts a point P on an Edwards curve to affine coordinates on
+   the corresponding Montgomery curve. */
 
-
-/* Point doubling, with jacobian output and affine input. Corner
-   cases: Correctly sets R = 0 (r_Z = 0) if p = 0 or 2p = 0. */
 mp_size_t
-ecc_dup_ja_itch (const struct ecc_curve *ecc);
+ecc_eh_to_a_itch (const struct ecc_curve *ecc);
 void
-ecc_dup_ja (const struct ecc_curve *ecc,
-	    mp_limb_t *r, const mp_limb_t *p,
-	    mp_limb_t *scratch);
+ecc_eh_to_a (const struct ecc_curve *ecc,
+	     int flags,
+	     mp_limb_t *r, const mp_limb_t *p,
+	     mp_limb_t *scratch);
+
+/* Group operations */
 
 /* Point doubling, with jacobian input and output. Corner cases:
    Correctly sets R = 0 (r_Z = 0) if p = 0 or 2p = 0. */
@@ -230,6 +233,15 @@ ecc_add_jjj (const struct ecc_curve *ecc,
 	     mp_limb_t *r, const mp_limb_t *p, const mp_limb_t *q,
 	     mp_limb_t *scratch);
 
+/* FIXME: Use a generic ecc_dup, ecc_add, for any type of curve. */
+/* Point doubling on an Edwards curve, with homogeneous
+   cooordinates. */
+mp_size_t
+ecc_dup_eh_itch (const struct ecc_curve *ecc);
+void
+ecc_dup_eh (const struct ecc_curve *ecc,
+	    mp_limb_t *r, const mp_limb_t *p,
+	    mp_limb_t *scratch);
 
 /* Computes N * the group generator. N is an array of ecc_size()
    limbs. It must be in the range 0 < N < group order, then R != 0,

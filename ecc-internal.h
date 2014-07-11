@@ -237,8 +237,9 @@ sec_modinv (mp_limb_t *vp, mp_limb_t *ap, mp_size_t n,
 /* Current scratch needs: */
 #define ECC_MODINV_ITCH(size) (3*(size))
 #define ECC_J_TO_A_ITCH(size) (5*(size))
-#define ECC_DUP_JA_ITCH(size) (5*(size))
+#define ECC_EH_TO_A_ITCH(size) (5*(size))
 #define ECC_DUP_JJ_ITCH(size) (5*(size))
+#define ECC_DUP_EH_ITCH(size) (5*(size))
 #define ECC_ADD_JJA_ITCH(size) (6*(size))
 #define ECC_ADD_JJJ_ITCH(size) (8*(size))
 #define ECC_MUL_G_ITCH(size) (9*(size))
