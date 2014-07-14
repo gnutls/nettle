@@ -190,6 +190,9 @@ dsa-keygen-test$(EXEEXT): dsa-keygen-test.$(OBJEXT)
 curve25519-dup-test$(EXEEXT): curve25519-dup-test.$(OBJEXT)
 	$(LINK) curve25519-dup-test.$(OBJEXT) $(TEST_OBJS) -o curve25519-dup-test$(EXEEXT)
 
+curve25519-add-test$(EXEEXT): curve25519-add-test.$(OBJEXT)
+	$(LINK) curve25519-add-test.$(OBJEXT) $(TEST_OBJS) -o curve25519-add-test$(EXEEXT)
+
 ecc-mod-test$(EXEEXT): ecc-mod-test.$(OBJEXT)
 	$(LINK) ecc-mod-test.$(OBJEXT) $(TEST_OBJS) -o ecc-mod-test$(EXEEXT)
 

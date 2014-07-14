@@ -1,5 +1,9 @@
 2014-07-14  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/curve25519-add-test.c: New test case.
+	* testsuite/Makefile.in (TS_HOGWEED_SOURCES): Added
+	curve25519-add-test.c.
+
 	* ecc-add-ehh.c (ecc_add_ehh, ecc_add_ehh_itch): New file, new
 	functions.
 	* ecc.h (ecc_add_ehh, ecc_add_ehh_itch): Declare them.
