@@ -75,7 +75,7 @@ const struct ecc_curve nettle_curve25519 =
   ECC_PIPPENGER_K,
   ECC_PIPPENGER_C,
   ecc_p,
-  ecc_b,
+  ecc_d, /* Use the Edwards curve constant. */
   ecc_q,
   ecc_g,
   ecc_redc_g,

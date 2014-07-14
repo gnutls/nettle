@@ -71,6 +71,8 @@ extern "C" {
 #define ecc_add_jjj nettle_ecc_add_jjj
 #define ecc_dup_eh_itch nettle_ecc_dup_eh_itch
 #define ecc_dup_eh nettle_ecc_dup_eh
+#define ecc_add_ehh_itch nettle_ecc_add_ehh_itch
+#define ecc_add_ehh nettle_ecc_add_ehh
 #define ecc_mul_g_itch nettle_ecc_mul_g_itch
 #define ecc_mul_g nettle_ecc_mul_g
 #define ecc_mul_a_itch nettle_ecc_mul_a_itch
@@ -242,6 +244,13 @@ void
 ecc_dup_eh (const struct ecc_curve *ecc,
 	    mp_limb_t *r, const mp_limb_t *p,
 	    mp_limb_t *scratch);
+
+mp_size_t
+ecc_add_ehh_itch (const struct ecc_curve *ecc);
+void
+ecc_add_ehh (const struct ecc_curve *ecc,
+	     mp_limb_t *r, const mp_limb_t *p, const mp_limb_t *q,
+	     mp_limb_t *scratch);
 
 /* Computes N * the group generator. N is an array of ecc_size()
    limbs. It must be in the range 0 < N < group order, then R != 0,

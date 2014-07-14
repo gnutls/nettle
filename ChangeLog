@@ -1,5 +1,13 @@
 2014-07-14  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-add-ehh.c (ecc_add_ehh, ecc_add_ehh_itch): New file, new
+	functions.
+	* ecc.h (ecc_add_ehh, ecc_add_ehh_itch): Declare them.
+	* ecc-internal.h (ECC_ADD_EHH_ITCH): New macro.
+	* Makefile.in (hogweed_SOURCES): Added ecc-add-ehh.c.
+
+	* ecc-25519.c (nettle_curve25519): Use ecc_d instead of ecc_b.
+
 	* eccdata.c: For curve25519, output the Edwards curve constant,
 	ecc_d = (121665/121666) mod p.
 
