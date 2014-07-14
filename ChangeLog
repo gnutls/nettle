@@ -1,5 +1,8 @@
 2014-07-14  Niels Möller  <nisse@lysator.liu.se>
 
+	* eccdata.c: For curve25519, output the Edwards curve constant,
+	ecc_d = (121665/121666) mod p.
+
 	* testsuite/curve25519-dup-test.c (test_main): Add test for 4g.
 	Delete some left-over debug output.
 

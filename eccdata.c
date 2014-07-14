@@ -80,6 +80,7 @@ struct ecc_curve
       v = (x-1) / (x+1)
   */
   int use_edwards;
+  mpz_t d;
   mpz_t t;
 
   /* Table for pippenger's algorithm.
@@ -316,7 +317,7 @@ static void
 ecc_curve_init_str (struct ecc_curve *ecc, enum ecc_type type,
 		    const char *p, const char *b, const char *q,
 		    const char *gx, const char *gy,
-		    const char *t)
+		    const char *d, const char *t)
 {
   ecc->type = type;
 
@@ -332,11 +333,15 @@ ecc_curve_init_str (struct ecc_curve *ecc, enum ecc_type type,
 
   ecc->ref = NULL;
 
+  mpz_init (ecc->d);
   mpz_init (ecc->t);
 
   ecc->use_edwards = (t != NULL);
   if (ecc->use_edwards)
-    mpz_set_str (ecc->t, t, 16);
+    {
+      mpz_set_str (ecc->t, t, 16);
+      mpz_set_str (ecc->d, d, 16);
+    }
 }
 
 static void
@@ -361,7 +366,7 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 
 			  "07192b95ffc8da78631011ed6b24cdd5"
 			  "73f977a11e794811",
-			  NULL);
+			  NULL, NULL);
       ecc->ref = ecc_alloc (3);
       ecc_set_str (&ecc->ref[0], /* 2 g */
 		   "dafebf5828783f2ad35534631588a3f629a70fb16982a888",
@@ -393,7 +398,7 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 
 			  "bd376388b5f723fb4c22dfe6cd4375a0"
 			  "5a07476444d5819985007e34",
-			  NULL);
+			  NULL, NULL);
 
       ecc->ref = ecc_alloc (3);
       ecc_set_str (&ecc->ref[0], /* 2 g */
@@ -426,7 +431,7 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 
 			  "4FE342E2FE1A7F9B8EE7EB4A7C0F9E16"
 			  "2BCE33576B315ECECBB6406837BF51F5",
-			  NULL);
+			  NULL, NULL);
 
       ecc->ref = ecc_alloc (3);
       ecc_set_str (&ecc->ref[0], /* 2 g */
@@ -464,7 +469,7 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 			  "3617de4a96262c6f5d9e98bf9292dc29"
 			  "f8f41dbd289a147ce9da3113b5f0b8c0"
 			  "0a60b1ce1d7e819d7a431d7c90ea0e5f",
-			  NULL);
+			  NULL, NULL);
 
       ecc->ref = ecc_alloc (3);
       ecc_set_str (&ecc->ref[0], /* 2 g */
@@ -511,7 +516,7 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 			  "98f54449579b446817afbd17273e662c"
 			  "97ee72995ef42640c550b9013fad0761"
 			  "353c7086a272c24088be94769fd16650",
-			  NULL);
+			  NULL, NULL);
 
       ecc->ref = ecc_alloc (3);
       ecc_set_str (&ecc->ref[0], /* 2 g */
@@ -565,6 +570,11 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 			  */
 			  "20ae19a1b8a086b4e01edd2c7748d14c"
 			  "923d4d7e6d7c61b229e9c5a27eced3d9",
+			  /* (121665/121666) mod p, from PARI/GP
+			     c = Mod(121665, p); c / (c+1)
+			  */
+			  "2dfc9311d490018c7338bf8688861767"
+			  "ff8ff5b2bebe27548a14b235eca6874a",
 			  /* sqrt(486664) mod p, from PARI/GP
 			     sqrt(Mod(486664, p)) */
 			  "141b0b6806563d503de05885280b5910"
@@ -930,6 +940,8 @@ output_curve (const struct ecc_curve *ecc, unsigned bits_per_limb)
 
   output_bignum ("ecc_p", ecc->p, limb_size, bits_per_limb);
   output_bignum ("ecc_b", ecc->b, limb_size, bits_per_limb);
+  if (ecc->use_edwards)
+    output_bignum ("ecc_d", ecc->d, limb_size, bits_per_limb);
   output_bignum ("ecc_q", ecc->q, limb_size, bits_per_limb);
   output_point ("ecc_g", ecc, &ecc->g, 0, limb_size, bits_per_limb);
   output_point ("ecc_redc_g", ecc, &ecc->g, 1, limb_size, bits_per_limb);
