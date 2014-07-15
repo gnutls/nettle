@@ -28,6 +28,9 @@ test_main (void)
   const struct ecc_curve *ecc = &nettle_curve25519;
   mp_limb_t *g;
   mp_limb_t *z;
+  mp_limb_t *g2;
+  mp_limb_t *g3;
+  mp_limb_t *g4;
   mp_limb_t *pe;
   mp_limb_t *pa;
   mp_limb_t *scratch;
@@ -63,6 +66,9 @@ test_main (void)
   
   g = xalloc_limbs (ecc_size_j (ecc));
   z = xalloc_limbs (ecc_size_j (ecc));
+  g2 = xalloc_limbs (ecc_size_j (ecc));
+  g3 = xalloc_limbs (ecc_size_j (ecc));
+  g4 = xalloc_limbs (ecc_size_j (ecc));
   pe = xalloc_limbs (ecc_size_j (ecc));
   pa = xalloc_limbs (ecc_size_j (ecc));
   scratch = xalloc_limbs (ECC_ADD_EHH_ITCH(ecc->size));
@@ -84,18 +90,32 @@ test_main (void)
   ecc_eh_to_a (ecc, 0, pa, pe, scratch);
   test_ecc_point (ecc, &rg, pa);
 
-  ecc_add_ehh (ecc, pe, g, pe, scratch);
+  ecc_add_ehh (ecc, g2, g, pe, scratch);
 
-  ecc_eh_to_a (ecc, 0, pa, pe, scratch);
+  ecc_eh_to_a (ecc, 0, pa, g2, scratch);
   test_ecc_point (ecc, &rg2, pa);
 
-  ecc_add_ehh (ecc, pe, g, pe, scratch);
+  ecc_add_ehh (ecc, g3, g, g2, scratch);
 
-  ecc_eh_to_a (ecc, 0, pa, pe, scratch);
+  ecc_eh_to_a (ecc, 0, pa, g3, scratch);
   test_ecc_point (ecc, &rg3, pa);
 
-  ecc_add_ehh (ecc, pe, g, pe, scratch);
+  ecc_add_ehh (ecc, g4, g, g3, scratch);
 
-  ecc_eh_to_a (ecc, 0, pa, pe, scratch);
+  ecc_eh_to_a (ecc, 0, pa, g4, scratch);
   test_ecc_point (ecc, &rg4, pa);
+
+  ecc_add_ehh (ecc, g4, g2, g2, scratch);
+
+  ecc_eh_to_a (ecc, 0, pa, g4, scratch);
+  test_ecc_point (ecc, &rg4, pa);
+
+  free (g);
+  free (z);
+  free (g2);
+  free (g3);
+  free (g4);
+  free (pe);
+  free (pa);
+  free (scratch);
 }
