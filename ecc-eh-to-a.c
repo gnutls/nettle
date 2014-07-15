@@ -74,7 +74,10 @@ ecc_eh_to_a (const struct ecc_curve *ecc,
 
   ecc_modp_sub (ecc, izp, wp, vp);
   /* FIXME: For the infinity point, this subtraction gives zero (mod
-     p), and the inversion below fails and returns something else. */
+     p), which isn't invertible. For curve25519, the desired output is
+     x = 0, which we get if the modular inversion function returns 0
+     in this case. Need to check that modular inversion really returns
+     0. */
   ecc_modp_mul (ecc, izp + ecc->size, izp, up);
   /* Needs 3*size scratch */
   ecc_modp_inv (ecc, izp, izp + ecc->size, izp + 2*ecc->size);

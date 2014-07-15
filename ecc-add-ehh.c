@@ -72,9 +72,9 @@ ecc_add_ehh (const struct ecc_curve *ecc,
      E = b*C*D		2 mul		A, B, C, D, E
      F = B - E				A, B, C, D, E, F
      G = B + E     			A, C, D, F, G
-     x3 = a*f*[(x1+y1)(x2+y2) - c - d] 3 mul	A, C, D, G
-     y3 = a*g*(d-c)	2 mul		F, G
-     z3 = f*g		mul
+     x3 = A*F*[(x1+y1)(x2+y2) - C - D] 3 mul	A, C, D, G
+     y3 = A*G*(D-C)	2 mul		F, G
+     z3 = F*G		mul
   */
 #define A scratch
 #define B (scratch + ecc->size)
