@@ -167,7 +167,7 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  ecc-25519.c \
 		  ecc-size.c ecc-j-to-a.c ecc-a-to-j.c \
 		  ecc-dup-jj.c ecc-add-jja.c ecc-add-jjj.c \
-		  ecc-dup-eh.c ecc-add-ehh.c ecc-eh-to-a.c \
+		  ecc-dup-eh.c ecc-add-eh.c ecc-add-ehh.c ecc-eh-to-a.c \
 		  ecc-mul-g.c ecc-mul-a.c ecc-hash.c ecc-random.c \
 		  ecc-point.c ecc-scalar.c ecc-point-mul.c ecc-point-mul-g.c \
 		  ecc-ecdsa-sign.c ecdsa-sign.c \

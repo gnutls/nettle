@@ -85,28 +85,43 @@ test_main (void)
   if (!point_zero_p (ecc, pe))
     die ("dup of zero point failed.\n");
 
-  ecc_add_ehh (ecc, pe, g, pe, scratch);
+  ecc_add_eh (ecc, pe, z, z, scratch);
+  if (!point_zero_p (ecc, pe))
+    die ("dup of zero point failed.\n");
 
+  ecc_add_ehh (ecc, pe, g, pe, scratch);
+  ecc_eh_to_a (ecc, 0, pa, pe, scratch);
+  test_ecc_point (ecc, &rg, pa);
+
+  ecc_add_eh (ecc, pe, z, g, scratch);
   ecc_eh_to_a (ecc, 0, pa, pe, scratch);
   test_ecc_point (ecc, &rg, pa);
 
   ecc_add_ehh (ecc, g2, g, pe, scratch);
+  ecc_eh_to_a (ecc, 0, pa, g2, scratch);
+  test_ecc_point (ecc, &rg2, pa);
 
+  ecc_add_eh (ecc, g2, g, g, scratch);
   ecc_eh_to_a (ecc, 0, pa, g2, scratch);
   test_ecc_point (ecc, &rg2, pa);
 
   ecc_add_ehh (ecc, g3, g, g2, scratch);
+  ecc_eh_to_a (ecc, 0, pa, g3, scratch);
+  test_ecc_point (ecc, &rg3, pa);
 
+  ecc_add_eh (ecc, g3, g2, g, scratch);
   ecc_eh_to_a (ecc, 0, pa, g3, scratch);
   test_ecc_point (ecc, &rg3, pa);
 
   ecc_add_ehh (ecc, g4, g, g3, scratch);
+  ecc_eh_to_a (ecc, 0, pa, g4, scratch);
+  test_ecc_point (ecc, &rg4, pa);
 
+  ecc_add_eh (ecc, g4, g3, g, scratch);
   ecc_eh_to_a (ecc, 0, pa, g4, scratch);
   test_ecc_point (ecc, &rg4, pa);
 
   ecc_add_ehh (ecc, g4, g2, g2, scratch);
-
   ecc_eh_to_a (ecc, 0, pa, g4, scratch);
   test_ecc_point (ecc, &rg4, pa);
 

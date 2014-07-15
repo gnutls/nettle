@@ -71,6 +71,8 @@ extern "C" {
 #define ecc_add_jjj nettle_ecc_add_jjj
 #define ecc_dup_eh_itch nettle_ecc_dup_eh_itch
 #define ecc_dup_eh nettle_ecc_dup_eh
+#define ecc_add_eh_itch nettle_ecc_add_eh_itch
+#define ecc_add_eh nettle_ecc_add_eh
 #define ecc_add_ehh_itch nettle_ecc_add_ehh_itch
 #define ecc_add_ehh nettle_ecc_add_ehh
 #define ecc_mul_g_itch nettle_ecc_mul_g_itch
@@ -243,6 +245,13 @@ ecc_dup_eh_itch (const struct ecc_curve *ecc);
 void
 ecc_dup_eh (const struct ecc_curve *ecc,
 	    mp_limb_t *r, const mp_limb_t *p,
+	    mp_limb_t *scratch);
+
+mp_size_t
+ecc_add_eh_itch (const struct ecc_curve *ecc);
+void
+ecc_add_eh (const struct ecc_curve *ecc,
+	    mp_limb_t *r, const mp_limb_t *p, const mp_limb_t *q,
 	    mp_limb_t *scratch);
 
 mp_size_t

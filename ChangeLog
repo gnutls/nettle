@@ -1,7 +1,12 @@
 2014-07-15  Niels Möller  <nisse@lysator.liu.se>
 
-	* testsuite/curve25519-add-test.c (test_main): Additonal test for
-	g2+g2. Free allocated storage.
+	* ecc-add-eh.c (ecc_add_eh, ecc_add_eh_itch): New file, new
+	functions.
+	* ecc.h: Declare new functions.
+	* ecc-internal.h (ECC_ADD_EH_ITCH): New macro.
+	* Makefile.in (hogweed_SOURCES): Added ecc-add-eh.c.
+	* testsuite/curve25519-add-test.c (test_main): Test ecc_add_eh.
+	Additional test for g2+g2. Free allocated storage.
 
 2014-07-14  Niels Möller  <nisse@lysator.liu.se>
 
