@@ -1,3 +1,8 @@
+2014-07-17  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/curve25519-dup-test.c (test_main): Free allocated
+	storage.
+
 2014-07-15  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-add-eh.c (ecc_add_eh, ecc_add_eh_itch): New file, new

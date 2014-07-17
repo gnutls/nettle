@@ -76,4 +76,10 @@ test_main (void)
 
   ecc_eh_to_a (ecc, 0, pa, pe, scratch);
   test_ecc_point (ecc, &g4, pa);
+
+  free (g);
+  free (z);
+  free (pe);
+  free (pa);
+  free (scratch);
 }
