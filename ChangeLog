@@ -1,5 +1,8 @@
 2014-07-17  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-add-eh.c (ecc_add_eh): Reduce scratch need.
+	* ecc-internal.h (ECC_ADD_EH_ITCH): Reduced to 6*size.
+
 	* testsuite/curve25519-dup-test.c (test_main): Free allocated
 	storage.
 
