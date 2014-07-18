@@ -1,3 +1,11 @@
+2014-07-18  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-mul-g-eh.c (ecc_mul_g_eh, ecc_mul_g_eh_itch): New file and
+	functions. Untested.
+	* ecc.h (ecc_mul_g_eh_itch): Declare new functions.
+	* ecc-internal.h (ECC_MUL_G_EH_ITCH): New macro.
+	* Makefile.in (hogweed_SOURCES): Added ecc-mul-g-eh.c.
+
 2014-07-17  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-add-eh.c (ecc_add_eh): Reduce scratch need.

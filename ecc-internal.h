@@ -245,6 +245,7 @@ sec_modinv (mp_limb_t *vp, mp_limb_t *ap, mp_size_t n,
 #define ECC_ADD_EH_ITCH(size) (6*(size))
 #define ECC_ADD_EHH_ITCH(size) (9*(size))
 #define ECC_MUL_G_ITCH(size) (9*(size))
+#define ECC_MUL_G_EH_ITCH(size) (9*(size))
 #if ECC_MUL_A_WBITS == 0
 #define ECC_MUL_A_ITCH(size) (12*(size))
 #else
