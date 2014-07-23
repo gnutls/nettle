@@ -193,6 +193,9 @@ curve25519-dup-test$(EXEEXT): curve25519-dup-test.$(OBJEXT)
 curve25519-add-test$(EXEEXT): curve25519-add-test.$(OBJEXT)
 	$(LINK) curve25519-add-test.$(OBJEXT) $(TEST_OBJS) -o curve25519-add-test$(EXEEXT)
 
+curve25519-dh-test$(EXEEXT): curve25519-dh-test.$(OBJEXT)
+	$(LINK) curve25519-dh-test.$(OBJEXT) $(TEST_OBJS) -o curve25519-dh-test$(EXEEXT)
+
 ecc-mod-test$(EXEEXT): ecc-mod-test.$(OBJEXT)
 	$(LINK) ecc-mod-test.$(OBJEXT) $(TEST_OBJS) -o ecc-mod-test$(EXEEXT)
 

@@ -1,3 +1,9 @@
+2014-07-23  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/curve25519-dh-test.c: New test case, based on
+	draft-josefsson-tls-curve25519-05 test vectors.
+	* testsuite/Makefile.in (TS_HOGWEED_SOURCES): Added curve25519-dh-test.c.
+
 2014-07-18  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-mul-g-eh.c (ecc_mul_g_eh, ecc_mul_g_eh_itch): New file and
