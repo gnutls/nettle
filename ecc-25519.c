@@ -1,4 +1,4 @@
-/* ecc-25519
+/* ecc-25519.c
 
    Arithmetic and tables for curve25519,
 
@@ -62,7 +62,7 @@ ecc_25519_modp(const struct ecc_curve *ecc UNUSED, mp_limb_t *rp)
 
 /* We'll also need square roots, see
    http://www.math.vt.edu/people/brown/doc/sqrts.pdf for a description
-   of Shanks-Tonelli. The needed quadratic non-residue is 3. */
+   of Shanks-Tonelli. A quadratic non-residue is 2. */
 
 const struct ecc_curve nettle_curve25519 =
 {
