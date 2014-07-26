@@ -1,3 +1,8 @@
+2014-07-26  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-add-ehh.c (ecc_add_ehh): Reduce scratch need.
+	* ecc-internal.h (ECC_ADD_EHH_ITCH): Reduced to 7*size.
+
 2014-07-23  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/curve25519-dh-test.c: New test case, based on

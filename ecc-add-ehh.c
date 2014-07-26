@@ -65,50 +65,53 @@ ecc_add_ehh (const struct ecc_curve *ecc,
 
      Computation	Operation	Live variables
 
-     A = z1*z2		mul		A
-     B = A^2		sqr		A, B
-     C = x1*x2		mul		A, B, C
-     D = y1*y2		mul		A, B, C, D
-     E = b*C*D		2 mul		A, B, C, D, E
-     F = B - E				A, B, C, D, E, F
-     G = B + E     			A, C, D, F, G
-     x3 = A*F*[(x1+y1)(x2+y2) - C - D] 3 mul	A, C, D, G
+     C = x1*x2		mul		C
+     D = y1*y2		mul		C, D
+     T = (x1+y1)(x2+y2) - C - D		C, D, T
+     E = b*C*D		2 mul		C, E, T (Replace C <-- D - C)
+     A = z1*z2		mul		A, C, E, T
+     B = A^2		sqr		A, B, C, E, T
+     F = B - E				A, B, C, E, F, T
+     G = B + E     			A, C, F, G, T
+     x3 = A*F*T		3 mul		A, C, G
      y3 = A*G*(D-C)	2 mul		F, G
      z3 = F*G		mul
   */
-#define A scratch
-#define B (scratch + ecc->size)
-#define C (scratch + 2*ecc->size)
-#define D (scratch + 3*ecc->size)
-#define E (scratch + 4*ecc->size) 
-#define F (scratch + 5*ecc->size)
-#define G (scratch + 6*ecc->size)
-#define T (scratch + 7*ecc->size)
- 
-  ecc_modp_mul (ecc, A, z1, z2);
-  ecc_modp_sqr (ecc, B, A);
+#define C scratch
+#define D (scratch + ecc->size)
+#define T (scratch + 2*ecc->size)
+#define E (scratch + 3*ecc->size) 
+#define A (scratch + 4*ecc->size)
+#define B (scratch + 5*ecc->size)
+#define F D
+#define G E
+
   ecc_modp_mul (ecc, C, x1, x2);
   ecc_modp_mul (ecc, D, y1, y2);
-  ecc_modp_mul (ecc, T, C, D);
-  ecc_modp_mul (ecc, E, T, ecc->b);
+  ecc_modp_add (ecc, A, x1, y1);
+  ecc_modp_add (ecc, B, x2, y2);
+  ecc_modp_mul (ecc, T, A, B);
+  ecc_modp_sub (ecc, T, T, C);
+  ecc_modp_sub (ecc, T, T, D);
+  ecc_modp_mul (ecc, x3, C, D);
+  ecc_modp_mul (ecc, E, x3, ecc->b);
+  ecc_modp_sub (ecc, C, D, C);
+  
+  ecc_modp_mul (ecc, A, z1, z2);
+  ecc_modp_sqr (ecc, B, A);
+
   ecc_modp_sub (ecc, F, B, E);
   ecc_modp_add (ecc, G, B, E);
 
   /* x3 */
-  ecc_modp_add (ecc, B, x1, y1);
-  ecc_modp_add (ecc, E, x2, y2);
-  ecc_modp_mul (ecc, T, B, E);
-  ecc_modp_sub (ecc, T, T, C);
-  ecc_modp_sub (ecc, x3, T, D);
-  ecc_modp_mul (ecc, T, x3, A);
-  ecc_modp_mul (ecc, x3, T, F);
+  ecc_modp_mul (ecc, B, F, T);
+  ecc_modp_mul (ecc, x3, B, A);
 
   /* y3 */
-  ecc_modp_sub (ecc, C, D, C);
-  ecc_modp_mul (ecc, T, A, C);
-  ecc_modp_mul (ecc, y3, T, G);
+  ecc_modp_mul (ecc, B, G, C);
+  ecc_modp_mul (ecc, y3, B, A);
 
   /* z3 */
-  ecc_modp_mul (ecc, T, F, G);
-  mpn_copyi (z3, T, ecc->size);
+  ecc_modp_mul (ecc, B, F, G);
+  mpn_copyi (z3, B, ecc->size);
 }
