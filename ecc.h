@@ -63,6 +63,8 @@ extern "C" {
 #define ecc_j_to_a nettle_ecc_j_to_a
 #define ecc_eh_to_a_itch nettle_ecc_eh_to_a_itch
 #define ecc_eh_to_a nettle_ecc_eh_to_a
+#define ecc_a_to_eh_itch nettle_ecc_a_to_eh_itch
+#define ecc_a_to_eh nettle_ecc_a_to_eh
 #define ecc_dup_jj_itch nettle_ecc_dup_jj_itch
 #define ecc_dup_jj nettle_ecc_dup_jj
 #define ecc_add_jja_itch nettle_ecc_add_jja_itch
@@ -81,6 +83,8 @@ extern "C" {
 #define ecc_mul_a nettle_ecc_mul_a
 #define ecc_mul_g_eh_itch nettle_ecc_mul_g_eh_itch
 #define ecc_mul_g_eh nettle_ecc_mul_g_eh
+#define ecc_mul_eh_itch nettle_ecc_mul_eh_itch
+#define ecc_mul_eh nettle_ecc_mul_eh
 
 struct ecc_curve;
 
@@ -205,6 +209,13 @@ ecc_eh_to_a (const struct ecc_curve *ecc,
 	     mp_limb_t *r, const mp_limb_t *p,
 	     mp_limb_t *scratch);
 
+mp_size_t
+ecc_a_to_eh_itch (const struct ecc_curve *ecc);
+void
+ecc_a_to_eh (const struct ecc_curve *ecc,
+	     mp_limb_t *r, const mp_limb_t *p,
+	     mp_limb_t *scratch);
+
 /* Group operations */
 
 /* Point doubling, with jacobian input and output. Corner cases:
@@ -291,6 +302,15 @@ ecc_mul_g_eh_itch (const struct ecc_curve *ecc);
 void
 ecc_mul_g_eh (const struct ecc_curve *ecc, mp_limb_t *r,
 	      const mp_limb_t *np, mp_limb_t *scratch);
+
+mp_size_t
+ecc_mul_eh_itch (const struct ecc_curve *ecc);
+void
+ecc_mul_eh (const struct ecc_curve *ecc,
+	    mp_limb_t *r,
+	    const mp_limb_t *np, const mp_limb_t *p,
+	    mp_limb_t *scratch);
+
 
 #ifdef __cplusplus
 }

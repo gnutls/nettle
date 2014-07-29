@@ -1,3 +1,23 @@
+2014-07-29  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-internal.h (ECC_MUL_A_EH_WBITS): New constant.
+	(ECC_A_TO_EH_ITCH, ECC_MUL_A_EH_ITCH): New macros.
+	* ecc-a-to-eh.c (ecc_a_to_eh, ecc_a_to_eh_itch): New file, new
+	functions.
+	* ecc-mul-a-eh.c: New file.
+	(ecc_mul_a_eh): New function. The case [ECC_MUL_A_EH_WBITS > 0]
+	not yet working).
+	(ecc_mul_a_eh_itch): New function.
+	* ecc.h: Declare new functions.
+	* Makefile.in (hogweed_SOURCES): Added ecc-a-to-eh.c and
+	ecc-mul-a-eh.c.
+
+	* testsuite/curve25519-dh-test.c (curve25519_sqrt): New function.
+	(curve_25519): Use ecc_mul_a_eh.
+	(test_a): New function.
+	(test_main): Test construction of shared secret, using scalar
+	multiplication with points other than the fix generator.
+
 2014-07-26  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-add-ehh.c (ecc_add_ehh): Reduce scratch need.

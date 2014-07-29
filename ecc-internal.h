@@ -72,6 +72,8 @@
    up to 5 bits, but I don't think that's worth doubling the
    storage. */
 #define ECC_MUL_A_WBITS 4
+#define ECC_MUL_A_EH_WBITS 0
+
 
 /* Reduces from 2*ecc->size to ecc->size. */
 /* Required to return a result < 2q. This property is inherited by
@@ -238,6 +240,7 @@ sec_modinv (mp_limb_t *vp, mp_limb_t *ap, mp_size_t n,
 #define ECC_MODINV_ITCH(size) (3*(size))
 #define ECC_J_TO_A_ITCH(size) (5*(size))
 #define ECC_EH_TO_A_ITCH(size) (5*(size))
+#define ECC_A_TO_EH_ITCH(size) (2*(size))
 #define ECC_DUP_JJ_ITCH(size) (5*(size))
 #define ECC_DUP_EH_ITCH(size) (5*(size))
 #define ECC_ADD_JJA_ITCH(size) (6*(size))
@@ -251,6 +254,12 @@ sec_modinv (mp_limb_t *vp, mp_limb_t *ap, mp_size_t n,
 #else
 #define ECC_MUL_A_ITCH(size) \
   (((3 << ECC_MUL_A_WBITS) + 11) * (size))
+#endif
+#if ECC_MUL_A_EH_WBITS == 0
+#define ECC_MUL_A_EH_ITCH(size) (13*(size))
+#else
+#define ECC_MUL_A_EH_ITCH(size) \
+  (((3 << ECC_MUL_A_EH_WBITS) + 10) * (size))
 #endif
 #define ECC_ECDSA_SIGN_ITCH(size) (12*(size))
 #define ECC_ECDSA_VERIFY_ITCH(size) \
