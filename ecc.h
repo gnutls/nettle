@@ -83,8 +83,8 @@ extern "C" {
 #define ecc_mul_a nettle_ecc_mul_a
 #define ecc_mul_g_eh_itch nettle_ecc_mul_g_eh_itch
 #define ecc_mul_g_eh nettle_ecc_mul_g_eh
-#define ecc_mul_eh_itch nettle_ecc_mul_eh_itch
-#define ecc_mul_eh nettle_ecc_mul_eh
+#define ecc_mul_a_eh_itch nettle_ecc_mul_a_eh_itch
+#define ecc_mul_a_eh nettle_ecc_mul_a_eh
 
 struct ecc_curve;
 
@@ -304,12 +304,12 @@ ecc_mul_g_eh (const struct ecc_curve *ecc, mp_limb_t *r,
 	      const mp_limb_t *np, mp_limb_t *scratch);
 
 mp_size_t
-ecc_mul_eh_itch (const struct ecc_curve *ecc);
+ecc_mul_a_eh_itch (const struct ecc_curve *ecc);
 void
-ecc_mul_eh (const struct ecc_curve *ecc,
-	    mp_limb_t *r,
-	    const mp_limb_t *np, const mp_limb_t *p,
-	    mp_limb_t *scratch);
+ecc_mul_a_eh (const struct ecc_curve *ecc,
+	      mp_limb_t *r,
+	      const mp_limb_t *np, const mp_limb_t *p,
+	      mp_limb_t *scratch);
 
 
 #ifdef __cplusplus
