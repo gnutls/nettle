@@ -68,11 +68,12 @@
 
 /* Window size for ecc_mul_a. Using 4 bits seems like a good choice,
    for both Intel x86_64 and ARM Cortex A9. For the larger curves, of
-   384 and 521 bits, we could improve seepd by a few percent if we go
+   384 and 521 bits, we could improve speed by a few percent if we go
    up to 5 bits, but I don't think that's worth doubling the
    storage. */
 #define ECC_MUL_A_WBITS 4
-#define ECC_MUL_A_EH_WBITS 0
+/* And for ecc_mul_a_eh */
+#define ECC_MUL_A_EH_WBITS 4
 
 
 /* Reduces from 2*ecc->size to ecc->size. */

@@ -91,8 +91,6 @@ ecc_mul_a_eh (const struct ecc_curve *ecc,
 }
 #else /* ECC_MUL_A_EH_WBITS > 1 */
 
-#error Not yet working
-
 #define TABLE_SIZE (1U << ECC_MUL_A_EH_WBITS)
 #define TABLE_MASK (TABLE_SIZE - 1)
 
@@ -111,7 +109,6 @@ table_init (const struct ecc_curve *ecc,
   TABLE(0)[ecc->size] = TABLE(0)[2*ecc->size] = 1;
 
   ecc_a_to_eh (ecc, TABLE(1), p, scratch);
-  mpn_copyi (TABLE(1), p, 3*ecc->size);
 
   for (j = 2; j < size; j += 2)
     {

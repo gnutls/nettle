@@ -1,3 +1,11 @@
+2014-08-02  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-internal.h (ECC_MUL_A_EH_WBITS): Set to 4, to enable
+	window-based scalar multiplication.
+
+	* ecc-mul-a-eh.c (table_init) [ECC_MUL_A_EH_WBITS > 0]: Fixed
+	initialization of TABLE(1).
+
 2014-07-29  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-internal.h (ECC_MUL_A_EH_WBITS): New constant.
