@@ -127,7 +127,7 @@ mapping $P = (x,y)$ to $P' = (u, v)$, as follows.
   that $x^2 + bx + 1 = 0$, or $(x + b/2)^2 = (b/2)^2 - 1$, which also
   isn't a quadratic residue). The correspondence is then given by
   \begin{align*}
-    u &= \sqrt{b} \, x / y \\
+    u &= \sqrt{b+2} \, x / y \\
     v &= (x-1) / (x+1)
   \end{align*}
 \end{itemize}
@@ -135,7 +135,7 @@ mapping $P = (x,y)$ to $P' = (u, v)$, as follows.
 The inverse transformation is
 \begin{align*}
   x &= (1+v) / (1-v) \\
-  y &= \sqrt{b} x / u 
+  y &= \sqrt{b+2} x / u 
 \end{align*}
 If the Edwards coordinates are represented using homogeneous
 coordinates, $u = U/W$ and $v = V/W$, then
