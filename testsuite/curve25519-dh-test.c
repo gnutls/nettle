@@ -111,6 +111,7 @@ int curve25519_sqrt (const struct ecc_curve *ecc,
   mpz_clear (sm1h);
   mpz_clear (x);
   mpz_clear (b);
+  mpz_clear (t);
   return success;
 }
 

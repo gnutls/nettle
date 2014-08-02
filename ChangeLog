@@ -1,5 +1,8 @@
 2014-08-02  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/curve25519-dh-test.c (curve25519_sqrt): Fixed memory
+	leak, a mpz_clear call was missing.
+
 	* ecc-internal.h (ECC_MUL_A_EH_WBITS): Set to 4, to enable
 	window-based scalar multiplication.
 
