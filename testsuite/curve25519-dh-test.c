@@ -31,6 +31,8 @@
 
 #include "testutils.h"
 
+#include "curve25519.h"
+
 static
 int curve25519_sqrt (const struct ecc_curve *ecc,
 		     mp_limb_t *rp, const mp_limb_t *ap)
@@ -160,39 +162,21 @@ curve_25519 (const struct ecc_curve *ecc,
 }
 
 static void
-test_g (const char *sz, const char *pz)
+test_g (const uint8_t *s, const uint8_t *r)
 {
-  mpz_t S, R, X;
-  const struct ecc_curve *ecc = &nettle_curve25519;
-
-  mpz_init (S);
-  mpz_init (R);
-  mpz_init (X);
-
-  mpz_set_str (S, sz, 16);
-  mpz_set_str (R, pz, 16);
-
-  ASSERT (mpz_size (S) == ecc->size);
-  
-  curve_25519 (ecc, mpz_limbs_write (X, ecc->size),
-	       mpz_limbs_read (S), NULL);
-
-  mpz_limbs_finish (X, ecc->size);
-  if (mpz_cmp (X, R) != 0)
+  uint8_t p[CURVE25519_SIZE];
+  curve25519_base (p, s);
+  if (!MEMEQ (CURVE25519_SIZE, p, r))
     {
-      fprintf (stderr, "curve25519 failure:\ns = ");
-      mpz_out_str (stderr, 16, S);
-      fprintf (stderr, "\nX = ");
-      mpz_out_str (stderr, 16, X);
-      fprintf (stderr, " (bad)\nR = ");
-      mpz_out_str (stderr, 16, R);
-      fprintf (stderr, " (expected)\n");
+      printf ("curve25519_base failure:\ns = ");
+      print_hex (CURVE25519_SIZE, s);
+      printf ("\np = ");
+      print_hex (CURVE25519_SIZE, p);
+      printf (" (bad)\nr = ");
+      print_hex (CURVE25519_SIZE, r);
+      printf (" (expected)\n");
       abort ();
     }
-
-  mpz_clear (S);
-  mpz_clear (R);
-  mpz_clear (X);
 }
 
 static void
@@ -240,19 +224,17 @@ test_a (const char *bz, const char *sz, const char *pz)
 void
 test_main (void)
 {
-  /* From draft-josefsson-tls-curve25519-05. Different endianness for
-     the P values, though. */
-  test_g ("6A2CB91DA5FB77B12A99C0EB872F4CDF"
-	  "4566B25172C1163C7DA518730A6D0770",
-
-	  "6A4E9BAA8EA9A4EBF41A38260D3ABF0D"
-	  "5AF73EB4DC7D8B7454A7308909F02085");
-
-  test_g ("6BE088FF278B2F1CFDB6182629B13B6F"
-	  "E60E80838B7FE1794B8A4A627E08AB58",
-
-	  "4F2B886F147EFCAD4D67785BC843833F"
-	  "3735E4ECC2615BD3B4C17D7B7DDB9EDE");
+  /* From draft-turner-thecurve25519function-00 (same also in
+     draft-josefsson-tls-curve25519-05, but the latter uses different
+     endianness). */
+  test_g (H("77076d0a7318a57d3c16c17251b26645"
+	    "df4c2f87ebc0992ab177fba51db92c2a"),
+	  H("8520f0098930a754748b7ddcb43ef75a"
+	    "0dbf3a0d26381af4eba4a98eaa9b4e6a"));
+  test_g (H("5dab087e624a8a4b79e17f8b83800ee6"
+	    "6f3bb1292618b6fd1c2f8b27ff88e0eb"),
+	  H("de9edb7d7b7dc1b4d35b61c2ece43537"
+	    "3f8343c85b78674dadfc7e146f882b4f"));
 
   test_a ("4F2B886F147EFCAD4D67785BC843833F"
 	  "3735E4ECC2615BD3B4C17D7B7DDB9EDE",

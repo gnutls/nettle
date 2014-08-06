@@ -1,5 +1,8 @@
 2014-08-06  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/curve25519-dh-test.c (test_g): Use curve25519_base.
+	(test_main): Use little-endian inputs for test_g.
+
 	* curve25519-base.c (curve25519_base): New file, new function.
 	Analogous to NaCl's crypto_scalarmult_base.
 	* curve25519.h: New file.
