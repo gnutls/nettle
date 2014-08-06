@@ -227,6 +227,68 @@ mpn_set_base256 (mp_limb_t *rp, mp_size_t rn,
     }
 }
 
+void
+mpn_set_base256_le (mp_limb_t *rp, mp_size_t rn,
+		    const uint8_t *xp, size_t xn)
+{
+  size_t xi;
+  mp_limb_t out;
+  unsigned bits;
+  for (xi = 0, out = bits = 0; xi < xn && rn > 0; )
+    {
+      mp_limb_t in = xp[xi++];
+      out |= (in << bits) & GMP_NUMB_MASK;
+      bits += 8;
+      if (bits >= GMP_NUMB_BITS)
+	{
+	  *rp++ = out;
+	  rn--;
+
+	  bits -= GMP_NUMB_BITS;
+	  out = in >> (8 - bits);
+	}
+    }
+  if (rn > 0)
+    {
+      *rp++ = out;
+      if (--rn > 0)
+	mpn_zero (rp, rn);
+    }
+}
+
+void
+mpn_get_base256_le (uint8_t *rp, size_t rn,
+		    const mp_limb_t *xp, mp_size_t xn)
+{
+  unsigned bits;
+  mp_limb_t in;
+  for (bits = in = 0; xn > 0 && rn > 0; )
+    {
+      if (bits >= 8)
+	{
+	  *rp++ = in;
+	  rn--;
+	  in >>= 8;
+	  bits -= 8;
+	}
+      else
+	{
+	  uint8_t old = in;
+	  in = *xp++;
+	  xn--;
+	  *rp++ = old | (in << bits);
+	  in >>= (8 - bits);
+	  bits += GMP_NUMB_BITS - 8;
+	}
+    }
+  while (rn > 0)
+    {
+      *rp++ = in;
+      rn--;
+      in >>= 8;
+    }
+}
+
 mp_limb_t *
 gmp_alloc_limbs (mp_size_t n)
 {

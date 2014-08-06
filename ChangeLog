@@ -1,3 +1,8 @@
+2014-08-06  Niels Möller  <nisse@lysator.liu.se>
+
+	* gmp-glue.c (mpn_set_base256_le, mpn_get_base256_le): New functions.
+	* gmp-glue.h: Declare them.
+
 2014-08-02  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/curve25519-dh-test.c (curve25519_sqrt): Fixed memory
