@@ -1,5 +1,11 @@
 2014-08-06  Niels Möller  <nisse@lysator.liu.se>
 
+	* curve25519-base.c (curve25519_base): New file, new function.
+	Analogous to NaCl's crypto_scalarmult_base.
+	* curve25519.h: New file.
+	* Makefile.in (hogweed_SOURCES): Added curve25519-base.c.
+	(HEADERS): Added curve25519.h.
+
 	* gmp-glue.c (mpn_set_base256_le, mpn_get_base256_le): New functions.
 	* gmp-glue.h: Declare them.
 
