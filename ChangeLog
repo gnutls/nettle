@@ -1,5 +1,10 @@
 2014-08-18  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/curve25519-dh-test.c (test_a): Use curve25519_mul.
+	(test_main): Use little-endian inputs for test_a.
+	(curve25519_sqrt, curve_25519): Deleted static helper functions,
+	no longer needed.
+
 	* curve25519-mul.c (curve25519_mul): New file and function.
 	* curve25519.h (curve25519_mul): Declare it.
 	* Makefile.in (hogweed_SOURCES): Added curve25519-mul.c.
