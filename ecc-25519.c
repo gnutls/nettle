@@ -60,9 +60,135 @@ ecc_25519_modp(const struct ecc_curve *ecc UNUSED, mp_limb_t *rp)
     + sec_add_1 (rp, rp, ECC_LIMB_SIZE - 1, 19 * cy);
 }
 
-/* We'll also need square roots, see
-   http://www.math.vt.edu/people/brown/doc/sqrts.pdf for a description
-   of Shanks-Tonelli. A quadratic non-residue is 2. */
+/* Needs 2*ecc->size limbs at rp, and 2*ecc->size additional limbs of
+   scratch space. No overlap allowed. */
+static void
+ecc_modp_powm_2kp1 (const struct ecc_curve *ecc,
+		    mp_limb_t *rp, const mp_limb_t *xp,
+		    unsigned k, mp_limb_t *tp)
+{
+  if (k & 1)
+    {
+      ecc_modp_sqr (ecc, tp, xp);
+      k--;
+    }
+  else
+    {
+      ecc_modp_sqr (ecc, rp, xp);
+      ecc_modp_sqr (ecc, tp, rp);
+      k -= 2;
+    }
+  while (k > 0)
+    {
+      ecc_modp_sqr (ecc, rp, tp);
+      ecc_modp_sqr (ecc, tp, rp);
+      k -= 2;
+    }
+  ecc_modp_mul (ecc, rp, tp, xp);
+#undef t1
+#undef t2
+}
+
+/* Compute x such that x^2 = a (mod p). Returns one on success, zero
+   on failure. using the e == 2 special case of the Shanks-Tonelli
+   algorithm (see http://www.math.vt.edu/people/brown/doc/sqrts.pdf,
+   or Henri Cohen, Computational Algebraic Number Theory, 1.5.1.
+
+   NOTE: Not side-channel silent. FIXME: Compute square root in the
+   extended field if a isn't a square (mod p)? FIXME: Accept scratch
+   space from caller (could allow scratch == rp). */
+#if ECC_SQRT_E != 2
+#error Broken curve25519 parameters
+#endif
+int
+ecc_25519_sqrt(mp_limb_t *rp, const mp_limb_t *ap)
+{
+  mp_size_t itch;
+  mp_limb_t *scratch;
+  int res;
+  const struct ecc_curve *ecc = &nettle_curve25519;
+
+  itch = 7*ECC_LIMB_SIZE;
+  scratch = gmp_alloc_limbs (itch);
+
+#define t0 scratch
+#define a7 (scratch + 2*ECC_LIMB_SIZE)
+#define t1 (scratch + 3*ECC_LIMB_SIZE)
+#define t2 (scratch + 5*ECC_LIMB_SIZE)
+#define scratch_out (scratch + 3*ECC_LIMB_SIZE) /* overlap t1, t2 */
+
+#define xp (scratch + ECC_LIMB_SIZE)
+#define bp (scratch + 2*ECC_LIMB_SIZE)
+
+  /* a^{2^252 - 3} = a^{(p-5)/8}, using the addition chain
+     2^252 - 3
+     = 1 + (2^252-4)
+     = 1 + 4 (2^250-1)
+     = 1 + 4 (2^125+1)(2^125-1)
+     = 1 + 4 (2^125+1)(1+2(2^124-1))
+     = 1 + 4 (2^125+1)(1+2(2^62+1)(2^62-1))
+     = 1 + 4 (2^125+1)(1+2(2^62+1)(2^31+1)(2^31-1))
+     = 1 + 4 (2^125+1)(1+2(2^62+1)(2^31+1)(7+8(2^28-1)))
+     = 1 + 4 (2^125+1)(1+2(2^62+1)(2^31+1)(7+8(2^14+1)(2^14-1)))
+     = 1 + 4 (2^125+1)(1+2(2^62+1)(2^31+1)(7+8(2^14+1)(2^7+1)(2^7-1)))
+     = 1 + 4 (2^125+1)(1+2(2^62+1)(2^31+1)(7+8(2^14+1)(2^7+1)(1+2(2^6-1))))
+     = 1 + 4 (2^125+1)(1+2(2^62+1)(2^31+1)(7+8(2^14+1)(2^7+1)(1+2(2^3+1)*7)))
+  */ 
+     
+  ecc_modp_powm_2kp1 (ecc, t1, ap, 1, t2);  /* a^3 */
+  ecc_modp_sqr (ecc, t0, t1);		    /* a^6 */
+  ecc_modp_mul (ecc, a7, t0, ap);	    /* a^7 */
+  ecc_modp_powm_2kp1 (ecc, t0, a7, 3, t1);  /* a^63 = a^{2^6-1} */
+  ecc_modp_sqr (ecc, t1, t0);		    /* a^{2^7-2} */
+  ecc_modp_mul (ecc, t0, t1, ap);	    /* a^{2^7-1} */
+  ecc_modp_powm_2kp1 (ecc, t1, t0, 7, t2);  /* a^{2^14-1}*/
+  ecc_modp_powm_2kp1 (ecc, t0, t1, 14, t2); /* a^{2^28-1} */
+  ecc_modp_sqr (ecc, t1, t0);		    /* a^{2^29-2} */
+  ecc_modp_sqr (ecc, t2, t1);		    /* a^{2^30-4} */
+  ecc_modp_sqr (ecc, t1, t2);		    /* a^{2^31-8} */
+  ecc_modp_mul (ecc, t0, t1, a7);	    /* a^{2^31-1} */
+  ecc_modp_powm_2kp1 (ecc, t1, t0, 31, t2); /* a^{2^62-1} */  
+  ecc_modp_powm_2kp1 (ecc, t0, t1, 62, t2); /* a^{2^124-1}*/
+  ecc_modp_sqr (ecc, t1, t0);		    /* a^{2^125-2} */
+  ecc_modp_mul (ecc, t0, t1, ap);	    /* a^{2^125-1} */
+  ecc_modp_powm_2kp1 (ecc, t1, t0, 125, t2); /* a^{2^250-1} */
+  ecc_modp_sqr (ecc, t0, t1);		    /* a^{2^251-2} */
+  ecc_modp_sqr (ecc, t1, t0);		    /* a^{2^252-4} */
+  ecc_modp_mul (ecc, t0, t1, ap);	    /* a^{2^252-3} */
+
+  /* Compute candidate root x and fudgefactor b. */
+  ecc_modp_mul (ecc, xp, t0, ap); /* a^{(p+3)/8 */
+  ecc_modp_mul (ecc, bp, t0, xp); /* a^{(p-1)/4} */
+  /* Check if b == 1 (mod p) */
+  if (mpn_cmp (bp, ecc->p, ECC_LIMB_SIZE) >= 0)
+    mpn_sub_n (bp, bp, ecc->p, ECC_LIMB_SIZE);
+  if (mpn_cmp (bp, ecc->unit, ECC_LIMB_SIZE) == 0)
+    {
+      mpn_copyi (rp, xp, ECC_LIMB_SIZE);
+      res = 1;
+    }
+  else
+    {
+      mpn_add_1 (bp, bp, ECC_LIMB_SIZE, 1);
+      if (mpn_cmp (bp, ecc->p, ECC_LIMB_SIZE) == 0)
+	{
+	  ecc_modp_mul (&nettle_curve25519, bp, xp, ecc_sqrt_z);
+	  mpn_copyi (rp, bp, ECC_LIMB_SIZE);
+	  res = 1;
+	}
+      else
+	res = 0;
+    }
+  gmp_free_limbs (scratch, itch);
+  return res;
+#undef t0
+#undef t1
+#undef t2
+#undef a7
+#undef xp
+#undef bp
+#undef scratch_out
+}
 
 const struct ecc_curve nettle_curve25519 =
 {

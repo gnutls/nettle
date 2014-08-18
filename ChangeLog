@@ -1,3 +1,10 @@
+2014-08-18  Niels Möller  <nisse@lysator.liu.se>
+
+	* eccdata.c (output_curve): Compute constants needed for
+	Shanks-Tonelli.
+	* ecc-25519.c (ecc_modp_powm_2kp1, ecc_25519_sqrt): New functions.
+	* ecc-internal.h (ecc_25519_sqrt): Declare it.
+
 2014-08-06  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/curve25519-dh-test.c (test_g): Use curve25519_base.

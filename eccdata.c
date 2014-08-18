@@ -926,7 +926,7 @@ output_curve (const struct ecc_curve *ecc, unsigned bits_per_limb)
 {
   unsigned limb_size = (ecc->bit_size + bits_per_limb - 1)/bits_per_limb;
   unsigned i;
-  unsigned bits;
+  unsigned bits, e;
   int redc_limbs;
   mpz_t t;
 
@@ -1033,6 +1033,62 @@ output_curve (const struct ecc_curve *ecc, unsigned bits_per_limb)
 	printf ("#define ecc_redc_ppm1 NULL\n");
     }
   printf ("#define ECC_REDC_SIZE %d\n", redc_limbs);
+
+  /* For mod p square root computation. */
+  if (mpz_fdiv_ui (ecc->p, 4) == 3)
+    {
+      /* x = a^{(p+1)/4} gives square root of a (if it exists,
+	 otherwise the square root of -a). */
+      e = 1;
+      mpz_add_ui (t, ecc->p, 1);
+      mpz_fdiv_q_2exp (t, t, 2); 
+    }
+  else
+    {
+      /* p-1 = 2^e s, s odd, t = (s-1)/2*/
+      unsigned g, i;
+      mpz_t s;
+      mpz_t z;
+
+      mpz_init (s);
+      mpz_init (z);
+
+      mpz_sub_ui (s, ecc->p, 1);
+      e = mpz_scan1 (s, 0);
+      assert (e > 1);
+
+      mpz_fdiv_q_2exp (s, s, e);
+
+      /* Find a non-square g, g^{(p-1)/2} = -1,
+	 and z = g^{(p-1)/4 */
+      for (g = 2; ; g++)
+	{
+	  mpz_set_ui (z, g);
+	  mpz_powm (z, z, s, ecc->p);
+	  mpz_mul (t, z, z);
+	  mpz_mod (t, t, ecc->p);
+
+	  for (i = 2; i < e; i++)
+	    {
+	      mpz_mul (t, t, t);
+	      mpz_mod (t, t, ecc->p);
+	    }
+	  if (mpz_cmp_ui (t, 1) != 0)
+	    break;
+	}
+      mpz_add_ui (t, t, 1);
+      assert (mpz_cmp (t, ecc->p) == 0);
+      output_bignum ("ecc_sqrt_z", z, limb_size, bits_per_limb);
+
+      mpz_fdiv_q_2exp (t, s, 1);
+
+      mpz_clear (s);
+      mpz_clear (z);
+    }
+  printf ("#define ECC_SQRT_E %u\n", e);
+  printf ("#define ECC_SQRT_T_BITS %u\n",
+	  (unsigned) mpz_sizeinbase (t, 2));
+  output_bignum ("ecc_sqrt_t", t, limb_size, bits_per_limb);      
 
   printf ("#if USE_REDC\n");
   printf ("#define ecc_unit ecc_Bmodp\n");
