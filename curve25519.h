@@ -39,11 +39,11 @@ extern "C" {
 #endif
 
 /* Name mangling */
-#define curve25519_base nettle_curve25519_base
+#define curve25519_mul_g nettle_curve25519_mul_g
 
 #define CURVE25519_SIZE 32
 
 void
-curve25519_base (uint8_t *q, const uint8_t *n);
-  
+curve25519_mul_g (uint8_t *q, const uint8_t *n);
+
 #endif /* NETTLE_CURVE25519_H */

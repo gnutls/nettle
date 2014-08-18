@@ -165,10 +165,10 @@ static void
 test_g (const uint8_t *s, const uint8_t *r)
 {
   uint8_t p[CURVE25519_SIZE];
-  curve25519_base (p, s);
+  curve25519_mul_g (p, s);
   if (!MEMEQ (CURVE25519_SIZE, p, r))
     {
-      printf ("curve25519_base failure:\ns = ");
+      printf ("curve25519_mul_g failure:\ns = ");
       print_hex (CURVE25519_SIZE, s);
       printf ("\np = ");
       print_hex (CURVE25519_SIZE, p);

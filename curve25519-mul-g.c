@@ -1,4 +1,4 @@
-/* curve25519-base.c
+/* curve25519-mul-g.c
 
    Copyright (C) 2014 Niels Möller
 
@@ -42,7 +42,7 @@
 
 /* Intended to be compatible with NaCl's crypto_scalarmult_base. */
 void
-curve25519_base (uint8_t *r, const uint8_t *n)
+curve25519_mul_g (uint8_t *r, const uint8_t *n)
 {
   uint8_t t[CURVE25519_SIZE];
   mp_limb_t *scratch;

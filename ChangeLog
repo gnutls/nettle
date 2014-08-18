@@ -1,5 +1,10 @@
 2014-08-18  Niels Möller  <nisse@lysator.liu.se>
 
+	* curve25519-mul-g.c (curve25519_mul_g): Renamed file and
+	function, updated callers.
+	* curve25519-base.c (curve25519_base): ... old names.
+	* Makefile.in (hogweed_SOURCES): Updated for rename.
+
 	* eccdata.c (output_curve): Compute constants needed for
 	Shanks-Tonelli.
 	* ecc-25519.c (ecc_modp_powm_2kp1, ecc_25519_sqrt): New functions.
