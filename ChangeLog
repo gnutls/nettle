@@ -1,5 +1,9 @@
 2014-08-18  Niels Möller  <nisse@lysator.liu.se>
 
+	* curve25519-mul.c (curve25519_mul): New file and function.
+	* curve25519.h (curve25519_mul): Declare it.
+	* Makefile.in (hogweed_SOURCES): Added curve25519-mul.c.
+
 	* curve25519-mul-g.c (curve25519_mul_g): Renamed file and
 	function, updated callers.
 	* curve25519-base.c (curve25519_base): ... old names.

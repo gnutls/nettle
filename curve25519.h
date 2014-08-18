@@ -40,10 +40,14 @@ extern "C" {
 
 /* Name mangling */
 #define curve25519_mul_g nettle_curve25519_mul_g
+#define curve25519_mul nettle_curve25519_mul
 
 #define CURVE25519_SIZE 32
 
 void
 curve25519_mul_g (uint8_t *q, const uint8_t *n);
+
+int
+curve25519_mul (uint8_t *q, const uint8_t *n, const uint8_t *p);
 
 #endif /* NETTLE_CURVE25519_H */
