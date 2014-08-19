@@ -1,3 +1,11 @@
+2014-08-19  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/ecc-benchmark.c (bench_curve): Support benchmarking of
+	curve25519, for now handled as a special case.
+	(curves): Added nettle_curve25519.
+	(bench_dup_eh, bench_add_eh, bench_add_ehh, bench_mul_g_eh): New
+	functions.
+
 2014-08-18  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/curve25519-dh-test.c (test_a): Use curve25519_mul.
