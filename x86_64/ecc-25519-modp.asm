@@ -33,65 +33,62 @@ ifelse(<
 	.file "ecc-25519-modp.asm"
 
 define(<RP>, <%rsi>)
-define(<U0>, <%rdi>) C Overlaps unused ecc input
+define(<U0>, <%rdi>)	C Overlaps unused ecc input
 define(<U1>, <%rcx>)
 define(<U2>, <%r8>)
-define(<V1>, <%r9>)
-define(<V2>, <%r10>)
-define(<V3>, <%r11>)
-define(<M>, <%r12>)
+define(<U3>, <%r9>)
+define(<T0>, <%r10>)
+define(<T1>, <%r11>)
+define(<M>, <%rbx>)
 
 PROLOGUE(nettle_ecc_25519_modp)
 	W64_ENTRY(2, 0)
-	push	%r12
-	
-	mov	$38, M
-	mov	32(RP), %rax	
-	mul	M
-	mov	%rax, U0
-	mov	%rdx, V1
+	push	%rbx
 
-	mov	40(RP), %rax
-	mul	M
-	mov	%rax, U1
-	mov	%rdx, V2
-	
-	mov	48(RP), %rax
-	mul	M
-	mov	%rax, U2
-	mov	%rdx, V3
-	
+	C First fold the limbs affecting bit 255
 	mov	56(RP), %rax
+	mov	$38, M
+	mul	M
+	mov	24(RP), U3
+	xor	T0, T0
+	add	%rax, U3
+	adc	%rdx, T0
+
+	mov	40(RP), %rax	C Do this early as possible
 	mul	M
 	
-	add	V1, U1
-	adc	V2, U2
-	adc	V3, %rax
-	adc	$0, %rdx
+	add	U3, U3
+	adc	T0, T0
+	shr	U3		C Undo shift, clear high bit
 
-	shr 	M
-	C FIXME: Load and add earlier?
-	add	(RP), U0
-	adc	8(RP), U1
-	adc	16(RP), U2
-	adc	24(RP), %rax
-	adc	$0, %rdx
+	C Fold the high limb again, together with RP[5]
+	imul	$19, T0
 
-	add	%rax, %rax	C Copy high bit to carry
-	adc	%rdx, %rdx
-	shr	%rax		C Undo shift, clear high bit
-	imul	M, %rdx
+	mov	(RP), U0
+	mov	8(RP), U1
+	mov	16(RP), U2
+	add	T0, U0
+	adc	%rax, U1
+	mov	32(RP), %rax
+	adc	%rdx, U2
+	adc	$0, U3
 
-	add	%rdx, U0
+	C Fold final two limbs, RP[4] and RP[6]
+	mul	M
+	mov	%rax, T0
+	mov	48(RP), %rax
+	mov	%rdx, T1
+	mul	M
+	add	T0, U0
 	mov	U0, (RP)
-	adc	$0, U1
+	adc	T1, U1
 	mov	U1, 8(RP)
-	adc	$0, U2
+	adc	%rax, U2
 	mov	U2, 16(RP)
-	adc	$0, %rax
-	mov	%rax, 24(RP)
+	adc	%rdx, U3
+	mov	U3, 24(RP)
 
-	pop	%r12
+	pop	%rbx
 	W64_EXIT(2, 0)
 	ret
 EPILOGUE(nettle_ecc_25519_modp)

@@ -1,7 +1,9 @@
 2014-08-22  Niels Möller  <nisse@lysator.liu.se>
 
-	* x86_64/ecc-25519-modp.asm: New file. Initial assembly
-	implementation, 30% speedup of ecc_25519_modp.
+	* x86_64/ecc-25519-modp.asm: New file. Assembly implementation,
+	initial version yields 30% speedup of ecc_25519_modp. Early
+	folding eliminates one pass of carry propagation, and yields
+	almost 20% additional speedup.
 
 	* ecc-25519.c [HAVE_NATIVE_ecc_25519_modp]: Use assembly version
 	if available.
