@@ -1,5 +1,8 @@
 2014-08-22  Niels Möller  <nisse@lysator.liu.se>
 
+	* x86_64/ecc-25519-modp.asm: New file. Initial assembly
+	implementation, 30% speedup of ecc_25519_modp.
+
 	* ecc-25519.c [HAVE_NATIVE_ecc_25519_modp]: Use assembly version
 	if available.
 
