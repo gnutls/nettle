@@ -1,3 +1,11 @@
+2014-08-22  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-25519.c [HAVE_NATIVE_ecc_25519_modp]: Use assembly version
+	if available.
+
+	* configure.ac (asm_hogweed_optional_list): Added ecc-25519-modp.asm.
+	Also add HAVE_NATIVE_ecc_25519_modp to config.h.in.
+
 2014-08-19  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/ecc-benchmark.c (bench_curve): Support benchmarking of

@@ -41,6 +41,13 @@
 
 #include "ecc-25519.h"
 
+#if HAVE_NATIVE_ecc_25519_modp
+
+#define ecc_25519_modp nettle_ecc_25519_modp
+void
+ecc_25519_modp (const struct ecc_curve *ecc, mp_limb_t *rp);
+#else
+
 #define HIGH_BITS (GMP_NUMB_BITS * ECC_LIMB_SIZE - 255)
 
 #if HIGH_BITS == 0
@@ -59,6 +66,8 @@ ecc_25519_modp(const struct ecc_curve *ecc UNUSED, mp_limb_t *rp)
   rp[ECC_LIMB_SIZE-1] = (hi & (GMP_NUMB_MASK >> HIGH_BITS))
     + sec_add_1 (rp, rp, ECC_LIMB_SIZE - 1, 19 * cy);
 }
+
+#endif /* HAVE_NATIVE_ecc_25519_modp */
 
 /* Needs 2*ecc->size limbs at rp, and 2*ecc->size additional limbs of
    scratch space. No overlap allowed. */
