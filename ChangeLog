@@ -1,3 +1,8 @@
+2014-08-23  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/nettle-benchmark.c (time_cipher): Fixed memset calls,
+	amending the totally broken change from 2014-02-06.
+
 2014-07-02  Niels Möller  <nisse@lysator.liu.se>
 
 	* eccdata.c (ecc_dup): Use mpz_submul_ui, now available in
