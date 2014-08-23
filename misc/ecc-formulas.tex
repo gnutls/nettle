@@ -135,7 +135,7 @@ mapping $P = (x,y)$ to $P' = (u, v)$, as follows.
 The inverse transformation is
 \begin{align*}
   x &= (1+v) / (1-v) \\
-  y &= \sqrt{b+2} x / u 
+  y &= \sqrt{b+2} \, x / u 
 \end{align*}
 If the Edwards coordinates are represented using homogeneous
 coordinates, $u = U/W$ and $v = V/W$, then
@@ -144,6 +144,37 @@ coordinates, $u = U/W$ and $v = V/W$, then
   y &= \sqrt{b} \frac{(W+V) W}{(W-V) U} 
 \end{align*}
 so we need to invert the value $(W-V) U$.
+
+The curve25519 function is defined with an input point represented by
+the $x$-coordinate only, and is specified as allowing any value. The
+corresponding $y$ coordinate is given by 
+\begin{equation*}
+  y = \sqrt{x^3 + b x^2 + x} \pmod p
+\end{equation*}
+whenever this square root exists. But what if it doesn't? Then we work
+with the curve over the extended field $F_{p^2}$. Let $n$ by any
+non-square, then $(x^3 + b x^2 + x) n$ is a square, and we get the
+$y = y' / \sqrt{n}$ with
+\begin{equation*}
+  y' = \sqrt{(x^3 + b x^2 + x) n}
+\end{equation*}
+It happens that for all multiples of such a point, this same factor is
+tacked on to all the $y$-coordinates, while all the $x$-coordinates
+remain in the base field $F_p$. It's the ``twist'' curve $y'^2 / n =
+x^3 + bx^2 + x$. On the corresponding Edwards curve, we
+get $u = \sqrt{n} u'$ with
+\begin{equation*}
+  u' = \sqrt{b+2} \, x / y'
+\end{equation*}
+and the addition formula
+\begin{align*}
+  t &= d n u'_1 u'_2 v_1 v_2 \\
+  u'_3 &= (1+t)^{-1}(u'_1v_2 + v_1 u'_2) \\
+  v_3 &= (1-t)^{-1}(v_1 v_2 - n u'_1 u'_2)
+\end{align*}
+It seems a bit tricky to handle both types of point in a single
+function without speed penalty, due to the conditional factor of $n$
+in the formula for $v_3$.
 \end{document}
 
 %%% Local Variables: 
