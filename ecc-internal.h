@@ -102,6 +102,11 @@ struct ecc_curve
   unsigned short pippenger_k;
   unsigned short pippenger_c;
 
+  ecc_mod_func *modp;
+  ecc_mod_func *redc;
+  ecc_mod_func *reduce;
+  ecc_mod_func *modq;
+  
   /* The prime p. */
   const mp_limb_t *p;
   const mp_limb_t *b;
@@ -114,11 +119,6 @@ struct ecc_curve
   /* If non-NULL, the constant needed for transformation to the
      equivalent Edwards curve. */
   const mp_limb_t *edwards_root;
-
-  ecc_mod_func *modp;
-  ecc_mod_func *redc;
-  ecc_mod_func *reduce;
-  ecc_mod_func *modq;
 
   /* B^size mod p. Expected to have at least 32 leading zeros
      (equality for secp_256r1). */

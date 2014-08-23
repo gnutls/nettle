@@ -1,5 +1,8 @@
 2014-08-23  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-internal.h (struct ecc_curve): Reordered struct, moved
+	function pointers before pointers to bignum constants.
+
 	* sec-modinv.c (sec_modinv): Document that for a == 0 (mod m), we
 	should produce the "inverse" 0.
 

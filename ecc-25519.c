@@ -209,16 +209,18 @@ const struct ecc_curve nettle_curve25519 =
   0,
   ECC_PIPPENGER_K,
   ECC_PIPPENGER_C,
+
+  ecc_25519_modp,
+  NULL,
+  ecc_25519_modp,
+  NULL,
+
   ecc_p,
   ecc_d, /* Use the Edwards curve constant. */
   ecc_q,
   ecc_g,
   ecc_redc_g,
   ecc_edwards,
-  ecc_25519_modp,
-  NULL,
-  ecc_25519_modp,
-  NULL,
   ecc_Bmodp,
   ecc_Bmodp_shifted,
   ecc_pp1h,
