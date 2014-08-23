@@ -37,6 +37,17 @@ ref_modinv (mp_limb_t *rp, const mp_limb_t *ap, const mp_limb_t *mp, mp_size_t m
 #define MAX_ECC_SIZE (1 + 521 / GMP_NUMB_BITS)
 #define COUNT 500
 
+static int
+mpn_zero_p (mp_srcptr ap, mp_size_t n)
+{
+  while (--n >= 0)
+    {
+      if (ap[n] != 0)
+	return 0;
+    }
+  return 1;
+}
+
 void
 test_main (void)
 {
@@ -55,6 +66,36 @@ test_main (void)
     {
       const struct ecc_curve *ecc = ecc_curves[i];
       unsigned j;
+      /* Check behaviour for zero input */
+      mpn_zero (a, ecc->size);
+      memset (ai, 17, ecc->size * sizeof(*ai));
+      ecc_modp_inv (ecc, ai, a, scratch);
+      if (!mpn_zero_p (ai, ecc->size))
+	{
+	  fprintf (stderr, "ecc_modp_inv failed for zero input (bit size %u):\n",
+		       ecc->bit_size);
+	  gmp_fprintf (stderr, "p = %Nx\n"
+		       "t = %Nx (bad)\n",
+		       ecc->p, ecc->size,
+		       ai, ecc->size);
+	  abort ();
+	}
+	  
+      /* Check behaviour for a = p */
+      mpn_copyi (a, ecc->p, ecc->size);
+      memset (ai, 17, ecc->size * sizeof(*ai));
+      ecc_modp_inv (ecc, ai, a, scratch);
+      if (!mpn_zero_p (ai, ecc->size))
+	{
+	  fprintf (stderr, "ecc_modp_inv failed for a = p input (bit size %u):\n",
+		       ecc->bit_size);
+	  gmp_fprintf (stderr, "p = %Nx\n"
+		       "t = %Nx (bad)\n",
+		       ecc->p, ecc->size,
+		       ai, ecc->size);
+	  abort ();
+	}
+	
       for (j = 0; j < COUNT; j++)
 	{
 	  if (j & 1)

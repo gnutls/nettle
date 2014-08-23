@@ -1,3 +1,11 @@
+2014-08-23  Niels Möller  <nisse@lysator.liu.se>
+
+	* sec-modinv.c (sec_modinv): Document that for a == 0 (mod m), we
+	should produce the "inverse" 0.
+
+	* testsuite/ecc-modinv-test.c (test_main): Check that ecc_modp_inv
+	produces 0 if a == 0 or a == p.
+
 2014-08-22  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86_64/ecc-25519-modp.asm: New file. Assembly implementation,
