@@ -67,7 +67,7 @@ ecc_mul_a (const struct ecc_curve *ecc,
 
   unsigned i;
 
-  ecc_a_to_j (ecc, 1, pj, p);
+  ecc_a_to_j (ecc, pj, p);
   mpn_zero (r, 3*ecc->size);
   
   for (i = ecc->size, is_zero = 1; i-- > 0; )
@@ -111,7 +111,7 @@ table_init (const struct ecc_curve *ecc,
   unsigned j;
 
   mpn_zero (TABLE(0), 3*ecc->size);
-  ecc_a_to_j (ecc, 1, TABLE(1), p);
+  ecc_a_to_j (ecc, TABLE(1), p);
 
   for (j = 2; j < size; j += 2)
     {

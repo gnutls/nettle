@@ -179,11 +179,9 @@ ecc_size_j (const struct ecc_curve *ecc);
    infinity points properly? */
 
 /* Converts a point P in affine coordinates into a point R in jacobian
-   coordinates. If INITIAL is non-zero, and the curve uses montgomery
-   coordinates, also convert coordinates to montgomery form. */
+   coordinates. */
 void
 ecc_a_to_j (const struct ecc_curve *ecc,
-	    int initial,
 	    mp_limb_t *r, const mp_limb_t *p);
 
 /* Converts a point P in jacobian coordinates into a point R in affine

@@ -1,5 +1,9 @@
 2014-08-23  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-a-to-j.c (ecc_a_to_j): Deleted INITIAL argument.
+	* ecc.h (ecc_a_to_j): Updated prototype.
+	* ecc-mul-a.c (ecc_mul_a, table_init): Updated calls to ecc_a_to_j.
+
 	* ecc-mul-a.c (ecc_mul_a): Deleted INITIAL argument, all callers,
 	except the tests, pass 1. Updated all callers.
 	(table_init): Likewise deleted INITIAL.
