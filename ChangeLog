@@ -1,5 +1,12 @@
 2014-08-23  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-mul-a.c (ecc_mul_a): Deleted INITIAL argument, all callers,
+	except the tests, pass 1. Updated all callers.
+	(table_init): Likewise deleted INITIAL.
+	* ecc.h (ecc_mul_a): Updated prototype.
+	* testsuite/ecc-mul-a-test.c (test_main): Deleted tests for
+	ecc_mul_a with INITIAL == 0.
+
 	* ecc-internal.h (struct ecc_curve): Reordered struct, moved
 	function pointers before pointers to bignum constants.
 

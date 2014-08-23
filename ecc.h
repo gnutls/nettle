@@ -285,15 +285,13 @@ ecc_mul_g (const struct ecc_curve *ecc, mp_limb_t *r,
 	   const mp_limb_t *np, mp_limb_t *scratch);
 
 /* Computes N * P. The scalar N is the same as for ecc_mul_g. P is a
-   non-zero point on the curve, in affine coordinates. Pass a non-zero
-   INITIAL if the point coordinates have not previously been converted
-   to Montgomery representation. Output R is a non-zero point, in
-   Jacobian coordinates. */
+   non-zero point on the curve, in affine coordinates. Output R is a
+   non-zero point, in Jacobian coordinates. */
 mp_size_t
 ecc_mul_a_itch (const struct ecc_curve *ecc);
 void
 ecc_mul_a (const struct ecc_curve *ecc,
-	   int initial, mp_limb_t *r,
+	   mp_limb_t *r,
 	   const mp_limb_t *np, const mp_limb_t *p,
 	   mp_limb_t *scratch);
 

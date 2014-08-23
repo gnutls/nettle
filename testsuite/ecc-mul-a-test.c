@@ -31,34 +31,21 @@ test_main (void)
       mpn_zero (n, size);
 
       n[0] = 1;
-      ecc_mul_a (ecc, 1, p, n, ecc->g, scratch);
+      ecc_mul_a (ecc, p, n, ecc->g, scratch);
       ecc_j_to_a (ecc, 1, p, p, scratch);
 
       if (mpn_cmp (p, ecc->g, 2*size != 0))
 	die ("curve %d: ecc_mul_a with n = 1 failed.\n", ecc->bit_size);
 
-      if (ecc->use_redc)
-	{
-	  ecc_mul_a (ecc, 0, p, n, ecc->redc_g, scratch);
-	  ecc_j_to_a (ecc, 1, p, p, scratch);
-
-	  if (mpn_cmp (p, ecc->g, 2*size != 0))
-	    die ("curve %d: ecc_mul_a with n = 1 and redc failed.\n", ecc->bit_size);
-	}
       for (n[0] = 2; n[0] <= 4; n[0]++)
 	{
-	  ecc_mul_a (ecc, 1, p, n, ecc->g, scratch);
+	  ecc_mul_a (ecc, p, n, ecc->g, scratch);
 	  test_ecc_mul_j (i, n[0], p);
-	  if (ecc->use_redc)
-	    {
-	      ecc_mul_a (ecc, 0, p, n, ecc->redc_g, scratch);
-	      test_ecc_mul_j (i, n[0], p);
-	    }
 	}
 
       /* (order - 1) * g = - g */
       mpn_sub_1 (n, ecc->q, size, 1);
-      ecc_mul_a (ecc, 1, p, n, ecc->g, scratch);
+      ecc_mul_a (ecc, p, n, ecc->g, scratch);
       ecc_j_to_a (ecc, 1, p, p, scratch);
       mpn_sub_n (p + size, ecc->p, p + size, size);
       if (mpn_cmp (p, ecc->g, 2*size) != 0)
@@ -80,7 +67,7 @@ test_main (void)
 	  mpz_limbs_copy (n, r, size);
 	  n[size - 1] %= ecc->q[size - 1];
 
-	  ecc_mul_a (ecc, 1, p, n, ecc->g, scratch);
+	  ecc_mul_a (ecc, p, n, ecc->g, scratch);
 	  ecc_j_to_a (ecc, 1, p, p, scratch);
 
 	  ecc_mul_g (ecc, q, n, scratch);

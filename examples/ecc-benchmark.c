@@ -234,7 +234,7 @@ static void
 bench_mul_a (void *p)
 {
   struct ecc_ctx *ctx = (struct ecc_ctx *) p;
-  ecc_mul_a (ctx->ecc, 1, ctx->rp, ctx->ap, ctx->bp, ctx->tp);
+  ecc_mul_a (ctx->ecc, ctx->rp, ctx->ap, ctx->bp, ctx->tp);
 }
 
 static void

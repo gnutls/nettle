@@ -55,7 +55,7 @@ ecc_mul_a_itch (const struct ecc_curve *ecc)
 #if ECC_MUL_A_WBITS == 0
 void
 ecc_mul_a (const struct ecc_curve *ecc,
-	   int initial, mp_limb_t *r,
+	   mp_limb_t *r,
 	   const mp_limb_t *np, const mp_limb_t *p,
 	   mp_limb_t *scratch)
 {
@@ -67,7 +67,7 @@ ecc_mul_a (const struct ecc_curve *ecc,
 
   unsigned i;
 
-  ecc_a_to_j (ecc, initial, pj, p);
+  ecc_a_to_j (ecc, 1, pj, p);
   mpn_zero (r, 3*ecc->size);
   
   for (i = ecc->size, is_zero = 1; i-- > 0; )
@@ -104,14 +104,14 @@ ecc_mul_a (const struct ecc_curve *ecc,
 static void
 table_init (const struct ecc_curve *ecc,
 	    mp_limb_t *table, unsigned bits,
-	    int initial, const mp_limb_t *p,
+	    const mp_limb_t *p,
 	    mp_limb_t *scratch)
 {
   unsigned size = 1 << bits;
   unsigned j;
 
   mpn_zero (TABLE(0), 3*ecc->size);
-  ecc_a_to_j (ecc, initial, TABLE(1), p);
+  ecc_a_to_j (ecc, 1, TABLE(1), p);
 
   for (j = 2; j < size; j += 2)
     {
@@ -122,7 +122,7 @@ table_init (const struct ecc_curve *ecc,
 
 void
 ecc_mul_a (const struct ecc_curve *ecc,
-	   int initial, mp_limb_t *r,
+	   mp_limb_t *r,
 	   const mp_limb_t *np, const mp_limb_t *p,
 	   mp_limb_t *scratch)
 {
@@ -140,7 +140,7 @@ ecc_mul_a (const struct ecc_curve *ecc,
   unsigned shift = bit_index % GMP_NUMB_BITS;
   mp_limb_t w, bits;
 
-  table_init (ecc, table, ECC_MUL_A_WBITS, initial, p, scratch_out);
+  table_init (ecc, table, ECC_MUL_A_WBITS, p, scratch_out);
 
   w = np[limb_index];
   bits = w >> shift;
