@@ -1,5 +1,8 @@
 2014-08-23  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-modp.c (ecc_modp_sub_1): Deleted unused function.
+	* ecc-internal.h: Deleted corresponding declaration.
+
 	* examples/nettle-benchmark.c (time_cipher): Fixed memset calls,
 	amending the totally broken change from 2014-02-06.
 

@@ -45,7 +45,6 @@
 #define ecc_generic_modq _nettle_ecc_generic_modq
 #define ecc_modp_add _nettle_ecc_modp_add
 #define ecc_modp_sub _nettle_ecc_modp_sub
-#define ecc_modp_sub_1 _nettle_ecc_modp_sub_1
 #define ecc_modp_mul_1 _nettle_ecc_modp_mul_1
 #define ecc_modp_addmul_1 _nettle_ecc_modp_addmul_1
 #define ecc_modp_submul_1 _nettle_ecc_modp_submul_1
@@ -157,10 +156,6 @@ ecc_modp_add (const struct ecc_curve *ecc, mp_limb_t *rp,
 void
 ecc_modp_sub (const struct ecc_curve *ecc, mp_limb_t *rp,
 	      const mp_limb_t *ap, const mp_limb_t *bp);
-
-void
-ecc_modp_sub_1 (const struct ecc_curve *ecc, mp_limb_t *rp,
-		const mp_limb_t *ap, mp_limb_t b);
 
 void
 ecc_modp_mul_1 (const struct ecc_curve *ecc, mp_limb_t *rp,

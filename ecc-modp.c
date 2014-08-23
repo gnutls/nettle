@@ -65,22 +65,6 @@ ecc_modp_sub (const struct ecc_curve *ecc, mp_limb_t *rp,
 }
 
 void
-ecc_modp_sub_1 (const struct ecc_curve *ecc, mp_limb_t *rp,
-		const mp_limb_t *ap, mp_limb_t b)
-{
-  mp_size_t i;
-
-  for (i = 0; i < ecc->size; i++)
-    {
-      mp_limb_t cy = ap[i] < b;
-      rp[i] = ap[i] - b;
-      b = cy;
-    }
-  b = cnd_sub_n (b, rp, ecc->Bmodp, ecc->size);
-  assert (b == 0);    
-}
-
-void
 ecc_modp_mul_1 (const struct ecc_curve *ecc, mp_limb_t *rp,
 		const mp_limb_t *ap, mp_limb_t b)
 {
