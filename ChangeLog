@@ -1,3 +1,7 @@
+2014-08-24  Niels Möller  <nisse@lysator.liu.se>
+
+	* misc/ecc-ref.gp: Script to generate ECDH test data.
+
 2014-08-23  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-a-to-j.c (ecc_a_to_j): Deleted INITIAL argument.
