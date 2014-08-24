@@ -220,6 +220,9 @@ ecdsa-verify-test$(EXEEXT): ecdsa-verify-test.$(OBJEXT)
 ecdsa-keygen-test$(EXEEXT): ecdsa-keygen-test.$(OBJEXT)
 	$(LINK) ecdsa-keygen-test.$(OBJEXT) $(TEST_OBJS) -o ecdsa-keygen-test$(EXEEXT)
 
+ecdh-test$(EXEEXT): ecdh-test.$(OBJEXT)
+	$(LINK) ecdh-test.$(OBJEXT) $(TEST_OBJS) -o ecdh-test$(EXEEXT)
+
 sha1-huge-test$(EXEEXT): sha1-huge-test.$(OBJEXT)
 	$(LINK) sha1-huge-test.$(OBJEXT) $(TEST_OBJS) -o sha1-huge-test$(EXEEXT)
 
