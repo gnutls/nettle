@@ -1,5 +1,10 @@
 2014-08-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-internal.h (ecc_mul_g_func, ecc_mul_func, ecc_h_to_a_func):
+	New typedefs.
+	(struct ecc_curve): New function pointers mul, mul_g, h_to_a, and
+	constans for their scratch requirements. Updated all instances.
+
 	* ecc-point.c (ecc_point_set): Handle curve25519 as a special
 	case, when checking if the point is on the curve.
 

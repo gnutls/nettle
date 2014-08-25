@@ -37,6 +37,7 @@
 # include "config.h"
 #endif
 
+#include "ecc.h"
 #include "ecc-internal.h"
 
 #if HAVE_NATIVE_ecc_224_modp
@@ -64,10 +65,18 @@ const struct ecc_curve nettle_secp_224r1 =
   ECC_PIPPENGER_K,
   ECC_PIPPENGER_C,
 
+  ECC_MUL_A_ITCH (ECC_LIMB_SIZE),
+  ECC_MUL_G_ITCH (ECC_LIMB_SIZE),
+  ECC_J_TO_A_ITCH (ECC_LIMB_SIZE),
+
   ecc_224_modp,
   ecc_generic_redc,
   USE_REDC ? ecc_generic_redc : ecc_224_modp,
   ecc_generic_modq,
+
+  ecc_mul_a,
+  ecc_mul_g,
+  ecc_j_to_a,
 
   ecc_p,
   ecc_b,

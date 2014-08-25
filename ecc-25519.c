@@ -35,6 +35,7 @@
 # include "config.h"
 #endif
 
+#include "ecc.h"
 #include "ecc-internal.h"
 
 #define USE_REDC 0
@@ -210,10 +211,18 @@ const struct ecc_curve nettle_curve25519 =
   ECC_PIPPENGER_K,
   ECC_PIPPENGER_C,
 
+  ECC_MUL_A_EH_ITCH (ECC_LIMB_SIZE),
+  ECC_MUL_G_EH_ITCH (ECC_LIMB_SIZE),
+  ECC_EH_TO_A_ITCH (ECC_LIMB_SIZE),
+
   ecc_25519_modp,
   NULL,
   ecc_25519_modp,
   NULL,
+
+  ecc_mul_a_eh,
+  ecc_mul_g_eh,
+  ecc_eh_to_a,
 
   ecc_p,
   ecc_d, /* Use the Edwards curve constant. */
