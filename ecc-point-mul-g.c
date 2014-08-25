@@ -45,13 +45,14 @@ void
 ecc_point_mul_g (struct ecc_point *r, const struct ecc_scalar *n)
 {
   TMP_DECL(scratch, mp_limb_t, 3*ECC_MAX_SIZE + ECC_MUL_G_ITCH (ECC_MAX_SIZE));
-  mp_limb_t size = r->ecc->size;
-  mp_size_t itch = 3*size + ECC_MUL_G_ITCH (size);
+  const struct ecc_curve *ecc = r->ecc;
+  mp_limb_t size = ecc->size;
+  mp_size_t itch = 3*size + ecc->mul_g_itch;
 
-  assert (r->ecc == n->ecc);
+  assert (n->ecc == ecc);
 
   TMP_ALLOC (scratch, itch);
 
-  ecc_mul_g (r->ecc, scratch, n->p, scratch + 3*size);
-  ecc_j_to_a (r->ecc, 1, r->p, scratch, scratch + 3*size);
+  ecc->mul_g (ecc, scratch, n->p, scratch + 3*size);
+  ecc->h_to_a (ecc, 1, r->p, scratch, scratch + 3*size);
 }

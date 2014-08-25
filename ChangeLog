@@ -1,5 +1,14 @@
 2014-08-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/ecdh-test.c (set_point): Check return value of
+	ecc_point_set.
+	(test_main): Enable curve25519 test.
+
+	* ecc-point-mul-g.c (ecc_point_mul_g): Use ecc->mul_g and
+	ecc->h_to_a function pointers.
+	* ecc-point-mul.c (ecc_point_mul): Use the ecc->mul and
+	ecc->h_to_a function pointers.
+
 	* ecc-internal.h (ecc_mul_g_func, ecc_mul_func, ecc_h_to_a_func):
 	New typedefs.
 	(struct ecc_curve): New function pointers mul, mul_g, h_to_a, and
