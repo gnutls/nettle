@@ -1,3 +1,8 @@
+2014-08-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-point.c (ecc_point_set): Handle curve25519 as a special
+	case, when checking if the point is on the curve.
+
 2014-08-24  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/ecdh-test.c: Test ecc_point_mul and ecc_point_mul_g,

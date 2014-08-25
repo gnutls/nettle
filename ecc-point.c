@@ -68,12 +68,26 @@ ecc_point_set (struct ecc_point *p, const mpz_t x, const mpz_t y)
   mpz_init (lhs);
   mpz_init (rhs);
 
-  /* Check that y^2 = x^3 - 3*x + b (mod p) */
+  if (p->ecc->bit_size == 255)
+    {
+      /* curve25519 special case. FIXME: Do in some cleaner way? */
+
+      /* Check that y^2 = x^3 + 486662 x^2 + x (mod p)*/
+      mpz_mul (lhs, x, x); /* Reuse lhs as a temporary */
+      mpz_add_ui (rhs, x, 486662);
+      mpz_mul (rhs, rhs, lhs);
+      mpz_add (rhs, rhs, x);
+    }
+  else
+    {
+      /* Check that y^2 = x^3 - 3*x + b (mod p) */
+      mpz_mul (rhs, x, x);
+      mpz_sub_ui (rhs, rhs, 3);
+      mpz_mul (rhs, rhs, x);
+      mpz_add (rhs, rhs, mpz_roinit_n (t, p->ecc->b, size));
+    }
+
   mpz_mul (lhs, y, y);
-  mpz_mul (rhs, x, x);
-  mpz_sub_ui (rhs, rhs, 3);
-  mpz_mul (rhs, rhs, x);
-  mpz_add (rhs, rhs, mpz_roinit_n (t, p->ecc->b, size));
 
   res = mpz_congruent_p (lhs, rhs, mpz_roinit_n (t, p->ecc->p, size));
 
