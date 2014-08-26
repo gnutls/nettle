@@ -1,3 +1,8 @@
+2014-08-26  Niels Möller  <nisse@lysator.liu.se>
+
+	* mini-gmp.c (mpz_abs_sub_bit): Do full normalization, needed in
+	case the most significant bit is cleared.
+
 2014-08-25  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/ecdh-test.c (set_point): Check return value of
