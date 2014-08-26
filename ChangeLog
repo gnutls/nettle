@@ -1,5 +1,9 @@
 2014-08-26  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-25519.c (ecc_25519_modq): New function.
+
+	* eccdata.c (output_curve): Precomputation for curve25519 mod q.
+
 	* mini-gmp.c (mpz_abs_sub_bit): Do full normalization, needed in
 	case the most significant bit is cleared.
 

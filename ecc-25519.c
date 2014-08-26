@@ -35,6 +35,8 @@
 # include "config.h"
 #endif
 
+#include <assert.h>
+
 #include "ecc.h"
 #include "ecc-internal.h"
 
@@ -49,9 +51,9 @@ void
 ecc_25519_modp (const struct ecc_curve *ecc, mp_limb_t *rp);
 #else
 
-#define HIGH_BITS (GMP_NUMB_BITS * ECC_LIMB_SIZE - 255)
+#define PHIGH_BITS (GMP_NUMB_BITS * ECC_LIMB_SIZE - 255)
 
-#if HIGH_BITS == 0
+#if PHIGH_BITS == 0
 #error Unsupported limb size */
 #endif
 
@@ -61,14 +63,44 @@ ecc_25519_modp(const struct ecc_curve *ecc UNUSED, mp_limb_t *rp)
   mp_limb_t hi, cy;
 
   cy = mpn_addmul_1 (rp, rp + ECC_LIMB_SIZE, ECC_LIMB_SIZE,
-		     (mp_limb_t) 19 << HIGH_BITS);
+		     (mp_limb_t) 19 << PHIGH_BITS);
   hi = rp[ECC_LIMB_SIZE-1];
-  cy = (cy << HIGH_BITS) + (hi >> (GMP_NUMB_BITS - HIGH_BITS));
-  rp[ECC_LIMB_SIZE-1] = (hi & (GMP_NUMB_MASK >> HIGH_BITS))
+  cy = (cy << PHIGH_BITS) + (hi >> (GMP_NUMB_BITS - PHIGH_BITS));
+  rp[ECC_LIMB_SIZE-1] = (hi & (GMP_NUMB_MASK >> PHIGH_BITS))
     + sec_add_1 (rp, rp, ECC_LIMB_SIZE - 1, 19 * cy);
 }
-
 #endif /* HAVE_NATIVE_ecc_25519_modp */
+
+#define QHIGH_BITS (GMP_NUMB_BITS * ECC_LIMB_SIZE - 252)
+
+#if QHIGH_BITS == 0
+#error Unsupported limb size */
+#endif
+
+static void
+ecc_25519_modq (const struct ecc_curve *ecc, mp_limb_t *rp)
+{
+  mp_size_t n;
+  mp_limb_t cy;
+
+  /* n is the offset where we add in the next term */
+  for (n = ECC_LIMB_SIZE; n-- > 0;)
+    {
+      mp_limb_t cy;
+
+      cy = mpn_submul_1 (rp + n,
+			 ecc->Bmodq_shifted, ECC_LIMB_SIZE,
+			 rp[n + ECC_LIMB_SIZE]);
+      /* Top limb of mBmodq_shifted is zero, so we get cy == 0 or 1 */
+      assert (cy < 2);
+      cnd_add_n (cy, rp+n, ecc_q, ECC_LIMB_SIZE);
+    }
+
+  cy = mpn_submul_1 (rp, ecc_q, ECC_LIMB_SIZE,
+		     rp[ECC_LIMB_SIZE-1] >> (GMP_NUMB_BITS - QHIGH_BITS));
+  assert (cy < 2);
+  cnd_add_n (cy, rp, ecc_q, ECC_LIMB_SIZE);
+}
 
 /* Needs 2*ecc->size limbs at rp, and 2*ecc->size additional limbs of
    scratch space. No overlap allowed. */
@@ -218,7 +250,8 @@ const struct ecc_curve nettle_curve25519 =
   ecc_25519_modp,
   NULL,
   ecc_25519_modp,
-  NULL,
+  ecc_25519_modq,
+
 
   ecc_mul_a_eh,
   ecc_mul_g_eh,
@@ -235,8 +268,8 @@ const struct ecc_curve nettle_curve25519 =
   ecc_pp1h,
   ecc_redc_ppm1,
   ecc_unit,
-  ecc_Bmodq,
-  ecc_Bmodq_shifted,
+  ecc_Bmodq,  
+  ecc_mBmodq_shifted, /* Use q - 2^{252} instead. */ 
   ecc_qp1h,
   ecc_table
 };

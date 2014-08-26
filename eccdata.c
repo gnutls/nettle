@@ -952,6 +952,28 @@ output_curve (const struct ecc_curve *ecc, unsigned bits_per_limb)
   bits = output_modulo ("ecc_Bmodq", ecc->q, limb_size, bits_per_limb);
   printf ("#define ECC_BMODQ_SIZE %u\n",
 	  (bits + bits_per_limb - 1) / bits_per_limb);
+  bits = mpz_sizeinbase (ecc->q, 2);
+  if (bits < ecc->bit_size)
+    {
+      /* for curve25519, with q = 2^k + q', with a much smaller q' */
+      unsigned mbits;
+      unsigned shift;
+
+      /* Shift to align the one bit at B */
+      shift = bits_per_limb * limb_size + 1 - bits;
+      
+      mpz_set (t, ecc->q);
+      mpz_clrbit (t, bits-1);
+      mbits = mpz_sizeinbase (t, 2);
+
+      /* The shifted value must be a limb smaller than q. */
+      if (mbits + shift + bits_per_limb <= bits)
+	{
+	  /* q of the form 2^k + q', with q' a limb smaller */
+	  mpz_mul_2exp (t, t, shift);
+	  output_bignum ("ecc_mBmodq_shifted", t, limb_size, bits_per_limb);
+	}
+    }
 
   if (ecc->bit_size < limb_size * bits_per_limb)
     {
