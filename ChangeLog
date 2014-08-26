@@ -1,5 +1,8 @@
 2014-08-26  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/ecc-mod-test.c (test_curve): Make modq test
+	unconditional, partially reverting 2014-07-04 change.
+
 	* ecc-25519.c (ecc_25519_modq): New function.
 
 	* eccdata.c (output_curve): Precomputation for curve25519 mod q.

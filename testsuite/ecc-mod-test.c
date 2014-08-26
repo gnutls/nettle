@@ -76,22 +76,19 @@ test_curve (gmp_randstate_t rands, const struct ecc_curve *ecc)
 
       ref_mod (ref, a, ecc->q, ecc->size);
 
-      if (ecc->modq)
-	{
-	  mpn_copyi (m, a, 2*ecc->size);
-	  ecc->modq (ecc, m);
-	  if (mpn_cmp (m, ecc->q, ecc->size) >= 0)
-	    mpn_sub_n (m, m, ecc->q, ecc->size);
+      mpn_copyi (m, a, 2*ecc->size);
+      ecc->modq (ecc, m);
+      if (mpn_cmp (m, ecc->q, ecc->size) >= 0)
+	mpn_sub_n (m, m, ecc->q, ecc->size);
 
-	  if (mpn_cmp (m, ref, ecc->size))
-	    {
-	      fprintf (stderr, "ecc->modq failed: bit_size = %u\n",
-		       ecc->bit_size);
-	      gmp_fprintf (stderr, "a   = %Nx\n", a, 2*ecc->size);
-	      gmp_fprintf (stderr, "m   = %Nx (bad)\n", m, ecc->size);
-	      gmp_fprintf (stderr, "ref = %Nx\n", ref, ecc->size);
-	      abort ();
-	    }
+      if (mpn_cmp (m, ref, ecc->size))
+	{
+	  fprintf (stderr, "ecc->modq failed: bit_size = %u\n",
+		   ecc->bit_size);
+	  gmp_fprintf (stderr, "a   = %Nx\n", a, 2*ecc->size);
+	  gmp_fprintf (stderr, "m   = %Nx (bad)\n", m, ecc->size);
+	  gmp_fprintf (stderr, "ref = %Nx\n", ref, ecc->size);
+	  abort ();
 	}
       if (ecc->Bmodq_size < ecc->size)
 	{
