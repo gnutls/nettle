@@ -227,14 +227,14 @@ static void
 bench_mul_g (void *p)
 {
   struct ecc_ctx *ctx = (struct ecc_ctx *) p;
-  ecc_mul_g (ctx->ecc, ctx->rp, ctx->ap, ctx->tp);
+  ctx->ecc->mul_g (ctx->ecc, ctx->rp, ctx->ap, ctx->tp);
 }
 
 static void
 bench_mul_a (void *p)
 {
   struct ecc_ctx *ctx = (struct ecc_ctx *) p;
-  ecc_mul_a (ctx->ecc, ctx->rp, ctx->ap, ctx->bp, ctx->tp);
+  ctx->ecc->mul (ctx->ecc, ctx->rp, ctx->ap, ctx->bp, ctx->tp);
 }
 
 static void
@@ -256,20 +256,6 @@ bench_add_ehh (void *p)
 {
   struct ecc_ctx *ctx = (struct ecc_ctx *) p;
   ecc_add_ehh (ctx->ecc, ctx->rp, ctx->ap, ctx->bp, ctx->tp);
-}
-
-static void
-bench_mul_g_eh (void *p)
-{
-  struct ecc_ctx *ctx = (struct ecc_ctx *) p;
-  ecc_mul_g_eh (ctx->ecc, ctx->rp, ctx->ap, ctx->tp);
-}
-
-static void
-bench_mul_a_eh (void *p)
-{
-  struct ecc_ctx *ctx = (struct ecc_ctx *) p;
-  ecc_mul_a_eh (ctx->ecc, ctx->rp, ctx->ap, ctx->bp, ctx->tp);
 }
 
 #if NETTLE_USE_MINI_GMP
@@ -322,7 +308,7 @@ bench_curve (const struct ecc_curve *ecc)
   modp = time_function (bench_modp, &ctx);
   redc = ecc->redc ? time_function (bench_redc, &ctx) : 0;
 
-  modq = ecc->modq ? time_function (bench_modq, &ctx) : 0;
+  modq = time_function (bench_modq, &ctx);
 
   modinv = time_function (bench_modinv, &ctx);
 #if !NETTLE_USE_MINI_GMP
@@ -338,8 +324,6 @@ bench_curve (const struct ecc_curve *ecc)
   if (ecc->bit_size == 255)
     {
       /* For now, curve25519 is a special case */
-      mul_g = time_function (bench_mul_g_eh, &ctx);
-      mul_a = time_function (bench_mul_a_eh, &ctx);
       dup_jj = time_function (bench_dup_eh, &ctx);
       add_jja = time_function (bench_add_eh, &ctx);
       add_jjj = time_function (bench_add_ehh, &ctx);
@@ -349,9 +333,9 @@ bench_curve (const struct ecc_curve *ecc)
       dup_jj = time_function (bench_dup_jj, &ctx);
       add_jja = time_function (bench_add_jja, &ctx);
       add_jjj = time_function (bench_add_jjj, &ctx);
-      mul_g = time_function (bench_mul_g, &ctx);
-      mul_a = time_function (bench_mul_a, &ctx);
     }
+  mul_g = time_function (bench_mul_g, &ctx);
+  mul_a = time_function (bench_mul_a, &ctx);
 
   free (ctx.rp);
   free (ctx.ap);

@@ -1,5 +1,11 @@
 2014-08-26  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/ecc-benchmark.c (bench_mul_g, bench_mul_a): Use struct
+	ecc_curve function pointers.
+	(bench_mul_g_eh, bench_mul_a_eh): Deleted.
+	(bench_curve): Make modq benchmark unconditional. Use bench_mul_g
+	and bench_mul_a also for curve25519.
+
 	* testsuite/ecc-mod-test.c (test_curve): Make modq test
 	unconditional, partially reverting 2014-07-04 change.
 
