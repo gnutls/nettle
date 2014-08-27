@@ -26,11 +26,11 @@ Affine formulas for duplication, $(x_2, y_2) = 2(x_1, y_1)$:
 \end{align*}
 Affine formulas for addition, $(x_3, y_3) = (x_1, y_1) + (x_2,
 y_2)$:
-\begin{align}
+\begin{align*}
   t &= (x_2 - x_1)^{-1} (y_2 - y_1) \\
   x_3 &= t^2 - x_1 - x_2 \\
   y_3 &= (x_1 - x_3) t - y_1
-\end{align}
+\end{align*}
 
 \section{Montgomery curve}
 
@@ -105,6 +105,29 @@ This works also for doubling, but a more efficient variant is
   Z_3 &= E J
 \end{align*}
 
+\section{EdDSA}
+
+The EdDSA paper (\url{http://ed25519.cr.yp.to/ed25519-20110926.pdf})
+suggests using the twisted Edwards curve,
+\begin{equation*}
+  -x^2 + y^2 = 1 + d x^2 y^2 \pmod{p}
+\end{equation*}
+Assuming -1 has a square root modulo $p$, a point $(x, y)$ lies on
+this curve if and only if $(\sqrt{-1} x, p)$ lies of the non-twisted
+Edwards curve. The point additin formulas for the twisted Edwards
+curve are
+\begin{align*}
+  t &= d x_1 x_2 y_1 y_2 \\
+  x_3 &= (1 + t)^{-1} (x_1 y_2 + y_1 x_2) \\
+  y_3 &= (1 - t)^{-1} (y_1 y_2 + x_1 x_2)
+\end{align*}
+For the other formulas, it should be fine to just switch the sign of
+terms involving $x_1 x_2$ or $x_1^2$. The paper suggests further
+optimizations: For precomputed points, use the representation $(x-y,
+x+y, dxy)$. And for temporary points, maintain an additional redundant
+coordinate $T$, with $Z T = X Y$ (see
+\url{http://eprint.iacr.org/2008/522.pdf}).
+
 \section{Curve25519}
 
 Curve25519 is defined as the Montgomery curve
@@ -144,6 +167,25 @@ coordinates, $u = U/W$ and $v = V/W$, then
   y &= \sqrt{b} \frac{(W+V) W}{(W-V) U} 
 \end{align*}
 so we need to invert the value $(W-V) U$.
+
+\subsection{Transforms for the twisted Edwards Curve}
+
+If we use the twisted Edwards curve instead, let $\alpha = \sqrt{-1}
+\pmod{p}$. Then we work with coordinates $(u', v)$, where $u' = \alpha
+u$. The transform from Montgomery form $(x, y)$ is then
+\begin{align*}
+  u &= (\alpha \sqrt{b+2}) \, x / y\\
+  v &= (x-1) / (x+1)
+\end{align*}
+And the inverse transform is similarly
+\begin{align*}
+  x &= (1+v) / (1-v) \\
+  y &= (\alpha \sqrt{b+2}) \, x / u 
+\end{align*}
+so it's just a change of the transform constant, effectively using
+$\sqrt{-(b+2)}$ instead.
+
+\subsection{Coordinates outside of the base field}
 
 The curve25519 function is defined with an input point represented by
 the $x$-coordinate only, and is specified as allowing any value. The
