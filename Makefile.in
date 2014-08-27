@@ -164,18 +164,23 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  ecc-mod.c ecc-generic-modp.c ecc-generic-modq.c \
 		  ecc-modp.c ecc-modq.c ecc-generic-redc.c \
 		  ecc-192.c ecc-224.c ecc-256.c ecc-384.c ecc-521.c \
+		  ecc-25519.c \
 		  ecc-size.c ecc-j-to-a.c ecc-a-to-j.c \
 		  ecc-dup-jj.c ecc-add-jja.c ecc-add-jjj.c \
+		  ecc-a-to-eh.c ecc-eh-to-a.c \
+		  ecc-dup-eh.c ecc-add-eh.c ecc-add-ehh.c \
+		  ecc-mul-g-eh.c ecc-mul-a-eh.c \
 		  ecc-mul-g.c ecc-mul-a.c ecc-hash.c ecc-random.c \
 		  ecc-point.c ecc-scalar.c ecc-point-mul.c ecc-point-mul-g.c \
 		  ecc-ecdsa-sign.c ecdsa-sign.c \
 		  ecc-ecdsa-verify.c ecdsa-verify.c ecdsa-keygen.c \
+		  curve25519-mul-g.c curve25519-mul.c \
 		  $(OPT_HOGWEED_SOURCES)
 
 HEADERS = aes.h arcfour.h arctwo.h asn1.h blowfish.h \
 	  base16.h base64.h buffer.h camellia.h cast128.h \
 	  cbc.h ccm.h chacha.h chacha-poly1305.h ctr.h \
-	  des.h des-compat.h dsa.h dsa-compat.h eax.h \
+	  curve25519.h des.h des-compat.h dsa.h dsa-compat.h eax.h \
 	  ecc-curve.h ecc.h ecdsa.h \
 	  gcm.h gosthash94.h hmac.h \
 	  knuth-lfib.h \
@@ -347,6 +352,9 @@ ecc-384.h: eccdata.stamp
 ecc-521.h: eccdata.stamp
 	./eccdata$(EXEEXT_FOR_BUILD) 521 56 6 $(GMP_NUMB_BITS) > $@T && mv $@T $@
 
+ecc-25519.h: eccdata.stamp
+	./eccdata$(EXEEXT_FOR_BUILD) 255 14 6 $(GMP_NUMB_BITS) > $@T && mv $@T $@
+
 eccdata.stamp: eccdata.c
 	$(MAKE) eccdata$(EXEEXT_FOR_BUILD)
 	echo stamp > eccdata.stamp
@@ -356,12 +364,14 @@ ecc-224.$(OBJEXT): ecc-224.h
 ecc-256.$(OBJEXT): ecc-256.h
 ecc-384.$(OBJEXT): ecc-384.h
 ecc-521.$(OBJEXT): ecc-521.h
+ecc-25519.$(OBJEXT): ecc-25519.h
 
 ecc-192.p$(OBJEXT): ecc-192.h
 ecc-224.p$(OBJEXT): ecc-224.h
 ecc-256.p$(OBJEXT): ecc-256.h
 ecc-384.p$(OBJEXT): ecc-384.h
 ecc-521.p$(OBJEXT): ecc-521.h
+ecc-25519.p$(OBJEXT): ecc-25519.h
 
 .asm.s: $(srcdir)/asm.m4 machine.m4 config.m4
 	$(M4) $(srcdir)/asm.m4 machine.m4 config.m4 $< >$@T \
@@ -619,7 +629,7 @@ distcheck: dist
 
 clean-here:
 	-rm -f $(TARGETS) $(IMPLICIT_TARGETS) *.$(OBJEXT) *.p$(OBJEXT) *.s \
-		ecc-192.h ecc-224.h ecc-256.h ecc-384.h ecc-521.h \
+		ecc-192.h ecc-224.h ecc-256.h ecc-384.h ecc-521.h ecc-25519.h \
 		eccdata$(EXEEXT_FOR_BUILD) eccdata.stamp
 	-rm -rf .lib libnettle.stamp libhogweed.stamp
 

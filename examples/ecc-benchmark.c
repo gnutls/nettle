@@ -227,14 +227,35 @@ static void
 bench_mul_g (void *p)
 {
   struct ecc_ctx *ctx = (struct ecc_ctx *) p;
-  ecc_mul_g (ctx->ecc, ctx->rp, ctx->ap, ctx->tp);
+  ctx->ecc->mul_g (ctx->ecc, ctx->rp, ctx->ap, ctx->tp);
 }
 
 static void
 bench_mul_a (void *p)
 {
   struct ecc_ctx *ctx = (struct ecc_ctx *) p;
-  ecc_mul_a (ctx->ecc, 1, ctx->rp, ctx->ap, ctx->bp, ctx->tp);
+  ctx->ecc->mul (ctx->ecc, ctx->rp, ctx->ap, ctx->bp, ctx->tp);
+}
+
+static void
+bench_dup_eh (void *p)
+{
+  struct ecc_ctx *ctx = (struct ecc_ctx *) p;
+  ecc_dup_eh (ctx->ecc, ctx->rp, ctx->ap, ctx->tp);
+}
+
+static void
+bench_add_eh (void *p)
+{
+  struct ecc_ctx *ctx = (struct ecc_ctx *) p;
+  ecc_add_eh (ctx->ecc, ctx->rp, ctx->ap, ctx->bp, ctx->tp);
+}
+
+static void
+bench_add_ehh (void *p)
+{
+  struct ecc_ctx *ctx = (struct ecc_ctx *) p;
+  ecc_add_ehh (ctx->ecc, ctx->rp, ctx->ap, ctx->bp, ctx->tp);
 }
 
 #if NETTLE_USE_MINI_GMP
@@ -300,9 +321,19 @@ bench_curve (const struct ecc_curve *ecc)
 #else
   modinv_powm = 0;
 #endif
-  dup_jj = time_function (bench_dup_jj, &ctx);
-  add_jja = time_function (bench_add_jja, &ctx);
-  add_jjj = time_function (bench_add_jjj, &ctx);
+  if (ecc->bit_size == 255)
+    {
+      /* For now, curve25519 is a special case */
+      dup_jj = time_function (bench_dup_eh, &ctx);
+      add_jja = time_function (bench_add_eh, &ctx);
+      add_jjj = time_function (bench_add_ehh, &ctx);
+    }
+  else
+    {
+      dup_jj = time_function (bench_dup_jj, &ctx);
+      add_jja = time_function (bench_add_jja, &ctx);
+      add_jjj = time_function (bench_add_jjj, &ctx);
+    }
   mul_g = time_function (bench_mul_g, &ctx);
   mul_a = time_function (bench_mul_a, &ctx);
 
@@ -321,6 +352,7 @@ bench_curve (const struct ecc_curve *ecc)
 const struct ecc_curve * const curves[] = {
   &nettle_secp_192r1,
   &nettle_secp_224r1,
+  &nettle_curve25519,
   &nettle_secp_256r1,
   &nettle_secp_384r1,
   &nettle_secp_521r1,

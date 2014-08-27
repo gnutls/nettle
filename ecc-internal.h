@@ -62,20 +62,37 @@
 #define sec_sub_1 _nettle_sec_sub_1
 #define sec_tabselect _nettle_sec_tabselect
 #define sec_modinv _nettle_sec_modinv
+#define ecc_25519_sqrt _nettle_ecc_25519_sqrt
 
 #define ECC_MAX_SIZE ((521 + GMP_NUMB_BITS - 1) / GMP_NUMB_BITS)
 
 /* Window size for ecc_mul_a. Using 4 bits seems like a good choice,
    for both Intel x86_64 and ARM Cortex A9. For the larger curves, of
-   384 and 521 bits, we could improve seepd by a few percent if we go
+   384 and 521 bits, we could improve speed by a few percent if we go
    up to 5 bits, but I don't think that's worth doubling the
    storage. */
 #define ECC_MUL_A_WBITS 4
+/* And for ecc_mul_a_eh */
+#define ECC_MUL_A_EH_WBITS 4
+
 
 /* Reduces from 2*ecc->size to ecc->size. */
 /* Required to return a result < 2q. This property is inherited by
    modp_mul and modp_add. */
 typedef void ecc_mod_func (const struct ecc_curve *ecc, mp_limb_t *rp);
+
+typedef void ecc_mul_g_func (const struct ecc_curve *ecc, mp_limb_t *r,
+			     const mp_limb_t *np, mp_limb_t *scratch);
+
+typedef void ecc_mul_func (const struct ecc_curve *ecc,
+			   mp_limb_t *r,
+			   const mp_limb_t *np, const mp_limb_t *p,
+			   mp_limb_t *scratch);
+
+typedef void ecc_h_to_a_func (const struct ecc_curve *ecc,
+			      int flags,
+			      mp_limb_t *r, const mp_limb_t *p,
+			      mp_limb_t *scratch);
 
 /* Represents an elliptic curve of the form
 
@@ -97,6 +114,19 @@ struct ecc_curve
   unsigned short pippenger_k;
   unsigned short pippenger_c;
 
+  unsigned short mul_itch;
+  unsigned short mul_g_itch;
+  unsigned short h_to_a_itch;
+
+  ecc_mod_func *modp;
+  ecc_mod_func *redc;
+  ecc_mod_func *reduce;
+  ecc_mod_func *modq;
+
+  ecc_mul_func *mul;
+  ecc_mul_g_func *mul_g;
+  ecc_h_to_a_func *h_to_a;
+
   /* The prime p. */
   const mp_limb_t *p;
   const mp_limb_t *b;
@@ -106,11 +136,9 @@ struct ecc_curve
   const mp_limb_t *g;
   /* Generator with coordinates in Montgomery form. */
   const mp_limb_t *redc_g;
-
-  ecc_mod_func *modp;
-  ecc_mod_func *redc;
-  ecc_mod_func *reduce;
-  ecc_mod_func *modq;
+  /* If non-NULL, the constant needed for transformation to the
+     equivalent Edwards curve. */
+  const mp_limb_t *edwards_root;
 
   /* B^size mod p. Expected to have at least 32 leading zeros
      (equality for secp_256r1). */
@@ -226,19 +254,33 @@ sec_modinv (mp_limb_t *vp, mp_limb_t *ap, mp_size_t n,
 	    const mp_limb_t *mp, const mp_limb_t *mp1h, mp_size_t bit_size,
 	    mp_limb_t *scratch);
 
+int
+ecc_25519_sqrt(mp_limb_t *rp, const mp_limb_t *ap);
+
 /* Current scratch needs: */
 #define ECC_MODINV_ITCH(size) (3*(size))
 #define ECC_J_TO_A_ITCH(size) (5*(size))
-#define ECC_DUP_JA_ITCH(size) (5*(size))
+#define ECC_EH_TO_A_ITCH(size) (5*(size))
+#define ECC_A_TO_EH_ITCH(size) (2*(size))
 #define ECC_DUP_JJ_ITCH(size) (5*(size))
+#define ECC_DUP_EH_ITCH(size) (5*(size))
 #define ECC_ADD_JJA_ITCH(size) (6*(size))
 #define ECC_ADD_JJJ_ITCH(size) (8*(size))
+#define ECC_ADD_EH_ITCH(size) (6*(size))
+#define ECC_ADD_EHH_ITCH(size) (7*(size))
 #define ECC_MUL_G_ITCH(size) (9*(size))
+#define ECC_MUL_G_EH_ITCH(size) (9*(size))
 #if ECC_MUL_A_WBITS == 0
 #define ECC_MUL_A_ITCH(size) (12*(size))
 #else
 #define ECC_MUL_A_ITCH(size) \
   (((3 << ECC_MUL_A_WBITS) + 11) * (size))
+#endif
+#if ECC_MUL_A_EH_WBITS == 0
+#define ECC_MUL_A_EH_ITCH(size) (13*(size))
+#else
+#define ECC_MUL_A_EH_ITCH(size) \
+  (((3 << ECC_MUL_A_EH_WBITS) + 10) * (size))
 #endif
 #define ECC_ECDSA_SIGN_ITCH(size) (12*(size))
 #define ECC_ECDSA_VERIFY_ITCH(size) \

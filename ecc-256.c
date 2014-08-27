@@ -39,6 +39,7 @@
 
 #include <assert.h>
 
+#include "ecc.h"
 #include "ecc-internal.h"
 
 #if HAVE_NATIVE_ecc_256_redc
@@ -228,15 +229,26 @@ const struct ecc_curve nettle_secp_256r1 =
   ECC_REDC_SIZE,
   ECC_PIPPENGER_K,
   ECC_PIPPENGER_C,
+
+  ECC_MUL_A_ITCH (ECC_LIMB_SIZE),
+  ECC_MUL_G_ITCH (ECC_LIMB_SIZE),
+  ECC_J_TO_A_ITCH (ECC_LIMB_SIZE),
+
+  ecc_256_modp,
+  ecc_256_redc,
+  USE_REDC ? ecc_256_redc : ecc_256_modp,
+  ecc_256_modq,
+
+  ecc_mul_a,
+  ecc_mul_g,
+  ecc_j_to_a,
+
   ecc_p,
   ecc_b,
   ecc_q,
   ecc_g,
   ecc_redc_g,
-  ecc_256_modp,
-  ecc_256_redc,
-  USE_REDC ? ecc_256_redc : ecc_256_modp,
-  ecc_256_modq,
+  NULL,
   ecc_Bmodp,
   ecc_Bmodp_shifted,
   ecc_pp1h,

@@ -224,6 +224,17 @@ test_dsa_key(const struct dsa_params *params,
 
 extern const struct ecc_curve * const ecc_curves[];
 
+struct ecc_ref_point
+{
+  const char *x;
+  const char *y;
+};
+
+void
+test_ecc_point (const struct ecc_curve *ecc,
+		const struct ecc_ref_point *ref,
+		const mp_limb_t *p);
+
 void
 test_ecc_mul_a (unsigned curve, unsigned n, const mp_limb_t *p);
 

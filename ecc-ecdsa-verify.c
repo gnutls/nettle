@@ -114,7 +114,7 @@ ecc_ecdsa_verify (const struct ecc_curve *ecc,
   ecc_modq_mul (ecc, u2, rp, sinv);
 
    /* Total storage: 5*ecc->size + ECC_MUL_A_ITCH (ecc->size) */
-  ecc_mul_a (ecc, 1, P2, u2, pp, u2 + ecc->size);
+  ecc_mul_a (ecc, P2, u2, pp, u2 + ecc->size);
 
   /* u1 = h / s, P1 = u1 * G */
   ecc_hash (ecc, hp, length, digest);

@@ -1,1 +1,5 @@
 /*.pdf
+/*.dvi
+/*.log
+/*.aux
+/auto

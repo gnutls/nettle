@@ -187,6 +187,15 @@ dsa-test$(EXEEXT): dsa-test.$(OBJEXT)
 dsa-keygen-test$(EXEEXT): dsa-keygen-test.$(OBJEXT)
 	$(LINK) dsa-keygen-test.$(OBJEXT) $(TEST_OBJS) -o dsa-keygen-test$(EXEEXT)
 
+curve25519-dup-test$(EXEEXT): curve25519-dup-test.$(OBJEXT)
+	$(LINK) curve25519-dup-test.$(OBJEXT) $(TEST_OBJS) -o curve25519-dup-test$(EXEEXT)
+
+curve25519-add-test$(EXEEXT): curve25519-add-test.$(OBJEXT)
+	$(LINK) curve25519-add-test.$(OBJEXT) $(TEST_OBJS) -o curve25519-add-test$(EXEEXT)
+
+curve25519-dh-test$(EXEEXT): curve25519-dh-test.$(OBJEXT)
+	$(LINK) curve25519-dh-test.$(OBJEXT) $(TEST_OBJS) -o curve25519-dh-test$(EXEEXT)
+
 ecc-mod-test$(EXEEXT): ecc-mod-test.$(OBJEXT)
 	$(LINK) ecc-mod-test.$(OBJEXT) $(TEST_OBJS) -o ecc-mod-test$(EXEEXT)
 
@@ -210,6 +219,9 @@ ecdsa-verify-test$(EXEEXT): ecdsa-verify-test.$(OBJEXT)
 
 ecdsa-keygen-test$(EXEEXT): ecdsa-keygen-test.$(OBJEXT)
 	$(LINK) ecdsa-keygen-test.$(OBJEXT) $(TEST_OBJS) -o ecdsa-keygen-test$(EXEEXT)
+
+ecdh-test$(EXEEXT): ecdh-test.$(OBJEXT)
+	$(LINK) ecdh-test.$(OBJEXT) $(TEST_OBJS) -o ecdh-test$(EXEEXT)
 
 sha1-huge-test$(EXEEXT): sha1-huge-test.$(OBJEXT)
 	$(LINK) sha1-huge-test.$(OBJEXT) $(TEST_OBJS) -o sha1-huge-test$(EXEEXT)

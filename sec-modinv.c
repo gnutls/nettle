@@ -71,6 +71,7 @@ cnd_swap (int cnd, mp_limb_t *ap, mp_limb_t *bp, mp_size_t n)
 }
 
 /* Compute a^{-1} mod m, with running time depending only on the size.
+   Returns zero if a == 0 (mod m), to be consistent with a^{phi(m)-1}.
    Also needs (m+1)/2, and m must be odd. */
 void
 sec_modinv (mp_limb_t *vp, mp_limb_t *ap, mp_size_t n,

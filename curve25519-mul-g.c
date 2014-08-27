@@ -1,6 +1,6 @@
-/* ecc-point-mul.c
+/* curve25519-mul-g.c
 
-   Copyright (C) 2013 Niels Möller
+   Copyright (C) 2014 Niels Möller
 
    This file is part of GNU Nettle.
 
@@ -29,30 +29,43 @@
    not, see http://www.gnu.org/licenses/.
 */
 
-/* Development of Nettle's ECC support was funded by the .SE Internet Fund. */
-
 #if HAVE_CONFIG_H
 # include "config.h"
 #endif
 
-#include <assert.h>
+#include <string.h>
+
+#include "curve25519.h"
 
 #include "ecc.h"
 #include "ecc-internal.h"
 
+/* Intended to be compatible with NaCl's crypto_scalarmult_base. */
 void
-ecc_point_mul (struct ecc_point *r, const struct ecc_scalar *n,
-	       const struct ecc_point *p)
+curve25519_mul_g (uint8_t *r, const uint8_t *n)
 {
-  const struct ecc_curve *ecc = r->ecc;
-  mp_limb_t size = ecc->size;
-  mp_size_t itch = 3*size + ecc->mul_itch;
-  mp_limb_t *scratch = gmp_alloc_limbs (itch);
+  uint8_t t[CURVE25519_SIZE];
+  mp_limb_t *scratch;
+  mp_size_t ecc_size;
+  mp_size_t itch;
 
-  assert (n->ecc == ecc);
-  assert (p->ecc == ecc);
+#define p scratch
+#define x (scratch + 3*ecc_size)
+#define scratch_out (scratch + 4*ecc_size)
+  
+  memcpy (t, n, sizeof(t));
+  t[0] &= ~7;
+  t[CURVE25519_SIZE-1] = (t[CURVE25519_SIZE-1] & 0x3f) | 0x40;
 
-  ecc->mul (ecc, scratch, n->p, p->p, scratch + 3*size);
-  ecc->h_to_a (ecc, 1, r->p, scratch, scratch + 3*size);
+  ecc_size = nettle_curve25519.size;
+  itch = 4*ecc_size + ECC_MUL_G_EH_ITCH(ecc_size);
+  scratch = gmp_alloc_limbs (itch);
+
+  mpn_set_base256_le (x, ecc_size, t, CURVE25519_SIZE);
+
+  ecc_mul_g_eh (&nettle_curve25519, p, x, scratch_out);
+  ecc_eh_to_a (&nettle_curve25519, 2, x, p, scratch_out);
+
+  mpn_get_base256_le (r, CURVE25519_SIZE, x, ecc_size);
   gmp_free_limbs (scratch, itch);
 }

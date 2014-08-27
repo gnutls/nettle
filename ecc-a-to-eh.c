@@ -1,6 +1,6 @@
-/* ecc-point-mul.c
+/* ecc-a-to-eh.c
 
-   Copyright (C) 2013 Niels Möller
+   Copyright (C) 2014 Niels Möller
 
    This file is part of GNU Nettle.
 
@@ -29,30 +29,49 @@
    not, see http://www.gnu.org/licenses/.
 */
 
-/* Development of Nettle's ECC support was funded by the .SE Internet Fund. */
-
 #if HAVE_CONFIG_H
 # include "config.h"
 #endif
 
-#include <assert.h>
-
 #include "ecc.h"
 #include "ecc-internal.h"
 
-void
-ecc_point_mul (struct ecc_point *r, const struct ecc_scalar *n,
-	       const struct ecc_point *p)
+mp_size_t
+ecc_a_to_eh_itch (const struct ecc_curve *ecc)
 {
-  const struct ecc_curve *ecc = r->ecc;
-  mp_limb_t size = ecc->size;
-  mp_size_t itch = 3*size + ecc->mul_itch;
-  mp_limb_t *scratch = gmp_alloc_limbs (itch);
+  return ECC_A_TO_EH_ITCH (ecc->size);
+}
 
-  assert (n->ecc == ecc);
-  assert (p->ecc == ecc);
+/* Convert from affine coordinates to homogeneous coordinates on the
+   corresponding Edwards curve. */
+void
+ecc_a_to_eh (const struct ecc_curve *ecc,
+	     mp_limb_t *r, const mp_limb_t *p,
+	     mp_limb_t *scratch)
+{
+#define xp p
+#define yp (p + ecc->size)
 
-  ecc->mul (ecc, scratch, n->p, p->p, scratch + 3*size);
-  ecc->h_to_a (ecc, 1, r->p, scratch, scratch + 3*size);
-  gmp_free_limbs (scratch, itch);
+#define up r
+#define vp (r + ecc->size)
+#define wp (r + 2*ecc->size)
+
+  /* u = t x / y
+     v = (x-1) / (x+1)
+
+     or in homogeneous coordinates
+
+     U = t x (x+1)
+     V = (x-1) y
+     W = (x+1) y
+  */
+
+  ecc_modp_mul (ecc, scratch, xp, yp);
+  ecc_modp_add (ecc, wp, scratch, yp);
+  ecc_modp_sub (ecc, vp, scratch, yp);
+
+  ecc_modp_sqr (ecc, scratch, xp);
+  ecc_modp_add (ecc, up, scratch, xp);
+  ecc_modp_mul (ecc, scratch, up, ecc->edwards_root);
+  mpn_copyi (up, scratch, ecc->size);
 }

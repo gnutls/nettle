@@ -40,10 +40,9 @@
 
 void
 ecc_a_to_j (const struct ecc_curve *ecc,
-	    int initial,
 	    mp_limb_t *r, const mp_limb_t *p)
 {
-  if (ecc->use_redc && initial)
+  if (ecc->use_redc)
     {
       mpn_copyd (r + ecc->size, p, 2*ecc->size);
 
