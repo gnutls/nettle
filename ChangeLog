@@ -1,5 +1,8 @@
 2014-08-27  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac: Bumped package version number to 3.1.
+	(LIBHOGWEED_MAJOR): Bumped library version to 4.0.
+
 	Merged camellia-reorg changes (starting at 2014-07-04).
 	* Makefile.in (clean-here): Added ecc-25519.h.
 
