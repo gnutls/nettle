@@ -1,5 +1,8 @@
 2014-08-27  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-internal.h (struct ecc_curve): New field q_bit_size. Updated
+	all instances.
+
 	* configure.ac: Bumped package version number to 3.1.
 	(LIBHOGWEED_MAJOR): Bumped library version to 4.0.
 

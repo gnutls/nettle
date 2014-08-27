@@ -237,6 +237,7 @@ const struct ecc_curve nettle_curve25519 =
   255,
   ECC_LIMB_SIZE,
   ECC_BMODP_SIZE,
+  253,
   ECC_BMODQ_SIZE,
   0, /* No redc */
   0,

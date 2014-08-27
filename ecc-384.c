@@ -152,6 +152,7 @@ const struct ecc_curve nettle_secp_384r1 =
   384,
   ECC_LIMB_SIZE,    
   ECC_BMODP_SIZE,
+  384,
   ECC_BMODQ_SIZE,
   USE_REDC,
   ECC_REDC_SIZE,

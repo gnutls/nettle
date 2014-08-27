@@ -224,6 +224,7 @@ const struct ecc_curve nettle_secp_256r1 =
   256,
   ECC_LIMB_SIZE,    
   ECC_BMODP_SIZE,
+  256,
   ECC_BMODQ_SIZE,
   USE_REDC,
   ECC_REDC_SIZE,

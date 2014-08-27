@@ -106,6 +106,7 @@ struct ecc_curve
      coordinates. */
   unsigned short size;
   unsigned short Bmodp_size;
+  unsigned short q_bit_size;
   unsigned short Bmodq_size;
   unsigned short use_redc;
   /* +k if p+1 has k low zero limbs, -k if p-1 has k low zero
