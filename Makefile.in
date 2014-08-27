@@ -629,7 +629,7 @@ distcheck: dist
 
 clean-here:
 	-rm -f $(TARGETS) $(IMPLICIT_TARGETS) *.$(OBJEXT) *.p$(OBJEXT) *.s \
-		ecc-192.h ecc-224.h ecc-256.h ecc-384.h ecc-521.h \
+		ecc-192.h ecc-224.h ecc-256.h ecc-384.h ecc-521.h ecc-25519.h \
 		eccdata$(EXEEXT_FOR_BUILD) eccdata.stamp
 	-rm -rf .lib libnettle.stamp libhogweed.stamp
 

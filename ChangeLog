@@ -1,3 +1,7 @@
+2014-08-27  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (clean-here): Added ecc-25519.h.
+
 2014-08-26  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/ecc-benchmark.c (bench_mul_g, bench_mul_a): Use struct
