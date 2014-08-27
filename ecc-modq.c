@@ -64,5 +64,5 @@ void
 ecc_modq_inv (const struct ecc_curve *ecc, mp_limb_t *rp, mp_limb_t *ap,
 	      mp_limb_t *scratch)
 {
-  sec_modinv (rp, ap, ecc->size, ecc->q, ecc->qp1h, ecc->bit_size, scratch);
+  sec_modinv (rp, ap, ecc->size, ecc->q, ecc->qp1h, ecc->q_bit_size, scratch);
 }
