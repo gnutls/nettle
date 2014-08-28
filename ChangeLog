@@ -1,5 +1,11 @@
 2014-08-28  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/ecdsa-sign-test.c (test_main): Added test for the
+	obscure case of ecdsa using curve25519.
+
+	* ecc-ecdsa-sign.c (ecc_ecdsa_sign): Use mul_g and h_to_a function
+	pointers. Implies (obscure) support for curve25519.
+
 	* ecc-25519.c (ecc_25519_modq): Access q via the ecc struct.
 
 	* ecc-eh-to-a.c (ecc_eh_to_a): Analogous change as for ecc_j_to_a.

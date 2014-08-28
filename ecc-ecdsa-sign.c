@@ -1,6 +1,6 @@
 /* ecc-ecdsa-sign.c
 
-   Copyright (C) 2013 Niels Möller
+   Copyright (C) 2013, 2014 Niels Möller
 
    This file is part of GNU Nettle.
 
@@ -46,7 +46,8 @@
 mp_size_t
 ecc_ecdsa_sign_itch (const struct ecc_curve *ecc)
 {
-  /* Needs 3*ecc->size + scratch for ecc_mul_g. */
+  /* Needs 3*ecc->size + scratch for ecc->mul_g. Currently same for
+     ecc_mul_g and ecc_mul_g_eh. */
   return ECC_ECDSA_SIGN_ITCH (ecc->size);
 }
 
@@ -77,9 +78,9 @@ ecc_ecdsa_sign (const struct ecc_curve *ecc,
      4. s2 <-- (h + z*s1)/k mod q.
   */
 
-  ecc_mul_g (ecc, P, kp, P + 3*ecc->size);
+  ecc->mul_g (ecc, P, kp, P + 3*ecc->size);
   /* x coordinate only, modulo q */
-  ecc_j_to_a (ecc, 2, rp, P, P + 3*ecc->size);
+  ecc->h_to_a (ecc, 2, rp, P, P + 3*ecc->size);
 
   /* Invert k, uses 5 * ecc->size including scratch */
   mpn_copyi (hp, kp, ecc->size);
