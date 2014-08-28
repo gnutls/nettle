@@ -1,5 +1,8 @@
 2014-08-28  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-eh-to-a.c (ecc_eh_to_a): Analogous change as for ecc_j_to_a.
+	The modulo q case (op == 2) is hardcoded for curve25519.
+
 	* ecc-j-to-a.c (ecc_j_to_a): For curves using redc, always convert
 	back from redc form. When producing x coordiante only optionally
 	reduce it modulo q. Completely changes the meaning of the "flags"

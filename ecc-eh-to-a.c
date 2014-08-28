@@ -33,6 +33,8 @@
 # include "config.h"
 #endif
 
+#include <assert.h>
+
 #include "ecc.h"
 #include "ecc-internal.h"
 
@@ -47,7 +49,7 @@ ecc_eh_to_a_itch (const struct ecc_curve *ecc)
    coordinates on the corresponding Montgomery curve. */
 void
 ecc_eh_to_a (const struct ecc_curve *ecc,
-	     int flags,
+	     int op,
 	     mp_limb_t *r, const mp_limb_t *p,
 	     mp_limb_t *scratch)
 {
@@ -88,10 +90,24 @@ ecc_eh_to_a (const struct ecc_curve *ecc,
   cy = mpn_sub_n (xp, tp, ecc->p, ecc->size);
   cnd_copy (cy, xp, tp, ecc->size);
 
-  if (flags & 2)
-    /* Skip y coordinate */
-    return;
-  
+  if (op)
+    {
+      /* Skip y coordinate */
+      if (op > 1)
+	{
+	  /* Reduce modulo q. FIXME: Hardcoded for curve25519,
+	     duplicates end of ecc_25519_modq. */
+	  mp_limb_t cy;
+	  unsigned shift;
+	  assert (ecc->bit_size == 255);
+	  shift = 252 - GMP_NUMB_BITS * (ecc->size - 1);
+	  cy = mpn_submul_1 (xp, ecc->q, ecc->size,
+			     xp[ecc->size-1] >> shift);
+	  assert (cy < 2);
+	  cnd_add_n (cy, xp, ecc->q, ecc->size);
+	}
+      return;
+    }
   ecc_modp_add (ecc, sp, wp, vp); /* FIXME: Redundant. Also the (W +
 				     V) Z^-1 multiplication is
 				     redundant. */

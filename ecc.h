@@ -206,7 +206,7 @@ mp_size_t
 ecc_eh_to_a_itch (const struct ecc_curve *ecc);
 void
 ecc_eh_to_a (const struct ecc_curve *ecc,
-	     int flags,
+	     int op,
 	     mp_limb_t *r, const mp_limb_t *p,
 	     mp_limb_t *scratch);
 
