@@ -110,23 +110,51 @@ This works also for doubling, but a more efficient variant is
 The EdDSA paper (\url{http://ed25519.cr.yp.to/ed25519-20110926.pdf})
 suggests using the twisted Edwards curve,
 \begin{equation*}
-  -x^2 + y^2 = 1 + d x^2 y^2 \pmod{p}
+  -x^2 + y^2 = 1 + d' x^2 y^2 \pmod{p}
 \end{equation*}
+(For this we use the same $d' = -d = (121665/121666) \bmod p$).
 Assuming -1 has a square root modulo $p$, a point $(x, y)$ lies on
 this curve if and only if $(\sqrt{-1} x, p)$ lies of the non-twisted
-Edwards curve. The point additin formulas for the twisted Edwards
+Edwards curve. The point addition formulas for the twisted Edwards
 curve are
 \begin{align*}
-  t &= d x_1 x_2 y_1 y_2 \\
+  t &= d' x_1 x_2 y_1 y_2 \\
   x_3 &= (1 + t)^{-1} (x_1 y_2 + y_1 x_2) \\
   y_3 &= (1 - t)^{-1} (y_1 y_2 + x_1 x_2)
 \end{align*}
+or in terms of $d$ rather than $d'$, signs are switched as
+\begin{align*}
+  t &= d x_1 x_2 y_1 y_2 \\
+  x_3 &= (1 - t)^{-1} (x_1 y_2 + y_1 x_2) \\
+  y_3 &= (1 + t)^{-1} (y_1 y_2 + x_1 x_2)
+\end{align*}
+
 For the other formulas, it should be fine to just switch the sign of
 terms involving $x_1 x_2$ or $x_1^2$. The paper suggests further
 optimizations: For precomputed points, use the representation $(x-y,
 x+y, dxy)$. And for temporary points, maintain an additional redundant
 coordinate $T$, with $Z T = X Y$ (see
 \url{http://eprint.iacr.org/2008/522.pdf}).
+
+According to djb, the formulas in Section 3.1 are the once to use,
+because they are complete. See
+\url{http://www.hyperelliptic.org/EFD/g1p/auto-twisted-extended-1.html#addition-add-2008-hwcd},
+\begin{align*}
+  A &= x_1 x_2 \\
+  B &= y_1 y_2 \\
+  C &= t_1 d' t_2 \\
+  D &= z_1 z_2 \\
+  E &= (x_1+y_1) (x_2+y_2)-A-B \\
+  F &= D-C \\
+  G &= D+C \\
+  H &= B-a A \\
+  x_3 &= E*F \\
+  y_3 &= G*H \\
+  t_3 &= E*H \\
+  z_3 &= F*G
+\end{align*}
+
+In our notation $a = -1$, and the $d'$ above is $-d$.
 
 \section{Curve25519}
 
