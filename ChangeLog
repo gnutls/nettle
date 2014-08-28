@@ -1,5 +1,8 @@
 2014-08-28  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecdsa-verify.c (ecdsa_verify): Drop include of ecc-internal.h,
+	use ecc_size function instead.
+
 	* ecc-ecdsa-verify.c (ecc_ecdsa_verify): Use the struct ecc_curve
 	function pointers: mul, mul_g, add_hhh, h_to_a.
 
