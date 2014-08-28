@@ -944,7 +944,6 @@ output_curve (const struct ecc_curve *ecc, unsigned bits_per_limb)
     output_bignum ("ecc_d", ecc->d, limb_size, bits_per_limb);
   output_bignum ("ecc_q", ecc->q, limb_size, bits_per_limb);
   output_point ("ecc_g", ecc, &ecc->g, 0, limb_size, bits_per_limb);
-  output_point ("ecc_redc_g", ecc, &ecc->g, 1, limb_size, bits_per_limb);
   
   bits = output_modulo ("ecc_Bmodp", ecc->p, limb_size, bits_per_limb);
   printf ("#define ECC_BMODP_SIZE %u\n",

@@ -133,10 +133,9 @@ struct ecc_curve
   const mp_limb_t *b;
   /* Group order. */
   const mp_limb_t *q;
-  /* Generator, x coordinate followed by y (affine coordinates). */
+  /* Generator, x coordinate followed by y (affine coordinates).
+   Currently used only by the test suite. */
   const mp_limb_t *g;
-  /* Generator with coordinates in Montgomery form. */
-  const mp_limb_t *redc_g;
   /* If non-NULL, the constant needed for transformation to the
      equivalent Edwards curve. */
   const mp_limb_t *edwards_root;

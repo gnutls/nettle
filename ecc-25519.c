@@ -262,7 +262,6 @@ const struct ecc_curve nettle_curve25519 =
   ecc_d, /* Use the Edwards curve constant. */
   ecc_q,
   ecc_g,
-  ecc_redc_g,
   ecc_edwards,
   ecc_Bmodp,
   ecc_Bmodp_shifted,

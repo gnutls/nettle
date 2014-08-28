@@ -1,3 +1,9 @@
+2014-08-28  Niels Möller  <nisse@lysator.liu.se>
+
+	* eccdata.c (output_curve): Don't output ecc_redc_g.
+	* ecc-internal.h (struct ecc_curve): Deleted unused field redc_g.
+	Updated all instances.
+
 2014-08-27  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-modq.c (ecc_modq_inv): Use q_bit_size.

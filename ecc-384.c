@@ -176,7 +176,6 @@ const struct ecc_curve nettle_secp_384r1 =
   ecc_b,
   ecc_q,
   ecc_g,
-  ecc_redc_g,
   NULL,
   ecc_Bmodp,
   ecc_Bmodp_shifted,
