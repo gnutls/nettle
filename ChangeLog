@@ -1,7 +1,14 @@
 2014-08-28  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-ecdsa-verify.c (ecc_ecdsa_verify): Use the struct ecc_curve
+	function pointers: mul, mul_g, add_hhh, h_to_a.
+
 	* ecc-internal.h (ECC_ECDSA_VERIFY_ITCH): Deleted macro. Needed
 	scratch depends on curve type, not just size.
+	(ecc_add_func): New typedef.
+	(struct ecc_curve): New function pointer add_hhh, and constant
+	add_hhh_itch. Updated all instances.
+
 	* ecdsa-verify.c (ecdsa_verify): Use the ecc_ecdsa_verify_itch
 	function, not the corresponding macro.
 	* ecc-ecdsa-verify.c (ecc_ecdsa_verify_itch): Take ecc->mul_itch

@@ -1,6 +1,6 @@
 /* ecc-ecdsa-verify.c
 
-   Copyright (C) 2013 Niels Möller
+   Copyright (C) 2013, 2014 Niels Möller
 
    This file is part of GNU Nettle.
 
@@ -113,7 +113,7 @@ ecc_ecdsa_verify (const struct ecc_curve *ecc,
   ecc_modq_mul (ecc, u2, rp, sinv);
 
    /* Total storage: 5*ecc->size + ecc->mul_itch */
-  ecc_mul_a (ecc, P2, u2, pp, u2 + ecc->size);
+  ecc->mul (ecc, P2, u2, pp, u2 + ecc->size);
 
   /* u1 = h / s, P1 = u1 * G */
   ecc_hash (ecc, hp, length, digest);
@@ -124,7 +124,7 @@ ecc_ecdsa_verify (const struct ecc_curve *ecc,
   if (!zero_p (u1, ecc->size))
     {
       /* Total storage: 6*ecc->size + ecc->mul_g_itch (ecc->size) */
-      ecc_mul_g (ecc, P1, u1, u1 + ecc->size);
+      ecc->mul_g (ecc, P1, u1, u1 + ecc->size);
 
       /* NOTE: ecc_add_jjj and/or ecc_j_to_a will produce garbage in
 	 case u1 G = +/- u2 V. However, anyone who gets his or her
@@ -140,11 +140,11 @@ ecc_ecdsa_verify (const struct ecc_curve *ecc,
 	 s_1 = z. Hitting that is about as unlikely as finding the
 	 private key by guessing.
        */
-      /* Total storage: 6*ecc->size + ECC_ADD_JJJ_ITCH (ecc->size) */
-      ecc_add_jjj (ecc, P1, P1, P2, u1);
+      /* Total storage: 6*ecc->size + ecc->add_hhh_itch */
+      ecc->add_hhh (ecc, P1, P1, P2, u1);
     }
   /* x coordinate only, modulo q */
-  ecc_j_to_a (ecc, 2, P2, P1, u1);
+  ecc->h_to_a (ecc, 2, P2, P1, u1);
 
   return (mpn_cmp (rp, P2, ecc->size) == 0);
 #undef P2
