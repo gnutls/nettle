@@ -61,7 +61,6 @@ ecc_ecdsa_sign (const struct ecc_curve *ecc,
 		mp_limb_t *rp, mp_limb_t *sp,
 		mp_limb_t *scratch)
 {
-  mp_limb_t cy;
 #define P	    scratch
 #define kinv	    scratch                /* Needs 5*ecc->size for computation */
 #define hp	    (scratch  + ecc->size) /* NOTE: ecc->size + 1 limbs! */
