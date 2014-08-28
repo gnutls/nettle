@@ -145,4 +145,17 @@ test_main (void)
 	      "97536710 1F67D1CF 9BCCBF2F 3D239534" 
 	      "FA509E70 AAC851AE 01AAC68D 62F86647"
 	      "2660"); /* s */
+
+  test_ecdsa (&nettle_curve25519,
+	      /* Public key corresponding to the key in ecdsa-sign-test */
+	      " eb07d9c7931d614 2669124e12273e1f"
+	      "b9f9555f52bed369 a71cdac173da0ceb", /* x */
+	      "2e726b0b1ff3abc4 d50798ebc246399e"
+	      "365777c0900a0d5b 425f819278d4281d", /* y */
+	      SHEX("e99df2a098c3c590 ea1e1db6d9547339"
+		   "ae760d5331496119 5d967fd881e3b0f5"), /* h */
+	      " 62cbc248a549765 3641d1cbedda2733"
+	      "a7357821dca43727 d8081448d608030d", /* r */
+	      " 14726f472f44f84 63fe82c2712231cd"
+	      "937f2aecdcfe9c39 e2ab0d68c390ccf4"); /* s */
 }

@@ -16,6 +16,8 @@
 
 	* testsuite/ecdsa-sign-test.c (test_main): Added test for the
 	obscure case of ecdsa using curve25519.
+	* testsuite/ecdsa-verify-test.c (test_main): Likewise (depends on
+	above changes).
 
 	* ecc-ecdsa-sign.c (ecc_ecdsa_sign): Use mul_g and h_to_a function
 	pointers. Implies (obscure) support for curve25519.
