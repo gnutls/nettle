@@ -53,6 +53,6 @@ ecc_point_mul (struct ecc_point *r, const struct ecc_scalar *n,
   assert (p->ecc == ecc);
 
   ecc->mul (ecc, scratch, n->p, p->p, scratch + 3*size);
-  ecc->h_to_a (ecc, 1, r->p, scratch, scratch + 3*size);
+  ecc->h_to_a (ecc, 0, r->p, scratch, scratch + 3*size);
   gmp_free_limbs (scratch, itch);
 }

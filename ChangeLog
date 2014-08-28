@@ -1,5 +1,15 @@
 2014-08-28  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-j-to-a.c (ecc_j_to_a): For curves using redc, always convert
+	back from redc form. When producing x coordiante only optionally
+	reduce it modulo q. Completely changes the meaning of the "flags"
+	argument, and renames it to "op". Update all users of this
+	function or ecc->h_to_a.
+
+	* ecc-ecdsa-sign.c (ecc_ecdsa_sign): Use new ecc_j_to_a modulo q
+	feature.
+	* ecc-ecdsa-verify.c (ecc_ecdsa_verify): Likewise.
+
 	* testsuite/symbols-test: Regexp fixes, to better filter out
 	get_pc_thunk functions.
 

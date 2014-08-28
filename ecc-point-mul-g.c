@@ -54,5 +54,5 @@ ecc_point_mul_g (struct ecc_point *r, const struct ecc_scalar *n)
   TMP_ALLOC (scratch, itch);
 
   ecc->mul_g (ecc, scratch, n->p, scratch + 3*size);
-  ecc->h_to_a (ecc, 1, r->p, scratch, scratch + 3*size);
+  ecc->h_to_a (ecc, 0, r->p, scratch, scratch + 3*size);
 }

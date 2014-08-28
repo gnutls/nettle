@@ -144,10 +144,8 @@ ecc_ecdsa_verify (const struct ecc_curve *ecc,
       /* Total storage: 6*ecc->size + ECC_ADD_JJJ_ITCH (ecc->size) */
       ecc_add_jjj (ecc, P1, P1, P2, u1);
     }
-  ecc_j_to_a (ecc, 3, P2, P1, u1);
-
-  if (mpn_cmp (P2, ecc->q, ecc->size) >= 0)
-    mpn_sub_n (P2, P2, ecc->q, ecc->size);
+  /* x coordinate only, modulo q */
+  ecc_j_to_a (ecc, 2, P2, P1, u1);
 
   return (mpn_cmp (rp, P2, ecc->size) == 0);
 #undef P2

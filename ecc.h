@@ -146,11 +146,13 @@ ecc_point_mul_g (struct ecc_point *r, const struct ecc_scalar *n);
 
 /* Low-level interface */
   
-/* Points on a curve are represented as arrays of mp_limb_t. For some
-   curves, point coordinates are represented in montgomery form. We
-   use either affine coordinates x,y, or Jacobian coordinates X, Y, Z,
-   where x = X/Z^2 and y = X/Z^2.
-
+/* Points on a curve are represented as arrays of mp_limb_t, with
+   curve-specific representation. For the secp curves, we use Jacobian
+   coordinates (possibly in Montgomery for for mod multiplication).
+   For curve25519 we use homogeneous coordiantes on an equivalent
+   Edwards curve. The suffix "_h" denotes this internal
+   representation.
+   
    Since we use additive notation for the groups, the infinity point
    on the curve is denoted 0. The infinity point can be represented
    with x = y = 0 in affine coordinates, and Z = 0 in Jacobian
@@ -185,14 +187,15 @@ ecc_a_to_j (const struct ecc_curve *ecc,
 	    mp_limb_t *r, const mp_limb_t *p);
 
 /* Converts a point P in jacobian coordinates into a point R in affine
-   coordinates. If FLAGS has bit 0 set, and the curve uses montgomery
-   coordinates, also undo the montgomery conversion. If flags has bit
-   1 set, produce x coordinate only. */
+   coordinates. If op == 1, produce x coordinate only. If op == 2,
+   produce the x coordiante only, and in also it modulo q. FIXME: For
+   the public interface, have separate for the three cases, and use
+   this flag argument only for the internal ecc->h_to_a function. */
 mp_size_t
 ecc_j_to_a_itch (const struct ecc_curve *ecc);
 void
 ecc_j_to_a (const struct ecc_curve *ecc,
-	    int flags,
+	    int op,
 	    mp_limb_t *r, const mp_limb_t *p,
 	    mp_limb_t *scratch);
 

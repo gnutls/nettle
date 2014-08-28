@@ -47,7 +47,7 @@ ecc_j_to_a_itch (const struct ecc_curve *ecc)
 
 void
 ecc_j_to_a (const struct ecc_curve *ecc,
-	    int flags,
+	    int op,
 	    mp_limb_t *r, const mp_limb_t *p,
 	    mp_limb_t *scratch)
 {
@@ -79,17 +79,12 @@ ecc_j_to_a (const struct ecc_curve *ecc,
 
       ecc_modp_inv (ecc, izp, up, up + ecc->size);
 
-      if (flags & 1)
-	{
-	  /* Divide this common factor by B */
-	  mpn_copyi (izBp, izp, ecc->size);
-	  mpn_zero (izBp + ecc->size, ecc->size);
-	  ecc->redc (ecc, izBp);
+      /* Divide this common factor by B */
+      mpn_copyi (izBp, izp, ecc->size);
+      mpn_zero (izBp + ecc->size, ecc->size);
+      ecc->redc (ecc, izBp);
 
-	  ecc_modp_mul (ecc, iz2p, izp, izBp);
-	}
-      else
-	ecc_modp_sqr (ecc, iz2p, izp);	
+      ecc_modp_mul (ecc, iz2p, izp, izBp);
     }
   else
     {
@@ -107,10 +102,19 @@ ecc_j_to_a (const struct ecc_curve *ecc,
   cy = mpn_sub_n (r, iz3p, ecc->p, ecc->size);
   cnd_copy (cy, r, iz3p, ecc->size);
 
-  if (flags & 2)
-    /* Skip y coordinate */
-    return;
-
+  if (op)
+    {
+      /* Skip y coordinate */
+      if (op > 1)
+	{
+	  /* Also reduce the x coordinate mod ecc->q. It should
+	     already be < 2*ecc->q, so one subtraction should
+	     suffice. */
+	  cy = mpn_sub_n (scratch, r, ecc->q, ecc->size);
+	  cnd_copy (cy == 0, r, scratch, ecc->size);
+	}
+      return;
+    }
   ecc_modp_mul (ecc, iz3p, iz2p, izp);
   ecc_modp_mul (ecc, tp, iz3p, p + ecc->size);
   /* And a similar subtraction. */

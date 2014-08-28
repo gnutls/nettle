@@ -31,7 +31,7 @@ test_main (void)
 
       n[0] = 1;
       ecc_mul_g (ecc, p, n, scratch);
-      ecc_j_to_a (ecc, 1, p, p, scratch);
+      ecc_j_to_a (ecc, 0, p, p, scratch);
 
       if (mpn_cmp (p, ecc->g, 2*size != 0))
 	{
@@ -48,7 +48,7 @@ test_main (void)
       /* (order - 1) * g = - g */
       mpn_sub_1 (n, ecc->q, size, 1);
       ecc_mul_g (ecc, p, n, scratch);
-      ecc_j_to_a (ecc, 1, p, p, scratch);
+      ecc_j_to_a (ecc, 0, p, p, scratch);
       mpn_sub_n (p + size, ecc->p, p + size, size);
       if (mpn_cmp (p, ecc->g, 2*size) != 0)
 	{

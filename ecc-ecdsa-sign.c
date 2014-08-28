@@ -79,13 +79,8 @@ ecc_ecdsa_sign (const struct ecc_curve *ecc,
   */
 
   ecc_mul_g (ecc, P, kp, P + 3*ecc->size);
-  /* x coordinate only */
-  ecc_j_to_a (ecc, 3, rp, P, P + 3*ecc->size);
-
-  /* We need to reduce x coordinate mod ecc->q. It should already
-     be < 2*ecc->q, so one subtraction should suffice. */
-  cy = mpn_sub_n (scratch, rp, ecc->q, ecc->size);
-  cnd_copy (cy == 0, rp, scratch, ecc->size);
+  /* x coordinate only, modulo q */
+  ecc_j_to_a (ecc, 2, rp, P, P + 3*ecc->size);
 
   /* Invert k, uses 5 * ecc->size including scratch */
   mpn_copyi (hp, kp, ecc->size);
