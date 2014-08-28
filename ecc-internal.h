@@ -41,7 +41,8 @@
 
 /* Name mangling */
 #define ecc_generic_modp _nettle_ecc_generic_modp
-#define ecc_generic_redc _nettle_ecc_generic_redc
+#define ecc_pp1_redc _nettle_ecc_pp1_redc
+#define ecc_pm1_redc _nettle_ecc_pm1_redc
 #define ecc_generic_modq _nettle_ecc_generic_modq
 #define ecc_modp_add _nettle_ecc_modp_add
 #define ecc_modp_sub _nettle_ecc_modp_sub
@@ -174,7 +175,8 @@ struct ecc_curve
 
 /* In-place reduction. */
 ecc_mod_func ecc_generic_modp;
-ecc_mod_func ecc_generic_redc;
+ecc_mod_func ecc_pp1_redc;
+ecc_mod_func ecc_pm1_redc;
 ecc_mod_func ecc_generic_modq;
 
 

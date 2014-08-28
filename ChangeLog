@@ -1,5 +1,20 @@
 2014-08-28  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-generic-redc.c (ecc_generic_redc): Deleted file and
+	function. Split into...
+	* ecc-pp1-redc.c (ecc_pp1_redc): New file and function.
+	* ecc-pm1-redc.c (ecc_pm1_redc): New file and function.
+	* ecc-internal.h: Updated declarations.
+	* Makefile.in (hogweed_SOURCES): Replace ecc-generic-redc.c by
+	ecc-pp1-redc.c and ecc-pm1-redc.c.
+	* ecc-192.c: Use ecc_pp1_redc (benchmarking only).
+	* ecc-224.c: Use ecc_pm1_redc when applicable.
+	* ecc-256.c: Use ecc_pp1_redc when applicable.
+	* ecc-384.c: Use ecc_pp1_redc (benchmarking only).
+	* ecc-521.c: Use ecc_pp1_redc (benchmarking only).
+	* testsuite/ecc-redc-test.c (test_main): Replace use of
+	ecc_generic_redc by ecc_pp1_redc and ecc_pm1_redc.
+
 	* eccdata.c (output_curve): Don't output ecc_redc_g.
 	* ecc-internal.h (struct ecc_curve): Deleted unused field redc_g.
 	Updated all instances.

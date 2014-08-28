@@ -55,8 +55,14 @@
 void
 ecc_256_redc (const struct ecc_curve *ecc, mp_limb_t *rp);
 #else /* !HAVE_NATIVE_ecc_256_redc */
-# define ecc_256_redc ecc_generic_redc
-#endif
+# if ECC_REDC_SIZE > 0 
+#   define ecc_256_redc ecc_pp1_redc
+# elif ECC_REDC_SIZE == 0
+#   define ecc_256_redc NULL
+# else
+#  error Configuration error
+# endif
+#endif /* !HAVE_NATIVE_ecc_256_redc */
 
 #if ECC_BMODP_SIZE < ECC_LIMB_SIZE
 #define ecc_256_modp ecc_generic_modp

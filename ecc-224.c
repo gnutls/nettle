@@ -54,6 +54,14 @@ ecc_224_modp (const struct ecc_curve *ecc, mp_limb_t *rp);
 
 #include "ecc-224.h"
 
+#if ECC_REDC_SIZE < 0
+# define ecc_224_redc ecc_pm1_redc
+#elif ECC_REDC_SIZE == 0
+# define ecc_224_redc NULL
+#else
+# error Configuration error
+#endif
+
 const struct ecc_curve nettle_secp_224r1 =
 {
   224,
@@ -71,8 +79,8 @@ const struct ecc_curve nettle_secp_224r1 =
   ECC_J_TO_A_ITCH (ECC_LIMB_SIZE),
 
   ecc_224_modp,
-  ecc_generic_redc,
-  USE_REDC ? ecc_generic_redc : ecc_224_modp,
+  ecc_224_redc,
+  USE_REDC ? ecc_224_redc : ecc_224_modp,
   ecc_generic_modq,
 
   ecc_mul_a,

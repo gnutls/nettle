@@ -87,14 +87,18 @@ test_main (void)
 	    }
 
 	  mpn_copyi (m, a, 2*ecc->size);
-	  ecc_generic_redc (ecc, m);
+	  if (ecc->redc_size > 0)
+	    ecc_pp1_redc (ecc, m);
+	  else
+	    ecc_pm1_redc (ecc, m);
+
 	  if (mpn_cmp (m, ecc->p, ecc->size) >= 0)
 	    mpn_sub_n (m, m, ecc->p, ecc->size);
 
 	  if (mpn_cmp (m, ref, ecc->size))
 	    {
-	      fprintf (stderr, "ecc_generic_redc failed: bit_size = %u\n",
-		       ecc->bit_size);
+	      fprintf (stderr, "ecc_p%c1_redc failed: bit_size = %u\n",
+		       ecc->redc_size > 0 ? 'p' : 'm', ecc->bit_size);
 	      gmp_fprintf (stderr, "a   = %Nx\n", a, 2*ecc->size);
 	      gmp_fprintf (stderr, "m   = %Nx (bad)\n", m, ecc->size);
 	      gmp_fprintf (stderr, "ref = %Nx\n", ref, ecc->size);
