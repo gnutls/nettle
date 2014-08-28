@@ -138,20 +138,20 @@ coordinate $T$, with $Z T = X Y$ (see
 
 According to djb, the formulas in Section 3.1 are the once to use,
 because they are complete. See
-\url{http://www.hyperelliptic.org/EFD/g1p/auto-twisted-extended-1.html#addition-add-2008-hwcd},
+\url{http://www.hyperelliptic.org/EFD/g1p/auto-twisted-extended-1.html#addition-add-2008-hwcd-3},
 \begin{align*}
-  A &= x_1 x_2 \\
-  B &= y_1 y_2 \\
-  C &= t_1 d' t_2 \\
-  D &= z_1 z_2 \\
-  E &= (x_1+y_1) (x_2+y_2)-A-B \\
-  F &= D-C \\
-  G &= D+C \\
-  H &= B-a A \\
-  x_3 &= E*F \\
-  y_3 &= G*H \\
-  t_3 &= E*H \\
-  z_3 &= F*G
+  A &= (y_1 - x_1)(y_2 - x_2) \\
+  B &= (y_1 + x_1)(y_2 + x_2) \\
+  C &= 2 t_1 d' t_2 \\
+  D &= 2 z_1 z_2 \\
+  E &= B - A \\
+  F &= D - C \\
+  G &= D + C \\
+  H &= B + A \\
+  x_3 &= E F \\
+  y_3 &= G H \\
+  t_3 &= E H \\
+  z_3 &= F G
 \end{align*}
 
 In our notation $a = -1$, and the $d'$ above is $-d$.
