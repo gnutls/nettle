@@ -38,7 +38,7 @@
 extern "C" {
 #endif
 
-/* The contets of this struct is internal. */
+/* The contents of this struct is internal. */
 struct ecc_curve;
 
 extern const struct ecc_curve nettle_secp_192r1;
