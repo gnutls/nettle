@@ -1,5 +1,8 @@
 2014-08-28  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/symbols-test: Regexp fixes, to better filter out
+	get_pc_thunk functions.
+
 	* ecc-generic-redc.c (ecc_generic_redc): Deleted file and
 	function. Split into...
 	* ecc-pp1-redc.c (ecc_pp1_redc): New file and function.
