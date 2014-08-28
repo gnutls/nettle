@@ -86,20 +86,18 @@ ecc_25519_modq (const struct ecc_curve *ecc, mp_limb_t *rp)
   /* n is the offset where we add in the next term */
   for (n = ECC_LIMB_SIZE; n-- > 0;)
     {
-      mp_limb_t cy;
-
       cy = mpn_submul_1 (rp + n,
 			 ecc->Bmodq_shifted, ECC_LIMB_SIZE,
 			 rp[n + ECC_LIMB_SIZE]);
       /* Top limb of mBmodq_shifted is zero, so we get cy == 0 or 1 */
       assert (cy < 2);
-      cnd_add_n (cy, rp+n, ecc_q, ECC_LIMB_SIZE);
+      cnd_add_n (cy, rp+n, ecc->q, ECC_LIMB_SIZE);
     }
 
-  cy = mpn_submul_1 (rp, ecc_q, ECC_LIMB_SIZE,
+  cy = mpn_submul_1 (rp, ecc->q, ECC_LIMB_SIZE,
 		     rp[ECC_LIMB_SIZE-1] >> (GMP_NUMB_BITS - QHIGH_BITS));
   assert (cy < 2);
-  cnd_add_n (cy, rp, ecc_q, ECC_LIMB_SIZE);
+  cnd_add_n (cy, rp, ecc->q, ECC_LIMB_SIZE);
 }
 
 /* Needs 2*ecc->size limbs at rp, and 2*ecc->size additional limbs of

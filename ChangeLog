@@ -1,5 +1,7 @@
 2014-08-28  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-25519.c (ecc_25519_modq): Access q via the ecc struct.
+
 	* ecc-eh-to-a.c (ecc_eh_to_a): Analogous change as for ecc_j_to_a.
 	The modulo q case (op == 2) is hardcoded for curve25519.
 
