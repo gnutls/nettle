@@ -47,7 +47,7 @@ ecdsa_verify (const struct ecc_point *pub,
 	      const struct dsa_signature *signature)
 {
   mp_limb_t size = pub->ecc->size;
-  mp_size_t itch = 2*size + ECC_ECDSA_VERIFY_ITCH (size);
+  mp_size_t itch = 2*size + ecc_ecdsa_verify_itch (pub->ecc);
   /* For ECC_MUL_A_WBITS == 0, at most 1512 bytes. With
      ECC_MUL_A_WBITS == 4, currently needs 67 * ecc->size, at most
      4824 bytes. Don't use stack allocation for this. */

@@ -285,8 +285,6 @@ ecc_25519_sqrt(mp_limb_t *rp, const mp_limb_t *ap);
   (((3 << ECC_MUL_A_EH_WBITS) + 10) * (size))
 #endif
 #define ECC_ECDSA_SIGN_ITCH(size) (12*(size))
-#define ECC_ECDSA_VERIFY_ITCH(size) \
-  (6*(size) + ECC_MUL_A_ITCH ((size)))
 #define ECC_MODQ_RANDOM_ITCH(size) (size)
 #define ECC_HASH_ITCH(size) (1+(size))
 

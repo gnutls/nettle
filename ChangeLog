@@ -1,5 +1,12 @@
 2014-08-28  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-internal.h (ECC_ECDSA_VERIFY_ITCH): Deleted macro. Needed
+	scratch depends on curve type, not just size.
+	* ecdsa-verify.c (ecdsa_verify): Use the ecc_ecdsa_verify_itch
+	function, not the corresponding macro.
+	* ecc-ecdsa-verify.c (ecc_ecdsa_verify_itch): Take ecc->mul_itch
+	into account. Also reduce to 5*ecc->size + ecc->mul_itch.
+
 	* testsuite/ecdsa-sign-test.c (test_main): Added test for the
 	obscure case of ecdsa using curve25519.
 

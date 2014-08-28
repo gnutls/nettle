@@ -62,9 +62,8 @@ ecdsa_in_range (const struct ecc_curve *ecc, const mp_limb_t *xp)
 mp_size_t
 ecc_ecdsa_verify_itch (const struct ecc_curve *ecc)
 {
-  /* Largest storage need is for the ecc_mul_a call, 6 * ecc->size +
-     ECC_MUL_A_ITCH (size) */
-  return ECC_ECDSA_VERIFY_ITCH (ecc->size);
+  /* Largest storage need is for the ecc->mul call. */
+  return 5*ecc->size + ecc->mul_itch;
 }
 
 /* FIXME: Use faster primitives, not requiring side-channel silence. */
@@ -113,7 +112,7 @@ ecc_ecdsa_verify (const struct ecc_curve *ecc,
   /* u2 = r / s, P2 = u2 * Y */
   ecc_modq_mul (ecc, u2, rp, sinv);
 
-   /* Total storage: 5*ecc->size + ECC_MUL_A_ITCH (ecc->size) */
+   /* Total storage: 5*ecc->size + ecc->mul_itch */
   ecc_mul_a (ecc, P2, u2, pp, u2 + ecc->size);
 
   /* u1 = h / s, P1 = u1 * G */
@@ -124,7 +123,7 @@ ecc_ecdsa_verify (const struct ecc_curve *ecc,
      unlikely. */
   if (!zero_p (u1, ecc->size))
     {
-      /* Total storage: 6*ecc->size + ECC_MUL_G_ITCH (ecc->size) */
+      /* Total storage: 6*ecc->size + ecc->mul_g_itch (ecc->size) */
       ecc_mul_g (ecc, P1, u1, u1 + ecc->size);
 
       /* NOTE: ecc_add_jjj and/or ecc_j_to_a will produce garbage in
