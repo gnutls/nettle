@@ -2,7 +2,7 @@
 
    Compile time constant (but machine dependent) tables.
 
-   Copyright (C) 2013 Niels Möller
+   Copyright (C) 2013, 2014 Niels Möller
 
    This file is part of GNU Nettle.
 
@@ -159,6 +159,7 @@ const struct ecc_curve nettle_secp_384r1 =
   ECC_PIPPENGER_K,
   ECC_PIPPENGER_C,
 
+  ECC_ADD_JJJ_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_A_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_G_ITCH (ECC_LIMB_SIZE),
   ECC_J_TO_A_ITCH (ECC_LIMB_SIZE),
@@ -168,6 +169,7 @@ const struct ecc_curve nettle_secp_384r1 =
   ecc_384_modp,
   ecc_generic_modq,
 
+  ecc_add_jjj,
   ecc_mul_a,
   ecc_mul_g,
   ecc_j_to_a,

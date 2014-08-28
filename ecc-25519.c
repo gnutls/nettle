@@ -242,6 +242,7 @@ const struct ecc_curve nettle_curve25519 =
   ECC_PIPPENGER_K,
   ECC_PIPPENGER_C,
 
+  ECC_ADD_EHH_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_A_EH_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_G_EH_ITCH (ECC_LIMB_SIZE),
   ECC_EH_TO_A_ITCH (ECC_LIMB_SIZE),
@@ -251,7 +252,7 @@ const struct ecc_curve nettle_curve25519 =
   ecc_25519_modp,
   ecc_25519_modq,
 
-
+  ecc_add_ehh,
   ecc_mul_a_eh,
   ecc_mul_g_eh,
   ecc_eh_to_a,

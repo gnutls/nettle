@@ -1,6 +1,6 @@
 /* ecc-internal.h
 
-   Copyright (C) 2013 Niels Möller
+   Copyright (C) 2013, 2014 Niels Möller
 
    This file is part of GNU Nettle.
 
@@ -82,6 +82,11 @@
    modp_mul and modp_add. */
 typedef void ecc_mod_func (const struct ecc_curve *ecc, mp_limb_t *rp);
 
+typedef void ecc_add_func (const struct ecc_curve *ecc,
+			   mp_limb_t *r,
+			   const mp_limb_t *p, const mp_limb_t *q,
+			   mp_limb_t *scratch);
+
 typedef void ecc_mul_g_func (const struct ecc_curve *ecc, mp_limb_t *r,
 			     const mp_limb_t *np, mp_limb_t *scratch);
 
@@ -116,6 +121,7 @@ struct ecc_curve
   unsigned short pippenger_k;
   unsigned short pippenger_c;
 
+  unsigned short add_hhh_itch;
   unsigned short mul_itch;
   unsigned short mul_g_itch;
   unsigned short h_to_a_itch;
@@ -125,6 +131,7 @@ struct ecc_curve
   ecc_mod_func *reduce;
   ecc_mod_func *modq;
 
+  ecc_add_func *add_hhh;
   ecc_mul_func *mul;
   ecc_mul_g_func *mul_g;
   ecc_h_to_a_func *h_to_a;
