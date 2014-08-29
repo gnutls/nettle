@@ -76,6 +76,10 @@ ecc_add_ehh (const struct ecc_curve *ecc,
      x3 = A*F*T		3 mul		A, C, G
      y3 = A*G*(D-C)	2 mul		F, G
      z3 = F*G		mul
+
+     But when working with the twist curve, we need to the factor
+     x1*x2. We need to switch sign in y3 expressions, and swap F and
+     G.
   */
 #define C scratch
 #define D (scratch + ecc->size)
@@ -95,7 +99,7 @@ ecc_add_ehh (const struct ecc_curve *ecc,
   ecc_modp_sub (ecc, T, T, D);
   ecc_modp_mul (ecc, x3, C, D);
   ecc_modp_mul (ecc, E, x3, ecc->b);
-  ecc_modp_sub (ecc, C, D, C);
+  ecc_modp_add (ecc, C, D, C);	/* ! */
   
   ecc_modp_mul (ecc, A, z1, z2);
   ecc_modp_sqr (ecc, B, A);
@@ -104,11 +108,11 @@ ecc_add_ehh (const struct ecc_curve *ecc,
   ecc_modp_add (ecc, G, B, E);
 
   /* x3 */
-  ecc_modp_mul (ecc, B, F, T);
+  ecc_modp_mul (ecc, B, G, T); /* ! */
   ecc_modp_mul (ecc, x3, B, A);
 
   /* y3 */
-  ecc_modp_mul (ecc, B, G, C);
+  ecc_modp_mul (ecc, B, F, C); /* ! */
   ecc_modp_mul (ecc, y3, B, A);
 
   /* z3 */

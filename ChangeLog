@@ -1,3 +1,14 @@
+2014-08-29  Niels Möller  <nisse@lysator.liu.se>
+
+	Switch the curve25519 implementation to use the isomorphism to the
+	twisted Edwards curve which is used for Ed25519 signatures.
+	* eccdata.c (ecc_curve_init): Tweaked the transformation constant
+	for the isomorphism between curve25519 and the twisted Edwards
+	curve.
+	* ecc-add-ehh.c (ecc_add_ehh): Updated formulas for the twist curve.
+	* ecc-add-eh.c (ecc_add_eh): Likewise.
+	* ecc-dup-eh.c (ecc_dup_eh): Likewise.
+
 2014-08-28  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecdsa-verify.c (ecdsa_verify): Drop include of ecc-internal.h,

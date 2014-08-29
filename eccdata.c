@@ -575,10 +575,15 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 			  */
 			  "2dfc9311d490018c7338bf8688861767"
 			  "ff8ff5b2bebe27548a14b235eca6874a",
-			  /* sqrt(486664) mod p, from PARI/GP
-			     sqrt(Mod(486664, p)) */
-			  "141b0b6806563d503de05885280b5910"
-			  "9ca5ee38d7b56c9c165db7106377bbd8");
+			  /* A square root of -486664 mod p, PARI/GP
+			     -sqrt(Mod(-486664, p)) in PARI/GP.
+
+			     Sign is important to map to the right
+			     generator on the twisted edwards curve
+			     used for EdDSA. */
+			  "70d9120b9f5ff9442d84f723fc03b081"
+			  "3a5e2c2eb482e57d3391fb5500ba81e7"
+			  );
       ecc->ref = ecc_alloc (3);
       ecc_set_str (&ecc->ref[0], /* 2 g */
 		   "20d342d51873f1b7d9750c687d157114"

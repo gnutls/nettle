@@ -94,17 +94,17 @@ ecc_add_eh (const struct ecc_curve *ecc,
   ecc_modp_mul (ecc, x3, C, D);
   ecc_modp_mul (ecc, E, x3, ecc->b);
 
-  ecc_modp_sub (ecc, C, D, C);
+  ecc_modp_add (ecc, C, D, C); /* ! */
   ecc_modp_sqr (ecc, B, z1);
   ecc_modp_sub (ecc, F, B, E);
   ecc_modp_add (ecc, G, B, E);  
 
   /* x3 */
-  ecc_modp_mul (ecc, B, F, T);
+  ecc_modp_mul (ecc, B, G, T); /* ! */
   ecc_modp_mul (ecc, x3, B, z1);
 
   /* y3 */
-  ecc_modp_mul (ecc, B, G, C);
+  ecc_modp_mul (ecc, B, F, C); /* ! */
   ecc_modp_mul (ecc, y3, B, z1);
 
   /* z3 */

@@ -62,6 +62,18 @@ ecc_dup_eh (const struct ecc_curve *ecc,
      x' = (b-e)*j	mul		c, d, e, j
      y' = e*(c-d)	mul		e, j
      z' = e*j		mul
+
+     But for the twisted curve, we need some sign changes.
+
+     b = (x+y)^2	sqr		b
+     c = x^2		sqr		b, c
+     d = y^2		sqr		b, c, d
+   ! e = -c+d				b, c, d, e
+     h = z^2		sqr		b, c, d, e, h
+   ! j = -e+2*h				b, c, d, e, j
+   ! x' = (b-c-d)*j	mul		c, d, e, j
+   ! y' = e*(c+d)	mul		e, j
+     z' = e*j		mul
   */
 #define b scratch 
 #define c (scratch  + ecc->size)
@@ -80,17 +92,18 @@ ecc_dup_eh (const struct ecc_curve *ecc,
   /* h, can use r as scratch, even for in-place operation. */
   ecc_modp_sqr (ecc, r, p + 2*ecc->size);
   /* e, */
-  ecc_modp_add (ecc, e, c, d);
-  /* b - e */
-  ecc_modp_sub (ecc, b, b, e);
+  ecc_modp_sub (ecc, e, d, c);
+  /* b - c - d */
+  ecc_modp_sub (ecc, b, b, c);
+  ecc_modp_sub (ecc, b, b, d);
   /* j */
   ecc_modp_add (ecc, r, r, r);
-  ecc_modp_sub (ecc, j, e, r);
+  ecc_modp_sub (ecc, j, r, e);
 
   /* x' */
   ecc_modp_mul (ecc, r, b, j);
   /* y' */
-  ecc_modp_sub (ecc, c, c, d);
+  ecc_modp_add (ecc, c, c, d); /* Redundant */
   ecc_modp_mul (ecc, r + ecc->size, e, c);
   /* z' */
   ecc_modp_mul (ecc, b, e, j);
