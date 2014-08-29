@@ -217,10 +217,10 @@ bench_add_jja (void *p)
 }
 
 static void
-bench_add_jjj (void *p)
+bench_add_hhh (void *p)
 {
   struct ecc_ctx *ctx = (struct ecc_ctx *) p;
-  ecc_add_jjj (ctx->ecc, ctx->rp, ctx->ap, ctx->bp, ctx->tp);
+  ctx->ecc->add_hhh (ctx->ecc, ctx->rp, ctx->ap, ctx->bp, ctx->tp);
 }
 
 static void
@@ -251,13 +251,6 @@ bench_add_eh (void *p)
   ecc_add_eh (ctx->ecc, ctx->rp, ctx->ap, ctx->bp, ctx->tp);
 }
 
-static void
-bench_add_ehh (void *p)
-{
-  struct ecc_ctx *ctx = (struct ecc_ctx *) p;
-  ecc_add_ehh (ctx->ecc, ctx->rp, ctx->ap, ctx->bp, ctx->tp);
-}
-
 #if NETTLE_USE_MINI_GMP
 static void
 mpn_random (mp_limb_t *xp, mp_size_t n)
@@ -273,7 +266,7 @@ bench_curve (const struct ecc_curve *ecc)
 {
   struct ecc_ctx ctx;  
   double modp, redc, modq, modinv, modinv_gcd, modinv_powm,
-    dup_jj, add_jja, add_jjj,
+    dup_jj, add_jja, add_hhh,
     mul_g, mul_a;
 
   mp_limb_t mask;
@@ -283,7 +276,7 @@ bench_curve (const struct ecc_curve *ecc)
   ctx.rp = xalloc_limbs (3*ecc->size);
   ctx.ap = xalloc_limbs (3*ecc->size);
   ctx.bp = xalloc_limbs (3*ecc->size);
-  itch = ECC_MUL_A_ITCH (ecc->size);
+  itch = ecc->mul_itch;
 #ifdef mpn_sec_powm
   {
     mp_size_t powm_itch
@@ -326,14 +319,13 @@ bench_curve (const struct ecc_curve *ecc)
       /* For now, curve25519 is a special case */
       dup_jj = time_function (bench_dup_eh, &ctx);
       add_jja = time_function (bench_add_eh, &ctx);
-      add_jjj = time_function (bench_add_ehh, &ctx);
     }
   else
     {
       dup_jj = time_function (bench_dup_jj, &ctx);
       add_jja = time_function (bench_add_jja, &ctx);
-      add_jjj = time_function (bench_add_jjj, &ctx);
     }
+  add_hhh = time_function (bench_add_hhh, &ctx);
   mul_g = time_function (bench_mul_g, &ctx);
   mul_a = time_function (bench_mul_a, &ctx);
 
@@ -345,7 +337,7 @@ bench_curve (const struct ecc_curve *ecc)
   printf ("%4d %6.4f %6.4f %6.4f %6.2f %6.3f %6.2f %6.3f %6.3f %6.3f %6.1f %6.1f\n",
 	  ecc->bit_size, 1e6 * modp, 1e6 * redc, 1e6 * modq,
 	  1e6 * modinv, 1e6 * modinv_gcd, 1e6 * modinv_powm,
-	  1e6 * dup_jj, 1e6 * add_jja, 1e6 * add_jjj,
+	  1e6 * dup_jj, 1e6 * add_jja, 1e6 * add_hhh,
 	  1e6 * mul_g, 1e6 * mul_a);
 }
 
@@ -368,7 +360,7 @@ main (int argc UNUSED, char **argv UNUSED)
   time_init();
   printf ("%4s %6s %6s %6s %6s %6s %6s %6s %6s %6s %6s %6s (us)\n",
 	  "size", "modp", "redc", "modq", "modinv", "mi_gcd", "mi_pow",
-	  "dup_jj", "ad_jja", "ad_jjj",
+	  "dup_jj", "ad_jja", "ad_hhh",
 	  "mul_g", "mul_a");
   for (i = 0; i < numberof (curves); i++)
     bench_curve (curves[i]);

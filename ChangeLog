@@ -1,5 +1,11 @@
 2014-08-29  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/ecc-benchmark.c (bench_add_jjj): Renamed, to...
+	(bench_add_hhh): ... new name. Use ecc->add_hhh function pointer.
+	(bench_add_ehh): Deleted.
+	(bench_curve): Use bench_add_hhh for all curves. Use ecc->mul_itch
+	for scratch size.
+
 	Switch the curve25519 implementation to use the isomorphism to the
 	twisted Edwards curve which is used for Ed25519 signatures.
 	* eccdata.c (ecc_curve_init): Tweaked the transformation constant
