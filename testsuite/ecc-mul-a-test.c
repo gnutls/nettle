@@ -40,7 +40,7 @@ test_main (void)
       for (n[0] = 2; n[0] <= 4; n[0]++)
 	{
 	  ecc_mul_a (ecc, p, n, ecc->g, scratch);
-	  test_ecc_mul_j (i, n[0], p);
+	  test_ecc_mul_h (i, n[0], p);
 	}
 
       /* (order - 1) * g = - g */

@@ -239,7 +239,7 @@ void
 test_ecc_mul_a (unsigned curve, unsigned n, const mp_limb_t *p);
 
 void
-test_ecc_mul_j (unsigned curve, unsigned n, const mp_limb_t *p);
+test_ecc_mul_h (unsigned curve, unsigned n, const mp_limb_t *p);
 
 #endif /* WITH_HOGWEED */
   

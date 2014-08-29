@@ -1,6 +1,10 @@
 2014-08-29  Niels Möller  <nisse@lysator.liu.se>
 
-	* examples/ecc-benchmark.c (bench_add_jjj): Renamed, to...
+	* testsuite/testutils.c (test_ecc_mul_j): Renamed, to ...
+	(test_ecc_mul_h): ... new name. Use ecc->h_to_a function pointer.
+	Updated callers.
+
+	* examples/ecc-benchmark.c (bench_add_jjj): Renamed, to ...
 	(bench_add_hhh): ... new name. Use ecc->add_hhh function pointer.
 	(bench_add_ehh): Deleted.
 	(bench_curve): Use bench_add_hhh for all curves. Use ecc->mul_itch
