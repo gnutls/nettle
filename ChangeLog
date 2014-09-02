@@ -64,7 +64,7 @@
 	The modulo q case (op == 2) is hardcoded for curve25519.
 
 	* ecc-j-to-a.c (ecc_j_to_a): For curves using redc, always convert
-	back from redc form. When producing x coordiante only optionally
+	back from redc form. When producing x coordinate only, optionally
 	reduce it modulo q. Completely changes the meaning of the "flags"
 	argument, and renames it to "op". Update all users of this
 	function or ecc->h_to_a.
