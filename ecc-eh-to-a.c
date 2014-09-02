@@ -62,7 +62,7 @@ ecc_eh_to_a (const struct ecc_curve *ecc,
 #define up p
 #define vp (p + ecc->size)
 #define wp (p + 2*ecc->size)
-  /* x = (v+1)/(v-1), y = t x / u (with t = sqrt(b+2))
+  /* x = (1+v)/(1-v), y = t x / u (with t = sqrt(b+2))
 
      In homogeneous coordinates,
 
