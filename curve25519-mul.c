@@ -82,7 +82,7 @@ curve25519_mul (uint8_t *q, const uint8_t *n, const uint8_t *p)
   mpn_set_base256_le (s, ecc->size, t, CURVE25519_SIZE);
   
   ecc_mul_a_eh (ecc, x, s, x, scratch_out);
-  ecc_eh_to_a (ecc, 1, s, x, scratch_out);
+  curve25519_eh_to_x (s, x, scratch_out);
   mpn_get_base256_le (q, CURVE25519_SIZE, s, ecc->size);
 
   gmp_free_limbs (scratch, itch);

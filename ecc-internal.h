@@ -64,6 +64,7 @@
 #define sec_tabselect _nettle_sec_tabselect
 #define sec_modinv _nettle_sec_modinv
 #define ecc_25519_sqrt _nettle_ecc_25519_sqrt
+#define curve25519_eh_to_x _nettle_curve25519_eh_to_x
 
 #define ECC_MAX_SIZE ((521 + GMP_NUMB_BITS - 1) / GMP_NUMB_BITS)
 
@@ -265,6 +266,10 @@ sec_modinv (mp_limb_t *vp, mp_limb_t *ap, mp_size_t n,
 
 int
 ecc_25519_sqrt(mp_limb_t *rp, const mp_limb_t *ap);
+
+void
+curve25519_eh_to_x (mp_limb_t *xp, const mp_limb_t *p,
+		    mp_limb_t *scratch);
 
 /* Current scratch needs: */
 #define ECC_MODINV_ITCH(size) (3*(size))

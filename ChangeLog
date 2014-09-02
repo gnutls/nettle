@@ -1,3 +1,13 @@
+2014-09-02  Niels Möller  <nisse@lysator.liu.se>
+
+	* curve25519-eh-to-x.c (curve25519_eh_to_x): New file, new
+	function. The curve25519 transform currently done by ecc_eh_to_a,
+	but which should eventually be eliminted from that function.
+	* Makefile.in (hogweed_SOURCES): Added curve25519-eh-to-x.c.
+	* ecc-internal.h (curve25519_eh_to_x): Declare it.
+	* curve25519-mul.c (curve25519_mul): Use it.
+	* curve25519-mul-g.c (curve25519_mul_g): Likewise.
+
 2014-08-29  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/testutils.c (test_ecc_mul_j): Renamed, to ...
