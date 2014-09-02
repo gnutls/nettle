@@ -44,28 +44,30 @@
 void
 curve25519_mul_g (uint8_t *r, const uint8_t *n)
 {
+  const struct ecc_curve *ecc = &nettle_curve25519;
   uint8_t t[CURVE25519_SIZE];
   mp_limb_t *scratch;
-  mp_size_t ecc_size;
   mp_size_t itch;
 
 #define p scratch
-#define x (scratch + 3*ecc_size)
-#define scratch_out (scratch + 4*ecc_size)
+#define x (scratch + 3*ecc->size)
+#define scratch_out (scratch + 4*ecc->size)
   
   memcpy (t, n, sizeof(t));
   t[0] &= ~7;
   t[CURVE25519_SIZE-1] = (t[CURVE25519_SIZE-1] & 0x3f) | 0x40;
 
-  ecc_size = nettle_curve25519.size;
-  itch = 4*ecc_size + ECC_MUL_G_EH_ITCH(ecc_size);
+  itch = 4*ecc->size + ecc->mul_g_itch;
   scratch = gmp_alloc_limbs (itch);
 
-  mpn_set_base256_le (x, ecc_size, t, CURVE25519_SIZE);
+  mpn_set_base256_le (x, ecc->size, t, CURVE25519_SIZE);
 
-  ecc_mul_g_eh (&nettle_curve25519, p, x, scratch_out);
+  ecc_mul_g_eh (ecc, p, x, scratch_out);
   curve25519_eh_to_x (x, p, scratch_out);
 
-  mpn_get_base256_le (r, CURVE25519_SIZE, x, ecc_size);
+  mpn_get_base256_le (r, CURVE25519_SIZE, x, ecc->size);
   gmp_free_limbs (scratch, itch);
+#undef p
+#undef x
+#undef scratch_out
 }

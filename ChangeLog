@@ -5,8 +5,10 @@
 	but which should eventually be eliminted from that function.
 	* Makefile.in (hogweed_SOURCES): Added curve25519-eh-to-x.c.
 	* ecc-internal.h (curve25519_eh_to_x): Declare it.
+
 	* curve25519-mul.c (curve25519_mul): Use it.
-	* curve25519-mul-g.c (curve25519_mul_g): Likewise.
+	* curve25519-mul-g.c (curve25519_mul_g): Likewise. Also introduce
+	local variable ecc, and use ecc->mul_g_itch.
 
 2014-08-29  Niels Möller  <nisse@lysator.liu.se>
 
