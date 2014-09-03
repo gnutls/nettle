@@ -1,5 +1,9 @@
 2014-09-03  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.in: Delete all uses of *.po files, use the same object
+	files for both shared and static libraries.
+	* configure.ac (dummy-dep-files): Don't create any .po.d files.
+
 	* aclocal.m4 (LSH_CCPIC): Don't substitute CCPIC here, let
 	configure.ac do that if needed.
 

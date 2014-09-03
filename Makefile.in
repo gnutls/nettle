@@ -221,10 +221,8 @@ DISTFILES = $(SOURCES) $(HEADERS) getopt.h getopt_int.h \
 
 # Rules building static libraries
 nettle_OBJS = $(nettle_SOURCES:.c=.$(OBJEXT)) $(OPT_ASM_NETTLE_SOURCES:.asm=.$(OBJEXT))
-nettle_PURE_OBJS = $(nettle_OBJS:.$(OBJEXT)=.p$(OBJEXT))
 
 hogweed_OBJS = $(hogweed_SOURCES:.c=.$(OBJEXT)) $(OPT_ASM_HOGWEED_SOURCES:.asm=.$(OBJEXT))
-hogweed_PURE_OBJS = $(hogweed_OBJS:.$(OBJEXT)=.p$(OBJEXT))
 
 libnettle.a: $(nettle_OBJS)
 	-rm -f $@
@@ -243,8 +241,8 @@ libhogweed.a: $(hogweed_OBJS)
 	&& $(DEP_PROCESS)
 
 # Rules building shared libraries.
-$(LIBNETTLE_FORLINK): $(nettle_PURE_OBJS)
-	$(LIBNETTLE_LINK) $(nettle_PURE_OBJS) -o $@ $(LIBNETTLE_LIBS)
+$(LIBNETTLE_FORLINK): $(nettle_OBJS)
+	$(LIBNETTLE_LINK) $(nettle_OBJS) -o $@ $(LIBNETTLE_LIBS)
 	-mkdir .lib 2>/dev/null
 	(cd .lib \
           && rm -f $(LIBNETTLE_FORLINK) \
@@ -254,8 +252,8 @@ $(LIBNETTLE_FORLINK): $(nettle_PURE_OBJS)
 	       && $(LN_S) $(LIBNETTLE_FORLINK) $(LIBNETTLE_SONAME) ; } )
 	echo nettle > libnettle.stamp
 
-$(LIBHOGWEED_FORLINK): $(hogweed_PURE_OBJS) $(LIBNETTLE_FORLINK)
-	$(LIBHOGWEED_LINK) $(hogweed_PURE_OBJS) -o $@ $(LIBHOGWEED_LIBS)
+$(LIBHOGWEED_FORLINK): $(hogweed_OBJS) $(LIBNETTLE_FORLINK)
+	$(LIBHOGWEED_LINK) $(hogweed_OBJS) -o $@ $(LIBHOGWEED_LIBS)
 	-mkdir .lib 2>/dev/null
 	(cd .lib \
           && rm -f $(LIBHOGWEED_FORLINK) \
@@ -264,10 +262,6 @@ $(LIBHOGWEED_FORLINK): $(hogweed_PURE_OBJS) $(LIBNETTLE_FORLINK)
 	  || { rm -f $(LIBHOGWEED_SONAME) \
 	       && $(LN_S) $(LIBHOGWEED_FORLINK) $(LIBHOGWEED_SONAME) ; } )
 	echo hogweed > libhogweed.stamp
-
-.c.p$(OBJEXT):
-	$(COMPILE) -c $< -o $@ \
-	&& $(DEP_PROCESS)
 
 # For Solaris and BSD make, we have to use an explicit rule for each
 # executable. Avoid object file targets to make it easy to run the
@@ -309,7 +303,6 @@ $(des_headers): desdata.c
 	  test -s $${f}T && mv -f $${f}T $$f
 
 des.$(OBJEXT): des.c des.h $(des_headers)
-des.p$(OBJEXT): des.c des.h $(des_headers)
 
 # Generate ECC files.
 # Some possible choices for 192:
@@ -367,23 +360,12 @@ ecc-384.$(OBJEXT): ecc-384.h
 ecc-521.$(OBJEXT): ecc-521.h
 ecc-25519.$(OBJEXT): ecc-25519.h
 
-ecc-192.p$(OBJEXT): ecc-192.h
-ecc-224.p$(OBJEXT): ecc-224.h
-ecc-256.p$(OBJEXT): ecc-256.h
-ecc-384.p$(OBJEXT): ecc-384.h
-ecc-521.p$(OBJEXT): ecc-521.h
-ecc-25519.p$(OBJEXT): ecc-25519.h
-
 .asm.s: $(srcdir)/asm.m4 machine.m4 config.m4
 	$(M4) $(srcdir)/asm.m4 machine.m4 config.m4 $< >$@T \
 	&& test -s $@T && mv -f $@T $@
 
 .s.$(OBJEXT):
 	$(COMPILE) -c $<
-	@echo > $@.d
-
-.s.p$(OBJEXT):
-	$(COMPILE) -c $< -o $@
 	@echo > $@.d
 
 # Texinfo rules
@@ -629,7 +611,7 @@ distcheck: dist
 	$(rm_distcheck)
 
 clean-here:
-	-rm -f $(TARGETS) $(IMPLICIT_TARGETS) *.$(OBJEXT) *.p$(OBJEXT) *.s \
+	-rm -f $(TARGETS) $(IMPLICIT_TARGETS) *.$(OBJEXT) *.s \
 		ecc-192.h ecc-224.h ecc-256.h ecc-384.h ecc-521.h ecc-25519.h \
 		eccdata$(EXEEXT_FOR_BUILD) eccdata.stamp
 	-rm -rf .lib libnettle.stamp libhogweed.stamp
@@ -646,5 +628,5 @@ maintainer-clean-here:
 tags-here:	
 	etags -o $(srcdir)/TAGS $(srcdir)/*.c $(srcdir)/*.h
 
-DEP_FILES = $(SOURCES:.c=.$(OBJEXT).d) $(SOURCES:.c=.p$(OBJEXT).d) asm.d
+DEP_FILES = $(SOURCES:.c=.$(OBJEXT).d) asm.d
 @DEP_INCLUDE@ $(DEP_FILES)
