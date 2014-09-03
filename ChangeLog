@@ -1,5 +1,12 @@
 2014-09-03  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.in: Revert 2013-02-06 Makefile changes: use a single
+	rule for transforming .asm to .o, and drop include of asm.d.
+	Possible now since we generate a single object file from each asm
+	file. This change also helps Solaris' make recognize .asm files.
+	* config.make.in (.SUFFIXES): Drop .s from list.
+	* configure.ac: Delete code to generate asm.d.
+
 	* Makefile.in: Delete all uses of *.po files, use the same object
 	files for both shared and static libraries.
 	* configure.ac (dummy-dep-files): Don't create any .po.d files.

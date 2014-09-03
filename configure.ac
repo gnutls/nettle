@@ -373,22 +373,6 @@ AH_VERBATIM([HAVE_NATIVE],
 #undef HAVE_NATIVE_ecc_521_redc
 #undef HAVE_NATIVE_gcm_hash8])
 
-# Besides getting correct dependencies, the explicit rules also tell
-# make that the .s files "ought to exist", so they are preferred over
-# .c files.
-AC_CONFIG_COMMANDS([asm.d],
-    [ for f in $asm_file_list
-      do
-        case $f in
-	  *.asm)
-	    echo "`basename $f .asm`.s : $f "'$(srcdir)/asm.m4 machine.m4 config.m4'
-	    ;;
-	esac
-      done > asm.d
-    ],
-    [ asm_file_list="$asm_file_list" ]
-)
-
 if test "x$enable_pic" = xyes; then
     LSH_CCPIC
 else

@@ -360,13 +360,10 @@ ecc-384.$(OBJEXT): ecc-384.h
 ecc-521.$(OBJEXT): ecc-521.h
 ecc-25519.$(OBJEXT): ecc-25519.h
 
-.asm.s: $(srcdir)/asm.m4 machine.m4 config.m4
-	$(M4) $(srcdir)/asm.m4 machine.m4 config.m4 $< >$@T \
-	&& test -s $@T && mv -f $@T $@
-
-.s.$(OBJEXT):
-	$(COMPILE) -c $<
-	@echo > $@.d
+.asm.$(OBJEXT): $(srcdir)/asm.m4 machine.m4 config.m4
+	$(M4) $(srcdir)/asm.m4 machine.m4 config.m4 $< >$*.s
+	$(COMPILE) -c $*.s
+	@echo "$@ : $< $(srcdir)/asm.m4 machine.m4 config.m4" >$@.d 
 
 # Texinfo rules
 .texinfo.info:
@@ -628,5 +625,5 @@ maintainer-clean-here:
 tags-here:	
 	etags -o $(srcdir)/TAGS $(srcdir)/*.c $(srcdir)/*.h
 
-DEP_FILES = $(SOURCES:.c=.$(OBJEXT).d) asm.d
+DEP_FILES = $(SOURCES:.c=.$(OBJEXT).d)
 @DEP_INCLUDE@ $(DEP_FILES)
