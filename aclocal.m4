@@ -58,8 +58,7 @@ AC_CACHE_VAL(lsh_cv_sys_ccpic,[
   CFLAGS="$OLD_CFLAGS"
 ])
 CCPIC="$lsh_cv_sys_ccpic"
-AC_MSG_RESULT($CCPIC)
-AC_SUBST([CCPIC])])
+AC_MSG_RESULT($CCPIC)])
 
 dnl LSH_PATH_ADD(path-id, directory)
 AC_DEFUN([LSH_PATH_ADD],

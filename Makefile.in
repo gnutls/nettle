@@ -23,6 +23,7 @@ include config.make
 
 # $(srcdir) is needed for includes in bignum.h.
 PRE_CPPFLAGS = -I. -I$(srcdir)
+EXTRA_CFLAGS = $(CCPIC)
 
 # FIXME: Add configuration of LIBEXT?
 LIBTARGETS = @IF_STATIC@ libnettle.a @IF_HOGWEED@ libhogweed.a
@@ -238,7 +239,7 @@ libhogweed.a: $(hogweed_OBJS)
 	echo hogweed > libhogweed.stamp
 
 .c.$(OBJEXT):
-	$(COMPILE) $(CCPIC_MAYBE) -c $< \
+	$(COMPILE) -c $< \
 	&& $(DEP_PROCESS)
 
 # Rules building shared libraries.
@@ -265,7 +266,7 @@ $(LIBHOGWEED_FORLINK): $(hogweed_PURE_OBJS) $(LIBNETTLE_FORLINK)
 	echo hogweed > libhogweed.stamp
 
 .c.p$(OBJEXT):
-	$(COMPILE) $(SHLIBCFLAGS) -c $< -o $@ \
+	$(COMPILE) -c $< -o $@ \
 	&& $(DEP_PROCESS)
 
 # For Solaris and BSD make, we have to use an explicit rule for each
@@ -378,11 +379,11 @@ ecc-25519.p$(OBJEXT): ecc-25519.h
 	&& test -s $@T && mv -f $@T $@
 
 .s.$(OBJEXT):
-	$(COMPILE) $(CCPIC_MAYBE) -c $<
+	$(COMPILE) -c $<
 	@echo > $@.d
 
 .s.p$(OBJEXT):
-	$(COMPILE) $(SHLIBCFLAGS) -c $< -o $@
+	$(COMPILE) -c $< -o $@
 	@echo > $@.d
 
 # Texinfo rules

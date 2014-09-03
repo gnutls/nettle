@@ -390,9 +390,12 @@ AC_CONFIG_COMMANDS([asm.d],
     [ asm_file_list="$asm_file_list" ]
 )
 
-LSH_CCPIC
-
-SHLIBCFLAGS="$CCPIC"
+if test "x$enable_pic" = xyes; then
+    LSH_CCPIC
+else
+    CCPIC=''
+fi
+AC_SUBST(CCPIC)
 
 IF_DLL='#'
 LIBNETTLE_FILE_SRC='$(LIBNETTLE_FORLINK)'
@@ -489,13 +492,6 @@ case "$host_os" in
     LIBHOGWEED_LIBS='libnettle.so $(LIBS)'
     ;;
 esac
-
-if test "x$enable_pic" = xyes; then
-  CCPIC_MAYBE="$CCPIC"
-else
-  CCPIC_MAYBE=''
-fi
-AC_SUBST([CCPIC_MAYBE])
 
 ASM_SYMBOL_PREFIX=''
 ASM_ELF_STYLE='no'
@@ -626,8 +622,6 @@ AC_SUBST(ASM_MARK_NOEXEC_STACK)
 AC_SUBST(ASM_ALIGN_LOG)
 AC_SUBST(W64_ABI)
 AC_SUBST(EMULATOR)
-
-AC_SUBST(SHLIBCFLAGS)
 
 AC_SUBST(LIBNETTLE_MAJOR)
 AC_SUBST(LIBNETTLE_MINOR)

@@ -1,3 +1,20 @@
+2014-09-03  Niels Möller  <nisse@lysator.liu.se>
+
+	* aclocal.m4 (LSH_CCPIC): Don't substitute CCPIC here, let
+	configure.ac do that if needed.
+
+	* configure.ac (CCPIC_MAYBE, SHLIBCFLAGS): Deleted substituted
+	variables. Instead, use CCPIC directly when compiling all library
+	files.
+	(CCPIC): Set to empty, if --disable-pic is used.
+
+	* config.make.in (SHLIBCFLAGS, CCPIC_MAYBE): Deleted.
+	(COMPILE, COMPILE_CXX): Drop CCPIC. New variable EXTRA_CFLAGS,
+	which can be set by individual Makefiles.
+
+	* Makefile.in (EXTRA_CFLAGS): Set using CCPIC.
+	Also delete all uses of CCPIC_MAYBE and SHLIBCFLAGS.
+
 2014-09-02  Niels Möller  <nisse@lysator.liu.se>
 
 	* curve25519-eh-to-x.c (curve25519_eh_to_x): New file, new
