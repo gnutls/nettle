@@ -118,4 +118,14 @@ if (S != ellpow(curve25519, B, a), error("curve25519 dh error"));
 print("curve25519");
 out(a, A, b, B, S);
 
+/* Convert point on curve25519 to a point on the twisted edwards curve */
+beta = -sqrt(Mod(-486664, p25519));
+ed25519(p) = [p[1] * beta / p[2], (p[1] - 1) / (p[1] + 1)];
+
+Ae = ed25519(A);
+Be = ed25519(B);
+Se = ed25519(S);
+print("ed25519");
+out(a, Ae, b, Be, Se);
+
 quit
