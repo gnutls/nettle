@@ -14,7 +14,6 @@ TAGS
 *.dylib
 core
 /*.d
-/*.po
 /*.s
 /*.tar.gz
 /*.tar.gz.asc
