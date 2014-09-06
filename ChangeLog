@@ -1,3 +1,9 @@
+2014-09-06  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/hogweed-benchmark.c (bench_curve25519_mul_g)
+	(bench_curve25519_mul, bench_curve25519): New functions.
+	(main): Added benchmarking of curve25519 functions.
+
 2014-09-03  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in: Revert 2013-02-06 Makefile changes: use a single
