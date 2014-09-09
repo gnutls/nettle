@@ -40,50 +40,103 @@
 #include "ecc.h"
 #include "ecc-internal.h"
 
-/* Intended to be compatible with NaCl's crypto_scalarmult. NOTE: Not
-   side-channel silent, due to the sqrt. */
+/* Intended to be compatible with NaCl's crypto_scalarmult. */
 int
 curve25519_mul (uint8_t *q, const uint8_t *n, const uint8_t *p)
 {
-  uint8_t t[CURVE25519_SIZE];
+  const struct ecc_curve *ecc = &nettle_curve25519;
   mp_size_t itch;
   mp_limb_t *scratch;
-  const struct ecc_curve *ecc = &nettle_curve25519;
+  int i;
+  mp_limb_t cy;
 
-#define x scratch
-#define y (scratch + ecc->size)
-#define s (scratch + 3*ecc->size)
-#define scratch_out (scratch + 4*ecc->size)
-  
-  itch = 5*ecc->size + ECC_MUL_A_EH_ITCH (ecc->size);
+  /* FIXME: Could save some more scratch space, e.g., by letting BB
+     overlap C, D, and CB overlap A, D. And possibly reusing some of
+     x2, z2, x3, z3. */
+#define x1 scratch
+#define x2 (scratch + ecc->size)
+#define z2 (scratch + 2*ecc->size)
+#define x3 (scratch + 3*ecc->size)
+#define z3 (scratch + 4*ecc->size)
+
+#define A  (scratch + 5*ecc->size)
+#define B  (scratch + 6*ecc->size)
+#define C  (scratch + 7*ecc->size)
+#define D  (scratch + 8*ecc->size)
+#define AA  (scratch + 9*ecc->size)
+#define BB  (scratch +10*ecc->size)
+#define E  (scratch + 10*ecc->size) /* Overlap BB */
+#define DA  (scratch + 9*ecc->size) /* Overlap AA */
+#define CB  (scratch + 10*ecc->size) /* Overlap BB */
+
+  itch = ecc->size * 12;
   scratch = gmp_alloc_limbs (itch);
 
-  mpn_set_base256_le (x, ecc->size, p, CURVE25519_SIZE);
+  mpn_set_base256_le (x1, ecc->size, p, CURVE25519_SIZE);
 
-  /* First compute y coordinate, from
+  /* Initialize, x2 = x1, z2 = 1 */
+  mpn_copyi (x2, x1, ecc->size);
+  z2[0] = 1;
+  mpn_zero (z2+1, ecc->size - 1);
 
-       y^2 = x^3 + b x^2 + x = (x^2 + bx + 1) x
-  */
-  ecc_modp_sqr (&nettle_curve25519, y, x);
-  ecc_modp_addmul_1 (&nettle_curve25519, y, x, 0x76d06ULL);
-  ecc_modp_add (ecc, s, y, ecc->unit);
-  ecc_modp_mul (ecc, y, s, x);
+  /* Get x3, z3 from doubling. Since bit 254 is forced to 1. */
+  ecc_modp_add (ecc, A, x2, z2);
+  ecc_modp_sub (ecc, B, x2, z2);
+  ecc_modp_sqr (ecc, AA, A);
+  ecc_modp_sqr (ecc, BB, B);
+  ecc_modp_mul (ecc, x3, AA, BB);
+  ecc_modp_sub (ecc, E, AA, BB);
+  ecc_modp_addmul_1 (ecc, AA, E, 121665);
+  ecc_modp_mul (ecc, z3, E, AA);      
 
-  /* FIXME: Pass s as scratch space to ecc_25519_sqrt */
-  if (!ecc_25519_sqrt (y, y))
-    /* y-coordinate doesn't belong to base field F_p. FIXME: Implement
-       case of y in F_{p^2}? */
-    return 0;
+  for (i = 253; i >= 3; i--)
+    {
+      int bit = (n[i/8] >> (i & 7)) & 1;
 
-  memcpy (t, n, sizeof(t));
-  t[0] &= ~7;
-  t[CURVE25519_SIZE-1] = (t[CURVE25519_SIZE-1] & 0x3f) | 0x40;
+      cnd_swap (bit, x2, x3, 2*ecc->size);
 
-  mpn_set_base256_le (s, ecc->size, t, CURVE25519_SIZE);
-  
-  ecc_mul_a_eh (ecc, x, s, x, scratch_out);
-  curve25519_eh_to_x (s, x, scratch_out);
-  mpn_get_base256_le (q, CURVE25519_SIZE, s, ecc->size);
+      /* Formulas from draft-turner-thecurve25519function-00-Mont. We
+	 compute new coordinates in memory-address order, since mul
+	 and sqr clobbers higher limbs. */
+      ecc_modp_add (ecc, A, x2, z2);
+      ecc_modp_sub (ecc, B, x2, z2);
+      ecc_modp_sqr (ecc, AA, A);
+      ecc_modp_sqr (ecc, BB, B);
+      ecc_modp_mul (ecc, x2, AA, BB); /* Last use of BB */
+      ecc_modp_sub (ecc, E, AA, BB);
+      ecc_modp_addmul_1 (ecc, AA, E, 121665);
+      ecc_modp_add (ecc, C, x3, z3);
+      ecc_modp_sub (ecc, D, x3, z3);
+      ecc_modp_mul (ecc, z2, E, AA); /* Last use of E and AA */
+      ecc_modp_mul (ecc, DA, D, A);  /* Last use of D, A. FIXME: could
+					let CB overlap. */
+      ecc_modp_mul (ecc, CB, C, B);
+
+      ecc_modp_add (ecc, C, DA, CB);
+      ecc_modp_sqr (ecc, x3, C);
+      ecc_modp_sub (ecc, C, DA, CB);
+      ecc_modp_sqr (ecc, DA, C);
+      ecc_modp_mul (ecc, z3, DA, x1);
+
+      cnd_swap (bit, x2, x3, 2*ecc->size);
+    }
+  /* Do the 3 low zero bits, just duplicating x2 */
+  for ( ; i >= 0; i--)
+    {
+      ecc_modp_add (ecc, A, x2, z2);
+      ecc_modp_sub (ecc, B, x2, z2);
+      ecc_modp_sqr (ecc, AA, A);
+      ecc_modp_sqr (ecc, BB, B);
+      ecc_modp_mul (ecc, x2, AA, BB);
+      ecc_modp_sub (ecc, E, AA, BB);
+      ecc_modp_addmul_1 (ecc, AA, E, 121665);
+      ecc_modp_mul (ecc, z2, E, AA);      
+    }
+  ecc_modp_inv (ecc, x3, z2, z3);
+  ecc_modp_mul (ecc, z3, x2, x3);
+  cy = mpn_sub_n (x2, z3, ecc->p, ecc->size);
+  cnd_copy (cy, x2, z3, ecc->size);
+  mpn_get_base256_le (q, CURVE25519_SIZE, x2, ecc->size);
 
   gmp_free_limbs (scratch, itch);
   return 1;

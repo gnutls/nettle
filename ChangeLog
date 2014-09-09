@@ -1,5 +1,11 @@
 2014-09-09  Niels Möller  <nisse@lysator.liu.se>
 
+	* curve25519-mul.c (curve25519_mul): Switch to use Montgomery
+	ladder. About 20% faster than current Edwards curve operations.
+	Difference is expected to shrink when Edwards operations are
+	optimized to take advantage of the twist, but it seems unlikely to
+	get significantly faster than the Montgomery ladder.
+
 	* gmp-glue.c (cnd_swap): Moved function here, made non-static.
 	Changed cnd type to mp_limb_t, for consistency with GMP
 	mpn_cnd_add_n.
