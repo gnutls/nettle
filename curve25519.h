@@ -47,6 +47,7 @@ extern "C" {
 void
 curve25519_mul_g (uint8_t *q, const uint8_t *n);
 
+/* FIXME: Switch to void return type? */
 int
 curve25519_mul (uint8_t *q, const uint8_t *n, const uint8_t *p);
 
