@@ -1,3 +1,11 @@
+2014-09-09  Niels Möller  <nisse@lysator.liu.se>
+
+	* gmp-glue.c (cnd_swap): Moved function here, made non-static.
+	Changed cnd type to mp_limb_t, for consistency with GMP
+	mpn_cnd_add_n.
+	* sec-modinv.c (cnd_swap): ... old location.
+	* gmp-glue.h (cnd_swap): Declare function.
+
 2014-09-06  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/hogweed-benchmark.c (bench_curve25519_mul_g)

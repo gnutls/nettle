@@ -66,6 +66,7 @@
 #define mpn_sqr(rp, ap, n) mpn_mul_n((rp), (ap), (ap), (n))
 #endif
 
+#define cnd_swap _nettle_cnd_swap
 #define mpz_limbs_cmp _nettle_mpz_limbs_cmp
 #define mpz_limbs_read_n _nettle_mpz_limbs_read_n
 #define mpz_limbs_copy _nettle_mpz_limbs_copy
@@ -142,6 +143,9 @@ mpn_copyi (mp_ptr dst, mp_srcptr src, mp_size_t n);
 void
 mpn_zero (mp_ptr ptr, mp_size_t n);
 #endif /* !GMP_HAVE_mpn_copyd */
+
+void
+cnd_swap (mp_limb_t cnd, mp_limb_t *ap, mp_limb_t *bp, mp_size_t n);
 
 /* Convenience functions */
 int
