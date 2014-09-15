@@ -1,3 +1,9 @@
+2014-09-14  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/ecc-mul-a-test.c (test_main): Use struct ecc_curve
+	function pointers.
+	* testsuite/ecc-mul-g-test.c (test_main): Likewise.
+
 2014-09-09  Niels Möller  <nisse@lysator.liu.se>
 
 	* curve25519-mul.c (curve25519_mul): Switch to use Montgomery

@@ -25,32 +25,32 @@ test_main (void)
       mp_limb_t *p = xalloc_limbs (ecc_size_j (ecc));
       mp_limb_t *q = xalloc_limbs (ecc_size_j (ecc));
       mp_limb_t *n = xalloc_limbs (size);
-      mp_limb_t *scratch = xalloc_limbs (ecc_mul_a_itch (ecc));
+      mp_limb_t *scratch = xalloc_limbs (ecc->mul_itch);
       unsigned j;
       
       mpn_zero (n, size);
 
       n[0] = 1;
-      ecc_mul_a (ecc, p, n, ecc->g, scratch);
-      ecc_j_to_a (ecc, 0, p, p, scratch);
+      ecc->mul (ecc, p, n, ecc->g, scratch);
+      ecc->h_to_a (ecc, 0, p, p, scratch);
 
       if (mpn_cmp (p, ecc->g, 2*size != 0))
-	die ("curve %d: ecc_mul_a with n = 1 failed.\n", ecc->bit_size);
+	die ("curve %d: ecc->mul with n = 1 failed.\n", ecc->bit_size);
 
       for (n[0] = 2; n[0] <= 4; n[0]++)
 	{
-	  ecc_mul_a (ecc, p, n, ecc->g, scratch);
+	  ecc->mul (ecc, p, n, ecc->g, scratch);
 	  test_ecc_mul_h (i, n[0], p);
 	}
 
       /* (order - 1) * g = - g */
       mpn_sub_1 (n, ecc->q, size, 1);
-      ecc_mul_a (ecc, p, n, ecc->g, scratch);
-      ecc_j_to_a (ecc, 0, p, p, scratch);
+      ecc->mul (ecc, p, n, ecc->g, scratch);
+      ecc->h_to_a (ecc, 0, p, p, scratch);
       mpn_sub_n (p + size, ecc->p, p + size, size);
       if (mpn_cmp (p, ecc->g, 2*size) != 0)
 	{
-	  fprintf (stderr, "ecc_mul_a with n = order - 1 failed.\n");
+	  fprintf (stderr, "ecc->mul with n = order - 1 failed.\n");
 	  abort ();
 	}
 
@@ -67,16 +67,16 @@ test_main (void)
 	  mpz_limbs_copy (n, r, size);
 	  n[size - 1] %= ecc->q[size - 1];
 
-	  ecc_mul_a (ecc, p, n, ecc->g, scratch);
-	  ecc_j_to_a (ecc, 0, p, p, scratch);
+	  ecc->mul (ecc, p, n, ecc->g, scratch);
+	  ecc->h_to_a (ecc, 0, p, p, scratch);
 
-	  ecc_mul_g (ecc, q, n, scratch);
-	  ecc_j_to_a (ecc, 0, q, q, scratch);
+	  ecc->mul_g (ecc, q, n, scratch);
+	  ecc->h_to_a (ecc, 0, q, q, scratch);
 
 	  if (mpn_cmp (p, q, 2*size))
 	    {
 	      gmp_fprintf (stderr,
-			   "Different results from ecc_mul_a and ecc_mul_g.\n"
+			   "Different results from ecc->mul and ecc->mul_g.\n"
 			   " bits = %u\n"
 			   " n = %Nx\n",
 			   ecc->bit_size, n, size);
