@@ -1,3 +1,12 @@
+2014-09-16  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/ecc-add-test.c: New generalized testcase, to replace
+	curve25519-add-test.c.
+	* testsuite/ecc-dup-test.c: New generalized testcase, to replace
+	curve25519-dup-test.c.
+	* testsuite/Makefile.in (TS_HOGWEED_SOURCES): Added ecc-add-test.c
+	and ecc-dup-test.c.
+
 2014-09-14  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/ecc-mul-a-test.c (test_main): Use struct ecc_curve

@@ -208,6 +208,9 @@ ecc-redc-test$(EXEEXT): ecc-redc-test.$(OBJEXT)
 ecc-dup-test$(EXEEXT): ecc-dup-test.$(OBJEXT)
 	$(LINK) ecc-dup-test.$(OBJEXT) $(TEST_OBJS) -o ecc-dup-test$(EXEEXT)
 
+ecc-add-test$(EXEEXT): ecc-add-test.$(OBJEXT)
+	$(LINK) ecc-add-test.$(OBJEXT) $(TEST_OBJS) -o ecc-add-test$(EXEEXT)
+
 ecc-mul-g-test$(EXEEXT): ecc-mul-g-test.$(OBJEXT)
 	$(LINK) ecc-mul-g-test.$(OBJEXT) $(TEST_OBJS) -o ecc-mul-g-test$(EXEEXT)
 
