@@ -49,7 +49,12 @@ test_main (void)
       mpn_sub_1 (n, ecc->q, size, 1);
       ecc->mul_g (ecc, p, n, scratch);
       ecc->h_to_a (ecc, 0, p, p, scratch);
-      mpn_sub_n (p + size, ecc->p, p + size, size);
+      if (ecc->bit_size == 255)
+	/* For edwards curves, - (x,y ) == (-x, y). FIXME: Swap x and
+	   y, to get identical negation? */
+	mpn_sub_n (p, ecc->p, p, size);
+      else
+	mpn_sub_n (p + size, ecc->p, p + size, size);
       if (mpn_cmp (p, ecc->g, 2*size) != 0)
 	{
 	  fprintf (stderr, "ecc->mul_g with n = order - 1 failed.\n");

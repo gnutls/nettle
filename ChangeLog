@@ -1,5 +1,16 @@
 2014-09-17  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/testutils.c (ecc_curves): Include curve25519 in list.
+	(test_ecc_mul_a): Include reference points for curve25519 (with
+	Edwards coordinates). Allow n == 1, and compare to the generator.
+
+	* testsuite/ecdsa-keygen-test.c (ecc_valid_p): Add special case
+	for curve25519.
+
+	* testsuite/ecc-mul-a-test.c (test_main): Fix point negation to
+	support curve25519.
+	* testsuite/ecc-mul-g-test.c (test_main): Likewise.
+
 	* ecc-a-to-eh.c (ecc_a_to_eh_itch, ecc_a_to_eh): Deleted file and
 	functions.
 	* ecc.h: Deleted corresponding declarations.

@@ -1258,6 +1258,7 @@ const struct ecc_curve * const ecc_curves[] = {
   &nettle_secp_256r1,
   &nettle_secp_384r1,
   &nettle_secp_521r1,
+  &nettle_curve25519,
   NULL
 };
 
@@ -1309,7 +1310,7 @@ void
 test_ecc_mul_a (unsigned curve, unsigned n, const mp_limb_t *p)
 {
   /* For each curve, the points 2 g, 3 g and 4 g */
-  static const struct ecc_ref_point ref[5][3] = {
+  static const struct ecc_ref_point ref[6][3] = {
     { { "dafebf5828783f2ad35534631588a3f629a70fb16982a888",
 	"dd6bda0d993da0fa46b27bbc141b868f59331afa5c7e93ab" },
       { "76e32a2557599e6edcd283201fb2b9aadfd0d359cbb263da",
@@ -1363,11 +1364,40 @@ test_ecc_mul_a (unsigned curve, unsigned n, const mp_limb_t *p)
 	"82"
 	"096f84261279d2b673e0178eb0b4abb65521aef6e6e32e1b5ae63fe2f19907f2"
 	"79f283e54ba385405224f750a95b85eebb7faef04699d1d9e21f47fc346e4d0d" },
+    },
+    { { "36ab384c9f5a046c3d043b7d1833e7ac080d8e4515d7a45f83c5a14e2843ce0e",
+	"2260cdf3092329c21da25ee8c9a21f5697390f51643851560e5f46ae6af8a3c9" },
+      { "67ae9c4a22928f491ff4ae743edac83a6343981981624886ac62485fd3f8e25c",
+	"1267b1d177ee69aba126a18e60269ef79f16ec176724030402c3684878f5b4d4" },
+      { "203da8db56cff1468325d4b87a3520f91a739ec193ce1547493aa657c4c9f870",
+	"47d0e827cb1595e1470eb88580d5716c4cf22832ea2f0ff0df38ab61ca32112f" },
     }
   };
-  assert (curve < 5);
-  assert (n >= 2 && n <= 4);
-  test_ecc_point (ecc_curves[curve], &ref[curve][n-2], p);
+  assert (curve < 6);
+  assert (n >= 1 && n <= 4);
+  if (n == 1)
+    {
+      const struct ecc_curve *ecc = ecc_curves[curve];
+      if (mpn_cmp (p, ecc->g, 2*ecc->size) != 0)
+	{
+	  fprintf (stderr, "Incorrect point (expected g)!\n"
+		   "got: x = ");
+	  write_mpn (stderr, 16, p, ecc->size);
+	  fprintf (stderr, "\n"
+		   "     y = ");
+	  write_mpn (stderr, 16, p + ecc->size, ecc->size);
+	  fprintf (stderr, "\n"
+		   "ref: x = ");
+	  write_mpn (stderr, 16, ecc->g, ecc->size);
+	  fprintf (stderr, "\n"
+		   "     y = ");
+	  write_mpn (stderr, 16, ecc->g + ecc->size, ecc->size);
+	  fprintf (stderr, "\n");
+	  abort();
+	}
+    }
+  else
+    test_ecc_point (ecc_curves[curve], &ref[curve][n-2], p);
 }
 
 void

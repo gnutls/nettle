@@ -24,11 +24,30 @@ ecc_valid_p (struct ecc_point *pub)
   mpz_roinit_n (y, pub->p + size, size);
 
   mpz_mul (lhs, y, y);
-  mpz_mul (rhs, x, x);
-  mpz_sub_ui (rhs, rhs, 3);
-  mpz_mul (rhs, rhs, x);
-  mpz_add (rhs, rhs, mpz_roinit_n (t, pub->ecc->b, size));
+  
+  if (pub->ecc->bit_size == 255)
+    {
+      /* Check that
+	 121666 (1 + x^2 - y^2) = 121665 x^2 y^2 */
+      mpz_t x2;
+      mpz_init (x2);
+      mpz_mul (x2, x, x); /* x^2 */
+      mpz_mul (rhs, x2, lhs); /* x^2 y^2 */
+      mpz_sub (lhs, x2, lhs); /* x^2 - y^2 */
+      mpz_add_ui (lhs, lhs, 1); /* 1 + x^2 - y^2 */
+      mpz_mul_ui (lhs, lhs, 121666);
+      mpz_mul_ui (rhs, rhs, 121665);
 
+      mpz_clear (x2);
+    }
+  else
+    {
+      /* Check y^2 = x^3 - 3 x + b */
+      mpz_mul (rhs, x, x);
+      mpz_sub_ui (rhs, rhs, 3);
+      mpz_mul (rhs, rhs, x);
+      mpz_add (rhs, rhs, mpz_roinit_n (t, pub->ecc->b, size));
+    }
   res = mpz_congruent_p (lhs, rhs, mpz_roinit_n (t, pub->ecc->p, size));
   
   mpz_clear (lhs);
