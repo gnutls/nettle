@@ -1,5 +1,11 @@
 2014-09-17  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-a-to-eh.c (ecc_a_to_eh_itch, ecc_a_to_eh): Deleted file and
+	functions.
+	* ecc.h: Deleted corresponding declarations.
+	* ecc-internal.h (ECC_A_TO_EH_ITCH): Deleted macro.
+	* Makefile.in (hogweed_SOURCES): Removed ecc-a-to-eh.c.
+
 	* testsuite/ecdh-test.c (test_main): Update curve25519 test to use
 	Edwards coordinates.
 	* testsuite/ecdsa-sign-test.c (test_main): Likewise.
