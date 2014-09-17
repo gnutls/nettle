@@ -1,5 +1,8 @@
 2014-09-17  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecdsa-keygen.c (ecdsa_generate_keypair): Use struct ecc_curve
+	function pointers.
+
 	* testsuite/curve25519-dup-test.c: Deleted file. In the way for
 	conversion to Edwards coordiante convention, and in the end
 	the tests will be done by ecc-dup-test.c.
