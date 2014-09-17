@@ -1,5 +1,9 @@
 2014-09-17  Niels Möller  <nisse@lysator.liu.se>
 
+	* gmp-glue.c (mpn_get_base256_le): Fixed missing update of rn
+	counter, making the function clear some bytes beyond the end of
+	the output buffer. The bug triggered a make check failure on ARM.
+
 	* testsuite/testutils.c (ecc_curves): Include curve25519 in list.
 	(test_ecc_mul_a): Include reference points for curve25519 (with
 	Edwards coordinates). Allow n == 0 and n == 1, comparing to zero

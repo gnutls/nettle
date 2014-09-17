@@ -293,6 +293,7 @@ mpn_get_base256_le (uint8_t *rp, size_t rn,
 	  in = *xp++;
 	  xn--;
 	  *rp++ = old | (in << bits);
+	  rn--;
 	  in >>= (8 - bits);
 	  bits += GMP_NUMB_BITS - 8;
 	}
