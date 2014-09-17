@@ -148,14 +148,14 @@ test_main (void)
 
   test_ecdsa (&nettle_curve25519,
 	      /* Public key corresponding to the key in ecdsa-sign-test */
-	      " eb07d9c7931d614 2669124e12273e1f"
-	      "b9f9555f52bed369 a71cdac173da0ceb", /* x */
-	      "2e726b0b1ff3abc4 d50798ebc246399e"
-	      "365777c0900a0d5b 425f819278d4281d", /* y */
+	      "59f8f317fd5f4e82 c02f8d4dec665fe1"
+	      "230f83b8572638e1 b2ac34a30028e24d", /* x */
+	      "1902a72dc1a6525a 811b9c1845978d56"
+	      "fd97dce5e278ebdd ec695349d7e41498", /* y */
 	      SHEX("e99df2a098c3c590 ea1e1db6d9547339"
 		   "ae760d5331496119 5d967fd881e3b0f5"), /* h */
-	      " 62cbc248a549765 3641d1cbedda2733"
-	      "a7357821dca43727 d8081448d608030d", /* r */
-	      " 14726f472f44f84 63fe82c2712231cd"
-	      "937f2aecdcfe9c39 e2ab0d68c390ccf4"); /* s */
+	      " 515c3a485f57432 0daf3353a0d08110"
+	      "64157c556296de09 4132f74865961b37", /* r */
+	      " 9ddd3e2fa87328c 372e28ac7a1c0c65"
+	      "697196d643238fd0 c4caa4d1d88a62fe"); /* s */
 }

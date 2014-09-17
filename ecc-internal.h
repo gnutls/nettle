@@ -274,7 +274,7 @@ curve25519_eh_to_x (mp_limb_t *xp, const mp_limb_t *p,
 /* Current scratch needs: */
 #define ECC_MODINV_ITCH(size) (3*(size))
 #define ECC_J_TO_A_ITCH(size) (5*(size))
-#define ECC_EH_TO_A_ITCH(size) (5*(size))
+#define ECC_EH_TO_A_ITCH(size) (4*(size))
 #define ECC_A_TO_EH_ITCH(size) (2*(size))
 #define ECC_DUP_JJ_ITCH(size) (5*(size))
 #define ECC_DUP_EH_ITCH(size) (5*(size))

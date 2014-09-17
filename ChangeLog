@@ -1,5 +1,22 @@
 2014-09-17  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/ecdh-test.c (test_main): Update curve25519 test to use
+	Edwards coordinates.
+	* testsuite/ecdsa-sign-test.c (test_main): Likewise.
+	* testsuite/ecdsa-verify-test.c (test_main): Likewise.
+
+	* ecc-point.c (ecc_point_set): Use Edwards rather than Montgomery
+	curve.
+
+	* ecc-mul-a-eh.c (ecc_mul_a_eh, table_init): Take an Edwards point
+	as input, not a Montgomery point. Hence, use ecc_a_to_j, not
+	ecc_a_to_eh.
+
+	* ecc-eh-to-a.c (ecc_eh_to_a): Just convert to affine coordinates,
+	don't transform from Edwards to Montgomery form. Also reduces
+	scratch need slightly.
+	* ecc-internal.h (ECC_EH_TO_A_ITCH): Reduced.
+
 	* ecdsa-keygen.c (ecdsa_generate_keypair): Use struct ecc_curve
 	function pointers.
 

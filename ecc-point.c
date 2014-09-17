@@ -1,6 +1,6 @@
 /* ecc-point.c
 
-   Copyright (C) 2013 Niels Möller
+   Copyright (C) 2013, 2014 Niels Möller
 
    This file is part of GNU Nettle.
 
@@ -68,15 +68,22 @@ ecc_point_set (struct ecc_point *p, const mpz_t x, const mpz_t y)
   mpz_init (lhs);
   mpz_init (rhs);
 
+  mpz_mul (lhs, y, y);
+  
   if (p->ecc->bit_size == 255)
     {
-      /* curve25519 special case. FIXME: Do in some cleaner way? */
-
-      /* Check that y^2 = x^3 + 486662 x^2 + x (mod p)*/
-      mpz_mul (lhs, x, x); /* Reuse lhs as a temporary */
-      mpz_add_ui (rhs, x, 486662);
-      mpz_mul (rhs, rhs, lhs);
-      mpz_add (rhs, rhs, x);
+      /* ed25519 special case. FIXME: Do in some cleaner way? */
+      mpz_t x2;
+      mpz_init (x2);
+      mpz_mul (x2, x, x);
+      mpz_mul (rhs, x2, lhs);
+      /* Check that -x^2 + y^2 = 1 - (121665/121666) x^2 y^2
+	 or 121666 (1 + x^2 - y^2) = 121665 x^2 y^2 */
+      mpz_sub (lhs, x2, lhs);
+      mpz_add_ui (lhs, lhs, 1);
+      mpz_mul_ui (lhs, lhs, 121666);
+      mpz_mul_ui (rhs, rhs, 121665);
+      mpz_clear (x2);
     }
   else
     {
@@ -86,8 +93,6 @@ ecc_point_set (struct ecc_point *p, const mpz_t x, const mpz_t y)
       mpz_mul (rhs, rhs, x);
       mpz_add (rhs, rhs, mpz_roinit_n (t, p->ecc->b, size));
     }
-
-  mpz_mul (lhs, y, y);
 
   res = mpz_congruent_p (lhs, rhs, mpz_roinit_n (t, p->ecc->p, size));
 

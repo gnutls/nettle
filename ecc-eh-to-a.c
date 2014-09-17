@@ -41,12 +41,12 @@
 mp_size_t
 ecc_eh_to_a_itch (const struct ecc_curve *ecc)
 {
-  /* Needs 2*ecc->size + scratch for ecc_modq_inv */
+  /* Needs ecc->size + scratch for ecc_modq_inv */
   return ECC_EH_TO_A_ITCH (ecc->size);
 }
 
 /* Convert from homogeneous coordinates on the Edwards curve to affine
-   coordinates on the corresponding Montgomery curve. */
+   coordinates. */
 void
 ecc_eh_to_a (const struct ecc_curve *ecc,
 	     int op,
@@ -54,41 +54,22 @@ ecc_eh_to_a (const struct ecc_curve *ecc,
 	     mp_limb_t *scratch)
 {
 #define izp scratch
-#define sp (scratch + ecc->size)
-#define tp (scratch + 2*ecc->size)
+#define tp (scratch + ecc->size)
 
-#define xp r
-#define yp (r + ecc->size)
-#define up p
-#define vp (p + ecc->size)
-#define wp (p + 2*ecc->size)
-  /* x = (1+v)/(1-v), y = t x / u (with t = sqrt(b+2))
 
-     In homogeneous coordinates,
-
-     X = (W + V) U
-     Y = t (W + V) W
-     Z = (W - V) U
-  */
-  /* FIXME: Simplify for common case that only x-coordinate is wanted. */
+#define xp p
+#define yp (p + ecc->size)
+#define zp (p + 2*ecc->size)
 
   mp_limb_t cy;
 
-  /* NOTE: For the infinity point, this subtraction gives zero (mod
-     p), which isn't invertible. For curve25519, the desired output is
-     x = 0, and we should be fine, since ecc_modp_inv returns 0
-     in this case. */
-  ecc_modp_sub (ecc, izp, wp, vp);
-  ecc_modp_mul (ecc, izp + ecc->size, izp, up);
+  mpn_copyi (tp, zp, ecc->size);
   /* Needs 3*size scratch */
-  ecc_modp_inv (ecc, izp, izp + ecc->size, izp + 2*ecc->size);
+  ecc_modp_inv (ecc, izp, tp, tp + ecc->size);
 
-  ecc_modp_add (ecc, sp, wp, vp);
-  ecc_modp_mul (ecc, tp, sp, up);
-  mpn_copyi (sp, tp, ecc->size); /* FIXME: Eliminate copy */
-  ecc_modp_mul (ecc, tp, sp, izp);
-  cy = mpn_sub_n (xp, tp, ecc->p, ecc->size);
-  cnd_copy (cy, xp, tp, ecc->size);
+  ecc_modp_mul (ecc, tp, xp, izp);
+  cy = mpn_sub_n (r, tp, ecc->p, ecc->size);
+  cnd_copy (cy, r, tp, ecc->size);
 
   if (op)
     {
@@ -96,26 +77,20 @@ ecc_eh_to_a (const struct ecc_curve *ecc,
       if (op > 1)
 	{
 	  /* Reduce modulo q. FIXME: Hardcoded for curve25519,
-	     duplicates end of ecc_25519_modq. */
+	     duplicates end of ecc_25519_modq. FIXME: Is this needed
+	     at all? Full reduction mod p is maybe sufficient. */
 	  mp_limb_t cy;
 	  unsigned shift;
 	  assert (ecc->bit_size == 255);
 	  shift = 252 - GMP_NUMB_BITS * (ecc->size - 1);
-	  cy = mpn_submul_1 (xp, ecc->q, ecc->size,
-			     xp[ecc->size-1] >> shift);
+	  cy = mpn_submul_1 (r, ecc->q, ecc->size,
+			     r[ecc->size-1] >> shift);
 	  assert (cy < 2);
-	  cnd_add_n (cy, xp, ecc->q, ecc->size);
+	  cnd_add_n (cy, r, ecc->q, ecc->size);
 	}
       return;
     }
-  ecc_modp_add (ecc, sp, wp, vp); /* FIXME: Redundant. Also the (W +
-				     V) Z^-1 multiplication is
-				     redundant. */
-  ecc_modp_mul (ecc, tp, sp, wp);
-  mpn_copyi (sp, tp, ecc->size); /* FIXME: Eliminate copy */
-  ecc_modp_mul (ecc, tp, sp, ecc->edwards_root);
-  mpn_copyi (sp, tp, ecc->size); /* FIXME: Eliminate copy */
-  ecc_modp_mul (ecc, tp, sp, izp);
-  cy = mpn_sub_n (yp, tp, ecc->p, ecc->size);
-  cnd_copy (cy, yp, tp, ecc->size);
+  ecc_modp_mul (ecc, tp, yp, izp);
+  cy = mpn_sub_n (r + ecc->size, tp, ecc->p, ecc->size);
+  cnd_copy (cy, r + ecc->size, tp, ecc->size);
 }
