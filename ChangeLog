@@ -1,5 +1,9 @@
 2014-09-17  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/ecc-modinv-test.c (mpn_zero_p): Moved function, to...
+	* testsuite/testutils.c (mpn_zero_p): New location. Also make
+	non-static.
+
 	* testsuite/testutils.c (ecc_curves): Include curve25519 in list.
 	(test_ecc_mul_a): Include reference points for curve25519 (with
 	Edwards coordinates). Allow n == 1, and compare to the generator.

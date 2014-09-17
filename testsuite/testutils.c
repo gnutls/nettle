@@ -686,6 +686,19 @@ mpz_combit (mpz_t x, unsigned long int bit)
 }
 #endif
 
+#ifndef mpn_zero_p
+int
+mpn_zero_p (mp_srcptr ap, mp_size_t n)
+{
+  while (--n >= 0)
+    {
+      if (ap[n] != 0)
+	return 0;
+    }
+  return 1;
+}
+#endif
+
 mp_limb_t *
 xalloc_limbs (mp_size_t n)
 {

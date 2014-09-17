@@ -37,17 +37,6 @@ ref_modinv (mp_limb_t *rp, const mp_limb_t *ap, const mp_limb_t *mp, mp_size_t m
 #define MAX_ECC_SIZE (1 + 521 / GMP_NUMB_BITS)
 #define COUNT 500
 
-static int
-mpn_zero_p (mp_srcptr ap, mp_size_t n)
-{
-  while (--n >= 0)
-    {
-      if (ap[n] != 0)
-	return 0;
-    }
-  return 1;
-}
-
 void
 test_main (void)
 {

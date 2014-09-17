@@ -157,6 +157,11 @@ test_armor(const struct nettle_armor *armor,
            const uint8_t *ascii);
 
 #if WITH_HOGWEED
+#ifndef mpn_zero_p
+int
+mpn_zero_p (mp_srcptr ap, mp_size_t n);
+#endif
+
 mp_limb_t *
 xalloc_limbs (mp_size_t n);
 
