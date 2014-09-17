@@ -1,31 +1,5 @@
 #include "testutils.h"
 
-/* For curve25519 (or other edwards curves) only. */
-static int
-point_zero_p (const struct ecc_curve *ecc, const mp_limb_t *p)
-{  
-  mp_limb_t *d;
-  int ret;
-  mp_size_t i;
-
-  /* Zero point has Y = Z (mod p), or y = Y/Z = 1, which also implies
-     x == 0. */
-  d = xalloc_limbs (ecc->size);
-  ecc_modp_sub (ecc, d, p + ecc->size, p + 2*ecc->size);
-  while (mpn_cmp (d, ecc->p, ecc->size) >= 0)
-    mpn_sub_n (d, d, ecc->p, ecc->size);
-
-  for (i = 0, ret = 1; i < ecc->size; i++)
-    if (d[i])
-      {
-	ret = 0;
-	break;
-      }
-  
-  free (d);
-  return ret;
-}
-
 void
 test_main (void)
 {
@@ -50,12 +24,10 @@ test_main (void)
 	  ecc_a_to_j (ecc, g, ecc->g);
 
 	  ecc_add_ehh (ecc, p, z, z, scratch);
-	  if (!point_zero_p (ecc, p))
-	    die ("dup of zero point failed.\n");
+	  test_ecc_mul_h (i, 0, p);
 
 	  ecc_add_eh (ecc, p, z, z, scratch);
-	  if (!point_zero_p (ecc, p))
-	    die ("dup of zero point failed.\n");
+	  test_ecc_mul_h (i, 0, p);
 
 	  ecc_add_ehh (ecc, p, g, p, scratch);
 	  test_ecc_mul_h (i, 1, p);

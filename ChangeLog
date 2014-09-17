@@ -1,12 +1,17 @@
 2014-09-17  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/testutils.c (ecc_curves): Include curve25519 in list.
+	(test_ecc_mul_a): Include reference points for curve25519 (with
+	Edwards coordinates). Allow n == 0 and n == 1, comparing to zero
+	and the generator, respectively.
+	* testsuite/ecc-add-test.c (point_zero_p): Deleted function.
+	(test_main): Replace calls to point_zero_p by calls to
+	test_ecc_mul_h with n == 0.
+	* testsuite/ecc-dup-test.c: Likewise.
+
 	* testsuite/ecc-modinv-test.c (mpn_zero_p): Moved function, to...
 	* testsuite/testutils.c (mpn_zero_p): New location. Also make
 	non-static.
-
-	* testsuite/testutils.c (ecc_curves): Include curve25519 in list.
-	(test_ecc_mul_a): Include reference points for curve25519 (with
-	Edwards coordinates). Allow n == 1, and compare to the generator.
 
 	* testsuite/ecdsa-keygen-test.c (ecc_valid_p): Add special case
 	for curve25519.

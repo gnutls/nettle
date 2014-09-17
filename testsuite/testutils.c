@@ -1387,8 +1387,26 @@ test_ecc_mul_a (unsigned curve, unsigned n, const mp_limb_t *p)
     }
   };
   assert (curve < 6);
-  assert (n >= 1 && n <= 4);
-  if (n == 1)
+  assert (n <= 4);
+  if (n == 0)
+    {
+      /* Makes sense for curve25519 only */
+      const struct ecc_curve *ecc = ecc_curves[curve];
+      assert (ecc->bit_size == 255);
+      if (!mpn_zero_p (p, ecc->size)
+	  || mpn_cmp (p + ecc->size, ecc->unit, ecc->size) != 0)
+	{
+	  fprintf (stderr, "Incorrect point (expected (0, 1))!\n"
+		   "got: x = ");
+	  write_mpn (stderr, 16, p, ecc->size);
+	  fprintf (stderr, "\n"
+		   "     y = ");
+	  write_mpn (stderr, 16, p + ecc->size, ecc->size);
+	  fprintf (stderr, "\n");
+	  abort();
+	}
+    }
+  else if (n == 1)
     {
       const struct ecc_curve *ecc = ecc_curves[curve];
       if (mpn_cmp (p, ecc->g, 2*ecc->size) != 0)
