@@ -38,7 +38,6 @@ TS_HOGWEED_SOURCES = sexp-test.c sexp-format-test.c \
 		     pkcs1-test.c \
 		     rsa-test.c rsa-encrypt-test.c rsa-keygen-test.c \
 		     dsa-test.c dsa-keygen-test.c \
-		     curve25519-dup-test.c curve25519-add-test.c \
 		     curve25519-dh-test.c \
 		     ecc-mod-test.c ecc-modinv-test.c ecc-redc-test.c \
 		     ecc-dup-test.c ecc-add-test.c \
