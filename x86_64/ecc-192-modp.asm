@@ -33,7 +33,7 @@ ifelse(<
 	.file "ecc-192-modp.asm"
 
 define(<RP>, <%rsi>)
-define(<T0>, <%rdi>) C Overlaps unused ecc input
+define(<T0>, <%rdi>) C Overlaps unused modulo input
 define(<T1>, <%rcx>)
 define(<T2>, <%rdx>)
 define(<T3>, <%r8>)
@@ -41,7 +41,7 @@ define(<H>, <%r9>)
 define(<C1>, <%r10>)
 define(<C2>, <%r11>)
 
-	C ecc_192_modp (const struct ecc_curve *ecc, mp_limb_t *rp)
+	C ecc_192_modp (const struct ecc_modulo *m, mp_limb_t *rp)
 	.text
 	ALIGN(16)
 PROLOGUE(nettle_ecc_192_modp)

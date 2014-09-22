@@ -45,7 +45,7 @@ define(<F3>, <r8>)
 define(<H>, <r12>)
 define(<N>, <lr>)
 
-	C ecc_521_modp (const struct ecc_curve *ecc, mp_limb_t *rp)
+	C ecc_521_modp (const struct ecc_modulo *m, mp_limb_t *rp)
 	.text
 .Lc511:
 	.int 511

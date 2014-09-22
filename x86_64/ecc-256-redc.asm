@@ -33,7 +33,7 @@ ifelse(<
 	.file "ecc-256-redc.asm"
 
 define(<RP>, <%rsi>)
-define(<U0>, <%rdi>) C Overlaps unused ecc input
+define(<U0>, <%rdi>) C Overlaps unused modulo input
 define(<U1>, <%rcx>)
 define(<U2>, <%rax>)
 define(<U3>, <%rdx>)

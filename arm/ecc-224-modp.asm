@@ -34,7 +34,7 @@ ifelse(<
 	.arm
 
 define(<RP>, <r1>)
-define(<H>, <r0>) C Overlaps unused ecc argument
+define(<H>, <r0>) C Overlaps unused modulo argument
 
 define(<T0>, <r2>)
 define(<T1>, <r3>)
@@ -48,7 +48,7 @@ define(<L0>, <r11>)
 define(<L1>, <r12>)
 define(<L2>, <lr>)
 
-	C ecc_224_modp (const struct ecc_curve *ecc, mp_limb_t *rp)
+	C ecc_224_modp (const struct ecc_modulo *m, mp_limb_t *rp)
 	.text
 	.align 2
 

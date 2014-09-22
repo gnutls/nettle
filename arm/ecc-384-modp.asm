@@ -46,7 +46,7 @@ define(<F4>, <r10>)
 define(<N>, <r12>)
 define(<H>, <lr>)
 	
-	C ecc_384_modp (const struct ecc_curve *ecc, mp_limb_t *rp)
+	C ecc_384_modp (const struct ecc_modulo *m, mp_limb_t *rp)
 	.text
 	.align 2
 

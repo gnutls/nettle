@@ -33,7 +33,7 @@ ifelse(<
 	.file "ecc-224-modp.asm"
 
 define(<RP>, <%rsi>)
-define(<T0>, <%rdi>) C Overlaps unused ecc input
+define(<T0>, <%rdi>) C Overlaps unused modulo input
 define(<T1>, <%rcx>)
 define(<H0>, <%rax>)
 define(<H1>, <%rdx>)
@@ -42,6 +42,7 @@ define(<F0>, <%r9>)
 define(<F1>, <%r10>)
 define(<F2>, <%r11>)
 
+	C ecc_224_modp (const struct ecc_modulo *m, mp_limb_t *rp)
 PROLOGUE(nettle_ecc_224_modp)
 	W64_ENTRY(2, 0)
 	mov	48(RP), H0
