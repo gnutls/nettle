@@ -1,5 +1,8 @@
 2014-09-22  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/ecc-modinv-test.c (test_modulo): New function, same
+	organization as in ecc-mod-test.c below.
+
 	* testsuite/ecc-mod-test.c (test_modulo): New function, testing
 	one modulo. Replacing...
 	(test_curve): ... old function.
