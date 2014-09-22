@@ -57,9 +57,6 @@ test_main (void)
     {
       const struct ecc_curve *ecc = ecc_curves[i];
       unsigned j;
-      if (ecc->p.reduce == ecc->p.mod)
-	continue;
-      ASSERT (ecc->p.redc_size != 0);
 
       for (j = 0; j < COUNT; j++)
 	{
@@ -72,38 +69,43 @@ test_main (void)
 
 	  ref_redc (ref, a, ecc->p.m, ecc->p.size);
 
-	  mpn_copyi (m, a, 2*ecc->p.size);
-	  ecc->p.reduce (&ecc->p, m);
-	  if (mpn_cmp (m, ecc->p.m, ecc->p.size) >= 0)
-	    mpn_sub_n (m, m, ecc->p.m, ecc->p.size);
-
-	  if (mpn_cmp (m, ref, ecc->p.size))
+	  if (ecc->p.reduce != ecc->p.mod)
 	    {
-	      fprintf (stderr, "ecc->reduce failed: bit_size = %u\n",
-		       ecc->p.bit_size);
-	      gmp_fprintf (stderr, "a   = %Nx\n", a, 2*ecc->p.size);
-	      gmp_fprintf (stderr, "m   = %Nx (bad)\n", m, ecc->p.size);
-	      gmp_fprintf (stderr, "ref = %Nx\n", ref, ecc->p.size);
-	      abort ();
+	      mpn_copyi (m, a, 2*ecc->p.size);
+	      ecc->p.reduce (&ecc->p, m);
+	      if (mpn_cmp (m, ecc->p.m, ecc->p.size) >= 0)
+		mpn_sub_n (m, m, ecc->p.m, ecc->p.size);
+
+	      if (mpn_cmp (m, ref, ecc->p.size))
+		{
+		  fprintf (stderr, "ecc->p.reduce failed: bit_size = %u\n",
+			   ecc->p.bit_size);
+		  gmp_fprintf (stderr, "a   = %Nx\n", a, 2*ecc->p.size);
+		  gmp_fprintf (stderr, "m   = %Nx (bad)\n", m, ecc->p.size);
+		  gmp_fprintf (stderr, "ref = %Nx\n", ref, ecc->p.size);
+		  abort ();
+		}
 	    }
+	  if (ecc->p.redc_size != 0)
+	    {	  
+	      mpn_copyi (m, a, 2*ecc->p.size);
+	      if (ecc->p.m[0] == 1)
+		ecc_pm1_redc (&ecc->p, m);
+	      else
+		ecc_pp1_redc (&ecc->p, m);
 
-	  mpn_copyi (m, a, 2*ecc->p.size);
-	  if (ecc->p.m[0] == 1)
-	    ecc_pm1_redc (&ecc->p, m);
-	  else
-	    ecc_pp1_redc (&ecc->p, m);
+	      if (mpn_cmp (m, ecc->p.m, ecc->p.size) >= 0)
+		mpn_sub_n (m, m, ecc->p.m, ecc->p.size);
 
-	  if (mpn_cmp (m, ecc->p.m, ecc->p.size) >= 0)
-	    mpn_sub_n (m, m, ecc->p.m, ecc->p.size);
-
-	  if (mpn_cmp (m, ref, ecc->p.size))
-	    {
-	      fprintf (stderr, "ecc_p%c1_redc failed: bit_size = %u\n",
-		       (ecc->p.m[0] == 1) ? 'm' : 'p', ecc->p.bit_size);
-	      gmp_fprintf (stderr, "a   = %Nx\n", a, 2*ecc->p.size);
-	      gmp_fprintf (stderr, "m   = %Nx (bad)\n", m, ecc->p.size);
-	      gmp_fprintf (stderr, "ref = %Nx\n", ref, ecc->p.size);
-	      abort ();
+	      if (mpn_cmp (m, ref, ecc->p.size))
+		{
+		  fprintf (stderr, "ecc_p%c1_redc failed: bit_size = %u\n",
+			   (ecc->p.m[0] == 1) ? 'm' : 'p', ecc->p.bit_size);
+		  gmp_fprintf (stderr, "a   = %Nx\n", a, 2*ecc->p.size);
+		  gmp_fprintf (stderr, "m   = %Nx (bad)\n", m, ecc->p.size);
+		  gmp_fprintf (stderr, "ref = %Nx\n", ref, ecc->p.size);
+		  abort ();
+		}
 	    }
 	}
     }
