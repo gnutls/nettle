@@ -1,5 +1,15 @@
 2014-09-22  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-mod-arith.c: New file, replacing ecc-modp.c and ecc-modq.c.
+	All functions take a struct ecc_modulo as argument.
+	(ecc_mod_add, ecc_mod_sub, ecc_mod_mul_1, ecc_mod_addmul_1)
+	(ecc_mod_submul_1, ecc_mod_mul, ecc_mod_sqr): New functions,
+	replacing the corresponding ecc_modp_* functions. For convenience,
+	old names are defined as macros wrapping the new functions.
+	* ecc-modp.c: Deleted file.
+	* ecc-modq.c: Deleted file.
+	* Makefile.in (hogweed_SOURCES): Updated accordingly.
+
 	* testsuite/ecc-redc-test.c (test_main): Relaxed tests for which
 	tests to run.
 

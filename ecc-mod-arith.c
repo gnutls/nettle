@@ -1,6 +1,6 @@
-/* ecc-modp.c
+/* ecc-mod-arith.c
 
-   Copyright (C) 2013 Niels Möller
+   Copyright (C) 2013, 2014 Niels Möller
 
    This file is part of GNU Nettle.
 
@@ -43,85 +43,85 @@
    not necessarily < p. */
 
 void
-ecc_modp_add (const struct ecc_curve *ecc, mp_limb_t *rp,
-	      const mp_limb_t *ap, const mp_limb_t *bp)
+ecc_mod_add (const struct ecc_modulo *m, mp_limb_t *rp,
+	     const mp_limb_t *ap, const mp_limb_t *bp)
 {
   mp_limb_t cy;
-  cy = mpn_add_n (rp, ap, bp, ecc->p.size);
-  cy = cnd_add_n (cy, rp, ecc->p.B, ecc->p.size);
-  cy = cnd_add_n (cy, rp, ecc->p.B, ecc->p.size);
+  cy = mpn_add_n (rp, ap, bp, m->size);
+  cy = cnd_add_n (cy, rp, m->B, m->size);
+  cy = cnd_add_n (cy, rp, m->B, m->size);
   assert (cy == 0);  
 }
 
 void
-ecc_modp_sub (const struct ecc_curve *ecc, mp_limb_t *rp,
-	      const mp_limb_t *ap, const mp_limb_t *bp)
+ecc_mod_sub (const struct ecc_modulo *m, mp_limb_t *rp,
+	     const mp_limb_t *ap, const mp_limb_t *bp)
 {
   mp_limb_t cy;
-  cy = mpn_sub_n (rp, ap, bp, ecc->p.size);
-  cy = cnd_sub_n (cy, rp, ecc->p.B, ecc->p.size);
-  cy = cnd_sub_n (cy, rp, ecc->p.B, ecc->p.size);
+  cy = mpn_sub_n (rp, ap, bp, m->size);
+  cy = cnd_sub_n (cy, rp, m->B, m->size);
+  cy = cnd_sub_n (cy, rp, m->B, m->size);
   assert (cy == 0);  
 }
 
 void
-ecc_modp_mul_1 (const struct ecc_curve *ecc, mp_limb_t *rp,
-		const mp_limb_t *ap, mp_limb_t b)
+ecc_mod_mul_1 (const struct ecc_modulo *m, mp_limb_t *rp,
+	       const mp_limb_t *ap, mp_limb_t b)
 {
   mp_limb_t hi;
 
   assert (b <= 0xffffffff);
-  hi = mpn_mul_1 (rp, ap, ecc->p.size, b);
-  hi = mpn_addmul_1 (rp, ecc->p.B, ecc->p.size, hi);
+  hi = mpn_mul_1 (rp, ap, m->size, b);
+  hi = mpn_addmul_1 (rp, m->B, m->size, hi);
   assert (hi <= 1);
-  hi = cnd_add_n (hi, rp, ecc->p.B, ecc->p.size);
+  hi = cnd_add_n (hi, rp, m->B, m->size);
   /* Sufficient if b < B^size / p */
   assert (hi == 0);
 }
 
 void
-ecc_modp_addmul_1 (const struct ecc_curve *ecc, mp_limb_t *rp,
-		   const mp_limb_t *ap, mp_limb_t b)
+ecc_mod_addmul_1 (const struct ecc_modulo *m, mp_limb_t *rp,
+		  const mp_limb_t *ap, mp_limb_t b)
 {
   mp_limb_t hi;
 
   assert (b <= 0xffffffff);
-  hi = mpn_addmul_1 (rp, ap, ecc->p.size, b);
-  hi = mpn_addmul_1 (rp, ecc->p.B, ecc->p.size, hi);
+  hi = mpn_addmul_1 (rp, ap, m->size, b);
+  hi = mpn_addmul_1 (rp, m->B, m->size, hi);
   assert (hi <= 1);
-  hi = cnd_add_n (hi, rp, ecc->p.B, ecc->p.size);
+  hi = cnd_add_n (hi, rp, m->B, m->size);
   /* Sufficient roughly if b < B^size / p */
   assert (hi == 0);
 }
   
 void
-ecc_modp_submul_1 (const struct ecc_curve *ecc, mp_limb_t *rp,
-		   const mp_limb_t *ap, mp_limb_t b)
+ecc_mod_submul_1 (const struct ecc_modulo *m, mp_limb_t *rp,
+		  const mp_limb_t *ap, mp_limb_t b)
 {
   mp_limb_t hi;
 
   assert (b <= 0xffffffff);
-  hi = mpn_submul_1 (rp, ap, ecc->p.size, b);
-  hi = mpn_submul_1 (rp, ecc->p.B, ecc->p.size, hi);
+  hi = mpn_submul_1 (rp, ap, m->size, b);
+  hi = mpn_submul_1 (rp, m->B, m->size, hi);
   assert (hi <= 1);
-  hi = cnd_sub_n (hi, rp, ecc->p.B, ecc->p.size);
+  hi = cnd_sub_n (hi, rp, m->B, m->size);
   /* Sufficient roughly if b < B^size / p */
   assert (hi == 0);
 }
 
-/* NOTE: mul and sqr needs 2*ecc->p.size limbs at rp */
+/* NOTE: mul and sqr needs 2*m->size limbs at rp */
 void
-ecc_modp_mul (const struct ecc_curve *ecc, mp_limb_t *rp,
-	      const mp_limb_t *ap, const mp_limb_t *bp)
+ecc_mod_mul (const struct ecc_modulo *m, mp_limb_t *rp,
+	     const mp_limb_t *ap, const mp_limb_t *bp)
 {
-  mpn_mul_n (rp, ap, bp, ecc->p.size);
-  ecc->p.reduce (&ecc->p, rp);
+  mpn_mul_n (rp, ap, bp, m->size);
+  m->reduce (m, rp);
 }
 
 void
-ecc_modp_sqr (const struct ecc_curve *ecc, mp_limb_t *rp,
-	      const mp_limb_t *ap)
+ecc_mod_sqr (const struct ecc_modulo *m, mp_limb_t *rp,
+	     const mp_limb_t *ap)
 {
-  mpn_sqr (rp, ap, ecc->p.size);
-  ecc->p.reduce (&ecc->p, rp);
+  mpn_sqr (rp, ap, m->size);
+  m->reduce (m, rp);
 }

@@ -42,15 +42,13 @@
 /* Name mangling */
 #define ecc_pp1_redc _nettle_ecc_pp1_redc
 #define ecc_pm1_redc _nettle_ecc_pm1_redc
-#define ecc_modp_add _nettle_ecc_modp_add
-#define ecc_modp_sub _nettle_ecc_modp_sub
-#define ecc_modp_mul_1 _nettle_ecc_modp_mul_1
-#define ecc_modp_addmul_1 _nettle_ecc_modp_addmul_1
-#define ecc_modp_submul_1 _nettle_ecc_modp_submul_1
-#define ecc_modp_mul _nettle_ecc_modp_mul
-#define ecc_modp_sqr _nettle_ecc_modp_sqr
-#define ecc_modq_mul _nettle_ecc_modq_mul
-#define ecc_modq_add _nettle_ecc_modq_add
+#define ecc_mod_add _nettle_ecc_mod_add
+#define ecc_mod_sub _nettle_ecc_mod_sub
+#define ecc_mod_mul_1 _nettle_ecc_mod_mul_1
+#define ecc_mod_addmul_1 _nettle_ecc_mod_addmul_1
+#define ecc_mod_submul_1 _nettle_ecc_mod_submul_1
+#define ecc_mod_mul _nettle_ecc_mod_mul
+#define ecc_mod_sqr _nettle_ecc_mod_sqr
 #define ecc_modq_random _nettle_ecc_modq_random
 #define ecc_mod _nettle_ecc_mod
 #define ecc_mod_inv _nettle_ecc_mod_inv
@@ -78,7 +76,7 @@ struct ecc_modulo;
 
 /* Reduces from 2*ecc->size to ecc->size. */
 /* Required to return a result < 2q. This property is inherited by
-   modp_mul and modp_sqr. */
+   mod_mul and mod_sqr. */
 typedef void ecc_mod_func (const struct ecc_modulo *m, mp_limb_t *rp);
 
 typedef void ecc_mod_inv_func (const struct ecc_modulo *m,
@@ -162,7 +160,7 @@ struct ecc_curve
      equivalent Edwards curve. */
   const mp_limb_t *edwards_root;
 
-  /* For redc, same as Bmodp, otherwise 1. */
+  /* For redc, same as B mod p, otherwise 1. */
   const mp_limb_t *unit;
 
   /* Tables for multiplying by the generator, size determined by k and
@@ -186,40 +184,53 @@ ecc_mod_func ecc_pm1_redc;
 ecc_mod_inv_func ecc_mod_inv;
 
 void
-ecc_modp_add (const struct ecc_curve *ecc, mp_limb_t *rp,
-	      const mp_limb_t *ap, const mp_limb_t *bp);
+ecc_mod_add (const struct ecc_modulo *m, mp_limb_t *rp,
+	     const mp_limb_t *ap, const mp_limb_t *bp);
 void
-ecc_modp_sub (const struct ecc_curve *ecc, mp_limb_t *rp,
-	      const mp_limb_t *ap, const mp_limb_t *bp);
+ecc_mod_sub (const struct ecc_modulo *m, mp_limb_t *rp,
+	     const mp_limb_t *ap, const mp_limb_t *bp);
 
 void
-ecc_modp_mul_1 (const struct ecc_curve *ecc, mp_limb_t *rp,
-		const mp_limb_t *ap, const mp_limb_t b);
+ecc_mod_mul_1 (const struct ecc_modulo *m, mp_limb_t *rp,
+	       const mp_limb_t *ap, const mp_limb_t b);
 
 void
-ecc_modp_addmul_1 (const struct ecc_curve *ecc, mp_limb_t *rp,
-		   const mp_limb_t *ap, mp_limb_t b);
+ecc_mod_addmul_1 (const struct ecc_modulo *m, mp_limb_t *rp,
+		  const mp_limb_t *ap, mp_limb_t b);
 void
-ecc_modp_submul_1 (const struct ecc_curve *ecc, mp_limb_t *rp,
-		   const mp_limb_t *ap, mp_limb_t b);
+ecc_mod_submul_1 (const struct ecc_modulo *m, mp_limb_t *rp,
+		  const mp_limb_t *ap, mp_limb_t b);
 
 /* NOTE: mul and sqr needs 2*ecc->size limbs at rp */
 void
-ecc_modp_mul (const struct ecc_curve *ecc, mp_limb_t *rp,
-	      const mp_limb_t *ap, const mp_limb_t *bp);
+ecc_mod_mul (const struct ecc_modulo *m, mp_limb_t *rp,
+	     const mp_limb_t *ap, const mp_limb_t *bp);
 
 void
-ecc_modp_sqr (const struct ecc_curve *ecc, mp_limb_t *rp,
-	      const mp_limb_t *ap);
+ecc_mod_sqr (const struct ecc_modulo *m, mp_limb_t *rp,
+	     const mp_limb_t *ap);
+
+#define ecc_modp_add(ecc, r, a, b) \
+  ecc_mod_add (&(ecc)->p, (r), (a), (b))
+#define ecc_modp_sub(ecc, r, a, b) \
+  ecc_mod_sub (&(ecc)->p, (r), (a), (b))
+#define ecc_modp_mul_1(ecc, r, a, b) \
+  ecc_mod_mul_1 (&(ecc)->p, (r), (a), (b))
+#define ecc_modp_addmul_1(ecc, r, a, b) \
+  ecc_mod_addmul_1 (&(ecc)->p, (r), (a), (b))
+#define ecc_modp_submul_1(ecc, r, a, b) \
+  ecc_mod_submul_1 (&(ecc)->p, (r), (a), (b))
+#define ecc_modp_mul(ecc, r, a, b) \
+  ecc_mod_mul (&(ecc)->p, (r), (a), (b))
+#define ecc_modp_sqr(ecc, r, a) \
+  ecc_mod_sqr (&(ecc)->p, (r), (a))
+
+#define ecc_modq_add(ecc, r, a, b) \
+  ecc_mod_add (&(ecc)->q, (r), (a), (b))
+#define ecc_modq_mul(ecc, r, a, b) \
+  ecc_mod_mul (&(ecc)->q, (r), (a), (b))
 
 /* mod q operations. */
-void
-ecc_modq_mul (const struct ecc_curve *ecc, mp_limb_t *rp,
-	      const mp_limb_t *ap, const mp_limb_t *bp);
-void
-ecc_modq_add (const struct ecc_curve *ecc, mp_limb_t *rp,
-	      const mp_limb_t *ap, const mp_limb_t *bp);
-
 void
 ecc_modq_random (const struct ecc_curve *ecc, mp_limb_t *xp,
 		 void *ctx, nettle_random_func *random, mp_limb_t *scratch);
