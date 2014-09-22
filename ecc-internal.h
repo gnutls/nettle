@@ -49,7 +49,7 @@
 #define ecc_mod_submul_1 _nettle_ecc_mod_submul_1
 #define ecc_mod_mul _nettle_ecc_mod_mul
 #define ecc_mod_sqr _nettle_ecc_mod_sqr
-#define ecc_modq_random _nettle_ecc_modq_random
+#define ecc_mod_random _nettle_ecc_mod_random
 #define ecc_mod _nettle_ecc_mod
 #define ecc_mod_inv _nettle_ecc_mod_inv
 #define ecc_hash _nettle_ecc_hash
@@ -232,8 +232,8 @@ ecc_mod_sqr (const struct ecc_modulo *m, mp_limb_t *rp,
 
 /* mod q operations. */
 void
-ecc_modq_random (const struct ecc_curve *ecc, mp_limb_t *xp,
-		 void *ctx, nettle_random_func *random, mp_limb_t *scratch);
+ecc_mod_random (const struct ecc_modulo *m, mp_limb_t *xp,
+		void *ctx, nettle_random_func *random, mp_limb_t *scratch);
 
 void
 ecc_hash (const struct ecc_curve *ecc,
@@ -287,7 +287,7 @@ curve25519_eh_to_x (mp_limb_t *xp, const mp_limb_t *p,
   (((3 << ECC_MUL_A_EH_WBITS) + 10) * (size))
 #endif
 #define ECC_ECDSA_SIGN_ITCH(size) (12*(size))
-#define ECC_MODQ_RANDOM_ITCH(size) (size)
+#define ECC_MOD_RANDOM_ITCH(size) (size)
 #define ECC_HASH_ITCH(size) (1+(size))
 
 #endif /* NETTLE_ECC_INTERNAL_H_INCLUDED */

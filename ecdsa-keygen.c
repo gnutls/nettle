@@ -55,7 +55,7 @@ ecdsa_generate_keypair (struct ecc_point *pub,
 
   TMP_ALLOC (p, itch);
 
-  ecc_modq_random (ecc, key->p, random_ctx, random, p);
+  ecc_mod_random (&ecc->q, key->p, random_ctx, random, p);
   ecc->mul_g (ecc, p, key->p, p + 3*ecc->p.size);
   ecc->h_to_a (ecc, 0, pub->p, p, p + 3*ecc->p.size);
 }

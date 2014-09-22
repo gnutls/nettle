@@ -1,5 +1,9 @@
 2014-09-22  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-random.c (ecc_mod_random): Renamed, and take a const struct
+	ecc_modulo * as argument. Updated callers.
+	(ecc_modq_random): ... old name.
+
 	* ecc-mod-arith.c: New file, replacing ecc-modp.c and ecc-modq.c.
 	All functions take a struct ecc_modulo as argument.
 	(ecc_mod_add, ecc_mod_sub, ecc_mod_mul_1, ecc_mod_addmul_1)

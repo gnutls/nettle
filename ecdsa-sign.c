@@ -61,7 +61,7 @@ ecdsa_sign (const struct ecc_scalar *key,
      timing is still independent of the secret k finally used. */
   do
     {
-      ecc_modq_random (key->ecc, k, random_ctx, random, k + size);
+      ecc_mod_random (&key->ecc->q, k, random_ctx, random, k + size);
       ecc_ecdsa_sign (key->ecc, key->p, k, digest_length, digest,
 		   rp, sp, k + size);
       mpz_limbs_finish (signature->r, size);
