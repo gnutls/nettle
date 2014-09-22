@@ -241,8 +241,11 @@ const struct ecc_curve nettle_curve25519 =
     ecc_Bmodp,
     ecc_Bmodp_shifted,
     NULL,
+    ecc_pp1h,
+
     ecc_25519_modp,
     ecc_25519_modp,
+    ecc_mod_inv,
   },
   {
     253,
@@ -253,8 +256,11 @@ const struct ecc_curve nettle_curve25519 =
     ecc_Bmodq,  
     ecc_mBmodq_shifted, /* Use q - 2^{252} instead. */
     NULL,
+    ecc_qp1h,
+
     ecc_25519_modq,
     ecc_25519_modq,
+    ecc_mod_inv,
   },
 
   0, /* No redc */
@@ -274,8 +280,6 @@ const struct ecc_curve nettle_curve25519 =
   ecc_d, /* Use the Edwards curve constant. */
   ecc_g,
   ecc_edwards,
-  ecc_pp1h,
   ecc_unit,
-  ecc_qp1h,
   ecc_table
 };

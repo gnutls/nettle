@@ -59,10 +59,3 @@ ecc_modq_mul (const struct ecc_curve *ecc, mp_limb_t *rp,
   mpn_mul_n (rp, ap, bp, ecc->q.size);
   ecc->q.mod (&ecc->q, rp);
 }
-
-void
-ecc_modq_inv (const struct ecc_curve *ecc, mp_limb_t *rp, mp_limb_t *ap,
-	      mp_limb_t *scratch)
-{
-  sec_modinv (rp, ap, ecc->q.size, ecc->q.m, ecc->qp1h, ecc->q.bit_size, scratch);
-}

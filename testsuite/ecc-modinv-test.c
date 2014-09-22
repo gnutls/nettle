@@ -58,10 +58,10 @@ test_main (void)
       /* Check behaviour for zero input */
       mpn_zero (a, ecc->p.size);
       memset (ai, 17, ecc->p.size * sizeof(*ai));
-      ecc_modp_inv (ecc, ai, a, scratch);
+      ecc->p.invert (&ecc->p, ai, a, scratch);
       if (!mpn_zero_p (ai, ecc->p.size))
 	{
-	  fprintf (stderr, "ecc_modp_inv failed for zero input (bit size %u):\n",
+	  fprintf (stderr, "ecc->p.invert failed for zero input (bit size %u):\n",
 		       ecc->p.bit_size);
 	  gmp_fprintf (stderr, "p = %Nx\n"
 		       "t = %Nx (bad)\n",
@@ -73,10 +73,10 @@ test_main (void)
       /* Check behaviour for a = p */
       mpn_copyi (a, ecc->p.m, ecc->p.size);
       memset (ai, 17, ecc->p.size * sizeof(*ai));
-      ecc_modp_inv (ecc, ai, a, scratch);
+      ecc->p.invert (&ecc->p, ai, a, scratch);
       if (!mpn_zero_p (ai, ecc->p.size))
 	{
-	  fprintf (stderr, "ecc_modp_inv failed for a = p input (bit size %u):\n",
+	  fprintf (stderr, "ecc->p.invert failed for a = p input (bit size %u):\n",
 		       ecc->p.bit_size);
 	  gmp_fprintf (stderr, "p = %Nx\n"
 		       "t = %Nx (bad)\n",
@@ -101,10 +101,10 @@ test_main (void)
 			 j, ecc->p.bit_size);
 	      continue;
 	    }
-	  ecc_modp_inv (ecc, ai, a, scratch);
+	  ecc->p.invert (&ecc->p, ai, a, scratch);
 	  if (mpn_cmp (ref, ai, ecc->p.size))
 	    {
-	      fprintf (stderr, "ecc_modp_inv failed (test %u, bit size %u):\n",
+	      fprintf (stderr, "ecc->p.invert failed (test %u, bit size %u):\n",
 		       j, ecc->p.bit_size);
 	      gmp_fprintf (stderr, "a = %Zx\n"
 			   "p = %Nx\n"
@@ -124,10 +124,10 @@ test_main (void)
 		       j, ecc->q.bit_size);
 	      continue;
 	    }
-	  ecc_modq_inv (ecc, ai, a, scratch);
+	  ecc->q.invert (&ecc->q, ai, a, scratch);
 	  if (mpn_cmp (ref, ai, ecc->p.size))
 	    {
-	      fprintf (stderr, "ecc_modq_inv failed (test %u, bit size %u):\n",
+	      fprintf (stderr, "ecc->q.invert failed (test %u, bit size %u):\n",
 		       j, ecc->q.bit_size);
 	      gmp_fprintf (stderr, "a = %Zx\n"
 			   "p = %Nx\n"

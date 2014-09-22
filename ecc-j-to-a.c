@@ -77,7 +77,7 @@ ecc_j_to_a (const struct ecc_curve *ecc,
       mpn_zero (up + ecc->p.size, ecc->p.size);
       ecc->p.reduce (&ecc->p, up);
 
-      ecc_modp_inv (ecc, izp, up, up + ecc->p.size);
+      ecc->p.invert (&ecc->p, izp, up, up + ecc->p.size);
 
       /* Divide this common factor by B */
       mpn_copyi (izBp, izp, ecc->p.size);
@@ -91,7 +91,7 @@ ecc_j_to_a (const struct ecc_curve *ecc,
       /* Set s = p_z^{-1}, r_x = p_x s^2, r_y = p_y s^3 */
 
       mpn_copyi (up, p+2*ecc->p.size, ecc->p.size); /* p_z */
-      ecc_modp_inv (ecc, izp, up, up + ecc->p.size);
+      ecc->p.invert (&ecc->p, izp, up, up + ecc->p.size);
 
       ecc_modp_sqr (ecc, iz2p, izp);
     }

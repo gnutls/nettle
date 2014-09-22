@@ -1,5 +1,16 @@
 2014-09-22  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-internal.h (ecc_mod_inv_func): New typedef.
+	(struct ecc_modulo): Added mp1h constant and invert function
+	pointer. Updated all callers.
+	* ecc-modp.c (ecc_modp_inv): Deleted wrapper function.
+	* ecc-modq.c (ecc_modq_inv): Deleted wrapper function.
+
+	* ecc-mod-inv.c (ecc_mod_inv): Renamed file and function. Also
+	take a struct ecc_modulo * as argument.
+	* sec-modinv.c (sec_modinv): ... the old names. Deleted.
+	* Makefile.in (hogweed_SOURCES): Updated accordingly.
+
 	* examples/ecc-benchmark.c (bench_modinv_powm, bench_curve):
 	Updated benchmarking of mpn_sec_powm.
 

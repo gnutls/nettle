@@ -125,11 +125,3 @@ ecc_modp_sqr (const struct ecc_curve *ecc, mp_limb_t *rp,
   mpn_sqr (rp, ap, ecc->p.size);
   ecc->p.reduce (&ecc->p, rp);
 }
-
-void
-ecc_modp_inv (const struct ecc_curve *ecc, mp_limb_t *rp, mp_limb_t *ap,
-	      mp_limb_t *scratch)
-{
-  sec_modinv (rp, ap, ecc->p.size, ecc->p.m, ecc->pp1h, ecc->p.bit_size, scratch);
-}
-

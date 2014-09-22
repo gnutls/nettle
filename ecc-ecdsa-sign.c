@@ -84,7 +84,7 @@ ecc_ecdsa_sign (const struct ecc_curve *ecc,
 
   /* Invert k, uses 5 * ecc->p.size including scratch */
   mpn_copyi (hp, kp, ecc->p.size);
-  ecc_modq_inv (ecc, kinv, hp, tp);
+  ecc->q.invert (&ecc->q, kinv, hp, tp);
   
   /* Process hash digest */
   ecc_hash (ecc, hp, length, digest);

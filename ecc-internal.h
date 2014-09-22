@@ -49,12 +49,11 @@
 #define ecc_modp_submul_1 _nettle_ecc_modp_submul_1
 #define ecc_modp_mul _nettle_ecc_modp_mul
 #define ecc_modp_sqr _nettle_ecc_modp_sqr
-#define ecc_modp_inv _nettle_ecc_modp_inv
 #define ecc_modq_mul _nettle_ecc_modq_mul
 #define ecc_modq_add _nettle_ecc_modq_add
-#define ecc_modq_inv _nettle_ecc_modq_inv
 #define ecc_modq_random _nettle_ecc_modq_random
 #define ecc_mod _nettle_ecc_mod
+#define ecc_mod_inv _nettle_ecc_mod_inv
 #define ecc_hash _nettle_ecc_hash
 #define cnd_copy _nettle_cnd_copy
 #define sec_add_1 _nettle_sec_add_1
@@ -81,6 +80,10 @@ struct ecc_modulo;
 /* Required to return a result < 2q. This property is inherited by
    modp_mul and modp_sqr. */
 typedef void ecc_mod_func (const struct ecc_modulo *m, mp_limb_t *rp);
+
+typedef void ecc_mod_inv_func (const struct ecc_modulo *m,
+			       mp_limb_t *vp, mp_limb_t *ap,
+			       mp_limb_t *scratch);
 
 typedef void ecc_add_func (const struct ecc_curve *ecc,
 			   mp_limb_t *r,
@@ -115,9 +118,12 @@ struct ecc_modulo
   const mp_limb_t *B_shifted;
   /* m +/- 1, for redc, excluding redc_size low limbs. */
   const mp_limb_t *redc_mpm1;
+  /* (m+1)/2 */
+  const mp_limb_t *mp1h;
 
   ecc_mod_func *mod;
   ecc_mod_func *reduce;
+  ecc_mod_inv_func *invert;
 };
 
 /* Represents an elliptic curve of the form
@@ -156,14 +162,9 @@ struct ecc_curve
      equivalent Edwards curve. */
   const mp_limb_t *edwards_root;
 
-  /* (p+1)/2 */
-  const mp_limb_t *pp1h;
   /* For redc, same as Bmodp, otherwise 1. */
   const mp_limb_t *unit;
 
-  /* (q+1)/2 */
-  const mp_limb_t *qp1h;
-  
   /* Tables for multiplying by the generator, size determined by k and
      c. The first 2^c entries are defined by
 
@@ -181,6 +182,8 @@ struct ecc_curve
 ecc_mod_func ecc_mod;
 ecc_mod_func ecc_pp1_redc;
 ecc_mod_func ecc_pm1_redc;
+
+ecc_mod_inv_func ecc_mod_inv;
 
 void
 ecc_modp_add (const struct ecc_curve *ecc, mp_limb_t *rp,
@@ -209,10 +212,6 @@ void
 ecc_modp_sqr (const struct ecc_curve *ecc, mp_limb_t *rp,
 	      const mp_limb_t *ap);
 
-void
-ecc_modp_inv (const struct ecc_curve *ecc, mp_limb_t *rp, mp_limb_t *ap,
-	      mp_limb_t *scratch);
-
 /* mod q operations. */
 void
 ecc_modq_mul (const struct ecc_curve *ecc, mp_limb_t *rp,
@@ -220,10 +219,6 @@ ecc_modq_mul (const struct ecc_curve *ecc, mp_limb_t *rp,
 void
 ecc_modq_add (const struct ecc_curve *ecc, mp_limb_t *rp,
 	      const mp_limb_t *ap, const mp_limb_t *bp);
-
-void
-ecc_modq_inv (const struct ecc_curve *ecc, mp_limb_t *rp, mp_limb_t *ap,
-	      mp_limb_t *scratch);
 
 void
 ecc_modq_random (const struct ecc_curve *ecc, mp_limb_t *xp,
@@ -248,10 +243,6 @@ sec_tabselect (mp_limb_t *rp, mp_size_t rn,
 	       const mp_limb_t *table, unsigned tn,
 	       unsigned k);
 
-void
-sec_modinv (mp_limb_t *vp, mp_limb_t *ap, mp_size_t n,
-	    const mp_limb_t *mp, const mp_limb_t *mp1h, mp_size_t bit_size,
-	    mp_limb_t *scratch);
 
 int
 ecc_25519_sqrt(mp_limb_t *rp, const mp_limb_t *ap);

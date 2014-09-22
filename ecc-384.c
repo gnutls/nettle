@@ -158,8 +158,11 @@ const struct ecc_curve nettle_secp_384r1 =
     ecc_Bmodp,
     ecc_Bmodp_shifted,
     ecc_redc_ppm1,
+    ecc_pp1h,
+
     ecc_384_modp,
     ecc_384_modp,
+    ecc_mod_inv,
   },
   {
     384,
@@ -170,8 +173,11 @@ const struct ecc_curve nettle_secp_384r1 =
     ecc_Bmodq,
     ecc_Bmodq_shifted,
     NULL,
+    ecc_qp1h,
+
     ecc_mod,
     ecc_mod,
+    ecc_mod_inv,
   },
 
   USE_REDC,
@@ -191,8 +197,6 @@ const struct ecc_curve nettle_secp_384r1 =
   ecc_b,
   ecc_g,
   NULL,
-  ecc_pp1h,
   ecc_unit,
-  ecc_qp1h,
   ecc_table
 };

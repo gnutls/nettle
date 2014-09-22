@@ -86,8 +86,11 @@ const struct ecc_curve nettle_secp_521r1 =
     ecc_Bmodp,
     ecc_Bmodp_shifted,
     ecc_redc_ppm1,
+    ecc_pp1h,
+
     ecc_521_modp,
     ecc_521_modp,
+    ecc_mod_inv,
   },
   {
     521,
@@ -98,8 +101,11 @@ const struct ecc_curve nettle_secp_521r1 =
     ecc_Bmodq,
     ecc_Bmodq_shifted,
     NULL,
+    ecc_qp1h,
+
     ecc_mod,
     ecc_mod,
+    ecc_mod_inv,
   },
   
   USE_REDC,
@@ -119,9 +125,7 @@ const struct ecc_curve nettle_secp_521r1 =
   ecc_b,
   ecc_g,
   NULL,
-  ecc_pp1h,
   ecc_unit,
-  ecc_qp1h,
   ecc_table
 };
 

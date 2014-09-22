@@ -108,7 +108,7 @@ ecc_ecdsa_verify (const struct ecc_curve *ecc,
   
   /* Compute sinv, use P2 as scratch */
   mpn_copyi (sinv + ecc->p.size, sp, ecc->p.size);
-  ecc_modq_inv (ecc, sinv, sinv + ecc->p.size, P2);
+  ecc->q.invert (&ecc->q, sinv, sinv + ecc->p.size, P2);
 
   /* u2 = r / s, P2 = u2 * Y */
   ecc_modq_mul (ecc, u2, rp, sinv);

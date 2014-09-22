@@ -66,7 +66,7 @@ curve25519_eh_to_x (mp_limb_t *xp, const mp_limb_t *p,
      in this case. */
   ecc_modp_sub (ecc, t0, wp, vp);
   /* Needs 3*size scratch, for a total of 5*size */
-  ecc_modp_inv (ecc, t1, t0, t2);
+  ecc->p.invert (&ecc->p, t1, t0, t2);
   
   ecc_modp_add (ecc, t0, wp, vp);
   ecc_modp_mul (ecc, t2, t0, t1);
