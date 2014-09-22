@@ -1,5 +1,19 @@
 2014-09-22  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-generic-modp.c (ecc_generic_modp): Deleted file and
+	function. We no longer need a wrapper around ecc_mod.
+	* ecc-generic-modq.c (ecc_generic_modq): Likewise deleted.
+	* Makefile.in (hogweed_SOURCES): Removed ecc-generic-modp.c and
+	ecc-generic-modq.c.
+
+	* ecc-internal.h (typedef ecc_mod_func): Take a const struct
+	ecc_modulo * argument, not const struct ecc_curve *. Updated all
+	implementations and all callers.
+
+	* ecc-mod.c (ecc_mod): Use struct ecc_modulo to specify the
+	modulo. Drop input size argument, always reduce from 2*size to
+	size.
+
 	* ecc-internal.h (struct ecc_modulo): New struct, collecting
 	constants needed for modulo arithmetic.
 	(struct ecc_curve): Use struct ecc_modulo for p and q arithmetic.

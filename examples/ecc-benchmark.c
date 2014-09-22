@@ -150,7 +150,7 @@ bench_modp (void *p)
 {
   struct ecc_ctx *ctx = (struct ecc_ctx *) p;
   mpn_copyi (ctx->rp, ctx->ap, 2*ctx->ecc->p.size);
-  ctx->ecc->modp (ctx->ecc, ctx->rp);
+  ctx->ecc->modp (&ctx->ecc->p, ctx->rp);
 }
 
 static void
@@ -158,7 +158,7 @@ bench_redc (void *p)
 {
   struct ecc_ctx *ctx = (struct ecc_ctx *) p;
   mpn_copyi (ctx->rp, ctx->ap, 2*ctx->ecc->p.size);
-  ctx->ecc->redc (ctx->ecc, ctx->rp);
+  ctx->ecc->redc (&ctx->ecc->p, ctx->rp);
 }
 
 static void
@@ -166,7 +166,7 @@ bench_modq (void *p)
 {
   struct ecc_ctx *ctx = (struct ecc_ctx *) p;
   mpn_copyi (ctx->rp, ctx->ap, 2*ctx->ecc->p.size);
-  ctx->ecc->modq (ctx->ecc, ctx->rp);
+  ctx->ecc->modq (&ctx->ecc->q, ctx->rp);
 }
 
 static void

@@ -42,27 +42,27 @@
 /* Use that 1 = - (p - 1) (mod p), and that at least one low limb of p
    - 1 is zero. */
 void
-ecc_pm1_redc (const struct ecc_curve *ecc, mp_limb_t *rp)
+ecc_pm1_redc (const struct ecc_modulo *m, mp_limb_t *rp)
 {
   unsigned i;
   mp_limb_t hi, cy;
-  unsigned shift = ecc->p.size * GMP_NUMB_BITS - ecc->p.bit_size;
-  mp_size_t k = ecc->p.redc_size;
+  unsigned shift = m->size * GMP_NUMB_BITS - m->bit_size;
+  mp_size_t k = m->redc_size;
   
-  for (i = 0; i < ecc->p.size; i++)
+  for (i = 0; i < m->size; i++)
     rp[i] = mpn_submul_1 (rp + i + k,
-			  ecc->p.redc_mpm1, ecc->p.size - k, rp[i]);
-  hi = mpn_sub_n (rp, rp + ecc->p.size, rp, ecc->p.size);
-  cy = cnd_add_n (hi, rp, ecc->p.m, ecc->p.size);
+			  m->redc_mpm1, m->size - k, rp[i]);
+  hi = mpn_sub_n (rp, rp + m->size, rp, m->size);
+  cy = cnd_add_n (hi, rp, m->m, m->size);
   assert (cy == hi);
 
   if (shift > 0)
     {
       /* Result is always < 2p, provided that
 	 2^shift * Bmodp_shifted <= p */
-      hi = (rp[ecc->p.size - 1] >> (GMP_NUMB_BITS - shift));
-      rp[ecc->p.size - 1] = (rp[ecc->p.size - 1]
+      hi = (rp[m->size - 1] >> (GMP_NUMB_BITS - shift));
+      rp[m->size - 1] = (rp[m->size - 1]
 			   & (((mp_limb_t) 1 << (GMP_NUMB_BITS - shift)) - 1))
-	+ mpn_addmul_1 (rp, ecc->p.B_shifted, ecc->p.size-1, hi);
+	+ mpn_addmul_1 (rp, m->B_shifted, m->size-1, hi);
     }
 }

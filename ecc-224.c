@@ -45,11 +45,11 @@
 #define USE_REDC 0
 #define ecc_224_modp nettle_ecc_224_modp
 void
-ecc_224_modp (const struct ecc_curve *ecc, mp_limb_t *rp);
+ecc_224_modp (const struct ecc_modulo *m, mp_limb_t *rp);
 
 #else
 #define USE_REDC (ECC_REDC_SIZE != 0)
-#define ecc_224_modp ecc_generic_modp
+#define ecc_224_modp ecc_mod
 #endif
 
 #include "ecc-224.h"
@@ -97,7 +97,7 @@ const struct ecc_curve nettle_secp_224r1 =
   ecc_224_modp,
   ecc_224_redc,
   USE_REDC ? ecc_224_redc : ecc_224_modp,
-  ecc_generic_modq,
+  ecc_mod,
 
   ecc_add_jjj,
   ecc_mul_a,

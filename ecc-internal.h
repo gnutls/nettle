@@ -40,10 +40,8 @@
 #include "gmp-glue.h"
 
 /* Name mangling */
-#define ecc_generic_modp _nettle_ecc_generic_modp
 #define ecc_pp1_redc _nettle_ecc_pp1_redc
 #define ecc_pm1_redc _nettle_ecc_pm1_redc
-#define ecc_generic_modq _nettle_ecc_generic_modq
 #define ecc_modp_add _nettle_ecc_modp_add
 #define ecc_modp_sub _nettle_ecc_modp_sub
 #define ecc_modp_mul_1 _nettle_ecc_modp_mul_1
@@ -97,7 +95,7 @@ struct ecc_modulo
 /* Reduces from 2*ecc->size to ecc->size. */
 /* Required to return a result < 2q. This property is inherited by
    modp_mul and modp_sqr. */
-typedef void ecc_mod_func (const struct ecc_curve *ecc, mp_limb_t *rp);
+typedef void ecc_mod_func (const struct ecc_modulo *m, mp_limb_t *rp);
 
 typedef void ecc_add_func (const struct ecc_curve *ecc,
 			   mp_limb_t *r,
@@ -180,11 +178,9 @@ struct ecc_curve
 };
 
 /* In-place reduction. */
-ecc_mod_func ecc_generic_modp;
+ecc_mod_func ecc_mod;
 ecc_mod_func ecc_pp1_redc;
 ecc_mod_func ecc_pm1_redc;
-ecc_mod_func ecc_generic_modq;
-
 
 void
 ecc_modp_add (const struct ecc_curve *ecc, mp_limb_t *rp,
@@ -232,9 +228,6 @@ ecc_modq_inv (const struct ecc_curve *ecc, mp_limb_t *rp, mp_limb_t *ap,
 void
 ecc_modq_random (const struct ecc_curve *ecc, mp_limb_t *xp,
 		 void *ctx, nettle_random_func *random, mp_limb_t *scratch);
-
-void
-ecc_mod (const struct ecc_modulo *m, mp_limb_t *rp, mp_size_t rn);
 
 void
 ecc_hash (const struct ecc_curve *ecc,

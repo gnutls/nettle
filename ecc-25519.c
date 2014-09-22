@@ -58,7 +58,7 @@ ecc_25519_modp (const struct ecc_curve *ecc, mp_limb_t *rp);
 #endif
 
 static void
-ecc_25519_modp(const struct ecc_curve *ecc UNUSED, mp_limb_t *rp)
+ecc_25519_modp(const struct ecc_modulo *m UNUSED, mp_limb_t *rp)
 {
   mp_limb_t hi, cy;
 
@@ -78,7 +78,7 @@ ecc_25519_modp(const struct ecc_curve *ecc UNUSED, mp_limb_t *rp)
 #endif
 
 static void
-ecc_25519_modq (const struct ecc_curve *ecc, mp_limb_t *rp)
+ecc_25519_modq (const struct ecc_modulo *q, mp_limb_t *rp)
 {
   mp_size_t n;
   mp_limb_t cy;
@@ -87,17 +87,17 @@ ecc_25519_modq (const struct ecc_curve *ecc, mp_limb_t *rp)
   for (n = ECC_LIMB_SIZE; n-- > 0;)
     {
       cy = mpn_submul_1 (rp + n,
-			 ecc->q.B_shifted, ECC_LIMB_SIZE,
+			 q->B_shifted, ECC_LIMB_SIZE,
 			 rp[n + ECC_LIMB_SIZE]);
       /* Top limb of mBmodq_shifted is zero, so we get cy == 0 or 1 */
       assert (cy < 2);
-      cnd_add_n (cy, rp+n, ecc->q.m, ECC_LIMB_SIZE);
+      cnd_add_n (cy, rp+n, q->m, ECC_LIMB_SIZE);
     }
 
-  cy = mpn_submul_1 (rp, ecc->q.m, ECC_LIMB_SIZE,
+  cy = mpn_submul_1 (rp, q->m, ECC_LIMB_SIZE,
 		     rp[ECC_LIMB_SIZE-1] >> (GMP_NUMB_BITS - QHIGH_BITS));
   assert (cy < 2);
-  cnd_add_n (cy, rp, ecc->q.m, ECC_LIMB_SIZE);
+  cnd_add_n (cy, rp, q->m, ECC_LIMB_SIZE);
 }
 
 /* Needs 2*ecc->size limbs at rp, and 2*ecc->size additional limbs of

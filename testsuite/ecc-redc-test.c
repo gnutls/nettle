@@ -73,7 +73,7 @@ test_main (void)
 	  ref_redc (ref, a, ecc->p.m, ecc->p.size);
 
 	  mpn_copyi (m, a, 2*ecc->p.size);
-	  ecc->redc (ecc, m);
+	  ecc->redc (&ecc->p, m);
 	  if (mpn_cmp (m, ecc->p.m, ecc->p.size) >= 0)
 	    mpn_sub_n (m, m, ecc->p.m, ecc->p.size);
 
@@ -89,9 +89,9 @@ test_main (void)
 
 	  mpn_copyi (m, a, 2*ecc->p.size);
 	  if (ecc->p.m[0] == 1)
-	    ecc_pm1_redc (ecc, m);
+	    ecc_pm1_redc (&ecc->p, m);
 	  else
-	    ecc_pp1_redc (ecc, m);
+	    ecc_pp1_redc (&ecc->p, m);
 
 	  if (mpn_cmp (m, ecc->p.m, ecc->p.size) >= 0)
 	    mpn_sub_n (m, m, ecc->p.m, ecc->p.size);

@@ -39,14 +39,15 @@
 
 #include "ecc-internal.h"
 
-/* Computes r mod m. */
+/* Computes r mod m, input 2*m->size, output m->size. */
 void
-ecc_mod (const struct ecc_modulo *m, mp_limb_t *rp, mp_size_t rn)
+ecc_mod (const struct ecc_modulo *m, mp_limb_t *rp)
 {
   mp_limb_t hi;
   mp_size_t mn = m->size;
   mp_size_t bn = m->B_size;
   mp_size_t sn = mn - bn;
+  mp_size_t rn = 2*mn;
   mp_size_t i;
   unsigned shift;
 

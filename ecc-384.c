@@ -62,7 +62,7 @@ ecc_384_modp (const struct ecc_curve *ecc, mp_limb_t *rp);
    almost 8 at a time. Do only 7, to avoid additional carry
    propagation, followed by 5. */
 static void
-ecc_384_modp (const struct ecc_curve *ecc, mp_limb_t *rp)
+ecc_384_modp (const struct ecc_modulo *p, mp_limb_t *rp)
 {
   mp_limb_t cy, bw;
 
@@ -99,14 +99,14 @@ ecc_384_modp (const struct ecc_curve *ecc, mp_limb_t *rp)
   assert (cy >= bw);
   cy -= bw;
   assert (cy <= 1);
-  cy = cnd_add_n (cy, rp, ecc->Bmodp, ECC_LIMB_SIZE);
+  cy = cnd_add_n (cy, rp, p->B, ECC_LIMB_SIZE);
   assert (cy == 0);
 }
 #elif GMP_NUMB_BITS == 64
 /* p is 6 limbs, and B^6 - p = B^2 + 2^32 (B - 1) + 1. Eliminate 3
    (almost 4) limbs at a time. */
 static void
-ecc_384_modp (const struct ecc_curve *ecc, mp_limb_t *rp)
+ecc_384_modp (const struct ecc_modulo *p, mp_limb_t *rp)
 {
   mp_limb_t tp[6];
   mp_limb_t cy;
@@ -140,11 +140,11 @@ ecc_384_modp (const struct ecc_curve *ecc, mp_limb_t *rp)
   cy = sec_add_1 (rp + 5, rp + 5, 1, cy);
   assert (cy <= 1);
 
-  cy = cnd_add_n (cy, rp, ecc->p.B, ECC_LIMB_SIZE);
+  cy = cnd_add_n (cy, rp, p->B, ECC_LIMB_SIZE);
   assert (cy == 0);  
 }
 #else
-#define ecc_384_modp ecc_generic_modp
+#define ecc_384_modp ecc_mod
 #endif
   
 const struct ecc_curve nettle_secp_384r1 =
@@ -182,7 +182,7 @@ const struct ecc_curve nettle_secp_384r1 =
   ecc_384_modp,
   ECC_REDC_SIZE > 0 ? ecc_pp1_redc : NULL,
   ecc_384_modp,
-  ecc_generic_modq,
+  ecc_mod,
 
   ecc_add_jjj,
   ecc_mul_a,

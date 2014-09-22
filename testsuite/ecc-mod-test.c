@@ -42,7 +42,7 @@ test_curve (gmp_randstate_t rands, const struct ecc_curve *ecc)
       ref_mod (ref, a, ecc->p.m, ecc->p.size);
 
       mpn_copyi (m, a, 2*ecc->p.size);
-      ecc->modp (ecc, m);
+      ecc->modp (&ecc->p, m);
       if (mpn_cmp (m, ecc->p.m, ecc->p.size) >= 0)
 	mpn_sub_n (m, m, ecc->p.m, ecc->p.size);
 
@@ -59,7 +59,7 @@ test_curve (gmp_randstate_t rands, const struct ecc_curve *ecc)
       if (ecc->p.B_size < ecc->p.size)
 	{
 	  mpn_copyi (m, a, 2*ecc->p.size);
-	  ecc_generic_modp (ecc, m);
+	  ecc_mod (&ecc->p, m);
 	  if (mpn_cmp (m, ecc->p.m, ecc->p.size) >= 0)
 	    mpn_sub_n (m, m, ecc->p.m, ecc->p.size);
 
@@ -77,7 +77,7 @@ test_curve (gmp_randstate_t rands, const struct ecc_curve *ecc)
       ref_mod (ref, a, ecc->q.m, ecc->p.size);
 
       mpn_copyi (m, a, 2*ecc->p.size);
-      ecc->modq (ecc, m);
+      ecc->modq (&ecc->q, m);
       if (mpn_cmp (m, ecc->q.m, ecc->p.size) >= 0)
 	mpn_sub_n (m, m, ecc->q.m, ecc->p.size);
 
@@ -93,7 +93,7 @@ test_curve (gmp_randstate_t rands, const struct ecc_curve *ecc)
       if (ecc->q.B_size < ecc->p.size)
 	{
 	  mpn_copyi (m, a, 2*ecc->p.size);
-	  ecc_generic_modq (ecc, m);
+	  ecc_mod (&ecc->q, m);
 	  if (mpn_cmp (m, ecc->q.m, ecc->p.size) >= 0)
 	    mpn_sub_n (m, m, ecc->q.m, ecc->p.size);
 

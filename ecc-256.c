@@ -65,22 +65,22 @@ ecc_256_redc (const struct ecc_curve *ecc, mp_limb_t *rp);
 #endif /* !HAVE_NATIVE_ecc_256_redc */
 
 #if ECC_BMODP_SIZE < ECC_LIMB_SIZE
-#define ecc_256_modp ecc_generic_modp
-#define ecc_256_modq ecc_generic_modq
+#define ecc_256_modp ecc_mod
+#define ecc_256_modq ecc_mod
 #elif GMP_NUMB_BITS == 64
 
 static void
-ecc_256_modp (const struct ecc_curve *ecc, mp_limb_t *rp)
+ecc_256_modp (const struct ecc_modulo *p, mp_limb_t *rp)
 {
   mp_limb_t u1, u0;
   mp_size_t n;
 
-  n = 2*ecc->p.size;
+  n = 2*p->size;
   u1 = rp[--n];
   u0 = rp[n-1];
 
   /* This is not particularly fast, but should work well with assembly implementation. */
-  for (; n >= ecc->p.size; n--)
+  for (; n >= p->size; n--)
     {
       mp_limb_t q2, q1, q0, t, cy;
 
@@ -115,8 +115,8 @@ ecc_256_modp (const struct ecc_curve *ecc, mp_limb_t *rp)
 
       /* We multiply by two low limbs of p, 2^96 - 1, so we could use
 	 shifts rather than mul. */
-      t = mpn_submul_1 (rp + n - 4, ecc->p.m, 2, q1);
-      t += cnd_sub_n (q2, rp + n - 3, ecc->p.m, 1);
+      t = mpn_submul_1 (rp + n - 4, p->m, 2, q1);
+      t += cnd_sub_n (q2, rp + n - 3, p->m, 1);
       t += (-q2) & 0xffffffff;
 
       u0 = rp[n-2];
@@ -124,7 +124,7 @@ ecc_256_modp (const struct ecc_curve *ecc, mp_limb_t *rp)
       u0 -= t;
       t = (u1 < cy);
       u1 -= cy;
-      u1 += cnd_add_n (t, rp + n - 4, ecc->p.m, 3);
+      u1 += cnd_add_n (t, rp + n - 4, p->m, 3);
       u1 -= (-t) & 0xffffffff;
     }
   rp[2] = u0;
@@ -132,17 +132,17 @@ ecc_256_modp (const struct ecc_curve *ecc, mp_limb_t *rp)
 }
 
 static void
-ecc_256_modq (const struct ecc_curve *ecc, mp_limb_t *rp)
+ecc_256_modq (const struct ecc_modulo *q, mp_limb_t *rp)
 {
   mp_limb_t u2, u1, u0;
   mp_size_t n;
 
-  n = 2*ecc->q.size;
+  n = 2*q->size;
   u2 = rp[--n];
   u1 = rp[n-1];
 
   /* This is not particularly fast, but should work well with assembly implementation. */
-  for (; n >= ecc->q.size; n--)
+  for (; n >= q->size; n--)
     {
       mp_limb_t q2, q1, q0, t, c1, c0;
 
@@ -196,9 +196,9 @@ ecc_256_modq (const struct ecc_curve *ecc, mp_limb_t *rp)
 
       assert (q2 < 2);
 
-      c0 = cnd_sub_n (q2, rp + n - 3, ecc->q.m, 1);
-      c0 += (-q2) & ecc->q.m[1];
-      t = mpn_submul_1 (rp + n - 4, ecc->q.m, 2, q1);
+      c0 = cnd_sub_n (q2, rp + n - 3, q->m, 1);
+      c0 += (-q2) & q->m[1];
+      t = mpn_submul_1 (rp + n - 4, q->m, 2, q1);
       c0 += t;
       c1 = c0 < t;
       
@@ -213,7 +213,7 @@ ecc_256_modq (const struct ecc_curve *ecc, mp_limb_t *rp)
       u1 += t;
       u2 += (t<<32) + (u0 < t);
 
-      t = cnd_add_n (t, rp + n - 4, ecc->q.m, 2);
+      t = cnd_add_n (t, rp + n - 4, q->m, 2);
       u1 += t;
       u2 += (u1 < t);
     }

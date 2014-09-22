@@ -57,7 +57,7 @@ ecc_521_modp (const struct ecc_curve *ecc, mp_limb_t *rp);
 
 /* Result may be *slightly* larger than 2^521 */
 static void
-ecc_521_modp (const struct ecc_curve *ecc UNUSED, mp_limb_t *rp)
+ecc_521_modp (const struct ecc_modulo *m UNUSED, mp_limb_t *rp)
 {
   /* FIXME: Should use mpn_addlsh_n_ip1 */
   mp_limb_t hi;
@@ -110,7 +110,7 @@ const struct ecc_curve nettle_secp_521r1 =
   ecc_521_modp,
   ECC_REDC_SIZE > 0 ? ecc_pp1_redc : NULL,
   ecc_521_modp,
-  ecc_generic_modq,
+  ecc_mod,
 
   ecc_add_jjj,
   ecc_mul_a,

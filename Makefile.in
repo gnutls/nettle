@@ -162,7 +162,7 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  der-iterator.c der2rsa.c der2dsa.c \
 		  sec-add-1.c sec-sub-1.c sec-modinv.c sec-tabselect.c \
 		  gmp-glue.c cnd-copy.c \
-		  ecc-mod.c ecc-generic-modp.c ecc-generic-modq.c \
+		  ecc-mod.c \
 		  ecc-modp.c ecc-modq.c ecc-pp1-redc.c ecc-pm1-redc.c \
 		  ecc-192.c ecc-224.c ecc-256.c ecc-384.c ecc-521.c \
 		  ecc-25519.c \

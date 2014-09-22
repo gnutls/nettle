@@ -52,14 +52,14 @@
 
 #define ecc_192_modp nettle_ecc_192_modp
 void
-ecc_192_modp (const struct ecc_curve *ecc, mp_limb_t *rp);
+ecc_192_modp (const struct ecc_modulo *m, mp_limb_t *rp);
 
 /* Use that p = 2^{192} - 2^64 - 1, to eliminate 128 bits at a time. */
 
 #elif GMP_NUMB_BITS == 32
 /* p is 6 limbs, p = B^6 - B^2 - 1 */
 static void
-ecc_192_modp (const struct ecc_curve *ecc UNUSED, mp_limb_t *rp)
+ecc_192_modp (const struct ecc_modulo *m UNUSED, mp_limb_t *rp)
 {
   mp_limb_t cy;
 
@@ -84,7 +84,7 @@ ecc_192_modp (const struct ecc_curve *ecc UNUSED, mp_limb_t *rp)
 #elif GMP_NUMB_BITS == 64
 /* p is 3 limbs, p = B^3 - B - 1 */
 static void
-ecc_192_modp (const struct ecc_curve *ecc UNUSED, mp_limb_t *rp)
+ecc_192_modp (const struct ecc_modulo *m UNUSED, mp_limb_t *rp)
 {
   mp_limb_t cy;
 
@@ -107,7 +107,7 @@ ecc_192_modp (const struct ecc_curve *ecc UNUSED, mp_limb_t *rp)
 }
   
 #else
-#define ecc_192_modp ecc_generic_modp
+#define ecc_192_modp ecc_mod
 #endif
 
 const struct ecc_curve nettle_secp_192r1 =
@@ -145,7 +145,7 @@ const struct ecc_curve nettle_secp_192r1 =
   ecc_192_modp,
   ECC_REDC_SIZE >= 1 ? ecc_pp1_redc : NULL,
   ecc_192_modp,
-  ecc_generic_modq,
+  ecc_mod,
 
   ecc_add_jjj,
   ecc_mul_a,
