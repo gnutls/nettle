@@ -1,5 +1,10 @@
 2014-09-22  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/ecc-mod-test.c (test_modulo): New function, testing
+	one modulo. Replacing...
+	(test_curve): ... old function.
+	(test_main): Invoke test_modulo for p and q of each curve.
+
 	* ecc-internal.h (ecc_mod_inv_func): New typedef.
 	(struct ecc_modulo): Added mp1h constant and invert function
 	pointer. Updated all callers.

@@ -20,10 +20,11 @@ ref_mod (mp_limb_t *rp, const mp_limb_t *ap, const mp_limb_t *mp, mp_size_t mn)
 #define COUNT 50000
 
 static void
-test_curve (gmp_randstate_t rands, const struct ecc_curve *ecc)
+test_modulo (gmp_randstate_t rands, const char *name,
+	     const struct ecc_modulo *m)
 {
   mp_limb_t a[MAX_SIZE];
-  mp_limb_t m[MAX_SIZE];
+  mp_limb_t t[MAX_SIZE];
   mp_limb_t ref[MAX_SIZE];
   mpz_t r;
   unsigned j;
@@ -33,77 +34,43 @@ test_curve (gmp_randstate_t rands, const struct ecc_curve *ecc)
   for (j = 0; j < COUNT; j++)
     {
       if (j & 1)
-	mpz_rrandomb (r, rands, 2*ecc->p.size * GMP_NUMB_BITS);
+	mpz_rrandomb (r, rands, 2*m->size * GMP_NUMB_BITS);
       else
-	mpz_urandomb (r, rands, 2*ecc->p.size * GMP_NUMB_BITS);
+	mpz_urandomb (r, rands, 2*m->size * GMP_NUMB_BITS);
 
-      mpz_limbs_copy (a, r, 2*ecc->p.size);
+      mpz_limbs_copy (a, r, 2*m->size);
 
-      ref_mod (ref, a, ecc->p.m, ecc->p.size);
+      ref_mod (ref, a, m->m, m->size);
 
-      mpn_copyi (m, a, 2*ecc->p.size);
-      ecc->p.mod (&ecc->p, m);
-      if (mpn_cmp (m, ecc->p.m, ecc->p.size) >= 0)
-	mpn_sub_n (m, m, ecc->p.m, ecc->p.size);
+      mpn_copyi (t, a, 2*m->size);
+      m->mod (m, t);
+      if (mpn_cmp (t, m->m, m->size) >= 0)
+	mpn_sub_n (t, t, m->m, m->size);
 
-      if (mpn_cmp (m, ref, ecc->p.size))
+      if (mpn_cmp (t, ref, m->size))
 	{
-	  fprintf (stderr, "ecc->modp failed: bit_size = %u\n",
-		   ecc->p.bit_size);
-	  gmp_fprintf (stderr, "a   = %Nx\n", a, 2*ecc->p.size);
-	  gmp_fprintf (stderr, "m   = %Nx (bad)\n", m, ecc->p.size);
-	  gmp_fprintf (stderr, "ref = %Nx\n", ref, ecc->p.size);
+	  fprintf (stderr, "m->mod %s failed: bit_size = %u\n",
+		   name, m->bit_size);
+	  gmp_fprintf (stderr, "a   = %Nx\n", a, 2*m->size);
+	  gmp_fprintf (stderr, "t   = %Nx (bad)\n", t, m->size);
+	  gmp_fprintf (stderr, "ref = %Nx\n", ref, m->size);
 	  abort ();
 	}
 
-      if (ecc->p.B_size < ecc->p.size)
+      if (m->B_size < m->size)
 	{
-	  mpn_copyi (m, a, 2*ecc->p.size);
-	  ecc_mod (&ecc->p, m);
-	  if (mpn_cmp (m, ecc->p.m, ecc->p.size) >= 0)
-	    mpn_sub_n (m, m, ecc->p.m, ecc->p.size);
+	  mpn_copyi (t, a, 2*m->size);
+	  ecc_mod (m, t);
+	  if (mpn_cmp (t, m->m, m->size) >= 0)
+	    mpn_sub_n (t, t, m->m, m->size);
 
-	  if (mpn_cmp (m, ref, ecc->p.size))
+	  if (mpn_cmp (t, ref, m->size))
 	    {
-	      fprintf (stderr, "ecc_generic_modp failed: bit_size = %u\n",
-		       ecc->p.bit_size);
-	      gmp_fprintf (stderr, "a   = %Nx\n", a, 2*ecc->p.size);
-	      gmp_fprintf (stderr, "m   = %Nx (bad)\n", m, ecc->p.size);
-	      gmp_fprintf (stderr, "ref = %Nx\n", ref, ecc->p.size);
-	      abort ();
-	    }
-	}
-
-      ref_mod (ref, a, ecc->q.m, ecc->p.size);
-
-      mpn_copyi (m, a, 2*ecc->p.size);
-      ecc->q.mod (&ecc->q, m);
-      if (mpn_cmp (m, ecc->q.m, ecc->p.size) >= 0)
-	mpn_sub_n (m, m, ecc->q.m, ecc->p.size);
-
-      if (mpn_cmp (m, ref, ecc->p.size))
-	{
-	  fprintf (stderr, "ecc->modq failed: bit_size = %u\n",
-		   ecc->p.bit_size);
-	  gmp_fprintf (stderr, "a   = %Nx\n", a, 2*ecc->p.size);
-	  gmp_fprintf (stderr, "m   = %Nx (bad)\n", m, ecc->p.size);
-	  gmp_fprintf (stderr, "ref = %Nx\n", ref, ecc->p.size);
-	  abort ();
-	}
-      if (ecc->q.B_size < ecc->p.size)
-	{
-	  mpn_copyi (m, a, 2*ecc->p.size);
-	  ecc_mod (&ecc->q, m);
-	  if (mpn_cmp (m, ecc->q.m, ecc->p.size) >= 0)
-	    mpn_sub_n (m, m, ecc->q.m, ecc->p.size);
-
-	  if (mpn_cmp (m, ref, ecc->p.size))
-	    {
-	      fprintf (stderr, "ecc_generic_modq failed: bit_size = %u\n",
-		       ecc->q.bit_size);
-	      gmp_fprintf (stderr, "a   = %Nx\n", a, 2*ecc->p.size);
-	      gmp_fprintf (stderr, "m   = %Nx (bad)\n", m, ecc->p.size);
-	      gmp_fprintf (stderr, "ref = %Nx\n", ref, ecc->p.size);
+	      fprintf (stderr, "ecc_mod %s failed: bit_size = %u\n",
+		       name, m->bit_size);
+	      gmp_fprintf (stderr, "a   = %Nx\n", a, 2*m->size);
+	      gmp_fprintf (stderr, "t   = %Nx (bad)\n", t, m->size);
+	      gmp_fprintf (stderr, "ref = %Nx\n", ref, m->size);
 	      abort ();
 	    }
 	}
@@ -120,9 +87,10 @@ test_main (void)
   gmp_randinit_default (rands);
   
   for (i = 0; ecc_curves[i]; i++)
-    test_curve (rands, ecc_curves[i]);
-
-  test_curve (rands, &nettle_curve25519);
+    {
+      test_modulo (rands, "p", &ecc_curves[i]->p);
+      test_modulo (rands, "q", &ecc_curves[i]->q);
+    }
   gmp_randclear (rands);
 }
 #endif /* ! NETTLE_USE_MINI_GMP */
