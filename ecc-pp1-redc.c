@@ -46,26 +46,24 @@ ecc_pp1_redc (const struct ecc_curve *ecc, mp_limb_t *rp)
 {
   unsigned i;
   mp_limb_t hi, cy;
-  unsigned shift = ecc->size * GMP_NUMB_BITS - ecc->bit_size;
-  mp_size_t k = ecc->redc_size;
+  unsigned shift = ecc->p.size * GMP_NUMB_BITS - ecc->p.bit_size;
+  mp_size_t k = ecc->p.redc_size;
   
-  assert (k > 0);
-
-  for (i = 0; i < ecc->size; i++)
+  for (i = 0; i < ecc->p.size; i++)
     rp[i] = mpn_addmul_1 (rp + i + k,
-			  ecc->redc_ppm1, ecc->size - k, rp[i]);
-  hi = mpn_add_n (rp, rp, rp + ecc->size, ecc->size);
+			  ecc->p.redc_mpm1, ecc->p.size - k, rp[i]);
+  hi = mpn_add_n (rp, rp, rp + ecc->p.size, ecc->p.size);
   if (shift > 0)
     {
-      hi = (hi << shift) | (rp[ecc->size - 1] >> (GMP_NUMB_BITS - shift));
-      rp[ecc->size - 1] = (rp[ecc->size - 1]
+      hi = (hi << shift) | (rp[ecc->p.size - 1] >> (GMP_NUMB_BITS - shift));
+      rp[ecc->p.size - 1] = (rp[ecc->p.size - 1]
 			   & (((mp_limb_t) 1 << (GMP_NUMB_BITS - shift)) - 1))
-	+ mpn_addmul_1 (rp, ecc->Bmodp_shifted, ecc->size-1, hi);
+	+ mpn_addmul_1 (rp, ecc->p.B_shifted, ecc->p.size-1, hi);
 	  
     }
   else
     {
-      cy = cnd_sub_n (hi, rp, ecc->p, ecc->size);
+      cy = cnd_sub_n (hi, rp, ecc->p.m, ecc->p.size);
       assert (cy == hi);      
     }
 }

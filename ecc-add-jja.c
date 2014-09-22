@@ -52,7 +52,7 @@
 mp_size_t
 ecc_add_jja_itch (const struct ecc_curve *ecc)
 {
-  return ECC_ADD_JJA_ITCH (ecc->size);
+  return ECC_ADD_JJA_ITCH (ecc->p.size);
 }
 
 void
@@ -78,17 +78,17 @@ ecc_add_jja (const struct ecc_curve *ecc,
       Y_3 = W*(V-X_3)-2*Y_1*J	mul, mul
   */
 #define zz  scratch
-#define h  (scratch + ecc->size)
-#define hh (scratch + 2*ecc->size)
-#define w  (scratch + 3*ecc->size)
-#define j  (scratch + 4*ecc->size)
+#define h  (scratch + ecc->p.size)
+#define hh (scratch + 2*ecc->p.size)
+#define w  (scratch + 3*ecc->p.size)
+#define j  (scratch + 4*ecc->p.size)
 #define v   scratch
 
 #define x1  p
-#define y1 (p + ecc->size)
-#define z1 (p + 2*ecc->size)
+#define y1 (p + ecc->p.size)
+#define z1 (p + 2*ecc->p.size)
 #define x2  q
-#define y2 (q + ecc->size)
+#define y2 (q + ecc->p.size)
 
   /* zz */
   ecc_modp_sqr (ecc, zz, z1);
@@ -100,10 +100,10 @@ ecc_add_jja (const struct ecc_curve *ecc,
   /* Do z^3 early, store at w. */
   ecc_modp_mul (ecc, w, zz, z1);
   /* z_3, use j area for scratch */
-  ecc_modp_add (ecc, r + 2*ecc->size, p + 2*ecc->size, h);
-  ecc_modp_sqr (ecc, j, r + 2*ecc->size);
+  ecc_modp_add (ecc, r + 2*ecc->p.size, p + 2*ecc->p.size, h);
+  ecc_modp_sqr (ecc, j, r + 2*ecc->p.size);
   ecc_modp_sub (ecc, j, j, zz);
-  ecc_modp_sub (ecc, r + 2*ecc->size, j, hh);
+  ecc_modp_sub (ecc, r + 2*ecc->p.size, j, hh);
   
   /* w */
   ecc_modp_mul (ecc, j, y2, w);
@@ -124,8 +124,8 @@ ecc_add_jja (const struct ecc_curve *ecc,
 
   /* y_3, use (h, hh) as sqratch */
   ecc_modp_mul (ecc, h, y1, j); /* frees j */
-  ecc_modp_sub (ecc, r + ecc->size, v, r);
-  ecc_modp_mul (ecc, j, r + ecc->size, w);
+  ecc_modp_sub (ecc, r + ecc->p.size, v, r);
+  ecc_modp_mul (ecc, j, r + ecc->p.size, w);
   ecc_modp_submul_1 (ecc, j, h, 2);
-  mpn_copyi (r + ecc->size, j, ecc->size);
+  mpn_copyi (r + ecc->p.size, j, ecc->p.size);
 }

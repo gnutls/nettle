@@ -41,23 +41,23 @@
 unsigned
 ecc_bit_size (const struct ecc_curve *ecc)
 {
-  return ecc->bit_size;
+  return ecc->p.bit_size;
 }
 
 mp_size_t
 ecc_size (const struct ecc_curve *ecc)
 {
-  return ecc->size;
+  return ecc->p.size;
 }
 
 mp_size_t
 ecc_size_a (const struct ecc_curve *ecc)
 {
-  return 2*ecc->size;
+  return 2*ecc->p.size;
 }
 
 mp_size_t
 ecc_size_j (const struct ecc_curve *ecc)
 {
-  return 3*ecc->size;
+  return 3*ecc->p.size;
 }

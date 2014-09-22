@@ -77,10 +77,26 @@
 /* And for ecc_mul_a_eh */
 #define ECC_MUL_A_EH_WBITS 4
 
+struct ecc_modulo
+{
+  unsigned short bit_size;
+  unsigned short size;
+  unsigned short B_size;
+  unsigned short redc_size;
+
+  const mp_limb_t *m;
+  /* B^size mod m. Expected to have at least 32 leading zeros
+     (equality for secp_256r1). */
+  const mp_limb_t *B;
+  /* 2^{bit_size} - p, same value as above, but shifted. */
+  const mp_limb_t *B_shifted;
+  /* m +/- 1, for redc, excluding redc_size low limbs. */
+  const mp_limb_t *redc_mpm1;
+};
 
 /* Reduces from 2*ecc->size to ecc->size. */
 /* Required to return a result < 2q. This property is inherited by
-   modp_mul and modp_add. */
+   modp_mul and modp_sqr. */
 typedef void ecc_mod_func (const struct ecc_curve *ecc, mp_limb_t *rp);
 
 typedef void ecc_add_func (const struct ecc_curve *ecc,
@@ -107,18 +123,14 @@ typedef void ecc_h_to_a_func (const struct ecc_curve *ecc,
 */
 struct ecc_curve
 {
-  unsigned short bit_size;
-  /* Limb size of elements in the base field, size of a point is
-     2*size in affine coordinates and 3*size in jacobian
-     coordinates. */
-  unsigned short size;
-  unsigned short Bmodp_size;
-  unsigned short q_bit_size;
-  unsigned short Bmodq_size;
+  /* The prime p. */
+  struct ecc_modulo p;
+  /* Group order. FIXME: Currently, many fucntions rely on q.size ==
+     p.size. This has to change for radix-51 implementation of
+     curve25519 mod p arithmetic. */
+  struct ecc_modulo q;
+
   unsigned short use_redc;
-  /* +k if p+1 has k low zero limbs, -k if p-1 has k low zero
-     limbs. */
-  short redc_size;
   unsigned short pippenger_k;
   unsigned short pippenger_c;
 
@@ -137,34 +149,20 @@ struct ecc_curve
   ecc_mul_g_func *mul_g;
   ecc_h_to_a_func *h_to_a;
 
-  /* The prime p. */
-  const mp_limb_t *p;
+  /* Curve constant */
   const mp_limb_t *b;
-  /* Group order. */
-  const mp_limb_t *q;
   /* Generator, x coordinate followed by y (affine coordinates).
-   Currently used only by the test suite. */
+     Currently used only by the test suite. */
   const mp_limb_t *g;
   /* If non-NULL, the constant needed for transformation to the
      equivalent Edwards curve. */
   const mp_limb_t *edwards_root;
 
-  /* B^size mod p. Expected to have at least 32 leading zeros
-     (equality for secp_256r1). */
-  const mp_limb_t *Bmodp;
-  /* 2^{bit_size} - p, same value as above, but shifted. */
-  const mp_limb_t *Bmodp_shifted;
   /* (p+1)/2 */
   const mp_limb_t *pp1h;
-  /* p +/- 1, for redc, excluding |redc_size| low limbs. */
-  const mp_limb_t *redc_ppm1;
   /* For redc, same as Bmodp, otherwise 1. */
   const mp_limb_t *unit;
 
-  /* Similarly, B^size mod q */
-  const mp_limb_t *Bmodq;
-  /* 2^{bit_size} - q, same value as above, but shifted. */
-  const mp_limb_t *Bmodq_shifted;
   /* (q+1)/2 */
   const mp_limb_t *qp1h;
   
@@ -236,9 +234,7 @@ ecc_modq_random (const struct ecc_curve *ecc, mp_limb_t *xp,
 		 void *ctx, nettle_random_func *random, mp_limb_t *scratch);
 
 void
-ecc_mod (mp_limb_t *rp, mp_size_t rn, mp_size_t mn,
-	 const mp_limb_t *bp, mp_size_t bn,
-	 const mp_limb_t *b_shifted, unsigned shift);
+ecc_mod (const struct ecc_modulo *m, mp_limb_t *rp, mp_size_t rn);
 
 void
 ecc_hash (const struct ecc_curve *ecc,

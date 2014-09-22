@@ -46,25 +46,23 @@ ecc_pm1_redc (const struct ecc_curve *ecc, mp_limb_t *rp)
 {
   unsigned i;
   mp_limb_t hi, cy;
-  unsigned shift = ecc->size * GMP_NUMB_BITS - ecc->bit_size;
-  mp_size_t k = -ecc->redc_size;
+  unsigned shift = ecc->p.size * GMP_NUMB_BITS - ecc->p.bit_size;
+  mp_size_t k = ecc->p.redc_size;
   
-  assert (k > 0);
-
-  for (i = 0; i < ecc->size; i++)
+  for (i = 0; i < ecc->p.size; i++)
     rp[i] = mpn_submul_1 (rp + i + k,
-			  ecc->redc_ppm1, ecc->size - k, rp[i]);
-  hi = mpn_sub_n (rp, rp + ecc->size, rp, ecc->size);
-  cy = cnd_add_n (hi, rp, ecc->p, ecc->size);
+			  ecc->p.redc_mpm1, ecc->p.size - k, rp[i]);
+  hi = mpn_sub_n (rp, rp + ecc->p.size, rp, ecc->p.size);
+  cy = cnd_add_n (hi, rp, ecc->p.m, ecc->p.size);
   assert (cy == hi);
 
   if (shift > 0)
     {
       /* Result is always < 2p, provided that
 	 2^shift * Bmodp_shifted <= p */
-      hi = (rp[ecc->size - 1] >> (GMP_NUMB_BITS - shift));
-      rp[ecc->size - 1] = (rp[ecc->size - 1]
+      hi = (rp[ecc->p.size - 1] >> (GMP_NUMB_BITS - shift));
+      rp[ecc->p.size - 1] = (rp[ecc->p.size - 1]
 			   & (((mp_limb_t) 1 << (GMP_NUMB_BITS - shift)) - 1))
-	+ mpn_addmul_1 (rp, ecc->Bmodp_shifted, ecc->size-1, hi);
+	+ mpn_addmul_1 (rp, ecc->p.B_shifted, ecc->p.size-1, hi);
     }
 }

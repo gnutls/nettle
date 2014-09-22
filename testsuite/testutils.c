@@ -1302,15 +1302,15 @@ test_ecc_point (const struct ecc_curve *ecc,
 		const struct ecc_ref_point *ref,
 		const mp_limb_t *p)
 {
-  if (! (test_mpn (ref->x, p, ecc->size)
-	 && test_mpn (ref->y, p + ecc->size, ecc->size) ))
+  if (! (test_mpn (ref->x, p, ecc->p.size)
+	 && test_mpn (ref->y, p + ecc->p.size, ecc->p.size) ))
     {
       fprintf (stderr, "Incorrect point!\n"
 	       "got: x = ");
-      write_mpn (stderr, 16, p, ecc->size);
+      write_mpn (stderr, 16, p, ecc->p.size);
       fprintf (stderr, "\n"
 	       "     y = ");
-      write_mpn (stderr, 16, p + ecc->size, ecc->size);
+      write_mpn (stderr, 16, p + ecc->p.size, ecc->p.size);
       fprintf (stderr, "\n"
 	       "ref: x = %s\n"
 	       "     y = %s\n",
@@ -1392,16 +1392,16 @@ test_ecc_mul_a (unsigned curve, unsigned n, const mp_limb_t *p)
     {
       /* Makes sense for curve25519 only */
       const struct ecc_curve *ecc = ecc_curves[curve];
-      assert (ecc->bit_size == 255);
-      if (!mpn_zero_p (p, ecc->size)
-	  || mpn_cmp (p + ecc->size, ecc->unit, ecc->size) != 0)
+      assert (ecc->p.bit_size == 255);
+      if (!mpn_zero_p (p, ecc->p.size)
+	  || mpn_cmp (p + ecc->p.size, ecc->unit, ecc->p.size) != 0)
 	{
 	  fprintf (stderr, "Incorrect point (expected (0, 1))!\n"
 		   "got: x = ");
-	  write_mpn (stderr, 16, p, ecc->size);
+	  write_mpn (stderr, 16, p, ecc->p.size);
 	  fprintf (stderr, "\n"
 		   "     y = ");
-	  write_mpn (stderr, 16, p + ecc->size, ecc->size);
+	  write_mpn (stderr, 16, p + ecc->p.size, ecc->p.size);
 	  fprintf (stderr, "\n");
 	  abort();
 	}
@@ -1409,20 +1409,20 @@ test_ecc_mul_a (unsigned curve, unsigned n, const mp_limb_t *p)
   else if (n == 1)
     {
       const struct ecc_curve *ecc = ecc_curves[curve];
-      if (mpn_cmp (p, ecc->g, 2*ecc->size) != 0)
+      if (mpn_cmp (p, ecc->g, 2*ecc->p.size) != 0)
 	{
 	  fprintf (stderr, "Incorrect point (expected g)!\n"
 		   "got: x = ");
-	  write_mpn (stderr, 16, p, ecc->size);
+	  write_mpn (stderr, 16, p, ecc->p.size);
 	  fprintf (stderr, "\n"
 		   "     y = ");
-	  write_mpn (stderr, 16, p + ecc->size, ecc->size);
+	  write_mpn (stderr, 16, p + ecc->p.size, ecc->p.size);
 	  fprintf (stderr, "\n"
 		   "ref: x = ");
-	  write_mpn (stderr, 16, ecc->g, ecc->size);
+	  write_mpn (stderr, 16, ecc->g, ecc->p.size);
 	  fprintf (stderr, "\n"
 		   "     y = ");
-	  write_mpn (stderr, 16, ecc->g + ecc->size, ecc->size);
+	  write_mpn (stderr, 16, ecc->g + ecc->p.size, ecc->p.size);
 	  fprintf (stderr, "\n");
 	  abort();
 	}

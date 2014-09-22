@@ -43,13 +43,13 @@
 mp_size_t
 ecc_mul_a_itch (const struct ecc_curve *ecc)
 {
-  /* Binary algorithm needs 6*ecc->size + scratch for ecc_add_jja.
-     Current total is 12 ecc->size, at most 864 bytes.
+  /* Binary algorithm needs 6*ecc->p.size + scratch for ecc_add_jja.
+     Current total is 12 ecc->p.size, at most 864 bytes.
 
-     Window algorithm needs (3<<w) * ecc->size for the table,
-     3*ecc->size for a temporary point, and scratch for
+     Window algorithm needs (3<<w) * ecc->p.size for the table,
+     3*ecc->p.size for a temporary point, and scratch for
      ecc_add_jjj. */
-  return ECC_MUL_A_ITCH (ecc->size);
+  return ECC_MUL_A_ITCH (ecc->p.size);
 }
 
 #if ECC_MUL_A_WBITS == 0
@@ -60,17 +60,17 @@ ecc_mul_a (const struct ecc_curve *ecc,
 	   mp_limb_t *scratch)
 {
 #define tp scratch
-#define pj (scratch + 3*ecc->size)
-#define scratch_out (scratch + 6*ecc->size)
+#define pj (scratch + 3*ecc->p.size)
+#define scratch_out (scratch + 6*ecc->p.size)
 
   int is_zero;
 
   unsigned i;
 
   ecc_a_to_j (ecc, pj, p);
-  mpn_zero (r, 3*ecc->size);
+  mpn_zero (r, 3*ecc->p.size);
   
-  for (i = ecc->size, is_zero = 1; i-- > 0; )
+  for (i = ecc->p.size, is_zero = 1; i-- > 0; )
     {
       mp_limb_t w = np[i];
       mp_limb_t bit;
@@ -87,10 +87,10 @@ ecc_mul_a (const struct ecc_curve *ecc,
 	  digit = (w & bit) > 0;
 	  /* If is_zero is set, r is the zero point,
 	     and ecc_add_jja produced garbage. */
-	  cnd_copy (is_zero, tp, pj, 3*ecc->size);
+	  cnd_copy (is_zero, tp, pj, 3*ecc->p.size);
 	  is_zero &= ~digit;
 	  /* If we had a one-bit, use the sum. */
-	  cnd_copy (digit, r, tp, 3*ecc->size);
+	  cnd_copy (digit, r, tp, 3*ecc->p.size);
 	}
     }
 }
@@ -99,7 +99,7 @@ ecc_mul_a (const struct ecc_curve *ecc,
 #define TABLE_SIZE (1U << ECC_MUL_A_WBITS)
 #define TABLE_MASK (TABLE_SIZE - 1)
 
-#define TABLE(j) (table + (j) * 3*ecc->size)
+#define TABLE(j) (table + (j) * 3*ecc->p.size)
 
 static void
 table_init (const struct ecc_curve *ecc,
@@ -110,7 +110,7 @@ table_init (const struct ecc_curve *ecc,
   unsigned size = 1 << bits;
   unsigned j;
 
-  mpn_zero (TABLE(0), 3*ecc->size);
+  mpn_zero (TABLE(0), 3*ecc->p.size);
   ecc_a_to_j (ecc, TABLE(1), p);
 
   for (j = 2; j < size; j += 2)
@@ -127,13 +127,13 @@ ecc_mul_a (const struct ecc_curve *ecc,
 	   mp_limb_t *scratch)
 {
 #define tp scratch
-#define table (scratch + 3*ecc->size)
-  mp_limb_t *scratch_out = table + (3*ecc->size << ECC_MUL_A_WBITS);
+#define table (scratch + 3*ecc->p.size)
+  mp_limb_t *scratch_out = table + (3*ecc->p.size << ECC_MUL_A_WBITS);
   int is_zero = 0;
 
   /* Avoid the mp_bitcnt_t type for compatibility with older GMP
      versions. */
-  unsigned blocks = (ecc->bit_size + ECC_MUL_A_WBITS - 1) / ECC_MUL_A_WBITS;
+  unsigned blocks = (ecc->p.bit_size + ECC_MUL_A_WBITS - 1) / ECC_MUL_A_WBITS;
   unsigned bit_index = (blocks-1) * ECC_MUL_A_WBITS;
 
   mp_size_t limb_index = bit_index / GMP_NUMB_BITS;
@@ -144,12 +144,12 @@ ecc_mul_a (const struct ecc_curve *ecc,
 
   w = np[limb_index];
   bits = w >> shift;
-  if (limb_index < ecc->size - 1)
+  if (limb_index < ecc->p.size - 1)
     bits |= np[limb_index + 1] << (GMP_NUMB_BITS - shift);
 
   assert (bits < TABLE_SIZE);
 
-  sec_tabselect (r, 3*ecc->size, table, TABLE_SIZE, bits);
+  sec_tabselect (r, 3*ecc->p.size, table, TABLE_SIZE, bits);
   is_zero = (bits == 0);
 
   for (;;)
@@ -176,13 +176,13 @@ ecc_mul_a (const struct ecc_curve *ecc,
 	ecc_dup_jj (ecc, r, r, scratch_out);
 
       bits &= TABLE_MASK;
-      sec_tabselect (tp, 3*ecc->size, table, TABLE_SIZE, bits);
-      cnd_copy (is_zero, r, tp, 3*ecc->size);
+      sec_tabselect (tp, 3*ecc->p.size, table, TABLE_SIZE, bits);
+      cnd_copy (is_zero, r, tp, 3*ecc->p.size);
       ecc_add_jjj (ecc, tp, tp, r, scratch_out);
 
       /* Use the sum when valid. ecc_add_jja produced garbage if
 	 is_zero != 0 or bits == 0, . */	  
-      cnd_copy (bits & (is_zero - 1), r, tp, 3*ecc->size);
+      cnd_copy (bits & (is_zero - 1), r, tp, 3*ecc->p.size);
       is_zero &= (bits == 0);
     }
 #undef table

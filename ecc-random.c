@@ -48,7 +48,7 @@ zero_p (const struct ecc_curve *ecc,
   mp_limb_t t;
   mp_size_t i;
 
-  for (i = t = 0; i < ecc->size; i++)
+  for (i = t = 0; i < ecc->p.size; i++)
     t |= xp[i];
 
   return t == 0;
@@ -60,7 +60,7 @@ ecdsa_in_range (const struct ecc_curve *ecc,
 {
   /* Check if 0 < x < q, with data independent timing. */
   return !zero_p (ecc, xp)
-    & (mpn_sub_n (scratch, xp, ecc->q, ecc->size) != 0);
+    & (mpn_sub_n (scratch, xp, ecc->q.m, ecc->p.size) != 0);
 }
 
 void
@@ -68,19 +68,18 @@ ecc_modq_random (const struct ecc_curve *ecc, mp_limb_t *xp,
 		 void *ctx, nettle_random_func *random, mp_limb_t *scratch)
 {
   uint8_t *buf = (uint8_t *) scratch;
-  unsigned nbytes = (ecc->bit_size + 7)/8;
+  unsigned nbytes = (ecc->q.bit_size + 7)/8;
 
   /* The bytes ought to fit in the scratch area, unless we have very
      unusual limb and byte sizes. */
-  assert (nbytes <= ecc->size * sizeof (mp_limb_t));
+  assert (nbytes <= ecc->p.size * sizeof (mp_limb_t));
 
   do
     {
-      /* q and p are of the same bitsize. */
       random (ctx, nbytes, buf);
-      buf[0] &= 0xff >> (nbytes * 8 - ecc->bit_size);
+      buf[0] &= 0xff >> (nbytes * 8 - ecc->q.bit_size);
 
-      mpn_set_base256 (xp, ecc->size, buf, nbytes);
+      mpn_set_base256 (xp, ecc->p.size, buf, nbytes);
     }
   while (!ecdsa_in_range (ecc, xp, scratch));
 }
@@ -90,7 +89,7 @@ ecc_scalar_random (struct ecc_scalar *x,
 		   void *random_ctx, nettle_random_func *random)
 {
   TMP_DECL (scratch, mp_limb_t, ECC_MODQ_RANDOM_ITCH (ECC_MAX_SIZE));
-  TMP_ALLOC (scratch, ECC_MODQ_RANDOM_ITCH (x->ecc->size));
+  TMP_ALLOC (scratch, ECC_MODQ_RANDOM_ITCH (x->ecc->p.size));
 
   ecc_modq_random (x->ecc, x->p, random_ctx, random, scratch);
 }

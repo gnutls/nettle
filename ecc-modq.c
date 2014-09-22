@@ -46,9 +46,9 @@ ecc_modq_add (const struct ecc_curve *ecc, mp_limb_t *rp,
 	      const mp_limb_t *ap, const mp_limb_t *bp)
 {
   mp_limb_t cy;
-  cy = mpn_add_n (rp, ap, bp, ecc->size);
-  cy = cnd_add_n (cy, rp, ecc->Bmodq, ecc->size);
-  cy = cnd_add_n (cy, rp, ecc->Bmodq, ecc->size);
+  cy = mpn_add_n (rp, ap, bp, ecc->q.size);
+  cy = cnd_add_n (cy, rp, ecc->q.B, ecc->q.size);
+  cy = cnd_add_n (cy, rp, ecc->q.B, ecc->q.size);
   assert (cy == 0);  
 }
 
@@ -56,7 +56,7 @@ void
 ecc_modq_mul (const struct ecc_curve *ecc, mp_limb_t *rp,
 	      const mp_limb_t *ap, const mp_limb_t *bp)
 {
-  mpn_mul_n (rp, ap, bp, ecc->size);
+  mpn_mul_n (rp, ap, bp, ecc->q.size);
   ecc->modq (ecc, rp);
 }
 
@@ -64,5 +64,5 @@ void
 ecc_modq_inv (const struct ecc_curve *ecc, mp_limb_t *rp, mp_limb_t *ap,
 	      mp_limb_t *scratch)
 {
-  sec_modinv (rp, ap, ecc->size, ecc->q, ecc->qp1h, ecc->q_bit_size, scratch);
+  sec_modinv (rp, ap, ecc->q.size, ecc->q.m, ecc->qp1h, ecc->q.bit_size, scratch);
 }

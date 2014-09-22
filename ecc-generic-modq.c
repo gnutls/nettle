@@ -42,9 +42,7 @@
 void
 ecc_generic_modq (const struct ecc_curve *ecc, mp_limb_t *rp)
 {
-  assert (ecc->Bmodq_size < ecc->size);
+  assert (ecc->q.B_size < ecc->q.size);
 
-  ecc_mod (rp, 2*ecc->size, ecc->size, ecc->Bmodq, ecc->Bmodq_size,
-	   ecc->Bmodq_shifted,
-	   ecc->size * GMP_NUMB_BITS - ecc->bit_size);
+  ecc_mod (&ecc->q, rp, 2*ecc->q.size);
 }

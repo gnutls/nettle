@@ -39,7 +39,7 @@
 mp_size_t
 ecc_dup_eh_itch (const struct ecc_curve *ecc)
 {
-  return ECC_DUP_EH_ITCH (ecc->size);
+  return ECC_DUP_EH_ITCH (ecc->p.size);
 }
 
 /* Double a point on an Edwards curve, in homogeneous coordinates */
@@ -76,21 +76,21 @@ ecc_dup_eh (const struct ecc_curve *ecc,
      z' = e*j		mul
   */
 #define b scratch 
-#define c (scratch  + ecc->size)
-#define d (scratch  + 2*ecc->size)
-#define e (scratch  + 3*ecc->size)
-#define j (scratch  + 4*ecc->size)
+#define c (scratch  + ecc->p.size)
+#define d (scratch  + 2*ecc->p.size)
+#define e (scratch  + 3*ecc->p.size)
+#define j (scratch  + 4*ecc->p.size)
 
   /* b */
-  ecc_modp_add (ecc, e, p, p + ecc->size);
+  ecc_modp_add (ecc, e, p, p + ecc->p.size);
   ecc_modp_sqr (ecc, b, e);
 
   /* c */
   ecc_modp_sqr (ecc, c, p);
   /* d */
-  ecc_modp_sqr (ecc, d, p + ecc->size);
+  ecc_modp_sqr (ecc, d, p + ecc->p.size);
   /* h, can use r as scratch, even for in-place operation. */
-  ecc_modp_sqr (ecc, r, p + 2*ecc->size);
+  ecc_modp_sqr (ecc, r, p + 2*ecc->p.size);
   /* e, */
   ecc_modp_sub (ecc, e, d, c);
   /* b - c - d */
@@ -104,8 +104,8 @@ ecc_dup_eh (const struct ecc_curve *ecc,
   ecc_modp_mul (ecc, r, b, j);
   /* y' */
   ecc_modp_add (ecc, c, c, d); /* Redundant */
-  ecc_modp_mul (ecc, r + ecc->size, e, c);
+  ecc_modp_mul (ecc, r + ecc->p.size, e, c);
   /* z' */
   ecc_modp_mul (ecc, b, e, j);
-  mpn_copyi (r + 2*ecc->size, b, ecc->size);
+  mpn_copyi (r + 2*ecc->p.size, b, ecc->p.size);
 }

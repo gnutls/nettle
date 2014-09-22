@@ -46,7 +46,7 @@ ecc_point_mul_g (struct ecc_point *r, const struct ecc_scalar *n)
 {
   TMP_DECL(scratch, mp_limb_t, 3*ECC_MAX_SIZE + ECC_MUL_G_ITCH (ECC_MAX_SIZE));
   const struct ecc_curve *ecc = r->ecc;
-  mp_limb_t size = ecc->size;
+  mp_limb_t size = ecc->p.size;
   mp_size_t itch = 3*size + ecc->mul_g_itch;
 
   assert (n->ecc == ecc);

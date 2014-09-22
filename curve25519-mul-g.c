@@ -49,23 +49,23 @@ curve25519_mul_g (uint8_t *r, const uint8_t *n)
   mp_limb_t *scratch;
   mp_size_t itch;
 
-#define p scratch
-#define x (scratch + 3*ecc->size)
-#define scratch_out (scratch + 4*ecc->size)
+#define ng scratch
+#define x (scratch + 3*ecc->p.size)
+#define scratch_out (scratch + 4*ecc->p.size)
   
   memcpy (t, n, sizeof(t));
   t[0] &= ~7;
   t[CURVE25519_SIZE-1] = (t[CURVE25519_SIZE-1] & 0x3f) | 0x40;
 
-  itch = 4*ecc->size + ecc->mul_g_itch;
+  itch = 4*ecc->p.size + ecc->mul_g_itch;
   scratch = gmp_alloc_limbs (itch);
 
-  mpn_set_base256_le (x, ecc->size, t, CURVE25519_SIZE);
+  mpn_set_base256_le (x, ecc->p.size, t, CURVE25519_SIZE);
 
-  ecc_mul_g_eh (ecc, p, x, scratch_out);
-  curve25519_eh_to_x (x, p, scratch_out);
+  ecc_mul_g_eh (ecc, ng, x, scratch_out);
+  curve25519_eh_to_x (x, ng, scratch_out);
 
-  mpn_get_base256_le (r, CURVE25519_SIZE, x, ecc->size);
+  mpn_get_base256_le (r, CURVE25519_SIZE, x, ecc->p.size);
   gmp_free_limbs (scratch, itch);
 #undef p
 #undef x

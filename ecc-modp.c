@@ -47,9 +47,9 @@ ecc_modp_add (const struct ecc_curve *ecc, mp_limb_t *rp,
 	      const mp_limb_t *ap, const mp_limb_t *bp)
 {
   mp_limb_t cy;
-  cy = mpn_add_n (rp, ap, bp, ecc->size);
-  cy = cnd_add_n (cy, rp, ecc->Bmodp, ecc->size);
-  cy = cnd_add_n (cy, rp, ecc->Bmodp, ecc->size);
+  cy = mpn_add_n (rp, ap, bp, ecc->p.size);
+  cy = cnd_add_n (cy, rp, ecc->p.B, ecc->p.size);
+  cy = cnd_add_n (cy, rp, ecc->p.B, ecc->p.size);
   assert (cy == 0);  
 }
 
@@ -58,9 +58,9 @@ ecc_modp_sub (const struct ecc_curve *ecc, mp_limb_t *rp,
 	      const mp_limb_t *ap, const mp_limb_t *bp)
 {
   mp_limb_t cy;
-  cy = mpn_sub_n (rp, ap, bp, ecc->size);
-  cy = cnd_sub_n (cy, rp, ecc->Bmodp, ecc->size);
-  cy = cnd_sub_n (cy, rp, ecc->Bmodp, ecc->size);
+  cy = mpn_sub_n (rp, ap, bp, ecc->p.size);
+  cy = cnd_sub_n (cy, rp, ecc->p.B, ecc->p.size);
+  cy = cnd_sub_n (cy, rp, ecc->p.B, ecc->p.size);
   assert (cy == 0);  
 }
 
@@ -71,10 +71,10 @@ ecc_modp_mul_1 (const struct ecc_curve *ecc, mp_limb_t *rp,
   mp_limb_t hi;
 
   assert (b <= 0xffffffff);
-  hi = mpn_mul_1 (rp, ap, ecc->size, b);
-  hi = mpn_addmul_1 (rp, ecc->Bmodp, ecc->size, hi);
+  hi = mpn_mul_1 (rp, ap, ecc->p.size, b);
+  hi = mpn_addmul_1 (rp, ecc->p.B, ecc->p.size, hi);
   assert (hi <= 1);
-  hi = cnd_add_n (hi, rp, ecc->Bmodp, ecc->size);
+  hi = cnd_add_n (hi, rp, ecc->p.B, ecc->p.size);
   /* Sufficient if b < B^size / p */
   assert (hi == 0);
 }
@@ -86,10 +86,10 @@ ecc_modp_addmul_1 (const struct ecc_curve *ecc, mp_limb_t *rp,
   mp_limb_t hi;
 
   assert (b <= 0xffffffff);
-  hi = mpn_addmul_1 (rp, ap, ecc->size, b);
-  hi = mpn_addmul_1 (rp, ecc->Bmodp, ecc->size, hi);
+  hi = mpn_addmul_1 (rp, ap, ecc->p.size, b);
+  hi = mpn_addmul_1 (rp, ecc->p.B, ecc->p.size, hi);
   assert (hi <= 1);
-  hi = cnd_add_n (hi, rp, ecc->Bmodp, ecc->size);
+  hi = cnd_add_n (hi, rp, ecc->p.B, ecc->p.size);
   /* Sufficient roughly if b < B^size / p */
   assert (hi == 0);
 }
@@ -101,20 +101,20 @@ ecc_modp_submul_1 (const struct ecc_curve *ecc, mp_limb_t *rp,
   mp_limb_t hi;
 
   assert (b <= 0xffffffff);
-  hi = mpn_submul_1 (rp, ap, ecc->size, b);
-  hi = mpn_submul_1 (rp, ecc->Bmodp, ecc->size, hi);
+  hi = mpn_submul_1 (rp, ap, ecc->p.size, b);
+  hi = mpn_submul_1 (rp, ecc->p.B, ecc->p.size, hi);
   assert (hi <= 1);
-  hi = cnd_sub_n (hi, rp, ecc->Bmodp, ecc->size);
+  hi = cnd_sub_n (hi, rp, ecc->p.B, ecc->p.size);
   /* Sufficient roughly if b < B^size / p */
   assert (hi == 0);
 }
 
-/* NOTE: mul and sqr needs 2*ecc->size limbs at rp */
+/* NOTE: mul and sqr needs 2*ecc->p.size limbs at rp */
 void
 ecc_modp_mul (const struct ecc_curve *ecc, mp_limb_t *rp,
 	      const mp_limb_t *ap, const mp_limb_t *bp)
 {
-  mpn_mul_n (rp, ap, bp, ecc->size);
+  mpn_mul_n (rp, ap, bp, ecc->p.size);
   ecc->reduce (ecc, rp);
 }
 
@@ -122,7 +122,7 @@ void
 ecc_modp_sqr (const struct ecc_curve *ecc, mp_limb_t *rp,
 	      const mp_limb_t *ap)
 {
-  mpn_sqr (rp, ap, ecc->size);
+  mpn_sqr (rp, ap, ecc->p.size);
   ecc->reduce (ecc, rp);
 }
 
@@ -130,6 +130,6 @@ void
 ecc_modp_inv (const struct ecc_curve *ecc, mp_limb_t *rp, mp_limb_t *ap,
 	      mp_limb_t *scratch)
 {
-  sec_modinv (rp, ap, ecc->size, ecc->p, ecc->pp1h, ecc->bit_size, scratch);
+  sec_modinv (rp, ap, ecc->p.size, ecc->p.m, ecc->pp1h, ecc->p.bit_size, scratch);
 }
 

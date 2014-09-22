@@ -14,8 +14,8 @@ test_ecdsa (const struct ecc_curve *ecc,
   struct dsa_signature ref;
   mpz_t z;
   mpz_t k;
-  mp_limb_t *rp = xalloc_limbs (ecc->size);
-  mp_limb_t *sp = xalloc_limbs (ecc->size);
+  mp_limb_t *rp = xalloc_limbs (ecc->p.size);
+  mp_limb_t *sp = xalloc_limbs (ecc->p.size);
   mp_limb_t *scratch = xalloc_limbs (ecc_ecdsa_sign_itch (ecc));
 
   dsa_signature_init (&ref);
@@ -23,21 +23,21 @@ test_ecdsa (const struct ecc_curve *ecc,
   mpz_init_set_str (z, sz, 16);
   mpz_init_set_str (k, sk, 16);
 
-  ecc_ecdsa_sign (ecc, mpz_limbs_read_n (z, ecc->size),
-		  mpz_limbs_read_n (k, ecc->size),
+  ecc_ecdsa_sign (ecc, mpz_limbs_read_n (z, ecc->p.size),
+		  mpz_limbs_read_n (k, ecc->p.size),
 		  h->length, h->data, rp, sp, scratch);
 
   mpz_set_str (ref.r, r, 16);
   mpz_set_str (ref.s, s, 16);
 
-  if (mpz_limbs_cmp (ref.r, rp, ecc->size) != 0
-      || mpz_limbs_cmp (ref.s, sp, ecc->size) != 0)
+  if (mpz_limbs_cmp (ref.r, rp, ecc->p.size) != 0
+      || mpz_limbs_cmp (ref.s, sp, ecc->p.size) != 0)
     {
-      fprintf (stderr, "_ecdsa_sign failed, bit_size = %u\n", ecc->bit_size);
+      fprintf (stderr, "_ecdsa_sign failed, bit_size = %u\n", ecc->p.bit_size);
       fprintf (stderr, "r     = ");
-      write_mpn (stderr, 16, rp, ecc->size);
+      write_mpn (stderr, 16, rp, ecc->p.size);
       fprintf (stderr, "\ns     = ");
-      write_mpn (stderr, 16, sp, ecc->size);
+      write_mpn (stderr, 16, sp, ecc->p.size);
       fprintf (stderr, "\nref.r = ");
       mpz_out_str (stderr, 16, ref.r);
       fprintf (stderr, "\nref.s = ");

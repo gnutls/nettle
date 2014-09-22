@@ -45,7 +45,7 @@ ecc_point_mul (struct ecc_point *r, const struct ecc_scalar *n,
 	       const struct ecc_point *p)
 {
   const struct ecc_curve *ecc = r->ecc;
-  mp_limb_t size = ecc->size;
+  mp_limb_t size = ecc->p.size;
   mp_size_t itch = 3*size + ecc->mul_itch;
   mp_limb_t *scratch = gmp_alloc_limbs (itch);
 

@@ -51,7 +51,7 @@ ecdsa_sign (const struct ecc_scalar *key,
 {
   /* At most 936 bytes. */
   TMP_DECL(k, mp_limb_t, ECC_MAX_SIZE + ECC_ECDSA_SIGN_ITCH (ECC_MAX_SIZE));
-  mp_limb_t size = key->ecc->size;
+  mp_limb_t size = key->ecc->p.size;
   mp_limb_t *rp = mpz_limbs_write (signature->r, size);
   mp_limb_t *sp = mpz_limbs_write (signature->s, size);
 

@@ -54,30 +54,30 @@ curve25519_mul (uint8_t *q, const uint8_t *n, const uint8_t *p)
      overlap C, D, and CB overlap A, D. And possibly reusing some of
      x2, z2, x3, z3. */
 #define x1 scratch
-#define x2 (scratch + ecc->size)
-#define z2 (scratch + 2*ecc->size)
-#define x3 (scratch + 3*ecc->size)
-#define z3 (scratch + 4*ecc->size)
+#define x2 (scratch + ecc->p.size)
+#define z2 (scratch + 2*ecc->p.size)
+#define x3 (scratch + 3*ecc->p.size)
+#define z3 (scratch + 4*ecc->p.size)
 
-#define A  (scratch + 5*ecc->size)
-#define B  (scratch + 6*ecc->size)
-#define C  (scratch + 7*ecc->size)
-#define D  (scratch + 8*ecc->size)
-#define AA  (scratch + 9*ecc->size)
-#define BB  (scratch +10*ecc->size)
-#define E  (scratch + 10*ecc->size) /* Overlap BB */
-#define DA  (scratch + 9*ecc->size) /* Overlap AA */
-#define CB  (scratch + 10*ecc->size) /* Overlap BB */
+#define A  (scratch + 5*ecc->p.size)
+#define B  (scratch + 6*ecc->p.size)
+#define C  (scratch + 7*ecc->p.size)
+#define D  (scratch + 8*ecc->p.size)
+#define AA  (scratch + 9*ecc->p.size)
+#define BB  (scratch +10*ecc->p.size)
+#define E  (scratch + 10*ecc->p.size) /* Overlap BB */
+#define DA  (scratch + 9*ecc->p.size) /* Overlap AA */
+#define CB  (scratch + 10*ecc->p.size) /* Overlap BB */
 
-  itch = ecc->size * 12;
+  itch = ecc->p.size * 12;
   scratch = gmp_alloc_limbs (itch);
 
-  mpn_set_base256_le (x1, ecc->size, p, CURVE25519_SIZE);
+  mpn_set_base256_le (x1, ecc->p.size, p, CURVE25519_SIZE);
 
   /* Initialize, x2 = x1, z2 = 1 */
-  mpn_copyi (x2, x1, ecc->size);
+  mpn_copyi (x2, x1, ecc->p.size);
   z2[0] = 1;
-  mpn_zero (z2+1, ecc->size - 1);
+  mpn_zero (z2+1, ecc->p.size - 1);
 
   /* Get x3, z3 from doubling. Since bit 254 is forced to 1. */
   ecc_modp_add (ecc, A, x2, z2);
@@ -93,7 +93,7 @@ curve25519_mul (uint8_t *q, const uint8_t *n, const uint8_t *p)
     {
       int bit = (n[i/8] >> (i & 7)) & 1;
 
-      cnd_swap (bit, x2, x3, 2*ecc->size);
+      cnd_swap (bit, x2, x3, 2*ecc->p.size);
 
       /* Formulas from draft-turner-thecurve25519function-00-Mont. We
 	 compute new coordinates in memory-address order, since mul
@@ -118,7 +118,7 @@ curve25519_mul (uint8_t *q, const uint8_t *n, const uint8_t *p)
       ecc_modp_sqr (ecc, DA, C);
       ecc_modp_mul (ecc, z3, DA, x1);
 
-      cnd_swap (bit, x2, x3, 2*ecc->size);
+      cnd_swap (bit, x2, x3, 2*ecc->p.size);
     }
   /* Do the 3 low zero bits, just duplicating x2 */
   for ( ; i >= 0; i--)
@@ -134,9 +134,9 @@ curve25519_mul (uint8_t *q, const uint8_t *n, const uint8_t *p)
     }
   ecc_modp_inv (ecc, x3, z2, z3);
   ecc_modp_mul (ecc, z3, x2, x3);
-  cy = mpn_sub_n (x2, z3, ecc->p, ecc->size);
-  cnd_copy (cy, x2, z3, ecc->size);
-  mpn_get_base256_le (q, CURVE25519_SIZE, x2, ecc->size);
+  cy = mpn_sub_n (x2, z3, ecc->p.m, ecc->p.size);
+  cnd_copy (cy, x2, z3, ecc->p.size);
+  mpn_get_base256_le (q, CURVE25519_SIZE, x2, ecc->p.size);
 
   gmp_free_limbs (scratch, itch);
   return 1;

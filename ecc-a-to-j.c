@@ -44,16 +44,16 @@ ecc_a_to_j (const struct ecc_curve *ecc,
 {
   if (ecc->use_redc)
     {
-      mpn_copyd (r + ecc->size, p, 2*ecc->size);
+      mpn_copyd (r + ecc->p.size, p, 2*ecc->p.size);
 
-      mpn_zero (r, ecc->size);
+      mpn_zero (r, ecc->p.size);
       ecc->modp (ecc, r);
 
-      mpn_zero (r + ecc->size, ecc->size);
-      ecc->modp (ecc, r + ecc->size);
+      mpn_zero (r + ecc->p.size, ecc->p.size);
+      ecc->modp (ecc, r + ecc->p.size);
     }
   else if (r != p)
-    mpn_copyi (r, p, 2*ecc->size);
+    mpn_copyi (r, p, 2*ecc->p.size);
 
-  mpn_copyi (r + 2*ecc->size, ecc->unit, ecc->size);
+  mpn_copyi (r + 2*ecc->p.size, ecc->unit, ecc->p.size);
 }

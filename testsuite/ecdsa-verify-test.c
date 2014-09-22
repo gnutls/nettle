@@ -29,7 +29,7 @@ test_ecdsa (const struct ecc_curve *ecc,
     {
       fprintf (stderr, "ecdsa_verify failed with valid signature.\n");
     fail:
-      fprintf (stderr, "bit_size = %u\nx = ", ecc->bit_size);
+      fprintf (stderr, "bit_size = %u\nx = ", ecc->p.bit_size);
       mpz_out_str (stderr, 16, x);
       fprintf (stderr, "\ny = ");
       mpz_out_str (stderr, 16, y);
@@ -43,21 +43,21 @@ test_ecdsa (const struct ecc_curve *ecc,
       abort();
     }
 
-  mpz_combit (signature.r, ecc->bit_size / 3);
+  mpz_combit (signature.r, ecc->p.bit_size / 3);
   if (ecdsa_verify (&pub, h->length, h->data, &signature))
     {
       fprintf (stderr, "ecdsa_verify unexpectedly succeeded with invalid signature.\n");
       goto fail;
     }
-  mpz_combit (signature.r, ecc->bit_size / 3);
+  mpz_combit (signature.r, ecc->p.bit_size / 3);
   
-  mpz_combit (signature.s, 4*ecc->bit_size / 5);
+  mpz_combit (signature.s, 4*ecc->p.bit_size / 5);
   if (ecdsa_verify (&pub, h->length, h->data, &signature))
     {
       fprintf (stderr, "ecdsa_verify unexpectedly succeeded with invalid signature.\n");
       goto fail;
     }
-  mpz_combit (signature.s, 4*ecc->bit_size / 5);
+  mpz_combit (signature.s, 4*ecc->p.bit_size / 5);
 
   h->data[2*h->length / 3] ^= 0x40;
   if (ecdsa_verify (&pub, h->length, h->data, &signature))

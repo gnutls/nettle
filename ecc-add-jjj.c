@@ -41,8 +41,8 @@
 mp_size_t
 ecc_add_jjj_itch (const struct ecc_curve *ecc)
 {
-  /* Needs 8 * ecc->size */
-  return ECC_ADD_JJJ_ITCH (ecc->size);
+  /* Needs 8 * ecc->p.size */
+  return ECC_ADD_JJJ_ITCH (ecc->p.size);
 }
 
 void
@@ -71,24 +71,24 @@ ecc_add_jjj (const struct ecc_curve *ecc,
       Y3 = W*(V-X3)-2*S1*J	mul, mul
   */
   mp_limb_t *z1z1 = scratch;
-  mp_limb_t *z2z2 = scratch + ecc->size;
-  mp_limb_t *u1   = scratch + 2*ecc->size;
-  mp_limb_t *u2   = scratch + 3*ecc->size;
+  mp_limb_t *z2z2 = scratch + ecc->p.size;
+  mp_limb_t *u1   = scratch + 2*ecc->p.size;
+  mp_limb_t *u2   = scratch + 3*ecc->p.size;
   mp_limb_t *s1   = scratch; /* overlap z1z1 */
-  mp_limb_t *s2   = scratch + ecc->size; /* overlap z2z2 */
-  mp_limb_t *i    = scratch + 4*ecc->size;
-  mp_limb_t *j    = scratch + 5*ecc->size;
-  mp_limb_t *v    = scratch + 6*ecc->size;
+  mp_limb_t *s2   = scratch + ecc->p.size; /* overlap z2z2 */
+  mp_limb_t *i    = scratch + 4*ecc->p.size;
+  mp_limb_t *j    = scratch + 5*ecc->p.size;
+  mp_limb_t *v    = scratch + 6*ecc->p.size;
 
   /* z1^2, z2^2, u1 = x1 x2^2, u2 = x2 z1^2 - u1 */
-  ecc_modp_sqr (ecc, z1z1, p + 2*ecc->size);
-  ecc_modp_sqr (ecc, z2z2, q + 2*ecc->size);
+  ecc_modp_sqr (ecc, z1z1, p + 2*ecc->p.size);
+  ecc_modp_sqr (ecc, z2z2, q + 2*ecc->p.size);
   ecc_modp_mul (ecc, u1, p, z2z2);
   ecc_modp_mul (ecc, u2, q, z1z1);
   ecc_modp_sub (ecc, u2, u2, u1);  /* Store h in u2 */
 
   /* z3, use i, j, v as scratch, result at i. */
-  ecc_modp_add (ecc, i, p + 2*ecc->size, q + 2*ecc->size);
+  ecc_modp_add (ecc, i, p + 2*ecc->p.size, q + 2*ecc->p.size);
   ecc_modp_sqr (ecc, v, i);
   ecc_modp_sub (ecc, v, v, z1z1);
   ecc_modp_sub (ecc, v, v, z2z2);
@@ -96,15 +96,15 @@ ecc_add_jjj (const struct ecc_curve *ecc,
   /* Delayed write, to support in-place operation. */
 
   /* s1 = y1 z2^3, s2 = y2 z1^3, scratch at j and v */
-  ecc_modp_mul (ecc, j, z1z1, p + 2*ecc->size); /* z1^3 */
-  ecc_modp_mul (ecc, v, z2z2, q + 2*ecc->size); /* z2^3 */
-  ecc_modp_mul (ecc, s1, p + ecc->size, v);
-  ecc_modp_mul (ecc, v, j, q + ecc->size);
+  ecc_modp_mul (ecc, j, z1z1, p + 2*ecc->p.size); /* z1^3 */
+  ecc_modp_mul (ecc, v, z2z2, q + 2*ecc->p.size); /* z2^3 */
+  ecc_modp_mul (ecc, s1, p + ecc->p.size, v);
+  ecc_modp_mul (ecc, v, j, q + ecc->p.size);
   ecc_modp_sub (ecc, s2, v, s1);
   ecc_modp_mul_1 (ecc, s2, s2, 2);
 
   /* Store z3 */
-  mpn_copyi (r + 2*ecc->size, i, ecc->size);
+  mpn_copyi (r + 2*ecc->p.size, i, ecc->p.size);
 
   /* i, j, v */
   ecc_modp_sqr (ecc, i, u2);
@@ -123,5 +123,5 @@ ecc_add_jjj (const struct ecc_curve *ecc,
   ecc_modp_sub (ecc, u2, v, r);  /* Frees v */
   ecc_modp_mul (ecc, i, s2, u2);
   ecc_modp_submul_1 (ecc, i, u1, 2);
-  mpn_copyi (r + ecc->size, i, ecc->size);
+  mpn_copyi (r + ecc->p.size, i, ecc->p.size);
 }

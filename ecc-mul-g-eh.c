@@ -43,8 +43,8 @@
 mp_size_t
 ecc_mul_g_eh_itch (const struct ecc_curve *ecc)
 {
-  /* Needs 3*ecc->size + scratch for ecc_add_jja. */
-  return ECC_MUL_G_EH_ITCH (ecc->size);
+  /* Needs 3*ecc->p.size + scratch for ecc_add_jja. */
+  return ECC_MUL_G_EH_ITCH (ecc->p.size);
 }
 
 void
@@ -52,9 +52,9 @@ ecc_mul_g_eh (const struct ecc_curve *ecc, mp_limb_t *r,
 	      const mp_limb_t *np, mp_limb_t *scratch)
 {
   /* Scratch need determined by the ecc_add_eh call. Current total is
-     9 * ecc->size, at most 648 bytes. */
+     9 * ecc->p.size, at most 648 bytes. */
 #define tp scratch
-#define scratch_out (scratch + 3*ecc->size)
+#define scratch_out (scratch + 3*ecc->p.size)
 
   unsigned k, c;
   unsigned i, j;
@@ -63,11 +63,11 @@ ecc_mul_g_eh (const struct ecc_curve *ecc, mp_limb_t *r,
   k = ecc->pippenger_k;
   c = ecc->pippenger_c;
 
-  bit_rows = (ecc->bit_size + k - 1) / k;
+  bit_rows = (ecc->p.bit_size + k - 1) / k;
 
   /* x = 0, y = 1, z = 1 */
-  mpn_zero (r, 3*ecc->size);
-  r[ecc->size] = r[2*ecc->size] = 1;
+  mpn_zero (r, 3*ecc->p.size);
+  r[ecc->p.size] = r[2*ecc->p.size] = 1;
 
   for (i = k; i-- > 0; )
     {
@@ -89,15 +89,15 @@ ecc_mul_g_eh (const struct ecc_curve *ecc, mp_limb_t *r,
 	      bit_index -= k;
 
 	      limb_index = bit_index / GMP_NUMB_BITS;
-	      if (limb_index >= ecc->size)
+	      if (limb_index >= ecc->p.size)
 		continue;
 
 	      shift = bit_index % GMP_NUMB_BITS;
 	      bits = (bits << 1) | ((np[limb_index] >> shift) & 1);
 	    }
-	  sec_tabselect (tp, 2*ecc->size,
+	  sec_tabselect (tp, 2*ecc->p.size,
 			 (ecc->pippenger_table
-			  + (2*ecc->size * (mp_size_t) j << c)),
+			  + (2*ecc->p.size * (mp_size_t) j << c)),
 			 1<<c, bits);
 
 	  ecc_add_eh (ecc, r, r, tp, scratch_out);

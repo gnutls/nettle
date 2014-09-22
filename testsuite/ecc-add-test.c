@@ -12,14 +12,14 @@ test_main (void)
       mp_limb_t *g2 = xalloc_limbs (ecc_size_j (ecc));
       mp_limb_t *g3 = xalloc_limbs (ecc_size_j (ecc));
       mp_limb_t *p = xalloc_limbs (ecc_size_j (ecc));
-      mp_limb_t *scratch = xalloc_limbs (ECC_ADD_JJJ_ITCH(ecc->size));
+      mp_limb_t *scratch = xalloc_limbs (ECC_ADD_JJJ_ITCH(ecc->p.size));
 
-      if (ecc->bit_size == 255)
+      if (ecc->p.bit_size == 255)
 	{
 	  mp_limb_t *z = xalloc_limbs (ecc_size_j (ecc));
 	  /* Zero point has x = 0, y = 1, z = 1 */
-	  mpn_zero (z, 3*ecc->size);
-	  z[ecc->size] = z[2*ecc->size] = 1;
+	  mpn_zero (z, 3*ecc->p.size);
+	  z[ecc->p.size] = z[2*ecc->p.size] = 1;
 	  
 	  ecc_a_to_j (ecc, g, ecc->g);
 

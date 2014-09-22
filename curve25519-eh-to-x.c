@@ -46,11 +46,11 @@ void
 curve25519_eh_to_x (mp_limb_t *xp, const mp_limb_t *p,
 		    mp_limb_t *scratch)
 {
-#define vp (p + ecc->size)
-#define wp (p + 2*ecc->size)
+#define vp (p + ecc->p.size)
+#define wp (p + 2*ecc->p.size)
 #define t0 scratch
-#define t1 (scratch + ecc->size)
-#define t2 (scratch + 2*ecc->size)
+#define t1 (scratch + ecc->p.size)
+#define t2 (scratch + 2*ecc->p.size)
 
   const struct ecc_curve *ecc = &nettle_curve25519;  
   mp_limb_t cy;
@@ -71,8 +71,8 @@ curve25519_eh_to_x (mp_limb_t *xp, const mp_limb_t *p,
   ecc_modp_add (ecc, t0, wp, vp);
   ecc_modp_mul (ecc, t2, t0, t1);
 
-  cy = mpn_sub_n (xp, t2, ecc->p, ecc->size);
-  cnd_copy (cy, xp, t2, ecc->size);
+  cy = mpn_sub_n (xp, t2, ecc->p.m, ecc->p.size);
+  cnd_copy (cy, xp, t2, ecc->p.size);
 #undef vp
 #undef wp
 #undef t0

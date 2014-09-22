@@ -33,77 +33,77 @@ test_curve (gmp_randstate_t rands, const struct ecc_curve *ecc)
   for (j = 0; j < COUNT; j++)
     {
       if (j & 1)
-	mpz_rrandomb (r, rands, 2*ecc->size * GMP_NUMB_BITS);
+	mpz_rrandomb (r, rands, 2*ecc->p.size * GMP_NUMB_BITS);
       else
-	mpz_urandomb (r, rands, 2*ecc->size * GMP_NUMB_BITS);
+	mpz_urandomb (r, rands, 2*ecc->p.size * GMP_NUMB_BITS);
 
-      mpz_limbs_copy (a, r, 2*ecc->size);
+      mpz_limbs_copy (a, r, 2*ecc->p.size);
 
-      ref_mod (ref, a, ecc->p, ecc->size);
+      ref_mod (ref, a, ecc->p.m, ecc->p.size);
 
-      mpn_copyi (m, a, 2*ecc->size);
+      mpn_copyi (m, a, 2*ecc->p.size);
       ecc->modp (ecc, m);
-      if (mpn_cmp (m, ecc->p, ecc->size) >= 0)
-	mpn_sub_n (m, m, ecc->p, ecc->size);
+      if (mpn_cmp (m, ecc->p.m, ecc->p.size) >= 0)
+	mpn_sub_n (m, m, ecc->p.m, ecc->p.size);
 
-      if (mpn_cmp (m, ref, ecc->size))
+      if (mpn_cmp (m, ref, ecc->p.size))
 	{
 	  fprintf (stderr, "ecc->modp failed: bit_size = %u\n",
-		   ecc->bit_size);
-	  gmp_fprintf (stderr, "a   = %Nx\n", a, 2*ecc->size);
-	  gmp_fprintf (stderr, "m   = %Nx (bad)\n", m, ecc->size);
-	  gmp_fprintf (stderr, "ref = %Nx\n", ref, ecc->size);
+		   ecc->p.bit_size);
+	  gmp_fprintf (stderr, "a   = %Nx\n", a, 2*ecc->p.size);
+	  gmp_fprintf (stderr, "m   = %Nx (bad)\n", m, ecc->p.size);
+	  gmp_fprintf (stderr, "ref = %Nx\n", ref, ecc->p.size);
 	  abort ();
 	}
 
-      if (ecc->Bmodp_size < ecc->size)
+      if (ecc->p.B_size < ecc->p.size)
 	{
-	  mpn_copyi (m, a, 2*ecc->size);
+	  mpn_copyi (m, a, 2*ecc->p.size);
 	  ecc_generic_modp (ecc, m);
-	  if (mpn_cmp (m, ecc->p, ecc->size) >= 0)
-	    mpn_sub_n (m, m, ecc->p, ecc->size);
+	  if (mpn_cmp (m, ecc->p.m, ecc->p.size) >= 0)
+	    mpn_sub_n (m, m, ecc->p.m, ecc->p.size);
 
-	  if (mpn_cmp (m, ref, ecc->size))
+	  if (mpn_cmp (m, ref, ecc->p.size))
 	    {
 	      fprintf (stderr, "ecc_generic_modp failed: bit_size = %u\n",
-		       ecc->bit_size);
-	      gmp_fprintf (stderr, "a   = %Nx\n", a, 2*ecc->size);
-	      gmp_fprintf (stderr, "m   = %Nx (bad)\n", m, ecc->size);
-	      gmp_fprintf (stderr, "ref = %Nx\n", ref, ecc->size);
+		       ecc->p.bit_size);
+	      gmp_fprintf (stderr, "a   = %Nx\n", a, 2*ecc->p.size);
+	      gmp_fprintf (stderr, "m   = %Nx (bad)\n", m, ecc->p.size);
+	      gmp_fprintf (stderr, "ref = %Nx\n", ref, ecc->p.size);
 	      abort ();
 	    }
 	}
 
-      ref_mod (ref, a, ecc->q, ecc->size);
+      ref_mod (ref, a, ecc->q.m, ecc->p.size);
 
-      mpn_copyi (m, a, 2*ecc->size);
+      mpn_copyi (m, a, 2*ecc->p.size);
       ecc->modq (ecc, m);
-      if (mpn_cmp (m, ecc->q, ecc->size) >= 0)
-	mpn_sub_n (m, m, ecc->q, ecc->size);
+      if (mpn_cmp (m, ecc->q.m, ecc->p.size) >= 0)
+	mpn_sub_n (m, m, ecc->q.m, ecc->p.size);
 
-      if (mpn_cmp (m, ref, ecc->size))
+      if (mpn_cmp (m, ref, ecc->p.size))
 	{
 	  fprintf (stderr, "ecc->modq failed: bit_size = %u\n",
-		   ecc->bit_size);
-	  gmp_fprintf (stderr, "a   = %Nx\n", a, 2*ecc->size);
-	  gmp_fprintf (stderr, "m   = %Nx (bad)\n", m, ecc->size);
-	  gmp_fprintf (stderr, "ref = %Nx\n", ref, ecc->size);
+		   ecc->p.bit_size);
+	  gmp_fprintf (stderr, "a   = %Nx\n", a, 2*ecc->p.size);
+	  gmp_fprintf (stderr, "m   = %Nx (bad)\n", m, ecc->p.size);
+	  gmp_fprintf (stderr, "ref = %Nx\n", ref, ecc->p.size);
 	  abort ();
 	}
-      if (ecc->Bmodq_size < ecc->size)
+      if (ecc->q.B_size < ecc->p.size)
 	{
-	  mpn_copyi (m, a, 2*ecc->size);
+	  mpn_copyi (m, a, 2*ecc->p.size);
 	  ecc_generic_modq (ecc, m);
-	  if (mpn_cmp (m, ecc->q, ecc->size) >= 0)
-	    mpn_sub_n (m, m, ecc->q, ecc->size);
+	  if (mpn_cmp (m, ecc->q.m, ecc->p.size) >= 0)
+	    mpn_sub_n (m, m, ecc->q.m, ecc->p.size);
 
-	  if (mpn_cmp (m, ref, ecc->size))
+	  if (mpn_cmp (m, ref, ecc->p.size))
 	    {
-	      fprintf (stderr, "ecc_generic_modp failed: bit_size = %u\n",
-		       ecc->bit_size);
-	      gmp_fprintf (stderr, "a   = %Nx\n", a, 2*ecc->size);
-	      gmp_fprintf (stderr, "m   = %Nx (bad)\n", m, ecc->size);
-	      gmp_fprintf (stderr, "ref = %Nx\n", ref, ecc->size);
+	      fprintf (stderr, "ecc_generic_modq failed: bit_size = %u\n",
+		       ecc->q.bit_size);
+	      gmp_fprintf (stderr, "a   = %Nx\n", a, 2*ecc->p.size);
+	      gmp_fprintf (stderr, "m   = %Nx (bad)\n", m, ecc->p.size);
+	      gmp_fprintf (stderr, "ref = %Nx\n", ref, ecc->p.size);
 	      abort ();
 	    }
 	}

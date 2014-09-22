@@ -41,8 +41,8 @@
 mp_size_t
 ecc_eh_to_a_itch (const struct ecc_curve *ecc)
 {
-  /* Needs ecc->size + scratch for ecc_modq_inv */
-  return ECC_EH_TO_A_ITCH (ecc->size);
+  /* Needs ecc->p.size + scratch for ecc_modq_inv */
+  return ECC_EH_TO_A_ITCH (ecc->p.size);
 }
 
 /* Convert from homogeneous coordinates on the Edwards curve to affine
@@ -54,22 +54,22 @@ ecc_eh_to_a (const struct ecc_curve *ecc,
 	     mp_limb_t *scratch)
 {
 #define izp scratch
-#define tp (scratch + ecc->size)
+#define tp (scratch + ecc->p.size)
 
 
 #define xp p
-#define yp (p + ecc->size)
-#define zp (p + 2*ecc->size)
+#define yp (p + ecc->p.size)
+#define zp (p + 2*ecc->p.size)
 
   mp_limb_t cy;
 
-  mpn_copyi (tp, zp, ecc->size);
+  mpn_copyi (tp, zp, ecc->p.size);
   /* Needs 3*size scratch */
-  ecc_modp_inv (ecc, izp, tp, tp + ecc->size);
+  ecc_modp_inv (ecc, izp, tp, tp + ecc->p.size);
 
   ecc_modp_mul (ecc, tp, xp, izp);
-  cy = mpn_sub_n (r, tp, ecc->p, ecc->size);
-  cnd_copy (cy, r, tp, ecc->size);
+  cy = mpn_sub_n (r, tp, ecc->p.m, ecc->p.size);
+  cnd_copy (cy, r, tp, ecc->p.size);
 
   if (op)
     {
@@ -81,16 +81,16 @@ ecc_eh_to_a (const struct ecc_curve *ecc,
 	     at all? Full reduction mod p is maybe sufficient. */
 	  mp_limb_t cy;
 	  unsigned shift;
-	  assert (ecc->bit_size == 255);
-	  shift = 252 - GMP_NUMB_BITS * (ecc->size - 1);
-	  cy = mpn_submul_1 (r, ecc->q, ecc->size,
-			     r[ecc->size-1] >> shift);
+	  assert (ecc->p.bit_size == 255);
+	  shift = 252 - GMP_NUMB_BITS * (ecc->p.size - 1);
+	  cy = mpn_submul_1 (r, ecc->q.m, ecc->p.size,
+			     r[ecc->p.size-1] >> shift);
 	  assert (cy < 2);
-	  cnd_add_n (cy, r, ecc->q, ecc->size);
+	  cnd_add_n (cy, r, ecc->q.m, ecc->p.size);
 	}
       return;
     }
   ecc_modp_mul (ecc, tp, yp, izp);
-  cy = mpn_sub_n (r + ecc->size, tp, ecc->p, ecc->size);
-  cnd_copy (cy, r + ecc->size, tp, ecc->size);
+  cy = mpn_sub_n (r + ecc->p.size, tp, ecc->p.m, ecc->p.size);
+  cnd_copy (cy, r + ecc->p.size, tp, ecc->p.size);
 }

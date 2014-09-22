@@ -87,17 +87,17 @@ ecc_25519_modq (const struct ecc_curve *ecc, mp_limb_t *rp)
   for (n = ECC_LIMB_SIZE; n-- > 0;)
     {
       cy = mpn_submul_1 (rp + n,
-			 ecc->Bmodq_shifted, ECC_LIMB_SIZE,
+			 ecc->q.B_shifted, ECC_LIMB_SIZE,
 			 rp[n + ECC_LIMB_SIZE]);
       /* Top limb of mBmodq_shifted is zero, so we get cy == 0 or 1 */
       assert (cy < 2);
-      cnd_add_n (cy, rp+n, ecc->q, ECC_LIMB_SIZE);
+      cnd_add_n (cy, rp+n, ecc->q.m, ECC_LIMB_SIZE);
     }
 
-  cy = mpn_submul_1 (rp, ecc->q, ECC_LIMB_SIZE,
+  cy = mpn_submul_1 (rp, ecc->q.m, ECC_LIMB_SIZE,
 		     rp[ECC_LIMB_SIZE-1] >> (GMP_NUMB_BITS - QHIGH_BITS));
   assert (cy < 2);
-  cnd_add_n (cy, rp, ecc->q, ECC_LIMB_SIZE);
+  cnd_add_n (cy, rp, ecc->q.m, ECC_LIMB_SIZE);
 }
 
 /* Needs 2*ecc->size limbs at rp, and 2*ecc->size additional limbs of
@@ -200,8 +200,8 @@ ecc_25519_sqrt(mp_limb_t *rp, const mp_limb_t *ap)
   ecc_modp_mul (ecc, xp, t0, ap); /* a^{(p+3)/8 */
   ecc_modp_mul (ecc, bp, t0, xp); /* a^{(p-1)/4} */
   /* Check if b == 1 (mod p) */
-  if (mpn_cmp (bp, ecc->p, ECC_LIMB_SIZE) >= 0)
-    mpn_sub_n (bp, bp, ecc->p, ECC_LIMB_SIZE);
+  if (mpn_cmp (bp, ecc->p.m, ECC_LIMB_SIZE) >= 0)
+    mpn_sub_n (bp, bp, ecc->p.m, ECC_LIMB_SIZE);
   if (mpn_cmp (bp, ecc->unit, ECC_LIMB_SIZE) == 0)
     {
       mpn_copyi (rp, xp, ECC_LIMB_SIZE);
@@ -210,7 +210,7 @@ ecc_25519_sqrt(mp_limb_t *rp, const mp_limb_t *ap)
   else
     {
       mpn_add_1 (bp, bp, ECC_LIMB_SIZE, 1);
-      if (mpn_cmp (bp, ecc->p, ECC_LIMB_SIZE) == 0)
+      if (mpn_cmp (bp, ecc->p.m, ECC_LIMB_SIZE) == 0)
 	{
 	  ecc_modp_mul (&nettle_curve25519, bp, xp, ecc_sqrt_z);
 	  mpn_copyi (rp, bp, ECC_LIMB_SIZE);
@@ -232,13 +232,28 @@ ecc_25519_sqrt(mp_limb_t *rp, const mp_limb_t *ap)
 
 const struct ecc_curve nettle_curve25519 =
 {
-  255,
-  ECC_LIMB_SIZE,
-  ECC_BMODP_SIZE,
-  253,
-  ECC_BMODQ_SIZE,
+  {
+    255,
+    ECC_LIMB_SIZE,
+    ECC_BMODP_SIZE,
+    0,
+    ecc_p,
+    ecc_Bmodp,
+    ecc_Bmodp_shifted,
+    NULL,
+  },
+  {
+    253,
+    ECC_LIMB_SIZE,
+    ECC_BMODQ_SIZE,
+    0,
+    ecc_q,
+    ecc_Bmodq,  
+    ecc_mBmodq_shifted, /* Use q - 2^{252} instead. */
+    NULL,
+  },
+
   0, /* No redc */
-  0,
   ECC_PIPPENGER_K,
   ECC_PIPPENGER_C,
 
@@ -257,18 +272,11 @@ const struct ecc_curve nettle_curve25519 =
   ecc_mul_g_eh,
   ecc_eh_to_a,
 
-  ecc_p,
   ecc_d, /* Use the Edwards curve constant. */
-  ecc_q,
   ecc_g,
   ecc_edwards,
-  ecc_Bmodp,
-  ecc_Bmodp_shifted,
   ecc_pp1h,
-  ecc_redc_ppm1,
   ecc_unit,
-  ecc_Bmodq,  
-  ecc_mBmodq_shifted, /* Use q - 2^{252} instead. */ 
   ecc_qp1h,
   ecc_table
 };

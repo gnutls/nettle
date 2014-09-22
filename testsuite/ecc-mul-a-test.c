@@ -35,7 +35,7 @@ test_main (void)
       ecc->h_to_a (ecc, 0, p, p, scratch);
 
       if (mpn_cmp (p, ecc->g, 2*size != 0))
-	die ("curve %d: ecc->mul with n = 1 failed.\n", ecc->bit_size);
+	die ("curve %d: ecc->mul with n = 1 failed.\n", ecc->p.bit_size);
 
       for (n[0] = 2; n[0] <= 4; n[0]++)
 	{
@@ -44,15 +44,15 @@ test_main (void)
 	}
 
       /* (order - 1) * g = - g */
-      mpn_sub_1 (n, ecc->q, size, 1);
+      mpn_sub_1 (n, ecc->q.m, size, 1);
       ecc->mul (ecc, p, n, ecc->g, scratch);
       ecc->h_to_a (ecc, 0, p, p, scratch);
-      if (ecc->bit_size == 255)
+      if (ecc->p.bit_size == 255)
 	/* For edwards curves, - (x,y ) == (-x, y). FIXME: Swap x and
 	   y, to get identical negation? */
-	mpn_sub_n (p, ecc->p, p, size);
+	mpn_sub_n (p, ecc->p.m, p, size);
       else
-	mpn_sub_n (p + size, ecc->p, p + size, size);
+	mpn_sub_n (p + size, ecc->p.m, p + size, size);
       if (mpn_cmp (p, ecc->g, 2*size) != 0)
 	{
 	  fprintf (stderr, "ecc->mul with n = order - 1 failed.\n");
@@ -70,7 +70,7 @@ test_main (void)
 
 	  /* Reduce so that (almost surely) n < q */
 	  mpz_limbs_copy (n, r, size);
-	  n[size - 1] %= ecc->q[size - 1];
+	  n[size - 1] %= ecc->q.m[size - 1];
 
 	  ecc->mul (ecc, p, n, ecc->g, scratch);
 	  ecc->h_to_a (ecc, 0, p, p, scratch);
@@ -84,7 +84,7 @@ test_main (void)
 			   "Different results from ecc->mul and ecc->mul_g.\n"
 			   " bits = %u\n"
 			   " n = %Nx\n",
-			   ecc->bit_size, n, size);
+			   ecc->p.bit_size, n, size);
 	      gmp_fprintf (stderr, "p = %Nx,\n    %Nx\n",
 			   p, size, p + size, size);
 	      gmp_fprintf (stderr, "q = %Nx,\n    %Nx\n",

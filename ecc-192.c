@@ -112,13 +112,28 @@ ecc_192_modp (const struct ecc_curve *ecc UNUSED, mp_limb_t *rp)
 
 const struct ecc_curve nettle_secp_192r1 =
 {
-  192,
-  ECC_LIMB_SIZE,
-  ECC_BMODP_SIZE,
-  192,
-  ECC_BMODQ_SIZE,
+  {
+    192,
+    ECC_LIMB_SIZE,
+    ECC_BMODP_SIZE,
+    ECC_REDC_SIZE,
+    ecc_p,
+    ecc_Bmodp,
+    ecc_Bmodp_shifted,    
+    ecc_redc_ppm1,
+  },
+  {
+    192,
+    ECC_LIMB_SIZE,
+    ECC_BMODQ_SIZE,
+    0,
+    ecc_q,
+    ecc_Bmodq,
+    ecc_Bmodq_shifted,
+    NULL,
+  },
+  
   USE_REDC,
-  ECC_REDC_SIZE,
   ECC_PIPPENGER_K,
   ECC_PIPPENGER_C,
 
@@ -137,18 +152,11 @@ const struct ecc_curve nettle_secp_192r1 =
   ecc_mul_g,
   ecc_j_to_a,
 
-  ecc_p,
   ecc_b,
-  ecc_q,
   ecc_g,
   NULL,
-  ecc_Bmodp,
-  ecc_Bmodp_shifted,
   ecc_pp1h,
-  ecc_redc_ppm1,
   ecc_unit,
-  ecc_Bmodq,
-  ecc_Bmodq_shifted,
   ecc_qp1h,
   ecc_table
 };

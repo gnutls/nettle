@@ -39,7 +39,7 @@
 mp_size_t
 ecc_add_ehh_itch (const struct ecc_curve *ecc)
 {
-  return ECC_ADD_EHH_ITCH (ecc->size);
+  return ECC_ADD_EHH_ITCH (ecc->p.size);
 }
 
 /* Add two points on an Edwards curve, in homogeneous coordinates */
@@ -49,16 +49,16 @@ ecc_add_ehh (const struct ecc_curve *ecc,
 	     mp_limb_t *scratch)
 {
 #define x1 p
-#define y1 (p + ecc->size)
-#define z1 (p + 2*ecc->size)
+#define y1 (p + ecc->p.size)
+#define z1 (p + 2*ecc->p.size)
 
 #define x2 q
-#define y2 (q + ecc->size)
-#define z2 (q + 2*ecc->size)
+#define y2 (q + ecc->p.size)
+#define z2 (q + 2*ecc->p.size)
 
 #define x3 r
-#define y3 (r + ecc->size)
-#define z3 (r + 2*ecc->size)
+#define y3 (r + ecc->p.size)
+#define z3 (r + 2*ecc->p.size)
 
   /* Formulas (from djb,
      http://www.hyperelliptic.org/EFD/g1p/auto-edwards-projective.html#doubling-dbl-2007-bl):
@@ -82,11 +82,11 @@ ecc_add_ehh (const struct ecc_curve *ecc,
      G.
   */
 #define C scratch
-#define D (scratch + ecc->size)
-#define T (scratch + 2*ecc->size)
-#define E (scratch + 3*ecc->size) 
-#define A (scratch + 4*ecc->size)
-#define B (scratch + 5*ecc->size)
+#define D (scratch + ecc->p.size)
+#define T (scratch + 2*ecc->p.size)
+#define E (scratch + 3*ecc->p.size) 
+#define A (scratch + 4*ecc->p.size)
+#define B (scratch + 5*ecc->p.size)
 #define F D
 #define G E
 
@@ -117,5 +117,5 @@ ecc_add_ehh (const struct ecc_curve *ecc,
 
   /* z3 */
   ecc_modp_mul (ecc, B, F, G);
-  mpn_copyi (z3, B, ecc->size);
+  mpn_copyi (z3, B, ecc->p.size);
 }

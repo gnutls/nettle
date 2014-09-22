@@ -10,11 +10,11 @@ ecc_valid_p (struct ecc_point *pub)
   int res;
   mp_size_t size;
 
-  size = pub->ecc->size;
+  size = pub->ecc->p.size;
 
   /* First check range */
-  if (mpn_cmp (pub->p, pub->ecc->p, size) >= 0
-      || mpn_cmp (pub->p + size, pub->ecc->p, size) >= 0)
+  if (mpn_cmp (pub->p, pub->ecc->p.m, size) >= 0
+      || mpn_cmp (pub->p + size, pub->ecc->p.m, size) >= 0)
     return 0;
 
   mpz_init (lhs);
@@ -25,7 +25,7 @@ ecc_valid_p (struct ecc_point *pub)
 
   mpz_mul (lhs, y, y);
   
-  if (pub->ecc->bit_size == 255)
+  if (pub->ecc->p.bit_size == 255)
     {
       /* Check that
 	 121666 (1 + x^2 - y^2) = 121665 x^2 y^2 */
@@ -48,7 +48,7 @@ ecc_valid_p (struct ecc_point *pub)
       mpz_mul (rhs, rhs, x);
       mpz_add (rhs, rhs, mpz_roinit_n (t, pub->ecc->b, size));
     }
-  res = mpz_congruent_p (lhs, rhs, mpz_roinit_n (t, pub->ecc->p, size));
+  res = mpz_congruent_p (lhs, rhs, mpz_roinit_n (t, pub->ecc->p.m, size));
   
   mpz_clear (lhs);
   mpz_clear (rhs);
@@ -79,7 +79,7 @@ test_main (void)
       struct ecc_scalar key;
 
       if (verbose)
-	fprintf (stderr, "Curve %d\n", ecc->bit_size);
+	fprintf (stderr, "Curve %d\n", ecc->p.bit_size);
 
       ecc_point_init (&pub, ecc);
       ecc_scalar_init (&key, ecc);
@@ -91,11 +91,11 @@ test_main (void)
       if (verbose)
 	{
 	  fprintf (stderr, "Public key:\nx = ");
-	  write_mpn (stderr, 16, pub.p, ecc->size);
+	  write_mpn (stderr, 16, pub.p, ecc->p.size);
 	  fprintf (stderr, "\ny = ");
-	  write_mpn (stderr, 16, pub.p + ecc->size, ecc->size);
+	  write_mpn (stderr, 16, pub.p + ecc->p.size, ecc->p.size);
 	  fprintf (stderr, "\nPrivate key: ");
-	  write_mpn (stderr, 16, key.p, ecc->size);
+	  write_mpn (stderr, 16, key.p, ecc->p.size);
 	  fprintf (stderr, "\n");
 	}
       if (!ecc_valid_p (&pub))

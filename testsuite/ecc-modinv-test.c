@@ -56,86 +56,86 @@ test_main (void)
       const struct ecc_curve *ecc = ecc_curves[i];
       unsigned j;
       /* Check behaviour for zero input */
-      mpn_zero (a, ecc->size);
-      memset (ai, 17, ecc->size * sizeof(*ai));
+      mpn_zero (a, ecc->p.size);
+      memset (ai, 17, ecc->p.size * sizeof(*ai));
       ecc_modp_inv (ecc, ai, a, scratch);
-      if (!mpn_zero_p (ai, ecc->size))
+      if (!mpn_zero_p (ai, ecc->p.size))
 	{
 	  fprintf (stderr, "ecc_modp_inv failed for zero input (bit size %u):\n",
-		       ecc->bit_size);
+		       ecc->p.bit_size);
 	  gmp_fprintf (stderr, "p = %Nx\n"
 		       "t = %Nx (bad)\n",
-		       ecc->p, ecc->size,
-		       ai, ecc->size);
+		       ecc->p.m, ecc->p.size,
+		       ai, ecc->p.size);
 	  abort ();
 	}
 	  
       /* Check behaviour for a = p */
-      mpn_copyi (a, ecc->p, ecc->size);
-      memset (ai, 17, ecc->size * sizeof(*ai));
+      mpn_copyi (a, ecc->p.m, ecc->p.size);
+      memset (ai, 17, ecc->p.size * sizeof(*ai));
       ecc_modp_inv (ecc, ai, a, scratch);
-      if (!mpn_zero_p (ai, ecc->size))
+      if (!mpn_zero_p (ai, ecc->p.size))
 	{
 	  fprintf (stderr, "ecc_modp_inv failed for a = p input (bit size %u):\n",
-		       ecc->bit_size);
+		       ecc->p.bit_size);
 	  gmp_fprintf (stderr, "p = %Nx\n"
 		       "t = %Nx (bad)\n",
-		       ecc->p, ecc->size,
-		       ai, ecc->size);
+		       ecc->p.m, ecc->p.size,
+		       ai, ecc->p.size);
 	  abort ();
 	}
 	
       for (j = 0; j < COUNT; j++)
 	{
 	  if (j & 1)
-	    mpz_rrandomb (r, rands, ecc->size * GMP_NUMB_BITS);
+	    mpz_rrandomb (r, rands, ecc->p.size * GMP_NUMB_BITS);
 	  else
-	    mpz_urandomb (r, rands, ecc->size * GMP_NUMB_BITS);
+	    mpz_urandomb (r, rands, ecc->p.size * GMP_NUMB_BITS);
 
-	  mpz_limbs_copy (a, r, ecc->size);
+	  mpz_limbs_copy (a, r, ecc->p.size);
 
-	  if (!ref_modinv (ref, a, ecc->p, ecc->size))
+	  if (!ref_modinv (ref, a, ecc->p.m, ecc->p.size))
 	    {
 	      if (verbose)
 		fprintf (stderr, "Test %u (bit size %u) not invertible.\n",
-			 j, ecc->bit_size);
+			 j, ecc->p.bit_size);
 	      continue;
 	    }
 	  ecc_modp_inv (ecc, ai, a, scratch);
-	  if (mpn_cmp (ref, ai, ecc->size))
+	  if (mpn_cmp (ref, ai, ecc->p.size))
 	    {
 	      fprintf (stderr, "ecc_modp_inv failed (test %u, bit size %u):\n",
-		       j, ecc->bit_size);
+		       j, ecc->p.bit_size);
 	      gmp_fprintf (stderr, "a = %Zx\n"
 			   "p = %Nx\n"
 			   "t = %Nx (bad)\n"
 			   "r = %Nx\n",
-			   r, ecc->p, ecc->size,
-			   ai, ecc->size,
-			   ref, ecc->size);
+			   r, ecc->p.m, ecc->p.size,
+			   ai, ecc->p.size,
+			   ref, ecc->p.size);
 	      abort ();
 	    }
 
-	  mpz_limbs_copy (a, r, ecc->size);
+	  mpz_limbs_copy (a, r, ecc->p.size);
 
-	  if (!ref_modinv (ref, a, ecc->q, ecc->size))
+	  if (!ref_modinv (ref, a, ecc->q.m, ecc->p.size))
 	    {
 	      fprintf (stderr, "Test %u (bit size %u) not invertible.\n",
-		       j, ecc->bit_size);
+		       j, ecc->q.bit_size);
 	      continue;
 	    }
 	  ecc_modq_inv (ecc, ai, a, scratch);
-	  if (mpn_cmp (ref, ai, ecc->size))
+	  if (mpn_cmp (ref, ai, ecc->p.size))
 	    {
 	      fprintf (stderr, "ecc_modq_inv failed (test %u, bit size %u):\n",
-		       j, ecc->bit_size);
+		       j, ecc->q.bit_size);
 	      gmp_fprintf (stderr, "a = %Zx\n"
 			   "p = %Nx\n"
 			   "t = %Nx (bad)\n"
 			   "r = %Nx\n",
-			   r, ecc->p, ecc->size,
-			   ai, ecc->size,
-			   ref, ecc->size);
+			   r, ecc->p.m, ecc->p.size,
+			   ai, ecc->p.size,
+			   ref, ecc->p.size);
 	      abort ();
 	    }
 	}

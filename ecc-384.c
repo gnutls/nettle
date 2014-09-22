@@ -140,7 +140,7 @@ ecc_384_modp (const struct ecc_curve *ecc, mp_limb_t *rp)
   cy = sec_add_1 (rp + 5, rp + 5, 1, cy);
   assert (cy <= 1);
 
-  cy = cnd_add_n (cy, rp, ecc->Bmodp, ECC_LIMB_SIZE);
+  cy = cnd_add_n (cy, rp, ecc->p.B, ECC_LIMB_SIZE);
   assert (cy == 0);  
 }
 #else
@@ -149,13 +149,28 @@ ecc_384_modp (const struct ecc_curve *ecc, mp_limb_t *rp)
   
 const struct ecc_curve nettle_secp_384r1 =
 {
-  384,
-  ECC_LIMB_SIZE,    
-  ECC_BMODP_SIZE,
-  384,
-  ECC_BMODQ_SIZE,
+  {
+    384,
+    ECC_LIMB_SIZE,    
+    ECC_BMODP_SIZE,
+    ECC_REDC_SIZE,
+    ecc_p,
+    ecc_Bmodp,
+    ecc_Bmodp_shifted,
+    ecc_redc_ppm1,
+  },
+  {
+    384,
+    ECC_LIMB_SIZE,    
+    ECC_BMODQ_SIZE,
+    0,
+    ecc_q,
+    ecc_Bmodq,
+    ecc_Bmodq_shifted,
+    NULL,
+  },
+
   USE_REDC,
-  ECC_REDC_SIZE,
   ECC_PIPPENGER_K,
   ECC_PIPPENGER_C,
 
@@ -174,18 +189,11 @@ const struct ecc_curve nettle_secp_384r1 =
   ecc_mul_g,
   ecc_j_to_a,
 
-  ecc_p,
   ecc_b,
-  ecc_q,
   ecc_g,
   NULL,
-  ecc_Bmodp,
-  ecc_Bmodp_shifted,
   ecc_pp1h,
-  ecc_redc_ppm1,
   ecc_unit,
-  ecc_Bmodq,
-  ecc_Bmodq_shifted,
   ecc_qp1h,
   ecc_table
 };

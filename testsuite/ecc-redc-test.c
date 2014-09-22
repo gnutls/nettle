@@ -59,49 +59,50 @@ test_main (void)
       unsigned j;
       if (!ecc->redc)
 	continue;
+      ASSERT (ecc->p.redc_size != 0);
 
       for (j = 0; j < COUNT; j++)
 	{
 	  if (j & 1)
-	    mpz_rrandomb (r, rands, 2*ecc->size * GMP_NUMB_BITS);
+	    mpz_rrandomb (r, rands, 2*ecc->p.size * GMP_NUMB_BITS);
 	  else
-	    mpz_urandomb (r, rands, 2*ecc->size * GMP_NUMB_BITS);
+	    mpz_urandomb (r, rands, 2*ecc->p.size * GMP_NUMB_BITS);
 
-	  mpz_limbs_copy (a, r, 2*ecc->size);
+	  mpz_limbs_copy (a, r, 2*ecc->p.size);
 
-	  ref_redc (ref, a, ecc->p, ecc->size);
+	  ref_redc (ref, a, ecc->p.m, ecc->p.size);
 
-	  mpn_copyi (m, a, 2*ecc->size);
+	  mpn_copyi (m, a, 2*ecc->p.size);
 	  ecc->redc (ecc, m);
-	  if (mpn_cmp (m, ecc->p, ecc->size) >= 0)
-	    mpn_sub_n (m, m, ecc->p, ecc->size);
+	  if (mpn_cmp (m, ecc->p.m, ecc->p.size) >= 0)
+	    mpn_sub_n (m, m, ecc->p.m, ecc->p.size);
 
-	  if (mpn_cmp (m, ref, ecc->size))
+	  if (mpn_cmp (m, ref, ecc->p.size))
 	    {
 	      fprintf (stderr, "ecc->redc failed: bit_size = %u\n",
-		       ecc->bit_size);
-	      gmp_fprintf (stderr, "a   = %Nx\n", a, 2*ecc->size);
-	      gmp_fprintf (stderr, "m   = %Nx (bad)\n", m, ecc->size);
-	      gmp_fprintf (stderr, "ref = %Nx\n", ref, ecc->size);
+		       ecc->p.bit_size);
+	      gmp_fprintf (stderr, "a   = %Nx\n", a, 2*ecc->p.size);
+	      gmp_fprintf (stderr, "m   = %Nx (bad)\n", m, ecc->p.size);
+	      gmp_fprintf (stderr, "ref = %Nx\n", ref, ecc->p.size);
 	      abort ();
 	    }
 
-	  mpn_copyi (m, a, 2*ecc->size);
-	  if (ecc->redc_size > 0)
-	    ecc_pp1_redc (ecc, m);
-	  else
+	  mpn_copyi (m, a, 2*ecc->p.size);
+	  if (ecc->p.m[0] == 1)
 	    ecc_pm1_redc (ecc, m);
+	  else
+	    ecc_pp1_redc (ecc, m);
 
-	  if (mpn_cmp (m, ecc->p, ecc->size) >= 0)
-	    mpn_sub_n (m, m, ecc->p, ecc->size);
+	  if (mpn_cmp (m, ecc->p.m, ecc->p.size) >= 0)
+	    mpn_sub_n (m, m, ecc->p.m, ecc->p.size);
 
-	  if (mpn_cmp (m, ref, ecc->size))
+	  if (mpn_cmp (m, ref, ecc->p.size))
 	    {
 	      fprintf (stderr, "ecc_p%c1_redc failed: bit_size = %u\n",
-		       ecc->redc_size > 0 ? 'p' : 'm', ecc->bit_size);
-	      gmp_fprintf (stderr, "a   = %Nx\n", a, 2*ecc->size);
-	      gmp_fprintf (stderr, "m   = %Nx (bad)\n", m, ecc->size);
-	      gmp_fprintf (stderr, "ref = %Nx\n", ref, ecc->size);
+		       (ecc->p.m[0] == 1) ? 'm' : 'p', ecc->p.bit_size);
+	      gmp_fprintf (stderr, "a   = %Nx\n", a, 2*ecc->p.size);
+	      gmp_fprintf (stderr, "m   = %Nx (bad)\n", m, ecc->p.size);
+	      gmp_fprintf (stderr, "ref = %Nx\n", ref, ecc->p.size);
 	      abort ();
 	    }
 	}

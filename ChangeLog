@@ -1,3 +1,10 @@
+2014-09-22  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-internal.h (struct ecc_modulo): New struct, collecting
+	constants needed for modulo arithmetic.
+	(struct ecc_curve): Use struct ecc_modulo for p and q arithmetic.
+	Updated all ecc-related files.
+
 2014-09-17  Niels Möller  <nisse@lysator.liu.se>
 
 	* gmp-glue.c (mpn_get_base256_le): Fixed missing update of rn

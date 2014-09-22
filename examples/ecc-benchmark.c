@@ -113,7 +113,7 @@ static int
 modinv_gcd (const struct ecc_curve *ecc,
 	    mp_limb_t *rp, mp_limb_t *ap, mp_limb_t *tp)
 {
-  mp_size_t size = ecc->size;
+  mp_size_t size = ecc->p.size;
   mp_limb_t *up = tp;
   mp_limb_t *vp = tp + size+1;
   mp_limb_t *gp = tp + 2*(size+1);
@@ -121,13 +121,13 @@ modinv_gcd (const struct ecc_curve *ecc,
   mp_size_t gn, sn;
 
   mpn_copyi (up, ap, size);
-  mpn_copyi (vp, ecc->p, size);
+  mpn_copyi (vp, ecc->p.m, size);
   gn = mpn_gcdext (gp, sp, &sn, up, size, vp, size);
   if (gn != 1 || gp[0] != 1)
     return 0;
   
   if (sn < 0)
-    mpn_sub (sp, ecc->p, size, sp, -sn);
+    mpn_sub (sp, ecc->p.m, size, sp, -sn);
   else if (sn < size)
     /* Zero-pad. */
     mpn_zero (sp + sn, size - sn);
@@ -149,7 +149,7 @@ static void
 bench_modp (void *p)
 {
   struct ecc_ctx *ctx = (struct ecc_ctx *) p;
-  mpn_copyi (ctx->rp, ctx->ap, 2*ctx->ecc->size);
+  mpn_copyi (ctx->rp, ctx->ap, 2*ctx->ecc->p.size);
   ctx->ecc->modp (ctx->ecc, ctx->rp);
 }
 
@@ -157,7 +157,7 @@ static void
 bench_redc (void *p)
 {
   struct ecc_ctx *ctx = (struct ecc_ctx *) p;
-  mpn_copyi (ctx->rp, ctx->ap, 2*ctx->ecc->size);
+  mpn_copyi (ctx->rp, ctx->ap, 2*ctx->ecc->p.size);
   ctx->ecc->redc (ctx->ecc, ctx->rp);
 }
 
@@ -165,7 +165,7 @@ static void
 bench_modq (void *p)
 {
   struct ecc_ctx *ctx = (struct ecc_ctx *) p;
-  mpn_copyi (ctx->rp, ctx->ap, 2*ctx->ecc->size);
+  mpn_copyi (ctx->rp, ctx->ap, 2*ctx->ecc->p.size);
   ctx->ecc->modq (ctx->ecc, ctx->rp);
 }
 
@@ -173,8 +173,8 @@ static void
 bench_modinv (void *p)
 {
   struct ecc_ctx *ctx = (struct ecc_ctx *) p;
-  mpn_copyi (ctx->rp + ctx->ecc->size, ctx->ap, ctx->ecc->size);
-  ecc_modp_inv (ctx->ecc, ctx->rp, ctx->rp + ctx->ecc->size, ctx->tp);
+  mpn_copyi (ctx->rp + ctx->ecc->p.size, ctx->ap, ctx->ecc->p.size);
+  ecc_modp_inv (ctx->ecc, ctx->rp, ctx->rp + ctx->ecc->p.size, ctx->tp);
 }
 
 #if !NETTLE_USE_MINI_GMP
@@ -182,8 +182,8 @@ static void
 bench_modinv_gcd (void *p)
 {
   struct ecc_ctx *ctx = (struct ecc_ctx *) p;
-  mpn_copyi (ctx->rp + ctx->ecc->size, ctx->ap, ctx->ecc->size);
-  modinv_gcd (ctx->ecc, ctx->rp, ctx->rp + ctx->ecc->size, ctx->tp);  
+  mpn_copyi (ctx->rp + ctx->ecc->p.size, ctx->ap, ctx->ecc->p.size);
+  modinv_gcd (ctx->ecc, ctx->rp, ctx->rp + ctx->ecc->p.size, ctx->tp);  
 }
 #endif
 
@@ -193,7 +193,7 @@ bench_modinv_powm (void *p)
 {
   struct ecc_ctx *ctx = (struct ecc_ctx *) p;
   const struct ecc_curve *ecc = ctx->ecc;
-  mp_size_t size = ecc->size;
+  mp_size_t size = ecc->p.size;
   
   mpn_sub_1 (ctx->rp + size, ecc->p, size, 2);
   mpn_sec_powm (ctx->rp, ctx->ap, size,
@@ -273,30 +273,30 @@ bench_curve (const struct ecc_curve *ecc)
   mp_size_t itch;
 
   ctx.ecc = ecc;
-  ctx.rp = xalloc_limbs (3*ecc->size);
-  ctx.ap = xalloc_limbs (3*ecc->size);
-  ctx.bp = xalloc_limbs (3*ecc->size);
+  ctx.rp = xalloc_limbs (3*ecc->p.size);
+  ctx.ap = xalloc_limbs (3*ecc->p.size);
+  ctx.bp = xalloc_limbs (3*ecc->p.size);
   itch = ecc->mul_itch;
 #ifdef mpn_sec_powm
   {
     mp_size_t powm_itch
-      = mpn_sec_powm_itch (ecc->size, ecc->bit_size, ecc->size);
+      = mpn_sec_powm_itch (ecc->p.size, ecc->bit_size, ecc->p.size);
     if (powm_itch > itch)
       itch = powm_itch;
   }
 #endif
   ctx.tp = xalloc_limbs (itch);
 
-  mpn_random (ctx.ap, 3*ecc->size);
-  mpn_random (ctx.bp, 3*ecc->size);
+  mpn_random (ctx.ap, 3*ecc->p.size);
+  mpn_random (ctx.bp, 3*ecc->p.size);
 
-  mask = (~(mp_limb_t) 0) >> (ecc->size * GMP_NUMB_BITS - ecc->bit_size);
-  ctx.ap[ecc->size - 1] &= mask;
-  ctx.ap[2*ecc->size - 1] &= mask;
-  ctx.ap[3*ecc->size - 1] &= mask;
-  ctx.bp[ecc->size - 1] &= mask;
-  ctx.bp[2*ecc->size - 1] &= mask;
-  ctx.bp[3*ecc->size - 1] &= mask;
+  mask = (~(mp_limb_t) 0) >> (ecc->p.size * GMP_NUMB_BITS - ecc->p.bit_size);
+  ctx.ap[ecc->p.size - 1] &= mask;
+  ctx.ap[2*ecc->p.size - 1] &= mask;
+  ctx.ap[3*ecc->p.size - 1] &= mask;
+  ctx.bp[ecc->p.size - 1] &= mask;
+  ctx.bp[2*ecc->p.size - 1] &= mask;
+  ctx.bp[3*ecc->p.size - 1] &= mask;
 
   modp = time_function (bench_modp, &ctx);
   redc = ecc->redc ? time_function (bench_redc, &ctx) : 0;
@@ -314,7 +314,7 @@ bench_curve (const struct ecc_curve *ecc)
 #else
   modinv_powm = 0;
 #endif
-  if (ecc->bit_size == 255)
+  if (ecc->p.bit_size == 255)
     {
       /* For now, curve25519 is a special case */
       dup_jj = time_function (bench_dup_eh, &ctx);
@@ -335,7 +335,7 @@ bench_curve (const struct ecc_curve *ecc)
   free (ctx.tp);
 
   printf ("%4d %6.4f %6.4f %6.4f %6.2f %6.3f %6.2f %6.3f %6.3f %6.3f %6.1f %6.1f\n",
-	  ecc->bit_size, 1e6 * modp, 1e6 * redc, 1e6 * modq,
+	  ecc->p.bit_size, 1e6 * modp, 1e6 * redc, 1e6 * modq,
 	  1e6 * modinv, 1e6 * modinv_gcd, 1e6 * modinv_powm,
 	  1e6 * dup_jj, 1e6 * add_jja, 1e6 * add_hhh,
 	  1e6 * mul_g, 1e6 * mul_a);

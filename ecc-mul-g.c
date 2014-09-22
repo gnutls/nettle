@@ -43,8 +43,8 @@
 mp_size_t
 ecc_mul_g_itch (const struct ecc_curve *ecc)
 {
-  /* Needs 3*ecc->size + scratch for ecc_add_jja. */
-  return ECC_MUL_G_ITCH (ecc->size);
+  /* Needs 3*ecc->p.size + scratch for ecc_add_jja. */
+  return ECC_MUL_G_ITCH (ecc->p.size);
 }
 
 void
@@ -52,9 +52,9 @@ ecc_mul_g (const struct ecc_curve *ecc, mp_limb_t *r,
 	   const mp_limb_t *np, mp_limb_t *scratch)
 {
   /* Scratch need determined by the ecc_add_jja call. Current total is
-     9 * ecc->size, at most 648 bytes. */
+     9 * ecc->p.size, at most 648 bytes. */
 #define tp scratch
-#define scratch_out (scratch + 3*ecc->size)
+#define scratch_out (scratch + 3*ecc->p.size)
 
   unsigned k, c;
   unsigned i, j;
@@ -65,9 +65,9 @@ ecc_mul_g (const struct ecc_curve *ecc, mp_limb_t *r,
   k = ecc->pippenger_k;
   c = ecc->pippenger_c;
 
-  bit_rows = (ecc->bit_size + k - 1) / k;
+  bit_rows = (ecc->p.bit_size + k - 1) / k;
   
-  mpn_zero (r, 3*ecc->size);
+  mpn_zero (r, 3*ecc->p.size);
   
   for (i = k, is_zero = 1; i-- > 0; )
     {
@@ -89,23 +89,23 @@ ecc_mul_g (const struct ecc_curve *ecc, mp_limb_t *r,
 	      bit_index -= k;
 
 	      limb_index = bit_index / GMP_NUMB_BITS;
-	      if (limb_index >= ecc->size)
+	      if (limb_index >= ecc->p.size)
 		continue;
 
 	      shift = bit_index % GMP_NUMB_BITS;
 	      bits = (bits << 1) | ((np[limb_index] >> shift) & 1);
 	    }
-	  sec_tabselect (tp, 2*ecc->size,
+	  sec_tabselect (tp, 2*ecc->p.size,
 			 (ecc->pippenger_table
-			  + (2*ecc->size * (mp_size_t) j << c)),
+			  + (2*ecc->p.size * (mp_size_t) j << c)),
 			 1<<c, bits);
-	  cnd_copy (is_zero, r, tp, 2*ecc->size);
-	  cnd_copy (is_zero, r + 2*ecc->size, ecc->unit, ecc->size);
+	  cnd_copy (is_zero, r, tp, 2*ecc->p.size);
+	  cnd_copy (is_zero, r + 2*ecc->p.size, ecc->unit, ecc->p.size);
 	  
 	  ecc_add_jja (ecc, tp, r, tp, scratch_out);
 	  /* Use the sum when valid. ecc_add_jja produced garbage if
 	     is_zero != 0 or bits == 0, . */	  
-	  cnd_copy (bits & (is_zero - 1), r, tp, 3*ecc->size);
+	  cnd_copy (bits & (is_zero - 1), r, tp, 3*ecc->p.size);
 	  is_zero &= (bits == 0);
 	}
     }
