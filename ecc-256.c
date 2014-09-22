@@ -53,7 +53,7 @@
 #if HAVE_NATIVE_ecc_256_redc
 # define ecc_256_redc nettle_ecc_256_redc
 void
-ecc_256_redc (const struct ecc_curve *ecc, mp_limb_t *rp);
+ecc_256_redc (const struct ecc_modulo *p, mp_limb_t *rp);
 #else /* !HAVE_NATIVE_ecc_256_redc */
 # if ECC_REDC_SIZE > 0 
 #   define ecc_256_redc ecc_pp1_redc

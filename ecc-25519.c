@@ -48,7 +48,7 @@
 
 #define ecc_25519_modp nettle_ecc_25519_modp
 void
-ecc_25519_modp (const struct ecc_curve *ecc, mp_limb_t *rp);
+ecc_25519_modp (const struct ecc_modulo *m, mp_limb_t *rp);
 #else
 
 #define PHIGH_BITS (GMP_NUMB_BITS * ECC_LIMB_SIZE - 255)
