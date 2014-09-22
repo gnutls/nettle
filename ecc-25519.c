@@ -241,6 +241,8 @@ const struct ecc_curve nettle_curve25519 =
     ecc_Bmodp,
     ecc_Bmodp_shifted,
     NULL,
+    ecc_25519_modp,
+    ecc_25519_modp,
   },
   {
     253,
@@ -251,6 +253,8 @@ const struct ecc_curve nettle_curve25519 =
     ecc_Bmodq,  
     ecc_mBmodq_shifted, /* Use q - 2^{252} instead. */
     NULL,
+    ecc_25519_modq,
+    ecc_25519_modq,
   },
 
   0, /* No redc */
@@ -261,10 +265,6 @@ const struct ecc_curve nettle_curve25519 =
   ECC_MUL_A_EH_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_G_EH_ITCH (ECC_LIMB_SIZE),
   ECC_EH_TO_A_ITCH (ECC_LIMB_SIZE),
-
-  ecc_25519_modp,
-  ecc_25519_modp,
-  ecc_25519_modq,
 
   ecc_add_ehh,
   ecc_mul_a_eh,

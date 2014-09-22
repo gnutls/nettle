@@ -75,22 +75,7 @@
 /* And for ecc_mul_a_eh */
 #define ECC_MUL_A_EH_WBITS 4
 
-struct ecc_modulo
-{
-  unsigned short bit_size;
-  unsigned short size;
-  unsigned short B_size;
-  unsigned short redc_size;
-
-  const mp_limb_t *m;
-  /* B^size mod m. Expected to have at least 32 leading zeros
-     (equality for secp_256r1). */
-  const mp_limb_t *B;
-  /* 2^{bit_size} - p, same value as above, but shifted. */
-  const mp_limb_t *B_shifted;
-  /* m +/- 1, for redc, excluding redc_size low limbs. */
-  const mp_limb_t *redc_mpm1;
-};
+struct ecc_modulo;
 
 /* Reduces from 2*ecc->size to ecc->size. */
 /* Required to return a result < 2q. This property is inherited by
@@ -115,6 +100,26 @@ typedef void ecc_h_to_a_func (const struct ecc_curve *ecc,
 			      mp_limb_t *r, const mp_limb_t *p,
 			      mp_limb_t *scratch);
 
+struct ecc_modulo
+{
+  unsigned short bit_size;
+  unsigned short size;
+  unsigned short B_size;
+  unsigned short redc_size;
+
+  const mp_limb_t *m;
+  /* B^size mod m. Expected to have at least 32 leading zeros
+     (equality for secp_256r1). */
+  const mp_limb_t *B;
+  /* 2^{bit_size} - p, same value as above, but shifted. */
+  const mp_limb_t *B_shifted;
+  /* m +/- 1, for redc, excluding redc_size low limbs. */
+  const mp_limb_t *redc_mpm1;
+
+  ecc_mod_func *mod;
+  ecc_mod_func *reduce;
+};
+
 /* Represents an elliptic curve of the form
 
      y^2 = x^3 - 3x + b (mod p)
@@ -136,10 +141,6 @@ struct ecc_curve
   unsigned short mul_itch;
   unsigned short mul_g_itch;
   unsigned short h_to_a_itch;
-
-  ecc_mod_func *modp;
-  ecc_mod_func *reduce;
-  ecc_mod_func *modq;
 
   ecc_add_func *add_hhh;
   ecc_mul_func *mul;

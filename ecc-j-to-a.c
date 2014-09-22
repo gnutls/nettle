@@ -73,16 +73,16 @@ ecc_j_to_a (const struct ecc_curve *ecc,
 
       mpn_copyi (up, p + 2*ecc->p.size, ecc->p.size);
       mpn_zero (up + ecc->p.size, ecc->p.size);
-      ecc->reduce (&ecc->p, up);
+      ecc->p.reduce (&ecc->p, up);
       mpn_zero (up + ecc->p.size, ecc->p.size);
-      ecc->reduce (&ecc->p, up);
+      ecc->p.reduce (&ecc->p, up);
 
       ecc_modp_inv (ecc, izp, up, up + ecc->p.size);
 
       /* Divide this common factor by B */
       mpn_copyi (izBp, izp, ecc->p.size);
       mpn_zero (izBp + ecc->p.size, ecc->p.size);
-      ecc->reduce (&ecc->p, izBp);
+      ecc->p.reduce (&ecc->p, izBp);
 
       ecc_modp_mul (ecc, iz2p, izp, izBp);
     }

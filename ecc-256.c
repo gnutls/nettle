@@ -236,6 +236,8 @@ const struct ecc_curve nettle_secp_256r1 =
     ecc_Bmodp,
     ecc_Bmodp_shifted,
     ecc_redc_ppm1,
+    ecc_256_modp,
+    USE_REDC ? ecc_256_redc : ecc_256_modp,
   },
   {
     256,
@@ -246,6 +248,8 @@ const struct ecc_curve nettle_secp_256r1 =
     ecc_Bmodq,
     ecc_Bmodq_shifted,
     NULL,
+    ecc_256_modq,
+    ecc_256_modq,
   },
 
   USE_REDC,
@@ -256,10 +260,6 @@ const struct ecc_curve nettle_secp_256r1 =
   ECC_MUL_A_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_G_ITCH (ECC_LIMB_SIZE),
   ECC_J_TO_A_ITCH (ECC_LIMB_SIZE),
-
-  ecc_256_modp,
-  USE_REDC ? ecc_256_redc : ecc_256_modp,
-  ecc_256_modq,
 
   ecc_add_jjj,
   ecc_mul_a,

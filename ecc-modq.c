@@ -57,7 +57,7 @@ ecc_modq_mul (const struct ecc_curve *ecc, mp_limb_t *rp,
 	      const mp_limb_t *ap, const mp_limb_t *bp)
 {
   mpn_mul_n (rp, ap, bp, ecc->q.size);
-  ecc->modq (&ecc->q, rp);
+  ecc->q.mod (&ecc->q, rp);
 }
 
 void

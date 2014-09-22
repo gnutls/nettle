@@ -42,7 +42,7 @@ test_curve (gmp_randstate_t rands, const struct ecc_curve *ecc)
       ref_mod (ref, a, ecc->p.m, ecc->p.size);
 
       mpn_copyi (m, a, 2*ecc->p.size);
-      ecc->modp (&ecc->p, m);
+      ecc->p.mod (&ecc->p, m);
       if (mpn_cmp (m, ecc->p.m, ecc->p.size) >= 0)
 	mpn_sub_n (m, m, ecc->p.m, ecc->p.size);
 
@@ -77,7 +77,7 @@ test_curve (gmp_randstate_t rands, const struct ecc_curve *ecc)
       ref_mod (ref, a, ecc->q.m, ecc->p.size);
 
       mpn_copyi (m, a, 2*ecc->p.size);
-      ecc->modq (&ecc->q, m);
+      ecc->q.mod (&ecc->q, m);
       if (mpn_cmp (m, ecc->q.m, ecc->p.size) >= 0)
 	mpn_sub_n (m, m, ecc->q.m, ecc->p.size);
 

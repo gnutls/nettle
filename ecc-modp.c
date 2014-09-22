@@ -115,7 +115,7 @@ ecc_modp_mul (const struct ecc_curve *ecc, mp_limb_t *rp,
 	      const mp_limb_t *ap, const mp_limb_t *bp)
 {
   mpn_mul_n (rp, ap, bp, ecc->p.size);
-  ecc->reduce (&ecc->p, rp);
+  ecc->p.reduce (&ecc->p, rp);
 }
 
 void
@@ -123,7 +123,7 @@ ecc_modp_sqr (const struct ecc_curve *ecc, mp_limb_t *rp,
 	      const mp_limb_t *ap)
 {
   mpn_sqr (rp, ap, ecc->p.size);
-  ecc->reduce (&ecc->p, rp);
+  ecc->p.reduce (&ecc->p, rp);
 }
 
 void
