@@ -263,7 +263,6 @@ const struct ecc_curve nettle_curve25519 =
   ECC_EH_TO_A_ITCH (ECC_LIMB_SIZE),
 
   ecc_25519_modp,
-  NULL,
   ecc_25519_modp,
   ecc_25519_modq,
 

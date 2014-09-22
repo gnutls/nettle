@@ -258,7 +258,6 @@ const struct ecc_curve nettle_secp_256r1 =
   ECC_J_TO_A_ITCH (ECC_LIMB_SIZE),
 
   ecc_256_modp,
-  ecc_256_redc,
   USE_REDC ? ecc_256_redc : ecc_256_modp,
   ecc_256_modq,
 

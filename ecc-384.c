@@ -180,7 +180,6 @@ const struct ecc_curve nettle_secp_384r1 =
   ECC_J_TO_A_ITCH (ECC_LIMB_SIZE),
 
   ecc_384_modp,
-  ECC_REDC_SIZE > 0 ? ecc_pp1_redc : NULL,
   ecc_384_modp,
   ecc_mod,
 

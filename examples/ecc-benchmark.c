@@ -154,11 +154,11 @@ bench_modp (void *p)
 }
 
 static void
-bench_redc (void *p)
+bench_reduce (void *p)
 {
   struct ecc_ctx *ctx = (struct ecc_ctx *) p;
   mpn_copyi (ctx->rp, ctx->ap, 2*ctx->ecc->p.size);
-  ctx->ecc->redc (&ctx->ecc->p, ctx->rp);
+  ctx->ecc->reduce (&ctx->ecc->p, ctx->rp);
 }
 
 static void
@@ -265,7 +265,7 @@ static void
 bench_curve (const struct ecc_curve *ecc)
 {
   struct ecc_ctx ctx;  
-  double modp, redc, modq, modinv, modinv_gcd, modinv_powm,
+  double modp, reduce, modq, modinv, modinv_gcd, modinv_powm,
     dup_jj, add_jja, add_hhh,
     mul_g, mul_a;
 
@@ -299,7 +299,7 @@ bench_curve (const struct ecc_curve *ecc)
   ctx.bp[3*ecc->p.size - 1] &= mask;
 
   modp = time_function (bench_modp, &ctx);
-  redc = ecc->redc ? time_function (bench_redc, &ctx) : 0;
+  reduce = time_function (bench_reduce, &ctx);
 
   modq = time_function (bench_modq, &ctx);
 
@@ -335,7 +335,7 @@ bench_curve (const struct ecc_curve *ecc)
   free (ctx.tp);
 
   printf ("%4d %6.4f %6.4f %6.4f %6.2f %6.3f %6.2f %6.3f %6.3f %6.3f %6.1f %6.1f\n",
-	  ecc->p.bit_size, 1e6 * modp, 1e6 * redc, 1e6 * modq,
+	  ecc->p.bit_size, 1e6 * modp, 1e6 * reduce, 1e6 * modq,
 	  1e6 * modinv, 1e6 * modinv_gcd, 1e6 * modinv_powm,
 	  1e6 * dup_jj, 1e6 * add_jja, 1e6 * add_hhh,
 	  1e6 * mul_g, 1e6 * mul_a);
@@ -359,7 +359,7 @@ main (int argc UNUSED, char **argv UNUSED)
 
   time_init();
   printf ("%4s %6s %6s %6s %6s %6s %6s %6s %6s %6s %6s %6s (us)\n",
-	  "size", "modp", "redc", "modq", "modinv", "mi_gcd", "mi_pow",
+	  "size", "modp", "reduce", "modq", "modinv", "mi_gcd", "mi_pow",
 	  "dup_jj", "ad_jja", "ad_hhh",
 	  "mul_g", "mul_a");
   for (i = 0; i < numberof (curves); i++)

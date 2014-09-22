@@ -1,5 +1,9 @@
 2014-09-22  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-internal.h (struct ecc_curve): Deleted redc function
+	pointer. Use only reduce pointer, which is redc or modp as
+	applicable. Updated all users.
+
 	* ecc-generic-modp.c (ecc_generic_modp): Deleted file and
 	function. We no longer need a wrapper around ecc_mod.
 	* ecc-generic-modq.c (ecc_generic_modq): Likewise deleted.

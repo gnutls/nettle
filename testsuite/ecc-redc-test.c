@@ -57,7 +57,7 @@ test_main (void)
     {
       const struct ecc_curve *ecc = ecc_curves[i];
       unsigned j;
-      if (!ecc->redc)
+      if (ecc->reduce == ecc->modp)
 	continue;
       ASSERT (ecc->p.redc_size != 0);
 
@@ -73,13 +73,13 @@ test_main (void)
 	  ref_redc (ref, a, ecc->p.m, ecc->p.size);
 
 	  mpn_copyi (m, a, 2*ecc->p.size);
-	  ecc->redc (&ecc->p, m);
+	  ecc->reduce (&ecc->p, m);
 	  if (mpn_cmp (m, ecc->p.m, ecc->p.size) >= 0)
 	    mpn_sub_n (m, m, ecc->p.m, ecc->p.size);
 
 	  if (mpn_cmp (m, ref, ecc->p.size))
 	    {
-	      fprintf (stderr, "ecc->redc failed: bit_size = %u\n",
+	      fprintf (stderr, "ecc->reduce failed: bit_size = %u\n",
 		       ecc->p.bit_size);
 	      gmp_fprintf (stderr, "a   = %Nx\n", a, 2*ecc->p.size);
 	      gmp_fprintf (stderr, "m   = %Nx (bad)\n", m, ecc->p.size);

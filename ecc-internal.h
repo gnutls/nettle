@@ -138,7 +138,6 @@ struct ecc_curve
   unsigned short h_to_a_itch;
 
   ecc_mod_func *modp;
-  ecc_mod_func *redc;
   ecc_mod_func *reduce;
   ecc_mod_func *modq;
 

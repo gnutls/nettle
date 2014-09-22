@@ -143,7 +143,6 @@ const struct ecc_curve nettle_secp_192r1 =
   ECC_J_TO_A_ITCH (ECC_LIMB_SIZE),
 
   ecc_192_modp,
-  ECC_REDC_SIZE >= 1 ? ecc_pp1_redc : NULL,
   ecc_192_modp,
   ecc_mod,
 

@@ -95,7 +95,6 @@ const struct ecc_curve nettle_secp_224r1 =
   ECC_J_TO_A_ITCH (ECC_LIMB_SIZE),
 
   ecc_224_modp,
-  ecc_224_redc,
   USE_REDC ? ecc_224_redc : ecc_224_modp,
   ecc_mod,
 
