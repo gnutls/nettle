@@ -1,5 +1,8 @@
 2014-09-22  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/ecc-benchmark.c (bench_modinv_powm, bench_curve):
+	Updated benchmarking of mpn_sec_powm.
+
 	* ecc-internal.h (struct ecc_curve): Deleted redc function
 	pointer. Use only reduce pointer, which is redc or modp as
 	applicable. Updated all users.

@@ -195,10 +195,10 @@ bench_modinv_powm (void *p)
   const struct ecc_curve *ecc = ctx->ecc;
   mp_size_t size = ecc->p.size;
   
-  mpn_sub_1 (ctx->rp + size, ecc->p, size, 2);
+  mpn_sub_1 (ctx->rp + size, ecc->p.m, size, 2);
   mpn_sec_powm (ctx->rp, ctx->ap, size,
-		ctx->rp + size, ecc->bit_size,
-		ecc->p, size, ctx->tp);
+		ctx->rp + size, ecc->p.bit_size,
+		ecc->p.m, size, ctx->tp);
 }
 #endif
 
@@ -280,7 +280,7 @@ bench_curve (const struct ecc_curve *ecc)
 #ifdef mpn_sec_powm
   {
     mp_size_t powm_itch
-      = mpn_sec_powm_itch (ecc->p.size, ecc->bit_size, ecc->p.size);
+      = mpn_sec_powm_itch (ecc->p.size, ecc->p.bit_size, ecc->p.size);
     if (powm_itch > itch)
       itch = powm_itch;
   }
