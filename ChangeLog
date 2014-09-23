@@ -1,5 +1,25 @@
 2014-09-23  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/ecc-modinv-test.c (zero_p): New function, checking for
+	zero modulo p.
+	(test_modulo): Use zero_p. Switch to dynamic allocation. Updated
+	for larger modinv result area, and use invert_itch.
+
+	* ecc-25519.c (ecc_mod_pow_2kp1): Renamed, and take a struct
+	ecc_modulo * as argument.
+	(ecc_modp_powm_2kp1): ... old name.
+	(ecc_mod_pow_252m3): New function, extracted from ecc_25519_sqrt.
+	(ecc_25519_inv): New modp invert function, about 5.5 times faster
+	then ecc_mod_inv.
+	(ecc_25519_sqrt): Use ecc_mod_pow_252m3.
+	(nettle_curve25519): Point to ecc_25519_inv. Updated p.invert_itch
+	and h_to_a_itch.
+
+	* ecc-internal.h (struct ecc_modulo): New field invert_itch.
+	Updated all implementations.
+	(ECC_EH_TO_A_ITCH): Updated, and take invert itch as an argument.
+	* ecc-eh-to-a.c (ecc_eh_to_a_itch): Take invert scratch into account.
+
 	* testsuite/testutils.c (test_ecc_mul_h): Use ecc->h_to_a_itch.
 
 	* ecc-mod-inv.c (ecc_mod_inv): Interface change, make ap input

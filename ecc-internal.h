@@ -107,6 +107,7 @@ struct ecc_modulo
   unsigned short size;
   unsigned short B_size;
   unsigned short redc_size;
+  unsigned short invert_itch;
 
   const mp_limb_t *m;
   /* B^size mod m. Expected to have at least 32 leading zeros
@@ -265,7 +266,7 @@ curve25519_eh_to_x (mp_limb_t *xp, const mp_limb_t *p,
 /* Current scratch needs: */
 #define ECC_MOD_INV_ITCH(size) (2*(size))
 #define ECC_J_TO_A_ITCH(size) (5*(size))
-#define ECC_EH_TO_A_ITCH(size) (4*(size))
+#define ECC_EH_TO_A_ITCH(size, inv) (2*(size)+(inv))
 #define ECC_DUP_JJ_ITCH(size) (5*(size))
 #define ECC_DUP_EH_ITCH(size) (5*(size))
 #define ECC_ADD_JJA_ITCH(size) (6*(size))

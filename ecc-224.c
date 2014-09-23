@@ -69,6 +69,8 @@ const struct ecc_curve nettle_secp_224r1 =
     ECC_LIMB_SIZE,    
     ECC_BMODP_SIZE,
     -ECC_REDC_SIZE,
+    ECC_MOD_INV_ITCH (ECC_LIMB_SIZE),
+
     ecc_p,
     ecc_Bmodp,
     ecc_Bmodp_shifted,
@@ -84,6 +86,8 @@ const struct ecc_curve nettle_secp_224r1 =
     ECC_LIMB_SIZE,    
     ECC_BMODQ_SIZE,
     0,
+    ECC_MOD_INV_ITCH (ECC_LIMB_SIZE),
+
     ecc_q,
     ecc_Bmodq,
     ecc_Bmodq_shifted,

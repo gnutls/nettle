@@ -103,32 +103,103 @@ ecc_25519_modq (const struct ecc_modulo *q, mp_limb_t *rp)
 /* Needs 2*ecc->size limbs at rp, and 2*ecc->size additional limbs of
    scratch space. No overlap allowed. */
 static void
-ecc_modp_powm_2kp1 (const struct ecc_curve *ecc,
-		    mp_limb_t *rp, const mp_limb_t *xp,
-		    unsigned k, mp_limb_t *tp)
+ecc_mod_pow_2kp1 (const struct ecc_modulo *m,
+		  mp_limb_t *rp, const mp_limb_t *xp,
+		  unsigned k, mp_limb_t *tp)
 {
   if (k & 1)
     {
-      ecc_modp_sqr (ecc, tp, xp);
+      ecc_mod_sqr (m, tp, xp);
       k--;
     }
   else
     {
-      ecc_modp_sqr (ecc, rp, xp);
-      ecc_modp_sqr (ecc, tp, rp);
+      ecc_mod_sqr (m, rp, xp);
+      ecc_mod_sqr (m, tp, rp);
       k -= 2;
     }
   while (k > 0)
     {
-      ecc_modp_sqr (ecc, rp, tp);
-      ecc_modp_sqr (ecc, tp, rp);
+      ecc_mod_sqr (m, rp, tp);
+      ecc_mod_sqr (m, tp, rp);
       k -= 2;
     }
-  ecc_modp_mul (ecc, rp, tp, xp);
-#undef t1
-#undef t2
+  ecc_mod_mul (m, rp, tp, xp);
 }
 
+/* Computes a^{2^{252-3}} mod m. Needs 5 * n scratch space. */
+static void
+ecc_mod_pow_252m3 (const struct ecc_modulo *m,
+		   mp_limb_t *rp, const mp_limb_t *ap, mp_limb_t *scratch)
+{
+#define a7 scratch
+#define t0 (scratch + ECC_LIMB_SIZE)
+#define t1 (scratch + 3*ECC_LIMB_SIZE)
+
+  /* a^{2^252 - 3} = a^{(p-5)/8}, using the addition chain
+     2^252 - 3
+     = 1 + (2^252-4)
+     = 1 + 4 (2^250-1)
+     = 1 + 4 (2^125+1)(2^125-1)
+     = 1 + 4 (2^125+1)(1+2(2^124-1))
+     = 1 + 4 (2^125+1)(1+2(2^62+1)(2^62-1))
+     = 1 + 4 (2^125+1)(1+2(2^62+1)(2^31+1)(2^31-1))
+     = 1 + 4 (2^125+1)(1+2(2^62+1)(2^31+1)(7+8(2^28-1)))
+     = 1 + 4 (2^125+1)(1+2(2^62+1)(2^31+1)(7+8(2^14+1)(2^14-1)))
+     = 1 + 4 (2^125+1)(1+2(2^62+1)(2^31+1)(7+8(2^14+1)(2^7+1)(2^7-1)))
+     = 1 + 4 (2^125+1)(1+2(2^62+1)(2^31+1)(7+8(2^14+1)(2^7+1)(1+2(2^6-1))))
+     = 1 + 4 (2^125+1)(1+2(2^62+1)(2^31+1)(7+8(2^14+1)(2^7+1)(1+2(2^3+1)*7)))
+  */ 
+     
+  ecc_mod_pow_2kp1 (m, t0, ap, 1, t1);	/* a^3 */
+  ecc_mod_sqr (m, rp, t0);		/* a^6 */
+  ecc_mod_mul (m, a7, rp, ap);		/* a^7 */
+  ecc_mod_pow_2kp1 (m, rp, a7, 3, t0);	/* a^63 = a^{2^6-1} */
+  ecc_mod_sqr (m, t0, rp);		/* a^{2^7-2} */
+  ecc_mod_mul (m, rp, t0, ap);		/* a^{2^7-1} */
+  ecc_mod_pow_2kp1 (m, t0, rp, 7, t1);	/* a^{2^14-1}*/
+  ecc_mod_pow_2kp1 (m, rp, t0, 14, t1);	/* a^{2^28-1} */
+  ecc_mod_sqr (m, t0, rp);		/* a^{2^29-2} */
+  ecc_mod_sqr (m, t1, t0);		/* a^{2^30-4} */
+  ecc_mod_sqr (m, t0, t1);		/* a^{2^31-8} */
+  ecc_mod_mul (m, rp, t0, a7);		/* a^{2^31-1} */
+  ecc_mod_pow_2kp1 (m, t0, rp, 31, t1);	/* a^{2^62-1} */  
+  ecc_mod_pow_2kp1 (m, rp, t0, 62, t1);	/* a^{2^124-1}*/
+  ecc_mod_sqr (m, t0, rp);		/* a^{2^125-2} */
+  ecc_mod_mul (m, rp, t0, ap);		/* a^{2^125-1} */
+  ecc_mod_pow_2kp1 (m, t0, rp, 125, t1);/* a^{2^250-1} */
+  ecc_mod_sqr (m, rp, t0);		/* a^{2^251-2} */
+  ecc_mod_sqr (m, t0, rp);		/* a^{2^252-4} */
+  ecc_mod_mul (m, rp, t0, ap);	    	/* a^{2^252-3} */
+#undef t0
+#undef t1
+#undef a7
+}
+
+/* Needs 5*ECC_LIMB_SIZE scratch space. */
+#define ECC_25519_INV_ITCH (5*ECC_LIMB_SIZE)
+
+static void ecc_25519_inv (const struct ecc_modulo *p,
+			   mp_limb_t *rp, const mp_limb_t *ap,
+			   mp_limb_t *scratch)
+{
+#define t0 scratch
+
+  /* Addition chain
+     
+       p - 2 = 2^{255} - 21
+             = 1 + 2 (1 + 4 (2^{252}-3))	     
+  */
+  ecc_mod_pow_252m3 (p, rp, ap, t0);
+  ecc_mod_sqr (p, t0, rp);
+  ecc_mod_sqr (p, rp, t0);
+  ecc_mod_mul (p, t0, ap, rp);
+  ecc_mod_sqr (p, rp, t0);
+  ecc_mod_mul (p, t0, ap, rp);
+  mpn_copyi (rp, t0, ECC_LIMB_SIZE); /* FIXME: Eliminate copy? */
+#undef t0
+}
+ 
 /* Compute x such that x^2 = a (mod p). Returns one on success, zero
    on failure. using the e == 2 special case of the Shanks-Tonelli
    algorithm (see http://www.math.vt.edu/people/brown/doc/sqrts.pdf,
@@ -146,63 +217,24 @@ ecc_25519_sqrt(mp_limb_t *rp, const mp_limb_t *ap)
   mp_size_t itch;
   mp_limb_t *scratch;
   int res;
-  const struct ecc_curve *ecc = &nettle_curve25519;
+  const struct ecc_modulo *p = &nettle_curve25519.p;
 
   itch = 7*ECC_LIMB_SIZE;
   scratch = gmp_alloc_limbs (itch);
 
 #define t0 scratch
-#define a7 (scratch + 2*ECC_LIMB_SIZE)
-#define t1 (scratch + 3*ECC_LIMB_SIZE)
-#define t2 (scratch + 5*ECC_LIMB_SIZE)
-#define scratch_out (scratch + 3*ECC_LIMB_SIZE) /* overlap t1, t2 */
-
 #define xp (scratch + ECC_LIMB_SIZE)
 #define bp (scratch + 2*ECC_LIMB_SIZE)
 
-  /* a^{2^252 - 3} = a^{(p-5)/8}, using the addition chain
-     2^252 - 3
-     = 1 + (2^252-4)
-     = 1 + 4 (2^250-1)
-     = 1 + 4 (2^125+1)(2^125-1)
-     = 1 + 4 (2^125+1)(1+2(2^124-1))
-     = 1 + 4 (2^125+1)(1+2(2^62+1)(2^62-1))
-     = 1 + 4 (2^125+1)(1+2(2^62+1)(2^31+1)(2^31-1))
-     = 1 + 4 (2^125+1)(1+2(2^62+1)(2^31+1)(7+8(2^28-1)))
-     = 1 + 4 (2^125+1)(1+2(2^62+1)(2^31+1)(7+8(2^14+1)(2^14-1)))
-     = 1 + 4 (2^125+1)(1+2(2^62+1)(2^31+1)(7+8(2^14+1)(2^7+1)(2^7-1)))
-     = 1 + 4 (2^125+1)(1+2(2^62+1)(2^31+1)(7+8(2^14+1)(2^7+1)(1+2(2^6-1))))
-     = 1 + 4 (2^125+1)(1+2(2^62+1)(2^31+1)(7+8(2^14+1)(2^7+1)(1+2(2^3+1)*7)))
-  */ 
-     
-  ecc_modp_powm_2kp1 (ecc, t1, ap, 1, t2);  /* a^3 */
-  ecc_modp_sqr (ecc, t0, t1);		    /* a^6 */
-  ecc_modp_mul (ecc, a7, t0, ap);	    /* a^7 */
-  ecc_modp_powm_2kp1 (ecc, t0, a7, 3, t1);  /* a^63 = a^{2^6-1} */
-  ecc_modp_sqr (ecc, t1, t0);		    /* a^{2^7-2} */
-  ecc_modp_mul (ecc, t0, t1, ap);	    /* a^{2^7-1} */
-  ecc_modp_powm_2kp1 (ecc, t1, t0, 7, t2);  /* a^{2^14-1}*/
-  ecc_modp_powm_2kp1 (ecc, t0, t1, 14, t2); /* a^{2^28-1} */
-  ecc_modp_sqr (ecc, t1, t0);		    /* a^{2^29-2} */
-  ecc_modp_sqr (ecc, t2, t1);		    /* a^{2^30-4} */
-  ecc_modp_sqr (ecc, t1, t2);		    /* a^{2^31-8} */
-  ecc_modp_mul (ecc, t0, t1, a7);	    /* a^{2^31-1} */
-  ecc_modp_powm_2kp1 (ecc, t1, t0, 31, t2); /* a^{2^62-1} */  
-  ecc_modp_powm_2kp1 (ecc, t0, t1, 62, t2); /* a^{2^124-1}*/
-  ecc_modp_sqr (ecc, t1, t0);		    /* a^{2^125-2} */
-  ecc_modp_mul (ecc, t0, t1, ap);	    /* a^{2^125-1} */
-  ecc_modp_powm_2kp1 (ecc, t1, t0, 125, t2); /* a^{2^250-1} */
-  ecc_modp_sqr (ecc, t0, t1);		    /* a^{2^251-2} */
-  ecc_modp_sqr (ecc, t1, t0);		    /* a^{2^252-4} */
-  ecc_modp_mul (ecc, t0, t1, ap);	    /* a^{2^252-3} */
+  ecc_mod_pow_252m3 (p, t0, ap, t0 + 2*ECC_LIMB_SIZE);
 
   /* Compute candidate root x and fudgefactor b. */
-  ecc_modp_mul (ecc, xp, t0, ap); /* a^{(p+3)/8 */
-  ecc_modp_mul (ecc, bp, t0, xp); /* a^{(p-1)/4} */
+  ecc_mod_mul (p, xp, t0, ap); /* a^{(p+3)/8 */
+  ecc_mod_mul (p, bp, t0, xp); /* a^{(p-1)/4} */
   /* Check if b == 1 (mod p) */
-  if (mpn_cmp (bp, ecc->p.m, ECC_LIMB_SIZE) >= 0)
-    mpn_sub_n (bp, bp, ecc->p.m, ECC_LIMB_SIZE);
-  if (mpn_cmp (bp, ecc->unit, ECC_LIMB_SIZE) == 0)
+  if (mpn_cmp (bp, p->m, ECC_LIMB_SIZE) >= 0)
+    mpn_sub_n (bp, bp, p->m, ECC_LIMB_SIZE);
+  if (mpn_cmp (bp, ecc_unit, ECC_LIMB_SIZE) == 0)
     {
       mpn_copyi (rp, xp, ECC_LIMB_SIZE);
       res = 1;
@@ -210,9 +242,9 @@ ecc_25519_sqrt(mp_limb_t *rp, const mp_limb_t *ap)
   else
     {
       mpn_add_1 (bp, bp, ECC_LIMB_SIZE, 1);
-      if (mpn_cmp (bp, ecc->p.m, ECC_LIMB_SIZE) == 0)
+      if (mpn_cmp (bp, p->m, ECC_LIMB_SIZE) == 0)
 	{
-	  ecc_modp_mul (&nettle_curve25519, bp, xp, ecc_sqrt_z);
+	  ecc_mod_mul (p, bp, xp, ecc_sqrt_z);
 	  mpn_copyi (rp, bp, ECC_LIMB_SIZE);
 	  res = 1;
 	}
@@ -222,12 +254,8 @@ ecc_25519_sqrt(mp_limb_t *rp, const mp_limb_t *ap)
   gmp_free_limbs (scratch, itch);
   return res;
 #undef t0
-#undef t1
-#undef t2
-#undef a7
 #undef xp
 #undef bp
-#undef scratch_out
 }
 
 const struct ecc_curve nettle_curve25519 =
@@ -237,6 +265,8 @@ const struct ecc_curve nettle_curve25519 =
     ECC_LIMB_SIZE,
     ECC_BMODP_SIZE,
     0,
+    ECC_25519_INV_ITCH,
+
     ecc_p,
     ecc_Bmodp,
     ecc_Bmodp_shifted,
@@ -245,13 +275,15 @@ const struct ecc_curve nettle_curve25519 =
 
     ecc_25519_modp,
     ecc_25519_modp,
-    ecc_mod_inv,
+    ecc_25519_inv,
   },
   {
     253,
     ECC_LIMB_SIZE,
     ECC_BMODQ_SIZE,
     0,
+    ECC_MOD_INV_ITCH (ECC_LIMB_SIZE),
+
     ecc_q,
     ecc_Bmodq,  
     ecc_mBmodq_shifted, /* Use q - 2^{252} instead. */
@@ -270,7 +302,7 @@ const struct ecc_curve nettle_curve25519 =
   ECC_ADD_EHH_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_A_EH_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_G_EH_ITCH (ECC_LIMB_SIZE),
-  ECC_EH_TO_A_ITCH (ECC_LIMB_SIZE),
+  ECC_EH_TO_A_ITCH (ECC_LIMB_SIZE, ECC_25519_INV_ITCH),
 
   ecc_add_ehh,
   ecc_mul_a_eh,

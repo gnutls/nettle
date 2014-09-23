@@ -34,6 +34,13 @@ ref_modinv (mp_limb_t *rp, const mp_limb_t *ap, const mp_limb_t *mp, mp_size_t m
   return 1;
 }
 
+static int
+zero_p (const struct ecc_modulo *m, const mp_limb_t *xp)
+{
+  return mpn_zero_p (xp, m->size)
+    || mpn_cmp (xp, m->m, m->size) == 0;
+}
+
 #define MAX_ECC_SIZE (1 + 521 / GMP_NUMB_BITS)
 #define COUNT 500
 
@@ -41,20 +48,25 @@ static void
 test_modulo (gmp_randstate_t rands, const char *name,
 	     const struct ecc_modulo *m)
 {
-  mp_limb_t a[MAX_ECC_SIZE];
-  mp_limb_t ai[2*MAX_ECC_SIZE];
-  mp_limb_t ref[MAX_ECC_SIZE];
-  mp_limb_t scratch[ECC_MOD_INV_ITCH (MAX_ECC_SIZE)];
+  mp_limb_t *a;
+  mp_limb_t *ai;
+  mp_limb_t *ref;
+  mp_limb_t *scratch;
   unsigned j;
   mpz_t r;
 
   mpz_init (r);
-  
+
+  a = xalloc_limbs (m->size);
+  ai = xalloc_limbs (2*m->size);
+  ref = xalloc_limbs (m->size);;
+  scratch = xalloc_limbs (m->invert_itch);
+
   /* Check behaviour for zero input */
   mpn_zero (a, m->size);
   memset (ai, 17, m->size * sizeof(*ai));
   m->invert (m, ai, a, scratch);
-  if (!mpn_zero_p (ai, m->size))
+  if (!zero_p (m, ai))
     {
       fprintf (stderr, "%s->invert failed for zero input (bit size %u):\n",
 	       name, m->bit_size);
@@ -68,7 +80,7 @@ test_modulo (gmp_randstate_t rands, const char *name,
   /* Check behaviour for a = m */
   memset (ai, 17, m->size * sizeof(*ai));
   m->invert (m, ai, m->m, scratch);
-  if (!mpn_zero_p (ai, m->size))
+  if (!zero_p (m, ai))
     {
       fprintf (stderr, "%s->invert failed for a = p input (bit size %u):\n",
 	       name, m->bit_size);
@@ -112,6 +124,10 @@ test_modulo (gmp_randstate_t rands, const char *name,
 	  
     }
   mpz_clear (r);
+  free (a);
+  free (ai);
+  free (ref);
+  free (scratch);
 }
 
 void

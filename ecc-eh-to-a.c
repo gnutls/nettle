@@ -41,9 +41,10 @@
 mp_size_t
 ecc_eh_to_a_itch (const struct ecc_curve *ecc)
 {
-  /* Needs ecc->p.size + scratch for ecc_modq_inv */
-  return ECC_EH_TO_A_ITCH (ecc->p.size);
+  /* Needs 2*ecc->p.size + scratch for ecc_modq_inv */  
+  return ECC_EH_TO_A_ITCH (ecc->p.size, ecc->p.invert_itch);
 }
+
 
 /* Convert from homogeneous coordinates on the Edwards curve to affine
    coordinates. */
@@ -63,7 +64,7 @@ ecc_eh_to_a (const struct ecc_curve *ecc,
 
   mp_limb_t cy;
 
-  /* Needs 2*size scratch */
+  /* Needs 2*size + scratch for the invert call. */
   ecc->p.invert (&ecc->p, izp, zp, tp + ecc->p.size);
 
   ecc_modp_mul (ecc, tp, xp, izp);
