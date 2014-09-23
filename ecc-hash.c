@@ -44,23 +44,21 @@
 /* NOTE: We don't considered the hash value to be secret, so it's ok
    if the running time of this conversion depends on h.
 
-   Requires ecc->size + 1 limbs, the extra limb may be needed for
+   Requires m->size + 1 limbs, the extra limb may be needed for
    unusual limb sizes.
 */
 
-/* FIXME: Take a struct ecc_modulo * as argument, and it would make
-   more sense to pass q than p. */
 void
-ecc_hash (const struct ecc_curve *ecc,
+ecc_hash (const struct ecc_modulo *m,
 	  mp_limb_t *hp,
 	  size_t length, const uint8_t *digest)
 {
-  if (length > ((size_t) ecc->p.bit_size + 7) / 8)
-    length = (ecc->p.bit_size + 7) / 8;
+  if (length > ((size_t) m->bit_size + 7) / 8)
+    length = (m->bit_size + 7) / 8;
 
-  mpn_set_base256 (hp, ecc->p.size + 1, digest, length);
+  mpn_set_base256 (hp, m->size + 1, digest, length);
 
-  if (8 * length > ecc->p.bit_size)
+  if (8 * length > m->bit_size)
     /* We got a few extra bits, at the low end. Discard them. */
-    mpn_rshift (hp, hp, ecc->p.size + 1, 8*length - ecc->p.bit_size);
+    mpn_rshift (hp, hp, m->size + 1, 8*length - m->bit_size);
 }

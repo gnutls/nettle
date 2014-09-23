@@ -1,5 +1,12 @@
 2014-09-23  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-hash.c (ecc_hash): Changed argument type from struct
+	ecc_curve to struct ecc_modulo. Updated callers.
+	* testsuite/ecdsa-sign-test.c (test_main): Updated curve25519
+	signature s. Changed since the hash value is truncated a few bits
+	more, to match the size of q.
+	* testsuite/ecdsa-verify-test.c (test_main): Likewise.
+
 	* testsuite/ecc-modinv-test.c (zero_p): New function, checking for
 	zero modulo p.
 	(test_modulo): Use zero_p. Switch to dynamic allocation. Updated

@@ -86,7 +86,7 @@ ecc_ecdsa_sign (const struct ecc_curve *ecc,
   ecc->q.invert (&ecc->q, kinv, kp, tp); /* NOTE: Also clobbers hp */
   
   /* Process hash digest */
-  ecc_hash (ecc, hp, length, digest);
+  ecc_hash (&ecc->q, hp, length, digest);
 
   ecc_modq_mul (ecc, tp, zp, rp);
   ecc_modq_add (ecc, hp, hp, tp);

@@ -111,7 +111,7 @@ ecc_ecdsa_verify (const struct ecc_curve *ecc,
   ecc->q.invert (&ecc->q, sinv, sp, sinv + 2*ecc->p.size);
 
   /* u1 = h / s, P1 = u1 * G */
-  ecc_hash (ecc, hp, length, digest);
+  ecc_hash (&ecc->q, hp, length, digest);
   ecc_modq_mul (ecc, u1, hp, sinv);
 
   /* u2 = r / s, P2 = u2 * Y */

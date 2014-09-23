@@ -237,7 +237,7 @@ ecc_mod_random (const struct ecc_modulo *m, mp_limb_t *xp,
 		void *ctx, nettle_random_func *random, mp_limb_t *scratch);
 
 void
-ecc_hash (const struct ecc_curve *ecc,
+ecc_hash (const struct ecc_modulo *m,
 	  mp_limb_t *hp,
 	  size_t length, const uint8_t *digest);
 
