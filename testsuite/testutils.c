@@ -1436,7 +1436,7 @@ test_ecc_mul_h (unsigned curve, unsigned n, const mp_limb_t *p)
 {
   const struct ecc_curve *ecc = ecc_curves[curve];
   mp_limb_t *np = xalloc_limbs (ecc_size_a (ecc));
-  mp_limb_t *scratch = xalloc_limbs (ecc_j_to_a_itch(ecc));
+  mp_limb_t *scratch = xalloc_limbs (ecc->h_to_a_itch);
   ecc->h_to_a (ecc, 0, np, p, scratch);
 
   test_ecc_mul_a (curve, n, np);

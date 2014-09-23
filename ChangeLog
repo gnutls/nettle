@@ -1,5 +1,7 @@
 2014-09-23  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/testutils.c (test_ecc_mul_h): Use ecc->h_to_a_itch.
+
 	* ecc-mod-inv.c (ecc_mod_inv): Interface change, make ap input
 	const, and require 2n limbs at rp. Preparing for powm-based
 	alternative implementations. Drop #if:ed out code and dp
