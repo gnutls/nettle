@@ -52,7 +52,7 @@ ecc_j_to_a (const struct ecc_curve *ecc,
 	    mp_limb_t *scratch)
 {
 #define izp   scratch
-#define up   (scratch + ecc->p.size)
+#define up   (scratch + 2*ecc->p.size)
 #define iz2p (scratch + ecc->p.size)
 #define iz3p (scratch + 2*ecc->p.size)
 #define izBp (scratch + 3*ecc->p.size)
@@ -65,10 +65,7 @@ ecc_j_to_a (const struct ecc_curve *ecc,
       /* Set v = (r_z / B^2)^-1,
 
 	 r_x = p_x v^2 / B^3 =  ((v/B * v)/B * p_x)/B
-	 r_y = p_y v^3 / B^4 = (((v/B * v)/B * v)/B * p_x)/B
-
-	 Skip the first redc, if we want to stay in Montgomery
-	 representation.
+	 r_y = p_y v^3 / B^4 = (((v/B * v)/B * v)/B * p_y)/B
       */
 
       mpn_copyi (up, p + 2*ecc->p.size, ecc->p.size);

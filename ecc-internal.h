@@ -80,7 +80,7 @@ struct ecc_modulo;
 typedef void ecc_mod_func (const struct ecc_modulo *m, mp_limb_t *rp);
 
 typedef void ecc_mod_inv_func (const struct ecc_modulo *m,
-			       mp_limb_t *vp, mp_limb_t *ap,
+			       mp_limb_t *vp, const mp_limb_t *ap,
 			       mp_limb_t *scratch);
 
 typedef void ecc_add_func (const struct ecc_curve *ecc,
@@ -263,7 +263,7 @@ curve25519_eh_to_x (mp_limb_t *xp, const mp_limb_t *p,
 		    mp_limb_t *scratch);
 
 /* Current scratch needs: */
-#define ECC_MODINV_ITCH(size) (3*(size))
+#define ECC_MOD_INV_ITCH(size) (2*(size))
 #define ECC_J_TO_A_ITCH(size) (5*(size))
 #define ECC_EH_TO_A_ITCH(size) (4*(size))
 #define ECC_DUP_JJ_ITCH(size) (5*(size))

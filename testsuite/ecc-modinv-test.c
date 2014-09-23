@@ -42,9 +42,9 @@ test_modulo (gmp_randstate_t rands, const char *name,
 	     const struct ecc_modulo *m)
 {
   mp_limb_t a[MAX_ECC_SIZE];
-  mp_limb_t ai[MAX_ECC_SIZE];
+  mp_limb_t ai[2*MAX_ECC_SIZE];
   mp_limb_t ref[MAX_ECC_SIZE];
-  mp_limb_t scratch[ECC_MODINV_ITCH (MAX_ECC_SIZE)];
+  mp_limb_t scratch[ECC_MOD_INV_ITCH (MAX_ECC_SIZE)];
   unsigned j;
   mpz_t r;
 
@@ -66,9 +66,8 @@ test_modulo (gmp_randstate_t rands, const char *name,
     }
 	  
   /* Check behaviour for a = m */
-  mpn_copyi (a, m->m, m->size);
   memset (ai, 17, m->size * sizeof(*ai));
-  m->invert (m, ai, a, scratch);
+  m->invert (m, ai, m->m, scratch);
   if (!mpn_zero_p (ai, m->size))
     {
       fprintf (stderr, "%s->invert failed for a = p input (bit size %u):\n",

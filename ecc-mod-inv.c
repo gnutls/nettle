@@ -56,18 +56,21 @@ cnd_neg (int cnd, mp_limb_t *rp, const mp_limb_t *ap, mp_size_t n)
 
 /* Compute a^{-1} mod m, with running time depending only on the size.
    Returns zero if a == 0 (mod m), to be consistent with a^{phi(m)-1}.
-   Also needs (m+1)/2, and m must be odd. */
+   Also needs (m+1)/2, and m must be odd.
+
+   Needs 2n limbs available at rp, and 2n additional scratch limbs.
+*/
 
 /* FIXME: Could use mpn_sec_invert (in GMP-6), but with a bit more
    scratch need since it doesn't precompute (m+1)/2. */
 void
 ecc_mod_inv (const struct ecc_modulo *m,
-	     mp_limb_t *vp, mp_limb_t *ap,
+	     mp_limb_t *vp, const mp_limb_t *in_ap,
 	     mp_limb_t *scratch)
 {
-#define bp scratch
-#define dp (scratch + n)
-#define up (scratch + 2*n)
+#define ap scratch
+#define bp (scratch + n)
+#define up (vp + n)
 
   mp_size_t n = m->size;
   /* Avoid the mp_bitcnt_t type for compatibility with older GMP
@@ -91,6 +94,7 @@ ecc_mod_inv (const struct ecc_modulo *m,
   mpn_zero (up+1, n - 1);
   mpn_copyi (bp, m->m, n);
   mpn_zero (vp, n);
+  mpn_copyi (ap, in_ap, n);
 
   for (i = m->bit_size + GMP_NUMB_BITS * n; i-- > 0; )
     {
@@ -134,29 +138,14 @@ ecc_mod_inv (const struct ecc_modulo *m,
       assert (bp[0] & 1);
       odd = ap[0] & 1;
 
-      /* Which variant is fastest depends on the speed of the various
-	 cnd_* functions. Assembly implementation would help. */
-#if 1
       swap = cnd_sub_n (odd, ap, bp, n);
       cnd_add_n (swap, bp, ap, n);
       cnd_neg (swap, ap, ap, n);
-#else
-      swap = odd & mpn_sub_n (dp, ap, bp, n);
-      cnd_copy (swap, bp, ap, n);
-      cnd_neg (swap, dp, dp, n);
-      cnd_copy (odd, ap, dp, n);
-#endif
 
-#if 1
       cnd_swap (swap, up, vp, n);
       cy = cnd_sub_n (odd, up, vp, n);
       cy -= cnd_add_n (cy, up, m->m, n);
-#else
-      cy = cnd_sub_n (odd, up, vp, n);
-      cnd_add_n (swap, vp, up, n);
-      cnd_neg (swap, up, up, n);
-      cnd_add_n (cy ^ swap, up, m->p, n);
-#endif
+
       cy = mpn_rshift (ap, ap, n, 1);
       assert (cy == 0);
       cy = mpn_rshift (up, up, n, 1);
@@ -164,7 +153,7 @@ ecc_mod_inv (const struct ecc_modulo *m,
       assert (cy == 0);
     }
   assert ( (ap[0] | ap[n-1]) == 0);
+#undef ap
 #undef bp
-#undef dp
 #undef up
 }

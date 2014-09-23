@@ -92,11 +92,12 @@ ecc_ecdsa_verify (const struct ecc_curve *ecc,
   */
 
 #define P2 scratch
-#define P1 (scratch + 3*ecc->p.size)
-#define sinv (scratch + 3*ecc->p.size)
+#define u1 (scratch + 3*ecc->p.size)
 #define u2 (scratch + 4*ecc->p.size)
-#define hp (scratch + 4*ecc->p.size)
-#define u1 (scratch + 6*ecc->p.size)
+
+#define P1 (scratch + 4*ecc->p.size)
+#define sinv (scratch)
+#define hp (scratch + ecc->p.size)
 
   if (! (ecdsa_in_range (ecc, rp)
 	 && ecdsa_in_range (ecc, sp)))
@@ -105,10 +106,13 @@ ecc_ecdsa_verify (const struct ecc_curve *ecc,
   /* FIXME: Micro optimizations: Either simultaneous multiplication.
      Or convert to projective coordinates (can be done without
      division, I think), and write an ecc_add_ppp. */
-  
-  /* Compute sinv, use P2 as scratch */
-  mpn_copyi (sinv + ecc->p.size, sp, ecc->p.size);
-  ecc->q.invert (&ecc->q, sinv, sinv + ecc->p.size, P2);
+
+  /* Compute sinv */
+  ecc->q.invert (&ecc->q, sinv, sp, sinv + 2*ecc->p.size);
+
+  /* u1 = h / s, P1 = u1 * G */
+  ecc_hash (ecc, hp, length, digest);
+  ecc_modq_mul (ecc, u1, hp, sinv);
 
   /* u2 = r / s, P2 = u2 * Y */
   ecc_modq_mul (ecc, u2, rp, sinv);
@@ -116,16 +120,12 @@ ecc_ecdsa_verify (const struct ecc_curve *ecc,
    /* Total storage: 5*ecc->p.size + ecc->mul_itch */
   ecc->mul (ecc, P2, u2, pp, u2 + ecc->p.size);
 
-  /* u1 = h / s, P1 = u1 * G */
-  ecc_hash (ecc, hp, length, digest);
-  ecc_modq_mul (ecc, u1, hp, sinv);
-
   /* u = 0 can happen only if h = 0 or h = q, which is extremely
      unlikely. */
   if (!zero_p (u1, ecc->p.size))
     {
-      /* Total storage: 6*ecc->p.size + ecc->mul_g_itch (ecc->p.size) */
-      ecc->mul_g (ecc, P1, u1, u1 + ecc->p.size);
+      /* Total storage: 7*ecc->p.size + ecc->mul_g_itch (ecc->p.size) */
+      ecc->mul_g (ecc, P1, u1, P1 + 3*ecc->p.size);
 
       /* NOTE: ecc_add_jjj and/or ecc_j_to_a will produce garbage in
 	 case u1 G = +/- u2 V. However, anyone who gets his or her
@@ -142,10 +142,10 @@ ecc_ecdsa_verify (const struct ecc_curve *ecc,
 	 private key by guessing.
        */
       /* Total storage: 6*ecc->p.size + ecc->add_hhh_itch */
-      ecc->add_hhh (ecc, P1, P1, P2, u1);
+      ecc->add_hhh (ecc, P1, P1, P2, P1 + 3*ecc->p.size);
     }
   /* x coordinate only, modulo q */
-  ecc->h_to_a (ecc, 2, P2, P1, u1);
+  ecc->h_to_a (ecc, 2, P2, P1, P1 + 3*ecc->p.size);
 
   return (mpn_cmp (rp, P2, ecc->p.size) == 0);
 #undef P2

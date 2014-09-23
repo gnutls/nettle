@@ -173,8 +173,7 @@ static void
 bench_modinv (void *p)
 {
   struct ecc_ctx *ctx = (struct ecc_ctx *) p;
-  mpn_copyi (ctx->rp + ctx->ecc->p.size, ctx->ap, ctx->ecc->p.size);
-  ctx->ecc->p.invert (&ctx->ecc->p, ctx->rp, ctx->rp + ctx->ecc->p.size, ctx->tp);
+  ctx->ecc->p.invert (&ctx->ecc->p, ctx->rp, ctx->ap, ctx->tp);
 }
 
 #if !NETTLE_USE_MINI_GMP

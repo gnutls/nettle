@@ -1,3 +1,17 @@
+2014-09-23  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-mod-inv.c (ecc_mod_inv): Interface change, make ap input
+	const, and require 2n limbs at rp. Preparing for powm-based
+	alternative implementations. Drop #if:ed out code and dp
+	temporary. Updated all callers, more complicated cases described
+	below.
+	* ecc-internal.h (typedef ecc_mod_inv_func): Added const to input
+	argument.
+	(ECC_MOD_INV_ITCH): Renamed, was ECC_MODINV_ITCH, and reduced to
+	2*n.
+	* ecc-ecdsa-verify.c (ecc_ecdsa_verify): Overhauled allocation,
+	putting mod_inv scratch at the end.
+
 2014-09-22  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-random.c (ecc_mod_random): Renamed, and take a const struct

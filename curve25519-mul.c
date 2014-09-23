@@ -132,7 +132,7 @@ curve25519_mul (uint8_t *q, const uint8_t *n, const uint8_t *p)
       ecc_modp_addmul_1 (ecc, AA, E, 121665);
       ecc_modp_mul (ecc, z2, E, AA);      
     }
-  ecc->p.invert (&ecc->p, x3, z2, z3);
+  ecc->p.invert (&ecc->p, x3, z2, z3 + ecc->p.size);
   ecc_modp_mul (ecc, z3, x2, x3);
   cy = mpn_sub_n (x2, z3, ecc->p.m, ecc->p.size);
   cnd_copy (cy, x2, z3, ecc->p.size);

@@ -63,9 +63,8 @@ ecc_eh_to_a (const struct ecc_curve *ecc,
 
   mp_limb_t cy;
 
-  mpn_copyi (tp, zp, ecc->p.size);
-  /* Needs 3*size scratch */
-  ecc->p.invert (&ecc->p, izp, tp, tp + ecc->p.size);
+  /* Needs 2*size scratch */
+  ecc->p.invert (&ecc->p, izp, zp, tp + ecc->p.size);
 
   ecc_modp_mul (ecc, tp, xp, izp);
   cy = mpn_sub_n (r, tp, ecc->p.m, ecc->p.size);
