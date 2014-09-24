@@ -1,3 +1,7 @@
+2014-09-24  Niels Möller  <nisse@lysator.liu.se>
+
+	* curve25519.h [__cplusplus]: Fixed extern "C" block.
+
 2014-09-23  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-hash.c (ecc_hash): Changed argument type from struct
