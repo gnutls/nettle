@@ -91,7 +91,7 @@ camellia128_set_decrypt_key(struct camellia128_ctx *ctx,
 void
 camellia128_invert_key(struct camellia128_ctx *dst,
 		       const struct camellia128_ctx *src);
-  
+
 void
 camellia128_crypt(const struct camellia128_ctx *ctx,
 		  size_t length, uint8_t *dst,
@@ -113,7 +113,7 @@ camellia256_set_decrypt_key(struct camellia256_ctx *ctx,
 void
 camellia256_invert_key(struct camellia256_ctx *dst,
 		       const struct camellia256_ctx *src);
-  
+
 void
 camellia256_crypt(const struct camellia256_ctx *ctx,
 		  size_t length, uint8_t *dst,
@@ -136,7 +136,7 @@ camellia192_set_decrypt_key(struct camellia256_ctx *ctx,
 #define camellia192_invert_key camellia256_invert_key
 #define camellia192_crypt camellia256_crypt
 
-#ifdef  __cplusplus
+#ifdef __cplusplus
 }
 #endif
 
