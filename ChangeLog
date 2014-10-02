@@ -1,5 +1,9 @@
 2014-10-02  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/eddsa-compress-test.c: New testcase.
+	* testsuite/Makefile.in (TS_HOGWEED_SOURCES): Added
+	eddsa-compress-test.c.
+
 	* eddsa-decompress.c (_eddsa_decompress): New file, new function.
 	* eddsa-compress.c (_eddsa_compress): New file, new function.
 	* eddsa.h: New file.

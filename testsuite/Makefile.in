@@ -44,7 +44,8 @@ TS_HOGWEED_SOURCES = sexp-test.c sexp-format-test.c \
 		     ecc-dup-test.c ecc-add-test.c \
 		     ecc-mul-g-test.c ecc-mul-a-test.c \
 		     ecdsa-sign-test.c ecdsa-verify-test.c \
-		     ecdsa-keygen-test.c ecdh-test.c
+		     ecdsa-keygen-test.c ecdh-test.c \
+		     eddsa-compress-test.c
 
 TS_SOURCES = $(TS_NETTLE_SOURCES) $(TS_HOGWEED_SOURCES)
 CXX_SOURCES = cxx-test.cxx

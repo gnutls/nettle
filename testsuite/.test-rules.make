@@ -226,6 +226,9 @@ ecdsa-keygen-test$(EXEEXT): ecdsa-keygen-test.$(OBJEXT)
 ecdh-test$(EXEEXT): ecdh-test.$(OBJEXT)
 	$(LINK) ecdh-test.$(OBJEXT) $(TEST_OBJS) -o ecdh-test$(EXEEXT)
 
+eddsa-compress-test$(EXEEXT): eddsa-compress-test.$(OBJEXT)
+	$(LINK) eddsa-compress-test.$(OBJEXT) $(TEST_OBJS) -o eddsa-compress-test$(EXEEXT)
+
 sha1-huge-test$(EXEEXT): sha1-huge-test.$(OBJEXT)
 	$(LINK) sha1-huge-test.$(OBJEXT) $(TEST_OBJS) -o sha1-huge-test$(EXEEXT)
 
