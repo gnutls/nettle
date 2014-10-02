@@ -181,7 +181,8 @@ suggests using the twisted Edwards curve,
 \begin{equation*}
   -x^2 + y^2 = 1 + d' x^2 y^2 \pmod{p}
 \end{equation*}
-(For this we use the same $d' = -d = (121665/121666) \bmod p$).
+(For this we use $d' = -d$, with $d = (121665/121666) \bmod p$, where
+$d$ is the same as in the curve25519 equivalence described below).
 Assuming -1 has a square root modulo $p$, a point $(x, y)$ lies on
 this curve if and only if $(\sqrt{-1} x, p)$ lies of the non-twisted
 Edwards curve. The point addition formulas for the twisted Edwards
@@ -224,6 +225,18 @@ because they are complete. See
 \end{align*}
 
 In our notation $a = -1$, and the $d'$ above is $-d$.
+
+\subsection{Decompression}
+
+For EdDSA, points are represented by the $y$ coordinate and only the
+low bit, or ``sign'' bit, of the $x$ coordinate. Then $x^2$ can be
+computed as
+\begin{align*}
+  x^2 &= (1-y^2) (d y^2 - 1)^{-1} \\
+  &= 121666 (1-y^2) (121665 y^2 - 121666)^{-1}
+\end{align*}
+We then get $x$ from a square root, and we can use a trick of djb's to
+avoid the inversion.
 
 \section{Curve25519}
 
