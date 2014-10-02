@@ -58,7 +58,6 @@
 #define sec_sub_1 _nettle_sec_sub_1
 #define sec_tabselect _nettle_sec_tabselect
 #define sec_modinv _nettle_sec_modinv
-#define ecc_25519_sqrt _nettle_ecc_25519_sqrt
 #define curve25519_eh_to_x _nettle_curve25519_eh_to_x
 
 #define ECC_MAX_SIZE ((521 + GMP_NUMB_BITS - 1) / GMP_NUMB_BITS)
@@ -81,6 +80,12 @@ typedef void ecc_mod_func (const struct ecc_modulo *m, mp_limb_t *rp);
 
 typedef void ecc_mod_inv_func (const struct ecc_modulo *m,
 			       mp_limb_t *vp, const mp_limb_t *ap,
+			       mp_limb_t *scratch);
+
+/* Computes the square root of (u/v) (mod p) */
+typedef int ecc_mod_sqrt_func (const struct ecc_modulo *m,
+			       mp_limb_t *rp,
+			       const mp_limb_t *up, const mp_limb_t *vp,
 			       mp_limb_t *scratch);
 
 typedef void ecc_add_func (const struct ecc_curve *ecc,
@@ -108,6 +113,7 @@ struct ecc_modulo
   unsigned short B_size;
   unsigned short redc_size;
   unsigned short invert_itch;
+  unsigned short sqrt_itch;
 
   const mp_limb_t *m;
   /* B^size mod m. Expected to have at least 32 leading zeros
@@ -123,6 +129,7 @@ struct ecc_modulo
   ecc_mod_func *mod;
   ecc_mod_func *reduce;
   ecc_mod_inv_func *invert;
+  ecc_mod_sqrt_func *sqrt;
 };
 
 /* Represents an elliptic curve of the form
@@ -254,10 +261,6 @@ void
 sec_tabselect (mp_limb_t *rp, mp_size_t rn,
 	       const mp_limb_t *table, unsigned tn,
 	       unsigned k);
-
-
-int
-ecc_25519_sqrt(mp_limb_t *rp, const mp_limb_t *ap);
 
 void
 curve25519_eh_to_x (mp_limb_t *xp, const mp_limb_t *p,

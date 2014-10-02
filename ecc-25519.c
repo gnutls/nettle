@@ -44,14 +44,14 @@
 
 #include "ecc-25519.h"
 
+#define PHIGH_BITS (GMP_NUMB_BITS * ECC_LIMB_SIZE - 255)
+
 #if HAVE_NATIVE_ecc_25519_modp
 
 #define ecc_25519_modp nettle_ecc_25519_modp
 void
 ecc_25519_modp (const struct ecc_modulo *m, mp_limb_t *rp);
 #else
-
-#define PHIGH_BITS (GMP_NUMB_BITS * ECC_LIMB_SIZE - 255)
 
 #if PHIGH_BITS == 0
 #error Unsupported limb size */
@@ -127,7 +127,8 @@ ecc_mod_pow_2kp1 (const struct ecc_modulo *m,
   ecc_mod_mul (m, rp, tp, xp);
 }
 
-/* Computes a^{2^{252-3}} mod m. Needs 5 * n scratch space. */
+/* Computes a^{(p-5)/8} = a^{2^{252-3}} mod m. Needs 5 * n scratch
+   space. */
 static void
 ecc_mod_pow_252m3 (const struct ecc_modulo *m,
 		   mp_limb_t *rp, const mp_limb_t *ap, mp_limb_t *scratch)
@@ -186,9 +187,9 @@ static void ecc_25519_inv (const struct ecc_modulo *p,
 #define t0 scratch
 
   /* Addition chain
-     
+
        p - 2 = 2^{255} - 21
-             = 1 + 2 (1 + 4 (2^{252}-3))	     
+             = 1 + 2 (1 + 4 (2^{252}-3))
   */
   ecc_mod_pow_252m3 (p, rp, ap, t0);
   ecc_mod_sqr (p, t0, rp);
@@ -199,63 +200,94 @@ static void ecc_25519_inv (const struct ecc_modulo *p,
   mpn_copyi (rp, t0, ECC_LIMB_SIZE); /* FIXME: Eliminate copy? */
 #undef t0
 }
- 
-/* Compute x such that x^2 = a (mod p). Returns one on success, zero
-   on failure. using the e == 2 special case of the Shanks-Tonelli
-   algorithm (see http://www.math.vt.edu/people/brown/doc/sqrts.pdf,
-   or Henri Cohen, Computational Algebraic Number Theory, 1.5.1.
 
-   NOTE: Not side-channel silent. FIXME: Compute square root in the
-   extended field if a isn't a square (mod p)? FIXME: Accept scratch
-   space from caller (could allow scratch == rp). */
+/* First, do a canonical reduction, then check if zero */
+static int
+ecc_25519_zero_p (const struct ecc_modulo *p, mp_limb_t *xp)
+{
+  mp_limb_t cy;
+  mp_limb_t w;
+  mp_size_t i;
+#if PHIGH_BITS > 0
+  mp_limb_t hi = xp[ECC_LIMB_SIZE-1];
+  xp[ECC_LIMB_SIZE-1] = (hi & (GMP_NUMB_MASK >> PHIGH_BITS))
+    + sec_add_1 (xp, xp, ECC_LIMB_SIZE - 1, 19 * (hi >> (GMP_NUMB_BITS - PHIGH_BITS)));
+#endif
+  cy = mpn_sub_n (xp, xp, p->m, ECC_LIMB_SIZE);
+  cnd_add_n (cy, xp, p->m, ECC_LIMB_SIZE);
+
+  for (i = 0, w = 0; i < ECC_LIMB_SIZE; i++)
+    w |= xp[i];
+  return w == 0;
+}
+
+/* Compute x such that x^2 = u/v (mod p). Returns one on success, zero
+   on failure. We use the e = 2 special case of the Shanks-Tonelli
+   algorithm (see http://www.math.vt.edu/people/brown/doc/sqrts.pdf,
+   or Henri Cohen, Computational Algebraic Number Theory, 1.5.1).
+
+   To avoid a separate inversion, we also use a trick of djb's, to
+   compute the candidate root as
+
+     x = (u/v)^{(p+3)/8} = u v^3 (u v^7)^{(p-5)/8}.
+*/
 #if ECC_SQRT_E != 2
 #error Broken curve25519 parameters
 #endif
-int
-ecc_25519_sqrt(mp_limb_t *rp, const mp_limb_t *ap)
+
+/* Needs 4*n space + scratch for ecc_mod_pow_252m3. */
+#define ECC_25519_SQRT_ITCH (9*ECC_LIMB_SIZE)
+
+static int
+ecc_25519_sqrt(const struct ecc_modulo *p, mp_limb_t *rp,
+	       const mp_limb_t *up, const mp_limb_t *vp,
+	       mp_limb_t *scratch)
 {
-  mp_size_t itch;
-  mp_limb_t *scratch;
-  int res;
-  const struct ecc_modulo *p = &nettle_curve25519.p;
+  int pos, neg;
 
-  itch = 7*ECC_LIMB_SIZE;
-  scratch = gmp_alloc_limbs (itch);
+#define uv3 scratch
+#define uv7 (scratch + ECC_LIMB_SIZE)
+#define uv7p (scratch + 2*ECC_LIMB_SIZE)
+#define v2 (scratch + 2*ECC_LIMB_SIZE)
+#define uv (scratch + 3*ECC_LIMB_SIZE)
+#define v4 (scratch + 3*ECC_LIMB_SIZE)
 
-#define t0 scratch
-#define xp (scratch + ECC_LIMB_SIZE)
-#define bp (scratch + 2*ECC_LIMB_SIZE)
+#define scratch_out (scratch + 4 * ECC_LIMB_SIZE)
 
-  ecc_mod_pow_252m3 (p, t0, ap, t0 + 2*ECC_LIMB_SIZE);
+#define x2 scratch
+#define vx2 (scratch + ECC_LIMB_SIZE)
+#define t0 (scratch + 2*ECC_LIMB_SIZE)
 
-  /* Compute candidate root x and fudgefactor b. */
-  ecc_mod_mul (p, xp, t0, ap); /* a^{(p+3)/8 */
-  ecc_mod_mul (p, bp, t0, xp); /* a^{(p-1)/4} */
-  /* Check if b == 1 (mod p) */
-  if (mpn_cmp (bp, p->m, ECC_LIMB_SIZE) >= 0)
-    mpn_sub_n (bp, bp, p->m, ECC_LIMB_SIZE);
-  if (mpn_cmp (bp, ecc_unit, ECC_LIMB_SIZE) == 0)
-    {
-      mpn_copyi (rp, xp, ECC_LIMB_SIZE);
-      res = 1;
-    }
-  else
-    {
-      mpn_add_1 (bp, bp, ECC_LIMB_SIZE, 1);
-      if (mpn_cmp (bp, p->m, ECC_LIMB_SIZE) == 0)
-	{
-	  ecc_mod_mul (p, bp, xp, ecc_sqrt_z);
-	  mpn_copyi (rp, bp, ECC_LIMB_SIZE);
-	  res = 1;
-	}
-      else
-	res = 0;
-    }
-  gmp_free_limbs (scratch, itch);
-  return res;
+					/* Live values */
+  ecc_mod_sqr (p, v2, vp);		/* v2 */
+  ecc_mod_mul (p, uv, up, vp);		/* uv, v2 */
+  ecc_mod_mul (p, uv3, uv, v2);		/* uv3, v2 */
+  ecc_mod_sqr (p, v4, v2);		/* uv3, v4 */
+  ecc_mod_mul (p, uv7, uv3, v4);	/* uv3, uv7 */
+  ecc_mod_pow_252m3 (p, uv7p, uv7, scratch_out); /* uv3, uv7p */
+  ecc_mod_mul (p, rp, uv7p, uv3);	/* none */
+
+  /* Check sign. If square root exists, have v x^2 = ±u */
+  ecc_mod_sqr (p, x2, rp);
+  ecc_mod_mul (p, vx2, x2, vp);
+  ecc_mod_add (p, t0, vx2, up);
+  neg = ecc_25519_zero_p (p, t0);
+  ecc_mod_sub (p, t0, up, vx2);
+  pos = ecc_25519_zero_p (p, t0);
+
+  ecc_mod_mul (p, t0, rp, ecc_sqrt_z);
+  cnd_copy (neg, rp, t0, ECC_LIMB_SIZE);
+  return pos | neg;
+
+#undef uv3
+#undef uv7
+#undef uv7p
+#undef v2
+#undef v4
+#undef scratch_out
+#undef x2
+#undef vx2
 #undef t0
-#undef xp
-#undef bp
 }
 
 const struct ecc_curve nettle_curve25519 =
@@ -266,6 +298,7 @@ const struct ecc_curve nettle_curve25519 =
     ECC_BMODP_SIZE,
     0,
     ECC_25519_INV_ITCH,
+    ECC_25519_SQRT_ITCH,
 
     ecc_p,
     ecc_Bmodp,
@@ -276,6 +309,7 @@ const struct ecc_curve nettle_curve25519 =
     ecc_25519_modp,
     ecc_25519_modp,
     ecc_25519_inv,
+    ecc_25519_sqrt,
   },
   {
     253,
@@ -283,6 +317,7 @@ const struct ecc_curve nettle_curve25519 =
     ECC_BMODQ_SIZE,
     0,
     ECC_MOD_INV_ITCH (ECC_LIMB_SIZE),
+    0,
 
     ecc_q,
     ecc_Bmodq,  
@@ -293,6 +328,7 @@ const struct ecc_curve nettle_curve25519 =
     ecc_25519_modq,
     ecc_25519_modq,
     ecc_mod_inv,
+    NULL,
   },
 
   0, /* No redc */

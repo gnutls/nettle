@@ -155,6 +155,7 @@ const struct ecc_curve nettle_secp_384r1 =
     ECC_BMODP_SIZE,
     ECC_REDC_SIZE,
     ECC_MOD_INV_ITCH (ECC_LIMB_SIZE),
+    0,
 
     ecc_p,
     ecc_Bmodp,
@@ -165,6 +166,7 @@ const struct ecc_curve nettle_secp_384r1 =
     ecc_384_modp,
     ecc_384_modp,
     ecc_mod_inv,
+    NULL,
   },
   {
     384,
@@ -172,6 +174,7 @@ const struct ecc_curve nettle_secp_384r1 =
     ECC_BMODQ_SIZE,
     0,
     ECC_MOD_INV_ITCH (ECC_LIMB_SIZE),
+    0,
 
     ecc_q,
     ecc_Bmodq,
@@ -182,6 +185,7 @@ const struct ecc_curve nettle_secp_384r1 =
     ecc_mod,
     ecc_mod,
     ecc_mod_inv,
+    NULL,
   },
 
   USE_REDC,

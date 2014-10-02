@@ -1,3 +1,14 @@
+2014-10-02  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-25519.c (PHIGH_BITS): Always define this constant.
+	(ecc_25519_zero_p): New function.
+	(ecc_25519_sqrt): Take a ratio u/v as input. Added scratch
+	argument. Made static.
+	* ecc-internal.h (ecc_mod_sqrt_func): New typedef.
+	(struct ecc_modulo): Added sqrt_itch and sqrt function pointer.
+	Updated all instances.
+	(ecc_25519_sqrt): Deleted declaration, function now static.
+
 2014-09-24  Niels Möller  <nisse@lysator.liu.se>
 
 	* curve25519.h [__cplusplus]: Fixed extern "C" block.
