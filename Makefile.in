@@ -176,13 +176,14 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  ecc-ecdsa-sign.c ecdsa-sign.c \
 		  ecc-ecdsa-verify.c ecdsa-verify.c ecdsa-keygen.c \
 		  curve25519-mul-g.c curve25519-mul.c curve25519-eh-to-x.c \
+		  eddsa-compress.c eddsa-decompress.c \
 		  $(OPT_HOGWEED_SOURCES)
 
 HEADERS = aes.h arcfour.h arctwo.h asn1.h blowfish.h \
 	  base16.h base64.h buffer.h camellia.h cast128.h \
 	  cbc.h ccm.h chacha.h chacha-poly1305.h ctr.h \
 	  curve25519.h des.h des-compat.h dsa.h dsa-compat.h eax.h \
-	  ecc-curve.h ecc.h ecdsa.h \
+	  ecc-curve.h ecc.h ecdsa.h eddsa.h \
 	  gcm.h gosthash94.h hmac.h \
 	  knuth-lfib.h \
 	  macros.h \

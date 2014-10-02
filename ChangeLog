@@ -1,5 +1,11 @@
 2014-10-02  Niels Möller  <nisse@lysator.liu.se>
 
+	* eddsa-decompress.c (_eddsa_decompress): New file, new function.
+	* eddsa-compress.c (_eddsa_compress): New file, new function.
+	* eddsa.h: New file.
+	* Makefile.in (HEADERS): Added eddsa.h.
+	(hogweed_SOURCES): Added eddsa-compress.c and eddsa-decompress.c.
+
 	* testsuite/ecc-sqrt-test.c: New test case.
 	* testsuite/Makefile.in (TS_HOGWEED_SOURCES): Added
 	ecc-sqrt-test.c.
