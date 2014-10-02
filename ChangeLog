@@ -1,5 +1,9 @@
 2014-10-02  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/ecc-sqrt-test.c: New test case.
+	* testsuite/Makefile.in (TS_HOGWEED_SOURCES): Added
+	ecc-sqrt-test.c.
+
 	* ecc-25519.c (PHIGH_BITS): Always define this constant.
 	(ecc_25519_zero_p): New function.
 	(ecc_25519_sqrt): Take a ratio u/v as input. Added scratch

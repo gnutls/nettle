@@ -187,12 +187,6 @@ dsa-test$(EXEEXT): dsa-test.$(OBJEXT)
 dsa-keygen-test$(EXEEXT): dsa-keygen-test.$(OBJEXT)
 	$(LINK) dsa-keygen-test.$(OBJEXT) $(TEST_OBJS) -o dsa-keygen-test$(EXEEXT)
 
-curve25519-dup-test$(EXEEXT): curve25519-dup-test.$(OBJEXT)
-	$(LINK) curve25519-dup-test.$(OBJEXT) $(TEST_OBJS) -o curve25519-dup-test$(EXEEXT)
-
-curve25519-add-test$(EXEEXT): curve25519-add-test.$(OBJEXT)
-	$(LINK) curve25519-add-test.$(OBJEXT) $(TEST_OBJS) -o curve25519-add-test$(EXEEXT)
-
 curve25519-dh-test$(EXEEXT): curve25519-dh-test.$(OBJEXT)
 	$(LINK) curve25519-dh-test.$(OBJEXT) $(TEST_OBJS) -o curve25519-dh-test$(EXEEXT)
 
@@ -204,6 +198,9 @@ ecc-modinv-test$(EXEEXT): ecc-modinv-test.$(OBJEXT)
 
 ecc-redc-test$(EXEEXT): ecc-redc-test.$(OBJEXT)
 	$(LINK) ecc-redc-test.$(OBJEXT) $(TEST_OBJS) -o ecc-redc-test$(EXEEXT)
+
+ecc-sqrt-test$(EXEEXT): ecc-sqrt-test.$(OBJEXT)
+	$(LINK) ecc-sqrt-test.$(OBJEXT) $(TEST_OBJS) -o ecc-sqrt-test$(EXEEXT)
 
 ecc-dup-test$(EXEEXT): ecc-dup-test.$(OBJEXT)
 	$(LINK) ecc-dup-test.$(OBJEXT) $(TEST_OBJS) -o ecc-dup-test$(EXEEXT)
