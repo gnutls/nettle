@@ -33,6 +33,38 @@
 
 #define COUNT 5000
 
+#if NETTLE_USE_MINI_GMP
+/* Implements Legendre symbol only, requiring that p is an odd prime */
+static int
+mpz_ui_kronecker (mp_limb_t ul, const mpz_t p)
+{
+  mpz_t t, u;
+  int r;
+
+  mpz_init_set_ui (u, ul);
+  mpz_init_set (t, p);
+  mpz_sub_ui (t, t, 1);
+  mpz_tdiv_q_2exp (t, t, 1);
+  mpz_powm (t, u, t, p);
+
+  r = mpz_cmp_ui (t, 1);
+  if (r < 0)
+    r = 0;
+  else if (r == 0)
+    r = 1;
+  else
+    {
+      mpz_sub (t, p, t);
+      ASSERT (mpz_cmp_ui (t, 1) == 0);
+      r = -1;
+    }
+  mpz_clear (t);
+  mpz_clear (u);
+
+  return r;
+}
+#endif /* NETTLE_USE_MINI_GMP */
+
 static void
 test_modulo (gmp_randstate_t rands, const struct ecc_modulo *m)
 {

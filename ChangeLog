@@ -1,3 +1,14 @@
+2014-10-03  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/ecc-sqrt-test.c (mpz_ui_kronecker)
+	[NETTLE_USE_MINI_GMP]: New fallback definition when building with
+	mini-gmp.
+	* testsuite/testutils.c (gmp_randinit_default)
+	[NETTLE_USE_MINI_GMP]: Likewise.
+	(mpz_urandomb): Likewise.
+	* testsuite/testutils.h (gmp_randstate_t) [NETTLE_USE_MINI_GMP]:
+	Fallback typedef, using knuth_lfib_ctx.
+
 2014-10-02  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/eddsa-compress-test.c: New testcase.

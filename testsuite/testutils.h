@@ -20,11 +20,14 @@
 # include "ecc-internal.h"
 # include "ecdsa.h"
 # include "gmp-glue.h"
+# if NETTLE_USE_MINI_GMP
+#  include "knuth-lfib.h"
+# endif
 
 /* Undo dsa-compat name mangling */
 #undef dsa_generate_keypair
 #define dsa_generate_keypair nettle_dsa_generate_keypair
-#endif
+#endif /* WITH_HOGWEED */
 
 #include "nettle-meta.h"
 
@@ -161,6 +164,17 @@ test_armor(const struct nettle_armor *armor,
 int
 mpn_zero_p (mp_srcptr ap, mp_size_t n);
 #endif
+
+#if NETTLE_USE_MINI_GMP
+typedef struct knuth_lfib_ctx gmp_randstate_t[1];
+
+void gmp_randinit_default (struct knuth_lfib_ctx *ctx);
+#define gmp_randclear(state)
+void mpz_urandomb (mpz_t r, struct knuth_lfib_ctx *ctx, mp_bitcnt_t bits);
+/* This is cheating */
+#define mpz_rrandomb mpz_urandomb
+
+#endif /* NETTLE_USE_MINI_GMP */
 
 mp_limb_t *
 xalloc_limbs (mp_size_t n);

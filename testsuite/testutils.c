@@ -699,6 +699,25 @@ mpn_zero_p (mp_srcptr ap, mp_size_t n)
 }
 #endif
 
+#if NETTLE_USE_MINI_GMP
+void
+gmp_randinit_default (struct knuth_lfib_ctx *ctx)
+{
+  knuth_lfib_init (ctx, 17);
+}
+void
+mpz_urandomb (mpz_t r, struct knuth_lfib_ctx *ctx, mp_bitcnt_t bits)
+{
+  size_t bytes = (bits+7)/8;
+  uint8_t *buf = xalloc (bytes);
+
+  knuth_lfib_random (ctx, bytes, buf);
+  buf[bytes-1] &= 0xff >> (8*bytes - bits);
+  nettle_mpz_set_str_256_u (r, bytes, buf);
+  free (buf);
+}
+#endif /* NETTLE_USE_MINI_GMP */
+
 mp_limb_t *
 xalloc_limbs (mp_size_t n)
 {
