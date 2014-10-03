@@ -3,6 +3,7 @@
 	* testsuite/ecc-redc-test.c [NETTLE_USE_MINI_GMP]: Enable test.
 	(test_main): Replace gmp_fprintf calls.
 	* testsuite/ecc-mul-a-test.c: Likewise.
+	* testsuite/ecc-mul-g-test.c: Likewise.
 
 	* testsuite/ecc-modinv-test.c [NETTLE_USE_MINI_GMP]: Enable test.
 	(ref_modinv): Use mpz_gcdext, instead of mpn_gcdext.
