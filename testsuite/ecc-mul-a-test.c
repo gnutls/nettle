@@ -1,13 +1,5 @@
 #include "testutils.h"
 
-#if NETTLE_USE_MINI_GMP
-void
-test_main (void)
-{
-  SKIP();
-}
-#else /* ! NETTLE_USE_MINI_GMP */
-
 void
 test_main (void)
 {
@@ -80,15 +72,23 @@ test_main (void)
 
 	  if (mpn_cmp (p, q, 2*size))
 	    {
-	      gmp_fprintf (stderr,
-			   "Different results from ecc->mul and ecc->mul_g.\n"
-			   " bits = %u\n"
-			   " n = %Nx\n",
-			   ecc->p.bit_size, n, size);
-	      gmp_fprintf (stderr, "p = %Nx,\n    %Nx\n",
-			   p, size, p + size, size);
-	      gmp_fprintf (stderr, "q = %Nx,\n    %Nx\n",
-			   q, size, q + size, size);
+	      fprintf (stderr,
+		       "Different results from ecc->mul and ecc->mul_g.\n"
+		       " bits = %u\n",
+		       ecc->p.bit_size);
+	      fprintf (stderr, " n = ");
+	      mpn_out_str (stderr, 16, n, size);
+	      
+	      fprintf (stderr, "\np = ");
+	      mpn_out_str (stderr, 16, p, size);
+	      fprintf (stderr, ",\n    ");
+	      mpn_out_str (stderr, 16, p + size, size);
+
+	      fprintf (stderr, "\nq = ");
+	      mpn_out_str (stderr, 16, q, size);
+	      fprintf (stderr, ",\n    ");
+	      mpn_out_str (stderr, 16, q + size, size);
+	      fprintf (stderr, "\n");
 	      abort ();
 	    }
 	}
@@ -100,4 +100,3 @@ test_main (void)
   mpz_clear (r); 
   gmp_randclear (rands);
 }
-#endif /* ! NETTLE_USE_MINI_GMP */
