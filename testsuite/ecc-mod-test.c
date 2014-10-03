@@ -1,18 +1,14 @@
 #include "testutils.h"
 
-#if NETTLE_USE_MINI_GMP
-void
-test_main (void)
-{
-  SKIP();
-}
-#else /* ! NETTLE_USE_MINI_GMP */
-
 static void
 ref_mod (mp_limb_t *rp, const mp_limb_t *ap, const mp_limb_t *mp, mp_size_t mn)
 {
-  mp_limb_t q[mn + 1];
-  mpn_tdiv_qr (q, rp, 0, ap, 2*mn, mp, mn);
+  mpz_t r, a, m;
+  mpz_init (r);
+  mpz_mod (r, mpz_roinit_n (a, ap, 2*mn), mpz_roinit_n (m, mp, mn));
+  mpz_limbs_copy (rp, r, mn);
+
+  mpz_clear (r);
 }
 
 #define MAX_ECC_SIZE (1 + 521 / GMP_NUMB_BITS)
@@ -51,9 +47,14 @@ test_modulo (gmp_randstate_t rands, const char *name,
 	{
 	  fprintf (stderr, "m->mod %s failed: bit_size = %u\n",
 		   name, m->bit_size);
-	  gmp_fprintf (stderr, "a   = %Nx\n", a, 2*m->size);
-	  gmp_fprintf (stderr, "t   = %Nx (bad)\n", t, m->size);
-	  gmp_fprintf (stderr, "ref = %Nx\n", ref, m->size);
+
+	  fprintf (stderr, "a   = ");
+	  mpn_out_str (stderr, 16, a, 2*m->size);
+	  fprintf (stderr, "\nt   = ");
+	  mpn_out_str (stderr, 16, t, m->size);
+	  fprintf (stderr, " (bad)\nref = ");
+	  mpn_out_str (stderr, 16, ref, m->size);
+	  fprintf (stderr, "\n");
 	  abort ();
 	}
 
@@ -68,9 +69,13 @@ test_modulo (gmp_randstate_t rands, const char *name,
 	    {
 	      fprintf (stderr, "ecc_mod %s failed: bit_size = %u\n",
 		       name, m->bit_size);
-	      gmp_fprintf (stderr, "a   = %Nx\n", a, 2*m->size);
-	      gmp_fprintf (stderr, "t   = %Nx (bad)\n", t, m->size);
-	      gmp_fprintf (stderr, "ref = %Nx\n", ref, m->size);
+	      fprintf (stderr, "a   = ");
+	      mpn_out_str (stderr, 16, a, 2*m->size);
+	      fprintf (stderr, "\nt   = ");
+	      mpn_out_str (stderr, 16, t, m->size);
+	      fprintf (stderr, " (bad)\nref = ");
+	      mpn_out_str (stderr, 16, ref, m->size);
+	      fprintf (stderr, "\n");
 	      abort ();
 	    }
 	}
@@ -93,4 +98,3 @@ test_main (void)
     }
   gmp_randclear (rands);
 }
-#endif /* ! NETTLE_USE_MINI_GMP */

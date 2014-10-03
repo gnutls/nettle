@@ -1,5 +1,10 @@
 2014-10-03  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/ecc-mod-test.c [NETTLE_USE_MINI_GMP]: Enable test.
+	(ref_mod): Use mpz_mod and mpz_limbs_copy, instead of mpn_tdiv_qr.
+	(test_modulo): Replace gmp_fprintf calls by plain fprintf and
+	mpn_out_str.
+
 	* testsuite/testutils.c (mpn_out_str): New function, needed to
 	replace uses of gmp_fprintf.
 
