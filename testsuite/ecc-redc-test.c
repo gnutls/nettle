@@ -1,13 +1,5 @@
 #include "testutils.h"
 
-#if NETTLE_USE_MINI_GMP
-void
-test_main (void)
-{
-  SKIP();
-}
-#else /* ! NETTLE_USE_MINI_GMP */
-
 static void
 ref_redc (mp_limb_t *rp, const mp_limb_t *ap, const mp_limb_t *mp, mp_size_t mn)
 {
@@ -80,9 +72,13 @@ test_main (void)
 		{
 		  fprintf (stderr, "ecc->p.reduce failed: bit_size = %u\n",
 			   ecc->p.bit_size);
-		  gmp_fprintf (stderr, "a   = %Nx\n", a, 2*ecc->p.size);
-		  gmp_fprintf (stderr, "m   = %Nx (bad)\n", m, ecc->p.size);
-		  gmp_fprintf (stderr, "ref = %Nx\n", ref, ecc->p.size);
+		  fprintf (stderr, "a   = ");
+		  mpn_out_str (stderr, 16, a, 2*ecc->p.size);
+		  fprintf (stderr, "\nm   = ");
+		  mpn_out_str (stderr, 16, m, ecc->p.size);
+		  fprintf (stderr, " (bad)\nref   = ");
+		  mpn_out_str (stderr, 16, ref, ecc->p.size);
+		  fprintf (stderr, "\n");
 		  abort ();
 		}
 	    }
@@ -101,9 +97,13 @@ test_main (void)
 		{
 		  fprintf (stderr, "ecc_p%c1_redc failed: bit_size = %u\n",
 			   (ecc->p.m[0] == 1) ? 'm' : 'p', ecc->p.bit_size);
-		  gmp_fprintf (stderr, "a   = %Nx\n", a, 2*ecc->p.size);
-		  gmp_fprintf (stderr, "m   = %Nx (bad)\n", m, ecc->p.size);
-		  gmp_fprintf (stderr, "ref = %Nx\n", ref, ecc->p.size);
+		  fprintf (stderr, "a   = ");
+		  mpn_out_str (stderr, 16, a, 2*ecc->p.size);
+		  fprintf (stderr, "\nm   = ");
+		  mpn_out_str (stderr, 16, m, ecc->p.size);
+		  fprintf (stderr, " (bad)\nref = ");
+		  mpn_out_str (stderr, 16, ref, ecc->p.size);
+		  fprintf (stderr, "\n");
 		  abort ();
 		}
 	    }
@@ -113,4 +113,3 @@ test_main (void)
   mpz_clear (r);
   gmp_randclear (rands);
 }
-#endif /* ! NETTLE_USE_MINI_GMP */
