@@ -1,37 +1,33 @@
 #include "testutils.h"
 
-#if NETTLE_USE_MINI_GMP
-void
-test_main (void)
-{
-  SKIP();
-}
-#else /* ! NETTLE_USE_MINI_GMP */
-
 static int
 ref_modinv (mp_limb_t *rp, const mp_limb_t *ap, const mp_limb_t *mp, mp_size_t mn)
 {
-  mp_limb_t tp[4*(mn+1)];
-  mp_limb_t *up = tp;
-  mp_limb_t *vp = tp + mn+1;
-  mp_limb_t *gp = tp + 2*(mn+1);
-  mp_limb_t *sp = tp + 3*(mn+1);
-  mp_size_t gn, sn;
+  mpz_t g, s, a, m;
+  int res;
 
-  mpn_copyi (up, ap, mn);
-  mpn_copyi (vp, mp, mn);
-  gn = mpn_gcdext (gp, sp, &sn, up, mn, vp, mn);
-  if (gn != 1 || gp[0] != 1)
-    return 0;
+  mpz_init (g);
+  mpz_init (s);
+  mpz_roinit_n (a, ap, mn);
+  mpz_roinit_n (m, mp, mn);
   
-  if (sn < 0)
-    mpn_sub (sp, mp, mn, sp, -sn);
-  else if (sn < mn)
-    /* Zero-pad. */
-    mpn_zero (sp + sn, mn - sn);
+  mpz_gcdext (g, s, NULL, a, m);
+  if (mpz_cmp_ui (g, 1) == 0)
+    {
+      if (mpz_sgn (s) < 0)
+	{
+	  mpz_add (s, s, m);
+	  ASSERT (mpz_sgn (s) > 0);
+	}
+      mpz_limbs_copy (rp, s, mn);
+      res = 1;
+    }
+  else
+    res = 0;
 
-  mpn_copyi (rp, sp, mn);
-  return 1;
+  mpz_clear (g);
+  mpz_clear (s);
+  return res;
 }
 
 static int
@@ -70,10 +66,11 @@ test_modulo (gmp_randstate_t rands, const char *name,
     {
       fprintf (stderr, "%s->invert failed for zero input (bit size %u):\n",
 	       name, m->bit_size);
-      gmp_fprintf (stderr, "p = %Nx\n"
-		   "t = %Nx (bad)\n",
-		   m->m, m->size,
-		   ai, m->size);
+      fprintf (stderr, "p = ");
+      mpn_out_str (stderr, 16, m->m, m->size);
+      fprintf (stderr, "\nt = ");
+      mpn_out_str (stderr, 16, ai, m->size);
+      fprintf (stderr, " (bad)\n");
       abort ();
     }
 	  
@@ -84,10 +81,12 @@ test_modulo (gmp_randstate_t rands, const char *name,
     {
       fprintf (stderr, "%s->invert failed for a = p input (bit size %u):\n",
 	       name, m->bit_size);
-      gmp_fprintf (stderr, "p = %Nx\n"
-		   "t = %Nx (bad)\n",
-		   m->m, m->size,
-		   ai, m->size);
+      
+      fprintf (stderr, "p = ");
+      mpn_out_str (stderr, 16, m->m, m->size);
+      fprintf (stderr, "\nt = ");
+      mpn_out_str (stderr, 16, ai, m->size);
+      fprintf (stderr, " (bad)\n");
       abort ();
     }
 	
@@ -112,13 +111,15 @@ test_modulo (gmp_randstate_t rands, const char *name,
 	{
 	  fprintf (stderr, "%s->invert failed (test %u, bit size %u):\n",
 		   name, j, m->bit_size);
-	  gmp_fprintf (stderr, "a = %Zx\n"
-		       "p = %Nx\n"
-		       "t = %Nx (bad)\n"
-		       "r = %Nx\n",
-		       r, m->m, m->size,
-		       ai, m->size,
-		       ref, m->size);
+	  fprintf (stderr, "a = ");
+	  mpz_out_str (stderr, 16, r);
+	  fprintf (stderr, "\np = ");
+	  mpn_out_str (stderr, 16, m->m, m->size);
+	  fprintf (stderr, "\nt = ");
+	  mpn_out_str (stderr, 16, ai, m->size);
+	  fprintf (stderr, " (bad)\nr = ");
+	  mpn_out_str (stderr, 16, ref, m->size);
+
 	  abort ();
 	}
 	  
@@ -145,4 +146,3 @@ test_main (void)
     }
   gmp_randclear (rands);
 }
-#endif /* ! NETTLE_USE_MINI_GMP */
