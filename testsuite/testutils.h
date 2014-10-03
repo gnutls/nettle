@@ -165,6 +165,9 @@ int
 mpn_zero_p (mp_srcptr ap, mp_size_t n);
 #endif
 
+void
+mpn_out_str (FILE *f, int base, const mp_limb_t *xp, mp_size_t xn);
+
 #if NETTLE_USE_MINI_GMP
 typedef struct knuth_lfib_ctx gmp_randstate_t[1];
 

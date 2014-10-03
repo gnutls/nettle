@@ -699,6 +699,13 @@ mpn_zero_p (mp_srcptr ap, mp_size_t n)
 }
 #endif
 
+void
+mpn_out_str (FILE *f, int base, const mp_limb_t *xp, mp_size_t xn)
+{
+  mpz_t x;
+  mpz_out_str (f, base, mpz_roinit_n (x, xp, xn));
+}
+
 #if NETTLE_USE_MINI_GMP
 void
 gmp_randinit_default (struct knuth_lfib_ctx *ctx)

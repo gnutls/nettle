@@ -1,5 +1,8 @@
 2014-10-03  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/testutils.c (mpn_out_str): New function, needed to
+	replace uses of gmp_fprintf.
+
 	* testsuite/ecc-sqrt-test.c (mpz_ui_kronecker)
 	[NETTLE_USE_MINI_GMP]: New fallback definition when building with
 	mini-gmp.
