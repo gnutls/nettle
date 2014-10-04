@@ -1,3 +1,12 @@
+2014-10-04  Niels Möller  <nisse@lysator.liu.se>
+
+	* eddsa-sign.c (_eddsa_sign, _eddsa_sign_itch): New file, new
+	functions.
+	* eddsa-hash.c (_eddsa_hash): New file and function.
+	* eddsa.h: Declare new functions.
+	* Makefile.in (hogweed_SOURCES): Added eddsa-hash.c and
+	eddsa-sign.c.
+
 2014-10-03  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/ecc-redc-test.c [NETTLE_USE_MINI_GMP]: Enable test.
