@@ -229,6 +229,9 @@ ecdh-test$(EXEEXT): ecdh-test.$(OBJEXT)
 eddsa-compress-test$(EXEEXT): eddsa-compress-test.$(OBJEXT)
 	$(LINK) eddsa-compress-test.$(OBJEXT) $(TEST_OBJS) -o eddsa-compress-test$(EXEEXT)
 
+eddsa-sign-test$(EXEEXT): eddsa-sign-test.$(OBJEXT)
+	$(LINK) eddsa-sign-test.$(OBJEXT) $(TEST_OBJS) -o eddsa-sign-test$(EXEEXT)
+
 sha1-huge-test$(EXEEXT): sha1-huge-test.$(OBJEXT)
 	$(LINK) sha1-huge-test.$(OBJEXT) $(TEST_OBJS) -o sha1-huge-test$(EXEEXT)
 

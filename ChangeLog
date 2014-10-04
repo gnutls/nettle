@@ -1,5 +1,9 @@
 2014-10-04  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/eddsa-sign-test.c: New testcase.
+	* testsuite/Makefile.in (TS_HOGWEED_SOURCES): Added
+	eddsa-sign-test.c.
+
 	* eddsa-sign.c (_eddsa_sign, _eddsa_sign_itch): New file, new
 	functions.
 	* eddsa-hash.c (_eddsa_hash): New file and function.
