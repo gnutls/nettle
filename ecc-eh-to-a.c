@@ -79,7 +79,6 @@ ecc_eh_to_a (const struct ecc_curve *ecc,
 	  /* Reduce modulo q. FIXME: Hardcoded for curve25519,
 	     duplicates end of ecc_25519_modq. FIXME: Is this needed
 	     at all? Full reduction mod p is maybe sufficient. */
-	  mp_limb_t cy;
 	  unsigned shift;
 	  assert (ecc->p.bit_size == 255);
 	  shift = 252 - GMP_NUMB_BITS * (ecc->p.size - 1);
