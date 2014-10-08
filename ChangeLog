@@ -1,5 +1,9 @@
 2014-10-08  Niels Möller  <nisse@lysator.liu.se>
 
+	* eddsa-expand.c (_eddsa_expand_key): New file, new function.
+	* eddsa.h (_eddsa_expand_key): Declare it.
+	* Makefile.in (hogweed_SOURCES): Added eddsa-expand.c.
+
 	* eddsa-sign.c: Drop unneeded include of nettle-internal.h.
 
 2014-10-04  Niels Möller  <nisse@lysator.liu.se>

@@ -176,8 +176,8 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  ecc-ecdsa-sign.c ecdsa-sign.c \
 		  ecc-ecdsa-verify.c ecdsa-verify.c ecdsa-keygen.c \
 		  curve25519-mul-g.c curve25519-mul.c curve25519-eh-to-x.c \
-		  eddsa-compress.c eddsa-decompress.c eddsa-hash.c \
-		  eddsa-sign.c \
+		  eddsa-compress.c eddsa-decompress.c eddsa-expand.c \
+		  eddsa-hash.c eddsa-sign.c \
 		  $(OPT_HOGWEED_SOURCES)
 
 HEADERS = aes.h arcfour.h arctwo.h asn1.h blowfish.h \

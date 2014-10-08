@@ -46,6 +46,8 @@ extern "C" {
 #define _eddsa_decompress _nettle_eddsa_decompress
 #define _eddsa_decompress_itch _nettle_eddsa_decompress_itch
 #define _eddsa_hash _nettle_eddsa_hash
+#define _eddsa_expand_key_itch _nettle_eddsa_expand_key_itch
+#define _eddsa_expand_key _nettle_eddsa_expand_key
 #define _eddsa_sign _nettle_eddsa_sign
 #define _eddsa_sign_itch _nettle_eddsa_sign_itch
 
@@ -85,6 +87,20 @@ _eddsa_sign (const struct ecc_curve *ecc,
 	     uint8_t *signature,
 	     mp_limb_t *scratch);
 
+mp_size_t
+_eddsa_expand_key_itch (const struct ecc_curve *ecc);
+
+void
+_eddsa_expand_key (const struct ecc_curve *ecc,
+		   const struct nettle_hash *H,
+		   void *ctx,
+		   const uint8_t *key,
+		   uint8_t *pub,
+		   uint8_t *k1,
+		   mp_limb_t *k2,
+		   mp_limb_t *scratch);
+
+			   
 #ifdef __cplusplus
 }
 #endif
