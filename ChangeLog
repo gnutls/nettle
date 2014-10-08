@@ -1,3 +1,7 @@
+2014-10-08  Niels Möller  <nisse@lysator.liu.se>
+
+	* eddsa-sign.c: Drop unneeded include of nettle-internal.h.
+
 2014-10-04  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/eddsa-sign-test.c: New testcase.

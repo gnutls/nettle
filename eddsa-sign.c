@@ -39,7 +39,6 @@
 
 #include "ecc.h"
 #include "ecc-internal.h"
-#include "nettle-internal.h"
 #include "nettle-meta.h"
 
 mp_size_t
