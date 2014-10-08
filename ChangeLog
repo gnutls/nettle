@@ -1,5 +1,8 @@
 2014-10-08  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/eddsa-sign-test.c (test_eddsa_sign): Use
+	_eddsa_expand_key, and check its public key output.
+
 	* eddsa-expand.c (_eddsa_expand_key): New file, new function.
 	* eddsa.h (_eddsa_expand_key): Declare it.
 	* Makefile.in (hogweed_SOURCES): Added eddsa-expand.c.

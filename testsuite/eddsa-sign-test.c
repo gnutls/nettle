@@ -45,27 +45,30 @@ test_eddsa_sign (const struct ecc_curve *ecc,
   size_t nbytes = 1 + ecc->p.bit_size / 8;
   uint8_t *signature = xalloc (2*nbytes);
   void *ctx = xalloc (H->context_size);
+  uint8_t *public_out = xalloc (nbytes);
+  uint8_t *k1 = xalloc (nbytes);
   mp_limb_t *k2 = xalloc_limbs (ecc->p.size);
 
   ASSERT (public->length == nbytes);
   ASSERT (private->length == nbytes);
   ASSERT (ref->length == 2*nbytes);
+  ASSERT (_eddsa_expand_key_itch (ecc) <= _eddsa_sign_itch (ecc));
 
-  /* Generate subkeys. FIXME: Needs a function for key expansion. */
-  H->init (ctx);
-  H->update (ctx, private->length, private->data);
-  H->digest (ctx, 2*nbytes, signature);
-  mpn_set_base256_le (k2, ecc->p.size, signature, nbytes);
-  /* Clear low 3 bits */
-  k2[0] &= ~(mp_limb_t) 7;
-  /* Set bit number bit_size - 1 (bit 254 for curve25519) */
-  k2[(ecc->p.bit_size - 1) / GMP_NUMB_BITS]
-    |= (mp_limb_t) 1 << ((ecc->p.bit_size - 1) % GMP_NUMB_BITS);
-  /* Clear any higher bits. */
-  k2[ecc->p.size - 1] &= ~(mp_limb_t) 0
-    >> (GMP_NUMB_BITS * ecc->p.size - ecc->p.bit_size);
+  _eddsa_expand_key (ecc, H, ctx, private->data,
+		     public_out,
+		     k1, k2, scratch);
 
-  H->update (ctx, nbytes, signature + nbytes);
+  if (!MEMEQ (nbytes, public_out, public->data))
+    {
+      fprintf (stderr, "Bad public key from _eddsa_expand_key.\n");
+      fprintf (stderr, "got:");
+      print_hex (nbytes, public_out);
+      fprintf (stderr, "\nref:");
+      tstring_print_hex (public);
+      fprintf (stderr, "\n");
+      abort ();
+    }
+  H->update (ctx, nbytes, k1);
   
   _eddsa_sign (ecc, H, public->data, ctx, k2,
 	       msg->length, msg->data, signature, scratch);
@@ -92,7 +95,9 @@ test_eddsa_sign (const struct ecc_curve *ecc,
   free (scratch);
   free (signature);
   free (ctx);
+  free (k1);
   free (k2);
+  free (public_out);
 }
 
 void test_main (void)
