@@ -1,3 +1,10 @@
+2014-10-14  Niels Möller  <nisse@lysator.liu.se>
+
+	* eddsa-verify.c (_eddsa_verify, eddsa_verify_itch): New file, new
+	functions.
+	* eddsa.h: Declare new functions.
+	* Makefile.in (hogweed_SOURCES): Added eddsa-verify.c.
+
 2014-10-08  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/eddsa-sign-test.c (test_eddsa_sign): Use

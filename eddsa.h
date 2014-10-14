@@ -50,6 +50,8 @@ extern "C" {
 #define _eddsa_expand_key _nettle_eddsa_expand_key
 #define _eddsa_sign _nettle_eddsa_sign
 #define _eddsa_sign_itch _nettle_eddsa_sign_itch
+#define _eddsa_verify _nettle_eddsa_verify
+#define _eddsa_verify_itch _nettle_eddsa_verify_itch
 
 #define ED25519_KEY_SIZE 32
 
@@ -86,6 +88,20 @@ _eddsa_sign (const struct ecc_curve *ecc,
 	     const uint8_t *msg,
 	     uint8_t *signature,
 	     mp_limb_t *scratch);
+
+mp_size_t
+_eddsa_verify_itch (const struct ecc_curve *ecc);
+
+int
+_eddsa_verify (const struct ecc_curve *ecc,
+	       const struct nettle_hash *H,
+	       const uint8_t *pub,
+	       void *ctx,
+	       const mp_limb_t *A,
+	       size_t length,
+	       const uint8_t *msg,
+	       const uint8_t *signature,
+	       mp_limb_t *scratch);
 
 mp_size_t
 _eddsa_expand_key_itch (const struct ecc_curve *ecc);
