@@ -1,5 +1,9 @@
 2014-10-14  Niels Möller  <nisse@lysator.liu.se>
 
+	* eddsa-verify.c (equal_h): New function.
+	(_eddsa_verify): Use it for a proper point compare, replacing an
+	ecc_add_ehh.
+
 	* testsuite/eddsa-verify-test.c: New testcase.
 	* testsuite/Makefile.in (TS_HOGWEED_SOURCES): Added
 	eddsa-verify-test.c.

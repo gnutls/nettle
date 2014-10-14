@@ -41,14 +41,29 @@
 #include "ecc-internal.h"
 #include "nettle-meta.h"
 
-/* FIXME: Use mpn_zero_p. Also duplicated in ecc-ecdsa-verify.c. */
+/* Checks if x1/z1 == x2/z2 (mod p). Assumes z1 and z2 are
+   non-zero. */
 static int
-zero_p (const mp_limb_t *xp, mp_size_t n)
+equal_h (const struct ecc_modulo *p,
+	 const mp_limb_t *x1, const mp_limb_t *z1,
+	 const mp_limb_t *x2, const mp_limb_t *z2,
+	 mp_limb_t *scratch)
 {
-  while (n > 0)
-    if (xp[--n] > 0)
-      return 0;
-  return 1;
+#define t0 scratch
+#define t1 (scratch + p->size)
+
+  ecc_mod_mul (p, t0, x1, z2);
+  if (mpn_cmp (t0, p->m, p->size) >= 0)
+    mpn_sub_n (t0, t0, p->m, p->size);
+
+  ecc_mod_mul (p, t1, x2, z1);
+  if (mpn_cmp (t1, p->m, p->size) >= 0)
+    mpn_sub_n (t1, t1, p->m, p->size);
+
+  return mpn_cmp (t0, t1, p->size) == 0;
+
+#undef t0
+#undef t1
 }
 
 mp_size_t
@@ -98,19 +113,17 @@ _eddsa_verify (const struct ecc_curve *ecc,
 
   /* Compute h A + R - s G, which should be the neutral point */
   ecc->mul (ecc, P, hp, A, scratch_out);
-  /* FIXME: Introduce an ecc->add method? */
   ecc_add_eh (ecc, P, P, R, scratch_out);
-  /* Produces s in the range 1 <= s <= q, with no carry. */
-  mpn_sub_n (hp, ecc->q.m, sp, ecc->q.size);
+  /* Move out of the way. */
+  mpn_copyi (hp, sp, ecc->q.size);
   ecc->mul_g (ecc, S, hp, scratch_out);
-  ecc_add_ehh (ecc, P, P, S, scratch_out);
 
-  /* Zero point iff x == 0 (mod p) iff (x == 0 or x == p) */
-  /* FIXME: Needs to differentiate between (0,1) and (0,-1). Implement
-     point compare instead of the above ecc_add_ehh?
-  /* FIXME: Introduce zero_p method? */
-  return (zero_p (P, ecc->p.size)
-	  || mpn_cmp (P, ecc->p.m, ecc->p.size) == 0);
+  return equal_h (&ecc->p,
+		   P, P + 2*ecc->p.size,
+		   S, S + 2*ecc->p.size, scratch_out)
+    && equal_h (&ecc->p,
+		P + ecc->p.size, P + 2*ecc->p.size,
+		S + ecc->p.size, S + 2*ecc->p.size, scratch_out);
 
 #undef R
 #undef sp
