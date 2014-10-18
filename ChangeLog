@@ -1,3 +1,11 @@
+2014-10-18  Niels Möller  <nisse@lysator.liu.se>
+
+	* eddsa-verify.c (_eddsa_verify): Change argument order, putting A
+	before ctx.
+	* eddsa.h: Updated prototype.
+	* testsuite/eddsa-verify-test.c (test_eddsa): Updated
+	_eddsa_verify calls.
+
 2014-10-14  Niels Möller  <nisse@lysator.liu.se>
 
 	* eddsa-verify.c (equal_h): New function.

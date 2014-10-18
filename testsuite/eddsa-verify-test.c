@@ -51,7 +51,7 @@ test_eddsa (const struct ecc_curve *ecc,
     die ("Invalid eddsa public key.\n");
 
   memcpy (csignature, signature, 2*nbytes);
-  if (!_eddsa_verify (ecc, H, pub, ctx, A,
+  if (!_eddsa_verify (ecc, H, pub, A, ctx,
 		      msg->length, msg->data, csignature, scratch))
     {
       fprintf (stderr, "eddsa_verify failed with valid signature.\n");
@@ -68,7 +68,7 @@ test_eddsa (const struct ecc_curve *ecc,
 
   memcpy (csignature, signature, 2*nbytes);
   csignature[nbytes/3] ^= 0x40;
-  if (_eddsa_verify (ecc, H, pub, ctx, A,
+  if (_eddsa_verify (ecc, H, pub, A, ctx,
 		     msg->length, msg->data, csignature, scratch))
     {
       fprintf (stderr,
@@ -79,7 +79,7 @@ test_eddsa (const struct ecc_curve *ecc,
   memcpy (csignature, signature, 2*nbytes);
   csignature[5*nbytes/3] ^= 0x8;
 
-  if (_eddsa_verify (ecc, H, pub, ctx, A,
+  if (_eddsa_verify (ecc, H, pub, A, ctx,
 		     msg->length, msg->data, csignature, scratch))
     {
       fprintf (stderr,
@@ -90,7 +90,7 @@ test_eddsa (const struct ecc_curve *ecc,
   memcpy (csignature, signature, 2*nbytes);
   if (msg->length == 0)
     {
-      if (_eddsa_verify  (ecc, H, pub, ctx, A,
+      if (_eddsa_verify  (ecc, H, pub, A, ctx,
 			  3, "foo", csignature, scratch))
 	{
 	  fprintf (stderr,
@@ -100,7 +100,7 @@ test_eddsa (const struct ecc_curve *ecc,
     }
   else
     {
-      if (_eddsa_verify  (ecc, H, pub, ctx, A,
+      if (_eddsa_verify  (ecc, H, pub, A, ctx,
 			  msg->length - 1, msg->data,
 			  csignature, scratch))
 	{
@@ -110,7 +110,7 @@ test_eddsa (const struct ecc_curve *ecc,
 	}
       memcpy (csignature, signature, 2*nbytes);
       cmsg[2*msg->length / 3] ^= 0x20;
-      if (_eddsa_verify  (ecc, H, pub, ctx, A,
+      if (_eddsa_verify  (ecc, H, pub, A, ctx,
 			  msg->length, cmsg, csignature, scratch))
 	{
 	  fprintf (stderr,
