@@ -1,3 +1,18 @@
+2014-10-20  Niels Möller  <nisse@lysator.liu.se>
+
+	* eddsa.h (ED25519_KEY_SIZE): New constant.
+	(ED25519_SIGNATURE_SIZE): New constant.
+	(struct ed25519_private_key): New struct.
+	(struct ed25519_public_key): New struct.
+
+	* ed25519-sha512-sign.c (ed25519_sha512_set_private_key)
+	(ed25519_sha512_sign): New file and functions.
+	* ed25519-sha512-verify.c (ed25519_sha512_set_public_key)
+	(ed25519_sha512_verify): New file and functions.
+	* Makefile.in (hogweed_SOURCES): Added ed25519-sha512-sign.c and
+	ed25519-sha512-verify.c.
+
+
 2014-10-18  Niels Möller  <nisse@lysator.liu.se>
 
 	* eddsa-verify.c (_eddsa_verify): Change argument order, putting A

@@ -41,6 +41,11 @@ extern "C" {
 #endif
 
 /* Name mangling */
+#define ed25519_sha512_set_private_key nettle_ed25519_sha512_set_private_key
+#define ed25519_sha512_sign nettle_ed25519_sha512_sign
+#define ed25519_sha512_set_public_key nettle_ed25519_sha512_set_public_key
+#define ed25519_sha512_verify nettle_ed25519_sha512_verify
+
 #define _eddsa_compress _nettle_eddsa_compress
 #define _eddsa_compress_itch _nettle_eddsa_compress_itch
 #define _eddsa_decompress _nettle_eddsa_decompress
@@ -54,6 +59,44 @@ extern "C" {
 #define _eddsa_verify_itch _nettle_eddsa_verify_itch
 
 #define ED25519_KEY_SIZE 32
+#define ED25519_SIGNATURE_SIZE 64
+
+/* Number of limbs needed to represent a point coordinate, or a secret
+   exponent (note that exponents are 254 bits, larger than q). */
+#define _ED25519_LIMB_SIZE ((255 + (GMP_NUMB_BITS - 1)) / GMP_NUMB_BITS)
+
+struct ed25519_private_key
+{
+  uint8_t pub[ED25519_KEY_SIZE];
+  uint8_t k1[ED25519_KEY_SIZE];
+  mp_limb_t k2[_ED25519_LIMB_SIZE];
+};
+
+void
+ed25519_sha512_set_private_key (struct ed25519_private_key *priv,
+				const uint8_t *key);
+
+void
+ed25519_sha512_sign (const struct ed25519_private_key *priv,
+		     size_t length, const uint8_t *msg,
+		     uint8_t *signature);
+
+struct ed25519_public_key
+{
+  uint8_t pub[ED25519_KEY_SIZE];
+  mp_limb_t A[2*_ED25519_LIMB_SIZE];
+};
+
+int
+ed25519_sha512_set_public_key (struct ed25519_public_key *pub,
+			       const uint8_t *key);
+
+int
+ed25519_sha512_verify (const struct ed25519_public_key *pub,
+		       size_t length, const uint8_t *msg,
+		       const uint8_t *signature);
+
+/* Low-level internal functions */
 
 struct ecc_curve;
 struct ecc_modulo;
