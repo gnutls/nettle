@@ -1,3 +1,9 @@
+2014-10-21  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/testutils.c (tstring_hex): Rewrite, using Nettle's
+	base16 functions.
+	(decode_hex, decode_hex_length): Deleted functions.
+
 2014-10-20  Niels Möller  <nisse@lysator.liu.se>
 
 	* eddsa.h (ED25519_KEY_SIZE): New constant.

@@ -2,6 +2,7 @@
 
 #include "testutils.h"
 
+#include "base16.h"
 #include "cbc.h"
 #include "ctr.h"
 #include "knuth-lfib.h"
@@ -10,27 +11,6 @@
 
 #include <assert.h>
 #include <ctype.h>
-
-/* -1 means invalid */
-static const signed char hex_digits[0x100] =
-  {
-    -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-    -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-    -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-     0, 1, 2, 3, 4, 5, 6, 7, 8, 9,-1,-1,-1,-1,-1,-1,
-    -1,10,11,12,13,14,15,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-    -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-    -1,10,11,12,13,14,15,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-    -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-    -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-    -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-    -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-    -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-    -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-    -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-    -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-    -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
-  };
 
 void
 die(const char *format, ...)
@@ -89,67 +69,19 @@ tstring_data(size_t length, const char *data)
   return s;
 }
 
-static size_t
-decode_hex_length(const char *h)
-{
-  const unsigned char *hex = (const unsigned char *) h;
-  size_t count;
-  size_t i;
-  
-  for (count = i = 0; hex[i]; i++)
-    {
-      if (isspace(hex[i]))
-	continue;
-      if (hex_digits[hex[i]] < 0)
-	abort();
-      count++;
-    }
-
-  if (count % 2)
-    abort();
-  return count / 2;  
-}
-
-static void
-decode_hex(uint8_t *dst, const char *h)
-{  
-  const unsigned char *hex = (const unsigned char *) h;
-  size_t i = 0;
-  
-  for (;;)
-  {
-    int high, low;
-    
-    while (*hex && isspace(*hex))
-      hex++;
-
-    if (!*hex)
-      return;
-
-    high = hex_digits[*hex++];
-    ASSERT (high >= 0);
-
-    while (*hex && isspace(*hex))
-      hex++;
-
-    ASSERT (*hex);
-
-    low = hex_digits[*hex++];
-    ASSERT (low >= 0);
-
-    dst[i++] = (high << 4) | low;
-  }
-}
-
 struct tstring *
 tstring_hex(const char *hex)
 {
+  struct base16_decode_ctx ctx;
   struct tstring *s;
-  size_t length = decode_hex_length(hex);
+  size_t length = strlen(hex);
 
-  s = tstring_alloc(length);
+  s = tstring_alloc(BASE16_DECODE_LENGTH (length));
+  base16_decode_init (&ctx);
+  ASSERT (base16_decode_update (&ctx, &s->length, s->data,
+				length, hex));
+  ASSERT (base16_decode_final (&ctx));
 
-  decode_hex(s->data, hex);
   return s;
 }
 
