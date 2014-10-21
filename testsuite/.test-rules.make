@@ -235,6 +235,9 @@ eddsa-sign-test$(EXEEXT): eddsa-sign-test.$(OBJEXT)
 eddsa-verify-test$(EXEEXT): eddsa-verify-test.$(OBJEXT)
 	$(LINK) eddsa-verify-test.$(OBJEXT) $(TEST_OBJS) -o eddsa-verify-test$(EXEEXT)
 
+ed25519-test$(EXEEXT): ed25519-test.$(OBJEXT)
+	$(LINK) ed25519-test.$(OBJEXT) $(TEST_OBJS) -o ed25519-test$(EXEEXT)
+
 sha1-huge-test$(EXEEXT): sha1-huge-test.$(OBJEXT)
 	$(LINK) sha1-huge-test.$(OBJEXT) $(TEST_OBJS) -o sha1-huge-test$(EXEEXT)
 

@@ -1,5 +1,8 @@
 2014-10-21  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/ed25519-test.c: New test case. Optionally reads the
+	file pointed to by $ED25519_SIGN_INPUT.
+
 	* testsuite/testutils.c (tstring_hex): Rewrite, using Nettle's
 	base16 functions.
 	(decode_hex, decode_hex_length): Deleted functions.
