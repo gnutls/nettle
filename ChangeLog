@@ -1,3 +1,9 @@
+2014-10-22  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (clean-here): Unconditionally delete .so and .dll
+	files.
+	(IMPLICIT_TARGETS): Deleted variable.
+
 2014-10-21  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/ed25519-test.c: New test case. Optionally reads the

@@ -40,7 +40,6 @@ TARGETS = aesdata$(EXEEXT_FOR_BUILD) desdata$(EXEEXT_FOR_BUILD) \
           gcmdata$(EXEEXT_FOR_BUILD) \
 	  $(getopt_TARGETS) $(internal_TARGETS) \
 	  $(LIBTARGETS) $(SHLIBTARGETS)
-IMPLICIT_TARGETS = @IF_DLL@ $(LIBNETTLE_FILE) $(LIBHOGWEED_FILE)
 
 DOCTARGETS = @IF_DOCUMENTATION@ nettle.info nettle.html nettle.pdf
 
@@ -611,7 +610,7 @@ distcheck: dist
 	$(rm_distcheck)
 
 clean-here:
-	-rm -f $(TARGETS) $(IMPLICIT_TARGETS) *.$(OBJEXT) *.s \
+	-rm -f $(TARGETS) *.$(OBJEXT) *.s *.so *.dll \
 		ecc-192.h ecc-224.h ecc-256.h ecc-384.h ecc-521.h ecc-25519.h \
 		eccdata$(EXEEXT_FOR_BUILD) eccdata.stamp
 	-rm -rf .lib libnettle.stamp libhogweed.stamp
