@@ -13,8 +13,8 @@
 <body>
   <h1> Nettle release plans </h1>
   <p> This is an attempt at defining a development target for
-  Nettle-3.1, inspired by similar pages for recent GMP releases. [Last
-  updated 2014-09-07]</p>
+    Nettle-3.1, inspired by similar pages for recent GMP releases.
+    [Last updated 2014-10-22]</p>
   <p class='should'>
     This really ought to be done before release
   </p>
@@ -37,11 +37,12 @@
   </p>
   
   <h2> New features </h2>
-  <p class='should'>
-    Add support for curve25519. What about the "x25519" name?
+  <p class='done'>
+    Add support for curve25519.<span class='should'> What about the
+    "x25519" name?</span>
   </p>
-  <p class='should'>
-    Add support for EdDSA25519 signatures.
+  <p class='done'>
+    Add support for Ed25519 signatures.
   </p>
   <p class='wish'>
     Add larger "safe" curves, e.g., M-383, curve41417 and E-521.
@@ -67,6 +68,12 @@
 
   <p class='should'>
     Assembly optimizations for ARMv8 (64-bit).
+  </p>
+  <p class='wish'>
+    Further optimizations of curve25519 and EdDSA, in particular,
+    radix 51 modp operations,
+    and <a href='http://www.hyperelliptic.org/EFD/g1p/auto-twisted-extended-1.html#addition-add-2008-hwcd-3'>more
+    efficient</a> point addition.
   </p>
   
   <h2> Miscellaneous </h2>
@@ -128,9 +135,11 @@
   <p class='should'>
     Reorganize private key operations. Need to support RSA with and
     without blinding, and DSA according to spec and some deterministic
-    variant (like putty), and possibly also smartcard versions where
-    the private key is not available to the library. And without an
-    explosion of the number of functions.
+    variant (like putty
+    or <a href='http://tools.ietf.org/html/rfc6979'>RFC6979</a>), and
+    possibly also smartcard versions where the private key is not
+    available to the library. And without an explosion of the number
+    of functions.
   </p>
 </body>
 </html>
