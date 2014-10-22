@@ -1,5 +1,9 @@
 2014-10-22  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac: Check for getline function.
+	* testsuite/ed25519-test.c (getline) [!HAVE_GETLINE]: Fallback
+	definition.
+
 	* Makefile.in (clean-here): Unconditionally delete .so and .dll
 	files.
 	(IMPLICIT_TARGETS): Deleted variable.

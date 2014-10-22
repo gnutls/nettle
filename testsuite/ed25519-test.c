@@ -117,6 +117,44 @@ test_one (const char *line)
   free (msg);
 }
 
+#ifndef HAVE_GETLINE
+static ssize_t
+getline(char **lineptr, size_t *n, FILE *f)
+{
+  size_t i;
+  int c;
+  if (!*lineptr)
+    {
+      *n = 500;
+      *lineptr = xalloc (*n);
+    }
+
+  i = 0;
+  do
+    {
+      c = getc(f);
+      if (c < 0)
+	{
+	  if (i > 0)
+	    break;
+	  return -1;
+	}
+
+      (*lineptr) [i++] = c;
+      if (i == *n)
+	{
+	  *n *= 2;
+	  *lineptr = realloc (*lineptr, *n);
+	  if (!*lineptr)
+	    die ("Virtual memory exhausted.\n");
+	}
+    } while (c != '\n');
+
+  (*lineptr) [i] = 0;
+  return i;
+}
+#endif
+
 void
 test_main(void)
 {

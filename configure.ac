@@ -647,7 +647,8 @@ AC_CHECK_HEADERS([valgrind/memcheck.h])
 
 LSH_FUNC_ALLOCA
 LSH_FUNC_STRERROR
-
+# Used in the testsuite
+AC_CHECK_FUNCS(getline)
 AC_C_BIGENDIAN
 
 LSH_GCC_ATTRIBUTES
