@@ -70,13 +70,14 @@ memxor_common_alignment (word_t *dst, const word_t *src, size_t n)
 
   if (n & 1)
     {
-      *dst++ ^= *src++;
       n--;
+      dst[n] ^= src[n];
     }
-  for (; n >= 2; dst += 2, src += 2, n -= 2)
+  while (n >= 2)
     {
-      dst[0] ^= src[0];
-      dst[1] ^= src[1];
+      n -= 2;
+      dst[n+1] ^= src[n+1];
+      dst[n] ^= src[n];
     }
 }
 
@@ -86,7 +87,6 @@ memxor_common_alignment (word_t *dst, const word_t *src, size_t n)
 static void
 memxor_different_alignment (word_t *dst, const char *src, size_t n)
 {
-  size_t i;
   int shl, shr;
   const word_t *src_word;
   unsigned offset = ALIGN_OFFSET (src);
@@ -97,21 +97,23 @@ memxor_different_alignment (word_t *dst, const char *src, size_t n)
 
   src_word = (const word_t *) ((uintptr_t) src & -SIZEOF_LONG);
 
-  /* FIXME: Unroll four times, like memcmp? */
-  i = n & 1;
-  s0 = src_word[i];
-  if (i)
+  if (n & 1)
     {
-      s1 = src_word[0];
-      dst[0] ^= MERGE (s1, shl, s0, shr);
+      n--;
+      s1 = src_word[n];
+      s0 = src_word[n+1]; /* FIXME: Overread */
+      dst[n] ^= MERGE (s1, shl, s0, shr);
     }
+  else
+    s1 = src_word[n]; /* FIXME: Overread */
 
-  for (; i < n; i += 2)
+  while (n > 0)
     {
-      s1 = src_word[i+1];
-      dst[i] ^= MERGE(s0, shl, s1, shr);
-      s0 = src_word[i+2];
-      dst[i+1] ^= MERGE(s1, shl, s0, shr);
+      n -= 2;
+      s0 = src_word[n+1];
+      dst[n+1] ^= MERGE(s0, shl, s1, shr);
+      s1 = src_word[n]; /* FIXME: Overread on last iteration */
+      dst[n] ^= MERGE(s1, shl, s0, shr);
     }
 }
 
@@ -128,26 +130,33 @@ memxor(void *dst_in, const void *src_in, size_t n)
 
   if (n >= WORD_T_THRESH)
     {
+      unsigned i;
+      unsigned offset;
+      size_t nwords;
       /* There are at least some bytes to compare.  No need to test
 	 for N == 0 in this alignment loop.  */
-      while (ALIGN_OFFSET (dst))
+      for (i = ALIGN_OFFSET(dst + n); i > 0; i--)
 	{
-	  *dst++ ^= *src++;
 	  n--;
+	  dst[n] ^= src[n];
 	}
-      if (ALIGN_OFFSET (src))
-	memxor_different_alignment ((word_t *) dst, src, n / sizeof(word_t));
+      offset = ALIGN_OFFSET(src + n);
+      nwords = n / sizeof (word_t);
+      n %= sizeof (word_t);
+
+      if (offset)
+	memxor_different_alignment ((word_t *) (dst+n), (src+n), nwords);
       else
-	memxor_common_alignment ((word_t *) dst, (const word_t *) src, n / sizeof(word_t));
-
-      dst += n & -SIZEOF_LONG;
-      src += n & -SIZEOF_LONG;
-      n = n & (SIZEOF_LONG - 1);
+	memxor_common_alignment ((word_t *) (dst+n),
+				 (const word_t *) (src+n), nwords);
     }
-  for (; n > 0; n--)
-    *dst++ ^= *src++;
+  while (n > 0)
+    {
+      n--;
+      dst[n] ^= src[n];
+    }
 
-  return dst_in;
+  return dst;
 }
 
 
