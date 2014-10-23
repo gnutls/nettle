@@ -37,6 +37,7 @@
 # include "config.h"
 #endif
 
+#include <assert.h>
 #include <limits.h>
 
 #include "memxor.h"
@@ -65,29 +66,37 @@ memxor3_common_alignment (word_t *dst,
 
 static void
 memxor3_different_alignment_b (word_t *dst,
-			       const word_t *a, const char *b, unsigned offset, size_t n)
+			       const word_t *a, const unsigned char *b,
+			       unsigned offset, size_t n)
 {
   int shl, shr;
   const word_t *b_word;
 
   word_t s0, s1;
 
+  assert (n > 0);
+
   shl = CHAR_BIT * offset;
   shr = CHAR_BIT * (sizeof(word_t) - offset);
 
   b_word = (const word_t *) ((uintptr_t) b & -sizeof(word_t));
 
+  /* Read top offset bytes, in native byte order. */
+  READ_PARTIAL (s0, (unsigned char *) &b_word[n], offset);
+#ifdef WORDS_BIGENDIAN
+  s0 <<= shr;
+#endif
+
   if (n & 1)
+    s1 = s0;
+  else
     {
       n--;
       s1 = b_word[n];
-      s0 = b_word[n+1];
       dst[n] = a[n] ^ MERGE (s1, shl, s0, shr);
     }
-  else
-    s1 = b_word[n];
 
-  while (n > 0)
+  while (n > 2)
     {
       n -= 2;
       s0 = b_word[n+1];
@@ -95,18 +104,28 @@ memxor3_different_alignment_b (word_t *dst,
       s1 = b_word[n];
       dst[n] = a[n] ^ MERGE(s1, shl, s0, shr);
     }
+  assert (n == 1);
+  /* Read low wordsize - offset bytes */
+  READ_PARTIAL (s0, b, sizeof(word_t) - offset);
+#ifndef WORDS_BIGENDIAN
+  s0 <<= shl;
+#endif /* !WORDS_BIGENDIAN */
+
+  dst[0] = a[0] ^ MERGE(s0, shl, s1, shr);
 }
 
 static void
 memxor3_different_alignment_ab (word_t *dst,
-				const char *a, const char *b,
+				const unsigned char *a, const unsigned char *b,
 				unsigned offset, size_t n)
 {
   int shl, shr;
   const word_t *a_word;
   const word_t *b_word;
 
-  word_t s0, s1;
+  word_t s0, s1, t;
+
+  assert (n > 0);
 
   shl = CHAR_BIT * offset;
   shr = CHAR_BIT * (sizeof(word_t) - offset);
@@ -114,17 +133,24 @@ memxor3_different_alignment_ab (word_t *dst,
   a_word = (const word_t *) ((uintptr_t) a & -sizeof(word_t));
   b_word = (const word_t *) ((uintptr_t) b & -sizeof(word_t));
 
+  /* Read top offset bytes, in native byte order. */
+  READ_PARTIAL (s0, (unsigned char *) &a_word[n], offset);
+  READ_PARTIAL (t,  (unsigned char *) &b_word[n], offset);
+  s0 ^= t;
+#ifdef WORDS_BIGENDIAN
+  s0 <<= shr;
+#endif
+
   if (n & 1)
+    s1 = s0;
+  else
     {
       n--;
       s1 = a_word[n] ^ b_word[n];
-      s0 = a_word[n+1] ^ b_word[n+1];
       dst[n] = MERGE (s1, shl, s0, shr);
     }
-  else
-    s1 = a_word[n] ^ b_word[n];
 
-  while (n > 0)
+  while (n > 2)
     {
       n -= 2;
       s0 = a_word[n+1] ^ b_word[n+1];
@@ -132,11 +158,21 @@ memxor3_different_alignment_ab (word_t *dst,
       s1 = a_word[n] ^ b_word[n];
       dst[n] = MERGE(s1, shl, s0, shr);
     }
+  assert (n == 1);
+  /* Read low wordsize - offset bytes */
+  READ_PARTIAL (s0, a, sizeof(word_t) - offset);
+  READ_PARTIAL (t,  b, sizeof(word_t) - offset);
+  s0 ^= t;
+#ifndef WORDS_BIGENDIAN
+  s0 <<= shl;
+#endif /* !WORDS_BIGENDIAN */
+
+  dst[0] = MERGE(s0, shl, s1, shr);
 }
 
 static void
 memxor3_different_alignment_all (word_t *dst,
-				 const char *a, const char *b,
+				 const unsigned char *a, const unsigned char *b,
 				 unsigned a_offset, unsigned b_offset,
 				 size_t n)
 {
@@ -154,21 +190,27 @@ memxor3_different_alignment_all (word_t *dst,
   a_word = (const word_t *) ((uintptr_t) a & -sizeof(word_t));
   b_word = (const word_t *) ((uintptr_t) b & -sizeof(word_t));
 
+  /* Read top offset bytes, in native byte order. */
+  READ_PARTIAL (a0, (unsigned char *) &a_word[n], a_offset);
+  READ_PARTIAL (b0, (unsigned char *) &b_word[n], b_offset);
+#ifdef WORDS_BIGENDIAN
+  a0 <<= ar;
+  b0 <<= br;
+#endif
+
   if (n & 1)
     {
-      n--;
-      a1 = a_word[n]; a0 = a_word[n+1];
-      b1 = b_word[n]; b0 = b_word[n+1];
-
-      dst[n] = MERGE (a1, al, a0, ar) ^ MERGE (b1, bl, b0, br);
+      a1 = a0; b1 = b0;
     }
   else
     {
+      n--;
       a1 = a_word[n];
       b1 = b_word[n];
-    }
 
-  while (n > 0)
+      dst[n] = MERGE (a1, al, a0, ar) ^ MERGE (b1, bl, b0, br);
+    }
+  while (n > 2)
     {
       n -= 2;
       a0 = a_word[n+1]; b0 = b_word[n+1];
@@ -176,6 +218,16 @@ memxor3_different_alignment_all (word_t *dst,
       a1 = a_word[n]; b1 = b_word[n];
       dst[n] = MERGE(a1, al, a0, ar) ^ MERGE(b1, bl, b0, br);
     }
+  assert (n == 1);
+  /* Read low wordsize - offset bytes */
+  READ_PARTIAL (a0, a, sizeof(word_t) - a_offset);
+  READ_PARTIAL (b0, b, sizeof(word_t) - b_offset);
+#ifndef WORDS_BIGENDIAN
+  a0 <<= al;
+  b0 <<= bl;
+#endif /* !WORDS_BIGENDIAN */
+
+  dst[0] = MERGE(a0, al, a1, ar) ^ MERGE(b0, bl, b1, br);
 }
 
 /* Current implementation processes data in descending order, to
@@ -186,9 +238,9 @@ memxor3_different_alignment_all (word_t *dst,
 void *
 memxor3(void *dst_in, const void *a_in, const void *b_in, size_t n)
 {
-  char *dst = dst_in;
-  const char *a = a_in;
-  const char *b = b_in;
+  unsigned char *dst = dst_in;
+  const unsigned char *a = a_in;
+  const unsigned char *b = b_in;
 
   if (n >= WORD_T_THRESH)
     {

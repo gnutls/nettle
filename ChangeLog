@@ -4,6 +4,7 @@
 	* memxor.c (memxor_different_alignment): Avoid out-of-bounds
 	reads, corresponding to valgrind's --partial-loads-ok. Use
 	READ_PARTIAL.
+	* memxor3.c: Analogous changes for unaligned operations.
 
 	* configure.ac (asm_replace_list): Deleted memxor.asm, now
 	incompatible with the memxor/memxor3 split.
