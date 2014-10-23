@@ -1,3 +1,8 @@
+2014-10-23  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/nettle-benchmark.c (time_memxor): Allocate buffers as
+	arrays of unsigned long, for more reliable alignment.
+
 2014-10-22  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Check for getline function.

@@ -157,9 +157,9 @@ bench_nothing(void *arg UNUSED)
 
 struct bench_memxor_info
 {
-  uint8_t *dst;
-  const uint8_t *src;
-  const uint8_t *other;  
+  void *dst;
+  const void *src;
+  const void *other;
 };
 
 static void
@@ -345,16 +345,16 @@ static void
 time_memxor(void)
 {
   struct bench_memxor_info info;
-  uint8_t src[BENCH_BLOCK + sizeof(long)];
-  uint8_t other[BENCH_BLOCK + sizeof(long)];
-  uint8_t dst[BENCH_BLOCK];
+  unsigned long src[BENCH_BLOCK / sizeof(long) + 2];
+  unsigned long other[BENCH_BLOCK / sizeof(long) + 2];
+  unsigned long dst[BENCH_BLOCK / sizeof(long) + 1];
 
   info.src = src;
   info.dst = dst;
 
   display ("memxor", "aligned", sizeof(unsigned long),
 	   time_function(bench_memxor, &info));
-  info.src = src + 1;
+  info.src = (const char *) src + 1;
   display ("memxor", "unaligned", sizeof(unsigned long),
 	   time_function(bench_memxor, &info));
 
@@ -363,13 +363,13 @@ time_memxor(void)
   display ("memxor3", "aligned", sizeof(unsigned long),
 	   time_function(bench_memxor3, &info));
 
-  info.other = other + 1;
+  info.other = (const char *) other + 1;
   display ("memxor3", "unaligned01", sizeof(unsigned long),
 	   time_function(bench_memxor3, &info));
-  info.src = src + 1;
+  info.src = (const char *) src + 1;
   display ("memxor3", "unaligned11", sizeof(unsigned long),
 	   time_function(bench_memxor3, &info));
-  info.other = other + 2;
+  info.other = (const char *) other + 2;
   display ("memxor3", "unaligned12", sizeof(unsigned long),
 	   time_function(bench_memxor3, &info));  
 }
