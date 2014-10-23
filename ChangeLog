@@ -2,6 +2,7 @@
 
 	* memxor.c (memxor_common_alignment, memxor_different_alignment)
 	(memxor): Change loop order, iterate from the end.
+	(memxor3_common_alignment): Unroll twice.
 
 	* examples/nettle-benchmark.c (time_memxor): Allocate buffers as
 	arrays of unsigned long, for more reliable alignment.

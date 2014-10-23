@@ -166,8 +166,17 @@ memxor3_common_alignment (word_t *dst,
 			  const word_t *a, const word_t *b, size_t n)
 {
   /* FIXME: Require n > 0? */
-  while (n-- > 0)
-    dst[n] = a[n] ^ b[n];
+  if (n & 1)
+    {
+      n--;
+      dst[n] = a[n] ^ b[n];
+    }
+  while (n > 0)
+    {
+      n -= 2;
+      dst[n+1] = a[n+1] ^ b[n+1];
+      dst[n] = a[n] ^ b[n];
+    }
 }
 
 static void
