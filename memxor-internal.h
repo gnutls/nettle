@@ -52,4 +52,22 @@ typedef unsigned long int word_t;
   (((w0) << (sh_1)) | ((w1) >> (sh_2)))
 #endif
 
+#ifndef WORDS_BIGENDIAN
+#define READ_PARTIAL(r,p,n) do {			\
+    word_t _rp_x;					\
+    unsigned _rp_i;					\
+    for (_rp_i = (n), _rp_x = (p)[--_rp_i]; _rp_i > 0;)	\
+      _rp_x = (_rp_x << CHAR_BIT) | (p)[--_rp_i];	\
+    (r) = _rp_x;					\
+  } while (0)
+#else
+#define READ_PARTIAL(r,p,n) do {			\
+    word_t _rp_x;						\
+    unsigned _rp_i;						\
+    for (_rp_x = (p)[0], _rp_i = 1; _rp_i < (n); _rp_i++)	\
+      _rp_x = (_rp_x << CHAR_BIT) | (p)[_rp_i];			\
+    (r) = _rp_x;						\
+  } while (0)
+#endif
+
 #endif /* NETTLE_MEMXOR_INTERNAL_H_INCLUDED */

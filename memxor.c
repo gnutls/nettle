@@ -76,8 +76,6 @@ memxor_different_alignment (word_t *dst, const unsigned char *src, size_t n)
   const word_t *src_word;
   unsigned offset = ALIGN_OFFSET (src);
   word_t s0, s1;
-  const unsigned char *part;
-  unsigned i;
 
   assert (n > 0);
   shl = CHAR_BIT * offset;
@@ -86,15 +84,10 @@ memxor_different_alignment (word_t *dst, const unsigned char *src, size_t n)
   src_word = (const word_t *) ((uintptr_t) src & -sizeof(word_t));
 
   /* Read top offset bytes, in native byte order. */
-  part = src + n*sizeof(word_t) - offset;
-#if WORDS_BIGENDIAN
-  for (s0 = part[0], i = 1; i < offset; i++)
-    s0 = (s0 << CHAR_BIT) | part[i];
+  READ_PARTIAL (s0, (unsigned char *) &src_word[n], offset);
+#ifdef WORDS_BIGENDIAN
   s0 <<= shr; /* FIXME: Eliminate this shift? */
-#else /* !WORDS_BIGENDIAN */
-  for (i = offset, s0 = part[--i]; i > 0 ; )
-    s0 = (s0 << CHAR_BIT) | part[--i];
-#endif /* !WORDS_BIGENDIAN */
+#endif
 
   /* Do n-1 regular iterations */
   if (n & 1)
@@ -117,14 +110,11 @@ memxor_different_alignment (word_t *dst, const unsigned char *src, size_t n)
     }
   assert (n == 1);
   /* Read low wordsize - offset bytes */
-#if WORDS_BIGENDIAN
-  for (s0 = src[0], i = 1; i < sizeof(word_t) - offset; i++)
-    s0 = (s0 << CHAR_BIT) | src[i];
-#else /* !WORDS_BIGENDIAN */
-  for (i = sizeof(word_t) - offset, s0 = src[--i]; i > 0 ; )
-    s0 = (s0 << CHAR_BIT) | src[--i];
+  READ_PARTIAL (s0, src, sizeof(word_t) - offset);
+#ifndef WORDS_BIGENDIAN
   s0 <<= shl; /* FIXME: eliminate shift? */
 #endif /* !WORDS_BIGENDIAN */
+
   dst[0] ^= MERGE(s0, shl, s1, shr);
 }
 
