@@ -44,10 +44,11 @@
 /* For uintptr_t */
 #include "nettle-types.h"
 
+#if defined(__x86_64__) || defined(__arch64__)
+/* Including on M$ windows, where unsigned long is only 32 bits */
+typedef uint64_t word_t;
+#else
 typedef unsigned long int word_t;
-
-#if SIZEOF_LONG & (SIZEOF_LONG - 1)
-#error Word size must be a power of two
 #endif
 
 #define ALIGN_OFFSET(p) ((uintptr_t) (p) % sizeof(word_t))
@@ -95,7 +96,7 @@ memxor_different_alignment (word_t *dst, const char *src, size_t n)
   shl = CHAR_BIT * offset;
   shr = CHAR_BIT * (sizeof(word_t) - offset);
 
-  src_word = (const word_t *) ((uintptr_t) src & -SIZEOF_LONG);
+  src_word = (const word_t *) ((uintptr_t) src & -sizeof(word_t));
 
   if (n & 1)
     {
@@ -191,7 +192,7 @@ memxor3_different_alignment_b (word_t *dst,
   shl = CHAR_BIT * offset;
   shr = CHAR_BIT * (sizeof(word_t) - offset);
 
-  b_word = (const word_t *) ((uintptr_t) b & -SIZEOF_LONG);
+  b_word = (const word_t *) ((uintptr_t) b & -sizeof(word_t));
 
   if (n & 1)
     {
@@ -227,8 +228,8 @@ memxor3_different_alignment_ab (word_t *dst,
   shl = CHAR_BIT * offset;
   shr = CHAR_BIT * (sizeof(word_t) - offset);
 
-  a_word = (const word_t *) ((uintptr_t) a & -SIZEOF_LONG);
-  b_word = (const word_t *) ((uintptr_t) b & -SIZEOF_LONG);
+  a_word = (const word_t *) ((uintptr_t) a & -sizeof(word_t));
+  b_word = (const word_t *) ((uintptr_t) b & -sizeof(word_t));
 
   if (n & 1)
     {
@@ -267,8 +268,8 @@ memxor3_different_alignment_all (word_t *dst,
   bl = CHAR_BIT * b_offset;
   br = CHAR_BIT * (sizeof(word_t) - b_offset);
 
-  a_word = (const word_t *) ((uintptr_t) a & -SIZEOF_LONG);
-  b_word = (const word_t *) ((uintptr_t) b & -SIZEOF_LONG);
+  a_word = (const word_t *) ((uintptr_t) a & -sizeof(word_t));
+  b_word = (const word_t *) ((uintptr_t) b & -sizeof(word_t));
 
   if (n & 1)
     {
