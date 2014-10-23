@@ -1,5 +1,9 @@
 2014-10-23  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac (IF_ASM): New substituted variable.
+	* testsuite/Makefile.in (VALGRIND): Allow partial loads only when
+	build includes assembly files.
+
 	* memxor-internal.h (READ_PARTIAL): New macro.
 	* memxor.c (memxor_different_alignment): Avoid out-of-bounds
 	reads, corresponding to valgrind's --partial-loads-ok. Use

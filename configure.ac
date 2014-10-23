@@ -356,6 +356,12 @@ fi
 AC_SUBST([OPT_ASM_NETTLE_SOURCES])
 AC_SUBST([OPT_ASM_HOGWEED_SOURCES])
 AC_SUBST([ASM_RODATA])
+if test "x$enable_assembler" = xyes ; then
+  IF_ASM=''
+else
+  IF_ASM='#'
+fi
+AC_SUBST([IF_ASM])
 
 AH_VERBATIM([HAVE_NATIVE],
 [/* Define to 1 each of the following for which a native (ie. CPU specific)
