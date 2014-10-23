@@ -1,5 +1,8 @@
 2014-10-23  Niels Möller  <nisse@lysator.liu.se>
 
+	* memxor.c (memxor_different_alignment): Avoid out-of-bounds
+	reads, corresponding to valgrind's --partial-loads-ok.
+
 	* configure.ac (asm_replace_list): Deleted memxor.asm, now
 	incompatible with the memxor/memxor3 split.
 
