@@ -1,4 +1,4 @@
-/* memxor.c
+/* memxor3.c
 
    Copyright (C) 2010, 2014 Niels Möller
 
