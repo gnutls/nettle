@@ -272,7 +272,8 @@ fi
 # to a new object file).
 asm_replace_list="aes-encrypt-internal.asm aes-decrypt-internal.asm \
 		arcfour-crypt.asm camellia-crypt-internal.asm \
-		md5-compress.asm poly1305-internal.asm \
+		md5-compress.asm memxor.asm memxor3.asm \
+		poly1305-internal.asm \
 		chacha-core-internal.asm \
 		salsa20-crypt.asm salsa20-core-internal.asm \
 		serpent-encrypt.asm serpent-decrypt.asm \

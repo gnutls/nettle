@@ -1,3 +1,13 @@
+2014-11-24  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/memxor3.asm (memxor3): New file, code moved from old
+	memxor.asm.
+	* x86_64/memxor.asm (memxor): Rewritten, no longer jumps into
+	memxor3.
+
+	* configure.ac (asm_replace_list): Added memxor.asm and
+	memxor3.asm.
+
 2014-10-23  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac (IF_ASM): New substituted variable.
