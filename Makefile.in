@@ -244,7 +244,7 @@ libhogweed.a: $(hogweed_OBJS)
 
 # Rules building shared libraries.
 $(LIBNETTLE_FORLINK): $(nettle_OBJS)
-	$(LIBNETTLE_LINK) $(nettle_OBJS) -o $@ $(LIBNETTLE_LIBS)
+	$(LIBNETTLE_LINK) $(nettle_OBJS) @EXTRA_LINKER_FLAGS@ -o $@ $(LIBNETTLE_LIBS)
 	-mkdir .lib 2>/dev/null
 	(cd .lib \
           && rm -f $(LIBNETTLE_FORLINK) \
@@ -255,7 +255,7 @@ $(LIBNETTLE_FORLINK): $(nettle_OBJS)
 	echo nettle > libnettle.stamp
 
 $(LIBHOGWEED_FORLINK): $(hogweed_OBJS) $(LIBNETTLE_FORLINK)
-	$(LIBHOGWEED_LINK) $(hogweed_OBJS) -o $@ $(LIBHOGWEED_LIBS)
+	$(LIBHOGWEED_LINK) $(hogweed_OBJS) @EXTRA_HOGWEED_LINKER_FLAGS@ -o $@ $(LIBHOGWEED_LIBS)
 	-mkdir .lib 2>/dev/null
 	(cd .lib \
           && rm -f $(LIBHOGWEED_FORLINK) \
