@@ -1,5 +1,8 @@
 2014-11-24  Niels Möller  <nisse@lysator.liu.se>
 
+	* gcm.h (GCM_SET_KEY): Rename macro argument KEY to avoid
+	collision with a struct tag. Spotted by Nikos Mavrogiannopoulos.
+
 	* testsuite/eddsa-verify-test.c (test_eddsa): Fixed test case bug,
 	showing up as use of uninitialized data with valgrind.
 
