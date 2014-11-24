@@ -87,11 +87,10 @@ test_eddsa (const struct ecc_curve *ecc,
       goto fail;
     }
 
-  memcpy (csignature, signature, 2*nbytes);
   if (msg->length == 0)
     {
       if (_eddsa_verify  (ecc, H, pub, A, ctx,
-			  3, "foo", csignature, scratch))
+			  3, "foo", signature, scratch))
 	{
 	  fprintf (stderr,
 		   "ecdsa_verify unexpectedly succeeded with different message.\n");
@@ -102,16 +101,16 @@ test_eddsa (const struct ecc_curve *ecc,
     {
       if (_eddsa_verify  (ecc, H, pub, A, ctx,
 			  msg->length - 1, msg->data,
-			  csignature, scratch))
+			  signature, scratch))
 	{
 	  fprintf (stderr,
 		   "ecdsa_verify unexpectedly succeeded with truncated message.\n");
 	  goto fail;
 	}
-      memcpy (csignature, signature, 2*nbytes);
+      memcpy (cmsg, msg->data, msg->length);
       cmsg[2*msg->length / 3] ^= 0x20;
       if (_eddsa_verify  (ecc, H, pub, A, ctx,
-			  msg->length, cmsg, csignature, scratch))
+			  msg->length, cmsg, signature, scratch))
 	{
 	  fprintf (stderr,
 		   "ecdsa_verify unexpectedly succeeded with modified message.\n");
