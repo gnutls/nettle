@@ -1,5 +1,8 @@
 2014-12-08  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac (LIBNETTLE_MAJOR): Bump major number, now 6.
+	(LIBHOGWEED_MAJOR): Bump major number, now 5.
+
 	From Nikos Mavrogiannopoulos. Support for versioned symbols.
 	* aclocal.m4 (LD_VERSION_SCRIPT): New macro. Substitute
 	EXTRA_LINKER_FLAGS and EXTRA_HOGWEED_LINKER_FLAGS.
