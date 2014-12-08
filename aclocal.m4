@@ -1264,9 +1264,9 @@ EOF
     AC_MSG_RESULT($have_ld_version_script)
   fi
   if test "$have_ld_version_script" = "yes";then
-	EXTRA_LINKER_FLAGS="-Wl,--version-script=\$(srcdir)/libnettle.map"
+	EXTRA_LINKER_FLAGS="-Wl,--version-script=libnettle.map"
 	AC_SUBST(EXTRA_LINKER_FLAGS)
-	EXTRA_HOGWEED_LINKER_FLAGS="-Wl,--version-script=\$(srcdir)/libhogweed.map"
+	EXTRA_HOGWEED_LINKER_FLAGS="-Wl,--version-script=libhogweed.map"
 	AC_SUBST(EXTRA_HOGWEED_LINKER_FLAGS)
   fi
 ])

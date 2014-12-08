@@ -1,5 +1,8 @@
 2014-12-08  Niels Möller  <nisse@lysator.liu.se>
 
+	* aclocal.m4 (LD_VERSION_SCRIPT): Linker scripts no longer located
+	in the source tree.
+
 	* configure.ac (LIBNETTLE_MAJOR): Bump major number, now 6.
 	(LIBHOGWEED_MAJOR): Bump major number, now 5.
 
