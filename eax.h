@@ -114,36 +114,42 @@ eax_digest (struct eax_ctx *eax, const struct eax_key *key,
 #define EAX_SET_KEY(ctx, set_key, encrypt, data)			\
   do {									\
     (set_key)(&(ctx)->cipher, (data));					\
-    if (0) (encrypt) (&(ctx)->cipher, 0, (void *) 0, (void *) 0);	\
+    if (0) (encrypt) (&(ctx)->cipher, ~(size_t) 0,			\
+		      (uint8_t *) 0, (const uint8_t *) 0);		\
     eax_set_key (&(ctx)->key, &(ctx)->cipher, (nettle_cipher_func *) encrypt); \
   } while (0)
 
-#define EAX_SET_NONCE(ctx, encrypt, length, nonce) \
-  (0 ? (encrypt) (&(ctx)->cipher, 0, (void *) 0, (void *) 0)	\
+#define EAX_SET_NONCE(ctx, encrypt, length, nonce)			\
+  (0 ? (encrypt) (&(ctx)->cipher, ~(size_t) 0,				\
+		  (uint8_t *) 0, (const uint8_t *) 0)			\
    : eax_set_nonce (&(ctx)->eax, &(ctx)->key,			\
 		    &(ctx)->cipher, (nettle_cipher_func *) (encrypt),	\
 		    (length), (nonce)))
 
 #define EAX_UPDATE(ctx, encrypt, length, data)				\
-  (0 ? (encrypt) (&(ctx)->cipher, 0, (void *) 0, (void *) 0)		\
+  (0 ? (encrypt) (&(ctx)->cipher, ~(size_t) 0,				\
+		  (uint8_t *) 0, (const uint8_t *) 0)			\
    : eax_update (&(ctx)->eax, &(ctx)->key,				\
 		 &(ctx)->cipher, (nettle_cipher_func *) (encrypt),	\
 		 (length), (data)))
 
 #define EAX_ENCRYPT(ctx, encrypt, length, dst, src)			\
-  (0 ? (encrypt) (&(ctx)->cipher, 0, (void *) 0, (void *) 0)		\
+  (0 ? (encrypt) (&(ctx)->cipher, ~(size_t) 0,				\
+		  (uint8_t *) 0, (const uint8_t *) 0)			\
    : eax_encrypt (&(ctx)->eax, &(ctx)->key,				\
 		 &(ctx)->cipher, (nettle_cipher_func *) (encrypt),	\
 		  (length), (dst), (src)))
 
 #define EAX_DECRYPT(ctx, encrypt, length, dst, src)			\
-  (0 ? (encrypt) (&(ctx)->cipher, 0, (void *) 0, (void *) 0)		\
+  (0 ? (encrypt) (&(ctx)->cipher, ~(size_t) 0,				\
+		  (uint8_t *) 0, (const uint8_t *) 0)			\
    : eax_decrypt (&(ctx)->eax, &(ctx)->key,				\
 		 &(ctx)->cipher, (nettle_cipher_func *) (encrypt),	\
 		  (length), (dst), (src)))
 
 #define EAX_DIGEST(ctx, encrypt, length, digest)			\
-  (0 ? (encrypt) (&(ctx)->cipher, 0, (void *) 0, (void *) 0)		\
+  (0 ? (encrypt) (&(ctx)->cipher, ~(size_t) 0,				\
+		  (uint8_t *) 0, (const uint8_t *) 0)			\
    : eax_digest (&(ctx)->eax, &(ctx)->key,				\
 		 &(ctx)->cipher, (nettle_cipher_func *) (encrypt),	\
 		 (length), (digest)))

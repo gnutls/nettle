@@ -57,7 +57,8 @@ ctr_crypt(const void *ctx, nettle_cipher_func *f,
 memcpy((ctx)->ctr, (data), sizeof((ctx)->ctr))
 
 #define CTR_CRYPT(self, f, length, dst, src)		\
-(0 ? ((f)(&(self)->ctx, 0, NULL, NULL))			\
+  (0 ? ((f)(&(self)->ctx, ~(size_t) 0,			\
+	  (uint8_t *) 0, (const uint8_t *) 0))		\
    : ctr_crypt((void *) &(self)->ctx,			\
 	       (nettle_cipher_func *) (f),		\
 	       sizeof((self)->ctr), (self)->ctr,	\

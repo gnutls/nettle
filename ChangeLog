@@ -1,3 +1,13 @@
+2014-12-12  Niels Möller  <nisse@lysator.liu.se>
+
+	* cbc.h (CBC_ENCRYPT, CBC_DECRYPT): Make type-checking hack
+	stricter, warn if type of length argument is smaller than size_t.
+	* ctr.h (CTR_CRYPT): Likewise.
+	* eax.h (EAX_SET_KEY, EAX_SET_NONCE, EAX_UPDATE, EAX_ENCRYPT)
+	(EAX_DECRYPT, EAX_DIGEST): Likewise.
+	* gcm.h (GCM_SET_KEY, GCM_ENCRYPT, GCM_DECRYPT, GCM_DIGEST):
+	Likewise.
+
 2014-11-24  Niels Möller  <nisse@lysator.liu.se>
 
 	* gcm.h (GCM_SET_KEY): Rename macro argument KEY to avoid

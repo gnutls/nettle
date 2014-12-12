@@ -151,10 +151,11 @@ gcm_digest(struct gcm_ctx *ctx, const struct gcm_key *key,
   { struct gcm_key key; struct gcm_ctx gcm; type cipher; }
 
 /* NOTE: Avoid using NULL, as we don't include anything defining it. */
-#define GCM_SET_KEY(ctx, set_key, encrypt, gcm_key)			\
+#define GCM_SET_KEY(ctx, set_key, encrypt, gcm_key)		\
   do {								\
-    (set_key)(&(ctx)->cipher, (gcm_key));				\
-    if (0) (encrypt)(&(ctx)->cipher, 0, (void *)0, (void *)0);	\
+    (set_key)(&(ctx)->cipher, (gcm_key));			\
+    if (0) (encrypt)(&(ctx)->cipher, ~(size_t) 0,		\
+		     (uint8_t *) 0, (const uint8_t *) 0);	\
     gcm_set_key(&(ctx)->key, &(ctx)->cipher,			\
 		(nettle_cipher_func *) (encrypt));		\
   } while (0)
@@ -166,19 +167,22 @@ gcm_digest(struct gcm_ctx *ctx, const struct gcm_key *key,
   gcm_update(&(ctx)->gcm, &(ctx)->key, (length), (data))
 
 #define GCM_ENCRYPT(ctx, encrypt, length, dst, src)			\
-  (0 ? (encrypt)(&(ctx)->cipher, 0, (void *)0, (void *)0)		\
+  (0 ? (encrypt)(&(ctx)->cipher, ~(size_t) 0,				\
+		 (uint8_t *) 0, (const uint8_t *) 0)			\
      : gcm_encrypt(&(ctx)->gcm, &(ctx)->key, &(ctx)->cipher,		\
 		   (nettle_cipher_func *) (encrypt),			\
 		   (length), (dst), (src)))
 
 #define GCM_DECRYPT(ctx, encrypt, length, dst, src)			\
-  (0 ? (encrypt)(&(ctx)->cipher, 0, (void *)0, (void *)0)		\
+  (0 ? (encrypt)(&(ctx)->cipher, ~(size_t) 0,				\
+		 (uint8_t *) 0, (const uint8_t *) 0)			\
      : gcm_decrypt(&(ctx)->gcm,  &(ctx)->key, &(ctx)->cipher,		\
 		   (nettle_cipher_func *) (encrypt),			\
 		   (length), (dst), (src)))
 
 #define GCM_DIGEST(ctx, encrypt, length, digest)			\
-  (0 ? (encrypt)(&(ctx)->cipher, 0, (void *)0, (void *)0)		\
+  (0 ? (encrypt)(&(ctx)->cipher, ~(size_t) 0,				\
+		 (uint8_t *) 0, (const uint8_t *) 0)			\
      : gcm_digest(&(ctx)->gcm, &(ctx)->key, &(ctx)->cipher,		\
 		  (nettle_cipher_func *) (encrypt),			\
 		  (length), (digest)))
