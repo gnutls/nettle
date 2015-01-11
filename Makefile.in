@@ -109,7 +109,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 knuth-lfib.c \
 		 md2.c md2-meta.c md4.c md4-meta.c \
 		 md5.c md5-compress.c md5-compat.c md5-meta.c \
-		 memxor.c \
+		 memxor.c memxor3.c \
 		 nettle-meta-aeads.c nettle-meta-armors.c \
 		 nettle-meta-ciphers.c nettle-meta-hashes.c \
 		 pbkdf2.c pbkdf2-hmac-sha1.c pbkdf2-hmac-sha256.c \
@@ -216,7 +216,7 @@ DISTFILES = $(SOURCES) $(HEADERS) getopt.h getopt_int.h \
 	$(des_headers) descore.README \
 	aes-internal.h camellia-internal.h serpent-internal.h \
 	cast128_sboxes.h desinfo.h desCode.h \
-	nettle-internal.h nettle-write.h \
+	memxor-internal.h nettle-internal.h nettle-write.h \
 	gmp-glue.h ecc-internal.h \
 	mini-gmp.h mini-gmp.c asm.m4 \
 	nettle.texinfo nettle.info nettle.html nettle.pdf sha-example.c

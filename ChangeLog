@@ -1,3 +1,50 @@
+2015-01-11  Niels Möller  <nisse@lysator.liu.se>
+
+	Merged memxor-reorg changes, starting at 2014-10-23.
+
+2015-01-10  Niels Möller  <nisse@lysator.liu.se>
+
+	* arm/memxor.asm (memxor3): Moved to new file.
+	* arm/memxor3.asm: New file.
+
+2014-11-24  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/memxor3.asm (memxor3): New file, code moved from old
+	memxor.asm.
+	* x86_64/memxor.asm (memxor): Rewritten, no longer jumps into
+	memxor3.
+
+	* configure.ac (asm_replace_list): Added memxor.asm and
+	memxor3.asm.
+
+2014-10-23  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac (IF_ASM): New substituted variable.
+	* testsuite/Makefile.in (VALGRIND): Allow partial loads only when
+	build includes assembly files.
+
+	* memxor-internal.h (READ_PARTIAL): New macro.
+	* memxor.c (memxor_different_alignment): Avoid out-of-bounds
+	reads, corresponding to valgrind's --partial-loads-ok. Use
+	READ_PARTIAL.
+	* memxor3.c: Analogous changes for unaligned operations.
+
+	* configure.ac (asm_replace_list): Deleted memxor.asm, now
+	incompatible with the memxor/memxor3 split.
+
+	* memxor3.c: New file, split off from memxor.c.
+	* memxor-internal.h: New file, declarations shared by memxor.c and
+	memxor3.c.
+	* memxor.c: memxor3 fucntions moved out from this file.
+	* Makefile.in (nettle_SOURCES): Added memxor3.c.
+	(DISTFILES): Added memxor-internal.h.
+
+	* memxor.c (memxor_common_alignment, memxor_different_alignment)
+	(memxor): Change loop order, iterate from the end.
+	(memxor3_common_alignment): Unroll twice.
+	(word_t): On x86_64, unconditionally define as uint64_t, to get 64
+	bits also in M$ windows. Replaced all uses of SIZEOF_LONG.
+
 2014-12-12  Niels Möller  <nisse@lysator.liu.se>
 
 	* cbc.h (CBC_ENCRYPT, CBC_DECRYPT): Make type-checking hack

@@ -114,7 +114,7 @@ $(TARGETS) $(EXTRA_TARGETS): testutils.$(OBJEXT) ../nettle-internal.$(OBJEXT) \
 
 # --partial-loads-ok=yes is needed for memxor's handling of unaligned
 # data.
-VALGRIND = valgrind --error-exitcode=1 --leak-check=full --partial-loads-ok=yes --show-reachable=yes
+VALGRIND = valgrind --error-exitcode=1 --leak-check=full --show-reachable=yes @IF_ASM@ --partial-loads-ok=yes
 
 # The PATH update is for locating dlls on w*ndows.
 check: $(TS_ALL)
