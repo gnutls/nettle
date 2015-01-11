@@ -1,5 +1,8 @@
 2015-01-11  Niels Möller  <nisse@lysator.liu.se>
 
+	* aclocal.m4 (LSH_RPATH_INIT): Handle freebsd, in the same way as
+	gnu/linux, with -Wl,-rpath,.
+
 	Merged memxor-reorg changes, starting at 2014-10-23.
 
 2015-01-10  Niels Möller  <nisse@lysator.liu.se>

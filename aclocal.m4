@@ -109,7 +109,7 @@ case "$host_os" in
       RPATHFLAG=-R
     fi
     ;;
-  linux*)		RPATHFLAG="-Wl,-rpath," ;;
+  linux*|freebsd*)	RPATHFLAG="-Wl,-rpath," ;;
   *)			RPATHFLAG="" ;;
 esac
 
