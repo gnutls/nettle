@@ -72,6 +72,10 @@ AC_ARG_ENABLE(arm-neon,
   AC_HELP_STRING([--enable-arm-neon], [Enable ARM Neon assembly. (default=auto)]),,
   [enable_arm_neon=auto])
 
+AC_ARG_ENABLE(x86-aesni,
+  AC_HELP_STRING([--enable-x86-aesni], [Enable x86_64 aes instructions. (default=no)]),,
+  [enable_x86_aesni=no])
+
 AC_ARG_ENABLE(mini-gmp,
   AC_HELP_STRING([--enable-mini-gmp], [Enable mini-gmp, used instead of libgmp.]),,
   [enable_mini_gmp=no])
@@ -239,6 +243,9 @@ if test "x$enable_assembler" = xyes ; then
     [x86_64 | amd64])
       if test "$ABI" = 64 ; then
 	asm_path=x86_64
+	if test "x$enable_x86_aesni" = xyes ; then
+	  asm_path="x86_64/aesni $asm_path"
+	fi
       else
 	asm_path=x86
       fi

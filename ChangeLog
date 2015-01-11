@@ -1,5 +1,9 @@
 2015-01-11  Niels Möller  <nisse@lysator.liu.se>
 
+	* x86_64/aesni/aes-decrypt-internal.asm: New file.
+	* x86_64/aesni/aes-encrypt-internal.asm: New file.
+	* configure.ac: New configure flag --enable-x86-aesni.
+
 	* aclocal.m4 (LSH_RPATH_INIT): Handle freebsd, in the same way as
 	gnu/linux, with -Wl,-rpath,.
 
