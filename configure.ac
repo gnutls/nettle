@@ -295,8 +295,8 @@ if test "x$enable_public_key" = "xyes" ; then
     ecc-25519-modp.asm ecc-256-redc.asm ecc-384-modp.asm ecc-521-modp.asm"
 fi
 
-OPT_ASM_NETTLE_SOURCES=""
-OPT_ASM_HOGWEED_SOURCES=""
+OPT_NETTLE_OBJS=""
+OPT_HOGWEED_OBJS=""
 
 asm_file_list=""
 
@@ -315,6 +315,8 @@ if test "x$enable_assembler" = xyes ; then
     dnl Workaround for AC_CONFIG_LINKS, which complains if we use the
     dnl same destination argument $tmp_f multiple times.
     for tmp_n in $asm_nettle_optional_list ; do
+      dnl Note extra pair of [] in sed expression
+      tmp_b=`echo "$tmp_n" | sed 's/\.[[^.]]*$//'`
       for asm_dir in $asm_path ; do
 	if test -f "$srcdir/$asm_dir/$tmp_n"; then
 	  asm_file_list="$asm_file_list $tmp_n"
@@ -325,12 +327,14 @@ if test "x$enable_assembler" = xyes ; then
 	  done <<EOF
 [`sed -n 's/[^ 	]*PROLOGUE(_*\(nettle_\)*\([^)]*\)).*$/\2/p' < "$srcdir/$asm_dir/$tmp_n"`]
 EOF
-	  OPT_ASM_NETTLE_SOURCES="$OPT_ASM_NETTLE_SOURCES $tmp_n"
+	  OPT_NETTLE_OBJS="$OPT_NETTLE_OBJS $tmp_b"'.$(OBJEXT)'
 	  break
 	fi
       done
     done	
     for tmp_h in $asm_hogweed_optional_list ; do
+      dnl Note extra pair of [] in sed expression
+      tmp_b=`echo "$tmp_h" | sed 's/\.[[^.]]*$//'`
       for asm_dir in $asm_path ; do
 	if test -f "$srcdir/$asm_dir/$tmp_h"; then
 	  asm_file_list="$asm_file_list $tmp_h"
@@ -341,7 +345,7 @@ EOF
 	  done <<EOF
 [`sed -n 's/[^ 	]*PROLOGUE(_*\(nettle_\)*\([^)]*\)).*$/\2/p' < "$srcdir/$asm_dir/$tmp_h"`]
 EOF
-	  OPT_ASM_HOGWEED_SOURCES="$OPT_ASM_HOGWEED_SOURCES $tmp_h"
+	  OPT_HOGWEED_OBJS="$OPT_HOGWEED_OBJS $tmp_b"'.$(OBJEXT)'
 	  break
 	fi
       done
@@ -361,8 +365,8 @@ EOF
   esac
 fi
 
-AC_SUBST([OPT_ASM_NETTLE_SOURCES])
-AC_SUBST([OPT_ASM_HOGWEED_SOURCES])
+AC_SUBST([OPT_NETTLE_OBJS])
+AC_SUBST([OPT_HOGWEED_OBJS])
 AC_SUBST([ASM_RODATA])
 if test "x$enable_assembler" = xyes ; then
   IF_ASM=''

@@ -12,8 +12,8 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = $(INSTALL_PROGRAM) -s
 MKDIR_P = @MKDIR_P@
 
-OPT_ASM_NETTLE_SOURCES = @OPT_ASM_NETTLE_SOURCES@
-OPT_ASM_HOGWEED_SOURCES = @OPT_ASM_HOGWEED_SOURCES@
+OPT_NETTLE_OBJS = @OPT_NETTLE_OBJS@
+OPT_HOGWEED_OBJS = @OPT_HOGWEED_OBJS@
 
 OPT_HOGWEED_SOURCES = @IF_MINI_GMP@ mini-gmp.c
 
@@ -222,9 +222,9 @@ DISTFILES = $(SOURCES) $(HEADERS) getopt.h getopt_int.h \
 	nettle.texinfo nettle.info nettle.html nettle.pdf sha-example.c
 
 # Rules building static libraries
-nettle_OBJS = $(nettle_SOURCES:.c=.$(OBJEXT)) $(OPT_ASM_NETTLE_SOURCES:.asm=.$(OBJEXT))
+nettle_OBJS = $(nettle_SOURCES:.c=.$(OBJEXT)) $(OPT_NETTLE_OBJS)
 
-hogweed_OBJS = $(hogweed_SOURCES:.c=.$(OBJEXT)) $(OPT_ASM_HOGWEED_SOURCES:.asm=.$(OBJEXT))
+hogweed_OBJS = $(hogweed_SOURCES:.c=.$(OBJEXT)) $(OPT_HOGWEED_OBJS)
 
 libnettle.a: $(nettle_OBJS)
 	-rm -f $@

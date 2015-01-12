@@ -1,3 +1,12 @@
+2015-01-12  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac (OPT_NETTLE_OBJS, OPT_HOGWEED_OBJS): Renamed
+	substituted variables, and list the object files rather than
+	source files.
+	(OPT_ASM_NETTLE_SOURCES, OPT_ASM_HOGWEED_SOURCES): ...Old names.
+	* Makefile.in (OPT_NETTLE_OBJS, OPT_HOGWEED_OBJS): Use new
+	variables.
+
 2015-01-11  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86_64/aesni/aes-decrypt-internal.asm: New file.
