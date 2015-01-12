@@ -1,5 +1,8 @@
 2015-01-12  Niels Möller  <nisse@lysator.liu.se>
 
+	* asm.m4 (DECLARE_FUNC): New macro, extracted from PROLOGUE.
+	(PROLOGUE): Use it.
+
 	* configure.ac (OPT_NETTLE_OBJS, OPT_HOGWEED_OBJS): Renamed
 	substituted variables, and list the object files rather than
 	source files.
