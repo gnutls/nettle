@@ -1,5 +1,9 @@
 2015-01-13  Niels Möller  <nisse@lysator.liu.se>
 
+	* x86_64/aesni/aes-encrypt-internal.asm: Use explicit .byte
+	sequences for aes instructions, don't rely on assembler support.
+	* x86_64/aesni/aes-decrypt-internal.asm: Likewise.
+
 	* aclocal.m4 (NETTLE_CHECK_IFUNC): New macro, checking for ifunc
 	and settting HAVE_LINK_IFUNC if working.
 	* configure.ac: Use it.
