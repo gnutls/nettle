@@ -150,10 +150,10 @@ fat_init (void)
       _aes_encrypt_vec = _nettle_aes_encrypt_x86_64;
       _aes_decrypt_vec = _nettle_aes_decrypt_x86_64;
     }
-  /* FIXME: We ought to use some thread-aware memory barrier before
-     setting the initialized flag. For now, just do another cpuinfo
-     call to get some synchronization. */
-  _nettle_cpuid (1, cpuid_data);
+
+  /* The x86_64 architecture should always make stores visible in the
+     right order to other processors (except for non-temporal stores
+     and the like). So we don't need any memory barrier. */
   initialized = 1;
 }
 
