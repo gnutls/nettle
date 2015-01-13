@@ -12,6 +12,9 @@ changecom()dnl
 dnl Including files from the srcdir
 define(<include_src>, <include(srcdir/$1)>)dnl
 
+dnl default definition, changed in fat builds
+define(<fat_suffix>, <>)
+
 dnl Pseudo ops
 define(<DECLARE_FUNC>,
 <ifelse(ELF_STYLE,yes,
@@ -24,13 +27,13 @@ COFF_STYLE, yes,
 <>)>)
 
 define(<PROLOGUE>,
-<.globl C_NAME($1)
-DECLARE_FUNC(C_NAME($1))
-C_NAME($1):>)
+<.globl C_NAME($1)<>fat_suffix
+DECLARE_FUNC(C_NAME($1)<>fat_suffix)
+C_NAME($1)<>fat_suffix:>)
 
 define(<EPILOGUE>,
 <ifelse(ELF_STYLE,yes,
-<.size C_NAME($1), . - C_NAME($1)>,<>)>)
+<.size C_NAME($1)<>fat_suffix, . - C_NAME($1)<>fat_suffix>,<>)>)
 
 define(<m4_log2>, <m4_log2_internal($1,1,0)>)
 define(<m4_log2_internal>,

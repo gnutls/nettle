@@ -68,6 +68,9 @@ AC_ARG_ENABLE(documentation,
   AC_HELP_STRING([--disable-documentation], [Omit building and installing the documentation. (default=auto)]),,
   [enable_documentation=auto])
 
+AC_ARG_ENABLE(fat, AC_HELP_STRING([--enable-fat], [Enable fat library build (default=no)]),,
+  [enable_fat=no])
+
 AC_ARG_ENABLE(arm-neon,
   AC_HELP_STRING([--enable-arm-neon], [Enable ARM Neon assembly. (default=auto)]),,
   [enable_arm_neon=auto])
@@ -248,6 +251,9 @@ if test "x$enable_assembler" = xyes ; then
 	if test "x$enable_x86_aesni" = xyes ; then
 	  asm_path="x86_64/aesni $asm_path"
 	fi
+	if test "x$enable_fat" = xyes ; then
+	  asm_path="x86_64/fat $asm_path"
+	fi
       else
 	asm_path=x86
       fi
@@ -290,7 +296,8 @@ asm_replace_list="aes-encrypt-internal.asm aes-decrypt-internal.asm \
 		sha3-permute.asm umac-nh.asm umac-nh-n.asm machine.m4"
 
 # Assembler files which generate additional object files if they are used.
-asm_nettle_optional_list="gcm-hash8.asm"
+asm_nettle_optional_list="gcm-hash8.asm cpuid.asm fat.c \
+  aes-encrypt-internal-2.asm aes-decrypt-internal-2.asm"
 asm_hogweed_optional_list=""
 if test "x$enable_public_key" = "xyes" ; then
   asm_hogweed_optional_list="ecc-192-modp.asm ecc-224-modp.asm \

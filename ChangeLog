@@ -1,5 +1,26 @@
 2015-01-13  Niels Möller  <nisse@lysator.liu.se>
 
+	* x86_64/fat/fat.c: New file, initialization for x86_64 fat
+	library.
+
+	* x86_64/fat/cpuid.asm (_nettle_cpuid): New file and function.
+
+	* x86_64/fat/aes-encrypt-internal.asm: New file, including
+	x86_64/aes-encrypt-internal.asm, after setting fat_suffix to
+	_x86_64.
+	* x86_64/fat/aes-decrypt-internal.asm: New file, analogous setup.
+	* x86_64/fat/aes-encrypt-internal-2.asm: New file, including
+	x86_64/aesni/aes-encrypt-internal.asm, after setting fat_suffix to
+	_aesni.
+	* x86_64/fat/aes-decrypt-internal.asm-2: New file, analogous
+	setup.
+
+	* configure.ac: New command line option --enable-fat.
+	(asm_nettle_optional_list): Added cpuid.asm, fat.c,
+	aes-encrypt-internal-2.asm, and aes-decrypt-internal-2.asm.
+
+	* asm.m4 (fat_suffix): New suffix added to symbol names.
+
 	* x86_64/aesni/aes-encrypt-internal.asm: Use explicit .byte
 	sequences for aes instructions, don't rely on assembler support.
 	* x86_64/aesni/aes-decrypt-internal.asm: Likewise.
