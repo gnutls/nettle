@@ -53,22 +53,21 @@
 
    To get everything hooked in, we use a belt-and-suspenders approach.
 
-   When compiling with gcc, we try to register a constructor function
-   which calls fat_init as soon as the library is loaded. If this is
-   unavailable or non-working, we instead arrange fat_init to be
-   called on demand.
+   We try to register fat_init as a constructor function to be called
+   at load time. If this is unavailable or non-working, we instead
+   arrange fat_init to be called lazily.
 
    For the actual indirection, there are two cases. 
 
    If ifunc support is available, function pointers are statically
    initialized to NULL, and we register resolver functions, e.g.,
-   _aes_encrypt_resolve, which calls fat_init, and then returns the
+   _aes_encrypt_resolve, which call fat_init, and then return the
    function pointer, e.g., the value of _aes_encrypt_vec.
 
    If ifunc is not available, we have to define a wrapper function to
    jump via the function pointer. (FIXME: For internal calls, we could
-   do this as a macro instead). We statically initialize each function
-   pointer to point to a special initialization function, e.g.,
+   do this as a macro). We statically initialize each function pointer
+   to point to a special initialization function, e.g.,
    _aes_encrypt_init, which calls fat_init, and then invokes the right
    function. This way, all pointers are setup correctly at the first
    call to any fat function.
@@ -78,6 +77,13 @@
 # define IFUNC(resolve) __attribute__ ((ifunc (resolve)))
 #else
 # define IFUNC(resolve)
+#endif
+
+#if HAVE_GCC_ATTRIBUTE
+# define CONSTRUCTOR __attribute__ ((constructor))
+#elif defined (__sun)
+# pragma init(fat_init)
+# define CONSTRUCTOR
 #endif
 
 void _nettle_cpuid (uint32_t input, uint32_t regs[4]);
@@ -111,7 +117,7 @@ static aes_crypt_internal_func *_aes_decrypt_vec = _aes_decrypt_init;
    it is idempotent, and on x86, pointer updates are atomic, so
    there's no danger if it is called simultaneously from multiple
    threads. */
-static void
+static void CONSTRUCTOR
 fat_init (void)
 {
   static volatile int initialized = 0;
@@ -150,14 +156,6 @@ fat_init (void)
   _nettle_cpuid (1, cpuid_data);
   initialized = 1;
 }
-
-#if __GNUC__
-static void __attribute__ ((constructor))
-fat_constructor (void)
-{
-  fat_init ();
-}
-#endif
 
 #if HAVE_LINK_IFUNC
 

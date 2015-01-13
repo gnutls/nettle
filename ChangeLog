@@ -1,5 +1,11 @@
 2015-01-13  Niels Möller  <nisse@lysator.liu.se>
 
+	* x86_64/fat/fat.c: For constructor hack, check
+	HAVE_GCC_ATTRIBUTE, not __GNUC__. Also support sun compilers, as
+	suggested by Nikos Mavrogiannopoulos, and attch the constructor
+	attribute directly to fat_init.
+	(fat_constructor): Deleted wrapper function.
+
 	* x86_64/fat/fat.c: New file, initialization for x86_64 fat
 	library.
 
