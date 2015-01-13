@@ -1,3 +1,9 @@
+2015-01-13  Niels Möller  <nisse@lysator.liu.se>
+
+	* aclocal.m4 (NETTLE_CHECK_IFUNC): New macro, checking for ifunc
+	and settting HAVE_LINK_IFUNC if working.
+	* configure.ac: Use it.
+
 2015-01-12  Niels Möller  <nisse@lysator.liu.se>
 
 	* asm.m4 (DECLARE_FUNC): New macro, extracted from PROLOGUE.

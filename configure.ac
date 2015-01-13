@@ -95,6 +95,8 @@ LSH_RPATH_INIT([`echo $with_lib_path | sed 's/:/ /g'` \
 # Checks for programs.
 AC_PROG_CC
 
+NETTLE_CHECK_IFUNC
+
 # When $CC foo.c -o foo creates both foo and foo.exe, autoconf picks
 # up the foo.exe and sets exeext to .exe. That is correct for cygwin,
 # which has some kind of magic link from foo to foo.exe, but not for

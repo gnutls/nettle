@@ -643,6 +643,41 @@ foo:
 fi
 ])
 
+dnl NETTLE_CHECK_IFUNC
+dnl ------------------
+dnl Check if __attribute__ ((ifunc(...))) works
+AC_DEFUN([NETTLE_CHECK_IFUNC],
+[AC_REQUIRE([AC_PROG_CC])
+AC_CACHE_CHECK([for ifunc support],
+  nettle_cv_link_ifunc,
+  AC_LINK_IFELSE([AC_LANG_PROGRAM([
+static int
+foo_imp(int x)
+{
+  return 1;
+}
+
+typedef void void_func (void);
+
+static void_func *
+foo_resolv(void)
+{
+  return (void_func *) foo_imp;
+}
+
+int foo (int x) __attribute__ ((ifunc("foo_resolv")));
+],[
+  return foo(0);
+
+])],
+[nettle_cv_link_ifunc=yes],
+[nettle_cv_link_ifunc=no]))
+AH_TEMPLATE([HAVE_LINK_IFUNC], [Define if compiler and linker supports __attribute__ ifunc])
+if test "x$nettle_cv_link_ifunc" = xyes ; then
+  AC_DEFINE(HAVE_LINK_IFUNC)
+fi 
+])
+
 dnl @synopsis AX_CREATE_STDINT_H [( HEADER-TO-GENERATE [, HEADERS-TO-CHECK])]
 dnl
 dnl the "ISO C9X: 7.18 Integer types <stdint.h>" section requires the
