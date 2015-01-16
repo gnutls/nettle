@@ -15,6 +15,7 @@ MKDIR_P = @MKDIR_P@
 OPT_NETTLE_OBJS = @OPT_NETTLE_OBJS@
 OPT_HOGWEED_OBJS = @OPT_HOGWEED_OBJS@
 
+OPT_NETTLE_SOURCES = @OPT_NETTLE_SOURCES@
 OPT_HOGWEED_SOURCES = @IF_MINI_GMP@ mini-gmp.c
 
 SUBDIRS = tools testsuite examples
@@ -134,7 +135,8 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 umac-poly64.c umac-poly128.c umac-set-key.c \
 		 umac32.c umac64.c umac96.c umac128.c \
 		 write-be32.c write-le32.c write-le64.c \
-		 yarrow256.c yarrow_key_event.c
+		 yarrow256.c yarrow_key_event.c \
+		 $(OPT_NETTLE_SOURCES)
 
 hogweed_SOURCES = sexp.c sexp-format.c \
 		  sexp-transport.c sexp-transport-format.c \

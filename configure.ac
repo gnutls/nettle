@@ -238,6 +238,8 @@ if test "x$ABI" != xstandard ; then
   fi
 fi
 
+OPT_NETTLE_SOURCES=""
+
 # Select assembler code
 asm_path=
 if test "x$enable_assembler" = xyes ; then
@@ -248,11 +250,11 @@ if test "x$enable_assembler" = xyes ; then
     [x86_64 | amd64])
       if test "$ABI" = 64 ; then
 	asm_path=x86_64
-	if test "x$enable_x86_aesni" = xyes ; then
-	  asm_path="x86_64/aesni $asm_path"
-	fi
 	if test "x$enable_fat" = xyes ; then
 	  asm_path="x86_64/fat $asm_path"
+	  OPT_NETTLE_SOURCES="fat-x86_64.c $OPT_NETTLE_SOURCES"
+	elif test "x$enable_x86_aesni" = xyes ; then
+	  asm_path="x86_64/aesni $asm_path"
 	fi
       else
 	asm_path=x86
@@ -296,7 +298,7 @@ asm_replace_list="aes-encrypt-internal.asm aes-decrypt-internal.asm \
 		sha3-permute.asm umac-nh.asm umac-nh-n.asm machine.m4"
 
 # Assembler files which generate additional object files if they are used.
-asm_nettle_optional_list="gcm-hash8.asm cpuid.asm fat.c \
+asm_nettle_optional_list="gcm-hash8.asm cpuid.asm \
   aes-encrypt-internal-2.asm aes-decrypt-internal-2.asm"
 asm_hogweed_optional_list=""
 if test "x$enable_public_key" = "xyes" ; then
@@ -376,6 +378,7 @@ fi
 
 AC_SUBST([OPT_NETTLE_OBJS])
 AC_SUBST([OPT_HOGWEED_OBJS])
+AC_SUBST([OPT_NETTLE_SOURCES])
 AC_SUBST([ASM_RODATA])
 if test "x$enable_assembler" = xyes ; then
   IF_ASM=''

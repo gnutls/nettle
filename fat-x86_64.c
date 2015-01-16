@@ -1,4 +1,4 @@
-/* fat.c
+/* fat-x86_64.c
 
    Copyright (C) 2015 Niels Möller
 

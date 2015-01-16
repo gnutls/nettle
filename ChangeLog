@@ -1,3 +1,13 @@
+2015-01-16  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac (OPT_NETTLE_SOURCES): New substituted variable.
+	(asm_path): Fixed x86_64 fat setup. Include only x86_64 and
+	x86_64/fat in the asm_path. Put fat-x86_64.c in
+	OPT_NETTLE_SOURCES, with no symlinking.
+
+	* fat-x86_64.c: Renamed,...
+	* x86_64/fat/fat.c: ... from old name.
+
 2015-01-13  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86_64/fat/fat.c: For constructor hack, check
