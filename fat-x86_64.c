@@ -49,7 +49,7 @@
    threads.
 
    The fat_init function checks the cpuid flags, and sets function
-   pointers, e.g, _aes_encrypt_vec, to point to the appropriate
+   pointers, e.g, _nettle_aes_encrypt_vec, to point to the appropriate
    implementation.
 
    To get everything hooked in, we use a belt-and-suspenders approach.
@@ -62,30 +62,91 @@
 
    If ifunc support is available, function pointers are statically
    initialized to NULL, and we register resolver functions, e.g.,
-   _aes_encrypt_resolve, which call fat_init, and then return the
-   function pointer, e.g., the value of _aes_encrypt_vec.
+   _nettle_aes_encrypt_resolve, which call fat_init, and then return
+   the function pointer, e.g., the value of _nettle_aes_encrypt_vec.
 
    If ifunc is not available, we have to define a wrapper function to
    jump via the function pointer. (FIXME: For internal calls, we could
    do this as a macro). We statically initialize each function pointer
    to point to a special initialization function, e.g.,
-   _aes_encrypt_init, which calls fat_init, and then invokes the right
-   function. This way, all pointers are setup correctly at the first
-   call to any fat function.
+   _nettle_aes_encrypt_init, which calls fat_init, and then invokes
+   the right function. This way, all pointers are setup correctly at
+   the first call to any fat function.
 */
 
 #if HAVE_LINK_IFUNC
 # define IFUNC(resolve) __attribute__ ((ifunc (resolve)))
+# define vec_init(f) NULL
+# define FAT_BOILERPLATE()
 #else
 # define IFUNC(resolve)
+# define vec_init(f) f##_init
 #endif
 
 #if HAVE_GCC_ATTRIBUTE
 # define CONSTRUCTOR __attribute__ ((constructor))
-#elif defined (__sun)
-# pragma init(fat_init)
+#else
 # define CONSTRUCTOR
+# if defined (__sun)
+#  pragma init(fat_init)
+# endif
 #endif
+
+/* DECLARE_FAT_FUNC(name, ftype)
+ *
+ *   name is the public function, e.g., _nettle_aes_encrypt.
+ *   ftype is its type, e.g., aes_crypt_internal_func.
+ *
+ * DECLARE_FAT_VAR(name, type, var)
+ *
+ *   name is name without _nettle prefix.
+ *   type is its type.
+ *   var is the variant, used as a suffix on the symbol name.
+ *
+ * DEFINE_FAT_FUNC(name, rtype, prototype, args)
+ *
+ *   name is the public function.
+ *   rtype its return type.
+ *   prototype is the list of formal arguments, with types.
+ *   args contain the argument list without any types.
+ */
+
+#if HAVE_LINK_IFUNC
+#define DECLARE_FAT_FUNC(name, ftype)	\
+  ftype name IFUNC(#name"_resolve");	\
+  static ftype *name##_vec = NULL;
+
+#define DEFINE_FAT_FUNC(name, rtype, prototype, args)	\
+  static void_func * name##_resolve(void) \
+  {								  \
+    if (getenv ("NETTLE_FAT_VERBOSE"))				  \
+      fprintf (stderr, "libnettle: "#name"_resolve\n");		  \
+    fat_init();							  \
+    return (void_func *) name##_vec;				  \
+  }
+
+#else /* !HAVE_LINK_IFUNC */
+#define DECLARE_FAT_FUNC(name, ftype)		\
+  ftype name;					\
+  static ftype name##_init;			\
+  static ftype *name##_vec = name##_init;				
+
+#define DEFINE_FAT_FUNC(name, rtype, prototype, args)		\
+  rtype name prototype						\
+  {								\
+    return name##_vec args;					\
+  }								\
+  static rtype name##_init prototype {			\
+    if (getenv ("NETTLE_FAT_VERBOSE"))				\
+      fprintf (stderr, "libnettle: "#name"_init\n");		\
+    fat_init();							\
+    assert (name##_vec != name##_init);				\
+    return name##_vec args;					\
+  }
+#endif /* !HAVE_LINK_IFUNC */
+
+#define DECLARE_FAT_FUNC_VAR(name, type, var)	\
+       type _nettle_##name##_##var;
 
 void _nettle_cpuid (uint32_t input, uint32_t regs[4]);
 
@@ -95,31 +156,19 @@ typedef void aes_crypt_internal_func (unsigned rounds, const uint32_t *keys,
 				      const struct aes_table *T,
 				      size_t length, uint8_t *dst,
 				      const uint8_t *src);
-aes_crypt_internal_func _aes_encrypt IFUNC ("_aes_encrypt_resolve");
-aes_crypt_internal_func _nettle_aes_encrypt_x86_64;
-aes_crypt_internal_func _nettle_aes_encrypt_aesni;
+DECLARE_FAT_FUNC(_nettle_aes_encrypt, aes_crypt_internal_func)
+DECLARE_FAT_FUNC_VAR(aes_encrypt, aes_crypt_internal_func, x86_64)
+DECLARE_FAT_FUNC_VAR(aes_encrypt, aes_crypt_internal_func, aesni)
 
-aes_crypt_internal_func _aes_decrypt IFUNC ("_aes_decrypt_resolve");
-aes_crypt_internal_func _nettle_aes_decrypt_x86_64;
-aes_crypt_internal_func _nettle_aes_decrypt_aesni;
+DECLARE_FAT_FUNC(_nettle_aes_decrypt, aes_crypt_internal_func)
+DECLARE_FAT_FUNC_VAR(aes_decrypt, aes_crypt_internal_func, x86_64)
+DECLARE_FAT_FUNC_VAR(aes_decrypt, aes_crypt_internal_func, aesni)
 
-typedef void *(memxor_func)(void *dst_in, const void *src_in, size_t n);
+typedef void *(memxor_func)(void *dst, const void *src, size_t n);
 
-memxor_func nettle_memxor IFUNC ("_memxor_resolve");
-memxor_func _nettle_memxor_x86_64;
-memxor_func _nettle_memxor_sse2;
-
-#if HAVE_LINK_IFUNC
-#define _aes_encrypt_init NULL
-#define _aes_decrypt_init NULL
-#else
-static aes_crypt_internal_func _aes_encrypt_init;
-static aes_crypt_internal_func _aes_decrypt_init;
-#endif
-
-static aes_crypt_internal_func *_aes_encrypt_vec = _aes_encrypt_init;
-static aes_crypt_internal_func *_aes_decrypt_vec = _aes_decrypt_init;
-static memxor_func *_memxor_vec = _nettle_memxor_x86_64;
+DECLARE_FAT_FUNC(nettle_memxor, memxor_func)
+DECLARE_FAT_FUNC_VAR(memxor, memxor_func, x86_64)
+DECLARE_FAT_FUNC_VAR(memxor, memxor_func, sse2)
 
 /* This function should usually be called only once, at startup. But
    it is idempotent, and on x86, pointer updates are atomic, so
@@ -148,15 +197,15 @@ fat_init (void)
     {
       if (verbose)
 	fprintf (stderr, "libnettle: aes instructions available.\n");
-      _aes_encrypt_vec = _nettle_aes_encrypt_aesni;
-      _aes_decrypt_vec = _nettle_aes_decrypt_aesni;
+      _nettle_aes_encrypt_vec = _nettle_aes_encrypt_aesni;
+      _nettle_aes_decrypt_vec = _nettle_aes_decrypt_aesni;
     }
   else
     {
       if (verbose)
 	fprintf (stderr, "libnettle: aes instructions not available.\n");
-      _aes_encrypt_vec = _nettle_aes_encrypt_x86_64;
-      _aes_decrypt_vec = _nettle_aes_decrypt_x86_64;
+      _nettle_aes_encrypt_vec = _nettle_aes_encrypt_x86_64;
+      _nettle_aes_decrypt_vec = _nettle_aes_decrypt_x86_64;
     }
 
   _nettle_cpuid (0, cpuid_data);
@@ -166,13 +215,13 @@ fat_init (void)
     {
       if (verbose)
 	fprintf (stderr, "libnettle: intel SSE2 will be used for XOR.\n");
-      _memxor_vec = _nettle_memxor_sse2;
+      nettle_memxor_vec = _nettle_memxor_sse2;
     }
   else
     {
       if (verbose)
 	fprintf (stderr, "libnettle: intel SSE2 will not be used for XOR.\n");
-      _memxor_vec = _nettle_memxor_x86_64;
+      nettle_memxor_vec = _nettle_memxor_x86_64;
     }
 
   /* The x86_64 architecture should always make stores visible in the
@@ -181,87 +230,20 @@ fat_init (void)
   initialized = 1;
 }
 
-#if HAVE_LINK_IFUNC
+DEFINE_FAT_FUNC(_nettle_aes_encrypt, void,
+		(unsigned rounds, const uint32_t *keys,
+		 const struct aes_table *T,
+		 size_t length, uint8_t *dst,
+		 const uint8_t *src),
+		(rounds, keys, T, length, dst, src))
 
-static void_func *
-_aes_encrypt_resolve (void)
-{
-  if (getenv ("NETTLE_FAT_VERBOSE"))
-    fprintf (stderr, "libnettle: _aes_encrypt_resolve\n");
-  fat_init ();
-  return (void_func *) _aes_encrypt_vec;
-}
+DEFINE_FAT_FUNC(_nettle_aes_decrypt, void,
+		(unsigned rounds, const uint32_t *keys,
+		 const struct aes_table *T,
+		 size_t length, uint8_t *dst,
+		 const uint8_t *src),
+		(rounds, keys, T, length, dst, src))
 
-static void_func *
-_aes_decrypt_resolve (void)
-{
-  if (getenv ("NETTLE_FAT_VERBOSE"))
-    fprintf (stderr, "libnettle: _aes_decrypt_resolve\n");
-  fat_init ();
-  return (void_func *) _aes_decrypt_vec;
-}
-
-static void_func *
-_memxor_resolve (void)
-{
-  if (getenv ("NETTLE_FAT_VERBOSE"))
-    fprintf (stderr, "libnettle: _memxor_resolve\n");
-  fat_init ();
-  return (void_func *) _memxor_vec;
-}
-
-#else /* !HAVE_LINK_IFUNC */
-
-/* We need wrapper functions jumping via the function pointer. */
-void
-_aes_encrypt (unsigned rounds, const uint32_t *keys,
-	      const struct aes_table *T,
-	      size_t length, uint8_t *dst,
-	      const uint8_t *src)
-{
-  _aes_encrypt_vec (rounds, keys, T, length, dst, src);
-}
-
-static void
-_aes_encrypt_init (unsigned rounds, const uint32_t *keys,
-		   const struct aes_table *T,
-		   size_t length, uint8_t *dst,
-		   const uint8_t *src)
-{
-  if (getenv ("NETTLE_FAT_VERBOSE"))
-    fprintf (stderr, "libnettle: _aes_encrypt_init\n");
-  fat_init ();
-  assert (_aes_encrypt_vec != _aes_encrypt_init);
-  _aes_encrypt (rounds, keys, T, length, dst, src);
-}
-
-void
-_aes_decrypt (unsigned rounds, const uint32_t *keys,
-	      const struct aes_table *T,
-	      size_t length, uint8_t *dst,
-	      const uint8_t *src)
-{
-  _aes_decrypt_vec (rounds, keys, T, length, dst, src);
-}
-
-static void
-_aes_decrypt_init (unsigned rounds, const uint32_t *keys,
-		   const struct aes_table *T,
-		   size_t length, uint8_t *dst,
-		   const uint8_t *src)
-{
-  if (getenv ("NETTLE_FAT_VERBOSE"))
-    fprintf (stderr, "libnettle: _aes_decrypt_init\n");
-  fat_init ();
-  assert (_aes_decrypt_vec != _aes_decrypt_init);
-  _aes_decrypt (rounds, keys, T, length, dst, src);
-}
-
-/* FIXME: Missing _memxor_init. */
-void *
-memxor(void *dst_in, const void *src_in, size_t n)
-{
-  return _memxor_vec (dst_in, src_in, n);
-}
-
-#endif /* !HAVE_LINK_IFUNC */
+DEFINE_FAT_FUNC(nettle_memxor, void *,
+		(void *dst, const void *src, size_t n),
+		(dst, src, n))

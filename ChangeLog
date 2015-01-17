@@ -1,5 +1,9 @@
 2015-01-17  Niels Möller  <nisse@lysator.liu.se>
 
+	* fat-x86_64.c (DECLARE_FAT_FUNC, DEFINE_FAT_FUNC)
+	(DECLARE_FAT_FUNC_VAR): New macros, to define needed resolver and
+	wrapper functions.
+
 	* config.m4.in (SYMBOL_PREFIX): Define from from autoconf
 	ASM_SYMBOL_PREFIX.
 	(C_NAMS): move definition to...
