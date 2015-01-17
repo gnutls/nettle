@@ -299,7 +299,7 @@ asm_replace_list="aes-encrypt-internal.asm aes-decrypt-internal.asm \
 
 # Assembler files which generate additional object files if they are used.
 asm_nettle_optional_list="gcm-hash8.asm cpuid.asm \
-  aes-encrypt-internal-2.asm aes-decrypt-internal-2.asm"
+  aes-encrypt-internal-2.asm aes-decrypt-internal-2.asm memxor-2.asm"
 asm_hogweed_optional_list=""
 if test "x$enable_public_key" = "xyes" ; then
   asm_hogweed_optional_list="ecc-192-modp.asm ecc-224-modp.asm \

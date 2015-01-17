@@ -1,3 +1,13 @@
+2015-01-17  Niels Möller  <nisse@lysator.liu.se>
+
+	* fat-x86_64.c: Set up for sse2 vs non-sse2 memxor. Patch by Nikos
+	Mavrogiannopoulos.
+	* configure.ac (asm_nettle_optional_list): Added memxor-2.asm.
+	* x86_64/fat/memxor-2.asm: New file.
+	* x86_64/fat/memxor.asm: New file.
+
+	* x86_64/memxor.asm: Use ifdef, not ifelse, for testing USE_SSE2.
+
 2015-01-16  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac (OPT_NETTLE_SOURCES): New substituted variable.

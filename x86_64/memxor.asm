@@ -79,7 +79,7 @@ PROLOGUE(nettle_memxor)
 	jnz	.Lalign_loop
 
 .Laligned:
-ifelse(USE_SSE2, yes, <
+ifdef(<USE_SSE2>, <
 	cmp	$16, N
 	jnc	.Lsse2_case
 >)
@@ -135,7 +135,7 @@ ifelse(USE_SSE2, yes, <
 	W64_EXIT(3, 0)
 	ret
 
-ifelse(USE_SSE2, yes, <
+ifdef(<USE_SSE2>, <
 
 .Lsse2_case:
 	lea	(DST, N), TMP
