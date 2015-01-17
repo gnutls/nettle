@@ -31,6 +31,6 @@ ifelse(<
    not, see http://www.gnu.org/licenses/.
 >)
 
-define(<fat_suffix>, <_sse2>)
+define(<fat_transform>, <_$1_sse2>)
 define(<USE_SSE2>, <yes>)	
 include_src(<x86_64/memxor.asm>)

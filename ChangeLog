@@ -1,5 +1,15 @@
 2015-01-17  Niels Möller  <nisse@lysator.liu.se>
 
+	* config.m4.in (SYMBOL_PREFIX): Define from from autoconf
+	ASM_SYMBOL_PREFIX.
+	(C_NAMS): move definition to...
+	* asm.m4 (C_NAME): Define here, also take fat_transform.
+	(fat_suffix): Replaced by...
+	(fat_transform): New macro, taking symbol nama as argument.
+	Updated all uses of fat_suffix.
+	* fat-x86_64.c: Updated for internal "_nettle" prefix on
+	cpu-specific memxor functions.
+
 	* fat-x86_64.c: Set up for sse2 vs non-sse2 memxor. Patch by Nikos
 	Mavrogiannopoulos.
 	* configure.ac (asm_nettle_optional_list): Added memxor-2.asm.

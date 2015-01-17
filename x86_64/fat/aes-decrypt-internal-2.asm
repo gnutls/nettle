@@ -31,5 +31,5 @@ ifelse(<
    not, see http://www.gnu.org/licenses/.
 >)
 
-define(<fat_suffix>, <_aesni>)
+define(<fat_transform>, <$1_aesni>)
 include_src(<x86_64/aesni/aes-decrypt-internal.asm>)

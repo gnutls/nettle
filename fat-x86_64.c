@@ -105,10 +105,9 @@ aes_crypt_internal_func _nettle_aes_decrypt_aesni;
 
 typedef void *(memxor_func)(void *dst_in, const void *src_in, size_t n);
 
-/* FIXME: Fix fat name-mangling to get _nettle prefix. */
 memxor_func nettle_memxor IFUNC ("_memxor_resolve");
-memxor_func nettle_memxor_x86_64;
-memxor_func nettle_memxor_sse2;
+memxor_func _nettle_memxor_x86_64;
+memxor_func _nettle_memxor_sse2;
 
 #if HAVE_LINK_IFUNC
 #define _aes_encrypt_init NULL
@@ -120,7 +119,7 @@ static aes_crypt_internal_func _aes_decrypt_init;
 
 static aes_crypt_internal_func *_aes_encrypt_vec = _aes_encrypt_init;
 static aes_crypt_internal_func *_aes_decrypt_vec = _aes_decrypt_init;
-static memxor_func *_memxor_vec = nettle_memxor_x86_64;
+static memxor_func *_memxor_vec = _nettle_memxor_x86_64;
 
 /* This function should usually be called only once, at startup. But
    it is idempotent, and on x86, pointer updates are atomic, so
@@ -167,13 +166,13 @@ fat_init (void)
     {
       if (verbose)
 	fprintf (stderr, "libnettle: intel SSE2 will be used for XOR.\n");
-      _memxor_vec = nettle_memxor_sse2;
+      _memxor_vec = _nettle_memxor_sse2;
     }
   else
     {
       if (verbose)
 	fprintf (stderr, "libnettle: intel SSE2 will not be used for XOR.\n");
-      _memxor_vec = nettle_memxor_x86_64;
+      _memxor_vec = _nettle_memxor_x86_64;
     }
 
   /* The x86_64 architecture should always make stores visible in the
