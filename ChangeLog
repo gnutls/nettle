@@ -1,5 +1,12 @@
 2015-01-19  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac: Fat library setup for arm.
+	* fat-arm.c: New file.
+	* arm/fat/aes-encrypt-internal.asm: New files.
+	* arm/fat/aes-encrypt-internal-2.asm: New file.
+	* arm/fat/aes-decrypt-internal.asm: New file.
+	* arm/fat/aes-decrypt-internal-2.asm: New file.
+
 	* Makefile.in (DISTFILES): Added fat-setup.h.
 
 	* fat-setup.h: New file, declarations moved from...

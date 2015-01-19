@@ -267,17 +267,24 @@ if test "x$enable_assembler" = xyes ; then
 	asm_path=sparc32
       fi
       ;;
-    armv6* | armv7*)
-      NETTLE_CHECK_ARM_NEON
-
-      asm_path="arm/v6 arm"
-      
-      if test "x$enable_arm_neon" = xyes ; then
-	asm_path="arm/neon $asm_path"
-      fi
-      ;;
     arm*)
       asm_path=arm
+      if test "x$enable_fat" = xyes ; then
+	asm_path="arm/fat $asm_path"
+	OPT_NETTLE_SOURCES="fat-arm.c $OPT_NETTLE_SOURCES"
+      else
+	case "$host_cpu" in
+	  armv6* | armv7*)
+	    NETTLE_CHECK_ARM_NEON
+
+	    asm_path="arm/v6 arm"
+      
+	    if test "x$enable_arm_neon" = xyes ; then
+	      asm_path="arm/neon $asm_path"
+	    fi
+	    ;;
+	esac
+      fi
       ;;
     *)
       enable_assembler=no
