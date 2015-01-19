@@ -1,3 +1,10 @@
+2015-01-19  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (DISTFILES): Added fat-setup.h.
+
+	* fat-setup.h: New file, declarations moved from...
+	* fat-x86_64.c: ... old location
+
 2015-01-17  Niels Möller  <nisse@lysator.liu.se>
 
 	* fat-x86_64.c (DECLARE_FAT_FUNC, DEFINE_FAT_FUNC)
