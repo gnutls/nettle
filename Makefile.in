@@ -206,6 +206,10 @@ SOURCES = $(nettle_SOURCES) $(hogweed_SOURCES) \
 	  $(getopt_SOURCES) $(internal_SOURCES) \
 	  aesdata.c desdata.c twofishdata.c shadata.c gcmdata.c eccdata.c
 
+# FIXME: $(SOURCES) includes $(OPT_NETTLE_SOURCES) and
+# $(OPT_HOGWEED_SOURCES), which means that inclusion in this list
+# depends on which sources where included in the build. It needs to
+# always include all files, and we no duplicates.
 DISTFILES = $(SOURCES) $(HEADERS) getopt.h getopt_int.h \
 	.bootstrap run-tests \
 	aclocal.m4 configure.ac \
