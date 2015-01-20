@@ -1,5 +1,13 @@
 2015-01-20  Niels Möller  <nisse@lysator.liu.se>
 
+	* fat-x86_64.c (get_x86_features): New function. Check
+	NETTLE_FAT_OVERRIDE environment variable.
+	(fat_init): Use it.
+
+	* fat-setup.h (secure_getenv) [!HAVE_SECURE_GETENV]: Dummy
+	definition, returning NULL.
+	(ENV_OVERRIDE): New constant.
+
 	* configure.ac: Check for secure_getenv function.
 
 2015-01-19  Niels Möller  <nisse@lysator.liu.se>

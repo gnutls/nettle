@@ -70,7 +70,12 @@
 # endif
 #endif
 
+#if !HAVE_SECURE_GETENV
+#define secure_getenv(s) NULL
+#endif
+
 #define ENV_VERBOSE "NETTLE_FAT_VERBOSE"
+#define ENV_OVERRIDE "NETTLE_FAT_OVERRIDE"
 
 /* DECLARE_FAT_FUNC(name, ftype)
  *

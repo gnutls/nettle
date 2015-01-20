@@ -29,6 +29,8 @@
    not, see http://www.gnu.org/licenses/.
 */
 
+#define _GNU_SOURCE
+
 #if HAVE_CONFIG_H
 # include "config.h"
 #endif
@@ -45,6 +47,61 @@
 #include "fat-setup.h"
 
 void _nettle_cpuid (uint32_t input, uint32_t regs[4]);
+
+struct x86_features
+{
+  enum x86_vendor { X86_OTHER, X86_INTEL, X86_AMD } vendor;
+  int have_aesni;
+};
+
+#define SKIP(s, slen, literal, llen)				\
+  (((slen) >= (llen) && memcmp ((s), (literal), llen) == 0)	\
+   ? ((slen) -= (llen), (s) += (llen), 1) : 0)
+#define MATCH(s, slen, literal, llen)				\
+  ((slen) == (llen) && memcmp ((s), (literal), llen) == 0)
+
+static void
+get_x86_features (struct x86_features *features)
+{
+  const char *s;
+  features->vendor = X86_OTHER;
+  features->have_aesni = 0;
+
+  s = secure_getenv (ENV_OVERRIDE);
+  if (s)
+    for (;;)
+      {
+	const char *sep = strchr (s, ',');
+	size_t length = sep ? (size_t) (sep - s) : strlen(s);
+
+	if (SKIP (s, length, "vendor:", 7))
+	  {
+	    if (MATCH(s, length, "intel", 5))
+	      features->vendor = X86_INTEL;
+	    else if (MATCH(s, length, "amd", 3))
+	      features->vendor = X86_AMD;
+	    
+	  }
+	else if (MATCH (s, length, "aesni", 5))
+	  features->have_aesni = 1;
+	if (!sep)
+	  break;
+	s = sep + 1;	
+      }
+  else
+    {
+      uint32_t cpuid_data[4];
+      _nettle_cpuid (0, cpuid_data);
+      if (memcmp (cpuid_data + 1, "Genu" "ntel" "ineI", 12) == 0)
+	features->vendor = X86_INTEL;
+      else if (memcmp (cpuid_data + 1, "Auth" "cAMD" "enti", 12) == 0)
+	features->vendor = X86_AMD;
+
+      _nettle_cpuid (1, cpuid_data);
+      if (cpuid_data[2] & 0x02000000)
+	features->have_aesni = 1;      
+    }
+}
 
 DECLARE_FAT_FUNC(_nettle_aes_encrypt, aes_crypt_internal_func)
 DECLARE_FAT_FUNC_VAR(aes_encrypt, aes_crypt_internal_func, x86_64)
@@ -66,7 +123,7 @@ static void CONSTRUCTOR
 fat_init (void)
 {
   static volatile int initialized = 0;
-  uint32_t cpuid_data[4];
+  struct x86_features features;
   int verbose;
   if (initialized)
     return;
@@ -76,39 +133,40 @@ fat_init (void)
   if (verbose)
     fprintf (stderr, "libnettle: fat library initialization.\n");
 
-  _nettle_cpuid (1, cpuid_data);
+  get_x86_features (&features);
   if (verbose)
-    fprintf (stderr, "libnettle: cpuid 1: %08x, %08x, %08x, %08x\n",
-	     cpuid_data[0], cpuid_data[1], cpuid_data[2], cpuid_data[3]);
-
-  if (cpuid_data[2] & 0x02000000)
+    {
+      const char * const vendor_names[3] =
+	{ "other", "intel", "amd" };
+      fprintf (stderr, "libnettle: cpu features: vendor:%s%s\n",
+	       vendor_names[features.vendor],
+	       features.have_aesni ? ",aesni" : "");
+    }
+  if (features.have_aesni)
     {
       if (verbose)
-	fprintf (stderr, "libnettle: aes instructions available.\n");
+	fprintf (stderr, "libnettle: using aes instructions.\n");
       _nettle_aes_encrypt_vec = _nettle_aes_encrypt_aesni;
       _nettle_aes_decrypt_vec = _nettle_aes_decrypt_aesni;
     }
   else
     {
       if (verbose)
-	fprintf (stderr, "libnettle: aes instructions not available.\n");
+	fprintf (stderr, "libnettle: not using aes instructions.\n");
       _nettle_aes_encrypt_vec = _nettle_aes_encrypt_x86_64;
       _nettle_aes_decrypt_vec = _nettle_aes_decrypt_x86_64;
     }
 
-  _nettle_cpuid (0, cpuid_data);
-  if (memcmp(&cpuid_data[1], "Genu", 4) == 0 &&
-      memcmp(&cpuid_data[3], "ineI", 4) == 0 &&
-      memcmp(&cpuid_data[2], "ntel", 4) == 0)
+  if (features.vendor == X86_INTEL)
     {
       if (verbose)
-	fprintf (stderr, "libnettle: intel SSE2 will be used for XOR.\n");
+	fprintf (stderr, "libnettle: intel SSE2 will be used for memxor.\n");
       nettle_memxor_vec = _nettle_memxor_sse2;
     }
   else
     {
       if (verbose)
-	fprintf (stderr, "libnettle: intel SSE2 will not be used for XOR.\n");
+	fprintf (stderr, "libnettle: intel SSE2 will not be used for memxor.\n");
       nettle_memxor_vec = _nettle_memxor_x86_64;
     }
 
