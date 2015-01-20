@@ -52,57 +52,85 @@ struct arm_features
   int have_neon;
 };
 
+#define SKIP(s, slen, literal, llen)				\
+  (((slen) >= (llen) && memcmp ((s), (literal), llen) == 0)	\
+   ? ((slen) -= (llen), (s) += (llen), 1) : 0)
+#define MATCH(s, slen, literal, llen)				\
+  ((slen) == (llen) && memcmp ((s), (literal), llen) == 0)
+
 static void
 get_arm_features (struct arm_features *features)
 {
-  FILE *f;
-  char line[200];
-  int seen_arch = 0;
-  int seen_features = 0;
-
+  const char *s;
   features->arch_version = 5;
   features->have_neon = 0;
 
-  f = fopen ("/proc/cpuinfo", "r");
-  if (!f)
-    return;
-  while (seen_features + seen_arch < 2
-	 && fgets (line, sizeof(line), f))
-    {
-      char *sep;
-      char *p;
-      sep = strchr (line, ':');
-      if (!sep)
-	continue;
-      for (p = sep; p - line > 0 && p[-1] == '\t'; p--)
-	;
+  s = secure_getenv (ENV_OVERRIDE);
+  if (s)
+    for (;;)
+      {
+	const char *sep = strchr (s, ',');
+	size_t length = sep ? (size_t) (sep - s) : strlen(s);
 
-      *p = '\0';
-      p = sep+1;
-
-      if (strcmp (line, "Features") == 0)
-	{
-	  features->have_neon = (strstr (p, " neon ") != NULL);
-	  seen_features = 1;
-	}
-      else if (strcmp (line, "CPU architecture") == 0)
-	{
-	  /* Don't use strtol, since it's locale dependent. */
-	  while (p[0] == ' ')
-	    p++;
-	  if (p[0] > '5' && p[0] <= '9')
-	    features->arch_version = p[0] - '0';
-	  else if (strcmp (p, "AArch64") == 0)
-	    features->arch_version = 8;
-	  seen_arch = 1;	  
-	}
-    }
-  if (features->arch_version >= 8)
+	if (SKIP (s, length, "arch:", 5))
+	  {
+	    if (length == 1 && *s >= '0' && *s <= '9')
+	      features->arch_version = *s - '0';
+	  }
+	else if (MATCH (s, length, "neon", 4))
+	  features->have_neon = 1;
+	if (!sep)
+	  break;
+	s = sep + 1;
+      }
+  else
     {
-      /* Neon is not required, and maybe not listed in feature flags */
-      features->have_neon = 1;
+      FILE *f;
+      char line[200];
+      int seen_arch = 0;
+      int seen_features = 0;
+
+      f = fopen ("/proc/cpuinfo", "r");
+      if (!f)
+	return;
+      while (seen_features + seen_arch < 2
+	     && fgets (line, sizeof(line), f))
+	{
+	  char *sep;
+	  char *p;
+	  sep = strchr (line, ':');
+	  if (!sep)
+	    continue;
+	  for (p = sep; p - line > 0 && p[-1] == '\t'; p--)
+	    ;
+
+	  *p = '\0';
+	  p = sep+1;
+
+	  if (strcmp (line, "Features") == 0)
+	    {
+	      features->have_neon = (strstr (p, " neon ") != NULL);
+	      seen_features = 1;
+	    }
+	  else if (strcmp (line, "CPU architecture") == 0)
+	    {
+	      /* Don't use strtol, since it's locale dependent. */
+	      while (p[0] == ' ')
+		p++;
+	      if (p[0] > '5' && p[0] <= '9')
+		features->arch_version = p[0] - '0';
+	      else if (strcmp (p, "AArch64") == 0)
+		features->arch_version = 8;
+	      seen_arch = 1;
+	    }
+	}
+      if (features->arch_version >= 8)
+	{
+	  /* Neon is not required, and maybe not listed in feature flags */
+	  features->have_neon = 1;
+	}
+      fclose (f);
     }
-  fclose (f);
 }
 
 DECLARE_FAT_FUNC(_nettle_aes_encrypt, aes_crypt_internal_func)
@@ -127,9 +155,9 @@ fat_init (void)
 
   verbose = getenv (ENV_VERBOSE) != NULL;
   if (verbose)
-    fprintf (stderr,
-	     "libnettle: cpu arch: %u, neon: %s\n",
-	     features.arch_version, features.have_neon ? "yes" : "no");
+    fprintf (stderr, "libnettle: cpu features: arch:%d%s\n",
+	     features.arch_version,
+	     features.have_neon ? ",neon" : "");
 
   if (features.arch_version >= 6)
     {

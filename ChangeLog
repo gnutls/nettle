@@ -1,5 +1,8 @@
 2015-01-20  Niels Möller  <nisse@lysator.liu.se>
 
+	* fat-arm.c (get_arm_features): Check NETTLE_FAT_OVERRIDE
+	environment variable.
+
 	* fat-x86_64.c (get_x86_features): New function. Check
 	NETTLE_FAT_OVERRIDE environment variable.
 	(fat_init): Use it.
