@@ -306,7 +306,10 @@ asm_replace_list="aes-encrypt-internal.asm aes-decrypt-internal.asm \
 
 # Assembler files which generate additional object files if they are used.
 asm_nettle_optional_list="gcm-hash8.asm cpuid.asm \
-  aes-encrypt-internal-2.asm aes-decrypt-internal-2.asm memxor-2.asm"
+  aes-encrypt-internal-2.asm aes-decrypt-internal-2.asm memxor-2.asm \
+  salsa20-core-internal-2.asm sha3-permute-2.asm sha512-compress-2.asm \
+  umac-nh-n-2.asm umac-nh-2.asm"
+
 asm_hogweed_optional_list=""
 if test "x$enable_public_key" = "xyes" ; then
   asm_hogweed_optional_list="ecc-192-modp.asm ecc-224-modp.asm \
@@ -343,7 +346,7 @@ if test "x$enable_assembler" = xyes ; then
 	    AC_DEFINE_UNQUOTED(HAVE_NATIVE_$tmp_func)
 	    eval HAVE_NATIVE_$tmp_func=yes
 	  done <<EOF
-[`sed -n 's/[^ 	]*PROLOGUE(_*\(nettle_\)*\([^)]*\)).*$/\2/p' < "$srcdir/$asm_dir/$tmp_n"`]
+[`sed -n 's/^.*[^ 	]*PROLOGUE(_*\(nettle_\)*\([^)]*\)).*$/\2/p' < "$srcdir/$asm_dir/$tmp_n"`]
 EOF
 	  OPT_NETTLE_OBJS="$OPT_NETTLE_OBJS $tmp_b"'.$(OBJEXT)'
 	  break
@@ -408,7 +411,12 @@ AH_VERBATIM([HAVE_NATIVE],
 #undef HAVE_NATIVE_ecc_384_redc
 #undef HAVE_NATIVE_ecc_521_modp
 #undef HAVE_NATIVE_ecc_521_redc
-#undef HAVE_NATIVE_gcm_hash8])
+#undef HAVE_NATIVE_gcm_hash8
+#undef HAVE_NATIVE_salsa20_core
+#undef HAVE_NATIVE_sha512_compress
+#undef HAVE_NATIVE_sha3_permute
+#undef HAVE_NATIVE_umac_nh
+#undef HAVE_NATIVE_umac_nh_n])
 
 if test "x$enable_pic" = xyes; then
     LSH_CCPIC

@@ -48,6 +48,13 @@
 
 #include "macros.h"
 
+/* For fat builds */
+#if HAVE_NATIVE_salsa20_core
+void
+_nettle_salsa20_core_c(uint32_t *dst, const uint32_t *src, unsigned rounds);
+#define _nettle_salsa20_core _nettle_salsa20_core_c
+#endif
+
 #ifndef SALSA20_DEBUG
 # define SALSA20_DEBUG 0
 #endif

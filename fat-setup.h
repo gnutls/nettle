@@ -142,3 +142,14 @@ typedef void aes_crypt_internal_func (unsigned rounds, const uint32_t *keys,
 				      const uint8_t *src);
 
 typedef void *(memxor_func)(void *dst, const void *src, size_t n);
+
+typedef void salsa20_core_func (uint32_t *dst, const uint32_t *src, unsigned rounds);
+
+struct sha3_state;
+typedef void sha3_permute_func (struct sha3_state *state);
+
+typedef void sha512_compress_func (uint64_t *state, const uint8_t *input, const uint64_t *k);
+
+typedef uint64_t umac_nh_func (const uint32_t *key, unsigned length, const uint8_t *msg);
+typedef void umac_nh_n_func (uint64_t *out, unsigned n, const uint32_t *key,
+			     unsigned length, const uint8_t *msg);

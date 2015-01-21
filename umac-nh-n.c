@@ -39,6 +39,14 @@
 #include "umac.h"
 #include "macros.h"
 
+/* For fat builds */
+#if HAVE_NATIVE_umac_nh_n
+void
+_nettle_umac_nh_n_c (uint64_t *out, unsigned n, const uint32_t *key,
+		     unsigned length, const uint8_t *msg);
+#define _nettle_umac_nh_n _nettle_umac_nh_n_c
+#endif
+
 void
 _umac_nh_n (uint64_t *out, unsigned n, const uint32_t *key,
 	    unsigned length, const uint8_t *msg)

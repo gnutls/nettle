@@ -41,6 +41,13 @@
 
 #define SHA3_ROUNDS 24
 
+/* For fat builds */
+#if HAVE_NATIVE_sha3_permute
+void
+_nettle_sha3_permute_c(struct sha3_state *state);
+#define nettle_sha3_permute _nettle_sha3_permute_c
+#endif
+
 void
 sha3_permute (struct sha3_state *state)
 {

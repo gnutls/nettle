@@ -1,3 +1,16 @@
+2015-01-21  Niels Möller  <nisse@lysator.liu.se>
+
+	* salsa20-core-internal.c: Prepare for fat build with C and
+	assembly implementations.
+	* sha512-compress.c: Likewise.
+	* sha3-permute.c: Likewise.
+	* umac-nh.c: Likewise.
+	* umac-nh-n.c: Likewise.
+
+	* configure.ac (asm_nettle_optional_list): Added more *-2.asm
+	files, and corresponding HAVE_NATIVE_* defines. Recognize PROLOGUE
+	macro in asm files, also when not at the start of the line.
+
 2015-01-20  Niels Möller  <nisse@lysator.liu.se>
 
 	* fat-arm.c (get_arm_features): Check NETTLE_FAT_OVERRIDE
