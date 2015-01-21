@@ -1,5 +1,13 @@
 2015-01-21  Niels Möller  <nisse@lysator.liu.se>
 
+	* fat-arm.c (fat_init): Setup for use of neon assembly functions.
+
+	* arm/fat/salsa20-core-internal-2.asm: New file.
+	* arm/fat/sha3-permute-2.asm: New file.
+	* arm/fat/sha512-compress-2.asm: New file.
+	* arm/fat/umac-nh-2.asm: New file.
+	* arm/fat/umac-nh-n-2.asm: New file.
+
 	* salsa20-core-internal.c: Prepare for fat build with C and
 	assembly implementations.
 	* sha512-compress.c: Likewise.

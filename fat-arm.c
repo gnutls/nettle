@@ -141,6 +141,26 @@ DECLARE_FAT_FUNC(_nettle_aes_decrypt, aes_crypt_internal_func)
 DECLARE_FAT_FUNC_VAR(aes_decrypt, aes_crypt_internal_func, arm)
 DECLARE_FAT_FUNC_VAR(aes_decrypt, aes_crypt_internal_func, armv6)
 
+DECLARE_FAT_FUNC(_nettle_salsa20_core, salsa20_core_func)
+DECLARE_FAT_FUNC_VAR(salsa20_core, salsa20_core_func, c)
+DECLARE_FAT_FUNC_VAR(salsa20_core, salsa20_core_func, neon)
+
+DECLARE_FAT_FUNC(_nettle_sha512_compress, sha512_compress_func)
+DECLARE_FAT_FUNC_VAR(sha512_compress, sha512_compress_func, c)
+DECLARE_FAT_FUNC_VAR(sha512_compress, sha512_compress_func, neon)
+
+DECLARE_FAT_FUNC(nettle_sha3_permute, sha3_permute_func)
+DECLARE_FAT_FUNC_VAR(sha3_permute, sha3_permute_func, c)
+DECLARE_FAT_FUNC_VAR(sha3_permute, sha3_permute_func, neon)
+
+DECLARE_FAT_FUNC(_nettle_umac_nh, umac_nh_func)
+DECLARE_FAT_FUNC_VAR(umac_nh, umac_nh_func, c);
+DECLARE_FAT_FUNC_VAR(umac_nh, umac_nh_func, neon);
+
+DECLARE_FAT_FUNC(_nettle_umac_nh_n, umac_nh_n_func)
+DECLARE_FAT_FUNC_VAR(umac_nh_n, umac_nh_n_func, c);
+DECLARE_FAT_FUNC_VAR(umac_nh_n, umac_nh_n_func, neon);
+
 static void CONSTRUCTOR
 fat_init (void)
 {
@@ -173,6 +193,26 @@ fat_init (void)
       _nettle_aes_encrypt_vec = _nettle_aes_encrypt_arm;
       _nettle_aes_decrypt_vec = _nettle_aes_decrypt_arm;
     }
+  if (features.have_neon)
+    {
+      if (verbose)
+	fprintf (stderr, "libnettle: enabling neon code.\n");
+      _nettle_salsa20_core_vec = _nettle_salsa20_core_neon;
+      _nettle_sha512_compress_vec = _nettle_sha512_compress_neon;
+      nettle_sha3_permute_vec = _nettle_sha3_permute_neon;
+      _nettle_umac_nh_vec = _nettle_umac_nh_neon;
+      _nettle_umac_nh_n_vec = _nettle_umac_nh_n_neon;
+    }
+  else
+    {
+      if (verbose)
+	fprintf (stderr, "libnettle: not enabling neon code.\n");
+      _nettle_salsa20_core_vec = _nettle_salsa20_core_c;
+      _nettle_sha512_compress_vec = _nettle_sha512_compress_c;
+      nettle_sha3_permute_vec = _nettle_sha3_permute_c;
+      _nettle_umac_nh_vec = _nettle_umac_nh_c;
+      _nettle_umac_nh_n_vec = _nettle_umac_nh_n_c;
+    }
   /* FIXME: Needs memory barrier, to enforce store ordering. */
   initialized = 1;
 }
@@ -190,3 +230,24 @@ DEFINE_FAT_FUNC(_nettle_aes_decrypt, void,
 		 size_t length, uint8_t *dst,
 		 const uint8_t *src),
 		(rounds, keys, T, length, dst, src))
+
+DEFINE_FAT_FUNC(_nettle_salsa20_core, void,
+		(uint32_t *dst, const uint32_t *src, unsigned rounds),
+		(dst, src, rounds))
+
+DEFINE_FAT_FUNC(_nettle_sha512_compress, void,
+		(uint64_t *state, const uint8_t *input, const uint64_t *k),
+		(state, input, k))
+
+DEFINE_FAT_FUNC(nettle_sha3_permute, void,
+		(struct sha3_state *state), (state))
+
+DEFINE_FAT_FUNC(_nettle_umac_nh, uint64_t,
+		(const uint32_t *key, unsigned length, const uint8_t *msg),
+		(key, length, msg))
+
+DEFINE_FAT_FUNC(_nettle_umac_nh_n, void,
+		(uint64_t *out, unsigned n, const uint32_t *key,
+		 unsigned length, const uint8_t *msg),
+		(out, n, key, length, msg))
+
