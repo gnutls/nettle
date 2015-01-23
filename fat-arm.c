@@ -164,12 +164,8 @@ DECLARE_FAT_FUNC_VAR(umac_nh_n, umac_nh_n_func, neon);
 static void CONSTRUCTOR
 fat_init (void)
 {
-  static volatile int initialized = 0;
   struct arm_features features;
   int verbose;
-
-  if (initialized)
-    return;
 
   get_arm_features (&features);
 
@@ -213,8 +209,6 @@ fat_init (void)
       _nettle_umac_nh_vec = _nettle_umac_nh_c;
       _nettle_umac_nh_n_vec = _nettle_umac_nh_n_c;
     }
-  /* FIXME: Needs memory barrier, to enforce store ordering. */
-  initialized = 1;
 }
   
 DEFINE_FAT_FUNC(_nettle_aes_encrypt, void,

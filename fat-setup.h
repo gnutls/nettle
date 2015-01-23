@@ -30,10 +30,11 @@
 */
 
 /* Fat library initialization works as follows. The main function is
-   fat_init. It tries to do initialization only once, but since it is
-   idempotent and pointer updates are atomic on x86_64, there's no
-   harm if it is in some cases called multiple times from several
-   threads.
+   fat_init. We try to do initialization only once, but since it is
+   idempotent, there's no harm if it is in some cases called multiple
+   times from several threads. For correctness, we rely on atomic
+   writes, but not on memory barriers or any other synchronization
+   mechanism.
 
    The fat_init function checks the cpuid flags, and sets function
    pointers, e.g, _nettle_aes_encrypt_vec, to point to the appropriate
@@ -47,18 +48,24 @@
 
    For the actual indirection, there are two cases. 
 
-   If ifunc support is available, function pointers are statically
-   initialized to NULL, and we register resolver functions, e.g.,
-   _nettle_aes_encrypt_resolve, which call fat_init, and then return
-   the function pointer, e.g., the value of _nettle_aes_encrypt_vec.
+   * If ifunc support is available, function pointers are statically
+     initialized to NULL, and we register resolver functions, e.g.,
+     _nettle_aes_encrypt_resolve, which call fat_init, and then return
+     the function pointer, e.g., the value of _nettle_aes_encrypt_vec.
 
-   If ifunc is not available, we have to define a wrapper function to
-   jump via the function pointer. (FIXME: For internal calls, we could
-   do this as a macro). We statically initialize each function pointer
-   to point to a special initialization function, e.g.,
-   _nettle_aes_encrypt_init, which calls fat_init, and then invokes
-   the right function. This way, all pointers are setup correctly at
-   the first call to any fat function.
+   * If ifunc is not available, we have to define a wrapper function
+     to jump via the function pointer. (FIXME: For internal calls, we
+     could do this as a macro).
+
+     We statically initialize each function pointer to point to a
+     special initialization function, e.g., _nettle_aes_encrypt_init,
+     which calls fat_init, and then invokes the right function. This
+     way, all pointers are setup correctly at the first call to any
+     fat function.
+
+     And atomic writes are required for correctness in the case that
+     several threads do "first call to any fat function" at the same
+     time.
 */
 
 #if HAVE_GCC_ATTRIBUTE
@@ -107,7 +114,8 @@
   {								  \
     if (getenv (ENV_VERBOSE))					  \
       fprintf (stderr, "libnettle: "#name"_resolve\n");		  \
-    fat_init();							  \
+    if (!name##_vec)						  \
+      fat_init();						  \
     return (void_func *) name##_vec;				  \
   }
 
@@ -125,7 +133,8 @@
   static rtype name##_init prototype {				\
     if (getenv (ENV_VERBOSE))					\
       fprintf (stderr, "libnettle: "#name"_init\n");		\
-    fat_init();							\
+    if (name##_vec == name##_init)				\
+      fat_init();						\
     assert (name##_vec != name##_init);				\
     return name##_vec args;					\
   }

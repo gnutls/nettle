@@ -122,11 +122,8 @@ DECLARE_FAT_FUNC_VAR(memxor, memxor_func, sse2)
 static void CONSTRUCTOR
 fat_init (void)
 {
-  static volatile int initialized = 0;
   struct x86_features features;
   int verbose;
-  if (initialized)
-    return;
 
   /* FIXME: Replace all getenv calls by getenv_secure? */
   verbose = getenv (ENV_VERBOSE) != NULL;
@@ -169,11 +166,6 @@ fat_init (void)
 	fprintf (stderr, "libnettle: intel SSE2 will not be used for memxor.\n");
       nettle_memxor_vec = _nettle_memxor_x86_64;
     }
-
-  /* The x86_64 architecture should always make stores visible in the
-     right order to other processors (except for non-temporal stores
-     and the like). So we don't need any memory barrier. */
-  initialized = 1;
 }
 
 DEFINE_FAT_FUNC(_nettle_aes_encrypt, void,

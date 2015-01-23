@@ -1,3 +1,13 @@
+2015-01-23  Niels Möller  <nisse@lysator.liu.se>
+
+	* fat-setup.h (DEFINE_FAT_FUNC): Check value of function pointer,
+	before calling fat_init. Should be correct even without memory
+	barrier.
+	* fat-x86_64.c (fat_init): Deleted static variable initialized.
+	The checks of the relevant pointer in DEFINE_FAT_FUNC is more
+	robust.
+	* fat-arm.c (fat_init): Likewise.
+
 2015-01-21  Niels Möller  <nisse@lysator.liu.se>
 
 	* fat-arm.c (fat_init): Setup for use of neon assembly functions.
