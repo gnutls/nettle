@@ -30,6 +30,8 @@ ifelse(<
    not, see http://www.gnu.org/licenses/.
 >) 
 
+	.arch armv6
+
 include_src(<arm/aes.m4>)
 
 define(<PARAM_ROUNDS>, <r0>)
