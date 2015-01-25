@@ -116,6 +116,13 @@
     h += S0(a) + Majority(a,b,c);		\
   } while (0)
 
+/* For fat builds */
+#if HAVE_NATIVE_sha256_compress
+void
+_nettle_sha256_compress_c(uint32_t *state, const uint8_t *input, const uint32_t *k);
+#define _nettle_sha256_compress _nettle_sha256_compress_c
+#endif
+
 void
 _nettle_sha256_compress(uint32_t *state, const uint8_t *input, const uint32_t *k)
 {

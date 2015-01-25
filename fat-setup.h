@@ -154,6 +154,9 @@ typedef void *(memxor_func)(void *dst, const void *src, size_t n);
 
 typedef void salsa20_core_func (uint32_t *dst, const uint32_t *src, unsigned rounds);
 
+typedef void sha1_compress_func(uint32_t *state, const uint8_t *input);
+typedef void sha256_compress_func(uint32_t *state, const uint8_t *input, const uint32_t *k);
+
 struct sha3_state;
 typedef void sha3_permute_func (struct sha3_state *state);
 

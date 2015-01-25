@@ -1,5 +1,15 @@
 2015-01-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* sha1-compress.c: Prepare for fat build with C and assembly
+	implementations.
+	* sha256-compress.c: Likewise.
+
+	* fat-setup.h (sha1_compress_func, sha256_compress_func): New typedefs.
+
+	* configure.ac (asm_nettle_optional_list): Added
+	sha1-compress-2.asm and sha256-compress-2.asm, and corresponding
+	HAVE_NATIVE_*.
+
 	From Martin Storsjö:
 	* arm: Add .arch directives for armv6. This allows building these
 	files as part of a fat build, even if the assembler by default

@@ -129,6 +129,13 @@
 #define subRound(a, b, c, d, e, f, k, data) \
     ( e += ROTL32( 5, a ) + f( b, c, d ) + k + data, b = ROTL32( 30, b ) )
 
+/* For fat builds */
+#if HAVE_NATIVE_sha1_compress
+void
+_nettle_sha1_compress_c(uint32_t *state, const uint8_t *input);
+#define _nettle_sha1_compress _nettle_sha1_compress_c
+#endif
+
 /* Perform the SHA transformation.  Note that this code, like MD5, seems to
    break some optimizing compilers due to the complexity of the expressions
    and the size of the basic block.  It may be necessary to split it into
