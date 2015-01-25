@@ -1,5 +1,10 @@
 2015-01-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* arm/fat/sha1-compress-2.asm: New file.
+	* arm/fat/sha256-compress-2.asm: Likewise.
+	* fat-arm.c (fat_init): Setup for use of additional v6 assembly
+	functions.
+
 	* sha1-compress.c: Prepare for fat build with C and assembly
 	implementations.
 	* sha256-compress.c: Likewise.

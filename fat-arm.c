@@ -145,6 +145,14 @@ DECLARE_FAT_FUNC(_nettle_salsa20_core, salsa20_core_func)
 DECLARE_FAT_FUNC_VAR(salsa20_core, salsa20_core_func, c)
 DECLARE_FAT_FUNC_VAR(salsa20_core, salsa20_core_func, neon)
 
+DECLARE_FAT_FUNC(_nettle_sha1_compress, sha1_compress_func)
+DECLARE_FAT_FUNC_VAR(sha1_compress, sha1_compress_func, c)
+DECLARE_FAT_FUNC_VAR(sha1_compress, sha1_compress_func, armv6)
+
+DECLARE_FAT_FUNC(_nettle_sha256_compress, sha256_compress_func)
+DECLARE_FAT_FUNC_VAR(sha256_compress, sha256_compress_func, c)
+DECLARE_FAT_FUNC_VAR(sha256_compress, sha256_compress_func, armv6)
+
 DECLARE_FAT_FUNC(_nettle_sha512_compress, sha512_compress_func)
 DECLARE_FAT_FUNC_VAR(sha512_compress, sha512_compress_func, c)
 DECLARE_FAT_FUNC_VAR(sha512_compress, sha512_compress_func, neon)
@@ -181,6 +189,8 @@ fat_init (void)
 	fprintf (stderr, "libnettle: enabling armv6 code.\n");
       _nettle_aes_encrypt_vec = _nettle_aes_encrypt_armv6;
       _nettle_aes_decrypt_vec = _nettle_aes_decrypt_armv6;
+      _nettle_sha1_compress_vec = _nettle_sha1_compress_armv6;
+      _nettle_sha256_compress_vec = _nettle_sha256_compress_armv6;
     }
   else
     {
@@ -188,6 +198,8 @@ fat_init (void)
 	fprintf (stderr, "libnettle: not enabling armv6 code.\n");
       _nettle_aes_encrypt_vec = _nettle_aes_encrypt_arm;
       _nettle_aes_decrypt_vec = _nettle_aes_decrypt_arm;
+      _nettle_sha1_compress_vec = _nettle_sha1_compress_c;
+      _nettle_sha256_compress_vec = _nettle_sha256_compress_c;
     }
   if (features.have_neon)
     {
@@ -228,6 +240,14 @@ DEFINE_FAT_FUNC(_nettle_aes_decrypt, void,
 DEFINE_FAT_FUNC(_nettle_salsa20_core, void,
 		(uint32_t *dst, const uint32_t *src, unsigned rounds),
 		(dst, src, rounds))
+
+DEFINE_FAT_FUNC(_nettle_sha1_compress, void,
+		(uint32_t *state, const uint8_t *input),
+		(state, input))
+
+DEFINE_FAT_FUNC(_nettle_sha256_compress, void,
+		(uint32_t *state, const uint8_t *input, const uint32_t *k),
+		(state, input, k))
 
 DEFINE_FAT_FUNC(_nettle_sha512_compress, void,
 		(uint64_t *state, const uint8_t *input, const uint64_t *k),
