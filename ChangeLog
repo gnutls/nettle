@@ -1,3 +1,10 @@
+2015-01-25  Niels Möller  <nisse@lysator.liu.se>
+
+	From Martin Storsjö:
+	* arm: Add .arch directives for armv6. This allows building these
+	files as part of a fat build, even if the assembler by default
+	targets a lower architecture version.
+
 2015-01-23  Niels Möller  <nisse@lysator.liu.se>
 
 	* fat-setup.h (DEFINE_FAT_FUNC): Check value of function pointer,
