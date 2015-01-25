@@ -59,6 +59,13 @@
 /* A block, treated as a sequence of 64-bit words. */
 #define SHA512_DATA_LENGTH 16
 
+/* For fat builds */
+#if HAVE_NATIVE_sha512_compress
+void
+_nettle_sha512_compress_c (uint64_t *state, const uint8_t *input, const uint64_t *k);
+#define _nettle_sha512_compress _nettle_sha512_compress_c
+#endif
+
 /* The SHA512 functions. The Choice function is the same as the SHA1
    function f1, and the majority function is the same as the SHA1 f3
    function, and the same as for SHA256. */

@@ -30,6 +30,8 @@ ifelse(<
    not, see http://www.gnu.org/licenses/.
 >) 
 
+	.arch armv6
+
 include_src(<arm/aes.m4>)
 
 C	Benchmarked at at 706, 870, 963 cycles/block on cortex A9,

@@ -31,6 +31,7 @@ ifelse(<
 >) 
 
 	.file "sha1-compress.asm"
+	.arch armv6
 
 define(<STATE>, <r0>)
 define(<INPUT>, <r1>)

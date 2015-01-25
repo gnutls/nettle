@@ -44,7 +44,11 @@ define(<CNT>, <%rdx>)
 C Subkey pointer
 define(<KEY>, <%rax>)
 
-	.arch bdver2
+dnl aesenc %xmm1, %xmm0
+define(<AESENC>, <.byte 0x66, 0x0f, 0x38, 0xdc, 0xc1>)
+dnl aesenclast %xmm1, %xmm0
+define(<AESENCLAST>, <.byte 0x66, 0x0f, 0x38, 0xdd, 0xc1>)
+	
 	.file "aes-encrypt-internal.asm"
 
 	C _aes_encrypt(unsigned rounds, const uint32_t *keys,
@@ -77,12 +81,12 @@ PROLOGUE(_nettle_aes_encrypt)
 	add	$16, KEY
 
 	movups	(KEY), %xmm1
-	aesenc	%xmm1, %xmm0
+	AESENC	C %xmm1, %xmm0
 	decl	XREG(CNT)
 	jnz	.Lround_loop
 
 	movups	16(KEY), %xmm1
-	aesenclast	%xmm1, %xmm0
+	AESENCLAST	C %xmm1, %xmm0
 
 	movups	%xmm0, (DST)
 	add	$16, SRC

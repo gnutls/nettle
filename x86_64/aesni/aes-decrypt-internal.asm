@@ -44,7 +44,11 @@ define(<CNT>, <%rdx>)
 C Subkey pointer
 define(<KEY>, <%rax>)
 
-	.arch bdver2
+dnl aesdec %xmm1, %xmm0
+define(<AESDEC>, <.byte 0x66, 0x0f, 0x38, 0xde, 0xc1>)
+dnl aesdeclast %xmm1, %xmm0
+define(<AESDECLAST>, <.byte 0x66, 0x0f, 0x38, 0xdf, 0xc1>)
+
 	.file "aes-decrypt-internal.asm"
 
 	C _aes_decrypt(unsigned rounds, const uint32_t *keys,
@@ -77,12 +81,12 @@ PROLOGUE(_nettle_aes_decrypt)
 	add	$16, KEY
 
 	movups	(KEY), %xmm1
-	aesdec	%xmm1, %xmm0
+	AESDEC	C %xmm1, %xmm0
 	decl	XREG(CNT)
 	jnz	.Lround_loop
 
 	movups	16(KEY), %xmm1
-	aesdeclast	%xmm1, %xmm0
+	AESDECLAST	C %xmm1, %xmm0
 
 	movups	%xmm0, (DST)
 	add	$16, SRC

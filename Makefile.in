@@ -12,9 +12,10 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = $(INSTALL_PROGRAM) -s
 MKDIR_P = @MKDIR_P@
 
-OPT_ASM_NETTLE_SOURCES = @OPT_ASM_NETTLE_SOURCES@
-OPT_ASM_HOGWEED_SOURCES = @OPT_ASM_HOGWEED_SOURCES@
+OPT_NETTLE_OBJS = @OPT_NETTLE_OBJS@
+OPT_HOGWEED_OBJS = @OPT_HOGWEED_OBJS@
 
+OPT_NETTLE_SOURCES = @OPT_NETTLE_SOURCES@
 OPT_HOGWEED_SOURCES = @IF_MINI_GMP@ mini-gmp.c
 
 SUBDIRS = tools testsuite examples
@@ -134,7 +135,8 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 umac-poly64.c umac-poly128.c umac-set-key.c \
 		 umac32.c umac64.c umac96.c umac128.c \
 		 write-be32.c write-le32.c write-le64.c \
-		 yarrow256.c yarrow_key_event.c
+		 yarrow256.c yarrow_key_event.c \
+		 $(OPT_NETTLE_SOURCES)
 
 hogweed_SOURCES = sexp.c sexp-format.c \
 		  sexp-transport.c sexp-transport-format.c \
@@ -204,6 +206,10 @@ SOURCES = $(nettle_SOURCES) $(hogweed_SOURCES) \
 	  $(getopt_SOURCES) $(internal_SOURCES) \
 	  aesdata.c desdata.c twofishdata.c shadata.c gcmdata.c eccdata.c
 
+# FIXME: $(SOURCES) includes $(OPT_NETTLE_SOURCES) and
+# $(OPT_HOGWEED_SOURCES), which means that inclusion in this list
+# depends on which sources where included in the build. It needs to
+# always include all files, and we no duplicates.
 DISTFILES = $(SOURCES) $(HEADERS) getopt.h getopt_int.h \
 	.bootstrap run-tests \
 	aclocal.m4 configure.ac \
@@ -217,14 +223,14 @@ DISTFILES = $(SOURCES) $(HEADERS) getopt.h getopt_int.h \
 	aes-internal.h camellia-internal.h serpent-internal.h \
 	cast128_sboxes.h desinfo.h desCode.h \
 	memxor-internal.h nettle-internal.h nettle-write.h \
-	gmp-glue.h ecc-internal.h \
+	gmp-glue.h ecc-internal.h fat-setup.h \
 	mini-gmp.h mini-gmp.c asm.m4 \
 	nettle.texinfo nettle.info nettle.html nettle.pdf sha-example.c
 
 # Rules building static libraries
-nettle_OBJS = $(nettle_SOURCES:.c=.$(OBJEXT)) $(OPT_ASM_NETTLE_SOURCES:.asm=.$(OBJEXT))
+nettle_OBJS = $(nettle_SOURCES:.c=.$(OBJEXT)) $(OPT_NETTLE_OBJS)
 
-hogweed_OBJS = $(hogweed_SOURCES:.c=.$(OBJEXT)) $(OPT_ASM_HOGWEED_SOURCES:.asm=.$(OBJEXT))
+hogweed_OBJS = $(hogweed_SOURCES:.c=.$(OBJEXT)) $(OPT_HOGWEED_OBJS)
 
 libnettle.a: $(nettle_OBJS)
 	-rm -f $@

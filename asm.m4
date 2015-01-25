@@ -12,22 +12,25 @@ changecom()dnl
 dnl Including files from the srcdir
 define(<include_src>, <include(srcdir/$1)>)dnl
 
-dnl Pseudo ops
+dnl default definition, changed in fat builds
+define(<fat_transform>, <$1>)
+define(<C_NAME>, <SYMBOL_PREFIX<>fat_transform($1)>)
 
-define(<PROLOGUE>,
+dnl Pseudo ops
+define(<DECLARE_FUNC>,
 <ifelse(ELF_STYLE,yes,
-<.globl C_NAME($1)
-.type C_NAME($1),TYPE_FUNCTION
-C_NAME($1):>,
-COFF_STYLE, <yes>,
-<.globl C_NAME($1)
-.def C_NAME($1)
+<.type $1,TYPE_FUNCTION>,
+COFF_STYLE, yes,
+<.def $1
 .scl 2
 .type 32
-.endef
-C_NAME($1):>,
+.endef>,
+<>)>)
+
+define(<PROLOGUE>,
 <.globl C_NAME($1)
-C_NAME($1):>)>)
+DECLARE_FUNC(C_NAME($1))
+C_NAME($1):>)
 
 define(<EPILOGUE>,
 <ifelse(ELF_STYLE,yes,

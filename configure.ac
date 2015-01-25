@@ -68,6 +68,9 @@ AC_ARG_ENABLE(documentation,
   AC_HELP_STRING([--disable-documentation], [Omit building and installing the documentation. (default=auto)]),,
   [enable_documentation=auto])
 
+AC_ARG_ENABLE(fat, AC_HELP_STRING([--enable-fat], [Enable fat library build (default=no)]),,
+  [enable_fat=no])
+
 AC_ARG_ENABLE(arm-neon,
   AC_HELP_STRING([--enable-arm-neon], [Enable ARM Neon assembly. (default=auto)]),,
   [enable_arm_neon=auto])
@@ -94,6 +97,8 @@ LSH_RPATH_INIT([`echo $with_lib_path | sed 's/:/ /g'` \
 
 # Checks for programs.
 AC_PROG_CC
+
+NETTLE_CHECK_IFUNC
 
 # When $CC foo.c -o foo creates both foo and foo.exe, autoconf picks
 # up the foo.exe and sets exeext to .exe. That is correct for cygwin,
@@ -233,6 +238,8 @@ if test "x$ABI" != xstandard ; then
   fi
 fi
 
+OPT_NETTLE_SOURCES=""
+
 # Select assembler code
 asm_path=
 if test "x$enable_assembler" = xyes ; then
@@ -243,7 +250,10 @@ if test "x$enable_assembler" = xyes ; then
     [x86_64 | amd64])
       if test "$ABI" = 64 ; then
 	asm_path=x86_64
-	if test "x$enable_x86_aesni" = xyes ; then
+	if test "x$enable_fat" = xyes ; then
+	  asm_path="x86_64/fat $asm_path"
+	  OPT_NETTLE_SOURCES="fat-x86_64.c $OPT_NETTLE_SOURCES"
+	elif test "x$enable_x86_aesni" = xyes ; then
 	  asm_path="x86_64/aesni $asm_path"
 	fi
       else
@@ -257,17 +267,24 @@ if test "x$enable_assembler" = xyes ; then
 	asm_path=sparc32
       fi
       ;;
-    armv6* | armv7*)
-      NETTLE_CHECK_ARM_NEON
-
-      asm_path="arm/v6 arm"
-      
-      if test "x$enable_arm_neon" = xyes ; then
-	asm_path="arm/neon $asm_path"
-      fi
-      ;;
     arm*)
       asm_path=arm
+      if test "x$enable_fat" = xyes ; then
+	asm_path="arm/fat $asm_path"
+	OPT_NETTLE_SOURCES="fat-arm.c $OPT_NETTLE_SOURCES"
+      else
+	case "$host_cpu" in
+	  armv6* | armv7*)
+	    NETTLE_CHECK_ARM_NEON
+
+	    asm_path="arm/v6 arm"
+      
+	    if test "x$enable_arm_neon" = xyes ; then
+	      asm_path="arm/neon $asm_path"
+	    fi
+	    ;;
+	esac
+      fi
       ;;
     *)
       enable_assembler=no
@@ -288,15 +305,19 @@ asm_replace_list="aes-encrypt-internal.asm aes-decrypt-internal.asm \
 		sha3-permute.asm umac-nh.asm umac-nh-n.asm machine.m4"
 
 # Assembler files which generate additional object files if they are used.
-asm_nettle_optional_list="gcm-hash8.asm"
+asm_nettle_optional_list="gcm-hash8.asm cpuid.asm \
+  aes-encrypt-internal-2.asm aes-decrypt-internal-2.asm memxor-2.asm \
+  salsa20-core-internal-2.asm sha3-permute-2.asm sha512-compress-2.asm \
+  umac-nh-n-2.asm umac-nh-2.asm"
+
 asm_hogweed_optional_list=""
 if test "x$enable_public_key" = "xyes" ; then
   asm_hogweed_optional_list="ecc-192-modp.asm ecc-224-modp.asm \
     ecc-25519-modp.asm ecc-256-redc.asm ecc-384-modp.asm ecc-521-modp.asm"
 fi
 
-OPT_ASM_NETTLE_SOURCES=""
-OPT_ASM_HOGWEED_SOURCES=""
+OPT_NETTLE_OBJS=""
+OPT_HOGWEED_OBJS=""
 
 asm_file_list=""
 
@@ -315,6 +336,8 @@ if test "x$enable_assembler" = xyes ; then
     dnl Workaround for AC_CONFIG_LINKS, which complains if we use the
     dnl same destination argument $tmp_f multiple times.
     for tmp_n in $asm_nettle_optional_list ; do
+      dnl Note extra pair of [] in sed expression
+      tmp_b=`echo "$tmp_n" | sed 's/\.[[^.]]*$//'`
       for asm_dir in $asm_path ; do
 	if test -f "$srcdir/$asm_dir/$tmp_n"; then
 	  asm_file_list="$asm_file_list $tmp_n"
@@ -323,14 +346,16 @@ if test "x$enable_assembler" = xyes ; then
 	    AC_DEFINE_UNQUOTED(HAVE_NATIVE_$tmp_func)
 	    eval HAVE_NATIVE_$tmp_func=yes
 	  done <<EOF
-[`sed -n 's/[^ 	]*PROLOGUE(_*\(nettle_\)*\([^)]*\)).*$/\2/p' < "$srcdir/$asm_dir/$tmp_n"`]
+[`sed -n 's/^.*[^ 	]*PROLOGUE(_*\(nettle_\)*\([^)]*\)).*$/\2/p' < "$srcdir/$asm_dir/$tmp_n"`]
 EOF
-	  OPT_ASM_NETTLE_SOURCES="$OPT_ASM_NETTLE_SOURCES $tmp_n"
+	  OPT_NETTLE_OBJS="$OPT_NETTLE_OBJS $tmp_b"'.$(OBJEXT)'
 	  break
 	fi
       done
     done	
     for tmp_h in $asm_hogweed_optional_list ; do
+      dnl Note extra pair of [] in sed expression
+      tmp_b=`echo "$tmp_h" | sed 's/\.[[^.]]*$//'`
       for asm_dir in $asm_path ; do
 	if test -f "$srcdir/$asm_dir/$tmp_h"; then
 	  asm_file_list="$asm_file_list $tmp_h"
@@ -341,7 +366,7 @@ EOF
 	  done <<EOF
 [`sed -n 's/[^ 	]*PROLOGUE(_*\(nettle_\)*\([^)]*\)).*$/\2/p' < "$srcdir/$asm_dir/$tmp_h"`]
 EOF
-	  OPT_ASM_HOGWEED_SOURCES="$OPT_ASM_HOGWEED_SOURCES $tmp_h"
+	  OPT_HOGWEED_OBJS="$OPT_HOGWEED_OBJS $tmp_b"'.$(OBJEXT)'
 	  break
 	fi
       done
@@ -361,8 +386,9 @@ EOF
   esac
 fi
 
-AC_SUBST([OPT_ASM_NETTLE_SOURCES])
-AC_SUBST([OPT_ASM_HOGWEED_SOURCES])
+AC_SUBST([OPT_NETTLE_OBJS])
+AC_SUBST([OPT_HOGWEED_OBJS])
+AC_SUBST([OPT_NETTLE_SOURCES])
 AC_SUBST([ASM_RODATA])
 if test "x$enable_assembler" = xyes ; then
   IF_ASM=''
@@ -385,7 +411,12 @@ AH_VERBATIM([HAVE_NATIVE],
 #undef HAVE_NATIVE_ecc_384_redc
 #undef HAVE_NATIVE_ecc_521_modp
 #undef HAVE_NATIVE_ecc_521_redc
-#undef HAVE_NATIVE_gcm_hash8])
+#undef HAVE_NATIVE_gcm_hash8
+#undef HAVE_NATIVE_salsa20_core
+#undef HAVE_NATIVE_sha512_compress
+#undef HAVE_NATIVE_sha3_permute
+#undef HAVE_NATIVE_umac_nh
+#undef HAVE_NATIVE_umac_nh_n])
 
 if test "x$enable_pic" = xyes; then
     LSH_CCPIC
@@ -661,8 +692,9 @@ AC_CHECK_HEADERS([valgrind/memcheck.h])
 
 LSH_FUNC_ALLOCA
 LSH_FUNC_STRERROR
-# Used in the testsuite
-AC_CHECK_FUNCS(getline)
+# getenv_secure is used for fat overrides,
+# getline is used in the testsuite
+AC_CHECK_FUNCS(secure_getenv getline)
 AC_C_BIGENDIAN
 
 LSH_GCC_ATTRIBUTES
