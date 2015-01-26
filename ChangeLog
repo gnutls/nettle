@@ -9372,8 +9372,8 @@
 	computing n = p * q.
 
 	* rsa-compat.c: Adapted to new private key struct.
-	* rsa_md5.c: Likesize.
-	* rsa_sha1.c: Likesize.
+	* rsa_md5.c: Likewise.
+	* rsa_sha1.c: Likewise.
 
 	* rsa.c (rsa_check_size): New function, for computing and checking
 	the size of the modulo in octets.
