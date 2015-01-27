@@ -53,6 +53,19 @@
 #define ecc_mod _nettle_ecc_mod
 #define ecc_mod_inv _nettle_ecc_mod_inv
 #define ecc_hash _nettle_ecc_hash
+#define ecc_a_to_j _nettle_ecc_a_to_j
+#define ecc_j_to_a _nettle_ecc_j_to_a
+#define ecc_eh_to_a _nettle_ecc_eh_to_a
+#define ecc_dup_jj _nettle_ecc_dup_jj
+#define ecc_add_jja _nettle_ecc_add_jja
+#define ecc_add_jjj _nettle_ecc_add_jjj
+#define ecc_dup_eh _nettle_ecc_dup_eh
+#define ecc_add_eh _nettle_ecc_add_eh
+#define ecc_add_ehh _nettle_ecc_add_ehh
+#define ecc_mul_g _nettle_ecc_mul_g
+#define ecc_mul_a _nettle_ecc_mul_a
+#define ecc_mul_g_eh _nettle_ecc_mul_g_eh
+#define ecc_mul_a_eh _nettle_ecc_mul_a_eh
 #define cnd_copy _nettle_cnd_copy
 #define sec_add_1 _nettle_sec_add_1
 #define sec_sub_1 _nettle_sec_sub_1
@@ -247,6 +260,102 @@ void
 ecc_hash (const struct ecc_modulo *m,
 	  mp_limb_t *hp,
 	  size_t length, const uint8_t *digest);
+
+/* Converts a point P in affine coordinates into a point R in jacobian
+   coordinates. */
+void
+ecc_a_to_j (const struct ecc_curve *ecc,
+	    mp_limb_t *r, const mp_limb_t *p);
+
+/* Converts a point P in jacobian coordinates into a point R in affine
+   coordinates. If op == 1, produce x coordinate only. If op == 2,
+   produce the x coordiante only, and in also it modulo q. FIXME: For
+   the public interface, have separate for the three cases, and use
+   this flag argument only for the internal ecc->h_to_a function. */
+void
+ecc_j_to_a (const struct ecc_curve *ecc,
+	    int op,
+	    mp_limb_t *r, const mp_limb_t *p,
+	    mp_limb_t *scratch);
+
+/* Converts a point P on an Edwards curve to affine coordinates on
+   the corresponding Montgomery curve. */
+void
+ecc_eh_to_a (const struct ecc_curve *ecc,
+	     int op,
+	     mp_limb_t *r, const mp_limb_t *p,
+	     mp_limb_t *scratch);
+
+/* Group operations */
+
+/* Point doubling, with jacobian input and output. Corner cases:
+   Correctly sets R = 0 (r_Z = 0) if p = 0 or 2p = 0. */
+void
+ecc_dup_jj (const struct ecc_curve *ecc,
+	    mp_limb_t *r, const mp_limb_t *p,
+	    mp_limb_t *scratch);
+
+/* Point addition, with jacobian output, one jacobian input and one
+   affine input. Corner cases: Fails for the cases
+
+     P = Q != 0                       Duplication of non-zero point
+     P = 0, Q != 0 or P != 0, Q = 0   One input zero
+   
+     Correctly gives R = 0 if P = Q = 0 or P = -Q. */
+void
+ecc_add_jja (const struct ecc_curve *ecc,
+	     mp_limb_t *r, const mp_limb_t *p, const mp_limb_t *q,
+	     mp_limb_t *scratch);
+
+/* Point addition with Jacobian input and output. */
+void
+ecc_add_jjj (const struct ecc_curve *ecc,
+	     mp_limb_t *r, const mp_limb_t *p, const mp_limb_t *q,
+	     mp_limb_t *scratch);
+
+/* Point doubling on an Edwards curve, with homogeneous
+   cooordinates. */
+void
+ecc_dup_eh (const struct ecc_curve *ecc,
+	    mp_limb_t *r, const mp_limb_t *p,
+	    mp_limb_t *scratch);
+
+void
+ecc_add_eh (const struct ecc_curve *ecc,
+	    mp_limb_t *r, const mp_limb_t *p, const mp_limb_t *q,
+	    mp_limb_t *scratch);
+
+void
+ecc_add_ehh (const struct ecc_curve *ecc,
+	     mp_limb_t *r, const mp_limb_t *p, const mp_limb_t *q,
+	     mp_limb_t *scratch);
+
+/* Computes N * the group generator. N is an array of ecc_size()
+   limbs. It must be in the range 0 < N < group order, then R != 0,
+   and the algorithm can work without any intermediate values getting
+   to zero. */ 
+void
+ecc_mul_g (const struct ecc_curve *ecc, mp_limb_t *r,
+	   const mp_limb_t *np, mp_limb_t *scratch);
+
+/* Computes N * P. The scalar N is the same as for ecc_mul_g. P is a
+   non-zero point on the curve, in affine coordinates. Output R is a
+   non-zero point, in Jacobian coordinates. */
+void
+ecc_mul_a (const struct ecc_curve *ecc,
+	   mp_limb_t *r,
+	   const mp_limb_t *np, const mp_limb_t *p,
+	   mp_limb_t *scratch);
+
+void
+ecc_mul_g_eh (const struct ecc_curve *ecc, mp_limb_t *r,
+	      const mp_limb_t *np, mp_limb_t *scratch);
+
+void
+ecc_mul_a_eh (const struct ecc_curve *ecc,
+	      mp_limb_t *r,
+	      const mp_limb_t *np, const mp_limb_t *p,
+	      mp_limb_t *scratch);
 
 void
 cnd_copy (int cnd, mp_limb_t *rp, const mp_limb_t *ap, mp_size_t n);

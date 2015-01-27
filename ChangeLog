@@ -1,3 +1,28 @@
+2015-01-27  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc.h: Deleted declarations of unused itch functions. Moved
+	declarations of internal functions to...
+	* ecc-internal.h: ...new location. Also added a leading under
+	score on the symbols.
+	(ecc_a_to_j, ecc_j_to_a, ecc_eh_to_a, ecc_dup_jj, ecc_add_jja)
+	(ecc_add_jjj, ecc_dup_eh, ecc_add_eh, ecc_add_ehh, ecc_mul_g)
+	(ecc_mul_a, ecc_mul_g_eh, ecc_mul_a_eh): Affected functions.
+
+2015-01-26  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-add-eh.c (ecc_add_eh_itch): Deleted.
+	* ecc-add-ehh.c (ecc_add_ehh_itch): Deleted.
+	* ecc-add-jja.c (ecc_add_jja_itch): Deleted.
+	* ecc-add-jjj.c (ecc_add_jjj_itch): Deleted.
+	* ecc-dup-eh.c (ecc_dup_eh_itch): Deleted.
+	* ecc-dup-jj.c (ecc_dup_jj_itch): Deleted.
+	* ecc-eh-to-a.c (ecc_eh_to_a_itch): Deleted.
+	* ecc-j-to-a.c (ecc_j_to_a_itch): Deleted.
+	* ecc-mul-a-eh.c (ecc_mul_a_eh_itch): Deleted.
+	* ecc-mul-a.c (ecc_mul_a_itch): Deleted.
+	* ecc-mul-g-eh.c (ecc_mul_g_eh_itch): Deleted.
+	* ecc-mul-g.c (ecc_mul_g_itch): Deleted.
+
 2015-01-25  Niels Möller  <nisse@lysator.liu.se>
 
 	* arm/fat/sha1-compress-2.asm: New file.

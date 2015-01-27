@@ -40,17 +40,12 @@
 #include "ecc.h"
 #include "ecc-internal.h"
 
-mp_size_t
-ecc_mul_a_itch (const struct ecc_curve *ecc)
-{
-  /* Binary algorithm needs 6*ecc->p.size + scratch for ecc_add_jja.
-     Current total is 12 ecc->p.size, at most 864 bytes.
+/* Binary algorithm needs 6*ecc->p.size + scratch for ecc_add_jja.
+   Current total is 12 ecc->p.size, at most 864 bytes.
 
-     Window algorithm needs (3<<w) * ecc->p.size for the table,
-     3*ecc->p.size for a temporary point, and scratch for
-     ecc_add_jjj. */
-  return ECC_MUL_A_ITCH (ecc->p.size);
-}
+   Window algorithm needs (3<<w) * ecc->p.size for the table,
+   3*ecc->p.size for a temporary point, and scratch for
+   ecc_add_jjj. */
 
 #if ECC_MUL_A_WBITS == 0
 void

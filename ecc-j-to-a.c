@@ -38,13 +38,6 @@
 #include "ecc.h"
 #include "ecc-internal.h"
 
-mp_size_t
-ecc_j_to_a_itch (const struct ecc_curve *ecc)
-{
-  /* Needs 2*ecc->size + scratch for ecc_modq_inv */
-  return ECC_J_TO_A_ITCH (ecc->p.size);
-}
-
 void
 ecc_j_to_a (const struct ecc_curve *ecc,
 	    int op,

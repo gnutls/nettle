@@ -40,13 +40,6 @@
 #include "ecc.h"
 #include "ecc-internal.h"
 
-mp_size_t
-ecc_mul_g_eh_itch (const struct ecc_curve *ecc)
-{
-  /* Needs 3*ecc->p.size + scratch for ecc_add_jja. */
-  return ECC_MUL_G_EH_ITCH (ecc->p.size);
-}
-
 void
 ecc_mul_g_eh (const struct ecc_curve *ecc, mp_limb_t *r,
 	      const mp_limb_t *np, mp_limb_t *scratch)

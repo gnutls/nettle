@@ -36,12 +36,6 @@
 #include "ecc.h"
 #include "ecc-internal.h"
 
-mp_size_t
-ecc_dup_eh_itch (const struct ecc_curve *ecc)
-{
-  return ECC_DUP_EH_ITCH (ecc->p.size);
-}
-
 /* Double a point on an Edwards curve, in homogeneous coordinates */
 void
 ecc_dup_eh (const struct ecc_curve *ecc,

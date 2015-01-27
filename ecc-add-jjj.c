@@ -38,13 +38,6 @@
 #include "ecc.h"
 #include "ecc-internal.h"
 
-mp_size_t
-ecc_add_jjj_itch (const struct ecc_curve *ecc)
-{
-  /* Needs 8 * ecc->p.size */
-  return ECC_ADD_JJJ_ITCH (ecc->p.size);
-}
-
 void
 ecc_add_jjj (const struct ecc_curve *ecc,
 	     mp_limb_t *r, const mp_limb_t *p, const mp_limb_t *q,

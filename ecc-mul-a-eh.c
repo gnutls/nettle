@@ -38,17 +38,12 @@
 #include "ecc.h"
 #include "ecc-internal.h"
 
-mp_size_t
-ecc_mul_a_eh_itch (const struct ecc_curve *ecc)
-{
-  /* Binary algorithm needs 6*ecc->p.size + scratch for ecc_add_ehh,
-     total 13 ecc->p.size
+/* Binary algorithm needs 6*ecc->p.size + scratch for ecc_add_ehh,
+   total 13 ecc->p.size
 
-     Window algorithm needs (3<<w) * ecc->p.size for the table,
-     3*ecc->p.size for a temporary point, and scratch for
-     ecc_add_ehh. */
-  return ECC_MUL_A_EH_ITCH (ecc->p.size);
-}
+   Window algorithm needs (3<<w) * ecc->p.size for the table,
+   3*ecc->p.size for a temporary point, and scratch for
+   ecc_add_ehh. */
 
 #if ECC_MUL_A_EH_WBITS == 0
 void

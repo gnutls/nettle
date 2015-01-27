@@ -49,12 +49,6 @@
    + p = q   ==>  r = 0, invalid
 */
 
-mp_size_t
-ecc_add_jja_itch (const struct ecc_curve *ecc)
-{
-  return ECC_ADD_JJA_ITCH (ecc->p.size);
-}
-
 void
 ecc_add_jja (const struct ecc_curve *ecc,
 	     mp_limb_t *r, const mp_limb_t *p, const mp_limb_t *q,

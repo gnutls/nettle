@@ -36,12 +36,6 @@
 #include "ecc.h"
 #include "ecc-internal.h"
 
-mp_size_t
-ecc_add_eh_itch (const struct ecc_curve *ecc)
-{
-  return ECC_ADD_EH_ITCH (ecc->p.size);
-}
-
 /* Add two points on an Edwards curve, with result and first point in
    homogeneous coordinates. */
 void

@@ -42,12 +42,6 @@
 
    + p = 0  ==>  r = 0, correct!
 */
-mp_size_t
-ecc_dup_jj_itch (const struct ecc_curve *ecc)
-{
-  return ECC_DUP_JJ_ITCH (ecc->p.size);
-}
-
 void
 ecc_dup_jj (const struct ecc_curve *ecc,
 	    mp_limb_t *r, const mp_limb_t *p,
