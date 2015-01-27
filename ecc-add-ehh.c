@@ -55,25 +55,25 @@ ecc_add_ehh (const struct ecc_curve *ecc,
 #define z3 (r + 2*ecc->p.size)
 
   /* Formulas (from djb,
-     http://www.hyperelliptic.org/EFD/g1p/auto-edwards-projective.html#doubling-dbl-2007-bl):
+     http://www.hyperelliptic.org/EFD/g1p/auto-edwards-projective.html#addition-add-2007-bl):
 
      Computation	Operation	Live variables
 
      C = x1*x2		mul		C
      D = y1*y2		mul		C, D
-     T = (x1+y1)(x2+y2) - C - D		C, D, T
+     T = (x1+y1)(x2+y2) - C - D, mul	C, D, T
      E = b*C*D		2 mul		C, E, T (Replace C <-- D - C)
      A = z1*z2		mul		A, C, E, T
      B = A^2		sqr		A, B, C, E, T
      F = B - E				A, B, C, E, F, T
      G = B + E     			A, C, F, G, T
-     x3 = A*F*T		3 mul		A, C, G
+     x3 = A*F*T		2 mul		A, C, G
      y3 = A*G*(D-C)	2 mul		F, G
      z3 = F*G		mul
 
-     But when working with the twist curve, we need to the factor
-     x1*x2. We need to switch sign in y3 expressions, and swap F and
-     G.
+     But when working with the twist curve, we have to negate the
+     factor C = x1*x2. We change subtract to add in the y3
+     expression, and swap F and G.
   */
 #define C scratch
 #define D (scratch + ecc->p.size)
