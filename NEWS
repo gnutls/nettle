@@ -1,3 +1,66 @@
+NEWS for the Nettle 3.1 release
+
+	This release adds a couple of new features.
+
+XXX	The shared library names???
+
+	Bug fixes:
+
+	* Eliminate out-of-bounds reads in the C implementation of
+	  memxor (related to valgrind's --partial-loads-ok flag).
+
+	Interface changes:
+
+	* Declarations of many internal functions are moved from ecc.h
+	  to ecc-internal.h. The functions are undocumented, and
+	  luckily they're apparently also unused by applications, so I
+	  don't expect any problems from this change.
+
+	New features:
+
+	* Support for curve25519 and for EdDSA25519 signatures.
+
+	* Support for "fat builds" on x86_64 and arm, where the
+	  implementation of certain functions is selected at run-time
+	  depending on available cpu features. Configure with
+	  --enable-fat to try this out. If it turns out to work well
+	  enough, it will likely be enabled by default in later
+	  releases.
+
+	* Support for building the hogweed library (public key
+	  support) using "mini-gmp", a small but slower implementation
+	  of a subset of the GMP interfaces. Note that builds using
+	  mini-gmp are *not* binary compatible with regular builds,
+	  and more likely to leak side-channel information.
+
+	  One intended usecase is for small embedded applications
+	  which need to verify digital signatures.
+
+XXX	* The shared libraries are now built with versioned symbols.
+	  Should reduce problems in case a program links explicitly
+	  both to nettle and/or hogweed, and to gnutls, and the
+	  program and gnutls expects different versions.
+
+	Optimizations:
+
+	* New x86_64 implementation of AES, using the "aesni"
+	  instructions. Autodetected in fat builds. In non-fat builds,
+	  it has to be enabled explicitly with --enable-x86-aesni.
+
+	Build system:
+
+	* Use the same object files for both static and shared
+	  libraries. This eliminates the *.po object files which were
+	  confusing to some tools (as well as humans). Like before,
+	  PIC code is used by default; to build a non-pic static
+	  library, configure with --disable-pic --disable-shared.
+
+	Miscellaneous:
+
+	* Made type-checking hack in CBC_ENCRYPT and similar macros
+	  stricter, to generate warnings if they are used with
+	  functions which have a length argument smaller than size_t.
+
 NEWS for the Nettle 3.0 release
 
 	This is a major release, including several interface changes,
