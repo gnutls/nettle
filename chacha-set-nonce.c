@@ -59,3 +59,12 @@ chacha_set_nonce(struct chacha_ctx *ctx, const uint8_t *nonce)
   ctx->state[14] = LE_READ_UINT32(nonce + 0);
   ctx->state[15] = LE_READ_UINT32(nonce + 4);
 }
+
+void
+chacha_set_nonce96(struct chacha_ctx *ctx, const uint8_t *nonce)
+{
+  ctx->state[12] = 0;
+  ctx->state[13] = LE_READ_UINT32(nonce + 0);
+  ctx->state[14] = LE_READ_UINT32(nonce + 4);
+  ctx->state[15] = LE_READ_UINT32(nonce + 8);
+}

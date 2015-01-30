@@ -1,3 +1,9 @@
+2015-01-30  Niels Möller  <nisse@lysator.liu.se>
+
+	* chacha-set-nonce.c (chacha_set_nonce96): New function.
+	* chacha.h (CHACHA_NONCE96_SIZE): New constant.
+	* testsuite/chacha-test.c: Add test for chacha with 96-bit nonce.
+
 2015-01-27  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc.h: Deleted declarations of unused itch functions. Moved

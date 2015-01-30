@@ -44,20 +44,30 @@ test_chacha(const struct tstring *key, const struct tstring *nonce,
 
   ASSERT (key->length == CHACHA_KEY_SIZE);
   chacha_set_key (&ctx, key->data);
-  ASSERT (nonce->length == CHACHA_NONCE_SIZE);
 
   if (rounds == 20)
     {
       uint8_t *data = xalloc (expected->length + 2);
-      data++;
       size_t length;
+      data++;
 
       for (length = 1; length <= expected->length; length++)
 	{
 	  data[-1] = 17;
 	  memset (data, 0, length);
 	  data[length] = 17;
-	  chacha_set_nonce(&ctx, nonce->data);
+	  if (nonce->length == CHACHA_NONCE_SIZE)
+	    chacha_set_nonce(&ctx, nonce->data);
+	  else if (nonce->length == CHACHA_NONCE96_SIZE)
+	    {
+	      chacha_set_nonce96(&ctx, nonce->data);
+	      /* Use initial counter 1, for
+		 draft-irtf-cfrg-chacha20-poly1305-08 test cases. */
+	      ctx.state[12]++;
+	    }
+	  else
+	    die ("Bad nonce size %u.\n", (unsigned) nonce->length);
+
 	  chacha_crypt (&ctx, length, data, data);
 
 	  ASSERT (data[-1] == 17);
@@ -84,6 +94,7 @@ test_chacha(const struct tstring *key, const struct tstring *nonce,
 	 numbers of rounds. */
       uint32_t out[_CHACHA_STATE_LENGTH];
       ASSERT (expected->length == CHACHA_BLOCK_SIZE);
+      ASSERT (nonce->length == CHACHA_NONCE_SIZE);
 
       chacha_set_nonce(&ctx, nonce->data);
       _chacha_core (out, ctx.state, rounds);
@@ -621,5 +632,15 @@ test_main(void)
 		   "853bf910b060bdf1 f897b6290f01d138"
 		   "ae2c4c90225ba9ea 14d518f55929dea0"
 		   "98ca7a6ccfe61227 053c84e49a4a3332"),
+	      20);
+
+  /* From draft-irtf-cfrg-chacha20-poly1305-08, with 96-bit nonce */
+  test_chacha(SHEX("0001020304050607 08090a0b0c0d0e0f"
+		   "1011121314151617 18191a1b1c1d1e1f"),
+	      SHEX("000000090000004a 00000000"),
+	      SHEX("10f1e7e4d13b5915 500fdd1fa32071c4"
+		   "c7d1f4c733c06803 0422aa9ac3d46c4e"
+		   "d2826446079faa09 14c2d705d98b02a2"
+		   "b5129cd1de164eb9 cbd083e8a2503c4e"),
 	      20);
 }
