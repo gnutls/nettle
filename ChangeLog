@@ -1,5 +1,15 @@
 2015-01-30  Niels Möller  <nisse@lysator.liu.se>
 
+	Update chacha-poly1305 for draft-irtf-cfrg-chacha20-poly1305-08.
+	* chacha-poly1305.h (CHACHA_POLY1305_NONCE_SIZE): Increase to 12
+	bytes, i.e., CHACHA_NONCE96_SIZE.
+	* chacha-poly1305.c (chacha_poly1305_set_nonce): Use
+	chacha_set_nonce96.
+	(poly1305_pad): New function.
+	(chacha_poly1305_encrypt): Use poly1305_pad.
+	(chacha_poly1305_digest): Call poly1305_pad, and format length
+	fields as a single poly1305 block.
+
 	* chacha-set-nonce.c (chacha_set_nonce96): New function.
 	* chacha.h (CHACHA_NONCE96_SIZE): New constant.
 	* testsuite/chacha-test.c: Add test for chacha with 96-bit nonce.
