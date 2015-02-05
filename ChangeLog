@@ -268,6 +268,25 @@
 	* gcm.h (GCM_SET_KEY, GCM_ENCRYPT, GCM_DECRYPT, GCM_DIGEST):
 	Likewise.
 
+2014-12-08  Niels Möller  <nisse@lysator.liu.se>
+
+	* aclocal.m4 (LD_VERSION_SCRIPT): Linker scripts no longer located
+	in the source tree.
+
+	* configure.ac (LIBNETTLE_MAJOR): Bump major number, now 6.
+	(LIBHOGWEED_MAJOR): Bump major number, now 5.
+
+	From Nikos Mavrogiannopoulos. Support for versioned symbols.
+	* aclocal.m4 (LD_VERSION_SCRIPT): New macro. Substitute
+	EXTRA_LINKER_FLAGS and EXTRA_HOGWEED_LINKER_FLAGS.
+	* configure.ac: Use LD_VERSION_SCRIPT. Generate libnettle.map
+	and libhogweed.map.
+	(HOGWEED_EXTRA_SYMBOLS): New substituted variable.
+	* libnettle.map.in: New file, libnettle.so linker script
+	* libhogweed.map.in: New file, libhogweed.so linker script.
+	* Makefile.in ($(LIBNETTLE_FORLINK)): Use EXTRA_LINKER_FLAGS.
+	($(LIBHOGWEED_FORLINK)): Use EXTRA_HOGWEED_LINKER_FLAGS.
+
 2014-11-24  Niels Möller  <nisse@lysator.liu.se>
 
 	* gcm.h (GCM_SET_KEY): Rename macro argument KEY to avoid

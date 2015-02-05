@@ -10,10 +10,10 @@ AC_CONFIG_AUX_DIR([.])
 
 AC_CONFIG_HEADER([config.h])
 
-LIBNETTLE_MAJOR=5
+LIBNETTLE_MAJOR=6
 LIBNETTLE_MINOR=0
 
-LIBHOGWEED_MAJOR=4
+LIBHOGWEED_MAJOR=5
 LIBHOGWEED_MINOR=0
 
 AC_CANONICAL_HOST
@@ -85,10 +85,13 @@ AC_ARG_ENABLE(mini-gmp,
 
 if test "x$enable_mini_gmp" = xyes ; then
   NETTLE_USE_MINI_GMP=1
+  HOGWEED_EXTRA_SYMBOLS="mpz_*;gmp_*;mpn_*;"
 else
   NETTLE_USE_MINI_GMP=0
+  HOGWEED_EXTRA_SYMBOLS=""
 fi
 AC_SUBST([NETTLE_USE_MINI_GMP])
+AC_SUBST([HOGWEED_EXTRA_SYMBOLS])
 
 LSH_RPATH_INIT([`echo $with_lib_path | sed 's/:/ /g'` \
     `echo $exec_prefix | sed "s@^NONE@$prefix/lib@g" | sed "s@^NONE@$ac_default_prefix/lib@g"` \
@@ -122,6 +125,8 @@ AC_LANG_PUSH(C++)
 AC_TRY_COMPILE([],[return 0;],[IF_CXX=''], [IF_CXX='#'])
 AC_SUBST([IF_CXX])
 AC_LANG_POP
+
+LD_VERSION_SCRIPT
 
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
@@ -892,7 +897,7 @@ fi
 
 AC_CONFIG_FILES([config.make config.m4 Makefile bignum.h])
 AC_CONFIG_FILES([tools/Makefile testsuite/Makefile examples/Makefile])
-AC_CONFIG_FILES([nettle.pc hogweed.pc])
+AC_CONFIG_FILES([nettle.pc hogweed.pc libnettle.map libhogweed.map])
 
 AC_OUTPUT
 
