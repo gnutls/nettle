@@ -1,5 +1,66 @@
 #include "testutils.h"
 #include "base64.h"
+#include "knuth-lfib.h"
+
+static void
+test_fuzz_once(struct base64_encode_ctx *encode,
+	       struct base64_decode_ctx *decode,
+	       size_t size, const uint8_t *input)
+{
+  size_t base64_len = BASE64_ENCODE_RAW_LENGTH (size);
+  size_t out_len;
+  uint8_t *base64 = xalloc (base64_len + 2);
+  uint8_t *decoded = xalloc (size + 2);
+
+  *base64++ = 0x12;
+  base64[base64_len] = 0x34;
+
+  *decoded++ = 0x56;
+  decoded[size] = 0x78;
+
+  out_len = base64_encode_update(encode, base64, size, input);
+  ASSERT (out_len <= base64_len);
+  out_len += base64_encode_final(encode, base64 + out_len);
+  ASSERT (out_len == base64_len);
+  ASSERT (base64[-1] == 0x12);
+  ASSERT (base64[base64_len] == 0x34);
+
+  ASSERT(base64_decode_update(decode, &out_len, decoded,
+			      base64_len, base64));
+  ASSERT(base64_decode_final(decode));
+  ASSERT (out_len == size);
+  ASSERT (decoded[-1] == 0x56);
+  ASSERT (decoded[size] == 0x78);
+  
+  ASSERT(MEMEQ(size, input, decoded));
+  free (base64 - 1);
+  free (decoded - 1);
+}
+
+static void
+test_fuzz(void)
+{
+  /* Fuzz a round-trip through both encoder and decoder */
+  struct base64_encode_ctx encode;
+  struct base64_decode_ctx decode;
+  unsigned i;
+  size_t length;
+  uint8_t input[1024];
+
+  struct knuth_lfib_ctx rand_ctx;
+  knuth_lfib_init(&rand_ctx, 39854);
+
+  for (i = 0; i < 10000; i++)
+    {
+      length = i % sizeof(input);
+      /* length could be 0, which is fine we need to test that case too */
+      knuth_lfib_random(&rand_ctx, length, input);
+
+      base64_encode_init(&encode);
+      base64_decode_init(&decode);
+      test_fuzz_once(&encode, &decode, length, input);
+    }
+}
 
 void
 test_main(void)
@@ -45,4 +106,5 @@ test_main(void)
     
     ASSERT(MEMEQ(9, buffer, "HelloG8=x"));
   }
+  test_fuzz ();
 }
