@@ -87,50 +87,6 @@ base64_encode_raw(uint8_t *dst, size_t length, const uint8_t *src)
   assert(out == dst);
 }
 
-#if 0
-unsigned 
-base64_encode(uint8_t *dst,
-	      unsigned src_length,
-	      const uint8_t *src)
-{
-  unsigned dst_length = BASE64_ENCODE_RAW_LENGTH(src_length);
-  unsigned n = src_length / 3;
-  unsigned left_over  = src_length % 3;
-  unsigned done = 0;
-  
-  if (left_over)
-    {
-      const uint8_t *in = src + n * 3;
-      uint8_t *out = dst + dst_length;
-
-      switch(left_over)
-	{
-	case 1:
-	  *--out = '=';
-	  *--out = ENCODE(in[0] << 4);
-	  break;
-	  
-	case 2:
-	  *--out = ENCODE( in[1] << 2);
-	  *--out = ENCODE((in[0] << 4) | (in[1] >> 4));
-	  break;
-
-	default:
-	  abort();
-	}
-      *--out = ENCODE(in[0] >> 2);
-
-      done = 4;
-    }
-  base64_encode_raw(n, dst, src);
-  done += n * 4;
-
-  assert(done == dst_length);
-
-  return done;
-}
-#endif
-
 void
 base64_encode_group(uint8_t *dst, uint32_t group)
 {

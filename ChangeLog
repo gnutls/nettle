@@ -1,5 +1,8 @@
 2015-02-09  Niels Möller  <nisse@lysator.liu.se>
 
+	* base64-encode.c (base64_encode): Deleted old #if:ed out
+	function.
+
 	* testsuite/base64-test.c (test_fuzz_once, test_fuzz): Additional
 	tests, based on contribution by Amos Jeffries.
 
