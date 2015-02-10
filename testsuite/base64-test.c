@@ -91,7 +91,18 @@ test_main(void)
   test_armor(&nettle_base64, 4, "Hell", "SGVsbA==");
   test_armor(&nettle_base64, 5, "Hello", "SGVsbG8=");
   test_armor(&nettle_base64, 6, "Hello", "SGVsbG8A");
+  test_armor(&nettle_base64, 9, "Hello?>>>", "SGVsbG8/Pj4+");
   test_armor(&nettle_base64, 4, "\xff\xff\xff\xff", "/////w==");
+
+  test_armor(&nettle_base64url, 0, "", "");
+  test_armor(&nettle_base64url, 1, "H", "SA==");
+  test_armor(&nettle_base64url, 2, "He", "SGU=");
+  test_armor(&nettle_base64url, 3, "Hel", "SGVs");
+  test_armor(&nettle_base64url, 4, "Hell", "SGVsbA==");
+  test_armor(&nettle_base64url, 5, "Hello", "SGVsbG8=");
+  test_armor(&nettle_base64url, 6, "Hello", "SGVsbG8A");
+  test_armor(&nettle_base64url, 9, "Hello?>>>", "SGVsbG8_Pj4-");
+  test_armor(&nettle_base64url, 4, "\xff\xff\xff\xff", "_____w==");
 
   {
     /* Test overlapping areas */

@@ -220,6 +220,7 @@ struct nettle_armor
 extern const struct nettle_armor * const nettle_armors[];
 
 extern const struct nettle_armor nettle_base64;
+extern const struct nettle_armor nettle_base64url;
 extern const struct nettle_armor nettle_base16;
 
 #ifdef __cplusplus

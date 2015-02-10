@@ -1,6 +1,6 @@
-/* nettle-meta-armors.c
+/* base64url-meta.c
 
-   Copyright (C) 2011 Daniel Kahn Gillmor
+   Copyright (C) 2015 Niels Möller
 
    This file is part of GNU Nettle.
 
@@ -33,12 +33,31 @@
 # include "config.h"
 #endif
 
-#include <stddef.h>
 #include "nettle-meta.h"
 
-const struct nettle_armor * const nettle_armors[] = {
-  &nettle_base64,
-  &nettle_base64url,
-  &nettle_base16,
-  NULL
-};
+#include "base64.h"
+
+/* Same as the macros with the same name */
+static nettle_armor_length_func base64url_encode_length;
+static size_t
+base64url_encode_length(size_t length)
+{
+  return BASE64_ENCODE_LENGTH(length);
+}
+
+static nettle_armor_length_func base64url_decode_length;
+static size_t
+base64url_decode_length(size_t length)
+{
+  return BASE64_DECODE_LENGTH(length);
+}
+
+#define base64url_encode_ctx base64_encode_ctx
+#define base64url_encode_update base64_encode_update
+#define base64url_encode_final base64_encode_final
+#define base64url_decode_ctx base64_decode_ctx
+#define base64url_decode_update base64_decode_update
+#define base64url_decode_final base64_decode_final
+
+const struct nettle_armor nettle_base64url
+= _NETTLE_ARMOR(base64url, BASE64);

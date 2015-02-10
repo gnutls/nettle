@@ -1,5 +1,13 @@
 2015-02-10  Niels Möller  <nisse@lysator.liu.se>
 
+	* base64url-meta.c (nettle_base64url): New file.
+	* nettle-meta.h (nettle_base64url): Declare it.
+	* nettle-meta-armors.c (nettle_armors): Added nettle_base64url.
+	* testsuite/meta-armor-test.c: Updated testcase.
+	* testsuite/base64-test.c (test_main): Additional tests, using
+	nettle_base64url.
+	* Makefile.in (nettle_SOURCES): Added base64url-meta.c.
+
 	Base-64 generalization to support RFC4648 URL safe alphabet,
 	contributed by Amos Jeffries.
 	* base64url-decode.c (base64url_decode_init): New file and
