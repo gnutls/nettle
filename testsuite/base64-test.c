@@ -59,6 +59,10 @@ test_fuzz(void)
       base64_encode_init(&encode);
       base64_decode_init(&decode);
       test_fuzz_once(&encode, &decode, length, input);
+
+      base64url_encode_init(&encode);
+      base64url_decode_init(&decode);
+      test_fuzz_once(&encode, &decode, length, input);
     }
 }
 

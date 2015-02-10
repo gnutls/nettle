@@ -42,12 +42,14 @@ extern "C" {
 
 /* Name mangling */
 #define base64_encode_init nettle_base64_encode_init
+#define base64url_encode_init nettle_base64url_encode_init
 #define base64_encode_single nettle_base64_encode_single
 #define base64_encode_update nettle_base64_encode_update
 #define base64_encode_final nettle_base64_encode_final
 #define base64_encode_raw nettle_base64_encode_raw
 #define base64_encode_group nettle_base64_encode_group
 #define base64_decode_init nettle_base64_decode_init
+#define base64url_decode_init nettle_base64url_decode_init
 #define base64_decode_single nettle_base64_decode_single
 #define base64_decode_update nettle_base64_decode_update
 #define base64_decode_final nettle_base64_decode_final
@@ -79,6 +81,10 @@ struct base64_encode_ctx
 /* Initialize encoding context for base-64 */
 void
 base64_encode_init(struct base64_encode_ctx *ctx);
+
+/* Initialize encoding context for URL safe alphabet, RFC 4648. */
+void
+base64url_encode_init(struct base64_encode_ctx *ctx);
 
 /* Encodes a single byte. Returns amount of output (always 1 or 2). */
 size_t
@@ -131,6 +137,10 @@ struct base64_decode_ctx
 /* Initialize decoding context for base-64 */
 void
 base64_decode_init(struct base64_decode_ctx *ctx);
+
+/* Initialize encoding context for URL safe alphabet, RFC 4648. */
+void
+base64url_decode_init(struct base64_decode_ctx *ctx);
 
 /* Decodes a single byte. Returns amount of output (0 or 1), or -1 on
  * errors. */

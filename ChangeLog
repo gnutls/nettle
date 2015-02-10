@@ -1,6 +1,17 @@
 2015-02-10  Niels Möller  <nisse@lysator.liu.se>
 
-	Base-64 generalization, contributed by Amos Jeffries.
+	Base-64 generalization to support RFC4648 URL safe alphabet,
+	contributed by Amos Jeffries.
+	* base64url-decode.c (base64url_decode_init): New file and
+	function.
+	* base64url-encode.c (base64url_encode_init): New file and
+	function.
+	* Makefile.in (nettle_SOURCES): Added base64url-encode.c and
+	base64url-decode.c.
+	* base64.h: Declare new functions.
+	* testsuite/base64-test.c (test_fuzz): Test base64url encoding and
+	decoding.
+
 	* base64.h (struct base64_encode_ctx): Added pointer to alphabet.
 	(struct base64_decode_ctx): Added pointer to decoding table.
 	* base64-decode.c (base64_decode_init): Initialize table pointer.

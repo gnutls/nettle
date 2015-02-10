@@ -81,6 +81,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 arctwo.c arctwo-meta.c blowfish.c \
 		 base16-encode.c base16-decode.c base16-meta.c \
 		 base64-encode.c base64-decode.c base64-meta.c \
+		 base64url-encode.c base64url-decode.c \
 		 buffer.c buffer-init.c \
 		 camellia-crypt-internal.c camellia-table.c \
 		 camellia-absorb.c camellia-invert-key.c \
