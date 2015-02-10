@@ -547,7 +547,7 @@ This function also resets the context in the same way as
 
 Several variants of SHA512 have been defined, with a different initial
 state, and with the output truncated to shorter length than 512 bits.
-Naming is a bit confused, these algorithms are call SHA512-224,
+Naming is a bit confused, these algorithms are called SHA512-224,
 SHA512-256 and SHA384, for output sizes of 224, 256 and 384 bits,
 respectively. Nettle defines these in @file{<nettle/sha2.h>} (and in
 @file{<nettle/sha.h>}, for backwards compatibility).
