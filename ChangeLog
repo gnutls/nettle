@@ -1,3 +1,20 @@
+2015-02-10  Niels Möller  <nisse@lysator.liu.se>
+
+	Base-64 generalization, contributed by Amos Jeffries.
+	* base64.h (struct base64_encode_ctx): Added pointer to alphabet.
+	(struct base64_decode_ctx): Added pointer to decoding table.
+	* base64-decode.c (base64_decode_init): Initialize table pointer.
+	Moved definition of table to local scope.
+	(base64_decode_single): Use the context's decoding table.
+	* base64-encode.c (ENCODE): Added alphabet argument. Updated all
+	uses.
+	(encode_raw): New static function, like base64_encode_raw
+	but with an alphabet argument.
+	(base64_encode_raw): Call encode_raw.
+	(base64_encode_init): Initialize alphabet pointer.
+	(base64_encode_single, base64_encode_update, base64_encode_final):
+	Use the context's alphabet.
+
 2015-02-09  Niels Möller  <nisse@lysator.liu.se>
 
 	* base64-encode.c (base64_encode): Deleted old #if:ed out

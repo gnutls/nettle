@@ -73,8 +73,10 @@ struct base64_encode_ctx
 {
   unsigned word;   /* Leftover bits */
   unsigned bits;  /* Number of bits, always 0, 2, or 4. */
+  const uint8_t *alphabet; /* Alphabet to use for encoding */
 };
 
+/* Initialize encoding context for base-64 */
 void
 base64_encode_init(struct base64_encode_ctx *ctx);
 
@@ -123,8 +125,10 @@ struct base64_decode_ctx
 
   /* Number of padding characters encountered */
   unsigned padding;
+  const signed char *table; /* Decoding table */
 };
 
+/* Initialize decoding context for base-64 */
 void
 base64_decode_init(struct base64_decode_ctx *ctx);
 

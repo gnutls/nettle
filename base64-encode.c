@@ -38,15 +38,11 @@
 
 #include "base64.h"
 
-static const uint8_t encode_table[64] =
-  "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-  "abcdefghijklmnopqrstuvwxyz"
-  "0123456789+/";
+#define ENCODE(alphabet,x) ((alphabet)[0x3F & (x)])
 
-#define ENCODE(x) (encode_table[0x3F & (x)])
-
-void
-base64_encode_raw(uint8_t *dst, size_t length, const uint8_t *src)
+static void
+encode_raw(const char *alphabet,
+	   uint8_t *dst, size_t length, const uint8_t *src)
 {
   const uint8_t *in = src + length;
   uint8_t *out = dst + BASE64_ENCODE_RAW_LENGTH(length);
@@ -61,45 +57,57 @@ base64_encode_raw(uint8_t *dst, size_t length, const uint8_t *src)
 	{
 	case 1:
 	  *--out = '=';
-	  *--out = ENCODE(in[0] << 4);
+	  *--out = ENCODE(alphabet, (in[0] << 4));
 	  break;
 	  
 	case 2:
-	  *--out = ENCODE( in[1] << 2);
-	  *--out = ENCODE((in[0] << 4) | (in[1] >> 4));
+	  *--out = ENCODE(alphabet, (in[1] << 2));
+	  *--out = ENCODE(alphabet, ((in[0] << 4) | (in[1] >> 4)));
 	  break;
 
 	default:
 	  abort();
 	}
-      *--out = ENCODE(in[0] >> 2);
+      *--out = ENCODE(alphabet, (in[0] >> 2));
     }
   
   while (in > src)
     {
       in -= 3;
-      *--out = ENCODE( in[2]);
-      *--out = ENCODE((in[1] << 2) | (in[2] >> 6));
-      *--out = ENCODE((in[0] << 4) | (in[1] >> 4));
-      *--out = ENCODE( in[0] >> 2);      
+      *--out = ENCODE(alphabet, (in[2]));
+      *--out = ENCODE(alphabet, ((in[1] << 2) | (in[2] >> 6)));
+      *--out = ENCODE(alphabet, ((in[0] << 4) | (in[1] >> 4)));
+      *--out = ENCODE(alphabet, (in[0] >> 2));
     }
   assert(in == src);
   assert(out == dst);
 }
 
+static const uint8_t base64_encode_table[64] =
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  "abcdefghijklmnopqrstuvwxyz"
+  "0123456789+/";
+
+void
+base64_encode_raw(uint8_t *dst, size_t length, const uint8_t *src)
+{
+  encode_raw(base64_encode_table, dst, length, src);
+}
+
 void
 base64_encode_group(uint8_t *dst, uint32_t group)
 {
-  *dst++ = ENCODE(group >> 18);
-  *dst++ = ENCODE(group >> 12);
-  *dst++ = ENCODE(group >> 6);
-  *dst++ = ENCODE(group);
+  *dst++ = ENCODE(base64_encode_table, (group >> 18));
+  *dst++ = ENCODE(base64_encode_table, (group >> 12));
+  *dst++ = ENCODE(base64_encode_table, (group >> 6));
+  *dst++ = ENCODE(base64_encode_table, group);
 }
 
 void
 base64_encode_init(struct base64_encode_ctx *ctx)
 {
   ctx->word = ctx->bits = 0;
+  ctx->alphabet = base64_encode_table;
 }
 
 /* Encodes a single byte. */
@@ -115,7 +123,7 @@ base64_encode_single(struct base64_encode_ctx *ctx,
   while (bits >= 6)
     {
       bits -= 6;
-      dst[done++] = ENCODE(word >> bits);
+      dst[done++] = ENCODE(ctx->alphabet, (word >> bits));
     }
 
   ctx->bits = bits;
@@ -152,7 +160,7 @@ base64_encode_update(struct base64_encode_ctx *ctx,
     {
       assert(!(bulk % 3));
       
-      base64_encode_raw(dst + done, bulk, src);
+      encode_raw(ctx->alphabet, dst + done, bulk, src);
       done += BASE64_ENCODE_RAW_LENGTH(bulk);
       src += bulk;
       left = left_over;
@@ -180,7 +188,7 @@ base64_encode_final(struct base64_encode_ctx *ctx,
   
   if (bits)
     {
-      dst[done++] = ENCODE(ctx->word << (6 - ctx->bits));
+      dst[done++] = ENCODE(ctx->alphabet, (ctx->word << (6 - ctx->bits)));
       for (; bits < 6; bits += 2)
 	dst[done++] = '=';
 
