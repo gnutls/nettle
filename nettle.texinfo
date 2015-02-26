@@ -4065,7 +4065,8 @@ curve discrete logarithm problem.
 Nettle supports standard curves which are all of the form @math{y^2 =
 x^3 - 3 x + b @pmod{p}}, i.e., the points have coordinates @math{(x,y)},
 both considered as integers modulo a specified prime @math{p}. Curves
-are represented as a @code{struct ecc_curve}. Supported curves are
+are represented as a @code{struct ecc_curve}. It also supports
+curve25519, which uses a different form of curve. Supported curves are
 declared in @file{<nettle/ecc-curve.h>}, e.g., @code{nettle_secp_256r1}
 for a standardized curve using the 256-bit prime @math{p = 2^{256} -
 2^{224} + 2^{192} + 2^{96} - 1}. The contents of these structs is not
@@ -4199,6 +4200,103 @@ structs should be initialized, for the desired ECC curve, before you call this f
 @code{random(random_ctx, length, dst)} should generate @code{length}
 random octets and store them at @code{dst}. For advice, see
 @xref{Randomness}.
+@end deftypefun
+
+@subsubsection Curve25519
+
+Curve25519 is an elliptic curve of Montgomery type, @math{y^2 = x^3 +
+486662 x^2 + x @pmod{p}}, with @math{p = 2^255 - 19}. Montgomery curves
+have the advantage of simple and efficient point addition based on the
+x-coordinate only. This particular curve was proposed by D.~J.~Bernstein
+in 2006, for fast Diffie-Hellman key exchange. The group generator is
+defined by @math{x = 9} (there are actually two points with @math{x =
+9}, differing by the sign of the y-coordinate, but that doesn't matter
+for the curve25519 operations which work with the x-coordinate only).
+
+The curve25519 functions are defined as operations on octet strings,
+which are interpreted as x-coordinates in little-endian byte order.
+
+@defvr Constant CURVE25519_SIZE
+The size of the strings representing curve25519 points and scalars, 32.
+@end defvr
+
+@deftypefun void curve25519_mul_g (uint8_t *@var{q}, const uint8_t *@var{n})
+Computes @math{Q = N G}, where @math{G} is the group generator and
+@math{N} is an integer. The input argument @var{n} and the output
+argument @var{q} use a little-endian representation of the scalar and
+the x-coordinate, respectively. They are both of size
+@code{CURVE25519_SIZE}.
+
+This function is intended to be compatible with the function
+@code{crypto_scalar_mult_base} in the NaCl library.
+@end deftypefun
+
+@c FIXME: Change to void return type
+@deftypefun int curve25519_mul (uint8_t *@var{q}, const uint8_t *@var{n}, const uint8_t *@var{p})
+Computes @math{Q = N P}, where @math{P} is an input point and @math{N}
+is an integer. The input arguments @var{n} and @var{p} and the output
+argument @var{q} use a little-endian representation of the scalar and
+the x-coordinates, respectively. They are all of size
+@code{CURVE25519_SIZE}.
+
+This function is intended to be compatible with the function
+@code{crypto_scalar_mult} in the NaCl library.
+@end deftypefun
+
+@subsubsection EdDSA
+
+EdDSA is a signature scheme proposed by D.~J.~Bernstein et al. in 2011.
+It is defined using a ``Twisted Edwards curve'', of the form @math{-x^2
++ y^2 = 1 + d x^2 y^2}. The specific signature scheme Ed25519 uses a
+curve which is equivalent to curve25519: The two groups used differ only
+by a simple change of coordinates, so that the discrete logarithm
+problem is of equal difficulty in both groups.
+
+Unlike other signature schemes in Nettle, the input to the EdDSA sign
+and verify functions is the possibly large message itself, not a hash
+digest. EdDSA is a variant of Schnorr signatures, where the message is
+hashed together with other data during the signature process, providing
+resilience to hash-collisions: A successful attack finding collisions in
+the hash function does not automatically translate into an attack to
+forge signatures. EdDSA also avoids the use of a randomness source by
+generating the needed signature nonce from a hash of the private key and
+the message, which means that the message is actually hashed twice when
+creating a signature. If signing huge messages, it is possible to hash
+the message first and pass the short message digest as input to the
+signa and verify functions, however, the hash collision resilience is
+then lost.
+
+@defvr Constant ED25519_KEY_SIZE
+The size of a private or public Ed25519 key, 32 octets.
+@end defvr
+
+@defvr Constant ED25519_SIGNATURE_SIZE
+The size of an Ed25519 signature, 64 octets.
+@end defvr
+
+@deftp {Context struct} {struct ed25519_private_key}
+@deftpx {Context struct} {struct ed25519_public_key}
+These structs represent a private and public key, respectively, expanded
+into an internal representation.
+@end deftp
+
+@deftypefun void ed25519_sha512_set_private_key (struct ed25519_private_key *@var{priv}, const uint8_t *@var{key})
+Expands a private key (@code{ED25519_KEY_SIZE} octets) into the internal
+representation.
+@end deftypefun
+
+@deftypefun void ed25519_sha512_sign (const struct ed25519_private_key *@var{priv}, size_t @var{length}, const uint8_t *@var{msg}, uint8_t *@var{signature})
+Signs a message using the provided private key.
+@end deftypefun
+
+@deftypefun int ed25519_sha512_set_public_key (struct ed25519_public_key *@var{pub}, const uint8_t *@var{key})
+Expands a public key (@code{ED25519_KEY_SIZE} octets) into the internal
+representation. Returns 1 on success, 0 on failure.
+@end deftypefun
+
+@deftypefun int ed25519_sha512_verify (const struct ed25519_public_key *@var{pub}, size_t @var{length}, const uint8_t *@var{msg}, const uint8_t *@var{signature})
+Verifies a message using the provided public key. Returns 1 if the
+signature is valid, otherwise 0.
 @end deftypefun
 
 @node Randomness, ASCII encoding, Public-key algorithms, Reference
