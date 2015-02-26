@@ -14,7 +14,7 @@
   <h1> Nettle release plans </h1>
   <p> This is an attempt at defining a development target for
     Nettle-3.1, inspired by similar pages for recent GMP releases.
-    [Last updated 2015-01-27]</p>
+    [Last updated 2015-02-26]</p>
   <p class='should'>
     This really ought to be done before release
   </p>
@@ -42,7 +42,15 @@
     "x25519" name?</span>
   </p>
   <p class='done'>
+    Update chacha-poly1305 to
+    the <a href='https://tools.ietf.org/html/draft-irtf-cfrg-chacha20-poly1305-08'>current
+    draft</a>.
+  </p>
+  <p class='done'>
     Add support for Ed25519 signatures.
+  </p>
+  <p class='should'>
+    Interface tweaks. EdDSA, Curve25519, base64.
   </p>
   <p class='wish'>
     Add larger "safe" curves, e.g., M-383, curve41417 and E-521.
@@ -57,7 +65,7 @@
   <p class='done'>
     Make it possible to build nettle and hogweed using mini-gmp.
   </p>
-  <p class='should'>
+  <p class='postpone'>
     Side-channel silent mem_equalp.
   </p>
 
