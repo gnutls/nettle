@@ -669,8 +669,7 @@ bench_curve25519_mul (void *p)
 {
   struct curve25519_ctx *ctx = p;
   char q[CURVE25519_SIZE];
-  if (!curve25519_mul (q, ctx->s, ctx->x))
-    die ("Internal error, curve25519_mul failed.\n");
+  curve25519_mul (q, ctx->s, ctx->x);
 }
 
 static void

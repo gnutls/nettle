@@ -55,15 +55,7 @@ static void
 test_a (const uint8_t *s, const uint8_t *b, const uint8_t *r)
 {
   uint8_t p[CURVE25519_SIZE];
-  if (!curve25519_mul (p, s, b))
-    {
-      printf ("curve25519_mul returned 0:\ns = ");
-      print_hex (CURVE25519_SIZE, s);
-      printf ("\nb = ");
-      print_hex (CURVE25519_SIZE, b);
-      printf ("\n");
-      abort ();
-    }
+  curve25519_mul (p, s, b);
     
   if (!MEMEQ (CURVE25519_SIZE, p, r))
     {

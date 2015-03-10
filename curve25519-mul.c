@@ -41,7 +41,7 @@
 #include "ecc-internal.h"
 
 /* Intended to be compatible with NaCl's crypto_scalarmult. */
-int
+void
 curve25519_mul (uint8_t *q, const uint8_t *n, const uint8_t *p)
 {
   const struct ecc_curve *ecc = &nettle_curve25519;
@@ -139,5 +139,4 @@ curve25519_mul (uint8_t *q, const uint8_t *n, const uint8_t *p)
   mpn_get_base256_le (q, CURVE25519_SIZE, x2, ecc->p.size);
 
   gmp_free_limbs (scratch, itch);
-  return 1;
 }
