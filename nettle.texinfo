@@ -4216,6 +4216,19 @@ for the curve25519 operations which work with the x-coordinate only).
 The curve25519 functions are defined as operations on octet strings,
 which are interpreted as x-coordinates in little-endian byte order.
 
+Of all the possible input strings, only about half correspond to points
+on curve25519, i.e., a value that can be produced by
+@code{curve25519_mul_g}. The other half corresponds to points on a
+related ``twist curve''. The current implementation of
+@code{curve25519_mul} uses a Montgomery ladder for the scalar
+multiplication, as suggested in the curve25519 literature, and produces
+a well defined output for all possible inputs, no matter if points are
+on the proper curve or on its twist. However, at the time of writing, it
+is not yet ruled out that other implementations could be faster, and
+therefore the behaviour for inputs corresponding to points on the twist
+curve must be considered an implementation idiosyncrasy, and may change
+in future versions.
+
 @defvr Constant CURVE25519_SIZE
 The size of the strings representing curve25519 points and scalars, 32.
 @end defvr
@@ -4231,13 +4244,16 @@ This function is intended to be compatible with the function
 @code{crypto_scalar_mult_base} in the NaCl library.
 @end deftypefun
 
-@c FIXME: Change to void return type
-@deftypefun int curve25519_mul (uint8_t *@var{q}, const uint8_t *@var{n}, const uint8_t *@var{p})
+@deftypefun void curve25519_mul (uint8_t *@var{q}, const uint8_t *@var{n}, const uint8_t *@var{p})
 Computes @math{Q = N P}, where @math{P} is an input point and @math{N}
 is an integer. The input arguments @var{n} and @var{p} and the output
 argument @var{q} use a little-endian representation of the scalar and
 the x-coordinates, respectively. They are all of size
 @code{CURVE25519_SIZE}.
+
+The output value is defined only when the input @var{p} is a string
+produced by @code{curve25519_mul_g}. (See discussion above, about the
+twist curve).
 
 This function is intended to be compatible with the function
 @code{crypto_scalar_mult} in the NaCl library.

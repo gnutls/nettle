@@ -1,6 +1,11 @@
 2015-03-10  Niels Möller  <nisse@diamant.hack.org>
 
+	* nettle.texinfo: Update documentation of curve25519_mul. Say that
+	the output is undefined for points belonging to the twist rather
+	than the proper curve.
+
 	* curve25519-mul.c (curve25519_mul): Changed return type to void.
+	* curve25519.h (curve25519_mul): Updated prototype.
 	* examples/hogweed-benchmark.c (bench_curve25519_mul): Drop check
 	of curve25519_mul return value.
 	* testsuite/curve25519-dh-test.c (test_a): Likewise.
