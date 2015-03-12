@@ -4641,9 +4641,9 @@ Returns an entropy estimate, in bits, suitable for calling
 @section ASCII encoding
 
 Encryption will transform your data from text into binary format, and that
-may be a problem if you want, for example, to send the data as if it was
-plain text in an email (or store it along with descriptive text in a
-file). You may then use an encoding from binary to text: each binary byte
+may be a problem if, for example, you want to send the data as if it was
+plain text in an email, or store it along with descriptive text in a
+file. You may then use an encoding from binary to text: each binary byte
 is translated into a number of bytes of plain text.
 
 A base-N encoding of data is one representation of data that only uses N
@@ -4653,18 +4653,19 @@ The base64 encoding will always use alphanumeric (upper and lower case)
 characters and the '+', '/' and '=' symbols to represent the data. Four
 output characters are generated for each three bytes of input. In case
 the length of the input is not a multiple of three, padding characters
-are added at the end.
+are added at the end. There's also a ``URL safe'' variant, which is
+useful for encoding binary data into URLs and filenames. See @cite{RFC
+4648}.
 
 The base16 encoding, also known as ``hexadecimal'', uses the decimal
 digits and the letters from A to F. Two hexadecimal digits are generated
-for each input byte. Base16 may be useful if you want to use the data
-for filenames or URLs, for example.
+for each input byte.
 
 Nettle supports both base64 and base16 encoding and decoding.
 
 Encoding and decoding uses a context struct to maintain its state (with
 the exception of base16 encoding, which doesn't need any). To encode or
-decode the your data, first initialize the context, then call the update
+decode the data, first initialize the context, then call the update
 function as many times as necessary, and complete the operation by
 calling the final function.
 
@@ -4675,8 +4676,11 @@ They are defined in @file{<nettle/base64.h>}.
 @end deftp
 
 @deftypefun {void} base64_encode_init (struct base64_encode_ctx *@var{ctx})
-Initializes a base64 context. This is necessary before starting an encoding
-session.
+@deftypefunx {void} base64url_encode_init (struct base64_encode_ctx *@var{ctx})
+Initializes a base64 context. This is necessary before starting an
+encoding session. @code{base64_encode_init} selects the standard base64
+alphabet, while @code{base64url_encode_init} selects the URL safe
+alphabet.
 @end deftypefun
 
 
@@ -4711,8 +4715,11 @@ generated.
 @end deftp
 
 @deftypefun {void} base64_decode_init (struct base64_decode_ctx *@var{ctx})
-Initializes a base64 decoding context. This is necessary before starting a decoding
-session.
+@deftypefunx {void} base64url_decode_init (struct base64_decode_ctx *@var{ctx})
+Initializes a base64 decoding context. This is necessary before starting
+a decoding session. @code{base64_decode_init} selects the standard
+base64 alphabet, while @code{base64url_decode_init} selects the URL safe
+alphabet.
 @end deftypefun
 
 @deftypefun {int} base64_decode_single (struct base64_decode_ctx *@var{ctx}, uint8_t *@var{dst}, uint8_t @var{src})

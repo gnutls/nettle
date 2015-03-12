@@ -1,3 +1,7 @@
+2015-03-12  Niels Möller  <nisse@diamant.hack.org>
+
+	* nettle.texinfo (ASCII encoding): Document base64url functions.
+
 2015-03-10  Niels Möller  <nisse@diamant.hack.org>
 
 	* nettle.texinfo: Update documentation of curve25519_mul. Say that
