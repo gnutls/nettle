@@ -1,5 +1,10 @@
 2015-03-12  Niels Möller  <nisse@diamant.hack.org>
 
+	* base64.h (struct base64_encode_ctx): Micro optimization of
+	struct layout, saving a few bytes.
+	(struct base64_decode_ctx): Likewise.
+	* base16.h (struct base16_decode_ctx): Likewise.
+
 	* nettle.texinfo (ASCII encoding): Document base64url functions.
 
 2015-03-10  Niels Möller  <nisse@diamant.hack.org>

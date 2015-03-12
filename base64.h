@@ -73,9 +73,9 @@ extern "C" {
 
 struct base64_encode_ctx
 {
-  unsigned word;   /* Leftover bits */
-  unsigned bits;  /* Number of bits, always 0, 2, or 4. */
   const uint8_t *alphabet; /* Alphabet to use for encoding */
+  unsigned short word;     /* Leftover bits */
+  unsigned char bits;      /* Number of bits, always 0, 2, or 4. */
 };
 
 /* Initialize encoding context for base-64 */
@@ -126,12 +126,12 @@ base64_encode_group(uint8_t *dst, uint32_t group);
 
 struct base64_decode_ctx
 {
-  unsigned word;   /* Leftover bits */
-  unsigned bits;   /* Number buffered bits */
+  const signed char *table; /* Decoding table */
+  unsigned short word;      /* Leftover bits */
+  unsigned char bits;       /* Number buffered bits */
 
   /* Number of padding characters encountered */
-  unsigned padding;
-  const signed char *table; /* Decoding table */
+  unsigned char padding;
 };
 
 /* Initialize decoding context for base-64 */

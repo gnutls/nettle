@@ -74,8 +74,8 @@ base16_encode_update(uint8_t *dst,
 
 struct base16_decode_ctx
 {
-  unsigned word;   /* Leftover bits */
-  unsigned bits;   /* Number buffered bits */
+  unsigned char word; /* Leftover bits */
+  unsigned char bits; /* Number buffered bits */
 };
 
 void
