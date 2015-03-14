@@ -1,3 +1,9 @@
+2015-03-14  Niels Möller  <nisse@diamant.hack.org>
+
+	* ccm.c (memeql_sec): New function, more side-channel silent than
+	memcmp.
+	(ccm_decrypt_message): Use it.
+
 2015-03-12  Niels Möller  <nisse@diamant.hack.org>
 
 	* base64.h (struct base64_encode_ctx): Micro optimization of

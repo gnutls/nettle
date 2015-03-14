@@ -246,6 +246,19 @@ ccm_encrypt_message(const void *cipher, nettle_cipher_func *f,
   ccm_digest(&ctx, cipher, f, tlength, tag);
 }
 
+/* FIXME: Should be made public, under some suitable name. */
+static int
+memeql_sec (const void *a, const void *b, size_t n)
+{
+  volatile const unsigned char *ap = (const unsigned char *) a;
+  volatile const unsigned char *bp = (const unsigned char *) b;
+  volatile unsigned char d;
+  size_t i;
+  for (d = i = 0; i < n; i++)
+    d |= (ap[i] ^ bp[i]);
+  return d == 0;
+}
+
 int
 ccm_decrypt_message(const void *cipher, nettle_cipher_func *f,
 		    size_t nlength, const uint8_t *nonce,
@@ -258,5 +271,5 @@ ccm_decrypt_message(const void *cipher, nettle_cipher_func *f,
   ccm_update(&ctx, cipher, f, alength, adata);
   ccm_decrypt(&ctx, cipher, f, mlength, dst, src);
   ccm_digest(&ctx, cipher, f, tlength, tag);
-  return (memcmp(tag, src + mlength, tlength) == 0);
+  return memeql_sec(tag, src + mlength, tlength);
 }
