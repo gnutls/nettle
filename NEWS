@@ -2,9 +2,18 @@ NEWS for the Nettle 3.1 release
 
 	This release adds a couple of new features.
 
-XXX	The shared library names???
+	The library is mostly source-level compatible with nettle-3.0.
+	It is however not binary compatible, due to the introduction
+	of versioned symbols, and extensions to the base64 context
+	structs. The shared library names are libnettle.so.6.0 and
+	libhogweed.so.4.0, with sonames libnettle.so.6 and
+	libhogweed.so.4.
 
 	Bug fixes:
+
+	* Fixed a missing include of <limits.h>, which made the
+	  camellia implementation fail on all 64-bit non-x86
+	  platforms.
 
 	* Eliminate out-of-bounds reads in the C implementation of
 	  memxor (related to valgrind's --partial-loads-ok flag).
@@ -33,13 +42,16 @@ XXX	The shared library names???
 	  mini-gmp are *not* binary compatible with regular builds,
 	  and more likely to leak side-channel information.
 
-	  One intended usecase is for small embedded applications
+	  One intended use-case is for small embedded applications
 	  which need to verify digital signatures.
 
-XXX	* The shared libraries are now built with versioned symbols.
-	  Should reduce problems in case a program links explicitly
-	  both to nettle and/or hogweed, and to gnutls, and the
-	  program and gnutls expects different versions.
+	* The shared libraries are now built with versioned symbols.
+	  Should reduce problems in case a program links explicitly to
+	  nettle and/or hogweed, and to gnutls, and the program and
+	  gnutls expect different versions.
+
+	* Support for "URL-safe" base64 encoding and decoding, as
+          specified in RFC 4648. Contributed by Amos Jeffries.
 
 	Optimizations:
 
