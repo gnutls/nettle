@@ -196,7 +196,7 @@ HEADERS = aes.h arcfour.h arctwo.h asn1.h blowfish.h \
 	  md5.h md5-compat.h \
 	  memxor.h \
 	  nettle-meta.h nettle-types.h \
-	  pbkdf2.h \
+	  pbkdf2.h version.h \
 	  pgp.h pkcs1.h realloc.h ripemd160.h rsa.h \
 	  salsa20.h sexp.h \
 	  serpent.h sha.h sha1.h sha2.h sha3.h twofish.h \

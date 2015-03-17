@@ -16,6 +16,11 @@ LIBNETTLE_MINOR=0
 LIBHOGWEED_MAJOR=4
 LIBHOGWEED_MINOR=0
 
+MAJOR_VERSION=`echo $PACKAGE_VERSION | sed 's/\(.*\)\..*/\1/g'`
+MINOR_VERSION=`echo $PACKAGE_VERSION | sed 's/.*\.\(.*\)/\1/g'`
+AC_SUBST([MAJOR_VERSION])
+AC_SUBST([MINOR_VERSION])
+
 AC_CANONICAL_HOST
 
 # Command line options
@@ -895,7 +900,7 @@ if test x$GCC = xyes ; then
 # inttypes.h.
 fi
 
-AC_CONFIG_FILES([config.make config.m4 Makefile bignum.h])
+AC_CONFIG_FILES([config.make config.m4 Makefile bignum.h version.h])
 AC_CONFIG_FILES([tools/Makefile testsuite/Makefile examples/Makefile])
 AC_CONFIG_FILES([nettle.pc hogweed.pc libnettle.map libhogweed.map])
 
