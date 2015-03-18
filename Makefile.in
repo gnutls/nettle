@@ -179,7 +179,7 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  ecc-ecdsa-verify.c ecdsa-verify.c ecdsa-keygen.c \
 		  curve25519-mul-g.c curve25519-mul.c curve25519-eh-to-x.c \
 		  eddsa-compress.c eddsa-decompress.c eddsa-expand.c \
-		  eddsa-hash.c eddsa-sign.c eddsa-verify.c \
+		  eddsa-hash.c eddsa-pubkey.c eddsa-sign.c eddsa-verify.c \
 		  ed25519-sha512-sign.c ed25519-sha512-verify.c \
 		  $(OPT_HOGWEED_SOURCES)
 

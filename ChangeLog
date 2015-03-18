@@ -1,3 +1,8 @@
+2015-03-18  Niels Möller  <nisse@diamant.hack.org>
+
+	* eddsa-pubkey.c (_eddsa_public_key, _eddsa_public_key_itch): New
+	file, new functions.
+
 2015-03-14  Niels Möller  <nisse@diamant.hack.org>
 
 	* ccm.c (memeql_sec): New function, more side-channel silent than
