@@ -1,5 +1,14 @@
 2015-03-19  Niels Möller  <nisse@diamant.hack.org>
 
+	* Makefile.in (OPT_HOGWEED_SOURCES): Deleted make variable.
+	(nettle_SOURCES, hogweed_SOURCES): Don't include optional sources
+	here.
+	(OPT_SOURCES): New variable.
+	(SOURCES): Include OPT_SOURCES.
+	(DISTFILES): Drop mini-gmp.c here, included via OPT_SOURCES.
+	(nettle_OBJS, hogweed_OBJS): Add the object files corresponding to
+	the optional source files included in the build.
+
 	* ecc-curve.h (nettle_curve25519): Removed public declaration.
 	* ecc-internal.h (_nettle_curve25519): New location, new name.
 	Updated all users.
