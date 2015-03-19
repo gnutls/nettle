@@ -1,4 +1,4 @@
-/* ed25519-sha512-sign.c
+/* ed25519-sha512-pubkey.c
 
    Copyright (C) 2014, 2015 Niels Möller
 
@@ -39,29 +39,21 @@
 #include "sha2.h"
 
 void
-ed25519_sha512_sign (const uint8_t *pub,
-		     const uint8_t *priv,
-		     size_t length, const uint8_t *msg,
-		     uint8_t *signature)
+ed25519_sha512_public_key (uint8_t *pub, const uint8_t *priv)
 {
   const struct ecc_curve *ecc = &nettle_curve25519;
-  mp_size_t itch = ecc->q.size + _eddsa_sign_itch (&nettle_curve25519);
-  mp_limb_t *scratch = gmp_alloc_limbs (itch);
-#define k2 scratch
-#define scratch_out (scratch + ecc->q.size)
   struct sha512_ctx ctx;
-  uint8_t digest[SHA512_DIGEST_SIZE];
-#define k1 (digest + ED25519_KEY_SIZE)
+  uint8_t digest[ED25519_KEY_SIZE];
+  mp_size_t itch = ecc->q.size + _eddsa_public_key_itch (ecc);
+  mp_limb_t *scratch = gmp_alloc_limbs (itch);
 
-  _eddsa_expand_key (ecc, &nettle_sha512, &ctx, priv, digest, k2);
+#define k scratch
+#define scratch_out (scratch + ecc->q.size)
 
-  sha512_update (&ctx, ED25519_KEY_SIZE, k1);
-  _eddsa_sign (&nettle_curve25519, &nettle_sha512, pub,
-	       &ctx,
-	       k2, length, msg, signature, scratch_out);
+  _eddsa_expand_key (ecc, &nettle_sha512, &ctx, priv, digest, k);
+  _eddsa_public_key (ecc, k, pub, scratch_out);
 
   gmp_free_limbs (scratch, itch);
-#undef k1
-#undef k2
+#undef k
 #undef scratch_out
 }

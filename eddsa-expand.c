@@ -42,38 +42,23 @@
 #include "ecc-internal.h"
 #include "nettle-meta.h"
 
-mp_size_t
-_eddsa_expand_key_itch (const struct ecc_curve *ecc)
-{
-  assert (_eddsa_compress_itch (ecc) <= ecc->mul_g_itch);
-  return 3*ecc->p.size + ecc->mul_g_itch;
-}
-
-/* Expands a private key, generating the key K1 for nonce generation,
-   the secret scalar K2, and, if PUB is non-NULL, the corresponding
-   public key (in compressed form). */
+/* Expands a private key, generating the secret scalar K2 and leaving
+   the key K1 for nonce generation, at the end of the digest. */
 void
 _eddsa_expand_key (const struct ecc_curve *ecc,
 		   const struct nettle_hash *H,
 		   void *ctx,
 		   const uint8_t *key,
-		   uint8_t *pub,
-		   uint8_t *k1,
-		   mp_limb_t *k2,
-		   mp_limb_t *scratch)
+		   uint8_t *digest,
+		   mp_limb_t *k2)
 {
   size_t nbytes = 1 + ecc->p.bit_size / 8;
-  uint8_t *digest = (uint8_t *) scratch;
-
-#define P scratch
-#define scratch_out (scratch + 3*ecc->p.size)
 
   assert (H->digest_size >= 2*nbytes);
 
   H->init (ctx);
   H->update (ctx, nbytes, key);
   H->digest (ctx, 2*nbytes, digest);
-  memcpy (k1, digest + nbytes, nbytes);
 
   mpn_set_base256_le (k2, ecc->p.size, digest, nbytes);
   /* Clear low 3 bits */
@@ -84,12 +69,4 @@ _eddsa_expand_key (const struct ecc_curve *ecc,
   /* Clear any higher bits. */
   k2[ecc->p.size - 1] &= ~(mp_limb_t) 0
     >> (GMP_NUMB_BITS * ecc->p.size - ecc->p.bit_size);
-
-  if (pub)
-    {
-      ecc->mul_g (ecc, P, k2, scratch_out);
-      _eddsa_compress (ecc, pub, P, scratch_out);
-    }
-#undef P
-#undef scratch_out
 }

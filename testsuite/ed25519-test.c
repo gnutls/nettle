@@ -63,13 +63,12 @@ test_one (const char *line)
   const char *mp;
   uint8_t sk[ED25519_KEY_SIZE];
   uint8_t pk[ED25519_KEY_SIZE];
+  uint8_t t[ED25519_KEY_SIZE];
   uint8_t s[ED25519_SIGNATURE_SIZE];
   uint8_t *msg;
   size_t msg_size;
   uint8_t s2[ED25519_SIGNATURE_SIZE];
 
-  struct ed25519_public_key pub;
-  struct ed25519_private_key priv;
   decode_hex (ED25519_KEY_SIZE, sk, line);
 
   p = strchr (line, ':');
@@ -91,28 +90,27 @@ test_one (const char *line)
 
   decode_hex (msg_size, msg, mp);
 
-  ed25519_sha512_set_private_key (&priv, sk);
-  ASSERT (MEMEQ(ED25519_KEY_SIZE, priv.pub, pk));
+  ed25519_sha512_public_key (t, sk);
+  ASSERT (MEMEQ(ED25519_KEY_SIZE, t, pk));
 
-  ed25519_sha512_sign (&priv, msg_size, msg, s2);
+  ed25519_sha512_sign (pk, sk, msg_size, msg, s2);
   ASSERT (MEMEQ (ED25519_SIGNATURE_SIZE, s, s2));
-  ASSERT (ed25519_sha512_set_public_key (&pub, pk));
 
-  ASSERT (ed25519_sha512_verify (&pub, msg_size, msg, s));
+  ASSERT (ed25519_sha512_verify (pk, msg_size, msg, s));
 
   s2[ED25519_SIGNATURE_SIZE/3] ^= 0x40;
-  ASSERT (!ed25519_sha512_verify (&pub, msg_size, msg, s2));
+  ASSERT (!ed25519_sha512_verify (pk, msg_size, msg, s2));
 
   memcpy (s2, s, ED25519_SIGNATURE_SIZE);
   s2[2*ED25519_SIGNATURE_SIZE/3] ^= 0x40;
-  ASSERT (!ed25519_sha512_verify (&pub, msg_size, msg, s2));
+  ASSERT (!ed25519_sha512_verify (pk, msg_size, msg, s2));
 
-  ASSERT (!ed25519_sha512_verify (&pub, msg_size + 1, msg, s));
+  ASSERT (!ed25519_sha512_verify (pk, msg_size + 1, msg, s));
 
   if (msg_size > 0)
     {
       msg[msg_size-1] ^= 0x20;
-      ASSERT (!ed25519_sha512_verify (&pub, msg_size, msg, s));
+      ASSERT (!ed25519_sha512_verify (pk, msg_size, msg, s));
     }
   free (msg);
 }

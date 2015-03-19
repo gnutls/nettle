@@ -1,7 +1,27 @@
 2015-03-18  Niels Möller  <nisse@diamant.hack.org>
 
+	EdDSA interface change, use plain strings to represent keys.
+	* eddsa.h (_ED25519_LIMB_SIZE): Deleted constant.
+	(struct ed25519_private_key, ed25519_public_key): Deleted.
+	* eddsa-expand.c (_eddsa_expand_key): Don't compute the public
+	key.
+	(_eddsa_expand_key_itch): Deleted function.
 	* eddsa-pubkey.c (_eddsa_public_key, _eddsa_public_key_itch): New
 	file, new functions.
+	* ed25519-sha512-pubkey.c (ed25519_sha512_public_key): New file
+	and function.
+	* ed25519-sha512-verify.c (ed25519_sha512_set_public_key): Deleted
+	function.
+	(ed25519_sha512_verify): Use a string to represent the public key.
+	* ed25519-sha512-sign.c (ed25519_sha512_set_private_key): Deleted
+	function.
+	(ed25519_sha512_sign): Use strings for the input key pair.
+	* Makefile.in (hogweed_SOURCES): Added eddsa-pubkey.c and
+	ed25519-sha512-pubkey.c.
+	* testsuite/eddsa-sign-test.c (test_eddsa_sign): Adapt to
+	_eddsa_expand_key changes, and use _eddsa_public_key.
+	* testsuite/ed25519-test.c (test_one): Test
+	ed25519_sha512_public_key, and adapt to new ed25519 interface.
 
 2015-03-14  Niels Möller  <nisse@diamant.hack.org>
 

@@ -46,21 +46,21 @@ test_eddsa_sign (const struct ecc_curve *ecc,
   uint8_t *signature = xalloc (2*nbytes);
   void *ctx = xalloc (H->context_size);
   uint8_t *public_out = xalloc (nbytes);
-  uint8_t *k1 = xalloc (nbytes);
+  uint8_t *digest = xalloc (2*nbytes);
+  const uint8_t *k1 = digest + nbytes;
   mp_limb_t *k2 = xalloc_limbs (ecc->p.size);
 
   ASSERT (public->length == nbytes);
   ASSERT (private->length == nbytes);
   ASSERT (ref->length == 2*nbytes);
-  ASSERT (_eddsa_expand_key_itch (ecc) <= _eddsa_sign_itch (ecc));
 
   _eddsa_expand_key (ecc, H, ctx, private->data,
-		     public_out,
-		     k1, k2, scratch);
+		     digest, k2);
+  _eddsa_public_key (ecc, k2, public_out, scratch);
 
   if (!MEMEQ (nbytes, public_out, public->data))
     {
-      fprintf (stderr, "Bad public key from _eddsa_expand_key.\n");
+      fprintf (stderr, "Bad public key from _eddsa_expand_key + _eddsa_public_key.\n");
       fprintf (stderr, "got:");
       print_hex (nbytes, public_out);
       fprintf (stderr, "\nref:");
@@ -95,7 +95,7 @@ test_eddsa_sign (const struct ecc_curve *ecc,
   free (scratch);
   free (signature);
   free (ctx);
-  free (k1);
+  free (digest);
   free (k2);
   free (public_out);
 }
