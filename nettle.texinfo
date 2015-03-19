@@ -4260,6 +4260,7 @@ This function is intended to be compatible with the function
 @end deftypefun
 
 @subsubsection EdDSA
+@cindex eddsa
 
 EdDSA is a signature scheme proposed by D.~J.~Bernstein et al. in 2011.
 It is defined using a ``Twisted Edwards curve'', of the form @math{-x^2
@@ -4278,9 +4279,9 @@ forge signatures. EdDSA also avoids the use of a randomness source by
 generating the needed signature nonce from a hash of the private key and
 the message, which means that the message is actually hashed twice when
 creating a signature. If signing huge messages, it is possible to hash
-the message first and pass the short message digest as input to the
-signa and verify functions, however, the hash collision resilience is
-then lost.
+the message first and pass the short message digest as input to the sign
+and verify functions, however, the resilience to hash collision is then
+lost.
 
 @defvr Constant ED25519_KEY_SIZE
 The size of a private or public Ed25519 key, 32 octets.
@@ -4290,27 +4291,16 @@ The size of a private or public Ed25519 key, 32 octets.
 The size of an Ed25519 signature, 64 octets.
 @end defvr
 
-@deftp {Context struct} {struct ed25519_private_key}
-@deftpx {Context struct} {struct ed25519_public_key}
-These structs represent a private and public key, respectively, expanded
-into an internal representation.
-@end deftp
-
-@deftypefun void ed25519_sha512_set_private_key (struct ed25519_private_key *@var{priv}, const uint8_t *@var{key})
-Expands a private key (@code{ED25519_KEY_SIZE} octets) into the internal
-representation.
+@deftypefun void ed25519_sha512_public_key (uint8_t *@var{pub}, const uint8_t *@var{priv})
+Computes the public key corresponding to the given private key. Both
+input and output are of size @code{ED25519_KEY_SIZE}.
 @end deftypefun
 
-@deftypefun void ed25519_sha512_sign (const struct ed25519_private_key *@var{priv}, size_t @var{length}, const uint8_t *@var{msg}, uint8_t *@var{signature})
-Signs a message using the provided private key.
+@deftypefun void ed25519_sha512_sign (const uint8_t *@var{pub}, const uint8_t *@var{priv}, size_t @var{length}, const uint8_t *@var{msg}, uint8_t *@var{signature})
+Signs a message using the provided key pair.
 @end deftypefun
 
-@deftypefun int ed25519_sha512_set_public_key (struct ed25519_public_key *@var{pub}, const uint8_t *@var{key})
-Expands a public key (@code{ED25519_KEY_SIZE} octets) into the internal
-representation. Returns 1 on success, 0 on failure.
-@end deftypefun
-
-@deftypefun int ed25519_sha512_verify (const struct ed25519_public_key *@var{pub}, size_t @var{length}, const uint8_t *@var{msg}, const uint8_t *@var{signature})
+@deftypefun int ed25519_sha512_verify (const uint8_t *@var{pub}, size_t @var{length}, const uint8_t *@var{msg}, const uint8_t *@var{signature})
 Verifies a message using the provided public key. Returns 1 if the
 signature is valid, otherwise 0.
 @end deftypefun

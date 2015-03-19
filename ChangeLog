@@ -1,5 +1,7 @@
 2015-03-19  Niels Möller  <nisse@diamant.hack.org>
 
+	* nettle.texinfo: Updated EdDSA documentation.
+
 	* Makefile.in (DISTFILES): Added version.h.in, libnettle.map.in,
 	and libhogweed.map.in (latter two patch by Nikos).
 	(version.h): New make target.
