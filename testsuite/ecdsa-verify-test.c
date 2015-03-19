@@ -146,7 +146,7 @@ test_main (void)
 	      "FA509E70 AAC851AE 01AAC68D 62F86647"
 	      "2660"); /* s */
 
-  test_ecdsa (&nettle_curve25519,
+  test_ecdsa (&_nettle_curve25519,
 	      /* Public key corresponding to the key in ecdsa-sign-test */
 	      "59f8f317fd5f4e82 c02f8d4dec665fe1"
 	      "230f83b8572638e1 b2ac34a30028e24d", /* x */

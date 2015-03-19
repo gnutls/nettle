@@ -290,7 +290,7 @@ ecc_25519_sqrt(const struct ecc_modulo *p, mp_limb_t *rp,
 #undef t0
 }
 
-const struct ecc_curve nettle_curve25519 =
+const struct ecc_curve _nettle_curve25519 =
 {
   {
     255,

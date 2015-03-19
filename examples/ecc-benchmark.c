@@ -343,7 +343,7 @@ bench_curve (const struct ecc_curve *ecc)
 const struct ecc_curve * const curves[] = {
   &nettle_secp_192r1,
   &nettle_secp_224r1,
-  &nettle_curve25519,
+  &_nettle_curve25519,
   &nettle_secp_256r1,
   &nettle_secp_384r1,
   &nettle_secp_521r1,

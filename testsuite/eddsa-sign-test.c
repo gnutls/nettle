@@ -104,7 +104,7 @@ void test_main (void)
 {
   /* Based on a few of the test vectors at
      http://ed25519.cr.yp.to/python/sign.input */
-  test_eddsa_sign (&nettle_curve25519, &nettle_sha512,
+  test_eddsa_sign (&_nettle_curve25519, &nettle_sha512,
 		   SHEX("d75a980182b10ab7 d54bfed3c964073a"
 			"0ee172f3daa62325 af021a68f707511a"),
 		   SHEX("9d61b19deffd5a60 ba844af492ec2cc4"
@@ -114,7 +114,7 @@ void test_main (void)
 			"84877f1eb8e5d974 d873e06522490155"
 			"5fb8821590a33bac c61e39701cf9b46b"
 			"d25bf5f0595bbe24 655141438e7a100b"));
-  test_eddsa_sign (&nettle_curve25519, &nettle_sha512,
+  test_eddsa_sign (&_nettle_curve25519, &nettle_sha512,
 		   SHEX("3d4017c3e843895a 92b70aa74d1b7ebc"
 			"9c982ccf2ec4968c c0cd55f12af4660c"),
 		   SHEX("4ccd089b28ff96da 9db6c346ec114e0f"
@@ -124,7 +124,7 @@ void test_main (void)
 			"a2b27b5416503f8f b3762223ebdb69da"
 			"085ac1e43e15996e 458f3613d0f11d8c"
 			"387b2eaeb4302aee b00d291612bb0c00"));
-  test_eddsa_sign (&nettle_curve25519, &nettle_sha512,
+  test_eddsa_sign (&_nettle_curve25519, &nettle_sha512,
 		   SHEX("1ed506485b09a645 0be7c9337d9fe87e"
 			"f99c96f8bd11cd63 1ca160d0fd73067e"),
 		   SHEX("f215d34fe2d757cf f9cf5c05430994de"

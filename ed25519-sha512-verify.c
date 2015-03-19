@@ -45,14 +45,14 @@ ed25519_sha512_verify (const uint8_t *pub,
 		       size_t length, const uint8_t *msg,
 		       const uint8_t *signature)
 {
-  const struct ecc_curve *ecc = &nettle_curve25519;
-  mp_size_t itch = 3*ecc->p.size + _eddsa_verify_itch (&nettle_curve25519);
+  const struct ecc_curve *ecc = &_nettle_curve25519;
+  mp_size_t itch = 3*ecc->p.size + _eddsa_verify_itch (ecc);
   mp_limb_t *scratch = gmp_alloc_limbs (itch);
   struct sha512_ctx ctx;
   int res;
 #define A scratch
 #define scratch_out (scratch + 3*ecc->p.size)
-  res = (_eddsa_decompress (&nettle_curve25519,
+  res = (_eddsa_decompress (ecc,
 			    A, pub, scratch_out)
 	 && _eddsa_verify (ecc, &nettle_sha512,
 			   pub, A, &ctx,

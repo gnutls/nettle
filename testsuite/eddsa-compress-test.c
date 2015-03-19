@@ -37,7 +37,7 @@
 
 void test_main (void)
 {
-  const struct ecc_curve *ecc = &nettle_curve25519;
+  const struct ecc_curve *ecc = &_nettle_curve25519;
   gmp_randstate_t rands;
   mp_size_t size, itch;
   mpz_t zp, t;

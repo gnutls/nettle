@@ -44,7 +44,7 @@
 void
 curve25519_mul_g (uint8_t *r, const uint8_t *n)
 {
-  const struct ecc_curve *ecc = &nettle_curve25519;
+  const struct ecc_curve *ecc = &_nettle_curve25519;
   uint8_t t[CURVE25519_SIZE];
   mp_limb_t *scratch;
   mp_size_t itch;

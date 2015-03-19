@@ -73,6 +73,12 @@
 #define sec_modinv _nettle_sec_modinv
 #define curve25519_eh_to_x _nettle_curve25519_eh_to_x
 
+/* Keep this structure internal for now. It's misnamed (since it's
+   really implementing the equivalent twisted Edwards curve, with
+   different coordinates). And we're not quite ready to provide
+   general ecc operations over an arbitrary type of curve. */
+extern const struct ecc_curve _nettle_curve25519;
+
 #define ECC_MAX_SIZE ((521 + GMP_NUMB_BITS - 1) / GMP_NUMB_BITS)
 
 /* Window size for ecc_mul_a. Using 4 bits seems like a good choice,

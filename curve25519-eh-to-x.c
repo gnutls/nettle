@@ -52,7 +52,7 @@ curve25519_eh_to_x (mp_limb_t *xp, const mp_limb_t *p,
 #define t1 (scratch + ecc->p.size)
 #define t2 (scratch + 2*ecc->p.size)
 
-  const struct ecc_curve *ecc = &nettle_curve25519;  
+  const struct ecc_curve *ecc = &_nettle_curve25519;
   mp_limb_t cy;
 
   /* If u = U/W and v = V/W are the coordiantes of the point on the

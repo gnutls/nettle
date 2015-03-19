@@ -1,5 +1,9 @@
 2015-03-19  Niels Möller  <nisse@diamant.hack.org>
 
+	* ecc-curve.h (nettle_curve25519): Removed public declaration.
+	* ecc-internal.h (_nettle_curve25519): New location, new name.
+	Updated all users.
+
 	* nettle.texinfo: Updated EdDSA documentation.
 
 	* Makefile.in (DISTFILES): Added version.h.in, libnettle.map.in,

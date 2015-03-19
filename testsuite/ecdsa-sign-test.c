@@ -159,7 +159,7 @@ test_main (void)
 
   /* Non-standard ecdsa using curve25519. Not interop-tested with
      anything else. */
-  test_ecdsa (&nettle_curve25519,
+  test_ecdsa (&_nettle_curve25519,
 	      "1db511101b8fd16f e0212c5679ef53f3"
 	      "323bde77f9efa442 617314d576d1dbcb", /* z */
 	      "aa2fa8facfdc3a99 ec466d41a2c9211c"

@@ -44,8 +44,8 @@ ed25519_sha512_sign (const uint8_t *pub,
 		     size_t length, const uint8_t *msg,
 		     uint8_t *signature)
 {
-  const struct ecc_curve *ecc = &nettle_curve25519;
-  mp_size_t itch = ecc->q.size + _eddsa_sign_itch (&nettle_curve25519);
+  const struct ecc_curve *ecc = &_nettle_curve25519;
+  mp_size_t itch = ecc->q.size + _eddsa_sign_itch (ecc);
   mp_limb_t *scratch = gmp_alloc_limbs (itch);
 #define k2 scratch
 #define scratch_out (scratch + ecc->q.size)
@@ -56,7 +56,7 @@ ed25519_sha512_sign (const uint8_t *pub,
   _eddsa_expand_key (ecc, &nettle_sha512, &ctx, priv, digest, k2);
 
   sha512_update (&ctx, ED25519_KEY_SIZE, k1);
-  _eddsa_sign (&nettle_curve25519, &nettle_sha512, pub,
+  _eddsa_sign (ecc, &nettle_sha512, pub,
 	       &ctx,
 	       k2, length, msg, signature, scratch_out);
 
