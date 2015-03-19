@@ -381,7 +381,7 @@
 	* memxor3.c: New file, split off from memxor.c.
 	* memxor-internal.h: New file, declarations shared by memxor.c and
 	memxor3.c.
-	* memxor.c: memxor3 fucntions moved out from this file.
+	* memxor.c: memxor3 functions moved out from this file.
 	* Makefile.in (nettle_SOURCES): Added memxor3.c.
 	(DISTFILES): Added memxor-internal.h.
 
@@ -733,7 +733,7 @@
 	function pointers.
 
 	* testsuite/curve25519-dup-test.c: Deleted file. In the way for
-	conversion to Edwards coordiante convention, and in the end
+	conversion to Edwards coordinate convention, and in the end
 	the tests will be done by ecc-dup-test.c.
 	* testsuite/curve25519-add-test.c: Similarly deleted.
 	* testsuite/Makefile.in (TS_HOGWEED_SOURCES): Removed
