@@ -215,7 +215,7 @@ SOURCES = $(nettle_SOURCES) $(hogweed_SOURCES) \
 DISTFILES = $(SOURCES) $(HEADERS) getopt.h getopt_int.h \
 	.bootstrap run-tests \
 	aclocal.m4 configure.ac \
-	configure stamp-h.in bignum.h.in \
+	configure stamp-h.in bignum.h.in version.h.in \
 	libnettle.map.in libhogweed.map.in \
 	config.guess config.sub install-sh texinfo.tex \
 	config.h.in config.m4.in config.make.in	Makefile.in \
@@ -435,6 +435,9 @@ nettle.pc: nettle.pc.in config.status
 hogweed.pc: hogweed.pc.in config.status
 	./config.status $@
 
+version.h: version.h.in config.status
+	./config.status $@
+
 # Installation
 install-doc: @IF_DOCUMENTATION@ install-info
 install-here: install-doc install-headers install-static install-pkgconfig \
@@ -626,8 +629,8 @@ clean-here:
 
 distclean-here: clean-here
 	-rm -f config.h stamp-h config.log config.status machine.m4 \
-	config.make config.m4 Makefile nettle-stdint.h bignum.h \
-	nettle.pc hogweed.pc \
+	config.make config.m4 Makefile nettle-stdint.h bignum.h version.h \
+	nettle.pc hogweed.pc libnettle.map libhogweed.map \
 	*.asm *.d
 
 maintainer-clean-here:

@@ -1,5 +1,11 @@
 2015-03-19  Niels Möller  <nisse@diamant.hack.org>
 
+	* Makefile.in (DISTFILES): Added version.h.in, libnettle.map.in,
+	and libhogweed.map.in (latter two patch by Nikos).
+	(version.h): New make target.
+	(distclean-here): Added version.h, libnettle.map, and
+	libhogweed.map.
+
 	From Nikos Mavrogiannopoulos.
 	* configure.ac (MAJOR_VERSION, MINOR_VERSION): New substituted
 	variables.
