@@ -1,5 +1,8 @@
 2015-03-25  Niels Möller  <nisse@diamant.hack.org>
 
+	* Makefile.in (distdir): Include assembly files from the new
+	x86_64/aesni, x86_64/fat, and arm/fat directories.
+
 	* ed25519-sha512-pubkey.c: Fix stack overwrite. The digest array
 	must have room for a complete sha512 digest.
 
