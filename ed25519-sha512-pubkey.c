@@ -43,7 +43,7 @@ ed25519_sha512_public_key (uint8_t *pub, const uint8_t *priv)
 {
   const struct ecc_curve *ecc = &_nettle_curve25519;
   struct sha512_ctx ctx;
-  uint8_t digest[ED25519_KEY_SIZE];
+  uint8_t digest[SHA512_DIGEST_SIZE];
   mp_size_t itch = ecc->q.size + _eddsa_public_key_itch (ecc);
   mp_limb_t *scratch = gmp_alloc_limbs (itch);
 

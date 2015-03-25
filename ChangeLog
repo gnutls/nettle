@@ -1,3 +1,8 @@
+2015-03-25  Niels Möller  <nisse@diamant.hack.org>
+
+	* ed25519-sha512-pubkey.c: Fix stack overwrite. The digest array
+	must have room for a complete sha512 digest.
+
 2015-03-19  Niels Möller  <nisse@diamant.hack.org>
 
 	* Makefile.in (OPT_HOGWEED_SOURCES): Deleted make variable.
