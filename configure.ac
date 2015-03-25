@@ -16,8 +16,9 @@ LIBNETTLE_MINOR=0
 LIBHOGWEED_MAJOR=4
 LIBHOGWEED_MINOR=0
 
-MAJOR_VERSION=`echo $PACKAGE_VERSION | sed 's/\(.*\)\..*/\1/g'`
-MINOR_VERSION=`echo $PACKAGE_VERSION | sed 's/.*\.\(.*\)/\1/g'`
+dnl Note double square brackets, for extra m4 quoting.
+MAJOR_VERSION=`echo $PACKAGE_VERSION | sed 's/^\([[^.]]*\)\..*/\1/'`
+MINOR_VERSION=`echo $PACKAGE_VERSION | sed 's/^[[^.]]*\.\([[0-9]]*\).*/\1/'`
 AC_SUBST([MAJOR_VERSION])
 AC_SUBST([MINOR_VERSION])
 

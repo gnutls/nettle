@@ -1,5 +1,8 @@
 2015-03-25  Niels Möller  <nisse@diamant.hack.org>
 
+	* configure.ac (MAJOR_VERSION, MINOR_VERSION): Tweak sed
+	expressions, to tolerate version suffixes.
+
 	* Makefile.in (distdir): Include assembly files from the new
 	x86_64/aesni, x86_64/fat, and arm/fat directories.
 
