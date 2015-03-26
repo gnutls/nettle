@@ -21,8 +21,7 @@ SUBDIRS = tools testsuite examples
 
 include config.make
 
-# $(srcdir) is needed for includes in bignum.h.
-PRE_CPPFLAGS = -I. -I$(srcdir)
+PRE_CPPFLAGS = -I.
 EXTRA_CFLAGS = $(CCPIC)
 
 # FIXME: Add configuration of LIBEXT?
@@ -184,7 +183,7 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 OPT_SOURCES = fat-x86_64.c fat-arm.c mini-gmp.c
 
 HEADERS = aes.h arcfour.h arctwo.h asn1.h blowfish.h \
-	  base16.h base64.h buffer.h camellia.h cast128.h \
+	  base16.h base64.h bignum.h buffer.h camellia.h cast128.h \
 	  cbc.h ccm.h chacha.h chacha-poly1305.h ctr.h \
 	  curve25519.h des.h des-compat.h dsa.h dsa-compat.h eax.h \
 	  ecc-curve.h ecc.h ecdsa.h eddsa.h \
@@ -195,13 +194,13 @@ HEADERS = aes.h arcfour.h arctwo.h asn1.h blowfish.h \
 	  md5.h md5-compat.h \
 	  memxor.h \
 	  nettle-meta.h nettle-types.h \
-	  pbkdf2.h version.h \
+	  pbkdf2.h \
 	  pgp.h pkcs1.h realloc.h ripemd160.h rsa.h \
 	  salsa20.h sexp.h \
 	  serpent.h sha.h sha1.h sha2.h sha3.h twofish.h \
 	  umac.h yarrow.h poly1305.h
 
-INSTALL_HEADERS = $(HEADERS) nettle-stdint.h bignum.h @IF_MINI_GMP@ mini-gmp.h
+INSTALL_HEADERS = $(HEADERS) nettle-stdint.h version.h @IF_MINI_GMP@ mini-gmp.h
 
 SOURCES = $(nettle_SOURCES) $(hogweed_SOURCES) \
 	  $(getopt_SOURCES) $(internal_SOURCES) \
@@ -213,7 +212,7 @@ SOURCES = $(nettle_SOURCES) $(hogweed_SOURCES) \
 DISTFILES = $(SOURCES) $(HEADERS) getopt.h getopt_int.h \
 	.bootstrap run-tests \
 	aclocal.m4 configure.ac \
-	configure stamp-h.in bignum.h.in version.h.in \
+	configure stamp-h.in version.h.in \
 	libnettle.map.in libhogweed.map.in \
 	config.guess config.sub install-sh texinfo.tex \
 	config.h.in config.m4.in config.make.in	Makefile.in \
@@ -416,9 +415,6 @@ config.h: stamp-h
 stamp-h: config.h.in config.status
 	./config.status config.h
 	echo timestamp > stamp-h
-
-bignum.h: bignum.h.in config.status
-	./config.status $@
 
 Makefile: Makefile.in config.status
 	./config.status $@
@@ -631,7 +627,7 @@ clean-here:
 
 distclean-here: clean-here
 	-rm -f config.h stamp-h config.log config.status machine.m4 \
-	config.make config.m4 Makefile nettle-stdint.h bignum.h version.h \
+	config.make config.m4 Makefile nettle-stdint.h version.h \
 	nettle.pc hogweed.pc libnettle.map libhogweed.map \
 	*.asm *.d
 

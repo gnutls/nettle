@@ -1,5 +1,18 @@
 2015-03-26  Niels Möller  <nisse@diamant.hack.org>
 
+	* Makefile.in (PRE_CPPFLAGS): Drop -I$(srcdir), no longer needed.
+	(HEADERS): Added bignum.h. Removed version.h.
+	(INSTALL_HEADERS): Added version.h.
+	(DISTFILES): Removed bignum.h.in.
+	(bignum.h): Deleted make target.
+	(distclean-here): Don't delete bignum.h.
+
+	* configure.ac: No longer generate bignum.h.
+
+	* bignum.h: Renamed. Removed substitution of NETTLE_USE_MINI_GMP,
+	and include version.h instead.
+	* bignum.h.in: ... old name.
+
 	* version.h.in (NETTLE_USE_MINI_GMP): Substitute here.
 
 2015-03-25  Niels Möller  <nisse@diamant.hack.org>

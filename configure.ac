@@ -901,7 +901,7 @@ if test x$GCC = xyes ; then
 # inttypes.h.
 fi
 
-AC_CONFIG_FILES([config.make config.m4 Makefile bignum.h version.h])
+AC_CONFIG_FILES([config.make config.m4 Makefile version.h])
 AC_CONFIG_FILES([tools/Makefile testsuite/Makefile examples/Makefile])
 AC_CONFIG_FILES([nettle.pc hogweed.pc libnettle.map libhogweed.map])
 

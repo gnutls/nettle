@@ -38,7 +38,8 @@
 
 #include "nettle-types.h"
 
-#define NETTLE_USE_MINI_GMP @NETTLE_USE_MINI_GMP@
+/* For NETTLE_USE_MINI_GMP */
+#include "version.h"
 
 #if NETTLE_USE_MINI_GMP
 # include "mini-gmp.h"

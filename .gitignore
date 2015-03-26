@@ -20,7 +20,6 @@ core
 /.lib
 /*.asm
 /Makefile
-/bignum.h
 /config.cache
 /config.h
 /config.h.in
