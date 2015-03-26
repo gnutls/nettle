@@ -1,3 +1,7 @@
+2015-03-26  Niels Möller  <nisse@diamant.hack.org>
+
+	* version.h.in (NETTLE_USE_MINI_GMP): Substitute here.
+
 2015-03-25  Niels Möller  <nisse@diamant.hack.org>
 
 	* configure.ac (MAJOR_VERSION, MINOR_VERSION): Tweak sed

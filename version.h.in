@@ -42,6 +42,8 @@ extern "C" {
 #define NETTLE_VERSION_MAJOR @MAJOR_VERSION@
 #define NETTLE_VERSION_MINOR @MINOR_VERSION@
 
+#define NETTLE_USE_MINI_GMP @NETTLE_USE_MINI_GMP@
+
 #ifdef __cplusplus
 }
 #endif
