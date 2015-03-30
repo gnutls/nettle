@@ -28,7 +28,7 @@ fi
 
 if [ -s ../libhogweed.a ] ; then
     PATTERN='\.?_?_?nettle_|get_pc_thunk'
-    if grep '^#define.*NETTLE_USE_MINI_GMP.*1$' ../bignum.h >/dev/null ; then
+    if grep '^#define.*NETTLE_USE_MINI_GMP.*1$' ../version.h >/dev/null ; then
 	PATTERN="$PATTERN|mp_|mpz_|mpn_"
     fi
     ( $NM -g ../libhogweed.a || $NM ../libhogweed.a ) \
