@@ -1,5 +1,9 @@
 2015-03-30  Niels Möller  <nisse@diamant.hack.org>
 
+	* version.h.in (GMP_NUMB_BITS) [NETTLE_USE_MINI_GMP]: Move
+	definition here (uses configure substitution).
+	* bignum.h (GMP_NUMB_BITS): ...old location.
+
 	* nettle.texinfo: Updated version number.
 	(Installation): Document some more configure options.
 
