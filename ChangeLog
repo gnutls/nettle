@@ -1,5 +1,8 @@
 2015-03-30  Niels Möller  <nisse@diamant.hack.org>
 
+	* nettle.texinfo: Updated version number.
+	(Installation): Document some more configure options.
+
 	* testsuite/symbols-test: Look for NETTLE_USE_MINI_GMP in
 	version.h, not bignum.h.
 

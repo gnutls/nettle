@@ -7,14 +7,14 @@
 @syncodeindex fn cp
 @c %**end of header
 
-@set UPDATED-FOR 3.0
+@set UPDATED-FOR 3.1
 @set AUTHOR Niels Möller
 
 @copying
 This manual is for the Nettle library (version @value{UPDATED-FOR}), a
 low-level cryptographic library.
 
-Originally written 2001 by @value{AUTHOR}, updated 2014.
+Originally written 2001 by @value{AUTHOR}, updated 2015.
 
 @quotation
 This manual is placed in the public domain. You may freely copy it, in
@@ -4902,17 +4902,35 @@ make install
 @end example
 
 @noindent
-to install in under the default prefix, @file{/usr/local}.
+to install it under the default prefix, @file{/usr/local}. Using GNU
+make is strongly recommended. By default, both static and shared
+libraries are built and installed.
 
-To get a list of configure options, use @code{./configure --help}.
+To get a list of configure options, use @code{./configure --help}. Some
+of the more interesting are:
 
-By default, both static and shared libraries are built and installed. To
-omit building the shared libraries, use the @option{ --disable-shared}
-option to @command{./configure}.
+@table @option
+@item --enable-fat
+Include multiple versions of certain functions in the library, and
+select the ones to use at run-time, depending on available processor
+features. Supported for ARM and x86_64.
 
-Using GNU make is recommended. For other make programs, in particular
-BSD make, you may have to use the @option{--disable-dependency-tracking}
-option to @command{./configure}.
+@item --enable-mini-gmp
+Use the smaller and slower ``mini-gmp'' implementation of the bignum
+functions needed for public-key cryptography, instead of the real GNU
+GMP library. This option is intended primarily for smaller embedded
+systems. Note that builds using mini-gmp are @strong{not} binary compatible
+with regular builds of Nettle, and more likely to leak side-channel
+information.
+
+@item --disable-shared
+Omit building the shared libraries.
+
+@item --disable-dependency-tracking
+Disable the automatic dependency tracking. You will likely need this
+option to be able to build with BSD make.
+
+@end table
 
 @node Index,  , Installation, Top
 @comment  node-name,  next,  previous,  up
