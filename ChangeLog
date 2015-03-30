@@ -8,7 +8,8 @@
 	(Installation): Document some more configure options.
 
 	* testsuite/symbols-test: Look for NETTLE_USE_MINI_GMP in
-	version.h, not bignum.h.
+	version.h, not bignum.h. Allow leading underscore on mini-gmp
+	symbols.
 
 2015-03-26  Niels Möller  <nisse@diamant.hack.org>
 
