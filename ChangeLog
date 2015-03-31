@@ -1,5 +1,8 @@
 2015-03-31  Niels Möller  <nisse@diamant.hack.org>
 
+	* configure.ac: Move tests for compiler characteristics,
+	libraries, and GMP_NUMB_BITS, before assembler-related tests.
+
 	* Makefile.in (clean-here): Unconditionally delete *.a (including
 	stub libraries like *.dll.a).
 

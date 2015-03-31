@@ -172,6 +172,100 @@ if test x$enable_dependency_tracking = xyes ; then
 ])
 fi
 
+if test "x$enable_gcov" = "xyes"; then
+  CFLAGS="$CFLAGS -ftest-coverage -fprofile-arcs"
+fi
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_C_INLINE
+AC_TYPE_UID_T
+AC_TYPE_SIZE_T
+AC_HEADER_TIME
+AC_CHECK_SIZEOF(long)
+AC_CHECK_SIZEOF(size_t)
+
+AC_CHECK_HEADERS([openssl/blowfish.h openssl/des.h openssl/cast.h openssl/aes.h openssl/ecdsa.h],,
+[enable_openssl=no
+ break])
+
+AC_CHECK_HEADERS([valgrind/memcheck.h])
+
+LSH_FUNC_ALLOCA
+LSH_FUNC_STRERROR
+# getenv_secure is used for fat overrides,
+# getline is used in the testsuite
+AC_CHECK_FUNCS(secure_getenv getline)
+AC_C_BIGENDIAN
+
+LSH_GCC_ATTRIBUTES
+
+# According to Simon Josefsson, looking for uint32_t and friends in
+# sys/types.h is needed on some systems, in particular cygwin.
+AX_CREATE_STDINT_H([nettle-stdint.h], [sys/types.h])
+
+# Check for file locking. We (AC_PROG_CC?) have already checked for
+# sys/types.h and unistd.h.
+AC_CACHE_CHECK([for fcntl file locking],
+		nettle_cv_fcntl_locking,
+[AC_TRY_COMPILE([
+#if HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+#if HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+#include <fcntl.h>
+],[
+int op = F_SETLKW;
+struct flock fl;
+],
+nettle_cv_fcntl_locking=yes,
+nettle_cv_fcntl_locking=no)])
+
+AH_TEMPLATE([HAVE_FCNTL_LOCKING], [Define if fcntl file locking is available])
+if test "x$nettle_cv_fcntl_locking" = "xyes" ; then
+  AC_DEFINE(HAVE_FCNTL_LOCKING)
+fi
+
+# Checks for libraries
+if test "x$enable_public_key" = "xyes" ; then
+  if test "x$enable_mini_gmp" = "xno" ; then
+    AC_CHECK_LIB(gmp, __gmpz_getlimbn,,
+        [AC_MSG_WARN(
+    [GNU MP not found, or not 3.1 or up, see http://gmplib.org/.
+    Support for public key algorithms will be unavailable.])]
+        enable_public_key=no)
+
+    # Add -R flags needed to run programs linked with gmp
+    LSH_RPATH_FIX
+  fi
+fi
+
+nettle_cv_gmp_numb_bits=0
+if test "x$enable_public_key" = "xyes" ; then
+  # Check for gmp limb size
+  if test "x$enable_mini_gmp" = "xyes" ; then
+    AC_MSG_CHECKING([for mini-gmp limb size])
+    # With mini-gmp, mp_limb_t is always unsigned long.
+    AC_COMPUTE_INT(nettle_cv_gmp_numb_bits, [(sizeof(unsigned long) * CHAR_BIT)],
+        [#include <limits.h>],
+        [AC_MSG_FAILURE([cannot find value of GMP_NUMB_BITS])])
+
+    AC_MSG_RESULT([$nettle_cv_gmp_numb_bits bits])
+  else
+    AC_MSG_CHECKING([for GMP limb size])
+    AC_COMPUTE_INT(nettle_cv_gmp_numb_bits, [GMP_NUMB_BITS],
+        [#include <gmp.h>],
+        [AC_MSG_FAILURE([cannot find value of GMP_NUMB_BITS])])
+
+    AC_MSG_RESULT([$nettle_cv_gmp_numb_bits bits])
+  fi
+fi
+
+GMP_NUMB_BITS="$nettle_cv_gmp_numb_bits"
+AC_SUBST([GMP_NUMB_BITS])
+
 # Figure out ABI. Currently, configurable only by setting CFLAGS.
 ABI=standard
 
@@ -684,100 +778,6 @@ AC_SUBST(LIBHOGWEED_LINK)
 AC_SUBST(LIBHOGWEED_LIBS)
 
 AC_PATH_PROG(M4, m4, m4)
-
-if test "x$enable_gcov" = "xyes"; then
-  CFLAGS="$CFLAGS -ftest-coverage -fprofile-arcs"
-fi
-
-# Checks for typedefs, structures, and compiler characteristics.
-AC_C_CONST
-AC_C_INLINE
-AC_TYPE_UID_T
-AC_TYPE_SIZE_T
-AC_HEADER_TIME
-AC_CHECK_SIZEOF(long)
-AC_CHECK_SIZEOF(size_t)
-
-AC_CHECK_HEADERS([openssl/blowfish.h openssl/des.h openssl/cast.h openssl/aes.h openssl/ecdsa.h],,
-[enable_openssl=no
- break])
-
-AC_CHECK_HEADERS([valgrind/memcheck.h])
-
-LSH_FUNC_ALLOCA
-LSH_FUNC_STRERROR
-# getenv_secure is used for fat overrides,
-# getline is used in the testsuite
-AC_CHECK_FUNCS(secure_getenv getline)
-AC_C_BIGENDIAN
-
-LSH_GCC_ATTRIBUTES
-
-# According to Simon Josefsson, looking for uint32_t and friends in
-# sys/types.h is needed on some systems, in particular cygwin.
-AX_CREATE_STDINT_H([nettle-stdint.h], [sys/types.h])
-
-# Check for file locking. We (AC_PROG_CC?) have already checked for
-# sys/types.h and unistd.h.
-AC_CACHE_CHECK([for fcntl file locking],
-		nettle_cv_fcntl_locking,
-[AC_TRY_COMPILE([
-#if HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
-#if HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-#include <fcntl.h>
-],[
-int op = F_SETLKW;
-struct flock fl;
-],
-nettle_cv_fcntl_locking=yes,
-nettle_cv_fcntl_locking=no)])
-
-AH_TEMPLATE([HAVE_FCNTL_LOCKING], [Define if fcntl file locking is available])
-if test "x$nettle_cv_fcntl_locking" = "xyes" ; then
-  AC_DEFINE(HAVE_FCNTL_LOCKING)
-fi
-
-# Checks for libraries
-if test "x$enable_public_key" = "xyes" ; then
-  if test "x$enable_mini_gmp" = "xno" ; then
-    AC_CHECK_LIB(gmp, __gmpz_getlimbn,,
-        [AC_MSG_WARN(
-    [GNU MP not found, or not 3.1 or up, see http://gmplib.org/.
-    Support for public key algorithms will be unavailable.])]
-        enable_public_key=no)
-  
-    # Add -R flags needed to run programs linked with gmp
-    LSH_RPATH_FIX
-  fi
-fi
-
-nettle_cv_gmp_numb_bits=0
-if test "x$enable_public_key" = "xyes" ; then
-  # Check for gmp limb size
-  if test "x$enable_mini_gmp" = "xyes" ; then
-    AC_MSG_CHECKING([for mini-gmp limb size])
-    # With mini-gmp, mp_limb_t is always unsigned long.
-    AC_COMPUTE_INT(nettle_cv_gmp_numb_bits, [(sizeof(unsigned long) * CHAR_BIT)],
-        [#include <limits.h>],
-        [AC_MSG_FAILURE([cannot find value of GMP_NUMB_BITS])])
-  
-    AC_MSG_RESULT([$nettle_cv_gmp_numb_bits bits])
-  else
-    AC_MSG_CHECKING([for GMP limb size])
-    AC_COMPUTE_INT(nettle_cv_gmp_numb_bits, [GMP_NUMB_BITS],
-        [#include <gmp.h>],
-        [AC_MSG_FAILURE([cannot find value of GMP_NUMB_BITS])])
-  
-    AC_MSG_RESULT([$nettle_cv_gmp_numb_bits bits])
-  fi
-fi
-
-GMP_NUMB_BITS="$nettle_cv_gmp_numb_bits"
-AC_SUBST([GMP_NUMB_BITS])
 
 AH_TEMPLATE([WITH_HOGWEED], [Defined if public key features are enabled])
 
