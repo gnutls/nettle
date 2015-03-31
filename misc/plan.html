@@ -14,7 +14,7 @@
   <h1> Nettle release plans </h1>
   <p> This is an attempt at defining a development target for
     Nettle-3.1, inspired by similar pages for recent GMP releases.
-    [Last updated 2015-03-19]</p>
+    [Last updated 2015-03-31]</p>
   <p class='should'>
     This really ought to be done before release
   </p>
@@ -85,7 +85,7 @@
   </p>
   
   <h2> Miscellaneous </h2>
-  <p class='should'>
+  <p class='postpone'>
     Use more functions from GMP-6 and later, when available:
     mpn_sec_add_1, mpn_sec_tabselect, mpn_sec_invert, mpn_cnd_swap,
     ...
@@ -114,7 +114,7 @@
     Reconsider assembly make rules, going back to an .asm.o: rule
     might work better with Solaris' make.
   </p>
-  <p class='should'>
+  <p class='postponed'>
     Update AX_CREATE_STDINT_H to the latest version.
   </p>
   
@@ -122,17 +122,17 @@
   <p> Since xenofarm isn't up and running, do some manual testing:
   </p>
   <ul>
-    <li class='should> x86_64-linux-gnu</li>
-    <li class='should'> x86-linux-gnu</li>
-    <li class='should'> x86_64-freebsd</li>
-    <li class='should'> x86-w*ndows (using cross compiler and wine)</li>
-    <li class='should'> x86_64-w*ndows (using cross compiler and wine)</li>
+    <li class='done'> x86_64-linux-gnu</li>
+    <li class='done'> x86-linux-gnu</li>
+    <li class='done'> x86_64-freebsd</li>
+    <li class='done'> x86-w*ndows (using cross compiler and wine)</li>
+    <li class='done'> x86_64-w*ndows (using cross compiler and wine)</li>
     <li class='should'> x86-darwin (needs help from Nettle users)</li>
     <li class='should'> x86_64-darwin (needs help from Nettle users)</li>
-    <li class='should'> armv7-linux-gnu (pandaboard test platform)</li>
+    <li class='done'> armv7-linux-gnu (pandaboard test platform)</li>
     <li class='wish'> armv7-android </li>
-    <li class='should'> sparc32-solaris10</li>
-    <li class='should'> sparc64-solaris10</li>
+    <li class='done'> sparc32-solaris10</li>
+    <li class='done'> sparc64-solaris10</li>
   </ul>
 
   <h1> Changes under consideration for later releases </h1>
