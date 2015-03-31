@@ -1,3 +1,8 @@
+2015-03-31  Niels Möller  <nisse@diamant.hack.org>
+
+	* Makefile.in (clean-here): Unconditionally delete *.a (including
+	stub libraries like *.dll.a).
+
 2015-03-30  Niels Möller  <nisse@diamant.hack.org>
 
 	* version.h.in (GMP_NUMB_BITS) [NETTLE_USE_MINI_GMP]: Move
