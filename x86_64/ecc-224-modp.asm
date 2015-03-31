@@ -32,6 +32,8 @@ ifelse(<
 
 	.file "ecc-224-modp.asm"
 
+GMP_NUMB_BITS(64)
+
 define(<RP>, <%rsi>)
 define(<T0>, <%rdi>) C Overlaps unused modulo input
 define(<T1>, <%rcx>)

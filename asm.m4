@@ -27,6 +27,8 @@ COFF_STYLE, yes,
 .endef>,
 <>)>)
 
+define(<GMP_NUMB_BITS>,<>)dnl
+
 define(<PROLOGUE>,
 <.globl C_NAME($1)
 DECLARE_FUNC(C_NAME($1))

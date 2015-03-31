@@ -1,7 +1,17 @@
 2015-03-31  Niels Möller  <nisse@diamant.hack.org>
 
+	* x86_64/ecc-224-modp.asm: Require that GMP_NUMB_BITS == 64.
+	* x86_64/ecc-521-modp.asm: Likewise. Note that the other
+	ecc-*-modp.asm files happen to work fine on x86_64, with either 32
+	or 64 bits.
+
+	* asm.m4 (GMP_NUMB_BITS): New macro, expanding to nothing.
+
 	* configure.ac: Move tests for compiler characteristics,
 	libraries, and GMP_NUMB_BITS, before assembler-related tests.
+	For files in $asm_hogweed_optional_list, check if they declare
+	a GMP_NUMB_BITS requirement, and skip files which are incompatible
+	with the configuration. Needed for --enable-mini-gmp om w64.
 
 	* Makefile.in (clean-here): Unconditionally delete *.a (including
 	stub libraries like *.dll.a).

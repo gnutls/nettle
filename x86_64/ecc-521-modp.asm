@@ -32,6 +32,8 @@ ifelse(<
 
 	.file "ecc-521-modp.asm"
 
+GMP_NUMB_BITS(64)
+
 define(<RP>, <%rsi>)
 define(<U0>, <%rax>)
 define(<U1>, <%rbx>)
