@@ -1,3 +1,8 @@
+2015-04-13  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Fix shell quoting in test of GMP_NUMB_BITS asm
+	compatibility. Reported by Edward Sheldrake.
+
 2015-03-31  Niels Möller  <nisse@diamant.hack.org>
 
 	* x86_64/ecc-224-modp.asm: Require that GMP_NUMB_BITS == 64.

@@ -467,7 +467,7 @@ EOF
 	  dnl Note double square brackets, for extra m4 quoting.
 	  tmp_bits=`grep GMP_NUMB_BITS "$srcdir/$asm_dir/$tmp_h" \
             | sed 's/^.*GMP_NUMB_BITS(\([[0-9]]*\)).*$/\1/'`
-	  if test "$tmp_bits" && test "$tmp_bits" != '${GMP_NUMB_BITS}' ; then
+	  if test "$tmp_bits" && test "$tmp_bits" != "${GMP_NUMB_BITS}" ; then
 	     AC_MSG_WARN([skipping $tmp_h, because GMP_NUMB_BITS != $tmp_bits])
 	     continue
 	  fi
