@@ -1,3 +1,8 @@
+2015-04-22  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/gcm-hash8.asm: Use ".value" instead of ".short", since
+	the latter is not supported by the Sun/Oracle assembler.
+
 2015-04-13  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Fix shell quoting in test of GMP_NUMB_BITS asm
