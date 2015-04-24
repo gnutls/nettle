@@ -1,3 +1,22 @@
+NEWS for the Nettle 3.1.1 release
+
+	This release fixes a couple of non-critical bugs.
+
+	Bug fixes:
+
+	* By accident, nettle-3.1 disabled the assembly code for the
+	  secp_224r1 and secp_521r1 elliptic curves on all x86_64
+	  configurations, making signature operations on those curves
+	  10%-30% slower. This code is now re-enabled.
+
+	* The x86_64 assembly implementation of gcm hashing has been
+          fixed to work with the Sun/Oracle assembler.
+
+	The shared library names are libnettle.so.6.1 and
+	libhogweed.so.4.1, with sonames still libnettle.so.6 and
+	libhogweed.so.4. It is intended to be fully binary compatible
+	with nettle-3.1.
+
 NEWS for the Nettle 3.1 release
 
 	This release adds a couple of new features.
