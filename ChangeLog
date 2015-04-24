@@ -198,7 +198,7 @@
 2015-02-05  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac (LIBHOGWEED_MAJOR): Undo latest bump, 4 should be
-	enough (previous release, nettle-3.1, used 3).
+	enough (previous release, nettle-3.0, used 3).
 
 2015-01-30  Niels Möller  <nisse@lysator.liu.se>
 
