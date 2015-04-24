@@ -1,5 +1,7 @@
 2015-04-24  Niels Möller  <nisse@lysator.liu.se>
 
+	* Released nettle-3.1.1.
+
 	* configure.ac: Bump package version, to nettle-3.1.1.
 	(LIBNETTLE_MINOR, LIBHOGWEED_MINOR): Bump minor versions, to
 	libnettle.so.6.1 and and libhogweed.so.4.1.
