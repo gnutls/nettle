@@ -8,6 +8,10 @@
 	* configure.ac: Fix shell quoting in test of GMP_NUMB_BITS asm
 	compatibility. Reported by Edward Sheldrake.
 
+2015-04-07  Niels Möller  <nisse@lysator.liu.se>
+
+	* Released nettle-3.1.
+
 2015-03-31  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86_64/ecc-224-modp.asm: Require that GMP_NUMB_BITS == 64.
@@ -1367,7 +1371,7 @@
 
 2014-06-07  Niels Möller  <nisse@lysator.liu.se>
 
-	* Released nettle-3.0
+	* Released nettle-3.0.
 
 2014-06-04  Niels Möller  <nisse@lysator.liu.se>
 
