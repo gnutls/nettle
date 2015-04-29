@@ -1,3 +1,8 @@
+2015-04-29  Niels Möller  <nisse@lysator.liu.se>
+
+	* arm/v6/aes-decrypt-internal.asm: Drop %-prefix on r12 register.
+	* arm/v6/aes-encrypt-internal.asm: Likewise.
+
 2015-04-24  Niels Möller  <nisse@lysator.liu.se>
 
 	* Released nettle-3.1.1.
