@@ -1,5 +1,7 @@
 2015-04-29  Niels Möller  <nisse@lysator.liu.se>
 
+	* arm/v6/sha256-compress.asm: Fix syntax error in offset
+	addressing. Spotted by Jukka Ukkonen.
 	* arm/v6/aes-decrypt-internal.asm: Drop %-prefix on r12 register.
 	* arm/v6/aes-encrypt-internal.asm: Likewise.
 
