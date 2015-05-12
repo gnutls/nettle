@@ -100,6 +100,9 @@ serpent-test$(EXEEXT): serpent-test.$(OBJEXT)
 twofish-test$(EXEEXT): twofish-test.$(OBJEXT)
 	$(LINK) twofish-test.$(OBJEXT) $(TEST_OBJS) -o twofish-test$(EXEEXT)
 
+version-test$(EXEEXT): version-test.$(OBJEXT)
+	$(LINK) version-test.$(OBJEXT) $(TEST_OBJS) -o version-test$(EXEEXT)
+
 knuth-lfib-test$(EXEEXT): knuth-lfib-test.$(OBJEXT)
 	$(LINK) knuth-lfib-test.$(OBJEXT) $(TEST_OBJS) -o knuth-lfib-test$(EXEEXT)
 

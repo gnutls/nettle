@@ -1,3 +1,12 @@
+2015-05-12  Niels Möller  <nisse@lysator.liu.se>
+
+	* version.c (nettle_version_major, nettle_version_minor): New
+	file. New functions, returning the value of the corresponding
+	preprocessor constant.
+	* Makefile.in (nettle_SOURCES): Added version.c.
+	* testsuite/version-test.c: New testcase.
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Added version-test.c.
+
 2015-04-29  Niels Möller  <nisse@lysator.liu.se>
 
 	* arm/v6/sha256-compress.asm: Fix syntax error in offset

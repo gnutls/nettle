@@ -1,8 +1,5 @@
-/* version.h
+/* version-test.c
 
-   Information about library version.
-
-   Copyright (C) 2015 Red Hat, Inc.
    Copyright (C) 2015 Niels Möller
 
    This file is part of GNU Nettle.
@@ -32,33 +29,13 @@
    not, see http://www.gnu.org/licenses/.
 */
 
-#ifndef NETTLE_VERSION_H_INCLUDED
-#define NETTLE_VERSION_H_INCLUDED
+#include "testutils.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/* Individual version numbers in decimal */
-#define NETTLE_VERSION_MAJOR @MAJOR_VERSION@
-#define NETTLE_VERSION_MINOR @MINOR_VERSION@
-
-#define NETTLE_USE_MINI_GMP @NETTLE_USE_MINI_GMP@
-
-/* We need a preprocessor constant for GMP_NUMB_BITS, simply using
-   sizeof(mp_limb_t) * CHAR_BIT is not good enough. */
-#if NETTLE_USE_MINI_GMP
-# define GMP_NUMB_BITS @GMP_NUMB_BITS@
-#endif
-
-int
-nettle_version_major (void);
-
-int
-nettle_version_minor (void);
-
-#ifdef __cplusplus
+void
+test_main (void)
+{
+  /* This also checks that we don't by accident link with a different
+     version of nettle which is installed on the system. */
+  ASSERT (nettle_version_major () == NETTLE_VERSION_MAJOR);
+  ASSERT (nettle_version_minor () == NETTLE_VERSION_MINOR);
 }
-#endif
-
-#endif /* NETTLE_VERSION_H_INCLUDED */
