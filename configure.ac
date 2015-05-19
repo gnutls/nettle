@@ -292,6 +292,17 @@ case "$host_cpu" in
       ABI=64
     ])
     ;;
+  *mips*)
+    AC_TRY_COMPILE([
+#if defined(__sgi) && defined(__LP64__)
+#error 32-bit mips
+#endif
+    ], [], [
+      ABI=32
+    ], [
+      ABI=64
+    ])
+    ;;
 esac
 
 if test "x$ABI" != xstandard ; then
@@ -334,6 +345,12 @@ if test "x$ABI" != xstandard ; then
 	;;
       *:freebsd*:64)
 	libdir='${exec_prefix}/lib'
+	;;
+      *:irix*:32)
+	libdir='${exec_prefix}/lib32'
+	;;
+      *:irix*:64)
+	libdir='${exec_prefix}/lib64'
 	;;
       *)
         AC_MSG_WARN([Don't know where to install $ABI-bit libraries on this system.]); dnl '
