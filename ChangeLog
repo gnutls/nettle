@@ -1,3 +1,8 @@
+2015-06-03  Niels Möller  <nisse@lysator.liu.se>
+
+	* arm/neon/chacha-core-internal.asm: New file. 55% speedup over C
+	version on Cortex-A9.
+
 2015-05-19  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: ABI detection (n32 or n64) on Irix, and
