@@ -1,3 +1,14 @@
+2015-08-24  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/sha3.awk: Document origin of test vectors.
+
+	From Nikos Mavrogiannopoulos.
+	* sha3.c (_sha3_pad): Update for NIST version.
+	* testsuite/sha3-224-test.c: Updated test vectors.
+	* testsuite/sha3-256-test.c: Likewise.
+	* testsuite/sha3-384-test.c: Likewise.
+	* testsuite/sha3-512-test.c: Likewise.
+
 2015-06-03  Niels Möller  <nisse@lysator.liu.se>
 
 	* arm/neon/chacha-core-internal.asm: New file. 55% speedup over C
