@@ -1,3 +1,29 @@
+NEWS for the Nettle 3.2 release
+
+	Bug fixes:
+
+	* The SHA3 implementation is updated according to the FIPS 202
+          standard. It is not interoperable with earlier versions of
+          Nettle. Thanks to Nikos Mavrogiannopoulos.
+
+	New features:
+
+	* New functions nettle_version_major, nettle_version_minor, as
+	  a run-time variant of the compile-time constants
+	  NETTLE_VERSION_MAJOR and NETTLE_VERSION_MINOR.
+
+	Optimizations:
+
+	* New ARM Neon implementation of the chacha stream cipher.
+
+	Miscellaneous:
+
+	* ABI detection on mips, with improved default libdir
+	  location. Contributed by Klaus Ziegler.
+
+	* Fixes for ARM assembly syntax, to work better with the clang
+	  assembler. Thanks to Jukka Ukkonen.
+
 NEWS for the Nettle 3.1.1 release
 
 	This release fixes a couple of non-critical bugs.
