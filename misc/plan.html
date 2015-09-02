@@ -13,8 +13,8 @@
 <body>
   <h1> Nettle release plans </h1>
   <p> This is an attempt at defining a development target for
-    Nettle-3.1, inspired by similar pages for recent GMP releases.
-    [Last updated 2015-03-31]</p>
+    Nettle-3.2, inspired by similar pages for recent GMP releases.
+    [Last updated 2015-09-02]</p>
   <p class='should'>
     This really ought to be done before release
   </p>
@@ -28,29 +28,14 @@
     Leave for some later release!
   </p>
 
-  <h1> Plans for nettle-3.1 </h1>
+  <h1> Plans for nettle-3.2 </h1>
 
-  <h2> Interface changes </h2>
-  <p class='done'>
-    Review public functions in ecc.h, move some to ecc-internal.h, to
-    enable sane support for other types of curves.
-  </p>
-  
   <h2> New features </h2>
-  <p class='done'>
-    Add support for curve25519.<span class='should'> What about the
-    "x25519" name?</span>
-  </p>
-  <p class='done'>
-    Update chacha-poly1305 to
-    the <a href='https://tools.ietf.org/html/draft-irtf-cfrg-chacha20-poly1305-08'>current
-    draft</a>.
-  </p>
-  <p class='done'>
-    Add support for Ed25519 signatures.
-  </p>
-  <p class='done'>
-    Interface tweaks. EdDSA, Curve25519, base64.
+  <p class='should'>
+    "CRT-hardened" RSA secret key operations. Check that the result of
+    rsa_compute_root is correct. Should be easy for the
+    rsa_pkcs1_sign_tr and rsa_decrypt_tr functions, other RSA
+    functions would need interface changes.
   </p>
   <p class='wish'>
     Add larger "safe" curves, e.g., M-383, curve41417 and E-521.
@@ -62,19 +47,13 @@
     Use side-channel silent GMP functions for RSA and DSA. May require
     additional interface changes, to use mpn functions.
   </p>
-  <p class='done'>
-    Make it possible to build nettle and hogweed using mini-gmp.
-  </p>
-  <p class='postpone'>
+  <p class='should'>
     Side-channel silent mem_equalp.
   </p>
 
   <h2> Optimizations </h2>
-  <p class='done'>
-    Support for using AES acceleration.
-  </p>
 
-  <p class='postponed'>
+  <p class='wish'>
     Assembly optimizations for ARMv8 (64-bit).
   </p>
   <p class='wish'>
@@ -85,35 +64,18 @@
   </p>
   
   <h2> Miscellaneous </h2>
-  <p class='postpone'>
+  <p class='wish'>
     Use more functions from GMP-6 and later, when available:
     mpn_sec_add_1, mpn_sec_tabselect, mpn_sec_invert, mpn_cnd_swap,
     ...
   </p>
 
   <h2> Documentation </h2>
-  <p class='done'>
-    Document curve25519.
-  </p>
-  <p class='done'>
-    Document EdDSA.
+  <p class='should'>
+    Update SHA3 documentation.
   </p>
   
   <h2> Build system </h2>
-  <p class='done'>
-    Support for fat binaries on ARM and x86_64, selecting code at
-    runtime depending on cpu capabilities.
-  </p>
-  <p class='done'>
-    Fix the handling of optional C source files with make dist.
-  </p>
-  <p class='done'>
-    Stop using the nonstandard <tt>.po</tt> extension.
-  </p>
-  <p class='done'>
-    Reconsider assembly make rules, going back to an .asm.o: rule
-    might work better with Solaris' make.
-  </p>
   <p class='postponed'>
     Update AX_CREATE_STDINT_H to the latest version.
   </p>
@@ -122,17 +84,17 @@
   <p> Since xenofarm isn't up and running, do some manual testing:
   </p>
   <ul>
-    <li class='done'> x86_64-linux-gnu</li>
-    <li class='done'> x86-linux-gnu</li>
-    <li class='done'> x86_64-freebsd</li>
-    <li class='done'> x86-w*ndows (using cross compiler and wine)</li>
-    <li class='done'> x86_64-w*ndows (using cross compiler and wine)</li>
+    <li class='should'> x86_64-linux-gnu</li>
+    <li class='should'> x86-linux-gnu</li>
+    <li class='should'> x86_64-freebsd</li>
+    <li class='should'> x86-w*ndows (using cross compiler and wine)</li>
+    <li class='should'> x86_64-w*ndows (using cross compiler and wine)</li>
     <li class='should'> x86-darwin (needs help from Nettle users)</li>
     <li class='should'> x86_64-darwin (needs help from Nettle users)</li>
-    <li class='done'> armv7-linux-gnu (pandaboard test platform)</li>
+    <li class='should'> armv7-linux-gnu (pandaboard test platform)</li>
     <li class='wish'> armv7-android </li>
-    <li class='done'> sparc32-solaris10</li>
-    <li class='done'> sparc64-solaris10</li>
+    <li class='wish'> sparc32-solaris10</li>
+    <li class='wish'> sparc64-solaris10</li>
   </ul>
 
   <h1> Changes under consideration for later releases </h1>
