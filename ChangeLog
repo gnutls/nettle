@@ -1,5 +1,17 @@
 2015-09-02  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/dlopen-test.c: New test program, exposing the problem
+	with ifunc and RTLD_NOW.
+
+	* testsuite/Makefile.in (TS_ALL): Conditionally add dlopen-test.
+	(SOURCES): Added dlopen-test.c.
+	(dlopen-test): New target, unlike other test programs, *not*
+	linked with -lnettle.
+
+	* configure.ac: Check for dlfcn.h and the dlopen function.
+	(IF_DLOPEN_TEST): New substituted variable, true if dlopen is
+	available and we are building a shared library.
+
 	* fat-setup.h: Disable use of ifunc, since it breaks dlopen with
 	RTLD_NOW.
 

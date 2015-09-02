@@ -189,7 +189,12 @@ AC_CHECK_HEADERS([openssl/blowfish.h openssl/des.h openssl/cast.h openssl/aes.h 
 [enable_openssl=no
  break])
 
+# For use by the testsuite
 AC_CHECK_HEADERS([valgrind/memcheck.h])
+AC_CHECK_HEADERS([dlfcn.h])
+AC_CHECK_LIB([dl], [dlopen],
+	     [AC_DEFINE([HAVE_LIBDL], 1,
+			[Define to 1 if you have dlopen (with -ldl).])])
 
 LSH_FUNC_ALLOCA
 LSH_FUNC_STRERROR
@@ -818,9 +823,13 @@ else
   IF_STATIC='#'
 fi
 
+IF_DLOPEN_TEST='#'
 if test "x$enable_shared" = xyes ; then
   IF_SHARED=''
   IF_NOT_SHARED='#'
+  if "x$ac_cv_lib_dl_dlopen" = yes ; then
+    IF_DLOPEN_TEST=''
+  fi
 else
   IF_SHARED='#'
   IF_NOT_SHARED=''
@@ -858,6 +867,7 @@ AC_SUBST(IF_HOGWEED)
 AC_SUBST(IF_STATIC)
 AC_SUBST(IF_SHARED)
 AC_SUBST(IF_NOT_SHARED)
+AC_SUBST(IF_DLOPEN_TEST)
 AC_SUBST(IF_DOCUMENTATION)
 AC_SUBST(IF_DLL)
 AC_SUBST(IF_MINI_GMP)

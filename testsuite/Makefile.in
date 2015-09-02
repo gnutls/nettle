@@ -57,12 +57,13 @@ TS_C = $(TS_NETTLE) @IF_HOGWEED@ $(TS_HOGWEED)
 TS_CXX = @IF_CXX@ $(CXX_SOURCES:.cxx=$(EXEEXT))
 TARGETS = $(TS_C) $(TS_CXX)
 TS_SH = sexp-conv-test pkcs1-conv-test nettle-pbkdf2-test symbols-test
-TS_ALL = $(TARGETS) $(TS_SH)
+TS_ALL = $(TARGETS) $(TS_SH) @IF_DLOPEN_TEST@ dlopen-test$(EXEEXT)
 EXTRA_SOURCES = sha1-huge-test.c
 EXTRA_TARGETS = $(EXTRA_SOURCES:.c=$(EXEEXT))
 
+
 # Includes all C source files, regardless of configuration
-SOURCES = $(TS_SOURCES) $(EXTRA_SOURCES) testutils.c
+SOURCES = $(TS_SOURCES) $(EXTRA_SOURCES) testutils.c dlopen-test.c
 
 DISTFILES = $(SOURCES) $(CXX_SOURCES) Makefile.in .test-rules.make \
 	    $(TS_SH) setup-env teardown-env \
@@ -88,6 +89,10 @@ TEST_OBJS = testutils.$(OBJEXT) ../nettle-internal.$(OBJEXT) \
 
 ../nettle-internal.$(OBJEXT):
 	( cd .. && $(MAKE) nettle-internal.$(OBJEXT) )
+
+# Special target, to omit linking with libnettle
+dlopen-test$(EXEEXT): dlopen-test.$(OBJEXT) testutils.$(OBJEXT)
+	$(LINK) dlopen-test.$(OBJEXT) -ldl -o dlopen-test$(EXEEXT)
 
 .PHONY: test-rules
 test-rules:
