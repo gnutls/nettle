@@ -1,3 +1,8 @@
+2015-09-02  Niels Möller  <nisse@lysator.liu.se>
+
+	* fat-setup.h: Disable use of ifunc, since it breaks dlopen with
+	RTLD_NOW.
+
 2015-08-25  Niels Möller  <nisse@lysator.liu.se>
 
 	* NEWS: Started on entries for Nettle-3.2.
