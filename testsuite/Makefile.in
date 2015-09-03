@@ -35,7 +35,7 @@ TS_NETTLE_SOURCES = aes-test.c arcfour-test.c arctwo-test.c \
 TS_HOGWEED_SOURCES = sexp-test.c sexp-format-test.c \
 		     rsa2sexp-test.c sexp2rsa-test.c \
 		     bignum-test.c random-prime-test.c \
-		     pkcs1-test.c \
+		     pkcs1-test.c rsa-sign-tr-test.c \
 		     rsa-test.c rsa-encrypt-test.c rsa-keygen-test.c \
 		     dsa-test.c dsa-keygen-test.c \
 		     curve25519-dh-test.c \

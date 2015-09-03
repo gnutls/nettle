@@ -175,6 +175,9 @@ random-prime-test$(EXEEXT): random-prime-test.$(OBJEXT)
 pkcs1-test$(EXEEXT): pkcs1-test.$(OBJEXT)
 	$(LINK) pkcs1-test.$(OBJEXT) $(TEST_OBJS) -o pkcs1-test$(EXEEXT)
 
+rsa-sign-tr-test$(EXEEXT): rsa-sign-tr-test.$(OBJEXT)
+	$(LINK) rsa-sign-tr-test.$(OBJEXT) $(TEST_OBJS) -o rsa-sign-tr-test$(EXEEXT)
+
 rsa-test$(EXEEXT): rsa-test.$(OBJEXT)
 	$(LINK) rsa-test.$(OBJEXT) $(TEST_OBJS) -o rsa-test$(EXEEXT)
 
