@@ -1,3 +1,7 @@
+2015-09-06  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle.texinfo: Updated SHA3 documentation.
+
 2015-09-02  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/dlopen-test.c: New test program, exposing the problem

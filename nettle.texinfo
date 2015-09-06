@@ -409,10 +409,9 @@ The most commonly used hash functions are MD5 and SHA1. Unfortunately,
 both these fail the collision-resistance requirement; cryptologists have
 found ways to construct colliding inputs. The recommended hash functions
 for new applications are SHA2 (with main variants SHA256 and SHA512). At
-the time of this writing (December 2012), the winner of the NIST SHA3
-competition has recently been announced, and the new SHA3 (earlier known
-as Keccak) and other top SHA3 candidates may also be reasonable
-alternatives.
+the time of this writing (Autumn 2015), SHA3 has recently been
+standardized, and the new SHA3 and other top SHA3 candidates may also be
+reasonable alternatives.
 
 @menu
 * Recommended hash functions::
@@ -599,6 +598,7 @@ corresponding init function.
 @end deftypefun
 
 @subsubsection @acronym{SHA3-224}
+@cindex SHA3
 
 The SHA3 hash functions were specified by NIST in response to weaknesses
 in SHA1, and doubts about SHA2 hash functions which structurally are
@@ -607,16 +607,21 @@ winner, also known as Keccak, was designed by Guido Bertoni, Joan
 Daemen, Michaël Peeters and Gilles Van Assche. It is structurally very
 different from all widely used earlier hash functions. Like SHA2, there
 are several variants, with output sizes of 224, 256, 384 and 512 bits
-(28, 32, 48 and 64 octets, respectively).
+(28, 32, 48 and 64 octets, respectively). In August 2015, it was
+formally standardized by NIST, as FIPS 202,
+@uref{http://dx.doi.org/10.6028/NIST.FIPS.202}.
 
-Nettle's implementation of SHA3 should be considered
-@strong{experimental}. It is based on the design from the competition.
-Unfortunately, it is likely that when the standard is finalized, there
-will be small changes making Nettle's current implementation
-incompatible with the standard. Nettle's implementation may need
-incompatible changes to track standardization. Latest standard draft, at
-the time of writing, is at
-@uref{http://csrc.nist.gov/publications/drafts/fips-202/fips_202_draft.pdf}.
+Note that the SHA3 implementation in earlier versions of Nettle was
+based on the specification at the time Keccak was announced as the
+winner of the competition, which is incompatible with the final standard
+and hence with current versions of Nettle. The @file{nette/sha3.h}
+defines a preprocessor symbol @code{NETTLE_SHA3_FIPS202} to indicate
+conformance with the standard.
+
+@defvr Constant NETTLE_SHA3_FIPS202
+Defined to 1 in Nettle versions supporting FIPS 202. Undefined in
+earlier versions.
+@end defvr
 
 Nettle defines SHA3-224 in @file{<nettle/sha3.h>}.
 
