@@ -24,6 +24,9 @@ NEWS for the Nettle 3.2 release
 	* Fixes for ARM assembly syntax, to work better with the clang
 	  assembler. Thanks to Jukka Ukkonen.
 
+	* Disabled use of ifunc relocations for fat builds, to fix
+	  problems most triggered by using dlopen with RTLD_NOW.
+
 NEWS for the Nettle 3.1.1 release
 
 	This release fixes a couple of non-critical bugs.
