@@ -1,6 +1,5 @@
 #include "testutils.h"
 #include "knuth-lfib.h"
-#include "nettle-internal.h"
 
 #define MSG1 ((uint8_t*)"None so blind as those who will not see")
 #define MSG2 ((uint8_t*)"Fortune knocks once at every man's door")
