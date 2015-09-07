@@ -1,3 +1,12 @@
+2015-09-07  Niels Möller  <nisse@lysator.liu.se>
+
+	From Nikos Mavrogiannopoulos.
+	* rsa-pkcs1-sign-tr.c (rsa_verify_res): New function.
+	(rsa_pkcs1_sign_tr): Check result of private key operation, to
+	protect against hardware or software errors leaking the private
+	key.
+	* testsuite/rsa-sign-tr-test.c: New testcase.
+
 2015-09-06  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle.texinfo: Updated SHA3 documentation.
