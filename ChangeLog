@@ -1,3 +1,8 @@
+2015-09-13  Niels Möller  <nisse@lysator.liu.se>
+
+	* rsa-blind.c (_rsa_blind, _rsa_unblind): Separate source and
+	destination arguments. Updated callers.
+
 2015-09-07  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/rsa-sign-tr-test.c: Drop include of nettle-internal.h.

@@ -39,18 +39,18 @@
 
 #include "bignum.h"
 
-/* Blinds the c, by computing c *= r^e (mod n), for a random r. Also
+/* Blinds m, by computing c = m r^e (mod n), for a random r. Also
    returns the inverse (ri), for use by rsa_unblind. */
 void
 _rsa_blind (const struct rsa_public_key *pub,
 	    void *random_ctx, nettle_random_func *random,
-	    mpz_t c, mpz_t ri)
+	    mpz_t c, mpz_t ri, const mpz_t m)
 {
   mpz_t r;
 
   mpz_init(r);
 
-  /* c = c*(r^e)
+  /* c = m*(r^e)
    * ri = r^(-1)
    */
   do 
@@ -62,16 +62,17 @@ _rsa_blind (const struct rsa_public_key *pub,
 
   /* c = c*(r^e) mod n */
   mpz_powm(r, r, pub->e, pub->n);
-  mpz_mul(c, c, r);
+  mpz_mul(c, m, r);
   mpz_fdiv_r(c, c, pub->n);
 
   mpz_clear(r);
 }
 
-/* c *= ri mod n */
+/* m = c ri mod n */
 void
-_rsa_unblind (const struct rsa_public_key *pub, mpz_t c, const mpz_t ri)
+_rsa_unblind (const struct rsa_public_key *pub,
+	      mpz_t m, const mpz_t ri, const mpz_t c)
 {
-  mpz_mul(c, c, ri);
-  mpz_fdiv_r(c, c, pub->n);
+  mpz_mul(m, c, ri);
+  mpz_fdiv_r(m, m, pub->n);
 }

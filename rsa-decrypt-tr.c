@@ -54,9 +54,9 @@ rsa_decrypt_tr(const struct rsa_public_key *pub,
   mpz_init_set(m, gibberish);
   mpz_init (ri);
 
-  _rsa_blind (pub, random_ctx, random, m, ri);
+  _rsa_blind (pub, random_ctx, random, m, ri, m);
   rsa_compute_root(key, m, m);
-  _rsa_unblind (pub, m, ri);
+  _rsa_unblind (pub, m, ri, m);
   mpz_clear (ri);
 
   res = pkcs1_decrypt (key->size, m, length, message);

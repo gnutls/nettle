@@ -75,7 +75,7 @@ rsa_pkcs1_sign_tr(const struct rsa_public_key *pub,
     {
       mpz_init (ri);
 
-      _rsa_blind (pub, random_ctx, random, m, ri);
+      _rsa_blind (pub, random_ctx, random, m, ri, m);
       rsa_compute_root(key, s, m);
 
       if (rsa_verify_res(pub, s, m) == 0)
@@ -86,7 +86,7 @@ rsa_pkcs1_sign_tr(const struct rsa_public_key *pub,
       else
         ret = 1;
 
-      _rsa_unblind (pub, s, ri);
+      _rsa_unblind (pub, s, ri, s);
       mpz_clear (ri);
     }
   else
