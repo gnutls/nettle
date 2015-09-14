@@ -1,8 +1,8 @@
-/* rsa-pkcs1-sign-tr.c
+/* rsa-sign-tr.c
 
-   Creating timing resistant RSA signatures.
+   Creating RSA signatures, with some additional checks.
 
-   Copyright (C) 2012 Nikos Mavrogiannopoulos
+   Copyright (C) 2015 Niels Möller
 
    This file is part of GNU Nettle.
 
@@ -34,26 +34,40 @@
 #if HAVE_CONFIG_H
 # include "config.h"
 #endif
+
 #include "rsa.h"
 
-#include "pkcs1.h"
-
-/* Side-channel resistant version of rsa_pkcs1_sign() */
+/* Checks for any errors done in the RSA computation. That avoids
+ * attacks which rely on faults on hardware, or even software MPI
+ * implementation. */
 int
-rsa_pkcs1_sign_tr(const struct rsa_public_key *pub,
-  	          const struct rsa_private_key *key,
-	          void *random_ctx, nettle_random_func *random,
-	          size_t length, const uint8_t *digest_info,
-   	          mpz_t s)
+rsa_compute_root_tr(const struct rsa_public_key *pub,
+		    const struct rsa_private_key *key,
+		    void *random_ctx, nettle_random_func *random,
+		    mpz_t x, const mpz_t m)
 {
-  mpz_t ri, m;
-  int ret;
+  int res;
+  mpz_t t, mb, xb, ri;
 
-  mpz_init(m);
+  mpz_init (mb);
+  mpz_init (xb);
+  mpz_init (ri);
+  mpz_init (t);
 
-  ret = (pkcs1_rsa_digest_encode (m, key->size, length, digest_info)
-	 && rsa_compute_root_tr (pub, key, random_ctx, random,
-				 s, m));
-  mpz_clear(m);
-  return ret;
+  _rsa_blind (pub, random_ctx, random, mb, ri, m);
+
+  rsa_compute_root (key, xb, mb);
+
+  mpz_powm(t, xb, pub->e, pub->n);
+  res = (mpz_cmp(mb, t) == 0);
+
+  if (res)
+    _rsa_unblind (pub, x, ri, xb);
+
+  mpz_clear (mb);
+  mpz_clear (xb);
+  mpz_clear (ri);
+  mpz_clear (t);
+
+  return res;
 }
