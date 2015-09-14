@@ -1,5 +1,9 @@
 2015-09-14  Niels Möller  <nisse@lysator.liu.se>
 
+	* rsa-decrypt-tr.c (rsa_decrypt_tr): Use rsa_compute_root_tr.
+	Mainly for simplicity and consistency, I'm not aware of any CRT
+	fault attacks on RSA decryption.
+
 	* testsuite/rsa-encrypt-test.c (test_main): Added test with
 	invalid private key.
 
