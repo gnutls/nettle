@@ -2,7 +2,8 @@
 
    Creating RSA signatures, with some additional checks.
 
-   Copyright (C) 2015 Niels Möller
+   Copyright (C) 2001, 2015 Niels Möller
+   Copyright (C) 2012 Nikos Mavrogiannopoulos
 
    This file is part of GNU Nettle.
 
@@ -37,6 +38,44 @@
 
 #include "rsa.h"
 
+/* Blinds m, by computing c = m r^e (mod n), for a random r. Also
+   returns the inverse (ri), for use by rsa_unblind. */
+static void
+rsa_blind (const struct rsa_public_key *pub,
+	   void *random_ctx, nettle_random_func *random,
+	   mpz_t c, mpz_t ri, const mpz_t m)
+{
+  mpz_t r;
+
+  mpz_init(r);
+
+  /* c = m*(r^e)
+   * ri = r^(-1)
+   */
+  do
+    {
+      nettle_mpz_random(r, random_ctx, random, pub->n);
+      /* invert r */
+    }
+  while (!mpz_invert (ri, r, pub->n));
+
+  /* c = c*(r^e) mod n */
+  mpz_powm(r, r, pub->e, pub->n);
+  mpz_mul(c, m, r);
+  mpz_fdiv_r(c, c, pub->n);
+
+  mpz_clear(r);
+}
+
+/* m = c ri mod n */
+static void
+rsa_unblind (const struct rsa_public_key *pub,
+	     mpz_t m, const mpz_t ri, const mpz_t c)
+{
+  mpz_mul(m, c, ri);
+  mpz_fdiv_r(m, m, pub->n);
+}
+
 /* Checks for any errors done in the RSA computation. That avoids
  * attacks which rely on faults on hardware, or even software MPI
  * implementation. */
@@ -54,7 +93,7 @@ rsa_compute_root_tr(const struct rsa_public_key *pub,
   mpz_init (ri);
   mpz_init (t);
 
-  _rsa_blind (pub, random_ctx, random, mb, ri, m);
+  rsa_blind (pub, random_ctx, random, mb, ri, m);
 
   rsa_compute_root (key, xb, mb);
 
@@ -62,7 +101,7 @@ rsa_compute_root_tr(const struct rsa_public_key *pub,
   res = (mpz_cmp(mb, t) == 0);
 
   if (res)
-    _rsa_unblind (pub, x, ri, xb);
+    rsa_unblind (pub, x, ri, xb);
 
   mpz_clear (mb);
   mpz_clear (xb);
