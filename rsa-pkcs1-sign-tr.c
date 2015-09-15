@@ -46,7 +46,7 @@ rsa_pkcs1_sign_tr(const struct rsa_public_key *pub,
 	          size_t length, const uint8_t *digest_info,
    	          mpz_t s)
 {
-  mpz_t ri, m;
+  mpz_t m;
   int ret;
 
   mpz_init(m);
