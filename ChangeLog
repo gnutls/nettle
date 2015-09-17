@@ -1,3 +1,18 @@
+2015-09-17  Niels Möller  <nisse@lysator.liu.se>
+
+	* rsa-md5-sign-tr.c (rsa_md5_sign_tr, rsa_md5_sign_digest_tr): New
+	file, new functions.
+	* rsa-sha1-sign-tr.c (rsa_sha1_sign_tr, rsa_sha1_sign_digest_tr):
+	Likewise.
+	* rsa-sha256-sign-tr.c (rsa_sha256_sign_tr)
+	(rsa_sha256_sign_digest_tr): Likewise.
+	* rsa-sha512-sign-tr.c (rsa_sha512_sign_tr)
+	(rsa_sha512_sign_digest_tr): Likewise.
+	* rsa.h: Added corresponding prototypes.
+	* Makefile.in (hogweed_SOURCES): Added new files.
+	* testsuite/testutils.c (SIGN): Extend macro to test new
+	functions, and the rsa_*_sign_digest functions. Updated callers.
+
 2015-09-14  Niels Möller  <nisse@lysator.liu.se>
 
 	* rsa-sign-tr.c (rsa_blind, rsa_unblind): Moved here, made static,
