@@ -1,3 +1,7 @@
+2015-11-15  Niels Möller  <nisse@lysator.liu.se>
+
+	* rsa.h (_rsa_blind, _rsa_unblind): Mark as deprecated.
+
 2015-09-17  Niels Möller  <nisse@lysator.liu.se>
 
 	* rsa-md5-sign-tr.c (rsa_md5_sign_tr, rsa_md5_sign_digest_tr): New

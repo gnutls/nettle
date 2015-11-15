@@ -483,6 +483,8 @@ _rsa_verify(const struct rsa_public_key *key,
 size_t
 _rsa_check_size(mpz_t n);
 
+/* _rsa_blind and _rsa_unblind are deprecated, unused in the library,
+   and will likely be removed with the next ABI break. */
 void
 _rsa_blind (const struct rsa_public_key *pub,
 	    void *random_ctx, nettle_random_func *random,
