@@ -11,6 +11,9 @@
 	* rsa.h: Added corresponding prototypes.
 	* Makefile.in (hogweed_SOURCES): Added new files.
 
+	* testsuite/testutils.c (SIGN): Extend macro to test new
+	functions, and the rsa_*_sign_digest functions. Updated callers.
+
 2015-09-14  Niels Möller  <nisse@lysator.liu.se>
 
 	* rsa-decrypt-tr.c (rsa_decrypt_tr): Use rsa_compute_root_tr.
