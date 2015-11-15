@@ -47,7 +47,6 @@
 	key.
 	* testsuite/rsa-sign-tr-test.c: New testcase.
 
-
 2015-09-06  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle.texinfo: Updated SHA3 documentation.
