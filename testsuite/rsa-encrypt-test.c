@@ -39,7 +39,6 @@ test_main(void)
 
   if (verbose)
     {
-      /* In which GMP version was gmp_fprintf introduced? */
       fprintf(stderr, "encrypted: ");
       mpz_out_str(stderr, 10, gibberish);
     }
