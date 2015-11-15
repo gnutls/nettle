@@ -17,7 +17,7 @@ test_rsa_sign_tr(struct rsa_public_key *pub,
   knuth_lfib_init(&lfib, 1111);
 
   mpz_init(signature);
-
+  mpz_set_ui (signature, 17);
   /* Try bad private key */
   mpz_add_ui(key->p, key->p, 2);
 
@@ -27,7 +27,7 @@ test_rsa_sign_tr(struct rsa_public_key *pub,
 
   mpz_sub_ui(key->p, key->p, 2);
 
-  ASSERT(!mpz_cmp_ui(signature, 0));
+  ASSERT(!mpz_cmp_ui(signature, 17));
 
   /* Try the good private key */
   ASSERT(rsa_pkcs1_sign_tr(pub, key,

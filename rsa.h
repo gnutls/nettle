@@ -75,6 +75,7 @@ extern "C" {
 #define rsa_decrypt nettle_rsa_decrypt
 #define rsa_decrypt_tr nettle_rsa_decrypt_tr
 #define rsa_compute_root nettle_rsa_compute_root
+#define rsa_compute_root_tr nettle_rsa_compute_root_tr
 #define rsa_generate_keypair nettle_rsa_generate_keypair
 #define rsa_keypair_to_sexp nettle_rsa_keypair_to_sexp
 #define rsa_keypair_from_sexp_alist nettle_rsa_keypair_from_sexp_alist
@@ -315,6 +316,13 @@ void
 rsa_compute_root(const struct rsa_private_key *key,
 		 mpz_t x, const mpz_t m);
 
+/* Safer variant, using RSA blinding, and checking the result after
+   CRT. */
+int
+rsa_compute_root_tr(const struct rsa_public_key *pub,
+		    const struct rsa_private_key *key,
+		    void *random_ctx, nettle_random_func *random,
+		    mpz_t x, const mpz_t m);
 
 /* Key generation */
 
