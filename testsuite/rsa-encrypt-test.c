@@ -78,6 +78,13 @@ test_main(void)
   ASSERT(MEMEQ(msg_length, msg, decrypted));
   ASSERT(decrypted[msg_length] == after);
 
+  /* Test invalid key. */
+  mpz_add_ui (key.q, key.q, 2);
+  decrypted_length = key.size;
+  ASSERT(!rsa_decrypt_tr(&pub, &key,
+			 &lfib, (nettle_random_func *) knuth_lfib_random,
+			 &decrypted_length, decrypted, gibberish));
+
   rsa_private_key_clear(&key);
   rsa_public_key_clear(&pub);
   mpz_clear(gibberish);
