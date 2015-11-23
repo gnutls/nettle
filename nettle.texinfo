@@ -2125,7 +2125,7 @@ and decryption.
 Both associated data and the message data (cleartext or ciphertext) can
 be processed incrementally. In general, all associated data must be
 processed before the message data, and all calls but the last one must
-use a length that is a multiple of he block size, although some
+use a length that is a multiple of the block size, although some
 @acronym{AEAD} may implement more liberal conventions. The @acronym{CCM}
 mode is a bit special in that it requires the message lengths up front,
 other @acronym{AEAD} constructions don't have this restriction.
