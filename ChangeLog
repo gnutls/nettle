@@ -1,3 +1,8 @@
+2015-11-23  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle.texinfo: Document rsa_encrypt, rsa_decrypt and
+	rsa_decrypt_tr. Text contributed by Andy Lawrence.
+
 2015-11-15  Niels Möller  <nisse@lysator.liu.se>
 
 	* rsa.h (_rsa_blind, _rsa_unblind): Mark as deprecated.

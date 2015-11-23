@@ -3693,6 +3693,32 @@ point to a digest of size @code{MD5_DIGEST_SIZE},
 @code{SHA1_DIGEST_SIZE}, or @code{SHA256_DIGEST_SIZE}, respectively.
 @end deftypefun
 
+The RSA algorithm can also be used for encryption. RSA encryption uses
+the public key @code{(n,e)} to compute the ciphertext @code{m^e mod n}.
+The PKCS#1 padding scheme will use at least 8 random and non-zero
+octets, using @var{m} of the form @code{[00 02 padding 00 plaintext]}.
+It is required that @code{m < n}, and therefor the plaintext must be
+smaller than the octet size of the modulo @code{n}, with some margin.
+
+The following function is used to encrypt a clear text message using RSA.
+@deftypefun int rsa_encrypt (const struct rsa_public_key *@var{key}, void *@var{random_ctx}, nettle_random_func *@var{random}, size_t @var{length}, const uint8_t *@var{cleartext}, mpz_t @var{ciphertext})
+Returns 1 on success, 0 on failure. If the message is too long then this
+will lead to a failure.
+@end deftypefun
+The following function is used to decrypt a cipher text message using RSA.
+@deftypefun int rsa_decrypt (const struct rsa_private_key *@var{key}, size_t *@var{length}, uint8_t *@var{cleartext}, const mpz_t @var{ciphertext})
+Returns 1 on success, 0 on failure. Causes of failure include decryption
+failing or the resulting message being to large. The message buffer
+pointed to by @var{cleartext} must be of size *@var{length}. After
+decryption, *@var{length} will be updated with the size of the
+message.
+@end deftypefun
+There is also a timing resistant version of decryption that utilizes
+randomized RSA blinding.
+@deftypefun int rsa_decrypt_tr (const struct rsa_public_key *@var{pub}, const struct rsa_private_key *@var{key}, void *@var{random_ctx}, nettle_random_func *@var{random}, size_t *@var{length}, uint8_t *@var{message}, const mpz_t @var{ciphertext})
+Returns 1 on success, 0 on failure.
+@end deftypefun
+
 If you need to use the @acronym{RSA} trapdoor, the private key, in a way
 that isn't supported by the above functions Nettle also includes a
 function that computes @code{x^d mod n} and nothing more, using the
