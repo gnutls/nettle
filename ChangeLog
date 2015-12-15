@@ -1,3 +1,11 @@
+2015-12-15  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/ecc-384-modp.asm: Fixed carry propagation bug. Problem
+	reported by Hanno Böck. Simplified the folding to always use
+	non-negative carry, the old code attempted to add in a carry which
+	could be either positive or negative, but didn't get that case
+	right.
+
 2015-12-10  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-256.c (ecc_256_modp): Fixed carry propagation bug. Problem
