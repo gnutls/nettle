@@ -827,7 +827,7 @@ IF_DLOPEN_TEST='#'
 if test "x$enable_shared" = xyes ; then
   IF_SHARED=''
   IF_NOT_SHARED='#'
-  if "x$ac_cv_lib_dl_dlopen" = yes ; then
+  if test "x$ac_cv_lib_dl_dlopen" = xyes ; then
     IF_DLOPEN_TEST=''
   fi
 else

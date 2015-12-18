@@ -1,5 +1,7 @@
 2015-12-18  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac (IF_DLOPEN_TEST): Fixed shell conditional.
+
 	* testsuite/ecc-mod-test.c (test_main): Handle random seeding if
 	NETTLE_TEST_SEED is set in the environment.
 
