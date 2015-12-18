@@ -1,5 +1,10 @@
 2015-12-18  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/testutils.h: Fix include order, system headers before
+	nettle headers. Always include version.h, needed by
+	version-test.c. It was included indirectly via bignum.h, but only
+	if configured with publickey support.
+
 	* configure.ac (IF_DLOPEN_TEST): Fixed shell conditional.
 
 	* testsuite/ecc-mod-test.c (test_main): Handle random seeding if
