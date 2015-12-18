@@ -1,3 +1,8 @@
+2015-12-18  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/ecc-mod-test.c (test_main): Handle random seeding if
+	NETTLE_TEST_SEED is set in the environment.
+
 2015-12-15  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86_64/ecc-384-modp.asm: Fixed carry propagation bug. Problem
