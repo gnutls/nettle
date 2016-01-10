@@ -1,3 +1,8 @@
+2016-01-10  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle.texinfo (RSA): Document the rsa_pkcs1_verify and
+	rsa_pkcs1_sign functions, and the new rsa_*_tr functions.
+
 2015-12-18  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/testutils.h: Fix include order, system headers before
