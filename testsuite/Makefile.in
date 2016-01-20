@@ -138,7 +138,8 @@ distdir: $(DISTFILES)
 	cp $? $(distdir)
 
 clean:
-	-rm -f $(TARGETS) $(EXTRA_TARGETS) *.o test.in test1.out test2.out
+	-rm -f $(TARGETS) $(EXTRA_TARGETS) dlopen-test$(EXEEXT) \
+		*.o test.in test1.out test2.out
 
 distclean: clean
 	-rm -f Makefile *.d
