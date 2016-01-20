@@ -3,10 +3,22 @@ NEWS for the Nettle 3.2 release
 	Bug fixes:
 
 	* The SHA3 implementation is updated according to the FIPS 202
-          standard. It is not interoperable with earlier versions of
-          Nettle. Thanks to Nikos Mavrogiannopoulos.
+	  standard. It is not interoperable with earlier versions of
+	  Nettle. Thanks to Nikos Mavrogiannopoulos. To easily
+	  differentiate at compile time, sha3.h defines the constant
+	  NETTLE_SHA3_FIPS202.
+
+	* Fix corner-case carry propagation bugs affecting elliptic
+	  curve operations on the curves secp_256r1 and secp_384r1 on
+	  certain platforms, including x86_64. Reported by Hanno Böck.
 
 	New features:
+
+	* New functions for RSA private key operations, identified by
+	  the "_tr" suffix, with better resistance to side channel
+	  attacks and to hardware or software failures which could
+	  break the CRT optimization. See the Nettle manual for
+	  details. Initial patch by Nikos Mavrogiannopoulos.
 
 	* New functions nettle_version_major, nettle_version_minor, as
 	  a run-time variant of the compile-time constants
@@ -25,7 +37,12 @@ NEWS for the Nettle 3.2 release
 	  assembler. Thanks to Jukka Ukkonen.
 
 	* Disabled use of ifunc relocations for fat builds, to fix
-	  problems most triggered by using dlopen with RTLD_NOW.
+	  problems most easily triggered by using dlopen RTLD_NOW.
+
+	The shared library names are libnettle.so.6.2 and
+	libhogweed.so.4.2, with sonames still libnettle.so.6 and
+	libhogweed.so.4. It is intended to be fully binary compatible
+	with nettle-3.1.
 
 NEWS for the Nettle 3.1.1 release
 
