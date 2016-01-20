@@ -1,5 +1,7 @@
 2016-01-20  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/dlopen-test.c (main): Mark arguments as UNUSED.
+
 	* testsuite/Makefile.in (clean): Delete dlopen-test.
 
 2016-01-10  Niels Möller  <nisse@lysator.liu.se>
