@@ -2,7 +2,7 @@ dnl -*- mode: shell-script; sh-indentation: 2; -*-
 
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([nettle], [3.1.1], [nettle-bugs@lists.lysator.liu.se])
+AC_INIT([nettle], [3.2], [nettle-bugs@lists.lysator.liu.se])
 AC_PREREQ(2.61)
 AC_CONFIG_SRCDIR([arcfour.c])
 # Needed to stop autoconf from looking for files in parent directories.
@@ -11,10 +11,10 @@ AC_CONFIG_AUX_DIR([.])
 AC_CONFIG_HEADER([config.h])
 
 LIBNETTLE_MAJOR=6
-LIBNETTLE_MINOR=1
+LIBNETTLE_MINOR=2
 
 LIBHOGWEED_MAJOR=4
-LIBHOGWEED_MINOR=1
+LIBHOGWEED_MINOR=2
 
 dnl Note double square brackets, for extra m4 quoting.
 MAJOR_VERSION=`echo $PACKAGE_VERSION | sed 's/^\([[^.]]*\)\..*/\1/'`

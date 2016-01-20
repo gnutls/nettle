@@ -4,6 +4,10 @@
 
 	* testsuite/Makefile.in (clean): Delete dlopen-test.
 
+	* configure.ac: Bump package version, to nettle-3.2.
+	(LIBNETTLE_MINOR, LIBHOGWEED_MINOR): Bump minor versions, to
+	libnettle.so.6.2 and and libhogweed.so.4.2.
+
 2016-01-10  Niels Möller  <nisse@lysator.liu.se>
 
 	* base64-encode.c (encode_raw): Use const uint8_t * for the
