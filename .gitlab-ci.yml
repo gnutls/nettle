@@ -1,0 +1,19 @@
+# See http://doc.gitlab.com/ce/ci/yaml/ for documentation.
+Build and Check (x86-64):
+  script:
+  - ./.bootstrap &&
+    ./configure --disable-documentation && make -j4 &&
+    make check -j4
+  tags:
+  - x86-64
+  except:
+  - tags
+Build and Check (x86):
+  script:
+  - ./.bootstrap &&
+    ./configure --disable-documentation && make -j4 &&
+    make check -j4
+  tags:
+  - x86
+  except:
+  - tags

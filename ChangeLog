@@ -1,3 +1,8 @@
+2016-01-21  Niels Möller  <nisse@lysator.liu.se>
+
+	* .gitlab-ci.yml: New file. Configuration for gitlab's continuous
+	integration system.
+
 2016-01-20  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/dlopen-test.c (main): Mark arguments as UNUSED.
