@@ -14,7 +14,7 @@
   <h1> Nettle release plans </h1>
   <p> This is an attempt at defining a development target for
     Nettle-3.2, inspired by similar pages for recent GMP releases.
-    [Last updated 2015-09-02]</p>
+    [Last updated 2016-01-23]</p>
   <p class='should'>
     This really ought to be done before release
   </p>
@@ -31,32 +31,32 @@
   <h1> Plans for nettle-3.2 </h1>
 
   <h2> New features </h2>
-  <p class='should'>
+  <p class='done'>
     "CRT-hardened" RSA secret key operations. Check that the result of
     rsa_compute_root is correct. Should be easy for the
     rsa_pkcs1_sign_tr and rsa_decrypt_tr functions, other RSA
     functions would need interface changes.
   </p>
-  <p class='wish'>
+  <p class='postponed'>
     Add larger "safe" curves, e.g., M-383, curve41417 and E-521.
   </p>
-  <p class='wish'>
+  <p class='postponed'>
     Add functions for converting ECC points to and from ANSI x9.62.
   </p>
-  <p class='wish'>
+  <p class='postponed'>
     Use side-channel silent GMP functions for RSA and DSA. May require
     additional interface changes, to use mpn functions.
   </p>
-  <p class='should'>
+  <p class='postponed'>
     Side-channel silent mem_equalp.
   </p>
 
   <h2> Optimizations </h2>
 
-  <p class='wish'>
+  <p class='postponed'>
     Assembly optimizations for ARMv8 (64-bit).
   </p>
-  <p class='wish'>
+  <p class='postponed'>
     Further optimizations of curve25519 and EdDSA, in particular,
     radix 51 modp operations,
     and <a href='http://www.hyperelliptic.org/EFD/g1p/auto-twisted-extended-1.html#addition-add-2008-hwcd-3'>more
@@ -64,15 +64,18 @@
   </p>
   
   <h2> Miscellaneous </h2>
-  <p class='wish'>
+  <p class='postponed'>
     Use more functions from GMP-6 and later, when available:
     mpn_sec_add_1, mpn_sec_tabselect, mpn_sec_invert, mpn_cnd_swap,
     ...
   </p>
 
   <h2> Documentation </h2>
-  <p class='should'>
+  <p class='done'>
     Update SHA3 documentation.
+  </p>
+  <p class='done'>
+    Update and extend RSA documentation.
   </p>
   
   <h2> Build system </h2>
@@ -84,17 +87,22 @@
   <p> Since xenofarm isn't up and running, do some manual testing:
   </p>
   <ul>
-    <li class='should'> x86_64-linux-gnu</li>
-    <li class='should'> x86-linux-gnu</li>
-    <li class='should'> x86_64-freebsd</li>
-    <li class='should'> x86-w*ndows (using cross compiler and wine)</li>
-    <li class='should'> x86_64-w*ndows (using cross compiler and wine)</li>
+    <li class='done'> x86_64-linux-gnu</li>
+    <li class='done'> x86-linux-gnu</li>
+    <li class='done'> x86_64-freebsd</li>
+    <li class='done'> x86-w*ndows (using cross compiler and wine)</li>
+    <li class='done'> x86_64-w*ndows (using cross compiler and wine)</li>
     <li class='should'> x86-darwin (needs help from Nettle users)</li>
     <li class='should'> x86_64-darwin (needs help from Nettle users)</li>
-    <li class='should'> armv7-linux-gnu (pandaboard test platform)</li>
+    <li class='done'> armv5-linux-gnu (qemu)</li>
+    <li class='done'> armv7-linux-gnu (qemu)</li>
+    <li class='done'> armv8-linux-gnu (qemu)</li>
+    <li class='done'> ppc64-linux-gnu (qemu)</li>
+    <li class='done'> ppc32-linux-gnu (qemu)</li>
+    <li class='should'> mips64-linux-gnu (qemu)</li>
+    <li class='should'> mips32-linux-gnu (qemu)</li>
+    <li class='should'> m68k-linux-gnu (aranym)</li>
     <li class='wish'> armv7-android </li>
-    <li class='wish'> sparc32-solaris10</li>
-    <li class='wish'> sparc64-solaris10</li>
   </ul>
 
   <h1> Changes under consideration for later releases </h1>
