@@ -7,7 +7,7 @@
 @syncodeindex fn cp
 @c %**end of header
 
-@set UPDATED-FOR 3.1
+@set UPDATED-FOR 3.2
 @set AUTHOR Niels Möller
 
 @copying

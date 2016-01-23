@@ -1,3 +1,7 @@
+2016-01-23  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle.texinfo: Set UPDATED-FOR to 3.2.
+
 2016-01-21  Niels Möller  <nisse@lysator.liu.se>
 
 	* .gitlab-ci.yml: New file. Configuration for gitlab's continuous
