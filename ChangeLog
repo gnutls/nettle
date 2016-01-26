@@ -1,3 +1,11 @@
+2016-01-26  Niels Möller  <nisse@lysator.liu.se>
+
+	* tools/nettle-pbkdf2.c (main): Fix handling of unrecognized
+	options. Bug reported by Dongsheng Zhang. Display usage message
+	and exit non-zero. Also added "Usage: "-prefix to the message.
+	* tools/nettle-hash.c (usage): New function, extracted from main.
+	(main): Analogous fix for unrecognized options.
+
 2016-01-23  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle.texinfo: Set UPDATED-FOR to 3.2.
