@@ -1,5 +1,10 @@
 2016-02-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* tools/input.c (sexp_get_string_length): Process advanced string
+	syntax only when in advanced mode. Fixes an assertion failure
+	reported by Hanno Böck, for input where advanced syntax is
+	improperly wrapped inside transport syntax.
+
 	* tools/parse.c (sexp_parse): Fail with an error message for
 	unexpected ']' characters. Fixes crash reported by Hanno Böck.
 	Also handle SEXP_DISPLAY (internal error) explicitly, without a
