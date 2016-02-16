@@ -1935,7 +1935,7 @@ around.
 
 Applies the encryption or decryption function @var{f} in @acronym{CBC}
 mode. The final ciphertext block processed is copied into @var{iv}
-before returning, so that large message be processed be a sequence of
+before returning, so that a large message can be processed by a sequence of
 calls to @code{cbc_encrypt}. The function @var{f} is of type
 
 @code{void f (void *@var{ctx}, size_t @var{length}, uint8_t @var{dst},
