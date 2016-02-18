@@ -576,12 +576,12 @@ case "$host_os" in
     # linking to the DLL, is installed into the lib dir.
     case "$host_os" in
       mingw32*)
-        LIBNETTLE_FORLINK='libnettle-$(LIBNETTLE_MAJOR)-$(LIBNETTLE_MINOR).dll'
-        LIBHOGWEED_FORLINK='libhogweed-$(LIBHOGWEED_MAJOR)-$(LIBHOGWEED_MINOR).dll'
+        LIBNETTLE_FORLINK='libnettle-$(LIBNETTLE_MAJOR).dll'
+        LIBHOGWEED_FORLINK='libhogweed-$(LIBHOGWEED_MAJOR).dll'
         ;;
       cygwin*)
-        LIBNETTLE_FORLINK='cygnettle-$(LIBNETTLE_MAJOR)-$(LIBNETTLE_MINOR).dll'
-        LIBHOGWEED_FORLINK='cyghogweed-$(LIBHOGWEED_MAJOR)-$(LIBHOGWEED_MINOR).dll'
+        LIBNETTLE_FORLINK='cygnettle-$(LIBNETTLE_MAJOR).dll'
+        LIBHOGWEED_FORLINK='cyghogweed-$(LIBHOGWEED_MAJOR).dll'
         ;;
     esac
     if test "x$cross_compiling" = xyes ; then
