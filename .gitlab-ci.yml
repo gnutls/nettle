@@ -17,3 +17,19 @@ Build and Check (x86):
   - x86
   except:
   - tags
+Build and Check with ubsan:
+  script:
+  - ./.bootstrap && 
+    CXXFLAGS="-fsanitize=undefined -fno-sanitize-recover -g -O2" CFLAGS="-fsanitize=undefined -fno-sanitize-recover -g -O2" ./configure 
+    --disable-documentation && make -j4 && make check -j4
+  tags:
+  - ubsan
+  except:
+  - tags
+Build and Check with asan:
+  script:
+  - ./.bootstrap && 
+  - CXXFLAGS="-fsanitize=address -g -O2" CFLAGS="-fsanitize=address -g -O2" ./configure --disable-documentation &&
+    make -j4 && make check -j4
+  except:
+  - tags
