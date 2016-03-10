@@ -91,7 +91,7 @@ AC_ARG_ENABLE(mini-gmp,
 
 if test "x$enable_mini_gmp" = xyes ; then
   NETTLE_USE_MINI_GMP=1
-  HOGWEED_EXTRA_SYMBOLS="mpz_*;gmp_*;mpn_*;"
+  HOGWEED_EXTRA_SYMBOLS="mpz_*;gmp_*;mpn_*;mp_*;"
 else
   NETTLE_USE_MINI_GMP=0
   HOGWEED_EXTRA_SYMBOLS=""
