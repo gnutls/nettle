@@ -17,6 +17,14 @@ Build and Check (x86):
   - x86
   except:
   - tags
+Build and Check with mini-gmp:
+  script:
+  - ./.bootstrap &&
+    ./configure --disable-documentation --enable-mini-gmp && make -j4 &&
+    make check -j4
+  tags:
+  except:
+  - tags
 Build and Check with ubsan:
   script:
   - ./.bootstrap && 
