@@ -1,3 +1,8 @@
+2016-03-14  Niels Möller  <nisse@lysator.liu.se>
+
+	* getopt.c (_getopt_internal_r): Fix c99-ism, move declarations to
+	top of block. Reported by Henrik Grubbström.
+
 2016-02-16  Niels Möller  <nisse@lysator.liu.se>
 
 	* tools/input.c (sexp_get_string_length): Process advanced string
