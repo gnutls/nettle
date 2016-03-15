@@ -1,5 +1,9 @@
 2016-03-15  Niels Möller  <nisse@lysator.liu.se>
 
+	* blowfish.c (blowfish_encrypt, blowfish_decrypt): Use READ_UINT32
+	macro. Fixes an undefined shift, reported by Nikos
+	Mavrogiannopoulos.
+
 	From Nikos Mavrogiannopoulos.
 	* configure.ac (HOGWEED_EXTRA_SYMBOLS): Add "mp_*", when building
 	with mini-gmp.
