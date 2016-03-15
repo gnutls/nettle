@@ -1,3 +1,11 @@
+2016-03-15  Niels Möller  <nisse@lysator.liu.se>
+
+	From Nikos Mavrogiannopoulos.
+	* configure.ac (HOGWEED_EXTRA_SYMBOLS): Add "mp_*", when building
+	with mini-gmp.
+	* des.c (des_weak_p): Check that the hash value is in the proper
+	range before using it. Fixes an out-of-bounds read.
+
 2016-03-14  Niels Möller  <nisse@lysator.liu.se>
 
 	* getopt.c (_getopt_internal_r): Fix c99-ism, move declarations to
