@@ -1,5 +1,11 @@
 2016-03-15  Niels Möller  <nisse@lysator.liu.se>
 
+	* twofish.c (gf_multiply): Change return value to uint32_t, to
+	make shifting of the return value well defined, without any type
+	casts. Fixes an undefined shift in compute_s, reported by Nikos
+	Mavrogiannopoulos.
+	(h_byte): Deleted type casts.
+
 	* blowfish.c (blowfish_encrypt, blowfish_decrypt): Use READ_UINT32
 	macro. Fixes an undefined shift, reported by Nikos
 	Mavrogiannopoulos.
