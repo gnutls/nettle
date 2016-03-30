@@ -1,3 +1,9 @@
+2016-03-30  Niels Möller  <nisse@lysator.liu.se>
+
+	From Nikos Mavrogiannopoulos.
+	* configure.ac: Change dll names to follow the libtool convention
+	with only major version number in the name.
+
 2016-03-15  Niels Möller  <nisse@lysator.liu.se>
 
 	* twofish.c (gf_multiply): Change return value to uint32_t, to
