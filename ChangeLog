@@ -1,3 +1,8 @@
+2016-04-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* curve25519-mul.c (curve25519_mul): Ignore top bit of the input x
+	coordinate, as erquired by RFC 7748.
+
 2016-03-15  Niels Möller  <nisse@lysator.liu.se>
 
 	* twofish.c (gf_multiply): Change return value to uint32_t, to
