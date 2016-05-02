@@ -1,3 +1,15 @@
+2016-05-02  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle.texinfo: Update Curve25519 documentation.
+
+	* testsuite/curve25519-dh-test.c: Test that inputs bits which must
+	be ignored really are ignored.
+
+2016-04-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* curve25519-mul.c (curve25519_mul): Ignore top bit of the input x
+	coordinate, as required by RFC 7748.
+
 2016-03-30  Niels Möller  <nisse@lysator.liu.se>
 
 	From Nikos Mavrogiannopoulos.
