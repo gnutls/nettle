@@ -4304,30 +4304,38 @@ random octets and store them at @code{dst}. For advice, see
 
 @subsubsection Curve25519
 
+@c FIXME: Make 2^255 pretty in all output formats. Use @sup?
+@c There are other places too (2^32, 2^130).
+
 Curve25519 is an elliptic curve of Montgomery type, @math{y^2 = x^3 +
 486662 x^2 + x @pmod{p}}, with @math{p = 2^255 - 19}. Montgomery curves
 have the advantage of simple and efficient point addition based on the
-x-coordinate only. This particular curve was proposed by D.~J.~Bernstein
-in 2006, for fast Diffie-Hellman key exchange. The group generator is
-defined by @math{x = 9} (there are actually two points with @math{x =
-9}, differing by the sign of the y-coordinate, but that doesn't matter
-for the curve25519 operations which work with the x-coordinate only).
+x-coordinate only. This particular curve was proposed by D. J. Bernstein
+in 2006, for fast Diffie-Hellman key exchange, and is also described in
+@cite{RFC 7748}. The group generator is defined by @math{x = 9} (there
+are actually two points with @math{x = 9}, differing by the sign of the
+y-coordinate, but that doesn't matter for the curve25519 operations
+which work with the x-coordinate only).
 
 The curve25519 functions are defined as operations on octet strings,
-which are interpreted as x-coordinates in little-endian byte order.
+representing 255-bit scalars or x-coordinates, in little-endian byte
+order. The most significant input bit, i.e, the most significant bit of
+the last octet, is always ignored.
 
-Of all the possible input strings, only about half correspond to points
-on curve25519, i.e., a value that can be produced by
-@code{curve25519_mul_g}. The other half corresponds to points on a
-related ``twist curve''. The current implementation of
+For scalars, in addition, the least significant three bits are ignored,
+and treated as zero, and the second most significant bit is ignored too,
+and treated as one. Then the scalar input string always represents 8
+times a number in the range @math{2^251 <= s < 2^252}.
+
+Of all the possible input strings, only about half correspond to
+x-coordinates of points on curve25519, i.e., a value @math{x} for which
+the the curve equation can be solved for @math{y}. The other half
+correspond to points on a related ``twist curve''. The function
 @code{curve25519_mul} uses a Montgomery ladder for the scalar
-multiplication, as suggested in the curve25519 literature, and produces
-a well defined output for all possible inputs, no matter if points are
-on the proper curve or on its twist. However, at the time of writing, it
-is not yet ruled out that other implementations could be faster, and
-therefore the behaviour for inputs corresponding to points on the twist
-curve must be considered an implementation idiosyncrasy, and may change
-in future versions.
+multiplication, as suggested in the curve25519 literature, and required
+by @cite{RFC 7748}. Its the output is therefore well defined for
+@emph{all} possible inputs, no matter if the input string represents a
+valid point on the curve or not.
 
 @defvr Constant CURVE25519_SIZE
 The size of the strings representing curve25519 points and scalars, 32.
@@ -4351,10 +4359,6 @@ argument @var{q} use a little-endian representation of the scalar and
 the x-coordinates, respectively. They are all of size
 @code{CURVE25519_SIZE}.
 
-The output value is defined only when the input @var{p} is a string
-produced by @code{curve25519_mul_g}. (See discussion above, about the
-twist curve).
-
 This function is intended to be compatible with the function
 @code{crypto_scalar_mult} in the NaCl library.
 @end deftypefun
@@ -4362,7 +4366,7 @@ This function is intended to be compatible with the function
 @subsubsection EdDSA
 @cindex eddsa
 
-EdDSA is a signature scheme proposed by D.~J.~Bernstein et al. in 2011.
+EdDSA is a signature scheme proposed by D. J. Bernstein et al. in 2011.
 It is defined using a ``Twisted Edwards curve'', of the form @math{-x^2
 + y^2 = 1 + d x^2 y^2}. The specific signature scheme Ed25519 uses a
 curve which is equivalent to curve25519: The two groups used differ only
