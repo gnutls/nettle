@@ -122,6 +122,7 @@ curve25519_mul (uint8_t *q, const uint8_t *n, const uint8_t *p)
       ecc_modp_sqr (ecc, DA, C);
       ecc_modp_mul (ecc, z3, DA, x1);
 
+      /* FIXME: Could be combined with the loop's initial cnd_swap. */
       cnd_swap (bit, x2, x3, 2*ecc->p.size);
     }
   /* Do the 3 low zero bits, just duplicating x2 */
