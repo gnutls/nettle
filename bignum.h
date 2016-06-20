@@ -53,6 +53,8 @@
 # define mpz_combit mpz_combit
 # define mpz_import mpz_import
 # define mpz_export mpz_export
+/* Side-channel silent powm not available in mini-gmp. */
+# define mpz_powm_sec mpz_pwm
 #else
 # include <gmp.h>
 #endif
