@@ -1,3 +1,13 @@
+2016-07-13  Niels Möller  <nisse@lysator.liu.se>
+
+	* bignum.c (nettle_mpz_from_octets): Unconditionally use
+	mpz_import.
+	* gmp-glue.c (mpn_copyd, mpn_copyi, mpn_zero): Deleted
+	compatibility definitions for older versions of GMP.
+	* gmp-glue.h (mpn_sqr): Deleted compatibility definition.
+	* testsuite/testutils.c (mpz_combit): Deleted compatibility
+	definition.
+
 2016-07-12  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Check for mpz_powm_sec, and require GMP-5.0 or

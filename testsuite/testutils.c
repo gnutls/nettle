@@ -606,18 +606,6 @@ test_armor(const struct nettle_armor *armor,
 
 #if WITH_HOGWEED
 
-#ifndef mpz_combit
-/* Missing in older gmp */
-static void
-mpz_combit (mpz_t x, unsigned long int bit)
-{
-  if (mpz_tstbit(x, bit))
-    mpz_clrbit(x, bit);
-  else
-    mpz_setbit(x, bit);
-}
-#endif
-
 #ifndef mpn_zero_p
 int
 mpn_zero_p (mp_srcptr ap, mp_size_t n)
