@@ -65,7 +65,7 @@ dsa_sign(const struct dsa_params *params,
   mpz_add_ui(k, k, 1);
 
   /* Compute r = (g^k (mod p)) (mod q) */
-  mpz_powm(tmp, params->g, k, params->p);
+  mpz_powm_sec(tmp, params->g, k, params->p);
   mpz_fdiv_r(signature->r, tmp, params->q);
 
   /* Compute hash */
