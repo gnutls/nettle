@@ -56,6 +56,11 @@ dsa_sign(const struct dsa_params *params,
   mpz_t tmp;
   int res;
   
+  /* Check that p is odd, so that invalid keys don't result in a crash
+     inside mpz_powm_sec. */
+  if (mpz_even_p (params->p))
+    return 0;
+
   /* Select k, 0<k<q, randomly */
   mpz_init_set(tmp, params->q);
   mpz_sub_ui(tmp, tmp, 1);
