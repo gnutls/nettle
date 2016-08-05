@@ -652,15 +652,15 @@ bench_openssl_ecdsa_clear (void *p)
 
 struct curve25519_ctx
 {
-  char x[CURVE25519_SIZE];
-  char s[CURVE25519_SIZE];
+  uint8_t x[CURVE25519_SIZE];
+  uint8_t s[CURVE25519_SIZE];
 };
 
 static void
 bench_curve25519_mul_g (void *p)
 {
   struct curve25519_ctx *ctx = p;
-  char q[CURVE25519_SIZE];
+  uint8_t q[CURVE25519_SIZE];
   curve25519_mul_g (q, ctx->s);
 }
 
@@ -668,7 +668,7 @@ static void
 bench_curve25519_mul (void *p)
 {
   struct curve25519_ctx *ctx = p;
-  char q[CURVE25519_SIZE];
+  uint8_t q[CURVE25519_SIZE];
   curve25519_mul (q, ctx->s, ctx->x);
 }
 

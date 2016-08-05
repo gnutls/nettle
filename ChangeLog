@@ -1,7 +1,7 @@
 2016-08-05  Niels Möller  <nisse@lysator.liu.se>
 
-	* examples/hogweed-benchmark.c (bench_rsa_init): Use uint8_t for
-	sexp strings.
+	* examples/hogweed-benchmark.c: Use uint8_t for curve25519 values.
+	(bench_rsa_init): Use uint8_t for sexp strings.
 	(bench_dsa_init): Likewise.
 
 	* examples/io.c (read_file): Use size_t for sizes, and uint8_t for
