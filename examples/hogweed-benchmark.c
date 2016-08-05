@@ -173,7 +173,7 @@ struct rsa_ctx
 static void *
 bench_rsa_init (unsigned size)
 {
-  char rsa1024[] = 
+  unsigned char rsa1024[] =
     "{KDExOnByaXZhdGUta2V5KDE0OnJzYS1wa2NzMS1zaGExKDE6bjEyOToA90+K5EmjbFJBeJD"
     " xP2KD2Df+0Twc9425uB+vhqTrVijtd2PnwEQDfR2VoducgkKcXJzYYyCNILQJbFAi2Km/sD"
     " jImERBqDtaI217Ze+tOKEmImexYTAgFuqEptp2F3M4DqgRQ7s/3nJQ/bPE5Hfi1OZhJSShu"
@@ -188,7 +188,7 @@ bench_rsa_init (unsigned size)
     " tAiGzthfSbFsBiLQgb3VOr+AeIybT+XKSgxOmM2NDojigqARWN5u1CVDVuD2L2ManpoGiM6"
     " kQ6FaJjqRjxeRRKFrQxGJa9tM1hqStxokC1oJidgaOLGnn60iwzToug9KSkp}";
     
-  char rsa2048[] =
+  unsigned char rsa2048[] =
     "{KDExOnByaXZhdGUta2V5KDE0OnJzYS1wa2NzMS1zaGExKDE6bjI1NzoAtxWXiglIdunDK48"
     " 8I0vW0wTqnh/riW9pLk8n1F8MUPBFdhvkkl0bDQqSJPUvSHy+w4fLVwcEzeI4qFyo3b2Avz"
     " JK20MFbt/WfHD1TbxuK8rNqXyqmqjJ9vgjtV9nPzAz7CM9ogs3/RJHpcfZPQF15ifizleUZ"
@@ -294,7 +294,7 @@ bench_dsa_init (unsigned size)
   struct dsa_ctx *ctx;
   struct sexp_iterator i;  
 
-  char dsa1024[] =
+  unsigned char dsa1024[] =
     "{KDExOnByaXZhdGUta2V5KDM6ZHNhKDE6cDEyOToA2q4hOXEClLMXXMOl9xaPcGC/GeGmCMv"
     " VCaaW0uWc50DvvmJDPQPdCehyfZr/1dv2UDbx06TC7ls/IFd+BsDzGBRxqIQ44J20cn+0gt"
     " NMIXAocE1QhCCFaT5gXrk8zMlqBEGaP3RdpgxNanEXkTj2Wma8r1GtrLX3HPafio62jicpK"
