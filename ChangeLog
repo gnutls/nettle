@@ -3,6 +3,8 @@
 	* examples/hogweed-benchmark.c: Use uint8_t for curve25519 values.
 	(bench_rsa_init): Use uint8_t for sexp strings.
 	(bench_dsa_init): Likewise.
+	(hash_string): Delete length argument, calling strlen instead.
+	Cast string to const uint8_t *. Updated callers.
 
 	* examples/io.c (read_file): Use size_t for sizes, and uint8_t for
 	the contents.
