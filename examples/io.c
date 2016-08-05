@@ -74,11 +74,11 @@ werror(const char *format, ...)
     }
 }
 
-unsigned
-read_file(const char *name, unsigned max_size, char **contents)
+size_t
+read_file(const char *name, size_t max_size, uint8_t **contents)
 {
-  unsigned size, done;
-  char *buffer;
+  size_t size, done;
+  uint8_t *buffer;
   FILE *f;
     
   f = fopen(name, "rb");
@@ -92,7 +92,7 @@ read_file(const char *name, unsigned max_size, char **contents)
 
   for (buffer = NULL, done = 0;; size *= 2)
     {
-      char *p;
+      uint8_t *p;
 
       if (max_size && size > max_size)
 	size = max_size;
@@ -167,7 +167,7 @@ int
 simple_random(struct yarrow256_ctx *ctx, const char *name)
 {
   unsigned length;
-  char *buffer;
+  uint8_t *buffer;
 
   if (name)
     length = read_file(name, 0, &buffer);

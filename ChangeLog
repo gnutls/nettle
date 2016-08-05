@@ -1,3 +1,8 @@
+2016-08-05  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/io.c (read_file): Use size_t for sizes, and uint8_t for
+	the contents.
+
 2016-08-04  Niels Möller  <nisse@lysator.liu.se>
 
 	* dsa-sign.c (dsa_sign): Return failure if p is even, so that an
