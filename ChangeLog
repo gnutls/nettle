@@ -1,5 +1,7 @@
 2016-08-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/io.c (hash_file): Use uint8_t for buffer.
+
 	* sexp.c (sexp_iterator_check_type, sexp_iterator_check_types)
 	(sexp_iterator_assoc): Use const char * for caller's expression
 	types. Updated all callers.
