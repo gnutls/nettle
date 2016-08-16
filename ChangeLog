@@ -1,5 +1,8 @@
 2016-08-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* rsa2openpgp.c (rsa_keypair_to_openpgp): Added cast to const
+	uint8_t *.
+
 	* pgp-encode.c (write_string): New helper function, replacing...
 	(WRITE): ... deleted macro.
 
