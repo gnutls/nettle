@@ -1,3 +1,10 @@
+2016-08-16  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/io.c (write_data): Renamed, and use const void * for
+	the input data. Updated all callers.
+	(write_string): ... old name.
+	(write_file): Use const void * for the input data.
+
 2016-08-05  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/hogweed-benchmark.c: Use uint8_t for curve25519 values.

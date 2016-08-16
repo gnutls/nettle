@@ -159,7 +159,7 @@ process_file(struct rsa_session *ctx,
 	{
 	  CBC_DECRYPT(&ctx->aes, aes_decrypt, size, buffer, buffer);
 	  hmac_sha1_update(&ctx->hmac, size, buffer);
-	  if (!write_string(out, size, buffer))
+	  if (!write_data(out, size, buffer))
 	    {
 	      werror("Writing output failed: %s\n", strerror(errno));
 	      return 0;
@@ -182,7 +182,7 @@ process_file(struct rsa_session *ctx,
     {
       unsigned leftover = AES_BLOCK_SIZE - padding;
       hmac_sha1_update(&ctx->hmac, leftover, buffer);
-      if (!write_string(out, leftover, buffer))
+      if (!write_data(out, leftover, buffer))
 	{
 	  werror("Writing output failed: %s\n", strerror(errno));
 	  return 0;
