@@ -1,5 +1,9 @@
 2016-08-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* sexp.c (sexp_iterator_check_type, sexp_iterator_check_types)
+	(sexp_iterator_assoc): Use const char * for caller's expression
+	types. Updated all callers.
+
 	* rsa2openpgp.c (rsa_keypair_to_openpgp): Added cast to const
 	uint8_t *.
 
