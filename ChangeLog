@@ -1,5 +1,8 @@
 2016-08-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* pgp-encode.c (write_string): New helper function, replacing...
+	(WRITE): ... deleted macro.
+
 	* examples/io.c (write_data): Renamed, and use const void * for
 	the input data. Updated all callers.
 	(write_string): ... old name.
