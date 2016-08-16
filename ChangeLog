@@ -18,7 +18,7 @@
 2016-08-05  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/hogweed-benchmark.c: Use uint8_t for curve25519 values.
-	(bench_rsa_init): Use uint8_t for sexp strings.
+	(bench_rsa_init): Use unsigned char for sexp strings.
 	(bench_dsa_init): Likewise.
 	(hash_string): Delete length argument, calling strlen instead.
 	Cast string to const uint8_t *. Updated callers.
