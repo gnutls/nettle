@@ -1,3 +1,8 @@
+2016-08-29  Niels Möller  <nisse@lysator.liu.se>
+
+	* sexp-format.c (strlen_u8): New helper function.
+	(sexp_vformat): Use uint8_t * for strings instead of char *.
+
 2016-08-16  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/io.c (hash_file): Use uint8_t for buffer.
