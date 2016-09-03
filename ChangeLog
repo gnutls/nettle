@@ -51,6 +51,10 @@
 
 	* memops.h: New header file, generalizing memxor.h.
 
+	* testsuite/memeql-test.c (test_main): New test case.
+	(memeql_sec_for_test): Wrapper to get valgrind to check for
+	side-channel silence.
+
 2016-08-29  Niels Möller  <nisse@lysator.liu.se>
 
 	* sexp-format.c (strlen_u8): New helper function.
