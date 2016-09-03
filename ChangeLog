@@ -1,8 +1,5 @@
 2016-09-03  Niels Möller  <nisse@lysator.liu.se>
 
-	* testsuite/rsa-encrypt-test.c (test_main): Fix pointer
-	signednesss warning.
-
 	* testsuite/testutils.h (US): New macro, for unsigned string
 	literals.
 	(LDATA): Use the US macro, to eliminate pointer signedness
@@ -19,6 +16,8 @@
 
 	* testsuite/yarrow-test.c (test_main): Fix pointer
 	signednesss warning.
+	* testsuite/sexp-format-test.c (test_main): Likewise.
+	* testsuite/rsa-encrypt-test.c (test_main): Likewise.
 
 	* testsuite/testutils.c (test_armor): Change ascii argument to
 	const char *.
