@@ -206,12 +206,6 @@ size_t
 sexp_transport_vformat(struct nettle_buffer *buffer,
 		       const char *format, va_list args);
 
-/* Classification for advanced syntax. */
-extern const char
-sexp_token_chars[0x80];
-
-#define TOKEN_CHAR(c) ((c) < 0x80 && sexp_token_chars[(c)])
-
 #ifdef __cplusplus
 }
 #endif

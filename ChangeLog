@@ -1,5 +1,8 @@
 2016-09-03  Niels Möller  <nisse@lysator.liu.se>
 
+	* sexp.h (TOKEN_CHAR): Delete macro and declaration of
+	sexp_token_chars. They belong in tools/misc.h, not here.
+
 	* examples/ecc-benchmark.c (die): Deleted unused function.
 
 	* testsuite/testutils.h (US): New macro, for unsigned string
