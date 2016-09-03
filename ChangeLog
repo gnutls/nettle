@@ -1,5 +1,7 @@
 2016-09-03  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/ecc-benchmark.c (die): Deleted unused function.
+
 	* testsuite/testutils.h (US): New macro, for unsigned string
 	literals.
 	(LDATA): Use the US macro, to eliminate pointer signedness
