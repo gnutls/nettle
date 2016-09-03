@@ -1,5 +1,7 @@
 2016-09-03  Niels Möller  <nisse@lysator.liu.se>
 
+	* config.make.in (.SUFFIXES): Delete no longer used .p$(OBJEXT).
+
 	* sexp.h (TOKEN_CHAR): Delete macro and declaration of
 	sexp_token_chars. They belong in tools/misc.h, not here.
 
