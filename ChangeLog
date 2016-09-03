@@ -15,9 +15,10 @@
 	keys. Overlooked in 2016-08-16 change.
 
 	* testsuite/yarrow-test.c (test_main): Fix pointer
-	signednesss warning.
+	signednesss warnings.
 	* testsuite/sexp-format-test.c (test_main): Likewise.
 	* testsuite/rsa-encrypt-test.c (test_main): Likewise.
+	* tools/nettle-lfib-stream.c (main): Likewise.
 
 	* testsuite/testutils.c (test_armor): Change ascii argument to
 	const char *.
@@ -25,7 +26,8 @@
 	argument to test_armor.
 	* testsuite/base64-test.c (test_main): Likewise.
 
-	* tools/nettle-lfib-stream.c (main): Fix pointer signedness warning.
+	* tools/nettle-pbkdf2.c (main): Fix some pointer signedness warning.
+	* tools/nettle-hash.c (hash_file): Likewise.
 
 2016-08-29  Niels Möller  <nisse@lysator.liu.se>
 
