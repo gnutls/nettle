@@ -150,7 +150,7 @@ main (int argc, char **argv)
 
       base16_decode_init (&base16);
       if (!base16_decode_update (&base16,
-				 &salt_length, salt, 
+				 &salt_length, salt,
 				 salt_length, salt)
 	  || !base16_decode_final (&base16))
 	die ("Invalid salt (expecting hex encoding).\n");
@@ -164,7 +164,7 @@ main (int argc, char **argv)
     die ("Reading password input failed: %s.\n", strerror (errno));
 
   output = xalloc (output_length);
-  pbkdf2_hmac_sha256 (password_length, (const uint8_t *) password, 
+  pbkdf2_hmac_sha256 (password_length, (const uint8_t *) password,
 		      iterations, salt_length, salt,
 		      output_length, output);
 
