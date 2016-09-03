@@ -1,3 +1,8 @@
+2016-09-03  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/rsa-encrypt-test.c (test_main): Fix pointer
+	signednesss warning.
+
 2016-08-29  Niels Möller  <nisse@lysator.liu.se>
 
 	* sexp-format.c (strlen_u8): New helper function.
