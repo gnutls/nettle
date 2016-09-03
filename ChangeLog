@@ -20,6 +20,12 @@
 	* testsuite/yarrow-test.c (test_main): Fix pointer
 	signednesss warning.
 
+	* testsuite/testutils.c (test_armor): Change ascii argument to
+	const char *.
+	* testsuite/base16-test.c (test_main): Use LDATA for the non-ascii
+	argument to test_armor.
+	* testsuite/base64-test.c (test_main): Likewise.
+
 2016-08-29  Niels Möller  <nisse@lysator.liu.se>
 
 	* sexp-format.c (strlen_u8): New helper function.

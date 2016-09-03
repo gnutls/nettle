@@ -563,7 +563,7 @@ void
 test_armor(const struct nettle_armor *armor,
            size_t data_length,
            const uint8_t *data,
-           const uint8_t *ascii)
+           const char *ascii)
 {
   size_t ascii_length = strlen(ascii);
   uint8_t *buffer = xalloc(1 + ascii_length);

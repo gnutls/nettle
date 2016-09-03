@@ -160,7 +160,7 @@ void
 test_armor(const struct nettle_armor *armor,
            size_t data_length,
            const uint8_t *data,
-           const uint8_t *ascii);
+           const char *ascii);
 
 #if WITH_HOGWEED
 #ifndef mpn_zero_p
