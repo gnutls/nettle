@@ -17,6 +17,9 @@
 	* testsuite/sexp-test.c (test_main): Use const char * for assoc
 	keys. Overlooked in 2016-08-16 change.
 
+	* testsuite/yarrow-test.c (test_main): Fix pointer
+	signednesss warning.
+
 2016-08-29  Niels Möller  <nisse@lysator.liu.se>
 
 	* sexp-format.c (strlen_u8): New helper function.
