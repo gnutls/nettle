@@ -25,6 +25,8 @@
 	argument to test_armor.
 	* testsuite/base64-test.c (test_main): Likewise.
 
+	* tools/nettle-lfib-stream.c (main): Fix pointer signedness warning.
+
 2016-08-29  Niels Möller  <nisse@lysator.liu.se>
 
 	* sexp-format.c (strlen_u8): New helper function.
