@@ -49,6 +49,7 @@
 #include "cbc.h"
 #include "hmac.h"
 #include "macros.h"
+#include "memops.h"
 #include "rsa.h"
 #include "yarrow.h"
 
@@ -189,7 +190,7 @@ process_file(struct rsa_session *ctx,
 	}
     }
   hmac_sha1_digest(&ctx->hmac, SHA1_DIGEST_SIZE, digest);
-  if (memcmp(digest, buffer + AES_BLOCK_SIZE, SHA1_DIGEST_SIZE) != 0)
+  if (!memeql_sec(digest, buffer + AES_BLOCK_SIZE, SHA1_DIGEST_SIZE))
     {
       werror("Decryption failed: Invalid mac.\n");
       return 0;

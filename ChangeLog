@@ -43,6 +43,14 @@
 	* tools/nettle-pbkdf2.c (main): Fix some pointer signedness warning.
 	* tools/nettle-hash.c (hash_file): Likewise.
 
+	* examples/rsa-decrypt.c (process_file): Use memeql_sec to check
+	the digest.
+
+	* memeql-sec.c (memeql_sec): New public function, moved from...
+	* ccm.c (memeql_sec): ... previous location.
+
+	* memops.h: New header file, generalizing memxor.h.
+
 2016-08-29  Niels Möller  <nisse@lysator.liu.se>
 
 	* sexp-format.c (strlen_u8): New helper function.
