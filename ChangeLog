@@ -1,5 +1,9 @@
 2016-09-03  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/eddsa-verify-test.c (test_eddsa): Use LDATA.
+	* testsuite/pbkdf2-test.c (test_main): Likewise.
+	* testsuite/pkcs1-test.c (test_main): Likewise.
+
 	* testsuite/testutils.h (US): New macro, for unsigned string
 	literals.
 	(LDATA): Use the US macro, to eliminate pointer signedness
