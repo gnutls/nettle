@@ -4337,6 +4337,20 @@ by @cite{RFC 7748}. Its the output is therefore well defined for
 @emph{all} possible inputs, no matter if the input string represents a
 valid point on the curve or not.
 
+Note that the curve25519 implementation in earlier versions from Nettle
+deviates slightly from @cite{RFC 7748}, in that bit 255 of the @math{x}
+coordinate of the point input to curve25519_mul was not ignored. The
+@file{nette/curve25519.h} defines a preprocessor symbol
+@code{NETTLE_CURVE25519_RFC7748} to indicate conformance with the
+standard.
+
+Nettle defines Curve 25519 in @file{<nettle/curve25519.h>}.
+
+@defvr Constant NETTLE_CURVE25519_RFC7748
+Defined to 1 in Nettle versions conforming to RFC 7748. Undefined in
+earlier versions.
+@end defvr
+
 @defvr Constant CURVE25519_SIZE
 The size of the strings representing curve25519 points and scalars, 32.
 @end defvr

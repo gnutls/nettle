@@ -1,3 +1,9 @@
+2016-09-05  Niels Möller  <nisse@lysator.liu.se>
+
+	* curve25519.h (NETTLE_CURVE25519_RFC7748): New preprocessor
+	constant.
+	* nettle.texinfo: Document it.
+
 2016-09-03  Niels Möller  <nisse@lysator.liu.se>
 
 	* config.make.in (.SUFFIXES): Delete no longer used .p$(OBJEXT).
