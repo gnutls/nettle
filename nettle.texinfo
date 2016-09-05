@@ -4303,6 +4303,7 @@ random octets and store them at @code{dst}. For advice, see
 @end deftypefun
 
 @subsubsection Curve25519
+@cindex Curve 25519
 
 @c FIXME: Make 2^255 pretty in all output formats. Use @sup?
 @c There are other places too (2^32, 2^130).
