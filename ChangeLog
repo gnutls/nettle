@@ -1,5 +1,7 @@
 2016-09-06  Niels Möller  <nisse@lysator.liu.se>
 
+	* NEWS: Update for 3.3.
+
 	* configure.ac: Bump package version to 3.3.
 	(LIBNETTLE_MINOR): Bump library version to 6.3.
 	(LIBHOGWEED_MINOR): Bump library version to 4.3.
