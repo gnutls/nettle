@@ -28,30 +28,29 @@
     Leave for some later release!
   </p>
 
-  <h1> Plans for nettle-3.2 </h1>
+  <h1> Plans for nettle-3.3 </h1>
 
   <h2> New features </h2>
-  <p class='wish'>
+  <p class='postponed'>
     Add larger "safe" curves, e.g., M-383, curve41417, curve448 and
     E-521.
   </p>
-  <p class='wish'>
+  <p class='postponed'>
     Add functions for converting ECC points to and from ANSI x9.62.
   </p>
-  <p class='wish'>
-    Use side-channel silent GMP functions for RSA and DSA. May require
-    additional interface changes, to use mpn functions.
+  <p class='done'>
+    Use side-channel silent mpz_powm_sec for RSA and DSA.
   </p>
-  <p class='wish'>
-    Side-channel silent mem_equalp.
+  <p class='done'>
+    Side-channel silent memeql_sec.
   </p>
 
   <h2> Optimizations </h2>
 
-  <p class='wish'>
+  <p class='postponed'>
     Assembly optimizations for ARMv8 (64-bit).
   </p>
-  <p class='wish'>
+  <p class='postponed'>
     Further optimizations of curve25519 and EdDSA, in particular,
 
     <a href='http://www.hyperelliptic.org/EFD/g1p/auto-twisted-extended-1.html#addition-add-2008-hwcd-3'>more
@@ -59,22 +58,20 @@
   </p>
   
   <h2> Miscellaneous </h2>
-  <p class='wish'>
+  <p class='done'> Use GMP-5 functions unconditionally. </p>
+  <p class='postponed'>
     Use more functions from GMP-6 and later, when available:
     mpn_sec_add_1, mpn_sec_tabselect, mpn_sec_invert, mpn_cnd_swap,
     ...
   </p>
 
   <h2> Documentation </h2>
-  <p class='done'>
-    Update SHA3 documentation.
-  </p>
-  <p class='done'>
-    Update and extend RSA documentation.
+  <p class='should'>
+    Document memeql_sec.
   </p>
   
   <h2> Build system </h2>
-  <p class='wish'>
+  <p class='postponed'>
     Update AX_CREATE_STDINT_H to the latest version.
   </p>
   
