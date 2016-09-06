@@ -1,3 +1,9 @@
+2016-09-06  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Bump package version to 3.3.
+	(LIBNETTLE_MINOR): Bump library version to 6.3.
+	(LIBHOGWEED_MINOR): Bump library version to 4.3.
+
 2016-09-05  Niels Möller  <nisse@lysator.liu.se>
 
 	* curve25519.h (NETTLE_CURVE25519_RFC7748): New preprocessor
