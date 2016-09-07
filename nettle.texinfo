@@ -4207,7 +4207,8 @@ it. If you have a process operating on the secret data, and this process
 does memory accesses depending on the data, e.g, an internal lookup
 table in some cryptographic algorithm, an attacker running a separate
 process on the same system may use behavior of internal CPU caches to
-get information about your secrets.
+get information about your secrets. This type of attack can even cross
+virtual machine boundaries.
 @end itemize
 
 Nettle's ECC implementation is designed to be @dfn{side-channel silent},
@@ -4937,8 +4938,16 @@ Like @code{memxor}, but takes two source areas and separate
 destination area.
 @end deftypefun
 
+@deftypefun int memeql_sec (const void *@var{a}, const void *@var{b}, size_t @var{n})
+Side-channel silent comparison of the @var{n} bytes at @var{a} and
+@var{b}. I.e., instructions executed and memory accesses are identical
+no matter where the areas differ, @pxref{Side-channel silence}. Return
+non-zero if the areas are equal, and zero if they differ.
+@end deftypefun
 
-@code{memxor} is declared in @file{<nettle/memxor.h>}.
+These functions are declared in @file{<nettle/memops.h>}. For
+compatibility with earlier versions of Nettle, @code{memxor} and
+@code{memxor3} are also declared in @file{<nettle/memxor.h>}.
 
 @node Compatibility functions,  , Miscellaneous functions, Reference
 @comment  node-name,  next,  previous,  up
