@@ -4227,7 +4227,7 @@ Represents a point on an elliptic curve. In particular, it is used to
 represent an ECDSA public key.
 @end deftp
 
-@deftypefun void ecc_point_init (struct ecc_point *@var{p}, const structecc_curve *@var{ecc})
+@deftypefun void ecc_point_init (struct ecc_point *@var{p}, const struct ecc_curve *@var{ecc})
 Initializes @var{p} to represent points on the given curve @var{ecc}.
 Allocates storage for the coordinates, using the same allocation
 functions as GMP.
