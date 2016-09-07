@@ -1,3 +1,7 @@
+2016-09-07  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle.texinfo (Elliptic curves): Split into sub-nodes.
+
 2016-09-06  Niels Möller  <nisse@lysator.liu.se>
 
 	* NEWS: Update for 3.3.

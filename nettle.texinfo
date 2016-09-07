@@ -107,6 +107,12 @@ Public-key algorithms
 * DSA::                         The DSA digital signature algorithm.
 * Elliptic curves::             Elliptic curves and ECDSA
 
+@acronym{Elliptic curves}
+
+* Side-channel silence::
+* ECDSA::
+* Curve 25519::
+
 @end detailmenu
 @end menu
 
@@ -4174,7 +4180,17 @@ visible to nettle users. The ``bitsize of the curve'' is used as a
 shorthand for the bitsize of the curve's prime @math{p}, e.g., 256 bits
 for @code{nettle_secp_256r1}.
 
+@menu
+* Side-channel silence::
+* ECDSA::
+* Curve 25519::
+@end menu
+
+@node Side-channel silence, ECDSA, , Elliptic curves
+@comment  node-name,  next,  previous,  up
 @subsubsection Side-channel silence
+@cindex Side-channel attack
+
 Nettle's implementation of the elliptic curve operations is intended to
 be side-channel silent. The side-channel attacks considered are:
 
@@ -4200,6 +4216,8 @@ accesses depend only on the size of the input data and its location in
 memory, not on the actual data bits. This implies a performance penalty
 in several of the building blocks.
 
+@node ECDSA, Side-channel silence, Curve 25519, Elliptic curves
+@comment  node-name,  next,  previous,  up
 @subsubsection ECDSA
 
 ECDSA is a variant of the DSA digital signature scheme (@pxref{DSA}),
@@ -4302,6 +4320,8 @@ random octets and store them at @code{dst}. For advice, see
 @xref{Randomness}.
 @end deftypefun
 
+@node Curve 25519, , ECDSA, Elliptic curves
+@comment  node-name,  next,  previous,  up
 @subsubsection Curve25519
 @cindex Curve 25519
 
