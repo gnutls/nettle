@@ -45,6 +45,11 @@ NEWS for the Nettle 3.3 release
 	* Fix a couple of formally undefined shift operations,
           reported by Nikos Mavrogiannopoulos.
 
+	New features:
+
+	* New function memeql_sec, for side-channel silent comparison
+	  of two memory areas.
+
 	Miscellaneous:
 
 	* Building the public key support of nettle now requires GMP

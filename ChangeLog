@@ -2,6 +2,7 @@
 
 	* nettle.texinfo (Elliptic curves): Split into sub-nodes.
 	(Miscellaneous functions): Document memeql_sec.
+	* NEWS: Mention memeql_sec.
 
 2016-09-06  Niels Möller  <nisse@lysator.liu.se>
 
