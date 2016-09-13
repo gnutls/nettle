@@ -1,3 +1,9 @@
+2016-09-13  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle-meta-hashes.c (nettle_hashes): Added SHA3 hashes.
+	Reported missing by Thomas Walter.
+	* testsuite/meta-hash-test.c: Update test accordingly.
+
 2016-09-07  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle.texinfo (Elliptic curves): Split into sub-nodes.
