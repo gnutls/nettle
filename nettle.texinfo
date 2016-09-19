@@ -4217,7 +4217,7 @@ accesses depend only on the size of the input data and its location in
 memory, not on the actual data bits. This implies a performance penalty
 in several of the building blocks.
 
-@node ECDSA, Side-channel silence, Curve 25519, Elliptic curves
+@node ECDSA, Curve 25519, Side-channel silence, Elliptic curves
 @comment  node-name,  next,  previous,  up
 @subsubsection ECDSA
 
