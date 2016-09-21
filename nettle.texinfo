@@ -4260,7 +4260,7 @@ Deallocate storage.
 Check that the given coordinates represent a point on the curve. If so,
 the coordinates are copied and converted to internal representation, and
 the function returns 1. Otherwise, it returns 0. Currently, the
-infinity point (or zero point, with additive notation) i snot allowed.
+infinity point (or zero point, with additive notation) is not allowed.
 @end deftypefun
 
 @deftypefun void ecc_point_get (const struct ecc_point *@var{p}, mpz_t @var{x}, mpz_t @var{y})
@@ -4355,11 +4355,11 @@ the the curve equation can be solved for @math{y}. The other half
 correspond to points on a related ``twist curve''. The function
 @code{curve25519_mul} uses a Montgomery ladder for the scalar
 multiplication, as suggested in the curve25519 literature, and required
-by @cite{RFC 7748}. Its the output is therefore well defined for
+by @cite{RFC 7748}. The output is therefore well defined for
 @emph{all} possible inputs, no matter if the input string represents a
 valid point on the curve or not.
 
-Note that the curve25519 implementation in earlier versions from Nettle
+Note that the curve25519 implementation in earlier versions of Nettle
 deviates slightly from @cite{RFC 7748}, in that bit 255 of the @math{x}
 coordinate of the point input to curve25519_mul was not ignored. The
 @file{nette/curve25519.h} defines a preprocessor symbol
