@@ -11,19 +11,17 @@ NEWS for the Nettle 3.3 release
 
 	  Nettle applications are required to call
 	  rsa_private_key_prepare and check the return value, before
-	  using any other RSA private key functions. Failing to do so
-	  will now lead to crashes for invalid private keys.
-
-	  The Gnutls library used to not call rsa_private_key_prepare.
-	  To avoid crashes when using Gnutls with an invalid private
-	  key, Nettle performs additional checks for even moduli in
-	  the functions the rsa_*_sign_tr, and rsa_decrypt_tr, which
-	  are used by all recent versions of Gnutls.
+	  using any other RSA private key functions; failing to do so
+	  may result in crashes for invalid private keys. As a
+	  workaround for versions of Gnutls which don't use
+	  rsa_private_key_prepare, additional checks for even moduli
+	  are added to the rsa_*_tr functions which are used by all
+	  recent versions of Gnutls.
 
 	* Ignore bit 255 of the x coordinate of the input point to
-          curve25519_mul, as required by RFC 7748. To differentiate at
-          compile time, curve25519.h defines the constant
-          NETTLE_CURVE25519_RFC7748.
+	  curve25519_mul, as required by RFC 7748. To differentiate at
+	  compile time, curve25519.h defines the constant
+	  NETTLE_CURVE25519_RFC7748.
 
 	Security:
 
@@ -34,16 +32,21 @@ NEWS for the Nettle 3.3 release
 	  HTTPS server on a virtual machine, where you don't know who
 	  you share the cache hardware with.
 
+	  (Private key operations on elliptic curves were already
+	  side-channel silent).
+
 	Bug fixes:
 
 	* Fix sexp-conv crashes on invalid input. Reported by Hanno
-          Böck.
+	  Böck.
 
 	* Fix out-of-bounds read in des_weak_p. Fixed by Nikos
-          Mavrogiannopoulos.
+	  Mavrogiannopoulos.
 
 	* Fix a couple of formally undefined shift operations,
-          reported by Nikos Mavrogiannopoulos.
+	  reported by Nikos Mavrogiannopoulos.
+
+	* Fix compilation with c89. Reported by Henrik Grubbström.
 
 	New features:
 
@@ -56,17 +59,15 @@ NEWS for the Nettle 3.3 release
 	  version 5.0 or later (unless --enable-mini-gmp is used).
 
 	* Filenames of windows DLL libraries now include major number
-          only. So the dll names change at the same time as the
-          corresponding soname on ELF platforms. Fixed by Nikos
-          Mavrogiannopoulos.
-
-	* Fix compilation with c89. Reported by Henrik Grubbström.
+	  only. So the dll names change at the same time as the
+	  corresponding soname on ELF platforms. Fixed by Nikos
+	  Mavrogiannopoulos.
 
 	* Eliminate most pointer-signedness warnings. In the process,
-          the strings representing expression type for sexp_interator
-          functions were changed from const uint8_t * to const char *.
-          These functions are undocumented, and it doesn't change the
-          ABI on any platform I'm aware of.
+	  the strings representing expression type for sexp_interator
+	  functions were changed from const uint8_t * to const char *.
+	  These functions are undocumented, and it doesn't change the
+	  ABI on any platform I'm aware of.
 
 	The shared library names are libnettle.so.6.3 and
 	libhogweed.so.4.3, with sonames still libnettle.so.6 and
