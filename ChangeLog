@@ -1,3 +1,7 @@
+2016-10-01  Niels Möller  <nisse@lysator.liu.se>
+
+	* Released nettle-3.3.
+
 2016-09-13  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle-meta-hashes.c (nettle_hashes): Added SHA3 hashes.
