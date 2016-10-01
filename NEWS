@@ -1,7 +1,7 @@
 NEWS for the Nettle 3.3 release
 
 	This release fixes a couple of bugs, and improves resistance
-	to side-channel attacks on RSA private key operations.
+	to side-channel attacks on RSA and DSA private key operations.
 
 	Changes in behavoir:
 
