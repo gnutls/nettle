@@ -97,20 +97,20 @@
     w3 += (keys)[((i)+3u) % 5u] + (i);		       \
   } while (0)
 
-/* FIXME: Let src be uint8_t?  */
 void
 _skein256_block (uint64_t dst[_SKEIN256_LENGTH],
 		 const uint64_t keys[_SKEIN256_NKEYS],
 		 const uint64_t tweak[_SKEIN_NTWEAK],
-		 const uint64_t src[_SKEIN256_LENGTH])
+		 const uint8_t src[SKEIN256_BLOCK_SIZE])
 {
+  uint64_t s0, s1, s2, s3;
   uint64_t w0, w1, w2, w3;
   unsigned i;
 
-  w0 = src[0];
-  w1 = src[1];
-  w2 = src[2];
-  w3 = src[3];
+  w0 = s0 = LE_READ_UINT64(src);
+  w1 = s1 = LE_READ_UINT64(src + 8);
+  w2 = s2 = LE_READ_UINT64(src + 16);
+  w3 = s3 = LE_READ_UINT64(src + 24);
 
   for (i = 0; i < 9; i++)
     {
@@ -130,8 +130,8 @@ _skein256_block (uint64_t dst[_SKEIN256_LENGTH],
     }
   ADD_SUBKEY(w0, w1, w2, w3, keys, tweak, 18);
 
-  dst[0] = src[0] ^ w0;
-  dst[1] = src[1] ^ w1;
-  dst[2] = src[2] ^ w2;
-  dst[3] = src[3] ^ w3;
+  dst[0] = s0 ^ w0;
+  dst[1] = s1 ^ w1;
+  dst[2] = s2 ^ w2;
+  dst[3] = s3 ^ w3;
 }

@@ -16,7 +16,7 @@ print_array(const char *label, size_t n, const uint64_t *x)
 static void
 test_skein256_block (const uint64_t keys[4],
 		     const uint64_t tweak[2],
-		     const uint64_t msg[_SKEIN256_LENGTH],
+		     const uint8_t msg[SKEIN256_BLOCK_SIZE],
 		     const uint64_t ref[_SKEIN256_LENGTH])
 {
   uint64_t keys_expanded[_SKEIN256_NKEYS];
@@ -40,7 +40,8 @@ test_skein256_block (const uint64_t keys[4],
       printf ("Skein 256 failed:\n");
       print_array("key", 4, keys);
       print_array("tweak", 2, tweak);
-      print_array("msg", 4, msg);
+      printf ("msg: ");
+      print_hex(SKEIN256_BLOCK_SIZE, msg);
       print_array("out", 4, output);
       print_array("ref", 4, ref);
       FAIL();
@@ -60,7 +61,10 @@ test_main(void)
       0x952419A1F4B16D53ull,
       0xD83F13E63C9F6B11ull,
     };
-    test_skein256_block(zeros, zeros, zeros, ref);
+    test_skein256_block(zeros, zeros,
+			H("0000000000000000 0000000000000000"
+			  "0000000000000000 0000000000000000"),
+			ref);
   }
   {
     static const uint64_t keys[4] = {
@@ -73,19 +77,17 @@ test_main(void)
       0x0706050403020100ull,
       0x0F0E0D0C0B0A0908ull,
     };
-    static const uint64_t msg[4] = {
-      0xF8F9FAFBFCFDFEFFull,
-      0xF0F1F2F3F4F5F6F7ull,
-      0xE8E9EAEBECEDEEEFull,
-      0xE0E1E2E3E4E5E6E7ull,
-    };
     static const uint64_t ref[4] = {
       0x277610F5036C2E1Full,
       0x25FB2ADD1267773Eull,
       0x9E1D67B3E4B06872ull,
       0x3F76BC7651B39682ull,
     };
-    test_skein256_block(keys, tweak, msg, ref);
+    test_skein256_block(keys, tweak,
+			H("FFFEFDFCFBFAF9F8 F7F6F5F4F3F2F1F0"
+			  "EFEEEDECEBEAE9E8 E7E6E5E4E3E2E1E0"
+			  ),
+			ref);
   }
   {
     /* skein256 G0 = E(zeros, tweak, config string) */
@@ -96,10 +98,6 @@ test_main(void)
       32, /* message length */
       0xc4ull << 56, /* first and final, type 4 */
     };
-    static const uint64_t config[_SKEIN256_LENGTH] = {
-      0x0133414853ull, /* "SHA3", version 1 */
-      256, /* Output length, in bits */
-      0, 0 };
     static const uint64_t ref[_SKEIN256_LENGTH] = {
       0xFC9DA860D048B449ull,
       0x2FCA66479FA7D833ull,
@@ -107,6 +105,10 @@ test_main(void)
       0x6A54E920FDE8DA69ull,
     };
 
-    test_skein256_block(zero_keys, tweak, config, ref);
+    test_skein256_block(zero_keys, tweak,
+			H("5348413301000000 0001000000000000"
+			  /* SHA3  v1       output bits (256) */
+			  "0000000000000000 0000000000000000"),
+			ref);
   }
 }

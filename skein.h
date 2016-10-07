@@ -58,7 +58,7 @@ void
 _skein256_block (uint64_t dst[_SKEIN256_LENGTH],
 		 const uint64_t keys[_SKEIN256_NKEYS],
 		 const uint64_t tweak[_SKEIN_NTWEAK],
-		 const uint64_t src[_SKEIN256_LENGTH]);
+		 const uint8_t src[SKEIN256_BLOCK_SIZE]);
 
 #ifdef __cplusplus
 }
