@@ -1,3 +1,13 @@
+2016-10-07  Niels Möller  <nisse@lysator.liu.se>
+
+	* skein256.c (_skein256_block): New file and function.
+	* skein.h: New file.
+	* Makefile.in (nettle_SOURCES): Added skein256.c.
+	(HEADERS): Added skein.h.
+	* testsuite/skein256-test.c: New test cases.
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Added
+	skein256-test.c.
+
 2016-10-01  Niels Möller  <nisse@lysator.liu.se>
 
 	* Released nettle-3.3.
