@@ -97,6 +97,9 @@ sha3-384-test$(EXEEXT): sha3-384-test.$(OBJEXT)
 sha3-512-test$(EXEEXT): sha3-512-test.$(OBJEXT)
 	$(LINK) sha3-512-test.$(OBJEXT) $(TEST_OBJS) -o sha3-512-test$(EXEEXT)
 
+skein256-test$(EXEEXT): skein256-test.$(OBJEXT)
+	$(LINK) skein256-test.$(OBJEXT) $(TEST_OBJS) -o skein256-test$(EXEEXT)
+
 serpent-test$(EXEEXT): serpent-test.$(OBJEXT)
 	$(LINK) serpent-test.$(OBJEXT) $(TEST_OBJS) -o serpent-test$(EXEEXT)
 
