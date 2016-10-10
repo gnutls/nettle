@@ -1,3 +1,10 @@
+2016-10-10  Niels Möller  <nisse@lysator.liu.se>
+
+	* write-be32.c (_nettle_write_be32): Use const for source argument.
+	* write-le32.c (_nettle_write_le32): Likewise.
+	* write-le64.c (_nettle_write_le64): Likewise.
+	* nettle-write.h: Update prototypes.
+
 2016-10-01  Niels Möller  <nisse@lysator.liu.se>
 
 	* Released nettle-3.3.
