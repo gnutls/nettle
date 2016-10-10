@@ -51,6 +51,8 @@ test_skein256_block (const uint64_t keys[4],
 void
 test_main(void)
 {
+  /* From skein_golden_kat_short_internals.txt in
+     http://www.skein-hash.info/sites/default/files/NIST_CD_102610.zip. */
   {
     static const uint64_t zeros[4] = {
       0, 0, 0, 0
@@ -111,4 +113,20 @@ test_main(void)
 			  "0000000000000000 0000000000000000"),
 			ref);
   }
+  /* From the skein paper. */
+  test_hash(&nettle_skein256, SHEX("ff"),
+	    SHEX("0B 98 DC D1 98 EA 0E 50 A7 A2 44 C4 44 E2 5C 23"
+		 "DA 30 C1 0F C9 A1 F2 70 A6 63 7F 1F 34 E6 7E D2"));
+  test_hash(&nettle_skein256,
+	    SHEX("FF FE FD FC FB FA F9 F8 F7 F6 F5 F4 F3 F2 F1 F0"
+		 "EF EE ED EC EB EA E9 E8 E7 E6 E5 E4 E3 E2 E1 E0"),
+	    SHEX("8D 0F A4 EF 77 7F D7 59 DF D4 04 4E 6F 6A 5A C3"
+		 "C7 74 AE C9 43 DC FC 07 92 7B 72 3B 5D BF 40 8B"));
+  test_hash(&nettle_skein256,
+	    SHEX("FF FE FD FC FB FA F9 F8 F7 F6 F5 F4 F3 F2 F1 F0"
+		 "EF EE ED EC EB EA E9 E8 E7 E6 E5 E4 E3 E2 E1 E0"
+		 "DF DE DD DC DB DA D9 D8 D7 D6 D5 D4 D3 D2 D1 D0"
+		 "CF CE CD CC CB CA C9 C8 C7 C6 C5 C4 C3 C2 C1 C0"),
+	    SHEX("DF 28 E9 16 63 0D 0B 44 C4 A8 49 DC 9A 02 F0 7A"
+		 "07 CB 30 F7 32 31 82 56 B1 5D 86 5A C4 AE 16 2F"));
 }

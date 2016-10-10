@@ -34,10 +34,12 @@
 #endif
 
 #include <assert.h>
+#include <string.h>
 
 #include "skein.h"
 
 #include "macros.h"
+#include "nettle-write.h"
 
 /*
    Subkeys used:
@@ -134,4 +136,100 @@ _skein256_block (uint64_t dst[_SKEIN256_LENGTH],
   dst[1] = s1 ^ w1;
   dst[2] = s2 ^ w2;
   dst[3] = s3 ^ w3;
+}
+
+void
+skein256_init(struct skein256_ctx *ctx)
+{
+  static const uint64_t G0[4] = {
+    0xFC9DA860D048B449ull,
+    0x2FCA66479FA7D833ull,
+    0xB33BC3896656840Full,
+    0x6A54E920FDE8DA69ull,
+  };
+  memcpy (ctx->state, G0, sizeof(G0));
+  ctx->count = 0;
+  ctx->index = 0;
+}
+
+static void
+skein256_process_block(struct skein256_ctx *ctx,
+		       unsigned tag, unsigned length,
+		       const uint8_t *data)
+{
+  /* Expand key */
+  uint64_t tweak[3];
+  uint64_t sum;
+  unsigned i;
+
+  for (i = 0, sum = _SKEIN_C240; i < _SKEIN256_LENGTH; i++)
+    sum ^= ctx->state[i];
+  ctx->state[_SKEIN256_LENGTH] = sum;
+
+  tag |= ((ctx->count == 0) << 6);
+
+  tweak[0] = (ctx->count << 5) + length;
+  tweak[1] = (ctx->count >> 59) | ((unsigned long long) tag << 56);
+  tweak[2] = tweak[0] ^ tweak[1];
+  _skein256_block(ctx->state, ctx->state, tweak, data);
+
+  ctx->count++;
+
+  /* Wraparound not handled (limited message size). */
+  assert (ctx->count > 0);
+}
+
+void
+skein256_update(struct skein256_ctx *ctx,
+		size_t length,
+		const uint8_t *data)
+{
+  if (ctx->index > 0)
+    {
+      unsigned left = SKEIN256_BLOCK_SIZE - ctx->index;
+      if (length <= left)
+	{
+	  memcpy (ctx->block + ctx->index, data, length);
+	  ctx->index += length;
+	  return;
+	}
+      memcpy (ctx->block + ctx->index, data, left);
+      data += left;
+      length -= left;
+
+      assert (length > 0);
+
+      skein256_process_block(ctx, 0x30, SKEIN256_BLOCK_SIZE, ctx->block);
+    }
+  while (length > SKEIN256_BLOCK_SIZE)
+    {
+      skein256_process_block(ctx, 0x30, SKEIN256_BLOCK_SIZE, data);
+      data += SKEIN256_BLOCK_SIZE;
+      length -= SKEIN256_BLOCK_SIZE;
+    }
+  assert (length <= SKEIN256_BLOCK_SIZE);
+  memcpy (ctx->block, data, length);
+  ctx->index = length;
+}
+
+void
+skein256_digest(struct skein256_ctx *ctx,
+		size_t length,
+		uint8_t *digest)
+{
+  static const uint8_t zeros[32];
+
+  /* FIXME: Should be always true. */
+  if (ctx->index > 0 || ctx->count == 0)
+    {
+      memset (ctx->block + ctx->index, 0,
+	      SKEIN256_BLOCK_SIZE - ctx->index);
+      skein256_process_block(ctx, 0xb0, ctx->index, ctx->block);
+    }
+  /* Reset count for output processing. */
+  ctx->count = 0;
+  skein256_process_block(ctx, 0xff, 8, zeros);
+  _nettle_write_le64(length, digest, ctx->state);
+
+  skein256_init(ctx);
 }

@@ -41,16 +41,41 @@ extern "C" {
 #endif
 
 /* Name mangling */
+#define skein256_init nettle_skein256_init
+#define skein256_update nettle_skein256_update
+#define skein256_digest nettle_skein256_digest
 #define _skein256_block _nettle_skein256_block
 
 #define SKEIN256_BLOCK_SIZE 32
-#define SKEIN512_BLOCK_SIZE 64
-#define SKEIN1024_BLOCK_SIZE 128
+#define SKEIN256_DIGEST_SIZE 32
 
 /* Internal lengths, as 64-bit words. */
 #define _SKEIN_NTWEAK 3
 #define _SKEIN256_LENGTH 4
 #define _SKEIN256_NKEYS 5
+
+struct skein256_ctx {
+  uint64_t state[_SKEIN256_NKEYS];
+
+  /* Current implementation limited to message size <= 2^69 - 32 bytes,
+     while the specification allows up to 2^96 -1 bytes.*/
+  uint64_t count;               /* Block count */
+  uint8_t block[SKEIN256_BLOCK_SIZE];
+  unsigned index;
+};
+
+void
+skein256_init(struct skein256_ctx *ctx);
+
+void
+skein256_update(struct skein256_ctx *ctx,
+		size_t length,
+		const uint8_t *data);
+
+void
+skein256_digest(struct skein256_ctx *ctx,
+		size_t length,
+		uint8_t *digest);
 
 #define _SKEIN_C240 0x1BD11BDAA9FC1A22ULL
 
