@@ -1,7 +1,14 @@
 2016-10-12  Niels Möller  <nisse@lysator.liu.se>
 
+	* skein.h (_SKEIN256_NKEYS, _SKEIN_NTWEAK): Increase to 6 and 4,
+	respectively, to reduce number of modulo operations.
+	* skein256.c (_skein256_expand): Intialize the additional words.
+	(_skein256_block): Avoid modulo operations in the loop. Almost 50%
+	speedup.
+
 	* skein256.c (_skein256_expand): New function.
 	(skein256_process_block): Use it.
+
 	* testsuite/skein256-test.c (test_skein256_block): Use it.
 
 2016-10-10  Niels Möller  <nisse@lysator.liu.se>
