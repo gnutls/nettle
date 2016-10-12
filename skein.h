@@ -44,6 +44,7 @@ extern "C" {
 #define skein256_init nettle_skein256_init
 #define skein256_update nettle_skein256_update
 #define skein256_digest nettle_skein256_digest
+#define _skein256_expand _nettle_skein256_expand
 #define _skein256_block _nettle_skein256_block
 
 #define SKEIN256_BLOCK_SIZE 32
@@ -78,6 +79,10 @@ skein256_digest(struct skein256_ctx *ctx,
 		uint8_t *digest);
 
 #define _SKEIN_C240 0x1BD11BDAA9FC1A22ULL
+
+void
+_skein256_expand(uint64_t keys[_SKEIN256_NKEYS],
+		 uint64_t tweak[_SKEIN_NTWEAK]);
 
 void
 _skein256_block (uint64_t dst[_SKEIN256_LENGTH],

@@ -1,3 +1,9 @@
+2016-10-12  Niels Möller  <nisse@lysator.liu.se>
+
+	* skein256.c (_skein256_expand): New function.
+	(skein256_process_block): Use it.
+	* testsuite/skein256-test.c (test_skein256_block): Use it.
+
 2016-10-10  Niels Möller  <nisse@lysator.liu.se>
 
 	* skein.h (struct skein256_ctx): New context struct.

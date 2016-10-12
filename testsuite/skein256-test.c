@@ -22,18 +22,10 @@ test_skein256_block (const uint64_t keys[4],
   uint64_t keys_expanded[_SKEIN256_NKEYS];
   uint64_t tweak_expanded[_SKEIN_NTWEAK];
   uint64_t output[_SKEIN256_LENGTH];
-  uint64_t sum;
-  unsigned i;
-  for (i = 0, sum = _SKEIN_C240; i < _SKEIN256_LENGTH; i++)
-    {
-      keys_expanded[i] = keys[i];
-      sum ^= keys[i];
-    }
-  keys_expanded[_SKEIN256_LENGTH] = sum;
-  tweak_expanded[0] = tweak[0];
-  tweak_expanded[1] = tweak[1];
-  tweak_expanded[2] = tweak[0] ^ tweak[1];
 
+  memcpy (keys_expanded, keys, _SKEIN256_LENGTH * sizeof(*keys));
+  memcpy (tweak_expanded, tweak, 2*sizeof(*tweak));
+  _skein256_expand (keys_expanded, tweak_expanded);
   _skein256_block(output, keys_expanded, tweak_expanded, msg);
   if (memcmp (output, ref, sizeof(output)) != 0)
     {

@@ -139,6 +139,19 @@ _skein256_block (uint64_t dst[_SKEIN256_LENGTH],
 }
 
 void
+_skein256_expand(uint64_t keys[_SKEIN256_NKEYS],
+		 uint64_t tweak[_SKEIN_NTWEAK])
+{
+  uint64_t sum;
+  unsigned i;
+
+  for (i = 0, sum = _SKEIN_C240; i < _SKEIN256_LENGTH; i++)
+    sum ^= keys[i];
+  keys[_SKEIN256_LENGTH] = sum;
+  tweak[2] = tweak[0] ^ tweak[1];
+}
+
+void
 skein256_init(struct skein256_ctx *ctx)
 {
   static const uint64_t G0[4] = {
@@ -158,19 +171,14 @@ skein256_process_block(struct skein256_ctx *ctx,
 		       const uint8_t *data)
 {
   /* Expand key */
-  uint64_t tweak[3];
-  uint64_t sum;
-  unsigned i;
-
-  for (i = 0, sum = _SKEIN_C240; i < _SKEIN256_LENGTH; i++)
-    sum ^= ctx->state[i];
-  ctx->state[_SKEIN256_LENGTH] = sum;
+  uint64_t tweak[_SKEIN_NTWEAK];
 
   tag |= ((ctx->count == 0) << 6);
 
   tweak[0] = (ctx->count << 5) + length;
   tweak[1] = (ctx->count >> 59) | ((unsigned long long) tag << 56);
-  tweak[2] = tweak[0] ^ tweak[1];
+  _skein256_expand(ctx->state, tweak);
+
   _skein256_block(ctx->state, ctx->state, tweak, data);
 
   ctx->count++;
