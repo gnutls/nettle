@@ -1,3 +1,11 @@
+2016-10-13  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (nettle_SOURCES): Added skein256-internal.c.
+
+	* skein256-internal.c (_skein256_block): Move to a separate file,
+	from...
+	* skein256.c: ... old location.
+
 2016-10-12  Niels Möller  <nisse@lysator.liu.se>
 
 	* skein.h (_SKEIN256_NKEYS, _SKEIN_NTWEAK): Increase to 6 and 4,
