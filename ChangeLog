@@ -1,3 +1,8 @@
+2016-10-15  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/skein256-internal.asm: New file, initial assembly
+	implementation for x86_64. Modest speedup compared to C version.
+
 2016-10-13  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in (nettle_SOURCES): Added skein256-internal.c.

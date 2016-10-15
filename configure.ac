@@ -429,7 +429,8 @@ asm_replace_list="aes-encrypt-internal.asm aes-decrypt-internal.asm \
 		salsa20-crypt.asm salsa20-core-internal.asm \
 		serpent-encrypt.asm serpent-decrypt.asm \
 		sha1-compress.asm sha256-compress.asm sha512-compress.asm \
-		sha3-permute.asm umac-nh.asm umac-nh-n.asm machine.m4"
+		sha3-permute.asm skein256-internal.asm \
+		umac-nh.asm umac-nh-n.asm machine.m4"
 
 # Assembler files which generate additional object files if they are used.
 asm_nettle_optional_list="gcm-hash8.asm cpuid.asm \
