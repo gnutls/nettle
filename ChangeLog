@@ -1,5 +1,16 @@
 2016-10-15  Niels Möller  <nisse@lysator.liu.se>
 
+	* skein256-internal.c (_skein256_block): Keep tweak words in
+	scalar variables, and expand on the fly, which is a single xor
+	operation.
+	* x86_64/skein256-internal.asm: Likewise, keep tweak words in
+	registers.
+	* skein256.c (_skein256_expand): Deleted tweak argument. Updated
+	callers.
+	* skein.h (_SKEIN_NTWEAK): Reduce to 2.
+
+2016-10-14  Niels Möller  <nisse@lysator.liu.se>
+
 	* x86_64/skein256-internal.asm: New file, initial assembly
 	implementation for x86_64. Modest speedup compared to C version.
 

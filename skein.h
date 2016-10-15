@@ -51,11 +51,11 @@ extern "C" {
 #define SKEIN256_DIGEST_SIZE 32
 
 /* Internal lengths, as 64-bit words. We use *two* redundant words for
-   both key and tweak, to reduce the number of index mod
-   operations. */
+   the key, to reduce the number of index mod operations. On the other
+   hand, tweak words are expanded on the fly. */
 #define _SKEIN256_LENGTH 4
 #define _SKEIN256_NKEYS 6
-#define _SKEIN_NTWEAK 4
+#define _SKEIN_NTWEAK 2
 
 struct skein256_ctx {
   uint64_t state[_SKEIN256_NKEYS];
@@ -83,8 +83,7 @@ skein256_digest(struct skein256_ctx *ctx,
 #define _SKEIN_C240 0x1BD11BDAA9FC1A22ULL
 
 void
-_skein256_expand(uint64_t keys[_SKEIN256_NKEYS],
-		 uint64_t tweak[_SKEIN_NTWEAK]);
+_skein256_expand(uint64_t keys[_SKEIN256_NKEYS]);
 
 void
 _skein256_block (uint64_t dst[_SKEIN256_LENGTH],

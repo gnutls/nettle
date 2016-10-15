@@ -41,8 +41,7 @@
 #include "nettle-write.h"
 
 void
-_skein256_expand(uint64_t keys[_SKEIN256_NKEYS],
-		 uint64_t tweak[_SKEIN_NTWEAK])
+_skein256_expand(uint64_t keys[_SKEIN256_NKEYS])
 {
   uint64_t sum;
   unsigned i;
@@ -51,8 +50,6 @@ _skein256_expand(uint64_t keys[_SKEIN256_NKEYS],
     sum ^= keys[i];
   keys[_SKEIN256_LENGTH] = sum;
   keys[_SKEIN256_LENGTH + 1] = keys[0];
-  tweak[2] = tweak[0] ^ tweak[1];
-  tweak[3] = tweak[0];
 }
 
 void
@@ -81,7 +78,7 @@ skein256_process_block(struct skein256_ctx *ctx,
 
   tweak[0] = (ctx->count << 5) + length;
   tweak[1] = (ctx->count >> 59) | ((unsigned long long) tag << 56);
-  _skein256_expand(ctx->state, tweak);
+  _skein256_expand(ctx->state);
 
   _skein256_block(ctx->state, ctx->state, tweak, data);
 

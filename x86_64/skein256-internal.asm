@@ -43,7 +43,8 @@ ifelse(<
 	define(<COUNT>, <%rcx>) C Overlaps SRC
 	define(<CMOD5>, <%rdi>) C Overlaps DST
 	define(<CP2MOD5>, <%rax>)
-	define(<CMOD3>, <%rbx>)
+	define(<T0>, <%rbx>)
+	define(<T1>, <%rdx>) C Overlaps TWEAK
 	define(<S0>, <%r12>)
 	define(<S1>, <%r13>)
 	define(<S2>, <%r14>)
@@ -93,12 +94,13 @@ PROLOGUE(_nettle_skein256_block)
 	add	S2, W2
 	add	S3, W3
 
-	C Add tweak words
-	add	(TWEAK), W1
-	add	8(TWEAK), W2
+	C Read and add in tweak words.
+	mov	(TWEAK), T0
+	mov	8(TWEAK), T1
+	add	T0, W1
+	add	T1, W2
 
 	mov	$1, XREG(CMOD5)
-	mov	$1, XREG(CMOD3)
 	mov	$3, XREG(CP2MOD5)
 	mov	$1, XREG(COUNT)
 
@@ -109,18 +111,22 @@ PROLOGUE(_nettle_skein256_block)
 	ROUND(W0, W1, W2, W3, 23, 40)
 	ROUND(W0, W3, W2, W1, 5, 37)
 
+	xor	T1, T0	C Next tweak word always xor of preceeding ones
+
 	add	(KEYS, CMOD5, 8), W0
 	add	8(KEYS, CMOD5, 8), W1
 	add	(KEYS, CP2MOD5, 8), W2
 	add	8(KEYS, CP2MOD5, 8), W3
-	add	(TWEAK, CMOD3, 8), W1
-	add	8(TWEAK, CMOD3, 8), W2
+	add	T1, W1
+	add	T0, W2
 	add	COUNT, W3
 
 	ROUND(W0, W1, W2, W3, 25, 33)
 	ROUND(W0, W3, W2, W1, 46, 12)
 	ROUND(W0, W1, W2, W3, 58, 22)
 	ROUND(W0, W3, W2, W1, 32, 32)
+
+	xor	T0, T1
 
 	add	8(KEYS, CMOD5, 8), W0
 	add	(KEYS, CP2MOD5, 8), W1
@@ -132,11 +138,8 @@ PROLOGUE(_nettle_skein256_block)
 	mov	XREG(CP2MOD5), XREG(CMOD5)
 	mov	XREG(TMP), XREG(CP2MOD5)
 
-	add	8(TWEAK, CMOD3, 8), W1
-	lea	2(CMOD3), TMP
-	sub	$1, XREG(CMOD3)
-	cmovc	XREG(TMP), XREG(CMOD3)
-	add	(TWEAK, CMOD3, 8), W2
+	add	T0, W1
+	add	T1, W2
 	lea	1(W3, COUNT), W3
 
 	add	$2, XREG(COUNT)

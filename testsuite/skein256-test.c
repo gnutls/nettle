@@ -20,13 +20,11 @@ test_skein256_block (const uint64_t keys[4],
 		     const uint64_t ref[_SKEIN256_LENGTH])
 {
   uint64_t keys_expanded[_SKEIN256_NKEYS];
-  uint64_t tweak_expanded[_SKEIN_NTWEAK];
   uint64_t output[_SKEIN256_LENGTH];
 
   memcpy (keys_expanded, keys, _SKEIN256_LENGTH * sizeof(*keys));
-  memcpy (tweak_expanded, tweak, 2*sizeof(*tweak));
-  _skein256_expand (keys_expanded, tweak_expanded);
-  _skein256_block(output, keys_expanded, tweak_expanded, msg);
+  _skein256_expand (keys_expanded);
+  _skein256_block(output, keys_expanded, tweak, msg);
   if (memcmp (output, ref, sizeof(output)) != 0)
     {
       printf ("Skein 256 failed:\n");

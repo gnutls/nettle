@@ -103,22 +103,25 @@ _skein256_block (uint64_t dst[_SKEIN256_LENGTH],
 {
   uint64_t s0, s1, s2, s3;
   uint64_t w0, w1, w2, w3;
+  uint64_t t0, t1;
   unsigned i;
-  unsigned imod5, ip2mod5, imod3;
+  unsigned imod5, ip2mod5;
 
   w0 = s0 = LE_READ_UINT64(src);
   w1 = s1 = LE_READ_UINT64(src + 8);
   w2 = s2 = LE_READ_UINT64(src + 16);
   w3 = s3 = LE_READ_UINT64(src + 24);
 
-  for (i = imod5 = imod3 = 0, ip2mod5 = 2; i < 18; i+=2)
+  t0 = tweak[0];
+  t1 = tweak[1];
+  for (i = imod5 = 0, ip2mod5 = 2; i < 18; i+=2)
     {
       unsigned ip4mod5;
-      unsigned ip2mod3;
-
       ADD_SUBKEY(w0, w1, w2, w3,
 		 keys[imod5], keys[imod5+1], keys[ip2mod5], keys[ip2mod5+1],
-		 tweak[imod3], tweak[imod3+1], i);
+		 t0, t1, i);
+
+      t0 ^= t1;
 
       ROUND(w0, w1, w2, w3, 14, 16);
       ROUND(w0, w3, w2, w1, 52, 57);
@@ -127,11 +130,12 @@ _skein256_block (uint64_t dst[_SKEIN256_LENGTH],
 
       /* Hopefully compiled to a conditional move, but gcc-6.1.1 doesn't. */
       ip4mod5 = imod5 ? imod5 - 1 : 4;
-      ip2mod3 = imod3 ? imod3 - 1 : 2;
 
       ADD_SUBKEY(w0, w1, w2, w3,
 		 keys[imod5+1], keys[ip2mod5], keys[ip2mod5+1], keys[ip4mod5],
-		 tweak[imod3+1], tweak[ip2mod3], i + 1);
+		 t1, t0, i + 1);
+
+      t1 ^= t0;
 
       ROUND(w0, w1, w2, w3, 25, 33);
       ROUND(w0, w3, w2, w1, 46, 12);
@@ -140,11 +144,10 @@ _skein256_block (uint64_t dst[_SKEIN256_LENGTH],
 
       imod5 = ip2mod5;
       ip2mod5 = ip4mod5;
-      imod3 = ip2mod3;
     }
   ADD_SUBKEY(w0, w1, w2, w3, /* 18 mod 5 = 3, 18 mod 3 = 0 */
 	     keys[3], keys[4], keys[0], keys[1],
-	     tweak[0], tweak[1], 18);
+	     t0, t1, 18);
 
   dst[0] = s0 ^ w0;
   dst[1] = s1 ^ w1;
