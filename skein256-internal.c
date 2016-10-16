@@ -88,13 +88,6 @@
     w3 ^= w2;								\
   } while(0)
 
-#define ADD_SUBKEY(w0, w1, w2, w3, k0, k1, k2, k3, t0, t1, i) do { \
-    w0 += (k0);			    \
-    w1 += (k1) + (t0);	    \
-    w2 += (k2) + (t1); \
-    w3 += (k3) + (i);		       \
-  } while (0)
-
 void
 _skein256_block (uint64_t dst[_SKEIN256_LENGTH],
 		 const uint64_t keys[_SKEIN256_NKEYS],
@@ -103,9 +96,9 @@ _skein256_block (uint64_t dst[_SKEIN256_LENGTH],
 {
   uint64_t s0, s1, s2, s3;
   uint64_t w0, w1, w2, w3;
+  uint64_t k0, k1, k2, k3, k4;
   uint64_t t0, t1;
   unsigned i;
-  unsigned imod5, ip2mod5;
 
   w0 = s0 = LE_READ_UINT64(src);
   w1 = s1 = LE_READ_UINT64(src + 8);
@@ -114,40 +107,49 @@ _skein256_block (uint64_t dst[_SKEIN256_LENGTH],
 
   t0 = tweak[0];
   t1 = tweak[1];
-  for (i = imod5 = 0, ip2mod5 = 2; i < 18; i+=2)
-    {
-      unsigned ip4mod5;
-      ADD_SUBKEY(w0, w1, w2, w3,
-		 keys[imod5], keys[imod5+1], keys[ip2mod5], keys[ip2mod5+1],
-		 t0, t1, i);
 
-      t0 ^= t1;
+  k0 = keys[0];
+  k1 = keys[1] + t0;
+  k2 = keys[2] + t1;
+  k3 = keys[3];
+  k4 = keys[4];
+
+  for (i = 0; i < 18; i+=2)
+    {
+      uint64_t tmp;
+      w0 += k0;
+      w1 += k1;
+      w2 += k2;
+      w3 += k3 + i;
 
       ROUND(w0, w1, w2, w3, 14, 16);
       ROUND(w0, w3, w2, w1, 52, 57);
       ROUND(w0, w1, w2, w3, 23, 40);
       ROUND(w0, w3, w2, w1, 5, 37);
 
-      /* Hopefully compiled to a conditional move, but gcc-6.1.1 doesn't. */
-      ip4mod5 = imod5 ? imod5 - 1 : 4;
+      w0 += k1 - t0; /* Right-hand side equal to new k4, below. */
+      w1 += k2;
+      t0 ^= t1;
+      w2 += k3 + t0; /* Right-hand side equal to new k1, below. */
+      w3 += k4 + i + 1;
 
-      ADD_SUBKEY(w0, w1, w2, w3,
-		 keys[imod5+1], keys[ip2mod5], keys[ip2mod5+1], keys[ip4mod5],
-		 t1, t0, i + 1);
-
+      tmp = k1;
+      k1 = k3 + t0;
+      k3 = k0;
+      k0 = k2 - t1;
       t1 ^= t0;
+      k2 = k4 + t1;
+      k4 = tmp - t1;
 
       ROUND(w0, w1, w2, w3, 25, 33);
       ROUND(w0, w3, w2, w1, 46, 12);
       ROUND(w0, w1, w2, w3, 58, 22);
       ROUND(w0, w3, w2, w1, 32, 32);
-
-      imod5 = ip2mod5;
-      ip2mod5 = ip4mod5;
     }
-  ADD_SUBKEY(w0, w1, w2, w3, /* 18 mod 5 = 3, 18 mod 3 = 0 */
-	     keys[3], keys[4], keys[0], keys[1],
-	     t0, t1, 18);
+  w0 += k0;
+  w1 += k1;
+  w2 += k2;
+  w3 += k3 + 18;
 
   dst[0] = s0 ^ w0;
   dst[1] = s1 ^ w1;

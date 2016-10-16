@@ -41,15 +41,14 @@ ifelse(<
 	define(<W3>, <%r11>)
 
 	define(<COUNT>, <%rcx>) C Overlaps SRC
-	define(<CMOD5>, <%rdi>) C Overlaps DST
-	define(<CP2MOD5>, <%rax>)
 	define(<T0>, <%rbx>)
 	define(<T1>, <%rdx>) C Overlaps TWEAK
-	define(<S0>, <%r12>)
-	define(<S1>, <%r13>)
-	define(<S2>, <%r14>)
-	define(<S3>, <%r15>)
-	define(<TMP>, <%rbp>)
+	define(<K0>, <%r12>)
+	define(<K1>, <%r13>)
+	define(<K2>, <%r14>)
+	define(<K3>, <%r15>)
+	define(<K4>, <%rsi>) C Overlaps KEYS
+	define(<TMP>, <%rax>)
 
 C ROUND(W0, W1, W2, W3, C0, C1)
 define(<ROUND>, <
@@ -69,98 +68,102 @@ define(<ROUND>, <
 	ALIGN(16)
 PROLOGUE(_nettle_skein256_block)
 	W64_ENTRY(4, 0)
-	C Save registers, %rdi (DST) last
+	C Save registers, %rcx (SRC) last
 	push	%rbx
-	push	%rbp
 	push	%r12
 	push	%r13
 	push	%r14
 	push	%r15
-	push	DST
+	push	SRC
 
 	C Unaligned read of source data.
-	mov	(SRC), S0
-	mov	8(SRC), S1
-	mov	16(SRC), S2
-	mov	24(SRC), S3
+	mov	(SRC), W0
+	mov	8(SRC), W1
+	mov	16(SRC), W2
+	mov	24(SRC), W3
 
-	C Read and add in first subkeys.
-	mov	(KEYS), W0
-	mov	8(KEYS), W1
-	mov	16(KEYS), W2
-	mov	24(KEYS), W3
-	add	S0, W0
-	add	S1, W1
-	add	S2, W2
-	add	S3, W3
+	C Read subkeys.
+	mov	(KEYS), K0
+	mov	8(KEYS), K1
+	mov	16(KEYS), K2
+	mov	24(KEYS), K3
+	mov	32(KEYS), K4
 
 	C Read and add in tweak words.
 	mov	(TWEAK), T0
 	mov	8(TWEAK), T1
-	add	T0, W1
-	add	T1, W2
+	add	T0, K1
+	add	T1, K2
 
-	mov	$1, XREG(CMOD5)
-	mov	$3, XREG(CP2MOD5)
-	mov	$1, XREG(COUNT)
+	mov	$0, XREG(COUNT)
 
 	ALIGN(16)
 .Loop:
+	C Add subkeys
+	add	K0, W0
+	add	K1, W1
+	add	K2, W2
+	add	K3, W3
+	add	COUNT, W3
+
 	ROUND(W0, W1, W2, W3, 14, 16)
 	ROUND(W0, W3, W2, W1, 52, 57)
 	ROUND(W0, W1, W2, W3, 23, 40)
 	ROUND(W0, W3, W2, W1, 5, 37)
 
+	mov	K1, TMP
+	sub	T0, TMP		C New value for K4
+	add	TMP, W0
+
+	add	K2, W1
+	add	K4, W3
+	lea	1(W3, COUNT), W3
+
 	xor	T1, T0	C Next tweak word always xor of preceeding ones
 
-	add	(KEYS, CMOD5, 8), W0
-	add	8(KEYS, CMOD5, 8), W1
-	add	(KEYS, CP2MOD5, 8), W2
-	add	8(KEYS, CP2MOD5, 8), W3
-	add	T1, W1
-	add	T0, W2
-	add	COUNT, W3
+	lea	(K3, T0), K1
+	add	K1, W2
+
+	mov	K0, K3
+	mov	K2, K0
+	sub	T1, K0
+	xor	T0, T1
+	lea	(K4, T1), K2
+
+	mov	TMP, K4
 
 	ROUND(W0, W1, W2, W3, 25, 33)
 	ROUND(W0, W3, W2, W1, 46, 12)
 	ROUND(W0, W1, W2, W3, 58, 22)
 	ROUND(W0, W3, W2, W1, 32, 32)
 
-	xor	T0, T1
-
-	add	8(KEYS, CMOD5, 8), W0
-	add	(KEYS, CP2MOD5, 8), W1
-	add	8(KEYS, CP2MOD5, 8), W2
-	lea	4(CMOD5), TMP
-	sub	$1, XREG(CMOD5)
-	cmovnc	XREG(CMOD5), XREG(TMP)
-	add	(KEYS, TMP, 8), W3
-	mov	XREG(CP2MOD5), XREG(CMOD5)
-	mov	XREG(TMP), XREG(CP2MOD5)
-
-	add	T0, W1
-	add	T1, W2
-	lea	1(W3, COUNT), W3
-
 	add	$2, XREG(COUNT)
-	cmp	$19, XREG(COUNT)
+	cmp	$18, XREG(COUNT)
 	jne	.Loop
 
-	pop	DST
-	xor	S0, W0
+	pop	SRC
+
+	add	K0, W0
+	add	K1, W1
+	add	K2, W2
+	lea	18(K3, W3), W3
+
+	C Repeats the unaligned reads. Keep in registers,
+	C if we get any spare registers. Or consider copying
+	C to stack?
+	xor	(SRC), W0
 	mov	W0, (DST)
-	xor	S1, W1
+	xor	8(SRC), W1
 	mov	W1, 8(DST)
-	xor	S2, W2
+	xor	16(SRC), W2
 	mov	W2, 16(DST)
-	xor	S3, W3
+	xor	24(SRC), W3
 	mov	W3, 24(DST)
 
 	pop	%r15
 	pop	%r14
 	pop	%r13
 	pop	%r12
-	pop	%rbp
 	pop	%rbx
 
 	W64_EXIT(4, 0)
