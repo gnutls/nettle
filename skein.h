@@ -46,6 +46,7 @@ extern "C" {
 #define skein256_digest nettle_skein256_digest
 #define _skein256_expand _nettle_skein256_expand
 #define _skein256_block _nettle_skein256_block
+#define _skein512_block _nettle_skein512_block
 
 #define SKEIN256_BLOCK_SIZE 32
 #define SKEIN256_DIGEST_SIZE 32
@@ -80,6 +81,15 @@ skein256_digest(struct skein256_ctx *ctx,
 		size_t length,
 		uint8_t *digest);
 
+#define SKEIN512_BLOCK_SIZE 64
+#define SKEIN512_DIGEST_SIZE 64
+
+/* Internal lengths, as 64-bit words. We use *two* redundant words for
+   the key, to reduce the number of index mod operations. On the other
+   hand, tweak words are expanded on the fly. */
+#define _SKEIN512_LENGTH 8
+#define _SKEIN512_NKEYS 9
+
 #define _SKEIN_C240 0x1BD11BDAA9FC1A22ULL
 
 void
@@ -90,6 +100,12 @@ _skein256_block (uint64_t dst[_SKEIN256_LENGTH],
 		 const uint64_t keys[_SKEIN256_NKEYS],
 		 const uint64_t tweak[_SKEIN_NTWEAK],
 		 const uint8_t src[SKEIN256_BLOCK_SIZE]);
+
+void
+_skein512_block (uint64_t dst[_SKEIN512_LENGTH],
+		 const uint64_t keys[_SKEIN512_NKEYS],
+		 const uint64_t tweak[_SKEIN_NTWEAK],
+		 const uint8_t src[SKEIN512_BLOCK_SIZE]);
 
 #ifdef __cplusplus
 }

@@ -1,3 +1,11 @@
+2016-10-18  Niels Möller  <nisse@lysator.liu.se>
+
+	* skein512-internal.c (_skein512_block): New file and function.
+	* skein.h: Added skein512 declarations.
+	* Makefile.in (nettle_SOURCES): Added skein512-internal.c.
+	* testsuite/skein512-test.c: New test case.
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Added skein512-test.c.
+
 2016-10-16  Niels Möller  <nisse@lysator.liu.se>
 
 	* skein256-internal.c (_skein256_block): Keep the subkey words in
