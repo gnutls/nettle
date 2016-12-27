@@ -14,8 +14,8 @@ print_array(const char *label, size_t n, const uint64_t *x)
 }
 
 static void
-test_skein256_block (const uint64_t keys[4],
-		     const uint64_t tweak[2],
+test_skein256_block (const uint64_t keys[_SKEIN256_LENGTH],
+		     const uint64_t tweak[_SKEIN_NTWEAK],
 		     const uint8_t msg[SKEIN256_BLOCK_SIZE],
 		     const uint64_t ref[_SKEIN256_LENGTH])
 {
@@ -28,12 +28,12 @@ test_skein256_block (const uint64_t keys[4],
   if (memcmp (output, ref, sizeof(output)) != 0)
     {
       printf ("Skein 256 failed:\n");
-      print_array("key", 4, keys);
-      print_array("tweak", 2, tweak);
+      print_array("key", _SKEIN256_LENGTH, keys);
+      print_array("tweak", _SKEIN_NTWEAK, tweak);
       printf ("msg: ");
       print_hex(SKEIN256_BLOCK_SIZE, msg);
-      print_array("out", 4, output);
-      print_array("ref", 4, ref);
+      print_array("out", _SKEIN256_LENGTH, output);
+      print_array("ref", _SKEIN256_LENGTH, ref);
       FAIL();
     }
 }
@@ -44,7 +44,7 @@ test_main(void)
   /* From skein_golden_kat_short_internals.txt in
      http://www.skein-hash.info/sites/default/files/NIST_CD_102610.zip. */
   {
-    static const uint64_t zeros[4] = {
+    static const uint64_t zeros[_SKEIN256_LENGTH] = {
       0, 0, 0, 0
     };
     static const uint64_t ref[_SKEIN256_LENGTH] = {
@@ -59,17 +59,17 @@ test_main(void)
 			ref);
   }
   {
-    static const uint64_t keys[4] = {
+    static const uint64_t keys[_SKEIN256_LENGTH] = {
       0x1716151413121110ull,
       0x1F1E1D1C1B1A1918ull,
       0x2726252423222120ull,
       0x2F2E2D2C2B2A2928ull,
     };
-    static const uint64_t tweak[2] = {
+    static const uint64_t tweak[_SKEIN_NTWEAK] = {
       0x0706050403020100ull,
       0x0F0E0D0C0B0A0908ull,
     };
-    static const uint64_t ref[4] = {
+    static const uint64_t ref[_SKEIN256_LENGTH] = {
       0x277610F5036C2E1Full,
       0x25FB2ADD1267773Eull,
       0x9E1D67B3E4B06872ull,
@@ -83,10 +83,10 @@ test_main(void)
   }
   {
     /* skein256 G0 = E(zeros, tweak, config string) */
-    static const uint64_t zero_keys[4] = {
+    static const uint64_t zero_keys[_SKEIN256_LENGTH] = {
       0, 0, 0, 0
     };
-    static const uint64_t tweak[2] = {
+    static const uint64_t tweak[_SKEIN_NTWEAK] = {
       32, /* message length */
       0xc4ull << 56, /* first and final, type 4 */
     };

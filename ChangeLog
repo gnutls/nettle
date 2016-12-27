@@ -1,3 +1,7 @@
+2016-12-27  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/skein256-test.c: Use symbolic constants.
+
 2016-10-18  Niels Möller  <nisse@lysator.liu.se>
 
 	* skein512-internal.c (_skein512_block): New file and function.
