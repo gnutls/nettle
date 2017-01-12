@@ -62,6 +62,7 @@
 #include "sha1.h"
 #include "sha2.h"
 #include "sha3.h"
+#include "skein.h"
 #include "twofish.h"
 #include "umac.h"
 #include "poly1305.h"
@@ -704,10 +705,38 @@ bench_sha3_permute(void)
   TIME_CYCLES (t, sha3_permute (&state));
   printf("sha3_permute: %.2f cycles (%.2f / round)\n", t, t / 24.0);
 }
+
+static void
+bench_skein256_block(void)
+{
+  uint64_t dst[_SKEIN256_LENGTH];
+  static const uint64_t keys[_SKEIN256_NKEYS];
+  static const uint64_t tweak[_SKEIN_NTWEAK];
+  static const uint8_t src[SKEIN256_BLOCK_SIZE];
+  double t;
+
+  TIME_CYCLES (t, _skein256_block (dst, keys, tweak, src));
+  printf("skein256_permute: %.2f cycles (%.2f / 8 rounds)\n", t, t / 9);
+}
+
+static void
+bench_skein512_block(void)
+{
+  uint64_t dst[_SKEIN512_LENGTH];
+  static const uint64_t keys[_SKEIN512_NKEYS];
+  static const uint64_t tweak[_SKEIN_NTWEAK];
+  static const uint8_t src[SKEIN512_BLOCK_SIZE];
+  double t;
+
+  TIME_CYCLES (t, _skein512_block (dst, keys, tweak, src));
+  printf("skein512_permute: %.2f cycles (%.2f / 8 rounds)\n", t, t / 9);
+}
 #else
 #define bench_sha1_compress()
 #define bench_salsa20_core()
 #define bench_sha3_permute()
+#define bench_skein256_block()
+#define bench_skein512_block()
 #endif
 
 #if WITH_OPENSSL
@@ -804,6 +833,8 @@ main(int argc, char **argv)
   bench_sha1_compress();
   bench_salsa20_core();
   bench_sha3_permute();
+  bench_skein256_block();
+  bench_skein512_block();
   printf("\n");
   time_overhead();
 
