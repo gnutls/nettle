@@ -1,5 +1,10 @@
 2017-01-12  Niels Möller  <nisse@lysator.liu.se>
 
+	* tools/nettle-hash.c (find_algorithm): Deleted function.
+	(main): Replaced by call to nettle_lookup_hash.
+
+	* testsuite/meta-hash-test.c (test_main): Use nettle_lookup_hash.
+
 	* nettle-meta.h (nettle_hashes): New macro, expanding to a call to
 	nettle_get_hashes. Direct access to the array causes the array
 	size to leak into the ABI, since a plain un-relocatable executable

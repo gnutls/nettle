@@ -21,20 +21,16 @@ const char* hashes[] = {
 void
 test_main(void)
 {
-  int i,j;
+  int i;
   int count = sizeof(hashes)/sizeof(*hashes);
   for (i = 0; i < count; i++) {
-    for (j = 0; NULL != nettle_hashes[j]; j++) {
-      if (0 == strcmp(hashes[i], nettle_hashes[j]->name))
-        break;
-    }
-    ASSERT(NULL != nettle_hashes[j]); /* make sure we found a matching hash */
+    /* make sure we found a matching hash */
+    ASSERT(nettle_lookup_hash(hashes[i]) != NULL);
   }
-  j = 0;
-  while (NULL != nettle_hashes[j])
-    j++;
-  ASSERT(j == count); /* we are not missing testing any hashes */
-  for (j = 0; NULL != nettle_hashes[j]; j++)
-    ASSERT(nettle_hashes[j]->digest_size <= NETTLE_MAX_HASH_DIGEST_SIZE);
+
+  while (NULL != nettle_hashes[i])
+    i++;
+  ASSERT(i == count); /* we are not missing testing any hashes */
+  for (i = 0; NULL != nettle_hashes[i]; i++)
+    ASSERT(nettle_hashes[i]->digest_size <= NETTLE_MAX_HASH_DIGEST_SIZE);
 }
-  
