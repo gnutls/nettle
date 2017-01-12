@@ -115,7 +115,18 @@ struct nettle_hash
 } 
 
 /* null-terminated list of digests implemented by this version of nettle */
-extern const struct nettle_hash * const nettle_hashes[];
+extern const struct nettle_hash * const _nettle_hashes[];
+
+const struct nettle_hash * const *
+#ifdef __GNUC__
+__attribute__((pure))
+#endif
+nettle_get_hashes (void);
+
+#define nettle_hashes (nettle_get_hashes())
+
+const struct nettle_hash *
+nettle_lookup_hash (const char *name);
 
 extern const struct nettle_hash nettle_md2;
 extern const struct nettle_hash nettle_md4;

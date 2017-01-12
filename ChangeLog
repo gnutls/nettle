@@ -1,3 +1,15 @@
+2017-01-12  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle-meta.h (nettle_hashes): New macro, expanding to a call to
+	nettle_get_hashes. Direct access to the array causes the array
+	size to leak into the ABI, since a plain un-relocatable executable
+	linking with libnettle.so gets copy relocations for any referenced
+	data items in the shared library.
+
+	* nettle-meta-hashes.c (_nettle_hashes): Renamed array, from...
+	(nettle_hashes): ... old name.
+	(nettle_get_hashes): New function.
+
 2016-10-10  Niels Möller  <nisse@lysator.liu.se>
 
 	* write-be32.c (_nettle_write_be32): Use const for source argument.

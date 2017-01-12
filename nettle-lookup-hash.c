@@ -1,6 +1,6 @@
-/* nettle-meta-hashes.c
+/* nettle-lookup-hash.c
 
-   Copyright (C) 2011 Daniel Kahn Gillmor
+   Copyright (C) 2016 Niels Möller.
 
    This file is part of GNU Nettle.
 
@@ -34,28 +34,20 @@
 #endif
 
 #include <stddef.h>
+#include <string.h>
 
 #include "nettle-meta.h"
 
-const struct nettle_hash * const _nettle_hashes[] = {
-  &nettle_md2,
-  &nettle_md4,
-  &nettle_md5,
-  &nettle_ripemd160,
-  &nettle_sha1,
-  &nettle_sha224,
-  &nettle_sha256,
-  &nettle_sha384,
-  &nettle_sha512,
-  &nettle_sha3_224,
-  &nettle_sha3_256,
-  &nettle_sha3_384,
-  &nettle_sha3_512,
-  NULL
-};
+/* Direct access to the array. */
+#undef nettle_hashes
+#define nettle_hashes _nettle_hashes
 
-const struct nettle_hash * const *
-nettle_get_hashes (void)
+const struct nettle_hash *
+nettle_lookup_hash (const char *name)
 {
-  return _nettle_hashes;
+  unsigned i;
+  for (i = 0; nettle_hashes[i]; i++)
+    if (!strcmp (name, nettle_hashes[i]->name))
+      return nettle_hashes[i];
+  return NULL;
 }
