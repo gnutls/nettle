@@ -1,3 +1,9 @@
+2017-01-18  Niels Möller  <nisse@lysator.liu.se>
+
+	* skein512-internal.c (ROUND_EVEN, ROUND_ODD, ADD_KEY_MOD): New
+	macros.
+	(_skein512_block): Use them.
+
 2017-01-12  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/nettle-benchmark.c (bench_skein256_block)

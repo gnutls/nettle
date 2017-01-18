@@ -95,6 +95,31 @@
     w7 ^= w6;								\
   } while(0)
 
+#define ROUND_EVEN(w0, w1, w2, w3, w4, w5, w6, w7) do {		\
+    ROUND(w0, w1, w2, w3, w4, w5, w6, w7, 46, 36, 19, 37);	\
+    ROUND(w2, w1, w4, w7, w6, w5, w0, w3, 33, 27, 14, 42);	\
+    ROUND(w4, w1, w6, w3, w0, w5, w2, w7, 17, 49, 36, 39);	\
+    ROUND(w6, w1, w0, w7, w2, w5, w4, w3, 44,  9, 54, 56);	\
+  } while (0)
+
+#define ROUND_ODD(w0, w1, w2, w3, w4, w5, w6, w7) do {		\
+    ROUND(w0, w1, w2, w3, w4, w5, w6, w7, 39, 30, 34, 24);	\
+    ROUND(w2, w1, w4, w7, w6, w5, w0, w3, 13, 50, 10, 17);	\
+    ROUND(w4, w1, w6, w3, w0, w5, w2, w7, 25, 29, 39, 43);	\
+    ROUND(w6, w1, w0, w7, w2, w5, w4, w3,  8, 35, 56, 22);	\
+  } while (0)
+
+#define ADD_KEY_MOD(w0, w1, w2, w3, w4, w5, w6, w7, t0, t1, i) do { \
+    w0 += keys[((i)+0) % 9];					    \
+    w1 += keys[((i)+1) % 9];					    \
+    w2 += keys[((i)+2) % 9];					    \
+    w3 += keys[((i)+3) % 9];					    \
+    w4 += keys[((i)+4) % 9];					    \
+    w5 += keys[((i)+5) % 9] + (t0);				    \
+    w6 += keys[((i)+6) % 9] + (t1);				    \
+    w7 += keys[((i)+7) % 9] + (i);				    \
+  } while (0)
+
 void
 _skein512_block (uint64_t dst[_SKEIN512_LENGTH],
 		 const uint64_t keys[_SKEIN512_NKEYS],
@@ -119,37 +144,13 @@ _skein512_block (uint64_t dst[_SKEIN512_LENGTH],
 
   for (i = 0; i < 18; i+=2)
     {
-      w0 += keys[(i+0) % 9];
-      w1 += keys[(i+1) % 9];
-      w2 += keys[(i+2) % 9];
-      w3 += keys[(i+3) % 9];
-      w4 += keys[(i+4) % 9];
-      w5 += keys[(i+5) % 9] + t0;
-      w6 += keys[(i+6) % 9] + t1;
-      w7 += keys[(i+7) % 9] + i;
-
+      ADD_KEY_MOD (w0, w1, w2, w3, w4, w5, w6, w7, t0, t1, i);
       t0 ^= t1;
+      ROUND_EVEN (w0, w1, w2, w3, w4, w5, w6, w7);
 
-      ROUND(w0, w1, w2, w3, w4, w5, w6, w7, 46, 36, 19, 37);
-      ROUND(w2, w1, w4, w7, w6, w5, w0, w3, 33, 27, 14, 42);
-      ROUND(w4, w1, w6, w3, w0, w5, w2, w7, 17, 49, 36, 39);
-      ROUND(w6, w1, w0, w7, w2, w5, w4, w3, 44,  9, 54, 56);
-
-      w0 += keys[(i+1) % 9];
-      w1 += keys[(i+2) % 9];
-      w2 += keys[(i+3) % 9];
-      w3 += keys[(i+4) % 9];
-      w4 += keys[(i+5) % 9];
-      w5 += keys[(i+6) % 9] + t1;
-      w6 += keys[(i+7) % 9] + t0;
-      w7 += keys[(i+8) % 9] + i + 1;
-
+      ADD_KEY_MOD (w0, w1, w2, w3, w4, w5, w6, w7, t1, t0, i + 1);
       t1 ^= t0;
-
-      ROUND(w0, w1, w2, w3, w4, w5, w6, w7, 39, 30, 34, 24);
-      ROUND(w2, w1, w4, w7, w6, w5, w0, w3, 13, 50, 10, 17);
-      ROUND(w4, w1, w6, w3, w0, w5, w2, w7, 25, 29, 39, 43);
-      ROUND(w6, w1, w0, w7, w2, w5, w4, w3,  8, 35, 56, 22);
+      ROUND_ODD (w0, w1, w2, w3, w4, w5, w6, w7);
     }
   w0 += keys[0];
   w1 += keys[1];
