@@ -144,6 +144,7 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  pkcs1.c pkcs1-encrypt.c pkcs1-decrypt.c \
 		  pkcs1-rsa-digest.c pkcs1-rsa-md5.c pkcs1-rsa-sha1.c \
 		  pkcs1-rsa-sha256.c pkcs1-rsa-sha512.c \
+		  pss.c pss-mgf1.c \
 		  rsa.c rsa-sign.c rsa-sign-tr.c rsa-verify.c \
 		  rsa-pkcs1-sign.c rsa-pkcs1-sign-tr.c rsa-pkcs1-verify.c \
 		  rsa-md5-sign.c rsa-md5-sign-tr.c rsa-md5-verify.c \
@@ -196,7 +197,7 @@ HEADERS = aes.h arcfour.h arctwo.h asn1.h blowfish.h \
 	  memops.h memxor.h \
 	  nettle-meta.h nettle-types.h \
 	  pbkdf2.h \
-	  pgp.h pkcs1.h realloc.h ripemd160.h rsa.h \
+	  pgp.h pkcs1.h pss.h pss-mgf1.h realloc.h ripemd160.h rsa.h \
 	  salsa20.h sexp.h \
 	  serpent.h sha.h sha1.h sha2.h sha3.h twofish.h \
 	  umac.h yarrow.h poly1305.h

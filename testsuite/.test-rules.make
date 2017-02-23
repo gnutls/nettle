@@ -157,6 +157,9 @@ yarrow-test$(EXEEXT): yarrow-test.$(OBJEXT)
 pbkdf2-test$(EXEEXT): pbkdf2-test.$(OBJEXT)
 	$(LINK) pbkdf2-test.$(OBJEXT) $(TEST_OBJS) -o pbkdf2-test$(EXEEXT)
 
+pss-mgf1-test$(EXEEXT): pss-mgf1-test.$(OBJEXT)
+	$(LINK) pss-mgf1-test.$(OBJEXT) $(TEST_OBJS) -o pss-mgf1-test$(EXEEXT)
+
 sexp-test$(EXEEXT): sexp-test.$(OBJEXT)
 	$(LINK) sexp-test.$(OBJEXT) $(TEST_OBJS) -o sexp-test$(EXEEXT)
 
@@ -177,6 +180,9 @@ random-prime-test$(EXEEXT): random-prime-test.$(OBJEXT)
 
 pkcs1-test$(EXEEXT): pkcs1-test.$(OBJEXT)
 	$(LINK) pkcs1-test.$(OBJEXT) $(TEST_OBJS) -o pkcs1-test$(EXEEXT)
+
+pss-test$(EXEEXT): pss-test.$(OBJEXT)
+	$(LINK) pss-test.$(OBJEXT) $(TEST_OBJS) -o pss-test$(EXEEXT)
 
 rsa-sign-tr-test$(EXEEXT): rsa-sign-tr-test.$(OBJEXT)
 	$(LINK) rsa-sign-tr-test.$(OBJEXT) $(TEST_OBJS) -o rsa-sign-tr-test$(EXEEXT)
