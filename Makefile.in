@@ -220,7 +220,7 @@ DISTFILES = $(SOURCES) $(HEADERS) getopt.h getopt_int.h \
 	libnettle.map.in libhogweed.map.in \
 	config.guess config.sub install-sh texinfo.tex \
 	config.h.in config.m4.in config.make.in	Makefile.in \
-	README AUTHORS COPYING.LESSERv3 COPYINGv2 COPYINGv3 \
+	README CONTRIBUTING.md AUTHORS COPYING.LESSERv3 COPYINGv2 COPYINGv3 \
 	INSTALL NEWS TODO ChangeLog \
 	nettle.pc.in hogweed.pc.in \
 	$(des_headers) descore.README \
