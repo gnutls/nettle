@@ -1,8 +1,8 @@
-/* rsa-verify.c
+/* rsa-pss-sha256-sign-tr.c
 
-   Verifying RSA signatures.
+   Signatures using RSA and SHA-256, with PSS padding.
 
-   Copyright (C) 2001, 2003 Niels Möller
+   Copyright (C) 2017 Daiki Ueno
 
    This file is part of GNU Nettle.
 
@@ -38,41 +38,27 @@
 #include "rsa.h"
 
 #include "bignum.h"
+#include "pss.h"
 
 int
-_rsa_verify(const struct rsa_public_key *key,
-	    const mpz_t m,
-	    const mpz_t s)
+rsa_pss_sha256_sign_digest_tr(const struct rsa_public_key *pub,
+			      const struct rsa_private_key *key,
+			      void *random_ctx, nettle_random_func *random,
+			      size_t salt_length, const uint8_t *salt,
+			      const uint8_t *digest,
+			      mpz_t s)
 {
+  mpz_t m;
   int res;
-  
-  mpz_t m1;
-  
-  if ( (mpz_sgn(s) <= 0)
-       || (mpz_cmp(s, key->n) >= 0) )
-    return 0;
-       
-  mpz_init(m1);
-  
-  mpz_powm(m1, s, key->e, key->n);
 
-  res = !mpz_cmp(m, m1);
+  mpz_init (m);
 
-  mpz_clear(m1);
+  res = (pss_encode_mgf1(m, mpz_sizeinbase(pub->n, 2) - 1, &nettle_sha256,
+			 salt_length, salt, digest)
+	 && rsa_compute_root_tr (pub, key,
+				 random_ctx, random,
+				 s, m));
 
+  mpz_clear (m);
   return res;
-}
-
-int
-_rsa_verify_recover(const struct rsa_public_key *key,
-		    mpz_t m,
-		    const mpz_t s)
-{
-  if ( (mpz_sgn(s) <= 0)
-       || (mpz_cmp(s, key->n) >= 0) )
-    return 0;
-
-  mpz_powm(m, s, key->e, key->n);
-
-  return 1;
 }

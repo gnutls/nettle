@@ -3770,6 +3770,43 @@ of the digest together with an object identifier for the used hash
 algorithm.
 @end deftypefun
 
+While the above functions for the RSA signature operations use the
+@cite{PKCS#1} padding scheme, Nettle also provides the variants based on
+the PSS padding scheme, specified in @cite{RFC 3447}.  These variants
+take advantage of a randomly choosen salt value, which could enhance the
+security by causing output to be different for equivalent inputs.
+However, assuming the same security level as inverting the @acronym{RSA}
+algorithm, a longer salt value does not always mean a better security
+@uref{http://www.iacr.org/archive/eurocrypt2002/23320268/coron.pdf}.
+The typical choices of the length are between 0 and the digest size of
+the underlying hash function.
+
+Creating an RSA signature with the PSS padding scheme is done with one
+of the following functions:
+
+@deftypefun int rsa_pss_sha256_sign_digest_tr(const struct rsa_public_key *@var{pub}, const struct rsa_private_key *@var{key}, void *@var{random_ctx}, nettle_random_func *@var{random}, size_t @var{salt_length}, const uint8_t *@var{salt}, const uint8_t *@var{digest}, mpz_t @var{signature})
+@deftypefunx int rsa_pss_sha384_sign_digest_tr(const struct rsa_public_key *@var{pub}, const struct rsa_private_key *@var{key}, void *@var{random_ctx}, nettle_random_func *@var{random}, size_t @var{salt_length}, const uint8_t *@var{salt}, const uint8_t *@var{digest}, mpz_t @var{signature})
+@deftypefunx int rsa_pss_sha512_sign_digest_tr(const struct rsa_public_key *@var{pub}, const struct rsa_private_key *@var{key}, void *@var{random_ctx}, nettle_random_func *@var{random}, size_t @var{salt_length}, const uint8_t *@var{salt}, const uint8_t *@var{digest}, mpz_t @var{signature})
+Creates a signature using the PSS padding scheme. @var{salt} should
+point to a salt string of size @var{salt_length}. @var{digest} should
+point to a digest of size @code{SHA256_DIGEST_SIZE},
+@code{SHA384_DIGEST_SIZE}, or @code{SHA512_DIGEST_SIZE}respectively. The
+signature is stored in @var{signature} (which must have been
+@code{mpz_init}:ed earlier).
+Returns one on success, or zero on failure.
+@end deftypefun
+
+Verifying an RSA signature with the PSS padding scheme is done with one
+of the following functions:
+
+@deftypefun int rsa_pss_sha256_verify_digest (const struct rsa_public_key *@var{key}, size_t @var{salt_length}, const uint8_t *@var{digest}, const mpz_t @var{signature})
+@deftypefunx int rsa_pss_sha384_verify_digest (const struct rsa_public_key *@var{key}, size_t @var{salt_length}, const uint8_t *@var{digest}, const mpz_t @var{signature})
+@deftypefunx int rsa_pss_sha512_verify_digest (const struct rsa_public_key *@var{key}, size_t @var{salt_length}, const uint8_t *@var{digest}, const mpz_t @var{signature})
+Returns 1 if the signature is valid, or 0 if it isn't. @var{digest}
+should point to a digest of size @code{SHA256_DIGEST_SIZE},
+@code{SHA384_DIGEST_SIZE}, or @code{SHA512_DIGEST_SIZE} respectively.
+@end deftypefun
+
 The following function is used to encrypt a clear text message using RSA.
 @deftypefun int rsa_encrypt (const struct rsa_public_key *@var{key}, void *@var{random_ctx}, nettle_random_func *@var{random}, size_t @var{length}, const uint8_t *@var{cleartext}, mpz_t @var{ciphertext})
 Returns 1 on success, 0 on failure. If the message is too long then this

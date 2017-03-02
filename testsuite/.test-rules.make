@@ -187,6 +187,9 @@ pss-test$(EXEEXT): pss-test.$(OBJEXT)
 rsa-sign-tr-test$(EXEEXT): rsa-sign-tr-test.$(OBJEXT)
 	$(LINK) rsa-sign-tr-test.$(OBJEXT) $(TEST_OBJS) -o rsa-sign-tr-test$(EXEEXT)
 
+rsa-pss-sign-tr-test$(EXEEXT): rsa-pss-sign-tr-test.$(OBJEXT)
+	$(LINK) rsa-pss-sign-tr-test.$(OBJEXT) $(TEST_OBJS) -o rsa-pss-sign-tr-test$(EXEEXT)
+
 rsa-test$(EXEEXT): rsa-test.$(OBJEXT)
 	$(LINK) rsa-test.$(OBJEXT) $(TEST_OBJS) -o rsa-test$(EXEEXT)
 

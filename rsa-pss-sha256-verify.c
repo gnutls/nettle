@@ -1,8 +1,8 @@
-/* rsa-verify.c
+/* rsa-pss-sha256-verify.c
 
-   Verifying RSA signatures.
+   Verifying signatures created with RSA and SHA-256, with PSS padding.
 
-   Copyright (C) 2001, 2003 Niels Möller
+   Copyright (C) 2017 Daiki Ueno
 
    This file is part of GNU Nettle.
 
@@ -38,41 +38,23 @@
 #include "rsa.h"
 
 #include "bignum.h"
+#include "pss.h"
 
 int
-_rsa_verify(const struct rsa_public_key *key,
-	    const mpz_t m,
-	    const mpz_t s)
+rsa_pss_sha256_verify_digest(const struct rsa_public_key *key,
+			     size_t salt_length,
+			     const uint8_t *digest,
+			     const mpz_t signature)
 {
   int res;
-  
-  mpz_t m1;
-  
-  if ( (mpz_sgn(s) <= 0)
-       || (mpz_cmp(s, key->n) >= 0) )
-    return 0;
-       
-  mpz_init(m1);
-  
-  mpz_powm(m1, s, key->e, key->n);
+  mpz_t m;
 
-  res = !mpz_cmp(m, m1);
+  mpz_init (m);
 
-  mpz_clear(m1);
+  res = (_rsa_verify_recover(key, m, signature) &&
+	 pss_verify_mgf1(m, mpz_sizeinbase(key->n, 2) - 1, &nettle_sha256,
+			 salt_length, digest));
 
+  mpz_clear (m);
   return res;
-}
-
-int
-_rsa_verify_recover(const struct rsa_public_key *key,
-		    mpz_t m,
-		    const mpz_t s)
-{
-  if ( (mpz_sgn(s) <= 0)
-       || (mpz_cmp(s, key->n) >= 0) )
-    return 0;
-
-  mpz_powm(m, s, key->e, key->n);
-
-  return 1;
 }
