@@ -1,3 +1,8 @@
+2017-03-20  Niels Möller  <nisse@lysator.liu.se>
+
+	* tools/nettle-hash.c (list_algorithms): Also display the internal
+	context size.
+
 2017-01-03  Nikos Mavrogiannopoulos <nmav@redhat.com>
 
 	* ecdsa-verify.c (ecdsa_verify): Eliminated memory leak on error
