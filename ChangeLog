@@ -1,5 +1,9 @@
 2017-03-20  Niels Möller  <nisse@lysator.liu.se>
 
+	* nettle-internal.h (NETTLE_MAX_HASH_CONTEXT_SIZE): New constant.
+	* testsuite/meta-hash-test.c (test_main): Add sanity check for
+	NETTLE_MAX_HASH_CONTEXT_SIZE.
+
 	* tools/nettle-hash.c (list_algorithms): Also display the internal
 	context size.
 
