@@ -52,6 +52,8 @@ static const uint8_t pss_masks[8] = {
   0xFF, 0x7F, 0x3F, 0x1F, 0xF, 0x7, 0x3, 0x1
 };
 
+static const uint8_t pss_pad[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+
 /* Format the PKCS#1 PSS padding for given salt and digest, using
  * pss_mgf1() as the mask generation function.
  *
@@ -66,7 +68,6 @@ pss_encode_mgf1(mpz_t m, size_t bits,
 {
   TMP_GMP_DECL(em, uint8_t);
   TMP_DECL(state, uint8_t, NETTLE_MAX_HASH_CONTEXT_SIZE);
-  uint8_t pad[8];
   size_t key_size = (bits + 7) / 8;
   size_t j;
 
@@ -81,8 +82,7 @@ pss_encode_mgf1(mpz_t m, size_t bits,
 
   /* Compute M'.  */
   hash->init(state);
-  memset(pad, 0, 8);
-  hash->update(state, 8, pad);
+  hash->update(state, sizeof(pss_pad), pss_pad);
   hash->update(state, hash->digest_size, digest);
   hash->update(state, salt_length, salt);
 
@@ -96,15 +96,15 @@ pss_encode_mgf1(mpz_t m, size_t bits,
   pss_mgf1(state, hash, key_size - hash->digest_size - 1, em);
 
   /* Compute maskedDB and store it in front of H in EM.  */
-  for (j = 0; j < key_size - salt_length - hash->digest_size - 2; j++)
-    em[j] ^= 0;
+  j = key_size - salt_length - hash->digest_size - 2;
+
   em[j++] ^= 1;
   memxor(em + j, salt, salt_length);
   j += salt_length;
 
   /* Store the trailer field following H.  */
   j += hash->digest_size;
-  *(em + j) = 0xbc;
+  em[j] = 0xbc;
 
   /* Clear the leftmost 8 * emLen - emBits of the leftmost octet in EM.  */
   *em &= pss_masks[(8 * key_size - bits)];
@@ -128,7 +128,7 @@ pss_verify_mgf1(const mpz_t m, size_t bits,
   TMP_GMP_DECL(em, uint8_t);
   TMP_DECL(h2, uint8_t, NETTLE_MAX_HASH_DIGEST_SIZE);
   TMP_DECL(state, uint8_t, NETTLE_MAX_HASH_CONTEXT_SIZE);
-  uint8_t pad[8], *h, *db, *salt;
+  uint8_t *h, *db, *salt;
   size_t key_size = (bits + 7) / 8;
   size_t j;
   int ret = 0;
@@ -178,9 +178,8 @@ pss_verify_mgf1(const mpz_t m, size_t bits,
   salt = db + j + 1;
 
   /* Compute H'.  */
-  memset(pad, 0, 8);
   hash->init(state);
-  hash->update(state, 8, pad);
+  hash->update(state, sizeof(pss_pad), pss_pad);
   hash->update(state, hash->digest_size, digest);
   hash->update(state, salt_length, salt);
   hash->digest(state, hash->digest_size, h2);
