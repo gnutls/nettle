@@ -1,5 +1,7 @@
 2017-04-04  Niels Möller  <nisse@lysator.liu.se>
 
+	* pss.c (pss_verify_mgf1): Use const for input mpz_t argument.
+
 	Merged RSA-PSS support, contributed by Daiki Ueno.
 	* pss-mgf1.h, pss.h: New header files.
 	* pss-mgf1.c (pss_mgf1): New file and function.

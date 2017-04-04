@@ -120,7 +120,7 @@ pss_encode_mgf1(mpz_t m, size_t bits,
  * Returns 1 if the encoded message is consistent, 0 if it is
  * inconsistent.  */
 int
-pss_verify_mgf1(mpz_t m, size_t bits,
+pss_verify_mgf1(const mpz_t m, size_t bits,
 		const struct nettle_hash *hash,
 		size_t salt_length,
 		const uint8_t *digest)

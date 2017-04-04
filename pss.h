@@ -53,7 +53,7 @@ pss_encode_mgf1(mpz_t m, size_t bits,
 		const uint8_t *digest);
 
 int
-pss_verify_mgf1(mpz_t m, size_t bits,
+pss_verify_mgf1(const mpz_t m, size_t bits,
 		const struct nettle_hash *hash,
 		size_t salt_length,
 		const uint8_t *digest);
