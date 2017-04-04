@@ -1,3 +1,26 @@
+2017-04-04  Niels Möller  <nisse@lysator.liu.se>
+
+	Merged RSA-PSS support, contributed by Daiki Ueno.
+	* pss-mgf1.h, pss.h: New header files.
+	* pss-mgf1.c (pss_mgf1): New file and function.
+	* pss.c (pss_encode_mgf1, pss_verify_mgf1): New file and
+	functions.
+	* rsa-verify.c (_rsa_verify_recover): New function.
+	* rsa-pss-sha256-sign-tr.c: (rsa_pss_sha256_sign_digest_tr): New
+	file and function.
+	* rsa-pss-sha256-verify.c (rsa_pss_sha256_verify_digest): New
+	file and function.
+	* rsa-pss-sha512-sign-tr.c (rsa_pss_sha384_sign_digest_tr)
+	(rsa_pss_sha512_sign_digest_tr): New file and functions.
+	* rsa-pss-sha512-verify.c (rsa_pss_sha384_verify_digest)
+	(rsa_pss_sha512_verify_digest): New file and functions.
+	* rsa.h: Prototypes for new functions.
+	* testsuite/rsa-pss-sign-tr-test.c: New test case.
+	* testsuite/pss-test.c: New test case.
+	* testsuite/pss-mgf1-test.c: New test case.
+	* Makefile.in, testsuite/Makefile.in: Added new files.
+	* nettle.texinfo: Documentation of rsa-pss functions.
+
 2017-03-20  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle-internal.h (NETTLE_MAX_HASH_CONTEXT_SIZE): New constant.
