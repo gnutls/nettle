@@ -244,7 +244,15 @@ struct nettle_armor
 }
 
 /* null-terminated list of armor schemes implemented by this version of nettle */
-extern const struct nettle_armor * const nettle_armors[];
+extern const struct nettle_armor * const _nettle_armors[];
+
+const struct nettle_armor * const *
+#ifdef __GNUC__
+__attribute__((pure))
+#endif
+nettle_get_armors (void);
+
+#define nettle_armors (nettle_get_armors())
 
 extern const struct nettle_armor nettle_base64;
 extern const struct nettle_armor nettle_base64url;
