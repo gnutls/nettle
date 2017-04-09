@@ -1212,11 +1212,11 @@ test_dsa_key(const struct dsa_params *params,
 }
 
 const struct ecc_curve * const ecc_curves[] = {
-  &nettle_secp_192r1,
-  &nettle_secp_224r1,
-  &nettle_secp_256r1,
-  &nettle_secp_384r1,
-  &nettle_secp_521r1,
+  &_nettle_secp_192r1,
+  &_nettle_secp_224r1,
+  &_nettle_secp_256r1,
+  &_nettle_secp_384r1,
+  &_nettle_secp_521r1,
   &_nettle_curve25519,
   NULL
 };

@@ -62,7 +62,7 @@ ecc_224_modp (const struct ecc_modulo *m, mp_limb_t *rp);
 # error Configuration error
 #endif
 
-const struct ecc_curve nettle_secp_224r1 =
+const struct ecc_curve _nettle_secp_224r1 =
 {
   {
     224,
@@ -123,3 +123,8 @@ const struct ecc_curve nettle_secp_224r1 =
   ecc_unit,
   ecc_table
 };
+
+const struct ecc_curve *nettle_get_secp_224r1(void)
+{
+  return &_nettle_secp_224r1;
+}

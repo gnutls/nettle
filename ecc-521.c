@@ -75,7 +75,7 @@ ecc_521_modp (const struct ecc_modulo *m UNUSED, mp_limb_t *rp)
 }
 #endif
 
-const struct ecc_curve nettle_secp_521r1 =
+const struct ecc_curve _nettle_secp_521r1 =
 {
   {
     521,
@@ -137,3 +137,7 @@ const struct ecc_curve nettle_secp_521r1 =
   ecc_table
 };
 
+const struct ecc_curve *nettle_get_secp_521r1(void)
+{
+  return &_nettle_secp_521r1;
+}

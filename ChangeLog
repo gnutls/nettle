@@ -1,5 +1,13 @@
 2017-04-09  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-curve.h (nettle_get_secp_192r1, nettle_get_secp_224r1)
+	(nettle_get_secp_256r1, nettle_get_secp_384r1)
+	(nettle_get_secp_521r1): New functions, returning a pointer to
+	corresponding structure.
+	(nettle_secp_192r1, nettle_secp_224r1, nettle_secp_256r1)
+	(nettle_secp_384r1, nettle_secp_521r1): Redefined as macros,
+	calling the corresponding function.
+
 	* nettle-meta.h (nettle_ciphers, nettle_aeads, nettle_armors): New
 	macros, analogous to below change to nettle_hashes.
 

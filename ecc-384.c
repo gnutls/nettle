@@ -147,7 +147,7 @@ ecc_384_modp (const struct ecc_modulo *p, mp_limb_t *rp)
 #define ecc_384_modp ecc_mod
 #endif
   
-const struct ecc_curve nettle_secp_384r1 =
+const struct ecc_curve _nettle_secp_384r1 =
 {
   {
     384,
@@ -208,3 +208,8 @@ const struct ecc_curve nettle_secp_384r1 =
   ecc_unit,
   ecc_table
 };
+
+const struct ecc_curve *nettle_get_secp_384r1(void)
+{
+  return &_nettle_secp_384r1;
+}

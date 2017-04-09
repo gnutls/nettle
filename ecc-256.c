@@ -239,7 +239,7 @@ ecc_256_modq (const struct ecc_modulo *q, mp_limb_t *rp)
 #error Unsupported parameters
 #endif
 
-const struct ecc_curve nettle_secp_256r1 =
+const struct ecc_curve _nettle_secp_256r1 =
 {
   {
     256,
@@ -300,3 +300,8 @@ const struct ecc_curve nettle_secp_256r1 =
   ecc_unit,
   ecc_table
 };
+
+const struct ecc_curve *nettle_get_secp_256r1(void)
+{
+  return &_nettle_secp_256r1;
+}
