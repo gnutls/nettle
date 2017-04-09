@@ -1,5 +1,8 @@
 2017-04-09  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/dlopen-test.c (main): Call dlclose, to fix memory leak
+	on success.
+
 	* testsuite/pss-test.c: Delete magic to let valgrind to check if
 	pss_encode_mgf1 is side-channel silent with respect to the salt
 	and digest inputs. It turns out that the most significant bits of
