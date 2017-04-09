@@ -1,3 +1,12 @@
+2017-04-09  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/pss-test.c: Delete magic to let valgrind to check if
+	pss_encode_mgf1 is side-channel silent with respect to the salt
+	and digest inputs. It turns out that the most significant bits of
+	the padded bignum, and hence its size, depends on these inputs.
+	Which results in a data-dependent branch in the normalization code
+	of at the end of gmp's mpz_import.
+
 2017-04-04  Niels Möller  <nisse@lysator.liu.se>
 
 	* pss.c (pss_verify_mgf1): Use const for input mpz_t argument.

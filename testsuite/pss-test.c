@@ -2,38 +2,6 @@
 
 #include "pss.h"
 
-#if HAVE_VALGRIND_MEMCHECK_H
-# include <valgrind/memcheck.h>
-
-static void
-test_unmark_mpz(mpz_t m)
-{
-  VALGRIND_MAKE_MEM_DEFINED (m, sizeof(*m));
-  VALGRIND_MAKE_MEM_DEFINED (&m->_mp_d, sizeof(mp_limb_t) * mpz_size(m));
-}
-
-static int
-pss_encode_mgf1_for_test(mpz_t m, size_t bits,
-			 const struct nettle_hash *hash,
-			 size_t salt_length, const uint8_t *salt,
-			 const uint8_t *digest)
-{
-  int res;
-
-  /* Makes valgrind trigger on any branches depending on the input
-     data. */
-  VALGRIND_MAKE_MEM_UNDEFINED (salt, salt_length);
-  VALGRIND_MAKE_MEM_UNDEFINED (digest, hash->digest_size);
-
-  res = pss_encode_mgf1 (m, bits, hash, salt_length, salt, digest);
-  VALGRIND_MAKE_MEM_DEFINED (&res, sizeof(res));
-  test_unmark_mpz (m);
-  return res;
-}
-#else
-#define pss_encode_mgf1_for_test pss_encode_mgf1
-#endif
-
 void
 test_main(void)
 {
