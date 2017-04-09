@@ -1,3 +1,12 @@
+2017-04-09  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle-meta.h (nettle_ciphers): New macro, analogous to below
+	change to nettle_hashes.
+
+	* nettle-meta-ciphers.c (_nettle_ciphers): Renamed array, from...
+	(nettle_ciphers: ... old name.
+	(nettle_get_ciphers): New function.
+
 2017-01-12  Niels Möller  <nisse@lysator.liu.se>
 
 	* tools/nettle-hash.c (find_algorithm): Deleted function.

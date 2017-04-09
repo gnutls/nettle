@@ -61,7 +61,15 @@ struct nettle_cipher
 };
 
 /* null-terminated list of ciphers implemented by this version of nettle */
-extern const struct nettle_cipher * const nettle_ciphers[];
+extern const struct nettle_cipher * const _nettle_ciphers[];
+
+const struct nettle_cipher * const *
+#ifdef __GNUC__
+__attribute__((pure))
+#endif
+nettle_get_ciphers (void);
+
+#define nettle_ciphers (nettle_get_ciphers())
 
 extern const struct nettle_cipher nettle_aes128;
 extern const struct nettle_cipher nettle_aes192;
