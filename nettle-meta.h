@@ -176,7 +176,15 @@ struct nettle_aead
 
 /* null-terminated list of aead constructions implemented by this
    version of nettle */
-extern const struct nettle_aead * const nettle_aeads[];
+extern const struct nettle_aead * const _nettle_aeads[];
+
+const struct nettle_aead * const *
+#ifdef __GNUC__
+__attribute__((pure))
+#endif
+nettle_get_aeads (void);
+
+#define nettle_aeads (nettle_get_aeads())
 
 extern const struct nettle_aead nettle_gcm_aes128;
 extern const struct nettle_aead nettle_gcm_aes192;
