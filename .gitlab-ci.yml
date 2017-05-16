@@ -1,5 +1,9 @@
 image: centos:7
 
+variables:
+  BUILD_IMAGES_PROJECT: gnutls/build-images
+  FEDORA_BUILD: buildenv-f25
+
 before_script:
  - yum install -y git make autoconf libtool automake gettext-devel glibc-devel gcc valgrind libasan-static libgcc.i686 glibc-devel.i686
 
@@ -55,3 +59,20 @@ Build and Check with asan:
   - shared
   except:
   - tags
+Build with static-analyzers:
+  image: fedora:25
+  script:
+  - yum install -y gmp-devel clang compiler-rt cppcheck clang-analyzer
+  - ./.bootstrap
+  - scan-build ./configure --disable-documentation
+  - scan-build --status-bugs -o scan-build-lib make -j$(nproc)
+  tags:
+  - shared
+  except:
+  - tags
+  artifacts:
+    expire_in: 1 week
+    when: on_failure
+    paths:
+      - scan-build-lib/*
+
