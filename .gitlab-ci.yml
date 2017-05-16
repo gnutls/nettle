@@ -34,7 +34,7 @@ Build and Check with mini-gmp:
   except:
   - tags
 Build and Check with ubsan:
-  image: fedora:24
+  image: fedora:25
   script:
   - yum install -y gmp-devel libubsan-static libubsan
   - ./.bootstrap && 
