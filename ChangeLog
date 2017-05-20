@@ -1,3 +1,14 @@
+2017-05-20  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/Makefile.in (test-rules): Use $(srddir)/-prefix for
+	.test-rules.make target, and change dependency from Makefile.in to
+	Makefile.
+
+2017-05-17  Nikos Mavrogiannopoulos  <nmav@redhat.com>
+
+	* testsuite/Makefile.in: Ensure .test-rules.make is regenerated
+	when Makefile.in is modified.
+
 2017-04-09  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/dlopen-test.c (main): Call dlclose, to fix memory leak

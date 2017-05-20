@@ -96,9 +96,9 @@ dlopen-test$(EXEEXT): dlopen-test.$(OBJEXT) testutils.$(OBJEXT)
 	$(LINK) dlopen-test.$(OBJEXT) -ldl -o dlopen-test$(EXEEXT)
 
 .PHONY: test-rules
-test-rules: .test-rules.make
+test-rules: $(srcdir)/.test-rules.make
 
-.test-rules.make: Makefile.in
+$(srcdir)/.test-rules.make: Makefile
 	(for f in $(TS_NETTLE) $(TS_HOGWEED) $(EXTRA_TARGETS) ; do \
 	  echo $$f'$$(EXEEXT): '$$f'.$$(OBJEXT)' ; \
 	  echo '	$$(LINK) '$$f'.$$(OBJEXT) $$(TEST_OBJS) -o '$$f'$$(EXEEXT)' ; \
