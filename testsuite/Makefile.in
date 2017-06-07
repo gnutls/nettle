@@ -67,6 +67,7 @@ EXTRA_TARGETS = $(EXTRA_SOURCES:.c=$(EXEEXT))
 SOURCES = $(TS_SOURCES) $(EXTRA_SOURCES) testutils.c dlopen-test.c
 
 DISTFILES = $(SOURCES) $(CXX_SOURCES) Makefile.in .test-rules.make \
+	    test-rules.stamp \
 	    $(TS_SH) setup-env teardown-env \
 	    gold-bug.txt testutils.h sha3.awk
 
@@ -96,9 +97,7 @@ dlopen-test$(EXEEXT): dlopen-test.$(OBJEXT) testutils.$(OBJEXT)
 	$(LINK) dlopen-test.$(OBJEXT) -ldl -o dlopen-test$(EXEEXT)
 
 .PHONY: test-rules
-test-rules: $(srcdir)/.test-rules.make
-
-$(srcdir)/.test-rules.make: Makefile
+test-rules:
 	(for f in $(TS_NETTLE) $(TS_HOGWEED) $(EXTRA_TARGETS) ; do \
 	  echo $$f'$$(EXEEXT): '$$f'.$$(OBJEXT)' ; \
 	  echo '	$$(LINK) '$$f'.$$(OBJEXT) $$(TEST_OBJS) -o '$$f'$$(EXEEXT)' ; \
@@ -109,10 +108,14 @@ $(srcdir)/.test-rules.make: Makefile
 	  echo '	$$(LINK_CXX) '$$f'.$$(OBJEXT) $$(TEST_OBJS) -o '$$f'$$(EXEEXT)' ; \
 	  echo ; \
 	done) > $(srcdir)/.test-rules.make
-	@echo "******************************************************************"
-	@echo "testsuite Makefile rules have been regenerated; please re-run make"
-	@echo "******************************************************************"
-	false
+
+$(srcdir)/.test-rules.make: $(srcdir)/test-rules.stamp
+
+# Updates the stamp file *first*, so that this rule isn't triggered
+# again and again by the recursive $(MAKE).
+$(srcdir)/test-rules.stamp: Makefile.in
+	echo stamp > $(srcdir)/test-rules.stamp
+	$(MAKE) test-rules
 
 include $(srcdir)/.test-rules.make
 

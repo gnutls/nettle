@@ -1,3 +1,12 @@
+2017-05-23  Niels Möller  <nisse@lysator.liu.se>
+
+	Rework the previous change, which had the unintended effect of
+	always regenerating .test-rules.make after ./configure is run.
+	* testsuite/Makefile.in (test-rules.stamp): New stamp file target,
+	depend on Makefile.in, and run $(MAKE) test-rules.
+	(.test-rules.make): Add a level of indirection, by depending on
+	test-rules.stamp.
+
 2017-05-20  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/Makefile.in (test-rules): Use $(srddir)/-prefix for
