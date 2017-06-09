@@ -1,3 +1,15 @@
+2017-06-09  Niels Möller  <nisse@lysator.liu.se>
+
+	* pss.c (pss_verify_mgf1): Check for m being too large, fixing an
+	assertion failure for certain invalid signatures. Based on a patch
+	contributed by Daiki Ueno.
+
+	* testsuite/rsa-pss-sign-tr-test.c (test_main): Add test case
+	contributed by Daiki Ueno. Problem originally found by oss-fuzz,
+	see https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=2132.
+	That problem report is currently embargoed, but will hopefully be
+	public in a month or two.
+
 2017-05-23  Niels Möller  <nisse@lysator.liu.se>
 
 	Rework the previous change, which had the unintended effect of
