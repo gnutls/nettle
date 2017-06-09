@@ -321,6 +321,35 @@ test_main(void)
 		       salt->length, salt->data, msg->length, msg->data,
 		       expected);
 
+  /* The public key n for this test is of size k = 1017 bits, and the
+     pss "em" value is limited to k - 1 = 1016 bits or 127 octets. The
+     alleged signature below results in a 1017 bit number during the
+     signature verification, which is too large, and used to result in
+     an assertion failure when attempting to convert the number to a
+     127 octet string.
+  */
+  mpz_set_str(pub.n,
+	      "1d64559685aad3490e976b48aacf442ecee847268f882341eafe78"
+	      "a0ca4ef88f66edbaf55b70e5285cc117aa9ceb322a4227c17e9e89"
+	      "27bf38e5672faecf79e2983d92766fbb6624522f072ae0e4e46d37"
+	      "052ce1e5745c2dd8fd67de3862e4711161e359b96bda85911ebf4e"
+	      "6ce1bea625970269c77004a3cb03f9c382c5f79", 16);
+  mpz_set_str(pub.e, "10001", 16);
+
+  ASSERT (rsa_public_key_prepare(&pub));
+
+  msg = SHEX("7f85e4909ff7bb29536e540a53031ef03ddcb129e553a43273fa1f"
+	     "ed28c22a8b57c7bde101ff746f335ba69b29642019");
+  /* Alleged signature, resulting in a too large m. */
+  mpz_set_str(expected,
+	      "000000000000000000000000000000000000000000000000000000"
+	      "000000000000000000000000000000000000000000000005ffff05"
+	      "000000000000000000000000000000000000000000000000000000"
+	      "000000000000000000000000000000000000000000000000000000"
+	      "0000000000000000000000000000000000000000", 16);
+
+  ASSERT(!rsa_pss_sha384_verify_digest(&pub, 48, msg->data, expected));
+
   rsa_private_key_clear(&key);
   rsa_public_key_clear(&pub);
   mpz_clear(expected);
