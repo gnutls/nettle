@@ -1,3 +1,10 @@
+2017-07-18  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-add-eh.c (ecc_add_eh): Fix in-place operation by reordering
+	two multiplies. Previously, in-place operation resulted in an
+	invalid call to mpn_mul with overlapping operands. Reported by
+	Sergei Trofimovich.
+
 2017-06-09  Niels Möller  <nisse@lysator.liu.se>
 
 	* pss.c (pss_verify_mgf1): Check for m being too large, fixing an
