@@ -45,11 +45,9 @@
 
 #include <assert.h>
 
-#include <openssl/aes.h>
-#include <openssl/blowfish.h>
-#include <openssl/des.h>
-#include <openssl/cast.h>
-#include <openssl/rc4.h>
+#include <openssl/conf.h>
+#include <openssl/evp.h>
+#include <openssl/err.h>
 
 #include <openssl/md5.h>
 #include <openssl/sha.h>
@@ -64,273 +62,202 @@ static nettle_set_key_func openssl_aes192_set_encrypt_key;
 static nettle_set_key_func openssl_aes192_set_decrypt_key;
 static nettle_set_key_func openssl_aes256_set_encrypt_key;
 static nettle_set_key_func openssl_aes256_set_decrypt_key;
+
+struct AESCipher {
+  EVP_CIPHER_CTX *ctx;
+};
+
+void
+nettle_openssl_init(void)
+{
+  ERR_load_crypto_strings();
+  OpenSSL_add_all_algorithms();
+#if OPENSSL_VERSION_NUMBER >= 0x1010000
+  CONF_modules_load_file(NULL, NULL, 0);
+#else
+  OPENSSL_config(NULL);
+#endif
+}
+
+static void
+openssl_evp_set_encrypt_key(void *ctx, const uint8_t *key, const EVP_CIPHER *cipher)
+{
+  EVP_CIPHER_CTX **ctxptr = ctx;
+  *ctxptr = EVP_CIPHER_CTX_new();
+  assert(EVP_EncryptInit_ex(*ctxptr, cipher, NULL, key, NULL) == 1);
+  EVP_CIPHER_CTX_set_padding(*ctxptr, 0);
+}
+static void
+openssl_evp_set_decrypt_key(void *ctx, const uint8_t *key, const EVP_CIPHER *cipher)
+{
+  EVP_CIPHER_CTX **ctxptr = ctx;
+  *ctxptr = EVP_CIPHER_CTX_new();
+  assert(EVP_DecryptInit_ex(*ctxptr, cipher, NULL, key, NULL) == 1);
+  EVP_CIPHER_CTX_set_padding(*ctxptr, 0);
+}
 static void
 openssl_aes128_set_encrypt_key(void *ctx, const uint8_t *key)
 {
-  AES_set_encrypt_key(key, 128, ctx);
+  openssl_evp_set_encrypt_key(ctx, key, EVP_aes_128_ecb());
 }
 static void
 openssl_aes128_set_decrypt_key(void *ctx, const uint8_t *key)
 {
-  AES_set_decrypt_key(key, 128, ctx);
+  openssl_evp_set_decrypt_key(ctx, key, EVP_aes_128_ecb());
 }
 
 static void
 openssl_aes192_set_encrypt_key(void *ctx, const uint8_t *key)
 {
-  AES_set_encrypt_key(key, 192, ctx);
+  openssl_evp_set_encrypt_key(ctx, key, EVP_aes_192_ecb());
 }
 static void
 openssl_aes192_set_decrypt_key(void *ctx, const uint8_t *key)
 {
-  AES_set_decrypt_key(key, 192, ctx);
+  openssl_evp_set_decrypt_key(ctx, key, EVP_aes_192_ecb());
 }
 
 static void
 openssl_aes256_set_encrypt_key(void *ctx, const uint8_t *key)
 {
-  AES_set_encrypt_key(key, 256, ctx);
+  openssl_evp_set_encrypt_key(ctx, key, EVP_aes_256_ecb());
 }
 static void
 openssl_aes256_set_decrypt_key(void *ctx, const uint8_t *key)
 {
-  AES_set_decrypt_key(key, 256, ctx);
+  openssl_evp_set_decrypt_key(ctx, key, EVP_aes_256_ecb());
 }
 
-static nettle_cipher_func openssl_aes_encrypt;
 static void
-openssl_aes_encrypt(const void *ctx, size_t length,
+openssl_evp_encrypt(const void *ctx, size_t length,
 		    uint8_t *dst, const uint8_t *src)
 {
-  assert (!(length % AES_BLOCK_SIZE));
-  while (length)
-    {
-      AES_ecb_encrypt(src, dst, ctx, AES_ENCRYPT);
-      length -= AES_BLOCK_SIZE;
-      dst += AES_BLOCK_SIZE;
-      src += AES_BLOCK_SIZE;
-    }
+  EVP_CIPHER_CTX * const*ctxptr = ctx;
+  int len;
+  assert(EVP_EncryptUpdate(*ctxptr, dst, &len, src, length) == 1);
 }
 
-static nettle_cipher_func openssl_aes_decrypt;
 static void
-openssl_aes_decrypt(const void *ctx, size_t length,
+openssl_evp_decrypt(const void *ctx, size_t length,
 		    uint8_t *dst, const uint8_t *src)
 {
-  assert (!(length % AES_BLOCK_SIZE));
-  while (length)
-    {
-      AES_ecb_encrypt(src, dst, ctx, AES_DECRYPT);
-      length -= AES_BLOCK_SIZE;
-      dst += AES_BLOCK_SIZE;
-      src += AES_BLOCK_SIZE;
-    }
+  EVP_CIPHER_CTX * const*ctxptr = ctx;
+  int len;
+  assert(EVP_DecryptUpdate(*ctxptr, dst, &len, src, length) == 1);
 }
 
 const struct nettle_cipher
 nettle_openssl_aes128 = {
-  "openssl aes128", sizeof(AES_KEY),
+  "openssl aes128", sizeof(EVP_CIPHER_CTX **),
   16, 16,
   openssl_aes128_set_encrypt_key, openssl_aes128_set_decrypt_key,
-  openssl_aes_encrypt, openssl_aes_decrypt
+  openssl_evp_encrypt, openssl_evp_decrypt
 };
 
 const struct nettle_cipher
 nettle_openssl_aes192 = {
-  "openssl aes192", sizeof(AES_KEY),
-  /* Claim no block size, so that the benchmark doesn't try CBC mode
-   * (as openssl cipher + nettle cbc is somewhat pointless to
-   * benchmark). */
+  "openssl aes192", sizeof(EVP_CIPHER_CTX **),
   16, 24,
   openssl_aes192_set_encrypt_key, openssl_aes192_set_decrypt_key,
-  openssl_aes_encrypt, openssl_aes_decrypt
+  openssl_evp_encrypt, openssl_evp_decrypt
 };
 
 const struct nettle_cipher
 nettle_openssl_aes256 = {
-  "openssl aes256", sizeof(AES_KEY),
-  /* Claim no block size, so that the benchmark doesn't try CBC mode
-   * (as openssl cipher + nettle cbc is somewhat pointless to
-   * benchmark). */
+  "openssl aes256", sizeof(EVP_CIPHER_CTX **),
   16, 32,
   openssl_aes256_set_encrypt_key, openssl_aes256_set_decrypt_key,
-  openssl_aes_encrypt, openssl_aes_decrypt
+  openssl_evp_encrypt, openssl_evp_decrypt
 };
 
 /* Arcfour */
-static nettle_set_key_func openssl_arcfour128_set_key;
 static void
-openssl_arcfour128_set_key(void *ctx, const uint8_t *key)
+openssl_arcfour128_set_encrypt_key(void *ctx, const uint8_t *key)
 {
-  RC4_set_key(ctx, 16, key);
+  openssl_evp_set_encrypt_key(ctx, key, EVP_rc4());
 }
 
-static nettle_crypt_func openssl_arcfour_crypt;
 static void
-openssl_arcfour_crypt(void *ctx, size_t length,
-		      uint8_t *dst, const uint8_t *src)
+openssl_arcfour128_set_decrypt_key(void *ctx, const uint8_t *key)
 {
-  RC4(ctx, length, src, dst);
+  openssl_evp_set_decrypt_key(ctx, key, EVP_rc4());
 }
 
 const struct nettle_aead
 nettle_openssl_arcfour128 = {
-  "openssl arcfour128", sizeof(RC4_KEY),
+  "openssl arcfour128", sizeof(EVP_CIPHER_CTX **),
   1, 16, 0, 0,
-  openssl_arcfour128_set_key,
-  openssl_arcfour128_set_key,
+  openssl_arcfour128_set_encrypt_key,
+  openssl_arcfour128_set_decrypt_key,
   NULL, NULL,
-  openssl_arcfour_crypt,
-  openssl_arcfour_crypt,
+  (nettle_crypt_func *)openssl_evp_encrypt,
+  (nettle_crypt_func *)openssl_evp_decrypt,
   NULL,  
 };
 
 /* Blowfish */
-static nettle_set_key_func openssl_bf128_set_key;
 static void
-openssl_bf128_set_key(void *ctx, const uint8_t *key)
+openssl_bf128_set_encrypt_key(void *ctx, const uint8_t *key)
 {
-  BF_set_key(ctx, 16, key);
+  openssl_evp_set_encrypt_key(ctx, key, EVP_bf_ecb());
 }
 
-static nettle_cipher_func openssl_bf_encrypt;
 static void
-openssl_bf_encrypt(const void *ctx, size_t length,
-		   uint8_t *dst, const uint8_t *src)
+openssl_bf128_set_decrypt_key(void *ctx, const uint8_t *key)
 {
-  assert (!(length % BF_BLOCK));
-  while (length)
-    {
-      BF_ecb_encrypt(src, dst, ctx, BF_ENCRYPT);
-      length -= BF_BLOCK;
-      dst += BF_BLOCK;
-      src += BF_BLOCK;
-    }
-}
-
-static nettle_cipher_func openssl_bf_decrypt;
-static void
-openssl_bf_decrypt(const void *ctx, size_t length,
-		   uint8_t *dst, const uint8_t *src)
-{
-  assert (!(length % BF_BLOCK));
-  while (length)
-    {
-      BF_ecb_encrypt(src, dst, ctx, BF_DECRYPT);
-      length -= BF_BLOCK;
-      dst += BF_BLOCK;
-      src += BF_BLOCK;
-    }
+  openssl_evp_set_decrypt_key(ctx, key, EVP_bf_ecb());
 }
 
 const struct nettle_cipher
 nettle_openssl_blowfish128 = {
-  "openssl bf128", sizeof(BF_KEY),
+  "openssl bf128", sizeof(EVP_CIPHER_CTX **),
   8, 16,
-  openssl_bf128_set_key, openssl_bf128_set_key,
-  openssl_bf_encrypt, openssl_bf_decrypt
+  openssl_bf128_set_encrypt_key, openssl_bf128_set_decrypt_key,
+  openssl_evp_encrypt, openssl_evp_decrypt
 };
 
 
 /* DES */
-static nettle_set_key_func openssl_des_set_key;
 static void
-openssl_des_set_key(void *ctx, const uint8_t *key)
+openssl_des_set_encrypt_key(void *ctx, const uint8_t *key)
 {
-  /* Not sure what "unchecked" means. We want to ignore parity bits,
-     but it would still make sense to check for weak keys. */
-  /* Explicit cast used as I don't want to care about openssl's broken
-     array typedefs DES_cblock and const_DES_cblock. */
-  DES_set_key_unchecked( (void *) key, ctx);
+  openssl_evp_set_encrypt_key(ctx, key, EVP_des_ecb());
 }
 
-#define DES_BLOCK_SIZE 8
-
-static nettle_cipher_func openssl_des_encrypt;
 static void
-openssl_des_encrypt(const void *ctx, size_t length,
-		    uint8_t *dst, const uint8_t *src)
+openssl_des_set_decrypt_key(void *ctx, const uint8_t *key)
 {
-  assert (!(length % DES_BLOCK_SIZE));
-  while (length)
-    {
-      DES_ecb_encrypt((void *) src, (void *) dst,
-		      (void *) ctx, DES_ENCRYPT);
-      length -= DES_BLOCK_SIZE;
-      dst += DES_BLOCK_SIZE;
-      src += DES_BLOCK_SIZE;
-    }
-}
-
-static nettle_cipher_func openssl_des_decrypt;
-static void
-openssl_des_decrypt(const void *ctx, size_t length,
-		    uint8_t *dst, const uint8_t *src)
-{
-  assert (!(length % DES_BLOCK_SIZE));
-  while (length)
-    {
-      DES_ecb_encrypt((void *) src, (void *) dst,
-		      (void *) ctx, DES_DECRYPT);
-      length -= DES_BLOCK_SIZE;
-      dst += DES_BLOCK_SIZE;
-      src += DES_BLOCK_SIZE;
-    }
+  openssl_evp_set_decrypt_key(ctx, key, EVP_des_ecb());
 }
 
 const struct nettle_cipher
 nettle_openssl_des = {
-  "openssl des", sizeof(DES_key_schedule),
+  "openssl des", sizeof(EVP_CIPHER_CTX **),
   8, 8,
-  openssl_des_set_key, openssl_des_set_key,
-  openssl_des_encrypt, openssl_des_decrypt
+  openssl_des_set_encrypt_key, openssl_des_set_decrypt_key,
+  openssl_evp_encrypt, openssl_evp_decrypt
 };
 
 
 /* Cast128 */
-static nettle_set_key_func openssl_cast128_set_key;
 static void
-openssl_cast128_set_key(void *ctx, const uint8_t *key)
+openssl_cast128_set_encrypt_key(void *ctx, const uint8_t *key)
 {
-  CAST_set_key(ctx, 16, key);
+  openssl_evp_set_encrypt_key(ctx, key, EVP_cast5_ecb());
 }
 
-static nettle_cipher_func openssl_cast_encrypt;
 static void
-openssl_cast_encrypt(const void *ctx, size_t length,
-		     uint8_t *dst, const uint8_t *src)
+openssl_cast128_set_decrypt_key(void *ctx, const uint8_t *key)
 {
-  assert (!(length % CAST_BLOCK));
-  while (length)
-    {
-      CAST_ecb_encrypt(src, dst, ctx, CAST_ENCRYPT);
-      length -= CAST_BLOCK;
-      dst += CAST_BLOCK;
-      src += CAST_BLOCK;
-    }
-}
-
-static nettle_cipher_func openssl_cast_decrypt;
-static void
-openssl_cast_decrypt(const void *ctx, size_t length,
-		     uint8_t *dst, const uint8_t *src)
-{
-  assert (!(length % CAST_BLOCK));
-  while (length)
-    {
-      CAST_ecb_encrypt(src, dst, ctx, CAST_DECRYPT);
-      length -= CAST_BLOCK;
-      dst += CAST_BLOCK;
-      src += CAST_BLOCK;
-    }
+  openssl_evp_set_decrypt_key(ctx, key, EVP_cast5_ecb());
 }
 
 const struct nettle_cipher
 nettle_openssl_cast128 = {
-  "openssl cast128", sizeof(CAST_KEY),
-  8, CAST_KEY_LENGTH,
-  openssl_cast128_set_key, openssl_cast128_set_key,
-  openssl_cast_encrypt, openssl_cast_decrypt
+  "openssl cast128", sizeof(EVP_CIPHER_CTX **),
+  8, 16,
+  openssl_cast128_set_encrypt_key, openssl_cast128_set_decrypt_key,
+  openssl_evp_encrypt, openssl_evp_decrypt
 };
 
 /* Hash functions */
