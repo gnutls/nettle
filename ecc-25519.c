@@ -335,12 +335,16 @@ const struct ecc_curve _nettle_curve25519 =
   ECC_PIPPENGER_K,
   ECC_PIPPENGER_C,
 
+  ECC_ADD_EH_ITCH (ECC_LIMB_SIZE),
   ECC_ADD_EHH_ITCH (ECC_LIMB_SIZE),
+  ECC_DUP_EH_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_A_EH_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_G_EH_ITCH (ECC_LIMB_SIZE),
   ECC_EH_TO_A_ITCH (ECC_LIMB_SIZE, ECC_25519_INV_ITCH),
 
+  ecc_add_eh,
   ecc_add_ehh,
+  ecc_dup_eh,
   ecc_mul_a_eh,
   ecc_mul_g_eh,
   ecc_eh_to_a,

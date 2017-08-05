@@ -284,12 +284,16 @@ const struct ecc_curve nettle_secp_256r1 =
   ECC_PIPPENGER_K,
   ECC_PIPPENGER_C,
 
+  ECC_ADD_JJA_ITCH (ECC_LIMB_SIZE),
   ECC_ADD_JJJ_ITCH (ECC_LIMB_SIZE),
+  ECC_DUP_JJ_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_A_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_G_ITCH (ECC_LIMB_SIZE),
   ECC_J_TO_A_ITCH (ECC_LIMB_SIZE),
 
+  ecc_add_jja,
   ecc_add_jjj,
+  ecc_dup_jj,
   ecc_mul_a,
   ecc_mul_g,
   ecc_j_to_a,

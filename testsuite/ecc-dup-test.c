@@ -21,13 +21,13 @@ test_main (void)
 	  
 	  ecc_a_to_j (ecc, g, ecc->g);
 
-	  ecc_dup_eh (ecc, p, z, scratch);
+	  ecc->dup (ecc, p, z, scratch);
 	  test_ecc_mul_h (i, 0, p);
 
-	  ecc_dup_eh (ecc, p, g, scratch);
+	  ecc->dup (ecc, p, g, scratch);
 	  test_ecc_mul_h (i, 2, p);
 
-	  ecc_dup_eh (ecc, p, p, scratch);
+	  ecc->dup (ecc, p, p, scratch);
 	  test_ecc_mul_h (i, 4, p);
 	  free (z);
 	}
@@ -35,10 +35,10 @@ test_main (void)
 	{
 	  ecc_a_to_j (ecc, g, ecc->g);
 
-	  ecc_dup_jj (ecc, p, g, scratch);
+	  ecc->dup (ecc, p, g, scratch);
 	  test_ecc_mul_h (i, 2, p);
 
-	  ecc_dup_jj (ecc, p, p, scratch);
+	  ecc->dup (ecc, p, p, scratch);
 	  test_ecc_mul_h (i, 4, p);
 	}
       free (p);

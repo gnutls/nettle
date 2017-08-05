@@ -112,6 +112,10 @@ typedef void ecc_add_func (const struct ecc_curve *ecc,
 			   const mp_limb_t *p, const mp_limb_t *q,
 			   mp_limb_t *scratch);
 
+typedef void ecc_dup_func (const struct ecc_curve *ecc,
+			   mp_limb_t *r, const mp_limb_t *p,
+			   mp_limb_t *scratch);
+
 typedef void ecc_mul_g_func (const struct ecc_curve *ecc, mp_limb_t *r,
 			     const mp_limb_t *np, mp_limb_t *scratch);
 
@@ -168,12 +172,16 @@ struct ecc_curve
   unsigned short pippenger_k;
   unsigned short pippenger_c;
 
+  unsigned short add_hh_itch;
   unsigned short add_hhh_itch;
+  unsigned short dup_itch;
   unsigned short mul_itch;
   unsigned short mul_g_itch;
   unsigned short h_to_a_itch;
 
+  ecc_add_func *add_hh;
   ecc_add_func *add_hhh;
+  ecc_dup_func *dup;
   ecc_mul_func *mul;
   ecc_mul_g_func *mul_g;
   ecc_h_to_a_func *h_to_a;
