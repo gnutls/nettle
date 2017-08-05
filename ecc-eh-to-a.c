@@ -73,7 +73,7 @@ ecc_eh_to_a (const struct ecc_curve *ecc,
 	     at all? Full reduction mod p is maybe sufficient. */
 	  unsigned shift;
 	  assert (ecc->p.bit_size == 255);
-	  shift = 252 - GMP_NUMB_BITS * (ecc->p.size - 1);
+	  shift = ecc->q.bit_size - 1 - GMP_NUMB_BITS * (ecc->p.size - 1);
 	  cy = mpn_submul_1 (r, ecc->q.m, ecc->p.size,
 			     r[ecc->p.size-1] >> shift);
 	  assert (cy < 2);

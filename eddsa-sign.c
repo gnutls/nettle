@@ -92,7 +92,7 @@ _eddsa_sign (const struct ecc_curve *ecc,
     unsigned shift;
     mp_limb_t cy;
     assert (ecc->p.bit_size == 255);
-    shift = 252 - GMP_NUMB_BITS * (ecc->p.size - 1);
+    shift = ecc->q.bit_size - 1 - GMP_NUMB_BITS * (ecc->p.size - 1);
     cy = mpn_submul_1 (sp, ecc->q.m, ecc->p.size,
 		       sp[ecc->p.size-1] >> shift);
     assert (cy < 2);
