@@ -694,11 +694,11 @@ ecc_point_out (FILE *f, const struct ecc_point *p)
     fprintf (f, "zero");
   else
     {
-	fprintf (stderr, "(");
-	mpz_out_str (stderr, 16, p->x);
-	fprintf (stderr, ",\n     ");
-	mpz_out_str (stderr, 16, (p)->y);
-	fprintf (stderr, ")");
+	fprintf (f, "(");
+	mpz_out_str (f, 16, p->x);
+	fprintf (f, ",\n     ");
+	mpz_out_str (f, 16, (p)->y);
+	fprintf (f, ")");
     }
 }
 #define ASSERT_EQUAL(p, q) do {						\
