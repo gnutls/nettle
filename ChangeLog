@@ -1,5 +1,9 @@
 2017-08-26  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/nettle-openssl.c (struct openssl_cipher_ctx): New
+	struct. Use everywhere, instead of typing EVP_CIPHER_CTX pointers
+	directly.
+
 	* configure.ac: Update openssl-related tests. Checks for
 	cipher-specific headers are replaced by a check for openssl/evp.h,
 	and the check for the BF_ecb_encrypt function is replaced by a

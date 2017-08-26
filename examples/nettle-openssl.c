@@ -2,7 +2,8 @@
 
    Glue that's used only by the benchmark, and subject to change.
 
-   Copyright (C) 2002 Niels Möller
+   Copyright (C) 2002, 2017 Niels Möller
+   Copyright (C) 2017 Daniel P. Berrange
 
    This file is part of GNU Nettle.
 
@@ -54,17 +55,11 @@
 
 #include "nettle-internal.h"
 
-
-/* AES */
-static nettle_set_key_func openssl_aes128_set_encrypt_key;
-static nettle_set_key_func openssl_aes128_set_decrypt_key;
-static nettle_set_key_func openssl_aes192_set_encrypt_key;
-static nettle_set_key_func openssl_aes192_set_decrypt_key;
-static nettle_set_key_func openssl_aes256_set_encrypt_key;
-static nettle_set_key_func openssl_aes256_set_decrypt_key;
-
-struct AESCipher {
-  EVP_CIPHER_CTX *ctx;
+/* We use Openssl's EVP api for all openssl ciphers. This API selects
+   platform-specific implementations if appropriate, e.g., using x86
+   AES-NI instructions. */
+struct openssl_cipher_ctx {
+  EVP_CIPHER_CTX *evp;
 };
 
 void
@@ -80,21 +75,49 @@ nettle_openssl_init(void)
 }
 
 static void
-openssl_evp_set_encrypt_key(void *ctx, const uint8_t *key, const EVP_CIPHER *cipher)
+openssl_evp_set_encrypt_key(void *p, const uint8_t *key,
+			    const EVP_CIPHER *cipher)
 {
-  EVP_CIPHER_CTX **ctxptr = ctx;
-  *ctxptr = EVP_CIPHER_CTX_new();
-  assert(EVP_EncryptInit_ex(*ctxptr, cipher, NULL, key, NULL) == 1);
-  EVP_CIPHER_CTX_set_padding(*ctxptr, 0);
+  struct openssl_cipher_ctx *ctx = p;
+  ctx->evp = EVP_CIPHER_CTX_new();
+  assert(EVP_EncryptInit_ex(ctx->evp, cipher, NULL, key, NULL) == 1);
+  EVP_CIPHER_CTX_set_padding(ctx->evp, 0);
 }
 static void
-openssl_evp_set_decrypt_key(void *ctx, const uint8_t *key, const EVP_CIPHER *cipher)
+openssl_evp_set_decrypt_key(void *p, const uint8_t *key,
+			    const EVP_CIPHER *cipher)
 {
-  EVP_CIPHER_CTX **ctxptr = ctx;
-  *ctxptr = EVP_CIPHER_CTX_new();
-  assert(EVP_DecryptInit_ex(*ctxptr, cipher, NULL, key, NULL) == 1);
-  EVP_CIPHER_CTX_set_padding(*ctxptr, 0);
+  struct openssl_cipher_ctx *ctx = p;
+  ctx->evp = EVP_CIPHER_CTX_new();
+  assert(EVP_DecryptInit_ex(ctx->evp, cipher, NULL, key, NULL) == 1);
+  EVP_CIPHER_CTX_set_padding(ctx->evp, 0);
 }
+
+static void
+openssl_evp_encrypt(const void *p, size_t length,
+		    uint8_t *dst, const uint8_t *src)
+{
+  const struct openssl_cipher_ctx *ctx = p;
+  int len;
+  assert(EVP_EncryptUpdate(ctx->evp, dst, &len, src, length) == 1);
+}
+static void
+openssl_evp_decrypt(const void *p, size_t length,
+		    uint8_t *dst, const uint8_t *src)
+{
+  const struct openssl_cipher_ctx *ctx = p;
+  int len;
+  assert(EVP_DecryptUpdate(ctx->evp, dst, &len, src, length) == 1);
+}
+
+/* AES */
+static nettle_set_key_func openssl_aes128_set_encrypt_key;
+static nettle_set_key_func openssl_aes128_set_decrypt_key;
+static nettle_set_key_func openssl_aes192_set_encrypt_key;
+static nettle_set_key_func openssl_aes192_set_decrypt_key;
+static nettle_set_key_func openssl_aes256_set_encrypt_key;
+static nettle_set_key_func openssl_aes256_set_decrypt_key;
+
 static void
 openssl_aes128_set_encrypt_key(void *ctx, const uint8_t *key)
 {
@@ -128,27 +151,9 @@ openssl_aes256_set_decrypt_key(void *ctx, const uint8_t *key)
   openssl_evp_set_decrypt_key(ctx, key, EVP_aes_256_ecb());
 }
 
-static void
-openssl_evp_encrypt(const void *ctx, size_t length,
-		    uint8_t *dst, const uint8_t *src)
-{
-  EVP_CIPHER_CTX * const*ctxptr = ctx;
-  int len;
-  assert(EVP_EncryptUpdate(*ctxptr, dst, &len, src, length) == 1);
-}
-
-static void
-openssl_evp_decrypt(const void *ctx, size_t length,
-		    uint8_t *dst, const uint8_t *src)
-{
-  EVP_CIPHER_CTX * const*ctxptr = ctx;
-  int len;
-  assert(EVP_DecryptUpdate(*ctxptr, dst, &len, src, length) == 1);
-}
-
 const struct nettle_cipher
 nettle_openssl_aes128 = {
-  "openssl aes128", sizeof(EVP_CIPHER_CTX **),
+  "openssl aes128", sizeof(struct openssl_cipher_ctx),
   16, 16,
   openssl_aes128_set_encrypt_key, openssl_aes128_set_decrypt_key,
   openssl_evp_encrypt, openssl_evp_decrypt
@@ -156,7 +161,7 @@ nettle_openssl_aes128 = {
 
 const struct nettle_cipher
 nettle_openssl_aes192 = {
-  "openssl aes192", sizeof(EVP_CIPHER_CTX **),
+  "openssl aes192", sizeof(struct openssl_cipher_ctx),
   16, 24,
   openssl_aes192_set_encrypt_key, openssl_aes192_set_decrypt_key,
   openssl_evp_encrypt, openssl_evp_decrypt
@@ -164,7 +169,7 @@ nettle_openssl_aes192 = {
 
 const struct nettle_cipher
 nettle_openssl_aes256 = {
-  "openssl aes256", sizeof(EVP_CIPHER_CTX **),
+  "openssl aes256", sizeof(struct openssl_cipher_ctx),
   16, 32,
   openssl_aes256_set_encrypt_key, openssl_aes256_set_decrypt_key,
   openssl_evp_encrypt, openssl_evp_decrypt
@@ -185,7 +190,7 @@ openssl_arcfour128_set_decrypt_key(void *ctx, const uint8_t *key)
 
 const struct nettle_aead
 nettle_openssl_arcfour128 = {
-  "openssl arcfour128", sizeof(EVP_CIPHER_CTX **),
+  "openssl arcfour128", sizeof(struct openssl_cipher_ctx),
   1, 16, 0, 0,
   openssl_arcfour128_set_encrypt_key,
   openssl_arcfour128_set_decrypt_key,
@@ -210,7 +215,7 @@ openssl_bf128_set_decrypt_key(void *ctx, const uint8_t *key)
 
 const struct nettle_cipher
 nettle_openssl_blowfish128 = {
-  "openssl bf128", sizeof(EVP_CIPHER_CTX **),
+  "openssl bf128", sizeof(struct openssl_cipher_ctx),
   8, 16,
   openssl_bf128_set_encrypt_key, openssl_bf128_set_decrypt_key,
   openssl_evp_encrypt, openssl_evp_decrypt
@@ -232,7 +237,7 @@ openssl_des_set_decrypt_key(void *ctx, const uint8_t *key)
 
 const struct nettle_cipher
 nettle_openssl_des = {
-  "openssl des", sizeof(EVP_CIPHER_CTX **),
+  "openssl des", sizeof(struct openssl_cipher_ctx),
   8, 8,
   openssl_des_set_encrypt_key, openssl_des_set_decrypt_key,
   openssl_evp_encrypt, openssl_evp_decrypt
@@ -254,7 +259,7 @@ openssl_cast128_set_decrypt_key(void *ctx, const uint8_t *key)
 
 const struct nettle_cipher
 nettle_openssl_cast128 = {
-  "openssl cast128", sizeof(EVP_CIPHER_CTX **),
+  "openssl cast128", sizeof(struct openssl_cipher_ctx),
   8, 16,
   openssl_cast128_set_encrypt_key, openssl_cast128_set_decrypt_key,
   openssl_evp_encrypt, openssl_evp_decrypt
