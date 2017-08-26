@@ -268,7 +268,16 @@ if test "x$enable_public_key" = "xyes" ; then
   fi
 fi
 
-GMP_NUMB_BITS="$nettle_cv_gmp_numb_bits"
+# Substituted in Makefile, passed on to the eccdata command.
+NUMB_BITS="$nettle_cv_gmp_numb_bits"
+AC_SUBST([NUMB_BITS])
+
+# Substituted in version.h, used only with mini-gmp.
+if test "x$enable_mini_gmp" = "xyes" ; then
+  GMP_NUMB_BITS="$NUMB_BITS"
+else
+  GMP_NUMB_BITS="n/a"
+fi
 AC_SUBST([GMP_NUMB_BITS])
 
 # Figure out ABI. Currently, configurable only by setting CFLAGS.
