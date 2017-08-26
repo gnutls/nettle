@@ -1,3 +1,8 @@
+2017-08-26  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-mod-inv.c (ecc_mod_inv): Add missing assert. Fixes a
+	"dead increment" warning from the clang static analyzer.
+
 2017-07-18  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-add-eh.c (ecc_add_eh): Fix in-place operation by reordering
