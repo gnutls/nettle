@@ -1,3 +1,18 @@
+2017-08-26  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Update openssl-related tests. Checks for
+	cipher-specific headers are replaced by a check for openssl/evp.h,
+	and the check for the BF_ecb_encrypt function is replaced by a
+	check for EVP_CIPHER_CTX_new.
+
+2017-08-03  Daniel P. Berrange  <berrange@redhat.com>
+
+	* examples/nettle-openssl.c: Rewritten to use openssl's EVP APIs.
+	The older cipher-specific functions always use openssl's generic
+	software implementation, while the EVP functions enables
+	platform-specific code, e.g., using the x86 AES-NI instructions.
+	(nettle_openssl_init): New function.
+
 2017-07-18  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-add-eh.c (ecc_add_eh): Fix in-place operation by reordering
