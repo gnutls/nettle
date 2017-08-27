@@ -68,7 +68,7 @@ sexp_transport_vformat(struct nettle_buffer *buffer,
       if (!nettle_buffer_space(buffer, base64_length - length))
 	return 0;
 
-      base64_encode_raw(buffer->contents + start,
+      base64_encode_raw((char*) (buffer->contents + start),
 			length, buffer->contents + start);
       
       if (!NETTLE_BUFFER_PUTC(buffer, '}'))

@@ -255,7 +255,7 @@ decode_base64(struct nettle_buffer *buffer,
   /* Decode in place */
   if (base64_decode_update(&ctx,
 			   length, buffer->contents + start,
-			   *length, buffer->contents + start)
+			   *length, (const char *) buffer->contents + start)
       && base64_decode_final(&ctx))
     return 1;
   
