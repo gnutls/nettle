@@ -1,3 +1,13 @@
+2017-08-27  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac (GMP_NUMB_BITS): Set to dummy value "n/a" in
+	mini-gmp builds.
+	(NUMB_BITS): New substituted variable which always holds the
+	configured value.
+	* Makefile.in (GMP_NUMB_BITS): Renamed variable...
+	(NUMB_BITS): ...new name
+	* config.make.in: Update corresponding substitution.
+
 2017-08-26  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-mod-inv.c (ecc_mod_inv): Add missing assert. Fixes a
