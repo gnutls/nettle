@@ -185,7 +185,7 @@ AC_HEADER_TIME
 AC_CHECK_SIZEOF(long)
 AC_CHECK_SIZEOF(size_t)
 
-AC_CHECK_HEADERS([openssl/blowfish.h openssl/des.h openssl/cast.h openssl/aes.h openssl/ecdsa.h],,
+AC_CHECK_HEADERS([openssl/evp.h openssl/ecdsa.h],,
 [enable_openssl=no
  break])
 
@@ -885,7 +885,7 @@ OPENSSL_LIBFLAGS=''
 
 # Check for openssl's libcrypto (used only for benchmarking)
 if test x$enable_openssl = xyes ; then
-  AC_CHECK_LIB(crypto, BF_ecb_encrypt,
+  AC_CHECK_LIB(crypto, EVP_CIPHER_CTX_new,
     [OPENSSL_LIBFLAGS='-lcrypto'],
     [enable_openssl=no])
 fi
