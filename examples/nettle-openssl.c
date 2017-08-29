@@ -3,7 +3,7 @@
    Glue that's used only by the benchmark, and subject to change.
 
    Copyright (C) 2002, 2017 Niels Möller
-   Copyright (C) 2017 Daniel P. Berrange
+   Copyright (C) 2017 Red Hat, Inc.
 
    This file is part of GNU Nettle.
 
