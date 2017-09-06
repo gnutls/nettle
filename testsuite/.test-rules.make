@@ -58,6 +58,9 @@ gosthash94-test$(EXEEXT): gosthash94-test.$(OBJEXT)
 ripemd160-test$(EXEEXT): ripemd160-test.$(OBJEXT)
 	$(LINK) ripemd160-test.$(OBJEXT) $(TEST_OBJS) -o ripemd160-test$(EXEEXT)
 
+hkdf-test$(EXEEXT): hkdf-test.$(OBJEXT)
+	$(LINK) hkdf-test.$(OBJEXT) $(TEST_OBJS) -o hkdf-test$(EXEEXT)
+
 salsa20-test$(EXEEXT): salsa20-test.$(OBJEXT)
 	$(LINK) salsa20-test.$(OBJEXT) $(TEST_OBJS) -o salsa20-test$(EXEEXT)
 

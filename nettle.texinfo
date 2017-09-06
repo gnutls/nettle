@@ -3366,12 +3366,7 @@ processing a new message.
 @node Key derivation functions, Public-key algorithms, Keyed hash functions, Reference
 @comment  node-name,  next,  previous,  up
 @section Key derivation Functions
-
 @cindex Key Derivation Function
-@cindex Password Based Key Derivation Function
-@cindex PKCS #5
-@cindex KDF
-@cindex PBKDF
 
 A @dfn{key derivation function} (@acronym{KDF}) is a function that from
 a given symmetric key derives other symmetric keys.  A sub-class of KDFs
@@ -3380,7 +3375,51 @@ which take as input a password or passphrase, and its purpose is
 typically to strengthen it and protect against certain pre-computation
 attacks by using salting and expensive computation.
 
+@subsection HKDF: HMAC-based Extract-and-Expand
+@cindex HKDF
+
+HKDF is a key derivation function used as a building block of
+higher-level protocols like TLS 1.3. It is a derivation function
+based on HMAC described in @cite{RFC 5869},
+and is split into two logical modules, called 'extract' and 'expand'.
+The extract module takes an initial secret and a random
+salt to "extract" a fixed-length pseudorandom key (PRK). The second stage
+takes as input the previous PRK and some informational data (e.g.,
+text) and expands them into multiple keys.
+
+Nettle's @acronym{HKDF} functions are defined in
+@file{<nettle/hkdf.h>}.  There are two abstract functions for the extract
+and expand operations that operate on any HMAC implemented via the @code{nettle_hash_update_func},
+and @code{nettle_hash_digest_func} interfaces.
+
+@deftypefun void hkdf_extract (void *mac_ctx, nettle_hash_update_func *update, nettle_hash_digest_func *digest, size_t digest_size,size_t secret_size, const uint8_t *secret, uint8_t *dst)
+Extract a Pseudorandom Key (PRK) from a secret and a salt according
+to HKDF. The HMAC must have been initialized, with its key being the
+salt for the Extract operation. This function will call the
+@var{update} and @var{digest} functions passing the @var{mac_ctx}
+context parameter as an argument in order to compute digest of size
+@var{digest_size}.  Inputs are the secret @var{secret} of length
+@var{secret_length}. The output length is fixed to @var{digest_size} octets,
+thus the output buffer @var{dst} must have room for at least @var{digest_size} octets.
+@end deftypefun
+
+@deftypefun void hkdf_expand (void *mac_ctx, nettle_hash_update_func *update, nettle_hash_digest_func *digest, size_t digest_size, size_t info_size, const uint8_t *info, size_t length, uint8_t *dst)
+Expand a Pseudorandom Key (PRK) to an arbitrary size according to HKDF.
+The HMAC must have been initialized, with its key being the
+PRK from the Extract operation. This function will call the
+@var{update} and @var{digest} functions passing the @var{mac_ctx}
+context parameter as an argument in order to compute digest of size
+@var{digest_size}.  Inputs are the info @var{info} of length
+@var{info_length}, and the desired derived output length @var{length}.
+The output buffer is @var{dst} which must have room for at least @var{length} octets.
+@end deftypefun
+
+
 @subsection @acronym{PBKDF2}
+@cindex Password Based Key Derivation Function
+@cindex PKCS #5
+@cindex KDF
+@cindex PBKDF
 The most well known PBKDF is the @code{PKCS #5 PBKDF2} described in
 @cite{RFC 2898} which uses a pseudo-random function such as
 @acronym{HMAC-SHA1}.
