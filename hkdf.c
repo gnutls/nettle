@@ -63,23 +63,20 @@ hkdf_expand(void *mac_ctx,
 	    size_t length, uint8_t *dst)
 {
   uint8_t i = 1;
-  ssize_t left = length;
 
-  if (!left)
+  if (!length)
     return;
 
-  for (;; dst += digest_size, left -= digest_size, i++) {
-    update(mac_ctx, info_size, info);
-    update(mac_ctx, 1, &i);
-    if (left <= digest_size) {
-      if (left > 0)
-	digest(mac_ctx, left, dst);
-      return;
+  for (;; dst += digest_size, length -= digest_size, i++)
+    {
+      update(mac_ctx, info_size, info);
+      update(mac_ctx, 1, &i);
+      if (length <= digest_size)
+	break;
+
+      digest(mac_ctx, digest_size, dst);
+      update(mac_ctx, digest_size, dst);
     }
 
-    digest(mac_ctx, digest_size, dst);
-    update(mac_ctx, digest_size, dst);
-  }
-
-  return;
+  digest(mac_ctx, length, dst);
 }

@@ -1,5 +1,10 @@
 2017-09-06  Niels Möller  <nisse@lysator.liu.se>
 
+	* hkdf.c (hkdf_expand): Eliminate a (signed) ssize_t variable, use
+	break rather than return at loop termination.
+
+2017-09-06  Niels Möller  <nisse@lysator.liu.se>
+
 	HKDF implementation, contributed by Nikos Mavrogiannopoulos.
 	* hkdf.c (hkdf_extract, hkdf_expand): New file, new functions.
 	* hkdf.h: New file.
