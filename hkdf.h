@@ -54,11 +54,11 @@ hkdf_extract(void *mac_ctx,
 
 void
 hkdf_expand(void *mac_ctx,
-	     nettle_hash_update_func *update,
-	     nettle_hash_digest_func *digest,
-	     size_t digest_size,
-	     size_t info_size, const uint8_t *info,
-	     size_t length, uint8_t *dst);
+	    nettle_hash_update_func *update,
+	    nettle_hash_digest_func *digest,
+	    size_t digest_size,
+	    size_t info_size, const uint8_t *info,
+	    size_t length, uint8_t *dst);
 
 #ifdef __cplusplus
 }

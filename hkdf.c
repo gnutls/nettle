@@ -48,38 +48,38 @@ hkdf_extract(void *mac_ctx,
 	     size_t secret_size, const uint8_t *secret,
 	     uint8_t *dst)
 {
-	update(mac_ctx, secret_size, secret);
-	digest(mac_ctx, digest_size, dst);
+  update(mac_ctx, secret_size, secret);
+  digest(mac_ctx, digest_size, dst);
 }
 
 /* hkdf_expand: Outputs an arbitrary key of size specified by length
  */
 void
 hkdf_expand(void *mac_ctx,
-	     nettle_hash_update_func *update,
-	     nettle_hash_digest_func *digest,
-	     size_t digest_size,
-	     size_t info_size, const uint8_t *info,
-	     size_t length, uint8_t *dst)
+	    nettle_hash_update_func *update,
+	    nettle_hash_digest_func *digest,
+	    size_t digest_size,
+	    size_t info_size, const uint8_t *info,
+	    size_t length, uint8_t *dst)
 {
-	uint8_t i = 1;
-	ssize_t left = length;
+  uint8_t i = 1;
+  ssize_t left = length;
 
-	if (!left)
-		return;
+  if (!left)
+    return;
 
-	for (;; dst += digest_size, left -= digest_size, i++) {
-		update(mac_ctx, info_size, info);
-		update(mac_ctx, 1, &i);
-		if (left <= digest_size) {
-			if (left > 0)
-				digest(mac_ctx, left, dst);
-			return;
-		}
+  for (;; dst += digest_size, left -= digest_size, i++) {
+    update(mac_ctx, info_size, info);
+    update(mac_ctx, 1, &i);
+    if (left <= digest_size) {
+      if (left > 0)
+	digest(mac_ctx, left, dst);
+      return;
+    }
 
-		digest(mac_ctx, digest_size, dst);
-		update(mac_ctx, digest_size, dst);
-	}
+    digest(mac_ctx, digest_size, dst);
+    update(mac_ctx, digest_size, dst);
+  }
 
-	return;
+  return;
 }
