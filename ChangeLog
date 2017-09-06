@@ -1,3 +1,7 @@
+2017-09-04  Andreas Schneider  <asn@samba.org>
+
+	* fat-arm.c: Add missing define for _GNU_SOURCE.
+
 2017-08-27  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac (GMP_NUMB_BITS): Set to dummy value "n/a" in
