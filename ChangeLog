@@ -1,3 +1,14 @@
+2017-09-06  Niels Möller  <nisse@lysator.liu.se>
+
+	HKDF implementation, contributed by Nikos Mavrogiannopoulos.
+	* hkdf.c (hkdf_extract, hkdf_expand): New file, new functions.
+	* hkdf.h: New file.
+	* Makefile.in (nettle_SOURCES): Add hkdf.c.
+	(HEADERS): Add hkdf.h.
+	* testsuite/hkdf-test.c: Tests for hkdf-sha256 and hkdf-sha1.
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Added hkdf-test.c.
+	* nettle.texinfo (Key derivation functions): Document HKDF.
+
 2017-08-27  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac (GMP_NUMB_BITS): Set to dummy value "n/a" in
