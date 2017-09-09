@@ -1,3 +1,13 @@
+2017-09-09  Daiki Ueno  <dueno@redhat.com>
+
+	* testsuite/ecc-mul-g-test.c (test_main): Fixed mpn_cmp call.
+	* testsuite/ecc-mul-a-test.c (test_main): Likewise.
+	* eccdata.c (ecc_point_out): Write to given stream, instead of
+	stderr.
+	* eccdata.c (output_curve): In curve448, the bit size of the order
+	is slightly smaller than the one of p's. Adjust ecc_Bmodq_shifted
+	accordingly.
+
 2017-09-09  Niels Möller  <nisse@lysator.liu.se>
 
 	* mini-gmp.c: Updated mini-gmp from the gmp repository, latest
