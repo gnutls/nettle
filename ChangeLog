@@ -1,3 +1,11 @@
+2017-09-12  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/testutils.h (mpn_zero_p): Avoid redefining mpn_zero_p
+	when building with mini-gmp. Since the mini-gmp update, this
+	function is defined by mini-gmp, causing link errors if nettle is
+	configured with --enable-mini-gmp --disable-shared. Reported by
+	Tim Rühsen.
+
 2017-09-09  Daiki Ueno  <dueno@redhat.com>
 
 	* testsuite/ecc-mul-g-test.c (test_main): Fixed mpn_cmp call.
