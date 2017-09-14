@@ -34,7 +34,7 @@
 #ifndef NETTLE_HKDF_H_INCLUDED
 #define NETTLE_HKDF_H_INCLUDED
 
-#include "nettle-meta.h"
+#include "nettle-types.h"
 
 #ifdef __cplusplus
 extern "C" {

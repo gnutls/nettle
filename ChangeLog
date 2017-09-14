@@ -1,5 +1,8 @@
 2017-09-14  Niels Möller  <nisse@lysator.liu.se>
 
+	* hkdf.c: Delete unneeded includes. Use Nettle licensing notice.
+	* hkdf.h: Include only nettle-types.h, not nettle-meta.h.
+
 	* ecc-mod.c (ecc_mod): Workaround to silence a false positive from
 	the clang static analyzer.
 
