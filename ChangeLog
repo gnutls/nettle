@@ -7,6 +7,10 @@
 
 2017-09-23  Daiki Ueno  <dueno@redhat.com>
 
+	* ecc-eh-to-a.c (ecc_eh_to_a): Use ecc->q.bit_size, instead of
+	hard-coded value for curve25519.
+	* eddsa-sign.c (_eddsa_sign): Likewise.
+
 	* ecc-internal.h (ecc_dup_func): New typedef.
 	(struct ecc_curve): New constants add_hh_itch and dup_itch, new
 	function pointers add_hh and dup.
