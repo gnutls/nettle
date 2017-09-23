@@ -1,5 +1,9 @@
 2017-09-23  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-internal.h (struct ecc_curve): Delete unused pointer
+	edwards_root. Update all instances.
+	* eccdata.c (output_curve): Don't output it.
+
 	* testsuite/ecc-add-test.c (test_main): Reduce test duplication.
 	Use ecc->add_hhh_itch.
 	* testsuite/ecc-dup-test.c (test_main): Reduce test duplication.

@@ -1036,9 +1036,6 @@ output_curve (const struct ecc_curve *ecc, unsigned bits_per_limb)
   mpz_fdiv_q_2exp (t, t, 1);
   output_bignum ("ecc_qp1h", t, limb_size, bits_per_limb);  
 
-  if (ecc->use_edwards)
-    output_bignum ("ecc_edwards", ecc->t, limb_size, bits_per_limb);
-
   /* Trailing zeros in p+1 correspond to trailing ones in p. */
   redc_limbs = mpz_scan0 (ecc->p, 0) / bits_per_limb;
   if (redc_limbs > 0)

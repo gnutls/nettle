@@ -171,7 +171,6 @@ const struct ecc_curve nettle_secp_192r1 =
 
   ecc_b,
   ecc_g,
-  NULL,
   ecc_unit,
   ecc_table
 };

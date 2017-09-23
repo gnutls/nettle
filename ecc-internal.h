@@ -191,9 +191,6 @@ struct ecc_curve
   /* Generator, x coordinate followed by y (affine coordinates).
      Currently used only by the test suite. */
   const mp_limb_t *g;
-  /* If non-NULL, the constant needed for transformation to the
-     equivalent Edwards curve. */
-  const mp_limb_t *edwards_root;
 
   /* For redc, same as B mod p, otherwise 1. */
   const mp_limb_t *unit;
