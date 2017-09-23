@@ -1,3 +1,8 @@
+2017-09-23  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/ecc-add-test.c (test_main): Reduce test duplication.
+	Use ecc->add_hhh_itch.
+
 2017-09-23  Daiki Ueno  <dueno@redhat.com>
 
 	* ecc-internal.h (ecc_dup_func): New typedef.
