@@ -68,9 +68,10 @@ ecc_eh_to_a (const struct ecc_curve *ecc,
       /* Skip y coordinate */
       if (op > 1)
 	{
-	  /* Reduce modulo q. FIXME: Hardcoded for curve25519,
-	     duplicates end of ecc_25519_modq. FIXME: Is this needed
-	     at all? Full reduction mod p is maybe sufficient. */
+	  /* Reduce modulo q. Hardcoded for curve25519, duplicates end
+	     of ecc_25519_modq. FIXME: Is this needed at all? op > 0
+	     is only used by ecdsa code, and ecdsa on Edwards curves
+	     makes little sense and is is only used by tests. */
 	  unsigned shift;
 	  assert (ecc->p.bit_size == 255);
 	  shift = ecc->q.bit_size - 1 - GMP_NUMB_BITS * (ecc->p.size - 1);

@@ -283,17 +283,16 @@ ecc_a_to_j (const struct ecc_curve *ecc,
 
 /* Converts a point P in jacobian coordinates into a point R in affine
    coordinates. If op == 1, produce x coordinate only. If op == 2,
-   produce the x coordiante only, and in also it modulo q. FIXME: For
-   the public interface, have separate for the three cases, and use
-   this flag argument only for the internal ecc->h_to_a function. */
+   produce the x coordinate only, and also reduce it modulo q. */
 void
 ecc_j_to_a (const struct ecc_curve *ecc,
 	    int op,
 	    mp_limb_t *r, const mp_limb_t *p,
 	    mp_limb_t *scratch);
 
-/* Converts a point P on an Edwards curve to affine coordinates on
-   the corresponding Montgomery curve. */
+/* Converts a point P in homogeneous coordinates on an Edwards curve
+   to affine coordinates. Meaning of op is the same as for
+   ecc_j_to_a. */
 void
 ecc_eh_to_a (const struct ecc_curve *ecc,
 	     int op,
