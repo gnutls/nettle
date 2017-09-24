@@ -62,7 +62,7 @@ tstring_clear(void)
 }
 
 struct tstring *
-tstring_data(size_t length, const char *data)
+tstring_data(size_t length, const uint8_t *data)
 {
   struct tstring *s = tstring_alloc (length);
   memcpy (s->data, data, length);

@@ -60,7 +60,7 @@ void
 tstring_clear(void);
 
 struct tstring *
-tstring_data(size_t length, const char *data);
+tstring_data(size_t length, const uint8_t *data);
 
 struct tstring *
 tstring_hex(const char *hex);
@@ -281,7 +281,7 @@ test_ecc_mul_h (unsigned curve, unsigned n, const mp_limb_t *p);
 #define LDUP(x) strlen(x), strdup(x)
 
 #define SHEX(x) (tstring_hex(x))
-#define SDATA(x) ((const struct tstring *)tstring_data(LLENGTH(x), x))
+#define SDATA(x) ((const struct tstring *)tstring_data(LLENGTH(x), US(x)))
 #define H(x) (SHEX(x)->data)
 
 #define MEMEQ(length, a, b) (!memcmp((a), (b), (length)))

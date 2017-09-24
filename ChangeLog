@@ -1,3 +1,10 @@
+2017-09-24  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/testutils.c (tstring_data): Use uint8_t for data
+	argument.
+	* testsuite/testutils.h (SDATA): Use US macro to cast data
+	argument.
+
 2017-08-26  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-mod-inv.c (ecc_mod_inv): Add missing assert. Fixes a
