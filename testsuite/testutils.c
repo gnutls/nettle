@@ -62,7 +62,7 @@ tstring_clear(void)
 }
 
 struct tstring *
-tstring_data(size_t length, const char *data)
+tstring_data(size_t length, const uint8_t *data)
 {
   struct tstring *s = tstring_alloc (length);
   memcpy (s->data, data, length);
@@ -566,7 +566,7 @@ test_armor(const struct nettle_armor *armor,
            const char *ascii)
 {
   size_t ascii_length = strlen(ascii);
-  uint8_t *buffer = xalloc(1 + ascii_length);
+  char *buffer = xalloc(1 + ascii_length);
   uint8_t *check = xalloc(1 + armor->decode_length(ascii_length));
   void *encode = xalloc(armor->encode_context_size);
   void *decode = xalloc(armor->decode_context_size);

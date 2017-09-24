@@ -1,3 +1,23 @@
+2017-09-24  Niels Möller  <nisse@lysator.liu.se>
+
+	* tools/pkcs1-conv.c (base64_decode_in_place): New helper
+	function.
+	(decode_base64): Use it.
+
+	* sexp-transport-format.c (base64_encode_in_place): New helper
+	function.
+	(sexp_transport_vformat): Use it.
+
+	* testsuite/base64-test.c (test_fuzz_once): Update to use char
+	type where appropriate.
+	(test_main): Use helper functions base64_encode_in_place and
+	base64_decode_in_place (copied to this file).
+
+	* testsuite/testutils.c (tstring_data): Use uint8_t for data
+	argument.
+	* testsuite/testutils.h (SDATA): Use US macro to cast data
+	argument.
+
 2017-09-14  Niels Möller  <nisse@lysator.liu.se>
 
 	* hkdf.c: Delete unneeded includes. Use Nettle licensing notice.
