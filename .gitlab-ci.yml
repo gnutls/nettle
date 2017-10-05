@@ -41,7 +41,7 @@ build/aarch64:
   - branches@gnutls/nettle
   except:
   - tags
-Build and Check with mini-gmp:
+build/mini-gmp:
   script:
   - ./.bootstrap &&
     ./configure --disable-documentation --enable-mini-gmp && make -j4 &&
@@ -50,7 +50,7 @@ Build and Check with mini-gmp:
   - shared
   except:
   - tags
-Build and Check with ubsan:
+build/ubsan:
   image: fedora:25
   script:
   - yum install -y gmp-devel libubsan-static libubsan
@@ -61,7 +61,7 @@ Build and Check with ubsan:
   - shared
   except:
   - tags
-Build and Check with asan:
+build/asan:
   image: fedora:25
   script:
   - yum install -y gmp-devel
@@ -72,7 +72,7 @@ Build and Check with asan:
   - shared
   except:
   - tags
-Build with static-analyzers:
+build/static-analyzers:
   image: fedora:25
   script:
   - yum install -y gmp-devel clang compiler-rt cppcheck clang-analyzer
