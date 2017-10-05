@@ -12,7 +12,7 @@ build/x86-64:
   script:
   - yum install -y gmp-devel
   - ./.bootstrap &&
-    ./configure --disable-documentation && make -j4 &&
+    ./configure --enable-fat --disable-documentation && make -j4 &&
     make check -j4
   tags:
   - shared
@@ -22,7 +22,7 @@ build/x86:
   script:
   - yum install -y gmp-devel.i686
   - ./.bootstrap &&
-    PKG_CONFIG_PATH="/usr/lib/pkgconfig/" CFLAGS="-O2 -g -m32" LDFLAGS="-m32" ./configure --build=i686-redhat-linux --disable-documentation && make -j4 &&
+    PKG_CONFIG_PATH="/usr/lib/pkgconfig/" CFLAGS="-O2 -g -m32" LDFLAGS="-m32" ./configure --build=i686-redhat-linux --enable-fat --disable-documentation && make -j4 &&
     make check -j4
   tags:
   - shared
