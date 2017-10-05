@@ -1,9 +1,5 @@
 image: centos:7
 
-variables:
-  BUILD_IMAGES_PROJECT: gnutls/build-images
-  FEDORA_BUILD: buildenv-f25
-
 before_script:
  - yum install -y git make autoconf libtool automake gettext-devel glibc-devel gcc valgrind libasan-static libgcc.i686 glibc-devel.i686
 
@@ -51,7 +47,7 @@ build/mini-gmp:
   except:
   - tags
 build/ubsan:
-  image: fedora:25
+  image: fedora:26
   script:
   - yum install -y gmp-devel libubsan-static libubsan
   - ./.bootstrap && 
@@ -62,7 +58,7 @@ build/ubsan:
   except:
   - tags
 build/asan:
-  image: fedora:25
+  image: fedora:26
   script:
   - yum install -y gmp-devel
   - ./.bootstrap && 
@@ -73,7 +69,7 @@ build/asan:
   except:
   - tags
 build/static-analyzers:
-  image: fedora:25
+  image: fedora:26
   script:
   - yum install -y gmp-devel clang compiler-rt cppcheck clang-analyzer
   - ./.bootstrap
