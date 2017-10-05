@@ -8,7 +8,7 @@ before_script:
  - yum install -y git make autoconf libtool automake gettext-devel glibc-devel gcc valgrind libasan-static libgcc.i686 glibc-devel.i686
 
 # See http://doc.gitlab.com/ce/ci/yaml/ for documentation.
-Build and Check (x86-64):
+build/x86-64:
   script:
   - yum install -y gmp-devel
   - ./.bootstrap &&
@@ -18,7 +18,7 @@ Build and Check (x86-64):
   - shared
   except:
   - tags
-Build and Check (x86):
+build/x86:
   script:
   - yum install -y gmp-devel.i686
   - ./.bootstrap &&
@@ -26,6 +26,19 @@ Build and Check (x86):
     make check -j4
   tags:
   - shared
+  except:
+  - tags
+build/aarch64:
+  before_script:
+  - /bin/true
+  script:
+  - ./.bootstrap &&
+    ./configure --enable-fat --disable-documentation && make -j4 &&
+    make check -j4
+  tags:
+  - aarch64
+  only:
+  - branches@gnutls/nettle
   except:
   - tags
 Build and Check with mini-gmp:
