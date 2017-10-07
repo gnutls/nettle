@@ -123,6 +123,13 @@ test_cipher_cbc(const struct nettle_cipher *cipher,
 		const struct tstring *iv);
 
 void
+test_cipher_cfb(const struct nettle_cipher *cipher,
+		const struct tstring *key,
+		const struct tstring *cleartext,
+		const struct tstring *ciphertext,
+		const struct tstring *iv);
+
+void
 test_cipher_ctr(const struct nettle_cipher *cipher,
 		const struct tstring *key,
 		const struct tstring *cleartext,

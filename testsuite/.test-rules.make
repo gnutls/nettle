@@ -115,6 +115,9 @@ knuth-lfib-test$(EXEEXT): knuth-lfib-test.$(OBJEXT)
 cbc-test$(EXEEXT): cbc-test.$(OBJEXT)
 	$(LINK) cbc-test.$(OBJEXT) $(TEST_OBJS) -o cbc-test$(EXEEXT)
 
+cfb-test$(EXEEXT): cfb-test.$(OBJEXT)
+	$(LINK) cfb-test.$(OBJEXT) $(TEST_OBJS) -o cfb-test$(EXEEXT)
+
 ctr-test$(EXEEXT): ctr-test.$(OBJEXT)
 	$(LINK) ctr-test.$(OBJEXT) $(TEST_OBJS) -o ctr-test$(EXEEXT)
 
