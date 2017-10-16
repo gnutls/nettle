@@ -1,3 +1,8 @@
+2017-10-16  Niels Möller  <nisse@lysator.liu.se>
+
+	* aclocal.m4 (GMP_PROG_CC_FOR_BUILD): Add -g when compiling with
+	gcc.
+
 2017-09-24  Niels Möller  <nisse@lysator.liu.se>
 
 	* tools/pkcs1-conv.c (base64_decode_in_place): New helper
