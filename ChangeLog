@@ -1,3 +1,15 @@
+2017-10-16  Niels Möller  <nisse@lysator.liu.se>
+
+	CFB support, contributed by Dmitry Eremin-Solenikov.
+	* cfb.c (cfb_encrypt, cfb_decrypt): New file, new functions.
+	* cfb.h: New header file.
+	(CFB_CTX, CFB_SET_IV, CFB_ENCRYPT, CFB_DECRYPT): New macros.
+	* Makefile.in (nettle_SOURCES): Add cfb.c.
+	(HEADERS): Add cfb.h.
+	* testsuite/cfb-test.c: New test case.
+	* testsuite/testutils.c (test_cipher_cfb): New function.
+	* nettle.texinfo (CFB): Documentation.
+
 2017-09-24  Niels Möller  <nisse@lysator.liu.se>
 
 	* tools/pkcs1-conv.c (base64_decode_in_place): New helper
