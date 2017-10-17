@@ -12,6 +12,7 @@
 /cast128-test
 /cbc-test
 /ccm-test
+/cfb-test
 /chacha-poly1305-test
 /chacha-test
 /ctr-test

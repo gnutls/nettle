@@ -91,7 +91,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 camellia256-set-decrypt-key.c \
 		 camellia256-meta.c \
 		 cast128.c cast128-meta.c cbc.c \
-		 ccm.c ccm-aes128.c ccm-aes192.c ccm-aes256.c \
+		 ccm.c ccm-aes128.c ccm-aes192.c ccm-aes256.c cfb.c \
 		 chacha-crypt.c chacha-core-internal.c \
 		 chacha-poly1305.c chacha-poly1305-meta.c \
 		 chacha-set-key.c chacha-set-nonce.c \
@@ -188,7 +188,7 @@ OPT_SOURCES = fat-x86_64.c fat-arm.c mini-gmp.c
 
 HEADERS = aes.h arcfour.h arctwo.h asn1.h blowfish.h \
 	  base16.h base64.h bignum.h buffer.h camellia.h cast128.h \
-	  cbc.h ccm.h chacha.h chacha-poly1305.h ctr.h \
+	  cbc.h ccm.h cfb.h chacha.h chacha-poly1305.h ctr.h \
 	  curve25519.h des.h des-compat.h dsa.h dsa-compat.h eax.h \
 	  ecc-curve.h ecc.h ecdsa.h eddsa.h \
 	  gcm.h gosthash94.h hmac.h \

@@ -93,6 +93,7 @@ Cipher modes
 
 * CBC::                         
 * CTR::                         
+* CFB::
 * GCM::                         
 * CCM::                         
 
@@ -1884,21 +1885,23 @@ a message that is larger than the cipher's block size. As explained in
 processing them independently with the block cipher (Electronic Code
 Book mode, @acronym{ECB}), leaks information.
 
-Besides @acronym{ECB}, Nettle provides a two other modes of operation:
-Cipher Block Chaining (@acronym{CBC}), Counter mode (@acronym{CTR}), and
-a couple of @acronym{AEAD} modes (@pxref{Authenticated encryption}).
-@acronym{CBC} is widely used, but there are a few subtle issues of
-information leakage, see, e.g.,
+Besides @acronym{ECB}, Nettle provides several other modes of operation:
+Cipher Block Chaining (@acronym{CBC}), Counter mode (@acronym{CTR}), Cipher
+Feedback (@acronym{CFB}) and a couple of @acronym{AEAD} modes
+(@pxref{Authenticated encryption}).  @acronym{CBC} is widely used, but
+there are a few subtle issues of information leakage, see, e.g.,
 @uref{http://www.kb.cert.org/vuls/id/958563, @acronym{SSH} @acronym{CBC}
 vulnerability}. Today, @acronym{CTR} is usually preferred over @acronym{CBC}.
 
-Modes like @acronym{CBC} and @acronym{CTR} provide @emph{no} message
-authentication, and should always be used together with a @acronym{MAC}
-(@pxref{Keyed hash functions}) or signature to authenticate the message.
+Modes like @acronym{CBC}, @acronym{CTR} and @acronym{CFB} provide @emph{no}
+message authentication, and should always be used together with a
+@acronym{MAC} (@pxref{Keyed hash functions}) or signature to authenticate
+the message.
 
 @menu
 * CBC::                         
 * CTR::                         
+* CFB::
 @end menu
 
 @node CBC, CTR, Cipher modes, Cipher modes
@@ -1994,7 +1997,7 @@ These macros use some tricks to make the compiler display a warning if
 the types of @var{f} and @var{ctx} don't match, e.g. if you try to use
 an @code{struct aes_ctx} context with the @code{des_encrypt} function.
 
-@node CTR, , CBC, Cipher modes
+@node CTR, CFB, CBC, Cipher modes
 @comment  node-name,  next,  previous,  up
 @subsection Counter mode
 
@@ -2065,6 +2068,91 @@ is copied into that context.
 @deffn Macro CTR_CRYPT (@var{ctx}, @var{f}, @var{length}, @var{dst}, @var{src})
 A simpler way to invoke @code{ctr_crypt}. The first argument is a
 pointer to a context struct as defined by @code{CTR_CTX}, and the second
+argument is an encryption function following Nettle's conventions. The
+last three arguments define the source and destination area for the
+operation.
+@end deffn
+
+@node CFB, , CTR, Cipher modes
+@comment  node-name,  next,  previous,  up
+@subsection Cipher Feedback mode
+
+@cindex Cipher Feedback Mode
+@cindex CFB Mode
+
+Cipher Feedback mode (@acronym{CFB}) being a close relative to both
+@acronym{CBC} mode and @acronym{CTR} mode borrows some characteristics
+from stream ciphers.
+
+The message is divided into @code{n} blocks @code{M_1},@dots{}
+@code{M_n}, where @code{M_n} is of size @code{m} which may be smaller
+than the block size. Except for the last block, all the message blocks
+must be of size equal to the cipher's block size.
+
+If @code{E_k} is the encryption function of a block cipher, @code{IV} is
+the initialization vector, then the @code{n} plaintext blocks are
+transformed into @code{n} ciphertext blocks @code{C_1},@dots{}
+@code{C_n} as follows:
+
+@example
+C_1 = E_k(IV) XOR M_1
+C_2 = E_k(C_1) XOR M_2
+
+@dots{}
+
+C_(n-1) = E_k(C_(n - 2)) XOR M_(n-1)
+C_n = E_k(C_(n - 1)) [1..m] XOR M_n
+@end example
+
+Nettle's includes two functions for applying a block cipher in Cipher
+Feedback (@acronym{CFB}) mode, one for encryption and one for
+decryption. These functions uses @code{void *} to pass cipher contexts
+around.
+
+@deftypefun {void} cfb_encrypt (const void *@var{ctx}, nettle_cipher_func *@var{f}, size_t @var{block_size}, uint8_t *@var{iv}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx {void} cfb_decrypt (const void *@var{ctx}, nettle_cipher_func *@var{f}, size_t @var{block_size}, uint8_t *@var{iv}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+
+Applies the encryption or decryption function @var{f} in @acronym{CFB}
+mode. The final ciphertext block processed is copied into @var{iv}
+before returning, so that a large message can be processed by a sequence
+of calls to @code{cfb_encrypt}. Note that for @acronym{CFB} mode
+internally uses encryption only function and hence @var{f} should always
+be the encryption function for the underlying block cipher.
+
+When a message is encrypted using a sequence of calls to
+@code{cfb_encrypt}, all but the last call @emph{must} use a length that
+is a multiple of the block size.
+@end deftypefun
+
+Like for @acronym{CBC}, there are also a couple of helper macros.
+
+@deffn Macro CFB_CTX (@var{context_type}, @var{block_size})
+Expands to
+@example
+@{
+   context_type ctx;
+   uint8_t iv[block_size];
+@}
+@end example
+@end deffn
+
+@deffn Macro CFB_SET_IV(@var{ctx}, @var{iv})
+First argument is a pointer to a context struct as defined by
+@code{CFB_CTX}, and the second is a pointer to an initialization vector
+that is copied into that context.
+@end deffn
+
+@deffn Macro CFB_ENCRYPT (@var{ctx}, @var{f}, @var{length}, @var{dst}, @var{src})
+A simpler way to invoke @code{cfb_encrypt}. The first argument is a
+pointer to a context struct as defined by @code{CFB_CTX}, and the second
+argument is an encryption function following Nettle's conventions. The
+last three arguments define the source and destination area for the
+operation.
+@end deffn
+
+@deffn Macro CFB_DECRYPT (@var{ctx}, @var{f}, @var{length}, @var{dst}, @var{src})
+A simpler way to invoke @code{cfb_decrypt}. The first argument is a
+pointer to a context struct as defined by @code{CFB_CTX}, and the second
 argument is an encryption function following Nettle's conventions. The
 last three arguments define the source and destination area for the
 operation.
