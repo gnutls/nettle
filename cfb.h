@@ -2,7 +2,7 @@
 
    Cipher feedback mode.
 
-   Copyright (C) 2015 Dmitry Eremin-Solenikov
+   Copyright (C) 2015, 2017 Dmitry Eremin-Solenikov
    Copyright (C) 2001 Niels Möller
 
    This file is part of GNU Nettle.
