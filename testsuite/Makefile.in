@@ -131,9 +131,10 @@ $(TARGETS) $(EXTRA_TARGETS): testutils.$(OBJEXT) ../nettle-internal.$(OBJEXT) \
 # data.
 VALGRIND = valgrind --error-exitcode=1 --leak-check=full --show-reachable=yes @IF_ASM@ --partial-loads-ok=yes
 
-# The PATH update is for locating dlls on w*ndows.
+# The PATH update is for windows dlls, DYLD_LIBRARY_PATH is for OSX.
 check: $(TS_ALL)
-	LD_LIBRARY_PATH=../.lib PATH="../.lib:$$PATH" srcdir="$(srcdir)" \
+	LD_LIBRARY_PATH=../.lib PATH="../.lib:$$PATH" DYLD_LIBRARY_PATH=../.lib \
+	  srcdir="$(srcdir)" \
 	  EMULATOR="$(EMULATOR)" NM="$(NM)" EXEEXT="$(EXEEXT)" \
           $(top_srcdir)/run-tests $(TS_ALL)
 
