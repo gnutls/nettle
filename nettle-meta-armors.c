@@ -36,7 +36,9 @@
 #include <stddef.h>
 #include "nettle-meta.h"
 
-const struct nettle_armor * const _nettle_armors[] = {
+#undef nettle_armors
+
+const struct nettle_armor * const nettle_armors[] = {
   &nettle_base64,
   &nettle_base64url,
   &nettle_base16,
@@ -46,5 +48,5 @@ const struct nettle_armor * const _nettle_armors[] = {
 const struct nettle_armor * const *
 nettle_get_armors (void)
 {
-  return _nettle_armors;
+  return nettle_armors;
 }

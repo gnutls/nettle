@@ -38,9 +38,7 @@
 
 #include "nettle-meta.h"
 
-/* Direct access to the array. */
 #undef nettle_hashes
-#define nettle_hashes _nettle_hashes
 
 const struct nettle_hash *
 nettle_lookup_hash (const char *name)

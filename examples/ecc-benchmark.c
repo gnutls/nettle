@@ -330,12 +330,12 @@ bench_curve (const struct ecc_curve *ecc)
 }
 
 const struct ecc_curve * const curves[] = {
-  &_nettle_secp_192r1,
-  &_nettle_secp_224r1,
+  &nettle_secp_192r1,
+  &nettle_secp_224r1,
   &_nettle_curve25519,
-  &_nettle_secp_256r1,
-  &_nettle_secp_384r1,
-  &_nettle_secp_521r1,
+  &nettle_secp_256r1,
+  &nettle_secp_384r1,
+  &nettle_secp_521r1,
 };
 
 #define numberof(x)  (sizeof (x) / sizeof ((x)[0]))

@@ -37,7 +37,9 @@
 
 #include "nettle-meta.h"
 
-const struct nettle_aead * const _nettle_aeads[] = {
+#undef nettle_aeads
+
+const struct nettle_aead * const nettle_aeads[] = {
   &nettle_gcm_aes128,
   &nettle_gcm_aes192,
   &nettle_gcm_aes256,
@@ -51,5 +53,5 @@ const struct nettle_aead * const _nettle_aeads[] = {
 const struct nettle_aead * const *
 nettle_get_aeads (void)
 {
-  return _nettle_aeads;
+  return nettle_aeads;
 }
