@@ -185,7 +185,7 @@ AC_HEADER_TIME
 AC_CHECK_SIZEOF(long)
 AC_CHECK_SIZEOF(size_t)
 
-AC_CHECK_HEADERS([openssl/blowfish.h openssl/des.h openssl/cast.h openssl/aes.h openssl/ecdsa.h],,
+AC_CHECK_HEADERS([openssl/evp.h openssl/ecdsa.h],,
 [enable_openssl=no
  break])
 
@@ -268,7 +268,16 @@ if test "x$enable_public_key" = "xyes" ; then
   fi
 fi
 
-GMP_NUMB_BITS="$nettle_cv_gmp_numb_bits"
+# Substituted in Makefile, passed on to the eccdata command.
+NUMB_BITS="$nettle_cv_gmp_numb_bits"
+AC_SUBST([NUMB_BITS])
+
+# Substituted in version.h, used only with mini-gmp.
+if test "x$enable_mini_gmp" = "xyes" ; then
+  GMP_NUMB_BITS="$NUMB_BITS"
+else
+  GMP_NUMB_BITS="n/a"
+fi
 AC_SUBST([GMP_NUMB_BITS])
 
 # Figure out ABI. Currently, configurable only by setting CFLAGS.
@@ -876,7 +885,7 @@ OPENSSL_LIBFLAGS=''
 
 # Check for openssl's libcrypto (used only for benchmarking)
 if test x$enable_openssl = xyes ; then
-  AC_CHECK_LIB(crypto, BF_ecb_encrypt,
+  AC_CHECK_LIB(crypto, EVP_CIPHER_CTX_new,
     [OPENSSL_LIBFLAGS='-lcrypto'],
     [enable_openssl=no])
 fi

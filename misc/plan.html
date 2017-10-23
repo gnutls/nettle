@@ -12,9 +12,9 @@
 </head>
 <body>
   <h1> Nettle release plans </h1>
-  <p> This is an attempt at defining a development target for
-    Nettle-3.3, inspired by similar pages for recent GMP releases.
-    [Last updated 2016-09-19]</p>
+  <p> This is an attempt at defining a development target for the next
+    release of Nettle, inspired by similar pages for recent GMP
+    releases. [Last updated 2017-10-01]</p>
   <p class='should'>
     This really ought to be done before release
   </p>
@@ -28,21 +28,36 @@
     Leave for some later release!
   </p>
 
-  <h1> Plans for nettle-3.3 </h1>
+  <h1> Plans for nettle-3.4 </h1>
+
+  <h2> Bug fixes </h2>
+  <p class='should'> Fix issues with sizes of objects like the
+    nettle_hashes array and the ecc_curve structs accidentally leaking
+    into the ABI. Fix by another level of indirection, with a function
+    call to return the start address.
+  </p>
 
   <h2> New features </h2>
   <p class='postponed'>
     Add larger "safe" curves, e.g., M-383, curve41417, curve448 and
-    E-521.
+    E-521. (curve448 in progress, on its own branch).
   </p>
+
   <p class='postponed'>
     Add functions for converting ECC points to and from ANSI x9.62.
   </p>
-  <p class='done'>
-    Use side-channel silent mpz_powm_sec for RSA and DSA.
+
+  <p class='postponed'>
+    Support for the Skein hash function.
   </p>
-  <p class='done'>
-    Side-channel silent memeql_sec.
+
+  <p class='postponed'>
+    Support for more GOST standard algorithms.
+  </p>
+
+  <p class='wish'>
+    Support for CFB mode (patch by Dmitry Eremin-Solenikov posted on
+    the list).
   </p>
 
   <h2> Optimizations </h2>
@@ -58,42 +73,43 @@
   </p>
   
   <h2> Miscellaneous </h2>
-  <p class='done'> Use GMP-5 functions unconditionally. </p>
   <p class='postponed'>
     Use more functions from GMP-6 and later, when available:
     mpn_sec_add_1, mpn_sec_tabselect, mpn_sec_invert, mpn_cnd_swap,
     ...
   </p>
 
-  <h2> Documentation </h2>
-  <p class='done'>
-    Document memeql_sec.
+  <p class='done'> Change base16 and base64 interfaces to use char
+    for encoded data, and fix remaining pointer-signedness warnings.
   </p>
   
+  <h2> Documentation </h2>
+
+  
   <h2> Build system </h2>
-  <p class='postponed'>
-    Update AX_CREATE_STDINT_H to the latest version.
+  <p class='should'>
+    Delete AX_CREATE_STDINT_H, use stdint.h unconditionally.
   </p>
   
   <h2> Testing </h2>
   <p> Since xenofarm isn't up and running, do some manual testing:
   </p>
   <ul>
-    <li class='done'> x86_64-linux-gnu</li>
-    <li class='done'> x86-linux-gnu</li>
-    <li class='done'> x86_64-freebsd</li>
-    <li class='done'> x86-w*ndows (using cross compiler and wine)</li>
-    <li class='done'> x86_64-w*ndows (using cross compiler and wine)</li>
+    <li class='should'> x86_64-linux-gnu</li>
+    <li class='should'> x86-linux-gnu</li>
+    <li class='should'> x86_64-freebsd</li>
+    <li class='should'> x86-w*ndows (using cross compiler and wine)</li>
+    <li class='should'> x86_64-w*ndows (using cross compiler and wine)</li>
     <li class='should'> x86-darwin (needs help from Nettle users)</li>
     <li class='should'> x86_64-darwin (needs help from Nettle users)</li>
     <li class='should'> armv5-linux-gnu (qemu)</li>
-    <li class='done'> armv7-linux-gnu (qemu)</li>
+    <li class='should'> armv7-linux-gnu (qemu)</li>
     <li class='should'> armv8-linux-gnu (qemu)</li>
     <li class='should'> ppc64-linux-gnu (qemu)</li>
     <li class='should'> ppc32-linux-gnu (qemu)</li>
-    <li class='done'> mips64-linux-gnu (qemu)</li>
+    <li class='should'> mips64-linux-gnu (qemu)</li>
     <li class='should'> mips32-linux-gnu (qemu)</li>
-    <li class='done'> m68k-linux-gnu (aranym)</li>
+    <li class='should'> m68k-linux-gnu (aranym)</li>
     <li class='wish'> armv7-android </li>
   </ul>
 

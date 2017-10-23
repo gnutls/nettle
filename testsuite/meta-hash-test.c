@@ -1,6 +1,8 @@
 #include "testutils.h"
 #include "nettle-internal.h"
 #include "nettle-meta.h"
+/* For NETTLE_MAX_HASH_CONTEXT_SIZE */
+#include "sha3.h"
 
 const char* hashes[] = {
   "md2",
@@ -28,9 +30,9 @@ test_main(void)
     ASSERT(nettle_lookup_hash(hashes[i]) != NULL);
   }
 
-  while (NULL != nettle_hashes[i])
-    i++;
-  ASSERT(i == count); /* we are not missing testing any hashes */
-  for (i = 0; NULL != nettle_hashes[i]; i++)
+  for (i = 0; NULL != nettle_hashes[i]; i++) {
     ASSERT(nettle_hashes[i]->digest_size <= NETTLE_MAX_HASH_DIGEST_SIZE);
+    ASSERT(nettle_hashes[i]->context_size <= NETTLE_MAX_HASH_CONTEXT_SIZE);
+  }
+  ASSERT(i == count); /* we are not missing testing any hashes */
 }

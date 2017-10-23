@@ -53,11 +53,11 @@ list_algorithms (void)
 {
   unsigned i;
   const struct nettle_hash *alg;
-  printf ("%10s digestsize (internal block size), in units of octets\n", "name");
+  printf ("%10s digestsize (internal block size, context size), in units of octets\n", "name");
 
   for (i = 0; (alg = nettle_hashes[i]); i++)
-    printf ("%10s %d (%d)\n",
-	    alg->name, alg->digest_size, alg->block_size);
+    printf ("%10s %d (%d, %d)\n",
+	    alg->name, alg->digest_size, alg->block_size, alg->context_size);
 };
 
 /* Also in examples/io.c */
