@@ -1,6 +1,6 @@
 2017-10-23  Niels Möller  <nisse@lysator.liu.se>
 
-	Undo added underscores on public symbols.
+	Merge API fixes, starting at 2017-01-12.
 
 2017-04-09  Niels Möller  <nisse@lysator.liu.se>
 
@@ -15,17 +15,11 @@
 	* nettle-meta.h (nettle_ciphers, nettle_aeads, nettle_armors): New
 	macros, analogous to below change to nettle_hashes.
 
-	* nettle-meta-ciphers.c (_nettle_ciphers): Renamed array, from...
-	(nettle_ciphers: ... old name.
-	(nettle_get_ciphers): New function.
+	* nettle-meta-ciphers.c (nettle_get_ciphers): New function.
 
-	* nettle-meta-aeads.c (_nettle_aeads): Renamed array, from...
-	(nettle_aeads: ... old name.
-	(nettle_get_aeads): New function.
+	* nettle-meta-aeads.c (nettle_get_aeads): New function.
 
-	* nettle-meta-armors.c (_nettle_armors): Renamed array, from...
-	(nettle_armors: ... old name.
-	(nettle_get_armors): New function.
+	* nettle-meta-armors.c (nettle_get_armors): New function.
 
 2017-01-12  Niels Möller  <nisse@lysator.liu.se>
 
@@ -40,9 +34,7 @@
 	linking with libnettle.so gets copy relocations for any referenced
 	data items in the shared library.
 
-	* nettle-meta-hashes.c (_nettle_hashes): Renamed array, from...
-	(nettle_hashes): ... old name.
-	(nettle_get_hashes): New function.
+	* nettle-meta-hashes.c (nettle_get_hashes): New function.
 
 2017-10-16  Niels Möller  <nisse@lysator.liu.se>
 
