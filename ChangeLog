@@ -1,3 +1,9 @@
+2017-10-23  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/Makefile.in (check): Also set DYLD_LIBRARY_PATH in the
+	environment, to support Mac OSX shared libraries.
+	* testsuite/Makefile.in (LD_LIBRARY_PATH): Likewise.
+
 2017-10-16  Niels Möller  <nisse@lysator.liu.se>
 
 	CFB support, contributed by Dmitry Eremin-Solenikov.
