@@ -4,6 +4,44 @@
 	environment, to support Mac OSX shared libraries.
 	* testsuite/Makefile.in (LD_LIBRARY_PATH): Likewise.
 
+2017-10-23  Niels Möller  <nisse@lysator.liu.se>
+
+	Merge API fixes, starting at 2017-01-12.
+
+2017-04-09  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-curve.h (nettle_get_secp_192r1, nettle_get_secp_224r1)
+	(nettle_get_secp_256r1, nettle_get_secp_384r1)
+	(nettle_get_secp_521r1): New functions, returning a pointer to
+	corresponding structure.
+	(nettle_secp_192r1, nettle_secp_224r1, nettle_secp_256r1)
+	(nettle_secp_384r1, nettle_secp_521r1): Redefined as macros,
+	calling the corresponding function.
+
+	* nettle-meta.h (nettle_ciphers, nettle_aeads, nettle_armors): New
+	macros, analogous to below change to nettle_hashes.
+
+	* nettle-meta-ciphers.c (nettle_get_ciphers): New function.
+
+	* nettle-meta-aeads.c (nettle_get_aeads): New function.
+
+	* nettle-meta-armors.c (nettle_get_armors): New function.
+
+2017-01-12  Niels Möller  <nisse@lysator.liu.se>
+
+	* tools/nettle-hash.c (find_algorithm): Deleted function.
+	(main): Replaced by call to nettle_lookup_hash.
+
+	* testsuite/meta-hash-test.c (test_main): Use nettle_lookup_hash.
+
+	* nettle-meta.h (nettle_hashes): New macro, expanding to a call to
+	nettle_get_hashes. Direct access to the array causes the array
+	size to leak into the ABI, since a plain un-relocatable executable
+	linking with libnettle.so gets copy relocations for any referenced
+	data items in the shared library.
+
+	* nettle-meta-hashes.c (nettle_get_hashes): New function.
+
 2017-10-16  Niels Möller  <nisse@lysator.liu.se>
 
 	CFB support, contributed by Dmitry Eremin-Solenikov.

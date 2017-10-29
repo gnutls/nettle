@@ -1,6 +1,6 @@
-/* nettle-meta-aeads.c
+/* nettle-lookup-hash.c
 
-   Copyright (C) 2014 Niels Möller
+   Copyright (C) 2016 Niels Möller.
 
    This file is part of GNU Nettle.
 
@@ -34,24 +34,18 @@
 #endif
 
 #include <stddef.h>
+#include <string.h>
 
 #include "nettle-meta.h"
 
-#undef nettle_aeads
+#undef nettle_hashes
 
-const struct nettle_aead * const nettle_aeads[] = {
-  &nettle_gcm_aes128,
-  &nettle_gcm_aes192,
-  &nettle_gcm_aes256,
-  &nettle_gcm_camellia128,
-  &nettle_gcm_camellia256,
-  &nettle_eax_aes128,
-  &nettle_chacha_poly1305,
-  NULL
-};
-
-const struct nettle_aead * const *
-nettle_get_aeads (void)
+const struct nettle_hash *
+nettle_lookup_hash (const char *name)
 {
-  return nettle_aeads;
+  unsigned i;
+  for (i = 0; nettle_hashes[i]; i++)
+    if (!strcmp (name, nettle_hashes[i]->name))
+      return nettle_hashes[i];
+  return NULL;
 }
