@@ -1,3 +1,32 @@
+NEWS for the Nettle 3.4 release
+
+	Bug fixes:
+
+	* Fixed an improper use of GMP mpn_mul, breaking curve2559 and
+	  eddsa on certain platforms. Reported by Sergei Trofimovich.
+
+	* Fixed memory leak when handling invalid signatures in
+	  ecdsa_verify. Fix contributed by Nikos Mavrogiannopoulos.
+
+	* Fix compilation error with --enable-fat om ARM. Fix
+	  contributed by Andreas Schneider.
+
+	New features:
+
+	* Support for RSA-PSS signatures, contributed by Daiki Ueno.
+
+	* Support for the HKDF key derivation function, defined by RFC
+	  5869. Contributed by Nikos Mavrogiannopoulos.
+
+	* Support for the Cipher Feedback Mode (CFB), contributed by
+	  Dmitry Eremin-Solenikov.
+
+	Miscellaneous:
+
+	* The contents of the header file nettle/version.h is now
+	  architecture independent, except in --enable-mini-gmp
+	  configurations.
+
 NEWS for the Nettle 3.3 release
 
 	This release fixes a couple of bugs, and improves resistance
