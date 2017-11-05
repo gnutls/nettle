@@ -14,7 +14,7 @@
   <h1> Nettle release plans </h1>
   <p> This is an attempt at defining a development target for the next
     release of Nettle, inspired by similar pages for recent GMP
-    releases. [Last updated 2017-10-01]</p>
+    releases. [Last updated 2017-11-05]</p>
   <p class='should'>
     This really ought to be done before release
   </p>
@@ -31,7 +31,7 @@
   <h1> Plans for nettle-3.4 </h1>
 
   <h2> Bug fixes </h2>
-  <p class='should'> Fix issues with sizes of objects like the
+  <p class='done'> Fix issues with sizes of objects like the
     nettle_hashes array and the ecc_curve structs accidentally leaking
     into the ABI. Fix by another level of indirection, with a function
     call to return the start address.
@@ -55,7 +55,7 @@
     Support for more GOST standard algorithms.
   </p>
 
-  <p class='wish'>
+  <p class='done'>
     Support for CFB mode (patch by Dmitry Eremin-Solenikov posted on
     the list).
   </p>
@@ -69,7 +69,7 @@
     Further optimizations of curve25519 and EdDSA, in particular,
 
     <a href='http://www.hyperelliptic.org/EFD/g1p/auto-twisted-extended-1.html#addition-add-2008-hwcd-3'>more
-    efficient</a> point addition.
+    efficient point addition</a>, using extended XYZT coordinates.
   </p>
   
   <h2> Miscellaneous </h2>
@@ -87,7 +87,7 @@
 
   
   <h2> Build system </h2>
-  <p class='should'>
+  <p class='postponed'>
     Delete AX_CREATE_STDINT_H, use stdint.h unconditionally.
   </p>
   
@@ -115,7 +115,7 @@
 
   <h1> Changes under consideration for later releases </h1>
 
-  <p> These are some other changes under consideration. </p>
+  <p> These are some larger changes under consideration. </p>
 
   <h2> Interface changes </h2>
   <p class='should'>
