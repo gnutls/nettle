@@ -87,3 +87,17 @@ build/static-analyzers:
     when: on_failure
     paths:
       - scan-build-lib/*
+build/gnutls:
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
+  script:
+  - ./.bootstrap &&
+  - ./configure --disable-documentation --prefix=/usr --libdir=/usr/lib64 &&
+    make -j4 && make install
+  - git clone --depth 1 --branch master https://gitlab.com/gnutls/gnutls.git gnutls-git
+  - cd gnutls-git && git submodule update --init && make autoreconf &&
+    ./configure --disable-cxx --disable-guile --disable-doc && make -j$(nproc) &&
+    make -j $(nproc) check
+  tags:
+  - shared
+  except:
+  - tags
