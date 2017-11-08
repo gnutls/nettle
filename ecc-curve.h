@@ -41,6 +41,15 @@ extern "C" {
 /* The contents of this struct is internal. */
 struct ecc_curve;
 
+/* FIXME: Rename with leading underscore. Due to ABI subtleties,
+   applications should not refer to these directly, but use the below
+   accessor functions. */
+extern const struct ecc_curve nettle_secp_192r1;
+extern const struct ecc_curve nettle_secp_224r1;
+extern const struct ecc_curve nettle_secp_256r1;
+extern const struct ecc_curve nettle_secp_384r1;
+extern const struct ecc_curve nettle_secp_521r1;
+
 #ifdef __GNUC__
 #define NETTLE_PURE __attribute__((pure))
 #else
@@ -54,13 +63,6 @@ const struct ecc_curve * NETTLE_PURE nettle_get_secp_384r1(void);
 const struct ecc_curve * NETTLE_PURE nettle_get_secp_521r1(void);
 
 #undef NETTLE_PURE
-
-/* For backwards compatibility */
-#define nettle_secp_192r1 (*nettle_get_secp_192r1())
-#define nettle_secp_224r1 (*nettle_get_secp_224r1())
-#define nettle_secp_256r1 (*nettle_get_secp_256r1())
-#define nettle_secp_384r1 (*nettle_get_secp_384r1())
-#define nettle_secp_521r1 (*nettle_get_secp_521r1())
 
 #ifdef __cplusplus
 }

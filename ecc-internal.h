@@ -73,21 +73,6 @@
 #define sec_modinv _nettle_sec_modinv
 #define curve25519_eh_to_x _nettle_curve25519_eh_to_x
 
-/* FIXME: Rename with leading underscore, but keep current name (and
-   size!) for now, for ABI compatibility with nettle-3.1, soname
-   libhogweed.so.4. */
-#undef nettle_secp_192r1
-#undef nettle_secp_224r1
-#undef nettle_secp_256r1
-#undef nettle_secp_384r1
-#undef nettle_secp_521r1
-
-extern const struct ecc_curve nettle_secp_192r1;
-extern const struct ecc_curve nettle_secp_224r1;
-extern const struct ecc_curve nettle_secp_256r1;
-extern const struct ecc_curve nettle_secp_384r1;
-extern const struct ecc_curve nettle_secp_521r1;
-
 /* Keep this structure internal for now. It's misnamed (since it's
    really implementing the equivalent twisted Edwards curve, with
    different coordinates). And we're not quite ready to provide
