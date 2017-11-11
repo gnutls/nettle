@@ -1,3 +1,13 @@
+2017-11-08  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-curve.h (nettle_secp_192r1, nettle_secp_224r1)
+	(nettle_secp_256r1, nettle_secp_384r1, nettle_secp_521r1): Delete
+	macro wrappers, partially reverting below 2017-04-09 change. They
+	didn't work at all for applications that only see a forward
+	declaration of struct ecc_curve. Instead, we will have to make an
+	ABI and API break and delete these symbols, when the size of
+	struct ecc_curve is increased.
+
 2017-11-05  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac Bump package version to 3.4.
