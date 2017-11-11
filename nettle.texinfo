@@ -7,14 +7,14 @@
 @syncodeindex fn cp
 @c %**end of header
 
-@set UPDATED-FOR 3.2
+@set UPDATED-FOR 3.4
 @set AUTHOR Niels Möller
 
 @copying
 This manual is for the Nettle library (version @value{UPDATED-FOR}), a
 low-level cryptographic library.
 
-Originally written 2001 by @value{AUTHOR}, updated 2015.
+Originally written 2001 by @value{AUTHOR}, updated 2017.
 
 @quotation
 This manual is placed in the public domain. You may freely copy it, in
@@ -1009,6 +1009,7 @@ This function also resets the context in the same way as
 @subsection The @code{struct nettle_hash} abstraction
 @cindex nettle_hash
 @cindex nettle_hashes
+@cindex nettle_get_hashes
 
 Nettle includes a struct including information about the supported hash
 functions. It is defined in @file{<nettle/nettle-meta.h>}, and is used
@@ -1039,10 +1040,19 @@ These are all the hash functions that Nettle implements.
 
 Nettle also exports a list of all these hashes.
 
-@deftypevr {Constant Array} {struct nettle_hash **} nettle_hashes
+@deftypefun const struct nettle_hash **nettle_get_hashes(void)
+Returns a NULL-terminated list of pointers to supported hash functions.
 This list can be used to dynamically enumerate or search the supported
-algorithms. NULL-terminated.
-@end deftypevr
+algorithms.
+@end deftypefun
+
+@deffn Macro nettle_hashes
+A macro expanding to a call to nettle_get_hashes, so that one could
+write, e.g., @code{nettle_hashes[0]->name} for the name of the first
+hash function on the list. In earlier versions, this was not a macro but
+the actual array of pointers. However, referring directly to the array
+makes the array size leak into the ABI in some cases.
+@end deffn
 
 @node Cipher functions, Cipher modes, Hash functions, Reference
 @comment  node-name,  next,  previous,  up
@@ -1826,6 +1836,7 @@ Analogous to @code{twofish_encrypt}
 @subsection The @code{struct nettle_cipher} abstraction
 @cindex nettle_cipher
 @cindex nettle_ciphers
+@cindex nettle_get_ciphers
 
 Nettle includes a struct including information about some of the more
 regular cipher functions. It can be useful for applications that need a
@@ -1870,10 +1881,16 @@ ones without weak keys or other oddities.
 Nettle also exports a list of all these ciphers without weak keys or
 other oddities.
 
-@deftypevr {Constant Array} {struct nettle_cipher **} nettle_ciphers
+@deftypefun const struct nettle_cipher **nettle_get_ciphers(void)
+Returns a NULL-terminated list of pointers to supported block ciphers.
 This list can be used to dynamically enumerate or search the supported
-algorithms. NULL-terminated.
-@end deftypevr
+algorithms.
+@end deftypefun
+
+@deffn Macro nettle_ciphers
+A macro expanding to a call to nettle_get_ciphers. In earlier versions,
+this was not a macro but the actual array of pointers.
+@end deffn
 
 @node Cipher modes, Authenticated encryption, Cipher functions, Reference
 @comment  node-name,  next,  previous,  up
@@ -2975,6 +2992,7 @@ smaller than @code{CHACHA_POLY1305_DIGEST_SIZE}, only the first
 @subsection The @code{struct nettle_aead} abstraction
 @cindex nettle_aead
 @cindex nettle_aeads
+@cindex nettle_get_aeads
 
 Nettle includes a struct including information about the supported hash
 functions. It is defined in @file{<nettle/nettle-meta.h>}.
@@ -2998,10 +3016,16 @@ message size is specified in advance makes it incompatible with the
 
 Nettle also exports a list of all these constructions.
 
-@deftypevr {Constant Array} {struct nettle_aead **} nettle_aeads
-This list can be used to dynamically enumerate or search the supported
-algorithms. NULL-terminated.
-@end deftypevr
+@deftypefun const struct nettle_aead **nettle_get_aeads(void)
+Returns a NULL-terminated list of pointers to supported algorithms.This
+list can be used to dynamically enumerate or search the supported
+algorithms.
+@end deftypefun
+
+@deffn Macro nettle_aeads
+A macro expanding to a call to nettle_get_aeads. In earlier versions,
+this was not a macro but the actual array of pointers.
+@end deffn
 
 @node Keyed hash functions, Key derivation functions, Authenticated encryption, Reference
 @comment  node-name,  next,  previous,  up
@@ -4337,12 +4361,12 @@ x^3 - 3 x + b @pmod{p}}, i.e., the points have coordinates @math{(x,y)},
 both considered as integers modulo a specified prime @math{p}. Curves
 are represented as a @code{struct ecc_curve}. It also supports
 curve25519, which uses a different form of curve. Supported curves are
-declared in @file{<nettle/ecc-curve.h>}, e.g., @code{nettle_secp_256r1}
-for a standardized curve using the 256-bit prime @math{p = 2^{256} -
-2^{224} + 2^{192} + 2^{96} - 1}. The contents of these structs is not
-visible to nettle users. The ``bitsize of the curve'' is used as a
-shorthand for the bitsize of the curve's prime @math{p}, e.g., 256 bits
-for @code{nettle_secp_256r1}.
+declared in @file{<nettle/ecc-curve.h>}, e.g., call
+@code{nettle_get_secp_256r1} for a standardized curve using the 256-bit
+prime @math{p = 2^{256} - 2^{224} + 2^{192} + 2^{96} - 1}. The contents
+of these structs is not visible to nettle users. The ``bitsize of the
+curve'' is used as a shorthand for the bitsize of the curve's prime
+@math{p}, e.g., 256 bits for the SECP 256R1 curve.
 
 @menu
 * Side-channel silence::
@@ -4473,7 +4497,7 @@ signature for the message digest @var{digest} (of @var{length} octets).
 Returns 1 if the signature is valid, otherwise 0.
 @end deftypefun
 
-Finally, to generation of new an ECDSA key pairs
+Finally, generating a new ECDSA key pair:
 
 @deftypefun void ecdsa_generate_keypair (struct ecc_point *@var{pub}, struct ecc_scalar *@var{key}, void *@var{random_ctx}, nettle_random_func *@var{random});
 @var{pub} and @var{key} is where the resulting key pair is stored. The
@@ -5254,20 +5278,6 @@ option to be able to build with BSD make.
 
 Local Variables:
 ispell-local-dictionary: "american"
-ispell-skip-region-alist: (
- (ispell-words-keyword forward-line)
- ("^@example" . "^@end.*example")
- ("^@ignore" . "^@end.*ignore")
- ("^@\\(end\\|syncodeindex\\|vskip\\|\\(un\\)?macro\\|node\\|deftp\\) .*$")
- ("^@\\(printindex\\|set\\) .*$")
- ("^@def.*$")
- ;; Allows one level of nested braces in the argument 
- ("@\\(uref\\|value\\|badspell\\|code\\|file\\|var\\|url\\){[^{}]*\\({[^{}]*}[^{}]*\\)*}")
- ("@[a-z]+[{ ]")
- ("@[a-z]+$")
- ("\input texinfo.*$")
- ("ispell-ignore" . "ispell-end-ignore")
- ("^Local Variables:$" . "^End:$"))
 End:
 
 @c  LocalWords:  cryptographics crypto LSH GNUPG API GPL LGPL aes rijndael ller

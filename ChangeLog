@@ -1,3 +1,11 @@
+2017-11-11  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle.texinfo: Document nettle_get_hashes, nettle_get_ciphers
+	and nettle_get_aeads, and replace nettle_secp_256r1 by
+	nettle_get_secp_256r1. Update version numbers. Delete ancient
+	setting of ispell-skip-region-alist as an emacs file-local
+	variable.
+
 2017-11-08  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-curve.h (nettle_secp_192r1, nettle_secp_224r1)
