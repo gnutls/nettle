@@ -15,16 +15,14 @@ NEWS for the Nettle 3.4 release
 	* Fix compilation error with --enable-fat om ARM. Fix
 	  contributed by Andreas Schneider.
 
-	* Reorganized the way data items are made available in the
-	  ABI.
+	* Reorganized the way certain data items are made available.
 
 	  Short version: Nettle header files now define the symbols
-	  nettle_hashes, nettle_aeads, nettle_armors, as well as the
-	  ecc curves nettle_secp_*, as preprocessor macros invoking a
-	  corresponding function returning the address of the data
-	  item. For backwards ABI compatibility, the symbols are still
-	  present in the compiled libraries, and with the same sizes
-	  as in nettle-3.3.
+	  nettle_hashes, nettle_ciphers, and nettle_aeads, as
+	  preprocessor macros invoking a corresponding accessor
+	  function. For backwards ABI compatibility, the symbols are
+	  still present in the compiled libraries, and with the same
+	  sizes as in nettle-3.3.
 
 	New features:
 
@@ -36,6 +34,16 @@ NEWS for the Nettle 3.4 release
 	* Support for the Cipher Feedback Mode (CFB), contributed by
 	  Dmitry Eremin-Solenikov.
 
+	* New accessor functions: nettle_get_hashes,
+	  nettle_get_ciphers, nettle_get_aeads, nettle_get_secp_192r1,
+	  nettle_get_secp_224r1, nettle_get_secp_256r1,
+	  nettle_get_secp_384r1, nettle_get_secp_521r1.
+
+	  For source-level compatibility with future versions,
+	  applications are encouraged to migrate to using these
+	  functions instead of referring to the corresponding data
+	  items directly.
+
 	Miscellaneous:
 
 	* The contents of the header file nettle/version.h is now
@@ -44,19 +52,14 @@ NEWS for the Nettle 3.4 release
 
 	ABI issue:
 
-	  Since the breakage was a bit subtle, let me document it here.
-	  The nettle and hogweed libraries export a couple of data
-	  symbols, and for some of these, the size was never intended to
-	  be part of the api. E.g.,
+	  Since the breakage was a bit subtle, let me document it
+	  here. The nettle and hogweed libraries export a couple of
+	  data symbols, and for some of these, the size was never
+	  intended to be part of the ABI. E.g.,
 
 	    extern const struct nettle_hash * const nettle_hashes[];
 
-	  which is an NULL-terminated array, and
-
-	    extern const struct ecc_curve nettle_secp_256r1;
-
-	  where the ecc_curve struct is only forward declared in the
-	  public headers.
+	  which is an NULL-terminated array.
 
 	  It turns out the sizes nevertheless may leak into the ABI, and
 	  that increasing the sizes can break old executables linked
@@ -80,11 +83,27 @@ NEWS for the Nettle 3.4 release
 	  in the nettle-3.3 release, this way of linking produces a
 	  truncated array at load time, no longer NULL-terminated.
 
+	  We will get similar problems for planned extensions of the
+	  internal struct ecc_curve, and exported data items like
+
+	    extern const struct ecc_curve nettle_secp_256r1;
+
+	  where the ecc_curve struct is only forward declared in the
+	  public headers. To prepare, applications should migrate to
+	  using the new function nettle_get_secp_256r1, and similarly
+	  for the other curves.
+
 	  In some future version, the plan is to add a leading
-	  underscore to the name of the actual data items, e.g.,
-	  nettle_hashes --> _nettle_hashes, breaking the ABI. While
+	  underscore to the name of the actual data items. E.g.,
+	  nettle_hashes --> _nettle_hashes, breaking the ABI, while
 	  keeping the nettle_get_hashes function and the nettle_hashes
-	  macro as the supported ways to access it.
+	  macro as the supported ways to access it. We will also
+	  rename nettle_secp_256r1 --> _nettle_secp_256r1, breaking
+	  both ABI and API.
+
+	  Note that data items like nettle_sha256 are *not* affected,
+	  since the size and layout of this struct is considered part
+	  of the ABI, and R_X86_64_COPY-relocations then work fine.
 
 	The shared library names are libnettle.so.6.4 and
 	libhogweed.so.4.4, with sonames still libnettle.so.6 and
