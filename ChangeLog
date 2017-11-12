@@ -1,3 +1,9 @@
+2017-11-12  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Update check of GMP_NUMB_BITS declaration in
+	assembly files. Was broken by rename of configure variable
+	GMP_NUMB_BITS --> NUMB_BITS.
+
 2017-11-11  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle.texinfo: Document nettle_get_hashes, nettle_get_ciphers
