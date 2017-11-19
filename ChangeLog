@@ -89,6 +89,10 @@
 	* aclocal.m4 (GMP_PROG_CC_FOR_BUILD): Add -g when compiling with
 	gcc.
 
+2017-09-27  Niels Möller  <nisse@lysator.liu.se>
+
+	Merged armor-signedness branch, starting 2017-08-27.
+
 2017-09-24  Niels Möller  <nisse@lysator.liu.se>
 
 	* tools/pkcs1-conv.c (base64_decode_in_place): New helper
@@ -108,6 +112,22 @@
 	argument.
 	* testsuite/testutils.h (SDATA): Use US macro to cast data
 	argument.
+
+2017-08-27  Niels Möller  <nisse@lysator.liu.se>
+
+	* base64-encode.c (base64_encode_raw, base64_encode_group)
+	(base64_encode_single, base64_encode_update)
+	(base64_encode_final): Change type of destination to char *.
+	* base16-encode.c (base16_encode_single, base16_encode_update):
+	Likewise.
+	* base64-decode.c (base64_decode_single, base64_decode_update):
+	Change type of source argument to const char *. Update (almost)
+	all callers.
+	* base16-decode.c (base16_decode_single, base16_decode_update):
+	Likewise.
+	* nettle-types.h (nettle_armor_encode_update_func)
+	(nettle_armor_encode_final_func, nettle_armor_decode_update_func):
+	Corresponding updates to typedefs.
 
 2017-09-14  Niels Möller  <nisse@lysator.liu.se>
 
