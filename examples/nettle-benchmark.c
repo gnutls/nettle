@@ -784,6 +784,9 @@ main(int argc, char **argv)
       &nettle_gcm_aes128,
       &nettle_gcm_aes192,
       &nettle_gcm_aes256,
+      OPENSSL(&nettle_openssl_gcm_aes128)
+      OPENSSL(&nettle_openssl_gcm_aes192)
+      OPENSSL(&nettle_openssl_gcm_aes256)
       &nettle_gcm_camellia128,
       &nettle_gcm_camellia256,
       &nettle_eax_aes128,
