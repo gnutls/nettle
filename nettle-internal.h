@@ -76,6 +76,9 @@ extern const struct nettle_aead nettle_arcfour128;
 extern const struct nettle_aead nettle_chacha;
 extern const struct nettle_aead nettle_salsa20;
 extern const struct nettle_aead nettle_salsa20r12;
+extern const struct nettle_aead nettle_openssl_gcm_aes128;
+extern const struct nettle_aead nettle_openssl_gcm_aes192;
+extern const struct nettle_aead nettle_openssl_gcm_aes256;
 
 /* Glue to openssl, for comparative benchmarking. Code in
  * examples/nettle-openssl.c. */
