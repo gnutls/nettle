@@ -809,7 +809,7 @@ main(int argc, char **argv)
 	  break;
 
       case OPT_HELP:
-	printf("Usage: nettle-benchmark [-f clock frequency] [alg]\n");
+	printf("Usage: nettle-benchmark [-f clock frequency] [alg...]\n");
 	return EXIT_SUCCESS;
 
       case '?':
@@ -818,8 +818,6 @@ main(int argc, char **argv)
       default:
 	abort();
     }
-
-  alg = argv[optind];
 
   time_init();
   bench_sha1_compress();
@@ -830,29 +828,36 @@ main(int argc, char **argv)
 
   header();
 
-  if (!alg || strstr ("memxor", alg))
+  do
     {
-      time_memxor();
-      printf("\n");
-    }
-  
-  for (i = 0; hashes[i]; i++)
-    if (!alg || strstr(hashes[i]->name, alg))
-      time_hash(hashes[i]);
+      alg = argv[optind];
 
-  if (!alg || strstr ("umac", alg))
-    time_umac();
+      if (!alg || strstr ("memxor", alg))
+	{
+	  time_memxor();
+	  printf("\n");
+	}
 
-  if (!alg || strstr ("poly1305-aes", alg))
-    time_poly1305_aes();
+      for (i = 0; hashes[i]; i++)
+	if (!alg || strstr(hashes[i]->name, alg))
+	  time_hash(hashes[i]);
 
-  for (i = 0; ciphers[i]; i++)
-    if (!alg || strstr(ciphers[i]->name, alg))
-      time_cipher(ciphers[i]);
+      if (!alg || strstr ("umac", alg))
+	time_umac();
 
-  for (i = 0; aeads[i]; i++)
-    if (!alg || strstr(aeads[i]->name, alg))
-      time_aead(aeads[i]);
+      if (!alg || strstr ("poly1305-aes", alg))
+	time_poly1305_aes();
+
+      for (i = 0; ciphers[i]; i++)
+	if (!alg || strstr(ciphers[i]->name, alg))
+	  time_cipher(ciphers[i]);
+
+      for (i = 0; aeads[i]; i++)
+	if (!alg || strstr(aeads[i]->name, alg))
+	  time_aead(aeads[i]);
+
+      optind++;
+    } while (alg && argv[optind]);
 
   return 0;
 }
