@@ -1,30 +1,49 @@
-image: centos:7
+variables:
+  BUILD_IMAGES_PROJECT: gnutls/build-images
+  FEDORA_BUILD: buildenv-f26
+  FEDORA_X86_BUILD: buildenv-f26-x86
+  GET_SOURCES_ATTEMPTS: "3"
 
+# remove any pre-installed headers from nettle
 before_script:
- - yum install -y git make autoconf libtool automake gettext-devel glibc-devel gcc valgrind libasan-static libgcc.i686 glibc-devel.i686
+ - yum remove -y nettle-devel
 
 # See http://doc.gitlab.com/ce/ci/yaml/ for documentation.
-Build and Check (x86-64):
+build/x86-64:
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
   script:
-  - yum install -y gmp-devel
   - ./.bootstrap &&
-    ./configure --disable-documentation && make -j4 &&
+    ./configure --enable-fat --disable-documentation && make -j4 &&
     make check -j4
   tags:
   - shared
   except:
   - tags
-Build and Check (x86):
+build/x86:
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_X86_BUILD
   script:
-  - yum install -y gmp-devel.i686
   - ./.bootstrap &&
-    PKG_CONFIG_PATH="/usr/lib/pkgconfig/" CFLAGS="-O2 -g -m32" LDFLAGS="-m32" ./configure --build=i686-redhat-linux --disable-documentation && make -j4 &&
+    PKG_CONFIG_PATH="/usr/lib/pkgconfig/" CFLAGS="-O2 -g -m32" LDFLAGS="-m32" ./configure --build=i686-redhat-linux --enable-fat --disable-documentation && make -j4 &&
     make check -j4
   tags:
   - shared
   except:
   - tags
-Build and Check with mini-gmp:
+build/aarch64:
+  before_script:
+  - /bin/true
+  script:
+  - ./.bootstrap &&
+    ./configure --enable-fat --disable-documentation && make -j4 &&
+    make check -j4
+  tags:
+  - aarch64
+  only:
+  - branches@gnutls/nettle
+  except:
+  - tags
+build/mini-gmp:
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
   script:
   - ./.bootstrap &&
     ./configure --disable-documentation --enable-mini-gmp && make -j4 &&
@@ -33,10 +52,9 @@ Build and Check with mini-gmp:
   - shared
   except:
   - tags
-Build and Check with ubsan:
-  image: fedora:24
+build/ubsan:
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
   script:
-  - yum install -y gmp-devel libubsan-static libubsan
   - ./.bootstrap && 
     CXXFLAGS="-fsanitize=undefined -fno-sanitize-recover -g -O2" CFLAGS="-fsanitize=undefined -fno-sanitize-recover -g -O2" ./configure 
     --disable-documentation && make -j4 && make check -j4
@@ -44,12 +62,41 @@ Build and Check with ubsan:
   - shared
   except:
   - tags
-Build and Check with asan:
+build/asan:
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
   script:
-  - yum install -y gmp-devel
   - ./.bootstrap && 
   - CXXFLAGS="-fsanitize=address -g -O2" CFLAGS="-fsanitize=address -g -O2" ./configure --disable-documentation &&
     make -j4 && make check -j4
+  tags:
+  - shared
+  except:
+  - tags
+build/static-analyzers:
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
+  script:
+  - ./.bootstrap
+  - scan-build ./configure --disable-documentation
+  - scan-build --status-bugs -o scan-build-lib make -j$(nproc)
+  tags:
+  - shared
+  except:
+  - tags
+  artifacts:
+    expire_in: 1 week
+    when: on_failure
+    paths:
+      - scan-build-lib/*
+build/gnutls:
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
+  script:
+  - ./.bootstrap &&
+  - ./configure --disable-documentation --prefix=/usr --libdir=/usr/lib64 &&
+    make -j4 && make install
+  - git clone --depth 1 --branch master https://gitlab.com/gnutls/gnutls.git gnutls-git
+  - cd gnutls-git && git submodule update --init && make autoreconf &&
+    ./configure --disable-cxx --disable-guile --disable-doc && make -j$(nproc) &&
+    make -j $(nproc) check
   tags:
   - shared
   except:
