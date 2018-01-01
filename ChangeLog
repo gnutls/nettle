@@ -1,3 +1,8 @@
+2018-01-01  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Don't use skein512-internal.asm, it brings no real
+	speedup.
+
 2017-01-18  Niels Möller  <nisse@lysator.liu.se>
 
 	* skein512-internal.c (ROUND_EVEN, ROUND_ODD, ADD_KEY_MOD): New
