@@ -119,4 +119,8 @@ test_main(void)
 		 "CF CE CD CC CB CA C9 C8 C7 C6 C5 C4 C3 C2 C1 C0"),
 	    SHEX("DF 28 E9 16 63 0D 0B 44 C4 A8 49 DC 9A 02 F0 7A"
 		 "07 CB 30 F7 32 31 82 56 B1 5D 86 5A C4 AE 16 2F"));
+
+  /* Note that ShortMsgKAT_256.txt from
+     http://www.skein-hash.info/sites/default/files/NIST_CD_102610.zip
+     are test vectors for skein512-256, so not useful here. */
 }
