@@ -1,5 +1,14 @@
 2018-01-01  Niels Möller  <nisse@lysator.liu.se>
 
+	* skein512.c: New file.
+	* skein512-meta.c: New file, new nettle_hash.
+	* nettle-meta.h (nettle_skein512): Declare it.
+	* testsuite/skein.awk: New script for processing official test
+	vectors.
+	* testsuite/skein512-test.c (test_main): Add more test vectors.
+	* examples/nettle-benchmark.c (main): Add benchmarking of
+	skein512.
+
 	* skein.h (_SKEIN256_NKEYS): Reduce from 6 to 5 (repeated subkeys
 	no longer used).
 	* skein256.c (_skein256_expand): Update accordingly.

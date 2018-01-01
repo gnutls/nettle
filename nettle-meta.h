@@ -159,6 +159,7 @@ extern const struct nettle_hash nettle_sha3_256;
 extern const struct nettle_hash nettle_sha3_384;
 extern const struct nettle_hash nettle_sha3_512;
 extern const struct nettle_hash nettle_skein256;
+extern const struct nettle_hash nettle_skein512;
 
 struct nettle_aead
 {
