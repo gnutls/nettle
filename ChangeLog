@@ -1,5 +1,12 @@
 2018-01-01  Niels Möller  <nisse@lysator.liu.se>
 
+	* skein.h (_SKEIN256_NKEYS): Reduce from 6 to 5 (repeated subkeys
+	no longer used).
+	* skein256.c (_skein256_expand): Update accordingly.
+	(skein256_process_block): Use uint64_t rather than unsigned long
+	long in cast.
+	* skein256-internal.c (_skein256_block): Micro optimization of subkey rotation.
+
 	* configure.ac: Don't use skein512-internal.asm, it brings no real
 	speedup.
 

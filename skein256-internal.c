@@ -127,19 +127,18 @@ _skein256_block (uint64_t dst[_SKEIN256_LENGTH],
       ROUND(w0, w1, w2, w3, 23, 40);
       ROUND(w0, w3, w2, w1, 5, 37);
 
-      w0 += k1 - t0; /* Right-hand side equal to new k4, below. */
+      tmp = k1 - t0; // New k4.
+      w0 += tmp;
       w1 += k2;
       t0 ^= t1;
-      w2 += k3 + t0; /* Right-hand side equal to new k1, below. */
-      w3 += k4 + i + 1;
-
-      tmp = k1;
       k1 = k3 + t0;
+      w2 += k1;
+      w3 += k4 + i + 1;
       k3 = k0;
       k0 = k2 - t1;
       t1 ^= t0;
       k2 = k4 + t1;
-      k4 = tmp - t1;
+      k4 = tmp;
 
       ROUND(w0, w1, w2, w3, 25, 33);
       ROUND(w0, w3, w2, w1, 46, 12);

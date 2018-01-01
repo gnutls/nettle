@@ -51,18 +51,18 @@ extern "C" {
 #define SKEIN256_BLOCK_SIZE 32
 #define SKEIN256_DIGEST_SIZE 32
 
-/* Internal lengths, as 64-bit words. We use *two* redundant words for
-   the key, to reduce the number of index mod operations. On the other
-   hand, tweak words are expanded on the fly. */
+/* Internal lengths, as 64-bit words. We store the redundant xor sum
+   of the subkeys as an extra subkey. On the other hand, tweak words
+   are expanded on the fly. */
 #define _SKEIN256_LENGTH 4
-#define _SKEIN256_NKEYS 6
+#define _SKEIN256_NKEYS 5
 #define _SKEIN_NTWEAK 2
 
 struct skein256_ctx {
   uint64_t state[_SKEIN256_NKEYS];
 
   /* Current implementation limited to message size <= 2^69 - 32 bytes,
-     while the specification allows up to 2^96 -1 bytes.*/
+     while the specification allows up to 2^96 - 1 bytes.*/
   uint64_t count;               /* Block count */
   uint8_t block[SKEIN256_BLOCK_SIZE];
   unsigned index;
