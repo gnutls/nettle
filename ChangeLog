@@ -1,3 +1,10 @@
+2018-01-03  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/aesni/aes-encrypt-internal.asm: Read subkeys into xmm
+	registers before the block loop, and completely unroll the round
+	loop.
+	* x86_64/aesni/aes-decrypt-internal.asm: Likewise.
+
 2017-11-19  Niels Möller  <nisse@lysator.liu.se>
 
 	* Released nettle-3.4.
