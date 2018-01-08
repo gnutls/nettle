@@ -9,6 +9,8 @@
 
 2018-01-08  Niels Möller  <nisse@lysator.liu.se>
 
+	* ctr.c (ctr_fill): New function. Use in ctr_crypt.
+
 	* ctr.c (ctr_crypt): For in-place operation, increase max buffer
 	size from 4 blocks to 512 bytes, similarly to CBC and CFB.
 	Improves in-place aes128 CTR performance by 25% on x86_64.

@@ -48,6 +48,20 @@
 /* Don't allocate any more space than this on the stack */
 #define CTR_BUFFER_LIMIT 512
 
+#define MIN(a,b) (((a) < (b)) ? (a) : (b))
+
+static size_t
+ctr_fill (size_t block_size, uint8_t *ctr, size_t length, uint8_t *buffer)
+{
+  size_t i;
+  for (i = 0; i + block_size <= length; i += block_size)
+    {
+      memcpy (buffer + i, ctr, block_size);
+      INCREMENT(block_size, ctr);
+    }
+  return i;
+}
+
 void
 ctr_crypt(const void *ctx, nettle_cipher_func *f,
 	  size_t block_size, uint8_t *ctr,
@@ -64,28 +78,19 @@ ctr_crypt(const void *ctx, nettle_cipher_func *f,
 	}
       else
 	{
-	  size_t left;
-	  uint8_t *p;	  
+	  size_t filled = ctr_fill (block_size, ctr, length, dst);
 
-	  for (p = dst, left = length;
-	       left >= block_size;
-	       left -= block_size, p += block_size)
-	    {
-	      memcpy (p, ctr, block_size);
-	      INCREMENT(block_size, ctr);
-	    }
+	  f(ctx, filled, dst, dst);
+	  memxor(dst, src, filled);
 
-	  f(ctx, length - left, dst, dst);
-	  memxor(dst, src, length - left);
-
-	  if (left)
+	  if (filled < length)
 	    {
 	      TMP_DECL(buffer, uint8_t, NETTLE_MAX_CIPHER_BLOCK_SIZE);
 	      TMP_ALLOC(buffer, block_size);
 
 	      f(ctx, block_size, buffer, ctr);
 	      INCREMENT(block_size, ctr);
-	      memxor3(dst + length - left, src + length - left, buffer, left);
+	      memxor3(dst + filled, src + filled, buffer, length - filled);
 	    }
 	}
     }
@@ -107,19 +112,12 @@ ctr_crypt(const void *ctx, nettle_cipher_func *f,
 
       while (length >= block_size)
 	{
-	  size_t i;
-	  for (i = 0;
-	       i + block_size <= buffer_size && i + block_size <= length;
-	       i += block_size)
-	    {
-	      memcpy (buffer + i, ctr, block_size);
-	      INCREMENT(block_size, ctr);
-	    }
-	  assert (i > 0);
-	  f(ctx, i, buffer, buffer);
-	  memxor(dst, buffer, i);
-	  length -= i;
-	  dst += i;
+	  size_t filled = ctr_fill (block_size, ctr, MIN(buffer_size, length), buffer);
+	  assert (filled > 0);
+	  f(ctx, filled, buffer, buffer);
+	  memxor(dst, buffer, filled);
+	  length -= filled;
+	  dst += filled;
 	}
 
       /* Final, possibly partial, block. */
