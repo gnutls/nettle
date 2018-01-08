@@ -9,6 +9,13 @@
 
 2018-01-08  Niels Möller  <nisse@lysator.liu.se>
 
+	* ctr.c (ctr_crypt16): New function, with optimizations specific
+	to 16-byte block size.
+	(ctr_fill16): New helper function, definition depending on
+	WORDS_BIGENDIAN, and little endian version requiring
+	HAVE_BUILTIN_BSWAP64.
+	(ctr_crypt): Use ctr_crypt16, when appropriate.
+
 	* nettle-types.h (union nettle_block16): Add uint64_t field.
 
 	* configure.ac: Check for __builtin_bswap64, define
