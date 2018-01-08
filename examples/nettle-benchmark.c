@@ -209,8 +209,9 @@ struct bench_cbc_info
   void *ctx;
   nettle_cipher_func *crypt;
  
-  uint8_t *data;
-  
+  const uint8_t *src;
+  uint8_t *dst;
+
   unsigned block_size;
   uint8_t *iv;
 };
@@ -221,7 +222,7 @@ bench_cbc_encrypt(void *arg)
   struct bench_cbc_info *info = arg;
   cbc_encrypt(info->ctx, info->crypt,
 	      info->block_size, info->iv,
-	      BENCH_BLOCK, info->data, info->data);
+	      BENCH_BLOCK, info->dst, info->src);
 }
 
 static void
@@ -230,7 +231,7 @@ bench_cbc_decrypt(void *arg)
   struct bench_cbc_info *info = arg;
   cbc_decrypt(info->ctx, info->crypt,
 	      info->block_size, info->iv,
-	      BENCH_BLOCK, info->data, info->data);
+	      BENCH_BLOCK, info->dst, info->src);
 }
 
 static void
@@ -239,7 +240,7 @@ bench_ctr(void *arg)
   struct bench_cbc_info *info = arg;
   ctr_crypt(info->ctx, info->crypt,
 	    info->block_size, info->iv,
-	    BENCH_BLOCK, info->data, info->data);
+	    BENCH_BLOCK, info->dst, info->src);
 }
 
 struct bench_aead_info
@@ -298,7 +299,7 @@ init_nonce(unsigned length,
 static void
 header(void)
 {
-  printf("%18s %11s Mbyte/s%s\n",
+  printf("%18s %12s Mbyte/s%s\n",
 	 "Algorithm", "mode", 
 	 frequency > 0.0 ? " cycles/byte cycles/block" : "");  
 }
@@ -307,7 +308,7 @@ static void
 display(const char *name, const char *mode, unsigned block_size,
 	double time)
 {
-  printf("%18s %11s %7.2f",
+  printf("%18s %12s %7.2f",
 	 name, mode,
 	 BENCH_BLOCK / (time * 1048576.0));
   if (frequency > 0.0)
@@ -478,11 +479,13 @@ time_cipher(const struct nettle_cipher *cipher)
   void *ctx = xalloc(cipher->context_size);
   uint8_t *key = xalloc(cipher->key_size);
 
+  static uint8_t src_data[BENCH_BLOCK];
   static uint8_t data[BENCH_BLOCK];
 
   printf("\n");
   
   init_data(data);
+  init_data(src_data);
 
   {
     /* Decent initializers are a GNU extension, so don't use it here. */
@@ -520,7 +523,8 @@ time_cipher(const struct nettle_cipher *cipher)
         struct bench_cbc_info info;
 	info.ctx = ctx;
 	info.crypt = cipher->encrypt;
-	info.data = data;
+	info.src = src_data;
+	info.dst = data;
 	info.block_size = cipher->block_size;
 	info.iv = iv;
     
@@ -536,7 +540,8 @@ time_cipher(const struct nettle_cipher *cipher)
         struct bench_cbc_info info;
 	info.ctx = ctx;
 	info.crypt = cipher->decrypt;
-	info.data = data;
+	info.src = src_data;
+	info.dst = data;
 	info.block_size = cipher->block_size;
 	info.iv = iv;
     
@@ -546,6 +551,12 @@ time_cipher(const struct nettle_cipher *cipher)
 
 	display(cipher->name, "CBC decrypt", cipher->block_size,
 		time_function(bench_cbc_decrypt, &info));
+
+	memset(iv, 0, cipher->block_size);
+	info.src = data;
+
+	display(cipher->name, "  (in-place)", cipher->block_size,
+		time_function(bench_cbc_decrypt, &info));
       }
 
       /* Do CTR mode */
@@ -553,7 +564,8 @@ time_cipher(const struct nettle_cipher *cipher)
         struct bench_cbc_info info;
 	info.ctx = ctx;
 	info.crypt = cipher->encrypt;
-	info.data = data;
+	info.src = src_data;
+	info.dst = data;
 	info.block_size = cipher->block_size;
 	info.iv = iv;
     
@@ -563,6 +575,12 @@ time_cipher(const struct nettle_cipher *cipher)
 
 	display(cipher->name, "CTR", cipher->block_size,
 		time_function(bench_ctr, &info));	
+
+	memset(iv, 0, cipher->block_size);
+	info.src = data;
+
+	display(cipher->name, "  (in-place)", cipher->block_size,
+		time_function(bench_ctr, &info));
       }
       
       free(iv);

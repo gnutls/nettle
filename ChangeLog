@@ -1,5 +1,8 @@
 2018-01-08  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/nettle-benchmark.c (time_cipher): Benchmark in-place
+	operation separately, for cbc_decrypt and ctr_crypt.
+
 	* cbc.c (cbc_decrypt): For in-place operation (src == dst case),
 	eliminate use of src variable.
 	* cfb.c (cfb_decrypt): Likewise.
