@@ -45,7 +45,8 @@
 #include "memxor.h"
 #include "nettle-internal.h"
 
-#define NBLOCKS 4
+/* Don't allocate any more space than this on the stack */
+#define CTR_BUFFER_LIMIT 512
 
 void
 ctr_crypt(const void *ctx, nettle_cipher_func *f,
@@ -90,47 +91,43 @@ ctr_crypt(const void *ctx, nettle_cipher_func *f,
     }
   else
     {
-      if (length > block_size)
+      /* For in-place CTR, construct a buffer of consecutive counter
+	 values, of size at most CTR_BUFFER_LIMIT. */
+      TMP_DECL(buffer, uint8_t, CTR_BUFFER_LIMIT);
+
+      size_t buffer_size;
+      if (length < block_size)
+	buffer_size = block_size;
+      else if (length <= CTR_BUFFER_LIMIT)
+	buffer_size = length;
+      else
+	buffer_size = CTR_BUFFER_LIMIT;
+
+      TMP_ALLOC(buffer, buffer_size);
+
+      while (length >= block_size)
 	{
-	  TMP_DECL(buffer, uint8_t, NBLOCKS * NETTLE_MAX_CIPHER_BLOCK_SIZE);
-	  size_t chunk = NBLOCKS * block_size;
-
-	  TMP_ALLOC(buffer, chunk);
-
-	  for (; length >= chunk;
-	       length -= chunk, src += chunk, dst += chunk)
+	  size_t i;
+	  for (i = 0;
+	       i + block_size <= buffer_size && i + block_size <= length;
+	       i += block_size)
 	    {
-	      unsigned n;
-	      uint8_t *p;	  
-	      for (n = 0, p = buffer; n < NBLOCKS; n++, p += block_size)
-		{
-		  memcpy (p, ctr, block_size);
-		  INCREMENT(block_size, ctr);
-		}
-	      f(ctx, chunk, buffer, buffer);
-	      memxor(dst, buffer, chunk);
+	      memcpy (buffer + i, ctr, block_size);
+	      INCREMENT(block_size, ctr);
 	    }
-
-	  if (length > 0)
-	    {
-	      /* Final, possibly partial, blocks */
-	      for (chunk = 0; chunk < length; chunk += block_size)
-		{
-		  memcpy (buffer + chunk, ctr, block_size);
-		  INCREMENT(block_size, ctr);
-		}
-	      f(ctx, chunk, buffer, buffer);
-	      memxor3(dst, src, buffer, length);
-	    }
+	  assert (i > 0);
+	  f(ctx, i, buffer, buffer);
+	  memxor(dst, buffer, i);
+	  length -= i;
+	  dst += i;
 	}
-      else if (length > 0)
-      	{
-	  TMP_DECL(buffer, uint8_t, NETTLE_MAX_CIPHER_BLOCK_SIZE);
-	  TMP_ALLOC(buffer, block_size);
 
+      /* Final, possibly partial, block. */
+      if (length > 0)
+	{
 	  f(ctx, block_size, buffer, ctr);
 	  INCREMENT(block_size, ctr);
-	  memxor3(dst, src, buffer, length);
+	  memxor(dst, buffer, length);
 	}
     }
 }
