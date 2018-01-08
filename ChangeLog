@@ -9,6 +9,8 @@
 
 2018-01-08  Niels Möller  <nisse@lysator.liu.se>
 
+	* nettle-types.h (union nettle_block16): Add uint64_t field.
+
 	* configure.ac: Check for __builtin_bswap64, define
 	HAVE_BUILTIN_BSWAP64 if available.
 

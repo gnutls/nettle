@@ -48,6 +48,7 @@ union nettle_block16
 {
   uint8_t b[16];
   unsigned long w[16 / sizeof(unsigned long)];
+  uint64_t u64[2];
 };
 
 /* Randomness. Used by key generation and dsa signature creation. */
