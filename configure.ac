@@ -203,6 +203,22 @@ LSH_FUNC_STRERROR
 AC_CHECK_FUNCS(secure_getenv getline)
 AC_C_BIGENDIAN
 
+AC_CACHE_CHECK([for __builtin_bswap64],
+		nettle_cv_c_builtin_bswap64,
+[AC_TRY_COMPILE([
+#include <stdint.h>
+],[
+uint64_t x = 17;
+uint64_t y = __builtin_bswap64(x);
+],
+nettle_cv_c_builtin_bswap64=yes,
+nettle_cv_c_builtin_bswap64=no)])
+
+AH_TEMPLATE([HAVE_BUILTIN_BSWAP64], [Define if __builtin_bswap64 is available])
+if test "x$nettle_cv_c_builtin_bswap64" = "xyes" ; then
+  AC_DEFINE(HAVE_BUILTIN_BSWAP64)
+fi
+
 LSH_GCC_ATTRIBUTES
 
 # According to Simon Josefsson, looking for uint32_t and friends in

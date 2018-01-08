@@ -9,6 +9,9 @@
 
 2018-01-08  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac: Check for __builtin_bswap64, define
+	HAVE_BUILTIN_BSWAP64 if available.
+
 	* ctr.c (ctr_fill): New function. Use in ctr_crypt.
 
 	* ctr.c (ctr_crypt): For in-place operation, increase max buffer
