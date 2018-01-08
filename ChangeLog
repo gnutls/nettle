@@ -1,3 +1,10 @@
+2018-01-08  Niels Möller  <nisse@lysator.liu.se>
+
+	* cbc.c (cbc_decrypt): For in-place operation (src == dst case),
+	eliminate use of src variable.
+	* cfb.c (cfb_decrypt): Likewise.
+	* gcm.c (gcm_crypt): Likewise, and replace one memxor3 by memxor.
+
 2018-01-03  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86_64/aesni/aes-encrypt-internal.asm: Read subkeys into xmm

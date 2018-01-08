@@ -147,12 +147,11 @@ cfb_decrypt(const void *ctx, nettle_cipher_func *f,
 	   * not less than block_size. So does part */
 
 	  f(ctx, block_size, buffer, iv);
-	  f(ctx, part - block_size, buffer + block_size, src);
-	  memcpy(iv, src + part - block_size, block_size);
+	  f(ctx, part - block_size, buffer + block_size, dst);
+	  memcpy(iv, dst + part - block_size, block_size);
 	  memxor(dst, buffer, part);
 
 	  length -= part;
-	  src += part;
 	  dst += part;
 	}
 

@@ -458,7 +458,7 @@ gcm_crypt(struct gcm_ctx *ctx, const void *cipher, nettle_cipher_func *f,
 	    src += GCM_BLOCK_SIZE, dst += GCM_BLOCK_SIZE))
         {
           f (cipher, GCM_BLOCK_SIZE, buffer, ctx->ctr.b);
-          memxor3 (dst, src, buffer, GCM_BLOCK_SIZE);
+          memxor (dst, buffer, GCM_BLOCK_SIZE);
           INC32 (ctx->ctr);
         }
     }
