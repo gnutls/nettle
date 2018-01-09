@@ -436,6 +436,7 @@ test_cipher_ctr(const struct nettle_cipher *cipher,
   uint8_t *octr = xalloc(cipher->block_size);
   size_t length, nblocks;
   unsigned low;
+  size_t i;
 
   ASSERT (cleartext->length == ciphertext->length);
   length = cleartext->length;
@@ -457,22 +458,29 @@ test_cipher_ctr(const struct nettle_cipher *cipher,
   data = xalloc(length);  
 
   cipher->set_encrypt_key(ctx, key->data);
-  memcpy(ctr, ictr->data, cipher->block_size);
 
-  ctr_crypt(ctx, cipher->encrypt,
-	    cipher->block_size, ctr,
-	    length, data, cleartext->data);
-
-  if (!MEMEQ(length, data, ciphertext->data))
+  for (i = 0; i <= length; i++)
     {
-      fprintf(stderr, "CTR encrypt failed:\nInput:");
-      tstring_print_hex(cleartext);
-      fprintf(stderr, "\nOutput: ");
-      print_hex(length, data);
-      fprintf(stderr, "\nExpected:");
-      tstring_print_hex(ciphertext);
-      fprintf(stderr, "\n");
-      FAIL();
+      memcpy(ctr, ictr->data, cipher->block_size);
+      memset(data, 17, length);
+
+      ctr_crypt(ctx, cipher->encrypt,
+		cipher->block_size, ctr,
+		i, data, cleartext->data);
+
+      if (!MEMEQ(i, data, ciphertext->data)
+	  || (i < length && data[i] != 17))
+	{
+	  fprintf(stderr, "CTR encrypt failed (length %d of %d):\nInput:",
+		  (int) i, (int) length);
+	  tstring_print_hex(cleartext);
+	  fprintf(stderr, "\nOutput: ");
+	  print_hex(length, data);
+	  fprintf(stderr, "\nExpected:");
+	  tstring_print_hex(ciphertext);
+	  fprintf(stderr, "\n");
+	  FAIL();
+	}
     }
 
   ASSERT (MEMEQ (cipher->block_size, ctr, octr));
