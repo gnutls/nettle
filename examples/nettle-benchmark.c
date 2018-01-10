@@ -64,6 +64,7 @@
 #include "sha3.h"
 #include "twofish.h"
 #include "umac.h"
+#include "cmac.h"
 #include "poly1305.h"
 
 #include "nettle-meta.h"
@@ -403,7 +404,7 @@ time_umac(void)
   struct umac64_ctx ctx64;
   struct umac96_ctx ctx96;
   struct umac128_ctx ctx128;
-  
+
   uint8_t key[16];
 
   umac32_set_key (&ctx32, key);
@@ -436,6 +437,24 @@ time_umac(void)
   info.data = data;
 
   display("umac128", "update", UMAC_BLOCK_SIZE,
+	  time_function(bench_hash, &info));
+}
+
+static void
+time_cmac(void)
+{
+  static uint8_t data[BENCH_BLOCK];
+  struct bench_hash_info info;
+  struct cmac_aes128_ctx ctx;
+
+  uint8_t key[16];
+
+  cmac_aes128_set_key (&ctx, key);
+  info.ctx = &ctx;
+  info.update = (nettle_hash_update_func *) cmac_aes128_update;
+  info.data = data;
+
+  display("cmac-aes128", "update", AES_BLOCK_SIZE,
 	  time_function(bench_hash, &info));
 }
 
@@ -848,6 +867,9 @@ main(int argc, char **argv)
 
       if (!alg || strstr ("umac", alg))
 	time_umac();
+
+      if (!alg || strstr ("cmac", alg))
+	time_cmac();
 
       if (!alg || strstr ("poly1305-aes", alg))
 	time_poly1305_aes();
