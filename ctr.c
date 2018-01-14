@@ -45,7 +45,113 @@
 #include "memxor.h"
 #include "nettle-internal.h"
 
-#define NBLOCKS 4
+/* Don't allocate any more space than this on the stack */
+#define CTR_BUFFER_LIMIT 512
+
+#define MIN(a,b) (((a) < (b)) ? (a) : (b))
+
+static size_t
+ctr_fill (size_t block_size, uint8_t *ctr, size_t length, uint8_t *buffer)
+{
+  size_t i;
+  for (i = 0; i + block_size <= length; i += block_size)
+    {
+      memcpy (buffer + i, ctr, block_size);
+      INCREMENT(block_size, ctr);
+    }
+  return i;
+}
+
+#if WORDS_BIGENDIAN
+# define USE_CTR_CRYPT16 1
+static void
+ctr_fill16(uint8_t *ctr, size_t blocks, uint64_t *buffer)
+{
+  uint64_t hi, lo;
+  hi = READ_UINT64(ctr);
+  lo = READ_UINT64(ctr + 8);
+
+  while (blocks-- > 0)
+    {
+      *buffer++ = hi;
+      *buffer++ = lo;
+      hi += !(++lo);
+    }
+  WRITE_UINT64(ctr, hi);
+  WRITE_UINT64(ctr + 8, lo);
+}
+#else /* !WORDS_BIGENDIAN */
+# if HAVE_BUILTIN_BSWAP64
+#  define USE_CTR_CRYPT16 1
+static void
+ctr_fill16(uint8_t *ctr, size_t blocks, uint64_t *buffer)
+{
+  uint64_t hi, lo;
+  /* Read hi in native endianness */
+  hi = LE_READ_UINT64(ctr);
+  lo = READ_UINT64(ctr + 8);
+
+  while (blocks-- > 0)
+    {
+      *buffer++ = hi;
+      *buffer++ = __builtin_bswap64(lo);
+      if (!++lo)
+	hi = __builtin_bswap64(__builtin_bswap64(hi) + 1);
+    }
+  LE_WRITE_UINT64(ctr, hi);
+  WRITE_UINT64(ctr + 8, lo);
+}
+# else /* ! HAVE_BUILTIN_BSWAP64 */
+#  define USE_CTR_CRYPT16 0
+# endif
+#endif /* !WORDS_BIGENDIAN */
+
+#if USE_CTR_CRYPT16
+static size_t
+ctr_crypt16(const void *ctx, nettle_cipher_func *f,
+	    uint8_t *ctr,
+	    size_t length, uint8_t *dst,
+	    const uint8_t *src)
+{
+  if (dst != src && !((uintptr_t) dst % sizeof(uint64_t)))
+    {
+      size_t blocks = length / 16u;
+      ctr_fill16 (ctr, blocks, (uint64_t *) dst);
+      f(ctx, blocks * 16, dst, dst);
+      memxor (dst, src, blocks * 16);
+      return blocks * 16;
+    }
+  else
+    {
+      /* Construct an aligned buffer of consecutive counter values, of
+	 size at most CTR_BUFFER_LIMIT. */
+      TMP_DECL(buffer, union nettle_block16, CTR_BUFFER_LIMIT / 16);
+      size_t blocks = (length + 15) / 16u;
+      size_t i;
+      TMP_ALLOC(buffer, MIN(blocks, CTR_BUFFER_LIMIT / 16));
+
+      for (i = 0; blocks >= CTR_BUFFER_LIMIT / 16;
+	   i += CTR_BUFFER_LIMIT, blocks -= CTR_BUFFER_LIMIT / 16)
+	{
+	  ctr_fill16 (ctr, CTR_BUFFER_LIMIT / 16, buffer->u64);
+	  f(ctx, CTR_BUFFER_LIMIT, buffer->b, buffer->b);
+	  if (length - i < CTR_BUFFER_LIMIT)
+	    goto done;
+	  memxor3 (dst, src, buffer->b, CTR_BUFFER_LIMIT);
+	}
+
+      if (blocks > 0)
+	{
+	  assert (length - i < CTR_BUFFER_LIMIT);
+	  ctr_fill16 (ctr, blocks, buffer->u64);
+	  f(ctx, blocks * 16, buffer->b, buffer->b);
+	done:
+	  memxor3 (dst + i, src + i, buffer->b, length - i);
+      }
+      return length;
+    }
+}
+#endif /* USE_CTR_CRYPT16 */
 
 void
 ctr_crypt(const void *ctx, nettle_cipher_func *f,
@@ -53,84 +159,65 @@ ctr_crypt(const void *ctx, nettle_cipher_func *f,
 	  size_t length, uint8_t *dst,
 	  const uint8_t *src)
 {
-  if (src != dst)
+#if USE_CTR_CRYPT16
+  if (block_size == 16)
     {
-      if (length == block_size)
+      size_t done = ctr_crypt16(ctx, f, ctr, length, dst, src);
+      length -= done;
+      src += done;
+      dst += done;
+    }
+#endif
+
+  if(src != dst)
+    {
+      size_t filled = ctr_fill (block_size, ctr, length, dst);
+
+      f(ctx, filled, dst, dst);
+      memxor(dst, src, filled);
+
+      if (filled < length)
 	{
-	  f(ctx, block_size, dst, ctr);
+	  TMP_DECL(block, uint8_t, NETTLE_MAX_CIPHER_BLOCK_SIZE);
+	  TMP_ALLOC(block, block_size);
+
+	  f(ctx, block_size, block, ctr);
 	  INCREMENT(block_size, ctr);
-	  memxor(dst, src, block_size);
-	}
-      else
-	{
-	  size_t left;
-	  uint8_t *p;	  
-
-	  for (p = dst, left = length;
-	       left >= block_size;
-	       left -= block_size, p += block_size)
-	    {
-	      memcpy (p, ctr, block_size);
-	      INCREMENT(block_size, ctr);
-	    }
-
-	  f(ctx, length - left, dst, dst);
-	  memxor(dst, src, length - left);
-
-	  if (left)
-	    {
-	      TMP_DECL(buffer, uint8_t, NETTLE_MAX_CIPHER_BLOCK_SIZE);
-	      TMP_ALLOC(buffer, block_size);
-
-	      f(ctx, block_size, buffer, ctr);
-	      INCREMENT(block_size, ctr);
-	      memxor3(dst + length - left, src + length - left, buffer, left);
-	    }
+	  memxor3(dst + filled, src + filled, block, length - filled);
 	}
     }
   else
     {
-      if (length > block_size)
+      /* For in-place CTR, construct a buffer of consecutive counter
+	 values, of size at most CTR_BUFFER_LIMIT. */
+      TMP_DECL(buffer, uint8_t, CTR_BUFFER_LIMIT);
+
+      size_t buffer_size;
+      if (length < block_size)
+	buffer_size = block_size;
+      else if (length <= CTR_BUFFER_LIMIT)
+	buffer_size = length;
+      else
+	buffer_size = CTR_BUFFER_LIMIT;
+
+      TMP_ALLOC(buffer, buffer_size);
+
+      while (length >= block_size)
 	{
-	  TMP_DECL(buffer, uint8_t, NBLOCKS * NETTLE_MAX_CIPHER_BLOCK_SIZE);
-	  size_t chunk = NBLOCKS * block_size;
-
-	  TMP_ALLOC(buffer, chunk);
-
-	  for (; length >= chunk;
-	       length -= chunk, src += chunk, dst += chunk)
-	    {
-	      unsigned n;
-	      uint8_t *p;	  
-	      for (n = 0, p = buffer; n < NBLOCKS; n++, p += block_size)
-		{
-		  memcpy (p, ctr, block_size);
-		  INCREMENT(block_size, ctr);
-		}
-	      f(ctx, chunk, buffer, buffer);
-	      memxor(dst, buffer, chunk);
-	    }
-
-	  if (length > 0)
-	    {
-	      /* Final, possibly partial, blocks */
-	      for (chunk = 0; chunk < length; chunk += block_size)
-		{
-		  memcpy (buffer + chunk, ctr, block_size);
-		  INCREMENT(block_size, ctr);
-		}
-	      f(ctx, chunk, buffer, buffer);
-	      memxor3(dst, src, buffer, length);
-	    }
+	  size_t filled = ctr_fill (block_size, ctr, MIN(buffer_size, length), buffer);
+	  assert (filled > 0);
+	  f(ctx, filled, buffer, buffer);
+	  memxor(dst, buffer, filled);
+	  length -= filled;
+	  dst += filled;
 	}
-      else if (length > 0)
-      	{
-	  TMP_DECL(buffer, uint8_t, NETTLE_MAX_CIPHER_BLOCK_SIZE);
-	  TMP_ALLOC(buffer, block_size);
 
+      /* Final, possibly partial, block. */
+      if (length > 0)
+	{
 	  f(ctx, block_size, buffer, ctr);
 	  INCREMENT(block_size, ctr);
-	  memxor3(dst, src, buffer, length);
+	  memxor(dst, buffer, length);
 	}
     }
 }
