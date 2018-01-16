@@ -807,6 +807,7 @@ main(int argc, char **argv)
 	frequency = atof(optarg);
 	if (frequency > 0.0)
 	  break;
+	/* Fall through */
 
       case OPT_HELP:
 	printf("Usage: nettle-benchmark [-f clock frequency] [alg...]\n");
