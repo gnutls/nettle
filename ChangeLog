@@ -1,3 +1,7 @@
+2018-01-16  Niels Möller  <nisse@lysator.liu.se>
+
+	* tools/pkcs1-conv.c (convert_file): Add missing break statements.
+
 2018-01-09  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/testutils.c (test_cipher_ctr): Test operations with
