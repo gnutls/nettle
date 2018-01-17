@@ -424,6 +424,184 @@ test_cipher_cfb(const struct nettle_cipher *cipher,
 }
 
 void
+test_cipher_cfb8(const struct nettle_cipher *cipher,
+		 const struct tstring *key,
+		 const struct tstring *cleartext,
+		 const struct tstring *ciphertext,
+		 const struct tstring *iiv)
+{
+  void *ctx = xalloc(cipher->context_size);
+  uint8_t *data, *data2;
+  uint8_t *iv = xalloc(cipher->block_size);
+  size_t length;
+
+  ASSERT (cleartext->length == ciphertext->length);
+  length = cleartext->length;
+
+  ASSERT (key->length == cipher->key_size);
+  ASSERT (iiv->length == cipher->block_size);
+
+  data = xalloc(length);
+  data2 = xalloc(length);
+
+  cipher->set_encrypt_key(ctx, key->data);
+  memcpy(iv, iiv->data, cipher->block_size);
+
+  cfb8_encrypt(ctx, cipher->encrypt,
+	      cipher->block_size, iv,
+	      length, data, cleartext->data);
+
+  if (!MEMEQ(length, data, ciphertext->data))
+    {
+      fprintf(stderr, "CFB8 encrypt failed:\nInput:");
+      tstring_print_hex(cleartext);
+      fprintf(stderr, "\nOutput: ");
+      print_hex(length, data);
+      fprintf(stderr, "\nExpected:");
+      tstring_print_hex(ciphertext);
+      fprintf(stderr, "\n");
+      FAIL();
+    }
+  cipher->set_encrypt_key(ctx, key->data);
+  memcpy(iv, iiv->data, cipher->block_size);
+
+  cfb8_decrypt(ctx, cipher->encrypt,
+	      cipher->block_size, iv,
+	      length, data2, data);
+
+  if (!MEMEQ(length, data2, cleartext->data))
+    {
+      fprintf(stderr, "CFB8 decrypt failed:\nInput:");
+      tstring_print_hex(ciphertext);
+      fprintf(stderr, "\nOutput: ");
+      print_hex(length, data2);
+      fprintf(stderr, "\nExpected:");
+      tstring_print_hex(cleartext);
+      fprintf(stderr, "\n");
+      FAIL();
+    }
+  cipher->set_encrypt_key(ctx, key->data);
+  memcpy(iv, iiv->data, cipher->block_size);
+  memcpy(data, cleartext->data, length);
+
+  cfb8_encrypt(ctx, cipher->encrypt,
+	      cipher->block_size, iv,
+	      length, data, data);
+
+  if (!MEMEQ(length, data, ciphertext->data))
+    {
+      fprintf(stderr, "CFB8 inplace encrypt failed:\nInput:");
+      tstring_print_hex(cleartext);
+      fprintf(stderr, "\nOutput: ");
+      print_hex(length, data);
+      fprintf(stderr, "\nExpected:");
+      tstring_print_hex(ciphertext);
+      fprintf(stderr, "\n");
+      FAIL();
+    }
+  cipher->set_encrypt_key(ctx, key->data);
+  memcpy(iv, iiv->data, cipher->block_size);
+
+  cfb8_decrypt(ctx, cipher->encrypt,
+	      cipher->block_size, iv,
+	      length, data, data);
+
+  if (!MEMEQ(length, data, cleartext->data))
+    {
+      fprintf(stderr, "CFB8 inplace decrypt failed:\nInput:");
+      tstring_print_hex(ciphertext);
+      fprintf(stderr, "\nOutput: ");
+      print_hex(length, data);
+      fprintf(stderr, "\nExpected:");
+      tstring_print_hex(cleartext);
+      fprintf(stderr, "\n");
+      FAIL();
+    }
+
+  /* Repeat all tests with incomplete last block */
+  length -= 1;
+
+  cipher->set_encrypt_key(ctx, key->data);
+  memcpy(iv, iiv->data, cipher->block_size);
+
+  cfb8_encrypt(ctx, cipher->encrypt,
+	      cipher->block_size, iv,
+	      length, data, cleartext->data);
+
+  if (!MEMEQ(length, data, ciphertext->data))
+    {
+      fprintf(stderr, "CFB8 encrypt failed:\nInput:");
+      print_hex(length, cleartext->data);
+      fprintf(stderr, "\nOutput: ");
+      print_hex(length, data);
+      fprintf(stderr, "\nExpected:");
+      print_hex(length, ciphertext->data);
+      fprintf(stderr, "\n");
+      FAIL();
+    }
+  cipher->set_encrypt_key(ctx, key->data);
+  memcpy(iv, iiv->data, cipher->block_size);
+
+  cfb8_decrypt(ctx, cipher->encrypt,
+	      cipher->block_size, iv,
+	      length, data2, data);
+
+  if (!MEMEQ(length, data2, cleartext->data))
+    {
+      fprintf(stderr, "CFB8 decrypt failed:\nInput:");
+      print_hex(length, ciphertext->data);
+      fprintf(stderr, "\nOutput: ");
+      print_hex(length, data2);
+      fprintf(stderr, "\nExpected:");
+      print_hex(length, cleartext->data);
+      fprintf(stderr, "\n");
+      FAIL();
+    }
+  cipher->set_encrypt_key(ctx, key->data);
+  memcpy(iv, iiv->data, cipher->block_size);
+  memcpy(data, cleartext->data, length);
+
+  cfb8_encrypt(ctx, cipher->encrypt,
+	      cipher->block_size, iv,
+	      length, data, data);
+
+  if (!MEMEQ(length, data, ciphertext->data))
+    {
+      fprintf(stderr, "CFB8 inplace encrypt failed:\nInput:");
+      print_hex(length, cleartext->data);
+      fprintf(stderr, "\nOutput: ");
+      print_hex(length, data);
+      fprintf(stderr, "\nExpected:");
+      print_hex(length, ciphertext->data);
+      fprintf(stderr, "\n");
+      FAIL();
+    }
+  cipher->set_encrypt_key(ctx, key->data);
+  memcpy(iv, iiv->data, cipher->block_size);
+
+  cfb8_decrypt(ctx, cipher->encrypt,
+	      cipher->block_size, iv,
+	      length, data, data);
+
+  if (!MEMEQ(length, data, cleartext->data))
+    {
+      fprintf(stderr, "CFB8 inplace decrypt failed:\nInput:");
+      print_hex(length, ciphertext->data);
+      fprintf(stderr, "\nOutput: ");
+      print_hex(length, data);
+      fprintf(stderr, "\nExpected:");
+      print_hex(length, cleartext->data);
+      fprintf(stderr, "\n");
+      FAIL();
+    }
+
+  free(ctx);
+  free(data);
+  free(data2);
+  free(iv);
+}
+
+void
 test_cipher_ctr(const struct nettle_cipher *cipher,
 		const struct tstring *key,
 		const struct tstring *cleartext,
