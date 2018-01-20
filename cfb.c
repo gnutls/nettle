@@ -167,9 +167,9 @@ cfb_decrypt(const void *ctx, nettle_cipher_func *f,
  * bytes and does memcpy/memxor afterwards */
 void
 cfb8_encrypt(const void *ctx, nettle_cipher_func *f,
-	    size_t block_size, uint8_t *iv,
-	    size_t length, uint8_t *dst,
-	    const uint8_t *src)
+	     size_t block_size, uint8_t *iv,
+	     size_t length, uint8_t *dst,
+	     const uint8_t *src)
 {
   TMP_DECL(buffer, uint8_t, NETTLE_MAX_CIPHER_BLOCK_SIZE * 2);
   TMP_DECL(outbuf, uint8_t, NETTLE_MAX_CIPHER_BLOCK_SIZE);
