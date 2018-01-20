@@ -1,3 +1,12 @@
+2018-01-20  Niels Möller  <nisse@lysator.liu.se>
+
+	CFB8 support, contributed by Dmitry Eremin-Solenikov.
+	* cfb.c (cfb8_encrypt, cfb8_decrypt): New functions.
+	* cfb.h: Declare them.
+	(CFB8_ENCRYPT, CFB8_DECRYPT): New macros.
+	* testsuite/cfb-test.c: New tests for CFB8.
+	* nettle.texinfo (CFB and CFB8): Documentation.
+
 2018-01-16  Niels Möller  <nisse@lysator.liu.se>
 
 	* tools/pkcs1-conv.c (convert_file): Add missing break statements.
