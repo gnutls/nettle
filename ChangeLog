@@ -1,3 +1,8 @@
+2018-01-23  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac (asm_path): Recognize "x86", in addition to "i?86",
+	for 32-bit x86 processors. Reportedly needed for x86 android builds.
+
 2018-01-20  Niels Möller  <nisse@lysator.liu.se>
 
 	CFB8 support, contributed by Dmitry Eremin-Solenikov.

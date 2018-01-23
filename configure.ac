@@ -396,7 +396,7 @@ OPT_NETTLE_SOURCES=""
 asm_path=
 if test "x$enable_assembler" = xyes ; then
   case "$host_cpu" in
-    [i?86* | k[5-8]* | pentium* | athlon])
+    [x86 | i?86* | k[5-8]* | pentium* | athlon])
       asm_path=x86
       ;;
     [x86_64 | amd64])
