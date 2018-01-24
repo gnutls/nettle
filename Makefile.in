@@ -34,10 +34,7 @@ getopt_TARGETS = $(getopt_SOURCES:.c=.$(OBJEXT))
 internal_SOURCES = nettle-internal.c
 internal_TARGETS = $(internal_SOURCES:.c=.$(OBJEXT))
 
-TARGETS = aesdata$(EXEEXT_FOR_BUILD) desdata$(EXEEXT_FOR_BUILD) \
-          twofishdata$(EXEEXT_FOR_BUILD) shadata$(EXEEXT_FOR_BUILD) \
-          gcmdata$(EXEEXT_FOR_BUILD) \
-	  $(getopt_TARGETS) $(internal_TARGETS) \
+TARGETS = $(getopt_TARGETS) $(internal_TARGETS) \
 	  $(LIBTARGETS) $(SHLIBTARGETS)
 
 DOCTARGETS = @IF_DOCUMENTATION@ nettle.info nettle.html nettle.pdf
@@ -224,7 +221,7 @@ DISTFILES = $(SOURCES) $(HEADERS) getopt.h getopt_int.h \
 	README CONTRIBUTING.md AUTHORS COPYING.LESSERv3 COPYINGv2 COPYINGv3 \
 	INSTALL NEWS TODO ChangeLog \
 	nettle.pc.in hogweed.pc.in \
-	$(des_headers) descore.README \
+	$(des_headers) descore.README desdata.stamp \
 	aes-internal.h camellia-internal.h serpent-internal.h \
 	cast128_sboxes.h desinfo.h desCode.h \
 	memxor-internal.h nettle-internal.h nettle-write.h \
@@ -311,11 +308,14 @@ eccdata$(EXEEXT_FOR_BUILD): eccdata.c mini-gmp.c mini-gmp.h
 des_headers = rotors.h keymap.h 
 
 # Generate DES headers.
-$(des_headers): desdata.c
-	$(MAKE) desdata$(EXEEXT_FOR_BUILD)
+$(des_headers): desdata.stamp
 	f="$(srcdir)/`basename $@`"; \
 	  ./desdata$(EXEEXT_FOR_BUILD) $(@F) > $${f}T; \
 	  test -s $${f}T && mv -f $${f}T $$f
+
+desdata.stamp: desdata.c
+	$(MAKE) desdata$(EXEEXT_FOR_BUILD)
+	echo stamp > desdata.stamp
 
 des.$(OBJEXT): des.c des.h $(des_headers)
 
@@ -627,6 +627,11 @@ distcheck: dist
 clean-here:
 	-rm -f $(TARGETS) *.$(OBJEXT) *.s *.so *.dll *.a \
 		ecc-192.h ecc-224.h ecc-256.h ecc-384.h ecc-521.h ecc-25519.h \
+		aesdata$(EXEEXT_FOR_BUILD) \
+		desdata$(EXEEXT_FOR_BUILD) desdata.stamp \
+		twofishdata$(EXEEXT_FOR_BUILD) \
+		shadata$(EXEEXT_FOR_BUILD) \
+		gcmdata$(EXEEXT_FOR_BUILD) \
 		eccdata$(EXEEXT_FOR_BUILD) eccdata.stamp
 	-rm -rf .lib libnettle.stamp libhogweed.stamp
 
