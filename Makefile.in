@@ -628,7 +628,7 @@ clean-here:
 	-rm -f $(TARGETS) *.$(OBJEXT) *.s *.so *.dll *.a \
 		ecc-192.h ecc-224.h ecc-256.h ecc-384.h ecc-521.h ecc-25519.h \
 		aesdata$(EXEEXT_FOR_BUILD) \
-		desdata$(EXEEXT_FOR_BUILD) desdata.stamp \
+		desdata$(EXEEXT_FOR_BUILD) \
 		twofishdata$(EXEEXT_FOR_BUILD) \
 		shadata$(EXEEXT_FOR_BUILD) \
 		gcmdata$(EXEEXT_FOR_BUILD) \
