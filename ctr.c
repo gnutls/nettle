@@ -204,7 +204,8 @@ ctr_crypt(const void *ctx, nettle_cipher_func *f,
 
       while (length >= block_size)
 	{
-	  size_t filled = ctr_fill (block_size, ctr, MIN(buffer_size, length), buffer);
+	  size_t filled
+	    = ctr_fill (block_size, ctr, MIN(buffer_size, length), buffer);
 	  assert (filled > 0);
 	  f(ctx, filled, buffer, buffer);
 	  memxor(dst, buffer, filled);
