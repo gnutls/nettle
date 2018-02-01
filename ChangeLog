@@ -1,3 +1,9 @@
+2018-02-01  Nikos Mavrogiannopoulos  <nmav@redhat.com>
+
+	* gcm.c (gcm_fill): New function, for use with _ctr_crypt16.
+	(gcm_encrypt, gcm_decrypt): Use _ctr_crypt16. 50% speedup of
+	gcm_aes128, benchmarked on x86_64 with aesni instructions.
+
 2018-02-01  Niels Möller  <nisse@lysator.liu.se>
 
 	Based on a patch contributed by Nikos Mavrogiannopoulos.
