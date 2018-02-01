@@ -92,7 +92,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 chacha-crypt.c chacha-core-internal.c \
 		 chacha-poly1305.c chacha-poly1305-meta.c \
 		 chacha-set-key.c chacha-set-nonce.c \
-		 ctr.c des.c des3.c des-compat.c \
+		 ctr.c ctr16.c des.c des3.c des-compat.c \
 		 eax.c eax-aes128.c eax-aes128-meta.c \
 		 gcm.c gcm-aes.c \
 		 gcm-aes128.c gcm-aes128-meta.c \
@@ -225,6 +225,7 @@ DISTFILES = $(SOURCES) $(HEADERS) getopt.h getopt_int.h \
 	aes-internal.h camellia-internal.h serpent-internal.h \
 	cast128_sboxes.h desinfo.h desCode.h \
 	memxor-internal.h nettle-internal.h nettle-write.h \
+	ctr-internal.h \
 	gmp-glue.h ecc-internal.h fat-setup.h \
 	mini-gmp.h asm.m4 \
 	nettle.texinfo nettle.info nettle.html nettle.pdf sha-example.c

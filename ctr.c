@@ -41,12 +41,10 @@
 
 #include "ctr.h"
 
+#include "ctr-internal.h"
 #include "macros.h"
 #include "memxor.h"
 #include "nettle-internal.h"
-
-/* Don't allocate any more space than this on the stack */
-#define CTR_BUFFER_LIMIT 512
 
 #define MIN(a,b) (((a) < (b)) ? (a) : (b))
 
@@ -64,17 +62,19 @@ ctr_fill (size_t block_size, uint8_t *ctr, size_t length, uint8_t *buffer)
 
 #if WORDS_BIGENDIAN
 # define USE_CTR_CRYPT16 1
+static nettle_fill16_func ctr_fill16;
 static void
-ctr_fill16(uint8_t *ctr, size_t blocks, uint64_t *buffer)
+ctr_fill16(uint8_t *ctr, size_t blocks, union nettle_block16 *buffer)
 {
   uint64_t hi, lo;
+  size_t i;
   hi = READ_UINT64(ctr);
   lo = READ_UINT64(ctr + 8);
 
-  while (blocks-- > 0)
+  for (i = 0; i < blocks; i++)
     {
-      *buffer++ = hi;
-      *buffer++ = lo;
+      buffer[i].u64[0] = hi;
+      buffer[i].u64[1] = lo;
       hi += !(++lo);
     }
   WRITE_UINT64(ctr, hi);
@@ -83,18 +83,20 @@ ctr_fill16(uint8_t *ctr, size_t blocks, uint64_t *buffer)
 #else /* !WORDS_BIGENDIAN */
 # if HAVE_BUILTIN_BSWAP64
 #  define USE_CTR_CRYPT16 1
+static nettle_fill16_func ctr_fill16;
 static void
-ctr_fill16(uint8_t *ctr, size_t blocks, uint64_t *buffer)
+ctr_fill16(uint8_t *ctr, size_t blocks, union nettle_block16 *buffer)
 {
   uint64_t hi, lo;
+  size_t i;
   /* Read hi in native endianness */
   hi = LE_READ_UINT64(ctr);
   lo = READ_UINT64(ctr + 8);
 
-  while (blocks-- > 0)
+  for (i = 0; i < blocks; i++)
     {
-      *buffer++ = hi;
-      *buffer++ = __builtin_bswap64(lo);
+      buffer[i].u64[0] = hi;
+      buffer[i].u64[1] = __builtin_bswap64(lo);
       if (!++lo)
 	hi = __builtin_bswap64(__builtin_bswap64(hi) + 1);
     }
@@ -106,53 +108,6 @@ ctr_fill16(uint8_t *ctr, size_t blocks, uint64_t *buffer)
 # endif
 #endif /* !WORDS_BIGENDIAN */
 
-#if USE_CTR_CRYPT16
-static size_t
-ctr_crypt16(const void *ctx, nettle_cipher_func *f,
-	    uint8_t *ctr,
-	    size_t length, uint8_t *dst,
-	    const uint8_t *src)
-{
-  if (dst != src && !((uintptr_t) dst % sizeof(uint64_t)))
-    {
-      size_t blocks = length / 16u;
-      ctr_fill16 (ctr, blocks, (uint64_t *) dst);
-      f(ctx, blocks * 16, dst, dst);
-      memxor (dst, src, blocks * 16);
-      return blocks * 16;
-    }
-  else
-    {
-      /* Construct an aligned buffer of consecutive counter values, of
-	 size at most CTR_BUFFER_LIMIT. */
-      TMP_DECL(buffer, union nettle_block16, CTR_BUFFER_LIMIT / 16);
-      size_t blocks = (length + 15) / 16u;
-      size_t i;
-      TMP_ALLOC(buffer, MIN(blocks, CTR_BUFFER_LIMIT / 16));
-
-      for (i = 0; blocks >= CTR_BUFFER_LIMIT / 16;
-	   i += CTR_BUFFER_LIMIT, blocks -= CTR_BUFFER_LIMIT / 16)
-	{
-	  ctr_fill16 (ctr, CTR_BUFFER_LIMIT / 16, buffer->u64);
-	  f(ctx, CTR_BUFFER_LIMIT, buffer->b, buffer->b);
-	  if (length - i < CTR_BUFFER_LIMIT)
-	    goto done;
-	  memxor3 (dst, src, buffer->b, CTR_BUFFER_LIMIT);
-	}
-
-      if (blocks > 0)
-	{
-	  assert (length - i < CTR_BUFFER_LIMIT);
-	  ctr_fill16 (ctr, blocks, buffer->u64);
-	  f(ctx, blocks * 16, buffer->b, buffer->b);
-	done:
-	  memxor3 (dst + i, src + i, buffer->b, length - i);
-      }
-      return length;
-    }
-}
-#endif /* USE_CTR_CRYPT16 */
-
 void
 ctr_crypt(const void *ctx, nettle_cipher_func *f,
 	  size_t block_size, uint8_t *ctr,
@@ -162,10 +117,8 @@ ctr_crypt(const void *ctx, nettle_cipher_func *f,
 #if USE_CTR_CRYPT16
   if (block_size == 16)
     {
-      size_t done = ctr_crypt16(ctx, f, ctr, length, dst, src);
-      length -= done;
-      src += done;
-      dst += done;
+      _ctr_crypt16(ctx, f, ctr_fill16, ctr, length, dst, src);
+      return;
     }
 #endif
 

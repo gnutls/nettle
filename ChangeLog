@@ -1,3 +1,21 @@
+2018-02-01  Niels Möller  <nisse@lysator.liu.se>
+
+	Based on a patch contributed by Nikos Mavrogiannopoulos.
+	* ctr16.c (_ctr_crypt16): New file, renamed and generalized
+	function. New function pointer argument, used to fill a block with
+	counter values. Use nettle_block16 * as the type for the buffer to
+	be filled. Always process any final and partial block, and return
+	no value.
+	* ctr.c (ctr_crypt): ... previous, replaced, function.
+	(ctr_fill16): Updated to new argument type.
+	(ctr_crypt): Return immediately after using _ctr_crypt16.
+
+	* ctr-internal.h: New file, declaring _ctr_crypt16.
+	(nettle_fill16_func): New function typedef.
+
+	* Makefile.in (nettle_SOURCES): Added ctr16.c.
+	(DISTFILES): Added ctr-internal.h.
+
 2018-01-30  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in (clean-here): Don't delete desdata.stamp.
