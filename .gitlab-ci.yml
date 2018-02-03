@@ -101,3 +101,10 @@ build/gnutls:
   - shared
   except:
   - tags
+  artifacts:
+    paths:
+      - gnutls-git/guile/tests/*.log
+      - gnutls-git/tests/*.log
+      - gnutls-git/*.log
+      - gnutls-git/tests/*/*.log
+      - gnutls-git/tests/suite/*/*.log
