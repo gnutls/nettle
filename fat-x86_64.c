@@ -52,6 +52,7 @@ struct x86_features
 {
   enum x86_vendor { X86_OTHER, X86_INTEL, X86_AMD } vendor;
   int have_aesni;
+  int have_sha_ni;
 };
 
 #define SKIP(s, slen, literal, llen)				\
@@ -66,6 +67,7 @@ get_x86_features (struct x86_features *features)
   const char *s;
   features->vendor = X86_OTHER;
   features->have_aesni = 0;
+  features->have_sha_ni = 0;
 
   s = secure_getenv (ENV_OVERRIDE);
   if (s)
@@ -84,9 +86,11 @@ get_x86_features (struct x86_features *features)
 	  }
 	else if (MATCH (s, length, "aesni", 5))
 	  features->have_aesni = 1;
+	else if (MATCH (s, length, "sha_ni", 6))
+	  features->have_sha_ni = 1;
 	if (!sep)
 	  break;
-	s = sep + 1;	
+	s = sep + 1;
       }
   else
     {
@@ -99,7 +103,11 @@ get_x86_features (struct x86_features *features)
 
       _nettle_cpuid (1, cpuid_data);
       if (cpuid_data[2] & 0x02000000)
-	features->have_aesni = 1;      
+       features->have_aesni = 1;
+
+      _nettle_cpuid (7, cpuid_data);
+      if (cpuid_data[1] & 0x20000000)
+       features->have_sha_ni = 1;
     }
 }
 
@@ -135,9 +143,10 @@ fat_init (void)
     {
       const char * const vendor_names[3] =
 	{ "other", "intel", "amd" };
-      fprintf (stderr, "libnettle: cpu features: vendor:%s%s\n",
+      fprintf (stderr, "libnettle: cpu features: vendor:%s%s%s\n",
 	       vendor_names[features.vendor],
-	       features.have_aesni ? ",aesni" : "");
+	       features.have_aesni ? ",aesni" : "",
+	       features.have_sha_ni ? ",sha_ni" : "");
     }
   if (features.have_aesni)
     {
