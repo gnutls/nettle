@@ -102,9 +102,9 @@ build/gnutls:
   except:
   - tags
   artifacts:
-    paths:
     expire_in: 1 week
     when: on_failure
+    paths:
       - gnutls-git/guile/tests/*.log
       - gnutls-git/tests/*.log
       - gnutls-git/*.log
