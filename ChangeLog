@@ -1,5 +1,8 @@
 2018-02-05  Niels Möller  <nisse@lysator.liu.se>
 
+	* x86_64/sha_ni/sha1-compress.asm: New implementation using sha_ni
+	instructions.
+
 	* fat-x86_64.c (get_x86_features): Check for sha_ni extension.
 
 	* x86_64/fat/cpuid.asm: Clear %ecx input to cpuid instruction.
