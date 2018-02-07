@@ -72,6 +72,8 @@ PROLOGUE(_nettle_sha1_compress)
 	movd	16(STATE), E0
 	movups	(INPUT), MSG0
 	movdqa	.Lswap_mask(%rip), SWAP_MASK
+	pshufd	$0x1b, ABCD, ABCD
+	pshufd	$0x1b, E0, E0
 	movdqa	ABCD, ABCD_ORIG
 	movdqa	E0, E_ORIG
 	pshufb	SWAP_MASK, MSG0
@@ -136,7 +138,9 @@ PROLOGUE(_nettle_sha1_compress)
 	sha1nexte E_ORIG, E0
 	paddd	ABCD_ORIG, ABCD
 
+	pshufd	$0x1b, ABCD, ABCD
 	movups	ABCD, (STATE)
+	pshufd	$0x1b, E0, E0
 	movd	E0, 16(STATE)
 
 	W64_EXIT(2, 10)
