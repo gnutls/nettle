@@ -123,6 +123,10 @@ DECLARE_FAT_FUNC(nettle_memxor, memxor_func)
 DECLARE_FAT_FUNC_VAR(memxor, memxor_func, x86_64)
 DECLARE_FAT_FUNC_VAR(memxor, memxor_func, sse2)
 
+DECLARE_FAT_FUNC(_nettle_sha1_compress, sha1_compress_func)
+DECLARE_FAT_FUNC_VAR(sha1_compress, sha1_compress_func, x86_64)
+DECLARE_FAT_FUNC_VAR(sha1_compress, sha1_compress_func, sha_ni)
+
 /* This function should usually be called only once, at startup. But
    it is idempotent, and on x86, pointer updates are atomic, so
    there's no danger if it is called simultaneously from multiple
@@ -163,6 +167,18 @@ fat_init (void)
       _nettle_aes_decrypt_vec = _nettle_aes_decrypt_x86_64;
     }
 
+  if (features.have_sha_ni)
+    {
+      if (verbose)
+	fprintf (stderr, "libnettle: using sha_ni instructions.\n");
+      _nettle_sha1_compress_vec = _nettle_sha1_compress_sha_ni;
+    }
+  else
+    {
+      if (verbose)
+	fprintf (stderr, "libnettle: not using sha_ni instructions.\n");
+      _nettle_sha1_compress_vec = _nettle_sha1_compress_x86_64;
+    }
   if (features.vendor == X86_INTEL)
     {
       if (verbose)
@@ -194,3 +210,7 @@ DEFINE_FAT_FUNC(_nettle_aes_decrypt, void,
 DEFINE_FAT_FUNC(nettle_memxor, void *,
 		(void *dst, const void *src, size_t n),
 		(dst, src, n))
+
+DEFINE_FAT_FUNC(_nettle_sha1_compress, void,
+		(uint32_t *state, const uint8_t *input),
+		(state, input))
