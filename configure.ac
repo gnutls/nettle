@@ -85,6 +85,10 @@ AC_ARG_ENABLE(x86-aesni,
   AC_HELP_STRING([--enable-x86-aesni], [Enable x86_64 aes instructions. (default=no)]),,
   [enable_x86_aesni=no])
 
+AC_ARG_ENABLE(x86-sha-ni,
+  AC_HELP_STRING([--enable-x86-sha-ni], [Enable x86_64 sha_ni instructions. (default=no)]),,
+  [enable_x86_sha_ni=no])
+
 AC_ARG_ENABLE(mini-gmp,
   AC_HELP_STRING([--enable-mini-gmp], [Enable mini-gmp, used instead of libgmp.]),,
   [enable_mini_gmp=no])
@@ -405,8 +409,13 @@ if test "x$enable_assembler" = xyes ; then
 	if test "x$enable_fat" = xyes ; then
 	  asm_path="x86_64/fat $asm_path"
 	  OPT_NETTLE_SOURCES="fat-x86_64.c $OPT_NETTLE_SOURCES"
-	elif test "x$enable_x86_aesni" = xyes ; then
-	  asm_path="x86_64/aesni $asm_path"
+	else
+	  if test "x$enable_x86_aesni" = xyes ; then
+	    asm_path="x86_64/aesni $asm_path"
+	  fi
+	  if test "x$enable_x86_sha_ni" = xyes ; then
+	    asm_path="x86_64/sha_ni $asm_path"
+	  fi
 	fi
       else
 	asm_path=x86

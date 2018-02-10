@@ -1,3 +1,7 @@
+2018-02-10  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: New configure option --enable-x86-sha-ni.
+
 2018-02-07  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86_64/fat/sha1-compress.asm: New file.
