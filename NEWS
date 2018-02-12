@@ -1,3 +1,46 @@
+NEWS for the Nettle 3.5 release
+
+	Changes in behavior:
+
+	* Nettle's gcm_crypt will now call the underlying block cipher
+	  to process more than one block at a time. This is not a
+	  change to the documented behavior, but unfortunately breaks
+	  assumptions accidentally made in gnutls, up to and including
+	  version 3.6.1.
+
+	Bug fixes:
+
+	* Fix bug in pkcs1-conv, missing break statements in the
+	  parsing of PEM input files.
+
+	New features:
+
+	* Support for CFB8 (Cipher Feedback Mode, processing a single
+	  octet per block cipher operation), contributed by Dmitry
+	  Eremin-Solenikov.
+
+	Optimizations:
+
+	* Improved performance of the x86_64 AES implementation using
+	  the aesni instructions. Gives a large speedup for operations
+	  processing multiple blocks at a time (including CTR mode,
+	  GCM mode, and CBC decrypt, but *not* CBC encrypt).
+
+	* Improved performance for CTR mode, for the common case of
+	  16-byte block size. Pass more data at a time to underlying
+	  block cipher, and fill the counter blocks more efficiently.
+	  Extension to also handle GCM mode efficiently contributed
+	  by Nikos Mavrogiannopoulos.
+
+	* New x86_64 implementation of sha1, for processors supporting
+	  the sha_ni instructions.
+
+	Miscellaneous:
+
+	* The programs aesdata, desdata, twofishdata, shadata and
+	  gcmdata are no longer build by default. Makefile
+	  improvements contributed by Jay Foad.
+
 NEWS for the Nettle 3.4 release
 
 	This release fixes bugs and adds a few new features. It also
