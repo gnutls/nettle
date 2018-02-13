@@ -52,7 +52,7 @@ define(<LOAD>, <
 	sel	W, WPREV, T0
 	ror	W, W, SHIFT
 	mov	WPREV, T0
-	rev	W, W
+IF_LE(<	rev	W, W>)
 	str	W, [SP,#eval(4*$1)]
 >)
 define(<EXPN>, <
@@ -127,8 +127,12 @@ PROLOGUE(_nettle_sha1_compress)
 	lsl	SHIFT, SHIFT, #3
 	mov	T0, #0
 	movne	T0, #-1
-	lsl	W, T0, SHIFT
+IF_LE(<	lsl	W, T0, SHIFT>)
+IF_BE(<	lsr	W, T0, SHIFT>)
 	uadd8	T0, T0, W		C Sets APSR.GE bits
+	C on BE rotate right by 32-SHIFT bits
+	C because there is no rotate left
+IF_BE(<	rsb     SHIFT, SHIFT, #32>)
 	
 	ldr	K, .LK1
 	ldm	STATE, {SA,SB,SC,SD,SE}
