@@ -1008,8 +1008,6 @@ This function also resets the context in the same way as
 @comment  node-name,  next,  previous,  up
 @subsection The @code{struct nettle_hash} abstraction
 @cindex nettle_hash
-@cindex nettle_hashes
-@cindex nettle_get_hashes
 
 Nettle includes a struct including information about the supported hash
 functions. It is defined in @file{<nettle/nettle-meta.h>}, and is used
@@ -1040,7 +1038,7 @@ These are all the hash functions that Nettle implements.
 
 Nettle also exports a list of all these hashes.
 
-@deftypefun const struct nettle_hash **nettle_get_hashes(void)
+@deftypefun {const struct nettle_hash **} nettle_get_hashes (void)
 Returns a NULL-terminated list of pointers to supported hash functions.
 This list can be used to dynamically enumerate or search the supported
 algorithms.
@@ -1131,6 +1129,8 @@ single key setup function that can be used for both encryption and
 decryption.
 
 @subsection AES
+@cindex AES
+
 AES is a block cipher, specified by NIST as a replacement for
 the older DES standard. The standard is the result of a competition
 between cipher designers. The winning design, also known as RIJNDAEL,
@@ -1211,6 +1211,8 @@ Analogous to the encryption functions above.
 @end deftypefun
 
 @subsection ARCFOUR
+@cindex Arcfour
+@cindex RC4
 ARCFOUR is a stream cipher, also known under the trade marked name RC4,
 and it is one of the fastest ciphers around. A problem is that the key
 setup of ARCFOUR is quite weak, you should never use keys with
@@ -1271,6 +1273,8 @@ them one after another. The result is the same as if you had called
 @end deftypefun
 
 @subsection ARCTWO
+@cindex Arctwo
+@cindex RC2
 ARCTWO (also known as the trade marked name RC2) is a block cipher
 specified in RFC 2268. Nettle also include a variation of the ARCTWO
 set key operation that lack one step, to be compatible with the
@@ -1332,6 +1336,7 @@ Analogous to @code{arctwo_encrypt}
 @end deftypefun
 
 @subsection BLOWFISH
+@cindex Blowfish
 
 BLOWFISH is a block cipher designed by Bruce Schneier. It uses a block
 size of 64 bits (8 octets), and a variable key size, up to 448 bits. It
@@ -1378,6 +1383,7 @@ Analogous to @code{blowfish_encrypt}
 @end deftypefun
 
 @subsection Camellia
+@cindex Camellia
 
 Camellia is a block cipher developed by Mitsubishi and Nippon Telegraph
 and Telephone Corporation, described in @cite{RFC3713}. It is
@@ -1459,6 +1465,7 @@ more than one block, the data is processed in ECB mode. @code{src} and
 @end deftypefun
 
 @subsection CAST128
+@cindex CAST
 
 CAST-128 is a block cipher, specified in @cite{RFC 2144}. It uses a 64
 bit (8 octets) block size, and a key size of 128 bits. It is possible,
@@ -1511,6 +1518,7 @@ decryption.
 @end deftypefun
 
 @subsection ChaCha
+@cindex ChaCha
 
 ChaCha is a variant of the stream cipher Salsa20, also designed by D. J.
 Bernstein. For more information on Salsa20, see below. Nettle defines
@@ -1551,6 +1559,7 @@ all but the last call @emph{must} use a length that is a multiple of
 @end deftypefun
 
 @subsection DES
+@cindex DES
 DES is the old Data Encryption Standard, specified by NIST. It uses a
 block size of 64 bits (8 octets), and a key size of 56 bits. However,
 the key bits are distributed over 8 octets, where the least significant
@@ -1608,6 +1617,10 @@ be equal.
 @end deftypefun
 
 @subsection DES3
+@cindex DES3
+@cindex 3DES
+@cindex Triple-DES
+
 The inadequate key size of DES has already been mentioned. One way to
 increase the key size is to pipe together several DES boxes with
 independent keys. It turns out that using two DES ciphers is not as
@@ -1675,6 +1688,7 @@ Analogous to @code{des_encrypt}
 @end deftypefun
 
 @subsection Salsa20
+@cindex Salsa20
 Salsa20 is a fairly recent stream cipher designed by D. J. Bernstein. It
 is built on the observation that a cryptographic hash function can be
 used for encryption: Form the hash input from the secret key and a
@@ -1761,6 +1775,8 @@ rounds.
 @end deftypefun
 
 @subsection SERPENT
+@cindex Serpent
+
 SERPENT is one of the AES finalists, designed by Ross Anderson, Eli
 Biham and Lars Knudsen. Thus, the interface and properties are similar
 to AES'. One peculiarity is that it is quite pointless to use it with
@@ -1804,6 +1820,8 @@ Analogous to @code{serpent_encrypt}
 
 
 @subsection TWOFISH
+@cindex Twofish
+
 Another AES finalist, this one designed by Bruce Schneier and others.
 Nettle defines it in @file{<nettle/twofish.h>}.
 
@@ -1842,12 +1860,10 @@ in any other way.
 Analogous to @code{twofish_encrypt}
 @end deftypefun
 
-@c @node nettle_cipher, Cipher Block Chaining, Cipher functions, Reference
+@c @node nettle_cipher abstraction,  , Cipher functions, Cipher functions
 @c @comment  node-name,  next,  previous,  up
 @subsection The @code{struct nettle_cipher} abstraction
 @cindex nettle_cipher
-@cindex nettle_ciphers
-@cindex nettle_get_ciphers
 
 Nettle includes a struct including information about some of the more
 regular cipher functions. It can be useful for applications that need a
@@ -1892,7 +1908,7 @@ ones without weak keys or other oddities.
 Nettle also exports a list of all these ciphers without weak keys or
 other oddities.
 
-@deftypefun const struct nettle_cipher **nettle_get_ciphers(void)
+@deftypefun {const struct nettle_cipher **} nettle_get_ciphers (void)
 Returns a NULL-terminated list of pointers to supported block ciphers.
 This list can be used to dynamically enumerate or search the supported
 algorithms.
@@ -3070,8 +3086,6 @@ smaller than @code{CHACHA_POLY1305_DIGEST_SIZE}, only the first
 @comment  node-name,  next,  previous,  up
 @subsection The @code{struct nettle_aead} abstraction
 @cindex nettle_aead
-@cindex nettle_aeads
-@cindex nettle_get_aeads
 
 Nettle includes a struct including information about the supported hash
 functions. It is defined in @file{<nettle/nettle-meta.h>}.
@@ -3095,7 +3109,7 @@ message size is specified in advance makes it incompatible with the
 
 Nettle also exports a list of all these constructions.
 
-@deftypefun const struct nettle_aead **nettle_get_aeads(void)
+@deftypefun {const struct nettle_aead **} nettle_get_aeads (void)
 Returns a NULL-terminated list of pointers to supported algorithms.This
 list can be used to dynamically enumerate or search the supported
 algorithms.

@@ -1,7 +1,8 @@
 2018-02-16  Niels Möller  <nisse@lysator.liu.se>
 
-	* nettle.texinfo (Cipher functions): Update CAST128/CAST5 docs.
-	Inconsistencies spotted by Henrik Rindlöw.
+	* nettle.texinfo: Improved index entries.
+	(Cipher functions): Update CAST128/CAST5 docs. Inconsistencies
+	spotted by Henrik Rindlöw.
 
 2018-02-10  Niels Möller  <nisse@lysator.liu.se>
 
