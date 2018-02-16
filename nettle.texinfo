@@ -1461,8 +1461,12 @@ more than one block, the data is processed in ECB mode. @code{src} and
 @subsection CAST128
 
 CAST-128 is a block cipher, specified in @cite{RFC 2144}. It uses a 64
-bit (8 octets) block size, and a variable key size of up to 128 bits.
-Nettle defines cast128 in @file{<nettle/cast128.h>}.
+bit (8 octets) block size, and a key size of 128 bits. It is possible,
+but discouraged, to use the same algorithm with shorter keys. Nettle
+refers to the variant with variable key size as CAST-5. Keys for CAST-5
+are zero padded to 128 bits, and with very short keys, less than 80
+bits, encryption also uses fewer rounds than CAST128. Nettle defines
+cast128 in @file{<nettle/cast128.h>}.
 
 @deftp {Context struct} {struct cast128_ctx}
 @end deftp
@@ -1471,19 +1475,20 @@ Nettle defines cast128 in @file{<nettle/cast128.h>}.
 The CAST128 block-size, 8.
 @end defvr
 
-@defvr Constant CAST128_MIN_KEY_SIZE
-Minimum CAST128 key size, 5.
-@end defvr
-
-@defvr Constant CAST128_MAX_KEY_SIZE
-Maximum CAST128 key size, 16.
-@end defvr
-
 @defvr Constant CAST128_KEY_SIZE
-Default CAST128 key size, 16.
+The CAST128 key size, 16.
 @end defvr
 
-@deftypefun void cast128_set_key (struct cast128_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{key})
+@defvr Constant CAST5_MIN_KEY_SIZE
+Minimum CAST5 key size, 5.
+@end defvr
+
+@defvr Constant CAST5_MAX_KEY_SIZE
+Maximum CAST5 key size, 16. With 16 octets key (128 bits), CAST-5 is the
+same as CAST-128.
+@end defvr
+
+@deftypefun void cast128_set_key (struct cast128_ctx *@var{ctx}, const uint8_t *@var{key})
 Initialize the cipher. The same function is used for both encryption and
 decryption. 
 @end deftypefun
@@ -1497,6 +1502,12 @@ in any other way.
 
 @deftypefun void cast128_decrypt (struct cast128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Analogous to @code{cast128_encrypt}
+@end deftypefun
+
+@deftypefun void cast5_set_key (struct cast128_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{key})
+Initialize the cipher. This variant of the key setup takes the key size
+as argument. The same function is used for both encryption and
+decryption.
 @end deftypefun
 
 @subsection ChaCha
