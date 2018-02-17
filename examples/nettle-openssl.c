@@ -79,8 +79,10 @@ openssl_evp_set_encrypt_key(void *p, const uint8_t *key,
 			    const EVP_CIPHER *cipher)
 {
   struct openssl_cipher_ctx *ctx = p;
+  int ret;
   ctx->evp = EVP_CIPHER_CTX_new();
-  assert(EVP_CipherInit_ex(ctx->evp, cipher, NULL, key, NULL, 1) == 1);
+  ret = EVP_CipherInit_ex(ctx->evp, cipher, NULL, key, NULL, 1);
+  assert(ret == 1);
   EVP_CIPHER_CTX_set_padding(ctx->evp, 0);
 }
 static void
@@ -88,8 +90,10 @@ openssl_evp_set_decrypt_key(void *p, const uint8_t *key,
 			    const EVP_CIPHER *cipher)
 {
   struct openssl_cipher_ctx *ctx = p;
+  int ret;
   ctx->evp = EVP_CIPHER_CTX_new();
-  assert(EVP_CipherInit_ex(ctx->evp, cipher, NULL, key, NULL, 0) == 1);
+  ret = EVP_CipherInit_ex(ctx->evp, cipher, NULL, key, NULL, 0);
+  assert(ret == 1);
   EVP_CIPHER_CTX_set_padding(ctx->evp, 0);
 }
 
@@ -99,7 +103,8 @@ openssl_evp_encrypt(const void *p, size_t length,
 {
   const struct openssl_cipher_ctx *ctx = p;
   int len;
-  assert(EVP_EncryptUpdate(ctx->evp, dst, &len, src, length) == 1);
+  int ret = EVP_EncryptUpdate(ctx->evp, dst, &len, src, length);
+  assert(ret == 1);
 }
 static void
 openssl_evp_decrypt(const void *p, size_t length,
@@ -107,14 +112,16 @@ openssl_evp_decrypt(const void *p, size_t length,
 {
   const struct openssl_cipher_ctx *ctx = p;
   int len;
-  assert(EVP_DecryptUpdate(ctx->evp, dst, &len, src, length) == 1);
+  int ret = EVP_DecryptUpdate(ctx->evp, dst, &len, src, length);
+  assert(ret == 1);
 }
 
 static void
 openssl_evp_set_nonce(void *p, const uint8_t *nonce)
 {
   const struct openssl_cipher_ctx *ctx = p;
-  assert(EVP_CipherInit_ex(ctx->evp, NULL, NULL, NULL, nonce, -1) == 1);
+  int ret = EVP_CipherInit_ex(ctx->evp, NULL, NULL, NULL, nonce, -1);
+  assert(ret == 1);
 }
 
 static void
@@ -122,7 +129,8 @@ openssl_evp_update(void *p, size_t length, const uint8_t *src)
 {
   const struct openssl_cipher_ctx *ctx = p;
   int len;
-  assert(EVP_EncryptUpdate(ctx->evp, NULL, &len, src, length) == 1);
+  int ret = EVP_EncryptUpdate(ctx->evp, NULL, &len, src, length);
+  assert(ret == 1);
 }
 
 /* This will work for encryption only! */
@@ -130,7 +138,8 @@ static void
 openssl_evp_gcm_digest(void *p, size_t length, uint8_t *dst)
 {
   const struct openssl_cipher_ctx *ctx = p;
-  assert(EVP_CIPHER_CTX_ctrl(ctx->evp, EVP_CTRL_GCM_GET_TAG, length, dst) == 1);
+  int ret = EVP_CIPHER_CTX_ctrl(ctx->evp, EVP_CTRL_GCM_GET_TAG, length, dst);
+  assert(ret == 1);
 }
 
 static void
@@ -139,7 +148,8 @@ openssl_evp_aead_encrypt(void *p, size_t length,
 {
   const struct openssl_cipher_ctx *ctx = p;
   int len;
-  assert(EVP_EncryptUpdate(ctx->evp, dst, &len, src, length) == 1);
+  int ret = EVP_EncryptUpdate(ctx->evp, dst, &len, src, length);
+  assert(ret == 1);
 }
 
 static void
@@ -148,7 +158,8 @@ openssl_evp_aead_decrypt(void *p, size_t length,
 {
   const struct openssl_cipher_ctx *ctx = p;
   int len;
-  assert(EVP_DecryptUpdate(ctx->evp, dst, &len, src, length) == 1);
+  int ret = EVP_DecryptUpdate(ctx->evp, dst, &len, src, length);
+  assert(ret == 1);
 }
 
 /* AES */
