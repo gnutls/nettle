@@ -1,3 +1,14 @@
+2018-02-17  Dmitry Eremin-Solenikov  <dbaryshkov@gmail.com>
+
+	(openssl_evp_set_encrypt_key, openssl_evp_set_decrypt_key): Use
+	EVP_CipherInit_ex.
+	* examples/nettle-openssl.c (nettle_openssl_gcm_aes128)
+	(nettle_openssl_gcm_aes192, nettle_openssl_gcm_aes256): New aead
+	algorithms, for benchmarking purposes, and supporting wrapper functions.
+	* nettle-internal.h: Corresponding declarations.
+	* examples/nettle-benchmark.c (main): Include openssl's gcm aes in
+	benchmark.
+
 2018-02-16  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle.texinfo: Improved index entries.
