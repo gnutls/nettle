@@ -1,3 +1,10 @@
+2018-02-18  Niels Möller  <nisse@lysator.liu.se>
+
+	Backported from master branch.
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Moved pss-mgf1-test.c...
+	(TS_HOGWEED_SOURCES): ...to here. Fixes link failure in builds
+	without public-key support.
+
 2018-01-16  Niels Möller  <nisse@lysator.liu.se>
 
 	Backported from master branch.
