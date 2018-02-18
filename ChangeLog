@@ -1,3 +1,8 @@
+2018-02-18  Dmitry Eremin-Solenikov  <dbaryshkov@gmail.com>
+
+	* examples/nettle-openssl.c): Move expressions with side effects
+	out of asserts.
+
 2018-02-17  Dmitry Eremin-Solenikov  <dbaryshkov@gmail.com>
 
 	(openssl_evp_set_encrypt_key, openssl_evp_set_decrypt_key): Use
