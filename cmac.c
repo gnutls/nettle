@@ -47,112 +47,124 @@
 #include "macros.h"
 
 static const uint8_t const_zero[] = {
-	0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00
+  0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00
 };
 
 /* shift one and XOR with 0x87. */
-static inline void block_mulx(union nettle_block16 *dst,
-			      const union nettle_block16 *src)
+static inline void
+block_mulx(union nettle_block16 *dst,
+	   const union nettle_block16 *src)
 {
-	uint64_t b1 = READ_UINT64(src->b);
-	uint64_t b2 = READ_UINT64(src->b+8);
+  uint64_t b1 = READ_UINT64(src->b);
+  uint64_t b2 = READ_UINT64(src->b+8);
 
-	b1 = (b1 << 1) | (b2 >> 63);
-	b2 <<= 1;
+  b1 = (b1 << 1) | (b2 >> 63);
+  b2 <<= 1;
 
-	if (src->b[0] & 0x80)
-		b2 ^= 0x87;
+  if (src->b[0] & 0x80)
+    b2 ^= 0x87;
 
-	WRITE_UINT64(dst->b, b1);
-	WRITE_UINT64(dst->b+8, b2);
+  WRITE_UINT64(dst->b, b1);
+  WRITE_UINT64(dst->b+8, b2);
 }
 
-void cmac128_set_key(struct cmac128 *ctx, void *cipher,
-		     nettle_cipher_func *encrypt)
+void
+cmac128_set_key(struct cmac128 *ctx, void *cipher,
+		nettle_cipher_func *encrypt)
 {
-	union nettle_block16 *L = &ctx->block;
-	memset(ctx, 0, sizeof(*ctx));
+  union nettle_block16 *L = &ctx->block;
+  memset(ctx, 0, sizeof(*ctx));
 
-	/* step 1 - generate subkeys k1 and k2 */
-	encrypt(cipher, 16, L->b, const_zero);
+  /* step 1 - generate subkeys k1 and k2 */
+  encrypt(cipher, 16, L->b, const_zero);
 
-	block_mulx(&ctx->K1, L);
-	block_mulx(&ctx->K2, &ctx->K1);
+  block_mulx(&ctx->K1, L);
+  block_mulx(&ctx->K2, &ctx->K1);
 }
 
 #define MIN(x,y) ((x)<(y)?(x):(y))
 
-void cmac128_update(struct cmac128 *ctx, void *cipher,
-		    nettle_cipher_func *encrypt,
-		    size_t msg_len, const uint8_t *msg)
+void
+cmac128_update(struct cmac128 *ctx, void *cipher,
+	       nettle_cipher_func *encrypt,
+	       size_t msg_len, const uint8_t *msg)
 {
-	union nettle_block16 Y;
-	/*
-	 * check if we expand the block
-	 */
-	if (ctx->index < 16) {
-		size_t len = MIN(16 - ctx->index, msg_len);
-		memcpy(&ctx->block.b[ctx->index], msg, len);
-		msg += len;
-		msg_len -= len;
-		ctx->index += len;
-	}
+  union nettle_block16 Y;
+  /*
+   * check if we expand the block
+   */
+  if (ctx->index < 16)
+    {
+      size_t len = MIN(16 - ctx->index, msg_len);
+      memcpy(&ctx->block.b[ctx->index], msg, len);
+      msg += len;
+      msg_len -= len;
+      ctx->index += len;
+    }
 
-	if (msg_len == 0) {
-		/* if it is still the last block, we are done */
-		return;
-	}
+  if (msg_len == 0) {
+    /* if it is still the last block, we are done */
+    return;
+  }
 
-	/*
-	 * now checksum everything but the last block
-	 */
-	memxor3(Y.b, ctx->X.b, ctx->block.b, 16);
-	encrypt(cipher, 16, ctx->X.b, Y.b);
+  /*
+   * now checksum everything but the last block
+   */
+  memxor3(Y.b, ctx->X.b, ctx->block.b, 16);
+  encrypt(cipher, 16, ctx->X.b, Y.b);
 
-	while (msg_len > 16) {
-		memxor3(Y.b, ctx->X.b, msg, 16);
-		encrypt(cipher, 16, ctx->X.b, Y.b);
-		msg += 16;
-		msg_len -= 16;
-	}
+  while (msg_len > 16)
+    {
+      memxor3(Y.b, ctx->X.b, msg, 16);
+      encrypt(cipher, 16, ctx->X.b, Y.b);
+      msg += 16;
+      msg_len -= 16;
+    }
 
-	/*
-	 * copy the last block, it will be processed in
-	 * cmac128_digest().
-	 */
-	memcpy(ctx->block.b, msg, msg_len);
-	ctx->index = msg_len;
+  /*
+   * copy the last block, it will be processed in
+   * cmac128_digest().
+   */
+  memcpy(ctx->block.b, msg, msg_len);
+  ctx->index = msg_len;
 }
 
-void cmac128_digest(struct cmac128 *ctx, void *cipher,
-		    nettle_cipher_func *encrypt,
-		    unsigned length,
-		    uint8_t *dst)
+void
+cmac128_digest(struct cmac128 *ctx, void *cipher,
+	       nettle_cipher_func *encrypt,
+	       unsigned length,
+	       uint8_t *dst)
 {
-	union nettle_block16 Y;
+  union nettle_block16 Y;
 
-	memset(ctx->block.b+ctx->index, 0, sizeof(ctx->block.b)-ctx->index);
+  memset(ctx->block.b+ctx->index, 0, sizeof(ctx->block.b)-ctx->index);
 
-	/* re-use ctx->block for memxor output */
-	if (ctx->index < 16) {
-		ctx->block.b[ctx->index] = 0x80;
-		memxor(ctx->block.b, ctx->K2.b, 16);
-	} else {
-		memxor(ctx->block.b, ctx->K1.b, 16);
-	}
+  /* re-use ctx->block for memxor output */
+  if (ctx->index < 16)
+    {
+      ctx->block.b[ctx->index] = 0x80;
+      memxor(ctx->block.b, ctx->K2.b, 16);
+    }
+  else
+    {
+      memxor(ctx->block.b, ctx->K1.b, 16);
+    }
 
-	memxor3(Y.b, ctx->block.b, ctx->X.b, 16);
+  memxor3(Y.b, ctx->block.b, ctx->X.b, 16);
 
-	assert(length <= 16);
-	if (length == 16) {
-		encrypt(cipher, 16, dst, Y.b);
-	} else {
-		encrypt(cipher, 16, ctx->block.b, Y.b);
-		memcpy(dst, ctx->block.b, length);
-	}
+  assert(length <= 16);
+  if (length == 16)
+    {
+      encrypt(cipher, 16, dst, Y.b);
+    }
+  else
+    {
+      encrypt(cipher, 16, ctx->block.b, Y.b);
+      memcpy(dst, ctx->block.b, length);
+    }
 
-	/* reset state for re-use */
-	memset(&ctx->X, 0, sizeof(ctx->X));
-	ctx->index = 0;
+  /* reset state for re-use */
+  memset(&ctx->X, 0, sizeof(ctx->X));
+  ctx->index = 0;
 }
