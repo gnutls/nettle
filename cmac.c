@@ -46,13 +46,8 @@
 #include "nettle-internal.h"
 #include "macros.h"
 
-static const uint8_t const_zero[] = {
-  0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00
-};
-
 /* shift one and XOR with 0x87. */
-static inline void
+static void
 block_mulx(union nettle_block16 *dst,
 	   const union nettle_block16 *src)
 {
@@ -70,9 +65,13 @@ block_mulx(union nettle_block16 *dst,
 }
 
 void
-cmac128_set_key(struct cmac128 *ctx, void *cipher,
+cmac128_set_key(struct cmac128_ctx *ctx, const void *cipher,
 		nettle_cipher_func *encrypt)
 {
+  static const uint8_t const_zero[] = {
+    0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00
+  };
   union nettle_block16 *L = &ctx->block;
   memset(ctx, 0, sizeof(*ctx));
 
@@ -86,7 +85,7 @@ cmac128_set_key(struct cmac128 *ctx, void *cipher,
 #define MIN(x,y) ((x)<(y)?(x):(y))
 
 void
-cmac128_update(struct cmac128 *ctx, void *cipher,
+cmac128_update(struct cmac128_ctx *ctx, const void *cipher,
 	       nettle_cipher_func *encrypt,
 	       size_t msg_len, const uint8_t *msg)
 {
@@ -131,7 +130,7 @@ cmac128_update(struct cmac128 *ctx, void *cipher,
 }
 
 void
-cmac128_digest(struct cmac128 *ctx, void *cipher,
+cmac128_digest(struct cmac128_ctx *ctx, const void *cipher,
 	       nettle_cipher_func *encrypt,
 	       unsigned length,
 	       uint8_t *dst)

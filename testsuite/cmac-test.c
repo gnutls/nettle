@@ -2,23 +2,24 @@
 #include "nettle-internal.h"
 #include "cmac.h"
 
-typedef void set_key_func(void *ctx, const uint8_t *key);
-typedef void update_func(void *ctx, size_t length, const uint8_t *data);
-typedef void digest_func(void *ctx, size_t length, uint8_t *digest);
+#define test_cmac_aes128(key, msg, ref)					\
+  test_cmac_hash ((nettle_set_key_func*) cmac_aes128_set_key,		\
+		  (nettle_hash_update_func*) cmac_aes128_update,	\
+		  (nettle_hash_digest_func*) cmac_aes128_digest,	\
+		  sizeof(struct cmac_aes128_ctx),			\
+		  key, msg, ref)
 
-#define test_cmac_aes128(key, msg, ref) \
-	test_cmac_hash ((set_key_func*)cmac_aes128_set_key, (update_func*)cmac_aes128_update, \
-			(digest_func*)cmac_aes128_digest, sizeof(struct cmac_aes128_ctx), \
-			key, msg, ref)
-
-#define test_cmac_aes256(key, msg, ref) \
-	test_cmac_hash ((set_key_func*)cmac_aes256_set_key, (update_func*)cmac_aes256_update, \
-			(digest_func*)cmac_aes256_digest, sizeof(struct cmac_aes256_ctx), \
-			key, msg, ref)
+#define test_cmac_aes256(key, msg, ref)					\
+  test_cmac_hash ((nettle_set_key_func*) cmac_aes256_set_key,		\
+		  (nettle_hash_update_func*) cmac_aes256_update,	\
+		  (nettle_hash_digest_func*) cmac_aes256_digest,	\
+		  sizeof(struct cmac_aes256_ctx),			\
+		  key, msg, ref)
 
 static void
-test_cmac_hash (set_key_func *set_key, update_func *update,
-		digest_func *digest, size_t ctx_size,
+test_cmac_hash (nettle_set_key_func *set_key,
+		nettle_hash_update_func *update,
+		nettle_hash_digest_func *digest, size_t ctx_size,
 		const struct tstring *key, const struct tstring *msg,
 		const struct tstring *ref)
 {

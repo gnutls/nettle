@@ -1,4 +1,16 @@
-2018-02-19    Nikos Mavrogiannopoulos  <nmav@redhat.com>
+2018-02-19  Niels Möller  <nisse@lysator.liu.se>
+
+	Mostly aesthetic changes. Besides indentation:
+	* cmac.h (struct cmac128): Rename, to cmac128_ctx.
+	(CMAC128_CTX): Rename first member from data to ctx.
+
+	* cmac.c: Use const void * as the type for cipher arguments.
+	(block_mulx): Un-inline.
+	(cmac128_set_key): Make a constant function local.
+
+	* testsuite/cmac-test.c: Delete local typedefs.
+
+2018-02-19  Nikos Mavrogiannopoulos  <nmav@redhat.com>
 
 	Add support for CMAC.
 	* cmac.h: New file.
