@@ -1,3 +1,15 @@
+2018-02-19  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle-internal.h: Include sha3.h, needed for the definition of
+	NETTLE_MAX_HASH_CONTEXT_SIZE.
+	(TMP_DECL_ALIGN, TMP_ALLOC_ALIGN): New macros, to support
+	allocation of context structs with alignment requirements.
+	[!HAVE_ALLOCA]: Also use assert, rather than calling abort
+	directly.
+
+	* pss.c (pss_encode_mgf1, pss_verify_mgf1): Use new macros.
+	* pss-mgf1.c (pss_mgf1): Likewise.
+
 2018-02-18  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Moved pss-mgf1-test.c...
