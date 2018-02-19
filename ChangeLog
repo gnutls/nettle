@@ -1,3 +1,25 @@
+2018-02-19    Nikos Mavrogiannopoulos  <nmav@redhat.com>
+
+	Add support for CMAC.
+	* cmac.h: New file.
+	(struct cmac128): New struct.
+	* cmac.c (block_mulx, cmac128_set_key, cmac128_update)
+	(cmac128_digest): New file, new functions.
+	* cmac-aes128.c (cmac_aes128_set_key, cmac_aes128_update)
+	(cmac_aes128_digest): New file, new functions.
+	* cmac-aes256.c (cmac_aes256_set_key, cmac_aes256_update)
+	(cmac_aes256_digest): New file, new functions.
+	* Makefile.in (nettle_SOURCES): Added cmac.c cmac-aes128.c cmac-aes256.c.
+	(HEADERS): Added cmac.h.
+
+	* testsuite/cmac-test.c: New tests.
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Add cmac-test.c.
+
+	* examples/nettle-benchmark.c (time_cmac): New function.
+	(main): Use it.
+
+	* nettle.texinfo: Document CMAC.
+
 2018-02-19  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle-internal.h: Include sha3.h, needed for the definition of
