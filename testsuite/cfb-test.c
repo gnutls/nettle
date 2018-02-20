@@ -23,7 +23,7 @@ test_cfb_bulk(void)
   const uint8_t *start_iv = H("11adbff119749103 207619cfa0e8d13a");
   const uint8_t *end_iv = H("1fd0a9189b8480b7 b06a2b36ef5943ba");
 
-  struct CFB_CTX(struct aes_ctx, AES_BLOCK_SIZE) aes;
+  struct CFB_CTX(struct aes256_ctx, AES_BLOCK_SIZE) aes;
 
   knuth_lfib_init(&random, CFB_BULK_DATA);
   knuth_lfib_random(&random, CFB_BULK_DATA, clear);
@@ -31,10 +31,10 @@ test_cfb_bulk(void)
   /* Byte that should not be overwritten */
   cipher[CFB_BULK_DATA] = 17;
 
-  aes_set_encrypt_key(&aes.ctx, 32, key);
+  aes256_set_encrypt_key(&aes.ctx, key);
   CFB_SET_IV(&aes, start_iv);
 
-  CFB_ENCRYPT(&aes, aes_encrypt, CFB_BULK_DATA, cipher, clear);
+  CFB_ENCRYPT(&aes, aes256_encrypt, CFB_BULK_DATA, cipher, clear);
 
   ASSERT(cipher[CFB_BULK_DATA] == 17);
 
@@ -48,9 +48,9 @@ test_cfb_bulk(void)
   ASSERT(MEMEQ(AES_BLOCK_SIZE, aes.iv, end_iv));
 
   /* Decrypt, in place */
-  aes_set_encrypt_key(&aes.ctx, 32, key);
+  aes256_set_encrypt_key(&aes.ctx, key);
   CFB_SET_IV(&aes, start_iv);
-  CFB_DECRYPT(&aes, aes_encrypt, CFB_BULK_DATA, cipher, cipher);
+  CFB_DECRYPT(&aes, aes256_encrypt, CFB_BULK_DATA, cipher, cipher);
 
   ASSERT(cipher[CFB_BULK_DATA] == 17);
 
@@ -80,7 +80,7 @@ test_cfb8_bulk(void)
   const uint8_t *start_iv = H("11adbff119749103 207619cfa0e8d13a");
   const uint8_t *end_iv = H("f84bfd48206f5803 6ef86f4e69e9aec0");
 
-  struct CFB8_CTX(struct aes_ctx, AES_BLOCK_SIZE) aes;
+  struct CFB8_CTX(struct aes256_ctx, AES_BLOCK_SIZE) aes;
 
   knuth_lfib_init(&random, CFB8_BULK_DATA);
   knuth_lfib_random(&random, CFB8_BULK_DATA, clear);
@@ -88,10 +88,10 @@ test_cfb8_bulk(void)
   /* Byte that should not be overwritten */
   cipher[CFB8_BULK_DATA] = 17;
 
-  aes_set_encrypt_key(&aes.ctx, 32, key);
+  aes256_set_encrypt_key(&aes.ctx, key);
   CFB8_SET_IV(&aes, start_iv);
 
-  CFB8_ENCRYPT(&aes, aes_encrypt, CFB8_BULK_DATA, cipher, clear);
+  CFB8_ENCRYPT(&aes, aes256_encrypt, CFB8_BULK_DATA, cipher, clear);
 
   ASSERT(cipher[CFB8_BULK_DATA] == 17);
 
@@ -105,9 +105,9 @@ test_cfb8_bulk(void)
   ASSERT(MEMEQ(AES_BLOCK_SIZE, aes.iv, end_iv));
 
   /* Decrypt, in place */
-  aes_set_encrypt_key(&aes.ctx, 32, key);
+  aes256_set_encrypt_key(&aes.ctx, key);
   CFB8_SET_IV(&aes, start_iv);
-  CFB8_DECRYPT(&aes, aes_encrypt, CFB8_BULK_DATA, cipher, cipher);
+  CFB8_DECRYPT(&aes, aes256_encrypt, CFB8_BULK_DATA, cipher, cipher);
 
   ASSERT(cipher[CFB8_BULK_DATA] == 17);
 

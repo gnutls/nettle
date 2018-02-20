@@ -1,13 +1,13 @@
 2018-02-20  Niels Möller  <nisse@lysator.liu.se>
 
-	* examples/rsa-session.h (struct rsa_session): Use struct
+	* testsuite/cbc-test.c (test_cbc_bulk): Use struct
 	aes256_ctx, instead of the deprecated struct aes_ctx.
-
+	* testsuite/cfb-test.c (test_cfb_bulk): Likewise.
+	* examples/rsa-session.h (struct rsa_session): Likewise.
 	* examples/rsa-encrypt.c (rsa_session_set_encrypt_key)
 	(process_file): Use aes256_* functions.
 	* examples/rsa-decrypt.c (rsa_session_set_decrypt_key)
 	(process_file): Likewise.
-
 
 2018-02-19  Niels Möller  <nisse@lysator.liu.se>
 
