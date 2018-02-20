@@ -64,7 +64,7 @@ rsa_session_set_decrypt_key(struct rsa_session *ctx,
   const uint8_t *iv = SESSION_IV(key);
   const uint8_t *hmac_key = SESSION_HMAC_KEY(key);
   
-  aes_set_decrypt_key(&ctx->aes.ctx, AES_KEY_SIZE, aes_key);
+  aes256_set_decrypt_key(&ctx->aes.ctx, aes_key);
   CBC_SET_IV(&ctx->aes, iv);
   hmac_sha1_set_key(&ctx->hmac, SHA1_DIGEST_SIZE, hmac_key);
 }
@@ -151,7 +151,7 @@ process_file(struct rsa_session *ctx,
 
       if (size)
 	{
-	  CBC_DECRYPT(&ctx->aes, aes_decrypt, size, buffer, buffer);
+	  CBC_DECRYPT(&ctx->aes, aes256_decrypt, size, buffer, buffer);
 	  hmac_sha1_update(&ctx->hmac, size, buffer);
 	  if (!write_data(out, size, buffer))
 	    {
@@ -164,7 +164,7 @@ process_file(struct rsa_session *ctx,
   while (size == BUF_SIZE);
 
   /* Decrypt final block */
-  CBC_DECRYPT(&ctx->aes, aes_decrypt, AES_BLOCK_SIZE, buffer, buffer);
+  CBC_DECRYPT(&ctx->aes, aes256_decrypt, AES_BLOCK_SIZE, buffer, buffer);
   padding = buffer[AES_BLOCK_SIZE - 1];
   if (padding > AES_BLOCK_SIZE)
     {
