@@ -109,13 +109,6 @@ read_bignum(FILE *f, mpz_t x)
   return 0;
 }
 
-struct process_ctx
-{
-  struct CBC_CTX(struct aes_ctx, AES_BLOCK_SIZE) aes;
-  struct hmac_sha1_ctx hmac;
-  struct yarrow256_ctx yarrow;
-};
-
 #define BUF_SIZE (100 * AES_BLOCK_SIZE)
 
 /* Trailing data that needs special processing */
