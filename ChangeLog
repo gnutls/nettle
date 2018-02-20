@@ -1,3 +1,7 @@
+2018-02-20  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/cmac-test.c (test_cmac_hash): Deallocate ctx properly.
+
 2018-02-19  Niels Möller  <nisse@lysator.liu.se>
 
 	Mostly aesthetic changes. Besides indentation:

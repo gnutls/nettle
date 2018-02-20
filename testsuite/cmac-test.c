@@ -77,6 +77,7 @@ test_cmac_hash (nettle_set_key_func *set_key,
       fprintf(stderr, "\n");
       FAIL();
     }
+  free (ctx);
 }
 
 void
