@@ -13,6 +13,8 @@
 	* gcm-aes.c: Deleted file.
 	* Makefile.in (nettle_SOURCES): Drop above files.
 
+	* nettle.texinfo: Delete corresponding documentation.
+
 	* testsuite/aes-test.c (test_invert): Generalize to take a struct
 	nettle_cipher and an invert function.
 	(test_cipher2): Deleted function.

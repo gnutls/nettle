@@ -1144,17 +1144,11 @@ Like all the AES candidates, the winning design uses a block size of 128
 bits, or 16 octets, and three possible key-size, 128, 192 and 256 bits
 (16, 24 and 32 octets) being the allowed key sizes. It does not have any
 weak keys. Nettle defines AES in @file{<nettle/aes.h>}, and there is one
-context struct for each key size. (Earlier versions of Nettle used a
-single context struct, @code{struct aes_ctx}, for all key sizes. This
-interface kept for backwards compatibility).
+context struct for each key size..
  
 @deftp {Context struct} {struct aes128_ctx}
 @deftpx {Context struct} {struct aes192_ctx}
 @deftpx {Context struct} {struct aes256_ctx}
-@end deftp
-
-@deftp {Context struct} {struct aes_ctx}
-Alternative struct, for the old AES interface.
 @end deftp
 
 @defvr Constant AES_BLOCK_SIZE
@@ -1164,8 +1158,6 @@ The AES block-size, 16.
 @defvr Constant AES128_KEY_SIZE
 @defvrx Constant AES192_KEY_SIZE
 @defvrx Constant AES256_KEY_SIZE
-@defvrx Constant AES_MIN_KEY_SIZE
-@defvrx Constant AES_MAX_KEY_SIZE
 @end defvr
 
 @defvr Constant AES_KEY_SIZE
@@ -1178,15 +1170,12 @@ Default AES key size, 32.
 @deftypefunx void aes192_set_decrypt_key (struct aes192_ctx *@var{ctx}, const uint8_t *@var{key})
 @deftypefunx void aes256_set_encrypt_key (struct aes256_ctx *@var{ctx}, const uint8_t *@var{key})
 @deftypefunx void aes256_set_decrypt_key (struct aes256_ctx *@var{ctx}, const uint8_t *@var{key})
-@deftypefunx void aes_set_encrypt_key (struct aes_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{key})
-@deftypefunx void aes_set_decrypt_key (struct aes_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{key})
 Initialize the cipher, for encryption or decryption, respectively.
 @end deftypefun
 
 @deftypefun void aes128_invert_key (struct aes128_ctx *@var{dst}, const struct aes128_ctx *@var{src})
 @deftypefunx void aes192_invert_key (struct aes192_ctx *@var{dst}, const struct aes192_ctx *@var{src})
 @deftypefunx void aes256_invert_key (struct aes256_ctx *@var{dst}, const struct aes256_ctx *@var{src})
-@deftypefunx void aes_invert_key (struct aes_ctx *@var{dst}, const struct aes_ctx *@var{src})
 Given a context @var{src} initialized for encryption, initializes the
 context struct @var{dst} for decryption, using the same key. If the same
 context struct is passed for both @code{src} and @code{dst}, it is
@@ -1200,7 +1189,6 @@ because calling, e.g., @code{aes128_set_encrypt_key} and
 @deftypefun void aes128_encrypt (struct aes128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 @deftypefunx void aes192_encrypt (struct aes192_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 @deftypefunx void aes256_encrypt (struct aes256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
-@deftypefunx void aes_encrypt (struct aes_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Encryption function. @var{length} must be an integral multiple of the
 block size. If it is more than one block, the data is processed in ECB
 mode. @code{src} and @code{dst} may be equal, but they must not overlap
@@ -1210,7 +1198,6 @@ in any other way.
 @deftypefun void aes128_decrypt (struct aes128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 @deftypefunx void aes192_decrypt (struct aes192_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 @deftypefunx void aes256_decrypt (struct aes256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
-@deftypefunx void aes_decrypt (struct aes_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Analogous to the encryption functions above.
 @end deftypefun
 
@@ -2017,13 +2004,13 @@ Expands to
 It can be used to define a @acronym{CBC} context struct, either directly,
 
 @example
-struct CBC_CTX(struct aes_ctx, AES_BLOCK_SIZE) ctx;
+struct CBC_CTX(struct aes256_ctx, AES_BLOCK_SIZE) ctx;
 @end example
 
 or to give it a struct tag,
 
 @example
-struct aes_cbc_ctx CBC_CTX (struct aes_ctx, AES_BLOCK_SIZE);
+struct aes256_cbc_ctx CBC_CTX (struct aes256_ctx, AES_BLOCK_SIZE);
 @end example
 
 @deffn Macro CBC_SET_IV (@var{ctx}, @var{iv})
@@ -2043,7 +2030,7 @@ the source and destination area for the operation.
 
 These macros use some tricks to make the compiler display a warning if
 the types of @var{f} and @var{ctx} don't match, e.g. if you try to use
-an @code{struct aes_ctx} context with the @code{des_encrypt} function.
+an @code{struct aes256_ctx} context with the @code{des_encrypt} function.
 
 @node CTR, CFB and CFB8, CBC, Cipher modes
 @comment  node-name,  next,  previous,  up
@@ -2661,19 +2648,11 @@ function of the underlying cipher.
 @subsubsection @acronym{GCM}-@acronym{AES} interface
 
 The following functions implement the common case of @acronym{GCM} using
-@acronym{AES} as the underlying cipher. The variants with a specific
-@acronym{AES} flavor are recommended, while the fucntinos using
-@code{struct gcm_aes_ctx} are kept for compatibility with older versiosn
-of Nettle.
-
+@acronym{AES} as the underlying cipher.
 @deftp {Context struct} {struct gcm_aes128_ctx}
 @deftpx {Context struct} {struct gcm_aes192_ctx}
 @deftpx {Context struct} {struct gcm_aes256_ctx}
 Context structs, defined using @code{GCM_CTX}.
-@end deftp
-
-@deftp {Context struct} {struct gcm_aes_ctx}
-Alternative context struct, usign the old @acronym{AES} interface.
 @end deftp
 
 @deftypefun void gcm_aes128_set_key (struct gcm_aes128_ctx *@var{ctx}, const uint8_t *@var{key})
@@ -2682,22 +2661,15 @@ Alternative context struct, usign the old @acronym{AES} interface.
 Initializes @var{ctx} using the given key.
 @end deftypefun
 
-@deftypefun void gcm_aes_set_key (struct gcm_aes_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{key})
-Corresponding function, using the old @acronym{AES} interface. All valid
-@acronym{AES} key sizes can be used.
-@end deftypefun
-
 @deftypefun void gcm_aes128_set_iv (struct gcm_aes128_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{iv})
 @deftypefunx void gcm_aes192_set_iv (struct gcm_aes192_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{iv})
 @deftypefunx void gcm_aes256_set_iv (struct gcm_aes256_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{iv})
-@deftypefunx void gcm_aes_set_iv (struct gcm_aes_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{iv})
 Initializes the per-message state, using the given @acronym{IV}.
 @end deftypefun
 
 @deftypefun void gcm_aes128_update (struct gcm_aes128_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
 @deftypefunx void gcm_aes192_update (struct gcm_aes192_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
 @deftypefunx void gcm_aes256_update (struct gcm_aes256_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
-@deftypefunx void gcm_aes_update (struct gcm_aes_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
 Provides associated data to be authenticated. If used, must be called
 before @code{gcm_aes_encrypt} or @code{gcm_aes_decrypt}. All but the
 last call for each message @emph{must} use a length that is a multiple
@@ -2707,11 +2679,9 @@ of the block size.
 @deftypefun void gcm_aes128_encrypt (struct gcm_aes128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 @deftypefunx void gcm_aes192_encrypt (struct gcm_aes192_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 @deftypefunx void gcm_aes256_encrypt (struct gcm_aes256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
-@deftypefunx void gcm_aes_encrypt (struct gcm_aes_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 @deftypefunx void gcm_aes128_decrypt (struct gcm_aes128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 @deftypefunx void gcm_aes192_decrypt (struct gcm_aes192_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 @deftypefunx void gcm_aes256_decrypt (struct gcm_aes256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
-@deftypefunx void gcm_aes_decrypt (struct gcm_aes_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Encrypts or decrypts the data of a message. All but the last call for
 each message @emph{must} use a length that is a multiple of the block
 size.
@@ -2720,7 +2690,6 @@ size.
 @deftypefun void gcm_aes128_digest (struct gcm_aes128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
 @deftypefunx void gcm_aes192_digest (struct gcm_aes192_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
 @deftypefunx void gcm_aes256_digest (struct gcm_aes256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-@deftypefunx void gcm_aes_digest (struct gcm_aes_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
 Extracts the message digest (also known ``authentication tag''). This is
 the final operation when processing a message. It's strongly recommended
 that @var{length} is @code{GCM_DIGEST_SIZE}, but if you provide a smaller
