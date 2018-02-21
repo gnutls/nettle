@@ -101,6 +101,7 @@ Keyed Hash Functions
 
 * HMAC::
 * UMAC::
+* CMAC::
 
 Public-key algorithms
 
@@ -270,6 +271,9 @@ The implementation of the TWOFISH cipher is written by Ruud de Rooij.
 
 @item UMAC
 Written by @value{AUTHOR}.
+
+@item CMAC
+Written by Nikos Mavrogiannopoulos, @value{AUTHOR}, Jeremy Allison, Michael Adam and Stefan Metzmacher.
 
 @item RSA
 Written by @value{AUTHOR}. Uses the GMP library for bignum operations.
@@ -3159,6 +3163,7 @@ as well.
 @menu
 * HMAC::
 * UMAC::
+* CMAC::
 * Poly1305::
 @end menu
 
@@ -3501,7 +3506,60 @@ as described above, the new value is used unless you call the
 @code{_set_nonce} function explicitly for each message.
 @end deftypefun
 
-@node Poly1305,, UMAC, Keyed hash functions
+@node CMAC,, UMAC, Keyed hash functions
+@subsection @acronym{CMAC}
+@cindex CMAC
+
+@acronym{CMAC} is a message authentication code based on CBC encryption
+mode. It is suitable for systems where block ciphers are preferrable
+and perform better than hash functions. @acronym{CMAC} is specified in
+@cite{RFC4493}. The block size is always 128 bits (16 octets).
+
+Nettle provides helper functions for @acronym{CMAC } with
+the @acronym{AES} block cipher.
+
+Nettle defines @acronym{CMAC} in @file{<nettle/cmac.h>}.
+
+@deftp {Context struct} {struct cmac128_ctx}
+@end deftp
+
+@defvr Constant CMAC128_DIGEST_SIZE
+The size of an CMAC digest, 16.
+@end defvr
+
+@deftypefun void cmac_aes128_set_key (struct cmac_aes128_ctx *@var{ctx}, const uint8_t *@var{key})
+This function initializes the @acronym{CMAC} context struct for AES-128.
+@end deftypefun
+
+@deftypefun void cmac_aes128_update (struct cmac_aes128_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
+This function is called zero or more times to process the message.
+@end deftypefun
+
+@deftypefun void cmac_aes128_digest (struct cmac_aes128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+Extracts the @acronym{MAC} of the message, writing it to @var{digest}.
+@var{length} is usually equal to the specified output size, but if you
+provide a smaller value, only the first @var{length} octets of the
+@acronym{MAC} are written. This function resets the context for
+processing of a new message with the same key.
+@end deftypefun
+
+@deftypefun void cmac_aes256_set_key (struct cmac_aes256_ctx *@var{ctx}, const uint8_t *@var{key})
+This function initializes the @acronym{CMAC} context struct for AES-256.
+@end deftypefun
+
+@deftypefun void cmac_aes256_update (struct cmac_aes256_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
+This function is called zero or more times to process the message.
+@end deftypefun
+
+@deftypefun void cmac_aes256_digest (struct cmac_aes256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+Extracts the @acronym{MAC} of the message, writing it to @var{digest}.
+@var{length} is usually equal to the specified output size, but if you
+provide a smaller value, only the first @var{length} octets of the
+@acronym{MAC} are written. This function resets the context for
+processing of a new message with the same key.
+@end deftypefun
+
+@node Poly1305,, CMAC, Keyed hash functions
 @comment  node-name,  next,  previous,  up
 @subsection Poly1305
 

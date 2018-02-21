@@ -1,5 +1,43 @@
 2018-02-20  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/cmac-test.c (test_cmac_hash): Deallocate ctx properly.
+
+2018-02-19  Niels Möller  <nisse@lysator.liu.se>
+
+	Mostly aesthetic changes. Besides indentation:
+	* cmac.h (struct cmac128): Rename, to cmac128_ctx.
+	(CMAC128_CTX): Rename first member from data to ctx.
+
+	* cmac.c: Use const void * as the type for cipher arguments.
+	(block_mulx): Un-inline.
+	(cmac128_set_key): Make a constant function local.
+
+	* testsuite/cmac-test.c: Delete local typedefs.
+
+2018-02-19  Nikos Mavrogiannopoulos  <nmav@redhat.com>
+
+	Add support for CMAC.
+	* cmac.h: New file.
+	(struct cmac128): New struct.
+	* cmac.c (block_mulx, cmac128_set_key, cmac128_update)
+	(cmac128_digest): New file, new functions.
+	* cmac-aes128.c (cmac_aes128_set_key, cmac_aes128_update)
+	(cmac_aes128_digest): New file, new functions.
+	* cmac-aes256.c (cmac_aes256_set_key, cmac_aes256_update)
+	(cmac_aes256_digest): New file, new functions.
+	* Makefile.in (nettle_SOURCES): Added cmac.c cmac-aes128.c cmac-aes256.c.
+	(HEADERS): Added cmac.h.
+
+	* testsuite/cmac-test.c: New tests.
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Add cmac-test.c.
+
+	* examples/nettle-benchmark.c (time_cmac): New function.
+	(main): Use it.
+
+	* nettle.texinfo: Document CMAC.
+
+2018-02-20  Niels Möller  <nisse@lysator.liu.se>
+
 	* testsuite/cbc-test.c (test_cbc_bulk): Use struct
 	aes256_ctx, instead of the deprecated struct aes_ctx.
 	* testsuite/cfb-test.c (test_cfb_bulk): Likewise.
