@@ -39,19 +39,9 @@
 
 #include "aes-internal.h"
 
-/* The main point on this function is to help the assembler
+/* The main point on these functions is to help the assembler
    implementations of _nettle_aes_encrypt to get the table pointer.
    For PIC code, the details can be complex and system dependent. */
-void
-aes_encrypt(const struct aes_ctx *ctx,
-	    size_t length, uint8_t *dst,
-	    const uint8_t *src)
-{
-  assert(!(length % AES_BLOCK_SIZE) );
-  _aes_encrypt(ctx->rounds, ctx->keys, &_aes_encrypt_table,
-	       length, dst, src);
-}
-
 void
 aes128_encrypt(const struct aes128_ctx *ctx,
 	       size_t length, uint8_t *dst,

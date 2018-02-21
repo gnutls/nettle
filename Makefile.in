@@ -65,7 +65,6 @@ all-here: $(TARGETS) $(DOCTARGETS)
 nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 aes-encrypt-internal.c aes-encrypt.c aes-encrypt-table.c \
 		 aes-invert-internal.c aes-set-key-internal.c \
-		 aes-set-encrypt-key.c aes-set-decrypt-key.c \
 		 aes128-set-encrypt-key.c aes128-set-decrypt-key.c \
 		 aes128-meta.c \
 		 aes192-set-encrypt-key.c aes192-set-decrypt-key.c \
@@ -94,7 +93,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 chacha-set-key.c chacha-set-nonce.c \
 		 ctr.c ctr16.c des.c des3.c des-compat.c \
 		 eax.c eax-aes128.c eax-aes128-meta.c \
-		 gcm.c gcm-aes.c \
+		 gcm.c \
 		 gcm-aes128.c gcm-aes128-meta.c \
 		 gcm-aes192.c gcm-aes192-meta.c \
 		 gcm-aes256.c gcm-aes256-meta.c \
