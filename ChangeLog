@@ -1,5 +1,8 @@
 2018-03-10  Niels Möller  <nisse@lysator.liu.se>
 
+	* eccdata.c (ecc_table_size): New helper function.
+	(ecc_pippenger_precompute): Display warning for poor parameters.
+
 	* eccparams.c (main): New program, to list parameter alternatives
 	for Pippenger's algorithm.
 
