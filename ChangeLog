@@ -1,3 +1,8 @@
+2018-03-10  Niels Möller  <nisse@lysator.liu.se>
+
+	* eccparams.c (main): New program, to list parameter alternatives
+	for Pippenger's algorithm.
+
 2018-02-20  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/cmac-test.c (test_cmac_hash): Deallocate ctx properly.

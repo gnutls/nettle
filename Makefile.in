@@ -305,6 +305,10 @@ eccdata$(EXEEXT_FOR_BUILD): eccdata.c mini-gmp.c mini-gmp.h
 	$(CC_FOR_BUILD) `test -f eccdata.c || echo '$(srcdir)/'`eccdata.c \
 	-o eccdata$(EXEEXT_FOR_BUILD)
 
+eccparams$(EXEEXT_FOR_BUILD): eccparams.c
+	$(CC_FOR_BUILD) `test -f eccparams.c || echo '$(srcdir)/'`eccparams.c \
+	-o eccparams$(EXEEXT_FOR_BUILD)
+
 # desCore rules
 # It seems using $(srcdir)/ doesn't work with GNU make 3.79.1
 # des_headers = $(srcdir)/rotors.h $(srcdir)/keymap.h 
