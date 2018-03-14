@@ -5,7 +5,7 @@ NEWS for the Nettle 3.5 release
 	* Nettle's gcm_crypt will now call the underlying block cipher
 	  to process more than one block at a time. This is not a
 	  change to the documented behavior, but unfortunately breaks
-	  assumptions accidentally made in gnutls, up to and including
+	  assumptions accidentally made in GnuTLS, up to and including
 	  version 3.6.1.
 
 	Bug fixes:
@@ -18,6 +18,9 @@ NEWS for the Nettle 3.5 release
 	* Support for CFB8 (Cipher Feedback Mode, processing a single
 	  octet per block cipher operation), contributed by Dmitry
 	  Eremin-Solenikov.
+
+	* Support for CMAC (RFC 4493), contributed by Nikos
+	  Mavrogiannopoulos.
 
 	Optimizations:
 
@@ -32,8 +35,16 @@ NEWS for the Nettle 3.5 release
 	  Extension to also handle GCM mode efficiently contributed
 	  by Nikos Mavrogiannopoulos.
 
-	* New x86_64 implementation of sha1, for processors supporting
-	  the sha_ni instructions.
+	* New x86_64 implementation of sha1 and sha256, for processors
+	  supporting the sha_ni instructions. Speedup of 3-5 times on
+	  affected processors.
+
+	* Improved parameters for the precomputation of tables used
+	  for ecc signatures. Roughly 10%-15% speedup of the ecdsa
+	  sign operation using the secp_256r1, secp_384r1 and
+	  secp_521r1 curves, and 25% speedup of ed25519 sign
+	  operation, benchmarked on x86_64. Table sizes unchanged,
+	  around 16 KB per curve.
 
 	Miscellaneous:
 
