@@ -1,3 +1,20 @@
+2018-03-14  Niels Möller  <nisse@lysator.liu.se>
+
+	Merge sha256 code using the x86_64 sha_ni instructions, starting
+	2018-02-21.
+
+2018-03-11  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/fat/sha256-compress.asm: New file.
+	* x86_64/fat/sha256-compress-2.asm: New file.
+	* fat-x86_64.c (fat_init): Select plain x86_64 assembly version or
+	sha_ni version for sha256_compress.
+
+2018-02-21  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/sha_ni/sha256-compress.asm: New implementation using sha_ni
+	instructions.
+
 2018-02-20  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/cmac-test.c (test_cmac_hash): Deallocate ctx properly.
