@@ -1,3 +1,28 @@
+2018-03-10  Niels Möller  <nisse@lysator.liu.se>
+
+	* eccdata.c (ecc_table_size): New helper function.
+	(ecc_pippenger_precompute): Display warning for poor parameters.
+
+	* eccparams.c (main): New program, to list parameter alternatives
+	for Pippenger's algorithm.
+
+	* Makefile.in: Tweak parameters for ecc tables.
+	(ecc-192.h): Change parameters from k = 7, c = 6 to k = 8, c = 6.
+	Reduces table size from 15 KB to 12 KB. Modest speedup, appr. 3%
+	for ecdsa signatures.
+	(ecc-224.h): Change parameters from k = 12, c = 6 to k = 16, c =
+	7. Table size unchanged (14 KB in 32-bit platforms, 18 KB on
+	64-bit platforms. Minor speedup, appr. 1% for ecdsa signatures.
+	(ecc-256.h): Change parameters from k = 14, c = 6 to k = 11, c =
+	6. Table size unchanged, 16 KB. 14% speedup for ecdsa signatures.
+	(ecc-384.h): Changed parameters from k = 41, c = 6 to k = 32, c =
+	6. Table size unchanged. 12% speedup for ecdsa signatures.
+	(ecc-521.h): Changed parameters from k = 56, c = 6 to k 44, c = 6.
+	Table size unchanged (17 KB on 32-bit platforms, 18 KB on 64-bit
+	platforms). 15% speedup for ecdsa signatures.
+	(ecc-255.h): Change parameters from k = 14, c = 6 to k = 11, c =
+	6. Table size unchanged, 16 KB. 24% speedup for eddsa signatures.
+
 2018-03-14  Niels Möller  <nisse@lysator.liu.se>
 
 	Merge sha256 code using the x86_64 sha_ni instructions, starting

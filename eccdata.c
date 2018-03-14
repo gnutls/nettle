@@ -611,18 +611,30 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
   ecc->bit_size = bit_size;
 }
 
+static unsigned
+ecc_table_size(unsigned bits, unsigned k, unsigned c)
+{
+  unsigned p = (bits + k-1) / k;
+  unsigned M = (p + c-1)/c;
+  return M;
+}
+
 static void
 ecc_pippenger_precompute (struct ecc_curve *ecc, unsigned k, unsigned c)
 {
-  unsigned p = (ecc->bit_size + k-1) / k;
-  unsigned M = (p + c-1)/c;
+  unsigned M = ecc_table_size (ecc->bit_size, k, c);
   unsigned i, j;
+
+  if (M == ecc_table_size (ecc->bit_size, k-1, c))
+    fprintf(stderr,
+	    "warn: Parameters k = %u, c = %d are suboptimal, could use smaller k\n",
+	    k, c);
 
   ecc->pippenger_k = k;
   ecc->pippenger_c = c;
   ecc->table_size = M << c;
   ecc->table = ecc_alloc (ecc->table_size);
-  
+
   /* Compute the first 2^c entries */
   ecc_set_zero (&ecc->table[0]);
   ecc_set (&ecc->table[1], &ecc->g);
