@@ -1,3 +1,18 @@
+2018-03-25  Niels Möller  <nisse@lysator.liu.se>
+
+	From Michael Weiser.
+	* configure.ac (ASM_WORDS_BIGENDIAN): New substution, set from AC_C_BIGENDIAN.
+	* config.m4.in: Use it to set WORDS_BIGENDIAN.
+	* asm.m4 (IF_BE, IF_LE): New macros.
+	* arm/memxor.asm: Support big-endian ARM.
+	* arm/memxor3.asm: Likewise.
+	* arm/neon/chacha-core-internal.asm: Likewise.
+	* arm/neon/salsa20-core-internal.asm: Likewise.
+	* arm/neon/umac-nh.asm: Likewise.
+	* arm/v6/sha1-compress.asm: Likewise.
+	* arm/v6/sha256-compress.asm: Likewise.
+	* arm/README: Document big-endian considerations.
+
 2018-03-10  Niels Möller  <nisse@lysator.liu.se>
 
 	* eccdata.c (ecc_table_size): New helper function.
