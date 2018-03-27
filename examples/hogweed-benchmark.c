@@ -394,7 +394,7 @@ bench_ecdsa_init (unsigned size)
   switch (size)
     {
     case 192:
-      ecc = &nettle_secp_192r1;
+      ecc = &_nettle_secp_192r1;
       xs = "8e8e07360350fb6b7ad8370cfd32fa8c6bba785e6e200599";
       ys = "7f82ddb58a43d59ff8dc66053002b918b99bd01bd68d6736";
       zs = "f2e620e086d658b4b507996988480917640e4dc107808bdd";
@@ -402,7 +402,7 @@ bench_ecdsa_init (unsigned size)
       ctx->digest_size = 20;
       break;
     case 224:
-      ecc = &nettle_secp_224r1;
+      ecc = &_nettle_secp_224r1;
       xs = "993bf363f4f2bc0f255f22563980449164e9c894d9efd088d7b77334";
       ys = "b75fff9849997d02d135140e4d0030944589586e22df1fc4b629082a";
       zs = "cdfd01838247f5de3cc70b688418046f10a2bfaca6de9ec836d48c27";
@@ -412,7 +412,7 @@ bench_ecdsa_init (unsigned size)
 
       /* From RFC 4754 */
     case 256:
-      ecc = &nettle_secp_256r1;
+      ecc = &_nettle_secp_256r1;
       xs = "2442A5CC 0ECD015F A3CA31DC 8E2BBC70 BF42D60C BCA20085 E0822CB0 4235E970";
       ys = "6FC98BD7 E50211A4 A27102FA 3549DF79 EBCB4BF2 46B80945 CDDFE7D5 09BBFD7D";
       zs = "DC51D386 6A15BACD E33D96F9 92FCA99D A7E6EF09 34E70975 59C27F16 14C88A7F";
@@ -420,7 +420,7 @@ bench_ecdsa_init (unsigned size)
       ctx->digest_size = 32;
       break;
     case 384:
-      ecc = &nettle_secp_384r1;
+      ecc = &_nettle_secp_384r1;
       xs = "96281BF8 DD5E0525 CA049C04 8D345D30 82968D10 FEDF5C5A CA0C64E6 465A97EA"
 	"5CE10C9D FEC21797 41571072 1F437922";
       ys = "447688BA 94708EB6 E2E4D59F 6AB6D7ED FF9301D2 49FE49C3 3096655F 5D502FAD"
@@ -431,7 +431,7 @@ bench_ecdsa_init (unsigned size)
       ctx->digest_size = 48;
       break;
     case 521:
-      ecc = &nettle_secp_521r1;
+      ecc = &_nettle_secp_521r1;
       xs = "0151518F 1AF0F563 517EDD54 85190DF9 5A4BF57B 5CBA4CF2 A9A3F647 4725A35F"
 	"7AFE0A6D DEB8BEDB CD6A197E 592D4018 8901CECD 650699C9 B5E456AE A5ADD190"
 	"52A8";

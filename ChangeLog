@@ -13,6 +13,21 @@
 	* arm/v6/sha256-compress.asm: Likewise.
 	* arm/README: Document big-endian considerations.
 
+2018-03-17  Niels Möller  <nisse@lysator.liu.se>
+
+	Discourage direct access to data symbols with non-public size.
+	Direct references to these symbols may result in copy-relocations
+	like R_X86_64_COPY, which make the symbol size leak into the ABI.
+	* ecc-curve.h (_nettle_secp_192r1, _nettle_secp_224r1)
+	(_nettle_secp_256r1, _nettle_secp_384r1, _nettle_secp_521r1): Add
+	leading underscore on these data symbols.
+
+	* nettle-meta.h (_nettle_ciphers, _nettle_hashes, _nettle_aeads)
+	(_nettle_armors): Add leading underscore on these data symbols.
+	Update all internal use. Macros without leading underscore remain,
+	and expand to access via accessor functions nettle_get_ciphers and
+	similar.
+
 2018-03-10  Niels Möller  <nisse@lysator.liu.se>
 
 	* eccdata.c (ecc_table_size): New helper function.
