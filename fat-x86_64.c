@@ -123,7 +123,7 @@ DECLARE_FAT_FUNC(nettle_memxor, memxor_func)
 DECLARE_FAT_FUNC_VAR(memxor, memxor_func, x86_64)
 DECLARE_FAT_FUNC_VAR(memxor, memxor_func, sse2)
 
-DECLARE_FAT_FUNC(_nettle_sha1_compress, sha1_compress_func)
+DECLARE_FAT_FUNC(nettle_sha1_compress, sha1_compress_func)
 DECLARE_FAT_FUNC_VAR(sha1_compress, sha1_compress_func, x86_64)
 DECLARE_FAT_FUNC_VAR(sha1_compress, sha1_compress_func, sha_ni)
 
@@ -175,7 +175,7 @@ fat_init (void)
     {
       if (verbose)
 	fprintf (stderr, "libnettle: using sha_ni instructions.\n");
-      _nettle_sha1_compress_vec = _nettle_sha1_compress_sha_ni;
+      nettle_sha1_compress_vec = _nettle_sha1_compress_sha_ni;
       _nettle_sha256_compress_vec = _nettle_sha256_compress_sha_ni;
     }
   else
@@ -217,7 +217,7 @@ DEFINE_FAT_FUNC(nettle_memxor, void *,
 		(void *dst, const void *src, size_t n),
 		(dst, src, n))
 
-DEFINE_FAT_FUNC(_nettle_sha1_compress, void,
+DEFINE_FAT_FUNC(nettle_sha1_compress, void,
 		(uint32_t *state, const uint8_t *input),
 		(state, input))
 

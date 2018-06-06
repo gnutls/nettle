@@ -59,13 +59,13 @@ define(<QROUND>, <
 
 	.file "sha1-compress.asm"
 
-	C _nettle_sha1_compress(uint32_t *state, uint8_t *input)
+	C nettle_sha1_compress(uint32_t *state, uint8_t *input)
 
 	.text
 	ALIGN(16)
 .Lswap_mask:
 	.byte 15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0
-PROLOGUE(_nettle_sha1_compress)
+PROLOGUE(nettle_sha1_compress)
 	C save all registers that need to be saved
 	W64_ENTRY(2, 10)
 	movups	(STATE), ABCD
@@ -145,4 +145,4 @@ PROLOGUE(_nettle_sha1_compress)
 
 	W64_EXIT(2, 10)
 	ret
-EPILOGUE(_nettle_sha1_compress)
+EPILOGUE(nettle_sha1_compress)

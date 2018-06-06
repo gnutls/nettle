@@ -76,11 +76,6 @@ ripemd160_digest(struct ripemd160_ctx *ctx,
 		 size_t length,
 		 uint8_t *digest);
 
-/* Internal compression function. STATE points to 5 uint32_t words,
-   and DATA points to 64 bytes of input data, possibly unaligned. */
-void
-_nettle_ripemd160_compress(uint32_t *state, const uint8_t *data);
-
 #ifdef __cplusplus
 }
 #endif

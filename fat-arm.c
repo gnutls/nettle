@@ -147,7 +147,7 @@ DECLARE_FAT_FUNC(_nettle_salsa20_core, salsa20_core_func)
 DECLARE_FAT_FUNC_VAR(salsa20_core, salsa20_core_func, c)
 DECLARE_FAT_FUNC_VAR(salsa20_core, salsa20_core_func, neon)
 
-DECLARE_FAT_FUNC(_nettle_sha1_compress, sha1_compress_func)
+DECLARE_FAT_FUNC(nettle_sha1_compress, sha1_compress_func)
 DECLARE_FAT_FUNC_VAR(sha1_compress, sha1_compress_func, c)
 DECLARE_FAT_FUNC_VAR(sha1_compress, sha1_compress_func, armv6)
 
@@ -243,7 +243,7 @@ DEFINE_FAT_FUNC(_nettle_salsa20_core, void,
 		(uint32_t *dst, const uint32_t *src, unsigned rounds),
 		(dst, src, rounds))
 
-DEFINE_FAT_FUNC(_nettle_sha1_compress, void,
+DEFINE_FAT_FUNC(nettle_sha1_compress, void,
 		(uint32_t *state, const uint8_t *input),
 		(state, input))
 

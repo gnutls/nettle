@@ -37,6 +37,7 @@
 #endif
 
 #include "rsa.h"
+#include "rsa-internal.h"
 
 /* Blinds m, by computing c = m r^e (mod n), for a random r. Also
    returns the inverse (ri), for use by rsa_unblind. */

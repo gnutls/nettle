@@ -226,8 +226,11 @@ DISTFILES = $(SOURCES) $(HEADERS) getopt.h getopt_int.h \
 	$(des_headers) descore.README desdata.stamp \
 	aes-internal.h camellia-internal.h serpent-internal.h \
 	cast128_sboxes.h desinfo.h desCode.h \
+	ripemd160-internal.h sha2-internal.h \
 	memxor-internal.h nettle-internal.h nettle-write.h \
-	ctr-internal.h \
+	ctr-internal.h chacha-internal.h sha3-internal.h \
+	salsa20-internal.h umac-internal.h hogweed-internal.h \
+	rsa-internal.h dsa-internal.h eddsa-internal.h \
 	gmp-glue.h ecc-internal.h fat-setup.h \
 	mini-gmp.h asm.m4 \
 	nettle.texinfo nettle.info nettle.html nettle.pdf sha-example.c

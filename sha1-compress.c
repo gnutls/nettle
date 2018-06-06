@@ -142,7 +142,7 @@ _nettle_sha1_compress_c(uint32_t *state, const uint8_t *input);
    sections, e.g. based on the four subrounds. */
 
 void
-_nettle_sha1_compress(uint32_t *state, const uint8_t *input)
+nettle_sha1_compress(uint32_t *state, const uint8_t *input)
 {
   uint32_t data[SHA1_DATA_LENGTH];
   uint32_t A, B, C, D, E;     /* Local vars */

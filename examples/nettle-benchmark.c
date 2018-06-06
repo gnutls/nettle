@@ -58,6 +58,7 @@
 #include "gcm.h"
 #include "memxor.h"
 #include "salsa20.h"
+#include "salsa20-internal.h"
 #include "serpent.h"
 #include "sha1.h"
 #include "sha2.h"
@@ -717,7 +718,7 @@ bench_sha1_compress(void)
   uint8_t data[SHA1_BLOCK_SIZE];
   double t;
 
-  TIME_CYCLES (t, _nettle_sha1_compress(state, data));
+  TIME_CYCLES (t, nettle_sha1_compress(state, data));
 
   printf("sha1_compress: %.2f cycles\n", t);  
 }

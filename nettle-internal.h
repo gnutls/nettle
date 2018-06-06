@@ -115,4 +115,6 @@ extern const struct nettle_aead nettle_openssl_arcfour128;
 extern const struct nettle_hash nettle_openssl_md5;
 extern const struct nettle_hash nettle_openssl_sha1;
 
+extern const struct nettle_hash * const _nettle_hashes[];
+
 #endif /* NETTLE_INTERNAL_H_INCLUDED */

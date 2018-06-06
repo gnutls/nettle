@@ -37,6 +37,7 @@
 #include <string.h>
 
 #include "nettle-meta.h"
+#include "nettle-internal.h"
 
 const struct nettle_hash *
 nettle_lookup_hash (const char *name)

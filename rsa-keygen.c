@@ -39,6 +39,7 @@
 #include <stdlib.h>
 
 #include "rsa.h"
+#include "rsa-internal.h"
 #include "bignum.h"
 
 #ifndef DEBUG

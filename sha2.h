@@ -91,12 +91,6 @@ sha256_digest(struct sha256_ctx *ctx,
 	      size_t length,
 	      uint8_t *digest);
 
-/* Internal compression function. STATE points to 8 uint32_t words,
-   DATA points to 64 bytes of input data, possibly unaligned, and K
-   points to the table of constants. */
-void
-_nettle_sha256_compress(uint32_t *state, const uint8_t *data, const uint32_t *k);
-
 
 /* SHA224, a truncated SHA256 with different initial state. */
 
@@ -143,12 +137,6 @@ void
 sha512_digest(struct sha512_ctx *ctx,
 	      size_t length,
 	      uint8_t *digest);
-
-/* Internal compression function. STATE points to 8 uint64_t words,
-   DATA points to 128 bytes of input data, possibly unaligned, and K
-   points to the table of constants. */
-void
-_nettle_sha512_compress(uint64_t *state, const uint8_t *data, const uint64_t *k);
 
 
 /* SHA384, a truncated SHA512 with different initial state. */

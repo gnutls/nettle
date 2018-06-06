@@ -77,7 +77,9 @@ md5_digest(struct md5_ctx *ctx,
 /* Internal compression function. STATE points to 4 uint32_t words,
    and DATA points to 64 bytes of input data, possibly unaligned. */
 void
-_nettle_md5_compress(uint32_t *state, const uint8_t *data);
+nettle_md5_compress(uint32_t *state, const uint8_t *data);
+
+#define _nettle_md5_compress nettle_md5_compress
 
 #ifdef __cplusplus
 }
