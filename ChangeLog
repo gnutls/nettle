@@ -1,6 +1,8 @@
 2018-06-17  Niels Möller  <nisse@lysator.liu.se>
 
 	Backported from master branch.
+	* aclocal.m4 (NETTLE_CHECK_IFUNC): Fix quoting. Patch contributed
+	by Dmitry Eremin-Solenikov.
 	* testsuite/symbols-test: Exclude ____chkstk_darwin symbols,
 	produced by Apple's Xcode 10 compiler. Patch contributed by
 	Dominyk Tiller.
