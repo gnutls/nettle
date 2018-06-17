@@ -1,3 +1,10 @@
+2018-06-17  Niels Möller  <nisse@lysator.liu.se>
+
+	Backported from master branch.
+	* testsuite/symbols-test: Exclude ____chkstk_darwin symbols,
+	produced by Apple's Xcode 10 compiler. Patch contributed by
+	Dominyk Tiller.
+
 2018-02-18  Niels Möller  <nisse@lysator.liu.se>
 
 	Backported from master branch.
