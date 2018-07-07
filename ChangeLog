@@ -1,3 +1,27 @@
+2018-07-07  Niels Möller  <nisse@lysator.liu.se>
+
+	From Nikos Mavrogiannopoulos.
+	* sha1-compress.c (nettle_sha1_compress): Renamed, and promoted to
+	public function, since there's known appliation usage (filezilla).
+	* sha1.h (_nettle_sha1_compress): Old name, now a preprocessor
+	alias for the new name.
+	* md5-compress.c (nettle_md5_compress): Similarly renamed (used by
+	sogo).
+	* md5.h (_nettle_md5_compress): Old name,, now a preprocessor
+	alias for the new name.
+
+	* chacha-internal.h, dsa-internal.h, eddsa-internal.h:
+	* hogweed-internal.h, ripemd160-internal.h, rsa-internal.h:
+	* salsa20-internal.h, sha2-internal.h, sha3-internal.h:
+	* umac-internal.h: Internal declarations moved to new header
+	files, which are not installed..
+	* Makefile.in (DISTFILES): Added above files.
+
+	* libnettle.map.in: Use a different symbol version for _nettle_*
+	symbols, depending on the minor release. This marks these symbols
+	explicitly not part of the public Nettle ABI.
+	* libhogweed.map.in: Analogous change.
+
 2018-06-17  Niels Möller  <nisse@lysator.liu.se>
 
 	* aclocal.m4 (NETTLE_CHECK_IFUNC): Fix quoting. Patch contributed
