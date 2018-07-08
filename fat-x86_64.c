@@ -182,7 +182,7 @@ fat_init (void)
     {
       if (verbose)
 	fprintf (stderr, "libnettle: not using sha_ni instructions.\n");
-      _nettle_sha1_compress_vec = _nettle_sha1_compress_x86_64;
+      nettle_sha1_compress_vec = _nettle_sha1_compress_x86_64;
       _nettle_sha256_compress_vec = _nettle_sha256_compress_x86_64;
     }
   if (features.vendor == X86_INTEL)

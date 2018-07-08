@@ -1,3 +1,9 @@
+2018-07-08  Niels Möller  <nisse@lysator.liu.se>
+
+	* fat-x86_64.c (fat_init): Fix setup for nettle_sha1_compress.
+	* x86_64/fat/sha1-compress.asm: Add leading underscore to symbol name.
+	* x86_64/fat/sha1-compress-2.asm: Likewise.
+
 2018-07-07  Niels Möller  <nisse@lysator.liu.se>
 
 	From Nikos Mavrogiannopoulos.

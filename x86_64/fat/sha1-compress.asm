@@ -30,5 +30,5 @@ ifelse(<
    not, see http://www.gnu.org/licenses/.
 >)
 
-define(<fat_transform>, <$1_x86_64>)
+define(<fat_transform>, <_$1_x86_64>)
 include_src(<x86_64/sha1-compress.asm>)
