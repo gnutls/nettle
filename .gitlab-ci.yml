@@ -1,7 +1,7 @@
 variables:
   BUILD_IMAGES_PROJECT: gnutls/build-images
-  FEDORA_BUILD: buildenv-f26
-  FEDORA_X86_BUILD: buildenv-f26-x86
+  FEDORA_BUILD: buildenv-f28
+  FEDORA_X86_BUILD: buildenv-f28-x86
   GET_SOURCES_ATTEMPTS: "3"
 
 # remove any pre-installed headers from nettle
