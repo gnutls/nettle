@@ -314,8 +314,6 @@ main (int argc, char **argv)
   root = (root - 1) | 1;
   /* Represents odd numbers from 3 up. */
   sieve_nbits = (root - 1) / 2;
-  sieve = vector_alloc(sieve_nbits );
-  vector_init(sieve, sieve_nbits);
 
   if (verbose)
     fprintf(stderr, "Initial sieve using %lu bits.\n", sieve_nbits);
@@ -325,6 +323,9 @@ main (int argc, char **argv)
 
   if (limit == 2)
     return EXIT_SUCCESS;
+
+  sieve = vector_alloc(sieve_nbits);
+  vector_init(sieve, sieve_nbits);
 
   for (bit = 0;
        bit < sieve_nbits;

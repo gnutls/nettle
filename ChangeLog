@@ -1,5 +1,8 @@
 2018-07-12  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/eratosthenes.c (main): Don't allocate bitmap storage
+	for limit == 2 (early exit), closing memory leak at exit.
+
 	* eccdata.c (output_curve): Replace mpz_init_set_ui by mpz_set_ui,
 	to fix memory leak.
 	(ecc_curve_clear): New function.
