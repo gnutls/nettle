@@ -1,3 +1,8 @@
+2018-07-12  Niels Möller  <nisse@lysator.liu.se>
+
+	* eccdata.c (output_curve): Replace mpz_init_set_ui by mpz_set_ui,
+	to fix memory leak.
+
 2018-07-08  Niels Möller  <nisse@lysator.liu.se>
 
 	* fat-x86_64.c (fat_init): Fix setup for nettle_sha1_compress.

@@ -1143,7 +1143,7 @@ output_curve (const struct ecc_curve *ecc, unsigned bits_per_limb)
 
   printf ("#else\n");
 
-  mpz_init_set_ui (t, 1);
+  mpz_set_ui (t, 1);
   output_bignum ("ecc_unit", t, limb_size, bits_per_limb);
   
   printf ("static const mp_limb_t ecc_table[%lu] = {",
