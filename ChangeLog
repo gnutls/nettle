@@ -2,6 +2,7 @@
 
 	* examples/eratosthenes.c (main): Don't allocate bitmap storage
 	for limit == 2 (early exit), closing memory leak at exit.
+	(main): Fix handling of short -q option.
 
 	* eccdata.c (output_curve): Replace mpz_init_set_ui by mpz_set_ui,
 	to fix memory leak.

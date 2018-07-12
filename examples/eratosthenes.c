@@ -262,7 +262,7 @@ main (int argc, char **argv)
       { NULL, 0, NULL, 0}
     };
 
-  while ( (c = getopt_long(argc, argv, "svb:", options, NULL)) != -1)
+  while ( (c = getopt_long(argc, argv, "svqb:", options, NULL)) != -1)
     switch (c)
       {
       case OPT_HELP:
