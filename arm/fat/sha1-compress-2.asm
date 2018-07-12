@@ -33,5 +33,5 @@ ifelse(<
 
 dnl PROLOGUE(nettle_sha1_compress) picked up by configure
 
-define(<fat_transform>, <$1_armv6>)
+define(<fat_transform>, <_$1_armv6>)
 include_src(<arm/v6/sha1-compress.asm>)

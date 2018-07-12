@@ -191,7 +191,7 @@ fat_init (void)
 	fprintf (stderr, "libnettle: enabling armv6 code.\n");
       _nettle_aes_encrypt_vec = _nettle_aes_encrypt_armv6;
       _nettle_aes_decrypt_vec = _nettle_aes_decrypt_armv6;
-      _nettle_sha1_compress_vec = _nettle_sha1_compress_armv6;
+      nettle_sha1_compress_vec = _nettle_sha1_compress_armv6;
       _nettle_sha256_compress_vec = _nettle_sha256_compress_armv6;
     }
   else
@@ -200,7 +200,7 @@ fat_init (void)
 	fprintf (stderr, "libnettle: not enabling armv6 code.\n");
       _nettle_aes_encrypt_vec = _nettle_aes_encrypt_arm;
       _nettle_aes_decrypt_vec = _nettle_aes_decrypt_arm;
-      _nettle_sha1_compress_vec = _nettle_sha1_compress_c;
+      nettle_sha1_compress_vec = _nettle_sha1_compress_c;
       _nettle_sha256_compress_vec = _nettle_sha256_compress_c;
     }
   if (features.have_neon)
