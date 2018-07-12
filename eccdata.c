@@ -611,6 +611,31 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
   ecc->bit_size = bit_size;
 }
 
+static void
+ecc_curve_clear (struct ecc_curve *ecc)
+{
+  mpz_clear (ecc->p);
+  mpz_clear (ecc->b);
+  mpz_clear (ecc->q);
+  ecc_clear (&ecc->g);
+  mpz_clear (ecc->d);
+  mpz_clear (ecc->t);
+  if (ecc->table)
+    {
+      size_t i;
+      for (i = 0; i < ecc->table_size; i++)
+	ecc_clear (&ecc->table[i]);
+      free (ecc->table);
+    }
+  if (ecc->ref)
+    {
+      size_t i;
+      for (i = 0; i < 3; i++)
+	ecc_clear (&ecc->ref[i]);
+      free (ecc->ref);
+    }
+}
+
 static unsigned
 ecc_table_size(unsigned bits, unsigned k, unsigned c)
 {
@@ -1180,5 +1205,6 @@ main (int argc, char **argv)
   if (argc > 4)
     output_curve (&ecc, atoi(argv[4]));
 
+  ecc_curve_clear (&ecc);
   return EXIT_SUCCESS;
 }

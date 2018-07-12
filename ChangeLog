@@ -2,6 +2,8 @@
 
 	* eccdata.c (output_curve): Replace mpz_init_set_ui by mpz_set_ui,
 	to fix memory leak.
+	(ecc_curve_clear): New function.
+	(main): Call it, to deallocate storage before exit.
 
 2018-07-08  Niels Möller  <nisse@lysator.liu.se>
 
