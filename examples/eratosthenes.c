@@ -92,8 +92,13 @@ isqrt(unsigned long n)
 static unsigned long *
 vector_alloc(unsigned long size)
 {
-  unsigned long end = (size + BITS_PER_LONG - 1) / BITS_PER_LONG;
-  unsigned long *vector = malloc (end * sizeof(*vector));
+  unsigned long end;
+  unsigned long *vector;
+
+  assert (size <= ULONG_MAX - (BITS_PER_LONG - 1));
+
+  end = (size + BITS_PER_LONG - 1) / BITS_PER_LONG;
+  vector = malloc (end * sizeof(*vector));
 
   if (!vector)
     {

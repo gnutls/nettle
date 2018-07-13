@@ -1,3 +1,9 @@
+2018-07-13  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/eratosthenes.c (vector_alloc): Add assert related to
+	overflow in the size calculation. Fixes a corner case identified
+	by static analysis.
+
 2018-07-12  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/eratosthenes.c (main): Don't allocate bitmap storage
