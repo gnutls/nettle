@@ -3,6 +3,7 @@
 	* examples/eratosthenes.c (vector_alloc): Add assert related to
 	overflow in the size calculation. Fixes a corner case identified
 	by static analysis.
+	(vector_init): Analogous assert.
 
 2018-07-12  Niels Möller  <nisse@lysator.liu.se>
 

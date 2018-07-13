@@ -111,8 +111,10 @@ vector_alloc(unsigned long size)
 static void
 vector_init(unsigned long *vector, unsigned long size)
 {
-  unsigned long end = (size + BITS_PER_LONG - 1) / BITS_PER_LONG;
-  unsigned long i;
+  unsigned long end, i;
+
+  assert (size <= ULONG_MAX - (BITS_PER_LONG - 1));
+  end = (size + BITS_PER_LONG - 1) / BITS_PER_LONG;
 
   for (i = 0; i < end; i++)
     vector[i] = ~0UL;
