@@ -67,6 +67,7 @@
 #include "umac.h"
 #include "cmac.h"
 #include "poly1305.h"
+#include "hmac.h"
 
 #include "nettle-meta.h"
 #include "nettle-internal.h"
@@ -476,6 +477,147 @@ time_poly1305_aes(void)
 	  time_function(bench_hash, &info));
 }
 
+struct bench_hmac_info
+{
+  void *ctx;
+  nettle_hash_update_func *update;
+  nettle_hash_digest_func *digest;
+  size_t length;
+  size_t digest_length;
+  const uint8_t *data;
+};
+
+static void
+bench_hmac(void *arg)
+{
+  struct bench_hmac_info *info = arg;
+  uint8_t digest[NETTLE_MAX_HASH_DIGEST_SIZE];
+  size_t pos, length;
+
+  length = info->length;
+  for (pos = 0; pos < BENCH_BLOCK; pos += length)
+    {
+      size_t single = pos + length < BENCH_BLOCK ?
+			length :
+			BENCH_BLOCK - pos;
+      info->update(info->ctx, single, info->data + pos);
+      info->digest(info->ctx, info->digest_length, digest);
+    }
+}
+
+static const struct
+{
+  size_t length;
+  const char *msg;
+} hmac_tests[] = {
+  { 64, "64 bytes" },
+  { 256, "256 bytes" },
+  { 1024, "1024 bytes" },
+  { 4096, "4096 bytes" },
+  { BENCH_BLOCK, "single msg" },
+  { 0, NULL },
+};
+
+static void
+time_hmac_md5(void)
+{
+  static uint8_t data[BENCH_BLOCK];
+  struct bench_hmac_info info;
+  struct hmac_md5_ctx md5_ctx;
+  unsigned int pos;
+
+  init_data(data);
+  info.data = data;
+
+  hmac_md5_set_key(&md5_ctx, MD5_BLOCK_SIZE, data);
+  info.ctx = &md5_ctx;
+  info.update = (nettle_hash_update_func *) hmac_md5_update;
+  info.digest = (nettle_hash_digest_func *) hmac_md5_digest;
+  info.digest_length = MD5_DIGEST_SIZE;
+
+  for (pos = 0; hmac_tests[pos].length != 0; pos++)
+    {
+      info.length = hmac_tests[pos].length;
+      display("hmac-md5", hmac_tests[pos].msg, MD5_BLOCK_SIZE,
+	      time_function(bench_hmac, &info));
+    }
+}
+
+static void
+time_hmac_sha1(void)
+{
+  static uint8_t data[BENCH_BLOCK];
+  struct bench_hmac_info info;
+  struct hmac_sha1_ctx sha1_ctx;
+  unsigned int pos;
+
+  init_data(data);
+  info.data = data;
+
+  hmac_sha1_set_key(&sha1_ctx, SHA1_BLOCK_SIZE, data);
+  info.ctx = &sha1_ctx;
+  info.update = (nettle_hash_update_func *) hmac_sha1_update;
+  info.digest = (nettle_hash_digest_func *) hmac_sha1_digest;
+  info.digest_length = SHA1_DIGEST_SIZE;
+
+  for (pos = 0; hmac_tests[pos].length != 0; pos++)
+    {
+      info.length = hmac_tests[pos].length;
+      display("hmac-sha1", hmac_tests[pos].msg, SHA1_BLOCK_SIZE,
+	      time_function(bench_hmac, &info));
+    }
+}
+
+static void
+time_hmac_sha256(void)
+{
+  static uint8_t data[BENCH_BLOCK];
+  struct bench_hmac_info info;
+  struct hmac_sha256_ctx sha256_ctx;
+  unsigned int pos;
+
+  init_data(data);
+  info.data = data;
+
+  hmac_sha256_set_key(&sha256_ctx, SHA256_BLOCK_SIZE, data);
+  info.ctx = &sha256_ctx;
+  info.update = (nettle_hash_update_func *) hmac_sha256_update;
+  info.digest = (nettle_hash_digest_func *) hmac_sha256_digest;
+  info.digest_length = SHA256_DIGEST_SIZE;
+
+  for (pos = 0; hmac_tests[pos].length != 0; pos++)
+    {
+      info.length = hmac_tests[pos].length;
+      display("hmac-sha256", hmac_tests[pos].msg, SHA256_BLOCK_SIZE,
+	      time_function(bench_hmac, &info));
+    }
+}
+
+static void
+time_hmac_sha512(void)
+{
+  static uint8_t data[BENCH_BLOCK];
+  struct bench_hmac_info info;
+  struct hmac_sha512_ctx sha512_ctx;
+  unsigned int pos;
+
+  init_data(data);
+  info.data = data;
+
+  hmac_sha512_set_key(&sha512_ctx, SHA512_BLOCK_SIZE, data);
+  info.ctx = &sha512_ctx;
+  info.update = (nettle_hash_update_func *) hmac_sha512_update;
+  info.digest = (nettle_hash_digest_func *) hmac_sha512_digest;
+  info.digest_length = SHA512_DIGEST_SIZE;
+
+  for (pos = 0; hmac_tests[pos].length != 0; pos++)
+    {
+      info.length = hmac_tests[pos].length;
+      display("hmac-sha512", hmac_tests[pos].msg, SHA512_BLOCK_SIZE,
+	      time_function(bench_hmac, &info));
+    }
+}
+
 static int
 prefix_p(const char *prefix, const char *s)
 {
@@ -882,6 +1024,18 @@ main(int argc, char **argv)
       for (i = 0; aeads[i]; i++)
 	if (!alg || strstr(aeads[i]->name, alg))
 	  time_aead(aeads[i]);
+
+      if (!alg || strstr ("hmac-md5", alg))
+	time_hmac_md5();
+
+      if (!alg || strstr ("hmac-sha1", alg))
+	time_hmac_sha1();
+
+      if (!alg || strstr ("hmac-sha256", alg))
+	time_hmac_sha256();
+
+      if (!alg || strstr ("hmac-sha512", alg))
+	time_hmac_sha512();
 
       optind++;
     } while (alg && argv[optind]);
