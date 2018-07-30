@@ -1,3 +1,7 @@
+2018-07-25  Dmitry Eremin-Solenikov  <dbaryshkov@gmail.com>
+
+	* examples/nettle-benchmark.c: Add benchmarking for HMAC functions.
+
 2018-07-13  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/eratosthenes.c (vector_alloc): Add assert related to
