@@ -62,6 +62,7 @@ object-oriented wrapper for your favorite language or application.
 * Conventions::                 General interface conventions.
 * Example::                     An example program.
 * Linking::                     Linking with libnettle and libhogweed.
+* Compatibility::               On API and ABI compatibility between versions.
 * Reference::                   All Nettle functions and features.
 * Nettle soup::                 For the serious nettle hacker.
 * Installation::                How to install Nettle.
@@ -348,7 +349,7 @@ the command line
 gcc sha-example.c -o sha-example -lnettle
 @end example
 
-@node Linking, Reference, Example, Top
+@node Linking, Compatibility, Example, Top
 @comment  node-name,  next,  previous,  up
 @chapter Linking
 
@@ -366,7 +367,72 @@ algorithms, the recommended linker flags are @code{-lhogweed -lnettle
 may be sufficient to link with just @code{-lhogweed}, and the loader
 will resolve the dependencies automatically.
 
-@node Reference, Nettle soup, Linking, Top
+@node Compatibility, Reference, Linking, Top
+@comment  node-name,  next,  previous,  up
+@chapter Compatibility
+@cindex ABI compatibility
+@cindex API compatibility
+@cindex Binary compatibility
+
+When you write a program using the Nettle library, it's desirable to
+have it work together not only with exactly the same version of Nettle
+you had at hand, but with other current and future versions. If a
+different version of Nettle is used at compile time, i.e., you recompile
+it using the header and library files belonging to a different version,
+we talk about API compatibility (for Application Programming Interface).
+If a different version of Nettle isn't used until link time, we talk
+about ABI compatibility (Application Binary Interface) or binary
+compatibility. ABI compatibility matters mainly when using dynamic
+linking with a shared library. E.g., a user has an executable linking at
+run-time with @file{libnettle.so}, and then updates to a later version
+of the shared library, without updating or recompiling the executable.
+
+Nettle aims to provide backwards compatibility, i.e., a program written
+for a particular version of the Nettle library should usually work fine
+with later version of the library. Note that the opposite is not
+supported: The program should @emph{not} be expected to work with older
+versions of the Nettle library; and ABI breakage can be unobvious. E.g,
+the later version may define a new library symbol, and let header files
+redefine an old API name as an alias for the new symbol. If the later
+version ensures that the old symbol is still defined in the library,
+this change is backwards compatible: A program compiled using headers
+from the older version can be successfulyl linked with either version of
+the library. But if you compile the same program using headers from the
+later version of the library, and attempt to link with the older
+version, you'll get an undefined reference to the new symbol.
+
+API compatibility is rarely broken; exceptions are noted in the NEWS
+file. For example, the key size argument to the function
+@code{cast128_set_key} was dropped in the Nettle-3.0 release, and all
+programs using that function had to be updated to work with the new
+version.
+
+ABI compatibility is broken occasionally. This is also noted in the NEWS
+file, and the name of the shared library is updated to prevent
+accidental run-time linking with the wrong version. All programs have to
+be recompiled before they can link with the new version. Since names are
+different, multiple versions can be installed on the same system, with a
+mix of programs linking to one version or the other.
+
+Under some circumstances, it is possible to have a single program
+linking dynamically with two binary incompatible versions of the Nettle
+library, thanks to the use of symbol versioning. Consider a program
+calling functions in both Nettle and GnuTLS. For the direct dependency
+on Nettle, the program is linked with a particular version of the Nettle
+shared library. GnuTLS uses Nettle internally, but does not expose any
+Nettle data structures or the like in its own ABI. In this situation,
+the GnuTLS shared library may link with a different version of the
+Nettle library. Then both versions of the Nettle library will be loaded
+into the program's address space, and each reference to a symbol will be
+resolved to the correct version.
+
+Finally, some of Nettle's symbols are internal. They carry a leading
+underscore, and are not declared in installed header files. They can be
+used for local or experimental purposes, but programs referring directly
+to those symbols get neither API nor ABI compatibility, not even between
+minor versions.
+
+@node Reference, Nettle soup, Compatibility, Top
 @comment  node-name,  next,  previous,  up
 @chapter Reference
 
