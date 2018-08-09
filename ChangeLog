@@ -1,3 +1,9 @@
+2018-08-09  Niels Möller  <nisse@lysator.liu.se>
+
+	Backported from master branch.
+	* des-compat.c (des_compat_des3_encrypt)
+	(des_compat_des3_decrypt): Change length argument type to size_t.
+
 2017-11-19  Niels Möller  <nisse@lysator.liu.se>
 
 	* Released nettle-3.4.
