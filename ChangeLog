@@ -1,5 +1,10 @@
 2018-08-09  Niels Möller  <nisse@lysator.liu.se>
 
+	* nettle-internal.c (des_set_key_wrapper, des3_set_key_wrapper)
+	(blowfish128_set_key_wrapper): Wrapper functions, to avoid cast
+	between incompatible function types (which gcc-8 warns about).
+	Wrappers are expected to compile to a single jmp instruction.
+
 	* des-compat.c (des_compat_des3_encrypt)
 	(des_compat_des3_decrypt): Change length argument type to size_t.
 
