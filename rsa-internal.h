@@ -61,8 +61,9 @@ _rsa_check_size(mpz_t n);
 void
 _rsa_blind (const struct rsa_public_key *pub,
 	    void *random_ctx, nettle_random_func *random,
-	    mpz_t c, mpz_t ri);
+	    mpz_t c, mpz_t ri) _NETTLE_ATTRIBUTE_DEPRECATED;
 void
-_rsa_unblind (const struct rsa_public_key *pub, mpz_t c, const mpz_t ri);
+_rsa_unblind (const struct rsa_public_key *pub, mpz_t c, const mpz_t ri)
+  _NETTLE_ATTRIBUTE_DEPRECATED;
 
 #endif /* NETTLE_RSA_INTERNAL_H_INCLUDED */

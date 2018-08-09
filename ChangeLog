@@ -1,5 +1,8 @@
 2018-08-09  Niels Möller  <nisse@lysator.liu.se>
 
+	* rsa-internal.h (_rsa_blind, _rsa_unblind): Mark with
+	_NETTLE_ATTRIBUTE_DEPRECATED.
+
 	* nettle-types.h (_NETTLE_ATTRIBUTE_PURE)
 	(_NETTLE_ATTRIBUTE_DEPRECATED): New macros, for gcc and
 	lookalikes.
