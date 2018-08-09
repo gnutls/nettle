@@ -39,6 +39,13 @@
 #define _STDINT_HAVE_INT_FAST32_T 1
 #include "nettle-stdint.h"
 
+/* Attributes we want to use in installed header files, and hence
+   can't rely on config.h. */
+#ifdef __GNUC__
+#define _NETTLE_ATTRIBUTE_PURE __attribute__((pure))
+#else /* !__GNUC__ */
+#define _NETTLE_ATTRIBUTE_PURE
+#endif /* !__GNUC__ */
 #ifdef __cplusplus
 extern "C" {
 #endif
