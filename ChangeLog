@@ -1,11 +1,17 @@
 2018-08-09  Niels Möller  <nisse@lysator.liu.se>
 
-	* nettle-types.h (_NETTLE_ATTRIBUTE_PURE): Define
-	_NETTLE_ATTRIBUTE_PURE for gcc and lookalikes.
+	* nettle-types.h (_NETTLE_ATTRIBUTE_PURE)
+	(_NETTLE_ATTRIBUTE_DEPRECATED): New macros, for gcc and
+	lookalikes.
 	* ecc-curve.h: Include nettle-types.h, and use
 	_NETTLE_ATTRIBUTE_PURE instead of local definition.
 	* nettle-meta.h: Use _NETTLE_ATTRIBUTE_PURE, instead of explicit
 	#ifdefs.
+
+	* aes.h: Mark functions using struct aes_ctx interface as
+	deprecated. Add #undef _NETTLE_ATTRIBUTE_DEPRECATED in files where
+	the functions are implemented or tested.
+	* gcm.h: Similarly mark functions using gcm_aes_ctx as deprecated.
 
 	* nettle-internal.c (des_set_key_wrapper, des3_set_key_wrapper)
 	(blowfish128_set_key_wrapper): Wrapper functions, to avoid cast
