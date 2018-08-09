@@ -1,3 +1,8 @@
+2018-08-09  Niels Möller  <nisse@lysator.liu.se>
+
+	* des-compat.c (des_compat_des3_encrypt)
+	(des_compat_des3_decrypt): Change length argument type to size_t.
+
 2018-08-08  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle.texinfo (Compatibility): New section on ABI and API

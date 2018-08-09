@@ -48,7 +48,7 @@ struct des_compat_des3 { const struct des_ctx *keys[3]; };
 
 static void
 des_compat_des3_encrypt(struct des_compat_des3 *ctx,
-			uint32_t length, uint8_t *dst, const uint8_t *src)
+			size_t length, uint8_t *dst, const uint8_t *src)
 {
   nettle_des_encrypt(ctx->keys[0], length, dst, src);
   nettle_des_decrypt(ctx->keys[1], length, dst, dst);
@@ -57,7 +57,7 @@ des_compat_des3_encrypt(struct des_compat_des3 *ctx,
 
 static void
 des_compat_des3_decrypt(struct des_compat_des3 *ctx,
-			uint32_t length, uint8_t *dst, const uint8_t *src)
+			size_t length, uint8_t *dst, const uint8_t *src)
 {
   nettle_des_decrypt(ctx->keys[2], length, dst, src);
   nettle_des_encrypt(ctx->keys[1], length, dst, dst);
