@@ -104,7 +104,7 @@ rsa_generate_keypair(struct rsa_public_key *pub,
 
 	  mpz_sub_ui(p1, key->p, 1);
       
-	  /* If e was given, we must chose p such that p-1 has no factors in
+	  /* If e was given, we must choose p such that p-1 has no factors in
 	   * common with e. */
 	  if (e_size)
 	    break;
@@ -132,7 +132,7 @@ rsa_generate_keypair(struct rsa_public_key *pub,
 
 	  mpz_sub_ui(q1, key->q, 1);
       
-	  /* If e was given, we must chose q such that q-1 has no factors in
+	  /* If e was given, we must choose q such that q-1 has no factors in
 	   * common with e. */
 	  if (e_size)
 	    break;
