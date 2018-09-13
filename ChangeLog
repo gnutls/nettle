@@ -1,3 +1,8 @@
+2018-09-13  Niels Möller  <nisse@lysator.liu.se>
+
+	* rsa-keygen.c (rsa_generate_keypair): Delete unlikely and
+	redundant check for p == q.
+
 2018-08-09  Niels Möller  <nisse@lysator.liu.se>
 
 	* rsa-internal.h (_rsa_blind, _rsa_unblind): Mark with

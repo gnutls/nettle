@@ -126,10 +126,6 @@ rsa_generate_keypair(struct rsa_public_key *pub,
 			      random_ctx, random,
 			      progress_ctx, progress);
 
-	  /* Very unlikely. */
-	  if (mpz_cmp (key->q, key->p) == 0)
-	    continue;
-
 	  mpz_sub_ui(q1, key->q, 1);
       
 	  /* If e was given, we must choose q such that q-1 has no factors in
