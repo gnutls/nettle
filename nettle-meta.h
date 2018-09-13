@@ -61,10 +61,7 @@ struct nettle_cipher
 };
 
 /* null-terminated list of ciphers implemented by this version of nettle */
-const struct nettle_cipher * const *
-#ifdef __GNUC__
-__attribute__((pure))
-#endif
+const struct nettle_cipher * const * _NETTLE_ATTRIBUTE_PURE
 nettle_get_ciphers (void);
 
 #define nettle_ciphers (nettle_get_ciphers())
@@ -121,10 +118,7 @@ struct nettle_hash
 } 
 
 /* null-terminated list of digests implemented by this version of nettle */
-const struct nettle_hash * const *
-#ifdef __GNUC__
-__attribute__((pure))
-#endif
+const struct nettle_hash * const * _NETTLE_ATTRIBUTE_PURE
 nettle_get_hashes (void);
 
 #define nettle_hashes (nettle_get_hashes())
@@ -172,10 +166,7 @@ struct nettle_aead
 
 /* null-terminated list of aead constructions implemented by this
    version of nettle */
-const struct nettle_aead * const *
-#ifdef __GNUC__
-__attribute__((pure))
-#endif
+const struct nettle_aead * const * _NETTLE_ATTRIBUTE_PURE
 nettle_get_aeads (void);
 
 #define nettle_aeads (nettle_get_aeads())
@@ -238,10 +229,7 @@ struct nettle_armor
 }
 
 /* null-terminated list of armor schemes implemented by this version of nettle */
-const struct nettle_armor * const *
-#ifdef __GNUC__
-__attribute__((pure))
-#endif
+const struct nettle_armor * const * _NETTLE_ATTRIBUTE_PURE
 nettle_get_armors (void);
 
 #define nettle_armors (nettle_get_armors())

@@ -76,7 +76,8 @@ extern "C" {
 #define AES_MIN_KEY_SIZE AES128_KEY_SIZE
 #define AES_MAX_KEY_SIZE AES256_KEY_SIZE
 
-/* Older nettle-2.7 interface */
+/* The older nettle-2.7 AES interface is deprecated, please migrate to
+   the newer interface where each algorithm has a fixed key size. */
 
 #define AES_KEY_SIZE 32
 
@@ -88,24 +89,27 @@ struct aes_ctx
 
 void
 aes_set_encrypt_key(struct aes_ctx *ctx,
-		    size_t length, const uint8_t *key);
+		    size_t length, const uint8_t *key)
+  _NETTLE_ATTRIBUTE_DEPRECATED;
 
 void
 aes_set_decrypt_key(struct aes_ctx *ctx,
-		   size_t length, const uint8_t *key);
+		   size_t length, const uint8_t *key)
+  _NETTLE_ATTRIBUTE_DEPRECATED;
 
 void
 aes_invert_key(struct aes_ctx *dst,
-	       const struct aes_ctx *src);
+	       const struct aes_ctx *src)
+  _NETTLE_ATTRIBUTE_DEPRECATED;
 
 void
 aes_encrypt(const struct aes_ctx *ctx,
 	    size_t length, uint8_t *dst,
-	    const uint8_t *src);
+	    const uint8_t *src) _NETTLE_ATTRIBUTE_DEPRECATED;
 void
 aes_decrypt(const struct aes_ctx *ctx,
 	    size_t length, uint8_t *dst,
-	    const uint8_t *src);
+	    const uint8_t *src) _NETTLE_ATTRIBUTE_DEPRECATED;
 
 struct aes128_ctx
 {
