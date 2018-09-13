@@ -11,6 +11,13 @@
 
 2018-09-13  Niels Möller  <nisse@lysator.liu.se>
 
+	* aes.h (struct aes_ctx): Redefine using a union of key-size
+	specific contexts.
+	* aes-decrypt.c (aes_decrypt): Use switch on ky_size.
+	* aes-encrypt.c (aes_encrypt): Likewise.
+	* aes-set-decrypt-key.c (aes_invert_key): Likewise.
+	* aes-set-encrypt-key.c (aes_set_encrypt_key): Likewise.
+
 	* rsa-keygen.c (rsa_generate_keypair): Delete unlikely and
 	redundant check for p == q.
 
