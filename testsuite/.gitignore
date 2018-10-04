@@ -95,6 +95,7 @@
 /umac-test
 /version-test
 /yarrow-test
+/xts-test
 
 /test.in
 /test1.out

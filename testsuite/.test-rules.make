@@ -166,6 +166,9 @@ buffer-test$(EXEEXT): buffer-test.$(OBJEXT)
 yarrow-test$(EXEEXT): yarrow-test.$(OBJEXT)
 	$(LINK) yarrow-test.$(OBJEXT) $(TEST_OBJS) -o yarrow-test$(EXEEXT)
 
+xts-test$(EXEEXT): xts-test.$(OBJEXT)
+	$(LINK) xts-test.$(OBJEXT) $(TEST_OBJS) -o xts-test$(EXEEXT)
+
 pbkdf2-test$(EXEEXT): pbkdf2-test.$(OBJEXT)
 	$(LINK) pbkdf2-test.$(OBJEXT) $(TEST_OBJS) -o pbkdf2-test$(EXEEXT)
 

@@ -135,7 +135,8 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 umac32.c umac64.c umac96.c umac128.c \
 		 version.c \
 		 write-be32.c write-le32.c write-le64.c \
-		 yarrow256.c yarrow_key_event.c
+		 yarrow256.c yarrow_key_event.c \
+		 xts.c xts-aes128.c xts-aes256.c
 
 hogweed_SOURCES = sexp.c sexp-format.c \
 		  sexp-transport.c sexp-transport-format.c \
@@ -206,7 +207,7 @@ HEADERS = aes.h arcfour.h arctwo.h asn1.h blowfish.h \
 	  pgp.h pkcs1.h pss.h pss-mgf1.h realloc.h ripemd160.h rsa.h \
 	  salsa20.h sexp.h \
 	  serpent.h sha.h sha1.h sha2.h sha3.h twofish.h \
-	  umac.h yarrow.h poly1305.h
+	  umac.h yarrow.h xts.h poly1305.h
 
 INSTALL_HEADERS = $(HEADERS) version.h @IF_MINI_GMP@ mini-gmp.h
 

@@ -2001,7 +2001,8 @@ Book mode, @acronym{ECB}), leaks information.
 
 Besides @acronym{ECB}, Nettle provides several other modes of operation:
 Cipher Block Chaining (@acronym{CBC}), Counter mode (@acronym{CTR}), Cipher
-Feedback (@acronym{CFB} and @acronym{CFB8}) and a couple of @acronym{AEAD}
+Feedback (@acronym{CFB} and @acronym{CFB8}), XEX-based tweaked-codebook mode
+with ciphertext stealing (@acronym{XTS}) and a couple of @acronym{AEAD}
 modes (@pxref{Authenticated encryption}).  @acronym{CBC} is widely used, but
 there are a few subtle issues of information leakage, see, e.g.,
 @uref{http://www.kb.cert.org/vuls/id/958563, @acronym{SSH} @acronym{CBC}
@@ -2016,6 +2017,7 @@ authenticate the message.
 * CBC::                         
 * CTR::                         
 * CFB and CFB8::
+* XTS::
 @end menu
 
 @node CBC, CTR, Cipher modes, Cipher modes
@@ -2187,7 +2189,7 @@ last three arguments define the source and destination area for the
 operation.
 @end deffn
 
-@node CFB and CFB8, , CTR, Cipher modes
+@node CFB and CFB8, XTS, CTR, Cipher modes
 @comment  node-name,  next,  previous,  up
 @subsection Cipher Feedback mode
 
@@ -2339,6 +2341,147 @@ second argument is an encryption function following Nettle's
 conventions. The last three arguments define the source and destination
 area for the operation.
 @end deffn
+
+@node XTS, , CFB and CFB8, Cipher modes
+@comment  node-name,  next,  previous,  up
+@subsection XEX-based tweaked-codebook mode with ciphertext stealing
+
+@cindex XEX-based tweaked-codebook mode with ciphertext stealing
+@cindex XTS Mode
+
+
+XEX-based tweaked-codebook mode with ciphertext stealing (@acronym{XTS}) is
+a block mode like (@acronym{CBC}) but tweaked to be able to encrypt partial
+blocks via a technique called ciphertext stealing, where the last complete
+block of ciphertext is split and part returned as the last block and part
+used as plaintext for the second to last block.
+This mode is principally used to encrypt data at rest where it is not possible
+to store additional metadata or blocks larger than the plain text. The most
+common usage is for disk encryption. Due to the fact that ciphertext expansion
+is not possible, data is not authenticated. This mode should not be used where
+authentication is critical.
+
+The message is divided into @code{n} blocks @code{M_1},@dots{} @code{M_n},
+where @code{M_n} is of size @code{m} which may be smaller than the block size.
+XTS always uses a fixed blocksize of 128 bit (16 bytes) length.
+
+Unlike other modes, the key is double the size of that for the used cipher mode
+(for example 256bit for AES-128 and 512bit for AES-256).
+
+@acronym{XTS} encryption mode operates given:
+@itemize
+@item A multiplication by a primitive element alpha.
+@code{MUL a^j} here represents the multiplication, where @code{j} is the power
+of alpha, and the input value is converted into a 16 bytes array
+@code{a_0[k], k = 0,1,..,15}. The multiplication is calculated as
+@code{a_(j+1)[0] = (2(a_j[0] mod 128)) XOR (135 * floor(a_j[15]/128)}
+@code{a_(j+1)[k] = (2(a_j[k] mod 128)) XOR (floor(a_j[k-1]/128), k = 1,2,..15}
+Note that this operation is practically a 1 bit left shift operation with carry
+propagating from one byte to the next, and if the last bit shift results in a
+carry the decimal value 135 is XORed into the first byte.
+
+@item The encryption key is provided as the @code{Key = K1 | K2}, where @code{|}
+denotes string concatenation.
+@code{E_k1} is the encryption function of the block cipher using @code{K1} as
+the key, and @code{E_k2} is the same encryption function using @code{K2}
+
+@item A 128 bit tweak value is provided as input and is denoted as @code{IV}
+@end itemize
+
+The @code{n} plaintext blocks are transformed into @code{n} ciphertext blocks
+@code{C_1},@dots{} @code{C_n} as follows.
+
+For a plaintext length that is a perfect multiple of the XTS block size:
+@example
+T_1 = E_k2(IV)
+C_1 = E_k1(P_1 XOR T_1) XOR T_1
+
+@dots{}
+
+T_n = T_(n-1) MUL a
+C_n = E_k1(P_n XOR T_n) XOR T_n
+@end example
+
+For any other plaintext lengths:
+@example
+T_1 = E_k2(IV)
+C_1 = E_k1(P_1 XOR T_1) XOR T_1
+
+@dots{}
+
+T_(n-2) = T_(n-3) MUL a
+C_(n-2) = E_k1(P_(n-2) XOR T_(n-2)) XOR T_(n-2)
+
+T_(n-1) = T_(n-2) MUL a
+CC_(n-1) = E_k1(P_(n-1) XOR T_(n-1)) XOR T_(n-1)
+
+T_n = T_(n-1) MUL a
+PP = [1..m]Pn | [m+1..128]CC_(n-1)
+C_(n-1) = E_k1(PP XOR T_n) XOR T_n
+
+C_n = [1..m]CC_(n-1)
+@end example
+
+@subsubsection General (@acronym{XTS}) interface.
+
+The two general functions to encrypt and decrypt using the @acronym{XTS} block
+cipher mode are the following:
+
+@deftypefun void xts_encrypt_message (const void *@var{enc_ctx}, const void *@var{twk_ctx}, nettle_cipher_func *@var{encf}, const uint8_t *@var{tweak}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void xts_decrypt_message (const void *@var{dec_ctx}, const void *@var{twk_ctx}, nettle_cipher_func *@var{decf}, nettle_cipher_func *@var{encf}, const uint8_t *@var{tweak}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+
+Applies the encryption function @var{encf} or the decryption function
+@var{decf} in @acronym{XTS} mode. At least one block (16 bytes) worth
+of data must be available therefore specifying a length less than 16
+bytes is illegal.
+
+The functions @var{encf} @var{decf} are of type
+
+@code{void f (const void *@var{ctx}, size_t @var{length}, uint8_t *@var{dst},
+const uint8_t *@var{src})},
+
+@noindent and the @code{xts_encrypt_message} and @code{xts_decrypt_message}
+functions pass their arguments @var{enc_ctx}, @var{twk_ctx} and @var{dec_ctx}
+to the functions @var{encf}, @var{decf} as @var{ctx}.
+@end deftypefun
+
+@subsubsection @acronym{XTS}-@acronym{AES} interface
+
+The @acronym{AES} @acronym{XTS} functions provide an API for using the
+@acronym{XTS} mode with the @acronym{AES} block ciphers. The parameters
+all have the same meaning as the general interface, except that the
+@var{enc_ctx}, @var{dec_ctx}, @var{twk_ctx}, @var{encf} and @var{decf} are
+replaced with an @acronym{AES} context structure called @var{ctx}, and a
+appropriate set-key function must be called before using any of the encryption
+or decryption functions in this interface.
+
+@deftp {Context struct} {struct xts_aes128_ctx}
+Holds state corresponding to the AES-128 block cipher.
+@end deftp
+
+@deftp {Context struct} {struct xts_aes256_ctx}
+Holds state corresponding to the AES-256 block cipher.
+@end deftp
+
+@deftypefun void xts_aes128_set_encrypt_key (struct xts_aes128_ctx *@var{ctx}, const uint8_t *@var{key})
+@deftypefunx void xts_aes256_set_encrypt_key (struct xts_aes256_ctx *@var{ctx}, const uint8_t *@var{key})
+@deftypefunx void xts_aes128_set_decrypt_key (struct xts_aes128_ctx *@var{ctx}, const uint8_t *@var{key})
+@deftypefunx void xts_aes256_set_decrypt_key (struct xts_aes256_ctx *@var{ctx}, const uint8_t *@var{key})
+Initializes the encryption or decryption key for the AES block cipher. The
+lenght of the key must be double the size of the key for the corresponding
+cipher (256 bits for AES-128 and 512 bits for AES-256). One of
+these functions must be called before any of the other functions.
+@end deftypefun
+
+@deftypefun void xts_aes128_encrypt_message(struct xts_aes128_ctx *@var{ctx}, uint8_t *@var{tweak}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void xts_aes256_encrypt_message(struct xts_aes256_ctx *@var{ctx}, uint8_t *@var{tweak}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void xts_aes128_decrypt_message(struct xts_aes128_ctx *@var{ctx}, uint8_t *@var{tweak}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void xts_aes256_decrypt_message(struct xts_aes256_ctx *@var{ctx}, uint8_t *@var{tweak}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+These are identical to @code{xts_encrypt_message} and
+@code{xts_decrypt_message}, except that @var{enc_ctx}, @var{dec_ctx},
+@var{twk_ctx}, @var{encf} and @var{decf} are replaced by the @var{ctx} context
+structure.
+@end deftypefun
 
 @node Authenticated encryption, Keyed hash functions, Cipher modes, Reference
 @comment  node-name,  next,  previous,  up
