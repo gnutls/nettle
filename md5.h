@@ -57,8 +57,8 @@ struct md5_ctx
 {
   uint32_t state[_MD5_DIGEST_LENGTH];
   uint64_t count;               /* Block count */
-  uint8_t block[MD5_BLOCK_SIZE]; /* Block buffer */
   unsigned index;               /* Into buffer */
+  uint8_t block[MD5_BLOCK_SIZE]; /* Block buffer */
 };
 
 void

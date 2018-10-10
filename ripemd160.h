@@ -59,8 +59,8 @@ struct ripemd160_ctx
 {
   uint32_t state[_RIPEMD160_DIGEST_LENGTH];
   uint64_t count;         /* 64-bit block count */
-  uint8_t block[RIPEMD160_BLOCK_SIZE];
   unsigned int index;
+  uint8_t block[RIPEMD160_BLOCK_SIZE];
 };
 
 void

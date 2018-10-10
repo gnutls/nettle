@@ -1,3 +1,14 @@
+2019-02-06  Niels Möller  <nisse@lysator.liu.se>
+
+	* gosthash94.h (struct gosthash94_ctx): Move block buffer last in
+	struct.
+	* md2.h (struct md2_ctx): Likewise.
+	* md4.h (struct md4_ctx): Likewise.
+	* md5.h (struct md5_ctx): Likewise.
+	* ripemd160.h (struct ripemd160_ctx): Likewise.
+	* sha1.h (struct sha1_ctx): Likewise.
+	* sha2.h (struct sha256_ctx, struct sha512_ctx): Likewise.
+
 2019-01-19  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/Makefile.in (TARGETS): Delete eratosthenes, left over
