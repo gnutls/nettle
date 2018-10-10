@@ -1,3 +1,8 @@
+2018-10-10  Niels Möller  <nisse@lysator.liu.se>
+
+	* aes-set-encrypt-key.c: Add missing include of stdlib.h.
+	* des-compat.c: Likewise.
+
 2018-09-13  Niels Möller  <nisse@lysator.liu.se>
 
 	* rsa-keygen.c (rsa_generate_keypair): Delete unlikely and
