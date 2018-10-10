@@ -74,8 +74,8 @@ struct sha256_ctx
 {
   uint32_t state[_SHA256_DIGEST_LENGTH];    /* State variables */
   uint64_t count;                           /* 64-bit block count */
-  uint8_t block[SHA256_BLOCK_SIZE];          /* SHA256 data buffer */
   unsigned int index;                       /* index into buffer */
+  uint8_t block[SHA256_BLOCK_SIZE];          /* SHA256 data buffer */
 };
 
 void
@@ -121,8 +121,8 @@ struct sha512_ctx
 {
   uint64_t state[_SHA512_DIGEST_LENGTH];    /* State variables */
   uint64_t count_low, count_high;           /* 128-bit block count */
-  uint8_t block[SHA512_BLOCK_SIZE];          /* SHA512 data buffer */
   unsigned int index;                       /* index into buffer */
+  uint8_t block[SHA512_BLOCK_SIZE];          /* SHA512 data buffer */
 };
 
 void
