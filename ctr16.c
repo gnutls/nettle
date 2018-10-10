@@ -91,7 +91,7 @@ _ctr_crypt16(const void *ctx, nettle_cipher_func *f,
 	  f(ctx, CTR_BUFFER_LIMIT, buffer->b, buffer->b);
 	  if (length - i < CTR_BUFFER_LIMIT)
 	    goto done;
-	  memxor3 (dst, src, buffer->b, CTR_BUFFER_LIMIT);
+	  memxor3 (dst + i, src + i, buffer->b, CTR_BUFFER_LIMIT);
 	}
 
       if (blocks > 0)
