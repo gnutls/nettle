@@ -76,6 +76,30 @@ test_main(void)
   ASSERT(MEMEQ(msg_length, msg, decrypted));
   ASSERT(decrypted[msg_length] == after);
 
+  /* test side channel resistant variant */
+  knuth_lfib_random (&lfib, msg_length + 1, decrypted);
+  after = decrypted[msg_length];
+  decrypted_length = msg_length;
+
+  ASSERT(rsa_sec_decrypt(&pub, &key,
+                         &lfib, (nettle_random_func *) knuth_lfib_random,
+                         decrypted_length, decrypted, gibberish));
+  ASSERT(MEMEQ(msg_length, msg, decrypted));
+  ASSERT(decrypted[msg_length] == after);
+
+  /* test invalid length to rsa_sec_decrypt */
+  knuth_lfib_random (&lfib, msg_length + 1, decrypted);
+  decrypted_length = msg_length - 1;
+  after = decrypted[decrypted_length] = 'X';
+  decrypted[0] = 'A';
+
+  ASSERT(!rsa_sec_decrypt(&pub, &key,
+                          &lfib, (nettle_random_func *) knuth_lfib_random,
+                          decrypted_length, decrypted, gibberish));
+  ASSERT(decrypted[decrypted_length] == after);
+  ASSERT(decrypted[0] == 'A');
+
+
   /* Test invalid key. */
   mpz_add_ui (key.q, key.q, 2);
   decrypted_length = key.size;

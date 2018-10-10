@@ -157,7 +157,8 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  rsa-sha512-sign.c rsa-sha512-sign-tr.c rsa-sha512-verify.c \
 		  rsa-pss-sha256-sign-tr.c rsa-pss-sha256-verify.c \
 		  rsa-pss-sha512-sign-tr.c rsa-pss-sha512-verify.c \
-		  rsa-encrypt.c rsa-decrypt.c rsa-decrypt-tr.c \
+		  rsa-encrypt.c rsa-decrypt.c \
+		  rsa-sec-decrypt.c rsa-decrypt-tr.c \
 		  rsa-keygen.c rsa-blind.c \
 		  rsa2sexp.c sexp2rsa.c \
 		  dsa.c dsa-compat.c dsa-compat-keygen.c dsa-gen-params.c \
