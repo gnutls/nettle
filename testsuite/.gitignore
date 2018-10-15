@@ -15,6 +15,7 @@
 /cfb-test
 /chacha-poly1305-test
 /chacha-test
+/cnd-memcpy-test
 /ctr-test
 /curve25519-dh-test
 /cxx-test

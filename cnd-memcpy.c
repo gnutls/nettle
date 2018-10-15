@@ -1,6 +1,6 @@
-/* memops.h
+/* cnd-memcpy.c
 
-   Copyright (C) 2016 Niels Möller
+   Copyright (C) 2018 Niels Möller
 
    This file is part of GNU Nettle.
 
@@ -29,29 +29,27 @@
    not, see http://www.gnu.org/licenses/.
 */
 
-#ifndef NETTLE_MEMOPS_H_INCLUDED
-#define NETTLE_MEMOPS_H_INCLUDED
-
-#include "memxor.h"
-
-#ifdef __cplusplus
-extern "C" {
+#if HAVE_CONFIG_H
+# include "config.h"
 #endif
 
-/* Name mangling */
-#define cnd_memcpy nettle_cnd_memcpy
-#define memeql_sec nettle_memeql_sec
+#include "memops.h"
 
-int
-memeql_sec (const void *a, const void *b, size_t n);
-
-/* Side-channel silent conditional memcpy. cnd must be 0 (nop) or 1
-   (copy). */
 void
-cnd_memcpy(int cnd, volatile void *dst, const volatile void *src, size_t n);
+cnd_memcpy(int cnd, volatile void *dst, const volatile void *src, size_t n)
+{
+  const volatile unsigned char *sp = src;
+  volatile unsigned char *dp = dst;
+  volatile unsigned char c;
+  volatile unsigned char m;
+  size_t i;
 
-#ifdef __cplusplus
+  m = -(unsigned char) cnd;
+
+  for (i = 0; i < n; i++)
+    {
+      c = (sp[i] & m);
+      c |= (dp[i] & ~m);
+      dp[i] = c;
+    }
 }
-#endif
-
-#endif /* NETTLE_MEMOPS_H_INCLUDED */
