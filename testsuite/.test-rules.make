@@ -211,6 +211,9 @@ rsa-encrypt-test$(EXEEXT): rsa-encrypt-test.$(OBJEXT)
 rsa-keygen-test$(EXEEXT): rsa-keygen-test.$(OBJEXT)
 	$(LINK) rsa-keygen-test.$(OBJEXT) $(TEST_OBJS) -o rsa-keygen-test$(EXEEXT)
 
+rsa-sec-decrypt-test$(EXEEXT): rsa-sec-decrypt-test.$(OBJEXT)
+	$(LINK) rsa-sec-decrypt-test.$(OBJEXT) $(TEST_OBJS) -o rsa-sec-decrypt-test$(EXEEXT)
+
 dsa-test$(EXEEXT): dsa-test.$(OBJEXT)
 	$(LINK) dsa-test.$(OBJEXT) $(TEST_OBJS) -o dsa-test$(EXEEXT)
 
