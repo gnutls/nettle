@@ -59,6 +59,7 @@
 /meta-hash-test
 /pbkdf2-test
 /pkcs1-test
+/pkcs1-sec-decrypt-test
 /poly1305-test
 /pss-mgf1-test
 /pss-test

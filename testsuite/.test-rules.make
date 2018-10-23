@@ -187,6 +187,9 @@ random-prime-test$(EXEEXT): random-prime-test.$(OBJEXT)
 pkcs1-test$(EXEEXT): pkcs1-test.$(OBJEXT)
 	$(LINK) pkcs1-test.$(OBJEXT) $(TEST_OBJS) -o pkcs1-test$(EXEEXT)
 
+pkcs1-sec-decrypt-test$(EXEEXT): pkcs1-sec-decrypt-test.$(OBJEXT)
+	$(LINK) pkcs1-sec-decrypt-test.$(OBJEXT) $(TEST_OBJS) -o pkcs1-sec-decrypt-test$(EXEEXT)
+
 pss-test$(EXEEXT): pss-test.$(OBJEXT)
 	$(LINK) pss-test.$(OBJEXT) $(TEST_OBJS) -o pss-test$(EXEEXT)
 
