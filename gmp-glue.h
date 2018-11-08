@@ -81,6 +81,9 @@
 # define cnd_sub_n(cnd, rp, ap, n) mpn_submul_1 ((rp), (ap), (n), (cnd) != 0)
 #endif
 
+#define NETTLE_OCTET_SIZE_TO_LIMB_SIZE(n) \
+  (((n) * 8 + GMP_NUMB_BITS - 1) / GMP_NUMB_BITS)
+
 /* Some functions for interfacing between mpz and mpn code. Signs of
    the mpz numbers are generally ignored. */
 
