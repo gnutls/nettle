@@ -69,7 +69,13 @@ int
 rsa_private_key_prepare(struct rsa_private_key *key)
 {
   mpz_t n;
-  
+
+  /* A key is invalid if the sizes of q and c are smaller than
+   * the size of n, we rely on that property in calculations so
+   * fail early if that happens. */
+  if (mpz_size (key->q) + mpz_size (key->c) < mpz_size(key->p))
+    return 0;
+
   /* The size of the product is the sum of the sizes of the factors,
    * or sometimes one less. It's possible but tricky to compute the
    * size without computing the full product. */
@@ -80,7 +86,7 @@ rsa_private_key_prepare(struct rsa_private_key *key)
   key->size = _rsa_check_size(n);
 
   mpz_clear(n);
-  
+
   return (key->size > 0);
 }
 
