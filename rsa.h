@@ -90,6 +90,7 @@ extern "C" {
 #define rsa_decrypt_tr nettle_rsa_decrypt_tr
 #define rsa_compute_root nettle_rsa_compute_root
 #define rsa_compute_root_tr nettle_rsa_compute_root_tr
+#define rsa_sec_compute_root_tr _nettle_rsa_sec_compute_root_tr
 #define rsa_generate_keypair nettle_rsa_generate_keypair
 #define rsa_keypair_to_sexp nettle_rsa_keypair_to_sexp
 #define rsa_keypair_from_sexp_alist nettle_rsa_keypair_from_sexp_alist
@@ -435,6 +436,14 @@ rsa_compute_root_tr(const struct rsa_public_key *pub,
 		    const struct rsa_private_key *key,
 		    void *random_ctx, nettle_random_func *random,
 		    mpz_t x, const mpz_t m);
+
+/* Safe side-channel silent variant, using RSA blinding, and checking the
+ * result after CRT. */
+int
+rsa_sec_compute_root_tr(const struct rsa_public_key *pub,
+		        const struct rsa_private_key *key,
+		        void *random_ctx, nettle_random_func *random,
+		        mp_limb_t *x, const mp_limb_t *m, size_t mn);
 
 /* Key generation */
 
