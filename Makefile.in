@@ -144,6 +144,7 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  bignum.c bignum-random.c bignum-random-prime.c \
 		  sexp2bignum.c \
 		  pkcs1.c pkcs1-encrypt.c pkcs1-decrypt.c \
+		  pkcs1-sec-decrypt.c \
 		  pkcs1-rsa-digest.c pkcs1-rsa-md5.c pkcs1-rsa-sha1.c \
 		  pkcs1-rsa-sha256.c pkcs1-rsa-sha512.c \
 		  pss.c pss-mgf1.c \
