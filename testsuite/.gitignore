@@ -66,6 +66,7 @@
 /random-prime-test
 /ripemd160-test
 /rsa-sec-decrypt-test
+/rsa-sec-compute-root-test
 /rsa-encrypt-test
 /rsa-keygen-test
 /rsa-pss-sign-tr-test
