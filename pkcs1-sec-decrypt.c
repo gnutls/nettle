@@ -53,6 +53,8 @@
     ((0U - ((uint32_t)(a) ^ (uint32_t)(b))) >> 31)
 #define EQUAL(a, b) \
     ((((uint32_t)(a) ^ (uint32_t)(b)) - 1U) >> 31)
+#define GREATER_OR_EQUAL(a, b) \
+    (1U - (((uint32_t)(a) - (uint32_t)(b)) >> 31))
 
 int
 _pkcs1_sec_decrypt (size_t length, uint8_t *message,
@@ -77,6 +79,71 @@ _pkcs1_sec_decrypt (size_t length, uint8_t *message,
 
   /* fill destination buffer regardless of outcome */
   cnd_memcpy(ok, message, padded_message + t + 1, length);
+
+  return ok;
+}
+
+int
+_pkcs1_sec_decrypt_variable(size_t *length, uint8_t *message,
+                            size_t padded_message_length,
+                            const volatile uint8_t *padded_message)
+{
+  volatile int not_found = 1;
+  volatile int ok;
+  volatile size_t offset;
+  size_t buflen, msglen;
+  size_t shift, i;
+
+  /* Check format, padding, message_size */
+  ok = EQUAL(padded_message[0], 0);
+  ok &= EQUAL(padded_message[1], 2);
+
+  /* length is discovered in a side-channel silent way.
+   * not_found goes to 0 when the terminator is found.
+   * offset strts at 3 as it includes the terminator and
+   * the fomat bytes already */
+  offset = 3;
+  for (i = 2; i < padded_message_length; i++)
+    {
+      not_found &= NOT_EQUAL(padded_message[i], 0);
+      offset += not_found;
+    }
+  /* check if we ran out of buffer */
+  ok &= NOT_EQUAL(not_found, 1);
+  /* padding must be >= 11 (2 format bytes + 8 pad bytes min. + terminator) */
+  ok &= GREATER_OR_EQUAL(offset, 11);
+
+  /* offset can vary between 3 and padded_message_length, due to the loop
+   * above, therefore msglen can't underflow */
+  msglen = padded_message_length - offset;
+
+  /* we always fill the whole buffer but only up to
+   * padded_message_length length */
+  buflen = *length;
+  if (buflen > padded_message_length) { /* input independent branch */
+    buflen = padded_message_length;
+  }
+
+  /* if the message length is larger than the buffer we must fail */
+  ok &= GREATER_OR_EQUAL(buflen, msglen);
+
+  /* fill destination buffer fully regardless of outcome. Copies the message
+   * in a memory access independent way. The destination message buffer will
+   * be clobbered past the message length. */
+  shift = padded_message_length - buflen;
+  cnd_memcpy(ok, message, padded_message + shift, buflen);
+  offset -= shift;
+  /* In this loop, the bits of the 'offset' variable are used as shifting
+   * conditions, starting from the least significant bit. The end result is
+   * that the buffer is shifted left eaxctly 'offset' bytes. */
+  for (shift = 1; shift < buflen; shift <<= 1, offset >>= 1)
+    {
+      /* 'ok' is both the a least significant bit mask and a condition */
+      cnd_memcpy(offset & ok, message, message + shift, buflen - shift);
+    }
+
+  /* update length only if we succeeded, otherwise leave unchanged */
+  *length = (msglen & (-(size_t) ok)) + (*length & ((size_t) ok - 1));
 
   return ok;
 }

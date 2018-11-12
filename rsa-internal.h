@@ -39,6 +39,7 @@
 #define _rsa_sec_compute_root_itch _nettle_rsa_sec_compute_root_itch
 #define _rsa_sec_compute_root _nettle_rsa_sec_compute_root
 #define _pkcs1_sec_decrypt _nettle_pkcs1_sec_decrypt
+#define _pkcs1_sec_decrypt_variable _nettle_pkcs1_sec_decrypt_variable
 
 /* side-channel silent root computation */
 mp_size_t
@@ -54,5 +55,10 @@ int
 _pkcs1_sec_decrypt (size_t length, uint8_t *message,
                     size_t padded_message_length,
                     const volatile uint8_t *padded_message);
+
+int
+_pkcs1_sec_decrypt_variable(size_t *length, uint8_t *message,
+                            size_t padded_message_length,
+                            const volatile uint8_t *padded_message);
 
 #endif /* NETTLE_RSA_INTERNAL_H_INCLUDED */
