@@ -57,6 +57,7 @@
 #define mpz_set_n _nettle_mpz_set_n
 #define mpn_set_base256 _nettle_mpn_set_base256
 #define mpn_set_base256_le _nettle_mpn_set_base256_le
+#define mpn_get_base256 _nettle_mpn_get_base256
 #define mpn_get_base256_le _nettle_mpn_get_base256_le
 #define gmp_alloc_limbs _nettle_gmp_alloc_limbs
 #define gmp_free_limbs _nettle_gmp_free_limbs
@@ -149,6 +150,10 @@ mpn_set_base256 (mp_limb_t *rp, mp_size_t rn,
 void
 mpn_set_base256_le (mp_limb_t *rp, mp_size_t rn,
 		    const uint8_t *xp, size_t xn);
+
+void
+mpn_get_base256 (uint8_t *rp, size_t rn,
+	         const mp_limb_t *xp, mp_size_t xn);
 
 void
 mpn_get_base256_le (uint8_t *rp, size_t rn,
