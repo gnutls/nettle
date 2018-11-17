@@ -148,7 +148,7 @@ bench_alg (const struct alg *alg)
   ctx = alg->init(alg->size);
   if (ctx == NULL)
     {
-      printf("%15s %4d N/A\n", alg->name, alg->size);
+      printf("%16s %4d N/A\n", alg->name, alg->size);
       return;
     }
 
@@ -157,7 +157,7 @@ bench_alg (const struct alg *alg)
 
   alg->clear (ctx);
 
-  printf("%15s %4d %9.4f %9.4f\n",
+  printf("%16s %4d %9.4f %9.4f\n",
 	 alg->name, alg->size, 1e-3/sign, 1e-3/verify);
 }
 
@@ -165,6 +165,7 @@ struct rsa_ctx
 {
   struct rsa_public_key pub;
   struct rsa_private_key key;
+  struct knuth_lfib_ctx lfib;
   uint8_t *digest;
   mpz_t s;
 };
@@ -223,6 +224,7 @@ bench_rsa_init (unsigned size)
   rsa_public_key_init (&ctx->pub);
   rsa_private_key_init (&ctx->key);
   mpz_init (ctx->s);
+  knuth_lfib_init (&ctx->lfib, 1);
 
   /* NOTE: Base64-decodes the strings in-place */
   if (size == 1024)
@@ -253,6 +255,19 @@ bench_rsa_sign (void *p)
   mpz_t s;
   mpz_init (s);
   rsa_sha256_sign_digest (&ctx->key, ctx->digest, s);
+  mpz_clear (s);
+}
+
+static void
+bench_rsa_sign_tr (void *p)
+{
+  struct rsa_ctx *ctx = p;
+
+  mpz_t s;
+  mpz_init (s);
+  rsa_sha256_sign_digest_tr (&ctx->pub, &ctx->key,
+			     &ctx->lfib, (nettle_random_func *)knuth_lfib_random,
+			     ctx->digest, s);
   mpz_clear (s);
 }
 
@@ -535,6 +550,23 @@ bench_openssl_rsa_init (unsigned size)
   return ctx;
 }
 
+static void *
+bench_openssl_rsa_tr_init (unsigned size)
+{
+  struct openssl_rsa_ctx *ctx = xalloc (sizeof (*ctx));
+
+  ctx->key = RSA_generate_key (size, 65537, NULL, NULL);
+  ctx->ref = xalloc (RSA_size (ctx->key));
+  ctx->signature = xalloc (RSA_size (ctx->key));
+  ctx->digest = hash_string (&nettle_sha1, "foo");
+
+  if (! RSA_sign (NID_sha1, ctx->digest, SHA1_DIGEST_SIZE,
+		  ctx->ref, &ctx->siglen, ctx->key))
+    die ("OpenSSL RSA_sign failed.\n");
+
+  return ctx;
+}
+
 static void
 bench_openssl_rsa_sign (void *p)
 {
@@ -689,16 +721,20 @@ bench_curve25519 (void)
   mul_g = time_function (bench_curve25519_mul_g, &ctx);
   mul = time_function (bench_curve25519_mul, &ctx);
 
-  printf("%15s %4d %9.4f %9.4f\n",
+  printf("%16s %4d %9.4f %9.4f\n",
 	 "curve25519", 255, 1e-3/mul_g, 1e-3/mul);
 }
 
 struct alg alg_list[] = {
   { "rsa",   1024, bench_rsa_init,   bench_rsa_sign,   bench_rsa_verify,   bench_rsa_clear },
   { "rsa",   2048, bench_rsa_init,   bench_rsa_sign,   bench_rsa_verify,   bench_rsa_clear },
+  { "rsa-tr",   1024, bench_rsa_init,   bench_rsa_sign_tr,   bench_rsa_verify,   bench_rsa_clear },
+  { "rsa-tr",   2048, bench_rsa_init,   bench_rsa_sign_tr,   bench_rsa_verify,   bench_rsa_clear },
 #if WITH_OPENSSL
   { "rsa (openssl)",  1024, bench_openssl_rsa_init, bench_openssl_rsa_sign, bench_openssl_rsa_verify, bench_openssl_rsa_clear },
   { "rsa (openssl)",  2048, bench_openssl_rsa_init, bench_openssl_rsa_sign, bench_openssl_rsa_verify, bench_openssl_rsa_clear },
+  { "rsa-tr (openssl)",  1024, bench_openssl_rsa_tr_init, bench_openssl_rsa_sign, bench_openssl_rsa_verify, bench_openssl_rsa_clear },
+  { "rsa-tr (openssl)",  2048, bench_openssl_rsa_tr_init, bench_openssl_rsa_sign, bench_openssl_rsa_verify, bench_openssl_rsa_clear },
 #endif
   { "dsa",   1024, bench_dsa_init,   bench_dsa_sign,   bench_dsa_verify,   bench_dsa_clear },
 #if 0
@@ -730,7 +766,7 @@ main (int argc, char **argv)
     filter = argv[1];
 
   time_init();
-  printf ("%15s %4s %9s %9s\n",
+  printf ("%16s %4s %9s %9s\n",
 	  "name", "size", "sign/ms", "verify/ms");
 
   for (i = 0; i < numberof(alg_list); i++)

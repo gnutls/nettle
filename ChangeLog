@@ -1,3 +1,12 @@
+2018-11-17  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/hogweed-benchmark.c (bench_rsa_verify)
+	(bench_openssl_rsa_tr_init): New functions.
+	(alg_list): Benchmark timing-resistant RSA functions, i.e.,
+	including RSA blinding.
+	(main): Increase width of first column, here and in other
+	printouts.
+
 2018-10-10  Dmitry Eremin-Solenikov  <dbaryshkov@gmail.com>
 
 	* ctr16.c (_ctr_crypt16): Bugfix for the src == dst case, when
