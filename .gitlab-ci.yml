@@ -1,7 +1,8 @@
 variables:
   BUILD_IMAGES_PROJECT: gnutls/build-images
-  FEDORA_BUILD: buildenv-f26
-  FEDORA_X86_BUILD: buildenv-f26-x86
+  DEBIAN_CROSS_BUILD: buildenv-debian-cross
+  FEDORA_BUILD: buildenv-f28
+  FEDORA_X86_BUILD: buildenv-f28-x86
   GET_SOURCES_ATTEMPTS: "3"
 
 # remove any pre-installed headers from nettle
@@ -13,7 +14,7 @@ build/x86-64:
   image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
   script:
   - ./.bootstrap &&
-    ./configure --enable-fat --disable-documentation && make -j4 &&
+    ./configure --disable-static --enable-fat --disable-documentation && make -j4 &&
     make check -j4
   tags:
   - shared
@@ -27,19 +28,6 @@ build/x86:
     make check -j4
   tags:
   - shared
-  except:
-  - tags
-build/aarch64:
-  before_script:
-  - /bin/true
-  script:
-  - ./.bootstrap &&
-    ./configure --enable-fat --disable-documentation && make -j4 &&
-    make check -j4
-  tags:
-  - aarch64
-  only:
-  - branches@gnutls/nettle
   except:
   - tags
 build/mini-gmp:
@@ -101,3 +89,39 @@ build/gnutls:
   - shared
   except:
   - tags
+  artifacts:
+    expire_in: 1 week
+    when: on_failure
+    paths:
+      - gnutls-git/guile/tests/*.log
+      - gnutls-git/tests/*.log
+      - gnutls-git/*.log
+      - gnutls-git/tests/*/*.log
+      - gnutls-git/tests/suite/*/*.log
+.Debian.cross.template: &Debian_cross_template
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_CROSS_BUILD
+  before_script:
+  # remove any previously installed nettle headers to avoid conflicts
+  - for arch in armhf mips arm64;do apt-get remove -y nettle-dev:$arch;done
+  script:
+  - build=$(dpkg-architecture -qDEB_HOST_GNU_TYPE)
+  - host="${CI_JOB_NAME#*.cross.}"
+  # not setting CC_FOR_BUILD paired with qemu-user/binfmt somehow causes
+  # config.guess to detect the target as the build platform and not activate
+  # cross-compile mode even though --build is given
+  - export CC_FOR_BUILD="gcc"
+  - export CC="$host-gcc"
+  - ./.bootstrap
+  - ./configure --disable-static --enable-fat --disable-documentation --build=$build --host=$host
+  - make -j$(nproc)
+  - make -j$(nproc) check
+  tags:
+  - shared
+  except:
+  - tags
+Debian.cross.arm-linux-gnueabihf:
+  <<: *Debian_cross_template
+Debian.cross.mips-linux-gnu:
+  <<: *Debian_cross_template
+Debian.cross.aarch64-linux-gnu:
+  <<: *Debian_cross_template
