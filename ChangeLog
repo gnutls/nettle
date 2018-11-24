@@ -1,5 +1,16 @@
 2018-11-08  Simo Sorce	  <simo@redhat.com>
 
+	* rsa-sign-tr.c (rsa_sec_compute_root_tr): New function that uses
+	_rsa_sec_compute_root, as well as side-channel silent RSA
+	blinding.
+	(rsa_compute_root_tr) Rewritten as a wrapper around
+	rsa_sec_compute_root_tr.
+	(rsa_sec_blind, rsa_sec_unblind, sec_equal, rsa_sec_check_root)
+	(cnd_mpn_zero): New helper functions.
+	(rsa_sec_compute_root_tr) [NETTLE_USE_MINI_GMP]: Defined as a not
+	side-channel silent wrapper around rsa_compute_root_tr, and the
+	latter function left unchanged.
+
 	* rsa-sec-compute-root.c (_rsa_sec_compute_root_itch)
 	(_rsa_sec_compute_root): New file, new private functions.
 	Side-channel silent version of rsa_compute_root.

@@ -4,6 +4,7 @@
 
    Copyright (C) 2001, 2015 Niels Möller
    Copyright (C) 2012 Nikos Mavrogiannopoulos
+   Copyright (C) 2018 Red Hat Inc.
 
    This file is part of GNU Nettle.
 
@@ -145,7 +146,7 @@ rsa_sec_compute_root_tr(const struct rsa_public_key *pub,
   res = rsa_compute_root_tr(pub, key, random_ctx, random, xz, mz);
 
   if (res)
-      mpz_limbs_copy(x, xz, mpz_size(pub->n));
+    mpz_limbs_copy(x, xz, mpz_size(pub->n));
 
   mpz_clear(mz);
   mpz_clear(xz);
