@@ -1,5 +1,10 @@
 2018-11-08  Simo Sorce	  <simo@redhat.com>
 
+	* rsa-sec-compute-root.c (_rsa_sec_compute_root_itch)
+	(_rsa_sec_compute_root): New file, new private functions.
+	Side-channel silent version of rsa_compute_root.
+	* rsa-internal.h: New header file with declarations.
+
 	* gmp-glue.h (NETTLE_OCTET_SIZE_TO_LIMB_SIZE): New macro.
 
 2018-11-24  Niels Möller  <nisse@lysator.liu.se>

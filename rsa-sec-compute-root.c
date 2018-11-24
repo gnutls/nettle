@@ -1,8 +1,9 @@
 /* rsa-sec-compute-root.c
 
-   Creating RSA signatures, with some additional checks.
+   Side-channel silent RSA root computation.
 
    Copyright (C) 2018 Niels Möller
+   Copyright (C) 2018 Red Hat, Inc
 
    This file is part of GNU Nettle.
 
