@@ -1,5 +1,9 @@
 2018-11-08  Simo Sorce	  <simo@redhat.com>
 
+	* cnd-memcpy.c (cnd_memcpy): New function.
+	* memops.h: Declare it.
+	* testsuite/cnd-memcpy-test.c: New test case.
+
 	* rsa-sign-tr.c (rsa_sec_compute_root_tr): New function that uses
 	_rsa_sec_compute_root, as well as side-channel silent RSA
 	blinding.
