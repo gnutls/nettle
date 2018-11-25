@@ -16,6 +16,10 @@
 
 2018-11-08  Simo Sorce	  <simo@redhat.com>
 
+	* rsa-sign.c (rsa_private_key_prepare): Check that qn + cn >= pn,
+	since that is required for one of the GMP calls in
+	_rsa_sec_compute_root.
+
 	* rsa-decrypt-tr.c: Switch to use side-channel silent functions.
 
 	* pkcs1-sec-decrypt.c (_pkcs1_sec_decrypt_variable): New private
