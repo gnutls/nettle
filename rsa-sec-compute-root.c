@@ -60,9 +60,9 @@ _rsa_sec_compute_root_itch (const struct rsa_private_key *key)
   itch = MAX (itch, i2);
   i2 = mpn_sec_div_r_itch (nn, pn);
   itch = MAX (itch, i2);
-  i2 = mpn_sec_powm_itch (qn, mpz_sizeinbase (key->b, 2), qn);
+  i2 = mpn_sec_powm_itch (qn, mpz_size (key->b) * GMP_NUMB_BITS, qn);
   itch = MAX (itch, i2);
-  i2 = mpn_sec_powm_itch (pn, mpz_sizeinbase (key->a, 2), pn);
+  i2 = mpn_sec_powm_itch (pn, mpz_size (key->a) * GMP_NUMB_BITS, pn);
   itch = MAX (itch, i2);
   i2 = mpn_sec_div_r_itch (qn, pn);
   itch = MAX (itch, i2);
@@ -111,13 +111,13 @@ _rsa_sec_compute_root (const struct rsa_private_key *key,
   mpn_copyi (scratch, mp, nn);
   mpn_sec_div_r (scratch, nn, qp, qn, sp);
   mpn_sec_powm (r_mod_q, scratch, qn, mpz_limbs_read (key->b),
-                mpz_sizeinbase (key->b, 2), qp, qn, sp);
+                mpz_size (key->b) * GMP_NUMB_BITS, qp, qn, sp);
 
   /* Compute r_mod_p = m^d % p = (m%p)^a % p */
   mpn_copyi (scratch, mp, nn);
   mpn_sec_div_r (scratch, nn, pp, pn, sp);
   mpn_sec_powm (r_mod_p, scratch, pn, mpz_limbs_read (key->a),
-                mpz_sizeinbase (key->a, 2), pp, pn, sp);
+                mpz_size (key->a) * GMP_NUMB_BITS, pp, pn, sp);
 
   /* Set r_mod_p' = r_mod_p * c % p - r_mod_q * c % p . */
   mpn_sec_mul (scratch, r_mod_p, pn, mpz_limbs_read (key->c), cn, sp);

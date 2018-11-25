@@ -1,5 +1,9 @@
 2018-11-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* rsa-sec-compute-root.c (_rsa_sec_compute_root): Avoid calls to
+	mpz_sizeinbase, since that potentially leaks most significant bits
+	of private key parameters a and b.
+
 	* testsuite/pkcs1-sec-decrypt-test.c (pkcs1_decrypt_for_test): Fix
 	valgrind marking of return value.
 
