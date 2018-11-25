@@ -18,6 +18,7 @@ pkcs1_decrypt_for_test(size_t msg_len, uint8_t *msg,
 
   VALGRIND_MAKE_MEM_DEFINED (msg, msg_len);
   VALGRIND_MAKE_MEM_DEFINED (pad, pad_len);
+  VALGRIND_MAKE_MEM_DEFINED (&ret, sizeof (ret));
 
   return ret;
 }

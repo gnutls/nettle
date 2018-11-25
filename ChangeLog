@@ -1,3 +1,8 @@
+2018-11-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/pkcs1-sec-decrypt-test.c (pkcs1_decrypt_for_test): Fix
+	valgrind marking of return value.
+
 2018-11-08  Simo Sorce	  <simo@redhat.com>
 
 	* testsuite/pkcs1-sec-decrypt-test.c: Adds tests for
