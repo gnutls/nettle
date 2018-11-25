@@ -128,10 +128,10 @@ rsa_compute_root_tr(const struct rsa_public_key *pub,
 }
 
 int
-rsa_sec_compute_root_tr(const struct rsa_public_key *pub,
-		        const struct rsa_private_key *key,
-		        void *random_ctx, nettle_random_func *random,
-		        mp_limb_t *x, const mp_limb_t *m, size_t mn)
+_rsa_sec_compute_root_tr(const struct rsa_public_key *pub,
+			 const struct rsa_private_key *key,
+			 void *random_ctx, nettle_random_func *random,
+			 mp_limb_t *x, const mp_limb_t *m, size_t mn)
 {
   mpz_t mz;
   mpz_t xz;
