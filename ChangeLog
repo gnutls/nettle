@@ -1,5 +1,7 @@
 2018-11-08  Simo Sorce	  <simo@redhat.com>
 
+	* gmp-glue.c (mpn_get_base256): New function.
+
 	* pkcs1-sec-decrypt.c (_pkcs1_sec_decrypt): New private function.
 	Fixed length side-channel silent version of pkcs1-decrypt.
 
