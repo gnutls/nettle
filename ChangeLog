@@ -13,6 +13,8 @@
 
 2018-11-08  Simo Sorce	  <simo@redhat.com>
 
+	* rsa-decrypt-tr.c: Switch to use side-channel silent functions.
+
 	* pkcs1-sec-decrypt.c (_pkcs1_sec_decrypt_variable): New private
 	function. Variable size version for backwards compatibility.
 
