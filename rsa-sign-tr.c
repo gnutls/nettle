@@ -293,10 +293,10 @@ cnd_mpn_zero (int cnd, volatile mp_ptr rp, mp_size_t n)
  * This version is side-channel silent even in case of error,
  * the destination buffer is always overwritten */
 int
-rsa_sec_compute_root_tr(const struct rsa_public_key *pub,
-		        const struct rsa_private_key *key,
-		        void *random_ctx, nettle_random_func *random,
-		        mp_limb_t *x, const mp_limb_t *m, size_t mn)
+_rsa_sec_compute_root_tr(const struct rsa_public_key *pub,
+			 const struct rsa_private_key *key,
+			 void *random_ctx, nettle_random_func *random,
+			 mp_limb_t *x, const mp_limb_t *m, size_t mn)
 {
   TMP_GMP_DECL (c, mp_limb_t);
   TMP_GMP_DECL (ri, mp_limb_t);
@@ -359,8 +359,8 @@ rsa_compute_root_tr(const struct rsa_public_key *pub,
   mp_size_t l_size = NETTLE_OCTET_SIZE_TO_LIMB_SIZE(key->size);
   TMP_GMP_ALLOC (l, l_size);
 
-  res = rsa_sec_compute_root_tr (pub, key, random_ctx, random, l,
-                                 mpz_limbs_read(m), mpz_size(m));
+  res = _rsa_sec_compute_root_tr (pub, key, random_ctx, random, l,
+				  mpz_limbs_read(m), mpz_size(m));
   if (res) {
     mp_limb_t *xp = mpz_limbs_write (x, l_size);
     mpn_copyi (xp, l, l_size);

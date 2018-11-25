@@ -38,6 +38,7 @@
 
 #define _rsa_sec_compute_root_itch _nettle_rsa_sec_compute_root_itch
 #define _rsa_sec_compute_root _nettle_rsa_sec_compute_root
+#define _rsa_sec_compute_root_tr _nettle_rsa_sec_compute_root_tr
 #define _pkcs1_sec_decrypt _nettle_pkcs1_sec_decrypt
 #define _pkcs1_sec_decrypt_variable _nettle_pkcs1_sec_decrypt_variable
 
@@ -48,6 +49,14 @@ void
 _rsa_sec_compute_root(const struct rsa_private_key *key,
                       mp_limb_t *rp, const mp_limb_t *mp,
                       mp_limb_t *scratch);
+
+/* Safe side-channel silent variant, using RSA blinding, and checking the
+ * result after CRT. */
+int
+_rsa_sec_compute_root_tr(const struct rsa_public_key *pub,
+			 const struct rsa_private_key *key,
+			 void *random_ctx, nettle_random_func *random,
+			 mp_limb_t *x, const mp_limb_t *m, size_t mn);
 
 /* additional resistance to memory access side-channel attacks.
  * Note: message buffer is returned unchanged on error */

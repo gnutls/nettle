@@ -1,5 +1,10 @@
 2018-11-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* rsa-sign-tr.c (_rsa_sec_compute_root_tr): Renamed, from...
+	(rsa_sec_compute_root_tr): ... old name. Updated callers.
+	* rsa.h (rsa_sec_compute_root_tr): Deleted declaration, moved to ...
+	* rsa-internal.h (_rsa_sec_compute_root_tr): ... new location.
+
 	* testsuite/testutils.c (mpz_urandomb) [NETTLE_USE_MINI_GMP]: Fix
 	masking of most significant bits.
 
@@ -16,6 +21,9 @@
 
 	* testsuite/pkcs1-sec-decrypt-test.c (pkcs1_decrypt_for_test): Fix
 	valgrind marking of return value.
+
+	Merged below changes from Simo Sorce, to make RSA private key
+	operations side-channel silent.
 
 2018-11-08  Simo Sorce  <simo@redhat.com>
 

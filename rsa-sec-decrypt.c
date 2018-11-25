@@ -57,9 +57,9 @@ rsa_sec_decrypt(const struct rsa_public_key *pub,
   TMP_GMP_ALLOC (m, mpz_size(pub->n));
   TMP_GMP_ALLOC (em, key->size);
 
-  res = rsa_sec_compute_root_tr (pub, key, random_ctx, random, m,
-                                 mpz_limbs_read(gibberish),
-                                 mpz_size(gibberish));
+  res = _rsa_sec_compute_root_tr (pub, key, random_ctx, random, m,
+				  mpz_limbs_read(gibberish),
+				  mpz_size(gibberish));
 
   mpn_get_base256 (em, key->size, m, mpz_size(pub->n));
 
