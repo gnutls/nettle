@@ -1,5 +1,8 @@
 2018-11-08  Simo Sorce	  <simo@redhat.com>
 
+	* pkcs1-sec-decrypt.c (_pkcs1_sec_decrypt): New private function.
+	Fixed length side-channel silent version of pkcs1-decrypt.
+
 	* cnd-memcpy.c (cnd_memcpy): New function.
 	* memops.h: Declare it.
 	* testsuite/cnd-memcpy-test.c: New test case.
