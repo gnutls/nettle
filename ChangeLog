@@ -17,7 +17,10 @@
 	* testsuite/pkcs1-sec-decrypt-test.c (pkcs1_decrypt_for_test): Fix
 	valgrind marking of return value.
 
-2018-11-08  Simo Sorce	  <simo@redhat.com>
+2018-11-08  Simo Sorce  <simo@redhat.com>
+
+	* rsa-sign.c (rsa_compute_root) [!NETTLE_USE_MINI_GMP]: Use
+	_rsa_sec_compute_root.
 
 	* testsuite/rsa-sec-compute-root-test.c: Add more tests for new
 	side-channel silent functions.

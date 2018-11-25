@@ -35,9 +35,11 @@
 # include "config.h"
 #endif
 
-#include "rsa.h"
+#include <assert.h>
 
-#include "bignum.h"
+#include "rsa.h"
+#include "rsa-internal.h"
+#include "gmp-glue.h"
 
 void
 rsa_private_key_init(struct rsa_private_key *key)
@@ -89,6 +91,8 @@ rsa_private_key_prepare(struct rsa_private_key *key)
 
   return (key->size > 0);
 }
+
+#if NETTLE_USE_MINI_GMP
 
 /* Computing an rsa root. */
 void
@@ -148,3 +152,35 @@ rsa_compute_root(const struct rsa_private_key *key,
 
   mpz_clear(xp); mpz_clear(xq);
 }
+
+#else /* !NETTLE_USE_MINI_GMP */
+
+/* Computing an rsa root. */
+void
+rsa_compute_root(const struct rsa_private_key *key,
+		 mpz_t x, const mpz_t m)
+{
+  TMP_GMP_DECL (scratch, mp_limb_t);
+  TMP_GMP_DECL (ml, mp_limb_t);
+  mp_limb_t *xl;
+  size_t key_size;
+
+  key_size = NETTLE_OCTET_SIZE_TO_LIMB_SIZE(key->size);
+  assert(mpz_size (m) <= key_size);
+
+  /* we need a copy because m can be shorter than key_size,
+   * but _rsa_sec_compute_root expect all inputs to be
+   * normalized to a key_size long buffer length */
+  TMP_GMP_ALLOC (ml, key_size);
+  mpz_limbs_copy(ml, m, key_size);
+
+  TMP_GMP_ALLOC (scratch, _rsa_sec_compute_root_itch(key));
+
+  xl = mpz_limbs_write (x, key_size);
+  _rsa_sec_compute_root (key, xl, ml, scratch);
+  mpz_limbs_finish (x, key_size);
+
+  TMP_GMP_FREE (ml);
+  TMP_GMP_FREE (scratch);
+}
+#endif /* !NETTLE_USE_MINI_GMP */
