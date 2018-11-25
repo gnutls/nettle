@@ -5,6 +5,10 @@
 
 2018-11-08  Simo Sorce	  <simo@redhat.com>
 
+	* rsa-sec-decrypt.c (rsa_sec_decrypt): New function.
+	Fixed length side-channel silent version of rsa-decrypt.
+	* testsuite/rsa-encrypt-test.c: add tests for the new fucntion.
+
 	* testsuite/pkcs1-sec-decrypt-test.c: Adds tests for
 	_pkcs1_sec_decrypt.
 
