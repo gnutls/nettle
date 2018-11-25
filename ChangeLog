@@ -1,5 +1,9 @@
 2018-11-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/rsa-sec-decrypt-test.c (rsa_decrypt_for_test): Tweak
+	valgrind marking, and document potential leakage of lowest and
+	highest bits of p and q.
+
 	* rsa-sec-compute-root.c (_rsa_sec_compute_root): Avoid calls to
 	mpz_sizeinbase, since that potentially leaks most significant bits
 	of private key parameters a and b.

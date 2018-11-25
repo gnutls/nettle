@@ -21,18 +21,26 @@ rsa_decrypt_for_test(const struct rsa_public_key *pub,
 {
   int ret;
   /* Makes valgrind trigger on any branches depending on the input
-     data. */
+     data. Except that (i) we have to allow rsa_sec_compute_root_tr to
+     check that p and q are odd, (ii) mpn_sec_div_r may leak
+     information about the most significant bits of p and q, due to
+     normalization check and table lookup in invert_limb, and (iii)
+     mpn_sec_powm may leak information about the least significant
+     bits of p and q, due to table lookup in binvert_limb. */
   VALGRIND_MAKE_MEM_UNDEFINED (message, length);
   MARK_MPZ_LIMBS_UNDEFINED(gibberish);
   MARK_MPZ_LIMBS_UNDEFINED(key->a);
   MARK_MPZ_LIMBS_UNDEFINED(key->b);
   MARK_MPZ_LIMBS_UNDEFINED(key->c);
-  MARK_MPZ_LIMBS_UNDEFINED(key->p);
-  MARK_MPZ_LIMBS_UNDEFINED(key->q);
+  VALGRIND_MAKE_MEM_UNDEFINED(mpz_limbs_read (key->p) + 1,
+			      (mpz_size (key->p) - 3) * sizeof(mp_limb_t));
+  VALGRIND_MAKE_MEM_UNDEFINED(mpz_limbs_read (key->q) + 1,
+			      (mpz_size (key->q) - 3) * sizeof(mp_limb_t));
 
   ret = rsa_sec_decrypt (pub, key, random_ctx, random, length, message, gibberish);
 
   VALGRIND_MAKE_MEM_DEFINED (message, length);
+  VALGRIND_MAKE_MEM_DEFINED (&ret, sizeof(ret));
   MARK_MPZ_LIMBS_DEFINED(gibberish);
   MARK_MPZ_LIMBS_DEFINED(key->a);
   MARK_MPZ_LIMBS_DEFINED(key->b);
