@@ -19,6 +19,9 @@
 
 2018-11-08  Simo Sorce	  <simo@redhat.com>
 
+	* testsuite/rsa-sec-compute-root-test.c: Add more tests for new
+	side-channel silent functions.
+
 	* rsa-sign.c (rsa_private_key_prepare): Check that qn + cn >= pn,
 	since that is required for one of the GMP calls in
 	_rsa_sec_compute_root.
