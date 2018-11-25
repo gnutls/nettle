@@ -1,9 +1,10 @@
 2018-11-25  Niels Möller  <nisse@lysator.liu.se>
 
-	* rsa-sign-tr.c (_rsa_sec_compute_root_tr): Renamed, from...
-	(rsa_sec_compute_root_tr): ... old name. Updated callers.
 	* rsa.h (rsa_sec_compute_root_tr): Deleted declaration, moved to ...
 	* rsa-internal.h (_rsa_sec_compute_root_tr): ... new location.
+	* rsa-sign-tr.c (_rsa_sec_compute_root_tr): Renamed, from...
+	(rsa_sec_compute_root_tr): ... old name. Updated callers.
+	(cnd_mpn_zero): Use a volatile-declared mask variable.
 
 	* testsuite/testutils.c (mpz_urandomb) [NETTLE_USE_MINI_GMP]: Fix
 	masking of most significant bits.

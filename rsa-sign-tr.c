@@ -245,6 +245,7 @@ sec_equal(const mp_limb_t *a, const mp_limb_t *b, size_t limbs)
       z |= (a[i] ^ b[i]);
     }
 
+  /* FIXME: Might compile to a branch instruction on some platforms. */
   return z == 0;
 }
 
@@ -278,11 +279,12 @@ static void
 cnd_mpn_zero (int cnd, volatile mp_ptr rp, mp_size_t n)
 {
   volatile mp_limb_t c;
+  volatile mp_limb_t mask = (mp_limb_t) cnd - 1;
 
   while (--n >= 0)
     {
       c = rp[n];
-      c &= ((mp_limb_t)cnd - 1);
+      c &= mask;
       rp[n] = c;
     }
 }
