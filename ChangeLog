@@ -1,5 +1,8 @@
 2018-11-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* rsa-decrypt-tr.c (rsa_decrypt_tr): Use
+	NETTLE_OCTET_SIZE_TO_LIMB_SIZE.
+
 	* testsuite/rsa-sec-decrypt-test.c (rsa_decrypt_for_test): Tweak
 	valgrind marking, and document potential leakage of lowest and
 	highest bits of p and q.
