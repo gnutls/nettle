@@ -1,5 +1,8 @@
 2018-11-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/testutils.c (mpz_urandomb) [NETTLE_USE_MINI_GMP]: Fix
+	masking of most significant bits.
+
 	* rsa-decrypt-tr.c (rsa_decrypt_tr): Use
 	NETTLE_OCTET_SIZE_TO_LIMB_SIZE.
 
