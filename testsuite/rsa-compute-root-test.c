@@ -34,7 +34,7 @@ test_one (gmp_randstate_t *rands, struct rsa_public_key *pub,
   mpz_powm (ciphertext, plaintext, pub->e, pub->n);
   rsa_compute_root_tr (pub, key, rands, random_fn, decrypted, ciphertext);
   if (mpz_cmp (plaintext, decrypted)) {
-    fprintf (stderr, "rsa_sec_compute_root_tr failed\n");
+    fprintf (stderr, "rsa_compute_root_tr failed\n");
 
     fprintf(stderr, "Public key: size=%lu\n n:", pub->size);
     mpz_out_str (stderr, 10, pub->n);

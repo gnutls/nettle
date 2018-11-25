@@ -214,8 +214,8 @@ rsa-keygen-test$(EXEEXT): rsa-keygen-test.$(OBJEXT)
 rsa-sec-decrypt-test$(EXEEXT): rsa-sec-decrypt-test.$(OBJEXT)
 	$(LINK) rsa-sec-decrypt-test.$(OBJEXT) $(TEST_OBJS) -o rsa-sec-decrypt-test$(EXEEXT)
 
-rsa-sec-compute-root-test$(EXEEXT): rsa-sec-compute-root-test.$(OBJEXT)
-	$(LINK) rsa-sec-compute-root-test.$(OBJEXT) $(TEST_OBJS) -o rsa-sec-compute-root-test$(EXEEXT)
+rsa-compute-root-test$(EXEEXT): rsa-compute-root-test.$(OBJEXT)
+	$(LINK) rsa-compute-root-test.$(OBJEXT) $(TEST_OBJS) -o rsa-compute-root-test$(EXEEXT)
 
 dsa-test$(EXEEXT): dsa-test.$(OBJEXT)
 	$(LINK) dsa-test.$(OBJEXT) $(TEST_OBJS) -o dsa-test$(EXEEXT)
