@@ -135,10 +135,10 @@ _pkcs1_sec_decrypt_variable(size_t *length, uint8_t *message,
   offset -= shift;
   /* In this loop, the bits of the 'offset' variable are used as shifting
    * conditions, starting from the least significant bit. The end result is
-   * that the buffer is shifted left eaxctly 'offset' bytes. */
+   * that the buffer is shifted left exactly 'offset' bytes. */
   for (shift = 1; shift < buflen; shift <<= 1, offset >>= 1)
     {
-      /* 'ok' is both the a least significant bit mask and a condition */
+      /* 'ok' is both a least significant bit mask and a condition */
       cnd_memcpy(offset & ok, message, message + shift, buflen - shift);
     }
 

@@ -13,6 +13,9 @@
 
 2018-11-08  Simo Sorce	  <simo@redhat.com>
 
+	* pkcs1-sec-decrypt.c (_pkcs1_sec_decrypt_variable): New private
+	function. Variable size version for backwards compatibility.
+
 	* testsuite/rsa-sec-decrypt-test.c: Adds more tests.
 
 	* rsa-sec-decrypt.c (rsa_sec_decrypt): New function.
