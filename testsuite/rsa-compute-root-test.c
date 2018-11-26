@@ -7,7 +7,8 @@
 
 #include "rsa.h"
 
-#define COUNT 5000
+#define KEY_COUNT 20
+#define COUNT 100
 
 static void
 random_fn (void *ctx, size_t n, uint8_t *dst)
@@ -55,26 +56,32 @@ test_one (gmp_randstate_t *rands, struct rsa_public_key *pub,
     fprintf(stderr, "\n");
 
     fprintf (stderr, "plaintext(%lu) = ", mpz_sizeinbase (plaintext, 2));
-    mpn_out_str (stderr, 16, mpz_limbs_read (plaintext), mpz_size (plaintext));
+    mpz_out_str (stderr, 10, plaintext);
+    fprintf (stderr, "\n");
+    fprintf (stderr, "ciphertext(%lu) = ", mpz_sizeinbase (ciphertext, 2));
+    mpz_out_str (stderr, 10, ciphertext);
     fprintf (stderr, "\n");
     fprintf (stderr, "decrypted(%lu) = ", mpz_sizeinbase (decrypted, 2));
-    mpn_out_str (stderr, 16, mpz_limbs_read (decrypted), mpz_size (decrypted));
+    mpz_out_str (stderr, 10, decrypted);
     fprintf (stderr, "\n");
     abort();
   }
+
+  mpz_clear (ciphertext);
+  mpz_clear (decrypted);
 }
 
 #if !NETTLE_USE_MINI_GMP
-/* we want to generate keypairs that are not "standard" but have more size
+/* We want to generate keypairs that are not "standard" but have more size
  * variance between q and p.
- * Function is otheriwse the same as standard rsa_generate_keypair()
+ * Function is otherwise the same as standard rsa_generate_keypair()
  */
 static void
-generate_keypair (gmp_randstate_t *rands,
+generate_keypair (gmp_randstate_t rands,
                   struct rsa_public_key *pub, struct rsa_private_key *key)
 {
-  unsigned long int psize = 0;
-  unsigned long int qsize = 0;
+  unsigned long int psize;
+  unsigned long int qsize;
   mpz_t p1;
   mpz_t q1;
   mpz_t phi;
@@ -85,18 +92,8 @@ generate_keypair (gmp_randstate_t *rands,
   mpz_init (phi);
   mpz_init (tmp);
 
-  while (psize < 100)
-    {
-      mpz_set_ui(tmp, 500);
-      mpz_urandomm (tmp, *rands, tmp);
-      psize = mpz_get_ui (tmp);
-    }
-  while (qsize < 100)
-    {
-      mpz_set_ui(tmp, 500);
-      mpz_urandomm (tmp, *rands, tmp);
-      qsize = mpz_get_ui (tmp);
-    }
+  psize = 100 + gmp_urandomm_ui (rands, 400);
+  qsize = 100 + gmp_urandomm_ui (rands, 400);
 
   mpz_set_ui (pub->e, 65537);
 
@@ -104,7 +101,7 @@ generate_keypair (gmp_randstate_t *rands,
     {
       for (;;)
         {
-          mpz_rrandomb (key->p, *rands, psize);
+          mpz_rrandomb (key->p, rands, psize);
           mpz_nextprime (key->p, key->p);
           mpz_sub_ui (p1, key->p, 1);
           mpz_gcd (tmp, pub->e, p1);
@@ -114,7 +111,7 @@ generate_keypair (gmp_randstate_t *rands,
 
       for (;;)
         {
-          mpz_rrandomb (key->q, *rands, psize);
+          mpz_rrandomb (key->q, rands, qsize);
           mpz_nextprime (key->q, key->q);
           mpz_sub_ui (q1, key->q, 1);
           mpz_gcd (tmp, pub->e, q1);
@@ -181,10 +178,11 @@ test_main (void)
   struct rsa_public_key pub;
   struct rsa_private_key key;
   mpz_t plaintext;
-  unsigned i;
+  unsigned i, j;
 
   rsa_private_key_init(&key);
   rsa_public_key_init(&pub);
+  mpz_init (plaintext);
 
   gmp_randinit_default (rands);
 
@@ -207,23 +205,30 @@ test_main (void)
       gmp_randseed (rands, seed);
       mpz_clear (seed);
     }
+#endif
 
-  generate_keypair(&rands, &pub, &key);
+  for (j = 0; j < KEY_COUNT; j++)
+    {
+#if !NETTLE_USE_MINI_GMP
+      generate_keypair(rands, &pub, &key);
 #else
-  rsa_generate_keypair(&pub, &key, &rands, random_fn, NULL, NULL, 512, 16);
+      rsa_generate_keypair(&pub, &key, &rands, random_fn, NULL, NULL, 512, 16);
 #endif /* !NETTLE_USE_MINI_GMP */
 
-  mpz_init (plaintext);
-  for (i = 0; i < COUNT; i++)
-    {
-      mpz_urandomb(plaintext, rands, mpz_sizeinbase(pub.n, 2) - 1);
-      test_one(&rands, &pub, &key, plaintext);
+      for (i = 0; i < COUNT; i++)
+	{
+	  mpz_urandomb(plaintext, rands, mpz_sizeinbase(pub.n, 2) - 1);
+	  test_one(&rands, &pub, &key, plaintext);
+	}
+      for (i = 0; i < COUNT; i++)
+	{
+	  mpz_rrandomb(plaintext, rands, mpz_sizeinbase(pub.n, 2) - 1);
+	  test_one(&rands, &pub, &key, plaintext);
+	}
     }
-  for (i = 0; i < COUNT; i++)
-    {
-      mpz_rrandomb(plaintext, rands, mpz_sizeinbase(pub.n, 2) - 1);
-      test_one(&rands, &pub, &key, plaintext);
-    }
+  mpz_clear (plaintext);
+  rsa_public_key_clear (&pub);
+  rsa_private_key_clear (&key);
 
   gmp_randclear (rands);
 }

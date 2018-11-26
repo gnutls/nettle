@@ -1,3 +1,10 @@
+2018-11-26  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/rsa-compute-root-test.c (generate_keypair): Simplify
+	selection of psize and qsize, and fix so that qsize is used.
+	(test_main): Add outer loop, to test with more than one key.
+	Deallocate storage before exiting.
+
 2018-11-25  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/rsa-compute-root-test.c: Renamed, from ...
