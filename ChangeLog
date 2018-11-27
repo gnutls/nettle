@@ -1,3 +1,10 @@
+2018-11-27  Niels Möller  <nisse@lysator.liu.se>
+
+	* rsa-sec-compute-root.c (sec_mul, sec_mod_mul, sec_powm): New
+	local helper functions, with their own itch functions.
+	(_rsa_sec_compute_root_itch, _rsa_sec_compute_root): Rewrote to
+	use helpers, for clarity.
+
 2018-11-26  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/rsa-compute-root-test.c (generate_keypair): Simplify
