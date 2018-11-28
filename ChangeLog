@@ -1,5 +1,8 @@
 2018-11-28  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac: Update GMP check. Check for the function
+	mpn_sec_div_r, available since GMP-6.0.0.
+
 	* testsuite/rsa-encrypt-test.c (test_main): Fix allocation of
 	decrypted storage. Update test of rsa_decrypt, to allow clobbering
 	of all of the passed in message area.
