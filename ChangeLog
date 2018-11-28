@@ -1,5 +1,13 @@
 2018-11-28  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/rsa-encrypt-test.c (test_main): Fix allocation of
+	decrypted storage. Update test of rsa_decrypt, to allow clobbering
+	of all of the passed in message area.
+
+	* pkcs1-decrypt.c (pkcs1_decrypt): Rewrite as a wrapper around
+	_pkcs1_sec_decrypt_variable. Improves side-channel silence of the
+	only caller, rsa_decrypt.
+
 	* Makefile.in (DISTFILES): Add rsa-internal.h, needed for make
 	dist. Patch from Simo Sorce.
 
