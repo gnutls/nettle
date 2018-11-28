@@ -1,5 +1,8 @@
 2018-11-28  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.in (DISTFILES): Add rsa-internal.h, needed for make
+	dist. Patch from Simo Sorce.
+
 	* rsa-internal.h: Add include of rsa.h.
 
 2018-11-27  Niels Möller  <nisse@lysator.liu.se>
