@@ -36,6 +36,8 @@
 
 #include "nettle-types.h"
 
+#include "rsa.h"
+
 #define _rsa_sec_compute_root_itch _nettle_rsa_sec_compute_root_itch
 #define _rsa_sec_compute_root _nettle_rsa_sec_compute_root
 #define _rsa_sec_compute_root_tr _nettle_rsa_sec_compute_root_tr

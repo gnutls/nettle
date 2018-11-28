@@ -1,3 +1,7 @@
+2018-11-28  Niels Möller  <nisse@lysator.liu.se>
+
+	* rsa-internal.h: Add include of rsa.h.
+
 2018-11-27  Niels Möller  <nisse@lysator.liu.se>
 
 	* rsa-sec-compute-root.c (sec_mul, sec_mod_mul, sec_powm): New
