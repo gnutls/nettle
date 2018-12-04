@@ -1,3 +1,7 @@
+2018-12-04  Niels Möller  <nisse@lysator.liu.se>
+
+	* Released nettle-3.4.1.
+
 2018-11-28  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Update GMP check. Check for the function
