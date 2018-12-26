@@ -1,5 +1,10 @@
 2018-12-26  Niels Möller  <nisse@lysator.liu.se>
 
+	* tools/nettle-pbkdf2.c: Add #define _GNU_SOURCE, needed for
+	strdup with gcc -std=c89.
+	* testsuite/ed25519-test.c: Add #define _GNU_SOURCE, needed for
+	getline with gcc -std=c89.
+
 	* rsa-sign-tr.c (sec_equal): Fix accidental use of C99 for loop.
 	Reported by Andreas Gustafsson.
 	* testsuite/rsa-sec-decrypt-test.c (test_main): Likewise.
