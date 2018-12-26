@@ -664,6 +664,7 @@ ecc_pippenger_precompute (struct ecc_curve *ecc, unsigned k, unsigned c)
   ecc->pippenger_k = k;
   ecc->pippenger_c = c;
   ecc->table_size = M << c;
+  assert (ecc->table_size >= 2);
   ecc->table = ecc_alloc (ecc->table_size);
 
   /* Compute the first 2^c entries */
