@@ -1,5 +1,10 @@
 2018-12-26  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac: Bump package version to 3.5.
+	(LIBNETTLE_MAJOR): Bump major number, now 7.
+	(LIBHOGWEED_MAJOR): Bump major number, now 5.
+	(LIBNETTLE_MINOR, LIBHOGWEED_MINOR): Reset to zero.
+
 	* pkcs1-internal.h: New header file, moved declarations of
 	_pkcs1_sec_decrypt and _pkcs1_sec_decrypt_variable here.
 	* rsa-internal.h: ... old location.
