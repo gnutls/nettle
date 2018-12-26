@@ -34,13 +34,18 @@
 #ifndef NETTLE_RSA_INTERNAL_H_INCLUDED
 #define NETTLE_RSA_INTERNAL_H_INCLUDED
 
-#include "nettle-types.h"
+#include "rsa.h"
 
 #define _rsa_verify _nettle_rsa_verify
 #define _rsa_verify_recover _nettle_rsa_verify_recover
 #define _rsa_check_size _nettle_rsa_check_size
 #define _rsa_blind _nettle_rsa_blind
 #define _rsa_unblind _nettle_rsa_unblind
+#define _rsa_sec_compute_root_itch _nettle_rsa_sec_compute_root_itch
+#define _rsa_sec_compute_root _nettle_rsa_sec_compute_root
+#define _rsa_sec_compute_root_tr _nettle_rsa_sec_compute_root_tr
+#define _pkcs1_sec_decrypt _nettle_pkcs1_sec_decrypt
+#define _pkcs1_sec_decrypt_variable _nettle_pkcs1_sec_decrypt_variable
 
 /* Internal functions. */
 int
@@ -65,5 +70,33 @@ _rsa_blind (const struct rsa_public_key *pub,
 void
 _rsa_unblind (const struct rsa_public_key *pub, mpz_t c, const mpz_t ri)
   _NETTLE_ATTRIBUTE_DEPRECATED;
+
+/* side-channel silent root computation */
+mp_size_t
+_rsa_sec_compute_root_itch(const struct rsa_private_key *key);
+void
+_rsa_sec_compute_root(const struct rsa_private_key *key,
+                      mp_limb_t *rp, const mp_limb_t *mp,
+                      mp_limb_t *scratch);
+
+/* Safe side-channel silent variant, using RSA blinding, and checking the
+ * result after CRT. */
+int
+_rsa_sec_compute_root_tr(const struct rsa_public_key *pub,
+			 const struct rsa_private_key *key,
+			 void *random_ctx, nettle_random_func *random,
+			 mp_limb_t *x, const mp_limb_t *m, size_t mn);
+
+/* additional resistance to memory access side-channel attacks.
+ * Note: message buffer is returned unchanged on error */
+int
+_pkcs1_sec_decrypt (size_t length, uint8_t *message,
+                    size_t padded_message_length,
+                    const volatile uint8_t *padded_message);
+
+int
+_pkcs1_sec_decrypt_variable(size_t *length, uint8_t *message,
+                            size_t padded_message_length,
+                            const volatile uint8_t *padded_message);
 
 #endif /* NETTLE_RSA_INTERNAL_H_INCLUDED */

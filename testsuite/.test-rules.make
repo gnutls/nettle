@@ -25,6 +25,9 @@ camellia-test$(EXEEXT): camellia-test.$(OBJEXT)
 chacha-test$(EXEEXT): chacha-test.$(OBJEXT)
 	$(LINK) chacha-test.$(OBJEXT) $(TEST_OBJS) -o chacha-test$(EXEEXT)
 
+cnd-memcpy-test$(EXEEXT): cnd-memcpy-test.$(OBJEXT)
+	$(LINK) cnd-memcpy-test.$(OBJEXT) $(TEST_OBJS) -o cnd-memcpy-test$(EXEEXT)
+
 des-test$(EXEEXT): des-test.$(OBJEXT)
 	$(LINK) des-test.$(OBJEXT) $(TEST_OBJS) -o des-test$(EXEEXT)
 
@@ -187,6 +190,9 @@ random-prime-test$(EXEEXT): random-prime-test.$(OBJEXT)
 pkcs1-test$(EXEEXT): pkcs1-test.$(OBJEXT)
 	$(LINK) pkcs1-test.$(OBJEXT) $(TEST_OBJS) -o pkcs1-test$(EXEEXT)
 
+pkcs1-sec-decrypt-test$(EXEEXT): pkcs1-sec-decrypt-test.$(OBJEXT)
+	$(LINK) pkcs1-sec-decrypt-test.$(OBJEXT) $(TEST_OBJS) -o pkcs1-sec-decrypt-test$(EXEEXT)
+
 pss-test$(EXEEXT): pss-test.$(OBJEXT)
 	$(LINK) pss-test.$(OBJEXT) $(TEST_OBJS) -o pss-test$(EXEEXT)
 
@@ -207,6 +213,12 @@ rsa-encrypt-test$(EXEEXT): rsa-encrypt-test.$(OBJEXT)
 
 rsa-keygen-test$(EXEEXT): rsa-keygen-test.$(OBJEXT)
 	$(LINK) rsa-keygen-test.$(OBJEXT) $(TEST_OBJS) -o rsa-keygen-test$(EXEEXT)
+
+rsa-sec-decrypt-test$(EXEEXT): rsa-sec-decrypt-test.$(OBJEXT)
+	$(LINK) rsa-sec-decrypt-test.$(OBJEXT) $(TEST_OBJS) -o rsa-sec-decrypt-test$(EXEEXT)
+
+rsa-compute-root-test$(EXEEXT): rsa-compute-root-test.$(OBJEXT)
+	$(LINK) rsa-compute-root-test.$(OBJEXT) $(TEST_OBJS) -o rsa-compute-root-test$(EXEEXT)
 
 dsa-test$(EXEEXT): dsa-test.$(OBJEXT)
 	$(LINK) dsa-test.$(OBJEXT) $(TEST_OBJS) -o dsa-test$(EXEEXT)
