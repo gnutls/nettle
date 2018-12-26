@@ -1,8 +1,7 @@
-/* pkcs1-decrypt.c
+/* pkcs1-internal.h
 
-   The RSA publickey algorithm. PKCS#1 decryption.
-
-   Copyright (C) 2001, 2012 Niels Möller
+   Copyright (C) 2018 Niels Möller
+   Copyright (C) 2018 Red Hat, Inc.
 
    This file is part of GNU Nettle.
 
@@ -31,32 +30,24 @@
    not, see http://www.gnu.org/licenses/.
 */
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
+#ifndef NETTLE_PKCS1_INTERNAL_H_INCLUDED
+#define NETTLE_PKCS1_INTERNAL_H_INCLUDED
 
-#include <string.h>
+#include "nettle-types.h"
 
-#include "pkcs1.h"
-#include "pkcs1-internal.h"
+#define _pkcs1_sec_decrypt _nettle_pkcs1_sec_decrypt
+#define _pkcs1_sec_decrypt_variable _nettle_pkcs1_sec_decrypt_variable
 
-#include "bignum.h"
-#include "gmp-glue.h"
+/* additional resistance to memory access side-channel attacks.
+ * Note: message buffer is returned unchanged on error */
+int
+_pkcs1_sec_decrypt (size_t length, uint8_t *message,
+                    size_t padded_message_length,
+                    const volatile uint8_t *padded_message);
 
 int
-pkcs1_decrypt (size_t key_size,
-	       const mpz_t m,
-	       size_t *length, uint8_t *message)
-{
-  TMP_GMP_DECL(em, uint8_t);
-  int ret;
+_pkcs1_sec_decrypt_variable(size_t *length, uint8_t *message,
+                            size_t padded_message_length,
+                            const volatile uint8_t *padded_message);
 
-  TMP_GMP_ALLOC(em, key_size);
-  nettle_mpz_get_str_256(key_size, em, m);
-
-  ret = _pkcs1_sec_decrypt_variable (length, message, key_size, em);
-
-  TMP_GMP_FREE(em);
-  return ret;
-}
-	       
+#endif /* NETTLE_PKCS1_INTERNAL_H_INCLUDED */

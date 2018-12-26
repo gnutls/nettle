@@ -44,8 +44,6 @@
 #define _rsa_sec_compute_root_itch _nettle_rsa_sec_compute_root_itch
 #define _rsa_sec_compute_root _nettle_rsa_sec_compute_root
 #define _rsa_sec_compute_root_tr _nettle_rsa_sec_compute_root_tr
-#define _pkcs1_sec_decrypt _nettle_pkcs1_sec_decrypt
-#define _pkcs1_sec_decrypt_variable _nettle_pkcs1_sec_decrypt_variable
 
 /* Internal functions. */
 int
@@ -86,17 +84,5 @@ _rsa_sec_compute_root_tr(const struct rsa_public_key *pub,
 			 const struct rsa_private_key *key,
 			 void *random_ctx, nettle_random_func *random,
 			 mp_limb_t *x, const mp_limb_t *m, size_t mn);
-
-/* additional resistance to memory access side-channel attacks.
- * Note: message buffer is returned unchanged on error */
-int
-_pkcs1_sec_decrypt (size_t length, uint8_t *message,
-                    size_t padded_message_length,
-                    const volatile uint8_t *padded_message);
-
-int
-_pkcs1_sec_decrypt_variable(size_t *length, uint8_t *message,
-                            size_t padded_message_length,
-                            const volatile uint8_t *padded_message);
 
 #endif /* NETTLE_RSA_INTERNAL_H_INCLUDED */

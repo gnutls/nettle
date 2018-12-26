@@ -1,5 +1,15 @@
 2018-12-26  Niels Möller  <nisse@lysator.liu.se>
 
+	* pkcs1-internal.h: New header file, moved declarations of
+	_pkcs1_sec_decrypt and _pkcs1_sec_decrypt_variable here.
+	* rsa-internal.h: ... old location.
+	* Makefile.in (DISTFILES): Added pkcs1-internal.h.
+	* pkcs1-decrypt.c: Include new file.
+	* pkcs1-sec-decrypt.c: Likewise.
+	* rsa-decrypt-tr.c: Likewise.
+	* rsa-sec-decrypt.c: Likewise.
+	* testsuite/pkcs1-sec-decrypt-test.c: Likewise.
+
 	* tools/nettle-pbkdf2.c: Add #define _GNU_SOURCE, needed for
 	strdup with gcc -std=c89.
 	* testsuite/ed25519-test.c: Add #define _GNU_SOURCE, needed for
