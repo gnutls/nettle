@@ -1,3 +1,9 @@
+2018-12-26  Niels Möller  <nisse@lysator.liu.se>
+
+	* rsa-sign-tr.c (sec_equal): Fix accidental use of C99 for loop.
+	Reported by Andreas Gustafsson.
+	* testsuite/rsa-sec-decrypt-test.c (test_main): Likewise.
+
 2018-12-04  Niels Möller  <nisse@lysator.liu.se>
 
 	* Released nettle-3.4.1.
