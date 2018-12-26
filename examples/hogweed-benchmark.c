@@ -59,6 +59,7 @@
 
 #if WITH_OPENSSL
 #include <openssl/rsa.h>
+#include <openssl/bn.h>
 #include <openssl/ec.h>
 #include <openssl/ecdsa.h>
 #include <openssl/objects.h>
@@ -532,39 +533,38 @@ struct openssl_rsa_ctx
   uint8_t *digest;
 };
 
-static void *
-bench_openssl_rsa_init (unsigned size)
+static struct openssl_rsa_ctx*
+make_openssl_rsa_ctx (unsigned size)
 {
   struct openssl_rsa_ctx *ctx = xalloc (sizeof (*ctx));
-
-  ctx->key = RSA_generate_key (size, 65537, NULL, NULL);
+  BIGNUM *e = BN_new();
+  BN_set_word(e, 65537);
+  ctx->key = RSA_new();
+  RSA_generate_key_ex (ctx->key, size, e, NULL);
   ctx->ref = xalloc (RSA_size (ctx->key));
   ctx->signature = xalloc (RSA_size (ctx->key));
   ctx->digest = hash_string (&nettle_sha1, "foo");
-  RSA_blinding_off(ctx->key);
 
   if (! RSA_sign (NID_sha1, ctx->digest, SHA1_DIGEST_SIZE,
 		  ctx->ref, &ctx->siglen, ctx->key))
     die ("OpenSSL RSA_sign failed.\n");
 
+  BN_free(e);
+  return ctx;
+}
+
+static void *
+bench_openssl_rsa_init (unsigned size)
+{
+  struct openssl_rsa_ctx *ctx = make_openssl_rsa_ctx (size);
+  RSA_blinding_off(ctx->key);
   return ctx;
 }
 
 static void *
 bench_openssl_rsa_tr_init (unsigned size)
 {
-  struct openssl_rsa_ctx *ctx = xalloc (sizeof (*ctx));
-
-  ctx->key = RSA_generate_key (size, 65537, NULL, NULL);
-  ctx->ref = xalloc (RSA_size (ctx->key));
-  ctx->signature = xalloc (RSA_size (ctx->key));
-  ctx->digest = hash_string (&nettle_sha1, "foo");
-
-  if (! RSA_sign (NID_sha1, ctx->digest, SHA1_DIGEST_SIZE,
-		  ctx->ref, &ctx->siglen, ctx->key))
-    die ("OpenSSL RSA_sign failed.\n");
-
-  return ctx;
+  return make_openssl_rsa_ctx (size);
 }
 
 static void

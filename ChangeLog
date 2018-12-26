@@ -1,5 +1,10 @@
 2018-12-26  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/hogweed-benchmark.c (make_openssl_rsa_ctx): New helper
+	function. Call openssl's RSA_generate_key_ex rather then the
+	deprecated RSA_generate_key.
+	(bench_openssl_rsa_init, bench_openssl_rsa_tr_init): Use it.
+
 	* eccdata.c (ecc_pippenger_precompute): Check that table size is
 	at least 2. Intended to silence warning from the clang static
 	analyzer.
