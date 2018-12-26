@@ -1,5 +1,9 @@
 2018-12-26  Niels Möller  <nisse@lysator.liu.se>
 
+	* eccdata.c (ecc_pippenger_precompute): Check that table size is
+	at least 2. Intended to silence warning from the clang static
+	analyzer.
+
 	* configure.ac: Bump package version to 3.5.
 	(LIBNETTLE_MAJOR): Bump major number, now 7.
 	(LIBHOGWEED_MAJOR): Bump major number, now 5.

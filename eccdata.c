@@ -650,6 +650,12 @@ ecc_pippenger_precompute (struct ecc_curve *ecc, unsigned k, unsigned c)
   unsigned M = ecc_table_size (ecc->bit_size, k, c);
   unsigned i, j;
 
+  if (M < 2)
+    {
+      fprintf (stderr, "Invalid parameters, implies M = %u\n", M);
+      exit (EXIT_FAILURE);
+    }
+
   if (M == ecc_table_size (ecc->bit_size, k-1, c))
     fprintf(stderr,
 	    "warn: Parameters k = %u, c = %d are suboptimal, could use smaller k\n",
