@@ -1,8 +1,8 @@
 variables:
   BUILD_IMAGES_PROJECT: gnutls/build-images
   DEBIAN_CROSS_BUILD: buildenv-debian-cross
-  FEDORA_BUILD: buildenv-f28
-  FEDORA_X86_BUILD: buildenv-f28-x86
+  FEDORA_BUILD: buildenv-f29
+  DEBIAN_X86_CROSS_BUILD: buildenv-debian-x86-cross
   GET_SOURCES_ATTEMPTS: "3"
 
 # remove any pre-installed headers from nettle
@@ -15,16 +15,6 @@ build/x86-64:
   script:
   - ./.bootstrap &&
     ./configure --disable-static --enable-fat --disable-documentation && make -j4 &&
-    make check -j4
-  tags:
-  - shared
-  except:
-  - tags
-build/x86:
-  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_X86_BUILD
-  script:
-  - ./.bootstrap &&
-    PKG_CONFIG_PATH="/usr/lib/pkgconfig/" CFLAGS="-O2 -g -m32" LDFLAGS="-m32" ./configure --build=i686-redhat-linux --enable-fat --disable-documentation && make -j4 &&
     make check -j4
   tags:
   - shared
@@ -98,6 +88,22 @@ build/gnutls:
       - gnutls-git/*.log
       - gnutls-git/tests/*/*.log
       - gnutls-git/tests/suite/*/*.log
+Debian.cross.x86:
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_X86_CROSS_BUILD
+  before_script:
+  - apt-get remove -y nettle-dev:i386
+  script:
+  - build=$(dpkg-architecture -qDEB_HOST_GNU_TYPE)
+  - host=i686-linux-gnu
+  - export CC_FOR_BUILD="gcc"
+  - export CC="$host-gcc"
+  - ./.bootstrap &&
+    CFLAGS="-O2 -g" ./configure --build=$build --host=$host --enable-fat --disable-documentation && make -j4 &&
+    make check -j4
+  tags:
+  - shared
+  except:
+  - tags
 .Debian.cross.template: &Debian_cross_template
   image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_CROSS_BUILD
   before_script:
