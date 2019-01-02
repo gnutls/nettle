@@ -171,6 +171,10 @@ DECLARE_FAT_FUNC(_nettle_umac_nh_n, umac_nh_n_func)
 DECLARE_FAT_FUNC_VAR(umac_nh_n, umac_nh_n_func, c);
 DECLARE_FAT_FUNC_VAR(umac_nh_n, umac_nh_n_func, neon);
 
+DECLARE_FAT_FUNC(_nettle_chacha_core, chacha_core_func)
+DECLARE_FAT_FUNC_VAR(_chacha_core, chacha_core_func, c);
+DECLARE_FAT_FUNC_VAR(_chacha_core, chacha_core_func, neon);
+
 static void CONSTRUCTOR
 fat_init (void)
 {
@@ -212,6 +216,7 @@ fat_init (void)
       nettle_sha3_permute_vec = _nettle_sha3_permute_neon;
       _nettle_umac_nh_vec = _nettle_umac_nh_neon;
       _nettle_umac_nh_n_vec = _nettle_umac_nh_n_neon;
+      _nettle_chacha_core_vec = _nettle_chacha_core_neon;
     }
   else
     {
@@ -222,6 +227,7 @@ fat_init (void)
       nettle_sha3_permute_vec = _nettle_sha3_permute_c;
       _nettle_umac_nh_vec = _nettle_umac_nh_c;
       _nettle_umac_nh_n_vec = _nettle_umac_nh_n_c;
+      _nettle_chacha_core_vec = _nettle_chacha_core_c;
     }
 }
   
@@ -266,4 +272,8 @@ DEFINE_FAT_FUNC(_nettle_umac_nh_n, void,
 		(uint64_t *out, unsigned n, const uint32_t *key,
 		 unsigned length, const uint8_t *msg),
 		(out, n, key, length, msg))
+
+DEFINE_FAT_FUNC(_nettle_chacha_core, void,
+		(uint32_t *dst, const uint32_t *src, unsigned rounds),
+		(dst, src, rounds))
 

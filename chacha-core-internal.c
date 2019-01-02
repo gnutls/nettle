@@ -51,6 +51,13 @@
 
 #include "macros.h"
 
+/* For fat builds */
+#if HAVE_NATIVE_chacha_core
+void
+_nettle_chacha_core_c(uint32_t *dst, const uint32_t *src, unsigned rounds);
+#define _nettle_chacha_core  _nettle_chacha_core_c
+#endif
+
 #ifndef CHACHA_DEBUG
 # define CHACHA_DEBUG 0
 #endif
