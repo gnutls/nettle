@@ -12,6 +12,11 @@
 
 	* sha512-compress.c: Add missing include of sha2-internal.h.
 
+2019-01-06  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/rsa-compute-root-test.c (generate_keypair): Fix assert
+	call with side-effects.
+
 2018-12-26  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/hogweed-benchmark.c (make_openssl_rsa_ctx): New helper
