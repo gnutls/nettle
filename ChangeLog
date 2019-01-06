@@ -1,3 +1,13 @@
+2019-01-06  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle-types.h: Don't use nettle-stdint.h, include <stdint.h>
+	directly.
+	* nettle-write.h: Likewise.
+	* configure.ac: Delete use of AX_CREATE_STDINT_H.
+	* aclocal.m4 (AX_CREATE_STDINT_H): Delete.
+	* Makefile.in (INSTALL_HEADERS, distclean-here): Delete mention of
+	nettle-stdint.h.
+
 2018-12-26  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/hogweed-benchmark.c (make_openssl_rsa_ctx): New helper

@@ -208,7 +208,7 @@ HEADERS = aes.h arcfour.h arctwo.h asn1.h blowfish.h \
 	  serpent.h sha.h sha1.h sha2.h sha3.h twofish.h \
 	  umac.h yarrow.h poly1305.h
 
-INSTALL_HEADERS = $(HEADERS) nettle-stdint.h version.h @IF_MINI_GMP@ mini-gmp.h
+INSTALL_HEADERS = $(HEADERS) version.h @IF_MINI_GMP@ mini-gmp.h
 
 SOURCES = $(nettle_SOURCES) $(hogweed_SOURCES) \
 	  $(getopt_SOURCES) $(internal_SOURCES) \
@@ -655,7 +655,7 @@ clean-here:
 
 distclean-here: clean-here
 	-rm -f config.h stamp-h config.log config.status machine.m4 \
-	config.make config.m4 Makefile nettle-stdint.h version.h \
+	config.make config.m4 Makefile version.h \
 	nettle.pc hogweed.pc libnettle.map libhogweed.map \
 	*.asm *.d
 
