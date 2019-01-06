@@ -1,3 +1,9 @@
+2018-02-18  Dmitry Eremin-Solenikov  <dbaryshkov@gmail.com>
+
+	Backported from master branch.
+	* examples/nettle-openssl.c): Move expressions with side effects
+	out of asserts.
+
 2018-12-26  Niels Möller  <nisse@lysator.liu.se>
 
 	* tools/nettle-pbkdf2.c: Add #define _GNU_SOURCE, needed for
