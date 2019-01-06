@@ -1,3 +1,8 @@
+2019-01-06  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/rsa-compute-root-test.c (generate_keypair): Fix assert
+	call with side-effects.
+
 2018-02-18  Dmitry Eremin-Solenikov  <dbaryshkov@gmail.com>
 
 	Backported from master branch.

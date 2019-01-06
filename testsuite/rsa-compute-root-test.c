@@ -86,6 +86,7 @@ generate_keypair (gmp_randstate_t rands,
   mpz_t q1;
   mpz_t phi;
   mpz_t tmp;
+  int res;
 
   mpz_init (p1);
   mpz_init (q1);
@@ -124,7 +125,8 @@ generate_keypair (gmp_randstate_t rands,
     }
 
   mpz_mul(phi, p1, q1);
-  assert (mpz_invert(key->d, pub->e, phi));
+  res = mpz_invert(key->d, pub->e, phi);
+  assert (res);
 
   mpz_fdiv_r (key->a, key->d, p1);
   mpz_fdiv_r (key->b, key->d, q1);
