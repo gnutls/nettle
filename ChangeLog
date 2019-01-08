@@ -1,3 +1,7 @@
+2019-01-08  Niels Möller  <nisse@lysator.liu.se>
+
+	* sha512-compress.c: Add missing include of sha2-internal.h.
+
 2018-12-26  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/hogweed-benchmark.c (make_openssl_rsa_ctx): New helper
