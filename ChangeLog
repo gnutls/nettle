@@ -1,3 +1,8 @@
+2019-01-09  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/nettle-benchmark.c (GET_CYCLE_COUNTER): Add volatile to
+	inline asm.
+
 2019-01-08  Niels Möller  <nisse@lysator.liu.se>
 
 	* sha512-compress.c: Add missing include of sha2-internal.h.

@@ -92,24 +92,24 @@ static double frequency = 0.0;
 #if WITH_CYCLE_COUNTER
 # if defined(__i386__)
 #define GET_CYCLE_COUNTER(hi, lo)		\
-  __asm__("xorl %%eax,%%eax\n"			\
-	  "movl %%ebx, %%edi\n"			\
-	  "cpuid\n"				\
-	  "rdtsc\n"				\
-	  "movl %%edi, %%ebx\n"			\
-	  : "=a" (lo), "=d" (hi)		\
-	  : /* No inputs. */			\
-	  : "%edi", "%ecx", "cc")
+  __asm__ volatile ("xorl %%eax,%%eax\n"	\
+		    "movl %%ebx, %%edi\n"	\
+		    "cpuid\n"			\
+		    "rdtsc\n"			\
+		    "movl %%edi, %%ebx\n"	\
+		    : "=a" (lo), "=d" (hi)	\
+		    : /* No inputs. */		\
+		    : "%edi", "%ecx", "cc")
 # elif defined(__x86_64__)
 #define GET_CYCLE_COUNTER(hi, lo)		\
-  __asm__("xorl %%eax,%%eax\n"			\
-	  "mov %%rbx, %%r10\n"			\
-	  "cpuid\n"				\
-	  "rdtsc\n"				\
-	  "mov %%r10, %%rbx\n"			\
-	  : "=a" (lo), "=d" (hi)		\
-	  : /* No inputs. */			\
-	  : "%r10", "%rcx", "cc")
+  __asm__ volatile ("xorl %%eax,%%eax\n"	\
+		    "mov %%rbx, %%r10\n"	\
+		    "cpuid\n"			\
+		    "rdtsc\n"			\
+		    "mov %%r10, %%rbx\n"	\
+		    : "=a" (lo), "=d" (hi)	\
+		    : /* No inputs. */		\
+		    : "%r10", "%rcx", "cc")
 # endif
 #define BENCH_ITERATIONS 10
 #endif
