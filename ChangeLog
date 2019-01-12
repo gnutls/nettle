@@ -1,3 +1,8 @@
+2019-01-12  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/eratosthenes.c: Deleted program.
+	* examples/Makefile.in: Delete rule to build and distribute it.
+
 2019-01-10  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/rsa-compute-root-test.c (test_one): Use %u and
