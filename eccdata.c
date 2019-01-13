@@ -674,12 +674,16 @@ ecc_pippenger_precompute (struct ecc_curve *ecc, unsigned k, unsigned c)
   for (j = 2; j < (1U<<c); j <<= 1)
     {
       /* T[j] = 2^k T[j/2] */
+      assert (j < ecc->table_size);
       ecc_dup (ecc, &ecc->table[j], &ecc->table[j/2]);
       for (i = 1; i < k; i++)
 	ecc_dup (ecc, &ecc->table[j], &ecc->table[j]);
 
       for (i = 1; i < j; i++)
-	ecc_add (ecc, &ecc->table[j + i], &ecc->table[j], &ecc->table[i]);
+	{
+	  assert (j + i < ecc->table_size);
+	  ecc_add (ecc, &ecc->table[j + i], &ecc->table[j], &ecc->table[i]);
+	}
     }
   for (j = 1<<c; j < ecc->table_size; j++)
     {
