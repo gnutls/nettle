@@ -1,5 +1,8 @@
 2019-01-19  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/Makefile.in (TARGETS): Delete eratosthenes, left over
+	from earlier change.
+
 	* fat-arm.c: Fix declarations of chacha_core functions.
 
 	From Yuriy M. Kaminskiy:

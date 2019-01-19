@@ -20,7 +20,7 @@ HOGWEED_TARGETS = rsa-keygen$(EXEEXT) rsa-sign$(EXEEXT) \
 
 ENC_TARGETS = base16enc$(EXEEXT) base16dec$(EXEEXT) \
 	      base64enc$(EXEEXT) base64dec$(EXEEXT)
-TARGETS = nettle-benchmark$(EXEEXT) eratosthenes$(EXEEXT) \
+TARGETS = nettle-benchmark$(EXEEXT) \
 	  $(ENC_TARGETS) @IF_HOGWEED@ $(HOGWEED_TARGETS)
 
 SOURCES = nettle-benchmark.c hogweed-benchmark.c ecc-benchmark.c \
