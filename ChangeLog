@@ -1,3 +1,14 @@
+2019-01-19  Niels Möller  <nisse@lysator.liu.se>
+
+	From Yuriy M. Kaminskiy:
+	* fat-setup.h (chacha_core_func): New typedef.
+	* fat-arm.c (fat_init): Enable choice between
+	_nettle_chacha_core_c and _nettle_chacha_core_neon.
+	* configure.ac (asm_nettle_optional_list): Add
+	chacha-core-internal-2.asm.
+	* chacha-core-internal.c: Enable fat build with C and asm version.
+	* arm/fat/chacha-core-internal-2.asm: New file.
+
 2019-01-12  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/eratosthenes.c: Deleted program.
