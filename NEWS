@@ -1,5 +1,14 @@
 NEWS for the Nettle 3.5 release
 
+	This release adds a couple of new features and optimizations.
+	It is *not* binary (ABI) compatible with earlier versions,
+	although it is intended to be fully source-level (API)
+	compatible with Nettle-3.4.1.
+
+	The shared library names are libnettle.so.7.0 and
+	libhogweed.so.5.0, with sonames libnettle.so.7 and
+	libhogweed.so.5.
+
 	Changes in behavior:
 
 	* Nettle's gcm_crypt will now call the underlying block cipher
