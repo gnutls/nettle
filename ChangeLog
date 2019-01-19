@@ -1,5 +1,7 @@
 2019-01-19  Niels Möller  <nisse@lysator.liu.se>
 
+	* fat-arm.c: Fix declarations of chacha_core functions.
+
 	From Yuriy M. Kaminskiy:
 	* fat-setup.h (chacha_core_func): New typedef.
 	* fat-arm.c (fat_init): Enable choice between

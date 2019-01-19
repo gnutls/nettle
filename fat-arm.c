@@ -172,8 +172,8 @@ DECLARE_FAT_FUNC_VAR(umac_nh_n, umac_nh_n_func, c);
 DECLARE_FAT_FUNC_VAR(umac_nh_n, umac_nh_n_func, neon);
 
 DECLARE_FAT_FUNC(_nettle_chacha_core, chacha_core_func)
-DECLARE_FAT_FUNC_VAR(_chacha_core, chacha_core_func, c);
-DECLARE_FAT_FUNC_VAR(_chacha_core, chacha_core_func, neon);
+DECLARE_FAT_FUNC_VAR(chacha_core, chacha_core_func, c);
+DECLARE_FAT_FUNC_VAR(chacha_core, chacha_core_func, neon);
 
 static void CONSTRUCTOR
 fat_init (void)
