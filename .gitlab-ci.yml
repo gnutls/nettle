@@ -30,6 +30,26 @@ build/mini-gmp:
   - shared
   except:
   - tags
+build/c89:
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
+  script:
+  - ./.bootstrap &&
+    ./configure CC='gcc -std=c89' --disable-static --disable-assembler --disable-documentation && make -j4 &&
+    make check -j4
+  tags:
+  - shared
+  except:
+  - tags
+build/ndebug:
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
+  script:
+  - ./.bootstrap &&
+    ./configure CPPFLAGS='-DNDEBUG' --disable-static --disable-assembler --disable-documentation && make -j4 &&
+    make check -j4
+  tags:
+  - shared
+  except:
+  - tags
 build/ubsan:
   image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
   script:
