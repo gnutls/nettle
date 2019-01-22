@@ -229,10 +229,6 @@ fi
 
 LSH_GCC_ATTRIBUTES
 
-# According to Simon Josefsson, looking for uint32_t and friends in
-# sys/types.h is needed on some systems, in particular cygwin.
-AX_CREATE_STDINT_H([nettle-stdint.h], [sys/types.h])
-
 # Check for file locking. We (AC_PROG_CC?) have already checked for
 # sys/types.h and unistd.h.
 AC_CACHE_CHECK([for fcntl file locking],

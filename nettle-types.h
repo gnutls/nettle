@@ -34,10 +34,7 @@
 
 /* For size_t */
 #include <stddef.h>
-
-/* Pretend these types always exists. Nettle doesn't use them. */
-#define _STDINT_HAVE_INT_FAST32_T 1
-#include "nettle-stdint.h"
+#include <stdint.h>
 
 /* Attributes we want to use in installed header files, and hence
    can't rely on config.h. */

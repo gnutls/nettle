@@ -31,7 +31,6 @@ core
 /autom4te.cache
 /stamp-h
 /stamp-h.in
-/nettle-stdint.h
 /*.pc
 /machine.m4
 /aesdata
