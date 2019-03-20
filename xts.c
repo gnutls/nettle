@@ -45,21 +45,32 @@
 #include "memxor.h"
 #include "nettle-internal.h"
 
-/* shift one and XOR with 0x87. */
+/* shift left one and XOR with 0x87 if there is carry. */
+/* the algorithm reads this as a 128bit Little Endian number */
 /* src and dest can point to the same buffer for in-place operations */
+#if WORDS_BIGENDIAN
+#define BE_SHIFT(x) ((((x) & 0x7f7f7f7f7f7f7f7f) << 1) | \
+                     (((x) & 0x8080808080808080) >> 15))
 static void
 xts_shift(union nettle_block16 *dst,
           const union nettle_block16 *src)
 {
-  uint8_t carry = src->b[15] >> 7;
-  uint64_t b0 = LE_READ_UINT64(src->b);
-  uint64_t b1 = LE_READ_UINT64(src->b+8);
-  b1 = (b1 << 1) | (b0 >> 63);
-  b0 = b0 << 1;
-  LE_WRITE_UINT64(dst->b, b0);
-  LE_WRITE_UINT64(dst->b+8, b1);
-  dst->b[0] ^= 0x87 & -carry;
+  uint64_t carry = (src->u64[1] & 0x80) >> 7;
+  dst->u64[1] = BE_SHIFT(src->u64[1]) | ((src->u64[0] & 0x80) << 49);
+  dst->u64[0] = BE_SHIFT(src->u64[0]);
+  dst->u64[0] ^= 0x8700000000000000 & -carry;
 }
+#else /* !WORDS_BIGENDIAN */
+static void
+xts_shift(union nettle_block16 *dst,
+          const union nettle_block16 *src)
+{
+  uint64_t carry = src->u64[1] >> 63;
+  dst->u64[1] = (src->u64[1] << 1) | (src->u64[0] >> 63);
+  dst->u64[0] = src->u64[0] << 1;
+  dst->u64[0] ^= 0x87 & -carry;
+}
+#endif /* !WORDS_BIGNDIAN */
 
 static void
 check_length(size_t length, uint8_t *dst)
