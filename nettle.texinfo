@@ -2455,28 +2455,28 @@ replaced with an @acronym{AES} context structure called @var{ctx}, and a
 appropriate set-key function must be called before using any of the encryption
 or decryption functions in this interface.
 
-@deftp {Context struct} {struct xts_aes128_ctx}
+@deftp {Context struct} {struct xts_aes128_key}
 Holds state corresponding to the AES-128 block cipher.
 @end deftp
 
-@deftp {Context struct} {struct xts_aes256_ctx}
+@deftp {Context struct} {struct xts_aes256_key}
 Holds state corresponding to the AES-256 block cipher.
 @end deftp
 
-@deftypefun void xts_aes128_set_encrypt_key (struct xts_aes128_ctx *@var{ctx}, const uint8_t *@var{key})
-@deftypefunx void xts_aes256_set_encrypt_key (struct xts_aes256_ctx *@var{ctx}, const uint8_t *@var{key})
-@deftypefunx void xts_aes128_set_decrypt_key (struct xts_aes128_ctx *@var{ctx}, const uint8_t *@var{key})
-@deftypefunx void xts_aes256_set_decrypt_key (struct xts_aes256_ctx *@var{ctx}, const uint8_t *@var{key})
+@deftypefun void xts_aes128_set_encrypt_key (struct xts_aes128_key *@var{ctx}, const uint8_t *@var{key})
+@deftypefunx void xts_aes256_set_encrypt_key (struct xts_aes256_key *@var{ctx}, const uint8_t *@var{key})
+@deftypefunx void xts_aes128_set_decrypt_key (struct xts_aes128_key *@var{ctx}, const uint8_t *@var{key})
+@deftypefunx void xts_aes256_set_decrypt_key (struct xts_aes256_key *@var{ctx}, const uint8_t *@var{key})
 Initializes the encryption or decryption key for the AES block cipher. The
 lenght of the key must be double the size of the key for the corresponding
 cipher (256 bits for AES-128 and 512 bits for AES-256). One of
 these functions must be called before any of the other functions.
 @end deftypefun
 
-@deftypefun void xts_aes128_encrypt_message(struct xts_aes128_ctx *@var{ctx}, uint8_t *@var{tweak}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
-@deftypefunx void xts_aes256_encrypt_message(struct xts_aes256_ctx *@var{ctx}, uint8_t *@var{tweak}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
-@deftypefunx void xts_aes128_decrypt_message(struct xts_aes128_ctx *@var{ctx}, uint8_t *@var{tweak}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
-@deftypefunx void xts_aes256_decrypt_message(struct xts_aes256_ctx *@var{ctx}, uint8_t *@var{tweak}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun void xts_aes128_encrypt_message(struct xts_aes128_key *@var{ctx}, uint8_t *@var{tweak}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void xts_aes256_encrypt_message(struct xts_aes256_key *@var{ctx}, uint8_t *@var{tweak}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void xts_aes128_decrypt_message(struct xts_aes128_key *@var{ctx}, uint8_t *@var{tweak}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void xts_aes256_decrypt_message(struct xts_aes256_key *@var{ctx}, uint8_t *@var{tweak}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 These are identical to @code{xts_encrypt_message} and
 @code{xts_decrypt_message}, except that @var{enc_ctx}, @var{dec_ctx},
 @var{twk_ctx}, @var{encf} and @var{decf} are replaced by the @var{ctx} context
