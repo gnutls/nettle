@@ -1,3 +1,23 @@
+2019-03-24  Niels Möller  <nisse@lysator.liu.se>
+
+	From Simo Sorce:
+	* xts.h: New file.
+	* xts.c: New file.
+	(BE_SHIFT): New macro.
+	(xts_shift, check_length, xts_encrypt_message)
+	(xts_decrypt_message): New functions.
+	* xts-aes128.c (xts_aes128_set_encrypt_key)
+	(xts_aes128_set_decrypt_key, xts_aes128_encrypt_message)
+	(xts_aes128_decrypt_message): New file, new functions.
+	* xts-aes256.c (xts_aes256_set_encrypt_key)
+	(xts_aes256_set_decrypt_key, xts_aes256_encrypt_message)
+	(xts_aes256_decrypt_message): New file, new functions.
+	* nettle.texinfo (XTS): Document XTS mode.
+	* Makefile.in (nettle_SOURCES): Add xts sourcce files.
+	(HEADERS): New installed header xts.h.
+	* testsuite/xts-test.c: New file.
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Add xts-test.c.
+
 2019-02-06  Niels Möller  <nisse@lysator.liu.se>
 
 	* gosthash94.h (struct gosthash94_ctx): Move block buffer last in
