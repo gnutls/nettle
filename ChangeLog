@@ -1,3 +1,10 @@
+2019-03-27  Niels Möller  <nisse@lysator.liu.se>
+
+	* xts.c (xts_shift): Arrange with a single write to u64[1].
+	* cmac.c (block_mulx): Rewrite to work in the same way as
+	xts_shift, with 64-bit operations. XTS and CMAC use opposite
+	endianness, but otherwise, these two functions are identical.
+
 2019-03-24  Niels Möller  <nisse@lysator.liu.se>
 
 	From Simo Sorce:

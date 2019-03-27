@@ -57,8 +57,7 @@ xts_shift(union nettle_block16 *dst,
 {
   uint64_t carry = (src->u64[1] & 0x80) >> 7;
   dst->u64[1] = BE_SHIFT(src->u64[1]) | ((src->u64[0] & 0x80) << 49);
-  dst->u64[0] = BE_SHIFT(src->u64[0]);
-  dst->u64[0] ^= 0x8700000000000000 & -carry;
+  dst->u64[0] = BE_SHIFT(src->u64[0]) ^ (0x8700000000000000 & -carry);
 }
 #else /* !WORDS_BIGENDIAN */
 static void
@@ -67,8 +66,7 @@ xts_shift(union nettle_block16 *dst,
 {
   uint64_t carry = src->u64[1] >> 63;
   dst->u64[1] = (src->u64[1] << 1) | (src->u64[0] >> 63);
-  dst->u64[0] = src->u64[0] << 1;
-  dst->u64[0] ^= 0x87 & -carry;
+  dst->u64[0] = (src->u64[0] << 1) ^ (0x87 & -carry);
 }
 #endif /* !WORDS_BIGNDIAN */
 

@@ -47,22 +47,27 @@
 #include "macros.h"
 
 /* shift one and XOR with 0x87. */
+#if WORDS_BIGENDIAN
 static void
 block_mulx(union nettle_block16 *dst,
 	   const union nettle_block16 *src)
 {
-  uint64_t b1 = READ_UINT64(src->b);
-  uint64_t b2 = READ_UINT64(src->b+8);
-
-  b1 = (b1 << 1) | (b2 >> 63);
-  b2 <<= 1;
-
-  if (src->b[0] & 0x80)
-    b2 ^= 0x87;
-
-  WRITE_UINT64(dst->b, b1);
-  WRITE_UINT64(dst->b+8, b2);
+  uint64_t carry = src->u64[0] >> 63;
+  dst->u64[0] = (src->u64[0] << 1) | (src->u64[1] >> 63);
+  dst->u64[1] = (src->u64[1] << 1) ^ (0x87 & -carry);
 }
+#else /* !WORDS_BIGENDIAN */
+#define LE_SHIFT(x) ((((x) & 0x7f7f7f7f7f7f7f7f) << 1) | \
+                     (((x) & 0x8080808080808080) >> 15))
+static void
+block_mulx(union nettle_block16 *dst,
+	   const union nettle_block16 *src)
+{
+  uint64_t carry = (src->u64[0] & 0x80) >> 7;
+  dst->u64[0] = LE_SHIFT(src->u64[0]) | ((src->u64[1] & 0x80) << 49);
+  dst->u64[1] = LE_SHIFT(src->u64[1]) ^ (0x8700000000000000 & -carry);
+}
+#endif /* !WORDS_BIGENDIAN */
 
 void
 cmac128_set_key(struct cmac128_ctx *ctx, const void *cipher,
