@@ -1,3 +1,12 @@
+2019-03-29  Niels Möller  <nisse@lysator.liu.se>
+
+	* aes.h (struct aes_ctx): Redefine using a union of key-size
+	specific contexts.
+	* aes-decrypt.c (aes_decrypt): Use switch on key_size.
+	* aes-encrypt.c (aes_encrypt): Likewise.
+	* aes-set-decrypt-key.c (aes_invert_key): Likewise.
+	* aes-set-encrypt-key.c (aes_set_encrypt_key): Likewise.
+
 2019-03-27  Niels Möller  <nisse@lysator.liu.se>
 
 	* xts.c (xts_shift): Arrange with a single write to u64[1].
