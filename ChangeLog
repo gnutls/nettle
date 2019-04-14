@@ -1,3 +1,7 @@
+2019-04-14  Niels Möller  <nisse@lysator.liu.se>
+
+	* tools/nettle-pbkdf2.c (main): Check strdup return value.
+
 2019-03-29  Niels Möller  <nisse@lysator.liu.se>
 
 	* aes.h (struct aes_ctx): Redefine using a union of key-size

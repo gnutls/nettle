@@ -144,6 +144,9 @@ main (int argc, char **argv)
     }
 
   salt = strdup (argv[0]);
+  if (!salt)
+    die ("strdup failed: Virtual memory exhausted.\n");
+
   salt_length = strlen(argv[0]);
   
   if (hex_salt)
