@@ -1,3 +1,10 @@
+2019-04-27  Niels Möller  <nisse@lysator.liu.se>
+
+	From Simo Sorce:
+	* x86_64/poly1305-internal.asm: Add missing EPILOGUE.
+	* x86_64/serpent-decrypt.asm: Likewise.
+	* x86_64/serpent-encrypt.asm: Likewise.
+
 2019-04-14  Niels Möller  <nisse@lysator.liu.se>
 
 	* tools/nettle-pbkdf2.c (main): Check strdup return value.
