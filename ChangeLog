@@ -1,3 +1,11 @@
+2019-04-30  Niels Möller  <nisse@lysator.liu.se>
+
+	Based on a patch contributed by Nikos Mavrogiannopoulos.
+	* cmac.c (_cmac128_block_mulx): Renamed function...
+	(block_mulx): ... from old name.
+	* cmac-internal.h (_cmac128_block_mulx): New file, declare function.
+	* Makefile.in (DISTFILES): Added cmac-internal.h.
+
 2019-04-27  Niels Möller  <nisse@lysator.liu.se>
 
 	From Simo Sorce:
