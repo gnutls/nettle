@@ -1,3 +1,25 @@
+2019-05-06  Niels Möller  <nisse@lysator.liu.se>
+
+	SIV-CMAC mode, based on patch by Nikos Mavrogiannopoulos:
+	* siv-cmac.h (SIV_BLOCK_SIZE, SIV_DIGEST_SIZE): New constants.
+	(SIV_CMAC_CTX): New macro.
+	(struct siv_cmac_aes128_ctx, struct siv_cmac_aes256_ctx): New
+	context structs.
+	* siv-cmac.c (_siv_s2v, siv_cmac_set_key)
+	(siv_cmac_encrypt_message)
+	(siv_cmac_decrypt_message): New file, new functions.
+	* siv-cmac-aes128.c (siv_cmac_aes128_set_key)
+	(siv_cmac_aes128_encrypt_message)
+	(siv_cmac_aes128_decrypt_message): New file, new functions.
+	* siv-cmac-aes256.c (siv_cmac_aes256_set_key)
+	(siv_cmac_aes256_encrypt_message)
+	(siv_cmac_aes256_decrypt_message): New file, new functions.
+	* Makefile.in (nettle_SOURCES): Add siv-cmac source files.
+	(HEADERS): Add siv-cmac.h.
+	* testsuite/siv-test.c: New file.
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Added siv-test.c
+	* nettle.texinfo (SIV-CMAC): Documentation.
+
 2019-04-30  Niels Möller  <nisse@lysator.liu.se>
 
 	Based on a patch contributed by Nikos Mavrogiannopoulos.

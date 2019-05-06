@@ -1,0 +1,162 @@
+/* siv-cmac.c
+
+   SIV-CMAC, RFC5297
+
+   Copyright (C) 2017 Nikos Mavrogiannopoulos
+
+   This file is part of GNU Nettle.
+
+   GNU Nettle is free software: you can redistribute it and/or
+   modify it under the terms of either:
+
+     * the GNU Lesser General Public License as published by the Free
+       Software Foundation; either version 3 of the License, or (at your
+       option) any later version.
+
+   or
+
+     * the GNU General Public License as published by the Free
+       Software Foundation; either version 2 of the License, or (at your
+       option) any later version.
+
+   or both in parallel, as here.
+
+   GNU Nettle is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+
+   You should have received copies of the GNU General Public License and
+   the GNU Lesser General Public License along with this program.  If
+   not, see http://www.gnu.org/licenses/.
+*/
+
+#if HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#include <assert.h>
+#include <string.h>
+
+#include "aes.h"
+#include "siv-cmac.h"
+#include "cmac.h"
+#include "ctr.h"
+#include "memxor.h"
+#include "memops.h"
+#include "cmac-internal.h"
+#include "nettle-internal.h"
+
+/* This is an implementation of S2V for the AEAD case where
+ * vectors if zero, are considered as S empty components */
+static void
+_siv_s2v (const struct nettle_cipher *nc,
+	  struct cmac128_ctx *siv_cmac_ctx,
+	  const void *cmac_cipher_ctx,
+	  size_t alength, const uint8_t * adata,
+	  size_t nlength, const uint8_t * nonce,
+	  size_t plength, const uint8_t * pdata, uint8_t * v)
+{
+  union nettle_block16 D, S, T;
+  static const union nettle_block16 const_zero = {.b = 0 };
+
+  cmac128_update (siv_cmac_ctx, cmac_cipher_ctx, nc->encrypt, 16, const_zero.b);
+  cmac128_digest (siv_cmac_ctx, cmac_cipher_ctx, nc->encrypt, 16, D.b);
+
+  _cmac128_block_mulx (&D, &D);
+  cmac128_update (siv_cmac_ctx, cmac_cipher_ctx, nc->encrypt, alength, adata);
+  cmac128_digest (siv_cmac_ctx, cmac_cipher_ctx, nc->encrypt, 16, S.b);
+  memxor (D.b, S.b, 16);
+
+  _cmac128_block_mulx (&D, &D);
+  cmac128_update (siv_cmac_ctx, cmac_cipher_ctx, nc->encrypt, nlength, nonce);
+  cmac128_digest (siv_cmac_ctx, cmac_cipher_ctx, nc->encrypt, 16, S.b);
+  memxor (D.b, S.b, 16);
+
+  /* Sn */
+  if (plength >= 16)
+    {
+      cmac128_update (siv_cmac_ctx, cmac_cipher_ctx, nc->encrypt, plength - 16, pdata);
+
+      pdata += plength - 16;
+
+      memxor3 (T.b, pdata, D.b, 16);
+    }
+  else
+    {
+      union nettle_block16 pad;
+
+      _cmac128_block_mulx (&T, &D);
+      memcpy (pad.b, pdata, plength);
+      pad.b[plength] = 0x80;
+      if (plength + 1 < 16)
+	memset (&pad.b[plength + 1], 0, 16 - plength - 1);
+
+      memxor (T.b, pad.b, 16);
+    }
+
+  cmac128_update (siv_cmac_ctx, cmac_cipher_ctx, nc->encrypt, 16, T.b);
+  cmac128_digest (siv_cmac_ctx, cmac_cipher_ctx, nc->encrypt, 16, v);
+}
+
+void
+siv_cmac_set_key (struct cmac128_ctx *siv_cmac_ctx, void *cmac_cipher_ctx, void *cipher_ctx,
+		  const struct nettle_cipher *nc, const uint8_t * key)
+{
+  nc->set_encrypt_key (cmac_cipher_ctx, key);
+  cmac128_set_key (siv_cmac_ctx, cmac_cipher_ctx, nc->encrypt);
+  nc->set_encrypt_key (cipher_ctx, key + nc->key_size);
+}
+
+void
+siv_cmac_encrypt_message (struct cmac128_ctx *siv_cmac_ctx,
+			  const void *cmac_cipher_ctx,
+			  const struct nettle_cipher *nc,
+			  const void *cipher_ctx,
+			  size_t nlength, const uint8_t * nonce,
+			  size_t alength, const uint8_t * adata,
+			  size_t clength, uint8_t * dst, const uint8_t * src)
+{
+  union nettle_block16 siv;
+  size_t slength;
+
+  assert (clength >= SIV_DIGEST_SIZE);
+  slength = clength - SIV_DIGEST_SIZE;
+
+  /* create CTR nonce */
+  _siv_s2v (nc, siv_cmac_ctx, cmac_cipher_ctx, alength, adata, nlength, nonce, slength, src, siv.b);
+
+  memcpy (dst, siv.b, SIV_DIGEST_SIZE);
+  siv.b[8] &= ~0x80;
+  siv.b[12] &= ~0x80;
+
+  ctr_crypt (cipher_ctx, nc->encrypt, AES_BLOCK_SIZE, siv.b, slength,
+	     dst + SIV_DIGEST_SIZE, src);
+}
+
+int
+siv_cmac_decrypt_message (struct cmac128_ctx *siv_cmac_ctx,
+			  const void *cmac_cipher_ctx,
+			  const struct nettle_cipher *nc,
+			  const void *cipher_ctx,
+			  size_t nlength, const uint8_t * nonce,
+			  size_t alength, const uint8_t * adata,
+			  size_t mlength, uint8_t * dst, const uint8_t * src)
+{
+  union nettle_block16 siv;
+  union nettle_block16 ctr;
+
+  memcpy (ctr.b, src, SIV_DIGEST_SIZE);
+  ctr.b[8] &= ~0x80;
+  ctr.b[12] &= ~0x80;
+
+  ctr_crypt (cipher_ctx, nc->encrypt, AES_BLOCK_SIZE, ctr.b,
+	     mlength, dst, src + SIV_DIGEST_SIZE);
+
+  /* create CTR nonce */
+  _siv_s2v (nc,
+	    siv_cmac_ctx, cmac_cipher_ctx, alength, adata,
+	    nlength, nonce, mlength, dst, siv.b);
+
+  return memeql_sec (siv.b, src, SIV_DIGEST_SIZE);
+}

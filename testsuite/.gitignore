@@ -96,6 +96,8 @@
 /version-test
 /yarrow-test
 /xts-test
+/cmac-test
+/siv-test
 
 /test.in
 /test1.out

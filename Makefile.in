@@ -89,6 +89,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 camellia256-meta.c \
 		 cast128.c cast128-meta.c cbc.c \
 		 ccm.c ccm-aes128.c ccm-aes192.c ccm-aes256.c cfb.c \
+		 siv-cmac.c siv-cmac-aes128.c siv-cmac-aes256.c \
 		 cnd-memcpy.c \
 		 chacha-crypt.c chacha-core-internal.c \
 		 chacha-poly1305.c chacha-poly1305-meta.c \
@@ -198,7 +199,7 @@ HEADERS = aes.h arcfour.h arctwo.h asn1.h blowfish.h \
 	  gcm.h gosthash94.h hmac.h \
 	  knuth-lfib.h hkdf.h \
 	  macros.h \
-	  cmac.h \
+	  cmac.h siv-cmac.h \
 	  md2.h md4.h \
 	  md5.h md5-compat.h \
 	  memops.h memxor.h \

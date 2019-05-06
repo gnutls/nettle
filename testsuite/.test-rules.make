@@ -136,6 +136,9 @@ ccm-test$(EXEEXT): ccm-test.$(OBJEXT)
 cmac-test$(EXEEXT): cmac-test.$(OBJEXT)
 	$(LINK) cmac-test.$(OBJEXT) $(TEST_OBJS) -o cmac-test$(EXEEXT)
 
+siv-test$(EXEEXT): siv-test.$(OBJEXT)
+	$(LINK) siv-test.$(OBJEXT) $(TEST_OBJS) -o siv-test$(EXEEXT)
+
 poly1305-test$(EXEEXT): poly1305-test.$(OBJEXT)
 	$(LINK) poly1305-test.$(OBJEXT) $(TEST_OBJS) -o poly1305-test$(EXEEXT)
 
