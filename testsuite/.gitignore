@@ -19,7 +19,6 @@
 /ctr-test
 /curve25519-dh-test
 /cxx-test
-/des-compat-test
 /des-test
 /des3-test
 /dlopen-test

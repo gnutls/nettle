@@ -34,9 +34,6 @@ des-test$(EXEEXT): des-test.$(OBJEXT)
 des3-test$(EXEEXT): des3-test.$(OBJEXT)
 	$(LINK) des3-test.$(OBJEXT) $(TEST_OBJS) -o des3-test$(EXEEXT)
 
-des-compat-test$(EXEEXT): des-compat-test.$(OBJEXT)
-	$(LINK) des-compat-test.$(OBJEXT) $(TEST_OBJS) -o des-compat-test$(EXEEXT)
-
 md2-test$(EXEEXT): md2-test.$(OBJEXT)
 	$(LINK) md2-test.$(OBJEXT) $(TEST_OBJS) -o md2-test$(EXEEXT)
 

@@ -1,3 +1,11 @@
+2019-05-12  Niels Möller  <nisse@lysator.liu.se>
+
+	Delete old libdes/openssl compatibility interface.
+	* des-compat.c: Delete file.
+	* des-compat.h: Delete file.
+	* testsuite/des-compat-test.c: Delete file.
+	* nettle.texinfo (Compatibility functions): Delete mention in documentation.
+
 2019-05-11  Niels Möller  <nisse@lysator.liu.se>
 
 	* NEWS: More updates for Nettle-3.5.
