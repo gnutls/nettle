@@ -1,3 +1,10 @@
+2019-05-12  Niels Möller  <nisse@lysator.liu.se>
+
+	* rsa-blind.c (_rsa_blind, _rsa_unblind): Delete file and
+	functions. RSA blinding is done differently, in rsa-sign-tr.c.
+	* rsa-internal.h: Delete declarations.
+	* Makefile.in (hogweed_SOURCES): Delete rsa-blind.c.
+
 2019-05-11  Niels Möller  <nisse@lysator.liu.se>
 
 	* NEWS: More updates for Nettle-3.5.
