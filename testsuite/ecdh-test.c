@@ -31,20 +31,21 @@
 
 #include "testutils.h"
 
-static void
-set_point (struct ecc_point *p,
-	   const char *x, const char *y)
+static int
+set_point (struct ecc_point *p, const char *x, const char *y)
 {
   mpz_t X, Y;
+  int ret;
+
   mpz_init_set_str (X, x, 0);
   mpz_init_set_str (Y, y, 0);
-  if (!ecc_point_set (p, X, Y))
-    die ("Test point not on curve!\n");
+  ret = ecc_point_set (p, X, Y);
 
   mpz_clear (X);
   mpz_clear (Y);
+  return ret;
 }
-  
+
 static void
 set_scalar (struct ecc_scalar *s,
 	    const char *x)
@@ -102,15 +103,15 @@ test_dh (const char *name, const struct ecc_curve *ecc,
   ecc_scalar_init (&A_priv, ecc);
   set_scalar (&A_priv, a_priv);
   ecc_point_init (&A, ecc);
-  set_point (&A, ax, ay);
+  ASSERT (set_point (&A, ax, ay));
 
   ecc_scalar_init (&B_priv, ecc);
   set_scalar (&B_priv, b_priv);
   ecc_point_init (&B, ecc);
-  set_point (&B, bx, by);
+  ASSERT (set_point (&B, bx, by));
 
   ecc_point_init (&S, ecc);
-  set_point (&S, sx, sy);
+  ASSERT (set_point (&S, sx, sy));
 
   ecc_point_init (&T, ecc);
 
@@ -135,9 +136,48 @@ test_dh (const char *name, const struct ecc_curve *ecc,
   ecc_point_clear (&T);  
 }
 
+static void
+test_public_key (const char *label, const struct ecc_curve *ecc,
+                 const char *x, const char *y, int expect_success)
+{
+  struct ecc_point P;
+  int ret;
+
+  ecc_point_init (&P, ecc);
+  ret = set_point (&P, x, y);
+
+  if (!ret && expect_success)
+    die ("Test point '%s' not on curve!\n", label);
+
+  if (ret && !expect_success)
+    die ("Expected failure to set point '%s'!", label);
+
+  ecc_point_clear (&P);
+}
+
 void
 test_main(void)
 {
+  test_public_key ("(0,0) with secp-192r1", &_nettle_secp_192r1, "0", "0", 0);
+  test_public_key (
+    "(P,0) with secp-192r1", &_nettle_secp_192r1,
+    "6277101735386680763835789423207666416083908700390324961279",
+    "0", 0);
+  test_public_key (
+    "(0,P) with secp-192r1", &_nettle_secp_192r1, "0",
+    "6277101735386680763835789423207666416083908700390324961279",
+    0);
+  test_public_key (
+    "(P,P) with secp-192r1", &_nettle_secp_192r1,
+    "6277101735386680763835789423207666416083908700390324961279",
+    "6277101735386680763835789423207666416083908700390324961279",
+    0);
+  test_public_key ("(1,2) with secp-192r1", &_nettle_secp_192r1, "1", "2", 0);
+  test_public_key ("(X,Y) with secp-192r1", &_nettle_secp_192r1,
+    "1050363442265225480786760666329560655512990381040021438562",
+    "5298249600854377235107392014200406283816103564916230704184",
+    1);
+
   test_dh ("secp-192r1", &_nettle_secp_192r1,
 	   "3406157206141798348095184987208239421004566462391397236532",
 	   "1050363442265225480786760666329560655512990381040021438562",
