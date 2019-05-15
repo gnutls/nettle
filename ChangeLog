@@ -1,5 +1,9 @@
 2019-05-15  Niels Möller  <nisse@lysator.liu.se>
 
+	* siv-cmac.h (SIV_CMAC_AES128_KEY_SIZE, SIV_CMAC_AES256_KEY_SIZE):
+	New constants.
+	* testsuite/siv-test.c: Simplify tests a little.
+
 	* siv-cmac.h (SIV_MIN_NONCE_SIZE): New constant, 1.
 	* siv-cmac.c (_siv_s2v): Require non-empty nonce.
 	* nettle.texinfo (SIV-CMAC): Update documentation.

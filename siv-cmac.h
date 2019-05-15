@@ -88,6 +88,8 @@ siv_cmac_decrypt_message(struct cmac128_ctx *siv_cmac_ctx, const void *cmac_ciph
 #define SIV_CMAC_CTX(type) { struct CMAC128_CTX(type) siv_cmac; type siv_cipher; }
 
 /* SIV_CMAC_AES128 */
+#define SIV_CMAC_AES128_KEY_SIZE 32
+
 struct siv_cmac_aes128_ctx SIV_CMAC_CTX(struct aes128_ctx);
 
 void
@@ -106,6 +108,8 @@ siv_cmac_aes128_decrypt_message(struct siv_cmac_aes128_ctx *ctx,
 				size_t mlength, uint8_t *dst, const uint8_t *src);
 
 /* SIV_CMAC_AES256 */
+#define SIV_CMAC_AES256_KEY_SIZE 64
+
 struct siv_cmac_aes256_ctx SIV_CMAC_CTX(struct aes256_ctx);
 
 void

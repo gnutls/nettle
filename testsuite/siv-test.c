@@ -112,8 +112,7 @@ test_cipher_siv(const char *name,
 		nettle_set_key_func *siv_set_key,
 		nettle_encrypt_message_func *siv_encrypt,
 		nettle_decrypt_message_func *siv_decrypt,
-		unsigned context_size,
-		const struct nettle_cipher *cipher,
+		size_t context_size, size_t key_size,
 		const struct tstring *key,
 		const struct tstring *nonce,
 		const struct tstring *authdata,
@@ -125,12 +124,11 @@ test_cipher_siv(const char *name,
   uint8_t *de_data;
   int ret;
 
-  ASSERT (key->length == cipher->key_size*2);
+  ASSERT (key->length == key_size);
   ASSERT (cleartext->length + SIV_DIGEST_SIZE == ciphertext->length);
 
   de_data = xalloc(cleartext->length+SIV_DIGEST_SIZE);
   en_data = xalloc(ciphertext->length);
-  cipher->set_encrypt_key(ctx, key->data);
 
   /* Ensure we get the same answers using the all-in-one API. */
   memset(de_data, 0, cleartext->length);
@@ -175,17 +173,19 @@ test_cipher_siv(const char *name,
   free(de_data);
 }
 
-#define test_siv_aes128(name, ctx_size, cipher, key, nonce, authdata, cleartext, ciphertext) \
-	test_cipher_siv(name, (nettle_set_key_func*)siv_cmac_aes128_set_key, \
-			(nettle_encrypt_message_func*)siv_cmac_aes128_encrypt_message, \
-			(nettle_decrypt_message_func*)siv_cmac_aes128_decrypt_message, ctx_size, cipher, \
-			key, nonce, authdata, cleartext, ciphertext)
+#define test_siv_aes128(name, key, nonce, authdata, cleartext, ciphertext) \
+  test_cipher_siv(name, (nettle_set_key_func*)siv_cmac_aes128_set_key,	\
+		  (nettle_encrypt_message_func*)siv_cmac_aes128_encrypt_message, \
+		  (nettle_decrypt_message_func*)siv_cmac_aes128_decrypt_message, \
+		  sizeof(struct siv_cmac_aes128_ctx), SIV_CMAC_AES128_KEY_SIZE, \
+		  key, nonce, authdata, cleartext, ciphertext)
 
-#define test_siv_aes256(name, ctx_size, cipher, key, nonce, authdata, cleartext, ciphertext) \
-	test_cipher_siv(name, (nettle_set_key_func*)siv_cmac_aes256_set_key, \
-			(nettle_encrypt_message_func*)siv_cmac_aes256_encrypt_message, \
-			(nettle_decrypt_message_func*)siv_cmac_aes256_decrypt_message, ctx_size, cipher, \
-			key, nonce, authdata, cleartext, ciphertext)
+#define test_siv_aes256(name, key, nonce, authdata, cleartext, ciphertext) \
+  test_cipher_siv(name, (nettle_set_key_func*)siv_cmac_aes256_set_key,	\
+		  (nettle_encrypt_message_func*)siv_cmac_aes256_encrypt_message, \
+		  (nettle_decrypt_message_func*)siv_cmac_aes256_decrypt_message, \
+		  sizeof(struct siv_cmac_aes256_ctx), SIV_CMAC_AES256_KEY_SIZE, \
+		  key, nonce, authdata, cleartext, ciphertext)
 
 void
 test_main(void)
@@ -195,8 +195,7 @@ test_main(void)
   /*
    * Example with small nonce, no AD and no plaintext
    */
-  test_siv_aes128("AES_SIV_CMAC256", sizeof(struct siv_cmac_aes128_ctx),
-		  &nettle_aes128,
+  test_siv_aes128("SIV_CMAC_AES128",
 		  SHEX("fffefdfc fbfaf9f8 f7f6f5f4 f3f2f1f0"
 		       "f0f1f2f3 f4f5f6f7 f8f9fafb fcfdfeff"),
 		  SHEX("01"),
@@ -206,8 +205,7 @@ test_main(void)
   /*
    * Example with small nonce, no AD and plaintext
    */
-  test_siv_aes128("AES_SIV_CMAC256", sizeof(struct siv_cmac_aes128_ctx),
-		  &nettle_aes128,
+  test_siv_aes128("SIV_CMAC_AES128",
 		  SHEX("fffefdfc fbfaf9f8 f7f6f5f4 f3f2f1f0"
 		       "f0f1f2f3 f4f5f6f7 f8f9fafb fcfdfeff"),
 		  SHEX("02"),
@@ -219,8 +217,7 @@ test_main(void)
   /*
    * Example with length < 16
    */
-  test_siv_aes128("AES_SIV_CMAC256", sizeof(struct siv_cmac_aes128_ctx),
-		  &nettle_aes128,
+  test_siv_aes128("SIV_CMAC_AES128",
 		  SHEX("fffefdfc fbfaf9f8 f7f6f5f4 f3f2f1f0"
 		       "f0f1f2f3 f4f5f6f7 f8f9fafb fcfdfeff"),
 		  SHEX("02"),
@@ -233,8 +230,7 @@ test_main(void)
   /*
    * Example with length > 16
    */
-  test_siv_aes128("AES_SIV_CMAC256", sizeof(struct siv_cmac_aes128_ctx),
-		  &nettle_aes128,
+  test_siv_aes128("SIV_CMAC_AES128",
 		  SHEX("7f7e7d7c 7b7a7978 77767574 73727170"
 		       "40414243 44454647 48494a4b 4c4d4e4f"),
 		  SHEX("020304"),
@@ -252,8 +248,7 @@ test_main(void)
   /*
    * Example with single AAD, length > 16
    */
-  test_siv_aes128("AES_SIV_CMAC256", sizeof(struct siv_cmac_aes128_ctx),
-	          &nettle_aes128,
+  test_siv_aes128("SIV_CMAC_AES128",
 		  SHEX("7f7e7d7c 7b7a7978 77767574 73727170"
 		       "40414243 44454647 48494a4b 4c4d4e4f"),
 		  SHEX("09f91102 9d74e35b d84156c5 635688c0"),
@@ -271,8 +266,7 @@ test_main(void)
   /*
    * Example with single AAD, length < 16
    */
-  test_siv_aes128("AES_SIV_CMAC256", sizeof(struct siv_cmac_aes128_ctx),
-	          &nettle_aes128,
+  test_siv_aes128("SIV_CMAC_AES128",
 		  SHEX("7f7e7d7c 7b7a7978 77767574 73727170"
 		       "40414243 44454647 48494a4b 4c4d4e4f"),
 		  SHEX("09f91102 9d74e35b d84156c5 635688c0"),
@@ -285,8 +279,7 @@ test_main(void)
 
   /* AES-SIV-CMAC-512 (AES-256) from dchest/siv repo
    */
-  test_siv_aes256("AES_SIV_CMAC512", sizeof(struct siv_cmac_aes256_ctx),
-		  &nettle_aes256,
+  test_siv_aes256("SIV_CMAC_AES256",
 		  SHEX("fffefdfc fbfaf9f8 f7f6f5f4 f3f2f1f0"
 		       "6f6e6d6c 6b6a6968 67666564 63626160"
 		       "f0f1f2f3 f4f5f6f7 f8f9fafb fcfdfeff"
@@ -301,8 +294,7 @@ test_main(void)
 
   /* AES-SIV-CMAC-512 (AES-256)
    */
-  test_siv_aes256("AES_SIV_CMAC512", sizeof(struct siv_cmac_aes256_ctx),
-		  &nettle_aes256,
+  test_siv_aes256("SIV_CMAC_AES256",
 		  SHEX("c27df2fd aec35d4a 2a412a50 c3e8c47d"
 		       "2d568e91 a38e5414 8abdc0b6 e86caf87"
 		       "695c0a8a df4c5f8e b2c6c8b1 36529864"
@@ -317,8 +309,7 @@ test_main(void)
   /*
    * Example with length > 16
    */
-  test_siv_aes256("AES_SIV_CMAC512", sizeof(struct siv_cmac_aes256_ctx),
-		  &nettle_aes256,
+  test_siv_aes256("SIV_CMAC_AES256",
 		  SHEX("c27df2fd aec35d4a 2a412a50 c3e8c47d"
 		       "2d568e91 a38e5414 8abdc0b6 e86caf87"
 		       "695c0a8a df4c5f8e b2c6c8b1 36529864"
@@ -338,8 +329,7 @@ test_main(void)
   /*
    * Example with single AAD, length > 16
    */
-  test_siv_aes256("AES_SIV_CMAC512", sizeof(struct siv_cmac_aes256_ctx),
-	          &nettle_aes256,
+  test_siv_aes256("SIV_CMAC_AES256",
 		  SHEX("c27df2fd aec35d4a 2a412a50 c3e8c47d"
 		       "2d568e91 a38e5414 8abdc0b6 e86caf87"
 		       "695c0a8a df4c5f8e b2c6c8b1 36529864"
@@ -362,8 +352,7 @@ test_main(void)
    * Example from miscreant.js with no AD
    * https://github.com/miscreant/miscreant.js/blob/master/vectors/aes_siv_aead.tjson
    */
-  test_siv_aes128("AES_SIV_CMAC256", sizeof(struct siv_cmac_aes128_ctx),
-		  &nettle_aes128,
+  test_siv_aes128("SIV_CMAC_AES128",
 		  SHEX("fffefdfc fbfaf9f8 f7f6f5f4 f3f2f1f0"
 		       "f0f1f2f3 f4f5f6f7 f8f9fafb fcfdfeff"),
 		  SHEX("10111213 1415161718191a1b1 c1d1e1f2"
@@ -376,8 +365,7 @@ test_main(void)
   /*
    * Example from miscreant.js with AD
    */
-  test_siv_aes128("AES_SIV_CMAC256", sizeof(struct siv_cmac_aes128_ctx),
-		  &nettle_aes128,
+  test_siv_aes128("SIV_CMAC_AES128",
 		  SHEX("7f7e7d7c 7b7a7978 77767574 73727170"
 		       "40414243 44454647 48494a4b 4c4d4e4f"),
 		  SHEX("09f91102 9d74e35b d84156c5 635688c0"),
