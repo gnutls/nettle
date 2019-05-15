@@ -57,6 +57,7 @@ extern "C" {
 /* For SIV, the block size of the underlying cipher shall be 128 bits. */
 #define SIV_BLOCK_SIZE  16
 #define SIV_DIGEST_SIZE 16
+#define SIV_MIN_NONCE_SIZE 1
 
 void
 siv_cmac_set_key(struct cmac128_ctx *siv_cmac_ctx, void *cmac_cipher_ctx, void *cipher_ctx,

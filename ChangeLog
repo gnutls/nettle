@@ -1,3 +1,9 @@
+2019-05-15  Niels Möller  <nisse@lysator.liu.se>
+
+	* siv-cmac.h (SIV_MIN_NONCE_SIZE): New constant, 1.
+	* siv-cmac.c (_siv_s2v): Require non-empty nonce.
+	* nettle.texinfo (SIV-CMAC): Update documentation.
+
 2019-05-06  Niels Möller  <nisse@lysator.liu.se>
 
 	SIV-CMAC mode, based on patch by Nikos Mavrogiannopoulos:

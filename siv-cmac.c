@@ -60,6 +60,8 @@ _siv_s2v (const struct nettle_cipher *nc,
   union nettle_block16 D, S, T;
   static const union nettle_block16 const_zero = {.b = 0 };
 
+  assert (nlength >= SIV_MIN_NONCE_SIZE);
+
   cmac128_update (siv_cmac_ctx, cmac_cipher_ctx, nc->encrypt, 16, const_zero.b);
   cmac128_digest (siv_cmac_ctx, cmac_cipher_ctx, nc->encrypt, 16, D.b);
 

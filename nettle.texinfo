@@ -3326,22 +3326,12 @@ Note also, that the @acronym{SIV-CMAC} algorithm, as specified in
 consist of multiple components. For example with @acronym{SIV-CMAC} the
 authentication tag of data @code{X} followed by @code{Y}, is different
 than the concatenated data @code{X || Y}. The interfaces described below
-follow the @acronym{AEAD} paradigm and uses a fix structure with single
-string of authenticated data, a nonce, and the plaintext message itself.
-In the terminology of the RFC, the input to the S2V function is always a
-vector of three elements, where S1 is the authenticated data, S2 is the
-nonce, and S3 is the plaintext.
+follow the @acronym{AEAD} paradigm and do not allow access to this
+feature and also require the use of a non-empty nonce. In the
+terminology of the RFC, the input to the S2V function is always a vector
+of three elements, where S1 is the authenticated data, S2 is the nonce,
+and S3 is the plaintext.
 
-@emph{Empty nonce should be considered experimental:} The specification
-also discusses nonce-less mode of operation, where the nonce is omitted
-in the S2V input vector; this leads to some confusion on how to do
-SIV-CMAC when the nonce is an empty string: Should S2 be an empty
-string, or should this mean nonce-less mode? Nettle's implementation
-currently uses an empty S2, but this may have interoperability issues.
-If standards emerge, Nettle's implementation may be changed to follow.
-In principle, we have the same ambiguity with empty associated data, but
-at the time of writing, Nettle authors are not aware of any
-interoperability problems with this.
 
 @subsubsection General interface
 
@@ -3351,6 +3341,10 @@ interoperability problems with this.
 
 @defvr Constant SIV_DIGEST_SIZE
 Size of the @acronym{SIV-CMAC} digest or initialization vector, 16.
+@end defvr
+
+@defvr Constant SIV_MIN_NONCE_SIZE
+The the minimum size for an @acronym{SIV-CMAC} nonce, 1.
 @end defvr
 
 @subsubsection @acronym{SIV-CMAC}-@acronym{AES} interface
