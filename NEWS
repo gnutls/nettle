@@ -56,11 +56,17 @@ NEWS for the Nettle 3.5 release
 	  of Chacha, where possible. Contributed by Yuriy M.
 	  Kaminskiy.
 
-	Deprecations:
+	Deleted features:
 
-	* Functions using the old struct aes_context have been marked
-	  as deprecated. Use the fixed key size interface instead,
-	  e.g., struct aes256_ctx, introduced in Nettle-3.0.
+	* The header file des-compat.h and everything declared therein
+	  has been deleted, as announced earlier. This file provided a
+	  subset of the old libdes/ssleay/openssl interface for DES
+	  and triple-DES. DES is still supported, via the functions
+	  declared in des.h.
+
+	* Functions using the old struct aes_ctx have been marked as
+	  deprecated. Use the fixed key size interface instead, e.g.,
+	  struct aes256_ctx, introduced in Nettle-3.0.
 
 	Miscellaneous:
 
