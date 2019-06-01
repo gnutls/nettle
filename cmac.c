@@ -83,8 +83,8 @@ cmac128_set_key(struct cmac128_ctx *ctx, const void *cipher,
   /* step 1 - generate subkeys k1 and k2 */
   encrypt(cipher, 16, L->b, const_zero);
 
-  block_mulx(&ctx->K1, L);
-  block_mulx(&ctx->K2, &ctx->K1);
+  block_mulx(&ctx->key.K1, L);
+  block_mulx(&ctx->key.K2, &ctx->key.K1);
 }
 
 #define MIN(x,y) ((x)<(y)?(x):(y))
@@ -148,11 +148,11 @@ cmac128_digest(struct cmac128_ctx *ctx, const void *cipher,
   if (ctx->index < 16)
     {
       ctx->block.b[ctx->index] = 0x80;
-      memxor(ctx->block.b, ctx->K2.b, 16);
+      memxor(ctx->block.b, ctx->key.K2.b, 16);
     }
   else
     {
-      memxor(ctx->block.b, ctx->K1.b, 16);
+      memxor(ctx->block.b, ctx->key.K1.b, 16);
     }
 
   memxor3(Y.b, ctx->block.b, ctx->X.b, 16);

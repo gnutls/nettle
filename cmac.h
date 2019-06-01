@@ -55,18 +55,22 @@ extern "C" {
 #define cmac_aes256_update nettle_cmac_aes256_update
 #define cmac_aes256_digest nettle_cmac_aes256_digest
 
-struct cmac128_ctx
+struct cmac128_key
 {
-  /* Key */
   union nettle_block16 K1;
   union nettle_block16 K2;
+};
+
+struct cmac128_ctx
+{
+  struct cmac128_key key;
 
   /* MAC state */
   union nettle_block16 X;
 
   /* Block buffer */
-  union nettle_block16 block;
   size_t index;
+  union nettle_block16 block;
 };
 
 void
