@@ -1,3 +1,20 @@
+2019-06-05  Niels Möller  <nisse@lysator.liu.se>
+
+	Further separation of CMAC per-message state from the
+	message-independent subkeys, analogous to the gcm implementation.
+	* cmac.h (struct cmac128_ctx): Remove key, instead a struct
+	cmac128_key should be passed separately to functions that need it.
+	(CMAC128_CTX): Include both a struct cmac128_key and a struct
+	cmac128_ctx.
+	(CMAC128_SET_KEY, CMAC128_DIGEST): Updated accordingly.
+
+	* cmac.c (cmac128_set_key): Change argument type from cmac128_ctx
+	to cmac128_key. Use a nettle_block16 for the constant zero block.
+	(cmac128_init): New function, to initialize a cmac128_ctx.
+	(cmac128_digest): Add cmac128_key argument. Move padding memset
+	into the block handling a partial block. Call cmac128_init to
+	reset state.
+
 2019-06-01  Niels Möller  <nisse@lysator.liu.se>
 
 	* cmac.h (struct cmac128_key): New struct.

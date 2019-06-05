@@ -46,6 +46,7 @@ extern "C" {
 #define CMAC128_DIGEST_SIZE 16
 
 #define cmac128_set_key nettle_cmac128_set_key
+#define cmac128_init nettle_cmac128_init
 #define cmac128_update nettle_cmac128_update
 #define cmac128_digest nettle_cmac128_digest
 #define cmac_aes128_set_key nettle_cmac_aes128_set_key
@@ -63,8 +64,6 @@ struct cmac128_key
 
 struct cmac128_ctx
 {
-  struct cmac128_key key;
-
   /* MAC state */
   union nettle_block16 X;
 
@@ -74,21 +73,24 @@ struct cmac128_ctx
 };
 
 void
-cmac128_set_key(struct cmac128_ctx *ctx, const void *cipher,
+cmac128_set_key(struct cmac128_key *key, const void *cipher,
 		nettle_cipher_func *encrypt);
+
+void
+cmac128_init(struct cmac128_ctx *ctx);
+
 void
 cmac128_update(struct cmac128_ctx *ctx, const void *cipher,
 	       nettle_cipher_func *encrypt,
 	       size_t msg_len, const uint8_t *msg);
 void
-cmac128_digest(struct cmac128_ctx *ctx, const void *cipher,
-	       nettle_cipher_func *encrypt,
-	       unsigned length,
-	       uint8_t *digest);
+cmac128_digest(struct cmac128_ctx *ctx, const struct cmac128_key *key,
+	       const void *cipher, nettle_cipher_func *encrypt,
+	       unsigned length, uint8_t *digest);
 
 
 #define CMAC128_CTX(type) \
-  { struct cmac128_ctx ctx; type cipher; }
+  { struct cmac128_key key; struct cmac128_ctx ctx; type cipher; }
 
 /* NOTE: Avoid using NULL, as we don't include anything defining it. */
 #define CMAC128_SET_KEY(self, set_key, encrypt, cmac_key)	\
@@ -96,20 +98,25 @@ cmac128_digest(struct cmac128_ctx *ctx, const void *cipher,
     (set_key)(&(self)->cipher, (cmac_key));			\
     if (0) (encrypt)(&(self)->cipher, ~(size_t) 0,		\
 		     (uint8_t *) 0, (const uint8_t *) 0);	\
-    cmac128_set_key(&(self)->ctx, &(self)->cipher,		\
-		(nettle_cipher_func *) (encrypt));		\
+    cmac128_set_key(&(self)->key, &(self)->cipher,		\
+		    (nettle_cipher_func *) (encrypt));		\
+    cmac128_init(&(self)->ctx);					\
   } while (0)
 
 #define CMAC128_UPDATE(self, encrypt, length, src)		\
-  cmac128_update(&(self)->ctx, &(self)->cipher,			\
-	      (nettle_cipher_func *)encrypt, (length), (src))
+  (0 ? (encrypt)(&(self)->cipher, ~(size_t) 0,			\
+		 (uint8_t *) 0, (const uint8_t *) 0)		\
+     : cmac128_update(&(self)->ctx, &(self)->cipher,		\
+		      (nettle_cipher_func *)encrypt,		\
+		      (length), (src)))
 
 #define CMAC128_DIGEST(self, encrypt, length, digest)		\
   (0 ? (encrypt)(&(self)->cipher, ~(size_t) 0,			\
 		 (uint8_t *) 0, (const uint8_t *) 0)		\
-     : cmac128_digest(&(self)->ctx, &(self)->cipher,		\
-		  (nettle_cipher_func *) (encrypt),		\
-		  (length), (digest)))
+     : cmac128_digest(&(self)->ctx, &(self)->key,		\
+		      &(self)->cipher,				\
+		      (nettle_cipher_func *) (encrypt),		\
+		      (length), (digest)))
 
 struct cmac_aes128_ctx CMAC128_CTX(struct aes128_ctx);
 
