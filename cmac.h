@@ -69,8 +69,8 @@ struct cmac128_ctx
   union nettle_block16 X;
 
   /* Block buffer */
-  size_t index;
   union nettle_block16 block;
+  size_t index;
 };
 
 void
