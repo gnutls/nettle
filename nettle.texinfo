@@ -3729,7 +3729,8 @@ the @acronym{AES} block cipher.
 
 Nettle defines @acronym{CMAC} in @file{<nettle/cmac.h>}.
 
-@deftp {Context struct} {struct cmac128_ctx}
+@deftp {Context struct} {struct cmac_aes128_ctx}
+@deftpx {Context struct} {struct cmac_aes256_ctx}
 @end deftp
 
 @defvr Constant CMAC128_DIGEST_SIZE
