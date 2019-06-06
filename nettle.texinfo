@@ -3826,7 +3826,8 @@ the @acronym{AES} block cipher.
 
 Nettle defines @acronym{CMAC} in @file{<nettle/cmac.h>}.
 
-@deftp {Context struct} {struct cmac128_ctx}
+@deftp {Context struct} {struct cmac_aes128_ctx}
+@deftpx {Context struct} {struct cmac_aes256_ctx}
 @end deftp
 
 @defvr Constant CMAC128_DIGEST_SIZE
@@ -5608,18 +5609,6 @@ Nettle defines a compatible interface to MD5 in
 @file{<nettle/md5-compat.h>}. This file defines the typedef
 @code{MD5_CTX}, and declares the functions @code{MD5Init}, @code{MD5Update} and
 @code{MD5Final}.
-
-Eric Young's ``libdes'' (also part of OpenSSL) is a quite popular DES
-implementation. Nettle includes a subset if its interface in
-@file{<nettle/des-compat.h>}. This file defines the typedefs
-@code{des_key_schedule} and @code{des_cblock}, two constants
-@code{DES_ENCRYPT} and @code{DES_DECRYPT}, and declares one global
-variable @code{des_check_key}, and the functions @code{des_cbc_cksum}
-@code{des_cbc_encrypt}, @code{des_ecb2_encrypt},
-@code{des_ecb3_encrypt}, @code{des_ecb_encrypt},
-@code{des_ede2_cbc_encrypt}, @code{des_ede3_cbc_encrypt},
-@code{des_is_weak_key}, @code{des_key_sched}, @code{des_ncbc_encrypt}
-@code{des_set_key}, and @code{des_set_odd_parity}.
 
 @node Nettle soup, Installation, Reference, Top
 @comment  node-name,  next,  previous,  up

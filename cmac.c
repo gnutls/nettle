@@ -71,21 +71,24 @@ _cmac128_block_mulx(union nettle_block16 *dst,
 #endif /* !WORDS_BIGENDIAN */
 
 void
-cmac128_set_key(struct cmac128_ctx *ctx, const void *cipher,
+cmac128_set_key(struct cmac128_key *key, const void *cipher,
 		nettle_cipher_func *encrypt)
 {
-  static const uint8_t const_zero[] = {
-    0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00
-  };
-  union nettle_block16 *L = &ctx->block;
-  memset(ctx, 0, sizeof(*ctx));
+  static const union nettle_block16 zero_block;
+  union nettle_block16 L;
 
   /* step 1 - generate subkeys k1 and k2 */
-  encrypt(cipher, 16, L->b, const_zero);
+  encrypt(cipher, 16, L.b, zero_block.b);
 
-  _cmac128_block_mulx(&ctx->K1, L);
-  _cmac128_block_mulx(&ctx->K2, &ctx->K1);
+  _cmac128_block_mulx(&key->K1, &L);
+  _cmac128_block_mulx(&key->K2, &key->K1);
+}
+
+void
+cmac128_init(struct cmac128_ctx *ctx)
+{
+  memset(&ctx->X, 0, sizeof(ctx->X));
+  ctx->index = 0;
 }
 
 #define MIN(x,y) ((x)<(y)?(x):(y))
@@ -136,24 +139,23 @@ cmac128_update(struct cmac128_ctx *ctx, const void *cipher,
 }
 
 void
-cmac128_digest(struct cmac128_ctx *ctx, const void *cipher,
-	       nettle_cipher_func *encrypt,
-	       unsigned length,
-	       uint8_t *dst)
+cmac128_digest(struct cmac128_ctx *ctx, const struct cmac128_key *key,
+	       const void *cipher, nettle_cipher_func *encrypt,
+	       unsigned length, uint8_t *dst)
 {
   union nettle_block16 Y;
-
-  memset(ctx->block.b+ctx->index, 0, sizeof(ctx->block.b)-ctx->index);
 
   /* re-use ctx->block for memxor output */
   if (ctx->index < 16)
     {
       ctx->block.b[ctx->index] = 0x80;
-      memxor(ctx->block.b, ctx->K2.b, 16);
+      memset(ctx->block.b + ctx->index + 1, 0, 16 - 1 - ctx->index);
+
+      memxor(ctx->block.b, key->K2.b, 16);
     }
   else
     {
-      memxor(ctx->block.b, ctx->K1.b, 16);
+      memxor(ctx->block.b, key->K1.b, 16);
     }
 
   memxor3(Y.b, ctx->block.b, ctx->X.b, 16);
@@ -170,6 +172,5 @@ cmac128_digest(struct cmac128_ctx *ctx, const void *cipher,
     }
 
   /* reset state for re-use */
-  memset(&ctx->X, 0, sizeof(ctx->X));
-  ctx->index = 0;
+  cmac128_init(ctx);
 }

@@ -60,22 +60,22 @@ extern "C" {
 #define SIV_MIN_NONCE_SIZE 1
 
 void
-siv_cmac_set_key(struct cmac128_ctx *siv_cmac_ctx, void *cmac_cipher_ctx, void *cipher_ctx,
+siv_cmac_set_key(struct cmac128_key *cmac_key, void *cmac_cipher, void *ctr_cipher,
 		 const struct nettle_cipher *nc,
 		 const uint8_t *key);
 
 void
-siv_cmac_encrypt_message(struct cmac128_ctx *siv_cmac_ctx, const void *cmac_cipher_ctx,
+siv_cmac_encrypt_message(const struct cmac128_key *cmac_key, const void *cmac_cipher_ctx,
 			 const struct nettle_cipher *nc,
-			 const void *cipher_ctx,
+			 const void *ctr_ctx,
 			 size_t nlength, const uint8_t *nonce,
 			 size_t alength, const uint8_t *adata,
 			 size_t clength, uint8_t *dst, const uint8_t *src);
 
 int
-siv_cmac_decrypt_message(struct cmac128_ctx *siv_cmac_ctx, const void *cmac_cipher_ctx,
+siv_cmac_decrypt_message(const struct cmac128_key *cmac_key, const void *cmac_cipher,
 			 const struct nettle_cipher *nc,
-			 const void *cipher_ctx,
+			 const void *ctr_cipher,
 			 size_t nlength, const uint8_t *nonce,
 			 size_t alength, const uint8_t *adata,
 			 size_t mlength, uint8_t *dst, const uint8_t *src);
@@ -85,7 +85,7 @@ siv_cmac_decrypt_message(struct cmac128_ctx *siv_cmac_ctx, const void *cmac_ciph
  * prevents streaming processing and it incompatible with the AEAD API.
  */
 
-#define SIV_CMAC_CTX(type) { struct CMAC128_CTX(type) siv_cmac; type siv_cipher; }
+#define SIV_CMAC_CTX(type) { struct cmac128_key cmac_key; type cmac_cipher; type ctr_cipher; }
 
 /* SIV_CMAC_AES128 */
 #define SIV_CMAC_AES128_KEY_SIZE 32
@@ -96,13 +96,13 @@ void
 siv_cmac_aes128_set_key(struct siv_cmac_aes128_ctx *ctx, const uint8_t *key);
 
 void
-siv_cmac_aes128_encrypt_message(struct siv_cmac_aes128_ctx *ctx,
+siv_cmac_aes128_encrypt_message(const struct siv_cmac_aes128_ctx *ctx,
 				size_t nlength, const uint8_t *nonce,
 				size_t alength, const uint8_t *adata,
 				size_t clength, uint8_t *dst, const uint8_t *src);
 
 int
-siv_cmac_aes128_decrypt_message(struct siv_cmac_aes128_ctx *ctx,
+siv_cmac_aes128_decrypt_message(const struct siv_cmac_aes128_ctx *ctx,
 				size_t nlength, const uint8_t *nonce,
 				size_t alength, const uint8_t *adata,
 				size_t mlength, uint8_t *dst, const uint8_t *src);
@@ -116,13 +116,13 @@ void
 siv_cmac_aes256_set_key(struct siv_cmac_aes256_ctx *ctx, const uint8_t *key);
 
 void
-siv_cmac_aes256_encrypt_message(struct siv_cmac_aes256_ctx *ctx,
+siv_cmac_aes256_encrypt_message(const struct siv_cmac_aes256_ctx *ctx,
 				size_t nlength, const uint8_t *nonce,
 				size_t alength, const uint8_t *adata,
 				size_t clength, uint8_t *dst, const uint8_t *src);
 
 int
-siv_cmac_aes256_decrypt_message(struct siv_cmac_aes256_ctx *ctx,
+siv_cmac_aes256_decrypt_message(const struct siv_cmac_aes256_ctx *ctx,
 				size_t nlength, const uint8_t *nonce,
 				size_t alength, const uint8_t *adata,
 				size_t mlength, uint8_t *dst, const uint8_t *src);

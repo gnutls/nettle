@@ -51,34 +51,35 @@
  * vectors if zero, are considered as S empty components */
 static void
 _siv_s2v (const struct nettle_cipher *nc,
-	  struct cmac128_ctx *siv_cmac_ctx,
-	  const void *cmac_cipher_ctx,
+	  const struct cmac128_key *cmac_key,
+	  const void *cmac_cipher,
 	  size_t alength, const uint8_t * adata,
 	  size_t nlength, const uint8_t * nonce,
 	  size_t plength, const uint8_t * pdata, uint8_t * v)
 {
   union nettle_block16 D, S, T;
   static const union nettle_block16 const_zero = {.b = 0 };
-
+  struct cmac128_ctx cmac_ctx;
   assert (nlength >= SIV_MIN_NONCE_SIZE);
 
-  cmac128_update (siv_cmac_ctx, cmac_cipher_ctx, nc->encrypt, 16, const_zero.b);
-  cmac128_digest (siv_cmac_ctx, cmac_cipher_ctx, nc->encrypt, 16, D.b);
+  cmac128_init(&cmac_ctx);
+  cmac128_update (&cmac_ctx, cmac_cipher, nc->encrypt, 16, const_zero.b);
+  cmac128_digest (&cmac_ctx, cmac_key, cmac_cipher, nc->encrypt, 16, D.b);
 
   _cmac128_block_mulx (&D, &D);
-  cmac128_update (siv_cmac_ctx, cmac_cipher_ctx, nc->encrypt, alength, adata);
-  cmac128_digest (siv_cmac_ctx, cmac_cipher_ctx, nc->encrypt, 16, S.b);
+  cmac128_update (&cmac_ctx, cmac_cipher, nc->encrypt, alength, adata);
+  cmac128_digest (&cmac_ctx, cmac_key, cmac_cipher, nc->encrypt, 16, S.b);
   memxor (D.b, S.b, 16);
 
   _cmac128_block_mulx (&D, &D);
-  cmac128_update (siv_cmac_ctx, cmac_cipher_ctx, nc->encrypt, nlength, nonce);
-  cmac128_digest (siv_cmac_ctx, cmac_cipher_ctx, nc->encrypt, 16, S.b);
+  cmac128_update (&cmac_ctx, cmac_cipher, nc->encrypt, nlength, nonce);
+  cmac128_digest (&cmac_ctx, cmac_key, cmac_cipher, nc->encrypt, 16, S.b);
   memxor (D.b, S.b, 16);
 
   /* Sn */
   if (plength >= 16)
     {
-      cmac128_update (siv_cmac_ctx, cmac_cipher_ctx, nc->encrypt, plength - 16, pdata);
+      cmac128_update (&cmac_ctx, cmac_cipher, nc->encrypt, plength - 16, pdata);
 
       pdata += plength - 16;
 
@@ -97,24 +98,24 @@ _siv_s2v (const struct nettle_cipher *nc,
       memxor (T.b, pad.b, 16);
     }
 
-  cmac128_update (siv_cmac_ctx, cmac_cipher_ctx, nc->encrypt, 16, T.b);
-  cmac128_digest (siv_cmac_ctx, cmac_cipher_ctx, nc->encrypt, 16, v);
+  cmac128_update (&cmac_ctx, cmac_cipher, nc->encrypt, 16, T.b);
+  cmac128_digest (&cmac_ctx, cmac_key, cmac_cipher, nc->encrypt, 16, v);
 }
 
 void
-siv_cmac_set_key (struct cmac128_ctx *siv_cmac_ctx, void *cmac_cipher_ctx, void *cipher_ctx,
+siv_cmac_set_key (struct cmac128_key *cmac_key, void *cmac_cipher, void *siv_cipher,
 		  const struct nettle_cipher *nc, const uint8_t * key)
 {
-  nc->set_encrypt_key (cmac_cipher_ctx, key);
-  cmac128_set_key (siv_cmac_ctx, cmac_cipher_ctx, nc->encrypt);
-  nc->set_encrypt_key (cipher_ctx, key + nc->key_size);
+  nc->set_encrypt_key (cmac_cipher, key);
+  cmac128_set_key (cmac_key, cmac_cipher, nc->encrypt);
+  nc->set_encrypt_key (siv_cipher, key + nc->key_size);
 }
 
 void
-siv_cmac_encrypt_message (struct cmac128_ctx *siv_cmac_ctx,
-			  const void *cmac_cipher_ctx,
+siv_cmac_encrypt_message (const struct cmac128_key *cmac_key,
+			  const void *cmac_cipher,
 			  const struct nettle_cipher *nc,
-			  const void *cipher_ctx,
+			  const void *ctr_cipher,
 			  size_t nlength, const uint8_t * nonce,
 			  size_t alength, const uint8_t * adata,
 			  size_t clength, uint8_t * dst, const uint8_t * src)
@@ -126,21 +127,21 @@ siv_cmac_encrypt_message (struct cmac128_ctx *siv_cmac_ctx,
   slength = clength - SIV_DIGEST_SIZE;
 
   /* create CTR nonce */
-  _siv_s2v (nc, siv_cmac_ctx, cmac_cipher_ctx, alength, adata, nlength, nonce, slength, src, siv.b);
+  _siv_s2v (nc, cmac_key, cmac_cipher, alength, adata, nlength, nonce, slength, src, siv.b);
 
   memcpy (dst, siv.b, SIV_DIGEST_SIZE);
   siv.b[8] &= ~0x80;
   siv.b[12] &= ~0x80;
 
-  ctr_crypt (cipher_ctx, nc->encrypt, AES_BLOCK_SIZE, siv.b, slength,
+  ctr_crypt (ctr_cipher, nc->encrypt, AES_BLOCK_SIZE, siv.b, slength,
 	     dst + SIV_DIGEST_SIZE, src);
 }
 
 int
-siv_cmac_decrypt_message (struct cmac128_ctx *siv_cmac_ctx,
-			  const void *cmac_cipher_ctx,
+siv_cmac_decrypt_message (const struct cmac128_key *cmac_key,
+			  const void *cmac_cipher,
 			  const struct nettle_cipher *nc,
-			  const void *cipher_ctx,
+			  const void *ctr_cipher,
 			  size_t nlength, const uint8_t * nonce,
 			  size_t alength, const uint8_t * adata,
 			  size_t mlength, uint8_t * dst, const uint8_t * src)
@@ -152,12 +153,12 @@ siv_cmac_decrypt_message (struct cmac128_ctx *siv_cmac_ctx,
   ctr.b[8] &= ~0x80;
   ctr.b[12] &= ~0x80;
 
-  ctr_crypt (cipher_ctx, nc->encrypt, AES_BLOCK_SIZE, ctr.b,
+  ctr_crypt (ctr_cipher, nc->encrypt, AES_BLOCK_SIZE, ctr.b,
 	     mlength, dst, src + SIV_DIGEST_SIZE);
 
   /* create CTR nonce */
   _siv_s2v (nc,
-	    siv_cmac_ctx, cmac_cipher_ctx, alength, adata,
+	    cmac_key, cmac_cipher, alength, adata,
 	    nlength, nonce, mlength, dst, siv.b);
 
   return memeql_sec (siv.b, src, SIV_DIGEST_SIZE);

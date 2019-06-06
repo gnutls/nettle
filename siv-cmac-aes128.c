@@ -49,29 +49,29 @@
 void
 siv_cmac_aes128_set_key(struct siv_cmac_aes128_ctx *ctx, const uint8_t *key)
 {
-  siv_cmac_set_key(&ctx->siv_cmac.ctx, &ctx->siv_cmac.cipher, &ctx->siv_cipher, &nettle_aes128, key);
+  siv_cmac_set_key(&ctx->cmac_key, &ctx->cmac_cipher, &ctx->ctr_cipher, &nettle_aes128, key);
 }
 
 void
-siv_cmac_aes128_encrypt_message(struct siv_cmac_aes128_ctx *ctx,
+siv_cmac_aes128_encrypt_message(const struct siv_cmac_aes128_ctx *ctx,
 				size_t nlength, const uint8_t *nonce,
 				size_t alength, const uint8_t *adata,
 				size_t clength, uint8_t *dst, const uint8_t *src)
 {
-  siv_cmac_encrypt_message(&ctx->siv_cmac.ctx, &ctx->siv_cmac.cipher,
-			   &nettle_aes128, &ctx->siv_cipher,
+  siv_cmac_encrypt_message(&ctx->cmac_key, &ctx->cmac_cipher,
+			   &nettle_aes128, &ctx->ctr_cipher,
 			   nlength, nonce, alength, adata,
 			   clength, dst, src);
 }
 
 int
-siv_cmac_aes128_decrypt_message(struct siv_cmac_aes128_ctx *ctx,
+siv_cmac_aes128_decrypt_message(const struct siv_cmac_aes128_ctx *ctx,
 				size_t nlength, const uint8_t *nonce,
 				size_t alength, const uint8_t *adata,
 				size_t mlength, uint8_t *dst, const uint8_t *src)
 {
-  return siv_cmac_decrypt_message(&ctx->siv_cmac.ctx, &ctx->siv_cmac.cipher,
-				  &nettle_aes128, &ctx->siv_cipher,
+  return siv_cmac_decrypt_message(&ctx->cmac_key, &ctx->cmac_cipher,
+				  &nettle_aes128, &ctx->ctr_cipher,
 				  nlength, nonce, alength, adata,
 				  mlength, dst, src);
 }
