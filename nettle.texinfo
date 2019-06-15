@@ -396,7 +396,7 @@ the later version may define a new library symbol, and let header files
 redefine an old API name as an alias for the new symbol. If the later
 version ensures that the old symbol is still defined in the library,
 this change is backwards compatible: A program compiled using headers
-from the older version can be successfulyl linked with either version of
+from the older version can be successfully linked with either version of
 the library. But if you compile the same program using headers from the
 later version of the library, and attempt to link with the older
 version, you'll get an undefined reference to the new symbol.
@@ -2320,7 +2320,7 @@ Expands to
 @end example
 @end deffn
 
-@deffn Macro CFB8_SET_IV(@var{ctx}, @var{iv})
+@deffn Macro CFB8_SET_IV (@var{ctx}, @var{iv})
 First argument is a pointer to a context struct as defined by
 @code{CFB8_CTX}, and the second is a pointer to an initialization vector
 that is copied into that context.
@@ -2468,7 +2468,7 @@ Holds state corresponding to the AES-256 block cipher.
 @deftypefunx void xts_aes128_set_decrypt_key (struct xts_aes128_key *@var{ctx}, const uint8_t *@var{key})
 @deftypefunx void xts_aes256_set_decrypt_key (struct xts_aes256_key *@var{ctx}, const uint8_t *@var{key})
 Initializes the encryption or decryption key for the AES block cipher. The
-lenght of the key must be double the size of the key for the corresponding
+length of the key must be double the size of the key for the corresponding
 cipher (256 bits for AES-128 and 512 bits for AES-256). One of
 these functions must be called before any of the other functions.
 @end deftypefun
@@ -2572,7 +2572,7 @@ more adventurous alternative, in particular if performance is important.
 @comment  node-name,  next,  previous,  up
 @subsection EAX
 
-The @acronym{EAX} mode is an @acronym{AEAD} mode whichcombines
+The @acronym{EAX} mode is an @acronym{AEAD} mode which combines
 @acronym{CTR} mode encryption, @xref{CTR}, with a message authentication
 based on @acronym{CBC}, @xref{CBC}. The implementation in Nettle is
 restricted to ciphers with a block size of 128 bits (16 octets).
@@ -2682,7 +2682,7 @@ Process message data for encryption or decryption.
 @end deffn
 
 @deffn Macro EAX_DIGEST (@var{ctx}, @var{encrypt}, @var{length}, @var{digest})
-Extract te authentication tag for the message.
+Extract the authentication tag for the message.
 @end deffn
 
 
@@ -2882,7 +2882,7 @@ Context structs, defined using @code{GCM_CTX}.
 @end deftp
 
 @deftp {Context struct} {struct gcm_aes_ctx}
-Alternative context struct, usign the old @acronym{AES} interface.
+Alternative context struct, using the old @acronym{AES} interface.
 @end deftp
 
 @deftypefun void gcm_aes128_set_key (struct gcm_aes128_ctx *@var{ctx}, const uint8_t *@var{key})
@@ -3038,8 +3038,8 @@ initial counter of @code{IC+1}.
 
 @acronym{CCM} mode decryption operates similarly, except that the
 ciphertext and @acronym{MAC} are first decrypted using CTR mode to
-retreive the plaintext and authentication tag. The authentication tag
-can then be recalucated from the authenticated data and plantext, and
+retrieve the plaintext and authentication tag. The authentication tag
+can then be recalculated from the authenticated data and plaintext, and
 compared to the value in the message to check for authenticity.
 
 @subsubsection General @acronym{CCM} interface
@@ -4532,7 +4532,7 @@ Calls @code{mpz_clear} on all numbers in the struct.
 @end deftypefun
 
 @deftypefun int dsa_generate_params (struct dsa_params *@var{params}, void *@var{random_ctx}, nettle_random_func *@var{random}, void *@var{progress_ctx}, nettle_progress_func *@var{progress}, unsigned @var{p_bits}, unsigned @var{q_bits})
-Generates paramaters of a new group. The @var{params} struct should be
+Generates parameters of a new group. The @var{params} struct should be
 initialized before you call this function.
 
 @var{random_ctx} and @var{random} is a randomness generator.
@@ -4575,8 +4575,8 @@ signature, and call @code{dsa_signature_clear} when you are finished
 with it.
 @end deftypefun
 
-Keys are represented as bignums, of type @code{mpz_t}. A public keys
-represent a group element, and is of the same size as @code{p}, while a
+Keys are represented as bignums, of type @code{mpz_t}. A public key
+represents a group element, and is of the same size as @code{p}, while a
 private key is an exponent, of the same size as @code{q}.
 
 @deftypefun int dsa_sign (const struct dsa_params *@var{params}, const mpz_t @var{x}, void *@var{random_ctx}, nettle_random_func *@var{random}, size_t @var{digest_size}, const uint8_t *@var{digest}, struct dsa_signature *@var{signature})
