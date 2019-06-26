@@ -1,3 +1,16 @@
+NEWS for the Nettle 3.5.1 release
+
+	The Nettle-3.5.1 corrects a packaging mistake in Nettle-3.5.
+	The new directory x86_64/sha_ni were missing in the tar file,
+	breaking x86_64 builds with --enable-fat, and producing worse
+	performance than promised for builds with --enable-x86-sha-ni.
+	Also a few unused in-progress assembly files were accidentally
+	included in the tar file.
+
+	These problems are corrected in Nettle-3.5.1. There are no
+	other changes, and also the library version numbers are
+	unchanged.
+
 NEWS for the Nettle 3.5 release
 
 	This release adds a couple of new features and optimizations,

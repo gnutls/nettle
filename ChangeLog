@@ -1,5 +1,12 @@
 2019-06-26  Niels Möller  <nisse@lysator.liu.se>
 
+	* Released nettle-3.5.1.
+
+	* configure.ac: Update version number to 3.5.1.
+
+	* Makefile.in (distdir): Add x86_64/sha_ni to list of distributed
+	directories.
+
 	* Released nettle-3.5.
 
 2019-06-25  Niels Möller  <nisse@lysator.liu.se>
