@@ -925,6 +925,70 @@ test_hash_large(const struct nettle_hash *hash,
 }
 
 void
+test_mac(const struct nettle_mac *mac,
+	 const struct tstring *key,
+	 const struct tstring *msg,
+	 const struct tstring *digest)
+{
+  void *ctx = xalloc(mac->context_size);
+  uint8_t *hash = xalloc(mac->digest_size);
+  unsigned i;
+
+
+  ASSERT (digest->length == mac->digest_size);
+  ASSERT (key->length == mac->key_size);
+  mac->set_key (ctx, key->data);
+  mac->update (ctx, msg->length, msg->data);
+  mac->digest (ctx, digest->length, hash);
+
+  if (!MEMEQ (digest->length, digest->data, hash))
+    {
+      fprintf (stderr, "test_mac failed, msg: ");
+      print_hex (msg->length, msg->data);
+      fprintf(stderr, "Output:");
+      print_hex (mac->digest_size, hash);
+      fprintf(stderr, "Expected:");
+      tstring_print_hex(digest);
+      fprintf(stderr, "\n");
+      FAIL();
+    }
+
+  /* attempt to re-use the structure */
+  mac->update (ctx, msg->length, msg->data);
+  mac->digest (ctx, digest->length, hash);
+  if (!MEMEQ (digest->length, digest->data, hash))
+    {
+      fprintf (stderr, "test_mac: failed on re-use, msg: ");
+      print_hex (msg->length, msg->data);
+      fprintf(stderr, "Output:");
+      print_hex (mac->digest_size, hash);
+      fprintf(stderr, "Expected:");
+      tstring_print_hex(digest);
+      fprintf(stderr, "\n");
+      FAIL();
+    }
+
+  /* attempt byte-by-byte hashing */
+  mac->set_key (ctx, key->data);
+  for (i=0;i<msg->length;i++)
+    mac->update (ctx, 1, msg->data+i);
+  mac->digest (ctx, digest->length, hash);
+  if (!MEMEQ (digest->length, digest->data, hash))
+    {
+      fprintf (stderr, "cmac_hash failed on byte-by-byte, msg: ");
+      print_hex (msg->length, msg->data);
+      fprintf(stderr, "Output:");
+      print_hex (16, hash);
+      fprintf(stderr, "Expected:");
+      tstring_print_hex(digest);
+      fprintf(stderr, "\n");
+      FAIL();
+    }
+  free (ctx);
+  free (hash);
+}
+
+void
 test_armor(const struct nettle_armor *armor,
            size_t data_length,
            const uint8_t *data,

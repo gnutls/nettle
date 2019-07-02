@@ -2,83 +2,35 @@
 #include "nettle-internal.h"
 #include "cmac.h"
 
+const struct nettle_mac nettle_cmac_aes128 =
+{
+  "CMAC-AES128",
+  sizeof(struct cmac_aes128_ctx),
+  CMAC128_DIGEST_SIZE,
+  AES128_KEY_SIZE,
+
+  (nettle_set_key_func*) cmac_aes128_set_key,
+  (nettle_hash_update_func*) cmac_aes128_update,
+  (nettle_hash_digest_func*) cmac_aes128_digest
+};
+
+const struct nettle_mac nettle_cmac_aes256 =
+{
+  "CMAC-AES256",
+  sizeof(struct cmac_aes256_ctx),
+  CMAC128_DIGEST_SIZE,
+  AES256_KEY_SIZE,
+
+  (nettle_set_key_func*) cmac_aes256_set_key,
+  (nettle_hash_update_func*) cmac_aes256_update,
+  (nettle_hash_digest_func*) cmac_aes256_digest
+};
+
 #define test_cmac_aes128(key, msg, ref)					\
-  test_cmac_hash ((nettle_set_key_func*) cmac_aes128_set_key,		\
-		  (nettle_hash_update_func*) cmac_aes128_update,	\
-		  (nettle_hash_digest_func*) cmac_aes128_digest,	\
-		  sizeof(struct cmac_aes128_ctx),			\
-		  key, msg, ref)
+  test_mac(&nettle_cmac_aes128, key, msg, ref)
 
 #define test_cmac_aes256(key, msg, ref)					\
-  test_cmac_hash ((nettle_set_key_func*) cmac_aes256_set_key,		\
-		  (nettle_hash_update_func*) cmac_aes256_update,	\
-		  (nettle_hash_digest_func*) cmac_aes256_digest,	\
-		  sizeof(struct cmac_aes256_ctx),			\
-		  key, msg, ref)
-
-static void
-test_cmac_hash (nettle_set_key_func *set_key,
-		nettle_hash_update_func *update,
-		nettle_hash_digest_func *digest, size_t ctx_size,
-		const struct tstring *key, const struct tstring *msg,
-		const struct tstring *ref)
-{
-  void *ctx;
-  uint8_t hash[16];
-  unsigned i;
-
-  ctx = xalloc(ctx_size);
-
-  ASSERT (ref->length == sizeof(hash));
-  ASSERT (key->length == 16 || key->length == 32);
-  set_key (ctx, key->data);
-  update (ctx, msg->length, msg->data);
-  digest (ctx, sizeof(hash), hash);
-  if (!MEMEQ (ref->length, ref->data, hash))
-    {
-      fprintf (stderr, "cmac_hash failed, msg: ");
-      print_hex (msg->length, msg->data);
-      fprintf(stderr, "Output:");
-      print_hex (16, hash);
-      fprintf(stderr, "Expected:");
-      tstring_print_hex(ref);
-      fprintf(stderr, "\n");
-      FAIL();
-    }
-
-  /* attempt to re-use the structure */
-  update (ctx, msg->length, msg->data);
-  digest (ctx, sizeof(hash), hash);
-  if (!MEMEQ (ref->length, ref->data, hash))
-    {
-      fprintf (stderr, "cmac_hash failed on re-use, msg: ");
-      print_hex (msg->length, msg->data);
-      fprintf(stderr, "Output:");
-      print_hex (16, hash);
-      fprintf(stderr, "Expected:");
-      tstring_print_hex(ref);
-      fprintf(stderr, "\n");
-      FAIL();
-    }
-
-  /* attempt byte-by-byte hashing */
-  set_key (ctx, key->data);
-  for (i=0;i<msg->length;i++)
-    update (ctx, 1, msg->data+i);
-  digest (ctx, sizeof(hash), hash);
-  if (!MEMEQ (ref->length, ref->data, hash))
-    {
-      fprintf (stderr, "cmac_hash failed on byte-by-byte, msg: ");
-      print_hex (msg->length, msg->data);
-      fprintf(stderr, "Output:");
-      print_hex (16, hash);
-      fprintf(stderr, "Expected:");
-      tstring_print_hex(ref);
-      fprintf(stderr, "\n");
-      FAIL();
-    }
-  free (ctx);
-}
+  test_mac(&nettle_cmac_aes256, key, msg, ref)
 
 void
 test_main(void)
