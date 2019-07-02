@@ -37,6 +37,7 @@
 #define NETTLE_CMAC_H_INCLUDED
 
 #include "aes.h"
+#include "des.h"
 #include "nettle-types.h"
 
 #ifdef __cplusplus
@@ -61,6 +62,9 @@ extern "C" {
 #define cmac64_init nettle_cmac64_init
 #define cmac64_update nettle_cmac64_update
 #define cmac64_digest nettle_cmac64_digest
+#define cmac_des3_set_key nettle_cmac_des3_set_key
+#define cmac_des3_update nettle_cmac_des3_update
+#define cmac_des3_digest nettle_cmac_des3_digest
 
 struct cmac128_key
 {
@@ -212,6 +216,19 @@ cmac_aes256_update(struct cmac_aes256_ctx *ctx,
 void
 cmac_aes256_digest(struct cmac_aes256_ctx *ctx,
 		   size_t length, uint8_t *digest);
+
+struct cmac_des3_ctx CMAC64_CTX(struct des3_ctx);
+
+void
+cmac_des3_set_key(struct cmac_des3_ctx *ctx, const uint8_t *key);
+
+void
+cmac_des3_update(struct cmac_des3_ctx *ctx,
+		 size_t length, const uint8_t *data);
+
+void
+cmac_des3_digest(struct cmac_des3_ctx *ctx,
+		 size_t length, uint8_t *digest);
 
 #ifdef __cplusplus
 }

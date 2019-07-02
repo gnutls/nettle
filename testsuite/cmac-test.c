@@ -26,11 +26,26 @@ const struct nettle_mac nettle_cmac_aes256 =
   (nettle_hash_digest_func*) cmac_aes256_digest
 };
 
+const struct nettle_mac nettle_cmac_des3 =
+{
+  "CMAC-3DES",
+  sizeof(struct cmac_des3_ctx),
+  CMAC64_DIGEST_SIZE,
+  DES3_KEY_SIZE,
+
+  (nettle_set_key_func*) cmac_des3_set_key,
+  (nettle_hash_update_func*) cmac_des3_update,
+  (nettle_hash_digest_func*) cmac_des3_digest
+};
+
 #define test_cmac_aes128(key, msg, ref)					\
   test_mac(&nettle_cmac_aes128, key, msg, ref)
 
 #define test_cmac_aes256(key, msg, ref)					\
   test_mac(&nettle_cmac_aes256, key, msg, ref)
+
+#define test_cmac_des3(key, msg, ref)					\
+  test_mac(&nettle_cmac_des3, key, msg, ref)
 
 void
 test_main(void)
@@ -96,4 +111,21 @@ test_main(void)
 		  SHEX("6bc1bee22e409f96e93d7e117393172aae2d8a571e03ac9c9eb76fac45af8e5130c81c46a35ce411e5fbc1191a0a52eff69f2445df4f9b17ad2b417be66c3710"),
 		  SHEX("e1992190549f6ed5696a2c056c315410"));
 
+  /* CMAC-3DES vectors from NIST SP800-38B examples */
+  test_cmac_des3 (SHEX("0123456789abcdef23456789abcdef01456789abcdef0123"),
+		  SDATA(""),
+		  SHEX("7db0d37df936c550"));
+
+  test_cmac_des3 (SHEX("0123456789abcdef23456789abcdef01456789abcdef0123"),
+		  SHEX("6bc1bee22e409f96e93d7e117393172a"),
+		  SHEX("30239cf1f52e6609"));
+
+  test_cmac_des3 (SHEX("0123456789abcdef23456789abcdef01456789abcdef0123"),
+		  SHEX("6bc1bee22e409f96e93d7e117393172aae2d8a57"),
+		  SHEX("6c9f3ee4923f6be2"));
+
+
+  test_cmac_des3 (SHEX("0123456789abcdef23456789abcdef01456789abcdef0123"),
+		  SHEX("6bc1bee22e409f96e93d7e117393172aae2d8a571e03ac9c9eb76fac45af8e51"),
+		  SHEX("99429bd0bf7904e5"));
 }
