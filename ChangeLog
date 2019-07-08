@@ -1,6 +1,7 @@
 2019-07-08  Niels Möller  <nisse@lysator.liu.se>
 
 	* eax.c (block16_xor): Use uint64_t member of nettle_block16.
+	* gcm.c (gcm_gf_add, gcm_gf_shift, gcm_gf_shift_8): Likewise.
 
 2019-07-02  Niels Möller  <nisse@lysator.liu.se>
 
