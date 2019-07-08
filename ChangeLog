@@ -1,3 +1,7 @@
+2019-07-08  Niels Möller  <nisse@lysator.liu.se>
+
+	* eax.c (block16_xor): Use uint64_t member of nettle_block16.
+
 2019-07-02  Niels Möller  <nisse@lysator.liu.se>
 
 	From Dmitry Eremin-Solenikov:
