@@ -102,7 +102,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 gcm-aes256.c gcm-aes256-meta.c \
 		 gcm-camellia128.c gcm-camellia128-meta.c \
 		 gcm-camellia256.c gcm-camellia256-meta.c \
-		 cmac.c cmac-aes128.c cmac-aes256.c \
+		 cmac.c cmac64.c cmac-aes128.c cmac-aes256.c \
 		 gosthash94.c gosthash94-meta.c \
 		 hmac.c hmac-md5.c hmac-ripemd160.c hmac-sha1.c \
 		 hmac-sha224.c hmac-sha256.c hmac-sha384.c hmac-sha512.c \

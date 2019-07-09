@@ -65,6 +65,12 @@ union nettle_block16
   uint64_t u64[2];
 };
 
+union nettle_block8
+{
+  uint8_t b[8];
+  uint64_t u64;
+};
+
 /* Randomness. Used by key generation and dsa signature creation. */
 typedef void nettle_random_func(void *ctx,
 				size_t length, uint8_t *dst);
