@@ -1,3 +1,11 @@
+2019-07-10  Niels Möller  <nisse@lysator.liu.se>
+
+	From Dmitry Eremin-Solenikov:
+	* cmac64.c (_cmac64_block_mulx, cmac64_set_key, cmac64_init)
+	(cmac64_update, cmac64_digest): New file, new functions.
+	* cmac.h: Add cmac64 declarations.
+	* Makefile.in (nettle_SOURCES): Add cmac64.c.
+
 2019-07-02  Niels Möller  <nisse@lysator.liu.se>
 
 	From Dmitry Eremin-Solenikov:
