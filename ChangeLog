@@ -3,8 +3,11 @@
 	From Dmitry Eremin-Solenikov:
 	* cmac64.c (_cmac64_block_mulx, cmac64_set_key, cmac64_init)
 	(cmac64_update, cmac64_digest): New file, new functions.
-	* cmac.h: Add cmac64 declarations.
-	* Makefile.in (nettle_SOURCES): Add cmac64.c.
+	* cmac-des3.c (cmac_des3_set_key, cmac_des3_update)
+	(cmac_des3_digest): New file, new functions.
+	* cmac.h: Add cmac64 and cmac_des3 declarations.
+	* Makefile.in (nettle_SOURCES): Add cmac64.c and cmac-des3.c.
+	* testsuite/cmac-test.c (test_main): Add tests for cmac_des3.
 
 2019-07-02  Niels Möller  <nisse@lysator.liu.se>
 
