@@ -5,6 +5,7 @@
  * See also RFC 4357.
  *
  * Copyright: 2009-2012 Aleksey Kravchenko <rhash.admin@gmail.com>
+ * Copyright: 2019 Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the
@@ -62,7 +63,8 @@ gosthash94_init (struct gosthash94_ctx *ctx)
  * @param block the message block to process
  */
 static void
-gost_block_compress (struct gosthash94_ctx *ctx, const uint32_t *block)
+gost_block_compress (struct gosthash94_ctx *ctx, const uint32_t *block,
+		     const uint32_t sbox[4][256])
 {
     unsigned i;
     uint32_t key[8], u[8], v[8], w[8], s[8];
@@ -107,7 +109,7 @@ gost_block_compress (struct gosthash94_ctx *ctx, const uint32_t *block)
               ((w[5] & 0xff000000) >> 8) | (w[7] & 0xff000000);
 
           /* encryption: s_i := E_{key_i} (h_i) */
-          _gost28147_encrypt_block (key, gost28147_param_test_3411.sbox, &ctx->hash[i], &s[i]);
+          _gost28147_encrypt_block (key, sbox, &ctx->hash[i], &s[i]);
 
           if (i == 0)
             {
@@ -262,7 +264,8 @@ gost_block_compress (struct gosthash94_ctx *ctx, const uint32_t *block)
  * @param block the 256-bit message block to process
  */
 static void
-gost_compute_sum_and_hash (struct gosthash94_ctx *ctx, const uint8_t *block)
+gost_compute_sum_and_hash (struct gosthash94_ctx *ctx, const uint8_t *block,
+			   const uint32_t sbox[4][256])
 {
     uint32_t block_le[8];
     unsigned i, carry;
@@ -278,7 +281,49 @@ gost_compute_sum_and_hash (struct gosthash94_ctx *ctx, const uint8_t *block)
       }
 
     /* update message hash */
-    gost_block_compress (ctx, block_le);
+    gost_block_compress (ctx, block_le, sbox);
+}
+
+/**
+ * Calculate message hash.
+ * Can be called repeatedly with chunks of the message to be hashed.
+ *
+ * @param ctx the algorithm context containing current hashing state
+ * @param msg message chunk
+ * @param size length of the message chunk
+ */
+static void
+gosthash94_update_int (struct gosthash94_ctx *ctx,
+		       size_t length, const uint8_t *msg,
+		       const uint32_t sbox[4][256])
+{
+    unsigned index = (unsigned) ctx->length & 31;
+    ctx->length += length;
+
+    /* fill partial block */
+    if (index)
+      {
+          unsigned left = GOSTHASH94_BLOCK_SIZE - index;
+          memcpy (ctx->message + index, msg, (length < left ? length : left));
+          if (length < left)
+              return;
+
+          /* process partial block */
+          gost_compute_sum_and_hash (ctx, ctx->message, sbox);
+          msg += left;
+          length -= left;
+      }
+    while (length >= GOSTHASH94_BLOCK_SIZE)
+      {
+          gost_compute_sum_and_hash (ctx, msg, sbox);
+          msg += GOSTHASH94_BLOCK_SIZE;
+          length -= GOSTHASH94_BLOCK_SIZE;
+      }
+    if (length)
+      {
+          /* save leftovers */
+          memcpy (ctx->message, msg, length);
+      }
 }
 
 /**
@@ -293,33 +338,24 @@ void
 gosthash94_update (struct gosthash94_ctx *ctx,
 		   size_t length, const uint8_t *msg)
 {
-    unsigned index = (unsigned) ctx->length & 31;
-    ctx->length += length;
+  gosthash94_update_int (ctx, length, msg,
+			 gost28147_param_test_3411.sbox);
+}
 
-    /* fill partial block */
-    if (index)
-      {
-          unsigned left = GOSTHASH94_BLOCK_SIZE - index;
-          memcpy (ctx->message + index, msg, (length < left ? length : left));
-          if (length < left)
-              return;
-
-          /* process partial block */
-          gost_compute_sum_and_hash (ctx, ctx->message);
-          msg += left;
-          length -= left;
-      }
-    while (length >= GOSTHASH94_BLOCK_SIZE)
-      {
-          gost_compute_sum_and_hash (ctx, msg);
-          msg += GOSTHASH94_BLOCK_SIZE;
-          length -= GOSTHASH94_BLOCK_SIZE;
-      }
-    if (length)
-      {
-          /* save leftovers */
-          memcpy (ctx->message, msg, length);
-      }
+/**
+ * Calculate message hash.
+ * Can be called repeatedly with chunks of the message to be hashed.
+ *
+ * @param ctx the algorithm context containing current hashing state
+ * @param msg message chunk
+ * @param size length of the message chunk
+ */
+void
+gosthash94cp_update (struct gosthash94_ctx *ctx,
+		     size_t length, const uint8_t *msg)
+{
+  gosthash94_update_int (ctx, length, msg,
+			 gost28147_param_CryptoPro_3411.sbox);
 }
 
 /**
@@ -328,9 +364,10 @@ gosthash94_update (struct gosthash94_ctx *ctx,
  * @param ctx the algorithm context containing current hashing state
  * @param result calculated hash in binary form
  */
-void
-gosthash94_digest (struct gosthash94_ctx *ctx,
-		   size_t length, uint8_t *result)
+static void
+gosthash94_write_digest (struct gosthash94_ctx *ctx,
+			 size_t length, uint8_t *result,
+			 const uint32_t sbox[4][256])
 {
     unsigned index = ctx->length & 31;
     uint32_t msg32[8];
@@ -341,7 +378,7 @@ gosthash94_digest (struct gosthash94_ctx *ctx,
     if (index > 0)
       {
           memset (ctx->message + index, 0, 32 - index);
-          gost_compute_sum_and_hash (ctx, ctx->message);
+          gost_compute_sum_and_hash (ctx, ctx->message, sbox);
       }
 
     /* hash the message length and the sum */
@@ -349,10 +386,26 @@ gosthash94_digest (struct gosthash94_ctx *ctx,
     msg32[1] = ctx->length >> 29;
     memset (msg32 + 2, 0, sizeof (uint32_t) * 6);
 
-    gost_block_compress (ctx, msg32);
-    gost_block_compress (ctx, ctx->sum);
+    gost_block_compress (ctx, msg32, sbox);
+    gost_block_compress (ctx, ctx->sum, sbox);
 
     /* convert hash state to result bytes */
     _nettle_write_le32(length, result, ctx->hash);
     gosthash94_init (ctx);
+}
+
+void
+gosthash94_digest (struct gosthash94_ctx *ctx,
+		   size_t length, uint8_t *result)
+{
+  gosthash94_write_digest (ctx, length, result,
+			   gost28147_param_test_3411.sbox);
+}
+
+void
+gosthash94cp_digest (struct gosthash94_ctx *ctx,
+		     size_t length, uint8_t *result)
+{
+  gosthash94_write_digest (ctx, length, result,
+			   gost28147_param_CryptoPro_3411.sbox);
 }
