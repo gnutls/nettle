@@ -41,6 +41,7 @@ extern "C" {
 #endif
 
 #define gost28147_param_test_3411 nettle_gost28147_param_test_3411
+#define gost28147_param_CryptoPro_3411 nettle_gost28147_param_CryptoPro_3411
 
 struct gost28147_param
 {
@@ -48,6 +49,7 @@ struct gost28147_param
 };
 
 extern const struct gost28147_param gost28147_param_test_3411;
+extern const struct gost28147_param gost28147_param_CryptoPro_3411;
 
 #ifdef __cplusplus
 }

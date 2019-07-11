@@ -1039,12 +1039,17 @@ This function also resets the context in the same way as
 @end deftypefun
 
 
-@subsubsection @acronym{GOSTHASH94}
+@subsubsection @acronym{GOSTHASH94 and GOSTHASH94CP}
 
 The GOST94 or GOST R 34.11-94 hash algorithm is a Soviet-era algorithm 
 used in Russian government standards (see @cite{RFC 4357}).
-It outputs message digests of 256 bits, or 32 octets.
-Nettle defines GOSTHASH94 in @file{<nettle/gosthash94.h>}.
+It outputs message digests of 256 bits, or 32 octets. The standard itself
+does not fix the S-box used by the hash algorith, so there are two popular
+variants (the testing S-box from the standard itself and the S-box defined
+by CryptoPro company, see RFC 4357). Nettle provides support for the former
+S-box in the form of GOSTHASH94 hash algorithm and for the latter in the
+form of GOSTHASH94CP hash algorithm.
+Nettle defines GOSTHASH94 and GOSTHASH94CP in @file{<nettle/gosthash94.h>}.
 
 @deftp {Context struct} {struct gosthash94_ctx}
 @end deftp
@@ -1073,6 +1078,35 @@ octets of the digest are written.
 
 This function also resets the context in the same way as
 @code{gosthash94_init}.
+@end deftypefun
+
+@deftp {Context struct} {struct gosthash94cp_ctx}
+@end deftp
+
+@defvr Constant GOSTHASH94CP_DIGEST_SIZE
+The size of a GOSTHASH94CP digest, i.e. 32.
+@end defvr
+
+@defvr Constant GOSTHASH94CP_BLOCK_SIZE
+The internal block size of GOSTHASH94CP, i.e., 32.
+@end defvr
+
+@deftypefun void gosthash94cp_init (struct gosthash94cp_ctx *@var{ctx})
+Initialize the GOSTHASH94CP state.
+@end deftypefun
+
+@deftypefun void gosthash94cp_update (struct gosthash94cp_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
+Hash some more data.
+@end deftypefun
+
+@deftypefun void gosthash94cp_digest (struct gosthash94cp_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing it
+to @var{digest}. @var{length} may be smaller than
+@code{GOSTHASH94CP_DIGEST_SIZE}, in which case only the first @var{length}
+octets of the digest are written.
+
+This function also resets the context in the same way as
+@code{gosthash94cp_init}.
 @end deftypefun
 
 @node nettle_hash abstraction,, Legacy hash functions, Hash functions
@@ -1104,6 +1138,7 @@ The last three attributes are function pointers, of types
 @deftypevrx {Constant Struct} {struct nettle_hash} nettle_sha512
 @deftypevrx {Constant Struct} {struct nettle_hash} nettle_sha3_256
 @deftypevrx {Constant Struct} {struct nettle_hash} nettle_gosthash94
+@deftypevrx {Constant Struct} {struct nettle_hash} nettle_gosthash94cp
 These are all the hash functions that Nettle implements.
 @end deftypevr
 
