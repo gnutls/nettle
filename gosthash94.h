@@ -87,8 +87,9 @@ struct gosthash94_ctx
 {
   uint32_t hash[8]; /* algorithm 256-bit state */
   uint32_t sum[8];  /* sum of processed message blocks */
-  uint64_t length;  /* number of processed bytes */
-  uint8_t message[GOSTHASH94_BLOCK_SIZE]; /* 256-bit buffer for leftovers */
+  uint64_t count;               /* Block count */
+  unsigned index;               /* Into buffer */
+  uint8_t block[GOSTHASH94_BLOCK_SIZE]; /* 256-bit buffer for leftovers */
 };
 #define gosthash94cp_ctx gosthash94_ctx
 
