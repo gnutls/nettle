@@ -894,4 +894,18 @@ test_main(void)
 		 "b1ff68a1de45509fbe4da9a433922655"));
 
   /* Test case AUTH512-3 from same document seems broken. */
+
+  HMAC_TEST(gosthash94,
+	    SHEX("000102030405060708090a0b0c0d0e0f"
+		 "101112131415161718191a1b1c1d1e1f"),
+	    SHEX("0126bdb87800af214341456563780100"),
+	    SHEX("bfebe25f051bfef6ac858babb0abc409"
+		 "bfd2e334ab847bc0b0d056517c7d94c5"));
+
+  HMAC_TEST(gosthash94cp,
+	    SHEX("000102030405060708090a0b0c0d0e0f"
+		 "101112131415161718191a1b1c1d1e1f"),
+	    SHEX("0126bdb87800af214341456563780100"),
+	    SHEX("bad70b61c41095bc47e1141cfaed4272"
+		 "6a5ceebd62ce75dbbb9ad76cda9f72f7"));
 }
