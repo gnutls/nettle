@@ -1,6 +1,6 @@
 /* cmac-des3.c
 
-   CMAC using TrippleDES as the underlying cipher.
+   CMAC using TripleDES as the underlying cipher.
 
    Copyright (C) 2019 Dmitry Eremin-Solenikov
 

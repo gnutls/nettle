@@ -1,5 +1,5 @@
 /*
-   AES-CMAC-128 (rfc 4493) / CMAC-64
+   CMAC-64, NIST SP 800-38B
    Copyright (C) Stefan Metzmacher 2012
    Copyright (C) Jeremy Allison 2012
    Copyright (C) Michael Adam 2012
