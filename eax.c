@@ -54,12 +54,8 @@ omac_init (union nettle_block16 *state, unsigned t)
 static void
 block16_xor (union nettle_block16 *dst, const union nettle_block16 *src)
 {
-  dst->w[0] ^= src->w[0];
-  dst->w[1] ^= src->w[1];
-#if SIZEOF_LONG == 4
-  dst->w[2] ^= src->w[2];
-  dst->w[3] ^= src->w[3];
-#endif
+  dst->u64[0] ^= src->u64[0];
+  dst->u64[1] ^= src->u64[1];
 }
 
 static void

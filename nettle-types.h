@@ -61,7 +61,7 @@ extern "C" {
 union nettle_block16
 {
   uint8_t b[16];
-  unsigned long w[16 / sizeof(unsigned long)];
+  unsigned long w[16 / sizeof(unsigned long)] _NETTLE_ATTRIBUTE_DEPRECATED;
   uint64_t u64[2];
 };
 

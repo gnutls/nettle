@@ -1,3 +1,9 @@
+2019-07-08  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle-types.h (union nettle_block16): Mark w member as deprecated.
+	* eax.c (block16_xor): Use uint64_t member of nettle_block16.
+	* gcm.c (gcm_gf_add, gcm_gf_shift, gcm_gf_shift_8): Likewise.
+
 2019-07-10  Niels Möller  <nisse@lysator.liu.se>
 
 	From Dmitry Eremin-Solenikov:
