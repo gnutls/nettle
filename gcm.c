@@ -133,45 +133,22 @@ shift_table[0x10] = {
 static void
 gcm_gf_shift_4(union nettle_block16 *x)
 {
-  unsigned long *w = x->w;
-  unsigned long reduce;
+  uint64_t *u64 = x->u64;
+  uint64_t reduce;
 
   /* Shift uses big-endian representation. */
 #if WORDS_BIGENDIAN
-# if SIZEOF_LONG == 4
-  reduce = shift_table[w[3] & 0xf];
-  w[3] = (w[3] >> 4) | ((w[2] & 0xf) << 28);
-  w[2] = (w[2] >> 4) | ((w[1] & 0xf) << 28);
-  w[1] = (w[1] >> 4) | ((w[0] & 0xf) << 28);
-  w[0] = (w[0] >> 4) ^ (reduce << 16);
-# elif SIZEOF_LONG == 8
-  reduce = shift_table[w[1] & 0xf];
-  w[1] = (w[1] >> 4) | ((w[0] & 0xf) << 60);
-  w[0] = (w[0] >> 4) ^ (reduce << 48);
-# else
-#  error Unsupported word size. */
-#endif
+  reduce = shift_table[u64[1] & 0xf];
+  u64[1] = (u64[1] >> 4) | ((u64[0] & 0xf) << 60);
+  u64[0] = (u64[0] >> 4) ^ (reduce << 48);
 #else /* ! WORDS_BIGENDIAN */
-# if SIZEOF_LONG == 4
-#define RSHIFT_WORD(x) \
-  ((((x) & 0xf0f0f0f0UL) >> 4)			\
-   | (((x) & 0x000f0f0f) << 12))
-  reduce = shift_table[(w[3] >> 24) & 0xf];
-  w[3] = RSHIFT_WORD(w[3]) | ((w[2] >> 20) & 0xf0);
-  w[2] = RSHIFT_WORD(w[2]) | ((w[1] >> 20) & 0xf0);
-  w[1] = RSHIFT_WORD(w[1]) | ((w[0] >> 20) & 0xf0);
-  w[0] = RSHIFT_WORD(w[0]) ^ reduce;
-# elif SIZEOF_LONG == 8
-#define RSHIFT_WORD(x) \
-  ((((x) & 0xf0f0f0f0f0f0f0f0UL) >> 4) \
-   | (((x) & 0x000f0f0f0f0f0f0fUL) << 12))
-  reduce = shift_table[(w[1] >> 56) & 0xf];
-  w[1] = RSHIFT_WORD(w[1]) | ((w[0] >> 52) & 0xf0);
-  w[0] = RSHIFT_WORD(w[0]) ^ reduce;
-# else
-#  error Unsupported word size. */
-# endif
-# undef RSHIFT_WORD
+#define RSHIFT_WORD_4(x) \
+  ((((x) & UINT64_C(0xf0f0f0f0f0f0f0f0)) >> 4) \
+   | (((x) & UINT64_C(0x000f0f0f0f0f0f0f)) << 12))
+  reduce = shift_table[(u64[1] >> 56) & 0xf];
+  u64[1] = RSHIFT_WORD_4(u64[1]) | ((u64[0] >> 52) & 0xf0);
+  u64[0] = RSHIFT_WORD_4(u64[0]) ^ reduce;
+# undef RSHIFT_WORD_4
 #endif /* ! WORDS_BIGENDIAN */
 }
 
