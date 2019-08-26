@@ -98,7 +98,7 @@ cmac64_update(struct cmac64_ctx *ctx, const void *cipher,
 	      nettle_cipher_func *encrypt,
 	      size_t msg_len, const uint8_t *msg)
 {
-  union nettle_block16 Y;
+  union nettle_block8 Y;
   /*
    * check if we expand the block
    */
