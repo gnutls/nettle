@@ -46,6 +46,7 @@
 #include "memops.h"
 #include "cmac-internal.h"
 #include "nettle-internal.h"
+#include "block-internal.h"
 
 /* This is an implementation of S2V for the AEAD case where
  * vectors if zero, are considered as S empty components */
@@ -69,12 +70,12 @@ _siv_s2v (const struct nettle_cipher *nc,
   _cmac128_block_mulx (&D, &D);
   cmac128_update (&cmac_ctx, cmac_cipher, nc->encrypt, alength, adata);
   cmac128_digest (&cmac_ctx, cmac_key, cmac_cipher, nc->encrypt, 16, S.b);
-  memxor (D.b, S.b, 16);
+  block16_xor (&D, &S);
 
   _cmac128_block_mulx (&D, &D);
   cmac128_update (&cmac_ctx, cmac_cipher, nc->encrypt, nlength, nonce);
   cmac128_digest (&cmac_ctx, cmac_key, cmac_cipher, nc->encrypt, 16, S.b);
-  memxor (D.b, S.b, 16);
+  block16_xor (&D, &S);
 
   /* Sn */
   if (plength >= 16)
@@ -83,7 +84,7 @@ _siv_s2v (const struct nettle_cipher *nc,
 
       pdata += plength - 16;
 
-      memxor3 (T.b, pdata, D.b, 16);
+      block16_xor_bytes (&T, &D, pdata);
     }
   else
     {
@@ -95,7 +96,7 @@ _siv_s2v (const struct nettle_cipher *nc,
       if (plength + 1 < 16)
 	memset (&pad.b[plength + 1], 0, 16 - plength - 1);
 
-      memxor (T.b, pad.b, 16);
+      block16_xor (&T, &pad);
     }
 
   cmac128_update (&cmac_ctx, cmac_cipher, nc->encrypt, 16, T.b);

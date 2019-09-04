@@ -43,8 +43,8 @@
 
 #include "cmac.h"
 
-#include "memxor.h"
 #include "nettle-internal.h"
+#include "block-internal.h"
 #include "macros.h"
 
 /* shift one and XOR with 0x87. */
@@ -119,12 +119,12 @@ cmac64_update(struct cmac64_ctx *ctx, const void *cipher,
   /*
    * now checksum everything but the last block
    */
-  memxor3(Y.b, ctx->X.b, ctx->block.b, 8);
+  block8_xor3(&Y, &ctx->X, &ctx->block);
   encrypt(cipher, 8, ctx->X.b, Y.b);
 
   while (msg_len > 8)
     {
-      memxor3(Y.b, ctx->X.b, msg, 8);
+      block8_xor_bytes(&Y, &ctx->X, msg);
       encrypt(cipher, 8, ctx->X.b, Y.b);
       msg += 8;
       msg_len -= 8;
@@ -151,14 +151,14 @@ cmac64_digest(struct cmac64_ctx *ctx, const struct cmac64_key *key,
   if (ctx->index < 8)
     {
       ctx->block.b[ctx->index] = 0x80;
-      memxor(ctx->block.b, key->K2.b, 8);
+      block8_xor(&ctx->block, &key->K2);
     }
   else
     {
-      memxor(ctx->block.b, key->K1.b, 8);
+      block8_xor(&ctx->block, &key->K1);
     }
 
-  memxor3(Y.b, ctx->block.b, ctx->X.b, 8);
+  block8_xor3(&Y, &ctx->block, &ctx->X);
 
   assert(length <= 8);
   if (length == 8)

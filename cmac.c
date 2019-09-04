@@ -45,6 +45,7 @@
 #include "memxor.h"
 #include "nettle-internal.h"
 #include "cmac-internal.h"
+#include "block-internal.h"
 #include "macros.h"
 
 /* shift one and XOR with 0x87. */
@@ -119,12 +120,12 @@ cmac128_update(struct cmac128_ctx *ctx, const void *cipher,
   /*
    * now checksum everything but the last block
    */
-  memxor3(Y.b, ctx->X.b, ctx->block.b, 16);
+  block16_xor3(&Y, &ctx->X, &ctx->block);
   encrypt(cipher, 16, ctx->X.b, Y.b);
 
   while (msg_len > 16)
     {
-      memxor3(Y.b, ctx->X.b, msg, 16);
+      block16_xor_bytes (&Y, &ctx->X, msg);
       encrypt(cipher, 16, ctx->X.b, Y.b);
       msg += 16;
       msg_len -= 16;
@@ -151,14 +152,14 @@ cmac128_digest(struct cmac128_ctx *ctx, const struct cmac128_key *key,
       ctx->block.b[ctx->index] = 0x80;
       memset(ctx->block.b + ctx->index + 1, 0, 16 - 1 - ctx->index);
 
-      memxor(ctx->block.b, key->K2.b, 16);
+      block16_xor (&ctx->block, &key->K2);
     }
   else
     {
-      memxor(ctx->block.b, key->K1.b, 16);
+      block16_xor (&ctx->block, &key->K1);
     }
 
-  memxor3(Y.b, ctx->block.b, ctx->X.b, 16);
+  block16_xor3 (&Y, &ctx->block, &ctx->X);
 
   assert(length <= 16);
   if (length == 16)

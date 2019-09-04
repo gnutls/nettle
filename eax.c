@@ -40,6 +40,7 @@
 
 #include "eax.h"
 
+#include "block-internal.h"
 #include "ctr.h"
 #include "memxor.h"
 
@@ -48,14 +49,6 @@ omac_init (union nettle_block16 *state, unsigned t)
 {
   memset (state->b, 0, EAX_BLOCK_SIZE - 1);
   state->b[EAX_BLOCK_SIZE - 1] = t;
-}
-
-/* Almost the same as gcm_gf_add */
-static void
-block16_xor (union nettle_block16 *dst, const union nettle_block16 *src)
-{
-  dst->u64[0] ^= src->u64[0];
-  dst->u64[1] ^= src->u64[1];
 }
 
 static void

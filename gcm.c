@@ -53,16 +53,10 @@
 #include "nettle-internal.h"
 #include "macros.h"
 #include "ctr-internal.h"
+#include "block-internal.h"
 
 #define GHASH_POLYNOMIAL 0xE1UL
 
-static void
-gcm_gf_add (union nettle_block16 *r,
-	    const union nettle_block16 *x, const union nettle_block16 *y)
-{
-  r->u64[0] = x->u64[0] ^ y->u64[0];
-  r->u64[1] = x->u64[1] ^ y->u64[1];
-}
 /* Multiplication by 010...0; a big-endian shift right. If the bit
    shifted out is one, the defining polynomial is added to cancel it
    out. r == x is allowed. */
@@ -108,7 +102,7 @@ gcm_gf_mul (union nettle_block16 *x, const union nettle_block16 *y)
       for (j = 0; j < 8; j++, b <<= 1)
 	{
 	  if (b & 0x80)
-	    gcm_gf_add(&Z, &Z, &V);
+	    block16_xor(&Z, &V);
 	  
 	  gcm_gf_shift(&V, &V);
 	}
@@ -165,9 +159,9 @@ gcm_gf_mul (union nettle_block16 *x, const union nettle_block16 *table)
       uint8_t b = x->b[i];
 
       gcm_gf_shift_4(&Z);
-      gcm_gf_add(&Z, &Z, &table[b & 0xf]);
+      block16_xor(&Z, &table[b & 0xf]);
       gcm_gf_shift_4(&Z);
-      gcm_gf_add(&Z, &Z, &table[b >> 4]);
+      block16_xor(&Z, &table[b >> 4]);
     }
   memcpy (x->b, Z.b, sizeof(Z));
 }
@@ -243,10 +237,10 @@ gcm_gf_mul (union nettle_block16 *x, const union nettle_block16 *table)
   for (i = GCM_BLOCK_SIZE-2; i > 0; i--)
     {
       gcm_gf_shift_8(&Z);
-      gcm_gf_add(&Z, &Z, &table[x->b[i]]);
+      block16_xor(&Z, &table[x->b[i]]);
     }
   gcm_gf_shift_8(&Z);
-  gcm_gf_add(x, &Z, &table[x->b[0]]);
+  block16_xor3(x, &Z, &table[x->b[0]]);
 }
 #  endif /* ! HAVE_NATIVE_gcm_hash8 */
 # else /* GCM_TABLE_BITS != 8 */
@@ -286,7 +280,7 @@ gcm_set_key(struct gcm_key *key,
     {
       unsigned j;
       for (j = 1; j < i; j++)
-	gcm_gf_add(&key->h[i+j], &key->h[i],&key->h[j]);
+	block16_xor3(&key->h[i+j], &key->h[i],&key->h[j]);
     }
 #endif
 }
