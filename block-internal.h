@@ -95,11 +95,15 @@ block8_xor_bytes (union nettle_block8 *r,
 #define LSHIFT_ALIEN_UINT64(x) \
 	((((x) & UINT64_C(0x7f7f7f7f7f7f7f7f)) << 1) | \
 	 (((x) & UINT64_C(0x8080808080808080)) >> 15))
+#define RSHIFT_ALIEN_UINT64(x) \
+	((((x) & UINT64_C(0xfefefefefefefefe)) >> 1) | \
+	 (((x) & UINT64_C(0x0001010101010101)) << 15))
 
 /* Two typical defining polynoms */
 
 #define BLOCK16_POLY (UINT64_C(0x87))
 #define BLOCK8_POLY (UINT64_C(0x1b))
+#define GHASH_POLY (UINT64_C(0xE1))
 
 /* Galois multiplications by 2:
  * functions differ in shifting right or left, big- or little- endianness
@@ -133,6 +137,18 @@ block8_mulx_be (union nettle_block8 *dst,
 
   dst->u64 = (src->u64 << 1) ^ (BLOCK8_POLY & -carry);
 }
+
+static inline void
+block16_mulx_ghash (union nettle_block16 *r,
+		    const union nettle_block16 *x)
+{
+  uint64_t mask;
+
+  /* Shift uses big-endian representation. */
+  mask = - (x->u64[1] & 1);
+  r->u64[1] = (x->u64[1] >> 1) | ((x->u64[0] & 1) << 63);
+  r->u64[0] = (x->u64[0] >> 1) ^ (mask & (GHASH_POLY << 56));
+}
 #else /* !WORDS_BIGENDIAN */
 static inline void
 block16_mulx_be (union nettle_block16 *dst,
@@ -160,6 +176,18 @@ block8_mulx_be (union nettle_block8 *dst,
 
   dst->u64 = LSHIFT_ALIEN_UINT64(src->u64) ^ ((BLOCK8_POLY << 56) & -carry);
 }
-#endif /* !WORDS_BIGENDIAN */
+
+static inline void
+block16_mulx_ghash (union nettle_block16 *r,
+		    const union nettle_block16 *x)
+{
+  uint64_t mask;
+
+  /* Shift uses big-endian representation. */
+  mask = - ((x->u64[1] >> 56) & 1);
+  r->u64[1] = RSHIFT_ALIEN_UINT64(x->u64[1]) | ((x->u64[0] >> 49) & 0x80);
+  r->u64[0] = RSHIFT_ALIEN_UINT64(x->u64[0]) ^ (mask & GHASH_POLY);
+}
+#endif /* ! WORDS_BIGENDIAN */
 
 #endif /* NETTLE_BLOCK_INTERNAL_H_INCLUDED */

@@ -55,32 +55,6 @@
 #include "ctr-internal.h"
 #include "block-internal.h"
 
-#define GHASH_POLYNOMIAL 0xE1UL
-
-/* Multiplication by 010...0; a big-endian shift right. If the bit
-   shifted out is one, the defining polynomial is added to cancel it
-   out. r == x is allowed. */
-static void
-gcm_gf_shift (union nettle_block16 *r, const union nettle_block16 *x)
-{
-  uint64_t mask;
-
-  /* Shift uses big-endian representation. */
-#if WORDS_BIGENDIAN
-  mask = - (x->u64[1] & 1);
-  r->u64[1] = (x->u64[1] >> 1) | ((x->u64[0] & 1) << 63);
-  r->u64[0] = (x->u64[0] >> 1) ^ (mask & ((uint64_t) GHASH_POLYNOMIAL << 56));
-#else /* ! WORDS_BIGENDIAN */
-#define RSHIFT_WORD(x) \
-  ((((x) & 0xfefefefefefefefeUL) >> 1) \
-   | (((x) & 0x0001010101010101UL) << 15))
-  mask = - ((x->u64[1] >> 56) & 1);
-  r->u64[1] = RSHIFT_WORD(x->u64[1]) | ((x->u64[0] >> 49) & 0x80);
-  r->u64[0] = RSHIFT_WORD(x->u64[0]) ^ (mask & GHASH_POLYNOMIAL);
-# undef RSHIFT_WORD
-#endif /* ! WORDS_BIGENDIAN */
-}
-
 #if GCM_TABLE_BITS == 0
 /* Sets x <- x * y mod r, using the plain bitwise algorithm from the
    specification. y may be shorter than a full block, missing bytes
@@ -104,7 +78,7 @@ gcm_gf_mul (union nettle_block16 *x, const union nettle_block16 *y)
 	  if (b & 0x80)
 	    block16_xor(&Z, &V);
 	  
-	  gcm_gf_shift(&V, &V);
+	  block16_mulx_ghash(&V, &V);
 	}
     }
   memcpy (x->b, Z.b, sizeof(Z));
@@ -275,7 +249,7 @@ gcm_set_key(struct gcm_key *key,
   /* Algorithm 3 from the gcm paper. First do powers of two, then do
      the rest by adding. */
   while (i /= 2)
-    gcm_gf_shift(&key->h[i], &key->h[2*i]);
+    block16_mulx_ghash(&key->h[i], &key->h[2*i]);
   for (i = 2; i < 1<<GCM_TABLE_BITS; i *= 2)
     {
       unsigned j;
