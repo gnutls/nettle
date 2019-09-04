@@ -90,4 +90,76 @@ block8_xor_bytes (union nettle_block8 *r,
   memxor3 (r->b, x->b, bytes, 8);
 }
 
+/* Do a foreign-endianness shift of data */
+
+#define LSHIFT_ALIEN_UINT64(x) \
+	((((x) & UINT64_C(0x7f7f7f7f7f7f7f7f)) << 1) | \
+	 (((x) & UINT64_C(0x8080808080808080)) >> 15))
+
+/* Two typical defining polynoms */
+
+#define BLOCK16_POLY (UINT64_C(0x87))
+#define BLOCK8_POLY (UINT64_C(0x1b))
+
+/* Galois multiplications by 2:
+ * functions differ in shifting right or left, big- or little- endianness
+ * and by defining polynom.
+ * r == x is allowed. */
+
+#if WORDS_BIGENDIAN
+static inline void
+block16_mulx_be (union nettle_block16 *dst,
+		 const union nettle_block16 *src)
+{
+  uint64_t carry = src->u64[0] >> 63;
+  dst->u64[0] = (src->u64[0] << 1) | (src->u64[1] >> 63);
+  dst->u64[1] = (src->u64[1] << 1) ^ (BLOCK16_POLY & -carry);
+}
+
+static inline void
+block16_mulx_le (union nettle_block16 *dst,
+		 const union nettle_block16 *src)
+{
+  uint64_t carry = (src->u64[1] & 0x80) >> 7;
+  dst->u64[1] = LSHIFT_ALIEN_UINT64(src->u64[1]) | ((src->u64[0] & 0x80) << 49);
+  dst->u64[0] = LSHIFT_ALIEN_UINT64(src->u64[0]) ^ ((BLOCK16_POLY << 56) & -carry);
+}
+
+static inline void
+block8_mulx_be (union nettle_block8 *dst,
+		const union nettle_block8 *src)
+{
+  uint64_t carry = src->u64 >> 63;
+
+  dst->u64 = (src->u64 << 1) ^ (BLOCK8_POLY & -carry);
+}
+#else /* !WORDS_BIGENDIAN */
+static inline void
+block16_mulx_be (union nettle_block16 *dst,
+		 const union nettle_block16 *src)
+{
+  uint64_t carry = (src->u64[0] & 0x80) >> 7;
+  dst->u64[0] = LSHIFT_ALIEN_UINT64(src->u64[0]) | ((src->u64[1] & 0x80) << 49);
+  dst->u64[1] = LSHIFT_ALIEN_UINT64(src->u64[1]) ^ ((BLOCK16_POLY << 56) & -carry);
+}
+
+static inline void
+block16_mulx_le (union nettle_block16 *dst,
+		 const union nettle_block16 *src)
+{
+  uint64_t carry = src->u64[1] >> 63;
+  dst->u64[1] = (src->u64[1] << 1) | (src->u64[0] >> 63);
+  dst->u64[0] = (src->u64[0] << 1) ^ (BLOCK16_POLY & -carry);
+}
+
+static inline void
+block8_mulx_be (union nettle_block8 *dst,
+		const union nettle_block8 *src)
+{
+  uint64_t carry = (src->u64 & 0x80) >> 7;
+
+  dst->u64 = LSHIFT_ALIEN_UINT64(src->u64) ^ ((BLOCK8_POLY << 56) & -carry);
+}
+#endif /* !WORDS_BIGENDIAN */
+
 #endif /* NETTLE_BLOCK_INTERNAL_H_INCLUDED */

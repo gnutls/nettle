@@ -44,7 +44,6 @@
 #include "ctr.h"
 #include "memxor.h"
 #include "memops.h"
-#include "cmac-internal.h"
 #include "nettle-internal.h"
 #include "block-internal.h"
 
@@ -67,12 +66,12 @@ _siv_s2v (const struct nettle_cipher *nc,
   cmac128_update (&cmac_ctx, cmac_cipher, nc->encrypt, 16, const_zero.b);
   cmac128_digest (&cmac_ctx, cmac_key, cmac_cipher, nc->encrypt, 16, D.b);
 
-  _cmac128_block_mulx (&D, &D);
+  block16_mulx_be (&D, &D);
   cmac128_update (&cmac_ctx, cmac_cipher, nc->encrypt, alength, adata);
   cmac128_digest (&cmac_ctx, cmac_key, cmac_cipher, nc->encrypt, 16, S.b);
   block16_xor (&D, &S);
 
-  _cmac128_block_mulx (&D, &D);
+  block16_mulx_be (&D, &D);
   cmac128_update (&cmac_ctx, cmac_cipher, nc->encrypt, nlength, nonce);
   cmac128_digest (&cmac_ctx, cmac_key, cmac_cipher, nc->encrypt, 16, S.b);
   block16_xor (&D, &S);
@@ -90,7 +89,7 @@ _siv_s2v (const struct nettle_cipher *nc,
     {
       union nettle_block16 pad;
 
-      _cmac128_block_mulx (&T, &D);
+      block16_mulx_be (&T, &D);
       memcpy (pad.b, pdata, plength);
       pad.b[plength] = 0x80;
       if (plength + 1 < 16)

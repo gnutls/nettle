@@ -47,29 +47,6 @@
 #include "block-internal.h"
 #include "macros.h"
 
-/* shift one and XOR with 0x87. */
-#if WORDS_BIGENDIAN
-static void
-_cmac64_block_mulx(union nettle_block8 *dst,
-	    const union nettle_block8 *src)
-{
-  uint64_t carry = src->u64 >> 63;
-
-  dst->u64 = (src->u64 << 1) ^ (0x1b & -carry);
-}
-#else /* !WORDS_BIGENDIAN */
-#define LE_SHIFT(x) ((((x) & 0x7f7f7f7f7f7f7f7f) << 1) | \
-                     (((x) & 0x8080808080808080) >> 15))
-static void
-_cmac64_block_mulx(union nettle_block8 *dst,
-	   const union nettle_block8 *src)
-{
-  uint64_t carry = (src->u64 & 0x80) >> 7;
-
-  dst->u64 = LE_SHIFT(src->u64) ^ (0x1b00000000000000 & -carry);
-}
-#endif /* !WORDS_BIGENDIAN */
-
 void
 cmac64_set_key(struct cmac64_key *key, const void *cipher,
 	       nettle_cipher_func *encrypt)
@@ -80,8 +57,8 @@ cmac64_set_key(struct cmac64_key *key, const void *cipher,
   /* step 1 - generate subkeys k1 and k2 */
   encrypt(cipher, 8, L.b, zero_block.b);
 
-  _cmac64_block_mulx(&key->K1, &L);
-  _cmac64_block_mulx(&key->K2, &key->K1);
+  block8_mulx_be(&key->K1, &L);
+  block8_mulx_be(&key->K2, &key->K1);
 }
 
 void

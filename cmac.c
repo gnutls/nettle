@@ -44,32 +44,8 @@
 
 #include "memxor.h"
 #include "nettle-internal.h"
-#include "cmac-internal.h"
 #include "block-internal.h"
 #include "macros.h"
-
-/* shift one and XOR with 0x87. */
-#if WORDS_BIGENDIAN
-void
-_cmac128_block_mulx(union nettle_block16 *dst,
-		    const union nettle_block16 *src)
-{
-  uint64_t carry = src->u64[0] >> 63;
-  dst->u64[0] = (src->u64[0] << 1) | (src->u64[1] >> 63);
-  dst->u64[1] = (src->u64[1] << 1) ^ (0x87 & -carry);
-}
-#else /* !WORDS_BIGENDIAN */
-#define LE_SHIFT(x) ((((x) & 0x7f7f7f7f7f7f7f7f) << 1) | \
-                     (((x) & 0x8080808080808080) >> 15))
-void
-_cmac128_block_mulx(union nettle_block16 *dst,
-		    const union nettle_block16 *src)
-{
-  uint64_t carry = (src->u64[0] & 0x80) >> 7;
-  dst->u64[0] = LE_SHIFT(src->u64[0]) | ((src->u64[1] & 0x80) << 49);
-  dst->u64[1] = LE_SHIFT(src->u64[1]) ^ (0x8700000000000000 & -carry);
-}
-#endif /* !WORDS_BIGENDIAN */
 
 void
 cmac128_set_key(struct cmac128_key *key, const void *cipher,
@@ -81,8 +57,8 @@ cmac128_set_key(struct cmac128_key *key, const void *cipher,
   /* step 1 - generate subkeys k1 and k2 */
   encrypt(cipher, 16, L.b, zero_block.b);
 
-  _cmac128_block_mulx(&key->K1, &L);
-  _cmac128_block_mulx(&key->K2, &key->K1);
+  block16_mulx_be(&key->K1, &L);
+  block16_mulx_be(&key->K2, &key->K1);
 }
 
 void

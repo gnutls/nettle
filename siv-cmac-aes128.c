@@ -44,7 +44,6 @@
 #include "ctr.h"
 #include "memxor.h"
 #include "memops.h"
-#include "cmac-internal.h"
 
 void
 siv_cmac_aes128_set_key(struct siv_cmac_aes128_ctx *ctx, const uint8_t *key)
