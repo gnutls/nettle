@@ -83,6 +83,8 @@ extern "C" {
 #define GOSTHASH94CP_BLOCK_SIZE GOSTHASH94_BLOCK_SIZE
 #define GOSTHASH94CP_DIGEST_SIZE GOSTHASH94_DIGEST_SIZE
 
+/* FIXME: Rearrange context struct to enable use of the MD_UPDATE
+   macro. Has to wait for an ABI update. */
 struct gosthash94_ctx
 {
   uint32_t hash[8]; /* algorithm 256-bit state */
