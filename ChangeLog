@@ -1,5 +1,28 @@
 2019-09-15  Niels Möller  <nisse@lysator.liu.se>
 
+	From Dmitry Eremin-Solenikov:
+	* gost28147.c (_gost28147_encrypt_block): New file, encrypt
+	function and sbox tables moved here.
+	* gosthash94.c: Update functions to take sbox array as argument.
+	(gost_block_compress): Use _gost28147_encrypt_block.
+	(gosthash94cp_update,gosthash94cp_digest): New functions.
+	* gost28147-internal.h: New file.
+	* gost28147.h: New file.
+	* gosthash94-meta.c (nettle_gosthash94cp): New hash algorithm.
+	* nettle-meta-hashes.c (_nettle_hashes): Add nettle_gosthash94 and
+	nettle_gosthash94cp.
+	* hmac-gosthash94.c (hmac_gosthash94_set_key)
+	(hmac_gosthash94_update, hmac_gosthash94_digest)
+	(hmac_gosthash94cp_set_key, hmac_gosthash94cp_update)
+	(hmac_gosthash94cp_digest): New file and functions.
+	* pbkdf2-hmac-gosthash94.c (pbkdf2_hmac_gosthash94cp): New file
+	and function.
+	* testsuite/pbkdf2-test.c (test_main): Add
+	pbkdf2-hmac-gosthash94cp tests.
+	* testsuite/hmac-test.c (test_main): Add hmac-gosthash94 tests.
+	* testsuite/gosthash94-test.c (test_main): Add gosthash94cp tests.
+	* nettle.texinfo (Legacy hash functions): Document gosthash94cp.
+
 	* testsuite/dlopen-test.c (main): Use libnettle.dylib on MacOS.
 
 2019-07-08  Niels Möller  <nisse@lysator.liu.se>
