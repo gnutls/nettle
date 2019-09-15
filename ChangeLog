@@ -1,3 +1,7 @@
+2019-09-15  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/dlopen-test.c (main): Use libnettle.dylib on MacOS.
+
 2019-07-08  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle-types.h (union nettle_block16): Mark w member as deprecated.
