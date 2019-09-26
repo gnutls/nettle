@@ -234,7 +234,7 @@ void
 ecc_mod_submul_1 (const struct ecc_modulo *m, mp_limb_t *rp,
 		  const mp_limb_t *ap, mp_limb_t b);
 
-/* NOTE: mul and sqr needs 2*ecc->size limbs at rp */
+/* The mul and sqr functions need 2*m->size limbs at rp */
 void
 ecc_mod_mul (const struct ecc_modulo *m, mp_limb_t *rp,
 	     const mp_limb_t *ap, const mp_limb_t *bp);
@@ -281,9 +281,10 @@ ecc_a_to_j (const struct ecc_curve *ecc,
 
 /* Converts a point P in jacobian coordinates into a point R in affine
    coordinates. If op == 1, produce x coordinate only. If op == 2,
-   produce the x coordiante only, and in also it modulo q. FIXME: For
-   the public interface, have separate for the three cases, and use
-   this flag argument only for the internal ecc->h_to_a function. */
+   produce the x coordinate only, and also reduce it modulo q. FIXME:
+   For the public interface, have separate functions for the three
+   cases, and use this flag argument only for the internal ecc->h_to_a
+   function. */
 void
 ecc_j_to_a (const struct ecc_curve *ecc,
 	    int op,
