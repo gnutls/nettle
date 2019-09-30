@@ -63,22 +63,8 @@ test_compare_results(const char *name,
 	const struct tstring *e_cipher,
         /* Actual results. */
         const void *clear,
-        const void *cipher,
-        const void *digest) /* digest optional. */
+        const void *cipher)
 {
-  if (digest && !MEMEQ(SIV_DIGEST_SIZE, e_cipher->data, digest))
-    {
-      fprintf(stderr, "%s digest failed:\nAdata:", name);
-      tstring_print_hex(adata);
-      fprintf(stderr, "\nInput: ");
-      tstring_print_hex(e_clear);
-      fprintf(stderr, "\nOutput: ");
-      print_hex(SIV_DIGEST_SIZE, digest);
-      fprintf(stderr, "\nExpected:");
-      print_hex(SIV_DIGEST_SIZE, e_cipher->data);
-      fprintf(stderr, "\n");
-      FAIL();
-    }
   if (!MEMEQ(e_cipher->length, e_cipher->data, cipher))
     {
       fprintf(stderr, "%s: encryption failed\nAdata: ", name);
@@ -127,7 +113,7 @@ test_cipher_siv(const char *name,
   ASSERT (key->length == key_size);
   ASSERT (cleartext->length + SIV_DIGEST_SIZE == ciphertext->length);
 
-  de_data = xalloc(cleartext->length+SIV_DIGEST_SIZE);
+  de_data = xalloc(cleartext->length);
   en_data = xalloc(ciphertext->length);
 
   /* Ensure we get the same answers using the all-in-one API. */
@@ -137,26 +123,30 @@ test_cipher_siv(const char *name,
   siv_set_key(ctx, key->data);
   siv_encrypt(ctx, nonce->length, nonce->data,
 	      authdata->length, authdata->data,
-	      cleartext->length+SIV_DIGEST_SIZE, en_data, cleartext->data);
+	      ciphertext->length, en_data, cleartext->data);
 
   ret = siv_decrypt(ctx, nonce->length, nonce->data,
 		    authdata->length, authdata->data,
 		    cleartext->length, de_data, ciphertext->data);
 
-  if (ret != 1) fprintf(stderr, "siv_decrypt_message failed to validate message\n");
-    test_compare_results(name, authdata,
-			 cleartext, ciphertext, de_data, en_data, NULL);
-
+  if (ret != 1)
+    {
+      fprintf(stderr, "siv_decrypt_message failed to validate message\n");
+      FAIL();
+    }
   test_compare_results(name, authdata,
-		       cleartext, ciphertext, de_data, en_data, en_data);
-
+		       cleartext, ciphertext, de_data, en_data);
 
   /* Ensure that we can detect corrupted message or tag data. */
   en_data[0] ^= 1;
   ret = siv_decrypt(ctx, nonce->length, nonce->data,
 	            authdata->length, authdata->data,
 		    cleartext->length, de_data, en_data);
-  if (ret != 0) fprintf(stderr, "siv_decrypt_message failed to detect corrupted message\n");
+  if (ret != 0)
+    {
+      fprintf(stderr, "siv_decrypt_message failed to detect corrupted message\n");
+      FAIL();
+    }
 
   /* Ensure we can detect corrupted adata. */
   if (authdata->length) {
@@ -164,9 +154,12 @@ test_cipher_siv(const char *name,
     ret = siv_decrypt(ctx, nonce->length, nonce->data,
 		      authdata->length-1, authdata->data,
 		      cleartext->length, de_data, en_data);
-    if (ret != 0) fprintf(stderr, "siv_decrypt_message failed to detect corrupted message\n");
+    if (ret != 0)
+      {
+	fprintf(stderr, "siv_decrypt_message failed to detect corrupted message\n");
+	FAIL();
+      }
   }
-
 
   free(ctx);
   free(en_data);

@@ -1,6 +1,9 @@
 2019-09-30  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/siv-test.c (test_cipher_siv): Fix out-of-bounds read.
+	Trim allocation size for de_data, drop some uses of
+	SIV_DIGEST_SIZE, call FAIL for unexpected returned values.
+	(test_compare_results): Delete digest argument.
 
 2019-09-15  Niels Möller  <nisse@lysator.liu.se>
 
