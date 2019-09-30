@@ -155,7 +155,7 @@ test_cipher_siv(const char *name,
   en_data[0] ^= 1;
   ret = siv_decrypt(ctx, nonce->length, nonce->data,
 	            authdata->length, authdata->data,
-		    ciphertext->length, de_data, en_data);
+		    cleartext->length, de_data, en_data);
   if (ret != 0) fprintf(stderr, "siv_decrypt_message failed to detect corrupted message\n");
 
   /* Ensure we can detect corrupted adata. */
@@ -163,7 +163,7 @@ test_cipher_siv(const char *name,
     en_data[0] ^= 1;
     ret = siv_decrypt(ctx, nonce->length, nonce->data,
 		      authdata->length-1, authdata->data,
-		      ciphertext->length, de_data, en_data);
+		      cleartext->length, de_data, en_data);
     if (ret != 0) fprintf(stderr, "siv_decrypt_message failed to detect corrupted message\n");
   }
 
