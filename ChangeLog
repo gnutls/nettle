@@ -1,3 +1,11 @@
+2019-10-01  Niels Möller  <nisse@lysator.liu.se>
+
+	From Daiki Ueno, fixing bug reported by Stephan Mueller:
+	* cfb.c (cfb8_decrypt): Don't truncate output IV if input is
+	shorter than block size.
+	* testsuite/testutils.c (test_cipher_cfb8): Test splitting input
+	into multiple calls to cfb8_encrypt and cfb8_decrypt.
+
 2019-09-30  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/siv-test.c (test_cipher_siv): Fix out-of-bounds read.
