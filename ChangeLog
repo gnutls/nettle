@@ -1,5 +1,8 @@
 2019-10-01  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/testutils.c (test_cipher_cfb8): Reset destination area
+	between tests. Encrypt/decrypt final partial block.
+
 	From Daiki Ueno, fixing bug reported by Stephan Mueller:
 	* cfb.c (cfb8_decrypt): Don't truncate output IV if input is
 	shorter than block size.

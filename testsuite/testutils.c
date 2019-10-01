@@ -442,8 +442,8 @@ test_cipher_cfb8(const struct nettle_cipher *cipher,
   ASSERT (key->length == cipher->key_size);
   ASSERT (iiv->length == cipher->block_size);
 
-  data = xalloc(length);
-  data2 = xalloc(length);
+  data = xalloc(length + 1);
+  data2 = xalloc(length + 1);
 
   for (block = 1; block <= length; block++)
     {
@@ -452,12 +452,16 @@ test_cipher_cfb8(const struct nettle_cipher *cipher,
       cipher->set_encrypt_key(ctx, key->data);
       memcpy(iv, iiv->data, cipher->block_size);
 
+      memset(data, 0x17, length + 1);
       for (i = 0; i + block <= length; i += block)
 	{
 	  cfb8_encrypt(ctx, cipher->encrypt,
 		       cipher->block_size, iv,
 		       block, data + i, cleartext->data + i);
 	}
+      cfb8_encrypt(ctx, cipher->encrypt,
+		   cipher->block_size, iv,
+		   length - i, data + i, cleartext->data + i);
 
       if (!MEMEQ(length, data, ciphertext->data))
 	{
@@ -471,15 +475,21 @@ test_cipher_cfb8(const struct nettle_cipher *cipher,
 	  fprintf(stderr, "\n");
 	  FAIL();
 	}
+      ASSERT (data[length] == 0x17);
+
       cipher->set_encrypt_key(ctx, key->data);
       memcpy(iv, iiv->data, cipher->block_size);
 
+      memset(data2, 0x17, length + 1);
       for (i = 0; i + block <= length; i += block)
 	{
 	  cfb8_decrypt(ctx, cipher->encrypt,
 		       cipher->block_size, iv,
 		       block, data2 + i, data + i);
 	}
+      cfb8_decrypt(ctx, cipher->encrypt,
+		   cipher->block_size, iv,
+		   length - i, data2 + i, data + i);
 
       if (!MEMEQ(length, data2, cleartext->data))
 	{
@@ -493,6 +503,7 @@ test_cipher_cfb8(const struct nettle_cipher *cipher,
 	  fprintf(stderr, "\n");
 	  FAIL();
 	}
+      ASSERT (data[length] == 0x17);
     }
 
   cipher->set_encrypt_key(ctx, key->data);
