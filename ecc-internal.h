@@ -118,6 +118,10 @@ typedef void ecc_add_func (const struct ecc_curve *ecc,
 			   const mp_limb_t *p, const mp_limb_t *q,
 			   mp_limb_t *scratch);
 
+typedef void ecc_dup_func (const struct ecc_curve *ecc,
+			   mp_limb_t *r, const mp_limb_t *p,
+			   mp_limb_t *scratch);
+
 typedef void ecc_mul_g_func (const struct ecc_curve *ecc, mp_limb_t *r,
 			     const mp_limb_t *np, mp_limb_t *scratch);
 
@@ -174,12 +178,16 @@ struct ecc_curve
   unsigned short pippenger_k;
   unsigned short pippenger_c;
 
+  unsigned short add_hh_itch;
   unsigned short add_hhh_itch;
+  unsigned short dup_itch;
   unsigned short mul_itch;
   unsigned short mul_g_itch;
   unsigned short h_to_a_itch;
 
+  ecc_add_func *add_hh;
   ecc_add_func *add_hhh;
+  ecc_dup_func *dup;
   ecc_mul_func *mul;
   ecc_mul_g_func *mul_g;
   ecc_h_to_a_func *h_to_a;
@@ -189,9 +197,6 @@ struct ecc_curve
   /* Generator, x coordinate followed by y (affine coordinates).
      Currently used only by the test suite. */
   const mp_limb_t *g;
-  /* If non-NULL, the constant needed for transformation to the
-     equivalent Edwards curve. */
-  const mp_limb_t *edwards_root;
 
   /* For redc, same as B mod p, otherwise 1. */
   const mp_limb_t *unit;
@@ -281,18 +286,16 @@ ecc_a_to_j (const struct ecc_curve *ecc,
 
 /* Converts a point P in jacobian coordinates into a point R in affine
    coordinates. If op == 1, produce x coordinate only. If op == 2,
-   produce the x coordinate only, and also reduce it modulo q. FIXME:
-   For the public interface, have separate functions for the three
-   cases, and use this flag argument only for the internal ecc->h_to_a
-   function. */
+   produce the x coordinate only, and also reduce it modulo q. */
 void
 ecc_j_to_a (const struct ecc_curve *ecc,
 	    int op,
 	    mp_limb_t *r, const mp_limb_t *p,
 	    mp_limb_t *scratch);
 
-/* Converts a point P on an Edwards curve to affine coordinates on
-   the corresponding Montgomery curve. */
+/* Converts a point P in homogeneous coordinates on an Edwards curve
+   to affine coordinates. Meaning of op is the same as for
+   ecc_j_to_a. */
 void
 ecc_eh_to_a (const struct ecc_curve *ecc,
 	     int op,

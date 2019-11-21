@@ -1,3 +1,41 @@
+2019-11-21  Niels Möller  <nisse@lysator.liu.se>
+
+	* Merge curve448 preparations, from September 2017.
+
+2017-09-23  Niels Möller  <nisse@lysator.liu.se>
+
+	* eccdata.c: Reorganize curve25519 precomputation to work directly
+	with the twisted Edwards curve, with new point addition based on a
+	patch from Daiki Ueno.
+	* ecc-25519.c (_nettle_curve25519): Update for removed Montgomery
+	curve constant.
+
+	* ecc-internal.h (struct ecc_curve): Delete unused pointer
+	edwards_root. Update all instances.
+	* eccdata.c (output_curve): Don't output it.
+
+	* testsuite/ecc-add-test.c (test_main): Reduce test duplication.
+	Use ecc->add_hhh_itch.
+	* testsuite/ecc-dup-test.c (test_main): Reduce test duplication.
+	Use ecc->dup_itch.
+
+2017-09-23  Daiki Ueno  <dueno@redhat.com>
+
+	* ecc-eh-to-a.c (ecc_eh_to_a): Use ecc->q.bit_size, instead of
+	hard-coded value for curve25519.
+	* eddsa-sign.c (_eddsa_sign): Likewise.
+
+	* ecc-internal.h (ecc_dup_func): New typedef.
+	(struct ecc_curve): New constants add_hh_itch and dup_itch, new
+	function pointers add_hh and dup.
+	* ecc-192.c, ecc-224.c, ecc-256.c, ecc-384.c, ecc-521.c,
+	ecc-25519.c: Update accordingly.
+	* ecc-mul-g-eh.c (ecc_mul_g_eh): Use new function pointers.
+	* ecc-mul-a-eh.c (ecc_mul_a_eh, table_init, ecc_mul_a_eh):
+	Likewise.
+	* testsuite/ecc-dup-test.c (test_main): Likewise.
+	* testsuite/ecc-add-test.c (test_main): Likewise.
+
 2019-10-01  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/testutils.c (test_cipher_cfb8): Reset destination area
