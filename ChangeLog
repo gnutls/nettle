@@ -1,5 +1,12 @@
 2019-11-21  Niels Möller  <nisse@lysator.liu.se>
 
+	* eccdata.c (ecc_curve_init_str): Delete unused t and d arguments.
+	Related to the the edwards_root member of struct ecc_curve, which
+	was used by ecc_a_to_eh before it was deleted, see 2014-09-17
+	entry below.
+	(ecc_curve_init): Delete corresponding curve25519 constants, and
+	NULL arguments passed for the other curves.
+
 	* Merge curve448 preparations, from September 2017.
 
 2017-09-23  Niels Möller  <nisse@lysator.liu.se>

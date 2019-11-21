@@ -368,8 +368,7 @@ ecc_set_str (struct ecc_point *p,
 static void
 ecc_curve_init_str (struct ecc_curve *ecc, enum ecc_type type,
 		    const char *p, const char *b, const char *q,
-		    const char *gx, const char *gy,
-		    const char *d, const char *t)
+		    const char *gx, const char *gy)
 {
   ecc->type = type;
 
@@ -407,8 +406,7 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 			  "f4ff0afd82ff1012",
 
 			  "07192b95ffc8da78631011ed6b24cdd5"
-			  "73f977a11e794811",
-			  NULL, NULL);
+			  "73f977a11e794811");
       ecc->ref = ecc_alloc (3);
       ecc_set_str (&ecc->ref[0], /* 2 g */
 		   "dafebf5828783f2ad35534631588a3f629a70fb16982a888",
@@ -439,8 +437,7 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 			  "56c21122343280d6115c1d21",
 
 			  "bd376388b5f723fb4c22dfe6cd4375a0"
-			  "5a07476444d5819985007e34",
-			  NULL, NULL);
+			  "5a07476444d5819985007e34");
 
       ecc->ref = ecc_alloc (3);
       ecc_set_str (&ecc->ref[0], /* 2 g */
@@ -472,8 +469,7 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 			  "77037D812DEB33A0F4A13945D898C296",
 
 			  "4FE342E2FE1A7F9B8EE7EB4A7C0F9E16"
-			  "2BCE33576B315ECECBB6406837BF51F5",
-			  NULL, NULL);
+			  "2BCE33576B315ECECBB6406837BF51F5");
 
       ecc->ref = ecc_alloc (3);
       ecc_set_str (&ecc->ref[0], /* 2 g */
@@ -510,8 +506,7 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 			  
 			  "3617de4a96262c6f5d9e98bf9292dc29"
 			  "f8f41dbd289a147ce9da3113b5f0b8c0"
-			  "0a60b1ce1d7e819d7a431d7c90ea0e5f",
-			  NULL, NULL);
+			  "0a60b1ce1d7e819d7a431d7c90ea0e5f");
 
       ecc->ref = ecc_alloc (3);
       ecc_set_str (&ecc->ref[0], /* 2 g */
@@ -557,8 +552,7 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 			  "39296a789a3bc0045c8a5fb42c7d1bd9"
 			  "98f54449579b446817afbd17273e662c"
 			  "97ee72995ef42640c550b9013fad0761"
-			  "353c7086a272c24088be94769fd16650",
-			  NULL, NULL);
+			  "353c7086a272c24088be94769fd16650");
 
       ecc->ref = ecc_alloc (3);
       ecc_set_str (&ecc->ref[0], /* 2 g */
@@ -605,21 +599,8 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 			  "216936d3cd6e53fec0a4e231fdd6dc5c"
 			  "692cc7609525a7b2c9562d608f25d51a",
 			  "66666666666666666666666666666666"
-			  "66666666666666666666666666666658",
-			  /* (121665/121666) mod p, from PARI/GP
-			     c = Mod(121665, p); c / (c+1)
-			  */
-			  "2dfc9311d490018c7338bf8688861767"
-			  "ff8ff5b2bebe27548a14b235eca6874a",
-			  /* A square root of -486664 mod p, PARI/GP
-			     -sqrt(Mod(-486664, p)) in PARI/GP.
+			  "66666666666666666666666666666658");
 
-			     Sign is important to map to the right
-			     generator on the twisted edwards curve
-			     used for EdDSA. */
-			  "70d9120b9f5ff9442d84f723fc03b081"
-			  "3a5e2c2eb482e57d3391fb5500ba81e7"
-			  );
       ecc->ref = ecc_alloc (3);
       ecc_set_str (&ecc->ref[0], /* 2 g */
 		   "36ab384c9f5a046c3d043b7d1833e7ac"
