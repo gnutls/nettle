@@ -1,6 +1,7 @@
-/* ecc-point-mul-g.c
+/* curve448-eh-to-x.c
 
-   Copyright (C) 2013 Niels Möller
+   Copyright (C) 2017 Daiki Ueno
+   Copyright (C) 2017 Red Hat, Inc.
 
    This file is part of GNU Nettle.
 
@@ -29,29 +30,44 @@
    not, see http://www.gnu.org/licenses/.
 */
 
-/* Development of Nettle's ECC support was funded by the .SE Internet Fund. */
-
 #if HAVE_CONFIG_H
 # include "config.h"
 #endif
 
-#include <assert.h>
+#include <string.h>
+
+#include "curve448.h"
 
 #include "ecc.h"
 #include "ecc-internal.h"
-#include "nettle-internal.h"
 
+/* Transform a point on the edwards448 Edwards curve to the curve448
+   Montgomery curve, and return the x coordinate. */
 void
-ecc_point_mul_g (struct ecc_point *r, const struct ecc_scalar *n)
+curve448_eh_to_x (mp_limb_t *xp, const mp_limb_t *p, mp_limb_t *scratch)
 {
-  const struct ecc_curve *ecc = r->ecc;
-  mp_limb_t size = ecc->p.size;
-  mp_size_t itch = 3*size + ECC_MAX(ecc->mul_g_itch, ecc->h_to_a_itch);
-  mp_limb_t *scratch = gmp_alloc_limbs (itch);
+#define vp (p + ecc->p.size)
+#define t0 scratch
+#define t1 (scratch + ecc->p.size)
+#define t2 (scratch + 2*ecc->p.size)
 
-  assert (n->ecc == ecc);
+  const struct ecc_curve *ecc = &_nettle_curve448;
+  mp_limb_t cy;
 
-  ecc->mul_g (ecc, scratch, n->p, scratch + 3*size);
-  ecc->h_to_a (ecc, 0, r->p, scratch, scratch + 3*size);
-  gmp_free_limbs (scratch, itch);
+  /* If u = U/W and v = V/W are the coordinates of the point on
+     edwards448 we get the curve448 x coordinate as
+
+     x = v^2 / u^2 = (V/W)^2 / (U/W)^2 = (V/U)^2
+  */
+  /* Needs a total of 9*size storage. */
+  ecc->p.invert (&ecc->p, t0, p, t1 + ecc->p.size);
+  ecc_modp_mul (ecc, t1, t0, vp);
+  ecc_modp_mul (ecc, t2, t1, t1);
+
+  cy = mpn_sub_n (xp, t2, ecc->p.m, ecc->p.size);
+  cnd_copy (cy, xp, t2, ecc->p.size);
+#undef vp
+#undef t0
+#undef t1
+#undef t2
 }

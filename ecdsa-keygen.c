@@ -47,9 +47,9 @@ ecdsa_generate_keypair (struct ecc_point *pub,
 			struct ecc_scalar *key,
 			void *random_ctx, nettle_random_func *random)
 {
-  TMP_DECL(p, mp_limb_t, 3*ECC_MAX_SIZE + ECC_MUL_G_ITCH (ECC_MAX_SIZE));
+  TMP_DECL(p, mp_limb_t, 3*ECC_MAX_SIZE + ECC_ECDSA_KEYGEN_ITCH (ECC_MAX_SIZE));
   const struct ecc_curve *ecc = pub->ecc;
-  mp_size_t itch = 3*ecc->p.size + ecc->mul_g_itch;
+  mp_size_t itch = 3*ecc->p.size + ECC_ECDSA_KEYGEN_ITCH (ecc->p.size);
 
   assert (key->ecc == ecc);
 

@@ -62,6 +62,9 @@
 #define ecc_dup_eh _nettle_ecc_dup_eh
 #define ecc_add_eh _nettle_ecc_add_eh
 #define ecc_add_ehh _nettle_ecc_add_ehh
+#define ecc_dup_eh_untwisted _nettle_ecc_dup_eh_untwisted
+#define ecc_add_eh_untwisted _nettle_ecc_add_eh_untwisted
+#define ecc_add_ehh_untwisted _nettle_ecc_add_ehh_untwisted
 #define ecc_mul_g _nettle_ecc_mul_g
 #define ecc_mul_a _nettle_ecc_mul_a
 #define ecc_mul_g_eh _nettle_ecc_mul_g_eh
@@ -72,6 +75,7 @@
 #define sec_tabselect _nettle_sec_tabselect
 #define sec_modinv _nettle_sec_modinv
 #define curve25519_eh_to_x _nettle_curve25519_eh_to_x
+#define curve448_eh_to_x _nettle_curve448_eh_to_x
 
 extern const struct ecc_curve _nettle_secp_192r1;
 extern const struct ecc_curve _nettle_secp_224r1;
@@ -84,6 +88,7 @@ extern const struct ecc_curve _nettle_secp_521r1;
    different coordinates). And we're not quite ready to provide
    general ecc operations over an arbitrary type of curve. */
 extern const struct ecc_curve _nettle_curve25519;
+extern const struct ecc_curve _nettle_curve448;
 
 #define ECC_MAX_SIZE ((521 + GMP_NUMB_BITS - 1) / GMP_NUMB_BITS)
 
@@ -329,7 +334,7 @@ ecc_add_jjj (const struct ecc_curve *ecc,
 	     mp_limb_t *r, const mp_limb_t *p, const mp_limb_t *q,
 	     mp_limb_t *scratch);
 
-/* Point doubling on an Edwards curve, with homogeneous
+/* Point doubling on a twisted Edwards curve, with homogeneous
    cooordinates. */
 void
 ecc_dup_eh (const struct ecc_curve *ecc,
@@ -345,6 +350,21 @@ void
 ecc_add_ehh (const struct ecc_curve *ecc,
 	     mp_limb_t *r, const mp_limb_t *p, const mp_limb_t *q,
 	     mp_limb_t *scratch);
+
+void
+ecc_dup_eh_untwisted (const struct ecc_curve *ecc,
+		      mp_limb_t *r, const mp_limb_t *p,
+		      mp_limb_t *scratch);
+
+void
+ecc_add_eh_untwisted (const struct ecc_curve *ecc,
+		      mp_limb_t *r, const mp_limb_t *p, const mp_limb_t *q,
+		      mp_limb_t *scratch);
+
+void
+ecc_add_ehh_untwisted (const struct ecc_curve *ecc,
+		       mp_limb_t *r, const mp_limb_t *p, const mp_limb_t *q,
+		       mp_limb_t *scratch);
 
 /* Computes N * the group generator. N is an array of ecc_size()
    limbs. It must be in the range 0 < N < group order, then R != 0,
@@ -391,6 +411,10 @@ void
 curve25519_eh_to_x (mp_limb_t *xp, const mp_limb_t *p,
 		    mp_limb_t *scratch);
 
+void
+curve448_eh_to_x (mp_limb_t *xp, const mp_limb_t *p,
+		  mp_limb_t *scratch);
+
 /* Current scratch needs: */
 #define ECC_MOD_INV_ITCH(size) (2*(size))
 #define ECC_J_TO_A_ITCH(size) (5*(size))
@@ -415,8 +439,11 @@ curve25519_eh_to_x (mp_limb_t *xp, const mp_limb_t *p,
 #define ECC_MUL_A_EH_ITCH(size) \
   (((3 << ECC_MUL_A_EH_WBITS) + 10) * (size))
 #endif
-#define ECC_ECDSA_SIGN_ITCH(size) (12*(size))
+#define ECC_ECDSA_KEYGEN_ITCH(size) (11*(size))
+#define ECC_ECDSA_SIGN_ITCH(size) (13*(size))
 #define ECC_MOD_RANDOM_ITCH(size) (size)
 #define ECC_HASH_ITCH(size) (1+(size))
+
+#define ECC_MAX(x,y) ((x) > (y) ? (x) : (y))
 
 #endif /* NETTLE_ECC_INTERNAL_H_INCLUDED */

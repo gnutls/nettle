@@ -73,7 +73,7 @@ ecc_eh_to_a (const struct ecc_curve *ecc,
 	     is only used by ecdsa code, and ecdsa on Edwards curves
 	     makes little sense and is is only used by tests. */
 	  unsigned shift;
-	  assert (ecc->p.bit_size == 255);
+	  assert (ecc->p.bit_size == 255 || ecc->p.bit_size == 448);
 	  shift = ecc->q.bit_size - 1 - GMP_NUMB_BITS * (ecc->p.size - 1);
 	  cy = mpn_submul_1 (r, ecc->q.m, ecc->p.size,
 			     r[ecc->p.size-1] >> shift);

@@ -175,7 +175,7 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  ecc-mod.c ecc-mod-inv.c \
 		  ecc-mod-arith.c ecc-pp1-redc.c ecc-pm1-redc.c \
 		  ecc-192.c ecc-224.c ecc-256.c ecc-384.c ecc-521.c \
-		  ecc-25519.c \
+		  ecc-25519.c ecc-448.c \
 		  ecc-size.c ecc-j-to-a.c ecc-a-to-j.c \
 		  ecc-dup-jj.c ecc-add-jja.c ecc-add-jjj.c \
 		  ecc-eh-to-a.c \
@@ -186,6 +186,7 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  ecc-ecdsa-sign.c ecdsa-sign.c \
 		  ecc-ecdsa-verify.c ecdsa-verify.c ecdsa-keygen.c \
 		  curve25519-mul-g.c curve25519-mul.c curve25519-eh-to-x.c \
+		  curve448-mul-g.c curve448-mul.c curve448-eh-to-x.c \
 		  eddsa-compress.c eddsa-decompress.c eddsa-expand.c \
 		  eddsa-hash.c eddsa-pubkey.c eddsa-sign.c eddsa-verify.c \
 		  ed25519-sha512-pubkey.c \
@@ -196,7 +197,7 @@ OPT_SOURCES = fat-x86_64.c fat-arm.c mini-gmp.c
 HEADERS = aes.h arcfour.h arctwo.h asn1.h blowfish.h \
 	  base16.h base64.h bignum.h buffer.h camellia.h cast128.h \
 	  cbc.h ccm.h cfb.h chacha.h chacha-poly1305.h ctr.h \
-	  curve25519.h des.h dsa.h dsa-compat.h eax.h \
+	  curve25519.h curve448.h des.h dsa.h dsa-compat.h eax.h \
 	  ecc-curve.h ecc.h ecdsa.h eddsa.h \
 	  gcm.h gost28147.h gosthash94.h hmac.h \
 	  knuth-lfib.h hkdf.h \
@@ -387,6 +388,9 @@ ecc-521.h: eccdata.stamp
 ecc-25519.h: eccdata.stamp
 	./eccdata$(EXEEXT_FOR_BUILD) 255 11 6 $(NUMB_BITS) > $@T && mv $@T $@
 
+ecc-448.h: eccdata.stamp
+	./eccdata$(EXEEXT_FOR_BUILD) 448 38 6 $(NUMB_BITS) > $@T && mv $@T $@
+
 eccdata.stamp: eccdata.c
 	$(MAKE) eccdata$(EXEEXT_FOR_BUILD)
 	echo stamp > eccdata.stamp
@@ -397,6 +401,7 @@ ecc-256.$(OBJEXT): ecc-256.h
 ecc-384.$(OBJEXT): ecc-384.h
 ecc-521.$(OBJEXT): ecc-521.h
 ecc-25519.$(OBJEXT): ecc-25519.h
+ecc-448.$(OBJEXT): ecc-448.h
 
 .asm.$(OBJEXT): $(srcdir)/asm.m4 machine.m4 config.m4
 	$(M4) $(srcdir)/asm.m4 machine.m4 config.m4 $< >$*.s
@@ -650,6 +655,7 @@ distcheck: dist
 clean-here:
 	-rm -f $(TARGETS) *.$(OBJEXT) *.s *.so *.dll *.a \
 		ecc-192.h ecc-224.h ecc-256.h ecc-384.h ecc-521.h ecc-25519.h \
+		ecc-448.h \
 		aesdata$(EXEEXT_FOR_BUILD) \
 		desdata$(EXEEXT_FOR_BUILD) \
 		twofishdata$(EXEEXT_FOR_BUILD) \

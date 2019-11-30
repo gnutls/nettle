@@ -1,6 +1,7 @@
-/* ecc-point-mul-g.c
+/* curve448.h
 
-   Copyright (C) 2013 Niels Möller
+   Copyright (C) 2017 Daiki Ueno
+   Copyright (C) 2017 Red Hat, Inc.
 
    This file is part of GNU Nettle.
 
@@ -29,29 +30,29 @@
    not, see http://www.gnu.org/licenses/.
 */
 
-/* Development of Nettle's ECC support was funded by the .SE Internet Fund. */
+#ifndef NETTLE_CURVE448_H
+#define NETTLE_CURVE448_H
 
-#if HAVE_CONFIG_H
-# include "config.h"
+#include "nettle-types.h"
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
-#include <assert.h>
+/* Name mangling */
+#define curve448_mul_g nettle_curve448_mul_g
+#define curve448_mul nettle_curve448_mul
 
-#include "ecc.h"
-#include "ecc-internal.h"
-#include "nettle-internal.h"
+#define CURVE448_SIZE 56
 
 void
-ecc_point_mul_g (struct ecc_point *r, const struct ecc_scalar *n)
-{
-  const struct ecc_curve *ecc = r->ecc;
-  mp_limb_t size = ecc->p.size;
-  mp_size_t itch = 3*size + ECC_MAX(ecc->mul_g_itch, ecc->h_to_a_itch);
-  mp_limb_t *scratch = gmp_alloc_limbs (itch);
+curve448_mul_g (uint8_t *q, const uint8_t *n);
 
-  assert (n->ecc == ecc);
+void
+curve448_mul (uint8_t *q, const uint8_t *n, const uint8_t *p);
 
-  ecc->mul_g (ecc, scratch, n->p, scratch + 3*size);
-  ecc->h_to_a (ecc, 0, r->p, scratch, scratch + 3*size);
-  gmp_free_limbs (scratch, itch);
+#ifdef __cplusplus
 }
+#endif
+
+#endif /* NETTLE_CURVE448_H */

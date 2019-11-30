@@ -18,6 +18,7 @@
 /cnd-memcpy-test
 /ctr-test
 /curve25519-dh-test
+/curve448-dh-test
 /cxx-test
 /des-test
 /des3-test

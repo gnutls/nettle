@@ -1673,6 +1673,7 @@ const struct ecc_curve * const ecc_curves[] = {
   &_nettle_secp_384r1,
   &_nettle_secp_521r1,
   &_nettle_curve25519,
+  &_nettle_curve448,
   NULL
 };
 
@@ -1724,7 +1725,7 @@ void
 test_ecc_mul_a (unsigned curve, unsigned n, const mp_limb_t *p)
 {
   /* For each curve, the points 2 g, 3 g and 4 g */
-  static const struct ecc_ref_point ref[6][3] = {
+  static const struct ecc_ref_point ref[7][3] = {
     { { "dafebf5828783f2ad35534631588a3f629a70fb16982a888",
 	"dd6bda0d993da0fa46b27bbc141b868f59331afa5c7e93ab" },
       { "76e32a2557599e6edcd283201fb2b9aadfd0d359cbb263da",
@@ -1785,15 +1786,22 @@ test_ecc_mul_a (unsigned curve, unsigned n, const mp_limb_t *p)
 	"1267b1d177ee69aba126a18e60269ef79f16ec176724030402c3684878f5b4d4" },
       { "203da8db56cff1468325d4b87a3520f91a739ec193ce1547493aa657c4c9f870",
 	"47d0e827cb1595e1470eb88580d5716c4cf22832ea2f0ff0df38ab61ca32112f" },
+    },
+    { { "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa955555555555555555555555555555555555555555555555555555555",
+	"ae05e9634ad7048db359d6205086c2b0036ed7a035884dd7b7e36d728ad8c4b80d6565833a2a3098bbbcb2bed1cda06bdaeafbcdea9386ed" },
+      { "865886b9108af6455bd64316cb6943332241b8b8cda82c7e2ba077a4a3fcfe8daa9cbf7f6271fd6e862b769465da8575728173286ff2f8f",
+	"e005a8dbd5125cf706cbda7ad43aa6449a4a8d952356c3b9fce43c82ec4e1d58bb3a331bdb6767f0bffa9a68fed02dafb822ac13588ed6fc" },
+      { "49dcbc5c6c0cce2c1419a17226f929ea255a09cf4e0891c693fda4be70c74cc301b7bdf1515dd8ba21aee1798949e120e2ce42ac48ba7f30",
+	"d49077e4accde527164b33a5de021b979cb7c02f0457d845c90dc3227b8a5bc1c0d8f97ea1ca9472b5d444285d0d4f5b32e236f86de51839" },
     }
   };
-  assert (curve < 6);
+  assert (curve < 7);
   assert (n <= 4);
   if (n == 0)
     {
       /* Makes sense for curve25519 only */
       const struct ecc_curve *ecc = ecc_curves[curve];
-      assert (ecc->p.bit_size == 255);
+      assert (ecc->p.bit_size == 255 || ecc->p.bit_size == 448);
       if (!mpn_zero_p (p, ecc->p.size)
 	  || mpn_cmp (p + ecc->p.size, ecc->unit, ecc->p.size) != 0)
 	{

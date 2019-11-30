@@ -17,7 +17,7 @@ test_main (void)
       mp_limb_t *p = xalloc_limbs (ecc_size_j (ecc));
       mp_limb_t *q = xalloc_limbs (ecc_size_j (ecc));
       mp_limb_t *n = xalloc_limbs (size);
-      mp_limb_t *scratch = xalloc_limbs (ecc->mul_g_itch);
+      mp_limb_t *scratch = xalloc_limbs (ecc->mul_g_itch + ecc->h_to_a_itch);
 
       mpn_zero (n, size);
 
@@ -41,7 +41,7 @@ test_main (void)
       mpn_sub_1 (n, ecc->q.m, size, 1);
       ecc->mul_g (ecc, p, n, scratch);
       ecc->h_to_a (ecc, 0, p, p, scratch);
-      if (ecc->p.bit_size == 255)
+      if (ecc->p.bit_size == 255 || ecc->p.bit_size == 448)
 	/* For edwards curves, - (x,y ) == (-x, y). FIXME: Swap x and
 	   y, to get identical negation? */
 	mpn_sub_n (p, ecc->p.m, p, size);

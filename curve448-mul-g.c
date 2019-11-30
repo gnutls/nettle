@@ -1,6 +1,7 @@
-/* ecc-point-mul-g.c
+/* curve448-mul-g.c
 
-   Copyright (C) 2013 Niels Möller
+   Copyright (C) 2017 Daiki Ueno
+   Copyright (C) 2017 Red Hat, Inc.
 
    This file is part of GNU Nettle.
 
@@ -29,29 +30,45 @@
    not, see http://www.gnu.org/licenses/.
 */
 
-/* Development of Nettle's ECC support was funded by the .SE Internet Fund. */
-
 #if HAVE_CONFIG_H
 # include "config.h"
 #endif
 
-#include <assert.h>
+#include <string.h>
+
+#include "curve448.h"
 
 #include "ecc.h"
 #include "ecc-internal.h"
-#include "nettle-internal.h"
 
+/* Intended to be compatible with NaCl's crypto_scalarmult_base. */
 void
-ecc_point_mul_g (struct ecc_point *r, const struct ecc_scalar *n)
+curve448_mul_g (uint8_t *r, const uint8_t *n)
 {
-  const struct ecc_curve *ecc = r->ecc;
-  mp_limb_t size = ecc->p.size;
-  mp_size_t itch = 3*size + ECC_MAX(ecc->mul_g_itch, ecc->h_to_a_itch);
-  mp_limb_t *scratch = gmp_alloc_limbs (itch);
+  const struct ecc_curve *ecc = &_nettle_curve448;
+  uint8_t t[CURVE448_SIZE];
+  mp_limb_t *scratch;
+  mp_size_t itch;
 
-  assert (n->ecc == ecc);
+#define ng scratch
+#define x (scratch + 3*ecc->p.size)
+#define scratch_out (scratch + 4*ecc->p.size)
 
-  ecc->mul_g (ecc, scratch, n->p, scratch + 3*size);
-  ecc->h_to_a (ecc, 0, r->p, scratch, scratch + 3*size);
+  memcpy (t, n, sizeof(t));
+  t[0] &= ~3;
+  t[CURVE448_SIZE-1] = (t[CURVE448_SIZE-1] & 0x7f) | 0x80;
+
+  itch = 5*ecc->p.size + ecc->mul_g_itch;
+  scratch = gmp_alloc_limbs (itch);
+
+  mpn_set_base256_le (x, ecc->p.size, t, CURVE448_SIZE);
+
+  ecc_mul_g_eh (ecc, ng, x, scratch_out);
+  curve448_eh_to_x (x, ng, scratch_out);
+
+  mpn_get_base256_le (r, CURVE448_SIZE, x, ecc->p.size);
   gmp_free_limbs (scratch, itch);
+#undef ng
+#undef x
+#undef scratch_out
 }
