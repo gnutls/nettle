@@ -1,3 +1,58 @@
+2019-12-01  Niels Möller  <nisse@lysator.liu.se>
+
+	Curve 448 support contributed by Daiki Ueno.
+	* eccdata.c (enum ecc_type): Add ECC_TYPE_EDWARDS.
+	(ecc_add): Support untwisted edwards curves.
+	(ecc_curve_init): Add curve448 parameters.
+	* ecc-internal.h (ECC_ECDSA_KEYGEN_ITCH): New macro.
+	(ECC_ECDSA_SIGN_ITCH): Increased from 12*size to 13*size.
+	(ECC_MAX): New macro.
+	* ecc-448.c: New file.
+	(ecc_mod_pow_2k, ecc_mod_pow_446m224m1, ecc_448_inv)
+	(ecc_448_zero_p, ecc_448_sqrt): New functions.
+	(_nettle_curve448): New curve definition.
+	* curve448.h (CURVE448_SIZE): New constant.
+	(curve448_mul_g, curve448_mul): Declare new public functions.
+	* ecc-eh-to-a.c (ecc_eh_to_a): Update assert to allow the curve448
+	Edwards curve.
+	* curve448-mul.c (curve448_mul): New file and function.
+	* curve448-mul-g.c (curve448_mul_g): New file and function.
+	* curve448-eh-to-x.c (curve448_eh_to_x): New file and function.
+	* ecc-dup-eh.c (ecc_dup_eh_untwisted): New function.
+	* ecc-add-ehh.c (ecc_add_ehh_untwisted): New function.
+	* ecc-add-eh.c (ecc_add_eh_untwisted): New function.
+	* ecc-point.c (ecc_point_set): Add point validation for curve448.
+	* ecc-point-mul.c (ecc_point_mul): Allow h_to_a_itch larger than
+	mul_itch.
+	* ecc-point-mul-g.c (ecc_point_mul_g): Allow h_to_a_itch
+	larger than mul_g_itch. Switch from TMP_DECL/_ALLOC/_FREE to
+	gmp_alloc_limbs/gmp_free_limbs.
+	* ecdsa-keygen.c (ecdsa_generate_keypair): Use
+	ECC_ECDSA_KEYGEN_ITCH.
+	* Makefile.in (hogweed_SOURCES): Add ecc-448.c, curve448-mul-g.c,
+	curve448-mul.c, and curve448-eh-to-x.c.
+	(HEADERS): Add curve448.h.
+	(ecc-448.h): New generated file.
+
+	* testsuite/testutils.c (ecc_curves): Add _nettle_curve448 to list
+	of tested curves.
+	(test_ecc_mul_a): Add curve448.
+	* testsuite/ecdsa-keygen-test.c (ecc_valid_p): Add curve448 support.
+	* testsuite/ecdh-test.c (test_main): Add tests for (non-standard)
+	curve448 diffie-hellman.
+	* testsuite/ecc-add-test.c (test_main): Update for testing of curve448.
+	* testsuite/ecc-dup-test.c (test_main): Likewise.
+	* testsuite/ecc-mul-a-test.c (test_main): Likewise. Also increase
+	scratch allocation for h_to_a_itch.
+	* testsuite/ecc-mul-g-test.c (test_main): Likewise.
+	* testsuite/curve448-dh-test.c: Test for curve448.
+	* testsuite/Makefile.in (TS_HOGWEED_SOURCES): Add curve448-dh-test.c.
+
+	* examples/ecc-benchmark.c: Add curve448 to list of benchmarked
+	curves.
+
+	* nettle.texinfo (Curve 25519 and Curve 448): Add docs.
+
 2019-11-21  Niels Möller  <nisse@lysator.liu.se>
 
 	* eccdata.c (ecc_curve_init_str): Delete unused t and d arguments.
