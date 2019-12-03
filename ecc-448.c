@@ -36,12 +36,63 @@
 # include "config.h"
 #endif
 
+#include <assert.h>
+
 #include "ecc.h"
 #include "ecc-internal.h"
 
 #define USE_REDC 0
 
 #include "ecc-448.h"
+
+#if GMP_NUMB_BITS == 64
+static void
+ecc_448_modp(const struct ecc_modulo *m, mp_limb_t *rp)
+{
+  /* Let B = 2^64, b = 2^32 = sqrt(B).
+     p = B^7 - b B^3 - 1 ==> B^7 = b B^3 + 1
+
+     We use this to reduce
+
+     {r_{13}, ..., r_0} =
+       {r_6,...,r_0}
+     + {r_{10},...,r_7}
+     + 2 {r_{13},r_{12}, r_{11}} B^4
+     + b {r_{10},...,r_7,r_{13},r_{12},r_{11} (mod p)
+
+     or
+
+             +----+----+----+----+----+----+----+
+             |r_6 |r_5 |r_4 |r_3 |r_2 |r_1 |r_0 |
+             +----+----+----+----+----+----+----+
+                            |r_10|r_9 |r_8 |r_7 |
+             +----+----+----+----+----+----+----+
+         2 * |r_13|r_12|r_11|
+             +----+----+----+----+----+----+----+
+      +  b * |r_10|r_9 |r_8 |r_7 |r_13|r_12|r_11|
+      -------+----+----+----+----+----+----+----+
+         c_7 |r_6 |r_5 |r_4 |r_3 |r_2 |r_1 |r_0 |
+             +----+----+----+----+----+----+----+
+  */
+  mp_limb_t c3, c4, c7;
+  mp_limb_t *tp = rp + 7;
+
+  c4 = mpn_add_n (rp, rp, rp + 7, 4);
+  c7 = mpn_addmul_1 (rp + 4, rp + 11, 3, 2);
+  c3 = mpn_addmul_1 (rp, rp + 11, 3, (mp_limb_t) 1 << 32);
+  c7 += mpn_addmul_1 (rp + 3, rp + 7, 4, (mp_limb_t) 1 << 32);
+  tp[0] = c7;
+  tp[1] = tp[2] = 0;
+  tp[3] = c3 + (c7 << 32);
+  tp[4] = c4 + (c7 >> 32) + (tp[3] < c3);
+  tp[5] = tp[6] = 0;
+  c7 = mpn_add_n (rp, rp, tp, 7);
+  c7 = cnd_add_n (c7, rp, m->B, 7);
+  assert (c7 == 0);
+}
+#else
+#define ecc_448_modp ecc_mod
+#endif
 
 /* Needs 2*ecc->size limbs at rp, and 2*ecc->size additional limbs of
    scratch space. No overlap allowed. */
@@ -219,8 +270,8 @@ const struct ecc_curve _nettle_curve448 =
     NULL,
     ecc_pp1h,
 
-    ecc_mod,	      /* FIXME: Implement optimized mod function */
-    ecc_mod,	      /* FIXME: Implement optimized reduce function */
+    ecc_448_modp,
+    ecc_448_modp,
     ecc_448_inv,
     ecc_448_sqrt,
   },

@@ -1,3 +1,7 @@
+2019-12-03  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-448.c (ecc_448_modp) [GMP_NUMB_BITS == 64]: New function.
+
 2019-12-01  Niels Möller  <nisse@lysator.liu.se>
 
 	Curve 448 support contributed by Daiki Ueno.
