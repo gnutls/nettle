@@ -466,7 +466,7 @@ test_cipher_cfb8(const struct nettle_cipher *cipher,
       if (!MEMEQ(length, data, ciphertext->data))
 	{
 	  fprintf(stderr, "CFB8 encrypt failed, block size %lu:\nInput:",
-		  block);
+		  (unsigned long) block);
 	  tstring_print_hex(cleartext);
 	  fprintf(stderr, "\nOutput: ");
 	  print_hex(length, data);
@@ -494,7 +494,7 @@ test_cipher_cfb8(const struct nettle_cipher *cipher,
       if (!MEMEQ(length, data2, cleartext->data))
 	{
 	  fprintf(stderr, "CFB8 decrypt failed, block size %lu:\nInput:",
-		  block);
+		  (unsigned long) block);
 	  tstring_print_hex(ciphertext);
 	  fprintf(stderr, "\nOutput: ");
 	  print_hex(length, data2);

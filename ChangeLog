@@ -1,3 +1,8 @@
+2019-12-04  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/testutils.c (test_cipher_cfb8): Add cast of size_t to
+	unsigned long for argument to fprintf.
+
 2019-11-21  Niels Möller  <nisse@lysator.liu.se>
 
 	* eccdata.c (ecc_curve_init_str): Delete unused t and d arguments.
