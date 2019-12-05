@@ -1,3 +1,10 @@
+2019-12-05  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Use AC_TRY_LINK rather than AC_TRY_COMPILE to
+	check for __builtin_bswap64. Since calling an non-existing
+	function typically results in a warning only at compile time, but
+	fails at link time. Patch contributed by by George Koehler.
+
 2019-12-04  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/testutils.c (test_cipher_cfb8): Add cast of size_t to

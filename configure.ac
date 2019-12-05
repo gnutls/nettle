@@ -213,7 +213,7 @@ AC_C_BIGENDIAN([AC_DEFINE([WORDS_BIGENDIAN], 1)
 
 AC_CACHE_CHECK([for __builtin_bswap64],
 		nettle_cv_c_builtin_bswap64,
-[AC_TRY_COMPILE([
+[AC_TRY_LINK([
 #include <stdint.h>
 ],[
 uint64_t x = 17;
