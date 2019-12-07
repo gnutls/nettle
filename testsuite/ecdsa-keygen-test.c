@@ -78,6 +78,10 @@ test_main (void)
       struct ecc_point pub;
       struct ecc_scalar key;
 
+      if (ecc->p.bit_size == 255)
+	/* Exclude curve25519, which isn't supported with ECDSA. */
+	continue;
+
       if (verbose)
 	fprintf (stderr, "Curve %d\n", ecc->p.bit_size);
 
