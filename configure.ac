@@ -476,7 +476,8 @@ asm_nettle_optional_list="gcm-hash8.asm cpuid.asm \
 asm_hogweed_optional_list=""
 if test "x$enable_public_key" = "xyes" ; then
   asm_hogweed_optional_list="ecc-192-modp.asm ecc-224-modp.asm \
-    ecc-25519-modp.asm ecc-256-redc.asm ecc-384-modp.asm ecc-521-modp.asm"
+    ecc-256-redc.asm ecc-384-modp.asm ecc-521-modp.asm \
+    ecc-25519-modp.asm ecc-curve448-modp.asm"
 fi
 
 OPT_NETTLE_OBJS=""
@@ -580,6 +581,7 @@ AH_VERBATIM([HAVE_NATIVE],
 #undef HAVE_NATIVE_ecc_256_redc
 #undef HAVE_NATIVE_ecc_384_modp
 #undef HAVE_NATIVE_ecc_384_redc
+#undef HAVE_NATIVE_ecc_curve448_modp
 #undef HAVE_NATIVE_ecc_521_modp
 #undef HAVE_NATIVE_ecc_521_redc
 #undef HAVE_NATIVE_gcm_hash8

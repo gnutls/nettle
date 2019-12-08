@@ -45,7 +45,11 @@
 
 #include "ecc-448.h"
 
-#if GMP_NUMB_BITS == 64
+#if HAVE_NATIVE_ecc_curve448_modp
+#define ecc_448_modp nettle_ecc_curve448_modp
+void
+ecc_448_modp (const struct ecc_modulo *m, mp_limb_t *rp);
+#elif GMP_NUMB_BITS == 64
 static void
 ecc_448_modp(const struct ecc_modulo *m, mp_limb_t *rp)
 {
