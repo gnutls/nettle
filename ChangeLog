@@ -1,3 +1,10 @@
+2019-12-09  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-448.c (ecc_mod_pow_446m224m1): Reduce scratch space from 9*n
+	to 6*n.
+	(ECC_448_INV_ITCH, ECC_448_SQRT_ITCH): Reduce accordingly.
+	* curve448-mul.c (curve448_mul): Reduce allocation from 14*n to 12*n.
+
 2019-12-08  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86_64/ecc-curve448-modp.asm (nettle_ecc_curve448_modp): New

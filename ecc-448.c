@@ -124,7 +124,7 @@ ecc_mod_pow_2k (const struct ecc_modulo *m,
     }
 }
 
-/* Computes a^{(p-3)/4} = a^{2^446-2^222-1} mod m. Needs 9 * n scratch
+/* Computes a^{(p-3)/4} = a^{2^446-2^222-1} mod m. Needs 6 * n scratch
    space. */
 static void
 ecc_mod_pow_446m224m1 (const struct ecc_modulo *p,
@@ -132,8 +132,8 @@ ecc_mod_pow_446m224m1 (const struct ecc_modulo *p,
 		       mp_limb_t *scratch)
 {
 #define t0 scratch
-#define t1 (scratch + 3*ECC_LIMB_SIZE)
-#define t2 (scratch + 6*ECC_LIMB_SIZE)
+#define t1 (scratch + 2*ECC_LIMB_SIZE)
+#define t2 (scratch + 4*ECC_LIMB_SIZE)
 
   ecc_mod_sqr (p, rp, ap);	        /* a^2 */
   ecc_mod_mul (p, t0, ap, rp);		/* a^3 */
@@ -164,8 +164,8 @@ ecc_mod_pow_446m224m1 (const struct ecc_modulo *p,
 #undef t2
 }
 
-/* Needs 9*ECC_LIMB_SIZE scratch space. */
-#define ECC_448_INV_ITCH (9*ECC_LIMB_SIZE)
+/* Needs 6*ECC_LIMB_SIZE scratch space. */
+#define ECC_448_INV_ITCH (6*ECC_LIMB_SIZE)
 
 static void ecc_448_inv (const struct ecc_modulo *p,
 			 mp_limb_t *rp, const mp_limb_t *ap,
@@ -207,7 +207,7 @@ ecc_448_zero_p (const struct ecc_modulo *p, mp_limb_t *xp)
 */
 
 /* Needs 4*n space + scratch for ecc_mod_pow_446m224m1. */
-#define ECC_448_SQRT_ITCH (13*ECC_LIMB_SIZE)
+#define ECC_448_SQRT_ITCH (10*ECC_LIMB_SIZE)
 
 static int
 ecc_448_sqrt(const struct ecc_modulo *p, mp_limb_t *rp,

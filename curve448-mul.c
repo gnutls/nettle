@@ -34,6 +34,7 @@
 # include "config.h"
 #endif
 
+#include <assert.h>
 #include <string.h>
 
 #include "curve448.h"
@@ -72,7 +73,8 @@ curve448_mul (uint8_t *q, const uint8_t *n, const uint8_t *p)
 
 #define a24 39081
 
-  itch = ecc->p.size * 14;
+  itch = ecc->p.size * 12;
+  assert (ecc->p.invert_itch + 5*ecc->p.size <= itch);
   scratch = gmp_alloc_limbs (itch);
 
   /* Note that 255 % GMP_NUMB_BITS == 0 isn't supported, so x1 always
