@@ -439,11 +439,8 @@ curve448_eh_to_x (mp_limb_t *xp, const mp_limb_t *p,
 #define ECC_MUL_A_EH_ITCH(size) \
   (((3 << ECC_MUL_A_EH_WBITS) + 10) * (size))
 #endif
-#define ECC_ECDSA_KEYGEN_ITCH(size) (11*(size))
-#define ECC_ECDSA_SIGN_ITCH(size) (13*(size))
+#define ECC_ECDSA_SIGN_ITCH(size) (12*(size))
 #define ECC_MOD_RANDOM_ITCH(size) (size)
 #define ECC_HASH_ITCH(size) (1+(size))
-
-#define ECC_MAX(x,y) ((x) > (y) ? (x) : (y))
 
 #endif /* NETTLE_ECC_INTERNAL_H_INCLUDED */

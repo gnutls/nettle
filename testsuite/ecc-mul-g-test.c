@@ -17,7 +17,7 @@ test_main (void)
       mp_limb_t *p = xalloc_limbs (ecc_size_j (ecc));
       mp_limb_t *q = xalloc_limbs (ecc_size_j (ecc));
       mp_limb_t *n = xalloc_limbs (size);
-      mp_limb_t *scratch = xalloc_limbs (ecc->mul_g_itch + ecc->h_to_a_itch);
+      mp_limb_t *scratch = xalloc_limbs (ecc->mul_g_itch);
 
       mpn_zero (n, size);
 

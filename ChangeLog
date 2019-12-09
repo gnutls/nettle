@@ -1,5 +1,11 @@
 2019-12-09  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-internal.h: Revert itch macro changes. We now have
+	h_to_a_itch <= mul_itch, mul_g_itch. Add asserts at a few places
+	relying on this.
+	(ECC_ECDSA_KEYGEN_ITCH, ECC_MAX): Delete macros.
+	(ECC_ECDSA_SIGN_ITCH): Revert previous change.
+
 	* ecc-448.c (ecc_mod_pow_446m224m1): Reduce scratch space from 9*n
 	to 6*n.
 	(ECC_448_INV_ITCH, ECC_448_SQRT_ITCH): Reduce accordingly.
