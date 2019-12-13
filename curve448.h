@@ -1,6 +1,7 @@
-/* ecdsa-keygen.c
+/* curve448.h
 
-   Copyright (C) 2013 Niels Möller
+   Copyright (C) 2017 Daiki Ueno
+   Copyright (C) 2017 Red Hat, Inc.
 
    This file is part of GNU Nettle.
 
@@ -29,34 +30,29 @@
    not, see http://www.gnu.org/licenses/.
 */
 
-/* Development of Nettle's ECC support was funded by the .SE Internet Fund. */
+#ifndef NETTLE_CURVE448_H
+#define NETTLE_CURVE448_H
 
-#if HAVE_CONFIG_H
-# include "config.h"
+#include "nettle-types.h"
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
-#include <assert.h>
-#include <stdlib.h>
+/* Name mangling */
+#define curve448_mul_g nettle_curve448_mul_g
+#define curve448_mul nettle_curve448_mul
 
-#include "ecdsa.h"
-#include "ecc-internal.h"
-#include "nettle-internal.h"
+#define CURVE448_SIZE 56
 
 void
-ecdsa_generate_keypair (struct ecc_point *pub,
-			struct ecc_scalar *key,
-			void *random_ctx, nettle_random_func *random)
-{
-  TMP_DECL(p, mp_limb_t, 3*ECC_MAX_SIZE + ECC_MUL_G_ITCH (ECC_MAX_SIZE));
-  const struct ecc_curve *ecc = pub->ecc;
-  mp_size_t itch = 3*ecc->p.size + ecc->mul_g_itch;
+curve448_mul_g (uint8_t *q, const uint8_t *n);
 
-  assert (key->ecc == ecc);
-  assert (ecc->h_to_a_itch <= ecc->mul_g_itch);
+void
+curve448_mul (uint8_t *q, const uint8_t *n, const uint8_t *p);
 
-  TMP_ALLOC (p, itch);
-
-  ecc_mod_random (&ecc->q, key->p, random_ctx, random, p);
-  ecc->mul_g (ecc, p, key->p, p + 3*ecc->p.size);
-  ecc->h_to_a (ecc, 0, pub->p, p, p + 3*ecc->p.size);
+#ifdef __cplusplus
 }
+#endif
+
+#endif /* NETTLE_CURVE448_H */

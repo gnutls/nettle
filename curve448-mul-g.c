@@ -1,6 +1,7 @@
-/* ecdsa-keygen.c
+/* curve448-mul-g.c
 
-   Copyright (C) 2013 Niels Möller
+   Copyright (C) 2017 Daiki Ueno
+   Copyright (C) 2017 Red Hat, Inc.
 
    This file is part of GNU Nettle.
 
@@ -29,34 +30,45 @@
    not, see http://www.gnu.org/licenses/.
 */
 
-/* Development of Nettle's ECC support was funded by the .SE Internet Fund. */
-
 #if HAVE_CONFIG_H
 # include "config.h"
 #endif
 
-#include <assert.h>
-#include <stdlib.h>
+#include <string.h>
 
-#include "ecdsa.h"
+#include "curve448.h"
+
+#include "ecc.h"
 #include "ecc-internal.h"
-#include "nettle-internal.h"
 
+/* Intended to be compatible with NaCl's crypto_scalarmult_base. */
 void
-ecdsa_generate_keypair (struct ecc_point *pub,
-			struct ecc_scalar *key,
-			void *random_ctx, nettle_random_func *random)
+curve448_mul_g (uint8_t *r, const uint8_t *n)
 {
-  TMP_DECL(p, mp_limb_t, 3*ECC_MAX_SIZE + ECC_MUL_G_ITCH (ECC_MAX_SIZE));
-  const struct ecc_curve *ecc = pub->ecc;
-  mp_size_t itch = 3*ecc->p.size + ecc->mul_g_itch;
+  const struct ecc_curve *ecc = &_nettle_curve448;
+  uint8_t t[CURVE448_SIZE];
+  mp_limb_t *scratch;
+  mp_size_t itch;
 
-  assert (key->ecc == ecc);
-  assert (ecc->h_to_a_itch <= ecc->mul_g_itch);
+#define ng scratch
+#define x (scratch + 3*ecc->p.size)
+#define scratch_out (scratch + 4*ecc->p.size)
 
-  TMP_ALLOC (p, itch);
+  memcpy (t, n, sizeof(t));
+  t[0] &= ~3;
+  t[CURVE448_SIZE-1] = (t[CURVE448_SIZE-1] & 0x7f) | 0x80;
 
-  ecc_mod_random (&ecc->q, key->p, random_ctx, random, p);
-  ecc->mul_g (ecc, p, key->p, p + 3*ecc->p.size);
-  ecc->h_to_a (ecc, 0, pub->p, p, p + 3*ecc->p.size);
+  itch = 5*ecc->p.size + ecc->mul_g_itch;
+  scratch = gmp_alloc_limbs (itch);
+
+  mpn_set_base256_le (x, ecc->p.size, t, CURVE448_SIZE);
+
+  ecc_mul_g_eh (ecc, ng, x, scratch_out);
+  curve448_eh_to_x (x, ng, scratch_out);
+
+  mpn_get_base256_le (r, CURVE448_SIZE, x, ecc->p.size);
+  gmp_free_limbs (scratch, itch);
+#undef ng
+#undef x
+#undef scratch_out
 }

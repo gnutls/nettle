@@ -19,12 +19,14 @@ test_main (void)
 
       ecc_a_to_j (ecc, g, ecc->g);
 
-      if (ecc->p.bit_size == 255)
+      if (ecc->p.bit_size == 255 || ecc->p.bit_size == 448)
 	{
 	  mp_limb_t *z = xalloc_limbs (ecc_size_j (ecc));
 
-	  ASSERT (ecc->add_hh == ecc_add_eh);
-	  ASSERT (ecc->add_hhh == ecc_add_ehh);
+	  ASSERT ((ecc->p.bit_size == 255 && ecc->add_hh == ecc_add_eh)
+		  || (ecc->p.bit_size == 448 && ecc->add_hh == ecc_add_eh_untwisted));
+	  ASSERT ((ecc->p.bit_size == 255 && ecc->add_hhh == ecc_add_ehh)
+		  || (ecc->p.bit_size == 448 && ecc->add_hhh == ecc_add_ehh_untwisted));
 	  ASSERT (ecc->add_hh_itch <= ecc->add_hhh_itch);
 
 	  /* Zero point has x = 0, y = 1, z = 1 */

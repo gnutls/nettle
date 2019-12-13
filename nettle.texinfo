@@ -115,7 +115,7 @@ Public-key algorithms
 
 * Side-channel silence::
 * ECDSA::
-* Curve 25519::
+* Curve 25519 and Curve 448::
 
 @end detailmenu
 @end menu
@@ -4894,7 +4894,7 @@ curve'' is used as a shorthand for the bitsize of the curve's prime
 @menu
 * Side-channel silence::
 * ECDSA::
-* Curve 25519::
+* Curve 25519 and Curve 448::
 @end menu
 
 @node Side-channel silence, ECDSA, , Elliptic curves
@@ -4928,7 +4928,7 @@ accesses depend only on the size of the input data and its location in
 memory, not on the actual data bits. This implies a performance penalty
 in several of the building blocks.
 
-@node ECDSA, Curve 25519, Side-channel silence, Elliptic curves
+@node ECDSA, Curve 25519 and Curve 448, Side-channel silence, Elliptic curves
 @comment  node-name,  next,  previous,  up
 @subsubsection ECDSA
 
@@ -5032,10 +5032,11 @@ random octets and store them at @code{dst}. For advice, see
 @xref{Randomness}.
 @end deftypefun
 
-@node Curve 25519, , ECDSA, Elliptic curves
+@node Curve 25519 and Curve 448, , ECDSA, Elliptic curves
 @comment  node-name,  next,  previous,  up
-@subsubsection Curve25519
+@subsubsection Curve25519 and Curve448
 @cindex Curve 25519
+@cindex Curve 448
 
 @c FIXME: Make 2^255 pretty in all output formats. Use @sup?
 @c There are other places too (2^32, 2^130).
@@ -5105,6 +5106,40 @@ is an integer. The input arguments @var{n} and @var{p} and the output
 argument @var{q} use a little-endian representation of the scalar and
 the x-coordinates, respectively. They are all of size
 @code{CURVE25519_SIZE}.
+
+This function is intended to be compatible with the function
+@code{crypto_scalar_mult} in the NaCl library.
+@end deftypefun
+
+Similarly, Nettle also implements Curve448, an elliptic curve of
+Montgomery type, @math{y^2 = x^3 + 156326 x^2 + x @pmod{p}}, with
+@math{p = 2^448 - 2^224 - 1}.  This particular curve was proposed by
+Mike Hamburg in 2015, for fast Diffie-Hellman key exchange, and is also
+described in @cite{RFC 7748}.
+
+Nettle defines Curve 448 in @file{<nettle/curve448.h>}.
+
+@defvr Constant CURVE448_SIZE
+The octet length of the strings representing curve448 points and scalars, 56.
+@end defvr
+
+@deftypefun void curve448_mul_g (uint8_t *@var{q}, const uint8_t *@var{n})
+Computes @math{Q = N G}, where @math{G} is the group generator and
+@math{N} is an integer. The input argument @var{n} and the output
+argument @var{q} use a little-endian representation of the scalar and
+the x-coordinate, respectively. They are both of size
+@code{CURVE448_SIZE}.
+
+This function is intended to be compatible with the function
+@code{crypto_scalar_mult_base} in the NaCl library.
+@end deftypefun
+
+@deftypefun void curve448_mul (uint8_t *@var{q}, const uint8_t *@var{n}, const uint8_t *@var{p})
+Computes @math{Q = N P}, where @math{P} is an input point and @math{N}
+is an integer. The input arguments @var{n} and @var{p} and the output
+argument @var{q} use a little-endian representation of the scalar and
+the x-coordinates, respectively. They are all of size
+@code{CURVE448_SIZE}.
 
 This function is intended to be compatible with the function
 @code{crypto_scalar_mult} in the NaCl library.

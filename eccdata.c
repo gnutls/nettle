@@ -55,10 +55,8 @@ enum ecc_type
   {
     /* y^2 = x^3 - 3x + b (mod p) */
     ECC_TYPE_WEIERSTRASS,
-#if 0
     /* x^2 + y^2 = 1 - d x^2 y^2 */
     ECC_TYPE_EDWARDS,
-#endif
     /* -x^2 + y^2 = 1 - d x^2 y^2 */
     ECC_TYPE_TWISTED_EDWARDS,
   };
@@ -255,6 +253,54 @@ ecc_add (const struct ecc_curve *ecc, struct ecc_point *r,
 	  mpz_clear (x);
 	  mpz_clear (y);
 	}
+    }
+  else if (ecc->type == ECC_TYPE_EDWARDS)
+    {
+      mpz_t s, t, x, y;
+      mpz_init (s);
+      mpz_init (t);
+      mpz_init (x);
+      mpz_init (y);
+
+      /* t = d p_x p_y q_x q_y */
+      mpz_mul (t, ecc->b, p->x);
+      mpz_mod (t, t, ecc->p);
+      mpz_mul (t, t, p->y);
+      mpz_mod (t, t, ecc->p);
+      mpz_mul (t, t, q->x);
+      mpz_mod (t, t, ecc->p);
+      mpz_mul (t, t, q->y);
+      mpz_mod (t, t, ecc->p);
+
+      /* x' = (p_x q_y + q_x p_y) / (1 + t) */
+      mpz_mul (x, p->x, q->y);
+      mpz_mod (x, x, ecc->p);
+      mpz_addmul (x, q->x, p->y);
+      mpz_mod (x, x, ecc->p);
+      mpz_add_ui (s, t, 1);
+      mpz_invert (s, s, ecc->p);
+      mpz_mul (x, x, s);
+      mpz_mod (x, x, ecc->p);
+
+      /* y' = (p_y q_y - p_x q_x) / (1 - t) */
+      mpz_mul (y, p->y, q->y);
+      mpz_mod (y, y, ecc->p);
+      mpz_submul (y, p->x, q->x);
+      mpz_mod (y, y, ecc->p);
+      mpz_set_ui (s, 1);
+      mpz_sub (s, s, t);
+      mpz_invert (s, s, ecc->p);
+      mpz_mul (y, y, s);
+      mpz_mod (y, y, ecc->p);
+
+      mpz_swap (x, r->x);
+      mpz_swap (y, r->y);
+      r->is_zero = mpz_cmp_ui (r->x, 0) == 0 && mpz_cmp_ui (r->y, 1) == 0;
+
+      mpz_clear (s);
+      mpz_clear (t);
+      mpz_clear (x);
+      mpz_clear (y);
     }
   else
     {
@@ -618,6 +664,88 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 		   "1a739ec193ce1547493aa657c4c9f870",
 		   "47d0e827cb1595e1470eb88580d5716c"
 		   "4cf22832ea2f0ff0df38ab61ca32112f");
+      break;
+
+    case 448:
+      /* curve448, y^2 = x^3 + 156326 x^2 + x (mod p), with p = 2^{448} - 2^{224} - 1.
+
+	 According to RFC 7748, this is 4-isogenious to the Edwards
+	 curve called "edwards448"
+
+	   x^2 + y^2 = 1 - 39081 x^2 y^2 (mod p).
+
+	 And since the constant is not a square, the Edwards formulas
+	 should be "complete", with no special cases needed for
+	 doubling, neutral element, negatives, etc.
+
+	 Generator is x = 5, with y coordinate
+	 355293926785568175264127502063783334808976399387714271831880898435169088786967410002932673765864550910142774147268105838985595290606362,
+	 according to
+
+	   x = Mod(5, 2^448-2^224-1); sqrt(x^3 + 156326*x^2 + x)
+
+	 in PARI/GP. Also, in PARI notation,
+
+	   curve448 = Mod([0, 156326, 0, 1, 0], 2^448-2^224-1)
+       */
+      ecc_curve_init_str (ecc, ECC_TYPE_EDWARDS,
+			  "fffffffffffffffffffffffffffffff"
+			  "ffffffffffffffffffffffffeffffff"
+			  "fffffffffffffffffffffffffffffff"
+			  "fffffffffffffffffff",
+			  /* -39081 mod p, from PARI/GP
+			     c = Mod(-39081, p)
+			  */
+			  "fffffffffffffffffffffffffffffff"
+			  "ffffffffffffffffffffffffeffffff"
+			  "fffffffffffffffffffffffffffffff"
+			  "fffffffffffffff6756",
+			  /* Order of the subgroup is 2^446 - q_0, where
+			     q_0 = 13818066809895115352007386748515426880336692474882178609894547503885,
+			     224 bits.
+			  */
+			  "3ffffffffffffffffffffffffffffff"
+			  "fffffffffffffffffffffffff7cca23"
+			  "e9c44edb49aed63690216cc2728dc58"
+			  "f552378c292ab5844f3",
+			  "4f1970c66bed0ded221d15a622bf36d"
+			  "a9e146570470f1767ea6de324a3d3a4"
+			  "6412ae1af72ab66511433b80e18b009"
+			  "38e2626a82bc70cc05e",
+			  "693f46716eb6bc248876203756c9c76"
+			  "24bea73736ca3984087789c1e05a0c2"
+			  "d73ad3ff1ce67c39c4fdbd132c4ed7c"
+			  "8ad9808795bf230fa14");
+      ecc->ref = ecc_alloc (3);
+      ecc_set_str (&ecc->ref[0], /* 2 g */
+		   "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+		   "aaaaaaaaaaaaaaaaaaaaaaa955555555"
+		   "55555555555555555555555555555555"
+		   "5555555555555555",
+		   "ae05e9634ad7048db359d6205086c2b0"
+		   "036ed7a035884dd7b7e36d728ad8c4b8"
+		   "0d6565833a2a3098bbbcb2bed1cda06b"
+		   "daeafbcdea9386ed");
+      ecc_set_str (&ecc->ref[1], /* 3 g */
+		   "865886b9108af6455bd64316cb694333"
+		   "2241b8b8cda82c7e2ba077a4a3fcfe8d"
+		   "aa9cbf7f6271fd6e862b769465da8575"
+		   "728173286ff2f8f",
+		   "e005a8dbd5125cf706cbda7ad43aa644"
+		   "9a4a8d952356c3b9fce43c82ec4e1d58"
+		   "bb3a331bdb6767f0bffa9a68fed02daf"
+		   "b822ac13588ed6fc");
+
+      ecc_set_str (&ecc->ref[2], /* 4 g */
+		   "49dcbc5c6c0cce2c1419a17226f929ea"
+		   "255a09cf4e0891c693fda4be70c74cc3"
+		   "01b7bdf1515dd8ba21aee1798949e120"
+		   "e2ce42ac48ba7f30",
+		   "d49077e4accde527164b33a5de021b97"
+		   "9cb7c02f0457d845c90dc3227b8a5bc1"
+		   "c0d8f97ea1ca9472b5d444285d0d4f5b"
+		   "32e236f86de51839");
+
       break;
 
     default:

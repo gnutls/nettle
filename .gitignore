@@ -49,6 +49,7 @@ core
 /ecc-384.h
 /ecc-521.h
 /ecc-25519.h
+/ecc-448.h
 /version.h
 /nettle.aux
 /nettle.cp

@@ -335,6 +335,7 @@ const struct ecc_curve * const curves[] = {
   &_nettle_curve25519,
   &_nettle_secp_256r1,
   &_nettle_secp_384r1,
+  &_nettle_curve448,
   &_nettle_secp_521r1,
 };
 

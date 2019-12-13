@@ -232,6 +232,9 @@ dsa-keygen-test$(EXEEXT): dsa-keygen-test.$(OBJEXT)
 curve25519-dh-test$(EXEEXT): curve25519-dh-test.$(OBJEXT)
 	$(LINK) curve25519-dh-test.$(OBJEXT) $(TEST_OBJS) -o curve25519-dh-test$(EXEEXT)
 
+curve448-dh-test$(EXEEXT): curve448-dh-test.$(OBJEXT)
+	$(LINK) curve448-dh-test.$(OBJEXT) $(TEST_OBJS) -o curve448-dh-test$(EXEEXT)
+
 ecc-mod-test$(EXEEXT): ecc-mod-test.$(OBJEXT)
 	$(LINK) ecc-mod-test.$(OBJEXT) $(TEST_OBJS) -o ecc-mod-test$(EXEEXT)
 

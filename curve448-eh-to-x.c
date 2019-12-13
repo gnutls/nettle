@@ -1,6 +1,7 @@
-/* ecdsa-keygen.c
+/* curve448-eh-to-x.c
 
-   Copyright (C) 2013 Niels Möller
+   Copyright (C) 2017 Daiki Ueno
+   Copyright (C) 2017 Red Hat, Inc.
 
    This file is part of GNU Nettle.
 
@@ -29,34 +30,44 @@
    not, see http://www.gnu.org/licenses/.
 */
 
-/* Development of Nettle's ECC support was funded by the .SE Internet Fund. */
-
 #if HAVE_CONFIG_H
 # include "config.h"
 #endif
 
-#include <assert.h>
-#include <stdlib.h>
+#include <string.h>
 
-#include "ecdsa.h"
+#include "curve448.h"
+
+#include "ecc.h"
 #include "ecc-internal.h"
-#include "nettle-internal.h"
 
+/* Transform a point on the edwards448 Edwards curve to the curve448
+   Montgomery curve, and return the x coordinate. */
 void
-ecdsa_generate_keypair (struct ecc_point *pub,
-			struct ecc_scalar *key,
-			void *random_ctx, nettle_random_func *random)
+curve448_eh_to_x (mp_limb_t *xp, const mp_limb_t *p, mp_limb_t *scratch)
 {
-  TMP_DECL(p, mp_limb_t, 3*ECC_MAX_SIZE + ECC_MUL_G_ITCH (ECC_MAX_SIZE));
-  const struct ecc_curve *ecc = pub->ecc;
-  mp_size_t itch = 3*ecc->p.size + ecc->mul_g_itch;
+#define vp (p + ecc->p.size)
+#define t0 scratch
+#define t1 (scratch + ecc->p.size)
+#define t2 (scratch + 2*ecc->p.size)
 
-  assert (key->ecc == ecc);
-  assert (ecc->h_to_a_itch <= ecc->mul_g_itch);
+  const struct ecc_curve *ecc = &_nettle_curve448;
+  mp_limb_t cy;
 
-  TMP_ALLOC (p, itch);
+  /* If u = U/W and v = V/W are the coordinates of the point on
+     edwards448 we get the curve448 x coordinate as
 
-  ecc_mod_random (&ecc->q, key->p, random_ctx, random, p);
-  ecc->mul_g (ecc, p, key->p, p + 3*ecc->p.size);
-  ecc->h_to_a (ecc, 0, pub->p, p, p + 3*ecc->p.size);
+     x = v^2 / u^2 = (V/W)^2 / (U/W)^2 = (V/U)^2
+  */
+  /* Needs a total of 9*size storage. */
+  ecc->p.invert (&ecc->p, t0, p, t1 + ecc->p.size);
+  ecc_modp_mul (ecc, t1, t0, vp);
+  ecc_modp_mul (ecc, t2, t1, t1);
+
+  cy = mpn_sub_n (xp, t2, ecc->p.m, ecc->p.size);
+  cnd_copy (cy, xp, t2, ecc->p.size);
+#undef vp
+#undef t0
+#undef t1
+#undef t2
 }
