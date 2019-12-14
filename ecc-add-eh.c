@@ -55,20 +55,26 @@ ecc_add_eh (const struct ecc_curve *ecc,
 #define z3 (r + 2*ecc->p.size)
 
   /* Formulas (from djb,
-     http://www.hyperelliptic.org/EFD/g1p/auto-edwards-projective.html#doubling-dbl-2007-bl):
+     http://www.hyperelliptic.org/EFD/g1p/auto-twisted-projective.html#addition-madd-2008-bbjlp
 
      Computation	Operation	Live variables
 
      C = x1*x2		mul		C
      D = y1*y2		mul		C, D
-     T = (x1+y1)(x2+y2) - C - D		C, D, T
-     E = b*C*D		2 mul		C, E, T  (Replace C <-- D - C)
+     T = (x1+y1)*(x2+y2) mul		C, D, T
+         - C - D
+     E = b*C*D          2 mul		C, E, T  (Replace C <-- D+C)
      B = z1^2		sqr		B, C, E, T
      F = B - E				B, C, E, F, T
      G = B + E     			C, F, G, T
-     x3 = z1*F*T	3 mul		C, F, G, T
-     y3 = z1*G*(D-C)	2 mul		F, G
+     x3 = z1 * F * T    2 mul		C, F, G, T
+     y3 = z1*G*(D+C)	2 mul		F, G
      z3 = F*G		mul
+
+     10M + 1S
+
+     We have different sign for E, hence swapping F and G, because our
+     ecc->b corresponds to -b above.
   */
 #define C (scratch)
 #define D (scratch + 1*ecc->p.size)
@@ -88,17 +94,17 @@ ecc_add_eh (const struct ecc_curve *ecc,
   ecc_modp_mul (ecc, x3, C, D);
   ecc_modp_mul (ecc, E, x3, ecc->b);
 
-  ecc_modp_add (ecc, C, D, C); /* ! */
+  ecc_modp_add (ecc, C, D, C);
   ecc_modp_sqr (ecc, B, z1);
   ecc_modp_sub (ecc, F, B, E);
   ecc_modp_add (ecc, G, B, E);
 
   /* x3 */
-  ecc_modp_mul (ecc, B, G, T); /* ! */
+  ecc_modp_mul (ecc, B, G, T);
   ecc_modp_mul (ecc, x3, B, z1);
 
   /* y3 */
-  ecc_modp_mul (ecc, B, F, z1); /* ! */
+  ecc_modp_mul (ecc, B, F, z1);
   ecc_modp_mul (ecc, y3, B, C); /* Clobbers z1 in case r == p. */
 
   /* z3 */
