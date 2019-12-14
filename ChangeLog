@@ -1,3 +1,15 @@
+2019-12-14  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-mul-m.c (ecc_mul_m): New file and function. Implements
+	multipliction for curves in Montgomery representation, as used for
+	curve25519 and curve448. Extracted from curve25519_mul.
+	* ecc-internal.h (ecc_mul_m): Declare.
+	(ECC_MUL_M_ITCH): New macro.
+	* Makefile.in (hogweed_SOURCES): Add ecc-mul-m.c.
+
+	* curve25519-mul.c (curve25519_mul): Use ecc_mul_m.
+	* curve448-mul.c (curve448_mul): Likewise.
+
 2019-12-13  Niels Möller  <nisse@lysator.liu.se>
 
 	* Merge curve448 implementation.

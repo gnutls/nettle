@@ -69,6 +69,7 @@
 #define ecc_mul_a _nettle_ecc_mul_a
 #define ecc_mul_g_eh _nettle_ecc_mul_g_eh
 #define ecc_mul_a_eh _nettle_ecc_mul_a_eh
+#define ecc_mul_m _nettle_ecc_mul_m
 #define cnd_copy _nettle_cnd_copy
 #define sec_add_1 _nettle_sec_add_1
 #define sec_sub_1 _nettle_sec_sub_1
@@ -394,6 +395,13 @@ ecc_mul_a_eh (const struct ecc_curve *ecc,
 	      mp_limb_t *scratch);
 
 void
+ecc_mul_m (const struct ecc_modulo *m,
+	   mp_limb_t a24,
+	   unsigned bit_low, unsigned bit_high,
+	   mp_limb_t *qx, const uint8_t *n, const mp_limb_t *px,
+	   mp_limb_t *scratch);
+
+void
 cnd_copy (int cnd, mp_limb_t *rp, const mp_limb_t *ap, mp_size_t n);
 
 mp_limb_t
@@ -439,6 +447,7 @@ curve448_eh_to_x (mp_limb_t *xp, const mp_limb_t *p,
 #define ECC_MUL_A_EH_ITCH(size) \
   (((3 << ECC_MUL_A_EH_WBITS) + 10) * (size))
 #endif
+#define ECC_MUL_M_ITCH(size) (11*(size))
 #define ECC_ECDSA_SIGN_ITCH(size) (12*(size))
 #define ECC_MOD_RANDOM_ITCH(size) (size)
 #define ECC_HASH_ITCH(size) (1+(size))
