@@ -55,7 +55,7 @@ ecc_add_ehh (const struct ecc_curve *ecc,
 #define z3 (r + 2*ecc->p.size)
 
   /* Formulas (from djb,
-     http://www.hyperelliptic.org/EFD/g1p/auto-edwards-projective.html#addition-add-2007-bl):
+     http://www.hyperelliptic.org/EFD/g1p/auto-twisted-projective.html#addition-add-2008-bbjlp):
 
      Computation	Operation	Live variables
 
@@ -68,12 +68,13 @@ ecc_add_ehh (const struct ecc_curve *ecc,
      F = B - E				A, B, C, E, F, T
      G = B + E     			A, C, F, G, T
      x3 = A*F*T		2 mul		A, C, G
-     y3 = A*G*(D-C)	2 mul		F, G
+     y3 = A*G*(D+C)	2 mul		F, G
      z3 = F*G		mul
 
-     But when working with the twist curve, we have to negate the
-     factor C = x1*x2. We change subtract to add in the y3
-     expression, and swap F and G.
+     11M + S
+
+     We have different sign for E, hence swapping F and G, because our
+     ecc->b corresponds to -b above.
   */
 #define C scratch
 #define D (scratch + ecc->p.size)
@@ -93,7 +94,7 @@ ecc_add_ehh (const struct ecc_curve *ecc,
   ecc_modp_sub (ecc, T, T, D);
   ecc_modp_mul (ecc, x3, C, D);
   ecc_modp_mul (ecc, E, x3, ecc->b);
-  ecc_modp_add (ecc, C, D, C);	/* ! */
+  ecc_modp_add (ecc, C, D, C);
 
   ecc_modp_mul (ecc, A, z1, z2);
   ecc_modp_sqr (ecc, B, A);
@@ -102,11 +103,11 @@ ecc_add_ehh (const struct ecc_curve *ecc,
   ecc_modp_add (ecc, G, B, E);
 
   /* x3 */
-  ecc_modp_mul (ecc, B, G, T); /* ! */
+  ecc_modp_mul (ecc, B, G, T);
   ecc_modp_mul (ecc, x3, B, A);
 
   /* y3 */
-  ecc_modp_mul (ecc, B, F, C); /* ! */
+  ecc_modp_mul (ecc, B, F, C);
   ecc_modp_mul (ecc, y3, B, A);
 
   /* z3 */
