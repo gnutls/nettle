@@ -43,65 +43,69 @@ ecc_dup_eh (const struct ecc_curve *ecc,
 	    mp_limb_t *scratch)
 {
   /* Formulas (from djb,
-     http://www.hyperelliptic.org/EFD/g1p/auto-edwards-projective.html#doubling-dbl-2007-bl):
+     http://www.hyperelliptic.org/EFD/g1p/auto-twisted-projective.html#doubling-dbl-2008-bbjlp):
+
+     B = (X1+Y1)^2
+     C = X1^2
+     D = Y1^2
+     (E = a*C = -C)
+     F = E+D
+     H = Z1^2
+     J = F-2*H
+     X3 = (B-C-D)*J
+     Y3 = F*(E-D)
+     Z3 = F*J         (-C+D)*(-C+D - 2Z1^2)
+
+     In the formula for Y3, we have E - D = -(C+D). To avoid explicit
+     negation, negate all of X3, Y3, Z3, and use
 
      Computation	Operation	Live variables
-     
-     b = (x+y)^2	sqr		b
-     c = x^2		sqr		b, c
-     d = y^2		sqr		b, c, d
-     e = c+d				b, c, d, e
-     h = z^2		sqr		b, c, d, e, h
-     j = e-2*h				b, c, d, e, j
-     x' = (b-e)*j	mul		c, d, e, j
-     y' = e*(c-d)	mul		e, j
-     z' = e*j		mul
 
-     But for the twisted curve, we need some sign changes.
+     B = (X1+Y1)^2	sqr		B
+     C = X1^2		sqr		B, C
+     D = Y1^2		sqr		B, C, D
+     F = -C+D				B, C, D, F
+     H = Z1^2		sqr		B, C, D, F, H
+     J = 2*H - F			B, C, D, F, J
+     X3 = (B-C-D)*J	mul		C, D, F, J
+     Y3 = F*(C+D)	mul		F, J
+     Z3 = F*J		mul
 
-     b = (x+y)^2	sqr		b
-     c = x^2		sqr		b, c
-     d = y^2		sqr		b, c, d
-   ! e = -c+d				b, c, d, e
-     h = z^2		sqr		b, c, d, e, h
-   ! j = -e+2*h				b, c, d, e, j
-   ! x' = (b-c-d)*j	mul		c, d, e, j
-   ! y' = e*(c+d)	mul		e, j
-     z' = e*j		mul
+     3M+4S
   */
-#define b scratch 
-#define c (scratch  + ecc->p.size)
-#define d (scratch  + 2*ecc->p.size)
-#define e (scratch  + 3*ecc->p.size)
-#define j (scratch  + 4*ecc->p.size)
+#define B scratch
+#define C (scratch  + ecc->p.size)
+#define D (scratch  + 2*ecc->p.size)
+#define F (scratch  + 3*ecc->p.size)
+#define J (scratch  + 4*ecc->p.size)
 
-  /* b */
-  ecc_modp_add (ecc, e, p, p + ecc->p.size);
-  ecc_modp_sqr (ecc, b, e);
+  /* B */
+  ecc_modp_add (ecc, F, p, p + ecc->p.size);
+  ecc_modp_sqr (ecc, B, F);
 
-  /* c */
-  ecc_modp_sqr (ecc, c, p);
-  /* d */
-  ecc_modp_sqr (ecc, d, p + ecc->p.size);
-  /* h, can use r as scratch, even for in-place operation. */
+  /* C */
+  ecc_modp_sqr (ecc, C, p);
+  /* D */
+  ecc_modp_sqr (ecc, D, p + ecc->p.size);
+  /* Can use r as scratch, even for in-place operation. */
   ecc_modp_sqr (ecc, r, p + 2*ecc->p.size);
-  /* e, */
-  ecc_modp_sub (ecc, e, d, c);
-  /* b - c - d */
-  ecc_modp_sub (ecc, b, b, c);
-  ecc_modp_sub (ecc, b, b, d);
-  /* j */
+  /* F, */
+  ecc_modp_sub (ecc, F, D, C);
+  /* B - C - D */
+  ecc_modp_sub (ecc, B, B, C);
+  ecc_modp_sub (ecc, B, B, D);
+  /* J */
   ecc_modp_add (ecc, r, r, r);
-  ecc_modp_sub (ecc, j, r, e);
+  ecc_modp_sub (ecc, J, r, F);
 
   /* x' */
-  ecc_modp_mul (ecc, r, b, j);
+  ecc_modp_mul (ecc, r, B, J);
   /* y' */
-  ecc_modp_add (ecc, c, c, d); /* Redundant */
-  ecc_modp_mul (ecc, r + ecc->p.size, e, c);
+  ecc_modp_add (ecc, C, C, D); /* Redundant */
+  ecc_modp_mul (ecc, r + ecc->p.size, F, C);
   /* z' */
-  ecc_modp_mul (ecc, b, e, j);
-  mpn_copyi (r + 2*ecc->p.size, b, ecc->p.size);
+  ecc_modp_mul (ecc, B, F, J);
+  mpn_copyi (r + 2*ecc->p.size, B, ecc->p.size);
 }
 
 void
