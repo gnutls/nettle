@@ -67,12 +67,13 @@ ecc_dup_eh (const struct ecc_curve *ecc,
      F = -C+D				B, C, D, F
      H = Z1^2		sqr		B, C, D, F, H
      J = 2*H - F			B, C, D, F, J
-     X3 = (B-C-D)*J	mul		C, D, F, J
+     X3 = (B-C-D)*J	mul		C, F, J  (Replace C <-- C+D)
      Y3 = F*(C+D)	mul		F, J
      Z3 = F*J		mul
 
      3M+4S
   */
+  /* FIXME: Could reduce scratch need by reusing D storage. */
 #define B scratch
 #define C (scratch  + ecc->p.size)
 #define D (scratch  + 2*ecc->p.size)
@@ -92,8 +93,8 @@ ecc_dup_eh (const struct ecc_curve *ecc,
   /* F, */
   ecc_modp_sub (ecc, F, D, C);
   /* B - C - D */
+  ecc_modp_add (ecc, C, C, D);
   ecc_modp_sub (ecc, B, B, C);
-  ecc_modp_sub (ecc, B, B, D);
   /* J */
   ecc_modp_add (ecc, r, r, r);
   ecc_modp_sub (ecc, J, r, F);
@@ -101,7 +102,6 @@ ecc_dup_eh (const struct ecc_curve *ecc,
   /* x' */
   ecc_modp_mul (ecc, r, B, J);
   /* y' */
-  ecc_modp_add (ecc, C, C, D); /* Redundant */
   ecc_modp_mul (ecc, r + ecc->p.size, F, C);
   /* z' */
   ecc_modp_mul (ecc, B, F, J);

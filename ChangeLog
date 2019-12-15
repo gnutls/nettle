@@ -1,3 +1,7 @@
+2019-12-15  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-dup-eh.c (ecc_dup_eh): Eliminate one unneeded ecc_modp_add.
+
 2019-12-14  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-mul-m.c (ecc_mul_m): New file and function. Implements
