@@ -1,3 +1,14 @@
+2019-12-17  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/ecc-benchmark.c (bench_dup_hh): Rename, and use
+	ecc->dup pointer.
+	(bench_dup_jj): ... old name.
+	(bench_add_hh): Rename, and use ecc->addd_hh pointer.
+	(bench_add_jja): ... old name.
+	(bench_dup_eh, bench_add_eh): Deleted.
+	(bench_curve): Update, and delete curve25519 special case.
+	(main): Update table headers accordingly.
+
 2019-12-15  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-dup-eh.c (ecc_dup_eh): Eliminate one unneeded ecc_modp_add.
