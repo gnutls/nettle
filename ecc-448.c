@@ -310,9 +310,9 @@ const struct ecc_curve _nettle_curve448 =
   ECC_MUL_G_EH_ITCH (ECC_LIMB_SIZE),
   ECC_EH_TO_A_ITCH (ECC_LIMB_SIZE, ECC_448_INV_ITCH),
 
-  ecc_add_eh_untwisted,
-  ecc_add_ehh_untwisted,
-  ecc_dup_eh_untwisted,
+  ecc_add_eh,
+  ecc_add_ehh,
+  ecc_dup_eh,
   ecc_mul_a_eh,
   ecc_mul_g_eh,
   ecc_eh_to_a,

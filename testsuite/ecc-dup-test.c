@@ -18,8 +18,8 @@ test_main (void)
 	{
 	  mp_limb_t *z = xalloc_limbs (ecc_size_j (ecc));
 
-	  ASSERT ((ecc->p.bit_size == 255 && ecc->dup == ecc_dup_eh)
-		  || (ecc->p.bit_size == 448 && ecc->dup == ecc_dup_eh_untwisted));
+	  ASSERT ((ecc->p.bit_size == 255 && ecc->dup == ecc_dup_th)
+		  || (ecc->p.bit_size == 448 && ecc->dup == ecc_dup_eh));
 
 	  /* Zero point has x = 0, y = 1, z = 1 */
 	  mpn_zero (z, 3*ecc->p.size);

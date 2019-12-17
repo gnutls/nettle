@@ -36,82 +36,11 @@
 #include "ecc.h"
 #include "ecc-internal.h"
 
-/* Double a point on a twisted Edwards curve, in homogeneous coordinates */
+/* Double a point on an Edwards curve, in homogeneous coordinates */
 void
 ecc_dup_eh (const struct ecc_curve *ecc,
 	    mp_limb_t *r, const mp_limb_t *p,
 	    mp_limb_t *scratch)
-{
-  /* Formulas (from djb,
-     http://www.hyperelliptic.org/EFD/g1p/auto-twisted-projective.html#doubling-dbl-2008-bbjlp):
-
-     B = (X1+Y1)^2
-     C = X1^2
-     D = Y1^2
-     (E = a*C = -C)
-     F = E+D
-     H = Z1^2
-     J = F-2*H
-     X3 = (B-C-D)*J
-     Y3 = F*(E-D)
-     Z3 = F*J         (-C+D)*(-C+D - 2Z1^2)
-
-     In the formula for Y3, we have E - D = -(C+D). To avoid explicit
-     negation, negate all of X3, Y3, Z3, and use
-
-     Computation	Operation	Live variables
-
-     B = (X1+Y1)^2	sqr		B
-     C = X1^2		sqr		B, C
-     D = Y1^2		sqr		B, C, D
-     F = -C+D				B, C, D, F
-     H = Z1^2		sqr		B, C, D, F, H
-     J = 2*H - F			B, C, D, F, J
-     X3 = (B-C-D)*J	mul		C, F, J  (Replace C <-- C+D)
-     Y3 = F*(C+D)	mul		F, J
-     Z3 = F*J		mul
-
-     3M+4S
-  */
-  /* FIXME: Could reduce scratch need by reusing D storage. */
-#define B scratch
-#define C (scratch  + ecc->p.size)
-#define D (scratch  + 2*ecc->p.size)
-#define F (scratch  + 3*ecc->p.size)
-#define J (scratch  + 4*ecc->p.size)
-
-  /* B */
-  ecc_modp_add (ecc, F, p, p + ecc->p.size);
-  ecc_modp_sqr (ecc, B, F);
-
-  /* C */
-  ecc_modp_sqr (ecc, C, p);
-  /* D */
-  ecc_modp_sqr (ecc, D, p + ecc->p.size);
-  /* Can use r as scratch, even for in-place operation. */
-  ecc_modp_sqr (ecc, r, p + 2*ecc->p.size);
-  /* F, */
-  ecc_modp_sub (ecc, F, D, C);
-  /* B - C - D */
-  ecc_modp_add (ecc, C, C, D);
-  ecc_modp_sub (ecc, B, B, C);
-  /* J */
-  ecc_modp_add (ecc, r, r, r);
-  ecc_modp_sub (ecc, J, r, F);
-
-  /* x' */
-  ecc_modp_mul (ecc, r, B, J);
-  /* y' */
-  ecc_modp_mul (ecc, r + ecc->p.size, F, C);
-  /* z' */
-  ecc_modp_mul (ecc, B, F, J);
-  mpn_copyi (r + 2*ecc->p.size, B, ecc->p.size);
-}
-
-void
-ecc_dup_eh_untwisted (const struct ecc_curve *ecc,
-		      mp_limb_t *r, const mp_limb_t *p,
-		      mp_limb_t *scratch)
 {
   /* Formulas (from djb,
      http://www.hyperelliptic.org/EFD/g1p/auto-edwards-projective.html#doubling-dbl-2007-bl):

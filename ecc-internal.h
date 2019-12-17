@@ -62,9 +62,9 @@
 #define ecc_dup_eh _nettle_ecc_dup_eh
 #define ecc_add_eh _nettle_ecc_add_eh
 #define ecc_add_ehh _nettle_ecc_add_ehh
-#define ecc_dup_eh_untwisted _nettle_ecc_dup_eh_untwisted
-#define ecc_add_eh_untwisted _nettle_ecc_add_eh_untwisted
-#define ecc_add_ehh_untwisted _nettle_ecc_add_ehh_untwisted
+#define ecc_dup_th _nettle_ecc_dup_th
+#define ecc_add_th _nettle_ecc_add_th
+#define ecc_add_thh _nettle_ecc_add_thh
 #define ecc_mul_g _nettle_ecc_mul_g
 #define ecc_mul_a _nettle_ecc_mul_a
 #define ecc_mul_g_eh _nettle_ecc_mul_g_eh
@@ -353,19 +353,19 @@ ecc_add_ehh (const struct ecc_curve *ecc,
 	     mp_limb_t *scratch);
 
 void
-ecc_dup_eh_untwisted (const struct ecc_curve *ecc,
-		      mp_limb_t *r, const mp_limb_t *p,
-		      mp_limb_t *scratch);
+ecc_dup_th (const struct ecc_curve *ecc,
+	    mp_limb_t *r, const mp_limb_t *p,
+	    mp_limb_t *scratch);
 
 void
-ecc_add_eh_untwisted (const struct ecc_curve *ecc,
-		      mp_limb_t *r, const mp_limb_t *p, const mp_limb_t *q,
-		      mp_limb_t *scratch);
+ecc_add_th (const struct ecc_curve *ecc,
+	    mp_limb_t *r, const mp_limb_t *p, const mp_limb_t *q,
+	    mp_limb_t *scratch);
 
 void
-ecc_add_ehh_untwisted (const struct ecc_curve *ecc,
-		       mp_limb_t *r, const mp_limb_t *p, const mp_limb_t *q,
-		       mp_limb_t *scratch);
+ecc_add_thh (const struct ecc_curve *ecc,
+	     mp_limb_t *r, const mp_limb_t *p, const mp_limb_t *q,
+	     mp_limb_t *scratch);
 
 /* Computes N * the group generator. N is an array of ecc_size()
    limbs. It must be in the range 0 < N < group order, then R != 0,
@@ -429,10 +429,13 @@ curve448_eh_to_x (mp_limb_t *xp, const mp_limb_t *p,
 #define ECC_EH_TO_A_ITCH(size, inv) (2*(size)+(inv))
 #define ECC_DUP_JJ_ITCH(size) (5*(size))
 #define ECC_DUP_EH_ITCH(size) (5*(size))
+#define ECC_DUP_TH_ITCH(size) (5*(size))
 #define ECC_ADD_JJA_ITCH(size) (6*(size))
 #define ECC_ADD_JJJ_ITCH(size) (8*(size))
 #define ECC_ADD_EH_ITCH(size) (6*(size))
 #define ECC_ADD_EHH_ITCH(size) (7*(size))
+#define ECC_ADD_TH_ITCH(size) (6*(size))
+#define ECC_ADD_THH_ITCH(size) (7*(size))
 #define ECC_MUL_G_ITCH(size) (9*(size))
 #define ECC_MUL_G_EH_ITCH(size) (9*(size))
 #if ECC_MUL_A_WBITS == 0

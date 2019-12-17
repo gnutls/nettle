@@ -1,5 +1,25 @@
 2019-12-18  Niels Möller  <nisse@lysator.liu.se>
 
+	Rename add and dup functions for Edwards curves.
+	* ecc-dup-th.c (ecc_dup_th): New file, move and rename ecc_dup_eh.
+	* ecc-add-th.c (ecc_add_th): New file, move and rename ecc_add_eh.
+	* ecc-add-thh.c (ecc_add_thh): New file, move and rename
+	ecc_add_ehh.
+	* ecc-dup-eh.c (ecc_dup_eh_untwisted): Rename to just ecc_dup_eh.
+	* ecc-add-eh.c (ecc_add_ehh_untwisted): Rename to just ecc_add_eh.
+	* ecc-add-ehh.c (ecc_add_ehh_untwisted): Rename to just ecc_add_ehh.
+	* ecc-internal.h (ecc_dup_th, ecc_add_th, ecc_add_thh): Declare
+	new functions, delete declarations of ecc_*_untwisted variants.
+	(ECC_DUP_TH_ITCH, ECC_ADD_TH_ITCH, ECC_ADD_THH_ITCH): New macros.
+	* ecc-25519.c (_nettle_curve25519): Update, use ecc_dup_th and
+	friends.
+	* ecc-448.c (_nettle_curve448): Update for rename, without
+	_untwisted suffix.
+	* Makefile.in (hogweed_SOURCES): Added ecc-dup-th.c, ecc-add-th.c,
+	and ecc-add-thh.c
+	* testsuite/ecc-dup-test.c (test_main): Update asserts.
+	* testsuite/ecc-add-test.c (test_main): Likewise.
+
 	* eddsa-verify.c (_eddsa_verify): Use function pointer rather than
 	calling ecc_add_eh directly. Preparation for eddsa over curve448.
 
