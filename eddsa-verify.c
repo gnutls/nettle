@@ -114,7 +114,7 @@ _eddsa_verify (const struct ecc_curve *ecc,
 
   /* Compute h A + R - s G, which should be the neutral point */
   ecc->mul (ecc, P, hp, A, scratch_out);
-  ecc_add_eh (ecc, P, P, R, scratch_out);
+  ecc->add_hh (ecc, P, P, R, scratch_out);
   /* Move out of the way. */
   mpn_copyi (hp, sp, ecc->q.size);
   ecc->mul_g (ecc, S, hp, scratch_out);

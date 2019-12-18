@@ -1,3 +1,8 @@
+2019-12-18  Niels Möller  <nisse@lysator.liu.se>
+
+	* eddsa-verify.c (_eddsa_verify): Use function pointer rather than
+	calling ecc_add_eh directly. Preparation for eddsa over curve448.
+
 2019-12-17  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/ecc-benchmark.c (bench_dup_hh): Rename, and use
