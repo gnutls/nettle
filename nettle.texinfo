@@ -834,6 +834,28 @@ octets of the digest are written.
 This function also resets the context.
 @end deftypefun
 
+@subsubsection @acronym{SHAKE-256}
+@cindex SHAKE
+
+In addition to those SHA-3 hash functions, Nettle also provides a SHA-3
+extendable-output function (XOF), SHAKE-256. Unlike SHA-3 hash functions,
+SHAKE can produce an output digest of any desired length.
+
+To use SHAKE256, the context struct, init and update functions are the
+same as for SHA3-256. To get a SHAKE256 digest, the following function
+is used instead of @code{sha3_256_digest}. For an output size of
+@code{SHA3_256_DIGEST_SIZE}, security is equivalent to SHA3-256 (but the
+digest is different). Increasing output size further does not increase
+security in terms of collision or preimage resistance. It can be seen as
+a built in pseudorandomness generator.
+
+@deftypefun void sha3_256_shake (struct shake256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+Performs final processing and produces a SHAKE256 digest, writing it
+to @var{digest}. @var{length} can be of arbitrary size.
+
+This function also resets the context.
+@end deftypefun
+
 @node Legacy hash functions, nettle_hash abstraction, Recommended hash functions, Hash functions
 @comment  node-name,  next,  previous,  up
 @subsection Legacy hash functions

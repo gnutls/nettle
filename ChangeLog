@@ -8,6 +8,7 @@
 	* testsuite/shake.awk: New script to extract test vectors.
 	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Add shake256-test.c.
 	(DISTFILES): Add shake.awk.
+	* nettle.texinfo (Recommended hash functions): Document SHAKE-256.
 
 	* sha3.c (_sha3_pad): Generalized with an argument for the magic
 	suffix defining the sha3 instance.
