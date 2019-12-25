@@ -1,8 +1,9 @@
-/* sha3-internal.h
+/* shake256.c
 
-   The sha3 hash function (aka Keccak).
+   The SHAKE256 hash function, arbitrary length output.
 
-   Copyright (C) 2012 Niels Möller
+   Copyright (C) 2017 Daiki Ueno
+   Copyright (C) 2017 Red Hat, Inc.
 
    This file is part of GNU Nettle.
 
@@ -31,33 +32,32 @@
    not, see http://www.gnu.org/licenses/.
 */
 
-#ifndef NETTLE_SHA3_INTERNAL_H_INCLUDED
-#define NETTLE_SHA3_INTERNAL_H_INCLUDED
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
 
-#include "nettle-types.h"
+#include <stddef.h>
+#include <string.h>
 
-#define _sha3_update _nettle_sha3_update
-#define _sha3_pad _nettle_sha3_pad
+#include "sha3.h"
+#include "sha3-internal.h"
 
-#define SHA3_HASH_MAGIC 6
-#define SHA3_SHAKE_MAGIC 0x1f
-
-unsigned
-_sha3_update (struct sha3_state *state,
-	      unsigned block_size, uint8_t *block,
-	      unsigned pos,
-	      size_t length, const uint8_t *data);
-
+#include "nettle-write.h"
 
 void
-_sha3_pad (struct sha3_state *state,
-	   unsigned block_size, uint8_t *block, unsigned pos, uint8_t magic);
+sha3_256_shake (struct sha3_256_ctx *ctx,
+		size_t length,
+		uint8_t *dst)
+{
+  _sha3_pad_shake (&ctx->state, SHA3_256_BLOCK_SIZE, ctx->block, ctx->index);
+  while (length > SHA3_256_BLOCK_SIZE)
+    {
+      _nettle_write_le64 (SHA3_256_BLOCK_SIZE, dst, ctx->state.a);
+      length -= SHA3_256_BLOCK_SIZE;
+      dst += SHA3_256_BLOCK_SIZE;
+      sha3_permute (&ctx->state);
+    }
+  _nettle_write_le64 (length, dst, ctx->state.a);
 
-#define _sha3_pad_hash(state, block_size, block, pos) \
-  _sha3_pad (state, block_size, block, pos, SHA3_HASH_MAGIC)
-
-#define _sha3_pad_shake(state, block_size, block, pos) \
-  _sha3_pad (state, block_size, block, pos, SHA3_SHAKE_MAGIC)
-
-
-#endif
+  sha3_256_init (ctx);
+}

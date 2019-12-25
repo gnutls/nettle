@@ -866,33 +866,36 @@ test_hash(const struct nettle_hash *hash,
 	  const struct tstring *digest)
 {
   void *ctx = xalloc(hash->context_size);
-  uint8_t *buffer = xalloc(hash->digest_size);
+  uint8_t *buffer = xalloc(digest->length);
   uint8_t *input;
   unsigned offset;
 
-  ASSERT (digest->length == hash->digest_size);
+  /* Here, hash->digest_size zero means arbitrary size. */
+  if (hash->digest_size)
+    ASSERT (digest->length == hash->digest_size);
 
   hash->init(ctx);
   hash->update(ctx, msg->length, msg->data);
-  hash->digest(ctx, hash->digest_size, buffer);
+  hash->digest(ctx, digest->length, buffer);
 
-  if (MEMEQ(hash->digest_size, digest->data, buffer) == 0)
+  if (MEMEQ(digest->length, digest->data, buffer) == 0)
     {
       fprintf(stdout, "\nGot:\n");
-      print_hex(hash->digest_size, buffer);
+      print_hex(digest->length, buffer);
       fprintf(stdout, "\nExpected:\n");
-      print_hex(hash->digest_size, digest->data);
+      print_hex(digest->length, digest->data);
       abort();
     }
 
-  memset(buffer, 0, hash->digest_size);
+  memset(buffer, 0, digest->length);
 
   hash->update(ctx, msg->length, msg->data);
-  hash->digest(ctx, hash->digest_size - 1, buffer);
+  ASSERT(digest->length > 0);
+  hash->digest(ctx, digest->length - 1, buffer);
 
-  ASSERT(MEMEQ(hash->digest_size - 1, digest->data, buffer));
+  ASSERT(MEMEQ(digest->length - 1, digest->data, buffer));
 
-  ASSERT(buffer[hash->digest_size - 1] == 0);
+  ASSERT(buffer[digest->length - 1] == 0);
 
   input = xalloc (msg->length + 16);
   for (offset = 0; offset < 16; offset++)
@@ -900,13 +903,13 @@ test_hash(const struct nettle_hash *hash,
       memset (input, 0, msg->length + 16);
       memcpy (input + offset, msg->data, msg->length);
       hash->update (ctx, msg->length, input + offset);
-      hash->digest (ctx, hash->digest_size, buffer);
-      if (MEMEQ(hash->digest_size, digest->data, buffer) == 0)
+      hash->digest (ctx, digest->length, buffer);
+      if (MEMEQ(digest->length, digest->data, buffer) == 0)
 	{
 	  fprintf(stdout, "hash input address: %p\nGot:\n", input + offset);
-	  print_hex(hash->digest_size, buffer);
+	  print_hex(digest->length, buffer);
 	  fprintf(stdout, "\nExpected:\n");
-	  print_hex(hash->digest_size, digest->data);
+	  print_hex(digest->length, digest->data);
 	  abort();
 	}      
     }

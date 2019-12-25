@@ -1,5 +1,14 @@
 2019-12-25  Niels Möller  <nisse@lysator.liu.se>
 
+	Support for SHAKE256, based on patch by Daiki Ueno.
+	* shake256.c (sha3_256_shake): New file and function.
+	* Makefile.in (nettle_SOURCES): Add shake256.c.
+	* testsuite/testutils.c (test_hash): Allow arbitrary digest size,
+	if hash->digest_size == 0.
+	* testsuite/shake.awk: New script to extract test vectors.
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Add shake256-test.c.
+	(DISTFILES): Add shake.awk.
+
 	* sha3.c (_sha3_pad): Generalized with an argument for the magic
 	suffix defining the sha3 instance.
 	* sha3-internal.h (_sha3_pad_hash): New macro, for SHA3 hashes.
