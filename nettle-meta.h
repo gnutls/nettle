@@ -144,6 +144,24 @@ extern const struct nettle_hash nettle_sha3_256;
 extern const struct nettle_hash nettle_sha3_384;
 extern const struct nettle_hash nettle_sha3_512;
 
+struct nettle_mac
+{
+  const char *name;
+
+  /* Size of the context struct */
+  unsigned context_size;
+
+  /* Size of digests */
+  unsigned digest_size;
+
+  /* Key size */
+  unsigned key_size;
+
+  nettle_set_key_func *set_key;
+  nettle_hash_update_func *update;
+  nettle_hash_digest_func *digest;
+};
+
 struct nettle_aead
 {
   const char *name;
