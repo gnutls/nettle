@@ -39,7 +39,7 @@
 #include "ecc-internal.h"
 
 /* Binary algorithm needs 6*ecc->p.size + scratch for ecc_add_ehh,
-   total 13 ecc->p.size
+   total 12 ecc->p.size
 
    Window algorithm needs (3<<w) * ecc->p.size for the table,
    3*ecc->p.size for a temporary point, and scratch for
@@ -76,7 +76,7 @@ ecc_mul_a_eh (const struct ecc_curve *ecc,
 	  int digit;
 
 	  ecc->dup (ecc, r, r, scratch_out);
-	  ecc->add_hhh (ecc, tp, r, pe, scratch_out);
+	  ecc->add_hh (ecc, tp, r, pe, scratch_out);
 
 	  digit = (w & bit) > 0;
 	  /* If we had a one-bit, use the sum. */
@@ -108,7 +108,7 @@ table_init (const struct ecc_curve *ecc,
   for (j = 2; j < size; j += 2)
     {
       ecc->dup (ecc, TABLE(j), TABLE(j/2), scratch);
-      ecc->add_hhh (ecc, TABLE(j+1), TABLE(j), TABLE(1), scratch);
+      ecc->add_hh (ecc, TABLE(j+1), TABLE(j), TABLE(1), scratch);
     }
 }
 

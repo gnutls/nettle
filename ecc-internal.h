@@ -445,7 +445,7 @@ curve448_eh_to_x (mp_limb_t *xp, const mp_limb_t *p,
   (((3 << ECC_MUL_A_WBITS) + 11) * (size))
 #endif
 #if ECC_MUL_A_EH_WBITS == 0
-#define ECC_MUL_A_EH_ITCH(size) (13*(size))
+#define ECC_MUL_A_EH_ITCH(size) (12*(size))
 #else
 #define ECC_MUL_A_EH_ITCH(size) \
   (((3 << ECC_MUL_A_EH_WBITS) + 10) * (size))

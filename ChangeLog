@@ -1,3 +1,11 @@
+2019-12-19  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-mul-a-eh.c (ecc_mul_a_eh) [ECC_MUL_A_EH_WBITS == 0]: Use
+	add_hh rather than add_hhh.
+	(table_init) [[ECC_MUL_A_EH_WBITS > 0]: Likewise.
+	* ecc-internal.h (ECC_MUL_A_EH_ITCH) [ECC_MUL_A_EH_WBITS == 0]:
+	Reduced from 13*n to 12*n.
+
 2019-12-18  Niels Möller  <nisse@lysator.liu.se>
 
 	Rename add and dup functions for Edwards curves.
