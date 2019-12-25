@@ -1,3 +1,11 @@
+2019-12-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* sha3.c (_sha3_pad): Generalized with an argument for the magic
+	suffix defining the sha3 instance.
+	* sha3-internal.h (_sha3_pad_hash): New macro, for SHA3 hashes.
+	Updated all callers of _sha3_pad.
+	(_sha3_pad_shake): New macro, using the SHAKE magic byte 0x1f.
+
 2019-12-19  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-mul-a-eh.c (ecc_mul_a_eh) [ECC_MUL_A_EH_WBITS == 0]: Use
