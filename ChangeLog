@@ -1,3 +1,9 @@
+2019-12-28  Niels Möller  <nisse@lysator.liu.se>
+
+	* bignum.h: Drop unreleted include of nettle-meta.h.
+	* pss.h: Include nettle-meta.h explicitly.
+	* eddsa-internal.h: Likewise.
+
 2019-12-25  Niels Möller  <nisse@lysator.liu.se>
 
 	Support for SHAKE256, based on patch by Daiki Ueno.

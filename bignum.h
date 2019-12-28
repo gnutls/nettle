@@ -34,8 +34,6 @@
 #ifndef NETTLE_BIGNUM_H_INCLUDED
 #define NETTLE_BIGNUM_H_INCLUDED
 
-#include "nettle-meta.h"
-
 #include "nettle-types.h"
 
 /* For NETTLE_USE_MINI_GMP */

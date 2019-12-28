@@ -33,6 +33,7 @@
 #define NETTLE_EDDSA_INTERNAL_H
 
 #include "nettle-types.h"
+#include "nettle-meta.h"
 
 #define _eddsa_compress _nettle_eddsa_compress
 #define _eddsa_compress_itch _nettle_eddsa_compress_itch
