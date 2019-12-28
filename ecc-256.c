@@ -55,7 +55,7 @@
 void
 ecc_256_redc (const struct ecc_modulo *p, mp_limb_t *rp);
 #else /* !HAVE_NATIVE_ecc_256_redc */
-# if ECC_REDC_SIZE > 0 
+# if ECC_REDC_SIZE > 0
 #   define ecc_256_redc ecc_pp1_redc
 # elif ECC_REDC_SIZE == 0
 #   define ecc_256_redc NULL
@@ -115,13 +115,13 @@ ecc_256_modp (const struct ecc_modulo *p, mp_limb_t *rp)
 
       /*
 	 n-1 n-2 n-3 n-4
-        +---+---+---+---+
-        | u1| u0| u low |
-        +---+---+---+---+
-          - | q1(2^96-1)|
-            +-------+---+
-            |q2(2^.)|
-            +-------+
+	+---+---+---+---+
+	| u1| u0| u low |
+	+---+---+---+---+
+	  - | q1(2^96-1)|
+	    +-------+---+
+	    |q2(2^.)|
+	    +-------+
 
 	 We multiply by two low limbs of p, 2^96 - 1, so we could use
 	 shifts rather than mul.
@@ -161,7 +161,7 @@ ecc_256_modq (const struct ecc_modulo *q, mp_limb_t *rp)
       mp_limb_t q2, q1, q0, t, c1, c0;
 
       u0 = rp[n-2];
-      
+
       /* <q2, q1, q0> = v * u2 + <u2,u1>, same method as above.
 
 	   +---+---+
@@ -183,7 +183,7 @@ ecc_256_modq (const struct ecc_modulo *q, mp_limb_t *rp)
       q2 = q1 < t;
 
       /* Compute candidate remainder, <u1, u0> - <q2, q1> * (2^128 - 2^96 + 2^64 - 1)
-         <u1, u0> + 2^64 q2 + (2^96 - 2^64 + 1) q1 (mod 2^128)
+	 <u1, u0> + 2^64 q2 + (2^96 - 2^64 + 1) q1 (mod 2^128)
 
 	   +---+---+
 	   | u1| u0|
@@ -194,9 +194,9 @@ ecc_256_modq (const struct ecc_modulo *q, mp_limb_t *rp)
 	 +-+-+-+
 	 | q1|
        --+-+-+-+---+
-           | u2| u1|
+	   | u2| u1|
 	   +---+---+
-      */	 
+      */
       u2 = u1 + q2 - q1;
       u1 = u0 + q1;
       u2 += (u1 < q1);
@@ -215,7 +215,7 @@ ecc_256_modq (const struct ecc_modulo *q, mp_limb_t *rp)
       t = mpn_submul_1 (rp + n - 4, q->m, 2, q1);
       c0 += t;
       c1 = c0 < t;
-      
+
       /* Construct underflow condition. */
       c1 += (u1 < c0);
       t = - (mp_limb_t) (u2 < c1);
@@ -234,7 +234,7 @@ ecc_256_modq (const struct ecc_modulo *q, mp_limb_t *rp)
   rp[2] = u1;
   rp[3] = u2;
 }
-      
+
 #else
 #error Unsupported parameters
 #endif
@@ -243,7 +243,7 @@ const struct ecc_curve _nettle_secp_256r1 =
 {
   {
     256,
-    ECC_LIMB_SIZE,    
+    ECC_LIMB_SIZE,
     ECC_BMODP_SIZE,
     ECC_REDC_SIZE,
     ECC_MOD_INV_ITCH (ECC_LIMB_SIZE),
@@ -253,8 +253,8 @@ const struct ecc_curve _nettle_secp_256r1 =
     ecc_Bmodp,
     ecc_Bmodp_shifted,
     ecc_redc_ppm1,
-
     ecc_pp1h,
+
     ecc_256_modp,
     USE_REDC ? ecc_256_redc : ecc_256_modp,
     ecc_mod_inv,
@@ -262,7 +262,7 @@ const struct ecc_curve _nettle_secp_256r1 =
   },
   {
     256,
-    ECC_LIMB_SIZE,    
+    ECC_LIMB_SIZE,
     ECC_BMODQ_SIZE,
     0,
     ECC_MOD_INV_ITCH (ECC_LIMB_SIZE),
