@@ -50,7 +50,7 @@ _eddsa_sign_itch (const struct ecc_curve *ecc)
 
 void
 _eddsa_sign (const struct ecc_curve *ecc,
-	     const struct nettle_hash *H,
+	     const struct ecc_eddsa *eddsa,
 	     const uint8_t *pub,
 	     void *ctx,
 	     const mp_limb_t *k2,
@@ -71,18 +71,16 @@ _eddsa_sign (const struct ecc_curve *ecc,
   size = ecc->p.size;
   nbytes = 1 + ecc->p.bit_size / 8;
 
-  assert (H->digest_size >= 2 * nbytes);
-
-  H->update (ctx, length, msg);
-  H->digest (ctx, 2*nbytes, hash);
+  eddsa->update (ctx, length, msg);
+  eddsa->digest (ctx, 2*nbytes, hash);
   _eddsa_hash (&ecc->q, rp, hash);
   ecc->mul_g (ecc, P, rp, scratch_out);
   _eddsa_compress (ecc, signature, P, scratch_out);
 
-  H->update (ctx, nbytes, signature);
-  H->update (ctx, nbytes, pub);
-  H->update (ctx, length, msg);
-  H->digest (ctx, 2*nbytes, hash);
+  eddsa->update (ctx, nbytes, signature);
+  eddsa->update (ctx, nbytes, pub);
+  eddsa->update (ctx, length, msg);
+  eddsa->digest (ctx, 2*nbytes, hash);
   _eddsa_hash (&ecc->q, hp, hash);
 
   ecc_modq_mul (ecc, sp, hp, k2);

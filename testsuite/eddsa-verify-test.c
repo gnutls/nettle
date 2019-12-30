@@ -36,7 +36,8 @@
 
 static void
 test_eddsa (const struct ecc_curve *ecc,
-	    const struct nettle_hash *H,
+	    const struct ecc_eddsa *eddsa,
+	    void *ctx,
 	    const uint8_t *pub,
 	    const struct tstring *msg,
 	    const uint8_t *signature)
@@ -46,13 +47,12 @@ test_eddsa (const struct ecc_curve *ecc,
   size_t nbytes = 1 + ecc->p.bit_size / 8;
   uint8_t *cmsg = xalloc (msg->length);
   uint8_t *csignature = xalloc (2*nbytes);
-  void *ctx = xalloc (H->context_size);
 
   if (!_eddsa_decompress (ecc, A, pub, scratch))
     die ("Invalid eddsa public key.\n");
 
   memcpy (csignature, signature, 2*nbytes);
-  if (!_eddsa_verify (ecc, H, pub, A, ctx,
+  if (!_eddsa_verify (ecc, eddsa, pub, A, ctx,
 		      msg->length, msg->data, csignature, scratch))
     {
       fprintf (stderr, "eddsa_verify failed with valid signature.\n");
@@ -69,7 +69,7 @@ test_eddsa (const struct ecc_curve *ecc,
 
   memcpy (csignature, signature, 2*nbytes);
   csignature[nbytes/3] ^= 0x40;
-  if (_eddsa_verify (ecc, H, pub, A, ctx,
+  if (_eddsa_verify (ecc, eddsa, pub, A, ctx,
 		     msg->length, msg->data, csignature, scratch))
     {
       fprintf (stderr,
@@ -80,7 +80,7 @@ test_eddsa (const struct ecc_curve *ecc,
   memcpy (csignature, signature, 2*nbytes);
   csignature[5*nbytes/3] ^= 0x8;
 
-  if (_eddsa_verify (ecc, H, pub, A, ctx,
+  if (_eddsa_verify (ecc, eddsa, pub, A, ctx,
 		     msg->length, msg->data, csignature, scratch))
     {
       fprintf (stderr,
@@ -90,7 +90,7 @@ test_eddsa (const struct ecc_curve *ecc,
 
   if (msg->length == 0)
     {
-      if (_eddsa_verify  (ecc, H, pub, A, ctx,
+      if (_eddsa_verify  (ecc, eddsa, pub, A, ctx,
 			  LDATA("foo"), signature, scratch))
 	{
 	  fprintf (stderr,
@@ -100,7 +100,7 @@ test_eddsa (const struct ecc_curve *ecc,
     }
   else
     {
-      if (_eddsa_verify  (ecc, H, pub, A, ctx,
+      if (_eddsa_verify  (ecc, eddsa, pub, A, ctx,
 			  msg->length - 1, msg->data,
 			  signature, scratch))
 	{
@@ -110,7 +110,7 @@ test_eddsa (const struct ecc_curve *ecc,
 	}
       memcpy (cmsg, msg->data, msg->length);
       cmsg[2*msg->length / 3] ^= 0x20;
-      if (_eddsa_verify  (ecc, H, pub, A, ctx,
+      if (_eddsa_verify  (ecc, eddsa, pub, A, ctx,
 			  msg->length, cmsg, signature, scratch))
 	{
 	  fprintf (stderr,
@@ -122,40 +122,49 @@ test_eddsa (const struct ecc_curve *ecc,
   free (scratch);
   free (cmsg);
   free (csignature);
-  free (ctx);
 }
+
+static void
+test_ed25519 (const uint8_t *pub,
+	      const struct tstring *msg,
+	      const uint8_t *signature)
+{
+  struct sha512_ctx ctx;
+
+  sha512_init (&ctx);
+  test_eddsa (&_nettle_curve25519, &_nettle_ed25519_sha512, &ctx,
+	      pub, msg, signature);
+}
+
 
 void
 test_main (void)
 {
-  test_eddsa (&_nettle_curve25519, &nettle_sha512,
-	      H("d75a980182b10ab7 d54bfed3c964073a"
-		"0ee172f3daa62325 af021a68f707511a"),
-	      SHEX(""),
-	      H("e5564300c360ac72 9086e2cc806e828a"
-		"84877f1eb8e5d974 d873e06522490155"
-		"5fb8821590a33bac c61e39701cf9b46b"
-		"d25bf5f0595bbe24 655141438e7a100b"));
-  test_eddsa (&_nettle_curve25519, &nettle_sha512,
-	      H("3d4017c3e843895a 92b70aa74d1b7ebc"
-		"9c982ccf2ec4968c c0cd55f12af4660c"),
-	      SHEX("72"),
-	      H("92a009a9f0d4cab8 720e820b5f642540"
-		"a2b27b5416503f8f b3762223ebdb69da"
-		"085ac1e43e15996e 458f3613d0f11d8c"
-		"387b2eaeb4302aee b00d291612bb0c00"));
-  test_eddsa (&_nettle_curve25519, &nettle_sha512,
-	      H("1ed506485b09a645 0be7c9337d9fe87e"
-		"f99c96f8bd11cd63 1ca160d0fd73067e"),
-	      SHEX("fbed2a7df418ec0e 8036312ec239fcee"
-		   "6ef97dc8c2df1f2e 14adee287808b788"
-		   "a6072143b851d975 c8e8a0299df846b1"
-		   "9113e38cee83da71 ea8e9bd6f57bdcd3"
-		   "557523f4feb616ca a595aea01eb0b3d4"
-		   "90b99b525ea4fbb9 258bc7fbb0deea8f"
-		   "568cb2"),
-	      H("cbef65b6f3fd5809 69fc3340cfae4f7c"
-		"99df1340cce54626 183144ef46887163"
-		"4b0a5c0033534108 e1c67c0dc99d3014"
-		"f01084e98c95e101 4b309b1dbb2e6704"));
+  test_ed25519 (H("d75a980182b10ab7 d54bfed3c964073a"
+		  "0ee172f3daa62325 af021a68f707511a"),
+		SHEX(""),
+		H("e5564300c360ac72 9086e2cc806e828a"
+		  "84877f1eb8e5d974 d873e06522490155"
+		  "5fb8821590a33bac c61e39701cf9b46b"
+		  "d25bf5f0595bbe24 655141438e7a100b"));
+  test_ed25519 (H("3d4017c3e843895a 92b70aa74d1b7ebc"
+		  "9c982ccf2ec4968c c0cd55f12af4660c"),
+		SHEX("72"),
+		H("92a009a9f0d4cab8 720e820b5f642540"
+		  "a2b27b5416503f8f b3762223ebdb69da"
+		  "085ac1e43e15996e 458f3613d0f11d8c"
+		  "387b2eaeb4302aee b00d291612bb0c00"));
+  test_ed25519 (H("1ed506485b09a645 0be7c9337d9fe87e"
+		  "f99c96f8bd11cd63 1ca160d0fd73067e"),
+		SHEX("fbed2a7df418ec0e 8036312ec239fcee"
+		     "6ef97dc8c2df1f2e 14adee287808b788"
+		     "a6072143b851d975 c8e8a0299df846b1"
+		     "9113e38cee83da71 ea8e9bd6f57bdcd3"
+		     "557523f4feb616ca a595aea01eb0b3d4"
+		     "90b99b525ea4fbb9 258bc7fbb0deea8f"
+		     "568cb2"),
+		H("cbef65b6f3fd5809 69fc3340cfae4f7c"
+		  "99df1340cce54626 183144ef46887163"
+		  "4b0a5c0033534108 e1c67c0dc99d3014"
+		  "f01084e98c95e101 4b309b1dbb2e6704"));
 }

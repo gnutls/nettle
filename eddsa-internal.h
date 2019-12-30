@@ -33,7 +33,7 @@
 #define NETTLE_EDDSA_INTERNAL_H
 
 #include "nettle-types.h"
-#include "nettle-meta.h"
+#include "bignum.h"
 
 #define _eddsa_compress _nettle_eddsa_compress
 #define _eddsa_compress_itch _nettle_eddsa_compress_itch
@@ -52,6 +52,18 @@
 
 struct ecc_curve;
 struct ecc_modulo;
+
+struct ecc_eddsa
+{
+  /* Hash function to use */
+  nettle_hash_update_func *update;
+  nettle_hash_digest_func *digest;
+  /* For generating the secret scalar */
+  mp_limb_t low_mask;
+  mp_limb_t high_bit;
+};
+
+extern const struct ecc_eddsa _nettle_ed25519_sha512;
 
 mp_size_t
 _eddsa_compress_itch (const struct ecc_curve *ecc);
@@ -75,7 +87,7 @@ _eddsa_sign_itch (const struct ecc_curve *ecc);
 
 void
 _eddsa_sign (const struct ecc_curve *ecc,
-	     const struct nettle_hash *H,
+	     const struct ecc_eddsa *eddsa,
 	     const uint8_t *pub,
 	     void *ctx,
 	     const mp_limb_t *k2,
@@ -89,7 +101,7 @@ _eddsa_verify_itch (const struct ecc_curve *ecc);
 
 int
 _eddsa_verify (const struct ecc_curve *ecc,
-	       const struct nettle_hash *H,
+	       const struct ecc_eddsa *eddsa,
 	       const uint8_t *pub,
 	       const mp_limb_t *A,
 	       void *ctx,
@@ -100,7 +112,7 @@ _eddsa_verify (const struct ecc_curve *ecc,
 
 void
 _eddsa_expand_key (const struct ecc_curve *ecc,
-		   const struct nettle_hash *H,
+		   const struct ecc_eddsa *eddsa,
 		   void *ctx,
 		   const uint8_t *key,
 		   uint8_t *digest,

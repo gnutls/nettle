@@ -1,6 +1,6 @@
-/* ed25519-sha512-sign.c
+/* ed25519-sha512.c
 
-   Copyright (C) 2014, 2015 Niels Möller
+   Copyright (C) 2019 Niels Möller
 
    This file is part of GNU Nettle.
 
@@ -33,36 +33,15 @@
 # include "config.h"
 #endif
 
-#include "eddsa.h"
 #include "eddsa-internal.h"
 
-#include "ecc-internal.h"
+#include "nettle-types.h"
 #include "sha2.h"
 
-void
-ed25519_sha512_sign (const uint8_t *pub,
-		     const uint8_t *priv,
-		     size_t length, const uint8_t *msg,
-		     uint8_t *signature)
-{
-  const struct ecc_curve *ecc = &_nettle_curve25519;
-  mp_size_t itch = ecc->q.size + _eddsa_sign_itch (ecc);
-  mp_limb_t *scratch = gmp_alloc_limbs (itch);
-#define k2 scratch
-#define scratch_out (scratch + ecc->q.size)
-  struct sha512_ctx ctx;
-  uint8_t digest[SHA512_DIGEST_SIZE];
-#define k1 (digest + ED25519_KEY_SIZE)
-  sha512_init (&ctx);
-  _eddsa_expand_key (ecc, &_nettle_ed25519_sha512, &ctx, priv, digest, k2);
-
-  sha512_update (&ctx, ED25519_KEY_SIZE, k1);
-  _eddsa_sign (ecc, &_nettle_ed25519_sha512, pub,
-	       &ctx,
-	       k2, length, msg, signature, scratch_out);
-
-  gmp_free_limbs (scratch, itch);
-#undef k1
-#undef k2
-#undef scratch_out
-}
+const struct ecc_eddsa _nettle_ed25519_sha512 =
+  {
+    (nettle_hash_update_func *) sha512_update,
+    (nettle_hash_digest_func *) sha512_digest,
+    ~(mp_limb_t) 7,
+    (mp_limb_t) 1 << (254 % GMP_NUMB_BITS),
+  };

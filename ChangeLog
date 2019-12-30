@@ -1,3 +1,24 @@
+2019-12-30  Niels Möller  <nisse@lysator.liu.se>
+
+	Preparation for ed448, based on patch by Daiki Ueno.
+	* eddsa-internal.h (struct ecc_eddsa): New struct for eddsa
+	parameters.
+	* ed25519-sha512.c (_nettle_ed25519_sha512): New parameter struct.
+	* eddsa-expand.c (_eddsa_expand_key): Replace input
+	struct nettle_hash with struct ecc_eddsa, and generalize for
+	ed448. Update all callers.
+	* eddsa-sign.c (_eddsa_sign): Likewise.
+	* eddsa-verify.c (_eddsa_verify): Likewise.
+	* eddsa-compress.c (_eddsa_compress): Store sign bit in most
+	significant bit of last byte, as specified by RFC 8032.
+	* eddsa-decompress.c (_eddsa_decompress): Corresponding update.
+	Also generalize to support ed448, and make validity checks
+	stricter.
+	* testsuite/eddsa-sign-test.c (test_ed25519_sign): New function.
+	(test_main): Use it.
+	* testsuite/eddsa-verify-test.c (test_ed25519): New function.
+	(test_main): Use it.
+
 2019-12-28  Niels Möller  <nisse@lysator.liu.se>
 
 	* bignum.h: Drop unreleted include of nettle-meta.h.
