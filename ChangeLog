@@ -1,3 +1,7 @@
+2020-01-01  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/eddsa-compress-test.c: Test also with curve448.
+
 2019-12-30  Niels Möller  <nisse@lysator.liu.se>
 
 	Preparation for ed448, based on patch by Daiki Ueno.
