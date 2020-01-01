@@ -124,37 +124,48 @@ ecc_mod_pow_2k (const struct ecc_modulo *m,
     }
 }
 
-/* Computes a^{(p-3)/4} = a^{2^446-2^222-1} mod m. Needs 6 * n scratch
+static void
+ecc_mod_pow_2kp1 (const struct ecc_modulo *m,
+		  mp_limb_t *rp, const mp_limb_t *xp,
+		  unsigned k, mp_limb_t *tp)
+{
+  ecc_mod_pow_2k (m, tp, xp, k, rp);
+  ecc_mod_mul (m, rp, tp, xp);
+}
+
+/* Computes a^{(p-3)/4} = a^{2^446-2^222-1} mod m. Needs 5 * n scratch
    space. */
 static void
 ecc_mod_pow_446m224m1 (const struct ecc_modulo *p,
 		       mp_limb_t *rp, const mp_limb_t *ap,
 		       mp_limb_t *scratch)
 {
+/* Note overlap: operations writing to t0 clobber t1. */
 #define t0 scratch
-#define t1 (scratch + 2*ECC_LIMB_SIZE)
-#define t2 (scratch + 4*ECC_LIMB_SIZE)
+#define t1 (scratch + 1*ECC_LIMB_SIZE)
+#define t2 (scratch + 3*ECC_LIMB_SIZE)
 
   ecc_mod_sqr (p, rp, ap);	        /* a^2 */
   ecc_mod_mul (p, t0, ap, rp);		/* a^3 */
   ecc_mod_sqr (p, rp, t0);		/* a^6 */
   ecc_mod_mul (p, t0, ap, rp);		/* a^{2^3-1} */
-  ecc_mod_pow_2k (p, rp, t0, 3, t2);	/* a^{2^6-2^3} */
-  ecc_mod_mul (p, t1, t0, rp);		/* a^{2^6-1} */
+
+  ecc_mod_pow_2kp1 (p, t1, t0, 3, rp);	/* a^{2^6-1} */
   ecc_mod_pow_2k (p, rp, t1, 3, t2);	/* a^{2^9-2^3} */
-  ecc_mod_mul (p, t1, t0, rp);		/* a^{2^9-1} */
-  ecc_mod_pow_2k (p, t0, t1, 9, t2);	/* a^{2^18-2^9} */
-  ecc_mod_mul (p, rp, t1, t0);		/* a^{2^18-1} */
-  ecc_mod_sqr (p, t1, rp);		/* a^{2^19-2} */
-  ecc_mod_mul (p, t0, ap, t1);		/* a^{2^19-1} */
-  ecc_mod_pow_2k (p, t1, t0, 18, t2);	/* a^{2^37-2^18} */
-  ecc_mod_mul (p, t0, rp, t1);		/* a^{2^37-1} */
-  ecc_mod_pow_2k (p, t1, t0, 37, t2);	/* a^{2^74-2^37} */
-  ecc_mod_mul (p, rp, t0, t1);		/* a^{2^74-1} */
+  ecc_mod_mul (p, t2, t0, rp);		/* a^{2^9-1} */
+  ecc_mod_pow_2kp1 (p, t0, t2, 9, rp);	/* a^{2^18-1} */
+
+  ecc_mod_sqr (p, t1, t0);		/* a^{2^19-2} */
+  ecc_mod_mul (p, rp, ap, t1);		/* a^{2^19-1} */
+  ecc_mod_pow_2k (p, t1, rp, 18, t2);	/* a^{2^37-2^18} */
+  ecc_mod_mul (p, rp, t0, t1);		/* a^{2^37-1} */
+  mpn_copyi (t0, rp, p->size);
+
+  ecc_mod_pow_2kp1 (p, rp, t0, 37, t2);	/* a^{2^74-1} */
   ecc_mod_pow_2k (p, t1, rp, 37, t2);	/* a^{2^111-2^37} */
   ecc_mod_mul (p, rp, t0, t1);		/* a^{2^111-1} */
-  ecc_mod_pow_2k (p, t1, rp, 111, t2);	/* a^{2^222-2^111} */
-  ecc_mod_mul (p, t0, rp, t1);		/* a^{2^222-1} */
+  ecc_mod_pow_2kp1 (p, t0, rp, 111, t2);/* a^{2^222-1} */
+
   ecc_mod_sqr (p, t1, t0);		/* a^{2^223-2} */
   ecc_mod_mul (p, rp, ap, t1);		/* a^{2^223-1} */
   ecc_mod_pow_2k (p, t1, rp, 223, t2);	/* a^{2^446-2^223} */
@@ -164,8 +175,7 @@ ecc_mod_pow_446m224m1 (const struct ecc_modulo *p,
 #undef t2
 }
 
-/* Needs 6*ECC_LIMB_SIZE scratch space. */
-#define ECC_448_INV_ITCH (6*ECC_LIMB_SIZE)
+#define ECC_448_INV_ITCH (5*ECC_LIMB_SIZE)
 
 static void ecc_448_inv (const struct ecc_modulo *p,
 			 mp_limb_t *rp, const mp_limb_t *ap,
@@ -207,7 +217,7 @@ ecc_448_zero_p (const struct ecc_modulo *p, mp_limb_t *xp)
 */
 
 /* Needs 4*n space + scratch for ecc_mod_pow_446m224m1. */
-#define ECC_448_SQRT_ITCH (10*ECC_LIMB_SIZE)
+#define ECC_448_SQRT_ITCH (9*ECC_LIMB_SIZE)
 
 static int
 ecc_448_sqrt(const struct ecc_modulo *p, mp_limb_t *rp,

@@ -1,5 +1,12 @@
 2020-01-01  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-448.c (ecc_mod_pow_2kp1): New function.
+	(ecc_mod_pow_446m224m1): Reduce scratch usage from 6*n to 5*n, at
+	the cost of one copy operation. Also use ecc_mod_pow_2kp1 where
+	applicable.
+	(ECC_448_INV_ITCH): Reduce to 5*ECC_LIMB_SIZE.
+	(ECC_448_SQRT_ITCH): Reduce to 9*ECC_LIMB_SIZE.
+
 	* testsuite/eddsa-compress-test.c: Test also with curve448.
 
 2019-12-30  Niels Möller  <nisse@lysator.liu.se>
