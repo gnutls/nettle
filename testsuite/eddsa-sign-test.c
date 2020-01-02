@@ -69,9 +69,8 @@ test_eddsa_sign (const struct ecc_curve *ecc,
       fprintf (stderr, "\n");
       abort ();
     }
-  eddsa->update (ctx, nbytes, k1);
-  
-  _eddsa_sign (ecc, eddsa, public->data, ctx, k2,
+  _eddsa_sign (ecc, eddsa, ctx,
+	       public->data, k1, k2,
 	       msg->length, msg->data, signature, scratch);
 
   if (!MEMEQ (2*nbytes, signature, ref->data))

@@ -82,7 +82,7 @@ _eddsa_decompress (const struct ecc_curve *ecc, mp_limb_t *p,
 
 void
 _eddsa_hash (const struct ecc_modulo *m,
-	     mp_limb_t *rp, const uint8_t *digest);
+	     mp_limb_t *rp, size_t digest_size, const uint8_t *digest);
 
 mp_size_t
 _eddsa_sign_itch (const struct ecc_curve *ecc);
@@ -90,8 +90,9 @@ _eddsa_sign_itch (const struct ecc_curve *ecc);
 void
 _eddsa_sign (const struct ecc_curve *ecc,
 	     const struct ecc_eddsa *eddsa,
-	     const uint8_t *pub,
 	     void *ctx,
+	     const uint8_t *pub,
+	     const uint8_t *k1,
 	     const mp_limb_t *k2,
 	     size_t length,
 	     const uint8_t *msg,

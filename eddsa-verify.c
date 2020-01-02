@@ -106,11 +106,12 @@ _eddsa_verify (const struct ecc_curve *ecc,
   if (mpn_cmp (sp, ecc->q.m, ecc->q.size) >= 0)
     return 0;
 
+  eddsa->update (ctx, eddsa->dom_size, eddsa->dom);
   eddsa->update (ctx, nbytes, signature);
   eddsa->update (ctx, nbytes, pub);
   eddsa->update (ctx, length, msg);
   eddsa->digest (ctx, 2*nbytes, hash);
-  _eddsa_hash (&ecc->q, hp, hash);
+  _eddsa_hash (&ecc->q, hp, 2*nbytes, hash);
 
   /* Compute h A + R - s G, which should be the neutral point */
   ecc->mul (ecc, P, hp, A, scratch_out);

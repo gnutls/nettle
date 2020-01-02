@@ -2,6 +2,21 @@
 
 	* eddsa-internal.h (struct ecc_eddsa): Add magic "dom" string,
 	needed for ed448.
+	* ed25519-sha512.c (_nettle_ed25519_sha512): Empty dom string.
+	* ed448-shake256.c (_nettle_ed448_shake256): New file and
+	parameter struct.
+
+	* eddsa-hash.c (_eddsa_hash): Add digest_size as input argument.
+	Handle ed448 digests with two extra bytes. Update callers.
+	* eddsa-verify.c (_eddsa_verify): Hash dom string.
+	* eddsa-sign.c (_eddsa_sign_itch): Assert that
+	_eddsa_compress_itch isn't too large.
+	(_eddsa_sign): New argument k1, with the hash prefix. Add hashing
+	of this prefix and the dom string. Update callers. Fix final
+	reduction, it's different for ed25519, with q slightly larger than
+	a power of two, and ed448, with q slightly smaller.
+	* eddsa-pubkey.c (_eddsa_public_key_itch): Assert that
+	_eddsa_compress_itch isn't too large.
 
 2020-01-01  Niels Möller  <nisse@lysator.liu.se>
 

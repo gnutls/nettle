@@ -45,14 +45,16 @@
 mp_size_t
 _eddsa_sign_itch (const struct ecc_curve *ecc)
 {
+  assert (_eddsa_compress_itch (ecc) <= ecc->mul_g_itch);
   return 5*ecc->p.size + ecc->mul_g_itch;
 }
 
 void
 _eddsa_sign (const struct ecc_curve *ecc,
 	     const struct ecc_eddsa *eddsa,
-	     const uint8_t *pub,
 	     void *ctx,
+	     const uint8_t *pub,
+	     const uint8_t *k1,
 	     const mp_limb_t *k2,
 	     size_t length,
 	     const uint8_t *msg,
@@ -61,6 +63,8 @@ _eddsa_sign (const struct ecc_curve *ecc,
 {
   mp_size_t size;
   size_t nbytes;
+  mp_limb_t q, cy;
+
 #define rp scratch
 #define hp (scratch + size)
 #define P (scratch + 2*size)
@@ -71,32 +75,51 @@ _eddsa_sign (const struct ecc_curve *ecc,
   size = ecc->p.size;
   nbytes = 1 + ecc->p.bit_size / 8;
 
+  eddsa->update (ctx, eddsa->dom_size, eddsa->dom);
+  eddsa->update (ctx, nbytes, k1);
   eddsa->update (ctx, length, msg);
   eddsa->digest (ctx, 2*nbytes, hash);
-  _eddsa_hash (&ecc->q, rp, hash);
+  _eddsa_hash (&ecc->q, rp, 2*nbytes, hash);
+
   ecc->mul_g (ecc, P, rp, scratch_out);
   _eddsa_compress (ecc, signature, P, scratch_out);
 
+  eddsa->update (ctx, eddsa->dom_size, eddsa->dom);
   eddsa->update (ctx, nbytes, signature);
   eddsa->update (ctx, nbytes, pub);
   eddsa->update (ctx, length, msg);
   eddsa->digest (ctx, 2*nbytes, hash);
-  _eddsa_hash (&ecc->q, hp, hash);
+  _eddsa_hash (&ecc->q, hp, 2*nbytes, hash);
 
   ecc_modq_mul (ecc, sp, hp, k2);
   ecc_modq_add (ecc, sp, sp, rp); /* FIXME: Can be plain add */
-  /* FIXME: Special code duplicated in ecc_25519_modq and ecc_eh_to_a.
-     Define a suitable method? */
-  {
-    unsigned shift;
-    mp_limb_t cy;
-    assert (ecc->p.bit_size == 255);
-    shift = ecc->q.bit_size - 1 - GMP_NUMB_BITS * (ecc->p.size - 1);
-    cy = mpn_submul_1 (sp, ecc->q.m, ecc->p.size,
-		       sp[ecc->p.size-1] >> shift);
-    assert (cy < 2);
-    cnd_add_n (cy, sp, ecc->q.m, ecc->p.size);
-  }
+  if (ecc->p.bit_size == 255)
+    {
+      /* FIXME: Special code duplicated in ecc_25519_modq
+	 Define a suitable method for canonical reduction? */
+
+      /* q is slightly larger than 2^252, underflow from below
+	 mpn_submul_1 is unlikely. */
+      unsigned shift = 252 - GMP_NUMB_BITS * (ecc->p.size - 1);
+      q = sp[ecc->p.size-1] >> shift;
+    }
+  else
+    {
+      unsigned shift;
+
+      assert (ecc->p.bit_size == 448);
+      /* q is slightly smaller than 2^446 */
+      shift = 446 - GMP_NUMB_BITS * (ecc->p.size - 1);
+      /* Add one, then it's possible but unlikely that below
+	 mpn_submul_1 does *not* underflow. */
+      q = (sp[ecc->p.size-1] >> shift) + 1;
+    }
+
+  cy = mpn_submul_1 (sp, ecc->q.m, ecc->p.size, q);
+  assert (cy < 2);
+  cy -= cnd_add_n (cy, sp, ecc->q.m, ecc->p.size);
+  assert (cy == 0);
+
   mpn_get_base256_le (signature + nbytes, nbytes, sp, ecc->q.size);
 #undef rp
 #undef hp
