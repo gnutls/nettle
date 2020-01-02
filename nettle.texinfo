@@ -5213,6 +5213,31 @@ Verifies a message using the provided public key. Returns 1 if the
 signature is valid, otherwise 0.
 @end deftypefun
 
+Nettle also provides Ed448, an EdDSA signature scheme based on an
+Edwards curve equivalent to curve448.
+
+@defvr Constant ED448_KEY_SIZE
+The size of a private or public Ed448 key, 57 octets.
+@end defvr
+
+@defvr Constant ED448_SIGNATURE_SIZE
+The size of an Ed448 signature, 114 octets.
+@end defvr
+
+@deftypefun void ed448_shake256_public_key (uint8_t *@var{pub}, const uint8_t *@var{priv})
+Computes the public key corresponding to the given private key. Both
+input and output are of size @code{ED448_KEY_SIZE}.
+@end deftypefun
+
+@deftypefun void ed448_shake256_sign (const uint8_t *@var{pub}, const uint8_t *@var{priv}, size_t @var{length}, const uint8_t *@var{msg}, uint8_t *@var{signature})
+Signs a message using the provided key pair.
+@end deftypefun
+
+@deftypefun int ed448_shake256_verify (const uint8_t *@var{pub}, size_t @var{length}, const uint8_t *@var{msg}, const uint8_t *@var{signature})
+Verifies a message using the provided public key. Returns 1 if the
+signature is valid, otherwise 0.
+@end deftypefun
+
 @node Randomness, ASCII encoding, Public-key algorithms, Reference
 @comment  node-name,  next,  previous,  up
 @section Randomness

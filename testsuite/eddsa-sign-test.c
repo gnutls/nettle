@@ -33,6 +33,7 @@
 
 #include "eddsa.h"
 #include "eddsa-internal.h"
+#include "sha3.h"
 
 static void
 test_eddsa_sign (const struct ecc_curve *ecc,
@@ -112,6 +113,19 @@ test_ed25519_sign (const struct tstring *public,
 		   public, private, msg, ref);
 }
 
+static void
+test_ed448_sign (const struct tstring *public,
+		 const struct tstring *private,
+		 const struct tstring *msg,
+		 const struct tstring *ref)
+{
+  struct sha3_256_ctx ctx;
+
+  sha3_256_init (&ctx);
+  test_eddsa_sign (&_nettle_curve448, &_nettle_ed448_shake256, &ctx,
+		   public, private, msg, ref);
+}
+
 void
 test_main (void)
 {
@@ -150,4 +164,59 @@ test_main (void)
 			  "99df1340cce54626 183144ef46887163"
 			  "4b0a5c0033534108 e1c67c0dc99d3014"
 			  "f01084e98c95e101 4b309b1dbb2e6704"));
+  /* Based on a few of the test vectors from RFC 8032 */
+  test_ed448_sign (SHEX("5fd7449b59b461fd 2ce787ec616ad46a"
+			"1da1342485a70e1f 8a0ea75d80e96778"
+			"edf124769b46c706 1bd6783df1e50f6c"
+			"d1fa1abeafe82561 80"),
+		   SHEX("6c82a562cb808d10 d632be89c8513ebf"
+			"6c929f34ddfa8c9f 63c9960ef6e348a3"
+			"528c8a3fcc2f044e 39a3fc5b94492f8f"
+			"032e7549a20098f9 5b"),
+		   SHEX(""),
+		   SHEX("533a37f6bbe45725 1f023c0d88f976ae"
+			"2dfb504a843e34d2 074fd823d41a591f"
+			"2b233f034f628281 f2fd7a22ddd47d78"
+			"28c59bd0a21bfd39 80ff0d2028d4b18a"
+			"9df63e006c5d1c2d 345b925d8dc00b41"
+			"04852db99ac5c7cd da8530a113a0f4db"
+			"b61149f05a736326 8c71d95808ff2e65"
+			"2600"));
+  test_ed448_sign (SHEX("43ba28f430cdff45 6ae531545f7ecd0a"
+			"c834a55d9358c037 2bfa0c6c6798c086"
+			"6aea01eb00742802 b8438ea4cb82169c"
+			"235160627b4c3a94 80"),
+		   SHEX("c4eab05d357007c6 32f3dbb48489924d"
+			"552b08fe0c353a0d 4a1f00acda2c463a"
+			"fbea67c5e8d2877c 5e3bc397a659949e"
+			"f8021e954e0a1227 4e"),
+		   SHEX("03"),
+		   SHEX("26b8f91727bd6289 7af15e41eb43c377"
+			"efb9c610d48f2335 cb0bd0087810f435"
+			"2541b143c4b981b7 e18f62de8ccdf633"
+			"fc1bf037ab7cd779 805e0dbcc0aae1cb"
+			"cee1afb2e027df36 bc04dcecbf154336"
+			"c19f0af7e0a64729 05e799f1953d2a0f"
+			"f3348ab21aa4adaf d1d234441cf807c0"
+			"3a00"));
+  test_ed448_sign (SHEX("df9705f58edbab80 2c7f8363cfe5560a"
+			"b1c6132c20a9f1dd 163483a26f8ac53a"
+			"39d6808bf4a1dfbd 261b099bb03b3fb5"
+			"0906cb28bd8a081f 00"),
+		   SHEX("d65df341ad13e008 567688baedda8e9d"
+			"cdc17dc024974ea5 b4227b6530e339bf"
+			"f21f99e68ca6968f 3cca6dfe0fb9f4fa"
+			"b4fa135d5542ea3f 01"),
+		   SHEX("bd0f6a3747cd561b dddf4640a332461a"
+			"4a30a12a434cd0bf 40d766d9c6d458e5"
+			"512204a30c17d1f5 0b5079631f64eb31"
+			"12182da300583546 1113718d1a5ef944"),
+		   SHEX("554bc2480860b49e ab8532d2a533b7d5"
+			"78ef473eeb58c98b b2d0e1ce488a98b1"
+			"8dfde9b9b90775e6 7f47d4a1c3482058"
+			"efc9f40d2ca033a0 801b63d45b3b722e"
+			"f552bad3b4ccb667 da350192b61c508c"
+			"f7b6b5adadc2c8d9 a446ef003fb05cba"
+			"5f30e88e36ec2703 b349ca229c267083"
+			"3900"));
 }

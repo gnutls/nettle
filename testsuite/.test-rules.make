@@ -286,6 +286,9 @@ eddsa-verify-test$(EXEEXT): eddsa-verify-test.$(OBJEXT)
 ed25519-test$(EXEEXT): ed25519-test.$(OBJEXT)
 	$(LINK) ed25519-test.$(OBJEXT) $(TEST_OBJS) -o ed25519-test$(EXEEXT)
 
+ed448-test$(EXEEXT): ed448-test.$(OBJEXT)
+	$(LINK) ed448-test.$(OBJEXT) $(TEST_OBJS) -o ed448-test$(EXEEXT)
+
 sha1-huge-test$(EXEEXT): sha1-huge-test.$(OBJEXT)
 	$(LINK) sha1-huge-test.$(OBJEXT) $(TEST_OBJS) -o sha1-huge-test$(EXEEXT)
 

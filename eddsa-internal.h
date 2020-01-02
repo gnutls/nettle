@@ -66,6 +66,7 @@ struct ecc_eddsa
 };
 
 extern const struct ecc_eddsa _nettle_ed25519_sha512;
+extern const struct ecc_eddsa _nettle_ed448_shake256;
 
 mp_size_t
 _eddsa_compress_itch (const struct ecc_curve *ecc);

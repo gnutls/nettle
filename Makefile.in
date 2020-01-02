@@ -192,7 +192,9 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  eddsa-compress.c eddsa-decompress.c eddsa-expand.c \
 		  eddsa-hash.c eddsa-pubkey.c eddsa-sign.c eddsa-verify.c \
 		  ed25519-sha512.c ed25519-sha512-pubkey.c \
-		  ed25519-sha512-sign.c ed25519-sha512-verify.c
+		  ed25519-sha512-sign.c ed25519-sha512-verify.c \
+		  ed448-shake256.c ed448-shake256-pubkey.c \
+		  ed448-shake256-sign.c ed448-shake256-verify.c
 
 OPT_SOURCES = fat-x86_64.c fat-arm.c mini-gmp.c
 

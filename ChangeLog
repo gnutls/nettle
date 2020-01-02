@@ -18,6 +18,23 @@
 	* eddsa-pubkey.c (_eddsa_public_key_itch): Assert that
 	_eddsa_compress_itch isn't too large.
 
+	Implementation of ed448-shake256, based on patch by Daiki Ueno.
+	* ed448-shake256-pubkey.c (ed448_shake256_public_key): New file
+	and function.
+	* ed448-shake256-sign.c (ed448_shake256_sign): New file and function.
+	* ed448-shake256-verify.c (ed448_shake256_verify): New file and function.
+
+	* Makefile.in (hogweed_SOURCES): Add new ed448 files.
+
+	* testsuite/eddsa-verify-test.c (test_ed448): New function.
+	(test_main): New ed448 tests.
+	* testsuite/eddsa-sign-test.c (test_ed448_sign): New function.
+	(test_main): New ed448 tests.
+	* testsuite/ed448-test.c: New tests.
+	* testsuite/Makefile.in (TS_HOGWEED_SOURCES): Add ed448-test.c.
+
+	* nettle.texinfo (Curve 25519 and Curve 448): Document ed448.
+
 2020-01-01  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-448.c (ecc_mod_pow_2kp1): New function.
