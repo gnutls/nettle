@@ -1,6 +1,18 @@
 2020-01-02  Niels Möller  <nisse@lysator.liu.se>
 
-	* eddsa-internal.h (struct ecc_eddsa): Add magic "dom" string,
+	* eddsa-internal.h (nettle_eddsa_dom_func): New typedef.
+	(struct ecc_eddsa): Use function pointer to represent eddsa dom
+	string. To avoid calling sha512_update with empty input for
+	ed25519.
+	* ed448-shake256.c (ed448_dom): New function, calling
+	sha3_256_update with the magic dom prefix.
+	(_nettle_ed448_shake256): Point to it.
+	* ed25519-sha512.c (_nettle_ed25519_sha512): Add do-nothing dom function.
+
+	* eddsa-sign.c (_eddsa_sign): Update to use dom function pointer.
+	* eddsa-verify.c (_eddsa_verify): Likewise.
+
+	* eddsa-internal.h (struct ecc_eddsa): Add magic dom string,
 	needed for ed448.
 	* ed25519-sha512.c (_nettle_ed25519_sha512): Empty dom string.
 	* ed448-shake256.c (_nettle_ed448_shake256): New file and

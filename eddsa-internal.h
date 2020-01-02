@@ -53,13 +53,14 @@
 struct ecc_curve;
 struct ecc_modulo;
 
+typedef void nettle_eddsa_dom_func(void *ctx);
+
 struct ecc_eddsa
 {
   /* Hash function to use */
   nettle_hash_update_func *update;
   nettle_hash_digest_func *digest;
-  const uint8_t *dom;
-  unsigned dom_size;
+  nettle_eddsa_dom_func *dom;
   /* For generating the secret scalar */
   mp_limb_t low_mask;
   mp_limb_t high_bit;

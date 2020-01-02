@@ -39,14 +39,22 @@
 #include "sha3.h"
 
 #define DOM_SIZE 10
-static const uint8_t ed448_dom[DOM_SIZE] =
-  { 'S', 'i', 'g', 'E', 'd', '4', '4', '8', 0, 0};
+
+static nettle_eddsa_dom_func ed448_dom;
+
+static void
+ed448_dom(void *ctx)
+{
+  static const uint8_t dom[DOM_SIZE] =
+    { 'S', 'i', 'g', 'E', 'd', '4', '4', '8', 0, 0};
+  sha3_256_update (ctx, DOM_SIZE, dom);
+}
 
 const struct ecc_eddsa _nettle_ed448_shake256 =
   {
     (nettle_hash_update_func *) sha3_256_update,
     (nettle_hash_digest_func *) sha3_256_shake,
-    ed448_dom, DOM_SIZE,
+    ed448_dom,
     ~(mp_limb_t) 3,
     (mp_limb_t) 1 << (447 % GMP_NUMB_BITS),
   };

@@ -106,7 +106,7 @@ _eddsa_verify (const struct ecc_curve *ecc,
   if (mpn_cmp (sp, ecc->q.m, ecc->q.size) >= 0)
     return 0;
 
-  eddsa->update (ctx, eddsa->dom_size, eddsa->dom);
+  eddsa->dom (ctx);
   eddsa->update (ctx, nbytes, signature);
   eddsa->update (ctx, nbytes, pub);
   eddsa->update (ctx, length, msg);
