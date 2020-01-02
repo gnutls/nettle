@@ -42,6 +42,7 @@ const struct ecc_eddsa _nettle_ed25519_sha512 =
   {
     (nettle_hash_update_func *) sha512_update,
     (nettle_hash_digest_func *) sha512_digest,
+    NULL, 0,
     ~(mp_limb_t) 7,
     (mp_limb_t) 1 << (254 % GMP_NUMB_BITS),
   };

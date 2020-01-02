@@ -1,3 +1,8 @@
+2020-01-02  Niels Möller  <nisse@lysator.liu.se>
+
+	* eddsa-internal.h (struct ecc_eddsa): Add magic "dom" string,
+	needed for ed448.
+
 2020-01-01  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-448.c (ecc_mod_pow_2kp1): New function.

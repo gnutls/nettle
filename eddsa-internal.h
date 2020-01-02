@@ -58,6 +58,8 @@ struct ecc_eddsa
   /* Hash function to use */
   nettle_hash_update_func *update;
   nettle_hash_digest_func *digest;
+  const uint8_t *dom;
+  unsigned dom_size;
   /* For generating the secret scalar */
   mp_limb_t low_mask;
   mp_limb_t high_bit;
