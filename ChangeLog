@@ -1,3 +1,17 @@
+2020-01-03  Niels Möller  <nisse@lysator.liu.se>
+
+	Add benchmarking of ed25519, ed448 and curve448.
+	* examples/hogweed-benchmark.c: (struct eddsa_ctx): New struct.
+	(bench_eddsa_init, bench_eddsa_sign, bench_eddsa_verify)
+	(bench_eddsa_clear): New functions.
+	(struct curve_ctx): New struct, generalizing struct curve25519_ctx.
+	(bench_curve_init, bench_curve_mul_g, bench_curve_mul)
+	(bench_curve_clear): New functions.
+	(struct curve25519_ctx, bench_curve25519_mul_g)
+	(bench_curve25519_mul, bench_curve25519): Deleted.
+	(alg_list): Add eddsa and curve entries.
+	(main): Delete call to bench_curve25519.
+
 2020-01-02  Niels Möller  <nisse@lysator.liu.se>
 
 	* eddsa-internal.h (nettle_eddsa_dom_func): New typedef.
