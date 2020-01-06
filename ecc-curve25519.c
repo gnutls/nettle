@@ -46,11 +46,11 @@
 
 #define PHIGH_BITS (GMP_NUMB_BITS * ECC_LIMB_SIZE - 255)
 
-#if HAVE_NATIVE_ecc_25519_modp
+#if HAVE_NATIVE_ecc_curve25519_modp
 
-#define ecc_25519_modp _nettle_ecc_25519_modp
+#define ecc_curve25519_modp _nettle_ecc_curve25519_modp
 void
-ecc_25519_modp (const struct ecc_modulo *m, mp_limb_t *rp);
+ecc_curve25519_modp (const struct ecc_modulo *m, mp_limb_t *rp);
 #else
 
 #if PHIGH_BITS == 0
@@ -58,7 +58,7 @@ ecc_25519_modp (const struct ecc_modulo *m, mp_limb_t *rp);
 #endif
 
 static void
-ecc_25519_modp(const struct ecc_modulo *m UNUSED, mp_limb_t *rp)
+ecc_curve25519_modp(const struct ecc_modulo *m UNUSED, mp_limb_t *rp)
 {
   mp_limb_t hi, cy;
 
@@ -69,7 +69,7 @@ ecc_25519_modp(const struct ecc_modulo *m UNUSED, mp_limb_t *rp)
   rp[ECC_LIMB_SIZE-1] = (hi & (GMP_NUMB_MASK >> PHIGH_BITS))
     + sec_add_1 (rp, rp, ECC_LIMB_SIZE - 1, 19 * cy);
 }
-#endif /* HAVE_NATIVE_ecc_25519_modp */
+#endif /* HAVE_NATIVE_ecc_curve25519_modp */
 
 #define QHIGH_BITS (GMP_NUMB_BITS * ECC_LIMB_SIZE - 252)
 
@@ -78,7 +78,7 @@ ecc_25519_modp(const struct ecc_modulo *m UNUSED, mp_limb_t *rp)
 #endif
 
 static void
-ecc_25519_modq (const struct ecc_modulo *q, mp_limb_t *rp)
+ecc_curve25519_modq (const struct ecc_modulo *q, mp_limb_t *rp)
 {
   mp_size_t n;
   mp_limb_t cy;
@@ -180,7 +180,7 @@ ecc_mod_pow_252m3 (const struct ecc_modulo *m,
 /* Needs 5*ECC_LIMB_SIZE scratch space. */
 #define ECC_25519_INV_ITCH (5*ECC_LIMB_SIZE)
 
-static void ecc_25519_inv (const struct ecc_modulo *p,
+static void ecc_curve25519_inv (const struct ecc_modulo *p,
 			   mp_limb_t *rp, const mp_limb_t *ap,
 			   mp_limb_t *scratch)
 {
@@ -203,7 +203,7 @@ static void ecc_25519_inv (const struct ecc_modulo *p,
 
 /* First, do a canonical reduction, then check if zero */
 static int
-ecc_25519_zero_p (const struct ecc_modulo *p, mp_limb_t *xp)
+ecc_curve25519_zero_p (const struct ecc_modulo *p, mp_limb_t *xp)
 {
   mp_limb_t cy;
   mp_limb_t w;
@@ -239,7 +239,7 @@ ecc_25519_zero_p (const struct ecc_modulo *p, mp_limb_t *xp)
 #define ECC_25519_SQRT_ITCH (9*ECC_LIMB_SIZE)
 
 static int
-ecc_25519_sqrt(const struct ecc_modulo *p, mp_limb_t *rp,
+ecc_curve25519_sqrt(const struct ecc_modulo *p, mp_limb_t *rp,
 	       const mp_limb_t *up, const mp_limb_t *vp,
 	       mp_limb_t *scratch)
 {
@@ -271,9 +271,9 @@ ecc_25519_sqrt(const struct ecc_modulo *p, mp_limb_t *rp,
   ecc_mod_sqr (p, x2, rp);
   ecc_mod_mul (p, vx2, x2, vp);
   ecc_mod_add (p, t0, vx2, up);
-  neg = ecc_25519_zero_p (p, t0);
+  neg = ecc_curve25519_zero_p (p, t0);
   ecc_mod_sub (p, t0, up, vx2);
-  pos = ecc_25519_zero_p (p, t0);
+  pos = ecc_curve25519_zero_p (p, t0);
 
   ecc_mod_mul (p, t0, rp, ecc_sqrt_z);
   cnd_copy (neg, rp, t0, ECC_LIMB_SIZE);
@@ -306,10 +306,10 @@ const struct ecc_curve _nettle_curve25519 =
     NULL,
     ecc_pp1h,
 
-    ecc_25519_modp,
-    ecc_25519_modp,
-    ecc_25519_inv,
-    ecc_25519_sqrt,
+    ecc_curve25519_modp,
+    ecc_curve25519_modp,
+    ecc_curve25519_inv,
+    ecc_curve25519_sqrt,
   },
   {
     253,
@@ -325,8 +325,8 @@ const struct ecc_curve _nettle_curve25519 =
     NULL,
     ecc_qp1h,
 
-    ecc_25519_modq,
-    ecc_25519_modq,
+    ecc_curve25519_modq,
+    ecc_curve25519_modq,
     ecc_mod_inv,
     NULL,
   },

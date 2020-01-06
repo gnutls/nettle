@@ -46,12 +46,12 @@
 #include "ecc-curve448.h"
 
 #if HAVE_NATIVE_ecc_curve448_modp
-#define ecc_448_modp _nettle_ecc_curve448_modp
+#define ecc_curve448_modp _nettle_ecc_curve448_modp
 void
-ecc_448_modp (const struct ecc_modulo *m, mp_limb_t *rp);
+ecc_curve448_modp (const struct ecc_modulo *m, mp_limb_t *rp);
 #elif GMP_NUMB_BITS == 64
 static void
-ecc_448_modp(const struct ecc_modulo *m, mp_limb_t *rp)
+ecc_curve448_modp(const struct ecc_modulo *m, mp_limb_t *rp)
 {
   /* Let B = 2^64, b = 2^32 = sqrt(B).
      p = B^7 - b B^3 - 1 ==> B^7 = b B^3 + 1
@@ -95,7 +95,7 @@ ecc_448_modp(const struct ecc_modulo *m, mp_limb_t *rp)
   assert (c7 == 0);
 }
 #else
-#define ecc_448_modp ecc_mod
+#define ecc_curve448_modp ecc_mod
 #endif
 
 /* Needs 2*ecc->size limbs at rp, and 2*ecc->size additional limbs of
@@ -175,9 +175,9 @@ ecc_mod_pow_446m224m1 (const struct ecc_modulo *p,
 #undef t2
 }
 
-#define ECC_448_INV_ITCH (5*ECC_LIMB_SIZE)
+#define ECC_CURVE448_INV_ITCH (5*ECC_LIMB_SIZE)
 
-static void ecc_448_inv (const struct ecc_modulo *p,
+static void ecc_curve448_inv (const struct ecc_modulo *p,
 			 mp_limb_t *rp, const mp_limb_t *ap,
 			 mp_limb_t *scratch)
 {
@@ -194,7 +194,7 @@ static void ecc_448_inv (const struct ecc_modulo *p,
 
 /* First, do a canonical reduction, then check if zero */
 static int
-ecc_448_zero_p (const struct ecc_modulo *p, mp_limb_t *xp)
+ecc_curve448_zero_p (const struct ecc_modulo *p, mp_limb_t *xp)
 {
   mp_limb_t cy;
   mp_limb_t w;
@@ -217,10 +217,10 @@ ecc_448_zero_p (const struct ecc_modulo *p, mp_limb_t *xp)
 */
 
 /* Needs 4*n space + scratch for ecc_mod_pow_446m224m1. */
-#define ECC_448_SQRT_ITCH (9*ECC_LIMB_SIZE)
+#define ECC_CURVE448_SQRT_ITCH (9*ECC_LIMB_SIZE)
 
 static int
-ecc_448_sqrt(const struct ecc_modulo *p, mp_limb_t *rp,
+ecc_curve448_sqrt(const struct ecc_modulo *p, mp_limb_t *rp,
 	     const mp_limb_t *up, const mp_limb_t *vp,
 	     mp_limb_t *scratch)
 {
@@ -253,7 +253,7 @@ ecc_448_sqrt(const struct ecc_modulo *p, mp_limb_t *rp,
   ecc_mod_mul (p, vx2, x2, vp);
   ecc_mod_sub (p, t0, vx2, up);
 
-  return ecc_448_zero_p (p, t0);
+  return ecc_curve448_zero_p (p, t0);
 
 #undef u3v
 #undef u5v3
@@ -275,8 +275,8 @@ const struct ecc_curve _nettle_curve448 =
     ECC_LIMB_SIZE,
     ECC_BMODP_SIZE,
     0,
-    ECC_448_INV_ITCH,
-    ECC_448_SQRT_ITCH,
+    ECC_CURVE448_INV_ITCH,
+    ECC_CURVE448_SQRT_ITCH,
 
     ecc_p,
     ecc_Bmodp,
@@ -284,10 +284,10 @@ const struct ecc_curve _nettle_curve448 =
     NULL,
     ecc_pp1h,
 
-    ecc_448_modp,
-    ecc_448_modp,
-    ecc_448_inv,
-    ecc_448_sqrt,
+    ecc_curve448_modp,
+    ecc_curve448_modp,
+    ecc_curve448_inv,
+    ecc_curve448_sqrt,
   },
   {
     446,
@@ -318,7 +318,7 @@ const struct ecc_curve _nettle_curve448 =
   ECC_DUP_EH_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_A_EH_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_G_EH_ITCH (ECC_LIMB_SIZE),
-  ECC_EH_TO_A_ITCH (ECC_LIMB_SIZE, ECC_448_INV_ITCH),
+  ECC_EH_TO_A_ITCH (ECC_LIMB_SIZE, ECC_CURVE448_INV_ITCH),
 
   ecc_add_eh,
   ecc_add_ehh,

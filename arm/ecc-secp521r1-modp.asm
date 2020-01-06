@@ -45,14 +45,14 @@ define(<F3>, <r8>)
 define(<H>, <r12>)
 define(<N>, <lr>)
 
-	C ecc_521_modp (const struct ecc_modulo *m, mp_limb_t *rp)
+	C ecc_secp521r1_modp (const struct ecc_modulo *m, mp_limb_t *rp)
 	.text
 .Lc511:
 	.int 511
 
 	.align 2
 
-PROLOGUE(_nettle_ecc_521_modp)
+PROLOGUE(_nettle_ecc_secp521r1_modp)
 	push	{r4,r5,r6,r7,r8,lr}
 
 	C Use that B^17 = 2^23 (mod p)
@@ -124,4 +124,4 @@ PROLOGUE(_nettle_ecc_521_modp)
 	stm	RP, {T0,T1,T2,F0,F1,F2,F3,H}	C 9-16
 
 	pop	{r4,r5,r6,r7,r8,pc}
-EPILOGUE(_nettle_ecc_521_modp)
+EPILOGUE(_nettle_ecc_secp521r1_modp)

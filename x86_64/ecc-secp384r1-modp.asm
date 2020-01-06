@@ -51,7 +51,7 @@ define(<C0>, H5)	C Overlap
 define(<TMP>, RP)	C Overlap
 
 
-PROLOGUE(_nettle_ecc_384_modp)
+PROLOGUE(_nettle_ecc_secp384r1_modp)
 	W64_ENTRY(2, 0)
 
 	push	%rbx
@@ -231,4 +231,4 @@ PROLOGUE(_nettle_ecc_384_modp)
 
 	W64_EXIT(2, 0)
 	ret
-EPILOGUE(_nettle_ecc_384_modp)
+EPILOGUE(_nettle_ecc_secp384r1_modp)

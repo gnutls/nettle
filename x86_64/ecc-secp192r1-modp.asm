@@ -41,10 +41,10 @@ define(<H>, <%r9>)
 define(<C1>, <%r10>)
 define(<C2>, <%r11>)
 
-	C ecc_192_modp (const struct ecc_modulo *m, mp_limb_t *rp)
+	C ecc_secp192r1_modp (const struct ecc_modulo *m, mp_limb_t *rp)
 	.text
 	ALIGN(16)
-PROLOGUE(_nettle_ecc_192_modp)
+PROLOGUE(_nettle_ecc_secp192r1_modp)
 	W64_ENTRY(2, 0)
 	mov	16(RP), T2
 	mov	24(RP), T3
@@ -85,4 +85,4 @@ PROLOGUE(_nettle_ecc_192_modp)
 
 	W64_EXIT(2, 0)
 	ret
-EPILOGUE(_nettle_ecc_192_modp)
+EPILOGUE(_nettle_ecc_secp192r1_modp)

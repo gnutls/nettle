@@ -42,7 +42,7 @@
 #include "ecc.h"
 #include "ecc-internal.h"
 
-#if HAVE_NATIVE_ecc_256_redc
+#if HAVE_NATIVE_ecc_secp256r1_redc
 # define USE_REDC 1
 #else
 # define USE_REDC (ECC_REDC_SIZE != 0)
@@ -50,27 +50,27 @@
 
 #include "ecc-secp256r1.h"
 
-#if HAVE_NATIVE_ecc_256_redc
-# define ecc_256_redc _nettle_ecc_256_redc
+#if HAVE_NATIVE_ecc_secp256r1_redc
+# define ecc_secp256r1_redc _nettle_ecc_secp256r1_redc
 void
-ecc_256_redc (const struct ecc_modulo *p, mp_limb_t *rp);
-#else /* !HAVE_NATIVE_ecc_256_redc */
+ecc_secp256r1_redc (const struct ecc_modulo *p, mp_limb_t *rp);
+#else /* !HAVE_NATIVE_ecc_secp256r1_redc */
 # if ECC_REDC_SIZE > 0
-#   define ecc_256_redc ecc_pp1_redc
+#   define ecc_secp256r1_redc ecc_pp1_redc
 # elif ECC_REDC_SIZE == 0
-#   define ecc_256_redc NULL
+#   define ecc_secp256r1_redc NULL
 # else
 #  error Configuration error
 # endif
-#endif /* !HAVE_NATIVE_ecc_256_redc */
+#endif /* !HAVE_NATIVE_ecc_secp256r1_redc */
 
 #if ECC_BMODP_SIZE < ECC_LIMB_SIZE
-#define ecc_256_modp ecc_mod
-#define ecc_256_modq ecc_mod
+#define ecc_secp256r1_modp ecc_mod
+#define ecc_secp256r1_modq ecc_mod
 #elif GMP_NUMB_BITS == 64
 
 static void
-ecc_256_modp (const struct ecc_modulo *p, mp_limb_t *rp)
+ecc_secp256r1_modp (const struct ecc_modulo *p, mp_limb_t *rp)
 {
   mp_limb_t u1, u0;
   mp_size_t n;
@@ -146,7 +146,7 @@ ecc_256_modp (const struct ecc_modulo *p, mp_limb_t *rp)
 }
 
 static void
-ecc_256_modq (const struct ecc_modulo *q, mp_limb_t *rp)
+ecc_secp256r1_modq (const struct ecc_modulo *q, mp_limb_t *rp)
 {
   mp_limb_t u2, u1, u0;
   mp_size_t n;
@@ -255,8 +255,8 @@ const struct ecc_curve _nettle_secp_256r1 =
     ecc_redc_ppm1,
     ecc_pp1h,
 
-    ecc_256_modp,
-    USE_REDC ? ecc_256_redc : ecc_256_modp,
+    ecc_secp256r1_modp,
+    USE_REDC ? ecc_secp256r1_redc : ecc_secp256r1_modp,
     ecc_mod_inv,
     NULL,
   },
@@ -274,8 +274,8 @@ const struct ecc_curve _nettle_secp_256r1 =
     NULL,
     ecc_qp1h,
 
-    ecc_256_modq,
-    ecc_256_modq,
+    ecc_secp256r1_modq,
+    ecc_secp256r1_modq,
     ecc_mod_inv,
     NULL,
   },

@@ -48,11 +48,11 @@ define(<L0>, <r11>)
 define(<L1>, <r12>)
 define(<L2>, <lr>)
 
-	C ecc_224_modp (const struct ecc_modulo *m, mp_limb_t *rp)
+	C ecc_secp224r1_modp (const struct ecc_modulo *m, mp_limb_t *rp)
 	.text
 	.align 2
 
-PROLOGUE(_nettle_ecc_224_modp)
+PROLOGUE(_nettle_ecc_secp224r1_modp)
 	push	{r4,r5,r6,r7,r8,r10,r11,lr}
 
 	add	L2, RP, #28
@@ -121,4 +121,4 @@ PROLOGUE(_nettle_ecc_224_modp)
 	stmdb	RP, {T0,T1,T2,T3,T4,T5,T6}
 
 	pop	{r4,r5,r6,r7,r8,r10,r11,pc}
-EPILOGUE(_nettle_ecc_224_modp)
+EPILOGUE(_nettle_ecc_secp224r1_modp)

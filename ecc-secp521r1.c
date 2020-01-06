@@ -44,10 +44,10 @@
 
 #include "ecc-secp521r1.h"
 
-#if HAVE_NATIVE_ecc_521_modp
-#define ecc_521_modp _nettle_ecc_521_modp
+#if HAVE_NATIVE_ecc_secp521r1_modp
+#define ecc_secp521r1_modp _nettle_ecc_secp521r1_modp
 void
-ecc_521_modp (const struct ecc_modulo *m, mp_limb_t *rp);
+ecc_secp521r1_modp (const struct ecc_modulo *m, mp_limb_t *rp);
 
 #else
 
@@ -57,7 +57,7 @@ ecc_521_modp (const struct ecc_modulo *m, mp_limb_t *rp);
 
 /* Result may be *slightly* larger than 2^521 */
 static void
-ecc_521_modp (const struct ecc_modulo *m UNUSED, mp_limb_t *rp)
+ecc_secp521r1_modp (const struct ecc_modulo *m UNUSED, mp_limb_t *rp)
 {
   /* FIXME: Should use mpn_addlsh_n_ip1 */
   mp_limb_t hi;
@@ -91,8 +91,8 @@ const struct ecc_curve _nettle_secp_521r1 =
     ecc_redc_ppm1,
     ecc_pp1h,
 
-    ecc_521_modp,
-    ecc_521_modp,
+    ecc_secp521r1_modp,
+    ecc_secp521r1_modp,
     ecc_mod_inv,
     NULL,
   },

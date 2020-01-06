@@ -48,18 +48,18 @@
 
 #include "ecc-secp192r1.h"
 
-#if HAVE_NATIVE_ecc_192_modp
+#if HAVE_NATIVE_ecc_secp192r1_modp
 
-#define ecc_192_modp _nettle_ecc_192_modp
+#define ecc_secp192r1_modp _nettle_ecc_secp192r1_modp
 void
-ecc_192_modp (const struct ecc_modulo *m, mp_limb_t *rp);
+ecc_secp192r1_modp (const struct ecc_modulo *m, mp_limb_t *rp);
 
 /* Use that p = 2^{192} - 2^64 - 1, to eliminate 128 bits at a time. */
 
 #elif GMP_NUMB_BITS == 32
 /* p is 6 limbs, p = B^6 - B^2 - 1 */
 static void
-ecc_192_modp (const struct ecc_modulo *m UNUSED, mp_limb_t *rp)
+ecc_secp192r1_modp (const struct ecc_modulo *m UNUSED, mp_limb_t *rp)
 {
   mp_limb_t cy;
 
@@ -84,7 +84,7 @@ ecc_192_modp (const struct ecc_modulo *m UNUSED, mp_limb_t *rp)
 #elif GMP_NUMB_BITS == 64
 /* p is 3 limbs, p = B^3 - B - 1 */
 static void
-ecc_192_modp (const struct ecc_modulo *m UNUSED, mp_limb_t *rp)
+ecc_secp192r1_modp (const struct ecc_modulo *m UNUSED, mp_limb_t *rp)
 {
   mp_limb_t cy;
 
@@ -107,7 +107,7 @@ ecc_192_modp (const struct ecc_modulo *m UNUSED, mp_limb_t *rp)
 }
   
 #else
-#define ecc_192_modp ecc_mod
+#define ecc_secp192r1_modp ecc_mod
 #endif
 
 const struct ecc_curve _nettle_secp_192r1 =
@@ -126,8 +126,8 @@ const struct ecc_curve _nettle_secp_192r1 =
     ecc_redc_ppm1,
     ecc_pp1h,
 
-    ecc_192_modp,
-    ecc_192_modp,
+    ecc_secp192r1_modp,
+    ecc_secp192r1_modp,
     ecc_mod_inv,
     NULL,
   },

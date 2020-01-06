@@ -40,24 +40,24 @@
 #include "ecc.h"
 #include "ecc-internal.h"
 
-#if HAVE_NATIVE_ecc_224_modp
+#if HAVE_NATIVE_ecc_secp224r1_modp
 
 #define USE_REDC 0
-#define ecc_224_modp _nettle_ecc_224_modp
+#define ecc_secp224r1_modp _nettle_ecc_secp224r1_modp
 void
-ecc_224_modp (const struct ecc_modulo *m, mp_limb_t *rp);
+ecc_secp224r1_modp (const struct ecc_modulo *m, mp_limb_t *rp);
 
 #else
 #define USE_REDC (ECC_REDC_SIZE != 0)
-#define ecc_224_modp ecc_mod
+#define ecc_secp224r1_modp ecc_mod
 #endif
 
 #include "ecc-secp224r1.h"
 
 #if ECC_REDC_SIZE < 0
-# define ecc_224_redc ecc_pm1_redc
+# define ecc_secp224r1_redc ecc_pm1_redc
 #elif ECC_REDC_SIZE == 0
-# define ecc_224_redc NULL
+# define ecc_secp224r1_redc NULL
 #else
 # error Configuration error
 #endif
@@ -78,8 +78,8 @@ const struct ecc_curve _nettle_secp_224r1 =
     ecc_redc_ppm1,
     ecc_pp1h,
 
-    ecc_224_modp,
-    USE_REDC ? ecc_224_redc : ecc_224_modp,
+    ecc_secp224r1_modp,
+    USE_REDC ? ecc_secp224r1_redc : ecc_secp224r1_modp,
     ecc_mod_inv,
     NULL,
   },

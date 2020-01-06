@@ -49,11 +49,11 @@ define(<H1>, <T1>)
 define(<C2>, <HP>)
 define(<C4>, <r12>)
 
-	C ecc_192_modp (const struct ecc_modulo *m, mp_limb_t *rp)
+	C ecc_secp192r1_modp (const struct ecc_modulo *m, mp_limb_t *rp)
 	.text
 	.align 2
 
-PROLOGUE(_nettle_ecc_192_modp)
+PROLOGUE(_nettle_ecc_secp192r1_modp)
 	push	{r4,r5,r6,r7,r8,r10}
 	C Reduce two words at a time
 	add	HP, RP, #48
@@ -103,4 +103,4 @@ PROLOGUE(_nettle_ecc_192_modp)
 
 	pop	{r4,r5,r6,r7,r8,r10}
 	bx	lr
-EPILOGUE(_nettle_ecc_192_modp)
+EPILOGUE(_nettle_ecc_secp192r1_modp)

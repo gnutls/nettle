@@ -46,10 +46,10 @@
 
 #include "ecc-secp384r1.h"
 
-#if HAVE_NATIVE_ecc_384_modp
-#define ecc_384_modp _nettle_ecc_384_modp
+#if HAVE_NATIVE_ecc_secp384r1_modp
+#define ecc_secp384r1_modp _nettle_ecc_secp384r1_modp
 void
-ecc_384_modp (const struct ecc_modulo *m, mp_limb_t *rp);
+ecc_secp384r1_modp (const struct ecc_modulo *m, mp_limb_t *rp);
 #elif GMP_NUMB_BITS == 32
 
 /* Use that 2^{384} = 2^{128} + 2^{96} - 2^{32} + 1, and eliminate 256
@@ -62,7 +62,7 @@ ecc_384_modp (const struct ecc_modulo *m, mp_limb_t *rp);
    almost 8 at a time. Do only 7, to avoid additional carry
    propagation, followed by 5. */
 static void
-ecc_384_modp (const struct ecc_modulo *p, mp_limb_t *rp)
+ecc_secp384r1_modp (const struct ecc_modulo *p, mp_limb_t *rp)
 {
   mp_limb_t cy, bw;
 
@@ -106,7 +106,7 @@ ecc_384_modp (const struct ecc_modulo *p, mp_limb_t *rp)
 /* p is 6 limbs, and B^6 - p = B^2 + 2^32 (B - 1) + 1. Eliminate 3
    (almost 4) limbs at a time. */
 static void
-ecc_384_modp (const struct ecc_modulo *p, mp_limb_t *rp)
+ecc_secp384r1_modp (const struct ecc_modulo *p, mp_limb_t *rp)
 {
   mp_limb_t tp[6];
   mp_limb_t cy;
@@ -144,7 +144,7 @@ ecc_384_modp (const struct ecc_modulo *p, mp_limb_t *rp)
   assert (cy == 0);  
 }
 #else
-#define ecc_384_modp ecc_mod
+#define ecc_secp384r1_modp ecc_mod
 #endif
   
 const struct ecc_curve _nettle_secp_384r1 =
@@ -163,8 +163,8 @@ const struct ecc_curve _nettle_secp_384r1 =
     ecc_redc_ppm1,
     ecc_pp1h,
 
-    ecc_384_modp,
-    ecc_384_modp,
+    ecc_secp384r1_modp,
+    ecc_secp384r1_modp,
     ecc_mod_inv,
     NULL,
   },

@@ -95,7 +95,7 @@ _eddsa_sign (const struct ecc_curve *ecc,
   ecc_modq_add (ecc, sp, sp, rp); /* FIXME: Can be plain add */
   if (ecc->p.bit_size == 255)
     {
-      /* FIXME: Special code duplicated in ecc_25519_modq
+      /* FIXME: Special code duplicated in ecc_curve25519_modq
 	 Define a suitable method for canonical reduction? */
 
       /* q is slightly larger than 2^252, underflow from below
