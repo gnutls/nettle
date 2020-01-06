@@ -58,7 +58,7 @@ define(<FOLD>, <
 	sbb	$1, F2
 	sbb	<$>0, F3
 >)
-PROLOGUE(nettle_ecc_256_redc)
+PROLOGUE(_nettle_ecc_256_redc)
 	W64_ENTRY(2, 0)
 	C save all registers that need to be saved
 	push	%rbx
@@ -126,4 +126,4 @@ PROLOGUE(nettle_ecc_256_redc)
 	pop	%rbx
 	W64_EXIT(2, 0)
 	ret
-EPILOGUE(nettle_ecc_256_redc)
+EPILOGUE(_nettle_ecc_256_redc)

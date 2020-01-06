@@ -45,7 +45,7 @@
 #include "ecc-secp521r1.h"
 
 #if HAVE_NATIVE_ecc_521_modp
-#define ecc_521_modp nettle_ecc_521_modp
+#define ecc_521_modp _nettle_ecc_521_modp
 void
 ecc_521_modp (const struct ecc_modulo *m, mp_limb_t *rp);
 

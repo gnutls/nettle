@@ -48,7 +48,7 @@
 
 #if HAVE_NATIVE_ecc_25519_modp
 
-#define ecc_25519_modp nettle_ecc_25519_modp
+#define ecc_25519_modp _nettle_ecc_25519_modp
 void
 ecc_25519_modp (const struct ecc_modulo *m, mp_limb_t *rp);
 #else

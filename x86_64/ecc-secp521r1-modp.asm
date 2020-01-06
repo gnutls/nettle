@@ -48,7 +48,7 @@ define(<U9>, <%r11>)
 define(<T0>, <%r12>)
 define(<T1>, <%r13>)
 
-PROLOGUE(nettle_ecc_521_modp)
+PROLOGUE(_nettle_ecc_521_modp)
 	W64_ENTRY(2, 0)
 	push	%rbx
 	push	%rbp
@@ -155,4 +155,4 @@ PROLOGUE(nettle_ecc_521_modp)
 	pop	%rbx
 	W64_EXIT(2, 0)
 	ret
-EPILOGUE(nettle_ecc_521_modp)
+EPILOGUE(_nettle_ecc_521_modp)

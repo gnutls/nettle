@@ -47,7 +47,7 @@
 #include "ecc-secp384r1.h"
 
 #if HAVE_NATIVE_ecc_384_modp
-#define ecc_384_modp nettle_ecc_384_modp
+#define ecc_384_modp _nettle_ecc_384_modp
 void
 ecc_384_modp (const struct ecc_modulo *m, mp_limb_t *rp);
 #elif GMP_NUMB_BITS == 32

@@ -50,7 +50,7 @@ define(<H>, <lr>)
 	.text
 	.align 2
 
-PROLOGUE(nettle_ecc_384_modp)
+PROLOGUE(_nettle_ecc_384_modp)
 	push	{r4,r5,r6,r7,r8,r10,lr}
 
 	add	RP, RP, #80
@@ -267,4 +267,4 @@ PROLOGUE(nettle_ecc_384_modp)
 	adcs	T3, T3, H
 	stm	RP!, {T0,T1,T2,T3}	C 8-11
 	pop	{r4,r5,r6,r7,r8,r10,pc}
-EPILOGUE(nettle_ecc_384_modp)
+EPILOGUE(_nettle_ecc_384_modp)

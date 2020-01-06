@@ -50,7 +50,7 @@
 
 #if HAVE_NATIVE_ecc_192_modp
 
-#define ecc_192_modp nettle_ecc_192_modp
+#define ecc_192_modp _nettle_ecc_192_modp
 void
 ecc_192_modp (const struct ecc_modulo *m, mp_limb_t *rp);
 

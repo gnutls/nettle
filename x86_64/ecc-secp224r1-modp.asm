@@ -45,7 +45,7 @@ define(<F1>, <%r10>)
 define(<F2>, <%r11>)
 
 	C ecc_224_modp (const struct ecc_modulo *m, mp_limb_t *rp)
-PROLOGUE(nettle_ecc_224_modp)
+PROLOGUE(_nettle_ecc_224_modp)
 	W64_ENTRY(2, 0)
 	mov	48(RP), H0
 	mov	56(RP), H1
@@ -128,4 +128,4 @@ PROLOGUE(nettle_ecc_224_modp)
 
 	W64_EXIT(2, 0)
 	ret
-EPILOGUE(nettle_ecc_224_modp)
+EPILOGUE(_nettle_ecc_224_modp)

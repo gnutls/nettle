@@ -52,7 +52,7 @@ define(<N>, <lr>)
 
 	.align 2
 
-PROLOGUE(nettle_ecc_521_modp)
+PROLOGUE(_nettle_ecc_521_modp)
 	push	{r4,r5,r6,r7,r8,lr}
 
 	C Use that B^17 = 2^23 (mod p)
@@ -124,4 +124,4 @@ PROLOGUE(nettle_ecc_521_modp)
 	stm	RP, {T0,T1,T2,F0,F1,F2,F3,H}	C 9-16
 
 	pop	{r4,r5,r6,r7,r8,pc}
-EPILOGUE(nettle_ecc_521_modp)
+EPILOGUE(_nettle_ecc_521_modp)

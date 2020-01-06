@@ -52,7 +52,7 @@ define(<F3>, <lr>)
 	.text
 	.align 2
 
-PROLOGUE(nettle_ecc_256_redc)
+PROLOGUE(_nettle_ecc_256_redc)
 	push	{r4,r5,r6,r7,r8,r10,r11,lr}
 
 	ldm	RP!, {T0,T1,T2,T3,T4,T5,T6,T7}
@@ -170,4 +170,4 @@ PROLOGUE(nettle_ecc_256_redc)
 	stm	RP, {T0,T1,T2,T3,T4,T5,T6,T7}
 
 	pop	{r4,r5,r6,r7,r8,r10,r11,pc}
-EPILOGUE(nettle_ecc_256_redc)
+EPILOGUE(_nettle_ecc_256_redc)

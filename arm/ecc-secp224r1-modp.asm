@@ -52,7 +52,7 @@ define(<L2>, <lr>)
 	.text
 	.align 2
 
-PROLOGUE(nettle_ecc_224_modp)
+PROLOGUE(_nettle_ecc_224_modp)
 	push	{r4,r5,r6,r7,r8,r10,r11,lr}
 
 	add	L2, RP, #28
@@ -121,4 +121,4 @@ PROLOGUE(nettle_ecc_224_modp)
 	stmdb	RP, {T0,T1,T2,T3,T4,T5,T6}
 
 	pop	{r4,r5,r6,r7,r8,r10,r11,pc}
-EPILOGUE(nettle_ecc_224_modp)
+EPILOGUE(_nettle_ecc_224_modp)

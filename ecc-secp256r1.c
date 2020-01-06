@@ -51,7 +51,7 @@
 #include "ecc-secp256r1.h"
 
 #if HAVE_NATIVE_ecc_256_redc
-# define ecc_256_redc nettle_ecc_256_redc
+# define ecc_256_redc _nettle_ecc_256_redc
 void
 ecc_256_redc (const struct ecc_modulo *p, mp_limb_t *rp);
 #else /* !HAVE_NATIVE_ecc_256_redc */

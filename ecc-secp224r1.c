@@ -43,7 +43,7 @@
 #if HAVE_NATIVE_ecc_224_modp
 
 #define USE_REDC 0
-#define ecc_224_modp nettle_ecc_224_modp
+#define ecc_224_modp _nettle_ecc_224_modp
 void
 ecc_224_modp (const struct ecc_modulo *m, mp_limb_t *rp);
 

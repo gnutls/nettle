@@ -53,7 +53,7 @@ define(<C4>, <r12>)
 	.text
 	.align 2
 
-PROLOGUE(nettle_ecc_192_modp)
+PROLOGUE(_nettle_ecc_192_modp)
 	push	{r4,r5,r6,r7,r8,r10}
 	C Reduce two words at a time
 	add	HP, RP, #48
@@ -103,4 +103,4 @@ PROLOGUE(nettle_ecc_192_modp)
 
 	pop	{r4,r5,r6,r7,r8,r10}
 	bx	lr
-EPILOGUE(nettle_ecc_192_modp)
+EPILOGUE(_nettle_ecc_192_modp)
