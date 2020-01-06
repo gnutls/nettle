@@ -1,4 +1,4 @@
-/* ecc-256.c
+/* ecc-secp256r1.c
 
    Compile time constant (but machine dependent) tables.
 
@@ -48,7 +48,7 @@
 # define USE_REDC (ECC_REDC_SIZE != 0)
 #endif
 
-#include "ecc-256.h"
+#include "ecc-secp256r1.h"
 
 #if HAVE_NATIVE_ecc_256_redc
 # define ecc_256_redc nettle_ecc_256_redc

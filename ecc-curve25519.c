@@ -1,4 +1,4 @@
-/* ecc-25519.c
+/* ecc-curve25519.c
 
    Arithmetic and tables for curve25519,
 
@@ -42,7 +42,7 @@
 
 #define USE_REDC 0
 
-#include "ecc-25519.h"
+#include "ecc-curve25519.h"
 
 #define PHIGH_BITS (GMP_NUMB_BITS * ECC_LIMB_SIZE - 255)
 

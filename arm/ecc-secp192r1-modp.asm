@@ -1,4 +1,4 @@
-C arm/ecc-192-modp.asm
+C arm/ecc-secp192r1-modp.asm
 
 ifelse(<
    Copyright (C) 2013 Niels Möller
@@ -30,7 +30,7 @@ ifelse(<
    not, see http://www.gnu.org/licenses/.
 >) 
 
-	.file "ecc-192-modp.asm"
+	.file "ecc-secp192r1-modp.asm"
 	.arm
 
 define(<HP>, <r0>) C Overlaps unused modulo argument

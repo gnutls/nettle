@@ -1,4 +1,4 @@
-C arm/ecc-256-redc.asm
+C arm/ecc-secp256r1-redc.asm
 
 ifelse(<
    Copyright (C) 2013 Niels Möller
@@ -30,7 +30,7 @@ ifelse(<
    not, see http://www.gnu.org/licenses/.
 >) 
 
-	.file "ecc-256-redc.asm"
+	.file "ecc-secp256r1-redc.asm"
 	.arm
 
 define(<RP>, <r1>)

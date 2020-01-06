@@ -1,4 +1,4 @@
-/* ecc-192.c
+/* ecc-secp224r1.c
 
    Compile time constant (but machine dependent) tables.
 
@@ -37,103 +37,55 @@
 # include "config.h"
 #endif
 
-#include <assert.h>
-
-/* FIXME: Remove ecc.h include, once prototypes of more internal
-   functions are moved to ecc-internal.h */
 #include "ecc.h"
 #include "ecc-internal.h"
 
+#if HAVE_NATIVE_ecc_224_modp
+
 #define USE_REDC 0
-
-#include "ecc-192.h"
-
-#if HAVE_NATIVE_ecc_192_modp
-
-#define ecc_192_modp nettle_ecc_192_modp
+#define ecc_224_modp nettle_ecc_224_modp
 void
-ecc_192_modp (const struct ecc_modulo *m, mp_limb_t *rp);
+ecc_224_modp (const struct ecc_modulo *m, mp_limb_t *rp);
 
-/* Use that p = 2^{192} - 2^64 - 1, to eliminate 128 bits at a time. */
-
-#elif GMP_NUMB_BITS == 32
-/* p is 6 limbs, p = B^6 - B^2 - 1 */
-static void
-ecc_192_modp (const struct ecc_modulo *m UNUSED, mp_limb_t *rp)
-{
-  mp_limb_t cy;
-
-  /* Reduce from 12 to 9 limbs (top limb small)*/
-  cy = mpn_add_n (rp + 2, rp + 2, rp + 8, 4);
-  cy = sec_add_1 (rp + 6, rp + 6, 2, cy);
-  cy += mpn_add_n (rp + 4, rp + 4, rp + 8, 4);
-  assert (cy <= 2);
-
-  rp[8] = cy;
-
-  /* Reduce from 9 to 6 limbs */
-  cy = mpn_add_n (rp, rp, rp + 6, 3);
-  cy = sec_add_1 (rp + 3, rp + 3, 2, cy);
-  cy += mpn_add_n (rp + 2, rp + 2, rp + 6, 3);
-  cy = sec_add_1 (rp + 5, rp + 5, 1, cy);
-  
-  assert (cy <= 1);
-  cy = cnd_add_n (cy, rp, ecc_Bmodp, 6);
-  assert (cy == 0);  
-}
-#elif GMP_NUMB_BITS == 64
-/* p is 3 limbs, p = B^3 - B - 1 */
-static void
-ecc_192_modp (const struct ecc_modulo *m UNUSED, mp_limb_t *rp)
-{
-  mp_limb_t cy;
-
-  /* Reduce from 6 to 5 limbs (top limb small)*/
-  cy = mpn_add_n (rp + 1, rp + 1, rp + 4, 2);
-  cy = sec_add_1 (rp + 3, rp + 3, 1, cy);
-  cy += mpn_add_n (rp + 2, rp + 2, rp + 4, 2);
-  assert (cy <= 2);
-
-  rp[4] = cy;
-
-  /* Reduce from 5 to 4 limbs (high limb small) */
-  cy = mpn_add_n (rp, rp, rp + 3, 2);
-  cy = sec_add_1 (rp + 2, rp + 2, 1, cy);
-  cy += mpn_add_n (rp + 1, rp + 1, rp + 3, 2);
-
-  assert (cy <= 1);
-  cy = cnd_add_n (cy, rp, ecc_Bmodp, 3);
-  assert (cy == 0);  
-}
-  
 #else
-#define ecc_192_modp ecc_mod
+#define USE_REDC (ECC_REDC_SIZE != 0)
+#define ecc_224_modp ecc_mod
 #endif
 
-const struct ecc_curve _nettle_secp_192r1 =
+#include "ecc-secp224r1.h"
+
+#if ECC_REDC_SIZE < 0
+# define ecc_224_redc ecc_pm1_redc
+#elif ECC_REDC_SIZE == 0
+# define ecc_224_redc NULL
+#else
+# error Configuration error
+#endif
+
+const struct ecc_curve _nettle_secp_224r1 =
 {
   {
-    192,
-    ECC_LIMB_SIZE,
+    224,
+    ECC_LIMB_SIZE,    
     ECC_BMODP_SIZE,
-    ECC_REDC_SIZE,
+    -ECC_REDC_SIZE,
     ECC_MOD_INV_ITCH (ECC_LIMB_SIZE),
     0,
 
     ecc_p,
     ecc_Bmodp,
-    ecc_Bmodp_shifted,    
+    ecc_Bmodp_shifted,
     ecc_redc_ppm1,
     ecc_pp1h,
 
-    ecc_192_modp,
-    ecc_192_modp,
+    ecc_224_modp,
+    USE_REDC ? ecc_224_redc : ecc_224_modp,
     ecc_mod_inv,
     NULL,
   },
   {
-    192,
-    ECC_LIMB_SIZE,
+    224,
+    ECC_LIMB_SIZE,    
     ECC_BMODQ_SIZE,
     0,
     ECC_MOD_INV_ITCH (ECC_LIMB_SIZE),
@@ -175,7 +127,7 @@ const struct ecc_curve _nettle_secp_192r1 =
   ecc_table
 };
 
-const struct ecc_curve *nettle_get_secp_192r1(void)
+const struct ecc_curve *nettle_get_secp_224r1(void)
 {
-  return &_nettle_secp_192r1;
+  return &_nettle_secp_224r1;
 }

@@ -475,9 +475,9 @@ asm_nettle_optional_list="gcm-hash8.asm cpuid.asm \
 
 asm_hogweed_optional_list=""
 if test "x$enable_public_key" = "xyes" ; then
-  asm_hogweed_optional_list="ecc-192-modp.asm ecc-224-modp.asm \
-    ecc-256-redc.asm ecc-384-modp.asm ecc-521-modp.asm \
-    ecc-25519-modp.asm ecc-curve448-modp.asm"
+  asm_hogweed_optional_list="ecc-secp192r1-modp.asm ecc-secp224r1-modp.asm \
+    ecc-secp256r1-redc.asm ecc-secp384r1-modp.asm ecc-secp521r1-modp.asm \
+    ecc-curve25519-modp.asm ecc-curve448-modp.asm"
 fi
 
 OPT_NETTLE_OBJS=""

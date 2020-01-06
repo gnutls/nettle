@@ -1,4 +1,4 @@
-/* ecc-224.c
+/* ecc-secp521r1.c
 
    Compile time constant (but machine dependent) tables.
 
@@ -40,35 +40,48 @@
 #include "ecc.h"
 #include "ecc-internal.h"
 
-#if HAVE_NATIVE_ecc_224_modp
-
 #define USE_REDC 0
-#define ecc_224_modp nettle_ecc_224_modp
+
+#include "ecc-secp521r1.h"
+
+#if HAVE_NATIVE_ecc_521_modp
+#define ecc_521_modp nettle_ecc_521_modp
 void
-ecc_224_modp (const struct ecc_modulo *m, mp_limb_t *rp);
+ecc_521_modp (const struct ecc_modulo *m, mp_limb_t *rp);
 
 #else
-#define USE_REDC (ECC_REDC_SIZE != 0)
-#define ecc_224_modp ecc_mod
+
+#define B_SHIFT (521 % GMP_NUMB_BITS)
+#define BMODP_SHIFT (GMP_NUMB_BITS - B_SHIFT)
+#define BMODP ((mp_limb_t) 1 << BMODP_SHIFT)
+
+/* Result may be *slightly* larger than 2^521 */
+static void
+ecc_521_modp (const struct ecc_modulo *m UNUSED, mp_limb_t *rp)
+{
+  /* FIXME: Should use mpn_addlsh_n_ip1 */
+  mp_limb_t hi;
+  /* Reduce from 2*ECC_LIMB_SIZE to ECC_LIMB_SIZE + 1 */
+  rp[ECC_LIMB_SIZE]
+    = mpn_addmul_1 (rp, rp + ECC_LIMB_SIZE, ECC_LIMB_SIZE, BMODP);
+  hi = mpn_addmul_1 (rp, rp + ECC_LIMB_SIZE, 1, BMODP);
+  hi = sec_add_1 (rp + 1, rp + 1, ECC_LIMB_SIZE - 1, hi);
+
+  /* Combine hi with top bits, and add in. */
+  hi = (hi << BMODP_SHIFT) | (rp[ECC_LIMB_SIZE-1] >> B_SHIFT);
+  rp[ECC_LIMB_SIZE-1] = (rp[ECC_LIMB_SIZE-1]
+			 & (((mp_limb_t) 1 << B_SHIFT)-1))
+    + sec_add_1 (rp, rp, ECC_LIMB_SIZE - 1, hi);
+}
 #endif
 
-#include "ecc-224.h"
-
-#if ECC_REDC_SIZE < 0
-# define ecc_224_redc ecc_pm1_redc
-#elif ECC_REDC_SIZE == 0
-# define ecc_224_redc NULL
-#else
-# error Configuration error
-#endif
-
-const struct ecc_curve _nettle_secp_224r1 =
+const struct ecc_curve _nettle_secp_521r1 =
 {
   {
-    224,
+    521,
     ECC_LIMB_SIZE,    
     ECC_BMODP_SIZE,
-    -ECC_REDC_SIZE,
+    ECC_REDC_SIZE,
     ECC_MOD_INV_ITCH (ECC_LIMB_SIZE),
     0,
 
@@ -78,13 +91,13 @@ const struct ecc_curve _nettle_secp_224r1 =
     ecc_redc_ppm1,
     ecc_pp1h,
 
-    ecc_224_modp,
-    USE_REDC ? ecc_224_redc : ecc_224_modp,
+    ecc_521_modp,
+    ecc_521_modp,
     ecc_mod_inv,
     NULL,
   },
   {
-    224,
+    521,
     ECC_LIMB_SIZE,    
     ECC_BMODQ_SIZE,
     0,
@@ -127,7 +140,7 @@ const struct ecc_curve _nettle_secp_224r1 =
   ecc_table
 };
 
-const struct ecc_curve *nettle_get_secp_224r1(void)
+const struct ecc_curve *nettle_get_secp_521r1(void)
 {
-  return &_nettle_secp_224r1;
+  return &_nettle_secp_521r1;
 }

@@ -1,4 +1,4 @@
-/* ecc-448.c
+/* ecc-curve448.c
 
    Arithmetic and tables for curve448,
 
@@ -43,7 +43,7 @@
 
 #define USE_REDC 0
 
-#include "ecc-448.h"
+#include "ecc-curve448.h"
 
 #if HAVE_NATIVE_ecc_curve448_modp
 #define ecc_448_modp nettle_ecc_curve448_modp

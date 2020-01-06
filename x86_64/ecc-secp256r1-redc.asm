@@ -1,4 +1,4 @@
-C x86_64/ecc-256-redc.asm
+C x86_64/ecc-secp256r1-redc.asm
 
 ifelse(<
    Copyright (C) 2013 Niels Möller
@@ -30,7 +30,7 @@ ifelse(<
    not, see http://www.gnu.org/licenses/.
 >)
 
-	.file "ecc-256-redc.asm"
+	.file "ecc-secp256r1-redc.asm"
 
 define(<RP>, <%rsi>)
 define(<U0>, <%rdi>) C Overlaps unused modulo input

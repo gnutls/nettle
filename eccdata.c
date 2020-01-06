@@ -432,11 +432,10 @@ ecc_curve_init_str (struct ecc_curve *ecc, enum ecc_type type,
 }
 
 static void
-ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
+ecc_curve_init (struct ecc_curve *ecc, const char *curve)
 {
-  switch (bit_size)
+  if (!strcmp (curve, "secp192r1"))
     {
-    case 192:      
       ecc_curve_init_str (ecc, ECC_TYPE_WEIERSTRASS,
 			  /* p = 2^{192} - 2^{64} - 1 */
 			  "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFE"
@@ -466,8 +465,9 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 		   "35433907297cc378b0015703374729d7a4fe46647084e4ba",
 		   "a2649984f2135c301ea3acb0776cd4f125389b311db3be32");
 
-      break;
-    case 224:
+    }
+  else if (!strcmp (curve, "secp224r1"))
+    {
       ecc_curve_init_str (ecc, ECC_TYPE_WEIERSTRASS,
 			  /* p = 2^{224} - 2^{96} + 1 */
 			  "ffffffffffffffffffffffffffffffff"
@@ -498,8 +498,9 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 		   "ae99feebb5d26945b54892092a8aee02912930fa41cd114e40447301",
 		   "482580a0ec5bc47e88bc8c378632cd196cb3fa058a7114eb03054c9");
 
-      break;
-    case 256:
+    }
+  else if (!strcmp (curve, "secp256r1"))
+    {
       ecc_curve_init_str (ecc, ECC_TYPE_WEIERSTRASS,
 			  /* p = 2^{256} - 2^{224} + 2^{192} + 2^{96} - 1 */
 			  "FFFFFFFF000000010000000000000000"
@@ -530,8 +531,9 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 		   "e2534a3532d08fbba02dde659ee62bd0031fe2db785596ef509302446b030852",
 		   "e0f1575a4c633cc719dfee5fda862d764efc96c3f30ee0055c42c23f184ed8c6");
 
-      break;
-    case 384:
+    }
+  else if (!strcmp (curve, "secp384r1"))
+    {
       ecc_curve_init_str (ecc, ECC_TYPE_WEIERSTRASS,
 			  /* p = 2^{384} - 2^{128} - 2^{96} + 2^{32} - 1 */
 			  "ffffffffffffffffffffffffffffffff"
@@ -567,8 +569,9 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 		   "138251cd52ac9298c1c8aad977321deb97e709bd0b4ca0aca55dc8ad51dcfc9d1589a1597e3a5120e1efd631c63e1835",
 		   "cacae29869a62e1631e8a28181ab56616dc45d918abc09f3ab0e63cf792aa4dced7387be37bba569549f1c02b270ed67");
 
-      break;
-    case 521:
+    }
+  else if (!strcmp (curve, "secp521r1"))
+    {
       ecc_curve_init_str (ecc, ECC_TYPE_WEIERSTRASS,
 			  "1ff" /* p = 2^{521} - 1 */
 			  "ffffffffffffffffffffffffffffffff"
@@ -613,9 +616,15 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 		   "35b5df64ae2ac204c354b483487c9070cdc61c891c5ff39afc06c5d55541d3ceac8659e24afe3d0750e8b88e9f078af066a1d5025b08e5a5e2fbc87412871902f3",
 		   "82096f84261279d2b673e0178eb0b4abb65521aef6e6e32e1b5ae63fe2f19907f279f283e54ba385405224f750a95b85eebb7faef04699d1d9e21f47fc346e4d0d");
 
-      break;
-    case 255:
-      /* Edwards curve used for eddsa25519 and curve25519,
+    }
+  else if (!strcmp (curve, "curve25519"))
+    {
+      /* curve25519, y^2 = x^3 + 486662 x^2 + x (mod p), with p = 2^{255} - 19.
+
+	 According to http://cr.yp.to/papers.html#newelliptic, this
+	 is birationally equivalent to the Edwards curve
+
+	   x^2 + y^2 = 1 + (121665/121666) x^2 y^2 (mod p).
 
 	   -x^2 + y^2 = 1 - (121665/121666) x^2 y^2, with p = 2^{255} - 19.
 
@@ -664,9 +673,9 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 		   "1a739ec193ce1547493aa657c4c9f870",
 		   "47d0e827cb1595e1470eb88580d5716c"
 		   "4cf22832ea2f0ff0df38ab61ca32112f");
-      break;
-
-    case 448:
+    }
+  else if (!strcmp (curve, "curve448"))
+    {
       /* curve448, y^2 = x^3 + 156326 x^2 + x (mod p), with p = 2^{448} - 2^{224} - 1.
 
 	 According to RFC 7748, this is 4-isogenious to the Edwards
@@ -745,14 +754,13 @@ ecc_curve_init (struct ecc_curve *ecc, unsigned bit_size)
 		   "9cb7c02f0457d845c90dc3227b8a5bc1"
 		   "c0d8f97ea1ca9472b5d444285d0d4f5b"
 		   "32e236f86de51839");
-
-      break;
-
-    default:
-      fprintf (stderr, "No known curve for size %d\n", bit_size);
-      exit(EXIT_FAILURE);     
     }
-  ecc->bit_size = bit_size;
+  else
+    {
+      fprintf (stderr, "No known curve with name %s\n", curve);
+      exit(EXIT_FAILURE);
+    }
+  ecc->bit_size = mpz_sizeinbase (ecc->p, 2);
 }
 
 static void
@@ -1312,7 +1320,7 @@ main (int argc, char **argv)
       return EXIT_FAILURE;
     }
 
-  ecc_curve_init (&ecc, atoi(argv[1]));
+  ecc_curve_init (&ecc, argv[1]);
 
   ecc_pippenger_precompute (&ecc, atoi(argv[2]), atoi(argv[3]));
 

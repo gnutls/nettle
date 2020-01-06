@@ -1,4 +1,4 @@
-C x86_64/ecc-224-modp.asm
+C x86_64/ecc-secp224r1-modp.asm
 
 ifelse(<
    Copyright (C) 2013 Niels Möller
@@ -30,7 +30,7 @@ ifelse(<
    not, see http://www.gnu.org/licenses/.
 >)
 
-	.file "ecc-224-modp.asm"
+	.file "ecc-secp224r1-modp.asm"
 
 GMP_NUMB_BITS(64)
 

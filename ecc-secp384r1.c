@@ -1,4 +1,4 @@
-/* ecc-384.c
+/* ecc-secp384r1.c
 
    Compile time constant (but machine dependent) tables.
 
@@ -44,7 +44,7 @@
 
 #define USE_REDC 0
 
-#include "ecc-384.h"
+#include "ecc-secp384r1.h"
 
 #if HAVE_NATIVE_ecc_384_modp
 #define ecc_384_modp nettle_ecc_384_modp

@@ -175,8 +175,9 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  gmp-glue.c cnd-copy.c \
 		  ecc-mod.c ecc-mod-inv.c \
 		  ecc-mod-arith.c ecc-pp1-redc.c ecc-pm1-redc.c \
-		  ecc-192.c ecc-224.c ecc-256.c ecc-384.c ecc-521.c \
-		  ecc-25519.c ecc-448.c \
+		  ecc-curve25519.c ecc-curve448.c \
+		  ecc-secp192r1.c ecc-secp224r1.c ecc-secp256r1.c \
+		  ecc-secp384r1.c ecc-secp521r1.c \
 		  ecc-size.c ecc-j-to-a.c ecc-a-to-j.c \
 		  ecc-dup-jj.c ecc-add-jja.c ecc-add-jjj.c \
 		  ecc-eh-to-a.c \
@@ -350,24 +351,24 @@ des.$(OBJEXT): des.c des.h $(des_headers)
 # k = 14, c =  7, S = 256, T =  42 ( 28 A + 14 D) 12 KB
 # k = 11, c =  6, S = 192, T =  44 ( 33 A + 11 D)  9 KB
 # k = 16, c =  6, S = 128, T =  48 ( 32 A + 16 D)  6 KB
-ecc-192.h: eccdata.stamp
-	./eccdata$(EXEEXT_FOR_BUILD) 192 8 6 $(NUMB_BITS) > $@T && mv $@T $@
+ecc-secp192r1.h: eccdata.stamp
+	./eccdata$(EXEEXT_FOR_BUILD) secp192r1 8 6 $(NUMB_BITS) > $@T && mv $@T $@
 
 # Some reasonable choices for 224:
 # k = 16, c =  7, S = 256, T =  48 ( 32 A + 16 D) ~16 KB
 # k = 10, c =  6, S = 256, T =  50 ( 40 A + 10 D) ~16 KB
 # k = 13, c =  6, S = 192, T =  52 ( 39 A + 13 D) ~12 KB
 # k =  9, c =  5, S = 160, T =  54 ( 45 A +  9 D) ~10 KB
-ecc-224.h: eccdata.stamp
-	./eccdata$(EXEEXT_FOR_BUILD) 224 16 7 $(NUMB_BITS) > $@T && mv $@T $@
+ecc-secp224r1.h: eccdata.stamp
+	./eccdata$(EXEEXT_FOR_BUILD) secp224r1 16 7 $(NUMB_BITS) > $@T && mv $@T $@
 
 # Some reasonable choices for 256:
 # k =  9, c =  6, S = 320, T =  54 ( 45 A +  9 D) 20 KB
 # k = 11, c =  6, S = 256, T =  55 ( 44 A + 11 D) 16 KB
 # k = 19, c =  7, S = 256, T =  57 ( 38 A + 19 D) 16 KB
 # k = 15, c =  6, S = 192, T =  60 ( 45 A + 15 D) 12 KB
-ecc-256.h: eccdata.stamp
-	./eccdata$(EXEEXT_FOR_BUILD) 256 11 6 $(NUMB_BITS) > $@T && mv $@T $@
+ecc-secp256r1.h: eccdata.stamp
+	./eccdata$(EXEEXT_FOR_BUILD) secp256r1 11 6 $(NUMB_BITS) > $@T && mv $@T $@
 
 # Some reasonable choices for 384:
 # k = 16, c =  6, S = 256, T =  80 ( 64 A + 16 D) 24 KB
@@ -377,35 +378,35 @@ ecc-256.h: eccdata.stamp
 # k = 13, c =  5, S = 192, T =  91 ( 78 A + 13 D) 18 KB
 # k = 16, c =  5, S = 160, T =  96 ( 80 A + 16 D) 15 KB
 # k = 32, c =  6, S = 128, T =  96 ( 64 A + 32 D) 12 KB
-ecc-384.h: eccdata.stamp
-	./eccdata$(EXEEXT_FOR_BUILD) 384 32 6 $(NUMB_BITS) > $@T && mv $@T $@
+ecc-secp384r1.h: eccdata.stamp
+	./eccdata$(EXEEXT_FOR_BUILD) secp384r1 32 6 $(NUMB_BITS) > $@T && mv $@T $@
 
 # Some reasonable choices for 521:
 # k = 29, c =  6, S = 192, T = 116 ( 87 A + 29 D) ~27 KB
 # k = 21, c =  5, S = 160, T = 126 (105 A + 21 D) ~23 KB
 # k = 44, c =  6, S = 128, T = 132 ( 88 A + 44 D) ~18 KB
 # k = 35, c =  5, S =  96, T = 140 (105 A + 35 D) ~14 KB
-ecc-521.h: eccdata.stamp
-	./eccdata$(EXEEXT_FOR_BUILD) 521 44 6 $(NUMB_BITS) > $@T && mv $@T $@
+ecc-secp521r1.h: eccdata.stamp
+	./eccdata$(EXEEXT_FOR_BUILD) secp521r1 44 6 $(NUMB_BITS) > $@T && mv $@T $@
 
-# Parameter choices mostly the same as for ecc-256.h.
-ecc-25519.h: eccdata.stamp
-	./eccdata$(EXEEXT_FOR_BUILD) 255 11 6 $(NUMB_BITS) > $@T && mv $@T $@
+# Parameter choices mostly the same as for ecc-secp256r1.h.
+ecc-curve25519.h: eccdata.stamp
+	./eccdata$(EXEEXT_FOR_BUILD) curve25519 11 6 $(NUMB_BITS) > $@T && mv $@T $@
 
-ecc-448.h: eccdata.stamp
-	./eccdata$(EXEEXT_FOR_BUILD) 448 38 6 $(NUMB_BITS) > $@T && mv $@T $@
+ecc-curve448.h: eccdata.stamp
+	./eccdata$(EXEEXT_FOR_BUILD) curve448 38 6 $(NUMB_BITS) > $@T && mv $@T $@
 
 eccdata.stamp: eccdata.c
 	$(MAKE) eccdata$(EXEEXT_FOR_BUILD)
 	echo stamp > eccdata.stamp
 
-ecc-192.$(OBJEXT): ecc-192.h
-ecc-224.$(OBJEXT): ecc-224.h
-ecc-256.$(OBJEXT): ecc-256.h
-ecc-384.$(OBJEXT): ecc-384.h
-ecc-521.$(OBJEXT): ecc-521.h
-ecc-25519.$(OBJEXT): ecc-25519.h
-ecc-448.$(OBJEXT): ecc-448.h
+ecc-curve25519.$(OBJEXT): ecc-curve25519.h
+ecc-curve448.$(OBJEXT): ecc-curve448.h
+ecc-secp192r1.$(OBJEXT): ecc-secp192r1.h
+ecc-secp224r1.$(OBJEXT): ecc-secp224r1.h
+ecc-secp256r1.$(OBJEXT): ecc-secp256r1.h
+ecc-secp384r1.$(OBJEXT): ecc-secp384r1.h
+ecc-secp521r1.$(OBJEXT): ecc-secp521r1.h
 
 .asm.$(OBJEXT): $(srcdir)/asm.m4 machine.m4 config.m4
 	$(M4) $(srcdir)/asm.m4 machine.m4 config.m4 $< >$*.s
@@ -658,8 +659,9 @@ distcheck: dist
 
 clean-here:
 	-rm -f $(TARGETS) *.$(OBJEXT) *.s *.so *.dll *.a \
-		ecc-192.h ecc-224.h ecc-256.h ecc-384.h ecc-521.h ecc-25519.h \
-		ecc-448.h \
+		ecc-curve25519.h ecc-curve448.h \
+		ecc-secp192r1.h ecc-secp224r1.h ecc-secp256r1.h \
+		ecc-secp384r1.h ecc-secp521r1.h \
 		aesdata$(EXEEXT_FOR_BUILD) \
 		desdata$(EXEEXT_FOR_BUILD) \
 		twofishdata$(EXEEXT_FOR_BUILD) \

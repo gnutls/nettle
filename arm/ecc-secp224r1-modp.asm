@@ -1,4 +1,4 @@
-C arm/ecc-224-modp.asm
+C arm/ecc-secp224r1-modp.asm
 
 ifelse(<
    Copyright (C) 2013 Niels Möller
@@ -30,7 +30,7 @@ ifelse(<
    not, see http://www.gnu.org/licenses/.
 >) 
 
-	.file "ecc-224-modp.asm"
+	.file "ecc-secp224r1-modp.asm"
 	.arm
 
 define(<RP>, <r1>)

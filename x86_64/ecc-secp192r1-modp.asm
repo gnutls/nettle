@@ -1,4 +1,4 @@
-C x86_64/ecc-192-modp.asm
+C x86_64/ecc-secp192r1-modp.asm
 
 ifelse(<
    Copyright (C) 2013 Niels Möller
@@ -30,7 +30,7 @@ ifelse(<
    not, see http://www.gnu.org/licenses/.
 >)
 
-	.file "ecc-192-modp.asm"
+	.file "ecc-secp192r1-modp.asm"
 
 define(<RP>, <%rsi>)
 define(<T0>, <%rdi>) C Overlaps unused modulo input
