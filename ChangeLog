@@ -1,3 +1,13 @@
+2020-01-10  Niels Möller  <nisse@lysator.liu.se>
+
+	From Dmitry Eremin-Solenikov: Consistently rename ecc files and
+	internal functions to include curve name rather than just number
+	of bits. E.g.,
+	* ecc-256.c (nettle_ecc_256_redc): File and function renamed to...
+	* ecc-secp256r1.c (_nettle_ecc_256_redc): ... new names.
+	* eccdata.c (ecc_curve_init, main): Take curve name as input, not
+	bit size.
+
 2020-01-03  Niels Möller  <nisse@lysator.liu.se>
 
 	Add benchmarking of ed25519, ed448 and curve448.
