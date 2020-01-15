@@ -315,6 +315,7 @@ const struct ecc_curve * const curves[] = {
   &_nettle_curve448,
   &_nettle_secp_521r1,
   &_nettle_gost_gc256b,
+  &_nettle_gost_gc512a,
 };
 
 #define numberof(x)  (sizeof (x) / sizeof ((x)[0]))

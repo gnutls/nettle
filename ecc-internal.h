@@ -93,6 +93,7 @@ extern const struct ecc_curve _nettle_curve448;
 
 /* GOST curves, visible with underscore prefix for now */
 extern const struct ecc_curve _nettle_gost_gc256b;
+extern const struct ecc_curve _nettle_gost_gc512a;
 
 #define ECC_MAX_SIZE ((521 + GMP_NUMB_BITS - 1) / GMP_NUMB_BITS)
 
