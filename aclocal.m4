@@ -456,13 +456,6 @@ if test x$enable_dependency_tracking = xyes ; then
   fi
 fi
 
-if test x$enable_dependency_tracking = xyes ; then
-  DEP_INCLUDE='include '
-else
-  DEP_INCLUDE='# '
-fi
-
-AC_SUBST([DEP_INCLUDE])
 AC_SUBST([DEP_FLAGS])
 AC_SUBST([DEP_PROCESS])])
 

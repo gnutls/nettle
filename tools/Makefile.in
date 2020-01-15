@@ -89,7 +89,7 @@ distdir: $(DISTFILES)
 	cp $? $(distdir)
 
 clean:
-	-rm -f $(TARGETS) *.o
+	-rm -f $(TARGETS) *.$(OBJEXT) *.$(OBJEXT).d
 
 distclean: clean
 	-rm -f Makefile *.d
@@ -97,4 +97,4 @@ distclean: clean
 tags:
 	etags -o $(srcdir)/TAGS --include $(top_srcdir) $(srcdir)/*.c $(srcdir)/*.h
 
-@DEP_INCLUDE@ $(SOURCES:.c=.$(OBJEXT).d)
+-include $(SOURCES:.c=.$(OBJEXT).d)

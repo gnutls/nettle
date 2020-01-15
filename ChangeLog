@@ -1,3 +1,15 @@
+2020-01-15  Niels Möller  <nisse@lysator.liu.se>
+
+	* aclocal.m4 (DEP_INCLUDE): Delete substituted variable.
+
+	* Makefile.in: Use the GNU make directive -include to include
+	dependency .d files. Delete dependency files on make clean.
+	* examples/Makefile.in: Likewise.
+	* testsuite/Makefile.in: Likewise. Also use $(OBJEXT) properly.
+	* tools/Makefile.in: Likewise.
+
+	* configure.ac (dummy-dep-files): Delete these config commands.
+
 2020-01-10  Niels Möller  <nisse@lysator.liu.se>
 
 	From Dmitry Eremin-Solenikov: Consistently rename ecc files and

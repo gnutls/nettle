@@ -156,7 +156,7 @@ distdir: $(DISTFILES)
 
 clean:
 	-rm -f $(TARGETS) $(EXTRA_TARGETS) dlopen-test$(EXEEXT) \
-		*.o test.in test1.out test2.out
+		*.$(OBJEXT) *.$(OBJEXT).d test.in test1.out test2.out
 
 distclean: clean
 	-rm -f Makefile *.d
@@ -167,4 +167,4 @@ tags:
 # Includes dependency files for everything, including objects which
 # the current configuration will not build.
 DEP_FILES = $(SOURCES:.c=.$(OBJEXT).d) $(CXX_SOURCES:.cxx=.$(OBJEXT).d)
-@DEP_INCLUDE@ $(DEP_FILES)
+-include $(DEP_FILES)

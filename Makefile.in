@@ -658,7 +658,7 @@ distcheck: dist
 	$(rm_distcheck)
 
 clean-here:
-	-rm -f $(TARGETS) *.$(OBJEXT) *.s *.so *.dll *.a \
+	-rm -f $(TARGETS) *.$(OBJEXT) *.$(OBJEXT).d *.s *.so *.dll *.a \
 		ecc-curve25519.h ecc-curve448.h \
 		ecc-secp192r1.h ecc-secp224r1.h ecc-secp256r1.h \
 		ecc-secp384r1.h ecc-secp521r1.h \
@@ -683,4 +683,4 @@ tags-here:
 	etags -o $(srcdir)/TAGS $(srcdir)/*.c $(srcdir)/*.h
 
 DEP_FILES = $(SOURCES:.c=.$(OBJEXT).d)
-@DEP_INCLUDE@ $(DEP_FILES)
+-include $(DEP_FILES)

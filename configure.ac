@@ -163,19 +163,6 @@ GMP_PROG_EXEEXT_FOR_BUILD
 
 LSH_DEPENDENCY_TRACKING
 
-if test x$enable_dependency_tracking = xyes ; then
-  # Since the makefiles use include to get the dependency files, we must
-  # make sure that the files exist. We generate some more files than are
-  # actually needed.
-
-  AC_CONFIG_COMMANDS([dummy-dep-files],
-  [(cd "$srcdir" && find . '(' -name '*.c' -o -name '*.cxx' ')' -print) \
- | sed 's/\.cx*$//' | (while read f; do \
-      test -f "$f.o.d" || echo > "$f.o.d"; \
-   done)
-])
-fi
-
 if test "x$enable_gcov" = "xyes"; then
   CFLAGS="$CFLAGS -ftest-coverage -fprofile-arcs"
 fi
