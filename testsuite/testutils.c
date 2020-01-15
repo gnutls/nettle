@@ -1677,6 +1677,7 @@ const struct ecc_curve * const ecc_curves[] = {
   &_nettle_secp_521r1,
   &_nettle_curve25519,
   &_nettle_curve448,
+  &_nettle_gost_gc256b,
   NULL
 };
 
@@ -1728,7 +1729,7 @@ void
 test_ecc_mul_a (unsigned curve, unsigned n, const mp_limb_t *p)
 {
   /* For each curve, the points 2 g, 3 g and 4 g */
-  static const struct ecc_ref_point ref[7][3] = {
+  static const struct ecc_ref_point ref[8][3] = {
     { { "dafebf5828783f2ad35534631588a3f629a70fb16982a888",
 	"dd6bda0d993da0fa46b27bbc141b868f59331afa5c7e93ab" },
       { "76e32a2557599e6edcd283201fb2b9aadfd0d359cbb263da",
@@ -1796,9 +1797,16 @@ test_ecc_mul_a (unsigned curve, unsigned n, const mp_limb_t *p)
 	"e005a8dbd5125cf706cbda7ad43aa6449a4a8d952356c3b9fce43c82ec4e1d58bb3a331bdb6767f0bffa9a68fed02dafb822ac13588ed6fc" },
       { "49dcbc5c6c0cce2c1419a17226f929ea255a09cf4e0891c693fda4be70c74cc301b7bdf1515dd8ba21aee1798949e120e2ce42ac48ba7f30",
 	"d49077e4accde527164b33a5de021b979cb7c02f0457d845c90dc3227b8a5bc1c0d8f97ea1ca9472b5d444285d0d4f5b32e236f86de51839" },
+    },
+    { { "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd95",
+	"726e1b8e1f676325d820afa5bac0d489cad6b0d220dc1c4edd5336636160df83" },
+      { "8e38e38e38e38e38e38e38e38e38e38e38e38e38e38e38e38e38e38e38e38d2c",
+	"76bcd1ca9a23b041d4d9baf507a6cd821267a94c838768e8486117796b788a51" },
+      { "f7063e7063e7063e7063e7063e7063e7063e7063e7063e7063e7063e7063e4b7",
+	"83ccf17ba6706d73625cc3534c7a2b9d6ec1ee6a9a7e07c10d84b388de59f741" },
     }
   };
-  assert (curve < 7);
+  assert (curve < 8);
   assert (n <= 4);
   if (n == 0)
     {

@@ -176,6 +176,7 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  ecc-mod.c ecc-mod-inv.c \
 		  ecc-mod-arith.c ecc-pp1-redc.c ecc-pm1-redc.c \
 		  ecc-curve25519.c ecc-curve448.c \
+		  ecc-gost-gc256b.c \
 		  ecc-secp192r1.c ecc-secp224r1.c ecc-secp256r1.c \
 		  ecc-secp384r1.c ecc-secp521r1.c \
 		  ecc-size.c ecc-j-to-a.c ecc-a-to-j.c \
@@ -376,12 +377,21 @@ ecc-curve25519.h: eccdata.stamp
 ecc-curve448.h: eccdata.stamp
 	./eccdata$(EXEEXT_FOR_BUILD) curve448 38 6 $(NUMB_BITS) > $@T && mv $@T $@
 
+# Some reasonable choices for 256:
+# k =  9, c =  6, S = 320, T =  54 ( 45 A +  9 D) 20 KB
+# k = 11, c =  6, S = 256, T =  55 ( 44 A + 11 D) 16 KB
+# k = 19, c =  7, S = 256, T =  57 ( 38 A + 19 D) 16 KB
+# k = 15, c =  6, S = 192, T =  60 ( 45 A + 15 D) 12 KB
+ecc-gost-gc256b.h: eccdata.stamp
+	./eccdata$(EXEEXT_FOR_BUILD) gost_gc256b 11 6 $(NUMB_BITS) > $@T && mv $@T $@
+
 eccdata.stamp: eccdata.c
 	$(MAKE) eccdata$(EXEEXT_FOR_BUILD)
 	echo stamp > eccdata.stamp
 
 ecc-curve25519.$(OBJEXT): ecc-curve25519.h
 ecc-curve448.$(OBJEXT): ecc-curve448.h
+ecc-gost-gc256b.$(OBJEXT): ecc-gost-gc256b.h
 ecc-secp192r1.$(OBJEXT): ecc-secp192r1.h
 ecc-secp224r1.$(OBJEXT): ecc-secp224r1.h
 ecc-secp256r1.$(OBJEXT): ecc-secp256r1.h
@@ -635,6 +645,7 @@ distcheck: dist
 clean-here:
 	-rm -f $(TARGETS) *.$(OBJEXT) *.$(OBJEXT).d *.s *.so *.dll *.a \
 		ecc-curve25519.h ecc-curve448.h \
+		ecc-gost-gc256b.h \
 		ecc-secp192r1.h ecc-secp224r1.h ecc-secp256r1.h \
 		ecc-secp384r1.h ecc-secp521r1.h \
 		aesdata$(EXEEXT_FOR_BUILD) \

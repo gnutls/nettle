@@ -674,6 +674,38 @@ ecc_curve_init (struct ecc_curve *ecc, const char *curve)
 		   "47d0e827cb1595e1470eb88580d5716c"
 		   "4cf22832ea2f0ff0df38ab61ca32112f");
     }
+  else if (!strcmp (curve, "gost_gc256b"))
+    {
+      ecc_curve_init_str (ecc, ECC_TYPE_WEIERSTRASS,
+			  "ffffffffffffffffffffffffffffffff"
+			  "fffffffffffffffffffffffffffffd97",
+
+			  "00000000000000000000000000000000"
+			  "000000000000000000000000000000a6",
+
+			  "ffffffffffffffffffffffffffffffff"
+			  "6c611070995ad10045841b09b761b893",
+
+			  "00000000000000000000000000000000"
+			  "00000000000000000000000000000001",
+
+			  "8d91e471e0989cda27df505a453f2b76"
+			  "35294f2ddf23e3b122acc99c9e9f1e14");
+
+      ecc->ref = ecc_alloc (3);
+      ecc_set_str (&ecc->ref[0], /* 2 g */
+		   "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd95",
+		   "726e1b8e1f676325d820afa5bac0d489cad6b0d220dc1c4edd5336636160df83");
+
+      ecc_set_str (&ecc->ref[1], /* 3 g */
+		   "8e38e38e38e38e38e38e38e38e38e38e38e38e38e38e38e38e38e38e38e38d2c",
+		   "76bcd1ca9a23b041d4d9baf507a6cd821267a94c838768e8486117796b788a51");
+
+      ecc_set_str (&ecc->ref[2], /* 4 g */
+		   "f7063e7063e7063e7063e7063e7063e7063e7063e7063e7063e7063e7063e4b7",
+		   "83ccf17ba6706d73625cc3534c7a2b9d6ec1ee6a9a7e07c10d84b388de59f741");
+
+    }
   else if (!strcmp (curve, "curve448"))
     {
       /* curve448, y^2 = x^3 + 156326 x^2 + x (mod p), with p = 2^{448} - 2^{224} - 1.
@@ -1316,7 +1348,7 @@ main (int argc, char **argv)
 
   if (argc < 4)
     {
-      fprintf (stderr, "Usage: %s CURVE-BITS K C [BITS-PER-LIMB]\n", argv[0]);
+      fprintf (stderr, "Usage: %s CURVE K C [BITS-PER-LIMB]\n", argv[0]);
       return EXIT_FAILURE;
     }
 
