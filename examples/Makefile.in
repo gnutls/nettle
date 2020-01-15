@@ -40,7 +40,7 @@ DISTFILES= $(SOURCES) Makefile.in $(TS_ALL) setup-env teardown-env \
 
 all: $(TARGETS)
 
-.c.$(OBJEXT):
+%.$(OBJEXT): %.c
 	$(COMPILE) -c $< && $(DEP_PROCESS)
 
 # NOTE: If we required GNU make, we could use a single rule with $(@F)

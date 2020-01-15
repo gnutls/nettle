@@ -79,11 +79,10 @@ DISTFILES = $(SOURCES) $(CXX_SOURCES) Makefile.in .test-rules.make \
 
 all: $(EXTRA_TARGETS)
 
-.c.$(OBJEXT):
+%.$(OBJEXT): %.c
 	$(COMPILE) -c $< && $(DEP_PROCESS)
 
-.SUFFIXES: .cxx
-.cxx.$(OBJEXT):
+%.$(OBJEXT): %.cxx
 	$(COMPILE_CXX) -c $< && $(DEP_PROCESS)
 
 # BSD (and Solaris) make doesn't allow extra dependencies together one

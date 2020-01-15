@@ -1,5 +1,19 @@
 2020-01-15  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.in: Replace suffix rules by pattern rules. Move .asm
+	rule above .c rule, since now the order of rules in the Makefile
+	matters, rather than the order in the .SUFFIXES list.
+	(aesdata, desdata, twofishdata, shadata, gcmdata, eccparams):
+	Individual rules replaced by a pattern rule.
+	(eccdata): Add explicit dependencies, to complement the pattern
+	rule.
+	* examples/Makefile.in: Replace suffix rules by pattern rules.
+	* testsuite/Makefile.in: Likewise.
+	* tools/Makefile.in: Likewise.
+
+	* config.make.in: Empty .SUFFIXES, to not accidentally use any
+	suffix rules.
+
 	* aclocal.m4 (DEP_INCLUDE): Delete substituted variable.
 
 	* Makefile.in: Use the GNU make directive -include to include

@@ -56,7 +56,7 @@ nettle-pbkdf2$(EXEEXT): $(nettle_pbkdf2_OBJS) ../libnettle.stamp
 	$(LINK) $(nettle_pbkdf2_OBJS) -lnettle -o $@
 
 
-.c.$(OBJEXT):
+%.$(OBJEXT): %.c
 	$(COMPILE) -c $< && $(DEP_PROCESS)
 
 # NOTE: If we required GNU make, we could use a single rule with $(@F)
