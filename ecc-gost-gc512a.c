@@ -43,7 +43,7 @@
 #include "ecc-gost-gc512a.h"
 
 static void
-ecc_gc512a_modp (const struct ecc_modulo *m, mp_limb_t *rp)
+ecc_gost_gc512a_modp (const struct ecc_modulo *m, mp_limb_t *rp)
 {
   mp_size_t mn = m->size;
   mp_limb_t hi;
@@ -54,8 +54,8 @@ ecc_gc512a_modp (const struct ecc_modulo *m, mp_limb_t *rp)
   assert(hi == 0);
 }
 
-#define ecc_gc512a_modp ecc_gc512a_modp
-#define ecc_gc512a_modq ecc_mod
+#define ecc_gost_gc512a_modp ecc_gost_gc512a_modp
+#define ecc_gost_gc512a_modq ecc_mod
 
 const struct ecc_curve _nettle_gost_gc512a =
 {
@@ -73,8 +73,8 @@ const struct ecc_curve _nettle_gost_gc512a =
     ecc_redc_ppm1,
 
     ecc_pp1h,
-    ecc_gc512a_modp,
-    ecc_gc512a_modp,
+    ecc_gost_gc512a_modp,
+    ecc_gost_gc512a_modp,
     ecc_mod_inv,
     NULL,
   },
@@ -92,8 +92,8 @@ const struct ecc_curve _nettle_gost_gc512a =
     NULL,
     ecc_qp1h,
 
-    ecc_gc512a_modq,
-    ecc_gc512a_modq,
+    ecc_gost_gc512a_modq,
+    ecc_gost_gc512a_modq,
     ecc_mod_inv,
     NULL,
   },
