@@ -328,7 +328,6 @@ const struct ecc_curve _nettle_curve448 =
   ecc_eh_to_a,
 
   ecc_b,
-  ecc_g,
   ecc_unit,
   ecc_table
 };

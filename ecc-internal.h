@@ -200,9 +200,6 @@ struct ecc_curve
 
   /* Curve constant */
   const mp_limb_t *b;
-  /* Generator, x coordinate followed by y (affine coordinates).
-     Currently used only by the test suite. */
-  const mp_limb_t *g;
 
   /* For redc, same as B mod p, otherwise 1. */
   const mp_limb_t *unit;

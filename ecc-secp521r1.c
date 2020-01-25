@@ -135,7 +135,6 @@ const struct ecc_curve _nettle_secp_521r1 =
   ecc_j_to_a,
 
   ecc_b,
-  ecc_g,
   ecc_unit,
   ecc_table
 };
