@@ -771,12 +771,12 @@ bench_curve_init (unsigned size)
     case 255:
       ctx->mul = curve25519_mul;
       ctx->mul_g = curve25519_mul_g;
-      knuth_lfib_random (&lfib, sizeof(CURVE25519_SIZE), ctx->s);
+      knuth_lfib_random (&lfib, CURVE25519_SIZE, ctx->s);
       break;
     case 448:
       ctx->mul = curve448_mul;
       ctx->mul_g = curve448_mul_g;
-      knuth_lfib_random (&lfib, sizeof(CURVE448_SIZE), ctx->s);
+      knuth_lfib_random (&lfib, CURVE448_SIZE, ctx->s);
       break;
     default:
       abort ();
