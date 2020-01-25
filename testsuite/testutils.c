@@ -1724,80 +1724,107 @@ test_ecc_point (const struct ecc_curve *ecc,
     }
 }
 
-void
-test_ecc_mul_a (unsigned curve, unsigned n, const mp_limb_t *p)
-{
-  /* For each curve, the points 2 g, 3 g and 4 g */
-  static const struct ecc_ref_point ref[7][3] = {
-    { { "dafebf5828783f2ad35534631588a3f629a70fb16982a888",
+/* For each curve, the points g, 2 g, 3 g and 4 g */
+static const struct ecc_ref_point ecc_ref[7][4] = {
+  { { "188da80eb03090f67cbf20eb43a18800f4ff0afd82ff1012",
+      "07192b95ffc8da78631011ed6b24cdd573f977a11e794811" },
+    { "dafebf5828783f2ad35534631588a3f629a70fb16982a888",
 	"dd6bda0d993da0fa46b27bbc141b868f59331afa5c7e93ab" },
-      { "76e32a2557599e6edcd283201fb2b9aadfd0d359cbb263da",
+    { "76e32a2557599e6edcd283201fb2b9aadfd0d359cbb263da",
 	"782c37e372ba4520aa62e0fed121d49ef3b543660cfd05fd" },
-      { "35433907297cc378b0015703374729d7a4fe46647084e4ba",
+    { "35433907297cc378b0015703374729d7a4fe46647084e4ba",
 	"a2649984f2135c301ea3acb0776cd4f125389b311db3be32" }
-    },
-    { { "706a46dc76dcb76798e60e6d89474788d16dc18032d268fd1a704fa6",
+  },
+  { { "b70e0cbd6bb4bf7f321390b94a03c1d356c21122343280d6115c1d21",
+	"bd376388b5f723fb4c22dfe6cd4375a05a07476444d5819985007e34" },
+    { "706a46dc76dcb76798e60e6d89474788d16dc18032d268fd1a704fa6",
 	"1c2b76a7bc25e7702a704fa986892849fca629487acf3709d2e4e8bb" },
-      { "df1b1d66a551d0d31eff822558b9d2cc75c2180279fe0d08fd896d04",
+    { "df1b1d66a551d0d31eff822558b9d2cc75c2180279fe0d08fd896d04",
 	"a3f7f03cadd0be444c0aa56830130ddf77d317344e1af3591981a925" },
-      { "ae99feebb5d26945b54892092a8aee02912930fa41cd114e40447301",
+    { "ae99feebb5d26945b54892092a8aee02912930fa41cd114e40447301",
 	"482580a0ec5bc47e88bc8c378632cd196cb3fa058a7114eb03054c9" },
-    },
-    { { "7cf27b188d034f7e8a52380304b51ac3c08969e277f21b35a60b48fc47669978",
+  },
+  { { "6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296",
+	"4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5" },
+    { "7cf27b188d034f7e8a52380304b51ac3c08969e277f21b35a60b48fc47669978",
 	"7775510db8ed040293d9ac69f7430dbba7dade63ce982299e04b79d227873d1" },
-      { "5ecbe4d1a6330a44c8f7ef951d4bf165e6c6b721efada985fb41661bc6e7fd6c",
+    { "5ecbe4d1a6330a44c8f7ef951d4bf165e6c6b721efada985fb41661bc6e7fd6c",
 	"8734640c4998ff7e374b06ce1a64a2ecd82ab036384fb83d9a79b127a27d5032" },
-      { "e2534a3532d08fbba02dde659ee62bd0031fe2db785596ef509302446b030852",
+    { "e2534a3532d08fbba02dde659ee62bd0031fe2db785596ef509302446b030852",
 	"e0f1575a4c633cc719dfee5fda862d764efc96c3f30ee0055c42c23f184ed8c6" },
-    },
-    { { "8d999057ba3d2d969260045c55b97f089025959a6f434d651d207d19fb96e9e"
+  },
+  { { "aa87ca22be8b05378eb1c71ef320ad746e1d3b628ba79b9859f741e082542a38"
+	"5502f25dbf55296c3a545e3872760ab7",
+	"3617de4a96262c6f5d9e98bf9292dc29f8f41dbd289a147ce9da3113b5f0b8c0"
+	"0a60b1ce1d7e819d7a431d7c90ea0e5f" },
+    { "8d999057ba3d2d969260045c55b97f089025959a6f434d651d207d19fb96e9e"
 	"4fe0e86ebe0e64f85b96a9c75295df61",
 	"8e80f1fa5b1b3cedb7bfe8dffd6dba74b275d875bc6cc43e904e505f256ab425"
 	"5ffd43e94d39e22d61501e700a940e80" },
-      { "77a41d4606ffa1464793c7e5fdc7d98cb9d3910202dcd06bea4f240d3566da6"
+    { "77a41d4606ffa1464793c7e5fdc7d98cb9d3910202dcd06bea4f240d3566da6"
 	"b408bbae5026580d02d7e5c70500c831",
 	"c995f7ca0b0c42837d0bbe9602a9fc998520b41c85115aa5f7684c0edc111eac"
 	"c24abd6be4b5d298b65f28600a2f1df1" },
-      { "138251cd52ac9298c1c8aad977321deb97e709bd0b4ca0aca55dc8ad51dcfc9d"
+    { "138251cd52ac9298c1c8aad977321deb97e709bd0b4ca0aca55dc8ad51dcfc9d"
 	"1589a1597e3a5120e1efd631c63e1835",
 	"cacae29869a62e1631e8a28181ab56616dc45d918abc09f3ab0e63cf792aa4dc"
 	"ed7387be37bba569549f1c02b270ed67" },
-    },
-    { { "43"
+  },
+  { { "c6"
+	"858e06b70404e9cd9e3ecb662395b4429c648139053fb521f828af606b4d3dba"
+	"a14b5e77efe75928fe1dc127a2ffa8de3348b3c1856a429bf97e7e31c2e5bd66",
+	"118"
+	"39296a789a3bc0045c8a5fb42c7d1bd998f54449579b446817afbd17273e662c"
+	"97ee72995ef42640c550b9013fad0761353c7086a272c24088be94769fd16650" },
+    { "43"
 	"3c219024277e7e682fcb288148c282747403279b1ccc06352c6e5505d769be97"
 	"b3b204da6ef55507aa104a3a35c5af41cf2fa364d60fd967f43e3933ba6d783d",
 	"f4"
 	"bb8cc7f86db26700a7f3eceeeed3f0b5c6b5107c4da97740ab21a29906c42dbb"
 	"b3e377de9f251f6b93937fa99a3248f4eafcbe95edc0f4f71be356d661f41b02"
-      },
-      { "1a7"
+    },
+    { "1a7"
 	"3d352443de29195dd91d6a64b5959479b52a6e5b123d9ab9e5ad7a112d7a8dd1"
 	"ad3f164a3a4832051da6bd16b59fe21baeb490862c32ea05a5919d2ede37ad7d",
 	"13e"
 	"9b03b97dfa62ddd9979f86c6cab814f2f1557fa82a9d0317d2f8ab1fa355ceec"
 	"2e2dd4cf8dc575b02d5aced1dec3c70cf105c9bc93a590425f588ca1ee86c0e5" },
-      { "35"
+    { "35"
 	"b5df64ae2ac204c354b483487c9070cdc61c891c5ff39afc06c5d55541d3ceac"
 	"8659e24afe3d0750e8b88e9f078af066a1d5025b08e5a5e2fbc87412871902f3",
 	"82"
 	"096f84261279d2b673e0178eb0b4abb65521aef6e6e32e1b5ae63fe2f19907f2"
 	"79f283e54ba385405224f750a95b85eebb7faef04699d1d9e21f47fc346e4d0d" },
-    },
-    { { "36ab384c9f5a046c3d043b7d1833e7ac080d8e4515d7a45f83c5a14e2843ce0e",
+  },
+  { { "216936d3cd6e53fec0a4e231fdd6dc5c692cc7609525a7b2c9562d608f25d51a",
+      "6666666666666666666666666666666666666666666666666666666666666658" },
+    { "36ab384c9f5a046c3d043b7d1833e7ac080d8e4515d7a45f83c5a14e2843ce0e",
 	"2260cdf3092329c21da25ee8c9a21f5697390f51643851560e5f46ae6af8a3c9" },
-      { "67ae9c4a22928f491ff4ae743edac83a6343981981624886ac62485fd3f8e25c",
+    { "67ae9c4a22928f491ff4ae743edac83a6343981981624886ac62485fd3f8e25c",
 	"1267b1d177ee69aba126a18e60269ef79f16ec176724030402c3684878f5b4d4" },
-      { "203da8db56cff1468325d4b87a3520f91a739ec193ce1547493aa657c4c9f870",
+    { "203da8db56cff1468325d4b87a3520f91a739ec193ce1547493aa657c4c9f870",
 	"47d0e827cb1595e1470eb88580d5716c4cf22832ea2f0ff0df38ab61ca32112f" },
-    },
-    { { "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa955555555555555555555555555555555555555555555555555555555",
+  },
+  { { "4f1970c66bed0ded221d15a622bf36da9e146570470f1767ea6de324a3d3a46412ae1af72ab66511433b80e18b00938e2626a82bc70cc05e",
+	"693f46716eb6bc248876203756c9c7624bea73736ca3984087789c1e05a0c2d73ad3ff1ce67c39c4fdbd132c4ed7c8ad9808795bf230fa14" },
+    { "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa955555555555555555555555555555555555555555555555555555555",
 	"ae05e9634ad7048db359d6205086c2b0036ed7a035884dd7b7e36d728ad8c4b80d6565833a2a3098bbbcb2bed1cda06bdaeafbcdea9386ed" },
-      { "865886b9108af6455bd64316cb6943332241b8b8cda82c7e2ba077a4a3fcfe8daa9cbf7f6271fd6e862b769465da8575728173286ff2f8f",
+    { "865886b9108af6455bd64316cb6943332241b8b8cda82c7e2ba077a4a3fcfe8daa9cbf7f6271fd6e862b769465da8575728173286ff2f8f",
 	"e005a8dbd5125cf706cbda7ad43aa6449a4a8d952356c3b9fce43c82ec4e1d58bb3a331bdb6767f0bffa9a68fed02dafb822ac13588ed6fc" },
-      { "49dcbc5c6c0cce2c1419a17226f929ea255a09cf4e0891c693fda4be70c74cc301b7bdf1515dd8ba21aee1798949e120e2ce42ac48ba7f30",
+    { "49dcbc5c6c0cce2c1419a17226f929ea255a09cf4e0891c693fda4be70c74cc301b7bdf1515dd8ba21aee1798949e120e2ce42ac48ba7f30",
 	"d49077e4accde527164b33a5de021b979cb7c02f0457d845c90dc3227b8a5bc1c0d8f97ea1ca9472b5d444285d0d4f5b32e236f86de51839" },
-    }
-  };
+  }
+};
+
+void
+test_ecc_ga (unsigned curve, const mp_limb_t *p)
+{
+  return test_ecc_point (ecc_curves[curve], &ecc_ref[curve][0], p);
+}
+
+void
+test_ecc_mul_a (unsigned curve, unsigned n, const mp_limb_t *p)
+{
   assert (curve < 7);
   assert (n <= 4);
   if (n == 0)
@@ -1818,29 +1845,8 @@ test_ecc_mul_a (unsigned curve, unsigned n, const mp_limb_t *p)
 	  abort();
 	}
     }
-  else if (n == 1)
-    {
-      const struct ecc_curve *ecc = ecc_curves[curve];
-      if (mpn_cmp (p, ecc->g, 2*ecc->p.size) != 0)
-	{
-	  fprintf (stderr, "Incorrect point (expected g)!\n"
-		   "got: x = ");
-	  write_mpn (stderr, 16, p, ecc->p.size);
-	  fprintf (stderr, "\n"
-		   "     y = ");
-	  write_mpn (stderr, 16, p + ecc->p.size, ecc->p.size);
-	  fprintf (stderr, "\n"
-		   "ref: x = ");
-	  write_mpn (stderr, 16, ecc->g, ecc->p.size);
-	  fprintf (stderr, "\n"
-		   "     y = ");
-	  write_mpn (stderr, 16, ecc->g + ecc->p.size, ecc->p.size);
-	  fprintf (stderr, "\n");
-	  abort();
-	}
-    }
   else
-    test_ecc_point (ecc_curves[curve], &ref[curve][n-2], p);
+    test_ecc_point (ecc_curves[curve], &ecc_ref[curve][n-1], p);
 }
 
 void
@@ -1855,6 +1861,47 @@ test_ecc_mul_h (unsigned curve, unsigned n, const mp_limb_t *p)
 
   free (np);
   free (scratch);
+}
+
+void
+test_ecc_get_g (unsigned curve, mp_limb_t *rp)
+{
+  const struct ecc_curve *ecc = ecc_curves[curve];
+  mpz_t x;
+  mpz_t y;
+  mpz_init_set_str (x, ecc_ref[curve][0].x, 16);
+  mpz_init_set_str (y, ecc_ref[curve][0].y, 16);
+
+  if (ecc->use_redc)
+    {
+      mpz_t t;
+      mpz_mul_2exp (x, x, ecc->p.size * GMP_NUMB_BITS);
+      mpz_mod (x, x, mpz_roinit_n (t, ecc->p.m, ecc->p.size));
+      mpz_mul_2exp (y, y, ecc->p.size * GMP_NUMB_BITS);
+      mpz_mod (y, y, mpz_roinit_n (t, ecc->p.m, ecc->p.size));
+    }
+  mpz_limbs_copy (rp, x, ecc->p.size);
+  mpz_limbs_copy (rp + ecc->p.size, y, ecc->p.size);
+  mpn_copyi (rp + 2*ecc->p.size, ecc->unit, ecc->p.size);
+
+  mpz_clear (x);
+  mpz_clear (y);
+}
+
+void
+test_ecc_get_ga (unsigned curve, mp_limb_t *rp)
+{
+  const struct ecc_curve *ecc = ecc_curves[curve];
+  mpz_t x;
+  mpz_t y;
+  mpz_init_set_str (x, ecc_ref[curve][0].x, 16);
+  mpz_init_set_str (y, ecc_ref[curve][0].y, 16);
+
+  mpz_limbs_copy (rp, x, ecc->p.size);
+  mpz_limbs_copy (rp + ecc->p.size, y, ecc->p.size);
+
+  mpz_clear (x);
+  mpz_clear (y);
 }
 
 #endif /* WITH_HOGWEED */

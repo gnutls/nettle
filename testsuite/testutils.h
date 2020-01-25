@@ -291,6 +291,19 @@ test_ecc_mul_a (unsigned curve, unsigned n, const mp_limb_t *p);
 void
 test_ecc_mul_h (unsigned curve, unsigned n, const mp_limb_t *p);
 
+/* Checks that p == g (affine coordinates) */
+void
+test_ecc_ga (unsigned curve, const mp_limb_t *p);
+
+/* Gets the curve generator, with coordinated in redc form, if
+   appropriate, and with an appended z = 1 coordinate. */
+void
+test_ecc_get_g (unsigned curve, mp_limb_t *rp);
+
+/* Variant with only two coordinates, and no redc. */
+void
+test_ecc_get_ga (unsigned curve, mp_limb_t *rp);
+
 #endif /* WITH_HOGWEED */
 
 /* String literal of type unsigned char. The GNUC version is safer. */
