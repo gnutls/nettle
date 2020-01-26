@@ -1,3 +1,8 @@
+2020-01-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/hogweed-benchmark.c (bench_curve_init): Pass correct
+	sizes to knuth_lfib_random. Patch contributed by Dmitry Baryshkov.
+
 2020-01-15  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in: Replace suffix rules by pattern rules. Move .asm
