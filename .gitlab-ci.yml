@@ -18,6 +18,7 @@ build/x86-64:
     make check -j4
   tags:
   - shared
+  - linux
   except:
   - tags
 build/mini-gmp:
@@ -28,6 +29,7 @@ build/mini-gmp:
     make check -j4
   tags:
   - shared
+  - linux
   except:
   - tags
 build/c89:
@@ -38,6 +40,7 @@ build/c89:
     make check -j4
   tags:
   - shared
+  - linux
   except:
   - tags
 build/ndebug:
@@ -48,6 +51,7 @@ build/ndebug:
     make check -j4
   tags:
   - shared
+  - linux
   except:
   - tags
 build/ubsan:
@@ -58,6 +62,7 @@ build/ubsan:
     --disable-documentation && make -j4 && make check -j4
   tags:
   - shared
+  - linux
   except:
   - tags
 build/asan:
@@ -68,6 +73,7 @@ build/asan:
     make -j4 && make check -j4
   tags:
   - shared
+  - linux
   except:
   - tags
 build/static-analyzers:
@@ -78,6 +84,7 @@ build/static-analyzers:
   - scan-build --status-bugs -o scan-build-lib make -j$(nproc)
   tags:
   - shared
+  - linux
   except:
   - tags
   artifacts:
@@ -97,6 +104,7 @@ build/gnutls:
     make -j $(nproc) check
   tags:
   - shared
+  - linux
   except:
   - tags
   artifacts:
@@ -122,6 +130,7 @@ Debian.cross.x86:
     make check -j4
   tags:
   - shared
+  - linux
   except:
   - tags
 .Debian.cross.template: &Debian_cross_template
@@ -143,6 +152,7 @@ Debian.cross.x86:
   - make -j$(nproc) check
   tags:
   - shared
+  - linux
   except:
   - tags
 Debian.cross.arm-linux-gnueabihf:
