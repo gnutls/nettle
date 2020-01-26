@@ -84,6 +84,7 @@ test_main (void)
 	      abort ();
 	    }
 	}
+      free (g);
       free (n);
       free (p);
       free (q);
