@@ -1063,6 +1063,7 @@ This function also resets the context in the same way as
 
 
 @subsubsection @acronym{GOSTHASH94 and GOSTHASH94CP}
+@cindex GOST hash
 
 The GOST94 or GOST R 34.11-94 hash algorithm is a Soviet-era algorithm 
 used in Russian government standards (see @cite{RFC 4357}).
@@ -5059,6 +5060,7 @@ random octets and store them at @code{dst}. For advice, see
 @node GOSTDSA, Curve 25519 and Curve 448, ECDSA, Elliptic curves
 @comment  node-name,  next,  previous,  up
 @subsubsection GOSTDSA
+@cindex GOST DSA
 
 GOSTDSA (GOST R 34.10-2001, GOST R 34.10-2012) is a variant of the DSA
 (@pxref{DSA}) and ECDSA (@pxref{ECDSA}) digital signature schemes, which works
