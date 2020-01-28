@@ -53,6 +53,7 @@
 #define ecc_mod _nettle_ecc_mod
 #define ecc_mod_inv _nettle_ecc_mod_inv
 #define ecc_hash _nettle_ecc_hash
+#define gost_hash _nettle_gost_hash
 #define ecc_a_to_j _nettle_ecc_a_to_j
 #define ecc_j_to_a _nettle_ecc_j_to_a
 #define ecc_eh_to_a _nettle_ecc_eh_to_a
@@ -90,6 +91,10 @@ extern const struct ecc_curve _nettle_secp_521r1;
    general ecc operations over an arbitrary type of curve. */
 extern const struct ecc_curve _nettle_curve25519;
 extern const struct ecc_curve _nettle_curve448;
+
+/* GOST curves, visible with underscore prefix for now */
+extern const struct ecc_curve _nettle_gost_gc256b;
+extern const struct ecc_curve _nettle_gost_gc512a;
 
 #define ECC_MAX_SIZE ((521 + GMP_NUMB_BITS - 1) / GMP_NUMB_BITS)
 
@@ -284,6 +289,11 @@ ecc_hash (const struct ecc_modulo *m,
 	  mp_limb_t *hp,
 	  size_t length, const uint8_t *digest);
 
+void
+gost_hash (const struct ecc_modulo *m,
+	  mp_limb_t *hp,
+	  size_t length, const uint8_t *digest);
+
 /* Converts a point P in affine coordinates into a point R in jacobian
    coordinates. */
 void
@@ -452,6 +462,7 @@ curve448_eh_to_x (mp_limb_t *xp, const mp_limb_t *p,
 #endif
 #define ECC_MUL_M_ITCH(size) (11*(size))
 #define ECC_ECDSA_SIGN_ITCH(size) (12*(size))
+#define ECC_GOSTDSA_SIGN_ITCH(size) (12*(size))
 #define ECC_MOD_RANDOM_ITCH(size) (size)
 #define ECC_HASH_ITCH(size) (1+(size))
 

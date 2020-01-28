@@ -1,5 +1,32 @@
 2020-01-26  Niels Möller  <nisse@lysator.liu.se>
 
+	Support for GOST DSA, contributed by Dmitry Baryshkov.
+	* gostdsa-verify.c (gostdsa_verify): New file and function.
+	* gostdsa-sign.c (gostdsa_sign): New file and function.
+	* ecc-gostdsa-verify.c (ecdsa_in_range, ecc_gostdsa_verify_itch)
+	(ecc_gostdsa_verify): New file and functions.
+	* ecc-gostdsa-sign.c (ecc_gostdsa_sign_itch, ecc_gostdsa_sign):
+	New file and functions.
+	* ecc-internal.h (ECC_GOSTDSA_SIGN_ITCH): New macro.
+	* ecc-hash.c (gost_hash): New function.
+	* testsuite/gostdsa-verify-test.c: New test.
+	* testsuite/gostdsa-sign-test.c: New test.
+	* testsuite/gostdsa-keygen-test.c: New test.
+	* testsuite/Makefile.in (TS_HOGWEED_SOURCES): Add new tests.
+
+	Support for GOST gc256b and gc512a curves, contributed by Dmitry
+	Baryshkov.
+	* eccdata.c (ecc_curve_init): Add parameters for gost_gc256b and
+	gost_gc512a.
+	* ecc-gost-gc256b.c: New file, define _nettle_gost_gc256b.
+	* ecc-gost-gc512a.c: New file, define _nettle_gost_gc512a.
+	* Makefile.in: Add rules to generate ecc-gost-gc256b.h and
+	ecc-gost-gc512a.h.
+	(hogweed_SOURCES): Add ecc-gost-gc256b.c ecc-gost-gc512a.c.
+	* examples/ecc-benchmark.c (curves): Add to list.
+	* testsuite/testutils.c (ecc_curves): Add to list.
+	(test_ecc_mul_a): Reference points for new curves.
+
 	* NEWS: Started on entries for Nettle-3.6.
 
 2020-01-25  Niels Möller  <nisse@lysator.liu.se>

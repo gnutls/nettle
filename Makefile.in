@@ -176,6 +176,7 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  ecc-mod.c ecc-mod-inv.c \
 		  ecc-mod-arith.c ecc-pp1-redc.c ecc-pm1-redc.c \
 		  ecc-curve25519.c ecc-curve448.c \
+		  ecc-gost-gc256b.c ecc-gost-gc512a.c \
 		  ecc-secp192r1.c ecc-secp224r1.c ecc-secp256r1.c \
 		  ecc-secp384r1.c ecc-secp521r1.c \
 		  ecc-size.c ecc-j-to-a.c ecc-a-to-j.c \
@@ -188,6 +189,8 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  ecc-point.c ecc-scalar.c ecc-point-mul.c ecc-point-mul-g.c \
 		  ecc-ecdsa-sign.c ecdsa-sign.c \
 		  ecc-ecdsa-verify.c ecdsa-verify.c ecdsa-keygen.c \
+		  ecc-gostdsa-sign.c gostdsa-sign.c \
+		  ecc-gostdsa-verify.c gostdsa-verify.c \
 		  curve25519-mul-g.c curve25519-mul.c curve25519-eh-to-x.c \
 		  curve448-mul-g.c curve448-mul.c curve448-eh-to-x.c \
 		  eddsa-compress.c eddsa-decompress.c eddsa-expand.c \
@@ -204,7 +207,7 @@ HEADERS = aes.h arcfour.h arctwo.h asn1.h blowfish.h \
 	  cbc.h ccm.h cfb.h chacha.h chacha-poly1305.h ctr.h \
 	  curve25519.h curve448.h des.h dsa.h dsa-compat.h eax.h \
 	  ecc-curve.h ecc.h ecdsa.h eddsa.h \
-	  gcm.h gost28147.h gosthash94.h hmac.h \
+	  gcm.h gost28147.h gostdsa.h gosthash94.h hmac.h \
 	  knuth-lfib.h hkdf.h \
 	  macros.h \
 	  cmac.h siv-cmac.h \
@@ -376,12 +379,31 @@ ecc-curve25519.h: eccdata.stamp
 ecc-curve448.h: eccdata.stamp
 	./eccdata$(EXEEXT_FOR_BUILD) curve448 38 6 $(NUMB_BITS) > $@T && mv $@T $@
 
+# Some reasonable choices for 256:
+# k =  9, c =  6, S = 320, T =  54 ( 45 A +  9 D) 20 KB
+# k = 11, c =  6, S = 256, T =  55 ( 44 A + 11 D) 16 KB
+# k = 19, c =  7, S = 256, T =  57 ( 38 A + 19 D) 16 KB
+# k = 15, c =  6, S = 192, T =  60 ( 45 A + 15 D) 12 KB
+ecc-gost-gc256b.h: eccdata.stamp
+	./eccdata$(EXEEXT_FOR_BUILD) gost_gc256b 11 6 $(NUMB_BITS) > $@T && mv $@T $@
+
+# Some reasonable choices for 512:
+# k = 22, c =  6, S = 256, T = 110 ( 88 A + 22 D) 32 KB
+# k = 29, c =  6, S = 192, T = 116 ( 87 A + 29 D) 24 KB
+# k = 21, c =  5, S = 160, T = 126 (105 A + 21 D) 20 KB
+# k = 43, c =  6, S = 128, T = 129 ( 86 A + 43 D) 16 KB
+# k = 35, c =  5, S =  96, T = 140 (105 A + 35 D) 12 KB
+ecc-gost-gc512a.h: eccdata.stamp
+	./eccdata$(EXEEXT_FOR_BUILD) gost_gc512a 43 6 $(NUMB_BITS) > $@T && mv $@T $@
+
 eccdata.stamp: eccdata.c
 	$(MAKE) eccdata$(EXEEXT_FOR_BUILD)
 	echo stamp > eccdata.stamp
 
 ecc-curve25519.$(OBJEXT): ecc-curve25519.h
 ecc-curve448.$(OBJEXT): ecc-curve448.h
+ecc-gost-gc256b.$(OBJEXT): ecc-gost-gc256b.h
+ecc-gost-gc512a.$(OBJEXT): ecc-gost-gc512a.h
 ecc-secp192r1.$(OBJEXT): ecc-secp192r1.h
 ecc-secp224r1.$(OBJEXT): ecc-secp224r1.h
 ecc-secp256r1.$(OBJEXT): ecc-secp256r1.h
@@ -635,6 +657,7 @@ distcheck: dist
 clean-here:
 	-rm -f $(TARGETS) *.$(OBJEXT) *.$(OBJEXT).d *.s *.so *.dll *.a \
 		ecc-curve25519.h ecc-curve448.h \
+		ecc-gost-gc256b.h ecc-gost-gc512a.h \
 		ecc-secp192r1.h ecc-secp224r1.h ecc-secp256r1.h \
 		ecc-secp384r1.h ecc-secp521r1.h \
 		aesdata$(EXEEXT_FOR_BUILD) \

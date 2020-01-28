@@ -115,6 +115,7 @@ Public-key algorithms
 
 * Side-channel silence::
 * ECDSA::
+* GOSTDSA::
 * Curve 25519 and Curve 448::
 
 @end detailmenu
@@ -1062,6 +1063,7 @@ This function also resets the context in the same way as
 
 
 @subsubsection @acronym{GOSTHASH94 and GOSTHASH94CP}
+@cindex GOST hash
 
 The GOST94 or GOST R 34.11-94 hash algorithm is a Soviet-era algorithm 
 used in Russian government standards (see @cite{RFC 4357}).
@@ -4916,6 +4918,7 @@ curve'' is used as a shorthand for the bitsize of the curve's prime
 @menu
 * Side-channel silence::
 * ECDSA::
+* GOSTDSA::
 * Curve 25519 and Curve 448::
 @end menu
 
@@ -4950,7 +4953,7 @@ accesses depend only on the size of the input data and its location in
 memory, not on the actual data bits. This implies a performance penalty
 in several of the building blocks.
 
-@node ECDSA, Curve 25519 and Curve 448, Side-channel silence, Elliptic curves
+@node ECDSA, GOSTDSA, Side-channel silence, Elliptic curves
 @comment  node-name,  next,  previous,  up
 @subsubsection ECDSA
 
@@ -5052,6 +5055,68 @@ structs should be initialized, for the desired ECC curve, before you call this f
 @code{random(random_ctx, length, dst)} should generate @code{length}
 random octets and store them at @code{dst}. For advice, see
 @xref{Randomness}.
+@end deftypefun
+
+@node GOSTDSA, Curve 25519 and Curve 448, ECDSA, Elliptic curves
+@comment  node-name,  next,  previous,  up
+@subsubsection GOSTDSA
+@cindex GOST DSA
+
+GOSTDSA (GOST R 34.10-2001, GOST R 34.10-2012) is a variant of the DSA
+(@pxref{DSA}) and ECDSA (@pxref{ECDSA}) digital signature schemes, which works
+over an elliptic curve group. Original documents are written in Russian.
+English translations are provided in @cite{RFC 5832} and @cite{RFC 7091}.
+While technically nothing stops one from using GOSTDSA over any curve, it
+is defined only over several 256 and 512-bit curves.  Like DSA and ECDSA,
+creating a signature requires a unique random nonce (repeating the nonce
+with two different messages reveals the private key, and any leak or bias
+in the generation of the nonce also leaks information about the key).
+
+GOST R 34.10-2001 was defined to use GOST R 34.11-94 hash function
+(GOSTHASH94 and GOSTHASH94CP, @cite{RFC 5831}).  GOST R 34.10-2012 is
+defined to use GOST R 34.11-2012 hash function (Streebog, @cite{RFC
+6986}) of corresponding size (256 or 512) depending on curve size.
+
+Nettle defines GOSTDSA in @file{<nettle/gostdsa.h>}. GOSTDSA reuses ECDSA
+data types (@code{struct ecc_point}, @code{struct ecc_scalar}) to
+represent public and private keys.  Also to generate a new GOSTDSA key
+pair one has to use @code{ecdsa_generate_keypair()} function.
+
+To create and verify GOSTDSA signatures, the following functions are used.
+
+@deftypefun void gostdsa_sign (const struct ecc_scalar *@var{key}, void *@var{random_ctx}, nettle_random_func *@var{random}, size_t @var{digest_length}, const uint8_t *@var{digest}, struct dsa_signature *@var{signature})
+Uses the private key @var{key} to create a signature on @var{digest}.
+@var{random_ctx} and @var{random} is a randomness generator.
+@code{random(random_ctx, length, dst)} should generate @code{length}
+random octets and store them at @code{dst}. The signature is stored in
+@var{signature}, in the same was as for plain DSA.
+@end deftypefun
+
+@deftypefun int gostdsa_verify (const struct ecc_point *@var{pub}, size_t @var{length}, const uint8_t *@var{digest}, const struct dsa_signature *@var{signature})
+Uses the public key @var{pub} to verify that @var{signature} is a valid
+signature for the message digest @var{digest} (of @var{length} octets).
+Returns 1 if the signature is valid, otherwise 0.
+@end deftypefun
+
+For historical reason several curve IDs (OIDs) may correspond to a single
+curve/generator combination. Following list defines correspondence
+between nettle's view on curves and actual identifiers defined in @cite{RFC
+4357} and @cite{RFC 7836}.
+
+@deftypefun {const struct ecc_curve} nettle_get_gost_gc256b(void)
+Returns curve corresponding to following identifiers:
+@itemize
+@item id-GostR3410-2001-CryptoPro-A-ParamSet (@cite{RFC 4357})
+@item id-GostR3410-2001-CryptoPro-XchA-ParamSet (@cite{RFC 4357})
+@item id-tc26-gost-3410-12-256-paramSetB
+@end itemize
+@end deftypefun
+
+@deftypefun {const struct ecc_curve} nettle_get_gost_gc512a(void)
+Returns curve corresponding to following identifiers:
+@itemize
+@item id-tc26-gost-3410-12-512-paramSetA (@cite{RFC 7836})
+@end itemize
 @end deftypefun
 
 @node Curve 25519 and Curve 448, , ECDSA, Elliptic curves

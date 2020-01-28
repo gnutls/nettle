@@ -45,6 +45,8 @@ core
 /rotors.h
 /ecc-curve25519.h
 /ecc-curve448.h
+/ecc-gost-gc256b.h
+/ecc-gost-gc512a.h
 /ecc-secp192r1.h
 /ecc-secp224r1.h
 /ecc-secp256r1.h
