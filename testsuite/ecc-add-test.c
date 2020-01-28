@@ -17,7 +17,7 @@ test_main (void)
 
       ASSERT (ecc->dup_itch <= ecc->add_hhh_itch);
 
-      ecc_a_to_j (ecc, g, ecc->g);
+      test_ecc_get_g (i, g);
 
       if (ecc->p.bit_size == 255 || ecc->p.bit_size == 448)
 	{

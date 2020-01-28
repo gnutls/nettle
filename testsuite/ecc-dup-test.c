@@ -12,7 +12,7 @@ test_main (void)
       mp_limb_t *p = xalloc_limbs (ecc_size_j (ecc));
       mp_limb_t *scratch = xalloc_limbs (ecc->dup_itch);
 
-      ecc_a_to_j (ecc, g, ecc->g);
+      test_ecc_get_g (i, g);
 
       if (ecc->p.bit_size == 255 || ecc->p.bit_size == 448)
 	{

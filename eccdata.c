@@ -1111,7 +1111,7 @@ output_bignum (const char *name, const mpz_t x,
 }
 
 static void
-output_point (const char *name, const struct ecc_curve *ecc,
+output_point (const struct ecc_curve *ecc,
 	      const struct ecc_point *p, int use_redc,
 	      unsigned size, unsigned bits_per_limb)
 {
@@ -1121,9 +1121,6 @@ output_point (const char *name, const struct ecc_curve *ecc,
   mpz_init (y);
   mpz_init (t);
  
-  if (name)
-    printf("static const mp_limb_t %s[%u] = {", name, 2*size);
-
   mpz_set (x, p->x);
   mpz_set (y, p->y);
 
@@ -1137,9 +1134,6 @@ output_point (const char *name, const struct ecc_curve *ecc,
       
   output_digits (x, size, bits_per_limb);
   output_digits (y, size, bits_per_limb);
-
-  if (name)
-    printf("\n};\n");
 
   mpz_clear (x);
   mpz_clear (y);
@@ -1185,7 +1179,6 @@ output_curve (const struct ecc_curve *ecc, unsigned bits_per_limb)
   output_bignum ("ecc_p", ecc->p, limb_size, bits_per_limb);
   output_bignum ("ecc_b", ecc->b, limb_size, bits_per_limb);
   output_bignum ("ecc_q", ecc->q, limb_size, bits_per_limb);
-  output_point ("ecc_g", ecc, &ecc->g, 0, limb_size, bits_per_limb);
   
   bits = output_modulo ("ecc_Bmodp", ecc->p, limb_size, bits_per_limb);
   printf ("#define ECC_BMODP_SIZE %u\n",
@@ -1359,7 +1352,7 @@ output_curve (const struct ecc_curve *ecc, unsigned bits_per_limb)
   printf ("static const mp_limb_t ecc_table[%lu] = {",
 	 (unsigned long) (2*ecc->table_size * limb_size));
   for (i = 0; i < ecc->table_size; i++)
-    output_point (NULL, ecc, &ecc->table[i], 1, limb_size, bits_per_limb);
+    output_point (ecc, &ecc->table[i], 1, limb_size, bits_per_limb);
 
   printf("\n};\n");
 
@@ -1371,7 +1364,7 @@ output_curve (const struct ecc_curve *ecc, unsigned bits_per_limb)
   printf ("static const mp_limb_t ecc_table[%lu] = {",
 	 (unsigned long) (2*ecc->table_size * limb_size));
   for (i = 0; i < ecc->table_size; i++)
-    output_point (NULL, ecc, &ecc->table[i], 0, limb_size, bits_per_limb);
+    output_point (ecc, &ecc->table[i], 0, limb_size, bits_per_limb);
 
   printf("\n};\n");
   printf ("#endif\n");

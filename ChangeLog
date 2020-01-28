@@ -1,5 +1,25 @@
 2020-01-26  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-internal.h (struct ecc_curve): Delete g, the curve
+	generator, since it was used only by tests. Update all curve
+	instances.
+
+	* eccdata.c (output_curve): Delete output of ecc_g.
+	(output_point): Delete name argument, and update callers.
+
+	* testsuite/testutils.c (ecc_ref): Table of reference points moved
+	out of test_ecc_mul_a. Add generator to the list of points.
+	(test_ecc_mul_a): Use ecc_ref table also for the n == 1 case.
+	(test_ecc_ga, test_ecc_get_g, test_ecc_get_ga): New functions,
+	using the tabulated generator.
+
+	* testsuite/ecc-add-test.c: Use test_ecc_get_g, instead of
+	accessing ecc->g.
+	* testsuite/ecc-dup-test.c: Likewise.
+	* testsuite/ecc-mul-a-test.c: Use test_ecc_get_ga and test_ecc_ga.
+	Delete special case for n == 1.
+	* testsuite/ecc-mul-g-test.c: Use test_ecc_ga.
+
 	Support for GOST DSA, contributed by Dmitry Baryshkov.
 	* gostdsa-verify.c (gostdsa_verify): New file and function.
 	* gostdsa-sign.c (gostdsa_sign): New file and function.

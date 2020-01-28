@@ -117,7 +117,6 @@ const struct ecc_curve _nettle_gost_gc256b =
   ecc_j_to_a,
 
   ecc_b,
-  ecc_g,
   ecc_unit,
   ecc_table
 };

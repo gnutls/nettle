@@ -350,7 +350,6 @@ const struct ecc_curve _nettle_curve25519 =
   ecc_eh_to_a,
 
   ecc_b, /* Edwards curve constant. */
-  ecc_g,
   ecc_unit,
   ecc_table
 };
