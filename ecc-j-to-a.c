@@ -45,47 +45,24 @@ ecc_j_to_a (const struct ecc_curve *ecc,
 	    mp_limb_t *scratch)
 {
 #define izp   scratch
-#define up   (scratch + 2*ecc->p.size)
 #define iz2p (scratch + ecc->p.size)
 #define iz3p (scratch + 2*ecc->p.size)
-#define izBp (scratch + 3*ecc->p.size)
 #define tp    scratch
 
   mp_limb_t cy;
 
+  ecc->p.invert (&ecc->p, izp, p+2*ecc->p.size, izp + 2 * ecc->p.size);
+  ecc_modp_sqr (ecc, iz2p, izp);
+
   if (ecc->use_redc)
     {
-      /* Set v = (r_z / B^2)^-1,
-
-	 r_x = p_x v^2 / B^3 =  ((v/B * v)/B * p_x)/B
-	 r_y = p_y v^3 / B^4 = (((v/B * v)/B * v)/B * p_y)/B
-      */
-
-      mpn_copyi (up, p + 2*ecc->p.size, ecc->p.size);
-      mpn_zero (up + ecc->p.size, ecc->p.size);
-      ecc->p.reduce (&ecc->p, up);
-      mpn_zero (up + ecc->p.size, ecc->p.size);
-      ecc->p.reduce (&ecc->p, up);
-
-      ecc->p.invert (&ecc->p, izp, up, up + ecc->p.size);
-
-      /* Divide this common factor by B */
-      mpn_copyi (izBp, izp, ecc->p.size);
-      mpn_zero (izBp + ecc->p.size, ecc->p.size);
-      ecc->p.reduce (&ecc->p, izBp);
-
-      ecc_modp_mul (ecc, iz2p, izp, izBp);
-    }
-  else
-    {
-      /* Set s = p_z^{-1}, r_x = p_x s^2, r_y = p_y s^3 */
-
-      mpn_copyi (up, p+2*ecc->p.size, ecc->p.size); /* p_z */
-      ecc->p.invert (&ecc->p, izp, up, up + ecc->p.size);
-
-      ecc_modp_sqr (ecc, iz2p, izp);
+      /* Divide this common factor by B, instead of applying redc to
+	 both x and y outputs. */
+      mpn_zero (iz2p + ecc->p.size, ecc->p.size);
+      ecc->p.reduce (&ecc->p, iz2p);
     }
 
+  /* r_x <-- x / z^2 */
   ecc_modp_mul (ecc, iz3p, iz2p, p);
   /* ecc_modp (and ecc_modp_mul) may return a value up to 2p - 1, so
      do a conditional subtraction. */
@@ -112,7 +89,6 @@ ecc_j_to_a (const struct ecc_curve *ecc,
   cnd_copy (cy, r + ecc->p.size, tp, ecc->p.size);
 
 #undef izp
-#undef up
 #undef iz2p
 #undef iz3p
 #undef tp

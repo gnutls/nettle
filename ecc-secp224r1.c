@@ -80,7 +80,7 @@ const struct ecc_curve _nettle_secp_224r1 =
 
     ecc_secp224r1_modp,
     USE_REDC ? ecc_secp224r1_redc : ecc_secp224r1_modp,
-    ecc_mod_inv,
+    USE_REDC ? ecc_mod_inv_redc : ecc_mod_inv,
     NULL,
   },
   {
