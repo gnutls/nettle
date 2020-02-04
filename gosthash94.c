@@ -41,7 +41,6 @@
 #include "macros.h"
 #include "nettle-write.h"
 #include "gosthash94.h"
-#include "gost28147.h"
 #include "gost28147-internal.h"
 
 /**
@@ -339,7 +338,7 @@ gosthash94_update (struct gosthash94_ctx *ctx,
 		   size_t length, const uint8_t *msg)
 {
   gosthash94_update_int (ctx, length, msg,
-			 gost28147_param_test_3411.sbox);
+			 _gost28147_param_test_3411.sbox);
 }
 
 /**
@@ -355,7 +354,7 @@ gosthash94cp_update (struct gosthash94_ctx *ctx,
 		     size_t length, const uint8_t *msg)
 {
   gosthash94_update_int (ctx, length, msg,
-			 gost28147_param_CryptoPro_3411.sbox);
+			 _gost28147_param_CryptoPro_3411.sbox);
 }
 
 /**
@@ -399,7 +398,7 @@ gosthash94_digest (struct gosthash94_ctx *ctx,
 		   size_t length, uint8_t *result)
 {
   gosthash94_write_digest (ctx, length, result,
-			   gost28147_param_test_3411.sbox);
+			   _gost28147_param_test_3411.sbox);
 }
 
 void
@@ -407,5 +406,5 @@ gosthash94cp_digest (struct gosthash94_ctx *ctx,
 		     size_t length, uint8_t *result)
 {
   gosthash94_write_digest (ctx, length, result,
-			   gost28147_param_CryptoPro_3411.sbox);
+			   _gost28147_param_CryptoPro_3411.sbox);
 }

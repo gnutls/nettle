@@ -34,7 +34,19 @@
 #ifndef NETTLE_GOST28147_INTERNAL_H_INCLUDED
 #define NETTLE_GOST28147_INTERNAL_H_INCLUDED
 
+#include <stdint.h>
+
 #define _gost28147_encrypt_block _nettle_gost28147_encrypt_block
+#define _gost28147_param_test_3411 _nettle_gost28147_param_test_3411
+#define _gost28147_param_CryptoPro_3411 _nettle_gost28147_param_CryptoPro_3411
+
+extern const struct gost28147_param _gost28147_param_test_3411;
+extern const struct gost28147_param _gost28147_param_CryptoPro_3411;
+
+struct gost28147_param
+{
+  uint32_t sbox[4][256];
+};
 
 void _gost28147_encrypt_block (const uint32_t *key, const uint32_t sbox[4][256],
 			       const uint32_t *in, uint32_t *out);

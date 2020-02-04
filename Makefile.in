@@ -207,7 +207,7 @@ HEADERS = aes.h arcfour.h arctwo.h asn1.h blowfish.h \
 	  cbc.h ccm.h cfb.h chacha.h chacha-poly1305.h ctr.h \
 	  curve25519.h curve448.h des.h dsa.h dsa-compat.h eax.h \
 	  ecc-curve.h ecc.h ecdsa.h eddsa.h \
-	  gcm.h gost28147.h gostdsa.h gosthash94.h hmac.h \
+	  gcm.h gostdsa.h gosthash94.h hmac.h \
 	  knuth-lfib.h hkdf.h \
 	  macros.h \
 	  cmac.h siv-cmac.h \
