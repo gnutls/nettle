@@ -1,3 +1,12 @@
+2020-02-05  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: On Solaris, link shared libraries with --shared
+	rather than -G. For gcc, --shared is the proper way. For Solaris'
+	proprietary cc, according to docs, it accepts --shared as an alias
+	for -G since Oracle Solaris Studio 12.4, and it was made more gcc
+	compatible in later versions. Since 12.4 was released in 2014,
+	don't attempt to cater for older versions.
+
 2020-01-26  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-internal.h (struct ecc_curve): Delete g, the curve
