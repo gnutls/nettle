@@ -2,7 +2,7 @@
 
    Information about algorithms.
 
-   Copyright (C) 2002, 2014 Niels Möller
+   Copyright (C) 2002, 2014, 2020 Niels Möller
 
    This file is part of GNU Nettle.
 
@@ -257,8 +257,27 @@ extern const struct nettle_armor nettle_base64;
 extern const struct nettle_armor nettle_base64url;
 extern const struct nettle_armor nettle_base16;
 
+#define _NETTLE_HMAC(name, HASH) {		\
+  #name,					\
+  sizeof(struct name##_ctx),			\
+  HASH##_DIGEST_SIZE,				\
+  HASH##_DIGEST_SIZE,				\
+  name##_set_key_wrapper,			\
+  (nettle_hash_update_func *) name##_update,	\
+  (nettle_hash_digest_func *) name##_digest,	\
+}
+
 extern const struct nettle_mac nettle_cmac_aes128;
 extern const struct nettle_mac nettle_cmac_aes256;
+
+/* HMAC variants with key size = digest size */
+extern const struct nettle_mac nettle_hmac_md5;
+extern const struct nettle_mac nettle_hmac_ripemd160;
+extern const struct nettle_mac nettle_hmac_sha1;
+extern const struct nettle_mac nettle_hmac_sha224;
+extern const struct nettle_mac nettle_hmac_sha256;
+extern const struct nettle_mac nettle_hmac_sha384;
+extern const struct nettle_mac nettle_hmac_sha512;
 
 #ifdef __cplusplus
 }

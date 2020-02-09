@@ -79,16 +79,6 @@ test_main(void);
 
 extern int verbose;
 
-#define _NETTLE_HMAC(name, NAME, keysize) {	\
-  #name,					\
-  sizeof(struct hmac_##name##_ctx),		\
-  NAME##_DIGEST_SIZE,				\
-  NAME##_DIGEST_SIZE,				\
-  hmac_##name##_set_key,			\
-  hmac_##name##_update,				\
-  hmac_##name##_digest,				\
-}
-
 /* Test functions deallocate their inputs when finished.*/
 void
 test_cipher(const struct nettle_cipher *cipher,

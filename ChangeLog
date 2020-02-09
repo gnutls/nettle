@@ -1,12 +1,35 @@
 2020-02-09  Niels Möller  <nisse@lysator.liu.se>
 
 	Based on patches by Daiki Ueno.
+	* nettle-meta.h (_NETTLE_HMAC): New macro.
+	(nettle_hmac_md5, nettle_hmac_ripemd160, nettle_hmac_sha1)
+	(nettle_hmac_sha224, nettle_hmac_sha256, nettle_hmac_sha384)
+	(nettle_hmac_sha512): Declare.
+	(struct nettle_mac): New public struct,
+	* testsuite/testutils.h: ...moved from this file.
+
+	* hmac-md5-meta.c: New file.
+	* hmac-ripemd160-meta.c: Likewise.
+	* hmac-sha1-meta.c: Likewise.
+	* hmac-sha224-meta.c: Likewise.
+	* hmac-sha256-meta.c: Likewise.
+	* hmac-sha384-meta.c: Likewise.
+	* hmac-sha512-meta.c: Likewise.
+
+	* Makefile.in (nettle_SOURCES): Add new files.
+
+	* testsuite/testutils.h (_NETTLE_HMAC): Delete unused version of
+	this macro.
+	* testsuite/testutils.c (test_mac): Allow testing with smaller
+	digest size.
+	* testsuite/hmac-test.c (test_main): Use test_mac for tests using
+	key size == digest size.
+
 	* testsuite/cmac-test.c (nettle_cmac_aes128, nettle_cmac_aes256):
 	Moved to...
 	* cmac-aes128-meta.c: New file.
 	* cmac-aes256-meta.c: New file.
 
-	* Makefile.in (nettle_SOURCES): Add cmac-aes128-meta.c cmac-aes256-meta.c.
 	* nettle-meta.h (struct nettle_mac): New public struct,
 	* testsuite/testutils.h: ...moved from this file.
 

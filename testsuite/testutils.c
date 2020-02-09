@@ -963,8 +963,7 @@ test_mac(const struct nettle_mac *mac,
   uint8_t *hash = xalloc(mac->digest_size);
   unsigned i;
 
-
-  ASSERT (digest->length == mac->digest_size);
+  ASSERT (digest->length <= mac->digest_size);
   ASSERT (key->length == mac->key_size);
   mac->set_key (ctx, key->data);
   mac->update (ctx, msg->length, msg->data);
