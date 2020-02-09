@@ -1,5 +1,12 @@
 2020-02-09  Niels Möller  <nisse@lysator.liu.se>
 
+	Based on patches by Daiki Ueno.
+	* testsuite/cmac-test.c (nettle_cmac_aes128, nettle_cmac_aes256):
+	Moved to...
+	* cmac-aes128-meta.c: New file.
+	* cmac-aes256-meta.c: New file.
+
+	* Makefile.in (nettle_SOURCES): Add cmac-aes128-meta.c cmac-aes256-meta.c.
 	* nettle-meta.h (struct nettle_mac): New public struct,
 	* testsuite/testutils.h: ...moved from this file.
 

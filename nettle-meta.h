@@ -257,6 +257,9 @@ extern const struct nettle_armor nettle_base64;
 extern const struct nettle_armor nettle_base64url;
 extern const struct nettle_armor nettle_base16;
 
+extern const struct nettle_mac nettle_cmac_aes128;
+extern const struct nettle_mac nettle_cmac_aes256;
+
 #ifdef __cplusplus
 }
 #endif

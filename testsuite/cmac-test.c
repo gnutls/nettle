@@ -2,30 +2,6 @@
 #include "nettle-internal.h"
 #include "cmac.h"
 
-const struct nettle_mac nettle_cmac_aes128 =
-{
-  "CMAC-AES128",
-  sizeof(struct cmac_aes128_ctx),
-  CMAC128_DIGEST_SIZE,
-  AES128_KEY_SIZE,
-
-  (nettle_set_key_func*) cmac_aes128_set_key,
-  (nettle_hash_update_func*) cmac_aes128_update,
-  (nettle_hash_digest_func*) cmac_aes128_digest
-};
-
-const struct nettle_mac nettle_cmac_aes256 =
-{
-  "CMAC-AES256",
-  sizeof(struct cmac_aes256_ctx),
-  CMAC128_DIGEST_SIZE,
-  AES256_KEY_SIZE,
-
-  (nettle_set_key_func*) cmac_aes256_set_key,
-  (nettle_hash_update_func*) cmac_aes256_update,
-  (nettle_hash_digest_func*) cmac_aes256_digest
-};
-
 const struct nettle_mac nettle_cmac_des3 =
 {
   "CMAC-3DES",
