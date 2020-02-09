@@ -267,6 +267,13 @@ extern const struct nettle_armor nettle_base16;
   (nettle_hash_digest_func *) name##_digest,	\
 }
 
+/* null-terminated list of macs implemented by this
+   version of nettle */
+const struct nettle_mac * const * _NETTLE_ATTRIBUTE_PURE
+nettle_get_macs (void);
+
+#define nettle_macs (nettle_get_macs())
+
 extern const struct nettle_mac nettle_cmac_aes128;
 extern const struct nettle_mac nettle_cmac_aes256;
 

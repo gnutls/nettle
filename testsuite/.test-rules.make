@@ -163,6 +163,9 @@ meta-aead-test$(EXEEXT): meta-aead-test.$(OBJEXT)
 meta-armor-test$(EXEEXT): meta-armor-test.$(OBJEXT)
 	$(LINK) meta-armor-test.$(OBJEXT) $(TEST_OBJS) -o meta-armor-test$(EXEEXT)
 
+meta-mac-test$(EXEEXT): meta-mac-test.$(OBJEXT)
+	$(LINK) meta-mac-test.$(OBJEXT) $(TEST_OBJS) -o meta-mac-test$(EXEEXT)
+
 buffer-test$(EXEEXT): buffer-test.$(OBJEXT)
 	$(LINK) buffer-test.$(OBJEXT) $(TEST_OBJS) -o buffer-test$(EXEEXT)
 

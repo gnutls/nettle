@@ -1,6 +1,9 @@
 2020-02-09  Niels Möller  <nisse@lysator.liu.se>
 
-	Based on patches by Daiki Ueno.
+	Addition of struct nettle_mac based on patches by Daiki Ueno.
+	* nettle-meta-macs.c (nettle_get_macs): New file, new function.
+	* testsuite/meta-mac-test.c: New test.
+
 	* nettle-meta.h (_NETTLE_HMAC): New macro.
 	(nettle_hmac_md5, nettle_hmac_ripemd160, nettle_hmac_sha1)
 	(nettle_hmac_sha224, nettle_hmac_sha256, nettle_hmac_sha384)
