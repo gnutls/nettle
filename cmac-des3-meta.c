@@ -1,6 +1,6 @@
-/* nettle-meta-macs.c
+/* cmac-des3-meta.c
 
-   Copyright (C) 2020 Daiki Ueno
+   Copyright (C) 2020 Dmitry Baryshkov
 
    This file is part of GNU Nettle.
 
@@ -33,26 +33,20 @@
 # include "config.h"
 #endif
 
-#include <stddef.h>
+#include <assert.h>
 
 #include "nettle-meta.h"
 
-const struct nettle_mac * const _nettle_macs[] = {
-  &nettle_cmac_aes128,
-  &nettle_cmac_aes256,
-  &nettle_cmac_des3,
-  &nettle_hmac_md5,
-  &nettle_hmac_ripemd160,
-  &nettle_hmac_sha1,
-  &nettle_hmac_sha224,
-  &nettle_hmac_sha256,
-  &nettle_hmac_sha384,
-  &nettle_hmac_sha512,
-  NULL
-};
+#include "cmac.h"
 
-const struct nettle_mac * const *
-nettle_get_macs (void)
+const struct nettle_mac nettle_cmac_des3 =
 {
-  return _nettle_macs;
-}
+  "cmac_des3",
+  sizeof(struct cmac_des3_ctx),
+  CMAC64_DIGEST_SIZE,
+  DES3_KEY_SIZE,
+
+  (nettle_set_key_func*) cmac_des3_set_key,
+  (nettle_hash_update_func*) cmac_des3_update,
+  (nettle_hash_digest_func*) cmac_des3_digest
+};

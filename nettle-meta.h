@@ -276,6 +276,7 @@ nettle_get_macs (void);
 
 extern const struct nettle_mac nettle_cmac_aes128;
 extern const struct nettle_mac nettle_cmac_aes256;
+extern const struct nettle_mac nettle_cmac_des3;
 
 /* HMAC variants with key size = digest size */
 extern const struct nettle_mac nettle_hmac_md5;
