@@ -41,7 +41,7 @@
 
 const struct nettle_mac nettle_cmac_aes256 =
 {
-  "cmac-aes256",
+  "cmac_aes256",
   sizeof(struct cmac_aes256_ctx),
   CMAC128_DIGEST_SIZE,
   AES256_KEY_SIZE,
