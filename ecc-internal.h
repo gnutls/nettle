@@ -256,26 +256,6 @@ void
 ecc_mod_sqr (const struct ecc_modulo *m, mp_limb_t *rp,
 	     const mp_limb_t *ap);
 
-#define ecc_modp_add(ecc, r, a, b) \
-  ecc_mod_add (&(ecc)->p, (r), (a), (b))
-#define ecc_modp_sub(ecc, r, a, b) \
-  ecc_mod_sub (&(ecc)->p, (r), (a), (b))
-#define ecc_modp_mul_1(ecc, r, a, b) \
-  ecc_mod_mul_1 (&(ecc)->p, (r), (a), (b))
-#define ecc_modp_addmul_1(ecc, r, a, b) \
-  ecc_mod_addmul_1 (&(ecc)->p, (r), (a), (b))
-#define ecc_modp_submul_1(ecc, r, a, b) \
-  ecc_mod_submul_1 (&(ecc)->p, (r), (a), (b))
-#define ecc_modp_mul(ecc, r, a, b) \
-  ecc_mod_mul (&(ecc)->p, (r), (a), (b))
-#define ecc_modp_sqr(ecc, r, a) \
-  ecc_mod_sqr (&(ecc)->p, (r), (a))
-
-#define ecc_modq_add(ecc, r, a, b) \
-  ecc_mod_add (&(ecc)->q, (r), (a), (b))
-#define ecc_modq_mul(ecc, r, a, b) \
-  ecc_mod_mul (&(ecc)->q, (r), (a), (b))
-
 /* mod q operations. */
 void
 ecc_mod_random (const struct ecc_modulo *m, mp_limb_t *xp,

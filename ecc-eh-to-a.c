@@ -61,11 +61,11 @@ ecc_eh_to_a (const struct ecc_curve *ecc,
   /* Needs 2*size + scratch for the invert call. */
   ecc->p.invert (&ecc->p, izp, zp, tp + ecc->p.size);
 
-  ecc_modp_mul (ecc, tp, xp, izp);
+  ecc_mod_mul (&ecc->p, tp, xp, izp);
   cy = mpn_sub_n (r, tp, ecc->p.m, ecc->p.size);
   cnd_copy (cy, r, tp, ecc->p.size);
 
-  ecc_modp_mul (ecc, tp, yp, izp);
+  ecc_mod_mul (&ecc->p, tp, yp, izp);
   cy = mpn_sub_n (r + ecc->p.size, tp, ecc->p.m, ecc->p.size);
   cnd_copy (cy, r + ecc->p.size, tp, ecc->p.size);
 }

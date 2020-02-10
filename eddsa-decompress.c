@@ -90,14 +90,14 @@ _eddsa_decompress (const struct ecc_curve *ecc, mp_limb_t *p,
   /* For a valid input, y < p, so subtraction should underflow. */
   res &= mpn_sub_n (scratch, scratch, ecc->p.m, ecc->p.size);
 
-  ecc_modp_sqr (ecc, y2, yp);
-  ecc_modp_mul (ecc, vp, y2, ecc->b);
-  ecc_modp_sub (ecc, vp, vp, ecc->unit);
+  ecc_mod_sqr (&ecc->p, y2, yp);
+  ecc_mod_mul (&ecc->p, vp, y2, ecc->b);
+  ecc_mod_sub (&ecc->p, vp, vp, ecc->unit);
   /* The sign is different between curve25519 and curve448.  */
   if (ecc->p.bit_size == 255)
-    ecc_modp_sub (ecc, up, ecc->unit, y2);
+    ecc_mod_sub (&ecc->p, up, ecc->unit, y2);
   else
-    ecc_modp_sub (ecc, up, y2, ecc->unit);
+    ecc_mod_sub (&ecc->p, up, y2, ecc->unit);
   res &= ecc->p.sqrt (&ecc->p, tp, up, vp, scratch_out);
 
   cy = mpn_sub_n (xp, tp, ecc->p.m, ecc->p.size);

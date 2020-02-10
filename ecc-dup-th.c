@@ -81,29 +81,29 @@ ecc_dup_th (const struct ecc_curve *ecc,
 #define J (scratch  + 4*ecc->p.size)
 
   /* B */
-  ecc_modp_add (ecc, F, p, p + ecc->p.size);
-  ecc_modp_sqr (ecc, B, F);
+  ecc_mod_add (&ecc->p, F, p, p + ecc->p.size);
+  ecc_mod_sqr (&ecc->p, B, F);
 
   /* C */
-  ecc_modp_sqr (ecc, C, p);
+  ecc_mod_sqr (&ecc->p, C, p);
   /* D */
-  ecc_modp_sqr (ecc, D, p + ecc->p.size);
+  ecc_mod_sqr (&ecc->p, D, p + ecc->p.size);
   /* Can use r as scratch, even for in-place operation. */
-  ecc_modp_sqr (ecc, r, p + 2*ecc->p.size);
+  ecc_mod_sqr (&ecc->p, r, p + 2*ecc->p.size);
   /* F, */
-  ecc_modp_sub (ecc, F, D, C);
+  ecc_mod_sub (&ecc->p, F, D, C);
   /* B - C - D */
-  ecc_modp_add (ecc, C, C, D);
-  ecc_modp_sub (ecc, B, B, C);
+  ecc_mod_add (&ecc->p, C, C, D);
+  ecc_mod_sub (&ecc->p, B, B, C);
   /* J */
-  ecc_modp_add (ecc, r, r, r);
-  ecc_modp_sub (ecc, J, r, F);
+  ecc_mod_add (&ecc->p, r, r, r);
+  ecc_mod_sub (&ecc->p, J, r, F);
 
   /* x' */
-  ecc_modp_mul (ecc, r, B, J);
+  ecc_mod_mul (&ecc->p, r, B, J);
   /* y' */
-  ecc_modp_mul (ecc, r + ecc->p.size, F, C);
+  ecc_mod_mul (&ecc->p, r + ecc->p.size, F, C);
   /* z' */
-  ecc_modp_mul (ecc, B, F, J);
+  ecc_mod_mul (&ecc->p, B, F, J);
   mpn_copyi (r + 2*ecc->p.size, B, ecc->p.size);
 }

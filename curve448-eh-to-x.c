@@ -61,8 +61,8 @@ curve448_eh_to_x (mp_limb_t *xp, const mp_limb_t *p, mp_limb_t *scratch)
   */
   /* Needs a total of 9*size storage. */
   ecc->p.invert (&ecc->p, t0, p, t1 + ecc->p.size);
-  ecc_modp_mul (ecc, t1, t0, vp);
-  ecc_modp_mul (ecc, t2, t1, t1);
+  ecc_mod_mul (&ecc->p, t1, t0, vp);
+  ecc_mod_mul (&ecc->p, t2, t1, t1);
 
   cy = mpn_sub_n (xp, t2, ecc->p.m, ecc->p.size);
   cnd_copy (cy, xp, t2, ecc->p.size);
