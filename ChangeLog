@@ -1,3 +1,12 @@
+2020-02-15  Niels Möller  <nisse@lysator.liu.se>
+
+	From Dmitry Baryshkov:
+	* ecc-internal.h (ecc_modq_add, ecc_modq_mul, ecc_modp_sqr)
+	(ecc_modp_mul, ecc_mod_submul_1, ecc_modp_mul_1, ecc_modp_add)
+	(ecc_modp_sub): Deleted macros. Updated callers to use respective
+	functions instead.
+	(ecc_modp_addmul_1): Delete unused macro.
+
 2020-02-09  Niels Möller  <nisse@lysator.liu.se>
 
 	Addition of struct nettle_mac based on patches by Daiki Ueno.
