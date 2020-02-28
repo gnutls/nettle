@@ -803,6 +803,68 @@ EOF
   ASM_ALIGN_LOG="$nettle_cv_asm_align_log"
 fi
 
+dnl  Define
+dnl  1. ASM_X86_ENDBR for endbr32/endbr64.
+dnl  2. ASM_X86_MARK_CET to add a .note.gnu.property section to mark
+dnl  Intel CET support if needed.
+dnl  3. ASM_X86_MARK_CET_ALIGN to align ASM_X86_MARK_CET.
+AC_CACHE_CHECK([if Intel CET is enabled],
+  [nettle_cv_asm_x86_intel_cet],
+  [AC_TRY_COMPILE([
+#ifndef __CET__
+#error Intel CET is not enabled
+#endif
+  ], [],
+  [nettle_cv_asm_x86_intel_cet=yes],
+  [nettle_cv_asm_x86_intel_cet=no])])
+if test "$nettle_cv_asm_x86_intel_cet" = yes; then
+  case $ABI in
+  32|standard)
+    ASM_X86_ENDBR=endbr32
+    ASM_X86_MARK_CET_ALIGN=2
+    ;;
+  64)
+    ASM_X86_ENDBR=endbr64
+    ASM_X86_MARK_CET_ALIGN=3
+    ;;
+  x32)
+    ASM_X86_ENDBR=endbr64
+    ASM_X86_MARK_CET_ALIGN=2
+    ;;
+  esac
+  AC_CACHE_CHECK([if .note.gnu.property section is needed],
+    [nettle_cv_asm_x86_gnu_property],
+    [AC_TRY_COMPILE([
+#if !defined __ELF__ || !defined __CET__
+#error GNU property is not needed
+#endif
+    ], [],
+    [nettle_cv_asm_x86_gnu_property=yes],
+    [nettle_cv_asm_x86_gnu_property=no])])
+else
+  nettle_cv_asm_x86_gnu_property=no
+fi
+if test "$nettle_cv_asm_x86_gnu_property" = yes; then
+  ASM_X86_MARK_CET='
+	.pushsection ".note.gnu.property", "a"
+	.p2align ASM_X86_MARK_CET_ALIGN
+	.long 1f - 0f
+	.long 4f - 1f
+	.long 5
+0:
+	.asciz "GNU"
+1:
+	.p2align ASM_X86_MARK_CET_ALIGN
+	.long 0xc0000002
+	.long 3f - 2f
+2:
+	.long 3
+3:
+	.p2align ASM_X86_MARK_CET_ALIGN
+4:
+	.popsection'
+fi
+
 AC_SUBST(ASM_SYMBOL_PREFIX)
 AC_SUBST(ASM_ELF_STYLE)
 AC_SUBST(ASM_COFF_STYLE)
@@ -813,6 +875,9 @@ AC_SUBST(ASM_ALIGN_LOG)
 AC_SUBST(W64_ABI)
 AC_SUBST(ASM_WORDS_BIGENDIAN)
 AC_SUBST(EMULATOR)
+AC_SUBST(ASM_X86_ENDBR)
+AC_SUBST(ASM_X86_MARK_CET)
+AC_SUBST(ASM_X86_MARK_CET_ALIGN)
 
 AC_SUBST(LIBNETTLE_MAJOR)
 AC_SUBST(LIBNETTLE_MINOR)
