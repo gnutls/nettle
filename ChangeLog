@@ -1,3 +1,11 @@
+2020-03-08  Niels Möller  <nisse@lysator.liu.se>
+
+	From Dmitry Baryshkov:
+	* cmac-des3-meta.c (nettle_cmac_des): New file, moving definition
+	from...
+	* testsuite/cmac-test.c: ... old location.
+	* nettle-meta.h (nettle_cmac_des): Declare it.
+
 2020-02-15  Niels Möller  <nisse@lysator.liu.se>
 
 	From Dmitry Baryshkov:
