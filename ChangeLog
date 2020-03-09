@@ -1,3 +1,16 @@
+2020-03-09  Niels Möller  <nisse@lysator.liu.se>
+
+	From Daiki Ueno:
+	* chacha-crypt.c (chacha_crypt32): New function.
+	* chacha-set-nonce.c (chacha_set_counter, chacha_set_counter32):
+	New functions.
+	* chacha.h (CHACHA_COUNTER_SIZE, CHACHA_COUNTER32_SIZE): New constants.
+	* chacha-poly1305.c (chacha_poly1305_encrypt)
+	(chacha_poly1305_decrypt): Use chacha_crypt32.
+	* testsuite/chacha-test.c: Update tests to use new functions.
+	* nettle.texinfo: Document new chacha functions, and update
+	out-of-date chacha-poly1305 documentation.
+
 2020-03-08  Niels Möller  <nisse@lysator.liu.se>
 
 	From Dmitry Baryshkov:
