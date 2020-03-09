@@ -1669,6 +1669,10 @@ ChaCha block size, 64.
 Size of the nonce, 8.
 @end defvr
 
+@defvr Constant CHACHA_COUNTER_SIZE
+Size of the counter, 8.
+@end defvr
+
 @deftypefun void chacha_set_key (struct chacha_ctx *@var{ctx}, const uint8_t *@var{key})
 Initialize the cipher. The same function is used for both encryption and
 decryption. Before using the cipher,
@@ -1679,6 +1683,14 @@ you @emph{must} also call @code{chacha_set_nonce}, see below.
 Sets the nonce. It is always of size @code{CHACHA_NONCE_SIZE}, 8
 octets. This function also initializes the block counter, setting it to
 zero.
+@end deftypefun
+
+@deftypefun void chacha_set_counter (struct chacha_ctx *@var{ctx}, const uint8_t *@var{counter})
+Sets the block counter. It is always of size @code{CHACHA_COUNTER_SIZE},
+8 octets. This is rarely needed since @code{chacha_set_nonce}
+initializes the block counter to zero. When it is still necessary, this
+function must be called after @code{chacha_set_nonce}.
+
 @end deftypefun
 
 @deftypefun void chacha_crypt (struct chacha_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
