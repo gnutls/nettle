@@ -1700,6 +1700,37 @@ all but the last call @emph{must} use a length that is a multiple of
 @code{CHACHA_BLOCK_SIZE}.
 @end deftypefun
 
+@subsubsection 32-bit counter variant
+
+While the original paper uses 64-bit counter value, the variant defined
+in @cite{RFC 8439} uses 32-bit counter value. This variant is
+particularly useful for @pxref{ChaCha-Poly1305} AEAD construction, which
+supports 12-octet nonces.
+
+@defvr Constant CHACHA_NONCE96_SIZE
+Size of the nonce, 12.
+@end defvr
+
+@defvr Constant CHACHA_COUNTER32_SIZE
+Size of the counter, 4.
+@end defvr
+
+@deftypefun void chacha_set_nonce96 (struct chacha_ctx *@var{ctx}, const uint8_t *@var{nonce})
+Sets the nonce. This is similar to the above @code{chacha_set_nonce},
+but the input is always of size @code{CHACHA_NONCE96_SIZE}, 12 octets.
+@end deftypefun
+
+@deftypefun void chacha_set_counter32 (struct chacha_ctx *@var{ctx}, const uint8_t *@var{counter})
+Sets the block counter. This is similar to the above @code{chacha_set_counter},
+but the input is always of size @code{CHACHA_COUNTER32_SIZE}, 4 octets.
+@end deftypefun
+
+@deftypefun void chacha_crypt32 (struct chacha_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+Encrypts or decrypts the data of a message, using ChaCha. This is similar to the
+above @code{chacha_crypt}, but it assumes the internal counter value is 32-bit
+long and the nonce is 96-bit long.
+@end deftypefun
+
 @subsection DES
 @cindex DES
 DES is the old Data Encryption Standard, specified by NIST. It uses a

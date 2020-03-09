@@ -47,7 +47,9 @@ extern "C" {
 #define chacha_set_nonce nettle_chacha_set_nonce
 #define chacha_set_nonce96 nettle_chacha_set_nonce96
 #define chacha_set_counter nettle_chacha_set_counter
+#define chacha_set_counter32 nettle_chacha_set_counter32
 #define chacha_crypt nettle_chacha_crypt
+#define chacha_crypt32 nettle_chacha_crypt32
 
 /* Currently, only 256-bit keys are supported. */
 #define CHACHA_KEY_SIZE 32
@@ -55,6 +57,7 @@ extern "C" {
 #define CHACHA_NONCE_SIZE 8
 #define CHACHA_NONCE96_SIZE 12
 #define CHACHA_COUNTER_SIZE 8
+#define CHACHA_COUNTER32_SIZE 4
 
 #define _CHACHA_STATE_LENGTH 16
 
@@ -87,8 +90,15 @@ void
 chacha_set_counter(struct chacha_ctx *ctx, const uint8_t *counter);
 
 void
+chacha_set_counter32(struct chacha_ctx *ctx, const uint8_t *counter);
+
+void
 chacha_crypt(struct chacha_ctx *ctx, size_t length, 
              uint8_t *dst, const uint8_t *src);
+
+void
+chacha_crypt32(struct chacha_ctx *ctx, size_t length,
+	       uint8_t *dst, const uint8_t *src);
 
 #ifdef __cplusplus
 }

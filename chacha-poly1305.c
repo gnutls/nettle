@@ -130,7 +130,7 @@ chacha_poly1305_encrypt (struct chacha_poly1305_ctx *ctx,
   assert (ctx->data_size % CHACHA_POLY1305_BLOCK_SIZE == 0);
   poly1305_pad (ctx);
 
-  chacha_crypt (&ctx->chacha, length, dst, src);
+  chacha_crypt32 (&ctx->chacha, length, dst, src);
   poly1305_update (ctx, length, dst);
   ctx->data_size += length;
 }
@@ -146,7 +146,7 @@ chacha_poly1305_decrypt (struct chacha_poly1305_ctx *ctx,
   poly1305_pad (ctx);
 
   poly1305_update (ctx, length, src);
-  chacha_crypt (&ctx->chacha, length, dst, src);
+  chacha_crypt32 (&ctx->chacha, length, dst, src);
   ctx->data_size += length;
 }
 			 

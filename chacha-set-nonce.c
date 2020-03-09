@@ -75,3 +75,9 @@ chacha_set_counter(struct chacha_ctx *ctx, const uint8_t *counter)
   ctx->state[12] = LE_READ_UINT32(counter + 0);
   ctx->state[13] = LE_READ_UINT32(counter + 4);
 }
+
+void
+chacha_set_counter32(struct chacha_ctx *ctx, const uint8_t *counter)
+{
+  ctx->state[12] = LE_READ_UINT32(counter + 0);
+}

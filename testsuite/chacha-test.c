@@ -71,9 +71,23 @@ _test_chacha(const struct tstring *key, const struct tstring *nonce,
 	    die ("Bad nonce size %u.\n", (unsigned) nonce->length);
 
 	  if (counter)
-	    chacha_set_counter(&ctx, counter->data);
+	    {
+	      if (counter->length == CHACHA_COUNTER_SIZE)
+		{
+		  ASSERT (nonce->length == CHACHA_NONCE_SIZE);
+		  chacha_set_counter(&ctx, counter->data);
+		}
+	      else if (counter->length == CHACHA_COUNTER32_SIZE)
+		{
+		  ASSERT (nonce->length == CHACHA_NONCE96_SIZE);
+		  chacha_set_counter32(&ctx, counter->data);
+		}
+	    }
 
-	  chacha_crypt (&ctx, length, data, data);
+	  if (nonce->length == CHACHA_NONCE_SIZE)
+	    chacha_crypt (&ctx, length, data, data);
+	  else
+	    chacha_crypt32 (&ctx, length, data, data);
 
 	  ASSERT (data[-1] == 17);
 	  ASSERT (data[length] == 17);
@@ -666,8 +680,20 @@ test_main(void)
 		   "b5129cd1de164eb9 cbd083e8a2503c4e"),
 	      20);
 
-  /* This is identical to the 96-bit nonce test, but it manually sets
-     the counter value */
+  /* This is identical to the above 96-bit nonce test, but it manually
+     sets the 32-bit counter value */
+  test_chacha_with_counter(SHEX("0001020304050607 08090a0b0c0d0e0f"
+				"1011121314151617 18191a1b1c1d1e1f"),
+			   SHEX("000000090000004a 00000000"),
+			   SHEX("10f1e7e4d13b5915 500fdd1fa32071c4"
+				"c7d1f4c733c06803 0422aa9ac3d46c4e"
+				"d2826446079faa09 14c2d705d98b02a2"
+				"b5129cd1de164eb9 cbd083e8a2503c4e"),
+			   20,
+			   SHEX("01000000"));
+
+  /* This is identical to the above 96-bit nonce test, but it manually
+     sets the 64-bit counter value */
   test_chacha_with_counter(SHEX("0001020304050607 08090a0b0c0d0e0f"
 				"1011121314151617 18191a1b1c1d1e1f"),
 			   SHEX("0000004a00000000"),
