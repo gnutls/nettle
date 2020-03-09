@@ -103,7 +103,7 @@ chacha_crypt32(struct chacha_ctx *ctx,
 
       ++ctx->state[12];
 
-      /* stopping at 2^70 length per nonce is user's responsibility */
+      /* stopping at 2^38 length per nonce is user's responsibility */
 
       if (length <= CHACHA_BLOCK_SIZE)
 	{

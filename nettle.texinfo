@@ -3328,7 +3328,7 @@ defines a similar construction but with Salsa20 instead of ChaCha.
 Nettle's implementation of ChaCha-Poly1305 follows @cite{RFC 8439},
 where the ChaCha cipher is initialized with a 12-byte nonce and a 4-byte
 block counter. This allows up to 256 gigabytes of data to be encrypted
-using the same key.
+using the same key and nonce.
 
 For ChaCha-Poly1305, the ChaCha cipher is initialized with a key, of 256
 bits, and a per-message nonce. The first block of the key stream
