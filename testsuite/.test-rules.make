@@ -178,6 +178,9 @@ xts-test$(EXEEXT): xts-test.$(OBJEXT)
 pbkdf2-test$(EXEEXT): pbkdf2-test.$(OBJEXT)
 	$(LINK) pbkdf2-test.$(OBJEXT) $(TEST_OBJS) -o pbkdf2-test$(EXEEXT)
 
+x86-ibt-test$(EXEEXT): x86-ibt-test.$(OBJEXT)
+	$(LINK) x86-ibt-test.$(OBJEXT) $(TEST_OBJS) -o x86-ibt-test$(EXEEXT)
+
 sexp-test$(EXEEXT): sexp-test.$(OBJEXT)
 	$(LINK) sexp-test.$(OBJEXT) $(TEST_OBJS) -o sexp-test$(EXEEXT)
 
