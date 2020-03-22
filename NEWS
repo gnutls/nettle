@@ -3,18 +3,36 @@ NEWS for the Nettle 3.6 release
 	New features:
 
 	* Support for Curve448 and ED448 signatures. Contributed by
-          Daiki Ueno.
+	  Daiki Ueno.
 
 	* Support for SHAKE256 (SHA3 variant with arbitrary output
-          size). Contributed by Daiki Ueno.
+	  size). Contributed by Daiki Ueno.
 
 	* Support for SIV-CMAC (Synthetic Initialization Vector) mode,
-          contributed by Nikos Mavrogiannopoulos.
+	  contributed by Nikos Mavrogiannopoulos.
 
 	* Support for CMAC64, contributed by Dmitry Baryshkov.
 
 	* Support for the "CryptoPro" variant of the GOST hash
-          function, as gosthash94cp. Contributed by Dmitry Baryshkov.
+	  function, as gosthash94cp. Contributed by Dmitry Baryshkov.
+
+	* Support for GOST DSA signatures, including GOST curves
+	  gc256b and gc512a. Contributed by Dmitry Baryshkov.
+
+	* Support for Intel CET in x86 and x86_64 assembly files, if
+	  enabled via CFLAGS (gcc --fcf-protection=full). Contributed
+	  by H.J. Lu and Simo Sorce.
+
+	* A few new functions to improve support the Chacha variant
+	  with 96-bit nonce and 32-bit block counter (the existing
+	  functions use nonce and counter of 64-bit each), and
+	  functions to set the counter. Contributed by Daiki Ueno.
+
+	* New interface, struct nettle_mac, for MAC (message
+	  authentication) algorithms. This abstraction is only for
+	  MACs that don't require a per-message nonce. For HMAC, the
+	  key size is fixed, and equal the digest size of the
+	  underlying hash function.
 
 	Bug fixes:
 
@@ -42,6 +60,11 @@ NEWS for the Nettle 3.6 release
 	  ecc_curve. Files and functions have been renamed to more
 	  consistently match the curve name, e.g., ecc-256.c has been
 	  renamed to ecc-secp256r1.c.
+
+	* Documentation for chacha-poly1305 updated. It is no longer
+	  experimental. The implementation was updated to follow RFC
+	  8439 in Nettle-3.1, but that was not documented or announced
+	  at the time.
 
 NEWS for the Nettle 3.5.1 release
 
