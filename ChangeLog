@@ -1,3 +1,15 @@
+2020-03-31  Niels Möller  <nisse@lysator.liu.se>
+
+	* config.make.in (abs_top_builddir, TEST_SHLIB_DIR): New variables.
+
+	* run-tests: Check TEST_SHLIB_DIR, and set up LD_LIBRARY_PATH and
+	related member variables.
+
+	* testsuite/Makefile.in (check): Pass only TEST_SHLIB_DIR
+	to the run-tests script, and leave setting of LD_LIBRARY_PATH and
+	related variables to that script.
+	* examples/Makefile.in (check): Likewise.
+
 2020-03-26  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Bump package version to 3.6.
