@@ -1,5 +1,8 @@
 2020-03-31  Niels Möller  <nisse@lysator.liu.se>
 
+	* aclocal.m4 (LSH_TYPE_SOCKLEN_T, LSH_CHECK_KRB_LIB, LSH_LIB_ARGP)
+	(LSH_MAKE_CONDITIONAL): Delete unused macros.
+
 	* config.make.in (abs_top_builddir, TEST_SHLIB_DIR): New variables.
 
 	* run-tests: Check TEST_SHLIB_DIR, and set up LD_LIBRARY_PATH and
