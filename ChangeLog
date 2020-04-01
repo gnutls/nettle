@@ -1,3 +1,9 @@
+2020-04-01  Niels Möller  <nisse@lysator.liu.se>
+
+	* config.guess: Update to 2020-01-01 version, from savannah's
+	config.git.
+	* config.sub: Likewise.
+
 2020-03-31  Niels Möller  <nisse@lysator.liu.se>
 
 	* aclocal.m4 (LSH_TYPE_SOCKLEN_T, LSH_CHECK_KRB_LIB, LSH_LIB_ARGP)
