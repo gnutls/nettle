@@ -66,7 +66,8 @@ includedir =	@includedir@
 infodir =	@infodir@
 abs_top_builddir = @abs_top_builddir@
 
-TEST_SHLIB_DIR = "${abs_top_builddir}/.lib"
+# Absolute name, since some systems require that for LD_LIBRARY_PATH.
+TEST_SHLIB_DIR = ${abs_top_builddir}/.lib
 
 # PRE_CPPFLAGS and PRE_LDFLAGS lets each Makefile.in prepend its own
 # flags before CPPFLAGS and LDFLAGS. While EXTRA_CFLAGS are added at the end.
