@@ -100,8 +100,9 @@ build/gnutls:
     make -j4 && make install
   - git clone --depth 1 --branch master https://gitlab.com/gnutls/gnutls.git gnutls-git
   - cd gnutls-git && git submodule update --init && ./bootstrap &&
-    ./configure PKG_CONFIG_PATH="$(pwd)/../local/lib/pkgconfig" CPPFLAGS="-I$(pwd)/../local/include" LDFLAGS="-L$(pwd)/../local/lib -Wl,-rpath,$(pwd)/../local/lib" --disable-gost --disable-cxx --disable-guile --disable-doc && make -j$(nproc) &&
-    make -j $(nproc) check
+    ./configure PKG_CONFIG_PATH="$(pwd)/../local/lib/pkgconfig" CPPFLAGS="-I$(pwd)/../local/include"
+      LDFLAGS="-L$(pwd)/../local/lib -Wl,-rpath,$(pwd)/../local/lib" --disable-gost --disable-cxx --disable-guile --disable-doc &&
+    make -j$(nproc) && make -j $(nproc) check
   tags:
   - shared
   - linux
