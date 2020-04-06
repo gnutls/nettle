@@ -13,8 +13,8 @@ AC_CONFIG_HEADER([config.h])
 LIBNETTLE_MAJOR=7
 LIBNETTLE_MINOR=1
 
-LIBHOGWEED_MAJOR=5
-LIBHOGWEED_MINOR=1
+LIBHOGWEED_MAJOR=6
+LIBHOGWEED_MINOR=0
 
 dnl Note double square brackets, for extra m4 quoting.
 MAJOR_VERSION=`echo $PACKAGE_VERSION | sed 's/^\([[^.]]*\)\..*/\1/'`

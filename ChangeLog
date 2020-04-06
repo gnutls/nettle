@@ -1,3 +1,9 @@
+2020-04-06  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac (LIBHOGWEED_MAJOR): Increase hogweed version number
+	to 6.0, at request of Gnutls team.
+	(LIBHOGWEED_MINOR): Reset to zero.
+
 2020-04-01  Niels Möller  <nisse@lysator.liu.se>
 
 	* config.guess: Update to 2020-01-01 version, from savannah's
