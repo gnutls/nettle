@@ -67,8 +67,14 @@ NEWS for the Nettle 3.6 release
 	  at the time.
 
 	The shared library names are libnettle.so.7.1 and
-	libhogweed.so.5.1. It is intended to be fully binary
-	compatible with nettle-3.5.
+	libhogweed.so.6.0. The libnettle.so library is intended to be
+	fully binary compatible with nettle-3.5.
+
+	The libhogweed.so library was also intended to be fully binary
+	compatible with nettle-3.5. However, the major version and the
+	soname are incremented anyway, to avoid upgrade problems with
+	recent Gnutls versions that depend on Nettle internals outside
+	of the advertised ABI.
 
 NEWS for the Nettle 3.5.1 release
 
