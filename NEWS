@@ -23,15 +23,15 @@ NEWS for the Nettle 3.6 release
 	  enabled via CFLAGS (gcc --fcf-protection=full). Contributed
 	  by H.J. Lu and Simo Sorce.
 
-	* A few new functions to improve support the Chacha variant
-	  with 96-bit nonce and 32-bit block counter (the existing
-	  functions use nonce and counter of 64-bit each), and
-	  functions to set the counter. Contributed by Daiki Ueno.
+	* A few new functions to improve support for the Chacha
+	  variant with 96-bit nonce and 32-bit block counter (the
+	  existing functions use nonce and counter of 64-bit each),
+	  and functions to set the counter. Contributed by Daiki Ueno.
 
 	* New interface, struct nettle_mac, for MAC (message
-	  authentication) algorithms. This abstraction is only for
-	  MACs that don't require a per-message nonce. For HMAC, the
-	  key size is fixed, and equal the digest size of the
+	  authentication code) algorithms. This abstraction is only
+	  for MACs that don't require a per-message nonce. For HMAC,
+	  the key size is fixed, and equal the digest size of the
 	  underlying hash function.
 
 	Bug fixes:
@@ -42,7 +42,7 @@ NEWS for the Nettle 3.6 release
 
 	* Fix configure check for __builtin_bswap64, the incorrect
 	  check would result in link errors on platforms missing this
-	  function. Patch contributed by by George Koehler.
+	  function. Patch contributed by George Koehler.
 
 	* All use of old-fashioned suffix rules in the Makefiles have
 	  been replaced with %-pattern rules. Nettle's use of suffix
@@ -73,7 +73,7 @@ NEWS for the Nettle 3.6 release
 	The libhogweed.so library was also intended to be fully binary
 	compatible with nettle-3.5. However, the major version and the
 	soname are incremented anyway, to avoid upgrade problems with
-	recent Gnutls versions that depend on Nettle internals outside
+	recent GnuTLS versions that depend on Nettle internals outside
 	of the advertised ABI.
 
 NEWS for the Nettle 3.5.1 release
