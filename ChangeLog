@@ -1,3 +1,13 @@
+2020-04-15  Niels Möller  <nisse@lysator.liu.se>
+
+	From Dmitry Baryshkov:
+	* poly1305.h (poly1305_set_key, poly1305_digest, _poly1305_block):
+	Removed declarations from this public header file.
+	* poly1305-internal.h: New file, with declarations of internal
+	poly1305 functions.
+	(_poly1305_set_key, _poly1305_digest): Renamed, with leading
+	underscore. Updated definitions and all uses.
+
 2020-04-12  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in (DISTFILES): Reorder to ensure that generated des
