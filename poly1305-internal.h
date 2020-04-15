@@ -1,4 +1,4 @@
-/* poly1305.h
+/* poly1305-internal.h
 
    Poly1305 message authentication code.
 
