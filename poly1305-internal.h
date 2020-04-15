@@ -35,7 +35,7 @@
 #ifndef NETTLE_POLY1305_INTERNAL_H_INCLUDED
 #define NETTLE_POLY1305_INTERNAL_H_INCLUDED
 
-#include "aes.h"
+#include "poly1305.h"
 
 #ifdef __cplusplus
 extern "C" {
