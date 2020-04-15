@@ -1,5 +1,8 @@
 2020-04-12  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.in (DISTFILES): Reorder to ensure that generated des
+	headers can't be older than desdata.stamp.
+
 	* testsuite/ed448-test.c: Define _GNU_SOURCE, for getline with gcc
 	-std=c89.
 

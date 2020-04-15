@@ -244,7 +244,7 @@ DISTFILES = $(SOURCES) $(HEADERS) getopt.h getopt_int.h \
 	README CONTRIBUTING.md AUTHORS COPYING.LESSERv3 COPYINGv2 COPYINGv3 \
 	INSTALL NEWS ChangeLog \
 	nettle.pc.in hogweed.pc.in \
-	$(des_headers) descore.README desdata.stamp \
+	desdata.stamp $(des_headers) descore.README \
 	aes-internal.h block-internal.h camellia-internal.h \
 	gost28147-internal.h serpent-internal.h \
 	cast128_sboxes.h desinfo.h desCode.h \
