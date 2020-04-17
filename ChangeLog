@@ -1,3 +1,9 @@
+2020-04-17  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac (LIBNETTLE_MAJOR): Increase libnettle version
+	number to 8.0, for move of internal poly1305 functions.
+	(LIBNETTLE_MINOR): Reset to zero.
+
 2020-04-15  Niels Möller  <nisse@lysator.liu.se>
 
 	From Dmitry Baryshkov:
@@ -18,8 +24,8 @@
 
 2020-04-06  Niels Möller  <nisse@lysator.liu.se>
 
-	* configure.ac (LIBHOGWEED_MAJOR): Increase hogweed version number
-	to 6.0, at request of Gnutls team.
+	* configure.ac (LIBHOGWEED_MAJOR): Increase libhogweed version
+	number to 6.0, at request of Gnutls team.
 	(LIBHOGWEED_MINOR): Reset to zero.
 
 2020-04-01  Niels Möller  <nisse@lysator.liu.se>
