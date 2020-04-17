@@ -1,5 +1,18 @@
 NEWS for the Nettle 3.6 release
 
+	This release adds a couple of new features, most notable being
+	support for ED448 signatures.
+
+	It is not binary compatible with earlier releases. The shared
+	library names are libnettle.so.8.0 and libhogweed.so.6.0, with
+	sonames nibnettle.so.8 and libhogweed.so.6. The changed
+	sonames are mainly to avoid upgrade problems with recent
+	GnuTLS versions, that depend on Nettle internals outside of
+	the advertised ABI. But also because of the removal of
+	internal poly1305 functions which were undocumented but
+	declared in an installed header file, see Interface changes
+	below.
+
 	New features:
 
 	* Support for Curve448 and ED448 signatures. Contributed by
@@ -53,6 +66,12 @@ NEWS for the Nettle 3.6 release
 	  and unsupported. (Building with BSD make or Solaris make
 	  used to work years ago, but has not been tested recently).
 
+	Interface changes:
+
+	* Declarations of internal poly1305.h functions have been
+	  removed from the header file poly1305.h, to make it clear
+	  that they are not part of the advertised API or ABI.
+
 	Miscellaneous:
 
 	* A fair amount of changes to ECC internals, with a few
@@ -65,16 +84,6 @@ NEWS for the Nettle 3.6 release
 	  experimental. The implementation was updated to follow RFC
 	  8439 in Nettle-3.1, but that was not documented or announced
 	  at the time.
-
-	The shared library names are libnettle.so.7.1 and
-	libhogweed.so.6.0. The libnettle.so library is intended to be
-	fully binary compatible with nettle-3.5.
-
-	The libhogweed.so library was also intended to be fully binary
-	compatible with nettle-3.5. However, the major version and the
-	soname are incremented anyway, to avoid upgrade problems with
-	recent GnuTLS versions that depend on Nettle internals outside
-	of the advertised ABI.
 
 NEWS for the Nettle 3.5.1 release
 
