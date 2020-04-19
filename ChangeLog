@@ -1,3 +1,14 @@
+2020-04-19  Niels Möller  <nisse@lysator.liu.se>
+
+	From Dmitry Baryshkov:
+	* gosthash94.h (struct gosthash94_ctx): Rearrange struct to enable
+	use of MD_UPDATE macro, in particular, replacing byte count with
+	block count and index. Also move buffer last, for consistency with
+	other hash functions.
+	* gosthash94.c (gosthash94_update_int): Use MD_UPDATE macro.
+	(gosthash94_write_digest): Update for block count rather than byte
+	count.
+
 2020-04-17  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac (LIBNETTLE_MAJOR): Increase libnettle version
