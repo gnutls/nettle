@@ -283,6 +283,8 @@ gost_compute_sum_and_hash (struct gosthash94_ctx *ctx, const uint8_t *block,
     gost_block_compress (ctx, block_le, sbox);
 }
 
+#define COMPRESS(ctx, block) gost_compute_sum_and_hash((ctx), (block), sbox);
+
 /**
  * Calculate message hash.
  * Can be called repeatedly with chunks of the message to be hashed.
@@ -296,33 +298,7 @@ gosthash94_update_int (struct gosthash94_ctx *ctx,
 		       size_t length, const uint8_t *msg,
 		       const uint32_t sbox[4][256])
 {
-    unsigned index = (unsigned) ctx->length & 31;
-    ctx->length += length;
-
-    /* fill partial block */
-    if (index)
-      {
-          unsigned left = GOSTHASH94_BLOCK_SIZE - index;
-          memcpy (ctx->message + index, msg, (length < left ? length : left));
-          if (length < left)
-              return;
-
-          /* process partial block */
-          gost_compute_sum_and_hash (ctx, ctx->message, sbox);
-          msg += left;
-          length -= left;
-      }
-    while (length >= GOSTHASH94_BLOCK_SIZE)
-      {
-          gost_compute_sum_and_hash (ctx, msg, sbox);
-          msg += GOSTHASH94_BLOCK_SIZE;
-          length -= GOSTHASH94_BLOCK_SIZE;
-      }
-    if (length)
-      {
-          /* save leftovers */
-          memcpy (ctx->message, msg, length);
-      }
+    MD_UPDATE(ctx, length, msg, COMPRESS, ctx->count++);
 }
 
 /**
@@ -368,21 +344,20 @@ gosthash94_write_digest (struct gosthash94_ctx *ctx,
 			 size_t length, uint8_t *result,
 			 const uint32_t sbox[4][256])
 {
-    unsigned index = ctx->length & 31;
-    uint32_t msg32[8];
+    uint32_t msg32[GOSTHASH94_BLOCK_SIZE / 4];
 
     assert(length <= GOSTHASH94_DIGEST_SIZE);
 
     /* pad the last block with zeroes and hash it */
-    if (index > 0)
+    if (ctx->index > 0)
       {
-          memset (ctx->message + index, 0, 32 - index);
-          gost_compute_sum_and_hash (ctx, ctx->message, sbox);
+          memset (ctx->block + ctx->index, 0, GOSTHASH94_BLOCK_SIZE - ctx->index);
+          gost_compute_sum_and_hash (ctx, ctx->block, sbox);
       }
 
     /* hash the message length and the sum */
-    msg32[0] = ctx->length << 3;
-    msg32[1] = ctx->length >> 29;
+    msg32[0] = (ctx->count << 8) | (ctx->index << 3);
+    msg32[1] = ctx->count >> 24;
     memset (msg32 + 2, 0, sizeof (uint32_t) * 6);
 
     gost_block_compress (ctx, msg32, sbox);
