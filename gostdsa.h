@@ -44,6 +44,7 @@ extern "C" {
 /* Name mangling */
 #define gostdsa_sign nettle_gostdsa_sign
 #define gostdsa_verify nettle_gostdsa_verify
+#define gostdsa_vko nettle_gostdsa_vko
 #define ecc_gostdsa_sign nettle_ecc_gostdsa_sign
 #define ecc_gostdsa_sign_itch nettle_ecc_gostdsa_sign_itch
 #define ecc_gostdsa_verify nettle_ecc_gostdsa_verify
@@ -67,6 +68,12 @@ int
 gostdsa_verify (const struct ecc_point *pub,
 	        size_t length, const uint8_t *digest,
 	        const struct dsa_signature *signature);
+
+void
+gostdsa_vko (const struct ecc_scalar *key,
+	     const struct ecc_point *pub,
+	     size_t ukm_length, const uint8_t *ukm,
+	     uint8_t *out);
 
 /* Low-level GOSTDSA functions. */
 mp_size_t

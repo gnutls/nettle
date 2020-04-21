@@ -304,6 +304,9 @@ gostdsa-verify-test$(EXEEXT): gostdsa-verify-test.$(OBJEXT)
 gostdsa-keygen-test$(EXEEXT): gostdsa-keygen-test.$(OBJEXT)
 	$(LINK) gostdsa-keygen-test.$(OBJEXT) $(TEST_OBJS) -o gostdsa-keygen-test$(EXEEXT)
 
+gostdsa-vko-test$(EXEEXT): gostdsa-vko-test.$(OBJEXT)
+	$(LINK) gostdsa-vko-test.$(OBJEXT) $(TEST_OBJS) -o gostdsa-vko-test$(EXEEXT)
+
 sha1-huge-test$(EXEEXT): sha1-huge-test.$(OBJEXT)
 	$(LINK) sha1-huge-test.$(OBJEXT) $(TEST_OBJS) -o sha1-huge-test$(EXEEXT)
 

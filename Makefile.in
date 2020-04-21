@@ -194,7 +194,7 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  ecc-ecdsa-sign.c ecdsa-sign.c \
 		  ecc-ecdsa-verify.c ecdsa-verify.c ecdsa-keygen.c \
 		  ecc-gostdsa-sign.c gostdsa-sign.c \
-		  ecc-gostdsa-verify.c gostdsa-verify.c \
+		  ecc-gostdsa-verify.c gostdsa-verify.c gostdsa-vko.c \
 		  curve25519-mul-g.c curve25519-mul.c curve25519-eh-to-x.c \
 		  curve448-mul-g.c curve448-mul.c curve448-eh-to-x.c \
 		  eddsa-compress.c eddsa-decompress.c eddsa-expand.c \

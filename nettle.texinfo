@@ -1065,6 +1065,7 @@ This function also resets the context in the same way as
 @subsubsection @acronym{GOSTHASH94 and GOSTHASH94CP}
 @cindex GOST hash
 
+@anchor{GOSTHASH94CP}
 The GOST94 or GOST R 34.11-94 hash algorithm is a Soviet-era algorithm 
 used in Russian government standards (see @cite{RFC 4357}).
 It outputs message digests of 256 bits, or 32 octets. The standard itself
@@ -5155,6 +5156,20 @@ Returns curve corresponding to following identifiers:
 @itemize
 @item id-tc26-gost-3410-12-512-paramSetA (@cite{RFC 7836})
 @end itemize
+@end deftypefun
+
+For GOST key pairs key derivation/key agreement function (VKO) is defined in
+@cite{RFC 4357} and @cite{RFC 7836}.  Basically shared key is equal to
+hash(cofactor * ukm * priv * pub). Nettle library provides a function that does
+multiplication. Caller should do hashing on his own (it will be either
+GOST R 34.11-94 (@pxref{GOSTHASH94CP}) or GOST R 34.11-2012, Streebog, which nor part of the library yet).
+
+@deftypefun void gostdsa_vko (const struct ecc_scalar *@var{priv}, const struct ecc_point *@var{pub}, size_t @var{ukm_length}, const uint8_t *@var{ukm}, uint8_t *@var{out})
+Uses private key @var{priv}, public ket @var{pub} and shared key material
+@var{ukm} to generate shared secret, written to buffer @var{out}. The buffer
+should be of the size equal to 2 private key lengths: 64 bytes for 256 bit
+curves and 128 bytes for 512 bit ones. UKM is a shared key material, usually
+transferred in cleartext. It does not have to be secret.
 @end deftypefun
 
 @node Curve 25519 and Curve 448, , ECDSA, Elliptic curves
