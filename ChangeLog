@@ -1,3 +1,10 @@
+2020-04-22  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/Makefile.in: Use pattern rules for test executables,
+	replacing...
+	(test-rules): ...deleted rule.
+	* testsuite/.test-rules.make: Deleted file.
+
 2020-04-21  Niels Möller  <nisse@lysator.liu.se>
 
 	From Dmitry Baryshkov:

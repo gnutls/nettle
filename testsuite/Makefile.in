@@ -75,8 +75,7 @@ EXTRA_TARGETS = $(EXTRA_SOURCES:.c=$(EXEEXT))
 # Includes all C source files, regardless of configuration
 SOURCES = $(TS_SOURCES) $(EXTRA_SOURCES) testutils.c dlopen-test.c
 
-DISTFILES = $(SOURCES) $(CXX_SOURCES) Makefile.in .test-rules.make \
-	    test-rules.stamp \
+DISTFILES = $(SOURCES) $(CXX_SOURCES) Makefile.in \
 	    $(TS_SH) setup-env teardown-env \
 	    gold-bug.txt testutils.h sha3.awk
 
@@ -93,9 +92,9 @@ all: $(EXTRA_TARGETS)
 # to use suffix rules to build the test executables. So we use an
 # explicit rule for each and every executable.
 
+TEST_OBJS = testutils.$(OBJEXT) ../nettle-internal.$(OBJEXT)
 LIB_HOGWEED = @IF_HOGWEED@ -lhogweed
-TEST_OBJS = testutils.$(OBJEXT) ../nettle-internal.$(OBJEXT) \
-	    $(LIB_HOGWEED) -lnettle $(LIBS)
+TEST_LIBS = $(LIB_HOGWEED) -lnettle $(LIBS)
 
 ../nettle-internal.$(OBJEXT):
 	( cd .. && $(MAKE) nettle-internal.$(OBJEXT) )
@@ -104,28 +103,12 @@ TEST_OBJS = testutils.$(OBJEXT) ../nettle-internal.$(OBJEXT) \
 dlopen-test$(EXEEXT): dlopen-test.$(OBJEXT) testutils.$(OBJEXT)
 	$(LINK) dlopen-test.$(OBJEXT) -ldl -o dlopen-test$(EXEEXT)
 
-.PHONY: test-rules
-test-rules:
-	(for f in $(TS_NETTLE) $(TS_HOGWEED) $(EXTRA_TARGETS) ; do \
-	  echo $$f'$$(EXEEXT): '$$f'.$$(OBJEXT)' ; \
-	  echo '	$$(LINK) '$$f'.$$(OBJEXT) $$(TEST_OBJS) -o '$$f'$$(EXEEXT)' ; \
-	  echo ; \
-	done ; \
-	for f in $(TS_CXX) ; do \
-	  echo $$f'$$(EXEEXT): '$$f'.$$(OBJEXT)' ; \
-	  echo '	$$(LINK_CXX) '$$f'.$$(OBJEXT) $$(TEST_OBJS) -o '$$f'$$(EXEEXT)' ; \
-	  echo ; \
-	done) > $(srcdir)/.test-rules.make
+# Special target, using C++ linking
+cxx-test$(EXEEXT): cxx-test.$(OBJEXT)
+	$(LINK_CXX) $< $(TEST_OBJS) $(TEST_LIBS) -o $@
 
-$(srcdir)/.test-rules.make: $(srcdir)/test-rules.stamp
-
-# Updates the stamp file *first*, so that this rule isn't triggered
-# again and again by the recursive $(MAKE).
-$(srcdir)/test-rules.stamp: Makefile.in
-	echo stamp > $(srcdir)/test-rules.stamp
-	$(MAKE) test-rules
-
-include $(srcdir)/.test-rules.make
+%$(EXEEXT): %.$(OBJEXT)
+	$(LINK) $< $(TEST_OBJS) $(TEST_LIBS) -o $@
 
 $(TARGETS) $(EXTRA_TARGETS): testutils.$(OBJEXT) ../nettle-internal.$(OBJEXT) \
 	../libnettle.stamp @IF_HOGWEED@ ../libhogweed.stamp
