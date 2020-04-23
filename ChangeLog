@@ -1,3 +1,10 @@
+2020-04-23  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/ecc-add-test.c (test_main): Delete ASSERTs with
+	functions pointer comparisons. They provide little value, and fail
+	when linking with hogweed.dll on windows.
+	* testsuite/ecc-dup-test.c (test_main): Likewise.
+
 2020-04-22  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/Makefile.in: Use pattern rules for test executables,

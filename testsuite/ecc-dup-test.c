@@ -18,9 +18,6 @@ test_main (void)
 	{
 	  mp_limb_t *z = xalloc_limbs (ecc_size_j (ecc));
 
-	  ASSERT ((ecc->p.bit_size == 255 && ecc->dup == ecc_dup_th)
-		  || (ecc->p.bit_size == 448 && ecc->dup == ecc_dup_eh));
-
 	  /* Zero point has x = 0, y = 1, z = 1 */
 	  mpn_zero (z, 3*ecc->p.size);
 	  z[ecc->p.size] = z[2*ecc->p.size] = 1;
@@ -30,8 +27,6 @@ test_main (void)
 
 	  free (z);
 	}
-      else
-	ASSERT (ecc->dup == ecc_dup_jj);
 
       ecc->dup (ecc, p, g, scratch);
       test_ecc_mul_h (i, 2, p);

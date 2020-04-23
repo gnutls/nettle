@@ -23,10 +23,6 @@ test_main (void)
 	{
 	  mp_limb_t *z = xalloc_limbs (ecc_size_j (ecc));
 
-	  ASSERT ((ecc->p.bit_size == 255 && ecc->add_hh == ecc_add_th)
-		  || (ecc->p.bit_size == 448 && ecc->add_hh == ecc_add_eh));
-	  ASSERT ((ecc->p.bit_size == 255 && ecc->add_hhh == ecc_add_thh)
-		  || (ecc->p.bit_size == 448 && ecc->add_hhh == ecc_add_ehh));
 	  ASSERT (ecc->add_hh_itch <= ecc->add_hhh_itch);
 
 	  /* Zero point has x = 0, y = 1, z = 1 */
@@ -52,11 +48,6 @@ test_main (void)
 	  test_ecc_mul_h (i, 2, g2);
 
 	  free (z);
-	}
-      else
-	{
-	  ASSERT (ecc->add_hhh == ecc_add_jjj);
-	  ASSERT (ecc->dup == ecc_dup_jj);
 	}
 
       ecc->dup (ecc, g2, g, scratch);
