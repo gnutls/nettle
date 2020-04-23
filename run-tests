@@ -35,9 +35,13 @@ if [ -n "$TEST_SHLIB_DIR" ] ; then
   DYLD_LIBRARY_PATH="$TEST_SHLIB_DIR"
   # For Windows
   PATH="${TEST_SHLIB_DIR}:${PATH}"
+  # For Wine
+  WINEPATH="${TEST_SHLIB_DIR}"
+
   export LD_LIBRARY_PATH
   export DYLD_LIBRARY_PATH
   export PATH
+  export WINEPATH
 fi
 
 # When used in make rules, we sometimes get the filenames VPATH

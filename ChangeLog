@@ -1,5 +1,12 @@
 2020-04-23  Niels Möller  <nisse@lysator.liu.se>
 
+	* run-tests: Set WINEPATH, since it appears wine doesn't search
+	for dlls in the unix PATH.
+	* examples/setup-env: Delete creation of extra dll symlinks.
+	* examples/teardown-env: Delete corresponding cleanup.
+	* testsuite/setup-env: Deleted file (same symlink creation).
+	* testsuite/teardown-env: Delete corresponding cleanup.
+
 	* testsuite/ecc-add-test.c (test_main): Delete ASSERTs with
 	functions pointer comparisons. They provide little value, and fail
 	when linking with hogweed.dll on windows.
