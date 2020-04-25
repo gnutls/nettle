@@ -164,16 +164,7 @@ void mpz_urandomb (mpz_t r, struct knuth_lfib_ctx *ctx, mp_bitcnt_t bits);
 /* This is cheating */
 #define mpz_rrandomb mpz_urandomb
 
-/* mini-gmp defines this function (in the GMP library, it was added in
-   gmp in version 6.1.0). */
-#define mpn_zero_p mpn_zero_p
-
 #endif /* NETTLE_USE_MINI_GMP */
-
-#ifndef mpn_zero_p
-int
-mpn_zero_p (mp_srcptr ap, mp_size_t n);
-#endif
 
 void
 mpn_out_str (FILE *f, int base, const mp_limb_t *xp, mp_size_t xn);

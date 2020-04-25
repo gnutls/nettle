@@ -1063,19 +1063,6 @@ test_armor(const struct nettle_armor *armor,
 
 #if WITH_HOGWEED
 
-#ifndef mpn_zero_p
-int
-mpn_zero_p (mp_srcptr ap, mp_size_t n)
-{
-  while (--n >= 0)
-    {
-      if (ap[n] != 0)
-	return 0;
-    }
-  return 1;
-}
-#endif
-
 void
 mpn_out_str (FILE *f, int base, const mp_limb_t *xp, mp_size_t xn)
 {

@@ -1,5 +1,13 @@
 2020-04-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac: Update required version of GMP to 6.1.0, needed
+	for mpn_zero_p.
+	* ecc-ecdsa-verify.c (zero_p): Deleted static function, usage
+	replaced with mpn_zero_p.
+	* testsuite/testutils.c (mpn_zero_p): Delete conditional
+	definition.
+	* testsuite/testutils.h: Delete corresponding declarations.
+
 	* Makefile.in (DISTFILES): Add poly1305-internal.h.
 	* testsuite/Makefile.in (DISTFILES): Delete setup-env.
 

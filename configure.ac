@@ -243,9 +243,10 @@ fi
 # Checks for libraries
 if test "x$enable_public_key" = "xyes" ; then
   if test "x$enable_mini_gmp" = "xno" ; then
-    AC_CHECK_LIB(gmp, __gmpn_sec_div_r,,
+    # mpn_zero_p was added in GMP-6.1.0
+    AC_CHECK_LIB(gmp, __gmpn_zero_p,,
         [AC_MSG_WARN(
-    [GNU MP not found, or too old. GMP-6.0 or later is needed, see https://gmplib.org/.
+    [GNU MP not found, or too old. GMP-6.1.0 or later is needed, see https://gmplib.org/.
     Support for public key algorithms will be unavailable.])]
         enable_public_key=no)
 
