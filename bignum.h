@@ -44,8 +44,6 @@
 
 # define GMP_NUMB_MASK (~(mp_limb_t) 0)
 
-/* Function missing in older gmp versions, and checked for with ifdef */
-# define mpz_limbs_read mpz_limbs_read
 /* Side-channel silent powm not available in mini-gmp. */
 # define mpz_powm_sec mpz_powm
 #else

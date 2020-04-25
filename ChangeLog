@@ -1,5 +1,11 @@
 2020-04-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* gmp-glue.c (mpz_limbs_read, mpz_limbs_write, mpz_limbs_modify)
+	(mpz_limbs_finish, mpz_roinit_n): Delete compatibility
+	definitions. These functions available in GMP since version 6.0.0.
+	* gmp-glue.h: Delete corresponding declarations, and preprocessor
+	conditions.
+
 	* configure.ac: Update required version of GMP to 6.1.0, needed
 	for mpn_zero_p.
 	* ecc-ecdsa-verify.c (zero_p): Deleted static function, usage
