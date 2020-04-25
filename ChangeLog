@@ -1,3 +1,8 @@
+2020-04-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (DISTFILES): Add poly1305-internal.h.
+	* testsuite/Makefile.in (DISTFILES): Delete setup-env.
+
 2020-04-23  Niels Möller  <nisse@lysator.liu.se>
 
 	* run-tests: Set WINEPATH, since it appears wine doesn't search

@@ -76,7 +76,7 @@ EXTRA_TARGETS = $(EXTRA_SOURCES:.c=$(EXEEXT))
 SOURCES = $(TS_SOURCES) $(EXTRA_SOURCES) testutils.c dlopen-test.c
 
 DISTFILES = $(SOURCES) $(CXX_SOURCES) Makefile.in \
-	    $(TS_SH) setup-env teardown-env \
+	    $(TS_SH) teardown-env \
 	    gold-bug.txt testutils.h sha3.awk
 
 all: $(EXTRA_TARGETS)
