@@ -74,6 +74,9 @@ NEWS for the Nettle 3.6 release
 
 	Miscellaneous:
 
+	* Building the public key support of nettle now requires GMP
+	  version 6.1.0 or later (unless --enable-mini-gmp is used).
+
 	* A fair amount of changes to ECC internals, with a few
 	  deleted and a few new fields in the internal struct
 	  ecc_curve. Files and functions have been renamed to more
