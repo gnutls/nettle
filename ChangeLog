@@ -1,5 +1,10 @@
 2020-04-27  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac: Tweak gcc command line options. Delete checks for
+	older gcc versions. Add -Wno-sign-compare, since warnings for
+	signed/unsigned comparisons adds a lot of noise, in particular
+	when building mini-gmp.
+
 	* mini-gmp.c: Updated mini-gmp from the gmp repository, latest
 	change from 2020-04-20.
 	* mini-gmp.h: Likewise.
