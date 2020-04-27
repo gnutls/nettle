@@ -1,3 +1,9 @@
+2020-04-27  Niels Möller  <nisse@lysator.liu.se>
+
+	* mini-gmp.c: Updated mini-gmp from the gmp repository, latest
+	change from 2020-04-20.
+	* mini-gmp.h: Likewise.
+
 2020-04-25  Niels Möller  <nisse@lysator.liu.se>
 
 	* gmp-glue.c (mpz_limbs_read, mpz_limbs_write, mpz_limbs_modify)
