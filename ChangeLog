@@ -1,3 +1,7 @@
+2020-04-29  Niels Möller  <nisse@lysator.liu.se>
+
+	* Released Nettle-3.6.
+
 2020-04-27  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Tweak gcc command line options. Delete checks for
