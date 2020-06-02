@@ -1,3 +1,11 @@
+2020-06-02  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/nettle-benchmark.c (main): Delete call to
+	time_overhead. The attempt to measure function call overhead is
+	not very useful or accurate. The benchmarking loop is optimized
+	away by gcc-10, making the benchmark program hang.
+	(bench_nothing, time_overhead): Deleted.
+
 2020-04-29  Niels Möller  <nisse@lysator.liu.se>
 
 	* Released Nettle-3.6.
