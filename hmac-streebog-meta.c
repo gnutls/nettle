@@ -1,6 +1,6 @@
-/* nettle-meta-macs.c
+/* hmac-streebog-meta.c
 
-   Copyright (C) 2020 Daiki Ueno
+   Copyright (C) 2020 Dmitry Baryshkov
 
    This file is part of GNU Nettle.
 
@@ -33,28 +33,24 @@
 # include "config.h"
 #endif
 
-#include <stddef.h>
-
 #include "nettle-meta.h"
 
-const struct nettle_mac * const _nettle_macs[] = {
-  &nettle_cmac_aes128,
-  &nettle_cmac_aes256,
-  &nettle_cmac_des3,
-  &nettle_hmac_md5,
-  &nettle_hmac_ripemd160,
-  &nettle_hmac_sha1,
-  &nettle_hmac_sha224,
-  &nettle_hmac_sha256,
-  &nettle_hmac_sha384,
-  &nettle_hmac_sha512,
-  &nettle_hmac_streebog256,
-  &nettle_hmac_streebog512,
-  NULL
-};
+#include "hmac.h"
 
-const struct nettle_mac * const *
-nettle_get_macs (void)
+static void
+hmac_streebog256_set_key_wrapper (void *ctx, const uint8_t *key)
 {
-  return _nettle_macs;
+  hmac_streebog256_set_key (ctx, STREEBOG256_DIGEST_SIZE, key);
 }
+
+const struct nettle_mac nettle_hmac_streebog256
+= _NETTLE_HMAC(hmac_streebog256, STREEBOG256);
+
+static void
+hmac_streebog512_set_key_wrapper (void *ctx, const uint8_t *key)
+{
+  hmac_streebog512_set_key (ctx, STREEBOG512_DIGEST_SIZE, key);
+}
+
+const struct nettle_mac nettle_hmac_streebog512
+= _NETTLE_HMAC(hmac_streebog512, STREEBOG512);
