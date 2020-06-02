@@ -96,6 +96,7 @@
 /sha512-224-test
 /sha512-256-test
 /sha512-test
+/streebog-test
 /twofish-test
 /umac-test
 /version-test
