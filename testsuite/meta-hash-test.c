@@ -20,6 +20,8 @@ const char* hashes[] = {
   "sha3_256",
   "sha3_384",
   "sha3_512",
+  "streebog256",
+  "streebog512"
 };
 
 void
