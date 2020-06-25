@@ -1,3 +1,8 @@
+2020-06-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/chacha-core-internal.asm (QROUND): Fix use of macro
+	arguments. Spotted by Torbjörn Granlund.
+
 2020-06-02  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/nettle-benchmark.c (main): Delete call to

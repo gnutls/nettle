@@ -54,33 +54,33 @@ define(<ROTL_BY_16>, <
 	por	$2, $1
 >)
 >)
-C QROUND
+C QROUND(x0, x1, x2, x3)
 define(<QROUND>, <
-	paddd	X1, X0
-	pxor	X0, X3
-	movaps	X3, T0
-	ROTL_BY_16(X3, T0)
+	paddd	$2, $1
+	pxor	$1, $4
+	movaps	$4, T0
+	ROTL_BY_16($4, T0)
 
-	paddd	X3, X2
-	pxor	X2, X1
-	movaps	X1, T0
-	pslld	<$>12, X1
+	paddd	$4, $3
+	pxor	$3, $2
+	movaps	$2, T0
+	pslld	<$>12, $2
 	psrld	<$>20, T0
-	por	T0, X1
+	por	T0, $2
 
-	paddd	X1, X0
-	pxor	X0, X3
-	movaps	X3, T0
-	pslld	<$>8, X3
+	paddd	$2, $1
+	pxor	$1, $4
+	movaps	$4, T0
+	pslld	<$>8, $4
 	psrld	<$>24, T0
-	por	T0, X3
+	por	T0, $4
 		
-	paddd	X3, X2
-	pxor	X2, X1
-	movaps	X1, T0
-	pslld	<$>7, X1
+	paddd	$4, $3
+	pxor	$3, $2
+	movaps	$2, T0
+	pslld	<$>7, $2
 	psrld	<$>25, T0
-	por	T0, X1
+	por	T0, $2
 >)
 	
 	C _chacha_core(uint32_t *dst, const uint32_t *src, unsigned rounds)
