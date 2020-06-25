@@ -54,28 +54,24 @@ define(<QROUND>, <
 	C x2 += x3, x1 ^= x2, x1 lrot 7
 
 	vadd.i32	$1, $1, $2
-	veor		$4, $4, $1
-	vshl.i32	T0, $4, #16
-	vshr.u32	$4, $4, #16
-	veor		$4, $4, T0
+	veor		T0, $4, $1
+	vshl.i32	$4, T0, #16
+	vsra.u32	$4, T0, #16
 
 	vadd.i32	$3, $3, $4
-	veor		$2, $2, $3
-	vshl.i32	T0, $2, #12
-	vshr.u32	$2, $2, #20
-	veor		$2, $2, T0
+	veor		T0, $2, $3
+	vshl.i32	$2, T0, #12
+	vsra.u32	$2, T0, #20
 
 	vadd.i32	$1, $1, $2
-	veor		$4, $4, $1
-	vshl.i32	T0, $4, #8
-	vshr.u32	$4, $4, #24
-	veor		$4, $4, T0
+	veor		T0, $4, $1
+	vshl.i32	$4, T0, #8
+	vsra.u32	$4, T0, #24
 
 	vadd.i32	$3, $3, $4
-	veor		$2, $2, $3
-	vshl.i32	T0, $2, #7
-	vshr.u32	$2, $2, #25
-	veor		$2, $2, T0
+	veor		T0, $2, $3
+	vshl.i32	$2, T0, #7
+	vsra.u32	$2, T0, #25
 >)
 
 	.text

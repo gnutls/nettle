@@ -1,5 +1,10 @@
 2020-06-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* arm/neon/chacha-core-internal.asm (QROUND): Micro optimize
+	rotations, using the vsra.u32 instruction. Gives 10% speedup,
+	benchmarked on Cortex-A5. Suggested by Torbjörn Granlund.
+	* arm/neon/salsa20-core-internal.asm (QROUND): Likewise.
+
 	* x86_64/chacha-core-internal.asm (QROUND): Fix use of macro
 	arguments. Spotted by Torbjörn Granlund.
 

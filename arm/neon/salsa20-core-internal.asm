@@ -53,26 +53,22 @@ define(<S3>, <q15>)
 define(<QROUND>, <
 	vadd.i32	T0, $1, $4
 	vshl.i32	T1, T0, #7
-	vshr.u32	T0, T0, #25
-	veor		$2, $2, T0
+	vsra.u32	T1, T0, #25
 	veor		$2, $2, T1
 
 	vadd.i32	T0, $1, $2
 	vshl.i32	T1, T0, #9
-	vshr.u32	T0, T0, #23
-	veor		$3, $3, T0
+	vsra.u32	T1, T0, #23
 	veor		$3, $3, T1
 
 	vadd.i32	T0, $2, $3
 	vshl.i32	T1, T0, #13
-	vshr.u32	T0, T0, #19
-	veor		$4, $4, T0
+	vsra.u32	T1, T0, #19
 	veor		$4, $4, T1
 
 	vadd.i32	T0, $3, $4
 	vshl.i32	T1, T0, #18
-	vshr.u32	T0, T0, #14
-	veor		$1, $1, T0
+	vsra.u32	T1, T0, #14
 	veor		$1, $1, T1
 >)
 	
