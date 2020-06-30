@@ -1,3 +1,9 @@
+2020-06-30  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle.texinfo (Miscellaneous hash functions): New section, with
+	Streebog documentation, contributed by Dmitry Baryshkov.
+	(Top): Added some missing entries to the detailed node listing
+
 2020-06-29  Niels Möller  <nisse@lysator.liu.se>
 
 	* .gitlab-ci.yml: Add cross tests for powerpc64le, based on patch

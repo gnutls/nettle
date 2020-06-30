@@ -87,23 +87,32 @@ Reference
 Hash functions
 
 * Recommended hash functions::
+* Miscellaneous hash functions::
 * Legacy hash functions::
 * nettle_hash abstraction::
 
 Cipher modes
 
-* CBC::                         
-* CTR::                         
+* CBC::
+* CTR::
 * CFB and CFB8::
+* XTS::
+
+Authenticated encryption with associated data
+
+* EAX::
 * GCM::                         
 * CCM::                         
+* ChaCha-Poly1305::
 * SIV-CMAC::
+* nettle_aead abstraction::
 
 Keyed Hash Functions
 
 * HMAC::
 * UMAC::
 * CMAC::
+* Poly1305::
 
 Public-key algorithms
 
@@ -494,11 +503,12 @@ reasonable alternatives.
 
 @menu
 * Recommended hash functions::
+* Miscellaneous hash functions::
 * Legacy hash functions::
 * nettle_hash abstraction::
 @end menu
 
-@node Recommended hash functions, Legacy hash functions,, Hash functions
+@node Recommended hash functions, Miscellaneous hash functions,, Hash functions
 @comment  node-name,  next,  previous,  up
 @subsection Recommended hash functions
 
@@ -857,7 +867,84 @@ to @var{digest}. @var{length} can be of arbitrary size.
 This function also resets the context.
 @end deftypefun
 
-@node Legacy hash functions, nettle_hash abstraction, Recommended hash functions, Hash functions
+@node Miscellaneous hash functions, Legacy hash functions, Recommended hash functions, Hash functions
+@comment  node-name,  next,  previous,  up
+@subsection Miscellaneous hash functions
+
+@subsubsection @acronym{STREEBOG512}
+
+STREEBOG512 is a member of the Streebog (GOST R 34.11-2012) family.  It outputs
+hash values of 512 bits, or 64 octets. Nettle defines STREEBOG512 in
+@file{<nettle/streebog.h>}.
+
+@deftp {Context struct} {struct streebog512_ctx}
+@end deftp
+
+@defvr Constant STREEBOG512_DIGEST_SIZE
+The size of a STREEBOG512 digest, i.e. 64.
+@end defvr
+
+@defvr Constant STREEBOG512_BLOCK_SIZE
+The internal block size of STREEBOG512. Useful for some special constructions,
+in particular HMAC-STREEBOG512.
+@end defvr
+
+@deftypefun void streebog512_init (struct streebog512_ctx *@var{ctx})
+Initialize the STREEBOG512 state.
+@end deftypefun
+
+@deftypefun void streebog512_update (struct streebog512_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
+Hash some more data.
+@end deftypefun
+
+@deftypefun void streebog512_digest (struct streebog512_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing it
+to @var{digest}. @var{length} may be smaller than
+@code{STREEBOG512_DIGEST_SIZE}, in which case only the first @var{length}
+octets of the digest are written.
+
+This function also resets the context in the same way as
+@code{streebog512_init}.
+@end deftypefun
+
+@subsubsection @acronym{STREEBOG256}
+
+STREEBOG256 is a variant of STREEBOG512, with a different initial state, and with
+the output truncated to 256 bits, or 32 octets. Nettle defines STREEBOG256 in
+@file{<nettle/streebog.h>}.
+
+@deftp {Context struct} {struct streebog256_ctx}
+@end deftp
+
+@defvr Constant STREEBOG256_DIGEST_SIZE
+The size of a STREEBOG256 digest, i.e. 32.
+@end defvr
+
+@defvr Constant STREEBOG256_BLOCK_SIZE
+The internal block size of STREEBOG256. Useful for some special constructions,
+in particular HMAC-STREEBOG256.
+@end defvr
+
+@deftypefun void streebog256_init (struct streebog256_ctx *@var{ctx})
+Initialize the STREEBOG256 state.
+@end deftypefun
+
+@deftypefun void streebog256_update (struct streebog256_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
+Hash some more data.
+@end deftypefun
+
+@deftypefun void streebog256_digest (struct streebog256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing it
+to @var{digest}. @var{length} may be smaller than
+@code{STREEBOG256_DIGEST_SIZE}, in which case only the first @var{length}
+octets of the digest are written.
+
+This function also resets the context in the same way as
+@code{streebog256_init}.
+@end deftypefun
+
+
+@node Legacy hash functions, nettle_hash abstraction, Miscellaneous hash functions, Hash functions
 @comment  node-name,  next,  previous,  up
 @subsection Legacy hash functions
 
