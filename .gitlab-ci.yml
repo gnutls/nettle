@@ -138,11 +138,10 @@ Debian.cross.x86:
   image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_CROSS_BUILD
   before_script:
   - host="${CI_JOB_NAME#*.cross.}"
-  - dpkg --add-architecture ppc64
   - dpkg --add-architecture ppc64el
   - apt-get update -q
   # remove any previously installed nettle headers to avoid conflicts
-  - for arch in armhf mips arm64 ppc64 ppc64el;do apt-get remove -y nettle-dev:$arch;done
+  - for arch in armhf mips arm64 ppc64el;do apt-get remove -y nettle-dev:$arch;done
   - if [ "$host" == "powerpc64-linux-gnu" ];then apt-get update && apt-get install -y gcc-$host g++-$host && export QEMU_LD_PREFIX=/usr/$host;fi
   - if [ "$host" == "powerpc64le-linux-gnu" ];then apt-get update && apt-get install -y gcc-$host g++-$host && export QEMU_LD_PREFIX=/usr/$host;fi
   script:
