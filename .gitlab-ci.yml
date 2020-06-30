@@ -142,6 +142,7 @@ Debian.cross.x86:
   - apt-get update -q
   # remove any previously installed nettle headers to avoid conflicts
   - for arch in armhf mips arm64 ppc64el;do apt-get remove -y nettle-dev:$arch;done
+  - if [ "$host" == "powerpc64-linux-gnu" ];then apt-get update && apt-get install -y gcc-$host g++-$host && export QEMU_LD_PREFIX=/usr/$host;fi
   - if [ "$host" == "powerpc64le-linux-gnu" ];then apt-get update && apt-get install -y gcc-$host g++-$host && export QEMU_LD_PREFIX=/usr/$host;fi
   script:
   - build=$(dpkg-architecture -qDEB_HOST_GNU_TYPE)
@@ -165,6 +166,8 @@ Debian.cross.arm-linux-gnueabihf:
 Debian.cross.mips-linux-gnu:
   <<: *Debian_cross_template
 Debian.cross.aarch64-linux-gnu:
+  <<: *Debian_cross_template
+Debian.cross.powerpc64-linux-gnu:
   <<: *Debian_cross_template
 Debian.cross.powerpc64le-linux-gnu:
   <<: *Debian_cross_template
