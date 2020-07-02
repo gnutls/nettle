@@ -1,3 +1,15 @@
+2020-07-01  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/bcrypt-test.c: New file. Moved bcrypt tests here.
+
+	Support for bcrypt, contributed by Stephen R. van den Berg.
+	* blowfish-bcrypt.c (blowfish_bcrypt_hash)
+	(blowfish_bcrypt_verify): New file, new functions.
+	* blowfish-internal.h: New header file, declaring internals needed
+	for bcrypt.
+	* testsuite/blowfish-test.c: Add bcrypt tests.
+	* nettle.texinfo (Cipher functions): Document bcrypt.
+
 2020-06-02  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/nettle-benchmark.c (main): Delete call to
