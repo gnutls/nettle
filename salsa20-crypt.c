@@ -57,7 +57,30 @@ salsa20_crypt(struct salsa20_ctx *ctx,
 {
   if (!length)
     return;
-  
+
+#if HAVE_NATIVE_salsa20_2core
+  uint32_t x[2*_SALSA20_INPUT_LENGTH];
+  while (length > SALSA20_BLOCK_SIZE)
+    {
+      _salsa20_2core (x, ctx->input, 20);
+      ctx->input[8] += 2;
+      ctx->input[9] += (ctx->input[8] < 2);
+      if (length < 2 * SALSA20_BLOCK_SIZE)
+	{
+	  memxor3 (c, m, x, length);
+	  return;
+	}
+      memxor3 (c, m, x, 2*SALSA20_BLOCK_SIZE);
+
+      length -= 2*SALSA20_BLOCK_SIZE;
+      c += 2*SALSA20_BLOCK_SIZE;
+      m += 2*SALSA20_BLOCK_SIZE;
+    }
+  _salsa20_core (x, ctx->input, 20);
+  ctx->input[9] += (++ctx->input[8] == 0);
+  memxor3 (c, m, x, length);
+  return;
+#else
   for (;;)
     {
       uint32_t x[_SALSA20_INPUT_LENGTH];
@@ -79,4 +102,5 @@ salsa20_crypt(struct salsa20_ctx *ctx,
       c += SALSA20_BLOCK_SIZE;
       m += SALSA20_BLOCK_SIZE;
   }
+#endif
 }

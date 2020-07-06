@@ -38,8 +38,12 @@
 #include "nettle-types.h"
 
 #define _salsa20_core _nettle_salsa20_core
+#define _salsa20_2core _nettle_salsa20_2core
 
 void
 _salsa20_core(uint32_t *dst, const uint32_t *src, unsigned rounds);
+
+void
+_salsa20_2core(uint32_t *dst, const uint32_t *src, unsigned rounds);
 
 #endif /* NETTLE_SALSA20_INTERNAL_H_INCLUDED */
