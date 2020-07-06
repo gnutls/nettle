@@ -1,3 +1,8 @@
+2020-07-06  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Obey --enable-arm-neon=yes, even if not explicitly
+	targetting ARM v6 or later.
+
 2020-07-01  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/bcrypt-test.c: New file. Moved bcrypt tests here.

@@ -427,12 +427,11 @@ if test "x$enable_assembler" = xyes ; then
 	    NETTLE_CHECK_ARM_NEON
 
 	    asm_path="arm/v6 arm"
-      
-	    if test "x$enable_arm_neon" = xyes ; then
-	      asm_path="arm/neon $asm_path"
-	    fi
 	    ;;
 	esac
+	if test "x$enable_arm_neon" = xyes ; then
+	  asm_path="arm/neon $asm_path"
+	fi
       fi
       ;;
     *)
