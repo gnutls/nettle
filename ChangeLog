@@ -1,5 +1,8 @@
 2020-07-06  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/salsa20-test.c (test_salsa20_core): New function, test
+	salsa20 with simple input structure.
+
 	* configure.ac: Obey --enable-arm-neon=yes, even if not explicitly
 	targetting ARM v6 or later.
 
