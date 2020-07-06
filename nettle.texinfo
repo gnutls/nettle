@@ -1600,6 +1600,76 @@ in any other way.
 Analogous to @code{blowfish_encrypt}
 @end deftypefun
 
+@deftypefun int blowfish_bcrypt_hash (char *@var{dst}, size_t @var{lenkey}, const char *@var{key}, size_t @var{lenscheme}, const char *@var{scheme}, int @var{log2rounds}, const uint8_t *@var{salt})
+Compute the bcrypt password hash.
+The function will return @code{0} if the hash cannot be computed
+due to invalid input.
+The function will return @code{1} and store the computed hash
+in the array pointed to by @var{dst}.  The hash is computed based
+on the chosen @var{scheme}, number of rounds @var{log2rounds} and
+specified @var{salt}.
+
+@var{dst} must point to a character array of at least
+ @code{BLOWFISH_BCRYPT_HASH_SIZE} bytes.
+
+@var{key} contains the plaintext password string of size @var{lenkey}.
+
+@var{scheme} is of size @var{lenscheme} and contains either just the
+chosen scheme (valid schemes
+are: @code{2a}, @code{2b}, @code{2x} or @code{2y}), or
+(the prefix of) an existing hashed password (typically @code{$2b$10$...}).
+
+@var{log2rounds} contains the log2 of the number of encryption rounds
+that must be used to compute the hash.  If it is @code{-1} the value
+will be extracted from @var{scheme}.
+
+@var{salt} should point to an array of @code{BLOWFISH_BCRYPT_BINSALT_SIZE}
+random bytes to be used to perturb the hash computation.  If it is @code{NULL}
+the salt will be extracted from @var{scheme}.
+
+Sample code to generate a bcrypt hash:
+@example
+char cleartxtpassword[] = "ExamplePassword";
+char scheme[] = "2b";
+uint8_t salt[BLOWFISH_BCRYPT_BINSALT_SIZE];
+@dots{}
+/* Make sure that salt is filled with random bytes */
+@dots{}
+char hashedresult[BLOWFISH_BCRYPT_HASH_SIZE];
+int result = blowfish_bcrypt(hashedresult,
+                             sizeof(cleartxtpassword) - 1, cleartxtpassword,
+                             sizeof(scheme) - 1, scheme, 10, salt);
+if (result)
+  printf("%s\n", hashedresult);
+@end example
+@end deftypefun
+
+@deftypefun int blowfish_bcrypt_verify (size_t @var{lenkey}, const char *@var{key}, size_t @var{lenhashed}, const char *@var{hashed})
+Verifies the bcrypt password hash against the supplied plaintext password.
+The function will return @code{0} if the password does not match.
+The function will return @code{1} if the password matches.
+
+@var{key} contains the plaintext password string of size @var{lenkey}.
+
+@var{hashed} contains the hashed string of size @var{lenhashed} to compare with.
+
+Sample code to verify a bcrypt hash:
+@example
+char cleartxtpassword[] = "ExamplePassword";
+char existinghashed[] =
+           "$2y$"  /* Hash algorithm version */
+           "10"   /* 2^10 hash rounds (strength) */
+           "$"   /* separator */
+           "1b2lPgo4XumibnJGN3r3sO" /* base64 encoded 16-byte salt */
+           "u7wE7xNfYDKlAxZffJDCJdVfFTAyevu"; /* Hashedpart */
+if (blowfish_bcrypt_verify(sizeof(cleartxtpassword) - 1, cleartxtpassword,
+                           sizeof(existinghashed) - 1, existinghashed))
+  printf("Password is correct.");
+else
+  printf("Password is incorrect.");
+@end example
+@end deftypefun
+
 @subsection Camellia
 @cindex Camellia
 
