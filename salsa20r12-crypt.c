@@ -41,13 +41,8 @@
 # include "config.h"
 #endif
 
-#include <string.h>
-
 #include "salsa20.h"
 #include "salsa20-internal.h"
-
-#include "macros.h"
-#include "memxor.h"
 
 void
 salsa20r12_crypt(struct salsa20_ctx *ctx,
@@ -57,50 +52,6 @@ salsa20r12_crypt(struct salsa20_ctx *ctx,
 {
   if (!length)
     return;
-  
-#if HAVE_NATIVE_salsa20_2core
-  uint32_t x[2*_SALSA20_INPUT_LENGTH];
-  while (length > SALSA20_BLOCK_SIZE)
-    {
-      _salsa20_2core (x, ctx->input, 12);
-      ctx->input[8] += 2;
-      ctx->input[9] += (ctx->input[8] < 2);
-      if (length < 2 * SALSA20_BLOCK_SIZE)
-	{
-	  memxor3 (c, m, x, length);
-	  return;
-	}
-      memxor3 (c, m, x, 2*SALSA20_BLOCK_SIZE);
 
-      length -= 2*SALSA20_BLOCK_SIZE;
-      c += 2*SALSA20_BLOCK_SIZE;
-      m += 2*SALSA20_BLOCK_SIZE;
-    }
-  _salsa20_core (x, ctx->input, 12);
-  ctx->input[9] += (++ctx->input[8] == 0);
-  memxor3 (c, m, x, length);
-  return;
-#else
-  for (;;)
-    {
-      uint32_t x[_SALSA20_INPUT_LENGTH];
-
-      _salsa20_core (x, ctx->input, 12);
-
-      ctx->input[9] += (++ctx->input[8] == 0);
-
-      /* stopping at 2^70 length per nonce is user's responsibility */
-      
-      if (length <= SALSA20_BLOCK_SIZE)
-	{
-	  memxor3 (c, m, x, length);
-	  return;
-	}
-      memxor3 (c, m, x, SALSA20_BLOCK_SIZE);
-
-      length -= SALSA20_BLOCK_SIZE;
-      c += SALSA20_BLOCK_SIZE;
-      m += SALSA20_BLOCK_SIZE;
-    }
-#endif
+  _salsa20_crypt (ctx, 12, length, c, m);
 }

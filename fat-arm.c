@@ -43,6 +43,7 @@
 #include "nettle-types.h"
 
 #include "aes-internal.h"
+#include "salsa20-internal.h"
 #include "fat-setup.h"
 
 struct arm_features
@@ -147,6 +148,10 @@ DECLARE_FAT_FUNC(_nettle_salsa20_core, salsa20_core_func)
 DECLARE_FAT_FUNC_VAR(salsa20_core, salsa20_core_func, c)
 DECLARE_FAT_FUNC_VAR(salsa20_core, salsa20_core_func, neon)
 
+DECLARE_FAT_FUNC(_nettle_salsa20_crypt, salsa20_crypt_func)
+DECLARE_FAT_FUNC_VAR(salsa20_crypt, salsa20_crypt_func, 1core)
+DECLARE_FAT_FUNC_VAR(salsa20_crypt, salsa20_crypt_func, 2core)
+
 DECLARE_FAT_FUNC(nettle_sha1_compress, sha1_compress_func)
 DECLARE_FAT_FUNC_VAR(sha1_compress, sha1_compress_func, c)
 DECLARE_FAT_FUNC_VAR(sha1_compress, sha1_compress_func, armv6)
@@ -212,6 +217,7 @@ fat_init (void)
       if (verbose)
 	fprintf (stderr, "libnettle: enabling neon code.\n");
       _nettle_salsa20_core_vec = _nettle_salsa20_core_neon;
+      _nettle_salsa20_crypt_vec = _nettle_salsa20_crypt_2core;
       _nettle_sha512_compress_vec = _nettle_sha512_compress_neon;
       nettle_sha3_permute_vec = _nettle_sha3_permute_neon;
       _nettle_umac_nh_vec = _nettle_umac_nh_neon;
@@ -223,6 +229,7 @@ fat_init (void)
       if (verbose)
 	fprintf (stderr, "libnettle: not enabling neon code.\n");
       _nettle_salsa20_core_vec = _nettle_salsa20_core_c;
+      _nettle_salsa20_crypt_vec = _nettle_salsa20_crypt_1core;
       _nettle_sha512_compress_vec = _nettle_sha512_compress_c;
       nettle_sha3_permute_vec = _nettle_sha3_permute_c;
       _nettle_umac_nh_vec = _nettle_umac_nh_c;
@@ -248,6 +255,12 @@ DEFINE_FAT_FUNC(_nettle_aes_decrypt, void,
 DEFINE_FAT_FUNC(_nettle_salsa20_core, void,
 		(uint32_t *dst, const uint32_t *src, unsigned rounds),
 		(dst, src, rounds))
+
+DEFINE_FAT_FUNC(_nettle_salsa20_crypt, void,
+		(struct salsa20_ctx *ctx, unsigned rounds,
+		 size_t length, uint8_t *dst,
+		 const uint8_t *src),
+		(ctx, rounds, length, dst, src))
 
 DEFINE_FAT_FUNC(nettle_sha1_compress, void,
 		(uint32_t *state, const uint8_t *input),

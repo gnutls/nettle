@@ -1,3 +1,24 @@
+2020-07-08  Niels Möller  <nisse@lysator.liu.se>
+
+	Rearrange salsa20, enabling ARM fat builds to use sala20_2core.
+	* salsa20-crypt-internal.c (_salsa20_crypt_2core)
+	(_salsa20_crypt_1core): New file, new functions. One or the other
+	is used for implementing salsa20_crypt and salsa20r12_crypt,
+	depending on availability of salsa20_2core.
+	* salsa20-crypt.c (salsa20_crypt): Call _salsa20_crypt.
+	* salsa20r12-crypt.c (salsa20r12_crypt): Likewise.
+	* salsa20-internal.h: Declare new internal functions.
+	* Makefile.in (nettle_SOURCES): Add salsa20-crypt-internal.c.
+	* fat-setup.h (salsa20_crypt_func): New typedef.
+	* fat-arm.c (_salsa20_crypt): Select _salsa20_crypt
+	implementation, use 2core version when Neon instructions are
+	available.
+	* arm/fat/salsa20-2core.asm: New file, including Neon
+	implementation. Trigger configure's HAVE_NATIVE_fat_salsa20_2core,
+	* configure.ac: Add HAVE_NATIVE_fat_salsa20_2core, to identify the
+	case that salsa20_2core is defined, but runtime checks are needed
+	to determine if it is usable.
+
 2020-07-06  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/salsa20-test.c (test_salsa20_core): New function, test

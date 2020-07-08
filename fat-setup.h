@@ -93,6 +93,8 @@
 #define ENV_VERBOSE "NETTLE_FAT_VERBOSE"
 #define ENV_OVERRIDE "NETTLE_FAT_OVERRIDE"
 
+struct salsa20_ctx;
+
 /* DECLARE_FAT_FUNC(name, ftype)
  *
  *   name is the public function, e.g., _nettle_aes_encrypt.
@@ -162,6 +164,9 @@ typedef void aes_crypt_internal_func (unsigned rounds, const uint32_t *keys,
 typedef void *(memxor_func)(void *dst, const void *src, size_t n);
 
 typedef void salsa20_core_func (uint32_t *dst, const uint32_t *src, unsigned rounds);
+typedef void salsa20_crypt_func (struct salsa20_ctx *ctx, unsigned rounds,
+				 size_t length, uint8_t *dst,
+				 const uint8_t *src);
 
 typedef void sha1_compress_func(uint32_t *state, const uint8_t *input);
 typedef void sha256_compress_func(uint32_t *state, const uint8_t *input, const uint32_t *k);

@@ -123,7 +123,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 poly1305-aes.c poly1305-internal.c \
 		 realloc.c \
 		 ripemd160.c ripemd160-compress.c ripemd160-meta.c \
-		 salsa20-core-internal.c \
+		 salsa20-core-internal.c salsa20-crypt-internal.c \
 		 salsa20-crypt.c salsa20r12-crypt.c salsa20-set-key.c \
 		 salsa20-set-nonce.c \
 		 salsa20-128-set-key.c salsa20-256-set-key.c \

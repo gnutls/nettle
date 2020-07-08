@@ -1,8 +1,8 @@
-/* salsa20-crypt.c
+C arm/fat/salsa20-2core.asm
 
-   The Salsa20 stream cipher.
 
-   Copyright (C) 2012 Simon Josefsson
+ifelse(<
+   Copyright (C) 2020 Niels Möller
 
    This file is part of GNU Nettle.
 
@@ -29,29 +29,8 @@
    You should have received copies of the GNU General Public License and
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
-*/
+>)
 
-/* Based on:
-   salsa20-ref.c version 20051118
-   D. J. Bernstein
-   Public domain.
-*/
+dnl PROLOGUE(_nettle_fat_salsa20_2core) picked up by configure
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
-
-#include "salsa20.h"
-#include "salsa20-internal.h"
-
-void
-salsa20_crypt(struct salsa20_ctx *ctx,
-	      size_t length,
-	      uint8_t *c,
-	      const uint8_t *m)
-{
-  if (!length)
-    return;
-
-  _salsa20_crypt (ctx, 20, length, c, m);
-}
+include_src(<arm/neon/salsa20-2core.asm>)

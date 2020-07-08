@@ -574,6 +574,7 @@ AH_VERBATIM([HAVE_NATIVE],
 #undef HAVE_NATIVE_gcm_hash8
 #undef HAVE_NATIVE_salsa20_core
 #undef HAVE_NATIVE_salsa20_2core
+#undef HAVE_NATIVE_fat_salsa20_2core
 #undef HAVE_NATIVE_sha1_compress
 #undef HAVE_NATIVE_sha256_compress
 #undef HAVE_NATIVE_sha512_compress
