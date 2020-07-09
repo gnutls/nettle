@@ -45,8 +45,10 @@
 #include "memxor.h"
 
 #if HAVE_NATIVE_salsa20_2core
+#undef _salsa20_crypt_2core
 #define _salsa20_crypt_2core _salsa20_crypt
 #elif !HAVE_NATIVE_fat_salsa20_2core
+#undef _salsa20_crypt_1core
 #define _salsa20_crypt_1core _salsa20_crypt
 #endif
 
