@@ -2,6 +2,8 @@
 
 	* testsuite/chacha-test.c (test_main): Delete obsolete tests for
 	chacha with 128-bit keys. #if:ed out since 2014-03-04, see below.
+	(test_chacha_core): New function, test chacha with simple input
+	structure.
 
 2020-07-08  Niels Möller  <nisse@lysator.liu.se>
 

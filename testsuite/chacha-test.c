@@ -37,6 +37,90 @@
 #include "chacha.h"
 #include "chacha-internal.h"
 
+static int
+memzero_p (const uint8_t *p, size_t n)
+{
+  size_t i;
+  for (i = 0; i < n; i++)
+    if (p[i])
+      return 0;
+  return 1;
+}
+
+/* Test with simple structure of the salsa20 input, to aid
+   debugging. */
+static void
+test_chacha_core(void)
+{
+  const uint32_t input[16] =
+    {
+     0, 1, 2, 3,
+     4, 5, 6, 7,
+     8, 9, 10, 11,
+     /* Second block will have carry from first counter word propagate
+	to next word. */
+     0xffffffff, 13, 14, 15,
+    };
+  const struct tstring *expected
+    = SHEX("32f216b0eddeee3b bade2bf5a4c0b3b3"
+	   "0aab2d67b09b2a63 6127fc965d831b2c"
+	   "ddc9e25ca7841f3e 938e3566a7702a0b"
+	   "7f80559e639ef6da 6d39627abc7da6b1"
+	   "0090a54241e68b6b d870f3b60adcaf89"
+	   "09d3c7b8a8c76aa3 941d726c649636db"
+	   "d6c3f0490fd38a46 070b77a757972126"
+	   "6323aa95eef9d68c 7eac86e913caa80c"
+	   "17dd18ae19b0b72e 0ef6e66a58c0791e"
+	   "e574e44162c99484 68085365916e0fee"
+	   "e3d0a5d3d2b93b4a ff245cb557af3ead"
+	   "2395f5cc7a00e25a 4f69a17969360781");
+
+  const struct tstring *expected_32 /* For 32-bit counter */
+    = SHEX("32f216b0eddeee3b bade2bf5a4c0b3b3"
+	   "0aab2d67b09b2a63 6127fc965d831b2c"
+	   "ddc9e25ca7841f3e 938e3566a7702a0b"
+	   "7f80559e639ef6da 6d39627abc7da6b1"
+	   "ea56196ace461eeb f898ade2f51c425f"
+	   "ff0452d728f13505 e23a1d017b40becd"
+	   "6482114a4586f48a 85c5cb9f92333de6"
+	   "9c248f2a809275fa 4786d5d6854fd7d7"
+	   "77dd6b03073f9dbf 294eabd6affa3104"
+	   "fccb19c3182a330c af2fdf0c43ebfa52"
+	   "7f845ffc0a897bea 2cf27a3dfc6f31af"
+	   "7db66563de442b71 f6d51f96930587ef");
+
+  struct chacha_ctx ctx;
+  uint8_t output[192];
+
+  ASSERT (expected->length == 192);
+  ASSERT (expected_32->length == 192);
+
+  /* Three blocks, to exercises _chacha_3core, if available. */
+  memcpy (&ctx, input, sizeof(ctx));
+  chacha_crypt (&ctx, 192, output, expected->data);
+
+  if (!memzero_p (output, 192))
+    {
+      fprintf(stderr, "chacha_crypt failed:\n");
+      fprintf(stderr, "\nOutput: ");
+      print_hex(192, output);
+      fprintf(stderr, "\n");
+      FAIL();
+    }
+
+  memcpy (&ctx, input, sizeof(ctx));
+  chacha_crypt32 (&ctx, 192, output, expected_32->data);
+
+  if (!memzero_p (output, 192))
+    {
+      fprintf(stderr, "chacha_crypt32 failed:\n");
+      fprintf(stderr, "\nOutput: ");
+      print_hex(192, output);
+      fprintf(stderr, "\n");
+      FAIL();
+    }
+}
+
 static void
 _test_chacha(const struct tstring *key, const struct tstring *nonce,
 	     const struct tstring *expected, unsigned rounds,
@@ -155,6 +239,8 @@ test_chacha_with_counter(const struct tstring *key, const struct tstring *nonce,
 void
 test_main(void)
 {
+  test_chacha_core();
+
   /* Test vectors from draft-strombergson-chacha-test-vectors */
   test_chacha (SHEX("0000000000000000 0000000000000000"
 		    "0000000000000000 0000000000000000"),
