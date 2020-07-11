@@ -1,3 +1,8 @@
+2020-07-11  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/chacha-test.c (test_main): Delete obsolete tests for
+	chacha with 128-bit keys. #if:ed out since 2014-03-04, see below.
+
 2020-07-08  Niels Möller  <nisse@lysator.liu.se>
 
 	Rearrange salsa20, enabling ARM fat builds to use sala20_2core.
