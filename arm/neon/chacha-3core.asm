@@ -181,33 +181,31 @@ PROLOGUE(_nettle_chacha_3core)
 
 	vadd.i32	X2, X2, X3
 	 vsri.u32	Y3, T0, #24
+	   vext.32	X3, X3, X3, #1
 	  vshl.i32	Z3, T1, #8
 	veor		T0, X1, X2
+	   vext.32	X2, X2, X2, #2
 	 vadd.i32	Y2, Y2, Y3
+	   vext.32	Y3, Y3, Y3, #1
 	  vsri.u32	Z3, T1, #24
 	vshl.i32	X1, T0, #7
 	 veor		T1, Y1, Y2
+	   vext.32	Y2, Y2, Y2, #2
 	  vadd.i32	Z2, Z2, Z3
+	   vext.32	Z3, Z3, Z3, #1
 	vsri.u32	X1, T0, #25
 	 vshl.i32	Y1, T1, #7
 	  veor		T0, Z1, Z2
+	   vext.32	Z2, Z2, Z2, #2
+	   vext.32	X1, X1, X1, #3
 	 vsri.u32	Y1, T1, #25
 	  vshl.i32	Z1, T0, #7
+	   vext.32	Y1, Y1, Y1, #3
 	  vsri.u32	Z1, T0, #25
 
 	subs	ROUNDS, ROUNDS, #2
 
-	vext.32	X1, X1, X1, #3
-	vext.32	X2, X2, X2, #2
-	vext.32	X3, X3, X3, #1
-
-	vext.32	Y1, Y1, Y1, #3
-	vext.32	Y2, Y2, Y2, #2
-	vext.32	Y3, Y3, Y3, #1
-
-	vext.32	Z1, Z1, Z1, #3
-	vext.32	Z2, Z2, Z2, #2
-	vext.32	Z3, Z3, Z3, #1
+	   vext.32	Z1, Z1, Z1, #3
 
 	bhi	.Loop
 
