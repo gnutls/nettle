@@ -54,6 +54,45 @@
 
 #define CHACHA_ROUNDS 20
 
+#if HAVE_NATIVE_chacha_3core
+void
+chacha_crypt(struct chacha_ctx *ctx,
+	      size_t length,
+	      uint8_t *dst,
+	      const uint8_t *src)
+{
+  uint32_t x[3*_CHACHA_STATE_LENGTH];
+
+  if (!length)
+    return;
+
+  while (length > 2*CHACHA_BLOCK_SIZE)
+    {
+      _chacha_3core (x, ctx->state, CHACHA_ROUNDS);
+      ctx->state[12] += 3;
+      ctx->state[13] += (ctx->state[12] < 3);
+      if (length <= 3*CHACHA_BLOCK_SIZE)
+	{
+	  memxor3 (dst, src, x, length);
+	  return;
+	}
+      memxor3 (dst, src, x, 3*CHACHA_BLOCK_SIZE);
+
+      length -= 3*CHACHA_BLOCK_SIZE;
+      dst += 3*CHACHA_BLOCK_SIZE;
+      src += 3*CHACHA_BLOCK_SIZE;
+    }
+  _chacha_core (x, ctx->state, CHACHA_ROUNDS);
+  ctx->state[13] += (++ctx->state[12] == 0);
+
+  if (length > CHACHA_BLOCK_SIZE)
+    {
+      _chacha_core (x + _CHACHA_STATE_LENGTH, ctx->state, CHACHA_ROUNDS);
+      ctx->state[13] += (++ctx->state[12] == 0);
+    }
+  memxor3 (dst, src, x, length);
+}
+#else
 void
 chacha_crypt(struct chacha_ctx *ctx,
 	      size_t length,
@@ -85,6 +124,7 @@ chacha_crypt(struct chacha_ctx *ctx,
       m += CHACHA_BLOCK_SIZE;
   }
 }
+#endif
 
 void
 chacha_crypt32(struct chacha_ctx *ctx,

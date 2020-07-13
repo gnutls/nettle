@@ -455,7 +455,7 @@ asm_replace_list="aes-encrypt-internal.asm aes-decrypt-internal.asm \
 # Assembler files which generate additional object files if they are used.
 asm_nettle_optional_list="gcm-hash8.asm cpuid.asm \
   aes-encrypt-internal-2.asm aes-decrypt-internal-2.asm memxor-2.asm \
-  chacha-core-internal-2.asm salsa20-2core.asm \
+  chacha-3core.asm chacha-core-internal-2.asm salsa20-2core.asm \
   salsa20-core-internal-2.asm sha1-compress-2.asm sha256-compress-2.asm \
   sha3-permute-2.asm sha512-compress-2.asm \
   umac-nh-n-2.asm umac-nh-2.asm"
@@ -559,6 +559,7 @@ AH_VERBATIM([HAVE_NATIVE],
 [/* Define to 1 each of the following for which a native (ie. CPU specific)
     implementation of the corresponding routine exists.  */
 #undef HAVE_NATIVE_chacha_core
+#undef HAVE_NATIVE_chacha_3core
 #undef HAVE_NATIVE_ecc_curve25519_modp
 #undef HAVE_NATIVE_ecc_curve448_modp
 #undef HAVE_NATIVE_ecc_secp192r1_modp

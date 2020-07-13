@@ -1,3 +1,8 @@
+2020-07-13  Niels Möller  <nisse@lysator.liu.se>
+
+	* arm/neon/chacha-3core.asm: New file, 3-way interleaving of
+	chacha.
+
 2020-07-11  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/chacha-test.c (test_main): Delete obsolete tests for

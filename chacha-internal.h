@@ -39,8 +39,13 @@
 #include "nettle-types.h"
 
 #define _chacha_core _nettle_chacha_core
+#define _chacha_3core _nettle_chacha_3core
 
 void
 _chacha_core(uint32_t *dst, const uint32_t *src, unsigned rounds);
+
+/* Functions available only in some configurations */
+void
+_chacha_3core(uint32_t *dst, const uint32_t *src, unsigned rounds);
 
 #endif /* NETTLE_CHACHA_INTERNAL_H_INCLUDED */
