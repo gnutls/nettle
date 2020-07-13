@@ -64,7 +64,7 @@ _salsa20_crypt_2core(struct salsa20_ctx *ctx, unsigned rounds,
       _salsa20_2core (x, ctx->input, rounds);
       ctx->input[8] += 2;
       ctx->input[9] += (ctx->input[8] < 2);
-      if (length < 2 * SALSA20_BLOCK_SIZE)
+      if (length <= 2 * SALSA20_BLOCK_SIZE)
 	{
 	  memxor3 (dst, src, x, length);
 	  return;
