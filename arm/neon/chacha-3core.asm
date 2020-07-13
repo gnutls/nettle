@@ -120,35 +120,33 @@ PROLOGUE(_nettle_chacha_3core)
 
 	vadd.i32	X2, X2, X3
 	 vsri.u32	Y3, T0, #24
+	  vext.32	X3, X3, X3, #3
 	  vshl.i32	Z3, T1, #8
 	veor		T0, X1, X2
 	 vadd.i32	Y2, Y2, Y3
 	  vsri.u32	Z3, T1, #24
+	   vext.32	Y3, Y3, Y3, #3
 	vshl.i32	X1, T0, #7
 	 veor		T1, Y1, Y2
 	  vadd.i32	Z2, Z2, Z3
 	vsri.u32	X1, T0, #25
 	 vshl.i32	Y1, T1, #7
 	  veor		T0, Z1, Z2
+	   vext.32	X1, X1, X1, #1
 	 vsri.u32	Y1, T1, #25
 	  vshl.i32	Z1, T0, #7
+	   vext.32	Y2, Y2, Y2, #2
+	   vext.32	Y1, Y1, Y1, #1
 	  vsri.u32	Z1, T0, #25
+	   vext.32	X2, X2, X2, #2
 
-	vext.32	X1, X1, X1, #1
-	vext.32	X2, X2, X2, #2
-	vext.32	X3, X3, X3, #3
-
-	vext.32	Y1, Y1, Y1, #1
-	vext.32	Y2, Y2, Y2, #2
-	vext.32	Y3, Y3, Y3, #3
-
-	vext.32	Z1, Z1, Z1, #1
-	vext.32	Z2, Z2, Z2, #2
-	vext.32	Z3, Z3, Z3, #3
-
+	C Second QROUND
 	vadd.i32	X0, X0, X1
+	   vext.32	Z2, Z2, Z2, #2
+	   vext.32	Z1, Z1, Z1, #1
 	veor		X3, X3, X0
 	 vadd.i32	Y0, Y0, Y1
+	   vext.32	Z3, Z3, Z3, #3
 	vrev32.16	X3, X3		C lrot 16
 	 veor		Y3, Y3, Y0
 	  vadd.i32	Z0, Z0, Z1
