@@ -79,8 +79,10 @@ PROLOGUE(_nettle_chacha_3core)
 	vmov	Z1, X1
 	vmov	Y2, X2
 	vmov	Z2, X2
-	vpush	{Z3}
-	vpush	{Y3}
+
+	C Save initial values for the words including the counters.
+	vmov	T2, Y3
+	vmov	T3, Z3
 
 .Loop:
 	C Interleave three blocks. Note that with this scheduling,
@@ -207,26 +209,28 @@ PROLOGUE(_nettle_chacha_3core)
 
 	bhi	.Loop
 
+	C Add updated counters
+	vadd.i32	Y3, Y3, T2
+	vadd.i32	Z3, Z3, T3
+
 	vldm	SRC, {T0,T1,T2,T3}
 	vadd.i32	X0, X0, T0
-	vadd.i32	Y0, Y0, T0
-	vadd.i32	Z0, Z0, T0
 	vadd.i32	X1, X1, T1
-	vadd.i32	Y1, Y1, T1
-	vadd.i32	Z1, Z1, T1
 	vadd.i32	X2, X2, T2
-	vadd.i32	Y2, Y2, T2
-	vadd.i32	Z2, Z2, T2
-
-	vpop	{T0, T1}	C updated counters
 	vadd.i32	X3, X3, T3
-	vadd.i32	Y3, Y3, T0
-	vadd.i32	Z3, Z3, T1
+	vstmia	DST!, {X0,X1,X2,X3}
+
+	vadd.i32	Y0, Y0, T0
+	vadd.i32	Y1, Y1, T1
+	vadd.i32	Y2, Y2, T2
+	vstmia	DST!, {Y0,Y1,Y2,Y3}
+
+	vadd.i32	Z0, Z0, T0
+	vadd.i32	Z1, Z1, T1
+	vadd.i32	Z2, Z2, T2
 
 	vpop	{q4,q5,q6,q7}
 
-	vstmia	DST!, {X0,X1,X2,X3}
-	vstmia	DST!, {Y0,Y1,Y2,Y3}
 	vstm	DST, {Z0,Z1,Z2,Z3}
 	bx	lr
 EPILOGUE(_nettle_chacha_3core)
