@@ -87,47 +87,50 @@ PROLOGUE(_nettle_chacha_3core)
 	C only two temporaries, T0 and T1, are needed.
 	vadd.i32	X0, X0, X1
 	veor		X3, X3, X0
+	 vadd.i32	Y0, Y0, Y1
 	vrev32.16	X3, X3		C lrot 16
-	 vadd.i32	Y0, Y0, Y1
-	vadd.i32	X2, X2, X3
 	 veor		Y3, Y3, Y0
-	veor		T0, X1, X2
-	 vrev32.16	Y3, Y3		C lrot 16
 	  vadd.i32	Z0, Z0, Z1
-	vshl.i32	X1, T0, #12
-	 vadd.i32	Y2, Y2, Y3
-	  veor		Z3, Z3, Z0
-	vsri.u32	X1, T0, #20
-	 veor		T0, Y1, Y2
-	  vrev32.16	Z3, Z3		C lrot 16
-	vadd.i32	X0, X0, X1
-	 vshl.i32	Y1, T0, #12
-	  vadd.i32	Z2, Z2, Z3
-	veor		T1, X3, X0
-	 vsri.u32	Y1, T0, #20
-	  veor		T0, Z1, Z2
-	vshl.i32	X3, T1, #8
-	vsri.u32	X3, T1, #24
-	 vadd.i32	Y0, Y0, Y1
-	  vshl.i32	Z1, T0, #12
+
 	vadd.i32	X2, X2, X3
-	 veor		T1, Y3, Y0
-	  vsri.u32	Z1, T0, #20
+	 vrev32.16	Y3, Y3		C lrot 16
+	  veor		Z3, Z3, Z0
 	veor		T0, X1, X2
-	 vshl.i32	Y3, T1, #8
-	 vsri.u32	Y3, T1, #24
-	  vadd.i32	Z0, Z0, Z1
-	vshl.i32	X1, T0, #7
 	 vadd.i32	Y2, Y2, Y3
-	  veor		T1, Z3, Z0
-	vsri.u32	X1, T0, #25
-	 veor		T0, Y1, Y2
-	  vshl.i32	Z3, T1, #8
-	  vsri.u32	Z3, T1, #24
-	 vshl.i32	Y1, T0, #7
+	  vrev32.16	Z3, Z3		C lrot 16
+	vshl.i32	X1, T0, #12
+	 veor		T1, Y1, Y2
 	  vadd.i32	Z2, Z2, Z3
-	 vsri.u32	Y1, T0, #25
+	vsri.u32	X1, T0, #20
+	 vshl.i32	Y1, T1, #12
 	  veor		T0, Z1, Z2
+
+	vadd.i32	X0, X0, X1
+	 vsri.u32	Y1, T1, #20
+	  vshl.i32	Z1, T0, #12
+	veor		T1, X3, X0
+	 vadd.i32	Y0, Y0, Y1
+	  vsri.u32	Z1, T0, #20
+	vshl.i32	X3, T1, #8
+	 veor		T0, Y3, Y0
+	  vadd.i32	Z0, Z0, Z1
+	vsri.u32	X3, T1, #24
+	 vshl.i32	Y3, T0, #8
+	  veor		T1, Z3, Z0
+
+	vadd.i32	X2, X2, X3
+	 vsri.u32	Y3, T0, #24
+	  vshl.i32	Z3, T1, #8
+	veor		T0, X1, X2
+	 vadd.i32	Y2, Y2, Y3
+	  vsri.u32	Z3, T1, #24
+	vshl.i32	X1, T0, #7
+	 veor		T1, Y1, Y2
+	  vadd.i32	Z2, Z2, Z3
+	vsri.u32	X1, T0, #25
+	 vshl.i32	Y1, T1, #7
+	  veor		T0, Z1, Z2
+	 vsri.u32	Y1, T1, #25
 	  vshl.i32	Z1, T0, #7
 	  vsri.u32	Z1, T0, #25
 
