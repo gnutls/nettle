@@ -82,13 +82,16 @@ chacha_crypt(struct chacha_ctx *ctx,
       dst += 3*CHACHA_BLOCK_SIZE;
       src += 3*CHACHA_BLOCK_SIZE;
     }
-  _chacha_core (x, ctx->state, CHACHA_ROUNDS);
-  ctx->state[13] += (++ctx->state[12] == 0);
-
-  if (length > CHACHA_BLOCK_SIZE)
+  if (length <= CHACHA_BLOCK_SIZE)
     {
-      _chacha_core (x + _CHACHA_STATE_LENGTH, ctx->state, CHACHA_ROUNDS);
+      _chacha_core (x, ctx->state, CHACHA_ROUNDS);
       ctx->state[13] += (++ctx->state[12] == 0);
+    }
+  else
+    {
+      _chacha_3core (x, ctx->state, CHACHA_ROUNDS);
+      ctx->state[12] += 2;
+      ctx->state[13] += (ctx->state[12] < 2);
     }
   memxor3 (dst, src, x, length);
 }
