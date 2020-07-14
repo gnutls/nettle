@@ -240,7 +240,6 @@ PROLOGUE(_nettle_chacha_3core32)
 	vpush	{q4,q5,q6,q7}
 	adr	r12, .Lcount1
 	vld1.64 {Z3}, [r12]
-	vadd.i32	Z3, Y3, Y3
 
 	vadd.i32	Y3, X3, Z3	C Increment 32-bit counter
 	vadd.i32	Z3, Y3, Z3
