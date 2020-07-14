@@ -93,6 +93,7 @@
 #define ENV_VERBOSE "NETTLE_FAT_VERBOSE"
 #define ENV_OVERRIDE "NETTLE_FAT_OVERRIDE"
 
+struct chacha_ctx;
 struct salsa20_ctx;
 
 /* DECLARE_FAT_FUNC(name, ftype)
@@ -181,3 +182,8 @@ typedef void umac_nh_n_func (uint64_t *out, unsigned n, const uint32_t *key,
 			     unsigned length, const uint8_t *msg);
 
 typedef void chacha_core_func(uint32_t *dst, const uint32_t *src, unsigned rounds);
+
+typedef void chacha_crypt_func(struct chacha_ctx *ctx,
+			       size_t length,
+			       uint8_t *dst,
+			       const uint8_t *src);
