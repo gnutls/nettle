@@ -13,6 +13,12 @@
 	(test_chacha_core): New function, test chacha with simple input
 	structure.
 
+2020-07-10  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/salsa20-2core.asm: New file.
+	* x86_64/salsa20-crypt.asm: Deleted, siince the 2core assembly is
+	faster.
+
 2020-07-08  Niels Möller  <nisse@lysator.liu.se>
 
 	Rearrange salsa20, enabling ARM fat builds to use sala20_2core.
