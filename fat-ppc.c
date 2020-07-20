@@ -39,10 +39,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#if defined(__FreeBSD__) && __FreeBSD__ < 12
-#include <sys/sysctl.h>
-#else
+
+#if defined(_AIX)
+#include <sys/systemcfg.h>
+#elif defined(__linux__)
 #include <sys/auxv.h>
+#elif defined(__FreeBSD__)
+#if __FreeBSD__ >= 12
+#include <sys/auxv.h>
+#else
+#include <sys/sysctl.h>
+#endif
 #endif
 
 #include "nettle-types.h"
@@ -64,19 +71,23 @@ struct ppc_features
 static void
 get_ppc_features (struct ppc_features *features)
 {
+#if defined(_AIX) && defined(__power_8_andup)
+  features->have_crypto_ext = __power_8_andup() != 0 ? 1 : 0;
+#else
   unsigned long hwcap2 = 0;
-#if defined(__FreeBSD__)
-#if __FreeBSD__ < 12
+#if defined(__linux__)
+  hwcap2 = getauxval(AT_HWCAP2);
+#elif defined(__FreeBSD__)
+#if __FreeBSD__ >= 12
+  elf_aux_info(AT_HWCAP2, &hwcap2, sizeof(hwcap2));
+#else
   size_t len = sizeof(hwcap2);
   sysctlbyname("hw.cpu_features2", &hwcap2, &len, NULL, 0);
-#else
-  elf_aux_info(AT_HWCAP2, &hwcap2, sizeof(hwcap2));
 #endif
-#else
-  hwcap2 = getauxval(AT_HWCAP2);
 #endif
   features->have_crypto_ext =
    (hwcap2 & PPC_FEATURE2_VEC_CRYPTO) == PPC_FEATURE2_VEC_CRYPTO ? 1 : 0;
+#endif
 }
 
 DECLARE_FAT_FUNC(_nettle_aes_encrypt, aes_crypt_internal_func)
