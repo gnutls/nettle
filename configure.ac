@@ -383,6 +383,7 @@ if test "x$ABI" != xstandard ; then
 fi
 
 OPT_NETTLE_SOURCES=""
+FAT_TEST_LIST=""
 
 # Select assembler code
 asm_path=
@@ -397,6 +398,9 @@ if test "x$enable_assembler" = xyes ; then
 	if test "x$enable_fat" = xyes ; then
 	  asm_path="x86_64/fat $asm_path"
 	  OPT_NETTLE_SOURCES="fat-x86_64.c $OPT_NETTLE_SOURCES"
+	  # For now, not enabling aesni or sha_ni, since at least 
+	  # the latter appears unavailable on te gitlab test machines.
+	  FAT_TEST_LIST="vendor:intel vendor:amd"
 	else
 	  if test "x$enable_x86_aesni" = xyes ; then
 	    asm_path="x86_64/aesni $asm_path"
@@ -421,6 +425,7 @@ if test "x$enable_assembler" = xyes ; then
       if test "x$enable_fat" = xyes ; then
 	asm_path="arm/fat $asm_path"
 	OPT_NETTLE_SOURCES="fat-arm.c $OPT_NETTLE_SOURCES"
+	FAT_TEST_LIST="arch:5 arch:6,neon"
       else
 	case "$host_cpu" in
 	  armv6* | armv7*)
@@ -547,6 +552,7 @@ fi
 AC_SUBST([OPT_NETTLE_OBJS])
 AC_SUBST([OPT_HOGWEED_OBJS])
 AC_SUBST([OPT_NETTLE_SOURCES])
+AC_SUBST([FAT_TEST_LIST])
 AC_SUBST([ASM_RODATA])
 if test "x$enable_assembler" = xyes ; then
   IF_ASM=''

@@ -1,3 +1,9 @@
+2020-07-28  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac (FAT_TEST_LIST): New substituted variable. Set for
+	fat builds, otherwise empty.
+	* Makefile.in (check-fat): New target, using $(FAT_TEST_LIST).
+
 2020-07-13  Niels Möller  <nisse@lysator.liu.se>
 
 	* chacha-crypt.c (chacha_crypt) [HAVE_NATIVE_chacha_3core]: Use
