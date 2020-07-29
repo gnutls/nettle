@@ -16,6 +16,7 @@ build/x86-64:
   - ./.bootstrap &&
     ./configure --disable-static --enable-fat --disable-documentation && make -j4 &&
     make check -j4
+    make check-fat
   tags:
   - shared
   - linux
@@ -156,6 +157,7 @@ Debian.cross.x86:
   - ./configure --disable-static --enable-fat --disable-documentation --build=$build --host=$host
   - make -j$(nproc)
   - make -j$(nproc) check
+  - make -j$(nproc) check-fat
   tags:
   - shared
   - linux
