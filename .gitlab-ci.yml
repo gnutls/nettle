@@ -15,7 +15,7 @@ build/x86-64:
   script:
   - ./.bootstrap &&
     ./configure --disable-static --enable-fat --disable-documentation && make -j4 &&
-    make check -j4
+    make check -j4 &&
     make check-fat
   tags:
   - shared
