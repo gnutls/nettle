@@ -447,7 +447,7 @@ if test "x$enable_assembler" = xyes ; then
       ;;
     *powerpc64*)
       if test "x$enable_power_crypto_ext" = xyes ; then
-        asm_path="powerpc64/P8 powerpc64"
+        asm_path="powerpc64/p8 powerpc64"
       fi
       ;;
 
