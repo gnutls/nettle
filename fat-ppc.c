@@ -68,26 +68,48 @@ struct ppc_features
   int have_crypto_ext;
 };
 
+#define MATCH(s, slen, literal, llen) \
+  ((slen) == (llen) && memcmp ((s), (literal), llen) == 0)
+
 static void
 get_ppc_features (struct ppc_features *features)
 {
+  const char *s;
+  features->have_crypto_ext = 0;
+
+  s = secure_getenv (ENV_OVERRIDE);
+  if (s)
+    for (;;)
+      {
+ const char *sep = strchr (s, ',');
+ size_t length = sep ? (size_t) (sep - s) : strlen(s);
+
+ if (MATCH (s, length, "crypto_ext", 10))
+  features->have_crypto_ext = 1;
+ if (!sep)
+  break;
+ s = sep + 1;
+      }
+  else
+  {
 #if defined(_AIX) && defined(__power_8_andup)
-  features->have_crypto_ext = __power_8_andup() != 0 ? 1 : 0;
+    features->have_crypto_ext = __power_8_andup() != 0 ? 1 : 0;
 #else
-  unsigned long hwcap2 = 0;
+    unsigned long hwcap2 = 0;
 #if defined(__linux__)
-  hwcap2 = getauxval(AT_HWCAP2);
+    hwcap2 = getauxval(AT_HWCAP2);
 #elif defined(__FreeBSD__)
 #if __FreeBSD__ >= 12
-  elf_aux_info(AT_HWCAP2, &hwcap2, sizeof(hwcap2));
+    elf_aux_info(AT_HWCAP2, &hwcap2, sizeof(hwcap2));
 #else
-  size_t len = sizeof(hwcap2);
-  sysctlbyname("hw.cpu_features2", &hwcap2, &len, NULL, 0);
+    size_t len = sizeof(hwcap2);
+    sysctlbyname("hw.cpu_features2", &hwcap2, &len, NULL, 0);
 #endif
 #endif
-  features->have_crypto_ext =
-   (hwcap2 & PPC_FEATURE2_VEC_CRYPTO) == PPC_FEATURE2_VEC_CRYPTO ? 1 : 0;
+    features->have_crypto_ext =
+     (hwcap2 & PPC_FEATURE2_VEC_CRYPTO) == PPC_FEATURE2_VEC_CRYPTO ? 1 : 0;
 #endif
+  }
 }
 
 DECLARE_FAT_FUNC(_nettle_aes_encrypt, aes_crypt_internal_func)
