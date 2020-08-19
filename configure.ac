@@ -580,6 +580,8 @@ AC_SUBST([IF_ASM])
 AH_VERBATIM([HAVE_NATIVE],
 [/* Define to 1 each of the following for which a native (ie. CPU specific)
     implementation of the corresponding routine exists.  */
+#undef HAVE_NATIVE_aes_decrypt
+#undef HAVE_NATIVE_aes_encrypt
 #undef HAVE_NATIVE_chacha_core
 #undef HAVE_NATIVE_chacha_3core
 #undef HAVE_NATIVE_fat_chacha_3core
