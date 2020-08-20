@@ -41,15 +41,15 @@
 #include <string.h>
 
 #if defined(_AIX)
-#include <sys/systemcfg.h>
+# include <sys/systemcfg.h>
 #elif defined(__linux__)
-#include <sys/auxv.h>
+# include <sys/auxv.h>
 #elif defined(__FreeBSD__)
-#if __FreeBSD__ >= 12
-#include <sys/auxv.h>
-#else
-#include <sys/sysctl.h>
-#endif
+# if __FreeBSD__ >= 12
+#  include <sys/auxv.h>
+# else
+#  include <sys/sysctl.h>
+# endif
 #endif
 
 #include "nettle-types.h"
@@ -81,35 +81,35 @@ get_ppc_features (struct ppc_features *features)
   if (s)
     for (;;)
       {
- const char *sep = strchr (s, ',');
- size_t length = sep ? (size_t) (sep - s) : strlen(s);
+	const char *sep = strchr (s, ',');
+	size_t length = sep ? (size_t) (sep - s) : strlen(s);
 
- if (MATCH (s, length, "crypto_ext", 10))
-  features->have_crypto_ext = 1;
- if (!sep)
-  break;
- s = sep + 1;
+	if (MATCH (s, length, "crypto_ext", 10))
+	  features->have_crypto_ext = 1;
+	if (!sep)
+	  break;
+	s = sep + 1;
       }
   else
-  {
+    {
 #if defined(_AIX) && defined(__power_8_andup)
-    features->have_crypto_ext = __power_8_andup() != 0 ? 1 : 0;
+      features->have_crypto_ext = __power_8_andup() != 0 ? 1 : 0;
 #else
-    unsigned long hwcap2 = 0;
-#if defined(__linux__)
-    hwcap2 = getauxval(AT_HWCAP2);
-#elif defined(__FreeBSD__)
-#if __FreeBSD__ >= 12
-    elf_aux_info(AT_HWCAP2, &hwcap2, sizeof(hwcap2));
-#else
-    size_t len = sizeof(hwcap2);
-    sysctlbyname("hw.cpu_features2", &hwcap2, &len, NULL, 0);
+      unsigned long hwcap2 = 0;
+# if defined(__linux__)
+      hwcap2 = getauxval(AT_HWCAP2);
+# elif defined(__FreeBSD__)
+#  if __FreeBSD__ >= 12
+      elf_aux_info(AT_HWCAP2, &hwcap2, sizeof(hwcap2));
+#  else
+      size_t len = sizeof(hwcap2);
+      sysctlbyname("hw.cpu_features2", &hwcap2, &len, NULL, 0);
+#  endif
+# endif
+      features->have_crypto_ext =
+	(hwcap2 & PPC_FEATURE2_VEC_CRYPTO) == PPC_FEATURE2_VEC_CRYPTO ? 1 : 0;
 #endif
-#endif
-    features->have_crypto_ext =
-     (hwcap2 & PPC_FEATURE2_VEC_CRYPTO) == PPC_FEATURE2_VEC_CRYPTO ? 1 : 0;
-#endif
-  }
+    }
 }
 
 DECLARE_FAT_FUNC(_nettle_aes_encrypt, aes_crypt_internal_func)
@@ -131,20 +131,20 @@ fat_init (void)
   verbose = getenv (ENV_VERBOSE) != NULL;
   if (verbose)
     fprintf (stderr, "libnettle: cpu features: %s\n",
-     features.have_crypto_ext ? "crypto extensions" : "");
+	     features.have_crypto_ext ? "crypto extensions" : "");
 
   if (features.have_crypto_ext)
-  {
-     if (verbose)
-        fprintf (stderr, "libnettle: enabling arch 2.07 code.\n");
-     _nettle_aes_encrypt_vec = _nettle_aes_encrypt_ppc64;
-     _nettle_aes_decrypt_vec = _nettle_aes_decrypt_ppc64;
-  }
+    {
+      if (verbose)
+	fprintf (stderr, "libnettle: enabling arch 2.07 code.\n");
+      _nettle_aes_encrypt_vec = _nettle_aes_encrypt_ppc64;
+      _nettle_aes_decrypt_vec = _nettle_aes_decrypt_ppc64;
+    }
   else
-  {
-     _nettle_aes_encrypt_vec = _nettle_aes_encrypt_c;
-     _nettle_aes_decrypt_vec = _nettle_aes_decrypt_c;
-  }
+    {
+      _nettle_aes_encrypt_vec = _nettle_aes_encrypt_c;
+      _nettle_aes_decrypt_vec = _nettle_aes_decrypt_c;
+    }
 }
 
 DEFINE_FAT_FUNC(_nettle_aes_encrypt, void,
