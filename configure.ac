@@ -89,11 +89,9 @@ AC_ARG_ENABLE(x86-sha-ni,
   AC_HELP_STRING([--enable-x86-sha-ni], [Enable x86_64 sha_ni instructions. (default=no)]),,
   [enable_x86_sha_ni=no])
 
-# Default yes for initial testing
 AC_ARG_ENABLE(power-crypto-ext,
-  AC_HELP_STRING([--enable-power-crypto-ext], [Enable POWER crypto
-extensions. (default=yes)]),,
-  [enable_power_crypto_ext=yes])
+  AC_HELP_STRING([--enable-power-crypto-ext], [Enable POWER crypto extensions. (default=no)]),,
+  [enable_power_crypto_ext=no])
 
 AC_ARG_ENABLE(mini-gmp,
   AC_HELP_STRING([--enable-mini-gmp], [Enable mini-gmp, used instead of libgmp.]),,
@@ -450,6 +448,8 @@ if test "x$enable_assembler" = xyes ; then
       if test "x$enable_fat" = xyes ; then
 	asm_path="powerpc64/fat $asm_path"
 	OPT_NETTLE_SOURCES="fat-ppc.c $OPT_NETTLE_SOURCES"
+	FAT_TEST_LIST="none crypto_ext"
+      fi
       elif test "x$enable_power_crypto_ext" = xyes ; then
         asm_path="powerpc64/p8 $asm_path"
       fi
