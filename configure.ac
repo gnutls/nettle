@@ -449,7 +449,6 @@ if test "x$enable_assembler" = xyes ; then
 	asm_path="powerpc64/fat $asm_path"
 	OPT_NETTLE_SOURCES="fat-ppc.c $OPT_NETTLE_SOURCES"
 	FAT_TEST_LIST="none crypto_ext"
-      fi
       elif test "x$enable_power_crypto_ext" = xyes ; then
         asm_path="powerpc64/p8 $asm_path"
       fi
