@@ -1,3 +1,21 @@
+2020-08-29  Niels Möller  <nisse@obsidian>
+
+	Initial powerpc64 assembly support, contributed by Mamone Tarsha:
+	* configure.ac: New configure option --enable-power-crypto-ext.
+	(asm_path): Setup this and related variables for powerpc64.
+	* powerpc64/machine.m4: New file.
+	* powerpc64/README: New file.
+	* powerpc64/p8/aes-encrypt-internal.asm: New file.
+	* powerpc64/p8/aes-decrypt-internal.asm: New file.
+	* powerpc64/fat/aes-encrypt-internal-2.asm: New file.
+	* powerpc64/fat/aes-decrypt-internal-2.asm: New file.
+	* fat-ppc.c: New file.
+	* Makefile.in (OPT_SOURCES): Add fat-ppc.c.
+	(distdir): Add powerpc64 directories.
+	* aes-decrypt-internal.c (_nettle_aes_decrypt_c): Alternative
+	name, for fat builds.
+	* aes-encrypt-internal.c (_nettle_aes_encrypt_c): Likewise.
+
 2020-07-28  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac (FAT_TEST_LIST): New substituted variable. Set for

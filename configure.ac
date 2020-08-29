@@ -89,6 +89,10 @@ AC_ARG_ENABLE(x86-sha-ni,
   AC_HELP_STRING([--enable-x86-sha-ni], [Enable x86_64 sha_ni instructions. (default=no)]),,
   [enable_x86_sha_ni=no])
 
+AC_ARG_ENABLE(power-crypto-ext,
+  AC_HELP_STRING([--enable-power-crypto-ext], [Enable POWER crypto extensions. (default=no)]),,
+  [enable_power_crypto_ext=no])
+
 AC_ARG_ENABLE(mini-gmp,
   AC_HELP_STRING([--enable-mini-gmp], [Enable mini-gmp, used instead of libgmp.]),,
   [enable_mini_gmp=no])
@@ -439,6 +443,17 @@ if test "x$enable_assembler" = xyes ; then
 	fi
       fi
       ;;
+    *powerpc64*)
+      asm_path="powerpc64"
+      if test "x$enable_fat" = xyes ; then
+	asm_path="powerpc64/fat $asm_path"
+	OPT_NETTLE_SOURCES="fat-ppc.c $OPT_NETTLE_SOURCES"
+	FAT_TEST_LIST="none crypto_ext"
+      elif test "x$enable_power_crypto_ext" = xyes ; then
+        asm_path="powerpc64/p8 $asm_path"
+      fi
+      ;;
+
     *)
       enable_assembler=no
       ;;
@@ -564,6 +579,8 @@ AC_SUBST([IF_ASM])
 AH_VERBATIM([HAVE_NATIVE],
 [/* Define to 1 each of the following for which a native (ie. CPU specific)
     implementation of the corresponding routine exists.  */
+#undef HAVE_NATIVE_aes_decrypt
+#undef HAVE_NATIVE_aes_encrypt
 #undef HAVE_NATIVE_chacha_core
 #undef HAVE_NATIVE_chacha_3core
 #undef HAVE_NATIVE_fat_chacha_3core
