@@ -329,6 +329,17 @@ case "$host_cpu" in
       ABI=64
     ])
     ;;
+  *powerpc64*)
+    AC_TRY_COMPILE([
+#if defined(__PPC64__)
+#error 64-bit powerpc
+#endif
+    ], [], [
+      ABI=32
+    ], [
+      ABI=64
+    ])
+    ;;
 esac
 
 if test "x$ABI" != xstandard ; then
@@ -444,13 +455,15 @@ if test "x$enable_assembler" = xyes ; then
       fi
       ;;
     *powerpc64*)
-      asm_path="powerpc64"
-      if test "x$enable_fat" = xyes ; then
-	asm_path="powerpc64/fat $asm_path"
-	OPT_NETTLE_SOURCES="fat-ppc.c $OPT_NETTLE_SOURCES"
-	FAT_TEST_LIST="none crypto_ext"
-      elif test "x$enable_power_crypto_ext" = xyes ; then
-        asm_path="powerpc64/p8 $asm_path"
+      if test "$ABI" = 64 ; then
+	asm_path="powerpc64"
+	if test "x$enable_fat" = xyes ; then
+	  asm_path="powerpc64/fat $asm_path"
+	  OPT_NETTLE_SOURCES="fat-ppc.c $OPT_NETTLE_SOURCES"
+	  FAT_TEST_LIST="none crypto_ext"
+	elif test "x$enable_power_crypto_ext" = xyes ; then
+          asm_path="powerpc64/p8 $asm_path"
+	fi
       fi
       ;;
 
