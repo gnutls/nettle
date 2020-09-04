@@ -1,4 +1,4 @@
-C powerpc64/P8/aes-encrypt-internal.asm
+C powerpc64/p8/aes-encrypt-internal.asm
 
 ifelse(<
    Copyright (C) 2020 Mamone Tarsha
@@ -52,19 +52,8 @@ define(<S5>, <7>)
 define(<S6>, <8>)
 define(<S7>, <9>)
 
-define(<KX>, <33>)
-define(<S0X>, <34>)
-define(<S1X>, <35>)
-define(<S2X>, <36>)
-define(<S3X>, <37>)
-define(<S4X>, <38>)
-define(<S5X>, <39>)
-define(<S6X>, <40>)
-define(<S7X>, <41>)
-
 .file "aes-encrypt-internal.asm"
 
-IF_LE(<.abiversion 2>)
 .text
 
  C _aes_encrypt(unsigned rounds, const uint32_t *keys,
@@ -101,17 +90,17 @@ PROLOGUE(_nettle_aes_encrypt)
 
 .align 5
 Lx8_loop:
- lxvd2x KX,0,KEYS
+ lxvd2x VSR(K),0,KEYS
  vperm   K,K,K,swap_mask
 
- lxvd2x S0X,0,SRC
- lxvd2x S1X,25,SRC
- lxvd2x S2X,26,SRC
- lxvd2x S3X,27,SRC
- lxvd2x S4X,28,SRC
- lxvd2x S5X,29,SRC
- lxvd2x S6X,30,SRC
- lxvd2x S7X,31,SRC
+ lxvd2x VSR(S0),0,SRC
+ lxvd2x VSR(S1),25,SRC
+ lxvd2x VSR(S2),26,SRC
+ lxvd2x VSR(S3),27,SRC
+ lxvd2x VSR(S4),28,SRC
+ lxvd2x VSR(S5),29,SRC
+ lxvd2x VSR(S6),30,SRC
+ lxvd2x VSR(S7),31,SRC
 
 IF_LE(<vperm S0,S0,S0,swap_mask
  vperm S1,S1,S1,swap_mask
@@ -135,7 +124,7 @@ IF_LE(<vperm S0,S0,S0,swap_mask
  li 10,0x10
 .align 5
 L8x_round_loop:
- lxvd2x KX,10,KEYS
+ lxvd2x VSR(K),10,KEYS
  vperm   K,K,K,swap_mask
  vcipher S0,S0,K
  vcipher S1,S1,K
@@ -148,7 +137,7 @@ L8x_round_loop:
  addi 10,10,0x10
  bdnz L8x_round_loop
 
- lxvd2x KX,10,KEYS
+ lxvd2x VSR(K),10,KEYS
  vperm   K,K,K,swap_mask
  vcipherlast S0,S0,K
  vcipherlast S1,S1,K
@@ -168,14 +157,14 @@ IF_LE(<vperm S0,S0,S0,swap_mask
  vperm S6,S6,S6,swap_mask
  vperm S7,S7,S7,swap_mask>)
 
- stxvd2x S0X,0,DST
- stxvd2x S1X,25,DST
- stxvd2x S2X,26,DST
- stxvd2x S3X,27,DST
- stxvd2x S4X,28,DST
- stxvd2x S5X,29,DST
- stxvd2x S6X,30,DST
- stxvd2x S7X,31,DST
+ stxvd2x VSR(S0),0,DST
+ stxvd2x VSR(S1),25,DST
+ stxvd2x VSR(S2),26,DST
+ stxvd2x VSR(S3),27,DST
+ stxvd2x VSR(S4),28,DST
+ stxvd2x VSR(S5),29,DST
+ stxvd2x VSR(S6),30,DST
+ stxvd2x VSR(S7),31,DST
 
  addi SRC,SRC,0x80
  addi DST,DST,0x80
@@ -197,16 +186,16 @@ L4x:
  cmpldi   5,0
  beq   L2x
 
- lxvd2x   KX,0,KEYS
+ lxvd2x   VSR(K),0,KEYS
  vperm   K,K,K,swap_mask
 
- lxvd2x S0X,0,SRC
+ lxvd2x VSR(S0),0,SRC
  li  9,0x10
- lxvd2x S1X,9,SRC
+ lxvd2x VSR(S1),9,SRC
  addi   9,9,0x10
- lxvd2x S2X,9,SRC
+ lxvd2x VSR(S2),9,SRC
  addi   9,9,0x10
- lxvd2x S3X,9,SRC
+ lxvd2x VSR(S3),9,SRC
 
 IF_LE(<vperm S0,S0,S0,swap_mask
  vperm S1,S1,S1,swap_mask
@@ -222,7 +211,7 @@ IF_LE(<vperm S0,S0,S0,swap_mask
  li 10,0x10
 .align 5
 L4x_round_loop:
- lxvd2x KX,10,KEYS
+ lxvd2x VSR(K),10,KEYS
  vperm  K,K,K,swap_mask
  vcipher S0,S0,K
  vcipher S1,S1,K
@@ -231,7 +220,7 @@ L4x_round_loop:
  addi   10,10,0x10
  bdnz  L4x_round_loop
 
- lxvd2x KX,10,KEYS
+ lxvd2x VSR(K),10,KEYS
  vperm   K,K,K,swap_mask
  vcipherlast S0,S0,K
  vcipherlast S1,S1,K
@@ -243,13 +232,13 @@ IF_LE(<vperm S0,S0,S0,swap_mask
  vperm S2,S2,S2,swap_mask
  vperm S3,S3,S3,swap_mask>)
 
- stxvd2x S0X,0,DST
+ stxvd2x VSR(S0),0,DST
  li  9,0x10
- stxvd2x S1X,9,DST
+ stxvd2x VSR(S1),9,DST
  addi   9,9,0x10
- stxvd2x S2X,9,DST
+ stxvd2x VSR(S2),9,DST
  addi  9,9,0x10
- stxvd2x S3X,9,DST
+ stxvd2x VSR(S3),9,DST
 
  addi   SRC,SRC,0x40
  addi   DST,DST,0x40
@@ -261,12 +250,12 @@ L2x:
  cmpldi  5,0
  beq   L1x
 
- lxvd2x KX,0,KEYS
+ lxvd2x VSR(K),0,KEYS
  vperm K,K,K,swap_mask
 
- lxvd2x S0X,0,SRC
+ lxvd2x VSR(S0),0,SRC
  li   9,0x10
- lxvd2x S1X,9,SRC
+ lxvd2x VSR(S1),9,SRC
 
 IF_LE(<vperm S0,S0,S0,swap_mask
  vperm S1,S1,S1,swap_mask>)
@@ -278,14 +267,14 @@ IF_LE(<vperm S0,S0,S0,swap_mask
  li  10,0x10
 .align 5
 L2x_round_loop:
- lxvd2x KX,10,KEYS
+ lxvd2x VSR(K),10,KEYS
  vperm  K,K,K,swap_mask
  vcipher S0,S0,K
  vcipher S1,S1,K
  addi   10,10,0x10
  bdnz   L2x_round_loop
 
- lxvd2x KX,10,KEYS
+ lxvd2x VSR(K),10,KEYS
  vperm  K,K,K,swap_mask
  vcipherlast S0,S0,K
  vcipherlast S1,S1,K
@@ -293,9 +282,9 @@ L2x_round_loop:
 IF_LE(<vperm S0,S0,S0,swap_mask
  vperm S1,S1,S1,swap_mask>)
 
- stxvd2x S0X,0,DST
+ stxvd2x VSR(S0),0,DST
  li  9,0x10
- stxvd2x S1X,9,DST
+ stxvd2x VSR(S1),9,DST
 
  addi   SRC,SRC,0x20
  addi   DST,DST,0x20
@@ -306,10 +295,10 @@ L1x:
  cmpldi LENGTH,0
  beq   Ldone
 
- lxvd2x KX,0,KEYS
+ lxvd2x VSR(K),0,KEYS
  vperm   K,K,K,swap_mask
 
- lxvd2x S0X,0,SRC
+ lxvd2x VSR(S0),0,SRC
 
 IF_LE(<vperm S0,S0,S0,swap_mask>)
 
@@ -319,19 +308,19 @@ IF_LE(<vperm S0,S0,S0,swap_mask>)
  li   10,0x10
 .align 5
 L1x_round_loop:
- lxvd2x KX,10,KEYS
+ lxvd2x VSR(K),10,KEYS
  vperm  K,K,K,swap_mask
  vcipher S0,S0,K
  addi   10,10,0x10
  bdnz   L1x_round_loop
 
- lxvd2x KX,10,KEYS
+ lxvd2x VSR(K),10,KEYS
  vperm  K,K,K,swap_mask
  vcipherlast S0,S0,K
 
 IF_LE(<vperm S0,S0,S0,swap_mask>)
 
- stxvd2x S0X,0,DST
+ stxvd2x VSR(S0),0,DST
 
 Ldone:
  blr

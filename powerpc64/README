@@ -53,8 +53,6 @@ in [3] to see an example of accessing unaligned storage operands.
 "lxvd2x/stxvd2x" can be used to load/store data into unaligned storage
 operands but permuting is needed for loading and storing data in
 little-endian mode VSX registers are defined with "X" suffix
-TODO: use architecture 3.0 instructions "lxv/stxv" instead for POWER9
-      and newer
 
 Function Prologue
 

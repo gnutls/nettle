@@ -22,6 +22,10 @@ define(<EPILOGUE>,
 <.size .C_NAME($1), . - .C_NAME($1)
 .size C_NAME($1), . - .C_NAME($1)>)>)
 
+C Get vector-scalar register from vector register
+C VSR(VR)
+define(<VSR>,<32+$1>)
+
 C Load the quadword in DATA_SRC storage into
 C VEC_DST. GPR is general-purpose register
 C used to obtain the effective address of
