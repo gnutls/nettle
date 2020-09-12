@@ -1,6 +1,6 @@
 C x86_64/fat/cpuid.asm
 
-ifelse(<
+ifelse(`
    Copyright (C) 2015 Niels Möller
 
    This file is part of GNU Nettle.
@@ -28,7 +28,7 @@ ifelse(<
    You should have received copies of the GNU General Public License and
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
->)
+')
 
 C Input argument
 C cpuid input: %edi

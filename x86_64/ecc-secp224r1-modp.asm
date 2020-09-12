@@ -1,6 +1,6 @@
 C x86_64/ecc-secp224r1-modp.asm
 
-ifelse(<
+ifelse(`
    Copyright (C) 2013 Niels Möller
 
    This file is part of GNU Nettle.
@@ -28,21 +28,21 @@ ifelse(<
    You should have received copies of the GNU General Public License and
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
->)
+')
 
 	.file "ecc-secp224r1-modp.asm"
 
 GMP_NUMB_BITS(64)
 
-define(<RP>, <%rsi>)
-define(<T0>, <%rdi>) C Overlaps unused modulo input
-define(<T1>, <%rcx>)
-define(<H0>, <%rax>)
-define(<H1>, <%rdx>)
-define(<H2>, <%r8>)
-define(<F0>, <%r9>)
-define(<F1>, <%r10>)
-define(<F2>, <%r11>)
+define(`RP', `%rsi')
+define(`T0', `%rdi') C Overlaps unused modulo input
+define(`T1', `%rcx')
+define(`H0', `%rax')
+define(`H1', `%rdx')
+define(`H2', `%r8')
+define(`F0', `%r9')
+define(`F1', `%r10')
+define(`F2', `%r11')
 
 	C ecc_secp224r1_modp (const struct ecc_modulo *m, mp_limb_t *rp)
 PROLOGUE(_nettle_ecc_secp224r1_modp)

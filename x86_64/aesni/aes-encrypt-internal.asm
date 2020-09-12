@@ -1,7 +1,7 @@
 C x86_64/aesni/aes-encrypt-internal.asm
 
 
-ifelse(<
+ifelse(`
    Copyright (C) 2015, 2018 Niels Möller
 
    This file is part of GNU Nettle.
@@ -29,32 +29,32 @@ ifelse(<
    You should have received copies of the GNU General Public License and
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
->)
+')
 
 C Input argument
-define(<ROUNDS>, <%rdi>)
-define(<KEYS>,	<%rsi>)
-C define(<TABLE>,	<%rdx>) C Unused here
-define(<LENGTH>,<%rcx>)
-define(<DST>,	<%r8>)
-define(<SRC>,	<%r9>)
+define(`ROUNDS', `%rdi')
+define(`KEYS',	`%rsi')
+C define(`TABLE',	`%rdx') C Unused here
+define(`LENGTH',`%rcx')
+define(`DST',	`%r8')
+define(`SRC',	`%r9')
 
-define(<KEY0>, <%xmm0>)
-define(<KEY1>, <%xmm1>)
-define(<KEY2>, <%xmm2>)
-define(<KEY3>, <%xmm3>)
-define(<KEY4>, <%xmm4>)
-define(<KEY5>, <%xmm5>)
-define(<KEY6>, <%xmm6>)
-define(<KEY7>, <%xmm7>)
-define(<KEY8>, <%xmm8>)
-define(<KEY9>, <%xmm9>)
-define(<KEY10>, <%xmm10>)
-define(<KEY11>, <%xmm11>)
-define(<KEY12>, <%xmm12>)
-define(<KEY13>, <%xmm13>)
-define(<KEYLAST>, <%xmm14>)
-define(<BLOCK>, <%xmm15>)
+define(`KEY0', `%xmm0')
+define(`KEY1', `%xmm1')
+define(`KEY2', `%xmm2')
+define(`KEY3', `%xmm3')
+define(`KEY4', `%xmm4')
+define(`KEY5', `%xmm5')
+define(`KEY6', `%xmm6')
+define(`KEY7', `%xmm7')
+define(`KEY8', `%xmm8')
+define(`KEY9', `%xmm9')
+define(`KEY10', `%xmm10')
+define(`KEY11', `%xmm11')
+define(`KEY12', `%xmm12')
+define(`KEY13', `%xmm13')
+define(`KEYLAST', `%xmm14')
+define(`BLOCK', `%xmm15')
 
 	.file "aes-encrypt-internal.asm"
 

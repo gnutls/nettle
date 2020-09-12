@@ -1,6 +1,6 @@
 C x86_64/ecc-secp521r1-modp.asm
 
-ifelse(<
+ifelse(`
    Copyright (C) 2013 Niels Möller
 
    This file is part of GNU Nettle.
@@ -28,25 +28,25 @@ ifelse(<
    You should have received copies of the GNU General Public License and
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
->)
+')
 
 	.file "ecc-secp521r1-modp.asm"
 
 GMP_NUMB_BITS(64)
 
-define(<RP>, <%rsi>)
-define(<U0>, <%rax>)
-define(<U1>, <%rbx>)
-define(<U2>, <%rcx>)
-define(<U3>, <%rdx>)
-define(<U4>, <%rbp>)
-define(<U5>, <%rdi>)
-define(<U6>, <%r8>)
-define(<U7>, <%r9>)
-define(<U8>, <%r10>)
-define(<U9>, <%r11>)
-define(<T0>, <%r12>)
-define(<T1>, <%r13>)
+define(`RP', `%rsi')
+define(`U0', `%rax')
+define(`U1', `%rbx')
+define(`U2', `%rcx')
+define(`U3', `%rdx')
+define(`U4', `%rbp')
+define(`U5', `%rdi')
+define(`U6', `%r8')
+define(`U7', `%r9')
+define(`U8', `%r10')
+define(`U9', `%r11')
+define(`T0', `%r12')
+define(`T1', `%r13')
 
 PROLOGUE(_nettle_ecc_secp521r1_modp)
 	W64_ENTRY(2, 0)

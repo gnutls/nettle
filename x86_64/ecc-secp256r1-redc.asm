@@ -1,6 +1,6 @@
 C x86_64/ecc-secp256r1-redc.asm
 
-ifelse(<
+ifelse(`
    Copyright (C) 2013 Niels Möller
 
    This file is part of GNU Nettle.
@@ -28,36 +28,36 @@ ifelse(<
    You should have received copies of the GNU General Public License and
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
->)
+')
 
 	.file "ecc-secp256r1-redc.asm"
 
-define(<RP>, <%rsi>)
-define(<U0>, <%rdi>) C Overlaps unused modulo input
-define(<U1>, <%rcx>)
-define(<U2>, <%rax>)
-define(<U3>, <%rdx>)
-define(<U4>, <%r8>)
-define(<U5>, <%r9>)
-define(<U6>, <%r10>)
-define(<F0>, <%r11>)
-define(<F1>, <%r12>)
-define(<F2>, <%rbx>)
-define(<F3>, <%rbp>)
+define(`RP', `%rsi')
+define(`U0', `%rdi') C Overlaps unused modulo input
+define(`U1', `%rcx')
+define(`U2', `%rax')
+define(`U3', `%rdx')
+define(`U4', `%r8')
+define(`U5', `%r9')
+define(`U6', `%r10')
+define(`F0', `%r11')
+define(`F1', `%r12')
+define(`F2', `%rbx')
+define(`F3', `%rbp')
 
 C FOLD(x), sets (F3,F2,F1,F0)  <-- (x << 224) - (x << 128) - (x<<32)
-define(<FOLD>, <
+define(`FOLD', `
 	mov	$1, F2
 	mov	$1, F3
-	shl	<$>32, F2
-	shr	<$>32, F3
+	shl	`$'32, F2
+	shr	`$'32, F3
 	xor	F0,F0
 	xor	F1,F1
 	sub	F2, F0
 	sbb	F3, F1
 	sbb	$1, F2
-	sbb	<$>0, F3
->)
+	sbb	`$'0, F3
+')
 PROLOGUE(_nettle_ecc_secp256r1_redc)
 	W64_ENTRY(2, 0)
 	C save all registers that need to be saved

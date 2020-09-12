@@ -1,6 +1,6 @@
 C x86_64/poly1305-internal.asm
 
-ifelse(<
+ifelse(`
    Copyright (C) 2013 Niels Möller
 
    This file is part of GNU Nettle.
@@ -28,18 +28,18 @@ ifelse(<
    You should have received copies of the GNU General Public License and
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
->)
+')
 
 	.file "poly1305-internal.asm"
 
 C Registers mainly used by poly1305_block
-define(<CTX>, <%rdi>)
-define(<T0>, <%rcx>)
-define(<T1>, <%rsi>)
-define(<T2>, <%r8>)
-define(<H0>, <%r9>)
-define(<H1>, <%r10>)
-define(<H2>, <%r11>)
+define(`CTX', `%rdi')
+define(`T0', `%rcx')
+define(`T1', `%rsi')
+define(`T2', `%r8')
+define(`H0', `%r9')
+define(`H1', `%r10')
+define(`H2', `%r11')
 	
 	C _poly1305_set_key(struct poly1305_ctx *ctx, const uint8_t key[16])
 	.text
@@ -162,7 +162,7 @@ PROLOGUE(_nettle_poly1305_digest)
 	adc	$0, XREG(H2)
 
 C Use %rax instead of %rsi
-define(<T1>, <%rax>)
+define(`T1', `%rax')
 	C Add 5, use result if >= 2^130
 	mov	$5, T0
 	xor	T1, T1

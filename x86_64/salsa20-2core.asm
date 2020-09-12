@@ -1,6 +1,6 @@
 C x86_64/salsa20-2core.asm
 
-ifelse(<
+ifelse(`
    Copyright (C) 2012, 2020 Niels Möller
 
    This file is part of GNU Nettle.
@@ -28,30 +28,30 @@ ifelse(<
    You should have received copies of the GNU General Public License and
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
->)
+')
 
-define(<DST>, <%rdi>)
-define(<SRC>, <%rsi>)
-define(<COUNT>, <%rdx>)
+define(`DST', `%rdi')
+define(`SRC', `%rsi')
+define(`COUNT', `%rdx')
 
 C State, even elements in X, odd elements in Y
-define(<X0>, <%xmm0>)
-define(<X1>, <%xmm1>)
-define(<X2>, <%xmm2>)
-define(<X3>, <%xmm3>)
-define(<Y0>, <%xmm4>)
-define(<Y1>, <%xmm5>)
-define(<Y2>, <%xmm6>)
-define(<Y3>, <%xmm7>)
+define(`X0', `%xmm0')
+define(`X1', `%xmm1')
+define(`X2', `%xmm2')
+define(`X3', `%xmm3')
+define(`Y0', `%xmm4')
+define(`Y1', `%xmm5')
+define(`Y2', `%xmm6')
+define(`Y3', `%xmm7')
 
-define(<T0>, <%xmm8>)
-define(<T1>, <%xmm9>)
-define(<T2>, <%xmm10>)
-define(<T3>, <%xmm11>)
+define(`T0', `%xmm8')
+define(`T1', `%xmm9')
+define(`T2', `%xmm10')
+define(`T3', `%xmm11')
 
-define(<M0011>, <%xmm12>)
+define(`M0011', `%xmm12')
 
-include_src(<x86_64/salsa20.m4>)
+include_src(`x86_64/salsa20.m4')
 
 	.text
 	ALIGN(16)

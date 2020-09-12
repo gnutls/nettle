@@ -1,6 +1,6 @@
 C x86_64/ecc-curve448-modp.asm
 
-ifelse(<
+ifelse(`
    Copyright (C) 2019 Niels Möller
 
    This file is part of GNU Nettle.
@@ -28,22 +28,22 @@ ifelse(<
    You should have received copies of the GNU General Public License and
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
->)
+')
 
 	.file "ecc-curve448-modp.asm"
 
-define(<RP>, <%rsi>)
-define(<X0>, <%rax>)
-define(<X1>, <%rbx>)
-define(<X2>, <%rcx>)
-define(<X3>, <%rdx>)
-define(<X4>, <%rbp>)
-define(<X5>, <%rdi>)
-define(<X6>, <%r8>)
-define(<X7>, <%r9>)
-define(<T0>, <%r10>)
-define(<T1>, <%r11>)
-define(<T2>, <%r12>)
+define(`RP', `%rsi')
+define(`X0', `%rax')
+define(`X1', `%rbx')
+define(`X2', `%rcx')
+define(`X3', `%rdx')
+define(`X4', `%rbp')
+define(`X5', `%rdi')
+define(`X6', `%r8')
+define(`X7', `%r9')
+define(`T0', `%r10')
+define(`T1', `%r11')
+define(`T2', `%r12')
 
 PROLOGUE(_nettle_ecc_curve448_modp)
 	W64_ENTRY(2, 0)

@@ -1,6 +1,6 @@
 C x86_64/ecc-secp192r1-modp.asm
 
-ifelse(<
+ifelse(`
    Copyright (C) 2013 Niels Möller
 
    This file is part of GNU Nettle.
@@ -28,18 +28,18 @@ ifelse(<
    You should have received copies of the GNU General Public License and
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
->)
+')
 
 	.file "ecc-secp192r1-modp.asm"
 
-define(<RP>, <%rsi>)
-define(<T0>, <%rdi>) C Overlaps unused modulo input
-define(<T1>, <%rcx>)
-define(<T2>, <%rdx>)
-define(<T3>, <%r8>)
-define(<H>, <%r9>)
-define(<C1>, <%r10>)
-define(<C2>, <%r11>)
+define(`RP', `%rsi')
+define(`T0', `%rdi') C Overlaps unused modulo input
+define(`T1', `%rcx')
+define(`T2', `%rdx')
+define(`T3', `%r8')
+define(`H', `%r9')
+define(`C1', `%r10')
+define(`C2', `%r11')
 
 	C ecc_secp192r1_modp (const struct ecc_modulo *m, mp_limb_t *rp)
 	.text

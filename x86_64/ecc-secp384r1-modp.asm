@@ -1,6 +1,6 @@
 C x86_64/ecc-secp384r1-modp.asm
 
-ifelse(<
+ifelse(`
    Copyright (C) 2013, 2015 Niels Möller
 
    This file is part of GNU Nettle.
@@ -28,27 +28,27 @@ ifelse(<
    You should have received copies of the GNU General Public License and
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
->)
+')
 
 	.file "ecc-secp384r1-modp.asm"
 
-define(<RP>, <%rsi>)
-define(<D5>, <%rax>)
-define(<T0>, <%rbx>)
-define(<T1>, <%rcx>)
-define(<T2>, <%rdx>)
-define(<T3>, <%rbp>)
-define(<T4>, <%rdi>)
-define(<T5>, <%r8>)
-define(<H0>, <%r9>)
-define(<H1>, <%r10>)
-define(<H2>, <%r11>)
-define(<H3>, <%r12>)
-define(<H4>, <%r13>)
-define(<H5>, <%r14>)
-define(<C2>, <%r15>)
-define(<C0>, H5)	C Overlap
-define(<TMP>, RP)	C Overlap
+define(`RP', `%rsi')
+define(`D5', `%rax')
+define(`T0', `%rbx')
+define(`T1', `%rcx')
+define(`T2', `%rdx')
+define(`T3', `%rbp')
+define(`T4', `%rdi')
+define(`T5', `%r8')
+define(`H0', `%r9')
+define(`H1', `%r10')
+define(`H2', `%r11')
+define(`H3', `%r12')
+define(`H4', `%r13')
+define(`H5', `%r14')
+define(`C2', `%r15')
+define(`C0', H5)	C Overlap
+define(`TMP', RP)	C Overlap
 
 
 PROLOGUE(_nettle_ecc_secp384r1_modp)
