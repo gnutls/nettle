@@ -307,12 +307,12 @@ C Y3: A1  B1  A11 B11  X3: A6  B6  A12 B12 (X3 swapped)
 	movups	X0,(DST)
 	movups	X1,16(DST)
 	movups	X2,32(DST)
-	movups	X3,48(DST)  C XXX
+	movups	X3,48(DST)
 	movups	Y3,64(DST)
 	movups	Y0,80(DST)
 	movups	Y1,96(DST)
-	movups	Y2,112(DST) C XXX
+	movups	Y2,112(DST)
 
-	W64_EXIT(3, 14)
+	W64_EXIT(3, 13)
 	ret
 EPILOGUE(_nettle_salsa20_2core)
