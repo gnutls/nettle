@@ -1,6 +1,6 @@
 C arm/ecc-secp384r1-modp.asm
 
-ifelse(<
+ifelse(`
    Copyright (C) 2013 Niels Möller
 
    This file is part of GNU Nettle.
@@ -28,23 +28,23 @@ ifelse(<
    You should have received copies of the GNU General Public License and
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
->) 
+')
 
 	.file "ecc-secp384r1-modp.asm"
 	.arm
 
-define(<RP>, <r1>)
-define(<T0>, <r0>)
-define(<T1>, <r2>)
-define(<T2>, <r3>)
-define(<T3>, <r4>)
-define(<F0>, <r5>)
-define(<F1>, <r6>)
-define(<F2>, <r7>)
-define(<F3>, <r8>)
-define(<F4>, <r10>)
-define(<N>, <r12>)
-define(<H>, <lr>)
+define(`RP', `r1')
+define(`T0', `r0')
+define(`T1', `r2')
+define(`T2', `r3')
+define(`T3', `r4')
+define(`F0', `r5')
+define(`F1', `r6')
+define(`F2', `r7')
+define(`F3', `r8')
+define(`F4', `r10')
+define(`N', `r12')
+define(`H', `lr')
 	
 	C ecc_secp384r1_modp (const struct ecc_modulo *m, mp_limb_t *rp)
 	.text

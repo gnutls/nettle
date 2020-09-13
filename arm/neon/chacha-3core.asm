@@ -1,6 +1,6 @@
 C arm/neon/chacha-3core.asm
 
-ifelse(<
+ifelse(`
    Copyright (C) 2020 Niels Möller
 
    This file is part of GNU Nettle.
@@ -28,33 +28,33 @@ ifelse(<
    You should have received copies of the GNU General Public License and
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
->)
+')
 
 	.file "chacha-3core.asm"
 	.fpu	neon
 
-define(<DST>, <r0>)
-define(<SRC>, <r1>)
-define(<ROUNDS>, <r2>)
+define(`DST', `r0')
+define(`SRC', `r1')
+define(`ROUNDS', `r2')
 
 C State, X, Y and Z representing consecutive blocks
-define(<X0>, <q0>)
-define(<X1>, <q1>)
-define(<X2>, <q2>)
-define(<X3>, <q3>)
-define(<Y0>, <q8>)
-define(<Y1>, <q9>)
-define(<Y2>, <q10>)
-define(<Y3>, <q11>)
-define(<Z0>, <q12>)
-define(<Z1>, <q13>)
-define(<Z2>, <q14>)
-define(<Z3>, <q15>)
+define(`X0', `q0')
+define(`X1', `q1')
+define(`X2', `q2')
+define(`X3', `q3')
+define(`Y0', `q8')
+define(`Y1', `q9')
+define(`Y2', `q10')
+define(`Y3', `q11')
+define(`Z0', `q12')
+define(`Z1', `q13')
+define(`Z2', `q14')
+define(`Z3', `q15')
 
-define(<T0>, <q4>)
-define(<T1>, <q5>)
-define(<T2>, <q6>)
-define(<T3>, <q7>)
+define(`T0', `q4')
+define(`T1', `q5')
+define(`T2', `q6')
+define(`T3', `q7')
 
 	.text
 	.align 4

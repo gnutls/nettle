@@ -1,6 +1,6 @@
 C arm/ecc-secp224r1-modp.asm
 
-ifelse(<
+ifelse(`
    Copyright (C) 2013 Niels Möller
 
    This file is part of GNU Nettle.
@@ -28,25 +28,25 @@ ifelse(<
    You should have received copies of the GNU General Public License and
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
->) 
+')
 
 	.file "ecc-secp224r1-modp.asm"
 	.arm
 
-define(<RP>, <r1>)
-define(<H>, <r0>) C Overlaps unused modulo argument
+define(`RP', `r1')
+define(`H', `r0') C Overlaps unused modulo argument
 
-define(<T0>, <r2>)
-define(<T1>, <r3>)
-define(<T2>, <r4>)
-define(<T3>, <r5>)
-define(<T4>, <r6>)
-define(<T5>, <r7>)
-define(<T6>, <r8>)
-define(<N3>, <r10>)
-define(<L0>, <r11>)
-define(<L1>, <r12>)
-define(<L2>, <lr>)
+define(`T0', `r2')
+define(`T1', `r3')
+define(`T2', `r4')
+define(`T3', `r5')
+define(`T4', `r6')
+define(`T5', `r7')
+define(`T6', `r8')
+define(`N3', `r10')
+define(`L0', `r11')
+define(`L1', `r12')
+define(`L2', `lr')
 
 	C ecc_secp224r1_modp (const struct ecc_modulo *m, mp_limb_t *rp)
 	.text

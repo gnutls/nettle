@@ -1,6 +1,6 @@
 C arm/neon/salsa20-core-internal.asm
 
-ifelse(<
+ifelse(`
    Copyright (C) 2013 Niels Möller
 
    This file is part of GNU Nettle.
@@ -28,29 +28,29 @@ ifelse(<
    You should have received copies of the GNU General Public License and
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
->) 
+')
 
 	.file "salsa20-core-internal.asm"
 	.fpu	neon
 
-define(<DST>, <r0>)
-define(<SRC>, <r1>)
-define(<ROUNDS>, <r2>)
+define(`DST', `r0')
+define(`SRC', `r1')
+define(`ROUNDS', `r2')
 
-define(<X0>, <q0>)
-define(<X1>, <q1>)
-define(<X2>, <q2>)
-define(<X3>, <q3>)
-define(<T0>, <q8>)
-define(<T1>, <q9>)
-define(<M0101>, <q10>)
-define(<M0110>, <q11>)
-define(<M0011>, <q12>)
-define(<S1>, <q13>)
-define(<S2>, <q14>)
-define(<S3>, <q15>)
+define(`X0', `q0')
+define(`X1', `q1')
+define(`X2', `q2')
+define(`X3', `q3')
+define(`T0', `q8')
+define(`T1', `q9')
+define(`M0101', `q10')
+define(`M0110', `q11')
+define(`M0011', `q12')
+define(`S1', `q13')
+define(`S2', `q14')
+define(`S3', `q15')
 	
-define(<QROUND>, <
+define(`QROUND', `
 	vadd.i32	T0, $1, $4
 	vshl.i32	T1, T0, #7
 	vshr.u32	T0, T0, #25
@@ -74,7 +74,7 @@ define(<QROUND>, <
 	vshr.u32	T0, T0, #14
 	veor		$1, $1, T0
 	veor		$1, $1, T1
->)
+')
 	
 	.text
 	.align 4
@@ -168,21 +168,21 @@ PROLOGUE(_nettle_salsa20_core)
 	C	 6  1 12 11  >>> 1
 	C different number of elements needs to be
 	C extracted on BE because of different column order
-IF_LE(<	vext.32	X1, X1, X1, #3>)
-IF_BE(<	vext.32	X1, X1, X1, #1>)
+IF_LE(`	vext.32	X1, X1, X1, #3')
+IF_BE(`	vext.32	X1, X1, X1, #1')
 	vext.32	X2, X2, X2, #2
-IF_LE(<	vext.32	X3, X3, X3, #1>)
-IF_BE(<	vext.32	X3, X3, X3, #3>)
+IF_LE(`	vext.32	X3, X3, X3, #1')
+IF_BE(`	vext.32	X3, X3, X3, #3')
 
 	QROUND(X0, X3, X2, X1)
 
 	subs	ROUNDS, ROUNDS, #2
 	C Inverse rotation
-IF_LE(<	vext.32	X1, X1, X1, #1>)
-IF_BE(<	vext.32	X1, X1, X1, #3>)
+IF_LE(`	vext.32	X1, X1, X1, #1')
+IF_BE(`	vext.32	X1, X1, X1, #3')
 	vext.32	X2, X2, X2, #2
-IF_LE(<	vext.32	X3, X3, X3, #3>)
-IF_BE(<	vext.32	X3, X3, X3, #1>)
+IF_LE(`	vext.32	X3, X3, X3, #3')
+IF_BE(`	vext.32	X3, X3, X3, #1')
 
 	bhi	.Loop
 
@@ -209,10 +209,10 @@ IF_BE(<	vext.32	X3, X3, X3, #1>)
 	vadd.u32	X3, X3, S3
 
 	C caller expects result little-endian
-IF_BE(<	vrev32.u8	X0, X0
+IF_BE(`	vrev32.u8	X0, X0
 	vrev32.u8	X1, X1
 	vrev32.u8	X2, X2
-	vrev32.u8	X3, X3>)
+	vrev32.u8	X3, X3')
 
 	vstm	DST, {X0,X1,X2,X3}
 	bx	lr

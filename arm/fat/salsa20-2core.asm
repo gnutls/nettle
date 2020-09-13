@@ -1,7 +1,7 @@
 C arm/fat/salsa20-2core.asm
 
 
-ifelse(<
+ifelse(`
    Copyright (C) 2020 Niels Möller
 
    This file is part of GNU Nettle.
@@ -29,8 +29,8 @@ ifelse(<
    You should have received copies of the GNU General Public License and
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
->)
+')
 
 dnl PROLOGUE(_nettle_fat_salsa20_2core) picked up by configure
 
-include_src(<arm/neon/salsa20-2core.asm>)
+include_src(`arm/neon/salsa20-2core.asm')

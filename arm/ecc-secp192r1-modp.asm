@@ -1,6 +1,6 @@
 C arm/ecc-secp192r1-modp.asm
 
-ifelse(<
+ifelse(`
    Copyright (C) 2013 Niels Möller
 
    This file is part of GNU Nettle.
@@ -28,26 +28,26 @@ ifelse(<
    You should have received copies of the GNU General Public License and
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
->) 
+')
 
 	.file "ecc-secp192r1-modp.asm"
 	.arm
 
-define(<HP>, <r0>) C Overlaps unused modulo argument
-define(<RP>, <r1>)
+define(`HP', `r0') C Overlaps unused modulo argument
+define(`RP', `r1')
 
-define(<T0>, <r2>)
-define(<T1>, <r3>)
-define(<T2>, <r4>)
-define(<T3>, <r5>)
-define(<T4>, <r6>)
-define(<T5>, <r7>)
-define(<T6>, <r8>)
-define(<T7>, <r10>)
-define(<H0>, <T0>) C Overlaps T0 and T1
-define(<H1>, <T1>)
-define(<C2>, <HP>)
-define(<C4>, <r12>)
+define(`T0', `r2')
+define(`T1', `r3')
+define(`T2', `r4')
+define(`T3', `r5')
+define(`T4', `r6')
+define(`T5', `r7')
+define(`T6', `r8')
+define(`T7', `r10')
+define(`H0', `T0') C Overlaps T0 and T1
+define(`H1', `T1')
+define(`C2', `HP')
+define(`C4', `r12')
 
 	C ecc_secp192r1_modp (const struct ecc_modulo *m, mp_limb_t *rp)
 	.text

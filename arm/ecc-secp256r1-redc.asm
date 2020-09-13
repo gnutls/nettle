@@ -1,6 +1,6 @@
 C arm/ecc-secp256r1-redc.asm
 
-ifelse(<
+ifelse(`
    Copyright (C) 2013 Niels Möller
 
    This file is part of GNU Nettle.
@@ -28,25 +28,25 @@ ifelse(<
    You should have received copies of the GNU General Public License and
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
->) 
+')
 
 	.file "ecc-secp256r1-redc.asm"
 	.arm
 
-define(<RP>, <r1>)
+define(`RP', `r1')
 
-define(<T0>, <r0>) C Overlaps unused modulo argument
-define(<T1>, <r2>)
-define(<T2>, <r3>)
-define(<T3>, <r4>)
-define(<T4>, <r5>)
-define(<T5>, <r6>)
-define(<T6>, <r7>)
-define(<T7>, <r8>)
-define(<F0>, <r10>)
-define(<F1>, <r11>)
-define(<F2>, <r12>)
-define(<F3>, <lr>)
+define(`T0', `r0') C Overlaps unused modulo argument
+define(`T1', `r2')
+define(`T2', `r3')
+define(`T3', `r4')
+define(`T4', `r5')
+define(`T5', `r6')
+define(`T6', `r7')
+define(`T7', `r8')
+define(`F0', `r10')
+define(`F1', `r11')
+define(`F2', `r12')
+define(`F3', `lr')
 
 	C ecc_secp256r1_redc (const struct ecc_modulo *m, mp_limb_t *rp)
 	.text
