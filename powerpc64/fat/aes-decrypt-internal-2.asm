@@ -1,7 +1,7 @@
 C powerpc64/fat/aes-decrypt-internal-2.asm
 
 
-ifelse(<
+ifelse(`
    Copyright (C) 2020 Mamone Tarsha
 
    This file is part of GNU Nettle.
@@ -29,9 +29,9 @@ ifelse(<
    You should have received copies of the GNU General Public License and
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
->)
+')
 
 dnl PROLOGUE(_nettle_aes_decrypt) picked up by configure
 
-define(<fat_transform>, <$1_ppc64>)
-include_src(<powerpc64/p8/aes-decrypt-internal.asm>)
+define(`fat_transform', `$1_ppc64')
+include_src(`powerpc64/p8/aes-decrypt-internal.asm')

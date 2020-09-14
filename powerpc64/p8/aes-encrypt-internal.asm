@@ -1,6 +1,6 @@
 C powerpc64/p8/aes-encrypt-internal.asm
 
-ifelse(<
+ifelse(`
    Copyright (C) 2020 Mamone Tarsha
    This file is part of GNU Nettle.
 
@@ -27,30 +27,30 @@ ifelse(<
    You should have received copies of the GNU General Public License and
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
->)
+')
 
 C Register usage:
 
-define(<SP>, <1>)
-define(<TOCP>, <2>)
+define(`SP', `1')
+define(`TOCP', `2')
 
-define(<ROUNDS>, <3>)
-define(<KEYS>, <4>)
-define(<LENGTH>, <6>)
-define(<DST>, <7>)
-define(<SRC>, <8>)
+define(`ROUNDS', `3')
+define(`KEYS', `4')
+define(`LENGTH', `6')
+define(`DST', `7')
+define(`SRC', `8')
 
-define(<swap_mask>, <0>)
+define(`swap_mask', `0')
 
-define(<K>, <1>)
-define(<S0>, <2>)
-define(<S1>, <3>)
-define(<S2>, <4>)
-define(<S3>, <5>)
-define(<S4>, <6>)
-define(<S5>, <7>)
-define(<S6>, <8>)
-define(<S7>, <9>)
+define(`K', `1')
+define(`S0', `2')
+define(`S1', `3')
+define(`S2', `4')
+define(`S3', `5')
+define(`S4', `6')
+define(`S5', `7')
+define(`S6', `8')
+define(`S7', `9')
 
 .file "aes-encrypt-internal.asm"
 
@@ -61,7 +61,7 @@ define(<S7>, <9>)
  C       size_t length, uint8_t *dst,
  C       uint8_t *src)
 
-define(<FUNC_ALIGN>, <5>)
+define(`FUNC_ALIGN', `5')
 PROLOGUE(_nettle_aes_encrypt)
  DATA_LOAD_VEC(swap_mask,.swap_mask,5)
 
@@ -102,14 +102,14 @@ Lx8_loop:
  lxvd2x VSR(S6),30,SRC
  lxvd2x VSR(S7),31,SRC
 
-IF_LE(<vperm S0,S0,S0,swap_mask
+IF_LE(`vperm S0,S0,S0,swap_mask
  vperm S1,S1,S1,swap_mask
  vperm S2,S2,S2,swap_mask
  vperm S3,S3,S3,swap_mask
  vperm S4,S4,S4,swap_mask
  vperm S5,S5,S5,swap_mask
  vperm S6,S6,S6,swap_mask
- vperm S7,S7,S7,swap_mask>)
+ vperm S7,S7,S7,swap_mask')
 
  vxor S0,S0,K
  vxor S1,S1,K
@@ -148,14 +148,14 @@ L8x_round_loop:
  vcipherlast S6,S6,K
  vcipherlast S7,S7,K
 
-IF_LE(<vperm S0,S0,S0,swap_mask
+IF_LE(`vperm S0,S0,S0,swap_mask
  vperm S1,S1,S1,swap_mask
  vperm S2,S2,S2,swap_mask
  vperm S3,S3,S3,swap_mask
  vperm S4,S4,S4,swap_mask
  vperm S5,S5,S5,swap_mask
  vperm S6,S6,S6,swap_mask
- vperm S7,S7,S7,swap_mask>)
+ vperm S7,S7,S7,swap_mask')
 
  stxvd2x VSR(S0),0,DST
  stxvd2x VSR(S1),25,DST
@@ -197,10 +197,10 @@ L4x:
  addi   9,9,0x10
  lxvd2x VSR(S3),9,SRC
 
-IF_LE(<vperm S0,S0,S0,swap_mask
+IF_LE(`vperm S0,S0,S0,swap_mask
  vperm S1,S1,S1,swap_mask
  vperm S2,S2,S2,swap_mask
- vperm S3,S3,S3,swap_mask>)
+ vperm S3,S3,S3,swap_mask')
 
  vxor S0,S0,K
  vxor S1,S1,K
@@ -227,10 +227,10 @@ L4x_round_loop:
  vcipherlast S2,S2,K
  vcipherlast S3,S3,K
 
-IF_LE(<vperm S0,S0,S0,swap_mask
+IF_LE(`vperm S0,S0,S0,swap_mask
  vperm S1,S1,S1,swap_mask
  vperm S2,S2,S2,swap_mask
- vperm S3,S3,S3,swap_mask>)
+ vperm S3,S3,S3,swap_mask')
 
  stxvd2x VSR(S0),0,DST
  li  9,0x10
@@ -257,8 +257,8 @@ L2x:
  li   9,0x10
  lxvd2x VSR(S1),9,SRC
 
-IF_LE(<vperm S0,S0,S0,swap_mask
- vperm S1,S1,S1,swap_mask>)
+IF_LE(`vperm S0,S0,S0,swap_mask
+ vperm S1,S1,S1,swap_mask')
 
  vxor  S0,S0,K
  vxor   S1,S1,K
@@ -279,8 +279,8 @@ L2x_round_loop:
  vcipherlast S0,S0,K
  vcipherlast S1,S1,K
 
-IF_LE(<vperm S0,S0,S0,swap_mask
- vperm S1,S1,S1,swap_mask>)
+IF_LE(`vperm S0,S0,S0,swap_mask
+ vperm S1,S1,S1,swap_mask')
 
  stxvd2x VSR(S0),0,DST
  li  9,0x10
@@ -300,7 +300,7 @@ L1x:
 
  lxvd2x VSR(S0),0,SRC
 
-IF_LE(<vperm S0,S0,S0,swap_mask>)
+IF_LE(`vperm S0,S0,S0,swap_mask')
 
  vxor   S0,S0,K
 
@@ -318,7 +318,7 @@ L1x_round_loop:
  vperm  K,K,K,swap_mask
  vcipherlast S0,S0,K
 
-IF_LE(<vperm S0,S0,S0,swap_mask>)
+IF_LE(`vperm S0,S0,S0,swap_mask')
 
  stxvd2x VSR(S0),0,DST
 
@@ -329,5 +329,5 @@ EPILOGUE(_nettle_aes_encrypt)
  .data
  .align 4
 .swap_mask:
-IF_LE(<.byte 8,9,10,11,12,13,14,15,0,1,2,3,4,5,6,7>)
-IF_BE(<.byte 3,2,1,0,7,6,5,4,11,10,9,8,15,14,13,12>)
+IF_LE(`.byte 8,9,10,11,12,13,14,15,0,1,2,3,4,5,6,7')
+IF_BE(`.byte 3,2,1,0,7,6,5,4,11,10,9,8,15,14,13,12')
