@@ -1,3 +1,9 @@
+2020-09-14  Niels Möller  <nisse@obsidian>
+
+	* asm.m4: Delete use of changequote, stick to the m4 default
+	quoting characters `'. Updated all assembly and m4 files.
+	* x86_64/machine.m4 (W64_ENTRY, W64_EXIT): Delete quoting workaround.
+
 2020-09-12  Niels Möller  <nisse@obsidian>
 
 	* x86_64/salsa20-2core.asm: Fix incorrect W64_EXIT.
