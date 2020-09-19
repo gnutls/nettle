@@ -24,10 +24,9 @@ define(`EPILOGUE',
 
 C Get vector-scalar register from vector register
 C VSR(VR)
-define(`VSR',`ifelse(ASM_PPC_WANT_R_REGISTERS,no,
-`eval(32+$1)',
-``vs'eval(32+substr($1,1,len($1)))'
-)')
+define(`VSR',`ifelse(substr($1,0,1),`v',
+``vs'eval(32+substr($1,1,len($1)))',
+`eval(32+$1)')')
 
 C Load the quadword in DATA_SRC storage into
 C VEC_DST. GPR is general-purpose register
