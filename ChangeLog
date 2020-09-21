@@ -1,3 +1,9 @@
+2020-09-21  Niels Möller  <nisse@obsidian>
+
+	* m4-utils.m4: New file with m4 utilities, copied from GMP's
+	mpn/asm-defs.m4.
+	* Makefile.in (DISTFILES): Add m4-utils.m4.
+
 2020-09-15  Niels Möller  <nisse@obsidian>
 
 	* Makefile.in (DISTFILES): Add missing file blowfish-internal.h.
