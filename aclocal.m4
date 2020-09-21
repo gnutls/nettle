@@ -555,3 +555,27 @@ EOF
 	AC_SUBST(EXTRA_HOGWEED_LINKER_FLAGS)
   fi
 ])
+
+dnl  GMP_ASM_POWERPC_R_REGISTERS
+dnl  ---------------------------
+dnl  Determine whether the assembler takes powerpc registers with an "r" as
+dnl  in "r6", or as plain "6".  The latter is standard, but NeXT, Rhapsody,
+dnl  and MacOS-X require the "r" forms.
+dnl
+dnl  See also mpn/powerpc32/powerpc-defs.m4 which uses the result of this
+dnl  test.
+
+AC_DEFUN([GMP_ASM_POWERPC_R_REGISTERS],
+[AC_CACHE_CHECK([if the assembler needs r on registers],
+               gmp_cv_asm_powerpc_r_registers,
+[GMP_TRY_ASSEMBLE(
+[	$gmp_cv_asm_text
+	mtctr	6],
+[gmp_cv_asm_powerpc_r_registers=no],
+[GMP_TRY_ASSEMBLE(
+[	.text
+	mtctr	r6],
+[gmp_cv_asm_powerpc_r_registers=yes],
+[AC_MSG_ERROR([neither "mtctr 6" nor "mtctr r6" works])])])])
+ASM_PPC_WANT_R_REGISTERS="$gmp_cv_asm_powerpc_r_registers"
+])

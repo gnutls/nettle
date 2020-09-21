@@ -399,6 +399,7 @@ fi
 
 OPT_NETTLE_SOURCES=""
 FAT_TEST_LIST=""
+ASM_PPC_WANT_R_REGISTERS="n/a"
 
 # Select assembler code
 asm_path=
@@ -456,6 +457,7 @@ if test "x$enable_assembler" = xyes ; then
       ;;
     *powerpc64*)
       if test "$ABI" = 64 ; then
+	GMP_ASM_POWERPC_R_REGISTERS
 	asm_path="powerpc64"
 	if test "x$enable_fat" = xyes ; then
 	  asm_path="powerpc64/fat $asm_path"
@@ -588,6 +590,7 @@ else
   IF_ASM='#'
 fi
 AC_SUBST([IF_ASM])
+AC_SUBST([ASM_PPC_WANT_R_REGISTERS])
 
 AH_VERBATIM([HAVE_NATIVE],
 [/* Define to 1 each of the following for which a native (ie. CPU specific)

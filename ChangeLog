@@ -3,6 +3,17 @@
 	* m4-utils.m4: New file with m4 utilities, copied from GMP's
 	mpn/asm-defs.m4.
 	* Makefile.in (DISTFILES): Add m4-utils.m4.
+	(%.asm): Include m4-utils.m4 for preprocessing of .asm files, and
+	include config.m4 before machine.m4.
+
+	* aclocal.m4 (GMP_ASM_POWERPC_R_REGISTERS): New configure test,
+	adapted from corresponding test in GMP's acinlude.m4.
+	* configure.ac (ASM_PPC_WANT_R_REGISTERS): New substituted
+	variable. Set using GMP_ASM_POWERPC_R_REGISTERS, when powerpc64
+	assembly code is enabled.
+	* config.m4.in: Substituted here.
+	* powerpc64/machine.m4: Check ASM_PPC_WANT_R_REGISTERS, and
+	if needed, replace register names like r0, r1, ... with integers.
 
 2020-09-15  Niels Möller  <nisse@obsidian>
 

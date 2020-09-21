@@ -289,8 +289,8 @@ libhogweed.a: $(hogweed_OBJS)
 	$(RANLIB) $@
 	echo hogweed > libhogweed.stamp
 
-%.$(OBJEXT): %.asm $(srcdir)/asm.m4 machine.m4 config.m4
-	$(M4) $(srcdir)/asm.m4 machine.m4 config.m4 $< >$*.s
+%.$(OBJEXT): %.asm $(srcdir)/m4-utils.m4 $(srcdir)/asm.m4 config.m4 machine.m4
+	$(M4) $(srcdir)/m4-utils.m4 $(srcdir)/asm.m4 config.m4 machine.m4 $< >$*.s
 	$(COMPILE) -c $*.s
 
 %.$(OBJEXT): %.c
