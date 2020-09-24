@@ -570,12 +570,12 @@ AC_DEFUN([GMP_ASM_POWERPC_R_REGISTERS],
                gmp_cv_asm_powerpc_r_registers,
 [GMP_TRY_ASSEMBLE(
 [	$gmp_cv_asm_text
-	mtctr	6],
-[gmp_cv_asm_powerpc_r_registers=no],
-[GMP_TRY_ASSEMBLE(
-[	.text
 	mtctr	r6],
 [gmp_cv_asm_powerpc_r_registers=yes],
+[GMP_TRY_ASSEMBLE(
+[	.text
+	mtctr	6],
+[gmp_cv_asm_powerpc_r_registers=no],
 [AC_MSG_ERROR([neither "mtctr 6" nor "mtctr r6" works])])])])
 ASM_PPC_WANT_R_REGISTERS="$gmp_cv_asm_powerpc_r_registers"
 ])

@@ -1,3 +1,8 @@
+2020-09-24  Niels Möller  <nisse@obsidian>
+
+	* aclocal.m4 (GMP_ASM_POWERPC_R_REGISTERS): Prefer to use register
+	names. Can be tested by configuring with CC='gcc -Wa,-mregnames'.
+
 2020-09-21  Niels Möller  <nisse@obsidian>
 
 	* m4-utils.m4: New file with m4 utilities, copied from GMP's
