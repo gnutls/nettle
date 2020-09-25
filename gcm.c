@@ -334,6 +334,46 @@ gcm_update(struct gcm_ctx *ctx, const struct gcm_key *key,
 }
 
 static nettle_fill16_func gcm_fill;
+#if WORDS_BIGENDIAN
+static void
+gcm_fill(uint8_t *ctr, size_t blocks, union nettle_block16 *buffer)
+{
+  uint64_t hi, mid;
+  uint32_t lo;
+  size_t i;
+  hi = READ_UINT64(ctr);
+  mid = (uint64_t) READ_UINT32(ctr + 8) << 32;
+  lo = READ_UINT32(ctr + 12);
+
+  for (i = 0; i < blocks; i++)
+    {
+      buffer[i].u64[0] = hi;
+      buffer[i].u64[1] = mid + lo++;
+    }
+  WRITE_UINT32(ctr + 12, lo);
+
+}
+#elif HAVE_BUILTIN_BSWAP64
+/* Assume __builtin_bswap32 is also available */
+static void
+gcm_fill(uint8_t *ctr, size_t blocks, union nettle_block16 *buffer)
+{
+  uint64_t hi, mid;
+  uint32_t lo;
+  size_t i;
+  hi = LE_READ_UINT64(ctr);
+  mid = LE_READ_UINT32(ctr + 8);
+  lo = READ_UINT32(ctr + 12);
+
+  for (i = 0; i < blocks; i++)
+    {
+      buffer[i].u64[0] = hi;
+      buffer[i].u64[1] = mid + ((uint64_t)__builtin_bswap32(lo) << 32);
+      lo++;
+    }
+  WRITE_UINT32(ctr + 12, lo);
+}
+#else
 static void
 gcm_fill(uint8_t *ctr, size_t blocks, union nettle_block16 *buffer)
 {
@@ -349,6 +389,7 @@ gcm_fill(uint8_t *ctr, size_t blocks, union nettle_block16 *buffer)
 
   WRITE_UINT32(ctr + GCM_BLOCK_SIZE - 4, c);
 }
+#endif
 
 void
 gcm_encrypt (struct gcm_ctx *ctx, const struct gcm_key *key,

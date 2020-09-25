@@ -1,3 +1,8 @@
+2020-09-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* gcm.c (gcm_fill): Added separate implementations for big- and
+	little-endian, to use uint64_t stores and less overhead.
+
 2020-09-24  Niels Möller  <nisse@obsidian>
 
 	* aclocal.m4 (GMP_ASM_POWERPC_R_REGISTERS): Prefer to use register
