@@ -1,5 +1,8 @@
 2020-09-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* powerpc64/p7/chacha-core-internal.asm: New file.
+	* Makefile.in (distdir): Add powerpc64/p7.
+
 	* gcm.c (gcm_fill): Added separate implementations for big- and
 	little-endian, to use uint64_t stores and less overhead.
 
