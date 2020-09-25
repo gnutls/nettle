@@ -458,7 +458,7 @@ if test "x$enable_assembler" = xyes ; then
     *powerpc64*)
       if test "$ABI" = 64 ; then
 	GMP_ASM_POWERPC_R_REGISTERS
-	asm_path="powerpc64"
+	asm_path="powerpc64/p7 powerpc64"
 	if test "x$enable_fat" = xyes ; then
 	  asm_path="powerpc64/fat $asm_path"
 	  OPT_NETTLE_SOURCES="fat-ppc.c $OPT_NETTLE_SOURCES"
