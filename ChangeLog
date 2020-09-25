@@ -3,12 +3,12 @@
 	* gcm.c (gcm_fill): Added separate implementations for big- and
 	little-endian, to use uint64_t stores and less overhead.
 
-2020-09-24  Niels Möller  <nisse@obsidian>
+2020-09-24  Niels Möller  <nisse@lysator.liu.se>
 
 	* aclocal.m4 (GMP_ASM_POWERPC_R_REGISTERS): Prefer to use register
 	names. Can be tested by configuring with CC='gcc -Wa,-mregnames'.
 
-2020-09-21  Niels Möller  <nisse@obsidian>
+2020-09-21  Niels Möller  <nisse@lysator.liu.se>
 
 	* m4-utils.m4: New file with m4 utilities, copied from GMP's
 	mpn/asm-defs.m4.
@@ -25,21 +25,21 @@
 	* powerpc64/machine.m4: Check ASM_PPC_WANT_R_REGISTERS, and
 	if needed, replace register names like r0, r1, ... with integers.
 
-2020-09-15  Niels Möller  <nisse@obsidian>
+2020-09-15  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in (DISTFILES): Add missing file blowfish-internal.h.
 
-2020-09-14  Niels Möller  <nisse@obsidian>
+2020-09-14  Niels Möller  <nisse@lysator.liu.se>
 
 	* asm.m4: Delete use of changequote, stick to the m4 default
 	quoting characters `'. Updated all assembly and m4 files.
 	* x86_64/machine.m4 (W64_ENTRY, W64_EXIT): Delete quoting workaround.
 
-2020-09-12  Niels Möller  <nisse@obsidian>
+2020-09-12  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86_64/salsa20-2core.asm: Fix incorrect W64_EXIT.
 
-2020-08-29  Niels Möller  <nisse@obsidian>
+2020-08-29  Niels Möller  <nisse@lysator.liu.se>
 
 	Initial powerpc64 assembly support, contributed by Mamone Tarsha:
 	* configure.ac: New configure option --enable-power-crypto-ext.
