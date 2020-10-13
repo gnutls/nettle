@@ -52,6 +52,7 @@
 #define ecc_mod_random _nettle_ecc_mod_random
 #define ecc_mod _nettle_ecc_mod
 #define ecc_mod_inv _nettle_ecc_mod_inv
+#define ecc_mod_inv_redc _nettle_ecc_mod_inv_redc
 #define ecc_hash _nettle_ecc_hash
 #define gost_hash _nettle_gost_hash
 #define ecc_a_to_j _nettle_ecc_a_to_j
@@ -168,6 +169,8 @@ struct ecc_modulo
 
   ecc_mod_func *mod;
   ecc_mod_func *reduce;
+  /* For moduli where we use redc, the invert and sqrt functions work
+     with inputs and outputs in redc form. */
   ecc_mod_inv_func *invert;
   ecc_mod_sqrt_func *sqrt;
 };
@@ -228,6 +231,7 @@ ecc_mod_func ecc_pp1_redc;
 ecc_mod_func ecc_pm1_redc;
 
 ecc_mod_inv_func ecc_mod_inv;
+ecc_mod_inv_func ecc_mod_inv_redc;
 
 void
 ecc_mod_add (const struct ecc_modulo *m, mp_limb_t *rp,
@@ -412,7 +416,8 @@ curve448_eh_to_x (mp_limb_t *xp, const mp_limb_t *p,
 
 /* Current scratch needs: */
 #define ECC_MOD_INV_ITCH(size) (2*(size))
-#define ECC_J_TO_A_ITCH(size) (5*(size))
+/* Only valid when using the general ecc_mod_inv/ecc_mod_inv_redc ! */
+#define ECC_J_TO_A_ITCH(size) (4*(size))
 #define ECC_EH_TO_A_ITCH(size, inv) (2*(size)+(inv))
 #define ECC_DUP_JJ_ITCH(size) (5*(size))
 #define ECC_DUP_EH_ITCH(size) (5*(size))

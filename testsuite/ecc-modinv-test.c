@@ -1,7 +1,8 @@
 #include "testutils.h"
 
 static int
-ref_modinv (mp_limb_t *rp, const mp_limb_t *ap, const mp_limb_t *mp, mp_size_t mn)
+ref_modinv (mp_limb_t *rp, const mp_limb_t *ap,
+	    const mp_limb_t *mp, mp_size_t mn, int use_redc)
 {
   mpz_t g, s, a, m;
   int res;
@@ -19,12 +20,18 @@ ref_modinv (mp_limb_t *rp, const mp_limb_t *ap, const mp_limb_t *mp, mp_size_t m
 	  mpz_add (s, s, m);
 	  ASSERT (mpz_sgn (s) > 0);
 	}
-      mpz_limbs_copy (rp, s, mn);
       res = 1;
     }
   else
     res = 0;
 
+  if (use_redc)
+    {
+      mpz_mul_2exp (s, s, 2 * mn * GMP_NUMB_BITS);
+      mpz_mod (s, s, m);
+    }
+
+  mpz_limbs_copy (rp, s, mn);
   mpz_clear (g);
   mpz_clear (s);
   return res;
@@ -42,7 +49,7 @@ zero_p (const struct ecc_modulo *m, const mp_limb_t *xp)
 
 static void
 test_modulo (gmp_randstate_t rands, const char *name,
-	     const struct ecc_modulo *m)
+	     const struct ecc_modulo *m, int use_redc)
 {
   mp_limb_t *a;
   mp_limb_t *ai;
@@ -99,7 +106,7 @@ test_modulo (gmp_randstate_t rands, const char *name,
 
       mpz_limbs_copy (a, r, m->size);
 
-      if (!ref_modinv (ref, a, m->m, m->size))
+      if (!ref_modinv (ref, a, m->m, m->size, use_redc))
 	{
 	  if (verbose)
 	    fprintf (stderr, "Test %u (bit size %u) not invertible mod %s.\n",
@@ -107,6 +114,7 @@ test_modulo (gmp_randstate_t rands, const char *name,
 	  continue;
 	}
       m->invert (m, ai, a, scratch);
+      /* FIXME: Allow non-canonical representation, ai > m */
       if (mpn_cmp (ref, ai, m->size))
 	{
 	  fprintf (stderr, "%s->invert failed (test %u, bit size %u):\n",
@@ -141,8 +149,8 @@ test_main (void)
 
   for (i = 0; ecc_curves[i]; i++)
     {
-      test_modulo (rands, "p", &ecc_curves[i]->p);
-      test_modulo (rands, "q", &ecc_curves[i]->q);
+      test_modulo (rands, "p", &ecc_curves[i]->p, ecc_curves[i]->use_redc);
+      test_modulo (rands, "q", &ecc_curves[i]->q, 0);
     }
   gmp_randclear (rands);
 }

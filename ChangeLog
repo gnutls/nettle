@@ -1,3 +1,22 @@
+2020-10-13  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-mod-inv.c (ecc_mod_inv_destructive): New helper function,
+	not preserving input argument. Extracted from old ecc_mod_inv.
+	(ecc_mod_inv): Call ecc_mod_inv_destructive.
+	(ecc_mod_inv_redc): New inversion function, with input and output
+	in redc form.
+
+	* ecc-secp224r1.c: Select between ecc_mod_inv and ecc_mod_inv_redc.
+	* ecc-secp256r1.c: Likewise.
+
+	* ecc-j-to-a.c (ecc_j_to_a): Simplify redc-related logic, taking
+	advantage of ecc->p.invert handling redc, when appropriate. Reduce
+	scratch need from 5n to 4n in the process (assuming inversion
+	needs 2n).
+
+	* testsuite/ecc-modinv-test.c (ref_modinv): Updated to do redc, if
+	appropriate.
+
 2020-09-25  Niels Möller  <nisse@lysator.liu.se>
 
 	* gcm.c (gcm_fill): Added separate implementations for big- and
