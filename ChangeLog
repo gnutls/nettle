@@ -1,3 +1,13 @@
+2020-10-14  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-mod-arith.c (ecc_mod_pow_2k, ecc_mod_pow_2k_mul): Moved
+	functions here.
+	* ecc-internal.h (ecc_mod_pow_2kp1): New macro, calling the more
+	general ecc_mod_pow_2k_mul.
+	* ecc-curve25519.c (ecc_mod_pow_2kp1): Deleted static function.
+	* ecc-curve448.c (ecc_mod_pow_2k, ecc_mod_pow_2kp1): Deleted
+	static functions.
+
 2020-10-13  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-mod-inv.c (ecc_mod_inv_destructive): New helper function,

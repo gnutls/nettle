@@ -100,33 +100,6 @@ ecc_curve25519_modq (const struct ecc_modulo *q, mp_limb_t *rp)
   cnd_add_n (cy, rp, q->m, ECC_LIMB_SIZE);
 }
 
-/* Needs 2*ecc->size limbs at rp, and 2*ecc->size additional limbs of
-   scratch space. No overlap allowed. */
-static void
-ecc_mod_pow_2kp1 (const struct ecc_modulo *m,
-		  mp_limb_t *rp, const mp_limb_t *xp,
-		  unsigned k, mp_limb_t *tp)
-{
-  if (k & 1)
-    {
-      ecc_mod_sqr (m, tp, xp);
-      k--;
-    }
-  else
-    {
-      ecc_mod_sqr (m, rp, xp);
-      ecc_mod_sqr (m, tp, rp);
-      k -= 2;
-    }
-  while (k > 0)
-    {
-      ecc_mod_sqr (m, rp, tp);
-      ecc_mod_sqr (m, tp, rp);
-      k -= 2;
-    }
-  ecc_mod_mul (m, rp, tp, xp);
-}
-
 /* Computes a^{(p-5)/8} = a^{2^{252}-3} mod m. Needs 5 * n scratch
    space. */
 static void

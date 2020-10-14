@@ -49,6 +49,8 @@
 #define ecc_mod_submul_1 _nettle_ecc_mod_submul_1
 #define ecc_mod_mul _nettle_ecc_mod_mul
 #define ecc_mod_sqr _nettle_ecc_mod_sqr
+#define ecc_mod_pow_2k _nettle_ecc_mod_pow_2k
+#define ecc_mod_pow_2k_mul _nettle_ecc_mod_pow_2k_mul
 #define ecc_mod_random _nettle_ecc_mod_random
 #define ecc_mod _nettle_ecc_mod
 #define ecc_mod_inv _nettle_ecc_mod_inv
@@ -259,6 +261,24 @@ ecc_mod_mul (const struct ecc_modulo *m, mp_limb_t *rp,
 void
 ecc_mod_sqr (const struct ecc_modulo *m, mp_limb_t *rp,
 	     const mp_limb_t *ap);
+
+/* The pow functions needs 2*m->size limbs at both rp and tp. */
+/* R <-- X^{2^k} */
+void
+ecc_mod_pow_2k (const struct ecc_modulo *m,
+		mp_limb_t *rp, const mp_limb_t *xp,
+		unsigned k, mp_limb_t *tp);
+
+/* R <-- X^{2^k} Y  */
+void
+ecc_mod_pow_2k_mul (const struct ecc_modulo *m,
+		    mp_limb_t *rp, const mp_limb_t *xp,
+		    unsigned k, const mp_limb_t *yp,
+		    mp_limb_t *tp);
+
+/* R <-- X^{2^k + 1} */
+#define ecc_mod_pow_2kp1(m, rp, xp, k, tp) \
+  ecc_mod_pow_2k_mul (m, rp, xp, k, xp, tp)
 
 /* mod q operations. */
 void

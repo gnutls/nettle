@@ -98,41 +98,6 @@ ecc_curve448_modp(const struct ecc_modulo *m, mp_limb_t *rp)
 #define ecc_curve448_modp ecc_mod
 #endif
 
-/* Needs 2*ecc->size limbs at rp, and 2*ecc->size additional limbs of
-   scratch space. No overlap allowed. */
-static void
-ecc_mod_pow_2k (const struct ecc_modulo *m,
-		mp_limb_t *rp, const mp_limb_t *xp,
-		unsigned k, mp_limb_t *tp)
-{
-  if (k & 1)
-    {
-      ecc_mod_sqr (m, rp, xp);
-      k--;
-    }
-  else
-    {
-      ecc_mod_sqr (m, tp, xp);
-      ecc_mod_sqr (m, rp, tp);
-      k -= 2;
-    }
-  while (k > 0)
-    {
-      ecc_mod_sqr (m, tp, rp);
-      ecc_mod_sqr (m, rp, tp);
-      k -= 2;
-    }
-}
-
-static void
-ecc_mod_pow_2kp1 (const struct ecc_modulo *m,
-		  mp_limb_t *rp, const mp_limb_t *xp,
-		  unsigned k, mp_limb_t *tp)
-{
-  ecc_mod_pow_2k (m, tp, xp, k, rp);
-  ecc_mod_mul (m, rp, tp, xp);
-}
-
 /* Computes a^{(p-3)/4} = a^{2^446-2^222-1} mod m. Needs 5 * n scratch
    space. */
 static void
