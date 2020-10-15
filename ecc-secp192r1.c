@@ -110,6 +110,81 @@ ecc_secp192r1_modp (const struct ecc_modulo *m UNUSED, mp_limb_t *rp, mp_limb_t 
 #define ecc_secp192r1_modp ecc_mod
 #endif
 
+#define ECC_SECP192R1_INV_ITCH (4*ECC_LIMB_SIZE)
+
+static void
+ecc_secp192r1_inv (const struct ecc_modulo *p,
+		   mp_limb_t *rp, const mp_limb_t *ap,
+		   mp_limb_t *scratch)
+{
+#define a62m1 scratch
+#define t0 (scratch + ECC_LIMB_SIZE)
+#define tp (scratch + 2*ECC_LIMB_SIZE)
+
+  /* Addition chain
+
+       p - 2 = 2^{192} - 2^{64} - 3
+	     = 1 + 2^{192} - 2^{64} - 4
+	     = 1 + 2^2 (2^{190} - 2^{62} - 1)
+	     = 1 + 2^2 (2^{62} - 1 + 2^{190} - 2^63)
+	     = 1 + 2^2 (2^{62} - 1 + 2^{63}(2^{127} - 1))
+	     = 1 + 2^2 (2^{62} - 1 + 2^{63}(1 + 2 (2^{126} - 1)))
+	     = 1 + 2^2 (2^{62} - 1 + 2^{63}(1 + 2 (2^{63} + 1)(2^{63} - 1)))
+	     = 1 + 2^2 (2^{62} - 1 + 2^{63}(1 + 2 (2^{63} + 1)(1 + 2(2^{62} - 1))))
+
+       2^{62} - 1 = (2^{31}+1)(2^{31}-1)
+		  = (2^{31}+1)(1 + 2(2^{30} - 1))
+		  = (2^{31}+1)(1 + 2(2^{15}+1)(2^15-1))
+		  = (2^{31}+1)(1 + 2(2^{15}+1)(1 + 2(1 + (2^{14}-1))))
+		  = (2^{31}+1)(1 + 2(2^{15}+1)(1 + 2(1 + (2^7+1)(2^7-1))))
+		  = (2^{31}+1)(1 + 2(2^{15}+1)(1 + 2(1 + (2^7+1)(1+2(2^3+1)(2^3-1)))))
+		  = (2^{31}+1)(1 + 2(2^{15}+1)(1 + 2(1 + (2^7+1)(1+2(2^3+1)(1 + 2 (2+1))))))
+
+       This addition chain needs 191 squarings and 14 multiplies.
+
+       Could be improved sligthly as:
+
+       a^7	   = 1 + 2 * (2 + 1)
+       2^{62} - 1  = (2^{31}+1)(2^{31}-1)
+		   = (2^{31}+1)(1 + 2(2^{30} - 1))
+		   = (2^{31}+1)(1 + 2(2^{15}+1)(2^15-1))
+		   = (2^{31}+1)(1 + 2(2^{15}+1)(1 + 2(1 + (2^{14}-1))))
+		   = (2^{31}+1)(1 + 2(2^{15}+1)(1 + 2(1 + (2^7+1)(2^7-1))))
+		   = (2^{31}+1)(1 + 2(2^{15}+1)(1 + 2(1 + (2^7+1)(1+2(2^3+1)(2^3-1)))))
+       2^{65} - 1  = 2^3 (2^{62} - 1) + 2^3 - 1
+       2^{127} - 1 = 2^{62} (2^{65} - 1) + 2^{62} - 1
+       p - 2 = 1 + 2^2 (2^{62} - 1 + 2^{63}(2^{127} - 1))
+
+       This needs 191 squarings and 13 multiplies, i.e., saving one
+       multiply, at the cost of additional temporary storage for a^7.
+  */
+
+  ecc_mod_sqr (p, rp, ap, tp);	        /* a^2 */
+  ecc_mod_mul (p, rp, rp, ap, tp);		/* a^3 */
+  ecc_mod_sqr (p, rp, rp, tp);		/* a^6 */
+  ecc_mod_mul (p, rp, rp, ap, tp);		/* a^{2^3-1} */
+  ecc_mod_pow_2kp1 (p, t0, rp, 3, tp);	/* a^{2^6-1} */
+  ecc_mod_sqr (p, rp, t0, tp);		/* a^{2^7-2} */
+  ecc_mod_mul (p, rp, rp, ap, tp);	/* a^{2^7-1} */
+  ecc_mod_pow_2kp1 (p, t0, rp, 7, tp);	/* a^{2^14-1} */
+  ecc_mod_sqr (p, rp, t0, tp);		/* a^{2^15-2} */
+  ecc_mod_mul (p, rp, ap, rp, tp);	/* a^{2^15-1} */
+  ecc_mod_pow_2kp1 (p, t0, rp, 15, tp);	/* a^{2^30-1} */
+  ecc_mod_sqr (p, rp, t0, tp);		/* a^{2^31-2} */
+  ecc_mod_mul (p, rp, ap, rp, tp);	/* a^{2^31-1} */
+  ecc_mod_pow_2kp1 (p, a62m1, rp, 31, tp);	/* a^{2^62-1} Overlaps t0 */
+
+  ecc_mod_sqr (p, rp, a62m1, tp);	/* a^{2^63-2} */
+  ecc_mod_mul (p, rp, rp, ap, tp);	/* a^{2^63-1} */
+  ecc_mod_pow_2kp1 (p, t0, rp, 63, tp);	/* a^{2^126-1} */
+  ecc_mod_sqr (p, rp, t0, tp);		/* a^{2^127-2} */
+  ecc_mod_mul (p, rp, rp, ap, tp);		/* a^{2^127-1} Clobbers t1 */
+  ecc_mod_pow_2k_mul (p, rp, rp, 63, a62m1, tp); /* a^{2^190 - 2^62 - 1} */
+  ecc_mod_sqr (p, rp, rp, tp);		/* a^{2^191 - 2^63 - 2} */
+  ecc_mod_sqr (p, rp, rp, tp);		/* a^{2^192 - 2^64 - 4} */
+  ecc_mod_mul (p, rp, rp, ap, tp);
+}
+
 const struct ecc_curve _nettle_secp_192r1 =
 {
   {
@@ -117,7 +192,7 @@ const struct ecc_curve _nettle_secp_192r1 =
     ECC_LIMB_SIZE,
     ECC_BMODP_SIZE,
     ECC_REDC_SIZE,
-    ECC_MOD_INV_ITCH (ECC_LIMB_SIZE),
+    ECC_SECP192R1_INV_ITCH,
     0,
 
     ecc_p,
@@ -128,7 +203,7 @@ const struct ecc_curve _nettle_secp_192r1 =
 
     ecc_secp192r1_modp,
     ecc_secp192r1_modp,
-    ecc_mod_inv,
+    ecc_secp192r1_inv,
     NULL,
   },
   {
@@ -160,7 +235,7 @@ const struct ecc_curve _nettle_secp_192r1 =
   ECC_DUP_JJ_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_A_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_G_ITCH (ECC_LIMB_SIZE),
-  ECC_J_TO_A_ITCH (ECC_LIMB_SIZE),
+  2*ECC_LIMB_SIZE + ECC_SECP192R1_INV_ITCH,
 
   ecc_add_jja,
   ecc_add_jjj,

@@ -1,5 +1,10 @@
 2020-10-15  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-secp192r1.c (ecc_secp192r1_inv): New function, modular
+	inverse using powering.
+	(_nettle_secp_192r1): Use it for p.invert, and also update
+	h_to_a_itch. Increases signing performance roughly 25% on x86_64.
+
 	* testsuite/ecc-modinv-test.c (test_modulo): Allow invert function
 	to return a non-canonical representation.
 
