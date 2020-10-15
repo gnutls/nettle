@@ -44,6 +44,13 @@ zero_p (const struct ecc_modulo *m, const mp_limb_t *xp)
     || mpn_cmp (xp, m->m, m->size) == 0;
 }
 
+static int
+mod_eq_p (const struct ecc_modulo *m, const mp_limb_t *a, const mp_limb_t *b,
+	  mp_limb_t *scratch) {
+  ecc_mod_sub (m, scratch, a, b);
+  return zero_p (m, scratch);
+}
+
 #define MAX_ECC_SIZE (1 + 521 / GMP_NUMB_BITS)
 #define COUNT 500
 
@@ -114,8 +121,7 @@ test_modulo (gmp_randstate_t rands, const char *name,
 	  continue;
 	}
       m->invert (m, ai, a, scratch);
-      /* FIXME: Allow non-canonical representation, ai > m */
-      if (mpn_cmp (ref, ai, m->size))
+      if (!mod_eq_p (m, ai, ref, scratch))
 	{
 	  fprintf (stderr, "%s->invert failed (test %u, bit size %u):\n",
 		   name, j, m->bit_size);
@@ -127,6 +133,7 @@ test_modulo (gmp_randstate_t rands, const char *name,
 	  mpn_out_str (stderr, 16, ai, m->size);
 	  fprintf (stderr, " (bad)\nr = ");
 	  mpn_out_str (stderr, 16, ref, m->size);
+	  printf ("\n");
 
 	  abort ();
 	}
