@@ -110,6 +110,70 @@ ecc_secp192r1_modp (const struct ecc_modulo *m UNUSED, mp_limb_t *rp)
 #define ecc_secp192r1_modp ecc_mod
 #endif
 
+#define ECC_SECP192R1_INV_ITCH (4*ECC_LIMB_SIZE)
+
+static void ecc_secp192r1_inv (const struct ecc_modulo *p,
+			       mp_limb_t *rp, const mp_limb_t *ap,
+			       mp_limb_t *scratch)
+{
+#define t0 scratch
+#define t1 (scratch + 2*ECC_LIMB_SIZE)
+  /* Overlap means that using a62m1 as destination (or scratch)
+     clobbers t0, and using t2 as destination clobbers t1. The tricky
+     operations are the powering operations while a62m1 is live. They
+     can use only rp and t1 as scratch and destination, and hence the
+     input must be stored at t2.
+  */
+#define a62m1 scratch
+#define t2 (scratch + ECC_LIMB_SIZE) /* Never used as scratch */
+
+  /* Addition chain
+
+       p - 2 = 2^{192} - 2^{64} - 3
+             = 1 + 2^{192} - 2^{64} - 4
+	     = 1 + 2^2 (2^{190} - 2^{62} - 1)
+	     = 1 + 2^2 (2^{62} - 1 + 2^{190} - 2^63)
+	     = 1 + 2^2 (2^{62} - 1 + 2^{63}(2^{127} - 1))
+	     = 1 + 2^2 (2^{62} - 1 + 2^{63}(1 + 2 (2^{126} - 1)))
+	     = 1 + 2^2 (2^{62} - 1 + 2^{63}(1 + 2 (2^{63} + 1)(2^{63} - 1)))
+	     = 1 + 2^2 (2^{62} - 1 + 2^{63}(1 + 2 (2^{63} + 1)(1 + 2(2^{62} - 1))))
+
+       2^{62} - 1 = (2^{31}+1)(2^{31}-1)
+		  = (2^{31}+1)(1 + 2(1 + 2^{30} - 1))
+		  = (2^{31}+1)(1 + 2(1 + (2^{15}+1)(2^15-1))
+		  = (2^{31}+1)(1 + 2(1 + (2^{15}+1)(1 + 2(1 + (2^{14}-1)))
+		  = (2^{31}+1)(1 + 2(1 + (2^{15}+1)(1 + 2(1 + (2^7+1)(2^7-1))))
+		  = (2^{31}+1)(1 + 2(1 + (2^{15}+1)(1 + 2(1 + (2^7+1)(1+2(2^3+1)(2^3-1)))))
+		  = (2^{31}+1)(1 + 2(1 + (2^{15}+1)(1 + 2(1 + (2^7+1)(1+2(2^3+1)(1 + 2 (2+1))))))
+
+  */
+
+  ecc_mod_sqr (p, rp, ap);	        /* a^2 */
+  ecc_mod_mul (p, t0, ap, rp);		/* a^3 */
+  ecc_mod_sqr (p, rp, t0);		/* a^6 */
+  ecc_mod_mul (p, t0, ap, rp);		/* a^{2^3-1} */
+  ecc_mod_pow_2kp1 (p, rp, t0, 3, t1);	/* a^{2^6-1} */
+  ecc_mod_sqr (p, t0, rp);		/* a^{2^7-2} */
+  ecc_mod_mul (p, rp, ap, t0);		/* a^{2^7-1} */
+  ecc_mod_pow_2kp1 (p, t0, rp, 7, t1);	/* a^{2^14-1} */
+  ecc_mod_sqr (p, rp, t0);		/* a^{2^15-2} */
+  ecc_mod_mul (p, t0, ap, rp);		/* a^{2^15-1} */
+  ecc_mod_pow_2kp1 (p, rp, t0, 15, t1);	/* a^{2^30-1} */
+  ecc_mod_sqr (p, t0, rp);		/* a^{2^31-2} */
+  ecc_mod_mul (p, rp, ap, t0);		/* a^{2^31-1} */
+  ecc_mod_pow_2kp1 (p, a62m1, rp, 31, t1);	/* a^{2^62-1} Overlaps t0 */
+
+  ecc_mod_sqr (p, rp, a62m1);		/* a^{2^63-2} */
+  ecc_mod_mul (p, t2, ap, rp);		/* a^{2^63-1} Clobbers t1 */
+  ecc_mod_pow_2kp1 (p, t1, t2, 63, rp);	/* a^{2^126-1} */
+  ecc_mod_sqr (p, rp, t1);		/* a^{2^127-2} */
+  ecc_mod_mul (p, t2, rp, ap);		/* a^{2^127-1} Clobbers t1 */
+  ecc_mod_pow_2k_mul (p, rp, t2, 63, a62m1, t1); /* a^{2^190 - 2^62 - 1} */
+  ecc_mod_sqr (p, t0, rp);		/* a^{2^191 - 2^63 - 2} */
+  ecc_mod_sqr (p, t1, t0);		/* a^{2^192 - 2^64 - 4} */
+  ecc_mod_mul (p, rp, t1, ap);
+}
+
 const struct ecc_curve _nettle_secp_192r1 =
 {
   {
@@ -117,7 +181,7 @@ const struct ecc_curve _nettle_secp_192r1 =
     ECC_LIMB_SIZE,
     ECC_BMODP_SIZE,
     ECC_REDC_SIZE,
-    ECC_MOD_INV_ITCH (ECC_LIMB_SIZE),
+    ECC_SECP192R1_INV_ITCH,
     0,
 
     ecc_p,
@@ -128,7 +192,7 @@ const struct ecc_curve _nettle_secp_192r1 =
 
     ecc_secp192r1_modp,
     ecc_secp192r1_modp,
-    ecc_mod_inv,
+    ecc_secp192r1_inv,
     NULL,
   },
   {
@@ -160,7 +224,7 @@ const struct ecc_curve _nettle_secp_192r1 =
   ECC_DUP_JJ_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_A_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_G_ITCH (ECC_LIMB_SIZE),
-  ECC_J_TO_A_ITCH (ECC_LIMB_SIZE),
+  2*ECC_LIMB_SIZE + ECC_SECP192R1_INV_ITCH,
 
   ecc_add_jja,
   ecc_add_jjj,
