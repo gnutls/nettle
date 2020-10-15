@@ -1,3 +1,8 @@
+2020-10-15  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/ecc-modinv-test.c (test_modulo): Allow invert function
+	to return a non-canonical representation.
+
 2020-10-14  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-mod-arith.c (ecc_mod_pow_2k, ecc_mod_pow_2k_mul): Moved
