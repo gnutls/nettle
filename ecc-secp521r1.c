@@ -75,6 +75,53 @@ ecc_secp521r1_modp (const struct ecc_modulo *m UNUSED, mp_limb_t *rp, mp_limb_t 
 }
 #endif
 
+#define ECC_SECP521R1_INV_ITCH (3*ECC_LIMB_SIZE)
+
+static void
+ecc_secp521r1_inv (const struct ecc_modulo *p,
+		   mp_limb_t *rp, const mp_limb_t *ap,
+		   mp_limb_t *scratch)
+{
+#define t0 scratch
+#define tp (scratch + ECC_LIMB_SIZE)
+
+  /* Addition chain for p - 2:
+
+     2^{521} - 3
+     = 1 + 2^2(2^519 - 1)
+     = 1 + 2^2(1 + 2 (2^518 - 1)
+     = 1 + 2^2(1 + 2 (2^259 + 1) (1 + 2(2^258 - 1)))
+     = 1 + 2^2(1 + 2 (2^259 + 1) (1 + 2(2^129 + 1) (2^129 - 1)))
+     = 1 + 2^2(1 + 2 (2^259 + 1) (1 + 2(2^129 + 1) (1 + 2 (2^128 - 1))))
+
+     where
+
+     2^{128} - 1 = (2^64 + 1) (2^32+1) (2^16 + 1) (2^8 + 1) (2^4 + 1) (2^2 + 1) (2 + 1)
+
+     This addition chain needs 520 squarings and 13 multiplies.
+  */
+
+  ecc_mod_sqr (p, rp, ap, tp);	        /* a^2 */
+  ecc_mod_mul (p, rp, ap, rp, tp);	/* a^3 = a^{2^2 - 1} */
+  ecc_mod_pow_2kp1 (p, t0, rp, 2, tp);	/* a^15 = a^{2^4 - 1} */
+  ecc_mod_pow_2kp1 (p, rp, t0, 4, tp);	/* a^{2^8 - 1} */
+  ecc_mod_pow_2kp1 (p, t0, rp, 8, tp);	/* a^{2^16 - 1} */
+  ecc_mod_pow_2kp1 (p, rp, t0, 16, tp);	/* a^{2^32 - 1} */
+  ecc_mod_pow_2kp1 (p, t0, rp, 32, tp);	/* a^{2^64 - 1} */
+  ecc_mod_pow_2kp1 (p, rp, t0, 64, tp);	/* a^{2^128 - 1} */
+  ecc_mod_sqr (p, rp, rp, tp);		/* a^{2^129 - 2} */
+  ecc_mod_mul (p, rp, rp, ap, tp);	/* a^{2^129 - 1} */
+  ecc_mod_pow_2kp1 (p, t0, rp, 129, tp);/* a^{2^258 - 1} */
+  ecc_mod_sqr (p, rp, t0, tp);		/* a^{2^259 - 2} */
+  ecc_mod_mul (p, rp, rp, ap, tp);	/* a^{2^259 - 1} */
+  ecc_mod_pow_2kp1 (p, t0, rp, 259, tp);/* a^{2^518 - 1} */
+  ecc_mod_sqr (p, rp, t0, tp);		/* a^{2^519 - 2} */
+  ecc_mod_mul (p, rp, rp, ap, tp);	/* a^{2^519 - 1} */
+  ecc_mod_sqr (p, rp, rp, tp);		/* a^{2^520 - 2} */
+  ecc_mod_sqr (p, rp, rp, tp);		/* a^{2^521 - 4} */
+  ecc_mod_mul (p, rp, rp, ap, tp);	/* a^{2^519 - 3} */
+}
+
 const struct ecc_curve _nettle_secp_521r1 =
 {
   {
@@ -82,7 +129,7 @@ const struct ecc_curve _nettle_secp_521r1 =
     ECC_LIMB_SIZE,    
     ECC_BMODP_SIZE,
     ECC_REDC_SIZE,
-    ECC_MOD_INV_ITCH (ECC_LIMB_SIZE),
+    ECC_SECP521R1_INV_ITCH,
     0,
 
     ecc_p,
@@ -93,7 +140,7 @@ const struct ecc_curve _nettle_secp_521r1 =
 
     ecc_secp521r1_modp,
     ecc_secp521r1_modp,
-    ecc_mod_inv,
+    ecc_secp521r1_inv,
     NULL,
   },
   {
@@ -125,7 +172,7 @@ const struct ecc_curve _nettle_secp_521r1 =
   ECC_DUP_JJ_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_A_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_G_ITCH (ECC_LIMB_SIZE),
-  ECC_J_TO_A_ITCH (ECC_LIMB_SIZE),
+  2*ECC_LIMB_SIZE + ECC_SECP521R1_INV_ITCH,
 
   ecc_add_jja,
   ecc_add_jjj,
