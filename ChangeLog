@@ -1,3 +1,15 @@
+2020-10-20  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-secp256r1.c (ecc_secp256r1_inv): New function, modular
+	inverse using powering.
+	(_nettle_secp_256r1): Analogous updates. Increases signing
+	performance roughly 6% on x86_64.
+
+	* ecc-secp224r1.c (ecc_secp224r1_inv): New function, modular
+	inverse using powering.
+	(_nettle_secp_224r1): Analogous updates. Increases signing
+	performance roughly 17% on x86_64.
+
 2020-10-19  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-secp521r1.c (ecc_secp521r1_inv): New function, modular

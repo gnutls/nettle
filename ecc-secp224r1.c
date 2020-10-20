@@ -62,6 +62,61 @@ ecc_secp224r1_modp (const struct ecc_modulo *m, mp_limb_t *rp);
 # error Configuration error
 #endif
 
+#define ECC_SECP224R1_INV_ITCH (6*ECC_LIMB_SIZE)
+
+static void
+ecc_secp224r1_inv (const struct ecc_modulo *p,
+		   mp_limb_t *rp, const mp_limb_t *ap,
+		   mp_limb_t *scratch)
+{
+#define a7 scratch
+#define a31m1 (scratch + ECC_LIMB_SIZE)
+#define a96m1 (scratch + 2*ECC_LIMB_SIZE)
+  /* t0 overlaps a96m1. */
+#define t0 (scratch + 2*ECC_LIMB_SIZE)
+#define t1 (scratch + 4*ECC_LIMB_SIZE)
+  /* t2 overlaps a7 and a31m1, and is used when those values are no
+     longer needed. */
+#define t2 scratch
+
+  /* Addition chain for p - 2 = 2^{224} - 2^{96} - 1
+
+       7           = 1 + 2 (2+1)                       2 S + 2 M
+       2^{31} - 1  = 1 + 2 (2^{15} + 1)(1 + 2 (2^7 + 1) (1 + 2 (2^3+1) * 7))
+                                                      28 S + 6 M
+       2^{34} - 1  = 2^3 (2^{31} - 1) + 7              3 S +   M
+       2^{65} - 1  = 2^{31}(2^{34} - 1) + 2^{31} - 1  31 S +   M
+       2^{96} - 1  = 2^{31}(2^{65} - 1) + 2^{31} - 1  31 S +   M
+       2^{127} - 1 = 2^{31}(2^{96} - 1) + 2^{31} - 1  31 S +   M
+
+       2^{224} - 2^{96} - 1                           97 S +   M
+                   = 2^{97}(2^{127} - 1) + 2^{96} - 1
+
+       This addition chain needs 223 squarings and 13 multiplies.
+  */
+  ecc_mod_sqr (p, rp, ap);	        /* a^2 */
+  ecc_mod_mul (p, t0, ap, rp);		/* a^3 */
+  ecc_mod_sqr (p, rp, t0);		/* a^6 */
+  ecc_mod_mul (p, a7, ap, rp);		/* a^{2^3-1} a7 */
+
+  ecc_mod_pow_2kp1 (p, t0, a7, 3, rp);	/* a^{2^6 - 1} */
+  ecc_mod_sqr (p, rp, t0);		/* a^{2^7 - 2} */
+  ecc_mod_mul (p, t0, rp, ap);		/* a^{2^7 - 1} */
+  ecc_mod_pow_2kp1 (p, rp, t0, 7, t1);	/* a^{2^14 - 1} */
+  ecc_mod_sqr (p, t0, rp);		/* a^{2^15 - 2} */
+  ecc_mod_mul (p, rp, t0, ap);		/* a^{2^15 - 1} */
+  ecc_mod_pow_2kp1 (p, t0, rp, 15, t1);	/* a^{2^30 - 1} */
+  ecc_mod_sqr (p, rp, t0);		/* a^{2^31 - 2} */
+  ecc_mod_mul (p, a31m1, rp, ap);	/* a^{2^31 - 1} a7, a31m1 */
+
+  ecc_mod_pow_2k_mul (p, rp, a31m1, 3, a7, t0); /* a^{2^34 - 1} a31m1 */
+  ecc_mod_pow_2k_mul (p, t1, rp, 31, a31m1, t0); /* a^{2^65 - 1} a31m1 */
+  ecc_mod_pow_2k_mul (p, a96m1, t1, 31, a31m1, rp); /* a^{2^96 - 1} a31m1, a96m1 */
+  ecc_mod_pow_2k_mul (p, t1, a96m1, 31, a31m1, rp); /* a^{2^{127} - 1} a96m1 */
+  ecc_mod_pow_2k_mul (p, rp, t1, 97, a96m1, t2); /* a^{2^{224} - 2^{96} - 1 */
+}
+
+
 const struct ecc_curve _nettle_secp_224r1 =
 {
   {
@@ -69,7 +124,7 @@ const struct ecc_curve _nettle_secp_224r1 =
     ECC_LIMB_SIZE,    
     ECC_BMODP_SIZE,
     -ECC_REDC_SIZE,
-    ECC_MOD_INV_ITCH (ECC_LIMB_SIZE),
+    ECC_SECP224R1_INV_ITCH,
     0,
 
     ecc_p,
@@ -80,7 +135,7 @@ const struct ecc_curve _nettle_secp_224r1 =
 
     ecc_secp224r1_modp,
     USE_REDC ? ecc_secp224r1_redc : ecc_secp224r1_modp,
-    USE_REDC ? ecc_mod_inv_redc : ecc_mod_inv,
+    ecc_secp224r1_inv,
     NULL,
   },
   {
@@ -112,7 +167,7 @@ const struct ecc_curve _nettle_secp_224r1 =
   ECC_DUP_JJ_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_A_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_G_ITCH (ECC_LIMB_SIZE),
-  ECC_J_TO_A_ITCH (ECC_LIMB_SIZE),
+  2*ECC_LIMB_SIZE + ECC_SECP224R1_INV_ITCH,
 
   ecc_add_jja,
   ecc_add_jjj,
