@@ -54,19 +54,22 @@ cnd_neg (int cnd, mp_limb_t *rp, const mp_limb_t *ap, mp_size_t n)
     }
 }
 
-/* Compute v = a^{-1} mod m, with running time depending only on the
-   size. Returns zero if a == 0 (mod m), to be consistent with
-   a^{phi(m)-1}. Also needs (m+1)/2, and m must be odd. The value at
-   ap is destroyed in the process.
+/* Compute a^{-1} mod m, with running time depending only on the size.
+   Returns zero if a == 0 (mod m), to be consistent with a^{phi(m)-1}.
+   Also needs (m+1)/2, and m must be odd.
+
+   Needs 2n limbs available at rp, and 2n additional scratch limbs.
 */
 
 /* FIXME: Could use mpn_sec_invert (in GMP-6), but with a bit more
    scratch need since it doesn't precompute (m+1)/2. */
-static void
-ecc_mod_inv_destructive (const struct ecc_modulo *m,
-			 mp_limb_t *vp, mp_limb_t *ap)
+void
+ecc_mod_inv (const struct ecc_modulo *m,
+	     mp_limb_t *vp, const mp_limb_t *in_ap,
+	     mp_limb_t *scratch)
 {
-#define bp (ap + n)
+#define ap scratch
+#define bp (scratch + n)
 #define up (vp + n)
 
   mp_size_t n = m->size;
@@ -91,6 +94,7 @@ ecc_mod_inv_destructive (const struct ecc_modulo *m,
   mpn_zero (up+1, n - 1);
   mpn_copyi (bp, m->m, n);
   mpn_zero (vp, n);
+  mpn_copyi (ap, in_ap, n);
 
   for (i = m->bit_size + GMP_NUMB_BITS * n; i-- > 0; )
     {
@@ -153,37 +157,4 @@ ecc_mod_inv_destructive (const struct ecc_modulo *m,
 #undef ap
 #undef bp
 #undef up
-}
-
-/* Needs 2n limbs available at rp, and 2n additional scratch
-   limbs. */
-void
-ecc_mod_inv (const struct ecc_modulo *m,
-	     mp_limb_t *vp, const mp_limb_t *ap,
-	     mp_limb_t *scratch)
-{
-  mpn_copyi (scratch, ap, m->size);
-  ecc_mod_inv_destructive (m, vp, scratch);
-}
-
-/* Inversion, with input and output in redc form. I.e., we want v =
-   a^-1 (mod m), but inputs and outputs are v' = vB, a' = aB. Then
-   v' a' = B^2 (mod b), and we do the inversion as
-
-     v' = (a / B^2)^-1 (mod m)
-*/
-
-void
-ecc_mod_inv_redc (const struct ecc_modulo *m,
-		  mp_limb_t *vp, const mp_limb_t *ap,
-		  mp_limb_t *scratch)
-{
-  mpn_copyi (scratch, ap, m->size);
-
-  mpn_zero (scratch + m->size, m->size);
-  m->reduce (m, scratch);
-  mpn_zero (scratch + m->size, m->size);
-  m->reduce (m, scratch);
-
-  ecc_mod_inv_destructive (m, vp, scratch);
 }

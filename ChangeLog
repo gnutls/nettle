@@ -1,5 +1,8 @@
 2020-10-20  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-mod-inv.c (ecc_mod_inv_redc): Deleted, no longer needed.
+	(ecc_mod_inv_destructive): Deleted, merged with ecc_mod_inv.
+
 	* ecc-secp256r1.c (ecc_secp256r1_inv): New function, modular
 	inverse using powering.
 	(_nettle_secp_256r1): Analogous updates. Increases signing
