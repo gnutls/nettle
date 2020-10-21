@@ -94,11 +94,11 @@ ecc_secp521r1_inv (const struct ecc_modulo *p,
      = 1 + 2^2(1 + 2 (2^259 + 1) (1 + 2(2^129 + 1) (2^129 - 1)))
      = 1 + 2^2(1 + 2 (2^259 + 1) (1 + 2(2^129 + 1) (1 + 2 (2^128 - 1))))
 
-    where
+     where
 
-    2^{128} - 1 = (2^64 + 1) (2^32+1) (2^16 + 1) (2^8 + 1) (2^4 + 1) (2^2 + 1) (2 + 1)
+     2^{128} - 1 = (2^64 + 1) (2^32+1) (2^16 + 1) (2^8 + 1) (2^4 + 1) (2^2 + 1) (2 + 1)
 
-    This addition chain needs 520 squarings and 13 multiplies.
+     This addition chain needs 520 squarings and 13 multiplies.
   */
 
   ecc_mod_sqr (p, rp, ap);	        /* a^2 */
