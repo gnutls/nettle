@@ -1,3 +1,10 @@
+2020-10-21  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-secp384r1.c (ecc_secp384r1_inv): New function, modular
+	inverse using powering.
+	(_nettle_secp_384r1): Analogous updates. Increases signing
+	performance roughly 15% on x86_64.
+
 2020-10-20  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-mod-inv.c (ecc_mod_inv_redc): Deleted, no longer needed.
