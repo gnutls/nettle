@@ -1,3 +1,14 @@
+2020-10-28  Niels Möller  <nisse@lysator.liu.se>
+
+	* gmp-glue.h (cnd_add_n, cnd_sub_n, cnd_swap): Deleted, use
+	corresponding functions mpn_cnd_add_n, mpn_cnd_sub_n,
+	mpn_cnd_swap, available from GMP version 6.1.0. Update all
+	callers, in particular, mpn_cnd_add_n and mpn_cnd_sub_n has one
+	more argument than the old functions.
+
+	* gmp-glue.c (mpn_cnd_add_n, mpn_cnd_sub_n, mpn_cnd_swap)
+	[NETTLE_USE_MINI_GMP]: Fallback definitions or mini-gmp builds.
+
 2020-10-14  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-mod-arith.c (ecc_mod_pow_2k, ecc_mod_pow_2k_mul): Moved

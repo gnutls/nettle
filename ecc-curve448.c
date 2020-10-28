@@ -91,7 +91,7 @@ ecc_curve448_modp(const struct ecc_modulo *m, mp_limb_t *rp)
   tp[4] = c4 + (c7 >> 32) + (tp[3] < c3);
   tp[5] = tp[6] = 0;
   c7 = mpn_add_n (rp, rp, tp, 7);
-  c7 = cnd_add_n (c7, rp, m->B, 7);
+  c7 = mpn_cnd_add_n (c7, rp, rp, m->B, 7);
   assert (c7 == 0);
 }
 #else
@@ -165,7 +165,7 @@ ecc_curve448_zero_p (const struct ecc_modulo *p, mp_limb_t *xp)
   mp_limb_t w;
   mp_size_t i;
   cy = mpn_sub_n (xp, xp, p->m, ECC_LIMB_SIZE);
-  cnd_add_n (cy, xp, p->m, ECC_LIMB_SIZE);
+  mpn_cnd_add_n (cy, xp, xp, p->m, ECC_LIMB_SIZE);
 
   for (i = 0, w = 0; i < ECC_LIMB_SIZE; i++)
     w |= xp[i];

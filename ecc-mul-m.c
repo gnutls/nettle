@@ -87,7 +87,7 @@ ecc_mul_m (const struct ecc_modulo *m,
     {
       int bit = (n[i/8] >> (i & 7)) & 1;
 
-      cnd_swap (bit, x2, x3, 2*m->size);
+      mpn_cnd_swap (bit, x2, x3, 2*m->size);
 
       /* Formulas from RFC 7748. We compute new coordinates in
 	 memory-address order, since mul and sqr clobbers higher
@@ -112,8 +112,8 @@ ecc_mul_m (const struct ecc_modulo *m,
       ecc_mod_sqr (m, DA, C);
       ecc_mod_mul (m, z3, DA, px);
 
-      /* FIXME: Could be combined with the loop's initial cnd_swap. */
-      cnd_swap (bit, x2, x3, 2*m->size);
+      /* FIXME: Could be combined with the loop's initial mpn_cnd_swap. */
+      mpn_cnd_swap (bit, x2, x3, 2*m->size);
     }
   /* Do the low zero bits, just duplicating x2 */
   for (i = 0; i < bit_low; i++)

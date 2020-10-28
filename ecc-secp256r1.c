@@ -127,7 +127,7 @@ ecc_secp256r1_modp (const struct ecc_modulo *p, mp_limb_t *rp)
 	 shifts rather than mul.
       */
       t = mpn_submul_1 (rp + n - 4, p->m, 2, q1);
-      t += cnd_sub_n (q2, rp + n - 3, p->m, 1);
+      t += mpn_cnd_sub_n (q2, rp + n - 3, rp + n - 3, p->m, 1);
       t += (-q2) & 0xffffffff;
 
       u0 = rp[n-2];
@@ -136,7 +136,7 @@ ecc_secp256r1_modp (const struct ecc_modulo *p, mp_limb_t *rp)
       t = (u1 < cy);
       u1 -= cy;
 
-      cy = cnd_add_n (t, rp + n - 4, p->m, 2);
+      cy = mpn_cnd_add_n (t, rp + n - 4, rp + n - 4, p->m, 2);
       u0 += cy;
       u1 += (u0 < cy);
       u1 -= (-t) & 0xffffffff;
@@ -210,7 +210,7 @@ ecc_secp256r1_modq (const struct ecc_modulo *q, mp_limb_t *rp)
 
       assert (q2 < 2);
 
-      c0 = cnd_sub_n (q2, rp + n - 3, q->m, 1);
+      c0 = mpn_cnd_sub_n (q2, rp + n - 3, rp + n - 3, q->m, 1);
       c0 += (-q2) & q->m[1];
       t = mpn_submul_1 (rp + n - 4, q->m, 2, q1);
       c0 += t;
@@ -227,7 +227,7 @@ ecc_secp256r1_modq (const struct ecc_modulo *q, mp_limb_t *rp)
       u1 += t;
       u2 += (t<<32) + (u1 < t);
 
-      t = cnd_add_n (t, rp + n - 4, q->m, 2);
+      t = mpn_cnd_add_n (t, rp + n - 4, rp + n - 4, q->m, 2);
       u1 += t;
       u2 += (u1 < t);
     }

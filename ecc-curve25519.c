@@ -91,13 +91,13 @@ ecc_curve25519_modq (const struct ecc_modulo *q, mp_limb_t *rp)
 			 rp[n + ECC_LIMB_SIZE]);
       /* Top limb of mBmodq_shifted is zero, so we get cy == 0 or 1 */
       assert (cy < 2);
-      cnd_add_n (cy, rp+n, q->m, ECC_LIMB_SIZE);
+      mpn_cnd_add_n (cy, rp+n, rp+n, q->m, ECC_LIMB_SIZE);
     }
 
   cy = mpn_submul_1 (rp, q->m, ECC_LIMB_SIZE,
 		     rp[ECC_LIMB_SIZE-1] >> (GMP_NUMB_BITS - QHIGH_BITS));
   assert (cy < 2);
-  cnd_add_n (cy, rp, q->m, ECC_LIMB_SIZE);
+  mpn_cnd_add_n (cy, rp, rp, q->m, ECC_LIMB_SIZE);
 }
 
 /* Computes a^{(p-5)/8} = a^{2^{252}-3} mod m. Needs 5 * n scratch
@@ -187,7 +187,7 @@ ecc_curve25519_zero_p (const struct ecc_modulo *p, mp_limb_t *xp)
     + sec_add_1 (xp, xp, ECC_LIMB_SIZE - 1, 19 * (hi >> (GMP_NUMB_BITS - PHIGH_BITS)));
 #endif
   cy = mpn_sub_n (xp, xp, p->m, ECC_LIMB_SIZE);
-  cnd_add_n (cy, xp, p->m, ECC_LIMB_SIZE);
+  mpn_cnd_add_n (cy, xp, xp, p->m, ECC_LIMB_SIZE);
 
   for (i = 0, w = 0; i < ECC_LIMB_SIZE; i++)
     w |= xp[i];

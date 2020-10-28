@@ -134,19 +134,19 @@ ecc_mod_inv_destructive (const struct ecc_modulo *m,
       assert (bp[0] & 1);
       odd = ap[0] & 1;
 
-      swap = cnd_sub_n (odd, ap, bp, n);
-      cnd_add_n (swap, bp, ap, n);
+      swap = mpn_cnd_sub_n (odd, ap, ap, bp, n);
+      mpn_cnd_add_n (swap, bp, bp, ap, n);
       cnd_neg (swap, ap, ap, n);
 
-      cnd_swap (swap, up, vp, n);
-      cy = cnd_sub_n (odd, up, vp, n);
-      cy -= cnd_add_n (cy, up, m->m, n);
+      mpn_cnd_swap (swap, up, vp, n);
+      cy = mpn_cnd_sub_n (odd, up, up, vp, n);
+      cy -= mpn_cnd_add_n (cy, up, up, m->m, n);
       assert (cy == 0);
 
       cy = mpn_rshift (ap, ap, n, 1);
       assert (cy == 0);
       cy = mpn_rshift (up, up, n, 1);
-      cy = cnd_add_n (cy, up, m->mp1h, n);
+      cy = mpn_cnd_add_n (cy, up, up, m->mp1h, n);
       assert (cy == 0);
     }
   assert ( (ap[0] | ap[n-1]) == 0);

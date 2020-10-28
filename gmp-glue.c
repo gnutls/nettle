@@ -39,10 +39,54 @@
 
 #include "gmp-glue.h"
 
-void
-cnd_swap (mp_limb_t cnd, mp_limb_t *ap, mp_limb_t *bp, mp_size_t n)
+#if NETTLE_USE_MINI_GMP
+mp_limb_t
+mpn_cnd_add_n (mp_limb_t cnd, mp_limb_t *rp,
+	       const mp_limb_t *ap, const mp_limb_t *bp, mp_size_t n)
 {
-  mp_limb_t mask = - (mp_limb_t) (cnd != 0);
+  mp_limb_t cy, mask;
+  mp_size_t  i;
+
+  mask = -(mp_limb_t) (cnd != 0);
+
+  for (i = 0, cy = 0; i < n; i++)
+    {
+      mp_limb_t rl = ap[i] + cy;
+      mp_limb_t bl = bp[i] & mask;
+      cy = (rl < cy);
+      rl += bl;
+      cy += (rl < bl);
+      rp[i] = rl;
+    }
+  return cy;
+}
+
+mp_limb_t
+mpn_cnd_sub_n (mp_limb_t cnd, mp_limb_t *rp,
+	       const mp_limb_t *ap, const mp_limb_t *bp, mp_size_t n)
+{
+  mp_limb_t cy, mask;
+  mp_size_t  i;
+
+  mask = -(mp_limb_t) (cnd != 0);
+
+  for (i = 0, cy = 0; i < n; i++)
+    {
+      mp_limb_t al = ap[i];
+      mp_limb_t bl = bp[i] & mask;
+      mp_limb_t sl;
+      sl = al - cy;
+      cy = (al < cy) + (sl < bl);
+      sl -= bl;
+      rp[i] = sl;
+    }
+  return cy;
+}
+
+void
+mpn_cnd_swap (mp_limb_t cnd, volatile mp_limb_t *ap, volatile mp_limb_t *bp, mp_size_t n)
+{
+  volatile mp_limb_t mask = - (mp_limb_t) (cnd != 0);
   mp_size_t i;
   for (i = 0; i < n; i++)
     {
@@ -54,6 +98,8 @@ cnd_swap (mp_limb_t cnd, mp_limb_t *ap, mp_limb_t *bp, mp_size_t n)
       bp[i] = b ^ t;
     }
 }
+
+#endif /* NETTLE_USE_MINI_GMP */
 
 /* Additional convenience functions. */
 
