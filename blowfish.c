@@ -385,8 +385,10 @@ blowfish_set_key (struct blowfish_ctx *ctx,
 
   for (i = j = 0; i < _BLOWFISH_ROUNDS + 2; i++)
     {
-      data = (key[j] << 24) | (key[(j+1) % length] << 16)
-	| (key[(j+2) % length] << 8) | key[(j+3) % length];
+      data = ((uint32_t) key[j] << 24)
+	| ((uint32_t) key[(j+1) % length] << 16)
+	| ((uint32_t) key[(j+2) % length] << 8)
+	| (uint32_t) key[(j+3) % length];
       ctx->p[i] ^= data;
       j = (j + 4) % length;
     }

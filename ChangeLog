@@ -1,3 +1,9 @@
+2020-10-29  Niels Möller  <nisse@lysator.liu.se>
+
+	* blowfish.c (blowfish_set_key): Add casts to uint32_t. Avoids
+	undefined behavior, since shifting an 8-bit value left by 24 bits
+	overflows the range of signed int. Reported by Guido Vranken.
+
 2020-10-28  Niels Möller  <nisse@lysator.liu.se>
 
 	* gmp-glue.h (cnd_add_n, cnd_sub_n, cnd_swap): Deleted, use
