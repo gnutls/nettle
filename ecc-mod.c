@@ -68,17 +68,10 @@ ecc_mod (const struct ecc_modulo *m, mp_limb_t *rp)
 	  rp[rn-1] = rp[rn+sn-1]
 	    + mpn_add_n (rp + rn - sn - 1, rp + rn - sn - 1, rp + rn - 1, sn);
 	}
-      goto final_limbs;
     }
   else
     {
-      /* The loop below always runs at least once. But the analyzer
-	 doesn't realize that, and complains about hi being used later
-	 on without a well defined value. */
-#ifdef __clang_analyzer__
-      hi = 0;
-#endif
-      while (rn >= 2 * mn - bn)
+      while (rn > 2 * mn - bn)
 	{
 	  rn -= sn;
 
@@ -91,17 +84,16 @@ ecc_mod (const struct ecc_modulo *m, mp_limb_t *rp)
 	}
     }
 
-  if (rn > mn)
-    {
-    final_limbs:
-      sn = rn - mn;
-      
-      for (i = 0; i < sn; i++)
-	rp[mn+i] = mpn_addmul_1 (rp + i, m->B, bn, rp[mn+i]);
+  assert (rn > mn);
+  rn -= mn;
+  assert (rn <= sn);
 
-      hi = mpn_add_n (rp + bn, rp + bn, rp + mn, sn);
-      hi = sec_add_1 (rp + bn + sn, rp + bn + sn, mn - bn - sn, hi);
-    }
+  for (i = 0; i < rn; i++)
+    rp[mn+i] = mpn_addmul_1 (rp + i, m->B, bn, rp[mn+i]);
+
+  hi = mpn_add_n (rp + bn, rp + bn, rp + mn, rn);
+  if (rn < sn)
+    hi = sec_add_1 (rp + bn + rn, rp + bn + rn, sn - rn, hi);
 
   shift = m->size * GMP_NUMB_BITS - m->bit_size;
   if (shift > 0)
@@ -113,7 +105,7 @@ ecc_mod (const struct ecc_modulo *m, mp_limb_t *rp)
     }
   else
     {
-      hi = mpn_cnd_add_n (hi, rp, rp, m->B_shifted, mn);
+      hi = mpn_cnd_add_n (hi, rp, rp, m->B, mn);
       assert (hi == 0);
     }
 }

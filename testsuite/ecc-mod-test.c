@@ -123,6 +123,10 @@ test_fixed (void)
   test_one ("p", &_nettle_secp_384r1.p, r);
   test_one ("q", &_nettle_secp_384r1.q, r);
 
+  /* Triggered a carry bug in development version. */
+  mpz_set_str (r, "fffffffffffffffffffffffe00000fffffffffffffffffffffffffffe00000000000000000000000000000000000fffffffc000000000000000007ffffffffff", 16);
+  test_one ("p", &_nettle_secp_224r1.p, r);
+
   mpz_clear (r);
 }
 
