@@ -33,6 +33,7 @@ ifelse(`
 	.file "ecc-25519-modp.asm"
 
 define(`RP', `%rsi')
+define(`XP', `%rdx')	C Overlaps with mul register
 define(`U0', `%rdi')	C Overlaps unused modulo input
 define(`U1', `%rcx')
 define(`U2', `%r8')
@@ -42,8 +43,10 @@ define(`T1', `%r11')
 define(`M', `%rbx')
 
 PROLOGUE(_nettle_ecc_curve25519_modp)
-	W64_ENTRY(2, 0)
+	W64_ENTRY(3, 0)
 	push	%rbx
+	push	RP
+	mov	XP, RP
 
 	C First fold the limbs affecting bit 255
 	mov	56(RP), %rax
@@ -79,6 +82,9 @@ PROLOGUE(_nettle_ecc_curve25519_modp)
 	mov	48(RP), %rax
 	mov	%rdx, T1
 	mul	M
+
+	pop	RP
+
 	add	T0, U0
 	mov	U0, (RP)
 	adc	T1, U1
@@ -89,6 +95,6 @@ PROLOGUE(_nettle_ecc_curve25519_modp)
 	mov	U3, 24(RP)
 
 	pop	%rbx
-	W64_EXIT(2, 0)
+	W64_EXIT(3, 0)
 	ret
 EPILOGUE(_nettle_ecc_curve25519_modp)
