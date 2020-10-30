@@ -45,7 +45,7 @@
 #define USE_REDC 0
 #define ecc_secp224r1_modp _nettle_ecc_secp224r1_modp
 void
-ecc_secp224r1_modp (const struct ecc_modulo *m, mp_limb_t *rp);
+ecc_secp224r1_modp (const struct ecc_modulo *m, mp_limb_t *rp, mp_limb_t *xp);
 
 #else
 #define USE_REDC (ECC_REDC_SIZE != 0)

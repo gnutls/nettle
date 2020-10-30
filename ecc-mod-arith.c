@@ -115,7 +115,7 @@ ecc_mod_mul (const struct ecc_modulo *m, mp_limb_t *rp,
 	     const mp_limb_t *ap, const mp_limb_t *bp)
 {
   mpn_mul_n (rp, ap, bp, m->size);
-  m->reduce (m, rp);
+  m->reduce (m, rp, rp);
 }
 
 void
@@ -123,7 +123,7 @@ ecc_mod_sqr (const struct ecc_modulo *m, mp_limb_t *rp,
 	     const mp_limb_t *ap)
 {
   mpn_sqr (rp, ap, m->size);
-  m->reduce (m, rp);
+  m->reduce (m, rp, rp);
 }
 
 /* Compute R <-- X^{2^k} mod M. Needs 2*ecc->size limbs at rp, and

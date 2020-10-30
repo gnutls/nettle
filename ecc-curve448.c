@@ -48,10 +48,10 @@
 #if HAVE_NATIVE_ecc_curve448_modp
 #define ecc_curve448_modp _nettle_ecc_curve448_modp
 void
-ecc_curve448_modp (const struct ecc_modulo *m, mp_limb_t *rp);
+ecc_curve448_modp (const struct ecc_modulo *m, mp_limb_t *rp, mp_limb_t *xp);
 #elif GMP_NUMB_BITS == 64
 static void
-ecc_curve448_modp(const struct ecc_modulo *m, mp_limb_t *rp)
+ecc_curve448_modp(const struct ecc_modulo *m, mp_limb_t *rp, mp_limb_t *xp)
 {
   /* Let B = 2^64, b = 2^32 = sqrt(B).
      p = B^7 - b B^3 - 1 ==> B^7 = b B^3 + 1
@@ -79,18 +79,18 @@ ecc_curve448_modp(const struct ecc_modulo *m, mp_limb_t *rp)
              +----+----+----+----+----+----+----+
   */
   mp_limb_t c3, c4, c7;
-  mp_limb_t *tp = rp + 7;
+  mp_limb_t *tp = xp + 7;
 
-  c4 = mpn_add_n (rp, rp, rp + 7, 4);
-  c7 = mpn_addmul_1 (rp + 4, rp + 11, 3, 2);
-  c3 = mpn_addmul_1 (rp, rp + 11, 3, (mp_limb_t) 1 << 32);
-  c7 += mpn_addmul_1 (rp + 3, rp + 7, 4, (mp_limb_t) 1 << 32);
+  c4 = mpn_add_n (xp, xp, xp + 7, 4);
+  c7 = mpn_addmul_1 (xp + 4, xp + 11, 3, 2);
+  c3 = mpn_addmul_1 (xp, xp + 11, 3, (mp_limb_t) 1 << 32);
+  c7 += mpn_addmul_1 (xp + 3, xp + 7, 4, (mp_limb_t) 1 << 32);
   tp[0] = c7;
   tp[1] = tp[2] = 0;
   tp[3] = c3 + (c7 << 32);
   tp[4] = c4 + (c7 >> 32) + (tp[3] < c3);
   tp[5] = tp[6] = 0;
-  c7 = mpn_add_n (rp, rp, tp, 7);
+  c7 = mpn_add_n (rp, xp, tp, 7);
   c7 = mpn_cnd_add_n (c7, rp, rp, m->B, 7);
   assert (c7 == 0);
 }

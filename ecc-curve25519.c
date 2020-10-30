@@ -50,7 +50,7 @@
 
 #define ecc_curve25519_modp _nettle_ecc_curve25519_modp
 void
-ecc_curve25519_modp (const struct ecc_modulo *m, mp_limb_t *rp);
+ecc_curve25519_modp (const struct ecc_modulo *m, mp_limb_t *rp, mp_limb_t *xp);
 #else
 
 #if PHIGH_BITS == 0
@@ -58,16 +58,16 @@ ecc_curve25519_modp (const struct ecc_modulo *m, mp_limb_t *rp);
 #endif
 
 static void
-ecc_curve25519_modp(const struct ecc_modulo *m UNUSED, mp_limb_t *rp)
+ecc_curve25519_modp(const struct ecc_modulo *m UNUSED, mp_limb_t *rp, mp_limb_t *xp)
 {
   mp_limb_t hi, cy;
 
-  cy = mpn_addmul_1 (rp, rp + ECC_LIMB_SIZE, ECC_LIMB_SIZE,
+  cy = mpn_addmul_1 (xp, xp + ECC_LIMB_SIZE, ECC_LIMB_SIZE,
 		     (mp_limb_t) 19 << PHIGH_BITS);
-  hi = rp[ECC_LIMB_SIZE-1];
+  hi = xp[ECC_LIMB_SIZE-1];
   cy = (cy << PHIGH_BITS) + (hi >> (GMP_NUMB_BITS - PHIGH_BITS));
   rp[ECC_LIMB_SIZE-1] = (hi & (GMP_NUMB_MASK >> PHIGH_BITS))
-    + sec_add_1 (rp, rp, ECC_LIMB_SIZE - 1, 19 * cy);
+    + sec_add_1 (rp, xp, ECC_LIMB_SIZE - 1, 19 * cy);
 }
 #endif /* HAVE_NATIVE_ecc_curve25519_modp */
 
@@ -78,7 +78,7 @@ ecc_curve25519_modp(const struct ecc_modulo *m UNUSED, mp_limb_t *rp)
 #endif
 
 static void
-ecc_curve25519_modq (const struct ecc_modulo *q, mp_limb_t *rp)
+ecc_curve25519_modq (const struct ecc_modulo *q, mp_limb_t *rp, mp_limb_t *xp)
 {
   mp_size_t n;
   mp_limb_t cy;
@@ -86,18 +86,18 @@ ecc_curve25519_modq (const struct ecc_modulo *q, mp_limb_t *rp)
   /* n is the offset where we add in the next term */
   for (n = ECC_LIMB_SIZE; n-- > 0;)
     {
-      cy = mpn_submul_1 (rp + n,
+      cy = mpn_submul_1 (xp + n,
 			 q->B_shifted, ECC_LIMB_SIZE,
-			 rp[n + ECC_LIMB_SIZE]);
+			 xp[n + ECC_LIMB_SIZE]);
       /* Top limb of mBmodq_shifted is zero, so we get cy == 0 or 1 */
       assert (cy < 2);
-      mpn_cnd_add_n (cy, rp+n, rp+n, q->m, ECC_LIMB_SIZE);
+      mpn_cnd_add_n (cy, xp+n, xp+n, q->m, ECC_LIMB_SIZE);
     }
 
-  cy = mpn_submul_1 (rp, q->m, ECC_LIMB_SIZE,
-		     rp[ECC_LIMB_SIZE-1] >> (GMP_NUMB_BITS - QHIGH_BITS));
+  cy = mpn_submul_1 (xp, q->m, ECC_LIMB_SIZE,
+		     xp[ECC_LIMB_SIZE-1] >> (GMP_NUMB_BITS - QHIGH_BITS));
   assert (cy < 2);
-  mpn_cnd_add_n (cy, rp, rp, q->m, ECC_LIMB_SIZE);
+  mpn_cnd_add_n (cy, rp, xp, q->m, ECC_LIMB_SIZE);
 }
 
 /* Computes a^{(p-5)/8} = a^{2^{252}-3} mod m. Needs 5 * n scratch

@@ -181,9 +181,9 @@ ecc_mod_inv_redc (const struct ecc_modulo *m,
   mpn_copyi (scratch, ap, m->size);
 
   mpn_zero (scratch + m->size, m->size);
-  m->reduce (m, scratch);
+  m->reduce (m, scratch, scratch);
   mpn_zero (scratch + m->size, m->size);
-  m->reduce (m, scratch);
+  m->reduce (m, scratch, scratch);
 
   ecc_mod_inv_destructive (m, vp, scratch);
 }

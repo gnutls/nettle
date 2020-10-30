@@ -59,7 +59,7 @@ ecc_j_to_a (const struct ecc_curve *ecc,
       /* Divide this common factor by B, instead of applying redc to
 	 both x and y outputs. */
       mpn_zero (iz2p + ecc->p.size, ecc->p.size);
-      ecc->p.reduce (&ecc->p, iz2p);
+      ecc->p.reduce (&ecc->p, iz2p, iz2p);
     }
 
   /* r_x <-- x / z^2 */

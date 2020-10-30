@@ -114,8 +114,10 @@ struct ecc_modulo;
 
 /* Reduces from 2*ecc->size to ecc->size. */
 /* Required to return a result < 2q. This property is inherited by
-   mod_mul and mod_sqr. */
-typedef void ecc_mod_func (const struct ecc_modulo *m, mp_limb_t *rp);
+   mod_mul and mod_sqr. May clobber input xp. rp may point to the
+   start or the middle of the xp area, but no other overlap is
+   allowed. */
+typedef void ecc_mod_func (const struct ecc_modulo *m, mp_limb_t *rp, mp_limb_t *xp);
 
 typedef void ecc_mod_inv_func (const struct ecc_modulo *m,
 			       mp_limb_t *vp, const mp_limb_t *ap,

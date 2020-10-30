@@ -1,3 +1,8 @@
+2020-10-30  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-internal.h (typedef ecc_mod_func): Add separate result
+	argument. Updated all C implementations and callers.
+
 2020-10-29  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-mod.c (ecc_mod): More unified handling of final carry

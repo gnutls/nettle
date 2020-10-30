@@ -64,7 +64,7 @@ test_main (void)
 	  if (ecc->p.reduce != ecc->p.mod)
 	    {
 	      mpn_copyi (m, a, 2*ecc->p.size);
-	      ecc->p.reduce (&ecc->p, m);
+	      ecc->p.reduce (&ecc->p, m, m);
 	      if (mpn_cmp (m, ecc->p.m, ecc->p.size) >= 0)
 		mpn_sub_n (m, m, ecc->p.m, ecc->p.size);
 
@@ -86,9 +86,9 @@ test_main (void)
 	    {	  
 	      mpn_copyi (m, a, 2*ecc->p.size);
 	      if (ecc->p.m[0] == 1)
-		ecc_pm1_redc (&ecc->p, m);
+		ecc_pm1_redc (&ecc->p, m, m);
 	      else
-		ecc_pp1_redc (&ecc->p, m);
+		ecc_pp1_redc (&ecc->p, m, m);
 
 	      if (mpn_cmp (m, ecc->p.m, ecc->p.size) >= 0)
 		mpn_sub_n (m, m, ecc->p.m, ecc->p.size);

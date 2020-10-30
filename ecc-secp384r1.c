@@ -49,7 +49,7 @@
 #if HAVE_NATIVE_ecc_secp384r1_modp
 #define ecc_secp384r1_modp _nettle_ecc_secp384r1_modp
 void
-ecc_secp384r1_modp (const struct ecc_modulo *m, mp_limb_t *rp);
+ecc_secp384r1_modp (const struct ecc_modulo *m, mp_limb_t *rp, mp_limb_t *xp);
 #elif GMP_NUMB_BITS == 32
 
 /* Use that 2^{384} = 2^{128} + 2^{96} - 2^{32} + 1, and eliminate 256
@@ -62,91 +62,92 @@ ecc_secp384r1_modp (const struct ecc_modulo *m, mp_limb_t *rp);
    almost 8 at a time. Do only 7, to avoid additional carry
    propagation, followed by 5. */
 static void
-ecc_secp384r1_modp (const struct ecc_modulo *p, mp_limb_t *rp)
+ecc_secp384r1_modp (const struct ecc_modulo *p, mp_limb_t *rp, mp_limb_t *xp)
 {
   mp_limb_t cy, bw;
 
   /* Reduce from 24 to 17 limbs. */
-  cy = mpn_add_n (rp + 4, rp + 4, rp + 16, 8);
-  cy = sec_add_1 (rp + 12, rp + 12, 3, cy);
+  cy = mpn_add_n (xp + 4, xp + 4, xp + 16, 8);
+  cy = sec_add_1 (xp + 12, xp + 12, 3, cy);
 
-  bw = mpn_sub_n (rp + 5, rp + 5, rp + 16, 8);
-  bw = sec_sub_1 (rp + 13, rp + 13, 3, bw);
+  bw = mpn_sub_n (xp + 5, xp + 5, xp + 16, 8);
+  bw = sec_sub_1 (xp + 13, xp + 13, 3, bw);
 
-  cy += mpn_add_n (rp + 7, rp + 7, rp + 16, 8);
-  cy = sec_add_1 (rp + 15, rp + 15, 1, cy);
+  cy += mpn_add_n (xp + 7, xp + 7, xp + 16, 8);
+  cy = sec_add_1 (xp + 15, xp + 15, 1, cy);
 
-  cy += mpn_add_n (rp + 8, rp + 8, rp + 16, 8);
+  cy += mpn_add_n (xp + 8, xp + 8, xp + 16, 8);
   assert (bw <= cy);
   cy -= bw;
 
   assert (cy <= 2);  
-  rp[16] = cy;
+  xp[16] = cy;
 
   /* Reduce from 17 to 12 limbs */
-  cy = mpn_add_n (rp, rp, rp + 12, 5);
-  cy = sec_add_1 (rp + 5, rp + 5, 3, cy);
+  cy = mpn_add_n (xp, xp, xp + 12, 5);
+  cy = sec_add_1 (xp + 5, xp + 5, 3, cy);
   
-  bw = mpn_sub_n (rp + 1, rp + 1, rp + 12, 5);
-  bw = sec_sub_1 (rp + 6, rp + 6, 6, bw);
+  bw = mpn_sub_n (xp + 1, xp + 1, xp + 12, 5);
+  bw = sec_sub_1 (xp + 6, xp + 6, 6, bw);
   
-  cy += mpn_add_n (rp + 3, rp + 3, rp + 12, 5);
-  cy = sec_add_1 (rp + 8, rp + 8, 1, cy);
+  cy += mpn_add_n (xp + 3, xp + 3, xp + 12, 5);
+  cy = sec_add_1 (xp + 8, xp + 8, 1, cy);
 
-  cy += mpn_add_n (rp + 4, rp + 4, rp + 12, 5);
-  cy = sec_add_1 (rp + 9, rp + 9, 3, cy);
+  cy += mpn_add_n (xp + 4, xp + 4, xp + 12, 5);
+  cy = sec_add_1 (xp + 9, xp + 9, 3, cy);
 
   assert (cy >= bw);
   cy -= bw;
   assert (cy <= 1);
-  cy = mpn_cnd_add_n (cy, rp, rp, p->B, ECC_LIMB_SIZE);
+  cy = mpn_cnd_add_n (cy, rp, xp, p->B, ECC_LIMB_SIZE);
   assert (cy == 0);
 }
 #elif GMP_NUMB_BITS == 64
 /* p is 6 limbs, and B^6 - p = B^2 + 2^32 (B - 1) + 1. Eliminate 3
    (almost 4) limbs at a time. */
 static void
-ecc_secp384r1_modp (const struct ecc_modulo *p, mp_limb_t *rp)
+ecc_secp384r1_modp (const struct ecc_modulo *p, mp_limb_t *rp, mp_limb_t *xp)
 {
   mp_limb_t tp[6];
   mp_limb_t cy;
 
   /* Reduce from 12 to 9 limbs */
   tp[0] = 0; /* FIXME: Could use mpn_sub_nc */
-  mpn_copyi (tp + 1, rp + 8, 3);
-  tp[4] = rp[11] - mpn_sub_n (tp, tp, rp + 8, 4);
+  mpn_copyi (tp + 1, xp + 8, 3);
+  tp[4] = xp[11] - mpn_sub_n (tp, tp, xp + 8, 4);
   tp[5] = mpn_lshift (tp, tp, 5, 32);
 
-  cy = mpn_add_n (rp + 2, rp + 2, rp + 8, 4);
-  cy = sec_add_1 (rp + 6, rp + 6, 2, cy);
+  cy = mpn_add_n (xp + 2, xp + 2, xp + 8, 4);
+  cy = sec_add_1 (xp + 6, xp + 6, 2, cy);
 
-  cy += mpn_add_n (rp + 2, rp + 2, tp, 6);
-  cy += mpn_add_n (rp + 4, rp + 4, rp + 8, 4);
+  cy += mpn_add_n (xp + 2, xp + 2, tp, 6);
+  cy += mpn_add_n (xp + 4, xp + 4, xp + 8, 4);
 
   assert (cy <= 2);
-  rp[8] = cy;
+  xp[8] = cy;
 
   /* Reduce from 9 to 6 limbs */
   tp[0] = 0;
-  mpn_copyi (tp + 1, rp + 6, 2);
-  tp[3] = rp[8] - mpn_sub_n (tp, tp, rp + 6, 3);
+  mpn_copyi (tp + 1, xp + 6, 2);
+  tp[3] = xp[8] - mpn_sub_n (tp, tp, xp + 6, 3);
   tp[4] = mpn_lshift (tp, tp, 4, 32);
 
-  cy = mpn_add_n (rp, rp, rp + 6, 3);
-  cy = sec_add_1 (rp + 3, rp + 3, 2, cy);
-  cy += mpn_add_n (rp, rp, tp, 5);
-  cy += mpn_add_n (rp + 2, rp + 2, rp + 6, 3);
+  cy = mpn_add_n (xp, xp, xp + 6, 3);
+  cy = sec_add_1 (xp + 3, xp + 3, 2, cy);
+  cy += mpn_add_n (xp, xp, tp, 5);
+  cy += mpn_add_n (xp + 2, xp + 2, xp + 6, 3);
 
-  cy = sec_add_1 (rp + 5, rp + 5, 1, cy);
+  cy = sec_add_1 (xp + 5, xp + 5, 1, cy);
   assert (cy <= 1);
 
-  cy = mpn_cnd_add_n (cy, rp, rp, p->B, ECC_LIMB_SIZE);
-  assert (cy == 0);  
+  cy = mpn_cnd_add_n (cy, xp, xp, p->B, ECC_LIMB_SIZE);
+  assert (cy == 0);
+  mpn_copyi (rp, xp, ECC_LIMB_SIZE);
 }
 #else
 #define ecc_secp384r1_modp ecc_mod
 #endif
-  
+
 const struct ecc_curve _nettle_secp_384r1 =
 {
   {
