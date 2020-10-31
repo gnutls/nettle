@@ -33,15 +33,17 @@ ifelse(`
 	.file "ecc-secp256r1-redc.asm"
 
 define(`RP', `%rsi')
+define(`XP', `%rdx')
+
 define(`U0', `%rdi') C Overlaps unused modulo input
 define(`U1', `%rcx')
 define(`U2', `%rax')
-define(`U3', `%rdx')
-define(`U4', `%r8')
-define(`U5', `%r9')
-define(`U6', `%r10')
-define(`F0', `%r11')
-define(`F1', `%r12')
+define(`U3', `%r8')
+define(`U4', `%r9')
+define(`U5', `%r10')
+define(`U6', `%r11')
+define(`F0', `%r12')
+define(`F1', `%r13')
 define(`F2', `%rbx')
 define(`F3', `%rbp')
 
@@ -59,38 +61,39 @@ define(`FOLD', `
 	sbb	`$'0, F3
 ')
 PROLOGUE(_nettle_ecc_secp256r1_redc)
-	W64_ENTRY(2, 0)
+	W64_ENTRY(3, 0)
 	C save all registers that need to be saved
 	push	%rbx
 	push	%rbp
 	push	%r12
+	push	%r13
 
-	mov	(RP), U0
+	mov	(XP), U0
 	FOLD(U0)
-	mov	8(RP), U1
-	mov	16(RP), U2
-	mov	24(RP), U3
+	mov	8(XP), U1
+	mov	16(XP), U2
+	mov	24(XP), U3
 	sub	F0, U1
 	sbb	F1, U2
 	sbb	F2, U3
 	sbb	F3, U0		C Add in later
 
 	FOLD(U1)
-	mov	32(RP), U4
+	mov	32(XP), U4
 	sub	F0, U2
 	sbb	F1, U3
 	sbb	F2, U4
 	sbb	F3, U1
 
 	FOLD(U2)
-	mov	40(RP), U5
+	mov	40(XP), U5
 	sub	F0, U3
 	sbb	F1, U4
 	sbb	F2, U5
 	sbb	F3, U2
 
 	FOLD(U3)
-	mov	48(RP), U6
+	mov	48(XP), U6
 	sub	F0, U4
 	sbb	F1, U5
 	sbb	F2, U6
@@ -99,7 +102,7 @@ PROLOGUE(_nettle_ecc_secp256r1_redc)
 	add	U4, U0
 	adc	U5, U1
 	adc	U6, U2
-	adc	56(RP), U3
+	adc	56(XP), U3
 
 	C If carry, we need to add in
 	C 2^256 - p = <0xfffffffe, 0xff..ff, 0xffffffff00000000, 1>
@@ -121,9 +124,10 @@ PROLOGUE(_nettle_ecc_secp256r1_redc)
 
 	mov	U3, 24(RP)
 
+	pop	%r13
 	pop	%r12
 	pop	%rbp
 	pop	%rbx
-	W64_EXIT(2, 0)
+	W64_EXIT(3, 0)
 	ret
 EPILOGUE(_nettle_ecc_secp256r1_redc)
