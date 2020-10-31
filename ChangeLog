@@ -1,5 +1,8 @@
 2020-10-31  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-internal.h (typedef ecc_mod_func): Updated all assembly
+	implementations.
+
 	* testsuite/ecc-mod-test.c (test_one): Extend tests, to also test
 	with different destination area.
 	* testsuite/ecc-redc-test.c (test_main): Likewise.
