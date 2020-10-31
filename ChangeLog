@@ -1,3 +1,9 @@
+2020-10-31  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/ecc-mod-test.c (test_one): Extend tests, to also test
+	with different destination area.
+	* testsuite/ecc-redc-test.c (test_main): Likewise.
+
 2020-10-30  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-internal.h (typedef ecc_mod_func): Add separate result
