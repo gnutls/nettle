@@ -1,3 +1,7 @@
+2020-11-01  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/testutils.c (test_ecc_point): Show curve bits on failure.
+
 2020-10-31  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-internal.h (typedef ecc_mod_func): Updated all assembly
