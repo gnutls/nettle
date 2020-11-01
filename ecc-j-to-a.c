@@ -52,7 +52,7 @@ ecc_j_to_a (const struct ecc_curve *ecc,
   mp_limb_t cy;
 
   ecc->p.invert (&ecc->p, izp, p+2*ecc->p.size, izp + 2 * ecc->p.size);
-  ecc_mod_sqr (&ecc->p, iz2p, izp);
+  ecc_mod_sqr (&ecc->p, iz2p, izp, iz2p);
 
   if (ecc->use_redc)
     {
@@ -63,7 +63,7 @@ ecc_j_to_a (const struct ecc_curve *ecc,
     }
 
   /* r_x <-- x / z^2 */
-  ecc_mod_mul (&ecc->p, iz3p, iz2p, p);
+  ecc_mod_mul (&ecc->p, iz3p, iz2p, p, iz3p);
   /* ecc_mod (and ecc_mod_mul) may return a value up to 2p - 1, so
      do a conditional subtraction. */
   cy = mpn_sub_n (r, iz3p, ecc->p.m, ecc->p.size);
@@ -82,8 +82,8 @@ ecc_j_to_a (const struct ecc_curve *ecc,
 	}
       return;
     }
-  ecc_mod_mul (&ecc->p, iz3p, iz2p, izp);
-  ecc_mod_mul (&ecc->p, tp, iz3p, p + ecc->p.size);
+  ecc_mod_mul (&ecc->p, iz3p, iz2p, izp, iz3p);
+  ecc_mod_mul (&ecc->p, tp, iz3p, p + ecc->p.size, tp);
   /* And a similar subtraction. */
   cy = mpn_sub_n (r + ecc->p.size, tp, ecc->p.m, ecc->p.size);
   cnd_copy (cy, r + ecc->p.size, tp, ecc->p.size);

@@ -109,57 +109,38 @@ ecc_mod_submul_1 (const struct ecc_modulo *m, mp_limb_t *rp,
   assert (hi == 0);
 }
 
-/* NOTE: mul and sqr needs 2*m->size limbs at rp */
 void
 ecc_mod_mul (const struct ecc_modulo *m, mp_limb_t *rp,
-	     const mp_limb_t *ap, const mp_limb_t *bp)
+	     const mp_limb_t *ap, const mp_limb_t *bp, mp_limb_t *tp)
 {
-  mpn_mul_n (rp, ap, bp, m->size);
-  m->reduce (m, rp, rp);
+  mpn_mul_n (tp, ap, bp, m->size);
+  m->reduce (m, rp, tp);
 }
 
 void
 ecc_mod_sqr (const struct ecc_modulo *m, mp_limb_t *rp,
-	     const mp_limb_t *ap)
+	     const mp_limb_t *ap, mp_limb_t *tp)
 {
-  mpn_sqr (rp, ap, m->size);
-  m->reduce (m, rp, rp);
+  mpn_sqr (tp, ap, m->size);
+  m->reduce (m, rp, tp);
 }
 
-/* Compute R <-- X^{2^k} mod M. Needs 2*ecc->size limbs at rp, and
-   2*ecc->size additional limbs of scratch space. No overlap
-   allowed. */
 void
 ecc_mod_pow_2k (const struct ecc_modulo *m,
 		mp_limb_t *rp, const mp_limb_t *xp,
 		unsigned k, mp_limb_t *tp)
 {
-  if (k & 1)
-    {
-      ecc_mod_sqr (m, rp, xp);
-      k--;
-    }
-  else
-    {
-      ecc_mod_sqr (m, tp, xp);
-      ecc_mod_sqr (m, rp, tp);
-      k -= 2;
-    }
-  while (k > 0)
-    {
-      ecc_mod_sqr (m, tp, rp);
-      ecc_mod_sqr (m, rp, tp);
-      k -= 2;
-    }
+  ecc_mod_sqr (m, rp, xp, tp);
+  while (--k > 0)
+    ecc_mod_sqr (m, rp, rp, tp);
 }
 
-/* Computes R <-- X^{2^k} * Y. Scratch requirements as ecc_mod_pow_2k. */
 void
 ecc_mod_pow_2k_mul (const struct ecc_modulo *m,
 		    mp_limb_t *rp, const mp_limb_t *xp,
 		    unsigned k, const mp_limb_t *yp,
 		    mp_limb_t *tp)
 {
-  ecc_mod_pow_2k (m, tp, xp, k, rp);
-  ecc_mod_mul (m, rp, tp, yp);
+  ecc_mod_pow_2k (m, rp, xp, k, tp);
+  ecc_mod_mul (m, rp, rp, yp, tp);
 }

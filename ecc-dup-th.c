@@ -82,14 +82,14 @@ ecc_dup_th (const struct ecc_curve *ecc,
 
   /* B */
   ecc_mod_add (&ecc->p, F, p, p + ecc->p.size);
-  ecc_mod_sqr (&ecc->p, B, F);
+  ecc_mod_sqr (&ecc->p, B, F, B);
 
   /* C */
-  ecc_mod_sqr (&ecc->p, C, p);
+  ecc_mod_sqr (&ecc->p, C, p, C);
   /* D */
-  ecc_mod_sqr (&ecc->p, D, p + ecc->p.size);
+  ecc_mod_sqr (&ecc->p, D, p + ecc->p.size, D);
   /* Can use r as scratch, even for in-place operation. */
-  ecc_mod_sqr (&ecc->p, r, p + 2*ecc->p.size);
+  ecc_mod_sqr (&ecc->p, r, p + 2*ecc->p.size, r);
   /* F, */
   ecc_mod_sub (&ecc->p, F, D, C);
   /* B - C - D */
@@ -100,10 +100,10 @@ ecc_dup_th (const struct ecc_curve *ecc,
   ecc_mod_sub (&ecc->p, J, r, F);
 
   /* x' */
-  ecc_mod_mul (&ecc->p, r, B, J);
+  ecc_mod_mul (&ecc->p, r, B, J, r);
   /* y' */
-  ecc_mod_mul (&ecc->p, r + ecc->p.size, F, C);
+  ecc_mod_mul (&ecc->p, r + ecc->p.size, F, C, r + ecc->p.size);
   /* z' */
-  ecc_mod_mul (&ecc->p, B, F, J);
+  ecc_mod_mul (&ecc->p, B, F, J, B);
   mpn_copyi (r + 2*ecc->p.size, B, ecc->p.size);
 }

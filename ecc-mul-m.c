@@ -76,12 +76,12 @@ ecc_mul_m (const struct ecc_modulo *m,
   /* Get x3, z3 from doubling. Since most significant bit is forced to 1. */
   ecc_mod_add (m, A, x2, z2);
   ecc_mod_sub (m, B, x2, z2);
-  ecc_mod_sqr (m, AA, A);
-  ecc_mod_sqr (m, BB, B);
-  ecc_mod_mul (m, x3, AA, BB);
+  ecc_mod_sqr (m, AA, A, AA);
+  ecc_mod_sqr (m, BB, B, BB);
+  ecc_mod_mul (m, x3, AA, BB, x3);
   ecc_mod_sub (m, E, AA, BB);
   ecc_mod_addmul_1 (m, AA, E, a24);
-  ecc_mod_mul (m, z3, E, AA);
+  ecc_mod_mul (m, z3, E, AA, z3);
 
   for (i = bit_high; i >= bit_low; i--)
     {
@@ -94,23 +94,23 @@ ecc_mul_m (const struct ecc_modulo *m,
 	 limbs. */
       ecc_mod_add (m, A, x2, z2);
       ecc_mod_sub (m, B, x2, z2);
-      ecc_mod_sqr (m, AA, A);
-      ecc_mod_sqr (m, BB, B);
-      ecc_mod_mul (m, x2, AA, BB); /* Last use of BB */
+      ecc_mod_sqr (m, AA, A, AA);
+      ecc_mod_sqr (m, BB, B, BB);
+      ecc_mod_mul (m, x2, AA, BB, x2); /* Last use of BB */
       ecc_mod_sub (m, E, AA, BB);
       ecc_mod_addmul_1 (m, AA, E, a24);
       ecc_mod_add (m, C, x3, z3);
       ecc_mod_sub (m, D, x3, z3);
-      ecc_mod_mul (m, z2, E, AA); /* Last use of E and AA */
-      ecc_mod_mul (m, DA, D, A);  /* Last use of D, A. FIXME: could
-				     let CB overlap. */
-      ecc_mod_mul (m, CB, C, B);
+      ecc_mod_mul (m, z2, E, AA, z2); /* Last use of E and AA */
+      ecc_mod_mul (m, DA, D, A, DA);  /* Last use of D, A. FIXME: could
+					 let CB overlap. */
+      ecc_mod_mul (m, CB, C, B, CB);
 
       ecc_mod_add (m, C, DA, CB);
-      ecc_mod_sqr (m, x3, C);
+      ecc_mod_sqr (m, x3, C, x3);
       ecc_mod_sub (m, C, DA, CB);
-      ecc_mod_sqr (m, DA, C);
-      ecc_mod_mul (m, z3, DA, px);
+      ecc_mod_sqr (m, DA, C, DA);
+      ecc_mod_mul (m, z3, DA, px, z3);
 
       /* FIXME: Could be combined with the loop's initial mpn_cnd_swap. */
       mpn_cnd_swap (bit, x2, x3, 2*m->size);
@@ -120,16 +120,16 @@ ecc_mul_m (const struct ecc_modulo *m,
     {
       ecc_mod_add (m, A, x2, z2);
       ecc_mod_sub (m, B, x2, z2);
-      ecc_mod_sqr (m, AA, A);
-      ecc_mod_sqr (m, BB, B);
-      ecc_mod_mul (m, x2, AA, BB);
+      ecc_mod_sqr (m, AA, A, AA);
+      ecc_mod_sqr (m, BB, B, BB);
+      ecc_mod_mul (m, x2, AA, BB, x2);
       ecc_mod_sub (m, E, AA, BB);
       ecc_mod_addmul_1 (m, AA, E, a24);
-      ecc_mod_mul (m, z2, E, AA);
+      ecc_mod_mul (m, z2, E, AA, z2);
     }
   assert (m->invert_itch <= 7 * m->size);
   m->invert (m, x3, z2, z3 + m->size);
-  ecc_mod_mul (m, z3, x2, x3);
+  ecc_mod_mul (m, z3, x2, x3, z3);
   cy = mpn_sub_n (qx, z3, m->m, m->size);
   cnd_copy (cy, qx, z3, m->size);
 }

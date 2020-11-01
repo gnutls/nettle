@@ -65,14 +65,14 @@ ecc_dup_eh (const struct ecc_curve *ecc,
 
   /* b */
   ecc_mod_add (&ecc->p, e, p, p + ecc->p.size);
-  ecc_mod_sqr (&ecc->p, b, e);
+  ecc_mod_sqr (&ecc->p, b, e, b);
 
   /* c */
-  ecc_mod_sqr (&ecc->p, c, p);
+  ecc_mod_sqr (&ecc->p, c, p, c);
   /* d */
-  ecc_mod_sqr (&ecc->p, d, p + ecc->p.size);
+  ecc_mod_sqr (&ecc->p, d, p + ecc->p.size, d);
   /* h, can use r as scratch, even for in-place operation. */
-  ecc_mod_sqr (&ecc->p, r, p + 2*ecc->p.size);
+  ecc_mod_sqr (&ecc->p, r, p + 2*ecc->p.size, r);
   /* e, */
   ecc_mod_add (&ecc->p, e, c, d);
   /* j */
@@ -81,11 +81,11 @@ ecc_dup_eh (const struct ecc_curve *ecc,
 
   /* x' */
   ecc_mod_sub (&ecc->p, b, b, e);
-  ecc_mod_mul (&ecc->p, r, b, j);
+  ecc_mod_mul (&ecc->p, r, b, j, r);
   /* y' */
   ecc_mod_sub (&ecc->p, c, c, d); /* Redundant */
-  ecc_mod_mul (&ecc->p, r + ecc->p.size, e, c);
+  ecc_mod_mul (&ecc->p, r + ecc->p.size, e, c, r + ecc->p.size);
   /* z' */
-  ecc_mod_mul (&ecc->p, b, e, j);
+  ecc_mod_mul (&ecc->p, b, e, j, b);
   mpn_copyi (r + 2*ecc->p.size, b, ecc->p.size);
 }

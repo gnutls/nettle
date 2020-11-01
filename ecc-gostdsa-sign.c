@@ -84,8 +84,8 @@ ecc_gostdsa_sign (const struct ecc_curve *ecc,
   if (mpn_zero_p (hp, ecc->p.size))
     mpn_add_1 (hp, hp, ecc->p.size, 1);
 
-  ecc_mod_mul (&ecc->q, tp, rp, zp);
-  ecc_mod_mul (&ecc->q, t2p, kp, hp);
+  ecc_mod_mul (&ecc->q, tp, rp, zp, tp);
+  ecc_mod_mul (&ecc->q, t2p, kp, hp, t2p);
   ecc_mod_add (&ecc->q, sp, tp, t2p);
 
   /* Also reduce mod ecc->q. It should already be < 2*ecc->q,

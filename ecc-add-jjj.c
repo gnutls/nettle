@@ -74,25 +74,25 @@ ecc_add_jjj (const struct ecc_curve *ecc,
   mp_limb_t *v    = scratch + 6*ecc->p.size;
 
   /* z1^2, z2^2, u1 = x1 x2^2, u2 = x2 z1^2 - u1 */
-  ecc_mod_sqr (&ecc->p, z1z1, p + 2*ecc->p.size);
-  ecc_mod_sqr (&ecc->p, z2z2, q + 2*ecc->p.size);
-  ecc_mod_mul (&ecc->p, u1, p, z2z2);
-  ecc_mod_mul (&ecc->p, u2, q, z1z1);
+  ecc_mod_sqr (&ecc->p, z1z1, p + 2*ecc->p.size, z1z1);
+  ecc_mod_sqr (&ecc->p, z2z2, q + 2*ecc->p.size, z2z2);
+  ecc_mod_mul (&ecc->p, u1, p, z2z2, u1);
+  ecc_mod_mul (&ecc->p, u2, q, z1z1, u2);
   ecc_mod_sub (&ecc->p, u2, u2, u1);  /* Store h in u2 */
 
   /* z3, use i, j, v as scratch, result at i. */
   ecc_mod_add (&ecc->p, i, p + 2*ecc->p.size, q + 2*ecc->p.size);
-  ecc_mod_sqr (&ecc->p, v, i);
+  ecc_mod_sqr (&ecc->p, v, i, v);
   ecc_mod_sub (&ecc->p, v, v, z1z1);
   ecc_mod_sub (&ecc->p, v, v, z2z2);
-  ecc_mod_mul (&ecc->p, i, v, u2);
+  ecc_mod_mul (&ecc->p, i, v, u2, i);
   /* Delayed write, to support in-place operation. */
 
   /* s1 = y1 z2^3, s2 = y2 z1^3, scratch at j and v */
-  ecc_mod_mul (&ecc->p, j, z1z1, p + 2*ecc->p.size); /* z1^3 */
-  ecc_mod_mul (&ecc->p, v, z2z2, q + 2*ecc->p.size); /* z2^3 */
-  ecc_mod_mul (&ecc->p, s1, p + ecc->p.size, v);
-  ecc_mod_mul (&ecc->p, v, j, q + ecc->p.size);
+  ecc_mod_mul (&ecc->p, j, z1z1, p + 2*ecc->p.size, j); /* z1^3 */
+  ecc_mod_mul (&ecc->p, v, z2z2, q + 2*ecc->p.size, v); /* z2^3 */
+  ecc_mod_mul (&ecc->p, s1, p + ecc->p.size, v, s1);
+  ecc_mod_mul (&ecc->p, v, j, q + ecc->p.size, v);
   ecc_mod_sub (&ecc->p, s2, v, s1);
   ecc_mod_mul_1 (&ecc->p, s2, s2, 2);
 
@@ -100,21 +100,21 @@ ecc_add_jjj (const struct ecc_curve *ecc,
   mpn_copyi (r + 2*ecc->p.size, i, ecc->p.size);
 
   /* i, j, v */
-  ecc_mod_sqr (&ecc->p, i, u2);
+  ecc_mod_sqr (&ecc->p, i, u2, i);
   ecc_mod_mul_1 (&ecc->p, i, i, 4);
-  ecc_mod_mul (&ecc->p, j, u2, i);
-  ecc_mod_mul (&ecc->p, v, u1, i);
+  ecc_mod_mul (&ecc->p, j, u2, i, j);
+  ecc_mod_mul (&ecc->p, v, u1, i, v);
 
   /* now, u1, u2 and i are free for reuse .*/
   /* x3, use u1, u2 as scratch */
-  ecc_mod_sqr (&ecc->p, u1, s2);
+  ecc_mod_sqr (&ecc->p, u1, s2, u1);
   ecc_mod_sub (&ecc->p, r, u1, j);
   ecc_mod_submul_1 (&ecc->p, r, v, 2);
 
   /* y3 */
-  ecc_mod_mul (&ecc->p, u1, s1, j); /* Frees j */
+  ecc_mod_mul (&ecc->p, u1, s1, j, u1); /* Frees j */
   ecc_mod_sub (&ecc->p, u2, v, r);  /* Frees v */
-  ecc_mod_mul (&ecc->p, i, s2, u2);
+  ecc_mod_mul (&ecc->p, i, s2, u2, i);
   ecc_mod_submul_1 (&ecc->p, i, u1, 2);
   mpn_copyi (r + ecc->p.size, i, ecc->p.size);
 }

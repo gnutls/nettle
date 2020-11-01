@@ -1,5 +1,11 @@
 2020-11-01  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-mod-arith.c (ecc_mod_mul, ecc_mod_sqr): Separate argument
+	for scratch area, reducing required size of result area. Update
+	all callers to naïvely keep using result in scratch area.
+	(ecc_mod_pow_2k, ecc_mod_pow_2k_mul): Simplified, also reducing
+	required size of result area.
+
 	* testsuite/testutils.c (test_ecc_point): Show curve bits on failure.
 
 2020-10-31  Niels Möller  <nisse@lysator.liu.se>

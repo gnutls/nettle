@@ -91,7 +91,7 @@ _eddsa_sign (const struct ecc_curve *ecc,
   eddsa->digest (ctx, 2*nbytes, hash);
   _eddsa_hash (&ecc->q, hp, 2*nbytes, hash);
 
-  ecc_mod_mul (&ecc->q, sp, hp, k2);
+  ecc_mod_mul (&ecc->q, sp, hp, k2, sp);
   ecc_mod_add (&ecc->q, sp, sp, rp); /* FIXME: Can be plain add */
   if (ecc->p.bit_size == 255)
     {

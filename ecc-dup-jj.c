@@ -72,39 +72,39 @@ ecc_dup_jj (const struct ecc_curve *ecc,
 #define zp (p + 2*ecc->p.size)
   
   /* delta */
-  ecc_mod_sqr (&ecc->p, delta, zp);
+  ecc_mod_sqr (&ecc->p, delta, zp, delta);
 
   /* gamma */
-  ecc_mod_sqr (&ecc->p, gamma, yp);
+  ecc_mod_sqr (&ecc->p, gamma, yp, gamma);
 
   /* z'. Can use beta area as scratch. */
   ecc_mod_add (&ecc->p, r + 2*ecc->p.size, yp, zp);
-  ecc_mod_sqr (&ecc->p, beta, r + 2*ecc->p.size);
+  ecc_mod_sqr (&ecc->p, beta, r + 2*ecc->p.size, beta);
   ecc_mod_sub (&ecc->p, beta, beta, gamma);
   ecc_mod_sub (&ecc->p, r + 2*ecc->p.size, beta, delta);
   
   /* alpha. Can use beta area as scratch, and overwrite delta. */
   ecc_mod_add (&ecc->p, sum, xp, delta);
   ecc_mod_sub (&ecc->p, delta, xp, delta);
-  ecc_mod_mul (&ecc->p, beta, sum, delta);
+  ecc_mod_mul (&ecc->p, beta, sum, delta, beta);
   ecc_mod_mul_1 (&ecc->p, alpha, beta, 3);
 
   /* beta */
-  ecc_mod_mul (&ecc->p, beta, xp, gamma);
+  ecc_mod_mul (&ecc->p, beta, xp, gamma, beta);
 
   /* Do gamma^2 and 4*beta early, to get them out of the way. We can
      then use the old area at gamma as scratch. */
-  ecc_mod_sqr (&ecc->p, g2, gamma);
+  ecc_mod_sqr (&ecc->p, g2, gamma, g2);
   ecc_mod_mul_1 (&ecc->p, sum, beta, 4);
   
   /* x' */
-  ecc_mod_sqr (&ecc->p, gamma, alpha);   /* Overwrites gamma and beta */
+  ecc_mod_sqr (&ecc->p, gamma, alpha, gamma);   /* Overwrites gamma and beta */
   ecc_mod_submul_1 (&ecc->p, gamma, sum, 2);
   mpn_copyi (r, gamma, ecc->p.size);
 
   /* y' */
   ecc_mod_sub (&ecc->p, sum, sum, r);
-  ecc_mod_mul (&ecc->p, gamma, sum, alpha);
+  ecc_mod_mul (&ecc->p, gamma, sum, alpha, gamma);
   ecc_mod_submul_1 (&ecc->p, gamma, g2, 8);
   mpn_copyi (r + ecc->p.size, gamma, ecc->p.size);
 }

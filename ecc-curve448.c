@@ -110,31 +110,31 @@ ecc_mod_pow_446m224m1 (const struct ecc_modulo *p,
 #define t1 (scratch + 1*ECC_LIMB_SIZE)
 #define t2 (scratch + 3*ECC_LIMB_SIZE)
 
-  ecc_mod_sqr (p, rp, ap);	        /* a^2 */
-  ecc_mod_mul (p, t0, ap, rp);		/* a^3 */
-  ecc_mod_sqr (p, rp, t0);		/* a^6 */
-  ecc_mod_mul (p, t0, ap, rp);		/* a^{2^3-1} */
+  ecc_mod_sqr (p, rp, ap, rp);	        /* a^2 */
+  ecc_mod_mul (p, t0, ap, rp, t0);	/* a^3 */
+  ecc_mod_sqr (p, rp, t0, rp);		/* a^6 */
+  ecc_mod_mul (p, t0, ap, rp,t0);	/* a^{2^3-1} */
 
   ecc_mod_pow_2kp1 (p, t1, t0, 3, rp);	/* a^{2^6-1} */
   ecc_mod_pow_2k (p, rp, t1, 3, t2);	/* a^{2^9-2^3} */
-  ecc_mod_mul (p, t2, t0, rp);		/* a^{2^9-1} */
+  ecc_mod_mul (p, t2, t0, rp, t2);	/* a^{2^9-1} */
   ecc_mod_pow_2kp1 (p, t0, t2, 9, rp);	/* a^{2^18-1} */
 
-  ecc_mod_sqr (p, t1, t0);		/* a^{2^19-2} */
-  ecc_mod_mul (p, rp, ap, t1);		/* a^{2^19-1} */
+  ecc_mod_sqr (p, t1, t0, t1);		/* a^{2^19-2} */
+  ecc_mod_mul (p, rp, ap, t1, rp);	/* a^{2^19-1} */
   ecc_mod_pow_2k (p, t1, rp, 18, t2);	/* a^{2^37-2^18} */
-  ecc_mod_mul (p, rp, t0, t1);		/* a^{2^37-1} */
+  ecc_mod_mul (p, rp, t0, t1, rp);	/* a^{2^37-1} */
   mpn_copyi (t0, rp, p->size);
 
   ecc_mod_pow_2kp1 (p, rp, t0, 37, t2);	/* a^{2^74-1} */
   ecc_mod_pow_2k (p, t1, rp, 37, t2);	/* a^{2^111-2^37} */
-  ecc_mod_mul (p, rp, t0, t1);		/* a^{2^111-1} */
+  ecc_mod_mul (p, rp, t0, t1, rp);	/* a^{2^111-1} */
   ecc_mod_pow_2kp1 (p, t0, rp, 111, t2);/* a^{2^222-1} */
 
-  ecc_mod_sqr (p, t1, t0);		/* a^{2^223-2} */
-  ecc_mod_mul (p, rp, ap, t1);		/* a^{2^223-1} */
+  ecc_mod_sqr (p, t1, t0, t1);		/* a^{2^223-2} */
+  ecc_mod_mul (p, rp, ap, t1, rp);	/* a^{2^223-1} */
   ecc_mod_pow_2k (p, t1, rp, 223, t2);	/* a^{2^446-2^223} */
-  ecc_mod_mul (p, rp, t0, t1);		/* a^{2^446-2^222-1} */
+  ecc_mod_mul (p, rp, t0, t1, rp);	/* a^{2^446-2^222-1} */
 #undef t0
 #undef t1
 #undef t2
@@ -149,9 +149,9 @@ static void ecc_curve448_inv (const struct ecc_modulo *p,
 #define t0 scratch
 
   ecc_mod_pow_446m224m1 (p, rp, ap, scratch); /* a^{2^446-2^222-1} */
-  ecc_mod_sqr (p, t0, rp);		      /* a^{2^447-2^223-2} */
-  ecc_mod_sqr (p, rp, t0);		      /* a^{2^448-2^224-4} */
-  ecc_mod_mul (p, t0, ap, rp);		      /* a^{2^448-2^224-3} */
+  ecc_mod_sqr (p, t0, rp, t0);		      /* a^{2^447-2^223-2} */
+  ecc_mod_sqr (p, rp, t0, rp);		      /* a^{2^448-2^224-4} */
+  ecc_mod_mul (p, t0, ap, rp, t0);	      /* a^{2^448-2^224-3} */
 
   mpn_copyi (rp, t0, ECC_LIMB_SIZE); /* FIXME: Eliminate copy? */
 #undef t0
@@ -204,18 +204,18 @@ ecc_curve448_sqrt(const struct ecc_modulo *p, mp_limb_t *rp,
 #define t0 (scratch + 2*ECC_LIMB_SIZE)
 
 					/* Live values */
-  ecc_mod_sqr (p, u2, up);		/* u2 */
-  ecc_mod_mul (p, u3, u2, up);		/* u3 */
-  ecc_mod_mul (p, u3v, u3, vp);		/* u3v */
-  ecc_mod_mul (p, uv, up, vp);		/* u3v, uv */
-  ecc_mod_sqr (p, u2v2, uv);		/* u3v, u2v2 */
-  ecc_mod_mul (p, u5v3, u3v, u2v2);	/* u3v, u5v3 */
+  ecc_mod_sqr (p, u2, up, u2);		/* u2 */
+  ecc_mod_mul (p, u3, u2, up, u3);	/* u3 */
+  ecc_mod_mul (p, u3v, u3, vp, u3v);	/* u3v */
+  ecc_mod_mul (p, uv, up, vp, uv);	/* u3v, uv */
+  ecc_mod_sqr (p, u2v2, uv, u2v2);	/* u3v, u2v2 */
+  ecc_mod_mul (p, u5v3, u3v, u2v2, u5v3);	/* u3v, u5v3 */
   ecc_mod_pow_446m224m1 (p, u5v3p, u5v3, scratch_out); /* u3v, u5v3p */
-  ecc_mod_mul (p, rp, u5v3p, u3v);	/* none */
+  ecc_mod_mul (p, rp, u5v3p, u3v, rp);	/* none */
 
   /* If square root exists, have v x^2 = u */
-  ecc_mod_sqr (p, x2, rp);
-  ecc_mod_mul (p, vx2, x2, vp);
+  ecc_mod_sqr (p, x2, rp, x2);
+  ecc_mod_mul (p, vx2, x2, vp, vx2);
   ecc_mod_sub (p, t0, vx2, up);
 
   return ecc_curve448_zero_p (p, t0);

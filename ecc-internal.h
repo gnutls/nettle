@@ -255,23 +255,26 @@ void
 ecc_mod_submul_1 (const struct ecc_modulo *m, mp_limb_t *rp,
 		  const mp_limb_t *ap, mp_limb_t b);
 
-/* The mul and sqr functions need 2*m->size limbs at rp */
+/* The mul and sqr function need 2*m->size limbs at tp. rp may overlap
+   ap or bp, and may equal tp or tp + m->size, but no other overlap
+   with tp is allowed. */
 void
 ecc_mod_mul (const struct ecc_modulo *m, mp_limb_t *rp,
-	     const mp_limb_t *ap, const mp_limb_t *bp);
+	     const mp_limb_t *ap, const mp_limb_t *bp, mp_limb_t *tp);
 
 void
 ecc_mod_sqr (const struct ecc_modulo *m, mp_limb_t *rp,
-	     const mp_limb_t *ap);
+	     const mp_limb_t *ap, mp_limb_t *tp);
 
-/* The pow functions needs 2*m->size limbs at both rp and tp. */
-/* R <-- X^{2^k} */
+/* R <-- X^{2^k} mod M. Needs 2*ecc->size limbs of scratch space, same
+   overlap requirements as mul and sqr above. */
 void
 ecc_mod_pow_2k (const struct ecc_modulo *m,
 		mp_limb_t *rp, const mp_limb_t *xp,
 		unsigned k, mp_limb_t *tp);
 
-/* R <-- X^{2^k} Y  */
+/* R <-- X^{2^k} Y mod M. Similar requirements as ecc_mod_pow_2k, but
+   rp and yp can't overlap. */
 void
 ecc_mod_pow_2k_mul (const struct ecc_modulo *m,
 		    mp_limb_t *rp, const mp_limb_t *xp,

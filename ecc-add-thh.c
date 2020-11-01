@@ -85,32 +85,32 @@ ecc_add_thh (const struct ecc_curve *ecc,
 #define F D
 #define G E
 
-  ecc_mod_mul (&ecc->p, C, x1, x2);
-  ecc_mod_mul (&ecc->p, D, y1, y2);
+  ecc_mod_mul (&ecc->p, C, x1, x2, C);
+  ecc_mod_mul (&ecc->p, D, y1, y2, D);
   ecc_mod_add (&ecc->p, A, x1, y1);
   ecc_mod_add (&ecc->p, B, x2, y2);
-  ecc_mod_mul (&ecc->p, T, A, B);
+  ecc_mod_mul (&ecc->p, T, A, B, T);
   ecc_mod_sub (&ecc->p, T, T, C);
   ecc_mod_sub (&ecc->p, T, T, D);
-  ecc_mod_mul (&ecc->p, x3, C, D);
-  ecc_mod_mul (&ecc->p, E, x3, ecc->b);
+  ecc_mod_mul (&ecc->p, x3, C, D, x3);
+  ecc_mod_mul (&ecc->p, E, x3, ecc->b, E);
   ecc_mod_add (&ecc->p, C, D, C);
 
-  ecc_mod_mul (&ecc->p, A, z1, z2);
-  ecc_mod_sqr (&ecc->p, B, A);
+  ecc_mod_mul (&ecc->p, A, z1, z2, A);
+  ecc_mod_sqr (&ecc->p, B, A, B);
 
   ecc_mod_sub (&ecc->p, F, B, E);
   ecc_mod_add (&ecc->p, G, B, E);
 
   /* x3 */
-  ecc_mod_mul (&ecc->p, B, G, T);
-  ecc_mod_mul (&ecc->p, x3, B, A);
+  ecc_mod_mul (&ecc->p, B, G, T, B);
+  ecc_mod_mul (&ecc->p, x3, B, A, x3);
 
   /* y3 */
-  ecc_mod_mul (&ecc->p, B, F, C);
-  ecc_mod_mul (&ecc->p, y3, B, A);
+  ecc_mod_mul (&ecc->p, B, F, C, B);
+  ecc_mod_mul (&ecc->p, y3, B, A, y3);
 
   /* z3 */
-  ecc_mod_mul (&ecc->p, B, F, G);
+  ecc_mod_mul (&ecc->p, B, F, G, B);
   mpn_copyi (z3, B, ecc->p.size);
 }
