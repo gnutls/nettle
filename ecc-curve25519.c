@@ -205,41 +205,42 @@ ecc_curve25519_zero_p (const struct ecc_modulo *p, mp_limb_t *xp)
 #error Broken curve25519 parameters
 #endif
 
-/* Needs 4*n space + scratch for ecc_mod_pow_252m3. */
-#define ECC_25519_SQRT_ITCH (9*ECC_LIMB_SIZE)
+/* Needs 3*n space + scratch for ecc_mod_pow_252m3. */
+#define ECC_25519_SQRT_ITCH (7*ECC_LIMB_SIZE)
 
 static int
 ecc_curve25519_sqrt(const struct ecc_modulo *p, mp_limb_t *rp,
-	       const mp_limb_t *up, const mp_limb_t *vp,
-	       mp_limb_t *scratch)
+		    const mp_limb_t *up, const mp_limb_t *vp,
+		    mp_limb_t *scratch)
 {
   int pos, neg;
 
 #define uv3 scratch
 #define uv7 (scratch + ECC_LIMB_SIZE)
 #define uv7p (scratch + 2*ECC_LIMB_SIZE)
-#define v2 (scratch + 2*ECC_LIMB_SIZE)
-#define uv (scratch + 3*ECC_LIMB_SIZE)
-#define v4 (scratch + 3*ECC_LIMB_SIZE)
 
-#define scratch_out (scratch + 4 * ECC_LIMB_SIZE)
+#define v2 uv7
+#define uv uv3
+#define v4 uv7
+
+#define scratch_out (scratch + 3 * ECC_LIMB_SIZE)
 
 #define x2 scratch
 #define vx2 (scratch + ECC_LIMB_SIZE)
 #define t0 (scratch + 2*ECC_LIMB_SIZE)
 
-					/* Live values */
-  ecc_mod_sqr (p, v2, vp, v2);		/* v2 */
-  ecc_mod_mul (p, uv, up, vp, uv);	/* uv, v2 */
-  ecc_mod_mul (p, uv3, uv, v2, uv3);	/* uv3, v2 */
-  ecc_mod_sqr (p, v4, v2, v4);		/* uv3, v4 */
-  ecc_mod_mul (p, uv7, uv3, v4, uv7);	/* uv3, uv7 */
-  ecc_mod_pow_252m3 (p, uv7p, uv7, scratch_out); /* uv3, uv7p */
-  ecc_mod_mul (p, rp, uv7p, uv3, rp);	/* none */
+						/* Live values */
+  ecc_mod_sqr (p, v2, vp, scratch_out);		/* v2 */
+  ecc_mod_mul (p, uv, up, vp, scratch_out);	/* uv, v2 */
+  ecc_mod_mul (p, uv3, uv, v2, scratch_out);	/* uv3, v2 */
+  ecc_mod_sqr (p, v4, v2, scratch_out);		/* uv3, v4 */
+  ecc_mod_mul (p, uv7, uv3, v4, scratch_out);	/* uv7 */
+  ecc_mod_pow_252m3 (p, uv7p, uv7, scratch_out);/* uv3, uv7p */
+  ecc_mod_mul (p, rp, uv7p, uv3, scratch_out);	/* none */
 
   /* Check sign. If square root exists, have v x^2 = ±u */
-  ecc_mod_sqr (p, x2, rp, x2);
-  ecc_mod_mul (p, vx2, x2, vp, vx2);
+  ecc_mod_sqr (p, x2, rp, t0);
+  ecc_mod_mul (p, vx2, x2, vp, t0);
   ecc_mod_add (p, t0, vx2, up);
   neg = ecc_curve25519_zero_p (p, t0);
   ecc_mod_sub (p, t0, up, vx2);
@@ -253,6 +254,7 @@ ecc_curve25519_sqrt(const struct ecc_modulo *p, mp_limb_t *rp,
 #undef uv7
 #undef uv7p
 #undef v2
+#undef uv
 #undef v4
 #undef scratch_out
 #undef x2
