@@ -101,8 +101,8 @@ ecc_add_th (const struct ecc_curve *ecc,
   ecc_mod_mul (&ecc->p, C, C, z1, x3);
 
   ecc_mod_sqr (&ecc->p, B, z1, x3);	/* C, T, E, B */
-  ecc_mod_add (&ecc->p, x3, B, E);	/* C, T, G */
-  ecc_mod_sub (&ecc->p, F, B, E);
+  ecc_mod_add (&ecc->p, x3, B, E);
+  ecc_mod_sub (&ecc->p, F, B, E);	/* C, T, F */
 
   /* Can now use y3 as scratch, without breaking in-place operation. */
   ecc_mod_mul (&ecc->p, y3, C, F, y3);	/* T G */
