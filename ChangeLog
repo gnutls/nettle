@@ -1,7 +1,8 @@
 2020-11-03  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-add-eh.c (ecc_add_eh): Reduce scratch need.
-	* ecc-internal.h (ECC_ADD_EH_ITCH): Now 4*size.
+	* ecc-add-th.c (ecc_add_th): Analogous changes.
+	* ecc-internal.h (ECC_ADD_EH_ITCH, ECC_ADD_TH_ITCH): Now 4*size.
 
 2020-11-02  Niels Möller  <nisse@lysator.liu.se>
 
