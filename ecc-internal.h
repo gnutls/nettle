@@ -445,7 +445,7 @@ curve448_eh_to_x (mp_limb_t *xp, const mp_limb_t *p,
 #define ECC_J_TO_A_ITCH(size) (4*(size))
 #define ECC_EH_TO_A_ITCH(size, inv) (2*(size)+(inv))
 #define ECC_DUP_JJ_ITCH(size) (5*(size))
-#define ECC_DUP_EH_ITCH(size) (5*(size))
+#define ECC_DUP_EH_ITCH(size) (3*(size))
 #define ECC_DUP_TH_ITCH(size) (5*(size))
 #define ECC_ADD_JJA_ITCH(size) (6*(size))
 #define ECC_ADD_JJJ_ITCH(size) (8*(size))
