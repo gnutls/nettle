@@ -129,6 +129,7 @@ typedef int ecc_mod_sqrt_func (const struct ecc_modulo *m,
 			       const mp_limb_t *up, const mp_limb_t *vp,
 			       mp_limb_t *scratch);
 
+/* Allows in-place operation with r == p, but not r == q */
 typedef void ecc_add_func (const struct ecc_curve *ecc,
 			   mp_limb_t *r,
 			   const mp_limb_t *p, const mp_limb_t *q,

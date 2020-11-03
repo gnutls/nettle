@@ -1,5 +1,9 @@
 2020-11-03  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-internal.h (ecc_add_func): Document in-place operation.
+	* ecc-mul-a-eh.c (ecc_mul_a_eh): Fix call to ecc->add_hhh accordingly.
+	* testsuite/ecc-add-test.c (test_main): Likewise.
+
 	* ecc-add-eh.c (ecc_add_eh): Reduce scratch need.
 	* ecc-add-th.c (ecc_add_th): Analogous changes.
 	* ecc-internal.h (ECC_ADD_EH_ITCH, ECC_ADD_TH_ITCH): Now 4*size.
