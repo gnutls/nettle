@@ -1,7 +1,8 @@
 2020-11-03  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-dup-eh.c (ecc_dup_eh): Reduce scratch need.
-	* ecc-internal.h (ECC_DUP_EH_ITCH): Now 3*size.
+	* ecc-dup-th.c (ecc_dup_th): Analogous changes.
+	* ecc-internal.h (ECC_DUP_EH_ITCH, ECC_DUP_TH_ITCH): Now 3*size.
 
 	* ecc-internal.h (ecc_add_func): Document in-place operation.
 	* ecc-mul-a-eh.c (ecc_mul_a_eh): Fix call to ecc->add_hhh accordingly.
