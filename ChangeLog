@@ -1,3 +1,8 @@
+2020-11-03  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-add-eh.c (ecc_add_eh): Reduce scratch need.
+	* ecc-internal.h (ECC_ADD_EH_ITCH): Now 4*size.
+
 2020-11-02  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-curve25519.c (ecc_mod_pow_252m3): Reduce scratch need.
