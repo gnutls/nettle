@@ -229,7 +229,6 @@ struct ecc_curve
   const mp_limb_t *pippenger_table;
 };
 
-/* In-place reduction. */
 ecc_mod_func ecc_mod;
 ecc_mod_func ecc_pp1_redc;
 ecc_mod_func ecc_pm1_redc;
