@@ -281,7 +281,7 @@ ecc_mod_pow_2k_mul (const struct ecc_modulo *m,
 		    unsigned k, const mp_limb_t *yp,
 		    mp_limb_t *tp);
 
-/* R <-- X^{2^k + 1} */
+/* R <-- X^{2^k + 1}. Here, rp and xp must not overlap. */
 #define ecc_mod_pow_2kp1(m, rp, xp, k, tp) \
   ecc_mod_pow_2k_mul (m, rp, xp, k, xp, tp)
 
