@@ -1,7 +1,11 @@
 2020-11-06  Niels Möller  <nisse@lysator.liu.se>
 
-	* ecc-curve25519.c (ecc_curve25519_sqrt): Reduce scratch need to
-	6*size.
+	After these changes, both curve25519 and curve448 need 4*size for
+	invert and 6*size for sqrt.
+	* ecc-curve448.c (ecc_mod_pow_446m224m1): Reduce scratch need.
+	(ecc_curve448_inv): Likewise.
+	(ecc_curve448_sqrt): Likewise.
+	* ecc-curve25519.c (ecc_curve25519_sqrt): Reduce scratch need.
 
 	* ecc-add-jja.c (ecc_add_jja): Delete an unneeded copy.
 
