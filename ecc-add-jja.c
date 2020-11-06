@@ -119,7 +119,6 @@ ecc_add_jja (const struct ecc_curve *ecc,
   /* y_3, use (h, hh) as sqratch */
   ecc_mod_mul (&ecc->p, h, y1, j, h); /* frees j */
   ecc_mod_sub (&ecc->p, r + ecc->p.size, v, r);
-  ecc_mod_mul (&ecc->p, j, r + ecc->p.size, w, j);
-  ecc_mod_submul_1 (&ecc->p, j, h, 2);
-  mpn_copyi (r + ecc->p.size, j, ecc->p.size);
+  ecc_mod_mul (&ecc->p, r + ecc->p.size, r + ecc->p.size, w, j);
+  ecc_mod_submul_1 (&ecc->p, r + ecc->p.size, h, 2);
 }

@@ -1,3 +1,7 @@
+2020-11-06  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-add-jja.c (ecc_add_jja): Delete an unneeded copy.
+
 2020-11-05  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-dup-jj.c (ecc_dup_jj): Reduce scratch need.
