@@ -205,8 +205,8 @@ ecc_curve25519_zero_p (const struct ecc_modulo *p, mp_limb_t *xp)
 #error Broken curve25519 parameters
 #endif
 
-/* Needs 3*n space + scratch for ecc_mod_pow_252m3. */
-#define ECC_25519_SQRT_ITCH (7*ECC_LIMB_SIZE)
+/* Needs 2*n space + scratch for ecc_mod_pow_252m3. */
+#define ECC_25519_SQRT_ITCH (6*ECC_LIMB_SIZE)
 
 static int
 ecc_curve25519_sqrt(const struct ecc_modulo *p, mp_limb_t *rp,
@@ -217,13 +217,12 @@ ecc_curve25519_sqrt(const struct ecc_modulo *p, mp_limb_t *rp,
 
 #define uv3 scratch
 #define uv7 (scratch + ECC_LIMB_SIZE)
-#define uv7p (scratch + 2*ECC_LIMB_SIZE)
 
 #define v2 uv7
 #define uv uv3
 #define v4 uv7
 
-#define scratch_out (scratch + 3 * ECC_LIMB_SIZE)
+#define scratch_out (scratch + 2 * ECC_LIMB_SIZE)
 
 #define x2 scratch
 #define vx2 (scratch + ECC_LIMB_SIZE)
@@ -235,8 +234,8 @@ ecc_curve25519_sqrt(const struct ecc_modulo *p, mp_limb_t *rp,
   ecc_mod_mul (p, uv3, uv, v2, scratch_out);	/* uv3, v2 */
   ecc_mod_sqr (p, v4, v2, scratch_out);		/* uv3, v4 */
   ecc_mod_mul (p, uv7, uv3, v4, scratch_out);	/* uv7 */
-  ecc_mod_pow_252m3 (p, uv7p, uv7, scratch_out);/* uv3, uv7p */
-  ecc_mod_mul (p, rp, uv7p, uv3, scratch_out);	/* none */
+  ecc_mod_pow_252m3 (p, rp, uv7, scratch_out);	/* uv3, uv7p */
+  ecc_mod_mul (p, rp, rp, uv3, scratch_out);	/* none */
 
   /* Check sign. If square root exists, have v x^2 = ±u */
   ecc_mod_sqr (p, x2, rp, t0);
@@ -252,7 +251,6 @@ ecc_curve25519_sqrt(const struct ecc_modulo *p, mp_limb_t *rp,
 
 #undef uv3
 #undef uv7
-#undef uv7p
 #undef v2
 #undef uv
 #undef v4

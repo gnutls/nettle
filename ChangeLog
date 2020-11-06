@@ -1,5 +1,8 @@
 2020-11-06  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-curve25519.c (ecc_curve25519_sqrt): Reduce scratch need to
+	6*size.
+
 	* ecc-add-jja.c (ecc_add_jja): Delete an unneeded copy.
 
 2020-11-05  Niels Möller  <nisse@lysator.liu.se>
