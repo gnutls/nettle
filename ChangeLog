@@ -1,3 +1,12 @@
+2020-11-07  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: New command line option --enable-power-altivec.
+	Update asm_path logic, and add altivec to FAT_TEST_LIST.
+	* fat-ppc.c (get_ppc_features): Add logic to check for altivec and
+	vsx support, and select aither C or altivec implementation of
+	chacha_core.
+	* powerpc64/fat/chacha-core-internal-2.asm: New file.
+
 2020-09-25  Niels Möller  <nisse@lysator.liu.se>
 
 	* powerpc64/p7/chacha-core-internal.asm: New file.
