@@ -1,3 +1,18 @@
+2020-11-07  Niels Möller  <nisse@lysator.liu.se>
+
+	Merged initial powerpc64 implementation of chacha.
+	* configure.ac: New command line option --enable-power-altivec.
+	Update asm_path logic, and add altivec to FAT_TEST_LIST.
+	* fat-ppc.c (get_ppc_features): Add logic to check for altivec and
+	vsx support, and select aither C or altivec implementation of
+	chacha_core.
+	* powerpc64/p7/chacha-core-internal.asm: New file.
+
+2020-09-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* powerpc64/p7/chacha-core-internal.asm: New file.
+	* Makefile.in (distdir): Add powerpc64/p7.
+
 2020-10-29  Niels Möller  <nisse@lysator.liu.se>
 
 	* blowfish.c (blowfish_set_key): Add casts to uint32_t. Avoids

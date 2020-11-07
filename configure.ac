@@ -93,6 +93,10 @@ AC_ARG_ENABLE(power-crypto-ext,
   AC_HELP_STRING([--enable-power-crypto-ext], [Enable POWER crypto extensions. (default=no)]),,
   [enable_power_crypto_ext=no])
 
+AC_ARG_ENABLE(power-altivec,
+  AC_HELP_STRING([--enable-power-altivec], [Enable POWER altivec and vsx extensions. (default=no)]),,
+  [enable_altivec=no])
+
 AC_ARG_ENABLE(mini-gmp,
   AC_HELP_STRING([--enable-mini-gmp], [Enable mini-gmp, used instead of libgmp.]),,
   [enable_mini_gmp=no])
@@ -462,9 +466,14 @@ if test "x$enable_assembler" = xyes ; then
 	if test "x$enable_fat" = xyes ; then
 	  asm_path="powerpc64/fat $asm_path"
 	  OPT_NETTLE_SOURCES="fat-ppc.c $OPT_NETTLE_SOURCES"
-	  FAT_TEST_LIST="none crypto_ext"
-	elif test "x$enable_power_crypto_ext" = xyes ; then
-          asm_path="powerpc64/p8 $asm_path"
+	  FAT_TEST_LIST="none crypto_ext altivec"
+	else
+	  if test "$enable_power_crypto_ext" = yes ; then
+            asm_path="powerpc64/p8 $asm_path"
+	  fi
+	  if test "$enable_power_altivec" = yes ; then
+	    asm_path="powerpc64/p7 $asm_path"
+	  fi
 	fi
       fi
       ;;

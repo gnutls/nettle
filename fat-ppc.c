@@ -66,6 +66,7 @@
 struct ppc_features
 {
   int have_crypto_ext;
+  int have_altivec;
 };
 
 #define MATCH(s, slen, literal, llen) \
@@ -76,6 +77,7 @@ get_ppc_features (struct ppc_features *features)
 {
   const char *s;
   features->have_crypto_ext = 0;
+  features->have_altivec = 0;
 
   s = secure_getenv (ENV_OVERRIDE);
   if (s)
@@ -86,6 +88,8 @@ get_ppc_features (struct ppc_features *features)
 
 	if (MATCH (s, length, "crypto_ext", 10))
 	  features->have_crypto_ext = 1;
+	else if (MATCH(s, length, "altivec", 7))
+	  features->have_altivec = 1;
 	if (!sep)
 	  break;
 	s = sep + 1;
@@ -95,8 +99,10 @@ get_ppc_features (struct ppc_features *features)
 #if defined(_AIX) && defined(__power_8_andup)
       features->have_crypto_ext = __power_8_andup() != 0 ? 1 : 0;
 #else
+      unsigned long hwcap = 0;
       unsigned long hwcap2 = 0;
 # if defined(__linux__)
+      hwcap = getauxval(AT_HWCAP);
       hwcap2 = getauxval(AT_HWCAP2);
 # elif defined(__FreeBSD__)
 #  if __FreeBSD__ >= 12
@@ -106,8 +112,13 @@ get_ppc_features (struct ppc_features *features)
       sysctlbyname("hw.cpu_features2", &hwcap2, &len, NULL, 0);
 #  endif
 # endif
-      features->have_crypto_ext =
-	(hwcap2 & PPC_FEATURE2_VEC_CRYPTO) == PPC_FEATURE2_VEC_CRYPTO ? 1 : 0;
+      features->have_crypto_ext
+	= ((hwcap2 & PPC_FEATURE2_VEC_CRYPTO) == PPC_FEATURE2_VEC_CRYPTO);
+
+      /* We also need VSX instructions, mainly for load and store. */
+      features->have_altivec
+	= ((hwcap & (PPC_FEATURE_HAS_ALTIVEC | PPC_FEATURE_HAS_VSX))
+	   == (PPC_FEATURE_HAS_ALTIVEC | PPC_FEATURE_HAS_VSX));
 #endif
     }
 }
@@ -119,6 +130,10 @@ DECLARE_FAT_FUNC_VAR(aes_encrypt, aes_crypt_internal_func, ppc64)
 DECLARE_FAT_FUNC(_nettle_aes_decrypt, aes_crypt_internal_func)
 DECLARE_FAT_FUNC_VAR(aes_decrypt, aes_crypt_internal_func, c)
 DECLARE_FAT_FUNC_VAR(aes_decrypt, aes_crypt_internal_func, ppc64)
+
+DECLARE_FAT_FUNC(_nettle_chacha_core, chacha_core_func)
+DECLARE_FAT_FUNC_VAR(chacha_core, chacha_core_func, c);
+DECLARE_FAT_FUNC_VAR(chacha_core, chacha_core_func, altivec);
 
 static void CONSTRUCTOR
 fat_init (void)
@@ -145,6 +160,16 @@ fat_init (void)
       _nettle_aes_encrypt_vec = _nettle_aes_encrypt_c;
       _nettle_aes_decrypt_vec = _nettle_aes_decrypt_c;
     }
+  if (features.have_altivec)
+    {
+      if (verbose)
+	fprintf (stderr, "libnettle: enabling altivec code.\n");
+      _nettle_chacha_core_vec = _nettle_chacha_core_altivec;
+    }
+  else
+    {
+      _nettle_chacha_core_vec = _nettle_chacha_core_c;
+    }
 }
 
 DEFINE_FAT_FUNC(_nettle_aes_encrypt, void,
@@ -160,3 +185,7 @@ DEFINE_FAT_FUNC(_nettle_aes_decrypt, void,
  size_t length, uint8_t *dst,
  const uint8_t *src),
  (rounds, keys, T, length, dst, src))
+
+DEFINE_FAT_FUNC(_nettle_chacha_core, void,
+		(uint32_t *dst, const uint32_t *src, unsigned rounds),
+		(dst, src, rounds))
