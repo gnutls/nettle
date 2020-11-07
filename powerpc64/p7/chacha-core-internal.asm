@@ -105,9 +105,9 @@ PROLOGUE(_nettle_chacha_core)
 	vspltisw ROT7, 7
 IF_BE(`
 	li	 r9, 0
-	lvsl	 LE_MASK, r9, r9
-	vspltisb LE_TEMP, 0x03
-	vxor	 LE_MASK, LE_MASK, LE_TEMP
+	lvsl	 LE_MASK, r9, r9		C 00 01 02 03 ... 0c 0d 0e 0f
+	vspltisb LE_TEMP, 0x03			C 03 03 03 03 ... 03 03 03 03
+	vxor	 LE_MASK, LE_MASK, LE_TEMP	C 03 02 01 00 ... 0f 0e 0d 0c
 ')
 
 	lxvw4x	VSR(X0), 0, SRC
