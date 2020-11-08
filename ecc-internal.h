@@ -467,7 +467,7 @@ curve448_eh_to_x (mp_limb_t *xp, const mp_limb_t *p,
 #define ECC_MUL_A_EH_ITCH(size) \
   (((3 << ECC_MUL_A_EH_WBITS) + 10) * (size))
 #endif
-#define ECC_MUL_M_ITCH(size) (11*(size))
+#define ECC_MUL_M_ITCH(size) (8*(size))
 #define ECC_ECDSA_SIGN_ITCH(size) (12*(size))
 #define ECC_GOSTDSA_SIGN_ITCH(size) (12*(size))
 #define ECC_MOD_RANDOM_ITCH(size) (size)
