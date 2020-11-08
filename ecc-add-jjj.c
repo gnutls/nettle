@@ -77,36 +77,38 @@ ecc_add_jjj (const struct ecc_curve *ecc,
 
 #define h scratch
 #define z1z1 (scratch + ecc->p.size)
-#define z2z2 (scratch + 2*ecc->p.size)
-#define z1z2 (scratch + 3*ecc->p.size)
+#define z2z2 z1z1
+#define z1z2 (scratch + 2*ecc->p.size)
 
 #define w (scratch + ecc->p.size)
 #define i (scratch + 2*ecc->p.size)
 #define j h
 #define v i
 
-#define tp  (scratch + 4*ecc->p.size)
+#define tp  (scratch + 3*ecc->p.size)
 
-  ecc_mod_sqr (&ecc->p, z1z1, z1, tp);		/* z1z1 */
-  ecc_mod_sqr (&ecc->p, z2z2, z2, tp);		/* z1z1, z2z2 */
+  ecc_mod_sqr (&ecc->p, z2z2, z2, tp);		/* z2z2 */
   /* Store u1 at x3 */
-  ecc_mod_mul (&ecc->p, x3, x1, z2z2, tp);	/* z1z1, z2z2 */
-  ecc_mod_mul (&ecc->p, h, x2, z1z1, tp);	/* z1z1, z2z2, h */
+  ecc_mod_mul (&ecc->p, x3, x1, z2z2, tp);	/* z2z2 */
+
+  ecc_mod_add (&ecc->p, z1z2, z1, z2);		/* z2z2, z1z2 */
+  ecc_mod_sqr (&ecc->p, z1z2, z1z2, tp);
+  ecc_mod_sub (&ecc->p, z1z2, z1z2, z2z2);	/* z2z2, z1z2 */
+
+  /* Do s1 early, store at y3 */
+  ecc_mod_mul (&ecc->p, z2z2, z2z2, z2, tp);	/* z2z2, z1z2 */
+  ecc_mod_mul (&ecc->p, y3, z2z2, y1, tp);	/* z1z2 */
+
+  ecc_mod_sqr (&ecc->p, z1z1, z1, tp);		/* z1z1, z1z2 */
+  ecc_mod_sub (&ecc->p, z1z2, z1z2, z1z1);
+  ecc_mod_mul (&ecc->p, h, x2, z1z1, tp);	/* z1z1, z1z2, h */
   ecc_mod_sub (&ecc->p, h, h, x3);
 
-  ecc_mod_add (&ecc->p, z1z2, z1, z2);		/* z1z1, z2z2, z1z2, h */
-  ecc_mod_sqr (&ecc->p, z1z2, z1z2, tp);
-  ecc_mod_sub (&ecc->p, z1z2, z1z2, z1z1);
-  ecc_mod_sub (&ecc->p, z1z2, z1z2, z2z2);
-
-  /* z1^3, z2^3 */
+  /* z1^3 */
   ecc_mod_mul (&ecc->p, z1z1, z1z1, z1, tp);
-  ecc_mod_mul (&ecc->p, z2z2, z2z2, z2, tp);
 
   /* z3 <-- h z1 z2 delayed until now, since that may clobber z1. */
-  ecc_mod_mul (&ecc->p, z3, z1z2, h, tp);	/* z1z1, z2z2, h */
-  /* Store s1 at y3 */
-  ecc_mod_mul (&ecc->p, y3, z2z2, y1, tp);	/* z1z1, h */
+  ecc_mod_mul (&ecc->p, z3, z1z2, h, tp);	/* z1z1, h */
   /* w = 2 (s2 - s1) */
   ecc_mod_mul (&ecc->p, w, z1z1, y2, tp);	/* h, w */
   ecc_mod_sub (&ecc->p, w, w, y3);
