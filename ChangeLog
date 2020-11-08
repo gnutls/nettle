@@ -1,5 +1,8 @@
 2020-11-08  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-add-jja.c (ecc_add_jja): Reduce scratch need.
+	* ecc-internal.h (ECC_ADD_JJA_ITCH): Now 5*size.
+
 	* ecc-add-jjj.c (ecc_add_jjj): Reduce scratch need.
 	* ecc-internal.h (ECC_ADD_JJJ_ITCH): Now 6*size.
 
