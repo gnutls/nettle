@@ -48,7 +48,7 @@ ecc_mul_m (const struct ecc_modulo *m,
 	   mp_limb_t *scratch)
 {
   unsigned i;
-  mp_limb_t cy;
+  mp_limb_t cy, swap;
 
 #define x2 (scratch)
 #define z2 (scratch + m->size)
@@ -109,11 +109,12 @@ ecc_mul_m (const struct ecc_modulo *m,
   ecc_mod_addmul_1 (m, AA, E, a24);
   ecc_mod_mul (m, z3, E, AA, tp);
 
-  for (i = bit_high; i >= bit_low; i--)
+  for (i = bit_high, swap = 0; i >= bit_low; i--)
     {
-      int bit = (n[i/8] >> (i & 7)) & 1;
+      mp_limb_t bit = (n[i/8] >> (i & 7)) & 1;
 
-      mpn_cnd_swap (bit, x2, x3, 2*m->size);
+      mpn_cnd_swap (swap ^ bit, x2, x3, 2*m->size);
+      swap = bit;
 
       ecc_mod_add (m, A, x2, z2);
       ecc_mod_sub (m, D, x3, z3);
@@ -144,10 +145,9 @@ ecc_mul_m (const struct ecc_modulo *m,
       ecc_mod_sub (m, z3, DA, z3);	/* DA - CB */
       ecc_mod_sqr (m, z3, z3, tp);
       ecc_mod_mul (m, z3, z3, px, tp);
-
-      /* FIXME: Could be combined with the loop's initial mpn_cnd_swap. */
-      mpn_cnd_swap (bit, x2, x3, 2*m->size);
     }
+  mpn_cnd_swap (swap, x2, x3, 2*m->size);
+
   /* Do the low zero bits, just duplicating x2 */
   for (i = 0; i < bit_low; i++)
     {
