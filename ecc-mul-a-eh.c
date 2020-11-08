@@ -39,7 +39,7 @@
 #include "ecc-internal.h"
 
 /* Binary algorithm needs 6*ecc->p.size + scratch for ecc_add_ehh,
-   total 12 ecc->p.size
+   total 10 ecc->p.size
 
    Window algorithm needs (3<<w) * ecc->p.size for the table,
    3*ecc->p.size for a temporary point, and scratch for

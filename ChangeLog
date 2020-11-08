@@ -1,5 +1,13 @@
 2020-11-08  Niels Möller  <nisse@lysator.liu.se>
 
+	* eddsa-sign.c (_eddsa_sign_itch): Update, since now point
+	multiplication needs less scratch than point compression.
+	* eddsa-pubkey.c (_eddsa_public_key_itch): Likewise.
+
+	* ecc-internal.h: Update *_ITCH macros for point multiplication
+	and signatures. They need slightly less scratch after optimization
+	of the point addition functions.
+
 	* ecc-mul-m.c (ecc_mul_m): Reduce scratch need.
 	(ecc_mul_m): Optimize swapping, with only a single mpn_cnd_swap
 	per iteration.

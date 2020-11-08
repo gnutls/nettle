@@ -47,7 +47,7 @@ mp_size_t
 ecc_ecdsa_sign_itch (const struct ecc_curve *ecc)
 {
   /* Needs 3*ecc->p.size + scratch for ecc->mul_g. Currently same for
-     ecc_mul_g and ecc_mul_g_eh. */
+     ecc_mul_g. */
   return ECC_ECDSA_SIGN_ITCH (ecc->p.size);
 }
 

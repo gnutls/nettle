@@ -453,23 +453,23 @@ curve448_eh_to_x (mp_limb_t *xp, const mp_limb_t *p,
 #define ECC_ADD_EHH_ITCH(size) (4*(size))
 #define ECC_ADD_TH_ITCH(size) (4*(size))
 #define ECC_ADD_THH_ITCH(size) (4*(size))
-#define ECC_MUL_G_ITCH(size) (9*(size))
-#define ECC_MUL_G_EH_ITCH(size) (9*(size))
+#define ECC_MUL_G_ITCH(size) (8*(size))
+#define ECC_MUL_G_EH_ITCH(size) (7*(size))
 #if ECC_MUL_A_WBITS == 0
-#define ECC_MUL_A_ITCH(size) (12*(size))
+#define ECC_MUL_A_ITCH(size) (11*(size))
 #else
 #define ECC_MUL_A_ITCH(size) \
-  (((3 << ECC_MUL_A_WBITS) + 11) * (size))
+  (((3 << ECC_MUL_A_WBITS) + 8) * (size))
 #endif
 #if ECC_MUL_A_EH_WBITS == 0
-#define ECC_MUL_A_EH_ITCH(size) (12*(size))
+#define ECC_MUL_A_EH_ITCH(size) (10*(size))
 #else
 #define ECC_MUL_A_EH_ITCH(size) \
-  (((3 << ECC_MUL_A_EH_WBITS) + 10) * (size))
+  (((3 << ECC_MUL_A_EH_WBITS) + 7) * (size))
 #endif
 #define ECC_MUL_M_ITCH(size) (8*(size))
-#define ECC_ECDSA_SIGN_ITCH(size) (12*(size))
-#define ECC_GOSTDSA_SIGN_ITCH(size) (12*(size))
+#define ECC_ECDSA_SIGN_ITCH(size) (11*(size))
+#define ECC_GOSTDSA_SIGN_ITCH(size) (11*(size))
 #define ECC_MOD_RANDOM_ITCH(size) (size)
 #define ECC_HASH_ITCH(size) (1+(size))
 
