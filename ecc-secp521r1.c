@@ -47,7 +47,7 @@
 #if HAVE_NATIVE_ecc_secp521r1_modp
 #define ecc_secp521r1_modp _nettle_ecc_secp521r1_modp
 void
-ecc_secp521r1_modp (const struct ecc_modulo *m, mp_limb_t *rp);
+ecc_secp521r1_modp (const struct ecc_modulo *m, mp_limb_t *rp, mp_limb_t *xp);
 
 #else
 
@@ -57,21 +57,21 @@ ecc_secp521r1_modp (const struct ecc_modulo *m, mp_limb_t *rp);
 
 /* Result may be *slightly* larger than 2^521 */
 static void
-ecc_secp521r1_modp (const struct ecc_modulo *m UNUSED, mp_limb_t *rp)
+ecc_secp521r1_modp (const struct ecc_modulo *m UNUSED, mp_limb_t *rp, mp_limb_t *xp)
 {
   /* FIXME: Should use mpn_addlsh_n_ip1 */
   mp_limb_t hi;
   /* Reduce from 2*ECC_LIMB_SIZE to ECC_LIMB_SIZE + 1 */
-  rp[ECC_LIMB_SIZE]
-    = mpn_addmul_1 (rp, rp + ECC_LIMB_SIZE, ECC_LIMB_SIZE, BMODP);
-  hi = mpn_addmul_1 (rp, rp + ECC_LIMB_SIZE, 1, BMODP);
-  hi = sec_add_1 (rp + 1, rp + 1, ECC_LIMB_SIZE - 1, hi);
+  xp[ECC_LIMB_SIZE]
+    = mpn_addmul_1 (xp, xp + ECC_LIMB_SIZE, ECC_LIMB_SIZE, BMODP);
+  hi = mpn_addmul_1 (xp, xp + ECC_LIMB_SIZE, 1, BMODP);
+  hi = sec_add_1 (xp + 1, xp + 1, ECC_LIMB_SIZE - 1, hi);
 
   /* Combine hi with top bits, and add in. */
-  hi = (hi << BMODP_SHIFT) | (rp[ECC_LIMB_SIZE-1] >> B_SHIFT);
-  rp[ECC_LIMB_SIZE-1] = (rp[ECC_LIMB_SIZE-1]
+  hi = (hi << BMODP_SHIFT) | (xp[ECC_LIMB_SIZE-1] >> B_SHIFT);
+  rp[ECC_LIMB_SIZE-1] = (xp[ECC_LIMB_SIZE-1]
 			 & (((mp_limb_t) 1 << B_SHIFT)-1))
-    + sec_add_1 (rp, rp, ECC_LIMB_SIZE - 1, hi);
+    + sec_add_1 (rp, xp, ECC_LIMB_SIZE - 1, hi);
 }
 #endif
 

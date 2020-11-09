@@ -43,14 +43,14 @@
 #include "ecc-gost-gc256b.h"
 
 static void
-ecc_gost_gc256b_modp (const struct ecc_modulo *m, mp_limb_t *rp)
+ecc_gost_gc256b_modp (const struct ecc_modulo *m, mp_limb_t *rp, mp_limb_t *xp)
 {
   mp_size_t mn = m->size;
   mp_limb_t hi;
 
-  hi = mpn_addmul_1(rp, rp + mn, mn, 0x269);
-  hi = sec_add_1 (rp, rp, mn, hi * 0x269);
-  hi = sec_add_1 (rp, rp, mn, hi * 0x269);
+  hi = mpn_addmul_1(xp, xp + mn, mn, 0x269);
+  hi = sec_add_1 (xp, xp, mn, hi * 0x269);
+  hi = sec_add_1 (rp, xp, mn, hi * 0x269);
   assert(hi == 0);
 }
 

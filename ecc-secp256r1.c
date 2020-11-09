@@ -53,7 +53,7 @@
 #if HAVE_NATIVE_ecc_secp256r1_redc
 # define ecc_secp256r1_redc _nettle_ecc_secp256r1_redc
 void
-ecc_secp256r1_redc (const struct ecc_modulo *p, mp_limb_t *rp);
+ecc_secp256r1_redc (const struct ecc_modulo *p, mp_limb_t *rp, mp_limb_t *xp);
 #else /* !HAVE_NATIVE_ecc_secp256r1_redc */
 # if ECC_REDC_SIZE > 0
 #   define ecc_secp256r1_redc ecc_pp1_redc
@@ -70,14 +70,14 @@ ecc_secp256r1_redc (const struct ecc_modulo *p, mp_limb_t *rp);
 #elif GMP_NUMB_BITS == 64
 
 static void
-ecc_secp256r1_modp (const struct ecc_modulo *p, mp_limb_t *rp)
+ecc_secp256r1_modp (const struct ecc_modulo *p, mp_limb_t *rp, mp_limb_t *xp)
 {
   mp_limb_t u1, u0;
   mp_size_t n;
 
   n = 2*p->size;
-  u1 = rp[--n];
-  u0 = rp[n-1];
+  u1 = xp[--n];
+  u0 = xp[n-1];
 
   /* This is not particularly fast, but should work well with assembly implementation. */
   for (; n >= p->size; n--)
@@ -126,41 +126,43 @@ ecc_secp256r1_modp (const struct ecc_modulo *p, mp_limb_t *rp)
 	 We multiply by two low limbs of p, 2^96 - 1, so we could use
 	 shifts rather than mul.
       */
-      t = mpn_submul_1 (rp + n - 4, p->m, 2, q1);
-      t += mpn_cnd_sub_n (q2, rp + n - 3, rp + n - 3, p->m, 1);
+      t = mpn_submul_1 (xp + n - 4, p->m, 2, q1);
+      t += mpn_cnd_sub_n (q2, xp + n - 3, xp + n - 3, p->m, 1);
       t += (-q2) & 0xffffffff;
 
-      u0 = rp[n-2];
+      u0 = xp[n-2];
       cy = (u0 < t);
       u0 -= t;
       t = (u1 < cy);
       u1 -= cy;
 
-      cy = mpn_cnd_add_n (t, rp + n - 4, rp + n - 4, p->m, 2);
+      cy = mpn_cnd_add_n (t, xp + n - 4, xp + n - 4, p->m, 2);
       u0 += cy;
       u1 += (u0 < cy);
       u1 -= (-t) & 0xffffffff;
     }
+  rp[0] = xp[0];
+  rp[1] = xp[1];
   rp[2] = u0;
   rp[3] = u1;
 }
 
 static void
-ecc_secp256r1_modq (const struct ecc_modulo *q, mp_limb_t *rp)
+ecc_secp256r1_modq (const struct ecc_modulo *q, mp_limb_t *rp, mp_limb_t *xp)
 {
   mp_limb_t u2, u1, u0;
   mp_size_t n;
 
   n = 2*q->size;
-  u2 = rp[--n];
-  u1 = rp[n-1];
+  u2 = xp[--n];
+  u1 = xp[n-1];
 
   /* This is not particularly fast, but should work well with assembly implementation. */
   for (; n >= q->size; n--)
     {
       mp_limb_t q2, q1, q0, t, c1, c0;
 
-      u0 = rp[n-2];
+      u0 = xp[n-2];
 
       /* <q2, q1, q0> = v * u2 + <u2,u1>, same method as above.
 
@@ -210,9 +212,9 @@ ecc_secp256r1_modq (const struct ecc_modulo *q, mp_limb_t *rp)
 
       assert (q2 < 2);
 
-      c0 = mpn_cnd_sub_n (q2, rp + n - 3, rp + n - 3, q->m, 1);
+      c0 = mpn_cnd_sub_n (q2, xp + n - 3, xp + n - 3, q->m, 1);
       c0 += (-q2) & q->m[1];
-      t = mpn_submul_1 (rp + n - 4, q->m, 2, q1);
+      t = mpn_submul_1 (xp + n - 4, q->m, 2, q1);
       c0 += t;
       c1 = c0 < t;
 
@@ -227,10 +229,12 @@ ecc_secp256r1_modq (const struct ecc_modulo *q, mp_limb_t *rp)
       u1 += t;
       u2 += (t<<32) + (u1 < t);
 
-      t = mpn_cnd_add_n (t, rp + n - 4, rp + n - 4, q->m, 2);
+      t = mpn_cnd_add_n (t, xp + n - 4, xp + n - 4, q->m, 2);
       u1 += t;
       u2 += (u1 < t);
     }
+  rp[0] = xp[0];
+  rp[1] = xp[1];
   rp[2] = u1;
   rp[3] = u2;
 }

@@ -74,5 +74,5 @@ _eddsa_hash (const struct ecc_modulo *m,
       hi = mpn_cnd_add_n (hi, rp + m->size, rp + m->size, m->B, m->size);
       assert (hi == 0);
     }
-  m->mod (m, rp);
+  m->mod (m, rp, rp);
 }

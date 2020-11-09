@@ -69,7 +69,7 @@ curve25519_eh_to_x (mp_limb_t *xp, const mp_limb_t *p,
   ecc->p.invert (&ecc->p, t1, t0, t2 + ecc->p.size);
   
   ecc_mod_add (&ecc->p, t0, wp, vp);
-  ecc_mod_mul (&ecc->p, t2, t0, t1);
+  ecc_mod_mul (&ecc->p, t2, t0, t1, t2);
 
   cy = mpn_sub_n (xp, t2, ecc->p.m, ecc->p.size);
   cnd_copy (cy, xp, t2, ecc->p.size);

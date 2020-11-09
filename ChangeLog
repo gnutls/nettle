@@ -1,3 +1,91 @@
+2020-11-08  Niels Möller  <nisse@lysator.liu.se>
+
+	Merge refactoring of ecc modulo and reduce functions.
+	* eddsa-sign.c (_eddsa_sign_itch): Update, since now point
+	multiplication needs less scratch than point compression.
+	* eddsa-pubkey.c (_eddsa_public_key_itch): Likewise.
+
+	* ecc-internal.h: Update *_ITCH macros for point multiplication
+	and signatures. They need slightly less scratch after optimization
+	of the point addition functions.
+
+	* ecc-mul-m.c (ecc_mul_m): Reduce scratch need.
+	(ecc_mul_m): Optimize swapping, with only a single mpn_cnd_swap
+	per iteration.
+
+	* ecc-add-jja.c (ecc_add_jja): Reduce scratch need.
+	* ecc-add-jjj.c (ecc_add_jjj): Reduce scratch need.
+	* ecc-internal.h (ECC_ADD_JJA_ITCH, ECC_ADD_JJJ_ITCH): Now 5*size.
+	(ECC_MUL_M_ITCH): New 8*size.
+
+2020-11-06  Niels Möller  <nisse@lysator.liu.se>
+
+	After these changes, both curve25519 and curve448 need 4*size for
+	invert and 6*size for sqrt.
+	* ecc-curve448.c (ecc_mod_pow_446m224m1): Reduce scratch need.
+	(ecc_curve448_inv): Likewise.
+	(ecc_curve448_sqrt): Likewise.
+	* ecc-curve25519.c (ecc_curve25519_sqrt): Reduce scratch need.
+
+	* ecc-add-jja.c (ecc_add_jja): Delete an unneeded copy.
+
+2020-11-05  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-dup-jj.c (ecc_dup_jj): Reduce scratch need.
+	* ecc-internal.h (ECC_DUP_JJ_ITCH): Now 4*size.
+
+2020-11-03  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-dup-eh.c (ecc_dup_eh): Reduce scratch need.
+	* ecc-dup-th.c (ecc_dup_th): Analogous changes.
+	* ecc-internal.h (ECC_DUP_EH_ITCH, ECC_DUP_TH_ITCH): Now 3*size.
+
+	* ecc-internal.h (ecc_add_func): Document in-place operation.
+	* ecc-mul-a-eh.c (ecc_mul_a_eh): Fix call to ecc->add_hhh accordingly.
+	* testsuite/ecc-add-test.c (test_main): Likewise.
+
+	* ecc-add-eh.c (ecc_add_eh): Reduce scratch need.
+	* ecc-add-th.c (ecc_add_th): Analogous changes.
+	* ecc-add-ehh.c (ecc_add_ehh): Reduce scratch need.
+	* ecc-add-thh.c (ecc_add_thh): Analogous changes.
+	* ecc-internal.h (ECC_ADD_EH_ITCH, ECC_ADD_EHH_ITCH)
+	(ECC_ADD_TH_ITCH, ECC_ADD_THH_ITCH): Now 4*size.
+
+2020-11-02  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-curve25519.c (ecc_mod_pow_252m3): Reduce scratch need.
+	(ecc_curve25519_inv): Likewise.
+	(ecc_curve25519_sqrt): Likewise.
+
+2020-11-01  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-mod-arith.c (ecc_mod_mul, ecc_mod_sqr): Separate argument
+	for scratch area, reducing required size of result area. Update
+	all callers to naïvely keep using result in scratch area.
+	(ecc_mod_pow_2k, ecc_mod_pow_2k_mul): Simplified, also reducing
+	required size of result area.
+
+	* testsuite/testutils.c (test_ecc_point): Show curve bits on failure.
+
+2020-10-31  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-internal.h (typedef ecc_mod_func): Updated all assembly
+	implementations.
+
+	* testsuite/ecc-mod-test.c (test_one): Extend tests, to also test
+	with different destination area.
+	* testsuite/ecc-redc-test.c (test_main): Likewise.
+
+2020-10-30  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-internal.h (typedef ecc_mod_func): Add separate result
+	argument. Updated all C implementations and callers.
+
+2020-10-29  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-mod.c (ecc_mod): More unified handling of final carry
+	folding. Also eliminates a goto statement.
+
 2020-11-07  Niels Möller  <nisse@lysator.liu.se>
 
 	Merged initial powerpc64 implementation of chacha.

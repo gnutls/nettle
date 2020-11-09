@@ -1698,8 +1698,8 @@ test_ecc_point (const struct ecc_curve *ecc,
   if (! (test_mpn (ref->x, p, ecc->p.size)
 	 && test_mpn (ref->y, p + ecc->p.size, ecc->p.size) ))
     {
-      fprintf (stderr, "Incorrect point!\n"
-	       "got: x = ");
+      fprintf (stderr, "Incorrect point, curve bits %d!\n"
+	       "got: x = ", ecc->p.bit_size);
       write_mpn (stderr, 16, p, ecc->p.size);
       fprintf (stderr, "\n"
 	       "     y = ");

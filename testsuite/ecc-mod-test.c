@@ -19,6 +19,15 @@ ref_mod (mp_limb_t *rp, const mp_limb_t *ap, const mp_limb_t *mp, mp_size_t mn)
 #define MAX_SIZE (2*MAX_ECC_SIZE)
 #define COUNT 50000
 
+/* Destructively normalize tp, then compare */
+static int
+mod_equal(const struct ecc_modulo *m, const mp_limb_t *ref, mp_limb_t *tp)
+{
+  if (mpn_cmp (tp, m->m, m->size) >= 0)
+    mpn_sub_n (tp, tp, m->m, m->size);
+  return mpn_cmp (ref, tp, m->size) == 0;
+}
+
 static void
 test_one(const char *name,
 	 const struct ecc_modulo *m,
@@ -33,13 +42,10 @@ test_one(const char *name,
   ref_mod (ref, a, m->m, m->size);
 
   mpn_copyi (t, a, 2*m->size);
-  m->mod (m, t);
-  if (mpn_cmp (t, m->m, m->size) >= 0)
-    mpn_sub_n (t, t, m->m, m->size);
-
-  if (mpn_cmp (t, ref, m->size))
+  m->mod (m, t, t);
+  if (!mod_equal (m, ref, t))
     {
-      fprintf (stderr, "m->mod %s failed: bit_size = %u\n",
+      fprintf (stderr, "m->mod %s failed: bit_size = %u, rp == xp\n",
 	       name, m->bit_size);
 
       fprintf (stderr, "a   = ");
@@ -52,21 +58,51 @@ test_one(const char *name,
       abort ();
     }
 
+  mpn_copyi (t, a, 2*m->size);
+  m->mod (m, t + m->size, t);
+  if (!mod_equal (m, ref, t + m->size))
+    {
+      fprintf (stderr, "m->mod %s failed: bit_size = %u, rp == xp + size\n",
+	       name, m->bit_size);
+
+      fprintf (stderr, "a   = ");
+      mpn_out_str (stderr, 16, a, 2*m->size);
+      fprintf (stderr, "\nt   = ");
+      mpn_out_str (stderr, 16, t + m->size, m->size);
+      fprintf (stderr, " (bad)\nref = ");
+      mpn_out_str (stderr, 16, ref, m->size);
+      fprintf (stderr, "\n");
+      abort ();
+    }
+
   if (m->B_size < m->size)
     {
       mpn_copyi (t, a, 2*m->size);
-      ecc_mod (m, t);
-      if (mpn_cmp (t, m->m, m->size) >= 0)
-	mpn_sub_n (t, t, m->m, m->size);
-
-      if (mpn_cmp (t, ref, m->size))
+      ecc_mod (m, t, t);
+      if (!mod_equal (m, ref, t))
 	{
-	  fprintf (stderr, "ecc_mod %s failed: bit_size = %u\n",
+	  fprintf (stderr, "ecc_mod %s failed: bit_size = %u, rp == xp\n",
 		   name, m->bit_size);
 	  fprintf (stderr, "a   = ");
 	  mpn_out_str (stderr, 16, a, 2*m->size);
 	  fprintf (stderr, "\nt   = ");
 	  mpn_out_str (stderr, 16, t, m->size);
+	  fprintf (stderr, " (bad)\nref = ");
+	  mpn_out_str (stderr, 16, ref, m->size);
+	  fprintf (stderr, "\n");
+	  abort ();
+	}
+
+      mpn_copyi (t, a, 2*m->size);
+      ecc_mod (m, t + m->size, t);
+      if (!mod_equal (m, ref, t + m->size))
+	{
+	  fprintf (stderr, "ecc_mod %s failed: bit_size = %u, rp == xp + size\n",
+		   name, m->bit_size);
+	  fprintf (stderr, "a   = ");
+	  mpn_out_str (stderr, 16, a, 2*m->size);
+	  fprintf (stderr, "\nt   = ");
+	  mpn_out_str (stderr, 16, t + m->size, m->size);
 	  fprintf (stderr, " (bad)\nref = ");
 	  mpn_out_str (stderr, 16, ref, m->size);
 	  fprintf (stderr, "\n");

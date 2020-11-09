@@ -52,57 +52,57 @@
 
 #define ecc_secp192r1_modp _nettle_ecc_secp192r1_modp
 void
-ecc_secp192r1_modp (const struct ecc_modulo *m, mp_limb_t *rp);
+ecc_secp192r1_modp (const struct ecc_modulo *m, mp_limb_t *rp, mp_limb_t *xp);
 
 /* Use that p = 2^{192} - 2^64 - 1, to eliminate 128 bits at a time. */
 
 #elif GMP_NUMB_BITS == 32
 /* p is 6 limbs, p = B^6 - B^2 - 1 */
 static void
-ecc_secp192r1_modp (const struct ecc_modulo *m UNUSED, mp_limb_t *rp)
+ecc_secp192r1_modp (const struct ecc_modulo *m UNUSED, mp_limb_t *rp, mp_limb_t *xp)
 {
   mp_limb_t cy;
 
   /* Reduce from 12 to 9 limbs (top limb small)*/
-  cy = mpn_add_n (rp + 2, rp + 2, rp + 8, 4);
-  cy = sec_add_1 (rp + 6, rp + 6, 2, cy);
-  cy += mpn_add_n (rp + 4, rp + 4, rp + 8, 4);
+  cy = mpn_add_n (xp + 2, xp + 2, xp + 8, 4);
+  cy = sec_add_1 (xp + 6, xp + 6, 2, cy);
+  cy += mpn_add_n (xp + 4, xp + 4, xp + 8, 4);
   assert (cy <= 2);
 
-  rp[8] = cy;
+  xp[8] = cy;
 
   /* Reduce from 9 to 6 limbs */
-  cy = mpn_add_n (rp, rp, rp + 6, 3);
-  cy = sec_add_1 (rp + 3, rp + 3, 2, cy);
-  cy += mpn_add_n (rp + 2, rp + 2, rp + 6, 3);
-  cy = sec_add_1 (rp + 5, rp + 5, 1, cy);
+  cy = mpn_add_n (xp, xp, xp + 6, 3);
+  cy = sec_add_1 (xp + 3, xp + 3, 2, cy);
+  cy += mpn_add_n (xp + 2, xp + 2, xp + 6, 3);
+  cy = sec_add_1 (xp + 5, xp + 5, 1, cy);
   
   assert (cy <= 1);
-  cy = mpn_cnd_add_n (cy, rp, rp, ecc_Bmodp, 6);
+  cy = mpn_cnd_add_n (cy, rp, xp, ecc_Bmodp, 6);
   assert (cy == 0);  
 }
 #elif GMP_NUMB_BITS == 64
 /* p is 3 limbs, p = B^3 - B - 1 */
 static void
-ecc_secp192r1_modp (const struct ecc_modulo *m UNUSED, mp_limb_t *rp)
+ecc_secp192r1_modp (const struct ecc_modulo *m UNUSED, mp_limb_t *rp, mp_limb_t *xp)
 {
   mp_limb_t cy;
 
   /* Reduce from 6 to 5 limbs (top limb small)*/
-  cy = mpn_add_n (rp + 1, rp + 1, rp + 4, 2);
-  cy = sec_add_1 (rp + 3, rp + 3, 1, cy);
-  cy += mpn_add_n (rp + 2, rp + 2, rp + 4, 2);
+  cy = mpn_add_n (xp + 1, xp + 1, xp + 4, 2);
+  cy = sec_add_1 (xp + 3, xp + 3, 1, cy);
+  cy += mpn_add_n (xp + 2, xp + 2, xp + 4, 2);
   assert (cy <= 2);
 
-  rp[4] = cy;
+  xp[4] = cy;
 
   /* Reduce from 5 to 4 limbs (high limb small) */
-  cy = mpn_add_n (rp, rp, rp + 3, 2);
-  cy = sec_add_1 (rp + 2, rp + 2, 1, cy);
-  cy += mpn_add_n (rp + 1, rp + 1, rp + 3, 2);
+  cy = mpn_add_n (xp, xp, xp + 3, 2);
+  cy = sec_add_1 (xp + 2, xp + 2, 1, cy);
+  cy += mpn_add_n (xp + 1, xp + 1, xp + 3, 2);
 
   assert (cy <= 1);
-  cy = mpn_cnd_add_n (cy, rp, rp, ecc_Bmodp, 3);
+  cy = mpn_cnd_add_n (cy, rp, xp, ecc_Bmodp, 3);
   assert (cy == 0);  
 }
   
