@@ -43,8 +43,13 @@
 #if defined(_AIX)
 # include <sys/systemcfg.h>
 #elif defined(__linux__)
+# include <asm/cputable.h>
 # include <sys/auxv.h>
 #elif defined(__FreeBSD__)
+# include <machine/cpu.h>
+# ifdef PPC_FEATURE2_HAS_VEC_CRYPTO
+# define PPC_FEATURE2_VEC_CRYPTO PPC_FEATURE2_HAS_VEC_CRYPTO
+# endif
 # if __FreeBSD__ >= 12
 #  include <sys/auxv.h>
 # else
@@ -58,7 +63,13 @@
 #include "gcm.h"
 #include "fat-setup.h"
 
-/* Define from arch/powerpc/include/uapi/asm/cputable.h in Linux kernel */
+/* Defines from arch/powerpc/include/uapi/asm/cputable.h in Linux kernel */
+#ifndef PPC_FEATURE_HAS_ALTIVEC
+#define PPC_FEATURE_HAS_ALTIVEC 0x10000000
+#endif
+#ifndef PPC_FEATURE_HAS_VSX
+#define PPC_FEATURE_HAS_VSX 0x00000080
+#endif
 #ifndef PPC_FEATURE2_VEC_CRYPTO
 #define PPC_FEATURE2_VEC_CRYPTO 0x02000000
 #endif
@@ -96,8 +107,10 @@ get_ppc_features (struct ppc_features *features)
       }
   else
     {
-#if defined(_AIX) && defined(__power_8_andup)
-      features->have_crypto_ext = __power_8_andup() != 0 ? 1 : 0;
+#if defined(_AIX)
+      features->have_crypto_ext
+ = _system_configuration.implementation >= 0x10000u;
+      features->have_altivec = _system_configuration.vmx_version > 1;
 #else
       unsigned long hwcap = 0;
       unsigned long hwcap2 = 0;
@@ -106,9 +119,13 @@ get_ppc_features (struct ppc_features *features)
       hwcap2 = getauxval(AT_HWCAP2);
 # elif defined(__FreeBSD__)
 #  if __FreeBSD__ >= 12
+      elf_aux_info(AT_HWCAP, &hwcap, sizeof(hwcap));
       elf_aux_info(AT_HWCAP2, &hwcap2, sizeof(hwcap2));
 #  else
-      size_t len = sizeof(hwcap2);
+      size_t len;
+      len = sizeof(hwcap);
+      sysctlbyname("hw.cpu_features", &hwcap, &len, NULL, 0);
+      len = sizeof(hwcap2);
       sysctlbyname("hw.cpu_features2", &hwcap2, &len, NULL, 0);
 #  endif
 # endif
