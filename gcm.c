@@ -140,9 +140,21 @@ gcm_gf_mul (union nettle_block16 *x, const union nettle_block16 *table)
   memcpy (x->b, Z.b, sizeof(Z));
 }
 # elif GCM_TABLE_BITS == 8
-#  if HAVE_NATIVE_gcm_hash8
+#  if HAVE_NATIVE_gcm_init_key
 
-#define gcm_hash _nettle_gcm_hash8
+#define gcm_init_key _nettle_gcm_init_key
+void
+_nettle_gcm_init_key (union nettle_block16 *table);
+#  endif /* HAVE_NATIVE_gcm_init_key */
+#  if HAVE_NATIVE_gcm_hash
+
+#define gcm_hash _nettle_gcm_hash
+void
+_nettle_gcm_hash (const struct gcm_key *key, union nettle_block16 *x,
+   size_t length, const uint8_t *data);
+#  endif /* HAVE_NATIVE_gcm_hash */
+#  if HAVE_NATIVE_gcm_hash8
+ #define gcm_hash _nettle_gcm_hash8
 void
 _nettle_gcm_hash8 (const struct gcm_key *key, union nettle_block16 *x,
 		   size_t length, const uint8_t *data);
@@ -228,6 +240,29 @@ gcm_gf_mul (union nettle_block16 *x, const union nettle_block16 *table)
 /* Increment the rightmost 32 bits. */
 #define INC32(block) INCREMENT(4, (block.b) + GCM_BLOCK_SIZE - 4)
 
+#ifndef gcm_init_key
+static void
+gcm_init_key(union nettle_block16 *table)
+{
+#if GCM_TABLE_BITS
+  /* Middle element if GCM_TABLE_BITS > 0, otherwise the first
+     element */
+  unsigned i = (1<<GCM_TABLE_BITS)/2;
+
+  /* Algorithm 3 from the gcm paper. First do powers of two, then do
+     the rest by adding. */
+  while (i /= 2)
+    block16_mulx_ghash(&table[i], &table[2*i]);
+  for (i = 2; i < 1<<GCM_TABLE_BITS; i *= 2)
+    {
+      unsigned j;
+      for (j = 1; j < i; j++)
+ block16_xor3(&table[i+j], &table[i], &table[j]);
+    }
+#endif
+}
+#endif /* !gcm_init_key */
+
 /* Initialization of GCM.
  * @ctx: The context of GCM
  * @cipher: The context of the underlying block cipher
@@ -245,18 +280,7 @@ gcm_set_key(struct gcm_key *key,
   memset(key->h[0].b, 0, GCM_BLOCK_SIZE);
   f (cipher, GCM_BLOCK_SIZE, key->h[i].b, key->h[0].b);
   
-#if GCM_TABLE_BITS
-  /* Algorithm 3 from the gcm paper. First do powers of two, then do
-     the rest by adding. */
-  while (i /= 2)
-    block16_mulx_ghash(&key->h[i], &key->h[2*i]);
-  for (i = 2; i < 1<<GCM_TABLE_BITS; i *= 2)
-    {
-      unsigned j;
-      for (j = 1; j < i; j++)
-	block16_xor3(&key->h[i+j], &key->h[i],&key->h[j]);
-    }
-#endif
+  gcm_init_key(key->h);
 }
 
 #ifndef gcm_hash
