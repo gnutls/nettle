@@ -1,3 +1,9 @@
+2020-11-13  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-internal.h (ECC_J_TO_A_ITCH): Generalize, and take invert
+	itch as an argument, similarly to ECC_EH_TO_A_ITCH. Updated all
+	secp and gost curve definitions to use it.
+
 2020-10-21  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-secp384r1.c (ecc_secp384r1_inv): New function, modular

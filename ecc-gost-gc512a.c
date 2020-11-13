@@ -107,7 +107,7 @@ const struct ecc_curve _nettle_gost_gc512a =
   ECC_DUP_JJ_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_A_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_G_ITCH (ECC_LIMB_SIZE),
-  ECC_J_TO_A_ITCH (ECC_LIMB_SIZE),
+  ECC_J_TO_A_ITCH (ECC_LIMB_SIZE, ECC_MOD_INV_ITCH(ECC_LIMB_SIZE)),
 
   ecc_add_jja,
   ecc_add_jjj,

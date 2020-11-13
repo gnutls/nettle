@@ -345,7 +345,7 @@ const struct ecc_curve _nettle_secp_256r1 =
   ECC_DUP_JJ_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_A_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_G_ITCH (ECC_LIMB_SIZE),
-  2*ECC_LIMB_SIZE + ECC_SECP256R1_INV_ITCH,
+  ECC_J_TO_A_ITCH(ECC_LIMB_SIZE, ECC_SECP256R1_INV_ITCH),
 
   ecc_add_jja,
   ecc_add_jjj,
