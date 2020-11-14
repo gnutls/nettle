@@ -99,7 +99,7 @@ ecc_gostdsa_verify (const struct ecc_curve *ecc,
     mpn_add_1 (hp, hp, ecc->p.size, 1);
 
   /* Compute v */
-  ecc->q.invert (&ecc->q, vp, hp, vp + 2*ecc->p.size);
+  ecc->q.invert (&ecc->q, vp, hp, vp + ecc->p.size);
 
   /* z1 = s / h, P1 = z1 * G */
   ecc_mod_mul (&ecc->q, z1, sp, vp, z1);

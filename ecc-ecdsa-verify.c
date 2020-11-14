@@ -98,7 +98,7 @@ ecc_ecdsa_verify (const struct ecc_curve *ecc,
      division, I think), and write an ecc_add_ppp. */
 
   /* Compute sinv */
-  ecc->q.invert (&ecc->q, sinv, sp, sinv + 2*ecc->p.size);
+  ecc->q.invert (&ecc->q, sinv, sp, sinv + ecc->p.size);
 
   /* u1 = h / s, P1 = u1 * G */
   ecc_hash (&ecc->q, hp, length, digest);

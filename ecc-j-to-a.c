@@ -51,7 +51,7 @@ ecc_j_to_a (const struct ecc_curve *ecc,
 
   mp_limb_t cy;
 
-  ecc->p.invert (&ecc->p, izp, p+2*ecc->p.size, izp + 2 * ecc->p.size);
+  ecc->p.invert (&ecc->p, izp, p+2*ecc->p.size, izp + ecc->p.size);
   ecc_mod_sqr (&ecc->p, iz2p, izp, iz2p);
 
   if (ecc->use_redc)

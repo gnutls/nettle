@@ -58,8 +58,8 @@ ecc_eh_to_a (const struct ecc_curve *ecc,
 
   assert(op == 0);
 
-  /* Needs 2*size + scratch for the invert call. */
-  ecc->p.invert (&ecc->p, izp, zp, tp + ecc->p.size);
+  /* Needs size + scratch for the invert call. */
+  ecc->p.invert (&ecc->p, izp, zp, tp);
 
   ecc_mod_mul (&ecc->p, tp, xp, izp, tp);
   cy = mpn_sub_n (r, tp, ecc->p.m, ecc->p.size);

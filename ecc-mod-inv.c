@@ -58,7 +58,7 @@ cnd_neg (int cnd, mp_limb_t *rp, const mp_limb_t *ap, mp_size_t n)
    Returns zero if a == 0 (mod m), to be consistent with a^{phi(m)-1}.
    Also needs (m+1)/2, and m must be odd.
 
-   Needs 2n limbs available at rp, and 2n additional scratch limbs.
+   Needs 3n limbs of scratch space.
 */
 
 /* FIXME: Could use mpn_sec_invert (in GMP-6), but with a bit more
@@ -70,7 +70,7 @@ ecc_mod_inv (const struct ecc_modulo *m,
 {
 #define ap scratch
 #define bp (scratch + n)
-#define up (vp + n)
+#define up (scratch + 2*n)
 
   mp_size_t n = m->size;
   /* Avoid the mp_bitcnt_t type for compatibility with older GMP

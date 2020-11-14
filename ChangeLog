@@ -1,3 +1,16 @@
+2020-11-14  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-mod-inv.c (ecc_mod_inv): Use passed in scratch for all
+	scratch needs, don't use memory after the result area.
+	* ecc-ecdsa-sign.c (ecc_ecdsa_sign): Update invert call.
+	* ecc-ecdsa-verify.c (ecc_ecdsa_verify): Likewise.
+	* ecc-eh-to-a.c (ecc_eh_to_a): Likewise.
+	* ecc-j-to-a.c (ecc_j_to_a): Likewise.
+	* ecc-gostdsa-verify.c (ecc_gostdsa_verify): Likewise.
+	* ecc-internal.h (ECC_MOD_INV_ITCH, ECC_J_TO_A_ITCH)
+	(ECC_EH_TO_A_ITCH): Update accordingly, but no change in total
+	scratch need.
+
 2020-11-13  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-internal.h (ECC_J_TO_A_ITCH): Generalize, and take invert
