@@ -141,24 +141,25 @@ gcm_gf_mul (union nettle_block16 *x, const union nettle_block16 *table)
 }
 # elif GCM_TABLE_BITS == 8
 #  if HAVE_NATIVE_gcm_init_key
-
-#define gcm_init_key _nettle_gcm_init_key
+#   define gcm_init_key _nettle_gcm_init_key
 void
 _nettle_gcm_init_key (union nettle_block16 *table);
 #  endif /* HAVE_NATIVE_gcm_init_key */
-#  if HAVE_NATIVE_gcm_hash
 
-#define gcm_hash _nettle_gcm_hash
+#  if HAVE_NATIVE_gcm_hash
+#   define gcm_hash _nettle_gcm_hash
 void
 _nettle_gcm_hash (const struct gcm_key *key, union nettle_block16 *x,
-   size_t length, const uint8_t *data);
-#  endif /* HAVE_NATIVE_gcm_hash */
-#  if HAVE_NATIVE_gcm_hash8
- #define gcm_hash _nettle_gcm_hash8
+		   size_t length, const uint8_t *data);
+#  else /* !HAVE_NATIVE_gcm_hash */
+
+#   if HAVE_NATIVE_gcm_hash8
+
+#define gcm_hash _nettle_gcm_hash8
 void
 _nettle_gcm_hash8 (const struct gcm_key *key, union nettle_block16 *x,
 		   size_t length, const uint8_t *data);
-#  else /* !HAVE_NATIVE_gcm_hash8 */
+#   else /* !HAVE_NATIVE_gcm_hash8 */
 static const uint16_t
 shift_table[0x100] = {
   W(00,00),W(01,c2),W(03,84),W(02,46),W(07,08),W(06,ca),W(04,8c),W(05,4e),
@@ -228,7 +229,8 @@ gcm_gf_mul (union nettle_block16 *x, const union nettle_block16 *table)
   gcm_gf_shift_8(&Z);
   block16_xor3(x, &Z, &table[x->b[0]]);
 }
-#  endif /* ! HAVE_NATIVE_gcm_hash8 */
+#   endif /* ! HAVE_NATIVE_gcm_hash8 */
+#  endif /* !HAVE_NATIVE_gcm_hash */
 # else /* GCM_TABLE_BITS != 8 */
 #  error Unsupported table size. 
 # endif /* GCM_TABLE_BITS != 8 */
@@ -257,7 +259,7 @@ gcm_init_key(union nettle_block16 *table)
     {
       unsigned j;
       for (j = 1; j < i; j++)
- block16_xor3(&table[i+j], &table[i], &table[j]);
+	block16_xor3(&table[i+j], &table[i], &table[j]);
     }
 #endif
 }
