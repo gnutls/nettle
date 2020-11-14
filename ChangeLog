@@ -7,6 +7,9 @@
 	* ecc-eh-to-a.c (ecc_eh_to_a): Likewise.
 	* ecc-j-to-a.c (ecc_j_to_a): Likewise.
 	* ecc-gostdsa-verify.c (ecc_gostdsa_verify): Likewise.
+	* curve25519-eh-to-x.c (curve25519_eh_to_x): Likewise.
+	* curve448-eh-to-x.c (curve448_eh_to_x): Update invert call, and
+	reduce scratch need from 9*size to 5*size.
 	* ecc-internal.h (ECC_MOD_INV_ITCH, ECC_J_TO_A_ITCH)
 	(ECC_EH_TO_A_ITCH): Update accordingly, but no change in total
 	scratch need.
