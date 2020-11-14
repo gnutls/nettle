@@ -29,8 +29,8 @@ ifelse(`
    not, see http://www.gnu.org/licenses/.
 ')
 
-C Alignment of gcm_key table elements, which is declared in gcm.h
-define(`TableElemAlign', `0x100')
+C gcm_set_key() assigns H value in the middle element of the table
+define(`H_Idx', `128')
 
 C Register usage:
 
@@ -101,7 +101,7 @@ IF_LE(`
 ')
 
     C 'H' is assigned by gcm_set_key() to the middle element of the table
-    li             r10,8*TableElemAlign
+    li             r10,H_Idx*16
     lxvd2x         VSR(H),r10,TABLE              C load 'H'
     C byte-reverse of each doubleword permuting on little-endian mode
 IF_LE(`
@@ -151,9 +151,9 @@ IF_LE(`
     xxmrgld        VSR(H2L),VSR(H2),VSR(Hm)
 
     C store H1M, H1L, H2M, H2L
-    li             r8,1*TableElemAlign
-    li             r9,2*TableElemAlign
-    li             r10,3*TableElemAlign
+    li             r8,1*16
+    li             r9,2*16
+    li             r10,3*16
     stxvd2x        VSR(H1M),0,TABLE
     stxvd2x        VSR(H1L),r8,TABLE
     stxvd2x        VSR(H2M),r9,TABLE
@@ -191,10 +191,10 @@ IF_LE(`
     xxmrgld        VSR(H2L),VSR(H4),VSR(Hm2)
 
     C store H3M, H3L, H4M, H4L
-    li             r7,4*TableElemAlign
-    li             r8,5*TableElemAlign
-    li             r9,6*TableElemAlign
-    li             r10,7*TableElemAlign
+    li             r7,4*16
+    li             r8,5*16
+    li             r9,6*16
+    li             r10,7*16
     stxvd2x        VSR(H1M),r7,TABLE
     stxvd2x        VSR(H1L),r8,TABLE
     stxvd2x        VSR(H2M),r9,TABLE
@@ -208,8 +208,8 @@ define(`X', `r4')
 define(`LENGTH', `r5')
 define(`DATA', `r6')
 
-define(`ZERO', `v16')
-define(`POLY', `v17')
+define(`ZERO', `v18')
+define(`POLY', `v19')
 define(`POLY_L', `v0')
 
 define(`D', `v1')
@@ -230,19 +230,20 @@ define(`F', `v15')
 define(`R2', `v16')
 define(`F2', `v17')
 define(`R3', `v18')
-define(`F3', `v20')
-define(`R4', `v21')
-define(`F4', `v22')
-define(`T', `v23')
+define(`F3', `v19')
+define(`R4', `v20')
+define(`F4', `v21')
+define(`T', `v22')
 
-define(`LE_TEMP', `v18')
-define(`LE_MASK', `v19')
+define(`LE_TEMP', `v22')
+define(`LE_MASK', `v23')
 
     C void gcm_hash (const struct gcm_key *key, union gcm_block *x,
     C                size_t length, const uint8_t *data)
 
 define(`FUNC_ALIGN', `5')
 PROLOGUE(_nettle_gcm_hash)
+    vxor           ZERO,ZERO,ZERO
     DATA_LOAD_VEC(POLY,.polynomial,r7)
 IF_LE(`
     li             r8,0
@@ -250,7 +251,6 @@ IF_LE(`
     vspltisb       LE_TEMP,0x07
     vxor           LE_MASK,LE_MASK,LE_TEMP
 ')
-    vxor           ZERO,ZERO,ZERO
     xxmrghd        VSR(POLY_L),VSR(ZERO),VSR(POLY)
 
     lxvd2x         VSR(D),0,X                    C load 'X' pointer
@@ -261,8 +261,7 @@ IF_LE(`
 
     C --- process 4 blocks '128-bit each' per one loop ---
 
-    srdi           r7,LENGTH,6                   C 4-blocks loop count 'LENGTH / (4 * 16)'
-    cmpldi         r7,0
+    srdi.          r7,LENGTH,6                   C 4-blocks loop count 'LENGTH / (4 * 16)'
     beq            L2x
 
     mtctr          r7                            C assign counter register to loop count
@@ -278,17 +277,17 @@ IF_LE(`
     stvx           23,0,r8
 
     C load table elements
-    li             r8,1*TableElemAlign
-    li             r9,2*TableElemAlign
-    li             r10,3*TableElemAlign
+    li             r8,1*16
+    li             r9,2*16
+    li             r10,3*16
     lxvd2x         VSR(H1M),0,TABLE
     lxvd2x         VSR(H1L),r8,TABLE
     lxvd2x         VSR(H2M),r9,TABLE
     lxvd2x         VSR(H2L),r10,TABLE
-    li             r7,4*TableElemAlign
-    li             r8,5*TableElemAlign
-    li             r9,6*TableElemAlign
-    li             r10,7*TableElemAlign
+    li             r7,4*16
+    li             r8,5*16
+    li             r9,6*16
+    li             r10,7*16
     lxvd2x         VSR(H3M),r7,TABLE
     lxvd2x         VSR(H3L),r8,TABLE
     lxvd2x         VSR(H4M),r9,TABLE
@@ -356,14 +355,13 @@ IF_LE(`
 L2x:
     C --- process 2 blocks ---
 
-    srdi           r7,LENGTH,5                   C 'LENGTH / (2 * 16)'
-    cmpldi         r7,0
+    srdi.          r7,LENGTH,5                   C 'LENGTH / (2 * 16)'
     beq            L1x
 
     C load table elements
-    li             r8,1*TableElemAlign
-    li             r9,2*TableElemAlign
-    li             r10,3*TableElemAlign
+    li             r8,1*16
+    li             r9,2*16
+    li             r10,3*16
     lxvd2x         VSR(H1M),0,TABLE
     lxvd2x         VSR(H1L),r8,TABLE
     lxvd2x         VSR(H2M),r9,TABLE
@@ -403,12 +401,11 @@ IF_LE(`
 L1x:
     C --- process 1 block ---
 
-    srdi           r7,LENGTH,4                   C 'LENGTH / (1 * 16)'
-    cmpldi         r7,0
+    srdi.          r7,LENGTH,4                   C 'LENGTH / (1 * 16)'
     beq            Lmod
 
     C load table elements
-    li             r8,1*TableElemAlign
+    li             r8,1*16
     lxvd2x         VSR(H1M),0,TABLE
     lxvd2x         VSR(H1L),r8,TABLE
 
@@ -441,7 +438,7 @@ Lmod:
     beq            Ldone
 
     C load table elements
-    li             r8,1*TableElemAlign
+    li             r8,1*16
     lxvd2x         VSR(H1M),0,TABLE
     lxvd2x         VSR(H1L),r8,TABLE
 
