@@ -1,5 +1,7 @@
 2020-11-23  Niels Möller  <nisse@lysator.liu.se>
 
+	* powerpc64/p7/chacha-2core.asm: New file.
+
 	* chacha-crypt.c (_chacha_crypt_2core, _chacha_crypt32_2core): New
 	variants of chacha_crypt, using _chacha_2core to do two blocks at
 	a time.
