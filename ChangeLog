@@ -1,3 +1,11 @@
+2020-11-23  Niels Möller  <nisse@lysator.liu.se>
+
+	* chacha-crypt.c (_chacha_crypt_2core, _chacha_crypt32_2core): New
+	variants of chacha_crypt, using _chacha_2core to do two blocks at
+	a time.
+	* chacha-internal.h (_chacha_2core, _chacha_2core32): Add declarations.
+	* configure.ac (asm_nettle_optional_list): Add chacha-2core.asm.
+
 2020-11-14  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-mod-inv.c (ecc_mod_inv): Use passed in scratch for all

@@ -40,6 +40,8 @@
 #include "chacha.h"
 
 #define _chacha_core _nettle_chacha_core
+#define _chacha_2core _nettle_chacha_2core
+#define _chacha_2core32 _nettle_chacha_2core32
 #define _chacha_3core _nettle_chacha_3core
 #define _chacha_3core32 _nettle_chacha_3core32
 #define _chacha_crypt_1core _nettle_chacha_crypt_1core
@@ -51,6 +53,12 @@ void
 _chacha_core(uint32_t *dst, const uint32_t *src, unsigned rounds);
 
 /* Functions available only in some configurations */
+void
+_chacha_2core(uint32_t *dst, const uint32_t *src, unsigned rounds);
+
+void
+_chacha_2core32(uint32_t *dst, const uint32_t *src, unsigned rounds);
+
 void
 _chacha_3core(uint32_t *dst, const uint32_t *src, unsigned rounds);
 
