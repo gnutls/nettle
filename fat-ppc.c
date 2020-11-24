@@ -60,6 +60,7 @@
 #include "nettle-types.h"
 
 #include "aes-internal.h"
+#include "chacha-internal.h"
 #include "gcm.h"
 #include "fat-setup.h"
 
@@ -152,6 +153,14 @@ DECLARE_FAT_FUNC(_nettle_chacha_core, chacha_core_func)
 DECLARE_FAT_FUNC_VAR(chacha_core, chacha_core_func, c);
 DECLARE_FAT_FUNC_VAR(chacha_core, chacha_core_func, altivec);
 
+DECLARE_FAT_FUNC(nettle_chacha_crypt, chacha_crypt_func)
+DECLARE_FAT_FUNC_VAR(chacha_crypt, chacha_crypt_func, 1core)
+DECLARE_FAT_FUNC_VAR(chacha_crypt, chacha_crypt_func, 3core)
+
+DECLARE_FAT_FUNC(nettle_chacha_crypt32, chacha_crypt_func)
+DECLARE_FAT_FUNC_VAR(chacha_crypt32, chacha_crypt_func, 1core)
+DECLARE_FAT_FUNC_VAR(chacha_crypt32, chacha_crypt_func, 3core)
+
 static void CONSTRUCTOR
 fat_init (void)
 {
@@ -182,10 +191,14 @@ fat_init (void)
       if (verbose)
 	fprintf (stderr, "libnettle: enabling altivec code.\n");
       _nettle_chacha_core_vec = _nettle_chacha_core_altivec;
+      nettle_chacha_crypt_vec = _nettle_chacha_crypt_2core;
+      nettle_chacha_crypt32_vec = _nettle_chacha_crypt32_2core;
     }
   else
     {
       _nettle_chacha_core_vec = _nettle_chacha_core_c;
+      nettle_chacha_crypt_vec = _nettle_chacha_crypt_1core;
+      nettle_chacha_crypt32_vec = _nettle_chacha_crypt32_1core;
     }
 }
 
@@ -206,3 +219,17 @@ DEFINE_FAT_FUNC(_nettle_aes_decrypt, void,
 DEFINE_FAT_FUNC(_nettle_chacha_core, void,
 		(uint32_t *dst, const uint32_t *src, unsigned rounds),
 		(dst, src, rounds))
+
+DEFINE_FAT_FUNC(nettle_chacha_crypt, void,
+		(struct chacha_ctx *ctx,
+		 size_t length,
+		 uint8_t *dst,
+		 const uint8_t *src),
+		(ctx, length, dst, src))
+
+DEFINE_FAT_FUNC(nettle_chacha_crypt32, void,
+		(struct chacha_ctx *ctx,
+		 size_t length,
+		 uint8_t *dst,
+		 const uint8_t *src),
+		(ctx, length, dst, src))

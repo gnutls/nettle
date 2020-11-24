@@ -1,3 +1,14 @@
+2020-11-24  Niels Möller  <nisse@lysator.liu.se>
+
+	Enable ppc chacha_2core in fat builds.
+	* configure.ac: Add HAVE_NATIVE_fat_chacha_2core.
+	* chacha-crypt.c: Check HAVE_NATIVE_fat_chacha_2core.
+	* chacha-internal.h (_chacha_crypt_2core, _chacha_crypt32_2core):
+	Add declarations.
+	* fat-ppc.c (fat_init): Use _nettle_chacha_crypt_2core and
+	_nettle_chacha_crypt32_2core when altivec is available.
+	* powerpc64/fat/chacha-2core.asm: New file, including p7 version.
+
 2020-11-23  Niels Möller  <nisse@lysator.liu.se>
 
 	* powerpc64/p7/chacha-2core.asm: New file.

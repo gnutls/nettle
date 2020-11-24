@@ -62,7 +62,7 @@
 #elif HAVE_NATIVE_chacha_2core
 #define _chacha_crypt_2core chacha_crypt
 #define _chacha_crypt32_2core chacha_crypt32
-#elif !HAVE_NATIVE_fat_chacha_3core
+#elif !(HAVE_NATIVE_fat_chacha_3core || HAVE_NATIVE_fat_chacha_2core)
 #undef _chacha_crypt_1core
 #undef _chacha_crypt32_1core
 #define _chacha_crypt_1core chacha_crypt
@@ -112,7 +112,7 @@ _chacha_crypt_3core(struct chacha_ctx *ctx,
 }
 #endif
 
-#if HAVE_NATIVE_chacha_2core
+#if HAVE_NATIVE_chacha_2core || HAVE_NATIVE_fat_chacha_2core
 void
 _chacha_crypt_2core(struct chacha_ctx *ctx,
 		    size_t length,
@@ -224,7 +224,7 @@ _chacha_crypt32_3core(struct chacha_ctx *ctx,
 }
 #endif
 
-#if HAVE_NATIVE_chacha_2core
+#if HAVE_NATIVE_chacha_2core || HAVE_NATIVE_fat_chacha_2core
 void
 _chacha_crypt32_2core(struct chacha_ctx *ctx,
 		    size_t length,
@@ -258,7 +258,7 @@ _chacha_crypt32_2core(struct chacha_ctx *ctx,
 }
 #endif
 
-#if !HAVE_NATIVE_chacha_3core
+#if !(HAVE_NATIVE_chacha_3core || HAVE_NATIVE_chacha_2core)
 void
 _chacha_crypt32_1core(struct chacha_ctx *ctx,
 		      size_t length,

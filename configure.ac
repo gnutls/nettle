@@ -609,6 +609,7 @@ AH_VERBATIM([HAVE_NATIVE],
 #undef HAVE_NATIVE_chacha_core
 #undef HAVE_NATIVE_chacha_2core
 #undef HAVE_NATIVE_chacha_3core
+#undef HAVE_NATIVE_fat_chacha_2core
 #undef HAVE_NATIVE_fat_chacha_3core
 #undef HAVE_NATIVE_ecc_curve25519_modp
 #undef HAVE_NATIVE_ecc_curve448_modp

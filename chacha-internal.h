@@ -45,8 +45,10 @@
 #define _chacha_3core _nettle_chacha_3core
 #define _chacha_3core32 _nettle_chacha_3core32
 #define _chacha_crypt_1core _nettle_chacha_crypt_1core
+#define _chacha_crypt_2core _nettle_chacha_crypt_2core
 #define _chacha_crypt_3core _nettle_chacha_crypt_3core
 #define _chacha_crypt32_1core _nettle_chacha_crypt32_1core
+#define _chacha_crypt32_2core _nettle_chacha_crypt32_2core
 #define _chacha_crypt32_3core _nettle_chacha_crypt32_3core
 
 void
@@ -72,6 +74,12 @@ _chacha_crypt_1core(struct chacha_ctx *ctx,
 		    const uint8_t *src);
 
 void
+_chacha_crypt_2core(struct chacha_ctx *ctx,
+		    size_t length,
+		    uint8_t *dst,
+		    const uint8_t *src);
+
+void
 _chacha_crypt_3core(struct chacha_ctx *ctx,
 		    size_t length,
 		    uint8_t *dst,
@@ -79,6 +87,12 @@ _chacha_crypt_3core(struct chacha_ctx *ctx,
 
 void
 _chacha_crypt32_1core(struct chacha_ctx *ctx,
+		      size_t length,
+		      uint8_t *dst,
+		      const uint8_t *src);
+
+void
+_chacha_crypt32_2core(struct chacha_ctx *ctx,
 		      size_t length,
 		      uint8_t *dst,
 		      const uint8_t *src);
