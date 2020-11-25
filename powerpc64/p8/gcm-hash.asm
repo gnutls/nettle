@@ -126,12 +126,12 @@ IF_LE(`
     C --- Hp = (H mod x⁶⁴) × (x⁶⁴+x⁶³+x⁶²+x⁵⁷) mod P(X), deg(Hp) ≤ 127 ---
     C --- Hp = (H mod x⁶⁴) × (x⁶⁴+x⁶³+x⁶²+x⁵⁷) ---
     vpmsumd        Hp,H,POLY_L                   C Hp = (H mod x⁶⁴) × (x⁶³+x⁶²+x⁵⁷)
-    xxmrgld        VSR(Hl),VSR(H),VSR(ZERO)      C Hl = (H mod x⁶⁴) × x⁶⁴
     xxswapd        VSR(Hm),VSR(H)
-    vxor           Hl,Hl,Hp                      C Hl = Hl + Hp
+    xxmrgld        VSR(Hl),VSR(H),VSR(ZERO)      C Hl = (H mod x⁶⁴) × x⁶⁴
     vxor           Hm,Hm,Hp                      C Hm = Hm + Hp
-    xxmrghd        VSR(H1M),VSR(H),VSR(Hl)       C H1M = (H div x⁶⁴)||(Hl div x⁶⁴)
+    vxor           Hl,Hl,Hp                      C Hl = Hl + Hp
     xxmrgld        VSR(H1L),VSR(H),VSR(Hm)       C H1L = (H mod x⁶⁴)||(Hl mod x⁶⁴)
+    xxmrghd        VSR(H1M),VSR(H),VSR(Hl)       C H1M = (H div x⁶⁴)||(Hl div x⁶⁴)
 
     vpmsumd        F,H1L,H                       C F = (H1Lh × Hh) + (H1Ll × Hl)
     vpmsumd        R,H1M,H                       C R = (H1Mh × Hh) + (H1Ml × Hl)
@@ -208,8 +208,8 @@ define(`X', `r4')
 define(`LENGTH', `r5')
 define(`DATA', `r6')
 
-define(`ZERO', `v18')
-define(`POLY', `v19')
+define(`ZERO', `v16')
+define(`POLY', `v17')
 define(`POLY_L', `v0')
 
 define(`D', `v1')
@@ -229,14 +229,14 @@ define(`R', `v14')
 define(`F', `v15')
 define(`R2', `v16')
 define(`F2', `v17')
-define(`R3', `v18')
-define(`F3', `v19')
-define(`R4', `v20')
-define(`F4', `v21')
-define(`T', `v22')
+define(`T', `v18')
+define(`R3', `v20')
+define(`F3', `v21')
+define(`R4', `v22')
+define(`F4', `v23')
 
-define(`LE_TEMP', `v22')
-define(`LE_MASK', `v23')
+define(`LE_TEMP', `v18')
+define(`LE_MASK', `v19')
 
     C void gcm_hash (const struct gcm_key *key, union gcm_block *x,
     C                size_t length, const uint8_t *data)
@@ -268,13 +268,13 @@ IF_LE(`
 
     C store non-volatile vector registers
     addi           r8,SP,-64
-    stvx           20,0,r8
+    stvx           v20,0,r8
     addi           r8,r8,16
-    stvx           21,0,r8
+    stvx           v21,0,r8
     addi           r8,r8,16
-    stvx           22,0,r8
+    stvx           v22,0,r8
     addi           r8,r8,16
-    stvx           23,0,r8
+    stvx           v23,0,r8
 
     C load table elements
     li             r8,1*16
@@ -343,13 +343,13 @@ IF_LE(`
 
     C restore non-volatile vector registers
     addi           r8,SP,-64
-    lvx            20,0,r8
+    lvx            v20,0,r8
     addi           r8,r8,16
-    lvx            21,0,r8
+    lvx            v21,0,r8
     addi           r8,r8,16
-    lvx            22,0,r8
+    lvx            v22,0,r8
     addi           r8,r8,16
-    lvx            23,0,r8
+    lvx            v23,0,r8
 
     clrldi         LENGTH,LENGTH,58              C 'set the high-order 58 bits to zeros'
 L2x:
