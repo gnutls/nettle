@@ -1,3 +1,8 @@
+2020-11-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* powerpc64/p7/chacha-2core.asm: Add byte swapping of output, for
+	big-endian builds.
+
 2020-11-24  Niels Möller  <nisse@lysator.liu.se>
 
 	Enable ppc chacha_2core in fat builds.
