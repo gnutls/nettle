@@ -61,6 +61,7 @@
 
 #include "aes-internal.h"
 #include "gcm.h"
+#include "gcm-internal.h"
 #include "fat-setup.h"
 
 /* Defines from arch/powerpc/include/uapi/asm/cputable.h in Linux kernel */
@@ -109,7 +110,7 @@ get_ppc_features (struct ppc_features *features)
     {
 #if defined(_AIX)
       features->have_crypto_ext
- = _system_configuration.implementation >= 0x10000u;
+	= _system_configuration.implementation >= 0x10000u;
       features->have_altivec = _system_configuration.vmx_version > 1;
 #else
       unsigned long hwcap = 0;
@@ -148,6 +149,16 @@ DECLARE_FAT_FUNC(_nettle_aes_decrypt, aes_crypt_internal_func)
 DECLARE_FAT_FUNC_VAR(aes_decrypt, aes_crypt_internal_func, c)
 DECLARE_FAT_FUNC_VAR(aes_decrypt, aes_crypt_internal_func, ppc64)
 
+#if GCM_TABLE_BITS == 8
+DECLARE_FAT_FUNC(_nettle_gcm_init_key, gcm_init_key_func)
+DECLARE_FAT_FUNC_VAR(gcm_init_key, gcm_init_key_func, c)
+DECLARE_FAT_FUNC_VAR(gcm_init_key, gcm_init_key_func, ppc64)
+
+DECLARE_FAT_FUNC(_nettle_gcm_hash, gcm_hash_func)
+DECLARE_FAT_FUNC_VAR(gcm_hash, gcm_hash_func, c)
+DECLARE_FAT_FUNC_VAR(gcm_hash, gcm_hash_func, ppc64)
+#endif /* GCM_TABLE_BITS == 8 */
+
 DECLARE_FAT_FUNC(_nettle_chacha_core, chacha_core_func)
 DECLARE_FAT_FUNC_VAR(chacha_core, chacha_core_func, c);
 DECLARE_FAT_FUNC_VAR(chacha_core, chacha_core_func, altivec);
@@ -171,11 +182,23 @@ fat_init (void)
 	fprintf (stderr, "libnettle: enabling arch 2.07 code.\n");
       _nettle_aes_encrypt_vec = _nettle_aes_encrypt_ppc64;
       _nettle_aes_decrypt_vec = _nettle_aes_decrypt_ppc64;
+#if GCM_TABLE_BITS == 8
+      /* Make sure _nettle_gcm_init_key_vec function is compatible
+         with _nettle_gcm_hash_vec function e.g. _nettle_gcm_init_key_c()
+         fills gcm_key table with values that are incompatible with
+         _nettle_gcm_hash_ppc64() */
+      _nettle_gcm_init_key_vec = _nettle_gcm_init_key_ppc64;
+      _nettle_gcm_hash_vec = _nettle_gcm_hash_ppc64;
+#endif /* GCM_TABLE_BITS == 8 */
     }
   else
     {
       _nettle_aes_encrypt_vec = _nettle_aes_encrypt_c;
       _nettle_aes_decrypt_vec = _nettle_aes_decrypt_c;
+#if GCM_TABLE_BITS == 8
+      _nettle_gcm_init_key_vec = _nettle_gcm_init_key_c;
+      _nettle_gcm_hash_vec = _nettle_gcm_hash_c;
+#endif /* GCM_TABLE_BITS == 8 */
     }
   if (features.have_altivec)
     {
@@ -202,6 +225,17 @@ DEFINE_FAT_FUNC(_nettle_aes_decrypt, void,
  size_t length, uint8_t *dst,
  const uint8_t *src),
  (rounds, keys, T, length, dst, src))
+
+#if GCM_TABLE_BITS == 8
+DEFINE_FAT_FUNC(_nettle_gcm_init_key, void,
+		(union nettle_block16 *table),
+		(table))
+
+DEFINE_FAT_FUNC(_nettle_gcm_hash, void,
+		(const struct gcm_key *key, union nettle_block16 *x,
+		 size_t length, const uint8_t *data),
+		(key, x, length, data))
+#endif /* GCM_TABLE_BITS == 8 */
 
 DEFINE_FAT_FUNC(_nettle_chacha_core, void,
 		(uint32_t *dst, const uint32_t *src, unsigned rounds),
