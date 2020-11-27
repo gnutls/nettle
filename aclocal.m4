@@ -31,7 +31,7 @@ AC_CACHE_VAL(lsh_cv_sys_ccpic,[
   fi
   OLD_CFLAGS="$CFLAGS"
   CFLAGS="$CFLAGS $CCPIC"
-  AC_TRY_COMPILE([], [exit(0);],
+  AC_TRY_COMPILE([], [return 0;],
     lsh_cv_sys_ccpic="$CCPIC", lsh_cv_sys_ccpic='')
   CFLAGS="$OLD_CFLAGS"
 ])
