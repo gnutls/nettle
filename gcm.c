@@ -153,7 +153,7 @@ gcm_gf_mul (union nettle_block16 *x, const union nettle_block16 *table)
 #  elif GCM_TABLE_BITS == 8
 #   if HAVE_NATIVE_gcm_hash8
 
-#define gcm_hash _nettle_gcm_hash8
+#define _nettle_gcm_hash _nettle_gcm_hash8
 void
 _nettle_gcm_hash8 (const struct gcm_key *key, union nettle_block16 *x,
 		   size_t length, const uint8_t *data);
