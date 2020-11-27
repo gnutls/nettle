@@ -1,3 +1,11 @@
+2020-11-27  Niels Möller  <nisse@lysator.liu.se>
+
+	* aclocal.m4: Replace some calls to exit with return, since exit
+	requires stdlib.h. Including patch contributed by Adrien Béraud.
+
+	* testsuite/version-test.c: Include version.h. Patch contributed
+	by Brian Smith.
+
 2020-11-25  Niels Möller  <nisse@lysator.liu.se>
 
 	* powerpc64/p7/chacha-2core.asm: Add byte swapping of output, for
