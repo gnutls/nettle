@@ -1,5 +1,8 @@
 2020-11-28  Niels Möller  <nisse@lysator.liu.se>
 
+	* powerpc64/p7/chacha-2core.asm: Simplify counter carry handling
+	using the vaddcuw instruction.
+
 	Merge changes by Marco Bodrato and Torbjorn Granlund, from the
 	gmp/mini-gmp copy of this file.
 	* run-tests: Delete special handling of zero arguments. Update

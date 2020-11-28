@@ -73,9 +73,7 @@ PROLOGUE(_nettle_chacha_2core)
 
 	lxvw4x	VSR(X3), r8, SRC
 
-	vsubuwm	X0, X0, X1	C {-1,0,...,0}
-	vcmpequw Y3, X3, X0
-	vand	Y3, Y3, X1	C Counter carry out
+	vaddcuw	Y3, X3, X1	C Counter carry out
 	vsldoi	Y3, Y3, Y3, 12
 	vor	Y3, Y3, X1
 
