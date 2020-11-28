@@ -14,6 +14,9 @@
 	* gcm-internal.h: New file.
 	* Makefile.in (DISTFILES): Add gcm-internal.h.
 
+	* powerpc64/p8/gcm-hash.asm: New file, contributed by Mamone
+	Tarsha. Implements _nettle_gcm_init_key and _nettle_gcm_hash.
+
 2020-11-28  Niels Möller  <nisse@lysator.liu.se>
 
 	* powerpc64/p7/chacha-2core.asm: Simplify counter carry handling
