@@ -49,13 +49,24 @@
 
 #include "gcm.h"
 
+#include "gcm-internal.h"
 #include "memxor.h"
 #include "nettle-internal.h"
 #include "macros.h"
 #include "ctr-internal.h"
 #include "block-internal.h"
 
-#if GCM_TABLE_BITS == 0
+#if GCM_TABLE_BITS != 8
+/* The native implementations (currently ppc64 only) depend on the
+   GCM_TABLE_BITS == 8 layout */
+#undef HAVE_NATIVE_gcm_hash
+#undef HAVE_NATIVE_gcm_init_key
+#undef HAVE_NATIVE_fat_gcm_hash
+#undef HAVE_NATIVE_fat_gcm_init_key
+#endif
+
+#if !HAVE_NATIVE_gcm_hash
+# if GCM_TABLE_BITS == 0
 /* Sets x <- x * y mod r, using the plain bitwise algorithm from the
    specification. y may be shorter than a full block, missing bytes
    are assumed zero. */
@@ -83,15 +94,15 @@ gcm_gf_mul (union nettle_block16 *x, const union nettle_block16 *y)
     }
   memcpy (x->b, Z.b, sizeof(Z));
 }
-#else /* GCM_TABLE_BITS != 0 */
+# else /* GCM_TABLE_BITS != 0 */
 
-# if WORDS_BIGENDIAN
-#  define W(left,right) (0x##left##right)
-# else
-#  define W(left,right) (0x##right##left)
-# endif
+#  if WORDS_BIGENDIAN
+#   define W(left,right) (0x##left##right)
+#  else
+#   define W(left,right) (0x##right##left)
+#  endif
 
-# if GCM_TABLE_BITS == 4
+#  if GCM_TABLE_BITS == 4
 static const uint16_t
 shift_table[0x10] = {
   W(00,00),W(1c,20),W(38,40),W(24,60),W(70,80),W(6c,a0),W(48,c0),W(54,e0),
@@ -110,7 +121,7 @@ gcm_gf_shift_4(union nettle_block16 *x)
   u64[1] = (u64[1] >> 4) | ((u64[0] & 0xf) << 60);
   u64[0] = (u64[0] >> 4) ^ (reduce << 48);
 #else /* ! WORDS_BIGENDIAN */
-#define RSHIFT_WORD_4(x) \
+# define RSHIFT_WORD_4(x) \
   ((((x) & UINT64_C(0xf0f0f0f0f0f0f0f0)) >> 4) \
    | (((x) & UINT64_C(0x000f0f0f0f0f0f0f)) << 12))
   reduce = shift_table[(u64[1] >> 56) & 0xf];
@@ -139,14 +150,14 @@ gcm_gf_mul (union nettle_block16 *x, const union nettle_block16 *table)
     }
   memcpy (x->b, Z.b, sizeof(Z));
 }
-# elif GCM_TABLE_BITS == 8
-#  if HAVE_NATIVE_gcm_hash8
+#  elif GCM_TABLE_BITS == 8
+#   if HAVE_NATIVE_gcm_hash8
 
-#define gcm_hash _nettle_gcm_hash8
+#define _nettle_gcm_hash _nettle_gcm_hash8
 void
 _nettle_gcm_hash8 (const struct gcm_key *key, union nettle_block16 *x,
 		   size_t length, const uint8_t *data);
-#  else /* !HAVE_NATIVE_gcm_hash8 */
+#   else /* !HAVE_NATIVE_gcm_hash8 */
 static const uint16_t
 shift_table[0x100] = {
   W(00,00),W(01,c2),W(03,84),W(02,46),W(07,08),W(06,ca),W(04,8c),W(05,4e),
@@ -216,17 +227,45 @@ gcm_gf_mul (union nettle_block16 *x, const union nettle_block16 *table)
   gcm_gf_shift_8(&Z);
   block16_xor3(x, &Z, &table[x->b[0]]);
 }
-#  endif /* ! HAVE_NATIVE_gcm_hash8 */
-# else /* GCM_TABLE_BITS != 8 */
-#  error Unsupported table size. 
-# endif /* GCM_TABLE_BITS != 8 */
+#   endif /* ! HAVE_NATIVE_gcm_hash8 */
+#  else /* GCM_TABLE_BITS != 8 */
+#   error Unsupported table size.
+#  endif /* GCM_TABLE_BITS != 8 */
 
-#undef W
+#  undef W
+# endif /* GCM_TABLE_BITS != 0 */
+#endif /* !HAVE_NATIVE_gcm_hash */
 
-#endif /* GCM_TABLE_BITS */
 
 /* Increment the rightmost 32 bits. */
 #define INC32(block) INCREMENT(4, (block.b) + GCM_BLOCK_SIZE - 4)
+
+#if !HAVE_NATIVE_gcm_init_key
+# if !HAVE_NATIVE_fat_gcm_hash
+#  define _nettle_gcm_init_key _nettle_gcm_init_key_c
+static
+# endif
+void
+_nettle_gcm_init_key_c(union nettle_block16 *table)
+{
+#if GCM_TABLE_BITS
+  /* Middle element if GCM_TABLE_BITS > 0, otherwise the first
+     element */
+  unsigned i = (1<<GCM_TABLE_BITS)/2;
+
+  /* Algorithm 3 from the gcm paper. First do powers of two, then do
+     the rest by adding. */
+  while (i /= 2)
+    block16_mulx_ghash(&table[i], &table[2*i]);
+  for (i = 2; i < 1<<GCM_TABLE_BITS; i *= 2)
+    {
+      unsigned j;
+      for (j = 1; j < i; j++)
+	block16_xor3(&table[i+j], &table[i], &table[j]);
+    }
+#endif
+}
+#endif /* !HAVE_NATIVE_gcm_init_key */
 
 /* Initialization of GCM.
  * @ctx: The context of GCM
@@ -244,25 +283,18 @@ gcm_set_key(struct gcm_key *key,
   /* H */  
   memset(key->h[0].b, 0, GCM_BLOCK_SIZE);
   f (cipher, GCM_BLOCK_SIZE, key->h[i].b, key->h[0].b);
-  
-#if GCM_TABLE_BITS
-  /* Algorithm 3 from the gcm paper. First do powers of two, then do
-     the rest by adding. */
-  while (i /= 2)
-    block16_mulx_ghash(&key->h[i], &key->h[2*i]);
-  for (i = 2; i < 1<<GCM_TABLE_BITS; i *= 2)
-    {
-      unsigned j;
-      for (j = 1; j < i; j++)
-	block16_xor3(&key->h[i+j], &key->h[i],&key->h[j]);
-    }
-#endif
+
+  _nettle_gcm_init_key(key->h);
 }
 
-#ifndef gcm_hash
-static void
-gcm_hash(const struct gcm_key *key, union nettle_block16 *x,
-	 size_t length, const uint8_t *data)
+#if !(HAVE_NATIVE_gcm_hash || HAVE_NATIVE_gcm_hash8)
+# if !HAVE_NATIVE_fat_gcm_hash
+#  define _nettle_gcm_hash _nettle_gcm_hash_c
+static
+# endif
+void
+_nettle_gcm_hash_c(const struct gcm_key *key, union nettle_block16 *x,
+		   size_t length, const uint8_t *data)
 {
   for (; length >= GCM_BLOCK_SIZE;
        length -= GCM_BLOCK_SIZE, data += GCM_BLOCK_SIZE)
@@ -276,7 +308,7 @@ gcm_hash(const struct gcm_key *key, union nettle_block16 *x,
       gcm_gf_mul (x, key->h);
     }
 }
-#endif /* !gcm_hash */
+#endif /* !(HAVE_NATIVE_gcm_hash || HAVE_NATIVE_gcm_hash8) */
 
 static void
 gcm_hash_sizes(const struct gcm_key *key, union nettle_block16 *x,
@@ -290,7 +322,7 @@ gcm_hash_sizes(const struct gcm_key *key, union nettle_block16 *x,
   WRITE_UINT64 (buffer, auth_size);
   WRITE_UINT64 (buffer + 8, data_size);
 
-  gcm_hash(key, x, GCM_BLOCK_SIZE, buffer);
+  _nettle_gcm_hash(key, x, GCM_BLOCK_SIZE, buffer);
 }
 
 /* NOTE: The key is needed only if length != GCM_IV_SIZE */
@@ -309,7 +341,7 @@ gcm_set_iv(struct gcm_ctx *ctx, const struct gcm_key *key,
   else
     {
       memset(ctx->iv.b, 0, GCM_BLOCK_SIZE);
-      gcm_hash(key, &ctx->iv, length, iv);
+      _nettle_gcm_hash(key, &ctx->iv, length, iv);
       gcm_hash_sizes(key, &ctx->iv, 0, length);
     }
 
@@ -328,7 +360,7 @@ gcm_update(struct gcm_ctx *ctx, const struct gcm_key *key,
   assert(ctx->auth_size % GCM_BLOCK_SIZE == 0);
   assert(ctx->data_size == 0);
 
-  gcm_hash(key, &ctx->x, length, data);
+  _nettle_gcm_hash(key, &ctx->x, length, data);
 
   ctx->auth_size += length;
 }
@@ -399,7 +431,7 @@ gcm_encrypt (struct gcm_ctx *ctx, const struct gcm_key *key,
   assert(ctx->data_size % GCM_BLOCK_SIZE == 0);
 
   _ctr_crypt16(cipher, f, gcm_fill, ctx->ctr.b, length, dst, src);
-  gcm_hash(key, &ctx->x, length, dst);
+  _nettle_gcm_hash(key, &ctx->x, length, dst);
 
   ctx->data_size += length;
 }
@@ -411,7 +443,7 @@ gcm_decrypt(struct gcm_ctx *ctx, const struct gcm_key *key,
 {
   assert(ctx->data_size % GCM_BLOCK_SIZE == 0);
 
-  gcm_hash(key, &ctx->x, length, src);
+  _nettle_gcm_hash(key, &ctx->x, length, src);
   _ctr_crypt16(cipher, f, gcm_fill, ctx->ctr.b, length, dst, src);
 
   ctx->data_size += length;

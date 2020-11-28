@@ -162,6 +162,11 @@ typedef void aes_crypt_internal_func (unsigned rounds, const uint32_t *keys,
 				      size_t length, uint8_t *dst,
 				      const uint8_t *src);
 
+typedef void gcm_init_key_func (union nettle_block16 *table);
+
+typedef void gcm_hash_func (const struct gcm_key *key, union nettle_block16 *x,
+			    size_t length, const uint8_t *data);
+
 typedef void *(memxor_func)(void *dst, const void *src, size_t n);
 
 typedef void salsa20_core_func (uint32_t *dst, const uint32_t *src, unsigned rounds);
