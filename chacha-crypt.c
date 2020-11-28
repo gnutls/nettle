@@ -60,6 +60,8 @@
 #define _chacha_crypt_3core chacha_crypt
 #define _chacha_crypt32_3core chacha_crypt32
 #elif HAVE_NATIVE_chacha_2core
+#undef _chacha_crypt_2core
+#undef _chacha_crypt32_2core
 #define _chacha_crypt_2core chacha_crypt
 #define _chacha_crypt32_2core chacha_crypt32
 #elif !(HAVE_NATIVE_fat_chacha_3core || HAVE_NATIVE_fat_chacha_2core)
