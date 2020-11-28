@@ -1,3 +1,10 @@
+2020-11-28  Niels Möller  <nisse@lysator.liu.se>
+
+	Merge changes by Marco Bodrato and Torbjorn Granlund, from the
+	gmp/mini-gmp copy of this file.
+	* run-tests: Delete special handling of zero arguments. Update
+	WINEPATH, instead of overwriting it.
+
 2020-11-27  Niels Möller  <nisse@lysator.liu.se>
 
 	* aclocal.m4: Replace some calls to exit with return, since exit
