@@ -193,7 +193,6 @@ _nettle_chacha_crypt32_3core(struct chacha_ctx *ctx,
     {
       _nettle_chacha_3core32 (x, ctx->state, CHACHA_ROUNDS);
       ctx->state[12] += 3;
-      ctx->state[13] += (ctx->state[12] < 3);
       if (length <= 3*CHACHA_BLOCK_SIZE)
 	{
 	  memxor3 (dst, src, x, length);
@@ -208,13 +207,12 @@ _nettle_chacha_crypt32_3core(struct chacha_ctx *ctx,
   if (length <= CHACHA_BLOCK_SIZE)
     {
       _nettle_chacha_core (x, ctx->state, CHACHA_ROUNDS);
-      ctx->state[13] += (++ctx->state[12] == 0);
+      ++ctx->state[12];
     }
   else
     {
       _nettle_chacha_3core32 (x, ctx->state, CHACHA_ROUNDS);
       ctx->state[12] += 2;
-      ctx->state[13] += (ctx->state[12] < 2);
     }
   memxor3 (dst, src, x, length);
 }

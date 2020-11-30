@@ -1,5 +1,8 @@
 2020-11-30  Niels Möller  <nisse@lysator.liu.se>
 
+	* chacha-crypt.c (_nettle_chacha_crypt32_3core): Fix bug in
+	handling of counter; this function should not propagate any carry.
+
 	* aes-internal.h: Delete name mangling of internal symbols. Update
 	all internal references to use _nettle prefix.
 	* camellia-internal.h: Likewise.
