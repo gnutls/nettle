@@ -2,6 +2,8 @@
 
 	* chacha-crypt.c: (_nettle_chacha_crypt_4core)
 	(_nettle_chacha_crypt32_4core): New functions.
+	(_nettle_chacha_crypt_2core, _nettle_chacha_crypt32_2core):
+	Deleted, no longer needed.
 	* chacha-internal.h: Add prototypes for _nettle_chacha_4core and
 	related functions.
 	* configure.ac (asm_nettle_optional_list): Add chacha-4core.asm.
