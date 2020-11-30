@@ -193,7 +193,7 @@ IF_BE(`
 	vxor	 T1, T1, T0	C 03 02 01 00 ... 0f 0e 0d 0c
 
 	forloop(i, 0, 15, `
-	vperm	`v'i, `v'i, `v'i, T1
+	vperm   m4_unquote(v`'i), m4_unquote(v`'i), m4_unquote(v`'i), T1
 	')
 ')
 
