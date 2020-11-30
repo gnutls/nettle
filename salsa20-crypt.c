@@ -53,5 +53,5 @@ salsa20_crypt(struct salsa20_ctx *ctx,
   if (!length)
     return;
 
-  _salsa20_crypt (ctx, 20, length, c, m);
+  _nettle_salsa20_crypt (ctx, 20, length, c, m);
 }

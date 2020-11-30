@@ -45,23 +45,21 @@
 #include "memxor.h"
 
 #if HAVE_NATIVE_salsa20_2core
-#undef _salsa20_crypt_2core
-#define _salsa20_crypt_2core _salsa20_crypt
+#define _nettle_salsa20_crypt_2core _nettle_salsa20_crypt
 #elif !HAVE_NATIVE_fat_salsa20_2core
-#undef _salsa20_crypt_1core
-#define _salsa20_crypt_1core _salsa20_crypt
+#define _nettle_salsa20_crypt_1core _nettle_salsa20_crypt
 #endif
 
 #if HAVE_NATIVE_salsa20_2core || HAVE_NATIVE_fat_salsa20_2core
 void
-_salsa20_crypt_2core(struct salsa20_ctx *ctx, unsigned rounds,
-		     size_t length, uint8_t *dst,
-		     const uint8_t *src)
+_nettle_salsa20_crypt_2core(struct salsa20_ctx *ctx, unsigned rounds,
+			    size_t length, uint8_t *dst,
+			    const uint8_t *src)
 {
   uint32_t x[2*_SALSA20_INPUT_LENGTH];
   while (length > SALSA20_BLOCK_SIZE)
     {
-      _salsa20_2core (x, ctx->input, rounds);
+      _nettle_salsa20_2core (x, ctx->input, rounds);
       ctx->input[8] += 2;
       ctx->input[9] += (ctx->input[8] < 2);
       if (length <= 2 * SALSA20_BLOCK_SIZE)
@@ -75,7 +73,7 @@ _salsa20_crypt_2core(struct salsa20_ctx *ctx, unsigned rounds,
       dst += 2*SALSA20_BLOCK_SIZE;
       src += 2*SALSA20_BLOCK_SIZE;
     }
-  _salsa20_core (x, ctx->input, rounds);
+  _nettle_salsa20_core (x, ctx->input, rounds);
   ctx->input[9] += (++ctx->input[8] == 0);
   memxor3 (dst, src, x, length);
 }
@@ -83,16 +81,16 @@ _salsa20_crypt_2core(struct salsa20_ctx *ctx, unsigned rounds,
 
 #if !HAVE_NATIVE_salsa20_2core
 void
-_salsa20_crypt_1core(struct salsa20_ctx *ctx, unsigned rounds,
-		     size_t length,
-		     uint8_t *dst,
-		     const uint8_t *src)
+_nettle_salsa20_crypt_1core(struct salsa20_ctx *ctx, unsigned rounds,
+			    size_t length,
+			    uint8_t *dst,
+			    const uint8_t *src)
 {
   for (;;)
     {
       uint32_t x[_SALSA20_INPUT_LENGTH];
 
-      _salsa20_core (x, ctx->input, rounds);
+      _nettle_salsa20_core (x, ctx->input, rounds);
 
       ctx->input[9] += (++ctx->input[8] == 0);
 

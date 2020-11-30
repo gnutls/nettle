@@ -8,6 +8,7 @@
 	* dsa-internal.h: Likewise.
 	* gost28147-internal.h: Likewise.
 	* poly1305-internal.h: Likewise.
+	* salsa20-internal.h: Likewise.
 
 2020-11-26  Niels Möller  <nisse@lysator.liu.se>
 
