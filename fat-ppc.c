@@ -214,8 +214,8 @@ fat_init (void)
       if (verbose)
 	fprintf (stderr, "libnettle: enabling altivec code.\n");
       _nettle_chacha_core_vec = _nettle_chacha_core_altivec;
-      nettle_chacha_crypt_vec = _nettle_chacha_crypt_2core;
-      nettle_chacha_crypt32_vec = _nettle_chacha_crypt32_2core;
+      nettle_chacha_crypt_vec = _nettle_chacha_crypt_4core;
+      nettle_chacha_crypt32_vec = _nettle_chacha_crypt32_4core;
     }
   else
     {

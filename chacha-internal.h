@@ -56,13 +56,13 @@ void
 _nettle_chacha_3core32(uint32_t *dst, const uint32_t *src, unsigned rounds);
 
 void
-_nettle_chacha_crypt_1core(struct chacha_ctx *ctx,
-			   size_t length,
-			   uint8_t *dst,
-			   const uint8_t *src);
+_nettle_chacha_4core(uint32_t *dst, const uint32_t *src, unsigned rounds);
 
 void
-_nettle_chacha_crypt_2core(struct chacha_ctx *ctx,
+_nettle_chacha_4core32(uint32_t *dst, const uint32_t *src, unsigned rounds);
+
+void
+_nettle_chacha_crypt_1core(struct chacha_ctx *ctx,
 			   size_t length,
 			   uint8_t *dst,
 			   const uint8_t *src);
@@ -74,19 +74,25 @@ _nettle_chacha_crypt_3core(struct chacha_ctx *ctx,
 			   const uint8_t *src);
 
 void
+_nettle_chacha_crypt_4core(struct chacha_ctx *ctx,
+			   size_t length,
+			   uint8_t *dst,
+			   const uint8_t *src);
+
+void
 _nettle_chacha_crypt32_1core(struct chacha_ctx *ctx,
 			     size_t length,
 			     uint8_t *dst,
 			     const uint8_t *src);
 
 void
-_nettle_chacha_crypt32_2core(struct chacha_ctx *ctx,
+_nettle_chacha_crypt32_3core(struct chacha_ctx *ctx,
 			     size_t length,
 			     uint8_t *dst,
 			     const uint8_t *src);
 
 void
-_nettle_chacha_crypt32_3core(struct chacha_ctx *ctx,
+_nettle_chacha_crypt32_4core(struct chacha_ctx *ctx,
 			     size_t length,
 			     uint8_t *dst,
 			     const uint8_t *src);
