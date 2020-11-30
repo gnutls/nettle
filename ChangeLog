@@ -1,5 +1,8 @@
 2020-11-30  Niels Möller  <nisse@lysator.liu.se>
 
+	* m4-utils.m4 (m4_unquote): New macro, copied from GMP's
+	mpn/asm-defs.m4.
+
 	* chacha-crypt.c: (_nettle_chacha_crypt_4core)
 	(_nettle_chacha_crypt32_4core): New functions.
 	(_nettle_chacha_crypt_2core, _nettle_chacha_crypt32_2core):
