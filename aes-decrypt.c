@@ -371,8 +371,8 @@ aes128_decrypt(const struct aes128_ctx *ctx,
 	       const uint8_t *src)
 {
   assert(!(length % AES_BLOCK_SIZE) );
-  _aes_decrypt(_AES128_ROUNDS, ctx->keys, &_aes_decrypt_table,
-	       length, dst, src);
+  _nettle_aes_decrypt(_AES128_ROUNDS, ctx->keys, &_aes_decrypt_table,
+		      length, dst, src);
 }
 
 void
@@ -381,8 +381,8 @@ aes192_decrypt(const struct aes192_ctx *ctx,
 	       const uint8_t *src)
 {
   assert(!(length % AES_BLOCK_SIZE) );
-  _aes_decrypt(_AES192_ROUNDS, ctx->keys, &_aes_decrypt_table,
-	       length, dst, src);
+  _nettle_aes_decrypt(_AES192_ROUNDS, ctx->keys, &_aes_decrypt_table,
+		      length, dst, src);
 }
 
 void
@@ -391,6 +391,6 @@ aes256_decrypt(const struct aes256_ctx *ctx,
 	       const uint8_t *src)
 {
   assert(!(length % AES_BLOCK_SIZE) );
-  _aes_decrypt(_AES256_ROUNDS, ctx->keys, &_aes_decrypt_table,
-	       length, dst, src);
+  _nettle_aes_decrypt(_AES256_ROUNDS, ctx->keys, &_aes_decrypt_table,
+		      length, dst, src);
 }

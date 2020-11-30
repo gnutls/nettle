@@ -1,3 +1,8 @@
+2020-11-30  Niels Möller  <nisse@lysator.liu.se>
+
+	* aes-internal.h: Delete name mangling of internal symbols. Update
+	all internal references to use _nettle prefix.
+
 2020-11-26  Niels Möller  <nisse@lysator.liu.se>
 
 	Enable powerpc64 gcm code in fat builds. Based on patch
