@@ -162,6 +162,7 @@ typedef void aes_crypt_internal_func (unsigned rounds, const uint32_t *keys,
 				      size_t length, uint8_t *dst,
 				      const uint8_t *src);
 
+struct gcm_key;
 typedef void gcm_init_key_func (union nettle_block16 *table);
 
 typedef void gcm_hash_func (const struct gcm_key *key, union nettle_block16 *x,
