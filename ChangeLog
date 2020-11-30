@@ -3,6 +3,7 @@
 	* aes-internal.h: Delete name mangling of internal symbols. Update
 	all internal references to use _nettle prefix.
 	* camellia-internal.h: Likewise.
+	* ctr-internal.h: Likewise.
 	* dsa-internal.h: Likewise.
 
 2020-11-26  Niels Möller  <nisse@lysator.liu.se>

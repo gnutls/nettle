@@ -430,7 +430,7 @@ gcm_encrypt (struct gcm_ctx *ctx, const struct gcm_key *key,
 {
   assert(ctx->data_size % GCM_BLOCK_SIZE == 0);
 
-  _ctr_crypt16(cipher, f, gcm_fill, ctx->ctr.b, length, dst, src);
+  _nettle_ctr_crypt16(cipher, f, gcm_fill, ctx->ctr.b, length, dst, src);
   _nettle_gcm_hash(key, &ctx->x, length, dst);
 
   ctx->data_size += length;
@@ -444,7 +444,7 @@ gcm_decrypt(struct gcm_ctx *ctx, const struct gcm_key *key,
   assert(ctx->data_size % GCM_BLOCK_SIZE == 0);
 
   _nettle_gcm_hash(key, &ctx->x, length, src);
-  _ctr_crypt16(cipher, f, gcm_fill, ctx->ctr.b, length, dst, src);
+  _nettle_ctr_crypt16(cipher, f, gcm_fill, ctx->ctr.b, length, dst, src);
 
   ctx->data_size += length;
 }
