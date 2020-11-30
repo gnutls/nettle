@@ -193,8 +193,8 @@ _test_chacha(const struct tstring *key, const struct tstring *nonce,
     }
   else
     {
-      /* Uses the _chacha_core function to be able to test different
-	 numbers of rounds. */
+      /* Uses the _nettle_chacha_core function to be able to test
+	 different numbers of rounds. */
       uint32_t out[_CHACHA_STATE_LENGTH];
       ASSERT (expected->length == CHACHA_BLOCK_SIZE);
       ASSERT (nonce->length == CHACHA_NONCE_SIZE);
@@ -202,7 +202,7 @@ _test_chacha(const struct tstring *key, const struct tstring *nonce,
       chacha_set_nonce(&ctx, nonce->data);
       if (counter)
 	    chacha_set_counter(&ctx, counter->data);
-      _chacha_core (out, ctx.state, rounds);
+      _nettle_chacha_core (out, ctx.state, rounds);
 
       if (!MEMEQ(CHACHA_BLOCK_SIZE, out, expected->data))
 	{

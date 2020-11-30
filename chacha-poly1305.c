@@ -80,7 +80,7 @@ chacha_poly1305_set_nonce (struct chacha_poly1305_ctx *ctx,
 
   chacha_set_nonce96 (&ctx->chacha, nonce);
   /* Generate authentication key */
-  _chacha_core (u.x, ctx->chacha.state, CHACHA_ROUNDS);
+  _nettle_chacha_core (u.x, ctx->chacha.state, CHACHA_ROUNDS);
   _poly1305_set_key (&ctx->poly1305, u.subkey);
   /* For final poly1305 processing */
   memcpy (ctx->s.b, u.subkey + 16, 16);
