@@ -184,6 +184,19 @@ C Load state and splat
 	vadduwm	v10, v10, T2
 	vadduwm	v11, v11, T2
 
+IF_BE(`
+	C Output always stored in little-endian byte order.
+	C Can reuse T0 and T1 to construct permutation mask.
+	li	 r9, 0
+	lvsl	 T0, r9, r9	C 00 01 02 03 ... 0c 0d 0e 0f
+	vspltisb T1, 0x03	C 03 03 03 03 ... 03 03 03 03
+	vxor	 T1, T1, T0	C 03 02 01 00 ... 0f 0e 0d 0c
+
+	forloop(i, 0, 15, `
+	vperm	`v'i, `v'i, `v'i, T1
+	')
+')
+
 	stxvw4x	VSR(v0), 0, DST
 	stxvw4x	VSR(v4), r6, DST
 	stxvw4x	VSR(v8), r7, DST
