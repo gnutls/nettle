@@ -56,18 +56,57 @@ define(`T3', `v23')
 C Main loop for round
 define(`QR',`
 	vadduwm $1, $1, $2
+	vadduwm $5, $5, $6
 	vxor	$4, $4, $1
+	vxor	$8, $8, $5
 	vrlw	$4, $4, ROT16
+	vrlw	$8, $8, ROT16
+	vadduwm $9, $9, $10
+	vadduwm $13, $13, $14
+	vxor	$12, $12, $9
+	vxor	$16, $16, $13
+	vrlw	$12, $12, ROT16
+	vrlw	$16, $16, ROT16
+
 	vadduwm $3, $3, $4
+	vadduwm $7, $7, $8
 	vxor	$2, $2, $3
+	vxor	$6, $6, $7
 	vrlw	$2, $2, ROT12
+	vrlw	$6, $6, ROT12
+	vadduwm $11, $11, $12
+	vadduwm $15, $15, $16
+	vxor	$10, $10, $11
+	vxor	$14, $14, $15
+	vrlw	$10, $10, ROT12
+	vrlw	$14, $14, ROT12
+
 	vadduwm $1, $1, $2
+	vadduwm $5, $5, $6
 	vxor	$4, $4, $1
+	vxor	$8, $8, $5
 	vrlw	$4, $4, ROT8
+	vrlw	$8, $8, ROT8
+	vadduwm $9, $9, $10
+	vadduwm $13, $13, $14
+	vxor	$12, $12, $9
+	vxor	$16, $16, $13
+	vrlw	$12, $12, ROT8
+	vrlw	$16, $16, ROT8
+
 	vadduwm $3, $3, $4
+	vadduwm $7, $7, $8
 	vxor	$2, $2, $3
+	vxor	$6, $6, $7
 	vrlw	$2, $2, ROT7
- ')
+	vrlw	$6, $6, ROT7
+	vadduwm $11, $11, $12
+	vadduwm $15, $15, $16
+	vxor	$10, $10, $11
+	vxor	$14, $14, $15
+	vrlw	$10, $10, ROT7
+	vrlw	$14, $14, ROT7
+')
 
 define(`TRANSPOSE',`
 	vmrghw	T0, $1, $3	C A0 A2 B0 B2
@@ -143,14 +182,8 @@ C Load state and splat
 	srdi	ROUNDS, ROUNDS, 1
 	mtctr	ROUNDS
 .Loop:
-	QR(v0, v4,  v8, v12)
-	QR(v1, v5,  v9, v13)
-	QR(v2, v6, v10, v14)
-	QR(v3, v7, v11, v15)
-	QR(v0, v5, v10, v15)
-	QR(v1, v6, v11, v12)
-	QR(v2, v7,  v8, v13)
-	QR(v3, v4,  v9, v14)
+	QR(v0, v4,  v8, v12, v1, v5,  v9, v13, v2, v6, v10, v14, v3, v7, v11, v15)
+	QR(v0, v5, v10, v15, v1, v6, v11, v12, v2, v7,  v8, v13, v3, v4,  v9, v14)
 	bdnz	.Loop
 
 	C Add in saved original words, including counters, before

@@ -1,3 +1,8 @@
+2020-12-01  Niels Möller  <nisse@lysator.liu.se>
+
+	* powerpc64/p7/chacha-4core.asm (QR): Instruction level
+	interleaving in the main loop, written by Torbjörn Granlund.
+
 2020-11-30  Niels Möller  <nisse@lysator.liu.se>
 
 	* m4-utils.m4 (m4_unquote): New macro, copied from GMP's
