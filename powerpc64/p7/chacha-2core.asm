@@ -212,7 +212,7 @@ C Y3  A15 B15 A13 B13  X3  A12 B12 A14 B14 (Y3 swapped)
 
 IF_BE(`
 	C Output always stored in little-endian byte order.
-	C Can reuse S0 and S1 to construct permutation mask mask.
+	C Can reuse S0 and S1 to construct permutation mask.
 	li	 r9, 0
 	lvsl	 S0, r9, r9	C 00 01 02 03 ... 0c 0d 0e 0f
 	vspltisb S1, 0x03	C 03 03 03 03 ... 03 03 03 03
