@@ -132,11 +132,13 @@ PROLOGUE(_nettle_chacha_4core)
 	li	r7, 0x20	C ...useful...
 	li	r8, 0x30	C ...offsets
 
-	addi	SP, SP, -0x40	C Save callee-save registers
-	stvx	v20, 0, SP
-	stvx	v21, r6, SP
-	stvx	v22, r7, SP
-	stvx	v23, r8, SP
+	C Save callee-save registers. Use the "protected zone", max
+	C 228 bytes, below the stack pointer, accessed via r10.
+	addi	r10, SP, -0x40
+	stvx	v20, 0, r10
+	stvx	v21, r6, r10
+	stvx	v22, r7, r10
+	stvx	v23, r8, r10
 
 	vspltisw ROT16, -16	C -16 instead of 16 actually works!
 	vspltisw ROT12, 12
@@ -257,11 +259,10 @@ IF_BE(`
 	stxvw4x	VSR(v15), r8, DST
 
 	C Restore callee-save registers
-	lvx	v20, 0, SP
-	lvx	v21, r6, SP
-	lvx	v22, r7, SP
-	lvx	v23, r8, SP
-	addi	SP, SP, 0x40
+	lvx	v20, 0, r10
+	lvx	v21, r6, r10
+	lvx	v22, r7, r10
+	lvx	v23, r8, r10
 
 	blr
 EPILOGUE(_nettle_chacha_4core)

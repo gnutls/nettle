@@ -1,7 +1,9 @@
 2020-12-01  Niels Möller  <nisse@lysator.liu.se>
 
-	* powerpc64/p7/chacha-4core.asm (QR): Instruction level
-	interleaving in the main loop, written by Torbjörn Granlund.
+	* powerpc64/p7/chacha-4core.asm: Use protected zone below stack
+	pointer to save registers, without modifying the stack pointer.
+	(QR): Instruction level interleaving in the main loop, written by
+	Torbjörn Granlund.
 
 2020-11-30  Niels Möller  <nisse@lysator.liu.se>
 
