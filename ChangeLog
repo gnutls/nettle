@@ -1,4 +1,27 @@
+2020-12-01  Niels Möller  <nisse@lysator.liu.se>
+
+	* powerpc64/p7/chacha-4core.asm: Use protected zone below stack
+	pointer to save registers, without modifying the stack pointer.
+	(QR): Instruction level interleaving in the main loop, written by
+	Torbjörn Granlund.
+
 2020-11-30  Niels Möller  <nisse@lysator.liu.se>
+
+	* m4-utils.m4 (m4_unquote): New macro, copied from GMP's
+	mpn/asm-defs.m4.
+
+	* chacha-crypt.c: (_nettle_chacha_crypt_4core)
+	(_nettle_chacha_crypt32_4core): New functions.
+	(_nettle_chacha_crypt_2core, _nettle_chacha_crypt32_2core):
+	Deleted, no longer needed.
+	* chacha-internal.h: Add prototypes for _nettle_chacha_4core and
+	related functions.
+	* configure.ac (asm_nettle_optional_list): Add chacha-4core.asm.
+	* powerpc64/fat/chacha-4core.asm: New file.
+	* powerpc64/p7/chacha-4core.asm: New file.
+	* fat-ppc.c (fat_init): When altivec is available, use
+	_nettle_chacha_crypt_4core and _nettle_chacha_crypt32_4core
+	instead of _2core variants.
 
 	* chacha-crypt.c (_nettle_chacha_crypt32_3core): Fix bug in
 	handling of counter; this function should not propagate any carry.
