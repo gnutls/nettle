@@ -344,6 +344,18 @@ case "$host_cpu" in
       ABI=64
     ])
     ;;
+  aarch64)
+    AC_TRY_COMPILE([
+#if defined(__aarch64__)
+#error 64-bit powerpc
+#endif
+    ], [], [
+      ABI=32
+    ], [
+      ABI=64
+    ])
+    ;;
+
 esac
 
 if test "x$ABI" != xstandard ; then
@@ -457,6 +469,17 @@ if test "x$enable_assembler" = xyes ; then
 	if test "x$enable_arm_neon" = xyes ; then
 	  asm_path="arm/neon $asm_path"
 	fi
+      fi
+      ;;
+    aarch64*)
+      if test "$ABI" = 64 ; then
+	asm_path=arm64
+      else
+	# As far as I understand, Neon instructions are unlikely to be
+	# missing. It may be omitted "only for implementations
+	# targeting specialized markets", to quote the Armv8 reference
+	# manual.
+	asm_path="arm/neon arm/v6 arm"
       fi
       ;;
     *powerpc64*)
