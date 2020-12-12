@@ -1,3 +1,8 @@
+2020-12-12  Niels Möller  <nisse@lysator.liu.se>
+
+	* powerpc64/p7/chacha-4core.asm: More interleaving of independent
+	instructions, gives slight speedup on Power9.
+
 2020-12-01  Niels Möller  <nisse@lysator.liu.se>
 
 	* powerpc64/p7/chacha-4core.asm: Use protected zone below stack
