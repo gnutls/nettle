@@ -34,14 +34,16 @@ VR20:VR31 Nonvolatile (extended ABI mode) their values are preserved
 
 Addressing memory
 
-There are many ways to reference data, in the sake of writing
-position-independent code the current implementation uses GOT-indirect
+There are many ways to reference data, to maintain support of
+position-independent code the current implementations use GOT-indirect
 addressing (Accessing data through the global offset table):
 1. Define data in .data section
 2. Load the address of data into register from the global offset table
-   e.g. ld 7, my_var@got(2)
+   Use 32-bit offset (medium or large code model) to get maximum addressing 
+   reach of 4 GB e.g. addis r7, r2, my_var@got@ha
+                      ld r7, my_var@got@l(r7)
 3. Use the address to load the value of data into register
-   e.g. ld 3, 0(7)
+   e.g. ld r3, 0(r7)
 Refer to [2] for more information about referencing data
 
 VSX instructions "lxvd2x/stxvd2x" are used to load and store data to
