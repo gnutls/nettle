@@ -168,7 +168,8 @@ C Load state and splat
 	vspltw	v15, v12, 3
 	vspltw	v12, v12, 0
 
-	ld	r9, .Lcnts@got(r2)
+	addis	r9, r2, .Lcnts@got@ha
+	ld	r9, .Lcnts@got@l(r9)
 	lxvw4x	VSR(T0), 0, r9	C increments
 	vaddcuw	T1, v12, T0	C compute carry-out
 	vadduwm	v12, v12, T0	C low adds

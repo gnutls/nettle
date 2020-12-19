@@ -34,7 +34,8 @@ C used to obtain the effective address of
 C DATA_SRC storage.
 C DATA_LOAD_VEC(VEC_DST, DATA_SRC, GPR)
 define(`DATA_LOAD_VEC',
-`ld $3,$2@got(r2)
+`addis $3,r2,$2@got@ha
+ld $3,$2@got@l($3)
 lvx $1,0,$3')
 
 dnl  Usage: r0 ... r31, cr0 ... cr7
