@@ -43,8 +43,11 @@
 #if defined(_AIX)
 # include <sys/systemcfg.h>
 #elif defined(__linux__)
-# include <asm/cputable.h>
-# include <sys/auxv.h>
+# if defined(__GLIBC__) && defined(__GLIBC_PREREQ) && __GLIBC_PREREQ(2, 16)
+#  define USE_GETAUXVAL 1
+#  include <asm/cputable.h>
+#  include <sys/auxv.h>
+# endif
 #elif defined(__FreeBSD__)
 # include <machine/cpu.h>
 # ifdef PPC_FEATURE2_HAS_VEC_CRYPTO
@@ -116,7 +119,7 @@ get_ppc_features (struct ppc_features *features)
 #else
       unsigned long hwcap = 0;
       unsigned long hwcap2 = 0;
-# if defined(__linux__)
+# if defined(__linux__) && USE_GETAUXVAL
       hwcap = getauxval(AT_HWCAP);
       hwcap2 = getauxval(AT_HWCAP2);
 # elif defined(__FreeBSD__)
