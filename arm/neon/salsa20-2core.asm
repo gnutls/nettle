@@ -69,7 +69,7 @@ PROLOGUE(_nettle_salsa20_2core)
 
 	vtrn.32	X0, Y3		C X0:  0  0  2  2  Y3:  1  1  3  3
 	vtrn.32	X1, Y0		C X1:  4  4  6  6  Y0:  5  5  7  7
-	vtrn.32	X2, Y1		C X2:  8  8 10 10  Y1:  9  9  1  1
+	vtrn.32	X2, Y1		C X2:  8  8 10 10  Y1:  9  9 11 11
 	vtrn.32	X3, Y2		C X3: 12 12 14 14  Y2: 13 13 15 15
 
 	C Swap, to get
