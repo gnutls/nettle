@@ -1,3 +1,8 @@
+2020-12-21  Niels Möller  <nisse@lysator.liu.se>
+
+	From Mamone Tarsha:
+	* fat-ppc.c: Check glibc version, and use getauxval only when available.
+
 2020-12-12  Niels Möller  <nisse@lysator.liu.se>
 
 	* powerpc64/p7/chacha-4core.asm: More interleaving of independent
