@@ -42,7 +42,9 @@
 
 #if defined(_AIX)
 # include <sys/systemcfg.h>
-#elif defined(__linux__)
+#elif defined(__linux__) && defined(__GLIBC__) && \
+  defined(__GLIBC_PREREQ) && __GLIBC_PREREQ(2, 16)
+# define USE_GETAUXVAL 1
 # include <asm/cputable.h>
 # include <sys/auxv.h>
 #elif defined(__FreeBSD__)
@@ -116,7 +118,7 @@ get_ppc_features (struct ppc_features *features)
 #else
       unsigned long hwcap = 0;
       unsigned long hwcap2 = 0;
-# if defined(__linux__)
+# if USE_GETAUXVAL
       hwcap = getauxval(AT_HWCAP);
       hwcap2 = getauxval(AT_HWCAP2);
 # elif defined(__FreeBSD__)
