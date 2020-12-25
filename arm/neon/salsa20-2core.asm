@@ -36,6 +36,7 @@ ifelse(`
 define(`DST', `r0')
 define(`SRC', `r1')
 define(`ROUNDS', `r2')
+define(`SRCp32', `r3')
 
 C State, even elements in X, odd elements in Y
 define(`X0', `q0')
@@ -58,11 +59,14 @@ define(`T3', `q15')
 
 	C _salsa20_2core(uint32_t *dst, const uint32_t *src, unsigned rounds)
 PROLOGUE(_nettle_salsa20_2core)
-	vldm	SRC, {X0,X1,X2,X3}
+	C loads using vld1.32 to be endianness-neutral wrt consecutive 32-bit words
+	add	SRCp32, SRC, #32
+	vld1.32	{X0,X1}, [SRC]
+	vld1.32	{X2,X3}, [SRCp32]
 	adr	r12, .Lcount1
 
 	vmov	Y3, X0
-	vld1.64 {Y1}, [r12]
+	vld1.32 {Y1}, [r12]
 	vmov	Y0, X1
 	vadd.i64 Y1, Y1, X2	C Increment counter
 	vmov	Y2, X3
@@ -180,7 +184,8 @@ C Inverse swaps and transpositions
 	vswp	D1REG(Y0), D1REG(Y2)
 	vswp	D1REG(Y1), D1REG(Y3)
 
-	vldm	SRC, {T0,T1,T2,T3}
+	vld1.32	{T0,T1}, [SRC]
+	vld1.32	{T2,T3}, [SRCp32]
 
 	vtrn.32	X0, Y3
 	vtrn.32	X1, Y0
@@ -190,17 +195,26 @@ C Inverse swaps and transpositions
 C Add in the original context
 	vadd.i32	X0, X0, T0
 	vadd.i32	X1, X1, T1
+
+C vst1.8 because caller expects results little-endian
+C interleave loads, calculations and stores to save cycles on stores
+C use vstm when little-endian for some additional speedup
+IF_BE(`	vst1.8	{X0,X1}, [DST]!')
+
 	vadd.i32	X2, X2, T2
 	vadd.i32	X3, X3, T3
+IF_BE(`	vst1.8	{X2,X3}, [DST]!')
+IF_LE(`	vstmia	DST!, {X0,X1,X2,X3}')
 
-	vstmia	DST!, {X0,X1,X2,X3}
-	vld1.64 {X0}, [r12]
+	vld1.32 {X0}, [r12]
 	vadd.i32	T0, T0, Y3
 	vadd.i64	T2, T2, X0
 	vadd.i32	T1, T1, Y0
+IF_BE(`	vst1.8	{T0,T1}, [DST]!')
+
 	vadd.i32	T2, T2, Y1
 	vadd.i32	T3, T3, Y2
-
-	vstm	DST, {T0,T1,T2,T3}
+IF_BE(`	vst1.8	{T2,T3}, [DST]')
+IF_LE(`	vstm	DST, {T0,T1,T2,T3}')
 	bx	lr
 EPILOGUE(_nettle_salsa20_2core)

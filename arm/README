@@ -70,11 +70,23 @@ If data is to be processed with bit operations only, endianness can be ignored
 because byte-swapping on load and store will cancel each other out. Shifts
 however have to be inverted. See arm/memxor.asm for an example.
 
-3. vld1.8
+3. v{ld,st}1.{8,32}
 
 NEON's vld instruction can be used to produce endianness-neutral code. vld1.8
 will load a byte sequence into a register regardless of memory endianness. This
 can be used to process byte sequences. See arm/neon/umac-nh.asm for example.
+
+In the same fashion, vst1.8 can be used do a little-endian store. See
+arm/neon/salsa and chacha routines for examples.
+
+NOTE: vst1.x (at least on the Allwinner A20 Cortex-A7 implementation) seems to
+interfer with itself on subsequent calls, slowing it down. This can be avoided
+by putting calculcations or loads inbetween two vld1.x stores.
+
+Similarly, vld1.32 is used in chacha and salsa routines where 32-bit operands
+are stored in host-endianness in RAM but need to be loaded sequentially without
+the distortion introduced by vldm/vstm. Consecutive vld1.x instructions do not
+seem to suffer from slowdown similar to vst1.x.
 
 4. vldm/vstm
 

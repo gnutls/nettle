@@ -36,6 +36,7 @@ ifelse(`
 define(`DST', `r0')
 define(`SRC', `r1')
 define(`ROUNDS', `r2')
+define(`SRCp32', `r3')
 
 define(`X0', `q0')
 define(`X1', `q1')
@@ -86,7 +87,10 @@ define(`QROUND', `
 	C _salsa20_core(uint32_t *dst, const uint32_t *src, unsigned rounds)
 
 PROLOGUE(_nettle_salsa20_core)
-	vldm	SRC, {X0,X1,X2,X3}
+	C loads using vld1.32 to be endianness-neutral wrt consecutive 32-bit words
+	add	SRCp32, SRC, #32
+	vld1.32	{X0,X1}, [SRC]
+	vld1.32	{X2,X3}, [SRCp32]
 
 	C Input rows little-endian:
 	C	 0  1  2  3	X0
@@ -99,23 +103,10 @@ PROLOGUE(_nettle_salsa20_core)
 	C	 8 13  2  7
 	C	12  1  6 11
 
-	C Input rows big-endian:
-	C	 1  0  3  2	X0
-	C	 5  4  7  6	X1
-	C	 9  8 11 10	X2
-	C	13 12 15 14	X3
-	C even and odd columns switched because
-	C vldm loads consecutive doublewords and
-	C switches words inside them to make them BE
-	C Permuted to:
-	C	 5  0 15 10
-	C	 9  4  3 14
-	C	13  8  7  2
-	C	 1 12 11  6
-
 	C FIXME: Construct in some other way?
 	adr	r12, .Lmasks
-	vldm	r12, {M0101, M0110, M0011}
+	vld1.32	{M0101, M0110}, [r12]!
+	vld1.32	{M0011}, [r12]
 
 	vmov	S1, X1
 	vmov	S2, X2
@@ -160,29 +151,17 @@ PROLOGUE(_nettle_salsa20_core)
 	C	 3  4  9 14  >>> 1
 	C	 2  7  8 13  >>> 2
 	C	 1  6 11 12  >>> 3
-
-	C In big-endian rotate rows, to get
-	C	 5  0 15 10
-	C	 4  3 14  9  >>> 3
-	C	 7  2 13  8  >>> 2
-	C	 6  1 12 11  >>> 1
-	C different number of elements needs to be
-	C extracted on BE because of different column order
-IF_LE(`	vext.32	X1, X1, X1, #3')
-IF_BE(`	vext.32	X1, X1, X1, #1')
+	vext.32	X1, X1, X1, #3
 	vext.32	X2, X2, X2, #2
-IF_LE(`	vext.32	X3, X3, X3, #1')
-IF_BE(`	vext.32	X3, X3, X3, #3')
+	vext.32	X3, X3, X3, #1
 
 	QROUND(X0, X3, X2, X1)
 
 	subs	ROUNDS, ROUNDS, #2
 	C Inverse rotation
-IF_LE(`	vext.32	X1, X1, X1, #1')
-IF_BE(`	vext.32	X1, X1, X1, #3')
+	vext.32	X1, X1, X1, #1
 	vext.32	X2, X2, X2, #2
-IF_LE(`	vext.32	X3, X3, X3, #3')
-IF_BE(`	vext.32	X3, X3, X3, #1')
+	vext.32	X3, X3, X3, #3
 
 	bhi	.Loop
 
@@ -202,19 +181,19 @@ IF_BE(`	vext.32	X3, X3, X3, #1')
 	vbit	X2, X3, M0101
 	vbit	X3, T1, M0101
 
-	vld1.64	{T0}, [SRC]
+	vld1.32	{T0}, [SRC]
 	vadd.u32	X0, X0, T0
 	vadd.u32	X1, X1, S1
+
+	C vst1.8 because caller expects results little-endian
+	C use vstm when little-endian for some additional speedup
+IF_BE(`	vst1.8	{X0,X1}, [DST]!')
+
 	vadd.u32	X2, X2, S2
 	vadd.u32	X3, X3, S3
 
-	C caller expects result little-endian
-IF_BE(`	vrev32.u8	X0, X0
-	vrev32.u8	X1, X1
-	vrev32.u8	X2, X2
-	vrev32.u8	X3, X3')
-
-	vstm	DST, {X0,X1,X2,X3}
+IF_BE(`	vst1.8	{X2,X3}, [DST]')
+IF_LE(`	vstm	DST, {X0,X1,X2,X3}')
 	bx	lr
 EPILOGUE(_nettle_salsa20_core)
 

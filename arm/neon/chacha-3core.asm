@@ -36,6 +36,7 @@ ifelse(`
 define(`DST', `r0')
 define(`SRC', `r1')
 define(`ROUNDS', `r2')
+define(`SRCp32', `r3')
 
 C State, X, Y and Z representing consecutive blocks
 define(`X0', `q0')
@@ -64,10 +65,13 @@ define(`T3', `q7')
 	C _chacha_3core(uint32_t *dst, const uint32_t *src, unsigned rounds)
 
 PROLOGUE(_nettle_chacha_3core)
-	vldm	SRC, {X0,X1,X2,X3}
+	C loads using vld1.32 to be endianness-neutral wrt consecutive 32-bit words
+	add	SRCp32, SRC, #32
+	vld1.32	{X0,X1}, [SRC]
+	vld1.32	{X2,X3}, [SRCp32]
 	vpush	{q4,q5,q6,q7}
 	adr	r12, .Lcount1
-	vld1.64 {Z3}, [r12]
+	vld1.32 {Z3}, [r12]
 
 	vadd.i64	Y3, X3, Z3	C Increment 64-bit counter
 	vadd.i64	Z3, Y3, Z3
@@ -213,33 +217,49 @@ PROLOGUE(_nettle_chacha_3core)
 	vadd.i32	Y3, Y3, T2
 	vadd.i32	Z3, Z3, T3
 
-	vldm	SRC, {T0,T1,T2,T3}
+	vld1.32	{T0,T1}, [SRC]
 	vadd.i32	X0, X0, T0
 	vadd.i32	X1, X1, T1
+
+	C vst1.8 because caller expects results little-endian
+	C interleave loads, calculations and stores to save cycles on stores
+	C use vstm when little-endian for some additional speedup
+IF_BE(`	vst1.8	{X0,X1}, [DST]!')
+
+	vld1.32	{T2,T3}, [SRCp32]
 	vadd.i32	X2, X2, T2
 	vadd.i32	X3, X3, T3
-	vstmia	DST!, {X0,X1,X2,X3}
+IF_BE(`	vst1.8	{X2,X3}, [DST]!')
+IF_LE(`	vstmia	DST!, {X0,X1,X2,X3}')
 
 	vadd.i32	Y0, Y0, T0
 	vadd.i32	Y1, Y1, T1
+IF_BE(`	vst1.8	{Y0,Y1}, [DST]!')
+
 	vadd.i32	Y2, Y2, T2
-	vstmia	DST!, {Y0,Y1,Y2,Y3}
+IF_BE(`	vst1.8	{Y2,Y3}, [DST]!')
+IF_LE(`	vstmia	DST!, {Y0,Y1,Y2,Y3}')
 
 	vadd.i32	Z0, Z0, T0
 	vadd.i32	Z1, Z1, T1
+IF_BE(`	vst1.8	{Z0,Z1}, [DST]!')
+
 	vadd.i32	Z2, Z2, T2
 
 	vpop	{q4,q5,q6,q7}
 
-	vstm	DST, {Z0,Z1,Z2,Z3}
+IF_BE(`	vst1.8	{Z2,Z3}, [DST]')
+IF_LE(`	vstm	DST, {Z0,Z1,Z2,Z3}')
 	bx	lr
 EPILOGUE(_nettle_chacha_3core)
 
 PROLOGUE(_nettle_chacha_3core32)
-	vldm	SRC, {X0,X1,X2,X3}
+	add	SRCp32, SRC, #32
+	vld1.32	{X0,X1}, [SRC]
+	vld1.32	{X2,X3}, [SRCp32]
 	vpush	{q4,q5,q6,q7}
 	adr	r12, .Lcount1
-	vld1.64 {Z3}, [r12]
+	vld1.32 {Z3}, [r12]
 
 	vadd.i32	Y3, X3, Z3	C Increment 32-bit counter
 	vadd.i32	Z3, Y3, Z3

@@ -83,7 +83,9 @@ define(`QROUND', `
 	C _chacha_core(uint32_t *dst, const uint32_t *src, unsigned rounds)
 
 PROLOGUE(_nettle_chacha_core)
-	vldm	SRC, {X0,X1,X2,X3}
+	C loads using vld1.32 to be endianness-neutral wrt consecutive 32-bit words
+	vld1.32	{X0,X1}, [SRC]!		C SRC changed!
+	vld1.32	{X2,X3}, [SRC]
 
 	vmov	S0, X0
 	vmov	S1, X1
@@ -96,15 +98,6 @@ PROLOGUE(_nettle_chacha_core)
 	C	 8  9 10 11	X2
 	C	12 13 14 15	X3
 
-	C Input rows big-endian:
-	C	 1  0  3  2	X0
-	C	 5  4  7  6	X1
-	C	 9  8 11 10	X2
-	C	13 12 15 14	X3
-	C even and odd columns switched because
-	C vldm loads consecutive doublewords and
-	C switches words inside them to make them BE
-
 .Loop:
 	QROUND(X0, X1, X2, X3)
 
@@ -113,44 +106,32 @@ PROLOGUE(_nettle_chacha_core)
 	C	 5  6  7  4  >>> 3
 	C	10 11  8  9  >>> 2
 	C	15 12 13 14  >>> 1
-
-	C In big-endian rotate rows, to get
-	C	 1  0  3  2
-	C	 6  5  4  7  >>> 1
-	C	11 10  9  8  >>> 2
-	C	12 15 14 13  >>> 3
-	C different number of elements needs to be
-	C extracted on BE because of different column order
-IF_LE(`	vext.32	X1, X1, X1, #1')
-IF_BE(`	vext.32	X1, X1, X1, #3')
+	vext.32	X1, X1, X1, #1
 	vext.32	X2, X2, X2, #2
-IF_LE(`	vext.32	X3, X3, X3, #3')
-IF_BE(`	vext.32	X3, X3, X3, #1')
+	vext.32	X3, X3, X3, #3
 
 	QROUND(X0, X1, X2, X3)
 
 	subs	ROUNDS, ROUNDS, #2
 	C Inverse rotation
-IF_LE(`	vext.32	X1, X1, X1, #3')
-IF_BE(`	vext.32	X1, X1, X1, #1')
+	vext.32	X1, X1, X1, #3
 	vext.32	X2, X2, X2, #2
-IF_LE(`	vext.32	X3, X3, X3, #1')
-IF_BE(`	vext.32	X3, X3, X3, #3')
+	vext.32	X3, X3, X3, #1
 
 	bhi	.Loop
 
 	vadd.u32	X0, X0, S0
 	vadd.u32	X1, X1, S1
+
+	C vst1.8 because caller expects results little-endian
+	C use vstm when little-endian for some additional speedup
+IF_BE(`	vst1.8	{X0,X1}, [DST]!')
+
 	vadd.u32	X2, X2, S2
 	vadd.u32	X3, X3, S3
 
-	C caller expects result little-endian
-IF_BE(`	vrev32.u8	X0, X0
-	vrev32.u8	X1, X1
-	vrev32.u8	X2, X2
-	vrev32.u8	X3, X3')
-
-	vstm	DST, {X0,X1,X2,X3}
+IF_BE(`	vst1.8	{X2,X3}, [DST]')
+IF_LE(`	vstm  DST, {X0,X1,X2,X3}')
 	bx	lr
 EPILOGUE(_nettle_chacha_core)
 
