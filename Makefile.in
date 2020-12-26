@@ -618,7 +618,7 @@ distdir: $(DISTFILES)
 		arm arm/neon arm/v6 arm/fat \
 		powerpc64 powerpc64/p7 powerpc64/p8 powerpc64/fat ; do \
 	  mkdir "$(distdir)/$$d" ; \
-	  find "$(srcdir)/$$d" -maxdepth 1 '(' -name '*.asm' -o -name '*.m4' ')' \
+	  find "$(srcdir)/$$d" -maxdepth 1 '(' -name '*.asm' -o -name '*.m4' -o -name README ')' \
 	    -exec cp '{}' "$(distdir)/$$d" ';' ; \
 	done
 	set -e; for d in $(SUBDIRS); do \
