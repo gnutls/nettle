@@ -5,7 +5,7 @@ NEWS for the Nettle 3.6 release
 
 	It is not binary compatible with earlier releases. The shared
 	library names are libnettle.so.8.0 and libhogweed.so.6.0, with
-	sonames nibnettle.so.8 and libhogweed.so.6. The changed
+	sonames libnettle.so.8 and libhogweed.so.6. The changed
 	sonames are mainly to avoid upgrade problems with recent
 	GnuTLS versions, that depend on Nettle internals outside of
 	the advertised ABI. But also because of the removal of
