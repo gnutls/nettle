@@ -1,3 +1,9 @@
+2020-12-26  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Bump package version, to 3.7.
+	(LIBNETTLE_MINOR): Bump minor number, to 8.1.
+	(LIBHOGWEED_MINOR): Bump minor number, to 6.1.
+
 2020-12-21  Niels Möller  <nisse@lysator.liu.se>
 
 	From Mamone Tarsha:
