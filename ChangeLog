@@ -1,5 +1,7 @@
 2020-12-26  Niels Möller  <nisse@lysator.liu.se>
 
+	* NEWS: News entries for Nettle-3.7.
+
 	* Makefile.in (distdir): Distribute the README files in assembly
 	directories.
 
