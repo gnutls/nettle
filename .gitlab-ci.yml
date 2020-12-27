@@ -14,7 +14,7 @@ build/x86-64:
   image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
   script:
   - ./.bootstrap &&
-    ./configure --disable-static --enable-fat --disable-documentation && make -j4 &&
+    ./configure --disable-static --disable-documentation && make -j4 &&
     make check -j4 &&
     make check-fat
   tags:
@@ -26,7 +26,7 @@ build/mini-gmp:
   image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
   script:
   - ./.bootstrap &&
-    ./configure --disable-documentation --enable-mini-gmp && make -j4 &&
+    ./configure --disable-documentation --disable-fat --enable-mini-gmp && make -j4 &&
     make check -j4
   tags:
   - shared
@@ -128,7 +128,7 @@ Debian.cross.x86:
   - export CC_FOR_BUILD="gcc"
   - export CC="$host-gcc"
   - ./.bootstrap &&
-    CFLAGS="-O2 -g" ./configure --build=$build --host=$host --enable-fat --disable-documentation && make -j4 &&
+    CFLAGS="-O2 -g" ./configure --build=$build --host=$host --disable-documentation && make -j4 &&
     make check -j4
   tags:
   - shared
@@ -154,7 +154,7 @@ Debian.cross.x86:
   - export CC_FOR_BUILD="gcc"
   - export CC="$host-gcc"
   - ./.bootstrap
-  - ./configure --disable-static --enable-fat --disable-documentation --build=$build --host=$host
+  - ./configure --disable-static --disable-documentation --build=$build --host=$host
   - make -j$(nproc)
   - make -j$(nproc) check
   - make -j$(nproc) check-fat

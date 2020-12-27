@@ -74,8 +74,8 @@ AC_ARG_ENABLE(documentation,
   AC_HELP_STRING([--disable-documentation], [Omit building and installing the documentation. (default=auto)]),,
   [enable_documentation=auto])
 
-AC_ARG_ENABLE(fat, AC_HELP_STRING([--enable-fat], [Enable fat library build (default=no)]),,
-  [enable_fat=no])
+AC_ARG_ENABLE(fat, AC_HELP_STRING([--disable-fat], [Disable fat library build]),,
+  [enable_fat=yes])
 
 AC_ARG_ENABLE(arm-neon,
   AC_HELP_STRING([--enable-arm-neon], [Enable ARM Neon assembly. (default=auto)]),,
