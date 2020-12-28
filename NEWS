@@ -1,15 +1,16 @@
 NEWS for the Nettle 3.7 release
 
 	This release adds one new feature, the bcrypt password hashing
-	function, and lots of optimizations.
+	function, and lots of optimizations. There's also one
+	important change to how Nettle is configured: Fat builds are
+	now on by default.
 
 	The release adds PowerPC64 assembly for a few algorithms,
 	resulting in great speedups. Benchmarked on a Power9 machine,
 	speedup was 13 times for AES256-CTR and AES256-GCM, and 3.5
-	times for Chacha. Since the new PowerPC64 code depends on
-	optional instructions, it is not enabled by default. The
-	recommended way to enable it, with runtime detection of
-	available instructions, is to configure with --enable-fat.
+	times for Chacha. For fat builds (now the default), the new
+	code is used automatically, on processors supporting the needed
+	instruction set extensions.
 
 	The new version is intended to be fully source and binary
 	compatible with Nettle-3.6. The shared library names are
@@ -32,6 +33,14 @@ NEWS for the Nettle 3.7 release
 
 	* Overhaul of some elliptic curve primitives, improving ECDSA
 	  signature speed.
+
+	Configure:
+
+	* Fat builds are enabled by default on the architectures where
+	  it is supported (x86_64, arm and powerpc64). To disable
+	  runtime selection, and instead specify the processor flavor
+	  at configure time, you need to pass --disable-fat to the
+	  configure script.
 
 	Miscellaneous:
 
