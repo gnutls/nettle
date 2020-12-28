@@ -59,7 +59,7 @@ build/ubsan:
   image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
   script:
   - ./.bootstrap && 
-    CXXFLAGS="-fsanitize=undefined -fno-sanitize-recover -g -O2" CFLAGS="-fsanitize=undefined -fno-sanitize-recover -g -O2" ./configure 
+    CXXFLAGS="-fsanitize=undefined -fno-sanitize-recover -g -O2" CFLAGS="-fsanitize=undefined -fno-sanitize-recover -g -O2" ./configure --disable-assembler 
     --disable-documentation && make -j4 && make check -j4
   tags:
   - shared
@@ -70,7 +70,7 @@ build/asan:
   image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
   script:
   - ./.bootstrap && 
-  - CXXFLAGS="-fsanitize=address -g -O2" CFLAGS="-fsanitize=address -g -O2" ./configure --disable-documentation &&
+  - CXXFLAGS="-fsanitize=address -g -O2" CFLAGS="-fsanitize=address -g -O2" ./configure --disable-documentation --disable-assembler &&
     make -j4 && make check -j4
   tags:
   - shared
@@ -81,7 +81,7 @@ build/static-analyzers:
   image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
   script:
   - ./.bootstrap
-  - scan-build ./configure --disable-documentation
+  - scan-build ./configure --disable-documentation --disable-assembler
   - scan-build --status-bugs -o scan-build-lib make -j$(nproc)
   tags:
   - shared
