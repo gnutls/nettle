@@ -42,6 +42,12 @@ NEWS for the Nettle 3.7 release
 	  at configure time, you need to pass --disable-fat to the
 	  configure script.
 
+	Known issues:
+
+	* The ARM assembly code in this release doesn't work correctly
+	  on big-endian ARM systems. This will hopefully be fixed in a
+	  later release.
+
 	Miscellaneous:
 
 	* Use a few more gmp-6.1 functions: mpn_cnd_add_n,
