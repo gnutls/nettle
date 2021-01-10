@@ -42,11 +42,12 @@
 
 #if defined(_AIX)
 # include <sys/systemcfg.h>
-#elif defined(__linux__) && defined(__GLIBC__) && \
-  defined(__GLIBC_PREREQ) && __GLIBC_PREREQ(2, 16)
-# define USE_GETAUXVAL 1
-# include <asm/cputable.h>
-# include <sys/auxv.h>
+#elif defined(__linux__) && defined(__GLIBC__) && defined(__GLIBC_PREREQ)
+# if __GLIBC_PREREQ(2, 16)
+#  define USE_GETAUXVAL 1
+#  include <asm/cputable.h>
+#  include <sys/auxv.h>
+# endif
 #elif defined(__FreeBSD__)
 # include <machine/cpu.h>
 # ifdef PPC_FEATURE2_HAS_VEC_CRYPTO

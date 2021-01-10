@@ -1,3 +1,10 @@
+2021-01-10  Niels Möller  <nisse@lysator.liu.se>
+
+	* fat-ppc.c: Don't use __GLIBC_PREREQ in the same preprocessor
+	conditional as defined(__GLIBC_PREREQ), but move to a nested #if
+	conditional. Fixes compile error on OpenBSD/powerpc64, reported by
+	Jasper Lievisse Adriaanse.
+
 2021-01-04  Niels Möller  <nisse@lysator.liu.se>
 
 	* Released Nettle-3.7.
