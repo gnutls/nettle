@@ -1,3 +1,8 @@
+2021-01-20  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-ecdsa-verify.c (ecc_ecdsa_verify): Fix corner case with
+	all-zero hash. Reported by Guido Vranken.
+
 2021-01-10  Niels Möller  <nisse@lysator.liu.se>
 
 	* fat-ppc.c: Don't use __GLIBC_PREREQ in the same preprocessor

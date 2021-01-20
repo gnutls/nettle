@@ -132,12 +132,12 @@ ecc_ecdsa_verify (const struct ecc_curve *ecc,
 	 private key by guessing.
        */
       /* Total storage: 6*ecc->p.size + ecc->add_hhh_itch */
-      ecc->add_hhh (ecc, P1, P1, P2, P1 + 3*ecc->p.size);
+      ecc->add_hhh (ecc, P2, P2, P1, P1 + 3*ecc->p.size);
     }
   /* x coordinate only, modulo q */
-  ecc->h_to_a (ecc, 2, P2, P1, P1 + 3*ecc->p.size);
+  ecc->h_to_a (ecc, 2, P1, P2, P1 + 3*ecc->p.size);
 
-  return (mpn_cmp (rp, P2, ecc->p.size) == 0);
+  return (mpn_cmp (rp, P1, ecc->p.size) == 0);
 #undef P2
 #undef P1
 #undef sinv
