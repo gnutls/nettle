@@ -46,7 +46,7 @@ test_ecdsa (const struct ecc_curve *ecc,
   mpz_combit (signature.r, ecc->p.bit_size / 3);
   if (ecdsa_verify (&pub, h->length, h->data, &signature))
     {
-      fprintf (stderr, "ecdsa_verify unexpectedly succeeded with invalid signature.\n");
+      fprintf (stderr, "ecdsa_verify unexpectedly succeeded with invalid signature (r modified).\n");
       goto fail;
     }
   mpz_combit (signature.r, ecc->p.bit_size / 3);
@@ -54,7 +54,7 @@ test_ecdsa (const struct ecc_curve *ecc,
   mpz_combit (signature.s, 4*ecc->p.bit_size / 5);
   if (ecdsa_verify (&pub, h->length, h->data, &signature))
     {
-      fprintf (stderr, "ecdsa_verify unexpectedly succeeded with invalid signature.\n");
+      fprintf (stderr, "ecdsa_verify unexpectedly succeeded with invalid signature (s modified).\n");
       goto fail;
     }
   mpz_combit (signature.s, 4*ecc->p.bit_size / 5);
@@ -62,7 +62,7 @@ test_ecdsa (const struct ecc_curve *ecc,
   h->data[2*h->length / 3] ^= 0x40;
   if (ecdsa_verify (&pub, h->length, h->data, &signature))
     {
-      fprintf (stderr, "ecdsa_verify unexpectedly succeeded with invalid signature.\n");
+      fprintf (stderr, "ecdsa_verify unexpectedly succeeded with invalid signature (h modified).\n");
       goto fail;
     }
   h->data[2*h->length / 3] ^= 0x40;
@@ -81,6 +81,14 @@ test_ecdsa (const struct ecc_curve *ecc,
 void
 test_main (void)
 {
+  /* Test case provided by Guido Vranken, from oss-fuzz */
+  test_ecdsa (&_nettle_secp_192r1,
+	      "14683086 f1734c6d e68743a6 48181b54 a74d4c5b 383eb6a8", /* x */
+	      "  1e2584 2ab8b2b0 4017f655 1b5e4058 a2aa0612 2dae9344", /* y */
+	      SHEX("00"), /* h == 0 corner case*/
+	      "952800792ed19341fdeeec047f2514f3b0f150d6066151fb", /* r */
+	      "ec5971222014878b50d7a19d8954bc871e7e65b00b860ffb"); /* s */
+
   /* From RFC 4754 */
   test_ecdsa (&_nettle_secp_256r1,
 	      "2442A5CC 0ECD015F A3CA31DC 8E2BBC70"

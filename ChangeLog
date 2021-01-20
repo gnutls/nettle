@@ -2,6 +2,7 @@
 
 	* ecc-ecdsa-verify.c (ecc_ecdsa_verify): Fix corner case with
 	all-zero hash. Reported by Guido Vranken.
+	* testsuite/ecdsa-verify-test.c: Add corresponding test case.
 
 2021-01-10  Niels Möller  <nisse@lysator.liu.se>
 
