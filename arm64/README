@@ -1,0 +1,45 @@
+Endianness
+
+Similar to arm, aarch64 can run with little-endian or big-endian memory
+accesses. Endianness is handled exclusively on load and store operations.
+Register layout and operation behaviour is identical in both modes.
+
+When writing SIMD code, endianness interaction with vector loads and stores may
+exhibit seemingly unintuitive behaviour, particularly when mixing normal and
+vector load/store operations.
+
+See https://llvm.org/docs/BigEndianNEON.html for a good overview, particularly
+into the pitfalls of using ldr/str vs. ld1/st1.
+
+For example, ld1 {v1.2d,v2.2d},[x0] will load v1 and v2 with elements of a
+one-dimensional vector from consecutive memory locations. So v1.d[0] will be
+read from x0+0, v1.d[1] from x0+8 (bytes) and v2.d[0] from x0+16 and v2.d[1]
+from x0+24. That'll be the same in LE and BE mode because it is the structure
+of the vector prescribed by the load operation. Endianness will be applied to
+the individual doublewords but the order in which they're loaded from memory
+and in which they're put into d[0] and d[1] won't change.
+
+Another way is to explicitly load a vector of bytes using ld1 {v1.16b,
+v2.16b},[x0]. This will load x0+0 into v1.b[0], x0+1 (byte) into v1.b[1] and so
+forth. This load (or store) is endianness-neutral and behaves identical in LE
+and BE mode.
+
+Care must however be taken when switching views onto the registers: d[0] is
+mapped onto b[0] through b[7] and b[0] will be the least significant byte in
+d[0] and b[7] will be MSB. This layout is also the same in both memory
+endianness modes. ld1 {v1.16b}, however, will always load a vector of bytes
+with eight elements as consecutive bytes from memory into b[0] through b[7].
+When accessed trough d[0] this will only appear as the expected
+doubleword-sized number if it was indeed stored little-endian in memory.
+Something similar happens when loading a vector of doublewords (ld1
+{v1.2d},[x0]) and then accessing individual bytes of it. Bytes will only be at
+the expected indices if the doublewords are indeed stored in current memory
+endianness in memory. Therefore it is most intuitive to use the appropriate
+vector element width for the data being loaded or stored to apply the necessary
+endianness correction.
+
+Finally, ldr/str are not vector operations. When used to load a 128bit
+quadword, they will apply endianness to the whole quadword. Therefore
+particular care must be taken if the loaded data is then to be regarded as
+elements of e.g. a doubleword vector. Indicies may appear reversed on
+big-endian systems (because they are).
