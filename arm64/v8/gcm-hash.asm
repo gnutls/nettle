@@ -55,17 +55,10 @@ C common macros:
 .endm
 
 .macro REDUCTION out
-IF_BE(`
-    pmull          T.1q,F.1d,POLY.1d
-    ext            \out\().16b,F.16b,F.16b,#8
-    eor            R.16b,R.16b,T.16b
-    eor            \out\().16b,\out\().16b,R.16b
-',`
     pmull          T.1q,F.1d,POLY.1d
     eor            R.16b,R.16b,T.16b
     ext            R.16b,R.16b,R.16b,#8
     eor            \out\().16b,F.16b,R.16b
-')
 .endm
 
     C void gcm_init_key (union gcm_block *table)
@@ -108,27 +101,25 @@ define(`H4M', `v29')
 define(`H4L', `v30')
 
 .macro PMUL_PARAM in, param1, param2
-IF_BE(`
-    pmull2         Hp.1q,\in\().2d,POLY.2d
-    ext            Hm.16b,\in\().16b,\in\().16b,#8
-    eor            Hm.16b,Hm.16b,Hp.16b
-    zip            \param1\().2d,\in\().2d,Hm.2d
-    zip2           \param2\().2d,\in\().2d,Hm.2d
-',`
     pmull2         Hp.1q,\in\().2d,POLY.2d
     eor            Hm.16b,\in\().16b,Hp.16b
     ext            \param1\().16b,Hm.16b,\in\().16b,#8
     ext            \param2\().16b,\in\().16b,Hm.16b,#8
     ext            \param1\().16b,\param1\().16b,\param1\().16b,#8
-')
 .endm
 
 PROLOGUE(_nettle_gcm_init_key)
-    ldr            HQ,[TABLE,#16*H_Idx]
-    dup            EMSB.16b,H.b[0]
+    add            x1,TABLE,#16*H_Idx
+    ld1            {H.2d},[x1]
+
+    C we treat data as big-endian doublewords for processing. Since there is no
+    C endianness-neutral MSB-first load operation we need to restore our desired
+    C byte order on little-endian systems. The same holds true for DATA below
+    C but not our own internal precalculated TABLE (see below).
 IF_LE(`
     rev64          H.16b,H.16b
 ')
+    dup            EMSB.16b,H.b[7]
     mov            x1,#0xC200000000000000
     mov            x2,#1
     mov            POLY.d[0],x1
@@ -154,7 +145,10 @@ IF_LE(`
 
     PMUL_PARAM H2,H2M,H2L
 
-    st1            {H1M.16b,H1L.16b,H2M.16b,H2L.16b},[TABLE],#64
+    C we store to the table as doubleword-vectors in current memory endianness
+    C because it's our own strictly internal data structure and what gsm_hash
+    C can most naturally use
+    st1            {H1M.2d,H1L.2d,H2M.2d,H2L.2d},[TABLE],#64
 
     C --- calculate H^3 = H^1*H^2 ---
 
@@ -172,7 +166,7 @@ IF_LE(`
 
     PMUL_PARAM H4,H4M,H4L
 
-    st1            {H3M.16b,H3L.16b,H4M.16b,H4L.16b},[TABLE]
+    st1            {H3M.2d,H3L.2d,H4M.2d,H4L.2d},[TABLE]
 
     ret
 EPILOGUE(_nettle_gcm_init_key)
@@ -220,7 +214,7 @@ PROLOGUE(_nettle_gcm_hash)
     mov            x4,#0xC200000000000000
     mov            POLY.d[0],x4
 
-    ld1            {D.16b},[X]
+    ld1            {D.2d},[X]
 IF_LE(`
     rev64          D.16b,D.16b
 ')
@@ -229,11 +223,11 @@ IF_LE(`
     b.eq           L2x
 
     add            x5,TABLE,#64
-    ld1            {H1M.16b,H1L.16b,H2M.16b,H2L.16b},[TABLE]
-    ld1            {H3M.16b,H3L.16b,H4M.16b,H4L.16b},[x5]
+    ld1            {H1M.2d,H1L.2d,H2M.2d,H2L.2d},[TABLE]
+    ld1            {H3M.2d,H3L.2d,H4M.2d,H4L.2d},[x5]
 
 L4x_loop:
-    ld1            {C0.16b,C1.16b,C2.16b,C3.16b},[DATA],#64
+    ld1            {C0.2d,C1.2d,C2.2d,C3.2d},[DATA],#64
 IF_LE(`
     rev64          C0.16b,C0.16b
     rev64          C1.16b,C1.16b
@@ -259,9 +253,9 @@ L2x:
     tst            LENGTH,#-32
     b.eq           L1x
 
-    ld1            {H1M.16b,H1L.16b,H2M.16b,H2L.16b},[TABLE]
+    ld1            {H1M.2d,H1L.2d,H2M.2d,H2L.2d},[TABLE]
 
-    ld1            {C0.16b,C1.16b},[DATA],#32
+    ld1            {C0.2d,C1.2d},[DATA],#32
 IF_LE(`
     rev64          C0.16b,C0.16b
     rev64          C1.16b,C1.16b
@@ -280,9 +274,9 @@ L1x:
     tst            LENGTH,#-16
     b.eq           Lmod
 
-    ld1            {H1M.16b,H1L.16b},[TABLE]
+    ld1            {H1M.2d,H1L.2d},[TABLE]
 
-    ld1            {C0.16b},[DATA],#16
+    ld1            {C0.2d},[DATA],#16
 IF_LE(`
     rev64          C0.16b,C0.16b
 ')
@@ -297,7 +291,7 @@ Lmod:
     tst            LENGTH,#15
     b.eq           Ldone
 
-    ld1            {H1M.16b,H1L.16b},[TABLE]
+    ld1            {H1M.2d,H1L.2d},[TABLE]
 
     tbz            LENGTH,3,Lmod_8
     ldr            C0D,[DATA],#8
@@ -338,6 +332,6 @@ Ldone:
 IF_LE(`
     rev64          D.16b,D.16b
 ')
-    st1            {D.16b},[X]
+    st1            {D.2d},[X]
     ret
 EPILOGUE(_nettle_gcm_hash)
