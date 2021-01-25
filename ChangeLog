@@ -8,8 +8,10 @@
 	implementation on some platforms, including the Raspberry Pi 4.
 	With the introduction of salsa20-2core.asm, performance of this
 	function is also less important.
+	* arm/neon/chacha-core-internal.asm: Deleted file, for analogous reasons.
 	* arm/fat/salsa20-core-internal-2.asm: Deleted file.
-	* fat-arm.c: Delete fat setup for _nettle_salsa20_core.
+	* arm/fat/chacha-core-internal-2.asm: Deleted file.
+	* fat-arm.c (_nettle_salsa20_core, _nettle_chacha_core): Delete fat setup.
 
 2021-01-20  Niels Möller  <nisse@lysator.liu.se>
 
