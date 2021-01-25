@@ -81,6 +81,10 @@ AC_ARG_ENABLE(arm-neon,
   AC_HELP_STRING([--enable-arm-neon], [Enable ARM Neon assembly. (default=auto)]),,
   [enable_arm_neon=auto])
 
+AC_ARG_ENABLE(armv8-a-crypto,
+  AC_HELP_STRING([--enable-armv8-a-crypto], [Enable Armv8-A Crypto extension. (default=no)]),,
+  [enable_armv8_a_crypto=no])
+
 AC_ARG_ENABLE(x86-aesni,
   AC_HELP_STRING([--enable-x86-aesni], [Enable x86_64 aes instructions. (default=no)]),,
   [enable_x86_aesni=no])
@@ -344,10 +348,10 @@ case "$host_cpu" in
       ABI=64
     ])
     ;;
-  aarch64)
+  aarch64*)
     AC_TRY_COMPILE([
 #if defined(__aarch64__)
-#error 64-bit powerpc
+#error 64-bit arm
 #endif
     ], [], [
       ABI=32
@@ -355,7 +359,6 @@ case "$host_cpu" in
       ABI=64
     ])
     ;;
-
 esac
 
 if test "x$ABI" != xstandard ; then
@@ -474,6 +477,10 @@ if test "x$enable_assembler" = xyes ; then
     aarch64*)
       if test "$ABI" = 64 ; then
 	asm_path=arm64
+	if test "$enable_armv8_a_crypto" = yes ; then
+          CFLAGS="$CFLAGS -Wa,-march=armv8-a+crypto"
+          asm_path="arm64/v8 $asm_path"
+        fi
       else
 	# As far as I understand, Neon instructions are unlikely to be
 	# missing. It may be omitted "only for implementations

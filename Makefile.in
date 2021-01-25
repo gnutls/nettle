@@ -615,7 +615,8 @@ distdir: $(DISTFILES)
 	done
 	set -e; for d in sparc32 sparc64 x86 \
 		x86_64 x86_64/aesni x86_64/sha_ni x86_64/fat \
-		arm arm/neon arm/v6 arm/fat arm64 \
+		arm arm/neon arm/v6 arm/fat \
+		arm64 arm64/v8 \
 		powerpc64 powerpc64/p7 powerpc64/p8 powerpc64/fat ; do \
 	  mkdir "$(distdir)/$$d" ; \
 	  find "$(srcdir)/$$d" -maxdepth 1 '(' -name '*.asm' -o -name '*.m4' -o -name README ')' \
