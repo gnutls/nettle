@@ -1,3 +1,10 @@
+2021-01-31  Niels Möller  <nisse@lysator.liu.se>
+
+	* arm64/v8/gcm-hash.asm: New file, contributed by Maamoun TK and
+	Michael Weiser.
+	* arm64/README: New file. Document endianness issues, contributed
+	by Michael Weiser.
+
 2021-01-04  Niels Möller  <nisse@lysator.liu.se>
 
 	* Released Nettle-3.7.
