@@ -2,6 +2,7 @@ C arm/v8/gcm-hash.asm
 
 ifelse(`
    Copyright (C) 2020 Niels Möller and Mamone Tarsha
+   Copyright (C) 2021 Michael Weiser
    This file is part of GNU Nettle.
 
    GNU Nettle is free software: you can redistribute it and/or
@@ -84,7 +85,6 @@ define(`TABLE', `x0')
 define(`EMSB', `v0')
 define(`B', `v1')
 define(`H', `v2')
-define(`HQ', `q2')
 define(`H2', `v3')
 define(`H3', `v4')
 define(`H4', `v5')
@@ -146,7 +146,7 @@ IF_LE(`
     PMUL_PARAM H2,H2M,H2L
 
     C we store to the table as doubleword-vectors in current memory endianness
-    C because it's our own strictly internal data structure and what gsm_hash
+    C because it's our own strictly internal data structure and what gcm_hash
     C can most naturally use
     st1            {H1M.2d,H1L.2d,H2M.2d,H2L.2d},[TABLE],#64
 
