@@ -4283,8 +4283,8 @@ Nettle's @acronym{PBKDF2} functions are defined in
 @file{<nettle/pbkdf2.h>}.  There is an abstract function that operate on
 any PRF implemented via the @code{nettle_hash_update_func},
 @code{nettle_hash_digest_func} interfaces.  There is also helper macros
-and concrete functions PBKDF2-HMAC-SHA1 and PBKDF2-HMAC-SHA256.  First,
-the abstract function:
+and concrete functions PBKDF2-HMAC-SHA1, PBKDF2-HMAC-SHA256, PBKDF2-HMAC-SHA384
+and PBKDF2-HMAC-SHA512.  First, the abstract function:
 
 @deftypefun void pbkdf2 (void *mac_ctx, nettle_hash_update_func *update, nettle_hash_digest_func *digest, size_t digest_size, unsigned iterations, size_t salt_length, const uint8_t *salt, size_t length, uint8_t *dst)
 Derive symmetric key from a password according to PKCS #5 PBKDF2.  The
@@ -4329,6 +4329,26 @@ room for at least @var{length} octets.
 
 @deftypefun void pbkdf2_hmac_sha256 (size_t @var{key_length}, const uint8_t *@var{key}, unsigned @var{iterations}, size_t @var{salt_length}, const uint8_t *@var{salt}, size_t @var{length}, uint8_t *@var{dst})
 PBKDF2 with HMAC-SHA256.  Derive @var{length} bytes of key into buffer
+@var{dst} using the password @var{key} of length @var{key_length} and
+salt @var{salt} of length @var{salt_length}, with iteration counter
+@var{iterations} (> 0).  The output buffer is @var{dst} which must have
+room for at least @var{length} octets.
+@end deftypefun
+
+@subsubsection @acronym{PBKDF2-HMAC-SHA384}
+
+@deftypefun void pbkdf2_hmac_sha384 (size_t @var{key_length}, const uint8_t *@var{key}, unsigned @var{iterations}, size_t @var{salt_length}, const uint8_t *@var{salt}, size_t @var{length}, uint8_t *@var{dst})
+PBKDF2 with HMAC-SHA384.  Derive @var{length} bytes of key into buffer
+@var{dst} using the password @var{key} of length @var{key_length} and
+salt @var{salt} of length @var{salt_length}, with iteration counter
+@var{iterations} (> 0).  The output buffer is @var{dst} which must have
+room for at least @var{length} octets.
+@end deftypefun
+
+@subsubsection @acronym{PBKDF2-HMAC-SHA512}
+
+@deftypefun void pbkdf2_hmac_sha512 (size_t @var{key_length}, const uint8_t *@var{key}, unsigned @var{iterations}, size_t @var{salt_length}, const uint8_t *@var{salt}, size_t @var{length}, uint8_t *@var{dst})
+PBKDF2 with HMAC-SHA512.  Derive @var{length} bytes of key into buffer
 @var{dst} using the password @var{key} of length @var{key_length} and
 salt @var{salt} of length @var{salt_length}, with iteration counter
 @var{iterations} (> 0).  The output buffer is @var{dst} which must have
