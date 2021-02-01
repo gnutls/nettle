@@ -131,7 +131,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 nettle-meta-aeads.c nettle-meta-armors.c \
 		 nettle-meta-ciphers.c nettle-meta-hashes.c nettle-meta-macs.c \
 		 pbkdf2.c pbkdf2-hmac-gosthash94.c pbkdf2-hmac-sha1.c \
-		 pbkdf2-hmac-sha256.c \
+		 pbkdf2-hmac-sha256.c pbkdf2-hmac-sha384.c pbkdf2-hmac-sha512.c \
 		 poly1305-aes.c poly1305-internal.c \
 		 realloc.c \
 		 ripemd160.c ripemd160-compress.c ripemd160-meta.c \
