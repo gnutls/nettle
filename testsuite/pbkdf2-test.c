@@ -114,6 +114,12 @@ test_main (void)
   PBKDF2_HMAC_TEST(pbkdf2_hmac_sha256, LDATA("passwd"), 1, LDATA("salt"),
 		   SHEX("55ac046e56e3089fec1691c22544b605"));
 
+  PBKDF2_HMAC_TEST(pbkdf2_hmac_sha384, LDATA("passwd"), 1, LDATA("salt"),
+		   SHEX("cd3443723a41cf1460cca9efeede428a"));
+
+  PBKDF2_HMAC_TEST(pbkdf2_hmac_sha512, LDATA("passwd"), 1, LDATA("salt"),
+		   SHEX("c74319d99499fc3e9013acff597c23c5"));
+
   /* From TC26 document, MR 26.2.001-2012 */
 
   hmac_gosthash94cp_set_key (&gosthash94cpctx, LDATA("password"));

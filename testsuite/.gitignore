@@ -104,6 +104,10 @@
 /xts-test
 /cmac-test
 /siv-test
+/bcrypt-test
+/ed448-test
+/shake256-test
+/x86-ibt-test
 
 /test.in
 /test1.out
