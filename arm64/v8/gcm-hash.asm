@@ -30,12 +30,12 @@ ifelse(`
    not, see http://www.gnu.org/licenses/.
 ')
 
-C gcm_set_key() assigns H value in the middle element of the table
-define(`H_Idx', `128')
-
 .file "gcm-hash.asm"
 
 .text
+
+C gcm_set_key() assigns H value in the middle element of the table
+define(`H_Idx', `128')
 
 C common register usage:
 define(`POLY', `v6')
