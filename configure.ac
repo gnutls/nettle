@@ -478,7 +478,6 @@ if test "x$enable_assembler" = xyes ; then
       if test "$ABI" = 64 ; then
 	asm_path=arm64
 	if test "$enable_armv8_a_crypto" = yes ; then
-          CFLAGS="$CFLAGS -march=armv8-a+crypto"
           asm_path="arm64/v8 $asm_path"
         fi
       else

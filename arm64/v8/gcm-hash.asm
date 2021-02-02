@@ -31,6 +31,7 @@ ifelse(`
 ')
 
 .file "gcm-hash.asm"
+.arch armv8-a+crypto
 
 .text
 
