@@ -1,3 +1,8 @@
+2021-02-03  Niels Möller  <nisse@lysator.liu.se>
+
+	* arm64/crypto/gcm-hash.asm: Renamed directory, moved file,...
+	* arm64/v8/gcm-hash.asm: ... old name.
+
 2021-02-02  Niels Möller  <nisse@lysator.liu.se>
 
 	* arm64/v8/gcm-hash.asm: Add ".arch armv8-a+crypto" directive.
