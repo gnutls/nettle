@@ -1,3 +1,18 @@
+2021-01-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* arm/neon/salsa20-core-internal.asm: Deleted file. This ARM Neon
+	implementation reportedly gave a speedup of 45% on Cortex A9,
+	compared to the C implementation, when it was added back in 2013.
+	That appears to no longer be the case with more recent processors
+	and compilers. And it's even significantly slower than the C
+	implementation on some platforms, including the Raspberry Pi 4.
+	With the introduction of salsa20-2core.asm, performance of this
+	function is also less important.
+	* arm/neon/chacha-core-internal.asm: Deleted file, for analogous reasons.
+	* arm/fat/salsa20-core-internal-2.asm: Deleted file.
+	* arm/fat/chacha-core-internal-2.asm: Deleted file.
+	* fat-arm.c (_nettle_salsa20_core, _nettle_chacha_core): Delete fat setup.
+
 2021-01-31  Niels Möller  <nisse@lysator.liu.se>
 
 	New variants, contributed by Nicolas Mora.
