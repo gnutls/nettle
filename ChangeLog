@@ -1,3 +1,10 @@
+2021-01-31  Niels Möller  <nisse@lysator.liu.se>
+
+	New variants, contributed by Nicolas Mora.
+	* pbkdf2-hmac-sha384.c (pbkdf2_hmac_sha384): New file and function.
+	* pbkdf2-hmac-sha512.c (pbkdf2_hmac_sha512): New file and function.
+	* testsuite/pbkdf2-test.c (test_main): Corresponding tests.
+
 2021-01-20  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-ecdsa-verify.c (ecc_ecdsa_verify): Fix corner case with
