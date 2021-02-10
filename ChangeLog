@@ -1,5 +1,9 @@
 2021-02-10  Niels Möller  <nisse@lysator.liu.se>
 
+	* chacha-crypt.c (_nettle_chacha_crypt_4core): Fix for the case
+	that counter increment should be 3 (129 <= message length <= 192).
+	(_nettle_chacha_crypt32_4core): Likewise.
+
 	* testsuite/chacha-test.c (test_chacha_rounds): New function, for
 	tests with non-standard round count. Extracted from _test_chacha.
 	(_test_chacha): Deleted rounds argument. Reorganized crypt/crypt32
