@@ -1,3 +1,15 @@
+2021-02-10  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/chacha-test.c (test_chacha_rounds): New function, for
+	tests with non-standard round count. Extracted from _test_chacha.
+	(_test_chacha): Deleted rounds argument. Reorganized crypt/crypt32
+	handling. When testing message prefixes of varying length, also
+	encrypt the remainder of the message, to catch errors in counter
+	value update.
+	(test_main): Add a few tests with large messages (16 blocks, 1024
+	octets), to improve test coverage for _nettle_chacha_crypt_4core
+	and _nettle_chacha_crypt32_4core.
+
 2021-01-25  Niels Möller  <nisse@lysator.liu.se>
 
 	* arm/neon/salsa20-core-internal.asm: Deleted file. This ARM Neon
