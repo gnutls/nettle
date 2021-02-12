@@ -228,6 +228,10 @@ test_rsa_set_key_1(struct rsa_public_key *pub,
 		   struct rsa_private_key *key);
 
 void
+test_rsa_set_key_2(struct rsa_public_key *pub,
+		   struct rsa_private_key *key);
+
+void
 test_rsa_md5(struct rsa_public_key *pub,
 	     struct rsa_private_key *key,
 	     mpz_t expected);

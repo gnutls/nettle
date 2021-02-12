@@ -172,6 +172,7 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  bignum.c bignum-random.c bignum-random-prime.c \
 		  sexp2bignum.c \
 		  pkcs1.c pkcs1-encrypt.c pkcs1-decrypt.c \
+		  oaep.c \
 		  pkcs1-sec-decrypt.c \
 		  pkcs1-rsa-digest.c pkcs1-rsa-md5.c pkcs1-rsa-sha1.c \
 		  pkcs1-rsa-sha256.c pkcs1-rsa-sha512.c \
@@ -186,6 +187,7 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  rsa-pss-sha256-sign-tr.c rsa-pss-sha256-verify.c \
 		  rsa-pss-sha512-sign-tr.c rsa-pss-sha512-verify.c \
 		  rsa-encrypt.c rsa-decrypt.c \
+		  rsa-oaep-encrypt.c rsa-oaep-decrypt.c \
 		  rsa-sec-decrypt.c rsa-decrypt-tr.c \
 		  rsa-keygen.c rsa-blind.c \
 		  rsa2sexp.c sexp2rsa.c \
@@ -276,7 +278,7 @@ DISTFILES = $(SOURCES) $(HEADERS) getopt.h getopt_int.h \
 	ctr-internal.h chacha-internal.h sha3-internal.h \
 	salsa20-internal.h umac-internal.h hogweed-internal.h \
 	rsa-internal.h pkcs1-internal.h dsa-internal.h eddsa-internal.h \
-	gmp-glue.h ecc-internal.h fat-setup.h \
+	gmp-glue.h ecc-internal.h fat-setup.h oaep.h \
 	mini-gmp.h asm.m4 m4-utils.m4 \
 	nettle.texinfo nettle.info nettle.html nettle.pdf sha-example.c
 
