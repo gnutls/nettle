@@ -1,3 +1,9 @@
+2021-02-13  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Bump package version, to 3.7.1.
+	(LIBNETTLE_MINOR): Bump minor number, to 8.2.
+	(LIBHOGWEED_MINOR): Bump minor number, to 6.2.
+
 2021-02-10  Niels Möller  <nisse@lysator.liu.se>
 
 	* chacha-crypt.c (_nettle_chacha_crypt_4core): Fix for the case
