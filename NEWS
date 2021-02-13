@@ -1,3 +1,42 @@
+NEWS for the Nettle 3.7.1 release
+
+	This is primarily a bug fix release, fixing a couple of
+	problems found in Nettle-3.7.
+
+	The new version is intended to be fully source and binary
+	compatible with Nettle-3.6. The shared library names are
+	libnettle.so.8.2 and libhogweed.so.6.2, with sonames
+	libnettle.so.8 and libhogweed.so.6.
+
+	Bug fixes:
+
+	* Fix bug in chacha counter update logic. The problem affected
+	  ppc64 and ppc64el, with the new altivec assembly code
+	  enabled. Reported by Andreas Metzler, after breakage in
+	  GnuTLS tests on ppc64.
+
+	* Support for big-endian ARM platforms has been restored.
+	  Fixes contributed by Michael Weiser.
+
+	* Fix build problem on OpenBSD/powerpc64, reported by Jasper
+	  Lievisse Adriaanse.
+
+	* Fix corner case bug in ECDSA verify, it would produce
+	  incorrect result in the unlikely case of an all-zero
+	  message hash. Reported by Guido Vranken.
+
+	New features:
+
+	* Support for pbkdf2_hmac_sha384 and pbkdf2_hmac_sha512,
+	  contributed by Nicolas Mora.
+
+	Miscellaneous:
+
+	* Poorly performing ARM Neon code for doing single-block
+	  Salsa20 and Chacha has been deleted. The code to do two or
+	  three blocks in parallel, introduced in Nettle-3.7, is
+	  unchanged.
+
 NEWS for the Nettle 3.7 release
 
 	This release adds one new feature, the bcrypt password hashing
