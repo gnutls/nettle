@@ -298,31 +298,6 @@ nettle_openssl_gcm_aes256 = {
   openssl_evp_gcm_digest
 };
 
-/* Arcfour */
-static void
-openssl_arcfour128_set_encrypt_key(void *ctx, const uint8_t *key)
-{
-  openssl_evp_set_encrypt_key(ctx, key, EVP_rc4());
-}
-
-static void
-openssl_arcfour128_set_decrypt_key(void *ctx, const uint8_t *key)
-{
-  openssl_evp_set_decrypt_key(ctx, key, EVP_rc4());
-}
-
-const struct nettle_aead
-nettle_openssl_arcfour128 = {
-  "openssl arcfour128", sizeof(struct openssl_cipher_ctx),
-  1, 16, 0, 0,
-  openssl_arcfour128_set_encrypt_key,
-  openssl_arcfour128_set_decrypt_key,
-  NULL, NULL,
-  (nettle_crypt_func *)openssl_evp_encrypt,
-  (nettle_crypt_func *)openssl_evp_decrypt,
-  NULL,  
-};
-
 /* Blowfish */
 static void
 openssl_bf128_set_encrypt_key(void *ctx, const uint8_t *key)

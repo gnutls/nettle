@@ -1,3 +1,12 @@
+2021-02-15  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/nettle-openssl.c (nettle_openssl_arcfour128): Deleted
+	glue to openssl arcfour.
+	(openssl_arcfour128_set_encrypt_key)
+	(openssl_arcfour128_set_decrypt_key): Deleted.
+	* nettle-internal.h: Deleted declaration.
+	* examples/nettle-benchmark.c (aeads): Delete benchmarking.
+
 2021-02-13  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Bump package version, to 3.7.1.
