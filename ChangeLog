@@ -1,3 +1,7 @@
+2021-02-17  Niels Möller  <nisse@lysator.liu.se>
+
+	* Released Nettle-3.7.1.
+
 2021-02-15  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/nettle-openssl.c (nettle_openssl_arcfour128): Deleted
