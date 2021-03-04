@@ -1,3 +1,26 @@
+2021-03-04  Niels Möller  <nisse@lysator.liu.se>
+
+	Merged initial arm64 code.
+
+2021-02-03  Niels Möller  <nisse@lysator.liu.se>
+
+	* arm64/crypto/gcm-hash.asm: Renamed directory, moved file,...
+	* arm64/v8/gcm-hash.asm: ... old name.
+
+2021-02-02  Niels Möller  <nisse@lysator.liu.se>
+
+	* arm64/v8/gcm-hash.asm: Add ".arch armv8-a+crypto" directive.
+	Supported by both GNU as and clang (the latter at least from
+	version 3.9.1).
+	* configure.ac: Don't add -march=armv8-a+crypto to CFLAGS.
+
+2021-01-31  Niels Möller  <nisse@lysator.liu.se>
+
+	* arm64/v8/gcm-hash.asm: New file, contributed by Maamoun TK and
+	Michael Weiser.
+	* arm64/README: New file. Document endianness issues, contributed
+	by Michael Weiser.
+
 2021-02-17  Niels Möller  <nisse@lysator.liu.se>
 
 	* Released Nettle-3.7.1.
