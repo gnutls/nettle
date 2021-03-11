@@ -49,6 +49,8 @@
 #define ecc_mod_submul_1 _nettle_ecc_mod_submul_1
 #define ecc_mod_mul _nettle_ecc_mod_mul
 #define ecc_mod_sqr _nettle_ecc_mod_sqr
+#define ecc_mod_mul_canonical _nettle_ecc_mod_mul_canonical
+#define ecc_mod_sqr_canonical _nettle_ecc_mod_sqr_canonical
 #define ecc_mod_pow_2k _nettle_ecc_mod_pow_2k
 #define ecc_mod_pow_2k_mul _nettle_ecc_mod_pow_2k_mul
 #define ecc_mod_random _nettle_ecc_mod_random
@@ -263,6 +265,19 @@ ecc_mod_mul (const struct ecc_modulo *m, mp_limb_t *rp,
 void
 ecc_mod_sqr (const struct ecc_modulo *m, mp_limb_t *rp,
 	     const mp_limb_t *ap, mp_limb_t *tp);
+
+/* These mul and sqr functions produce a canonical result, 0 <= R < M.
+   Requirements on input and output areas are similar to the above
+   functions, except that it is *not* allowed to pass rp = rp +
+   m->size.
+ */
+void
+ecc_mod_mul_canonical (const struct ecc_modulo *m, mp_limb_t *rp,
+		       const mp_limb_t *ap, const mp_limb_t *bp, mp_limb_t *tp);
+
+void
+ecc_mod_sqr_canonical (const struct ecc_modulo *m, mp_limb_t *rp,
+		       const mp_limb_t *ap, mp_limb_t *tp);
 
 /* R <-- X^{2^k} mod M. Needs 2*ecc->size limbs of scratch space, same
    overlap requirements as mul and sqr above. */

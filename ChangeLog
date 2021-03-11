@@ -1,3 +1,14 @@
+2021-03-11  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-mod-arith.c (ecc_mod_mul_canonical, ecc_mod_sqr_canonical):
+	New functions.
+	* ecc-internal.h: Declare and document new functions.
+	* curve448-eh-to-x.c (curve448_eh_to_x): Use ecc_mod_sqr_canonical.
+	* curve25519-eh-to-x.c (curve25519_eh_to_x): Use ecc_mod_mul_canonical.
+	* ecc-eh-to-a.c (ecc_eh_to_a): Likewise.
+	* ecc-j-to-a.c (ecc_j_to_a): Likewise.
+	* ecc-mul-m.c (ecc_mul_m): Likewise.
+
 2021-03-04  Niels Möller  <nisse@lysator.liu.se>
 
 	Merged initial arm64 code.

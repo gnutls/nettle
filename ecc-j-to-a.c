@@ -49,8 +49,6 @@ ecc_j_to_a (const struct ecc_curve *ecc,
 #define iz3p (scratch + 2*ecc->p.size)
 #define tp    scratch
 
-  mp_limb_t cy;
-
   ecc->p.invert (&ecc->p, izp, p+2*ecc->p.size, izp + ecc->p.size);
   ecc_mod_sqr (&ecc->p, iz2p, izp, iz2p);
 
@@ -63,17 +61,13 @@ ecc_j_to_a (const struct ecc_curve *ecc,
     }
 
   /* r_x <-- x / z^2 */
-  ecc_mod_mul (&ecc->p, iz3p, iz2p, p, iz3p);
-  /* ecc_mod (and ecc_mod_mul) may return a value up to 2p - 1, so
-     do a conditional subtraction. */
-  cy = mpn_sub_n (r, iz3p, ecc->p.m, ecc->p.size);
-  cnd_copy (cy, r, iz3p, ecc->p.size);
-
+  ecc_mod_mul_canonical (&ecc->p, r, iz2p, p, iz3p);
   if (op)
     {
       /* Skip y coordinate */
       if (op > 1)
 	{
+	  mp_limb_t cy;
 	  /* Also reduce the x coordinate mod ecc->q. It should
 	     already be < 2*ecc->q, so one subtraction should
 	     suffice. */
@@ -83,10 +77,7 @@ ecc_j_to_a (const struct ecc_curve *ecc,
       return;
     }
   ecc_mod_mul (&ecc->p, iz3p, iz2p, izp, iz3p);
-  ecc_mod_mul (&ecc->p, tp, iz3p, p + ecc->p.size, tp);
-  /* And a similar subtraction. */
-  cy = mpn_sub_n (r + ecc->p.size, tp, ecc->p.m, ecc->p.size);
-  cnd_copy (cy, r + ecc->p.size, tp, ecc->p.size);
+  ecc_mod_mul_canonical (&ecc->p, r + ecc->p.size, iz3p, p + ecc->p.size, tp);
 
 #undef izp
 #undef iz2p
