@@ -48,7 +48,7 @@ ecc_mul_m (const struct ecc_modulo *m,
 	   mp_limb_t *scratch)
 {
   unsigned i;
-  mp_limb_t cy, swap;
+  mp_limb_t swap;
 
 #define x2 (scratch)
 #define z2 (scratch + m->size)
@@ -162,7 +162,5 @@ ecc_mul_m (const struct ecc_modulo *m,
     }
   assert (m->invert_itch <= 7 * m->size);
   m->invert (m, x3, z2, z3 + m->size);
-  ecc_mod_mul (m, z3, x2, x3, z3);
-  cy = mpn_sub_n (qx, z3, m->m, m->size);
-  cnd_copy (cy, qx, z3, m->size);
+  ecc_mod_mul_canonical (m, qx, x2, x3, z3);
 }
