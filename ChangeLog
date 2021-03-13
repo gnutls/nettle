@@ -1,5 +1,8 @@
 2021-03-13  Niels Möller  <nisse@lysator.liu.se>
 
+	* gostdsa-vko.c (gostdsa_vko): Use ecc_mod_mul_canonical to
+	compute the scalar used for ecc multiplication.
+
 	* eddsa-hash.c (_eddsa_hash): Ensure result is canonically
 	reduced. Two of the three call sites need that.
 
