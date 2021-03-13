@@ -81,6 +81,26 @@ test_ecdsa (const struct ecc_curve *ecc,
 void
 test_main (void)
 {
+  /* Corresponds to nonce k = 2 and private key z =
+     0x99b5b787484def12894ca507058b3bf543d72d82fa7721d2e805e5e6. z and
+     hash are chosen so that intermediate scalars in the verify
+     equations are u1 = 0x6b245680e700, u2 =
+     259da6542d4ba7d21ad916c3bd57f811. These values require canonical
+     reduction of the scalars. Bug caused by missing canonical
+     reduction reported by Guido Vranken. */
+  test_ecdsa (&_nettle_secp_224r1,
+	      "9e7e6cc6b1bdfa8ee039b66ad85e5490"
+	      "7be706a900a3cba1c8fdd014", /* x */
+	      "74855db3f7c1b4097ae095745fc915e3"
+	      "8a79d2a1de28f282eafb22ba", /* y */
+
+	      SHEX("cdb887ac805a3b42e22d224c85482053"
+		   "16c755d4a736bb2032c92553"),
+	      "706a46dc76dcb76798e60e6d89474788"
+	      "d16dc18032d268fd1a704fa6", /* r */
+	      "3a41e1423b1853e8aa89747b1f987364"
+	      "44705d6d6d8371ea1f578f2e"); /* s */
+
   /* Test case provided by Guido Vranken, from oss-fuzz */
   test_ecdsa (&_nettle_secp_192r1,
 	      "14683086 f1734c6d e68743a6 48181b54 a74d4c5b 383eb6a8", /* x */
