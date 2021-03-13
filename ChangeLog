@@ -1,5 +1,8 @@
 2021-03-13  Niels Möller  <nisse@lysator.liu.se>
 
+	* eddsa-hash.c (_eddsa_hash): Ensure result is canonically
+	reduced. Two of the three call sites need that.
+
 	* ecc-gostdsa-verify.c (ecc_gostdsa_verify): Use ecc_mod_mul_canonical
 	to compute the scalars used for ecc multiplication.
 
