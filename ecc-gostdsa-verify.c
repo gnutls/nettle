@@ -102,11 +102,11 @@ ecc_gostdsa_verify (const struct ecc_curve *ecc,
   ecc->q.invert (&ecc->q, vp, hp, vp + ecc->p.size);
 
   /* z1 = s / h, P1 = z1 * G */
-  ecc_mod_mul (&ecc->q, z1, sp, vp, z1);
+  ecc_mod_mul_canonical (&ecc->q, z1, sp, vp, z1);
 
   /* z2 = - r / h, P2 = z2 * Y */
-  ecc_mod_mul (&ecc->q, z2, rp, vp, z2);
-  mpn_sub_n (z2, ecc->q.m, z2, ecc->p.size);
+  mpn_sub_n (hp, ecc->q.m, rp, ecc->p.size);
+  ecc_mod_mul_canonical (&ecc->q, z2, hp, vp, z2);
 
    /* Total storage: 5*ecc->p.size + ecc->mul_itch */
   ecc->mul (ecc, P2, z2, pp, z2 + ecc->p.size);
