@@ -102,10 +102,10 @@ ecc_ecdsa_verify (const struct ecc_curve *ecc,
 
   /* u1 = h / s, P1 = u1 * G */
   ecc_hash (&ecc->q, hp, length, digest);
-  ecc_mod_mul (&ecc->q, u1, hp, sinv, u1);
+  ecc_mod_mul_canonical (&ecc->q, u1, hp, sinv, u1);
 
   /* u2 = r / s, P2 = u2 * Y */
-  ecc_mod_mul (&ecc->q, u2, rp, sinv, u2);
+  ecc_mod_mul_canonical (&ecc->q, u2, rp, sinv, u2);
 
    /* Total storage: 5*ecc->p.size + ecc->mul_itch */
   ecc->mul (ecc, P2, u2, pp, u2 + ecc->p.size);

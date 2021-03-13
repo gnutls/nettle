@@ -58,6 +58,19 @@ test_ecdsa (const struct ecc_curve *ecc,
 void
 test_main (void)
 {
+  /* Producing the signature for corresponding test in
+     ecdsa-verify-test.c, with special u1 and u2. */
+  test_ecdsa (&_nettle_secp_224r1,
+	      "99b5b787484def12894ca507058b3bf5"
+	      "43d72d82fa7721d2e805e5e6",
+	      "2",
+	      SHEX("cdb887ac805a3b42e22d224c85482053"
+		   "16c755d4a736bb2032c92553"),
+	      "706a46dc76dcb76798e60e6d89474788"
+	      "d16dc18032d268fd1a704fa6", /* r */
+	      "3a41e1423b1853e8aa89747b1f987364"
+	      "44705d6d6d8371ea1f578f2e"); /* s */
+
   /* Test cases for the smaller groups, verified with a
      proof-of-concept implementation done for Yubico AB. */
   test_ecdsa (&_nettle_secp_192r1,
