@@ -91,9 +91,8 @@ ecc_ecdsa_sign (const struct ecc_curve *ecc,
 
   ecc_mod_mul (&ecc->q, tp, zp, rp, tp);
   ecc_mod_add (&ecc->q, hp, hp, tp);
-  ecc_mod_mul (&ecc->q, tp, hp, kinv, tp);
+  ecc_mod_mul_canonical (&ecc->q, sp, hp, kinv, tp);
 
-  mpn_copyi (sp, tp, ecc->p.size);
 #undef P
 #undef hp
 #undef kinv
