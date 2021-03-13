@@ -1,3 +1,7 @@
+2021-03-13  Niels Möller  <nisse@lysator.liu.se>
+
+	* eddsa-verify.c (equal_h): Use ecc_mod_mul_canonical.
+
 2021-03-11  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-mod-arith.c (ecc_mod_mul_canonical, ecc_mod_sqr_canonical):
