@@ -1,3 +1,9 @@
+2021-03-17  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Bump package version, to 3.7.2.
+	(LIBNETTLE_MINOR): Bump minor number, to 8.3.
+	(LIBHOGWEED_MINOR): Bump minor number, to 6.3.
+
 2021-03-13  Niels Möller  <nisse@lysator.liu.se>
 
 	* gostdsa-vko.c (gostdsa_vko): Use ecc_mod_mul_canonical to
@@ -22,6 +28,7 @@
 2021-03-13  Niels Möller  <nisse@lysator.liu.se>
 
 	* eddsa-verify.c (equal_h): Use ecc_mod_mul_canonical.
+
 2021-03-11  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-mod-arith.c (ecc_mod_mul_canonical, ecc_mod_sqr_canonical):
