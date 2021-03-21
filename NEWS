@@ -1,3 +1,51 @@
+NEWS for the Nettle 3.7.2 release
+
+	This is a bugfix release, fixing a bug in ECDSA signature
+	verification that could lead to a denial of service attack
+	(via an assertion failure) or possibly incorrect results. It
+	also fixes a few related problems where scalars are required
+	to be canonically reduced modulo the ECC group order, but in
+	fact may be slightly larger.
+
+	Upgrading to the new version is strongly recommended.
+
+	Even when no assert is triggered in ecdsa_verify, ECC point
+	multiplication may get invalid intermediate values as input,
+	and produce incorrect results. It's trivial to construct
+	alleged signatures that result in invalid intermediate values.
+	It appears difficult to construct an alleged signature that
+	makes the function misbehave in such a way that an invalid
+	signature is accepted as valid, but such attacks can't be
+	ruled out without further analysis.
+
+	Thanks to Guido Vranken for setting up the fuzzer tests that
+	uncovered this problem.
+
+	The new version is intended to be fully source and binary
+	compatible with Nettle-3.6. The shared library names are
+	libnettle.so.8.3 and libhogweed.so.6.3, with sonames
+	libnettle.so.8 and libhogweed.so.6.
+
+	Bug fixes:
+
+	* Fixed bug in ecdsa_verify, and added a corresponding test
+          case.
+
+	* Similar fixes to ecc_gostdsa_verify and gostdsa_vko.
+
+	* Similar fixes to eddsa signatures. The problem is less severe
+          for these curves, because (i) the potentially out or range
+          value is derived from output of a hash function, making it
+          harder for the attacker to to hit the narrow range of
+          problematic values, and (ii) the ecc operations are
+          inherently more robust, and my current understanding is that
+          unless the corresponding assert is hit, the verify
+          operation should complete with a correct result.
+
+	* Fix to ecdsa_sign, which with a very low probability could
+          return out of range signature values, which would be
+          rejected immediately by a verifier.
+
 NEWS for the Nettle 3.7.1 release
 
 	This is primarily a bug fix release, fixing a couple of
