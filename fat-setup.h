@@ -157,6 +157,7 @@ struct salsa20_ctx;
 
 typedef void void_func (void);
 
+struct aes_table;
 typedef void aes_crypt_internal_func (unsigned rounds, const uint32_t *keys,
 				      const struct aes_table *T,
 				      size_t length, uint8_t *dst,
