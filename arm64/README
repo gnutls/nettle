@@ -1,3 +1,42 @@
+General-purpose Registers[1]
+
+There are thirty-one, 64-bit, general-purpose (integer) registers visible to
+the A64 instruction set; these are labeled r0-r30. In a 64-bit context these
+registers are normally referred to using the names x0-x30; in a 32-bit context
+the registers are specified by using w0-w30. Additionally, a stack-pointer
+register, SP, can be used with a restricted number of instructions.
+
+The first eight registers, r0-r7, are used to pass argument values into
+a subroutine and to return result values from a function.
+
+Software developers creating platform-independent code are advised to avoid
+using r18 if at all possible. Most compilers provide a mechanism to prevent
+specific registers from being used for general allocation; portable hand-coded
+assembler should avoid it entirely. It should not be assumed that treating the
+register as callee-saved will be sufficient to satisfy the requirements of the
+platform. Virtualization code must, of course, treat the register as they would
+any other resource provided to the virtual machine.
+
+A subroutine invocation must preserve the contents of the registers r19-r29
+and SP. All 64 bits of each value stored in r19-r29 must be preserved, even
+when using the ILP32 data model.
+
+SIMD and Floating-Point Registers[1]
+
+Unlike in AArch32, in AArch64 the 128-bit and 64-bit views of a SIMD and
+Floating-Point register do not overlap multiple registers in a narrower view,
+so q1, d1 and s1 all refer to the same entry in the register bank.
+
+The first eight registers, v0-v7, are used to pass argument values into
+a subroutine and to return result values from a function. They may also
+be used to hold intermediate values within a routine (but, in general,
+only between subroutine calls).
+
+Registers v8-v15 must be preserved by a callee across subroutine calls;
+the remaining registers (v0-v7, v16-v31) do not need to be preserved
+(or should be preserved by the caller). Additionally, only the bottom 64 bits
+of each value stored in v8-v15 need to be preserved.
+
 Endianness
 
 Similar to arm, aarch64 can run with little-endian or big-endian memory
@@ -8,8 +47,8 @@ When writing SIMD code, endianness interaction with vector loads and stores may
 exhibit seemingly unintuitive behaviour, particularly when mixing normal and
 vector load/store operations.
 
-See https://llvm.org/docs/BigEndianNEON.html for a good overview, particularly
-into the pitfalls of using ldr/str vs. ld1/st1.
+See [2] for a good overview, particularly into the pitfalls of using
+ldr/str vs. ld1/st1.
 
 For example, ld1 {v1.2d,v2.2d},[x0] will load v1 and v2 with elements of a
 one-dimensional vector from consecutive memory locations. So v1.d[0] will be
@@ -43,3 +82,6 @@ quadword, they will apply endianness to the whole quadword. Therefore
 particular care must be taken if the loaded data is then to be regarded as
 elements of e.g. a doubleword vector. Indicies may appear reversed on
 big-endian systems (because they are).
+
+[1] https://github.com/ARM-software/abi-aa/releases/download/2020Q4/aapcs64.pdf
+[2] https://llvm.org/docs/BigEndianNEON.html

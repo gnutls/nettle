@@ -476,9 +476,15 @@ if test "x$enable_assembler" = xyes ; then
       ;;
     aarch64*)
       if test "$ABI" = 64 ; then
-	asm_path=arm64
-	if test "$enable_arm64_crypto" = yes ; then
-          asm_path="arm64/crypto $asm_path"
+        asm_path=arm64
+        if test "x$enable_fat" = xyes ; then
+          asm_path="arm64/fat $asm_path"
+          OPT_NETTLE_SOURCES="fat-arm64.c $OPT_NETTLE_SOURCES"
+          FAT_TEST_LIST="none pmull"
+        else
+          if test "$enable_arm64_crypto" = yes ; then
+            asm_path="arm64/crypto $asm_path"
+          fi
         fi
       else
 	# As far as I understand, Neon instructions are unlikely to be
