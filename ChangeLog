@@ -1,3 +1,16 @@
+2021-03-22  Niels Möller  <nisse@lysator.liu.se>
+
+	Arm64 improvements, including fat build support. Contributed by
+	Mamone Tarsha:
+	* configure.ac (asm_path): Setup for arm64 fat builds.
+	* fat-arm64.c: New file.
+	* fat-arm64.c: New file.
+	* arm64/fat/gcm-hash.asm: New file.
+	* arm64/crypto/gcm-hash.asm: Improved docs. Use m4 macros rather
+	than as macros.
+	(LOAD_REV_PARTIAL_BLOCK): New macro.
+	* arm64/README: Improved docs.
+
 2021-03-21  Niels Möller  <nisse@lysator.liu.se>
 
 	* Released nettle-3.7.2 with ecc bug-fixes only.
