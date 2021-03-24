@@ -181,6 +181,10 @@ Debian.remote.s390x:
   before_script:
   - chmod 0600 $SSH_PRIVATE_KEY
   script:
+  - echo $CI_PIPELINE_IID
+  - ./.bootstrap &&
+    ./configure && make PACKAGE_VERSION=snapshot dist &&
+    ls -l *.tar.gz
   - ssh -o 'StrictHostKeyChecking no' -i $SSH_PRIVATE_KEY $S390X_HOST 'id ; hostname'
   tags:
   - shared
