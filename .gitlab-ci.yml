@@ -196,7 +196,7 @@ Debian.remote.s390x:
     "cd ci-work/$CI_PIPELINE_IID/nettle-snapshot && make"
   - ssh -o 'StrictHostKeyChecking no' -i $SSH_PRIVATE_KEY $S390X_HOST 
     "cd ci-work/$CI_PIPELINE_IID/nettle-snapshot && make check"
-  after-script:
+  after_script:
   - ssh -o 'StrictHostKeyChecking no' -i $SSH_PRIVATE_KEY $S390X_HOST
     "rm -rf ci-work/$CI_PIPELINE_IID"
   tags:
