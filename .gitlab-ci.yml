@@ -177,6 +177,9 @@ Debian.cross.powerpc64le-linux-gnu:
 
 Debian.remote.s390x:
   image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
+  # File created as world-readable by gitlab ci machinery. 
+  before_script:
+  - chmod 0600 $SSH_PRIVATE_KEY
   script:
   - ssh -o 'StrictHostKeyChecking no' -i $SSH_PRIVATE_KEY $S390X_HOST 'id ; hostname'
   tags:
