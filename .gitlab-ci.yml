@@ -4,6 +4,7 @@ variables:
   FEDORA_BUILD: buildenv-fedora31
   DEBIAN_X86_CROSS_BUILD: buildenv-debian-x86-cross
   GET_SOURCES_ATTEMPTS: "3"
+  S390X_HOST: nettle-ci@148.100.78.99
 
 # remove any pre-installed headers from nettle
 before_script:
@@ -173,3 +174,33 @@ Debian.cross.powerpc64-linux-gnu:
   <<: *Debian_cross_template
 Debian.cross.powerpc64le-linux-gnu:
   <<: *Debian_cross_template
+
+remote/s390x:
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
+  before_script:
+  # File created as world-readable by gitlab ci machinery.
+  - chmod 0600 $SSH_PRIVATE_KEY
+  - ssh -o 'StrictHostKeyChecking no' -i $SSH_PRIVATE_KEY $S390X_HOST
+    "mkdir -p ci-work/$CI_PIPELINE_IID"
+  script:
+  - echo $CI_PIPELINE_IID
+  - ./.bootstrap &&
+    ./configure && make PACKAGE_VERSION=snapshot dist &&
+      ls -l *.tar.gz
+  - cat nettle-snapshot.tar.gz |
+    ssh -o 'StrictHostKeyChecking no' -i $SSH_PRIVATE_KEY $S390X_HOST
+    "cd ci-work/$CI_PIPELINE_IID && tar xzf -"
+  - ssh -o 'StrictHostKeyChecking no' -i $SSH_PRIVATE_KEY $S390X_HOST
+    "cd ci-work/$CI_PIPELINE_IID/nettle-snapshot && ./configure --disable-documentation"
+  - ssh -o 'StrictHostKeyChecking no' -i $SSH_PRIVATE_KEY $S390X_HOST
+    "cd ci-work/$CI_PIPELINE_IID/nettle-snapshot && make"
+  - ssh -o 'StrictHostKeyChecking no' -i $SSH_PRIVATE_KEY $S390X_HOST
+    "cd ci-work/$CI_PIPELINE_IID/nettle-snapshot && make check"
+  after_script:
+  - ssh -o 'StrictHostKeyChecking no' -i $SSH_PRIVATE_KEY $S390X_HOST
+    "rm -rf ci-work/$CI_PIPELINE_IID"
+  tags:
+  - shared
+  - linux
+  except:
+  - tags

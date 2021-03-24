@@ -1,3 +1,7 @@
+2021-03-24  Niels Möller  <nisse@lysator.liu.se>
+
+	* .gitlab-ci.yml: Add remote tests for s390x.
+
 2021-03-22  Niels Möller  <nisse@lysator.liu.se>
 
 	Arm64 improvements, including fat build support. Contributed by
