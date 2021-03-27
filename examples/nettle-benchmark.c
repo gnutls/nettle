@@ -390,7 +390,9 @@ time_umac(void)
   struct umac96_ctx ctx96;
   struct umac128_ctx ctx128;
 
-  uint8_t key[16];
+  uint8_t key[UMAC_KEY_SIZE];
+
+  init_key (sizeof(key), key);
 
   umac32_set_key (&ctx32, key);
   info.ctx = &ctx32;
@@ -432,7 +434,9 @@ time_cmac(void)
   struct bench_hash_info info;
   struct cmac_aes128_ctx ctx;
 
-  uint8_t key[16];
+  uint8_t key[AES128_KEY_SIZE];
+
+  init_key (sizeof(key), key);
 
   cmac_aes128_set_key (&ctx, key);
   info.ctx = &ctx;
@@ -449,7 +453,9 @@ time_poly1305_aes(void)
   static uint8_t data[BENCH_BLOCK];
   struct bench_hash_info info;
   struct poly1305_aes_ctx ctx;
-  uint8_t key[32];
+  uint8_t key[POLY1305_AES_KEY_SIZE];
+
+  init_key (sizeof(key), key);
 
   poly1305_aes_set_key (&ctx, key);
   info.ctx = &ctx;
