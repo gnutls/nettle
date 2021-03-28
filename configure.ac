@@ -101,6 +101,10 @@ AC_ARG_ENABLE(power-altivec,
   AC_HELP_STRING([--enable-power-altivec], [Enable POWER altivec and vsx extensions. (default=no)]),,
   [enable_altivec=no])
 
+AC_ARG_ENABLE(s390x-msa-x1,
+  AC_HELP_STRING([--enable-s390x-msa-x1], [Enable message-security assist extension 1 on z/Architecture. (default=no)]),,
+  [enable_s390x_msa_x1=no])
+
 AC_ARG_ENABLE(mini-gmp,
   AC_HELP_STRING([--enable-mini-gmp], [Enable mini-gmp, used instead of libgmp.]),,
   [enable_mini_gmp=no])
@@ -359,6 +363,17 @@ case "$host_cpu" in
       ABI=64
     ])
     ;;
+  *s390x*)
+    AC_TRY_COMPILE([
+#if defined(__s390x__)
+#error 64-bit s390x
+#endif
+    ], [], [
+      ABI=32
+    ], [
+      ABI=64
+    ])
+    ;;
 esac
 
 if test "x$ABI" != xstandard ; then
@@ -512,7 +527,14 @@ if test "x$enable_assembler" = xyes ; then
 	fi
       fi
       ;;
-
+    *s390x*)
+      if test "$ABI" = 64 ; then
+	asm_path="s390x"
+        if test "$enable_s390x_msa_x1" = yes ; then
+          asm_path="s390x/msa_x1 $asm_path"
+	fi
+      fi
+      ;;
     *)
       enable_assembler=no
       ;;

@@ -1,3 +1,11 @@
+2021-03-28  Niels Möller  <nisse@lysator.liu.se>
+
+	Initial config for s390x, contributed by Mamone Tarsha.
+	* configure.ac: Add flag --enable-s390x-msa-x1. Add ABI check for
+	s390x, and setup asm_path.
+	* Makefile.in (distdir): Add s390x directory.
+	* s390x/README: New file
+
 2021-03-24  Niels Möller  <nisse@lysator.liu.se>
 
 	* .gitlab-ci.yml: Add remote tests for s390x.
