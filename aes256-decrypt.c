@@ -1,6 +1,6 @@
-/* aes-encrypt.c
+/* aes256-decrypt.c
 
-   Encryption function for the aes/rijndael block cipher.
+   Decryption function for aes/rijndael block cipher.
 
    Copyright (C) 2002, 2013 Niels Möller
 
@@ -35,29 +35,16 @@
 # include "config.h"
 #endif
 
-#include <stdlib.h>
+#include <assert.h>
 
 #include "aes-internal.h"
 
-/* The main point on this function is to help the assembler
-   implementations of _nettle_aes_encrypt to get the table pointer.
-   For PIC code, the details can be complex and system dependent. */
 void
-aes_encrypt(const struct aes_ctx *ctx,
-	    size_t length, uint8_t *dst,
-	    const uint8_t *src)
+aes256_decrypt(const struct aes256_ctx *ctx,
+	       size_t length, uint8_t *dst,
+	       const uint8_t *src)
 {
-  switch (ctx->key_size)
-    {
-    default: abort();
-    case AES128_KEY_SIZE:
-      aes128_encrypt(&ctx->u.ctx128, length, dst, src);
-      break;
-    case AES192_KEY_SIZE:
-      aes192_encrypt(&ctx->u.ctx192, length, dst, src);
-      break;
-    case AES256_KEY_SIZE:
-      aes256_encrypt(&ctx->u.ctx256, length, dst, src);
-      break;
-    }
+  assert(!(length % AES_BLOCK_SIZE) );
+  _nettle_aes_decrypt(_AES256_ROUNDS, ctx->keys, &_nettle_aes_decrypt_table,
+		      length, dst, src);
 }

@@ -1,3 +1,20 @@
+2021-04-01  Niels Möller  <nisse@lysator.liu.se>
+
+	Move aes128_encrypt and similar functions to their own files. To
+	make it easier for assembly implementations to override specific
+	AES variants.
+	* aes-decrypt.c: Split file, keep only legacy function aes_decrypt here.
+	* aes-decrypt-table.c (_nettle_aes_decrypt_table): New file, moved
+	table here.
+	* aes128-decrypt.c (aes128_decrypt): New file, moved function here.
+	* aes192-decrypt.c (aes192_decrypt): New file, moved function here.
+	* aes256-decrypt.c (aes256_decrypt): New file, moved function here.
+	* aes-encrypt.c: Split file, keep only legacy function aes_encrypt here.
+	* aes128-encrypt.c (aes128_encrypt): New file, moved function here.
+	* aes192-encrypt.c (aes192_encrypt): New file, moved function here.
+	* aes256-encrypt.c (aes256_encrypt): New file, moved function here.
+	* Makefile.in (nettle_SOURCES): Add new files.
+
 2021-03-28  Niels Möller  <nisse@lysator.liu.se>
 
 	Initial config for s390x, contributed by Mamone Tarsha.

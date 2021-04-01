@@ -74,8 +74,10 @@ dvi installcheck uninstallcheck:
 
 all-here: $(TARGETS) $(DOCTARGETS)
 
-nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
+nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c aes-decrypt-table.c \
+		 aes128-decrypt.c aes192-decrypt.c aes256-decrypt.c \
 		 aes-encrypt-internal.c aes-encrypt.c aes-encrypt-table.c \
+		 aes128-encrypt.c aes192-encrypt.c aes256-encrypt.c \
 		 aes-invert-internal.c aes-set-key-internal.c \
 		 aes-set-encrypt-key.c aes-set-decrypt-key.c \
 		 aes128-set-encrypt-key.c aes128-set-decrypt-key.c \
