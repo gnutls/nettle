@@ -553,6 +553,10 @@ asm_replace_list="aes-encrypt-internal.asm aes-decrypt-internal.asm \
 		sha1-compress.asm sha256-compress.asm sha512-compress.asm \
 		sha3-permute.asm umac-nh.asm umac-nh-n.asm machine.m4"
 
+# Files which replace a C source file that used by S390x architecture.
+asm_replace_list="$asm_replace_list aes128-set-encrypt-key.asm \
+  aes128-set-decrypt-key.asm aes128-encrypt.asm aes128-decrypt.asm"
+
 # Assembler files which generate additional object files if they are used.
 asm_nettle_optional_list="gcm-hash.asm gcm-hash8.asm cpuid.asm \
   aes-encrypt-internal-2.asm aes-decrypt-internal-2.asm memxor-2.asm \
