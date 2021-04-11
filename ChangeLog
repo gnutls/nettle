@@ -1,3 +1,9 @@
+2021-04-11  Niels Möller  <nisse@lysator.liu.se>
+
+	* config.guess: Update to 2021-01-25 version, from savannah's
+	config.git. Needed to recognize M1 Macs.
+	* config.sub: Similarly update to 2021-03-10 version.
+
 2021-03-24  Niels Möller  <nisse@lysator.liu.se>
 
 	* .gitlab-ci.yml: Add remote tests for s390x.
