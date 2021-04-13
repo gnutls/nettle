@@ -1,3 +1,9 @@
+2021-04-13  Niels Möller  <nisse@lysator.liu.se>
+
+	* powerpc64/p8/aes-encrypt-internal.asm (SWAP_MASK): Change macro
+	name to use all uppercase.
+	* powerpc64/p8/aes-decrypt-internal.asm (SWAP_MASK): Likewise.
+
 2021-04-11  Niels Möller  <nisse@lysator.liu.se>
 
 	* config.guess: Update to 2021-01-25 version, from savannah's
