@@ -63,7 +63,9 @@ _pkcs1_sec_decrypt (size_t length, uint8_t *message,
   volatile int ok;
   size_t i, t;
 
-  assert (padded_message_length >= length);
+  /* Message independent branch */
+  if (length + 11 > padded_message_length)
+    return 0;
 
   t = padded_message_length - length - 1;
 
