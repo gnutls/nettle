@@ -1,3 +1,11 @@
+2021-05-06  Niels Möller  <nisse@lysator.liu.se>
+
+	Bug fixes merged from from 3.7.3 release (starting from 2021-05-06).
+	* pkcs1-sec-decrypt.c (_pkcs1_sec_decrypt): Check that message
+	length is valid, for given key size.
+	* testsuite/rsa-sec-decrypt-test.c (test_main): Add test cases for
+	calls to rsa_sec_decrypt specifying a too large message length.
+
 2021-05-23  Niels Möller  <nisse@lysator.liu.se>
 
 	From Nicolas Mora: Implement aes key wrap and key unwrap (RFC 3394).
