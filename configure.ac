@@ -101,9 +101,9 @@ AC_ARG_ENABLE(power-altivec,
   AC_HELP_STRING([--enable-power-altivec], [Enable POWER altivec and vsx extensions. (default=no)]),,
   [enable_altivec=no])
 
-AC_ARG_ENABLE(s390x-msa-x1,
-  AC_HELP_STRING([--enable-s390x-msa-x1], [Enable message-security assist extension 1 on z/Architecture. (default=no)]),,
-  [enable_s390x_msa_x1=no])
+AC_ARG_ENABLE(s390x-msa,
+  AC_HELP_STRING([--enable-s390x-msa], [Enable message-security assist extensions on z/Architecture. (default=no)]),,
+  [enable_s390x_msa=no])
 
 AC_ARG_ENABLE(mini-gmp,
   AC_HELP_STRING([--enable-mini-gmp], [Enable mini-gmp, used instead of libgmp.]),,
@@ -530,8 +530,8 @@ if test "x$enable_assembler" = xyes ; then
     *s390x*)
       if test "$ABI" = 64 ; then
 	asm_path="s390x"
-        if test "$enable_s390x_msa_x1" = yes ; then
-          asm_path="s390x/msa_x1 $asm_path"
+        if test "$enable_s390x_msa" = yes ; then
+          asm_path="s390x/msa_x1 s390x/msa_x2 $asm_path"
 	fi
       fi
       ;;
@@ -555,7 +555,10 @@ asm_replace_list="aes-encrypt-internal.asm aes-decrypt-internal.asm \
 
 # Files which replace a C source file that used by S390x architecture.
 asm_replace_list="$asm_replace_list aes128-set-encrypt-key.asm \
-  aes128-set-decrypt-key.asm aes128-encrypt.asm aes128-decrypt.asm"
+  aes128-set-decrypt-key.asm aes128-encrypt.asm aes128-decrypt.asm \
+  aes192-set-encrypt-key.asm aes192-set-decrypt-key.asm aes192-encrypt.asm \
+  aes192-decrypt.asm aes256-set-encrypt-key.asm aes256-set-decrypt-key.asm \
+  aes256-encrypt.asm aes256-decrypt.asm"
 
 # Assembler files which generate additional object files if they are used.
 asm_nettle_optional_list="gcm-hash.asm gcm-hash8.asm cpuid.asm \
