@@ -551,14 +551,11 @@ asm_replace_list="aes-encrypt-internal.asm aes-decrypt-internal.asm \
 		salsa20-crypt.asm salsa20-core-internal.asm \
 		serpent-encrypt.asm serpent-decrypt.asm \
 		sha1-compress.asm sha256-compress.asm sha512-compress.asm \
-		sha3-permute.asm umac-nh.asm umac-nh-n.asm machine.m4"
-
-# Files which replace a C source file that used by S390x architecture.
-asm_replace_list="$asm_replace_list aes128-set-encrypt-key.asm \
-  aes128-set-decrypt-key.asm aes128-encrypt.asm aes128-decrypt.asm \
-  aes192-set-encrypt-key.asm aes192-set-decrypt-key.asm aes192-encrypt.asm \
-  aes192-decrypt.asm aes256-set-encrypt-key.asm aes256-set-decrypt-key.asm \
-  aes256-encrypt.asm aes256-decrypt.asm"
+		sha3-permute.asm umac-nh.asm umac-nh-n.asm machine.m4 \
+    aes128-set-encrypt-key.asm aes128-set-decrypt-key.asm aes128-encrypt.asm \
+    aes128-decrypt.asm aes192-set-encrypt-key.asm aes192-set-decrypt-key.asm \
+    aes192-encrypt.asm aes192-decrypt.asm aes256-set-encrypt-key.asm \
+    aes256-set-decrypt-key.asm aes256-encrypt.asm aes256-decrypt.asm"
 
 # Assembler files which generate additional object files if they are used.
 asm_nettle_optional_list="gcm-hash.asm gcm-hash8.asm cpuid.asm \
