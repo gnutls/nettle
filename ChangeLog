@@ -1,3 +1,24 @@
+2021-05-09  Niels Möller  <nisse@lysator.liu.se>
+
+	Implementation of AES using s390x "message security assist"
+	extensions. Contributed by Mamone Tarsha:
+	* s390x/msa_x1/aes128-decrypt.asm: New file.
+	* s390x/msa_x1/aes128-encrypt.asm: New file.
+	* s390x/msa_x1/aes128-set-decrypt-key.asm: New file.
+	* s390x/msa_x1/aes128-set-encrypt-key.asm: New file.
+	* s390x/msa_x2/aes192-decrypt.asm: New file.
+	* s390x/msa_x2/aes192-encrypt.asm: New file.
+	* s390x/msa_x2/aes192-set-decrypt-key.asm: New file.
+	* s390x/msa_x2/aes192-set-encrypt-key.asm: New file.
+	* s390x/msa_x2/aes256-decrypt.asm: New file.
+	* s390x/msa_x2/aes256-encrypt.asm: New file.
+	* s390x/msa_x2/aes256-set-decrypt-key.asm: New file.
+	* s390x/msa_x2/aes256-set-encrypt-key.asm: New file.
+	* configure.ac: Renamed option to --enable-s390x-msa. Enables both
+	mas_x1 and msa_x2.
+	(asm_replace_list): Add more aes files.
+	* Makefile.in (distdir): Add s390x/msa_x1 s390x/msa_x2 directories.
+
 2021-04-01  Niels Möller  <nisse@lysator.liu.se>
 
 	Move aes128_encrypt and similar functions to their own files. To
