@@ -268,7 +268,7 @@ ecc_mod_sqr (const struct ecc_modulo *m, mp_limb_t *rp,
 
 /* These mul and sqr functions produce a canonical result, 0 <= R < M.
    Requirements on input and output areas are similar to the above
-   functions, except that it is *not* allowed to pass rp = rp +
+   functions, except that it is *not* allowed to pass rp = tp +
    m->size.
  */
 void
