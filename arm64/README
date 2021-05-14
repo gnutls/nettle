@@ -83,5 +83,12 @@ particular care must be taken if the loaded data is then to be regarded as
 elements of e.g. a doubleword vector. Indicies may appear reversed on
 big-endian systems (because they are).
 
+Hardware-accelerated SHA Instructions
+
+The SHA optimized cores are implemented using SHA hashing instructions added
+to AArch64 in crypto extensions. The repository [3] illustrates using those
+instructions for optimizing SHA hashing functions.
+
 [1] https://github.com/ARM-software/abi-aa/releases/download/2020Q4/aapcs64.pdf
 [2] https://llvm.org/docs/BigEndianNEON.html
+[3] https://github.com/noloader/SHA-Intrinsics
