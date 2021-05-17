@@ -52,6 +52,10 @@ rsa_decrypt_tr(const struct rsa_public_key *pub,
   mp_size_t key_limb_size;
   int res;
 
+  /* First check that input is in range. */
+  if (mpz_sgn (gibberish) < 0 || mpz_cmp (gibberish, pub->n) >= 0)
+    return 0;
+
   key_limb_size = mpz_size(pub->n);
 
   TMP_GMP_ALLOC (m, key_limb_size);

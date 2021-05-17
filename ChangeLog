@@ -1,3 +1,11 @@
+2021-05-17  Niels Möller  <nisse@lysator.liu.se>
+
+	* rsa-decrypt-tr.c (rsa_decrypt_tr): Check up-front that input is
+	in range.
+	* rsa-sec-decrypt.c (rsa_sec_decrypt): Likewise.
+	* rsa-decrypt.c (rsa_decrypt): Likewise.
+	* testsuite/rsa-encrypt-test.c (test_main): Add tests with input > n.
+
 2021-05-14  Niels Möller  <nisse@lysator.liu.se>
 
 	* rsa-sign-tr.c (rsa_sec_blind): Delete mn argument.
