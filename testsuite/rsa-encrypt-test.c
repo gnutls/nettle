@@ -19,6 +19,7 @@ test_main(void)
   uint8_t after;
 
   mpz_t gibberish;
+  mpz_t zero;
 
   rsa_private_key_init(&key);
   rsa_public_key_init(&pub);
@@ -101,6 +102,17 @@ test_main(void)
   ASSERT(decrypted[decrypted_length] == after);
   ASSERT(decrypted[0] == 'A');
 
+  /* Test zero input. */
+  mpz_init_set_ui (zero, 0);
+  decrypted_length = msg_length;
+  ASSERT(!rsa_decrypt(&key, &decrypted_length, decrypted, zero));
+  ASSERT(!rsa_decrypt_tr(&pub, &key,
+			 &lfib, (nettle_random_func *) knuth_lfib_random,
+			 &decrypted_length, decrypted, zero));
+  ASSERT(!rsa_sec_decrypt(&pub, &key,
+			  &lfib, (nettle_random_func *) knuth_lfib_random,
+			  decrypted_length, decrypted, zero));
+  ASSERT(decrypted_length == msg_length);
 
   /* Test invalid key. */
   mpz_add_ui (key.q, key.q, 2);
@@ -112,6 +124,6 @@ test_main(void)
   rsa_private_key_clear(&key);
   rsa_public_key_clear(&pub);
   mpz_clear(gibberish);
+  mpz_clear(zero);
   free(decrypted);
 }
-  
