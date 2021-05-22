@@ -1,3 +1,9 @@
+2021-05-22  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Bump package version, to 3.7.3.
+	(LIBNETTLE_MINOR): Bump minor number, to 8.4.
+	(LIBHOGWEED_MINOR): Bump minor number, to 6.4.
+
 2021-05-17  Niels Möller  <nisse@lysator.liu.se>
 
 	* rsa-decrypt-tr.c (rsa_decrypt_tr): Check up-front that input is
