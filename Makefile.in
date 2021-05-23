@@ -84,6 +84,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 aes192-meta.c \
 		 aes256-set-encrypt-key.c aes256-set-decrypt-key.c \
 		 aes256-meta.c \
+		 nist-keywrap.c \
 		 arcfour.c arcfour-crypt.c \
 		 arctwo.c arctwo-meta.c blowfish.c blowfish-bcrypt.c \
 		 base16-encode.c base16-decode.c base16-meta.c \
@@ -236,7 +237,7 @@ HEADERS = aes.h arcfour.h arctwo.h asn1.h blowfish.h \
 	  pgp.h pkcs1.h pss.h pss-mgf1.h realloc.h ripemd160.h rsa.h \
 	  salsa20.h sexp.h \
 	  serpent.h sha.h sha1.h sha2.h sha3.h streebog.h twofish.h \
-	  umac.h yarrow.h xts.h poly1305.h
+	  umac.h yarrow.h xts.h poly1305.h nist-keywrap.h
 
 INSTALL_HEADERS = $(HEADERS) version.h @IF_MINI_GMP@ mini-gmp.h
 

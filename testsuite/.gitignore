@@ -1,6 +1,7 @@
 /*.d
 /Makefile
 /aes-test
+/aes-keywrap-test
 /arcfour-test
 /arctwo-test
 /base16-test

@@ -10,7 +10,7 @@ include ../config.make
 PRE_CPPFLAGS = -I.. -I$(top_srcdir)
 PRE_LDFLAGS = -L..
 
-TS_NETTLE_SOURCES = aes-test.c arcfour-test.c arctwo-test.c \
+TS_NETTLE_SOURCES = aes-test.c aes-keywrap-test.c arcfour-test.c arctwo-test.c \
 		    blowfish-test.c bcrypt-test.c cast128-test.c \
 	            base16-test.c base64-test.c \
 		    camellia-test.c chacha-test.c \
