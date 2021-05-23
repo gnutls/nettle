@@ -1,3 +1,16 @@
+2021-05-23  Niels Möller  <nisse@lysator.liu.se>
+
+	From Nicolas Mora: Implement aes key wrap and key unwrap (RFC 3394).
+	* nist-keywrap.c (bswap_if_le, nist_keywrap16, nist_keyunwrap16)
+	(aes128_keywrap, aes192_keywrap, aes256_keywrap)
+	(aes128_keyunwrap, aes192_keyunwrap, aes256_keyunwrap): New file,
+	new functions.
+	* nist-keywrap.h: New header file.
+	* Makefile.in (nettle_SOURCES): Add nist-keywrap.c.
+	(HEADERS): Add nist-keywrap.h.
+	* testsuite/aes-keywrap-test.c (test_main): New tests.
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Add aes-keywrap-test.c.
+
 2021-04-13  Niels Möller  <nisse@lysator.liu.se>
 
 	* powerpc64/p8/aes-encrypt-internal.asm (SWAP_MASK): Change macro
