@@ -86,17 +86,17 @@ nist_keywrap16 (const void *ctx, nettle_cipher_func *encrypt,
     {
       for (i = 0; i < n; i++)
 	{
-	  // I = A | R[1]
+	  /* I = A | R[1] */
 	  I.u64[0] = A.u64;
 	  memcpy (I.b + 8, R + (i * 8), 8);
 
-	  // B = AES(K, I)
+	  /* B = AES(K, I) */
 	  encrypt (ctx, 16, B.b, I.b);
 
-	  // A = MSB(64, B) ^ t where t = (n*j)+i
+	  /* A = MSB(64, B) ^ t where t = (n*j)+i */
 	  A.u64 = B.u64[0] ^ bswap_if_le ((n * j) + (i + 1));
 
-	  // R[i] = LSB(64, B)
+	  /* R[i] = LSB(64, B) */
 	  memcpy (R + (i * 8), B.b + 8, 8);
 	}
     }
@@ -128,17 +128,16 @@ nist_keyunwrap16 (const void *ctx, nettle_cipher_func *decrypt,
     {
       for (i = n - 1; i >= 0; i--)
 	{
-	  // B = AES-1(K, (A ^ t) | R[i]) where t = n*j+i
+	  /* B = AES-1(K, (A ^ t) | R[i]) where t = n*j+i */
 	  I.u64[0] = A.u64 ^ bswap_if_le ((n * j) + (i + 1));
 	  memcpy (I.b + 8, R + (i * 8), 8);
 	  decrypt (ctx, 16, B.b, I.b);
 
-	  // A = MSB(64, B)
+	  /* A = MSB(64, B) */
 	  A.u64 = B.u64[0];
 
-	  // R[i] = LSB(64, B)
+	  /* R[i] = LSB(64, B) */
 	  memcpy (R + (i * 8), B.b + 8, 8);
-	  //R[i*8] = B.u64[1];
 	}
     }
 
