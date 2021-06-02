@@ -9,7 +9,8 @@ NEWS for the Nettle 3.7.3 release
 	ciphertext is in the range 0 < ciphertext < n, before
 	attempting to decrypt it.
 
-	Thanks to Justus Winter for reporting these problems.
+	Thanks to Paul Schaub and Justus Winter for reporting these
+	problems.
 
 	The new version is intended to be fully source and binary
 	compatible with Nettle-3.6. The shared library names are
@@ -26,8 +27,8 @@ NEWS for the Nettle 3.7.3 release
 	  or silently reducing input modulo n. Potential denial of
 	  service vector.
 
-	* Ensure that all of rsa_decrypt returns failure for out of
-	  range inputs, instead of silently reducing input modulo n.
+	* Ensure that rsa_decrypt returns failure for out of range
+	  inputs, instead of silently reducing input modulo n.
 
 	* Ensure that rsa_sec_decrypt returns failure if the message
 	  size is too large for the given key. Unlike the other bugs,
