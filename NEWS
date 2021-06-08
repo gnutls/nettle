@@ -1,3 +1,41 @@
+NEWS for the Nettle 3.7.3 release
+
+	This is bugfix release, fixing bugs that could make the RSA
+	decryption functions crash on invalid inputs.
+
+	Upgrading to the new version is strongly recommended. For
+	applications that want to support older versions of Nettle,
+	the bug can be worked around by adding a check that the RSA
+	ciphertext is in the range 0 < ciphertext < n, before
+	attempting to decrypt it.
+
+	Thanks to Paul Schaub and Justus Winter for reporting these
+	problems.
+
+	The new version is intended to be fully source and binary
+	compatible with Nettle-3.6. The shared library names are
+	libnettle.so.8.4 and libhogweed.so.6.4, with sonames
+	libnettle.so.8 and libhogweed.so.6.
+
+	Bug fixes:
+
+	* Fix crash for zero input to rsa_sec_decrypt and
+	  rsa_decrypt_tr. Potential denial of service vector.
+
+	* Ensure that all of rsa_decrypt_tr and rsa_sec_decrypt return
+	  failure for out of range inputs, instead of either crashing,
+	  or silently reducing input modulo n. Potential denial of
+	  service vector.
+
+	* Ensure that rsa_decrypt returns failure for out of range
+	  inputs, instead of silently reducing input modulo n.
+
+	* Ensure that rsa_sec_decrypt returns failure if the message
+	  size is too large for the given key. Unlike the other bugs,
+	  this would typically be triggered by invalid local
+	  configuration, rather than by processing untrusted remote
+	  data.
+
 NEWS for the Nettle 3.7.2 release
 
 	This is a bugfix release, fixing a bug in ECDSA signature
