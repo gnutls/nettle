@@ -531,7 +531,7 @@ if test "x$enable_assembler" = xyes ; then
       if test "$ABI" = 64 ; then
 	asm_path="s390x"
         if test "$enable_s390x_msa" = yes ; then
-          asm_path="s390x/msa_x1 s390x/msa_x2 $asm_path"
+          asm_path="s390x/msa_x1 s390x/msa_x2 s390x/msa_x4 $asm_path"
 	fi
       fi
       ;;
