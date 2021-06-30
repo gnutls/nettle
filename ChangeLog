@@ -1,5 +1,7 @@
 2021-06-30  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac (FAT_TEST_LIST): Add sha1 to aarch64 fat tests.
+
 	From Mamone Tarsha:
 	* fat-arm64.c: Add setup for nettle_sha1_compress.
 	* arm64/fat/sha1-compress-2.asm: New file.
