@@ -65,15 +65,16 @@ C void gcm_hash (const struct gcm_key *key, union gcm_block *x,
 C                size_t length, const uint8_t *data)
 
 PROLOGUE(_nettle_gcm_hash)
-    ldgr           %f0,%r6
-    alloc_stack(%r1,PB_SIZE+16)                  C parameter block (must be general register 1)
+    ldgr           %f0,%r6                       C load non-volatile general register 6 into volatile float-point register 0
+    C --- allocate a stack space for parameter block in addition to 16-byte buffer to handle leftover bytes ---
+    ALLOC_STACK(%r1,PB_SIZE+16)                  C parameter block (must be general register 1)
     lgr            %r6,%r3
     mvc            0(16,%r1),0(%r3)              C copy x Initial Chaining Value field
     mvc            16(16,%r1),H_idx (%r2)        C copy H to Hash Subkey field
     lghi           %r0,65                        C GHASH function code (must be general register 0)
     lgr            %r2,%r5                       C location of leftmost byte of data (must not be odd-numbered general register nor be general register 0)
     C number of bytes (must be general register of data + 1). length must be a multiple of the data block size (16).
-    risbg          %r3,%r4,0,187,0               C Insert bit offsets 0-59, bit offset 0 of the fourth operant is set to clear the remaining bits.
+    risbg          %r3,%r4,0,187,0               C Insert bit offsets 0-59, bit offset 0 of the fourth operand is set to clear the remaining bits.
 1:  .long   0xb93e0002                           C kimd %r0,%r2
     brc            1,1b                          C safely branch back in case of partial completion
     C --- handle leftovers ---
@@ -91,7 +92,7 @@ PROLOGUE(_nettle_gcm_hash)
     brc            1,3b                          C safely branch back in case of partial completion
 4:
     mvc            0(16,%r6),0(%r1)              C store x
-    free_stack(PB_SIZE+16)
-    lgdr           %r6,%f0
+    FREE_STACK(PB_SIZE+16)
+    lgdr           %r6,%f0                       C restore general register 6
     br             RA
 EPILOGUE(_nettle_gcm_hash)
