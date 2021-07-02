@@ -92,6 +92,7 @@ PROLOGUE(_nettle_gcm_hash)
     brc            1,3b                          C safely branch back in case of partial completion
 4:
     mvc            0(16,%r6),0(%r1)              C store x
+    xc             16(16,%r1),16(%r1)            C wipe hash subkey from stack
     FREE_STACK(PB_SIZE+16)
     lgdr           %r6,%f0                       C restore general register 6
     br             RA
