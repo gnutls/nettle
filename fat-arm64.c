@@ -64,11 +64,15 @@
 #ifndef HWCAP_SHA1
 #define HWCAP_SHA1 (1 << 5)
 #endif
+#ifndef HWCAP_SHA2
+#define HWCAP_SHA2 (1 << 6)
+#endif
 
 struct arm64_features
 {
   int have_pmull;
   int have_sha1;
+  int have_sha2;
 };
 
 #define MATCH(s, slen, literal, llen) \
@@ -80,6 +84,7 @@ get_arm64_features (struct arm64_features *features)
   const char *s;
   features->have_pmull = 0;
   features->have_sha1 = 0;
+  features->have_sha2 = 0;
 
   s = secure_getenv (ENV_OVERRIDE);
   if (s)
@@ -90,8 +95,10 @@ get_arm64_features (struct arm64_features *features)
 
 	if (MATCH (s, length, "pmull", 5))
 	  features->have_pmull = 1;
-	else if (MATCH (s, length, "sha1", 4))
+  else if (MATCH (s, length, "sha1", 4))
 	  features->have_sha1 = 1;
+  else if (MATCH (s, length, "sha2", 4))
+	  features->have_sha2 = 1;
 	if (!sep)
 	  break;
 	s = sep + 1;
@@ -104,6 +111,8 @@ get_arm64_features (struct arm64_features *features)
 	= ((hwcap & (HWCAP_ASIMD | HWCAP_PMULL)) == (HWCAP_ASIMD | HWCAP_PMULL));
       features->have_sha1
 	= ((hwcap & (HWCAP_ASIMD | HWCAP_SHA1)) == (HWCAP_ASIMD | HWCAP_SHA1));
+      features->have_sha2
+	= ((hwcap & (HWCAP_ASIMD | HWCAP_SHA2)) == (HWCAP_ASIMD | HWCAP_SHA2));
 #endif
     }
 }
@@ -122,6 +131,10 @@ DECLARE_FAT_FUNC(nettle_sha1_compress, sha1_compress_func)
 DECLARE_FAT_FUNC_VAR(sha1_compress, sha1_compress_func, c)
 DECLARE_FAT_FUNC_VAR(sha1_compress, sha1_compress_func, arm64)
 
+DECLARE_FAT_FUNC(_nettle_sha256_compress, sha256_compress_func)
+DECLARE_FAT_FUNC_VAR(sha256_compress, sha256_compress_func, c)
+DECLARE_FAT_FUNC_VAR(sha256_compress, sha256_compress_func, arm64)
+
 static void CONSTRUCTOR
 fat_init (void)
 {
@@ -132,9 +145,11 @@ fat_init (void)
 
   verbose = getenv (ENV_VERBOSE) != NULL;
   if (verbose)
-    fprintf (stderr, "libnettle: cpu features:%s%s\n",
+    fprintf (stderr, "libnettle: cpu features:%s%s%s\n",
 	     features.have_pmull ? " polynomial multiply long instructions (PMULL/PMULL2)" : "",
-	     features.have_sha1 ? " sha1 instructions" : "");
+       features.have_sha1 ? " sha1 instructions" : "",
+       features.have_sha2 ? " sha2 instructions" : "");
+
   if (features.have_pmull)
     {
       if (verbose)
@@ -165,6 +180,16 @@ fat_init (void)
     {
       nettle_sha1_compress_vec = _nettle_sha1_compress_c;
     }
+  if (features.have_sha2)
+    {
+      if (verbose)
+	fprintf (stderr, "libnettle: enabling hardware-accelerated sha256 compress code.\n");
+      _nettle_sha256_compress_vec = _nettle_sha256_compress_arm64;
+    }
+  else
+    {
+      _nettle_sha256_compress_vec = _nettle_sha256_compress_c;
+    }
 }
 
 #if GCM_TABLE_BITS == 8
@@ -181,3 +206,7 @@ DEFINE_FAT_FUNC(_nettle_gcm_hash, void,
 DEFINE_FAT_FUNC(nettle_sha1_compress, void,
 		(uint32_t *state, const uint8_t *input),
 		(state, input))
+
+DEFINE_FAT_FUNC(_nettle_sha256_compress, void,
+		(uint32_t *state, const uint8_t *input, const uint32_t *k),
+		(state, input, k))
