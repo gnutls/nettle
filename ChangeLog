@@ -1,5 +1,7 @@
 2021-07-08  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac (FAT_TEST_LIST): Add sha2 to aarch64 fat tests.
+
 	From Mamone Tarsha:
 	* arm64/fat/sha256-compress-2.asm: New file.
 	* arm64/crypto/sha256-compress.asm: New file.
