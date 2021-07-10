@@ -39,8 +39,17 @@
 
 #include "aes-internal.h"
 
+/* For fat builds */
+#if HAVE_NATIVE_aes128_decrypt
 void
-aes128_decrypt(const struct aes128_ctx *ctx,
+_nettle_aes128_decrypt_c(const struct aes128_ctx *ctx,
+	       size_t length, uint8_t *dst,
+	       const uint8_t *src);
+# define nettle_aes128_decrypt _nettle_aes128_decrypt_c
+#endif
+
+void
+nettle_aes128_decrypt(const struct aes128_ctx *ctx,
 	       size_t length, uint8_t *dst,
 	       const uint8_t *src)
 {

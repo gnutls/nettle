@@ -194,3 +194,21 @@ typedef void chacha_crypt_func(struct chacha_ctx *ctx,
 			       size_t length,
 			       uint8_t *dst,
 			       const uint8_t *src);
+
+struct aes128_ctx;
+typedef void aes128_set_key_func (struct aes128_ctx *ctx, const uint8_t *key);
+typedef void aes128_invert_key_func (struct aes128_ctx *dst, const struct aes128_ctx *src);
+typedef void aes128_crypt_func (const struct aes128_ctx *ctx, size_t length, uint8_t *dst,
+	       const uint8_t *src);
+
+struct aes192_ctx;
+typedef void aes192_set_key_func (struct aes192_ctx *ctx, const uint8_t *key);
+typedef void aes192_invert_key_func (struct aes192_ctx *dst, const struct aes192_ctx *src);
+typedef void aes192_crypt_func (const struct aes192_ctx *ctx, size_t length, uint8_t *dst,
+	       const uint8_t *src);
+
+struct aes256_ctx;
+typedef void aes256_set_key_func (struct aes256_ctx *ctx, const uint8_t *key);
+typedef void aes256_invert_key_func (struct aes256_ctx *dst, const struct aes256_ctx *src);
+typedef void aes256_crypt_func (const struct aes256_ctx *ctx, size_t length, uint8_t *dst,
+	       const uint8_t *src);
