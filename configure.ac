@@ -529,10 +529,15 @@ if test "x$enable_assembler" = xyes ; then
       ;;
     *s390x*)
       if test "$ABI" = 64 ; then
-	asm_path="s390x"
-        if test "$enable_s390x_msa" = yes ; then
-          asm_path="s390x/msa_x1 s390x/msa_x2 s390x/msa_x4 $asm_path"
-	fi
+        asm_path="s390x"
+        if test "x$enable_fat" = xyes ; then
+	        asm_path="s390x/fat $asm_path"
+	        OPT_NETTLE_SOURCES="fat-s390x.c $OPT_NETTLE_SOURCES"
+        else
+          if test "$enable_s390x_msa" = yes ; then
+            asm_path="s390x/msa_x1 s390x/msa_x2 s390x/msa_x4 $asm_path"
+          fi
+        fi
       fi
       ;;
     *)

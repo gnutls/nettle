@@ -39,8 +39,17 @@
 
 #include "aes-internal.h"
 
+/* For fat builds */
+#if HAVE_NATIVE_aes256_encrypt
 void
-aes256_encrypt(const struct aes256_ctx *ctx,
+_nettle_aes256_encrypt_c(const struct aes256_ctx *ctx,
+	       size_t length, uint8_t *dst,
+	       const uint8_t *src);
+# define nettle_aes256_encrypt _nettle_aes256_encrypt_c
+#endif
+
+void
+nettle_aes256_encrypt(const struct aes256_ctx *ctx,
 	       size_t length, uint8_t *dst,
 	       const uint8_t *src)
 {
