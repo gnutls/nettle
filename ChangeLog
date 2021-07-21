@@ -1,3 +1,7 @@
+2021-07-21  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (OPT_SOURCES): Add fat-s390x.c.
+
 2021-05-09  Niels Möller  <nisse@lysator.liu.se>
 
 	Implementation of AES using s390x "message security assist"
