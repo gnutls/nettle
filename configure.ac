@@ -565,8 +565,14 @@ asm_replace_list="aes-encrypt-internal.asm aes-decrypt-internal.asm \
 		sha3-permute.asm umac-nh.asm umac-nh-n.asm machine.m4"
 
 # Assembler files which generate additional object files if they are used.
-asm_nettle_optional_list="gcm-hash.asm gcm-hash8.asm cpuid.asm \
+asm_nettle_optional_list="gcm-hash.asm gcm-hash8.asm cpuid.asm cpu-facility.asm \
   aes-encrypt-internal-2.asm aes-decrypt-internal-2.asm memxor-2.asm \
+  aes128-set-encrypt-key-2.asm aes128-set-decrypt-key-2.asm \
+  aes128-encrypt-2.asm aes128-decrypt-2.asm \
+  aes192-set-encrypt-key-2.asm aes192-set-decrypt-key-2.asm \
+  aes192-encrypt-2.asm aes192-decrypt-2.asm \
+  aes256-set-encrypt-key-2.asm aes256-set-decrypt-key-2.asm \
+  aes256-encrypt-2.asm aes256-decrypt-2.asm \
   chacha-2core.asm chacha-3core.asm chacha-4core.asm chacha-core-internal-2.asm \
   salsa20-2core.asm salsa20-core-internal-2.asm \
   sha1-compress-2.asm sha256-compress-2.asm \
@@ -675,6 +681,21 @@ AH_VERBATIM([HAVE_NATIVE],
     implementation of the corresponding routine exists.  */
 #undef HAVE_NATIVE_aes_decrypt
 #undef HAVE_NATIVE_aes_encrypt
+#undef HAVE_NATIVE_aes128_decrypt
+#undef HAVE_NATIVE_aes128_encrypt
+#undef HAVE_NATIVE_aes128_invert_key
+#undef HAVE_NATIVE_aes128_set_decrypt_key
+#undef HAVE_NATIVE_aes128_set_encrypt_key
+#undef HAVE_NATIVE_aes192_decrypt
+#undef HAVE_NATIVE_aes192_encrypt
+#undef HAVE_NATIVE_aes192_invert_key
+#undef HAVE_NATIVE_aes192_set_decrypt_key
+#undef HAVE_NATIVE_aes192_set_encrypt_key
+#undef HAVE_NATIVE_aes256_decrypt
+#undef HAVE_NATIVE_aes256_encrypt
+#undef HAVE_NATIVE_aes256_invert_key
+#undef HAVE_NATIVE_aes256_set_decrypt_key
+#undef HAVE_NATIVE_aes256_set_encrypt_key
 #undef HAVE_NATIVE_chacha_core
 #undef HAVE_NATIVE_chacha_2core
 #undef HAVE_NATIVE_chacha_3core

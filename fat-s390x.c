@@ -84,6 +84,10 @@ struct s390x_features
   int have_kmid_ghash;
 };
 
+void _nettle_stfle(uint64_t *facility, uint64_t facility_size);
+void _nettle_km_status(uint64_t *status);
+void _nettle_kimd_status(uint64_t *status);
+
 #define MATCH(s, slen, literal, llen) \
   ((slen) == (llen) && memcmp ((s), (literal), llen) == 0)
 
@@ -126,24 +130,12 @@ get_s390x_features (struct s390x_features *features)
     if (hwcap & HWCAP_S390_STFLE)
     {
       uint64_t facilities[FACILITY_DOUBLEWORDS_MAX] = {0};
-
-      register uint64_t gr0 asm("0") = FACILITY_DOUBLEWORDS_MAX - 1;
-      asm volatile(
-        ".insn s,0xb2b00000,%1" /* stfle */
-        : "+d"(gr0), "=Q"(facilities)
-        :
-        : "cc");
+      _nettle_stfle(facilities, FACILITY_DOUBLEWORDS_MAX);
 
       if (facilities[FACILITY_INDEX(FAC_MSA)] & FACILITY_BIT(FAC_MSA))
       {
         uint64_t query_status[2] = {0};
-        register uint64_t *query_status_addr asm("1") = query_status;
-        asm volatile(
-          "lghi 0,0\n\t"
-          ".long 0xb92e0022" /* km %r2,%r2. Operands are ignored */
-          :
-          : "a"(query_status_addr)
-          : "memory", "cc", "r0");
+        _nettle_km_status(query_status);
         if (query_status[FACILITY_INDEX(AES_128_CODE)] & FACILITY_BIT(AES_128_CODE))
           features->have_km_aes128 = 1;
         if (query_status[FACILITY_INDEX(AES_192_CODE)] & FACILITY_BIT(AES_192_CODE))
@@ -155,13 +147,7 @@ get_s390x_features (struct s390x_features *features)
       if (facilities[FACILITY_INDEX(FAC_MSA_X4)] & FACILITY_BIT(FAC_MSA_X4))
       {
         uint64_t query_status[2] = {0};
-        register uint64_t *query_status_addr asm("1") = query_status;
-        asm volatile(
-          "lghi 0,0\n\t"
-          ".long 0xb93e0002" /* kimd %r0,%r2. Operands are ignored */
-          :
-          : "a"(query_status_addr)
-          : "memory", "cc", "r0");
+        _nettle_kimd_status(query_status);
         if (query_status[FACILITY_INDEX(GHASH_CODE)] & FACILITY_BIT(GHASH_CODE))
           features->have_kmid_ghash = 1;
       }
