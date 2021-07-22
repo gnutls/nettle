@@ -49,6 +49,7 @@
 
 #include "nettle-types.h"
 
+#include "memxor.h"
 #include "aes.h"
 #include "gcm.h"
 #include "gcm-internal.h"
@@ -67,6 +68,7 @@
 #endif
 
 /* Facility bits */
+#define FAC_VF 129      /* vector facility */
 #define FAC_MSA 17      /* message-security assist */
 #define FAC_MSA_X4 77   /* message-security-assist extension 4 */
 
@@ -78,6 +80,7 @@
 
 struct s390x_features
 {
+  int have_vector_facility;
   int have_km_aes128;
   int have_km_aes192;
   int have_km_aes256;
@@ -94,6 +97,7 @@ void _nettle_kimd_status(uint64_t *status);
 static void
 get_s390x_features (struct s390x_features *features)
 {
+  features->have_vector_facility = 0;
   features->have_km_aes128 = 0;
   features->have_km_aes192 = 0;
   features->have_km_aes256 = 0;
@@ -106,7 +110,9 @@ get_s390x_features (struct s390x_features *features)
       const char *sep = strchr (s, ',');
       size_t length = sep ? (size_t) (sep - s) : strlen(s);
 
-      if (MATCH (s, length, "msa_x1", 6))
+      if (MATCH (s, length, "vf", 2))
+        features->have_vector_facility = 1;
+      else if (MATCH (s, length, "msa_x1", 6))
       {
         features->have_km_aes128 = 1;
       }
@@ -132,6 +138,9 @@ get_s390x_features (struct s390x_features *features)
       uint64_t facilities[FACILITY_DOUBLEWORDS_MAX] = {0};
       _nettle_stfle(facilities, FACILITY_DOUBLEWORDS_MAX);
 
+      if (facilities[FACILITY_INDEX(FAC_VF)] & FACILITY_BIT(FAC_VF))
+        features->have_vector_facility = 1;
+
       if (facilities[FACILITY_INDEX(FAC_MSA)] & FACILITY_BIT(FAC_MSA))
       {
         uint64_t query_status[2] = {0};
@@ -155,6 +164,11 @@ get_s390x_features (struct s390x_features *features)
 #endif
   }
 }
+
+/* MEMXOR3 */
+DECLARE_FAT_FUNC(nettle_memxor3, memxor3_func)
+DECLARE_FAT_FUNC_VAR(memxor3, memxor3_func, c)
+DECLARE_FAT_FUNC_VAR(memxor3, memxor3_func, s390x)
 
 /* AES128 */
 DECLARE_FAT_FUNC(nettle_aes128_set_encrypt_key, aes128_set_key_func)
@@ -226,6 +240,18 @@ fat_init (void)
 
   get_s390x_features (&features);
   verbose = getenv (ENV_VERBOSE) != NULL;
+
+  /* MEMXOR3 */
+  if (features.have_vector_facility)
+  {
+    if (verbose)
+      fprintf (stderr, "libnettle: enabling vectorized memxor3.\n");
+    nettle_memxor3_vec = _nettle_memxor3_s390x;
+  }
+  else
+  {
+    nettle_memxor3_vec = _nettle_memxor3_c;
+  }
 
   /* AES128 */
   if (features.have_km_aes128)
@@ -301,6 +327,11 @@ fat_init (void)
     _nettle_gcm_hash_vec = _nettle_gcm_hash_c;
   }
 }
+
+/* MEMXOR3 */
+DEFINE_FAT_FUNC(nettle_memxor3, void *,
+		(void *dst_in, const void *a_in, const void *b_in, size_t n),
+		(dst_in, a_in, b_in, n))
 
 /* AES128 */
 DEFINE_FAT_FUNC(nettle_aes128_set_encrypt_key, void,
