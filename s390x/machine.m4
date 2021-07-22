@@ -19,3 +19,20 @@ C Free allocated stack space
 C FREE_STACK(SPACE_LEN)
 define(`FREE_STACK',
 `aghi           SP,STANDARD_STACK_FRAME+$1')
+
+C XOR contents of two areas in storage with specific length
+C DST: The destination area of storage
+C SRC: The source area of storage
+C LEN: The length of storage area. LEN <= 256
+C TMP_ADDR: A temporary register that handles the XOR instrcution address
+C All parameters are general registers and cannot be assigned to
+C general register 0
+C XOR_LEN(DST, SRC, LEN, TMP_ADDR)
+define(`XOR_LEN',
+`larl           $4,18f
+    aghi           $3,-1
+    jm             19f
+    ex             $3,0($4)
+    j              19f
+18: xc             0(1,$1),0($2)
+19:')
