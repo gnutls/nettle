@@ -190,7 +190,7 @@ remote/s390x:
     ssh -o 'StrictHostKeyChecking no' -i "$SSH_PRIVATE_KEY" "$S390X_ACCOUNT"
     "cd ci-work/$CI_PIPELINE_IID && tar xzf -"
   - ssh -o 'StrictHostKeyChecking no' -i "$SSH_PRIVATE_KEY" "$S390X_ACCOUNT"
-    "cd ci-work/$CI_PIPELINE_IID/nettle-snapshot && ./configure --disable-documentation"
+    "cd ci-work/$CI_PIPELINE_IID/nettle-snapshot && ./configure --disable-documentation --enable-s390x-msa"
   - ssh -o 'StrictHostKeyChecking no' -i "$SSH_PRIVATE_KEY" "$S390X_ACCOUNT"
     "cd ci-work/$CI_PIPELINE_IID/nettle-snapshot && make"
   - ssh -o 'StrictHostKeyChecking no' -i "$SSH_PRIVATE_KEY" "$S390X_ACCOUNT"

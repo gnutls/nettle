@@ -1,6 +1,8 @@
-/* aes256-set-decrypt-key.c
+/* aes192-decrypt.c
 
-   Copyright (C) 2013, Niels Möller
+   Decryption function for aes/rijndael block cipher.
+
+   Copyright (C) 2002, 2013 Niels Möller
 
    This file is part of GNU Nettle.
 
@@ -36,31 +38,22 @@
 #include <assert.h>
 
 #include "aes-internal.h"
-#include "macros.h"
 
 /* For fat builds */
-#if HAVE_NATIVE_aes256_invert_key
+#if HAVE_NATIVE_aes192_decrypt
 void
-_nettle_aes256_invert_key_c(struct aes256_ctx *dst,
-		  const struct aes256_ctx *src);
-# define nettle_aes256_invert_key _nettle_aes256_invert_key_c
-#endif
-
-#if HAVE_NATIVE_aes256_set_decrypt_key
-void
-_nettle_aes256_set_decrypt_key_c(struct aes256_ctx *ctx, const uint8_t *key);
-# define nettle_aes256_set_decrypt_key _nettle_aes256_set_decrypt_key_c
+_nettle_aes192_decrypt_c(const struct aes192_ctx *ctx,
+	       size_t length, uint8_t *dst,
+	       const uint8_t *src);
+# define nettle_aes192_decrypt _nettle_aes192_decrypt_c
 #endif
 
 void
-nettle_aes256_invert_key (struct aes256_ctx *dst, const struct aes256_ctx *src)
+nettle_aes192_decrypt(const struct aes192_ctx *ctx,
+	       size_t length, uint8_t *dst,
+	       const uint8_t *src)
 {
-  _nettle_aes_invert (_AES256_ROUNDS, dst->keys, src->keys);
-}
-
-void
-nettle_aes256_set_decrypt_key(struct aes256_ctx *ctx, const uint8_t *key)
-{
-  aes256_set_encrypt_key (ctx, key);
-  aes256_invert_key (ctx, ctx);
+  assert(!(length % AES_BLOCK_SIZE) );
+  _nettle_aes_decrypt(_AES192_ROUNDS, ctx->keys, &_nettle_aes_decrypt_table,
+		      length, dst, src);
 }

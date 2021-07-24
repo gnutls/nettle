@@ -101,6 +101,10 @@ AC_ARG_ENABLE(power-altivec,
   AC_HELP_STRING([--enable-power-altivec], [Enable POWER altivec and vsx extensions. (default=no)]),,
   [enable_altivec=no])
 
+AC_ARG_ENABLE(s390x-msa,
+  AC_HELP_STRING([--enable-s390x-msa], [Enable message-security assist extensions on z/Architecture. (default=no)]),,
+  [enable_s390x_msa=no])
+
 AC_ARG_ENABLE(mini-gmp,
   AC_HELP_STRING([--enable-mini-gmp], [Enable mini-gmp, used instead of libgmp.]),,
   [enable_mini_gmp=no])
@@ -359,6 +363,17 @@ case "$host_cpu" in
       ABI=64
     ])
     ;;
+  *s390x*)
+    AC_TRY_COMPILE([
+#if defined(__s390x__)
+#error 64-bit s390x
+#endif
+    ], [], [
+      ABI=32
+    ], [
+      ABI=64
+    ])
+    ;;
 esac
 
 if test "x$ABI" != xstandard ; then
@@ -512,7 +527,20 @@ if test "x$enable_assembler" = xyes ; then
 	fi
       fi
       ;;
-
+    *s390x*)
+      if test "$ABI" = 64 ; then
+        asm_path="s390x"
+        if test "x$enable_fat" = xyes ; then
+	        asm_path="s390x/fat $asm_path"
+	        OPT_NETTLE_SOURCES="fat-s390x.c $OPT_NETTLE_SOURCES"
+          FAT_TEST_LIST="none msa_x1 msa_x2 msa_x4"
+        else
+          if test "$enable_s390x_msa" = yes ; then
+            asm_path="s390x/msa_x1 s390x/msa_x2 s390x/msa_x4 $asm_path"
+          fi
+        fi
+      fi
+      ;;
     *)
       enable_assembler=no
       ;;
@@ -522,6 +550,12 @@ fi
 # Files which replace a C source file (or otherwise don't correspond
 # to a new object file).
 asm_replace_list="aes-encrypt-internal.asm aes-decrypt-internal.asm \
+		aes128-set-encrypt-key.asm aes128-set-decrypt-key.asm \
+		aes128-encrypt.asm aes128-decrypt.asm \
+		aes192-set-encrypt-key.asm aes192-set-decrypt-key.asm \
+		aes192-encrypt.asm aes192-decrypt.asm \
+		aes256-set-encrypt-key.asm aes256-set-decrypt-key.asm \
+		aes256-encrypt.asm aes256-decrypt.asm \
 		arcfour-crypt.asm camellia-crypt-internal.asm \
 		md5-compress.asm memxor.asm memxor3.asm \
 		poly1305-internal.asm \
@@ -532,8 +566,14 @@ asm_replace_list="aes-encrypt-internal.asm aes-decrypt-internal.asm \
 		sha3-permute.asm umac-nh.asm umac-nh-n.asm machine.m4"
 
 # Assembler files which generate additional object files if they are used.
-asm_nettle_optional_list="gcm-hash.asm gcm-hash8.asm cpuid.asm \
+asm_nettle_optional_list="gcm-hash.asm gcm-hash8.asm cpuid.asm cpu-facility.asm \
   aes-encrypt-internal-2.asm aes-decrypt-internal-2.asm memxor-2.asm \
+  aes128-set-encrypt-key-2.asm aes128-set-decrypt-key-2.asm \
+  aes128-encrypt-2.asm aes128-decrypt-2.asm \
+  aes192-set-encrypt-key-2.asm aes192-set-decrypt-key-2.asm \
+  aes192-encrypt-2.asm aes192-decrypt-2.asm \
+  aes256-set-encrypt-key-2.asm aes256-set-decrypt-key-2.asm \
+  aes256-encrypt-2.asm aes256-decrypt-2.asm \
   chacha-2core.asm chacha-3core.asm chacha-4core.asm chacha-core-internal-2.asm \
   salsa20-2core.asm salsa20-core-internal-2.asm \
   sha1-compress-2.asm sha256-compress-2.asm \
@@ -642,6 +682,21 @@ AH_VERBATIM([HAVE_NATIVE],
     implementation of the corresponding routine exists.  */
 #undef HAVE_NATIVE_aes_decrypt
 #undef HAVE_NATIVE_aes_encrypt
+#undef HAVE_NATIVE_aes128_decrypt
+#undef HAVE_NATIVE_aes128_encrypt
+#undef HAVE_NATIVE_aes128_invert_key
+#undef HAVE_NATIVE_aes128_set_decrypt_key
+#undef HAVE_NATIVE_aes128_set_encrypt_key
+#undef HAVE_NATIVE_aes192_decrypt
+#undef HAVE_NATIVE_aes192_encrypt
+#undef HAVE_NATIVE_aes192_invert_key
+#undef HAVE_NATIVE_aes192_set_decrypt_key
+#undef HAVE_NATIVE_aes192_set_encrypt_key
+#undef HAVE_NATIVE_aes256_decrypt
+#undef HAVE_NATIVE_aes256_encrypt
+#undef HAVE_NATIVE_aes256_invert_key
+#undef HAVE_NATIVE_aes256_set_decrypt_key
+#undef HAVE_NATIVE_aes256_set_encrypt_key
 #undef HAVE_NATIVE_chacha_core
 #undef HAVE_NATIVE_chacha_2core
 #undef HAVE_NATIVE_chacha_3core

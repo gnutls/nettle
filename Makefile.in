@@ -74,8 +74,10 @@ dvi installcheck uninstallcheck:
 
 all-here: $(TARGETS) $(DOCTARGETS)
 
-nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
+nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c aes-decrypt-table.c \
+		 aes128-decrypt.c aes192-decrypt.c aes256-decrypt.c \
 		 aes-encrypt-internal.c aes-encrypt.c aes-encrypt-table.c \
+		 aes128-encrypt.c aes192-encrypt.c aes256-encrypt.c \
 		 aes-invert-internal.c aes-set-key-internal.c \
 		 aes-set-encrypt-key.c aes-set-decrypt-key.c \
 		 aes128-set-encrypt-key.c aes128-set-decrypt-key.c \
@@ -218,7 +220,7 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  ed448-shake256.c ed448-shake256-pubkey.c \
 		  ed448-shake256-sign.c ed448-shake256-verify.c
 
-OPT_SOURCES = fat-arm.c fat-ppc.c fat-x86_64.c mini-gmp.c
+OPT_SOURCES = fat-arm.c fat-ppc.c fat-s390x.c fat-x86_64.c mini-gmp.c
 
 HEADERS = aes.h arcfour.h arctwo.h asn1.h blowfish.h \
 	  base16.h base64.h bignum.h buffer.h camellia.h cast128.h \
@@ -618,7 +620,8 @@ distdir: $(DISTFILES)
 		x86_64 x86_64/aesni x86_64/sha_ni x86_64/fat \
 		arm arm/neon arm/v6 arm/fat \
 		arm64 arm64/crypto arm64/fat \
-		powerpc64 powerpc64/p7 powerpc64/p8 powerpc64/fat ; do \
+		powerpc64 powerpc64/p7 powerpc64/p8 powerpc64/fat \
+		s390x s390x/msa_x1 s390x/msa_x2 s390x/msa_x4 s390x/fat ; do \
 	  mkdir "$(distdir)/$$d" ; \
 	  find "$(srcdir)/$$d" -maxdepth 1 '(' -name '*.asm' -o -name '*.m4' -o -name README ')' \
 	    -exec cp '{}' "$(distdir)/$$d" ';' ; \

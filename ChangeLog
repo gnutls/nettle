@@ -1,3 +1,64 @@
+2021-07-24  Niels Möller  <nisse@lysator.liu.se>
+
+	Merged s390x code.
+
+	GCM and fat build support for s390x, contributed by Mamone Tarsha:
+	* s390x/machine.m4: New file.
+	* s390x/msa_x4/gcm-hash.asm: New file.
+	* fat-s390x.c: New file.
+	* s390x/fat/cpu-facility.asm: New file.
+	* s390x/fat/: New wrapper files for aes and gcm assembly.
+
+2021-07-21  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (OPT_SOURCES): Add fat-s390x.c.
+
+2021-05-09  Niels Möller  <nisse@lysator.liu.se>
+
+	Implementation of AES using s390x "message security assist"
+	extensions. Contributed by Mamone Tarsha:
+	* s390x/msa_x1/aes128-decrypt.asm: New file.
+	* s390x/msa_x1/aes128-encrypt.asm: New file.
+	* s390x/msa_x1/aes128-set-decrypt-key.asm: New file.
+	* s390x/msa_x1/aes128-set-encrypt-key.asm: New file.
+	* s390x/msa_x2/aes192-decrypt.asm: New file.
+	* s390x/msa_x2/aes192-encrypt.asm: New file.
+	* s390x/msa_x2/aes192-set-decrypt-key.asm: New file.
+	* s390x/msa_x2/aes192-set-encrypt-key.asm: New file.
+	* s390x/msa_x2/aes256-decrypt.asm: New file.
+	* s390x/msa_x2/aes256-encrypt.asm: New file.
+	* s390x/msa_x2/aes256-set-decrypt-key.asm: New file.
+	* s390x/msa_x2/aes256-set-encrypt-key.asm: New file.
+	* configure.ac: Renamed option to --enable-s390x-msa. Enables both
+	mas_x1 and msa_x2.
+	(asm_replace_list): Add more aes files.
+	* Makefile.in (distdir): Add s390x/msa_x1 s390x/msa_x2 directories.
+
+2021-04-01  Niels Möller  <nisse@lysator.liu.se>
+
+	Move aes128_encrypt and similar functions to their own files. To
+	make it easier for assembly implementations to override specific
+	AES variants.
+	* aes-decrypt.c: Split file, keep only legacy function aes_decrypt here.
+	* aes-decrypt-table.c (_nettle_aes_decrypt_table): New file, moved
+	table here.
+	* aes128-decrypt.c (aes128_decrypt): New file, moved function here.
+	* aes192-decrypt.c (aes192_decrypt): New file, moved function here.
+	* aes256-decrypt.c (aes256_decrypt): New file, moved function here.
+	* aes-encrypt.c: Split file, keep only legacy function aes_encrypt here.
+	* aes128-encrypt.c (aes128_encrypt): New file, moved function here.
+	* aes192-encrypt.c (aes192_encrypt): New file, moved function here.
+	* aes256-encrypt.c (aes256_encrypt): New file, moved function here.
+	* Makefile.in (nettle_SOURCES): Add new files.
+
+2021-03-28  Niels Möller  <nisse@lysator.liu.se>
+
+	Initial config for s390x, contributed by Mamone Tarsha.
+	* configure.ac: Add flag --enable-s390x-msa-x1. Add ABI check for
+	s390x, and setup asm_path.
+	* Makefile.in (distdir): Add s390x directory.
+	* s390x/README: New file
+
 2021-07-08  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac (FAT_TEST_LIST): Add sha2 to aarch64 fat tests.
