@@ -50,6 +50,7 @@
 
 #include "nettle-types.h"
 
+#include "aes.h"
 #include "gcm.h"
 #include "gcm-internal.h"
 #include "fat-setup.h"
@@ -57,6 +58,9 @@
 /* Defines from arch/arm64/include/uapi/asm/hwcap.h in Linux kernel */
 #ifndef HWCAP_ASIMD
 #define HWCAP_ASIMD (1 << 1)
+#endif
+#ifndef HWCAP_AES
+#define HWCAP_AES (1 << 3)
 #endif
 #ifndef HWCAP_PMULL
 #define HWCAP_PMULL (1 << 4)
@@ -70,6 +74,7 @@
 
 struct arm64_features
 {
+  int have_aes;
   int have_pmull;
   int have_sha1;
   int have_sha2;
@@ -82,6 +87,7 @@ static void
 get_arm64_features (struct arm64_features *features)
 {
   const char *s;
+  features->have_aes = 0;
   features->have_pmull = 0;
   features->have_sha1 = 0;
   features->have_sha2 = 0;
@@ -93,7 +99,9 @@ get_arm64_features (struct arm64_features *features)
 	const char *sep = strchr (s, ',');
 	size_t length = sep ? (size_t) (sep - s) : strlen(s);
 
-	if (MATCH (s, length, "pmull", 5))
+	if (MATCH (s, length, "aes", 3))
+	  features->have_aes = 1;
+  else if (MATCH (s, length, "pmull", 5))
 	  features->have_pmull = 1;
   else if (MATCH (s, length, "sha1", 4))
 	  features->have_sha1 = 1;
@@ -107,6 +115,8 @@ get_arm64_features (struct arm64_features *features)
     {
 #if USE_GETAUXVAL
       unsigned long hwcap = getauxval(AT_HWCAP);
+      features->have_aes
+	= ((hwcap & (HWCAP_ASIMD | HWCAP_AES)) == (HWCAP_ASIMD | HWCAP_AES));
       features->have_pmull
 	= ((hwcap & (HWCAP_ASIMD | HWCAP_PMULL)) == (HWCAP_ASIMD | HWCAP_PMULL));
       features->have_sha1
@@ -116,6 +126,27 @@ get_arm64_features (struct arm64_features *features)
 #endif
     }
 }
+
+DECLARE_FAT_FUNC(nettle_aes128_encrypt, aes128_crypt_func)
+DECLARE_FAT_FUNC_VAR(aes128_encrypt, aes128_crypt_func, c)
+DECLARE_FAT_FUNC_VAR(aes128_encrypt, aes128_crypt_func, arm64)
+DECLARE_FAT_FUNC(nettle_aes128_decrypt, aes128_crypt_func)
+DECLARE_FAT_FUNC_VAR(aes128_decrypt, aes128_crypt_func, c)
+DECLARE_FAT_FUNC_VAR(aes128_decrypt, aes128_crypt_func, arm64)
+
+DECLARE_FAT_FUNC(nettle_aes192_encrypt, aes192_crypt_func)
+DECLARE_FAT_FUNC_VAR(aes192_encrypt, aes192_crypt_func, c)
+DECLARE_FAT_FUNC_VAR(aes192_encrypt, aes192_crypt_func, arm64)
+DECLARE_FAT_FUNC(nettle_aes192_decrypt, aes192_crypt_func)
+DECLARE_FAT_FUNC_VAR(aes192_decrypt, aes192_crypt_func, c)
+DECLARE_FAT_FUNC_VAR(aes192_decrypt, aes192_crypt_func, arm64)
+
+DECLARE_FAT_FUNC(nettle_aes256_encrypt, aes256_crypt_func)
+DECLARE_FAT_FUNC_VAR(aes256_encrypt, aes256_crypt_func, c)
+DECLARE_FAT_FUNC_VAR(aes256_encrypt, aes256_crypt_func, arm64)
+DECLARE_FAT_FUNC(nettle_aes256_decrypt, aes256_crypt_func)
+DECLARE_FAT_FUNC_VAR(aes256_decrypt, aes256_crypt_func, c)
+DECLARE_FAT_FUNC_VAR(aes256_decrypt, aes256_crypt_func, arm64)
 
 #if GCM_TABLE_BITS == 8
 DECLARE_FAT_FUNC(_nettle_gcm_init_key, gcm_init_key_func)
@@ -145,11 +176,33 @@ fat_init (void)
 
   verbose = getenv (ENV_VERBOSE) != NULL;
   if (verbose)
-    fprintf (stderr, "libnettle: cpu features:%s%s%s\n",
+    fprintf (stderr, "libnettle: cpu features:%s%s%s%s\n",
+	     features.have_aes ? " aes instructions" : "",
 	     features.have_pmull ? " polynomial multiply long instructions (PMULL/PMULL2)" : "",
        features.have_sha1 ? " sha1 instructions" : "",
        features.have_sha2 ? " sha2 instructions" : "");
 
+  if (features.have_aes)
+  {
+    if (verbose)
+      fprintf (stderr, "libnettle: enabling hardware accelerated AES encrypt/decrypt code.\n");
+    nettle_aes128_encrypt_vec = _nettle_aes128_encrypt_arm64;
+    nettle_aes128_decrypt_vec = _nettle_aes128_decrypt_arm64;
+    nettle_aes192_encrypt_vec = _nettle_aes192_encrypt_arm64;
+    nettle_aes192_decrypt_vec = _nettle_aes192_decrypt_arm64;
+    nettle_aes256_encrypt_vec = _nettle_aes256_encrypt_arm64;
+    nettle_aes256_decrypt_vec = _nettle_aes256_decrypt_arm64;
+  }
+  else
+  {
+    nettle_aes128_encrypt_vec = _nettle_aes128_encrypt_c;
+    nettle_aes128_decrypt_vec = _nettle_aes128_decrypt_c;
+    nettle_aes192_encrypt_vec = _nettle_aes192_encrypt_c;
+    nettle_aes192_decrypt_vec = _nettle_aes192_decrypt_c;
+    nettle_aes256_encrypt_vec = _nettle_aes256_encrypt_c;
+    nettle_aes256_decrypt_vec = _nettle_aes256_decrypt_c;
+  }
+  
   if (features.have_pmull)
     {
       if (verbose)
@@ -191,6 +244,33 @@ fat_init (void)
       _nettle_sha256_compress_vec = _nettle_sha256_compress_c;
     }
 }
+
+DEFINE_FAT_FUNC(nettle_aes128_encrypt, void,
+ (const struct aes128_ctx *ctx, size_t length,
+  uint8_t *dst,const uint8_t *src),
+ (ctx, length, dst, src))
+DEFINE_FAT_FUNC(nettle_aes128_decrypt, void,
+ (const struct aes128_ctx *ctx, size_t length,
+  uint8_t *dst,const uint8_t *src),
+ (ctx, length, dst, src))
+
+DEFINE_FAT_FUNC(nettle_aes192_encrypt, void,
+ (const struct aes192_ctx *ctx, size_t length,
+  uint8_t *dst,const uint8_t *src),
+ (ctx, length, dst, src))
+DEFINE_FAT_FUNC(nettle_aes192_decrypt, void,
+ (const struct aes192_ctx *ctx, size_t length,
+  uint8_t *dst,const uint8_t *src),
+ (ctx, length, dst, src))
+
+DEFINE_FAT_FUNC(nettle_aes256_encrypt, void,
+ (const struct aes256_ctx *ctx, size_t length,
+  uint8_t *dst,const uint8_t *src),
+ (ctx, length, dst, src))
+DEFINE_FAT_FUNC(nettle_aes256_decrypt, void,
+ (const struct aes256_ctx *ctx, size_t length,
+  uint8_t *dst,const uint8_t *src),
+ (ctx, length, dst, src))
 
 #if GCM_TABLE_BITS == 8
 DEFINE_FAT_FUNC(_nettle_gcm_init_key, void,

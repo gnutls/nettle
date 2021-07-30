@@ -495,7 +495,7 @@ if test "x$enable_assembler" = xyes ; then
         if test "x$enable_fat" = xyes ; then
           asm_path="arm64/fat $asm_path"
           OPT_NETTLE_SOURCES="fat-arm64.c $OPT_NETTLE_SOURCES"
-          FAT_TEST_LIST="none pmull sha1 sha2"
+          FAT_TEST_LIST="none aes pmull sha1 sha2"
         else
           if test "$enable_arm64_crypto" = yes ; then
             asm_path="arm64/crypto $asm_path"
