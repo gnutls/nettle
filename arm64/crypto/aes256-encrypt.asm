@@ -61,46 +61,6 @@ define(`K12', `v28')
 define(`K13', `v29')
 define(`K14', `v30')
 
-C AES encryption round of 4-blocks
-C AESE_ROUND_4B(KEY)
-define(`AESE_ROUND_4B', m4_assert_numargs(1)`
-    aese           S0.16b,$1.16b
-    aesmc          S0.16b,S0.16b
-    aese           S1.16b,$1.16b
-    aesmc          S1.16b,S1.16b
-    aese           S2.16b,$1.16b
-    aesmc          S2.16b,S2.16b
-    aese           S3.16b,$1.16b
-    aesmc          S3.16b,S3.16b
-')
-
-C AES last encryption round of 4-blocks
-C AESE_LAST_ROUND_4B(KEY)
-define(`AESE_LAST_ROUND_4B', m4_assert_numargs(2)`
-    aese           S0.16b,$1.16b
-    eor            S0.16b,S0.16b,$2.16b
-    aese           S1.16b,$1.16b
-    eor            S1.16b,S1.16b,$2.16b
-    aese           S2.16b,$1.16b
-    eor            S2.16b,S2.16b,$2.16b
-    aese           S3.16b,$1.16b
-    eor            S3.16b,S3.16b,$2.16b
-')
-
-C AES encryption round of 1-block
-C AESE_ROUND_1B(KEY)
-define(`AESE_ROUND_1B', m4_assert_numargs(1)`
-    aese           S0.16b,$1.16b
-    aesmc          S0.16b,S0.16b
-')
-
-C AES last encryption round of 1-block
-C AESE_LAST_ROUND_1B(KEY)
-define(`AESE_LAST_ROUND_1B', m4_assert_numargs(2)`
-    aese           S0.16b,$1.16b
-    eor            S0.16b,S0.16b,$2.16b
-')
-
 C void
 C aes256_encrypt(const struct aes256_ctx *ctx,
 C                size_t length, uint8_t *dst,
@@ -119,20 +79,20 @@ PROLOGUE(nettle_aes256_encrypt)
 L4B_loop:
     ld1            {S0.16b,S1.16b,S2.16b,S3.16b},[SRC],#64
     
-    AESE_ROUND_4B(K0)
-    AESE_ROUND_4B(K1)
-    AESE_ROUND_4B(K2)
-    AESE_ROUND_4B(K3)
-    AESE_ROUND_4B(K4)
-    AESE_ROUND_4B(K5)
-    AESE_ROUND_4B(K6)
-    AESE_ROUND_4B(K7)
-    AESE_ROUND_4B(K8)
-    AESE_ROUND_4B(K9)
-    AESE_ROUND_4B(K10)
-    AESE_ROUND_4B(K11)
-    AESE_ROUND_4B(K12)
-    AESE_LAST_ROUND_4B(K13,K14)
+    AESE_ROUND_4B(S0,S1,S2,S3,K0)
+    AESE_ROUND_4B(S0,S1,S2,S3,K1)
+    AESE_ROUND_4B(S0,S1,S2,S3,K2)
+    AESE_ROUND_4B(S0,S1,S2,S3,K3)
+    AESE_ROUND_4B(S0,S1,S2,S3,K4)
+    AESE_ROUND_4B(S0,S1,S2,S3,K5)
+    AESE_ROUND_4B(S0,S1,S2,S3,K6)
+    AESE_ROUND_4B(S0,S1,S2,S3,K7)
+    AESE_ROUND_4B(S0,S1,S2,S3,K8)
+    AESE_ROUND_4B(S0,S1,S2,S3,K9)
+    AESE_ROUND_4B(S0,S1,S2,S3,K10)
+    AESE_ROUND_4B(S0,S1,S2,S3,K11)
+    AESE_ROUND_4B(S0,S1,S2,S3,K12)
+    AESE_LAST_ROUND_4B(S0,S1,S2,S3,K13,K14)
 
     st1            {S0.16b,S1.16b,S2.16b,S3.16b},[DST],#64
 
@@ -152,20 +112,20 @@ L1B:
 L1B_loop:
     ld1            {S0.16b},[SRC],#16
     
-    AESE_ROUND_1B(K0)
-    AESE_ROUND_1B(K1)
-    AESE_ROUND_1B(K2)
-    AESE_ROUND_1B(K3)
-    AESE_ROUND_1B(K4)
-    AESE_ROUND_1B(K5)
-    AESE_ROUND_1B(K6)
-    AESE_ROUND_1B(K7)
-    AESE_ROUND_1B(K8)
-    AESE_ROUND_1B(K9)
-    AESE_ROUND_1B(K10)
-    AESE_ROUND_1B(K11)
-    AESE_ROUND_1B(K12)
-    AESE_LAST_ROUND_1B(K13,K14)
+    AESE_ROUND_1B(S0,K0)
+    AESE_ROUND_1B(S0,K1)
+    AESE_ROUND_1B(S0,K2)
+    AESE_ROUND_1B(S0,K3)
+    AESE_ROUND_1B(S0,K4)
+    AESE_ROUND_1B(S0,K5)
+    AESE_ROUND_1B(S0,K6)
+    AESE_ROUND_1B(S0,K7)
+    AESE_ROUND_1B(S0,K8)
+    AESE_ROUND_1B(S0,K9)
+    AESE_ROUND_1B(S0,K10)
+    AESE_ROUND_1B(S0,K11)
+    AESE_ROUND_1B(S0,K12)
+    AESE_LAST_ROUND_1B(S0,K13,K14)
 
     st1            {S0.16b},[DST],#16
 
