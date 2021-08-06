@@ -33,7 +33,7 @@ ifelse(`
 
 .text
 
-C void * memxor(void *dst, const void *src, size_t n)      
+C void * memxor(void *dst, const void *src, size_t n)
 
 PROLOGUE(nettle_memxor)
     srlg           %r5,%r4,8

@@ -1,3 +1,13 @@
+2021-08-06  Niels Möller  <nisse@lysator.liu.se>
+
+	S390x xor functions, from Mamone Tarsha:
+	* configure.ac: New configure option --enable-s390x-vf.
+	* fat-s390x.c: Fat setup for memxor3.
+	* s390x/vf/memxor3.asm: New file.
+	* s390x/memxor.asm: New file.
+	* s390x/machine.m4 (XOR_LEN): New macro.
+	* s390x/fat/memxor3-2.asm: New file.
+
 2021-07-24  Niels Möller  <nisse@lysator.liu.se>
 
 	Merged s390x code.
