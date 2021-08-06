@@ -621,7 +621,7 @@ distdir: $(DISTFILES)
 		arm arm/neon arm/v6 arm/fat \
 		arm64 arm64/crypto arm64/fat \
 		powerpc64 powerpc64/p7 powerpc64/p8 powerpc64/fat \
-		s390x s390x/msa_x1 s390x/msa_x2 s390x/msa_x4 s390x/fat ; do \
+		s390x s390x/vf s390x/msa_x1 s390x/msa_x2 s390x/msa_x4 s390x/fat ; do \
 	  mkdir "$(distdir)/$$d" ; \
 	  find "$(srcdir)/$$d" -maxdepth 1 '(' -name '*.asm' -o -name '*.m4' -o -name README ')' \
 	    -exec cp '{}' "$(distdir)/$$d" ';' ; \

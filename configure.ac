@@ -101,6 +101,10 @@ AC_ARG_ENABLE(power-altivec,
   AC_HELP_STRING([--enable-power-altivec], [Enable POWER altivec and vsx extensions. (default=no)]),,
   [enable_altivec=no])
 
+AC_ARG_ENABLE(s390x-vf,
+  AC_HELP_STRING([--enable-s390x-vf], [Enable vector facility on z/Architecture. (default=no)]),,
+  [enable_s390x_vf=no])
+
 AC_ARG_ENABLE(s390x-msa,
   AC_HELP_STRING([--enable-s390x-msa], [Enable message-security assist extensions on z/Architecture. (default=no)]),,
   [enable_s390x_msa=no])
@@ -533,8 +537,11 @@ if test "x$enable_assembler" = xyes ; then
         if test "x$enable_fat" = xyes ; then
 	        asm_path="s390x/fat $asm_path"
 	        OPT_NETTLE_SOURCES="fat-s390x.c $OPT_NETTLE_SOURCES"
-          FAT_TEST_LIST="none msa_x1 msa_x2 msa_x4"
+          FAT_TEST_LIST="none vf msa_x1 msa_x2 msa_x4"
         else
+          if test "$enable_s390x_vf" = yes ; then
+            asm_path="s390x/vf $asm_path"
+          fi
           if test "$enable_s390x_msa" = yes ; then
             asm_path="s390x/msa_x1 s390x/msa_x2 s390x/msa_x4 $asm_path"
           fi
@@ -567,7 +574,7 @@ asm_replace_list="aes-encrypt-internal.asm aes-decrypt-internal.asm \
 
 # Assembler files which generate additional object files if they are used.
 asm_nettle_optional_list="gcm-hash.asm gcm-hash8.asm cpuid.asm cpu-facility.asm \
-  aes-encrypt-internal-2.asm aes-decrypt-internal-2.asm memxor-2.asm \
+  aes-encrypt-internal-2.asm aes-decrypt-internal-2.asm memxor-2.asm memxor3-2.asm \
   aes128-set-encrypt-key-2.asm aes128-set-decrypt-key-2.asm \
   aes128-encrypt-2.asm aes128-decrypt-2.asm \
   aes192-set-encrypt-key-2.asm aes192-set-decrypt-key-2.asm \
@@ -680,6 +687,7 @@ AC_SUBST([ASM_PPC_WANT_R_REGISTERS])
 AH_VERBATIM([HAVE_NATIVE],
 [/* Define to 1 each of the following for which a native (ie. CPU specific)
     implementation of the corresponding routine exists.  */
+#undef HAVE_NATIVE_memxor3
 #undef HAVE_NATIVE_aes_decrypt
 #undef HAVE_NATIVE_aes_encrypt
 #undef HAVE_NATIVE_aes128_decrypt

@@ -170,6 +170,7 @@ typedef void gcm_hash_func (const struct gcm_key *key, union nettle_block16 *x,
 			    size_t length, const uint8_t *data);
 
 typedef void *(memxor_func)(void *dst, const void *src, size_t n);
+typedef void *(memxor3_func)(void *dst_in, const void *a_in, const void *b_in, size_t n);
 
 typedef void salsa20_core_func (uint32_t *dst, const uint32_t *src, unsigned rounds);
 typedef void salsa20_crypt_func (struct salsa20_ctx *ctx, unsigned rounds,
