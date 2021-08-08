@@ -65,14 +65,13 @@ C                size_t length, uint8_t *dst,
 C                const uint8_t *src)
 
 PROLOGUE(nettle_aes192_decrypt)
+    ld1            {K0.4s,K1.4s,K2.4s,K3.4s},[KEYS],#64
+    ld1            {K4.4s,K5.4s,K6.4s,K7.4s},[KEYS],#64
+    ld1            {K8.4s,K9.4s,K10.4s,K11.4s},[KEYS],#64
+    ld1            {K12.4s},[KEYS]
+    
     ands           x4,LENGTH,#-64
     b.eq           L1B
-
-    mov            x5,KEYS
-    ld1            {K0.4s,K1.4s,K2.4s,K3.4s},[x5],#64
-    ld1            {K4.4s,K5.4s,K6.4s,K7.4s},[x5],#64
-    ld1            {K8.4s,K9.4s,K10.4s,K11.4s},[x5],#64
-    ld1            {K12.4s},[x5]
 
 L4B_loop:
     ld1            {S0.16b,S1.16b,S2.16b,S3.16b},[SRC],#64
@@ -99,11 +98,6 @@ L4B_loop:
 
 L1B:
     cbz            LENGTH,Ldone
-
-    ld1            {K0.4s,K1.4s,K2.4s,K3.4s},[KEYS],#64
-    ld1            {K4.4s,K5.4s,K6.4s,K7.4s},[KEYS],#64
-    ld1            {K8.4s,K9.4s,K10.4s,K11.4s},[KEYS],#64
-    ld1            {K12.4s},[KEYS]
 
 L1B_loop:
     ld1            {S0.16b},[SRC],#16
