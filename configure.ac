@@ -537,13 +537,13 @@ if test "x$enable_assembler" = xyes ; then
         if test "x$enable_fat" = xyes ; then
 	        asm_path="s390x/fat $asm_path"
 	        OPT_NETTLE_SOURCES="fat-s390x.c $OPT_NETTLE_SOURCES"
-          FAT_TEST_LIST="none vf msa_x1 msa_x2 msa_x4"
+          FAT_TEST_LIST="none vf msa msa_x1 msa_x2 msa_x4"
         else
           if test "$enable_s390x_vf" = yes ; then
             asm_path="s390x/vf $asm_path"
           fi
           if test "$enable_s390x_msa" = yes ; then
-            asm_path="s390x/msa_x1 s390x/msa_x2 s390x/msa_x4 $asm_path"
+            asm_path="s390x/msa s390x/msa_x1 s390x/msa_x2 s390x/msa_x4 $asm_path"
           fi
         fi
       fi

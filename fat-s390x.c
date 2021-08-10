@@ -76,6 +76,7 @@
 #define AES_128_CODE 18
 #define AES_192_CODE 19
 #define AES_256_CODE 20
+#define SHA_1_CODE 1
 #define GHASH_CODE 65
 
 struct s390x_features
@@ -84,7 +85,8 @@ struct s390x_features
   int have_km_aes128;
   int have_km_aes192;
   int have_km_aes256;
-  int have_kmid_ghash;
+  int have_kimd_sha_1;
+  int have_kimd_ghash;
 };
 
 void _nettle_stfle(uint64_t *facility, uint64_t facility_size);
@@ -101,7 +103,8 @@ get_s390x_features (struct s390x_features *features)
   features->have_km_aes128 = 0;
   features->have_km_aes192 = 0;
   features->have_km_aes256 = 0;
-  features->have_kmid_ghash = 0;
+  features->have_kimd_sha_1 = 0;
+  features->have_kimd_ghash = 0;
 
   const char *s = secure_getenv (ENV_OVERRIDE);
   if (s)
@@ -112,19 +115,17 @@ get_s390x_features (struct s390x_features *features)
 
       if (MATCH (s, length, "vf", 2))
         features->have_vector_facility = 1;
+      else if (MATCH (s, length, "msa", 3))
+        features->have_kimd_sha_1 = 1;
       else if (MATCH (s, length, "msa_x1", 6))
-      {
         features->have_km_aes128 = 1;
-      }
       else if (MATCH (s, length, "msa_x2", 6))
       {
         features->have_km_aes192 = 1;
         features->have_km_aes256 = 1;
       }
       else if (MATCH (s, length, "msa_x4", 6))
-      {
-        features->have_kmid_ghash = 1;
-      }
+        features->have_kimd_ghash = 1;
       if (!sep)
         break;
       s = sep + 1;
@@ -151,6 +152,11 @@ get_s390x_features (struct s390x_features *features)
           features->have_km_aes192 = 1;
         if (query_status[FACILITY_INDEX(AES_256_CODE)] & FACILITY_BIT(AES_256_CODE))
           features->have_km_aes256 = 1;
+        
+        memset(query_status, 0, sizeof(query_status));
+        _nettle_kimd_status(query_status);
+        if (query_status[FACILITY_INDEX(SHA_1_CODE)] & FACILITY_BIT(SHA_1_CODE))
+          features->have_kimd_sha_1 = 1;
       }
 
       if (facilities[FACILITY_INDEX(FAC_MSA_X4)] & FACILITY_BIT(FAC_MSA_X4))
@@ -158,7 +164,7 @@ get_s390x_features (struct s390x_features *features)
         uint64_t query_status[2] = {0};
         _nettle_kimd_status(query_status);
         if (query_status[FACILITY_INDEX(GHASH_CODE)] & FACILITY_BIT(GHASH_CODE))
-          features->have_kmid_ghash = 1;
+          features->have_kimd_ghash = 1;
       }
     }
 #endif
@@ -231,6 +237,10 @@ DECLARE_FAT_FUNC(_nettle_gcm_hash, gcm_hash_func)
 DECLARE_FAT_FUNC_VAR(gcm_hash, gcm_hash_func, c)
 DECLARE_FAT_FUNC_VAR(gcm_hash, gcm_hash_func, s390x)
 #endif /* GCM_TABLE_BITS == 8 */
+
+DECLARE_FAT_FUNC(nettle_sha1_compress, sha1_compress_func)
+DECLARE_FAT_FUNC_VAR(sha1_compress, sha1_compress_func, c)
+DECLARE_FAT_FUNC_VAR(sha1_compress, sha1_compress_func, s390x)
 
 static void CONSTRUCTOR
 fat_init (void)
@@ -314,7 +324,7 @@ fat_init (void)
   }
 
   /* GHASH */
-  if (features.have_kmid_ghash)
+  if (features.have_kimd_ghash)
   {
     if (verbose)
       fprintf (stderr, "libnettle: enabling hardware accelerated GHASH.\n");
@@ -325,6 +335,18 @@ fat_init (void)
   {
     _nettle_gcm_init_key_vec = _nettle_gcm_init_key_c;
     _nettle_gcm_hash_vec = _nettle_gcm_hash_c;
+  }
+
+  /* SHA1 */
+  if (features.have_kimd_sha_1)
+  {
+    if (verbose)
+      fprintf (stderr, "libnettle: enabling hardware accelerated SHA1 compress code.\n");
+    nettle_sha1_compress_vec = _nettle_sha1_compress_s390x;
+  }
+  else
+  {
+    nettle_sha1_compress_vec = _nettle_sha1_compress_c;
   }
 }
 
@@ -400,3 +422,8 @@ DEFINE_FAT_FUNC(_nettle_gcm_hash, void,
 		 size_t length, const uint8_t *data),
 		(key, x, length, data))
 #endif /* GCM_TABLE_BITS == 8 */
+
+/* SHA1 */
+DEFINE_FAT_FUNC(nettle_sha1_compress, void,
+		(uint32_t *state, const uint8_t *input),
+		(state, input))
