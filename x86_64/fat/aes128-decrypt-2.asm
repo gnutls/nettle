@@ -1,8 +1,7 @@
-C x86_64/fat/aes-encrypt-internal.asm
-
+C x86_64/fat/aes128-decrypt.asm
 
 ifelse(`
-   Copyright (C) 2015 Niels Möller
+   Copyright (C) 2021 Niels Möller
 
    This file is part of GNU Nettle.
 
@@ -31,5 +30,7 @@ ifelse(`
    not, see http://www.gnu.org/licenses/.
 ')
 
-define(`fat_transform', `$1_x86_64')
-include_src(`x86_64/aes-encrypt-internal.asm')
+dnl PROLOGUE(nettle_aes128_decrypt) picked up by configure
+
+define(`fat_transform', `_$1_aesni')
+include_src(`x86_64/aesni/aes128-decrypt.asm')
