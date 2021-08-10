@@ -4,7 +4,7 @@
 	* x86_64/aesni/aes128-decrypt.asm: Likewise.
 	* x86_64/aesni/aes192-encrypt.asm: Likewise.
 	* x86_64/aesni/aes192-decrypt.asm: Likewise.
-	* x86_64/aesni/aes256-encrypt.asm: New file, but 1-way loop.
+	* x86_64/aesni/aes256-encrypt.asm: Likewise.
 	* x86_64/aesni/aes256-decrypt.asm: Likewise.
 	* x86_64/aesni/aes-encrypt-internal.asm: Deleted.
 	* x86_64/aesni/aes-decrypt-internal.asm: Deleted.
