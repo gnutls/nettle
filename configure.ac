@@ -353,15 +353,17 @@ case "$host_cpu" in
     ], [], [
       ABI=32
     ], [
+      ABI=64
+    ])
+    if test "$ABI" = 64 ; then
       AC_TRY_COMPILE([
 #if _CALL_ELF == 2
 #error ELFv2 ABI
 #endif
-      ], [], [
-	ABI=64v1
-      ], [
-	ABI=64v2
-      ])])
+      ], [], [], [
+	ELFV2_ABI=yes
+      ])
+    fi
     ;;
   aarch64*)
     AC_TRY_COMPILE([
@@ -521,7 +523,7 @@ if test "x$enable_assembler" = xyes ; then
       fi
       ;;
     *powerpc64*)
-      if test "$ABI" != 32 ; then
+      if test "$ABI" = 64 ; then
 	GMP_ASM_POWERPC_R_REGISTERS
 	asm_path="powerpc64"
 	if test "x$enable_fat" = xyes ; then
@@ -757,7 +759,8 @@ IF_DLL='#'
 LIBNETTLE_FILE_SRC='$(LIBNETTLE_FORLINK)'
 LIBHOGWEED_FILE_SRC='$(LIBHOGWEED_FORLINK)'
 EMULATOR=''
-W64_ABI=no
+ELFV2_ABI=no # For powerpc64
+W64_ABI=no   # For x86_64 windows
 
 case "$host_os" in
   mingw32*|cygwin*)
@@ -1038,8 +1041,8 @@ AC_SUBST(ASM_TYPE_FUNCTION)
 AC_SUBST(ASM_TYPE_PROGBITS)
 AC_SUBST(ASM_MARK_NOEXEC_STACK)
 AC_SUBST(ASM_ALIGN_LOG)
+AC_SUBST(ELFV2_ABI)
 AC_SUBST(W64_ABI)
-AC_SUBST(ABI)
 AC_SUBST(ASM_WORDS_BIGENDIAN)
 AC_SUBST(EMULATOR)
 AC_SUBST(ASM_X86_ENDBR)
