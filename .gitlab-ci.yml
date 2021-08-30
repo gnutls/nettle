@@ -156,7 +156,7 @@ Debian.cross.x86:
   - export CC_FOR_BUILD="gcc"
   - export CC="$host-gcc"
   - ./.bootstrap
-  - ./configure --disable-static --disable-documentation $EXTRA_CONFIGURE_ARGS --build=$build --host=$host
+  - ./configure --disable-static --disable-documentation $EXTRA_CONFIGURE_FLAGS --build=$build --host=$host
   - make -j$(nproc)
   - make -j$(nproc) check
   - make -j$(nproc) check-fat
