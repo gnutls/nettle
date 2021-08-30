@@ -140,11 +140,13 @@ Debian.cross.x86:
   before_script:
   - host="${CI_JOB_NAME#*.cross.}"
   - dpkg --add-architecture ppc64el
+  - dpkg --add-architecture s390x
   - apt-get update -q
   # remove any previously installed nettle headers to avoid conflicts
   - for arch in armhf arm64 ppc64el;do apt-get remove -y nettle-dev:$arch;done
   - if [ "$host" == "powerpc64-linux-gnu" ];then apt-get update && apt-get install -y gcc-$host g++-$host && export QEMU_LD_PREFIX=/usr/$host;fi
   - if [ "$host" == "powerpc64le-linux-gnu" ];then apt-get update && apt-get install -y gcc-$host g++-$host && export QEMU_LD_PREFIX=/usr/$host;fi
+  - if [ "$host" == "s390x-linux-gnu"];then apt-get update && apt-get install -y gcc-$host g++-$host && export EXTRA_CONFIGURE_FLAGS='--disable-assembler';fi
   script:
   - build=$(dpkg-architecture -qDEB_HOST_GNU_TYPE)
   - host="${CI_JOB_NAME#*.cross.}"
@@ -154,7 +156,7 @@ Debian.cross.x86:
   - export CC_FOR_BUILD="gcc"
   - export CC="$host-gcc"
   - ./.bootstrap
-  - ./configure --disable-static --disable-documentation --build=$build --host=$host
+  - ./configure --disable-static --disable-documentation $EXTRA_CONFIGURE_ARGS --build=$build --host=$host
   - make -j$(nproc)
   - make -j$(nproc) check
   - make -j$(nproc) check-fat
@@ -170,6 +172,8 @@ Debian.cross.aarch64-linux-gnu:
 Debian.cross.powerpc64-linux-gnu:
   <<: *Debian_cross_template
 Debian.cross.powerpc64le-linux-gnu:
+  <<: *Debian_cross_template
+Debian.cross.s390x-linux-gnu:
   <<: *Debian_cross_template
 
 remote/s390x:
