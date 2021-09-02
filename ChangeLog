@@ -10,6 +10,19 @@
 	* fat-s390x.c: Update fat setup.
 	* Makefile.in (distdir): Add s390x/msa_x1.
 
+2021-08-10  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/aesni/aes128-encrypt.asm: New file, with 2-way loop.
+	* x86_64/aesni/aes128-decrypt.asm: Likewise.
+	* x86_64/aesni/aes192-encrypt.asm: Likewise.
+	* x86_64/aesni/aes192-decrypt.asm: Likewise.
+	* x86_64/aesni/aes256-encrypt.asm: Likewise.
+	* x86_64/aesni/aes256-decrypt.asm: Likewise.
+	* x86_64/aesni/aes-encrypt-internal.asm: Deleted.
+	* x86_64/aesni/aes-decrypt-internal.asm: Deleted.
+	* x86_64/fat/: Corresponding new and deleted files.
+	* fat-x86_64.c: Update fat setup accordingly.
+
 2021-08-09  Niels Möller  <nisse@lysator.liu.se>
 
 	Arm64 AES functions, from Mamone Tarsha:
