@@ -804,7 +804,6 @@ test_aead(const struct nettle_aead *aead,
   length = cleartext->length;
 
   ASSERT (key->length == aead->key_size);
-  ASSERT (digest->length <= aead->digest_size);
 
   data = xalloc(length);
   
@@ -820,41 +819,49 @@ test_aead(const struct nettle_aead *aead,
   else
     aead->set_nonce(ctx, nonce->data);
 
-  if (authtext->length)
+  if (aead->update && authtext->length)
     aead->update(ctx, authtext->length, authtext->data);
-    
+
   if (length)
     aead->encrypt(ctx, length, data, cleartext->data);
 
-  aead->digest(ctx, digest->length, buffer);
-
-  ASSERT(MEMEQ(length, data, ciphertext->data));
-  ASSERT(MEMEQ(digest->length, buffer, digest->data));
-
-  /* decryption */
-  memset(buffer, 0, aead->digest_size);
-
-  aead->set_decrypt_key(ctx, key->data);
-
-  if (nonce->length != aead->nonce_size)
+  if (digest)
     {
-      ASSERT (set_nonce);
-      set_nonce (ctx, nonce->length, nonce->data);
+      ASSERT (digest->length <= aead->digest_size);
+      aead->digest(ctx, digest->length, buffer);
+      ASSERT(MEMEQ(digest->length, buffer, digest->data));
     }
   else
-    aead->set_nonce(ctx, nonce->data);
+    ASSERT(!aead->digest);
 
-  if (authtext->length)
-    aead->update(ctx, authtext->length, authtext->data);
+  ASSERT(MEMEQ(length, data, ciphertext->data));
+
+  /* decryption */
+  if (aead->set_decrypt_key)
+    {
+      memset(buffer, 0, aead->digest_size);
+
+      aead->set_decrypt_key(ctx, key->data);
+
+      if (nonce->length != aead->nonce_size)
+	{
+	  ASSERT (set_nonce);
+	  set_nonce (ctx, nonce->length, nonce->data);
+	}
+      else
+	aead->set_nonce(ctx, nonce->data);
+
+      if (authtext->length)
+	aead->update(ctx, authtext->length, authtext->data);
     
-  if (length)
-    aead->decrypt(ctx, length, data, data);
+      if (length)
+	aead->decrypt(ctx, length, data, data);
 
-  aead->digest(ctx, digest->length, buffer);
+      aead->digest(ctx, digest->length, buffer);
 
-  ASSERT(MEMEQ(length, data, cleartext->data));
-  ASSERT(MEMEQ(digest->length, buffer, digest->data));
-
+      ASSERT(MEMEQ(length, data, cleartext->data));
+      ASSERT(MEMEQ(digest->length, buffer, digest->data));
+    }
   free(ctx);
   free(data);
   free(buffer);

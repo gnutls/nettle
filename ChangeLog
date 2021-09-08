@@ -1,3 +1,22 @@
+2021-09-08  Niels Möller  <nisse@lysator.liu.se>
+
+	* cbc-aes128-encrypt.c (nettle_cbc_aes128_encrypt): New file and
+	function.
+	* cbc-aes192-encrypt.c (cbc_aes192_set_encrypt_key): New file.
+	* cbc-aes256-encrypt.c (cbc_aes256_set_encrypt_key): New file.
+	* cbc.h (cbc_aes128_ctx, struct cbc_aes192_ctx, cbc_aes256_ctx):
+	New context structs. Declare new functions.
+	* Makefile.in (nettle_SOURCES): Add new files.
+	* nettle-internal.c (nettle_cbc_aes128, nettle_cbc_aes192)
+	(nettle_cbc_aes256): New algorithm structs, for tests and
+	benchmarking.
+	* testsuite/testutils.c (test_aead): Skip tests of decryption and
+	authentication, if corresponding function pointers are NULL.
+	* testsuite/cbc-test.c (test_main): Add tests of new cbc
+	functions.
+	* examples/nettle-benchmark.c (time_aead): Skip decrypt benchmark,
+	if corresponding function pointer is NULL.
+
 2021-08-16  Niels Möller  <nisse@lysator.liu.se>
 
 	S390x functions for sha1, sha256 and sha512, from Mamone Tarsha:
