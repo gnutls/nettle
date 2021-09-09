@@ -1,5 +1,6 @@
-/* cbc-aes128-encrypt.c
+C x86_64/fat/cbc-aes128-encrypt.asm
 
+ifelse(`
    Copyright (C) 2021 Niels Möller
 
    This file is part of GNU Nettle.
@@ -27,25 +28,9 @@
    You should have received copies of the GNU General Public License and
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
-*/
+')
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
+dnl PROLOGUE(nettle_cbc_aes128_encrypt) picked up by configure
 
-#include "cbc.h"
-
-/* For fat builds */
-#if HAVE_NATIVE_aes128_encrypt
-void
-_nettle_cbc_aes128_encrypt_c(struct cbc_aes128_ctx *ctx,
-			     size_t length, uint8_t *dst,
-			     const uint8_t *src);
-# define nettle_cbc_aes128_encrypt _nettle_cbc_aes128_encrypt_c
-#endif
-
-void
-cbc_aes128_encrypt(struct cbc_aes128_ctx *ctx, size_t length, uint8_t *dst, const uint8_t *src)
-{
-  CBC_ENCRYPT(ctx, aes128_encrypt, length, dst, src);
-}
+define(`fat_transform', `_$1_aesni')
+include_src(`x86_64/aesni/cbc-aes128-encrypt.asm')

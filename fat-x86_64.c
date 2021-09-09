@@ -130,6 +130,16 @@ DECLARE_FAT_FUNC_VAR(aes256_encrypt, aes256_crypt_func, aesni)
 DECLARE_FAT_FUNC_VAR(aes256_decrypt, aes256_crypt_func, c)
 DECLARE_FAT_FUNC_VAR(aes256_decrypt, aes256_crypt_func, aesni)
 
+DECLARE_FAT_FUNC(nettle_cbc_aes128_encrypt, cbc_aes128_encrypt_func);
+DECLARE_FAT_FUNC_VAR(cbc_aes128_encrypt, cbc_aes128_encrypt_func, c);
+DECLARE_FAT_FUNC_VAR(cbc_aes128_encrypt, cbc_aes128_encrypt_func, aesni);
+DECLARE_FAT_FUNC(nettle_cbc_aes192_encrypt, cbc_aes192_encrypt_func);
+DECLARE_FAT_FUNC_VAR(cbc_aes192_encrypt, cbc_aes192_encrypt_func, c);
+DECLARE_FAT_FUNC_VAR(cbc_aes192_encrypt, cbc_aes192_encrypt_func, aesni);
+DECLARE_FAT_FUNC(nettle_cbc_aes256_encrypt, cbc_aes256_encrypt_func);
+DECLARE_FAT_FUNC_VAR(cbc_aes256_encrypt, cbc_aes256_encrypt_func, c);
+DECLARE_FAT_FUNC_VAR(cbc_aes256_encrypt, cbc_aes256_encrypt_func, aesni);
+
 DECLARE_FAT_FUNC(nettle_memxor, memxor_func)
 DECLARE_FAT_FUNC_VAR(memxor, memxor_func, x86_64)
 DECLARE_FAT_FUNC_VAR(memxor, memxor_func, sse2)
@@ -177,6 +187,9 @@ fat_init (void)
       nettle_aes192_decrypt_vec = _nettle_aes192_decrypt_aesni;
       nettle_aes256_encrypt_vec = _nettle_aes256_encrypt_aesni;
       nettle_aes256_decrypt_vec = _nettle_aes256_decrypt_aesni;
+      nettle_cbc_aes128_encrypt_vec = _nettle_cbc_aes128_encrypt_aesni;
+      nettle_cbc_aes192_encrypt_vec = _nettle_cbc_aes192_encrypt_aesni;
+      nettle_cbc_aes256_encrypt_vec = _nettle_cbc_aes256_encrypt_aesni;
     }
   else
     {
@@ -188,6 +201,9 @@ fat_init (void)
       nettle_aes192_decrypt_vec = _nettle_aes192_decrypt_c;
       nettle_aes256_encrypt_vec = _nettle_aes256_encrypt_c;
       nettle_aes256_decrypt_vec = _nettle_aes256_decrypt_c;
+      nettle_cbc_aes128_encrypt_vec = _nettle_cbc_aes128_encrypt_c;
+      nettle_cbc_aes192_encrypt_vec = _nettle_cbc_aes192_encrypt_c;
+      nettle_cbc_aes256_encrypt_vec = _nettle_cbc_aes256_encrypt_c;
     }
 
   if (features.have_sha_ni)
@@ -243,6 +259,19 @@ DEFINE_FAT_FUNC(nettle_aes256_encrypt, void,
 DEFINE_FAT_FUNC(nettle_aes256_decrypt, void,
  (const struct aes256_ctx *ctx, size_t length,
   uint8_t *dst,const uint8_t *src),
+ (ctx, length, dst, src))
+
+DEFINE_FAT_FUNC(nettle_cbc_aes128_encrypt, void,
+ (struct cbc_aes128_ctx *ctx,
+  size_t length, uint8_t *dst, const uint8_t *src),
+ (ctx, length, dst, src))
+DEFINE_FAT_FUNC(nettle_cbc_aes192_encrypt, void,
+ (struct cbc_aes192_ctx *ctx,
+  size_t length, uint8_t *dst, const uint8_t *src),
+ (ctx, length, dst, src))
+DEFINE_FAT_FUNC(nettle_cbc_aes256_encrypt, void,
+ (struct cbc_aes256_ctx *ctx,
+  size_t length, uint8_t *dst, const uint8_t *src),
  (ctx, length, dst, src))
 
 DEFINE_FAT_FUNC(nettle_memxor, void *,

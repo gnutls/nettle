@@ -5,7 +5,14 @@
 	* x86_64/aesni/cbc-aes128-encrypt.asm: New file.
 	* x86_64/aesni/cbc-aes192-encrypt.asm: New file.
 	* x86_64/aesni/cbc-aes256-encrypt.asm: New file.
-	* configure.ac (asm_replace_list): Add new asm files.
+	* x86_64/fat/cbc-aes128-encrypt-2.asm: New file.
+	* x86_64/fat/cbc-aes192-encrypt-2.asm: New file.
+	* x86_64/fat/cbc-aes256-encrypt-2.asm: New file.
+	* configure.ac (asm_nettle_optional_list, asm_replace_list): Add
+	new asm files.
+	* fat-setup.h (cbc_aes128_encrypt_func, cbc_aes192_encrypt_func)
+	(cbc_aes256_encrypt_func): New typedefs.
+	* fat-x86_64.c (fat_init): Use new functions, when aesni is available
 
 2021-09-08  Niels Möller  <nisse@lysator.liu.se>
 
