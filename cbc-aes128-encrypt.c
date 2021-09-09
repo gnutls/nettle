@@ -36,7 +36,7 @@
 #include "cbc.h"
 
 /* For fat builds */
-#if HAVE_NATIVE_aes128_encrypt
+#if HAVE_NATIVE_cbc_aes128_encrypt
 void
 _nettle_cbc_aes128_encrypt_c(struct cbc_aes128_ctx *ctx,
 			     size_t length, uint8_t *dst,
