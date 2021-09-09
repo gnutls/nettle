@@ -1,3 +1,8 @@
+2021-09-09  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/fat/cpuid.asm: Fix usage of W64_ENTRY and W64_EXIT, to
+	make fat builds work on 64-bit windows.
+
 2021-08-16  Niels Möller  <nisse@lysator.liu.se>
 
 	S390x functions for sha1, sha256 and sha512, from Mamone Tarsha:
