@@ -1,3 +1,12 @@
+2021-09-09  Niels Möller  <nisse@lysator.liu.se>
+
+	Implementation of CBC-AES for x86_64 aesni. Roughly 40%-50%
+	speedup benchmarked on Ryzen 5.
+	* x86_64/aesni/cbc-aes128-encrypt.asm: New file.
+	* x86_64/aesni/cbc-aes192-encrypt.asm: New file.
+	* x86_64/aesni/cbc-aes256-encrypt.asm: New file.
+	* configure.ac (asm_replace_list): Add new asm files.
+
 2021-09-08  Niels Möller  <nisse@lysator.liu.se>
 
 	* cbc-aes128-encrypt.c (nettle_cbc_aes128_encrypt): New file and
