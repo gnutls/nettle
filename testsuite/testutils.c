@@ -851,16 +851,18 @@ test_aead(const struct nettle_aead *aead,
       else
 	aead->set_nonce(ctx, nonce->data);
 
-      if (authtext->length)
+      if (aead->update && authtext->length)
 	aead->update(ctx, authtext->length, authtext->data);
     
       if (length)
 	aead->decrypt(ctx, length, data, data);
 
-      aead->digest(ctx, digest->length, buffer);
-
+      if (digest)
+	{
+	  aead->digest(ctx, digest->length, buffer);
+	  ASSERT(MEMEQ(digest->length, buffer, digest->data));
+	}
       ASSERT(MEMEQ(length, data, cleartext->data));
-      ASSERT(MEMEQ(digest->length, buffer, digest->data));
     }
   free(ctx);
   free(data);
