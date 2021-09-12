@@ -563,6 +563,8 @@ asm_replace_list="aes-encrypt-internal.asm aes-decrypt-internal.asm \
 		aes192-encrypt.asm aes192-decrypt.asm \
 		aes256-set-encrypt-key.asm aes256-set-decrypt-key.asm \
 		aes256-encrypt.asm aes256-decrypt.asm \
+		cbc-aes128-encrypt.asm cbc-aes192-encrypt.asm \
+		cbc-aes256-encrypt.asm \
 		arcfour-crypt.asm camellia-crypt-internal.asm \
 		md5-compress.asm memxor.asm memxor3.asm \
 		poly1305-internal.asm \
@@ -581,6 +583,7 @@ asm_nettle_optional_list="gcm-hash.asm gcm-hash8.asm cpuid.asm cpu-facility.asm 
   aes192-encrypt-2.asm aes192-decrypt-2.asm \
   aes256-set-encrypt-key-2.asm aes256-set-decrypt-key-2.asm \
   aes256-encrypt-2.asm aes256-decrypt-2.asm \
+  cbc-aes128-encrypt-2.asm cbc-aes192-encrypt-2.asm cbc-aes256-encrypt-2.asm \
   chacha-2core.asm chacha-3core.asm chacha-4core.asm chacha-core-internal-2.asm \
   salsa20-2core.asm salsa20-core-internal-2.asm \
   sha1-compress-2.asm sha256-compress-2.asm \
@@ -705,6 +708,9 @@ AH_VERBATIM([HAVE_NATIVE],
 #undef HAVE_NATIVE_aes256_invert_key
 #undef HAVE_NATIVE_aes256_set_decrypt_key
 #undef HAVE_NATIVE_aes256_set_encrypt_key
+#undef HAVE_NATIVE_cbc_aes128_encrypt
+#undef HAVE_NATIVE_cbc_aes192_encrypt
+#undef HAVE_NATIVE_cbc_aes256_encrypt
 #undef HAVE_NATIVE_chacha_core
 #undef HAVE_NATIVE_chacha_2core
 #undef HAVE_NATIVE_chacha_3core

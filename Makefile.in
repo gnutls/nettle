@@ -102,7 +102,8 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c aes-decrypt-table.c \
 		 camellia256-set-encrypt-key.c camellia256-crypt.c \
 		 camellia256-set-decrypt-key.c \
 		 camellia256-meta.c \
-		 cast128.c cast128-meta.c cbc.c \
+		 cast128.c cast128-meta.c \
+		 cbc.c cbc-aes128-encrypt.c cbc-aes192-encrypt.c cbc-aes256-encrypt.c \
 		 ccm.c ccm-aes128.c ccm-aes192.c ccm-aes256.c cfb.c \
 		 siv-cmac.c siv-cmac-aes128.c siv-cmac-aes256.c \
 		 cnd-memcpy.c \

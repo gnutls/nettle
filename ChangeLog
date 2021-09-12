@@ -1,3 +1,42 @@
+2021-09-12  Niels Möller  <nisse@lysator.liu.se>
+
+	* Merged CBC-AES changes into master branch.
+
+2021-09-09  Niels Möller  <nisse@lysator.liu.se>
+
+	Implementation of CBC-AES for x86_64 aesni. Roughly 40%-50%
+	speedup benchmarked on Ryzen 5.
+	* x86_64/aesni/cbc-aes128-encrypt.asm: New file.
+	* x86_64/aesni/cbc-aes192-encrypt.asm: New file.
+	* x86_64/aesni/cbc-aes256-encrypt.asm: New file.
+	* x86_64/fat/cbc-aes128-encrypt-2.asm: New file.
+	* x86_64/fat/cbc-aes192-encrypt-2.asm: New file.
+	* x86_64/fat/cbc-aes256-encrypt-2.asm: New file.
+	* configure.ac (asm_nettle_optional_list, asm_replace_list): Add
+	new asm files.
+	* fat-setup.h (cbc_aes128_encrypt_func, cbc_aes192_encrypt_func)
+	(cbc_aes256_encrypt_func): New typedefs.
+	* fat-x86_64.c (fat_init): Use new functions, when aesni is available
+
+2021-09-08  Niels Möller  <nisse@lysator.liu.se>
+
+	* cbc-aes128-encrypt.c (nettle_cbc_aes128_encrypt): New file and
+	function.
+	* cbc-aes192-encrypt.c (cbc_aes192_set_encrypt_key): New file.
+	* cbc-aes256-encrypt.c (cbc_aes256_set_encrypt_key): New file.
+	* cbc.h (cbc_aes128_ctx, struct cbc_aes192_ctx, cbc_aes256_ctx):
+	New context structs. Declare new functions.
+	* Makefile.in (nettle_SOURCES): Add new files.
+	* nettle-internal.c (nettle_cbc_aes128, nettle_cbc_aes192)
+	(nettle_cbc_aes256): New algorithm structs, for tests and
+	benchmarking.
+	* testsuite/testutils.c (test_aead): Skip tests of decryption and
+	authentication, if corresponding function pointers are NULL.
+	* testsuite/cbc-test.c (test_main): Add tests of new cbc
+	functions.
+	* examples/nettle-benchmark.c (time_aead): Skip decrypt benchmark,
+	if corresponding function pointer is NULL.
+
 2021-09-09  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86_64/fat/cpuid.asm: Fix usage of W64_ENTRY and W64_EXIT, to

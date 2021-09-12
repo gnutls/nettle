@@ -769,21 +769,22 @@ time_aead(const struct nettle_aead *aead)
     display(aead->name, "encrypt", aead->block_size,
 	    time_function(bench_aead_crypt, &info));
   }
-  
-  {
-    struct bench_aead_info info;
-    info.ctx = ctx;
-    info.crypt = aead->decrypt;
-    info.data = data;
-    
-    init_key(aead->key_size, key);
-    aead->set_decrypt_key(ctx, key);
-    if (aead->set_nonce)
-      aead->set_nonce (ctx, nonce);
 
-    display(aead->name, "decrypt", aead->block_size,
-	    time_function(bench_aead_crypt, &info));
-  }
+  if (aead->decrypt)
+    {
+      struct bench_aead_info info;
+      info.ctx = ctx;
+      info.crypt = aead->decrypt;
+      info.data = data;
+    
+      init_key(aead->key_size, key);
+      aead->set_decrypt_key(ctx, key);
+      if (aead->set_nonce)
+	aead->set_nonce (ctx, nonce);
+
+      display(aead->name, "decrypt", aead->block_size,
+	      time_function(bench_aead_crypt, &info));
+    }
 
   if (aead->update)
     {
@@ -933,6 +934,8 @@ main(int argc, char **argv)
       /* Stream ciphers */
       &nettle_arcfour128,
       &nettle_salsa20, &nettle_salsa20r12, &nettle_chacha,
+      /* CBC encrypt */
+      &nettle_cbc_aes128, &nettle_cbc_aes192, &nettle_cbc_aes256,
       /* Proper AEAD algorithme. */
       &nettle_gcm_aes128,
       &nettle_gcm_aes192,
