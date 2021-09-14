@@ -83,17 +83,17 @@ memcpy((ctx)->iv, (data), sizeof((ctx)->iv))
 		 sizeof((self)->iv), (self)->iv,	\
 		 (length), (dst), (src)))
 
-struct cbc_aes128_ctx CBC_CTX(struct aes128_ctx, AES_BLOCK_SIZE);
 void
-cbc_aes128_encrypt(struct cbc_aes128_ctx *ctx, size_t length, uint8_t *dst, const uint8_t *src);
+cbc_aes128_encrypt(const struct aes128_ctx *ctx, uint8_t *iv,
+		   size_t length, uint8_t *dst, const uint8_t *src);
 
-struct cbc_aes192_ctx CBC_CTX(struct aes192_ctx, AES_BLOCK_SIZE);
 void
-cbc_aes192_encrypt(struct cbc_aes192_ctx *ctx, size_t length, uint8_t *dst, const uint8_t *src);
+cbc_aes192_encrypt(const struct aes192_ctx *ctx, uint8_t *iv,
+		   size_t length, uint8_t *dst, const uint8_t *src);
 
-struct cbc_aes256_ctx CBC_CTX(struct aes256_ctx, AES_BLOCK_SIZE);
 void
-cbc_aes256_encrypt(struct cbc_aes256_ctx *ctx, size_t length, uint8_t *dst, const uint8_t *src);
+cbc_aes256_encrypt(const struct aes256_ctx *ctx, uint8_t *iv,
+		   size_t length, uint8_t *dst, const uint8_t *src);
 
 #ifdef __cplusplus
 }

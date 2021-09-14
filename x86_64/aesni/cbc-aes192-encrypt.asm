@@ -32,9 +32,10 @@ ifelse(`
 
 C Input argument
 define(`CTX',	`%rdi')
-define(`LENGTH',`%rsi')
-define(`DST',	`%rdx')
-define(`SRC',	`%rcx')
+define(`IV',	`%rsi')
+define(`LENGTH',`%rdx')
+define(`DST',	`%rcx')
+define(`SRC',	`%r8')
 
 define(`KEY0', `%xmm0')
 define(`KEY1', `%xmm1')
@@ -61,7 +62,7 @@ define(`BLOCK', `%xmm14')
 	.text
 	ALIGN(16)
 PROLOGUE(nettle_cbc_aes192_encrypt)
-	W64_ENTRY(4, 15)
+	W64_ENTRY(5, 15)
 	shr	$4, LENGTH
 	test	LENGTH, LENGTH
 	jz	.Lend
@@ -79,7 +80,7 @@ PROLOGUE(nettle_cbc_aes192_encrypt)
 	movups	160(CTX), KEY10
 	movups	176(CTX), KEY11
 	movups	192(CTX), KEY12
-	movups	208(CTX), X	C Load IV
+	movups	(IV), X
 
 .Lblock_loop:
 	movups	(SRC), BLOCK	C Cleartext block
@@ -105,10 +106,9 @@ PROLOGUE(nettle_cbc_aes192_encrypt)
 	dec	LENGTH
 	jnz	.Lblock_loop
 
-	C Save IV
-	movups	X, 208(CTX)
+	movups	X, (IV)
 
 .Lend:
-	W64_EXIT(4, 15)
+	W64_EXIT(5, 15)
 	ret
 EPILOGUE(nettle_cbc_aes192_encrypt)

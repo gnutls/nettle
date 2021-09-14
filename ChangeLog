@@ -1,5 +1,10 @@
 2021-09-14  Niels Möller  <nisse@lysator.liu.se>
 
+	* cbc.h (cbc_aes128_encrypt, cbc_aes192_encrypt)
+	(cbc_aes256_encrypt): Change interface, take cipher context
+	pointer and iv as separate arguments. Update C and x86_64
+	implementations and corresponding glue code.
+
 	* testsuite/testutils.c (test_aead): Test encrypt/decrypt with
 	message split into pieces.
 

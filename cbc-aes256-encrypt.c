@@ -38,14 +38,16 @@
 /* For fat builds */
 #if HAVE_NATIVE_cbc_aes256_encrypt
 void
-_nettle_cbc_aes256_encrypt_c(struct cbc_aes256_ctx *ctx,
+_nettle_cbc_aes256_encrypt_c(const struct aes256_ctx *ctx, uint8_t *iv,
 			     size_t length, uint8_t *dst,
 			     const uint8_t *src);
 # define nettle_cbc_aes256_encrypt _nettle_cbc_aes256_encrypt_c
 #endif
 
 void
-cbc_aes256_encrypt(struct cbc_aes256_ctx *ctx, size_t length, uint8_t *dst, const uint8_t *src)
+cbc_aes256_encrypt(const struct aes256_ctx *ctx, uint8_t *iv,
+		   size_t length, uint8_t *dst, const uint8_t *src)
 {
-  CBC_ENCRYPT(ctx, aes256_encrypt, length, dst, src);
+  cbc_encrypt(ctx, (nettle_cipher_func *) aes256_encrypt,
+	      AES_BLOCK_SIZE, iv, length, dst, src);
 }

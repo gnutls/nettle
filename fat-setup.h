@@ -214,12 +214,9 @@ typedef void aes256_invert_key_func (struct aes256_ctx *dst, const struct aes256
 typedef void aes256_crypt_func (const struct aes256_ctx *ctx, size_t length, uint8_t *dst,
 	       const uint8_t *src);
 
-struct cbc_aes128_ctx;
-typedef void cbc_aes128_encrypt_func (struct cbc_aes128_ctx *ctx,
+typedef void cbc_aes128_encrypt_func (const struct aes128_ctx *ctx, uint8_t *iv,
 				      size_t length, uint8_t *dst, const uint8_t *src);
-struct cbc_aes192_ctx;
-typedef void cbc_aes192_encrypt_func (struct cbc_aes192_ctx *ctx,
+typedef void cbc_aes192_encrypt_func (const struct aes192_ctx *ctx, uint8_t *iv,
 				      size_t length, uint8_t *dst, const uint8_t *src);
-struct cbc_aes256_ctx;
-typedef void cbc_aes256_encrypt_func (struct cbc_aes256_ctx *ctx,
+typedef void cbc_aes256_encrypt_func (const struct aes256_ctx *ctx, uint8_t *iv,
 				      size_t length, uint8_t *dst, const uint8_t *src);
