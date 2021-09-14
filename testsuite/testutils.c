@@ -798,50 +798,20 @@ test_aead(const struct nettle_aead *aead,
   void *ctx = xalloc(aead->context_size);
   uint8_t *data;
   uint8_t *buffer = xalloc(aead->digest_size);
-  size_t length;
+  size_t offset;
 
   ASSERT (cleartext->length == ciphertext->length);
-  length = cleartext->length;
 
   ASSERT (key->length == aead->key_size);
 
-  data = xalloc(length);
-  
-  /* encryption */
-  memset(buffer, 0, aead->digest_size);
-  aead->set_encrypt_key(ctx, key->data);
+  data = xalloc(cleartext->length);
 
-  if (nonce->length != aead->nonce_size)
+  ASSERT(aead->block_size > 0);
+
+  for (offset = 0; offset <= cleartext->length; offset += aead->block_size)
     {
-      ASSERT (set_nonce);
-      set_nonce (ctx, nonce->length, nonce->data);
-    }
-  else
-    aead->set_nonce(ctx, nonce->data);
-
-  if (aead->update && authtext->length)
-    aead->update(ctx, authtext->length, authtext->data);
-
-  if (length)
-    aead->encrypt(ctx, length, data, cleartext->data);
-
-  if (digest)
-    {
-      ASSERT (digest->length <= aead->digest_size);
-      aead->digest(ctx, digest->length, buffer);
-      ASSERT(MEMEQ(digest->length, buffer, digest->data));
-    }
-  else
-    ASSERT(!aead->digest);
-
-  ASSERT(MEMEQ(length, data, ciphertext->data));
-
-  /* decryption */
-  if (aead->set_decrypt_key)
-    {
-      memset(buffer, 0, aead->digest_size);
-
-      aead->set_decrypt_key(ctx, key->data);
+      /* encryption */
+      aead->set_encrypt_key(ctx, key->data);
 
       if (nonce->length != aead->nonce_size)
 	{
@@ -853,16 +823,57 @@ test_aead(const struct nettle_aead *aead,
 
       if (aead->update && authtext->length)
 	aead->update(ctx, authtext->length, authtext->data);
-    
-      if (length)
-	aead->decrypt(ctx, length, data, data);
+
+      if (offset > 0)
+	aead->encrypt(ctx, offset, data, cleartext->data);
+
+      if (offset < cleartext->length)
+	aead->encrypt(ctx, cleartext->length - offset,
+		      data + offset, cleartext->data + offset);
 
       if (digest)
 	{
+	  ASSERT (digest->length <= aead->digest_size);
+	  memset(buffer, 0, aead->digest_size);
 	  aead->digest(ctx, digest->length, buffer);
 	  ASSERT(MEMEQ(digest->length, buffer, digest->data));
 	}
-      ASSERT(MEMEQ(length, data, cleartext->data));
+      else
+	ASSERT(!aead->digest);
+
+      ASSERT(MEMEQ(cleartext->length, data, ciphertext->data));
+
+      /* decryption */
+      if (aead->set_decrypt_key)
+	{
+	  aead->set_decrypt_key(ctx, key->data);
+
+	  if (nonce->length != aead->nonce_size)
+	    {
+	      ASSERT (set_nonce);
+	      set_nonce (ctx, nonce->length, nonce->data);
+	    }
+	  else
+	    aead->set_nonce(ctx, nonce->data);
+
+	  if (aead->update && authtext->length)
+	    aead->update(ctx, authtext->length, authtext->data);
+
+	  if (offset > 0)
+	    aead->decrypt (ctx, offset, data, data);
+
+	  if (offset < cleartext->length)
+	    aead->decrypt(ctx, cleartext->length - offset,
+			  data + offset, data + offset);
+
+	  if (digest)
+	    {
+	      memset(buffer, 0, aead->digest_size);
+	      aead->digest(ctx, digest->length, buffer);
+	      ASSERT(MEMEQ(digest->length, buffer, digest->data));
+	    }
+	  ASSERT(MEMEQ(cleartext->length, data, cleartext->data));
+	}
     }
   free(ctx);
   free(data);

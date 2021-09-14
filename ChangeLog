@@ -1,3 +1,8 @@
+2021-09-14  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/testutils.c (test_aead): Test encrypt/decrypt with
+	message split into pieces.
+
 2021-09-12  Niels Möller  <nisse@lysator.liu.se>
 
 	* Merged CBC-AES changes into master branch.
