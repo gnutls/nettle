@@ -714,6 +714,20 @@
 	* nettle.texinfo: Delete explicit node pointers in nettle.texinfo
 	Instead, rely on makeinfo's automatic pointer creation.
 	(Cipher functions): Split into nodes, with proper menu.
+2021-09-18  Niels Möller  <nisse@lysator.liu.se>
+
+	Implement OCB mode. RFC 7253.
+	* ocb.c (ocb_set_key, ocb_set_nonce, ocb_update, ocb_encrypt)
+	(ocb_decrypt, ocb_digest): New file and functions.
+	* ocb.h: Corresponding header file.
+	* ocb-aes128-meta.c (nettle_ocb_aes128): New aead struct.
+	* Makefile.in (nettle_SOURCES): Add new source files.
+	(HEADERS): Add ocb.h.
+	* testsuite/ocb-test.c: New tests.
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Add ocb-test.c
+
+	* testsuite/testutils.c (test_aead): Check plaintext/ciphertext
+	before checking digest.
 
 2021-09-14  Niels Möller  <nisse@lysator.liu.se>
 
