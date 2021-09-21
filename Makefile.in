@@ -440,17 +440,8 @@ ecc-secp521r1.$(OBJEXT): ecc-secp521r1.h
 	  --output $@T `basename "$<"` \
 	  && test -s $@T && mv -f $@T $@
 
-%.dvi: %.texinfo
-	cd $(srcdir) && texi2dvi -b `basename "$<"`
-
-%.ps: %.dvi
-	cd $(srcdir) && dvips -Ppdf -G0 -o `basename "$<" .dvi`.ps `basename "$<"`
-
-# Avoid rebuilding .dvi and .ps files when the .texinfo source is unchanged.
-PS2PDFFLAGS=-dCompatibilityLevel=1.3 -dMAxSubsetPct=100 -dSubsetFonts=true -dEmbedAllFonts=true
 %.pdf: %.texinfo
-	$(MAKE) `basename "$<" .texinfo`.ps
-	cd $(srcdir) && ps2pdf $(PS2PDFFLAGS) `basename "$<" .texinfo`.ps
+	cd $(srcdir) && texi2pdf `basename "$<"`
 
 # Configure-related rules, mostly copied from the autoconf manual. No
 # $(srcdir) prefixes on the targets, though.

@@ -1,5 +1,9 @@
 2021-09-21  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.in (nettle.pdf): Generate pdf manual using texi2pdf,
+	rather than texi2dvi + dvips + ps2pdf, which makes hyperlinks work
+	better.
+
 	* nettle.texinfo: Delete explicit node pointers in nettle.texinfo
 	Instead, rely on makeinfo's automatic pointer creation.
 	(Cipher functions): Split into nodes, with proper menu.
