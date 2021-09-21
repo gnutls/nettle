@@ -46,8 +46,7 @@ appreciated, but not required.
 @contents
 
 @ifnottex
-@node     Top, Introduction, (dir), (dir)
-@comment  node-name,  next,  previous,  up
+@node Top
 @top Nettle
 
 This document describes the Nettle low-level cryptographic library. You
@@ -132,8 +131,7 @@ Public-key algorithms
 
 @end ifnottex
 
-@node Introduction, Copyright, Top, Top
-@comment  node-name,  next,  previous,  up
+@node Introduction
 @chapter Introduction
 
 Nettle is a cryptographic library that is designed to fit easily in more
@@ -164,8 +162,7 @@ This manual explains how to use the Nettle library. It also tries to
 provide some background on the cryptography, and advice on how to best
 put it to use.
 
-@node Copyright, Conventions, Introduction, Top
-@comment  node-name,  next,  previous,  up
+@node Copyright
 @chapter Copyright
 
 Nettle is dual licenced under the GNU General Public License version 2
@@ -298,8 +295,7 @@ Written by @value{AUTHOR}. Uses the GMP library for bignum operations.
 Development of Nettle's ECC support was funded by the .SE Internet Fund.
 @end table
 
-@node Conventions, Example, Copyright, Top
-@comment  node-name,  next,  previous,  up
+@node Conventions
 @chapter Conventions
 
 For each supported algorithm, there is an include file that defines a
@@ -342,8 +338,7 @@ functions which can fail, return one on success and zero on failure.
 
 @c FIXME: Say something about the name mangling.
 
-@node Example, Linking, Conventions, Top
-@comment  node-name,  next,  previous,  up
+@node Example
 @chapter Example
 
 A simple example program that reads a file from standard input and
@@ -360,8 +355,7 @@ the command line
 gcc sha-example.c -o sha-example -lnettle
 @end example
 
-@node Linking, Compatibility, Example, Top
-@comment  node-name,  next,  previous,  up
+@node Linking
 @chapter Linking
 
 Nettle actually consists of two libraries, @file{libnettle} and
@@ -378,8 +372,7 @@ algorithms, the recommended linker flags are @code{-lhogweed -lnettle
 may be sufficient to link with just @code{-lhogweed}, and the loader
 will resolve the dependencies automatically.
 
-@node Compatibility, Reference, Linking, Top
-@comment  node-name,  next,  previous,  up
+@node Compatibility
 @chapter Compatibility
 @cindex ABI compatibility
 @cindex API compatibility
@@ -443,8 +436,7 @@ used for local or experimental purposes, but programs referring directly
 to those symbols get neither API nor ABI compatibility, not even between
 minor versions.
 
-@node Reference, Nettle soup, Compatibility, Top
-@comment  node-name,  next,  previous,  up
+@node Reference
 @chapter Reference
 
 This chapter describes all the Nettle functions, grouped by family.
@@ -463,8 +455,7 @@ This chapter describes all the Nettle functions, grouped by family.
 * Compatibility functions::     
 @end menu
 
-@node Hash functions, Cipher functions, Reference, Reference
-@comment  node-name,  next,  previous,  up
+@node Hash functions
 
 @section Hash functions
 @cindex Hash function
@@ -508,8 +499,7 @@ reasonable alternatives.
 * nettle_hash abstraction::
 @end menu
 
-@node Recommended hash functions, Miscellaneous hash functions,, Hash functions
-@comment  node-name,  next,  previous,  up
+@node Recommended hash functions
 @subsection Recommended hash functions
 
 The following hash functions have no known weaknesses, and are suitable
@@ -867,8 +857,7 @@ to @var{digest}. @var{length} can be of arbitrary size.
 This function also resets the context.
 @end deftypefun
 
-@node Miscellaneous hash functions, Legacy hash functions, Recommended hash functions, Hash functions
-@comment  node-name,  next,  previous,  up
+@node Miscellaneous hash functions
 @subsection Miscellaneous hash functions
 
 @subsubsection @acronym{STREEBOG512}
@@ -944,8 +933,7 @@ This function also resets the context in the same way as
 @end deftypefun
 
 
-@node Legacy hash functions, nettle_hash abstraction, Miscellaneous hash functions, Hash functions
-@comment  node-name,  next,  previous,  up
+@node Legacy hash functions
 @subsection Legacy hash functions
 
 The hash functions in this section all have some known weaknesses, and
@@ -1221,8 +1209,7 @@ This function also resets the context in the same way as
 @code{gosthash94cp_init}.
 @end deftypefun
 
-@node nettle_hash abstraction,, Legacy hash functions, Hash functions
-@comment  node-name,  next,  previous,  up
+@node nettle_hash abstraction
 @subsection The @code{struct nettle_hash} abstraction
 @cindex nettle_hash
 
@@ -1270,8 +1257,7 @@ the actual array of pointers. However, referring directly to the array
 makes the array size leak into the ABI in some cases.
 @end deffn
 
-@node Cipher functions, Cipher modes, Hash functions, Reference
-@comment  node-name,  next,  previous,  up
+@node Cipher functions
 @section Cipher functions
 @cindex Cipher
 
@@ -2191,8 +2177,7 @@ in any other way.
 Analogous to @code{twofish_encrypt}
 @end deftypefun
 
-@c @node nettle_cipher abstraction,  , Cipher functions, Cipher functions
-@c @comment  node-name,  next,  previous,  up
+@node nettle_cipher abstraction
 @subsection The @code{struct nettle_cipher} abstraction
 @cindex nettle_cipher
 
@@ -2250,8 +2235,7 @@ A macro expanding to a call to nettle_get_ciphers. In earlier versions,
 this was not a macro but the actual array of pointers.
 @end deffn
 
-@node Cipher modes, Authenticated encryption, Cipher functions, Reference
-@comment  node-name,  next,  previous,  up
+@node Cipher modes
 @section Cipher modes
 
 Cipher modes of operation specifies the procedure to use when encrypting
@@ -2281,8 +2265,7 @@ authenticate the message.
 * XTS::
 @end menu
 
-@node CBC, CTR, Cipher modes, Cipher modes
-@comment  node-name,  next,  previous,  up
+@node CBC
 @subsection Cipher Block Chaining
 
 @cindex Cipher Block Chaining
@@ -2374,8 +2357,7 @@ These macros use some tricks to make the compiler display a warning if
 the types of @var{f} and @var{ctx} don't match, e.g. if you try to use
 an @code{struct aes_ctx} context with the @code{des_encrypt} function.
 
-@node CTR, CFB and CFB8, CBC, Cipher modes
-@comment  node-name,  next,  previous,  up
+@node CTR
 @subsection Counter mode
 
 @cindex Counter Mode
@@ -2450,8 +2432,7 @@ last three arguments define the source and destination area for the
 operation.
 @end deffn
 
-@node CFB and CFB8, XTS, CTR, Cipher modes
-@comment  node-name,  next,  previous,  up
+@node CFB and CFB8
 @subsection Cipher Feedback mode
 
 @cindex Cipher Feedback Mode
@@ -2603,8 +2584,7 @@ conventions. The last three arguments define the source and destination
 area for the operation.
 @end deffn
 
-@node XTS, , CFB and CFB8, Cipher modes
-@comment  node-name,  next,  previous,  up
+@node XTS
 @subsection XEX-based tweaked-codebook mode with ciphertext stealing
 
 @cindex XEX-based tweaked-codebook mode with ciphertext stealing
@@ -2744,9 +2724,7 @@ These are identical to @code{xts_encrypt_message} and
 structure.
 @end deftypefun
 
-@node Authenticated encryption, Keyed hash functions, Cipher modes, Reference
-@comment  node-name,  next,  previous,  up
-
+@node Authenticated encryption
 @section Authenticated encryption with associated data
 @cindex AEAD
 @cindex Authenticated encryption
@@ -2830,8 +2808,7 @@ more adventurous alternative, in particular if performance is important.
 * nettle_aead abstraction::
 @end menu
 
-@node EAX, GCM, Authenticated encryption, Authenticated encryption
-@comment  node-name,  next,  previous,  up
+@node EAX
 @subsection EAX
 
 The @acronym{EAX} mode is an @acronym{AEAD} mode which combines
@@ -2985,8 +2962,7 @@ smaller than @code{EAX_DIGEST_SIZE}, only the first @var{length} octets
 of the digest are written.
 @end deftypefun
 
-@node GCM, CCM, EAX, Authenticated encryption
-@comment  node-name,  next,  previous,  up
+@node GCM
 @subsection Galois counter mode
 
 @cindex Galois Counter Mode
@@ -3245,8 +3221,7 @@ that @var{length} is @code{GCM_DIGEST_SIZE}, but if you provide a smaller
 value, only the first @var{length} octets of the digest are written.
 @end deftypefun
 
-@node CCM, ChaCha-Poly1305, GCM, Authenticated encryption
-@comment  node-name,  next,  previous,  up
+@node CCM
 @subsection Counter with CBC-MAC mode
 
 @cindex Counter with CBC-MAC Mode
@@ -3474,8 +3449,7 @@ These are identical to @code{ccm_encrypt_message} and @code{ccm_decrypt_message}
 except that @var{cipher} and @var{f} are replaced with a context structure.
 @end deftypefun
 
-@node ChaCha-Poly1305, SIV-CMAC, CCM, Authenticated encryption
-@comment  node-name,  next,  previous,  up
+@node ChaCha-Poly1305
 @subsection ChaCha-Poly1305
 
 ChaCha-Poly1305 is a combination of the ChaCha stream cipher and the
@@ -3552,8 +3526,7 @@ smaller than @code{CHACHA_POLY1305_DIGEST_SIZE}, only the first
 @var{length} octets of the digest are written.
 @end deftypefun
 
-@node SIV-CMAC, nettle_aead abstraction, ChaCha-Poly1305, Authenticated encryption
-@comment  node-name,  next,  previous,  up
+@node SIV-CMAC
 @subsection Synthetic Initialization Vector AEAD
 
 @cindex SIV mode
@@ -3647,8 +3620,7 @@ are equal, this will return 1 indicating a valid and authenticated
 message. Otherwise, this function will return zero.
 @end deftypefun
 
-@node nettle_aead abstraction, , ChaCha-Poly1305, Authenticated encryption
-@comment  node-name,  next,  previous,  up
+@node nettle_aead abstraction
 @subsection The @code{struct nettle_aead} abstraction
 @cindex nettle_aead
 
@@ -3685,8 +3657,7 @@ A macro expanding to a call to nettle_get_aeads. In earlier versions,
 this was not a macro but the actual array of pointers.
 @end deffn
 
-@node Keyed hash functions, Key derivation functions, Authenticated encryption, Reference
-@comment  node-name,  next,  previous,  up
+@node Keyed hash functions
 @section Keyed Hash Functions
 
 @cindex Keyed Hash Function
@@ -3728,9 +3699,7 @@ as well.
 * Poly1305::
 @end menu
 
-@node HMAC, UMAC, Keyed hash functions, Keyed hash functions
-@comment  node-name,  next,  previous,  up
-
+@node HMAC
 @subsection @acronym{HMAC}
 @cindex HMAC
 
@@ -3830,7 +3799,6 @@ Note that there is no @code{HMAC_UPDATE} macro; simply call
 @code{hmac_update} function directly, or the update function of the
 underlying hash function.
 
-@subsection Concrete @acronym{HMAC} functions
 Now we come to the specialized @acronym{HMAC} functions, which are
 easier to use than the general @acronym{HMAC} functions.
 
@@ -3946,9 +3914,7 @@ This function also resets the context for processing new messages, with
 the same key.
 @end deftypefun
 
-@node UMAC, Poly1305 , HMAC, Keyed hash functions
-@comment  node-name,  next,  previous,  up
-
+@node UMAC
 @subsection @acronym{UMAC}
 @cindex UMAC
 
@@ -4067,7 +4033,7 @@ as described above, the new value is used unless you call the
 @code{_set_nonce} function explicitly for each message.
 @end deftypefun
 
-@node CMAC,, UMAC, Keyed hash functions
+@node CMAC
 @subsection @acronym{CMAC}
 @cindex CMAC
 @cindex CMAC-128
@@ -4151,8 +4117,7 @@ provide a smaller value, only the first @var{length} octets of the
 processing of a new message with the same key.
 @end deftypefun
 
-@node Poly1305,, CMAC, Keyed hash functions
-@comment  node-name,  next,  previous,  up
+@node Poly1305
 @subsection Poly1305
 
 Poly1305-@acronym{AES} is a message authentication code designed by D. J.
@@ -4218,8 +4183,7 @@ processing a new message.
 @end deftypefun
 
 
-@node Key derivation functions, Public-key algorithms, Keyed hash functions, Reference
-@comment  node-name,  next,  previous,  up
+@node Key derivation functions
 @section Key derivation Functions
 @cindex Key Derivation Function
 
@@ -4355,8 +4319,7 @@ salt @var{salt} of length @var{salt_length}, with iteration counter
 room for at least @var{length} octets.
 @end deftypefun
 
-@node Public-key algorithms, Randomness, Key derivation functions, Reference
-@comment  node-name,  next,  previous,  up
+@node Public-key algorithms
 @section Public-key algorithms
 
 Nettle uses @acronym{GMP}, the GNU bignum library, for all calculations
@@ -4437,8 +4400,7 @@ key, and to no others''.
 * Elliptic curves::             Elliptic curves and ECDSA
 @end menu
 
-@node RSA, DSA, Public-key algorithms, Public-key algorithms
-@comment  node-name,  next,  previous,  up
+@node RSA
 @subsection @acronym{RSA}
 
 The @acronym{RSA} algorithm was the first practical digital signature
@@ -4782,8 +4744,7 @@ example if if @var{n_size} is too small, or if @var{e_size} is zero and
 @code{pub->e} is an even number.
 @end deftypefun
 
-@node DSA, Elliptic curves, RSA, Public-key algorithms
-@comment  node-name,  next,  previous,  up
+@node DSA
 @subsection @acronym{DSA}
 
 The @acronym{DSA} digital signature algorithm is more complex than
@@ -5106,8 +5067,7 @@ callbacks.
 @code{q}. See @code{dsa_generate_keypair} for details.
 @end deftypefun
 
-@node Elliptic curves,, DSA, Public-key algorithms
-@comment  node-name,  next,  previous,  up
+@node Elliptic curves
 @subsection @acronym{Elliptic curves}
 
 For cryptographic purposes, an elliptic curve is a mathematical group of
@@ -5138,8 +5098,7 @@ curve'' is used as a shorthand for the bitsize of the curve's prime
 * Curve 25519 and Curve 448::
 @end menu
 
-@node Side-channel silence, ECDSA, , Elliptic curves
-@comment  node-name,  next,  previous,  up
+@node Side-channel silence
 @subsubsection Side-channel silence
 @cindex Side-channel attack
 
@@ -5169,8 +5128,7 @@ accesses depend only on the size of the input data and its location in
 memory, not on the actual data bits. This implies a performance penalty
 in several of the building blocks.
 
-@node ECDSA, GOSTDSA, Side-channel silence, Elliptic curves
-@comment  node-name,  next,  previous,  up
+@node ECDSA
 @subsubsection ECDSA
 
 ECDSA is a variant of the DSA digital signature scheme (@pxref{DSA}),
@@ -5273,8 +5231,7 @@ random octets and store them at @code{dst}. For advice, see
 @xref{Randomness}.
 @end deftypefun
 
-@node GOSTDSA, Curve 25519 and Curve 448, ECDSA, Elliptic curves
-@comment  node-name,  next,  previous,  up
+@node GOSTDSA
 @subsubsection GOSTDSA
 @cindex GOST DSA
 
@@ -5349,8 +5306,7 @@ curves and 128 bytes for 512 bit ones. UKM is a shared key material, usually
 transferred in cleartext. It does not have to be secret.
 @end deftypefun
 
-@node Curve 25519 and Curve 448, , ECDSA, Elliptic curves
-@comment  node-name,  next,  previous,  up
+@node Curve 25519 and Curve 448
 @subsubsection Curve25519 and Curve448
 @cindex Curve 25519
 @cindex Curve 448
@@ -5533,8 +5489,7 @@ Verifies a message using the provided public key. Returns 1 if the
 signature is valid, otherwise 0.
 @end deftypefun
 
-@node Randomness, ASCII encoding, Public-key algorithms, Reference
-@comment  node-name,  next,  previous,  up
+@node Randomness
 @section Randomness
 
 @cindex Randomness
@@ -5854,8 +5809,7 @@ Returns an entropy estimate, in bits, suitable for calling
 @code{yarrow256_update}. Usually, 0, 1 or 2 bits.
 @end deftypefun
 
-@node ASCII encoding, Miscellaneous functions, Randomness, Reference
-@comment  node-name,  next,  previous,  up
+@node ASCII encoding
 @section ASCII encoding
 
 Encryption will transform your data from text into binary format, and that
@@ -6011,8 +5965,7 @@ hexadecimal digits have been seen). Returns 1 on success, and 0 on
 error.
 @end deftypefun
 
-@node Miscellaneous functions, Compatibility functions, ASCII encoding, Reference
-@comment  node-name,  next,  previous,  up
+@node Miscellaneous functions
 @section Miscellaneous functions
 
 @deftypefun {void *} memxor (void *@var{dst}, const void *@var{src}, size_t @var{n})
@@ -6037,8 +5990,7 @@ These functions are declared in @file{<nettle/memops.h>}. For
 compatibility with earlier versions of Nettle, @code{memxor} and
 @code{memxor3} are also declared in @file{<nettle/memxor.h>}.
 
-@node Compatibility functions,  , Miscellaneous functions, Reference
-@comment  node-name,  next,  previous,  up
+@node Compatibility functions
 @section Compatibility functions
 
 For convenience, Nettle includes alternative interfaces to some
@@ -6052,8 +6004,7 @@ Nettle defines a compatible interface to MD5 in
 @code{MD5_CTX}, and declares the functions @code{MD5Init}, @code{MD5Update} and
 @code{MD5Final}.
 
-@node Nettle soup, Installation, Reference, Top
-@comment  node-name,  next,  previous,  up
+@node Nettle soup
 @chapter Traditional Nettle Soup
 For the serious nettle hacker, here is a recipe for nettle soup. 4 servings.
 
@@ -6112,8 +6063,7 @@ smaksätt med salt och peppar.
 Servera med kokta ägghalvor.
 @end ignore
 
-@node Installation, Index, Nettle soup, Top
-@comment  node-name,  next,  previous,  up
+@node Installation
 @chapter Installation
 
 Nettle uses @command{autoconf}. To build it, unpack the source and run
@@ -6156,8 +6106,7 @@ option to be able to build with BSD make.
 
 @end table
 
-@node Index,  , Installation, Top
-@comment  node-name,  next,  previous,  up
+@node Index
 @unnumbered Function and Concept Index
 
 @printindex cp
