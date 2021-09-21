@@ -705,7 +705,7 @@ different from all widely used earlier hash functions. Like SHA2, there
 are several variants, with output sizes of 224, 256, 384 and 512 bits
 (28, 32, 48 and 64 octets, respectively). In August 2015, it was
 formally standardized by NIST, as FIPS 202,
-@uref{http://dx.doi.org/10.6028/NIST.FIPS.202}.
+@url{https://dx.doi.org/10.6028/NIST.FIPS.202}.
 
 Note that the SHA3 implementation in earlier versions of Nettle was
 based on the specification at the time Keccak was announced as the
@@ -1654,18 +1654,18 @@ the salt will be extracted from @var{scheme}.
 
 Sample code to generate a bcrypt hash:
 @example
-char cleartxtpassword[] = "ExamplePassword";
+char password[] = "ExamplePassword";
 char scheme[] = "2b";
 uint8_t salt[BLOWFISH_BCRYPT_BINSALT_SIZE];
 @dots{}
 /* Make sure that salt is filled with random bytes */
 @dots{}
-char hashedresult[BLOWFISH_BCRYPT_HASH_SIZE];
-int result = blowfish_bcrypt(hashedresult,
-                             sizeof(cleartxtpassword) - 1, cleartxtpassword,
+char hash[BLOWFISH_BCRYPT_HASH_SIZE];
+int result = blowfish_bcrypt(hash,
+                             sizeof(password) - 1, password,
                              sizeof(scheme) - 1, scheme, 10, salt);
 if (result)
-  printf("%s\n", hashedresult);
+  printf("%s\n", hash);
 @end example
 @end deftypefun
 
@@ -1680,15 +1680,15 @@ The function will return @code{1} if the password matches.
 
 Sample code to verify a bcrypt hash:
 @example
-char cleartxtpassword[] = "ExamplePassword";
-char existinghashed[] =
-           "$2y$"  /* Hash algorithm version */
-           "10"   /* 2^10 hash rounds (strength) */
-           "$"   /* separator */
-           "1b2lPgo4XumibnJGN3r3sO" /* base64 encoded 16-byte salt */
-           "u7wE7xNfYDKlAxZffJDCJdVfFTAyevu"; /* Hashedpart */
-if (blowfish_bcrypt_verify(sizeof(cleartxtpassword) - 1, cleartxtpassword,
-                           sizeof(existinghashed) - 1, existinghashed))
+char password[] = "ExamplePassword";
+char hash[] =
+  "$2y$"  /* Hash algorithm version */
+  "10"   /* 2^10 hash rounds (strength) */
+  "$"   /* separator */
+  "1b2lPgo4XumibnJGN3r3sO" /* base64 encoded 16-byte salt */
+  "u7wE7xNfYDKlAxZffJDCJdVfFTAyevu"; /* Hashedpart */
+if (blowfish_bcrypt_verify(sizeof(password) - 1, password,
+                           sizeof(hash) - 1, hash))
   printf("Password is correct.");
 else
   printf("Password is incorrect.");
@@ -1708,7 +1708,7 @@ algorithm is patented. The implementation in Nettle is derived from the
 implementation released by NTT under the GNU LGPL (v2.1 or later), and
 relies on the implicit patent license of the LGPL. There is also a
 statement of royalty-free licensing for Camellia at
-@url{http://www.ntt.co.jp/news/news01e/0104/010417.html}, but this
+@url{https://www.ntt.co.jp/news/news01e/0104/010417.html}, but this
 statement has some limitations which seem problematic for free software.
 
 Camellia uses a the same block size and key sizes as AES: The block size
@@ -2128,7 +2128,7 @@ all but the last call @emph{must} use a length that is a multiple of
 
 The full salsa20 cipher uses 20 rounds of mixing. Variants of Salsa20
 with fewer rounds are possible, and the 12-round variant is specified by
-eSTREAM, see @url{http://www.ecrypt.eu.org/stream/finallist.html}.
+eSTREAM, see @url{https://www.ecrypt.eu.org/stream/finallist.html}.
 Nettle calls this variant @code{salsa20r12}. It uses the same context
 struct and key setup as the full salsa20 cipher, but a separate function
 for encryption and decryption.
@@ -2298,7 +2298,7 @@ Feedback (@acronym{CFB} and @acronym{CFB8}), XEX-based tweaked-codebook mode
 with ciphertext stealing (@acronym{XTS}) and a couple of @acronym{AEAD}
 modes (@pxref{Authenticated encryption}).  @acronym{CBC} is widely used, but
 there are a few subtle issues of information leakage, see, e.g.,
-@uref{http://www.kb.cert.org/vuls/id/958563, @acronym{SSH} @acronym{CBC}
+@url{https://www.kb.cert.org/vuls/id/958563, @acronym{SSH} @acronym{CBC}
 vulnerability}. Today, @acronym{CTR} is usually preferred over @acronym{CBC}.
 
 Modes like @acronym{CBC}, @acronym{CTR}, @acronym{CFB} and @acronym{CFB8}
@@ -2840,7 +2840,7 @@ The supported @acronym{AEAD} constructions are Galois/Counter mode
 (@acronym{GCM}), @acronym{EAX}, ChaCha-Poly1305, and Counter with
 @acronym{CBC}-@acronym{MAC} (@acronym{CCM}). There are some weaknesses
 in @acronym{GCM} authentication, see
-@uref{http://csrc.nist.gov/groups/ST/toolkit/BCM/documents/comments/CWC-GCM/Ferguson2.pdf}.
+@url{https://csrc.nist.gov/groups/ST/toolkit/BCM/documents/comments@//CWC-GCM/Ferguson2.pdf}.
 @acronym{CCM} and @acronym{EAX} use the same building blocks, but the
 @acronym{EAX} design is cleaner and avoids a couple of inconveniences of
 @acronym{CCM}. Therefore, @acronym{EAX} seems like a good conservative
@@ -3023,12 +3023,12 @@ implementations, where other popular @acronym{MAC} algorithms
 (@pxref{Keyed hash functions}) become a bottleneck for high-speed
 hardware implementations. It was proposed by David A. McGrew and John
 Viega in 2005, and recommended by NIST in 2007,
-@uref{http://csrc.nist.gov/publications/nistpubs/800-38D/SP-800-38D.pdf,
+@url{https://csrc.nist.gov/publications/nistpubs/800-38D/SP-800-38D.pdf,
 NIST Special Publication 800-38D}. It is constructed on top of a block
 cipher which must have a block size of 128 bits.
 
 The authentication in @acronym{GCM} has some known weaknesses, see
-@uref{http://csrc.nist.gov/groups/ST/toolkit/BCM/documents/comments/CWC-GCM/Ferguson2.pdf}.
+@url{https://csrc.nist.gov@//groups/ST/toolkit/BCM/documents/comments/CWC-GCM/Ferguson2.pdf}.
 In particular, don't use @acronym{GCM} with short authentication tags.
 
 Nettle's support for @acronym{GCM} consists of a low-level general
@@ -3280,7 +3280,7 @@ authentication based on cipher block chaining, the same building blocks
 as @acronym{EAX}, @pxref{EAX}. It is constructed on top of a block cipher
 which must have a block size of 128 bits. @acronym{CCM} mode is
 recommended by NIST in
-@uref{http://csrc.nist.gov/publications/nistpubs/800-38C/SP800-38C_updated-July20_2007.pdf,
+@url{https://csrc.nist.gov/publications/nistpubs/800-38C/SP800-38C_updated-July20_2007.pdf,
 NIST Special Publication 800-38C}. Nettle's support for CCM consists of
 a low-level general interface, a message encryption and authentication
 interface, and specific functions for CCM using AES as the underlying
@@ -4092,7 +4092,7 @@ mode. It is suitable for systems where block ciphers are preferrable
 and perform better than hash functions. @acronym{CMAC-128} is specified in
 @cite{RFC4493}. The block size is always 128 bits (16 octets).
 @acronym{CMAC-64} is specified by
-@uref{https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-38B.pdf,
+@url{https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-38B.pdf,
 NIST Special Publication 800-38B}. The block size is always 64 bits
 (8 octets).
 
@@ -4187,7 +4187,7 @@ polynomial coefficients modulo @math{2^130 - 5}, and the polynomial is
 evaluated at the point @code{r}. Finally, this value is reduced modulo
 @math{2^128}, and added (also modulo @math{2^128}) to the encrypted
 nonce, to produce an 128-bit authenticator for the message. See
-@uref{http://cr.yp.to/mac/poly1305-20050329.pdf} for further details.
+@url{https://cr.yp.to/mac/poly1305-20050329.pdf} for further details.
 
 Clearly, variants using a different cipher than @acronym{AES} could be
 defined. Another variant is the ChaCha-Poly1305 @acronym{AEAD}
@@ -4701,7 +4701,7 @@ take advantage of a randomly choosen salt value, which could enhance the
 security by causing output to be different for equivalent inputs.
 However, assuming the same security level as inverting the @acronym{RSA}
 algorithm, a longer salt value does not always mean a better security
-@uref{http://www.iacr.org/archive/eurocrypt2002/23320268/coron.pdf}.
+@url{https://www.iacr.org/archive/eurocrypt2002/23320268/coron.pdf}.
 The typical choices of the length are between 0 and the digest size of
 the underlying hash function.
 
@@ -5731,7 +5731,7 @@ The recommended generator to use is Yarrow, described below.
 Yarrow is a family of pseudo-randomness generators, designed for
 cryptographic use, by John Kelsey, Bruce Schneier and Niels Ferguson.
 Yarrow-160 is described in a paper at
-@url{http://www.counterpane.com/yarrow.html}, and it uses @acronym{SHA1}
+@url{https://www.counterpane.com/yarrow.html}, and it uses @acronym{SHA1}
 and triple-DES, and has a 160-bit internal state. Nettle implements
 Yarrow-256, which is similar, but uses @acronym{SHA256} and
 @acronym{AES} to get an internal state of 256 bits.
