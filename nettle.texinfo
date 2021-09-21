@@ -72,16 +72,17 @@ object-oriented wrapper for your favorite language or application.
 
 Reference
 
-* Hash functions::              
-* Cipher functions::            
-* Cipher modes::                
-* Keyed hash functions::        
-* Key derivation functions::    
-* Public-key algorithms::       
-* Randomness::                  
-* ASCII encoding::              
-* Miscellaneous functions::     
-* Compatibility functions::     
+* Hash functions::
+* Cipher functions::
+* Cipher modes::
+* Authenticated encryption::
+* Keyed hash functions::
+* Key derivation functions::
+* Public-key algorithms::
+* Randomness::
+* ASCII encoding::
+* Miscellaneous functions::
+* Compatibility functions::
 
 Hash functions
 
@@ -89,6 +90,22 @@ Hash functions
 * Miscellaneous hash functions::
 * Legacy hash functions::
 * nettle_hash abstraction::
+
+Cipher functions
+
+* AES::
+* Arcfour::
+* Arctwo::
+* Blowfish::
+* Camellia::
+* CAST128::
+* ChaCha::
+* DES::
+* DES3::
+* Salsa20::
+* Serpent::
+* Twofish::
+* nettle_cipher abstraction::
 
 Cipher modes
 
@@ -100,8 +117,8 @@ Cipher modes
 Authenticated encryption with associated data
 
 * EAX::
-* GCM::                         
-* CCM::                         
+* GCM::
+* CCM::
 * ChaCha-Poly1305::
 * SIV-CMAC::
 * nettle_aead abstraction::
@@ -119,7 +136,7 @@ Public-key algorithms
 * DSA::                         The DSA digital signature algorithm.
 * Elliptic curves::             Elliptic curves and ECDSA
 
-@acronym{Elliptic curves}
+Elliptic curves
 
 * Side-channel silence::
 * ECDSA::
@@ -442,23 +459,23 @@ minor versions.
 This chapter describes all the Nettle functions, grouped by family.
 
 @menu
-* Hash functions::              
-* Cipher functions::            
-* Cipher modes::                
+* Hash functions::
+* Cipher functions::
+* Cipher modes::
 * Authenticated encryption::
-* Keyed hash functions::        
-* Key derivation functions::    
-* Public-key algorithms::       
-* Randomness::                  
-* ASCII encoding::              
-* Miscellaneous functions::     
-* Compatibility functions::     
+* Keyed hash functions::
+* Key derivation functions::
+* Public-key algorithms::
+* Randomness::
+* ASCII encoding::
+* Miscellaneous functions::
+* Compatibility functions::
 @end menu
 
 @node Hash functions
-
 @section Hash functions
 @cindex Hash function
+
 A cryptographic @dfn{hash function} is a function that takes variable
 size strings, and maps them to strings of fixed, short, length. There
 are naturally lots of collisions, as there are more possible 1MB files
@@ -1332,6 +1349,23 @@ context struct for only one direction, even if some of the ciphers use a
 single key setup function that can be used for both encryption and
 decryption.
 
+@menu
+* AES::
+* Arcfour::
+* Arctwo::
+* Blowfish::
+* Camellia::
+* CAST128::
+* ChaCha::
+* DES::
+* DES3::
+* Salsa20::
+* Serpent::
+* Twofish::
+* nettle_cipher abstraction::
+@end menu
+
+@node AES
 @subsection AES
 @cindex AES
 
@@ -1414,9 +1448,11 @@ in any other way.
 Analogous to the encryption functions above.
 @end deftypefun
 
-@subsection ARCFOUR
+@node Arcfour
+@subsection Arcfour
 @cindex Arcfour
 @cindex RC4
+
 ARCFOUR is a stream cipher, also known under the trade marked name RC4,
 and it is one of the fastest ciphers around. A problem is that the key
 setup of ARCFOUR is quite weak, you should never use keys with
@@ -1476,9 +1512,11 @@ them one after another. The result is the same as if you had called
 @code{arcfour_crypt} only once with all the data.
 @end deftypefun
 
-@subsection ARCTWO
+@node Arctwo
+@subsection Arctwo
 @cindex Arctwo
 @cindex RC2
+
 ARCTWO (also known as the trade marked name RC2) is a block cipher
 specified in RFC 2268. Nettle also include a variation of the ARCTWO
 set key operation that lack one step, to be compatible with the
@@ -1539,7 +1577,8 @@ overlap in any other way.
 Analogous to @code{arctwo_encrypt}
 @end deftypefun
 
-@subsection BLOWFISH
+@node Blowfish
+@subsection Blowfish
 @cindex Blowfish
 
 BLOWFISH is a block cipher designed by Bruce Schneier. It uses a block
@@ -1656,6 +1695,7 @@ else
 @end example
 @end deftypefun
 
+@node Camellia
 @subsection Camellia
 @cindex Camellia
 
@@ -1738,6 +1778,7 @@ more than one block, the data is processed in ECB mode. @code{src} and
 @code{dst} may be equal, but they must not overlap in any other way.
 @end deftypefun
 
+@node CAST128
 @subsection CAST128
 @cindex CAST
 
@@ -1791,12 +1832,13 @@ as argument. The same function is used for both encryption and
 decryption.
 @end deftypefun
 
+@node ChaCha
 @subsection ChaCha
 @cindex ChaCha
 
-ChaCha is a variant of the stream cipher Salsa20, also designed by D. J.
-Bernstein. For more information on Salsa20, see below. Nettle defines
-ChaCha in @file{<nettle/chacha.h>}.
+ChaCha is a variant of the stream cipher Salsa20 (@pxref{Salsa20}),
+below, also designed by D. J. Bernstein. Nettle defines ChaCha in
+@file{<nettle/chacha.h>}.
 
 @deftp {Context struct} {struct chacha_ctx}
 @end deftp
@@ -1875,8 +1917,10 @@ above @code{chacha_crypt}, but it assumes the internal counter value is 32-bit
 long and the nonce is 96-bit long.
 @end deftypefun
 
+@node DES
 @subsection DES
 @cindex DES
+
 DES is the old Data Encryption Standard, specified by NIST. It uses a
 block size of 64 bits (8 octets), and a key size of 56 bits. However,
 the key bits are distributed over 8 octets, where the least significant
@@ -1933,6 +1977,7 @@ protocol, and want to use it as a DES key. @var{dst} and @var{src} may
 be equal.
 @end deftypefun
 
+@node DES3
 @subsection DES3
 @cindex DES3
 @cindex 3DES
@@ -2004,13 +2049,15 @@ in any other way.
 Analogous to @code{des_encrypt}
 @end deftypefun
 
+@node Salsa20
 @subsection Salsa20
 @cindex Salsa20
+
 Salsa20 is a fairly recent stream cipher designed by D. J. Bernstein. It
 is built on the observation that a cryptographic hash function can be
 used for encryption: Form the hash input from the secret key and a
 counter, xor the hash output and the first block of the plaintext, then
-increment the counter to process the next block (similar to CTR mode, see
+increment the counter to process the next block (similar to CTR mode,
 @pxref{CTR}). Bernstein defined an encryption algorithm, Snuffle,
 in this way to ridicule United States export restrictions which treated hash
 functions as nice and harmless, but ciphers as dangerous munitions.
@@ -2091,7 +2138,8 @@ Encrypts or decrypts the data of a message, using salsa20 reduced to 12
 rounds.
 @end deftypefun
 
-@subsection SERPENT
+@node Serpent
+@subsection Serpent
 @cindex Serpent
 
 SERPENT is one of the AES finalists, designed by Ross Anderson, Eli
@@ -2135,8 +2183,8 @@ in any other way.
 Analogous to @code{serpent_encrypt}
 @end deftypefun
 
-
-@subsection TWOFISH
+@node Twofish
+@subsection Twofish
 @cindex Twofish
 
 Another AES finalist, this one designed by Bruce Schneier and others.
@@ -2259,8 +2307,8 @@ with a @acronym{MAC} (@pxref{Keyed hash functions}) or signature to
 authenticate the message.
 
 @menu
-* CBC::                         
-* CTR::                         
+* CBC::
+* CTR::
 * CFB and CFB8::
 * XTS::
 @end menu
@@ -2800,9 +2848,9 @@ choice. The more recent ChaCha-Poly1305 may also be an attractive but
 more adventurous alternative, in particular if performance is important.
 
 @menu
-* EAX::                         
-* GCM::                         
-* CCM::                         
+* EAX::
+* GCM::
+* CCM::
 * ChaCha-Poly1305::
 * SIV-CMAC::
 * nettle_aead abstraction::
@@ -5068,7 +5116,7 @@ callbacks.
 @end deftypefun
 
 @node Elliptic curves
-@subsection @acronym{Elliptic curves}
+@subsection Elliptic curves
 
 For cryptographic purposes, an elliptic curve is a mathematical group of
 points, and computing logarithms in this group is computationally
