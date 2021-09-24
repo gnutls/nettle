@@ -39,9 +39,6 @@
 
 #include <assert.h>
 
-/* FIXME: Remove ecc.h include, once prototypes of more internal
-   functions are moved to ecc-internal.h */
-#include "ecc.h"
 #include "ecc-internal.h"
 
 #define USE_REDC 0

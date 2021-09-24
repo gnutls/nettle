@@ -189,9 +189,8 @@ struct ecc_curve
 {
   /* The prime p. */
   struct ecc_modulo p;
-  /* Group order. FIXME: Currently, many functions rely on q.size ==
-     p.size. This has to change for radix-51 implementation of
-     curve25519 mod p arithmetic. */
+  /* Group order. Currently, many functions rely on q.size ==
+     p.size. */
   struct ecc_modulo q;
 
   unsigned short use_redc;

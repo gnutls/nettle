@@ -1382,7 +1382,6 @@ test_rsa_key(struct rsa_public_key *pub,
   
   if (verbose)
     {
-      /* FIXME: Use gmp_printf */
       fprintf(stderr, "Public key: n=");
       mpz_out_str(stderr, 16, pub->n);
       fprintf(stderr, "\n    e=");

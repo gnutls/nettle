@@ -37,7 +37,6 @@
 
 #include <assert.h>
 
-#include "ecc.h"
 #include "ecc-internal.h"
 
 #define USE_REDC 0

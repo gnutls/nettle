@@ -38,7 +38,6 @@
 
 #include <assert.h>
 
-#include "ecc.h"
 #include "ecc-internal.h"
 
 #define USE_REDC 0
@@ -252,8 +251,8 @@ const struct ecc_curve _nettle_curve448 =
     NULL,
     ecc_qp1h,
 
-    ecc_mod,	      /* FIXME: Implement optimized mod function */
-    ecc_mod,	      /* FIXME: Implement optimized reduce function */
+    ecc_mod,
+    ecc_mod,
     ecc_mod_inv,
     NULL,
   },

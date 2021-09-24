@@ -39,7 +39,6 @@
 
 #include <assert.h>
 
-#include "ecc.h"
 #include "ecc-internal.h"
 
 #if HAVE_NATIVE_ecc_secp256r1_redc
