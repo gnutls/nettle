@@ -51,7 +51,7 @@ static void
 ocb_aes128_set_key (struct ocb_aes128_ctx *ctx, const uint8_t *key)
 {
   aes128_set_encrypt_key (&ctx->encrypt, key);
-  aes128_set_decrypt_key (&ctx->decrypt, key);
+  aes128_invert_key (&ctx->decrypt, &ctx->encrypt);
   ocb_set_key (&ctx->key, &ctx->encrypt, (nettle_cipher_func *) aes128_encrypt);
 }
 
