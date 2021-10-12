@@ -5,6 +5,7 @@
 @documentencoding UTF-8
 @footnotestyle separate
 @syncodeindex fn cp
+@syncodeindex tp cp
 @c %**end of header
 
 @set UPDATED-FOR 3.4
@@ -4977,6 +4978,7 @@ Returns one on success, and zero on failure. The function will fail if
 Signatures are represented using the structure below.
 
 @deftp {Context struct} {dsa_signature} r s
+The @var{r} and @var{s} fields are both of type @code{mpz_t}.
 @end deftp
 
 @deftypefun void dsa_signature_init (struct dsa_signature *@var{signature})
@@ -5211,7 +5213,7 @@ functions as GMP.
 @end deftypefun
 
 @deftypefun void ecc_point_clear (struct ecc_point *@var{p})
-Deallocate storage.
+Deallocate storage allocated by previous ecc_point_init.
 @end deftypefun
 
 @deftypefun int ecc_point_set (struct ecc_point *@var{p}, const mpz_t @var{x}, const mpz_t @var{y})
@@ -5239,7 +5241,7 @@ Initializes @var{s} to represent a scalar suitable for the given curve
 @end deftypefun
 
 @deftypefun void ecc_scalar_clear (struct ecc_scalar *@var{s})
-Deallocate storage.
+Deallocate the storage allocated by previous ecc_scalar_init.
 @end deftypefun
 
 @deftypefun int ecc_scalar_set (struct ecc_scalar *@var{s}, const mpz_t @var{z})
@@ -5258,7 +5260,7 @@ Uses the private key @var{key} to create a signature on @var{digest}.
 @var{random_ctx} and @var{random} is a randomness generator.
 @code{random(random_ctx, length, dst)} should generate @code{length}
 random octets and store them at @code{dst}. The signature is stored in
-@var{signature}, in the same was as for plain DSA.
+@var{signature}, in the same way as for plain DSA.
 @end deftypefun
 
 @deftypefun int ecdsa_verify (const struct ecc_point *@var{pub}, size_t @var{length}, const uint8_t *@var{digest}, const struct dsa_signature *@var{signature})
