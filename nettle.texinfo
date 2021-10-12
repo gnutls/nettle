@@ -5256,7 +5256,7 @@ Extracts the scalar, in GMP @code{mpz_t} representation.
 To create and verify ECDSA signatures, the following functions are used.
 
 @deftypefun void ecdsa_sign (const struct ecc_scalar *@var{key}, void *@var{random_ctx}, nettle_random_func *@var{random}, size_t @var{digest_length}, const uint8_t *@var{digest}, struct dsa_signature *@var{signature})
-Uses the private key @var{key} to create a signature on @var{digest}.
+Uses the private key @var{key} to create a signature of @var{digest}.
 @var{random_ctx} and @var{random} is a randomness generator.
 @code{random(random_ctx, length, dst)} should generate @code{length}
 random octets and store them at @code{dst}. The signature is stored in
@@ -5308,7 +5308,7 @@ pair one has to use @code{ecdsa_generate_keypair()} function.
 To create and verify GOSTDSA signatures, the following functions are used.
 
 @deftypefun void gostdsa_sign (const struct ecc_scalar *@var{key}, void *@var{random_ctx}, nettle_random_func *@var{random}, size_t @var{digest_length}, const uint8_t *@var{digest}, struct dsa_signature *@var{signature})
-Uses the private key @var{key} to create a signature on @var{digest}.
+Uses the private key @var{key} to create a signature of @var{digest}.
 @var{random_ctx} and @var{random} is a randomness generator.
 @code{random(random_ctx, length, dst)} should generate @code{length}
 random octets and store them at @code{dst}. The signature is stored in
