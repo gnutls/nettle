@@ -122,10 +122,39 @@ test_modulo (gmp_randstate_t rands, const char *name,
 
   for (j = 0; j < count; j++)
     {
-      if (j & 1)
-	mpz_rrandomb (r, rands, 2*m->size * GMP_NUMB_BITS);
+      if (j & 2)
+	{
+	  if (j & 1)
+	    mpz_rrandomb (r, rands, 2*m->size * GMP_NUMB_BITS);
+	  else
+	    mpz_urandomb (r, rands, 2*m->size * GMP_NUMB_BITS);
+	}
       else
-	mpz_urandomb (r, rands, 2*m->size * GMP_NUMB_BITS);
+	{
+	  /* Test inputs close to a multiple of m. */
+	  mpz_t q;
+	  unsigned q_size;
+	  int diff;
+
+	  mpz_urandomb(r, rands, 30);
+	  q_size = 11 + mpz_get_ui(r) % (m->size * GMP_NUMB_BITS - 10);
+	  mpz_urandomb(r, rands, 30);
+	  diff = mpz_get_si(r) % 20 - 10;
+
+	  if (j & 1)
+	    mpz_rrandomb (r, rands, q_size);
+	  else
+	    mpz_urandomb (r, rands, q_size);
+
+	  mpz_mul (r, r, mpz_roinit_n(q, m->m, m->size));
+	  if (diff >= 0)
+	    mpz_add_ui (r, r, diff);
+	  else
+	    mpz_sub_ui (r, r, -diff);
+
+	  if (mpz_sgn(r) < 0)
+	    continue;
+	}
 
       test_one (name, m, r);
     }
@@ -173,9 +202,14 @@ test_patterns (const char *name,
 
   for (j = m->bit_size; j < 2*m->bit_size; j++)
     {
+      /* Single one bit */
       mpz_set_ui (r, 1);
       mpz_mul_2exp (r, r, j);
+      test_one (name, m, r);
 
+      /* All ones. */
+      mpz_mul_2exp (r, r, 1);
+      mpz_sub_ui (r, r, 1);
       test_one (name, m, r);
     }
   mpz_clear (r);

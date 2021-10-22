@@ -1,3 +1,8 @@
+2021-10-06  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/ecc-mod-test.c: Extend tests to give better coverage
+	of corner cases, with input close to a multiple of the modulo.
+
 2021-09-21  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in (nettle.pdf): Generate pdf manual using texi2pdf,
