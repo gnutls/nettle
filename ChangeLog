@@ -1,3 +1,11 @@
+2021-10-22  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-secp256r1.c: Rework ad-hoc reduction functions. In
+	particular, arranged to always use single-limb quotients, no q2
+	quotient carry.
+	(ecc_secp256r1_modp): Reimplemented, closer to 2/1 division,
+	(ecc_secp256r1_modq): Reimplemented, closer to divappr2 division.
+
 2021-10-06  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/ecc-mod-test.c: Extend tests to give better coverage
