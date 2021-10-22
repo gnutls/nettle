@@ -1,4 +1,4 @@
-C s390x/msa_x6/sha3-permute.asm
+C s390x/vf/sha3-permute.asm
 
 ifelse(`
    Copyright (C) 2012 Niels Möller
@@ -65,15 +65,15 @@ define(`D34', `%v27')
 C Wide temporaries
 define(`W0', `%v28')
 define(`W1', `%v29')
-define(`W2', `%v30')		     C Overlap D12
-define(`W3', `%v31')		     C Overlap D34
+define(`W2', `%v30')
+define(`W3', `%v31')
 
 define(`TMP', `%r9')
 
 define(`T0', `%r10')
 define(`T1', `%r11')
-define(`T2', `%r12')		     C Overlap D0
-define(`T3', `%r13')		     C Overlap C0
+define(`T2', `%r12')
+define(`T3', `%r13')
 
 define(`RC', `%r14')
 
@@ -97,12 +97,11 @@ PROLOGUE(nettle_sha3_permute)
     lg             A00,0*8(STATE)
     vl             A0102,1*8(STATE)
     vl             A0304,3*8(STATE)
-    lgr            C0,A00
 
     lg             A05,5*8(STATE)
     vl             A0607,6*8(STATE)
     vl             A0809,8*8(STATE)
-    xgr            C0,A05
+    xgrk           C0,A00,A05
     vx             C12,A0102,A0607
     vx             C34,A0304,A0809
 
@@ -231,22 +230,17 @@ PROLOGUE(nettle_sha3_permute)
 	  C chi step. With the transposed matrix, applied independently
 	  C to each column.
     lghi           TMP,-1
-    lgr            T0,A05
-    xgr            T0,TMP
+    xgrk           T0,A05,TMP
     ngr            T0,A10
-    lgr            T1,A10
-    xgr            T1,TMP
+    xgrk           T1,A10,TMP
     ngr            T1,A15
-    lgr            T2,A15
-    xgr            T2,TMP
+    xgrk           T2,A15,TMP
     ngr            T2,A20
     xgr            A10,T2
-    lgr            T3,A20
-    xgr            T3,TMP
+    xgrk           T3,A20,TMP
     ngr            T3,A00
     xgr            A15,T3
-    lgr            T2,A00
-    xgr            T2,TMP
+    xgrk           T2,A00,TMP
     ngr            T2,A05
     xgr            A20,T2
     xgr            A00,T0
@@ -285,10 +279,9 @@ PROLOGUE(nettle_sha3_permute)
     vlvgg          C34,A15,0
     vlvgg          W0,A10,0
     vlvgg          W1,A20,0
-    lgr            C0,A00
     vlgvg          A05,A0102,0
     vlgvg          A15,A0304,0
-    xgr            C0,A05
+    xgrk           C0,A00,A05
     xgr            C0,A15
     vlgvg          A10,A0102,1
     vlgvg          A20,A0304,1
