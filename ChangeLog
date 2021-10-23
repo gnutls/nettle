@@ -1,3 +1,11 @@
+2021-10-23  Niels Möller  <nisse@lysator.liu.se>
+
+	* gmp-glue.c (sec_zero_p): New function.
+	* ecc-curve25519.c (ecc_curve25519_zero_p): Use it.
+	* ecc-curve448.c (ecc_curve448_zero_p): Use it.
+	* ecc-random.c (ecdsa_in_range): Use it.
+	(zero_p): Delete static function.
+
 2021-10-06  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/ecc-mod-test.c: Extend tests to give better coverage

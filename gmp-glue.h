@@ -39,6 +39,7 @@
 #define mpz_limbs_read_n _nettle_mpz_limbs_read_n
 #define mpz_limbs_copy _nettle_mpz_limbs_copy
 #define mpz_set_n _nettle_mpz_set_n
+#define sec_zero_p _nettle_sec_zero_p
 #define mpn_set_base256 _nettle_mpn_set_base256
 #define mpn_set_base256_le _nettle_mpn_set_base256_le
 #define mpn_get_base256 _nettle_mpn_get_base256
@@ -68,6 +69,10 @@ mpn_cnd_sub_n (mp_limb_t cnd, mp_limb_t *rp,
 void
 mpn_cnd_swap (mp_limb_t cnd, volatile mp_limb_t *ap, volatile mp_limb_t *bp, mp_size_t n);
 #endif
+
+/* Side-channel silent variant of mpn_zero_p. */
+int
+sec_zero_p (const mp_limb_t *ap, mp_size_t n);
 
 #define NETTLE_OCTET_SIZE_TO_LIMB_SIZE(n) \
   (((n) * 8 + GMP_NUMB_BITS - 1) / GMP_NUMB_BITS)

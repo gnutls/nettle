@@ -101,6 +101,18 @@ mpn_cnd_swap (mp_limb_t cnd, volatile mp_limb_t *ap, volatile mp_limb_t *bp, mp_
 
 #endif /* NETTLE_USE_MINI_GMP */
 
+int
+sec_zero_p (const mp_limb_t *ap, mp_size_t n)
+{
+  volatile mp_limb_t w;
+  mp_size_t i;
+
+  for (i = 0, w = 0; i < n; i++)
+    w |= ap[i];
+
+  return w == 0;
+}
+
 /* Additional convenience functions. */
 
 int

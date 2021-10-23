@@ -175,8 +175,6 @@ static int
 ecc_curve25519_zero_p (const struct ecc_modulo *p, mp_limb_t *xp)
 {
   mp_limb_t cy;
-  mp_limb_t w;
-  mp_size_t i;
 #if PHIGH_BITS > 0
   mp_limb_t hi = xp[ECC_LIMB_SIZE-1];
   xp[ECC_LIMB_SIZE-1] = (hi & (GMP_NUMB_MASK >> PHIGH_BITS))
@@ -185,9 +183,7 @@ ecc_curve25519_zero_p (const struct ecc_modulo *p, mp_limb_t *xp)
   cy = mpn_sub_n (xp, xp, p->m, ECC_LIMB_SIZE);
   mpn_cnd_add_n (cy, xp, xp, p->m, ECC_LIMB_SIZE);
 
-  for (i = 0, w = 0; i < ECC_LIMB_SIZE; i++)
-    w |= xp[i];
-  return w == 0;
+  return sec_zero_p (xp, ECC_LIMB_SIZE);
 }
 
 /* Compute x such that x^2 = u/v (mod p). Returns one on success, zero

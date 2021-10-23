@@ -158,15 +158,10 @@ static void ecc_curve448_inv (const struct ecc_modulo *p,
 static int
 ecc_curve448_zero_p (const struct ecc_modulo *p, mp_limb_t *xp)
 {
-  mp_limb_t cy;
-  mp_limb_t w;
-  mp_size_t i;
-  cy = mpn_sub_n (xp, xp, p->m, ECC_LIMB_SIZE);
+  mp_limb_t cy = mpn_sub_n (xp, xp, p->m, ECC_LIMB_SIZE);
   mpn_cnd_add_n (cy, xp, xp, p->m, ECC_LIMB_SIZE);
 
-  for (i = 0, w = 0; i < ECC_LIMB_SIZE; i++)
-    w |= xp[i];
-  return w == 0;
+  return sec_zero_p (xp, ECC_LIMB_SIZE);
 }
 
 /* Compute x such that x^2 = u/v (mod p). Returns one on success, zero
