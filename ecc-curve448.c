@@ -154,15 +154,10 @@ static void ecc_curve448_inv (const struct ecc_modulo *p,
   ecc_mod_mul (p, rp, ap, rp, tp);	/* a^{2^448-2^224-3} */
 }
 
-/* First, do a canonical reduction, then check if zero */
-static int
-ecc_curve448_zero_p (const struct ecc_modulo *p, mp_limb_t *xp)
-{
-  mp_limb_t cy = mpn_sub_n (xp, xp, p->m, ECC_LIMB_SIZE);
-  mpn_cnd_add_n (cy, xp, xp, p->m, ECC_LIMB_SIZE);
-
-  return sec_zero_p (xp, ECC_LIMB_SIZE);
-}
+/* To guarantee that inputs to ecc_mod_zero_p are in the required range. */
+#if ECC_LIMB_SIZE * GMP_NUMB_BITS != 448
+#error Unsupported limb size
+#endif
 
 /* Compute x such that x^2 = u/v (mod p). Returns one on success, zero
    on failure.
@@ -203,7 +198,7 @@ ecc_curve448_sqrt(const struct ecc_modulo *p, mp_limb_t *rp,
   ecc_mod_mul (p, t0, t0, vp, scratch_out);	/* v x^2 */
   ecc_mod_sub (p, t0, t0, up);
 
-  return ecc_curve448_zero_p (p, t0);
+  return ecc_mod_zero_p (p, t0);
 #undef uv
 #undef u3v
 #undef u5v3

@@ -1,4 +1,5 @@
 #include "testutils.h"
+#include <assert.h>
 
 static int
 ref_modinv (mp_limb_t *rp, const mp_limb_t *ap,
@@ -37,18 +38,16 @@ ref_modinv (mp_limb_t *rp, const mp_limb_t *ap,
   return res;
 }
 
+/* Requires that a < 2m, and ref < m. */
 static int
-zero_p (const struct ecc_modulo *m, const mp_limb_t *xp)
-{
-  return mpn_zero_p (xp, m->size)
-    || mpn_cmp (xp, m->m, m->size) == 0;
-}
-
-static int
-mod_eq_p (const struct ecc_modulo *m, const mp_limb_t *a, const mp_limb_t *b,
+mod_eq_p (const struct ecc_modulo *m, const mp_limb_t *a, const mp_limb_t *ref,
 	  mp_limb_t *scratch) {
-  ecc_mod_sub (m, scratch, a, b);
-  return zero_p (m, scratch);
+  mp_limb_t cy;
+  assert (mpn_cmp (ref, m->m, m->size) < 0);
+  cy = mpn_sub_n (scratch, a, ref, m->size);
+  /* If cy > 0, i.e., a < ref, then they can't be equal mod m. */
+  return (cy == 0) & ecc_mod_zero_p (m, scratch);
+
 }
 
 #define MAX_ECC_SIZE (1 + 521 / GMP_NUMB_BITS)
@@ -76,7 +75,7 @@ test_modulo (gmp_randstate_t rands, const char *name,
   mpn_zero (a, m->size);
   memset (ai, 17, m->size * sizeof(*ai));
   m->invert (m, ai, a, scratch);
-  if (!zero_p (m, ai))
+  if (!ecc_mod_zero_p (m, ai))
     {
       fprintf (stderr, "%s->invert failed for zero input (bit size %u):\n",
 	       name, m->bit_size);
@@ -91,7 +90,7 @@ test_modulo (gmp_randstate_t rands, const char *name,
   /* Check behaviour for a = m */
   memset (ai, 17, m->size * sizeof(*ai));
   m->invert (m, ai, m->m, scratch);
-  if (!zero_p (m, ai))
+  if (!ecc_mod_zero_p (m, ai))
     {
       fprintf (stderr, "%s->invert failed for a = p input (bit size %u):\n",
 	       name, m->bit_size);

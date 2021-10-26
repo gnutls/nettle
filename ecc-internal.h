@@ -42,6 +42,7 @@
 /* Name mangling */
 #define ecc_pp1_redc _nettle_ecc_pp1_redc
 #define ecc_pm1_redc _nettle_ecc_pm1_redc
+#define ecc_mod_zero_p _nettle_ecc_mod_zero_p
 #define ecc_mod_add _nettle_ecc_mod_add
 #define ecc_mod_sub _nettle_ecc_mod_sub
 #define ecc_mod_mul_1 _nettle_ecc_mod_mul_1
@@ -235,6 +236,9 @@ ecc_mod_func ecc_pp1_redc;
 ecc_mod_func ecc_pm1_redc;
 
 ecc_mod_inv_func ecc_mod_inv;
+
+/* Side channel silent. Requires that x < 2m, so checks if x == 0 or x == p */
+int ecc_mod_zero_p (const struct ecc_modulo *m, const mp_limb_t *xp);
 
 void
 ecc_mod_add (const struct ecc_modulo *m, mp_limb_t *rp,

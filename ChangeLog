@@ -1,3 +1,13 @@
+2021-10-26  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-mod-arith.c (ecc_mod_zero_p): New function.
+	* ecc-curve25519.c (ecc_curve25519_zero_p): Use it.
+	* ecc-curve448.c (ecc_curve448_zero_p): Deleted, usage replaced
+	with ecc_mod_zero_p.
+	* testsuite/ecc-modinv-test.c (mod_eq_p): Rewritten to use
+	ecc_mod_zero_p, and require that one input is canonically reduced.
+	(zero_p): Deleted, usage replaced with ecc_mod_zero_p.
+
 2021-10-23  Niels Möller  <nisse@lysator.liu.se>
 
 	* gmp-glue.c (sec_zero_p): New function.

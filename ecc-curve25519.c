@@ -170,20 +170,17 @@ ecc_curve25519_inv (const struct ecc_modulo *p,
   ecc_mod_mul (p, rp, ap, rp, scratch);
 }
 
-/* First, do a canonical reduction, then check if zero */
 static int
 ecc_curve25519_zero_p (const struct ecc_modulo *p, mp_limb_t *xp)
 {
-  mp_limb_t cy;
+/* First, reduce to < 2p. */
 #if PHIGH_BITS > 0
   mp_limb_t hi = xp[ECC_LIMB_SIZE-1];
   xp[ECC_LIMB_SIZE-1] = (hi & (GMP_NUMB_MASK >> PHIGH_BITS))
     + sec_add_1 (xp, xp, ECC_LIMB_SIZE - 1, 19 * (hi >> (GMP_NUMB_BITS - PHIGH_BITS)));
 #endif
-  cy = mpn_sub_n (xp, xp, p->m, ECC_LIMB_SIZE);
-  mpn_cnd_add_n (cy, xp, xp, p->m, ECC_LIMB_SIZE);
 
-  return sec_zero_p (xp, ECC_LIMB_SIZE);
+  return ecc_mod_zero_p (p, xp);
 }
 
 /* Compute x such that x^2 = u/v (mod p). Returns one on success, zero
