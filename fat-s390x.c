@@ -264,6 +264,10 @@ DECLARE_FAT_FUNC(_nettle_sha512_compress, sha512_compress_func)
 DECLARE_FAT_FUNC_VAR(sha512_compress, sha512_compress_func, c)
 DECLARE_FAT_FUNC_VAR(sha512_compress, sha512_compress_func, s390x)
 
+DECLARE_FAT_FUNC(nettle_sha3_permute, sha3_permute_func)
+DECLARE_FAT_FUNC_VAR(sha3_permute, sha3_permute_func, c)
+DECLARE_FAT_FUNC_VAR(sha3_permute, sha3_permute_func, s390x)
+
 static void CONSTRUCTOR
 fat_init (void)
 {
@@ -279,10 +283,16 @@ fat_init (void)
     if (verbose)
       fprintf (stderr, "libnettle: enabling vectorized memxor3.\n");
     nettle_memxor3_vec = _nettle_memxor3_s390x;
+
+    if (verbose)
+      fprintf (stderr, "libnettle: enabling vectorized sha3 permute.\n");
+    nettle_sha3_permute_vec = _nettle_sha3_permute_s390x;
   }
   else
   {
-    nettle_memxor3_vec = _nettle_memxor3_c;
+     nettle_memxor3_vec = _nettle_memxor3_c;
+     
+     nettle_sha3_permute_vec = _nettle_sha3_permute_c;
   }
 
   /* AES128 */
@@ -483,3 +493,7 @@ DEFINE_FAT_FUNC(_nettle_sha256_compress, void,
 DEFINE_FAT_FUNC(_nettle_sha512_compress, void,
 		(uint64_t *state, const uint8_t *input, const uint64_t *k),
 		(state, input, k))
+
+/* SHA3 */
+DEFINE_FAT_FUNC(nettle_sha3_permute, void,
+		(struct sha3_state *state), (state))
