@@ -71,19 +71,23 @@ ecc_secp256r1_redc (const struct ecc_modulo *p, mp_limb_t *rp, mp_limb_t *xp);
 static void
 ecc_secp256r1_modp (const struct ecc_modulo *p, mp_limb_t *rp, mp_limb_t *xp)
 {
-  mp_limb_t u1, u0;
+  mp_limb_t d1, u1, cy;
   mp_size_t n;
 
-  n = 2*p->size;
-  u1 = xp[--n];
-  u0 = xp[n-1];
+  /* Reduce to < B^4 p up front, to avoid first quotient overflowing a limb. */
+  cy = mpn_sub_n (xp + 4, xp + 4, p->m, p->size);
+  mpn_cnd_add_n (cy, xp + 4, xp + 4, p->m, p->size);
 
-  /* This is not particularly fast, but should work well with assembly implementation. */
-  for (; n >= p->size; n--)
+  d1 = UINT64_C(0xffffffff00000001);
+  for (n = 2*p->size, u1 = xp[--n] ;; n--)
     {
-      mp_limb_t q2, q1, q0, t, cy;
+      mp_limb_t u0, q1, q0, qmax, r, t, mask;
+      u0 = xp[n-1];
 
-      /* <q2, q1, q0> = v * u1 + <u1,u0>, with v = 2^32 - 1:
+      /* Since d0 == 0, 2/1 division gives a good enough quotient
+	 approximation.
+
+	 <q1, q0> = v * u1 + <u1,u0>, with v = 2^32 - 1:
 
 	   +---+---+
 	   | u1| u0|
@@ -91,151 +95,118 @@ ecc_secp256r1_modp (const struct ecc_modulo *p, mp_limb_t *rp, mp_limb_t *xp)
 	       |-u1|
 	     +-+-+-+
 	     | u1|
-       +---+-+-+-+-+
-       | q2| q1| q0|
-       +---+---+---+
+           +-+-+-+-+
+           | q1| q0|
+           +---+---+
       */
       q1 = u1 - (u1 > u0);
       q0 = u0 - u1;
       t = u1 << 32;
       q0 += t;
-      t = (u1 >> 32) + (q0 < t) + 1;
-      q1 += t;
-      q2 = q1 < t;
+      q1 += (u1 >> 32) + (q0 < t) + 1;
 
-      /* Compute candidate remainder */
-      u1 = u0 + (q1 << 32) - q1;
-      t = -(mp_limb_t) (u1 > q0);
-      u1 -= t & 0xffffffff;
-      q1 += t;
-      q2 += t + (q1 < t);
+      /* Force q = B-1 when u1 == d1 */
+      qmax = - (mp_limb_t) (u1 >= d1);
 
-      assert (q2 < 2);
+      /* Candidate remainder r = u0 - q d1 (mod B), and 2/1 division
+	 adjustments. */
+      r = u0 + (q1 << 32) - q1;
+      mask = - (mp_limb_t) (r > q0);
+      q1 += mask;
+      r += (mask & d1);
+      mask = - (mp_limb_t) (r >= d1);
+      q1 -= mask;
+      r -= (mask & d1);
 
-      /*
-	 n-1 n-2 n-3 n-4
-	+---+---+---+---+
-	| u1| u0| u low |
-	+---+---+---+---+
-	  - | q1(2^96-1)|
-	    +-------+---+
-	    |q2(2^.)|
-	    +-------+
+      /* In the case that u1 == d1, we get q1 == 0, r == 0 here (and
+	 correct 2/1 quotient would be B). Replace with q1 = B-1, r =
+	 d1. */
+      q1 |= qmax;
+      r += d1 & qmax;
 
-	 We multiply by two low limbs of p, 2^96 - 1, so we could use
-	 shifts rather than mul.
-      */
-      t = mpn_submul_1 (xp + n - 4, p->m, 2, q1);
-      t += mpn_cnd_sub_n (q2, xp + n - 3, xp + n - 3, p->m, 1);
-      t += (-q2) & 0xffffffff;
-
-      u0 = xp[n-2];
-      cy = (u0 < t);
-      u0 -= t;
-      t = (u1 < cy);
-      u1 -= cy;
-
-      cy = mpn_cnd_add_n (t, xp + n - 4, xp + n - 4, p->m, 2);
-      u0 += cy;
-      u1 += (u0 < cy);
-      u1 -= (-t) & 0xffffffff;
+      cy = mpn_submul_1 (xp + n - 4, p->m, 3, q1);
+      mask = - (mp_limb_t) (r < cy);
+      if (n == p->size)
+	{
+	  rp[3] = r - cy + (mask & d1) + mpn_cnd_add_n (mask, rp, xp, p->m, 3);
+	  return;
+	}
+      u1 = r - cy + (mask & d1) + mpn_cnd_add_n (mask, xp + n - 4, xp + n- 4, p->m, 3);
     }
-  rp[0] = xp[0];
-  rp[1] = xp[1];
-  rp[2] = u0;
-  rp[3] = u1;
 }
 
 static void
 ecc_secp256r1_modq (const struct ecc_modulo *q, mp_limb_t *rp, mp_limb_t *xp)
 {
-  mp_limb_t u2, u1, u0;
+  mp_limb_t d1, cy;
   mp_size_t n;
 
+  /* Reduce to < B^4 p up front, to avoid first quotient overflowing a limb. */
+  cy = mpn_sub_n (xp + 4, xp + 4, q->m, q->size);
+  mpn_cnd_add_n (cy, xp + 4, xp + 4, q->m, q->size);
+
+  d1 = UINT64_C(0xffffffff00000000);
   n = 2*q->size;
-  u2 = xp[--n];
-  u1 = xp[n-1];
-
-  /* This is not particularly fast, but should work well with assembly implementation. */
-  for (; n >= q->size; n--)
+  for (;;)
     {
-      mp_limb_t q2, q1, q0, t, c1, c0;
+      mp_limb_t u1, u0, q1, q0, r, t, qmax, mask;
+      u1 = xp[--n];
+      u0 = xp[n-1];
 
-      u0 = xp[n-2];
+      /* divappr2, specialized for d1 = 2^64 - 2^32, d0 = 2^64-1.
 
-      /* <q2, q1, q0> = v * u2 + <u2,u1>, same method as above.
-
-	   +---+---+
-	   | u2| u1|
-	   +---+---+
-	       |-u2|
-	     +-+-+-+
-	     | u2|
-       +---+-+-+-+-+
-       | q2| q1| q0|
-       +---+---+---+
-      */
-      q1 = u2 - (u2 > u1);
-      q0 = u1 - u2;
-      t = u2 << 32;
-      q0 += t;
-      t = (u2 >> 32) + (q0 < t) + 1;
-      q1 += t;
-      q2 = q1 < t;
-
-      /* Compute candidate remainder, <u1, u0> - <q2, q1> * (2^128 - 2^96 + 2^64 - 1)
-	 <u1, u0> + 2^64 q2 + (2^96 - 2^64 + 1) q1 (mod 2^128)
+	 <q1, q0> = v * u1 + <u1,u0>, with v = 2^32 - 1:
 
 	   +---+---+
 	   | u1| u0|
 	   +---+---+
-	   | q2| q1|
-	   +---+---+
-	   |-q1|
-	 +-+-+-+
-	 | q1|
-       --+-+-+-+---+
-	   | u2| u1|
-	   +---+---+
+	       |-u1|
+	     +-+-+-+
+	     | u1|
+           +-+-+-+-+
+           | q1| q0|
+           +---+---+
       */
-      u2 = u1 + q2 - q1;
-      u1 = u0 + q1;
-      u2 += (u1 < q1);
-      u2 += (q1 << 32);
+      q1 = u1 - (u1 > u0);
+      q0 = u0 - u1;
+      t = u1 << 32;
+      q0 += t;
+      q1 += (q0 < t);
+      t = u1 >> 32;
+      /* The divappr2 algorithm handles only q < B - 1. If we check
+	 for u1 >= d1 = 2^{64}-2^{32}, we cover all cases where q =
+	 2^64-1, and some when q = 2^64-2. The latter case is
+	 corrected by the final adjustment. */
+      qmax = - (mp_limb_t) (t == 0xffffffff);
+      q1 += t + 1;
 
-      t = -(mp_limb_t) (u2 >= q0);
-      q1 += t;
-      q2 += t + (q1 < t);
-      u1 += t;
-      u2 += (t << 32) + (u1 < t);
+      /* Candidate remainder r = u0 - q (d1 + 1) (mod B), and divappr2
+	 adjustments.
 
-      assert (q2 < 2);
+	 For general divappr2, the expression is
 
-      c0 = mpn_cnd_sub_n (q2, xp + n - 3, xp + n - 3, q->m, 1);
-      c0 += (-q2) & q->m[1];
-      t = mpn_submul_1 (xp + n - 4, q->m, 2, q1);
-      c0 += t;
-      c1 = c0 < t;
+	   r = u_0 - q1 d1 - floor(q1 d0 / B) - 1
 
-      /* Construct underflow condition. */
-      c1 += (u1 < c0);
-      t = - (mp_limb_t) (u2 < c1);
+	 but in our case floor(q1 d0 / B) simplifies to q1 - 1.
+      */
+      r = u0 + (q1 << 32) - q1;
+      mask = - (mp_limb_t) (r >= q0);
+      q1 += mask;
+      r += (mask & (d1 + 1));
+      q1 += (r >= d1 - 1);
 
-      u1 -= c0;
-      u2 -= c1;
+      /* Replace by qmax, when that is needed */
+      q1 |= qmax;
 
-      /* Conditional add of p */
-      u1 += t;
-      u2 += (t<<32) + (u1 < t);
-
-      t = mpn_cnd_add_n (t, xp + n - 4, xp + n - 4, q->m, 2);
-      u1 += t;
-      u2 += (u1 < t);
+      /* Subtract, may underflow. */
+      cy = mpn_submul_1 (xp + n - 4, q->m, 4, q1);
+      if (n == q->size)
+	{
+	  mpn_cnd_add_n (cy > u1, rp, xp, q->m, 4);
+	  return;
+	}
+      mpn_cnd_add_n (cy > u1, xp + n - 4, xp + n- 4, q->m, 4);
     }
-  rp[0] = xp[0];
-  rp[1] = xp[1];
-  rp[2] = u1;
-  rp[3] = u2;
 }
 
 #else
