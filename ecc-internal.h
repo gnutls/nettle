@@ -125,7 +125,7 @@ typedef void ecc_mod_inv_func (const struct ecc_modulo *m,
 			       mp_limb_t *vp, const mp_limb_t *ap,
 			       mp_limb_t *scratch);
 
-/* Computes the square root of (u/v) (mod p) */
+/* Computes the square root of (u/v) (mod p). */
 typedef int ecc_mod_sqrt_ratio_func (const struct ecc_modulo *m,
 				     mp_limb_t *rp,
 				     const mp_limb_t *up, const mp_limb_t *vp,
@@ -161,7 +161,7 @@ struct ecc_modulo
   unsigned short B_size;
   unsigned short redc_size;
   unsigned short invert_itch;
-  unsigned short sqrt_itch;
+  unsigned short sqrt_ratio_itch;
 
   const mp_limb_t *m;
   /* B^size mod m. Expected to have at least 32 leading zeros
@@ -227,7 +227,7 @@ struct ecc_curve
      The following entries differ by powers of 2^{kc},
 
        T[i] = 2^{kc} T[i-2^c]
-  */  
+  */
   const mp_limb_t *pippenger_table;
 };
 
@@ -238,7 +238,8 @@ ecc_mod_func ecc_pm1_redc;
 ecc_mod_inv_func ecc_mod_inv;
 
 /* Side channel silent. Requires that x < 2m, so checks if x == 0 or x == p */
-int ecc_mod_zero_p (const struct ecc_modulo *m, const mp_limb_t *xp);
+int
+ecc_mod_zero_p (const struct ecc_modulo *m, const mp_limb_t *xp);
 
 void
 ecc_mod_add (const struct ecc_modulo *m, mp_limb_t *rp,
@@ -354,7 +355,7 @@ ecc_dup_jj (const struct ecc_curve *ecc,
 
      P = Q != 0                       Duplication of non-zero point
      P = 0, Q != 0 or P != 0, Q = 0   One input zero
-   
+
      Correctly gives R = 0 if P = Q = 0 or P = -Q. */
 void
 ecc_add_jja (const struct ecc_curve *ecc,
@@ -402,7 +403,7 @@ ecc_add_thh (const struct ecc_curve *ecc,
 /* Computes N * the group generator. N is an array of ecc_size()
    limbs. It must be in the range 0 < N < group order, then R != 0,
    and the algorithm can work without any intermediate values getting
-   to zero. */ 
+   to zero. */
 void
 ecc_mul_g (const struct ecc_curve *ecc, mp_limb_t *r,
 	   const mp_limb_t *np, mp_limb_t *scratch);

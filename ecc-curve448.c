@@ -169,12 +169,12 @@ static void ecc_curve448_inv (const struct ecc_modulo *p,
 */
 
 /* Needs 2*n space + scratch for ecc_mod_pow_446m224m1. */
-#define ECC_CURVE448_SQRT_ITCH (6*ECC_LIMB_SIZE)
+#define ECC_CURVE448_SQRT_RATIO_ITCH (6*ECC_LIMB_SIZE)
 
 static int
-ecc_curve448_sqrt(const struct ecc_modulo *p, mp_limb_t *rp,
-	     const mp_limb_t *up, const mp_limb_t *vp,
-	     mp_limb_t *scratch)
+ecc_curve448_sqrt_ratio(const struct ecc_modulo *p, mp_limb_t *rp,
+			const mp_limb_t *up, const mp_limb_t *vp,
+			mp_limb_t *scratch)
 {
 #define uv scratch
 #define u3v (scratch + ECC_LIMB_SIZE)
@@ -214,7 +214,7 @@ const struct ecc_curve _nettle_curve448 =
     ECC_BMODP_SIZE,
     0,
     ECC_CURVE448_INV_ITCH,
-    ECC_CURVE448_SQRT_ITCH,
+    ECC_CURVE448_SQRT_RATIO_ITCH,
 
     ecc_p,
     ecc_Bmodp,
@@ -225,7 +225,7 @@ const struct ecc_curve _nettle_curve448 =
     ecc_curve448_modp,
     ecc_curve448_modp,
     ecc_curve448_inv,
-    ecc_curve448_sqrt,
+    ecc_curve448_sqrt_ratio,
   },
   {
     446,

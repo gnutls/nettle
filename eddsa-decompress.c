@@ -44,7 +44,7 @@
 mp_size_t
 _eddsa_decompress_itch (const struct ecc_curve *ecc)
 {
-  return 4*ecc->p.size + ecc->p.sqrt_itch;
+  return 4*ecc->p.size + ecc->p.sqrt_ratio_itch;
 }
 
 int

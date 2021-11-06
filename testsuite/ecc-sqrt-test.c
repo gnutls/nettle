@@ -89,7 +89,7 @@ test_modulo (gmp_randstate_t rands, const struct ecc_modulo *m)
   up = xalloc_limbs (m->size);
   vp = xalloc_limbs (m->size);
   rp = xalloc_limbs (2*m->size);
-  scratch = xalloc_limbs (m->sqrt_itch);
+  scratch = xalloc_limbs (m->sqrt_ratio_itch);
 
   /* Find a non-square */
   for (z = 2; mpz_ui_kronecker (z, p) != -1; z++)

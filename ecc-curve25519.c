@@ -198,12 +198,12 @@ ecc_curve25519_zero_p (const struct ecc_modulo *p, mp_limb_t *xp)
 #endif
 
 /* Needs 2*n space + scratch for ecc_mod_pow_252m3. */
-#define ECC_25519_SQRT_ITCH (6*ECC_LIMB_SIZE)
+#define ECC_25519_SQRT_RATIO_ITCH (6*ECC_LIMB_SIZE)
 
 static int
-ecc_curve25519_sqrt(const struct ecc_modulo *p, mp_limb_t *rp,
-		    const mp_limb_t *up, const mp_limb_t *vp,
-		    mp_limb_t *scratch)
+ecc_curve25519_sqrt_ratio(const struct ecc_modulo *p, mp_limb_t *rp,
+			  const mp_limb_t *up, const mp_limb_t *vp,
+			  mp_limb_t *scratch)
 {
   int pos, neg;
 
@@ -260,7 +260,7 @@ const struct ecc_curve _nettle_curve25519 =
     ECC_BMODP_SIZE,
     0,
     ECC_25519_INV_ITCH,
-    ECC_25519_SQRT_ITCH,
+    ECC_25519_SQRT_RATIO_ITCH,
 
     ecc_p,
     ecc_Bmodp,
@@ -271,7 +271,7 @@ const struct ecc_curve _nettle_curve25519 =
     ecc_curve25519_modp,
     ecc_curve25519_modp,
     ecc_curve25519_inv,
-    ecc_curve25519_sqrt,
+    ecc_curve25519_sqrt_ratio,
   },
   {
     253,

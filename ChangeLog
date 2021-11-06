@@ -1,4 +1,20 @@
-2021-11-06  Niels Möller  <nisse@lysator.liu.se>
+2021-11-07  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-internal.h (struct ecc_modulo): Renamed sqrt_itch to
+	sqrt_ratio_itch.
+	* eddsa-decompress.c (_eddsa_decompress_itch): Updated.
+
+	* ecc-curve448.c (ECC_CURVE448_SQRT_RATIO_ITCH): Renamed, from ...
+	(ECC_CURVE448_SQRT_ITCH): ... old name.
+	(ecc_curve448_sqrt_ratio): Renamed, from ...
+	(ecc_curve448_sqrt): ... old name.
+	(_nettle_curve448): Updated.
+
+	* ecc-curve25519.c (ECC_25519_SQRT_RATIO_ITCH): Renamed, from ...
+	(ECC_25519_SQRT_ITCH): ... old name
+	(ecc_curve25519_sqrt_ratio): Renamed, from ...
+	(ecc_curve25519_sqrt): ... old name.
+	(_nettle_curve25519): Updated.
 
 	* ecc-internal.h (ecc_mod_sqrt_ratio_func): Renamed typedef...
 	(ecc_mod_sqrt_func): ... from old name.
