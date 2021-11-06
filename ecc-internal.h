@@ -126,10 +126,10 @@ typedef void ecc_mod_inv_func (const struct ecc_modulo *m,
 			       mp_limb_t *scratch);
 
 /* Computes the square root of (u/v) (mod p) */
-typedef int ecc_mod_sqrt_func (const struct ecc_modulo *m,
-			       mp_limb_t *rp,
-			       const mp_limb_t *up, const mp_limb_t *vp,
-			       mp_limb_t *scratch);
+typedef int ecc_mod_sqrt_ratio_func (const struct ecc_modulo *m,
+				     mp_limb_t *rp,
+				     const mp_limb_t *up, const mp_limb_t *vp,
+				     mp_limb_t *scratch);
 
 /* Allows in-place operation with r == p, but not r == q */
 typedef void ecc_add_func (const struct ecc_curve *ecc,
@@ -179,7 +179,7 @@ struct ecc_modulo
   /* For moduli where we use redc, the invert and sqrt functions work
      with inputs and outputs in redc form. */
   ecc_mod_inv_func *invert;
-  ecc_mod_sqrt_func *sqrt;
+  ecc_mod_sqrt_ratio_func *sqrt_ratio;
 };
 
 /* Represents an elliptic curve of the form

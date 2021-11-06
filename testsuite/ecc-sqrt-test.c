@@ -112,12 +112,12 @@ test_modulo (gmp_randstate_t rands, const struct ecc_modulo *m)
 	}
       mpz_limbs_copy (up, u, m->size);
       mpz_limbs_copy (vp, v, m->size);
-      if (!m->sqrt (m, rp, up, vp, scratch))
+      if (!m->sqrt_ratio (m, rp, up, vp, scratch))
 	{
 	  mpz_mul_ui (u, u, z);
 	  mpz_mod (u, u, p);
 	  mpz_limbs_copy (up, u, m->size);
-	  if (!m->sqrt (m, rp, up, vp, scratch))
+	  if (!m->sqrt_ratio (m, rp, up, vp, scratch))
 	    {
 	      fprintf (stderr, "m->sqrt returned failure, bit_size = %d\n"
 		       "u = 0x",
@@ -165,7 +165,7 @@ test_main (void)
   gmp_randinit_default (rands);
   for (i = 0; ecc_curves[i]; i++)
     {
-      if (ecc_curves[i]->p.sqrt)
+      if (ecc_curves[i]->p.sqrt_ratio)
 	test_modulo (rands, &ecc_curves[i]->p);
     }
   gmp_randclear (rands);

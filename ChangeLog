@@ -1,3 +1,10 @@
+2021-11-06  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-internal.h (ecc_mod_sqrt_ratio_func): Renamed typedef...
+	(ecc_mod_sqrt_func): ... from old name.
+	(struct ecc_modulo): Renamed corresponding function pointer to
+	sqrt_ratio. Updated all uses.
+
 2021-10-26  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-mod-arith.c (ecc_mod_zero_p): New function.

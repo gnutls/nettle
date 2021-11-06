@@ -98,7 +98,7 @@ _eddsa_decompress (const struct ecc_curve *ecc, mp_limb_t *p,
     ecc_mod_sub (&ecc->p, up, ecc->unit, y2);
   else
     ecc_mod_sub (&ecc->p, up, y2, ecc->unit);
-  res &= ecc->p.sqrt (&ecc->p, tp, up, vp, scratch_out);
+  res &= ecc->p.sqrt_ratio (&ecc->p, tp, up, vp, scratch_out);
 
   cy = mpn_sub_n (xp, tp, ecc->p.m, ecc->p.size);
   cnd_copy (cy, xp, tp, ecc->p.size);
