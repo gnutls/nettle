@@ -263,6 +263,70 @@ ecc_secp256r1_inv (const struct ecc_modulo *p,
   ecc_mod_pow_2k_mul (p, rp, rp, 15, a15m1, tp);/* a^{2^{239} - 2^{207} + 2^{175} + 2^{79} - 1} */
   ecc_mod_pow_2k_mul (p, rp, rp, 15, a15m1, tp);/* a^{2^{254} - 2^{222} + 2^{190} + 2^{94} - 1} */
   ecc_mod_pow_2k_mul (p, rp, rp, 2, ap, tp); 	/* a^{2^{256} - 2^{224} + 2^{192} + 2^{96} - 3} */
+
+#undef a5m1
+#undef t0
+#undef a15m1
+#undef a32m1
+#undef tp
+}
+
+/* To guarantee that inputs to ecc_mod_zero_p are in the required range. */
+#if ECC_LIMB_SIZE * GMP_NUMB_BITS != 256
+#error Unsupported limb size
+#endif
+
+#define ECC_SECP256R1_SQRT_ITCH (3*ECC_LIMB_SIZE)
+
+static int
+ecc_secp256r1_sqrt (const struct ecc_modulo *m,
+		    mp_limb_t *rp,
+		    const mp_limb_t *cp,
+		    mp_limb_t *scratch)
+{
+  /* This computes the square root modulo p256 using the identity:
+
+     sqrt(c) = c^(2^254 − 2^222 + 2^190 + 2^94)  (mod P-256)
+
+     which can be seen as a special case of Tonelli-Shanks with e=1.
+
+     It would be nice to share part of the addition chain between inverse and sqrt.
+
+     We need
+
+       p-2 = 2^{256} - 2^{224} + 2^{192} + 2^{96} - 3 (inverse)
+
+     and
+
+       (p+1)/4 = 2^{254} − 2^{222} + 2^{190} + 2^{94} (sqrt)
+
+     which we can both get conveniently from
+
+       (p-3)/4 = 2^{254} − 2^{222} + 2^{190} + 2^{94} - 1
+
+     But addition chain for 2^{94} - 1 appears to cost a few more mul
+     operations than the current, separate, chains. */
+
+#define t0 scratch
+#define tp (scratch + ECC_LIMB_SIZE)
+
+  ecc_mod_sqr        (m, rp, cp, tp);		/* c^2 */
+  ecc_mod_mul        (m, t0, rp, cp, tp);	/* c^3 */
+  ecc_mod_pow_2kp1   (m, rp, t0, 2, tp);	/* c^(2^4 - 1) */
+  ecc_mod_pow_2kp1   (m, t0, rp, 4, tp);	/* c^(2^8 - 1) */
+  ecc_mod_pow_2kp1   (m, rp, t0, 8, tp);	/* c^(2^16 - 1) */
+  ecc_mod_pow_2kp1   (m, t0, rp, 16, tp);	/* c^(2^32 - 1) */
+  ecc_mod_pow_2k_mul (m, rp, t0, 32, cp, tp);	/* c^(2^64 - 2^32 + 1) */
+  ecc_mod_pow_2k_mul (m, t0, rp, 96, cp, tp);	/* c^(2^160 - 2^128 + 2^96 + 1) */
+  ecc_mod_pow_2k     (m, rp, t0, 94,     tp);	/* c^(2^254 - 2^222 + 2^190 + 2^94) */
+
+  ecc_mod_sqr (m, t0, rp, tp);
+  ecc_mod_sub (m, t0, t0, cp);
+
+  return ecc_mod_zero_p (m, t0);
+#undef t0
+#undef tp
+
 }
 
 const struct ecc_curve _nettle_secp_256r1 =
@@ -273,7 +337,7 @@ const struct ecc_curve _nettle_secp_256r1 =
     ECC_BMODP_SIZE,
     ECC_REDC_SIZE,
     ECC_SECP256R1_INV_ITCH,
-    0, 
+    ECC_SECP256R1_SQRT_ITCH,
     0,
 
     ecc_p,
@@ -285,7 +349,7 @@ const struct ecc_curve _nettle_secp_256r1 =
     ecc_secp256r1_modp,
     USE_REDC ? ecc_secp256r1_redc : ecc_secp256r1_modp,
     ecc_secp256r1_inv,
-    NULL,
+    ecc_secp256r1_sqrt,
     NULL,
   },
   {
