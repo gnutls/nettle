@@ -8,6 +8,7 @@
 	(ecc_secp192r1_sqrt): New function.
 	* ecc-secp256r1.c (ecc_secp256r1_sqrt): New function.
 	* ecc-secp384r1.c (ecc_secp384r1_sqrt): New function.
+	* ecc-secp521r1.c (ecc_secp521r1_sqrt): New function.
 
 	* testsuite/ecc-sqrt-test.c (test_sqrt): New function.
 	(test_sqrt_ratio): Renamed function (was test_modulo).
