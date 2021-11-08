@@ -14,6 +14,8 @@
 	(test_sqrt_ratio): Renamed function (was test_modulo).
 	(test_main): Test sqrt function, for curves that define it.
 
+	* ecc-secp224r1.c (ecc_mod_pow_127m1): New function.
+
 2021-11-07  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-internal.h (struct ecc_modulo): Renamed sqrt_itch to
