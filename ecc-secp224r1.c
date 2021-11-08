@@ -37,6 +37,8 @@
 # include "config.h"
 #endif
 
+#include <assert.h>
+
 #include "ecc-internal.h"
 
 #if HAVE_NATIVE_ecc_secp224r1_modp
@@ -135,6 +137,76 @@ ecc_secp224r1_inv (const struct ecc_modulo *p,
 #undef tp
 }
 
+#define ECC_SECP224R1_SQRT_ITCH (5*ECC_LIMB_SIZE)
+
+static int
+ecc_secp224r1_sqrt (const struct ecc_modulo *p,
+		    mp_limb_t *xp,
+		    const mp_limb_t *cp,
+		    mp_limb_t *scratch)
+{
+  unsigned r;
+
+#define bp scratch
+#define yp (scratch + ECC_LIMB_SIZE)
+#define t0 (scratch + 2*ECC_LIMB_SIZE)
+#define tp (scratch + 3*ECC_LIMB_SIZE)
+
+  /* Uses Tonnelli-Shanks' algorithm, and which isn't side-channel silent.
+
+     We have p - 1 = 2^e q, with e = 2^{96} and q = 2^{128} - 1.
+
+     Initially, we need b = c^q and x = c^{(q+1)/2}, and to get both,
+     we start with
+
+     c^{(q-1)/2} = a^{2^{127}-1}
+  */
+
+  /* Needs total 4 * ECC_LIMB_SIZE scratch space */
+  ecc_mod_pow_127m1 (p, xp, scratch, cp, scratch + ECC_LIMB_SIZE);
+
+  ecc_mod_sqr (p, bp, xp, tp);  /* b <-- c^{2^{128} - 2 */
+  ecc_mod_mul (p, bp, bp, cp, tp);  /* b <-- c^{2^{128} - 1 */
+  ecc_mod_mul (p, xp, xp, cp, tp);  /* x <-- c^{2^{127}} */
+
+  mpn_copyi (yp, ecc_sqrt_z, p->size);
+  r = ECC_SQRT_E;
+
+  /* The algoritm maintains x^2 = c b; when b == 1, we are done. We
+     also have the invariants b^{2^{r-1}} = 1 (assuming square root
+     exists), and y^{2^{r-1}} = -1. */
+  for (;;)
+    {
+      unsigned m;
+      if (ecc_mod_equal_p (p, bp, ecc_unit, tp))
+	return 1;
+
+      ecc_mod_sqr (p, t0, bp, tp);
+      for (m = 1;
+	   m < r && !ecc_mod_equal_p (p, t0, ecc_unit, tp);
+	   m++)
+	ecc_mod_sqr (p, t0, t0, tp);
+
+      if (m == r)
+	{
+	  /* No square root. Will always be detected on first round in
+	     the outer loop. */
+	  assert (r == ECC_SQRT_E);
+	  return 0;
+	}
+
+      if (m < r - 1)
+	ecc_mod_pow_2k (p, yp, yp, r - m - 1, tp);
+
+      r = m;
+      ecc_mod_mul (p, xp, xp, yp, tp);	/* x' <-- x y^{2^{r-m-1} */
+      ecc_mod_sqr (p, yp, yp, tp);	/* y' <-- y^{2^{r-m}} */
+      ecc_mod_mul (p, bp, bp, yp, tp);	/* b' <-- b y^{2^{r-m}} */
+    }
+#undef bp
+#undef yp
+#undef tp
+}
 
 const struct ecc_curve _nettle_secp_224r1 =
 {
@@ -144,7 +216,7 @@ const struct ecc_curve _nettle_secp_224r1 =
     ECC_BMODP_SIZE,
     -ECC_REDC_SIZE,
     ECC_SECP224R1_INV_ITCH,
-    0,
+    ECC_SECP224R1_SQRT_ITCH,
     0,
 
     ecc_p,
@@ -156,7 +228,7 @@ const struct ecc_curve _nettle_secp_224r1 =
     ecc_secp224r1_modp,
     USE_REDC ? ecc_secp224r1_redc : ecc_secp224r1_modp,
     ecc_secp224r1_inv,
-    NULL,
+    ecc_secp224r1_sqrt,
     NULL,
   },
   {
