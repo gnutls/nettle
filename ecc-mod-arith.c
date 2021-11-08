@@ -58,6 +58,16 @@ ecc_mod_zero_p (const struct ecc_modulo *m, const mp_limb_t *xp_in)
   return (is_non_zero == 0) | (is_not_p == 0);
 }
 
+int
+ecc_mod_equal_p (const struct ecc_modulo *m, const mp_limb_t *a,
+		 const mp_limb_t *ref, mp_limb_t *scratch)
+{
+  mp_limb_t cy;
+  cy = mpn_sub_n (scratch, a, ref, m->size);
+  /* If cy > 0, i.e., a < ref, then they can't be equal mod m. */
+  return (cy == 0) & ecc_mod_zero_p (m, scratch);
+}
+
 void
 ecc_mod_add (const struct ecc_modulo *m, mp_limb_t *rp,
 	     const mp_limb_t *ap, const mp_limb_t *bp)

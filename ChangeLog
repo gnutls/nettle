@@ -39,6 +39,12 @@
 	(struct ecc_modulo): Renamed corresponding function pointer to
 	sqrt_ratio. Updated all uses.
 
+2021-10-28  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-mod-arith.c (ecc_mod_equal_p): New function, moved from
+	ecc-modinv-test.c. Based on patch by Wim Lewis.
+	* testsuite/ecc-modinv-test.c (mod_eq_p): Deleted, replaced with ecc_mod_equal_p.
+
 2021-10-26  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-mod-arith.c (ecc_mod_zero_p): New function.

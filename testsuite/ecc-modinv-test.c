@@ -38,18 +38,6 @@ ref_modinv (mp_limb_t *rp, const mp_limb_t *ap,
   return res;
 }
 
-/* Requires that a < 2m, and ref < m. */
-static int
-mod_eq_p (const struct ecc_modulo *m, const mp_limb_t *a, const mp_limb_t *ref,
-	  mp_limb_t *scratch) {
-  mp_limb_t cy;
-  assert (mpn_cmp (ref, m->m, m->size) < 0);
-  cy = mpn_sub_n (scratch, a, ref, m->size);
-  /* If cy > 0, i.e., a < ref, then they can't be equal mod m. */
-  return (cy == 0) & ecc_mod_zero_p (m, scratch);
-
-}
-
 #define MAX_ECC_SIZE (1 + 521 / GMP_NUMB_BITS)
 #define COUNT 500
 
@@ -120,7 +108,7 @@ test_modulo (gmp_randstate_t rands, const char *name,
 	  continue;
 	}
       m->invert (m, ai, a, scratch);
-      if (!mod_eq_p (m, ai, ref, scratch))
+      if (!ecc_mod_equal_p (m, ai, ref, scratch))
 	{
 	  fprintf (stderr, "%s->invert failed (test %u, bit size %u):\n",
 		   name, j, m->bit_size);
