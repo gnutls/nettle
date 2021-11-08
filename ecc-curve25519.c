@@ -260,6 +260,7 @@ const struct ecc_curve _nettle_curve25519 =
     ECC_BMODP_SIZE,
     0,
     ECC_25519_INV_ITCH,
+    0,
     ECC_25519_SQRT_RATIO_ITCH,
 
     ecc_p,
@@ -271,6 +272,7 @@ const struct ecc_curve _nettle_curve25519 =
     ecc_curve25519_modp,
     ecc_curve25519_modp,
     ecc_curve25519_inv,
+    NULL,
     ecc_curve25519_sqrt_ratio,
   },
   {
@@ -279,6 +281,7 @@ const struct ecc_curve _nettle_curve25519 =
     ECC_BMODQ_SIZE,
     0,
     ECC_MOD_INV_ITCH (ECC_LIMB_SIZE),
+    0,
     0,
 
     ecc_q,
@@ -290,6 +293,7 @@ const struct ecc_curve _nettle_curve25519 =
     ecc_curve25519_modq,
     ecc_curve25519_modq,
     ecc_mod_inv,
+    NULL,
     NULL,
   },
 

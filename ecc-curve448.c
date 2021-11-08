@@ -214,6 +214,7 @@ const struct ecc_curve _nettle_curve448 =
     ECC_BMODP_SIZE,
     0,
     ECC_CURVE448_INV_ITCH,
+    0,
     ECC_CURVE448_SQRT_RATIO_ITCH,
 
     ecc_p,
@@ -225,6 +226,7 @@ const struct ecc_curve _nettle_curve448 =
     ecc_curve448_modp,
     ecc_curve448_modp,
     ecc_curve448_inv,
+    NULL,
     ecc_curve448_sqrt_ratio,
   },
   {
@@ -233,6 +235,7 @@ const struct ecc_curve _nettle_curve448 =
     ECC_BMODQ_SIZE,
     0,
     ECC_MOD_INV_ITCH (ECC_LIMB_SIZE),
+    0,
     0,
 
     ecc_q,
@@ -244,6 +247,7 @@ const struct ecc_curve _nettle_curve448 =
     ecc_mod,
     ecc_mod,
     ecc_mod_inv,
+    NULL,
     NULL,
   },
 

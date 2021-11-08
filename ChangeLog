@@ -1,3 +1,16 @@
+2021-11-08  Niels Möller  <nisse@lysator.liu.se>
+
+	Square root functions, based on patch by Wim Lewis.
+	* ecc-internal.h (ecc_mod_sqrt_func): New typedef.
+	(struct ecc_modulo): Add sqrt function pointer and sqrt_itch.
+	Update all curve definitions.
+	* ecc-secp192r1.c (ECC_SECP192R1_SQRT_ITCH): New constant.
+	(ecc_secp192r1_sqrt): New function.
+
+	* testsuite/ecc-sqrt-test.c (test_sqrt): New function.
+	(test_sqrt_ratio): Renamed function (was test_modulo).
+	(test_main): Test sqrt function, for curves that define it.
+
 2021-11-07  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-internal.h (struct ecc_modulo): Renamed sqrt_itch to

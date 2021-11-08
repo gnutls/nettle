@@ -125,6 +125,11 @@ typedef void ecc_mod_inv_func (const struct ecc_modulo *m,
 			       mp_limb_t *vp, const mp_limb_t *ap,
 			       mp_limb_t *scratch);
 
+/* Computes the square root of ap mod p. No overlap between input and output. */
+typedef int ecc_mod_sqrt_func (const struct ecc_modulo *m,
+			       mp_limb_t *vp, const mp_limb_t *ap,
+			       mp_limb_t *scratch);
+
 /* Computes the square root of (u/v) (mod p). */
 typedef int ecc_mod_sqrt_ratio_func (const struct ecc_modulo *m,
 				     mp_limb_t *rp,
@@ -161,6 +166,7 @@ struct ecc_modulo
   unsigned short B_size;
   unsigned short redc_size;
   unsigned short invert_itch;
+  unsigned short sqrt_itch;
   unsigned short sqrt_ratio_itch;
 
   const mp_limb_t *m;
@@ -179,6 +185,7 @@ struct ecc_modulo
   /* For moduli where we use redc, the invert and sqrt functions work
      with inputs and outputs in redc form. */
   ecc_mod_inv_func *invert;
+  ecc_mod_sqrt_func *sqrt;
   ecc_mod_sqrt_ratio_func *sqrt_ratio;
 };
 
