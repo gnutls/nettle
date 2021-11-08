@@ -200,9 +200,82 @@ ecc_secp384r1_inv (const struct ecc_modulo *p,
   ecc_mod_pow_2k_mul (p, rp, rp, 31, a30m1, tp); /* a^{2^{286} - 2^{30} - 1}, a3 a30m1 */
 
   ecc_mod_pow_2k_mul (p, rp, rp, 2, a3, tp); /* a^{2^{288} - 2^{32} - 1, a30m1 */
-  ecc_mod_pow_2k_mul (p, rp, rp, 94, a30m1, tp); /* a^{2^{392} - 2^{126} - 2^{94} + 2^{30} - 1 */
+  ecc_mod_pow_2k_mul (p, rp, rp, 94, a30m1, tp); /* a^{2^{382} - 2^{126} - 2^{94} + 2^{30} - 1 */
   ecc_mod_pow_2k_mul (p, rp, rp, 2, ap, tp);
+
+#undef a3
+#undef a5m1
+#undef a15m1
+#undef a30m1
+#undef t0
+#undef tp
 }
+
+/* To guarantee that inputs to ecc_mod_zero_p are in the required range. */
+#if ECC_LIMB_SIZE * GMP_NUMB_BITS != 384
+#error Unsupported limb size
+#endif
+
+#define ECC_SECP384R1_SQRT_ITCH (8*ECC_LIMB_SIZE)
+
+static int
+ecc_secp384r1_sqrt (const struct ecc_modulo *m,
+		    mp_limb_t *rp,
+		    const mp_limb_t *cp,
+		    mp_limb_t *scratch)
+{
+  /* This computes the square root modulo p384 using the identity:
+
+     sqrt(c) = c^(2^382 − 2^126 - 2^94 + 2^30)  (mod P-384)
+
+     which can be seen as a special case of Tonelli-Shanks with e=1.
+
+     The specific sqr/mul schedule is from Routine 3.2.12 of
+     "Mathematical routines for the NIST prime elliptic curves", April
+     5, 2010, author unknown.
+  */
+
+#define t0 scratch
+#define c3 (scratch + ECC_LIMB_SIZE)
+#define c5m1 (scratch + 2*ECC_LIMB_SIZE)
+#define c15m1 (scratch + 3*ECC_LIMB_SIZE)
+#define c30m1 c5m1
+#define c32m4 (scratch + 4*ECC_LIMB_SIZE)
+#define c32m1 (scratch + 5*ECC_LIMB_SIZE)
+#define tp (scratch + 6*ECC_LIMB_SIZE)
+
+  ecc_mod_sqr        (m, t0, cp, tp);			/* c^2 */
+  ecc_mod_mul        (m, c3, t0, cp, tp);		/* c^3 */
+  ecc_mod_pow_2kp1   (m, rp, c3, 2, tp);		/* c^(2^4 - 1) */
+  ecc_mod_sqr        (m, t0, rp, tp);			/* c^(2^5 - 2) */
+  ecc_mod_mul        (m, c5m1, t0, cp, tp);		/* c^(2^5 - 1) */
+  ecc_mod_pow_2kp1   (m, t0, c5m1, 5, tp);		/* c^(2^10 - 1) */
+  ecc_mod_pow_2k_mul (m, c15m1, t0, 5, c5m1, tp);	/* c^(2^15 - 1) c5m1*/
+  ecc_mod_pow_2kp1   (m, c30m1, c15m1, 15, tp);		/* c^(2^30 - 1) */
+  ecc_mod_pow_2k     (m, c32m4, c30m1, 2, tp);		/* c^(2^32 - 4) */
+  ecc_mod_mul        (m, c32m1, c32m4, c3, tp);		/* c^(2^32 - 1) c3 */
+  ecc_mod_pow_2k_mul (m, rp, c32m4, 28, c30m1, tp);	/* c^(2^60 - 1) c32m4 */
+  ecc_mod_pow_2kp1   (m, t0, rp, 60, tp);		/* c^(2^120 - 1) */
+  ecc_mod_pow_2kp1   (m, rp, t0, 120, tp);		/* c^(2^240 - 1) */
+  ecc_mod_pow_2k_mul (m, t0, rp, 15, c15m1, tp);	/* c^(2^255 - 1) c15m1 */
+  /* FIXME: Reuse part of chain with invert function. */
+  ecc_mod_pow_2k_mul (m, rp, t0, 33, c32m1, tp);	/* c^(2^288 - 2^32 - 1) c32m1 */
+  ecc_mod_pow_2k_mul (m, t0, rp, 64, cp, tp);		/* c^(2^352 - 2^96 - 2^64 + 1) */
+  ecc_mod_pow_2k     (m, rp, t0, 30, tp);		/* c^(2^382 - 2^126 - 2^94 + 2^30) */
+
+  ecc_mod_sqr (m, t0, rp, tp);
+  ecc_mod_sub (m, t0, t0, cp);
+
+  return ecc_mod_zero_p (m, t0);
+#undef t0
+#undef c3
+#undef c5m1
+#undef c15m1
+#undef c30m1
+#undef c32m1
+#undef tp
+}
+
 
 const struct ecc_curve _nettle_secp_384r1 =
 {
@@ -212,7 +285,7 @@ const struct ecc_curve _nettle_secp_384r1 =
     ECC_BMODP_SIZE,
     ECC_REDC_SIZE,
     ECC_SECP384R1_INV_ITCH,
-    0,
+    ECC_SECP384R1_SQRT_ITCH,
     0,
 
     ecc_p,
@@ -224,7 +297,7 @@ const struct ecc_curve _nettle_secp_384r1 =
     ecc_secp384r1_modp,
     ecc_secp384r1_modp,
     ecc_secp384r1_inv,
-    NULL,
+    ecc_secp384r1_sqrt,
     NULL,
   },
   {
