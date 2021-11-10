@@ -1,3 +1,9 @@
+2021-11-10  Niels Möller  <nisse@lysator.liu.se>
+
+	* eccdata.c (output_bignum_redc): New function.
+	(output_curve): Generate both redc and non-redc versions of
+	ecc_sqrt_z. Fixes secp224r1 sqrt, in configs using redc.
+
 2021-11-08  Niels Möller  <nisse@lysator.liu.se>
 
 	Square root functions, based on patch by Wim Lewis.
