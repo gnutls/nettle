@@ -1175,7 +1175,7 @@ output_curve (const struct ecc_curve *ecc, unsigned bits_per_limb)
 {
   unsigned limb_size = (ecc->bit_size + bits_per_limb - 1)/bits_per_limb;
   unsigned i;
-  unsigned bits, e;
+  unsigned bits;
   int redc_limbs;
   mpz_t t;
   mpz_t z;
@@ -1313,7 +1313,7 @@ output_curve (const struct ecc_curve *ecc, unsigned bits_per_limb)
   else
     {
       /* p-1 = 2^e s, s odd, t = (s-1)/2*/
-      unsigned g, i;
+      unsigned g, i, e;
       mpz_t s;
 
       mpz_init (s);
@@ -1347,12 +1347,12 @@ output_curve (const struct ecc_curve *ecc, unsigned bits_per_limb)
       mpz_fdiv_q_2exp (t, s, 1);
 
       mpz_clear (s);
+      printf ("#define ECC_SQRT_E %u\n", e);
     }
-  printf ("#define ECC_SQRT_E %u\n", e);
-
   printf ("#if USE_REDC\n");
   printf ("#define ecc_unit ecc_Bmodp\n");
-  output_bignum_redc ("ecc_sqrt_z", z, ecc->p, limb_size, bits_per_limb);
+  if (mpz_sgn(z) > 0)
+    output_bignum_redc ("ecc_sqrt_z", z, ecc->p, limb_size, bits_per_limb);
 
   printf ("static const mp_limb_t ecc_table[%lu] = {",
 	 (unsigned long) (2*ecc->table_size * limb_size));
@@ -1365,7 +1365,8 @@ output_curve (const struct ecc_curve *ecc, unsigned bits_per_limb)
 
   mpz_set_ui (t, 1);
   output_bignum ("ecc_unit", t, limb_size, bits_per_limb);
-  output_bignum ("ecc_sqrt_z", z, limb_size, bits_per_limb);
+  if (mpz_sgn(z) > 0)
+    output_bignum ("ecc_sqrt_z", z, limb_size, bits_per_limb);
   
   printf ("static const mp_limb_t ecc_table[%lu] = {",
 	 (unsigned long) (2*ecc->table_size * limb_size));

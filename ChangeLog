@@ -1,5 +1,8 @@
 2021-11-11  Niels Möller  <nisse@lysator.liu.se>
 
+	* eccdata.c (output_curve): Output ecc_sqrt_z and ECC_SQRT_E only
+	when computed. Fixes uninitialized value bug from previous change.
+
 	* ecc-secp384r1.c (ecc_mod_pow_288m32m1): New function.
 	(ecc_secp384r1_inv): Use ecc_mod_pow_288m32m1.
 	(ecc_secp384r1_sqrt): Likewise.
