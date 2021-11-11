@@ -1307,10 +1307,8 @@ output_curve (const struct ecc_curve *ecc, unsigned bits_per_limb)
   if (mpz_fdiv_ui (ecc->p, 4) == 3)
     {
       /* x = a^{(p+1)/4} gives square root of a (if it exists,
-	 otherwise the square root of -a). */
-      e = 1;
-      mpz_add_ui (t, ecc->p, 1);
-      mpz_fdiv_q_2exp (t, t, 2); 
+	 otherwise the square root of -a). We use no precomputed
+	 values for this. */
     }
   else
     {
@@ -1351,9 +1349,6 @@ output_curve (const struct ecc_curve *ecc, unsigned bits_per_limb)
       mpz_clear (s);
     }
   printf ("#define ECC_SQRT_E %u\n", e);
-  printf ("#define ECC_SQRT_T_BITS %u\n",
-	  (unsigned) mpz_sizeinbase (t, 2));
-  output_bignum ("ecc_sqrt_t", t, limb_size, bits_per_limb);      
 
   printf ("#if USE_REDC\n");
   printf ("#define ecc_unit ecc_Bmodp\n");

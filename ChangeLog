@@ -1,3 +1,8 @@
+2021-11-11  Niels Möller  <nisse@lysator.liu.se>
+
+	* eccdata.c (output_curve): Delete generation of unused values
+	ecc_sqrt_t and ECC_SQRT_T_BITS.
+
 2021-11-10  Niels Möller  <nisse@lysator.liu.se>
 
 	* eccdata.c (output_bignum_redc): New function.
