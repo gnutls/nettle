@@ -119,7 +119,7 @@ ecc_secp521r1_inv (const struct ecc_modulo *p,
   ecc_mod_mul (p, rp, rp, ap, tp);	/* a^{2^519 - 1} */
   ecc_mod_sqr (p, rp, rp, tp);		/* a^{2^520 - 2} */
   ecc_mod_sqr (p, rp, rp, tp);		/* a^{2^521 - 4} */
-  ecc_mod_mul (p, rp, rp, ap, tp);	/* a^{2^519 - 3} */
+  ecc_mod_mul (p, rp, rp, ap, tp);	/* a^{2^521 - 3} */
 }
 
 #define ECC_SECP521R1_SQRT_ITCH (2*ECC_LIMB_SIZE)
