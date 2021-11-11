@@ -1,5 +1,9 @@
 2021-11-11  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-secp384r1.c (ecc_mod_pow_288m32m1): New function.
+	(ecc_secp384r1_inv): Use ecc_mod_pow_288m32m1.
+	(ecc_secp384r1_sqrt): Likewise.
+
 	* eccdata.c (output_curve): Delete generation of unused values
 	ecc_sqrt_t and ECC_SQRT_T_BITS.
 
