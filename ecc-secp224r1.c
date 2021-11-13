@@ -189,10 +189,11 @@ ecc_secp224r1_sqrt (const struct ecc_modulo *p,
 
       if (m == r)
 	{
-	  /* No square root. Will always be detected on first round in
-	     the outer loop. */
+	  /* We get here if there is no square root, or input is zero.
+	     Will always be detected on first round in the outer
+	     loop. */
 	  assert (r == ECC_SQRT_E);
-	  return 0;
+	  return ecc_mod_zero_p (p, xp);
 	}
 
       if (m < r - 1)

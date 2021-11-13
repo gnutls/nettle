@@ -87,6 +87,25 @@ test_sqrt (gmp_randstate_t rands, const struct ecc_modulo *m, int use_redc)
   rp = xalloc_limbs (2*m->size);
   scratch = xalloc_limbs (m->sqrt_itch);
 
+  /* Check behaviour for zero input */
+  mpn_zero (up, m->size);
+  memset (rp, 17, m->size * sizeof(*rp));
+  if (!m->sqrt (m, rp, up, scratch))
+    {
+      fprintf (stderr, "m->sqrt returned failure for zero input, bit_size = %d\n",
+	       m->bit_size);
+      abort();
+    }
+  if (!ecc_mod_zero_p (m, rp))
+    {
+      fprintf (stderr, "m->sqrt failed for zero input (bit size %u):\n",
+	       m->bit_size);
+      fprintf (stderr, "r = ");
+      mpn_out_str (stderr, 16, rp, m->size);
+      fprintf (stderr, " (bad)\n");
+      abort ();
+    }
+
   /* Find a non-square */
   for (z = 2; mpz_ui_kronecker (z, p) != -1; z++)
     ;
@@ -175,6 +194,27 @@ test_sqrt_ratio (gmp_randstate_t rands, const struct ecc_modulo *m)
   vp = xalloc_limbs (m->size);
   rp = xalloc_limbs (2*m->size);
   scratch = xalloc_limbs (m->sqrt_ratio_itch);
+
+  /* Check behaviour for zero input */
+  mpn_zero (up, m->size);
+  mpn_zero (vp, m->size);
+  vp[0] = 1;
+  memset (rp, 17, m->size * sizeof(*rp));
+  if (!m->sqrt_ratio (m, rp, up, vp, scratch))
+    {
+      fprintf (stderr, "m->sqrt_ratio returned failure for zero input, bit_size = %d\n",
+	       m->bit_size);
+      abort();
+    }
+  if (!ecc_mod_zero_p (m, rp))
+    {
+      fprintf (stderr, "m->sqrt_ratio failed for zero input (bit size %u):\n",
+	       m->bit_size);
+      fprintf (stderr, "r = ");
+      mpn_out_str (stderr, 16, rp, m->size);
+      fprintf (stderr, " (bad)\n");
+      abort ();
+    }
 
   /* Find a non-square */
   for (z = 2; mpz_ui_kronecker (z, p) != -1; z++)

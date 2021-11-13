@@ -1,3 +1,13 @@
+2021-11-13  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-secp224r1.c (ecc_secp224r1_sqrt): Fix result for zero
+	input, which needs handling as a special case in the
+	Tonelli-Shanks algorithm.
+
+	* testsuite/ecc-sqrt-test.c (test_sqrt_ratio): Check that sqrt(0)
+	returns 0.
+	(test_sqrt_ratio): Check that sqrt (0/1) returns 0.
+
 2021-11-11  Niels Möller  <nisse@lysator.liu.se>
 
 	* eccdata.c (output_curve): Output ecc_sqrt_z and ECC_SQRT_E only
