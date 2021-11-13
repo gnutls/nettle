@@ -74,7 +74,6 @@ test_one (gmp_randstate_t *rands, struct rsa_public_key *pub,
 #if !NETTLE_USE_MINI_GMP
 /* We want to generate keypairs that are not "standard" but have more size
  * variance between q and p.
- * Function is otherwise the same as standard rsa_generate_keypair()
  */
 static void
 generate_keypair (gmp_randstate_t rands,
