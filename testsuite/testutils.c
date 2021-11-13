@@ -11,7 +11,9 @@
 #include "nettle-internal.h"
 
 #include <assert.h>
+#include <errno.h>
 #include <ctype.h>
+#include <sys/time.h>
 
 void
 die(const char *format, ...)
@@ -1107,7 +1109,63 @@ mpz_urandomb (mpz_t r, struct knuth_lfib_ctx *ctx, mp_bitcnt_t bits)
   nettle_mpz_set_str_256_u (r, bytes, buf);
   free (buf);
 }
-#endif /* NETTLE_USE_MINI_GMP */
+#else /* !NETTLE_USE_MINI_GMP */
+static void
+get_random_seed(mpz_t seed)
+{
+  struct timeval tv;
+  FILE *f;
+  f = fopen ("/dev/urandom", "rb");
+  if (f)
+    {
+      uint8_t buf[8];
+      size_t res;
+
+      setbuf (f, NULL);
+      res = fread (&buf, sizeof(buf), 1, f);
+      fclose(f);
+      if (res == 1)
+	{
+	  nettle_mpz_set_str_256_u (seed, sizeof(buf), buf);
+	  return;
+	}
+      fprintf (stderr, "Read of /dev/urandom failed: %s\n",
+	       strerror (errno));
+    }
+  gettimeofday(&tv, NULL);
+  mpz_set_ui (seed, tv.tv_sec);
+  mpz_mul_ui (seed, seed, 1000000UL);
+  mpz_add_ui (seed, seed, tv.tv_usec);
+}
+
+int
+test_randomize(gmp_randstate_t rands)
+{
+  const char *nettle_test_seed;
+
+  nettle_test_seed = getenv ("NETTLE_TEST_SEED");
+  if (nettle_test_seed && *nettle_test_seed)
+    {
+      mpz_t seed;
+      mpz_init (seed);
+      if (mpz_set_str (seed, nettle_test_seed, 0) < 0
+	  || mpz_sgn (seed) < 0)
+	die ("Invalid NETTLE_TEST_SEED: %s\n",
+	     nettle_test_seed);
+      if (mpz_sgn (seed) == 0)
+	get_random_seed (seed);
+      fprintf (stderr, "Using NETTLE_TEST_SEED=");
+      mpz_out_str (stderr, 10, seed);
+      fprintf (stderr, "\n");
+
+      gmp_randseed (rands, seed);
+      mpz_clear (seed);
+      return 1;
+    }
+  else 
+    return 0;
+}
+#endif /* !NETTLE_USE_MINI_GMP */
 
 mp_limb_t *
 xalloc_limbs (mp_size_t n)

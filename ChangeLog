@@ -1,5 +1,12 @@
 2021-11-13  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/testutils.c (get_random_seed): Move function here.
+	(test_randomize): New function.
+	* testsuite/ecc-mod-test.c (get_random_seed): Delete old copy.
+	(test_main): Use test_randomize.
+	* testsuite/rsa-compute-root-test.c (get_random_seed): Delete old copy.
+	(test_main): Use test_randomize.
+
 	* ecc-secp224r1.c (ecc_secp224r1_sqrt): Fix result for zero
 	input, which needs handling as a special case in the
 	Tonelli-Shanks algorithm.
