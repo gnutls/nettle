@@ -84,7 +84,7 @@ test_sqrt (gmp_randstate_t rands, const struct ecc_modulo *m, int use_redc)
   mpz_roinit_n (p, m->m, m->size);
 
   up = xalloc_limbs (m->size);
-  rp = xalloc_limbs (2*m->size);
+  rp = xalloc_limbs (m->size);
   scratch = xalloc_limbs (m->sqrt_itch);
 
   /* Check behaviour for zero input */
@@ -192,7 +192,7 @@ test_sqrt_ratio (gmp_randstate_t rands, const struct ecc_modulo *m)
 
   up = xalloc_limbs (m->size);
   vp = xalloc_limbs (m->size);
-  rp = xalloc_limbs (2*m->size);
+  rp = xalloc_limbs (m->size);
   scratch = xalloc_limbs (m->sqrt_ratio_itch);
 
   /* Check behaviour for zero input */
