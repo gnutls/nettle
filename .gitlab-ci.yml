@@ -15,8 +15,8 @@ build/x86-64:
   script:
   - ./.bootstrap &&
     ./configure --disable-static --disable-documentation && make -j4 &&
-    make check -j4 &&
-    make check-fat
+    NETTLE_TEST_SEED=0 make check -j4 &&
+    NETTLE_TEST_SEED=0 make check-fat
   tags:
   - shared
   - linux
@@ -38,7 +38,7 @@ build/c89:
   script:
   - ./.bootstrap &&
     ./configure CC='gcc -std=c89' --disable-static --disable-assembler --disable-documentation && make -j4 &&
-    make check -j4
+    NETTLE_TEST_SEED=0 make check -j4
   tags:
   - shared
   - linux
@@ -49,7 +49,7 @@ build/ndebug:
   script:
   - ./.bootstrap &&
     ./configure CPPFLAGS='-DNDEBUG' --disable-static --disable-assembler --disable-documentation && make -j4 &&
-    make check -j4
+    NETTLE_TEST_SEED=0 make check -j4
   tags:
   - shared
   - linux
@@ -60,7 +60,7 @@ build/ubsan:
   script:
   - ./.bootstrap && 
     CXXFLAGS="-fsanitize=undefined -fno-sanitize-recover -g -O2" CFLAGS="-fsanitize=undefined -fno-sanitize-recover -g -O2" ./configure --disable-assembler 
-    --disable-documentation && make -j4 && make check -j4
+    --disable-documentation && make -j4 && NETTLE_TEST_SEED=0 make check -j4
   tags:
   - shared
   - linux
@@ -71,7 +71,7 @@ build/asan:
   script:
   - ./.bootstrap && 
   - CXXFLAGS="-fsanitize=address -g -O2" CFLAGS="-fsanitize=address -g -O2" ./configure --disable-documentation --disable-assembler &&
-    make -j4 && make check -j4
+    make -j4 && NETTLE_TEST_SEED=0 make check -j4
   tags:
   - shared
   - linux
@@ -129,7 +129,7 @@ Debian.cross.x86:
   - export CC="$host-gcc"
   - ./.bootstrap &&
     CFLAGS="-O2 -g" ./configure --build=$build --host=$host --disable-documentation && make -j4 &&
-    make check -j4
+    NETTLE_TEST_SEED=0 make check -j4
   tags:
   - shared
   - linux
@@ -158,8 +158,8 @@ Debian.cross.x86:
   - ./.bootstrap
   - ./configure --disable-static --disable-documentation $EXTRA_CONFIGURE_FLAGS --build=$build --host=$host
   - make -j$(nproc)
-  - make -j$(nproc) check
-  - make -j$(nproc) check-fat
+  - NETTLE_TEST_SEED=0 make -j$(nproc) check
+  - NETTLE_TEST_SEED=0 make -j$(nproc) check-fat
   tags:
   - shared
   - linux
@@ -196,7 +196,7 @@ remote/s390x:
   - ssh -o 'StrictHostKeyChecking no' -i "$SSH_PRIVATE_KEY" "$S390X_ACCOUNT"
     "cd ci-work/$CI_PIPELINE_IID/nettle-snapshot && make"
   - ssh -o 'StrictHostKeyChecking no' -i "$SSH_PRIVATE_KEY" "$S390X_ACCOUNT"
-    "cd ci-work/$CI_PIPELINE_IID/nettle-snapshot && make check"
+    "cd ci-work/$CI_PIPELINE_IID/nettle-snapshot && NETTLE_TEST_SEED=0 make check"
   after_script:
   - ssh -o 'StrictHostKeyChecking no' -i "$SSH_PRIVATE_KEY" "$S390X_ACCOUNT"
     "rm -rf ci-work/$CI_PIPELINE_IID"
