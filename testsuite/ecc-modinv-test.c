@@ -55,7 +55,7 @@ test_modulo (gmp_randstate_t rands, const char *name,
   mpz_init (r);
 
   a = xalloc_limbs (m->size);
-  ai = xalloc_limbs (2*m->size);
+  ai = xalloc_limbs (m->size);
   ref = xalloc_limbs (m->size);;
   scratch = xalloc_limbs (m->invert_itch);
 

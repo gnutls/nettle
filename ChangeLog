@@ -1,5 +1,9 @@
 2021-11-15  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/ecc-modinv-test.c (test_modulo): Trim allocation for
+	result area.
+	* testsuite/ecc-sqrt-test.c (test_sqrt, test_sqrt_ratio): Likewise.
+
 	* testsuite/ecc-sqrt-test.c (test_sqrt_ratio): Fix sqrt_ratio test
 	for v = 0, failure is expected.
 
