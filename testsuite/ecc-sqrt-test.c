@@ -244,6 +244,10 @@ test_sqrt_ratio (gmp_randstate_t rands, const struct ecc_modulo *m)
 	  mpz_limbs_copy (up, u, m->size);
 	  if (!m->sqrt_ratio (m, rp, up, vp, scratch))
 	    {
+	      if (mpz_divisible_p (v, p))
+		/* v = 0 (mod p), sqrt_ratio should fail. */
+		continue;
+
 	      fprintf (stderr, "m->sqrt_ratio returned failure, bit_size = %d\n"
 		       "u = 0x",
 		       m->bit_size);

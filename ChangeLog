@@ -1,3 +1,8 @@
+2021-11-15  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/ecc-sqrt-test.c (test_sqrt_ratio): Fix sqrt_ratio test
+	for v = 0, failure is expected.
+
 2021-11-13  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/testutils.c (get_random_seed): Move function here.
