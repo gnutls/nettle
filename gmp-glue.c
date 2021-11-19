@@ -115,25 +115,6 @@ sec_zero_p (const mp_limb_t *ap, mp_size_t n)
 
 /* Additional convenience functions. */
 
-/* Get a pointer to an n limb area, for read-only operation. n must be
-   greater or equal to the current size, and the mpz is zero-padded if
-   needed. */
-const mp_limb_t *
-mpz_limbs_read_n (mpz_ptr x, mp_size_t n)
-{
-  mp_size_t xn = mpz_size (x);
-  mp_ptr xp;
-  
-  assert (xn <= n);
-
-  xp = mpz_limbs_modify (x, n);
-
-  if (xn < n)
-    mpn_zero (xp + xn, n - xn);
-
-  return xp;
-}
-
 void
 mpz_limbs_copy (mp_limb_t *xp, mpz_srcptr x, mp_size_t n)
 {

@@ -35,7 +35,6 @@
 
 #include "bignum.h"
 
-#define mpz_limbs_read_n _nettle_mpz_limbs_read_n
 #define mpz_limbs_copy _nettle_mpz_limbs_copy
 #define mpz_set_n _nettle_mpz_set_n
 #define sec_zero_p _nettle_sec_zero_p
@@ -77,12 +76,6 @@ sec_zero_p (const mp_limb_t *ap, mp_size_t n);
   (((n) * 8 + GMP_NUMB_BITS - 1) / GMP_NUMB_BITS)
 
 /* Convenience functions */
-
-/* Get a pointer to an n limb area, for read-only operation. n must be
-   greater or equal to the current size, and the mpz is zero-padded if
-   needed. */
-const mp_limb_t *
-mpz_limbs_read_n (mpz_ptr x, mp_size_t n);
 
 /* Copy limbs, with zero-padding. */
 /* FIXME: Reorder arguments, on the theory that the first argument of

@@ -2,6 +2,8 @@
 
 	* gmp-glue.c (mpz_limbs_cmp): Deleted function. Usage replaced
 	with mpz_roinit_n and mpz_cmp.
+	(mpz_limbs_read_n): Deleted function. Usage in tests only,
+	replaced with mpz_limbs_copy.
 
 2021-11-15  Niels Möller  <nisse@lysator.liu.se>
 
