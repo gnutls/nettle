@@ -1748,14 +1748,12 @@ const struct ecc_curve * const ecc_curves[] = {
 static int
 test_mpn (const char *ref, const mp_limb_t *xp, mp_size_t n)
 {
-  mpz_t r;
+  mpz_t r, x;
   int res;
 
   mpz_init_set_str (r, ref, 16);
-  while (n > 0 && xp[n-1] == 0)
-    n--;
   
-  res = (mpz_limbs_cmp (r, xp, n) == 0);
+  res = (mpz_cmp (r, mpz_roinit_n (x, xp, n)) == 0);
   mpz_clear (r);
   return res;
 }

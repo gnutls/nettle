@@ -13,6 +13,7 @@ test_gostdsa (const struct ecc_curve *ecc,
 	    const char *r, const char *s)
 {
   struct dsa_signature ref;
+  mpz_t t;
   mpz_t z;
   mpz_t k;
   mp_limb_t *rp = xalloc_limbs (ecc->p.size);
@@ -31,8 +32,8 @@ test_gostdsa (const struct ecc_curve *ecc,
   mpz_set_str (ref.r, r, 16);
   mpz_set_str (ref.s, s, 16);
 
-  if (mpz_limbs_cmp (ref.r, rp, ecc->p.size) != 0
-      || mpz_limbs_cmp (ref.s, sp, ecc->p.size) != 0)
+  if (mpz_cmp (ref.r, mpz_roinit_n (t, rp, ecc->p.size)) != 0
+      || mpz_cmp (ref.s, mpz_roinit_n (t, sp, ecc->p.size)) != 0)
     {
       fprintf (stderr, "_gostdsa_sign failed, bit_size = %u\n", ecc->p.bit_size);
       fprintf (stderr, "r     = ");
