@@ -1,6 +1,7 @@
-/* nettle-meta-hashes.c
+/* sm3-meta.c
 
-   Copyright (C) 2011 Daniel Kahn Gillmor
+   Copyright (C) 2017 Jia Zhang
+   Copyright (C) 2021 Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
 
    This file is part of GNU Nettle.
 
@@ -33,34 +34,9 @@
 # include "config.h"
 #endif
 
-#include <stddef.h>
-
 #include "nettle-meta.h"
 
-const struct nettle_hash * const _nettle_hashes[] = {
-  &nettle_gosthash94,
-  &nettle_gosthash94cp,
-  &nettle_md2,
-  &nettle_md4,
-  &nettle_md5,
-  &nettle_ripemd160,
-  &nettle_sha1,
-  &nettle_sha224,
-  &nettle_sha256,
-  &nettle_sha384,
-  &nettle_sha512,
-  &nettle_sha3_224,
-  &nettle_sha3_256,
-  &nettle_sha3_384,
-  &nettle_sha3_512,
-  &nettle_streebog256,
-  &nettle_streebog512,
-  &nettle_sm3,
-  NULL
-};
+#include "sm3.h"
 
-const struct nettle_hash * const *
-nettle_get_hashes (void)
-{
-  return _nettle_hashes;
-}
+const struct nettle_hash nettle_sm3
+= _NETTLE_HASH(sm3, SM3);

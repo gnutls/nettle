@@ -145,6 +145,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c aes-decrypt-table.c \
 		 sha3-224.c sha3-224-meta.c sha3-256.c sha3-256-meta.c \
 		 sha3-384.c sha3-384-meta.c sha3-512.c sha3-512-meta.c \
 		 shake256.c \
+		 sm3.c sm3-meta.c \
 		 serpent-set-key.c serpent-encrypt.c serpent-decrypt.c \
 		 serpent-meta.c \
 		 streebog.c streebog-meta.c \
@@ -233,7 +234,7 @@ HEADERS = aes.h arcfour.h arctwo.h asn1.h blowfish.h \
 	  pbkdf2.h \
 	  pgp.h pkcs1.h pss.h pss-mgf1.h realloc.h ripemd160.h rsa.h \
 	  salsa20.h sexp.h \
-	  serpent.h sha.h sha1.h sha2.h sha3.h streebog.h twofish.h \
+	  serpent.h sha.h sha1.h sha2.h sha3.h sm3.h streebog.h twofish.h \
 	  umac.h yarrow.h xts.h poly1305.h nist-keywrap.h
 
 INSTALL_HEADERS = $(HEADERS) version.h @IF_MINI_GMP@ mini-gmp.h

@@ -145,6 +145,7 @@ extern const struct nettle_hash nettle_sha3_384;
 extern const struct nettle_hash nettle_sha3_512;
 extern const struct nettle_hash nettle_streebog256;
 extern const struct nettle_hash nettle_streebog512;
+extern const struct nettle_hash nettle_sm3;
 
 struct nettle_mac
 {
