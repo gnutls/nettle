@@ -47,7 +47,7 @@ define(`F1', `%r13')
 define(`F2', `%rbx')
 define(`F3', `%rbp')
 
-C FOLD(x), sets (F3,F2,F1,F0)  <-- (x << 224) - (x << 128) - (x<<32)
+C FOLD(x), sets (F3,F2,F1,F0)  <-- (x << 160) - (x << 128) - (x<<32)
 define(`FOLD', `
 	mov	$1, F2
 	mov	$1, F3
@@ -104,8 +104,10 @@ PROLOGUE(_nettle_ecc_secp256r1_redc)
 	adc	U6, U2
 	adc	56(XP), U3
 
-	C If carry, we need to add in
-	C 2^256 - p = <0xfffffffe, 0xff..ff, 0xffffffff00000000, 1>
+	C Sum, including carry, is < 2^{256} + p.
+	C If carry, we need to add in 2^{256} mod p = 2^{256} - p
+	C     = <0xfffffffe, 0xff..ff, 0xffffffff00000000, 1>
+	C and this addition can not overflow.
 	sbb	F2, F2
 	mov	F2, F0
 	mov	F2, F1
