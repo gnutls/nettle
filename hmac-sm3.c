@@ -1,6 +1,8 @@
-/* nettle-meta-macs.c
+/* hmac-sm3.c
 
-   Copyright (C) 2020 Daiki Ueno
+   HMAC-SM3 message authentication code.
+
+   Copyright (C) 2021 Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
 
    This file is part of GNU Nettle.
 
@@ -33,29 +35,25 @@
 # include "config.h"
 #endif
 
-#include <stddef.h>
+#include "hmac.h"
 
-#include "nettle-meta.h"
-
-const struct nettle_mac * const _nettle_macs[] = {
-  &nettle_cmac_aes128,
-  &nettle_cmac_aes256,
-  &nettle_cmac_des3,
-  &nettle_hmac_md5,
-  &nettle_hmac_ripemd160,
-  &nettle_hmac_sha1,
-  &nettle_hmac_sha224,
-  &nettle_hmac_sha256,
-  &nettle_hmac_sha384,
-  &nettle_hmac_sha512,
-  &nettle_hmac_streebog256,
-  &nettle_hmac_streebog512,
-  &nettle_hmac_sm3,
-  NULL
-};
-
-const struct nettle_mac * const *
-nettle_get_macs (void)
+void
+hmac_sm3_set_key(struct hmac_sm3_ctx *ctx,
+		 size_t key_length, const uint8_t *key)
 {
-  return _nettle_macs;
+  HMAC_SET_KEY(ctx, &nettle_sm3, key_length, key);
+}
+
+void
+hmac_sm3_update(struct hmac_sm3_ctx *ctx,
+		size_t length, const uint8_t *data)
+{
+  sm3_update(&ctx->state, length, data);
+}
+
+void
+hmac_sm3_digest(struct hmac_sm3_ctx *ctx,
+		size_t length, uint8_t *digest)
+{
+  HMAC_DIGEST(ctx, &nettle_sm3, length, digest);
 }

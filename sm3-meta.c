@@ -1,6 +1,7 @@
-/* nettle-meta-macs.c
+/* sm3-meta.c
 
-   Copyright (C) 2020 Daiki Ueno
+   Copyright (C) 2017 Jia Zhang
+   Copyright (C) 2021 Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
 
    This file is part of GNU Nettle.
 
@@ -33,29 +34,9 @@
 # include "config.h"
 #endif
 
-#include <stddef.h>
-
 #include "nettle-meta.h"
 
-const struct nettle_mac * const _nettle_macs[] = {
-  &nettle_cmac_aes128,
-  &nettle_cmac_aes256,
-  &nettle_cmac_des3,
-  &nettle_hmac_md5,
-  &nettle_hmac_ripemd160,
-  &nettle_hmac_sha1,
-  &nettle_hmac_sha224,
-  &nettle_hmac_sha256,
-  &nettle_hmac_sha384,
-  &nettle_hmac_sha512,
-  &nettle_hmac_streebog256,
-  &nettle_hmac_streebog512,
-  &nettle_hmac_sm3,
-  NULL
-};
+#include "sm3.h"
 
-const struct nettle_mac * const *
-nettle_get_macs (void)
-{
-  return _nettle_macs;
-}
+const struct nettle_hash nettle_sm3
+= _NETTLE_HASH(sm3, SM3);

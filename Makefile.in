@@ -117,10 +117,10 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c aes-decrypt-table.c \
 		 gost28147.c gosthash94.c gosthash94-meta.c \
 		 hmac.c hmac-gosthash94.c hmac-md5.c hmac-ripemd160.c \
 		 hmac-sha1.c hmac-sha224.c hmac-sha256.c hmac-sha384.c \
-		 hmac-sha512.c hmac-streebog.c \
+		 hmac-sha512.c hmac-streebog.c hmac-sm3.c \
 		 hmac-md5-meta.c hmac-ripemd160-meta.c hmac-sha1-meta.c \
 		 hmac-sha224-meta.c hmac-sha256-meta.c hmac-sha384-meta.c \
-		 hmac-sha512-meta.c hmac-streebog-meta.c \
+		 hmac-sha512-meta.c hmac-streebog-meta.c hmac-sm3-meta.c \
 		 knuth-lfib.c hkdf.c \
 		 md2.c md2-meta.c md4.c md4-meta.c \
 		 md5.c md5-compress.c md5-compat.c md5-meta.c \
@@ -145,6 +145,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c aes-decrypt-table.c \
 		 sha3-224.c sha3-224-meta.c sha3-256.c sha3-256-meta.c \
 		 sha3-384.c sha3-384-meta.c sha3-512.c sha3-512-meta.c \
 		 shake256.c \
+		 sm3.c sm3-meta.c \
 		 serpent-set-key.c serpent-encrypt.c serpent-decrypt.c \
 		 serpent-meta.c \
 		 streebog.c streebog-meta.c \
@@ -233,7 +234,7 @@ HEADERS = aes.h arcfour.h arctwo.h asn1.h blowfish.h \
 	  pbkdf2.h \
 	  pgp.h pkcs1.h pss.h pss-mgf1.h realloc.h ripemd160.h rsa.h \
 	  salsa20.h sexp.h \
-	  serpent.h sha.h sha1.h sha2.h sha3.h streebog.h twofish.h \
+	  serpent.h sha.h sha1.h sha2.h sha3.h sm3.h streebog.h twofish.h \
 	  umac.h yarrow.h xts.h poly1305.h nist-keywrap.h
 
 INSTALL_HEADERS = $(HEADERS) version.h @IF_MINI_GMP@ mini-gmp.h
