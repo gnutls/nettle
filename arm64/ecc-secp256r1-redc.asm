@@ -56,6 +56,16 @@ define(`FOLD', `
 	subs	F2, $1, F0
 	sbc	F3, $1, F1
 ')
+
+C FOLDC(x), sets (F3, F2,F1,F0)  <--  ((x+c) << 192) - (x << 160) + (x << 128) + (x << 32)
+define(`FOLDC', `
+	lsl	F0, $1, #32
+	lsr	F1, $1, #32
+	adc	F3, $1, ZERO	C May overflow, but final result will not.
+	subs	F2, $1, F0
+	sbc	F3, F3, F1
+')
+
 PROLOGUE(_nettle_ecc_secp256r1_redc)
 	ldr	U0, [XP]
 	ldr	U1, [XP, #8]
@@ -71,30 +81,25 @@ PROLOGUE(_nettle_ecc_secp256r1_redc)
 	adds	U1, U1, F0
 	adcs	U2, U2, F1
 	adcs	U3, U3, F2
-	adc	U0, ZERO, F3
+	adcs	U4, U4, F3
 
-	FOLD(U1)
+	FOLDC(U1)
 	adds	U2, U2, F0
 	adcs	U3, U3, F1
 	adcs	U4, U4, F2
-	adc	U1, ZERO, F3
+	adcs	U5, U5, F3
 
-	FOLD(U2)
+	FOLDC(U2)
 	adds	U3, U3, F0
 	adcs	U4, U4, F1
 	adcs	U5, U5, F2
-	adc	U2, ZERO, F3
+	adcs	U6, U6, F3
 
-	FOLD(U3)
+	FOLDC(U3)
 	adds	U4, U4, F0
 	adcs	U5, U5, F1
 	adcs	U6, U6, F2
-	adc	U3, ZERO, F3
-
-	adds	U0, U4, U0
-	adcs	U1, U5, U1
-	adcs	U2, U6, U2
-	adcs	U3, U7, U3
+	adcs	U7, U7, F3
 
 	C Sum, including carry, is < 2^{256} + p.
 	C If carry, we need to add in 2^{256} mod p = 2^{256} - p
@@ -106,10 +111,10 @@ PROLOGUE(_nettle_ecc_secp256r1_redc)
 	lsr	F3, F2, #32
 	and	F3, F3, #-2
 
-	adds	U0, F0, U0
-	adcs	U1, F1, U1
-	adcs	U2, F2, U2
-	adc	U3, F3, U3
+	adds	U0, F0, U4
+	adcs	U1, F1, U5
+	adcs	U2, F2, U6
+	adc	U3, F3, U7
 
 	str	U0, [RP]
 	str	U1, [RP, #8]
