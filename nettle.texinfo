@@ -950,6 +950,52 @@ This function also resets the context in the same way as
 @code{streebog256_init}.
 @end deftypefun
 
+@subsubsection @acronym{SM3}
+
+SM3 is a cryptographic hash function standard adopted by the government of the
+People's Republic of China, which was issued by the Cryptography Standardization
+Technical Committee of China on December 17, 2010. The corresponding standard
+is GM/T 0004-2012 "SM3 Cryptographic Hash Algorithm".
+
+SM3 algorithm is a hash algorithm in ShangMi cryptosystems. SM3 is mainly used
+for digital signature and verification, message authentication code generation
+and verification, random number generation, and the RFC 8998 specification
+defines the usage of ShangMi algorithm suite in TLS 1.3, etc. According to the
+State Cryptography Administration of China, its security and efficiency are
+equivalent to SHA-256.
+
+Nettle defines SM3 in @file{<nettle/sm3.h>}.
+
+@deftp {Context struct} {struct sm3_ctx}
+@end deftp
+
+@defvr Constant SM3_DIGEST_SIZE
+The size of a SM3 digest, i.e. 32.
+@end defvr
+
+@defvr Constant SM3_BLOCK_SIZE
+The internal block size of SM3. Useful for some special constructions,
+in particular HMAC-SM3.
+@end defvr
+
+@deftypefun void sm3_init (struct sm3_ctx *@var{ctx})
+Initialize the SM3 state.
+@end deftypefun
+
+@deftypefun void sm3_update (struct sm3_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
+Hash some more data.
+@end deftypefun
+
+@deftypefun void sm3_digest (struct sm3_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing it
+to @var{digest}. @var{length} may be smaller than
+@code{SM3_DIGEST_SIZE}, in which case only the first @var{length}
+octets of the digest are written.
+
+This function also resets the context in the same way as
+@code{sm3_init}.
+@end deftypefun
+
 
 @node Legacy hash functions
 @subsection Legacy hash functions
@@ -1256,6 +1302,7 @@ The last three attributes are function pointers, of types
 @deftypevrx {Constant Struct} {struct nettle_hash} nettle_sha3_256
 @deftypevrx {Constant Struct} {struct nettle_hash} nettle_gosthash94
 @deftypevrx {Constant Struct} {struct nettle_hash} nettle_gosthash94cp
+@deftypevrx {Constant Struct} {struct nettle_hash} nettle_sm3
 These are all the hash functions that Nettle implements.
 @end deftypevr
 
@@ -3775,8 +3822,8 @@ There are abstract functions that use a pointer to a @code{struct
 nettle_hash} to represent the underlying hash function and @code{void *}
 pointers that point to three different context structs for that hash
 function. There are also concrete functions for @acronym{HMAC-MD5},
-@acronym{HMAC-RIPEMD160} @acronym{HMAC-SHA1}, @acronym{HMAC-SHA256}, and
-@acronym{HMAC-SHA512}. First, the abstract functions:
+@acronym{HMAC-RIPEMD160} @acronym{HMAC-SHA1}, @acronym{HMAC-SHA256},
+@acronym{HMAC-SHA512}, and @acronym{HMAC-SM3}. First, the abstract functions:
 
 @deftypefun void hmac_set_key (void *@var{outer}, void *@var{inner}, void *@var{state}, const struct nettle_hash *@var{H}, size_t @var{length}, const uint8_t *@var{key})
 Initializes the three context structs from the key. The @var{outer} and
@@ -3957,6 +4004,29 @@ Process some more data.
 @deftypefun void hmac_sha512_digest (struct hmac_sha512_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
 Extracts the @acronym{MAC}, writing it to @var{digest}. @var{length} may be smaller than
 @code{SHA512_DIGEST_SIZE}, in which case only the first @var{length}
+octets of the @acronym{MAC} are written.
+
+This function also resets the context for processing new messages, with
+the same key.
+@end deftypefun
+
+
+@subsubsection @acronym{HMAC-SM3}
+
+@deftp {Context struct} {struct hmac_sm3_ctx}
+@end deftp
+
+@deftypefun void hmac_sm3_set_key (struct hmac_sm3_ctx *@var{ctx}, size_t @var{key_length}, const uint8_t *@var{key})
+Initializes the context with the key.
+@end deftypefun
+
+@deftypefun void hmac_sm3_update (struct hmac_sm3_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
+Process some more data.
+@end deftypefun
+
+@deftypefun void hmac_sm3_digest (struct hmac_sm3_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+Extracts the @acronym{MAC}, writing it to @var{digest}. @var{length} may be smaller than
+@code{SM3_DIGEST_SIZE}, in which case only the first @var{length}
 octets of the @acronym{MAC} are written.
 
 This function also resets the context for processing new messages, with
