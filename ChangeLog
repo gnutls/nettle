@@ -1,5 +1,11 @@
 2021-12-09  Niels Möller  <nisse@lysator.liu.se>
 
+	* x86_64/ecc-secp256r1-redc.asm: New folding scheme with one less
+	carry propagation phase, and fewer registers, avoiding save and
+	restore of callee-save registers. 17% speedup of this function on
+	AMD Ryzen 5, resulting in a modest improvement in ecdsa
+	performance.
+
 	* powerpc64/ecc-secp256r1-redc.asm: New file, contributed by
 	Amitay Isaacs.
 
