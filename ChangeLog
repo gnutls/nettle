@@ -1,3 +1,8 @@
+2021-12-09  Niels Möller  <nisse@lysator.liu.se>
+
+	* powerpc64/ecc-secp256r1-redc.asm: New file, contributed by
+	Amitay Isaacs.
+
 2021-11-19  Niels Möller  <nisse@lysator.liu.se>
 
 	* gmp-glue.c (mpz_limbs_cmp): Deleted function. Usage replaced
