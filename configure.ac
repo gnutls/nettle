@@ -311,6 +311,9 @@ AC_SUBST([GMP_NUMB_BITS])
 # Figure out ABI. Currently, configurable only by setting CFLAGS.
 ABI=standard
 
+ELFV2_ABI=no # For powerpc64
+W64_ABI=no   # For x86_64 windows
+
 case "$host_cpu" in
   [x86_64 | amd64])
     AC_TRY_COMPILE([
@@ -355,6 +358,15 @@ case "$host_cpu" in
     ], [
       ABI=64
     ])
+    if test "$ABI" = 64 ; then
+      AC_TRY_COMPILE([
+#if _CALL_ELF == 2
+#error ELFv2 ABI
+#endif
+      ], [], [], [
+	ELFV2_ABI=yes
+      ])
+    fi
     ;;
   aarch64*)
     AC_TRY_COMPILE([
@@ -756,7 +768,6 @@ IF_DLL='#'
 LIBNETTLE_FILE_SRC='$(LIBNETTLE_FORLINK)'
 LIBHOGWEED_FILE_SRC='$(LIBHOGWEED_FORLINK)'
 EMULATOR=''
-W64_ABI=no
 
 case "$host_os" in
   mingw32*|cygwin*)
@@ -1037,6 +1048,7 @@ AC_SUBST(ASM_TYPE_FUNCTION)
 AC_SUBST(ASM_TYPE_PROGBITS)
 AC_SUBST(ASM_MARK_NOEXEC_STACK)
 AC_SUBST(ASM_ALIGN_LOG)
+AC_SUBST(ELFV2_ABI)
 AC_SUBST(W64_ABI)
 AC_SUBST(ASM_WORDS_BIGENDIAN)
 AC_SUBST(EMULATOR)

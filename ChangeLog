@@ -1,3 +1,12 @@
+2022-01-04  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac (ELFV2_ABI): New substituted variable, set on
+	powerpc64 based on the _CALL_ELF define.
+	* config.m4.in (ELFV2_ABI): Substituted here.
+	* powerpc64/machine.m4: Use ELFV2_ABI rather than WORDS_BIGENDIAN
+	to select abi flavor. Intended to support ppc64be + musl, which,
+	unlike other big-endian configurations, uses ELFv2.
+
 2021-12-09  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86_64/ecc-secp256r1-redc.asm: New folding scheme with one less
