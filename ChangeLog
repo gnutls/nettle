@@ -1,3 +1,10 @@
+2022-01-10  Niels Möller  <nisse@lysator.liu.se>
+
+	* powerpc64/ecc-secp256r1-redc.asm: Reduce number of registers
+	used, eliminating save and restore of callee-save registers.
+	Speedup of 7% reported for POWER9 (and marginal speedup of secp256
+	sign and verify operations).
+
 2022-01-04  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac (ELFV2_ABI): New substituted variable, set on
