@@ -134,19 +134,19 @@ test_main (void)
       digest->data[3] ^= 17;
       if (gostdsa_verify (&pub, digest->length, digest->data,
 			  &signature))
-	die ("gostdsa_verify  returned success with invalid digest.\n");
+	die ("gostdsa_verify returned success with invalid digest.\n");
       digest->data[3] ^= 17;
 
       mpz_combit (signature.r, 117);
       if (gostdsa_verify (&pub, digest->length, digest->data,
 			  &signature))
-	die ("gostdsa_verify  returned success with invalid signature.r.\n");
+	die ("gostdsa_verify returned success with invalid signature.r.\n");
 
       mpz_combit (signature.r, 117);
       mpz_combit (signature.s, 93);
       if (gostdsa_verify (&pub, digest->length, digest->data,
 			  &signature))
-	die ("gostdsa_verify  returned success with invalid signature.s.\n");
+	die ("gostdsa_verify returned success with invalid signature.s.\n");
 
       ecc_point_clear (&pub);
       ecc_scalar_clear (&key);

@@ -24,7 +24,7 @@ ecc_valid_p (struct ecc_point *pub)
   mpz_roinit_n (y, pub->p + size, size);
 
   mpz_mul (lhs, y, y);
-  
+
   if (pub->ecc->p.bit_size == 255)
     {
       /* Check that
@@ -65,7 +65,7 @@ ecc_valid_p (struct ecc_point *pub)
       mpz_add (rhs, rhs, mpz_roinit_n (t, pub->ecc->b, size));
     }
   res = mpz_congruent_p (lhs, rhs, mpz_roinit_n (t, pub->ecc->p.m, size));
-  
+
   mpz_clear (lhs);
   mpz_clear (rhs);
 
@@ -133,19 +133,19 @@ test_main (void)
       digest->data[3] ^= 17;
       if (ecdsa_verify (&pub, digest->length, digest->data,
 			 &signature))
-	die ("ecdsa_verify  returned success with invalid digest.\n");
+	die ("ecdsa_verify returned success with invalid digest.\n");
       digest->data[3] ^= 17;
 
       mpz_combit (signature.r, 117);
       if (ecdsa_verify (&pub, digest->length, digest->data,
 			 &signature))
-	die ("ecdsa_verify  returned success with invalid signature.r.\n");
+	die ("ecdsa_verify returned success with invalid signature.r.\n");
 
       mpz_combit (signature.r, 117);
       mpz_combit (signature.s, 93);
       if (ecdsa_verify (&pub, digest->length, digest->data,
 			 &signature))
-	die ("ecdsa_verify  returned success with invalid signature.s.\n");
+	die ("ecdsa_verify returned success with invalid signature.s.\n");
 
       ecc_point_clear (&pub);
       ecc_scalar_clear (&key);
