@@ -1,3 +1,11 @@
+2022-01-17  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/testutils.c (test_ecc_point_valid_p): New function,
+	moved from...
+	* testsuite/ecdsa-keygen-test.c (ecc_valid_p): ... old copy.
+	* testsuite/gostdsa-keygen-test.c (ecc_valid_p): ... old copy.
+	* testsuite/testutils.h: Declare it.
+
 2022-01-10  Niels Möller  <nisse@lysator.liu.se>
 
 	* powerpc64/ecc-secp256r1-redc.asm: Reduce number of registers

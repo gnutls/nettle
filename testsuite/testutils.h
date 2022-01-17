@@ -240,6 +240,10 @@ test_dsa_key(const struct dsa_params *params,
 
 extern const struct ecc_curve * const ecc_curves[];
 
+/* Check that given point satisfyes curve equation. */
+int
+test_ecc_point_valid_p (struct ecc_point *pub);
+
 struct ecc_ref_point
 {
   const char *x;
