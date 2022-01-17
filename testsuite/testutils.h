@@ -163,10 +163,11 @@ void gmp_randinit_default (struct knuth_lfib_ctx *ctx);
 void mpz_urandomb (mpz_t r, struct knuth_lfib_ctx *ctx, mp_bitcnt_t bits);
 /* This is cheating */
 #define mpz_rrandomb mpz_urandomb
-#define test_randomize(rands) 0
+static inline int
+test_randomize (gmp_randstate_t rands UNUSED) { return 0; }
 #else /* !NETTLE_USE_MINI_GMP */
 int
-test_randomize(gmp_randstate_t rands);
+test_randomize (gmp_randstate_t rands);
 
 #endif /* !NETTLE_USE_MINI_GMP */
 

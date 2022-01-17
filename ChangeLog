@@ -5,6 +5,8 @@
 	* testsuite/ecdsa-keygen-test.c (ecc_valid_p): ... old copy.
 	* testsuite/gostdsa-keygen-test.c (ecc_valid_p): ... old copy.
 	* testsuite/testutils.h: Declare it.
+	(test_randomize) [NETTLE_USE_MINI_GMP]: Use inline function rather
+	than macro for dummy definition, to avoid compile time warnings.
 
 2022-01-10  Niels Möller  <nisse@lysator.liu.se>
 
