@@ -81,6 +81,10 @@ AC_ARG_ENABLE(arm-neon,
   AC_HELP_STRING([--enable-arm-neon], [Enable ARM Neon assembly. (default=auto)]),,
   [enable_arm_neon=auto])
 
+AC_ARG_ENABLE(arm64-asimd,
+  AC_HELP_STRING([--enable-arm64-asimd], [Enable Arm64 advanced SIMD. (default=no)]),,
+  [enable_arm64_asimd=no])
+
 AC_ARG_ENABLE(arm64-crypto,
   AC_HELP_STRING([--enable-arm64-crypto], [Enable Arm64 crypto extension. (default=no)]),,
   [enable_arm64_crypto=no])
@@ -511,8 +515,11 @@ if test "x$enable_assembler" = xyes ; then
         if test "x$enable_fat" = xyes ; then
           asm_path="arm64/fat $asm_path"
           OPT_NETTLE_SOURCES="fat-arm64.c $OPT_NETTLE_SOURCES"
-          FAT_TEST_LIST="none aes pmull sha1 sha2"
+          FAT_TEST_LIST="none asimd aes pmull sha1 sha2"
         else
+          if test "$enable_arm64_asimd" = yes ; then
+            asm_path="arm64/asimd $asm_path"
+          fi
           if test "$enable_arm64_crypto" = yes ; then
             asm_path="arm64/crypto $asm_path"
           fi

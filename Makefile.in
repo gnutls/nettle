@@ -606,7 +606,7 @@ distdir: $(DISTFILES)
 	set -e; for d in sparc32 sparc64 x86 \
 		x86_64 x86_64/aesni x86_64/sha_ni x86_64/fat \
 		arm arm/neon arm/v6 arm/fat \
-		arm64 arm64/crypto arm64/fat \
+		arm64 arm64/asimd arm64/crypto arm64/fat \
 		powerpc64 powerpc64/p7 powerpc64/p8 powerpc64/fat \
 		s390x s390x/vf s390x/msa s390x/msa_x1 s390x/msa_x2 s390x/msa_x4 s390x/fat ; do \
 	  mkdir "$(distdir)/$$d" ; \

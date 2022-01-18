@@ -74,6 +74,7 @@
 
 struct arm64_features
 {
+  int have_asimd;
   int have_aes;
   int have_pmull;
   int have_sha1;
@@ -87,6 +88,7 @@ static void
 get_arm64_features (struct arm64_features *features)
 {
   const char *s;
+  features->have_asimd = 0;
   features->have_aes = 0;
   features->have_pmull = 0;
   features->have_sha1 = 0;
@@ -99,7 +101,9 @@ get_arm64_features (struct arm64_features *features)
 	const char *sep = strchr (s, ',');
 	size_t length = sep ? (size_t) (sep - s) : strlen(s);
 
-	if (MATCH (s, length, "aes", 3))
+	if (MATCH (s, length, "asimd", 5))
+	  features->have_asimd = 1;
+  else if (MATCH (s, length, "aes", 3))
 	  features->have_aes = 1;
   else if (MATCH (s, length, "pmull", 5))
 	  features->have_pmull = 1;
@@ -115,6 +119,8 @@ get_arm64_features (struct arm64_features *features)
     {
 #if USE_GETAUXVAL
       unsigned long hwcap = getauxval(AT_HWCAP);
+      features->have_asimd
+	= ((hwcap & HWCAP_ASIMD) == HWCAP_ASIMD);
       features->have_aes
 	= ((hwcap & (HWCAP_ASIMD | HWCAP_AES)) == (HWCAP_ASIMD | HWCAP_AES));
       features->have_pmull
@@ -166,6 +172,18 @@ DECLARE_FAT_FUNC(_nettle_sha256_compress, sha256_compress_func)
 DECLARE_FAT_FUNC_VAR(sha256_compress, sha256_compress_func, c)
 DECLARE_FAT_FUNC_VAR(sha256_compress, sha256_compress_func, arm64)
 
+DECLARE_FAT_FUNC(_nettle_chacha_core, chacha_core_func)
+DECLARE_FAT_FUNC_VAR(chacha_core, chacha_core_func, c);
+DECLARE_FAT_FUNC_VAR(chacha_core, chacha_core_func, arm64);
+
+DECLARE_FAT_FUNC(nettle_chacha_crypt, chacha_crypt_func)
+DECLARE_FAT_FUNC_VAR(chacha_crypt, chacha_crypt_func, 1core)
+DECLARE_FAT_FUNC_VAR(chacha_crypt, chacha_crypt_func, 4core)
+
+DECLARE_FAT_FUNC(nettle_chacha_crypt32, chacha_crypt_func)
+DECLARE_FAT_FUNC_VAR(chacha_crypt32, chacha_crypt_func, 1core)
+DECLARE_FAT_FUNC_VAR(chacha_crypt32, chacha_crypt_func, 4core)
+
 static void CONSTRUCTOR
 fat_init (void)
 {
@@ -176,8 +194,9 @@ fat_init (void)
 
   verbose = getenv (ENV_VERBOSE) != NULL;
   if (verbose)
-    fprintf (stderr, "libnettle: cpu features:%s%s%s%s\n",
-	     features.have_aes ? " aes instructions" : "",
+    fprintf (stderr, "libnettle: cpu features:%s%s%s%s%s\n",
+	     features.have_asimd ? " advanced simd" : "",
+       features.have_aes ? " aes instructions" : "",
 	     features.have_pmull ? " polynomial multiply long instructions (PMULL/PMULL2)" : "",
        features.have_sha1 ? " sha1 instructions" : "",
        features.have_sha2 ? " sha2 instructions" : "");
@@ -243,6 +262,20 @@ fat_init (void)
     {
       _nettle_sha256_compress_vec = _nettle_sha256_compress_c;
     }
+  if (features.have_asimd)
+    {
+      if (verbose)
+	fprintf (stderr, "libnettle: enabling advanced simd code.\n");
+      _nettle_chacha_core_vec = _nettle_chacha_core_arm64;
+      nettle_chacha_crypt_vec = _nettle_chacha_crypt_4core;
+      nettle_chacha_crypt32_vec = _nettle_chacha_crypt32_4core;
+    }
+  else
+    {
+      _nettle_chacha_core_vec = _nettle_chacha_core_c;
+      nettle_chacha_crypt_vec = _nettle_chacha_crypt_1core;
+      nettle_chacha_crypt32_vec = _nettle_chacha_crypt32_1core;
+    }
 }
 
 DEFINE_FAT_FUNC(nettle_aes128_encrypt, void,
@@ -290,3 +323,21 @@ DEFINE_FAT_FUNC(nettle_sha1_compress, void,
 DEFINE_FAT_FUNC(_nettle_sha256_compress, void,
 		(uint32_t *state, const uint8_t *input, const uint32_t *k),
 		(state, input, k))
+
+DEFINE_FAT_FUNC(_nettle_chacha_core, void,
+		(uint32_t *dst, const uint32_t *src, unsigned rounds),
+		(dst, src, rounds))
+
+DEFINE_FAT_FUNC(nettle_chacha_crypt, void,
+		(struct chacha_ctx *ctx,
+		 size_t length,
+		 uint8_t *dst,
+		 const uint8_t *src),
+		(ctx, length, dst, src))
+
+DEFINE_FAT_FUNC(nettle_chacha_crypt32, void,
+		(struct chacha_ctx *ctx,
+		 size_t length,
+		 uint8_t *dst,
+		 const uint8_t *src),
+		(ctx, length, dst, src))
