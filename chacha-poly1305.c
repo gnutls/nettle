@@ -90,14 +90,11 @@ chacha_poly1305_set_nonce (struct chacha_poly1305_ctx *ctx,
   ctx->auth_size = ctx->data_size = ctx->index = 0;
 }
 
-/* FIXME: Duplicated in poly1305-aes128.c */
-#define COMPRESS(ctx, data) _nettle_poly1305_block(&(ctx)->poly1305, (data), 1)
-
 static void
 poly1305_update (struct chacha_poly1305_ctx *ctx,
 		 size_t length, const uint8_t *data)
 {
-  MD_UPDATE (ctx, length, data, COMPRESS, (void) 0);
+  ctx->index = _nettle_poly1305_update(&ctx->poly1305, ctx->block, ctx->index, length, data);
 }
 
 static void

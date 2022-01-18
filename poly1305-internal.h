@@ -53,6 +53,19 @@ void _nettle_poly1305_digest (struct poly1305_ctx *ctx, union nettle_block16 *s)
 /* Process one block. */
 void _nettle_poly1305_block (struct poly1305_ctx *ctx, const uint8_t *m,
 			     unsigned high);
+unsigned _nettle_poly1305_update(struct poly1305_ctx *ctx, uint8_t *block, unsigned pos, size_t length,
+			     const uint8_t *data);
+
+/* Functions available only in some configurations */
+unsigned
+_nettle_poly1305_update_2core(struct poly1305_ctx *ctx,
+			     uint8_t *block, unsigned pos,
+			     size_t length, const uint8_t *data);
+
+unsigned
+_nettle_poly1305_update_1core(struct poly1305_ctx *ctx,
+			     uint8_t *block, unsigned pos,
+			     size_t length, const uint8_t *data);
 
 #ifdef __cplusplus
 }

@@ -102,6 +102,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c aes-decrypt-table.c \
 		 siv-cmac.c siv-cmac-aes128.c siv-cmac-aes256.c \
 		 cnd-memcpy.c \
 		 chacha-crypt.c chacha-core-internal.c \
+		 poly1305-update.c \
 		 chacha-poly1305.c chacha-poly1305-meta.c \
 		 chacha-set-key.c chacha-set-nonce.c \
 		 ctr.c ctr16.c des.c des3.c \
@@ -606,7 +607,7 @@ distdir: $(DISTFILES)
 	set -e; for d in sparc32 sparc64 x86 \
 		x86_64 x86_64/aesni x86_64/sha_ni x86_64/fat \
 		arm arm/neon arm/v6 arm/fat \
-		arm64 arm64/crypto arm64/fat \
+		arm64 arm64/asimd arm64/crypto arm64/fat \
 		powerpc64 powerpc64/p7 powerpc64/p8 powerpc64/fat \
 		s390x s390x/vf s390x/msa s390x/msa_x1 s390x/msa_x2 s390x/msa_x4 s390x/fat ; do \
 	  mkdir "$(distdir)/$$d" ; \

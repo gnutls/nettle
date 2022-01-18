@@ -81,6 +81,10 @@ AC_ARG_ENABLE(arm-neon,
   AC_HELP_STRING([--enable-arm-neon], [Enable ARM Neon assembly. (default=auto)]),,
   [enable_arm_neon=auto])
 
+AC_ARG_ENABLE(arm64-asimd,
+  AC_HELP_STRING([--enable-arm64-asimd], [Enable Arm64 advanced SIMD. (default=no)]),,
+  [enable_arm64_asimd=no])
+
 AC_ARG_ENABLE(arm64-crypto,
   AC_HELP_STRING([--enable-arm64-crypto], [Enable Arm64 crypto extension. (default=no)]),,
   [enable_arm64_crypto=no])
@@ -511,8 +515,11 @@ if test "x$enable_assembler" = xyes ; then
         if test "x$enable_fat" = xyes ; then
           asm_path="arm64/fat $asm_path"
           OPT_NETTLE_SOURCES="fat-arm64.c $OPT_NETTLE_SOURCES"
-          FAT_TEST_LIST="none aes pmull sha1 sha2"
+          FAT_TEST_LIST="none asimd aes pmull sha1 sha2"
         else
+          if test "$enable_arm64_asimd" = yes ; then
+            asm_path="arm64/asimd $asm_path"
+          fi
           if test "$enable_arm64_crypto" = yes ; then
             asm_path="arm64/crypto $asm_path"
           fi
@@ -597,6 +604,7 @@ asm_nettle_optional_list="gcm-hash.asm gcm-hash8.asm cpuid.asm cpu-facility.asm 
   aes256-encrypt-2.asm aes256-decrypt-2.asm \
   cbc-aes128-encrypt-2.asm cbc-aes192-encrypt-2.asm cbc-aes256-encrypt-2.asm \
   chacha-2core.asm chacha-3core.asm chacha-4core.asm chacha-core-internal-2.asm \
+  poly1305-2core.asm \
   salsa20-2core.asm salsa20-core-internal-2.asm \
   sha1-compress-2.asm sha256-compress-2.asm \
   sha3-permute-2.asm sha512-compress-2.asm \
@@ -730,6 +738,8 @@ AH_VERBATIM([HAVE_NATIVE],
 #undef HAVE_NATIVE_fat_chacha_2core
 #undef HAVE_NATIVE_fat_chacha_3core
 #undef HAVE_NATIVE_fat_chacha_4core
+#undef HAVE_NATIVE_poly1305_2core
+#undef HAVE_NATIVE_fat_poly1305_2core
 #undef HAVE_NATIVE_ecc_curve25519_modp
 #undef HAVE_NATIVE_ecc_curve448_modp
 #undef HAVE_NATIVE_ecc_secp192r1_modp

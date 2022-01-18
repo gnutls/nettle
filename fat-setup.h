@@ -196,6 +196,10 @@ typedef void chacha_crypt_func(struct chacha_ctx *ctx,
 			       uint8_t *dst,
 			       const uint8_t *src);
 
+struct poly1305_ctx;
+typedef unsigned poly1305_update_func(struct poly1305_ctx *ctx, uint8_t *block, unsigned pos,
+			       size_t length, const uint8_t *data);
+
 struct aes128_ctx;
 typedef void aes128_set_key_func (struct aes128_ctx *ctx, const uint8_t *key);
 typedef void aes128_invert_key_func (struct aes128_ctx *dst, const struct aes128_ctx *src);
