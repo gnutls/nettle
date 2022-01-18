@@ -78,6 +78,7 @@ define(`T3', `%r13')
 define(`RC', `%r14')
 
 .file "sha3-permute.asm"
+.machine "z13"
 
 .text
 

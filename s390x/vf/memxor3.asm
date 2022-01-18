@@ -1,4 +1,4 @@
-C s390/memxor3.asm
+C s390/vx/memxor3.asm
 
 ifelse(`
    Copyright (C) 2020 Mamone Tarsha
@@ -30,6 +30,7 @@ ifelse(`
 ')
 
 .file "memxor3.asm"
+.machine "z13"
 
 .text
 
