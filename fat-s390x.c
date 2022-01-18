@@ -268,6 +268,18 @@ DECLARE_FAT_FUNC(nettle_sha3_permute, sha3_permute_func)
 DECLARE_FAT_FUNC_VAR(sha3_permute, sha3_permute_func, c)
 DECLARE_FAT_FUNC_VAR(sha3_permute, sha3_permute_func, s390x)
 
+DECLARE_FAT_FUNC(_nettle_chacha_core, chacha_core_func)
+DECLARE_FAT_FUNC_VAR(chacha_core, chacha_core_func, c);
+DECLARE_FAT_FUNC_VAR(chacha_core, chacha_core_func, s390x);
+
+DECLARE_FAT_FUNC(nettle_chacha_crypt, chacha_crypt_func)
+DECLARE_FAT_FUNC_VAR(chacha_crypt, chacha_crypt_func, 1core)
+DECLARE_FAT_FUNC_VAR(chacha_crypt, chacha_crypt_func, 4core)
+
+DECLARE_FAT_FUNC(nettle_chacha_crypt32, chacha_crypt_func)
+DECLARE_FAT_FUNC_VAR(chacha_crypt32, chacha_crypt_func, 1core)
+DECLARE_FAT_FUNC_VAR(chacha_crypt32, chacha_crypt_func, 4core)
+
 static void CONSTRUCTOR
 fat_init (void)
 {
@@ -281,18 +293,20 @@ fat_init (void)
   if (features.have_vector_facility)
   {
     if (verbose)
-      fprintf (stderr, "libnettle: enabling vectorized memxor3.\n");
+      fprintf (stderr, "libnettle: enabling vector facility code.\n");
     nettle_memxor3_vec = _nettle_memxor3_s390x;
-
-    if (verbose)
-      fprintf (stderr, "libnettle: enabling vectorized sha3 permute.\n");
     nettle_sha3_permute_vec = _nettle_sha3_permute_s390x;
+    _nettle_chacha_core_vec = _nettle_chacha_core_s390x;
+    nettle_chacha_crypt_vec = _nettle_chacha_crypt_4core;
+    nettle_chacha_crypt32_vec = _nettle_chacha_crypt32_4core;
   }
   else
   {
      nettle_memxor3_vec = _nettle_memxor3_c;
-     
      nettle_sha3_permute_vec = _nettle_sha3_permute_c;
+     _nettle_chacha_core_vec = _nettle_chacha_core_c;
+     nettle_chacha_crypt_vec = _nettle_chacha_crypt_1core;
+     nettle_chacha_crypt32_vec = _nettle_chacha_crypt32_1core;
   }
 
   /* AES128 */
@@ -497,3 +511,21 @@ DEFINE_FAT_FUNC(_nettle_sha512_compress, void,
 /* SHA3 */
 DEFINE_FAT_FUNC(nettle_sha3_permute, void,
 		(struct sha3_state *state), (state))
+
+DEFINE_FAT_FUNC(_nettle_chacha_core, void,
+		(uint32_t *dst, const uint32_t *src, unsigned rounds),
+		(dst, src, rounds))
+
+DEFINE_FAT_FUNC(nettle_chacha_crypt, void,
+		(struct chacha_ctx *ctx,
+		 size_t length,
+		 uint8_t *dst,
+		 const uint8_t *src),
+		(ctx, length, dst, src))
+
+DEFINE_FAT_FUNC(nettle_chacha_crypt32, void,
+		(struct chacha_ctx *ctx,
+		 size_t length,
+		 uint8_t *dst,
+		 const uint8_t *src),
+		(ctx, length, dst, src))
