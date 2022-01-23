@@ -1,5 +1,7 @@
 #include "testutils.h"
 #include "poly1305.h"
+#include "poly1305-internal.h"
+#include "knuth-lfib.h"
 
 static void
 update (void *ctx, nettle_hash_update_func *f,
@@ -51,6 +53,133 @@ test_poly1305 (const struct tstring *key,
 		msg, length, 16, ref->data);
 }
 
+static void
+test_poly1305_internal (const uint8_t key[16],
+			size_t length, const uint8_t *message,
+			union nettle_block16 *nonce)
+{
+  struct poly1305_ctx ctx;
+  _nettle_poly1305_set_key (&ctx, key);
+
+  for ( ; length >= 16; length -= 16, message += 16)
+    _nettle_poly1305_block (&ctx, message, 1);
+  if (length > 0)
+    {
+      uint8_t block[16];
+      memcpy (block, message, length);
+      block[length] = 1;
+      memset (block + length + 1, 0, sizeof(block) - 1 - length);
+      _nettle_poly1305_block (&ctx, block, 0);
+    }
+  _nettle_poly1305_digest (&ctx, nonce);
+}
+
+static void
+ref_poly1305_internal (const uint8_t key[16],
+		       size_t length, const uint8_t *message,
+		       union nettle_block16 *nonce)
+{
+  uint8_t block[16];
+  mpz_t p;
+  mpz_t h;
+  mpz_t r;
+  mpz_t m;
+
+  mpz_init_set_ui (p, 1);
+  mpz_init (r);
+  mpz_init_set_ui (h, 0);
+  mpz_init (m);
+
+  mpz_mul_2exp (p, p, 130);
+  mpz_sub_ui (p, p, 5);
+
+  memcpy (block, key, sizeof(block));
+  block[3] &= 0x0f;
+  block[4] &= 0xfc;
+  block[7] &= 0x0f;
+  block[8] &= 0xfc;
+  block[11] &= 0x0f;
+  block[12] &= 0xfc;
+  block[15] &= 0x0f;
+
+  /* Little-endian load */
+  mpz_import (r, 16, -1, 1, 0, 0, block);
+
+  for ( ; length >= 16; length -= 16, message += 16)
+    {
+      mpz_import (m, 16, -1, 1, 0, 0, message);
+      mpz_setbit (m, 128);
+      mpz_add (h, h, m);
+      mpz_mul (h, h, r);
+      mpz_mod (h, h, p);
+    }
+  if (length > 0)
+    {
+      mpz_import (m, length, -1, 1, 0, 0, message);
+      mpz_setbit (m, length * 8);
+      mpz_add (h, h, m);
+      mpz_mul (h, h, r);
+      mpz_mod (h, h, p);
+    }
+  mpz_import (m, 16, -1, 1, 0, 0, nonce->b);
+  mpz_add (h, h, m);
+  mpz_fdiv_r_2exp (h, h, 128);
+
+  memset (nonce->b, 0, 16);
+  mpz_export (nonce->b, NULL, -1, 1, 0, 0, h);
+
+  mpz_clear (p);
+  mpz_clear (r);
+  mpz_clear (h);
+  mpz_clear (m);
+}
+
+#define COUNT 100000
+#define MAX_MESSAGE_SIZE 300
+
+static void
+test_random(void)
+{
+  struct knuth_lfib_ctx rand_ctx;
+  unsigned j;
+
+  knuth_lfib_init (&rand_ctx, 17);
+  for (j = 0; j < COUNT; j++)
+    {
+      uint8_t key[16];
+      uint8_t nonce[16];
+      uint8_t message[MAX_MESSAGE_SIZE];
+      size_t length;
+      union nettle_block16 digest;
+      union nettle_block16 ref;
+
+      knuth_lfib_random (&rand_ctx, sizeof(key), key);
+      knuth_lfib_random (&rand_ctx, sizeof(nonce), nonce);
+
+      knuth_lfib_random (&rand_ctx, sizeof(length), (uint8_t *) &length);
+      length %= MAX_MESSAGE_SIZE + 1;
+
+      knuth_lfib_random (&rand_ctx, length, message);
+
+      memcpy (digest.b, nonce, sizeof(digest.b));
+      test_poly1305_internal (key, length, message, &digest);
+
+      memcpy (ref.b, nonce, sizeof(ref.b));
+      ref_poly1305_internal (key, length, message, &ref);
+      if (!MEMEQ (sizeof(ref.b), digest.b, ref.b))
+	{
+	  printf ("poly1305-internal failed\n");
+	  printf ("key: "); print_hex (16, key);
+	  printf ("nonce: "); print_hex (16, nonce);
+	  printf ("msg: "); print_hex (length, message);
+	  printf ("length: %u\n", (unsigned) length);
+	  printf ("tag: "); print_hex (16, digest.b);
+	  printf ("ref: "); print_hex (16, ref.b);
+	  abort();
+	}
+    }
+}
+
 void
 test_main(void)
 {
@@ -83,4 +212,5 @@ test_main(void)
          "5c1bf9"), 63,
     SHEX("5154ad0d2cb26e01274fc51148491f1b"));
 
+  test_random();
 }

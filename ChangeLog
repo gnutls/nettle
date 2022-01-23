@@ -1,5 +1,10 @@
 2022-01-23  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/poly1305-test.c (test_poly1305_internal): New function.
+	(ref_poly1305_internal): New function.
+	(test_random): New function.
+	(test_main): Call test_random.
+
 	Arrange so that GMP or mini-gmp is always available for tests.
 	* testsuite/testutils.h [!WITH_HOGWEED]: Include mini-gmp.h.
 	* testsuite/testutils.c [!WITH_HOGWEED]: Include mini-gmp.c.
