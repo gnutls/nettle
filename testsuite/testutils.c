@@ -2063,5 +2063,8 @@ test_ecc_get_ga (unsigned curve, mp_limb_t *rp)
   mpz_clear (y);
 }
 
-#endif /* WITH_HOGWEED */
+#else /* !WITH_HOGWEED */
+/* Make sure either gmp or mini-gmp is available for tests. */
+#include "mini-gmp.c"
+#endif /* !WITH_HOGWEED */
 

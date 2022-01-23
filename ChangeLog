@@ -1,3 +1,9 @@
+2022-01-23  Niels Möller  <nisse@lysator.liu.se>
+
+	Arrange so that GMP or mini-gmp is always available for tests.
+	* testsuite/testutils.h [!WITH_HOGWEED]: Include mini-gmp.h.
+	* testsuite/testutils.c [!WITH_HOGWEED]: Include mini-gmp.c.
+
 2022-01-21  Niels Möller  <nisse@lysator.liu.se>
 
 	* powerpc64/ecc-secp192r1-modp.asm: New file, contributed by

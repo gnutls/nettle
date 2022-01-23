@@ -30,7 +30,10 @@
 /* Undo dsa-compat name mangling */
 #undef dsa_generate_keypair
 #define dsa_generate_keypair nettle_dsa_generate_keypair
-#endif /* WITH_HOGWEED */
+#else /* !WITH_HOGWEED */
+/* Make sure either gmp or mini-gmp is available for tests. */
+#include "mini-gmp.h"
+#endif /* !WITH_HOGWEED */
 
 #include "nettle-meta.h"
 
