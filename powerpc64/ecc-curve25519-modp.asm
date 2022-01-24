@@ -37,7 +37,7 @@ ifelse(`
 define(`RP', `r4')
 define(`XP', `r5')
 
-define(`U0', `r6')	C Overlaps unused modulo input
+define(`U0', `r6')
 define(`U1', `r7')
 define(`U2', `r8')
 define(`U3', `r9')
@@ -45,7 +45,7 @@ define(`T0', `r10')
 define(`T1', `r11')
 define(`M', `r12')
 
-define(`UN', r3)
+define(`UN', r3)	C Overlaps unused modulo input
 
 	C void ecc_curve25519_modp (const struct ecc_modulo *p, mp_limb_t *rp, mp_limb_t *xp)
 	.text
