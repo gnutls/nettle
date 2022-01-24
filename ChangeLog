@@ -1,3 +1,12 @@
+2022-01-24  Niels Möller  <nisse@lysator.liu.se>
+
+	* powerpc64/ecc-secp224r1-modp.asm: New file, contributed by
+	Amitay Isaacs.
+	* powerpc64/ecc-curve25519-modp.asm: New file, contributed by
+	Martin Schwenke & Alastair D´Silva
+	* powerpc64/ecc-curve448-modp.asm: New file, contributed by Martin
+	Schwenke & Amitay Isaacs.
+
 2022-01-23  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/poly1305-test.c (test_poly1305_internal): New function.
