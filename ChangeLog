@@ -1,3 +1,10 @@
+2022-01-25  Niels Möller  <nisse@lysator.liu.se>
+
+	Chacha implementation for arm64, contributed by Mamone Tarsha.
+	* arm64/chacha-core-internal.asm: New file.
+	* arm64/chacha-2core.asm: New file.
+	* arm64/chacha-4core.asm: New file
+
 2022-01-24  Niels Möller  <nisse@lysator.liu.se>
 
 	* powerpc64/ecc-secp224r1-modp.asm: New file, contributed by
