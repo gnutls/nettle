@@ -55,18 +55,15 @@ struct poly1305_ctx {
   /* Key, 128-bit value and some cached multiples. */
   union
   {
-    uint32_t r32[6];
-    uint64_t r64[3];
+    uint32_t r32[8];
+    uint64_t r64[4];
   } r;
-  uint32_t s32[3];
   /* State, represented as words of 26, 32 or 64 bits, depending on
      implementation. */
-  /* High bits first, to maintain alignment. */
-  uint32_t hh;
   union
   {
-    uint32_t h32[4];
-    uint64_t h64[2];
+    uint32_t h32[6];
+    uint64_t h64[3];
   } h;
 };
 

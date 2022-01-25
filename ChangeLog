@@ -1,5 +1,13 @@
 2022-01-25  Niels Möller  <nisse@lysator.liu.se>
 
+	Complete rewrite of C implementation of poly1305. Radix 32 rather
+	than radix 26, and use that certain key bits are always zero.
+	* poly1305-internal.c (_nettle_poly1305_set_key): Rewritten.
+	(_nettle_poly1305_block): Rewritten.
+	(_nettle_poly1305_digest): Rewritten.
+	* poly1305.h (struct poly1305_ctx): Rearrange internal unions, but
+	with size and alignment unchanged.
+
 	Chacha implementation for arm64, contributed by Mamone Tarsha.
 	* arm64/chacha-core-internal.asm: New file.
 	* arm64/chacha-2core.asm: New file.
