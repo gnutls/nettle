@@ -1,3 +1,12 @@
+2022-01-27  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/poly1305-internal.asm: Rewrote. Rearrange folding, so
+	that all the multiply instructions needed to process a block are
+	independent of each other. Measured speedup of 16% on AMD zen2 and
+	28% on Intel broadwell, and expected to be generally faster.
+	* asm.m4 (P1305): Rearrange struct contents, to fit 64-bit entries
+	S0 and H2. Total struct size unchanged.
+
 2022-01-25  Niels Möller  <nisse@lysator.liu.se>
 
 	Chacha implementation for arm64, contributed by Mamone Tarsha.
