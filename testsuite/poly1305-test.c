@@ -43,9 +43,9 @@ test_poly1305 (const struct tstring *key,
 }
 
 static void
-test_poly1305_internal (const uint8_t key[16],
-			size_t length, const uint8_t *message,
-			union nettle_block16 *nonce)
+poly1305_internal (const uint8_t key[16],
+		   size_t length, const uint8_t *message,
+		   union nettle_block16 *nonce)
 {
   struct poly1305_ctx ctx;
   _nettle_poly1305_set_key (&ctx, key);
@@ -123,6 +123,68 @@ ref_poly1305_internal (const uint8_t key[16],
   mpz_clear (m);
 }
 
+static void
+test_poly1305_internal (const uint8_t key[16],
+			size_t length, const uint8_t *message,
+			const uint8_t nonce[16],
+			const uint8_t ref[16])
+{
+  union nettle_block16 digest;
+
+  memcpy (digest.b, nonce, sizeof(digest.b));
+  poly1305_internal (key, length, message, &digest);
+
+  if (!MEMEQ (sizeof(digest.b), digest.b, ref))
+    {
+      printf ("poly1305_internal failed\n");
+      printf ("key: "); print_hex (16, key);
+      printf ("nonce: "); print_hex (16, nonce);
+      printf ("msg: "); print_hex (length, message);
+      printf ("length: %u\n", (unsigned) length);
+      printf ("tag: "); print_hex (16, digest.b);
+      printf ("ref: "); print_hex (16, ref);
+      abort();
+    }
+}
+
+static void
+test_fixed (void)
+{
+  static uint8_t nonce[16] = {0};
+  static const struct {
+    char *key;
+    char *message;
+    char *digest;
+  } test_cases[] = {
+    {"9959780624f5670ccc9e530738ddd70a",
+     "82785d0bbe75181ea188c1a0d8dd81cf90d1c0f1cfa97912e92ab91bd3357368",
+     "00000000000000000000000000000000"},
+    {"6c72ea0dc487510934252a01544e9307",
+     "0b6a6a734cb67fe9a548a81f21ec3db398c1ed1a62715e993e67f0a682b75990",
+     "01000000000000000000000000000000"},
+    {"64447e0bdca48e0a30c5af06ec830008",
+     "1fd9b81b8310bdf6007549d6d06df6d07e37c8a8500edd91874a5657cff1c1ba",
+     "faffffffffffffffffffffffffffffff"},
+    {"054a840700390c092c422e037825c709",
+     "3faabe212f024da30f8f7064d3dab6f426c5a408de0bec35624b6793a0d4a353",
+     "05000000000000000000000000000000",}
+  };
+  size_t i;
+
+  for (i = 0; i < sizeof(test_cases) / sizeof(test_cases[0]); i++)
+    {
+      struct tstring *key = tstring_hex(test_cases[i].key);
+      struct tstring *message = tstring_hex(test_cases[i].message);
+      struct tstring *digest = tstring_hex(test_cases[i].digest);
+      union nettle_block16 out;
+      ASSERT (key->length == 16);
+      ASSERT (digest->length == 16);
+
+      memset (out.b, 0, sizeof(out.b));
+      test_poly1305_internal (key->data, message->length, message->data, nonce, digest->data);
+    }
+}
+
 #define COUNT 100000
 #define MAX_MESSAGE_SIZE 300
 
@@ -139,7 +201,6 @@ test_random(void)
       uint8_t nonce[16];
       uint8_t message[MAX_MESSAGE_SIZE];
       size_t length;
-      union nettle_block16 digest;
       union nettle_block16 ref;
 
       knuth_lfib_random (&rand_ctx, sizeof(key), key);
@@ -150,22 +211,10 @@ test_random(void)
 
       knuth_lfib_random (&rand_ctx, length, message);
 
-      memcpy (digest.b, nonce, sizeof(digest.b));
-      test_poly1305_internal (key, length, message, &digest);
-
       memcpy (ref.b, nonce, sizeof(ref.b));
       ref_poly1305_internal (key, length, message, &ref);
-      if (!MEMEQ (sizeof(ref.b), digest.b, ref.b))
-	{
-	  printf ("poly1305-internal failed\n");
-	  printf ("key: "); print_hex (16, key);
-	  printf ("nonce: "); print_hex (16, nonce);
-	  printf ("msg: "); print_hex (length, message);
-	  printf ("length: %u\n", (unsigned) length);
-	  printf ("tag: "); print_hex (16, digest.b);
-	  printf ("ref: "); print_hex (16, ref.b);
-	  abort();
-	}
+
+      test_poly1305_internal (key, length, message, nonce, ref.b);
     }
 }
 
@@ -201,5 +250,6 @@ test_main(void)
          "5c1bf9"),
     SHEX("5154ad0d2cb26e01274fc51148491f1b"));
 
+  test_fixed();
   test_random();
 }

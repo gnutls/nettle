@@ -1,3 +1,16 @@
+2022-01-28  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/poly1305-test.c (poly1305_internal): Renamed function,
+	was test_poly1305_internal.
+	(test_poly1305_internal): New helper function.
+	(test_fixed): New function, to test internal functions with fixed
+	test inputs.
+	(test_random): Use test_poly1305_internal.
+	(test_main): Call test_fixed.
+
+	* misc/poly1305-gen-example.pike: Program to generate poly1305
+	inputs with a given digest.
+
 2022-01-27  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86_64/poly1305-internal.asm: Rewrote. Rearrange folding, so
