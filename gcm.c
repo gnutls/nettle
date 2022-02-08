@@ -153,7 +153,7 @@ gcm_gf_mul (union nettle_block16 *x, const union nettle_block16 *table)
 #  elif GCM_TABLE_BITS == 8
 #   if HAVE_NATIVE_gcm_hash8
 
-#define _nettle_gcm_hash _nettle_gcm_hash8
+#define _nettle_gcm_hash8 _nettle_gcm_hash
 void
 _nettle_gcm_hash8 (const struct gcm_key *key, union nettle_block16 *x,
 		   size_t length, const uint8_t *data);
@@ -267,6 +267,16 @@ _nettle_gcm_init_key_c(union nettle_block16 *table)
 }
 #endif /* !HAVE_NATIVE_gcm_init_key */
 
+void
+_nettle_gcm_set_key (struct gcm_key *gcm, const uint8_t *key)
+{
+  memset (gcm->h[0].b, 0, GCM_BLOCK_SIZE);
+  /* Middle element if GCM_TABLE_BITS > 0, otherwise the first
+     element */
+  memcpy (gcm->h[(1<<GCM_TABLE_BITS)/2].b, key, GCM_BLOCK_SIZE);
+  _nettle_gcm_init_key(gcm->h);
+}
+
 /* Initialization of GCM.
  * @ctx: The context of GCM
  * @cipher: The context of the underlying block cipher
@@ -276,21 +286,16 @@ void
 gcm_set_key(struct gcm_key *key,
 	    const void *cipher, nettle_cipher_func *f)
 {
-  /* Middle element if GCM_TABLE_BITS > 0, otherwise the first
-     element */
-  unsigned i = (1<<GCM_TABLE_BITS)/2;
+  static const union nettle_block16 zero_block;
+  union nettle_block16 key_block;
+  f (cipher, GCM_BLOCK_SIZE, key_block.b, zero_block.b);
 
-  /* H */  
-  memset(key->h[0].b, 0, GCM_BLOCK_SIZE);
-  f (cipher, GCM_BLOCK_SIZE, key->h[i].b, key->h[0].b);
-
-  _nettle_gcm_init_key(key->h);
+  _nettle_gcm_set_key (key, key_block.b);
 }
 
 #if !(HAVE_NATIVE_gcm_hash || HAVE_NATIVE_gcm_hash8)
 # if !HAVE_NATIVE_fat_gcm_hash
-#  define _nettle_gcm_hash _nettle_gcm_hash_c
-static
+#  define _nettle_gcm_hash_c _nettle_gcm_hash
 # endif
 void
 _nettle_gcm_hash_c(const struct gcm_key *key, union nettle_block16 *x,

@@ -1,3 +1,15 @@
+2022-02-08  Niels Möller  <nisse@lysator.liu.se>
+
+	* gcm.c (_nettle_gcm_set_key): New internal function, intended to
+	make tests of internal ghash functions easier.
+	(gcm_set_key): Use it.
+	(_nettle_gcm_hash): Arrange so that if one of the implementations
+	in this file is used, it is defined with this name, and not
+	declared static.
+	* testsuite/gcm-test.c (test_ghash_internal): New function.
+	(test_main): Add tests of internal ghash functions, with keys
+	corresponding to various single-bit polynomials.
+
 2022-01-27  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86_64/poly1305-internal.asm: Rewrote. Rearrange folding, so

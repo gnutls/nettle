@@ -32,13 +32,16 @@
 #ifndef NETTLE_GCM_INTERNAL_H_INCLUDED
 #define NETTLE_GCM_INTERNAL_H_INCLUDED
 
-/* Functions available only in some configurations */
 void
-_nettle_gcm_init_key (union nettle_block16 *table);
+_nettle_gcm_set_key (struct gcm_key *gcm, const uint8_t *key);
 
 void
 _nettle_gcm_hash(const struct gcm_key *key, union nettle_block16 *x,
 		 size_t length, const uint8_t *data);
+
+/* Functions available only in some configurations */
+void
+_nettle_gcm_init_key (union nettle_block16 *table);
 
 #if HAVE_NATIVE_fat_gcm_init_key
 void
