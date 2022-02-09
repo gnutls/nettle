@@ -43,11 +43,11 @@
 
 /* Arrange so that _gcm_hash is an alias for the right implementation. */
 
-#if HAVE_NATIVE_gcm_hash
+#if HAVE_NATIVE_gcm_hash || HAVE_NATIVE_fat_gcm_hash
 # define _gcm_hash _nettle_gcm_hash
 #elif GCM_TABLE_BITS == 8 && HAVE_NATIVE_gcm_hash8
 # define _gcm_hash _nettle_gcm_hash8
-#elif !HAVE_NATIVE_fat_gcm_hash
+#else
 # define _gcm_hash _nettle_gcm_hash_c
 #endif
 
