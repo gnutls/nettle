@@ -43,7 +43,7 @@ test_ghash_internal (const struct tstring *key,
 
   _nettle_gcm_set_key (&gcm_key, key->data);
   memcpy (state.b, iv->data, GCM_BLOCK_SIZE);
-  _nettle_gcm_hash (&gcm_key, &state, message->length, message->data);
+  _gcm_hash (&gcm_key, &state, message->length, message->data);
   if (!MEMEQ(GCM_BLOCK_SIZE, state.b, digest->data))
     {
       fprintf (stderr, "gcm_hash (internal) failed\n");
