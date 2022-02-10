@@ -32,23 +32,46 @@
 #ifndef NETTLE_GCM_INTERNAL_H_INCLUDED
 #define NETTLE_GCM_INTERNAL_H_INCLUDED
 
-/* Functions available only in some configurations */
+#if GCM_TABLE_BITS != 8
+/* The native implementations (currently ppc64 only) depend on the
+   GCM_TABLE_BITS == 8 layout */
+#undef HAVE_NATIVE_gcm_hash
+#undef HAVE_NATIVE_gcm_init_key
+#undef HAVE_NATIVE_fat_gcm_hash
+#undef HAVE_NATIVE_fat_gcm_init_key
+#endif
+
+/* Arrange so that _gcm_hash is an alias for the right implementation. */
+#if HAVE_NATIVE_gcm_hash || HAVE_NATIVE_fat_gcm_hash
+# define _gcm_hash _nettle_gcm_hash
+#elif GCM_TABLE_BITS == 8 && HAVE_NATIVE_gcm_hash8
+# define _gcm_hash _nettle_gcm_hash8
+#else
+# define _gcm_hash _nettle_gcm_hash_c
+#endif
+
+/* Declare all variants, if defined depends on configuration. */
 void
-_nettle_gcm_init_key (union nettle_block16 *table);
+_nettle_gcm_set_key (struct gcm_key *gcm, const uint8_t *key);
 
 void
 _nettle_gcm_hash(const struct gcm_key *key, union nettle_block16 *x,
 		 size_t length, const uint8_t *data);
 
+void
+_nettle_gcm_hash8(const struct gcm_key *key, union nettle_block16 *x,
+		  size_t length, const uint8_t *data);
+
+void
+_nettle_gcm_hash_c(const struct gcm_key *key, union nettle_block16 *x,
+		  size_t length, const uint8_t *data);
+
+void
+_nettle_gcm_init_key (union nettle_block16 *table);
+
 #if HAVE_NATIVE_fat_gcm_init_key
 void
 _nettle_gcm_init_key_c (union nettle_block16 *table);
-#endif
-
-#if HAVE_NATIVE_fat_gcm_hash
-void
-_nettle_gcm_hash_c (const struct gcm_key *key, union nettle_block16 *x,
-		    size_t length, const uint8_t *data);
 #endif
 
 #endif /* NETTLE_GCM_INTERNAL_H_INCLUDED */
