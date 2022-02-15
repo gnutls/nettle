@@ -469,7 +469,7 @@ if test "x$enable_assembler" = xyes ; then
 	  asm_path="x86_64/fat $asm_path"
 	  OPT_NETTLE_SOURCES="fat-x86_64.c $OPT_NETTLE_SOURCES"
 	  # For now, not enabling aesni or sha_ni, since at least 
-	  # the latter appears unavailable on te gitlab test machines.
+	  # the latter appears unavailable on the gitlab test machines.
 	  FAT_TEST_LIST="vendor:intel vendor:amd"
 	else
 	  if test "x$enable_x86_aesni" = xyes ; then
