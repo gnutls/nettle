@@ -1,5 +1,8 @@
 2022-02-15  Niels Möller  <nisse@lysator.liu.se>
 
+	* fat-x86_64.c: Add fat setup for gcm.
+	* x86_64/fat/gcm-hash.asm: New file.
+
 	* Makefile.in (distdir): Add x86_64/pclmul directory.
 	* configure.ac: New configure option --enable-x86-pclmul.
 	(asm_path): Add x86_64/pclmul, if above option is set.

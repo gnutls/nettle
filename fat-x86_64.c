@@ -43,6 +43,8 @@
 #include "nettle-types.h"
 
 #include "aes-internal.h"
+#include "gcm.h"
+#include "gcm-internal.h"
 #include "memxor.h"
 #include "fat-setup.h"
 
@@ -53,6 +55,7 @@ struct x86_features
   enum x86_vendor { X86_OTHER, X86_INTEL, X86_AMD } vendor;
   int have_aesni;
   int have_sha_ni;
+  int have_pclmul;
 };
 
 #define SKIP(s, slen, literal, llen)				\
@@ -68,6 +71,7 @@ get_x86_features (struct x86_features *features)
   features->vendor = X86_OTHER;
   features->have_aesni = 0;
   features->have_sha_ni = 0;
+  features->have_pclmul = 0;
 
   s = secure_getenv (ENV_OVERRIDE);
   if (s)
@@ -88,6 +92,8 @@ get_x86_features (struct x86_features *features)
 	  features->have_aesni = 1;
 	else if (MATCH (s, length, "sha_ni", 6))
 	  features->have_sha_ni = 1;
+	else if (MATCH (s, length, "pclmul", 6))
+	  features->have_pclmul = 1;
 	if (!sep)
 	  break;
 	s = sep + 1;
@@ -102,12 +108,14 @@ get_x86_features (struct x86_features *features)
 	features->vendor = X86_AMD;
 
       _nettle_cpuid (1, cpuid_data);
+      if (cpuid_data[2] & 0x2)
+	features->have_pclmul = 1;
       if (cpuid_data[2] & 0x02000000)
-       features->have_aesni = 1;
+	features->have_aesni = 1;
 
       _nettle_cpuid (7, cpuid_data);
       if (cpuid_data[1] & 0x20000000)
-       features->have_sha_ni = 1;
+	features->have_sha_ni = 1;
     }
 }
 
@@ -152,6 +160,17 @@ DECLARE_FAT_FUNC(_nettle_sha256_compress, sha256_compress_func)
 DECLARE_FAT_FUNC_VAR(sha256_compress, sha256_compress_func, x86_64)
 DECLARE_FAT_FUNC_VAR(sha256_compress, sha256_compress_func, sha_ni)
 
+#if GCM_TABLE_BITS == 8
+DECLARE_FAT_FUNC(_nettle_gcm_init_key, gcm_init_key_func)
+DECLARE_FAT_FUNC_VAR(gcm_init_key, gcm_init_key_func, c)
+DECLARE_FAT_FUNC_VAR(gcm_init_key, gcm_init_key_func, pclmul)
+
+DECLARE_FAT_FUNC(_nettle_gcm_hash, gcm_hash_func)
+DECLARE_FAT_FUNC_VAR(gcm_hash, gcm_hash_func, c)
+DECLARE_FAT_FUNC_VAR(gcm_hash, gcm_hash_func, pclmul)
+#endif /* GCM_TABLE_BITS == 8 */
+
+
 /* This function should usually be called only once, at startup. But
    it is idempotent, and on x86, pointer updates are atomic, so
    there's no danger if it is called simultaneously from multiple
@@ -172,10 +191,11 @@ fat_init (void)
     {
       const char * const vendor_names[3] =
 	{ "other", "intel", "amd" };
-      fprintf (stderr, "libnettle: cpu features: vendor:%s%s%s\n",
+      fprintf (stderr, "libnettle: cpu features: vendor:%s%s%s%s\n",
 	       vendor_names[features.vendor],
 	       features.have_aesni ? ",aesni" : "",
-	       features.have_sha_ni ? ",sha_ni" : "");
+	       features.have_sha_ni ? ",sha_ni" : "",
+	       features.have_pclmul ? ",pclmul" : "");
     }
   if (features.have_aesni)
     {
@@ -220,6 +240,23 @@ fat_init (void)
       nettle_sha1_compress_vec = _nettle_sha1_compress_x86_64;
       _nettle_sha256_compress_vec = _nettle_sha256_compress_x86_64;
     }
+
+#if GCM_TABLE_BITS == 8
+  if (features.have_pclmul)
+    {
+      if (verbose)
+	fprintf (stderr, "libnettle: using pclmulqdq instructions.\n");
+      _nettle_gcm_init_key_vec = _nettle_gcm_init_key_pclmul;
+      _nettle_gcm_hash_vec = _nettle_gcm_hash_pclmul;
+    }
+  else
+    {
+      if (verbose)
+	fprintf (stderr, "libnettle: not using pclmulqdq instructions.\n");
+      _nettle_gcm_init_key_vec = _nettle_gcm_init_key_c;
+      _nettle_gcm_hash_vec = _nettle_gcm_hash8;
+    }
+#endif
   if (features.vendor == X86_INTEL)
     {
       if (verbose)
@@ -285,3 +322,14 @@ DEFINE_FAT_FUNC(nettle_sha1_compress, void,
 DEFINE_FAT_FUNC(_nettle_sha256_compress, void,
 		(uint32_t *state, const uint8_t *input, const uint32_t *k),
 		(state, input, k))
+
+#if GCM_TABLE_BITS == 8
+DEFINE_FAT_FUNC(_nettle_gcm_init_key, void,
+		(union nettle_block16 *table),
+		(table))
+
+DEFINE_FAT_FUNC(_nettle_gcm_hash, void,
+		(const struct gcm_key *key, union nettle_block16 *x,
+		 size_t length, const uint8_t *data),
+		(key, x, length, data))
+#endif /* GCM_TABLE_BITS == 8 */
