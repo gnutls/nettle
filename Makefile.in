@@ -604,7 +604,7 @@ distdir: $(DISTFILES)
 	  fi ; \
 	done
 	set -e; for d in sparc32 sparc64 x86 \
-		x86_64 x86_64/aesni x86_64/sha_ni x86_64/fat \
+		x86_64 x86_64/aesni x86_64/sha_ni x86_64/pclmul x86_64/fat \
 		arm arm/neon arm/v6 arm/fat \
 		arm64 arm64/crypto arm64/fat \
 		powerpc64 powerpc64/p7 powerpc64/p8 powerpc64/fat \

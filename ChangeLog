@@ -1,3 +1,11 @@
+2022-02-15  Niels Möller  <nisse@lysator.liu.se>
+
+	* Makefile.in (distdir): Add x86_64/pclmul directory.
+	* configure.ac: New configure option --enable-x86-pclmul.
+	(asm_path): Add x86_64/pclmul, if above option is set.
+	* x86_64/pclmul/gcm-hash.asm: New file, initial implementation of
+	GCM using the pclmulqdq instructions.
+
 2022-02-08  Niels Möller  <nisse@lysator.liu.se>
 
 	* gcm-internal.h (_gcm_hash): Arrange so that this is an alias for

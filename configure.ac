@@ -93,6 +93,10 @@ AC_ARG_ENABLE(x86-sha-ni,
   AC_HELP_STRING([--enable-x86-sha-ni], [Enable x86_64 sha_ni instructions. (default=no)]),,
   [enable_x86_sha_ni=no])
 
+AC_ARG_ENABLE(x86-pclmul,
+  AC_HELP_STRING([--enable-x86-pclmul], [Enable x86_64 pclmulqdq instructions. (default=no)]),,
+  [enable_x86_pclmul=no])
+
 AC_ARG_ENABLE(power-crypto-ext,
   AC_HELP_STRING([--enable-power-crypto-ext], [Enable POWER crypto extensions. (default=no)]),,
   [enable_power_crypto_ext=no])
@@ -473,6 +477,9 @@ if test "x$enable_assembler" = xyes ; then
 	  fi
 	  if test "x$enable_x86_sha_ni" = xyes ; then
 	    asm_path="x86_64/sha_ni $asm_path"
+	  fi
+	  if test "x$enable_x86_pclmul" = xyes ; then
+	    asm_path="x86_64/pclmul $asm_path"
 	  fi
 	fi
       else
