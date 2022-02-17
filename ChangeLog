@@ -1,3 +1,13 @@
+2022-02-17  Niels Möller  <nisse@lysator.liu.se>
+
+	* gcm.c: Require that GCM_TABLE_BITS == 8. Delete old code for
+	GCM_TABLE_BITS == 0 and GCM_TABLE_BITS == 4.
+	* gcm-internal.h: Delete checks for GCM_TABLE_BITS != 8.
+	* fat-x86_64.c: Likewise.
+	* fat-s390x.c: Likewise.
+	* fat-ppc.c: Likewise.
+	* fat-arm64.c: Likewise.
+
 2022-02-15  Niels Möller  <nisse@lysator.liu.se>
 
 	* fat-x86_64.c: Add fat setup for gcm.

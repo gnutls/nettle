@@ -32,19 +32,10 @@
 #ifndef NETTLE_GCM_INTERNAL_H_INCLUDED
 #define NETTLE_GCM_INTERNAL_H_INCLUDED
 
-#if GCM_TABLE_BITS != 8
-/* The native implementations (currently ppc64 only) depend on the
-   GCM_TABLE_BITS == 8 layout */
-#undef HAVE_NATIVE_gcm_hash
-#undef HAVE_NATIVE_gcm_init_key
-#undef HAVE_NATIVE_fat_gcm_hash
-#undef HAVE_NATIVE_fat_gcm_init_key
-#endif
-
 /* Arrange so that _gcm_hash is an alias for the right implementation. */
 #if HAVE_NATIVE_gcm_hash || HAVE_NATIVE_fat_gcm_hash
 # define _gcm_hash _nettle_gcm_hash
-#elif GCM_TABLE_BITS == 8 && HAVE_NATIVE_gcm_hash8
+#elif HAVE_NATIVE_gcm_hash8
 # define _gcm_hash _nettle_gcm_hash8
 #else
 # define _gcm_hash _nettle_gcm_hash_c

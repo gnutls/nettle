@@ -160,7 +160,6 @@ DECLARE_FAT_FUNC(_nettle_sha256_compress, sha256_compress_func)
 DECLARE_FAT_FUNC_VAR(sha256_compress, sha256_compress_func, x86_64)
 DECLARE_FAT_FUNC_VAR(sha256_compress, sha256_compress_func, sha_ni)
 
-#if GCM_TABLE_BITS == 8
 DECLARE_FAT_FUNC(_nettle_gcm_init_key, gcm_init_key_func)
 DECLARE_FAT_FUNC_VAR(gcm_init_key, gcm_init_key_func, c)
 DECLARE_FAT_FUNC_VAR(gcm_init_key, gcm_init_key_func, pclmul)
@@ -168,7 +167,6 @@ DECLARE_FAT_FUNC_VAR(gcm_init_key, gcm_init_key_func, pclmul)
 DECLARE_FAT_FUNC(_nettle_gcm_hash, gcm_hash_func)
 DECLARE_FAT_FUNC_VAR(gcm_hash, gcm_hash_func, c)
 DECLARE_FAT_FUNC_VAR(gcm_hash, gcm_hash_func, pclmul)
-#endif /* GCM_TABLE_BITS == 8 */
 
 
 /* This function should usually be called only once, at startup. But
@@ -241,7 +239,6 @@ fat_init (void)
       _nettle_sha256_compress_vec = _nettle_sha256_compress_x86_64;
     }
 
-#if GCM_TABLE_BITS == 8
   if (features.have_pclmul)
     {
       if (verbose)
@@ -256,7 +253,7 @@ fat_init (void)
       _nettle_gcm_init_key_vec = _nettle_gcm_init_key_c;
       _nettle_gcm_hash_vec = _nettle_gcm_hash8;
     }
-#endif
+
   if (features.vendor == X86_INTEL)
     {
       if (verbose)
@@ -323,7 +320,6 @@ DEFINE_FAT_FUNC(_nettle_sha256_compress, void,
 		(uint32_t *state, const uint8_t *input, const uint32_t *k),
 		(state, input, k))
 
-#if GCM_TABLE_BITS == 8
 DEFINE_FAT_FUNC(_nettle_gcm_init_key, void,
 		(union nettle_block16 *table),
 		(table))
@@ -332,4 +328,3 @@ DEFINE_FAT_FUNC(_nettle_gcm_hash, void,
 		(const struct gcm_key *key, union nettle_block16 *x,
 		 size_t length, const uint8_t *data),
 		(key, x, length, data))
-#endif /* GCM_TABLE_BITS == 8 */

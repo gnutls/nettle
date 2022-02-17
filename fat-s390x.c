@@ -242,7 +242,6 @@ DECLARE_FAT_FUNC_VAR(aes256_decrypt, aes256_crypt_func, c)
 DECLARE_FAT_FUNC_VAR(aes256_decrypt, aes256_crypt_func, s390x)
 
 /* GHASH */
-#if GCM_TABLE_BITS == 8
 DECLARE_FAT_FUNC(_nettle_gcm_init_key, gcm_init_key_func)
 DECLARE_FAT_FUNC_VAR(gcm_init_key, gcm_init_key_func, c)
 DECLARE_FAT_FUNC_VAR(gcm_init_key, gcm_init_key_func, s390x)
@@ -250,7 +249,6 @@ DECLARE_FAT_FUNC_VAR(gcm_init_key, gcm_init_key_func, s390x)
 DECLARE_FAT_FUNC(_nettle_gcm_hash, gcm_hash_func)
 DECLARE_FAT_FUNC_VAR(gcm_hash, gcm_hash_func, c)
 DECLARE_FAT_FUNC_VAR(gcm_hash, gcm_hash_func, s390x)
-#endif /* GCM_TABLE_BITS == 8 */
 
 DECLARE_FAT_FUNC(nettle_sha1_compress, sha1_compress_func)
 DECLARE_FAT_FUNC_VAR(sha1_compress, sha1_compress_func, c)
@@ -483,7 +481,6 @@ DEFINE_FAT_FUNC(nettle_aes256_decrypt, void,
  (ctx, length, dst, src))
 
 /* GHASH */
-#if GCM_TABLE_BITS == 8
 DEFINE_FAT_FUNC(_nettle_gcm_init_key, void,
 		(union nettle_block16 *table),
 		(table))
@@ -491,7 +488,6 @@ DEFINE_FAT_FUNC(_nettle_gcm_hash, void,
 		(const struct gcm_key *key, union nettle_block16 *x,
 		 size_t length, const uint8_t *data),
 		(key, x, length, data))
-#endif /* GCM_TABLE_BITS == 8 */
 
 /* SHA1 */
 DEFINE_FAT_FUNC(nettle_sha1_compress, void,

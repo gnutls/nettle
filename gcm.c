@@ -56,93 +56,19 @@
 #include "ctr-internal.h"
 #include "block-internal.h"
 
+#if GCM_TABLE_BITS != 8
+# error Unsupported table size.
+#endif
+
 #if !HAVE_NATIVE_gcm_hash
-# if GCM_TABLE_BITS == 0
-/* Sets x <- x * y mod r, using the plain bitwise algorithm from the
-   specification. y may be shorter than a full block, missing bytes
-   are assumed zero. */
-static void
-gcm_gf_mul (union nettle_block16 *x, const union nettle_block16 *y)
-{
-  union nettle_block16 V;
-  union nettle_block16 Z;
-  unsigned i;
 
-  memcpy(V.b, x, sizeof(V));
-  memset(Z.b, 0, sizeof(Z));
+# if WORDS_BIGENDIAN
+#  define W(left,right) (0x##left##right)
+# else
+#  define W(left,right) (0x##right##left)
+# endif
 
-  for (i = 0; i < GCM_BLOCK_SIZE; i++)
-    {
-      uint8_t b = y->b[i];
-      unsigned j;
-      for (j = 0; j < 8; j++, b <<= 1)
-	{
-	  if (b & 0x80)
-	    block16_xor(&Z, &V);
-	  
-	  block16_mulx_ghash(&V, &V);
-	}
-    }
-  memcpy (x->b, Z.b, sizeof(Z));
-}
-# else /* GCM_TABLE_BITS != 0 */
-
-#  if WORDS_BIGENDIAN
-#   define W(left,right) (0x##left##right)
-#  else
-#   define W(left,right) (0x##right##left)
-#  endif
-
-#  if GCM_TABLE_BITS == 4
-static const uint16_t
-shift_table[0x10] = {
-  W(00,00),W(1c,20),W(38,40),W(24,60),W(70,80),W(6c,a0),W(48,c0),W(54,e0),
-  W(e1,00),W(fd,20),W(d9,40),W(c5,60),W(91,80),W(8d,a0),W(a9,c0),W(b5,e0),
-};
-
-static void
-gcm_gf_shift_4(union nettle_block16 *x)
-{
-  uint64_t *u64 = x->u64;
-  uint64_t reduce;
-
-  /* Shift uses big-endian representation. */
-#if WORDS_BIGENDIAN
-  reduce = shift_table[u64[1] & 0xf];
-  u64[1] = (u64[1] >> 4) | ((u64[0] & 0xf) << 60);
-  u64[0] = (u64[0] >> 4) ^ (reduce << 48);
-#else /* ! WORDS_BIGENDIAN */
-# define RSHIFT_WORD_4(x) \
-  ((((x) & UINT64_C(0xf0f0f0f0f0f0f0f0)) >> 4) \
-   | (((x) & UINT64_C(0x000f0f0f0f0f0f0f)) << 12))
-  reduce = shift_table[(u64[1] >> 56) & 0xf];
-  u64[1] = RSHIFT_WORD_4(u64[1]) | ((u64[0] >> 52) & 0xf0);
-  u64[0] = RSHIFT_WORD_4(u64[0]) ^ reduce;
-# undef RSHIFT_WORD_4
-#endif /* ! WORDS_BIGENDIAN */
-}
-
-static void
-gcm_gf_mul (union nettle_block16 *x, const union nettle_block16 *table)
-{
-  union nettle_block16 Z;
-  unsigned i;
-
-  memset(Z.b, 0, sizeof(Z));
-
-  for (i = GCM_BLOCK_SIZE; i-- > 0;)
-    {
-      uint8_t b = x->b[i];
-
-      gcm_gf_shift_4(&Z);
-      block16_xor(&Z, &table[b & 0xf]);
-      gcm_gf_shift_4(&Z);
-      block16_xor(&Z, &table[b >> 4]);
-    }
-  memcpy (x->b, Z.b, sizeof(Z));
-}
-#  elif GCM_TABLE_BITS == 8
-#   if !HAVE_NATIVE_gcm_hash8
+# if !HAVE_NATIVE_gcm_hash8
 static const uint16_t
 shift_table[0x100] = {
   W(00,00),W(01,c2),W(03,84),W(02,46),W(07,08),W(06,ca),W(04,8c),W(05,4e),
@@ -212,13 +138,9 @@ gcm_gf_mul (union nettle_block16 *x, const union nettle_block16 *table)
   gcm_gf_shift_8(&Z);
   block16_xor3(x, &Z, &table[x->b[0]]);
 }
-#   endif /* ! HAVE_NATIVE_gcm_hash8 */
-#  else /* GCM_TABLE_BITS != 8 */
-#   error Unsupported table size.
-#  endif /* GCM_TABLE_BITS != 8 */
+# endif /* ! HAVE_NATIVE_gcm_hash8 */
 
-#  undef W
-# endif /* GCM_TABLE_BITS != 0 */
+# undef W
 #endif /* !HAVE_NATIVE_gcm_hash */
 
 
@@ -233,7 +155,6 @@ static
 void
 _nettle_gcm_init_key_c(union nettle_block16 *table)
 {
-#if GCM_TABLE_BITS
   /* Middle element if GCM_TABLE_BITS > 0, otherwise the first
      element */
   unsigned i = (1<<GCM_TABLE_BITS)/2;
@@ -248,7 +169,6 @@ _nettle_gcm_init_key_c(union nettle_block16 *table)
       for (j = 1; j < i; j++)
 	block16_xor3(&table[i+j], &table[i], &table[j]);
     }
-#endif
 }
 #endif /* !HAVE_NATIVE_gcm_init_key */
 
