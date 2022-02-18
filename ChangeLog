@@ -1,3 +1,7 @@
+2022-02-18  Niels Möller  <nisse@lysator.liu.se>
+
+	* block-internal.h (block16_zero): New function.
+
 2022-02-17  Niels Möller  <nisse@lysator.liu.se>
 
 	* gcm.c: Require that GCM_TABLE_BITS == 8. Delete old code for
