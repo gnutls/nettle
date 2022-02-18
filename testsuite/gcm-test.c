@@ -4,7 +4,7 @@
 #include "testutils.h"
 #include "nettle-internal.h"
 #include "gcm.h"
-#include "gcm-internal.h"
+#include "ghash-internal.h"
 
 static void
 test_gcm_hash (const struct tstring *msg, const struct tstring *ref)
@@ -38,12 +38,15 @@ test_ghash_internal (const struct tstring *key,
   ASSERT (key->length == GCM_BLOCK_SIZE);
   ASSERT (iv->length == GCM_BLOCK_SIZE);
   ASSERT (digest->length == GCM_BLOCK_SIZE);
+  ASSERT (message->length % GCM_BLOCK_SIZE == 0);
   struct gcm_key gcm_key;
   union nettle_block16 state;
 
-  _nettle_gcm_set_key (&gcm_key, key->data);
+  memcpy (state.b, key->data, GCM_BLOCK_SIZE);
+  _ghash_set_key (&gcm_key, &state);
+
   memcpy (state.b, iv->data, GCM_BLOCK_SIZE);
-  _gcm_hash (&gcm_key, &state, message->length, message->data);
+  _ghash_update (&gcm_key, &state, message->length / GCM_BLOCK_SIZE, message->data);
   if (!MEMEQ(GCM_BLOCK_SIZE, state.b, digest->data))
     {
       fprintf (stderr, "gcm_hash (internal) failed\n");

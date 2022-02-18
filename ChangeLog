@@ -2,6 +2,30 @@
 
 	* block-internal.h (block16_zero): New function.
 
+	* ghash-internal.h: New file, declaring new internal ghash interface.
+	* gcm-internal.h: Deleted file.
+	* ghash-update.c (gcm_gf_shift_8): Moved here (from gcm.c)
+	(gcm_gf_mul): Likewise.
+	(_ghash_update): New function, extracted from _nettle_gcm_hash_c.
+	(_ghash_digest): New function.
+	* ghash-set-key.c (_ghash_set_key): New file and function.
+	Extracted from _nettle_gcm_init_key_c and _nettle_gcm_set_key.
+
+	* gcm.c (INC32): Deleted macro, used in only one place.
+	(gcm_set_key): Update to use _ghash_set_key.
+	(gcm_hash): Renamed, was _gcm_hash, and implemented in terms of
+	_ghash_update.
+	(bswap_if_le): New function (copied from nist-keywrap.c).
+	(gcm_hash_sizes): Use bswap_if_le and _ghash_update.
+	(gcm_set_iv): Updated to use gcm_hash and block16_zero.
+	(gcm_digest): Use _ghash_digest.
+
+	* testsuite/gcm-test.c (test_ghash_internal): Updated to use
+	_ghash_set_key and _ghash_update.
+
+	* Makefile.in (nettle_SOURCES): Add ghash-set-key.c ghash-update.c.
+	(DISTFILES): Replaced gcm-internal.h with ghash-internal.h.
+
 2022-02-17  Niels Möller  <nisse@lysator.liu.se>
 
 	* gcm.c: Require that GCM_TABLE_BITS == 8. Delete old code for
