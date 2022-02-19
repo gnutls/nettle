@@ -258,7 +258,7 @@ gcm_digest(struct gcm_ctx *ctx, const struct gcm_key *key,
   gcm_hash_sizes(key, &ctx->x, ctx->auth_size, ctx->data_size);
 
   f (cipher, GCM_BLOCK_SIZE, buffer.b, ctx->iv.b);
-  _ghash_digest (&ctx->x, &buffer);
+  block16_xor (&buffer, &ctx->x);
   memcpy (digest, buffer.b, length);
 
   return;

@@ -1,5 +1,9 @@
 2022-02-19  Niels Möller  <nisse@lysator.liu.se>
 
+	* ghash-set-key.c (_ghash_digest): Deleted, and also deleted
+	assembly implementations.
+	* gcm.c (gcm_digest): Replace call to _ghash_digest with block16_xor.
+
 	* x86_64/pclmul/gcm-hash.asm: Deleted, split into two new files...
 	* x86_64/pclmul/ghash-set-key.asm: New file.
 	* x86_64/pclmul/ghash-update.asm: New file.

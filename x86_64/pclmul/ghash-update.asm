@@ -123,21 +123,6 @@ PROLOGUE(_nettle_ghash_update)
 	ret
 EPILOGUE(_nettle_ghash_update)
 
-	C void _ghash_digest (const union nettle_block16 *state,
-	C		      union nettle_block16 *digest)
-	C state in %rdi, digest in %rsi
-PROLOGUE(_nettle_ghash_digest)
-	W64_ENTRY(2)
-	mov	(%rsi), %rax
-	mov	8(%rsi), %rdx
-	xor	(%rdi), %rax
-	xor	8(%rdi), %rdx
-	mov	%rax, (%rsi)
-	mov	%rdx, 8(%rsi)
-	W64_EXIT(2)
-	ret
-EPILOGUE(_nettle_ghash_digest)
-
 	RODATA
 	C The GCM polynomial is x^{128} + x^7 + x^2 + x + 1,
 	C but in bit-reversed representation, that is

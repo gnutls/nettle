@@ -38,7 +38,6 @@
 /* Name mangling */
 #define _ghash_set_key _nettle_ghash_set_key
 #define _ghash_update _nettle_ghash_update
-#define _ghash_digest _nettle_ghash_digest
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,9 +45,7 @@ extern "C" {
 
 /* The CTX a struct gcm_key (even if struct ghash_key might be a more
  * appropriate name). An array of blocks, exact contents depends on
- * the implementation. STATE is only a single block. Initial state is
- * all zero, otherwise, usage (e.g., byte order) depends on
- * implementation. */
+ * the implementation. STATE is only a single block. */
 
 /* Expands KEY as needed, for corresponding _ghash_update */
 void
@@ -60,10 +57,6 @@ _ghash_set_key (struct gcm_key *ctx, const union nettle_block16 *key);
 const uint8_t *
 _ghash_update (const struct gcm_key *ctx, union nettle_block16 *state,
 	       size_t blocks, const uint8_t *data);
-
-/* Produces final digest, and XORS into the digest block. */
-void 
-_ghash_digest (const union nettle_block16 *state, union nettle_block16 *digest);
 
 #ifdef __cplusplus
 }
