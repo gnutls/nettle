@@ -1,4 +1,4 @@
-C x86_64/gcm-hash.asm
+C x86_64/ghash-update.asm
 
 ifelse(`
    Copyright (C) 2022 Niels Möller
@@ -32,44 +32,20 @@ ifelse(`
 
 C Common registers
 
-define(`KEY', `%rdi')
+define(`CTX', `%rdi')
+define(`X', `%rsi')
+define(`BLOCKS', `%rdx')
+define(`DATA', `%rcx')
+
 define(`P', `%xmm0')
 define(`BSWAP', `%xmm1')
 define(`H', `%xmm2')
 define(`D', `%xmm3')
 define(`T', `%xmm4')
 
-    C void gcm_init_key (union gcm_block *table)
-
-PROLOGUE(_nettle_gcm_init_key)
-define(`MASK', `%xmm5')
-	W64_ENTRY(1, 6)
-	movdqa	.Lpolynomial(%rip), P
-	movdqa	.Lbswap(%rip), BSWAP
-	movups	2048(KEY), H	C Middle element
-	pshufb	BSWAP, H
-	C Multiply by x mod P, which is a left shift.
-	movdqa	H, T
-	psllq	$1, T
-	psrlq	$63, H		C 127 --> 64, 63 --> 0
-	pshufd	$0xaa, H, MASK	C 64 --> (96, 64, 32, 0)
-	pslldq	$8, H		C 0 --> 64
-	por	T, H
-	pxor	T, T
-	psubd	MASK, T		C All-ones if bit 127 was set
-	pand	P, T
-	pxor	T, H
-	movups	H, (KEY)
-
-	C Set D = x^{-64} H = {H0, H1} + P1 H0
-	pshufd	$0x4e, H, D	C Swap H0, H1
-	pclmullqhqdq P, H
-	pxor	H, D
-	movups	D, 16(KEY)
-	W64_EXIT(1, 6)
-	ret
-undefine(`MASK')
-EPILOGUE(_nettle_gcm_init_key)
+define(`R', `%xmm5')
+define(`M', `%xmm6')
+define(`F', `%xmm7')
 
 C Use pclmulqdq, doing one 64x64 --> 127 bit carry-less multiplication,
 C with source operands being selected from the halves of two 128-bit registers.
@@ -99,28 +75,21 @@ C blocks, we need additionan D ang H registers (for powers of the key) and the
 C additional message word, but we could perhaps interlave as many as 4, with two
 C registers left for temporaries.
 
-define(`X', `%rsi')
-define(`LENGTH', `%rdx')
-define(`DATA', `%rcx')
+	C const uint8_t *_ghash_update (const struct gcm_key *key,
+	C				union gcm_block *x,
+	C				size_t blocks, const uint8_t *data)
 
-define(`R', `%xmm5')
-define(`M', `%xmm6')
-define(`F', `%xmm7')
-
-    C void gcm_hash (const struct gcm_key *key, union gcm_block *x,
-    C                size_t length, const uint8_t *data)
-
-PROLOGUE(_nettle_gcm_hash)
+PROLOGUE(_nettle_ghash_update)
 	W64_ENTRY(4, 8)
 	movdqa		.Lpolynomial(%rip), P
 	movdqa		.Lbswap(%rip), BSWAP
-	movups		(KEY), H
-	movups		16(KEY), D
+	movups		(CTX), H
+	movups		16(CTX), D
 	movups		(X), R
 	pshufb		BSWAP, R
 
-	sub		$16, LENGTH
-	jc		.Lfinal
+	sub		$1, BLOCKS
+	jc		.Ldone
 
 .Loop:
 	movups		(DATA), M
@@ -143,37 +112,31 @@ PROLOGUE(_nettle_gcm_hash)
 	pxor		F, R
 
 	add		$16, DATA
-	sub		$16, LENGTH
+	sub		$1, BLOCKS
 	jnc		.Loop
-.Lfinal:
-	add		$16, LENGTH
-	jnz		.Lpartial
 
+.Ldone:
 	pshufb		BSWAP, R
 	movups		R, (X)
+	mov		DATA, %rax
 	W64_EXIT(4, 8)
 	ret
+EPILOGUE(_nettle_ghash_update)
 
-.Lpartial:
-	C Copy zero padded to stack
-	mov		%rsp, %r8
-	sub		$16, %rsp
-	pxor		M, M
-	movups		M, (%rsp)
-.Lread_loop:
-	movb		(DATA), %al
-	sub		$1, %r8
-	movb		%al, (%r8)
-	add		$1, DATA
-	sub		$1, LENGTH
-	jnz		.Lread_loop
-
-	C Move into M register, jump into loop with LENGTH = 0
-	movups		(%rsp), M
-	add		$16, %rsp
-	jmp		.Lblock
-
-EPILOGUE(_nettle_gcm_hash)
+	C void _ghash_digest (const union nettle_block16 *state,
+	C		      union nettle_block16 *digest)
+	C state in %rdi, digest in %rsi
+PROLOGUE(_nettle_ghash_digest)
+	W64_ENTRY(2)
+	mov	(%rsi), %rax
+	mov	8(%rsi), %rdx
+	xor	(%rdi), %rax
+	xor	8(%rdi), %rdx
+	mov	%rax, (%rsi)
+	mov	%rdx, 8(%rsi)
+	W64_EXIT(2)
+	ret
+EPILOGUE(_nettle_ghash_digest)
 
 	RODATA
 	C The GCM polynomial is x^{128} + x^7 + x^2 + x + 1,

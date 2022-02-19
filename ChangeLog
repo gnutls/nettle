@@ -1,5 +1,9 @@
 2022-02-19  Niels Möller  <nisse@lysator.liu.se>
 
+	* x86_64/pclmul/gcm-hash.asm: Deleted, split into two new files...
+	* x86_64/pclmul/ghash-set-key.asm: New file.
+	* x86_64/pclmul/ghash-update.asm: New file.
+
 	* configure.ac (asm_replace_list): Add ghash-set-key.asm ghash-update.asm.
 	(asm_nettle_optional_list): Delete gcm-hash.asm gcm-hash8.asm.
 	* x86_64/ghash-update.asm: New file, based on old gcm-hash8.asm,
