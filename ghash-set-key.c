@@ -66,3 +66,9 @@ _ghash_set_key (struct gcm_key *ctx, const union nettle_block16 *key)
 	block16_xor3 (&ctx->h[i+j], &ctx->h[i], &ctx->h[j]);
     }
 }
+
+void
+_ghash_digest (const union nettle_block16 *state, union nettle_block16 *digest)
+{
+  block16_xor (digest, state);
+}

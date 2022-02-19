@@ -136,9 +136,3 @@ _ghash_update (const struct gcm_key *ctx, union nettle_block16 *state,
     }
   return data;
 }
-
-void
-_ghash_digest (const union nettle_block16 *state, union nettle_block16 *digest)
-{
-  block16_xor (digest, state);
-}

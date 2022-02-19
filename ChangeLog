@@ -1,3 +1,8 @@
+2022-02-19  Niels Möller  <nisse@lysator.liu.se>
+
+	* ghash-set-key.c (_ghash_digest): Moved function from...
+	* ghash-update.c (_ghash_digest): ...old location.
+
 2022-02-18  Niels Möller  <nisse@lysator.liu.se>
 
 	* block-internal.h (block16_zero): New function.
