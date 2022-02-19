@@ -1,7 +1,7 @@
-C x86_64/gcm-hash8.asm
+C x86_64/ghash-update.asm
 
 ifelse(`
-   Copyright (C) 2013 Niels Möller
+   Copyright (C) 2013, 2022 Niels Möller
 
    This file is part of GNU Nettle.
 
@@ -34,7 +34,7 @@ C Register usage:
 
 define(`KEY', `%rdi')
 define(`XP', `%rsi')
-define(`LENGTH', `%rdx')
+define(`BLOCKS', `%rdx')
 define(`SRC', `%rcx')
 define(`X0', `%rax')
 define(`X1', `%rbx')
@@ -46,24 +46,25 @@ define(`Z0', `%r11')
 define(`Z1', `%r12')
 define(`SHIFT_TABLE', `%r13')
 
-	.file "gcm-hash8.asm"
+	.file "ghash-update.asm"
 
-	C void gcm_hash (const struct gcm_key *key, union gcm_block *x,
-	C                size_t length, const uint8_t *data)
+	C const uint8_t *_ghash_update (const struct gcm_key *key,
+	C				union gcm_block *x,
+	C				size_t blocks, const uint8_t *data)
 
 	.text
 	ALIGN(16)
-PROLOGUE(_nettle_gcm_hash8)
+PROLOGUE(_nettle_ghash_update)
 	W64_ENTRY(4, 0)
 	push	%rbx
 	push	%rbp
 	push	%r12
 	push	%r13
-	sub	$16, LENGTH
+	sub	$1, BLOCKS
 	lea	.Lshift_table(%rip), SHIFT_TABLE
 	mov	(XP), X0
 	mov	8(XP), X1
-	jc	.Lfinal
+	jc	.Ldone
 ALIGN(16)
 .Lblock_loop:
 
@@ -148,57 +149,20 @@ ALIGN(16)
 	xor	Z1, X1
 
 	add	$16, SRC
-	sub	$16, LENGTH
+	sub	$1, BLOCKS
 	jnc	.Lblock_loop
 
-.Lfinal:
-	add	$16, LENGTH
-	jnz	.Lpartial
-
+.Ldone:
 	mov	X0, (XP)
 	mov	X1, 8(XP)
-
+	mov	SRC, %rax
 	pop	%r13
 	pop	%r12
 	pop	%rbp
 	pop	%rbx
 	W64_EXIT(4, 0)
 	ret
-
-.Lpartial:
-	C Read and xor partial block, then jump back into the loop
-	C with LENGTH == 0.
-
-	cmp	$8, LENGTH
-	jc	.Llt8
-
-	C 	8 <= LENGTH < 16
-	xor	(SRC), X0
-	add	$8, SRC
-	sub	$8, LENGTH
-	jz	.Lblock_mul
-	call	.Lread_bytes
-	xor	T0, X1
-	jmp	.Lblock_mul
-
-.Llt8:	C 0 < LENGTH < 8
-	call	.Lread_bytes
-	xor	T0, X0
-	jmp	.Lblock_mul
-
-C Read 0 < LENGTH < 8 bytes at SRC, result in T0
-.Lread_bytes:
-	xor	T0, T0
-	sub	$1, SRC
-ALIGN(16)
-.Lread_loop:
-	shl	$8, T0
-	orb	(SRC, LENGTH), LREG(T0)
-.Lread_next:
-	sub	$1, LENGTH
-	jnz	.Lread_loop
-	ret
-EPILOGUE(_nettle_gcm_hash8)
+EPILOGUE(_nettle_ghash_update)
 
 define(`W', `0x$2$1')
 	RODATA

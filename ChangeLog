@@ -1,5 +1,11 @@
 2022-02-19  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac (asm_replace_list): Add ghash-set-key.asm ghash-update.asm.
+	(asm_nettle_optional_list): Delete gcm-hash.asm gcm-hash8.asm.
+	* x86_64/ghash-update.asm: New file, based on old gcm-hash8.asm,
+	but without any handling of partial blocks.
+	* x86_64/gcm-hash8.asm: Deleted.
+
 	* ghash-set-key.c (_ghash_digest): Moved function from...
 	* ghash-update.c (_ghash_digest): ...old location.
 

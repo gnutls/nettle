@@ -586,6 +586,7 @@ asm_replace_list="aes-encrypt-internal.asm aes-decrypt-internal.asm \
 		cbc-aes256-encrypt.asm \
 		arcfour-crypt.asm camellia-crypt-internal.asm \
 		md5-compress.asm memxor.asm memxor3.asm \
+		ghash-set-key.asm ghash-update.asm \
 		poly1305-internal.asm \
 		chacha-core-internal.asm \
 		salsa20-crypt.asm salsa20-core-internal.asm \
@@ -594,7 +595,7 @@ asm_replace_list="aes-encrypt-internal.asm aes-decrypt-internal.asm \
 		sha3-permute.asm umac-nh.asm umac-nh-n.asm machine.m4"
 
 # Assembler files which generate additional object files if they are used.
-asm_nettle_optional_list="gcm-hash.asm gcm-hash8.asm cpuid.asm cpu-facility.asm \
+asm_nettle_optional_list="cpuid.asm cpu-facility.asm \
   aes-encrypt-internal-2.asm aes-decrypt-internal-2.asm memxor-2.asm memxor3-2.asm \
   aes128-set-encrypt-key-2.asm aes128-set-decrypt-key-2.asm \
   aes128-encrypt-2.asm aes128-decrypt-2.asm \
