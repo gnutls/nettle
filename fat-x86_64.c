@@ -43,8 +43,7 @@
 #include "nettle-types.h"
 
 #include "aes-internal.h"
-#include "gcm.h"
-#include "gcm-internal.h"
+#include "ghash-internal.h"
 #include "memxor.h"
 #include "fat-setup.h"
 
@@ -160,13 +159,13 @@ DECLARE_FAT_FUNC(_nettle_sha256_compress, sha256_compress_func)
 DECLARE_FAT_FUNC_VAR(sha256_compress, sha256_compress_func, x86_64)
 DECLARE_FAT_FUNC_VAR(sha256_compress, sha256_compress_func, sha_ni)
 
-DECLARE_FAT_FUNC(_nettle_gcm_init_key, gcm_init_key_func)
-DECLARE_FAT_FUNC_VAR(gcm_init_key, gcm_init_key_func, c)
-DECLARE_FAT_FUNC_VAR(gcm_init_key, gcm_init_key_func, pclmul)
+DECLARE_FAT_FUNC(_nettle_ghash_set_key, ghash_set_key_func)
+DECLARE_FAT_FUNC_VAR(ghash_set_key, ghash_set_key_func, c)
+DECLARE_FAT_FUNC_VAR(ghash_set_key, ghash_set_key_func, pclmul)
 
-DECLARE_FAT_FUNC(_nettle_gcm_hash, gcm_hash_func)
-DECLARE_FAT_FUNC_VAR(gcm_hash, gcm_hash_func, c)
-DECLARE_FAT_FUNC_VAR(gcm_hash, gcm_hash_func, pclmul)
+DECLARE_FAT_FUNC(_nettle_ghash_update, ghash_update_func)
+DECLARE_FAT_FUNC_VAR(ghash_update, ghash_update_func, table)
+DECLARE_FAT_FUNC_VAR(ghash_update, ghash_update_func, pclmul)
 
 
 /* This function should usually be called only once, at startup. But
@@ -243,15 +242,15 @@ fat_init (void)
     {
       if (verbose)
 	fprintf (stderr, "libnettle: using pclmulqdq instructions.\n");
-      _nettle_gcm_init_key_vec = _nettle_gcm_init_key_pclmul;
-      _nettle_gcm_hash_vec = _nettle_gcm_hash_pclmul;
+      _nettle_ghash_set_key_vec = _nettle_ghash_set_key_pclmul;
+      _nettle_ghash_update_vec = _nettle_ghash_update_pclmul;
     }
   else
     {
       if (verbose)
 	fprintf (stderr, "libnettle: not using pclmulqdq instructions.\n");
-      _nettle_gcm_init_key_vec = _nettle_gcm_init_key_c;
-      _nettle_gcm_hash_vec = _nettle_gcm_hash8;
+      _nettle_ghash_set_key_vec = _nettle_ghash_set_key_c;
+      _nettle_ghash_update_vec = _nettle_ghash_update_table;
     }
 
   if (features.vendor == X86_INTEL)
@@ -320,11 +319,10 @@ DEFINE_FAT_FUNC(_nettle_sha256_compress, void,
 		(uint32_t *state, const uint8_t *input, const uint32_t *k),
 		(state, input, k))
 
-DEFINE_FAT_FUNC(_nettle_gcm_init_key, void,
-		(union nettle_block16 *table),
-		(table))
-
-DEFINE_FAT_FUNC(_nettle_gcm_hash, void,
-		(const struct gcm_key *key, union nettle_block16 *x,
-		 size_t length, const uint8_t *data),
-		(key, x, length, data))
+DEFINE_FAT_FUNC(_nettle_ghash_set_key, void,
+		(struct gcm_key *ctx, const union nettle_block16 *key),
+		(ctx, key))
+DEFINE_FAT_FUNC(_nettle_ghash_update, const uint8_t *,
+		(const struct gcm_key *ctx, union nettle_block16 *state,
+		 size_t blocks, const uint8_t *data),
+		(ctx, state, blocks, data))

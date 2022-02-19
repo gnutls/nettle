@@ -1,5 +1,4 @@
-C powerpc64/fat/gcm-hash.asm
-
+C x86_64/fat/ghash-update-2.asm
 
 ifelse(`
    Copyright (C) 2022 Niels Möller
@@ -32,8 +31,7 @@ ifelse(`
 ')
 
 dnl picked up by configure
-dnl PROLOGUE(_nettle_fat_gcm_init_key)
-dnl PROLOGUE(_nettle_fat_gcm_hash)
+dnl PROLOGUE(_nettle_ghash_update)
 
 define(`fat_transform', `$1_pclmul')
-include_src(`x86_64/pclmul/gcm-hash.asm')
+include_src(`x86_64/pclmul/ghash-update.asm')

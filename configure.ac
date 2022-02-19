@@ -605,6 +605,7 @@ asm_nettle_optional_list="cpuid.asm cpu-facility.asm \
   aes256-encrypt-2.asm aes256-decrypt-2.asm \
   cbc-aes128-encrypt-2.asm cbc-aes192-encrypt-2.asm cbc-aes256-encrypt-2.asm \
   chacha-2core.asm chacha-3core.asm chacha-4core.asm chacha-core-internal-2.asm \
+  ghash-set-key-2.asm ghash-update-2.asm \
   salsa20-2core.asm salsa20-core-internal-2.asm \
   sha1-compress-2.asm sha256-compress-2.asm \
   sha3-permute-2.asm sha512-compress-2.asm \
@@ -750,11 +751,7 @@ AH_VERBATIM([HAVE_NATIVE],
 #undef HAVE_NATIVE_ecc_secp384r1_redc
 #undef HAVE_NATIVE_ecc_secp521r1_modp
 #undef HAVE_NATIVE_ecc_secp521r1_redc
-#undef HAVE_NATIVE_gcm_init_key
-#undef HAVE_NATIVE_fat_gcm_init_key
-#undef HAVE_NATIVE_gcm_hash
-#undef HAVE_NATIVE_fat_gcm_hash
-#undef HAVE_NATIVE_gcm_hash8
+#undef HAVE_NATIVE_ghash_set_key
 #undef HAVE_NATIVE_salsa20_core
 #undef HAVE_NATIVE_salsa20_2core
 #undef HAVE_NATIVE_fat_salsa20_2core

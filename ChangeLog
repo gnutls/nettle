@@ -1,5 +1,19 @@
 2022-02-19  Niels Möller  <nisse@lysator.liu.se>
 
+	* fat-x86_64.c (fat_init): Update fat init for new _ghash_set_key
+	and _ghash_update functions, delete setup for old gcm functions.
+	* fat-setup.h (ghash_set_key_func, ghash_update_func): New
+	typedefs.
+	(gcm_init_key_func, gcm_hash_func): Deleted typedefs.
+	* x86_64/fat/ghash-update.asm: New file.
+	* x86_64/fat/ghash-update-2.asm: New file.
+	* x86_64/fat/ghash-set-key-2.asm: New file.
+	* x86_64/fat/gcm-hash.asm: Deleted.
+	* ghash-set-key.c (_nettle_ghash_set_key_c): New name, for fat
+	builds.
+	* configure.ac (asm_nettle_optional_list): Add ghash-set-key-2.asm
+	ghash-update-2.asm.
+
 	* ghash-set-key.c (_ghash_digest): Deleted, and also deleted
 	assembly implementations.
 	* gcm.c (gcm_digest): Replace call to _ghash_digest with block16_xor.

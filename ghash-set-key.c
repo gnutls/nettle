@@ -44,6 +44,13 @@
 #include "ghash-internal.h"
 #include "block-internal.h"
 
+/* For fat builds */
+#if HAVE_NATIVE_ghash_set_key
+void
+_nettle_ghash_set_key_c (struct gcm_key *ctx, const union nettle_block16 *key);
+#define _nettle_ghash_set_key _nettle_ghash_set_key_c
+#endif
+
 /* Implements a lookup table for processors without carryless-mul
    instruction. */
 void
