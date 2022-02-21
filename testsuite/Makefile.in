@@ -24,7 +24,7 @@ TS_NETTLE_SOURCES = aes-test.c aes-keywrap-test.c arcfour-test.c arctwo-test.c \
 		    sha384-test.c sha512-test.c sha512-224-test.c sha512-256-test.c \
 		    sha3-permute-test.c sha3-224-test.c sha3-256-test.c \
 		    sha3-384-test.c sha3-512-test.c \
-		    shake256-test.c streebog-test.c sm3-test.c \
+		    shake256-test.c streebog-test.c sm3-test.c sm4-test.c \
 		    serpent-test.c twofish-test.c version-test.c \
 		    knuth-lfib-test.c \
 		    cbc-test.c cfb-test.c ctr-test.c gcm-test.c eax-test.c ccm-test.c \
