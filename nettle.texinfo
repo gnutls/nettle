@@ -3296,6 +3296,44 @@ that @var{length} is @code{GCM_DIGEST_SIZE}, but if you provide a smaller
 value, only the first @var{length} octets of the digest are written.
 @end deftypefun
 
+@subsubsection @acronym{GCM}-SM4 interface
+
+The following functions implement the case of @acronym{GCM} using
+SM4 as the underlying cipher.
+
+@deftp {Context struct} {struct gcm_sm4_ctx}
+Context structs, defined using @code{GCM_CTX}.
+@end deftp
+
+@deftypefun void gcm_sm4_set_key (struct gcm_sm4_ctx *@var{ctx}, const uint8_t *@var{key})
+Initializes @var{ctx} using the given key.
+@end deftypefun
+
+@deftypefun void gcm_sm4_set_iv (struct gcm_sm4_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{iv})
+Initializes the per-message state, using the given @acronym{IV}.
+@end deftypefun
+
+@deftypefun void gcm_sm4_update (struct gcm_sm4_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
+Provides associated data to be authenticated. If used, must be called
+before @code{gcm_sm4_encrypt} or @code{gcm_sm4_decrypt}. All but the
+last call for each message @emph{must} use a length that is a multiple
+of the block size.
+@end deftypefun
+
+@deftypefun void gcm_sm4_encrypt (struct gcm_sm4_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void gcm_sm4_decrypt (struct gcm_sm4_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+Encrypts or decrypts the data of a message. All but the last call for
+each message @emph{must} use a length that is a multiple of the block
+size.
+@end deftypefun
+
+@deftypefun void gcm_sm4_digest (struct gcm_sm4_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+Extracts the message digest (also known ``authentication tag''). This is
+the final operation when processing a message. It's strongly recommended
+that @var{length} is @code{GCM_DIGEST_SIZE}, but if you provide a smaller
+value, only the first @var{length} octets of the digest are written.
+@end deftypefun
+
 @node CCM
 @subsection Counter with CBC-MAC mode
 
