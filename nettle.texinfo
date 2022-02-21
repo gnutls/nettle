@@ -2145,6 +2145,42 @@ in any other way.
 Analogous to @code{serpent_encrypt}
 @end deftypefun
 
+@node SM4
+@subsection SM4
+@cindex SM4
+
+SM4 is a block cipher standard adopted by the government of the People's
+Republic of China, and it was issued by the State Cryptography Administration
+on March 21, 2012. The standard is GM/T 0002-2012 "SM4 block cipher algorithm".
+Nettle defines it in @file{<nettle/sm4.h>}.
+
+@deftp {Context struct} {struct sm4_ctx}
+@end deftp
+
+@defvr Constant SM4_BLOCK_SIZE
+The SM4 block-size, 16.
+@end defvr
+
+@defvr Constant SM4_KEY_SIZE
+Default SM4 key size, 16.
+@end defvr
+
+@deftypefun void sm4_set_encrypt_key (struct sm4_ctx *@var{ctx}, const uint8_t *@var{key})
+Initialize the cipher. The function is used for encryption.
+@end deftypefun
+
+@deftypefun void sm4_set_decrypt_key (struct sm4_ctx *@var{ctx}, const uint8_t *@var{key})
+Initialize the cipher. The function is used for decryption.
+@end deftypefun
+
+@deftypefun void sm4_crypt (const struct sm4_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+Cryption function. @var{length} must be an integral multiple of the
+block size. If it is more than one block, the data is processed in ECB
+mode. @code{src} and @code{dst} may be equal, but they must not overlap
+in any other way. The same function is used for both encryption and
+decryption.
+@end deftypefun
+
 @node Twofish
 @subsection Twofish
 @cindex Twofish
