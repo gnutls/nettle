@@ -63,6 +63,7 @@
 #include "sha1.h"
 #include "sha2.h"
 #include "sha3.h"
+#include "sm4.h"
 #include "twofish.h"
 #include "umac.h"
 #include "cmac.h"
@@ -926,6 +927,7 @@ main(int argc, char **argv)
       &nettle_des3,
       &nettle_serpent256,
       &nettle_twofish128, &nettle_twofish192, &nettle_twofish256,
+      &nettle_sm4,
       NULL
     };
 
