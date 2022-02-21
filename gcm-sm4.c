@@ -1,6 +1,8 @@
-/* nettle-meta-aeads.c
+/* gcm-sm4.c
 
-   Copyright (C) 2014 Niels Möller
+   Galois counter mode using SM4 as the underlying cipher.
+
+   Copyright (C) 2022 Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
 
    This file is part of GNU Nettle.
 
@@ -33,24 +35,47 @@
 # include "config.h"
 #endif
 
-#include <stddef.h>
+#include <assert.h>
 
-#include "nettle-meta.h"
+#include "gcm.h"
 
-const struct nettle_aead * const _nettle_aeads[] = {
-  &nettle_gcm_aes128,
-  &nettle_gcm_aes192,
-  &nettle_gcm_aes256,
-  &nettle_gcm_camellia128,
-  &nettle_gcm_camellia256,
-  &nettle_gcm_sm4,
-  &nettle_eax_aes128,
-  &nettle_chacha_poly1305,
-  NULL
-};
-
-const struct nettle_aead * const *
-nettle_get_aeads (void)
+void
+gcm_sm4_set_key(struct gcm_sm4_ctx *ctx, const uint8_t *key)
 {
-  return _nettle_aeads;
+  GCM_SET_KEY(ctx, sm4_set_encrypt_key, sm4_crypt, key);
+}
+
+void
+gcm_sm4_set_iv(struct gcm_sm4_ctx *ctx,
+	       size_t length, const uint8_t *iv)
+{
+  GCM_SET_IV (ctx, length, iv);
+}
+
+void
+gcm_sm4_update(struct gcm_sm4_ctx *ctx,
+	       size_t length, const uint8_t *data)
+{
+  GCM_UPDATE (ctx, length, data);
+}
+
+void
+gcm_sm4_encrypt(struct gcm_sm4_ctx *ctx,
+		size_t length, uint8_t *dst, const uint8_t *src)
+{
+  GCM_ENCRYPT(ctx, sm4_crypt, length, dst, src);
+}
+
+void
+gcm_sm4_decrypt(struct gcm_sm4_ctx *ctx,
+		size_t length, uint8_t *dst, const uint8_t *src)
+{
+  GCM_DECRYPT(ctx, sm4_crypt, length, dst, src);
+}
+
+void
+gcm_sm4_digest(struct gcm_sm4_ctx *ctx,
+	       size_t length, uint8_t *digest)
+{
+  GCM_DIGEST(ctx, sm4_crypt, length, digest);
 }

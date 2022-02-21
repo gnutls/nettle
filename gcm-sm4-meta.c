@@ -1,6 +1,6 @@
-/* nettle-meta-aeads.c
+/* gcm-sm4-meta.c
 
-   Copyright (C) 2014 Niels Möller
+   Copyright (C) 2022 Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
 
    This file is part of GNU Nettle.
 
@@ -33,24 +33,28 @@
 # include "config.h"
 #endif
 
-#include <stddef.h>
+#include <assert.h>
 
 #include "nettle-meta.h"
 
-const struct nettle_aead * const _nettle_aeads[] = {
-  &nettle_gcm_aes128,
-  &nettle_gcm_aes192,
-  &nettle_gcm_aes256,
-  &nettle_gcm_camellia128,
-  &nettle_gcm_camellia256,
-  &nettle_gcm_sm4,
-  &nettle_eax_aes128,
-  &nettle_chacha_poly1305,
-  NULL
-};
+#include "gcm.h"
 
-const struct nettle_aead * const *
-nettle_get_aeads (void)
+static nettle_set_key_func gcm_sm4_set_nonce_wrapper;
+static void
+gcm_sm4_set_nonce_wrapper (void *ctx, const uint8_t *nonce)
 {
-  return _nettle_aeads;
+  gcm_sm4_set_iv (ctx, GCM_IV_SIZE, nonce);
 }
+
+const struct nettle_aead nettle_gcm_sm4 =
+  { "gcm_sm4", sizeof(struct gcm_sm4_ctx),
+    GCM_BLOCK_SIZE, SM4_KEY_SIZE,
+    GCM_IV_SIZE, GCM_DIGEST_SIZE,
+    (nettle_set_key_func *) gcm_sm4_set_key,
+    (nettle_set_key_func *) gcm_sm4_set_key,
+    gcm_sm4_set_nonce_wrapper,
+    (nettle_hash_update_func *) gcm_sm4_update,
+    (nettle_crypt_func *) gcm_sm4_encrypt,
+    (nettle_crypt_func *) gcm_sm4_decrypt,
+    (nettle_hash_digest_func *) gcm_sm4_digest,
+  };

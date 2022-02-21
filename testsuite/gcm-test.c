@@ -577,6 +577,24 @@ test_main(void)
 		 "16aedbf5a0de6a57 a637b39b"),	/* iv */
 	    SHEX("5791883f822013f8bd136fc36fb9946b"));	/* tag */
 
+  /*
+   * GCM-SM4 Test Vectors from
+   * https://datatracker.ietf.org/doc/html/rfc8998
+   */
+  test_aead(&nettle_gcm_sm4, NULL,
+	    SHEX("0123456789ABCDEFFEDCBA9876543210"),
+	    SHEX("FEEDFACEDEADBEEFFEEDFACEDEADBEEFABADDAD2"),
+	    SHEX("AAAAAAAAAAAAAAAABBBBBBBBBBBBBBBB"
+	         "CCCCCCCCCCCCCCCCDDDDDDDDDDDDDDDD"
+	         "EEEEEEEEEEEEEEEEFFFFFFFFFFFFFFFF"
+	         "EEEEEEEEEEEEEEEEAAAAAAAAAAAAAAAA"),
+	    SHEX("17F399F08C67D5EE19D0DC9969C4BB7D"
+	         "5FD46FD3756489069157B282BB200735"
+	         "D82710CA5C22F0CCFA7CBF93D496AC15"
+	         "A56834CBCF98C397B4024A2691233B8D"),
+	    SHEX("00001234567800000000ABCD"),
+	    SHEX("83DE3541E4C2B58177E065A9BF7B62EC"));
+
   /* Test gcm_hash, with varying message size, keys and iv all zero.
      Not compared to any other implementation. */
   test_gcm_hash (SDATA("a"),
