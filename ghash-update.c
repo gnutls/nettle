@@ -48,6 +48,14 @@
 # error Unsupported table size.
 #endif
 
+/* For fat builds */
+#if HAVE_NATIVE_ghash_update
+const uint8_t *
+_nettle_ghash_update_c (const struct gcm_key *ctx, union nettle_block16 *state,
+			size_t blocks, const uint8_t *data);
+#define _nettle_ghash_update _nettle_ghash_update_c
+
+#endif
 #if WORDS_BIGENDIAN
 # define W(left,right) (0x##left##right)
 #else

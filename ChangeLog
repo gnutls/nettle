@@ -1,5 +1,14 @@
 2022-02-21  Niels Möller  <nisse@lysator.liu.se>
 
+	* fat-arm64.c (fat_init): Update fat init for new _ghash_set_key
+	and _ghash_update functions, delete setup for old gcm functions.
+
+	* arm64/fat/ghash-update-2.asm: New file.
+	* arm64/fat/ghash-set-key-2.asm: New file.
+	* arm64/fat/gcm-hash.asm: Deleted.
+
+	* ghash-update.c (_nettle_ghash_update_c): New name, for fat builds.
+
 	* arm64/crypto/gcm-hash.asm: Deleted, split into two new files...
 	* arm64/crypto/ghash-set-key.asm: New file.
 	* arm64/crypto/ghash-update.asm: New file.

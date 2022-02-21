@@ -1,4 +1,4 @@
-C arm64/fat/gcm-hash.asm
+C arm64/fat/ghash-set-key.asm
 
 ifelse(`
    Copyright (C) 2021 Mamone Tarsha
@@ -31,8 +31,7 @@ ifelse(`
 ')
 
 dnl picked up by configure
-dnl PROLOGUE(_nettle_fat_gcm_init_key)
-dnl PROLOGUE(_nettle_fat_gcm_hash)
+dnl PROLOGUE(_nettle_ghash_set_key)
 
 define(`fat_transform', `$1_arm64')
-include_src(`arm64/crypto/gcm-hash.asm')
+include_src(`arm64/crypto/ghash-set-key.asm')

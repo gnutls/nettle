@@ -51,8 +51,7 @@
 #include "nettle-types.h"
 
 #include "aes.h"
-#include "gcm.h"
-#include "gcm-internal.h"
+#include "ghash-internal.h"
 #include "fat-setup.h"
 
 /* Defines from arch/arm64/include/uapi/asm/hwcap.h in Linux kernel */
@@ -148,13 +147,13 @@ DECLARE_FAT_FUNC(nettle_aes256_decrypt, aes256_crypt_func)
 DECLARE_FAT_FUNC_VAR(aes256_decrypt, aes256_crypt_func, c)
 DECLARE_FAT_FUNC_VAR(aes256_decrypt, aes256_crypt_func, arm64)
 
-DECLARE_FAT_FUNC(_nettle_gcm_init_key, gcm_init_key_func)
-DECLARE_FAT_FUNC_VAR(gcm_init_key, gcm_init_key_func, c)
-DECLARE_FAT_FUNC_VAR(gcm_init_key, gcm_init_key_func, arm64)
+DECLARE_FAT_FUNC(_nettle_ghash_set_key, ghash_set_key_func)
+DECLARE_FAT_FUNC_VAR(ghash_set_key, ghash_set_key_func, c)
+DECLARE_FAT_FUNC_VAR(ghash_set_key, ghash_set_key_func, arm64)
 
-DECLARE_FAT_FUNC(_nettle_gcm_hash, gcm_hash_func)
-DECLARE_FAT_FUNC_VAR(gcm_hash, gcm_hash_func, c)
-DECLARE_FAT_FUNC_VAR(gcm_hash, gcm_hash_func, arm64)
+DECLARE_FAT_FUNC(_nettle_ghash_update, ghash_update_func)
+DECLARE_FAT_FUNC_VAR(ghash_update, ghash_update_func, c)
+DECLARE_FAT_FUNC_VAR(ghash_update, ghash_update_func, arm64)
 
 DECLARE_FAT_FUNC(nettle_sha1_compress, sha1_compress_func)
 DECLARE_FAT_FUNC_VAR(sha1_compress, sha1_compress_func, c)
@@ -206,17 +205,17 @@ fat_init (void)
       if (verbose)
 	fprintf (stderr, "libnettle: enabling hardware-accelerated polynomial multiply code.\n");
 
-      /* Make sure _nettle_gcm_init_key_vec function is compatible
-         with _nettle_gcm_hash_vec function e.g. _nettle_gcm_init_key_c()
+      /* Make sure _nettle_ghash_set_key_vec function is compatible
+         with _nettle_ghash_update_vec function e.g. _nettle_ghash_key_c()
          fills gcm_key table with values that are incompatible with
-         _nettle_gcm_hash_arm64() */
-      _nettle_gcm_init_key_vec = _nettle_gcm_init_key_arm64;
-      _nettle_gcm_hash_vec = _nettle_gcm_hash_arm64;
+         _nettle_ghash_update_arm64() */
+      _nettle_ghash_set_key_vec = _nettle_ghash_set_key_arm64;
+      _nettle_ghash_update_vec = _nettle_ghash_update_arm64;
     }
   else
     {
-      _nettle_gcm_init_key_vec = _nettle_gcm_init_key_c;
-      _nettle_gcm_hash_vec = _nettle_gcm_hash_c;
+      _nettle_ghash_set_key_vec = _nettle_ghash_set_key_c;
+      _nettle_ghash_update_vec = _nettle_ghash_update_c;
     }
   if (features.have_sha1)
     {
@@ -267,14 +266,13 @@ DEFINE_FAT_FUNC(nettle_aes256_decrypt, void,
   uint8_t *dst,const uint8_t *src),
  (ctx, length, dst, src))
 
-DEFINE_FAT_FUNC(_nettle_gcm_init_key, void,
-		(union nettle_block16 *table),
-		(table))
-
-DEFINE_FAT_FUNC(_nettle_gcm_hash, void,
-		(const struct gcm_key *key, union nettle_block16 *x,
-		 size_t length, const uint8_t *data),
-		(key, x, length, data))
+DEFINE_FAT_FUNC(_nettle_ghash_set_key, void,
+		(struct gcm_key *ctx, const union nettle_block16 *key),
+		(ctx, key))
+DEFINE_FAT_FUNC(_nettle_ghash_update, const uint8_t *,
+		(const struct gcm_key *ctx, union nettle_block16 *state,
+		 size_t blocks, const uint8_t *data),
+		(ctx, state, blocks, data))
 
 DEFINE_FAT_FUNC(nettle_sha1_compress, void,
 		(uint32_t *state, const uint8_t *input),
