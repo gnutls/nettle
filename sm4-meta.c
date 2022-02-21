@@ -1,6 +1,6 @@
-/* nettle-meta-ciphers.c
+/* sm4-meta.c
 
-   Copyright (C) 2011 Daniel Kahn Gillmor
+   Copyright (C) 2022 Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
 
    This file is part of GNU Nettle.
 
@@ -33,33 +33,17 @@
 # include "config.h"
 #endif
 
-#include <stddef.h>
 #include "nettle-meta.h"
 
-const struct nettle_cipher * const _nettle_ciphers[] = {
-  &nettle_aes128,
-  &nettle_aes192,
-  &nettle_aes256,
-  &nettle_camellia128,
-  &nettle_camellia192,
-  &nettle_camellia256,
-  &nettle_cast128,
-  &nettle_serpent128,
-  &nettle_serpent192,
-  &nettle_serpent256,
-  &nettle_twofish128,
-  &nettle_twofish192,
-  &nettle_twofish256,
-  &nettle_arctwo40,
-  &nettle_arctwo64,
-  &nettle_arctwo128,
-  &nettle_arctwo_gutmann128,
-  &nettle_sm4,
-  NULL
-};
+#include "sm4.h"
 
-const struct nettle_cipher * const *
-nettle_get_ciphers (void)
-{
-  return _nettle_ciphers;
-}
+const struct nettle_cipher nettle_sm4 = {
+  "sm4",
+  sizeof(struct sm4_ctx),
+  SM4_BLOCK_SIZE,
+  SM4_KEY_SIZE,
+  (nettle_set_key_func *) sm4_set_encrypt_key,
+  (nettle_set_key_func *) sm4_set_decrypt_key,
+  (nettle_cipher_func *) sm4_crypt,
+  (nettle_cipher_func *) sm4_crypt
+};

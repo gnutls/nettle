@@ -1,6 +1,6 @@
-/* nettle-meta-ciphers.c
+/* sm4.h
 
-   Copyright (C) 2011 Daniel Kahn Gillmor
+   Copyright (C) 2022 Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
 
    This file is part of GNU Nettle.
 
@@ -29,37 +29,41 @@
    not, see http://www.gnu.org/licenses/.
 */
 
-#if HAVE_CONFIG_H
-# include "config.h"
+#ifndef NETTLE_SM4_H_INCLUDED
+#define NETTLE_SM4_H_INCLUDED
+
+#include "nettle-types.h"
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
-#include <stddef.h>
-#include "nettle-meta.h"
+/* Name mangling */
+#define sm4_set_encrypt_key nettle_sm4_set_encrypt_key
+#define sm4_set_decrypt_key nettle_sm4_set_decrypt_key
+#define sm4_crypt nettle_sm4_crypt
 
-const struct nettle_cipher * const _nettle_ciphers[] = {
-  &nettle_aes128,
-  &nettle_aes192,
-  &nettle_aes256,
-  &nettle_camellia128,
-  &nettle_camellia192,
-  &nettle_camellia256,
-  &nettle_cast128,
-  &nettle_serpent128,
-  &nettle_serpent192,
-  &nettle_serpent256,
-  &nettle_twofish128,
-  &nettle_twofish192,
-  &nettle_twofish256,
-  &nettle_arctwo40,
-  &nettle_arctwo64,
-  &nettle_arctwo128,
-  &nettle_arctwo_gutmann128,
-  &nettle_sm4,
-  NULL
+#define SM4_BLOCK_SIZE 16
+#define SM4_KEY_SIZE 16
+
+struct sm4_ctx
+{
+  uint32_t rkey[32];
 };
 
-const struct nettle_cipher * const *
-nettle_get_ciphers (void)
-{
-  return _nettle_ciphers;
+void
+sm4_set_encrypt_key(struct sm4_ctx *ctx, const uint8_t *key);
+
+void
+sm4_set_decrypt_key(struct sm4_ctx *ctx, const uint8_t *key);
+
+void
+sm4_crypt(const struct sm4_ctx *context,
+	  size_t length, uint8_t *dst,
+	  const uint8_t *src);
+
+#ifdef __cplusplus
 }
+#endif
+
+#endif /* NETTLE_SM4_H_INCLUDED */

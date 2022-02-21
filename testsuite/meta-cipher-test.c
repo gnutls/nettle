@@ -18,7 +18,8 @@ const char* ciphers[] = {
   "serpent256",
   "twofish128",
   "twofish192",
-  "twofish256"
+  "twofish256",
+  "sm4"
 };
 
 void

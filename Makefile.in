@@ -150,6 +150,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c aes-decrypt-table.c \
 		 serpent-meta.c \
 		 streebog.c streebog-meta.c \
 		 twofish.c twofish-meta.c \
+		 sm4.c sm4-meta.c \
 		 umac-nh.c umac-nh-n.c umac-l2.c umac-l3.c \
 		 umac-poly64.c umac-poly128.c umac-set-key.c \
 		 umac32.c umac64.c umac96.c umac128.c \
