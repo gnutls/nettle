@@ -49,7 +49,7 @@ define(`SHIFT_TABLE', `%r13')
 	.file "ghash-update.asm"
 
 	C const uint8_t *_ghash_update (const struct gcm_key *key,
-	C				union gcm_block *x,
+	C				union nettle_block16 *x,
 	C				size_t blocks, const uint8_t *data)
 
 	.text
