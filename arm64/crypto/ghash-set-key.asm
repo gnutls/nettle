@@ -1,4 +1,4 @@
-C arm64/crypto/gcm-hash.asm
+C arm64/crypto/ghash-set-key.asm
 
 ifelse(`
    Copyright (C) 2020 Niels Möller and Mamone Tarsha
@@ -30,13 +30,10 @@ ifelse(`
    not, see http://www.gnu.org/licenses/.
 ')
 
-.file "gcm-hash.asm"
+.file "ghash-set-key.asm"
 .arch armv8-a+crypto
 
 .text
-
-C gcm_set_key() assigns H value in the middle element of the table
-define(`H_Idx', `128')
 
 C common SIMD register usage:
 define(`POLY', `v6')
@@ -75,7 +72,7 @@ define(`REDUCTION', m4_assert_numargs(1)`
     eor            $1.16b,F.16b,R.16b
 ')
 
-    C void gcm_init_key (union gcm_block *table)
+    C void _ghash_set_key (struct gcm_key *ctx, const union nettle_block16 *key)
 
 C This function populates the gcm table as the following layout
 C *******************************************************************************
@@ -92,8 +89,9 @@ C | H4M = (H3 div x⁶⁴)||((H4 mod x⁶⁴) × (x⁶⁴+x⁶³+x⁶²+x⁵⁷)
 C | H4L = (H3 mod x⁶⁴)||(((H4 mod x⁶⁴) × (x⁶³+x⁶²+x⁵⁷)) mod x⁶⁴) + (H4 div x⁶⁴) |
 C *******************************************************************************
 
-C gcm_init_key register usage:
-define(`TABLE', `x0')
+C Register usage:
+define(`CTX', `x0')
+define(`KEY', `x1')
 
 define(`EMSB', `v0')
 define(`B', `v1')
@@ -122,14 +120,13 @@ define(`PMUL_PARAM', m4_assert_numargs(3)`
     ext            $2.16b,$2.16b,$2.16b,#8
 ')
 
-PROLOGUE(_nettle_gcm_init_key)
-    add            x1,TABLE,#16*H_Idx
-    ld1            {H.2d},[x1]
+PROLOGUE(_nettle_ghash_set_key)
+    ld1            {H.2d},[KEY]
 
     C we treat data as big-endian doublewords for processing. Since there is no
     C endianness-neutral MSB-first load operation we need to restore our desired
     C byte order on little-endian systems. The same holds true for DATA below
-    C but not our own internal precalculated TABLE (see below).
+    C but not our own internal precalculated CTX (see below).
 IF_LE(`
     rev64          H.16b,H.16b
 ')
@@ -162,9 +159,9 @@ IF_LE(`
     PMUL_PARAM(H2,H2M,H2L)
 
     C we store to the table as doubleword-vectors in current memory endianness
-    C because it's our own strictly internal data structure and what gcm_hash
+    C because it's our own strictly internal data structure and what ghash_update
     C can most naturally use
-    st1            {H1M.2d,H1L.2d,H2M.2d,H2L.2d},[TABLE],#64
+    st1            {H1M.2d,H1L.2d,H2M.2d,H2L.2d},[CTX],#64
 
     C --- calculate H^3 = H^1 × H^2 ---
 
@@ -182,163 +179,7 @@ IF_LE(`
 
     PMUL_PARAM(H4,H4M,H4L)
 
-    st1            {H3M.2d,H3L.2d,H4M.2d,H4L.2d},[TABLE]
+    st1            {H3M.2d,H3L.2d,H4M.2d,H4L.2d},[CTX]
 
     ret
-EPILOGUE(_nettle_gcm_init_key)
-
-C gcm_hash register usage:
-define(`TABLE', `x0')
-define(`X', `x1')
-define(`LENGTH', `x2')
-define(`DATA', `x3')
-
-define(`D', `v0')
-define(`C0', `v1')
-define(`C1', `v2')
-define(`C2', `v3')
-define(`C3', `v4')
-define(`R2', `v20')
-define(`F2', `v21')
-define(`R3', `v22')
-define(`F3', `v23')
-define(`H1M', `v24')
-define(`H1L', `v25')
-define(`H2M', `v26')
-define(`H2L', `v27')
-define(`H3M', `v28')
-define(`H3L', `v29')
-define(`H4M', `v30')
-define(`H4L', `v31')
-
-C PMUL_SUM(in, param1, param2)
-define(`PMUL_SUM', m4_assert_numargs(3)`
-    pmull          F2.1q,$3.1d,$1.1d
-    pmull2         F3.1q,$3.2d,$1.2d
-    pmull          R2.1q,$2.1d,$1.1d
-    pmull2         R3.1q,$2.2d,$1.2d
-    eor            F2.16b,F2.16b,F3.16b
-    eor            R2.16b,R2.16b,R3.16b
-    eor            F.16b,F.16b,F2.16b
-    eor            R.16b,R.16b,R2.16b
-')
-
-C Load the final partial block into SIMD register,
-C stored in little-endian order for each 64-bit part
-C LOAD_REV_PARTIAL_BLOCK(out)
-define(`LOAD_REV_PARTIAL_BLOCK', m4_assert_numargs(1)`
-    tbz            LENGTH,3,Lless_8_bytes
-    ldr            `d'substr($1,1,len($1)),[DATA],#8
-IF_LE(`
-    rev64          $1.16b,$1.16b
-')
-    mov            x7,#0
-    mov            $1.d[1],x7
-    tst            LENGTH,#7
-    b.eq           Lload_done
-Lless_8_bytes:
-    mov            x6,#0
-    mov            x5,#64
-    and            x4,LENGTH,#7
-Lload_byte_loop:
-    mov            x7,#0
-    ldrb           w7,[DATA],#1
-    sub            x5,x5,#8
-    lsl            x7,x7,x5
-    orr            x6,x6,x7
-    subs           x4,x4,#1
-    b.ne           Lload_byte_loop
-    tbz            LENGTH,3,Lstore_hi_dw
-    mov            $1.d[1],x6
-    b              Lload_done
-Lstore_hi_dw:
-    mov            x7,#0
-    mov            $1.d[0],x6
-    mov            $1.d[1],x7
-Lload_done:
-')
-
-    C void gcm_hash (const struct gcm_key *key, union gcm_block *x,
-    C                size_t length, const uint8_t *data)
-
-PROLOGUE(_nettle_gcm_hash)
-    mov            x4,#0xC200000000000000
-    mov            POLY.d[0],x4
-
-    ld1            {D.2d},[X]
-IF_LE(`
-    rev64          D.16b,D.16b
-')
-
-    ands           x4,LENGTH,#-64
-    b.eq           L1_block
-
-    add            x5,TABLE,#64
-    ld1            {H1M.2d,H1L.2d,H2M.2d,H2L.2d},[TABLE]
-    ld1            {H3M.2d,H3L.2d,H4M.2d,H4L.2d},[x5]
-
-L4_blocks_loop:
-    ld1            {C0.2d,C1.2d,C2.2d,C3.2d},[DATA],#64
-IF_LE(`
-    rev64          C0.16b,C0.16b
-    rev64          C1.16b,C1.16b
-    rev64          C2.16b,C2.16b
-    rev64          C3.16b,C3.16b
-')
-
-    eor            C0.16b,C0.16b,D.16b
-
-    PMUL(C1,H3M,H3L)
-    PMUL_SUM(C2,H2M,H2L)
-    PMUL_SUM(C3,H1M,H1L)
-    PMUL_SUM(C0,H4M,H4L)
-
-    REDUCTION(D)
-
-    subs           x4,x4,#64
-    b.ne           L4_blocks_loop
-
-    and            LENGTH,LENGTH,#63
-
-L1_block:
-    ands           x4,LENGTH,#-16
-    b.eq           Lpartial
-
-    ld1            {H1M.2d,H1L.2d},[TABLE]
-
-L1_block_loop:
-    ld1            {C0.2d},[DATA],#16
-IF_LE(`
-    rev64          C0.16b,C0.16b
-')
-
-    eor            C0.16b,C0.16b,D.16b
-
-    PMUL(C0,H1M,H1L)
-
-    REDUCTION(D)
-
-    subs           x4,x4,#16
-    b.ne           L1_block_loop
-
-Lpartial:
-    tst            LENGTH,#15
-    b.eq           Lghash_done
-
-    ld1            {H1M.2d,H1L.2d},[TABLE]
-
-    LOAD_REV_PARTIAL_BLOCK(C0)
-
-    eor            C0.16b,C0.16b,D.16b
-
-    PMUL(C0,H1M,H1L)
-
-    REDUCTION(D)
-
-Lghash_done:
-IF_LE(`
-    rev64          D.16b,D.16b
-')
-    st1            {D.2d},[X]
-    ret
-EPILOGUE(_nettle_gcm_hash)
+EPILOGUE(_nettle_ghash_set_key)

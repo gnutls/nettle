@@ -1,3 +1,9 @@
+2022-02-21  Niels Möller  <nisse@lysator.liu.se>
+
+	* arm64/crypto/gcm-hash.asm: Deleted, split into two new files...
+	* arm64/crypto/ghash-set-key.asm: New file.
+	* arm64/crypto/ghash-update.asm: New file.
+
 2022-02-19  Niels Möller  <nisse@lysator.liu.se>
 
 	* fat-x86_64.c (fat_init): Update fat init for new _ghash_set_key
