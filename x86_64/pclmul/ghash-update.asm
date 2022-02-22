@@ -75,7 +75,7 @@ C blocks, we need additionan D ang H registers (for powers of the key) and the
 C additional message word, but we could perhaps interlave as many as 4, with two
 C registers left for temporaries.
 
-	C const uint8_t *_ghash_update (const struct gcm_key *key,
+	C const uint8_t *_ghash_update (const struct gcm_key *ctx,
 	C				union nettle_block16 *x,
 	C				size_t blocks, const uint8_t *data)
 
