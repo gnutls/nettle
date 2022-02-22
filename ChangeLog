@@ -1,3 +1,9 @@
+2022-02-22  Niels Möller  <nisse@lysator.liu.se>
+
+	* powerpc64/p8/gcm-hash.asm: Deleted, split into two new files...
+	* powerpc64/p8/ghash-update.asm: New file.
+	* powerpc64/p8/ghash-set-key.asm: New file
+
 2022-02-21  Niels Möller  <nisse@lysator.liu.se>
 
 	* fat-arm64.c (fat_init): Update fat init for new _ghash_set_key
