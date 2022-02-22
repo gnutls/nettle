@@ -1,5 +1,4 @@
-C powerpc64/fat/gcm-hash.asm
-
+C powerpc64/fat/ghash-set-key-2.asm
 
 ifelse(`
    Copyright (C) 2020 Mamone Tarsha
@@ -32,8 +31,7 @@ ifelse(`
 ')
 
 dnl picked up by configure
-dnl PROLOGUE(_nettle_fat_gcm_init_key)
-dnl PROLOGUE(_nettle_fat_gcm_hash)
+dnl PROLOGUE(_nettle_ghash_set_key)
 
 define(`fat_transform', `$1_ppc64')
-include_src(`powerpc64/p8/gcm-hash.asm')
+include_src(`powerpc64/p8/ghash-set-key.asm')
