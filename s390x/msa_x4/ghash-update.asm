@@ -1,4 +1,4 @@
-C s390x/msa_x4/gcm-hash.asm
+C s390x/msa_x4/ghash-update.asm
 
 ifelse(`
    Copyright (C) 2020 Mamone Tarsha
@@ -47,53 +47,28 @@ C *----------------------------------------------*
 C Size of parameter block
 define(`PB_SIZE', `32')
 
-C gcm_set_key() assigns H value in the middle element of the table
-define(`H_idx', `128*16')
-
-.file "gcm-hash.asm"
+.file "ghash-update.asm"
 
 .text
 
-C void gcm_init_key (union gcm_block *table)
+    C const uint8_t *_ghash_update (const struct gcm_key *ctx,
+    C                               union nettle_block16 *x,
+    C                               size_t blocks, const uint8_t *data)
 
-PROLOGUE(_nettle_gcm_init_key)
-    C Except for Hash Subkey (H), KIMD-GHASH does not need any pre-computed values so just return to the caller.
-    br             RA
-EPILOGUE(_nettle_gcm_init_key)
-
-C void gcm_hash (const struct gcm_key *key, union gcm_block *x,
-C                size_t length, const uint8_t *data)
-
-PROLOGUE(_nettle_gcm_hash)
-    ldgr           %f0,%r6                       C load non-volatile general register 6 into volatile float-point register 0
+PROLOGUE(_nettle_ghash_update)
     C --- allocate a stack space for parameter block in addition to 16-byte buffer to handle leftover bytes ---
-    ALLOC_STACK(%r1,PB_SIZE+16)                  C parameter block (must be general register 1)
-    lgr            %r6,%r3
+    ALLOC_STACK(%r1,PB_SIZE)                     C parameter block (must be general register 1)
     mvc            0(16,%r1),0(%r3)              C copy x Initial Chaining Value field
-    mvc            16(16,%r1),H_idx (%r2)        C copy H to Hash Subkey field
+    mvc            16(16,%r1),0(%r2)             C copy H to Hash Subkey field
     lghi           %r0,65                        C GHASH function code (must be general register 0)
     lgr            %r2,%r5                       C location of leftmost byte of data (must not be odd-numbered general register nor be general register 0)
+    lgr            %r5,%r3
     C number of bytes (must be general register of data + 1). length must be a multiple of the data block size (16).
-    risbg          %r3,%r4,0,187,0               C Insert bit offsets 0-59, bit offset 0 of the fourth operand is set to clear the remaining bits.
+    sllg           %r3,%r4,4                     C LEN = 16*BLOCKS
 1:  .long   0xb93e0002                           C kimd %r0,%r2
     brc            1,1b                          C safely branch back in case of partial completion
-    C --- handle leftovers ---
-    risbg          %r5,%r4,60,191,0              C Insert bit offsets 60-63 and clear the remaining bits.
-    jz             4f
-    lgr            %r4,%r2
-    C --- copy the leftovers to allocated stack buffer and pad the remaining bytes with zero ---
-    la             %r2,PB_SIZE (%r1)
-    lghi           %r3,16
-2:  mvcle          %r2,%r4,0
-    brc            1,2b
-    aghi           %r2,-16
-    aghi           %r3,16
-3:  .long   0xb93e0002                           C kimd %r0,%r2
-    brc            1,3b                          C safely branch back in case of partial completion
-4:
-    mvc            0(16,%r6),0(%r1)              C store x
-    xc             0(PB_SIZE+16,%r1),0(%r1)      C wipe parameter block content and leftover bytes of data from stack
-    FREE_STACK(PB_SIZE+16)
-    lgdr           %r6,%f0                       C restore general register 6
+    mvc            0(16,%r5),0(%r1)              C store x
+    xc             0(PB_SIZE,%r1),0(%r1)         C wipe parameter block content from stack
+    FREE_STACK(PB_SIZE)
     br             RA
-EPILOGUE(_nettle_gcm_hash)
+EPILOGUE(_nettle_ghash_update)

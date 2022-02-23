@@ -50,9 +50,9 @@
 #include "nettle-types.h"
 
 #include "memxor.h"
-#include "aes.h"
-#include "gcm.h"
-#include "gcm-internal.h"
+#include "aes-internal.h"
+#include "chacha-internal.h"
+#include "ghash-internal.h"
 #include "fat-setup.h"
 
 /* Max number of doublewords returned by STFLE */
@@ -242,13 +242,13 @@ DECLARE_FAT_FUNC_VAR(aes256_decrypt, aes256_crypt_func, c)
 DECLARE_FAT_FUNC_VAR(aes256_decrypt, aes256_crypt_func, s390x)
 
 /* GHASH */
-DECLARE_FAT_FUNC(_nettle_gcm_init_key, gcm_init_key_func)
-DECLARE_FAT_FUNC_VAR(gcm_init_key, gcm_init_key_func, c)
-DECLARE_FAT_FUNC_VAR(gcm_init_key, gcm_init_key_func, s390x)
+DECLARE_FAT_FUNC(_nettle_ghash_set_key, ghash_set_key_func)
+DECLARE_FAT_FUNC_VAR(ghash_set_key, ghash_set_key_func, c)
+DECLARE_FAT_FUNC_VAR(ghash_set_key, ghash_set_key_func, s390x)
 
-DECLARE_FAT_FUNC(_nettle_gcm_hash, gcm_hash_func)
-DECLARE_FAT_FUNC_VAR(gcm_hash, gcm_hash_func, c)
-DECLARE_FAT_FUNC_VAR(gcm_hash, gcm_hash_func, s390x)
+DECLARE_FAT_FUNC(_nettle_ghash_update, ghash_update_func)
+DECLARE_FAT_FUNC_VAR(ghash_update, ghash_update_func, c)
+DECLARE_FAT_FUNC_VAR(ghash_update, ghash_update_func, s390x)
 
 DECLARE_FAT_FUNC(nettle_sha1_compress, sha1_compress_func)
 DECLARE_FAT_FUNC_VAR(sha1_compress, sha1_compress_func, c)
@@ -372,13 +372,13 @@ fat_init (void)
   {
     if (verbose)
       fprintf (stderr, "libnettle: enabling hardware accelerated GHASH.\n");
-    _nettle_gcm_init_key_vec = _nettle_gcm_init_key_s390x;
-    _nettle_gcm_hash_vec = _nettle_gcm_hash_s390x;
+    _nettle_ghash_set_key_vec = _nettle_ghash_set_key_s390x;
+    _nettle_ghash_update_vec = _nettle_ghash_update_s390x;
   }
   else
   {
-    _nettle_gcm_init_key_vec = _nettle_gcm_init_key_c;
-    _nettle_gcm_hash_vec = _nettle_gcm_hash_c;
+    _nettle_ghash_set_key_vec = _nettle_ghash_set_key_c;
+    _nettle_ghash_update_vec = _nettle_ghash_update_c;
   }
 
   /* SHA1 */
@@ -481,13 +481,13 @@ DEFINE_FAT_FUNC(nettle_aes256_decrypt, void,
  (ctx, length, dst, src))
 
 /* GHASH */
-DEFINE_FAT_FUNC(_nettle_gcm_init_key, void,
-		(union nettle_block16 *table),
-		(table))
-DEFINE_FAT_FUNC(_nettle_gcm_hash, void,
-		(const struct gcm_key *key, union nettle_block16 *x,
-		 size_t length, const uint8_t *data),
-		(key, x, length, data))
+DEFINE_FAT_FUNC(_nettle_ghash_set_key, void,
+		(struct gcm_key *ctx, const union nettle_block16 *key),
+		(ctx, key))
+DEFINE_FAT_FUNC(_nettle_ghash_update, const uint8_t *,
+		(const struct gcm_key *ctx, union nettle_block16 *state,
+		 size_t blocks, const uint8_t *data),
+		(ctx, state, blocks, data))
 
 /* SHA1 */
 DEFINE_FAT_FUNC(nettle_sha1_compress, void,
