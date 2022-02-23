@@ -1,4 +1,4 @@
-C s390x/fat/gcm-hash.asm
+C s390x/fat/ghash-update.asm
 
 ifelse(`
    Copyright (C) 2020 Mamone Tarsha
@@ -31,8 +31,7 @@ ifelse(`
 ')
 
 dnl picked up by configure
-dnl PROLOGUE(_nettle_fat_gcm_init_key)
-dnl PROLOGUE(_nettle_fat_gcm_hash)
+dnl PROLOGUE(_nettle_ghash_update)
 
 define(`fat_transform', `$1_s390x')
-include_src(`s390x/msa_x4/gcm-hash.asm')
+include_src(`s390x/msa_x4/ghash-update.asm')
