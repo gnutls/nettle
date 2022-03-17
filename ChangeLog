@@ -1,4 +1,23 @@
+2022-02-23  Niels Möller  <nisse@lysator.liu.se>
+
+	Analogous s390x update, by Mamone Tarsha:
+	* fat-s390x.c (fat_init): Update fat init for new _ghash_set_key
+	and _ghash_update functions, delete setup for old gcm functions.
+	* s390x/fat/ghash-update-2.asm: New file.
+	* s390x/fat/ghash-set-key-2.asm: New file.
+	* s390x/fat/gcm-hash.asm: Deleted.
+	* s390x/msa_x4/gcm-hash.asm: Deleted, split into two new files...
+	* s390x/msa_x4/ghash-update.asm: New file.
+	* s390x/msa_x4/ghash-set-key.asm: New file
+
 2022-02-22  Niels Möller  <nisse@lysator.liu.se>
+
+	* fat-ppc.c (fat_init): Update fat init for new _ghash_set_key
+	and _ghash_update functions, delete setup for old gcm functions.
+
+	* powerpc64/fat/ghash-update-2.asm: New file.
+	* powerpc64/fat/ghash-set-key-2.asm: New file.
+	* powerpc64/fat/gcm-hash.asm: Deleted.
 
 	* powerpc64/p8/gcm-hash.asm: Deleted, split into two new files...
 	* powerpc64/p8/ghash-update.asm: New file.
