@@ -1,4 +1,4 @@
-C powerpc64/fat/ghash-update.asm
+C powerpc64/fat/ghash-update-2.asm
 
 ifelse(`
    Copyright (C) 2020 Mamone Tarsha
