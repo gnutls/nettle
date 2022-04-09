@@ -1397,9 +1397,8 @@
 2020-03-14  Niels Möller  <nisse@lysator.liu.se>
 
 	From H.J. Lu:
-	* configure.ac (ASM_X86_ENDBR)
-	(ASM_X86_MARK_CETASM_X86_MARK_CET_ALIGN): New substituted
-	variables.
+	* configure.ac (ASM_X86_ENDBR, ASM_X86_MARK_CET_ALIGN): New
+	substituted variables.
 	* config.m4.in: Substituted here. Add ASM_X86_MARK_CET to
 	diversion inserted at end of assembly files.
 	* asm.m4 (PROLOGUE): Add ASM_X86_ENDBR at entry point.
