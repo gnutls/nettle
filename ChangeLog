@@ -1,3 +1,9 @@
+2022-04-28  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle.texinfo (Copyright): Deleted incomplete and out of date
+	list of authors. Replaced by...
+	* AUTHORS: New updated list of authors and contributions.
+
 2022-02-23  Niels Möller  <nisse@lysator.liu.se>
 
 	Analogous s390x update, by Mamone Tarsha:
