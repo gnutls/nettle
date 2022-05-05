@@ -1,3 +1,8 @@
+2022-05-05  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle.texinfo (CBC): Document cbc_aes128_encrypt,
+	cbc_aes192_encrypt and cbc_aes256_encrypt.
+
 2022-04-28  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle.texinfo (Copyright): Deleted incomplete and out of date

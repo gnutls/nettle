@@ -2273,10 +2273,11 @@ C_2 = E_k(C_1 XOR M_2)
 C_n = E_k(C_(n-1) XOR M_n)
 @end example
 
-Nettle's includes two functions for applying a block cipher in Cipher
-Block Chaining (@acronym{CBC}) mode, one for encryption and one for
-decryption. These functions uses @code{void *} to pass cipher contexts
-around.
+Nettle provides two main functions for applying a block cipher in
+Cipher Block Chaining (@acronym{CBC}) mode, one for encryption and one
+for decryption. These functions uses @code{const void *} to pass cipher
+contexts around. The @acronym{CBC} interface is defined in
+@file{<nettle/cbc.h>}.
 
 @deftypefun {void} cbc_encrypt (const void *@var{ctx}, nettle_cipher_func *@var{f}, size_t @var{block_size}, uint8_t *@var{iv}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 @deftypefunx {void} cbc_decrypt (const void *@var{ctx}, nettle_cipher_func *@var{f}, size_t @var{block_size}, uint8_t *@var{iv}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
@@ -2286,12 +2287,14 @@ mode. The final ciphertext block processed is copied into @var{iv}
 before returning, so that a large message can be processed by a sequence of
 calls to @code{cbc_encrypt}. The function @var{f} is of type
 
-@code{void f (void *@var{ctx}, size_t @var{length}, uint8_t @var{dst},
+@code{void @var{f} (const void *@var{ctx}, size_t @var{length}, uint8_t @var{dst},
 const uint8_t *@var{src})},
 
 @noindent and the @code{cbc_encrypt} and @code{cbc_decrypt} functions pass their
 argument @var{ctx} on to @var{f}.
 @end deftypefun
+
+@subsubsection Utility macros
 
 There are also some macros to help use these functions correctly.
 
@@ -2335,6 +2338,30 @@ the source and destination area for the operation.
 These macros use some tricks to make the compiler display a warning if
 the types of @var{f} and @var{ctx} don't match, e.g. if you try to use
 an @code{struct aes_ctx} context with the @code{des_encrypt} function.
+
+@subsubsection Cipher-specific functions
+
+Encryption in @acronym{CBC} mode (but not decryption!) is inherently
+serial. It can pass only one block at a time to the block cipher's
+encrypt function. Optimizations to process several blocks in parallel
+can't be applied, and on platforms where the underlying cipher is fast,
+per-function-call overhead, e.g., loading subkeys from memory into
+registers, can be significant. Depending on platform and cipher used,
+@code{cbc_encrypt} can be considerably slower than both
+@code{cbc_decrypt} and @acronym{CTR} mode. The second reason for poor
+performance can be addressed by having a combined @acronym{CBC} and
+encrypt function, for ciphers where the overhead is significant.
+
+Nettle currently includes such special functions only for AES.
+
+@deftypefun void cbc_aes128_encrypt (const struct aes128_ctx *@var{ctx}, uint8_t *@var{iv}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void cbc_aes192_encrypt (const struct aes192_ctx *@var{ctx}, uint8_t *@var{iv}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void cbc_aes256_encrypt (const struct aes256_ctx *@var{ctx}, uint8_t *@var{iv}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+Calling @code{cbc_aes128_encrypt(ctx, iv, length, dst, src)} does the
+same thing as calling @code{cbc_encrypt(ctx, aes128_encrypt,
+AES_BLOCK_SIZE, iv, length, dst, src)}, but is more efficient on certain
+platforms.
+@end deftypefun
 
 @node CTR
 @subsection Counter mode
