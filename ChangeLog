@@ -237,6 +237,17 @@
 	* powerpc64/ecc-secp256r1-redc.asm: New file, contributed by
 	Amitay Isaacs.
 
+2021-11-29  Niels Möller  <nisse@lysator.liu.se>
+
+	From Tianjia Zhang: SM3 hash function.
+	* sm3.h: New file.
+	* sm3.c: New file.
+	* sm3-meta.c: New file.
+	* hmac-sm3.c: New file.
+	* hmac-sm3-meta.c: New file.
+	* testsuite/sm3-test.c: New file.
+	* nettle.texinfo: Document SM3.
+
 2021-11-19  Niels Möller  <nisse@lysator.liu.se>
 
 	* gmp-glue.c (mpz_limbs_cmp): Deleted function. Usage replaced
