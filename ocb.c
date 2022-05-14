@@ -40,21 +40,34 @@
 #include "ocb.h"
 #include "block-internal.h"
 
+/* FIXME: Duplicated in nist-keywrap.c */
+#if WORDS_BIGENDIAN
+#define bswap_if_le(x) (x)
+#elif HAVE_BUILTIN_BSWAP64
+#define bswap_if_le(x) (__builtin_bswap64 (x))
+#else
+static uint64_t
+bswap_if_le (uint64_t x)
+{
+  x = ((x >> 32) & UINT64_C (0xffffffff))
+    | ((x & UINT64_C (0xffffffff)) << 32);
+  x = ((x >> 16) & UINT64_C (0xffff0000ffff))
+    | ((x & UINT64_C (0xffff0000ffff)) << 16);
+  x = ((x >> 8) & UINT64_C (0xff00ff00ff00ff))
+    | ((x & UINT64_C (0xff00ff00ff00ff)) << 8);
+  return x;
+}
+#endif
+
 /* Returns 64 bits from the concatenation (u0, u1), starting from bit offset. */
 static inline uint64_t
 extract(uint64_t u0, uint64_t u1, unsigned offset)
 {
   if (offset == 0)
     return u0;
-#if WORDS_BIGENDIAN
-  return (u0 << offset) | (u1 >> (64 - offset));
-#else
-  uint64_t t;
-  u0 = __builtin_bswap64(u0);
-  u1 = __builtin_bswap64(u1);
-  t = (u0 << offset) | (u1 >> (64 - offset));
-  return __builtin_bswap64(t);
-#endif
+  u0 = bswap_if_le(u0);
+  u1 = bswap_if_le(u1);
+  return bswap_if_le((u0 << offset) | (u1 >> (64 - offset)));
 }
 
 void
