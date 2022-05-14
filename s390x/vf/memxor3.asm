@@ -1,4 +1,4 @@
-C s390/vx/memxor3.asm
+C s390/vf/memxor3.asm
 
 ifelse(`
    Copyright (C) 2020 Mamone Tarsha
