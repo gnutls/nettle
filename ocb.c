@@ -79,22 +79,23 @@ ocb_set_key (struct ocb_key *key, const void *cipher, nettle_cipher_func *f)
   block16_mulx_be (&key->L[2], &key->L[1]);
 }
 
+/* Add x^k L[2], where k is the number of trailing bits in i. */
 static void
 update_offset(const struct ocb_key *key,
 	      union nettle_block16 *offset, size_t i)
 {
-  unsigned ntz = __builtin_ctzll(i);
-  if (ntz > 0)
+  if (i & 1)
+    block16_xor (offset, &key->L[2]);
+  else
     {
+      assert (i > 0);
       union nettle_block16 diff;
       block16_mulx_be (&diff, &key->L[2]);
-      while (--ntz > 0)
+      for (i >>= 1; !(i&1); i >>= 1)
 	block16_mulx_be (&diff, &diff);
 
       block16_xor (offset, &diff);
     }
-  else
-    block16_xor (offset, &key->L[2]);
 }
 
 static void
