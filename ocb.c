@@ -150,9 +150,6 @@ ocb_update (struct ocb_ctx *ctx, const struct ocb_key *key,
 	    const void *cipher, nettle_cipher_func *f,
 	    size_t length, const uint8_t *data)
 {
-  if (data == 0)
-    return;
-
   assert (ctx->message_count == 0);
 
   if (ctx->data_count == 0)
@@ -184,9 +181,6 @@ ocb_encrypt (struct ocb_ctx *ctx, const struct ocb_key *key,
 	     const void *cipher, nettle_cipher_func *f,
 	     size_t length, uint8_t *dst, const uint8_t *src)
 {
-  if (length == 0)
-    return;
-
   if (ctx->message_count == 0)
     ctx->offset = ctx->initial;
 
@@ -222,9 +216,6 @@ ocb_decrypt (struct ocb_ctx *ctx, const struct ocb_key *key,
 	     const void *decrypt_ctx, nettle_cipher_func *decrypt,
 	     size_t length, uint8_t *dst, const uint8_t *src)
 {
-  if (length == 0)
-    return;
-
   if (ctx->message_count == 0)
     ctx->offset = ctx->initial;
 
