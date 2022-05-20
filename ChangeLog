@@ -1,3 +1,9 @@
+2022-05-20  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Bump package version, to 3.8.
+	(LIBNETTLE_MINOR): Bump minor number, to 8.5.
+	(LIBHOGWEED_MINOR): Bump minor number, to 6.5.
+
 2022-05-05  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle.texinfo (CBC): Document cbc_aes128_encrypt,
