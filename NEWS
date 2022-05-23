@@ -57,6 +57,16 @@ NEWS for the Nettle 3.8 release
 
 	* Rewritten and faster x86_64 poly1305 assembly.
 
+	Known issues:
+
+	* Nettle's testsuite doesn't work out-of-the-box on recent
+	  MacOS, due to /bin/sh discarding the DYLD_LIBRARY_PATH
+	  environment variable. Nettle's test scripts handle this in
+	  some cases, but currently fails the test cases that are
+	  themselves written as /bin/sh scripts. As a workaround, use
+
+	  make check EMULATOR='env DYLD_LIBRARY_PATH=$(TEST_SHLIB_DIR)'
+
 	Miscellaneous:
 
 	* Updated manual to current makeinfo conventions, with no
