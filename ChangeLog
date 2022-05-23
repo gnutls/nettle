@@ -1,5 +1,7 @@
 2022-05-23  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.in (OPT_SOURCES): Add missing file fat-arm64.c.
+
 	* config.guess: Update to 2022-05-08 version.
 	* config.sub: Update to 2022-01-03 version.
 

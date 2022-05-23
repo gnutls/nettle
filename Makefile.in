@@ -216,7 +216,7 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  ed448-shake256.c ed448-shake256-pubkey.c \
 		  ed448-shake256-sign.c ed448-shake256-verify.c
 
-OPT_SOURCES = fat-arm.c fat-ppc.c fat-s390x.c fat-x86_64.c mini-gmp.c
+OPT_SOURCES = fat-arm.c fat-arm64.c fat-ppc.c fat-s390x.c fat-x86_64.c mini-gmp.c
 
 HEADERS = aes.h arcfour.h arctwo.h asn1.h blowfish.h \
 	  base16.h base64.h bignum.h buffer.h camellia.h cast128.h \
