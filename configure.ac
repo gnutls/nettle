@@ -105,6 +105,10 @@ AC_ARG_ENABLE(power-altivec,
   AC_HELP_STRING([--enable-power-altivec], [Enable POWER altivec and vsx extensions. (default=no)]),,
   [enable_altivec=no])
 
+AC_ARG_ENABLE(power9,
+  AC_HELP_STRING([--enable-power9], [Enable POWER ISA v3.0. (default=no)]),,
+  [enable_power9=no])
+
 AC_ARG_ENABLE(s390x-vf,
   AC_HELP_STRING([--enable-s390x-vf], [Enable vector facility on z/Architecture. (default=no)]),,
   [enable_s390x_vf=no])
@@ -539,9 +543,12 @@ if test "x$enable_assembler" = xyes ; then
 	if test "x$enable_fat" = xyes ; then
 	  asm_path="powerpc64/fat $asm_path"
 	  OPT_NETTLE_SOURCES="fat-ppc.c $OPT_NETTLE_SOURCES"
-	  FAT_TEST_LIST="none crypto_ext altivec"
+	  FAT_TEST_LIST="none crypto_ext altivec power9"
 	else
-	  if test "$enable_power_crypto_ext" = yes ; then
+	  if test "$enable_power9" = yes ; then
+	    asm_path="powerpc64/p9 $asm_path"
+	  fi
+    if test "$enable_power_crypto_ext" = yes ; then
             asm_path="powerpc64/p8 $asm_path"
 	  fi
 	  if test "$enable_power_altivec" = yes ; then
@@ -605,6 +612,7 @@ asm_nettle_optional_list="cpuid.asm cpu-facility.asm \
   aes256-encrypt-2.asm aes256-decrypt-2.asm \
   cbc-aes128-encrypt-2.asm cbc-aes192-encrypt-2.asm cbc-aes256-encrypt-2.asm \
   chacha-2core.asm chacha-3core.asm chacha-4core.asm chacha-core-internal-2.asm \
+  poly1305-internal-2.asm \
   ghash-set-key-2.asm ghash-update-2.asm \
   salsa20-2core.asm salsa20-core-internal-2.asm \
   sha1-compress-2.asm sha256-compress-2.asm \
@@ -751,6 +759,9 @@ AH_VERBATIM([HAVE_NATIVE],
 #undef HAVE_NATIVE_ecc_secp384r1_redc
 #undef HAVE_NATIVE_ecc_secp521r1_modp
 #undef HAVE_NATIVE_ecc_secp521r1_redc
+#undef HAVE_NATIVE_poly1305_set_key
+#undef HAVE_NATIVE_poly1305_block
+#undef HAVE_NATIVE_poly1305_digest
 #undef HAVE_NATIVE_ghash_set_key
 #undef HAVE_NATIVE_ghash_update
 #undef HAVE_NATIVE_salsa20_core
