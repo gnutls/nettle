@@ -312,3 +312,9 @@ sha512_256_digest(struct sha512_256_ctx *ctx,
   sha512_write_digest(ctx, length, digest);
   sha512_256_init(ctx);
 }
+
+void
+sha512_compress(uint64_t *state, const uint8_t *input)
+{
+  _nettle_sha512_compress(state, input, K);
+}

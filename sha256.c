@@ -161,3 +161,9 @@ sha224_digest(struct sha256_ctx *ctx,
   sha256_write_digest(ctx, length, digest);
   sha224_init(ctx);
 }
+
+void
+sha256_compress(uint32_t *state, const uint8_t *input)
+{
+  _nettle_sha256_compress(state, input, K);
+}
