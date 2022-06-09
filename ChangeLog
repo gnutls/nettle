@@ -1,3 +1,10 @@
+2022-06-09  Niels Möller  <nisse@lysator.liu.se>
+
+	From Corentin Labbe:
+	* sha2.h: Declare new functions.
+	* sha256.c (sha256_compress): New function.
+	* sha512.c (sha512_compress): New function.
+
 2022-06-02  Niels Möller  <nisse@lysator.liu.se>
 
 	* Released nettle-3.8.
