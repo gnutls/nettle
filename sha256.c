@@ -70,7 +70,7 @@ K[64] =
   0x90befffaUL, 0xa4506cebUL, 0xbef9a3f7UL, 0xc67178f2UL, 
 };
 
-#define COMPRESS(ctx, data) (_nettle_sha256_compress((ctx)->state, (data), K))
+#define COMPRESS(ctx, data) (sha256_compress((ctx)->state, (data)))
 
 /* Initialize the SHA values */
 
@@ -118,7 +118,7 @@ sha256_write_digest(struct sha256_ctx *ctx,
      big-endian format, and will be converted back by the compression
      function. It's probably not worth the effort to fix this. */
   WRITE_UINT64(ctx->block + (SHA256_BLOCK_SIZE - 8), bit_count);
-  COMPRESS(ctx, ctx->block);
+  sha256_compress(ctx->state, ctx->block);
 
   _nettle_write_be32(length, digest, ctx->state);
 }

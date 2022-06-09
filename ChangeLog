@@ -1,9 +1,13 @@
 2022-06-09  Niels Möller  <nisse@lysator.liu.se>
 
-	From Corentin Labbe:
+	Based on patches from Corentin Labbe:
 	* sha2.h: Declare new functions.
 	* sha256.c (sha256_compress): New function.
+	(COMPRESS): Updated to use sha256_compress.
+	(sha256_write_digest): Use sha256_compress directly.
 	* sha512.c (sha512_compress): New function.
+	(COMPRESS): Updated to use sha512_compress.
+	(sha512_write_digest): Use sha512_compress directly.
 
 2022-06-02  Niels Möller  <nisse@lysator.liu.se>
 
