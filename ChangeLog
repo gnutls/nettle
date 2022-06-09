@@ -1,3 +1,7 @@
+2022-06-02  Niels Möller  <nisse@lysator.liu.se>
+
+	* Released nettle-3.8.
+
 2022-05-23  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in (OPT_SOURCES): Add missing file fat-arm64.c.
