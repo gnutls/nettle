@@ -93,6 +93,8 @@ sha256_digest(struct sha256_ctx *ctx,
 	      size_t length,
 	      uint8_t *digest);
 
+void
+sha256_compress(uint32_t *state, const uint8_t *input);
 
 /* SHA224, a truncated SHA256 with different initial state. */
 
@@ -190,9 +192,6 @@ void
 sha512_256_digest(struct sha512_256_ctx *ctx,
                   size_t length,
                   uint8_t *digest);
-
-void
-sha256_compress(uint32_t *state, const uint8_t *input);
 
 #ifdef __cplusplus
 }
