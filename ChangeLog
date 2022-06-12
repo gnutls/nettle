@@ -1,3 +1,9 @@
+2022-06-12  Niels Möller  <nisse@lysator.liu.se>
+
+	From Christian Weisgerber:
+	* fat-arm64.c (get_arm64_features): Enable runtime feature
+	detection for openbsd.
+
 2022-06-09  Niels Möller  <nisse@lysator.liu.se>
 
 	* md5.h (md5_compress): New public name for compression function.
