@@ -51,9 +51,9 @@ define(`T3', `%v28')
 C A workaround for expanding multiple digits of argument references to QR macro which is incompatible with POSIX
 C See https://www.gnu.org/software/m4/manual/html_node/Arguments.html
 define(`P1',
-`ifelse($1, 0, v0, $1, 1, v1, $1, 2, v2, $1, 3, v3, $1, 4, v4, $1, 5, v5, $1, 6, v6, $1, 7, v7, $1, 8, v8, $1, 9, v9, $1, 10, v10, $1, 11, v11, $1, 12, v12, $1, 13, v13, $1, 14, v14, $1, 15, v15)')
+`ifelse($1, 0, %v0, $1, 1, %v1, $1, 2, %v2, $1, 3, %v3, $1, 4, %v4, $1, 5, %v5, $1, 6, %v6, $1, 7, %v7, $1, 8, %v8, $1, 9, %v9, $1, 10, %v10, $1, 11, %v11, $1, 12, %v12, $1, 13, %v13, $1, 14, %v14, $1, 15, %v15)')
 define(`P2',
-`ifelse($1, 0, v0, $1, 1, v5, $1, 2, v10, $1, 3, v15, $1, 4, v4, $1, 5, v9, $1, 6, v14, $1, 7, v3, $1, 8, v8, $1, 9, v13, $1, 10, v2, $1, 11, v7, $1, 12, v12, $1, 13, v1, $1, 14, v6, $1, 15, v11)')
+`ifelse($1, 0, %v0, $1, 1, %v5, $1, 2, %v10, $1, 3, %v15, $1, 4, %v4, $1, 5, %v9, $1, 6, %v14, $1, 7, %v3, $1, 8, %v8, $1, 9, %v13, $1, 10, %v2, $1, 11, %v7, $1, 12, %v12, $1, 13, %v1, $1, 14, %v6, $1, 15, %v11)')
 
 C Main loop for round
 define(`QR',`
