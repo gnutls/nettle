@@ -1,3 +1,10 @@
+2022-06-20  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/sha1-test.c (test_sha1_compress): New function.
+	(test_main): Add tests for compressing 0, 1 or 2 blocks.
+	* testsuite/sha256-test.c (test_sha256_compress): New function.
+	(test_main): Add tests for compressing 0, 1 or 2 blocks.
+
 2022-06-12  Niels Möller  <nisse@lysator.liu.se>
 
 	From Christian Weisgerber:
