@@ -30,6 +30,7 @@ ifelse(`
 ')
 
 .file "memxor.asm"
+.machine "z10"
 
 .text
 
