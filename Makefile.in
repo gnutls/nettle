@@ -260,7 +260,7 @@ DISTFILES = $(SOURCES) $(HEADERS) getopt.h getopt_int.h \
 	aes-internal.h block-internal.h blowfish-internal.h camellia-internal.h \
 	ghash-internal.h gost28147-internal.h poly1305-internal.h \
 	serpent-internal.h cast128_sboxes.h desinfo.h desCode.h \
-	ripemd160-internal.h sha2-internal.h \
+	ripemd160-internal.h md-internal.h sha2-internal.h \
 	memxor-internal.h nettle-internal.h nettle-write.h \
 	ctr-internal.h chacha-internal.h sha3-internal.h \
 	salsa20-internal.h umac-internal.h hogweed-internal.h \
