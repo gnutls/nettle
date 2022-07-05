@@ -1,7 +1,7 @@
-C x86_64/sha_ni/sha256-compress.asm
+C x86_64/sha_ni/sha256-compress-n.asm
 
 ifelse(`
-   Copyright (C) 2018 Niels Möller
+   Copyright (C) 2018, 2022 Niels Möller
 
    This file is part of GNU Nettle.
 
@@ -30,10 +30,11 @@ ifelse(`
    not, see http://www.gnu.org/licenses/.
 ')
 
-	.file "sha256-compress.asm"
+	.file "sha256-compress-n.asm"
 define(`STATE', `%rdi')
-define(`INPUT', `%rsi')
-define(`K', `%rdx')
+define(`K', `%rsi')
+define(`BLOCKS', `%rdx')
+define(`INPUT', `%rcx')
 
 define(`MSGK',`%xmm0')	C Implicit operand of sha256rnds2
 define(`MSG0',`%xmm1')
@@ -45,7 +46,7 @@ define(`CDGH',`%xmm6')
 define(`ABEF_ORIG',`%xmm7')
 define(`CDGH_ORIG', `%xmm8')
 define(`SWAP_MASK',`%xmm9')
-define(`TMP', `%xmm9')	C Overlaps SWAP_MASK
+define(`TMP', `%xmm10')
 
 C QROUND(M0, M1, M2, M3, R)
 define(`QROUND', `
@@ -69,15 +70,19 @@ define(`TRANSPOSE', `
 	punpcklqdq $1, $3
 ')
 
-	C void
-	C _nettle_sha256_compress(uint32_t *state, const uint8_t *input, const uint32_t *k)
+	C const uint8_t *
+	C _nettle_sha256_compress_n(uint32_t *state, const uint32_t *k,
+	C                           size_t blocks, const uint8_t *input)
 
 	.text
 	ALIGN(16)
 .Lswap_mask:
 	.byte 3,2,1,0,7,6,5,4,11,10,9,8,15,14,13,12
-PROLOGUE(_nettle_sha256_compress)
-	W64_ENTRY(3, 10)
+PROLOGUE(_nettle_sha256_compress_n)
+	W64_ENTRY(4, 11)
+	test	BLOCKS, BLOCKS
+	jz	.Lend
+
 	movups	(STATE), TMP
 	movups	16(STATE), ABEF
 
@@ -88,11 +93,12 @@ PROLOGUE(_nettle_sha256_compress)
 
 	movdqa	.Lswap_mask(%rip), SWAP_MASK
 
-	movdqa	ABEF, ABEF_ORIG
-	movdqa	CDGH, CDGH_ORIG
-
+.Loop:
 	movups	(INPUT), MSG0
 	pshufb	SWAP_MASK, MSG0
+
+	movdqa	ABEF, ABEF_ORIG
+	movdqa	CDGH, CDGH_ORIG
 
 	movdqa	(K), MSGK
 	paddd	MSG0, MSGK
@@ -163,6 +169,10 @@ PROLOGUE(_nettle_sha256_compress)
 	paddd ABEF_ORIG, ABEF
 	paddd CDGH_ORIG, CDGH
 
+	add	$64, INPUT
+	dec	BLOCKS
+	jnz	.Loop
+
 	TRANSPOSE(ABEF, CDGH, TMP)
 
 	pshufd	$0x1b, CDGH, CDGH
@@ -170,6 +180,8 @@ PROLOGUE(_nettle_sha256_compress)
 	movups	CDGH, 0(STATE)
 	movups	TMP, 16(STATE)
 
-	W64_EXIT(3, 10)
+.Lend:
+	mov	INPUT, %rax
+	W64_EXIT(4, 11)
 	ret
-EPILOGUE(_nettle_sha256_compress)
+EPILOGUE(_nettle_sha256_compress_n)

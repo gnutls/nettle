@@ -138,7 +138,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c aes-decrypt-table.c \
 		 salsa20-set-nonce.c \
 		 salsa20-128-set-key.c salsa20-256-set-key.c \
 		 sha1.c sha1-compress.c sha1-meta.c \
-		 sha256.c sha256-compress.c sha224-meta.c sha256-meta.c \
+		 sha256.c sha256-compress-n.c sha224-meta.c sha256-meta.c \
 		 sha512.c sha512-compress.c sha384-meta.c sha512-meta.c \
 		 sha512-224-meta.c sha512-256-meta.c \
 		 sha3.c sha3-permute.c \

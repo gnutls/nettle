@@ -1,4 +1,4 @@
-C x86_64/fat/sha256-compress.asm
+C x86_64/fat/sha256-compress-n-2.asm
 
 ifelse(`
    Copyright (C) 2018 Niels Möller
@@ -30,5 +30,5 @@ ifelse(`
    not, see http://www.gnu.org/licenses/.
 ')
 
-define(`fat_transform', `$1_x86_64')
-include_src(`x86_64/sha256-compress.asm')
+define(`fat_transform', `$1_sha_ni')
+include_src(`x86_64/sha_ni/sha256-compress-n.asm')
