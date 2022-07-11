@@ -118,10 +118,11 @@
   } while (0)
 
 /* For fat builds */
-#if HAVE_NATIVE_sha256_compress
-void
-_nettle_sha256_compress_c(uint32_t *state, const uint8_t *input, const uint32_t *k);
-#define _nettle_sha256_compress _nettle_sha256_compress_c
+#if HAVE_NATIVE_sha256_compress_n
+const uint8_t *
+_nettle_sha256_compress_n_c(uint32_t *state, const uint32_t *table,
+			    size_t blocks, const uint8_t *input);
+#define _nettle_sha256_compress_n _nettle_sha256_compress_n_c
 #endif
 
 const uint8_t *
