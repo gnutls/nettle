@@ -1,4 +1,4 @@
-C arm/fat/sha256-compress-2.asm
+C arm/fat/sha256-compress-n-2.asm
 
 
 ifelse(`
@@ -31,7 +31,7 @@ ifelse(`
    not, see http://www.gnu.org/licenses/.
 ')
 
-dnl PROLOGUE(_nettle_sha256_compress) picked up by configure
+dnl PROLOGUE(_nettle_sha256_compress_n) picked up by configure
 
 define(`fat_transform', `$1_armv6')
-include_src(`arm/v6/sha256-compress.asm')
+include_src(`arm/v6/sha256-compress-n.asm')

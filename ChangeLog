@@ -1,3 +1,11 @@
+2022-07-26  Niels Möller  <nisse@lysator.liu.se>
+
+	* arm/v6/sha256-compress-n.asm: New file. replacing...
+	* arm/v6/sha256-compress.asm: ...deleted file.
+	* arm/fat/sha256-compress-n-2.asm: New file. replacing...
+	* arm/fat/sha256-compress-2.asm: ...deleted file.
+	* fat-arm.c: Update fat setup.
+
 2022-07-11  Niels Möller  <nisse@lysator.liu.se>
 
 	* arm64/crypto/sha256-compress-n.asm: New file. replacing...
