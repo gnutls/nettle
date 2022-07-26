@@ -1,5 +1,7 @@
 2022-07-26  Niels Möller  <nisse@lysator.liu.se>
 
+	* Released nettle-3.8.1.
+
 	* configure.ac: Bump package version, to 3.8.1.
 	(LIBNETTLE_MINOR): Bump minor number, to 8.6.
 	(LIBHOGWEED_MINOR): Bump minor number, to 6.6.
