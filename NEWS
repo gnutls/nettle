@@ -1,3 +1,28 @@
+NEWS for the Nettle 3.8.1 release
+
+	This is a bugfix release, fixing a few portability issues
+	reported for Nettle-3.8.
+
+	Bug fixes:
+
+	* Avoid non-posix m4 argument references in the chacha
+	  implementation for arm64, powerpc64 and s390x. Reported by
+	  Christian Weisgerber, fix contributed by Mamone Tarsha.
+
+	* Use explicit .machine pseudo-ops where needed in s390x
+	  assembly files. Bug report by Andreas K. Huettel, fix
+	  contributed by Mamone Tarsha.
+
+	Optimizations:
+
+	* Implemented runtime detection of cpu features for OpenBSD on
+	  arm64. Contributed by Christian Weisgerber.
+
+	The new version is intended to be fully source and binary
+	compatible with Nettle-3.6. The shared library names are
+	libnettle.so.8.6 and libhogweed.so.6.6, with sonames
+	libnettle.so.8 and libhogweed.so.6.
+
 NEWS for the Nettle 3.8 release
 
 	This release includes a couple of new features, and many
