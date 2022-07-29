@@ -1,3 +1,11 @@
+2022-07-29  Niels Möller  <nisse@lysator.liu.se>
+
+	* s390x/msa_x1/sha256-compress-n.asm: New file. replacing...
+	* s390x/msa_x1/sha256-compress.asm: ...deleted file.
+	* s390x/fat/sha256-compress-n-2.asm: New file. replacing...
+	* s390x/fat/sha256-compress-2.asm: ...deleted file.
+	* fat-s390x.c: Update fat setup.
+
 2022-07-26  Niels Möller  <nisse@lysator.liu.se>
 
 	* arm/v6/sha256-compress-n.asm: New file. replacing...

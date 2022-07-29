@@ -1,4 +1,4 @@
-C s390x/fat/sha256-compress-2.asm
+C s390x/fat/sha256-compress-n-2.asm
 
 ifelse(`
    Copyright (C) 2021 Mamone Tarsha
@@ -30,7 +30,7 @@ ifelse(`
    not, see http://www.gnu.org/licenses/.
 ')
 
-dnl PROLOGUE(_nettle_sha256_compress) picked up by configure
+dnl PROLOGUE(_nettle_sha256_compress_n) picked up by configure
 
 define(`fat_transform', `$1_s390x')
-include_src(`s390x/msa_x1/sha256-compress.asm')
+include_src(`s390x/msa_x1/sha256-compress-n.asm')
