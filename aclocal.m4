@@ -10,6 +10,7 @@ AC_CACHE_VAL(lsh_cv_sys_ccpic,[
 	bsdi4.*)	CCPIC="-fPIC" ;;
 	bsdi*)		CCPIC="" ;;
 	darwin*)	CCPIC="-fPIC" ;;
+	freebsd*|netbsd*|openbsd*)	CCPIC="-fPIC" ;;
 	# Could also use -fpic, depending on the number of symbol references
 	solaris*)	CCPIC="-fPIC" ;;
 	cygwin*)	CCPIC="" ;;
@@ -21,7 +22,7 @@ AC_CACHE_VAL(lsh_cv_sys_ccpic,[
 	darwin*)	CCPIC="-fPIC" ;;
         irix*)		CCPIC="-share" ;;
 	hpux*)		CCPIC="+z"; ;;
-	*freebsd*)	CCPIC="-fpic" ;;
+	freebsd*|netbsd*|openbsd*)	CCPIC="-fPIC" ;;
 	sco*|sysv4.*)	CCPIC="-KPIC -dy -Bdynamic" ;;
 	solaris*)	CCPIC="-KPIC -Bdynamic" ;;
 	winnt*)		CCPIC="-shared" ;;
