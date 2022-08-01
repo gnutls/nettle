@@ -149,6 +149,9 @@ static uint32_t magic_w[6] = {
   0x64657253, 0x63727944, 0x6F756274
 };
 
+/* conflicts with OpenBSD's swap32 macro */
+#undef swap32
+
 static void swap32(uint32_t *x, int count)
 {
 #if !WORDS_BIGENDIAN
