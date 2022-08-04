@@ -1,3 +1,10 @@
+2022-08-04  Niels Möller  <nisse@lysator.liu.se>
+
+	From Brad Smith:
+	* configure.ac: Fix 64-bit MIPS ABI check for other OS's like *BSD / Linux.
+	* aclocal.m4 (LSH_CCPIC): Use proper PIC flag for *BSD OS's.
+	* blowfish-bcrypt.c (swap32): Eliminate conflict with OpenBSD's swap32 macro.
+
 2022-06-20  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/sha1-test.c (test_sha1_compress): New function.
