@@ -36,6 +36,8 @@
 #define NETTLE_INTERNAL_H_INCLUDED
 
 #include <assert.h>
+/* Needed for alloca on bsd systems. */
+#include <stdlib.h>
 
 #include "nettle-meta.h"
 

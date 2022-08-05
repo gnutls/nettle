@@ -1,5 +1,8 @@
 2022-08-05  Niels Möller  <nisse@lysator.liu.se>
 
+	* nettle-internal.h: Include stdlib.h, fix alloca warnings on BSD.
+	* hmac.c: Delete corresponding include here, no longer needed.
+
 	* getopt.c: Include stdlib.h and unistd.h unconditionally,
 	similarly to the gnulib version of this file.
 
