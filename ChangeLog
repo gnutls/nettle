@@ -1,3 +1,8 @@
+2022-08-05  Niels Möller  <nisse@lysator.liu.se>
+
+	* getopt.c: Include stdlib.h and unistd.h unconditionally,
+	similarly to the gnulib version of this file.
+
 2022-08-04  Niels Möller  <nisse@lysator.liu.se>
 
 	From Brad Smith:
