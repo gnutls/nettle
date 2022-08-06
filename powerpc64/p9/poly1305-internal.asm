@@ -99,14 +99,14 @@ IF_BE(`
 	add			r8, r8, r10
 
 	C Store key
-	std			r5, 0(r3)
-	std			r6, 8(r3)
-	std			r7, 16(r3)
-	std			r8, 24(r3)
+	std			r5, P1305_R0 (r3)
+	std			r6, P1305_R1 (r3)
+	std			r7, P1305_S0 (r3)
+	std			r8, P1305_S1 (r3)
 	C Reset state
-	std			r9, 32(r3)
-	std			r9, 40(r3)
-	std			r9, 48(r3)
+	std			r9, P1305_H0 (r3)
+	std			r9, P1305_H1 (r3)
+	std			r9, P1305_H2 (r3)
 
 	blr
 EPILOGUE(_nettle_poly1305_set_key)
@@ -114,9 +114,9 @@ EPILOGUE(_nettle_poly1305_set_key)
 C void _nettle_poly1305_block(struct poly1305_ctx *ctx, const uint8_t *m, unsigned m128)
 define(`FUNC_ALIGN', `5')
 PROLOGUE(_nettle_poly1305_block)
-	ld			H0, 32(CTX)
-	ld			H1, 40(CTX)
-	ld			H2, 48(CTX)
+	ld			H0, P1305_H0 (CTX)
+	ld			H1, P1305_H1 (CTX)
+	ld			H2, P1305_H2 (CTX)
 IF_LE(`
 	ld			T0, 0(M)
 	ld			T1, 8(M)
@@ -133,7 +133,7 @@ IF_BE(`
 
 	mtvsrdd		VSR(T), T0, T1
 
-	li			IDX, 16
+	li			IDX, P1305_S0
 	lxvd2x		VSR(R), 0, CTX
 	lxvd2x		VSR(S), IDX, CTX
 
@@ -160,9 +160,9 @@ IF_BE(`
 	xxmrgld		VSR(TMP), VSR(TMP), VSR(ZERO)
 	xxswapd		VSR(F0S), VSR(F0)
 	vadduqm		F1, F1, TMP
-	stxsd		F0S, 32(CTX)
+	stxsd		F0S, P1305_H0 (CTX)
 
-	li			IDX, 40
+	li			IDX, P1305_H1
 	xxmrghd		VSR(F0), VSR(ZERO), VSR(F0)
 	vadduqm		F1, F1, F0
 	xxswapd		VSR(F1), VSR(F1)
@@ -175,9 +175,9 @@ C _poly1305_digest (struct poly1305_ctx *ctx, uint8_t *s)
 define(`FUNC_ALIGN', `5')
 PROLOGUE(_nettle_poly1305_digest)
 	C Load current state
-	ld			r5, 32(r3)
-	ld			r6, 40(r3)
-	ld			r7, 48(r3)
+	ld			r5, P1305_H0 (r3)
+	ld			r6, P1305_H1 (r3)
+	ld			r7, P1305_H2 (r3)
 
 	C Fold high part of H2
 	li			r10, 0
@@ -225,14 +225,14 @@ IF_BE(`
 ')
 	C Reset hash
 	li			r9, 0
-	std			r9, 32(r3)
-	std			r9, 40(r3)
-	std			r9, 48(r3)
+	std			r9, P1305_H0 (r3)
+	std			r9, P1305_H1 (r3)
+	std			r9, P1305_H2 (r3)
 
 	blr
 EPILOGUE(_nettle_poly1305_digest)
 
-.data
+.rodata
 .align 3
 .key_mask:
 .quad 0x0FFFFFFC0FFFFFFC
