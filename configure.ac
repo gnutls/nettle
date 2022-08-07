@@ -4,7 +4,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_INIT([nettle], [3.8], [nettle-bugs@lists.lysator.liu.se])
 AC_PREREQ(2.61)
-AC_CONFIG_SRCDIR([arcfour.c])
+AC_CONFIG_SRCDIR([nettle-types.h])
 # Needed to stop autoconf from looking for files in parent directories.
 AC_CONFIG_AUX_DIR([.])
 
