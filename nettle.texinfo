@@ -442,6 +442,14 @@ This function also resets the context in the same way as
 @code{sha256_init}.
 @end deftypefun
 
+@deftypefun void sha256_compress (const uint32_t *@var{state}, uint8_t *@var{input})
+Perform a raw SHA256 compress on SHA256_BLOCK_SIZE bytes from@var{input}
+using @var{state} as IV (an array of 8 uint32_t). The output is stored in @var{state}.
+This function provides access to the underlying compression function,
+for the rare applications that need that (e.g., using different IV from
+standard SHA256).
+@end deftypefun
+
 Earlier versions of nettle defined SHA256 in the header file
 @file{<nettle/sha.h>}, which is now deprecated, but kept for
 compatibility.
@@ -520,6 +528,14 @@ octets of the digest are written.
 
 This function also resets the context in the same way as
 @code{sha512_init}.
+@end deftypefun
+
+@deftypefun void sha512_compress (const uint64_t *@var{state}, uint8_t *@var{input})
+Perform a raw SHA512 compress on SHA512_BLOCK_SIZE bytes from
+@var{input} using @var{state} as IV (an array of 8 uint64_t). The output is stored in @var{state}.
+This function provides access to the underlying compression function,
+for the rare applications that need that (e.g., using different IV from
+standard SHA512).
 @end deftypefun
 
 @subsubsection @acronym{SHA384 and other variants of SHA512}
@@ -929,6 +945,14 @@ This function also resets the context in the same way as
 @code{md5_init}.
 @end deftypefun
 
+@deftypefun void md5_compress (const uint32_t *@var{state}, uint8_t *@var{input})
+Perform a raw MD5 compress on MD5_BLOCK_SIZE bytes from @var{input}
+using @var{state} as IV (an array of 4 uint32_t). The output is stored in @var{state}.
+This function provides access to the underlying compression function,
+for the rare applications that need that (e.g., using different IV from
+standard MD5).
+@end deftypefun
+
 The normal way to use MD5 is to call the functions in order: First
 @code{md5_init}, then @code{md5_update} zero or more times, and finally
 @code{md5_digest}. After @code{md5_digest}, the context is reset to
@@ -1083,6 +1107,13 @@ This function also resets the context in the same way as
 @code{sha1_init}.
 @end deftypefun
 
+@deftypefun void sha1_compress (const uint32_t *@var{state}, uint8_t *@var{input})
+Perform a raw SHA1 compress on SHA1_BLOCK_SIZE bytes from @var{input}
+using @var{state} as IV (an array of 5 uint32_t). The output is stored in @var{state}.
+This function provides access to the underlying compression function,
+for the rare applications that need that (e.g., using different IV from
+standard SHA1).
+@end deftypefun
 
 @subsubsection @acronym{GOSTHASH94 and GOSTHASH94CP}
 @cindex GOST hash

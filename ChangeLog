@@ -1,5 +1,9 @@
 2022-08-07  Niels Möller  <nisse@lysator.liu.se>
 
+	Based on patch from Corentin Labbe:
+	* nettle.texinfo: Document sha256_compress, sha512_compress,
+	md5_compress and sha1_compress.
+
 	* configure.ac: Refer to nettle-types.h, rather than arcfour.c,
 	for AC_CONFIG_SRCDIR.
 
