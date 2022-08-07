@@ -81,7 +81,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c aes-decrypt-table.c \
 		 aes256-set-encrypt-key.c aes256-set-decrypt-key.c \
 		 aes256-meta.c \
 		 nist-keywrap.c \
-		 arcfour.c arcfour-crypt.c \
+		 arcfour.c \
 		 arctwo.c arctwo-meta.c blowfish.c blowfish-bcrypt.c \
 		 base16-encode.c base16-decode.c base16-meta.c \
 		 base64-encode.c base64-decode.c base64-meta.c \
