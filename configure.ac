@@ -585,7 +585,7 @@ asm_replace_list="aes-encrypt-internal.asm aes-decrypt-internal.asm \
 		cbc-aes128-encrypt.asm cbc-aes192-encrypt.asm \
 		cbc-aes256-encrypt.asm \
 		camellia-crypt-internal.asm \
-		md5-compress.asm memxor.asm memxor3.asm \
+		memxor.asm memxor3.asm \
 		ghash-set-key.asm ghash-update.asm \
 		poly1305-internal.asm \
 		chacha-core-internal.asm \

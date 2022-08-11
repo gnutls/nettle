@@ -1,5 +1,12 @@
 2023-12-08  Niels Möller  <nisse@lysator.liu.se>
 
+	Delete all md5 assembly code.
+	* md5.c (nettle_md5_compress): Move function and related macros
+	here, from...
+	* md5-compress.c: ... deleted file.
+	* x86/md5-compress.asm: Deleted file.
+	* x86_64/md5-compress.asm: Deleted file.
+
 	* configure.ac: When checking for openssl, use AC_LINK_IFELSE to
 	check if needed functions really are available. Just using
 	AC_CHECK_LIB to check for, e.g., EVP_RSA_gen, doesn't work, since
