@@ -1,7 +1,7 @@
-C arm/v6/sha256-compress.asm
+C arm/v6/sha256-compress-n.asm
 
 ifelse(`
-   Copyright (C) 2013 Niels Möller
+   Copyright (C) 2013, 2022 Niels Möller
 
    This file is part of GNU Nettle.
 
@@ -30,13 +30,14 @@ ifelse(`
    not, see http://www.gnu.org/licenses/.
 ')
 
-	.file "sha256-compress.asm"
+	.file "sha256-compress-n.asm"
 	.arch armv6
 
 define(`STATE', `r0')
-define(`INPUT', `r1')
-define(`K', `r2')
-define(`SA', `r3')
+define(`K', `r1')
+define(`BLOCKS', `r2')
+define(`INPUT', `r3')
+define(`SA', `r2')	C Overlap BLOCKS
 define(`SB', `r4')
 define(`SC', `r5')
 define(`SD', `r6')
@@ -45,12 +46,12 @@ define(`SF', `r8')
 define(`SG', `r10')
 define(`SH', `r11')
 define(`T0', `r12')
-define(`T1', `r1')	C Overlap INPUT
+define(`T1', `r3')	C Overlap INPUT
 define(`COUNT', `r0')	C Overlap STATE
 define(`W', `r14')
 
-C Used for data load
-define(`I0', `r3')
+C Used for data load. Must not clobber STATE (r0), K (r1) or INPUT (r3)
+define(`I0', `r2')
 define(`I1', `r4')
 define(`I2', `r5')
 define(`I3', `r6')
@@ -88,7 +89,7 @@ C S1(E) = E<<<26 ^ E<<<21 ^ E<<<7
 C S0(A) = A<<<30 ^ A<<<19 ^ A<<<10
 C Choice (E, F, G) = G^(E&(F^G))
 C Majority (A,B,C) = (A&B) + (C&(A^B))
-	
+
 define(`ROUND', `
 	ror	T0, $5, #6
 	eor	T0, T0, $5, ror #11
@@ -117,16 +118,31 @@ define(`NOEXPN', `
 	ldr	W, [sp, + $1]
 	add	$1, $1, #4
 ')
-	C void
-	C _nettle_sha256_compress(uint32_t *state, const uint8_t *input, const uint32_t *k)
-
 	.text
 	.align 2
 
-PROLOGUE(_nettle_sha256_compress)
-	push	{r4,r5,r6,r7,r8,r10,r11,r14}
-	sub	sp, sp, #68
-	str	STATE, [sp, #+64]
+define(`SHIFT_OFFSET', 64)
+define(`INPUT_OFFSET', 68)
+define(`I0_OFFSET', 72)
+define(`STATE_OFFSET', 76)
+define(`K_OFFSET', 80)
+define(`BLOCKS_OFFSET', 84)
+
+	C const uint8_t *
+	C _nettle_sha256_compress_n(uint32_t *state, const uint32_t *k,
+	C                           size_t blocks, const uint8_t *input)
+
+PROLOGUE(_nettle_sha256_compress_n)
+	cmp	BLOCKS, #0
+	bne	.Lwork
+
+	mov	r0, INPUT
+	bx lr
+
+.Lwork:
+	C Also save STATE (r0), K (r1) and BLOCKS (r2)
+	push	{r0,r1,r2,r4,r5,r6,r7,r8,r10,r11,r12,r14}
+	sub	sp, sp, #STATE_OFFSET
 
 	C Load data up front, since we don't have enough registers
 	C to load and shift on-the-fly
@@ -144,6 +160,9 @@ IF_BE(`	lsr	I1, T0, SHIFT')
 	C because there is no rotate left
 IF_BE(`	rsb	SHIFT, SHIFT, #32')
 
+	str	SHIFT, [sp, #SHIFT_OFFSET]
+
+.Loop_block:
 	mov	DST, sp
 	mov	ILEFT, #4
 .Lcopy:
@@ -164,7 +183,12 @@ IF_LE(`	rev	I3, I3')
 	stm	DST!, {I0,I1,I2,I3}
 	mov	I0, I4	
 	bne	.Lcopy
-	
+
+	str	INPUT, [sp, #INPUT_OFFSET]
+	str	I0, [sp, #I0_OFFSET]
+
+	C Process block, with input at sp, expanded on the fly
+
 	ldm	STATE, {SA,SB,SC,SD,SE,SF,SG,SH}
 
 	mov	COUNT,#0
@@ -203,20 +227,40 @@ IF_LE(`	rev	I3, I3')
 	EXPN(15) ROUND(SB,SC,SD,SE,SF,SG,SH,SA)
 	bne	.Loop2
 
-	ldr	STATE, [sp, #+64]
+	ldr	STATE, [sp, #STATE_OFFSET]
 	C No longer needed registers
-	ldm	STATE, {r1,r2,r12,r14}
-	add	SA, SA, r1
-	add	SB, SB, r2
-	add	SC, SC, r12
-	add	SD, SD, r14
+	ldm	STATE, {K, T1, T0, W}
+	add	SA, SA, K
+	add	SB, SB, T1
+	add	SC, SC, T0
+	add	SD, SD, W
 	stm	STATE!, {SA,SB,SC,SD}
-	ldm	STATE, {r1,r2,r12,r14}
-	add	SE, SE, r1
-	add	SF, SF, r2
-	add	SG, SG, r12
-	add	SH, SH, r14
-	stm	STATE!, {SE,SF,SG,SH}
-	add	sp, sp, #68
-	pop	{r4,r5,r6,r7,r8,r10,r11,pc}
-EPILOGUE(_nettle_sha256_compress)
+	ldm	STATE, {K, T1, T0, W}
+	add	SE, SE, K
+	add	SF, SF, T1
+	add	SG, SG, T0
+	add	SH, SH, W
+	stm	STATE, {SE,SF,SG,SH}
+	sub	STATE, STATE, #16
+
+	ldr	BLOCKS, [sp, #BLOCKS_OFFSET]
+	subs	BLOCKS, BLOCKS, #1
+	str	BLOCKS, [sp, #BLOCKS_OFFSET]
+
+	ldr	SHIFT, [sp, #SHIFT_OFFSET]
+	ldr	K, [sp, #K_OFFSET]
+	ldr	INPUT, [sp, #INPUT_OFFSET]
+	ldr	I0, [sp, #I0_OFFSET]
+
+	bne	.Loop_block
+
+	C Restore input pointer adjustment
+IF_BE(`	rsbs	SHIFT, SHIFT, #32')
+IF_LE(` cmp	SHIFT, #0')
+	subne	INPUT, INPUT, #4
+	orr	r0, INPUT, SHIFT, lsr #3
+
+	C Discard saved STATE, K and BLOCKS.
+	add	sp, sp, #STATE_OFFSET + 12
+	pop	{r4,r5,r6,r7,r8,r10,r11,r12,pc}
+EPILOGUE(_nettle_sha256_compress_n)

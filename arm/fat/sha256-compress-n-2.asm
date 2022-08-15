@@ -1,7 +1,8 @@
-C x86_64/fat/sha256-compress-2.asm
+C arm/fat/sha256-compress-n-2.asm
+
 
 ifelse(`
-   Copyright (C) 2018 Niels Möller
+   Copyright (C) 2015 Niels Möller
 
    This file is part of GNU Nettle.
 
@@ -30,5 +31,7 @@ ifelse(`
    not, see http://www.gnu.org/licenses/.
 ')
 
-define(`fat_transform', `$1_sha_ni')
-include_src(`x86_64/sha_ni/sha256-compress.asm')
+dnl PROLOGUE(_nettle_sha256_compress_n) picked up by configure
+
+define(`fat_transform', `$1_armv6')
+include_src(`arm/v6/sha256-compress-n.asm')

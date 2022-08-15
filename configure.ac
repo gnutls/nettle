@@ -598,7 +598,7 @@ asm_replace_list="aes-encrypt-internal.asm aes-decrypt-internal.asm \
 		chacha-core-internal.asm \
 		salsa20-crypt.asm salsa20-core-internal.asm \
 		serpent-encrypt.asm serpent-decrypt.asm \
-		sha1-compress.asm sha256-compress.asm sha512-compress.asm \
+		sha1-compress.asm sha256-compress-n.asm sha512-compress.asm \
 		sha3-permute.asm umac-nh.asm umac-nh-n.asm machine.m4"
 
 # Assembler files which generate additional object files if they are used.
@@ -615,7 +615,7 @@ asm_nettle_optional_list="cpuid.asm cpu-facility.asm \
   poly1305-internal-2.asm \
   ghash-set-key-2.asm ghash-update-2.asm \
   salsa20-2core.asm salsa20-core-internal-2.asm \
-  sha1-compress-2.asm sha256-compress-2.asm \
+  sha1-compress-2.asm sha256-compress-n-2.asm \
   sha3-permute-2.asm sha512-compress-2.asm \
   umac-nh-n-2.asm umac-nh-2.asm"
 
@@ -768,7 +768,7 @@ AH_VERBATIM([HAVE_NATIVE],
 #undef HAVE_NATIVE_salsa20_2core
 #undef HAVE_NATIVE_fat_salsa20_2core
 #undef HAVE_NATIVE_sha1_compress
-#undef HAVE_NATIVE_sha256_compress
+#undef HAVE_NATIVE_sha256_compress_n
 #undef HAVE_NATIVE_sha512_compress
 #undef HAVE_NATIVE_sha3_permute
 #undef HAVE_NATIVE_umac_nh

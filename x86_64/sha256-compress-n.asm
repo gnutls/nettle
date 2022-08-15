@@ -1,7 +1,7 @@
-C x86_64/sha256-compress.asm
+C x86_64/sha256-compress-n.asm
 
 ifelse(`
-   Copyright (C) 2013 Niels Möller
+   Copyright (C) 2013, 2022 Niels Möller
 
    This file is part of GNU Nettle.
 
@@ -30,21 +30,24 @@ ifelse(`
    not, see http://www.gnu.org/licenses/.
 ')
 
-	.file "sha256-compress.asm"
+	.file "sha256-compress-n.asm"
 define(`STATE', `%rdi')
-define(`INPUT', `%rsi')
-define(`K', `%rdx')
+define(`K', `%rsi')
+define(`BLOCKS', `%rdx')
+define(`INPUT', `%rcx')
+define(`STATE_SAVED', `64(%rsp)')
+
 define(`SA', `%eax')
 define(`SB', `%ebx')
-define(`SC', `%ecx')
+define(`SC', `%ebp')
 define(`SD', `%r8d')
 define(`SE', `%r9d')
 define(`SF', `%r10d')
 define(`SG', `%r11d')
 define(`SH', `%r12d')
 define(`T0', `%r13d')
-define(`T1', `%edi')	C Overlap STATE
-define(`COUNT', `%r14')
+define(`T1', `%r14d')
+define(`COUNT', `%rdi')	C Overlap STATE
 define(`W', `%r15d')
 
 define(`EXPN', `
@@ -123,18 +126,21 @@ define(`NOEXPN', `
 	movl	W, OFFSET($1)(%rsp, COUNT, 4)
 ')
 
-	C void
-	C _nettle_sha256_compress(uint32_t *state, const uint8_t *input, const uint32_t *k)
+	C const uint8_t *
+	C _nettle_sha256_compress_n(uint32_t *state, const uint32_t *k,
+	C                           size_t blocks, const uint8_t *input)
 
 	.text
 	ALIGN(16)
 
-PROLOGUE(_nettle_sha256_compress)
+PROLOGUE(_nettle_sha256_compress_n)
 	W64_ENTRY(3, 0)
+	test	BLOCKS, BLOCKS
+	jz	.Lend
 
 	sub	$120, %rsp
-	mov	%rbx, 64(%rsp)
-	mov	STATE, 72(%rsp)	C Save state, to free a register
+	mov	STATE, STATE_SAVED	C Save state, to free a register
+	mov	%rbx, 72(%rsp)
 	mov	%rbp, 80(%rsp)
 	mov	%r12, 88(%rsp)
 	mov	%r13, 96(%rsp)
@@ -149,7 +155,9 @@ PROLOGUE(_nettle_sha256_compress)
 	movl	20(STATE), SF
 	movl	24(STATE), SG
 	movl	28(STATE), SH
-	xor	COUNT, COUNT
+
+.Loop_block:
+	xorl	XREG(COUNT), XREG(COUNT)
 	ALIGN(16)
 
 .Loop1:
@@ -161,8 +169,8 @@ PROLOGUE(_nettle_sha256_compress)
 	NOEXPN(5) ROUND(SD,SE,SF,SG,SH,SA,SB,SC,5)
 	NOEXPN(6) ROUND(SC,SD,SE,SF,SG,SH,SA,SB,6)
 	NOEXPN(7) ROUND(SB,SC,SD,SE,SF,SG,SH,SA,7)
-	add	$8, COUNT
-	cmp	$16, COUNT
+	addl	$8, XREG(COUNT)
+	cmpl	$16, XREG(COUNT)
 	jne	.Loop1
 
 .Loop2:
@@ -182,22 +190,35 @@ PROLOGUE(_nettle_sha256_compress)
 	EXPN(13) ROUND(SD,SE,SF,SG,SH,SA,SB,SC,13)
 	EXPN(14) ROUND(SC,SD,SE,SF,SG,SH,SA,SB,14)
 	EXPN(15) ROUND(SB,SC,SD,SE,SF,SG,SH,SA,15)
-	add	$16, COUNT
-	cmp	$64, COUNT
+	addl	$16, XREG(COUNT)
+	cmpl	$64, XREG(COUNT)
 	jne	.Loop2
 
-	mov	72(%rsp), STATE
+	mov	STATE_SAVED, STATE
 
-	addl	SA, (STATE)
-	addl	SB, 4(STATE)
-	addl	SC, 8(STATE)
-	addl	SD, 12(STATE)
-	addl	SE, 16(STATE)
-	addl	SF, 20(STATE)
-	addl	SG, 24(STATE)
-	addl	SH, 28(STATE)
+	addl	(STATE), SA
+	addl	4(STATE), SB
+	addl	8(STATE), SC
+	addl	12(STATE), SD
+	addl	16(STATE), SE
+	addl	20(STATE), SF
+	addl	24(STATE), SG
+	addl	28(STATE), SH
 
-	mov	64(%rsp), %rbx
+	movl	SA, (STATE)
+	movl	SB, 4(STATE)
+	movl	SC, 8(STATE)
+	movl	SD, 12(STATE)
+	movl	SE, 16(STATE)
+	movl	SF, 20(STATE)
+	movl	SG, 24(STATE)
+	movl	SH, 28(STATE)
+
+	add	$64, INPUT
+	dec	BLOCKS
+	jnz	.Loop_block
+
+	mov	72(%rsp), %rbx
 	mov	80(%rsp), %rbp
 	mov	88(%rsp), %r12
 	mov	96(%rsp), %r13
@@ -205,6 +226,8 @@ PROLOGUE(_nettle_sha256_compress)
 	mov	112(%rsp),%r15
 
 	add	$120, %rsp
+.Lend:
+	mov	INPUT, %rax
 	W64_EXIT(3, 0)
 	ret
-EPILOGUE(_nettle_sha256_compress)
+EPILOGUE(_nettle_sha256_compress_n)

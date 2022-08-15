@@ -1,7 +1,7 @@
-C s390x/msa_x1/sha256-compress.asm
+C s390x/msa_x1/sha256-compress-n.asm
 
 ifelse(`
-   Copyright (C) 2021 Mamone Tarsha
+   Copyright (C) 2021, 2022 Mamone Tarsha, Niels Möller
    This file is part of GNU Nettle.
 
    GNU Nettle is free software: you can redistribute it and/or
@@ -56,25 +56,23 @@ C |----------------------------------------------|
 C |                 H7 (4 bytes)                 |
 C *----------------------------------------------*
 
-.file "sha256-compress.asm"
+.file "sha256-compress-n.asm"
 
 .text
 
 C SHA function code
 define(`SHA256_FUNCTION_CODE', `2')
-C Size of block
-define(`SHA256_BLOCK_SIZE', `64')
 
-C void 
-C _nettle_sha256_compress(uint32_t *state, const uint8_t *input,
-C                         const uint32_t *k)
+C const uint8_t *
+C _nettle_sha256_compress_n(uint32_t *state, const uint32_t *k,
+C			    size_t blocks, const uint8_t *input)
 
-PROLOGUE(_nettle_sha256_compress)
+PROLOGUE(_nettle_sha256_compress_n)
     lghi           %r0,SHA256_FUNCTION_CODE      C SHA-256 Function Code
     lgr            %r1,%r2
-    lgr            %r4,%r3
-    lghi           %r5,SHA256_BLOCK_SIZE
-1:  .long   0xb93e0004                           C kimd %r0,%r4. perform KIMD-SHA operation on data
+    lgr            %r2, %r5
+    sllg	   %r3, %r4, 6                   C 64 * block size
+1:  .long   0xb93e0002                           C kimd %r0,%r2. perform KIMD-SHA operation on data
     brc            1,1b
     br             RA
-EPILOGUE(_nettle_sha256_compress)
+EPILOGUE(_nettle_sha256_compress_n)

@@ -179,7 +179,9 @@ typedef void salsa20_crypt_func (struct salsa20_ctx *ctx, unsigned rounds,
 				 const uint8_t *src);
 
 typedef void sha1_compress_func(uint32_t *state, const uint8_t *input);
-typedef void sha256_compress_func(uint32_t *state, const uint8_t *input, const uint32_t *k);
+typedef const uint8_t *
+sha256_compress_n_func(uint32_t *state, const uint32_t *k,
+		       size_t blocks, const uint8_t *input);
 
 struct sha3_state;
 typedef void sha3_permute_func (struct sha3_state *state);

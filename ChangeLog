@@ -22,6 +22,48 @@
 	* aclocal.m4 (LSH_CCPIC): Use proper PIC flag for *BSD OS's.
 	* blowfish-bcrypt.c (swap32): Eliminate conflict with OpenBSD's swap32 macro.
 
+2022-07-29  Niels Möller  <nisse@lysator.liu.se>
+
+	* s390x/msa_x1/sha256-compress-n.asm: New file. replacing...
+	* s390x/msa_x1/sha256-compress.asm: ...deleted file.
+	* s390x/fat/sha256-compress-n-2.asm: New file. replacing...
+	* s390x/fat/sha256-compress-2.asm: ...deleted file.
+	* fat-s390x.c: Update fat setup.
+
+2022-07-26  Niels Möller  <nisse@lysator.liu.se>
+
+	* arm/v6/sha256-compress-n.asm: New file. replacing...
+	* arm/v6/sha256-compress.asm: ...deleted file.
+	* arm/fat/sha256-compress-n-2.asm: New file. replacing...
+	* arm/fat/sha256-compress-2.asm: ...deleted file.
+	* fat-arm.c: Update fat setup.
+
+2022-07-11  Niels Möller  <nisse@lysator.liu.se>
+
+	* arm64/crypto/sha256-compress-n.asm: New file. replacing...
+	* arm64/crypto/sha256-compress.asm: ...deleted file.
+	* arm64/fat/sha256-compress-n-2.asm: New file. replacing...
+	* arm64/fat/sha256-compress-2.asm: ...deleted file.
+	* fat-arm64.c: Update fat setup.
+
+2022-07-05  Niels Möller  <nisse@lysator.liu.se>
+
+	* md-internal.h (MD_FILL_OR_RETURN): New file, new macro.
+	* sha256-compress-n.c (_nettle_sha256_compress_n): New file and
+	function, replacing...
+	* sha256-compress.c (_nettle_sha256_compress): ...deleted file and
+	function.
+	* sha2-internal.h (_nettle_sha256_compress_n): Declare new function..
+	* sha256.c (sha256_compress): Update to use
+	_nettle_sha256_compress_n and MD_FILL_OR_RETURN.
+	* x86_64/sha256-compress-n.asm: New file. replacing...
+	* x86_64/sha256-compress.asm: ...deleted file.
+	* x86_64/sha_ni/sha256-compress-n.asm: New file. replacing...
+	* x86_64/sha_ni/sha256-compress.asm: ...deleted file.
+	* fat-setup.h (sha256_compress_n_func): New typedef, replacing...
+	(sha256_compress_func): ... deleted typedef.
+	* fat-x86_64.c: Update fat setup.
+
 2022-06-20  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/sha1-test.c (test_sha1_compress): New function.

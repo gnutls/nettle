@@ -1,4 +1,4 @@
-C arm64/crypto/sha256-compress.asm
+C arm64/crypto/sha256-compress-n.asm
 
 ifelse(`
    Copyright (C) 2021 Mamone Tarsha
@@ -37,7 +37,7 @@ C SHA256H2: SHA256 hash update (part 2)
 C SHA256SU0: SHA256 schedule update 0
 C SHA256SU1: SHA256 schedule update 1
 
-.file "sha256-compress.asm"
+.file "sha256-compress-n.asm"
 .arch armv8-a+crypto
 
 .text
@@ -45,8 +45,9 @@ C SHA256SU1: SHA256 schedule update 1
 C Register usage:
 
 define(`STATE', `x0')
-define(`INPUT', `x1')
-define(`K', `x2')
+define(`K', `x1')
+define(`BLOCKS', `x2')
+define(`INPUT', `x3')
 
 define(`MSG0', `v0')
 define(`MSG1', `v1')
@@ -59,19 +60,23 @@ define(`TMP', `v7')
 define(`STATE0_SAVED', `v16')
 define(`STATE1_SAVED', `v17')
 
-C void 
-C _nettle_sha256_compress(uint32_t *state, const uint8_t *input, const uint32_t *k)
+C const uint8_t *
+C _nettle_sha256_compress_n(uint32_t *state, const uint32_t *k,
+C                           size_t blocks, const uint8_t *input)
 
-PROLOGUE(_nettle_sha256_compress)
+PROLOGUE(_nettle_sha256_compress_n)
+    cbz            BLOCKS, .Lend
+
     C Load state
     ld1            {STATE0.4s,STATE1.4s},[STATE]
 
+.Loop:
     C Save state
     mov            STATE0_SAVED.16b,STATE0.16b
     mov            STATE1_SAVED.16b,STATE1.16b
 
     C Load message
-    ld1            {MSG0.16b,MSG1.16b,MSG2.16b,MSG3.16b},[INPUT]
+    ld1            {MSG0.16b,MSG1.16b,MSG2.16b,MSG3.16b},[INPUT],#64
     
     C Reverse for little endian
     rev32          MSG0.16b,MSG0.16b
@@ -217,9 +222,13 @@ PROLOGUE(_nettle_sha256_compress)
     C Combine state
     add            STATE0.4s,STATE0.4s,STATE0_SAVED.4s
     add            STATE1.4s,STATE1.4s,STATE1_SAVED.4s
-	
+    subs           BLOCKS, BLOCKS, #1
+    sub            K, K, #240
+    b.ne           .Loop
+
     C Store state
     st1            {STATE0.4s,STATE1.4s},[STATE]
-
+.Lend:
+    mov            x0, INPUT
     ret
-EPILOGUE(_nettle_sha256_compress)
+EPILOGUE(_nettle_sha256_compress_n)

@@ -1,7 +1,7 @@
-C s390x/fat/sha256-compress-2.asm
+C x86_64/fat/sha256-compress-n.asm
 
 ifelse(`
-   Copyright (C) 2021 Mamone Tarsha
+   Copyright (C) 2018 Niels Möller
 
    This file is part of GNU Nettle.
 
@@ -30,7 +30,5 @@ ifelse(`
    not, see http://www.gnu.org/licenses/.
 ')
 
-dnl PROLOGUE(_nettle_sha256_compress) picked up by configure
-
-define(`fat_transform', `$1_s390x')
-include_src(`s390x/msa_x1/sha256-compress.asm')
+define(`fat_transform', `$1_x86_64')
+include_src(`x86_64/sha256-compress-n.asm')

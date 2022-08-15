@@ -1,8 +1,6 @@
-/* sha2-internal.h
+/* md-internal.h
 
-   The sha2 family of hash functions.
-
-   Copyright (C) 2001, 2012 Niels Möller
+   Copyright (C) 2001, 2010, 2022 Niels Möller
 
    This file is part of GNU Nettle.
 
@@ -31,23 +29,29 @@
    not, see http://www.gnu.org/licenses/.
 */
 
-#ifndef NETTLE_SHA2_INTERNAL_H_INCLUDED
-#define NETTLE_SHA2_INTERNAL_H_INCLUDED
+#ifndef NETTLE_MD_INTERNAL_H_INCLUDED
+#define NETTLE_MD_INTERNAL_H_INCLUDED
 
-#include "nettle-types.h"
+/* Internal helper macros for Merkle-Damgård hash functions. Assumes the context
+   structs includes the following fields:
 
-/* Internal compression function. STATE points to 8 uint32_t words,
-   DATA points to 64 bytes of input data, possibly unaligned, and K
-   points to the table of constants. */
-const uint8_t *
-_nettle_sha256_compress_n(uint32_t *state, const uint32_t *k,
-			  size_t blocks, const uint8_t *data);
+     uint8_t block[...];		// Buffer holding one block
+     unsigned int index;		// Index into block
+*/
 
-/* Internal compression function. STATE points to 8 uint64_t words,
-   DATA points to 128 bytes of input data, possibly unaligned, and K
-   points to the table of constants. */
-void
-_nettle_sha512_compress(uint64_t *state, const uint8_t *data, const uint64_t *k);
+#define MD_FILL_OR_RETURN(ctx, length, data)			\
+  do {								\
+    unsigned __md_left = sizeof((ctx)->block) - (ctx)->index;	\
+    if ((length) < __md_left)					\
+      {								\
+	memcpy((ctx)->block + (ctx)->index, (data), (length));	\
+	(ctx)->index += (length);				\
+	return;							\
+      }								\
+    memcpy((ctx)->block + (ctx)->index, (data), __md_left);	\
+    (data) += __md_left;					\
+    (length) -= __md_left;					\
+    (ctx)->index = 0;						\
+  } while(0)
 
-
-#endif /* NETTLE_SHA2_INTERNAL_H_INCLUDED */
+#endif /* NETTLE_MD_INTERNAL_H_INCLUDED */
