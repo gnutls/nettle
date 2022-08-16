@@ -1,3 +1,9 @@
+2022-08-16  Niels Möller  <nisse@lysator.liu.se>
+
+	* eccdata.c (output_modulo): Output the limb size, delete return
+	value.
+	(output_curve): Update calls to output_modulo, other minor cleanup.
+
 2022-08-07  Niels Möller  <nisse@lysator.liu.se>
 
 	Based on patch from Corentin Labbe:

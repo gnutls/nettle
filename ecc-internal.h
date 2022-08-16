@@ -174,7 +174,9 @@ struct ecc_modulo
   /* B^size mod m. Expected to have at least 32 leading zeros
      (equality for secp_256r1). */
   const mp_limb_t *B;
-  /* 2^{bit_size} - m, same value as above, but shifted. */
+  /* 2^{bit_size} - m. When different from B above, for numbers of
+     interest, usually B has trailing zeros and this is B shifted
+     right. */
   const mp_limb_t *B_shifted;
   /* m +/- 1, for redc, excluding redc_size low limbs. */
   const mp_limb_t *redc_mpm1;
