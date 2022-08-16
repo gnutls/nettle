@@ -68,4 +68,10 @@ nettle_bswap32 (uint32_t x)
 #define bswap64_if_le nettle_bswap64
 #endif
 
+#if WORDS_BIGENDIAN
+#define bswap64_if_be nettle_bswap64
+#else
+#define bswap64_if_be(x) (x)
+#endif
+
 #endif /* NETTLE_BSWAP_INTERNAL_H_INCLUDED */

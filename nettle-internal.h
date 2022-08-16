@@ -80,6 +80,7 @@
 #define NETTLE_MAX_HASH_CONTEXT_SIZE (sizeof(struct sha3_224_ctx))
 #define NETTLE_MAX_SEXP_ASSOC 17
 #define NETTLE_MAX_CIPHER_BLOCK_SIZE 32
+#define NETTLE_MAX_CIPHER_KEY_SIZE 32
 
 /* Doesn't quite fit with the other algorithms, because of the weak
  * keys. Weak keys are not reported, the functions will simply crash
