@@ -39,6 +39,7 @@ test_add(const char *name,
       fprintf (stderr, "\n");
       abort ();
     }
+  mpz_clear (ref);
 }
 
 static void
@@ -96,6 +97,7 @@ test_sub(const char *name,
       fprintf (stderr, "\n");
       abort ();
     }
+  mpz_clear (ref);
 }
 
 static void
