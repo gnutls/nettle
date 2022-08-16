@@ -178,6 +178,10 @@ struct ecc_modulo
      interest, usually B has trailing zeros and this is B shifted
      right. */
   const mp_limb_t *B_shifted;
+  /* For ecc_mod_sub: B^size - 2m, if that doesn't underflow.
+     Otherwise, same as B */
+  const mp_limb_t *Bm2m;
+
   /* m +/- 1, for redc, excluding redc_size low limbs. */
   const mp_limb_t *redc_mpm1;
   /* (m+1)/2 */
@@ -260,6 +264,8 @@ ecc_mod_equal_p (const struct ecc_modulo *m, const mp_limb_t *a,
 void
 ecc_mod_add (const struct ecc_modulo *m, mp_limb_t *rp,
 	     const mp_limb_t *ap, const mp_limb_t *bp);
+
+/* If inputs are in the range 0 <= a, b < 2m, then so is the output. */
 void
 ecc_mod_sub (const struct ecc_modulo *m, mp_limb_t *rp,
 	     const mp_limb_t *ap, const mp_limb_t *bp);

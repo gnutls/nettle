@@ -1227,6 +1227,11 @@ output_curve (const struct ecc_curve *ecc, unsigned bits_per_limb)
       int shift;
 
       mpz_set_ui (t, 0);
+      mpz_setbit (t, limb_size * bits_per_limb);
+      mpz_submul_ui (t, ecc->p, 2);
+      output_bignum ("ecc_Bm2p", t, limb_size, bits_per_limb);
+
+      mpz_set_ui (t, 0);
       mpz_setbit (t, ecc->bit_size);
       mpz_sub (t, t, ecc->p);      
       output_bignum ("ecc_Bmodp_shifted", t, limb_size, bits_per_limb);
@@ -1258,18 +1263,28 @@ output_curve (const struct ecc_curve *ecc, unsigned bits_per_limb)
 	}
     }
   else
-    printf ("#define ecc_Bmodp_shifted ecc_Bmodp\n");
+    {
+      printf ("#define ecc_Bmodp_shifted ecc_Bmodp\n");
+      printf ("#define ecc_Bm2p ecc_Bmodp\n");
+    }
 
   if (qbits < limb_size * bits_per_limb)
     {
       mpz_set_ui (t, 0);
+      mpz_setbit (t, limb_size * bits_per_limb);
+      mpz_submul_ui (t, ecc->q, 2);
+      output_bignum ("ecc_Bm2q", t, limb_size, bits_per_limb);
+
+      mpz_set_ui (t, 0);
       mpz_setbit (t, qbits);
       mpz_sub (t, t, ecc->q);      
-      output_bignum ("ecc_Bmodq_shifted", t, limb_size, bits_per_limb);      
+      output_bignum ("ecc_Bmodq_shifted", t, limb_size, bits_per_limb);
     }
   else
-    printf ("#define ecc_Bmodq_shifted ecc_Bmodq\n");
-
+    {
+      printf ("#define ecc_Bmodq_shifted ecc_Bmodq\n");
+      printf ("#define ecc_Bm2q ecc_Bmodq\n");
+    }
   mpz_add_ui (t, ecc->p, 1);
   mpz_fdiv_q_2exp (t, t, 1);
   output_bignum ("ecc_pp1h", t, limb_size, bits_per_limb);      

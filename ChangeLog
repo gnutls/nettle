@@ -1,5 +1,13 @@
 2022-08-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-mod-arith.c (ecc_mod_sub): Ensure that if inputs are in the
+	range 0 <= a, b < 2m, then output is in the same range.
+	* eccdata.c (output_curve): New outputs ecc_Bm2p and ecc_Bm2q.
+	* ecc-internal.h (struct ecc_modulo): New member Bm2m (B^size -
+	2m), needed by ecc_mod_sub. Update all curves.
+	* testsuite/ecc-mod-arith-test.c: New tests for ecc_mod_add and
+	ecc_mod_sub.
+
 	* eccdata.c (output_modulo): Output the limb size, delete return
 	value.
 	(output_curve): Update calls to output_modulo, other minor cleanup.
