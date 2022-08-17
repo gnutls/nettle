@@ -1109,6 +1109,13 @@ mpz_urandomb (mpz_t r, struct knuth_lfib_ctx *ctx, mp_bitcnt_t bits)
   nettle_mpz_set_str_256_u (r, bytes, buf);
   free (buf);
 }
+void
+mpz_urandomm (mpz_t r, struct knuth_lfib_ctx *ctx, const mpz_t n)
+{
+  /* Add some extra bits, to make result almost unbiased. */
+  mpz_urandomb(r, ctx, mpz_sizeinbase(n, 2) + 30);
+  mpz_mod(r, r, n);
+}
 #else /* !NETTLE_USE_MINI_GMP */
 static void
 get_random_seed(mpz_t seed)

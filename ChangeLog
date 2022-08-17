@@ -1,3 +1,8 @@
+2022-08-17  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/testutils.c (mpz_urandomm) [NETTLE_USE_MINI_GMP]: New
+	fallback definition when building with mini-gmp.
+
 2022-08-16  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-mod-arith.c (ecc_mod_sub): Ensure that if inputs are in the
