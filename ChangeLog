@@ -1,5 +1,7 @@
 2022-08-18  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.in (HEADERS): Add sm4.h.
+
 	From Tianjia Zhang: SM4 block cipher.
 	* sm4.c: New file.
 	* sm4.h: New file.
