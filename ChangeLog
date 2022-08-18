@@ -1,5 +1,15 @@
 2022-08-18  Niels Möller  <nisse@lysator.liu.se>
 
+	From Tianjia Zhang: SM4 block cipher.
+	* sm4.c: New file.
+	* sm4.h: New file.
+	* sm4-meta.c: New file.
+	* gcm-sm4.c: New file
+	* gcm-sm4-meta.c: New file.
+	* nettle.texinfo: Document SM4.
+	* testsuite/gcm-test.c (test_main): Add SM4 tests.
+	* testsuite/sm4-test.c: New file.
+
 	* configure.ac (ABI): Change mips abi check to apply only to mips64.
 
 2022-08-17  Niels Möller  <nisse@lysator.liu.se>
