@@ -105,6 +105,7 @@ Cipher functions
 * DES3::
 * Salsa20::
 * Serpent::
+* SM4::
 * Twofish::
 * nettle_cipher abstraction::
 
@@ -1323,6 +1324,7 @@ decryption.
 * DES3::
 * Salsa20::
 * Serpent::
+* SM4::
 * Twofish::
 * nettle_cipher abstraction::
 @end menu
