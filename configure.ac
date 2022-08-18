@@ -345,7 +345,7 @@ case "$host_cpu" in
       ABI=64
     ])
     ;;
-  *mips*)
+  *mips64*)
     AC_TRY_COMPILE([
 #if defined(__mips64) || defined(__mips64__) || (defined(__sgi) && defined(__LP64__))
 #error 64-bit mips

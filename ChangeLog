@@ -1,3 +1,7 @@
+2022-08-18  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac (ABI): Change mips abi check to apply only to mips64.
+
 2022-08-17  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/testutils.c (mpz_urandomm) [NETTLE_USE_MINI_GMP]: New
