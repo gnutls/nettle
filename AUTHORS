@@ -121,7 +121,7 @@ Mamone Tarsha Kurdi	Powerpc64 assembly and fat build setup,
 
 Nicolas Mora		RFC 3394 keywrap.
 
-Tianjia Zhang		SM3 hash function.
+Tianjia Zhang		SM3 hash function, SM4 block cipher.
 
 Amitay Isaacs		Powerpc64 assembly for secp192r1, secp224r1
 			and secp256r1.
