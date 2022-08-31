@@ -1,3 +1,15 @@
+2022-08-31  Niels Möller  <nisse@lysator.liu.se>
+
+	* bswap-internal.h (nettle_bswap64, nettle_bswap32)
+	(bswap64_if_le): New header file, new inline functions/macros.
+	* gcm.c (gcm_hash_sizes): Use bswap64_if_le, and bswap-internal.h,
+	replacing local definition of bswap_if_le.
+	* nist-keywrap.c (nist_keywrap16): Likewise.
+	* blowfish-bcrypt.c (swap32): Renamed function, to...
+	(bswap32_if_le): ...new name, rewritten to use nettle_bswap32.
+	Update call sites.
+	* Makefile.in (DISTFILES): Add bswap-internal.h.
+
 2022-08-18  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in (HEADERS): Add sm4.h.
