@@ -1,3 +1,9 @@
+2022-09-08  Niels Möller  <nisse@lysator.liu.se>
+
+	* eccdata.c (string_toupper): New utility function.
+	(output_modulo): Move more of the per-modulo output here.
+	(output_curve): Remove corresponding code.
+
 2022-08-31  Niels Möller  <nisse@lysator.liu.se>
 
 	* bswap-internal.h (nettle_bswap64, nettle_bswap32)
