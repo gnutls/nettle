@@ -4,6 +4,7 @@
 /aes-keywrap-test
 /arcfour-test
 /arctwo-test
+/balloon-test
 /base16-test
 /base64-test
 /bignum-test

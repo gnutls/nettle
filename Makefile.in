@@ -83,6 +83,8 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c aes-decrypt-table.c \
 		 nist-keywrap.c \
 		 arcfour.c arcfour-crypt.c \
 		 arctwo.c arctwo-meta.c blowfish.c blowfish-bcrypt.c \
+		 balloon.c balloon-sha1.c balloon-sha256.c \
+		 balloon-sha384.c balloon-sha512.c \
 		 base16-encode.c base16-decode.c base16-meta.c \
 		 base64-encode.c base64-decode.c base64-meta.c \
 		 base64url-encode.c base64url-decode.c base64url-meta.c \
@@ -220,7 +222,7 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 
 OPT_SOURCES = fat-arm.c fat-arm64.c fat-ppc.c fat-s390x.c fat-x86_64.c mini-gmp.c
 
-HEADERS = aes.h arcfour.h arctwo.h asn1.h blowfish.h \
+HEADERS = aes.h arcfour.h arctwo.h asn1.h blowfish.h balloon.h \
 	  base16.h base64.h bignum.h buffer.h camellia.h cast128.h \
 	  cbc.h ccm.h cfb.h chacha.h chacha-poly1305.h ctr.h \
 	  curve25519.h curve448.h des.h dsa.h dsa-compat.h eax.h \
