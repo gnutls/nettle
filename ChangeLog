@@ -1,3 +1,11 @@
+2022-09-14  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-nonsec-add-jjj.c (ecc_nonsec_add_jjj): New file and
+	function.
+	* ecc-internal.h: Declare it.
+	* Makefile.in (hogweed_SOURCES): Add ecc-nonsec-add-jjj.c.
+	* testsuite/ecc-add-test.c (test_main): Add tests for ecc_nonsec_add_jjj.
+
 2022-09-08  Niels Möller  <nisse@lysator.liu.se>
 
 	* eccdata.c (string_toupper): New utility function.

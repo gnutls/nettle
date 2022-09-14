@@ -66,6 +66,7 @@
 #define ecc_dup_jj _nettle_ecc_dup_jj
 #define ecc_add_jja _nettle_ecc_add_jja
 #define ecc_add_jjj _nettle_ecc_add_jjj
+#define ecc_nonsec_add_jjj _nettle_ecc_nonsec_add_jjj
 #define ecc_dup_eh _nettle_ecc_dup_eh
 #define ecc_add_eh _nettle_ecc_add_eh
 #define ecc_add_ehh _nettle_ecc_add_ehh
@@ -389,6 +390,14 @@ void
 ecc_add_jjj (const struct ecc_curve *ecc,
 	     mp_limb_t *r, const mp_limb_t *p, const mp_limb_t *q,
 	     mp_limb_t *scratch);
+
+/* Variant that handles the checks for the special cases P = ±Q.
+   Returns 1 on success, 0 if result is infinite. Not side-channel
+   silent, so must not be used with secret inputs. */
+int
+ecc_nonsec_add_jjj (const struct ecc_curve *ecc,
+		    mp_limb_t *r, const mp_limb_t *p, const mp_limb_t *q,
+		    mp_limb_t *scratch);
 
 /* Point doubling on a twisted Edwards curve, with homogeneous
    cooordinates. */
