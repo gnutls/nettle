@@ -1,6 +1,7 @@
 /* balloon-test.c
 
    Copyright (C) 2022 Zoltan Fridrich
+   Copyright (C) 2022 Red Hat, Inc.
 
    This file is part of GNU Nettle.
 
@@ -39,7 +40,6 @@ test_balloon(const struct nettle_hash *alg,
              unsigned s_cost, unsigned t_cost,
              const struct tstring *expected)
 {
-  int fail = 0;
   void *ctx = xalloc(alg->context_size);
   uint8_t *buf = xalloc(balloon_itch(alg->digest_size, s_cost));
 
@@ -56,14 +56,11 @@ test_balloon(const struct nettle_hash *alg,
       fprintf(stderr, "\nExpected:");
       tstring_print_hex(expected);
       fprintf(stderr, "\n");
-      fail = 1;
+      FAIL();
     }
 
   free(ctx);
   free(buf);
-
-  if (fail)
-    FAIL();
 }
 
 static void
@@ -73,7 +70,6 @@ test_balloon_sha(const struct nettle_hash *alg,
                  unsigned s_cost, unsigned t_cost,
                  const struct tstring *expected)
 {
-  int fail = 0;
   uint8_t *buf = xalloc(balloon_itch(alg->digest_size, s_cost));
 
   if (alg == &nettle_sha1)
@@ -91,10 +87,10 @@ test_balloon_sha(const struct nettle_hash *alg,
   else
     {
       fprintf(stderr, "test_balloon_sha: bad test\n");
-      fail = 1;
+      FAIL();
     }
 
-  if (!fail && !MEMEQ(alg->digest_size, buf, expected->data))
+  if (!MEMEQ(alg->digest_size, buf, expected->data))
     {
       fprintf(stderr, "test_balloon_sha: result doesn't match the expectation:");
       fprintf(stderr, "\nOutput: ");
@@ -102,13 +98,10 @@ test_balloon_sha(const struct nettle_hash *alg,
       fprintf(stderr, "\nExpected:");
       tstring_print_hex(expected);
       fprintf(stderr, "\n");
-      fail = 1;
+      FAIL();
     }
 
   free(buf);
-
-  if (fail)
-    FAIL();
 }
 
 /* Test vectors are taken from:
