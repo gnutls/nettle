@@ -51,6 +51,17 @@ extern "C" {
 #define OCB_BLOCK_SIZE 16
 #define OCB_DIGEST_SIZE 16
 
+/* Open questions:
+   1. Precompute more of the L_i values?
+
+   2. Since processing of the auth data is independent of the nonce, can
+      we have some interface for reusing the same auth data with several messages?
+
+   3. Nonce processing seems intended to allow for incrementing the
+      nonce cheaply, via the "stretch" bits. Should we implement this,
+      maybe as auto-incrementing the nonce (like umac)?
+*/
+
 struct ocb_key {
   /* L_*, L_$ and L_0 */
   union nettle_block16 L[3];
@@ -98,6 +109,22 @@ void
 ocb_digest (struct ocb_ctx *ctx, const struct ocb_key *key,
 	    const void *cipher, nettle_cipher_func *f,
 	    size_t length, uint8_t *digest);
+
+
+void
+ocb_encrypt_message (const struct ocb_key *ocb_key,
+		     const void *cipher, nettle_cipher_func *f,
+		     size_t nlength, const uint8_t *nonce,
+		     size_t alength, const uint8_t *adata,
+		     size_t clength, uint8_t *dst, const uint8_t *src);
+
+void
+ocb_decrypt_message (const struct ocb_key *ocb_key,
+		     const void *encrypt_ctx, nettle_cipher_func *encrypt,
+		     const void *decrypt_ctx, nettle_cipher_func *decrypt,
+		     size_t nlength, const uint8_t *nonce,
+		     size_t alength, const uint8_t *adata,
+		     size_t clength, uint8_t *dst, const uint8_t *src);
 
 #ifdef __cplusplus
 }
