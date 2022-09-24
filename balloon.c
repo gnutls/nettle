@@ -61,8 +61,10 @@ hash(void *ctx,
   uint8_t tmp[8];
   LE_WRITE_UINT64(tmp, cnt);
   update(ctx, sizeof(tmp), tmp);
-  update(ctx, a_len, a);
-  update(ctx, b_len, b);
+  if (a && a_len)
+    update(ctx, a_len, a);
+  if (b && b_len)
+    update(ctx, b_len, b);
   digest(ctx, digest_size, dst);
 }
 
