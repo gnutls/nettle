@@ -3,6 +3,7 @@
    Balloon password-hashing algorithm.
 
    Copyright (C) 2022 Zoltan Fridrich
+   Copyright (C) 2022 Red Hat, Inc.
 
    This file is part of GNU Nettle.
 
