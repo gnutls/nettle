@@ -102,13 +102,16 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c aes-decrypt-table.c \
 		 cbc.c cbc-aes128-encrypt.c cbc-aes192-encrypt.c cbc-aes256-encrypt.c \
 		 ccm.c ccm-aes128.c ccm-aes192.c ccm-aes256.c cfb.c \
 		 siv-cmac.c siv-cmac-aes128.c siv-cmac-aes256.c \
+		 siv-gcm.c siv-gcm-aes128.c siv-gcm-aes256.c \
 		 cnd-memcpy.c \
 		 chacha-crypt.c chacha-core-internal.c \
 		 chacha-poly1305.c chacha-poly1305-meta.c \
 		 chacha-set-key.c chacha-set-nonce.c \
 		 ctr.c ctr16.c des.c des3.c \
 		 eax.c eax-aes128.c eax-aes128-meta.c \
-		 ghash-set-key.c ghash-update.c gcm.c gcm-aes.c \
+		 ghash-set-key.c ghash-update.c \
+		 siv-ghash-set-key.c siv-ghash-update.c \
+		 gcm.c gcm-aes.c \
 		 gcm-aes128.c gcm-aes128-meta.c \
 		 gcm-aes192.c gcm-aes192-meta.c \
 		 gcm-aes256.c gcm-aes256-meta.c \
@@ -230,7 +233,7 @@ HEADERS = aes.h arcfour.h arctwo.h asn1.h blowfish.h balloon.h \
 	  gcm.h gostdsa.h gosthash94.h hmac.h \
 	  knuth-lfib.h hkdf.h \
 	  macros.h \
-	  cmac.h siv-cmac.h \
+	  cmac.h siv-cmac.h siv-gcm.h \
 	  md2.h md4.h \
 	  md5.h md5-compat.h \
 	  memops.h memxor.h \

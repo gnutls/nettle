@@ -40,6 +40,7 @@
 #include <assert.h>
 
 #include "nettle-types.h"
+#include "bswap-internal.h"
 #include "memxor.h"
 
 static inline void
@@ -196,5 +197,16 @@ block16_mulx_ghash (union nettle_block16 *r,
   r->u64[0] = RSHIFT_ALIEN_UINT64(x->u64[0]) ^ (mask & GHASH_POLY);
 }
 #endif /* ! WORDS_BIGENDIAN */
+
+/* Reverse bytes in X and store the result in R.  This supports
+   in-place operation (R and X can overlap).  */
+static inline void
+block16_bswap (union nettle_block16 *r,
+	       const union nettle_block16 *x)
+{
+  uint64_t t = nettle_bswap64 (x->u64[0]);
+  r->u64[0] = nettle_bswap64 (x->u64[1]);
+  r->u64[1] = t;
+}
 
 #endif /* NETTLE_BLOCK_INTERNAL_H_INCLUDED */

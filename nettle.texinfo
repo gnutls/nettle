@@ -123,6 +123,7 @@ Authenticated encryption with associated data
 * CCM::
 * ChaCha-Poly1305::
 * SIV-CMAC::
+* SIV-GCM::
 * nettle_aead abstraction::
 
 Keyed Hash Functions
@@ -2880,6 +2881,7 @@ more adventurous alternative, in particular if performance is important.
 * CCM::
 * ChaCha-Poly1305::
 * SIV-CMAC::
+* SIV-GCM::
 * nettle_aead abstraction::
 @end menu
 
@@ -3726,6 +3728,90 @@ plus @code{SIV_DIGEST_SIZE}.
 
 @deftypefun int siv_cmac_aes128_decrypt_message (struct siv_cmac_aes128_ctx *@var{ctx}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{mlength}, uint8_t *@var{dst}, const uint8_t *@var{src})
 @deftypefunx int siv_cmac_aes256_decrypt_message (struct siv_cmac_aes128_ctx *@var{ctx}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{mlength}, uint8_t *@var{dst}, const uint8_t *@var{src})
+Decrypts the ciphertext from @var{src}, outputs the plaintext to
+@var{dst}, recalculates the initialization vector from @var{adata} and the
+plaintext. If the values of the received and calculated initialization vector
+are equal, this will return 1 indicating a valid and authenticated
+message. Otherwise, this function will return zero.
+@end deftypefun
+
+@node SIV-GCM
+@subsection SIV-GCM
+
+@acronym{SIV-GCM}, described in @cite{RFC 8452}, is an @acronym{AEAD}
+construction similar to @acronym{AES-GCM}, but provides protection against
+accidental nonce misuse like @acronym{SIV-CMAC} mode.
+
+It is constructed on top of a block cipher which must have a block size of 128
+bits and a nonce size of 12 bytes. Nettle's support for @acronym{SIV-GCM}
+consists of a message encryption and authentication interface, for
+@acronym{SIV-GCM} using AES as the underlying block cipher.  These
+interfaces are defined in @file{<nettle/siv-gcm.h>}.
+
+Unlike other @acronym{AEAD} mode in @acronym{SIV-GCM} the tag is calculated
+over the encoded additional authentication data and plaintext instead of the
+ciphertext.
+
+@subsubsection General interface
+
+@defvr Constant SIV_GCM_BLOCK_SIZE
+@acronym{SIV-GCM}'s block size, 16.
+@end defvr
+
+@defvr Constant SIV_GCM_DIGEST_SIZE
+Size of the @acronym{SIV-GCM} digest for tags, 16.
+@end defvr
+
+@defvr Constant SIV_GCM_NONCE_SIZE
+Size of the @acronym{SIV-GCM} nonce, 12.
+@end defvr
+
+@deftypefun void siv_gcm_encrypt_message (const struct nettle_cipher *@var{nc}, const void *@var{ctx}, void *@var{ctr_ctx}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{clength}, uint8_t *@var{dst}, const uint8_t *@var{src})
+Computes the message digest from the @var{adata} and @var{src}
+parameters, encrypts the plaintext from @var{src}, appends the
+authentication tag to the ciphertext and outputs it to @var{dst}.  The
+@var{clength} variable must be equal to the length of @var{src} plus
+@code{SIV_GCM_DIGEST_SIZE}.
+@end deftypefun
+
+@deftypefun int siv_gcm_decrypt_message (const struct nettle_cipher *@var{nc}, const void *@var{ctx}, void *@var{ctr_ctx}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{mlength}, uint8_t *@var{dst}, const uint8_t *@var{src})
+Decrypts the ciphertext from @var{src}, outputs the plaintext to
+@var{dst}, recalculates the initialization vector from @var{adata} and the
+plaintext. If the values of the received and calculated initialization vector
+are equal, this will return 1 indicating a valid and authenticated
+message. Otherwise, this function will return zero.
+@end deftypefun
+
+In the above interface, @var{nc} must point to a cipher that works
+with 16-byte block size and the key sizes that are multiple of
+8-bytes.  The @var{ctr} and @var{ctr_ctx} context structures must be
+initialized for encryption mode using a set-key function, before using
+any of the functions in this interface. These structures can point to
+the same area.  For convenience, Nettle provides wrapper functions
+that works with @acronym{AES} described in the following section.
+
+@subsubsection @acronym{SIV-GCM}-@acronym{AES} interface
+
+The @acronym{SIV-GCM} functions provide an API for using @acronym{SIV-GCM}
+mode with the @acronym{AES} block ciphers. The parameters all have the same
+meaning as the general and message interfaces, except that the @var{cipher},
+@var{f}, and @var{ctx} parameters are replaced with an @acronym{AES} context
+structure. The @acronym{AES} context structure must be initialized for
+encryption mode using a set-key function, before using any of the functions in
+this interface.
+
+@deftypefun void siv_gcm_aes128_encrypt_message (const struct aes128_ctx *@var{ctx}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{clength}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void siv_gcm_aes256_encrypt_message (const struct aes256_ctx *@var{ctx}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{clength}, uint8_t *@var{dst}, const uint8_t *@var{src})
+Computes the message digest from the @var{adata} and @var{src}
+parameters, encrypts the plaintext from @var{src}, appends the
+authentication tag to the ciphertext and outputs it to @var{dst}.
+The @var{clength} variable must be equal to the length of @var{src}
+plus @code{SIV_GCM_DIGEST_SIZE}.
+
+@end deftypefun
+
+@deftypefun int siv_gcm_aes128_decrypt_message (const struct aes128_ctx *@var{ctx}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{mlength}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx int siv_gcm_aes256_decrypt_message (const struct aes256_ctx *@var{ctx}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{mlength}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Decrypts the ciphertext from @var{src}, outputs the plaintext to
 @var{dst}, recalculates the initialization vector from @var{adata} and the
 plaintext. If the values of the received and calculated initialization vector
