@@ -1,5 +1,13 @@
 2022-09-28  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/meta-hash-test.c (test_main): Add check of
+	NETTLE_MAX_HASH_BLOCK_SIZE.
+	* nettle-internal.h (NETTLE_MAX_HASH_BLOCK_SIZE): Increase to 144,
+	to accommodate sha3_224.
+	* testsuite/meta-cipher-test.c (test_main): Check that cipher
+	metadata doesn't exceed NETTLE_MAX_CIPHER_BLOCK_SIZE or
+	NETTLE_MAX_CIPHER_KEY_SIZE.
+
 	From Daiki Ueno:
 	* siv-gcm.c (siv_gcm_encrypt_message, siv_gcm_decrypt_message):
 	New file, implementation of SIV-GCM.

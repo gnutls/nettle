@@ -74,8 +74,8 @@
   do { assert((size_t)(size) <= (sizeof(name))); } while (0)
 #endif 
 
-/* Arbitrary limits which apply to systems that don't have alloca */
-#define NETTLE_MAX_HASH_BLOCK_SIZE 128
+/* Limits that apply to systems that don't have alloca */
+#define NETTLE_MAX_HASH_BLOCK_SIZE 144  /* For sha3_224*/
 #define NETTLE_MAX_HASH_DIGEST_SIZE 64
 #define NETTLE_MAX_HASH_CONTEXT_SIZE (sizeof(struct sha3_224_ctx))
 #define NETTLE_MAX_SEXP_ASSOC 17
