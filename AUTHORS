@@ -96,7 +96,7 @@ Amos Jeffries		Implementation of base64url encoding.
 Daiki Ueno		Implementation of RSA-PSS signatures,
 			curve448, shake256, ed448-shake256 signatures,
 			chacha functions for 32-bit nonce, struct
-			nettle_mac interface.
+			nettle_mac interface, siv-gcm.
 
 Dmitry Baryshkov	CFB and CFB8 modes, CMAC64. gosthash94cp and
 			Streebog hash functions, GOST DSA signatures

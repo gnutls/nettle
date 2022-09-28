@@ -1,5 +1,27 @@
 2022-09-28  Niels Möller  <nisse@lysator.liu.se>
 
+	From Daiki Ueno:
+	* siv-gcm.c (siv_gcm_encrypt_message, siv_gcm_decrypt_message):
+	New file, implementation of SIV-GCM.
+	* siv-gcm.h (SIV_GCM_BLOCK_SIZE, SIV_GCM_DIGEST_SIZE)
+	(SIV_GCM_NONCE_SIZE): New header file, new constants and
+	declarations.
+	* siv-gcm-aes128.c (siv_gcm_aes128_encrypt_message)
+	(siv_gcm_aes128_decrypt_message): New file and functions.
+	* siv-gcm-aes256.c (siv_gcm_aes256_encrypt_message)
+	(siv_gcm_aes256_decrypt_message): Likewise.
+	* siv-ghash-set-key.c (_siv_ghash_set_key): New file, new internal
+	function.
+	* siv-ghash-update.c (_siv_ghash_update): Likewise.
+	* block-internal.h (block16_bswap): New inline function.
+	* bswap-internal.h (bswap64_if_be): New macro.
+	* nettle-internal.h (NETTLE_MAX_CIPHER_KEY_SIZE): New constant.
+	* Makefile.in (nettle_SOURCES): Add new source files.
+	(HEADERS): Add siv-gcm.h.
+	* testsuite/siv-gcm-test.c: New tests.
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Add siv-gcm-test.c.
+	* nettle.texinfo (SIV-GCM): Documentation.
+
 	From Zoltan Fridrich:
 	* balloon.c (balloon, balloon_itch): Implementation of balloon
 	password hash.
