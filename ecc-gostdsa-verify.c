@@ -114,11 +114,12 @@ ecc_gostdsa_verify (const struct ecc_curve *ecc,
   /* Total storage: 7*ecc->p.size + ecc->mul_g_itch (ecc->p.size) */
   ecc->mul_g (ecc, P1, z1, P1 + 3*ecc->p.size);
 
-  /* Total storage: 6*ecc->p.size + ecc->add_hhh_itch */
-  ecc->add_hhh (ecc, P1, P1, P2, P1 + 3*ecc->p.size);
+  /* Total storage: 6*ecc->p.size + ECC_ADD_JJJ_ITCH(size) */
+  if (!ecc_nonsec_add_jjj (ecc, P1, P1, P2, P1 + 3*ecc->p.size))
+    return 0;
 
   /* x coordinate only, modulo q */
-  ecc->h_to_a (ecc, 2, P2, P1, P1 + 3*ecc->p.size);
+  ecc_j_to_a (ecc, 2, P2, P1, P1 + 3*ecc->p.size);
 
   return (mpn_cmp (rp, P2, ecc->p.size) == 0);
 #undef P2

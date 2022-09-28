@@ -43,6 +43,24 @@
 	* testsuite/balloon-test.c: New tests.
 	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Add balloon-test.c.
 
+2022-09-14  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-nonsec-add-jjj.c (ecc_nonsec_add_jjj): New file and
+	function.
+	* ecc-internal.h: Declare it.
+	* Makefile.in (hogweed_SOURCES): Add ecc-nonsec-add-jjj.c.
+	* testsuite/ecc-add-test.c (test_main): Add tests for ecc_nonsec_add_jjj.
+
+	* ecc-ecdsa-verify.c (ecc_ecdsa_verify): Use ecc_nonsec_add_jjj,
+	to produce correct result in a corner case where point addition
+	needs to use point duplication. Also use ecc_j_to_a rather than
+	ecc->h_to_a, since ecdsa supports only weierstrass curves.
+	* ecc-gostdsa-verify.c (ecc_gostdsa_verify): Analogous change.
+
+	* testsuite/ecdsa-verify-test.c (test_main): Add corresponding test.
+	* testsuite/ecdsa-sign-test.c (test_main): And a test producing
+	the problematic signature.
+
 2022-09-08  Niels Möller  <nisse@lysator.liu.se>
 
 	* eccdata.c (string_toupper): New utility function.

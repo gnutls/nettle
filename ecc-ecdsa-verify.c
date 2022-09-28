@@ -117,25 +117,13 @@ ecc_ecdsa_verify (const struct ecc_curve *ecc,
       /* Total storage: 7*ecc->p.size + ecc->mul_g_itch (ecc->p.size) */
       ecc->mul_g (ecc, P1, u1, P1 + 3*ecc->p.size);
 
-      /* NOTE: ecc_add_jjj and/or ecc_j_to_a will produce garbage in
-	 case u1 G = +/- u2 V. However, anyone who gets his or her
-	 hands on a signature where this happens during verification,
-	 can also get the private key as z = +/- u1 / u_2 (mod q). And
-	 then it doesn't matter very much if verification of
-	 signatures with that key succeeds or fails.
-
-	 u1 G = - u2 V can never happen for a correctly generated
-	 signature, since it implies k = 0.
-
-	 u1 G = u2 V is possible, if we are unlucky enough to get h /
-	 s_1 = z. Hitting that is about as unlikely as finding the
-	 private key by guessing.
-       */
-      /* Total storage: 6*ecc->p.size + ecc->add_hhh_itch */
-      ecc->add_hhh (ecc, P2, P2, P1, P1 + 3*ecc->p.size);
+      /* Total storage: 6*ecc->p.size + ECC_ADD_JJJ_ITCH(size) */
+      if (!ecc_nonsec_add_jjj (ecc, P2, P2, P1, P1 + 3*ecc->p.size))
+	/* Infinity point, not a valid signature. */
+	return 0;
     }
   /* x coordinate only, modulo q */
-  ecc->h_to_a (ecc, 2, P1, P2, P1 + 3*ecc->p.size);
+  ecc_j_to_a (ecc, 2, P1, P2, P1 + 3*ecc->p.size);
 
   return (mpn_cmp (rp, P1, ecc->p.size) == 0);
 #undef P2
