@@ -128,3 +128,5 @@ Amitay Isaacs		Powerpc64 assembly for secp192r1, secp224r1
 
 Martin Schwenke		Powerpc64 assembly for secp384r1, secp521r1,
 			curve25519 and curve448.
+
+Zoltan Fridrich		Ballon password hashing.
