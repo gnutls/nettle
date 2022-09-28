@@ -53,8 +53,8 @@ ecdsa_in_range (const struct ecc_curve *ecc, const mp_limb_t *xp)
 mp_size_t
 ecc_ecdsa_verify_itch (const struct ecc_curve *ecc)
 {
-  /* Largest storage need is for the ecc->mul call. */
-  return 5*ecc->p.size + ecc->mul_itch;
+  /* Largest storage need is for the ecc_mul_a call. */
+  return 5*ecc->p.size + ECC_MUL_A_ITCH (ecc->p.size);
 }
 
 /* FIXME: Use faster primitives, not requiring side-channel silence. */
@@ -107,17 +107,17 @@ ecc_ecdsa_verify (const struct ecc_curve *ecc,
   /* u2 = r / s, P2 = u2 * Y */
   ecc_mod_mul_canonical (&ecc->q, u2, rp, sinv, u2);
 
-   /* Total storage: 5*ecc->p.size + ecc->mul_itch */
-  ecc->mul (ecc, P2, u2, pp, u2 + ecc->p.size);
+   /* Total storage: 5*ecc->p.size + ECC_MUL_A_ITCH */
+  ecc_mul_a (ecc, P2, u2, pp, u2 + ecc->p.size);
 
   /* u = 0 can happen only if h = 0 or h = q, which is extremely
      unlikely. */
   if (!mpn_zero_p (u1, ecc->p.size))
     {
-      /* Total storage: 7*ecc->p.size + ecc->mul_g_itch (ecc->p.size) */
-      ecc->mul_g (ecc, P1, u1, P1 + 3*ecc->p.size);
+      /* Total storage: 7*ecc->p.size + ECC_MUL_G_ITCH */
+      ecc_mul_g (ecc, P1, u1, P1 + 3*ecc->p.size);
 
-      /* Total storage: 6*ecc->p.size + ECC_ADD_JJJ_ITCH(size) */
+      /* Total storage: 6*ecc->p.size + ECC_ADD_JJJ_ITCH */
       if (!ecc_nonsec_add_jjj (ecc, P2, P2, P1, P1 + 3*ecc->p.size))
 	/* Infinity point, not a valid signature. */
 	return 0;
