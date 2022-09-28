@@ -108,6 +108,7 @@
 /xts-test
 /cmac-test
 /siv-test
+/siv-gcm-test
 /bcrypt-test
 /ed448-test
 /shake256-test
