@@ -117,7 +117,7 @@ ecc_ecdsa_verify (const struct ecc_curve *ecc,
       /* Total storage: 7*ecc->p.size + ecc->mul_g_itch (ecc->p.size) */
       ecc->mul_g (ecc, P1, u1, P1 + 3*ecc->p.size);
 
-      /* Total storage: 6*ecc->p.size + ECC_ADD_JJA_ITCH(size) */
+      /* Total storage: 6*ecc->p.size + ECC_ADD_JJJ_ITCH(size) */
       if (!ecc_nonsec_add_jjj (ecc, P2, P2, P1, P1 + 3*ecc->p.size))
 	/* Infinity point, not a valid signature. */
 	return 0;
