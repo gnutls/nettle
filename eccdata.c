@@ -1189,7 +1189,8 @@ output_modulo (const char *name, const mpz_t x,
   
   string_toupper (buf, sizeof (buf), name);
   printf ("#define ECC_BMOD%s_SIZE %u\n", buf,
-	  (mpz_sizeinbase (t, 2) + bits_per_limb - 1) / bits_per_limb);
+	  (unsigned) ((mpz_sizeinbase (t, 2) + bits_per_limb - 1)
+		      / bits_per_limb));
 
   bit_size = mpz_sizeinbase (x, 2);
 
@@ -1273,7 +1274,6 @@ output_curve (const struct ecc_curve *ecc, unsigned bits_per_limb)
 {
   unsigned limb_size = (ecc->bit_size + bits_per_limb - 1)/bits_per_limb;
   unsigned i;
-  unsigned qbits;
   int redc_limbs;
   mpz_t t;
   mpz_t z;
