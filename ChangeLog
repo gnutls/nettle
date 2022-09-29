@@ -1,3 +1,19 @@
+2022-09-29  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-ecdsa-verify.c (ecc_ecdsa_verify): Call ecc_mul_g and ecc_mul_a directly, not via
+	function pointers.
+	(ecc_ecdsa_verify_itch): Use ECC_MUL_A_ITCH
+	rather than ecc->mul_itch.
+	* ecc-gostdsa-verify.c (ecc_gostdsa_verify_itch)
+	(ecc_gostdsa_verify): Analogous changes.
+
+	* ecc-ecdsa-sign.c (ecc_ecdsa_sign): Call ecc_mul_g and ecc_j_to_a
+	directly, not via function pointers.
+	(ecc_ecdsa_sign_itch): Use ECC_MUL_G_ITCH rather than
+	ecc->mul_g_itch.
+	* ecc-gostdsa-sign.c (ecc_gostdsa_sign_itch, ecc_gostdsa_sign):
+	Analogous changes.
+
 2022-09-28  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/meta-hash-test.c (test_main): Add check of
