@@ -1,3 +1,8 @@
+2022-10-02  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/ecc-benchmark.c (bench_curve): Add benchmarking of
+	modulo q inversion.
+
 2022-09-29  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-ecdsa-verify.c (ecc_ecdsa_verify): Call ecc_mul_g and ecc_mul_a directly, not via
