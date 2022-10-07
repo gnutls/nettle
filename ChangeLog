@@ -1,3 +1,25 @@
+2022-10-07  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-mod-inv.c: Implement Bernstein-Yang algorithm. It
+	outperforms older inversion code, except except secp192r1 mod p
+	inversion.
+	* eccdata.c (output_modulo): Output iteration count for new
+	modular inversion algorithm, and needed power of two for redc
+	inversion.
+	* ecc-curve25519.c (ecc_curve25519_inv): Deleted.
+	* ecc-curve448.c (ecc_curve448_inv): Deleted.
+	* ecc-secp224r1.c (ecc_secp224r1_inv): Deleted.
+	* ecc-secp256r1.c (ecc_secp256r1_inv): Deleted.
+	* ecc-secp384r1.c (ecc_secp384r1_inv): Deleted.
+	* ecc-secp521r1.c (ecc_secp521r1_inv): Deleted.
+
+2022-10-03  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-internal.h (struct ecc_modulo): Delete (m+1)/2 constant, and
+	update all curve structs.
+	* eccdata.c (output_curve): Delete corresponding code to generate
+	ecc_pp1h and ecc_qp1h.
+
 2022-11-09  Niels Möller  <nisse@lysator.liu.se>
 
 	From Mamone Tarsha:

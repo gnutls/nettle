@@ -111,32 +111,6 @@ ecc_mod_pow_127m1 (const struct ecc_modulo *m,
 #undef tp
 }
 
-#define ECC_SECP224R1_INV_ITCH (4*ECC_LIMB_SIZE)
-
-static void
-ecc_secp224r1_inv (const struct ecc_modulo *p,
-		   mp_limb_t *rp, const mp_limb_t *ap,
-		   mp_limb_t *scratch)
-{
-#define a96m1 scratch
-#define tp (scratch + ECC_LIMB_SIZE)
-
-  /* Compute a^{p - 2}, with
-
-       p-2 = 2^{224} - 2^{96} - 1
-                   = 2^{97}(2^{127} - 1) + 2^{96} - 1
-
-     This addition chain needs 97 squarings and one multiply in
-     addition to ecc_mod_pow_127m1, for a total of 223 squarings and
-     13 multiplies.
-  */
-  ecc_mod_pow_127m1 (p, rp, a96m1, ap, tp);
-  ecc_mod_pow_2k_mul (p, rp, rp, 97, a96m1, tp); /* a^{2^{224} - 2^{96} - 1 */
-
-#undef a96m1
-#undef tp
-}
-
 #define ECC_SECP224R1_SQRT_ITCH (5*ECC_LIMB_SIZE)
 
 static int
@@ -216,20 +190,22 @@ const struct ecc_curve _nettle_secp_224r1 =
     ECC_LIMB_SIZE,    
     ECC_BMODP_SIZE,
     -ECC_REDC_SIZE,
-    ECC_SECP224R1_INV_ITCH,
+    ECC_MOD_INV_ITCH(ECC_LIMB_SIZE),
     ECC_SECP224R1_SQRT_ITCH,
     0,
+    ECC_INVP_COUNT,
+    ECC_BINVP,
 
     ecc_p,
     ecc_Bmodp,
     ecc_Bmodp_shifted,
     ecc_Bm2p,
     ecc_redc_ppm1,
-    ecc_pp1h,
+    USE_REDC ? ecc_invp_redc_power : NULL,
 
     ecc_secp224r1_modp,
     USE_REDC ? ecc_secp224r1_redc : ecc_secp224r1_modp,
-    ecc_secp224r1_inv,
+    ecc_mod_inv,
     ecc_secp224r1_sqrt,
     NULL,
   },
@@ -241,13 +217,15 @@ const struct ecc_curve _nettle_secp_224r1 =
     ECC_MOD_INV_ITCH (ECC_LIMB_SIZE),
     0,
     0,
+    ECC_INVQ_COUNT,
+    ECC_BINVQ,
 
     ecc_q,
     ecc_Bmodq,
     ecc_Bmodq_shifted,
     ecc_Bm2q,
     NULL,
-    ecc_qp1h,
+    NULL,
 
     ecc_mod,
     ecc_mod,
@@ -265,7 +243,7 @@ const struct ecc_curve _nettle_secp_224r1 =
   ECC_DUP_JJ_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_A_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_G_ITCH (ECC_LIMB_SIZE),
-  ECC_J_TO_A_ITCH(ECC_LIMB_SIZE, ECC_SECP224R1_INV_ITCH),
+  ECC_J_TO_A_ITCH(ECC_LIMB_SIZE, ECC_MOD_INV_ITCH (ECC_LIMB_SIZE)),
 
   ecc_add_jja,
   ecc_add_jjj,

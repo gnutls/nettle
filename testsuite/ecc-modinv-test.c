@@ -51,8 +51,11 @@ test_modulo (gmp_randstate_t rands, const char *name,
   mp_limb_t *scratch;
   unsigned j;
   mpz_t r;
+  mp_bitcnt_t bits;
 
   mpz_init (r);
+
+  bits = m->bit_size + (m->size * GMP_NUMB_BITS > m->bit_size);
 
   a = xalloc_limbs (m->size);
   ai = xalloc_limbs (m->size);
@@ -90,15 +93,17 @@ test_modulo (gmp_randstate_t rands, const char *name,
       fprintf (stderr, " (bad)\n");
       abort ();
     }
-	
+
   for (j = 0; j < COUNT; j++)
     {
       if (j & 1)
-	mpz_rrandomb (r, rands, m->size * GMP_NUMB_BITS);
+	mpz_rrandomb (r, rands, bits);
       else
-	mpz_urandomb (r, rands, m->size * GMP_NUMB_BITS);
+	mpz_urandomb (r, rands, bits);
 
       mpz_limbs_copy (a, r, m->size);
+      if ((a[m->size - 1] >> 1) > m->m[m->size - 1])
+	a[m->size - 1] = 2*m->m[m->size - 1] + 1;
 
       if (!ref_modinv (ref, a, m->m, m->size, use_redc))
 	{
@@ -113,7 +118,7 @@ test_modulo (gmp_randstate_t rands, const char *name,
 	  fprintf (stderr, "%s->invert failed (test %u, bit size %u):\n",
 		   name, j, m->bit_size);
 	  fprintf (stderr, "a = ");
-	  mpz_out_str (stderr, 16, r);
+	  mpn_out_str (stderr, 16, a, m->size);
 	  fprintf (stderr, "\np = ");
 	  mpn_out_str (stderr, 16, m->m, m->size);
 	  fprintf (stderr, "\nt = ");

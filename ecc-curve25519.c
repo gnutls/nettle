@@ -149,27 +149,6 @@ ecc_mod_pow_252m3 (const struct ecc_modulo *m,
 #undef tp
 }
 
-/* Scratch as for ecc_mod_pow_252m3 above. */
-#define ECC_25519_INV_ITCH (4*ECC_LIMB_SIZE)
-
-static void
-ecc_curve25519_inv (const struct ecc_modulo *p,
-		    mp_limb_t *rp, const mp_limb_t *ap,
-		    mp_limb_t *scratch)
-{
-  /* Addition chain
-
-       p - 2 = 2^{255} - 21
-             = 1 + 2 (1 + 4 (2^{252}-3))
-  */
-  ecc_mod_pow_252m3 (p, rp, ap, scratch);
-  ecc_mod_sqr (p, rp, rp, scratch);
-  ecc_mod_sqr (p, rp, rp, scratch);
-  ecc_mod_mul (p, rp, ap, rp, scratch);
-  ecc_mod_sqr (p, rp, rp, scratch);
-  ecc_mod_mul (p, rp, ap, rp, scratch);
-}
-
 static int
 ecc_curve25519_zero_p (const struct ecc_modulo *p, mp_limb_t *xp)
 {
@@ -259,20 +238,22 @@ const struct ecc_curve _nettle_curve25519 =
     ECC_LIMB_SIZE,
     ECC_BMODP_SIZE,
     0,
-    ECC_25519_INV_ITCH,
+    ECC_MOD_INV_ITCH(ECC_LIMB_SIZE),
     0,
     ECC_25519_SQRT_RATIO_ITCH,
+    ECC_INVP_COUNT,
+    ECC_BINVP,
 
     ecc_p,
     ecc_Bmodp,
     ecc_Bmodp_shifted,
     ecc_Bm2p,
     NULL,
-    ecc_pp1h,
+    NULL,
 
     ecc_curve25519_modp,
     ecc_curve25519_modp,
-    ecc_curve25519_inv,
+    ecc_mod_inv,
     NULL,
     ecc_curve25519_sqrt_ratio,
   },
@@ -284,13 +265,15 @@ const struct ecc_curve _nettle_curve25519 =
     ECC_MOD_INV_ITCH (ECC_LIMB_SIZE),
     0,
     0,
+    ECC_INVQ_COUNT,
+    ECC_BINVQ,
 
     ecc_q,
     ecc_Bmodq,  
     ecc_mBmodq_shifted, /* Use q - 2^{252} instead. */
     ecc_Bm2q,
     NULL,
-    ecc_qp1h,
+    NULL,
 
     ecc_curve25519_modq,
     ecc_curve25519_modq,
@@ -308,7 +291,7 @@ const struct ecc_curve _nettle_curve25519 =
   ECC_DUP_TH_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_A_EH_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_G_EH_ITCH (ECC_LIMB_SIZE),
-  ECC_EH_TO_A_ITCH (ECC_LIMB_SIZE, ECC_25519_INV_ITCH),
+  ECC_EH_TO_A_ITCH (ECC_LIMB_SIZE, ECC_MOD_INV_ITCH(ECC_LIMB_SIZE)),
 
   ecc_add_th,
   ecc_add_thh,

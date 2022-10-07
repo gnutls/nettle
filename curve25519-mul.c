@@ -48,7 +48,7 @@ curve25519_mul (uint8_t *q, const uint8_t *n, const uint8_t *p)
   mp_size_t itch;
   mp_limb_t *x;
 
-  itch = m->size + ECC_MUL_M_ITCH(m->size);
+  itch = m->size + ECC_MUL_M_ITCH(m->size, m->invert_itch);
   x = gmp_alloc_limbs (itch);
 
   /* Note that 255 % GMP_NUMB_BITS == 0 isn't supported, so x always

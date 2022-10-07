@@ -58,7 +58,7 @@ curve448_eh_to_x (mp_limb_t *xp, const mp_limb_t *p, mp_limb_t *scratch)
 
      x = v^2 / u^2 = (V/W)^2 / (U/W)^2 = (V/U)^2
   */
-  /* Needs a total of 5*size storage. */
+  /* Needs a total of size + scratch for inversion. */
   ecc->p.invert (&ecc->p, t0, up, tp);
   ecc_mod_mul (&ecc->p, t0, t0, vp, tp);
   ecc_mod_sqr_canonical (&ecc->p, xp, t0, tp);

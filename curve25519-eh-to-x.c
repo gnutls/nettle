@@ -64,7 +64,7 @@ curve25519_eh_to_x (mp_limb_t *xp, const mp_limb_t *p,
      x = 0, and we should be fine, since ecc_mod_inv for ecc->p returns 0
      in this case. */
   ecc_mod_sub (&ecc->p, t0, wp, vp);
-  /* Needs a total of 6*size storage. */
+  /* Needs a total of 2*size + scratch for inversion. */
   ecc->p.invert (&ecc->p, t1, t0, tp);
   
   ecc_mod_add (&ecc->p, t0, wp, vp);

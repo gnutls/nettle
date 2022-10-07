@@ -213,64 +213,6 @@ ecc_secp256r1_modq (const struct ecc_modulo *q, mp_limb_t *rp, mp_limb_t *xp)
 #error Unsupported parameters
 #endif
 
-#define ECC_SECP256R1_INV_ITCH (4*ECC_LIMB_SIZE)
-
-static void
-ecc_secp256r1_inv (const struct ecc_modulo *p,
-		   mp_limb_t *rp, const mp_limb_t *ap,
-		   mp_limb_t *scratch)
-{
-#define a5m1 scratch
-#define t0 (scratch + ECC_LIMB_SIZE)
-#define a15m1 t0
-#define a32m1 a5m1
-#define tp (scratch + 2*ECC_LIMB_SIZE)
-/*
-   Addition chain for p - 2 = 2^{256} - 2^{224} + 2^{192} + 2^{96} - 3
-
-    2^5 - 1 = 1 + 2 (2^4 - 1) = 1 + 2 (2^2+1)(2 + 1)    4 S + 3 M
-    2^{15} - 1 = (2^5 - 1) (1 + 2^5 (1 + 2^5)          10 S + 2 M
-    2^{16} - 1 = 1 + 2 (2^{15} - 1)                       S +   M
-    2^{32} - 1 = (2^{16} + 1) (2^{16} - 1)             16 S +   M
-    2^{64} - 2^{32} + 1 = 2^{32} (2^{32} - 1) + 1      32 S +   M
-    2^{192} - 2^{160} + 2^{128} + 2^{32} - 1
-        = 2^{128} (2^{64} - 2^{32} + 1) + 2^{32} - 1  128 S +   M
-    2^{224} - 2^{192} + 2^{160} + 2^{64} - 1
-        = 2^{32} (...) + 2^{32} - 1                    32 S +   M
-    2^{239} - 2^{207} + 2^{175} + 2^{79} - 1
-        = 2^{15} (...) + 2^{15} - 1                    15 S +   M
-    2^{254} - 2^{222} + 2^{190} + 2^{94} - 1
-        = 2^{15} (...) + 2^{15} - 1                    15 S +   M
-    p - 2 = 2^2 (...) + 1                               2 S     M
-                                                   ---------------
-						      255 S + 13 M
- */
-  ecc_mod_sqr (p, rp, ap, tp);			/* a^2 */
-  ecc_mod_mul (p, rp, rp, ap, tp);		/* a^3 */
-  ecc_mod_pow_2kp1 (p, t0, rp, 2, tp);		/* a^{2^4 - 1} */
-  ecc_mod_sqr (p, rp, t0, tp);			/* a^{2^5 - 2} */
-  ecc_mod_mul (p, a5m1, rp, ap, tp);		/* a^{2^5 - 1}, a5m1 */
-
-  ecc_mod_pow_2kp1 (p, rp, a5m1, 5, tp);	/* a^{2^{10} - 1, a5m1*/
-  ecc_mod_pow_2k_mul (p, a15m1, rp, 5, a5m1, tp); /* a^{2^{15} - 1}, a5m1 a15m1 */
-  ecc_mod_sqr (p, rp, a15m1, tp);		/* a^{2^{16} - 2}, a15m1 */
-  ecc_mod_mul (p, rp, rp, ap, tp);		/* a^{2^{16} - 1}, a15m1 */
-  ecc_mod_pow_2kp1 (p, a32m1, rp, 16, tp);	/* a^{2^{32} - 1}, a15m1, a32m1 */
-
-  ecc_mod_pow_2k_mul (p, rp, a32m1, 32, ap, tp);/* a^{2^{64} - 2^{32} + 1 */
-  ecc_mod_pow_2k_mul (p, rp, rp, 128, a32m1, tp); /* a^{2^{192} - 2^{160} + 2^{128} + 2^{32} - 1} */
-  ecc_mod_pow_2k_mul (p, rp, rp, 32, a32m1, tp);/* a^{2^{224} - 2^{192} + 2^{160} + 2^{64} - 1} */
-  ecc_mod_pow_2k_mul (p, rp, rp, 15, a15m1, tp);/* a^{2^{239} - 2^{207} + 2^{175} + 2^{79} - 1} */
-  ecc_mod_pow_2k_mul (p, rp, rp, 15, a15m1, tp);/* a^{2^{254} - 2^{222} + 2^{190} + 2^{94} - 1} */
-  ecc_mod_pow_2k_mul (p, rp, rp, 2, ap, tp); 	/* a^{2^{256} - 2^{224} + 2^{192} + 2^{96} - 3} */
-
-#undef a5m1
-#undef t0
-#undef a15m1
-#undef a32m1
-#undef tp
-}
-
 /* To guarantee that inputs to ecc_mod_zero_p are in the required range. */
 #if ECC_LIMB_SIZE * GMP_NUMB_BITS != 256
 #error Unsupported limb size
@@ -336,20 +278,22 @@ const struct ecc_curve _nettle_secp_256r1 =
     ECC_LIMB_SIZE,
     ECC_BMODP_SIZE,
     ECC_REDC_SIZE,
-    ECC_SECP256R1_INV_ITCH,
+    ECC_MOD_INV_ITCH (ECC_LIMB_SIZE),
     ECC_SECP256R1_SQRT_ITCH,
     0,
+    ECC_INVP_COUNT,
+    ECC_BINVP,
 
     ecc_p,
     ecc_Bmodp,
     ecc_Bmodp_shifted,
     ecc_Bm2p,
     ecc_redc_ppm1,
-    ecc_pp1h,
+    USE_REDC ? ecc_invp_redc_power : NULL,
 
     ecc_secp256r1_modp,
     USE_REDC ? ecc_secp256r1_redc : ecc_secp256r1_modp,
-    ecc_secp256r1_inv,
+    ecc_mod_inv,
     ecc_secp256r1_sqrt,
     NULL,
   },
@@ -361,14 +305,15 @@ const struct ecc_curve _nettle_secp_256r1 =
     ECC_MOD_INV_ITCH (ECC_LIMB_SIZE),
     0,
     0,
+    ECC_INVQ_COUNT,
+    ECC_BINVQ,
 
     ecc_q,
     ecc_Bmodq,
     ecc_Bmodq_shifted,
     ecc_Bm2q,
     NULL,
-    ecc_qp1h,
-
+    NULL,
     ecc_secp256r1_modq,
     ecc_secp256r1_modq,
     ecc_mod_inv,
@@ -385,7 +330,7 @@ const struct ecc_curve _nettle_secp_256r1 =
   ECC_DUP_JJ_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_A_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_G_ITCH (ECC_LIMB_SIZE),
-  ECC_J_TO_A_ITCH(ECC_LIMB_SIZE, ECC_SECP256R1_INV_ITCH),
+  ECC_J_TO_A_ITCH(ECC_LIMB_SIZE, ECC_MOD_INV_ITCH (ECC_LIMB_SIZE)),
 
   ecc_add_jja,
   ecc_add_jjj,

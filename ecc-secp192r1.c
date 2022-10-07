@@ -244,13 +244,15 @@ const struct ecc_curve _nettle_secp_192r1 =
     ECC_SECP192R1_INV_ITCH,
     ECC_SECP192R1_SQRT_ITCH,
     0,
+    ECC_INVP_COUNT,
+    ECC_BINVP,
 
     ecc_p,
     ecc_Bmodp,
     ecc_Bmodp_shifted,
     ecc_Bm2p,
     ecc_redc_ppm1,
-    ecc_pp1h,
+    NULL,
 
     ecc_secp192r1_modp,
     ecc_secp192r1_modp,
@@ -266,13 +268,15 @@ const struct ecc_curve _nettle_secp_192r1 =
     ECC_MOD_INV_ITCH (ECC_LIMB_SIZE),
     0,
     0,
+    ECC_INVQ_COUNT,
+    ECC_BINVQ,
 
     ecc_q,
     ecc_Bmodq,
     ecc_Bmodq_shifted,
     ecc_Bm2q,
     NULL,
-    ecc_qp1h,
+    NULL,
 
     ecc_mod,
     ecc_mod,

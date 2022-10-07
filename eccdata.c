@@ -1167,11 +1167,19 @@ string_toupper (char *buf, size_t size, const char *s)
   abort();
 }
 
+static unsigned
+invert_count (unsigned bit_size) {
+  /* See https://eprint.iacr.org/2019/266.pdf, Theorem 11.2 */
+  return (49 * bit_size + 57) / 17;
+}
+
 static void
 output_modulo (const char *name, const mpz_t x,
 	       unsigned size, unsigned bits_per_limb)
 {
   unsigned bit_size;
+  unsigned count;
+  unsigned invert_iterations;
   int shift;
   char buf[20];
   mpz_t t;
@@ -1193,9 +1201,29 @@ output_modulo (const char *name, const mpz_t x,
 		      / bits_per_limb));
 
   bit_size = mpz_sizeinbase (x, 2);
-
   shift = size * bits_per_limb - bit_size;
   assert (shift >= 0);
+
+  /* If most significant bit of top limb is zero, input may be one bit
+     larger than the modulo. */
+  count = invert_count (bit_size + (shift > 0));
+  printf("#define ECC_INV%s_COUNT %u\n", buf, count);
+
+  mpz_set_ui (t, 0);
+  mpz_setbit (t, bits_per_limb);
+  mpz_invert (t, x, t);
+
+  printf ("#define ECC_BINV%s 0x", buf);
+  mpz_out_str (stdout, 16, t);
+  printf("%s\n", bits_per_limb > 32 ? "ULL" : "UL");
+
+  invert_iterations = (count + bits_per_limb - 3) / (bits_per_limb - 2);
+  mpz_set_ui (t, 2);
+  mpz_powm_ui (t, t, bits_per_limb * (invert_iterations + size) - count, x);
+  mpz_invert (t, t, x);
+  snprintf (buf, sizeof(buf), "ecc_inv%s_redc_power", name);
+  output_bignum (buf, t, size, bits_per_limb);
+
   if (shift > 0)
     {
       mpz_set_ui (t, 0);
@@ -1291,14 +1319,6 @@ output_curve (const struct ecc_curve *ecc, unsigned bits_per_limb)
   output_modulo ("q", ecc->q, limb_size, bits_per_limb);
 
   output_bignum ("ecc_b", ecc->b, limb_size, bits_per_limb);
-
-  mpz_add_ui (t, ecc->p, 1);
-  mpz_fdiv_q_2exp (t, t, 1);
-  output_bignum ("ecc_pp1h", t, limb_size, bits_per_limb);      
-
-  mpz_add_ui (t, ecc->q, 1);
-  mpz_fdiv_q_2exp (t, t, 1);
-  output_bignum ("ecc_qp1h", t, limb_size, bits_per_limb);  
 
   /* Trailing zeros in p+1 correspond to trailing ones in p. */
   redc_limbs = mpz_scan0 (ecc->p, 0) / bits_per_limb;

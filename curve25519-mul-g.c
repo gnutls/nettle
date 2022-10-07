@@ -33,6 +33,7 @@
 # include "config.h"
 #endif
 
+#include <assert.h>
 #include <string.h>
 
 #include "curve25519.h"
@@ -57,7 +58,9 @@ curve25519_mul_g (uint8_t *r, const uint8_t *n)
   t[0] &= ~7;
   t[CURVE25519_SIZE-1] = (t[CURVE25519_SIZE-1] & 0x3f) | 0x40;
 
-  itch = 4*ecc->p.size + ecc->mul_g_itch;
+  assert (ecc->mul_g_itch <= 2*ecc->p.size + ecc->p.invert_itch); 
+  itch = 6*ecc->p.size + ecc->p.invert_itch;
+
   scratch = gmp_alloc_limbs (itch);
 
   mpn_set_base256_le (x, ecc->p.size, t, CURVE25519_SIZE);

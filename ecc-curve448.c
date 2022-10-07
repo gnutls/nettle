@@ -142,18 +142,6 @@ ecc_mod_pow_446m224m1 (const struct ecc_modulo *p,
 #undef tp
 }
 
-#define ECC_CURVE448_INV_ITCH (4*ECC_LIMB_SIZE)
-
-static void ecc_curve448_inv (const struct ecc_modulo *p,
-			 mp_limb_t *rp, const mp_limb_t *ap,
-			 mp_limb_t *tp)
-{
-  ecc_mod_pow_446m224m1 (p, rp, ap, tp);/* a^{2^446-2^222-1} */
-  ecc_mod_sqr (p, rp, rp, tp);		/* a^{2^447-2^223-2} */
-  ecc_mod_sqr (p, rp, rp, tp);		/* a^{2^448-2^224-4} */
-  ecc_mod_mul (p, rp, ap, rp, tp);	/* a^{2^448-2^224-3} */
-}
-
 /* To guarantee that inputs to ecc_mod_zero_p are in the required range. */
 #if ECC_LIMB_SIZE * GMP_NUMB_BITS != 448
 #error Unsupported limb size
@@ -213,20 +201,22 @@ const struct ecc_curve _nettle_curve448 =
     ECC_LIMB_SIZE,
     ECC_BMODP_SIZE,
     0,
-    ECC_CURVE448_INV_ITCH,
+    ECC_MOD_INV_ITCH(ECC_LIMB_SIZE),
     0,
     ECC_CURVE448_SQRT_RATIO_ITCH,
+    ECC_INVP_COUNT,
+    ECC_BINVP,
 
     ecc_p,
     ecc_Bmodp,
     ecc_Bmodp_shifted,
     ecc_Bm2p,
     NULL,
-    ecc_pp1h,
+    NULL,
 
     ecc_curve448_modp,
     ecc_curve448_modp,
-    ecc_curve448_inv,
+    ecc_mod_inv,
     NULL,
     ecc_curve448_sqrt_ratio,
   },
@@ -238,13 +228,15 @@ const struct ecc_curve _nettle_curve448 =
     ECC_MOD_INV_ITCH (ECC_LIMB_SIZE),
     0,
     0,
+    ECC_INVQ_COUNT,
+    ECC_BINVQ,
 
     ecc_q,
     ecc_Bmodq,
     ecc_Bmodq_shifted,
     ecc_Bm2q,
     NULL,
-    ecc_qp1h,
+    NULL,
 
     ecc_mod,
     ecc_mod,
@@ -262,7 +254,7 @@ const struct ecc_curve _nettle_curve448 =
   ECC_DUP_EH_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_A_EH_ITCH (ECC_LIMB_SIZE),
   ECC_MUL_G_EH_ITCH (ECC_LIMB_SIZE),
-  ECC_EH_TO_A_ITCH (ECC_LIMB_SIZE, ECC_CURVE448_INV_ITCH),
+  ECC_EH_TO_A_ITCH (ECC_LIMB_SIZE, ECC_MOD_INV_ITCH (ECC_LIMB_SIZE)),
 
   ecc_add_eh,
   ecc_add_ehh,

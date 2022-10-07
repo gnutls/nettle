@@ -170,6 +170,13 @@ struct ecc_modulo
   unsigned short sqrt_itch;
   unsigned short sqrt_ratio_itch;
 
+  /* Needed iterations for the Bernstein-Yang inversion algorithm, for
+     input size bit_size, or bit_size + 1 in case the most significant
+     bit of the most significant modulo limb is zero. */
+  unsigned short invert_count;
+  /* m^{-1} mod 2^{GMP_NUMB_BITS} */
+  mp_limb_t binv;
+
   const mp_limb_t *m;
   /* B^size mod m. Expected to have at least 32 leading zeros
      (equality for secp_256r1). */
@@ -184,8 +191,8 @@ struct ecc_modulo
 
   /* m +/- 1, for redc, excluding redc_size low limbs. */
   const mp_limb_t *redc_mpm1;
-  /* (m+1)/2 */
-  const mp_limb_t *mp1h;
+
+  const mp_limb_t *invert_power;
 
   ecc_mod_func *mod;
   ecc_mod_func *reduce;
@@ -482,7 +489,7 @@ curve448_eh_to_x (mp_limb_t *xp, const mp_limb_t *p,
 		  mp_limb_t *scratch);
 
 /* Current scratch needs: */
-#define ECC_MOD_INV_ITCH(size) (3*(size))
+#define ECC_MOD_INV_ITCH(size) (5*(size)+4)
 #define ECC_J_TO_A_ITCH(size, inv) ((size)+(inv))
 #define ECC_EH_TO_A_ITCH(size, inv) ((size)+(inv))
 #define ECC_DUP_JJ_ITCH(size) (4*(size))
@@ -508,7 +515,7 @@ curve448_eh_to_x (mp_limb_t *xp, const mp_limb_t *p,
 #define ECC_MUL_A_EH_ITCH(size) \
   (((3 << ECC_MUL_A_EH_WBITS) + 7) * (size))
 #endif
-#define ECC_MUL_M_ITCH(size) (8*(size))
+#define ECC_MUL_M_ITCH(size, inv) (4*(size) + (inv))
 #define ECC_ECDSA_SIGN_ITCH(size) (11*(size))
 #define ECC_GOSTDSA_SIGN_ITCH(size) (11*(size))
 #define ECC_MOD_RANDOM_ITCH(size) (size)

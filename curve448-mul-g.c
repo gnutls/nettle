@@ -58,7 +58,7 @@ curve448_mul_g (uint8_t *r, const uint8_t *n)
   t[0] &= ~3;
   t[CURVE448_SIZE-1] = (t[CURVE448_SIZE-1] & 0x7f) | 0x80;
 
-  itch = 5*ecc->p.size + ecc->mul_g_itch;
+  itch = 4*ecc->p.size + ecc->mul_g_itch;
   scratch = gmp_alloc_limbs (itch);
 
   mpn_set_base256_le (x, ecc->p.size, t, CURVE448_SIZE);
