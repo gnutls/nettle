@@ -1,3 +1,9 @@
+2022-10-11  Niels Möller  <nisse@lysator.liu.se>
+
+	* sec-tabselect.c (sec_tabselect): Delete file and function. All
+	callers updated to use gmp's mpn_sec_tabselect instead, which is
+	implemented in assembly on many platforms.
+
 2022-10-02  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/ecc-benchmark.c (bench_curve): Add benchmarking of

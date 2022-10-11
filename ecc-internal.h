@@ -81,7 +81,6 @@
 #define cnd_copy _nettle_cnd_copy
 #define sec_add_1 _nettle_sec_add_1
 #define sec_sub_1 _nettle_sec_sub_1
-#define sec_tabselect _nettle_sec_tabselect
 #define sec_modinv _nettle_sec_modinv
 #define curve25519_eh_to_x _nettle_curve25519_eh_to_x
 #define curve448_eh_to_x _nettle_curve448_eh_to_x
@@ -473,11 +472,6 @@ sec_add_1 (mp_limb_t *rp, mp_limb_t *ap, mp_size_t n, mp_limb_t b);
 
 mp_limb_t
 sec_sub_1 (mp_limb_t *rp, mp_limb_t *ap, mp_size_t n, mp_limb_t b);
-
-void
-sec_tabselect (mp_limb_t *rp, mp_size_t rn,
-	       const mp_limb_t *table, unsigned tn,
-	       unsigned k);
 
 void
 curve25519_eh_to_x (mp_limb_t *xp, const mp_limb_t *p,
