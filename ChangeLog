@@ -1,3 +1,10 @@
+2022-10-13  Niels Möller  <nisse@lysator.liu.se>
+
+	* gmp-glue.c (mpn_sec_tabselect) [NETTLE_USE_MINI_GMP]: Add back
+	here, to support mini-gmp builds. Updated signature to be
+	compatible with the gmp version.
+	* gmp-glue.h: Add declaration.
+
 2022-10-11  Niels Möller  <nisse@lysator.liu.se>
 
 	* sec-tabselect.c (sec_tabselect): Delete file and function. All
