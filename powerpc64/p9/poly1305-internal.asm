@@ -124,7 +124,7 @@ IF_LE(`
 IF_BE(`
 	ldbrx		T0, 0, M
 	addi		M, M, 8
-	ldbrx		T0, 0, M
+	ldbrx		T1, 0, M
 ')
 
 	addc		T0, T0, H0
