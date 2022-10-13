@@ -92,7 +92,6 @@
 
 #define ENV_VERBOSE "NETTLE_FAT_VERBOSE"
 #define ENV_OVERRIDE "NETTLE_FAT_OVERRIDE"
-#define ENV_DISABLE_POWER9 "NETTLE_FAT_DISABLE_POWER9"
 
 struct chacha_ctx;
 struct salsa20_ctx;
