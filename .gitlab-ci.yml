@@ -158,8 +158,8 @@ Debian.cross.x86:
   - ./.bootstrap
   - ./configure --disable-static --disable-documentation $EXTRA_CONFIGURE_FLAGS --build=$build --host=$host
   - make -j$(nproc)
-  - NETTLE_TEST_SEED=0 NETTLE_FAT_DISABLE_POWER9=1 make -j$(nproc) check
-  - NETTLE_TEST_SEED=0 NETTLE_FAT_DISABLE_POWER9=1 make -j$(nproc) check-fat
+  - NETTLE_TEST_SEED=0 make -j$(nproc) check
+  - NETTLE_TEST_SEED=0 make -j$(nproc) check-fat
   tags:
   - shared
   - linux

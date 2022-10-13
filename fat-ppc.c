@@ -153,11 +153,6 @@ get_ppc_features (struct ppc_features *features)
 	   == (PPC_FEATURE_HAS_ALTIVEC | PPC_FEATURE_HAS_VSX));
 #endif
     }
-  /* NETTLE_FAT_DISABLE_POWER9 can be set to disable code that fails
-     in qemu, due to
-     https://gitlab.com/qemu-project/qemu/-/issues/1156. */
-  if (secure_getenv (ENV_DISABLE_POWER9))
-    features->have_power9 = 0;
 }
 
 DECLARE_FAT_FUNC(_nettle_aes_encrypt, aes_crypt_internal_func)
