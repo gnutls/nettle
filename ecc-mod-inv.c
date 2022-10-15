@@ -34,6 +34,7 @@
 #endif
 
 #include <assert.h>
+#include <limits.h>
 
 #include "ecc-internal.h"
 

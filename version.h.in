@@ -49,6 +49,7 @@ extern "C" {
    sizeof(mp_limb_t) * CHAR_BIT is not good enough. */
 #if NETTLE_USE_MINI_GMP
 # define GMP_NUMB_BITS @GMP_NUMB_BITS@
+# define GMP_LIMB_BITS GMP_NUMB_BITS
 #endif
 
 int
