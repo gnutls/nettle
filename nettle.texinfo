@@ -4546,6 +4546,81 @@ salt @var{salt} of length @var{salt_length}, with iteration counter
 room for at least @var{length} octets.
 @end deftypefun
 
+
+@subsection @acronym{BALLOON}
+@cindex Balloon password-hashing algorithm
+Balloon is a memory-hard password-hashing algorithm.  An in-depth description
+of the algorithm and its properties can be found in an online research paper:
+Boneh, D., Corrigan-Gibbs, H., Schechter, S. (2017, May 12). Balloon Hashing:
+A Memory-Hard Function Providing Provable Protection Against Sequential Attacks.
+Retrieved Sep 1, 2022, from @url{https://eprint.iacr.org/2016/027.pdf}
+
+Nettle's definition of the @acronym{BALLOON} algorithm can be found in
+@file{<nettle/balloon.h>}.  There is a general @acronym{BALLOON} function where
+the user can specify desired hash algorithm that will be used by the function.
+There are also concrete, more user-friendly functions that use common hash algorithms
+like SHA1, SHA256, SHA384 and SHA512.  There is also a utility function which helps to
+determine the size of the working buffer that must be provided as one of the inputs.
+
+Each @acronym{BALLOON} function takes as an input a password and a salt of arbitrary
+lengths, a time and a space parameters, and a scratch buffer.  The space parameter
+@var{s_cost} determines how many blocks of working space the algorithm will require
+during its computation.  It is common to set @var{s_cost} to a high value in order
+to increase the cost of hardware accelerators built by the adversary.  The time
+parameter @var{t_cost} determines the number of rounds of computation that the algorithm
+will perform. This can be used to further increase the cost of computation without raising
+the memory requirement.  Scratch buffer @var{scratch} is a user allocated working space
+required by the algorithm.  To determine the required size of the scratch buffer use the
+utility function @code{balloon_itch}.  Output of @acronym{BALLOON} algorithm will be
+written into the output buffer @var{dst} that has to be at least @var{digest_size} bytes
+long.  Note that it is safe to use the same buffer for both @var{scratch} and @var{dst}.
+Next follows the description of the general @acronym{BALLOON} function.
+
+@deftypefun void balloon (void *@var{hash_ctx}, nettle_hash_update_func *@var{update}, nettle_hash_digest_func *@var{digest}, size_t @var{digest_size}, size_t @var{s_cost}, size_t @var{t_cost}, size_t @var{passwd_length}, const uint8_t *@var{passwd}, size_t @var{salt_length}, const uint8_t *@var{salt}, uint8_t *@var{scratch}, uint8_t *@var{dst})
+Compute hash of given password @var{passwd} of length @var{passwd_length} salted
+with @var{salt} of length @var{salt_length} and write @var{digest_size} bytes into
+the output buffer @var{dst}.  Parameter @var{hash_ctx} is a context for the
+underlying hash function, which much be initialized by the caller.  @var{update}
+and @var{digest} are the update and digest functions of the chosen hash algorithm.
+@var{digest_size} is the digest size of the chosen hash algorithm and determines
+the size of the output.
+@end deftypefun
+
+@deftypefun size_t balloon_itch (size_t @var{digest_size}, size_t @var{s_cost})
+Compute the size of the scratch buffer @var{scratch}.  @var{digest_size} is the
+digest size of the chosen hash algorithm.  @var{s_cost} is the space parameter
+used by the @code{balloon} function.
+@end deftypefun
+
+@subsection Concrete @acronym{BALLOON} functions
+Here follows a list of the specialized @acronym{BALLOON} functions, which are
+more user-friendly variants of the general function.
+
+@subsubsection @acronym{BALLOON-SHA1}
+
+@deftypefun void balloon_sha1 (size_t @var{s_cost}, size_t @var{t_cost}, size_t @var{passwd_length}, const uint8_t *@var{passwd}, size_t @var{salt_length}, const uint8_t *@var{salt}, uint8_t *@var{scratch}, uint8_t *@var{dst})
+@acronym{BALLOON} algorithm using SHA1 as the underlying hash function.
+@end deftypefun
+
+@subsubsection @acronym{BALLOON-SHA256}
+
+@deftypefun void balloon_sha256 (size_t @var{s_cost}, size_t @var{t_cost}, size_t @var{passwd_length}, const uint8_t *@var{passwd}, size_t @var{salt_length}, const uint8_t *@var{salt}, uint8_t *@var{scratch}, uint8_t *@var{dst})
+@acronym{BALLOON} algorithm using SHA256 as the underlying hash function.
+@end deftypefun
+
+@subsubsection @acronym{BALLOON-SHA384}
+
+@deftypefun void balloon_sha384 (size_t @var{s_cost}, size_t @var{t_cost}, size_t @var{passwd_length}, const uint8_t *@var{passwd}, size_t @var{salt_length}, const uint8_t *@var{salt}, uint8_t *@var{scratch}, uint8_t *@var{dst})
+@acronym{BALLOON} algorithm using SHA384 as the underlying hash function.
+@end deftypefun
+
+@subsubsection @acronym{BALLOON-SHA512}
+
+@deftypefun void balloon_sha512 (size_t @var{s_cost}, size_t @var{t_cost}, size_t @var{passwd_length}, const uint8_t *@var{passwd}, size_t @var{salt_length}, const uint8_t *@var{salt}, uint8_t *@var{scratch}, uint8_t *@var{dst})
+@acronym{BALLOON} algorithm using SHA512 as the underlying hash function.
+@end deftypefun
+
+
 @node Public-key algorithms
 @section Public-key algorithms
 
