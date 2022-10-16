@@ -315,7 +315,7 @@ ecc_mod_inv (const struct ecc_modulo *m,
       matrix_vector_mul (&M, STEPS, n+1, fp, gp, tp);
       matrix_vector_mul_mod (&M, mp, m->binv, n, up, vp, tp);
     }
-  delta = steps (&M, count, delta, fp[0], gp[0]);
+  steps (&M, count, delta, fp[0], gp[0]);
   matrix_vector_mul (&M, count, n+1, fp, gp, tp);
   /* Only compute u, we don't need v. */
   add_add_mul_mod (tp, up, vp, mp, n, M.a[0][0], M.a[0][1]);
@@ -326,7 +326,7 @@ ecc_mod_inv (const struct ecc_modulo *m,
   /* Now f = ±1 (if the inverse exists), and a * u = f (mod m) */
   cy = cnd_neg (fp[n] >> (GMP_LIMB_BITS - 1), up, up, n);
   /* Make u non-negative */
-  cy -= mpn_cnd_add_n (cy, up, up, mp, n);
+  mpn_cnd_add_n (cy, up, up, mp, n);
 
   cnd_neg (fp[n] >> (GMP_LIMB_BITS - 1), fp, fp, n + 1);
   cy = one_p (fp, n+1);
