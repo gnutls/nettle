@@ -40,6 +40,7 @@
 #include "poly1305.h"
 #include "poly1305-internal.h"
 #include "macros.h"
+#include "md-internal.h"
 
 void
 poly1305_aes_set_key (struct poly1305_aes_ctx *ctx, const uint8_t * key)
@@ -56,13 +57,12 @@ poly1305_aes_set_nonce (struct poly1305_aes_ctx *ctx,
   memcpy (ctx->nonce, nonce, POLY1305_AES_NONCE_SIZE);
 }
 
-#define COMPRESS(ctx, data) _nettle_poly1305_block(&(ctx)->pctx, (data), 1)
-
 void
 poly1305_aes_update (struct poly1305_aes_ctx *ctx,
 		     size_t length, const uint8_t *data)
 {
-  MD_UPDATE (ctx, length, data, COMPRESS, (void) 0);
+  ctx->index = _nettle_poly1305_update (&(ctx)->pctx,
+					ctx->block, ctx->index, length, data);
 }
 
 void
