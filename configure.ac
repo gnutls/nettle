@@ -761,6 +761,7 @@ AH_VERBATIM([HAVE_NATIVE],
 #undef HAVE_NATIVE_ecc_secp521r1_redc
 #undef HAVE_NATIVE_poly1305_set_key
 #undef HAVE_NATIVE_poly1305_block
+#undef HAVE_NATIVE_poly1305_blocks
 #undef HAVE_NATIVE_poly1305_digest
 #undef HAVE_NATIVE_ghash_set_key
 #undef HAVE_NATIVE_ghash_update
