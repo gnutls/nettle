@@ -169,15 +169,6 @@ _nettle_poly1305_block (struct poly1305_ctx *ctx, const uint8_t *m, unsigned t4)
   ctx->h0 += b * 5;
 }
 
-const uint8_t *
-_nettle_poly1305_blocks (struct poly1305_ctx *ctx, size_t blocks, const uint8_t *m)
-{
-  for (; blocks > 0; blocks--, m += POLY1305_BLOCK_SIZE)
-    _nettle_poly1305_block (ctx, m, 1);
-
-  return m;
-}
-
 /* Adds digest to the nonce */
 void
 _nettle_poly1305_digest (struct poly1305_ctx *ctx, union nettle_block16 *s)
