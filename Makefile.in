@@ -136,7 +136,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c aes-decrypt-table.c \
 		 nettle-meta-ciphers.c nettle-meta-hashes.c nettle-meta-macs.c \
 		 pbkdf2.c pbkdf2-hmac-gosthash94.c pbkdf2-hmac-sha1.c \
 		 pbkdf2-hmac-sha256.c pbkdf2-hmac-sha384.c pbkdf2-hmac-sha512.c \
-		 poly1305-aes.c poly1305-internal.c \
+		 poly1305-aes.c poly1305-internal.c poly1305-update.c \
 		 realloc.c \
 		 ripemd160.c ripemd160-compress.c ripemd160-meta.c \
 		 salsa20-core-internal.c salsa20-crypt-internal.c \

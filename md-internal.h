@@ -32,6 +32,8 @@
 #ifndef NETTLE_MD_INTERNAL_H_INCLUDED
 #define NETTLE_MD_INTERNAL_H_INCLUDED
 
+#include <string.h>
+
 /* Internal helper macros for Merkle-Damgård hash functions. Assumes the context
    structs includes the following fields:
 
@@ -51,7 +53,18 @@
     memcpy((ctx)->block + (ctx)->index, (data), __md_left);	\
     (data) += __md_left;					\
     (length) -= __md_left;					\
-    (ctx)->index = 0;						\
   } while(0)
 
+#define MD_FILL_OR_RETURN_INDEX(block_size, block, index, length, data)	\
+  do {									\
+    unsigned __md_left = (block_size) - (index);			\
+    if ((length) < __md_left)						\
+      {									\
+	memcpy(block + (index), (data), (length));			\
+	return (index) + (length);					\
+      }									\
+    memcpy((block) + (index), (data), __md_left);			\
+    (data) += __md_left;						\
+    (length) -= __md_left;						\
+  } while(0)
 #endif /* NETTLE_MD_INTERNAL_H_INCLUDED */

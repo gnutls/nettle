@@ -1,3 +1,14 @@
+2022-10-31  Niels Möller  <nisse@lysator.liu.se>
+
+	* md-internal.h (MD_FILL_OR_RETURN_INDEX): New macro.
+	* poly1305-update.c (_nettle_poly1305_update): New file and
+	function.
+	* poly1305-internal.h: Declare _nettle_poly1305_blocks and
+	_nettle_poly1305_update.
+	* chacha-poly1305.c (poly1305_update): Use _nettle_poly1305_update.
+	* poly1305-aes.c (poly1305_aes_update): Likewise.
+	* Makefile.in (nettle_SOURCES): Add poly1305-update.c.
+
 2022-10-13  Niels Möller  <nisse@lysator.liu.se>
 
 	* gmp-glue.c (mpn_sec_tabselect) [NETTLE_USE_MINI_GMP]: Add back
