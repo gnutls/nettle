@@ -1,5 +1,9 @@
 2022-10-31  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac: (asm_file_list): Add HAVE_NATIVE_poly1305_blocks.
+	(asm_nettle_optional_list): Add poly1305-blocks.asm.
+	* x86_64/poly1305-blocks.asm: New file.
+
 	* md-internal.h (MD_FILL_OR_RETURN_INDEX): New macro.
 	* poly1305-update.c (_nettle_poly1305_update): New file and
 	function.

@@ -612,7 +612,7 @@ asm_nettle_optional_list="cpuid.asm cpu-facility.asm \
   aes256-encrypt-2.asm aes256-decrypt-2.asm \
   cbc-aes128-encrypt-2.asm cbc-aes192-encrypt-2.asm cbc-aes256-encrypt-2.asm \
   chacha-2core.asm chacha-3core.asm chacha-4core.asm chacha-core-internal-2.asm \
-  poly1305-internal-2.asm \
+  poly1305-blocks.asm poly1305-internal-2.asm \
   ghash-set-key-2.asm ghash-update-2.asm \
   salsa20-2core.asm salsa20-core-internal-2.asm \
   sha1-compress-2.asm sha256-compress-n-2.asm \
@@ -762,6 +762,7 @@ AH_VERBATIM([HAVE_NATIVE],
 #undef HAVE_NATIVE_poly1305_set_key
 #undef HAVE_NATIVE_poly1305_block
 #undef HAVE_NATIVE_poly1305_digest
+#undef HAVE_NATIVE_poly1305_blocks
 #undef HAVE_NATIVE_ghash_set_key
 #undef HAVE_NATIVE_ghash_update
 #undef HAVE_NATIVE_salsa20_core
