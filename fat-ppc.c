@@ -195,6 +195,11 @@ DECLARE_FAT_FUNC(_nettle_poly1305_digest, poly1305_digest_func)
 DECLARE_FAT_FUNC_VAR(poly1305_digest, poly1305_digest_func, c)
 DECLARE_FAT_FUNC_VAR(poly1305_digest, poly1305_digest_func, ppc64)
 
+DECLARE_FAT_FUNC(_nettle_poly1305_blocks, poly1305_blocks_func)
+DECLARE_FAT_FUNC_VAR(poly1305_blocks, poly1305_blocks_func, c)
+DECLARE_FAT_FUNC_VAR(poly1305_blocks, poly1305_blocks_func, ppc64)
+
+
 static void CONSTRUCTOR
 fat_init (void)
 {
@@ -251,12 +256,14 @@ fat_init (void)
       _nettle_poly1305_set_key_vec = _nettle_poly1305_set_key_ppc64;
     _nettle_poly1305_block_vec = _nettle_poly1305_block_ppc64;
     _nettle_poly1305_digest_vec = _nettle_poly1305_digest_ppc64;
+    _nettle_poly1305_blocks_vec = _nettle_poly1305_blocks_ppc64;
     }
   else
     {
       _nettle_poly1305_set_key_vec = _nettle_poly1305_set_key_c;
     _nettle_poly1305_block_vec = _nettle_poly1305_block_c;
     _nettle_poly1305_digest_vec = _nettle_poly1305_digest_c;
+    _nettle_poly1305_blocks_vec = _nettle_poly1305_blocks_c;
     }
 }
 
@@ -315,3 +322,9 @@ DEFINE_FAT_FUNC(_nettle_poly1305_digest, void,
 		(struct poly1305_ctx *ctx,
      union nettle_block16 *s),
 		(ctx, s))
+
+DEFINE_FAT_FUNC(_nettle_poly1305_blocks, const uint8_t *,
+		(struct poly1305_ctx *ctx,
+     size_t blocks,
+		 const uint8_t *m),
+		(ctx, blocks, m))

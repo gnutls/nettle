@@ -203,6 +203,8 @@ typedef void poly1305_set_key_func(struct poly1305_ctx *ctx, const uint8_t *key)
 typedef void poly1305_digest_func(struct poly1305_ctx *ctx, union nettle_block16 *s);
 typedef void poly1305_block_func(struct poly1305_ctx *ctx, const uint8_t *m,
 			     unsigned high);
+typedef const uint8_t * poly1305_blocks_func(struct poly1305_ctx *ctx, size_t blocks,
+			     const uint8_t *m);
 
 struct aes128_ctx;
 typedef void aes128_set_key_func (struct aes128_ctx *ctx, const uint8_t *key);

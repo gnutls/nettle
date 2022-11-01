@@ -37,6 +37,21 @@
 #include "poly1305-internal.h"
 #include "md-internal.h"
 
+#if HAVE_NATIVE_fat_poly1305_blocks
+const uint8_t *
+_nettle_poly1305_blocks_c(struct poly1305_ctx *ctx,
+			   size_t blocks, const uint8_t *m);
+
+const uint8_t *
+_nettle_poly1305_blocks_c(struct poly1305_ctx *ctx,
+			   size_t blocks, const uint8_t *m)
+{
+  for (; blocks; blocks--, m += POLY1305_BLOCK_SIZE)
+    _nettle_poly1305_block(ctx, m, 1);
+  return m;
+}
+#endif
+
 unsigned
 _nettle_poly1305_update (struct poly1305_ctx *ctx,
 			 uint8_t *block, unsigned index,
@@ -49,7 +64,7 @@ _nettle_poly1305_update (struct poly1305_ctx *ctx,
 			       length, m);
       _nettle_poly1305_block(ctx, block, 1);
     }
-#if HAVE_NATIVE_poly1305_blocks
+#if HAVE_NATIVE_poly1305_blocks || HAVE_NATIVE_fat_poly1305_blocks
   m = _nettle_poly1305_blocks (ctx, length >> 4, m);
   length &= 15;
 #else
