@@ -44,7 +44,7 @@ C GPR3, GPR4 are temporary registers
 C VR0 is the starting register of sequential vector resigers used in
 C the macro of following layout
 C VR0, VR1 are outputs representing the result state radix 2^64 sorted as follows
-C (low 64-bit of F0) + (low 64-bit of F1) + (high 64-bit of F1)
+C (low 64-bit of VR0) + (low 64-bit of VR1) + (high 64-bit of VR1)
 C VR2..VR12 are temporary registers
 C BLOCK_R64(CTX, DATA, PADBYTE, GPR0, VR0)
 define(`BLOCK_R64', `
