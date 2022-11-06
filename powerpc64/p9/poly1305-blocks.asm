@@ -37,15 +37,12 @@ C Register usage:
 define(`SP', `r1')
 define(`TOCP', `r2')
 
-define(`DEFINES_BLOCK_ARG_R64', `
-	C State inputs
-	define(`H0', `r6')
-	define(`H1', `r7')
-	define(`H2', `r8')
-	C State outputs
-	define(`F0', `v1')
-	define(`F1', `v2')
-	')
+C Argments
+define(`CTX', `r3')
+define(`BLOCKS', `r4')
+define(`DATA', `r5')
+
+define(`PADBYTE', `r6') C Padding byte register
 
 define(`DEFINES_BLOCK_R44', `
 	define(`R0', `v0')
@@ -203,17 +200,15 @@ PROLOGUE(_nettle_poly1305_blocks)
 	stxv	VSR(v21),-192(SP)
 	stxv	VSR(v20),-208(SP)
 
-	mr		LEN, r4
-	mr		DATA, r5
 	C Initialize padding byte register
 	li		PADBYTE, 1
 
 C Process data blocks of number of multiple 4
 	DEFINES_BLOCK_R44()
-	cmpldi	LEN, POLY1305_BLOCK_THRESHOLD
+	cmpldi	BLOCKS, POLY1305_BLOCK_THRESHOLD
 	blt		Ldata_r64
-	srdi	r9, LEN, 2
-	andi.	LEN, LEN, 3
+	srdi	r9, BLOCKS, 2
+	andi.	BLOCKS, BLOCKS, 3
 	mtctr	r9
 
 	C Initialize constants
@@ -384,24 +379,23 @@ IF_BE(`
 	stxsd		H2, 48(CTX)
 
 Ldata_r64:
-	DEFINES_BLOCK_ARG_R64()
-	C COUNTER = LEN / 16
-	cmpldi	LEN, 0
+	cmpldi	BLOCKS, 0
 	beq		Ldone
-	mtctr	LEN
-	ld			H0, P1305_H0 (CTX)
-	ld			H1, P1305_H1 (CTX)
-	ld			H2, P1305_H2 (CTX)
+	mtctr	BLOCKS
+	mr			r4, PADBYTE
+	ld			r6, P1305_H0 (CTX)
+	ld			r7, P1305_H1 (CTX)
+	ld			r8, P1305_H2 (CTX)
 L1B_loop:
-	BLOCK_R64(F0,F1,H0,H1,H2)
-	mfvsrld		H0, VSR(F0)
-	mfvsrld		H1, VSR(F1)
-	mfvsrd		H2, VSR(F1)
+	BLOCK_R64(CTX,DATA,r4,r6,v0)
+	mfvsrld		r6, VSR(v0)
+	mfvsrld		r7, VSR(v1)
+	mfvsrd		r8, VSR(v1)
 	addi	DATA, DATA, 16
 	bdnz	L1B_loop
-	std		H0, P1305_H0 (CTX)
-	std		H1, P1305_H1 (CTX)
-	std		H2, P1305_H2 (CTX)
+	std		r6, P1305_H0 (CTX)
+	std		r7, P1305_H1 (CTX)
+	std		r8, P1305_H2 (CTX)
 
 Ldone:
 	C Restore non-volatile vector registers

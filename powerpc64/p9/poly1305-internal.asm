@@ -37,13 +37,10 @@ C Register usage:
 define(`SP', `r1')
 define(`TOCP', `r2')
 
-C State inputs
-define(`H0', `r6')
-define(`H1', `r7')
-define(`H2', `r8')
-C State outputs
-define(`F0', `v1')
-define(`F1', `v2')
+C Argments
+define(`CTX', `r3')
+define(`DATA', `r4')
+define(`PADBYTE', `r5') C Padding byte register
 
 .text
 
@@ -91,17 +88,17 @@ EPILOGUE(_nettle_poly1305_set_key)
 C void _nettle_poly1305_block(struct poly1305_ctx *ctx, const uint8_t *m, unsigned m128)
 define(`FUNC_ALIGN', `5')
 PROLOGUE(_nettle_poly1305_block)
-	ld			H0, P1305_H0 (CTX)
-	ld			H1, P1305_H1 (CTX)
-	ld			H2, P1305_H2 (CTX)
+	ld			r6, P1305_H0 (CTX)
+	ld			r7, P1305_H1 (CTX)
+	ld			r8, P1305_H2 (CTX)
 
-	BLOCK_R64(F0,F1,H0,H1,H2)
+	BLOCK_R64(CTX,DATA,PADBYTE,r6,v0)
 
 	li			r10, P1305_H1
-	xxswapd		VSR(F0), VSR(F0)
-	xxswapd		VSR(F1), VSR(F1)
-	stxsd		F0, P1305_H0 (CTX)
-	stxvd2x		VSR(F1), r10, CTX
+	xxswapd		VSR(v0), VSR(v0)
+	xxswapd		VSR(v1), VSR(v1)
+	stxsd		v0, P1305_H0 (CTX)
+	stxvd2x		VSR(v1), r10, CTX
 
 	blr
 EPILOGUE(_nettle_poly1305_block)
