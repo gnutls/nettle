@@ -1,3 +1,10 @@
+2022-11-07  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac (ASM_FLAGS): New configure environment variable.
+	* aclocal.m4 (GMP_TRY_ASSEMBLE): Use $ASM_FLAGS.
+	* config.make.in (ASM_FLAGS): Add substitution.
+	* Makefile.in: Use $(ASM_FLAGS) when compiling .asm files.
+
 2022-10-31  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: (asm_file_list): Add HAVE_NATIVE_poly1305_blocks.

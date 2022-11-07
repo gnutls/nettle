@@ -121,6 +121,8 @@ AC_ARG_ENABLE(mini-gmp,
   AC_HELP_STRING([--enable-mini-gmp], [Enable mini-gmp, used instead of libgmp.]),,
   [enable_mini_gmp=no])
 
+AC_ARG_VAR(ASM_FLAGS, [Extra flags for processing assembly source files])
+
 if test "x$enable_mini_gmp" = xyes ; then
   NETTLE_USE_MINI_GMP=1
   HOGWEED_EXTRA_SYMBOLS="mpz_*;gmp_*;mpn_*;mp_*;"

@@ -302,7 +302,7 @@ AC_DEFUN([GMP_TRY_ASSEMBLE],
 [cat >conftest.s <<EOF
 [$1]
 EOF
-gmp_assemble="$CC $CFLAGS $CPPFLAGS -c conftest.s >conftest.out 2>&1"
+gmp_assemble="$CC $CFLAGS $CPPFLAGS $ASM_FLAGS -c conftest.s >conftest.out 2>&1"
 if AC_TRY_EVAL(gmp_assemble); then
   cat conftest.out >&AC_FD_CC
   ifelse([$2],,:,[$2])

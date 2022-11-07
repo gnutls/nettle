@@ -298,7 +298,7 @@ libhogweed.a: $(hogweed_OBJS)
 
 %.$(OBJEXT): %.asm $(srcdir)/m4-utils.m4 $(srcdir)/asm.m4 config.m4 machine.m4
 	$(M4) $(srcdir)/m4-utils.m4 $(srcdir)/asm.m4 config.m4 machine.m4 $< >$*.s
-	$(COMPILE) -c $*.s
+	$(COMPILE) $(ASM_FLAGS) -c $*.s
 
 %.$(OBJEXT): %.c
 	$(COMPILE) -c $< \
