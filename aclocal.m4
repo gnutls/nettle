@@ -563,7 +563,7 @@ dnl  Determine whether the assembler takes powerpc registers with an "r" as
 dnl  in "r6", or as plain "6".  The latter is standard, but NeXT, Rhapsody,
 dnl  and MacOS-X require the "r" forms.
 dnl
-dnl  See also mpn/powerpc32/powerpc-defs.m4 which uses the result of this
+dnl  See also powerpc64/machine.m4 which uses the result of this
 dnl  test.
 
 AC_DEFUN([GMP_ASM_POWERPC_R_REGISTERS],
