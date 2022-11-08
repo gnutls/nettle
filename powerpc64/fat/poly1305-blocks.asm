@@ -30,7 +30,9 @@ ifelse(`
    not, see http://www.gnu.org/licenses/.
 ')
 
-dnl PROLOGUE(_nettle_fat_poly1305_blocks) picked up by configure
+dnl picked up by configure
+dnl PROLOGUE(_nettle_poly1305_blocks)
+dnl PROLOGUE(_nettle_fat_poly1305_blocks)
 
 define(`fat_transform', `$1_ppc64')
 include_src(`powerpc64/p9/poly1305-blocks.asm')

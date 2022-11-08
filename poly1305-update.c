@@ -64,7 +64,7 @@ _nettle_poly1305_update (struct poly1305_ctx *ctx,
 			       length, m);
       _nettle_poly1305_block(ctx, block, 1);
     }
-#if HAVE_NATIVE_poly1305_blocks || HAVE_NATIVE_fat_poly1305_blocks
+#if HAVE_NATIVE_poly1305_blocks
   m = _nettle_poly1305_blocks (ctx, length >> 4, m);
   length &= 15;
 #else

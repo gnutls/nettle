@@ -4,34 +4,34 @@ define(`POLY1305_BLOCK_THRESHOLD', `12')
 
 C DEFINES_BLOCK_R64(GPR0, VR0)
 define(`DEFINES_BLOCK_R64', `
-	define(`H0', `eval(0+$1)')
-	define(`H1', `eval(1+$1)')
-	define(`H2', `eval(2+$1)')
+	define(`H0', `$1')
+	define(`H1', `INC_GPR($1,1)')
+	define(`H2', `INC_GPR($1,2)')
 	
-	define(`T0', `eval(3+$1)')
-	define(`T1', `eval(4+$1)')
-	define(`T2', `eval(2+$1)')
-	define(`T2A', `eval(3+$1)')
-	define(`T2S', `eval(4+$1)')
-	define(`RZ', `eval(0+$1)')
-	define(`IDX', `eval(4+$1)')
+	define(`T0', `INC_GPR($1,3)')
+	define(`T1', `INC_GPR($1,4)')
+	define(`T2', `H2')
+	define(`T2A', `INC_GPR($1,3)')
+	define(`T2S', `INC_GPR($1,4)')
+	define(`RZ', `H0')
+	define(`IDX', `INC_GPR($1,4)')
 
-	define(`F0', `eval(0+$2)')
-	define(`F1', `eval(1+$2)')
+	define(`F0', `$2')
+	define(`F1', `INC_VR($2,1)')
 	
-	define(`ZERO', `eval(2+$2)')
-	define(`F0S', `eval(3+$2)')
-	define(`F11', `eval(4+$2)')
-	define(`T', `eval(5+$2)')
+	define(`ZERO', `INC_VR($2,2)')
+	define(`F0S', `INC_VR($2,3)')
+	define(`F11', `INC_VR($2,4)')
+	define(`T', `INC_VR($2,5)')
 
-	define(`R', `eval(6+$2)')
-	define(`S', `eval(7+$2)')
+	define(`R', `INC_VR($2,6)')
+	define(`S', `INC_VR($2,7)')
 
-	define(`T00', `eval(8+$2)')
-	define(`T10', `eval(9+$2)')
-	define(`T11', `eval(10+$2)')
-	define(`MU0', `eval(11+$2)')
-	define(`MU1', `eval(12+$2)')
+	define(`T00', `INC_VR($2,8)')
+	define(`T10', `INC_VR($2,9)')
+	define(`T11', `INC_VR($2,10)')
+	define(`MU0', `INC_VR($2,11)')
+	define(`MU1', `INC_VR($2,12)')
 	')
 
 C CTX is the address of context where key and pre-computed values are stored
@@ -85,7 +85,7 @@ IF_BE(`
 	mtvsrdd		VSR(T00), T2S, RZ
 	mtvsrdd		VSR(T10), 0, T2
 
-	C Mutiplicate key by combined state and block
+	C Multiply key by combined state and block
 	vmsumudm	F0, T, MU0, ZERO
 	vmsumudm	F1, T, MU1, ZERO
 	vmsumudm	F11, T11, MU1, ZERO
