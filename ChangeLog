@@ -1,3 +1,18 @@
+2022-11-09  Niels Möller  <nisse@lysator.liu.se>
+
+	From Mamone Tarsha:
+	* powerpc64/p9/poly1305-blocks.asm: New file, multi-block radix
+	2^44 implementation. Benchmarked to give a speedup of 3.2 times on
+	Power9.
+	* powerpc64/p9/poly1305.m4 (DEFINES_BLOCK_R64, BLOCK_R64): New
+	file, new macros.
+	* powerpc64/p9/poly1305-internal.asm: Use BLOCK_R64 macro.
+	* powerpc64/machine.m4 (INC_GPR, INC_VR): New macros.
+	* powerpc64/fat/poly1305-blocks.asm: New file.
+	* poly1305-update.c: Check HAVE_NATIVE_fat_poly1305_blocks, and
+	define _nettle_poly1305_blocks_c when needed.
+	* fat-ppc.c: Fat setup for _nettle_poly1305_blocks.
+
 2022-11-07  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac (ASM_FLAGS): New configure environment variable.
