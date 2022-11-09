@@ -7,7 +7,7 @@ define(`DEFINES_BLOCK_R64', `
 	define(`H0', `$1')
 	define(`H1', `INC_GPR($1,1)')
 	define(`H2', `INC_GPR($1,2)')
-	
+
 	define(`T0', `INC_GPR($1,3)')
 	define(`T1', `INC_GPR($1,4)')
 	define(`T2', `H2')
@@ -18,7 +18,7 @@ define(`DEFINES_BLOCK_R64', `
 
 	define(`F0', `$2')
 	define(`F1', `INC_VR($2,1)')
-	
+
 	define(`ZERO', `INC_VR($2,2)')
 	define(`F0S', `INC_VR($2,3)')
 	define(`F11', `INC_VR($2,4)')
@@ -37,7 +37,7 @@ define(`DEFINES_BLOCK_R64', `
 C CTX is the address of context where key and pre-computed values are stored
 C DATA is the address of input block
 C PADBYTE is padding byte for input block
-C GPR0 is the starting register of sequential general-purpose registers 
+C GPR0 is the starting register of sequential general-purpose registers
 C used in the macro of following layout
 C GPR0, GPR1, GPR2 are inputs representing the previous state radix 2^64
 C GPR3, GPR4 are temporary registers
@@ -59,7 +59,7 @@ IF_BE(`
 	ldbrx		T1, IDX, $2
 	ldbrx		T0, 0, $2
 ')
-	C Combine state with input block, latter is padded to 17-bytes 
+	C Combine state with input block, latter is padded to 17-bytes
 	C by low-order byte of PADBYTE register
 	addc		T0, T0, H0
 	adde		T1, T1, H1

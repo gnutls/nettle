@@ -250,7 +250,7 @@ C Process data blocks of number of multiple 4
 	COMPUTE_S(S1, S2, R1, R2)
 
 	C Calculate R^2 = R R
-	
+
 	MUL(T0, T1, T2, R0, R1, R2)
 	RED(H0, H1, H2, T0, T1, T2)
 	xxpermdi	VSR(R0), VSR(R0), VSR(H0), 0b01
@@ -260,7 +260,7 @@ C Process data blocks of number of multiple 4
 	COMPUTE_S(S1, S2, R1, R2)
 
 	C Calculate R^3 = R^2 R
-	
+
 	xxmrghd		VSR(R3), VSR(ZERO), VSR(R0)
 	xxmrghd		VSR(R4), VSR(ZERO), VSR(R1)
 	xxmrghd		VSR(R5), VSR(ZERO), VSR(R2)
@@ -269,7 +269,7 @@ C Process data blocks of number of multiple 4
 	RED(H0, H1, H2, T0, T1, T2)
 
 	C Calculate R^4 = R^2 R^2
-	
+
 	xxmrgld		VSR(R3), VSR(ZERO), VSR(R0)
 	xxmrgld		VSR(R4), VSR(ZERO), VSR(R1)
 	xxmrgld		VSR(R5), VSR(ZERO), VSR(R2)
