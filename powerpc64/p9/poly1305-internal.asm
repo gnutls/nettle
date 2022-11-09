@@ -30,6 +30,8 @@ ifelse(`
    not, see http://www.gnu.org/licenses/.
 ')
 
+include_src(`powerpc64/p9/poly1305.m4')
+
 C Register usage:
 
 define(`SP', `r1')
@@ -37,36 +39,8 @@ define(`TOCP', `r2')
 
 C Argments
 define(`CTX', `r3')
-define(`M', `r4')
-define(`M128', `r5')
-
-C Working state
-define(`H0', `r6')
-define(`H1', `r7')
-define(`H2', `r8')
-define(`T0', `r9')
-define(`T1', `r10')
-define(`T2', `r8')
-define(`T2A', `r9')
-define(`T2S', `r10')
-define(`IDX', `r6')
-define(`RZ', `r7')
-
-define(`ZERO', `v0')
-define(`F0', `v1')
-define(`F1', `v2')
-define(`F0S', `v3')
-define(`T', `v4')
-
-define(`R', `v5')
-define(`S', `v6')
-
-define(`T00', `v7')
-define(`T10', `v8')
-define(`T11', `v9')
-define(`MU0', `v10')
-define(`MU1', `v11')
-define(`TMP', `v12')
+define(`DATA', `r4')
+define(`PADBYTE', `r5') C Padding byte register
 
 .text
 
@@ -114,59 +88,17 @@ EPILOGUE(_nettle_poly1305_set_key)
 C void _nettle_poly1305_block(struct poly1305_ctx *ctx, const uint8_t *m, unsigned m128)
 define(`FUNC_ALIGN', `5')
 PROLOGUE(_nettle_poly1305_block)
-	ld			H0, P1305_H0 (CTX)
-	ld			H1, P1305_H1 (CTX)
-	ld			H2, P1305_H2 (CTX)
-IF_LE(`
-	ld			T0, 0(M)
-	ld			T1, 8(M)
-')
-IF_BE(`
-	ldbrx		T0, 0, M
-	addi		M, M, 8
-	ldbrx		T1, 0, M
-')
+	ld			r6, P1305_H0 (CTX)
+	ld			r7, P1305_H1 (CTX)
+	ld			r8, P1305_H2 (CTX)
 
-	addc		T0, T0, H0
-	adde		T1, T1, H1
-	adde		T2, M128, H2
+	BLOCK_R64(CTX,DATA,PADBYTE,r6,v0)
 
-	mtvsrdd		VSR(T), T0, T1
-
-	li			IDX, P1305_S0
-	lxvd2x		VSR(R), 0, CTX
-	lxvd2x		VSR(S), IDX, CTX
-
-	andi.		T2A, T2, 3
-	srdi		T2S, T2, 2
-
-	li			RZ, 0
-	vxor		ZERO, ZERO, ZERO
-
-	xxpermdi	VSR(MU0), VSR(R), VSR(S), 0b01
-	xxswapd		VSR(MU1), VSR(R)
-
-	mtvsrdd		VSR(T11), 0, T2A
-	mtvsrdd		VSR(T00), T2S, RZ
-	mtvsrdd		VSR(T10), 0, T2
-
-	vmsumudm	F0, T, MU0, ZERO
-	vmsumudm	F1, T, MU1, ZERO
-	vmsumudm	TMP, T11, MU1, ZERO
-
-	vmsumudm	F0, T00, S, F0
-	vmsumudm	F1, T10, MU0, F1
-
-	xxmrgld		VSR(TMP), VSR(TMP), VSR(ZERO)
-	xxswapd		VSR(F0S), VSR(F0)
-	vadduqm		F1, F1, TMP
-	stxsd		F0S, P1305_H0 (CTX)
-
-	li			IDX, P1305_H1
-	xxmrghd		VSR(F0), VSR(ZERO), VSR(F0)
-	vadduqm		F1, F1, F0
-	xxswapd		VSR(F1), VSR(F1)
-	stxvd2x		VSR(F1), IDX, CTX
+	li			r10, P1305_H1
+	xxswapd		VSR(v0), VSR(v0)
+	xxswapd		VSR(v1), VSR(v1)
+	stxsd		v0, P1305_H0 (CTX)
+	stxvd2x		VSR(v1), r10, CTX
 
 	blr
 EPILOGUE(_nettle_poly1305_block)
