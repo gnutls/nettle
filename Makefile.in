@@ -81,7 +81,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c aes-decrypt-table.c \
 		 aes256-set-encrypt-key.c aes256-set-decrypt-key.c \
 		 aes256-meta.c \
 		 nist-keywrap.c \
-		 arcfour.c arcfour-crypt.c \
+		 arcfour.c \
 		 arctwo.c arctwo-meta.c blowfish.c blowfish-bcrypt.c \
 		 balloon.c balloon-sha1.c balloon-sha256.c \
 		 balloon-sha384.c balloon-sha512.c \
