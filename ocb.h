@@ -106,7 +106,7 @@ ocb_decrypt (struct ocb_ctx *ctx, const struct ocb_key *key,
 	     size_t length, uint8_t *dst, const uint8_t *src);
 
 void
-ocb_digest (struct ocb_ctx *ctx, const struct ocb_key *key,
+ocb_digest (const struct ocb_ctx *ctx, const struct ocb_key *key,
 	    const void *cipher, nettle_cipher_func *f,
 	    size_t length, uint8_t *digest);
 
