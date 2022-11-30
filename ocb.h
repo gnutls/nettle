@@ -35,6 +35,7 @@
 #define NETTLE_OCB_H_INCLUDED
 
 #include "nettle-types.h"
+#include "aes.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -47,6 +48,15 @@ extern "C" {
 #define ocb_encrypt nettle_ocb_encrypt
 #define ocb_decrypt nettle_ocb_decrypt
 #define ocb_digest nettle_ocb_digest
+#define ocb_encrypt_message nettle_ocb_encrypt_message
+#define ocb_decrypt_message nettle_ocb_decrypt_message
+#define ocb_aes128_set_key nettle_ocb_aes128_set_key
+#define ocb_aes128_update nettle_ocb_aes128_update
+#define ocb_aes128_encrypt nettle_ocb_aes128_encrypt
+#define ocb_aes128_decrypt nettle_ocb_aes128_decrypt
+#define ocb_aes128_digest nettle_ocb_aes128_digest
+#define ocb_aes128_encrypt_message nettle_ocb_aes128_encrypt_message
+#define ocb_aes128_decrypt_message nettle_ocb_aes128_decrypt_message
 
 #define OCB_BLOCK_SIZE 16
 #define OCB_DIGEST_SIZE 16
@@ -114,17 +124,64 @@ ocb_digest (const struct ocb_ctx *ctx, const struct ocb_key *key,
 void
 ocb_encrypt_message (const struct ocb_key *ocb_key,
 		     const void *cipher, nettle_cipher_func *f,
+		     size_t tlength,
 		     size_t nlength, const uint8_t *nonce,
 		     size_t alength, const uint8_t *adata,
 		     size_t clength, uint8_t *dst, const uint8_t *src);
 
-void
+int
 ocb_decrypt_message (const struct ocb_key *ocb_key,
 		     const void *encrypt_ctx, nettle_cipher_func *encrypt,
 		     const void *decrypt_ctx, nettle_cipher_func *decrypt,
+		     size_t tlength,
 		     size_t nlength, const uint8_t *nonce,
 		     size_t alength, const uint8_t *adata,
-		     size_t clength, uint8_t *dst, const uint8_t *src);
+		     size_t plength, uint8_t *dst, const uint8_t *src);
+
+/* OCB-AES */
+struct ocb_aes128_ctx
+{
+  struct ocb_key key;
+  struct ocb_ctx ocb;
+  struct aes128_ctx encrypt;
+  struct aes128_ctx decrypt;
+};
+
+void
+ocb_aes128_set_key (struct ocb_aes128_ctx *ctx, const uint8_t *key);
+
+void
+ocb_aes128_set_nonce (struct ocb_aes128_ctx *ctx,
+		      size_t nonce_length, const uint8_t *nonce);
+
+void
+ocb_aes128_update (struct ocb_aes128_ctx *ctx,
+		   size_t length, const uint8_t *data);
+
+void
+ocb_aes128_encrypt(struct ocb_aes128_ctx *ctx,
+		   size_t length, uint8_t *dst, const uint8_t *src);
+
+void
+ocb_aes128_decrypt(struct ocb_aes128_ctx *ctx,
+		   size_t length, uint8_t *dst, const uint8_t *src);
+
+void
+ocb_aes128_digest(struct ocb_aes128_ctx *ctx, size_t length, uint8_t *digest);
+
+void
+ocb_aes128_encrypt_message (const struct aes128_ctx *cipher,
+			    size_t tlength,
+			    size_t nlength, const uint8_t *nonce,
+			    size_t alength, const uint8_t *adata,
+			    size_t clength, uint8_t *dst, const uint8_t *src);
+
+int
+ocb_aes128_decrypt_message (const struct aes128_ctx *cipher,
+			    size_t tlength,
+			    size_t nlength, const uint8_t *nonce,
+			    size_t alength, const uint8_t *adata,
+			    size_t clength, uint8_t *dst, const uint8_t *src);
 
 #ifdef __cplusplus
 }

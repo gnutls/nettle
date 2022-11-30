@@ -40,6 +40,7 @@
 #include "ocb.h"
 #include "block-internal.h"
 #include "bswap-internal.h"
+#include "memops.h"
 
 /* Returns 64 bits from the concatenation (u0, u1), starting from bit offset. */
 static inline uint64_t
@@ -240,4 +241,39 @@ ocb_digest (const struct ocb_ctx *ctx, const struct ocb_key *key,
   block16_xor (&block, &ctx->checksum);
   f (cipher, OCB_BLOCK_SIZE, block.b, block.b);
   memxor3 (digest, block.b, ctx->sum.b, length);
+}
+
+void
+ocb_encrypt_message (const struct ocb_key *key,
+		     const void *cipher, nettle_cipher_func *f,
+		     size_t tlength,
+		     size_t nlength, const uint8_t *nonce,
+		     size_t alength, const uint8_t *adata,
+		     size_t clength, uint8_t *dst, const uint8_t *src)
+{
+  struct ocb_ctx ctx;
+  assert (clength >= tlength);
+  ocb_set_nonce (&ctx, cipher, f, tlength, nlength, nonce);
+  ocb_update (&ctx, key, cipher, f, alength, adata);
+  ocb_encrypt (&ctx, key, cipher, f,  clength - tlength, dst, src);
+  ocb_digest (&ctx, key, cipher, f, tlength, dst + clength - tlength);
+}
+
+int
+ocb_decrypt_message (const struct ocb_key *key,
+		     const void *encrypt_ctx, nettle_cipher_func *encrypt,
+		     const void *decrypt_ctx, nettle_cipher_func *decrypt,
+		     size_t tlength,
+		     size_t nlength, const uint8_t *nonce,
+		     size_t alength, const uint8_t *adata,
+		     size_t plength, uint8_t *dst, const uint8_t *src)
+{
+  struct ocb_ctx ctx;
+  union nettle_block16 digest;
+  ocb_set_nonce (&ctx, encrypt_ctx, encrypt, tlength, nlength, nonce);
+  ocb_update (&ctx, key, encrypt_ctx, encrypt, alength, adata);
+  ocb_decrypt (&ctx, key, encrypt_ctx, encrypt, decrypt_ctx, decrypt,
+	       plength, dst, src);
+  ocb_digest (&ctx, key, encrypt_ctx, encrypt, tlength, digest.b);
+  return memeql_sec(digest.b, src + plength, tlength);
 }
