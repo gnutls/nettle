@@ -246,9 +246,9 @@ ocb_digest (const struct ocb_ctx *ctx, const struct ocb_key *key,
 void
 ocb_encrypt_message (const struct ocb_key *key,
 		     const void *cipher, nettle_cipher_func *f,
-		     size_t tlength,
 		     size_t nlength, const uint8_t *nonce,
 		     size_t alength, const uint8_t *adata,
+		     size_t tlength,
 		     size_t clength, uint8_t *dst, const uint8_t *src)
 {
   struct ocb_ctx ctx;
@@ -263,17 +263,17 @@ int
 ocb_decrypt_message (const struct ocb_key *key,
 		     const void *encrypt_ctx, nettle_cipher_func *encrypt,
 		     const void *decrypt_ctx, nettle_cipher_func *decrypt,
-		     size_t tlength,
 		     size_t nlength, const uint8_t *nonce,
 		     size_t alength, const uint8_t *adata,
-		     size_t plength, uint8_t *dst, const uint8_t *src)
+		     size_t tlength,
+		     size_t mlength, uint8_t *dst, const uint8_t *src)
 {
   struct ocb_ctx ctx;
   union nettle_block16 digest;
   ocb_set_nonce (&ctx, encrypt_ctx, encrypt, tlength, nlength, nonce);
   ocb_update (&ctx, key, encrypt_ctx, encrypt, alength, adata);
   ocb_decrypt (&ctx, key, encrypt_ctx, encrypt, decrypt_ctx, decrypt,
-	       plength, dst, src);
+	       mlength, dst, src);
   ocb_digest (&ctx, key, encrypt_ctx, encrypt, tlength, digest.b);
-  return memeql_sec(digest.b, src + plength, tlength);
+  return memeql_sec(digest.b, src + mlength, tlength);
 }

@@ -85,23 +85,23 @@ ocb_aes128_digest(struct ocb_aes128_ctx *ctx, size_t length, uint8_t *digest)
 
 void
 ocb_aes128_encrypt_message (const struct aes128_ctx *cipher,
-			    size_t tlength,
 			    size_t nlength, const uint8_t *nonce,
 			    size_t alength, const uint8_t *adata,
+			    size_t tlength,
 			    size_t clength, uint8_t *dst, const uint8_t *src)
 {
   struct ocb_key key;
   ocb_set_key (&key, cipher, (nettle_cipher_func *) aes128_encrypt);
   ocb_encrypt_message (&key, cipher, (nettle_cipher_func *) aes128_encrypt,
-		       tlength, nlength, nonce, alength, adata, clength, dst, src);
+		       nlength, nonce, alength, adata, tlength, clength, dst, src);
 }
 
 int
 ocb_aes128_decrypt_message (const struct aes128_ctx *cipher,
-			    size_t tlength,
 			    size_t nlength, const uint8_t *nonce,
 			    size_t alength, const uint8_t *adata,
-			    size_t plength, uint8_t *dst, const uint8_t *src)
+			    size_t tlength,
+			    size_t mlength, uint8_t *dst, const uint8_t *src)
 {
   struct ocb_key key;
   struct aes128_ctx decrypt_ctx;
@@ -109,6 +109,6 @@ ocb_aes128_decrypt_message (const struct aes128_ctx *cipher,
   ocb_set_key (&key, cipher, (nettle_cipher_func *) aes128_encrypt);
   return ocb_decrypt_message (&key, cipher, (nettle_cipher_func *) aes128_encrypt,
 			      &decrypt_ctx, (nettle_cipher_func *) aes128_decrypt,
-			      tlength, nlength, nonce, alength, adata,
-			      plength, dst, src);
+			      nlength, nonce, alength, adata,
+			      tlength, mlength, dst, src);
 }
