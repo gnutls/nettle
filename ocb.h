@@ -50,7 +50,8 @@ extern "C" {
 #define ocb_digest nettle_ocb_digest
 #define ocb_encrypt_message nettle_ocb_encrypt_message
 #define ocb_decrypt_message nettle_ocb_decrypt_message
-#define ocb_aes128_set_key nettle_ocb_aes128_set_key
+#define ocb_aes128_set_encrypt_key nettle_ocb_aes128_set_encrypt_key
+#define ocb_aes128_set_decrypt_key nettle_ocb_aes128_set_decrypt_key
 #define ocb_aes128_set_nonce nettle_ocb_aes128_set_nonce
 #define ocb_aes128_update nettle_ocb_aes128_update
 #define ocb_aes128_encrypt nettle_ocb_aes128_encrypt
@@ -140,45 +141,52 @@ ocb_decrypt_message (const struct ocb_key *ocb_key,
 		     size_t mlength, uint8_t *dst, const uint8_t *src);
 
 /* OCB-AES */
-struct ocb_aes128_ctx
+/* This struct represents an expanded key for ocb-aes encryption. For
+   decryption, a separate decryption context is needed as well. */
+struct ocb_aes128_encrypt_key
 {
-  struct ocb_key key;
-  struct ocb_ctx ocb;
+  struct ocb_key ocb;
   struct aes128_ctx encrypt;
-  struct aes128_ctx decrypt;
 };
 
 void
-ocb_aes128_set_key (struct ocb_aes128_ctx *ctx, const uint8_t *key);
+ocb_aes128_set_encrypt_key (struct ocb_aes128_encrypt_key *ocb, const uint8_t *key);
 
 void
-ocb_aes128_set_nonce (struct ocb_aes128_ctx *ctx,
-		      size_t nonce_length, const uint8_t *nonce);
+ocb_aes128_set_decrypt_key (struct ocb_aes128_encrypt_key *ocb, struct aes128_ctx *decrypt,
+			    const uint8_t *key);
 
 void
-ocb_aes128_update (struct ocb_aes128_ctx *ctx,
+ocb_aes128_set_nonce (struct ocb_ctx *ctx, const struct ocb_aes128_encrypt_key *key,
+		      size_t tag_length, size_t nonce_length, const uint8_t *nonce);
+
+void
+ocb_aes128_update (struct ocb_ctx *ctx, const struct ocb_aes128_encrypt_key *key,
 		   size_t length, const uint8_t *data);
 
 void
-ocb_aes128_encrypt(struct ocb_aes128_ctx *ctx,
+ocb_aes128_encrypt(struct ocb_ctx *ctx, const struct ocb_aes128_encrypt_key *key,
 		   size_t length, uint8_t *dst, const uint8_t *src);
 
 void
-ocb_aes128_decrypt(struct ocb_aes128_ctx *ctx,
+ocb_aes128_decrypt(struct ocb_ctx *ctx, const struct ocb_aes128_encrypt_key *key,
+		   const struct aes128_ctx *decrypt,
 		   size_t length, uint8_t *dst, const uint8_t *src);
 
 void
-ocb_aes128_digest(struct ocb_aes128_ctx *ctx, size_t length, uint8_t *digest);
+ocb_aes128_digest(struct ocb_ctx *ctx, const struct ocb_aes128_encrypt_key *key,
+		  size_t length, uint8_t *digest);
 
 void
-ocb_aes128_encrypt_message (const struct aes128_ctx *cipher,
+ocb_aes128_encrypt_message (const struct ocb_aes128_encrypt_key *key,
 			    size_t nlength, const uint8_t *nonce,
 			    size_t alength, const uint8_t *adata,
 			    size_t tlength,
 			    size_t clength, uint8_t *dst, const uint8_t *src);
 
 int
-ocb_aes128_decrypt_message (const struct aes128_ctx *cipher,
+ocb_aes128_decrypt_message (const struct ocb_aes128_encrypt_key *key,
+			    const struct aes128_ctx *decrypt,
 			    size_t nlength, const uint8_t *nonce,
 			    size_t alength, const uint8_t *adata,
 			    size_t tlength,
