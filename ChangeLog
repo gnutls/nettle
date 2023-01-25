@@ -4,6 +4,10 @@
 	pointer if non-NULL, test varying alignment, output the unexpected
 	data when test fails.
 
+2023-01-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/nettle-benchmark.c (main): Benchmark ocb_aes128.
+
 2022-12-05  Niels Möller  <nisse@lysator.liu.se>
 
 	* xts-aes128.c (xts_aes128_encrypt_message)
