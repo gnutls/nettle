@@ -202,12 +202,15 @@ ocb_encrypt (struct ocb_ctx *ctx, const struct ocb_key *key,
   if (length > 0)
     {
       union nettle_block16 block;
-      pad_block (&block, length, src + n*OCB_BLOCK_SIZE);
+
+      src += n*OCB_BLOCK_SIZE; dst += n*OCB_BLOCK_SIZE;
+
+      pad_block (&block, length, src);
       block16_xor (&ctx->checksum, &block);
 
       block16_xor (&ctx->offset, &key->L[0]);
       f (cipher, OCB_BLOCK_SIZE, block.b, ctx->offset.b);
-      memxor3 (dst + n*OCB_BLOCK_SIZE, block.b, src, length);
+      memxor3 (dst, block.b, src, length);
       ctx->message_count++;
     }
 }
