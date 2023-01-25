@@ -6,6 +6,10 @@
 
 2023-01-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* ocb.c (ocb_crypt_n, ocb_checksum_n): New functions, processing
+	complete blocks.
+	(ocb_encrypt, ocb_decrypt): Use new functions.
+
 	* testsuite/ocb-test.c (test_main): Add tests with larger messages.
 
 	* examples/nettle-benchmark.c (main): Benchmark ocb_aes128.
