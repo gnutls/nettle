@@ -159,13 +159,70 @@ ocb_update (struct ocb_ctx *ctx, const struct ocb_key *key,
     }
 }
 
+/* Kept temporarily for comparison purposes */
+static void
+ocb_crypt_n_old (struct ocb_ctx *ctx, const struct ocb_key *key,
+		 const void *cipher, nettle_cipher_func *f,
+		 size_t n, uint8_t *dst, const uint8_t *src)
+{
+  for (; n > 0; n--, src += OCB_BLOCK_SIZE, dst += OCB_BLOCK_SIZE)
+    {
+      union nettle_block16 block;
+      update_offset (key, &ctx->offset, ++ctx->message_count);
+
+      memxor3 (block.b, ctx->offset.b, src, OCB_BLOCK_SIZE);
+      f (cipher, OCB_BLOCK_SIZE, block.b, block.b);
+      memxor3 (dst, ctx->offset.b, block.b, OCB_BLOCK_SIZE);
+    }
+}
+
 /* Process n complete blocks (encrypt or decrypt, checksum left to caller). */
 static void
 ocb_crypt_n (struct ocb_ctx *ctx, const struct ocb_key *key,
 	     const void *cipher, nettle_cipher_func *f,
 	     size_t n, uint8_t *dst, const uint8_t *src)
 {
-  for (; n > 0; n--, src += OCB_BLOCK_SIZE, dst += OCB_BLOCK_SIZE)
+  if (n == 0)
+    return;
+
+  if (!(ctx->message_count & 1))
+    {
+      /* Do a single block to align block count. */
+      union nettle_block16 block;
+      ++ctx->message_count; /* Always odd. */
+      block16_xor (&ctx->offset, &key->L[2]);
+
+      memxor3 (block.b, ctx->offset.b, src, OCB_BLOCK_SIZE);
+      f (cipher, OCB_BLOCK_SIZE, block.b, block.b);
+
+      memxor3 (dst, ctx->offset.b, block.b, OCB_BLOCK_SIZE);
+
+      n--; src += OCB_BLOCK_SIZE; dst += OCB_BLOCK_SIZE;
+    }
+
+  for (; n >= 2; n -= 2, src += 2*OCB_BLOCK_SIZE, dst += 2*OCB_BLOCK_SIZE)
+    {
+      union nettle_block16 o[2], block[2];
+      size_t i;
+
+      ctx->message_count += 2; /* Always odd. */
+
+      /* Based on trailing zeros of ctx->message_count - 1, the
+         initial shift below discards a one bit. */
+      block16_mulx_be (&o[0], &key->L[2]);
+      for (i = ctx->message_count >> 1; !(i&1); i >>= 1)
+	block16_mulx_be (&o[0], &o[0]);
+
+      block16_xor (&o[0], &ctx->offset);
+      block16_xor3 (&o[1], &o[0], &key->L[2]);
+
+      memxor3 (block[0].b, o[0].b, src, 2*OCB_BLOCK_SIZE);
+      f (cipher, 2*OCB_BLOCK_SIZE, block[0].b, block[0].b);
+
+      memxor3 (dst, o[0].b, block[0].b, 2*OCB_BLOCK_SIZE);
+      ctx->offset.u64[0] = o[1].u64[0]; ctx->offset.u64[1] = o[1].u64[1];
+    }
+  if (n > 0)
     {
       union nettle_block16 block;
       update_offset (key, &ctx->offset, ++ctx->message_count);
@@ -226,7 +283,7 @@ ocb_decrypt (struct ocb_ctx *ctx, const struct ocb_key *key,
   if (ctx->message_count == 0)
     ctx->offset = ctx->initial;
 
-  ocb_crypt_n (ctx, key, decrypt_ctx, decrypt, n, dst, src);
+  ocb_crypt_n_old (ctx, key, decrypt_ctx, decrypt, n, dst, src);
   ocb_checksum_n (&ctx->checksum, n, dst);
 
   length &= 15;
