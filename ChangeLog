@@ -6,6 +6,8 @@
 
 2023-01-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/ocb-test.c (test_main): Add tests with larger messages.
+
 	* examples/nettle-benchmark.c (main): Benchmark ocb_aes128.
 
 2022-12-05  Niels Möller  <nisse@lysator.liu.se>
