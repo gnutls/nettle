@@ -51,6 +51,14 @@ block16_zero (union nettle_block16 *r)
 }
 
 static inline void
+block16_set (union nettle_block16 *r,
+	     const union nettle_block16 *x)
+{
+  r->u64[0] = x->u64[0];
+  r->u64[1] = x->u64[1];
+}
+
+static inline void
 block16_xor (union nettle_block16 *r,
 	     const union nettle_block16 *x)
 {
