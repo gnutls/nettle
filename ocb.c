@@ -130,25 +130,91 @@ ocb_set_nonce (struct ocb_ctx *ctx,
   ctx->data_count = ctx->message_count = 0;
 }
 
+static void
+ocb_fill_n (const struct ocb_key *key,
+	    union nettle_block16 *offset, size_t count,
+	    size_t n, union nettle_block16 *o)
+{
+  assert (n > 0);
+  union nettle_block16 *prev;
+  if (count & 1)
+    prev = offset;
+  else
+    {
+      /* Do a single block to align block count. */
+      count++; /* Always odd. */
+      block16_xor (offset, &key->L[2]);
+      block16_set (&o[0], offset);
+      prev = o;
+      n--; o++;
+    }
+
+  for (; n >= 2; n -= 2, o += 2)
+    {
+      size_t i;
+      count += 2; /* Always odd. */
+
+      /* Based on trailing zeros of ctx->message_count - 1, the
+         initial shift below discards a one bit. */
+      block16_mulx_be (&o[0], &key->L[2]);
+      for (i = count >> 1; !(i&1); i >>= 1)
+	block16_mulx_be (&o[0], &o[0]);
+
+      block16_xor (&o[0], prev);
+      block16_xor3 (&o[1], &o[0], &key->L[2]);
+      prev = &o[1];
+    }
+  block16_set(offset, prev);
+
+  if (n > 0)
+    {
+      update_offset (key, offset, ++count);
+      block16_set (o, offset);
+    }
+}
+
 void
 ocb_update (struct ocb_ctx *ctx, const struct ocb_key *key,
 	    const void *cipher, nettle_cipher_func *f,
 	    size_t length, const uint8_t *data)
 {
+  union nettle_block16 block[OCB_MAX_BLOCKS];
+  size_t n = length / OCB_BLOCK_SIZE;
   assert (ctx->message_count == 0);
 
   if (ctx->data_count == 0)
     ctx->offset.u64[0] = ctx->offset.u64[1] = 0;
 
-  for (; length >= OCB_BLOCK_SIZE;
-       length -= OCB_BLOCK_SIZE, data += OCB_BLOCK_SIZE)
+  while (n > OCB_MAX_BLOCKS)
     {
-      union nettle_block16 block;
-      update_offset (key, &ctx->offset, ++ctx->data_count);
-      memxor3 (block.b, ctx->offset.b, data, OCB_BLOCK_SIZE);
-      f (cipher, OCB_BLOCK_SIZE, block.b, block.b);
-      block16_xor (&ctx->sum, &block);
+      size_t blocks = OCB_MAX_BLOCKS - 1 + (ctx->data_count & 1);
+      size_t size, i;
+      ocb_fill_n (key, &ctx->offset, ctx->data_count, blocks, block);
+      ctx->data_count += blocks;
+
+      size = blocks * OCB_BLOCK_SIZE;
+      memxor (block[0].b, data, size);
+      f (cipher, size, block[0].b, block[0].b);
+      for (i = 0; i < blocks; i++)
+	block16_xor(&ctx->sum, &block[i]);
+
+      n -= blocks; data += size;
     }
+  if (n > 0)
+    {
+      size_t size, i;
+      ocb_fill_n (key, &ctx->offset, ctx->data_count, n, block);
+      ctx->data_count += n;
+
+      size = n * OCB_BLOCK_SIZE;
+      memxor (block[0].b, data, size);
+      f (cipher, size, block[0].b, block[0].b);
+      for (i = 0; i < n; i++)
+	block16_xor(&ctx->sum, &block[i]);
+
+      data += size;
+    }
+  length &= 15;
   if (length > 0)
     {
       union nettle_block16 block;
@@ -158,48 +224,6 @@ ocb_update (struct ocb_ctx *ctx, const struct ocb_key *key,
 
       f (cipher, OCB_BLOCK_SIZE, block.b, block.b);
       block16_xor (&ctx->sum, &block);
-    }
-}
-
-static void
-ocb_fill_n (struct ocb_ctx *ctx, const struct ocb_key *key,
-	    size_t n, union nettle_block16 *o)
-{
-  assert (n > 0);
-  union nettle_block16 *prev;
-  if (ctx->message_count & 1)
-    prev = &ctx->offset;
-  else
-    {
-      /* Do a single block to align block count. */
-      ++ctx->message_count; /* Always odd. */
-      block16_xor (&ctx->offset, &key->L[2]);
-      block16_set (&o[0], &ctx->offset);
-      prev = o;
-      n--; o++;
-    }
-
-  for (; n >= 2; n -= 2, o += 2)
-    {
-      size_t i;
-      ctx->message_count += 2; /* Always odd. */
-
-      /* Based on trailing zeros of ctx->message_count - 1, the
-         initial shift below discards a one bit. */
-      block16_mulx_be (&o[0], &key->L[2]);
-      for (i = ctx->message_count >> 1; !(i&1); i >>= 1)
-	block16_mulx_be (&o[0], &o[0]);
-
-      block16_xor (&o[0], prev);
-      block16_xor3 (&o[1], &o[0], &key->L[2]);
-      prev = &o[1];
-    }
-  block16_set(&ctx->offset, prev);
-
-  if (n > 0)
-    {
-      update_offset (key, &ctx->offset, ++ctx->message_count);
-      block16_set (o, &ctx->offset);
     }
 }
 
@@ -214,7 +238,8 @@ ocb_crypt_n (struct ocb_ctx *ctx, const struct ocb_key *key,
   while (n > OCB_MAX_BLOCKS)
     {
       size_t blocks = OCB_MAX_BLOCKS - 1 + (ctx->message_count & 1);
-      ocb_fill_n (ctx, key, blocks, o);
+      ocb_fill_n (key, &ctx->offset, ctx->message_count, blocks, o);
+      ctx->message_count += n;
 
       size = blocks * OCB_BLOCK_SIZE;
       memxor3 (block[0].b, o[0].b, src, size);
@@ -223,7 +248,9 @@ ocb_crypt_n (struct ocb_ctx *ctx, const struct ocb_key *key,
 
       n -= blocks; src += size; dst -= size;
     }
-  ocb_fill_n (ctx, key, n, o);
+  ocb_fill_n (key, &ctx->offset, ctx->message_count, n, o);
+  ctx->message_count += n;
+
   size = n * OCB_BLOCK_SIZE;
   memxor3 (block[0].b, o[0].b, src, size);
   f (cipher, size, block[0].b, block[0].b);
