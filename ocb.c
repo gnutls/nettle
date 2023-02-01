@@ -185,10 +185,12 @@ ocb_update (struct ocb_ctx *ctx, const struct ocb_key *key,
   if (ctx->data_count == 0)
     ctx->offset.u64[0] = ctx->offset.u64[1] = 0;
 
-  while (n > OCB_MAX_BLOCKS)
+  while (n > 0)
     {
-      size_t blocks = OCB_MAX_BLOCKS - 1 + (ctx->data_count & 1);
       size_t size, i;
+      size_t blocks = (n <= OCB_MAX_BLOCKS) ? n
+	: OCB_MAX_BLOCKS - 1 + (ctx->data_count & 1);
+
       ocb_fill_n (key, &ctx->offset, ctx->data_count, blocks, block);
       ctx->data_count += blocks;
 
@@ -200,20 +202,7 @@ ocb_update (struct ocb_ctx *ctx, const struct ocb_key *key,
 
       n -= blocks; data += size;
     }
-  if (n > 0)
-    {
-      size_t size, i;
-      ocb_fill_n (key, &ctx->offset, ctx->data_count, n, block);
-      ctx->data_count += n;
 
-      size = n * OCB_BLOCK_SIZE;
-      memxor (block[0].b, data, size);
-      f (cipher, size, block[0].b, block[0].b);
-      for (i = 0; i < n; i++)
-	block16_xor(&ctx->sum, &block[i]);
-
-      data += size;
-    }
   length &= 15;
   if (length > 0)
     {
