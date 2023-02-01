@@ -210,8 +210,6 @@ ocb_crypt_n (struct ocb_ctx *ctx, const struct ocb_key *key,
 {
   union nettle_block16 o[OCB_MAX_BLOCKS], block[OCB_MAX_BLOCKS];
   size_t size;
-  if (n == 0)
-    return;
 
   while (n > OCB_MAX_BLOCKS)
     {
@@ -376,8 +374,58 @@ static void
 ocb_checksum_n (union nettle_block16 *checksum,
 		size_t n, const uint8_t *src)
 {
-  for (; n > 0; n--, src += OCB_BLOCK_SIZE)
-    memxor (checksum->b, src, OCB_BLOCK_SIZE);
+  unsigned offset = (uintptr_t) src & 7;
+  uint64_t edge_word = 0;
+  uint64_t s0, s1;
+
+  if (n == 1)
+    {
+      memxor (checksum->b, src, OCB_BLOCK_SIZE);
+      return;
+    }
+  if (offset > 0)
+    {
+      /* Input not 64-bit aligned. Read initial bytes. */
+      unsigned i;
+      /* Edge word is read in big-endian order */
+      for (i = 8 - offset; i > 0; i--)
+	edge_word = (edge_word << 8) + *src++;
+      n--;
+    }
+
+  /* Now src is 64-bit aligned, so do 64-bit reads. */
+  for (s0 = s1 = 0 ; n > 0; n--, src += OCB_BLOCK_SIZE)
+    {
+      s0 ^= ((const uint64_t *) src)[0];
+      s1 ^= ((const uint64_t *) src)[1];
+    }
+  if (offset > 0)
+    {
+      unsigned i;
+      uint64_t t, mask;
+      s0 ^= ((const uint64_t *) src)[0];
+      for (i = offset, src += 8; i > 0; i--)
+	edge_word = (edge_word << 8) + *src++;
+
+#if WORDS_BIGENDIAN
+      mask = ((uint64_t) 1 << 8*offset) - 1;
+      /* Rotate [s0, s1] right 64 - 8*offset bits */
+      t = (s0 >> (64-8*offset)) | (s1 << (8*offset));
+      s1 = (s1 >> (64-8*offset)) | (s0 << (8*offset));
+      s0 = t ^ (edge_word & ~mask);
+      s1 ^= (edge_word & mask);
+#else
+      mask = ((uint64_t) 1 << (64-8*offset)) - 1;
+      edge_word = nettle_bswap64 (edge_word);
+      /* Rotate [s0, s1] left 64 - 8*offset bits */
+      t = (s0 << (64-8*offset)) | (s1 >> (8*offset));
+      s1 = (s1 << (64-8*offset)) | (s0 >> (8*offset));
+      s0 = t ^ (edge_word & mask);
+      s1 ^= (edge_word & ~mask);
+#endif
+    }
+  checksum->u64[0] ^= s0;
+  checksum->u64[1] ^= s1;
 }
 
 void
@@ -390,10 +438,12 @@ ocb_encrypt (struct ocb_ctx *ctx, const struct ocb_key *key,
   if (ctx->message_count == 0)
     ctx->offset = ctx->initial;
 
-  ocb_checksum_n (&ctx->checksum, n, src);
-  ocb_crypt_n (ctx, key, cipher, f, n, dst, src);
-
-  length &= 15;
+  if (n > 0)
+    {
+      ocb_checksum_n (&ctx->checksum, n, src);
+      ocb_crypt_n (ctx, key, cipher, f, n, dst, src);
+      length &= 15;
+    }
   if (length > 0)
     {
       union nettle_block16 block;
@@ -421,10 +471,12 @@ ocb_decrypt (struct ocb_ctx *ctx, const struct ocb_key *key,
   if (ctx->message_count == 0)
     ctx->offset = ctx->initial;
 
-  ocb_crypt_n (ctx, key, decrypt_ctx, decrypt, n, dst, src);
-  ocb_checksum_n (&ctx->checksum, n, dst);
-
-  length &= 15;
+  if (n > 0)
+    {
+      ocb_crypt_n (ctx, key, decrypt_ctx, decrypt, n, dst, src);
+      ocb_checksum_n (&ctx->checksum, n, dst);
+      length &= 15;
+    }
   if (length > 0)
     {
       union nettle_block16 block;
