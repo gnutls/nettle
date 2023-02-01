@@ -6,7 +6,7 @@
 
 2023-02-01  Niels Möller  <nisse@lysator.liu.se>
 	* ocb.c (ocb_checksum_n): Implement using 64-bit aligned
-	operations, with special logic to handle edge bytes.
+o	operations, with special logic to handle edge bytes.
 
 2023-01-25  Niels Möller  <nisse@lysator.liu.se>
 

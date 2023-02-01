@@ -369,7 +369,30 @@ ocb_crypt_n_4way (struct ocb_ctx *ctx, const struct ocb_key *key,
 }
 #endif
 
+/* Rotate bytes (8-c) positions to the right, in memory order. */
+#if WORDS_BIGENDIAN
+# define MEM_ROTATE_RIGHT(c, s0, s1) do {				\
+    uint64_t __rotate_t = ((s0) >> (64-8*(c))) | ((s1) << (8*(c)));	\
+    (s1) = ((s1) >> (64-8*(c))) | ((s0) << (8*(c)));			\
+    (s0) = __rotate_t;							\
+  } while (0)
+#else
+# define MEM_ROTATE_RIGHT(c, s0, s1) do {				\
+    uint64_t __rotate_t = ((s0) << (64-8*(c))) | ((s1) >> (8*(c)));	\
+    (s1) = ((s1) << (64-8*(c))) | ((s0) >> (8*(c)));			\
+    (s0) = __rotate_t;							\
+  } while (0)
+#endif
+
+/* Mask for the first c bytes in memory */
+#if WORDS_BIGENDIAN
+# define MEM_MASK(c) (-((uint64_t) 1 << 8*(c)))
+#else
+# define MEM_MASK(c) (((uint64_t) 1 << (64-8*(c))) - 1)
+#endif
+
 /* Checksum of n complete blocks. */
+
 static void
 ocb_checksum_n (union nettle_block16 *checksum,
 		size_t n, const uint8_t *src)
@@ -402,27 +425,18 @@ ocb_checksum_n (union nettle_block16 *checksum,
   if (offset > 0)
     {
       unsigned i;
-      uint64_t t, mask;
+      uint64_t mask;
       s0 ^= ((const uint64_t *) src)[0];
       for (i = offset, src += 8; i > 0; i--)
 	edge_word = (edge_word << 8) + *src++;
 
-#if WORDS_BIGENDIAN
-      mask = ((uint64_t) 1 << 8*offset) - 1;
-      /* Rotate [s0, s1] right 64 - 8*offset bits */
-      t = (s0 >> (64-8*offset)) | (s1 << (8*offset));
-      s1 = (s1 >> (64-8*offset)) | (s0 << (8*offset));
-      s0 = t ^ (edge_word & ~mask);
-      s1 ^= (edge_word & mask);
-#else
-      mask = ((uint64_t) 1 << (64-8*offset)) - 1;
-      edge_word = nettle_bswap64 (edge_word);
-      /* Rotate [s0, s1] left 64 - 8*offset bits */
-      t = (s0 << (64-8*offset)) | (s1 >> (8*offset));
-      s1 = (s1 << (64-8*offset)) | (s0 >> (8*offset));
-      s0 = t ^ (edge_word & mask);
+      /* Rotate [s0, s1] right 8 - offset bytes. */
+      MEM_ROTATE_RIGHT(offset, s0, s1);
+      /* Add in the edge bytes.  */
+      mask = MEM_MASK(offset);
+      edge_word = bswap64_if_le (edge_word);
+      s0 ^= (edge_word & mask);
       s1 ^= (edge_word & ~mask);
-#endif
     }
   checksum->u64[0] ^= s0;
   checksum->u64[1] ^= s1;
