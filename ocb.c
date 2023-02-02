@@ -224,9 +224,11 @@ ocb_crypt_n (struct ocb_ctx *ctx, const struct ocb_key *key,
   union nettle_block16 o[OCB_MAX_BLOCKS], block[OCB_MAX_BLOCKS];
   size_t size;
 
-  while (n > OCB_MAX_BLOCKS)
+  while (n > 0)
     {
-      size_t blocks = OCB_MAX_BLOCKS - 1 + (ctx->message_count & 1);
+      size_t blocks = (n <= OCB_MAX_BLOCKS) ? n
+	: OCB_MAX_BLOCKS - 1 + (ctx->message_count & 1);
+
       ocb_fill_n (key, &ctx->offset, ctx->message_count, blocks, o);
       ctx->message_count += n;
 
@@ -237,13 +239,6 @@ ocb_crypt_n (struct ocb_ctx *ctx, const struct ocb_key *key,
 
       n -= blocks; src += size; dst -= size;
     }
-  ocb_fill_n (key, &ctx->offset, ctx->message_count, n, o);
-  ctx->message_count += n;
-
-  size = n * OCB_BLOCK_SIZE;
-  memxor3 (block[0].b, o[0].b, src, size);
-  f (cipher, size, block[0].b, block[0].b);
-  memxor3 (dst, block[0].b, o[0].b, size);
 }
 
 #if 0
