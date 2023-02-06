@@ -1,5 +1,15 @@
 #include "testutils.h"
 #include "nettle-internal.h"
+#include "ocb-internal.h"
+
+/* For 96-bit tag */
+static void
+set_nonce_tag96 (struct ocb_aes128_ctx *ctx, size_t length, const uint8_t *nonce)
+{
+  assert (length == OCB_NONCE_SIZE);
+  ocb_aes128_set_nonce (&ctx->ocb, &ctx->key,
+			12, OCB_NONCE_SIZE, nonce);
+}
 
 void
 test_main(void)
@@ -144,6 +154,18 @@ test_main(void)
 		 "A5DDBFC5787E50B5CC55EE507BCB084E"), /* ciphertext */
 	    SHEX("BBAA9988776655443322110F"), /* nonce */
 	    SHEX("479AD363AC366B95 A98CA5F3000B1479")); /* tag */
+
+  /* Test with 96-bit tag. */
+  test_aead(&nettle_ocb_aes128, (nettle_hash_update_func *) set_nonce_tag96,
+	    SHEX("0F0E0D0C0B0A09080706050403020100"), /* key */
+	    SHEX("000102030405060708090A0B0C0D0E0F1011121314151617"
+		 "18191A1B1C1D1E1F2021222324252627"), /* auth data */
+	    SHEX("000102030405060708090A0B0C0D0E0F1011121314151617"
+		 "18191A1B1C1D1E1F2021222324252627"), /* plaintext */
+	    SHEX("1792A4E31E0755FB03E31B22116E6C2DDF9EFD6E33D536F1"
+		 "A0124B0A55BAE884ED93481529C76B6A"), /* ciphertext */
+	    SHEX("BBAA9988776655443322110D"), /* nonce */
+	    SHEX("D0C515F4D1CDD4FDAC4F02AA")); /* tag */
 
   /* 16 blocks, not verified with other implementations or any
      authoritative test vector.not an authoritative test vector. */
