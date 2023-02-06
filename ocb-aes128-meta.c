@@ -35,16 +35,8 @@
 
 #include "aes.h"
 #include "ocb.h"
+#include "ocb-internal.h"
 #include "nettle-meta.h"
-
-#define OCB_NONCE_SIZE 12
-
-struct ocb_aes128_ctx
-{
-  struct ocb_ctx ocb;
-  struct ocb_aes128_encrypt_key key;
-  struct aes128_ctx decrypt;
-};
 
 static void
 set_encrypt_key_wrapper (struct ocb_aes128_ctx *ctx, const uint8_t *key)
