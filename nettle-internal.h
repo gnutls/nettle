@@ -40,6 +40,8 @@
 #include <stdlib.h>
 
 #include "nettle-meta.h"
+#include "ocb.h"
+#include "aes.h"
 
 /* For definition of NETTLE_MAX_HASH_CONTEXT_SIZE. */
 #include "sha3.h"
@@ -126,5 +128,18 @@ extern const struct nettle_hash nettle_openssl_md5;
 extern const struct nettle_hash nettle_openssl_sha1;
 
 extern const struct nettle_hash * const _nettle_hashes[];
+
+/* OCB-declarations to be moved to a public header file, once it's
+   settled which nonce and tag sizes to use. */
+#define OCB_NONCE_SIZE 12
+
+struct ocb_aes128_ctx
+{
+  struct ocb_ctx ocb;
+  struct ocb_aes128_encrypt_key key;
+  struct aes128_ctx decrypt;
+};
+
+extern const struct nettle_aead nettle_ocb_aes128;
 
 #endif /* NETTLE_INTERNAL_H_INCLUDED */

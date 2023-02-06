@@ -1,6 +1,5 @@
 #include "testutils.h"
 #include "nettle-internal.h"
-#include "ocb-internal.h"
 
 /* For 96-bit tag */
 static void
