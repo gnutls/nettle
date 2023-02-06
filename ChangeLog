@@ -1,3 +1,9 @@
+2023-02-06  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/testutils.c (test_aead): Always use set_nonce function
+	pointer if non-NULL, test varying alignment, output the unexpected
+	data when test fails.
+
 2022-12-05  Niels Möller  <nisse@lysator.liu.se>
 
 	* xts-aes128.c (xts_aes128_encrypt_message)
