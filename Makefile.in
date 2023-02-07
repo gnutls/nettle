@@ -134,6 +134,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c aes-decrypt-table.c \
 		 nettle-lookup-hash.c \
 		 nettle-meta-aeads.c nettle-meta-armors.c \
 		 nettle-meta-ciphers.c nettle-meta-hashes.c nettle-meta-macs.c \
+		 ocb.c ocb-aes128.c \
 		 pbkdf2.c pbkdf2-hmac-gosthash94.c pbkdf2-hmac-sha1.c \
 		 pbkdf2-hmac-sha256.c pbkdf2-hmac-sha384.c pbkdf2-hmac-sha512.c \
 		 poly1305-aes.c poly1305-internal.c poly1305-update.c \
@@ -238,7 +239,7 @@ HEADERS = aes.h arcfour.h arctwo.h asn1.h blowfish.h balloon.h \
 	  md5.h md5-compat.h \
 	  memops.h memxor.h \
 	  nettle-meta.h nettle-types.h \
-	  pbkdf2.h \
+	  ocb.h pbkdf2.h \
 	  pgp.h pkcs1.h pss.h pss-mgf1.h realloc.h ripemd160.h rsa.h \
 	  salsa20.h sexp.h serpent.h \
 	  sha.h sha1.h sha2.h sha3.h sm3.h sm4.h streebog.h twofish.h \
