@@ -1,6 +1,149 @@
 #include "testutils.h"
 #include "nettle-internal.h"
 
+/* FIXME: Lots of almost duplicated code with siv tests. */
+/* AEAD ciphers */
+typedef void
+nettle_encrypt_message_func(const void *ctx,
+			    size_t nlength, const uint8_t *nonce,
+			    size_t alength, const uint8_t *adata,
+			    size_t tlength,
+			    size_t clength, uint8_t *dst, const uint8_t *src);
+
+typedef int
+nettle_decrypt_message_func(const void *encrypt_ctx, const void *decrypt_ctx,
+			    size_t nlength, const uint8_t *nonce,
+			    size_t alength, const uint8_t *adata,
+			    size_t tlength,
+			    size_t mlength, uint8_t *dst, const uint8_t *src);
+
+static void
+test_compare_results(const char *name,
+        const struct tstring *adata,
+        /* Expected results. */
+        const struct tstring *e_clear,
+	const struct tstring *e_cipher,
+        /* Actual results. */
+        const void *clear,
+        const void *cipher)
+{
+  if (!MEMEQ(e_cipher->length, e_cipher->data, cipher))
+    {
+      fprintf(stderr, "%s: encryption failed\nAdata: ", name);
+      tstring_print_hex(adata);
+      fprintf(stderr, "\nInput: ");
+      tstring_print_hex(e_clear);
+      fprintf(stderr, "\nOutput: ");
+      print_hex(e_cipher->length, cipher);
+      fprintf(stderr, "\nExpected:");
+      tstring_print_hex(e_cipher);
+      fprintf(stderr, "\n");
+      FAIL();
+    }
+  if (!MEMEQ(e_clear->length, e_clear->data, clear))
+    {
+      fprintf(stderr, "%s decrypt failed:\nAdata:", name);
+      tstring_print_hex(adata);
+      fprintf(stderr, "\nInput: ");
+      tstring_print_hex(e_cipher);
+      fprintf(stderr, "\nOutput: ");
+      print_hex(e_clear->length, clear);
+      fprintf(stderr, "\nExpected:");
+      tstring_print_hex(e_clear);
+      fprintf(stderr, "\n");
+      FAIL();
+    }
+} /* test_compare_results */
+
+static void
+test_ocb_message(const char *name,
+		 nettle_set_key_func *set_encrypt_key,
+		 nettle_set_key_func *set_decrypt_key,
+		 nettle_encrypt_message_func *encrypt,
+		 nettle_decrypt_message_func *decrypt,
+		 size_t encrypt_context_size, size_t decrypt_context_size,
+		 size_t key_size, size_t digest_size,
+		 const struct tstring *key,
+		 const struct tstring *nonce,
+		 const struct tstring *authdata,
+		 const struct tstring *cleartext,
+		 const struct tstring *ciphertext)
+{
+  void *encrypt_ctx = xalloc(encrypt_context_size);
+  void *decrypt_ctx = xalloc(decrypt_context_size);
+  uint8_t *en_data;
+  uint8_t *de_data;
+  int ret;
+
+  ASSERT (key->length == key_size);
+  ASSERT (cleartext->length + digest_size == ciphertext->length);
+
+  de_data = xalloc(cleartext->length);
+  en_data = xalloc(ciphertext->length);
+
+  /* Ensure we get the same answers using the all-in-one API. */
+  memset(de_data, 0, cleartext->length);
+  memset(en_data, 0, ciphertext->length);
+
+  set_encrypt_key(encrypt_ctx, key->data);
+  encrypt(encrypt_ctx, nonce->length, nonce->data,
+	  authdata->length, authdata->data, digest_size,
+	  ciphertext->length, en_data, cleartext->data);
+
+  set_decrypt_key(decrypt_ctx, key->data);
+
+  ret = decrypt(encrypt_ctx, decrypt_ctx, nonce->length, nonce->data,
+		authdata->length, authdata->data, digest_size,
+		cleartext->length, de_data, ciphertext->data);
+
+  if (ret != 1)
+    {
+      fprintf(stderr, "decrypt_message failed to validate message\n");
+      FAIL();
+    }
+  test_compare_results(name, authdata,
+		       cleartext, ciphertext, de_data, en_data);
+
+  /* Ensure that we can detect corrupted message or tag data. */
+  en_data[0] ^= 1;
+  ret = decrypt(encrypt_ctx, decrypt_ctx, nonce->length, nonce->data,
+		authdata->length, authdata->data, digest_size,
+		cleartext->length, de_data, en_data);
+  if (ret != 0)
+    {
+      fprintf(stderr, "decrypt_message failed to detect corrupted message\n");
+      FAIL();
+    }
+
+  /* Ensure we can detect corrupted adata. */
+  if (authdata->length) {
+    en_data[0] ^= 1;
+    ret = decrypt(encrypt_ctx, decrypt_ctx, nonce->length, nonce->data,
+		  authdata->length-1, authdata->data, digest_size,
+		  cleartext->length, de_data, en_data);
+    if (ret != 0)
+      {
+	fprintf(stderr, "siv_decrypt_message failed to detect corrupted message\n");
+	FAIL();
+      }
+  }
+
+  free(encrypt_ctx);
+  free(decrypt_ctx);
+  free(en_data);
+  free(de_data);
+}
+
+#define test_ocb_aes128(key, nonce, authdata, cleartext, ciphertext) \
+  test_ocb_message("ocb_aes128",					\
+		   (nettle_set_key_func*)ocb_aes128_set_encrypt_key,	\
+		   (nettle_set_key_func*)aes128_set_decrypt_key,	\
+		   (nettle_encrypt_message_func*)ocb_aes128_encrypt_message, \
+		   (nettle_decrypt_message_func*)ocb_aes128_decrypt_message, \
+		   sizeof(struct ocb_aes128_ctx), sizeof(struct aes128_ctx), \
+		   AES128_KEY_SIZE, OCB_DIGEST_SIZE,			\
+		   key, nonce, authdata, cleartext, ciphertext)
+
 /* For 96-bit tag */
 static void
 set_nonce_tag96 (struct ocb_aes128_ctx *ctx, size_t length, const uint8_t *nonce)
@@ -232,4 +375,18 @@ test_main(void)
 	    SHEX("BBAA9988776655443322110F"), /* nonce */
 	    SHEX("8a24edb596b59425 43ec197d5369979b")); /* tag */
 
+  /* Test the all-in-one message functions. */
+  test_ocb_aes128(
+	    SHEX("000102030405060708090A0B0C0D0E0F"), /* key */
+	    SHEX("BBAA99887766554433221100"), /* nonce */
+	    SHEX(""), /* auth data */
+	    SHEX(""), /* plaintext */
+	    SHEX("785407BFFFC8AD9EDCC5520AC9111EE6"));
+
+  test_ocb_aes128(
+	    SHEX("000102030405060708090A0B0C0D0E0F"), /* key */
+	    SHEX("BBAA99887766554433221101"), /* nonce */
+	    SHEX("0001020304050607"), /* auth data */
+	    SHEX("0001020304050607"), /* plaintext */
+	    SHEX("6820B3657B6F615A5725BDA0D3B4EB3A257C9AF1F8F03009")); /* ciphertext */
 }
