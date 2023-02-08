@@ -1,3 +1,7 @@
+2023-02-08  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/nettle-benchmark.c (main): Benchmark ocb_aes128.
+
 2023-02-07  Niels Möller  <nisse@lysator.liu.se>
 
 	Implement OCB mode. RFC 7253.

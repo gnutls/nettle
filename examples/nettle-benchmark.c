@@ -949,6 +949,7 @@ main(int argc, char **argv)
       &nettle_gcm_camellia256,
       &nettle_eax_aes128,
       &nettle_chacha_poly1305,
+      &nettle_ocb_aes128,
       NULL
     };
 
