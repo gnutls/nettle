@@ -31,16 +31,10 @@
    not, see http://www.gnu.org/licenses/.
 */
 
-/* The
- * test vectors have been collected from the following standards:
- *  RFC5297
- */
-
 #include "testutils.h"
 #include "aes.h"
 #include "nettle-types.h"
 #include "siv-cmac.h"
-#include "knuth-lfib.h"
 
 static const struct nettle_aead_message
 siv_cmac_aes128 = {

@@ -41,130 +41,30 @@
 #include "aes.h"
 #include "siv-gcm.h"
 
-static void
-test_compare_results (const char *name,
-		      const struct tstring *adata,
-		      /* Expected results. */
-		      const struct tstring *e_clear,
-		      const struct tstring *e_cipher,
-		      /* Actual results. */
-		      const void *clear,
-		      const void *cipher)
-{
-  if (!MEMEQ(e_cipher->length, e_cipher->data, cipher))
-    {
-      fprintf (stderr, "%s: encryption failed\nAdata: ", name);
-      tstring_print_hex (adata);
-      fprintf (stderr, "\nInput: ");
-      tstring_print_hex (e_clear);
-      fprintf (stderr, "\nOutput: ");
-      print_hex (e_cipher->length, cipher);
-      fprintf (stderr, "\nExpected:");
-      tstring_print_hex (e_cipher);
-      fprintf (stderr, "\n");
-      FAIL();
-    }
-  if (!MEMEQ(e_clear->length, e_clear->data, clear))
-    {
-      fprintf (stderr, "%s decrypt failed:\nAdata:", name);
-      tstring_print_hex (adata);
-      fprintf (stderr, "\nInput: ");
-      tstring_print_hex (e_cipher);
-      fprintf (stderr, "\nOutput: ");
-      print_hex (e_clear->length, clear);
-      fprintf (stderr, "\nExpected:");
-      tstring_print_hex (e_clear);
-      fprintf (stderr, "\n");
-      FAIL();
-    }
-} /* test_compare_results */
 
-static void
-test_cipher_siv_gcm (const char *name,
-		     nettle_set_key_func *siv_gcm_set_key,
-		     nettle_encrypt_message_func *siv_gcm_encrypt,
-		     nettle_decrypt_message_func *siv_gcm_decrypt,
-		     size_t context_size, size_t key_size,
-		     const struct tstring *key,
-		     const struct tstring *nonce,
-		     const struct tstring *authdata,
-		     const struct tstring *cleartext,
-		     const struct tstring *ciphertext)
-{
-  void *ctx = xalloc (context_size);
-  uint8_t *en_data;
-  uint8_t *de_data;
-  int ret;
+static const struct nettle_aead_message
+siv_gcm_aes128 = {
+  "siv_gcm_aes128",
+  sizeof(struct aes128_ctx),
+  AES128_KEY_SIZE,
+  SIV_GCM_DIGEST_SIZE,
+  (nettle_set_key_func*) aes128_set_encrypt_key,
+  (nettle_set_key_func*) aes128_set_encrypt_key,
+  (nettle_encrypt_message_func*) siv_gcm_aes128_encrypt_message,
+  (nettle_decrypt_message_func*) siv_gcm_aes128_decrypt_message,
+};
 
-  ASSERT (key->length == key_size);
-  ASSERT (cleartext->length + SIV_GCM_DIGEST_SIZE == ciphertext->length);
-
-  de_data = xalloc (cleartext->length);
-  en_data = xalloc (ciphertext->length);
-
-  /* Ensure we get the same answers using the all-in-one API. */
-  memset (de_data, 0, cleartext->length);
-  memset (en_data, 0, ciphertext->length);
-
-  siv_gcm_set_key (ctx, key->data);
-  siv_gcm_encrypt (ctx, nonce->length, nonce->data,
-		   authdata->length, authdata->data,
-		   ciphertext->length, en_data, cleartext->data);
-  ret = siv_gcm_decrypt (ctx, nonce->length, nonce->data,
-			 authdata->length, authdata->data,
-			 cleartext->length, de_data, ciphertext->data);
-
-  if (ret != 1)
-    {
-      fprintf (stderr, "siv_gcm_decrypt_message failed to validate message\n");
-      FAIL();
-    }
-  test_compare_results (name, authdata,
-			cleartext, ciphertext, de_data, en_data);
-
-  /* Ensure that we can detect corrupted message or tag data. */
-  en_data[0] ^= 1;
-  ret = siv_gcm_decrypt (ctx, nonce->length, nonce->data,
-			 authdata->length, authdata->data,
-			 cleartext->length, de_data, en_data);
-  if (ret != 0)
-    {
-      fprintf (stderr, "siv_gcm_decrypt_message failed to detect corrupted message\n");
-      FAIL();
-    }
-
-  /* Ensure we can detect corrupted adata. */
-  if (authdata->length)
-    {
-      en_data[0] ^= 1;
-      ret = siv_gcm_decrypt (ctx, nonce->length, nonce->data,
-			    authdata->length-1, authdata->data,
-			     cleartext->length, de_data, en_data);
-    if (ret != 0)
-      {
-	fprintf (stderr, "siv_decrypt_message failed to detect corrupted message\n");
-	FAIL();
-      }
-  }
-
-  free (ctx);
-  free (en_data);
-  free (de_data);
-}
-
-#define test_siv_gcm_aes128(name, key, nonce, authdata, cleartext, ciphertext) \
-  test_cipher_siv_gcm(name, (nettle_set_key_func*)aes128_set_encrypt_key, \
-		      (nettle_encrypt_message_func*)siv_gcm_aes128_encrypt_message, \
-		      (nettle_decrypt_message_func*)siv_gcm_aes128_decrypt_message, \
-		      sizeof(struct aes128_ctx), AES128_KEY_SIZE,	\
-		      key, nonce, authdata, cleartext, ciphertext)
-
-#define test_siv_gcm_aes256(name, key, nonce, authdata, cleartext, ciphertext) \
-  test_cipher_siv_gcm(name, (nettle_set_key_func*)aes256_set_encrypt_key, \
-		      (nettle_encrypt_message_func*)siv_gcm_aes256_encrypt_message, \
-		      (nettle_decrypt_message_func*)siv_gcm_aes256_decrypt_message, \
-		      sizeof(struct aes256_ctx), AES256_KEY_SIZE,	\
-		      key, nonce, authdata, cleartext, ciphertext)
+static const struct nettle_aead_message
+siv_gcm_aes256 = {
+  "siv_gcm_aes256",
+  sizeof(struct aes256_ctx),
+  AES256_KEY_SIZE,
+  SIV_GCM_DIGEST_SIZE,
+  (nettle_set_key_func*) aes256_set_encrypt_key,
+  (nettle_set_key_func*) aes256_set_encrypt_key,
+  (nettle_encrypt_message_func*) siv_gcm_aes256_encrypt_message,
+  (nettle_decrypt_message_func*) siv_gcm_aes256_decrypt_message,
+};
 
 static void
 test_polyval_internal (const struct tstring *key,
@@ -210,14 +110,14 @@ test_main(void)
 			 SHEX("f7a3b47b846119fae5b7866cf5e5b77e"));
 
   /* RFC8452, Appendix C.1.  */
-  test_siv_gcm_aes128 ("AEAD_AES_128_GCM_SIV",
+  test_aead_message(&siv_gcm_aes128,
 		       SHEX("01000000000000000000000000000000"),
 		       SHEX("030000000000000000000000"),
 		       SHEX(""),
 		       SHEX(""),
 		       SHEX("dc20e2d83f25705bb49e439eca56de25"));
 
-  test_siv_gcm_aes128 ("AEAD_AES_128_GCM_SIV 1",
+  test_aead_message(&siv_gcm_aes128,
 		       SHEX("01000000000000000000000000000000"),
 		       SHEX("030000000000000000000000"),
 		       SHEX(""),
@@ -225,7 +125,7 @@ test_main(void)
 		       SHEX("b5d839330ac7b786578782fff6013b81"
 			    "5b287c22493a364c"));
 
-  test_siv_gcm_aes128 ("AEAD_AES_128_GCM_SIV",
+  test_aead_message(&siv_gcm_aes128,
 		       SHEX("01000000000000000000000000000000"),
 		       SHEX("030000000000000000000000"),
 		       SHEX(""),
@@ -233,7 +133,7 @@ test_main(void)
 		       SHEX("7323ea61d05932260047d942a4978db3"
 			    "57391a0bc4fdec8b0d106639"));
 
-  test_siv_gcm_aes128 ("AEAD_AES_128_GCM_SIV",
+  test_aead_message(&siv_gcm_aes128,
 		       SHEX("01000000000000000000000000000000"),
 		       SHEX("030000000000000000000000"),
 		       SHEX(""),
@@ -241,7 +141,7 @@ test_main(void)
 		       SHEX("743f7c8077ab25f8624e2e948579cf77"
 			    "303aaf90f6fe21199c6068577437a0c4"));
 
-  test_siv_gcm_aes128 ("AEAD_AES_128_GCM_SIV",
+  test_aead_message(&siv_gcm_aes128,
 		       SHEX("01000000000000000000000000000000"),
 		       SHEX("030000000000000000000000"),
 		       SHEX(""),
@@ -251,7 +151,7 @@ test_main(void)
 			    "fe427d6315c09b57ce45f2e3936a9445"
 			    "1a8e45dcd4578c667cd86847bf6155ff"));
 
-  test_siv_gcm_aes128 ("AEAD_AES_128_GCM_SIV",
+  test_aead_message(&siv_gcm_aes128,
 		       SHEX("01000000000000000000000000000000"),
 		       SHEX("030000000000000000000000"),
 		       SHEX(""),
@@ -263,7 +163,7 @@ test_main(void)
 		            "f42bf7226122fa92e17a40eeaac1201b"
 		            "5e6e311dbf395d35b0fe39c2714388f8"));
 
-  test_siv_gcm_aes128 ("AEAD_AES_128_GCM_SIV",
+  test_aead_message(&siv_gcm_aes128,
 		       SHEX("01000000000000000000000000000000"),
 		       SHEX("030000000000000000000000"),
 		       SHEX(""),
@@ -277,7 +177,7 @@ test_main(void)
 		            "36697f25b4cd169c6590d1dd39566d3f"
 		            "8a263dd317aa88d56bdf3936dba75bb8"));
 
-  test_siv_gcm_aes128 ("AEAD_AES_128_GCM_SIV",
+  test_aead_message(&siv_gcm_aes128,
 		       SHEX("01000000000000000000000000000000"),
 		       SHEX("030000000000000000000000"),
 		       SHEX("01"),
@@ -285,7 +185,7 @@ test_main(void)
 		       SHEX("1e6daba35669f4273b0a1a2560969cdf"
 		            "790d99759abd1508"));
 
-  test_siv_gcm_aes128 ("AEAD_AES_128_GCM_SIV",
+  test_aead_message(&siv_gcm_aes128,
 		       SHEX("01000000000000000000000000000000"),
 		       SHEX("030000000000000000000000"),
 		       SHEX("01"),
@@ -293,7 +193,7 @@ test_main(void)
 		       SHEX("296c7889fd99f41917f4462008299c51"
 		            "02745aaa3a0c469fad9e075a"));
 
-  test_siv_gcm_aes128 ("AEAD_AES_128_GCM_SIV",
+  test_aead_message(&siv_gcm_aes128,
 		       SHEX("01000000000000000000000000000000"),
 		       SHEX("030000000000000000000000"),
 		       SHEX("01"),
@@ -301,7 +201,7 @@ test_main(void)
 		       SHEX("e2b0c5da79a901c1745f700525cb335b"
 		            "8f8936ec039e4e4bb97ebd8c4457441f"));
 
-  test_siv_gcm_aes128 ("AEAD_AES_128_GCM_SIV",
+  test_aead_message(&siv_gcm_aes128,
 		       SHEX("01000000000000000000000000000000"),
 		       SHEX("030000000000000000000000"),
 		       SHEX("01"),
@@ -311,7 +211,7 @@ test_main(void)
 		            "19e73e4caac8e96a1ecb2933145a1d71"
 		            "e6af6a7f87287da059a71684ed3498e1"));
 
-  test_siv_gcm_aes128 ("AEAD_AES_128_GCM_SIV",
+  test_aead_message(&siv_gcm_aes128,
 		       SHEX("01000000000000000000000000000000"),
 		       SHEX("030000000000000000000000"),
 		       SHEX("01"),
@@ -323,7 +223,7 @@ test_main(void)
 		            "3201d723120a8562b838cdff25bf9d1e"
 		            "6a8cc3865f76897c2e4b245cf31c51f2"));
 
-  test_siv_gcm_aes128 ("AEAD_AES_128_GCM_SIV",
+  test_aead_message(&siv_gcm_aes128,
 		       SHEX("01000000000000000000000000000000"),
 		       SHEX("030000000000000000000000"),
 		       SHEX("01"),
@@ -337,7 +237,7 @@ test_main(void)
 		            "0d36c95f48a3e7980f0e7ac299332a80"
 		            "cdc46ae475563de037001ef84ae21744"));
 
-  test_siv_gcm_aes128 ("AEAD_AES_128_GCM_SIV",
+  test_aead_message(&siv_gcm_aes128,
 		       SHEX("01000000000000000000000000000000"),
 		       SHEX("030000000000000000000000"),
 		       SHEX("010000000000000000000000"),
@@ -345,7 +245,7 @@ test_main(void)
 		       SHEX("a8fe3e8707eb1f84fb28f8cb73de8e99"
 		            "e2f48a14"));
 
-  test_siv_gcm_aes128 ("AEAD_AES_128_GCM_SIV",
+  test_aead_message(&siv_gcm_aes128,
 		       SHEX("01000000000000000000000000000000"),
 		       SHEX("030000000000000000000000"),
 		       SHEX("01000000000000000000000000000000"
@@ -356,7 +256,7 @@ test_main(void)
 		            "91dd029724afc9805e976f451e6d87f6"
 		            "fe106514"));
 
-  test_siv_gcm_aes128 ("AEAD_AES_128_GCM_SIV",
+  test_aead_message(&siv_gcm_aes128,
 		       SHEX("01000000000000000000000000000000"),
 		       SHEX("030000000000000000000000"),
 		       SHEX("01000000000000000000000000000000"
@@ -367,14 +267,14 @@ test_main(void)
 		            "2adabff9b2ef00fb47920cc72a0c0f13"
 		            "b9fd"));
 
-  test_siv_gcm_aes128 ("AEAD_AES_128_GCM_SIV",
+  test_aead_message(&siv_gcm_aes128,
 		       SHEX("e66021d5eb8e4f4066d4adb9c33560e4"),
 		       SHEX("f46e44bb3da0015c94f70887"),
 		       SHEX(""),
 		       SHEX(""),
 		       SHEX("a4194b79071b01a87d65f706e3949578"));
 
-  test_siv_gcm_aes128 ("AEAD_AES_128_GCM_SIV",
+  test_aead_message(&siv_gcm_aes128,
 		       SHEX("36864200e0eaf5284d884a0e77d31646"),
 		       SHEX("bae8e37fc83441b16034566b"),
 		       SHEX("46bb91c3c5"),
@@ -382,7 +282,7 @@ test_main(void)
 		       SHEX("af60eb711bd85bc1e4d3e0a462e074ee"
 		            "a428a8"));
 
-  test_siv_gcm_aes128 ("AEAD_AES_128_GCM_SIV",
+  test_aead_message(&siv_gcm_aes128,
 		       SHEX("aedb64a6c590bc84d1a5e269e4b47801"),
 		       SHEX("afc0577e34699b9e671fdd4f"),
 		       SHEX("fc880c94a95198874296"),
@@ -390,7 +290,7 @@ test_main(void)
 		       SHEX("bb93a3e34d3cd6a9c45545cfc11f03ad"
 		            "743dba20f966"));
 
-  test_siv_gcm_aes128 ("AEAD_AES_128_GCM_SIV",
+  test_aead_message(&siv_gcm_aes128,
 		       SHEX("d5cc1fd161320b6920ce07787f86743b"),
 		       SHEX("275d1ab32f6d1f0434d8848c"),
 		       SHEX("046787f3ea22c127aaf195d1894728"),
@@ -398,7 +298,7 @@ test_main(void)
 		       SHEX("4f37281f7ad12949d01d02fd0cd174c8"
 		            "4fc5dae2f60f52fd2b"));
 
-  test_siv_gcm_aes128 ("AEAD_AES_128_GCM_SIV",
+  test_aead_message(&siv_gcm_aes128,
 		       SHEX("b3fed1473c528b8426a582995929a149"),
 		       SHEX("9e9ad8780c8d63d0ab4149c0"),
 		       SHEX("c9882e5386fd9f92ec489c8fde2be2cf"
@@ -407,7 +307,7 @@ test_main(void)
 		       SHEX("f54673c5ddf710c745641c8bc1dc2f87"
 		            "1fb7561da1286e655e24b7b0"));
 
-  test_siv_gcm_aes128 ("AEAD_AES_128_GCM_SIV",
+  test_aead_message(&siv_gcm_aes128,
 		       SHEX("2d4ed87da44102952ef94b02b805249b"),
 		       SHEX("ac80e6f61455bfac8308a2d4"),
 		       SHEX("2950a70d5a1db2316fd568378da107b5"
@@ -416,7 +316,7 @@ test_main(void)
 		       SHEX("c9ff545e07b88a015f05b274540aa183"
 		            "b3449b9f39552de99dc214a1190b0b"));
 
-  test_siv_gcm_aes128 ("AEAD_AES_128_GCM_SIV",
+  test_aead_message(&siv_gcm_aes128,
 		       SHEX("bde3b2f204d1e9f8b06bc47f9745b3d1"),
 		       SHEX("ae06556fb6aa7890bebc18fe"),
 		       SHEX("1860f762ebfbd08284e421702de0de18"
@@ -427,7 +327,7 @@ test_main(void)
 		            "d5803e377094f04709f64d7b985310a4"
 		            "db84"));
 
-  test_siv_gcm_aes128 ("AEAD_AES_128_GCM_SIV",
+  test_aead_message(&siv_gcm_aes128,
 		       SHEX("f901cfe8a69615a93fdf7a98cad48179"),
 		       SHEX("6245709fb18853f68d833640"),
 		       SHEX("7576f7028ec6eb5ea7e298342a94d4b2"
@@ -440,7 +340,7 @@ test_main(void)
 		            "d24a2a6e70"));
 
   /* RFC8452, Appendix C.2.  */
-  test_siv_gcm_aes256 ("AEAD_AES_256_GCM_SIV",
+  test_aead_message(&siv_gcm_aes256,
 		       SHEX("01000000000000000000000000000000"
 			    "00000000000000000000000000000000"),
 		       SHEX("030000000000000000000000"),
@@ -448,7 +348,7 @@ test_main(void)
 		       SHEX(""),
 		       SHEX("07f5f4169bbf55a8400cd47ea6fd400f"));
 
-  test_siv_gcm_aes256 ("AEAD_AES_256_GCM_SIV",
+  test_aead_message(&siv_gcm_aes256,
 		       SHEX("01000000000000000000000000000000"
 			    "00000000000000000000000000000000"),
 		       SHEX("030000000000000000000000"),
@@ -457,7 +357,7 @@ test_main(void)
 		       SHEX("c2ef328e5c71c83b843122130f7364b7"
 			    "61e0b97427e3df28"));
 
-  test_siv_gcm_aes256 ("AEAD_AES_256_GCM_SIV",
+  test_aead_message(&siv_gcm_aes256,
 		       SHEX("01000000000000000000000000000000"
 			    "00000000000000000000000000000000"),
 		       SHEX("030000000000000000000000"),
@@ -466,7 +366,7 @@ test_main(void)
 		       SHEX("9aab2aeb3faa0a34aea8e2b18ca50da9"
 			    "ae6559e48fd10f6e5c9ca17e"));
 
-  test_siv_gcm_aes256 ("AEAD_AES_256_GCM_SIV",
+  test_aead_message(&siv_gcm_aes256,
 		       SHEX("01000000000000000000000000000000"
 		            "00000000000000000000000000000000"),
 		       SHEX("030000000000000000000000"),
@@ -475,7 +375,7 @@ test_main(void)
 		       SHEX("85a01b63025ba19b7fd3ddfc033b3e76"
 		            "c9eac6fa700942702e90862383c6c366"));
 
-  test_siv_gcm_aes256 ("AEAD_AES_256_GCM_SIV",
+  test_aead_message(&siv_gcm_aes256,
 		       SHEX("01000000000000000000000000000000"
 		            "00000000000000000000000000000000"),
 		       SHEX("030000000000000000000000"),
@@ -486,7 +386,7 @@ test_main(void)
 		            "21ec9cf850948a7c86c68ac7539d027f"
 		            "e819e63abcd020b006a976397632eb5d"));
 
-  test_siv_gcm_aes256 ("AEAD_AES_256_GCM_SIV",
+  test_aead_message(&siv_gcm_aes256,
 		       SHEX("01000000000000000000000000000000"
 		            "00000000000000000000000000000000"),
 		       SHEX("030000000000000000000000"),
@@ -499,7 +399,7 @@ test_main(void)
 		            "9cf6c748837b61f6ee3adcee17534ed5"
 		            "790bc96880a99ba804bd12c0e6a22cc4"));
 
-  test_siv_gcm_aes256 ("AEAD_AES_256_GCM_SIV",
+  test_aead_message(&siv_gcm_aes256,
 		       SHEX("01000000000000000000000000000000"
 		            "00000000000000000000000000000000"),
 		       SHEX("030000000000000000000000"),
@@ -514,7 +414,7 @@ test_main(void)
 		            "04d80487540735234e3744512c6f90ce"
 		            "112864c269fc0d9d88c61fa47e39aa08"));
 
-  test_siv_gcm_aes256 ("AEAD_AES_256_GCM_SIV",
+  test_aead_message(&siv_gcm_aes256,
 		       SHEX("01000000000000000000000000000000"
 		            "00000000000000000000000000000000"),
 		       SHEX("030000000000000000000000"),
@@ -523,7 +423,7 @@ test_main(void)
 		       SHEX("1de22967237a813291213f267e3b452f"
 		            "02d01ae33e4ec854"));
 
-  test_siv_gcm_aes256 ("AEAD_AES_256_GCM_SIV",
+  test_aead_message(&siv_gcm_aes256,
 		       SHEX("01000000000000000000000000000000"
 		            "00000000000000000000000000000000"),
 		       SHEX("030000000000000000000000"),
@@ -532,7 +432,7 @@ test_main(void)
 		       SHEX("163d6f9cc1b346cd453a2e4cc1a4a19a"
 		            "e800941ccdc57cc8413c277f"));
 
-  test_siv_gcm_aes256 ("AEAD_AES_256_GCM_SIV",
+  test_aead_message(&siv_gcm_aes256,
 		       SHEX("01000000000000000000000000000000"
 		            "00000000000000000000000000000000"),
 		       SHEX("030000000000000000000000"),
@@ -541,7 +441,7 @@ test_main(void)
 		       SHEX("c91545823cc24f17dbb0e9e807d5ec17"
 		            "b292d28ff61189e8e49f3875ef91aff7"));
 
-  test_siv_gcm_aes256 ("AEAD_AES_256_GCM_SIV",
+  test_aead_message(&siv_gcm_aes256,
 		       SHEX("01000000000000000000000000000000"
 		            "00000000000000000000000000000000"),
 		       SHEX("030000000000000000000000"),
@@ -552,7 +452,7 @@ test_main(void)
 		            "6f255510aa654f920ac81b94e8bad365"
 		            "aea1bad12702e1965604374aab96dbbc"));
 
-  test_siv_gcm_aes256 ("AEAD_AES_256_GCM_SIV",
+  test_aead_message(&siv_gcm_aes256,
 		       SHEX("01000000000000000000000000000000"
 		            "00000000000000000000000000000000"),
 		       SHEX("030000000000000000000000"),
@@ -565,7 +465,7 @@ test_main(void)
 		            "fbca3b5f749cdf564527f2314f42fe25"
 		            "03332742b228c647173616cfd44c54eb"));
 
-  test_siv_gcm_aes256 ("AEAD_AES_256_GCM_SIV",
+  test_aead_message(&siv_gcm_aes256,
 		       SHEX("01000000000000000000000000000000"
 		            "00000000000000000000000000000000"),
 		       SHEX("030000000000000000000000"),
@@ -580,7 +480,7 @@ test_main(void)
 		            "c3f91880ed405b2dd298318858467c89"
 		            "5bde0285037c5de81e5b570a049b62a0"));
 
-  test_siv_gcm_aes256 ("AEAD_AES_256_GCM_SIV",
+  test_aead_message(&siv_gcm_aes256,
 		       SHEX("01000000000000000000000000000000"
 		            "00000000000000000000000000000000"),
 		       SHEX("030000000000000000000000"),
@@ -589,7 +489,7 @@ test_main(void)
 		       SHEX("22b3f4cd1835e517741dfddccfa07fa4"
 		            "661b74cf"));
 
-  test_siv_gcm_aes256 ("AEAD_AES_256_GCM_SIV",
+  test_aead_message(&siv_gcm_aes256,
 		       SHEX("01000000000000000000000000000000"
 		            "00000000000000000000000000000000"),
 		       SHEX("030000000000000000000000"),
@@ -601,7 +501,7 @@ test_main(void)
 		            "067f342bb879ad976d8242acc188ab59"
 		            "cabfe307"));
 
-  test_siv_gcm_aes256 ("AEAD_AES_256_GCM_SIV",
+  test_aead_message(&siv_gcm_aes256,
 		       SHEX("01000000000000000000000000000000"
 		            "00000000000000000000000000000000"),
 		       SHEX("030000000000000000000000"),
@@ -613,7 +513,7 @@ test_main(void)
 		            "a075cfcdf5042112aa29685c912fc205"
 		            "6543"));
 
-  test_siv_gcm_aes256 ("AEAD_AES_256_GCM_SIV",
+  test_aead_message(&siv_gcm_aes256,
 		       SHEX("e66021d5eb8e4f4066d4adb9c33560e4"
 		            "f46e44bb3da0015c94f7088736864200"),
 		       SHEX("e0eaf5284d884a0e77d31646"),
@@ -621,7 +521,7 @@ test_main(void)
 		       SHEX(""),
 		       SHEX("169fbb2fbf389a995f6390af22228a62"));
 
-  test_siv_gcm_aes256 ("AEAD_AES_256_GCM_SIV",
+  test_aead_message(&siv_gcm_aes256,
 		       SHEX("bae8e37fc83441b16034566b7a806c46"
 		            "bb91c3c5aedb64a6c590bc84d1a5e269"),
 		       SHEX("e4b47801afc0577e34699b9e"),
@@ -630,7 +530,7 @@ test_main(void)
 		       SHEX("0eaccb93da9bb81333aee0c785b240d3"
 		            "19719d"));
 
-  test_siv_gcm_aes256 ("AEAD_AES_256_GCM_SIV",
+  test_aead_message(&siv_gcm_aes256,
 		       SHEX("6545fc880c94a95198874296d5cc1fd1"
 		            "61320b6920ce07787f86743b275d1ab3"),
 		       SHEX("2f6d1f0434d8848c1177441f"),
@@ -639,7 +539,7 @@ test_main(void)
 		       SHEX("a254dad4f3f96b62b84dc40c84636a5e"
 		            "c12020ec8c2c"));
 
-  test_siv_gcm_aes256 ("AEAD_AES_256_GCM_SIV",
+  test_aead_message(&siv_gcm_aes256,
 		       SHEX("d1894728b3fed1473c528b8426a58299"
 		            "5929a1499e9ad8780c8d63d0ab4149c0"),
 		       SHEX("9f572c614b4745914474e7c7"),
@@ -648,7 +548,7 @@ test_main(void)
 		       SHEX("0df9e308678244c44bc0fd3dc6628dfe"
 		            "55ebb0b9fb2295c8c2"));
 
-  test_siv_gcm_aes256 ("AEAD_AES_256_GCM_SIV",
+  test_aead_message(&siv_gcm_aes256,
 		       SHEX("a44102952ef94b02b805249bac80e6f6"
 		            "1455bfac8308a2d40d8c845117808235"),
 		       SHEX("5c9e940fea2f582950a70d5a"),
@@ -658,7 +558,7 @@ test_main(void)
 		       SHEX("8dbeb9f7255bf5769dd56692404099c2"
 		            "587f64979f21826706d497d5"));
 
-  test_siv_gcm_aes256 ("AEAD_AES_256_GCM_SIV",
+  test_aead_message(&siv_gcm_aes256,
 		       SHEX("9745b3d1ae06556fb6aa7890bebc18fe"
 		            "6b3db4da3d57aa94842b9803a96e07fb"),
 		       SHEX("6de71860f762ebfbd08284e4"),
@@ -668,7 +568,7 @@ test_main(void)
 		       SHEX("793576dfa5c0f88729a7ed3c2f1bffb3"
 		            "080d28f6ebb5d3648ce97bd5ba67fd"));
 
-  test_siv_gcm_aes256 ("AEAD_AES_256_GCM_SIV",
+  test_aead_message(&siv_gcm_aes256,
 		       SHEX("b18853f68d833640e42a3c02c25b6486"
 		            "9e146d7b233987bddfc240871d7576f7"),
 		       SHEX("028ec6eb5ea7e298342a94d4"),
@@ -680,7 +580,7 @@ test_main(void)
 		            "5cdd454fc2a154fea91f8363a39fec7d"
 		            "0a49"));
 
-  test_siv_gcm_aes256 ("AEAD_AES_256_GCM_SIV",
+  test_aead_message(&siv_gcm_aes256,
 		       SHEX("3c535de192eaed3822a2fbbe2ca9dfc8"
 		            "8255e14a661b8aa82cc54236093bbc23"),
 		       SHEX("688089e55540db1872504e1c"),
@@ -694,7 +594,7 @@ test_main(void)
 		            "ed1a286594"));
 
   /* RFC8452, Appendix C.3.  */
-  test_siv_gcm_aes256 ("Counter wrap",
+  test_aead_message(&siv_gcm_aes256,
 		       SHEX("00000000000000000000000000000000"
 		            "00000000000000000000000000000000"),
 		       SHEX("000000000000000000000000"),
@@ -705,7 +605,7 @@ test_main(void)
 		            "c537703b5ba70324a6793a7bf218d3ea"
 		            "ffffffff000000000000000000000000"));
 
-  test_siv_gcm_aes256 ("Counter wrap",
+  test_aead_message(&siv_gcm_aes256,
 		       SHEX("00000000000000000000000000000000"
 		            "00000000000000000000000000000000"),
 		       SHEX("000000000000000000000000"),
