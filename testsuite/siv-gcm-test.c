@@ -41,19 +41,6 @@
 #include "aes.h"
 #include "siv-gcm.h"
 
-/* AEAD ciphers */
-typedef void
-nettle_encrypt_message_func(void *ctx,
-			    size_t nlength, const uint8_t *nonce,
-			    size_t alength, const uint8_t *adata,
-			    size_t clength, uint8_t *dst, const uint8_t *src);
-
-typedef int
-nettle_decrypt_message_func(void *ctx,
-			    size_t nlength, const uint8_t *nonce,
-			    size_t alength, const uint8_t *adata,
-			    size_t mlength, uint8_t *dst, const uint8_t *src);
-
 static void
 test_compare_results (const char *name,
 		      const struct tstring *adata,

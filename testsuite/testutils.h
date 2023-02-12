@@ -37,9 +37,6 @@
 
 #include "nettle-meta.h"
 
-/* Forward declare */
-struct nettle_aead;
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -82,7 +79,30 @@ test_main(void);
 
 extern int verbose;
 
-/* Test functions deallocate their inputs when finished.*/
+typedef void
+nettle_encrypt_message_func(void *ctx,
+			    size_t nlength, const uint8_t *nonce,
+			    size_t alength, const uint8_t *adata,
+			    size_t clength, uint8_t *dst, const uint8_t *src);
+
+typedef int
+nettle_decrypt_message_func(void *ctx,
+			    size_t nlength, const uint8_t *nonce,
+			    size_t alength, const uint8_t *adata,
+			    size_t mlength, uint8_t *dst, const uint8_t *src);
+
+struct nettle_aead_message
+{
+  const char *name;
+  unsigned context_size;
+  unsigned key_size;
+  unsigned digest_size;
+  nettle_set_key_func *set_encrypt_key;
+  nettle_set_key_func *set_decrypt_key;
+  nettle_encrypt_message_func *encrypt;
+  nettle_decrypt_message_func *decrypt;
+};
+
 void
 test_cipher(const struct nettle_cipher *cipher,
 	    const struct tstring *key,
@@ -132,6 +152,14 @@ test_aead(const struct nettle_aead *aead,
 	  const struct tstring *ciphertext,
 	  const struct tstring *nonce,
 	  const struct tstring *digest);
+
+void
+test_aead_message(const struct nettle_aead_message *aead,
+		  const struct tstring *key,
+		  const struct tstring *adata,
+		  const struct tstring *nonce,
+		  const struct tstring *clear,
+		  const struct tstring *cipher);
 
 void
 test_hash(const struct nettle_hash *hash,

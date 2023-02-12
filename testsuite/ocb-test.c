@@ -4,18 +4,18 @@
 /* FIXME: Lots of almost duplicated code with siv tests. */
 /* AEAD ciphers */
 typedef void
-nettle_encrypt_message_func(const void *ctx,
-			    size_t nlength, const uint8_t *nonce,
-			    size_t alength, const uint8_t *adata,
-			    size_t tlength,
-			    size_t clength, uint8_t *dst, const uint8_t *src);
+ocb_encrypt_message_func(const void *ctx,
+			 size_t nlength, const uint8_t *nonce,
+			 size_t alength, const uint8_t *adata,
+			 size_t tlength,
+			 size_t clength, uint8_t *dst, const uint8_t *src);
 
 typedef int
-nettle_decrypt_message_func(const void *encrypt_ctx, const void *decrypt_ctx,
-			    size_t nlength, const uint8_t *nonce,
-			    size_t alength, const uint8_t *adata,
-			    size_t tlength,
-			    size_t mlength, uint8_t *dst, const uint8_t *src);
+ocb_decrypt_message_func(const void *encrypt_ctx, const void *decrypt_ctx,
+			 size_t nlength, const uint8_t *nonce,
+			 size_t alength, const uint8_t *adata,
+			 size_t tlength,
+			 size_t mlength, uint8_t *dst, const uint8_t *src);
 
 static void
 test_compare_results(const char *name,
@@ -59,8 +59,8 @@ static void
 test_ocb_message(const char *name,
 		 nettle_set_key_func *set_encrypt_key,
 		 nettle_set_key_func *set_decrypt_key,
-		 nettle_encrypt_message_func *encrypt,
-		 nettle_decrypt_message_func *decrypt,
+		 ocb_encrypt_message_func *encrypt,
+		 ocb_decrypt_message_func *decrypt,
 		 size_t encrypt_context_size, size_t decrypt_context_size,
 		 size_t key_size, size_t digest_size,
 		 const struct tstring *key,
@@ -138,8 +138,8 @@ test_ocb_message(const char *name,
   test_ocb_message("ocb_aes128",					\
 		   (nettle_set_key_func*)ocb_aes128_set_encrypt_key,	\
 		   (nettle_set_key_func*)aes128_set_decrypt_key,	\
-		   (nettle_encrypt_message_func*)ocb_aes128_encrypt_message, \
-		   (nettle_decrypt_message_func*)ocb_aes128_decrypt_message, \
+		   (ocb_encrypt_message_func*)ocb_aes128_encrypt_message, \
+		   (ocb_decrypt_message_func*)ocb_aes128_decrypt_message, \
 		   sizeof(struct ocb_aes128_ctx), sizeof(struct aes128_ctx), \
 		   AES128_KEY_SIZE, OCB_DIGEST_SIZE,			\
 		   key, nonce, authdata, cleartext, ciphertext)

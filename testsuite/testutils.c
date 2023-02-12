@@ -908,6 +908,127 @@ test_aead(const struct nettle_aead *aead,
 }
 
 void
+test_aead_message (const struct nettle_aead_message *aead,
+		   const struct tstring *key,
+		   const struct tstring *nonce,
+		   const struct tstring *adata,
+		   const struct tstring *clear,
+		   const struct tstring *cipher)
+{
+  void *ctx = xalloc (aead->context_size);
+  uint8_t *buf = xalloc (cipher->length + 1);
+  int res;
+
+  ASSERT (key->length == aead->key_size);
+  ASSERT (cipher->length > clear->length);
+  ASSERT (cipher->length - clear->length == aead->digest_size);
+
+  aead->set_encrypt_key (ctx, key->data);
+  buf[cipher->length] = 0xae;
+  aead->encrypt (ctx,
+		 nonce->length, nonce->data,
+		 adata->length, adata->data,
+		 cipher->length, buf, clear->data);
+  if (!MEMEQ (cipher->length, cipher->data, buf))
+    {
+      fprintf(stderr, "aead->encrypt (message) failed:\n  got: ");
+      print_hex (cipher->length, buf);
+      fprintf (stderr, "  exp: ");
+      tstring_print_hex (cipher);
+      FAIL();
+    }
+  if (buf[cipher->length] != 0xae)
+    {
+      fprintf (stderr, "aead->encrypt (message) wrote too much.\n ");
+      FAIL();
+    }
+  aead->set_decrypt_key (ctx, key->data);
+#if 0
+  /* First try in-place decrypt. FIXME: Not supported for SIV. */
+  res = aead->decrypt (ctx,
+		       nonce->length, nonce->data,
+		       adata->length, adata->data,
+		       clear->length, buf, buf);
+  if (!res)
+    {
+      fprintf (stderr, "in-place decrypting valid ciphertext failed:\n  ");
+      tstring_print_hex (cipher);
+    }
+  if (!MEMEQ (clear->length, clear->data, buf))
+    {
+      fprintf(stderr, "aead->decrypt (in place message) failed:\n  got: ");
+      print_hex (clear->length, buf);
+      fprintf (stderr, "  exp: ");
+      tstring_print_hex (clear);
+      FAIL();
+    }
+#endif
+  memset (buf, 0xae, clear->length + 1);
+
+  res = aead->decrypt (ctx,
+		       nonce->length, nonce->data,
+		       adata->length, adata->data,
+		       clear->length, buf, cipher->data);
+  if (!res)
+    {
+      fprintf (stderr, "decrypting valid ciphertext failed:\n  ");
+      tstring_print_hex (cipher);
+    }
+  if (!MEMEQ (clear->length, clear->data, buf))
+    {
+      fprintf(stderr, "aead->decrypt (message) failed:\n  got: ");
+      print_hex (clear->length, buf);
+      fprintf (stderr, "  exp: ");
+      tstring_print_hex (clear);
+      FAIL();
+    }
+
+  /* Invalid messages */
+  if (clear->length > 0
+      && aead->decrypt (ctx,
+			nonce->length, nonce->data,
+			adata->length, adata->data,
+			clear->length - 1, buf, cipher->data))
+    {
+      fprintf (stderr, "Invalid message (truncated) not rejected\n");
+      FAIL();
+    }
+  memcpy (buf, cipher->data, cipher->length);
+  buf[0] ^= 4;
+  if (aead->decrypt (ctx,
+		     nonce->length, nonce->data,
+		     adata->length, adata->data,
+		     clear->length, buf, buf))
+    {
+      fprintf (stderr, "Invalid message (first byte modified) not rejected\n");
+      FAIL();
+    }
+
+  memcpy (buf, cipher->data, cipher->length);
+  buf[cipher->length - 1] ^= 4;
+  if (aead->decrypt (ctx,
+		     nonce->length, nonce->data,
+		     adata->length, adata->data,
+		     clear->length, buf, buf))
+    {
+      fprintf (stderr, "Invalid message (last byte modified) not rejected\n");
+      FAIL();
+    }
+
+  memcpy (buf, adata->data, adata->length);
+  if (adata->length == 0)
+    buf[0] = 0;
+  if (aead->decrypt (ctx,
+		     nonce->length, nonce->data,
+		     adata->length ? adata->length /* - 1 */ : 1, buf,
+		     clear->length, buf, cipher->data))
+    {
+      fprintf (stderr, "Invalid adata not rejected\n");
+      FAIL();
+    }
+}
+
+void
 test_hash(const struct nettle_hash *hash,
 	  const struct tstring *msg,
 	  const struct tstring *digest)
