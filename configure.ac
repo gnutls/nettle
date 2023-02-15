@@ -832,6 +832,22 @@ case "$host_os" in
     LIBHOGWEED_LIBS='-Wl,--no-whole-archive $(LIBS) libnettle.dll.a'
     IF_DLL=''
     ;;
+  midipix*)
+    if test "x$ABI" = x64 ; then
+        W64_ABI=yes
+    fi
+    LIBNETTLE_FORLINK=libnettle.so
+    LIBNETTLE_SONAME='$(LIBNETTLE_FORLINK).$(LIBNETTLE_MAJOR)'
+    LIBNETTLE_FILE='$(LIBNETTLE_SONAME).$(LIBNETTLE_MINOR)'
+    LIBNETTLE_LINK='$(CC) $(CFLAGS) $(LDFLAGS) -shared -Wl,--out-dsolib=libnettle.lib.a -Wl,-soname=$(LIBNETTLE_SONAME)'
+    LIBNETTLE_LIBS=''
+
+    LIBHOGWEED_FORLINK=libhogweed.so
+    LIBHOGWEED_SONAME='$(LIBHOGWEED_FORLINK).$(LIBHOGWEED_MAJOR)'
+    LIBHOGWEED_FILE='$(LIBHOGWEED_SONAME).$(LIBHOGWEED_MINOR)'
+    LIBHOGWEED_LINK='$(CC) $(CFLAGS) $(LDFLAGS) -shared -Wl,--out-dsolib=libhogweed.lib.a -Wl,-soname=$(LIBHOGWEED_SONAME)'
+    LIBHOGWEED_LIBS='$(LIBS) .lib/libnettle.so.8'
+    ;;
   darwin*)
     LIBNETTLE_FORLINK=libnettle.dylib
     LIBNETTLE_SONAME='libnettle.$(LIBNETTLE_MAJOR).dylib'
