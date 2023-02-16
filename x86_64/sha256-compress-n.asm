@@ -134,7 +134,7 @@ define(`NOEXPN', `
 	ALIGN(16)
 
 PROLOGUE(_nettle_sha256_compress_n)
-	W64_ENTRY(3, 0)
+	W64_ENTRY(4, 0)
 	test	BLOCKS, BLOCKS
 	jz	.Lend
 
@@ -228,6 +228,6 @@ PROLOGUE(_nettle_sha256_compress_n)
 	add	$120, %rsp
 .Lend:
 	mov	INPUT, %rax
-	W64_EXIT(3, 0)
+	W64_EXIT(4, 0)
 	ret
 EPILOGUE(_nettle_sha256_compress_n)

@@ -1,3 +1,8 @@
+2023-02-16  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/sha256-compress-n.asm: Fix incorrect w64 setup. Report
+	and fix from Gisle Vanem.
+
 2023-02-08  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/nettle-benchmark.c (main): Benchmark ocb_aes128.
