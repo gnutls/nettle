@@ -5986,7 +5986,7 @@ The recommended generator to use is Yarrow, described below.
 Yarrow is a family of pseudo-randomness generators, designed for
 cryptographic use, by John Kelsey, Bruce Schneier and Niels Ferguson.
 Yarrow-160 is described in a paper at
-@url{https://www.counterpane.com/yarrow.html}, and it uses @acronym{SHA1}
+@url{https://www.schneier.com/academic/yarrow/}, and it uses @acronym{SHA1}
 and triple-DES, and has a 160-bit internal state. Nettle implements
 Yarrow-256, which is similar, but uses @acronym{SHA256} and
 @acronym{AES} to get an internal state of 256 bits.
