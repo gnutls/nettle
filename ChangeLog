@@ -1,3 +1,7 @@
+2023-03-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* ocb.h (OCB_MAX_NONCE_SIZE): New constant.
+
 2023-02-16  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86_64/sha256-compress-n.asm: Fix incorrect w64 setup. Report

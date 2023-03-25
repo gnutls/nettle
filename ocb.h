@@ -62,6 +62,7 @@ extern "C" {
 
 #define OCB_BLOCK_SIZE 16
 #define OCB_DIGEST_SIZE 16
+#define OCB_MAX_NONCE_SIZE 15
 
 struct ocb_key {
   /* L_*, L_$ and L_0, and one reserved entry */
