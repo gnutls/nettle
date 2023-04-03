@@ -1,3 +1,10 @@
+2023-04-03  Niels Möller  <nisse@lysator.liu.se>
+
+	From Mamone Tarsha:
+	* x86_64/pclmul/ghash-update.asm: New loop to process two blocks
+	at a time.
+	* x86_64/pclmul/ghash-set-key.asm: Likewise.
+
 2023-03-25  Niels Möller  <nisse@lysator.liu.se>
 
 	* ocb.h (OCB_MAX_NONCE_SIZE): New constant.

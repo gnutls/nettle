@@ -2,6 +2,7 @@ C x86_64/ghash-set-key.asm
 
 ifelse(`
    Copyright (C) 2022 Niels Möller
+   Copyright (C) 2023 Mamone Tarsha
 
    This file is part of GNU Nettle.
 
