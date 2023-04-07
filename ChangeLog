@@ -1,3 +1,17 @@
+2023-04-07  Niels Möller  <nisse@lysator.liu.se>
+
+	* ghash-update.c (gcm_gf_mul): Rewrite to avoid side channel
+	leakage. Now processes message bits one at a time, using tabulated
+	values of the key premultiplied by appropriate powers of x, so
+	that the table is accessed in a fixed sequential order.
+	Performance penalty, on x86_64, is roughly 3 times.
+	(shift_table): Deleted table.
+	(gcm_gf_shift_8): Deleted function.
+
+	* ghash-set-key.c (_ghash_set_key): Rewrite table generation.
+
+	* gcmdata.c: Deleted.
+
 2023-04-03  Niels Möller  <nisse@lysator.liu.se>
 
 	From Mamone Tarsha:
