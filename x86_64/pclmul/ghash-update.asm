@@ -141,7 +141,7 @@ PROLOGUE(_nettle_ghash_update)
 	jnz		.Loop
 
 .L1_block:
-	and		$1, BLOCKS
+	test		$1, BLOCKS
 	jz		.Ldone
 
 	movups		(DATA), M
