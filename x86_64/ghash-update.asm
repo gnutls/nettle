@@ -41,7 +41,6 @@ define(`X', `%xmm0')
 define(`M0', `%xmm1')
 define(`M1', `%xmm2')
 define(`R', `%xmm3')
-define(`ONE', `%xmm4')
 
 	.file "ghash-update.asm"
 
@@ -52,15 +51,10 @@ define(`ONE', `%xmm4')
 	.text
 	ALIGN(16)
 PROLOGUE(_nettle_ghash_update)
-	W64_ENTRY(4, 5)
+	W64_ENTRY(4, 4)
 	sub	$1, BLOCKS
 	movups	(XP), X
 	jc	.Ldone
-	C Point to middle of table.
-	lea	1024(KEY), KEY
-	movaps	X, ONE
-	pcmpeqd	ONE, ONE
-	psrlq	$63, ONE
 
 ALIGN(16)
 .Lblock_loop:
@@ -68,22 +62,21 @@ ALIGN(16)
 	movups	(SRC), M0
 	pxor	M0, X
 	pxor	R, R
-	mov	$-1024, CNT
+	mov	$1008, CNT
 ALIGN(16)
 .Loop_bit:
-	movaps	ONE, M0
-	pand	X, M0
-	pcmpeqd	ONE, M0
-	pshufd	$0xaa, M0, M1
-	pshufd	$0, M0, M0
-	psrlq	$1, X
+	movaps	X, M0
+	psrad	$31, M0
+	pshufd	$0xff, M0, M1
+	pshufd	$0x55, M0, M0
+	psllq	$1, X
 	pand	(KEY, CNT), M0
 	pand	1024(KEY, CNT), M1
 	pxor	M0, R
 	pxor	M1, R
 
-	add	$16, CNT
-	jnz	.Loop_bit
+	sub	$16, CNT
+	jnc	.Loop_bit
 
 	movaps	R, X
 
@@ -94,6 +87,6 @@ ALIGN(16)
 .Ldone:
 	movups	X, (XP)
 	mov	SRC, %rax
-	W64_EXIT(4, 5)
+	W64_EXIT(4, 4)
 	ret
 EPILOGUE(_nettle_ghash_update)
