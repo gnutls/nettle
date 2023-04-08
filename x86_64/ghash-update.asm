@@ -36,15 +36,14 @@ define(`KEY', `%rdi')
 define(`XP', `%rsi')
 define(`BLOCKS', `%rdx')
 define(`SRC', `%rcx')
-define(`X0', `%rax')
-define(`X1', `%rbx')
-define(`CNT', `%rbp')
-define(`R0', `%r8')
-define(`R1', `%r9')
-define(`T0', `%r10')
-define(`T1', `%r11')
-define(`M0', `%r12')
-define(`M1', `%r13')
+define(`CNT', `%rax')
+define(`X', `%xmm0')
+define(`T0', `%xmm1')
+define(`T1', `%xmm2')
+define(`R', `%xmm3')
+define(`M0', `%xmm4')
+define(`M1', `%xmm5')
+define(`ONE', `%xmm6')
 
 	.file "ghash-update.asm"
 
@@ -55,63 +54,50 @@ define(`M1', `%r13')
 	.text
 	ALIGN(16)
 PROLOGUE(_nettle_ghash_update)
-	W64_ENTRY(4, 0)
-	push	%rbx
-	push	%rbp
-	push	%r12
-	push	%r13
+	W64_ENTRY(4, 6)
 	sub	$1, BLOCKS
-	mov	(XP), X0
-	mov	8(XP), X1
+	movups	(XP), X
 	jc	.Ldone
 	C Point to middle of table.
 	lea	1024(KEY), KEY
+	movaps	X, ONE
+	pcmpeqd	ONE, ONE
+	psrlq	$63, ONE
+
 ALIGN(16)
 .Lblock_loop:
 
-	xor (SRC), X0
-	xor 8(SRC), X1
-
-	xor	R0, R0
-	xor	R1, R1
+	movups	(SRC), T0
+	pxor	T0, X
+	pxor	R, R
 	mov	$-1024, CNT
-
 ALIGN(16)
 .Loop_bit:
-	shr	X0
-	sbb	M0, M0
-	shr	X1
-	sbb	M1, M1
+	movups	(KEY, CNT), T0
+	movaps	ONE, M0
+	pand	X, M0
+	movups	1024(KEY, CNT), T1
+	pcmpeqd	ONE, M0
+	pshufd	$0xaa, M0, M1
+	pshufd	$0, M0, M0
+	psrlq	$1, X
+	pand	M0, T0
+	pand	M1, T1
+	pxor	T0, R
+	pxor	T1, R
 
-	mov	(KEY, CNT), T0
-	and	M0, T0
-	and	8(KEY, CNT), M0
-	mov	1024(KEY, CNT), T1
-	and	M1, T1
-	and	1032(KEY, CNT), M1
-	xor	T1, T0
-	xor	M0, M1
-
-	xor	T0, R0
-	xor	M1, R1
 	add	$16, CNT
 	jnz	.Loop_bit
 
-	mov	R0, X0
-	mov	R1, X1
+	movaps	R, X
 
 	add	$16, SRC
 	sub	$1, BLOCKS
 	jnc	.Lblock_loop
 
 .Ldone:
-	mov	X0, (XP)
-	mov	X1, 8(XP)
+	movups	X, (XP)
 	mov	SRC, %rax
-	pop	%r13
-	pop	%r12
-	pop	%rbp
-	pop	%rbx
-	W64_EXIT(4, 0)
+	W64_EXIT(4, 6)
 	ret
 EPILOGUE(_nettle_ghash_update)
