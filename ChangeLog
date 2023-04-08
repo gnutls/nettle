@@ -1,3 +1,7 @@
+2023-04-08  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/nettle-benchmark.c (bench_ghash_update): New function.
+
 2023-04-07  Niels Möller  <nisse@lysator.liu.se>
 
 	* ghash-update.c (gcm_gf_mul): Rewrite to avoid side channel
