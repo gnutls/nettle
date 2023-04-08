@@ -67,13 +67,13 @@ ALIGN(16)
 	mov	$496, CNT
 ALIGN(16)
 .Loop_bit:
-	movaps	X, M0
-	psrad	$31, M0
-	pshufd	$0xff, M0, M3
-	pshufd	$0xaa, M0, M2
-	pshufd	$0x55, M0, M1
-	pshufd	$0x00, M0, M0
-	psllq	$1, X
+	movaps	X, M3
+	psrad	$31, M3
+	pshufd	$0x00, M3, M0
+	pshufd	$0x55, M3, M1
+	pshufd	$0xaa, M3, M2
+	pshufd	$0xff, M3, M3
+	pslld	$1, X
 	pand	(KEY, CNT), M0
 	pand	512(KEY, CNT), M1
 	pand	1024(KEY, CNT), M2
