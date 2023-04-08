@@ -38,12 +38,10 @@ define(`BLOCKS', `%rdx')
 define(`SRC', `%rcx')
 define(`CNT', `%rax')
 define(`X', `%xmm0')
-define(`T0', `%xmm1')
-define(`T1', `%xmm2')
+define(`M0', `%xmm1')
+define(`M1', `%xmm2')
 define(`R', `%xmm3')
-define(`M0', `%xmm4')
-define(`M1', `%xmm5')
-define(`ONE', `%xmm6')
+define(`ONE', `%xmm4')
 
 	.file "ghash-update.asm"
 
@@ -54,7 +52,7 @@ define(`ONE', `%xmm6')
 	.text
 	ALIGN(16)
 PROLOGUE(_nettle_ghash_update)
-	W64_ENTRY(4, 6)
+	W64_ENTRY(4, 5)
 	sub	$1, BLOCKS
 	movups	(XP), X
 	jc	.Ldone
@@ -66,25 +64,23 @@ PROLOGUE(_nettle_ghash_update)
 
 ALIGN(16)
 .Lblock_loop:
-
-	movups	(SRC), T0
-	pxor	T0, X
+	C Unaligned input
+	movups	(SRC), M0
+	pxor	M0, X
 	pxor	R, R
 	mov	$-1024, CNT
 ALIGN(16)
 .Loop_bit:
-	movups	(KEY, CNT), T0
 	movaps	ONE, M0
 	pand	X, M0
-	movups	1024(KEY, CNT), T1
 	pcmpeqd	ONE, M0
 	pshufd	$0xaa, M0, M1
 	pshufd	$0, M0, M0
 	psrlq	$1, X
-	pand	M0, T0
-	pand	M1, T1
-	pxor	T0, R
-	pxor	T1, R
+	pand	(KEY, CNT), M0
+	pand	1024(KEY, CNT), M1
+	pxor	M0, R
+	pxor	M1, R
 
 	add	$16, CNT
 	jnz	.Loop_bit
@@ -98,6 +94,6 @@ ALIGN(16)
 .Ldone:
 	movups	X, (XP)
 	mov	SRC, %rax
-	W64_EXIT(4, 6)
+	W64_EXIT(4, 5)
 	ret
 EPILOGUE(_nettle_ghash_update)
