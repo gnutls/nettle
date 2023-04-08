@@ -38,9 +38,11 @@ define(`BLOCKS', `%rdx')
 define(`SRC', `%rcx')
 define(`CNT', `%rax')
 define(`X', `%xmm0')
-define(`M0', `%xmm1')
-define(`M1', `%xmm2')
-define(`R', `%xmm3')
+define(`R', `%xmm1')
+define(`M0', `%xmm2')
+define(`M1', `%xmm3')
+define(`M2', `%xmm4')
+define(`M3', `%xmm5')
 
 	.file "ghash-update.asm"
 
@@ -51,7 +53,7 @@ define(`R', `%xmm3')
 	.text
 	ALIGN(16)
 PROLOGUE(_nettle_ghash_update)
-	W64_ENTRY(4, 4)
+	W64_ENTRY(4, 6)
 	sub	$1, BLOCKS
 	movups	(XP), X
 	jc	.Ldone
@@ -62,18 +64,24 @@ ALIGN(16)
 	movups	(SRC), M0
 	pxor	M0, X
 	pxor	R, R
-	mov	$1008, CNT
+	mov	$496, CNT
 ALIGN(16)
 .Loop_bit:
 	movaps	X, M0
 	psrad	$31, M0
-	pshufd	$0xff, M0, M1
-	pshufd	$0x55, M0, M0
+	pshufd	$0xff, M0, M3
+	pshufd	$0xaa, M0, M2
+	pshufd	$0x55, M0, M1
+	pshufd	$0x00, M0, M0
 	psllq	$1, X
 	pand	(KEY, CNT), M0
-	pand	1024(KEY, CNT), M1
-	pxor	M0, R
+	pand	512(KEY, CNT), M1
+	pand	1024(KEY, CNT), M2
+	pand	1536(KEY, CNT), M3
+	pxor	M0, M1
+	pxor	M2, M3
 	pxor	M1, R
+	pxor	M3, R
 
 	sub	$16, CNT
 	jnc	.Loop_bit
@@ -87,6 +95,6 @@ ALIGN(16)
 .Ldone:
 	movups	X, (XP)
 	mov	SRC, %rax
-	W64_EXIT(4, 4)
+	W64_EXIT(4, 6)
 	ret
 EPILOGUE(_nettle_ghash_update)
