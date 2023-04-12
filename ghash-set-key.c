@@ -62,10 +62,9 @@ _ghash_set_key (struct gcm_key *ctx, const union nettle_block16 *key)
 {
   /* Table elements hold the key, premultiplied by all needed powers
      of x. Element ordering follows the order bits are processed in
-     _ghash_update, first u64[0] bits, starting from the least
-     significant end, then the u64[1] bits, also from least
-     significant end. In the gcm bit order, bits (left to right)
-     correspond to x powers (the numbers) like
+     _ghash_update, alternating u64[0] and u64[1] bits, starting from
+     the least significant end. In the gcm bit order, bits (left to
+     right) correspond to x powers (the numbers) like
 
        |0...7|8...15|...|56...63|64...71|72...79|...|120...127|
 
@@ -87,7 +86,11 @@ _ghash_set_key (struct gcm_key *ctx, const union nettle_block16 *key)
 #endif
   unsigned i;
 
-  block16_set (&ctx->h[INDEX_PERMUTE], key);
-  for (i = 1; i < 128; i++)
-    block16_mulx_ghash(&ctx->h[i ^ INDEX_PERMUTE], &ctx->h[(i-1) ^ INDEX_PERMUTE]);
+  block16_set (&ctx->h[2*INDEX_PERMUTE], key);
+  for (i = 1; i < 64; i++)
+    block16_mulx_ghash(&ctx->h[2*(i ^ INDEX_PERMUTE)], &ctx->h[2*((i-1) ^ INDEX_PERMUTE)]);
+
+  block16_mulx_ghash(&ctx->h[2*INDEX_PERMUTE + 1], &ctx->h[2*(63^INDEX_PERMUTE)]);
+  for (i = 1; i < 64; i++)
+    block16_mulx_ghash(&ctx->h[2*(i ^ INDEX_PERMUTE)+1], &ctx->h[2*((i-1) ^ INDEX_PERMUTE)+1]);
 }

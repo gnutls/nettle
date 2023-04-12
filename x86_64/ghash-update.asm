@@ -37,6 +37,7 @@ define(`XP', `%rsi')
 define(`BLOCKS', `%rdx')
 define(`SRC', `%rcx')
 define(`CNT', `%rax')
+define(`KEY32', `%r8')
 define(`X', `%xmm0')
 define(`R', `%xmm1')
 define(`M0', `%xmm2')
@@ -57,6 +58,8 @@ PROLOGUE(_nettle_ghash_update)
 	sub	$1, BLOCKS
 	movups	(XP), X
 	jc	.Ldone
+	C Table offset corresponding to 32 bits.
+	lea	1024(KEY), KEY32
 
 ALIGN(16)
 .Lblock_loop:
@@ -64,10 +67,10 @@ ALIGN(16)
 	movups	(SRC), M0
 	pxor	M0, X
 	pxor	R, R
-	mov	$496, CNT
+	mov	$992, CNT
 ALIGN(16)
 .Loop_bit:
-	movaps	X, M3
+	movdqa	X, M3
 	psrad	$31, M3
 	pshufd	$0x00, M3, M0
 	pshufd	$0x55, M3, M1
@@ -75,15 +78,15 @@ ALIGN(16)
 	pshufd	$0xff, M3, M3
 	pslld	$1, X
 	pand	(KEY, CNT), M0
-	pand	512(KEY, CNT), M1
-	pand	1024(KEY, CNT), M2
-	pand	1536(KEY, CNT), M3
+	pand	(KEY32, CNT), M1
+	pand	16(KEY, CNT), M2
+	pand	16(KEY32, CNT), M3
 	pxor	M0, M1
 	pxor	M2, M3
 	pxor	M1, R
 	pxor	M3, R
 
-	sub	$16, CNT
+	sub	$32, CNT
 	jnc	.Loop_bit
 
 	movaps	R, X

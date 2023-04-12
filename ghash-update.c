@@ -68,10 +68,10 @@ gcm_gf_mul (union nettle_block16 *x, const union nettle_block16 *table)
     {
       uint64_t m0 = -(x0 & 1);
       uint64_t m1 = -(x1 & 1);
-      r0 ^= m0 & table[i].u64[0];
-      r1 ^= m0 & table[i].u64[1];
-      r0 ^= m1 & table[64+i].u64[0];
-      r1 ^= m1 & table[64+i].u64[1];
+      r0 ^= m0 & table[2*i].u64[0];
+      r1 ^= m0 & table[2*i].u64[1];
+      r0 ^= m1 & table[2*i+1].u64[0];
+      r1 ^= m1 & table[2*i+1].u64[1];
     }
   x->u64[0] = r0; x->u64[1] = r1;
 }
