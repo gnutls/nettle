@@ -1,3 +1,9 @@
+2023-04-12  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/gcm-test.c (test_ghash_internal): Add valgrind
+	annotations, to verify that the ghash makes no data-dependent
+	branches or memory accesses.
+
 2023-04-08  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/nettle-benchmark.c (bench_ghash_update): New function.
