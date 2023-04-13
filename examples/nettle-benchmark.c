@@ -56,6 +56,7 @@
 #include "des.h"
 #include "eax.h"
 #include "gcm.h"
+#include "ghash-internal.h"
 #include "memxor.h"
 #include "salsa20.h"
 #include "salsa20-internal.h"
@@ -875,10 +876,22 @@ bench_sha3_permute(void)
   TIME_CYCLES (t, sha3_permute (&state));
   printf("sha3_permute: %.2f cycles (%.2f / round)\n", t, t / 24.0);
 }
+static void
+bench_ghash_update(void)
+{
+  struct gcm_key key;
+  union nettle_block16 state;
+  const uint8_t data[160];
+  double t;
+
+  TIME_CYCLES (t, _ghash_update (&key, &state, 10, data));
+  printf("ghash_update: %.2f cycles / block\n", t / 10.0);
+}
 #else
 #define bench_sha1_compress()
 #define bench_salsa20_core()
 #define bench_sha3_permute()
+#define bench_ghash_update()
 #endif
 
 #if WITH_OPENSSL
@@ -986,6 +999,7 @@ main(int argc, char **argv)
   bench_sha1_compress();
   bench_salsa20_core();
   bench_sha3_permute();
+  bench_ghash_update();
   printf("\n");
 
   header();

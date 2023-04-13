@@ -1,3 +1,26 @@
+2023-04-13  Niels Möller  <nisse@lysator.liu.se>
+
+	* ghash-update.c (gcm_gf_mul): Rewrite to avoid side-channel
+	leakage. Now processes the message bits one at a time, using
+	tabulated values of the key premultiplied by appropriate powers of
+	x, so that the table is accessed in a fixed sequential order.
+	Performance penalty, on x86_64, is roughly 3 times.
+	(shift_table): Deleted table.
+	(gcm_gf_shift_8): Deleted function.
+	* ghash-set-key.c (_ghash_set_key): Rewrite table generation.
+	* gcmdata.c: Deleted.
+	* Makefile.in: Delete references to gcmdata.
+
+	* x86_64/ghash-update.asm: Rewritten, similar side-channel silent
+	method as the C implementation, with same table layout, but using
+	sse2 instructions.
+
+	* testsuite/gcm-test.c (test_ghash_internal): Add valgrind
+	annotations, to verify that the ghash implementation makes no
+	data-dependent branches or memory accesses.
+
+	* examples/nettle-benchmark.c (bench_ghash_update): New function.
+
 2023-04-03  Niels Möller  <nisse@lysator.liu.se>
 
 	From Mamone Tarsha:

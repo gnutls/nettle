@@ -250,7 +250,7 @@ INSTALL_HEADERS = $(HEADERS) version.h @IF_MINI_GMP@ mini-gmp.h
 SOURCES = $(nettle_SOURCES) $(hogweed_SOURCES) \
 	  $(getopt_SOURCES) $(internal_SOURCES) \
 	  $(OPT_SOURCES) \
-	  aesdata.c desdata.c twofishdata.c shadata.c gcmdata.c eccdata.c
+	  aesdata.c desdata.c twofishdata.c shadata.c eccdata.c
 
 # NOTE: This list must include all source files, with no duplicates,
 # independently of which source files are included in the build.
@@ -683,7 +683,6 @@ clean-here:
 		desdata$(EXEEXT_FOR_BUILD) \
 		twofishdata$(EXEEXT_FOR_BUILD) \
 		shadata$(EXEEXT_FOR_BUILD) \
-		gcmdata$(EXEEXT_FOR_BUILD) \
 		eccdata$(EXEEXT_FOR_BUILD) eccdata.stamp
 	-rm -rf .lib libnettle.stamp libhogweed.stamp
 
