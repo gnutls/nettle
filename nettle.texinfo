@@ -3723,7 +3723,6 @@ parameters, encrypts the plaintext from @var{src}, prepends the
 initialization vector to the ciphertext and outputs it to @var{dst}.
 The @var{clength} variable must be equal to the length of @var{src}
 plus @code{SIV_DIGEST_SIZE}.
-
 @end deftypefun
 
 @deftypefun int siv_cmac_aes128_decrypt_message (struct siv_cmac_aes128_ctx *@var{ctx}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{mlength}, uint8_t *@var{dst}, const uint8_t *@var{src})
