@@ -1,3 +1,8 @@
+2023-04-23  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/siv-cmac-test.c: Renamed file, from...
+	* testsuite/siv-test.c: ... old name.
+
 2023-04-13  Niels Möller  <nisse@lysator.liu.se>
 
 	* ghash-update.c (gcm_gf_mul): Rewrite to avoid side-channel
