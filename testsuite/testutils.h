@@ -37,9 +37,6 @@
 
 #include "nettle-meta.h"
 
-/* Forward declare */
-struct nettle_aead;
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -82,7 +79,6 @@ test_main(void);
 
 extern int verbose;
 
-/* Test functions deallocate their inputs when finished.*/
 void
 test_cipher(const struct nettle_cipher *cipher,
 	    const struct tstring *key,
