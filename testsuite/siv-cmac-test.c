@@ -1,6 +1,6 @@
-/* siv-test.c
+/* siv-cmac-test.c
 
-   Self-test and vectors for AES-SIV mode ciphers
+   Self-test and vectors for AES-SIV-CMAC mode ciphers
 
    Copyright (C) 2018 Nikos Mavrogiannopoulos
 
