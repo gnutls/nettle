@@ -1,3 +1,25 @@
+2023-04-24  Niels Möller  <nisse@lysator.liu.se>
+
+	Rework tests of OCB message functions.
+	* testsuite/testutils.c (test_aead_message): New function, for
+	testing AEAD message functions.
+	* testsuite/testutils.h (nettle_encrypt_message_func)
+	(nettle_decrypt_message_func): New typedefs.
+	(struct nettle_aead_message): New struct.
+	* testsuite/ocb-test.c (nettle_encrypt_message_func)
+	(nettle_decrypt_message_func): Deleted typedefs.
+	(test_compare_results): Deleted function.
+	(test_ocb_aes128): Deleted macro.
+	(struct ocb_aes128_message_key): New struct.
+	(ocb_aes128_set_encrypt_key_wrapper)
+	(ocb_aes128_set_decrypt_key_wrapper)
+	(ocb_aes128_encrypt_message_wrapper)
+	(ocb_aes128_decrypt_message_wrapper): New wrapper functions, using
+	above ocb_aes128_message_key for both encrypt and decrypt, and a
+	fix tag length of 16 octets.
+	(ocb_aes128_message): New algorithm struct, with above wrappers.
+	(test_main): Use test_aead_message.
+
 2023-04-23  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/siv-cmac-test.c: Renamed file, from...
