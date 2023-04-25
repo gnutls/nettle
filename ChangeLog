@@ -1,3 +1,20 @@
+2023-04-25  Niels Möller  <nisse@lysator.liu.se>
+
+	Rework tests of SIV message functions.
+	* testsuite/siv-gcm-test.c (nettle_encrypt_message_func)
+	(nettle_decrypt_message_func): Delete typedefs.
+	(test_compare_results, test_cipher_siv_gcm): Delete functions.
+	(test_siv_gcm_aes128, test_siv_gcm_aes256): Delete macros.
+	(siv_gcm_aes128, siv_gcm_aes256): New algorithm structs.
+	(test_main): Use test_aead_message.
+
+	* testsuite/siv-cmac-test.c (nettle_encrypt_message_func)
+	(nettle_decrypt_message_func): Delete typedefs.
+	(test_compare_results, test_cipher_siv): Delete functions.
+	(test_siv_aes128, test_siv_aes256): Delete macros.
+	(siv_cmac_aes128, siv_cmac_aes256): New algorithm structs.
+	(test_main): Use test_aead_message.
+
 2023-04-24  Niels Möller  <nisse@lysator.liu.se>
 
 	Rework tests of OCB message functions.

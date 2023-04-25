@@ -31,154 +31,36 @@
    not, see http://www.gnu.org/licenses/.
 */
 
-/* The
- * test vectors have been collected from the following standards:
- *  RFC5297
- */
-
 #include "testutils.h"
 #include "aes.h"
 #include "nettle-types.h"
 #include "siv-cmac.h"
-#include "knuth-lfib.h"
 
-/* AEAD ciphers */
-typedef void
-nettle_encrypt_message_func(void *ctx,
-			    size_t nlength, const uint8_t *nonce,
-			    size_t alength, const uint8_t *adata,
-			    size_t clength, uint8_t *dst, const uint8_t *src);
+static const struct nettle_aead_message
+siv_cmac_aes128 = {
+  "siv_cmac_aes128",
+  sizeof(struct siv_cmac_aes128_ctx),
+  SIV_CMAC_AES128_KEY_SIZE,
+  SIV_DIGEST_SIZE,
+  0, /* No in-place operation. */
+  (nettle_set_key_func*) siv_cmac_aes128_set_key,
+  (nettle_set_key_func*) siv_cmac_aes128_set_key,
+  (nettle_encrypt_message_func*) siv_cmac_aes128_encrypt_message,
+  (nettle_decrypt_message_func*) siv_cmac_aes128_decrypt_message,
+};
 
-typedef int
-nettle_decrypt_message_func(void *ctx,
-			    size_t nlength, const uint8_t *nonce,
-			    size_t alength, const uint8_t *adata,
-			    size_t mlength, uint8_t *dst, const uint8_t *src);
-
-static void
-test_compare_results(const char *name,
-        const struct tstring *adata,
-        /* Expected results. */
-        const struct tstring *e_clear,
-	const struct tstring *e_cipher,
-        /* Actual results. */
-        const void *clear,
-        const void *cipher)
-{
-  if (!MEMEQ(e_cipher->length, e_cipher->data, cipher))
-    {
-      fprintf(stderr, "%s: encryption failed\nAdata: ", name);
-      tstring_print_hex(adata);
-      fprintf(stderr, "\nInput: ");
-      tstring_print_hex(e_clear);
-      fprintf(stderr, "\nOutput: ");
-      print_hex(e_cipher->length, cipher);
-      fprintf(stderr, "\nExpected:");
-      tstring_print_hex(e_cipher);
-      fprintf(stderr, "\n");
-      FAIL();
-    }
-  if (!MEMEQ(e_clear->length, e_clear->data, clear))
-    {
-      fprintf(stderr, "%s decrypt failed:\nAdata:", name);
-      tstring_print_hex(adata);
-      fprintf(stderr, "\nInput: ");
-      tstring_print_hex(e_cipher);
-      fprintf(stderr, "\nOutput: ");
-      print_hex(e_clear->length, clear);
-      fprintf(stderr, "\nExpected:");
-      tstring_print_hex(e_clear);
-      fprintf(stderr, "\n");
-      FAIL();
-    }
-} /* test_compare_results */
-
-static void
-test_cipher_siv(const char *name,
-		nettle_set_key_func *siv_set_key,
-		nettle_encrypt_message_func *siv_encrypt,
-		nettle_decrypt_message_func *siv_decrypt,
-		size_t context_size, size_t key_size,
-		const struct tstring *key,
-		const struct tstring *nonce,
-		const struct tstring *authdata,
-		const struct tstring *cleartext,
-		const struct tstring *ciphertext)
-{
-  void *ctx = xalloc(context_size);
-  uint8_t *en_data;
-  uint8_t *de_data;
-  int ret;
-
-  ASSERT (key->length == key_size);
-  ASSERT (cleartext->length + SIV_DIGEST_SIZE == ciphertext->length);
-
-  de_data = xalloc(cleartext->length);
-  en_data = xalloc(ciphertext->length);
-
-  /* Ensure we get the same answers using the all-in-one API. */
-  memset(de_data, 0, cleartext->length);
-  memset(en_data, 0, ciphertext->length);
-
-  siv_set_key(ctx, key->data);
-  siv_encrypt(ctx, nonce->length, nonce->data,
-	      authdata->length, authdata->data,
-	      ciphertext->length, en_data, cleartext->data);
-
-  ret = siv_decrypt(ctx, nonce->length, nonce->data,
-		    authdata->length, authdata->data,
-		    cleartext->length, de_data, ciphertext->data);
-
-  if (ret != 1)
-    {
-      fprintf(stderr, "siv_decrypt_message failed to validate message\n");
-      FAIL();
-    }
-  test_compare_results(name, authdata,
-		       cleartext, ciphertext, de_data, en_data);
-
-  /* Ensure that we can detect corrupted message or tag data. */
-  en_data[0] ^= 1;
-  ret = siv_decrypt(ctx, nonce->length, nonce->data,
-	            authdata->length, authdata->data,
-		    cleartext->length, de_data, en_data);
-  if (ret != 0)
-    {
-      fprintf(stderr, "siv_decrypt_message failed to detect corrupted message\n");
-      FAIL();
-    }
-
-  /* Ensure we can detect corrupted adata. */
-  if (authdata->length) {
-    en_data[0] ^= 1;
-    ret = siv_decrypt(ctx, nonce->length, nonce->data,
-		      authdata->length-1, authdata->data,
-		      cleartext->length, de_data, en_data);
-    if (ret != 0)
-      {
-	fprintf(stderr, "siv_decrypt_message failed to detect corrupted message\n");
-	FAIL();
-      }
-  }
-
-  free(ctx);
-  free(en_data);
-  free(de_data);
-}
-
-#define test_siv_aes128(name, key, nonce, authdata, cleartext, ciphertext) \
-  test_cipher_siv(name, (nettle_set_key_func*)siv_cmac_aes128_set_key,	\
-		  (nettle_encrypt_message_func*)siv_cmac_aes128_encrypt_message, \
-		  (nettle_decrypt_message_func*)siv_cmac_aes128_decrypt_message, \
-		  sizeof(struct siv_cmac_aes128_ctx), SIV_CMAC_AES128_KEY_SIZE, \
-		  key, nonce, authdata, cleartext, ciphertext)
-
-#define test_siv_aes256(name, key, nonce, authdata, cleartext, ciphertext) \
-  test_cipher_siv(name, (nettle_set_key_func*)siv_cmac_aes256_set_key,	\
-		  (nettle_encrypt_message_func*)siv_cmac_aes256_encrypt_message, \
-		  (nettle_decrypt_message_func*)siv_cmac_aes256_decrypt_message, \
-		  sizeof(struct siv_cmac_aes256_ctx), SIV_CMAC_AES256_KEY_SIZE, \
-		  key, nonce, authdata, cleartext, ciphertext)
+static const struct nettle_aead_message
+siv_cmac_aes256 = {
+  "siv_cmac_aes256",
+  sizeof(struct siv_cmac_aes256_ctx),
+  SIV_CMAC_AES256_KEY_SIZE,
+  SIV_DIGEST_SIZE,
+  0, /* No in-place operation. */
+  (nettle_set_key_func*) siv_cmac_aes256_set_key,
+  (nettle_set_key_func*) siv_cmac_aes256_set_key,
+  (nettle_encrypt_message_func*) siv_cmac_aes256_encrypt_message,
+  (nettle_decrypt_message_func*) siv_cmac_aes256_decrypt_message,
+};
 
 void
 test_main(void)
@@ -188,7 +70,7 @@ test_main(void)
   /*
    * Example with small nonce, no AD and no plaintext
    */
-  test_siv_aes128("SIV_CMAC_AES128",
+  test_aead_message(&siv_cmac_aes128,
 		  SHEX("fffefdfc fbfaf9f8 f7f6f5f4 f3f2f1f0"
 		       "f0f1f2f3 f4f5f6f7 f8f9fafb fcfdfeff"),
 		  SHEX("01"),
@@ -198,7 +80,7 @@ test_main(void)
   /*
    * Example with small nonce, no AD and plaintext
    */
-  test_siv_aes128("SIV_CMAC_AES128",
+  test_aead_message(&siv_cmac_aes128,
 		  SHEX("fffefdfc fbfaf9f8 f7f6f5f4 f3f2f1f0"
 		       "f0f1f2f3 f4f5f6f7 f8f9fafb fcfdfeff"),
 		  SHEX("02"),
@@ -210,7 +92,7 @@ test_main(void)
   /*
    * Example with length < 16
    */
-  test_siv_aes128("SIV_CMAC_AES128",
+  test_aead_message(&siv_cmac_aes128,
 		  SHEX("fffefdfc fbfaf9f8 f7f6f5f4 f3f2f1f0"
 		       "f0f1f2f3 f4f5f6f7 f8f9fafb fcfdfeff"),
 		  SHEX("02"),
@@ -223,7 +105,7 @@ test_main(void)
   /*
    * Example with length > 16
    */
-  test_siv_aes128("SIV_CMAC_AES128",
+  test_aead_message(&siv_cmac_aes128,
 		  SHEX("7f7e7d7c 7b7a7978 77767574 73727170"
 		       "40414243 44454647 48494a4b 4c4d4e4f"),
 		  SHEX("020304"),
@@ -241,7 +123,7 @@ test_main(void)
   /*
    * Example with single AAD, length > 16
    */
-  test_siv_aes128("SIV_CMAC_AES128",
+  test_aead_message(&siv_cmac_aes128,
 		  SHEX("7f7e7d7c 7b7a7978 77767574 73727170"
 		       "40414243 44454647 48494a4b 4c4d4e4f"),
 		  SHEX("09f91102 9d74e35b d84156c5 635688c0"),
@@ -259,7 +141,7 @@ test_main(void)
   /*
    * Example with single AAD, length < 16
    */
-  test_siv_aes128("SIV_CMAC_AES128",
+  test_aead_message(&siv_cmac_aes128,
 		  SHEX("7f7e7d7c 7b7a7978 77767574 73727170"
 		       "40414243 44454647 48494a4b 4c4d4e4f"),
 		  SHEX("09f91102 9d74e35b d84156c5 635688c0"),
@@ -272,7 +154,7 @@ test_main(void)
 
   /* AES-SIV-CMAC-512 (AES-256) from dchest/siv repo
    */
-  test_siv_aes256("SIV_CMAC_AES256",
+  test_aead_message(&siv_cmac_aes256,
 		  SHEX("fffefdfc fbfaf9f8 f7f6f5f4 f3f2f1f0"
 		       "6f6e6d6c 6b6a6968 67666564 63626160"
 		       "f0f1f2f3 f4f5f6f7 f8f9fafb fcfdfeff"
@@ -287,7 +169,7 @@ test_main(void)
 
   /* AES-SIV-CMAC-512 (AES-256)
    */
-  test_siv_aes256("SIV_CMAC_AES256",
+  test_aead_message(&siv_cmac_aes256,
 		  SHEX("c27df2fd aec35d4a 2a412a50 c3e8c47d"
 		       "2d568e91 a38e5414 8abdc0b6 e86caf87"
 		       "695c0a8a df4c5f8e b2c6c8b1 36529864"
@@ -302,7 +184,7 @@ test_main(void)
   /*
    * Example with length > 16
    */
-  test_siv_aes256("SIV_CMAC_AES256",
+  test_aead_message(&siv_cmac_aes256,
 		  SHEX("c27df2fd aec35d4a 2a412a50 c3e8c47d"
 		       "2d568e91 a38e5414 8abdc0b6 e86caf87"
 		       "695c0a8a df4c5f8e b2c6c8b1 36529864"
@@ -322,7 +204,7 @@ test_main(void)
   /*
    * Example with single AAD, length > 16
    */
-  test_siv_aes256("SIV_CMAC_AES256",
+  test_aead_message(&siv_cmac_aes256,
 		  SHEX("c27df2fd aec35d4a 2a412a50 c3e8c47d"
 		       "2d568e91 a38e5414 8abdc0b6 e86caf87"
 		       "695c0a8a df4c5f8e b2c6c8b1 36529864"
@@ -345,7 +227,7 @@ test_main(void)
    * Example from miscreant.js with no AD
    * https://github.com/miscreant/miscreant.js/blob/master/vectors/aes_siv_aead.tjson
    */
-  test_siv_aes128("SIV_CMAC_AES128",
+  test_aead_message(&siv_cmac_aes128,
 		  SHEX("fffefdfc fbfaf9f8 f7f6f5f4 f3f2f1f0"
 		       "f0f1f2f3 f4f5f6f7 f8f9fafb fcfdfeff"),
 		  SHEX("10111213 1415161718191a1b1 c1d1e1f2"
@@ -358,7 +240,7 @@ test_main(void)
   /*
    * Example from miscreant.js with AD
    */
-  test_siv_aes128("SIV_CMAC_AES128",
+  test_aead_message(&siv_cmac_aes128,
 		  SHEX("7f7e7d7c 7b7a7978 77767574 73727170"
 		       "40414243 44454647 48494a4b 4c4d4e4f"),
 		  SHEX("09f91102 9d74e35b d84156c5 635688c0"),
