@@ -1,3 +1,10 @@
+2023-05-07  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Bump package version, to 3.9.
+	(LIBNETTLE_MINOR): Bump minor number, to 8.7 (8.6 was used for
+	Nettle-3.8.1).
+	(LIBHOGWEED_MINOR): Bump minor number, to 6.7.
+
 2023-04-25  Niels Möller  <nisse@lysator.liu.se>
 
 	Rework tests of SIV message functions.
