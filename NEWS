@@ -4,18 +4,15 @@ NEWS for the Nettle 3.9 release
 	performance improvements, and one performance regression
 	affecting GCM on certain platforms.
 
-	Nettle's implementation of GHASH, the authentication mechanism
-	used for GCM, dates from 2011, and has used data-dependent
-	table lookups for performance. Those lookups imply a potential
-	side-channel leak. More recent assembly implementations of
-	GHASH that use the carry-less multiplication instruction,
-	available on certain platforms, don't suffer from this
-	problem.
+	The new version is intended to be fully source and binary
+	compatible with Nettle-3.6. The shared library names are
+	libnettle.so.8.7 and libhogweed.so.6.7, with sonames
+	libnettle.so.8 and libhogweed.so.6.
 
 	This release includes a rewrite of the C implementation of
-	GHASH as well as the plain x86_64 assembly version to use
-	precomputed tables in a different way, with tables always
-	accessed in the same sequential manner.
+	GHASH (dating from 2011), as well as the plain x86_64 assembly
+	version, to use precomputed tables in a different way, with
+	tables always accessed in the same sequential manner.
 
 	This should make Nettle's GHASH implementation side-channel
 	silent on all platforms, but considerably slower on platforms
@@ -35,7 +32,7 @@ NEWS for the Nettle 3.9 release
 	* GHASH implementation should now be side-channel silent on
 	  all architectures.
 
-	* A few other portability fixes for *BSD.
+	* A few portability fixes for *BSD.
 
 	New features:
 
