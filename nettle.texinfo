@@ -3779,23 +3779,23 @@ each message @emph{must} use a length that is a multiple of the block
 size.
 @end deftypefun
 
-@deftypefun void ocb_aes128_encrypt(struct ocb_ctx *@var{ctx}, const struct ocb_aes128_encrypt_key *@var{key}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun void ocb_aes128_encrypt (struct ocb_ctx *@var{ctx}, const struct ocb_aes128_encrypt_key *@var{key}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Encrypts the data of a message. All but the last call for each message
 @emph{must} use a length that is a multiple of the block size.
 @end deftypefun
 
-@deftypefun void ocb_aes128_decrypt(struct ocb_ctx *@var{ctx}, const struct ocb_aes128_encrypt_key *@var{key}, const struct aes128_ctx *@var{decrypt}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun void ocb_aes128_decrypt (struct ocb_ctx *@var{ctx}, const struct ocb_aes128_encrypt_key *@var{key}, const struct aes128_ctx *@var{decrypt}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Decrypts the data of a message. @var{decrypt} is an AES context
 initialized for decryption using the same key. All but the last call for
 each message @emph{must} use a length that is a multiple of the block
 size.
 @end deftypefun
 
-@deftypefun void ocb_aes128_digest(struct ocb_ctx *@var{ctx}, const struct ocb_aes128_encrypt_key *@var{key}, size_t @var{length}, uint8_t *@var{digest})
+@deftypefun void ocb_aes128_digest (struct ocb_ctx *@var{ctx}, const struct ocb_aes128_encrypt_key *@var{key}, size_t @var{length}, uint8_t *@var{digest})
 Extracts the message digest (also known ``authentication tag''). This is
 the final operation when processing a message. The @var{length} value
 @emph{should} be the same as the tag length passed to the preceding
-@code{ocb_set_nonce} call (using a different length is possible, but
+@code{ocb_aes128_set_nonce} call (using a different length is possible, but
 incompatible with @cite{RFC 7253}).
 @end deftypefun
 
