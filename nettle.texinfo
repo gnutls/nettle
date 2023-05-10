@@ -6298,6 +6298,45 @@ Returns an entropy estimate, in bits, suitable for calling
 @code{yarrow256_update}. Usually, 0, 1 or 2 bits.
 @end deftypefun
 
+@subsection DRBG-CTR
+
+The Deterministic Random Bit Generator (DRBG) family is a complex family
+of deterministic randomness generators published by NIST in SP 800-90A.
+
+We support what we believe is the reasonable parts of the CTR_DRBG
+algorithm for AES256.  Re-seeding, personalization strings, derivation
+functions and support for non-AES256 is not implemented.
+Personalization strings can be implemented by the caller, if desired,
+with xor.  If you need re-seeding or entropy derivation, we suggest that
+you use Yarrow instead.
+
+The security bounds of DRBG-CTR are not intuitive, see ``Security Bounds
+for the NIST Codebook-based Deterministic Random Bit Generator'' by
+Matthew J. Campagna, from @url{https://eprint.iacr.org/2006/379.pdf}.
+
+Our suggested use-case for DRBG-CTR is to deterministically generate
+known values from a seed when comparing against expected values for some
+other algorithm.
+
+Nettle defines DRBG-CTR in @file{<nettle/drbg-ctr.h>}.
+
+@deftp {Context struct} {struct drbg_ctr_aes256_ctx}
+@end deftp
+
+@defvr Constant DRBG_CTR_AES256_SEED_SIZE
+The size of the seeding material.
+@end defvr
+
+@deftypefun void drbg_ctr_aes256_init (struct drbg_ctr_aes256_ctx *@var{ctx}, uint8_t *@var{seed_material})
+Initialize the DRBG-CTR-AES256 context using
+@code{DRBG_CTR_AES256_SEED_SIZE} bytes of @var{seed_material}.
+@end deftypefun
+
+@deftypefun void drbg_ctr_aes256_random (struct drbg_ctr_aes256_ctx *@var{ctx}, size_t n, uint8_t *@var{dst});
+Generates @var{n} octets of output into @var{dst}.  The generator must
+be initialized before you call this function.
+@end deftypefun
+
 @node ASCII encoding
 @section ASCII encoding
 
