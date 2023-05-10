@@ -1,3 +1,9 @@
+2023-05-10  Niels Möller  <nisse@lysator.liu.se>
+
+	Fix compile error in --disable-public-key configuration.
+	* testsuite/sha1-test.c: Add missing include of sha1.h.
+	* testsuite/sha256-test.c: Add missing include of sha2.h.
+
 2023-05-07  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Bump package version, to 3.9.

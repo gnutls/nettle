@@ -1,6 +1,7 @@
 #include "testutils.h"
 
 #include "nettle-write.h"
+#include "sha2.h"
 
 /* Test compression only. */
 static void
