@@ -1418,15 +1418,23 @@ Analogous to the encryption functions above.
 @cindex Arcfour
 @cindex RC4
 
-ARCFOUR is a stream cipher, also known under the trade marked name RC4,
-and it is one of the fastest ciphers around. A problem is that the key
-setup of ARCFOUR is quite weak, you should never use keys with
-structure, keys that are ordinary passwords, or sequences of keys like
-``secret:1'', ``secret:2'', @enddots{}. If you have keys that don't look
-like random bit strings, and you want to use ARCFOUR, always hash the
-key before feeding it to ARCFOUR. Furthermore, the initial bytes of the
-generated key stream leak information about the key; for this reason, it
-is recommended to discard the first 512 bytes of the key stream.
+ARCFOUR is a historic stream cipher, also known under the trade marked
+name RC4, and was a widely used fast stream cipher.
+
+We do not recommend the use of ARCFOUR; the Nettle implementation is
+provided primarily for interoperability with existing applications and
+standards.
+
+One problem is that the key setup of ARCFOUR is quite weak, you should
+never use keys with structure, keys that are ordinary passwords, or
+sequences of keys like ``secret:1'', ``secret:2'', @enddots{}. If you
+have keys that don't look like random bit strings, and you want to use
+ARCFOUR, always hash the key before feeding it to ARCFOUR.
+
+Another problem is that the output is distinguishable from random data,
+and that the initial bytes of the generated key stream leak information
+about the key; for this reason, it was sometimes recommended to discard
+the first 512, 768 or 1024 bytes of the key stream.
 
 @example
 /* A more robust key setup function for ARCFOUR */
@@ -6142,11 +6150,13 @@ what output is generated after @code{t_2}.
 Nettle includes one randomness generator that is believed to have all
 the above properties, and two simpler ones.
 
-@acronym{ARCFOUR}, like any stream cipher, can be used as a randomness
-generator. Its output should be of reasonable quality, if the seed is
-hashed properly before it is used with @code{arcfour_set_key}. There's
-no single natural way to reseed it, but if you need reseeding, you
-should be using Yarrow instead.
+@acronym{ChaCha} (@pxref{ChaCha}), like any stream cipher, can be used
+as a randomness generator. Its output should be of reasonable
+quality. There's no single natural way to reseed it, but if you need
+reseeding, you should be using Yarrow instead.  Historically ARCFOUR
+(@pxref{Arcfour}) has been used as a randomness generator, however it is
+known to be distinguishable from random data and the output leaks
+information about the key.
 
 The ``lagged Fibonacci'' generator in @file{<nettle/knuth-lfib.h>} is a
 fast generator with good statistical properties, but is @strong{not} for
