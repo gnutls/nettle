@@ -8,14 +8,14 @@
 @syncodeindex tp cp
 @c %**end of header
 
-@set UPDATED-FOR 3.4
+@set UPDATED-FOR 3.9
 @set AUTHOR Niels Möller
 
 @copying
 This manual is for the Nettle library (version @value{UPDATED-FOR}), a
 low-level cryptographic library.
 
-Originally written 2001 by @value{AUTHOR}, updated 2017.
+Originally written 2001 by @value{AUTHOR}, updated 2023.
 
 @quotation
 This manual is placed in the public domain. You may freely copy it, in
