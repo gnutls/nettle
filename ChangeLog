@@ -1,5 +1,7 @@
 2023-05-12  Niels Möller  <nisse@lysator.liu.se>
 
+	* texinfo.tex: Delete unused file.
+
 	Copy files from https://git.savannah.gnu.org/cgit/gnulib.git/plain/build-aux/
 	* install-sh: Update to 2020-11-14.01 version.
 	* config.guess: Update to 2023-01-01 version.

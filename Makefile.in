@@ -259,7 +259,7 @@ DISTFILES = $(SOURCES) $(HEADERS) getopt.h getopt_int.h \
 	aclocal.m4 configure.ac \
 	configure stamp-h.in version.h.in \
 	libnettle.map.in libhogweed.map.in \
-	config.guess config.sub install-sh texinfo.tex \
+	config.guess config.sub install-sh \
 	config.h.in config.m4.in config.make.in	Makefile.in \
 	README CONTRIBUTING.md AUTHORS COPYING.LESSERv3 COPYINGv2 COPYINGv3 \
 	INSTALL NEWS ChangeLog \
