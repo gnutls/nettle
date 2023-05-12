@@ -70,6 +70,21 @@ NEWS for the Nettle 3.9 release
 	* Delete all arcfour assembly code. Affects 32-bit x86, 32-bit
 	  and 64-bit sparc.
 
+	Known issues:
+
+	* Version 6.2.1 of GNU GMP (the most recent GMP release as of
+	  this writing) has a known issue for MacOS on 64-bit ARM: GMP
+	  assembly files use the reserved x18 register. On this
+	  platform it is recommended to use a GMP snapshot where this
+	  bug is fixed, and upgrade to a later GMP release when one
+	  becomes available.
+
+	* Also on MacOS, Nettle's testsuite may still break due to
+	  DYLD_LIBRARY_PATH being discarded under some circumstances.
+	  As a workaround, use
+
+	  make check EMULATOR='env DYLD_LIBRARY_PATH=$(TEST_SHLIB_DIR)'
+
 NEWS for the Nettle 3.8.1 release
 
 	This is a bugfix release, fixing a few portability issues
