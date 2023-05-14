@@ -1,3 +1,7 @@
+2023-05-14  Niels Möller  <nisse@lysator.liu.se>
+
+	* Released nettle-3.9.
+
 2023-05-12  Niels Möller  <nisse@lysator.liu.se>
 
 	* texinfo.tex: Delete unused file.
