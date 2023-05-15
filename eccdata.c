@@ -1074,7 +1074,7 @@ output_digits (const mpz_t x,
   unsigned i;
   const char *suffix;
 
-  mpz_init (t);
+  mpz_init_set (t, x);
   mpz_init (mask);
   mpz_init (limb);
 
@@ -1082,8 +1082,6 @@ output_digits (const mpz_t x,
   mpz_sub_ui (mask, mask, 1);
 
   suffix = bits_per_limb > 32 ? "ULL" : "UL";
-
-  mpz_init_set (t, x);
 
   for (i = 0; i < size; i++)
     {
@@ -1120,6 +1118,7 @@ output_bignum_redc (const char *name, const mpz_t x, const mpz_t p,
   mpz_mul_2exp (t, x, size * bits_per_limb);
   mpz_mod (t, t, p);
   output_bignum (name, t, size, bits_per_limb);
+  mpz_clear (t);
 }
 
 static void

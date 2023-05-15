@@ -1,3 +1,9 @@
+2023-05-15  Niels Möller  <nisse@lysator.liu.se>
+
+	* eccdata.c (output_bignum_redc): Add missing mpz_clear, reported
+	by Noah Watkins.
+	(output_digits): Delete a gratuitous mpz_init.
+
 2023-05-14  Niels Möller  <nisse@lysator.liu.se>
 
 	* Released nettle-3.9.
