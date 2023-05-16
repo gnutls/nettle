@@ -1,3 +1,10 @@
+2023-05-16  Niels Möller  <nisse@lysator.liu.se>
+
+	* x86_64/ghash-update.asm: Use separate unaligned load
+	instructions (movups) to load the tabulated values, since they are
+	only 8-byte aligned and pand memory operands require 16-byte
+	alignment.
+
 2023-05-15  Niels Möller  <nisse@lysator.liu.se>
 
 	* eccdata.c (output_bignum_redc): Add missing mpz_clear, reported

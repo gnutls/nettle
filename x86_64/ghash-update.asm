@@ -44,6 +44,8 @@ define(`M0', `%xmm2')
 define(`M1', `%xmm3')
 define(`M2', `%xmm4')
 define(`M3', `%xmm5')
+define(`T0', `%xmm6')
+define(`T1', `%xmm7')
 
 	.file "ghash-update.asm"
 
@@ -54,7 +56,7 @@ define(`M3', `%xmm5')
 	.text
 	ALIGN(16)
 PROLOGUE(_nettle_ghash_update)
-	W64_ENTRY(4, 6)
+	W64_ENTRY(4, 8)
 	sub	$1, BLOCKS
 	movups	(XP), X
 	jc	.Ldone
@@ -77,10 +79,18 @@ ALIGN(16)
 	pshufd	$0xaa, M3, M2
 	pshufd	$0xff, M3, M3
 	pslld	$1, X
-	pand	(KEY, CNT), M0
-	pand	(KEY32, CNT), M1
-	pand	16(KEY, CNT), M2
-	pand	16(KEY32, CNT), M3
+	C Tabulated values are only 8-byte aligned, and therefore
+	C can't be used as memory operands to pand. It would be nice
+	C if we could force 16-byte alignment on nettle_block16, using
+	C C11 alignas.
+	movups	(KEY, CNT), T0
+	movups	(KEY32, CNT), T1
+	pand	T0, M0
+	pand	T1, M1
+	movups	16(KEY, CNT), T0
+	movups	16(KEY32, CNT), T1
+	pand	T0, M2
+	pand	T1, M3
 	pxor	M0, M1
 	pxor	M2, M3
 	pxor	M1, R
@@ -98,6 +108,6 @@ ALIGN(16)
 .Ldone:
 	movups	X, (XP)
 	mov	SRC, %rax
-	W64_EXIT(4, 6)
+	W64_EXIT(4, 8)
 	ret
 EPILOGUE(_nettle_ghash_update)
