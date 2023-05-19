@@ -1,3 +1,10 @@
+2023-05-19  Niels Möller  <nisse@lysator.liu.se>
+
+	From Jussi Kivilinna:
+	* ocb.c (ocb_crypt_n): Fix broken loop logic.
+	* testsuite/ocb-test.c (test_main): Add test vector from libgcrypt,
+	with larger message, to exercise above loop.
+
 2023-05-16  Niels Möller  <nisse@lysator.liu.se>
 
 	* x86_64/ghash-update.asm: Use separate unaligned load

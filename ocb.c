@@ -230,14 +230,14 @@ ocb_crypt_n (struct ocb_ctx *ctx, const struct ocb_key *key,
 	: OCB_MAX_BLOCKS - 1 + (ctx->message_count & 1);
 
       ocb_fill_n (key, &ctx->offset, ctx->message_count, blocks, o);
-      ctx->message_count += n;
+      ctx->message_count += blocks;
 
       size = blocks * OCB_BLOCK_SIZE;
       memxor3 (block[0].b, o[0].b, src, size);
       f (cipher, size, block[0].b, block[0].b);
       memxor3 (dst, block[0].b, o[0].b, size);
 
-      n -= blocks; src += size; dst -= size;
+      n -= blocks; src += size; dst += size;
     }
 }
 
