@@ -122,6 +122,7 @@ Authenticated encryption with associated data
 * GCM::
 * CCM::
 * ChaCha-Poly1305::
+* OCB::
 * SIV-CMAC::
 * SIV-GCM::
 * nettle_aead abstraction::
