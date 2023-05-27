@@ -1,3 +1,27 @@
+NEWS for the Nettle 3.9.1 release
+
+	This is a bugfix release, fixing a few bugs reported for
+	Nettle-3.9. The bug in the new OCB code may be exploitable for
+	denial of service or worse, since triggering it leads to
+	memory corruption. Upgrading from Nettle-3.9 to the new
+	version is strongly recommended.
+
+	The new version is intended to be fully source and binary
+	compatible with Nettle-3.6. The shared library names are
+	libnettle.so.8.8 and libhogweed.so.6.8, with sonames
+	libnettle.so.8 and libhogweed.so.6.
+
+	Bug fixes:
+
+	* Fix OCB loop for processing messages of size 272 bytes or
+	  larger. Reported and fixed by Jussi Kivilinna.
+
+	* Fix alignment bug in the new x86_64 non-pclmul assembly
+	  implementation of ghash. Reported by Henrik Grubbström.
+
+	* Fix build-time memory leak in eccdata. Reported by Noah
+	  Watkins.
+
 NEWS for the Nettle 3.9 release
 
 	This release includes bug fixes, several new features, a few
