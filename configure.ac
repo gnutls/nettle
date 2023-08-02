@@ -3,12 +3,12 @@ dnl -*- mode: shell-script; sh-indentation: 2; -*-
 dnl Process this file with autoconf to produce a configure script.
 
 AC_INIT([nettle], [3.9.1], [nettle-bugs@lists.lysator.liu.se])
-AC_PREREQ(2.61)
+AC_PREREQ([2.69])
 AC_CONFIG_SRCDIR([nettle-types.h])
 # Needed to stop autoconf from looking for files in parent directories.
 AC_CONFIG_AUX_DIR([.])
 
-AC_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 
 LIBNETTLE_MAJOR=8
 LIBNETTLE_MINOR=8
@@ -26,7 +26,7 @@ AC_CANONICAL_HOST
 
 # Command line options
 AC_ARG_WITH(include-path,
-  AC_HELP_STRING([--with-include-path], [A colon-separated list of directories to search for include files]),,
+  AS_HELP_STRING([--with-include-path], [A colon-separated list of directories to search for include files]),,
   [with_include_path=''])
 
 if test x$with_include_path != x ; then
@@ -34,7 +34,7 @@ if test x$with_include_path != x ; then
 fi
 
 AC_ARG_WITH(lib-path,
-  AC_HELP_STRING([--with-lib-path], [A colon-separated list of directories to search for libraries]),,
+  AS_HELP_STRING([--with-lib-path], [A colon-separated list of directories to search for libraries]),,
   [with_lib_path=''])
 
 if test x$with_lib_path != x ; then
@@ -42,83 +42,82 @@ if test x$with_lib_path != x ; then
 fi
 
 AC_ARG_ENABLE(public-key,
-  AC_HELP_STRING([--disable-public-key], [Disable public key algorithms]),,
+  AS_HELP_STRING([--disable-public-key], [Disable public key algorithms]),,
   [enable_public_key=yes])
 
 AC_ARG_ENABLE(assembler,
-  AC_HELP_STRING([--disable-assembler],[Disable assembler code]),,
+  AS_HELP_STRING([--disable-assembler], [Disable assembler code]),,
   [enable_assembler=yes])
 
 AC_ARG_ENABLE(static,
-  AC_HELP_STRING([--disable-static], [Do not build any static library]),,
+  AS_HELP_STRING([--disable-static], [Do not build any static library]),,
   [enable_static=yes])
 
 AC_ARG_ENABLE(shared,
-  AC_HELP_STRING([--disable-shared], [Do not build any shared library]),,
+  AS_HELP_STRING([--disable-shared], [Do not build any shared library]),,
   [enable_shared=yes])
 
 AC_ARG_ENABLE(pic,
-  AC_HELP_STRING([--disable-pic],
-  [Do not try to compile library files as position independent code]),,
+  AS_HELP_STRING([--disable-pic], [Do not try to compile library files as position independent code]),,
   [enable_pic=yes])
 
 AC_ARG_ENABLE(openssl,
-  AC_HELP_STRING([--disable-openssl], [Do not include openssl glue in the benchmark program]),,
+  AS_HELP_STRING([--disable-openssl], [Do not include openssl glue in the benchmark program]),,
   [enable_openssl=yes])
 
 AC_ARG_ENABLE(gcov,
-  AC_HELP_STRING([--enable-gcov], [Instrument for gcov (requires a modern gcc)]),,
+  AS_HELP_STRING([--enable-gcov], [Instrument for gcov (requires a modern gcc)]),,
   [enable_gcov=no])
 
 AC_ARG_ENABLE(documentation,
-  AC_HELP_STRING([--disable-documentation], [Omit building and installing the documentation. (default=auto)]),,
+  AS_HELP_STRING([--disable-documentation], [Omit building and installing the documentation. (default=auto)]),,
   [enable_documentation=auto])
 
-AC_ARG_ENABLE(fat, AC_HELP_STRING([--disable-fat], [Disable fat library build]),,
+AC_ARG_ENABLE(fat, AS_HELP_STRING([--disable-fat], [Disable fat library build]),,
   [enable_fat=yes])
 
 AC_ARG_ENABLE(arm-neon,
-  AC_HELP_STRING([--enable-arm-neon], [Enable ARM Neon assembly. (default=auto)]),,
+  AS_HELP_STRING([--enable-arm-neon], [Enable ARM Neon assembly. (default=auto)]),,
   [enable_arm_neon=auto])
 
 AC_ARG_ENABLE(arm64-crypto,
-  AC_HELP_STRING([--enable-arm64-crypto], [Enable Arm64 crypto extension. (default=no)]),,
+  AS_HELP_STRING([--enable-arm64-crypto], [Enable Arm64 crypto extension. (default=no)]),,
   [enable_arm64_crypto=no])
 
 AC_ARG_ENABLE(x86-aesni,
-  AC_HELP_STRING([--enable-x86-aesni], [Enable x86_64 aes instructions. (default=no)]),,
+  AS_HELP_STRING([--enable-x86-aesni], [Enable x86_64 aes instructions. (default=no)]),,
   [enable_x86_aesni=no])
 
 AC_ARG_ENABLE(x86-sha-ni,
-  AC_HELP_STRING([--enable-x86-sha-ni], [Enable x86_64 sha_ni instructions. (default=no)]),,
+  AS_HELP_STRING([--enable-x86-sha-ni], [Enable x86_64 sha_ni instructions. (default=no)]),,
   [enable_x86_sha_ni=no])
 
 AC_ARG_ENABLE(x86-pclmul,
-  AC_HELP_STRING([--enable-x86-pclmul], [Enable x86_64 pclmulqdq instructions. (default=no)]),,
+  AS_HELP_STRING([--enable-x86-pclmul], [Enable x86_64 pclmulqdq instructions. (default=no)]),,
   [enable_x86_pclmul=no])
 
 AC_ARG_ENABLE(power-crypto-ext,
-  AC_HELP_STRING([--enable-power-crypto-ext], [Enable POWER crypto extensions. (default=no)]),,
+  AS_HELP_STRING([--enable-power-crypto-ext], [Enable POWER crypto extensions. (default=no)]),,
   [enable_power_crypto_ext=no])
 
 AC_ARG_ENABLE(power-altivec,
-  AC_HELP_STRING([--enable-power-altivec], [Enable POWER altivec and vsx extensions. (default=no)]),,
+  AS_HELP_STRING([--enable-power-altivec], [Enable POWER altivec and vsx extensions. (default=no)]),,
   [enable_altivec=no])
 
 AC_ARG_ENABLE(power9,
-  AC_HELP_STRING([--enable-power9], [Enable POWER ISA v3.0. (default=no)]),,
+  AS_HELP_STRING([--enable-power9], [Enable POWER ISA v3.0. (default=no)]),,
   [enable_power9=no])
 
 AC_ARG_ENABLE(s390x-vf,
-  AC_HELP_STRING([--enable-s390x-vf], [Enable vector facility on z/Architecture. (default=no)]),,
+  AS_HELP_STRING([--enable-s390x-vf], [Enable vector facility on z/Architecture. (default=no)]),,
   [enable_s390x_vf=no])
 
 AC_ARG_ENABLE(s390x-msa,
-  AC_HELP_STRING([--enable-s390x-msa], [Enable message-security assist extensions on z/Architecture. (default=no)]),,
+  AS_HELP_STRING([--enable-s390x-msa], [Enable message-security assist extensions on z/Architecture. (default=no)]),,
   [enable_s390x_msa=no])
 
 AC_ARG_ENABLE(mini-gmp,
-  AC_HELP_STRING([--enable-mini-gmp], [Enable mini-gmp, used instead of libgmp.]),,
+  AS_HELP_STRING([--enable-mini-gmp], [Enable mini-gmp, used instead of libgmp.]),,
   [enable_mini_gmp=no])
 
 AC_ARG_VAR(ASM_FLAGS, [Extra flags for processing assembly source files])
@@ -147,7 +146,7 @@ NETTLE_CHECK_IFUNC
 AC_PROG_CXX
 
 AC_LANG_PUSH(C++)
-AC_TRY_COMPILE([],[return 0;],[IF_CXX=''], [IF_CXX='#'])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[return 0;]])], [IF_CXX=''], [IF_CXX='#'])
 AC_SUBST([IF_CXX])
 AC_LANG_POP
 
@@ -183,7 +182,6 @@ AC_C_CONST
 AC_C_INLINE
 AC_TYPE_UID_T
 AC_TYPE_SIZE_T
-AC_HEADER_TIME
 AC_CHECK_SIZEOF(long)
 AC_CHECK_SIZEOF(size_t)
 
@@ -211,14 +209,14 @@ AC_C_BIGENDIAN([AC_DEFINE([WORDS_BIGENDIAN], 1)
 
 AC_CACHE_CHECK([for __builtin_bswap64],
 		nettle_cv_c_builtin_bswap64,
-[AC_TRY_LINK([
+[AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <stdint.h>
-],[
+]], [[
 uint64_t x = 17;
 uint64_t y = __builtin_bswap64(x);
-],
-nettle_cv_c_builtin_bswap64=yes,
-nettle_cv_c_builtin_bswap64=no)])
+]])],
+  [nettle_cv_c_builtin_bswap64=yes],
+  [nettle_cv_c_builtin_bswap64=no])])
 
 AH_TEMPLATE([HAVE_BUILTIN_BSWAP64], [Define if __builtin_bswap64 is available])
 if test "x$nettle_cv_c_builtin_bswap64" = "xyes" ; then
@@ -231,7 +229,7 @@ LSH_GCC_ATTRIBUTES
 # sys/types.h and unistd.h.
 AC_CACHE_CHECK([for fcntl file locking],
 		nettle_cv_fcntl_locking,
-[AC_TRY_COMPILE([
+[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #if HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #endif
@@ -239,12 +237,12 @@ AC_CACHE_CHECK([for fcntl file locking],
 # include <unistd.h>
 #endif
 #include <fcntl.h>
-],[
+]], [[
 int op = F_SETLKW;
 struct flock fl;
-],
-nettle_cv_fcntl_locking=yes,
-nettle_cv_fcntl_locking=no)])
+]])],
+  [nettle_cv_fcntl_locking=yes],
+  [nettle_cv_fcntl_locking=no])])
 
 AH_TEMPLATE([HAVE_FCNTL_LOCKING], [Define if fcntl file locking is available])
 if test "x$nettle_cv_fcntl_locking" = "xyes" ; then
@@ -307,75 +305,75 @@ W64_ABI=no   # For x86_64 windows
 
 case "$host_cpu" in
   [x86_64 | amd64])
-    AC_TRY_COMPILE([
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #if defined(__x86_64__) || defined(__arch64__)
 #error 64-bit x86
 #endif
-    ], [], [
+    ]], [[]])], [
       ABI=32
     ], [
       ABI=64
     ])
     ;;
   *sparc*)
-    AC_TRY_COMPILE([
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #if defined(__sparcv9) || defined(__arch64__)
 #error 64-bit sparc
 #endif
-    ], [], [
+    ]], [[]])], [
       ABI=32
     ], [
       ABI=64
     ])
     ;;
   *mips64*)
-    AC_TRY_COMPILE([
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #if defined(__mips64) || defined(__mips64__) || (defined(__sgi) && defined(__LP64__))
 #error 64-bit mips
 #endif
-    ], [], [
+    ]], [[]])], [
       ABI=32
     ], [
       ABI=64
     ])
     ;;
   *powerpc64*)
-    AC_TRY_COMPILE([
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #if defined(__PPC64__)
 #error 64-bit powerpc
 #endif
-    ], [], [
+    ]], [[]])], [
       ABI=32
     ], [
       ABI=64
     ])
     if test "$ABI" = 64 ; then
-      AC_TRY_COMPILE([
+      AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #if _CALL_ELF == 2
 #error ELFv2 ABI
 #endif
-      ], [], [], [
+      ]], [[]])], [], [
 	ELFV2_ABI=yes
       ])
     fi
     ;;
   aarch64*)
-    AC_TRY_COMPILE([
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #if defined(__aarch64__)
 #error 64-bit arm
 #endif
-    ], [], [
+    ]], [[]])], [
       ABI=32
     ], [
       ABI=64
     ])
     ;;
   *s390x*)
-    AC_TRY_COMPILE([
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #if defined(__s390x__)
 #error 64-bit s390x
 #endif
-    ], [], [
+    ]], [[]])], [
       ABI=32
     ], [
       ABI=64
@@ -974,13 +972,13 @@ int foo() { return 0; }
 EOF
     nettle_compile="$CC $CFLAGS $CPPFLAGS -c conftest.c >conftest.out 2>&1"
     if AC_TRY_EVAL(nettle_compile); then
-      cat conftest.out >&AC_FD_CC
+      cat conftest.out >&AS_MESSAGE_LOG_FD
       $OBJDUMP -x conftest.o | grep '\.note\.GNU-stack' > /dev/null \
       && nettle_cv_asm_gnu_stack=yes
     else
-      cat conftest.out >&AC_FD_CC
-      echo "configure: failed program was:" >&AC_FD_CC
-      cat conftest.s >&AC_FD_CC
+      cat conftest.out >&AS_MESSAGE_LOG_FD
+      echo "configure: failed program was:" >&AS_MESSAGE_LOG_FD
+      cat conftest.s >&AS_MESSAGE_LOG_FD
     fi
     rm -f conftest.*])
   if test x$nettle_cv_asm_gnu_stack = xyes ; then
@@ -1004,11 +1002,11 @@ dnl  Intel CET support if needed.
 dnl  3. ASM_X86_MARK_CET_ALIGN to align ASM_X86_MARK_CET.
 AC_CACHE_CHECK([if Intel CET is enabled],
   [nettle_cv_asm_x86_intel_cet],
-  [AC_TRY_COMPILE([
+  [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #ifndef __CET__
 #error Intel CET is not enabled
 #endif
-  ], [],
+  ]], [[]])],
   [nettle_cv_asm_x86_intel_cet=yes],
   [nettle_cv_asm_x86_intel_cet=no])])
 if test "$nettle_cv_asm_x86_intel_cet" = yes; then
@@ -1028,13 +1026,13 @@ if test "$nettle_cv_asm_x86_intel_cet" = yes; then
   esac
   AC_CACHE_CHECK([if .note.gnu.property section is needed],
     [nettle_cv_asm_x86_gnu_property],
-    [AC_TRY_COMPILE([
+    [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #if !defined __ELF__ || !defined __CET__
 #error GNU property is not needed
 #endif
-    ], [],
-    [nettle_cv_asm_x86_gnu_property=yes],
-    [nettle_cv_asm_x86_gnu_property=no])])
+    ]], [[]])],
+  [nettle_cv_asm_x86_gnu_property=yes],
+  [nettle_cv_asm_x86_gnu_property=no])])
 else
   nettle_cv_asm_x86_gnu_property=no
 fi

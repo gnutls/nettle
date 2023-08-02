@@ -31,8 +31,8 @@ AC_CACHE_VAL(lsh_cv_sys_ccpic,[
   fi
   OLD_CFLAGS="$CFLAGS"
   CFLAGS="$CFLAGS $CCPIC"
-  AC_TRY_COMPILE([], [return 0;],
-    lsh_cv_sys_ccpic="$CCPIC", lsh_cv_sys_ccpic='')
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[return 0;]])],
+    [lsh_cv_sys_ccpic="$CCPIC"], [lsh_cv_sys_ccpic=''])
   CFLAGS="$OLD_CFLAGS"
 ])
 CCPIC="$lsh_cv_sys_ccpic"
@@ -113,8 +113,8 @@ dnl LSH_RPATH_FIX
 AC_DEFUN([LSH_RPATH_FIX],
 [if test $cross_compiling = no -a "x$RPATHFLAG" != x ; then
   ac_success=no
-  AC_TRY_RUN([int main(int argc, char **argv) { return 0; }],
-    ac_success=yes, ac_success=no, :)
+  AC_RUN_IFELSE([AC_LANG_SOURCE([[int main(int argc, char **argv) { return 0; }]])],
+    [ac_success=yes], [ac_success=no], [:])
   
   if test $ac_success = no ; then
     AC_MSG_CHECKING([Running simple test program failed. Trying -R flags])
@@ -127,12 +127,12 @@ dnl echo RPATH_CANDIDATE_DIRS = $RPATH_CANDIDATE_DIRS
       else
   	LDFLAGS="$RPATHFLAG$d $LDFLAGS"
 dnl echo LDFLAGS = $LDFLAGS
-  	AC_TRY_RUN([int main(int argc, char **argv) { return 0; }],
-  	  [ac_success=yes
+	AC_RUN_IFELSE([AC_LANG_SOURCE([[int main(int argc, char **argv) { return 0; }]])],
+	  [ac_success=yes
   	  ac_rpath_save_LDFLAGS="$LDFLAGS"
-  	  AC_MSG_RESULT([adding $RPATHFLAG$d])
-  	  ],
-  	  [ac_remaining_dirs="$ac_remaining_dirs $d"], :)
+	  AC_MSG_RESULT([adding $RPATHFLAG$d])
+	  ],
+	  [ac_remaining_dirs="$ac_remaining_dirs $d"], [:])
   	LDFLAGS="$ac_rpath_save_LDFLAGS"
       fi
     done
@@ -150,7 +150,7 @@ dnl Check for gcc's __attribute__ construction
 AC_DEFUN([LSH_GCC_ATTRIBUTES],
 [AC_CACHE_CHECK(for __attribute__,
 	       lsh_cv_c_attribute,
-[ AC_TRY_COMPILE([
+[ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <stdlib.h>
 
 static void foo(void) __attribute__ ((noreturn));
@@ -160,9 +160,9 @@ foo(void)
 {
   exit(1);
 }
-],[],
-lsh_cv_c_attribute=yes,
-lsh_cv_c_attribute=no)])
+]], [[]])],
+  [lsh_cv_c_attribute=yes],
+  [lsh_cv_c_attribute=no])])
 
 AH_TEMPLATE([HAVE_GCC_ATTRIBUTE], [Define if the compiler understands __attribute__])
 if test "x$lsh_cv_c_attribute" = "xyes"; then
@@ -225,8 +225,7 @@ dnl themselves are not treated as targets.
 
 AC_DEFUN([LSH_DEPENDENCY_TRACKING],
 [AC_ARG_ENABLE(dependency_tracking,
-  AC_HELP_STRING([--disable-dependency-tracking],
-    [Disable dependency tracking. Dependency tracking doesn't work with BSD make]),,
+  AS_HELP_STRING([--disable-dependency-tracking], [Disable dependency tracking. Dependency tracking doesn't work with BSD make]),,
   [enable_dependency_tracking=yes])
 
 DEP_FLAGS=''
@@ -262,7 +261,7 @@ dnl  conftest.o and conftest.out are available for inspection in
 dnl  "action-success".  If either action does a "break" out of a loop then
 dnl  an explicit "rm -f conftest*" will be necessary.
 dnl
-dnl  This is not unlike AC_TRY_COMPILE, but there's no default includes or
+dnl  This is not unlike AC_COMPILE_IFELSE, but there's no default includes or
 dnl  anything in "asm-code", everything wanted must be given explicitly.
 
 AC_DEFUN([GMP_TRY_ASSEMBLE],
@@ -271,12 +270,12 @@ AC_DEFUN([GMP_TRY_ASSEMBLE],
 EOF
 gmp_assemble="$CC $CFLAGS $CPPFLAGS $ASM_FLAGS -c conftest.s >conftest.out 2>&1"
 if AC_TRY_EVAL(gmp_assemble); then
-  cat conftest.out >&AC_FD_CC
+  cat conftest.out >&AS_MESSAGE_LOG_FD
   ifelse([$2],,:,[$2])
 else
-  cat conftest.out >&AC_FD_CC
-  echo "configure: failed program was:" >&AC_FD_CC
-  cat conftest.s >&AC_FD_CC
+  cat conftest.out >&AS_MESSAGE_LOG_FD
+  echo "configure: failed program was:" >&AS_MESSAGE_LOG_FD
+  cat conftest.s >&AS_MESSAGE_LOG_FD
   ifelse([$3],,:,[$3])
 fi
 rm -f conftest*
@@ -343,7 +342,7 @@ EOF
 gmp_compile="$1 conftest.c"
 cc_for_build_works=no
 if AC_TRY_EVAL(gmp_compile); then
-  if (./a.out || ./b.out || ./a.exe || ./a_out.exe || ./conftest) >&AC_FD_CC 2>&1; then
+  if (./a.out || ./b.out || ./a.exe || ./a_out.exe || ./conftest) >&AS_MESSAGE_LOG_FD 2>&1; then
     cc_for_build_works=yes
   fi
 fi
@@ -384,7 +383,7 @@ EOF
   for i in .exe ,ff8 ""; do
     gmp_compile="$CC_FOR_BUILD conftest.c -o conftest$i"
     if AC_TRY_EVAL(gmp_compile); then
-      if (./conftest) 2>&AC_FD_CC; then
+      if (./conftest) 2>&AS_MESSAGE_LOG_FD; then
         gmp_cv_prog_exeext_for_build=$i
         break
       fi
