@@ -143,21 +143,6 @@ AC_PROG_CC
 
 NETTLE_CHECK_IFUNC
 
-# When $CC foo.c -o foo creates both foo and foo.exe, autoconf picks
-# up the foo.exe and sets exeext to .exe. That is correct for cygwin,
-# which has some kind of magic link from foo to foo.exe, but not for
-# rntcl. A better check for the cygwin case would check if the
-# contents of foo and foo.exe are equal; in the rntcl case, foo is a
-# sh script, and foo.exe is a windows executable.
-
-if test "x$CC" = xrntcl ; then
-    AC_MSG_NOTICE([Compiling with rntcl; clearing EXEEXT and disabling assembler])
-    ac_exeext=''
-    ac_cv_exeext=''
-    EXEEXT=''
-    enable_assembler=no
-fi
-
 # Used by the testsuite only
 AC_PROG_CXX
 
@@ -174,10 +159,6 @@ AC_CHECK_TOOL(NM, nm, strings)
 # Used only for the GNU-stack configure test.
 AC_CHECK_TOOL(OBJDUMP, objdump, false)
 AC_CHECK_TOOL(AR, ar, false)
-
-if test "x$ac_cv_prog_cc_stdc" = xno ; then
-  AC_ERROR([the C compiler doesn't handle ANSI-C]) #'
-fi
 
 AC_PROG_INSTALL
 

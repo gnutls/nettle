@@ -1,3 +1,9 @@
+2023-08-01  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Delete special handling of rntcl; it should be
+	treated like any other cross compiler. Delete obsolete check of
+	ac_cv_prog_cc_stdc.
+
 2023-06-01  Niels Möller  <nisse@lysator.liu.se>
 
 	* Released Nettle-3.9.1.

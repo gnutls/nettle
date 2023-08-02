@@ -1,5 +1,4 @@
 dnl Choose cc flags for compiling position independent code
-dnl FIXME: Doesn't do the right thing when crosscompiling.
 AC_DEFUN([LSH_CCPIC],
 [AC_REQUIRE([AC_CANONICAL_HOST])dnl
 AC_MSG_CHECKING(CCPIC)
