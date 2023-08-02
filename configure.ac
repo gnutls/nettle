@@ -199,7 +199,7 @@ AC_CHECK_LIB([dl], [dlopen],
 			[Define to 1 if you have dlopen (with -ldl).])])
 
 LSH_FUNC_ALLOCA
-LSH_FUNC_STRERROR
+
 # getenv_secure is used for fat overrides,
 # getline is used in the testsuite
 AC_CHECK_FUNCS(secure_getenv getline)

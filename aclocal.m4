@@ -215,16 +215,6 @@ char *alloca ();
 #endif
 ])])
 
-AC_DEFUN([LSH_FUNC_STRERROR],
-[AC_CHECK_FUNCS(strerror)
-AH_BOTTOM(
-[#if HAVE_STRERROR
-#define STRERROR strerror
-#else
-#define STRERROR(x) (sys_errlist[x])
-#endif
-])])
-
 AC_DEFUN([LSH_FUNC_STRSIGNAL],
 [AC_CHECK_FUNCS(strsignal)
 AC_CHECK_DECLS([sys_siglist, _sys_siglist])

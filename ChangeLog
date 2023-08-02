@@ -1,3 +1,10 @@
+2023-08-02  Niels Möller  <nisse@lysator.liu.se>
+
+	* aclocal.m4 (LSH_FUNC_STRERROR): Delete macro.
+	* configure.ac: Delete usage.
+	* tools/nettle-hash.c (main): Use strerror unconditionally.
+	* tools/nettle-pbkdf2.c (main): Likewise.
+
 2023-08-01  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Delete special handling of rntcl; it should be
