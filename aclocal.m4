@@ -215,28 +215,6 @@ char *alloca ();
 #endif
 ])])
 
-AC_DEFUN([LSH_FUNC_STRSIGNAL],
-[AC_CHECK_FUNCS(strsignal)
-AC_CHECK_DECLS([sys_siglist, _sys_siglist])
-AH_BOTTOM(
-[#if HAVE_STRSIGNAL
-# define STRSIGNAL strsignal
-#else /* !HAVE_STRSIGNAL */
-# if HAVE_DECL_SYS_SIGLIST
-#  define STRSIGNAL(x) (sys_siglist[x])
-# else
-#  if HAVE_DECL__SYS_SIGLIST
-#   define STRSIGNAL(x) (_sys_siglist[x])
-#  else
-#   define STRSIGNAL(x) "Unknown signal"
-#   if __GNUC__
-#    warning Using dummy STRSIGNAL
-#   endif
-#  endif
-# endif
-#endif /* !HAVE_STRSIGNAL */
-])])
-
 dnl LSH_DEPENDENCY_TRACKING
 
 dnl Defines compiler flags DEP_FLAGS to generate dependency
