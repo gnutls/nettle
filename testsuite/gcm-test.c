@@ -6,13 +6,6 @@
 #include "gcm.h"
 #include "ghash-internal.h"
 
-#if HAVE_VALGRIND_MEMCHECK_H
-# include <valgrind/memcheck.h>
-#else
-# define VALGRIND_MAKE_MEM_UNDEFINED(p, n)
-# define VALGRIND_MAKE_MEM_DEFINED(p, n)
-#endif
-
 static void
 test_gcm_hash (const struct tstring *msg, const struct tstring *ref)
 {
@@ -49,19 +42,19 @@ test_ghash_internal (const struct tstring *key,
   struct gcm_key gcm_key;
   union nettle_block16 state;
 
-  /* Use VALGRIND_MAKE_MEM_DEFINED to mark inputs as "undefined", to
-     get valgrind to warn about any branches or memory accesses
-     depending on secret data. */
+  /* Mark inputs as "undefined" to valgrind, to get warnings about any
+     branches or memory accesses depending on secret data. */
   memcpy (state.b, key->data, GCM_BLOCK_SIZE);
-  VALGRIND_MAKE_MEM_UNDEFINED (&state, sizeof(state));
+  mark_bytes_undefined (sizeof(state), &state);
   _ghash_set_key (&gcm_key, &state);
 
   memcpy (state.b, iv->data, GCM_BLOCK_SIZE);
-  VALGRIND_MAKE_MEM_UNDEFINED (&state, sizeof(state));
-  VALGRIND_MAKE_MEM_UNDEFINED (message->data, message->length);
+  mark_bytes_undefined (sizeof(state), &state);
+  mark_bytes_undefined (message->length, message->data);
   _ghash_update (&gcm_key, &state, message->length / GCM_BLOCK_SIZE, message->data);
-  VALGRIND_MAKE_MEM_DEFINED (&state, sizeof(state));
-  VALGRIND_MAKE_MEM_DEFINED (message->data, message->length);
+  mark_bytes_defined (sizeof(state), &state);
+  mark_bytes_defined (message->length, message->data);
+
   if (!MEMEQ(GCM_BLOCK_SIZE, state.b, digest->data))
     {
       fprintf (stderr, "gcm_hash (internal) failed\n");

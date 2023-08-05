@@ -66,7 +66,9 @@ TS_HOGWEED = $(TS_HOGWEED_SOURCES:.c=$(EXEEXT))
 TS_C = $(TS_NETTLE) @IF_HOGWEED@ $(TS_HOGWEED)
 TS_CXX = @IF_CXX@ $(CXX_SOURCES:.cxx=$(EXEEXT))
 TARGETS = $(TS_C) $(TS_CXX)
-TS_SH = symbols-test
+TS_SC = sc-cnd-memcpy-test sc-gcm-test sc-memeql-test \
+	@IF_HOGWEED@ sc-pkcs1-sec-decrypt-test sc-rsa-sec-decrypt-test
+TS_SH = $(TS_SC) symbols-test
 TS_ALL = $(TARGETS) $(TS_SH) @IF_DLOPEN_TEST@ dlopen-test$(EXEEXT)
 
 TS_FAT = $(patsubst %, %$(EXEEXT), aes-test cbc-test \
@@ -127,7 +129,7 @@ $(TARGETS) $(EXTRA_TARGETS): testutils.$(OBJEXT) ../nettle-internal.$(OBJEXT) \
 # data.
 VALGRIND = valgrind --error-exitcode=1 --leak-check=full --show-reachable=yes @IF_ASM@ --partial-loads-ok=yes
 
-check: $(TS_ALL)
+check: $(TS_ALL) $(TS_ALL:sc-%=%)
 	TEST_SHLIB_DIR="$(TEST_SHLIB_DIR)" \
 	  srcdir="$(srcdir)" \
 	  EMULATOR="$(EMULATOR)" NM="$(NM)" EXEEXT="$(EXEEXT)" \
