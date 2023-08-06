@@ -123,9 +123,9 @@ print_hex(size_t length, const uint8_t *data)
 }
 
 int verbose = 0;
+int test_side_channel = 0;
 
 #if HAVE_VALGRIND_MEMCHECK_H
-int test_side_channel = 0;
 
 void
 mark_bytes_undefined (size_t size, const void *p)
