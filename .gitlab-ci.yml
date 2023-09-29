@@ -15,7 +15,7 @@ build/x86-64:
   image: $CI_REGISTRY/$BUILDENV_NATIVE_IMAGE
   # Disable default yum command.
   before_script:
-  - true
+  - 'true'
   script:
   - ./.bootstrap &&
     ./configure --disable-static --disable-documentation && make -j4 &&
