@@ -13,6 +13,9 @@ before_script:
 # See http://doc.gitlab.com/ce/ci/yaml/ for documentation.
 build/x86-64:
   image: $CI_REGISTRY/$BUILDENV_NATIVE_IMAGE
+  # Disable default yum command.
+  before_script:
+  - true
   script:
   - ./.bootstrap &&
     ./configure --disable-static --disable-documentation && make -j4 &&
