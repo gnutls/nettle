@@ -1,7 +1,7 @@
 variables:
   BUILDENV_NATIVE_IMAGE: gnutls/nettle-build-images:buildenv-native
   BUILDENV_CLANG_IMAGE: gnutls/nettle-build-images:buildenv-clang
-  BUILDENV_CROSS_IMAGE: gnutls/nettle-build-images:buildenv-clang
+  BUILDENV_CROSS_IMAGE: gnutls/nettle-build-images:buildenv-cross
   BUILD_IMAGES_PROJECT: gnutls/build-images
   DEBIAN_CROSS_BUILD: buildenv-debian-cross
   DEBIAN_X86_CROSS_BUILD: buildenv-debian-x86-cross
