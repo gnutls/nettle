@@ -163,8 +163,7 @@ Debian.cross.x86:
   - linux
   except:
   - tags
-Debian.cross.arm-linux-gnueabihf:
-  <<: *Debian_cross_template
+
 Debian.cross.aarch64-linux-gnu:
   <<: *Debian_cross_template
 Debian.cross.powerpc64-linux-gnu:
@@ -221,7 +220,7 @@ remote/s390x:
   # Disable C++, to not depend on cross g++.
   - export CXX=/bin/false
   - ./.bootstrap
-  - ./configure --disable-static --disable-documentation $EXTRA_CONFIGURE_FLAGS --build=$build --host=$host
+  - ./configure --disable-documentation --build=$build --host=$host
   - make -j$(nproc)
   - NETTLE_TEST_SEED=0 make -j$(nproc) check
   - NETTLE_TEST_SEED=0 make -j$(nproc) check-fat
@@ -232,4 +231,16 @@ remote/s390x:
   - tags
 
 cross.arm-linux-gnueabihf:
+  extends: .cross-build
+
+cross.aarch64-linux-gnu:
+  extends: .cross-build
+
+cross.powerpc64-linux-gnu:
+  extends: .cross-build
+
+cross.powerpc64le-linux-gnu:
+  extends: .cross-build
+
+cross.s390x-linux-gnu:
   extends: .cross-build
