@@ -220,7 +220,7 @@ remote/s390x:
   # Disable C++, to not depend on cross g++.
   - export CXX=/bin/false
   - ./.bootstrap
-  - ./configure --disable-documentation --build=$build --host=$host
+  - ./configure --disable-documentation $EXTRA_CONFIGURE_ARGS --build=$build --host=$host
   - make -j$(nproc)
   - NETTLE_TEST_SEED=0 make -j$(nproc) check
   - NETTLE_TEST_SEED=0 make -j$(nproc) check-fat
@@ -242,5 +242,9 @@ cross.powerpc64-linux-gnu:
 cross.powerpc64le-linux-gnu:
   extends: .cross-build
 
+# Disable assembly files, because current qemu doesn't support all
+# needed instructions.
 cross.s390x-linux-gnu:
   extends: .cross-build
+  variables:
+    EXTRA_CONFIGURE_ARGS: --disable-assembler
