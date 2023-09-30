@@ -176,6 +176,7 @@ Debian.cross.s390x-linux-gnu:
 
 remote/s390x:
   image: $CI_REGISTRY/$BUILDENV_NATIVE_IMAGE
+  before_script:
   # File created as world-readable by gitlab ci machinery.
   - chmod 0600 $SSH_PRIVATE_KEY
   - ssh -o 'StrictHostKeyChecking no' -i "$SSH_PRIVATE_KEY" "$S390X_ACCOUNT"
