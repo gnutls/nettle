@@ -6,16 +6,9 @@ variables:
   DEBIAN_X86_CROSS_BUILD: buildenv-debian-x86-cross
   GET_SOURCES_ATTEMPTS: "3"
 
-# remove any pre-installed headers from nettle
-before_script:
- - yum remove -y nettle-devel
-
 # See http://doc.gitlab.com/ce/ci/yaml/ for documentation.
 build/x86-64:
   image: $CI_REGISTRY/$BUILDENV_NATIVE_IMAGE
-  # Disable default yum command.
-  before_script:
-  - 'true'
   script:
   - ./.bootstrap &&
     ./configure --disable-static --disable-documentation && make -j4 &&
@@ -27,7 +20,7 @@ build/x86-64:
   except:
   - tags
 build/mini-gmp:
-  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
+  image: $CI_REGISTRY/$BUILDENV_NATIVE_IMAGE
   script:
   - ./.bootstrap &&
     ./configure --disable-documentation --disable-fat --enable-mini-gmp && make -j4 &&
@@ -38,7 +31,7 @@ build/mini-gmp:
   except:
   - tags
 build/c89:
-  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
+  image: $CI_REGISTRY/$BUILDENV_NATIVE_IMAGE
   script:
   - ./.bootstrap &&
     ./configure CC='gcc -std=c89' --disable-static --disable-assembler --disable-documentation && make -j4 &&
@@ -49,7 +42,7 @@ build/c89:
   except:
   - tags
 build/ndebug:
-  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
+  image: $CI_REGISTRY/$BUILDENV_NATIVE_IMAGE
   script:
   - ./.bootstrap &&
     ./configure CPPFLAGS='-DNDEBUG' --disable-static --disable-assembler --disable-documentation && make -j4 &&
@@ -60,7 +53,7 @@ build/ndebug:
   except:
   - tags
 build/ubsan:
-  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
+  image: $CI_REGISTRY/$BUILDENV_NATIVE_IMAGE
   script:
   - ./.bootstrap && 
     CXXFLAGS="-fsanitize=undefined -fno-sanitize-recover -g -O2" CFLAGS="-fsanitize=undefined -fno-sanitize-recover -g -O2" ./configure --disable-assembler 
@@ -71,7 +64,7 @@ build/ubsan:
   except:
   - tags
 build/asan:
-  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
+  image: $CI_REGISTRY/$BUILDENV_NATIVE_IMAGE
   script:
   - ./.bootstrap && 
   - CXXFLAGS="-fsanitize=address -g -O2" CFLAGS="-fsanitize=address -g -O2" ./configure --disable-documentation --disable-assembler &&
@@ -83,6 +76,9 @@ build/asan:
   - tags
 build/static-analyzers:
   image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
+  # remove any pre-installed headers from nettle
+  before_script:
+   - yum remove -y nettle-devel
   script:
   - ./.bootstrap
   - scan-build ./configure --disable-documentation --disable-assembler
@@ -99,6 +95,9 @@ build/static-analyzers:
       - scan-build-lib/*
 build/gnutls:
   image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
+  # remove any pre-installed headers from nettle
+  before_script:
+   - yum remove -y nettle-devel
   script:
   - ./.bootstrap &&
     ./configure --disable-documentation --prefix="$(pwd)/local" --libdir="$(pwd)/local/lib" &&
@@ -183,6 +182,7 @@ Debian.cross.s390x-linux-gnu:
 remote/s390x:
   image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
   before_script:
+  - yum remove -y nettle-devel
   # File created as world-readable by gitlab ci machinery.
   - chmod 0600 $SSH_PRIVATE_KEY
   - ssh -o 'StrictHostKeyChecking no' -i "$SSH_PRIVATE_KEY" "$S390X_ACCOUNT"
