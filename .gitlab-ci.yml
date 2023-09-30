@@ -213,11 +213,13 @@ remote/s390x:
   script:
   - build=$(dpkg-architecture -qDEB_HOST_GNU_TYPE)
   - host="${CI_JOB_NAME#cross.}"
-  # not setting CC_FOR_BUILD paired with qemu-user/binfmt somehow causes
+  # Not setting CC_FOR_BUILD paired with qemu-user/binfmt somehow causes
   # config.guess to detect the target as the build platform and not activate
-  # cross-compile mode even though --build is given
+  # cross-compile mode, even though --build is given.
   - export CC_FOR_BUILD="gcc"
   - export CC="$host-gcc"
+  # Disable C++, to not depend on cross g++.
+  - export CXX=/bin/false
   - ./.bootstrap
   - ./configure --disable-static --disable-documentation $EXTRA_CONFIGURE_FLAGS --build=$build --host=$host
   - make -j$(nproc)
