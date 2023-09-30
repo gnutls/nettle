@@ -1,8 +1,9 @@
 variables:
   BUILDENV_NATIVE_IMAGE: gnutls/nettle-build-images:buildenv-native
+  BUILDENV_CLANG_IMAGE: gnutls/nettle-build-images:buildenv-clang
+  BUILDENV_CROSS_IMAGE: gnutls/nettle-build-images:buildenv-clang
   BUILD_IMAGES_PROJECT: gnutls/build-images
   DEBIAN_CROSS_BUILD: buildenv-debian-cross
-  FEDORA_BUILD: buildenv-fedora31
   DEBIAN_X86_CROSS_BUILD: buildenv-debian-x86-cross
   GET_SOURCES_ATTEMPTS: "3"
 
@@ -75,10 +76,7 @@ build/asan:
   except:
   - tags
 build/static-analyzers:
-  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
-  # remove any pre-installed headers from nettle
-  before_script:
-   - yum remove -y nettle-devel
+  image: $CI_REGISTRY/$BUILDENV_CLANG_IMAGE
   script:
   - ./.bootstrap
   - scan-build ./configure --disable-documentation --disable-assembler
@@ -94,10 +92,7 @@ build/static-analyzers:
     paths:
       - scan-build-lib/*
 build/gnutls:
-  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
-  # remove any pre-installed headers from nettle
-  before_script:
-   - yum remove -y nettle-devel
+  image: $CI_REGISTRY/$BUILDENV_NATIVE_IMAGE
   script:
   - ./.bootstrap &&
     ./configure --disable-documentation --prefix="$(pwd)/local" --libdir="$(pwd)/local/lib" &&
@@ -180,9 +175,7 @@ Debian.cross.s390x-linux-gnu:
   <<: *Debian_cross_template
 
 remote/s390x:
-  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
-  before_script:
-  - yum remove -y nettle-devel
+  image: $CI_REGISTRY/$BUILDENV_NATIVE_IMAGE
   # File created as world-readable by gitlab ci machinery.
   - chmod 0600 $SSH_PRIVATE_KEY
   - ssh -o 'StrictHostKeyChecking no' -i "$SSH_PRIVATE_KEY" "$S390X_ACCOUNT"
