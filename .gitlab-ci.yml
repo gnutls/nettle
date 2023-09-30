@@ -212,7 +212,7 @@ remote/s390x:
   image: $CI_REGISTRY/$BUILDENV_CROSS_IMAGE
   script:
   - build=$(dpkg-architecture -qDEB_HOST_GNU_TYPE)
-  - host="${CI_JOB_NAME#*.cross.}"
+  - host="${CI_JOB_NAME#cross.}"
   # not setting CC_FOR_BUILD paired with qemu-user/binfmt somehow causes
   # config.guess to detect the target as the build platform and not activate
   # cross-compile mode even though --build is given
