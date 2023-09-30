@@ -207,3 +207,27 @@ remote/s390x:
   - linux
   except:
   - tags
+
+.cross-build: &cross-build
+  image: $CI_REGISTRY/$BUILDENV_CROSS_IMAGE
+  script:
+  - build=$(dpkg-architecture -qDEB_HOST_GNU_TYPE)
+  - host="${CI_JOB_NAME#*.cross.}"
+  # not setting CC_FOR_BUILD paired with qemu-user/binfmt somehow causes
+  # config.guess to detect the target as the build platform and not activate
+  # cross-compile mode even though --build is given
+  - export CC_FOR_BUILD="gcc"
+  - export CC="$host-gcc"
+  - ./.bootstrap
+  - ./configure --disable-static --disable-documentation $EXTRA_CONFIGURE_FLAGS --build=$build --host=$host
+  - make -j$(nproc)
+  - NETTLE_TEST_SEED=0 make -j$(nproc) check
+  - NETTLE_TEST_SEED=0 make -j$(nproc) check-fat
+  tags:
+  - shared
+  - linux
+  except:
+  - tags
+
+cross.arm-linux-gnueabihf:
+  extends: .cross-build
