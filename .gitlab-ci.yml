@@ -165,13 +165,9 @@ Debian.cross.x86:
   except:
   - tags
 
-Debian.cross.aarch64-linux-gnu:
-  <<: *Debian_cross_template
 Debian.cross.powerpc64-linux-gnu:
   <<: *Debian_cross_template
 Debian.cross.powerpc64le-linux-gnu:
-  <<: *Debian_cross_template
-Debian.cross.s390x-linux-gnu:
   <<: *Debian_cross_template
 
 remote/s390x:
