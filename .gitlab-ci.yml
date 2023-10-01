@@ -238,7 +238,7 @@ cross/aarch64-linux-gnu:
 cross/powerpc64-linux-gnu:
   extends: .cross-build
   variables:
-    QEMU_LD_PREFIX:/usr/powerpc64-linux-gnu
+    QEMU_LD_PREFIX: /usr/powerpc64-linux-gnu
 
 cross/powerpc64le-linux-gnu:
   extends: .cross-build
@@ -248,4 +248,4 @@ cross/powerpc64le-linux-gnu:
 cross/s390x-linux-gnu:
   extends: .cross-build
   variables:
-    EXTRA_CONFIGURE_ARGS: --disable-assembler
+    EXTRA_CONFIGURE_ARGS: '--disable-assembler'
