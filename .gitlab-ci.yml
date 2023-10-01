@@ -236,8 +236,12 @@ cross/arm-linux-gnueabihf:
 cross/aarch64-linux-gnu:
   extends: .cross-build
 
+# Setting QEMU_LD_PREFIX works around the error "qemu-ppc64: Could not
+# open '/lib64/ld64.so.1".
 cross/powerpc64-linux-gnu:
   extends: .cross-build
+  variables:
+    QEMU_LD_PREFIX:/usr/powerpc64-linux-gnu
 
 cross/powerpc64le-linux-gnu:
   extends: .cross-build
