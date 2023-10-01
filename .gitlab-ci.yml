@@ -207,6 +207,8 @@ remote/s390x:
 .cross-build: &cross-build
   image: $CI_REGISTRY/$BUILDENV_CROSS_IMAGE
   script:
+  - echo qemu prefix: $QEMU_LD_PREFIX
+  - env | grep QEMU_LD_PREFIX
   - build=$(dpkg-architecture -qDEB_HOST_GNU_TYPE)
   - host="${CI_JOB_NAME#cross/}"
   # Not setting CC_FOR_BUILD paired with qemu-user/binfmt somehow causes
