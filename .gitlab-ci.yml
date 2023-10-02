@@ -219,8 +219,8 @@ remote/s390x:
   - ./.bootstrap
   - ./configure --disable-documentation $EXTRA_CONFIGURE_ARGS --build=$build --host=$host
   - make -j$(nproc)
-  - NETTLE_TEST_SEED=0 make EMULATOR=$(EMULATOR) -j$(nproc) check
-  - NETTLE_TEST_SEED=0 make EMULATOR=$(EMULATOR) -j$(nproc) check-fat
+  - NETTLE_TEST_SEED=0 make EMULATOR=${EMULATOR} -j$(nproc) check
+  - NETTLE_TEST_SEED=0 make EMULATOR=${EMULATOR} -j$(nproc) check-fat
   tags:
   - shared
   - linux
