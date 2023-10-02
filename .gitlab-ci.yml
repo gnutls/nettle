@@ -3,7 +3,6 @@ variables:
   BUILDENV_CLANG_IMAGE: gnutls/nettle-build-images:buildenv-clang
   BUILDENV_CROSS_IMAGE: gnutls/nettle-build-images:buildenv-cross
   BUILD_IMAGES_PROJECT: gnutls/build-images
-  DEBIAN_CROSS_BUILD: buildenv-debian-cross
   DEBIAN_X86_CROSS_BUILD: buildenv-debian-x86-cross
   GET_SOURCES_ATTEMPTS: "3"
 
@@ -134,41 +133,6 @@ Debian.cross.x86:
   - linux
   except:
   - tags
-.Debian.cross.template: &Debian_cross_template
-  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_CROSS_BUILD
-  before_script:
-  - host="${CI_JOB_NAME#*.cross.}"
-  - dpkg --add-architecture ppc64el
-  - dpkg --add-architecture s390x
-  - apt-get update -q
-  # remove any previously installed nettle headers to avoid conflicts
-  - for arch in armhf arm64 ppc64el;do apt-get remove -y nettle-dev:$arch;done
-  - if [ "$host" == "powerpc64-linux-gnu" ];then apt-get install -y software-properties-common && add-apt-repository "deb http://deb.debian.org/debian bullseye-backports main" && apt-get update && apt-get install -y -t bullseye-backports binfmt-support qemu-user && apt-get install -y gcc-$host g++-$host && export QEMU_LD_PREFIX=/usr/$host EXTRA_CONFIGURE_FLAGS='--enable-mini-gmp';fi
-  - if [ "$host" == "powerpc64le-linux-gnu" ];then apt-get install -y software-properties-common && add-apt-repository "deb http://deb.debian.org/debian bullseye-backports main" && apt-get update && apt-get install -y -t bullseye-backports binfmt-support qemu-user && apt-get install -y gcc-$host g++-$host libgmp-dev:ppc64el && export QEMU_LD_PREFIX=/usr/$host;fi
-  - if [ "$host" == "s390x-linux-gnu" ];then apt-get update && apt-get install -y gcc-$host g++-$host libgmp-dev:s390x && export EXTRA_CONFIGURE_FLAGS='--disable-assembler';fi
-  script:
-  - build=$(dpkg-architecture -qDEB_HOST_GNU_TYPE)
-  - host="${CI_JOB_NAME#*.cross.}"
-  # not setting CC_FOR_BUILD paired with qemu-user/binfmt somehow causes
-  # config.guess to detect the target as the build platform and not activate
-  # cross-compile mode even though --build is given
-  - export CC_FOR_BUILD="gcc"
-  - export CC="$host-gcc"
-  - ./.bootstrap
-  - ./configure --disable-static --disable-documentation $EXTRA_CONFIGURE_FLAGS --build=$build --host=$host
-  - make -j$(nproc)
-  - NETTLE_TEST_SEED=0 make -j$(nproc) check
-  - NETTLE_TEST_SEED=0 make -j$(nproc) check-fat
-  tags:
-  - shared
-  - linux
-  except:
-  - tags
-
-Debian.cross.powerpc64-linux-gnu:
-  <<: *Debian_cross_template
-Debian.cross.powerpc64le-linux-gnu:
-  <<: *Debian_cross_template
 
 remote/s390x:
   image: $CI_REGISTRY/$BUILDENV_NATIVE_IMAGE
@@ -229,20 +193,27 @@ remote/s390x:
 
 cross/arm-linux-gnueabihf:
   extends: .cross-build
+  variables:
+    EMULATOR: qemu-arm
 
 cross/aarch64-linux-gnu:
   extends: .cross-build
+  variables:
+    EMULATOR: qemu-aarch64
 
 # Setting QEMU_LD_PREFIX works around the error "qemu-ppc64: Could not
 # open '/lib64/ld64.so.1".
 cross/powerpc64-linux-gnu:
   extends: .cross-build
   variables:
+    EXTRA_CONFIGURE_ARGS: '--enable-mini-gmp'
     QEMU_LD_PREFIX: /usr/powerpc64-linux-gnu
     EMULATOR: qemu-ppc64
 
 cross/powerpc64le-linux-gnu:
   extends: .cross-build
+  variables:
+    EMULATOR: qemu-ppc64le
 
 # Disable assembly files, because current qemu doesn't support all
 # needed instructions.
@@ -250,3 +221,4 @@ cross/s390x-linux-gnu:
   extends: .cross-build
   variables:
     EXTRA_CONFIGURE_ARGS: '--disable-assembler'
+    EMULATOR: qemu-s390x
