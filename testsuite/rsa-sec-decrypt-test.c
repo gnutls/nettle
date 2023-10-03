@@ -69,7 +69,7 @@ test_main(void)
   unsigned n_size = 1024;
   mpz_t gibberish;
   mpz_t garbage;
-  size_t size;
+  unsigned count;
 
   rsa_private_key_init(&key);
   rsa_public_key_init(&pub);
@@ -80,7 +80,7 @@ test_main(void)
 
   memset(verifybad, 'A', PAYLOAD_SIZE);
 
-  for (size = 1; size < 51; size++)
+  for (count = 1; count < 20; count++)
     {
       ASSERT (rsa_generate_keypair(&pub, &key, &random_ctx,
 			           (nettle_random_func *) knuth_lfib_random,

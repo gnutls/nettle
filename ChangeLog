@@ -1,5 +1,18 @@
 2023-10-03  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/ecc-mod-arith-test.c: Reduce test count, aiming to get
+	test to complete in roughly 0.1s.
+	* testsuite/ecc-mod-test.c: Likewise.
+	* testsuite/ecc-modinv-test.c: Likewise.
+	* testsuite/ecc-mul-a-test.c: Likewise.
+	* testsuite/ecc-redc-test.c: Likewise.
+	* testsuite/ecc-sqrt-test.c: Likewise.
+	* testsuite/eddsa-compress-test.c: Likewise.
+	* testsuite/poly1305-test.c: Likewise.
+	* testsuite/random-prime-test.c: Likewise.
+	* testsuite/rsa-compute-root-test.c: Likewise.
+	* testsuite/rsa-sec-decrypt-test.c: Likewise.
+
 	* testsuite/Makefile.in (TS_SH): Delete tools tests from list.
 	* tools/Makefile.in (check): Run tools tests from this target.
 	(TS_ALL): New variable.
