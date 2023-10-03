@@ -68,6 +68,12 @@ TS_CXX = @IF_CXX@ $(CXX_SOURCES:.cxx=$(EXEEXT))
 TARGETS = $(TS_C) $(TS_CXX)
 TS_SH = symbols-test
 TS_ALL = $(TARGETS) $(TS_SH) @IF_DLOPEN_TEST@ dlopen-test$(EXEEXT)
+
+TS_FAT = $(patsubst %, %$(EXEEXT), aes-test cbc-test \
+	chacha-test salsa20-test memxor-test \
+	sha1-test sha256-test sha512-test sha3-permute-test sha3-512-test \
+	umac-test gcm-test siv-gcm-test)
+
 EXTRA_SOURCES = sha1-huge-test.c
 EXTRA_TARGETS = $(EXTRA_SOURCES:.c=$(EXEEXT))
 

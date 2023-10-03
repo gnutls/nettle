@@ -1,5 +1,11 @@
 2023-10-03  Niels Möller  <nisse@lysator.liu.se>
 
+	* Makefile.in (check-fat): Reduce tests to run to TS_FAT, to speed
+	up tests.
+
+	* testsuite/Makefile.in (TS_FAT): Define list of tests relevant
+	for testing algorithm variants in fat builds.
+
 	* testsuite/ecc-mod-arith-test.c: Reduce test count, aiming to get
 	test to complete in roughly 0.1s.
 	* testsuite/ecc-mod-test.c: Likewise.

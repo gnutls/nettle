@@ -63,7 +63,7 @@ check-fat:
 	[ -z "$(FAT_TEST_LIST)" ] || \
 	  set -e; cd testsuite && for f in $(FAT_TEST_LIST) ; do \
 	    echo NETTLE_FAT_OVERRIDE=$$f ; \
-	    NETTLE_FAT_OVERRIDE=$$f $(MAKE) check ; \
+	    NETTLE_FAT_OVERRIDE=$$f $(MAKE) check TS_ALL='$$(TS_FAT)' ; \
 	  done
 
 all-here: $(TARGETS) $(DOCTARGETS)
