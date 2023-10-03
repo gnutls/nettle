@@ -66,7 +66,7 @@ TS_HOGWEED = $(TS_HOGWEED_SOURCES:.c=$(EXEEXT))
 TS_C = $(TS_NETTLE) @IF_HOGWEED@ $(TS_HOGWEED)
 TS_CXX = @IF_CXX@ $(CXX_SOURCES:.cxx=$(EXEEXT))
 TARGETS = $(TS_C) $(TS_CXX)
-TS_SH = sexp-conv-test pkcs1-conv-test nettle-pbkdf2-test symbols-test
+TS_SH = symbols-test
 TS_ALL = $(TARGETS) $(TS_SH) @IF_DLOPEN_TEST@ dlopen-test$(EXEEXT)
 EXTRA_SOURCES = sha1-huge-test.c
 EXTRA_TARGETS = $(EXTRA_SOURCES:.c=$(EXEEXT))
@@ -76,8 +76,7 @@ EXTRA_TARGETS = $(EXTRA_SOURCES:.c=$(EXEEXT))
 SOURCES = $(TS_SOURCES) $(EXTRA_SOURCES) testutils.c dlopen-test.c
 
 DISTFILES = $(SOURCES) $(CXX_SOURCES) Makefile.in \
-	    $(TS_SH) teardown-env \
-	    gold-bug.txt testutils.h sha3.awk
+	    $(TS_SH) gold-bug.txt testutils.h sha3.awk
 
 all: $(EXTRA_TARGETS)
 
@@ -128,7 +127,6 @@ check: $(TS_ALL)
 	  EMULATOR="$(EMULATOR)" NM="$(NM)" EXEEXT="$(EXEEXT)" \
           $(top_srcdir)/run-tests $(TS_ALL)
 
-
 Makefile: $(srcdir)/Makefile.in ../config.status
 	cd .. && $(SHELL) ./config.status testsuite/$@
 
@@ -140,7 +138,7 @@ distdir: $(DISTFILES)
 
 clean:
 	-rm -f $(TARGETS) $(EXTRA_TARGETS) dlopen-test$(EXEEXT) \
-		*.$(OBJEXT) *.$(OBJEXT).d test.in test1.out test2.out
+		*.$(OBJEXT) *.$(OBJEXT).d test1.out
 
 distclean: clean
 	-rm -f Makefile *.d

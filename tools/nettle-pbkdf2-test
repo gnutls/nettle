@@ -15,7 +15,7 @@ test_pbkdf2 () {
 
     # Delete carriage return characters, needed when testing with
     # wine.
-    printf "%s" "$password" | $EMULATOR ../tools/nettle-pbkdf2 \
+    printf "%s" "$password" | $EMULATOR ./nettle-pbkdf2 \
 	-i "$iters" -l "$length" "$salt" | tr -d '\r' > test1.out
     echo "$expected" | tr -d '\r' > test2.out
 
