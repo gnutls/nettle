@@ -1,5 +1,17 @@
 2023-10-04  Niels Möller  <nisse@lysator.liu.se>
 
+	* bswap-internal.h (bswap32_if_be, bswap32_if_le): New macros.
+	* blowfish-bcrypt.c (bswap32_if_le_n): Rename, to not collide with
+	new macro.
+	(bswap32_if_le): ... old name, deleted.
+	* umac-set-key.c (bswap32_if_le_n): Define in the same way as for
+	bcrypt, replacing...
+	(BE_SWAP32_N): ...deleted macro.
+	* umac-l3.c (_nettle_umac_l3_init): Use bswap64_if_le.
+	* umac-l2.c (_nettle_umac_l2_init): Use bswap32_if_le.
+	* chacha-core-internal.c (_nettle_chacha_core): Use bswap32_if_be.
+	* salsa20-core-internal.c (_nettle_salsa20_core): Likewise
+
 	* umac-l2.c (_nettle_umac_l2_final): Delete redundant assignment.
 
 2023-10-03  Niels Möller  <nisse@lysator.liu.se>

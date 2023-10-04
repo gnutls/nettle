@@ -150,9 +150,10 @@ static uint32_t magic_w[6] = {
 };
 
 #if WORDS_BIGENDIAN
-#define bswap32_if_le(x, n)
+#define bswap32_if_le_n(n, x)
 #else
-static void bswap32_if_le (uint32_t *x, unsigned n)
+static void
+bswap32_if_le_n (unsigned n, uint32_t *x)
 {
   unsigned i;
   for (i = 0; i < n; i++)
@@ -340,7 +341,7 @@ static int ibcrypt(uint8_t *dst,
   else if (lenscheme < HASHOFFSET)
     return 0;
   memcpy(psalt, data.binary.salt, BLOWFISH_BCRYPT_BINSALT_SIZE);
-  bswap32_if_le (data.binary.salt, 4);
+  bswap32_if_le_n (4, data.binary.salt);
 
   if (log2rounds < minlog2rounds || log2rounds > 31)
     return 0;
@@ -445,7 +446,7 @@ static int ibcrypt(uint8_t *dst,
   dst = (uint8_t*)
         encode_radix64((char*) dst, BLOWFISH_BCRYPT_BINSALT_SIZE, psalt) - 1;
 
-  bswap32_if_le (data.binary.output, 6);
+  bswap32_if_le_n (6, data.binary.output);
 /* This has to be bug-compatible with the original implementation, so
    only encode 23 of the 24 bytes. */
   encode_radix64((char*) dst, 23, (uint8_t *) data.binary.output);
