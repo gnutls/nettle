@@ -2,78 +2,73 @@ variables:
   BUILDENV_NATIVE_IMAGE: gnutls/nettle-build-images:buildenv-native
   BUILDENV_CLANG_IMAGE: gnutls/nettle-build-images:buildenv-clang
   BUILDENV_CROSS_IMAGE: gnutls/nettle-build-images:buildenv-cross
-  BUILD_IMAGES_PROJECT: gnutls/build-images
-  DEBIAN_X86_CROSS_BUILD: buildenv-debian-x86-cross
   GET_SOURCES_ATTEMPTS: "3"
 
-# See http://doc.gitlab.com/ce/ci/yaml/ for documentation.
-build/x86-64:
+# "Native" means x86-64; no jobs run on anything else.
+.native-build:
   image: $CI_REGISTRY/$BUILDENV_NATIVE_IMAGE
   script:
   - ./.bootstrap &&
-    ./configure --disable-static --disable-documentation && make -j4 &&
-    NETTLE_TEST_SEED=0 make check -j4 &&
-    NETTLE_TEST_SEED=0 make check-fat
+    ./configure $EXTRA_CONFIGURE_ARGS --disable-documentation && make -j$(nproc) &&
+    make -j$(nproc) check $EXTRA_CHECK_TARGET
   tags:
   - shared
   - linux
   except:
   - tags
-build/mini-gmp:
-  image: $CI_REGISTRY/$BUILDENV_NATIVE_IMAGE
-  script:
-  - ./.bootstrap &&
-    ./configure --disable-documentation --disable-fat --enable-mini-gmp && make -j4 &&
-    make check -j4
-  tags:
-  - shared
-  - linux
-  except:
-  - tags
-build/c89:
-  image: $CI_REGISTRY/$BUILDENV_NATIVE_IMAGE
-  script:
-  - ./.bootstrap &&
-    ./configure CC='gcc -std=c89' --disable-static --disable-assembler --disable-documentation && make -j4 &&
-    NETTLE_TEST_SEED=0 make check -j4
-  tags:
-  - shared
-  - linux
-  except:
-  - tags
-build/ndebug:
-  image: $CI_REGISTRY/$BUILDENV_NATIVE_IMAGE
-  script:
-  - ./.bootstrap &&
-    ./configure CPPFLAGS='-DNDEBUG' --disable-static --disable-assembler --disable-documentation && make -j4 &&
-    NETTLE_TEST_SEED=0 make check -j4
-  tags:
-  - shared
-  - linux
-  except:
-  - tags
-build/ubsan:
-  image: $CI_REGISTRY/$BUILDENV_NATIVE_IMAGE
-  script:
-  - ./.bootstrap && 
-    CXXFLAGS="-fsanitize=undefined -fno-sanitize-recover -g -O2" CFLAGS="-fsanitize=undefined -fno-sanitize-recover -g -O2" ./configure --disable-assembler 
-    --disable-documentation && make -j4 && NETTLE_TEST_SEED=0 make check -j4
-  tags:
-  - shared
-  - linux
-  except:
-  - tags
-build/asan:
-  image: $CI_REGISTRY/$BUILDENV_NATIVE_IMAGE
-  script:
-  - ./.bootstrap && 
-  - CXXFLAGS="-fsanitize=address -g -O2" CFLAGS="-fsanitize=address -g -O2" ./configure --disable-documentation --disable-assembler &&
-    make -j4 && NETTLE_TEST_SEED=0 make check -j4
-  tags:
-  - shared
-  - linux
-  except:
-  - tags
+  variables:
+    NETTLE_TEST_SEED: '0'
+
+native/fat:
+  extends: .native-build
+  variables:
+    EXTRA_CHECK: check-fat
+
+native/no-fat:
+  extends: .native-build
+  variables:
+    EXTRA_CONFIGURE_ARGS: '--disable-fat'
+
+native/no-static:
+  extends: .native-build
+  variables:
+    EXTRA_CONFIGURE_ARGS: '--disable-static'
+
+native/no-shared:
+  extends: .native-build
+  variables:
+    EXTRA_CONFIGURE_ARGS: '--disable-static'
+
+native/32-bit:
+  extends: .native-build
+  variables:
+    EXTRA_CONFIGURE_ARGS: 'CC="gcc -m32" CXX="g++ -m32"'
+
+native/mini-gmp:
+  extends: .native-build
+  variables:
+    EXTRA_CONFIGURE_ARGS: '--enable-mini-gmp'
+
+native/c89:
+  extends: .native-build
+  variables:
+    EXTRA_CONFIGURE_ARGS: '"CC=gcc -std=c89" --disable-assembler'
+
+native/ndebug:
+  extends: .native-build
+  variables:
+    EXTRA_CONFIGURE_ARGS: 'CPPFLAGS=-DNDEBUG --disable-assembler'
+
+native/ubsan:
+  extends: .native-build
+  variables:
+    EXTRA_CONFIGURE_ARGS: 'CXXFLAGS="-fsanitize=undefined -fno-sanitize-recover -g -O2" CFLAGS="-fsanitize=undefined -fno-sanitize-recover -g -O2" --disable-assembler'
+
+native/asan:
+  extends: .native-build
+  variables:
+    EXTRA_CONFIGURE_ARGS: 'CXXFLAGS="-fsanitize=address -g -O2" CFLAGS="-fsanitize=address -g -O2" --disable-assembler'
+
 build/static-analyzers:
   image: $CI_REGISTRY/$BUILDENV_CLANG_IMAGE
   script:
@@ -90,6 +85,7 @@ build/static-analyzers:
     when: on_failure
     paths:
       - scan-build-lib/*
+
 build/gnutls:
   image: $CI_REGISTRY/$BUILDENV_NATIVE_IMAGE
   script:
@@ -116,23 +112,6 @@ build/gnutls:
       - gnutls-git/*.log
       - gnutls-git/tests/*/*.log
       - gnutls-git/tests/suite/*/*.log
-Debian.cross.x86:
-  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$DEBIAN_X86_CROSS_BUILD
-  before_script:
-  - apt-get remove -y nettle-dev:i386
-  script:
-  - build=$(dpkg-architecture -qDEB_HOST_GNU_TYPE)
-  - host=i686-linux-gnu
-  - export CC_FOR_BUILD="gcc"
-  - export CC="$host-gcc"
-  - ./.bootstrap &&
-    CFLAGS="-O2 -g" ./configure --build=$build --host=$host --disable-documentation && make -j4 &&
-    NETTLE_TEST_SEED=0 make check -j4
-  tags:
-  - shared
-  - linux
-  except:
-  - tags
 
 remote/s390x:
   image: $CI_REGISTRY/$BUILDENV_NATIVE_IMAGE
@@ -168,7 +147,7 @@ remote/s390x:
   except:
   - tags
 
-.cross-build: &cross-build
+.cross-build:
   image: $CI_REGISTRY/$BUILDENV_CROSS_IMAGE
   script:
   - build=$(dpkg-architecture -qDEB_HOST_GNU_TYPE)
