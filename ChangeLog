@@ -1,3 +1,7 @@
+2023-10-04  Niels Möller  <nisse@lysator.liu.se>
+
+	* umac-l2.c (_nettle_umac_l2_final): Delete redundant assignment.
+
 2023-10-03  Niels Möller  <nisse@lysator.liu.se>
 
 	* Makefile.in (check-fat): Reduce tests to run to TS_FAT, to speed

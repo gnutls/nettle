@@ -146,7 +146,7 @@ _nettle_umac_l2_final(const uint32_t *key, uint64_t *state, unsigned n,
 	  if (yh == UMAC_P128_HI && yl >= UMAC_P128_LO)
 	    {
 	      state[0] = 0;
-	      state[1] = yl -= UMAC_P128_LO;
+	      state[1] = yl - UMAC_P128_LO;
 	    }
 	}
     }
