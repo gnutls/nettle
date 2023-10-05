@@ -59,7 +59,7 @@ native/c89:
   extends: .native-build
   variables:
     EXTRA_CONFIGURE_ARGS: '--disable-assembler'
-    CC: 'gcc -std=c89
+    CC: 'gcc -std=c89'
 
 native/ndebug:
   extends: .native-build
