@@ -9,9 +9,10 @@ variables:
   image: $CI_REGISTRY/$BUILDENV_NATIVE_IMAGE
   script:
   - ./.bootstrap
-  - 'echo ./configure $EXTRA_CONFIGURE_ARGS --disable-documentation && make -j$(nproc)'
-  - './configure $EXTRA_CONFIGURE_ARGS --disable-documentation && make -j$(nproc)'
-  - make -j$(nproc) check $EXTRA_CHECK_TARGET
+  - 'echo ./configure $EXTRA_CONFIGURE_ARGS --disable-documentation'
+  - './configure $EXTRA_CONFIGURE_ARGS --disable-documentation'
+  - 'make -j$(nproc)'
+  - 'make -j$(nproc) check $EXTRA_CHECK_TARGET'
   tags:
   - shared
   - linux
