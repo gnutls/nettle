@@ -8,9 +8,11 @@ variables:
 .native-build:
   image: $CI_REGISTRY/$BUILDENV_NATIVE_IMAGE
   script:
-  - ./.bootstrap &&
-    ./configure $EXTRA_CONFIGURE_ARGS --disable-documentation && make -j$(nproc) &&
-    make -j$(nproc) check $EXTRA_CHECK_TARGET
+  - printf "1: x%sx" "$EXTRA_CONFIGURE_ARGS"
+  - 'printf "2: x%sx" "$EXTRA_CONFIGURE_ARGS"'
+  - ./.bootstrap
+  - ./configure $EXTRA_CONFIGURE_ARGS --disable-documentation && make -j$(nproc)
+  - make -j$(nproc) check $EXTRA_CHECK_TARGET
   tags:
   - shared
   - linux
