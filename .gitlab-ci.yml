@@ -44,7 +44,8 @@ native/no-shared:
 native/32-bit:
   extends: .native-build
   variables:
-    EXTRA_CONFIGURE_ARGS: 'CC="gcc -m32" CXX="g++ -m32"'
+    CC: 'gcc -m32'
+    CXX: 'g++ -m32'
 
 native/mini-gmp:
   extends: .native-build
