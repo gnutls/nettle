@@ -9,7 +9,6 @@ variables:
   image: $CI_REGISTRY/$BUILDENV_NATIVE_IMAGE
   script:
   - ./.bootstrap
-  - 'echo ./configure $EXTRA_CONFIGURE_ARGS --disable-documentation'
   - './configure $EXTRA_CONFIGURE_ARGS --disable-documentation'
   - 'make -j$(nproc)'
   - 'make -j$(nproc) check $EXTRA_CHECK_TARGET'
@@ -20,6 +19,10 @@ variables:
   - tags
   variables:
     NETTLE_TEST_SEED: '0'
+  artifacts:
+    expire_in: 1 week
+    paths:
+    - "config.log"
 
 native/fat:
   extends: .native-build
@@ -45,7 +48,7 @@ native/32-bit:
   extends: .native-build
   variables:
     CC: 'gcc -m32'
-    CXX: 'g++ -m32'
+    CXX: '/bin/false'
 
 native/mini-gmp:
   extends: .native-build
@@ -55,7 +58,8 @@ native/mini-gmp:
 native/c89:
   extends: .native-build
   variables:
-    EXTRA_CONFIGURE_ARGS: '"CC=gcc -std=c89" --disable-assembler'
+    EXTRA_CONFIGURE_ARGS: '--disable-assembler'
+    CC: 'gcc -std=c89
 
 native/ndebug:
   extends: .native-build
@@ -65,12 +69,16 @@ native/ndebug:
 native/ubsan:
   extends: .native-build
   variables:
-    EXTRA_CONFIGURE_ARGS: 'CXXFLAGS="-fsanitize=undefined -fno-sanitize-recover -g -O2" CFLAGS="-fsanitize=undefined -fno-sanitize-recover -g -O2" --disable-assembler'
+    EXTRA_CONFIGURE_ARGS: '--disable-assembler'
+    CFLAGS: '-fsanitize=undefined -fno-sanitize-recover -g -O2'
+    CXXFLAGS: '-fsanitize=undefined -fno-sanitize-recover -g -O2'
 
 native/asan:
   extends: .native-build
   variables:
-    EXTRA_CONFIGURE_ARGS: 'CXXFLAGS="-fsanitize=address -g -O2" CFLAGS="-fsanitize=address -g -O2" --disable-assembler'
+    EXTRA_CONFIGURE_ARGS: '--disable-assembler'
+    CFLAGS: '-fsanitize=address -g -O2'
+    CXXFLAGS: '-fsanitize=address -g -O2'
 
 build/static-analyzers:
   image: $CI_REGISTRY/$BUILDENV_CLANG_IMAGE
@@ -165,13 +173,19 @@ remote/s390x:
   - ./.bootstrap
   - ./configure --disable-documentation $EXTRA_CONFIGURE_ARGS --build=$build --host=$host
   - make -j$(nproc)
-  - NETTLE_TEST_SEED=0 make EMULATOR=${EMULATOR} -j$(nproc) check
-  - NETTLE_TEST_SEED=0 make EMULATOR=${EMULATOR} -j$(nproc) check-fat
+  - make EMULATOR=${EMULATOR} -j$(nproc) check
+  - make EMULATOR=${EMULATOR} -j$(nproc) check-fat
   tags:
   - shared
   - linux
   except:
   - tags
+  variables:
+    NETTLE_TEST_SEED: '0'
+  artifacts:
+    expire_in: 1 week
+    paths:
+    - "config.log"
 
 cross/arm-linux-gnueabihf:
   extends: .cross-build
