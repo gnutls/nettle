@@ -47,6 +47,7 @@ native/no-shared:
 native/32-bit:
   extends: .native-build
   variables:
+    EXTRA_CONFIGURE_ARGS: '--enable-mini-gmp'
     CC: 'gcc -m32'
     CXX: '/bin/false'
 
