@@ -8,7 +8,8 @@ variables:
 .native-build:
   image: $CI_REGISTRY/$BUILDENV_NATIVE_IMAGE
   script:
-  - 'echo dir: $CI_BUILDS_DIR'
+  - 'echo builds-dir: $CI_BUILDS_DIR'
+  - 'echo project-dir: $CI_PROJECT_DIR'
   - pwd
   - ./.bootstrap
   - './configure $EXTRA_CONFIGURE_ARGS --disable-documentation'
