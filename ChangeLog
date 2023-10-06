@@ -1,5 +1,16 @@
 2023-10-06  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/rsa-sec-decrypt-test.c (test_main): Skip side-channel
+	test if built with mini-gmp.
+
+	* testsuite/sc-valgrind.sh (with_valgrind): Pass
+	--exit-on-first-error=yes.
+
+	* aclocal.m4 (NETTLE_PROG_VALGRIND): New macro.
+	* configure.ac: Use it.
+	* testsuite/Makefile.in (TS_SH): Include side-channel tests only
+	if we have a working valgrind.
+
 	* misc/c89: New wrapper script to force compiling in c89 mode.
 
 2023-10-04  Niels Möller  <nisse@lysator.liu.se>
@@ -48,6 +59,28 @@
 	* tools/nettle-pbkdf2-test: Moved, from testseuite/.
 	* tools/sexp-conv-test: Likewise.
 	* tools/pkcs1-conv-test: Likewise.
+
+2023-08-05  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/testutils.c (mark_bytes_undefined)
+	(mark_bytes_defined): New functions. Update side-channel related
+	tests to use them.
+	(main): Check environment variable NETTLE_TEST_SIDE_CHANNEL.
+	(test_side_channel): New global variable.
+
+	* testsuite/sc-valgrind.sh (with_valgrind): New file, new shell
+	utility function.
+
+	* testsuite/sc-pkcs1-sec-decrypt-test: New test, for side channel
+	silence.
+	* testsuite/sc-memeql-test: Likewise.
+	* testsuite/sc-gcm-test: Likewise.
+	* testsuite/sc-cnd-memcpy-test: Likewise.
+	* testsuite/rsa-sec-decrypt-test: Likewise.
+
+	* rsa-sec-decrypt.c (_rsa_sec_decrypt): New internal function,
+	without input range checks.
+	(rsa_sec_decrypt): Use it.
 
 2023-08-02  Niels Möller  <nisse@lysator.liu.se>
 

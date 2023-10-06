@@ -15,6 +15,11 @@
 #include <ctype.h>
 #include <sys/time.h>
 
+#if HAVE_VALGRIND_MEMCHECK_H
+# include <valgrind/memcheck.h>
+# include <valgrind/valgrind.h>
+#endif
+
 void
 die(const char *format, ...)
 {
@@ -118,6 +123,28 @@ print_hex(size_t length, const uint8_t *data)
 }
 
 int verbose = 0;
+int test_side_channel = 0;
+
+#if HAVE_VALGRIND_MEMCHECK_H
+
+void
+mark_bytes_undefined (size_t size, const void *p)
+{
+  if (test_side_channel)
+    VALGRIND_MAKE_MEM_UNDEFINED(p, size);
+}
+void
+mark_bytes_defined (size_t size, const void *p)
+{
+  if (test_side_channel)
+    VALGRIND_MAKE_MEM_DEFINED(p, size);
+}
+#else
+void
+mark_bytes_undefined (size_t size, const void *p) {}
+void
+mark_bytes_defined (size_t size, const void *p) {}
+#endif
 
 int
 main(int argc, char **argv)
@@ -134,6 +161,15 @@ main(int argc, char **argv)
 	}
     }
 
+  if (getenv("NETTLE_TEST_SIDE_CHANNEL"))
+    {
+#if HAVE_VALGRIND_MEMCHECK_H
+      if (RUNNING_ON_VALGRIND)
+	test_side_channel = 1;
+      else
+#endif
+	SKIP();
+    }
   test_main();
 
   tstring_clear();
