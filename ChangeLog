@@ -1,3 +1,7 @@
+2023-10-06  Niels Möller  <nisse@lysator.liu.se>
+
+	* misc/c89: New wrapper script to force compiling in c89 mode.
+
 2023-10-04  Niels Möller  <nisse@lysator.liu.se>
 
 	* bswap-internal.h (bswap32_if_be, bswap32_if_le): New macros.
