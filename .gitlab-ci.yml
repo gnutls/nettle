@@ -56,6 +56,7 @@ native/mini-gmp:
   variables:
     EXTRA_CONFIGURE_ARGS: '--enable-mini-gmp'
 
+# FIXME: Need to defeat autoconf that automagically adds -std=gnu11.
 native/c89:
   extends: .native-build
   variables:
