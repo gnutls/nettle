@@ -168,7 +168,7 @@ remote/s390x:
   except:
   - tags
 
-.cross-build: &cross-build
+.cross-build:
   image: $CI_REGISTRY/$BUILDENV_CROSS_IMAGE
   script:
   - build=$(dpkg-architecture -qDEB_HOST_GNU_TYPE)
@@ -183,13 +183,20 @@ remote/s390x:
   - ./.bootstrap
   - ./configure --disable-documentation $EXTRA_CONFIGURE_ARGS --build=$build --host=$host
   - make -j$(nproc)
-  - NETTLE_TEST_SEED=0 make EMULATOR=${EMULATOR} -j$(nproc) check
-  - NETTLE_TEST_SEED=0 make EMULATOR=${EMULATOR} -j$(nproc) check-fat
+  - make EMULATOR=${EMULATOR} -j$(nproc) check
+  - make EMULATOR=${EMULATOR} -j$(nproc) check-fat
   tags:
   - shared
   - linux
   except:
   - tags
+  variables:
+    NETTLE_TEST_SEED: '0'
+  artifacts:
+    expire_in: 1 week
+    when: always
+    paths:
+    - "config.log"
 
 cross/arm-linux-gnueabihf:
   extends: .cross-build
