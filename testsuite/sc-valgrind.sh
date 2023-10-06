@@ -2,6 +2,6 @@
 # using valgrind.
 
 with_valgrind () {
-    type valgrind >/dev/null || exit 77
-    NETTLE_TEST_SIDE_CHANNEL=1 valgrind -q --error-exitcode=1 "$@"
+    type valgrind >/dev/null 2>&1 || exit 77
+    NETTLE_TEST_SIDE_CHANNEL=1 valgrind -q --exit-on-first-error=yes --error-exitcode=1 "$@"
 }

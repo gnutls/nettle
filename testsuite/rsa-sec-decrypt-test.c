@@ -70,6 +70,10 @@ test_main(void)
   mpz_t garbage;
   unsigned count;
 
+#if NETTLE_USE_MINI_GMP
+  if (test_side_channel)
+    SKIP();
+#endif
   rsa_private_key_init(&key);
   rsa_public_key_init(&pub);
   mpz_init(gibberish);

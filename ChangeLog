@@ -1,5 +1,11 @@
 2023-10-06  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/rsa-sec-decrypt-test.c (test_main): Skip side-channel
+	test if built with mini-gmp.
+
+	* testsuite/sc-valgrind.sh (with_valgrind): Pass
+	--exit-on-first-error=yes.
+
 	* aclocal.m4 (NETTLE_PROG_VALGRIND): New macro.
 	* configure.ac: Use it.
 	* testsuite/Makefile.in (TS_SH): Include side-channel tests only
