@@ -546,3 +546,21 @@ AC_DEFUN([GMP_ASM_POWERPC_R_REGISTERS],
 [AC_MSG_ERROR([neither "mtctr 6" nor "mtctr r6" works])])])])
 ASM_PPC_WANT_R_REGISTERS="$gmp_cv_asm_powerpc_r_registers"
 ])
+
+# Check if valgrind supports the platform we are compiling for.
+AC_DEFUN([NETTLE_PROG_VALGRIND],
+[AC_CACHE_CHECK([if valgrind is working],
+  nettle_cv_prog_valgrind,
+  [AC_LINK_IFELSE([AC_LANG_PROGRAM([], [])], [
+    if valgrind -q ./conftest$EXEEXT 2>&AS_MESSAGE_LOG_FD; then
+      nettle_cv_prog_valgrind=yes
+    else
+      nettle_cv_prog_valgrind=no
+    fi], [nettle_cv_prog_valgrind=no])])
+  if test "$nettle_cv_prog_valgrind" = yes ; then
+    IF_VALGRIND=''
+  else
+    IF_VALGRIND='#'
+  fi
+  AC_SUBST(IF_VALGRIND)
+])

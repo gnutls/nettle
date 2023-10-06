@@ -171,6 +171,9 @@ AC_PROG_LN_S
 GMP_PROG_CC_FOR_BUILD
 GMP_PROG_EXEEXT_FOR_BUILD
 
+# Check if valgrind is working; expected to fail in cross builds.
+NETTLE_PROG_VALGRIND
+
 LSH_DEPENDENCY_TRACKING
 
 if test "x$enable_gcov" = "xyes"; then
