@@ -85,6 +85,13 @@
 #define curve25519_eh_to_x _nettle_curve25519_eh_to_x
 #define curve448_eh_to_x _nettle_curve448_eh_to_x
 
+inline int
+is_zero_limb (mp_limb_t x)
+{
+  x |= (x << 1);
+  return ((x >> 1) - 1) >> (GMP_LIMB_BITS - 1);
+}
+
 extern const struct ecc_curve _nettle_secp_192r1;
 extern const struct ecc_curve _nettle_secp_224r1;
 extern const struct ecc_curve _nettle_secp_256r1;
@@ -464,6 +471,7 @@ ecc_mul_m (const struct ecc_modulo *m,
 	   mp_limb_t *qx, const uint8_t *n, const mp_limb_t *px,
 	   mp_limb_t *scratch);
 
+/* The cnd argument must be 1 or 0. */
 void
 cnd_copy (int cnd, mp_limb_t *rp, const mp_limb_t *ap, mp_size_t n);
 

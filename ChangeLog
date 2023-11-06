@@ -1,3 +1,28 @@
+2023-11-06  Niels Möller  <nisse@lysator.liu.se>
+
+	Avoid comparison like cnd = (x == 0) in code intended to be
+	side-channel silent, since to eliminate branches with some
+	compilers/architectures, in particular 32-bit x86 and the msvc compiler.
+	* nettle-internal.h (IS_ZERO_SMALL): New macro.
+	* memeql-sec.c (memeql_sec): Use IS_ZERO_SMALL.
+	* pkcs1-sec-decrypt.c (EQUAL): Likewise.
+
+	* cnd-copy.c (cnd_copy): Require that cnd argument is 1 or 0.
+	* ecc-mul-a.c (ecc_mul_a) [ECC_MUL_A_WBITS == 0]:
+	Rearrange loop to pass 0 or 1 to cnd_copy.
+	* ecc-mul-a-eh.c (ecc_mul_a_eh) [ECC_MUL_A_EH_WBITS == 0]:
+	Likewise.
+	* ecc-mul-a.c (ecc_mul_a) [ECC_MUL_A_WBITS > 0]: Use
+	IS_ZERO_SMALL, and pass 0 or 1 to cnd_copy.
+	* ecc-mul-g.c (ecc_mul_g): Likewise.
+
+	* ecc-internal.h (is_zero_limb): New inline function.
+	* eddsa-decompress.c (_eddsa_decompress): Likewise.
+	* ecc-gostdsa-sign.c (ecc_gostdsa_sign): Likewise.
+	* ecc-mod-arith.c (ecc_mod_zero_p): Likewise.
+	(ecc_mod_equal_p): Avoid comparison cy == 0.
+	* ecc-j-to-a.c (ecc_j_to_a): Avoid comparison cy == 0.
+
 2023-10-06  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/rsa-sec-decrypt-test.c (test_main): Skip side-channel

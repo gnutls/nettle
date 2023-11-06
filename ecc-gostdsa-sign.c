@@ -91,7 +91,7 @@ ecc_gostdsa_sign (const struct ecc_curve *ecc,
    * so one subtraction should suffice. */
 
   *scratch = mpn_sub_n (tp, sp, ecc->q.m, ecc->p.size);
-  cnd_copy (*scratch == 0, sp, tp, ecc->p.size);
+  cnd_copy (is_zero_limb (*scratch), sp, tp, ecc->p.size);
 
 #undef P
 #undef hp

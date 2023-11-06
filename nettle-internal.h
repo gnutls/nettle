@@ -84,6 +84,10 @@
 #define NETTLE_MAX_CIPHER_BLOCK_SIZE 32
 #define NETTLE_MAX_CIPHER_KEY_SIZE 32
 
+/* Equivalent to x == 0, but with an expression that should compile to
+   branch free code on all compilers. Requires that x is at most 31 bits. */
+#define IS_ZERO_SMALL(x) (((uint32_t) (x) - 1U) >> 31)
+
 /* Doesn't quite fit with the other algorithms, because of the weak
  * keys. Weak keys are not reported, the functions will simply crash
  * if you try to use a weak key. */
@@ -103,7 +107,7 @@ extern const struct nettle_aead nettle_chacha;
 extern const struct nettle_aead nettle_salsa20;
 extern const struct nettle_aead nettle_salsa20r12;
 
-/* All-in-one CBC encrypt fucntinos treated as AEAD with no
+/* All-in-one CBC encrypt functinos treated as AEAD with no
    authentication and no decrypt method. */
 extern const struct nettle_aead nettle_cbc_aes128;
 extern const struct nettle_aead nettle_cbc_aes192;
