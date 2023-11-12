@@ -1,3 +1,11 @@
+2023-11-12  Niels Möller  <nisse@lysator.liu.se>
+
+	* gmp-glue.h (GMP_LIMB_BITS) [NETTLE_USE_MINI_GMP]: Define as alias for
+	GMP_NUMB_BITS.
+	(is_zero_limb): Move inline function here. Add static, for
+	compatibility with c89. and mini-gmp builds.
+	* gmp-glue.c (sec_zero_p): Use is_zero_limb.
+
 2023-11-06  Niels Möller  <nisse@lysator.liu.se>
 
 	Avoid comparison like cnd = (x == 0) in code intended to be
