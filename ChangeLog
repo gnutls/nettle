@@ -10,10 +10,14 @@
 	* ecc-mod-arith.c: Convert most asserts to assert_maybe.
 	* ecc-mod-inv.c (ecc_mod_inv): Likewise.
 	* ecc-mod.c (ecc_mod): Likewise.
+	* ecc-pm1-redc.c (ecc_pm1_redc): Likewise.
+	* ecc-pp1-redc.c (ecc_pp1_redc): Likewise.
+	* ecc-secp192r1.c (ecc_secp192r1_modp): Likewise.
+	* ecc-secp384r1.c (ecc_secp384r1_modp): Likewise.
 	* testsuite/ecdsa-sign-test.c (test_ecdsa): Add calls to
 	mark_bytes_undefined and mark_bytes_defined.
-	(test_main): Skip test if both side channel tests and extra
-	asserts are enabled.
+	(test_main): Skip side-channel tests in builds with mini-gmp or
+	extra asserts enabled.
 	* testsuite/sc-ecdsa-sign-test: New testcase.
 	* testsuite/Makefile.in (TS_SC): Add sc-ecdsa-sign-test.
 

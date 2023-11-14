@@ -70,7 +70,7 @@ test_ecdsa (const struct ecc_curve *ecc,
 void
 test_main (void)
 {
-#if WITH_EXTRA_ASSERTS
+#if NETTLE_USE_MINI_GMP || WITH_EXTRA_ASSERTS
   if (test_side_channel)
     SKIP();
 #endif
