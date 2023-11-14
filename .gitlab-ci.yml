@@ -63,6 +63,11 @@ native/c89:
     EXTRA_CONFIGURE_ARGS: '--disable-assembler'
     CC: '$CI_PROJECT_DIR/misc/c89'
 
+native/extra-asserts:
+  extends: .native-build
+  variables:
+    EXTRA_CONFIGURE_ARGS: '--enable-extra-asserts'
+
 native/ndebug:
   extends: .native-build
   variables:
