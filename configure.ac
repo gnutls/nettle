@@ -116,6 +116,10 @@ AC_ARG_ENABLE(s390x-msa,
   AS_HELP_STRING([--enable-s390x-msa], [Enable message-security assist extensions on z/Architecture. (default=no)]),,
   [enable_s390x_msa=no])
 
+AC_ARG_ENABLE(extra-asserts,
+  AS_HELP_STRING([--enable-extra-asserts], [Enable additional asserts in ECC code (incompatible side-channel tests)]),,
+  [enable_extra_asserts=no])
+
 AC_ARG_ENABLE(mini-gmp,
   AS_HELP_STRING([--enable-mini-gmp], [Enable mini-gmp, used instead of libgmp.]),,
   [enable_mini_gmp=no])
@@ -131,6 +135,11 @@ else
 fi
 AC_SUBST([NETTLE_USE_MINI_GMP])
 AC_SUBST([HOGWEED_EXTRA_SYMBOLS])
+
+AH_TEMPLATE([WITH_EXTRA_ASSERTS], [Defined to enable additional asserts])
+if test "$enable_extra_asserts" = yes ; then
+  AC_DEFINE(WITH_EXTRA_ASSERTS)
+fi
 
 LSH_RPATH_INIT([`echo $with_lib_path | sed 's/:/ /g'` \
     `echo $exec_prefix | sed "s@^NONE@$prefix/lib@g" | sed "s@^NONE@$ac_default_prefix/lib@g"` \

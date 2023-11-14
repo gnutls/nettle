@@ -85,6 +85,14 @@
 #define curve25519_eh_to_x _nettle_curve25519_eh_to_x
 #define curve448_eh_to_x _nettle_curve448_eh_to_x
 
+/* For asserts that are incompatible with sc tests. Currently used
+   only by ECC code. */
+#if WITH_EXTRA_ASSERTS
+#define assert_maybe(x) assert(x)
+#else
+#define assert_maybe(x)
+#endif
+
 extern const struct ecc_curve _nettle_secp_192r1;
 extern const struct ecc_curve _nettle_secp_224r1;
 extern const struct ecc_curve _nettle_secp_256r1;

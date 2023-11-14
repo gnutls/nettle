@@ -67,7 +67,8 @@ TS_C = $(TS_NETTLE) @IF_HOGWEED@ $(TS_HOGWEED)
 TS_CXX = @IF_CXX@ $(CXX_SOURCES:.cxx=$(EXEEXT))
 TARGETS = $(TS_C) $(TS_CXX)
 TS_SC = sc-cnd-memcpy-test sc-gcm-test sc-memeql-test \
-	@IF_HOGWEED@ sc-pkcs1-sec-decrypt-test sc-rsa-sec-decrypt-test
+	@IF_HOGWEED@ sc-pkcs1-sec-decrypt-test sc-rsa-sec-decrypt-test sc-ecdsa-sign-test
+
 TS_SH = symbols-test @IF_VALGRIND@ $(TS_SC)
 TS_ALL = $(TARGETS) $(TS_SH) @IF_DLOPEN_TEST@ dlopen-test$(EXEEXT)
 

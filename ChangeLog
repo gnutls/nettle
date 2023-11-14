@@ -1,3 +1,22 @@
+2023-11-14  Niels Möller  <nisse@lysator.liu.se>
+
+	Add a first side-channel test for the ECC code.
+	* configure.ac: New option --enable-extra-asserts. Enables asserts
+	that are disabled by default, due to conflict with tests of
+	side-channel silence.
+	(WITH_EXTRA_ASSERTS): Corresponding new define.
+	* ecc-internal.h (assert_maybe): Conditionally define this assert
+	macro, depending on WITH_EXTRA_ASSERTS.
+	* ecc-mod-arith.c: Convert most asserts to assert_maybe.
+	* ecc-mod-inv.c (ecc_mod_inv): Likewise.
+	* ecc-mod.c (ecc_mod): Likewise.
+	* testsuite/ecdsa-sign-test.c (test_ecdsa): Add calls to
+	mark_bytes_undefined and mark_bytes_defined.
+	(test_main): Skip test if both side channel tests and extra
+	asserts are enabled.
+	* testsuite/sc-ecdsa-sign-test: New testcase.
+	* testsuite/Makefile.in (TS_SC): Add sc-ecdsa-sign-test.
+
 2023-11-12  Niels Möller  <nisse@lysator.liu.se>
 
 	* gmp-glue.h (GMP_LIMB_BITS) [NETTLE_USE_MINI_GMP]: Define as alias for
