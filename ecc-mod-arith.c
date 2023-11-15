@@ -127,10 +127,10 @@ ecc_mod_addmul_1 (const struct ecc_modulo *m, mp_limb_t *rp,
   assert (b <= 0xffffffff);
   hi = mpn_addmul_1 (rp, ap, m->size, b);
   hi = mpn_addmul_1 (rp, m->B, m->size, hi);
-  assert (hi <= 1);
+  assert_maybe (hi <= 1);
   hi = mpn_cnd_add_n (hi, rp, rp, m->B, m->size);
   /* Sufficient roughly if b < B^size / p */
-  assert (hi == 0);
+  assert_maybe (hi == 0);
 }
   
 void
