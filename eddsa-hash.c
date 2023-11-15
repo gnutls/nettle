@@ -71,9 +71,9 @@ _eddsa_hash (const struct ecc_modulo *m,
       assert (nlimbs == 2*m->size + 1);
 
       hi = mpn_addmul_1 (rp + m->size, m->B, m->size, hi);
-      assert (hi <= 1);
+      assert_maybe (hi <= 1);
       hi = mpn_cnd_add_n (hi, rp + m->size, rp + m->size, m->B, m->size);
-      assert (hi == 0);
+      assert_maybe (hi == 0);
     }
   m->mod (m, rp + m->size , rp);
   /* Ensure canonical reduction. */
