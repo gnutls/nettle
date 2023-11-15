@@ -1,17 +1,19 @@
 2023-11-15  Niels Möller  <nisse@lysator.liu.se>
 
+	* ecc-mod-arith.c (ecc_mod_addmul_1): Use assert_maybe.
+	* ecc-curve448.c (ecc_curve448_modp): Likewise.
+
 	* testsuite/curve25519-dh-test.c (test_g): Add calls to
 	mark_bytes_undefined and mark_bytes_defined.
 	(test_a): Likewise.
 	(test_main): Skip side-channel tests in builds with mini-gmp or
 	extra asserts enabled.
-
-	* ecc-mod-arith.c (ecc_mod_addmul_1): Use assert_maybe.
+	* testsuite/curve448-dh-test.c: Analogous changes.
 
 	* testsuite/Makefile.in (TS_SC_HOGWEED): New make variable. Added
-	sc-curve25519-dh-test to list.
-
+	sc-curve25519-dh-test and sc-curve448-dh-test to list.
 	* testsuite/sc-curve25519-dh-test: New testcase.
+	* testsuite/sc-curve448-dh-test: New testcase.
 
 2023-11-14  Niels Möller  <nisse@lysator.liu.se>
 
