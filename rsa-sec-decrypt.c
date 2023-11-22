@@ -44,18 +44,20 @@
 
 #include "gmp-glue.h"
 
-/* Variant without range check of the input, to ease testing for
-   side-channel silence. */
 int
-_rsa_sec_decrypt (const struct rsa_public_key *pub,
-		  const struct rsa_private_key *key,
-		  void *random_ctx, nettle_random_func *random,
-		  size_t length, uint8_t *message,
-		  const mpz_t gibberish)
+rsa_sec_decrypt(const struct rsa_public_key *pub,
+	        const struct rsa_private_key *key,
+	        void *random_ctx, nettle_random_func *random,
+	        size_t length, uint8_t *message,
+	        const mpz_t gibberish)
 {
   TMP_GMP_DECL (m, mp_limb_t);
   TMP_GMP_DECL (em, uint8_t);
   int res;
+
+  /* First check that input is in range. */
+  if (mpz_sgn (gibberish) < 0 || mpz_cmp (gibberish, pub->n) >= 0)
+    return 0;
 
   TMP_GMP_ALLOC (m, mpz_size(pub->n));
   TMP_GMP_ALLOC (em, key->size);
@@ -76,16 +78,3 @@ _rsa_sec_decrypt (const struct rsa_public_key *pub,
   return res;
 }
 
-int
-rsa_sec_decrypt (const struct rsa_public_key *pub,
-		 const struct rsa_private_key *key,
-		 void *random_ctx, nettle_random_func *random,
-		 size_t length, uint8_t *message,
-		 const mpz_t gibberish)
-{
-  /* First check that input is in range. */
-  if (mpz_sgn (gibberish) < 0 || mpz_cmp (gibberish, pub->n) >= 0)
-    return 0;
-
-  return _rsa_sec_decrypt (pub, key, random_ctx, random, length, message, gibberish);
-}

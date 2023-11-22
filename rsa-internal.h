@@ -44,7 +44,6 @@
 #define _rsa_sec_compute_root_itch _nettle_rsa_sec_compute_root_itch
 #define _rsa_sec_compute_root _nettle_rsa_sec_compute_root
 #define _rsa_sec_compute_root_tr _nettle_rsa_sec_compute_root_tr
-#define _rsa_sec_decrypt _nettle_rsa_sec_decrypt
 
 /* Internal functions. */
 int
@@ -85,14 +84,5 @@ _rsa_sec_compute_root_tr(const struct rsa_public_key *pub,
 			 const struct rsa_private_key *key,
 			 void *random_ctx, nettle_random_func *random,
 			 mp_limb_t *x, const mp_limb_t *m);
-
-/* Variant without range check of the input, to ease testing for
-   side-channel silence. */
-int
-_rsa_sec_decrypt (const struct rsa_public_key *pub,
-		  const struct rsa_private_key *key,
-		  void *random_ctx, nettle_random_func *random,
-		  size_t length, uint8_t *message,
-		  const mpz_t gibberish);
 
 #endif /* NETTLE_RSA_INTERNAL_H_INCLUDED */

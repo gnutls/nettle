@@ -1,3 +1,14 @@
+2023-11-22  Niels Möller  <nisse@lysator.liu.se>
+
+	Revert part of the 2023-08-05 change.
+	* rsa-sec-decrypt.c (rsa_sec_decrypt): Merge with
+	_rsa_sec_decrypt, including input range check.
+	(_rsa_sec_decrypt): Deleted.
+	* rsa-internal.h (_rsa_sec_decrypt): Delete declaration.
+	* testsuite/rsa-sec-decrypt-test.c (rsa_decrypt_for_test): Always
+	call rsa_sec_decrypt, but don't annotate the ciphertext input as
+	undefined/secret.
+
 2023-11-15  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-mod-arith.c (ecc_mod_addmul_1): Use assert_maybe.

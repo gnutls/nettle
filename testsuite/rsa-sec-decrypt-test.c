@@ -1,7 +1,6 @@
 #include "testutils.h"
 
 #include "rsa.h"
-#include "rsa-internal.h"
 #include "knuth-lfib.h"
 
 #define MARK_MPZ_LIMBS_UNDEFINED(x) \
@@ -18,8 +17,6 @@ rsa_decrypt_for_test(const struct rsa_public_key *pub,
                      const mpz_t gibberish)
 {
   int ret;
-  if (!test_side_channel)
-    return rsa_sec_decrypt (pub, key, random_ctx, random, length, message, gibberish);
 
   /* Makes valgrind trigger on any branches depending on the input
      data. Except that (i) we have to allow rsa_sec_compute_root_tr to
@@ -29,7 +26,6 @@ rsa_decrypt_for_test(const struct rsa_public_key *pub,
      mpn_sec_powm may leak information about the least significant
      bits of p and q, due to table lookup in binvert_limb. */
   mark_bytes_undefined (length, message);
-  MARK_MPZ_LIMBS_UNDEFINED(gibberish);
   MARK_MPZ_LIMBS_UNDEFINED(key->a);
   MARK_MPZ_LIMBS_UNDEFINED(key->b);
   MARK_MPZ_LIMBS_UNDEFINED(key->c);
@@ -38,12 +34,10 @@ rsa_decrypt_for_test(const struct rsa_public_key *pub,
   mark_bytes_undefined((mpz_size (key->q) - 3) * sizeof(mp_limb_t), 
 		       mpz_limbs_read (key->q) + 1);
 
-  /* Call variant not checking that 0 <= gibberish < n. */
-  ret = _rsa_sec_decrypt (pub, key, random_ctx, random, length, message, gibberish);
+  ret = rsa_sec_decrypt (pub, key, random_ctx, random, length, message, gibberish);
 
   mark_bytes_defined (length, message);
   mark_bytes_defined (sizeof(ret), &ret);
-  MARK_MPZ_LIMBS_DEFINED(gibberish);
   MARK_MPZ_LIMBS_DEFINED(key->a);
   MARK_MPZ_LIMBS_DEFINED(key->b);
   MARK_MPZ_LIMBS_DEFINED(key->c);
