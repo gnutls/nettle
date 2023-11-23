@@ -103,12 +103,12 @@ all: $(EXTRA_TARGETS)
 # to use suffix rules to build the test executables. So we use an
 # explicit rule for each and every executable.
 
-TEST_OBJS = testutils.$(OBJEXT) ../nettle-internal.$(OBJEXT)
+TEST_OBJS = testutils.$(OBJEXT) ../non-nettle.$(OBJEXT)
 LIB_HOGWEED = @IF_HOGWEED@ -lhogweed
 TEST_LIBS = $(LIB_HOGWEED) -lnettle $(LIBS)
 
-../nettle-internal.$(OBJEXT):
-	( cd .. && $(MAKE) nettle-internal.$(OBJEXT) )
+../non-nettle.$(OBJEXT):
+	( cd .. && $(MAKE) non-nettle.$(OBJEXT) )
 
 # Special target, to omit linking with libnettle
 dlopen-test$(EXEEXT): dlopen-test.$(OBJEXT) testutils.$(OBJEXT)
@@ -121,7 +121,7 @@ cxx-test$(EXEEXT): cxx-test.$(OBJEXT)
 %$(EXEEXT): %.$(OBJEXT)
 	$(LINK) $< $(TEST_OBJS) $(TEST_LIBS) -o $@
 
-$(TARGETS) $(EXTRA_TARGETS): testutils.$(OBJEXT) ../nettle-internal.$(OBJEXT) \
+$(TARGETS) $(EXTRA_TARGETS): testutils.$(OBJEXT) ../non-nettle.$(OBJEXT) \
 	../libnettle.stamp @IF_HOGWEED@ ../libhogweed.stamp
 
 # For use as, e.g.,

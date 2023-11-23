@@ -7,6 +7,9 @@
 	* non-nettle.c: New file, renamed from ...
 	* nettle-internal.c: ... old name, deleted.
 	* Makefile.in (internal_SOURCES, DISTFILES): Updated accordingly.
+	* testsuite/Makefile.in (TEST_OBJS): Replace ../nettle-internal.o
+	with ../non-nettle.o, and update corresponding make rule.
+	* examples/Makefile.in (BENCH_OBJS): Likewise.
 
 2023-11-22  Niels Möller  <nisse@lysator.liu.se>
 
