@@ -1,3 +1,13 @@
+2023-11-23  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle-internal.h: Keep only declarations actually used
+	internally in the library.
+	* non-nettle.h: New file, contents extracted from
+	nettle-internal.h, for use in test and benchmark code.
+	* non-nettle.c: New file, renamed from ...
+	* nettle-internal.c: ... old name, deleted.
+	* Makefile.in (internal_SOURCES, DISTFILES): Updated accordingly.
+
 2023-11-22  Niels Möller  <nisse@lysator.liu.se>
 
 	Revert part of the 2023-08-05 change.

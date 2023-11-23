@@ -32,7 +32,7 @@ SHLIBTARGETS = @IF_SHARED@ $(LIBNETTLE_FORLINK) @IF_HOGWEED@ $(LIBHOGWEED_FORLIN
 getopt_SOURCES = getopt.c getopt1.c
 getopt_TARGETS = $(getopt_SOURCES:.c=.$(OBJEXT))
 
-internal_SOURCES = nettle-internal.c
+internal_SOURCES = non-nettle.c
 internal_TARGETS = $(internal_SOURCES:.c=.$(OBJEXT))
 
 TARGETS = $(getopt_TARGETS) $(internal_TARGETS) \
@@ -270,7 +270,7 @@ DISTFILES = $(SOURCES) $(HEADERS) getopt.h getopt_int.h \
 	ghash-internal.h gost28147-internal.h poly1305-internal.h \
 	serpent-internal.h cast128_sboxes.h desinfo.h desCode.h \
 	ripemd160-internal.h md-internal.h sha2-internal.h \
-	memxor-internal.h nettle-internal.h nettle-write.h \
+	memxor-internal.h nettle-internal.h non-nettle.h nettle-write.h \
 	ctr-internal.h chacha-internal.h sha3-internal.h \
 	salsa20-internal.h umac-internal.h hogweed-internal.h \
 	rsa-internal.h pkcs1-internal.h dsa-internal.h eddsa-internal.h \

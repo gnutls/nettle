@@ -73,6 +73,7 @@
 
 #include "nettle-meta.h"
 #include "nettle-internal.h"
+#include "non-nettle.h"
 
 #include "getopt.h"
 

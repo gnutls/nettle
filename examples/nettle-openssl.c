@@ -53,7 +53,7 @@
 #include <openssl/md5.h>
 #include <openssl/sha.h>
 
-#include "nettle-internal.h"
+#include "non-nettle.h"
 
 /* We use Openssl's EVP api for all openssl ciphers. This API selects
    platform-specific implementations if appropriate, e.g., using x86

@@ -1,4 +1,4 @@
-/* nettle-internal.c
+/* non-nettle.c
 
    Things that are used only by the testsuite and benchmark, and
    not included in the library.
@@ -40,7 +40,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "nettle-internal.h"
+#include "non-nettle.h"
 #include "arcfour.h"
 #include "blowfish.h"
 #include "cbc.h"
@@ -107,7 +107,7 @@ nettle_arcfour128 = {
   NULL, NULL,
   (nettle_crypt_func *) arcfour_crypt,
   (nettle_crypt_func *) arcfour_crypt,
-  NULL,  
+  NULL,
 };
 
 const struct nettle_aead
