@@ -1,3 +1,12 @@
+2023-12-04  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/hogweed-benchmark.c (struct openssl_ctx): Unified
+	struct, replacing openssl_rsa_ctx and openssl_ecdsa_ctx.
+	(bench_openssl_init, bench_openssl_sign, bench_openssl_verify)
+	(bench_openssl_clear): New functions, using EVP interfaces to
+	signing, replacing rsa- and ecdsa-specific functions.
+	(bench_openssl_rsa_init, bench_openssl_ecdsa_init): Use bench_openssl_init.
+
 2023-11-23  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle-internal.h: Keep only declarations actually used
