@@ -1,5 +1,10 @@
 2023-12-04  Niels Möller  <nisse@lysator.liu.se>
 
+	* examples/nettle-openssl.c (nettle_openssl_blowfish128)
+	(nettle_openssl_des, openssl_cast128_set_encrypt_key): Deleted,
+	since these algorithms are now available in openssl only via the
+	"legacy provider". Also deleted declarations and usage.
+
 	* examples/hogweed-benchmark.c (struct openssl_ctx): Unified
 	struct, replacing openssl_rsa_ctx and openssl_ecdsa_ctx.
 	(bench_openssl_init, bench_openssl_sign, bench_openssl_verify)
