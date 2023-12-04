@@ -61,12 +61,9 @@
 #include "../gmp-glue.h"
 
 #if WITH_OPENSSL
-#include <openssl/rsa.h>
-#include <openssl/bn.h>
 #include <openssl/evp.h>
 #include <openssl/ec.h>
-#include <openssl/ecdsa.h>
-#include <openssl/objects.h>
+#include <openssl/rsa.h>
 #endif
 
 #define BENCH_INTERVAL 0.1
@@ -697,7 +694,6 @@ bench_gostdsa_clear (void *p)
 #if WITH_OPENSSL
 struct openssl_rsa_ctx
 {
-  EVP_PKEY_CTX *pkey_ctx;
   EVP_PKEY *key;
   EVP_MD_CTX *md_ctx;
   unsigned char *signature;
@@ -708,17 +704,11 @@ static void *
 bench_openssl_rsa_init (unsigned size)
 {
   struct openssl_rsa_ctx *ctx = xalloc (sizeof (*ctx));
-  ctx->pkey_ctx = EVP_PKEY_CTX_new_from_name (NULL, "RSA", "");
-  if (!ctx->pkey_ctx)
-    die ("OpenSSL EVP_PKEY_CTX_new_from_name (\"RSA\") failed.\n");
-  if (EVP_PKEY_keygen_init (ctx->pkey_ctx) <= 0)
-    die ("OpenSSL EVP_PKEY_keygen_init failed.\n");
-  if (EVP_PKEY_CTX_set_rsa_keygen_bits(ctx->pkey_ctx, size) <= 0)
-    die ("OpenSSL EVP_PKEY_CTX_set_rsa_keygen_bits failed.\n");
-  BIGNUM *e = BN_new();
-  BN_set_word(e, 65537);
-  EVP_PKEY_CTX_set1_rsa_keygen_pubexp (ctx->pkey_ctx, e);
-  EVP_PKEY_keygen (ctx->pkey_ctx, &ctx->key);
+
+  /* Always uses e = 65537? */
+  ctx->key = EVP_RSA_gen(size);
+  if (!ctx->key)
+    die ("OpenSSL EVP_RSA_gen failed.\n");
 
   ctx->md_ctx = EVP_MD_CTX_create();
   if (!ctx->md_ctx)
@@ -733,7 +723,6 @@ bench_openssl_rsa_init (unsigned size)
   if (EVP_DigestSignFinal (ctx->md_ctx, ctx->signature, &ctx->siglen) <= 0)
     die ("OpenSSL EVP_DigestSignFinal failed.\n");
 
-  BN_free(e); // Ok ?
   return ctx;
 }
 
@@ -771,7 +760,6 @@ static void
 bench_openssl_rsa_clear (void *p)
 {
   struct openssl_rsa_ctx *ctx = p;
-  EVP_PKEY_CTX_free (ctx->pkey_ctx);
   EVP_PKEY_free (ctx->key);
   EVP_MD_CTX_free (ctx->md_ctx);
   free (ctx->signature);
@@ -780,10 +768,12 @@ bench_openssl_rsa_clear (void *p)
 
 struct openssl_ecdsa_ctx
 {
-  EC_KEY *key;
-  ECDSA_SIG *signature;
-  unsigned digest_length;
-  uint8_t *digest;
+  EVP_PKEY *key;
+  const EVP_MD *md;
+  EVP_MD_CTX *md_ctx;
+  unsigned char *signature;
+  size_t sig_alloc;
+  size_t sig_size;
 };
 
 static void *
@@ -794,29 +784,24 @@ bench_openssl_ecdsa_init (unsigned size)
   switch (size)
     {
     case 192:
-      ctx->key = EC_KEY_new_by_curve_name (NID_X9_62_prime192v1);
-      ctx->digest_length = 24; /* truncated */
-      ctx->digest = hash_string (&nettle_sha224, "abc");
+      ctx->key = EVP_EC_gen ("P-192");
+      ctx->md = EVP_sha256(); /* truncated? */
       break;
     case 224:
-      ctx->key = EC_KEY_new_by_curve_name (NID_secp224r1);
-      ctx->digest_length = SHA224_DIGEST_SIZE;
-      ctx->digest = hash_string (&nettle_sha224, "abc");
+      ctx->key = EVP_EC_gen ("P-224");
+      ctx->md = EVP_sha224();
       break;
     case 256:
-      ctx->key = EC_KEY_new_by_curve_name (NID_X9_62_prime256v1);
-      ctx->digest_length = SHA256_DIGEST_SIZE;
-      ctx->digest = hash_string (&nettle_sha256, "abc");
+      ctx->key = EVP_EC_gen ("P-256");
+      ctx->md = EVP_sha256();
       break;
     case 384:
-      ctx->key = EC_KEY_new_by_curve_name (NID_secp384r1);
-      ctx->digest_length = SHA384_DIGEST_SIZE;
-      ctx->digest = hash_string (&nettle_sha384, "abc");
+      ctx->key = EVP_EC_gen ("P-384");
+      ctx->md = EVP_sha384();
       break;
     case 521:
-      ctx->key = EC_KEY_new_by_curve_name (NID_secp521r1);
-      ctx->digest_length = SHA512_DIGEST_SIZE;
-      ctx->digest = hash_string (&nettle_sha512, "abc");
+      ctx->key = EVP_EC_gen ("P-521");
+      ctx->md = EVP_sha512();
       break;
     default:
       die ("Internal error.\n");
@@ -828,11 +813,19 @@ bench_openssl_ecdsa_init (unsigned size)
       free(ctx);
       return NULL;
     }
-
-  if (!EC_KEY_generate_key( ctx->key))
-    die ("Openssl EC_KEY_generate_key failed.\n");
-  
-  ctx->signature = ECDSA_do_sign (ctx->digest, ctx->digest_length, ctx->key);
+  ctx->md_ctx = EVP_MD_CTX_create();
+  if (!ctx->md_ctx)
+    die ("OpenSSL EVP_MD_CTX_create failed.");
+  if (EVP_DigestSignInit (ctx->md_ctx, NULL, ctx->md, NULL, ctx->key) <= 0)
+    die ("OpenSSL EVP_DigestSignInit failed.");
+  if (EVP_DigestSignUpdate (ctx->md_ctx, "foo", 3) <= 0)
+    die ("OpenSSL EVP_DigestSignUpdate failed.");
+  if (EVP_DigestSignFinal (ctx->md_ctx, NULL, &ctx->sig_alloc) <= 0)
+    die ("OpenSSL EVP_DigestSignFinal (... NULL ...) failed.\n");
+  ctx->signature = xalloc (ctx->sig_alloc);
+  ctx->sig_size = ctx->sig_alloc;
+  if (EVP_DigestSignFinal (ctx->md_ctx, ctx->signature, &ctx->sig_size) <= 0)
+    die ("OpenSSL EVP_DigestSignFinal failed.\n");
   
   return ctx;
 }
@@ -840,26 +833,44 @@ bench_openssl_ecdsa_init (unsigned size)
 static void
 bench_openssl_ecdsa_sign (void *p)
 {
-  const struct openssl_ecdsa_ctx *ctx = p;
-  ECDSA_SIG *sig = ECDSA_do_sign (ctx->digest, ctx->digest_length, ctx->key);
-  ECDSA_SIG_free (sig);
+  struct openssl_ecdsa_ctx *ctx = p;
+  size_t siglen;
+
+  if (EVP_DigestSignInit (ctx->md_ctx, NULL, ctx->md, NULL, ctx->key) <= 0)
+    die ("OpenSSL EVP_DigestSignInit failed.");
+  if (EVP_DigestSignUpdate (ctx->md_ctx, "foo", 3) <= 0)
+    die ("OpenSSL EVP_DigestSignUpdate failed.");
+  if (EVP_DigestSignFinal (ctx->md_ctx, NULL, &siglen) <= 0)
+    die ("OpenSSL EVP_DigestSignFinal (... NULL ...) failed.\n");
+  if (siglen != ctx->sig_alloc)
+    die ("Unexpected sig_alloc from EVP_DigestSignFinal.\n");
+  ctx->sig_size = siglen;
+  if (EVP_DigestSignFinal (ctx->md_ctx, ctx->signature, &ctx->sig_size) <= 0)
+    die ("OpenSSL EVP_DigestSignFinal failed.\n");
+  if (ctx->sig_size > ctx->sig_alloc)
+    die ("Unexpected sig_size from EVP_DigestSignFinal.\n");
 }
 
 static void
 bench_openssl_ecdsa_verify (void *p)
 {
   const struct openssl_ecdsa_ctx *ctx = p;
-  if (ECDSA_do_verify (ctx->digest, ctx->digest_length,
-			 ctx->signature, ctx->key) != 1)
-    die ("Openssl ECDSA_do_verify failed.\n");      
+
+  if (EVP_DigestVerifyInit (ctx->md_ctx, NULL, ctx->md, NULL, ctx->key) <= 0)
+    die ("OpenSSL EVP_DigestVerifyInit failed.\n");
+  if (EVP_DigestVerifyUpdate (ctx->md_ctx, "foo", 3) <= 0)
+    die ("OpenSSL EVP_DigestVerifyUpdate failed.");
+  if (EVP_DigestVerifyFinal (ctx->md_ctx, ctx->signature, ctx->sig_size) <= 0)
+    die ("OpenSSL EVP_DigestVerifyFinal failed.\n");
 }
+
 static void
 bench_openssl_ecdsa_clear (void *p)
 {
   struct openssl_ecdsa_ctx *ctx = p;
-  ECDSA_SIG_free (ctx->signature);
-  EC_KEY_free (ctx->key);
-  free (ctx->digest);
+  EVP_PKEY_free (ctx->key);
+  EVP_MD_CTX_free (ctx->md_ctx);
+  free (ctx->signature);
   free (ctx);
 }
 #endif
