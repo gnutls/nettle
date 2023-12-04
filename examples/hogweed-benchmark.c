@@ -692,81 +692,7 @@ bench_gostdsa_clear (void *p)
 }
 
 #if WITH_OPENSSL
-struct openssl_rsa_ctx
-{
-  EVP_PKEY *key;
-  EVP_MD_CTX *md_ctx;
-  unsigned char *signature;
-  size_t siglen;
-};
-
-static void *
-bench_openssl_rsa_init (unsigned size)
-{
-  struct openssl_rsa_ctx *ctx = xalloc (sizeof (*ctx));
-
-  /* Always uses e = 65537? */
-  ctx->key = EVP_RSA_gen(size);
-  if (!ctx->key)
-    die ("OpenSSL EVP_RSA_gen failed.\n");
-
-  ctx->md_ctx = EVP_MD_CTX_create();
-  if (!ctx->md_ctx)
-    die ("OpenSSL EVP_MD_CTX_create failed.");
-  if (EVP_DigestSignInit (ctx->md_ctx, NULL, EVP_sha256(), NULL, ctx->key) <= 0)
-    die ("OpenSSL EVP_DigestSignInit failed.");
-  if (EVP_DigestSignUpdate (ctx->md_ctx, "foo", 3) <= 0)
-    die ("OpenSSL EVP_DigestSignUpdate failed.");
-  if (EVP_DigestSignFinal (ctx->md_ctx, NULL, &ctx->siglen) <= 0)
-    die ("OpenSSL EVP_DigestSignFinal (... NULL ...) failed.\n");
-  ctx->signature = xalloc (ctx->siglen);
-  if (EVP_DigestSignFinal (ctx->md_ctx, ctx->signature, &ctx->siglen) <= 0)
-    die ("OpenSSL EVP_DigestSignFinal failed.\n");
-
-  return ctx;
-}
-
-static void
-bench_openssl_rsa_sign (void *p)
-{
-  const struct openssl_rsa_ctx *ctx = p;
-  size_t siglen;
-
-  if (EVP_DigestSignInit (ctx->md_ctx, NULL, EVP_sha256(), NULL, ctx->key) <= 0)
-    die ("OpenSSL EVP_DigestSignInit failed.");
-  if (EVP_DigestSignUpdate (ctx->md_ctx, "foo", 3) <= 0)
-    die ("OpenSSL EVP_DigestSignUpdate failed.");
-  if (EVP_DigestSignFinal (ctx->md_ctx, NULL, &siglen) <= 0)
-    die ("OpenSSL EVP_DigestSignFinal (... NULL ...) failed.\n");
-  if (siglen != ctx->siglen)
-    die ("Unexpected siglen from EVP_DigestSignFinal.\n");
-  if (EVP_DigestSignFinal (ctx->md_ctx, ctx->signature, &siglen) <= 0)
-    die ("OpenSSL EVP_DigestSignFinal failed.\n");
-}
-
-static void
-bench_openssl_rsa_verify (void *p)
-{
-  const struct openssl_rsa_ctx *ctx = p;
-  if (EVP_DigestVerifyInit (ctx->md_ctx, NULL, EVP_sha256(), NULL, ctx->key) <= 0)
-    die ("OpenSSL EVP_DigestVerifyInit failed.\n");
-  if (EVP_DigestVerifyUpdate (ctx->md_ctx, "foo", 3) <= 0)
-    die ("OpenSSL EVP_DigestVerifyUpdate failed.");
-  if (EVP_DigestVerifyFinal (ctx->md_ctx, ctx->signature, ctx->siglen) <= 0)
-    die ("OpenSSL EVP_DigestVerifyFinal failed.\n");
-}
-
-static void
-bench_openssl_rsa_clear (void *p)
-{
-  struct openssl_rsa_ctx *ctx = p;
-  EVP_PKEY_free (ctx->key);
-  EVP_MD_CTX_free (ctx->md_ctx);
-  free (ctx->signature);
-  free (ctx);
-}
-
-struct openssl_ecdsa_ctx
+struct openssl_ctx
 {
   EVP_PKEY *key;
   const EVP_MD *md;
@@ -777,45 +703,18 @@ struct openssl_ecdsa_ctx
 };
 
 static void *
-bench_openssl_ecdsa_init (unsigned size)
+bench_openssl_init (EVP_PKEY *key, const EVP_MD *md)
 {
-  struct openssl_ecdsa_ctx *ctx = xalloc (sizeof (*ctx));
+  struct openssl_ctx *ctx = xalloc (sizeof (*ctx));
 
-  switch (size)
-    {
-    case 192:
-      ctx->key = EVP_EC_gen ("P-192");
-      ctx->md = EVP_sha256(); /* truncated? */
-      break;
-    case 224:
-      ctx->key = EVP_EC_gen ("P-224");
-      ctx->md = EVP_sha224();
-      break;
-    case 256:
-      ctx->key = EVP_EC_gen ("P-256");
-      ctx->md = EVP_sha256();
-      break;
-    case 384:
-      ctx->key = EVP_EC_gen ("P-384");
-      ctx->md = EVP_sha384();
-      break;
-    case 521:
-      ctx->key = EVP_EC_gen ("P-521");
-      ctx->md = EVP_sha512();
-      break;
-    default:
-      die ("Internal error.\n");
-    }
-
-  /* This curve isn't supported in this build of openssl */
-  if (ctx->key == NULL)
-    {
-      free(ctx);
-      return NULL;
-    }
+  if (!key)
+    die ("OpenSSL key eneration failed.\n");
+  ctx->key = key;
+  ctx->md = md;
   ctx->md_ctx = EVP_MD_CTX_create();
   if (!ctx->md_ctx)
     die ("OpenSSL EVP_MD_CTX_create failed.");
+
   if (EVP_DigestSignInit (ctx->md_ctx, NULL, ctx->md, NULL, ctx->key) <= 0)
     die ("OpenSSL EVP_DigestSignInit failed.");
   if (EVP_DigestSignUpdate (ctx->md_ctx, "foo", 3) <= 0)
@@ -826,36 +725,35 @@ bench_openssl_ecdsa_init (unsigned size)
   ctx->sig_size = ctx->sig_alloc;
   if (EVP_DigestSignFinal (ctx->md_ctx, ctx->signature, &ctx->sig_size) <= 0)
     die ("OpenSSL EVP_DigestSignFinal failed.\n");
-  
+
   return ctx;
 }
 
-static void
-bench_openssl_ecdsa_sign (void *p)
+static void *
+bench_openssl_rsa_init (unsigned size)
 {
-  struct openssl_ecdsa_ctx *ctx = p;
-  size_t siglen;
+  /* Always uses e = 65537? */
+  return bench_openssl_init (EVP_RSA_gen(size), EVP_sha256());
+}
+
+static void
+bench_openssl_sign (void *p)
+{
+  struct openssl_ctx *ctx = p;
 
   if (EVP_DigestSignInit (ctx->md_ctx, NULL, ctx->md, NULL, ctx->key) <= 0)
     die ("OpenSSL EVP_DigestSignInit failed.");
   if (EVP_DigestSignUpdate (ctx->md_ctx, "foo", 3) <= 0)
     die ("OpenSSL EVP_DigestSignUpdate failed.");
-  if (EVP_DigestSignFinal (ctx->md_ctx, NULL, &siglen) <= 0)
-    die ("OpenSSL EVP_DigestSignFinal (... NULL ...) failed.\n");
-  if (siglen != ctx->sig_alloc)
-    die ("Unexpected sig_alloc from EVP_DigestSignFinal.\n");
-  ctx->sig_size = siglen;
+  ctx->sig_size = ctx->sig_alloc;
   if (EVP_DigestSignFinal (ctx->md_ctx, ctx->signature, &ctx->sig_size) <= 0)
     die ("OpenSSL EVP_DigestSignFinal failed.\n");
-  if (ctx->sig_size > ctx->sig_alloc)
-    die ("Unexpected sig_size from EVP_DigestSignFinal.\n");
 }
 
 static void
-bench_openssl_ecdsa_verify (void *p)
+bench_openssl_verify (void *p)
 {
-  const struct openssl_ecdsa_ctx *ctx = p;
-
+  const struct openssl_ctx *ctx = p;
   if (EVP_DigestVerifyInit (ctx->md_ctx, NULL, ctx->md, NULL, ctx->key) <= 0)
     die ("OpenSSL EVP_DigestVerifyInit failed.\n");
   if (EVP_DigestVerifyUpdate (ctx->md_ctx, "foo", 3) <= 0)
@@ -865,13 +763,36 @@ bench_openssl_ecdsa_verify (void *p)
 }
 
 static void
-bench_openssl_ecdsa_clear (void *p)
+bench_openssl_clear (void *p)
 {
-  struct openssl_ecdsa_ctx *ctx = p;
+  struct openssl_ctx *ctx = p;
   EVP_PKEY_free (ctx->key);
   EVP_MD_CTX_free (ctx->md_ctx);
   free (ctx->signature);
   free (ctx);
+}
+
+static void *
+bench_openssl_ecdsa_init (unsigned size)
+{
+  struct openssl_ctx *ctx = xalloc (sizeof (*ctx));
+
+  switch (size)
+    {
+    case 192:
+      /* Larger hash is truncated? */
+      return bench_openssl_init (EVP_EC_gen ("P-192"), EVP_sha256());
+    case 224:
+      return bench_openssl_init (EVP_EC_gen ("P-224"), EVP_sha224());
+    case 256:
+      return bench_openssl_init (EVP_EC_gen ("P-256"), EVP_sha256());
+    case 384:
+      return bench_openssl_init (EVP_EC_gen ("P-384"), EVP_sha384());
+    case 521:
+      return bench_openssl_init (EVP_EC_gen ("P-521"), EVP_sha512());
+    default:
+      die ("Internal error.\n");
+    }
 }
 #endif
 
@@ -936,8 +857,8 @@ struct alg alg_list[] = {
   { "rsa-tr",   1024, bench_rsa_init,   bench_rsa_sign_tr,   bench_rsa_verify,   bench_rsa_clear },
   { "rsa-tr",   2048, bench_rsa_init,   bench_rsa_sign_tr,   bench_rsa_verify,   bench_rsa_clear },
 #if WITH_OPENSSL
-  { "rsa (openssl)",  1024, bench_openssl_rsa_init, bench_openssl_rsa_sign, bench_openssl_rsa_verify, bench_openssl_rsa_clear },
-  { "rsa (openssl)",  2048, bench_openssl_rsa_init, bench_openssl_rsa_sign, bench_openssl_rsa_verify, bench_openssl_rsa_clear },
+  { "rsa (openssl)",  1024, bench_openssl_rsa_init, bench_openssl_sign, bench_openssl_verify, bench_openssl_clear },
+  { "rsa (openssl)",  2048, bench_openssl_rsa_init, bench_openssl_sign, bench_openssl_verify, bench_openssl_clear },
 #endif
   { "dsa",   1024, bench_dsa_init,   bench_dsa_sign,   bench_dsa_verify,   bench_dsa_clear },
 #if 0
@@ -949,11 +870,11 @@ struct alg alg_list[] = {
   { "ecdsa",  384, bench_ecdsa_init, bench_ecdsa_sign, bench_ecdsa_verify, bench_ecdsa_clear },
   { "ecdsa",  521, bench_ecdsa_init, bench_ecdsa_sign, bench_ecdsa_verify, bench_ecdsa_clear },
 #if WITH_OPENSSL
-  { "ecdsa (openssl)",  192, bench_openssl_ecdsa_init, bench_openssl_ecdsa_sign, bench_openssl_ecdsa_verify, bench_openssl_ecdsa_clear },
-  { "ecdsa (openssl)",  224, bench_openssl_ecdsa_init, bench_openssl_ecdsa_sign, bench_openssl_ecdsa_verify, bench_openssl_ecdsa_clear },
-  { "ecdsa (openssl)",  256, bench_openssl_ecdsa_init, bench_openssl_ecdsa_sign, bench_openssl_ecdsa_verify, bench_openssl_ecdsa_clear },
-  { "ecdsa (openssl)",  384, bench_openssl_ecdsa_init, bench_openssl_ecdsa_sign, bench_openssl_ecdsa_verify, bench_openssl_ecdsa_clear },
-  { "ecdsa (openssl)",  521, bench_openssl_ecdsa_init, bench_openssl_ecdsa_sign, bench_openssl_ecdsa_verify, bench_openssl_ecdsa_clear },
+  { "ecdsa (openssl)",  192, bench_openssl_ecdsa_init, bench_openssl_sign, bench_openssl_verify, bench_openssl_clear },
+  { "ecdsa (openssl)",  224, bench_openssl_ecdsa_init, bench_openssl_sign, bench_openssl_verify, bench_openssl_clear },
+  { "ecdsa (openssl)",  256, bench_openssl_ecdsa_init, bench_openssl_sign, bench_openssl_verify, bench_openssl_clear },
+  { "ecdsa (openssl)",  384, bench_openssl_ecdsa_init, bench_openssl_sign, bench_openssl_verify, bench_openssl_clear },
+  { "ecdsa (openssl)",  521, bench_openssl_ecdsa_init, bench_openssl_sign, bench_openssl_verify, bench_openssl_clear },
 #endif
   { "eddsa", 255, bench_eddsa_init, bench_eddsa_sign, bench_eddsa_verify, bench_eddsa_clear },
   { "eddsa", 448, bench_eddsa_init, bench_eddsa_sign, bench_eddsa_verify, bench_eddsa_clear },
