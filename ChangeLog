@@ -1,5 +1,10 @@
 2023-12-05  Niels Möller  <nisse@lysator.liu.se>
 
+	From Tim Kosse:
+	* fat-arm64.c (check_sysctlbyname) [__APPLE__]: New function.
+	(get_arm64_features) [__APPLE__]: Fix feature detection for Apple
+	M1 devices.
+
 	* configure.ac: In openssl tests, check for the headers actually
 	used by the benchmarking code, and for a subset of the relevant
 	functions.
