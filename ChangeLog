@@ -1,3 +1,10 @@
+2023-12-05  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/nettle-openssl.c: Trim openssl includes and defines,
+	and use Nettle's definition of sha1 and md5 constants.
+	(nettle_openssl_init): Deleted.
+	* examples/nettle-benchmark.c (main): Delete call to nettle_openssl_init.
+
 2023-12-04  Niels Möller  <nisse@lysator.liu.se>
 
 	* examples/nettle-openssl.c (nettle_openssl_blowfish128)
