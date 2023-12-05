@@ -711,7 +711,7 @@ bench_openssl_init (EVP_PKEY *key, const EVP_MD *md)
     die ("OpenSSL key eneration failed.\n");
   ctx->key = key;
   ctx->md = md;
-  ctx->md_ctx = EVP_MD_CTX_create();
+  ctx->md_ctx = EVP_MD_CTX_new();
   if (!ctx->md_ctx)
     die ("OpenSSL EVP_MD_CTX_create failed.");
 

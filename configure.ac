@@ -197,7 +197,7 @@ AC_TYPE_SIZE_T
 AC_CHECK_SIZEOF(long)
 AC_CHECK_SIZEOF(size_t)
 
-AC_CHECK_HEADERS([openssl/evp.h openssl/ecdsa.h],,
+AC_CHECK_HEADERS([openssl/evp.h openssl/ec.h openssl/rsa.h],,
 [enable_openssl=no
  break])
 
@@ -1170,11 +1170,15 @@ AC_SUBST(IF_MINI_GMP)
 
 OPENSSL_LIBFLAGS=''
 
-# Check for openssl's libcrypto (used only for benchmarking)
+# Check for openssl's libcrypto (used only for benchmarking), test for
+# a few of the functions used.
 if test x$enable_openssl = xyes ; then
-  AC_CHECK_LIB(crypto, EVP_CIPHER_CTX_new,
-    [OPENSSL_LIBFLAGS='-lcrypto'],
-    [enable_openssl=no])
+  for fun in EVP_CIPHER_CTX_new EVP_MD_CTX_new EVP_DigestVerifyFinal ; do
+    AC_CHECK_LIB(crypto, $fun,
+		 [OPENSSL_LIBFLAGS='-lcrypto'],
+		 [enable_openssl=no
+		  break])
+  done
 fi
 
 AH_TEMPLATE([WITH_OPENSSL],

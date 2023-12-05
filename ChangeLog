@@ -1,5 +1,9 @@
 2023-12-05  Niels Möller  <nisse@lysator.liu.se>
 
+	* configure.ac: In openssl tests, check for the headers actually
+	used by the benchmarking code, and for a subset of the relevant
+	functions.
+
 	* examples/nettle-openssl.c: Trim openssl includes and defines,
 	and use Nettle's definition of sha1 and md5 constants.
 	(nettle_openssl_init): Deleted.
