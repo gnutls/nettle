@@ -40,6 +40,25 @@
 #include "memxor.h"
 #include "block-internal.h"
 
+static void
+drbg_ctr_aes256_output (const struct aes256_ctx *key, union nettle_block16 *V,
+			size_t n, uint8_t *dst)
+{
+  for (; n >= AES_BLOCK_SIZE; n -= AES_BLOCK_SIZE, dst += AES_BLOCK_SIZE)
+    {
+      INCREMENT(AES_BLOCK_SIZE, V->b);
+      aes256_encrypt (key, AES_BLOCK_SIZE, dst, V->b);
+    }
+  if (n > 0)
+    {
+      union nettle_block16 block;
+
+      INCREMENT(AES_BLOCK_SIZE, V->b);
+      aes256_encrypt (key, AES_BLOCK_SIZE, block.b, V->b);
+      memcpy (dst, block.b, n);
+    }
+}
+
 /* provided_data is either NULL or a pointer to
    DRBG_CTR_AES256_SEED_SIZE (= 48) bytes. */
 static void
@@ -47,15 +66,7 @@ drbg_ctr_aes256_update (struct aes256_ctx *key,
 			union nettle_block16 *V, const uint8_t *provided_data)
 {
   union nettle_block16 tmp[3];
-
-  INCREMENT (AES_BLOCK_SIZE, V->b);
-  aes256_encrypt (key, AES_BLOCK_SIZE, tmp[0].b, V->b);
-
-  INCREMENT (AES_BLOCK_SIZE, V->b);
-  aes256_encrypt (key, AES_BLOCK_SIZE, tmp[1].b, V->b);
-
-  INCREMENT (AES_BLOCK_SIZE, V->b);
-  aes256_encrypt (key, AES_BLOCK_SIZE, tmp[2].b, V->b);
+  drbg_ctr_aes256_output (key, V, DRBG_CTR_AES256_SEED_SIZE, tmp[0].b);
 
   if (provided_data)
     memxor (tmp[0].b, provided_data, DRBG_CTR_AES256_SEED_SIZE);
@@ -79,22 +90,6 @@ void
 drbg_ctr_aes256_random (struct drbg_ctr_aes256_ctx *ctx,
 			size_t n, uint8_t *dst)
 {
-  while (n >= AES_BLOCK_SIZE)
-    {
-      INCREMENT (AES_BLOCK_SIZE, ctx->V.b);
-      aes256_encrypt (&ctx->key, AES_BLOCK_SIZE, dst, ctx->V.b);
-      dst += AES_BLOCK_SIZE;
-      n -= AES_BLOCK_SIZE;
-    }
-
-  if (n > 0)
-    {
-      union nettle_block16 block;
-
-      INCREMENT (AES_BLOCK_SIZE, ctx->V.b);
-      aes256_encrypt (&ctx->key, AES_BLOCK_SIZE, block.b, ctx->V.b);
-      memcpy (dst, block.b, n);
-    }
-
+  drbg_ctr_aes256_output (&ctx->key, &ctx->V, n, dst);
   drbg_ctr_aes256_update (&ctx->key, &ctx->V, NULL);
 }
