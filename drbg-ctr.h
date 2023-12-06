@@ -47,8 +47,8 @@ extern "C"
 
 struct drbg_ctr_aes256_ctx
 {
-  struct aes256_ctx Key;
-  uint8_t V[AES_BLOCK_SIZE];
+  struct aes256_ctx key;
+  union nettle_block16 V;
 };
 
 /* Initialize using DRBG_CTR_AES256_SEED_SIZE bytes of
