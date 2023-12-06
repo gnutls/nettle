@@ -1,10 +1,13 @@
 2023-12-06  Niels Möller  <nisse@lysator.liu.se>
+	* drbg-ctr-aes256.c (drbg_ctr_aes256_output): New helper function.
+	(drbg_ctr_aes256_update, drbg_ctr_aes256_random): Use it.
 
 	From Simon Josefsson:
 	* drbg-ctr.h (struct drbg_ctr_aes256_ctx): New context struct.
 	(DRBG_CTR_AES256_SEED_SIZE): New constant.
 	* drbg-ctr-aes256.c (drbg_ctr_aes256_update)
 	(drbg_ctr_aes256_init, drbg_ctr_aes256_random): New file, new functions.
+
 	* testsuite/drbg-ctr-aes256-test.c: New testcase.
 	* nettle.texinfo (Randomness): Document DRBG-CTR.
 
