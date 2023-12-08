@@ -33,7 +33,7 @@
 */
 
 #ifndef NETTLE_NON_NETTLE_H_INCLUDED
-#define NETTLE_INTERNAL_H_INCLUDED
+#define NETTLE_NON_NETTLE_H_INCLUDED
 
 #include "nettle-meta.h"
 #include "ocb.h"
@@ -92,4 +92,4 @@ struct ocb_aes128_ctx
 extern const struct nettle_aead nettle_ocb_aes128;
 
 
-#endif /* NETTLE_INTERNAL_H_INCLUDED */
+#endif /* NETTLE_NON_NETTLE_H_INCLUDED */
