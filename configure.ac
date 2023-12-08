@@ -1170,22 +1170,35 @@ AC_SUBST(IF_MINI_GMP)
 
 OPENSSL_LIBFLAGS=''
 
-# Check for openssl's libcrypto (used only for benchmarking), test for
-# a few of the functions used.
+# Check for openssl's libcrypto (used only for benchmarking)
 if test x$enable_openssl = xyes ; then
-  for fun in EVP_CIPHER_CTX_new EVP_MD_CTX_new EVP_DigestVerifyFinal ; do
-    AC_CHECK_LIB(crypto, $fun,
-		 [OPENSSL_LIBFLAGS='-lcrypto'],
-		 [enable_openssl=no
-		  break])
-  done
+  AC_CHECK_LIB(crypto, EVP_CIPHER_CTX_new,
+    [OPENSSL_LIBFLAGS='-lcrypto'],
+    [enable_openssl=no])
 fi
-
-AH_TEMPLATE([WITH_OPENSSL],
-	    [Define if you have openssl's libcrypto (used for benchmarking)]) dnl'
-
 if test x$enable_openssl = xyes ; then
-  AC_DEFINE(WITH_OPENSSL)
+  AC_MSG_CHECKING([if openssl supports the functions used by nettle benchmark programs])
+  save_LIBS="$LIBS"
+  LIBS="$LIBS $OPENSSL_LIBFLAGS"
+  AC_LINK_IFELSE([AC_LANG_PROGRAM([
+#include <openssl/evp.h>
+#include <openssl/ec.h>
+#include <openssl/rsa.h>
+], [
+EVP_MD_CTX *cipher_ctx = EVP_CIPHER_CTX_new();
+EVP_MD_CTX *md_ctx = EVP_MD_CTX_new();
+EVP_PKEY *rsa_key = EVP_RSA_gen(2048);
+EVP_PKEY *ec_key = EVP_EC_gen("P-256");
+int res = EVP_DigestSignFinal (md_ctx, NULL, NULL);
+])], [
+  AC_MSG_RESULT([yes])
+  AC_DEFINE([WITH_OPENSSL], 1,
+	    [Define if you have openssl libcrypto (used for benchmarking)])
+], [
+  AC_MSG_RESULT([no])
+  enable_openssl=no
+])
+  LIBS=$save_LIBS
 fi
 
 AC_SUBST(OPENSSL_LIBFLAGS)

@@ -1,3 +1,10 @@
+2023-12-08  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: When checking for openssl, use AC_LINK_IFELSE to
+	check if needed functions really are available. Just using
+	AC_CHECK_LIB to check for, e.g., EVP_RSA_gen, doesn't work, since
+	that is a macro that depends on including openssl/rsa.h.'
+
 2023-12-06  Niels Möller  <nisse@lysator.liu.se>
 
 	* drbg-ctr-aes256.c (drbg_ctr_aes256_output): New helper function.
