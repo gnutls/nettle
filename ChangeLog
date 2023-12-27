@@ -1,3 +1,8 @@
+2023-12-27  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/gcm-test.c (test_main): Additional gcm test case, with
+	719 byte message, contributed by Danny Tsen.
+
 2023-12-08  Niels Möller  <nisse@lysator.liu.se>
 
 	Delete all md5 assembly code.
