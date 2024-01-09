@@ -63,3 +63,13 @@ C INC_VR(VR, INC)
 define(`INC_VR',`ifelse(substr($1,0,1),`v',
 ``v'eval($2+substr($1,1,len($1)))',
 `eval($2+$1)')')
+
+C Apply op to 4 separate registers, with the same y,
+C op x_k, x_k, y, for k = 1,2,3,4
+C OP4(op, x1, x2, x3, x4, y)
+define(`OP4', `
+  $1 $2, $2, $6
+  $1 $3, $3, $6
+  $1 $4, $4, $6
+  $1 $5, $5, $6
+')

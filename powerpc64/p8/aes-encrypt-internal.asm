@@ -111,14 +111,8 @@ IF_LE(`vperm S0,S0,S0,SWAP_MASK
  vperm S6,S6,S6,SWAP_MASK
  vperm S7,S7,S7,SWAP_MASK')
 
- vxor S0,S0,K
- vxor S1,S1,K
- vxor S2,S2,K
- vxor S3,S3,K
- vxor S4,S4,K
- vxor S5,S5,K
- vxor S6,S6,K
- vxor S7,S7,K
+ OP4(vxor, S0, S1, S2, S3, K)
+ OP4(vxor, S4, S5, S6, S7, K)
 
  mtctr ROUNDS
  li r10,0x10
@@ -126,27 +120,15 @@ IF_LE(`vperm S0,S0,S0,SWAP_MASK
 L8x_round_loop:
  lxvd2x VSR(K),r10,KEYS
  vperm   K,K,K,SWAP_MASK
- vcipher S0,S0,K
- vcipher S1,S1,K
- vcipher S2,S2,K
- vcipher S3,S3,K
- vcipher S4,S4,K
- vcipher S5,S5,K
- vcipher S6,S6,K
- vcipher S7,S7,K
+ OP4(vcipher, S0, S1, S2, S3, K)
+ OP4(vcipher, S4, S5, S6, S7, K)
  addi r10,r10,0x10
  bdnz L8x_round_loop
 
  lxvd2x VSR(K),r10,KEYS
  vperm   K,K,K,SWAP_MASK
- vcipherlast S0,S0,K
- vcipherlast S1,S1,K
- vcipherlast S2,S2,K
- vcipherlast S3,S3,K
- vcipherlast S4,S4,K
- vcipherlast S5,S5,K
- vcipherlast S6,S6,K
- vcipherlast S7,S7,K
+ OP4(vcipherlast, S0, S1, S2, S3, K)
+ OP4(vcipherlast, S4, S5, S6, S7, K)
 
 IF_LE(`vperm S0,S0,S0,SWAP_MASK
  vperm S1,S1,S1,SWAP_MASK
@@ -202,10 +184,7 @@ IF_LE(`vperm S0,S0,S0,SWAP_MASK
  vperm S2,S2,S2,SWAP_MASK
  vperm S3,S3,S3,SWAP_MASK')
 
- vxor S0,S0,K
- vxor S1,S1,K
- vxor S2,S2,K
- vxor S3,S3,K
+ OP4(vxor, S0, S1, S2, S3, K)
 
  mtctr ROUNDS
  li r10,0x10
@@ -213,19 +192,13 @@ IF_LE(`vperm S0,S0,S0,SWAP_MASK
 L4x_round_loop:
  lxvd2x VSR(K),r10,KEYS
  vperm  K,K,K,SWAP_MASK
- vcipher S0,S0,K
- vcipher S1,S1,K
- vcipher S2,S2,K
- vcipher S3,S3,K
+ OP4(vcipher, S0, S1, S2, S3, K)
  addi   r10,r10,0x10
  bdnz  L4x_round_loop
 
  lxvd2x VSR(K),r10,KEYS
  vperm   K,K,K,SWAP_MASK
- vcipherlast S0,S0,K
- vcipherlast S1,S1,K
- vcipherlast S2,S2,K
- vcipherlast S3,S3,K
+ OP4(vcipherlast, S0, S1, S2, S3, K)
 
 IF_LE(`vperm S0,S0,S0,SWAP_MASK
  vperm S1,S1,S1,SWAP_MASK

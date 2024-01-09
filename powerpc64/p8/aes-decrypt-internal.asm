@@ -80,13 +80,13 @@ PROLOGUE(_nettle_aes_decrypt)
  cmpldi r5,0
  beq L4x
 
- std r25,-56(SP);
- std r26,-48(SP);
- std r27,-40(SP);
- std r28,-32(SP);
- std r29,-24(SP);
- std r30,-16(SP);
- std r31,-8(SP);
+ std r25,-56(SP)
+ std r26,-48(SP)
+ std r27,-40(SP)
+ std r28,-32(SP)
+ std r29,-24(SP)
+ std r30,-16(SP)
+ std r31,-8(SP)
 
  li r25,0x10
  li r26,0x20
@@ -119,14 +119,8 @@ IF_LE(`vperm S0,S0,S0,SWAP_MASK
  vperm S6,S6,S6,SWAP_MASK
  vperm S7,S7,S7,SWAP_MASK')
 
- vxor S0,S0,K
- vxor S1,S1,K
- vxor S2,S2,K
- vxor S3,S3,K
- vxor S4,S4,K
- vxor S5,S5,K
- vxor S6,S6,K
- vxor S7,S7,K
+ OP4(vxor, S0, S1, S2, S3, K)
+ OP4(vxor, S4, S5, S6, S7, K)
 
  mtctr ROUNDS
  li r10,0x10
@@ -134,35 +128,17 @@ IF_LE(`vperm S0,S0,S0,SWAP_MASK
 L8x_round_loop:
  lxvd2x VSR(K),r10,KEYS
  vperm   K,K,K,SWAP_MASK
- vncipher S0,S0,ZERO
- vncipher S1,S1,ZERO
- vncipher S2,S2,ZERO
- vncipher S3,S3,ZERO
- vncipher S4,S4,ZERO
- vncipher S5,S5,ZERO
- vncipher S6,S6,ZERO
- vncipher S7,S7,ZERO
- vxor S0,S0,K
- vxor S1,S1,K
- vxor S2,S2,K
- vxor S3,S3,K
- vxor S4,S4,K
- vxor S5,S5,K
- vxor S6,S6,K
- vxor S7,S7,K
+ OP4(vncipher, S0, S1, S2, S3, ZERO)
+ OP4(vncipher, S4, S5, S6, S7, ZERO)
+ OP4(vxor, S0, S1, S2, S3, K)
+ OP4(vxor, S4, S5, S6, S7, K)
  addi r10,r10,0x10
  bdnz L8x_round_loop
 
  lxvd2x VSR(K),r10,KEYS
  vperm   K,K,K,SWAP_MASK
- vncipherlast S0,S0,K
- vncipherlast S1,S1,K
- vncipherlast S2,S2,K
- vncipherlast S3,S3,K
- vncipherlast S4,S4,K
- vncipherlast S5,S5,K
- vncipherlast S6,S6,K
- vncipherlast S7,S7,K
+ OP4(vncipherlast, S0, S1, S2, S3, K)
+ OP4(vncipherlast, S4, S5, S6, S7, K)
 
 IF_LE(`vperm S0,S0,S0,SWAP_MASK
  vperm S1,S1,S1,SWAP_MASK
@@ -218,10 +194,7 @@ IF_LE(`vperm S0,S0,S0,SWAP_MASK
  vperm S2,S2,S2,SWAP_MASK
  vperm S3,S3,S3,SWAP_MASK')
 
- vxor S0,S0,K
- vxor S1,S1,K
- vxor S2,S2,K
- vxor S3,S3,K
+ OP4(vxor, S0, S1, S2, S3, K)
 
  mtctr ROUNDS
  li r10,0x10
@@ -229,23 +202,14 @@ IF_LE(`vperm S0,S0,S0,SWAP_MASK
 L4x_round_loop:
  lxvd2x VSR(K),r10,KEYS
  vperm  K,K,K,SWAP_MASK
- vncipher S0,S0,ZERO
- vncipher S1,S1,ZERO
- vncipher S2,S2,ZERO
- vncipher S3,S3,ZERO
- vxor   S0,S0,K
- vxor  S1,S1,K
- vxor   S2,S2,K
- vxor   S3,S3,K
+ OP4(vncipher, S0, S1, S2, S3, ZERO)
+ OP4(vxor, S0, S1, S2, S3, K)
  addi   r10,r10,0x10
  bdnz  L4x_round_loop
 
  lxvd2x VSR(K),r10,KEYS
  vperm   K,K,K,SWAP_MASK
- vncipherlast S0,S0,K
- vncipherlast S1,S1,K
- vncipherlast S2,S2,K
- vncipherlast S3,S3,K
+ OP4(vncipherlast, S0, S1, S2, S3, K)
 
 IF_LE(`vperm S0,S0,S0,SWAP_MASK
  vperm S1,S1,S1,SWAP_MASK
