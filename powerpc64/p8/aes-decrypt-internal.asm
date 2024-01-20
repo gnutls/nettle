@@ -110,9 +110,9 @@ Lx8_loop:
  lxvd2x VSR(S6),r30,SRC
  lxvd2x VSR(S7),r31,SRC
 
-IF_LE(`OP_YXXX(vperm, SWAP_MASK, S0,S1,S2,S3,S4,S5,S6,S7)')
+IF_LE(`OPN_XXXY(vperm, SWAP_MASK, S0,S1,S2,S3,S4,S5,S6,S7)')
 
- OP_YXX(vxor, K, S0, S1, S2, S3, S4, S5, S6, S7)
+ OPN_XXY(vxor, K, S0, S1, S2, S3, S4, S5, S6, S7)
 
  mtctr ROUNDS
  li r10,0x10
@@ -120,16 +120,16 @@ IF_LE(`OP_YXXX(vperm, SWAP_MASK, S0,S1,S2,S3,S4,S5,S6,S7)')
 L8x_round_loop:
  lxvd2x VSR(K),r10,KEYS
  vperm   K,K,K,SWAP_MASK
- OP_YXX(vncipher, ZERO, S0, S1, S2, S3, S4, S5, S6, S7)
- OP_YXX(vxor, K, S0, S1, S2, S3, S4, S5, S6, S7)
+ OPN_XXY(vncipher, ZERO, S0, S1, S2, S3, S4, S5, S6, S7)
+ OPN_XXY(vxor, K, S0, S1, S2, S3, S4, S5, S6, S7)
  addi r10,r10,0x10
  bdnz L8x_round_loop
 
  lxvd2x VSR(K),r10,KEYS
  vperm   K,K,K,SWAP_MASK
- OP_YXX(vncipherlast, K, S0, S1, S2, S3, S4, S5, S6, S7)
+ OPN_XXY(vncipherlast, K, S0, S1, S2, S3, S4, S5, S6, S7)
 
-IF_LE(`OP_YXXX(vperm, SWAP_MASK, S0,S1,S2,S3,S4,S5,S6,S7)')
+IF_LE(`OPN_XXXY(vperm, SWAP_MASK, S0,S1,S2,S3,S4,S5,S6,S7)')
 
  stxvd2x VSR(S0),0,DST
  stxvd2x VSR(S1),r25,DST
@@ -171,9 +171,9 @@ L4x:
  addi   r9,r9,0x10
  lxvd2x VSR(S3),r9,SRC
 
-IF_LE(`OP_YXXX(vperm, SWAP_MASK, S0,S1,S2,S3)')
+IF_LE(`OPN_XXXY(vperm, SWAP_MASK, S0,S1,S2,S3)')
 
- OP_YXX(vxor, K, S0, S1, S2, S3)
+ OPN_XXY(vxor, K, S0, S1, S2, S3)
 
  mtctr ROUNDS
  li r10,0x10
@@ -181,16 +181,16 @@ IF_LE(`OP_YXXX(vperm, SWAP_MASK, S0,S1,S2,S3)')
 L4x_round_loop:
  lxvd2x VSR(K),r10,KEYS
  vperm  K,K,K,SWAP_MASK
- OP_YXX(vncipher, ZERO, S0, S1, S2, S3)
- OP_YXX(vxor, K, S0, S1, S2, S3)
+ OPN_XXY(vncipher, ZERO, S0, S1, S2, S3)
+ OPN_XXY(vxor, K, S0, S1, S2, S3)
  addi   r10,r10,0x10
  bdnz  L4x_round_loop
 
  lxvd2x VSR(K),r10,KEYS
  vperm   K,K,K,SWAP_MASK
- OP_YXX(vncipherlast, K, S0, S1, S2, S3)
+ OPN_XXY(vncipherlast, K, S0, S1, S2, S3)
 
-IF_LE(`OP_YXXX(vperm, SWAP_MASK, S0,S1,S2,S3)')
+IF_LE(`OPN_XXXY(vperm, SWAP_MASK, S0,S1,S2,S3)')
 
  stxvd2x VSR(S0),0,DST
  li  r9,0x10

@@ -65,17 +65,17 @@ define(`INC_VR',`ifelse(substr($1,0,1),`v',
 `eval($2+$1)')')
 
 C Apply op x, x, y, for each x.
-C OP_YXX(OP, Y, X1, X2, ...)
-define(`OP_YXX',
+C OPN_XXY(OP, Y, X1, X2, ...)
+define(`OPN_XXY',
 `$1 $3, $3, $2
 ifelse(eval($# > 3), 1,
-`OP_YXX($1, $2, shift(shift(shift($@))))dnl
+`OPN_XXY($1, $2, shift(shift(shift($@))))dnl
 ')')
 
 C Apply op x, x, x, y, for each x.
-C OP_YXXX(OP, Y, X1, X2, ...)
-define(`OP_YXXX',
+C OPN_XXXY(OP, Y, X1, X2, ...)
+define(`OPN_XXXY',
 `$1 $3, $3, $3, $2
 ifelse(eval($# > 3), 1,
-`OP_YXXX($1, $2, shift(shift(shift($@))))dnl
+`OPN_XXXY($1, $2, shift(shift(shift($@))))dnl
 ')')
