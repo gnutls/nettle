@@ -80,13 +80,12 @@ ifelse(eval($# > 3), 1,
 `OPN_XXXY($1, $2, shift(shift(shift($@))))dnl
 ')')
 
-C FIXME: If we allow clobber of F, no need for T register.
-C Polynomial reduction D = R + x^{-64} F mod P
+C Polynomial reduction R += x^{-64} F mod P
 C where x^{-64} = x^{64} + P1 (mod P)
-C GHASH_REDUCE(D, R, F, P1, T)
+C GHASH_REDUCE(R, F, P1, T1, T2)
 define(`GHASH_REDUCE', `
-    vpmsumd        $5,$3,$4
-    xxswapd        VSR($1),VSR($3)
-    vxor           $1, $1, $2
+    vpmsumd        $4, $2, $3
+    xxswapd        VSR($5),VSR($2)
     vxor           $1, $1, $5
+    vxor           $1, $1, $4
 ')

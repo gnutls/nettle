@@ -46,10 +46,10 @@ define(`BLOCKS', `r5')
 define(`DATA', `r6')
 
 define(`ZERO', `v16')
-define(`POLY', `v17')
-define(`POLY_L', `v0')
+define(`LE_TEMP', `v17')
 
-define(`D', `v1')
+define(`POLY_L', `v0')
+define(`LE_MASK', `v1')
 define(`C0', `v2')
 define(`C1', `v3')
 define(`C2', `v4')
@@ -66,14 +66,10 @@ define(`R', `v14')
 define(`F', `v15')
 define(`R2', `v16')
 define(`F2', `v17')
-define(`T', `v18')
-define(`R3', `v20')
-define(`F3', `v21')
-define(`R4', `v22')
-define(`F4', `v23')
-
-define(`LE_TEMP', `v18')
-define(`LE_MASK', `v19')
+define(`R3', `v18')
+define(`F3', `v19')
+define(`R4', `v20')
+define(`F4', `v21')
 
     C const uint8_t *_ghash_update (const struct gcm_key *ctx,
     C                               union nettle_block16 *x,
@@ -82,19 +78,19 @@ define(`LE_MASK', `v19')
 define(`FUNC_ALIGN', `5')
 PROLOGUE(_nettle_ghash_update)
     vxor           ZERO,ZERO,ZERO
-    DATA_LOAD_VEC(POLY,.polynomial,r7)
+    DATA_LOAD_VEC(POLY_L,.polynomial,r7)
 IF_LE(`
     li             r8,0
     lvsl           LE_MASK,0,r8
     vspltisb       LE_TEMP,0x07
     vxor           LE_MASK,LE_MASK,LE_TEMP
 ')
-    xxmrghd        VSR(POLY_L),VSR(ZERO),VSR(POLY)
+    xxmrghd        VSR(POLY_L),VSR(ZERO),VSR(POLY_L)
 
-    lxvd2x         VSR(D),0,X                    C load 'X' pointer
+    lxvd2x         VSR(R),0,X                    C load 'X' pointer
     C byte-reverse of each doubleword permuting on little-endian mode
 IF_LE(`
-    vperm          D,D,D,LE_MASK
+    vperm          R,R,R,LE_MASK
 ')
 
     C --- process 4 blocks '128-bit each' per one loop ---
@@ -105,14 +101,10 @@ IF_LE(`
     mtctr          r7                            C assign counter register to loop count
 
     C store non-volatile vector registers
-    addi           r8,SP,-64
+    addi           r8,SP,-32
     stvx           v20,0,r8
     addi           r8,r8,16
     stvx           v21,0,r8
-    addi           r8,r8,16
-    stvx           v22,0,r8
-    addi           r8,r8,16
-    stvx           v23,0,r8
 
     C load table elements
     li             r8,1*16
@@ -150,7 +142,7 @@ IF_LE(`
 ')
 
     C previous digest combining
-    vxor           C0,C0,D
+    vxor           C0,C0,R
 
     C polynomial multiplication
     vpmsumd        F2,H3L,C1
@@ -170,20 +162,16 @@ IF_LE(`
     vxor           F,F,F3
     vxor           R,R,R3
 
-    GHASH_REDUCE(D, R, F, POLY_L, T)
+    GHASH_REDUCE(R, F, POLY_L, R2, F2)  C R2, F2 used as temporaries
 
     addi           DATA,DATA,0x40
     bdnz           L4x_loop
 
     C restore non-volatile vector registers
-    addi           r8,SP,-64
+    addi           r8,SP,-32
     lvx            v20,0,r8
     addi           r8,r8,16
     lvx            v21,0,r8
-    addi           r8,r8,16
-    lvx            v22,0,r8
-    addi           r8,r8,16
-    lvx            v23,0,r8
 
     clrldi         BLOCKS,BLOCKS,62              C 'set the high-order 62 bits to zeros'
 L2x:
@@ -212,7 +200,7 @@ IF_LE(`
 ')
 
     C previous digest combining
-    vxor           C0,C0,D
+    vxor           C0,C0,R
 
     C polynomial multiplication
     vpmsumd        F2,H1L,C1
@@ -224,7 +212,7 @@ IF_LE(`
     vxor           F,F,F2
     vxor           R,R,R2
 
-    GHASH_REDUCE(D, R, F, POLY_L, T)
+    GHASH_REDUCE(R, F, POLY_L, R2, F2)  C R2, F2 used as temporaries
 
     addi           DATA,DATA,0x20
     clrldi         BLOCKS,BLOCKS,63              C 'set the high-order 63 bits to zeros'
@@ -247,13 +235,13 @@ IF_LE(`
 ')
 
     C previous digest combining
-    vxor           C0,C0,D
+    vxor           C0,C0,R
 
     C polynomial multiplication
     vpmsumd        F,H1L,C0
     vpmsumd        R,H1M,C0
 
-    GHASH_REDUCE(D, R, F, POLY_L, T)
+    GHASH_REDUCE(R, F, POLY_L, R2, F2)  C R2, F2 used as temporaries
 
     addi           DATA,DATA,0x10
     clrldi         BLOCKS,BLOCKS,60              C 'set the high-order 60 bits to zeros'
@@ -261,9 +249,9 @@ IF_LE(`
 Ldone:
     C byte-reverse of each doubleword permuting on little-endian mode
 IF_LE(`
-    vperm          D,D,D,LE_MASK
+    vperm          R,R,R,LE_MASK
 ')
-    stxvd2x        VSR(D),0,X                    C store digest 'D'
+    stxvd2x        VSR(R),0,X                    C store digest 'R'
     mr             r3, DATA
 
     blr
