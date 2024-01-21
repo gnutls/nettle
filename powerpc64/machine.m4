@@ -87,6 +87,6 @@ C GHASH_REDUCE(D, R, F, P1, T)
 define(`GHASH_REDUCE', `
     vpmsumd        $5,$3,$4
     xxswapd        VSR($1),VSR($3)
-    vxor           $5, $5, $2
+    vxor           $1, $1, $2
     vxor           $1, $1, $5
 ')
