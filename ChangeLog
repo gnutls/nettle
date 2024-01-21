@@ -1,3 +1,10 @@
+2024-01-21  Niels Möller  <nisse@lysator.liu.se>
+
+	* powerpc64/machine.m4 (OPN_XXY, OPN_XXXY): New macros.
+	* powerpc64/p8/aes-encrypt-internal.asm: Use macros for repeated
+	instruction patterns.
+	* powerpc64/p8/aes-decrypt-internal.asm: Likewise.
+
 2023-12-27  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/gcm-test.c (test_main): Additional gcm test case, with
