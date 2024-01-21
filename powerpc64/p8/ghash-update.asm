@@ -92,6 +92,10 @@ IF_LE(`
 IF_LE(`
     vperm          R,R,R,LE_MASK
 ')
+    C Used as offsets for load/store, throughout this function
+    li             r8,1*16
+    li             r9,2*16
+    li             r10,3*16
 
     C --- process 4 blocks '128-bit each' per one loop ---
 
@@ -101,31 +105,21 @@ IF_LE(`
     mtctr          r7                            C assign counter register to loop count
 
     C store non-volatile vector registers
-    addi           r8,SP,-32
-    stvx           v20,0,r8
-    addi           r8,r8,16
-    stvx           v21,0,r8
+    addi           r7,SP,-32
+    stvx           v20,0,r7
+    stvx           v21,r8,r7
 
     C load table elements
-    li             r8,1*16
-    li             r9,2*16
-    li             r10,3*16
     lxvd2x         VSR(H1M),0,CTX
     lxvd2x         VSR(H1L),r8,CTX
     lxvd2x         VSR(H2M),r9,CTX
     lxvd2x         VSR(H2L),r10,CTX
-    li             r7,4*16
-    li             r8,5*16
-    li             r9,6*16
-    li             r10,7*16
-    lxvd2x         VSR(H3M),r7,CTX
-    lxvd2x         VSR(H3L),r8,CTX
-    lxvd2x         VSR(H4M),r9,CTX
-    lxvd2x         VSR(H4L),r10,CTX
+    addi           r7,CTX,64
+    lxvd2x         VSR(H3M),0,r7
+    lxvd2x         VSR(H3L),r8,r7
+    lxvd2x         VSR(H4M),r9,r7
+    lxvd2x         VSR(H4L),r10,r7
 
-    li             r8,0x10
-    li             r9,0x20
-    li             r10,0x30
 .align 5
 L4x_loop:
     C input loading
@@ -168,10 +162,10 @@ IF_LE(`
     bdnz           L4x_loop
 
     C restore non-volatile vector registers
-    addi           r8,SP,-32
-    lvx            v20,0,r8
-    addi           r8,r8,16
-    lvx            v21,0,r8
+    addi           r7,SP,-32
+    lvx            v20,0,r7
+    addi           r7,r7,16
+    lvx            v21,0,r7
 
     clrldi         BLOCKS,BLOCKS,62              C 'set the high-order 62 bits to zeros'
 L2x:
@@ -181,18 +175,14 @@ L2x:
     beq            L1x
 
     C load table elements
-    li             r8,1*16
-    li             r9,2*16
-    li             r10,3*16
     lxvd2x         VSR(H1M),0,CTX
     lxvd2x         VSR(H1L),r8,CTX
     lxvd2x         VSR(H2M),r9,CTX
     lxvd2x         VSR(H2L),r10,CTX
 
     C input loading
-    li             r10,0x10
     lxvd2x         VSR(C0),0,DATA                C load C0
-    lxvd2x         VSR(C1),r10,DATA              C load C1
+    lxvd2x         VSR(C1),r8,DATA              C load C1
 
 IF_LE(`
     vperm          C0,C0,C0,LE_MASK
@@ -223,7 +213,6 @@ L1x:
     beq            Ldone
 
     C load table elements
-    li             r8,1*16
     lxvd2x         VSR(H1M),0,CTX
     lxvd2x         VSR(H1L),r8,CTX
 
