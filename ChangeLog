@@ -19,6 +19,14 @@
 
 2024-01-21  Niels Möller  <nisse@lysator.liu.se>
 
+	* aes-invert-internal.c (_nettle_aes_invert): Don't reorder the subkeys.
+	* aes-decrypt-internal.c (_nettle_aes_decrypt): Updated to process
+	subkeys starting from the end.
+	* x86_64/aes-decrypt-internal.asm: Likewise.
+	* x86_64/aesni/aes128-decrypt.asm: Likewise.
+	* x86_64/aesni/aes192-decrypt.asm: Likewise.
+	* x86_64/aesni/aes256-decrypt.asm: Likewise.
+
 	* powerpc64/machine.m4 (OPN_XXY, OPN_XXXY): New macros.
 	* powerpc64/p8/aes-encrypt-internal.asm: Use macros for repeated
 	instruction patterns.

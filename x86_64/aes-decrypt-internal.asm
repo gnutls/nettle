@@ -83,8 +83,10 @@ PROLOGUE(_nettle_aes_decrypt)
 	push	%r15	
 
 	subl	$1, XREG(ROUNDS)
-	push	ROUNDS		C Rounds at (%rsp) 
-	
+	push	ROUNDS			C Rounds stored at (%rsp)
+	shl	$4, XREG(ROUNDS)	C Zero-extends
+	lea	16(KEYS, ROUNDS), KEYS
+
 	mov	PARAM_TABLE, TABLE
 	mov	PARAM_LENGTH, LENGTH
 	shr	$4, LENGTH
@@ -92,11 +94,12 @@ PROLOGUE(_nettle_aes_decrypt)
 	mov	KEYS, KEY
 	
 	AES_LOAD(SA, SB, SC, SD, SRC, KEY)
-	add	$16, SRC	C Increment src pointer
 
+	add	$16, SRC	C  increment src pointer
 	movl	(%rsp), XREG(ROUNDS)
 
-	add	$16, KEY	C  point to next key
+	sub	$16, KEY	C  point to next key
+
 	ALIGN(16)
 .Lround_loop:
 	AES_ROUND(TABLE, SA,SD,SC,SB, TA, TMP)
@@ -113,7 +116,7 @@ PROLOGUE(_nettle_aes_decrypt)
 	xorl	8(KEY),SC
 	xorl	12(KEY),SD
 
-	add	$16, KEY	C  point to next key
+	sub	$16, KEY	C  point to next key
 	decl	XREG(ROUNDS)
 	jnz	.Lround_loop
 

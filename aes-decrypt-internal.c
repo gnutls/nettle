@@ -65,12 +65,12 @@ _nettle_aes_decrypt(unsigned rounds, const uint32_t *keys,
       /* Get clear text, using little-endian byte order.
        * Also XOR with the first subkey. */
 
-      w0 = LE_READ_UINT32(src)      ^ keys[0];
-      w1 = LE_READ_UINT32(src + 4)  ^ keys[1];
-      w2 = LE_READ_UINT32(src + 8)  ^ keys[2];
-      w3 = LE_READ_UINT32(src + 12) ^ keys[3];
+      w0 = LE_READ_UINT32(src)      ^ keys[4*rounds];
+      w1 = LE_READ_UINT32(src + 4)  ^ keys[4*rounds + 1];
+      w2 = LE_READ_UINT32(src + 8)  ^ keys[4*rounds + 2];
+      w3 = LE_READ_UINT32(src + 12) ^ keys[4*rounds + 3];
 
-      for (i = 1; i < rounds; i++)
+      for (i = rounds - 1; i > 0; i--)
 	{
 	  t0 = AES_ROUND(T, w0, w3, w2, w1, keys[4*i]);
 	  t1 = AES_ROUND(T, w1, w0, w3, w2, keys[4*i + 1]);
@@ -88,10 +88,10 @@ _nettle_aes_decrypt(unsigned rounds, const uint32_t *keys,
 
       /* Final round */
 
-      t0 = AES_FINAL_ROUND(T, w0, w3, w2, w1, keys[4*i]);
-      t1 = AES_FINAL_ROUND(T, w1, w0, w3, w2, keys[4*i + 1]);
-      t2 = AES_FINAL_ROUND(T, w2, w1, w0, w3, keys[4*i + 2]);
-      t3 = AES_FINAL_ROUND(T, w3, w2, w1, w0, keys[4*i + 3]);
+      t0 = AES_FINAL_ROUND(T, w0, w3, w2, w1, keys[0]);
+      t1 = AES_FINAL_ROUND(T, w1, w0, w3, w2, keys[1]);
+      t2 = AES_FINAL_ROUND(T, w2, w1, w0, w3, keys[2]);
+      t3 = AES_FINAL_ROUND(T, w3, w2, w1, w0, keys[3]);
 
       LE_WRITE_UINT32(dst, t0);
       LE_WRITE_UINT32(dst + 4, t1);
