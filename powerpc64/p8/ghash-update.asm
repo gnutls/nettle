@@ -170,11 +170,7 @@ IF_LE(`
     vxor           F,F,F3
     vxor           R,R,R3
 
-    C reduction
-    vpmsumd        T,F,POLY_L
-    xxswapd        VSR(D),VSR(F)
-    vxor           R,R,T
-    vxor           D,R,D
+    GHASH_REDUCE(D, R, F, POLY_L, T)
 
     addi           DATA,DATA,0x40
     bdnz           L4x_loop
@@ -228,11 +224,7 @@ IF_LE(`
     vxor           F,F,F2
     vxor           R,R,R2
 
-    C reduction
-    vpmsumd        T,F,POLY_L
-    xxswapd        VSR(D),VSR(F)
-    vxor           R,R,T
-    vxor           D,R,D
+    GHASH_REDUCE(D, R, F, POLY_L, T)
 
     addi           DATA,DATA,0x20
     clrldi         BLOCKS,BLOCKS,63              C 'set the high-order 63 bits to zeros'
@@ -261,11 +253,7 @@ IF_LE(`
     vpmsumd        F,H1L,C0
     vpmsumd        R,H1M,C0
 
-    C reduction
-    vpmsumd        T,F,POLY_L
-    xxswapd        VSR(D),VSR(F)
-    vxor           R,R,T
-    vxor           D,R,D
+    GHASH_REDUCE(D, R, F, POLY_L, T)
 
     addi           DATA,DATA,0x10
     clrldi         BLOCKS,BLOCKS,60              C 'set the high-order 60 bits to zeros'

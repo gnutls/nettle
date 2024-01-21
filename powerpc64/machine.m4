@@ -79,3 +79,14 @@ define(`OPN_XXXY',
 ifelse(eval($# > 3), 1,
 `OPN_XXXY($1, $2, shift(shift(shift($@))))dnl
 ')')
+
+C FIXME: If we allow clobber of F, no need for T register.
+C Polynomial reduction D = R + x^{-64} F mod P
+C where x^{-64} = x^{64} + P1 (mod P)
+C GHASH_REDUCE(D, R, F, P1, T)
+define(`GHASH_REDUCE', `
+    vpmsumd        $5,$3,$4
+    xxswapd        VSR($1),VSR($3)
+    vxor           $5, $5, $2
+    vxor           $1, $1, $5
+')
