@@ -1,3 +1,10 @@
+2024-01-23  Niels Möller  <nisse@lysator.liu.se>
+
+	* powerpc64/machine.m4 (GHASH_REDUCE): New macro. Improve
+	scheduling, adding vpmsumd result last.
+	* powerpc64/p8/ghash-update.asm: Use GHASH_REDUCE, slightly reduce
+	vector register usage, simplify use of index registers.
+
 2024-01-21  Niels Möller  <nisse@lysator.liu.se>
 
 	* powerpc64/machine.m4 (OPN_XXY, OPN_XXXY): New macros.
