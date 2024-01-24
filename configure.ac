@@ -486,8 +486,6 @@ if test "x$enable_assembler" = xyes ; then
     *sparc*)
       if test "$ABI" = 64 ; then
 	asm_path=sparc64
-      else
-	asm_path=sparc32
       fi
       ;;
     arm*)

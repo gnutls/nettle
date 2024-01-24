@@ -15,12 +15,12 @@ define(`AES_LOAD', `
 	ldub	[$2 + 4*$1 + 1], TMP1
 	ldub	[$2 + 4*$1 + 2], TMP2
 	sll	TMP1, 8, TMP1
-	
+
 	or	$4, TMP1, $4
 	ldub	[$2 + 4*$1+3], TMP1
 	sll	TMP2, 16, TMP2
 	or	$4, TMP2, $4
-	
+
 	sll	TMP1, 24, TMP1
 	C	Get subkey
 	ld	[$3 + 4*$1], TMP2
