@@ -90,10 +90,7 @@ PROLOGUE(_nettle_aes_decrypt)
 	jz	.Lend
 
 	shrl	$4, PARAM_LENGTH
-	movl	PARAM_ROUNDS, TMP
 	decl	PARAM_ROUNDS
-	shll	$4, TMP
-	addl	TMP, PARAM_KEYS
 .Lblock_loop:
 	movl	PARAM_KEYS, KEY	C  address of subkeys
 	

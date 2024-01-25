@@ -88,9 +88,6 @@ PROLOGUE(_nettle_aes_decrypt)
 	add	T, AES_TABLE2, T2
 	add	T, AES_TABLE3, T3
 
-	sll	ROUNDS, 4, W0	C Can use W0 as scratch
-	add	KEYS, W0, KEYS	C Point to last subkey
-
 	C	Must be even, and includes the final round
 	srl	ROUNDS, 1, ROUNDS
 	C	Last two rounds handled specially

@@ -60,22 +60,23 @@ _nettle_aes_decrypt(unsigned rounds, const uint32_t *keys,
     {
       uint32_t w0, w1, w2, w3;		/* working ciphertext */
       uint32_t t0, t1, t2, t3;
+      const uint32_t *p;
       unsigned i;
       
       /* Get clear text, using little-endian byte order.
        * Also XOR with the first subkey. */
 
-      w0 = LE_READ_UINT32(src)      ^ keys[4*rounds];
-      w1 = LE_READ_UINT32(src + 4)  ^ keys[4*rounds + 1];
-      w2 = LE_READ_UINT32(src + 8)  ^ keys[4*rounds + 2];
-      w3 = LE_READ_UINT32(src + 12) ^ keys[4*rounds + 3];
+      w0 = LE_READ_UINT32(src)      ^ keys[0];
+      w1 = LE_READ_UINT32(src + 4)  ^ keys[1];
+      w2 = LE_READ_UINT32(src + 8)  ^ keys[2];
+      w3 = LE_READ_UINT32(src + 12) ^ keys[3];
 
-      for (i = rounds - 1; i > 0; i--)
+      for (i = 1, p = keys - 4; i < rounds; i++, p -= 4)
 	{
-	  t0 = AES_ROUND(T, w0, w3, w2, w1, keys[4*i]);
-	  t1 = AES_ROUND(T, w1, w0, w3, w2, keys[4*i + 1]);
-	  t2 = AES_ROUND(T, w2, w1, w0, w3, keys[4*i + 2]);
-	  t3 = AES_ROUND(T, w3, w2, w1, w0, keys[4*i + 3]);
+	  t0 = AES_ROUND(T, w0, w3, w2, w1, p[0]);
+	  t1 = AES_ROUND(T, w1, w0, w3, w2, p[1]);
+	  t2 = AES_ROUND(T, w2, w1, w0, w3, p[2]);
+	  t3 = AES_ROUND(T, w3, w2, w1, w0, p[3]);
 
 	  /* We could unroll the loop twice, to avoid these
 	     assignments. If all eight variables fit in registers,
@@ -88,10 +89,10 @@ _nettle_aes_decrypt(unsigned rounds, const uint32_t *keys,
 
       /* Final round */
 
-      t0 = AES_FINAL_ROUND(T, w0, w3, w2, w1, keys[0]);
-      t1 = AES_FINAL_ROUND(T, w1, w0, w3, w2, keys[1]);
-      t2 = AES_FINAL_ROUND(T, w2, w1, w0, w3, keys[2]);
-      t3 = AES_FINAL_ROUND(T, w3, w2, w1, w0, keys[3]);
+      t0 = AES_FINAL_ROUND(T, w0, w3, w2, w1, p[0]);
+      t1 = AES_FINAL_ROUND(T, w1, w0, w3, w2, p[1]);
+      t2 = AES_FINAL_ROUND(T, w2, w1, w0, w3, p[2]);
+      t3 = AES_FINAL_ROUND(T, w3, w2, w1, w0, p[3]);
 
       LE_WRITE_UINT32(dst, t0);
       LE_WRITE_UINT32(dst + 4, t1);
