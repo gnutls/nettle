@@ -90,7 +90,10 @@ PROLOGUE(_nettle_aes_decrypt)
 	jz	.Lend
 
 	shrl	$4, PARAM_LENGTH
-	subl	$1, PARAM_ROUNDS
+	movl	PARAM_ROUNDS, TMP
+	decl	PARAM_ROUNDS
+	shll	$4, TMP
+	addl	TMP, PARAM_KEYS
 .Lblock_loop:
 	movl	PARAM_KEYS, KEY	C  address of subkeys
 	
@@ -103,7 +106,7 @@ PROLOGUE(_nettle_aes_decrypt)
 	C Loop counter on stack
 	movl	TMP, FRAME_COUNT
 
-	addl	$16,KEY		C  point to next key
+	subl	$16,KEY		C  point to next key
 	movl	KEY,FRAME_KEY
 	ALIGN(16)
 .Lround_loop:
@@ -128,7 +131,7 @@ PROLOGUE(_nettle_aes_decrypt)
 	xorl	4(KEY),SB
 	xorl	8(KEY),SC
 	xorl	12(KEY),SD
-	addl	$16,FRAME_KEY	C  point to next key
+	subl	$16,FRAME_KEY	C  point to next key
 	decl	FRAME_COUNT
 	jnz	.Lround_loop
 
