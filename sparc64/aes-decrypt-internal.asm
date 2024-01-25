@@ -88,6 +88,9 @@ PROLOGUE(_nettle_aes_decrypt)
 	add	T, AES_TABLE2, T2
 	add	T, AES_TABLE3, T3
 
+	sll	ROUNDS, 4, W0	C Can use W0 as scratch
+	add	KEYS, W0, KEYS	C Point to last subkey
+
 	C	Must be even, and includes the final round
 	srl	ROUNDS, 1, ROUNDS
 	C	Last two rounds handled specially
@@ -103,33 +106,32 @@ PROLOGUE(_nettle_aes_decrypt)
 
 	mov	ROUNDS, COUNT
 	add	SRC, 16, SRC
-	add	KEY, 16, KEY
+	sub	KEY, 32, KEY
 
 .Lround_loop:
 	C The AES_ROUND macro uses T0,... T3
 	C	Transform W -> X
-	AES_ROUND(0, W0, W3, W2, W1, KEY, X0)
-	AES_ROUND(1, W1, W0, W3, W2, KEY, X1)
-	AES_ROUND(2, W2, W1, W0, W3, KEY, X2)
-	AES_ROUND(3, W3, W2, W1, W0, KEY, X3)
+	AES_ROUND(4, W0, W3, W2, W1, KEY, X0)
+	AES_ROUND(5, W1, W0, W3, W2, KEY, X1)
+	AES_ROUND(6, W2, W1, W0, W3, KEY, X2)
+	AES_ROUND(7, W3, W2, W1, W0, KEY, X3)
 
 	C	Transform X -> W
-	AES_ROUND(4, X0, X3, X2, X1, KEY, W0)
-	AES_ROUND(5, X1, X0, X3, X2, KEY, W1)
-	AES_ROUND(6, X2, X1, X0, X3, KEY, W2)
-	AES_ROUND(7, X3, X2, X1, X0, KEY, W3)
+	AES_ROUND(0, X0, X3, X2, X1, KEY, W0)
+	AES_ROUND(1, X1, X0, X3, X2, KEY, W1)
+	AES_ROUND(2, X2, X1, X0, X3, KEY, W2)
+	AES_ROUND(3, X3, X2, X1, X0, KEY, W3)
 
 	subcc	COUNT, 1, COUNT
 	bne	.Lround_loop
-	add	KEY, 32, KEY
+	sub	KEY, 32, KEY
 
 	C	Penultimate round
-	AES_ROUND(0, W0, W3, W2, W1, KEY, X0)
-	AES_ROUND(1, W1, W0, W3, W2, KEY, X1)
-	AES_ROUND(2, W2, W1, W0, W3, KEY, X2)
-	AES_ROUND(3, W3, W2, W1, W0, KEY, X3)
+	AES_ROUND(4, W0, W3, W2, W1, KEY, X0)
+	AES_ROUND(5, W1, W0, W3, W2, KEY, X1)
+	AES_ROUND(6, W2, W1, W0, W3, KEY, X2)
+	AES_ROUND(7, W3, W2, W1, W0, KEY, X3)
 
-	add	KEY, 16, KEY
 	C	Final round
 	AES_FINAL_ROUND(0, T, X0, X3, X2, X1, KEY, DST)
 	AES_FINAL_ROUND(1, T, X1, X0, X3, X2, KEY, DST)
