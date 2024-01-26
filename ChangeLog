@@ -1,3 +1,15 @@
+2024-01-26  Niels Möller  <nisse@lysator.liu.se>
+
+	Delete all sparc32 assembly.
+	* sparc32/aes-decrypt-internal.asm: Deleted file.
+	* sparc32/aes-encrypt-internal.asm: Deleted file.
+	* configure.ac: Don't enable any assembly for 32-bit sparc.
+	* Makefile.in (distdir): Don't distribute sparc32 files.
+	* sparc64/aes.m4: Moved file, from...
+	* sparc32/aes.m4: ... old location.
+	* sparc64/aes-encrypt-internal.asm: Update for location of aes.m4.
+	* sparc64/aes-decrypt-internal.asm: Likewise.
+
 2024-01-23  Niels Möller  <nisse@lysator.liu.se>
 
 	* powerpc64/machine.m4 (GHASH_REDUCE): New macro. Improve
