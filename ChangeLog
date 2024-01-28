@@ -1,3 +1,9 @@
+2024-01-28  Niels Möller  <nisse@lysator.liu.se>
+
+	* powerpc64/p8/aes-encrypt-internal.asm: Use only r10-r12 or
+	indexing, eliminating save and restore of r25-r31.
+	* powerpc64/p8/aes-decrypt-internal.asm: Likewise.
+
 2024-01-26  Niels Möller  <nisse@lysator.liu.se>
 
 	Delete all sparc32 assembly.

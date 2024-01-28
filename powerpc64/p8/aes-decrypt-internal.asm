@@ -76,25 +76,14 @@ PROLOGUE(_nettle_aes_decrypt)
  subi ROUNDS,ROUNDS,1
  srdi LENGTH,LENGTH,4
 
+ C Used as offsets for load/store, throughout this function
+ li             r10,0x10
+ li             r11,0x20
+ li             r12,0x30
+
  srdi r5,LENGTH,3 #8x loop count
  cmpldi r5,0
  beq L4x
-
- std r25,-56(SP)
- std r26,-48(SP)
- std r27,-40(SP)
- std r28,-32(SP)
- std r29,-24(SP)
- std r30,-16(SP)
- std r31,-8(SP)
-
- li r25,0x10
- li r26,0x20
- li r27,0x30
- li r28,0x40
- li r29,0x50
- li r30,0x60
- li r31,0x70
 
 .align 5
 Lx8_loop:
@@ -102,56 +91,51 @@ Lx8_loop:
  vperm   K,K,K,SWAP_MASK
 
  lxvd2x VSR(S0),0,SRC
- lxvd2x VSR(S1),r25,SRC
- lxvd2x VSR(S2),r26,SRC
- lxvd2x VSR(S3),r27,SRC
- lxvd2x VSR(S4),r28,SRC
- lxvd2x VSR(S5),r29,SRC
- lxvd2x VSR(S6),r30,SRC
- lxvd2x VSR(S7),r31,SRC
+ lxvd2x VSR(S1),r10,SRC
+ lxvd2x VSR(S2),r11,SRC
+ lxvd2x VSR(S3),r12,SRC
+ addi SRC,SRC,0x40
+ lxvd2x VSR(S4),0,SRC
+ lxvd2x VSR(S5),r10,SRC
+ lxvd2x VSR(S6),r11,SRC
+ lxvd2x VSR(S7),r12,SRC
+ addi SRC,SRC,0x40
 
 IF_LE(`OPN_XXXY(vperm, SWAP_MASK, S0,S1,S2,S3,S4,S5,S6,S7)')
 
  OPN_XXY(vxor, K, S0, S1, S2, S3, S4, S5, S6, S7)
 
  mtctr ROUNDS
- li r10,0x10
+ li r9,0x10
+
 .align 5
 L8x_round_loop:
- lxvd2x VSR(K),r10,KEYS
+ lxvd2x VSR(K),r9,KEYS
  vperm   K,K,K,SWAP_MASK
  OPN_XXY(vncipher, ZERO, S0, S1, S2, S3, S4, S5, S6, S7)
  OPN_XXY(vxor, K, S0, S1, S2, S3, S4, S5, S6, S7)
- addi r10,r10,0x10
+ addi r9,r9,0x10
  bdnz L8x_round_loop
 
- lxvd2x VSR(K),r10,KEYS
+ lxvd2x VSR(K),r9,KEYS
  vperm   K,K,K,SWAP_MASK
  OPN_XXY(vncipherlast, K, S0, S1, S2, S3, S4, S5, S6, S7)
 
 IF_LE(`OPN_XXXY(vperm, SWAP_MASK, S0,S1,S2,S3,S4,S5,S6,S7)')
 
  stxvd2x VSR(S0),0,DST
- stxvd2x VSR(S1),r25,DST
- stxvd2x VSR(S2),r26,DST
- stxvd2x VSR(S3),r27,DST
- stxvd2x VSR(S4),r28,DST
- stxvd2x VSR(S5),r29,DST
- stxvd2x VSR(S6),r30,DST
- stxvd2x VSR(S7),r31,DST
+ stxvd2x VSR(S1),r10,DST
+ stxvd2x VSR(S2),r11,DST
+ stxvd2x VSR(S3),r12,DST
+ addi DST,DST,0x40
+ stxvd2x VSR(S4),0,DST
+ stxvd2x VSR(S5),r10,DST
+ stxvd2x VSR(S6),r11,DST
+ stxvd2x VSR(S7),r12,DST
+ addi DST,DST,0x40
 
- addi SRC,SRC,0x80
- addi DST,DST,0x80
  subic. r5,r5,1
  bne Lx8_loop
-
- ld r25,-56(SP)
- ld r26,-48(SP)
- ld r27,-40(SP)
- ld r28,-32(SP)
- ld r29,-24(SP)
- ld r30,-16(SP)
- ld r31,-8(SP)
 
  clrldi LENGTH,LENGTH,61
 
@@ -164,41 +148,35 @@ L4x:
  vperm   K,K,K,SWAP_MASK
 
  lxvd2x VSR(S0),0,SRC
- li  r9,0x10
- lxvd2x VSR(S1),r9,SRC
- addi   r9,r9,0x10
- lxvd2x VSR(S2),r9,SRC
- addi   r9,r9,0x10
- lxvd2x VSR(S3),r9,SRC
+ lxvd2x VSR(S1),r10,SRC
+ lxvd2x VSR(S2),r11,SRC
+ lxvd2x VSR(S3),r12,SRC
 
 IF_LE(`OPN_XXXY(vperm, SWAP_MASK, S0,S1,S2,S3)')
 
  OPN_XXY(vxor, K, S0, S1, S2, S3)
 
  mtctr ROUNDS
- li r10,0x10
+ li r9,0x10
 .align 5
 L4x_round_loop:
- lxvd2x VSR(K),r10,KEYS
+ lxvd2x VSR(K),r9,KEYS
  vperm  K,K,K,SWAP_MASK
  OPN_XXY(vncipher, ZERO, S0, S1, S2, S3)
  OPN_XXY(vxor, K, S0, S1, S2, S3)
- addi   r10,r10,0x10
+ addi   r9,r9,0x10
  bdnz  L4x_round_loop
 
- lxvd2x VSR(K),r10,KEYS
+ lxvd2x VSR(K),r9,KEYS
  vperm   K,K,K,SWAP_MASK
  OPN_XXY(vncipherlast, K, S0, S1, S2, S3)
 
 IF_LE(`OPN_XXXY(vperm, SWAP_MASK, S0,S1,S2,S3)')
 
  stxvd2x VSR(S0),0,DST
- li  r9,0x10
- stxvd2x VSR(S1),r9,DST
- addi   r9,r9,0x10
- stxvd2x VSR(S2),r9,DST
- addi  r9,r9,0x10
- stxvd2x VSR(S3),r9,DST
+ stxvd2x VSR(S1),r10,DST
+ stxvd2x VSR(S2),r11,DST
+ stxvd2x VSR(S3),r12,DST
 
  addi   SRC,SRC,0x40
  addi   DST,DST,0x40
@@ -214,8 +192,7 @@ L2x:
  vperm K,K,K,SWAP_MASK
 
  lxvd2x VSR(S0),0,SRC
- li   r9,0x10
- lxvd2x VSR(S1),r9,SRC
+ lxvd2x VSR(S1),r10,SRC
 
 IF_LE(`vperm S0,S0,S0,SWAP_MASK
  vperm S1,S1,S1,SWAP_MASK')
@@ -224,19 +201,19 @@ IF_LE(`vperm S0,S0,S0,SWAP_MASK
  vxor   S1,S1,K
 
  mtctr   ROUNDS
- li  r10,0x10
+ li  r9,0x10
 .align 5
 L2x_round_loop:
- lxvd2x VSR(K),r10,KEYS
+ lxvd2x VSR(K),r9,KEYS
  vperm  K,K,K,SWAP_MASK
  vncipher S0,S0,ZERO
  vncipher S1,S1,ZERO
  vxor  S0,S0,K
  vxor  S1,S1,K
- addi   r10,r10,0x10
+ addi   r9,r9,0x10
  bdnz   L2x_round_loop
 
- lxvd2x VSR(K),r10,KEYS
+ lxvd2x VSR(K),r9,KEYS
  vperm  K,K,K,SWAP_MASK
  vncipherlast S0,S0,K
  vncipherlast S1,S1,K
@@ -245,8 +222,7 @@ IF_LE(`vperm S0,S0,S0,SWAP_MASK
  vperm S1,S1,S1,SWAP_MASK')
 
  stxvd2x VSR(S0),0,DST
- li  r9,0x10
- stxvd2x VSR(S1),r9,DST
+ stxvd2x VSR(S1),r10,DST
 
  addi   SRC,SRC,0x20
  addi   DST,DST,0x20
@@ -267,17 +243,17 @@ IF_LE(`vperm S0,S0,S0,SWAP_MASK')
  vxor   S0,S0,K
 
  mtctr   ROUNDS
- li   r10,0x10
+ li   r9,0x10
 .align 5
 L1x_round_loop:
- lxvd2x VSR(K),r10,KEYS
+ lxvd2x VSR(K),r9,KEYS
  vperm  K,K,K,SWAP_MASK
  vncipher S0,S0,ZERO
  vxor   S0,S0,K
- addi   r10,r10,0x10
+ addi   r9,r9,0x10
  bdnz   L1x_round_loop
 
- lxvd2x VSR(K),r10,KEYS
+ lxvd2x VSR(K),r9,KEYS
  vperm  K,K,K,SWAP_MASK
  vncipherlast S0,S0,K
 
