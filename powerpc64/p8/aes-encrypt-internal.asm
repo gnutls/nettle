@@ -39,8 +39,6 @@ define(`KEYS', `r4')
 define(`LENGTH', `r6')
 define(`DST', `r7')
 define(`SRC', `r8')
-define(`DSTx40', `r14')
-define(`SRCx40', `r15')
 
 define(`SWAP_MASK', `v0')
 
@@ -79,11 +77,16 @@ PROLOGUE(_nettle_aes_encrypt)
  cmpldi r5,0
  beq L4x
 
- std r14,-16(SP)
- std r15,-8(SP)
+ std r14,-32(SP)
+ std r15,-24(SP)
+ std r16,-16(SP)
+ std r17,-8(SP)
 
- addi SRCx40, SRC, 64
- addi DSTx40, DST, 64
+ li r14,0x40
+ li r15,0x50
+ li r16,0x60
+ li r17,0x70
+
 .align 5
 Lx8_loop:
  lxvd2x VSR(K),0,KEYS
@@ -93,10 +96,10 @@ Lx8_loop:
  lxvd2x VSR(S1),r10,SRC
  lxvd2x VSR(S2),r11,SRC
  lxvd2x VSR(S3),r12,SRC
- lxvd2x VSR(S4),0,SRCx40
- lxvd2x VSR(S5),r10,SRCx40
- lxvd2x VSR(S6),r11,SRCx40
- lxvd2x VSR(S7),r12,SRCx40
+ lxvd2x VSR(S4),r14,SRC
+ lxvd2x VSR(S5),r15,SRC
+ lxvd2x VSR(S6),r16,SRC
+ lxvd2x VSR(S7),r17,SRC
 
 IF_LE(`OPN_XXXY(vperm, SWAP_MASK, S0,S1,S2,S3,S4,S5,S6,S7)')
 
@@ -123,21 +126,21 @@ IF_LE(`OPN_XXXY(vperm, SWAP_MASK, S0,S1,S2,S3,S4,S5,S6,S7)')
  stxvd2x VSR(S1),r10,DST
  stxvd2x VSR(S2),r11,DST
  stxvd2x VSR(S3),r12,DST
- stxvd2x VSR(S4),0,DSTx40
- stxvd2x VSR(S5),r10,DSTx40
- stxvd2x VSR(S6),r11,DSTx40
- stxvd2x VSR(S7),r12,DSTx40
+ stxvd2x VSR(S4),r14,DST
+ stxvd2x VSR(S5),r15,DST
+ stxvd2x VSR(S6),r16,DST
+ stxvd2x VSR(S7),r17,DST
 
  addi SRC,SRC,0x80
  addi DST,DST,0x80
- addi SRCx40,SRCx40,0x80
- addi DSTx40,DSTx40,0x80
 
  subic. r5,r5,1
  bne Lx8_loop
 
- ld r14,-16(SP)
- ld r15,-8(SP)
+ ld r14,-32(SP)
+ ld r15,-24(SP)
+ ld r16,-16(SP)
+ ld r17,-8(SP)
 
  clrldi LENGTH,LENGTH,61
 
