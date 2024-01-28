@@ -39,6 +39,7 @@ define(`KEYS', `r4')
 define(`LENGTH', `r6')
 define(`DST', `r7')
 define(`SRC', `r8')
+C r9 used as loop index register, r10-r12, r14-r17 as constants.
 
 define(`SWAP_MASK', `v0')
 
