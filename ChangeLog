@@ -1,3 +1,9 @@
+2024-01-28  Niels Möller  <nisse@lysator.liu.se>
+
+	* powerpc64/p8/aes-encrypt-internal.asm: Use r10-r12 consistently
+	for indexing, and reducing number of used callee-save registers.
+	* powerpc64/p8/aes-decrypt-internal.asm: Likewise.
+
 2024-01-26  Niels Möller  <nisse@lysator.liu.se>
 
 	Delete all sparc32 assembly.
