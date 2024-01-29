@@ -115,7 +115,7 @@ IF_LE(`OPN_XXXY(vperm, SWAP_MASK, S0,S1,S2,S3,S4,S5,S6,S7)')
  OPN_XXY(vxor, K, S0, S1, S2, S3, S4, S5, S6, S7)
 
  mtctr ROUNDS
- li r9,0x10
+ li r9,-0x10
 
 .align 5
 L8x_round_loop:
@@ -123,7 +123,7 @@ L8x_round_loop:
  vperm   K,K,K,SWAP_MASK
  OPN_XXY(vncipher, ZERO, S0, S1, S2, S3, S4, S5, S6, S7)
  OPN_XXY(vxor, K, S0, S1, S2, S3, S4, S5, S6, S7)
- addi r9,r9,0x10
+ subi r9,r9,0x10
  bdnz L8x_round_loop
 
  lxvd2x VSR(K),r9,KEYS
@@ -172,14 +172,14 @@ IF_LE(`OPN_XXXY(vperm, SWAP_MASK, S0,S1,S2,S3)')
  OPN_XXY(vxor, K, S0, S1, S2, S3)
 
  mtctr ROUNDS
- li r9,0x10
+ li r9,-0x10
 .align 5
 L4x_round_loop:
  lxvd2x VSR(K),r9,KEYS
  vperm  K,K,K,SWAP_MASK
  OPN_XXY(vncipher, ZERO, S0, S1, S2, S3)
  OPN_XXY(vxor, K, S0, S1, S2, S3)
- addi   r9,r9,0x10
+ subi   r9,r9,0x10
  bdnz  L4x_round_loop
 
  lxvd2x VSR(K),r9,KEYS
@@ -216,7 +216,7 @@ IF_LE(`vperm S0,S0,S0,SWAP_MASK
  vxor   S1,S1,K
 
  mtctr   ROUNDS
- li  r9,0x10
+ li  r9,-0x10
 .align 5
 L2x_round_loop:
  lxvd2x VSR(K),r9,KEYS
@@ -225,7 +225,7 @@ L2x_round_loop:
  vncipher S1,S1,ZERO
  vxor  S0,S0,K
  vxor  S1,S1,K
- addi   r9,r9,0x10
+ subi   r9,r9,0x10
  bdnz   L2x_round_loop
 
  lxvd2x VSR(K),r9,KEYS
@@ -258,14 +258,14 @@ IF_LE(`vperm S0,S0,S0,SWAP_MASK')
  vxor   S0,S0,K
 
  mtctr   ROUNDS
- li   r9,0x10
+ li   r9,-0x10
 .align 5
 L1x_round_loop:
  lxvd2x VSR(K),r9,KEYS
  vperm  K,K,K,SWAP_MASK
  vncipher S0,S0,ZERO
  vxor   S0,S0,K
- addi   r9,r9,0x10
+ subi   r9,r9,0x10
  bdnz   L1x_round_loop
 
  lxvd2x VSR(K),r9,KEYS

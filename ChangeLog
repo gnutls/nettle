@@ -4,6 +4,32 @@
 	for indexing, and reducing number of used callee-save registers.
 	* powerpc64/p8/aes-decrypt-internal.asm: Likewise.
 
+2024-01-27  Niels Möller  <nisse@lysator.liu.se>
+
+	* aes-invert-internal.c (_nettle_aes_invert): Don't reorder the subkeys.
+	* aes-decrypt-internal.c (_nettle_aes_decrypt): Updated to process
+	subkeys starting from the end, and let subkeys pointer point at
+	the subkey for the first decrypt round, located at the end of the
+	array.
+	* aes128-decrypt.c (nettle_aes128_decrypt): Updated accordingly.
+	* aes192-decrypt.c (nettle_aes192_decrypt): Likewise.
+	* aes256-decrypt.c (nettle_aes256_decrypt): Likewise.
+	* arm/aes.m4 (AES_LOAD_INCR): New macro, specifying desired
+	increment of key pointer.
+	* arm/aes-decrypt-internal.asm: Updated for new conventions.
+	* arm/v6/aes-decrypt-internal.asm: Likewise.
+	* arm64/crypto/aes128-decrypt.asm: Likewise.
+	* arm64/crypto/aes192-decrypt.asm: Likewise.
+	* arm64/crypto/aes256-decrypt.asm: Likewise.
+	* powerpc64/p8/aes-decrypt-internal.asm: Likewise.
+	* sparc64/aes-decrypt-internal.asm: Likewise.
+	* x86/aes-decrypt-internal.asm: Likewise.
+	* x86_64/aes-decrypt-internal.asm: Likewise.
+	* x86_64/aes-decrypt-internal.asm: Likewise.
+	* x86_64/aesni/aes128-decrypt.asm: Likewise.
+	* x86_64/aesni/aes192-decrypt.asm: Likewise.
+	* x86_64/aesni/aes256-decrypt.asm: Likewise.
+
 2024-01-26  Niels Möller  <nisse@lysator.liu.se>
 
 	Delete all sparc32 assembly.
