@@ -42,6 +42,13 @@
 
 #include "macros.h"
 
+/* For fat builds */
+#if HAVE_NATIVE_aes_invert
+void
+_nettle_aes_invert_c(unsigned rounds, uint32_t *dst, const uint32_t *src);
+#define _nettle_aes_invert _nettle_aes_invert_c
+#endif
+
 /* NOTE: We don't include rotated versions of the table. */
 static const uint32_t mtable[0x100] =
 {

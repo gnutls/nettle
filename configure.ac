@@ -574,6 +574,7 @@ fi
 # Files which replace a C source file (or otherwise don't correspond
 # to a new object file).
 asm_replace_list="aes-encrypt-internal.asm aes-decrypt-internal.asm \
+		aes-invert-internal.asm \
 		aes128-set-encrypt-key.asm aes128-set-decrypt-key.asm \
 		aes128-encrypt.asm aes128-decrypt.asm \
 		aes192-set-encrypt-key.asm aes192-set-decrypt-key.asm \
@@ -594,7 +595,8 @@ asm_replace_list="aes-encrypt-internal.asm aes-decrypt-internal.asm \
 
 # Assembler files which generate additional object files if they are used.
 asm_nettle_optional_list="cpuid.asm cpu-facility.asm \
-  aes-encrypt-internal-2.asm aes-decrypt-internal-2.asm memxor-2.asm memxor3-2.asm \
+  memxor-2.asm memxor3-2.asm \
+  aes-encrypt-internal-2.asm aes-decrypt-internal-2.asm aes-invert-internal-2.asm \
   aes128-set-encrypt-key-2.asm aes128-set-decrypt-key-2.asm \
   aes128-encrypt-2.asm aes128-decrypt-2.asm \
   aes192-set-encrypt-key-2.asm aes192-set-decrypt-key-2.asm \
@@ -713,6 +715,7 @@ AH_VERBATIM([HAVE_NATIVE],
 #undef HAVE_NATIVE_memxor3
 #undef HAVE_NATIVE_aes_decrypt
 #undef HAVE_NATIVE_aes_encrypt
+#undef HAVE_NATIVE_aes_invert
 #undef HAVE_NATIVE_aes128_decrypt
 #undef HAVE_NATIVE_aes128_encrypt
 #undef HAVE_NATIVE_aes128_invert_key

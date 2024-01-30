@@ -163,6 +163,10 @@ DECLARE_FAT_FUNC(_nettle_aes_decrypt, aes_crypt_internal_func)
 DECLARE_FAT_FUNC_VAR(aes_decrypt, aes_crypt_internal_func, c)
 DECLARE_FAT_FUNC_VAR(aes_decrypt, aes_crypt_internal_func, ppc64)
 
+DECLARE_FAT_FUNC(_nettle_aes_invert, aes_invert_internal_func)
+DECLARE_FAT_FUNC_VAR(aes_invert, aes_invert_internal_func, c)
+DECLARE_FAT_FUNC_VAR(aes_invert, aes_invert_internal_func, ppc64)
+
 DECLARE_FAT_FUNC(_nettle_ghash_set_key, ghash_set_key_func)
 DECLARE_FAT_FUNC_VAR(ghash_set_key, ghash_set_key_func, c)
 DECLARE_FAT_FUNC_VAR(ghash_set_key, ghash_set_key_func, ppc64)
@@ -219,6 +223,7 @@ fat_init (void)
 	fprintf (stderr, "libnettle: enabling arch 2.07 code.\n");
       _nettle_aes_encrypt_vec = _nettle_aes_encrypt_ppc64;
       _nettle_aes_decrypt_vec = _nettle_aes_decrypt_ppc64;
+      _nettle_aes_invert_vec = _nettle_aes_invert_ppc64;
 
       /* Make sure _nettle_ghash_set_key_vec function is compatible
          with _nettle_ghash_update_vec function e.g. _nettle_ghash_key_c()
@@ -231,6 +236,7 @@ fat_init (void)
     {
       _nettle_aes_encrypt_vec = _nettle_aes_encrypt_c;
       _nettle_aes_decrypt_vec = _nettle_aes_decrypt_c;
+      _nettle_aes_invert_vec = _nettle_aes_invert_c;
       _nettle_ghash_set_key_vec = _nettle_ghash_set_key_c;
       _nettle_ghash_update_vec = _nettle_ghash_update_c;
     }
@@ -280,6 +286,10 @@ DEFINE_FAT_FUNC(_nettle_aes_decrypt, void,
  size_t length, uint8_t *dst,
  const uint8_t *src),
  (rounds, keys, T, length, dst, src))
+
+DEFINE_FAT_FUNC(_nettle_aes_invert, void,
+ (unsigned rounds, uint32_t *dst, const uint32_t *src),
+ (rounds, dst, src))
 
 DEFINE_FAT_FUNC(_nettle_ghash_set_key, void,
 		(struct gcm_key *ctx, const union nettle_block16 *key),

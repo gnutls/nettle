@@ -53,12 +53,6 @@ define(`S5', `v7')
 define(`S6', `v8')
 define(`S7', `v9')
 
-C ZERO vector register is used in place of RoundKey
-C for vncipher instruction because the order of InvMixColumns
-C and Xor processes are flipped in that instruction.
-C The Xor process with RoundKey is executed afterward.
-define(`ZERO', `v10')
-
 .file "aes-decrypt-internal.asm"
 
 .text
@@ -70,8 +64,6 @@ define(`ZERO', `v10')
 
 define(`FUNC_ALIGN', `5')
 PROLOGUE(_nettle_aes_decrypt)
- vxor ZERO,ZERO,ZERO
-
  DATA_LOAD_VEC(SWAP_MASK,.swap_mask,r5)
 
  subi ROUNDS,ROUNDS,1
@@ -121,8 +113,7 @@ IF_LE(`OPN_XXXY(vperm, SWAP_MASK, S0,S1,S2,S3,S4,S5,S6,S7)')
 L8x_round_loop:
  lxvd2x VSR(K),r9,KEYS
  vperm   K,K,K,SWAP_MASK
- OPN_XXY(vncipher, ZERO, S0, S1, S2, S3, S4, S5, S6, S7)
- OPN_XXY(vxor, K, S0, S1, S2, S3, S4, S5, S6, S7)
+ OPN_XXY(vncipher, K, S0, S1, S2, S3, S4, S5, S6, S7)
  subi r9,r9,0x10
  bdnz L8x_round_loop
 
@@ -177,8 +168,7 @@ IF_LE(`OPN_XXXY(vperm, SWAP_MASK, S0,S1,S2,S3)')
 L4x_round_loop:
  lxvd2x VSR(K),r9,KEYS
  vperm  K,K,K,SWAP_MASK
- OPN_XXY(vncipher, ZERO, S0, S1, S2, S3)
- OPN_XXY(vxor, K, S0, S1, S2, S3)
+ OPN_XXY(vncipher, K, S0, S1, S2, S3)
  subi   r9,r9,0x10
  bdnz  L4x_round_loop
 
@@ -221,10 +211,8 @@ IF_LE(`vperm S0,S0,S0,SWAP_MASK
 L2x_round_loop:
  lxvd2x VSR(K),r9,KEYS
  vperm  K,K,K,SWAP_MASK
- vncipher S0,S0,ZERO
- vncipher S1,S1,ZERO
- vxor  S0,S0,K
- vxor  S1,S1,K
+ vncipher S0,S0,K
+ vncipher S1,S1,K
  subi   r9,r9,0x10
  bdnz   L2x_round_loop
 
@@ -263,8 +251,7 @@ IF_LE(`vperm S0,S0,S0,SWAP_MASK')
 L1x_round_loop:
  lxvd2x VSR(K),r9,KEYS
  vperm  K,K,K,SWAP_MASK
- vncipher S0,S0,ZERO
- vxor   S0,S0,K
+ vncipher S0,S0,K
  subi   r9,r9,0x10
  bdnz   L1x_round_loop
 
