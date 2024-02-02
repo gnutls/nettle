@@ -1,3 +1,20 @@
+2024-02-02  Niels Möller  <nisse@lysator.liu.se>
+
+	Optimize powerpc64 aes decrypt. Speedup of 80%-100%, depending on
+	key size, when benchmarked on Power 10:
+	* configure.ac (asm_replace_list): Add aes-invert-internal.asm.
+	(asm_nettle_optional_list): Add aes-invert-internal-2.asm.
+	* powerpc64/p8/aes-invert-internal.asm (_aes_invert): New file.
+	Implementat _aes_invert as just a memcpy.
+	* powerpc64/p8/aes-decrypt-internal.asm: Rework to use unmixed
+	encryption subkeys, which fits better with the vncipher
+	instruction, and eliminates lots of vxor instructions.
+	* powerpc64/fat/aes-invert-internal-2.asm: New file.
+	* aes-invert-internal.c: Check HAVE_NATIVE_aes_invert, and define
+	_nettle_aes_invert_c wen needed.
+	* fat-setup.h (aes_invert_internal_func): New typedef.
+	* fat-ppc.c: Add fat setup for _aes_invert.
+
 2024-01-28  Niels Möller  <nisse@lysator.liu.se>
 
 	* powerpc64/p8/aes-encrypt-internal.asm: Use r10-r12 consistently
