@@ -48,10 +48,8 @@ define(`T', `%xmm6')
 define(`R', `%xmm7')
 define(`M', `%xmm8')
 define(`F', `%xmm9')
-define(`T2', `%xmm10')
-define(`R2', `%xmm11')
-define(`M2', `%xmm12')
-define(`F2', `%xmm13')
+define(`R2', `%xmm10')
+define(`F2', `%xmm11')
 
 C Use pclmulqdq, doing one 64x64 --> 127 bit carry-less multiplication,
 C with source operands being selected from the halves of two 128-bit registers.
@@ -86,7 +84,7 @@ C registers left for temporaries.
 	C				size_t blocks, const uint8_t *data)
 
 PROLOGUE(_nettle_ghash_update)
-	W64_ENTRY(4, 14)
+	W64_ENTRY(4, 12)
 	movdqa		.Lpolynomial(%rip), P
 	movdqa		.Lbswap(%rip), BSWAP
 	movups		(CTX), H
@@ -111,22 +109,21 @@ PROLOGUE(_nettle_ghash_update)
 	pclmullqhqdq	D2, R	C {D^2}1 * M1_0
 	pclmulhqlqdq	H2, T	C {H^2}0 * M1_1
 	pclmulhqhqdq	H2, M	C {H^2}1 * M1_1
-	
-
-	movups		16(DATA), M2
-	pshufb		BSWAP, M2
-	movdqa		M2, R2
-	movdqa		M2, F2
-	movdqa		M2, T2
-	pclmullqlqdq	D, F2 	C D0 * M2_0
-	pclmullqhqdq	D, R2	C D1 * M2_0
-	pclmulhqlqdq	H, T2	C H0 * M2_1
-	pclmulhqhqdq	H, M2	C H1 * M2_1
-
 	pxor		T, F
 	pxor		M, R
-	pxor		T2, F2
-	pxor		M2, R2
+
+	movups		16(DATA), M
+	pshufb		BSWAP, M
+	movdqa		M, R2
+	movdqa		M, F2
+	movdqa		M, T
+	pclmullqlqdq	D, F2 	C D0 * M2_0
+	pclmullqhqdq	D, R2	C D1 * M2_0
+	pclmulhqlqdq	H, T	C H0 * M2_1
+	pclmulhqhqdq	H, M	C H1 * M2_1
+
+	pxor		T, F2
+	pxor		M, R2
 
 	pxor		F2, F
 	pxor		R2, R
@@ -168,7 +165,7 @@ PROLOGUE(_nettle_ghash_update)
 	pshufb		BSWAP, R
 	movups		R, (X)
 	mov		DATA, %rax
-	W64_EXIT(4, 14)
+	W64_EXIT(4, 12)
 	ret
 EPILOGUE(_nettle_ghash_update)
 
