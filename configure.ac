@@ -478,6 +478,9 @@ if test "x$enable_assembler" = xyes ; then
 	  if test "x$enable_x86_pclmul" = xyes ; then
 	    asm_path="x86_64/pclmul $asm_path"
 	  fi
+	  if test "x$enable_x86_aesni$enable_x86_pclmul" = xyesyes ; then
+	    asm_path="x86_64/aesni_pclmul $asm_path"
+	  fi
 	fi
       else
 	asm_path=x86
@@ -606,7 +609,7 @@ asm_nettle_optional_list="cpuid.asm cpu-facility.asm \
   cbc-aes128-encrypt-2.asm cbc-aes192-encrypt-2.asm cbc-aes256-encrypt-2.asm \
   chacha-2core.asm chacha-3core.asm chacha-4core.asm chacha-core-internal-2.asm \
   poly1305-blocks.asm poly1305-internal-2.asm \
-  ghash-set-key-2.asm ghash-update-2.asm \
+  gcm-aes-encrypt.asm gcm-aes-decrypt.asm ghash-set-key-2.asm ghash-update-2.asm \
   salsa20-2core.asm salsa20-core-internal-2.asm \
   sha1-compress-2.asm sha256-compress-n-2.asm \
   sha3-permute-2.asm sha512-compress-2.asm \

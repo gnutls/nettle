@@ -165,3 +165,14 @@ define(`W64_EXIT', `
     pop	%rdi
   ')
 ')
+
+C Polynomial reduction R += x^{-64} F mod P
+C where x^{-64} = x^{64} + P1 (mod P)
+C Clobbers F and temporary T
+C GHASH_REDUCE(R, F, P, T)
+define(`GHASH_REDUCE', `
+	pshufd		`$'0x4e, $2, $4		C Swap halves of F
+	pxor		$4, $1
+	pclmullqhqdq	$3, $2
+	pxor		$2, $1
+')

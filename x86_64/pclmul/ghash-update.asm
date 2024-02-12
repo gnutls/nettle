@@ -128,10 +128,7 @@ PROLOGUE(_nettle_ghash_update)
 	pxor		F2, F
 	pxor		R2, R
 
-	pshufd		$0x4e, F, T		C Swap halves of F
-	pxor		T, R
-	pclmullqhqdq	P, F
-	pxor		F, R
+	GHASH_REDUCE(R, F, P, T)
 
 	add		$32, DATA
 	dec		%rax
@@ -154,10 +151,7 @@ PROLOGUE(_nettle_ghash_update)
 	pxor		T, F
 	pxor		M, R
 
-	pshufd		$0x4e, F, T		C Swap halves of F
-	pxor		T, R
-	pclmullqhqdq	P, F
-	pxor		F, R
+	GHASH_REDUCE(R, F, P, T)
 
 	add		$16, DATA
 
