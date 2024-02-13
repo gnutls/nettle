@@ -54,24 +54,24 @@ define(`CTR', `%xmm7')
 define(`INCR', `%xmm8')
 
 C Message blocks
-define(`X', `%xmm11')
-define(`Y', `%xmm12')
+define(`X', `%xmm9')
+define(`Y', `%xmm10')
 
 C Short lived GHASH registers
-define(`T', `%xmm13')
-define(`F', `%xmm14')
-define(`F2', `%xmm15')
+define(`T', `%xmm11')
+define(`F', `%xmm12')
+define(`F2', `%xmm13')
 
 C Short lived AES registers
-define(`K0', `%xmm13')
-define(`K1', `%xmm14')
+define(`K0', `%xmm11')
+define(`K1', `%xmm12')
 
 	C size_t
 	C _gcm_aes_encrypt (struct gcm_key *key, unsigned rounds,
 	C 		    size_t size, uint8_t *dst, const uint8_t *src);
 
 PROLOGUE(_nettle_gcm_aes_encrypt)
-	W64_ENTRY(5, 16)
+	W64_ENTRY(5, 14)
 
 	C Setup return value right away
 	mov		COUNT, %rax
@@ -177,7 +177,7 @@ PROLOGUE(_nettle_gcm_aes_encrypt)
 	movups		CTR, 16(CTX)
 	movups		R, 32(CTX)
 .Ldone:
-	W64_EXIT(5, 16)
+	W64_EXIT(5, 14)
 	ret
 EPILOGUE(_nettle_gcm_aes_encrypt)
 
