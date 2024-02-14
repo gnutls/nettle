@@ -763,6 +763,8 @@ AH_VERBATIM([HAVE_NATIVE],
 #undef HAVE_NATIVE_fat_poly1305_blocks
 #undef HAVE_NATIVE_ghash_set_key
 #undef HAVE_NATIVE_ghash_update
+#undef HAVE_NATIVE_gcm_aes_encrypt
+#undef HAVE_NATIVE_gcm_aes_decrypt
 #undef HAVE_NATIVE_salsa20_core
 #undef HAVE_NATIVE_salsa20_2core
 #undef HAVE_NATIVE_fat_salsa20_2core
