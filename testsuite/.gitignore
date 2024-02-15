@@ -76,6 +76,7 @@
 /rsa-compute-root-test
 /rsa-encrypt-test
 /rsa-keygen-test
+/rsa-oaep-encrypt-test
 /rsa-pss-sign-tr-test
 /rsa-sign-tr-test
 /rsa-test

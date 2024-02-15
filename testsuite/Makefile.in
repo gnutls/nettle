@@ -43,6 +43,7 @@ TS_HOGWEED_SOURCES = sexp-test.c sexp-format-test.c \
 		     pss-test.c rsa-sign-tr-test.c \
 		     pss-mgf1-test.c rsa-pss-sign-tr-test.c \
 		     rsa-test.c rsa-encrypt-test.c rsa-keygen-test.c \
+		     rsa-oaep-encrypt-test.c \
 		     rsa-sec-decrypt-test.c \
 		     rsa-compute-root-test.c \
 		     dsa-test.c dsa-keygen-test.c \
@@ -67,6 +68,7 @@ TS_C = $(TS_NETTLE) @IF_HOGWEED@ $(TS_HOGWEED)
 TS_CXX = @IF_CXX@ $(CXX_SOURCES:.cxx=$(EXEEXT))
 TARGETS = $(TS_C) $(TS_CXX)
 TS_SC_HOGWEED = sc-pkcs1-sec-decrypt-test sc-rsa-sec-decrypt-test \
+	sc-rsa-oaep-encrypt-test \
 	sc-ecdsa-sign-test sc-curve25519-dh-test sc-curve448-dh-test \
 	sc-ed25519-test sc-ed448-test
 TS_SC = sc-cnd-memcpy-test sc-gcm-test sc-memeql-test \
