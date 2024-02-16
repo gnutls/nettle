@@ -1,3 +1,26 @@
+2024-02-16  Niels Möller  <nisse@lysator.liu.se>
+
+	RSA-OAEP support contributed by Nicolas Mora and Daiki Ueno:
+	* rsa-oaep-encrypt.c (_rsa_oaep_encrypt)
+	(rsa_oaep_sha256_encrypt, rsa_oaep_sha384_encrypt)
+	(rsa_oaep_sha512_encrypt): New file, new functions.
+	* rsa-oaep-decrypt.c (_rsa_oaep_decrypt)
+	(rsa_oaep_sha256_decrypt, rsa_oaep_sha384_decrypt)
+	(rsa_oaep_sha512_decrypt): New file, new functions.
+	* rsa.h: Declare new RSA OAEP functions.
+	* rsa-internal.h: Declare internal RSA OAEP functions.
+	* oaep.c (_oaep_sec_decrypt_variable, _oaep_decode_mgf1)
+	(_oaep_encode_mgf1): New file, new functions.
+	* oaep.h: New file, declaring internal functions.
+	* Makefile.in (hogweed_SOURCES): Add oaep.c, rsa-oaep-encrypt.c
+	rsa-oaep-decrypt.c.
+	(DISTFILES): Add oaep.h.
+	* nettle.texinfo (RSA): Document RSA-OAEP functions.
+	* testsuite/rsa-oaep-encrypt-test.c: New tests.
+	* testsuite/testutils.c (test_rsa_set_key_2): New function.
+	* testsuite/Makefile.in (TS_HOGWEED_SOURCES): Add rsa-oaep-encrypt-test.c
+	(TS_SC_HOGWEED): Add sc-rsa-oaep-encrypt-test.
+
 2024-02-02  Niels Möller  <nisse@lysator.liu.se>
 
 	Optimize powerpc64 aes decrypt. Speedup of 80%-100%, depending on
