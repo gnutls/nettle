@@ -5202,8 +5202,12 @@ is done with one of the following functions:
 @deftypefunx int rsa_oaep_sha384_encrypt (const struct rsa_public_key *@var{key}, void *@var{random_ctx}, nettle_random_func *@var{random}, size_t @var{label_length}, const uint8_t *@var{label}, size_t @var{length}, const uint8_t *@var{message}, uint8_t *@var{ciphertext})
 @deftypefunx int rsa_oaep_sha512_encrypt (const struct rsa_public_key *@var{key}, void *@var{random_ctx}, nettle_random_func *@var{random}, size_t @var{label_length}, const uint8_t *@var{label}, size_t @var{length}, const uint8_t *@var{message}, uint8_t *@var{ciphertext})
 Returns 1 on success, 0 on failure. The label is optional and if
-omitted, @var{label_length} and @var{label} can be set to 0 and
-@code{NULL} respectively.
+omitted, @var{label_length} and @var{label} is set to 0 and
+@code{NULL} respectively. The maximum size of @var{message} can be
+calculated with @code{k - 2 * hLen - 2}, where @code{k} is the key
+size in octets obtained with @var{key}->size, and @code{hLen} is the
+output size of the underlying hash function (e.g.,
+@code{SHA256_DIGEST_SIZE} for @code{rsa_oaep_sha256_encrypt}).
 @end deftypefun
 
 Decrypting a cipher text message using RSA with the OAEP padding
@@ -5213,7 +5217,10 @@ scheme is done with one of the following functions:
 @deftypefunx int rsa_oaep_sha384_decrypt (const struct rsa_public_key *@var{pub}, const struct rsa_private_key *@var{key}, void *@var{random_ctx}, nettle_random_func *@var{random}, size_t @var{label_length}, const uint8_t *@var{label}, size_t *@var{length}, uint8_t *@var{message}, const uint8_t *@var{ciphertext})
 @deftypefunx int rsa_oaep_sha512_decrypt (const struct rsa_public_key *@var{pub}, const struct rsa_private_key *@var{key}, void *@var{random_ctx}, nettle_random_func *@var{random}, size_t @var{label_length}, const uint8_t *@var{label}, size_t *@var{length}, uint8_t *@var{message}, const uint8_t *@var{ciphertext})
 Returns 1 on success, 0 on failure. These function utilize randomized
-RSA blinding similarly to @code{rsa_decrypt_tr}.
+RSA blinding similarly to @code{rsa_decrypt_tr}. The message buffer
+pointed to by @var{cleartext} must be of size *@var{length}. After
+decryption, *@var{length} will be updated with the size of the
+message.
 @end deftypefun
 
 

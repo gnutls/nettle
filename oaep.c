@@ -187,9 +187,8 @@ _oaep_encode_mgf1 (mpz_t m, size_t key_size,
   uint8_t *seed;
   uint8_t seed_mask[NETTLE_MAX_HASH_DIGEST_SIZE];
 
-  assert (key_size >= 2 * hash->digest_size - 2);
-
-  if (message_length > key_size - 2 * hash->digest_size - 2)
+  if (message_length > key_size
+      || message_length + 2 + 2 * hash->digest_size > key_size)
     return 0;
 
   TMP_GMP_ALLOC(em, key_size);
