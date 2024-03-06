@@ -89,3 +89,10 @@ define(`GHASH_REDUCE', `
     vxor           $1, $1, $5
     vxor           $1, $1, $4
 ')
+
+C GF multification of L/M and data
+C GF_MUL(
+C GF_MUL(F, R, HL, HM, S)
+define(`GF_MUL',
+  `vpmsumd $1,$3,$5
+   vpmsumd $2,$4,$5')
