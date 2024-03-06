@@ -112,6 +112,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c aes-decrypt-table.c \
 		 ghash-set-key.c ghash-update.c \
 		 siv-ghash-set-key.c siv-ghash-update.c \
 		 gcm.c gcm-aes.c \
+		 gcm-aes-crypt.c \
 		 gcm-aes128.c gcm-aes128-meta.c \
 		 gcm-aes192.c gcm-aes192-meta.c \
 		 gcm-aes256.c gcm-aes256-meta.c \

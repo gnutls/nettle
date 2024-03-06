@@ -63,6 +63,11 @@ void
 gcm_aes256_encrypt(struct gcm_aes256_ctx *ctx,
 		size_t length, uint8_t *dst, const uint8_t *src)
 {
+  size_t done = _gcm_aes_encrypt ((struct gcm_key *)ctx, _AES256_ROUNDS, length, dst, src);
+  ctx->gcm.data_size += done;
+  length -= done;
+  src += done;
+  dst += done;
   GCM_ENCRYPT(ctx, aes256_encrypt, length, dst, src);
 }
 
@@ -70,6 +75,11 @@ void
 gcm_aes256_decrypt(struct gcm_aes256_ctx *ctx,
 		   size_t length, uint8_t *dst, const uint8_t *src)
 {
+  size_t done = _gcm_aes_decrypt ((struct gcm_key *)ctx, _AES256_ROUNDS, length, dst, src);
+  ctx->gcm.data_size += done;
+  length -= done;
+  src += done;
+  dst += done;
   GCM_DECRYPT(ctx, aes256_encrypt, length, dst, src);
 }
 
