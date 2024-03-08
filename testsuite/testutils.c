@@ -1108,16 +1108,22 @@ test_hash(const struct nettle_hash *hash,
     ASSERT (digest->length == hash->digest_size);
 
   hash->init(ctx);
-  hash->update(ctx, msg->length, msg->data);
-  hash->digest(ctx, digest->length, buffer);
-
-  if (MEMEQ(digest->length, digest->data, buffer) == 0)
+  for (offset = 0; offset <= msg->length && offset < 40; offset++)
     {
-      fprintf(stdout, "\nGot:\n");
-      print_hex(digest->length, buffer);
-      fprintf(stdout, "\nExpected:\n");
-      print_hex(digest->length, digest->data);
-      abort();
+      hash->update(ctx, offset, msg->data);
+      hash->update(ctx, 0, NULL);
+      hash->update(ctx, msg->length - offset, msg->data + offset);
+
+      hash->digest(ctx, digest->length, buffer);
+
+      if (MEMEQ(digest->length, digest->data, buffer) == 0)
+	{
+	  fprintf(stdout, "Offset %u\nGot:\n", offset);
+	  print_hex(digest->length, buffer);
+	  fprintf(stdout, "\nExpected:\n");
+	  print_hex(digest->length, digest->data);
+	  abort();
+	}
     }
 
   memset(buffer, 0, digest->length);

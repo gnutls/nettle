@@ -1,3 +1,14 @@
+2024-03-08  Niels Möller  <nisse@lysator.liu.se>
+
+	Fix ubsan issues for empty hash updates.
+	* macros.h (MD_UPDATE): Check upfront if length is zero. Avoids
+	calling memcpy(dst, NULL, 0), which is undefined behavior.
+	* sha256.c (sha256_update): Likewise.
+	* sha3.c (_nettle_sha3_update): Likewise.
+	* testsuite/testutils.c (test_hash): Test with message split into
+	two pieces in different ways, and also add an call to update(ctx,
+	0, NULL) in the middle.
+
 2024-02-16  Niels Möller  <nisse@lysator.liu.se>
 
 	RSA-OAEP support contributed by Nicolas Mora and Daiki Ueno:
