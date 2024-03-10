@@ -111,7 +111,7 @@ sha256_update(struct sha256_ctx *ctx,
   if (ctx->index > 0)
     {
       /* Try to fill partial block */
-      MD_FILL_OR_RETURN (ctx, length, data);
+      MD_FILL_OR_RETURN (ctx->block, ctx->index, length, data);
       sha256_compress (ctx->state, ctx->block);
       ctx->count++;
     }

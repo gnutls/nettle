@@ -53,6 +53,7 @@
 #include "memxor.h"
 #include "nettle-internal.h"
 #include "macros.h"
+#include "md-internal.h"
 #include "ctr-internal.h"
 #include "block-internal.h"
 #include "bswap-internal.h"
@@ -123,11 +124,7 @@ gcm_set_iv(struct gcm_ctx *ctx, const struct gcm_key *key,
       gcm_hash_sizes(key, &ctx->iv, 0, length);
     }
 
-  ctx->ctr = ctx->iv;
-  /* Increment the rightmost 32 bits. */
-  INCREMENT (4, ctx->ctr.b + GCM_BLOCK_SIZE - 4);
-
-  /* Reset the rest of the message-dependent state. */
+  /* Reset the message-dependent state. */
   block16_zero(&ctx->x);
   ctx->auth_size = ctx->data_size = 0;
 }
@@ -136,12 +133,39 @@ void
 gcm_update(struct gcm_ctx *ctx, const struct gcm_key *key,
 	   size_t length, const uint8_t *data)
 {
-  assert(ctx->auth_size % GCM_BLOCK_SIZE == 0);
-  assert(ctx->data_size == 0);
+  unsigned index;
 
-  gcm_hash(key, &ctx->x, length, data);
+  assert (!ctx->data_size);
+  if (!length)
+    return;
 
+  index = ctx->auth_size & (GCM_BLOCK_SIZE - 1);
   ctx->auth_size += length;
+
+  if (index > 0)
+    {
+      /* Attempt to fill buffer. */
+      MD_FILL_OR_RETURN (ctx->ctr.b, index, length, data);
+      _ghash_update (key, &ctx->x, 1, ctx->ctr.b);
+    }
+
+  data = _ghash_update (key, &ctx->x, length / GCM_BLOCK_SIZE, data);
+  /* Copy leftover data. */
+  index = length & (GCM_BLOCK_SIZE - 1);
+  memcpy (ctx->ctr.b, data, index);
+}
+
+/* Must be called at end of accociated data, i.e., by the first call
+   of either gcm_encrypt, gcm_decrypt or gcm_digest. */
+static void
+gcm_pad_adata (struct gcm_ctx *ctx, const struct gcm_key *key)
+{
+  unsigned index = ctx->auth_size & (GCM_BLOCK_SIZE - 1);
+  if (index > 0)
+    {
+      memset (ctx->ctr.b + index, 0, GCM_BLOCK_SIZE - index);
+      _ghash_update (key, &ctx->x, 1, ctx->ctr.b);
+    }
 }
 
 static nettle_fill16_func gcm_fill;
@@ -202,12 +226,29 @@ gcm_fill(uint8_t *ctr, size_t blocks, union nettle_block16 *buffer)
 }
 #endif
 
+/* Pad any associated data, and then initialize the ctr field for
+   encrypt/decrypt operation. */
+static void
+gcm_init_crypt (struct gcm_ctx *ctx, const struct gcm_key *key)
+{
+  gcm_pad_adata (ctx, key);
+  ctx->ctr = ctx->iv;
+  /* Increment the rightmost 32 bits. */
+  INCREMENT (4, ctx->ctr.b + GCM_BLOCK_SIZE - 4);
+}
+
 void
 gcm_encrypt (struct gcm_ctx *ctx, const struct gcm_key *key,
 	     const void *cipher, nettle_cipher_func *f,
 	     size_t length, uint8_t *dst, const uint8_t *src)
 {
   assert(ctx->data_size % GCM_BLOCK_SIZE == 0);
+
+  if (!length)
+    return;
+
+  if (!ctx->data_size)
+    gcm_init_crypt (ctx, key);
 
   _nettle_ctr_crypt16(cipher, f, gcm_fill, ctx->ctr.b, length, dst, src);
   gcm_hash(key, &ctx->x, length, dst);
@@ -221,6 +262,12 @@ gcm_decrypt(struct gcm_ctx *ctx, const struct gcm_key *key,
 	    size_t length, uint8_t *dst, const uint8_t *src)
 {
   assert(ctx->data_size % GCM_BLOCK_SIZE == 0);
+
+  if (!length)
+    return;
+
+  if (!ctx->data_size)
+    gcm_init_crypt (ctx, key);
 
   gcm_hash(key, &ctx->x, length, src);
   _nettle_ctr_crypt16(cipher, f, gcm_fill, ctx->ctr.b, length, dst, src);
@@ -236,6 +283,8 @@ gcm_digest(struct gcm_ctx *ctx, const struct gcm_key *key,
   union nettle_block16 buffer;
 
   assert (length <= GCM_BLOCK_SIZE);
+  if (!ctx->data_size)
+    gcm_pad_adata (ctx, key);
 
   gcm_hash_sizes(key, &ctx->x, ctx->auth_size, ctx->data_size);
 

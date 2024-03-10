@@ -118,7 +118,8 @@ struct gcm_key
 struct gcm_ctx {
   /* Original counter block */
   union nettle_block16 iv;
-  /* Updated for each block. */
+  /* Used as block buffer for associated data, and ctr for
+     encrypt/decrypt. */
   union nettle_block16 ctr;
   /* Hashing state */
   union nettle_block16 x;

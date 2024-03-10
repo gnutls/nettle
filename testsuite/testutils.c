@@ -864,15 +864,17 @@ test_aead(const struct nettle_aead *aead,
 	      assert (nonce->length == aead->nonce_size);
 	      aead->set_nonce(ctx, nonce->data);
 	    }
-	  if (aead->update && authtext->length)
-	    aead->update(ctx, authtext->length, authtext->data);
-
-	  if (offset > 0)
-	    aead->encrypt(ctx, offset, out + out_align, in + in_align);
-
-	  if (offset < cleartext->length)
-	    aead->encrypt(ctx, cleartext->length - offset,
-			  out + out_align + offset, in + in_align + offset);
+	  if (aead->update)
+	    {
+	      size_t a_offset = offset <= authtext->length ? offset : authtext->length;
+	      aead->update(ctx, a_offset, authtext->data);
+	      aead->update(ctx, 0, NULL);
+	      aead->update(ctx, authtext->length - a_offset, authtext->data + a_offset);
+	    }
+	  aead->encrypt(ctx, offset, out + out_align, in + in_align);
+	  aead->encrypt(ctx, 0, out + out_align, NULL);
+	  aead->encrypt(ctx, cleartext->length - offset,
+			out + out_align + offset, in + in_align + offset);
 
 	  if (!MEMEQ(cleartext->length, out + out_align, ciphertext->data))
 	    {

@@ -34,23 +34,17 @@
 
 #include <string.h>
 
-/* Internal helper macros for Merkle-Damgård hash functions. Assumes the context
-   structs includes the following fields:
-
-     uint8_t block[...];		// Buffer holding one block
-     unsigned int index;		// Index into block
-*/
-
-#define MD_FILL_OR_RETURN(ctx, length, data)			\
+/* Internal helper macros for Merkle-Damgård hash functions. */
+#define MD_FILL_OR_RETURN(block, index, length, data)		\
   do {								\
-    unsigned __md_left = sizeof((ctx)->block) - (ctx)->index;	\
+    unsigned __md_left = sizeof(block) - index;			\
     if ((length) < __md_left)					\
       {								\
-	memcpy((ctx)->block + (ctx)->index, (data), (length));	\
-	(ctx)->index += (length);				\
+	memcpy(block + index, (data), (length));		\
+	index += (length);					\
 	return;							\
       }								\
-    memcpy((ctx)->block + (ctx)->index, (data), __md_left);	\
+    memcpy(block + index, (data), __md_left);			\
     (data) += __md_left;					\
     (length) -= __md_left;					\
   } while(0)
