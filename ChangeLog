@@ -1,3 +1,13 @@
+2024-03-10  Niels Möller  <nisse@lysator.liu.se>
+
+	* poly1305-update.c (_nettle_poly1305_update): Explicitly check
+	for empty input and return.
+
+	* testsuite/testutils.c (test_aead): Test with associated split
+	data into two pieces in different ways, respecting block
+	boundaries. Also add a call to update(ctx, 0, NULL) in the
+	middle, and encrypt and decrypt calls with empty input.
+
 2024-03-08  Niels Möller  <nisse@lysator.liu.se>
 
 	Fix ubsan issues for empty hash updates.
