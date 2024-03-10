@@ -20,6 +20,8 @@
 # include <valgrind/valgrind.h>
 #endif
 
+#define MIN(a,b) (((a) < (b)) ? (a) : (b))
+
 void
 die(const char *format, ...)
 {
@@ -866,7 +868,7 @@ test_aead(const struct nettle_aead *aead,
 	    }
 	  if (aead->update)
 	    {
-	      size_t a_offset = offset <= authtext->length ? offset : authtext->length;
+	      size_t a_offset = MIN(authtext->length, offset / aead->block_size);
 	      aead->update(ctx, a_offset, authtext->data);
 	      aead->update(ctx, 0, NULL);
 	      aead->update(ctx, authtext->length - a_offset, authtext->data + a_offset);
