@@ -1,3 +1,26 @@
+2024-03-10  Niels Möller  <nisse@lysator.liu.se>
+
+	* md-internal.h (MD_FILL_OR_RETURN): Take block and index as
+	separate arguments.
+	* sha256.c (sha256_update): Adjust use of MD_FILL_OR_RETURN.
+
+	* gcm.c (gcm_set_iv): Drop initialization of ctr.
+	(gcm_update): Allow arbitrary length argument, reuse the ctr field
+	for buffering any leftover associated data.
+	(gcm_pad_adata, gcm_init_crypt): New functions.
+	(gcm_encrypt, gcm_decrypt): Explicitly check for empty input and
+	return. Call gcm_init_crypt on first call with non-empty input,
+	(gcm_digest): Call gcm_pad_adata if not done by previous
+	gcm_encrypt or gcm_decrypt.
+
+	* testsuite/testutils.c (test_aead): Test with associated split
+	data into two pieces in different ways. Also add an call to
+	update(ctx, 0, NULL) in the middle, and encrypt calls with empty
+	input.
+
+	* poly1305-update.c (_nettle_poly1305_update): Explicitly check
+	for empty input and return.
+
 2024-03-08  Niels Möller  <nisse@lysator.liu.se>
 
 	Fix ubsan issues for empty hash updates.
