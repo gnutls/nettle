@@ -49,6 +49,7 @@ extern "C" {
 #define sha3_256_update nettle_sha3_256_update
 #define sha3_256_digest nettle_sha3_256_digest
 #define sha3_256_shake nettle_sha3_256_shake
+#define sha3_256_shake_output nettle_sha3_256_shake_output
 #define sha3_384_init nettle_sha3_384_init
 #define sha3_384_update nettle_sha3_384_update
 #define sha3_384_digest nettle_sha3_384_digest
@@ -142,6 +143,13 @@ void
 sha3_256_shake(struct sha3_256_ctx *ctx,
 	       size_t length,
 	       uint8_t *digest);
+
+/* Unlike sha3_256_shake, this function can be called multiple times
+   to retrieve output from shake256 in an incremental manner */
+void
+sha3_256_shake_output(struct sha3_256_ctx *ctx,
+		      size_t length,
+		      uint8_t *digest);
 
 struct sha3_384_ctx
 {
