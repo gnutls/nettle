@@ -1,5 +1,14 @@
 2024-03-10  Niels Möller  <nisse@lysator.liu.se>
 
+	From Daiki Ueno:
+	* shake256.c (sha3_256_shake_output): New function, incremental
+	shake256 output.
+	* testsuite/shake256-test.c (test_incremental): New function, for
+	testing sha3_256_shake_output.
+	(test_main): Use it.
+
+2024-03-10  Niels Möller  <nisse@lysator.liu.se>
+
 	* poly1305-update.c (_nettle_poly1305_update): Explicitly check
 	for empty input and return.
 
