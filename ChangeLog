@@ -1,3 +1,12 @@
+2024-03-28  Niels Möller  <nisse@lysator.liu.se>
+
+	* sha512-224-meta.c (nettle_sha512_224): Change name to
+	"sha512_224", with underscore rather than dash.
+	* sha512-256-meta.c (nettle_sha512_256): Analogous change.
+	* nettle-meta-hashes.c (_nettle_hashes): Add nettle_sha512_224 and
+	nettle_sha512_256.
+	* testsuite/meta-hash-test.c: Update test.
+
 2024-03-24  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/gcm-test.c (test_main): Add a test case that triggers
