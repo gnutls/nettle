@@ -38,6 +38,7 @@
 #include <assert.h>
 
 #include "gcm.h"
+#include "gcm-internal.h"
 
 void
 gcm_aes128_set_key(struct gcm_aes128_ctx *ctx, const uint8_t *key)

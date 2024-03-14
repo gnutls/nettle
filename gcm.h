@@ -54,9 +54,6 @@ extern "C" {
 #define gcm_decrypt nettle_gcm_decrypt
 #define gcm_digest nettle_gcm_digest
 
-#define _gcm_aes_encrypt _nettle_gcm_aes_encrypt
-#define _gcm_aes_decrypt _nettle_gcm_aes_decrypt
-
 #define gcm_aes128_set_key nettle_gcm_aes128_set_key
 #define gcm_aes128_set_iv nettle_gcm_aes128_set_iv
 #define gcm_aes128_update nettle_gcm_aes128_update

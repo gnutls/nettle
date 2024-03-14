@@ -1,8 +1,6 @@
-/* gcm-aes-crypt.c
+/* gcm-internal.h
 
-   Galois counter mode using AES as the underlying cipher.
-
-   Copyright (C) 2011, 2014 Niels Möller
+   Copyright (C) 2024 Niels Möller
 
    This file is part of GNU Nettle.
 
@@ -31,40 +29,27 @@
    not, see http://www.gnu.org/licenses/.
 */
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
-
-#include <assert.h>
+#ifndef NETTLE_GCM_INTERNAL_H_INCLUDED
+#define NETTLE_GCM_INTERNAL_H_INCLUDED
 
 #include "gcm.h"
-#include "gcm-internal.h"
 
-/* For fat builds */
-#if HAVE_NATIVE_gcm_aes_encrypt
-size_t
-_gcm_aes_encrypt (struct gcm_key *key, unsigned rounds,
-                  size_t len, uint8_t *dst, const uint8_t *src);
-#define _nettle_gcm_aes_encrypt _nettle_gcm_aes_encrypt_c
-#endif
+/* Name mangling */
+#define _gcm_aes_encrypt _nettle_gcm_aes_encrypt
+#define _gcm_aes_decrypt _nettle_gcm_aes_decrypt
 
-#if HAVE_NATIVE_gcm_aes_decrypt
+/* To reduce the number of arguments (e.g., maximum of 6 register
+   arguments on x86_64), pass a pointer to gcm_key, which really is a
+   pointer to the first member of the appropriate gcm_aes*_ctx
+   struct. */
 size_t
-_gcm_aes_decrypt (struct gcm_key *key, unsigned rounds,
-                  size_t len, uint8_t *dst, const uint8_t *src);
-#define _nettle_gcm_aes_decrypt _nettle_gcm_aes_decrypt_c
-#endif
+_gcm_aes_encrypt (struct gcm_key *key,
+		  unsigned rounds,
+		  size_t size, uint8_t *dst, const uint8_t *src);
 
 size_t
-_gcm_aes_encrypt (struct gcm_key *key, unsigned rounds,
-                  size_t len, uint8_t *dst, const uint8_t *src)
-{
-  return 0;
-}
+_gcm_aes_decrypt (struct gcm_key *CTX,
+		  unsigned rounds,
+		  size_t size, uint8_t *dst, const uint8_t *src);
 
-size_t
-_gcm_aes_decrypt (struct gcm_key *key, unsigned rounds,
-                  size_t len, uint8_t *dst, const uint8_t *src)
-{
-  return 0;
-}
+#endif /* NETTLE_GCM_INTERNAL_H_INCLUDED */
