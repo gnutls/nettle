@@ -171,11 +171,8 @@ ghash_update_func (const struct gcm_key *ctx, union nettle_block16 *state,
 		   size_t blocks, const uint8_t *data);
 
 typedef size_t
-gcm_aes_encrypt_func (struct gcm_key *key, size_t rounds,
-                      size_t len, uint8_t *dst, const uint8_t *src);
-typedef size_t
-gcm_aes_decrypt_func (struct gcm_key *key, size_t rounds,
-                      size_t len, uint8_t *dst, const uint8_t *src);
+gcm_aes_crypt_func (struct gcm_key *key, unsigned rounds,
+		    size_t len, uint8_t *dst, const uint8_t *src);
 
 typedef void *(memxor_func)(void *dst, const void *src, size_t n);
 typedef void *(memxor3_func)(void *dst_in, const void *a_in, const void *b_in, size_t n);

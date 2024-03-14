@@ -175,13 +175,13 @@ DECLARE_FAT_FUNC(_nettle_ghash_update, ghash_update_func)
 DECLARE_FAT_FUNC_VAR(ghash_update, ghash_update_func, c)
 DECLARE_FAT_FUNC_VAR(ghash_update, ghash_update_func, ppc64)
 
-DECLARE_FAT_FUNC(_nettle_gcm_aes_encrypt, gcm_aes_encrypt_func)
-DECLARE_FAT_FUNC_VAR(gcm_aes_encrypt, gcm_aes_encrypt_func, c)
-DECLARE_FAT_FUNC_VAR(gcm_aes_encrypt, gcm_aes_encrypt_func, ppc64)
+DECLARE_FAT_FUNC(_nettle_gcm_aes_encrypt, gcm_aes_crypt_func)
+DECLARE_FAT_FUNC_VAR(gcm_aes_encrypt, gcm_aes_crypt_func, c)
+DECLARE_FAT_FUNC_VAR(gcm_aes_encrypt, gcm_aes_crypt_func, ppc64)
 
-DECLARE_FAT_FUNC(_nettle_gcm_aes_decrypt, gcm_aes_decrypt_func)
-DECLARE_FAT_FUNC_VAR(gcm_aes_decrypt, gcm_aes_decrypt_func, c)
-DECLARE_FAT_FUNC_VAR(gcm_aes_decrypt, gcm_aes_decrypt_func, ppc64)
+DECLARE_FAT_FUNC(_nettle_gcm_aes_decrypt, gcm_aes_crypt_func)
+DECLARE_FAT_FUNC_VAR(gcm_aes_decrypt, gcm_aes_crypt_func, c)
+DECLARE_FAT_FUNC_VAR(gcm_aes_decrypt, gcm_aes_crypt_func, ppc64)
 
 DECLARE_FAT_FUNC(_nettle_chacha_core, chacha_core_func)
 DECLARE_FAT_FUNC_VAR(chacha_core, chacha_core_func, c);
@@ -312,12 +312,12 @@ DEFINE_FAT_FUNC(_nettle_ghash_update, const uint8_t *,
 		(ctx, state, blocks, data))
 
 DEFINE_FAT_FUNC(_nettle_gcm_aes_encrypt, size_t,
-		(struct gcm_key *key, size_t rounds,
+		(struct gcm_key *key, unsigned rounds,
                  size_t len, uint8_t *dst, const uint8_t *src),
 		(key, rounds, len, dst, src))
 
 DEFINE_FAT_FUNC(_nettle_gcm_aes_decrypt, size_t,
-		(struct gcm_key *key, size_t rounds,
+		(struct gcm_key *key, unsigned rounds,
                  size_t len, uint8_t *dst, const uint8_t *src),
 		(key, rounds, len, dst, src))
 
