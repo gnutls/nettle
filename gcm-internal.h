@@ -34,6 +34,8 @@
 
 #include "gcm.h"
 
+#if HAVE_NATIVE_gcm_aes_encrypt
+
 /* Name mangling */
 #define _gcm_aes_encrypt _nettle_gcm_aes_encrypt
 #define _gcm_aes_decrypt _nettle_gcm_aes_decrypt
@@ -51,5 +53,9 @@ size_t
 _gcm_aes_decrypt (struct gcm_key *CTX,
 		  unsigned rounds,
 		  size_t size, uint8_t *dst, const uint8_t *src);
+#else /* !HAVE_NATIVE_gcm_aes_encrypt */
+#define _gcm_aes_encrypt(key, rounds, size, dst, src) 0
+#define _gcm_aes_decrypt(key, rounds, size, dst, src) 0
+#endif /* !HAVE_NATIVE_gcm_aes_encrypt */
 
 #endif /* NETTLE_GCM_INTERNAL_H_INCLUDED */

@@ -211,6 +211,13 @@ DECLARE_FAT_FUNC(_nettle_poly1305_blocks, poly1305_blocks_func)
 DECLARE_FAT_FUNC_VAR(poly1305_blocks, poly1305_blocks_func, c)
 DECLARE_FAT_FUNC_VAR(poly1305_blocks, poly1305_blocks_func, ppc64)
 
+/* Nop implementation for _gcm_aes_encrypt and _gcm_aes_decrypt. */
+static size_t
+gcm_aes_crypt_c (struct gcm_key *key UNUSED, unsigned rounds UNUSED,
+		 size_t size UNUSED, uint8_t *dst UNUSED, const uint8_t *src UNUSED)
+{
+  return 0;
+}
 
 static void CONSTRUCTOR
 fat_init (void)
@@ -249,8 +256,8 @@ fat_init (void)
       _nettle_aes_invert_vec = _nettle_aes_invert_c;
       _nettle_ghash_set_key_vec = _nettle_ghash_set_key_c;
       _nettle_ghash_update_vec = _nettle_ghash_update_c;
-      _nettle_gcm_aes_encrypt_vec = _nettle_gcm_aes_encrypt_c;
-      _nettle_gcm_aes_decrypt_vec = _nettle_gcm_aes_decrypt_c;
+      _nettle_gcm_aes_encrypt_vec = gcm_aes_crypt_c;
+      _nettle_gcm_aes_decrypt_vec = gcm_aes_crypt_c;
     }
   if (features.have_altivec)
     {
