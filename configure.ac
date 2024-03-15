@@ -607,8 +607,8 @@ asm_nettle_optional_list="cpuid.asm cpu-facility.asm \
   chacha-2core.asm chacha-3core.asm chacha-4core.asm chacha-core-internal-2.asm \
   poly1305-blocks.asm poly1305-internal-2.asm \
   ghash-set-key-2.asm ghash-update-2.asm \
-  gcm-aes-encrypt-2.asm \
-  gcm-aes-decrypt-2.asm \
+  gcm-aes-encrypt.asm gcm-aes-encrypt-2.asm \
+  gcm-aes-decrypt.asm gcm-aes-decrypt-2.asm\
   salsa20-2core.asm salsa20-core-internal-2.asm \
   sha1-compress-2.asm sha256-compress-n-2.asm \
   sha3-permute-2.asm sha512-compress-2.asm \
