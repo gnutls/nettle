@@ -98,8 +98,8 @@ define(`LASTCNT', `v29')
 
 define(`FUNC_ALIGN', `5')
 PROLOGUE(_nettle_gcm_aes_encrypt)
-    cmpdi SLEN, 128
-    blt No_encrypt_out
+    srdi. LOOP, SLEN, 7		C loop n 8 blocks
+    beq No_encrypt_out
 
     mflr 0
     std 0,16(1)
@@ -168,8 +168,6 @@ IF_LE(`
     addi RK, HT, 48
     lxvb16x VSR(S0), 0, HT		C Load 'CTR'
 
-    li r11, 128
-    divdu LOOP, SLEN, r11		C loop n 8 blocks
     sldi SLEN, LOOP, 7
 
     addi LOOP, LOOP, -1
