@@ -101,8 +101,6 @@ PROLOGUE(_nettle_gcm_aes_encrypt)
     srdi. LOOP, SLEN, 7		C loop n 8 blocks
     beq No_encrypt_out
 
-    mflr 0
-    std 0,16(1)
     stdu  SP,-336(SP)
 
     std r25, 112(SP)
@@ -436,15 +434,13 @@ IF_LE(`
     lxv VSR(v30), 288(SP)
     lxv VSR(v31), 304(SP)
 
-    addi 1, 1, 336
-    ld 0, 16(1)
-    mtlr r0
+    addi SP, SP, 336
 
-    mr 3, SLEN
+    mr r3, SLEN
     blr
 
 No_encrypt_out:
-    li 3, 0
+    li r3, 0
     blr
 EPILOGUE(_nettle_gcm_aes_encrypt)
 
