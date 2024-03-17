@@ -42,6 +42,7 @@ define(`SLEN', `r5')
 define(`SDST', `r6')
 define(`SSRC', `r7')
 define(`RK', `r8')
+C r9-r11 used as constant indices.
 define(`LOOP', `r12')
 
 C
@@ -100,24 +101,14 @@ PROLOGUE(_nettle_gcm_aes_encrypt)
     srdi. LOOP, SLEN, 7		C loop n 8 blocks
     beq No_encrypt_out
 
-    stdu  SP,-336(SP)
-
-    std r25, 112(SP)
-    std r26, 120(SP)
-    std r27, 128(SP)
-    std r28, 136(SP)
-    std r29, 144(SP)
-    std r30, 152(SP)
-    std r31, 160(SP)
-    std r30, 176(SP)
-    std r31, 184(SP)
-    stxv VSR(v20), 208(SP)
-    stxv VSR(v21), 224(SP)
-    stxv VSR(v22), 240(SP)
-    stxv VSR(v28), 256(SP)
-    stxv VSR(v29), 272(SP)
-    stxv VSR(v30), 288(SP)
-    stxv VSR(v31), 304(SP)
+    C 288 byte "protected zone" is sufficient for storage.
+    stxv VSR(v20), -16(SP)
+    stxv VSR(v21), -32(SP)
+    stxv VSR(v22), -48(SP)
+    stxv VSR(v28), -64(SP)
+    stxv VSR(v29), -80(SP)
+    stxv VSR(v30), -96(SP)
+    stxv VSR(v31), -112(SP)
 
     vxor ZERO,ZERO,ZERO
     vspltisb CNT1, 1
@@ -415,24 +406,13 @@ IF_LE(`
 ')
     stxvd2x VSR(LASTCNT), 0, HT		C store ctr
 
-    ld r25, 112(SP)
-    ld r26, 120(SP)
-    ld r27, 128(SP)
-    ld r28, 136(SP)
-    ld r29, 144(SP)
-    ld r30, 152(SP)
-    ld r31, 160(SP)
-    ld r30, 176(SP)
-    ld r31, 184(SP)
-    lxv VSR(v20), 208(SP)
-    lxv VSR(v21), 224(SP)
-    lxv VSR(v22), 240(SP)
-    lxv VSR(v28), 256(SP)
-    lxv VSR(v29), 272(SP)
-    lxv VSR(v30), 288(SP)
-    lxv VSR(v31), 304(SP)
-
-    addi SP, SP, 336
+    lxv VSR(v20), -16(SP)
+    lxv VSR(v21), -32(SP)
+    lxv VSR(v22), -48(SP)
+    lxv VSR(v28), -64(SP)
+    lxv VSR(v29), -80(SP)
+    lxv VSR(v30), -96(SP)
+    lxv VSR(v31), -112(SP)
 
     mr r3, SLEN
     blr
