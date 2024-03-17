@@ -186,16 +186,16 @@ IF_LE(`
 
     addi SRND, SRND, -1
     mtctr SRND
-    li r11,0x10
+    addi RK,RK,0x10
 .align 5
 L8x_round_loop1:
-    lxvd2x VSR(K),r11,RK
+    lxvd2x VSR(K),0,RK
     vperm   K,K,K,LE_MASK
     OPN_XXY(vcipher, K, S0, S1, S2, S3, S4, S5, S6, S7)
-    addi r11,r11,0x10
+    addi RK,RK,0x10
     bdnz L8x_round_loop1
 
-    lxvd2x VSR(K),r11,RK
+    lxvd2x VSR(K),0,RK
     vperm   K,K,K,LE_MASK
     OPN_XXY(vcipherlast, K, S0, S1, S2, S3, S4, S5, S6, S7)
 
@@ -289,6 +289,8 @@ IF_LE(`OPN_XXXY(vperm, LE_MASK, S4,S5,S6,S7)')
     addi SDST, SDST, 0x80
     addi SSRC, SSRC, 0x80
 
+    addi RK, HT, 48
+
     lxvd2x VSR(K),0,RK
     vperm   K,K,K,LE_MASK
 
@@ -305,16 +307,16 @@ IF_LE(`OPN_XXXY(vperm, LE_MASK, S4,S5,S6,S7)')
     OPN_XXY(vxor, K, S0, S1, S2, S3, S4, S5, S6, S7)
 
     mtctr SRND
-    li r11,0x10
+    addi RK, RK, 0x10
 .align 5
 L8x_round_loop2:
-    lxvd2x VSR(K),r11,RK
+    lxvd2x VSR(K),0,RK
     vperm   K,K,K,LE_MASK
     OPN_XXY(vcipher, K, S0, S1, S2, S3, S4, S5, S6, S7)
-    addi r11,r11,0x10
+    addi RK,RK,0x10
     bdnz L8x_round_loop2
 
-    lxvd2x VSR(K),r11,RK
+    lxvd2x VSR(K),0,RK
     vperm   K,K,K,LE_MASK
     OPN_XXY(vcipherlast, K, S0, S1, S2, S3, S4, S5, S6, S7)
 
