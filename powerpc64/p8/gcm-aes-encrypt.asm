@@ -48,7 +48,7 @@ C
 C vectors used in aes encrypt output
 C
 
-define(`K0', `v1')
+define(`K', `v1')
 define(`S0', `v2')
 define(`S1', `v3')
 define(`S2', `v4')
@@ -80,7 +80,6 @@ define(`F', `v20')
 define(`R2', `v21')
 define(`F2', `v22')
 
-define(`K', `v30')
 define(`LE_TEMP', `v30')
 define(`LE_MASK', `v31')
 
@@ -169,8 +168,8 @@ IF_LE(`
 
     addi LOOP, LOOP, -1
 
-    lxvd2x VSR(K0),0,RK
-    vperm   K0,K0,K0,LE_MASK
+    lxvd2x VSR(K),0,RK
+    vperm   K,K,K,LE_MASK
 
 .align 5
     C increase ctr value as input to aes_encrypt
@@ -183,7 +182,7 @@ IF_LE(`
     vadduwm S7, S6, CNT1
     vmr LASTCNT, S7			C save last cnt
 
-    OPN_XXY(vxor, K0, S0, S1, S2, S3, S4, S5, S6, S7)
+    OPN_XXY(vxor, K, S0, S1, S2, S3, S4, S5, S6, S7)
 
     addi SRND, SRND, -1
     mtctr SRND
@@ -290,6 +289,9 @@ IF_LE(`OPN_XXXY(vperm, LE_MASK, S4,S5,S6,S7)')
     addi SDST, SDST, 0x80
     addi SSRC, SSRC, 0x80
 
+    lxvd2x VSR(K),0,RK
+    vperm   K,K,K,LE_MASK
+
     vadduwm S0, LASTCNT, CNT1
     vadduwm S1, S0, CNT1
     vadduwm S2, S1, CNT1
@@ -300,7 +302,7 @@ IF_LE(`OPN_XXXY(vperm, LE_MASK, S4,S5,S6,S7)')
     vadduwm S7, S6, CNT1
     vmr LASTCNT, S7			C save last cnt to v29
 
-    OPN_XXY(vxor, K0, S0, S1, S2, S3, S4, S5, S6, S7)
+    OPN_XXY(vxor, K, S0, S1, S2, S3, S4, S5, S6, S7)
 
     mtctr SRND
     li r11,0x10
