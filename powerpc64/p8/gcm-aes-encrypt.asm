@@ -136,8 +136,6 @@ IF_BE(`vspltisb    LE_TEMP,0x03')
 
     xxmrghd        VSR(POLY_L),VSR(ZERO),VSR(POLY)
 
-    addi r12, HT, 4096
-
     C load table elements
     li             r9,1*16
     li             r10,2*16
@@ -167,7 +165,7 @@ IF_LE(`
     vperm          D,D,D,LE_MASK
 ')
 
-    addi RK, r12, 64
+    addi RK, HT, 48
     lxvb16x VSR(S0), 0, HT		C Load 'CTR'
 
     li r11, 128
