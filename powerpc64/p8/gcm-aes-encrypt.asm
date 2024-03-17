@@ -83,7 +83,6 @@ define(`F2', `v22')
 define(`K', `v30')
 define(`LE_TEMP', `v30')
 define(`LE_MASK', `v31')
-define(`TEMP1', `v31')
 
 define(`CNT1', `v28')
 define(`LASTCNT', `v29')
@@ -124,8 +123,8 @@ PROLOGUE(_nettle_gcm_aes_encrypt)
     stxv VSR(v31), 304(SP)
 
     vxor ZERO,ZERO,ZERO
-    vspltisb TEMP1, 1
-    vsldoi CNT1, ZERO, TEMP1, 1    C counter 1
+    vspltisb CNT1, 1
+    vsldoi CNT1, ZERO, CNT1, 1		C counter 1
 
     DATA_LOAD_VEC(POLY,.polynomial,r9)
 
