@@ -149,7 +149,6 @@ IF_BE(`vspltisb    LE_TEMP,0x03')
 
     addi HT, HT,  4048  C Advance to point to the 'CTR' field in the context
  
-    li r27,0x30
     li r28,0x40
     li r29,0x50
     li r30,0x60
@@ -161,14 +160,13 @@ IF_LE(`
     vperm          D,D,D,LE_MASK
 ')
 
-    addi RK, HT, 48
     lxvb16x VSR(S0), 0, HT		C Load 'CTR'
 
     sldi SLEN, LOOP, 7
 
     addi LOOP, LOOP, -1
 
-    lxvd2x VSR(K),0,RK
+    lxvd2x VSR(K),r11,HT		C First subkey
     vperm   K,K,K,LE_MASK
 
 .align 5
@@ -186,7 +184,7 @@ IF_LE(`
 
     addi SRND, SRND, -1
     mtctr SRND
-    addi RK,RK,0x10
+    addi RK, HT, 64			C Point at second subkey
 .align 5
 L8x_round_loop1:
     lxvd2x VSR(K),0,RK
@@ -216,7 +214,7 @@ Loop8x_en:
     lxvd2x VSR(S0),0,SSRC
     lxvd2x VSR(S1),r9,SSRC
     lxvd2x VSR(S2),r10,SSRC
-    lxvd2x VSR(S3),r27,SSRC
+    lxvd2x VSR(S3),r11,SSRC
     lxvd2x VSR(S4),r28,SSRC
     lxvd2x VSR(S5),r29,SSRC
     lxvd2x VSR(S6),r30,SSRC
@@ -255,7 +253,7 @@ IF_LE(`OPN_XXXY(vperm, LE_MASK, S0,S1,S2,S3)')
     stxvd2x VSR(S0),0,SDST
     stxvd2x VSR(S1),r9,SDST
     stxvd2x VSR(S2),r10,SDST
-    stxvd2x VSR(S3),r27,SDST
+    stxvd2x VSR(S3),r11,SDST
 
     xxlxor VSR(S4), VSR(S4), vs5
     xxlxor VSR(S5), VSR(S5), vs6
@@ -289,9 +287,7 @@ IF_LE(`OPN_XXXY(vperm, LE_MASK, S4,S5,S6,S7)')
     addi SDST, SDST, 0x80
     addi SSRC, SSRC, 0x80
 
-    addi RK, HT, 48
-
-    lxvd2x VSR(K),0,RK
+    lxvd2x VSR(K),r11,HT		C First subkey
     vperm   K,K,K,LE_MASK
 
     vadduwm S0, LASTCNT, CNT1
@@ -307,7 +303,7 @@ IF_LE(`OPN_XXXY(vperm, LE_MASK, S4,S5,S6,S7)')
     OPN_XXY(vxor, K, S0, S1, S2, S3, S4, S5, S6, S7)
 
     mtctr SRND
-    addi RK, RK, 0x10
+    addi RK, HT, 64			C Point at second subkey
 .align 5
 L8x_round_loop2:
     lxvd2x VSR(K),0,RK
@@ -338,7 +334,7 @@ do_ghash:
     lxvd2x VSR(S0),0,SSRC
     lxvd2x VSR(S1),r9,SSRC
     lxvd2x VSR(S2),r10,SSRC
-    lxvd2x VSR(S3),r27,SSRC
+    lxvd2x VSR(S3),r11,SSRC
     lxvd2x VSR(S4),r28,SSRC
     lxvd2x VSR(S5),r29,SSRC
     lxvd2x VSR(S6),r30,SSRC
@@ -375,7 +371,7 @@ IF_LE(`OPN_XXXY(vperm, LE_MASK, S0,S1,S2,S3)')
     stxvd2x VSR(S0),0,SDST
     stxvd2x VSR(S1),r9,SDST
     stxvd2x VSR(S2),r10,SDST
-    stxvd2x VSR(S3),r27,SDST
+    stxvd2x VSR(S3),r11,SDST
 
     xxlxor VSR(S4), VSR(S4), vs5
     xxlxor VSR(S5), VSR(S5), vs6
