@@ -124,6 +124,20 @@ PROLOGUE(_nettle_gcm_aes_encrypt)
     stxv VSR(v30), 288(SP)
     stxv VSR(v31), 304(SP)
 
+    vxor ZERO,ZERO,ZERO
+    vspltisb TEMP1, 1
+    vsldoi CNT1, ZERO, TEMP1, 1    C counter 1
+
+    DATA_LOAD_VEC(POLY,.polynomial,r9)
+
+    li             r9,0
+    lvsl           LE_MASK,0,r9
+IF_LE(`vspltisb    LE_TEMP,0x07')
+IF_BE(`vspltisb    LE_TEMP,0x03')
+    vxor           LE_MASK,LE_MASK,LE_TEMP
+
+    xxmrghd        VSR(POLY_L),VSR(ZERO),VSR(POLY)
+
     addi r12, HT, 4096
 
     C load table elements
@@ -139,9 +153,9 @@ PROLOGUE(_nettle_gcm_aes_encrypt)
     lxvd2x         VSR(H3L),r9,HT
     lxvd2x         VSR(H4M),r10,HT
     lxvd2x         VSR(H4L),r11,HT
-    
+
     addi HT, HT,  4048  C Advance to point to the 'CTR' field in the context
- 
+
     li r25,0x10
     li r26,0x20
     li r27,0x30
@@ -149,20 +163,6 @@ PROLOGUE(_nettle_gcm_aes_encrypt)
     li r29,0x50
     li r30,0x60
     li r31,0x70
-
-    vxor ZERO,ZERO,ZERO
-    vspltisb TEMP1, 1
-    vsldoi CNT1, ZERO, TEMP1, 1    C counter 1
-
-    DATA_LOAD_VEC(POLY,.polynomial,r9)
-
-    li             r9,0
-    lvsl           LE_MASK,0,r9
-IF_LE(`vspltisb    LE_TEMP,0x07')
-IF_BE(`vspltisb    LE_TEMP,0x03')
-    vxor           LE_MASK,LE_MASK,LE_TEMP
-
-    xxmrghd        VSR(POLY_L),VSR(ZERO),VSR(POLY)
 
     addi X, r12, 32
     lxvd2x         VSR(D),0,X                    C load 'X' pointer
