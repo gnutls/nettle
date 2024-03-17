@@ -42,7 +42,6 @@ define(`SLEN', `r5')
 define(`SDST', `r6')
 define(`SSRC', `r7')
 define(`X', `r8')
-define(`SCTR', `r9')
 define(`RK', `r10')
 define(`LOOP', `r12')
 
@@ -140,7 +139,9 @@ PROLOGUE(_nettle_gcm_aes_encrypt)
     lxvd2x         VSR(H3L),r9,HT
     lxvd2x         VSR(H4M),r10,HT
     lxvd2x         VSR(H4L),r11,HT
-
+    
+    addi HT, HT,  4048  C Advance to point to the 'CTR' field in the context
+ 
     li r25,0x10
     li r26,0x20
     li r27,0x30
@@ -170,9 +171,9 @@ IF_LE(`
     vperm          D,D,D,LE_MASK
 ')
 
-    addi SCTR, r12, 16
+    addi HT, r12, 16
     addi RK, r12, 64
-    lxvb16x VSR(S0), 0, SCTR
+    lxvb16x VSR(S0), 0, HT
 
     li r11, 128
     divdu LOOP, SLEN, r11		C loop n 8 blocks
@@ -425,7 +426,7 @@ IF_LE(`
 IF_LE(`
     vperm LASTCNT,LASTCNT,LASTCNT,LE_MASK
 ')
-    stxvd2x VSR(LASTCNT), 0, SCTR		C store ctr
+    stxvd2x VSR(LASTCNT), 0, HT		C store ctr
 
     ld r25, 112(SP)
     ld r26, 120(SP)
