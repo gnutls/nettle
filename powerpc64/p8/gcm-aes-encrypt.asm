@@ -149,11 +149,6 @@ IF_BE(`vspltisb    LE_TEMP,0x03')
 
     addi HT, HT,  4048  C Advance to point to the 'CTR' field in the context
  
-    li r28,0x40
-    li r29,0x50
-    li r30,0x60
-    li r31,0x70
-
     lxvd2x         VSR(D),r9,HT		C load 'X' pointer
     C byte-reverse of each doubleword permuting on little-endian mode
 IF_LE(`
@@ -215,10 +210,12 @@ Loop8x_en:
     lxvd2x VSR(S1),r9,SSRC
     lxvd2x VSR(S2),r10,SSRC
     lxvd2x VSR(S3),r11,SSRC
-    lxvd2x VSR(S4),r28,SSRC
-    lxvd2x VSR(S5),r29,SSRC
-    lxvd2x VSR(S6),r30,SSRC
-    lxvd2x VSR(S7),r31,SSRC
+    addi SSRC, SSRC, 0x40
+    lxvd2x VSR(S4),0,SSRC
+    lxvd2x VSR(S5),r9,SSRC
+    lxvd2x VSR(S6),r10,SSRC
+    lxvd2x VSR(S7),r11,SSRC
+    addi SSRC, SSRC, 0x40
 
 IF_LE(`OPN_XXXY(vperm, LE_MASK, S0,S1,S2,S3)')
 
@@ -254,6 +251,7 @@ IF_LE(`OPN_XXXY(vperm, LE_MASK, S0,S1,S2,S3)')
     stxvd2x VSR(S1),r9,SDST
     stxvd2x VSR(S2),r10,SDST
     stxvd2x VSR(S3),r11,SDST
+    addi SDST, SDST, 0x40
 
     xxlxor VSR(S4), VSR(S4), vs5
     xxlxor VSR(S5), VSR(S5), vs6
@@ -279,13 +277,11 @@ IF_LE(`OPN_XXXY(vperm, LE_MASK, S0,S1,S2,S3)')
 
 IF_LE(`OPN_XXXY(vperm, LE_MASK, S4,S5,S6,S7)')
 
-    stxvd2x VSR(S4),r28,SDST
-    stxvd2x VSR(S5),r29,SDST
-    stxvd2x VSR(S6),r30,SDST
-    stxvd2x VSR(S7),r31,SDST
-
-    addi SDST, SDST, 0x80
-    addi SSRC, SSRC, 0x80
+    stxvd2x VSR(S4),0,SDST
+    stxvd2x VSR(S5),r9,SDST
+    stxvd2x VSR(S6),r10,SDST
+    stxvd2x VSR(S7),r11,SDST
+    addi SDST, SDST, 0x40
 
     lxvd2x VSR(K),r11,HT		C First subkey
     vperm   K,K,K,LE_MASK
@@ -335,10 +331,12 @@ do_ghash:
     lxvd2x VSR(S1),r9,SSRC
     lxvd2x VSR(S2),r10,SSRC
     lxvd2x VSR(S3),r11,SSRC
-    lxvd2x VSR(S4),r28,SSRC
-    lxvd2x VSR(S5),r29,SSRC
-    lxvd2x VSR(S6),r30,SSRC
-    lxvd2x VSR(S7),r31,SSRC
+    addi SSRC, SSRC, 0x40
+    lxvd2x VSR(S4),0,SSRC
+    lxvd2x VSR(S5),r9,SSRC
+    lxvd2x VSR(S6),r10,SSRC
+    lxvd2x VSR(S7),r11,SSRC
+    addi SSRC, SSRC, 0x40
 
 IF_LE(`OPN_XXXY(vperm, LE_MASK, S0,S1,S2,S3)')
 
@@ -372,6 +370,7 @@ IF_LE(`OPN_XXXY(vperm, LE_MASK, S0,S1,S2,S3)')
     stxvd2x VSR(S1),r9,SDST
     stxvd2x VSR(S2),r10,SDST
     stxvd2x VSR(S3),r11,SDST
+    addi SDST, SDST, 0x40
 
     xxlxor VSR(S4), VSR(S4), vs5
     xxlxor VSR(S5), VSR(S5), vs6
@@ -397,10 +396,10 @@ IF_LE(`OPN_XXXY(vperm, LE_MASK, S0,S1,S2,S3)')
 
 IF_LE(`OPN_XXXY(vperm, LE_MASK, S4,S5,S6,S7)')
 
-    stxvd2x VSR(S4),r28,SDST
-    stxvd2x VSR(S5),r29,SDST
-    stxvd2x VSR(S6),r30,SDST
-    stxvd2x VSR(S7),r31,SDST
+    stxvd2x VSR(S4),0,SDST
+    stxvd2x VSR(S5),r9,SDST
+    stxvd2x VSR(S6),r10,SDST
+    stxvd2x VSR(S7),r11,SDST
 
 gcm_aes_out:
     vadduwm LASTCNT, LASTCNT, CNT1		C increase ctr
