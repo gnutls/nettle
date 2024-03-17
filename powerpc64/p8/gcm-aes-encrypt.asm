@@ -41,7 +41,6 @@ define(`SRND', `r4')
 define(`SLEN', `r5')
 define(`SDST', `r6')
 define(`SSRC', `r7')
-define(`X', `r8')
 define(`RK', `r10')
 define(`LOOP', `r12')
 
@@ -164,16 +163,14 @@ IF_BE(`vspltisb    LE_TEMP,0x03')
     li r30,0x60
     li r31,0x70
 
-    addi X, r12, 32
-    lxvd2x         VSR(D),0,X                    C load 'X' pointer
+    lxvd2x         VSR(D),r9,HT		C load 'X' pointer
     C byte-reverse of each doubleword permuting on little-endian mode
 IF_LE(`
     vperm          D,D,D,LE_MASK
 ')
 
-    addi HT, r12, 16
     addi RK, r12, 64
-    lxvb16x VSR(S0), 0, HT
+    lxvb16x VSR(S0), 0, HT		C Load 'CTR'
 
     li r11, 128
     divdu LOOP, SLEN, r11		C loop n 8 blocks
@@ -421,7 +418,7 @@ gcm_aes_out:
 IF_LE(`
     vperm          D,D,D,LE_MASK
 ')
-    stxvd2x        VSR(D),0,X                    C store digest 'D'
+    stxvd2x        VSR(D),r9,HT			C store digest 'D'
 
 IF_LE(`
     vperm LASTCNT,LASTCNT,LASTCNT,LE_MASK
