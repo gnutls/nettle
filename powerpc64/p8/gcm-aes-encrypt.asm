@@ -153,8 +153,7 @@ IF_BE(`vspltisb    LE_TEMP,0x03')
     lxvd2x         VSR(H4L),r11,HT
 
     addi HT, HT,  4048  C Advance to point to the 'CTR' field in the context
-
-    li r25,0x10
+ 
     li r26,0x20
     li r27,0x30
     li r28,0x40
@@ -223,7 +222,7 @@ Loop8x_en:
     xxlor vs8, VSR(S7), VSR(S7)
 
     lxvd2x VSR(S0),0,SSRC
-    lxvd2x VSR(S1),r25,SSRC
+    lxvd2x VSR(S1),r9,SSRC
     lxvd2x VSR(S2),r26,SSRC
     lxvd2x VSR(S3),r27,SSRC
     lxvd2x VSR(S4),r28,SSRC
@@ -262,7 +261,7 @@ IF_LE(`OPN_XXXY(vperm, LE_MASK, S4,S5,S6,S7)')
 IF_LE(`OPN_XXXY(vperm, LE_MASK, S0,S1,S2,S3)')
 
     stxvd2x VSR(S0),0,SDST
-    stxvd2x VSR(S1),r25,SDST
+    stxvd2x VSR(S1),r9,SDST
     stxvd2x VSR(S2),r26,SDST
     stxvd2x VSR(S3),r27,SDST
 
@@ -340,7 +339,7 @@ do_ghash:
     xxlor vs8, VSR(S7), VSR(S7)
 
     lxvd2x VSR(S0),0,SSRC
-    lxvd2x VSR(S1),r25,SSRC
+    lxvd2x VSR(S1),r9,SSRC
     lxvd2x VSR(S2),r26,SSRC
     lxvd2x VSR(S3),r27,SSRC
     lxvd2x VSR(S4),r28,SSRC
@@ -377,7 +376,7 @@ IF_LE(`OPN_XXXY(vperm, LE_MASK, S4,S5,S6,S7)')
 IF_LE(`OPN_XXXY(vperm, LE_MASK, S0,S1,S2,S3)')
 
     stxvd2x VSR(S0),0,SDST
-    stxvd2x VSR(S1),r25,SDST
+    stxvd2x VSR(S1),r9,SDST
     stxvd2x VSR(S2),r26,SDST
     stxvd2x VSR(S3),r27,SDST
 
