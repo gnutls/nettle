@@ -99,7 +99,15 @@ nettle_gcm_unified_aes128 = {
   (nettle_crypt_func *) gcm_aes_decrypt,
   (nettle_hash_digest_func *) gcm_aes_digest
 };
-    
+
+/* Hack that uses a 16-byte nonce, a 12-byte standard GCM nonce and an
+   explicit initial value for the counter. */
+static void
+gcm_aes128_set_iv_hack (struct gcm_aes128_ctx *ctx, size_t size, const uint8_t *iv) {
+  assert (size == 16);
+  gcm_aes128_set_iv (ctx, 12, iv);
+  memcpy (ctx->gcm.ctr.b + 12, iv + 12, 4);
+}
 
 void
 test_main(void)
@@ -157,6 +165,40 @@ test_main(void)
 		 "1ba30b396a0aac973d58e091"),
 	    SHEX("cafebabefacedbaddecaf888"),
 	    SHEX("5bc94fbc3221a5db94fae95ae7121a47"));
+
+  /* Regression test, same inputs but explicitly setting the counter
+     value. */
+  test_aead(&nettle_gcm_aes128,
+	    (nettle_hash_update_func *) gcm_aes128_set_iv_hack,
+	    SHEX("feffe9928665731c6d6a8f9467308308"),
+	    SHEX("feedfacedeadbeeffeedfacedeadbeef"
+		 "abaddad2"),
+	    SHEX("d9313225f88406e5a55909c5aff5269a"
+		 "86a7a9531534f7da2e4c303d8a318a72"
+		 "1c3c0c95956809532fcf0e2449a6b525"
+		 "b16aedf5aa0de657ba637b39"),
+	    SHEX("42831ec2217774244b7221b784d0d49c"
+		 "e3aa212f2c02a4e035c17e2329aca12e"
+		 "21d514b25466931c7d8f6a5aac84aa05"
+		 "1ba30b396a0aac973d58e091"),
+	    SHEX("cafebabefacedbaddecaf88800000002"), /* ctr == 2, same as the spec */
+	    SHEX("5bc94fbc3221a5db94fae95ae7121a47"));
+
+  test_aead(&nettle_gcm_aes128,
+	    (nettle_hash_update_func *) gcm_aes128_set_iv_hack,
+	    SHEX("feffe9928665731c6d6a8f9467308308"),
+	    SHEX("feedfacedeadbeeffeedfacedeadbeef"
+		 "abaddad2"),
+	    SHEX("d9313225f88406e5a55909c5aff5269a"
+		 "86a7a9531534f7da2e4c303d8a318a72"
+		 "1c3c0c95956809532fcf0e2449a6b525"
+		 "b16aedf5aa0de657ba637b39"),
+	    SHEX("77ffd1ba63b141ba fb2efb329c9c25ee"
+		 "99e5e06e603dd5c6 8efe1cb2cefc0677"
+		 "2e7b14dea92760f7 6273dc0cce1d013d"
+		 "2ad8c11273fe9496 5448534b"),
+	    SHEX("cafebabefacedbaddecaf888ffffffff"), /* ctr == 2^31-1 */
+	    SHEX("83cf46eb0407be56 72f756a4caebcda7"));
 
   /* Test case 5 */
   test_aead(&nettle_gcm_aes128,
