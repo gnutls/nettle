@@ -3,6 +3,9 @@
 	* sha3-shake.c (_nettle_sha3_shake, _nettle_sha3_shake_output):
 	New file, new functions. Generalizations of sha3_256_shake and
 	sha3_256_shake_output, respectively.
+	(_nettle_sha3_shake_output): Use one's complement of index,
+	instead of just setting high bit.
+
 	* shake256.c (sha3_256_shake, sha3_256_shake_output): Implement in
 	terms of calls to the new functions.
 	* Makefile.in (nettle_SOURCES): Add sha3-shake.c.

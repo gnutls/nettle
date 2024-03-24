@@ -36,15 +36,12 @@
 #endif
 
 #include <assert.h>
-#include <limits.h>
 #include <string.h>
 
 #include "sha3.h"
 #include "sha3-internal.h"
 
 #include "nettle-write.h"
-
-#define INDEX_HIGH_BIT (~((UINT_MAX) >> 1))
 
 void
 _nettle_sha3_shake (struct sha3_state *state,
@@ -74,7 +71,8 @@ _nettle_sha3_shake_output (struct sha3_state *state,
 {
   unsigned left;
 
-  /* We use the leftmost bit as a flag to indicate SHAKE is initialized. */
+  /* We use one's complement of the index value to indicate SHAKE is
+     initialized. */
   if (index < block_size)
     {
       /* This is the first call of _shake_output.  */
@@ -83,7 +81,7 @@ _nettle_sha3_shake_output (struct sha3_state *state,
       index = block_size;
     }
   else
-    index &= ~INDEX_HIGH_BIT;
+    index = ~index;
 
   assert (index <= block_size);
 
@@ -92,7 +90,7 @@ _nettle_sha3_shake_output (struct sha3_state *state,
   if (length <= left)
     {
       memcpy (dst, block + index, length);
-      return (index + length) | INDEX_HIGH_BIT;
+      return ~(index + length);
     }
   else
     {
@@ -114,5 +112,5 @@ _nettle_sha3_shake_output (struct sha3_state *state,
   /* Fill in the buffer for next call.  */
   _nettle_write_le64 (block_size, block, state->a);
   memcpy (dst, block, length);
-  return length | INDEX_HIGH_BIT;
+  return ~length;
 }
