@@ -58,5 +58,16 @@ _nettle_sha3_pad (struct sha3_state *state,
 #define _sha3_pad_shake(state, block_size, block, pos) \
   _nettle_sha3_pad (state, block_size, block, pos, SHA3_SHAKE_MAGIC)
 
+void
+_nettle_sha3_shake (struct sha3_state *state,
+		    unsigned block_size, uint8_t *block,
+		    unsigned index,
+		    size_t length, uint8_t *dst);
+
+unsigned
+_nettle_sha3_shake_output (struct sha3_state *state,
+			   unsigned block_size, uint8_t *block,
+			   unsigned index,
+			   size_t length, uint8_t *dst);
 
 #endif

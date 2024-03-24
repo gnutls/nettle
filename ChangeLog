@@ -1,5 +1,12 @@
 2024-03-24  Niels Möller  <nisse@lysator.liu.se>
 
+	* sha3-shake.c (_nettle_sha3_shake, _nettle_sha3_shake_output):
+	New file, new functions. Generalizations of sha3_256_shake and
+	sha3_256_shake_output, respectively.
+	* shake256.c (sha3_256_shake, sha3_256_shake_output): Implement in
+	terms of calls to the new functions.
+	* Makefile.in (nettle_SOURCES): Add sha3-shake.c.
+
 	* sha3.c (_nettle_sha3_update): Use MD_FILL_OR_RETURN_INDEX.
 	(sha3_xor_block): New function, taken out from sha3_absorb.
 	(_nettle_sha3_pad): Call sha3_xor_block, not sha3_absorb.
