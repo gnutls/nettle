@@ -1,6 +1,14 @@
 2024-03-24  Niels Möller  <nisse@lysator.liu.se>
 
 	* sha3.c (_nettle_sha3_update): Use MD_FILL_OR_RETURN_INDEX.
+	(sha3_xor_block): New function, taken out from sha3_absorb.
+	(_nettle_sha3_pad): Call sha3_xor_block, not sha3_absorb.
+	* sha3-internal.h (_sha3_pad_shake): By above change, no longer
+	implies sha3_permute.
+	(_sha3_pad_hash): Update, to still include a
+	call to sha3_permute.
+	* shake256.c (sha3_256_shake, sha3_256_shake_output): Update to
+	call sha3_permute before generating output.
 
 2024-03-20  Niels Möller  <nisse@lysator.liu.se>
 

@@ -56,11 +56,12 @@ sha3_256_shake (struct sha3_256_ctx *ctx,
   _sha3_pad_shake (&ctx->state, SHA3_256_BLOCK_SIZE, ctx->block, ctx->index);
   while (length > SHA3_256_BLOCK_SIZE)
     {
+      sha3_permute (&ctx->state);
       _nettle_write_le64 (SHA3_256_BLOCK_SIZE, dst, ctx->state.a);
       length -= SHA3_256_BLOCK_SIZE;
       dst += SHA3_256_BLOCK_SIZE;
-      sha3_permute (&ctx->state);
     }
+  sha3_permute (&ctx->state);
   _nettle_write_le64 (length, dst, ctx->state.a);
 
   sha3_256_init (ctx);
@@ -104,17 +105,17 @@ sha3_256_shake_output (struct sha3_256_ctx *ctx,
   /* Write full blocks.  */
   while (length > sizeof (ctx->block))
     {
+      sha3_permute (&ctx->state);
       _nettle_write_le64 (sizeof (ctx->block), digest, ctx->state.a);
       length -= sizeof (ctx->block);
       digest += sizeof (ctx->block);
-      sha3_permute (&ctx->state);
     }
 
   if (length > 0)
     {
       /* Fill in the buffer for next call.  */
-      _nettle_write_le64 (sizeof (ctx->block), ctx->block, ctx->state.a);
       sha3_permute (&ctx->state);
+      _nettle_write_le64 (sizeof (ctx->block), ctx->block, ctx->state.a);
       memcpy (digest, ctx->block, length);
       ctx->index = length | INDEX_HIGH_BIT;
     }
