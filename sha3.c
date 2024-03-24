@@ -73,6 +73,8 @@ _nettle_sha3_update (struct sha3_state *state,
 		     unsigned pos,
 		     size_t length, const uint8_t *data)
 {
+  assert (pos < block_size);
+
   if (!length)
     return pos;
 
