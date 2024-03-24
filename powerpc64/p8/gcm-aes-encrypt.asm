@@ -182,13 +182,13 @@ IF_LE(`
 
 .align 5
     C increase ctr value as input to aes_encrypt
-    vaddudm S1, S0, CNT1
-    vaddudm S2, S1, CNT1
-    vaddudm S3, S2, CNT1
-    vaddudm S4, S3, CNT1
-    vaddudm S5, S4, CNT1
-    vaddudm S6, S5, CNT1
-    vaddudm S7, S6, CNT1
+    vadduwm S1, S0, CNT1
+    vadduwm S2, S1, CNT1
+    vadduwm S3, S2, CNT1
+    vadduwm S4, S3, CNT1
+    vadduwm S5, S4, CNT1
+    vadduwm S6, S5, CNT1
+    vadduwm S7, S6, CNT1
     vmr LASTCNT, S7			C save last cnt
 
     OPN_XXY(vxor, K0, S0, S1, S2, S3, S4, S5, S6, S7)
@@ -298,14 +298,14 @@ IF_LE(`OPN_XXXY(vperm, LE_MASK, S4,S5,S6,S7)')
     addi SDST, SDST, 0x80
     addi SSRC, SSRC, 0x80
 
-    vaddudm S0, LASTCNT, CNT1
-    vaddudm S1, S0, CNT1
-    vaddudm S2, S1, CNT1
-    vaddudm S3, S2, CNT1
-    vaddudm S4, S3, CNT1
-    vaddudm S5, S4, CNT1
-    vaddudm S6, S5, CNT1
-    vaddudm S7, S6, CNT1
+    vadduwm S0, LASTCNT, CNT1
+    vadduwm S1, S0, CNT1
+    vadduwm S2, S1, CNT1
+    vadduwm S3, S2, CNT1
+    vadduwm S4, S3, CNT1
+    vadduwm S5, S4, CNT1
+    vadduwm S6, S5, CNT1
+    vadduwm S7, S6, CNT1
     vmr LASTCNT, S7			C save last cnt to v29
 
     OPN_XXY(vxor, K0, S0, S1, S2, S3, S4, S5, S6, S7)
@@ -411,7 +411,7 @@ IF_LE(`OPN_XXXY(vperm, LE_MASK, S4,S5,S6,S7)')
     stxvd2x VSR(S7),r31,SDST
 
 gcm_aes_out:
-    vaddudm LASTCNT, LASTCNT, CNT1		C increase ctr
+    vadduwm LASTCNT, LASTCNT, CNT1		C increase ctr
 
     C byte-reverse of each doubleword permuting on little-endian mode
 IF_LE(`
