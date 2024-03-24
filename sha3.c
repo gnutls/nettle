@@ -42,6 +42,7 @@
 #include "sha3-internal.h"
 
 #include "macros.h"
+#include "md-internal.h"
 #include "memxor.h"
 
 static void
@@ -72,19 +73,8 @@ _nettle_sha3_update (struct sha3_state *state,
 
   if (pos > 0)
     {
-      unsigned left = block_size - pos;
-      if (length < left)
-	{
-	  memcpy (block + pos, data, length);
-	  return pos + length;
-	}
-      else
-	{
-	  memcpy (block + pos, data, left);
-	  data += left;
-	  length -= left;
-	  sha3_absorb (state, block_size, block);
-	}
+      MD_FILL_OR_RETURN_INDEX (block_size, block, pos, length, data);
+      sha3_absorb (state, block_size, block);
     }
   for (; length >= block_size; length -= block_size, data += block_size)
     sha3_absorb (state, block_size, data);

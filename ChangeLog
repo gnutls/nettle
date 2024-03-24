@@ -1,3 +1,7 @@
+2024-03-24  Niels Möller  <nisse@lysator.liu.se>
+
+	* sha3.c (_nettle_sha3_update): Use MD_FILL_OR_RETURN_INDEX.
+
 2024-03-20  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/gcm-test.c (test_main): Add a test case that triggers
