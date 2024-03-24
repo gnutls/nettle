@@ -1,3 +1,9 @@
+2024-03-24  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/gcm-test.c (test_main): Add a test case that triggers
+	32-bit counter wraparound for gcm_aes256, and a larger 719 byte
+	message.
+
 2024-03-20  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/gcm-test.c (test_main): Add a test case that triggers
