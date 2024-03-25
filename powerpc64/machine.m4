@@ -64,6 +64,22 @@ define(`INC_VR',`ifelse(substr($1,0,1),`v',
 ``v'eval($2+substr($1,1,len($1)))',
 `eval($2+$1)')')
 
+C Apply op x, x, for each x.
+C OPN_XX(OP, X1, X2, ...)
+define(`OPN_XX',
+`$1 $2, $2
+ifelse(eval($# > 2), 1,
+`OPN_XX($1, shift(shift($@)))dnl
+')')
+
+C Apply op VSR(x), VSR(x), for each x.
+C OPN_VSR_XX(OP, X1, X2, ...)
+define(`OPN_VSR_XX',
+`$1 VSR($2), VSR($2)
+ifelse(eval($# > 2), 1,
+`OPN_VSR_XX($1, shift(shift($@)))dnl
+')')
+
 C Apply op x, x, y, for each x.
 C OPN_XXY(OP, Y, X1, X2, ...)
 define(`OPN_XXY',

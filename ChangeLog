@@ -1,5 +1,11 @@
 2024-03-25  Niels Möller  <nisse@lysator.liu.se>
 
+	* powerpc64/machine.m4 (OPN_XX, OPN_VSR_XX): New macros.
+
+	* powerpc64/p8/aes-encrypt-internal.asm): Use xxbrd and xxbrw
+	instructions for needed byte swapping.
+	* powerpc64/p8/aes-decrypt-internal.asm: Likewise.
+
 	* powerpc64/p8/ghash-set-key.asm: Use xxbrd instruction for byte swap.
 	* powerpc64/p8/ghash-update.asm: Likewise. Yields register
 	savings, eliminating use of callee-save ("non-volatile") registers.
