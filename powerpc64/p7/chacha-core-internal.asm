@@ -53,10 +53,6 @@ define(`S1', `v9')
 define(`S2', `v10')
 define(`S3', `v11')
 
-C Big-endian working state
-define(`LE_MASK', `v12')
-define(`LE_TEMP', `v13')
-
 C QROUND(X0, X1, X2, X3)
 define(`QROUND', `
 	C x0 += x1, x3 ^= x0, x3 lrot 16
@@ -81,14 +77,6 @@ define(`QROUND', `
 	vrlw	$2, $2, ROT7
 ')
 
-C LE_SWAP32(X0, X1, X2, X3)
-define(`LE_SWAP32', `IF_BE(`
-	vperm	X0, X0, X0, LE_MASK
-	vperm	X1, X1, X1, LE_MASK
-	vperm	X2, X2, X2, LE_MASK
-	vperm	X3, X3, X3, LE_MASK
-')')
-
 	.text
 	C _chacha_core(uint32_t *dst, const uint32_t *src, unsigned rounds)
 
@@ -103,12 +91,6 @@ PROLOGUE(_nettle_chacha_core)
 	vspltisw ROT12, 12
 	vspltisw ROT8, 8
 	vspltisw ROT7, 7
-IF_BE(`
-	li	 r9, 0
-	lvsl	 LE_MASK, r9, r9		C 00 01 02 03 ... 0c 0d 0e 0f
-	vspltisb LE_TEMP, 0x03			C 03 03 03 03 ... 03 03 03 03
-	vxor	 LE_MASK, LE_MASK, LE_TEMP	C 03 02 01 00 ... 0f 0e 0d 0c
-')
 
 	lxvw4x	VSR(X0), 0, SRC
 	lxvw4x	VSR(X1), r6, SRC
@@ -148,8 +130,12 @@ IF_BE(`
 	vadduwm	X1, X1, S1
 	vadduwm	X2, X2, S2
 	vadduwm	X3, X3, S3
-
-	LE_SWAP32(X0, X1, X2, X3)
+IF_BE(`
+	xxbrw	VSR(X0), VSR(X0)
+	xxbrw	VSR(X1), VSR(X1)
+	xxbrw	VSR(X2), VSR(X2)
+	xxbrw	VSR(X3), VSR(X3)
+')
 
 	stxvw4x	VSR(X0), 0, DST
 	stxvw4x	VSR(X1), r6, DST

@@ -218,20 +218,14 @@ C Y3  A15 B15 A13 B13  X3  A12 B12 A14 B14 (Y3 swapped)
 
 IF_BE(`
 	C Output always stored in little-endian byte order.
-	C Can reuse S0 and S1 to construct permutation mask.
-	li	 r9, 0
-	lvsl	 S0, r9, r9	C 00 01 02 03 ... 0c 0d 0e 0f
-	vspltisb S1, 0x03	C 03 03 03 03 ... 03 03 03 03
-	vxor	 S1, S1, S0	C 03 02 01 00 ... 0f 0e 0d 0c
-
-	vperm	T0, T0, T0, S1
-	vperm	X0, X0, X0, S1
-	vperm	X1, X1, X1, S1
-	vperm	X2, X2, X2, S1
-	vperm	Y0, Y0, Y0, S1
-	vperm	Y1, Y1, Y1, S1
-	vperm	Y2, Y2, Y2, S1
-	vperm	Y3, Y3, Y3, S1
+	xxbrw	VSR(T0), VSR(T0)
+	xxbrw	VSR(X0), VSR(X0)
+	xxbrw	VSR(X1), VSR(X1)
+	xxbrw	VSR(X2), VSR(X2)
+	xxbrw	VSR(Y0), VSR(Y0)
+	xxbrw	VSR(Y1), VSR(Y1)
+	xxbrw	VSR(Y2), VSR(Y2)
+	xxbrw	VSR(Y3), VSR(Y3)
 ')
 	stxvw4x	VSR(T0), 0, DST
 	stxvw4x	VSR(X0), r6, DST
@@ -260,6 +254,7 @@ EPILOGUE(_nettle_chacha_2core32)
 .rodata
 .align 4
 .even_word_mask:
+C FIXME: Can these be constructed using a sequence lvsl, vspltisb, vxor?
 IF_LE(`.byte 27,26,25,24,11,10,9,8,19,18,17,16,3,2,1,0')
 IF_BE(`.byte 0,1,2,3,16,17,18,19,8,9,10,11,24,25,26,27')
 .odd_word_mask:

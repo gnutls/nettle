@@ -64,9 +64,6 @@ define(`R2', `v16')
 define(`F2', `v17')
 define(`T2', `v18')
 
-define(`LE_TEMP', `v18')
-define(`LE_MASK', `v19')
-
 .file "ghash-set-key.asm"
 
 .text
@@ -91,18 +88,12 @@ C ******************************************************************************
 define(`FUNC_ALIGN', `5')
 PROLOGUE(_nettle_ghash_set_key)
     DATA_LOAD_VEC(POLY,.polynomial,r7)           C 0xC2000000000000000000000000000001
-IF_LE(`
-    li             r8,0
-    lvsl           LE_MASK,0,r8                  C 0x000102030405060708090A0B0C0D0E0F
-    vspltisb       LE_TEMP,0x07                  C 0x07070707070707070707070707070707
-    vxor           LE_MASK,LE_MASK,LE_TEMP       C 0x07060504030201000F0E0D0C0B0A0908
-')
 
     C 'H' is assigned by gcm_set_key() to the middle element of the table
     lxvd2x         VSR(H),0,KEY                  C load 'H'
     C byte-reverse of each doubleword permuting on little-endian mode
 IF_LE(`
-    vperm          H,H,H,LE_MASK
+    xxbrd          VSR(H), VSR(H)
 ')
 
     C --- calculate H = H << 1 mod P(X), P(X) = (x¹²⁸+x¹²⁷+x¹²⁶+x¹²¹+1) ---

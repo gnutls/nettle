@@ -229,14 +229,8 @@ C Load state and splat
 
 IF_BE(`
 	C Output always stored in little-endian byte order.
-	C Can reuse T0 and T1 to construct permutation mask.
-	li	 r9, 0
-	lvsl	 T0, r9, r9	C 00 01 02 03 ... 0c 0d 0e 0f
-	vspltisb T1, 0x03	C 03 03 03 03 ... 03 03 03 03
-	vxor	 T1, T1, T0	C 03 02 01 00 ... 0f 0e 0d 0c
-
 	forloop(i, 0, 15, `
-	vperm   m4_unquote(v`'i), m4_unquote(v`'i), m4_unquote(v`'i), T1
+	xxbrw   VSR(m4_unquote(v`'i)), VSR(m4_unquote(v`'i))
 	')
 ')
 

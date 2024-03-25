@@ -1,3 +1,13 @@
+2024-03-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* powerpc64/p8/ghash-set-key.asm: Use xxbrd instruction for byte swap.
+	* powerpc64/p8/ghash-update.asm: Likewise. Yields register
+	savings, eliminating use of callee-save ("non-volatile") registers.
+
+	* powerpc64/p7/chacha-2core.asm: Use xxbrw instruction for byte swap.
+	* powerpc64/p7/chacha-4core.asm: Likewise.
+	* powerpc64/p7/chacha-core-internal.asm: Likewise.
+
 2024-03-24  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/gcm-test.c (test_main): Add a test case that triggers

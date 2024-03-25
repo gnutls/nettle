@@ -46,30 +46,27 @@ define(`BLOCKS', `r5')
 define(`DATA', `r6')
 
 define(`ZERO', `v16')
-define(`LE_TEMP', `v17')
-
 define(`POLY_L', `v0')
-define(`LE_MASK', `v1')
-define(`C0', `v2')
-define(`C1', `v3')
-define(`C2', `v4')
-define(`C3', `v5')
-define(`H1M', `v6')
-define(`H1L', `v7')
-define(`H2M', `v8')
-define(`H2L', `v9')
-define(`H3M', `v10')
-define(`H3L', `v11')
-define(`H4M', `v12')
-define(`H4L', `v13')
-define(`R', `v14')
-define(`F', `v15')
-define(`R2', `v16')
-define(`F2', `v17')
-define(`R3', `v18')
-define(`F3', `v19')
-define(`R4', `v20')
-define(`F4', `v21')
+define(`C0', `v1')
+define(`C1', `v2')
+define(`C2', `v3')
+define(`C3', `v4')
+define(`H1M', `v5')
+define(`H1L', `v6')
+define(`H2M', `v7')
+define(`H2L', `v8')
+define(`H3M', `v9')
+define(`H3L', `v10')
+define(`H4M', `v11')
+define(`H4L', `v12')
+define(`R', `v13')
+define(`F', `v14')
+define(`R2', `v15')
+define(`F2', `v16')
+define(`R3', `v17')
+define(`F3', `v18')
+define(`R4', `v4')	C Overlap with C3
+define(`F4', `v19')
 
     C const uint8_t *_ghash_update (const struct gcm_key *ctx,
     C                               union nettle_block16 *x,
@@ -79,18 +76,12 @@ define(`FUNC_ALIGN', `5')
 PROLOGUE(_nettle_ghash_update)
     vxor           ZERO,ZERO,ZERO
     DATA_LOAD_VEC(POLY_L,.polynomial,r7)
-IF_LE(`
-    li             r8,0
-    lvsl           LE_MASK,0,r8
-    vspltisb       LE_TEMP,0x07
-    vxor           LE_MASK,LE_MASK,LE_TEMP
-')
     xxmrghd        VSR(POLY_L),VSR(ZERO),VSR(POLY_L)
 
     lxvd2x         VSR(R),0,X                    C load 'X' pointer
     C byte-reverse of each doubleword permuting on little-endian mode
 IF_LE(`
-    vperm          R,R,R,LE_MASK
+    xxbrd          VSR(R),VSR(R)
 ')
     C Used as offsets for load/store, throughout this function
     li             r8,1*16
@@ -103,11 +94,6 @@ IF_LE(`
     beq            L2x
 
     mtctr          r7                            C assign counter register to loop count
-
-    C store non-volatile vector registers
-    addi           r7,SP,-32
-    stvx           v20,0,r7
-    stvx           v21,r8,r7
 
     C load table elements
     lxvd2x         VSR(H1M),0,CTX
@@ -129,10 +115,10 @@ L4x_loop:
     lxvd2x         VSR(C3),r10,DATA              C load C3
 
 IF_LE(`
-    vperm          C0,C0,C0,LE_MASK
-    vperm          C1,C1,C1,LE_MASK
-    vperm          C2,C2,C2,LE_MASK
-    vperm          C3,C3,C3,LE_MASK
+    xxbrd          VSR(C0),VSR(C0)
+    xxbrd          VSR(C1),VSR(C1)
+    xxbrd          VSR(C2),VSR(C2)
+    xxbrd          VSR(C3),VSR(C3)
 ')
 
     C previous digest combining
@@ -161,12 +147,6 @@ IF_LE(`
     addi           DATA,DATA,0x40
     bdnz           L4x_loop
 
-    C restore non-volatile vector registers
-    addi           r7,SP,-32
-    lvx            v20,0,r7
-    addi           r7,r7,16
-    lvx            v21,0,r7
-
     clrldi         BLOCKS,BLOCKS,62              C 'set the high-order 62 bits to zeros'
 L2x:
     C --- process 2 blocks ---
@@ -185,8 +165,8 @@ L2x:
     lxvd2x         VSR(C1),r8,DATA              C load C1
 
 IF_LE(`
-    vperm          C0,C0,C0,LE_MASK
-    vperm          C1,C1,C1,LE_MASK
+    xxbrd          VSR(C0),VSR(C0)
+    xxbrd          VSR(C1),VSR(C1)
 ')
 
     C previous digest combining
@@ -220,7 +200,7 @@ L1x:
     lxvd2x         VSR(C0),0,DATA                C load C0
 
 IF_LE(`
-    vperm          C0,C0,C0,LE_MASK
+    xxbrd          VSR(C0),VSR(C0)
 ')
 
     C previous digest combining
@@ -238,7 +218,7 @@ IF_LE(`
 Ldone:
     C byte-reverse of each doubleword permuting on little-endian mode
 IF_LE(`
-    vperm          R,R,R,LE_MASK
+    xxbrd          VSR(R),VSR(R)
 ')
     stxvd2x        VSR(R),0,X                    C store digest 'R'
     mr             r3, DATA
