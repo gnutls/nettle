@@ -112,6 +112,7 @@
 /siv-gcm-test
 /bcrypt-test
 /ed448-test
+/shake128-test
 /shake256-test
 /x86-ibt-test
 /drbg-ctr-aes256-test
