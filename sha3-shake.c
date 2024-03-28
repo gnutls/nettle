@@ -54,7 +54,7 @@ _nettle_sha3_shake (struct sha3_state *state,
   while (length > block_size)
     {
       sha3_permute (state);
-      _nettle_write_le64 (SHA3_256_BLOCK_SIZE, dst, state->a);
+      _nettle_write_le64 (block_size, dst, state->a);
       length -= block_size;
       dst += block_size;
     }
