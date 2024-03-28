@@ -1,3 +1,12 @@
+2024-03-28  Niels Möller  <nisse@lysator.liu.se>
+
+	From Daiki Ueno:
+	* shake128.c (sha3_128_init, sha3_128_update, sha3_128_shake)
+	(sha3_128_shake_output): New file, new functions.
+	* testsuite/shake128-test.c: New testcases.
+	* Makefile.in (nettle_SOURCES): Add shake128.c.
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Add shake128-test.c.
+
 2024-03-24  Niels Möller  <nisse@lysator.liu.se>
 
 	* sha3-shake.c (_nettle_sha3_shake, _nettle_sha3_shake_output):
