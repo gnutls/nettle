@@ -151,7 +151,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c aes-decrypt-table.c \
 		 sha3.c sha3-permute.c \
 		 sha3-224.c sha3-224-meta.c sha3-256.c sha3-256-meta.c \
 		 sha3-384.c sha3-384-meta.c sha3-512.c sha3-512-meta.c \
-		 sha3-shake.c shake256.c \
+		 sha3-shake.c shake128.c shake256.c \
 		 sm3.c sm3-meta.c \
 		 serpent-set-key.c serpent-encrypt.c serpent-decrypt.c \
 		 serpent-meta.c \
