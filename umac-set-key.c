@@ -61,19 +61,6 @@ umac_kdf (struct aes128_ctx *aes, unsigned index, unsigned length, uint8_t *dst)
     }
 }
 
-#if WORDS_BIGENDIAN
-/* FIXME: Duplicated with blowfish-bcrypt.c. */
-#define bswap32_if_le_n(n, x)
-#else
-static void
-bswap32_if_le_n (unsigned n, uint32_t *x)
-{
-  unsigned i;
-  for (i = 0; i < n; i++)
-    x[i] = nettle_bswap32 (x[i]);
-}
-#endif
-
 void
 _nettle_umac_set_key (uint32_t *l1_key, uint32_t *l2_key,
 		      uint64_t *l3_key1, uint32_t *l3_key2,
@@ -86,7 +73,7 @@ _nettle_umac_set_key (uint32_t *l1_key, uint32_t *l2_key,
 
   size = UMAC_BLOCK_SIZE / 4 + 4*(n-1);
   umac_kdf (aes, 1, size * sizeof(uint32_t), (uint8_t *) l1_key);
-  bswap32_if_le_n (size, l1_key);
+  bswap32_n_if_le (size, l1_key);
 
   size = 6*n;
   umac_kdf (aes, 2, size * sizeof(uint32_t), (uint8_t *) l2_key);

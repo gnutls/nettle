@@ -1,3 +1,11 @@
+2024-03-29  Niels Möller  <nisse@lysator.liu.se>
+
+	* bswap-internal.h (nettle_bswap32_n): New inline function.
+	(bswap32_n_if_le): New macro, to reduce code duplication.
+	* blowfish-bcrypt.c (bswap32_if_le_n): Deleted, usage replaced
+	with shared bswap32_n_if_le.
+	* umac-set-key.c (bswap32_if_le_n): Likewise.
+
 2024-03-28  Niels Möller  <nisse@lysator.liu.se>
 
 	* sha512-224-meta.c (nettle_sha512_224): Change name to
