@@ -21,6 +21,37 @@
 	32-bit counter wraparound for gcm_aes256, and a larger 719 byte
 	message.
 
+2024-03-28  Niels Möller  <nisse@lysator.liu.se>
+
+	From Daiki Ueno:
+	* shake128.c (sha3_128_init, sha3_128_update, sha3_128_shake)
+	(sha3_128_shake_output): New file, new functions.
+	* testsuite/shake128-test.c: New testcases.
+	* Makefile.in (nettle_SOURCES): Add shake128.c.
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Add shake128-test.c.
+
+2024-03-24  Niels Möller  <nisse@lysator.liu.se>
+
+	* sha3-shake.c (_nettle_sha3_shake, _nettle_sha3_shake_output):
+	New file, new functions. Generalizations of sha3_256_shake and
+	sha3_256_shake_output, respectively.
+	(_nettle_sha3_shake_output): Use one's complement of index,
+	instead of just setting high bit.
+
+	* shake256.c (sha3_256_shake, sha3_256_shake_output): Implement in
+	terms of calls to the new functions.
+	* Makefile.in (nettle_SOURCES): Add sha3-shake.c.
+
+	* sha3.c (_nettle_sha3_update): Use MD_FILL_OR_RETURN_INDEX.
+	(sha3_xor_block): New function, taken out from sha3_absorb.
+	(_nettle_sha3_pad): Call sha3_xor_block, not sha3_absorb.
+	* sha3-internal.h (_sha3_pad_shake): By above change, no longer
+	implies sha3_permute.
+	(_sha3_pad_hash): Update, to still include a
+	call to sha3_permute.
+	* shake256.c (sha3_256_shake, sha3_256_shake_output): Update to
+	call sha3_permute before generating output.
+
 2024-03-20  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/gcm-test.c (test_main): Add a test case that triggers

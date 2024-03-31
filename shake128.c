@@ -1,6 +1,6 @@
-/* shake256.c
+/* shake128.c
 
-   The SHAKE256 hash function, arbitrary length output.
+   The SHAKE128 hash function, arbitrary length output.
 
    Copyright (C) 2017 Daiki Ueno
    Copyright (C) 2017 Red Hat, Inc.
@@ -36,19 +36,37 @@
 # include "config.h"
 #endif
 
+#include <string.h>
+
 #include "sha3.h"
 #include "sha3-internal.h"
 
 void
-sha3_256_shake (struct sha3_256_ctx *ctx,
-		size_t length, uint8_t *dst)
+sha3_128_init (struct sha3_128_ctx *ctx)
 {
-  _nettle_sha3_shake (&ctx->state, sizeof (ctx->block), ctx->block, ctx->index, length, dst);
-  sha3_256_init (ctx);
+  memset (ctx, 0, offsetof (struct sha3_128_ctx, block));
 }
 
 void
-sha3_256_shake_output (struct sha3_256_ctx *ctx,
+sha3_128_update (struct sha3_128_ctx *ctx,
+		 size_t length,
+		 const uint8_t *data)
+{
+  ctx->index = _nettle_sha3_update (&ctx->state,
+				    SHA3_128_BLOCK_SIZE, ctx->block,
+				    ctx->index, length, data);
+}
+
+void
+sha3_128_shake (struct sha3_128_ctx *ctx,
+		size_t length, uint8_t *dst)
+{
+  _nettle_sha3_shake (&ctx->state, sizeof (ctx->block), ctx->block, ctx->index, length, dst);
+  sha3_128_init (ctx);
+}
+
+void
+sha3_128_shake_output (struct sha3_128_ctx *ctx,
 		       size_t length, uint8_t *digest)
 {
   ctx->index =
