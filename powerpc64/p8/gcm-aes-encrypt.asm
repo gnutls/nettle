@@ -152,12 +152,13 @@ PROLOGUE(_nettle_gcm_aes_encrypt)
     vsldoi CNT1, ZERO, TEMP1, 1    C counter 1
 
     DATA_LOAD_VEC(POLY,.polynomial,r9)
-IF_LE(`
+
     li             r9,0
     lvsl           LE_MASK,0,r9
-    vspltisb       LE_TEMP,0x07
+IF_LE(`vspltisb    LE_TEMP,0x07')
+IF_BE(`vspltisb    LE_TEMP,0x03')
     vxor           LE_MASK,LE_MASK,LE_TEMP
-')
+
     xxmrghd        VSR(POLY_L),VSR(ZERO),VSR(POLY)
 
     addi X, r12, 32
