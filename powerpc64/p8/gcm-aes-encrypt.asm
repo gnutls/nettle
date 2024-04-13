@@ -63,8 +63,8 @@ C
 C ghash assigned registers and vectors
 C
 
-define(`ZERO', `v21')
-define(`POLY', `v22')
+define(`ZERO', `v21')	C Overlap R2 (only used in setup phase)
+define(`POLY', `v22')	C Overlap F2 (only used in setup phase)
 define(`POLY_L', `v0')
 
 define(`D', `v10')
@@ -81,11 +81,11 @@ define(`F', `v20')
 define(`R2', `v21')
 define(`F2', `v22')
 
-define(`LE_TEMP', `v30')
-define(`LE_MASK', `v31')
+define(`LE_TEMP', `v1')	C Overlap K (only used in setup phase)
+define(`LE_MASK', `v23')
 
-define(`CNT1', `v28')
-define(`LASTCNT', `v29')
+define(`CNT1', `v24')
+define(`LASTCNT', `v25')
 
 .file "gcm-aes-encrypt.asm"
 
@@ -105,10 +105,9 @@ PROLOGUE(_nettle_gcm_aes_encrypt)
     stxv VSR(v20), -16(SP)
     stxv VSR(v21), -32(SP)
     stxv VSR(v22), -48(SP)
-    stxv VSR(v28), -64(SP)
-    stxv VSR(v29), -80(SP)
-    stxv VSR(v30), -96(SP)
-    stxv VSR(v31), -112(SP)
+    stxv VSR(v23), -64(SP)
+    stxv VSR(v24), -80(SP)
+    stxv VSR(v25), -96(SP)
 
     vxor ZERO,ZERO,ZERO
     vspltisb CNT1, 1
@@ -409,10 +408,9 @@ IF_LE(`
     lxv VSR(v20), -16(SP)
     lxv VSR(v21), -32(SP)
     lxv VSR(v22), -48(SP)
-    lxv VSR(v28), -64(SP)
-    lxv VSR(v29), -80(SP)
-    lxv VSR(v30), -96(SP)
-    lxv VSR(v31), -112(SP)
+    lxv VSR(v23), -64(SP)
+    lxv VSR(v24), -80(SP)
+    lxv VSR(v25), -96(SP)
 
     mr r3, SLEN
     blr
