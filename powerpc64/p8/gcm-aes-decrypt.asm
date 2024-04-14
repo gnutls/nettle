@@ -1,7 +1,9 @@
 C powerpc64/p8/gcm-aes-decrypt.asm
 
 ifelse(`
-   Copyright (C) 2023- IBM Inc. All rights reserved
+   Copyright (C) 2023- IBM Inc.
+   Copyright (C) 2024 Niels Möller.
+
    This file is part of GNU Nettle.
 
    GNU Nettle is free software: you can redistribute it and/or
