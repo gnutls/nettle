@@ -755,26 +755,69 @@ octets of the digest are written.
 This function also resets the context.
 @end deftypefun
 
-@subsubsection @acronym{SHAKE-256}
+@subsubsection @acronym{SHAKE}
 @cindex SHAKE
 
-In addition to those SHA-3 hash functions, Nettle also provides a SHA-3
-extendable-output function (XOF), SHAKE-256. Unlike SHA-3 hash functions,
-SHAKE can produce an output digest of any desired length.
+In addition to those SHA-3 hash functions, Nettle also supports a
+SHA-3 extendable-output function (XOF) called SHAKE. Unlike hash
+functions, SHAKE can produce an output digest of any desired
+length. There are two variants, SHAKE-128 and SHAKE-256, with
+different security strengths in terms of collision or preimage
+resistance: SHAKE-128 internally uses a SHA-3 hash function with
+128-bit security, while SHAKE-256 corresponds to SHA3-256 which
+provides 256-bit security.
 
-To use SHAKE256, the context struct, init and update functions are the
-same as for SHA3-256. To get a SHAKE256 digest, the following function
-is used instead of @code{sha3_256_digest}. For an output size of
-@code{SHA3_256_DIGEST_SIZE}, security is equivalent to SHA3-256 (but the
-digest is different). Increasing output size further does not increase
-security in terms of collision or preimage resistance. It can be seen as
-a built in pseudorandomness generator.
+To use SHAKE, the context struct needs to be initialized with the
+@code{init} function and data is hashed using the @code{update}
+function. Afterwards, a digest can be generated using either the
+@code{shake} or @code{shake_ouput} function, where the former
+generates the digest at once and resets the context, while the latter
+can be called multiple times to generate the digest in an incremental
+manner.
 
-@deftypefun void sha3_256_shake (struct shake256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Performs final processing and produces a SHAKE256 digest, writing it
+For SHAKE-128 they are defined as follows.
+
+@deftp {Context struct} {struct sha3_128_ctx}
+@end deftp
+
+@deftypefun void sha3_128_init (struct sha3_128_ctx *@var{ctx})
+Initialize the SHA3-256 state.
+@end deftypefun
+
+@deftypefun void sha3_128_update (struct sha3_128_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
+Hash some more data.
+@end deftypefun
+
+@deftypefun void sha3_128_shake (struct sha3_128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+Performs final processing and produces a SHAKE-128 digest, writing it
 to @var{digest}. @var{length} can be of arbitrary size.
 
 This function also resets the context.
+@end deftypefun
+
+@deftypefun void sha3_128_shake_output (struct sha3_128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+Performs final processing and produces a SHAKE-128 digest, writing it
+to @var{digest}. @var{length} can be of arbitrary size.
+
+This function does not reset the context.
+@end deftypefun
+
+For SHAKE-256, the corresponding context struct and the @code{init}
+and @code{update} functions are the same as SHA3-256. To generate a
+digest, use either the @code{shake} or @code{shake_output} function.
+
+@deftypefun void sha3_256_shake (struct sha3_256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+Performs final processing and produces a SHAKE-256 digest, writing it
+to @var{digest}. @var{length} can be of arbitrary size.
+
+This function also resets the context.
+@end deftypefun
+
+@deftypefun void sha3_256_shake_output (struct sha3_256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+Performs final processing and produces a SHAKE-256 digest, writing it
+to @var{digest}. @var{length} can be of arbitrary size.
+
+This function does not reset the context.
 @end deftypefun
 
 @node Miscellaneous hash functions
