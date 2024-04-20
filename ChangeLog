@@ -1,3 +1,27 @@
+2024-04-14  Niels Möller  <nisse@lysator.liu.se>
+
+	From Danny Tsen: Combined gcm-aes implementation for powerpc64.
+	* configure.ac: Define HAVE_NATIVE_gcm_aes_encrypt and
+	HAVE_NATIVE_gcm_aes_decrypt.
+	(asm_nettle_optional_list): Add gcm-aes-encrypt.asm,
+	gcm-aes-encrypt-2.asm, gcm-aes-decrypt.asm, and
+	gcm-aes-decrypt-2.asm.
+	* gcm-internal.h (_gcm_aes_encrypt, _gcm_aes_decrypt): Declare
+	internal functions, and define as dummy macros when not supported.
+	* gcm-aes128.c (gcm_aes128_encrypt): Use _gcm_aes_encrypt.
+	(gcm_aes128_decrypt): Use _gcm_aes_encrypt.
+	* gcm-aes192.c (gcm_aes192_encrypt, gcm_aes128_decrypt): Likewise.
+	* gcm-aes256.c (gcm_aes256_encrypt, gcm_aes256_decrypt): Likewise.
+	* Makefile.in (DISTFILES): Add gcm-internal.h.
+	* powerpc64/machine.m4 (GF_MUL): New macro.
+	* powerpc64/fat/gcm-aes-decrypt-2.asm: New file.
+	* powerpc64/fat/gcm-aes-encrypt-2.asm: New file.
+	* powerpc64/p8/gcm-aes-decrypt.asm: New file.
+	* powerpc64/p8/gcm-aes-encrypt.asm: New file.
+	* fat-setup.h (gcm_aes_crypt_func): New typedef.
+	* fat-ppc.c: Fat setup for gcm_aes_encrypt and gcm_aes_decrypt.
+	(gcm_aes_crypt_c): New nop implementation.
+
 2024-03-29  Niels Möller  <nisse@lysator.liu.se>
 
 	* bswap-internal.h (nettle_bswap32_n): New inline function.

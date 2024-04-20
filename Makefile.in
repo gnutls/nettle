@@ -270,7 +270,7 @@ DISTFILES = $(SOURCES) $(HEADERS) getopt.h getopt_int.h \
 	nettle.pc.in hogweed.pc.in \
 	desdata.stamp $(des_headers) descore.README \
 	aes-internal.h block-internal.h blowfish-internal.h bswap-internal.h \
-	camellia-internal.h \
+	camellia-internal.h gcm-internal.h \
 	ghash-internal.h gost28147-internal.h poly1305-internal.h \
 	serpent-internal.h cast128_sboxes.h desinfo.h desCode.h \
 	ripemd160-internal.h md-internal.h sha2-internal.h \
