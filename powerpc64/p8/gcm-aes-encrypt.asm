@@ -99,7 +99,8 @@ define(`LASTCNT', `v25')
 define(`FUNC_ALIGN', `5')
 PROLOGUE(_nettle_gcm_aes_encrypt)
     srdi. LOOP, SLEN, 7		C loop n 8 blocks
-    beq No_encrypt_out
+    sldi SLEN, LOOP, 7
+    beq end
 
     C 288 byte "protected zone" is sufficient for storage.
     stxv VSR(v20), -16(SP)
@@ -146,8 +147,6 @@ IF_LE(`
 ')
 
     lxvb16x VSR(S0), 0, HT		C Load 'CTR'
-
-    sldi SLEN, LOOP, 7
 
     addi LOOP, LOOP, -1
 
@@ -412,11 +411,8 @@ IF_LE(`
     lxv VSR(v24), -80(SP)
     lxv VSR(v25), -96(SP)
 
+end:
     mr r3, SLEN
-    blr
-
-No_encrypt_out:
-    li r3, 0
     blr
 EPILOGUE(_nettle_gcm_aes_encrypt)
 
