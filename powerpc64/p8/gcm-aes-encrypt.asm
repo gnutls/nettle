@@ -226,11 +226,11 @@ IF_LE(`OPN_XXXY(vperm, LE_MASK, S4,S5,S6,S7)')
     vxor           R,R,R2
 
     GF_MUL(F2, R2, H2L, H2M, S2)
-    vxor	   F, F, F2
-    vxor	   R, R, R2
+    vxor	   F,F,F2
+    vxor	   R,R,R2
     GF_MUL(F2, R2, H1L, H1M, S3)
-    vxor	   F, F, F2
-    vxor	   D, R, R2
+    vxor	   F,F,F2
+    vxor	   D,R,R2
 
     GHASH_REDUCE(D, F, POLY_L, R2, F2)  C R2, F2 used as temporaries
 
@@ -256,11 +256,11 @@ IF_LE(`OPN_XXXY(vperm, LE_MASK, S0,S1,S2,S3)')
     vxor           R,R,R2
 
     GF_MUL(F2, R2, H2L, H2M, S6)
-    vxor	   F, F, F2
-    vxor	   R, R, R2
+    vxor	   F,F,F2
+    vxor	   R,R,R2
     GF_MUL(F2, R2, H1L, H1M, S7)
-    vxor	   F, F, F2
-    vxor	   D, R, R2
+    vxor	   F,F,F2
+    vxor	   D,R,R2
 
     GHASH_REDUCE(D, F, POLY_L, R2, F2)  C R2, F2 used as temporaries
 
@@ -345,11 +345,11 @@ IF_LE(`OPN_XXXY(vperm, LE_MASK, S4,S5,S6,S7)')
     vxor           R,R,R2
 
     GF_MUL(F2, R2, H2L, H2M, S2)
-    vxor	   F, F, F2
-    vxor	   R, R, R2
+    vxor	   F,F,F2
+    vxor	   R,R,R2
     GF_MUL(F2, R2, H1L, H1M, S3)
-    vxor	   F, F, F2
-    vxor	   D, R, R2
+    vxor	   F,F,F2
+    vxor	   D,R,R2
 
     GHASH_REDUCE(D, F, POLY_L, R2, F2)  C R2, F2 used as temporaries
 
@@ -375,11 +375,11 @@ IF_LE(`OPN_XXXY(vperm, LE_MASK, S0,S1,S2,S3)')
     vxor           R,R,R2
 
     GF_MUL(F2, R2, H2L, H2M, S6)
-    vxor	   F, F, F2
-    vxor	   R, R, R2
+    vxor	   F,F,F2
+    vxor	   R,R,R2
     GF_MUL(F2, R2, H1L, H1M, S7)
-    vxor	   F, F, F2
-    vxor	   D, R, R2
+    vxor	   F,F,F2
+    vxor	   D,R,R2
 
     GHASH_REDUCE(D, F, POLY_L, R2, F2)  C R2, F2 used as temporaries
 
