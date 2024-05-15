@@ -41,16 +41,15 @@ define(`SRND', `r4')
 define(`SLEN', `r5')
 define(`SDST', `r6')
 define(`SSRC', `r7')
-define(`X', `r8')
-define(`SCTR', `r9')
-define(`RK', `r10')
+define(`RK', `r8')
+C r9-r11 used as constant indices.
 define(`LOOP', `r12')
 
 C
 C vectors used in aes encrypt output
 C
 
-define(`K0', `v1')
+define(`K', `v1')
 define(`S0', `v2')
 define(`S1', `v3')
 define(`S2', `v4')
@@ -64,8 +63,8 @@ C
 C ghash assigned registers and vectors
 C
 
-define(`ZERO', `v21')
-define(`POLY', `v22')
+define(`ZERO', `v21')	C Overlap R2 (only used in setup phase)
+define(`POLY', `v22')	C Overlap F2 (only used in setup phase)
 define(`POLY_L', `v0')
 
 define(`D', `v10')
@@ -82,13 +81,11 @@ define(`F', `v20')
 define(`R2', `v21')
 define(`F2', `v22')
 
-define(`K', `v30')
-define(`LE_TEMP', `v30')
-define(`LE_MASK', `v31')
-define(`TEMP1', `v31')
+define(`LE_TEMP', `v1')	C Overlap K (only used in setup phase)
+define(`LE_MASK', `v23')
 
-define(`CNT1', `v28')
-define(`LASTCNT', `v29')
+define(`CNT1', `v24')
+define(`LASTCNT', `v25')
 
 .file "gcm-aes-decrypt.asm"
 
@@ -101,31 +98,31 @@ define(`LASTCNT', `v29')
 
 define(`FUNC_ALIGN', `5')
 PROLOGUE(_nettle_gcm_aes_decrypt)
-    cmpdi SLEN, 128
-    blt No_decrypt_out
+    srdi. LOOP, SLEN, 7		C loop n 8 blocks
+    sldi SLEN, LOOP, 7
+    beq end
 
-    mflr 0
-    std 0,16(1)
-    stdu  SP,-336(SP)
+    C 288 byte "protected zone" is sufficient for storage.
+    stxv VSR(v20), -16(SP)
+    stxv VSR(v21), -32(SP)
+    stxv VSR(v22), -48(SP)
+    stxv VSR(v23), -64(SP)
+    stxv VSR(v24), -80(SP)
+    stxv VSR(v25), -96(SP)
 
-    std r25, 112(SP)
-    std r26, 120(SP)
-    std r27, 128(SP)
-    std r28, 136(SP)
-    std r29, 144(SP)
-    std r30, 152(SP)
-    std r31, 160(SP)
-    std r30, 176(SP)
-    std r31, 184(SP)
-    stxv VSR(v20), 208(SP)
-    stxv VSR(v21), 224(SP)
-    stxv VSR(v22), 240(SP)
-    stxv VSR(v28), 256(SP)
-    stxv VSR(v29), 272(SP)
-    stxv VSR(v30), 288(SP)
-    stxv VSR(v31), 304(SP)
+    vxor ZERO,ZERO,ZERO
+    vspltisb CNT1, 1
+    vsldoi CNT1, ZERO, CNT1, 1    C counter 1
 
-    addi r12, HT, 4096
+    DATA_LOAD_VEC(POLY,.polynomial,r9)
+
+    li             r9,0
+    lvsl           LE_MASK,0,r9
+IF_LE(`vspltisb    LE_TEMP,0x07')
+IF_BE(`vspltisb    LE_TEMP,0x03')
+    vxor           LE_MASK,LE_MASK,LE_TEMP
+
+    xxmrghd        VSR(POLY_L),VSR(ZERO),VSR(POLY)
 
     C load table elements
     li             r9,1*16
@@ -141,47 +138,20 @@ PROLOGUE(_nettle_gcm_aes_decrypt)
     lxvd2x         VSR(H4M),r10,HT
     lxvd2x         VSR(H4L),r11,HT
 
-    li r25,0x10
-    li r26,0x20
-    li r27,0x30
-    li r28,0x40
-    li r29,0x50
-    li r30,0x60
-    li r31,0x70
+    addi HT, HT,  4048  C Advance to point to the 'CTR' field in the context
 
-    vxor ZERO,ZERO,ZERO
-    vspltisb TEMP1, 1
-    vsldoi CNT1, ZERO, TEMP1, 1    C counter 1
-
-    DATA_LOAD_VEC(POLY,.polynomial,r9)
-
-    li             r9,0
-    lvsl           LE_MASK,0,r9
-IF_LE(`vspltisb    LE_TEMP,0x07')
-IF_BE(`vspltisb    LE_TEMP,0x03')
-    vxor           LE_MASK,LE_MASK,LE_TEMP
-
-    xxmrghd        VSR(POLY_L),VSR(ZERO),VSR(POLY)
-
-    addi X, r12, 32
-    lxvd2x         VSR(D),0,X                    C load 'X' pointer
+    lxvd2x         VSR(D),r9,HT		C load 'X' pointer
     C byte-reverse of each doubleword permuting on little-endian mode
 IF_LE(`
     vperm          D,D,D,LE_MASK
 ')
 
-    addi SCTR, r12, 16
-    addi RK, r12, 64
-    lxvb16x VSR(S0), 0, SCTR
-
-    li r11, 128
-    divdu LOOP, SLEN, r11		C loop n 8 blocks
-    sldi SLEN, LOOP, 7
+    lxvb16x VSR(S0), 0, HT		C Load 'CTR'
 
     addi LOOP, LOOP, -1
 
-    lxvd2x VSR(K0),0,RK
-    vperm   K0,K0,K0,LE_MASK
+    lxvd2x VSR(K),r11,HT		C First subkey
+    vperm   K,K,K,LE_MASK
 
 .align 5
     C increase ctr value as input to aes_encrypt
@@ -194,20 +164,20 @@ IF_LE(`
     vadduwm S7, S6, CNT1
     vmr LASTCNT, S7			C save last cnt
 
-    OPN_XXY(vxor, K0, S0, S1, S2, S3, S4, S5, S6, S7)
+    OPN_XXY(vxor, K, S0, S1, S2, S3, S4, S5, S6, S7)
 
     addi SRND, SRND, -1
     mtctr SRND
-    li r11,0x10
+    addi RK, HT, 64			C Point at second subkey
 .align 5
 L8x_round_loop1:
-    lxvd2x VSR(K),r11,RK
+    lxvd2x VSR(K),0,RK
     vperm   K,K,K,LE_MASK
     OPN_XXY(vcipher, K, S0, S1, S2, S3, S4, S5, S6, S7)
-    addi r11,r11,0x10
+    addi RK,RK,0x10
     bdnz L8x_round_loop1
 
-    lxvd2x VSR(K),r11,RK
+    lxvd2x VSR(K),0,RK
     vperm   K,K,K,LE_MASK
     OPN_XXY(vcipherlast, K, S0, S1, S2, S3, S4, S5, S6, S7)
 
@@ -226,13 +196,15 @@ Loop8x_de:
     xxlor vs8, VSR(S7), VSR(S7)
 
     lxvd2x VSR(S0),0,SSRC
-    lxvd2x VSR(S1),r25,SSRC
-    lxvd2x VSR(S2),r26,SSRC
-    lxvd2x VSR(S3),r27,SSRC
-    lxvd2x VSR(S4),r28,SSRC
-    lxvd2x VSR(S5),r29,SSRC
-    lxvd2x VSR(S6),r30,SSRC
-    lxvd2x VSR(S7),r31,SSRC
+    lxvd2x VSR(S1),r9,SSRC
+    lxvd2x VSR(S2),r10,SSRC
+    lxvd2x VSR(S3),r11,SSRC
+    addi SSRC, SSRC, 0x40
+    lxvd2x VSR(S4),0,SSRC
+    lxvd2x VSR(S5),r9,SSRC
+    lxvd2x VSR(S6),r10,SSRC
+    lxvd2x VSR(S7),r11,SSRC
+    addi SSRC, SSRC, 0x40
 
 IF_LE(`OPN_XXXY(vperm, LE_MASK, S0,S1,S2,S3,S4,S5,S6,S7)')
 
@@ -247,11 +219,11 @@ IF_LE(`OPN_XXXY(vperm, LE_MASK, S0,S1,S2,S3,S4,S5,S6,S7)')
     vxor           R,R,R2
 
     GF_MUL(F2, R2, H2L, H2M, S2)
-    vxor           F,F,F2
-    vxor           R,R,R2
+    vxor	   F,F,F2
+    vxor	   R,R,R2
     GF_MUL(F2, R2, H1L, H1M, S3)
-    vxor           F,F,F2
-    vxor           D,R,R2
+    vxor	   F,F,F2
+    vxor	   D,R,R2
 
     GHASH_REDUCE(D, F, POLY_L, R2, F2)  C R2, F2 used as temporaries
 
@@ -263,9 +235,10 @@ IF_LE(`OPN_XXXY(vperm, LE_MASK, S0,S1,S2,S3,S4,S5,S6,S7)')
 IF_LE(`OPN_XXXY(vperm, LE_MASK, S0,S1,S2,S3)')
 
     stxvd2x VSR(S0),0,SDST
-    stxvd2x VSR(S1),r25,SDST
-    stxvd2x VSR(S2),r26,SDST
-    stxvd2x VSR(S3),r27,SDST
+    stxvd2x VSR(S1),r9,SDST
+    stxvd2x VSR(S2),r10,SDST
+    stxvd2x VSR(S3),r11,SDST
+    addi SDST, SDST, 0x40
 
     C previous digest combining
     vxor D,S4,D
@@ -276,11 +249,11 @@ IF_LE(`OPN_XXXY(vperm, LE_MASK, S0,S1,S2,S3)')
     vxor           R,R,R2
 
     GF_MUL(F2, R2, H2L, H2M, S6)
-    vxor           F,F,F2
-    vxor           R,R,R2
+    vxor	   F,F,F2
+    vxor	   R,R,R2
     GF_MUL(F2, R2, H1L, H1M, S7)
-    vxor           F,F,F2
-    vxor           D,R,R2
+    vxor	   F,F,F2
+    vxor	   D,R,R2
 
     GHASH_REDUCE(D, F, POLY_L, R2, F2)  C R2, F2 used as temporaries
 
@@ -291,13 +264,14 @@ IF_LE(`OPN_XXXY(vperm, LE_MASK, S0,S1,S2,S3)')
 
 IF_LE(`OPN_XXXY(vperm, LE_MASK, S4,S5,S6,S7)')
 
-    stxvd2x VSR(S4),r28,SDST
-    stxvd2x VSR(S5),r29,SDST
-    stxvd2x VSR(S6),r30,SDST
-    stxvd2x VSR(S7),r31,SDST
+    stxvd2x VSR(S4),0,SDST
+    stxvd2x VSR(S5),r9,SDST
+    stxvd2x VSR(S6),r10,SDST
+    stxvd2x VSR(S7),r11,SDST
+    addi SDST, SDST, 0x40
 
-    addi SDST, SDST, 0x80
-    addi SSRC, SSRC, 0x80
+    lxvd2x VSR(K),r11,HT		C First subkey
+    vperm   K,K,K,LE_MASK
 
     vadduwm S0, LASTCNT, CNT1
     vadduwm S1, S0, CNT1
@@ -309,19 +283,19 @@ IF_LE(`OPN_XXXY(vperm, LE_MASK, S4,S5,S6,S7)')
     vadduwm S7, S6, CNT1
     vmr LASTCNT, S7			C save last cnt to v29
 
-    OPN_XXY(vxor, K0, S0, S1, S2, S3, S4, S5, S6, S7)
+    OPN_XXY(vxor, K, S0, S1, S2, S3, S4, S5, S6, S7)
 
     mtctr SRND
-    li r11,0x10
+    addi RK, HT, 64			C Point at second subkey
 .align 5
 L8x_round_loop2:
-    lxvd2x VSR(K),r11,RK
+    lxvd2x VSR(K),0,RK
     vperm   K,K,K,LE_MASK
     OPN_XXY(vcipher, K, S0, S1, S2, S3, S4, S5, S6, S7)
-    addi r11,r11,0x10
+    addi RK,RK,0x10
     bdnz L8x_round_loop2
 
-    lxvd2x VSR(K),r11,RK
+    lxvd2x VSR(K),0,RK
     vperm   K,K,K,LE_MASK
     OPN_XXY(vcipherlast, K, S0, S1, S2, S3, S4, S5, S6, S7)
 
@@ -341,13 +315,15 @@ do_ghash:
     xxlor vs8, VSR(S7), VSR(S7)
 
     lxvd2x VSR(S0),0,SSRC
-    lxvd2x VSR(S1),r25,SSRC
-    lxvd2x VSR(S2),r26,SSRC
-    lxvd2x VSR(S3),r27,SSRC
-    lxvd2x VSR(S4),r28,SSRC
-    lxvd2x VSR(S5),r29,SSRC
-    lxvd2x VSR(S6),r30,SSRC
-    lxvd2x VSR(S7),r31,SSRC
+    lxvd2x VSR(S1),r9,SSRC
+    lxvd2x VSR(S2),r10,SSRC
+    lxvd2x VSR(S3),r11,SSRC
+    addi SSRC, SSRC, 0x40
+    lxvd2x VSR(S4),0,SSRC
+    lxvd2x VSR(S5),r9,SSRC
+    lxvd2x VSR(S6),r10,SSRC
+    lxvd2x VSR(S7),r11,SSRC
+    addi SSRC, SSRC, 0x40
 
 IF_LE(`OPN_XXXY(vperm, LE_MASK, S0,S1,S2,S3,S4,S5,S6,S7)')
 
@@ -360,11 +336,11 @@ IF_LE(`OPN_XXXY(vperm, LE_MASK, S0,S1,S2,S3,S4,S5,S6,S7)')
     vxor           R,R,R2
 
     GF_MUL(F2, R2, H2L, H2M, S2)
-    vxor           F,F,F2
-    vxor           R,R,R2
+    vxor	   F,F,F2
+    vxor	   R,R,R2
     GF_MUL(F2, R2, H1L, H1M, S3)
-    vxor           F,F,F2
-    vxor           D,R,R2
+    vxor	   F,F,F2
+    vxor	   D,R,R2
 
     GHASH_REDUCE(D, F, POLY_L, R2, F2)  C R2, F2 used as temporaries
 
@@ -376,9 +352,10 @@ IF_LE(`OPN_XXXY(vperm, LE_MASK, S0,S1,S2,S3,S4,S5,S6,S7)')
 IF_LE(`OPN_XXXY(vperm, LE_MASK, S0,S1,S2,S3)')
 
     stxvd2x VSR(S0),0,SDST
-    stxvd2x VSR(S1),r25,SDST
-    stxvd2x VSR(S2),r26,SDST
-    stxvd2x VSR(S3),r27,SDST
+    stxvd2x VSR(S1),r9,SDST
+    stxvd2x VSR(S2),r10,SDST
+    stxvd2x VSR(S3),r11,SDST
+    addi SDST, SDST, 0x40
 
     C previous digest combining
     vxor D,S4,D
@@ -389,11 +366,11 @@ IF_LE(`OPN_XXXY(vperm, LE_MASK, S0,S1,S2,S3)')
     vxor           R,R,R2
 
     GF_MUL(F2, R2, H2L, H2M, S6)
-    vxor           F,F,F2
-    vxor           R,R,R2
+    vxor	   F,F,F2
+    vxor	   R,R,R2
     GF_MUL(F2, R2, H1L, H1M, S7)
-    vxor           F,F,F2
-    vxor           D,R,R2
+    vxor	   F,F,F2
+    vxor	   D,R,R2
 
     GHASH_REDUCE(D, F, POLY_L, R2, F2)  C R2, F2 used as temporaries
 
@@ -404,10 +381,10 @@ IF_LE(`OPN_XXXY(vperm, LE_MASK, S0,S1,S2,S3)')
 
 IF_LE(`OPN_XXXY(vperm, LE_MASK, S4,S5,S6,S7)')
 
-    stxvd2x VSR(S4),r28,SDST
-    stxvd2x VSR(S5),r29,SDST
-    stxvd2x VSR(S6),r30,SDST
-    stxvd2x VSR(S7),r31,SDST
+    stxvd2x VSR(S4),0,SDST
+    stxvd2x VSR(S5),r9,SDST
+    stxvd2x VSR(S6),r10,SDST
+    stxvd2x VSR(S7),r11,SDST
 
 gcm_aes_out:
     vadduwm LASTCNT, LASTCNT, CNT1		C increase ctr
@@ -416,39 +393,22 @@ gcm_aes_out:
 IF_LE(`
     vperm          D,D,D,LE_MASK
 ')
-    stxvd2x        VSR(D),0,X                    C store digest 'D'
+    stxvd2x        VSR(D),r9,HT			C store digest 'D'
 
 IF_LE(`
     vperm LASTCNT,LASTCNT,LASTCNT,LE_MASK
 ')
-    stxvd2x VSR(LASTCNT), 0, SCTR		C store ctr
+    stxvd2x VSR(LASTCNT), 0, HT		C store ctr
 
-    ld r25, 112(SP)
-    ld r26, 120(SP)
-    ld r27, 128(SP)
-    ld r28, 136(SP)
-    ld r29, 144(SP)
-    ld r30, 152(SP)
-    ld r31, 160(SP)
-    ld r30, 176(SP)
-    ld r31, 184(SP)
-    lxv VSR(v20), 208(SP)
-    lxv VSR(v21), 224(SP)
-    lxv VSR(v22), 240(SP)
-    lxv VSR(v28), 256(SP)
-    lxv VSR(v29), 272(SP)
-    lxv VSR(v30), 288(SP)
-    lxv VSR(v31), 304(SP)
+    lxv VSR(v20), -16(SP)
+    lxv VSR(v21), -32(SP)
+    lxv VSR(v22), -48(SP)
+    lxv VSR(v23), -64(SP)
+    lxv VSR(v24), -80(SP)
+    lxv VSR(v25), -96(SP)
 
-    addi 1, 1, 336
-    ld 0, 16(1)
-    mtlr r0
-
-    mr 3, SLEN
-    blr
-
-No_decrypt_out:
-    li 3, 0
+end:
+    mr r3, SLEN
     blr
 EPILOGUE(_nettle_gcm_aes_decrypt)
 

@@ -1,3 +1,8 @@
+2024-05-15  Niels Möller  <nisse@lysator.liu.se>
+
+	* powerpc64/p8/gcm-aes-encrypt.asm: Reduce register usage.
+	* powerpc64/p8/gcm-aes-decrypt.asm: Analogous changes.
+
 2024-04-14  Niels Möller  <nisse@lysator.liu.se>
 
 	From Danny Tsen: Combined gcm-aes implementation for powerpc64.
