@@ -13,8 +13,7 @@ variables:
   - 'make -j$(nproc)'
   - 'make -j$(nproc) check $EXTRA_CHECK_TARGET'
   tags:
-  - shared
-  - linux
+  - saas-linux-small-amd64
   except:
   - tags
   variables:
@@ -94,8 +93,7 @@ build/static-analyzers:
   - scan-build ./configure --disable-documentation --disable-assembler
   - scan-build --status-bugs -o scan-build-lib make -j$(nproc)
   tags:
-  - shared
-  - linux
+  - saas-linux-small-amd64
   except:
   - tags
   artifacts:
@@ -117,8 +115,7 @@ build/gnutls:
       --disable-cxx --disable-guile --without-p11-kit --disable-doc &&
     make -j$(nproc) && make -j $(nproc) check
   tags:
-  - shared
-  - linux
+  - saas-linux-small-amd64
   except:
   - tags
   artifacts:
@@ -160,8 +157,7 @@ remote/s390x:
     - $SSH_PRIVATE_KEY != ""
     - $S390X_ACCOUNT != ""
   tags:
-  - shared
-  - linux
+  - saas-linux-small-amd64
   except:
   - tags
 
@@ -183,8 +179,7 @@ remote/s390x:
   - make EMULATOR=${EMULATOR} -j$(nproc) check
   - make EMULATOR=${EMULATOR} -j$(nproc) check-fat
   tags:
-  - shared
-  - linux
+  - saas-linux-small-amd64
   except:
   - tags
   variables:
