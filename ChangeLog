@@ -1,3 +1,7 @@
+2024-06-01  Niels Möller  <nisse@lysator.liu.se>
+
+	* eddsa-hash.c (_eddsa_hash): Use NETTLE_OCTET_SIZE_TO_LIMB_SIZE.
+
 2024-05-15  Niels Möller  <nisse@lysator.liu.se>
 
 	* powerpc64/p8/gcm-aes-encrypt.asm: Reduce register usage.
