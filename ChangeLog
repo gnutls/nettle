@@ -2,6 +2,24 @@
 
 	* eddsa-hash.c (_eddsa_hash): Use NETTLE_OCTET_SIZE_TO_LIMB_SIZE.
 
+	* ecc-hash.c (ecc_hash, gost_hash): Deleted file, moved functions to...
+	* dsa-hash.c (_nettle_dsa_hash): Change to use mpn interface
+	instead of mpz, replacing ecc_hash.
+	(_nettle_gostdsa_hash): Moved here, renamed from gost_hash.
+	* dsa-internal.h (_nettle_dsa_hash): Update declaration.
+	(_nettle_gostdsa_hash): Moved declaration here.
+	* ecc-internal.h (ecc_hash, gost_hash): Delete old declarations.
+	* gmp-glue.h (NETTLE_BIT_SIZE_TO_LIMB_SIZE): New macro.
+
+	* dsa-sign.c (dsa_sign): Adapt to _nettle_dsa_hash change.
+	* dsa-verify.c (dsa_verify): Likewise.
+	* ecc-ecdsa-sign.c (ecc_ecdsa_sign): Use _nettle_dsa_hash.
+	* ecc-ecdsa-verify.c (ecc_ecdsa_verify): Likewise.
+	* ecc-gostdsa-sign.c (ecc_gostdsa_sign): Use _nettle_gostdsa_hash.
+	* ecc-gostdsa-verify.c (ecc_gostdsa_verify): Likewise.
+
+	* Makefile.in (hogweed_SOURCES): Delete ecc-hash.c
+
 2024-05-15  Niels Möller  <nisse@lysator.liu.se>
 
 	* powerpc64/p8/gcm-aes-encrypt.asm: Reduce register usage.

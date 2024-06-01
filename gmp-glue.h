@@ -85,8 +85,11 @@ is_zero_limb (mp_limb_t x)
 int
 sec_zero_p (const mp_limb_t *ap, mp_size_t n);
 
+#define NETTLE_BIT_SIZE_TO_LIMB_SIZE(n) \
+  (((n) + GMP_NUMB_BITS - 1) / GMP_NUMB_BITS)
+
 #define NETTLE_OCTET_SIZE_TO_LIMB_SIZE(n) \
-  (((n) * 8 + GMP_NUMB_BITS - 1) / GMP_NUMB_BITS)
+  (NETTLE_BIT_SIZE_TO_LIMB_SIZE((n) * 8))
 
 /* Convenience functions */
 

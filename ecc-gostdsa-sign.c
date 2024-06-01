@@ -38,6 +38,7 @@
 #include <stdlib.h>
 
 #include "gostdsa.h"
+#include "dsa-internal.h"
 #include "ecc-internal.h"
 
 /* Low-level GOST DSA signing */
@@ -79,7 +80,7 @@ ecc_gostdsa_sign (const struct ecc_curve *ecc,
   ecc_j_to_a (ecc, 2, rp, P, P + 3*ecc->p.size);
 
   /* Process hash digest */
-  gost_hash (&ecc->q, hp, length, digest);
+  _nettle_gostdsa_hash (hp, ecc->q.bit_size, length, digest);
   if (mpn_zero_p (hp, ecc->p.size))
     mpn_add_1 (hp, hp, ecc->p.size, 1);
 

@@ -58,8 +58,6 @@
 #define ecc_mod_random _nettle_ecc_mod_random
 #define ecc_mod _nettle_ecc_mod
 #define ecc_mod_inv _nettle_ecc_mod_inv
-#define ecc_hash _nettle_ecc_hash
-#define gost_hash _nettle_gost_hash
 #define ecc_a_to_j _nettle_ecc_a_to_j
 #define ecc_j_to_a _nettle_ecc_j_to_a
 #define ecc_eh_to_a _nettle_ecc_eh_to_a
@@ -338,16 +336,6 @@ ecc_mod_pow_2k_mul (const struct ecc_modulo *m,
 void
 ecc_mod_random (const struct ecc_modulo *m, mp_limb_t *xp,
 		void *ctx, nettle_random_func *random, mp_limb_t *scratch);
-
-void
-ecc_hash (const struct ecc_modulo *m,
-	  mp_limb_t *hp,
-	  size_t length, const uint8_t *digest);
-
-void
-gost_hash (const struct ecc_modulo *m,
-	  mp_limb_t *hp,
-	  size_t length, const uint8_t *digest);
 
 /* Converts a point P in affine coordinates into a point R in jacobian
    coordinates. */
