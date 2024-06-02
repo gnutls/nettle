@@ -1,5 +1,13 @@
 NEWS for the Nettle 3.10 release
 
+	This is a maintenance release, including a few each of bug
+	fixes, new features and optimizations.
+
+	The new version is intended to be fully source and binary
+	compatible with Nettle-3.6. The shared library names are
+	libnettle.so.8.9 and libhogweed.so.6.9, with sonames
+	libnettle.so.8 and libhogweed.so.6.
+
 	Bug fixes:
 
 	* Add missing hash functions sha512_224 and sha512_256 to the
@@ -14,7 +22,7 @@ NEWS for the Nettle 3.10 release
 	New features:
 
 	* Support RSA-OAEP encryption. Contributed by Nicolas Mora and
-          Daiki Ueno.
+	  Daiki Ueno.
 
 	* New function sha3_256_shake_output, new functions
 	  sha3_128_init, sha3_128_update, sha3_128_shake,
@@ -28,11 +36,11 @@ NEWS for the Nettle 3.10 release
 	  Danny Tsen.
 
 	* Improved performance for powerpc64 AES decrypt, by skipping
-          subkey transformations that don't suit the vncipher
-          instructions.
+	  subkey transformations that don't suit the vncipher
+	  instructions.
 
 	* Add arm64 CPU feature detection for Apple systems,
-          contributed by Tim Kosse.
+	  contributed by Tim Kosse.
 
 	Miscellaneous:
 

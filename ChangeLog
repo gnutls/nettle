@@ -1,3 +1,9 @@
+2024-06-02  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Bump package version, to 3.10.
+	(LIBNETTLE_MINOR): Bump minor number, to 8.9.
+	(LIBHOGWEED_MINOR): Bump minor number, to 6.9.
+
 2024-06-01  Niels Möller  <nisse@lysator.liu.se>
 
 	* eddsa-hash.c (_eddsa_hash): Use NETTLE_OCTET_SIZE_TO_LIMB_SIZE.
