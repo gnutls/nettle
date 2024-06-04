@@ -211,6 +211,10 @@ DECLARE_FAT_FUNC(_nettle_poly1305_blocks, poly1305_blocks_func)
 DECLARE_FAT_FUNC_VAR(poly1305_blocks, poly1305_blocks_func, c)
 DECLARE_FAT_FUNC_VAR(poly1305_blocks, poly1305_blocks_func, ppc64)
 
+DECLARE_FAT_FUNC(_nettle_sha256_compress_n, sha256_compress_n_func)
+DECLARE_FAT_FUNC_VAR(sha256_compress_n, sha256_compress_n_func, c)
+DECLARE_FAT_FUNC_VAR(sha256_compress_n, sha256_compress_n_func, ppc64)
+
 /* Nop implementation for _gcm_aes_encrypt and _gcm_aes_decrypt. */
 static size_t
 gcm_aes_crypt_c (struct gcm_key *key UNUSED, unsigned rounds UNUSED,
@@ -248,6 +252,7 @@ fat_init (void)
       _nettle_ghash_update_vec = _nettle_ghash_update_ppc64;
       _nettle_gcm_aes_encrypt_vec = _nettle_gcm_aes_encrypt_ppc64;
       _nettle_gcm_aes_decrypt_vec = _nettle_gcm_aes_decrypt_ppc64;
+      _nettle_sha256_compress_n_vec = _nettle_sha256_compress_n_ppc64;
     }
   else
     {
@@ -258,6 +263,7 @@ fat_init (void)
       _nettle_ghash_update_vec = _nettle_ghash_update_c;
       _nettle_gcm_aes_encrypt_vec = gcm_aes_crypt_c;
       _nettle_gcm_aes_decrypt_vec = gcm_aes_crypt_c;
+      _nettle_sha256_compress_n_vec = _nettle_sha256_compress_n_c;
     }
   if (features.have_altivec)
     {
@@ -367,3 +373,8 @@ DEFINE_FAT_FUNC(_nettle_poly1305_blocks, const uint8_t *,
      size_t blocks,
 		 const uint8_t *m),
 		(ctx, blocks, m))
+
+DEFINE_FAT_FUNC(_nettle_sha256_compress_n, const uint8_t *,
+		(uint32_t *state, const uint32_t *k,
+		 size_t blocks, const uint8_t *input),
+		(state, k, blocks, input))
