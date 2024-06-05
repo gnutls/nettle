@@ -1,3 +1,8 @@
+2024-06-05  Niels Möller  <nisse@lysator.liu.se>
+
+	* config.guess: Update to 2024-01-01 version.
+	* config.sub: Update to 2024-01-01 version.
+
 2024-06-02  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Bump package version, to 3.10.
