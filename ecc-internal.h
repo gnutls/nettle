@@ -87,10 +87,8 @@
    only by ECC code. */
 #if WITH_EXTRA_ASSERTS
 # define assert_maybe(x) assert(x)
-#elif defined(__clang_analyzer__)
-# define assert_maybe(x) ((void)(x))
 #else
-# define assert_maybe(x)
+# define assert_maybe(x) ((void)(x))
 #endif
 
 extern const struct ecc_curve _nettle_secp_192r1;

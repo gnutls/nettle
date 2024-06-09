@@ -1,3 +1,8 @@
+2024-06-09  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-internal.h (assert_maybe) [!WITH_EXTRA_ASSERTS]: Cast to
+	void, to avoid warnings.
+
 2024-06-05  Niels Möller  <nisse@lysator.liu.se>
 
 	* config.guess: Update to 2024-01-01 version.
