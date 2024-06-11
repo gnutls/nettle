@@ -88,7 +88,7 @@ C Registers v16-v31 are used for input words W[0] through W[15]
 C Convert an index for W[i] to the corresponding vector register v[16 + i]
 define(`IV', `m4_unquote(v`'eval((($1) % 16) + 16))')
 
-C ROUND(A B C D E F G H R EXT)
+C ROUND(A B C D E F G H R)
 define(`ROUND', `
 
 	vadduwm	VT1, VK, IV($9)               C VT1: k+W
@@ -254,6 +254,8 @@ PROLOGUE(_nettle_sha256_compress_n)
 	lxvw4x	VSR(VSA), 0, STATE	C VSA contains A,B,C,D
 	lxvw4x	VSR(VSE), TC16, STATE	C VSE contains E,F,G,H
 
+	C "permute" state from VSA containing A,B,C,D into VSA,VSB,VSC,VSD
+
 	vsldoi	VSB, VSA, VSA, 4
 	vsldoi	VSF, VSE, VSE, 4
 
@@ -278,8 +280,6 @@ PROLOGUE(_nettle_sha256_compress_n)
 	addi	TK, TK, 4
 
 	DOLOADS
-
-	C "permute" state from VSA containing A,B,C,D into VSA,VSB,VSC,VSD
 
 	EXTENDROUNDS
 	EXTENDROUNDS
