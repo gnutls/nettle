@@ -1,3 +1,10 @@
+2024-06-10  Niels Möller  <nisse@lysator.liu.se>
+
+	From Eric Richter:
+	* powerpc64/p8/sha256-compress-n.asm: New file.
+	* powerpc64/fat/sha256-compress-n-2.asm: New file.
+	* fat-ppc.c: Add fat setup for _nettle_sha256_compress_n.
+
 2024-06-09  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-internal.h (assert_maybe) [!WITH_EXTRA_ASSERTS]: Cast to

@@ -132,3 +132,5 @@ Martin Schwenke		Powerpc64 assembly for secp384r1, secp521r1,
 Zoltan Fridrich		Balloon password hashing.
 
 Danny Tsen		Powerpc64 assembly for combined GCM-AES.
+
+Eric Richter		Powerpc64 sha256 assembly.
