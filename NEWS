@@ -35,12 +35,15 @@ NEWS for the Nettle 3.10 release
 	* New combined gcm-aes assembly for powerpc64, contributed by
 	  Danny Tsen.
 
+	* New sha256 assembly for powerpc64, contributed by Eric
+          Richter.
+
 	* Improved performance for powerpc64 AES decrypt, by skipping
 	  subkey transformations that don't suit the vncipher
 	  instructions.
 
-	* Add arm64 CPU feature detection for Apple systems,
-	  contributed by Tim Kosse.
+	* Add arm64 CPU feature detection for Android and for Apple systems,
+	  contributed by Foolbar and Tim Kosse, prespectively.
 
 	Miscellaneous:
 
