@@ -68,15 +68,16 @@ TS_HOGWEED = $(TS_HOGWEED_SOURCES:.c=$(EXEEXT))
 TS_C = $(TS_NETTLE) @IF_HOGWEED@ $(TS_HOGWEED)
 TS_CXX = @IF_CXX@ $(CXX_SOURCES:.cxx=$(EXEEXT))
 TARGETS = $(TS_C) $(TS_CXX)
+
 TS_SC_HOGWEED = sc-pkcs1-sec-decrypt-test sc-rsa-sec-decrypt-test \
 	sc-rsa-oaep-encrypt-test \
 	sc-ecdsa-sign-test sc-curve25519-dh-test sc-curve448-dh-test \
 	sc-ed25519-test sc-ed448-test
-TS_SC = sc-cnd-memcpy-test sc-gcm-test sc-memeql-test \
-	@IF_HOGWEED@ $(TS_SC_HOGWEED)
+TS_SC_NETTLE = sc-cnd-memcpy-test sc-gcm-test sc-memeql-test
+TS_SC = @IF_VALGRIND@ $(TS_SC_NETTLE) @IF_HOGWEED@ $(TS_SC_HOGWEED)
 
-TS_SH = symbols-test @IF_VALGRIND@ $(TS_SC)
-TS_ALL = $(TARGETS) $(TS_SH) @IF_DLOPEN_TEST@ dlopen-test$(EXEEXT)
+TS_SH = symbols-test
+TS_ALL = $(TARGETS) $(TS_SH) $(TS_SC) @IF_DLOPEN_TEST@ dlopen-test$(EXEEXT)
 
 TS_FAT = $(patsubst %, %$(EXEEXT), aes-test cbc-test \
 	chacha-test salsa20-test memxor-test \
@@ -91,7 +92,7 @@ EXTRA_TARGETS = $(EXTRA_SOURCES:.c=$(EXEEXT))
 SOURCES = $(TS_SOURCES) $(EXTRA_SOURCES) testutils.c dlopen-test.c
 
 DISTFILES = $(SOURCES) $(CXX_SOURCES) Makefile.in \
-	    $(TS_SH) sc-valgrind.sh gold-bug.txt testutils.h sha3.awk
+	    $(TS_SH) $(TS_SC_NETTLE) $(TS_SC_HOGWEED) sc-valgrind.sh gold-bug.txt testutils.h sha3.awk
 
 all: $(EXTRA_TARGETS)
 
