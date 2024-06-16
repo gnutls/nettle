@@ -1,3 +1,18 @@
+2024-06-16  Niels Möller  <nisse@lysator.liu.se>
+
+	* examples/rsa-encrypt-test: Consistently add $EXEEXT to
+	executable names.
+	* examples/rsa-sign-test: Likewise.
+	* examples/rsa-verify-test: Likewise.
+	* examples/setup-env: Likewise.
+	* tools/nettle-pbkdf2-test: Likewise.
+	* tools/pkcs1-conv-test: Likewise
+	* tools/sexp-conv-test: Likewise.
+
+	* configure.ac: When cross-compiling targetting windows,
+	always use "wine" as EMULATOR; using "wine64" for 64-bit windows
+	seems no longer needed.
+
 2024-06-15  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/Makefile.in (TS_SC_NETTLE): New variable.

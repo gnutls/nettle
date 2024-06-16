@@ -803,14 +803,7 @@ case "$host_os" in
         ;;
     esac
     if test "x$cross_compiling" = xyes ; then
-	case "$ABI" in
-	    64)
-		EMULATOR=wine64
-		;;
-	    *)
-		EMULATOR=wine
-		;;
-	esac
+      EMULATOR=wine
     fi
     if test "x$ABI" = x64 ; then
         W64_ABI=yes
