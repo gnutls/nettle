@@ -1,5 +1,13 @@
 2024-06-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/testutils.c (test_mac): Add set_key function argument,
+	to support tests with key size != mac->key_size.
+	* testsuite/cmac-test.c: Update test_mac usage.
+	* testsuite/hmac-test.c (HMAC_TEST): Deleted macro, replace with
+	test_mac, passing set_key function when needed.
+	(test_main): Add more test vectors from RFC 4868, previously
+	draft-kelly-ipsec-ciph-sha2.
+
 	* hmac-gosthash94-meta.c: New file.
 	* nettle-meta.h (nettle_hmac_gosthash94)
 	(nettle_hmac_gosthash94cp): Declare.

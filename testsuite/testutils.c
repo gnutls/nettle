@@ -1194,6 +1194,7 @@ test_hash_large(const struct nettle_hash *hash,
 
 void
 test_mac(const struct nettle_mac *mac,
+	 nettle_hash_update_func *set_key,
 	 const struct tstring *key,
 	 const struct tstring *msg,
 	 const struct tstring *digest)
@@ -1203,8 +1204,13 @@ test_mac(const struct nettle_mac *mac,
   unsigned i;
 
   ASSERT (digest->length <= mac->digest_size);
-  ASSERT (key->length == mac->key_size);
-  mac->set_key (ctx, key->data);
+  if (set_key)
+    set_key (ctx, key->length, key->data);
+  else
+    {
+      ASSERT (key->length == mac->key_size);
+      mac->set_key (ctx, key->data);
+    }
   mac->update (ctx, msg->length, msg->data);
   mac->digest (ctx, digest->length, hash);
 
@@ -1236,13 +1242,12 @@ test_mac(const struct nettle_mac *mac,
     }
 
   /* attempt byte-by-byte hashing */
-  mac->set_key (ctx, key->data);
   for (i=0;i<msg->length;i++)
     mac->update (ctx, 1, msg->data+i);
   mac->digest (ctx, digest->length, hash);
   if (!MEMEQ (digest->length, digest->data, hash))
     {
-      fprintf (stderr, "cmac_hash failed on byte-by-byte, msg: ");
+      fprintf (stderr, "test_mac failed on byte-by-byte, msg: ");
       print_hex (msg->length, msg->data);
       fprintf(stderr, "Output:");
       print_hex (16, hash);

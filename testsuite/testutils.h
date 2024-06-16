@@ -184,6 +184,7 @@ test_hash_large(const struct nettle_hash *hash,
 
 void
 test_mac(const struct nettle_mac *mac,
+	 nettle_hash_update_func *set_key,
 	 const struct tstring *key,
 	 const struct tstring *msg,
 	 const struct tstring *digest);
