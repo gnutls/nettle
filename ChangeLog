@@ -1,5 +1,7 @@
 2024-06-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* Released Nettle-3.10.
+
 	* examples/rsa-encrypt-test: Consistently add $EXEEXT to
 	executable names.
 	* examples/rsa-sign-test: Likewise.
