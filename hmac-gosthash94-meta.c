@@ -1,6 +1,6 @@
-/* nettle-meta-macs.c
+/* hmac-gosthash94-meta.c
 
-   Copyright (C) 2020 Daiki Ueno
+   Copyright (C) 2024 Niels Möller
 
    This file is part of GNU Nettle.
 
@@ -33,31 +33,24 @@
 # include "config.h"
 #endif
 
-#include <stddef.h>
-
 #include "nettle-meta.h"
 
-const struct nettle_mac * const _nettle_macs[] = {
-  &nettle_cmac_aes128,
-  &nettle_cmac_aes256,
-  &nettle_cmac_des3,
-  &nettle_hmac_gosthash94,
-  &nettle_hmac_gosthash94cp,
-  &nettle_hmac_md5,
-  &nettle_hmac_ripemd160,
-  &nettle_hmac_sha1,
-  &nettle_hmac_sha224,
-  &nettle_hmac_sha256,
-  &nettle_hmac_sha384,
-  &nettle_hmac_sha512,
-  &nettle_hmac_streebog256,
-  &nettle_hmac_streebog512,
-  &nettle_hmac_sm3,
-  NULL
-};
+#include "hmac.h"
 
-const struct nettle_mac * const *
-nettle_get_macs (void)
+static void
+hmac_gosthash94_set_key_wrapper (void *ctx, const uint8_t *key)
 {
-  return _nettle_macs;
+  hmac_gosthash94_set_key (ctx, GOSTHASH94_DIGEST_SIZE, key);
 }
+
+const struct nettle_mac nettle_hmac_gosthash94
+= _NETTLE_HMAC(hmac_gosthash94, GOSTHASH94);
+
+static void
+hmac_gosthash94cp_set_key_wrapper (void *ctx, const uint8_t *key)
+{
+  hmac_gosthash94cp_set_key (ctx, GOSTHASH94CP_DIGEST_SIZE, key);
+}
+
+const struct nettle_mac nettle_hmac_gosthash94cp
+= _NETTLE_HMAC(hmac_gosthash94cp, GOSTHASH94CP);

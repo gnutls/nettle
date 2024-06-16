@@ -1,5 +1,13 @@
 2024-06-16  Niels Möller  <nisse@lysator.liu.se>
 
+	* hmac-gosthash94-meta.c: New file.
+	* nettle-meta.h (nettle_hmac_gosthash94)
+	(nettle_hmac_gosthash94cp): Declare.
+	* nettle-meta-macs.c (_nettle_macs): Add nettle_hmac_gosthash94
+	and nettle_hmac_gosthash94cp.
+	* Makefile.in (nettle_SOURCES): Add hmac-gosthash94-meta.c.
+	* testsuite/meta-mac-test.c: Update test.
+
 	* Released Nettle-3.10.
 
 	* examples/rsa-encrypt-test: Consistently add $EXEEXT to
