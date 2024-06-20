@@ -177,34 +177,34 @@ define(`EXTENDROUNDS', `
 ')
 
 define(`LOAD', `
-	IF_BE(`lxvw4x	VSR(IV($1)), m4_unquote(TC`'eval(($1 % 4) * 4)), INPUT')
+	IF_BE(`lxvw4x	VSR(IV($1)), $2, INPUT')
 	IF_LE(`
-		lxvd2x	VSR(IV($1)), m4_unquote(TC`'eval(($1 % 4) * 4)), INPUT
+		lxvd2x	VSR(IV($1)), $2, INPUT
 		vperm	IV($1), IV($1), IV($1), VT0
 	')
 ')
 
 define(`DOLOADS', `
 	IF_LE(`DATA_LOAD_VEC(VT0, .load_swap, T1)')
-	LOAD(0)
-	LOAD(1)
-	LOAD(2)
-	LOAD(3)
+	LOAD(0, TC0)
+	LOAD(1, TC4)
+	LOAD(2, TC8)
+	LOAD(3, TC12)
 	addi	INPUT, INPUT, 16
-	LOAD(4)
-	LOAD(5)
-	LOAD(6)
-	LOAD(7)
+	LOAD(4, TC0)
+	LOAD(5, TC4)
+	LOAD(6, TC8)
+	LOAD(7, TC12)
 	addi	INPUT, INPUT, 16
-	LOAD(8)
-	LOAD(9)
-	LOAD(10)
-	LOAD(11)
+	LOAD(8, TC0)
+	LOAD(9, TC4)
+	LOAD(10, TC8)
+	LOAD(11, TC12)
 	addi	INPUT, INPUT, 16
-	LOAD(12)
-	LOAD(13)
-	LOAD(14)
-	LOAD(15)
+	LOAD(12, TC0)
+	LOAD(13, TC4)
+	LOAD(14, TC8)
+	LOAD(15, TC12)
 	addi	INPUT, INPUT, 16
 ')
 
