@@ -1,3 +1,16 @@
+2024-06-23  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/testutils.h (struct nettle_xof): New struct type.
+	* testsuite/testutils.c (test_hash): Delete support for tests with
+	arbitrary digest size, reverting part of 2019-12-25 change.
+	(test_xof): New function, test both digest and output functions.
+	* testsuite/shake128-test.c (test_main): Change from using
+	test_hash to test_xof.
+	* testsuite/shake256-test.c (test_incremental): Deleted function,
+	superseded by test_xof.
+	(test_main): Change from using test_hash to test_xof, delete use
+	of test_incremental.
+
 2024-06-16  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/testutils.c (test_mac): Add set_key function argument,

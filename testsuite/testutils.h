@@ -113,6 +113,16 @@ struct nettle_aead_message
   nettle_decrypt_message_func *decrypt;
 };
 
+struct nettle_xof {
+  const char *name;
+  unsigned context_size;
+  unsigned block_size;
+  nettle_hash_init_func *init;
+  nettle_hash_update_func *update;
+  nettle_hash_digest_func *digest;
+  nettle_hash_digest_func *output;
+};
+
 void
 test_cipher(const struct nettle_cipher *cipher,
 	    const struct tstring *key,
@@ -181,6 +191,11 @@ test_hash_large(const struct nettle_hash *hash,
 		size_t count, size_t length,
 		uint8_t c,
 		const struct tstring *digest);
+
+void
+test_xof (const struct nettle_xof *xof,
+	  const struct tstring *msg,
+	  const struct tstring *digest);
 
 void
 test_mac(const struct nettle_mac *mac,
