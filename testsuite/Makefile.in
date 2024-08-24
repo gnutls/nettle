@@ -16,7 +16,7 @@ TS_NETTLE_SOURCES = aes-test.c aes-keywrap-test.c arcfour-test.c arctwo-test.c \
 		    camellia-test.c chacha-test.c \
 		    cnd-memcpy-test.c \
 		    des-test.c des3-test.c \
-		    md2-test.c md4-test.c md5-test.c md5-compat-test.c \
+		    md2-test.c md4-test.c md5-test.c \
 		    memeql-test.c memxor-test.c gosthash94-test.c \
 		    ripemd160-test.c hkdf-test.c \
 		    salsa20-test.c \
