@@ -53,9 +53,9 @@ hmac_streebog512_update(struct hmac_streebog512_ctx *ctx,
 
 void
 hmac_streebog512_digest(struct hmac_streebog512_ctx *ctx,
-			size_t length, uint8_t *digest)
+			uint8_t *digest)
 {
-  HMAC_DIGEST(ctx, &nettle_streebog512, length, digest);
+  HMAC_DIGEST(ctx, &nettle_streebog512, digest);
 }
 
 void
@@ -67,7 +67,7 @@ hmac_streebog256_set_key(struct hmac_streebog256_ctx *ctx,
 
 void
 hmac_streebog256_digest(struct hmac_streebog256_ctx *ctx,
-			size_t length, uint8_t *digest)
+			uint8_t *digest)
 {
-  HMAC_DIGEST(ctx, &nettle_streebog256, length, digest);
+  HMAC_DIGEST(ctx, &nettle_streebog256, digest);
 }

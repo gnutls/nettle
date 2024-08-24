@@ -98,7 +98,7 @@ hash_string (const struct nettle_hash *hash, const char *s)
   uint8_t *digest = xalloc (hash->digest_size);
   hash->init (ctx);
   hash->update (ctx, strlen(s), (const uint8_t *) s);
-  hash->digest (ctx, hash->digest_size, digest);
+  hash->digest (ctx, digest);
   free (ctx);
 
   return digest;

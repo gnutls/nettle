@@ -174,7 +174,7 @@ test_main(void)
       printf("         sha256:");
     }
 
-  sha256_digest(&input_hash, sizeof(digest), digest);
+  sha256_digest(&input_hash, digest);
 
   if (verbose)
     {
@@ -200,7 +200,7 @@ test_main(void)
       printf("          sha256:");
     }
   
-  sha256_digest(&output_hash, sizeof(digest), digest);
+  sha256_digest(&output_hash, digest);
 
   if (verbose)
     {

@@ -243,9 +243,8 @@ sm3_write_digest(struct sm3_ctx *ctx,
 
 void
 sm3_digest(struct sm3_ctx *ctx,
-	   size_t length,
 	   uint8_t *digest)
 {
-  sm3_write_digest(ctx, length, digest);
+  sm3_write_digest(ctx, SM3_DIGEST_SIZE, digest);
   sm3_init(ctx);
 }

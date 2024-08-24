@@ -74,7 +74,6 @@ sha1_update(struct sha1_ctx *ctx,
 
 void
 sha1_digest(struct sha1_ctx *ctx,
-	    size_t length,
 	    uint8_t *digest);
 
 /* SHA1 compression function. STATE points to 5 uint32_t words,

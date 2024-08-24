@@ -889,9 +889,9 @@ test_aead(const struct nettle_aead *aead,
 	    }
 	  if (digest)
 	    {
-	      ASSERT (digest->length <= aead->digest_size);
+	      ASSERT (digest->length == aead->digest_size);
 	      memset(buffer, 0, aead->digest_size);
-	      aead->digest(ctx, digest->length, buffer);
+	      aead->digest(ctx, buffer);
 	      if (!MEMEQ(digest->length, buffer, digest->data))
 		{
 		  fprintf(stderr, "aead->digest failed (offset = %u):\n  got: ",
@@ -930,8 +930,9 @@ test_aead(const struct nettle_aead *aead,
 
 	      if (digest)
 		{
+		  ASSERT (digest->length == aead->digest_size);
 		  memset(buffer, 0, aead->digest_size);
-		  aead->digest(ctx, digest->length, buffer);
+		  aead->digest(ctx, buffer);
 		  ASSERT(MEMEQ(digest->length, buffer, digest->data));
 		}
 	    }
@@ -1112,7 +1113,7 @@ test_hash(const struct nettle_hash *hash,
       hash->update(ctx, 0, NULL);
       hash->update(ctx, msg->length - offset, msg->data + offset);
 
-      hash->digest(ctx, digest->length, buffer);
+      hash->digest(ctx, buffer);
 
       if (MEMEQ(digest->length, digest->data, buffer) == 0)
 	{
@@ -1124,23 +1125,13 @@ test_hash(const struct nettle_hash *hash,
 	}
     }
 
-  memset(buffer, 0, digest->length);
-
-  hash->update(ctx, msg->length, msg->data);
-  ASSERT(digest->length > 0);
-  hash->digest(ctx, digest->length - 1, buffer);
-
-  ASSERT(MEMEQ(digest->length - 1, digest->data, buffer));
-
-  ASSERT(buffer[digest->length - 1] == 0);
-
   input = xalloc (msg->length + 16);
   for (offset = 0; offset < 16; offset++)
     {
       memset (input, 0, msg->length + 16);
       memcpy (input + offset, msg->data, msg->length);
       hash->update (ctx, msg->length, input + offset);
-      hash->digest (ctx, digest->length, buffer);
+      hash->digest (ctx, buffer);
       if (MEMEQ(digest->length, digest->data, buffer) == 0)
 	{
 	  fprintf(stdout, "hash input address: %p\nGot:\n", input + offset);
@@ -1264,7 +1255,7 @@ test_hash_large(const struct nettle_hash *hash,
     }
   fprintf (stderr, "\n");
   
-  hash->digest(ctx, hash->digest_size, buffer);
+  hash->digest(ctx, buffer);
 
   print_hex(hash->digest_size, buffer);
 
@@ -1295,7 +1286,7 @@ test_mac(const struct nettle_mac *mac,
       mac->set_key (ctx, key->data);
     }
   mac->update (ctx, msg->length, msg->data);
-  mac->digest (ctx, digest->length, hash);
+  mac->digest (ctx, hash);
 
   if (!MEMEQ (digest->length, digest->data, hash))
     {
@@ -1311,7 +1302,7 @@ test_mac(const struct nettle_mac *mac,
 
   /* attempt to re-use the structure */
   mac->update (ctx, msg->length, msg->data);
-  mac->digest (ctx, digest->length, hash);
+  mac->digest (ctx, hash);
   if (!MEMEQ (digest->length, digest->data, hash))
     {
       fprintf (stderr, "test_mac: failed on re-use, msg: ");
@@ -1327,7 +1318,7 @@ test_mac(const struct nettle_mac *mac,
   /* attempt byte-by-byte hashing */
   for (i=0;i<msg->length;i++)
     mac->update (ctx, 1, msg->data+i);
-  mac->digest (ctx, digest->length, hash);
+  mac->digest (ctx, hash);
   if (!MEMEQ (digest->length, digest->data, hash))
     {
       fprintf (stderr, "test_mac failed on byte-by-byte, msg: ");
@@ -1504,7 +1495,7 @@ xalloc_limbs (mp_size_t n)
   ASSERT(mpz_cmp (signature, expected) == 0);				\
 									\
   hash##_update(&hash, LDATA(msg));					\
-  hash##_digest(&hash, sizeof(digest), digest);				\
+  hash##_digest(&hash, digest);						\
   ASSERT(rsa_##hash##_sign_digest(key, digest, signature));		\
   ASSERT(mpz_cmp (signature, expected) == 0);				\
 									\
@@ -1994,7 +1985,7 @@ test_rsa_key(struct rsa_public_key *pub,
 /* Requires that the context is named like the hash algorithm. */
 #define DSA_VERIFY(params, key, hash, buf, msg, signature)	\
   (hash##_update(&hash, LDATA(msg)),				\
-   hash##_digest(&hash, sizeof(buf), buf),			\
+   hash##_digest(&hash, buf),					\
    dsa_verify(params, key, sizeof(buf), buf, signature))
 
 void
@@ -2012,7 +2003,7 @@ test_dsa160(const struct dsa_params *params,
   knuth_lfib_init(&lfib, 1111);
   
   sha1_update(&sha1, LDATA("The magic words are squeamish ossifrage"));
-  sha1_digest(&sha1, sizeof(digest), digest);
+  sha1_digest(&sha1, digest);
   ASSERT (dsa_sign(params, key,
 		   &lfib, (nettle_random_func *) knuth_lfib_random,
 		   sizeof(digest), digest, &signature));
@@ -2064,7 +2055,7 @@ test_dsa256(const struct dsa_params *params,
   knuth_lfib_init(&lfib, 1111);
   
   sha256_update(&sha256, LDATA("The magic words are squeamish ossifrage"));
-  sha256_digest(&sha256, sizeof(digest), digest);
+  sha256_digest(&sha256, digest);
   ASSERT (dsa_sign(params, key,
 		   &lfib, (nettle_random_func *) knuth_lfib_random,
 		   sizeof(digest), digest, &signature));
@@ -2176,7 +2167,7 @@ test_dsa_verify(const struct dsa_params *params,
   hash->init(ctx);
   
   hash->update (ctx, msg->length, msg->data);
-  hash->digest (ctx, hash->digest_size, digest);
+  hash->digest (ctx, digest);
 
   mpz_set (signature.r, ref->r);
   mpz_set (signature.s, ref->s);

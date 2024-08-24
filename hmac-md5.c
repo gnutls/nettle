@@ -53,7 +53,7 @@ hmac_md5_update(struct hmac_md5_ctx *ctx,
 
 void
 hmac_md5_digest(struct hmac_md5_ctx *ctx,
-		size_t length, uint8_t *digest)
+		uint8_t *digest)
 {
-  HMAC_DIGEST(ctx, &nettle_md5, length, digest);
+  HMAC_DIGEST(ctx, &nettle_md5, digest);
 }

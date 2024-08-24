@@ -73,7 +73,6 @@ ripemd160_update(struct ripemd160_ctx *ctx,
 
 void
 ripemd160_digest(struct ripemd160_ctx *ctx,
-		 size_t length,
 		 uint8_t *digest);
 
 #ifdef __cplusplus

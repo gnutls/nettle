@@ -53,7 +53,7 @@ hmac_sha256_update(struct hmac_sha256_ctx *ctx,
 
 void
 hmac_sha256_digest(struct hmac_sha256_ctx *ctx,
-		   size_t length, uint8_t *digest)
+		   uint8_t *digest)
 {
-  HMAC_DIGEST(ctx, &nettle_sha256, length, digest);
+  HMAC_DIGEST(ctx, &nettle_sha256, digest);
 }

@@ -46,7 +46,7 @@ hmac_sha224_set_key(struct hmac_sha224_ctx *ctx,
 
 void
 hmac_sha224_digest(struct hmac_sha224_ctx *ctx,
-		   size_t length, uint8_t *digest)
+		   uint8_t *digest)
 {
-  HMAC_DIGEST(ctx, &nettle_sha224, length, digest);
+  HMAC_DIGEST(ctx, &nettle_sha224, digest);
 }

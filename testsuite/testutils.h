@@ -114,8 +114,9 @@ struct nettle_xof {
   unsigned block_size;
   nettle_hash_init_func *init;
   nettle_hash_update_func *update;
-  nettle_hash_digest_func *digest;
-  nettle_hash_digest_func *output;
+  /* FIXME: Rename to, e.g., nettle_output_func. */
+  nettle_random_func *digest;
+  nettle_random_func *output;
 };
 
 void

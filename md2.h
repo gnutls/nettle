@@ -68,7 +68,6 @@ md2_update(struct md2_ctx *ctx,
 
 void
 md2_digest(struct md2_ctx *ctx,
-	   size_t length,
 	   uint8_t *digest);
 
 

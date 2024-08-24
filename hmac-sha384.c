@@ -46,7 +46,7 @@ hmac_sha384_set_key(struct hmac_sha512_ctx *ctx,
 
 void
 hmac_sha384_digest(struct hmac_sha512_ctx *ctx,
-		   size_t length, uint8_t *digest)
+		   uint8_t *digest)
 {
-  HMAC_DIGEST(ctx, &nettle_sha384, length, digest);
+  HMAC_DIGEST(ctx, &nettle_sha384, digest);
 }

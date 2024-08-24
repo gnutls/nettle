@@ -97,13 +97,13 @@ void gosthash94_init(struct gosthash94_ctx *ctx);
 void gosthash94_update(struct gosthash94_ctx *ctx,
 		       size_t length, const uint8_t *msg);
 void gosthash94_digest(struct gosthash94_ctx *ctx,
-		       size_t length, uint8_t *result);
+		       uint8_t *result);
 
 #define gosthash94cp_init gosthash94_init
 void gosthash94cp_update(struct gosthash94_ctx *ctx,
 			 size_t length, const uint8_t *msg);
 void gosthash94cp_digest(struct gosthash94_ctx *ctx,
-			 size_t length, uint8_t *result);
+			 uint8_t *result);
 
 #ifdef __cplusplus
 }

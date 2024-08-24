@@ -72,7 +72,6 @@ md4_update(struct md4_ctx *ctx,
 
 void
 md4_digest(struct md4_ctx *ctx,
-	   size_t length,
 	   uint8_t *digest);
 
 

@@ -72,7 +72,6 @@ md5_update(struct md5_ctx *ctx,
 
 void
 md5_digest(struct md5_ctx *ctx,
-	   size_t length,
 	   uint8_t *digest);
 
 /* MD5 compression function. STATE points to 4 uint32_t words,

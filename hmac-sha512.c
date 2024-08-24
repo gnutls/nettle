@@ -53,7 +53,7 @@ hmac_sha512_update(struct hmac_sha512_ctx *ctx,
 
 void
 hmac_sha512_digest(struct hmac_sha512_ctx *ctx,
-		   size_t length, uint8_t *digest)
+		   uint8_t *digest)
 {
-  HMAC_DIGEST(ctx, &nettle_sha512, length, digest);
+  HMAC_DIGEST(ctx, &nettle_sha512, digest);
 }

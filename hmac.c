@@ -67,7 +67,7 @@ hmac_set_key(void *outer, void *inner, void *state,
 
       hash->init(state);
       hash->update(state, key_length, key);
-      hash->digest(state, hash->digest_size, digest);
+      hash->digest(state, digest);
 
       key = digest;
       key_length = hash->digest_size;
@@ -99,17 +99,18 @@ hmac_update(void *state,
 void
 hmac_digest(const void *outer, const void *inner, void *state,
 	    const struct nettle_hash *hash, 	    
-	    size_t length, uint8_t *dst)
+	    uint8_t *dst)
 {
+  /* FIXME: Use dst area instead? */
   TMP_DECL(digest, uint8_t, NETTLE_MAX_HASH_DIGEST_SIZE);
   TMP_ALLOC(digest, hash->digest_size);
 
-  hash->digest(state, hash->digest_size, digest);
+  hash->digest(state, digest);
 
   memcpy(state, outer, hash->context_size);
 
   hash->update(state, hash->digest_size, digest);
-  hash->digest(state, length, dst);
+  hash->digest(state, dst);
 
   memcpy(state, inner, hash->context_size);
 }

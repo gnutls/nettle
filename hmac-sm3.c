@@ -53,7 +53,7 @@ hmac_sm3_update(struct hmac_sm3_ctx *ctx,
 
 void
 hmac_sm3_digest(struct hmac_sm3_ctx *ctx,
-		size_t length, uint8_t *digest)
+		uint8_t *digest)
 {
-  HMAC_DIGEST(ctx, &nettle_sm3, length, digest);
+  HMAC_DIGEST(ctx, &nettle_sm3, digest);
 }

@@ -8,13 +8,13 @@ test_gcm_hash (const struct tstring *msg, const struct tstring *ref)
 {
   struct gcm_aes128_ctx ctx;
   const uint8_t z16[16] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
-  uint8_t digest[16];
+  uint8_t digest[GCM_DIGEST_SIZE];
 
   ASSERT (ref->length == sizeof(digest));
   gcm_aes128_set_key (&ctx, z16);
   gcm_aes128_set_iv (&ctx, 16, z16);
   gcm_aes128_update (&ctx, msg->length, msg->data);
-  gcm_aes128_digest (&ctx, sizeof(digest), digest);
+  gcm_aes128_digest (&ctx, digest);
   if (!MEMEQ (ref->length, ref->data, digest))
     {
       fprintf (stderr, "gcm_hash failed, msg: %s\nOutput: ", msg->data);

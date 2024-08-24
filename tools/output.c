@@ -303,7 +303,7 @@ sexp_put_digest(struct sexp_output *output)
   
   assert(output->hash);
 
-  output->hash->digest(output->ctx, output->hash->digest_size, digest);
+  output->hash->digest(output->ctx, digest);
 
   sexp_put_code_start(output, &nettle_base16);
   sexp_put_data(output, output->hash->digest_size, digest);

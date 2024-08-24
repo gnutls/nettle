@@ -151,7 +151,7 @@ gcm_decrypt(struct gcm_ctx *ctx, const struct gcm_key *key,
 void
 gcm_digest(struct gcm_ctx *ctx, const struct gcm_key *key,
 	   const void *cipher, nettle_cipher_func *f,
-	   size_t length, uint8_t *digest);
+	   uint8_t *digest);
 
 /* Convenience macrology (not sure how useful it is) */
 /* All-in-one context, with hash subkey, message state, and cipher. */
@@ -188,12 +188,12 @@ gcm_digest(struct gcm_ctx *ctx, const struct gcm_key *key,
 		   (nettle_cipher_func *) (encrypt),			\
 		   (length), (dst), (src)))
 
-#define GCM_DIGEST(ctx, encrypt, length, digest)			\
+#define GCM_DIGEST(ctx, encrypt, digest)				\
   (0 ? (encrypt)(&(ctx)->cipher, ~(size_t) 0,				\
 		 (uint8_t *) 0, (const uint8_t *) 0)			\
      : gcm_digest(&(ctx)->gcm, &(ctx)->key, &(ctx)->cipher,		\
 		  (nettle_cipher_func *) (encrypt),			\
-		  (length), (digest)))
+		  (digest)))
 
 struct gcm_aes128_ctx GCM_CTX(struct aes128_ctx);
 
@@ -219,7 +219,7 @@ gcm_aes128_decrypt(struct gcm_aes128_ctx *ctx,
 
 void
 gcm_aes128_digest(struct gcm_aes128_ctx *ctx,
-		  size_t length, uint8_t *digest);
+		  uint8_t *digest);
 
 struct gcm_aes192_ctx GCM_CTX(struct aes192_ctx);
 
@@ -243,7 +243,7 @@ gcm_aes192_decrypt(struct gcm_aes192_ctx *ctx,
 
 void
 gcm_aes192_digest(struct gcm_aes192_ctx *ctx,
-		  size_t length, uint8_t *digest);
+		  uint8_t *digest);
 
 struct gcm_aes256_ctx GCM_CTX(struct aes256_ctx);
 
@@ -267,7 +267,7 @@ gcm_aes256_decrypt(struct gcm_aes256_ctx *ctx,
 
 void
 gcm_aes256_digest(struct gcm_aes256_ctx *ctx,
-		  size_t length, uint8_t *digest);
+		  uint8_t *digest);
 
 
 struct gcm_camellia128_ctx GCM_CTX(struct camellia128_ctx);
@@ -283,7 +283,7 @@ void gcm_camellia128_encrypt(struct gcm_camellia128_ctx *ctx,
 void gcm_camellia128_decrypt(struct gcm_camellia128_ctx *ctx,
 			     size_t length, uint8_t *dst, const uint8_t *src);
 void gcm_camellia128_digest(struct gcm_camellia128_ctx *ctx,
-			    size_t length, uint8_t *digest);
+			    uint8_t *digest);
 
 
 struct gcm_camellia256_ctx GCM_CTX(struct camellia256_ctx);
@@ -299,7 +299,7 @@ void gcm_camellia256_encrypt(struct gcm_camellia256_ctx *ctx,
 void gcm_camellia256_decrypt(struct gcm_camellia256_ctx *ctx,
 			     size_t length, uint8_t *dst, const uint8_t *src);
 void gcm_camellia256_digest(struct gcm_camellia256_ctx *ctx,
-			    size_t length, uint8_t *digest);
+			    uint8_t *digest);
 
 
 struct gcm_sm4_ctx GCM_CTX(struct sm4_ctx);
@@ -314,7 +314,7 @@ void gcm_sm4_encrypt(struct gcm_sm4_ctx *ctx,
 void gcm_sm4_decrypt(struct gcm_sm4_ctx *ctx,
 		     size_t length, uint8_t *dst, const uint8_t *src);
 void gcm_sm4_digest(struct gcm_sm4_ctx *ctx,
-		    size_t length, uint8_t *digest);
+		    uint8_t *digest);
 
 
 #ifdef __cplusplus

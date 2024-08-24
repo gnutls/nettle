@@ -61,10 +61,9 @@ sha3_384_update (struct sha3_384_ctx *ctx,
 
 void
 sha3_384_digest(struct sha3_384_ctx *ctx,
-		size_t length,
 		uint8_t *digest)
 {
   _sha3_pad_hash (&ctx->state, SHA3_384_BLOCK_SIZE, ctx->block, ctx->index);
-  _nettle_write_le64 (length, digest, ctx->state.a);
+  _nettle_write_le64 (SHA3_384_DIGEST_SIZE, digest, ctx->state.a);
   sha3_384_init (ctx);
 }

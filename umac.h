@@ -169,16 +169,16 @@ umac128_update (struct umac128_ctx *ctx,
 /* The _digest functions increment the nonce */
 void
 umac32_digest (struct umac32_ctx *ctx,
-	       size_t length, uint8_t *digest);
+	       uint8_t *digest);
 void
 umac64_digest (struct umac64_ctx *ctx,
-	       size_t length, uint8_t *digest);
+	       uint8_t *digest);
 void
 umac96_digest (struct umac96_ctx *ctx,
-	       size_t length, uint8_t *digest);
+	       uint8_t *digest);
 void
 umac128_digest (struct umac128_ctx *ctx,
-		size_t length, uint8_t *digest);
+		uint8_t *digest);
 
 
 /* Internal functions */

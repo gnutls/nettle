@@ -53,9 +53,9 @@ hmac_gosthash94_update(struct hmac_gosthash94_ctx *ctx,
 
 void
 hmac_gosthash94_digest(struct hmac_gosthash94_ctx *ctx,
-		   size_t length, uint8_t *digest)
+		       uint8_t *digest)
 {
-  HMAC_DIGEST(ctx, &nettle_gosthash94, length, digest);
+  HMAC_DIGEST(ctx, &nettle_gosthash94, digest);
 }
 
 void
@@ -73,7 +73,7 @@ hmac_gosthash94cp_update(struct hmac_gosthash94cp_ctx *ctx,
 }
 void
 hmac_gosthash94cp_digest(struct hmac_gosthash94cp_ctx *ctx,
-		   size_t length, uint8_t *digest)
+			 uint8_t *digest)
 {
-  HMAC_DIGEST(ctx, &nettle_gosthash94cp, length, digest);
+  HMAC_DIGEST(ctx, &nettle_gosthash94cp, digest);
 }

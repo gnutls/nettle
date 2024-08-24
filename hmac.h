@@ -101,7 +101,7 @@ hmac_update(void *state,
 void
 hmac_digest(const void *outer, const void *inner, void *state,
 	    const struct nettle_hash *hash,
-	    size_t length, uint8_t *digest);
+	    uint8_t *digest);
 
 
 #define HMAC_CTX(type) \
@@ -111,9 +111,9 @@ hmac_digest(const void *outer, const void *inner, void *state,
   hmac_set_key( &(ctx)->outer, &(ctx)->inner, &(ctx)->state,	\
                 (hash), (length), (key) )
 
-#define HMAC_DIGEST(ctx, hash, length, digest)			\
+#define HMAC_DIGEST(ctx, hash, digest)				\
   hmac_digest( &(ctx)->outer, &(ctx)->inner, &(ctx)->state,	\
-               (hash), (length), (digest) )
+               (hash), (digest) )
 
 /* HMAC using specific hash functions */
 
@@ -130,7 +130,7 @@ hmac_md5_update(struct hmac_md5_ctx *ctx,
 
 void
 hmac_md5_digest(struct hmac_md5_ctx *ctx,
-		size_t length, uint8_t *digest);
+		uint8_t *digest);
 
 
 /* hmac-ripemd160 */
@@ -146,7 +146,7 @@ hmac_ripemd160_update(struct hmac_ripemd160_ctx *ctx,
 
 void
 hmac_ripemd160_digest(struct hmac_ripemd160_ctx *ctx,
-		      size_t length, uint8_t *digest);
+		      uint8_t *digest);
 
 
 /* hmac-sha1 */
@@ -162,7 +162,7 @@ hmac_sha1_update(struct hmac_sha1_ctx *ctx,
 
 void
 hmac_sha1_digest(struct hmac_sha1_ctx *ctx,
-		 size_t length, uint8_t *digest);
+		 uint8_t *digest);
 
 /* hmac-sha256 */
 struct hmac_sha256_ctx HMAC_CTX(struct sha256_ctx);
@@ -177,7 +177,7 @@ hmac_sha256_update(struct hmac_sha256_ctx *ctx,
 
 void
 hmac_sha256_digest(struct hmac_sha256_ctx *ctx,
-		   size_t length, uint8_t *digest);
+		   uint8_t *digest);
 
 /* hmac-sha224 */
 #define hmac_sha224_ctx hmac_sha256_ctx
@@ -190,7 +190,7 @@ hmac_sha224_set_key(struct hmac_sha224_ctx *ctx,
 
 void
 hmac_sha224_digest(struct hmac_sha224_ctx *ctx,
-		   size_t length, uint8_t *digest);
+		   uint8_t *digest);
 
 /* hmac-sha512 */
 struct hmac_sha512_ctx HMAC_CTX(struct sha512_ctx);
@@ -205,7 +205,7 @@ hmac_sha512_update(struct hmac_sha512_ctx *ctx,
 
 void
 hmac_sha512_digest(struct hmac_sha512_ctx *ctx,
-		   size_t length, uint8_t *digest);
+		   uint8_t *digest);
 
 /* hmac-sha384 */
 #define hmac_sha384_ctx hmac_sha512_ctx
@@ -218,7 +218,7 @@ hmac_sha384_set_key(struct hmac_sha512_ctx *ctx,
 
 void
 hmac_sha384_digest(struct hmac_sha512_ctx *ctx,
-		   size_t length, uint8_t *digest);
+		   uint8_t *digest);
 
 /* hmac-gosthash94 */
 struct hmac_gosthash94_ctx HMAC_CTX(struct gosthash94_ctx);
@@ -233,7 +233,7 @@ hmac_gosthash94_update(struct hmac_gosthash94_ctx *ctx,
 
   void
 hmac_gosthash94_digest(struct hmac_gosthash94_ctx *ctx,
-		       size_t length, uint8_t *digest);
+		       uint8_t *digest);
 
 struct hmac_gosthash94cp_ctx HMAC_CTX(struct gosthash94cp_ctx);
 
@@ -247,7 +247,7 @@ hmac_gosthash94cp_update(struct hmac_gosthash94cp_ctx *ctx,
 
 void
 hmac_gosthash94cp_digest(struct hmac_gosthash94cp_ctx *ctx,
-			 size_t length, uint8_t *digest);
+			 uint8_t *digest);
 
 
 /* hmac-streebog */
@@ -263,7 +263,7 @@ hmac_streebog512_update(struct hmac_streebog512_ctx *ctx,
 
 void
 hmac_streebog512_digest(struct hmac_streebog512_ctx *ctx,
-		   size_t length, uint8_t *digest);
+			uint8_t *digest);
 
 #define hmac_streebog256_ctx hmac_streebog512_ctx
 
@@ -275,7 +275,7 @@ hmac_streebog256_set_key(struct hmac_streebog256_ctx *ctx,
 
 void
 hmac_streebog256_digest(struct hmac_streebog256_ctx *ctx,
-		   size_t length, uint8_t *digest);
+			uint8_t *digest);
 
 /* hmac-sm3 */
 struct hmac_sm3_ctx HMAC_CTX(struct sm3_ctx);
@@ -290,7 +290,7 @@ hmac_sm3_update(struct hmac_sm3_ctx *ctx,
 
 void
 hmac_sm3_digest(struct hmac_sm3_ctx *ctx,
-		size_t length, uint8_t *digest);
+		uint8_t *digest);
 
 #ifdef __cplusplus
 }

@@ -105,7 +105,7 @@ _eddsa_verify (const struct ecc_curve *ecc,
   eddsa->update (ctx, nbytes, signature);
   eddsa->update (ctx, nbytes, pub);
   eddsa->update (ctx, length, msg);
-  eddsa->digest (ctx, 2*nbytes, hash);
+  eddsa->digest (ctx, hash);
   _eddsa_hash (&ecc->q, hp, 2*nbytes, hash);
 
   /* Compute h A + R - s G, which should be the neutral point */

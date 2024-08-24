@@ -146,7 +146,6 @@ sha3_224_update (struct sha3_224_ctx *ctx,
 
 void
 sha3_224_digest(struct sha3_224_ctx *ctx,
-		size_t length,
 		uint8_t *digest);
 
 struct sha3_256_ctx
@@ -166,7 +165,6 @@ sha3_256_update (struct sha3_256_ctx *ctx,
 
 void
 sha3_256_digest(struct sha3_256_ctx *ctx,
-		size_t length,
 		uint8_t *digest);
 
 /* Alternative digest function implementing shake256, with arbitrary
@@ -200,7 +198,6 @@ sha3_384_update (struct sha3_384_ctx *ctx,
 
 void
 sha3_384_digest(struct sha3_384_ctx *ctx,
-		size_t length,
 		uint8_t *digest);
 
 struct sha3_512_ctx
@@ -220,7 +217,6 @@ sha3_512_update (struct sha3_512_ctx *ctx,
 
 void
 sha3_512_digest(struct sha3_512_ctx *ctx,
-		size_t length,
 		uint8_t *digest);
 
 #ifdef __cplusplus

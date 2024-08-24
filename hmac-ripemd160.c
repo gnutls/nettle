@@ -53,7 +53,7 @@ hmac_ripemd160_update(struct hmac_ripemd160_ctx *ctx,
 
 void
 hmac_ripemd160_digest(struct hmac_ripemd160_ctx *ctx,
-		      size_t length, uint8_t *digest)
+		      uint8_t *digest)
 {
-  HMAC_DIGEST(ctx, &nettle_ripemd160, length, digest);
+  HMAC_DIGEST(ctx, &nettle_ripemd160, digest);
 }
