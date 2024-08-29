@@ -216,8 +216,8 @@ PROLOGUE(_nettle_sha256_compress_n)
 
 	C Store non-volatile registers
 
-	li	T0, -8
-	li	T1, -24
+	li	T0, -16
+	li	T1, -32
 	stvx	v20, T0, SP
 	stvx	v21, T1, SP
 	subi	T0, T0, 32
@@ -321,8 +321,8 @@ PROLOGUE(_nettle_sha256_compress_n)
 
 
 	C Restore nonvolatile registers
-	li	T0, -8
-	li	T1, -24
+	li	T0, -16
+	li	T1, -32
 	lvx	v20, T0, SP
 	lvx	v21, T1, SP
 	subi	T0, T0, 32
