@@ -212,7 +212,7 @@ LSH_FUNC_ALLOCA
 
 # getenv_secure is used for fat overrides,
 # getline is used in the testsuite
-AC_CHECK_FUNCS(secure_getenv getline)
+AC_CHECK_FUNCS(secure_getenv getline elf_aux_info)
 
 ASM_WORDS_BIGENDIAN=unknown
 AC_C_BIGENDIAN([AC_DEFINE([WORDS_BIGENDIAN], 1)
