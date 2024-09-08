@@ -55,7 +55,7 @@
 # endif
 # ifdef HAVE_ELF_AUX_INFO
 #  include <sys/auxv.h>
-# elif !defined(__OpenBSD__)
+# elif defined(__FreeBSD__)
 #  include <sys/sysctl.h>
 # endif
 #endif
@@ -129,17 +129,15 @@ get_ppc_features (struct ppc_features *features)
 # if USE_GETAUXVAL
       hwcap = getauxval(AT_HWCAP);
       hwcap2 = getauxval(AT_HWCAP2);
-# elif defined(__FreeBSD__) || defined(__OpenBSD__)
-#  ifdef HAVE_ELF_AUX_INFO
+# elif defined(HAVE_ELF_AUX_INFO)
       elf_aux_info(AT_HWCAP, &hwcap, sizeof(hwcap));
       elf_aux_info(AT_HWCAP2, &hwcap2, sizeof(hwcap2));
-#  elif !defined(__OpenBSD__)
+# elif defined(__FreeBSD__)
       size_t len;
       len = sizeof(hwcap);
       sysctlbyname("hw.cpu_features", &hwcap, &len, NULL, 0);
       len = sizeof(hwcap2);
       sysctlbyname("hw.cpu_features2", &hwcap2, &len, NULL, 0);
-#  endif
 # endif
       features->have_crypto_ext
 	= ((hwcap2 & PPC_FEATURE2_VEC_CRYPTO) == PPC_FEATURE2_VEC_CRYPTO);
