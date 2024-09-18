@@ -1,3 +1,10 @@
+2024-09-08  Niels Möller  <nisse@lysator.liu.se>
+
+	From Brad Smith: Support elf_aux_info (OpenBSD and FreeBSD).
+	* configure.ac: Check for elf_aux_info.
+	* fat-arm64.c (get_arm64_features): Use elf_aux_info if available.
+	* fat-ppc.c (get_ppc_features): Likewise.
+
 2024-06-23  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/testutils.h (struct nettle_xof): New struct type.
