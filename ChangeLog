@@ -1,3 +1,8 @@
+2024-10-16  Niels Möller  <nisse@lysator.liu.se>
+
+	* run-tests: Cleanup, guided by shellcheck warnings. Use $()
+	rather than `` and $(()) rather than expr.
+
 2024-09-08  Niels Möller  <nisse@lysator.liu.se>
 
 	From Brad Smith: Support elf_aux_info (OpenBSD and FreeBSD).
