@@ -1,3 +1,30 @@
+NEWS for the Nettle 3.10.1 release
+
+	This is a maintenance release, with only a few bugfixes and
+	portability improvements.
+
+	The new version is intended to be fully source and binary
+	compatible with Nettle-3.6. The shared library names are
+	libnettle.so.8.10 and libhogweed.so.6.10, with sonames
+	libnettle.so.8 and libhogweed.so.6.
+
+	Bug fixes:
+
+	* Fix buffer overread in the new sha256 assembly for
+	  powerpc64, as well as a stack alignment issue.
+
+	* Added missing nettle_mac structs for hmac-gosthash.
+
+	* Fix configure test for valgrind, to not attempt to run
+	  valgrind on executables built using memory sanitizers.
+
+	Optimizations:
+
+	* Improved runtime detection of cpu features for OpenBSD and
+	  FreeBSD, using elf_aux_info when available. This also adds
+	  runtime detection for FreeBSD on arm64. Contributed by Brad
+	  Smith.
+
 NEWS for the Nettle 3.10 release
 
 	This is a maintenance release, including a few each of bug
@@ -43,7 +70,7 @@ NEWS for the Nettle 3.10 release
 	  instructions.
 
 	* Add arm64 CPU feature detection for Android and for Apple systems,
-	  contributed by Foolbar and Tim Kosse, prespectively.
+	  contributed by Foolbar and Tim Kosse, respectively.
 
 	Miscellaneous:
 
