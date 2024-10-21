@@ -35,13 +35,39 @@
 # include "config.h"
 #endif
 
+#include <string.h>
+
 #include "hmac.h"
+#include "memxor.h"
+
+#define IPAD 0x36
+#define OPAD 0x5c
 
 void
 hmac_sha256_set_key(struct hmac_sha256_ctx *ctx,
 		    size_t key_length, const uint8_t *key)
 {
-  HMAC_SET_KEY(ctx, &nettle_sha256, key_length, key);
+  uint8_t digest[SHA256_DIGEST_SIZE];
+
+  sha256_init (&ctx->state);
+  if (key_length > SHA256_BLOCK_SIZE)
+    {
+      sha256_update (&ctx->state, key_length, key);
+      sha256_digest (&ctx->state, digest);
+      key = digest;
+      key_length = SHA256_DIGEST_SIZE;
+    }
+
+  memset (ctx->state.block, OPAD, SHA256_BLOCK_SIZE);
+  memxor (ctx->state.block, key, key_length);
+  sha256_update (&ctx->state, SHA256_BLOCK_SIZE, ctx->state.block);
+  memcpy (ctx->outer, ctx->state.state, sizeof(ctx->outer));
+
+  sha256_init (&ctx->state);
+  memset (ctx->state.block, IPAD, SHA256_BLOCK_SIZE);
+  memxor (ctx->state.block, key, key_length);
+  sha256_update (&ctx->state, SHA256_BLOCK_SIZE, ctx->state.block);
+  memcpy (ctx->inner, ctx->state.state, sizeof(ctx->outer));
 }
 
 void
@@ -55,5 +81,14 @@ void
 hmac_sha256_digest(struct hmac_sha256_ctx *ctx,
 		   uint8_t *digest)
 {
-  HMAC_DIGEST(ctx, &nettle_sha256, digest);
+  uint8_t inner_digest[SHA256_DIGEST_SIZE];
+  sha256_digest (&ctx->state, inner_digest);
+
+  memcpy (ctx->state.state, ctx->outer, sizeof (ctx->state.state));
+  ctx->state.count = 1;
+  sha256_update (&ctx->state, SHA256_DIGEST_SIZE, inner_digest);
+  sha256_digest (&ctx->state, digest);
+
+  memcpy (ctx->state.state, ctx->inner, sizeof (ctx->state.state));
+  ctx->state.count = 1;
 }

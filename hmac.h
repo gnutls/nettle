@@ -165,7 +165,11 @@ hmac_sha1_digest(struct hmac_sha1_ctx *ctx,
 		 uint8_t *digest);
 
 /* hmac-sha256 */
-struct hmac_sha256_ctx HMAC_CTX(struct sha256_ctx);
+struct hmac_sha256_ctx {
+  uint32_t outer[_SHA256_DIGEST_LENGTH];
+  uint32_t inner[_SHA256_DIGEST_LENGTH];
+  struct sha256_ctx state;
+};
 
 void
 hmac_sha256_set_key(struct hmac_sha256_ctx *ctx,

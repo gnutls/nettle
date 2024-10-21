@@ -35,18 +35,53 @@
 # include "config.h"
 #endif
 
+#include <string.h>
+
 #include "hmac.h"
+#include "memxor.h"
+
+#define IPAD 0x36
+#define OPAD 0x5c
 
 void
 hmac_sha224_set_key(struct hmac_sha224_ctx *ctx,
 		    size_t key_length, const uint8_t *key)
 {
-  HMAC_SET_KEY(ctx, &nettle_sha224, key_length, key);
+  uint8_t digest[SHA224_DIGEST_SIZE];
+
+  sha224_init (&ctx->state);
+  if (key_length > SHA224_BLOCK_SIZE)
+    {
+      sha224_update (&ctx->state, key_length, key);
+      sha224_digest (&ctx->state, digest);
+      key = digest;
+      key_length = SHA224_DIGEST_SIZE;
+    }
+
+  memset (ctx->state.block, OPAD, SHA224_BLOCK_SIZE);
+  memxor (ctx->state.block, key, key_length);
+  sha224_update (&ctx->state, SHA224_BLOCK_SIZE, ctx->state.block);
+  memcpy (ctx->outer, ctx->state.state, sizeof(ctx->outer));
+
+  sha224_init (&ctx->state);
+  memset (ctx->state.block, IPAD, SHA224_BLOCK_SIZE);
+  memxor (ctx->state.block, key, key_length);
+  sha224_update (&ctx->state, SHA224_BLOCK_SIZE, ctx->state.block);
+  memcpy (ctx->inner, ctx->state.state, sizeof(ctx->outer));
 }
 
 void
 hmac_sha224_digest(struct hmac_sha224_ctx *ctx,
 		   uint8_t *digest)
 {
-  HMAC_DIGEST(ctx, &nettle_sha224, digest);
+  uint8_t inner_digest[SHA224_DIGEST_SIZE];
+  sha224_digest (&ctx->state, inner_digest);
+
+  memcpy (ctx->state.state, ctx->outer, sizeof (ctx->state.state));
+  ctx->state.count = 1;
+  sha224_update (&ctx->state, SHA224_DIGEST_SIZE, inner_digest);
+  sha224_digest (&ctx->state, digest);
+
+  memcpy (ctx->state.state, ctx->inner, sizeof (ctx->state.state));
+  ctx->state.count = 1;
 }

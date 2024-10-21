@@ -1,3 +1,12 @@
+2024-10-21  Niels Möller  <nisse@lysator.liu.se>
+
+	* hmac.h (struct hmac_sha256_ctx): Change outer and inner members
+	to hold only the sha256 state, no block buffers.
+	* hmac-sha256.c (hmac_sha256_set_key): Rewrite, without hmac_set_key.
+	(hmac_sha256_digest): Rewrite, without hmac_digest.
+	* hmac-sha224.c (hmac_sha224_set_key): Analogous change.
+	(hmac_sha224_digest): Analogous change.
+
 2025-06-22  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/testutils.c (test_mac): Print name of mac algorithm on
