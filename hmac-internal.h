@@ -1,8 +1,6 @@
-/* sha2-internal.h
+/* hmac-internal.h
 
-   The sha2 family of hash functions.
-
-   Copyright (C) 2001, 2012 Niels Möller
+   Copyright (C) 2024 Niels Möller
 
    This file is part of GNU Nettle.
 
@@ -31,26 +29,21 @@
    not, see http://www.gnu.org/licenses/.
 */
 
-#ifndef NETTLE_SHA2_INTERNAL_H_INCLUDED
-#define NETTLE_SHA2_INTERNAL_H_INCLUDED
+#ifndef NETTLE_HMAC_INTERNAL_H_INCLUDED
+#define NETTLE_HMAC_INTERNAL_H_INCLUDED
 
 #include "nettle-types.h"
 
-extern const uint32_t _nettle_sha224_iv[_SHA256_DIGEST_LENGTH];
-extern const uint32_t _nettle_sha256_iv[_SHA256_DIGEST_LENGTH];
+#define IPAD 0x36
+#define OPAD 0x5c
 
-/* Internal compression function. STATE points to 8 uint32_t words,
-   DATA points to 64 bytes of input data, possibly unaligned, and K
-   points to the table of constants. */
-const uint8_t *
-_nettle_sha256_compress_n(uint32_t *state, const uint32_t *k,
-			  size_t blocks, const uint8_t *data);
+/* Initialize BLOCK from KEY, with KEY_SIZE <= BLOCK_SIZE. If KEY ==
+   NULL, key is already written at the start of the block. */
+void _nettle_hmac_outer_block (size_t block_size, uint8_t *block, size_t key_size, const uint8_t *key);
 
-/* Internal compression function. STATE points to 8 uint64_t words,
-   DATA points to 128 bytes of input data, possibly unaligned, and K
-   points to the table of constants. */
 void
-_nettle_sha512_compress(uint64_t *state, const uint8_t *data, const uint64_t *k);
+_nettle_hmac_outer_block_digest (size_t block_size, uint8_t *block, size_t key_size);
 
+void _nettle_hmac_inner_block (size_t block_size, uint8_t *block);
 
-#endif /* NETTLE_SHA2_INTERNAL_H_INCLUDED */
+#endif /* NETTLE_HMAC_INTERNAL_H_INCLUDED */

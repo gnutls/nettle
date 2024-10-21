@@ -38,36 +38,42 @@
 #include <string.h>
 
 #include "hmac.h"
+#include "hmac-internal.h"
 #include "memxor.h"
+#include "sha2-internal.h"
 
-#define IPAD 0x36
-#define OPAD 0x5c
+/* Initialize for processing a new message.*/
+static void 
+hmac_sha256_init (struct hmac_sha256_ctx *ctx)
+{
+  memcpy (ctx->state.state, ctx->inner, sizeof (ctx->state.state));
+  ctx->state.count = 1;
+  /* index should already be zero, from previous call to sha256_init or sha256_digest. */
+}
 
 void
 hmac_sha256_set_key(struct hmac_sha256_ctx *ctx,
 		    size_t key_length, const uint8_t *key)
 {
-  uint8_t digest[SHA256_DIGEST_SIZE];
-
   sha256_init (&ctx->state);
   if (key_length > SHA256_BLOCK_SIZE)
     {
       sha256_update (&ctx->state, key_length, key);
-      sha256_digest (&ctx->state, digest);
-      key = digest;
-      key_length = SHA256_DIGEST_SIZE;
+      sha256_digest (&ctx->state, ctx->state.block);
+      _nettle_hmac_outer_block_digest (SHA256_BLOCK_SIZE, ctx->state.block, SHA256_DIGEST_SIZE);
     }
+  else
+    _nettle_hmac_outer_block (SHA256_BLOCK_SIZE, ctx->state.block,
+			      key_length, key);
 
-  memset (ctx->state.block, OPAD, SHA256_BLOCK_SIZE);
-  memxor (ctx->state.block, key, key_length);
-  sha256_update (&ctx->state, SHA256_BLOCK_SIZE, ctx->state.block);
-  memcpy (ctx->outer, ctx->state.state, sizeof(ctx->outer));
+  memcpy (ctx->outer, _nettle_sha256_iv, sizeof(ctx->outer));
+  sha256_compress (ctx->outer, ctx->state.block);
 
-  sha256_init (&ctx->state);
-  memset (ctx->state.block, IPAD, SHA256_BLOCK_SIZE);
-  memxor (ctx->state.block, key, key_length);
-  sha256_update (&ctx->state, SHA256_BLOCK_SIZE, ctx->state.block);
-  memcpy (ctx->inner, ctx->state.state, sizeof(ctx->outer));
+  _nettle_hmac_inner_block (SHA256_BLOCK_SIZE, ctx->state.block);
+  memcpy (ctx->inner, _nettle_sha256_iv, sizeof(ctx->inner));
+  sha256_compress (ctx->inner, ctx->state.block);
+
+  hmac_sha256_init (ctx);
 }
 
 void
@@ -81,14 +87,12 @@ void
 hmac_sha256_digest(struct hmac_sha256_ctx *ctx,
 		   uint8_t *digest)
 {
-  uint8_t inner_digest[SHA256_DIGEST_SIZE];
-  sha256_digest (&ctx->state, inner_digest);
+  sha256_digest (&ctx->state, ctx->state.block);
 
   memcpy (ctx->state.state, ctx->outer, sizeof (ctx->state.state));
   ctx->state.count = 1;
-  sha256_update (&ctx->state, SHA256_DIGEST_SIZE, inner_digest);
+  ctx->state.index = SHA256_DIGEST_SIZE;
   sha256_digest (&ctx->state, digest);
 
-  memcpy (ctx->state.state, ctx->inner, sizeof (ctx->state.state));
-  ctx->state.count = 1;
+  hmac_sha256_init (ctx);
 }
