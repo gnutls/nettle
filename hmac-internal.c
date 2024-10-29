@@ -69,3 +69,31 @@ _nettle_hmac_inner_block (size_t block_size, uint8_t *block)
 {
   memxor_byte (block, OPAD ^ IPAD, block_size);
 }
+
+void
+_nettle_hmac_set_key(size_t state_size, void *outer, void *inner,
+		     void *ctx, uint8_t *block,
+		     const struct nettle_hash *hash,
+		     compress_func *compress,
+		     size_t key_length, const uint8_t *key)
+{
+  hash->init (ctx);
+  memcpy (outer, ctx, state_size);
+  memcpy (inner, ctx, state_size);
+
+  if (key_length > hash->block_size)
+    {
+      hash->update (ctx, key_length, key);
+      hash->digest (ctx, block);
+      _nettle_hmac_outer_block_digest (hash->block_size, block, hash->digest_size);
+    }
+  else
+    _nettle_hmac_outer_block (hash->block_size, block, key_length, key);
+
+  compress (outer, block);
+
+  _nettle_hmac_inner_block (hash->block_size, block);
+  compress (inner, block);
+
+  memcpy (ctx, inner, state_size);
+}

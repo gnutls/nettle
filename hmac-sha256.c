@@ -55,25 +55,9 @@ void
 hmac_sha256_set_key(struct hmac_sha256_ctx *ctx,
 		    size_t key_length, const uint8_t *key)
 {
-  sha256_init (&ctx->state);
-  if (key_length > SHA256_BLOCK_SIZE)
-    {
-      sha256_update (&ctx->state, key_length, key);
-      sha256_digest (&ctx->state, ctx->state.block);
-      _nettle_hmac_outer_block_digest (SHA256_BLOCK_SIZE, ctx->state.block, SHA256_DIGEST_SIZE);
-    }
-  else
-    _nettle_hmac_outer_block (SHA256_BLOCK_SIZE, ctx->state.block,
-			      key_length, key);
-
-  memcpy (ctx->outer, _nettle_sha256_iv, sizeof(ctx->outer));
-  sha256_compress (ctx->outer, ctx->state.block);
-
-  _nettle_hmac_inner_block (SHA256_BLOCK_SIZE, ctx->state.block);
-  memcpy (ctx->inner, _nettle_sha256_iv, sizeof(ctx->inner));
-  sha256_compress (ctx->inner, ctx->state.block);
-
-  hmac_sha256_init (ctx);
+  _nettle_hmac_set_key (sizeof(ctx->outer), ctx->outer, ctx->inner, &ctx->state,
+			ctx->state.block, &nettle_sha256, (compress_func *) sha256_compress, key_length, key);
+  ctx->state.count = 1;
 }
 
 void

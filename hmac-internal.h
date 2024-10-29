@@ -33,6 +33,7 @@
 #define NETTLE_HMAC_INTERNAL_H_INCLUDED
 
 #include "nettle-types.h"
+#include "nettle-meta.h"
 
 #define IPAD 0x36
 #define OPAD 0x5c
@@ -45,5 +46,14 @@ void
 _nettle_hmac_outer_block_digest (size_t block_size, uint8_t *block, size_t key_size);
 
 void _nettle_hmac_inner_block (size_t block_size, uint8_t *block);
+
+typedef void compress_func (void *state, const uint8_t *block);
+
+void
+_nettle_hmac_set_key(size_t state_size, void *outer, void *inner,
+		     void *ctx, uint8_t *block,
+		     const struct nettle_hash *hash,
+		     compress_func *compress,
+		     size_t key_length, const uint8_t *key);
 
 #endif /* NETTLE_HMAC_INTERNAL_H_INCLUDED */
