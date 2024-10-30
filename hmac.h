@@ -196,7 +196,7 @@ hmac_sha224_digest(struct hmac_sha224_ctx *ctx,
 		   uint8_t *digest);
 
 /* hmac-sha512 */
-struct hmac_sha512_ctx OLD_HMAC_CTX(struct sha512_ctx);
+struct hmac_sha512_ctx HMAC_CTX (struct sha512_ctx, offsetof (struct sha512_ctx, index));
 
 void
 hmac_sha512_set_key(struct hmac_sha512_ctx *ctx,
