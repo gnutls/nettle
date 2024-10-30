@@ -36,9 +36,6 @@
 
 #include "nettle-types.h"
 
-extern const uint32_t _nettle_sha224_iv[_SHA256_DIGEST_LENGTH];
-extern const uint32_t _nettle_sha256_iv[_SHA256_DIGEST_LENGTH];
-
 /* Internal compression function. STATE points to 8 uint32_t words,
    DATA points to 64 bytes of input data, possibly unaligned, and K
    points to the table of constants. */
