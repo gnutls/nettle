@@ -224,7 +224,7 @@ hmac_sha384_digest(struct hmac_sha512_ctx *ctx,
 		   uint8_t *digest);
 
 /* hmac-gosthash94 */
-struct hmac_gosthash94_ctx OLD_HMAC_CTX(struct gosthash94_ctx);
+struct hmac_gosthash94_ctx HMAC_CTX (struct gosthash94_ctx, offsetof (struct gosthash94_ctx,index));
 
 void
 hmac_gosthash94_set_key(struct hmac_gosthash94_ctx *ctx,
@@ -238,7 +238,7 @@ hmac_gosthash94_update(struct hmac_gosthash94_ctx *ctx,
 hmac_gosthash94_digest(struct hmac_gosthash94_ctx *ctx,
 		       uint8_t *digest);
 
-struct hmac_gosthash94cp_ctx OLD_HMAC_CTX(struct gosthash94cp_ctx);
+#define hmac_gosthash94cp_ctx hmac_gosthash94_ctx
 
 void
 hmac_gosthash94cp_set_key(struct hmac_gosthash94cp_ctx *ctx,
