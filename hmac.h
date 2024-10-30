@@ -153,7 +153,7 @@ hmac_ripemd160_digest(struct hmac_ripemd160_ctx *ctx,
 
 
 /* hmac-sha1 */
-struct hmac_sha1_ctx OLD_HMAC_CTX(struct sha1_ctx);
+struct hmac_sha1_ctx HMAC_CTX (struct sha1_ctx, offsetof (struct sha1_ctx, index));
 
 void
 hmac_sha1_set_key(struct hmac_sha1_ctx *ctx,
