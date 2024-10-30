@@ -281,7 +281,7 @@ hmac_streebog256_digest(struct hmac_streebog256_ctx *ctx,
 			uint8_t *digest);
 
 /* hmac-sm3 */
-struct hmac_sm3_ctx OLD_HMAC_CTX(struct sm3_ctx);
+struct hmac_sm3_ctx HMAC_CTX (struct sm3_ctx, offsetof (struct sm3_ctx, index));
 
 void
 hmac_sm3_set_key(struct hmac_sm3_ctx *ctx,

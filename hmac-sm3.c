@@ -3,6 +3,7 @@
    HMAC-SM3 message authentication code.
 
    Copyright (C) 2021 Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
+   Copyright (C) 2024 Niels Möller
 
    This file is part of GNU Nettle.
 
@@ -36,12 +37,14 @@
 #endif
 
 #include "hmac.h"
+#include "hmac-internal.h"
 
 void
 hmac_sm3_set_key(struct hmac_sm3_ctx *ctx,
 		 size_t key_length, const uint8_t *key)
 {
-  HMAC_SET_KEY(ctx, &nettle_sm3, key_length, key);
+  _nettle_hmac_set_key (sizeof(ctx->outer), ctx->outer, ctx->inner, &ctx->state,
+			ctx->state.block, &nettle_sm3, key_length, key);
 }
 
 void
@@ -55,5 +58,7 @@ void
 hmac_sm3_digest(struct hmac_sm3_ctx *ctx,
 		uint8_t *digest)
 {
-  HMAC_DIGEST(ctx, &nettle_sm3, digest);
+  sm3_digest (&ctx->state, ctx->state.block);
+  ctx->state.index = SM3_DIGEST_SIZE;
+  _NETTLE_HMAC_DIGEST (ctx->outer, ctx->inner, &ctx->state, sm3_digest, digest);
 }
