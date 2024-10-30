@@ -254,7 +254,7 @@ hmac_gosthash94cp_digest(struct hmac_gosthash94cp_ctx *ctx,
 
 
 /* hmac-streebog */
-struct hmac_streebog512_ctx OLD_HMAC_CTX(struct streebog512_ctx);
+struct hmac_streebog512_ctx HMAC_CTX (struct streebog512_ctx, offsetof (struct streebog512_ctx, index));
 
 void
 hmac_streebog512_set_key(struct hmac_streebog512_ctx *ctx,

@@ -3,6 +3,7 @@
    HMAC-Streebog message authentication code.
 
    Copyright (C) 2016 Dmitry Eremin-Solenikov
+   Copyright (C) 2024 Niels Möller
 
    This file is part of GNU Nettle.
 
@@ -36,12 +37,14 @@
 #endif
 
 #include "hmac.h"
+#include "hmac-internal.h"
 
 void
 hmac_streebog512_set_key(struct hmac_streebog512_ctx *ctx,
 			 size_t key_length, const uint8_t *key)
 {
-  HMAC_SET_KEY(ctx, &nettle_streebog512, key_length, key);
+  _nettle_hmac_set_key (sizeof(ctx->outer), ctx->outer, ctx->inner, &ctx->state,
+			ctx->state.block, &nettle_streebog512, key_length, key);
 }
 
 void
@@ -55,19 +58,28 @@ void
 hmac_streebog512_digest(struct hmac_streebog512_ctx *ctx,
 			uint8_t *digest)
 {
-  HMAC_DIGEST(ctx, &nettle_streebog512, digest);
+  /* Using _NETTLE_HMAC_DIGEST doesn't work since
+     STREEBOG512_DIGEST_SIZE == STREEBOG512_BLOCK_SIZE. */
+  streebog512_digest (&ctx->state, ctx->state.block);
+  memcpy (&ctx->state, ctx->outer, sizeof (ctx->outer));
+  streebog512_update (&ctx->state, STREEBOG512_DIGEST_SIZE, ctx->state.block);
+  streebog512_digest (&ctx->state, digest);
+  memcpy (&ctx->state, ctx->inner, sizeof (ctx->inner));
 }
 
 void
 hmac_streebog256_set_key(struct hmac_streebog256_ctx *ctx,
 			 size_t key_length, const uint8_t *key)
 {
-  HMAC_SET_KEY(ctx, &nettle_streebog256, key_length, key);
+  _nettle_hmac_set_key (sizeof(ctx->outer), ctx->outer, ctx->inner, &ctx->state,
+			ctx->state.block, &nettle_streebog256, key_length, key);
 }
 
 void
 hmac_streebog256_digest(struct hmac_streebog256_ctx *ctx,
 			uint8_t *digest)
 {
-  HMAC_DIGEST(ctx, &nettle_streebog256, digest);
+  streebog256_digest (&ctx->state, ctx->state.block);
+  ctx->state.index = STREEBOG256_DIGEST_SIZE;
+  _NETTLE_HMAC_DIGEST (ctx->outer, ctx->inner, &ctx->state, streebog256_digest, digest);
 }
