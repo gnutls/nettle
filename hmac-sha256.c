@@ -2,7 +2,7 @@
 
    HMAC-SHA256 message authentication code.
 
-   Copyright (C) 2003 Niels Möller
+   Copyright (C) 2003, 2024 Niels Möller
 
    This file is part of GNU Nettle.
 
@@ -39,8 +39,6 @@
 
 #include "hmac.h"
 #include "hmac-internal.h"
-#include "memxor.h"
-#include "sha2-internal.h"
 
 void
 hmac_sha256_set_key(struct hmac_sha256_ctx *ctx,

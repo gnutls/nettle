@@ -104,7 +104,10 @@ hmac_digest(const void *outer, const void *inner, void *state,
 	    uint8_t *digest);
 
 
-#define HMAC_CTX(type) \
+#define HMAC_CTX(type, size)				\
+{ char outer[size]; char inner[size]; type state; }
+
+#define OLD_HMAC_CTX(type) \
 { type outer; type inner; type state; }
 
 #define HMAC_SET_KEY(ctx, hash, length, key)			\
@@ -118,7 +121,7 @@ hmac_digest(const void *outer, const void *inner, void *state,
 /* HMAC using specific hash functions */
 
 /* hmac-md5 */
-struct hmac_md5_ctx HMAC_CTX(struct md5_ctx);
+struct hmac_md5_ctx HMAC_CTX(struct md5_ctx, offsetof(struct md5_ctx, index));
 
 void
 hmac_md5_set_key(struct hmac_md5_ctx *ctx,
@@ -134,7 +137,7 @@ hmac_md5_digest(struct hmac_md5_ctx *ctx,
 
 
 /* hmac-ripemd160 */
-struct hmac_ripemd160_ctx HMAC_CTX(struct ripemd160_ctx);
+struct hmac_ripemd160_ctx OLD_HMAC_CTX(struct ripemd160_ctx);
 
 void
 hmac_ripemd160_set_key(struct hmac_ripemd160_ctx *ctx,
@@ -150,7 +153,7 @@ hmac_ripemd160_digest(struct hmac_ripemd160_ctx *ctx,
 
 
 /* hmac-sha1 */
-struct hmac_sha1_ctx HMAC_CTX(struct sha1_ctx);
+struct hmac_sha1_ctx OLD_HMAC_CTX(struct sha1_ctx);
 
 void
 hmac_sha1_set_key(struct hmac_sha1_ctx *ctx,
@@ -165,11 +168,7 @@ hmac_sha1_digest(struct hmac_sha1_ctx *ctx,
 		 uint8_t *digest);
 
 /* hmac-sha256 */
-struct hmac_sha256_ctx {
-  char outer[offsetof(struct sha256_ctx, index)];
-  char inner[offsetof(struct sha256_ctx, index)];
-  struct sha256_ctx state;
-};
+struct hmac_sha256_ctx HMAC_CTX (struct sha256_ctx, offsetof(struct sha256_ctx, index));
 
 void
 hmac_sha256_set_key(struct hmac_sha256_ctx *ctx,
@@ -197,7 +196,7 @@ hmac_sha224_digest(struct hmac_sha224_ctx *ctx,
 		   uint8_t *digest);
 
 /* hmac-sha512 */
-struct hmac_sha512_ctx HMAC_CTX(struct sha512_ctx);
+struct hmac_sha512_ctx OLD_HMAC_CTX(struct sha512_ctx);
 
 void
 hmac_sha512_set_key(struct hmac_sha512_ctx *ctx,
@@ -225,7 +224,7 @@ hmac_sha384_digest(struct hmac_sha512_ctx *ctx,
 		   uint8_t *digest);
 
 /* hmac-gosthash94 */
-struct hmac_gosthash94_ctx HMAC_CTX(struct gosthash94_ctx);
+struct hmac_gosthash94_ctx OLD_HMAC_CTX(struct gosthash94_ctx);
 
 void
 hmac_gosthash94_set_key(struct hmac_gosthash94_ctx *ctx,
@@ -239,7 +238,7 @@ hmac_gosthash94_update(struct hmac_gosthash94_ctx *ctx,
 hmac_gosthash94_digest(struct hmac_gosthash94_ctx *ctx,
 		       uint8_t *digest);
 
-struct hmac_gosthash94cp_ctx HMAC_CTX(struct gosthash94cp_ctx);
+struct hmac_gosthash94cp_ctx OLD_HMAC_CTX(struct gosthash94cp_ctx);
 
 void
 hmac_gosthash94cp_set_key(struct hmac_gosthash94cp_ctx *ctx,
@@ -255,7 +254,7 @@ hmac_gosthash94cp_digest(struct hmac_gosthash94cp_ctx *ctx,
 
 
 /* hmac-streebog */
-struct hmac_streebog512_ctx HMAC_CTX(struct streebog512_ctx);
+struct hmac_streebog512_ctx OLD_HMAC_CTX(struct streebog512_ctx);
 
 void
 hmac_streebog512_set_key(struct hmac_streebog512_ctx *ctx,
@@ -282,7 +281,7 @@ hmac_streebog256_digest(struct hmac_streebog256_ctx *ctx,
 			uint8_t *digest);
 
 /* hmac-sm3 */
-struct hmac_sm3_ctx HMAC_CTX(struct sm3_ctx);
+struct hmac_sm3_ctx OLD_HMAC_CTX(struct sm3_ctx);
 
 void
 hmac_sm3_set_key(struct hmac_sm3_ctx *ctx,

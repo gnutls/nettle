@@ -32,6 +32,8 @@
 #ifndef NETTLE_HMAC_INTERNAL_H_INCLUDED
 #define NETTLE_HMAC_INTERNAL_H_INCLUDED
 
+#include <string.h>
+
 #include "nettle-types.h"
 #include "nettle-meta.h"
 
