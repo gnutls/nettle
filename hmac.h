@@ -121,7 +121,7 @@ hmac_digest(const void *outer, const void *inner, void *state,
 /* HMAC using specific hash functions */
 
 /* hmac-md5 */
-struct hmac_md5_ctx HMAC_CTX(struct md5_ctx, offsetof(struct md5_ctx, index));
+struct hmac_md5_ctx HMAC_CTX(struct md5_ctx, offsetof (struct md5_ctx, index));
 
 void
 hmac_md5_set_key(struct hmac_md5_ctx *ctx,
@@ -137,7 +137,7 @@ hmac_md5_digest(struct hmac_md5_ctx *ctx,
 
 
 /* hmac-ripemd160 */
-struct hmac_ripemd160_ctx OLD_HMAC_CTX(struct ripemd160_ctx);
+struct hmac_ripemd160_ctx HMAC_CTX(struct ripemd160_ctx, offsetof (struct ripemd160_ctx, index));
 
 void
 hmac_ripemd160_set_key(struct hmac_ripemd160_ctx *ctx,
