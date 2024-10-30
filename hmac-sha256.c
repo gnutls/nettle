@@ -48,7 +48,6 @@ hmac_sha256_set_key(struct hmac_sha256_ctx *ctx,
 {
   _nettle_hmac_set_key (sizeof(ctx->outer), ctx->outer, ctx->inner, &ctx->state,
 			ctx->state.block, &nettle_sha256, key_length, key);
-  ctx->state.count = 1;
 }
 
 void
@@ -62,5 +61,7 @@ void
 hmac_sha256_digest(struct hmac_sha256_ctx *ctx,
 		   uint8_t *digest)
 {
-  _NETTLE_HMAC_DIGEST (ctx->outer, ctx->inner, &ctx->state, SHA256_DIGEST_SIZE, sha256_digest, digest);
+  sha256_digest (&ctx->state, ctx->state.block);
+  ctx->state.index = SHA256_DIGEST_SIZE;
+  _NETTLE_HMAC_DIGEST (ctx->outer, ctx->inner, &ctx->state, sha256_digest, digest);
 }
