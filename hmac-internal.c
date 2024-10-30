@@ -47,53 +47,40 @@ memxor_byte (uint8_t *p, uint8_t b, size_t n)
     p[i] ^= b;
 }
 
-void
-_nettle_hmac_outer_block (size_t block_size, uint8_t *block, size_t key_size, const uint8_t *key)
+static void
+memxor_byte4 (uint8_t *dst, const uint8_t *src, uint8_t b, size_t n)
 {
-  assert (key_size <= block_size);
-  memset (block, OPAD, block_size);
-  memxor (block, key, key_size);
+  size_t i;
+  for (i = 0; i < n; i++)
+    dst[i] = src[i] ^ b;
 }
 
 void
-_nettle_hmac_outer_block_digest (size_t block_size, uint8_t *block, size_t key_size)
-{
-  assert (key_size <= block_size);
-
-  memxor_byte (block, OPAD, key_size);
-  memset (block + key_size, OPAD, block_size - key_size);
-}
-
-void
-_nettle_hmac_inner_block (size_t block_size, uint8_t *block)
-{
-  memxor_byte (block, OPAD ^ IPAD, block_size);
-}
-
-void
-_nettle_hmac_set_key(size_t state_size, void *outer, void *inner,
-		     void *ctx, uint8_t *block,
-		     const struct nettle_hash *hash,
-		     compress_func *compress,
-		     size_t key_length, const uint8_t *key)
+_nettle_hmac_set_key (size_t state_size, void *outer, void *inner,
+		      void *ctx, uint8_t *block,
+		      const struct nettle_hash *hash,
+		      size_t key_size, const uint8_t *key)
 {
   hash->init (ctx);
-  memcpy (outer, ctx, state_size);
-  memcpy (inner, ctx, state_size);
 
-  if (key_length > hash->block_size)
+  if (key_size > hash->block_size)
     {
-      hash->update (ctx, key_length, key);
+      hash->update (ctx, key_size, key);
       hash->digest (ctx, block);
-      _nettle_hmac_outer_block_digest (hash->block_size, block, hash->digest_size);
+      key_size = hash->digest_size;
+      memxor_byte (block, OPAD, key_size);
     }
   else
-    _nettle_hmac_outer_block (hash->block_size, block, key_length, key);
+    memxor_byte4 (block, key, OPAD, key_size);
 
-  compress (outer, block);
+  memset (block + key_size, OPAD, hash->block_size - key_size);
 
-  _nettle_hmac_inner_block (hash->block_size, block);
-  compress (inner, block);
+  hash->update (ctx, hash->block_size, block);
+  memcpy (outer, ctx, state_size);
 
-  memcpy (ctx, inner, state_size);
+  memxor_byte (block, OPAD ^ IPAD, hash->block_size);
+
+  hash->init (ctx);
+  hash->update (ctx, hash->block_size, block);
+  memcpy (inner, ctx, state_size);
 }

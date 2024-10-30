@@ -42,21 +42,12 @@
 #include "memxor.h"
 #include "sha2-internal.h"
 
-/* Initialize for processing a new message.*/
-static void 
-hmac_sha256_init (struct hmac_sha256_ctx *ctx)
-{
-  memcpy (ctx->state.state, ctx->inner, sizeof (ctx->state.state));
-  ctx->state.count = 1;
-  /* index should already be zero, from previous call to sha256_init or sha256_digest. */
-}
-
 void
 hmac_sha256_set_key(struct hmac_sha256_ctx *ctx,
 		    size_t key_length, const uint8_t *key)
 {
   _nettle_hmac_set_key (sizeof(ctx->outer), ctx->outer, ctx->inner, &ctx->state,
-			ctx->state.block, &nettle_sha256, (compress_func *) sha256_compress, key_length, key);
+			ctx->state.block, &nettle_sha256, key_length, key);
   ctx->state.count = 1;
 }
 
@@ -71,12 +62,5 @@ void
 hmac_sha256_digest(struct hmac_sha256_ctx *ctx,
 		   uint8_t *digest)
 {
-  sha256_digest (&ctx->state, ctx->state.block);
-
-  memcpy (ctx->state.state, ctx->outer, sizeof (ctx->state.state));
-  ctx->state.count = 1;
-  ctx->state.index = SHA256_DIGEST_SIZE;
-  sha256_digest (&ctx->state, digest);
-
-  hmac_sha256_init (ctx);
+  _NETTLE_HMAC_DIGEST (ctx->outer, ctx->inner, &ctx->state, SHA256_DIGEST_SIZE, sha256_digest, digest);
 }
