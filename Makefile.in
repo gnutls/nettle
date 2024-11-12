@@ -197,7 +197,6 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  dsa-sha1-sign.c dsa-sha1-verify.c \
 		  dsa-sha256-sign.c dsa-sha256-verify.c  \
 		  dsa2sexp.c sexp2dsa.c \
-		  pgp-encode.c rsa2openpgp.c \
 		  der-iterator.c der2rsa.c der2dsa.c \
 		  sec-add-1.c sec-sub-1.c \
 		  gmp-glue.c cnd-copy.c \
@@ -244,7 +243,7 @@ HEADERS = aes.h arcfour.h arctwo.h asn1.h blowfish.h balloon.h \
 	  memops.h memxor.h \
 	  nettle-meta.h nettle-types.h \
 	  ocb.h pbkdf2.h \
-	  pgp.h pkcs1.h pss.h pss-mgf1.h realloc.h ripemd160.h rsa.h \
+	  pkcs1.h pss.h pss-mgf1.h realloc.h ripemd160.h rsa.h \
 	  salsa20.h sexp.h serpent.h \
 	  sha.h sha1.h sha2.h sha3.h sm3.h sm4.h streebog.h twofish.h \
 	  umac.h yarrow.h xts.h poly1305.h nist-keywrap.h \

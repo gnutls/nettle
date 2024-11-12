@@ -1,3 +1,13 @@
+2024-08-23  Niels Möller  <nisse@lysator.liu.se>
+
+	Delete incomplete and old openpgp support.
+	* pgp-encode.c: Deleted file.
+	* pgp.h: Deleted file.
+	* rsa2openpgp.c: Deleted file.
+	* rsa.h (rsa_keypair_to_openpgp): Delete declaration.
+	* Makefile.in (hogweed_SOURCES): Delete pgp-encode.c and rsa2openpgp.c.
+	(HEADERS): Delete pgp.h.
+
 2024-06-23  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/testutils.h (struct nettle_xof): New struct type.
