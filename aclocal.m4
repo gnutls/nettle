@@ -552,7 +552,14 @@ AC_DEFUN([NETTLE_PROG_VALGRIND],
 [AC_CACHE_CHECK([if valgrind is working],
   nettle_cv_prog_valgrind,
   [AC_LINK_IFELSE([AC_LANG_PROGRAM([], [])], [
-    if valgrind -q ./conftest$EXEEXT 2>&AS_MESSAGE_LOG_FD; then
+    # Valgrind is known to work poorly and sometimes hang indefinitely
+    # on executables built with gcc's leak-sanitizer and
+    # address-sanitizer, and with clang's memory sanitizer. Attempt to
+    # work around. See https://bugs.kde.org/show_bug.cgi?id=492255
+    if "$NM" ./conftest$EXEEXT 2>&AS_MESSAGE_LOG_FD |
+       grep '_lsan_\|_msan_\|_asan_' >/dev/null; then
+      nettle_cv_prog_valgrind=no
+    elif valgrind -q ./conftest$EXEEXT 2>&AS_MESSAGE_LOG_FD; then
       nettle_cv_prog_valgrind=yes
     else
       nettle_cv_prog_valgrind=no

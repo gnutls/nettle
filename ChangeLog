@@ -1,3 +1,9 @@
+2024-12-13  Niels Möller  <nisse@lysator.liu.se>
+
+	* aclocal.m4 (NETTLE_PROG_VALGRIND): Check if executable appears
+	to include lsan, asan or msan symbols, and if so, don't attempt to
+	run valgrind.
+
 2024-10-16  Niels Möller  <nisse@lysator.liu.se>
 
 	* run-tests: Cleanup, guided by shellcheck warnings. Use $()
