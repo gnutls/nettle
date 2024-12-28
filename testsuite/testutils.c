@@ -141,9 +141,9 @@ mark_bytes_defined (size_t size, const void *p)
 }
 #else
 void
-mark_bytes_undefined (size_t size, const void *p) {}
+mark_bytes_undefined (size_t size UNUSED, const void *p UNUSED) {}
 void
-mark_bytes_defined (size_t size, const void *p) {}
+mark_bytes_defined (size_t size UNUSED, const void *p UNUSED) {}
 #endif
 
 int

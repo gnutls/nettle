@@ -1,3 +1,9 @@
+2024-12-28  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/testutils.c (mark_bytes_undefined)
+	(mark_bytes_defined) [!HAVE_VALGRIND_MEMCHECK_H]: Add UNUSED
+	attribute on dummy version of these functions.
+
 2024-12-14  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Bump package version, to 3.10.1.
