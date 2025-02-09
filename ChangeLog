@@ -1,3 +1,10 @@
+2025-02-09  Niels Möller  <nisse@lysator.liu.se>
+
+	* powerpc64/p8/gcm-aes-decrypt.asm: Use stxvd2x/lxvd2x rather than
+	stxv/lxv for save and restore of vector registers, since the
+	latter instructions are not available on Power8 (ISA v2.07).
+	* powerpc64/p8/gcm-aes-encrypt.asm: Likewise.
+
 2024-12-30  Niels Möller  <nisse@lysator.liu.se>
 
 	* Released Nettle-3.10.1.
