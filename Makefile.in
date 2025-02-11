@@ -226,7 +226,8 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  ed25519-sha512.c ed25519-sha512-pubkey.c \
 		  ed25519-sha512-sign.c ed25519-sha512-verify.c \
 		  ed448-shake256.c ed448-shake256-pubkey.c \
-		  ed448-shake256-sign.c ed448-shake256-verify.c
+		  ed448-shake256-sign.c ed448-shake256-verify.c \
+		  slh-wots.c
 
 OPT_SOURCES = fat-arm.c fat-arm64.c fat-ppc.c fat-s390x.c fat-x86_64.c mini-gmp.c
 
@@ -279,6 +280,7 @@ DISTFILES = $(SOURCES) $(HEADERS) getopt.h getopt_int.h \
 	ctr-internal.h chacha-internal.h sha3-internal.h \
 	salsa20-internal.h umac-internal.h hogweed-internal.h \
 	rsa-internal.h pkcs1-internal.h dsa-internal.h eddsa-internal.h \
+	slh-dsa-internal.h \
 	gmp-glue.h ecc-internal.h fat-setup.h oaep.h \
 	mini-gmp.h asm.m4 m4-utils.m4 \
 	nettle.texinfo nettle.info nettle.html nettle.pdf sha-example.c
