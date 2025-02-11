@@ -166,7 +166,8 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c aes-decrypt-table.c \
 		 write-be32.c write-le32.c write-le64.c \
 		 yarrow256.c yarrow_key_event.c \
 		 xts.c xts-aes128.c xts-aes256.c \
-		 drbg-ctr-aes256.c
+		 drbg-ctr-aes256.c \
+		 slh-wots.c
 
 hogweed_SOURCES = sexp.c sexp-format.c \
 		  sexp-transport.c sexp-transport-format.c \
@@ -228,6 +229,7 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  ed448-shake256.c ed448-shake256-pubkey.c \
 		  ed448-shake256-sign.c ed448-shake256-verify.c
 
+
 OPT_SOURCES = fat-arm.c fat-arm64.c fat-ppc.c fat-s390x.c fat-x86_64.c mini-gmp.c
 
 HEADERS = aes.h arcfour.h arctwo.h asn1.h blowfish.h balloon.h \
@@ -279,6 +281,7 @@ DISTFILES = $(SOURCES) $(HEADERS) getopt.h getopt_int.h \
 	ctr-internal.h chacha-internal.h sha3-internal.h \
 	salsa20-internal.h umac-internal.h hogweed-internal.h \
 	rsa-internal.h pkcs1-internal.h dsa-internal.h eddsa-internal.h \
+	slh-dsa-internal.h \
 	gmp-glue.h ecc-internal.h fat-setup.h oaep.h \
 	mini-gmp.h asm.m4 m4-utils.m4 \
 	nettle.texinfo nettle.info nettle.html nettle.pdf sha-example.c

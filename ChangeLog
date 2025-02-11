@@ -1,3 +1,12 @@
+2025-02-11  Niels Möller  <nisse@lysator.liu.se>
+
+	* slh-wots.c (_wots_gen, _wots_sign, _wots_verify): New file, new functions.
+	* slh-dsa-internal.h: New file.
+	* Makefile.in (nettle_SOURCES): Add slh-wots.c.
+	(DISTFILES): Add slh-dsa-internal.h.
+	* testsuite/slh-dsa-test.c: New file.
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Add slh-dsa-test.c.
+
 2025-03-02  Niels Möller  <nisse@lysator.liu.se>
 
 	* powerpc64/p8/gcm-aes-decrypt.asm: Avoid using lxvb16x
