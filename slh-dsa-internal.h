@@ -43,6 +43,9 @@
 #define _merkle_root _nettle_merkle_root
 #define _merkle_sign _nettle_merkle_sign
 #define _merkle_verify _nettle_merkle_verify
+#define _fors_gen _nettle_fors_gen
+#define _fors_sign _nettle_fors_sign
+#define _fors_verify _nettle_fors_verify
 #define _xmss_gen _nettle_xmss_gen
 #define _xmss_sign _nettle_xmss_sign
 #define _xmss_verify _nettle_xmss_verify
@@ -143,6 +146,29 @@ _merkle_sign (const struct slh_merkle_ctx_secret *ctx,
 void
 _merkle_verify (const struct slh_merkle_ctx_public *ctx, merkle_node_hash_func *node_hash,
 		unsigned height, unsigned idx, const uint8_t *signature, uint8_t *hash);
+
+/* Use k Merkle trees, each of size 2^a. Signs messages of size
+   k * a = 168 bits or 21 octets. */
+#define FORS_A 12
+#define FORS_K 14
+
+#define FORS_MSG_SIZE 21
+/* 2912 bytes */
+#define FORS_SIGNATURE_SIZE (FORS_K * (FORS_A + 1) * _SLH_DSA_128_SIZE)
+
+/* Generates a single secret value, and corresponding leaf hash. */
+void
+_fors_gen (const struct slh_merkle_ctx_secret *ctx, unsigned index, uint8_t *sk, uint8_t *leaf);
+
+/* Computes a fors signature as well as the public key. */
+void
+_fors_sign (const struct slh_merkle_ctx_secret *fors_ctx,
+	    const uint8_t *msg, uint8_t *signature, uint8_t *pub);
+
+/* Computes candidate public key from signature. */
+void
+_fors_verify (const struct slh_merkle_ctx_public *ctx,
+	      const uint8_t *msg, const uint8_t *signature, uint8_t *pub);
 
 #define XMSS_H 9
 /* Just the auth path, excluding the wots signature, 144 bytes. */
