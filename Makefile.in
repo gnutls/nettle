@@ -167,7 +167,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c aes-decrypt-table.c \
 		 yarrow256.c yarrow_key_event.c \
 		 xts.c xts-aes128.c xts-aes256.c \
 		 drbg-ctr-aes256.c \
-		 slh-merkle.c slh-shake.c slh-wots.c slh-xmss.c
+		 slh-fors.c slh-merkle.c slh-shake.c slh-wots.c slh-xmss.c
 
 hogweed_SOURCES = sexp.c sexp-format.c \
 		  sexp-transport.c sexp-transport-format.c \

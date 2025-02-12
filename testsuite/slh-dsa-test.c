@@ -137,6 +137,63 @@ test_merkle (const struct tstring *public_seed, const struct tstring *secret_see
 }
 
 static void
+test_fors_gen(const struct tstring *public_seed, const struct tstring *secret_seed,
+	      unsigned layer, uint64_t tree_idx, unsigned keypair, unsigned idx,
+	      const struct tstring *exp_sk, const struct tstring *exp_leaf)
+{
+  struct slh_merkle_ctx_secret ctx =
+    {
+      {
+	public_seed->data,
+	{ bswap32_if_le(layer), 0, bswap64_if_le(tree_idx) },
+	keypair,
+      },
+      secret_seed->data,
+    };
+  uint8_t sk[_SLH_DSA_128_SIZE];
+  uint8_t leaf[_SLH_DSA_128_SIZE];
+  ASSERT (public_seed->length == _SLH_DSA_128_SIZE);
+  ASSERT (secret_seed->length == _SLH_DSA_128_SIZE);
+  ASSERT (exp_sk->length == _SLH_DSA_128_SIZE);
+  ASSERT (exp_leaf->length == _SLH_DSA_128_SIZE);
+
+  _fors_gen (&ctx, idx, sk, leaf);
+  ASSERT (MEMEQ(sizeof(sk), sk, exp_sk->data));
+  ASSERT (MEMEQ(sizeof(leaf), leaf, exp_leaf->data));
+}
+
+static void
+test_fors_sign (const struct tstring *public_seed, const struct tstring *secret_seed,
+		unsigned layer, uint64_t tree_idx, unsigned keypair, const struct tstring *msg,
+		const struct tstring *exp_pub, const struct tstring *exp_sig)
+{
+  struct slh_merkle_ctx_secret ctx =
+    {
+      {
+	public_seed->data,
+	{ bswap32_if_le(layer), 0, bswap64_if_le(tree_idx) },
+	keypair,
+      },
+      secret_seed->data,
+    };
+  uint8_t pub[_SLH_DSA_128_SIZE];
+  uint8_t sig[FORS_SIGNATURE_SIZE];
+  ASSERT (public_seed->length == _SLH_DSA_128_SIZE);
+  ASSERT (secret_seed->length == _SLH_DSA_128_SIZE);
+  ASSERT (msg->length == FORS_MSG_SIZE);
+  ASSERT (exp_pub->length == _SLH_DSA_128_SIZE);
+  ASSERT (exp_sig->length == FORS_SIGNATURE_SIZE);
+
+  _fors_sign (&ctx, msg->data, sig, pub);
+  ASSERT (MEMEQ(sizeof(sig), sig, exp_sig->data));
+  ASSERT (MEMEQ(sizeof(pub), pub, exp_pub->data));
+
+  memset (pub, 0, sizeof(pub));
+  _fors_verify (&ctx.pub, msg->data, sig, pub);
+  ASSERT (MEMEQ(sizeof(pub), pub, exp_pub->data));
+}
+
+static void
 test_xmss_gen(const struct tstring *public_seed, const struct tstring *secret_seed,
 	      const struct tstring *exp_pub)
 {
@@ -229,6 +286,113 @@ test_main(void)
 		    "a467897bbed0d3a0 9d50e9deaadff78d e9ac65c1fd05d076 10a79c8c465141ad"
 		    "65e60340531fab08 f1f433ef823283fe"));
 
+  test_fors_gen (public_seed, secret_seed, 0, UINT64_C(0x29877722d7c079), 0x156, 0x203,
+		 SHEX("1ba66d6f782bdd2485589ea15d2b8ff0"),
+		 SHEX("4d9783fd544a53ee7a485ef229b35965"));
+  test_fors_gen (public_seed, secret_seed, 0, UINT64_C(0x29877722d7c079), 0x156, 0,
+		 SHEX("be19da5abd01818bbcae2fc2d728c83b"),
+		 SHEX("40b0edc79104214adda356341b3950ab"));
+  test_fors_gen (public_seed, secret_seed, 0, UINT64_C(0x29877722d7c079), 0x156, 1,
+		 SHEX("ed98099d2fd9d94ac48cae4c142a4c78"),
+		 SHEX("64fccb8a3cf088faeb39353aad5f624c"));
+  test_fors_gen (public_seed, secret_seed, 0, UINT64_C(0x29877722d7c079), 0x156, 0x4e1e,
+		 SHEX("17f55905e41a6dc6e5bab2c9f0c1d5d3"),
+		 SHEX("15325ef3d2914cbd401327244cdb633d"));
+  test_fors_sign (public_seed, secret_seed, 0, UINT64_C(0x29877722d7c079), 0x156,
+		  SHEX("2033c1a4df6fc230c699522a21bed913"
+		       "0dda231526"),
+		  SHEX("3961b2cab15e08c633be827744a07f01"),
+		  SHEX("1ba66d6f782bdd24 85589ea15d2b8ff0 a00c06eaedc8c22d cb86f3df8b52a3bd"
+		       "144d4ed6f1167431 a95dc6018879b6b0 f9813797204ec2b0 558bad17b32e6dd9"
+		       "88086a032c0acbcf 2c1349ffc16c4af7 59365ff74afe4b8d c3fac5b2cda7ba65"
+		       "6c36c086e58468c0 1eddfc959fbdc853 2d75e79cf3374756 cc0491cfef555921"
+		       "ec8567bff0b6f216 ac4a4f200da63b5c 6d3a5c3273aa7a42 66adf083d3126103"
+		       "c73fe63a6e05e47e 8b9a520f00f32a69 7d0ff3a5ee840931 3773188f300b39e5"
+		       "b4967febf77c0f23 226785ee9dce335c efb1ce84b0673058 1bcef4d45f24aee4"
+		       "96a60bd4759b7b20 692241850eae1de7 0c7c4287b9f3b962 a66e0f23d1301b84"
+		       "48bb3dc545be0ef8 d0ec0be045d33ae4 b2dc0c5d002c2699 e8f49bf3bcb13676"
+		       "beefe11186a20a95 7027ac48ee6dd33b c0895df9847fd1c6 7a753777d21ac464"
+		       "2751139061cca836 99822c13567833b9 41fe5954bff0969a 4b20e0829d77e24e"
+		       "d0e02a00a2ce9f7e 64923fa61f0da1af dc5978dc063afeac b7108ee08aaa55b7"
+		       "11df00bbf1c71d69 8b389e6ad0ee2af4 fad1d8f8c87d53ee ac1f82a162a95cd5"
+		       "cce6dfc9908a1de3 3a2b26b41bbc4ffd a8e136879f10341a 713d62c107f3238c"
+		       "38693aff2e1fe15a dd8380671b2fac8f db3a4ffacd143f5a 00e21caccbe7d95d"
+		       "4c31c4daf7110529 de599fb6e8aa4f71 8c6172f4f10c4c1d d7310f8e44d18fb9"
+		       "bb6b906ae7ce973d eadfc82d6704762e d61165f6ca118313 4b6c834bf6b4e4ce"
+		       "19700bb54fb2d0f2 82b11ee5b7f68c72 cf32ff9e7d1356bd 53fdcce0d03c43d0"
+		       "ebf6f7d8841a16dd b49944d01374ecb9 45e6c5f0659d5f51 de0b27a834e2e7be"
+		       "a78a609da75d7f2c 6a40ba9110a2c331 9db7775bf6226b9a 8e324dc4411824a8"
+		       "8db95cc2fd96e4bc 24f1ecb6ce2b9293 020c28deacec1eb3 313d4e3dfd24b403"
+		       "686f16272cac3aca 95080257071a54f7 45ffb4708ff2d02d e94d7e9bf8d45f64"
+		       "5917c7135d6bc0a1 ca0a99bc4e33a689 07aa65a58b586c56 e1d81af6cb57fa5d"
+		       "56b3567687ecef53 2bb5aaaf2041b510 1538294296ae4c11 89a5100eb19b5531"
+		       "2016c575cbbb688f 20ba186dd48e4161 64c29b2eb7b59979 814b5a8e76553997"
+		       "99bf79eeab3ee76d 4c97df282265564f 2fa8971a1ecca0c4 6b59cc6ba253531c"
+		       "17ab7125cf2aad60 a120c7d4b631b1ba f187182c7d7582da 3232251215ffd6a2"
+		       "a55c627ba8d5cafe 761504d8341f293e 713987d6e0ca2eab 373c5131c2d38051"
+		       "c35b17918937b9fe e98382c277640de0 ccec45ba22d9d189 eea505a21c8594dd"
+		       "9b12e69a7faf58ed 269b718abeea4621 391d7fb4c6e0037b daf4a9ac73191674"
+		       "9e2a17d704cf5616 8d97c17b257e2483 16aa9da15d822ee3 c325bc0519173641"
+		       "7007ea82088618d7 531ffcef255b2de2 bf9fcaeb29d83e56 7a08dd3d3c229209"
+		       "af96ba71d8274fda e324702878d99ac0 5e990e0d6f34c879 d19279f57541f294"
+		       "96645cad4a636793 385b0a5dc21d5659 37fc36384dea4beb b5746c10748efcbd"
+		       "6b1925a74e3ac467 d7af456e0ba1e47a 2fab24e8311c14d8 40b499c9140e99a4"
+		       "993379b9b762b3ad c9499d5c86d07bc6 a159876a9962d8a4 43514e812f75c60d"
+		       "c50028388c627329 6e7208a3fa618256 2d10d7142a99da06 86ef8f05e564446c"
+		       "6bb32ffdee9edd13 aee58027d29e7195 48b67d75efe9581a 3374c66f65a1cd9e"
+		       "f9e98e6b57c40321 2739df6fd2de6c8a 39decc7cd33e37db 3a0f43296cb987e8"
+		       "756d4b29dc227733 bdee1d2f01679dab 92ce506e2fc77a70 798787b2e95be8e9"
+		       "bf80d0b64af8eaa6 ceda80fe85a0ceaf 81f335b99a1899a3 d9d609e7ba606eb2"
+		       "ababf2bbce1bc8f9 9eaf6074cf1c7e07 9896eb09827c16d0 cd4833377c46a337"
+		       "a7950b31b6566624 02e8ba838668a315 ac531315a9a56af1 8729ee25f53711c0"
+		       "9d25c173aa0e4d2b ec72db4b9cb4210d 52a8fb2f8b2671b1 ec711a4da8a357df"
+		       "bb0d2ec9734a50e1 db92352ace0f26f5 0cfb76fd17a08dec bb19c2417a9dc719"
+		       "f2ecac4a8e7c4827 5533def5c08788dc 4b47ec81960b25a5 7dba2762f5a07003"
+		       "7c50a4883fe902eb cb1574998dd5e8b1 e34ea5aea20bbbef fdb5d6163688e4e1"
+		       "bdc9619f12b78d20 e8c073f81da8bbe4 8bde8934bc7186da 9d29d1f670a322bf"
+		       "9febca92915e393c 1878895c04b8c365 e4d399ac551a55c5 4264e3fc6176cbcd"
+		       "101790863cdab395 74a4dd5c9edd69a0 1df20a10e5abff31 b4e204f5cf7e1dc9"
+		       "a27626ec3bf06d28 fad08c10674830d7 abc54772d95ace66 765757340007a353"
+		       "63d270f410a6bcf2 0f2ca54dfdb00d9b e8fa7ea5b79bf818 2f16b95f9850ce4c"
+		       "acff1e66bec202b5 7b85b37cdd2c3900 1d2950666368afa2 1de5ce68f54833a8"
+		       "8da17b49c4e66243 560ec61a6efd5d3a 2966a76df2dc08c4 e5f02f8b8cd71b90"
+		       "4ddd4bfd73a5c848 9b7eb813ca3da6b8 dbea536354e01428 dd6dc42db23257a2"
+		       "0e322f685bb82b20 f0edc48351c22b75 e0aa8adc567f172e 654360e094c19754"
+		       "2f39965bd9004621 c9ee3297870ed818 f980a71ec4a8f818 1e9be5be1ef6a660"
+		       "cbf68637e54b5afa bbc5f9dc61933014 cb52b4d2624a24ac a3c6f5ca80dd5aee"
+		       "93d0155af703c0ac a4a9266cd9b56f3f 152fc4fca8e7dce3 21a188682fb36e6f"
+		       "7a736fd4e9972a9f 71f11d50c351551e 3c455f1b051befcb c1fd83239b748951"
+		       "f7e18c2027627339 712df2772dcd57de 9a15f218e25a4493 ce20d039e2880881"
+		       "69445f244f14d56e 6efe9ed005094333 1a4ef297119cf5c0 e21e2bbc535daebf"
+		       "3fce3caf9d86b62c 37a4c9bd8991b8ff 01e992f26a77e987 ca8ddf6cf47d47d5"
+		       "439eb6622b241172 a8d5a251dcb5d4d2 26a68bef9d2e77df e4db3ebd4342f49b"
+		       "ee82b28fc35063e9 36589f86f8ff2db0 f2a7fcbf0d461484 184f64bf18e5bff6"
+		       "84545e6112f87662 60987bcfe76bed5a 17dfb88a9b7d7cac cb4283afb4ee21ef"
+		       "b43d698c413de813 48309bc1ec10cdb3 3a7e2e4aaed41cfe bf808b08e7f64f8f"
+		       "6f250960375c3a3e d0617000ac6e54a6 12727861daf4d893 7ae133a5e99c607e"
+		       "09e8097f876ef8cd 75e244b78eaabf83 1db9efd0ba405b52 715825974579a627"
+		       "9f7775ab87de6e26 9979530e3fff6d8f f6421ab3ba1ec61b 9ebc1a2a7aa59002"
+		       "ac916c26f55bc369 b2e11030f3346548 28285930228ad081 2500c822bd41ead4"
+		       "80b530331f8642f2 6d5454fe75cc3870 d807ef92496b27e0 45b3317f10e98533"
+		       "59875ec041117f3b b37d88c526ef1a34 2b6ea289fa69bc91 4d8fef84a27329f3"
+		       "0a7326c84710f972 5432a525f3bf9af3 d93f9faded5766f9 067a5b1b7a0dac92"
+		       "75207b6776c404b1 7801a7372666f153 78cdf91bb4c29d6a cf79eed16918947c"
+		       "769283e829ec1e97 cb90630473224d88 95f2a0219d309507 173f42594372696f"
+		       "6ef8468b843d4ad5 81ad78c221bbb877 0ca2323858016dc6 f9c311bd451a5b68"
+		       "ce23c6feb8c1f543 82a8512d286e6bd5 62ada1c6c8c7c46d 7a9722d7a909b7cc"
+		       "fce3258bb37b78c0 d076e4bb587bfe05 95257c988543edeb d2f24f9e124dd0e3"
+		       "35ea2add17201df7 f2e68fbcc02da7d4 3b7a9a8f83de7375 be2c61b4c2b872bb"
+		       "de25ea659a59b1a6 3cbc9c5efb6c449d 9818245291c6c232 17ae6cb018cdf7a9"
+		       "a49240f37a484361 b450ba8fccedd4f4 556ca8423fd1e907 6a876306958ee264"
+		       "4646633c2777280a c7a82e441d79b556 c629d7c97b4c7895 4bae0e76cb4ab1b2"
+		       "0b51126ac8f125e2 f01c266df31b2ae6 d50eb02f96b39044 81a32254799bc233"
+		       "88f7d86b6b60876d 20cf9e8a4468fb3e be4883fb90765a50 5d6ae99827a0ff96"
+		       "d5eb284ac7df815c 0fd5aa2bdffa560b dc37beb9a7a6a4e3 fc074a9f812132a8"
+		       "6be3a1f73433a198 0a168bbe54910ff5 95a47b6747f43a67 8fe5a7c96e636b4b"
+		       "874f348d24b79337 db4315cb10fd0e56 2431511c323353cf 1e59fd5a55357e5f"
+		       "6b7cce60f1f8211f d1f5be68f7c8bd70 c29f03c0a6613c64 dd10a65db5e0c546"
+		       "f5382403ff8ba36b ad49879231912a4b 219a08a19858b12c 2744fd65603775b5"
+		       "6bf4459512e79188 92da55f87d7cc02c 6885c0ec02550b60 9e3fa7d9fb0d13ab"));
   test_xmss_gen (public_seed, secret_seed,
 		 SHEX("ac524902fc81f503 2bc27b17d9261ebd"));
 

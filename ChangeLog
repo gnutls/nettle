@@ -9,9 +9,11 @@
 	* slh-dsa-internal.h (struct slh_merkle_ctx_public)
 	(struct slh_merkle_ctx_secret): New structs.
 	(merkle_leaf_hash_func, merkle_node_hash_func): New typedefs.
-	* Makefile.in (nettle_SOURCES): Add slh-merkle.c, slh-shake.c and
-	slh-xmss.c.
-	* testsuite/slh-dsa-test.c: Add xmss and merkle tests.
+	* slh-fors.c (_fors_gen, fors_leaf, fors_node, _fors_sign)
+	(_fors_verify): New file, new functions.
+	* Makefile.in (nettle_SOURCES): Add slh-fors.c, slh-merkle.c,
+	slh-shake.c and slh-xmss.c.
+	* testsuite/slh-dsa-test.c: Add merkle, xmss and fors tests.
 
 2025-02-11  Niels Möller  <nisse@lysator.liu.se>
 
