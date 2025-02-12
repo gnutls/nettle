@@ -35,12 +35,22 @@
 #include <stdint.h>
 
 /* Name mangling */
+#define _slh_shake_init _nettle_slh_shake_init
+#define _slh_shake _nettle_slh_shake
 #define _wots_gen _nettle_wots_gen
 #define _wots_sign _nettle_wots_sign
 #define _wots_verify _nettle_wots_verify
+#define _merkle_root _nettle_merkle_root
+#define _merkle_sign _nettle_merkle_sign
+#define _merkle_verify _nettle_merkle_verify
+#define _xmss_gen _nettle_xmss_gen
+#define _xmss_sign _nettle_xmss_sign
+#define _xmss_verify _nettle_xmss_verify
 
 /* Size of a single hash, including the seed and prf parameters */
 #define _SLH_DSA_128_SIZE 16
+
+#define SLH_DSA_D 7
 
 /* Fields always big-endian */
 struct slh_address_tree
@@ -72,6 +82,28 @@ enum slh_addr_type
     SLH_FORS_PRF = 6,
   };
 
+struct slh_merkle_ctx_public
+{
+  const uint8_t *seed;
+  struct slh_address_tree at;
+  unsigned keypair; /* Used only by fors_leaf and fors_node. */
+};
+
+struct slh_merkle_ctx_secret
+{
+  struct slh_merkle_ctx_public pub;
+  const uint8_t *secret_seed;
+};
+
+struct sha3_256_ctx;
+void
+_slh_shake_init (struct sha3_256_ctx *ctx, const uint8_t *public_seed,
+		 const struct slh_address_tree *at, const struct slh_address_hash *ah);
+void
+_slh_shake (const uint8_t *public_seed,
+	    const struct slh_address_tree *at, const struct slh_address_hash *ah,
+	    const uint8_t *secret, uint8_t *out);
+
 #define _WOTS_SIGNATURE_LENGTH 35
 /* 560 bytes */
 #define WOTS_SIGNATURE_SIZE (_WOTS_SIGNATURE_LENGTH*_SLH_DSA_128_SIZE)
@@ -88,5 +120,47 @@ _wots_sign (const uint8_t *public_seed, const uint8_t *secret_seed, const struct
 void
 _wots_verify (const uint8_t *public_seed, const struct slh_address_tree *at,
 	      unsigned keypair, const uint8_t *msg, const uint8_t *signature, uint8_t *pub);
+
+/* Merkle tree functions. Could be generalized for other merkle tree
+   applications, by using const void* for the ctx argument. */
+typedef void merkle_leaf_hash_func (const struct slh_merkle_ctx_secret *ctx, unsigned index, uint8_t *out);
+typedef void merkle_node_hash_func (const struct slh_merkle_ctx_public *ctx, unsigned height, unsigned index,
+				    const uint8_t *left, const uint8_t *right, uint8_t *out);
+
+void
+_merkle_root (const struct slh_merkle_ctx_secret *ctx,
+	      merkle_leaf_hash_func *leaf_hash, merkle_node_hash_func *node_hash,
+	      unsigned height, unsigned start, uint8_t *root,
+	      /* Must have space for (height + 1) node hashes */
+	      uint8_t *stack);
+
+void
+_merkle_sign (const struct slh_merkle_ctx_secret *ctx,
+	      merkle_leaf_hash_func *leaf_hash, merkle_node_hash_func *node_hash,
+	      unsigned height, unsigned idx, uint8_t *signature);
+
+/* The hash argument is both input (leaf hash to be verified) and output (resulting root hash). */
+void
+_merkle_verify (const struct slh_merkle_ctx_public *ctx, merkle_node_hash_func *node_hash,
+		unsigned height, unsigned idx, const uint8_t *signature, uint8_t *hash);
+
+#define XMSS_H 9
+/* Just the auth path, excluding the wots signature, 144 bytes. */
+#define XMSS_AUTH_SIZE (XMSS_H * _SLH_DSA_128_SIZE)
+#define XMSS_SIGNATURE_SIZE (WOTS_SIGNATURE_SIZE + XMSS_AUTH_SIZE)
+
+void
+_xmss_gen (const uint8_t *public_seed, const uint8_t *secret_seed,
+	   uint8_t *root);
+
+/* Signs using wots, then signs wots public key using xmss. Also
+   returns the xmss public key (i.e., root hash).*/
+void
+_xmss_sign (const struct slh_merkle_ctx_secret *ctx,
+	    unsigned idx, const uint8_t *msg, uint8_t *signature, uint8_t *pub);
+
+void
+_xmss_verify (const struct slh_merkle_ctx_public *ctx,
+	      unsigned idx, const uint8_t *msg, const uint8_t *signature, uint8_t *pub);
 
 #endif /* NETTLE_SLH_DSA_INTERNAL_H_INCLUDED */

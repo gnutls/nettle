@@ -40,27 +40,6 @@
 #include "sha3.h"
 #include "bswap-internal.h"
 
-static void
-slh_shake_init (struct sha3_256_ctx *ctx, const uint8_t *public_seed,
-		const struct slh_address_tree *at, const struct slh_address_hash *ah)
-{
-  sha3_256_init (ctx);
-  sha3_256_update (ctx, _SLH_DSA_128_SIZE, public_seed);
-  sha3_256_update (ctx, sizeof(*at), (const uint8_t *) at);
-  sha3_256_update (ctx, sizeof(*ah), (const uint8_t *) ah);
-}
-
-static void
-slh_prf (const uint8_t *public_seed,
-	 const struct slh_address_tree *at, const struct slh_address_hash *ah,
-	 const uint8_t *secret, uint8_t *out)
-{
-  struct sha3_256_ctx ctx;
-  slh_shake_init (&ctx, public_seed, at, ah);
-  sha3_256_update (&ctx, _SLH_DSA_128_SIZE, secret);
-  sha3_256_shake (&ctx, _SLH_DSA_128_SIZE, out);
-}
-
 /* If s == 0, returns src and leaves dst unchanged. Otherwise, returns
    dst. For the ah argument, leaves ah->keypair and ah->height_chain
    unchanged, but overwrites the other fields. */
@@ -78,12 +57,12 @@ wots_chain (const uint8_t *public_seed, const struct slh_address_tree *at,
   ah->type = bswap32_if_le (SLH_WOTS_HASH);
   ah->index_hash = bswap32_if_le(i);
 
-  slh_prf (public_seed, at, ah, src, dst);
+  _slh_shake (public_seed, at, ah, src, dst);
 
   for (j = 1; j < s; j++)
     {
       ah->index_hash = bswap32_if_le(i + j);
-      slh_prf (public_seed, at, ah, dst, dst);
+      _slh_shake (public_seed, at, ah, dst, dst);
     }
 
   return dst;
@@ -98,7 +77,7 @@ wots_pk_init (const uint8_t *public_seed, const struct slh_address_tree *at,
   ah->height_chain = 0;
   ah->index_hash = 0;
 
-  slh_shake_init (ctx, public_seed, at, ah);
+  _slh_shake_init (ctx, public_seed, at, ah);
 }
 
 void
@@ -119,7 +98,7 @@ _wots_gen (const uint8_t *public_seed, const uint8_t *secret_seed, const struct 
       ah.type = bswap32_if_le (SLH_WOTS_PRF);
       ah.height_chain = bswap32_if_le(i);
       ah.index_hash = 0;
-      slh_prf (public_seed, at, &ah, secret_seed, out);
+      _slh_shake (public_seed, at, &ah, secret_seed, out);
 
       /* Hash chain. */
       wots_chain (public_seed, at, &ah, 0, 15, out, out);
@@ -145,7 +124,7 @@ wots_sign_one (const uint8_t *public_seed,
   ah.keypair = bswap32_if_le (keypair);
   ah.height_chain = bswap32_if_le(i);
   ah.index_hash = 0;
-  slh_prf (public_seed, at, &ah, secret_seed, sig);
+  _slh_shake (public_seed, at, &ah, secret_seed, sig);
 
   /* Hash chain. */
   wots_chain (public_seed, at, &ah, 0, msg, sig, sig);
