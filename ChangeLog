@@ -1,3 +1,18 @@
+2025-02-12  Niels Möller  <nisse@lysator.liu.se>
+
+	* slh-shake.c (_slh_shake_init, _slh_shake): New file, new
+	functions, moved from slh-wots.c. Update callers.
+	* slh-merkle.c (_merkle_root, _merkle_sign, _merkle_verify): New
+	file, new functions.
+	* slh-xmss.c (xmss_leaf, xmss_node, _xmss_gen, _xmss_sign)
+	(_xmss_verify): New file, new functions.
+	* slh-dsa-internal.h (struct slh_merkle_ctx_public)
+	(struct slh_merkle_ctx_secret): New structs.
+	(merkle_leaf_hash_func, merkle_node_hash_func): New typedefs.
+	* Makefile.in (hogweed_SOURCES): Add slh-merkle.c, slh-shake.c and
+	slh-xmss.c.
+	* testsuite/slh-dsa-test.c: Add xmss and merkle tests.
+
 2025-02-11  Niels Möller  <nisse@lysator.liu.se>
 
 	* slh-wots.c (_wots_gen, _wots_sign, _wots_verify): New file, new functions.

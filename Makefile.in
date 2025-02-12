@@ -227,7 +227,7 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  ed25519-sha512-sign.c ed25519-sha512-verify.c \
 		  ed448-shake256.c ed448-shake256-pubkey.c \
 		  ed448-shake256-sign.c ed448-shake256-verify.c \
-		  slh-wots.c
+		  slh-merkle.c slh-shake.c slh-wots.c slh-xmss.c
 
 OPT_SOURCES = fat-arm.c fat-arm64.c fat-ppc.c fat-s390x.c fat-x86_64.c mini-gmp.c
 
