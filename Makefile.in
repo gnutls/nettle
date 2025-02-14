@@ -167,7 +167,8 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c aes-decrypt-table.c \
 		 yarrow256.c yarrow_key_event.c \
 		 xts.c xts-aes128.c xts-aes256.c \
 		 drbg-ctr-aes256.c \
-		 slh-fors.c slh-merkle.c slh-shake.c slh-wots.c slh-xmss.c
+		 slh-fors.c slh-merkle.c slh-shake.c slh-wots.c slh-xmss.c \
+		 slh-dsa-shake-128s.c
 
 hogweed_SOURCES = sexp.c sexp-format.c \
 		  sexp-transport.c sexp-transport-format.c \
@@ -248,7 +249,7 @@ HEADERS = aes.h arcfour.h arctwo.h asn1.h blowfish.h balloon.h \
 	  ocb.h pbkdf2.h \
 	  pgp.h pkcs1.h pss.h pss-mgf1.h realloc.h ripemd160.h rsa.h \
 	  salsa20.h sexp.h serpent.h \
-	  sha.h sha1.h sha2.h sha3.h sm3.h sm4.h streebog.h twofish.h \
+	  sha.h sha1.h sha2.h sha3.h slh-dsa.h sm3.h sm4.h streebog.h twofish.h \
 	  umac.h yarrow.h xts.h poly1305.h nist-keywrap.h \
 	  drbg-ctr.h
 

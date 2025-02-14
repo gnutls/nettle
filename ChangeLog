@@ -1,3 +1,14 @@
+2025-02-14  Niels Möller  <nisse@lysator.liu.se>
+
+	* slh-dsa.h: New public header file.
+	* slh-dsa-shake-128s.c (slh_dsa_shake_128s_root)
+	(slh_dsa_shake_128s_generate_keypair, slh_digest)
+	(slh_dsa_shake_128s_sign, slh_dsa_shake_128s_verify): New file,
+	new functions.
+	* Makefile.in (hogweed_SOURCES): Add slh-dsa-shake-128s.
+	(HEADERS): Add slh-dsa.h.
+	* testsuite/slh-dsa-test.c: Add test of slh-dsa-shake-128s.
+
 2025-02-12  Niels Möller  <nisse@lysator.liu.se>
 
 	* slh-shake.c (_slh_shake_init, _slh_shake): New file, new
