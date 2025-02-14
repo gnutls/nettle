@@ -227,7 +227,8 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  ed25519-sha512-sign.c ed25519-sha512-verify.c \
 		  ed448-shake256.c ed448-shake256-pubkey.c \
 		  ed448-shake256-sign.c ed448-shake256-verify.c \
-		  slh-fors.c slh-merkle.c slh-shake.c slh-wots.c slh-xmss.c
+		  slh-fors.c slh-merkle.c slh-shake.c slh-wots.c slh-xmss.c \
+		  slh-dsa-shake-128s.c
 
 OPT_SOURCES = fat-arm.c fat-arm64.c fat-ppc.c fat-s390x.c fat-x86_64.c mini-gmp.c
 
@@ -247,7 +248,7 @@ HEADERS = aes.h arcfour.h arctwo.h asn1.h blowfish.h balloon.h \
 	  ocb.h pbkdf2.h \
 	  pgp.h pkcs1.h pss.h pss-mgf1.h realloc.h ripemd160.h rsa.h \
 	  salsa20.h sexp.h serpent.h \
-	  sha.h sha1.h sha2.h sha3.h sm3.h sm4.h streebog.h twofish.h \
+	  sha.h sha1.h sha2.h sha3.h slh-dsa.h sm3.h sm4.h streebog.h twofish.h \
 	  umac.h yarrow.h xts.h poly1305.h nist-keywrap.h \
 	  drbg-ctr.h
 
