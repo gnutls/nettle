@@ -1,3 +1,12 @@
+2025-02-16  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/Makefile.in (TS_SC_HOGWEED): Add sc-slh-dsa-test.
+
+	* testsuite/sc-slh-dsa-test: New test case.
+	* testsuite/slh-dsa-test.c: Add mark_bytes_undefined /
+	mark_bytes_defined instrumentation to tests of the slh-dsa
+	primitives.
+
 2025-02-14  Niels Möller  <nisse@lysator.liu.se>
 
 	* slh-dsa.h: New public header file.
