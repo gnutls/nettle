@@ -50,6 +50,7 @@ test_wots_gen (const struct tstring *public_seed, const struct tstring *secret_s
   at.layer = bswap32_if_le (layer);
   at.tree_idx = bswap64_if_le (tree_idx);
   _wots_gen (public_seed->data, secret_seed->data, &at, keypair, pub);
+  mark_bytes_defined (sizeof (pub), pub);
   ASSERT (MEMEQ (sizeof (pub), pub, exp_pub->data));
 }
 
@@ -72,6 +73,8 @@ test_wots_sign (const struct tstring *public_seed, const struct tstring *secret_
 
   _wots_sign (public_seed->data, secret_seed->data, &at, keypair,
 	      msg->data, sig, pub);
+  mark_bytes_defined (sizeof(sig), sig);
+  mark_bytes_defined (sizeof(pub), pub);
   ASSERT (MEMEQ(sizeof(sig), sig, exp_sig->data));
   ASSERT (MEMEQ(sizeof(pub), pub, exp_pub->data));
 
@@ -85,6 +88,7 @@ static void
 xmss_leaf (const struct slh_merkle_ctx_secret *ctx, unsigned idx, uint8_t *leaf)
 {
   _wots_gen (ctx->pub.seed, ctx->secret_seed, &ctx->pub.at, idx, leaf);
+  mark_bytes_defined (SLH_DSA_SHAKE_128S_SEED_SIZE, leaf);
 }
 
 static void
@@ -159,6 +163,8 @@ test_fors_gen(const struct tstring *public_seed, const struct tstring *secret_se
   ASSERT (exp_leaf->length == _SLH_DSA_128_SIZE);
 
   _fors_gen (&ctx, idx, sk, leaf);
+  mark_bytes_defined (sizeof(sk), sk);
+  mark_bytes_defined (sizeof(sk), leaf);
   ASSERT (MEMEQ(sizeof(sk), sk, exp_sk->data));
   ASSERT (MEMEQ(sizeof(leaf), leaf, exp_leaf->data));
 }
@@ -186,6 +192,8 @@ test_fors_sign (const struct tstring *public_seed, const struct tstring *secret_
   ASSERT (exp_sig->length == FORS_SIGNATURE_SIZE);
 
   _fors_sign (&ctx, msg->data, sig, pub);
+  mark_bytes_defined (sizeof(sig), sig);
+  mark_bytes_defined (sizeof(pub), pub);
   ASSERT (MEMEQ(sizeof(sig), sig, exp_sig->data));
   ASSERT (MEMEQ(sizeof(pub), pub, exp_pub->data));
 
@@ -204,6 +212,7 @@ test_xmss_gen(const struct tstring *public_seed, const struct tstring *secret_se
   ASSERT (exp_pub->length == _SLH_DSA_128_SIZE);
 
   _xmss_gen (public_seed->data, secret_seed->data, pub);
+  mark_bytes_defined (sizeof(pub), pub);
   ASSERT (MEMEQ(sizeof(pub), pub, exp_pub->data));
 }
 
@@ -231,6 +240,8 @@ test_xmss_sign (const struct tstring *public_seed, const struct tstring *secret_
   ASSERT (exp_sig->length == XMSS_SIGNATURE_SIZE);
 
   _xmss_sign (&ctx, idx, msg->data, sig, pub);
+  mark_bytes_defined (sizeof(pub), pub);
+  mark_bytes_defined (sizeof(sig), sig);
   ASSERT (MEMEQ(sizeof(sig), sig, exp_sig->data));
   ASSERT (MEMEQ(sizeof(pub), pub, exp_pub->data));
 
@@ -275,6 +286,8 @@ test_main(void)
 
   const struct tstring *secret_seed =
     SHEX("7c9935a0b07694aa0c6d10e4db6b1add");
+
+  mark_bytes_undefined (2*SLH_DSA_SHAKE_128S_SEED_SIZE, secret_seed->data);
 
   test_wots_gen (public_seed, secret_seed, 6, 0, 0,
 		 SHEX("38c9077d76d1e32933fb58a53e769ed7"));
@@ -454,6 +467,14 @@ test_main(void)
 		      "9d93d7104660fefa 0753cf875cb22fd6 0e55dc2f303de036 47712b12067a55f7"
 		      "a467897bbed0d3a0 9d50e9deaadff78d e9ac65c1fd05d076 10a79c8c465141ad"
 		      "65e60340531fab08 f1f433ef823283fe"));
+
+  /* If we mark the private key for the top-level
+     slh_dsa_shake_128s_sign call as undefined, then we get valgrind
+     errors from the branches in wots_chain, when signing the derived
+     public keys. We'd need further instrumentation to make such a
+     test work. */
+  if (test_side_channel)
+    return;
 
   /* Test vector from
      https://github.com/smuellerDD/leancrypto/raw/refs/heads/master/slh-dsa/tests/sphincs_tester_vectors_shake_128s.h */

@@ -73,7 +73,8 @@ TARGETS = $(TS_C) $(TS_CXX)
 TS_SC_HOGWEED = sc-pkcs1-sec-decrypt-test sc-rsa-sec-decrypt-test \
 	sc-rsa-oaep-encrypt-test \
 	sc-ecdsa-sign-test sc-curve25519-dh-test sc-curve448-dh-test \
-	sc-ed25519-test sc-ed448-test
+	sc-ed25519-test sc-ed448-test sc-slh-dsa-test
+
 TS_SC_NETTLE = sc-cnd-memcpy-test sc-gcm-test sc-memeql-test
 TS_SC = @IF_VALGRIND@ $(TS_SC_NETTLE) @IF_HOGWEED@ $(TS_SC_HOGWEED)
 
