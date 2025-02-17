@@ -49,6 +49,7 @@
 #define _xmss_gen _nettle_xmss_gen
 #define _xmss_sign _nettle_xmss_sign
 #define _xmss_verify _nettle_xmss_verify
+#define _slh_dsa_shake_128s_params _nettle_slh_dsa_shake_128s_params
 
 /* Size of a single hash, including the seed and prf parameters */
 #define _SLH_DSA_128_SIZE 16
@@ -104,6 +105,22 @@ struct slh_xmss_params
   unsigned short h; /* Height of each tree. */
 };
 
+struct slh_fors_params
+{
+  unsigned short a; /* Height of tree. */
+  unsigned short k; /* Number of trees. */
+  unsigned short msg_size;
+  unsigned short signature_size;
+};
+
+struct slh_dsa_params
+{
+  struct slh_xmss_params xmss;
+  struct slh_fors_params fors;
+};
+
+extern const struct slh_dsa_params _slh_dsa_shake_128s_params;
+
 struct sha3_256_ctx;
 void
 _slh_shake_init (struct sha3_256_ctx *ctx, const uint8_t *public_seed,
@@ -153,14 +170,7 @@ void
 _merkle_verify (const struct slh_merkle_ctx_public *ctx, merkle_node_hash_func *node_hash,
 		unsigned height, unsigned idx, const uint8_t *signature, uint8_t *hash);
 
-/* Use k Merkle trees, each of size 2^a. Signs messages of size
-   k * a = 168 bits or 21 octets. */
-#define FORS_A 12
-#define FORS_K 14
-
-#define FORS_MSG_SIZE 21
-/* 2912 bytes */
-#define FORS_SIGNATURE_SIZE (FORS_K * (FORS_A + 1) * _SLH_DSA_128_SIZE)
+#define FORS_SIGNATURE_SIZE(a, k) ((k) * ((a) + 1) * _SLH_DSA_128_SIZE)
 
 /* Generates a single secret value, and corresponding leaf hash. */
 void
@@ -168,12 +178,14 @@ _fors_gen (const struct slh_merkle_ctx_secret *ctx, unsigned index, uint8_t *sk,
 
 /* Computes a fors signature as well as the public key. */
 void
-_fors_sign (const struct slh_merkle_ctx_secret *fors_ctx,
+_fors_sign (const struct slh_merkle_ctx_secret *ctx,
+	    const struct slh_fors_params *fors,
 	    const uint8_t *msg, uint8_t *signature, uint8_t *pub);
 
 /* Computes candidate public key from signature. */
 void
 _fors_verify (const struct slh_merkle_ctx_public *ctx,
+	      const struct slh_fors_params *fors,
 	      const uint8_t *msg, const uint8_t *signature, uint8_t *pub);
 
 /* Just the auth path, excluding the wots signature, 144 bytes. */

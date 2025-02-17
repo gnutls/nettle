@@ -47,11 +47,16 @@
 #define SLH_DSA_D 7
 #define XMSS_H 9
 
-static const struct slh_xmss_params
-slh_dsa_shake_128s_xmss =
+/* Use k Merkle trees, each of size 2^a. Signs messages of size
+   k * a = 168 bits or 21 octets. */
+#define FORS_A 12
+#define FORS_K 14
+
+const struct slh_dsa_params
+_slh_dsa_shake_128s_params =
   {
-    SLH_DSA_D,
-    XMSS_H,
+    { SLH_DSA_D, XMSS_H },
+    { FORS_A, FORS_K, 21, FORS_SIGNATURE_SIZE(FORS_A, FORS_K) },
   };
 
 void
@@ -59,7 +64,7 @@ slh_dsa_shake_128s_root (const uint8_t *public_seed, const uint8_t *private_seed
 			 uint8_t *root)
 {
   uint8_t scratch[(XMSS_H + 1)*_SLH_DSA_128_SIZE];
-  _xmss_gen (public_seed, private_seed, &slh_dsa_shake_128s_xmss, scratch, root);
+  _xmss_gen (public_seed, private_seed, &_slh_dsa_shake_128s_params.xmss, scratch, root);
 }
 
 void
@@ -144,8 +149,8 @@ slh_dsa_shake_128s_sign (const uint8_t *pub, const uint8_t *priv,
   merkle_ctx.pub.at.tree_idx = bswap64_if_le (tree_idx);
   merkle_ctx.pub.keypair = leaf_idx;
 
-  _fors_sign (&merkle_ctx, digest, signature, root);
-  signature += FORS_SIGNATURE_SIZE;
+  _fors_sign (&merkle_ctx, &_slh_dsa_shake_128s_params.fors, digest, signature, root);
+  signature += FORS_SIGNATURE_SIZE(FORS_A, FORS_K);
 
   _xmss_sign (&merkle_ctx, XMSS_H, leaf_idx, root, signature, root);
 
@@ -190,8 +195,8 @@ slh_dsa_shake_128s_verify (const uint8_t *pub,
   merkle_ctx.at.tree_idx = bswap64_if_le (tree_idx);
   merkle_ctx.keypair = leaf_idx;
 
-  _fors_verify (&merkle_ctx, digest, signature, root);
-  signature += FORS_SIGNATURE_SIZE;
+  _fors_verify (&merkle_ctx, &_slh_dsa_shake_128s_params.fors, digest, signature, root);
+  signature += FORS_SIGNATURE_SIZE(FORS_A, FORS_K);
 
   _xmss_verify (&merkle_ctx, XMSS_H, leaf_idx, root, signature, root);
 

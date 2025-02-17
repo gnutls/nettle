@@ -52,7 +52,6 @@ _fors_gen (const struct slh_merkle_ctx_secret *ctx,
       0,
       bswap32_if_le(idx),
     };
-  assert (idx < (FORS_K << FORS_A));
 
   _slh_shake (ctx->pub.seed, &ctx->pub.at, &ah, ctx->secret_seed, sk);
 
@@ -85,23 +84,23 @@ fors_node (const struct slh_merkle_ctx_public *ctx, unsigned height, unsigned in
 }
 
 static void
-fors_sign_one (const struct slh_merkle_ctx_secret *ctx,
+fors_sign_one (const struct slh_merkle_ctx_secret *ctx, unsigned a,
 	       unsigned idx, uint8_t *signature, struct sha3_256_ctx *pub)
 {
   uint8_t hash[_SLH_DSA_128_SIZE];
-  assert (idx < (FORS_K << FORS_A));
 
   _fors_gen (ctx, idx, signature, hash);
 
-  _merkle_sign (ctx, fors_leaf, fors_node, FORS_A, idx,
+  _merkle_sign (ctx, fors_leaf, fors_node, a, idx,
 		signature + _SLH_DSA_128_SIZE);
-  _merkle_verify (&ctx->pub, fors_node, FORS_A, idx, signature + _SLH_DSA_128_SIZE, hash);
+  _merkle_verify (&ctx->pub, fors_node, a, idx, signature + _SLH_DSA_128_SIZE, hash);
 
   sha3_256_update (pub, _SLH_DSA_128_SIZE, hash);
 }
 
 void
 _fors_sign (const struct slh_merkle_ctx_secret *ctx,
+	    const struct slh_fors_params *fors,
 	    const uint8_t *msg, uint8_t *signature, uint8_t *pub)
 {
   struct slh_address_hash ah =
@@ -111,26 +110,25 @@ _fors_sign (const struct slh_merkle_ctx_secret *ctx,
       0, 0,
     };
   struct sha3_256_ctx sha3;
-  unsigned i;
-
-  assert (FORS_A == 12); /* Specialized code */
+  unsigned i, w, bits;
+  unsigned mask = (1 << fors->a) - 1;
 
   _slh_shake_init (&sha3, ctx->pub.seed, &ctx->pub.at, &ah);
 
-  for (i = 0; i < FORS_K; i += 2, msg += 3, signature += 2*(FORS_A + 1) * _SLH_DSA_128_SIZE)
+  for (i = w = bits = 0; i < fors->k; i++, signature += (fors->a + 1) * _SLH_DSA_128_SIZE)
     {
-      unsigned m0 = ((unsigned) msg[0] << 4) + (msg[1] >> 4);
-      unsigned m1 = ((msg[1] & 0xf) << 8) + msg[2];
-      fors_sign_one (ctx, (i << FORS_A) +  m0, signature, &sha3);
-      fors_sign_one (ctx,((i+1) << FORS_A) + m1,
-		     signature + (FORS_A + 1) * _SLH_DSA_128_SIZE, &sha3);
-    }
+      for (; bits < fors->a; bits += 8)
+	w = (w << 8) | *msg++;
+      bits -= fors->a;
+
+      fors_sign_one (ctx, fors->a, (i << fors->a) + ((w >> bits) & mask), signature, &sha3);
+     }
 
   sha3_256_shake (&sha3, _SLH_DSA_128_SIZE, pub);
 }
 
 static void
-fors_verify_one (const struct slh_merkle_ctx_public *ctx,
+fors_verify_one (const struct slh_merkle_ctx_public *ctx, unsigned a,
 		 unsigned idx, const uint8_t *signature, struct sha3_256_ctx *pub)
 {
   uint8_t root[_SLH_DSA_128_SIZE];
@@ -141,20 +139,21 @@ fors_verify_one (const struct slh_merkle_ctx_public *ctx,
       0,
       bswap32_if_le(idx),
     };
-  assert (idx < (FORS_K << FORS_A));
 
   _slh_shake (ctx->seed, &ctx->at, &ah, signature, root);
-  _merkle_verify (ctx, fors_node, FORS_A, idx, signature + _SLH_DSA_128_SIZE, root);
+  _merkle_verify (ctx, fors_node, a, idx, signature + _SLH_DSA_128_SIZE, root);
 
   sha3_256_update (pub, _SLH_DSA_128_SIZE, root);
 }
 
 void
 _fors_verify (const struct slh_merkle_ctx_public *ctx,
+	      const struct slh_fors_params *fors,
 	      const uint8_t *msg, const uint8_t *signature, uint8_t *pub)
 {
   struct sha3_256_ctx sha3;
-  unsigned i;
+  unsigned i, w, bits;
+  unsigned mask = (1 << fors->a) - 1;
   struct slh_address_hash ah =
     {
       bswap32_if_le (SLH_FORS_ROOTS),
@@ -162,17 +161,15 @@ _fors_verify (const struct slh_merkle_ctx_public *ctx,
       0, 0,
     };
 
-  assert (FORS_A == 12); /* Specialized code */
-
   _slh_shake_init (&sha3, ctx->seed, &ctx->at, &ah);
 
-  for (i = 0; i < FORS_K; i += 2, msg += 3, signature += 2*(FORS_A + 1) * _SLH_DSA_128_SIZE)
+  for (i = w = bits = 0; i < fors->k; i++, signature += (fors->a + 1) * _SLH_DSA_128_SIZE)
     {
-      unsigned m0 = ((unsigned) msg[0] << 4) + (msg[1] >> 4);
-      unsigned m1 = ((msg[1] & 0xf) << 8) + msg[2];
-      fors_verify_one (ctx, (i << FORS_A) +  m0, signature, &sha3);
-      fors_verify_one (ctx, ((i+1) << FORS_A) + m1,
-		       signature + (FORS_A + 1) * _SLH_DSA_128_SIZE, &sha3);
+      for (; bits < fors->a; bits += 8)
+	w = (w << 8) | *msg++;
+      bits -= fors->a;
+
+      fors_verify_one (ctx, fors->a, (i << fors->a) + ((w >> bits) & mask), signature, &sha3);
     }
   sha3_256_shake (&sha3, _SLH_DSA_128_SIZE, pub);
 }

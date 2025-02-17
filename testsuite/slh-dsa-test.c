@@ -173,6 +173,7 @@ test_fors_gen(const struct tstring *public_seed, const struct tstring *secret_se
 
 static void
 test_fors_sign (const struct tstring *public_seed, const struct tstring *secret_seed,
+		const struct slh_fors_params *fors,
 		unsigned layer, uint64_t tree_idx, unsigned keypair, const struct tstring *msg,
 		const struct tstring *exp_pub, const struct tstring *exp_sig)
 {
@@ -186,22 +187,23 @@ test_fors_sign (const struct tstring *public_seed, const struct tstring *secret_
       secret_seed->data,
     };
   uint8_t pub[_SLH_DSA_128_SIZE];
-  uint8_t sig[FORS_SIGNATURE_SIZE];
+  uint8_t *sig = xalloc (fors->signature_size);
   ASSERT (public_seed->length == _SLH_DSA_128_SIZE);
   ASSERT (secret_seed->length == _SLH_DSA_128_SIZE);
-  ASSERT (msg->length == FORS_MSG_SIZE);
+  ASSERT (msg->length == fors->msg_size);
   ASSERT (exp_pub->length == _SLH_DSA_128_SIZE);
-  ASSERT (exp_sig->length == FORS_SIGNATURE_SIZE);
+  ASSERT (exp_sig->length == fors->signature_size);
 
-  _fors_sign (&ctx, msg->data, sig, pub);
-  mark_bytes_defined (sizeof(sig), sig);
+  _fors_sign (&ctx, fors, msg->data, sig, pub);
+  mark_bytes_defined (exp_sig->length, sig);
   mark_bytes_defined (sizeof(pub), pub);
-  ASSERT (MEMEQ(sizeof(sig), sig, exp_sig->data));
+  ASSERT (MEMEQ(exp_sig->length, sig, exp_sig->data));
   ASSERT (MEMEQ(sizeof(pub), pub, exp_pub->data));
 
   memset (pub, 0, sizeof(pub));
-  _fors_verify (&ctx.pub, msg->data, sig, pub);
+  _fors_verify (&ctx.pub, fors, msg->data, sig, pub);
   ASSERT (MEMEQ(sizeof(pub), pub, exp_pub->data));
+  free (sig);
 }
 
 static void
@@ -344,7 +346,8 @@ test_main(void)
   test_fors_gen (public_seed, secret_seed, 0, UINT64_C(0x29877722d7c079), 0x156, 0x4e1e,
 		 SHEX("17f55905e41a6dc6e5bab2c9f0c1d5d3"),
 		 SHEX("15325ef3d2914cbd401327244cdb633d"));
-  test_fors_sign (public_seed, secret_seed, 0, UINT64_C(0x29877722d7c079), 0x156,
+  test_fors_sign (public_seed, secret_seed, &_slh_dsa_shake_128s_params.fors,
+		  0, UINT64_C(0x29877722d7c079), 0x156,
 		  SHEX("2033c1a4df6fc230c699522a21bed913"
 		       "0dda231526"),
 		  SHEX("3961b2cab15e08c633be827744a07f01"),
