@@ -66,39 +66,39 @@ xmss_node (const struct slh_merkle_ctx_public *ctx, unsigned height, unsigned in
 
 void
 _xmss_gen (const uint8_t *public_seed, const uint8_t *secret_seed,
-	   uint8_t *root)
+	   const struct slh_xmss_params *xmss, 
+	   uint8_t *scratch, uint8_t *root)
 {
   struct slh_merkle_ctx_secret ctx =
     {
       {
 	public_seed,
 	/* Everything zero, except layer and type. */
-	{ bswap32_if_le(SLH_DSA_D-1), 0, 0, } ,
+	{ bswap32_if_le(xmss->d-1), 0, 0, } ,
 	0,
       },
       secret_seed
     };
-  uint8_t stack[(XMSS_H + 1)*_SLH_DSA_128_SIZE];
-  _merkle_root (&ctx, xmss_leaf, xmss_node, XMSS_H, 0, root, stack);
+  _merkle_root (&ctx, xmss_leaf, xmss_node, xmss->h, 0, root, scratch);
 }
 
 void
-_xmss_sign (const struct slh_merkle_ctx_secret *ctx,
+_xmss_sign (const struct slh_merkle_ctx_secret *ctx, unsigned h,
 	    unsigned idx, const uint8_t *msg, uint8_t *signature, uint8_t *pub)
 {
   _wots_sign (ctx->pub.seed, ctx->secret_seed, &ctx->pub.at, idx, msg, signature, pub);
   signature += WOTS_SIGNATURE_SIZE;
 
-  _merkle_sign (ctx, xmss_leaf, xmss_node, XMSS_H, idx, signature);
-  _merkle_verify (&ctx->pub, xmss_node, XMSS_H, idx, signature, pub);
+  _merkle_sign (ctx, xmss_leaf, xmss_node, h, idx, signature);
+  _merkle_verify (&ctx->pub, xmss_node, h, idx, signature, pub);
 }
 
 void
-_xmss_verify (const struct slh_merkle_ctx_public *ctx,
+_xmss_verify (const struct slh_merkle_ctx_public *ctx, unsigned h,
 	      unsigned idx, const uint8_t *msg, const uint8_t *signature, uint8_t *pub)
 {
   _wots_verify (ctx->seed, &ctx->at, idx, msg, signature, pub);
   signature += WOTS_SIGNATURE_SIZE;
 
-  _merkle_verify (ctx, xmss_node, XMSS_H, idx, signature, pub);
+  _merkle_verify (ctx, xmss_node, h, idx, signature, pub);
 }

@@ -53,7 +53,6 @@
 /* Size of a single hash, including the seed and prf parameters */
 #define _SLH_DSA_128_SIZE 16
 
-#define SLH_DSA_D 7
 #define SLH_DSA_M 30
 
 /* Fields always big-endian */
@@ -97,6 +96,12 @@ struct slh_merkle_ctx_secret
 {
   struct slh_merkle_ctx_public pub;
   const uint8_t *secret_seed;
+};
+
+struct slh_xmss_params
+{
+  unsigned short d; /* Levels of xmss trees. */
+  unsigned short h; /* Height of each tree. */
 };
 
 struct sha3_256_ctx;
@@ -171,23 +176,24 @@ void
 _fors_verify (const struct slh_merkle_ctx_public *ctx,
 	      const uint8_t *msg, const uint8_t *signature, uint8_t *pub);
 
-#define XMSS_H 9
 /* Just the auth path, excluding the wots signature, 144 bytes. */
-#define XMSS_AUTH_SIZE (XMSS_H * _SLH_DSA_128_SIZE)
-#define XMSS_SIGNATURE_SIZE (WOTS_SIGNATURE_SIZE + XMSS_AUTH_SIZE)
+#define XMSS_AUTH_SIZE(h) ((h) * _SLH_DSA_128_SIZE)
+#define XMSS_SIGNATURE_SIZE(h) (WOTS_SIGNATURE_SIZE + XMSS_AUTH_SIZE(h))
 
+/* Provided scratch must be of size (xmss->h + 1) * _SLH_DSA_128_SIZE. */
 void
 _xmss_gen (const uint8_t *public_seed, const uint8_t *secret_seed,
-	   uint8_t *root);
+	   const struct slh_xmss_params *xmss, 
+	   uint8_t *scratch, uint8_t *root);
 
 /* Signs using wots, then signs wots public key using xmss. Also
    returns the xmss public key (i.e., root hash).*/
 void
-_xmss_sign (const struct slh_merkle_ctx_secret *ctx,
+_xmss_sign (const struct slh_merkle_ctx_secret *ctx, unsigned h,
 	    unsigned idx, const uint8_t *msg, uint8_t *signature, uint8_t *pub);
 
 void
-_xmss_verify (const struct slh_merkle_ctx_public *ctx,
+_xmss_verify (const struct slh_merkle_ctx_public *ctx, unsigned h,
 	      unsigned idx, const uint8_t *msg, const uint8_t *signature, uint8_t *pub);
 
 #endif /* NETTLE_SLH_DSA_INTERNAL_H_INCLUDED */

@@ -44,11 +44,22 @@
 #include "slh-dsa.h"
 #include "slh-dsa-internal.h"
 
+#define SLH_DSA_D 7
+#define XMSS_H 9
+
+static const struct slh_xmss_params
+slh_dsa_shake_128s_xmss =
+  {
+    SLH_DSA_D,
+    XMSS_H,
+  };
+
 void
 slh_dsa_shake_128s_root (const uint8_t *public_seed, const uint8_t *private_seed,
 			 uint8_t *root)
 {
-  _xmss_gen (public_seed, private_seed, root);
+  uint8_t scratch[(XMSS_H + 1)*_SLH_DSA_128_SIZE];
+  _xmss_gen (public_seed, private_seed, &slh_dsa_shake_128s_xmss, scratch, root);
 }
 
 void
@@ -136,11 +147,11 @@ slh_dsa_shake_128s_sign (const uint8_t *pub, const uint8_t *priv,
   _fors_sign (&merkle_ctx, digest, signature, root);
   signature += FORS_SIGNATURE_SIZE;
 
-  _xmss_sign (&merkle_ctx, leaf_idx, root, signature, root);
+  _xmss_sign (&merkle_ctx, XMSS_H, leaf_idx, root, signature, root);
 
   for (i = 1; i < SLH_DSA_D; i++)
     {
-      signature += XMSS_SIGNATURE_SIZE;
+      signature += XMSS_SIGNATURE_SIZE(XMSS_H);
 
       leaf_idx = tree_idx & ((1<< XMSS_H) - 1);
       tree_idx >>= XMSS_H;
@@ -148,7 +159,7 @@ slh_dsa_shake_128s_sign (const uint8_t *pub, const uint8_t *priv,
       merkle_ctx.pub.at.layer = bswap32_if_le(i);
       merkle_ctx.pub.at.tree_idx = bswap64_if_le (tree_idx);
 
-      _xmss_sign (&merkle_ctx, leaf_idx, root, signature, root);
+      _xmss_sign (&merkle_ctx, XMSS_H, leaf_idx, root, signature, root);
     }
   assert (memeql_sec (root, pub + _SLH_DSA_128_SIZE, sizeof(root)));
 }
@@ -182,11 +193,11 @@ slh_dsa_shake_128s_verify (const uint8_t *pub,
   _fors_verify (&merkle_ctx, digest, signature, root);
   signature += FORS_SIGNATURE_SIZE;
 
-  _xmss_verify (&merkle_ctx, leaf_idx, root, signature, root);
+  _xmss_verify (&merkle_ctx, XMSS_H, leaf_idx, root, signature, root);
 
   for (i = 1; i < SLH_DSA_D; i++)
     {
-      signature += XMSS_SIGNATURE_SIZE;
+      signature += XMSS_SIGNATURE_SIZE(XMSS_H);
 
       leaf_idx = tree_idx & ((1<< XMSS_H) - 1);
       tree_idx >>= XMSS_H;
@@ -194,7 +205,7 @@ slh_dsa_shake_128s_verify (const uint8_t *pub,
       merkle_ctx.at.layer = bswap32_if_le(i);
       merkle_ctx.at.tree_idx = bswap64_if_le (tree_idx);
 
-      _xmss_verify (&merkle_ctx, leaf_idx, root, signature, root);
+      _xmss_verify (&merkle_ctx, XMSS_H, leaf_idx, root, signature, root);
     }
   return memcmp (root, pub + _SLH_DSA_128_SIZE, sizeof(root)) == 0;
 }

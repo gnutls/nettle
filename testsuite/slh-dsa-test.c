@@ -112,6 +112,7 @@ xmss_node (const struct slh_merkle_ctx_public *ctx, unsigned height, unsigned in
 
 static void
 test_merkle (const struct tstring *public_seed, const struct tstring *secret_seed,
+	     unsigned h,
 	     unsigned layer, uint64_t tree_idx, uint32_t idx, const struct tstring *msg,
 	     const struct tstring *exp_pub, const struct tstring *exp_sig)
 {
@@ -125,20 +126,21 @@ test_merkle (const struct tstring *public_seed, const struct tstring *secret_see
       secret_seed->data,
     };
 
-  uint8_t sig[XMSS_AUTH_SIZE];
+  uint8_t *sig = xalloc(XMSS_AUTH_SIZE(h));
   uint8_t pub[_SLH_DSA_128_SIZE];
   ASSERT (public_seed->length == _SLH_DSA_128_SIZE);
   ASSERT (secret_seed->length == _SLH_DSA_128_SIZE);
   ASSERT (msg->length == _SLH_DSA_128_SIZE);
   ASSERT (exp_pub->length == _SLH_DSA_128_SIZE);
-  ASSERT (exp_sig->length == XMSS_AUTH_SIZE);
+  ASSERT (exp_sig->length == XMSS_AUTH_SIZE(h));
 
-  _merkle_sign (&ctx, xmss_leaf, xmss_node, XMSS_H, idx, sig);
-  ASSERT (MEMEQ(sizeof(sig), sig, exp_sig->data));
+  _merkle_sign (&ctx, xmss_leaf, xmss_node, h, idx, sig);
+  ASSERT (MEMEQ(exp_sig->length, sig, exp_sig->data));
 
   memcpy (pub, msg->data, sizeof(pub));
-  _merkle_verify (&ctx.pub, xmss_node, XMSS_H, idx, sig, pub);
+  _merkle_verify (&ctx.pub, xmss_node, h, idx, sig, pub);
   ASSERT (MEMEQ(sizeof(pub), pub, exp_pub->data));
+  free (sig);
 }
 
 static void
@@ -203,21 +205,8 @@ test_fors_sign (const struct tstring *public_seed, const struct tstring *secret_
 }
 
 static void
-test_xmss_gen(const struct tstring *public_seed, const struct tstring *secret_seed,
-	      const struct tstring *exp_pub)
-{
-  uint8_t pub[_SLH_DSA_128_SIZE];
-  ASSERT (public_seed->length == _SLH_DSA_128_SIZE);
-  ASSERT (secret_seed->length == _SLH_DSA_128_SIZE);
-  ASSERT (exp_pub->length == _SLH_DSA_128_SIZE);
-
-  _xmss_gen (public_seed->data, secret_seed->data, pub);
-  mark_bytes_defined (sizeof(pub), pub);
-  ASSERT (MEMEQ(sizeof(pub), pub, exp_pub->data));
-}
-
-static void
 test_xmss_sign (const struct tstring *public_seed, const struct tstring *secret_seed,
+		unsigned xmss_h,
 		unsigned layer, uint64_t tree_idx, uint32_t idx, const struct tstring *msg,
 		const struct tstring *exp_pub, const struct tstring *exp_sig)
 {
@@ -231,22 +220,37 @@ test_xmss_sign (const struct tstring *public_seed, const struct tstring *secret_
       secret_seed->data,
     };
 
-  uint8_t sig[XMSS_SIGNATURE_SIZE];
+  uint8_t *sig = xalloc(XMSS_SIGNATURE_SIZE(xmss_h));
   uint8_t pub[_SLH_DSA_128_SIZE];
   ASSERT (public_seed->length == _SLH_DSA_128_SIZE);
   ASSERT (secret_seed->length == _SLH_DSA_128_SIZE);
   ASSERT (msg->length == _SLH_DSA_128_SIZE);
   ASSERT (exp_pub->length == _SLH_DSA_128_SIZE);
-  ASSERT (exp_sig->length == XMSS_SIGNATURE_SIZE);
+  ASSERT (exp_sig->length == XMSS_SIGNATURE_SIZE(xmss_h));
 
-  _xmss_sign (&ctx, idx, msg->data, sig, pub);
+  _xmss_sign (&ctx, xmss_h, idx, msg->data, sig, pub);
   mark_bytes_defined (sizeof(pub), pub);
-  mark_bytes_defined (sizeof(sig), sig);
-  ASSERT (MEMEQ(sizeof(sig), sig, exp_sig->data));
+  mark_bytes_defined (exp_sig->length, sig);
+  ASSERT (MEMEQ(exp_sig->length, sig, exp_sig->data));
   ASSERT (MEMEQ(sizeof(pub), pub, exp_pub->data));
 
   memset (pub, 0, sizeof(pub));
-  _xmss_verify (&ctx.pub, idx, msg->data, sig, pub);
+  _xmss_verify (&ctx.pub, xmss_h, idx, msg->data, sig, pub);
+  ASSERT (MEMEQ(sizeof(pub), pub, exp_pub->data));
+  free (sig);
+}
+
+static void
+test_slh_dsa_shake_128s_root (const struct tstring *public_seed, const struct tstring *secret_seed,
+			      const struct tstring *exp_pub)
+{
+  uint8_t pub[_SLH_DSA_128_SIZE];
+  ASSERT (public_seed->length == _SLH_DSA_128_SIZE);
+  ASSERT (secret_seed->length == _SLH_DSA_128_SIZE);
+  ASSERT (exp_pub->length == _SLH_DSA_128_SIZE);
+
+  slh_dsa_shake_128s_root (public_seed->data, secret_seed->data, pub);
+  mark_bytes_defined (sizeof(pub), pub);
   ASSERT (MEMEQ(sizeof(pub), pub, exp_pub->data));
 }
 
@@ -318,7 +322,7 @@ test_main(void)
 		       "e87eb3d444825ba4 424ee5b2d9efb595 d5a338f4c253f79d e9d04535206ca6db"
 		       "c2d4c9a1ec20849b 0db3fbe10c1446d5"));
 
-  test_merkle (public_seed, secret_seed, 0, UINT64_C(0x29877722d7c079), 0x156,
+  test_merkle (public_seed, secret_seed, 9, 0, UINT64_C(0x29877722d7c079), 0x156,
 	       /* The message signed is the wots public key. */
 	       SHEX("99747c3547770fa288a628ed15122d3e"),
 	       SHEX("1be9523f2c90cd553ef5be5aa1c5c4fa"),
@@ -435,10 +439,8 @@ test_main(void)
 		       "6b7cce60f1f8211f d1f5be68f7c8bd70 c29f03c0a6613c64 dd10a65db5e0c546"
 		       "f5382403ff8ba36b ad49879231912a4b 219a08a19858b12c 2744fd65603775b5"
 		       "6bf4459512e79188 92da55f87d7cc02c 6885c0ec02550b60 9e3fa7d9fb0d13ab"));
-  test_xmss_gen (public_seed, secret_seed,
-		 SHEX("ac524902fc81f503 2bc27b17d9261ebd"));
 
-  test_xmss_sign(public_seed, secret_seed, 0, UINT64_C(0x29877722d7c079), 0x156,
+  test_xmss_sign(public_seed, secret_seed, 9, 0, UINT64_C(0x29877722d7c079), 0x156,
 		 /* The message signed is a fors public key. */
 		 SHEX("3961b2cab15e08c633be827744a07f01"),
 		 SHEX("1be9523f2c90cd553ef5be5aa1c5c4fa"),
@@ -467,6 +469,10 @@ test_main(void)
 		      "9d93d7104660fefa 0753cf875cb22fd6 0e55dc2f303de036 47712b12067a55f7"
 		      "a467897bbed0d3a0 9d50e9deaadff78d e9ac65c1fd05d076 10a79c8c465141ad"
 		      "65e60340531fab08 f1f433ef823283fe"));
+
+  test_slh_dsa_shake_128s_root (public_seed, secret_seed,
+				SHEX("ac524902fc81f503 2bc27b17d9261ebd"));
+
 
   /* If we mark the private key for the top-level
      slh_dsa_shake_128s_sign call as undefined, then we get valgrind
