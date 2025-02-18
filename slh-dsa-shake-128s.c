@@ -44,6 +44,8 @@
 #include "slh-dsa.h"
 #include "slh-dsa-internal.h"
 
+#define SLH_DSA_M 30
+
 #define SLH_DSA_D 7
 #define XMSS_H 9
 
@@ -72,9 +74,9 @@ void
 slh_dsa_shake_128s_generate_keypair (uint8_t *pub, uint8_t *priv,
 				     void *random_ctx, nettle_random_func *random)
 {
-  random (random_ctx, SLH_DSA_SHAKE_128S_SEED_SIZE, pub);
-  random (random_ctx, 2*SLH_DSA_SHAKE_128S_SEED_SIZE, priv);
-  slh_dsa_shake_128s_root (pub, priv, pub + SLH_DSA_SHAKE_128S_SEED_SIZE);
+  random (random_ctx, SLH_DSA_SHAKE_128_SEED_SIZE, pub);
+  random (random_ctx, 2*SLH_DSA_SHAKE_128_SEED_SIZE, priv);
+  slh_dsa_shake_128s_root (pub, priv, pub + SLH_DSA_SHAKE_128_SEED_SIZE);
 }
 
 static void

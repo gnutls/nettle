@@ -59,8 +59,6 @@
 /* Size of a single hash, including the seed and prf parameters */
 #define _SLH_DSA_128_SIZE 16
 
-#define SLH_DSA_M 30
-
 /* Fields always big-endian */
 struct slh_address_tree
 {
