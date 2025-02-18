@@ -49,6 +49,11 @@
 #define _xmss_gen _nettle_xmss_gen
 #define _xmss_sign _nettle_xmss_sign
 #define _xmss_verify _nettle_xmss_verify
+#define _slh_dsa_randomizer _nettle_slh_dsa_randomizer
+#define _slh_dsa_digest _nettle_slh_dsa_digest
+#define _slh_dsa_sign _nettle_slh_dsa_sign
+#define _slh_dsa_verify _nettle_slh_dsa_verify
+
 #define _slh_dsa_shake_128s_params _nettle_slh_dsa_shake_128s_params
 
 /* Size of a single hash, including the seed and prf parameters */
@@ -103,6 +108,7 @@ struct slh_xmss_params
 {
   unsigned short d; /* Levels of xmss trees. */
   unsigned short h; /* Height of each tree. */
+  unsigned short signature_size;
 };
 
 struct slh_fors_params
@@ -207,5 +213,25 @@ _xmss_sign (const struct slh_merkle_ctx_secret *ctx, unsigned h,
 void
 _xmss_verify (const struct slh_merkle_ctx_public *ctx, unsigned h,
 	      unsigned idx, const uint8_t *msg, const uint8_t *signature, uint8_t *pub);
+
+void
+_slh_dsa_randomizer (const uint8_t *public_seed, const uint8_t *secret_prf,
+		     size_t msg_length, const uint8_t *msg,
+		     uint8_t *randomizer);
+void
+_slh_dsa_digest (const uint8_t *randomizer, const uint8_t *pub,
+		 size_t length, const uint8_t *msg,
+		 size_t digest_size, uint8_t *digest);
+void
+_slh_dsa_sign (const struct slh_dsa_params *params,
+	       const uint8_t *pub, const uint8_t *priv,
+	       const uint8_t *digest,
+	       uint64_t tree_idx, unsigned leaf_idx,
+	       uint8_t *signature);
+int
+_slh_dsa_verify (const struct slh_dsa_params *params, const uint8_t *pub,
+		 const uint8_t *digest, uint64_t tree_idx, unsigned leaf_idx,
+		 const uint8_t *signature);
+
 
 #endif /* NETTLE_SLH_DSA_INTERNAL_H_INCLUDED */

@@ -51,12 +51,13 @@
    k * a = 168 bits or 21 octets. */
 #define FORS_A 12
 #define FORS_K 14
+#define FORS_MSG_SIZE 21
 
 const struct slh_dsa_params
 _slh_dsa_shake_128s_params =
   {
-    { SLH_DSA_D, XMSS_H },
-    { FORS_A, FORS_K, 21, FORS_SIGNATURE_SIZE(FORS_A, FORS_K) },
+    { SLH_DSA_D, XMSS_H, XMSS_SIGNATURE_SIZE(XMSS_H) },
+    { FORS_A, FORS_K, FORS_MSG_SIZE, FORS_SIGNATURE_SIZE(FORS_A, FORS_K) },
   };
 
 void
@@ -76,22 +77,11 @@ slh_dsa_shake_128s_generate_keypair (uint8_t *pub, uint8_t *priv,
   slh_dsa_shake_128s_root (pub, priv, pub + SLH_DSA_SHAKE_128S_SEED_SIZE);
 }
 
-static const uint8_t slh_pure_prefix[2] = {0, 0};
-
 static void
-slh_digest (struct sha3_256_ctx *ctx,
-	    const uint8_t *randomizer, const uint8_t *pub,
-	    size_t length, const uint8_t *msg,
-	    uint8_t *digest, uint64_t *tree_idx, unsigned *leaf_idx)
+parse_digest (const uint8_t *digest, uint64_t *tree_idx, unsigned *leaf_idx)
 {
   uint64_t x;
   unsigned i;
-
-  sha3_256_update (ctx, _SLH_DSA_128_SIZE, randomizer);
-  sha3_256_update (ctx, 2*_SLH_DSA_128_SIZE, pub);
-  sha3_256_update (ctx, sizeof(slh_pure_prefix), slh_pure_prefix);
-  sha3_256_update (ctx, length, msg);
-  sha3_256_shake (ctx, SLH_DSA_M, digest);
 
   /* Split digest as
      +----+------+-----+
@@ -99,18 +89,19 @@ slh_digest (struct sha3_256_ctx *ctx,
      +----+------+-----+
        21       7     2
 
-   The first 21 octets are the digest signed with fors, the next 7
-   octets represent 54 bits selecting the tree, the last 2 octets
-   represent 9 bits selecting the key in that tree.
+   The first 21 octets are the digest signed with fors (and not
+   processed by this function), the next 7 octets represent 54 bits
+   selecting the tree, the last 2 octets represent 9 bits selecting
+   the key in that tree.
 
    Left over high bits are discarded.
   */
-  x = digest[21] & 0x3f; /* Discard 2 high-most bits of 56 */
-  for (i = 22; i < 28; i++)
+  x = digest[0] & 0x3f; /* Discard 2 high-most bits of 56 */
+  for (i = 1; i < 7; i++)
     x = (x << 8) + digest[i];
   *tree_idx = x;
   /* Discard 7 high-most bits of 16 */
-  *leaf_idx = ((digest[28] & 1) << 8) + digest[29];
+  *leaf_idx = ((digest[7] & 1) << 8) + digest[8];
 }
 
 /* Only the "pure" and deterministic variant. */
@@ -119,54 +110,16 @@ slh_dsa_shake_128s_sign (const uint8_t *pub, const uint8_t *priv,
 			 size_t length, const uint8_t *msg,
 			 uint8_t *signature)
 {
-  struct sha3_256_ctx ctx;
   uint8_t digest[SLH_DSA_M];
-  uint8_t root[_SLH_DSA_128_SIZE];
-
   uint64_t tree_idx;
   unsigned leaf_idx;
-  int i;
 
-  struct slh_merkle_ctx_secret merkle_ctx =
-    {
-      {
-	pub, { 0, }, 0,
-      },
-      priv,
-    };
-  /* First the "randomizer" */
-  sha3_256_init (&ctx);
-  sha3_256_update (&ctx, _SLH_DSA_128_SIZE, priv + _SLH_DSA_128_SIZE);
-  sha3_256_update (&ctx, _SLH_DSA_128_SIZE, pub);
-  sha3_256_update (&ctx, sizeof(slh_pure_prefix), slh_pure_prefix);
-  sha3_256_update (&ctx, length, msg);
-  sha3_256_shake (&ctx, _SLH_DSA_128_SIZE, signature);
+  _slh_dsa_randomizer (pub, priv + _SLH_DSA_128_SIZE, length, msg, signature);
+  _slh_dsa_digest (signature, pub, length, msg, SLH_DSA_M, digest);
+  parse_digest (digest + FORS_MSG_SIZE, &tree_idx, &leaf_idx);
 
-  slh_digest (&ctx, signature, pub, length, msg, digest, &tree_idx, &leaf_idx);
-
-  signature += _SLH_DSA_128_SIZE;
-
-  merkle_ctx.pub.at.tree_idx = bswap64_if_le (tree_idx);
-  merkle_ctx.pub.keypair = leaf_idx;
-
-  _fors_sign (&merkle_ctx, &_slh_dsa_shake_128s_params.fors, digest, signature, root);
-  signature += FORS_SIGNATURE_SIZE(FORS_A, FORS_K);
-
-  _xmss_sign (&merkle_ctx, XMSS_H, leaf_idx, root, signature, root);
-
-  for (i = 1; i < SLH_DSA_D; i++)
-    {
-      signature += XMSS_SIGNATURE_SIZE(XMSS_H);
-
-      leaf_idx = tree_idx & ((1<< XMSS_H) - 1);
-      tree_idx >>= XMSS_H;
-
-      merkle_ctx.pub.at.layer = bswap32_if_le(i);
-      merkle_ctx.pub.at.tree_idx = bswap64_if_le (tree_idx);
-
-      _xmss_sign (&merkle_ctx, XMSS_H, leaf_idx, root, signature, root);
-    }
-  assert (memeql_sec (root, pub + _SLH_DSA_128_SIZE, sizeof(root)));
+  _slh_dsa_sign (&_slh_dsa_shake_128s_params, pub, priv, digest, tree_idx, leaf_idx,
+		 signature + _SLH_DSA_128_SIZE);
 }
 
 int
@@ -174,43 +127,12 @@ slh_dsa_shake_128s_verify (const uint8_t *pub,
 			   size_t length, const uint8_t *msg,
 			   const uint8_t *signature)
 {
-  struct sha3_256_ctx ctx;
   uint8_t digest[SLH_DSA_M];
-  uint8_t root[_SLH_DSA_128_SIZE];
-
   uint64_t tree_idx;
   unsigned leaf_idx;
-  int i;
 
-  struct slh_merkle_ctx_public merkle_ctx =
-    {
-      pub, { 0, }, 0
-    };
-
-  sha3_256_init (&ctx);
-  slh_digest (&ctx, signature, pub, length, msg, digest, &tree_idx, &leaf_idx);
-
-  signature += _SLH_DSA_128_SIZE;
-
-  merkle_ctx.at.tree_idx = bswap64_if_le (tree_idx);
-  merkle_ctx.keypair = leaf_idx;
-
-  _fors_verify (&merkle_ctx, &_slh_dsa_shake_128s_params.fors, digest, signature, root);
-  signature += FORS_SIGNATURE_SIZE(FORS_A, FORS_K);
-
-  _xmss_verify (&merkle_ctx, XMSS_H, leaf_idx, root, signature, root);
-
-  for (i = 1; i < SLH_DSA_D; i++)
-    {
-      signature += XMSS_SIGNATURE_SIZE(XMSS_H);
-
-      leaf_idx = tree_idx & ((1<< XMSS_H) - 1);
-      tree_idx >>= XMSS_H;
-
-      merkle_ctx.at.layer = bswap32_if_le(i);
-      merkle_ctx.at.tree_idx = bswap64_if_le (tree_idx);
-
-      _xmss_verify (&merkle_ctx, XMSS_H, leaf_idx, root, signature, root);
-    }
-  return memcmp (root, pub + _SLH_DSA_128_SIZE, sizeof(root)) == 0;
+  _slh_dsa_digest (signature, pub, length, msg, SLH_DSA_M,digest);
+  parse_digest (digest + FORS_MSG_SIZE, &tree_idx, &leaf_idx);
+  return _slh_dsa_verify (&_slh_dsa_shake_128s_params, pub, digest, tree_idx, leaf_idx,
+			  signature + _SLH_DSA_128_SIZE);
 }
