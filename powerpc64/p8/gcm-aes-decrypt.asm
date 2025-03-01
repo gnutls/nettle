@@ -151,7 +151,8 @@ IF_LE(`
     vperm          D,D,D,LE_MASK
 ')
 
-    lxvb16x VSR(S0), 0, HT		C Load 'CTR'
+    lxvd2x VSR(S0), 0, HT		C Load 'CTR'
+IF_LE(`vperm S0, S0, S0, LE_MASK')
 
     addi LOOP, LOOP, -1
 
