@@ -1,5 +1,9 @@
 2025-03-05  Niels Möller  <nisse@lysator.liu.se>
 
+	* md5-compat.c (MD5Init, MD5Update, MD5Final): Delete file and
+	functions. Also delete corresponding header file, tests, and
+	documentation.
+
 	* configure.ac: Bump version numbers, to prepare for changes that
 	break API or ABI. Bump package version to 4.0.
 	(LIBNETTLE_MAJOR, LIBNETTLE_MINOR): Bump, to 9.0.

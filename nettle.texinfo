@@ -83,7 +83,6 @@ Reference
 * Randomness::
 * ASCII encoding::
 * Miscellaneous functions::
-* Compatibility functions::
 
 Hash functions
 
@@ -356,7 +355,6 @@ This chapter describes all the Nettle functions, grouped by family.
 * Randomness::
 * ASCII encoding::
 * Miscellaneous functions::
-* Compatibility functions::
 @end menu
 
 @node Hash functions
@@ -6596,20 +6594,6 @@ non-zero if the areas are equal, and zero if they differ.
 These functions are declared in @file{<nettle/memops.h>}. For
 compatibility with earlier versions of Nettle, @code{memxor} and
 @code{memxor3} are also declared in @file{<nettle/memxor.h>}.
-
-@node Compatibility functions
-@section Compatibility functions
-
-For convenience, Nettle includes alternative interfaces to some
-algorithms, for compatibility with some other popular crypto toolkits.
-These are not fully documented here; refer to the source or to the
-documentation for the original implementation.
-
-MD5 is defined in [RFC 1321], which includes a reference implementation.
-Nettle defines a compatible interface to MD5 in
-@file{<nettle/md5-compat.h>}. This file defines the typedef
-@code{MD5_CTX}, and declares the functions @code{MD5Init}, @code{MD5Update} and
-@code{MD5Final}.
 
 @node Nettle soup
 @chapter Traditional Nettle Soup
