@@ -68,12 +68,11 @@ check-fat:
 
 all-here: $(TARGETS) $(DOCTARGETS)
 
-nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c aes-decrypt-table.c \
+nettle_SOURCES = aes-decrypt-internal.c aes-decrypt-table.c \
 		 aes128-decrypt.c aes192-decrypt.c aes256-decrypt.c \
-		 aes-encrypt-internal.c aes-encrypt.c aes-encrypt-table.c \
+		 aes-encrypt-internal.c aes-encrypt-table.c \
 		 aes128-encrypt.c aes192-encrypt.c aes256-encrypt.c \
 		 aes-invert-internal.c aes-set-key-internal.c \
-		 aes-set-encrypt-key.c aes-set-decrypt-key.c \
 		 aes128-set-encrypt-key.c aes128-set-decrypt-key.c \
 		 aes128-meta.c \
 		 aes192-set-encrypt-key.c aes192-set-decrypt-key.c \
@@ -111,7 +110,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c aes-decrypt-table.c \
 		 eax.c eax-aes128.c eax-aes128-meta.c \
 		 ghash-set-key.c ghash-update.c \
 		 siv-ghash-set-key.c siv-ghash-update.c \
-		 gcm.c gcm-aes.c \
+		 gcm.c \
 		 gcm-aes128.c gcm-aes128-meta.c \
 		 gcm-aes192.c gcm-aes192-meta.c \
 		 gcm-aes256.c gcm-aes256-meta.c \
