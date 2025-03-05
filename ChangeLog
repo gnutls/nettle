@@ -1,5 +1,13 @@
 2025-03-05  Niels Möller  <nisse@lysator.liu.se>
 
+	Delete incomplete and old openpgp support.
+	* pgp-encode.c: Deleted file.
+	* pgp.h: Deleted file.
+	* rsa2openpgp.c: Deleted file.
+	* rsa.h (rsa_keypair_to_openpgp): Delete declaration.
+	* Makefile.in (hogweed_SOURCES): Delete pgp-encode.c and rsa2openpgp.c.
+	(HEADERS): Delete pgp.h.
+
 	* md5-compat.c (MD5Init, MD5Update, MD5Final): Delete file and
 	functions. Also delete corresponding header file, tests, and
 	documentation.
