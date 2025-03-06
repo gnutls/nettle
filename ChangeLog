@@ -1,3 +1,8 @@
+2025-03-06  Niels Möller  <nisse@lysator.liu.se>
+
+	* rsa-blind.c (_rsa_blind, _rsa_unblind): Delete file, delete
+	obsolete functions (current RSA blinding functions are not exported).
+
 2025-03-05  Niels Möller  <nisse@lysator.liu.se>
 
 	Delete old AES interface.
