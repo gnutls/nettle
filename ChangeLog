@@ -1,5 +1,8 @@
 2025-03-06  Niels Möller  <nisse@lysator.liu.se>
 
+	* nettle-types.h (union nettle_block16): Delete deprecated
+	unsigned long member of this union.
+
 	* rsa-blind.c (_rsa_blind, _rsa_unblind): Delete file, delete
 	obsolete functions (current RSA blinding functions are not exported).
 
