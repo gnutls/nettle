@@ -50,7 +50,7 @@ test_compare_results(const char *name,
         const struct tstring *adata,
         /* Expected results. */
         const struct tstring *e_clear,
-		const struct tstring *e_cipher,
+        const struct tstring *e_cipher,
         /* Actual results. */
         const void *clear,
         const void *cipher,
@@ -150,37 +150,43 @@ test_cipher_ccm(const struct nettle_cipher *cipher,
 
   /* Ensure we get the same answers using the all-in-one API. */
   if (repeat <= 1) {
-    int ret;
     memset(de_data, 0, cleartext->length);
     memset(en_data, 0, ciphertext->length);
-    memset(de_digest, 0, sizeof(de_digest));
 
     ccm_encrypt_message(ctx, cipher->encrypt, nonce->length, nonce->data,
 			authdata->length, authdata->data, tlength,
 			ciphertext->length, en_data, cleartext->data);
 
-    ret = ccm_decrypt_message(ctx, cipher->encrypt, nonce->length, nonce->data,
-			      authdata->length, authdata->data, tlength,
-			      cleartext->length, de_data, ciphertext->data);
-
-    if (ret != 1) fprintf(stderr, "ccm_decrypt_message failed to validate message\n");
+    if (!ccm_decrypt_message(ctx, cipher->encrypt, nonce->length, nonce->data,
+			     authdata->length, authdata->data, tlength,
+			     cleartext->length, de_data, ciphertext->data))
+      {
+	fprintf(stderr, "ccm_decrypt_message failed to validate message\n");
+	FAIL();
+      }
     test_compare_results("CCM_MSG", authdata,
 			 cleartext, ciphertext, de_data, en_data, NULL);
 
     /* Ensure that we can detect corrupted message or tag data. */
     if (tlength) {
       en_data[0] ^= 1;
-      ret = ccm_decrypt_message(ctx, cipher->encrypt, nonce->length, nonce->data,
-				authdata->length, authdata->data, tlength,
-				cleartext->length, de_data, en_data);
-      if (ret != 0) fprintf(stderr, "ccm_decrypt_message failed to detect corrupted message\n");
+      if (ccm_decrypt_message(ctx, cipher->encrypt, nonce->length, nonce->data,
+			      authdata->length, authdata->data, tlength,
+			      cleartext->length, de_data, en_data))
+	{
+	  fprintf(stderr, "ccm_decrypt_message failed to detect corrupted message\n");
+	  FAIL();
+	}
     }
     /* Ensure we can detect corrupted adata. */
     if (tlength && authdata->length) {
-      ret = ccm_decrypt_message(ctx, cipher->encrypt, nonce->length, nonce->data,
-				authdata->length-1, authdata->data, tlength,
-				cleartext->length, de_data, ciphertext->data);
-      if (ret != 0) fprintf(stderr, "ccm_decrypt_message failed to detect corrupted message\n");
+      if  (ccm_decrypt_message(ctx, cipher->encrypt, nonce->length, nonce->data,
+			       authdata->length-1, authdata->data, tlength,
+			       cleartext->length, de_data, ciphertext->data))
+	{
+	  fprintf(stderr, "ccm_decrypt_message failed to detect corrupted message\n");
+	  FAIL();
+	}
     }
   }
 
@@ -212,6 +218,23 @@ test_cipher_ccm(const struct nettle_cipher *cipher,
 
     test_compare_results("CCM_AES_128", authdata,
 			 cleartext, ciphertext, de_data, en_data, de_digest);
+    if (repeat <= 1)
+      {
+	memset(de_data, 0, cleartext->length);
+	memset(en_data, 0, ciphertext->length);
+	ccm_aes128_encrypt_message (ctx, nonce->length, nonce->data,
+				    authdata->length, authdata->data, tlength,
+				    ciphertext->length, en_data, cleartext->data);
+	if (!ccm_aes128_decrypt_message(ctx, nonce->length, nonce->data,
+					authdata->length, authdata->data, tlength,
+					cleartext->length, de_data, ciphertext->data))
+	  {
+	    fprintf(stderr, "ccm_aes128_decrypt_message failed to validate message\n");
+	    FAIL();
+	  }
+	test_compare_results("CCM_AES_128_MSG", authdata,
+			     cleartext, ciphertext, de_data, en_data, NULL);
+      }
   }
   /* TODO: I couldn't find any test cases for CCM-AES-192 */
   if (cipher == &nettle_aes256) {
@@ -241,6 +264,23 @@ test_cipher_ccm(const struct nettle_cipher *cipher,
 
     test_compare_results("CCM_AES_256", authdata,
 			 cleartext, ciphertext, de_data, en_data, de_digest);
+    if (repeat <= 1)
+      {
+	memset(de_data, 0, cleartext->length);
+	memset(en_data, 0, ciphertext->length);
+	ccm_aes256_encrypt_message (ctx, nonce->length, nonce->data,
+				    authdata->length, authdata->data, tlength,
+				    ciphertext->length, en_data, cleartext->data);
+	if (!ccm_aes256_decrypt_message(ctx, nonce->length, nonce->data,
+					authdata->length, authdata->data, tlength,
+					cleartext->length, de_data, ciphertext->data))
+	  {
+	    fprintf(stderr, "ccm_aes256_decrypt_message failed to validate message\n");
+	    FAIL();
+	  }
+	test_compare_results("CCM_AES_256_MSG", authdata,
+			     cleartext, ciphertext, de_data, en_data, NULL);
+      }
   }
 
   free(ctx);

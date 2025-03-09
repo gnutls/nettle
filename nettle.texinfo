@@ -3496,13 +3496,13 @@ passed to a function is always the size for the result, @var{clength}
 for the encryption functions, and @var{mlength} for the decryption
 functions.
 
-@deftypefun void ccm_encrypt_message (void *@var{cipher}, nettle_cipher_func *@var{f}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{tlength}, size_t @var{clength}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun void ccm_encrypt_message (const void *@var{cipher}, nettle_cipher_func *@var{f}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{tlength}, size_t @var{clength}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Computes the message digest from the @var{adata} and @var{src}
 parameters, encrypts the plaintext from @var{src}, appends the encrypted
 @acronym{MAC} to ciphertext and outputs it to @var{dst}.
 @end deftypefun
 
-@deftypefun int ccm_decrypt_message (void *@var{cipher}, nettle_cipher_func *@var{f}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{tlength}, size_t @var{mlength}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun int ccm_decrypt_message (const void *@var{cipher}, nettle_cipher_func *@var{f}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{tlength}, size_t @var{mlength}, uint8_t *@var{dst}, const uint8_t *@var{src})
 Decrypts the ciphertext from @var{src}, outputs the plaintext to
 @var{dst}, recalculates the @acronym{MAC} from @var{adata} and the
 plaintext, and compares it to the final @var{tlength} bytes of
@@ -3574,14 +3574,15 @@ These are identical to @code{ccm_set_digest}, except that @var{cipher},
 @var{f}, and @var{ctx} are replaced with a context structure.
 @end deftypefun
 
-@deftypefun void ccm_aes128_encrypt_message (struct ccm_aes128_ctx *@var{ctx}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{tlength}, size_t @var{clength}, uint8_t *@var{dst}, const uint8_t *@var{src})
-@deftypefunx void ccm_aes192_encrypt_message (struct ccm_aes192_ctx *@var{ctx}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{tlength}, size_t @var{clength}, uint8_t *@var{dst}, const uint8_t *@var{src})
-@deftypefunx void ccm_aes256_encrypt_message (struct ccm_aes256_ctx *@var{ctx}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{tlength}, size_t @var{clength}, uint8_t *@var{dst}, const uint8_t *@var{src})
-@deftypefunx int ccm_aes128_decrypt_message (struct ccm_aes128_ctx *@var{ctx}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{tlength}, size_t @var{mlength}, uint8_t *@var{dst}, const uint8_t *@var{src})
-@deftypefunx int ccm_aes192_decrypt_message (struct ccm_aes192_ctx *@var{ctx}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{tlength}, size_t @var{mlength}, uint8_t *@var{dst}, const uint8_t *@var{src})
-@deftypefunx int ccm_aes256_decrypt_message (struct ccm_aes256_ctx *@var{ctx}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{tlength}, size_t @var{mlength}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefun void ccm_aes128_encrypt_message (const struct aes128_ctx *@var{cipher}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{tlength}, size_t @var{clength}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void ccm_aes192_encrypt_message (const struct aes192_ctx *@var{cipher}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{tlength}, size_t @var{clength}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx void ccm_aes256_encrypt_message (const struct aes256_ctx *@var{cipher}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{tlength}, size_t @var{clength}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx int ccm_aes128_decrypt_message (const struct aes128_ctx *@var{cipher}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{tlength}, size_t @var{mlength}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx int ccm_aes192_decrypt_message (const struct aes192_ctx *@var{cipher}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{tlength}, size_t @var{mlength}, uint8_t *@var{dst}, const uint8_t *@var{src})
+@deftypefunx int ccm_aes256_decrypt_message (const struct aes256_ctx *@var{cipher}, size_t @var{nlength}, const uint8_t *@var{nonce}, size_t @var{alength}, const uint8_t *@var{adata}, size_t @var{tlength}, size_t @var{mlength}, uint8_t *@var{dst}, const uint8_t *@var{src})
 These are identical to @code{ccm_encrypt_message} and @code{ccm_decrypt_message}
-except that @var{cipher} and @var{f} are replaced with a context structure.
+except that @var{cipher} is an AES context and the encryption function
+@var{f} is implied.
 @end deftypefun
 
 @node ChaCha-Poly1305

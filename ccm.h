@@ -193,18 +193,15 @@ void
 ccm_aes128_digest(struct ccm_aes128_ctx *ctx,
 		  size_t length, uint8_t *digest);
 
-/* FIXME: For next API/ABI break: first argument should be const
-   struct aes128_ctx *, and similarly for other ccm_*_message
-   functions below. */
 void
-ccm_aes128_encrypt_message(struct ccm_aes128_ctx *ctx,
+ccm_aes128_encrypt_message(const struct aes128_ctx *ctx,
 			   size_t nlength, const uint8_t *nonce,
 			   size_t alength, const uint8_t *adata,
 			   size_t tlength,
 			   size_t clength, uint8_t *dst, const uint8_t *src);
 
 int
-ccm_aes128_decrypt_message(struct ccm_aes128_ctx *ctx,
+ccm_aes128_decrypt_message(const struct aes128_ctx *ctx,
 			   size_t nlength, const uint8_t *nonce,
 			   size_t alength, const uint8_t *adata,
 			   size_t tlength,
@@ -241,14 +238,14 @@ ccm_aes192_digest(struct ccm_aes192_ctx *ctx,
 		  size_t length, uint8_t *digest);
 
 void
-ccm_aes192_encrypt_message(struct ccm_aes192_ctx *ctx,
+ccm_aes192_encrypt_message(const struct aes192_ctx *ctx,
 			   size_t nlength, const uint8_t *nonce,
 			   size_t alength, const uint8_t *adata,
 			   size_t tlength,
 			   size_t clength, uint8_t *dst, const uint8_t *src);
 
 int
-ccm_aes192_decrypt_message(struct ccm_aes192_ctx *ctx,
+ccm_aes192_decrypt_message(const struct aes192_ctx *ctx,
 			   size_t nlength, const uint8_t *nonce,
 			   size_t alength, const uint8_t *adata,
 			   size_t tlength,
@@ -285,14 +282,14 @@ ccm_aes256_digest(struct ccm_aes256_ctx *ctx,
 		  size_t length, uint8_t *digest);
 
 void
-ccm_aes256_encrypt_message(struct ccm_aes256_ctx *ctx,
+ccm_aes256_encrypt_message(const struct aes256_ctx *ctx,
 			   size_t nlength, const uint8_t *nonce,
 			   size_t alength, const uint8_t *adata,
 			   size_t tlength,
 			   size_t clength, uint8_t *dst, const uint8_t *src);
 
 int
-ccm_aes256_decrypt_message(struct ccm_aes256_ctx *ctx,
+ccm_aes256_decrypt_message(const struct aes256_ctx *ctx,
 			   size_t nlength, const uint8_t *nonce,
 			   size_t alength, const uint8_t *adata,
 			   size_t tlength,
