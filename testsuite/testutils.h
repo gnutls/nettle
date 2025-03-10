@@ -17,7 +17,6 @@
 
 #if WITH_HOGWEED
 # include "rsa.h"
-# include "dsa-compat.h"
 # include "ecc-curve.h"
 # include "ecc.h"
 # include "ecc-internal.h"
@@ -26,10 +25,6 @@
 # if NETTLE_USE_MINI_GMP
 #  include "knuth-lfib.h"
 # endif
-
-/* Undo dsa-compat name mangling */
-#undef dsa_generate_keypair
-#define dsa_generate_keypair nettle_dsa_generate_keypair
 #else /* !WITH_HOGWEED */
 /* Make sure either gmp or mini-gmp is available for tests. */
 #include "mini-gmp.h"
@@ -272,13 +267,13 @@ test_rsa_key(struct rsa_public_key *pub,
 	     struct rsa_private_key *key);
 
 void
-test_dsa160(const struct dsa_public_key *pub,
-	    const struct dsa_private_key *key,
+test_dsa160(const struct dsa_params *params,
+	    const mpz_t pub, const mpz_t key,
 	    const struct dsa_signature *expected);
 
 void
-test_dsa256(const struct dsa_public_key *pub,
-	    const struct dsa_private_key *key,
+test_dsa256(const struct dsa_params *params,
+	    const mpz_t pub, const mpz_t key,
 	    const struct dsa_signature *expected);
 
 #if 0

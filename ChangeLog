@@ -1,3 +1,22 @@
+2025-03-10  Niels Möller  <nisse@lysator.liu.se>
+
+	Delete the old deprecated DSA functions declared in dsa-compat.h.
+        * dsa-compat-keygen.c: Deleted.
+        * dsa-compat.c: Deleted.
+        * dsa-compat.h: Deleted.
+        * dsa-sha1-sign.c: Deleted.
+        * dsa-sha1-verify.c: Deleted.
+        * dsa-sha256-sign.c: Deleted.
+        * dsa-sha256-verify.c: Deleted.
+	* Makefile.in (hogweed_SOURCES): Delete source files.
+	(HEADERS): Delete dsa-compat.h.
+	* nettle.texinfo (DSA): Delete documentation of the deprecated DSA
+	API.
+	* testsuite/testutils.c (test_dsa160, test_dsa256): Update to not
+	depend on deprecated functions.
+	* testsuite/dsa-test.c (test_main): Likewise.
+	* testsuite/dsa-keygen-test.c (test_main): Likewise.
+
 2025-03-09  Niels Möller  <nisse@lysator.liu.se>
 
 	* ccm-aes128.c (ccm_aes128_encrypt_message)

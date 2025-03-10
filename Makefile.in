@@ -191,10 +191,8 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  rsa-sec-decrypt.c rsa-decrypt-tr.c \
 		  rsa-keygen.c \
 		  rsa2sexp.c sexp2rsa.c \
-		  dsa.c dsa-compat.c dsa-compat-keygen.c dsa-gen-params.c \
+		  dsa.c dsa-gen-params.c \
 		  dsa-sign.c dsa-verify.c dsa-keygen.c dsa-hash.c \
-		  dsa-sha1-sign.c dsa-sha1-verify.c \
-		  dsa-sha256-sign.c dsa-sha256-verify.c  \
 		  dsa2sexp.c sexp2dsa.c \
 		  der-iterator.c der2rsa.c der2dsa.c \
 		  sec-add-1.c sec-sub-1.c \
@@ -231,7 +229,7 @@ OPT_SOURCES = fat-arm.c fat-arm64.c fat-ppc.c fat-s390x.c fat-x86_64.c mini-gmp.
 HEADERS = aes.h arcfour.h arctwo.h asn1.h blowfish.h balloon.h \
 	  base16.h base64.h bignum.h buffer.h camellia.h cast128.h \
 	  cbc.h ccm.h cfb.h chacha.h chacha-poly1305.h ctr.h \
-	  curve25519.h curve448.h des.h dsa.h dsa-compat.h eax.h \
+	  curve25519.h curve448.h des.h dsa.h eax.h \
 	  ecc-curve.h ecc.h ecdsa.h eddsa.h \
 	  gcm.h gostdsa.h gosthash94.h hmac.h \
 	  knuth-lfib.h hkdf.h \

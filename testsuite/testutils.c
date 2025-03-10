@@ -1992,27 +1992,30 @@ test_rsa_key(struct rsa_public_key *pub,
 }
 
 /* Requires that the context is named like the hash algorithm. */
-#define DSA_VERIFY(key, hash, msg, signature)	\
-  (hash##_update(&hash, LDATA(msg)),		\
-   dsa_##hash##_verify(key, &hash, signature))
+#define DSA_VERIFY(params, key, hash, buf, msg, signature)	\
+  (hash##_update(&hash, LDATA(msg)),				\
+   hash##_digest(&hash, sizeof(buf), buf),			\
+   dsa_verify(params, key, sizeof(buf), buf, signature))
 
 void
-test_dsa160(const struct dsa_public_key *pub,
-	    const struct dsa_private_key *key,
+test_dsa160(const struct dsa_params *params,
+	    const mpz_t pub, const mpz_t key,
 	    const struct dsa_signature *expected)
 {
   struct sha1_ctx sha1;
   struct dsa_signature signature;
   struct knuth_lfib_ctx lfib;
-  
+  uint8_t digest[SHA1_DIGEST_SIZE];
+
   sha1_init(&sha1);
   dsa_signature_init(&signature);
   knuth_lfib_init(&lfib, 1111);
   
   sha1_update(&sha1, LDATA("The magic words are squeamish ossifrage"));
-  ASSERT (dsa_sha1_sign(pub, key,
-			&lfib, (nettle_random_func *) knuth_lfib_random,
-			&sha1, &signature));
+  sha1_digest(&sha1, sizeof(digest), digest);
+  ASSERT (dsa_sign(params, key,
+		   &lfib, (nettle_random_func *) knuth_lfib_random,
+		   sizeof(digest), digest, &signature));
 
   if (verbose)
     {
@@ -2028,18 +2031,18 @@ test_dsa160(const struct dsa_public_key *pub,
 	    && mpz_cmp (signature.s, expected->s) == 0);
   
   /* Try bad data */
-  ASSERT (!DSA_VERIFY(pub, sha1,
+  ASSERT (!DSA_VERIFY(params, pub, sha1, digest,
 		      "The magick words are squeamish ossifrage",
 		      &signature));
 
   /* Try correct data */
-  ASSERT (DSA_VERIFY(pub, sha1,
+  ASSERT (DSA_VERIFY(params, pub, sha1, digest,
 		     "The magic words are squeamish ossifrage",
 		     &signature));
 
   /* Try bad signature */
   mpz_combit(signature.r, 17);
-  ASSERT (!DSA_VERIFY(pub, sha1,
+  ASSERT (!DSA_VERIFY(params, pub, sha1, digest,
 		      "The magic words are squeamish ossifrage",
 		      &signature));
 
@@ -2047,22 +2050,24 @@ test_dsa160(const struct dsa_public_key *pub,
 }
 
 void
-test_dsa256(const struct dsa_public_key *pub,
-	    const struct dsa_private_key *key,
+test_dsa256(const struct dsa_params *params,
+	    const mpz_t pub, const mpz_t key,
 	    const struct dsa_signature *expected)
 {
   struct sha256_ctx sha256;
   struct dsa_signature signature;
   struct knuth_lfib_ctx lfib;
+  uint8_t digest[SHA256_DIGEST_SIZE];
   
   sha256_init(&sha256);
   dsa_signature_init(&signature);
   knuth_lfib_init(&lfib, 1111);
   
   sha256_update(&sha256, LDATA("The magic words are squeamish ossifrage"));
-  ASSERT (dsa_sha256_sign(pub, key,
-			&lfib, (nettle_random_func *) knuth_lfib_random,
-			&sha256, &signature));
+  sha256_digest(&sha256, sizeof(digest), digest);
+  ASSERT (dsa_sign(params, key,
+		   &lfib, (nettle_random_func *) knuth_lfib_random,
+		   sizeof(digest), digest, &signature));
   
   if (verbose)
     {
@@ -2078,18 +2083,18 @@ test_dsa256(const struct dsa_public_key *pub,
 	    && mpz_cmp (signature.s, expected->s) == 0);
   
   /* Try bad data */
-  ASSERT (!DSA_VERIFY(pub, sha256,
+  ASSERT (!DSA_VERIFY(params, pub, sha256, digest,
 		      "The magick words are squeamish ossifrage",
 		      &signature));
 
   /* Try correct data */
-  ASSERT (DSA_VERIFY(pub, sha256,
+  ASSERT (DSA_VERIFY(params, pub, sha256, digest,
 		     "The magic words are squeamish ossifrage",
 		     &signature));
 
   /* Try bad signature */
   mpz_combit(signature.r, 17);
-  ASSERT (!DSA_VERIFY(pub, sha256,
+  ASSERT (!DSA_VERIFY(params, pub, sha256, digest,
 		      "The magic words are squeamish ossifrage",
 		      &signature));
 
@@ -2177,8 +2182,8 @@ test_dsa_verify(const struct dsa_params *params,
   mpz_set (signature.s, ref->s);
 
   ASSERT (dsa_verify (params, pub,
-		       hash->digest_size, digest,
-		       &signature));
+		      hash->digest_size, digest,
+		      &signature));
 
   /* Try bad signature */
   mpz_combit(signature.r, 17);
