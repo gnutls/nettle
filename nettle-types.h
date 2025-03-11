@@ -70,9 +70,13 @@ union nettle_block8
   uint64_t u64;
 };
 
-/* Randomness. Used by key generation and dsa signature creation. */
-typedef void nettle_random_func(void *ctx,
+
+/* Used for generating randomness, as well as for extendable output
+   functions like shake. */
+typedef void nettle_output_func(void *ctx,
 				size_t length, uint8_t *dst);
+/* Old name used for key generation and (ec)dsa signature creation. */
+typedef nettle_output_func nettle_random_func;
 
 /* Progress report function, mainly for key generation. */
 typedef void nettle_progress_func(void *ctx, int c);
