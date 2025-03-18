@@ -1,3 +1,40 @@
+2025-03-18  Niels Möller  <nisse@lysator.liu.se>
+
+	Delete the output size argument from almost all digest functions.
+	* chacha-poly1305.h (chacha_poly1305_digest): Delete length argument.
+	* cmac.h (cmac128_digest, cmac64_digest)
+	(CMAC128_DIGEST, cmac_aes128_digest, cmac_aes256_digest)
+	(cmac_des3_digest, CMAC64_DIGEST): Likewise.
+	* eax.h (eax_digest, eax_aes128_digest, EAX_DIGEST): Likewise.
+	* gcm.h (gcm_digest, gcm_aes128_digest, gcm_aes192_digest)
+	(gcm_aes256_digest, gcm_camellia128_digest)
+	(gcm_camellia256_digest, gcm_sm4_digest, GCM_DIGEST): Likewise.
+	* gosthash94.h (gosthash94_digest, gosthash94cp_digest): Likewise.
+	* hkdf.h (hkdf_extract): Likewise.
+	* hmac.h (hmac_digest, hmac_md5_digest, hmac_ripemd160_digest)
+	(hmac_sha1_digest, hmac_sha256_digest, hmac_sha224_digest)
+	(hmac_sha512_digest, hmac_sha384_digest, hmac_gosthash94_digest)
+	(hmac_gosthash94cp_digest, hmac_streebog512_digest)
+	(hmac_streebog256_digest, hmac_sm3_digest, HMAC_DIGEST): Likewise.
+	* md2.h (md2_digest): Likewise.
+	* md4.h (md4_digest): Likewise.
+	* md5.h (md5_digest): Likewise.
+	* poly1305.h (poly1305_aes_digest): Likewise.
+	* ripemd160.h (ripemd160_digest): Likewise.
+	* sha1.h (sha1_digest): Likewise.
+	* sha2.h (sha256_digest, sha224_digest, sha512_digest)
+	(sha384_digest, sha512_224_digest, sha512_256_digest): Likewise.
+	* sha3.h (sha3_224_digest, sha3_256_digest, sha3_384_digest)
+	(sha3_512_digest): Likewise.
+	* sm3.h (sm3_digest): Likewise.
+	* streebog.h (streebog512_digest, streebog256_digest): Likewise
+	* umac.h (umac32_digest, umac64_digest, umac96_digest)
+	(umac128_digest): Likewise.
+	* nettle-types.h (nettle_output_func): New typedef, same signature
+	as nettle_random_func.
+	(nettle_random_func): Redefine as alias to nettle_output_func.
+	(nettle_hash_digest_func): Delete length argument.
+
 2025-03-10  Niels Möller  <nisse@lysator.liu.se>
 
 	Delete the old deprecated DSA functions declared in dsa-compat.h.

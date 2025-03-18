@@ -433,11 +433,9 @@ Initialize the SHA256 state.
 Hash some more data.
 @end deftypefun
 
-@deftypefun void sha256_digest (struct sha256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Performs final processing and extracts the message digest, writing it
-to @var{digest}. @var{length} may be smaller than
-@code{SHA256_DIGEST_SIZE}, in which case only the first @var{length}
-octets of the digest are written.
+@deftypefun void sha256_digest (struct sha256_ctx *@var{ctx}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing
+@code{SHA256_DIGEST_SIZE} octets to @var{digest}.
 
 This function also resets the context in the same way as
 @code{sha256_init}.
@@ -482,11 +480,9 @@ Initialize the SHA224 state.
 Hash some more data.
 @end deftypefun
 
-@deftypefun void sha224_digest (struct sha224_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Performs final processing and extracts the message digest, writing it
-to @var{digest}. @var{length} may be smaller than
-@code{SHA224_DIGEST_SIZE}, in which case only the first @var{length}
-octets of the digest are written.
+@deftypefun void sha224_digest (struct sha224_ctx *@var{ctx}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing
+@code{SHA224_DIGEST_SIZE} octets to @var{digest}.
 
 This function also resets the context in the same way as
 @code{sha224_init}.
@@ -521,11 +517,9 @@ Initialize the SHA512 state.
 Hash some more data.
 @end deftypefun
 
-@deftypefun void sha512_digest (struct sha512_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Performs final processing and extracts the message digest, writing it
-to @var{digest}. @var{length} may be smaller than
-@code{SHA512_DIGEST_SIZE}, in which case only the first @var{length}
-octets of the digest are written.
+@deftypefun void sha512_digest (struct sha512_ctx *@var{ctx}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing
+@code{SHA512_DIGEST_SIZE} octets to @var{digest}.
 
 This function also resets the context in the same way as
 @code{sha512_init}.
@@ -582,13 +576,11 @@ Hash some more data. These are all aliases for sha512_update, which does
 the same thing.
 @end deftypefun
 
-@deftypefun void sha512_224_digest (struct sha512_224_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-@deftypefunx void sha512_256_digest (struct sha512_256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-@deftypefunx void sha384_digest (struct sha384_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Performs final processing and extracts the message digest, writing it to
-@var{digest}. @var{length} may be smaller than the specified digest
-size, in which case only the first @var{length} octets of the digest are
-written.
+@deftypefun void sha512_224_digest (struct sha512_224_ctx *@var{ctx}, uint8_t *@var{digest})
+@deftypefunx void sha512_256_digest (struct sha512_256_ctx *@var{ctx}, uint8_t *@var{digest})
+@deftypefunx void sha384_digest (struct sha384_ctx *@var{ctx}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing a
+digest of the corresponding size to @var{digest}.
 
 These function also reset the context in the same way as the
 corresponding init function.
@@ -641,11 +633,9 @@ Initialize the SHA3-224 state.
 Hash some more data.
 @end deftypefun
 
-@deftypefun void sha3_224_digest (struct sha3_224_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Performs final processing and extracts the message digest, writing it
-to @var{digest}. @var{length} may be smaller than
-@code{SHA3_224_DIGEST_SIZE}, in which case only the first @var{length}
-octets of the digest are written.
+@deftypefun void sha3_224_digest (struct sha3_224_ctx *@var{ctx}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing
+@code{SHA3_224_DIGEST_SIZE} octets to @var{digest}.
 
 This function also resets the context.
 @end deftypefun
@@ -676,11 +666,9 @@ Initialize the SHA3-256 state.
 Hash some more data.
 @end deftypefun
 
-@deftypefun void sha3_256_digest (struct sha3_256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Performs final processing and extracts the message digest, writing it
-to @var{digest}. @var{length} may be smaller than
-@code{SHA3_256_DIGEST_SIZE}, in which case only the first @var{length}
-octets of the digest are written.
+@deftypefun void sha3_256_digest (struct sha3_256_ctx *@var{ctx}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing
+@code{SHA3_256_DIGEST_SIZE} octets to @var{digest}.
 
 This function also resets the context.
 @end deftypefun
@@ -710,11 +698,9 @@ Initialize the SHA3-384 state.
 Hash some more data.
 @end deftypefun
 
-@deftypefun void sha3_384_digest (struct sha3_384_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Performs final processing and extracts the message digest, writing it
-to @var{digest}. @var{length} may be smaller than
-@code{SHA3_384_DIGEST_SIZE}, in which case only the first @var{length}
-octets of the digest are written.
+@deftypefun void sha3_384_digest (struct sha3_384_ctx *@var{ctx}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing
+@code{SHA3_384_DIGEST_SIZE} octets to @var{digest}.
 
 This function also resets the context.
 @end deftypefun
@@ -744,11 +730,9 @@ Initialize the SHA3-512 state.
 Hash some more data.
 @end deftypefun
 
-@deftypefun void sha3_512_digest (struct sha3_512_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Performs final processing and extracts the message digest, writing it
-to @var{digest}. @var{length} may be smaller than
-@code{SHA3_512_DIGEST_SIZE}, in which case only the first @var{length}
-octets of the digest are written.
+@deftypefun void sha3_512_digest (struct sha3_512_ctx *@var{ctx}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing
+@code{SHA3_512_DIGEST_SIZE} octets to @var{digest}.
 
 This function also resets the context.
 @end deftypefun
@@ -847,11 +831,9 @@ Initialize the STREEBOG512 state.
 Hash some more data.
 @end deftypefun
 
-@deftypefun void streebog512_digest (struct streebog512_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Performs final processing and extracts the message digest, writing it
-to @var{digest}. @var{length} may be smaller than
-@code{STREEBOG512_DIGEST_SIZE}, in which case only the first @var{length}
-octets of the digest are written.
+@deftypefun void streebog512_digest (struct streebog512_ctx *@var{ctx}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing
+@code{STREEBOG512_DIGEST_SIZE} octets to @var{digest}.
 
 This function also resets the context in the same way as
 @code{streebog512_init}.
@@ -883,11 +865,9 @@ Initialize the STREEBOG256 state.
 Hash some more data.
 @end deftypefun
 
-@deftypefun void streebog256_digest (struct streebog256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Performs final processing and extracts the message digest, writing it
-to @var{digest}. @var{length} may be smaller than
-@code{STREEBOG256_DIGEST_SIZE}, in which case only the first @var{length}
-octets of the digest are written.
+@deftypefun void streebog256_digest (struct streebog256_ctx *@var{ctx}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing
+@code{STREEBOG256_DIGEST_SIZE} octets to @var{digest}.
 
 This function also resets the context in the same way as
 @code{streebog256_init}.
@@ -929,11 +909,9 @@ Initialize the SM3 state.
 Hash some more data.
 @end deftypefun
 
-@deftypefun void sm3_digest (struct sm3_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Performs final processing and extracts the message digest, writing it
-to @var{digest}. @var{length} may be smaller than
-@code{SM3_DIGEST_SIZE}, in which case only the first @var{length}
-octets of the digest are written.
+@deftypefun void sm3_digest (struct sm3_ctx *@var{ctx}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing
+@code{SM3_DIGEST_SIZE} octets to @var{digest}.
 
 This function also resets the context in the same way as
 @code{sm3_init}.
@@ -979,11 +957,9 @@ Initialize the MD5 state.
 Hash some more data.
 @end deftypefun
 
-@deftypefun void md5_digest (struct md5_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Performs final processing and extracts the message digest, writing it
-to @var{digest}. @var{length} may be smaller than
-@code{MD5_DIGEST_SIZE}, in which case only the first @var{length}
-octets of the digest are written.
+@deftypefun void md5_digest (struct md5_ctx *@var{ctx}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing
+@code{MD5_DIGEST_SIZE} octets to @var{digest}.
 
 This function also resets the context in the same way as
 @code{md5_init}.
@@ -1030,11 +1006,9 @@ Initialize the MD2 state.
 Hash some more data.
 @end deftypefun
 
-@deftypefun void md2_digest (struct md2_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Performs final processing and extracts the message digest, writing it
-to @var{digest}. @var{length} may be smaller than
-@code{MD2_DIGEST_SIZE}, in which case only the first @var{length}
-octets of the digest are written.
+@deftypefun void md2_digest (struct md2_ctx *@var{ctx}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing
+@code{MD2_DIGEST_SIZE} octets to @var{digest}.
 
 This function also resets the context in the same way as
 @code{md2_init}.
@@ -1067,11 +1041,9 @@ Initialize the MD4 state.
 Hash some more data.
 @end deftypefun
 
-@deftypefun void md4_digest (struct md4_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Performs final processing and extracts the message digest, writing it
-to @var{digest}. @var{length} may be smaller than
-@code{MD4_DIGEST_SIZE}, in which case only the first @var{length}
-octets of the digest are written.
+@deftypefun void md4_digest (struct md4_ctx *@var{ctx}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing
+@code{MD4_DIGEST_SIZE} octets to @var{digest}.
 
 This function also resets the context in the same way as
 @code{md4_init}.
@@ -1104,11 +1076,9 @@ Initialize the RIPEMD160 state.
 Hash some more data.
 @end deftypefun
 
-@deftypefun void ripemd160_digest (struct ripemd160_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Performs final processing and extracts the message digest, writing it
-to @var{digest}. @var{length} may be smaller than
-@code{RIPEMD160_DIGEST_SIZE}, in which case only the first @var{length}
-octets of the digest are written.
+@deftypefun void ripemd160_digest (struct ripemd160_ctx *@var{ctx}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing
+@code{RIPEMD160_DIGEST_SIZE} octets to @var{digest}.
 
 This function also resets the context in the same way as
 @code{ripemd160_init}.
@@ -1141,11 +1111,9 @@ Initialize the SHA1 state.
 Hash some more data.
 @end deftypefun
 
-@deftypefun void sha1_digest (struct sha1_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Performs final processing and extracts the message digest, writing it
-to @var{digest}. @var{length} may be smaller than
-@code{SHA1_DIGEST_SIZE}, in which case only the first @var{length}
-octets of the digest are written.
+@deftypefun void sha1_digest (struct sha1_ctx *@var{ctx}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing
+@code{SHA1_DIGEST_SIZE} octets to @var{digest}.
 
 This function also resets the context in the same way as
 @code{sha1_init}.
@@ -1192,11 +1160,9 @@ Initialize the GOSTHASH94 state.
 Hash some more data.
 @end deftypefun
 
-@deftypefun void gosthash94_digest (struct gosthash94_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Performs final processing and extracts the message digest, writing it
-to @var{digest}. @var{length} may be smaller than
-@code{GOSTHASH94_DIGEST_SIZE}, in which case only the first @var{length}
-octets of the digest are written.
+@deftypefun void gosthash94_digest (struct gosthash94_ctx *@var{ctx}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing
+@code{GOSTHASH94_DIGEST_SIZE} octets to @var{digest}.
 
 This function also resets the context in the same way as
 @code{gosthash94_init}.
@@ -1221,11 +1187,9 @@ Initialize the GOSTHASH94CP state.
 Hash some more data.
 @end deftypefun
 
-@deftypefun void gosthash94cp_digest (struct gosthash94cp_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Performs final processing and extracts the message digest, writing it
-to @var{digest}. @var{length} may be smaller than
-@code{GOSTHASH94CP_DIGEST_SIZE}, in which case only the first @var{length}
-octets of the digest are written.
+@deftypefun void gosthash94cp_digest (struct gosthash94cp_ctx *@var{ctx}, uint8_t *@var{digest})
+Performs final processing and extracts the message digest, writing
+@code{GOSTHASH94CP_DIGEST_SIZE} octets to @var{digest}.
 
 This function also resets the context in the same way as
 @code{gosthash94cp_init}.
@@ -2988,11 +2952,9 @@ All but the last call for each message @emph{must} use a length that is
 a multiple of the block size.
 @end deftypefun
 
-@deftypefun void eax_digest (struct eax_ctx *@var{eax}, const struct eax_key *@var{key}, const void *@var{cipher}, nettle_cipher_func *@var{f}, size_t @var{length}, uint8_t *@var{digest})
-Extracts the message digest (also known ``authentication tag''). This is
-the final operation when processing a message. If @var{length} is
-smaller than @code{EAX_DIGEST_SIZE}, only the first @var{length} octets
-of the digest are written.
+@deftypefun void eax_digest (struct eax_ctx *@var{eax}, const struct eax_key *@var{key}, const void *@var{cipher}, nettle_cipher_func *@var{f}, uint8_t *@var{digest})
+Extracts the message digest (also known ``authentication tag''), and
+writes @code{EAX_DIGEST_SIZE} octets to @var{digest}.
 @end deftypefun
 
 
@@ -3035,7 +2997,7 @@ Process associated data for authentication.
 Process message data for encryption or decryption.
 @end deffn
 
-@deffn Macro EAX_DIGEST (@var{ctx}, @var{encrypt}, @var{length}, @var{digest})
+@deffn Macro EAX_DIGEST (@var{ctx}, @var{encrypt}, @var{digest})
 Extract the authentication tag for the message.
 @end deffn
 
@@ -3070,11 +3032,9 @@ each message @emph{must} use a length that is a multiple of the block
 size.
 @end deftypefun
 
-@deftypefun void eax_aes128_digest (struct eax_aes128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Extracts the message digest (also known ``authentication tag''). This is
-the final operation when processing a message. If @var{length} is
-smaller than @code{EAX_DIGEST_SIZE}, only the first @var{length} octets
-of the digest are written.
+@deftypefun void eax_aes128_digest (struct eax_aes128_ctx *@var{ctx}, uint8_t *@var{digest})
+Extracts the message digest (also known ``authentication tag''), and
+writes @code{EAX_DIGEST_SIZE} octets to @var{digest}.
 @end deftypefun
 
 @node GCM
@@ -3152,11 +3112,9 @@ All but the last call for each message @emph{must} use a length that is
 a multiple of the block size.
 @end deftypefun
 
-@deftypefun void gcm_digest (struct gcm_ctx *@var{ctx}, const struct gcm_key *@var{key}, const void *@var{cipher}, nettle_cipher_func *@var{f}, size_t @var{length}, uint8_t *@var{digest})
-Extracts the message digest (also known ``authentication tag''). This is
-the final operation when processing a message. It's strongly recommended
-that @var{length} is @code{GCM_DIGEST_SIZE}, but if you provide a smaller
-value, only the first @var{length} octets of the digest are written.
+@deftypefun void gcm_digest (struct gcm_ctx *@var{ctx}, const struct gcm_key *@var{key}, const void *@var{cipher}, nettle_cipher_func *@var{f}, uint8_t *@var{digest})
+Extracts the message digest (also known ``authentication tag''), and
+writes @code{GCM_DIGEST_SIZE} octets to @var{digest}.
 @end deftypefun
 
 To encrypt a message using @acronym{GCM}, first initialize a context for
@@ -3213,7 +3171,7 @@ struct as defined by @code{GCM_CTX}
 
 @deffn Macro GCM_ENCRYPT (@var{ctx}, @var{encrypt}, @var{length}, @var{dst}, @var{src})
 @deffnx Macro GCM_DECRYPT (@var{ctx}, @var{encrypt}, @var{length}, @var{dst}, @var{src})
-@deffnx Macro GCM_DIGEST (@var{ctx}, @var{encrypt}, @var{length}, @var{digest})
+@deffnx Macro GCM_DIGEST (@var{ctx}, @var{encrypt}, @var{digest})
 Simpler way to call @code{gcm_encrypt}, @code{gcm_decrypt} or
 @code{gcm_digest}. First argument is a context struct as defined by
 @code{GCM_CTX}. Second argument, @var{encrypt}, is the encryption
@@ -3262,13 +3220,11 @@ each message @emph{must} use a length that is a multiple of the block
 size.
 @end deftypefun
 
-@deftypefun void gcm_aes128_digest (struct gcm_aes128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-@deftypefunx void gcm_aes192_digest (struct gcm_aes192_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-@deftypefunx void gcm_aes256_digest (struct gcm_aes256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Extracts the message digest (also known ``authentication tag''). This is
-the final operation when processing a message. It's strongly recommended
-that @var{length} is @code{GCM_DIGEST_SIZE}, but if you provide a smaller
-value, only the first @var{length} octets of the digest are written.
+@deftypefun void gcm_aes128_digest (struct gcm_aes128_ctx *@var{ctx}, uint8_t *@var{digest})
+@deftypefunx void gcm_aes192_digest (struct gcm_aes192_ctx *@var{ctx}, uint8_t *@var{digest})
+@deftypefunx void gcm_aes256_digest (struct gcm_aes256_ctx *@var{ctx}, uint8_t *@var{digest})
+Extracts the message digest (also known ``authentication tag''), and
+writes @code{GCM_DIGEST_SIZE} octets to @var{digest}.
 @end deftypefun
 
 @subsubsection @acronym{GCM}-Camellia interface
@@ -3308,14 +3264,12 @@ each message @emph{must} use a length that is a multiple of the block
 size.
 @end deftypefun
 
-@deftypefun void gcm_camellia128_digest (struct gcm_camellia128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-@deftypefunx void gcm_camellia192_digest (struct gcm_camellia192_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-@deftypefunx void gcm_camellia256_digest (struct gcm_camellia256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-@deftypefunx void gcm_camellia_digest (struct gcm_camellia_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Extracts the message digest (also known ``authentication tag''). This is
-the final operation when processing a message. It's strongly recommended
-that @var{length} is @code{GCM_DIGEST_SIZE}, but if you provide a smaller
-value, only the first @var{length} octets of the digest are written.
+@deftypefun void gcm_camellia128_digest (struct gcm_camellia128_ctx *@var{ctx}, uint8_t *@var{digest})
+@deftypefunx void gcm_camellia192_digest (struct gcm_camellia192_ctx *@var{ctx}, uint8_t *@var{digest})
+@deftypefunx void gcm_camellia256_digest (struct gcm_camellia256_ctx *@var{ctx}, uint8_t *@var{digest})
+@deftypefunx void gcm_camellia_digest (struct gcm_camellia_ctx *@var{ctx}, uint8_t *@var{digest})
+Extracts the message digest (also known ``authentication tag''), and
+writes @code{GCM_DIGEST_SIZE} octets to @var{digest}.
 @end deftypefun
 
 @subsubsection @acronym{GCM}-SM4 interface
@@ -3349,11 +3303,9 @@ each message @emph{must} use a length that is a multiple of the block
 size.
 @end deftypefun
 
-@deftypefun void gcm_sm4_digest (struct gcm_sm4_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Extracts the message digest (also known ``authentication tag''). This is
-the final operation when processing a message. It's strongly recommended
-that @var{length} is @code{GCM_DIGEST_SIZE}, but if you provide a smaller
-value, only the first @var{length} octets of the digest are written.
+@deftypefun void gcm_sm4_digest (struct gcm_sm4_ctx *@var{ctx}, uint8_t *@var{digest})
+Extracts the message digest (also known ``authentication tag''), and
+writes @code{GCM_DIGEST_SIZE} octets to @var{digest}.
 @end deftypefun
 
 @node CCM
@@ -3655,11 +3607,9 @@ each message @emph{must} use a length that is a multiple of the block
 size.
 @end deftypefun
 
-@deftypefun void chacha_poly1305_digest (struct chacha_poly1305_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Extracts the message digest (also known ``authentication tag''). This is
-the final operation when processing a message. If @var{length} is
-smaller than @code{CHACHA_POLY1305_DIGEST_SIZE}, only the first
-@var{length} octets of the digest are written.
+@deftypefun void chacha_poly1305_digest (struct chacha_poly1305_ctx *@var{ctx}, uint8_t *@var{digest})
+Extracts the message digest (also known ``authentication tag''), and
+writes @code{CHACHA_POLY1305_DIGEST_SIZE} octets to @var{digest}.
 @end deftypefun
 
 @node OCB
@@ -4142,11 +4092,9 @@ Actually, @code{hmac_update(state, H, length, data)} is equivalent to
 ordinary update function of the underlying hash function instead.
 @end deftypefun
 
-@deftypefun void hmac_digest (const void *@var{outer}, const void *@var{inner}, void *@var{state}, const struct nettle_hash *@var{H}, size_t @var{length}, uint8_t *@var{digest})
-Extracts the @acronym{MAC} of the message, writing it to @var{digest}.
-@var{outer} and @var{inner} are not modified. @var{length} is usually
-equal to @code{H->digest_size}, but if you provide a smaller value,
-only the first @var{length} octets of the @acronym{MAC} are written.
+@deftypefun void hmac_digest (const void *@var{outer}, const void *@var{inner}, void *@var{state}, const struct nettle_hash *@var{H}, uint8_t *@var{digest})
+Extracts the @acronym{MAC} of the message, writing @code{H->digest_size}
+octets to @var{digest}. @var{outer} and @var{inner} are not modified.
 
 This function also resets the @var{state} context so that you can start
 over processing a new message (with the same key).
@@ -4187,11 +4135,11 @@ the type of the components of @var{ctx}). The last two arguments specify
 the secret key.
 @end deffn
 
-@deffn Macro HMAC_DIGEST (@var{ctx}, @var{H}, @var{length}, @var{digest})
+@deffn Macro HMAC_DIGEST (@var{ctx}, @var{H}, @var{digest})
 @var{ctx} is a pointer to a context struct as defined by
 @code{HMAC_CTX}, @var{H} is a pointer to a @code{const struct
-nettle_hash} describing the underlying hash function. The last two
-arguments specify where the digest is written.
+nettle_hash} describing the underlying hash function. The @var{digest}
+argument specifies where the digest is written.
 @end deffn
 
 Note that there is no @code{HMAC_UPDATE} macro; simply call
@@ -4214,10 +4162,8 @@ Initializes the context with the key.
 Process some more data.
 @end deftypefun
 
-@deftypefun void hmac_md5_digest (struct hmac_md5_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Extracts the @acronym{MAC}, writing it to @var{digest}. @var{length} may be smaller than
-@code{MD5_DIGEST_SIZE}, in which case only the first @var{length}
-octets of the @acronym{MAC} are written.
+@deftypefun void hmac_md5_digest (struct hmac_md5_ctx *@var{ctx}, uint8_t *@var{digest})
+Extracts the @acronym{MAC}, writing @code{MD5_DIGEST_SIZE} octets to @var{digest}.
 
 This function also resets the context for processing new messages, with
 the same key.
@@ -4236,10 +4182,9 @@ Initializes the context with the key.
 Process some more data.
 @end deftypefun
 
-@deftypefun void hmac_ripemd160_digest (struct hmac_ripemd160_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Extracts the @acronym{MAC}, writing it to @var{digest}. @var{length} may be smaller than
-@code{RIPEMD160_DIGEST_SIZE}, in which case only the first @var{length}
-octets of the @acronym{MAC} are written.
+@deftypefun void hmac_ripemd160_digest (struct hmac_ripemd160_ctx *@var{ctx}, uint8_t *@var{digest})
+Extracts the @acronym{MAC}, writing @code{RIPEMD160_DIGEST_SIZE} octets
+to @var{digest}.
 
 This function also resets the context for processing new messages, with
 the same key.
@@ -4258,10 +4203,9 @@ Initializes the context with the key.
 Process some more data.
 @end deftypefun
 
-@deftypefun void hmac_sha1_digest (struct hmac_sha1_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Extracts the @acronym{MAC}, writing it to @var{digest}. @var{length} may be smaller than
-@code{SHA1_DIGEST_SIZE}, in which case only the first @var{length}
-octets of the @acronym{MAC} are written.
+@deftypefun void hmac_sha1_digest (struct hmac_sha1_ctx *@var{ctx}, uint8_t *@var{digest})
+Extracts the @acronym{MAC}, writing @code{SHA1_DIGEST_SIZE} octets to
+@var{digest}.
 
 This function also resets the context for processing new messages, with
 the same key.
@@ -4281,10 +4225,9 @@ Initializes the context with the key.
 Process some more data.
 @end deftypefun
 
-@deftypefun void hmac_sha256_digest (struct hmac_sha256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Extracts the @acronym{MAC}, writing it to @var{digest}. @var{length} may be smaller than
-@code{SHA256_DIGEST_SIZE}, in which case only the first @var{length}
-octets of the @acronym{MAC} are written.
+@deftypefun void hmac_sha256_digest (struct hmac_sha256_ctx *@var{ctx}, uint8_t *@var{digest})
+Extracts the @acronym{MAC}, writing @code{SHA256_DIGEST_SIZE} octets to
+@var{digest}.
 
 This function also resets the context for processing new messages, with
 the same key.
@@ -4304,10 +4247,8 @@ Initializes the context with the key.
 Process some more data.
 @end deftypefun
 
-@deftypefun void hmac_sha512_digest (struct hmac_sha512_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Extracts the @acronym{MAC}, writing it to @var{digest}. @var{length} may be smaller than
-@code{SHA512_DIGEST_SIZE}, in which case only the first @var{length}
-octets of the @acronym{MAC} are written.
+@deftypefun void hmac_sha512_digest (struct hmac_sha512_ctx *@var{ctx}, uint8_t *@var{digest})
+Extracts the @acronym{MAC}, writing @code{SHA512_DIGEST_SIZE} octets to @var{digest}.
 
 This function also resets the context for processing new messages, with
 the same key.
@@ -4327,10 +4268,9 @@ Initializes the context with the key.
 Process some more data.
 @end deftypefun
 
-@deftypefun void hmac_sm3_digest (struct hmac_sm3_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Extracts the @acronym{MAC}, writing it to @var{digest}. @var{length} may be smaller than
-@code{SM3_DIGEST_SIZE}, in which case only the first @var{length}
-octets of the @acronym{MAC} are written.
+@deftypefun void hmac_sm3_digest (struct hmac_sm3_ctx *@var{ctx}, uint8_t *@var{digest})
+Extracts the @acronym{MAC}, writing @code{SM3_DIGEST_SIZE} octets to
+@var{digest}.
 
 This function also resets the context for processing new messages, with
 the same key.
@@ -4442,17 +4382,15 @@ message.
 These functions are called zero or more times to process the message.
 @end deftypefun
 
-@deftypefun void umac32_digest (struct umac32_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-@deftypefunx void umac64_digest (struct umac64_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-@deftypefunx void umac96_digest (struct umac96_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-@deftypefunx void umac128_digest (struct umac128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+@deftypefun void umac32_digest (struct umac32_ctx *@var{ctx}, uint8_t *@var{digest})
+@deftypefunx void umac64_digest (struct umac64_ctx *@var{ctx}, uint8_t *@var{digest})
+@deftypefunx void umac96_digest (struct umac96_ctx *@var{ctx}, uint8_t *@var{digest})
+@deftypefunx void umac128_digest (struct umac128_ctx *@var{ctx}, uint8_t *@var{digest})
 Extracts the @acronym{MAC} of the message, writing it to @var{digest}.
-@var{length} is usually equal to the specified output size, but if you
-provide a smaller value, only the first @var{length} octets of the
-@acronym{MAC} are written. These functions reset the context for
-processing of a new message with the same key. The nonce is incremented
-as described above, the new value is used unless you call the
-@code{_set_nonce} function explicitly for each message.
+These functions reset the context for processing of a new message with
+the same key. The nonce is incremented as described above, the new value
+is used unless you call the @code{_set_nonce} function explicitly for
+each message.
 @end deftypefun
 
 @node CMAC
@@ -4492,12 +4430,10 @@ This function initializes the @acronym{CMAC} context struct for AES-128.
 This function is called zero or more times to process the message.
 @end deftypefun
 
-@deftypefun void cmac_aes128_digest (struct cmac_aes128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Extracts the @acronym{MAC} of the message, writing it to @var{digest}.
-@var{length} is usually equal to the specified output size, but if you
-provide a smaller value, only the first @var{length} octets of the
-@acronym{MAC} are written. This function resets the context for
-processing of a new message with the same key.
+@deftypefun void cmac_aes128_digest (struct cmac_aes128_ctx *@var{ctx}, uint8_t *@var{digest})
+Extracts the @acronym{MAC} of the message, writing @code{CMAC128_DIGEST_SIZE}
+octets to @var{digest}. This function resets the context for processing
+of a new message with the same key.
 @end deftypefun
 
 @deftypefun void cmac_aes256_set_key (struct cmac_aes256_ctx *@var{ctx}, const uint8_t *@var{key})
@@ -4508,12 +4444,10 @@ This function initializes the @acronym{CMAC} context struct for AES-256.
 This function is called zero or more times to process the message.
 @end deftypefun
 
-@deftypefun void cmac_aes256_digest (struct cmac_aes256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Extracts the @acronym{MAC} of the message, writing it to @var{digest}.
-@var{length} is usually equal to the specified output size, but if you
-provide a smaller value, only the first @var{length} octets of the
-@acronym{MAC} are written. This function resets the context for
-processing of a new message with the same key.
+@deftypefun void cmac_aes256_digest (struct cmac_aes256_ctx *@var{ctx}, uint8_t *@var{digest})
+Extracts the @acronym{MAC} of the message, writing
+@code{CMAC128_DIGEST_SIZE} octets to @var{digest}. This function resets
+the context for processing of a new message with the same key.
 @end deftypefun
 
 @deftp {Context struct} {struct cmac_des3_ctx}
@@ -4531,12 +4465,10 @@ This function initializes the @acronym{CMAC} context struct for @acronym{Tripple
 This function is called zero or more times to process the message.
 @end deftypefun
 
-@deftypefun void cmac_des3_digest (struct cmac_des3_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Extracts the @acronym{MAC} of the message, writing it to @var{digest}.
-@var{length} is usually equal to the specified output size, but if you
-provide a smaller value, only the first @var{length} octets of the
-@acronym{MAC} are written. This function resets the context for
-processing of a new message with the same key.
+@deftypefun void cmac_des3_digest (struct cmac_des3_ctx *@var{ctx}, uint8_t *@var{digest})
+Extracts the @acronym{MAC} of the message, writing
+@code{CMAC64_DIGEST_SIZE} octets to @var{digest}. This function resets
+the context for processing of a new message with the same key.
 @end deftypefun
 
 @node Poly1305
@@ -4597,10 +4529,9 @@ incremented automatically for each message.
 Process more data.
 @end deftypefun
 
-@deftypefun void poly1305_aes_digest (struct poly1305_aes_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-Extracts the digest. If @var{length} is smaller than
-@code{POLY1305_AES_DIGEST_SIZE}, only the first @var{length} octets are
-written. Also increments the nonce, and prepares the context for
+@deftypefun void poly1305_aes_digest (struct poly1305_aes_ctx *@var{ctx}, uint8_t *@var{digest})
+Extracts the digest, writing @code{POLY1305_AES_DIGEST_SIZE} octets to
+@var{digest}. Also increments the nonce, and prepares the context for
 processing a new message.
 @end deftypefun
 
