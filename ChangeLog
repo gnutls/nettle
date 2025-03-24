@@ -1,3 +1,9 @@
+2025-03-24  Niels Möller  <nisse@lysator.liu.se>
+
+	* gcm.h (GCM_TABLE_BITS): Delete constant.
+	(struct gcm_key): Halve the allocation size for precomputed
+	values, to 2048 bytes, or 128 16-byte blocks.
+
 2025-03-18  Niels Möller  <nisse@lysator.liu.se>
 
 	Delete the output size argument from almost all digest functions.

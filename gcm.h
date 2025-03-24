@@ -106,12 +106,11 @@ extern "C" {
 #define GCM_BLOCK_SIZE 16
 #define GCM_IV_SIZE (GCM_BLOCK_SIZE - 4)
 #define GCM_DIGEST_SIZE 16
-#define GCM_TABLE_BITS 8
 
 /* Hashing subkey */
 struct gcm_key
 {
-  union nettle_block16 h[1 << GCM_TABLE_BITS];
+  union nettle_block16 h[0x80];
 };
 
 /* Per-message state, depending on the iv */
