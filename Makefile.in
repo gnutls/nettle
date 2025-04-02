@@ -17,7 +17,8 @@ OPT_HOGWEED_OBJS = @OPT_HOGWEED_OBJS@
 
 OPT_NETTLE_SOURCES = @OPT_NETTLE_SOURCES@
 
-FAT_TEST_LIST = @FAT_TEST_LIST@
+FAT_OVERRIDE_LIST = @FAT_OVERRIDE_LIST@
+FAT_EMULATE_LIST = @FAT_EMULATE_LIST@
 
 SUBDIRS = tools testsuite examples
 
@@ -59,11 +60,20 @@ check-here:
 # Tries different settings of NETTLE_FAT_OVERRIDE. Note that this
 # requires that corresponding processor features are available on the
 # test machine.
-check-fat:
-	[ -z "$(FAT_TEST_LIST)" ] || \
-	  set -e; cd testsuite && for f in $(FAT_TEST_LIST) ; do \
+check-fat-override:
+	[ -z "$(FAT_OVERRIDE_LIST)" ] || \
+	  set -e; cd testsuite && for f in $(FAT_OVERRIDE_LIST) ; do \
 	    echo NETTLE_FAT_OVERRIDE=$$f ; \
 	    NETTLE_FAT_OVERRIDE=$$f $(MAKE) check TS_ALL='$$(TS_FAT)' ; \
+	  done
+
+# Emulate for multiple cpu flavors; -cpu is the right flag for qemu.
+EMULATOR_CPU_FLAG = -cpu
+check-fat-emulate:
+	[ -z "$(FAT_EMULATE_LIST)" ] || [ -z "$(EMULATOR)" ] || \
+	  set -e; cd testsuite && for f in $(FAT_EMULATE_LIST) ; do \
+	    echo Emulating: $$f ; \
+            $(MAKE) check EMULATOR="$(EMULATOR) $(EMULATOR_CPU_FLAG) $$f" TS_ALL='$$(TS_FAT)' ; \
 	  done
 
 all-here: $(TARGETS) $(DOCTARGETS)

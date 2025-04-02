@@ -27,7 +27,7 @@ variables:
 native/fat:
   extends: .native-build
   variables:
-    EXTRA_CHECK: check-fat
+    EXTRA_CHECK_TARGET: check-fat-override
 
 native/no-fat:
   extends: .native-build
@@ -176,8 +176,7 @@ remote/s390x:
   - ./.bootstrap
   - ./configure --disable-documentation $EXTRA_CONFIGURE_ARGS --build=$build --host=$host
   - make -j$(nproc)
-  - make EMULATOR=${EMULATOR} -j$(nproc) check
-  - make EMULATOR=${EMULATOR} -j$(nproc) check-fat
+  - make EMULATOR=${EMULATOR} -j$(nproc) check $EXTRA_CHECK_TARGET
   tags:
   - saas-linux-small-amd64
   except:
@@ -194,11 +193,13 @@ cross/arm-linux-gnueabihf:
   extends: .cross-build
   variables:
     EMULATOR: qemu-arm
+    EXTRA_CHECK_TARGET: check-fat-override
 
 cross/aarch64-linux-gnu:
   extends: .cross-build
   variables:
     EMULATOR: qemu-aarch64
+    EXTRA_CHECK_TARGET: check-fat-override
 
 # Setting QEMU_LD_PREFIX works around the error "qemu-ppc64: Could not
 # open '/lib64/ld64.so.1".
@@ -207,11 +208,13 @@ cross/powerpc64-linux-gnu:
   variables:
     EXTRA_CONFIGURE_ARGS: '--enable-mini-gmp'
     QEMU_LD_PREFIX: /usr/powerpc64-linux-gnu
+    EXTRA_CHECK_TARGET: check-fat-override check-fat-emulate
     EMULATOR: qemu-ppc64
 
 cross/powerpc64le-linux-gnu:
   extends: .cross-build
   variables:
+    EXTRA_CHECK_TARGET: check-fat-override check-fat-emulate
     EMULATOR: qemu-ppc64le
 
 # Disable assembly files, because current qemu doesn't support all

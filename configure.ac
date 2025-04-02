@@ -449,7 +449,8 @@ if test "x$ABI" != xstandard ; then
 fi
 
 OPT_NETTLE_SOURCES=""
-FAT_TEST_LIST=""
+FAT_OVERRIDE_LIST=""
+FAT_EMULATE_LIST=""
 ASM_PPC_WANT_R_REGISTERS="n/a"
 
 # Select assembler code
@@ -467,7 +468,7 @@ if test "x$enable_assembler" = xyes ; then
 	  OPT_NETTLE_SOURCES="fat-x86_64.c $OPT_NETTLE_SOURCES"
 	  # For now, not enabling aesni or sha_ni, since at least 
 	  # the latter appears unavailable on the gitlab test machines.
-	  FAT_TEST_LIST="vendor:intel vendor:amd"
+	  FAT_OVERRIDE_LIST="vendor:intel vendor:amd"
 	else
 	  if test "x$enable_x86_aesni" = xyes ; then
 	    asm_path="x86_64/aesni $asm_path"
@@ -493,7 +494,7 @@ if test "x$enable_assembler" = xyes ; then
       if test "x$enable_fat" = xyes ; then
 	asm_path="arm/fat $asm_path"
 	OPT_NETTLE_SOURCES="fat-arm.c $OPT_NETTLE_SOURCES"
-	FAT_TEST_LIST="arch:5 arch:6,neon"
+	FAT_OVERRIDE_LIST="arch:5 arch:6,neon"
       else
 	case "$host_cpu" in
 	  armv6* | armv7*)
@@ -513,7 +514,7 @@ if test "x$enable_assembler" = xyes ; then
         if test "x$enable_fat" = xyes ; then
           asm_path="arm64/fat $asm_path"
           OPT_NETTLE_SOURCES="fat-arm64.c $OPT_NETTLE_SOURCES"
-          FAT_TEST_LIST="none aes pmull sha1 sha2"
+          FAT_OVERRIDE_LIST="none aes pmull sha1 sha2"
         else
           if test "$enable_arm64_crypto" = yes ; then
             asm_path="arm64/crypto $asm_path"
@@ -534,7 +535,9 @@ if test "x$enable_assembler" = xyes ; then
 	if test "x$enable_fat" = xyes ; then
 	  asm_path="powerpc64/fat $asm_path"
 	  OPT_NETTLE_SOURCES="fat-ppc.c $OPT_NETTLE_SOURCES"
-	  FAT_TEST_LIST="none crypto_ext altivec power9"
+	  FAT_OVERRIDE_LIST="none crypto_ext altivec power9"
+	  # No debian support for power7, making it hard to test.
+	  FAT_EMULATE_LIST="power8 power9"
 	else
 	  if test "$enable_power9" = yes ; then
 	    asm_path="powerpc64/p9 $asm_path"
@@ -554,7 +557,7 @@ if test "x$enable_assembler" = xyes ; then
         if test "x$enable_fat" = xyes ; then
 	        asm_path="s390x/fat $asm_path"
 	        OPT_NETTLE_SOURCES="fat-s390x.c $OPT_NETTLE_SOURCES"
-          FAT_TEST_LIST="none vf msa msa_x1 msa_x2 msa_x4"
+          FAT_OVERRIDE_LIST="none vf msa msa_x1 msa_x2 msa_x4"
         else
           if test "$enable_s390x_vf" = yes ; then
             asm_path="s390x/vf $asm_path"
@@ -701,7 +704,8 @@ fi
 AC_SUBST([OPT_NETTLE_OBJS])
 AC_SUBST([OPT_HOGWEED_OBJS])
 AC_SUBST([OPT_NETTLE_SOURCES])
-AC_SUBST([FAT_TEST_LIST])
+AC_SUBST([FAT_OVERRIDE_LIST])
+AC_SUBST([FAT_EMULATE_LIST])
 AC_SUBST([ASM_RODATA])
 if test "x$enable_assembler" = xyes ; then
   IF_ASM=''
