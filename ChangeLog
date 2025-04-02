@@ -1,3 +1,21 @@
+2025-04-02  Niels Möller  <nisse@lysator.liu.se>
+
+	* .gitlab-ci.yml: Fix native/fat to actually run make
+	check-fat-override. Add an EXTRA_CHECK_TARGET variable also for
+	the .cross-build template, use it for check-fat-override where
+	applicable, and add check-fat-emulate to the powerpc64 builds.
+
+	* Makefile.in (check-fat-override): Renamed target, from...
+	(check-fat): ... old name.
+	(check-fat-emulate): New target, similar to above, but varies the
+	-cpu flag passed to the emulator, instead of using
+	NETTLE_FAT_OVERRIDE.
+
+	* configure.ac (FAT_OVERRIDE_LIST): Renamed variable, from...
+	(FAT_TEST_LIST): ... old name.
+	(FAT_EMULATE_LIST): New substituted variable. Set to "power8
+	power9" for fat ppc64 builds.
+
 2025-03-24  Niels Möller  <nisse@lysator.liu.se>
 
 	* gcm.h (GCM_TABLE_BITS): Delete constant.
