@@ -367,6 +367,16 @@ case "$host_cpu" in
       ]], [[]])], [], [
 	ELFV2_ABI=yes
       ])
+      if test "$enable_assembler" = yes ; then
+	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#if defined(__VSX__)
+#error VSX available
+#endif
+      ]], [[]])], [
+	  AC_MSG_WARN([VSX instructions (Power7 or later) not available, disabling use of assembly.])
+	  enable_assembler=no
+      ], [])
+      fi
     fi
     ;;
   aarch64*)

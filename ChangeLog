@@ -1,3 +1,8 @@
+2025-04-02  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: For ppc64, check if __VSX__ is defined, and
+	disable use of assembly if it isn't.
+
 2025-03-02  Niels Möller  <nisse@lysator.liu.se>
 
 	* powerpc64/p8/gcm-aes-decrypt.asm: Avoid using lxvb16x
