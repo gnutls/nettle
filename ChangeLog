@@ -1,5 +1,9 @@
 2025-04-02  Niels Möller  <nisse@lysator.liu.se>
 
+	Cherry-picked from branch nettle-3.10-fixes:
+	* configure.ac: For ppc64, check if __VSX__ is defined, and
+	disable use of assembly if it isn't.
+
 	* .gitlab-ci.yml: Fix native/fat to actually run make
 	check-fat-override. Add an EXTRA_CHECK_TARGET variable also for
 	the .cross-build template, use it for check-fat-override where
