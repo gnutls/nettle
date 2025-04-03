@@ -206,7 +206,7 @@ cross/aarch64-linux-gnu:
 cross/powerpc64-linux-gnu:
   extends: .cross-build
   variables:
-    EXTRA_CONFIGURE_ARGS: '--enable-mini-gmp'
+    EXTRA_CONFIGURE_ARGS: '--enable-mini-gmp' CC='powerpc64-linux-gnu-gcc -mvsx'
     QEMU_LD_PREFIX: /usr/powerpc64-linux-gnu
     EXTRA_CHECK_TARGET: check-fat-override check-fat-emulate
     EMULATOR: qemu-ppc64
