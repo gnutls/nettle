@@ -1,3 +1,9 @@
+2025-04-08  Niels Möller  <nisse@lysator.liu.se>
+
+	* twofish.c (twofish_encrypt, twofish_decrypt): Avoid copying via
+	a uint32_t words[4] array. Speedup of 15% benchmarked on an x86_64
+	laptop (AMD Ryzen 5).
+
 2025-04-02  Niels Möller  <nisse@lysator.liu.se>
 
 	Cherry-picked from branch nettle-3.10-fixes:
