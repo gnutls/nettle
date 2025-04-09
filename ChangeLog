@@ -1,3 +1,8 @@
+2025-04-09  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/testutils.c (test_cipher): Test encrypt and
+	decrypt methods with varying data alignment.
+
 2025-04-08  Niels Möller  <nisse@lysator.liu.se>
 
 	* twofish.c (twofish_encrypt, twofish_decrypt): Avoid copying via

@@ -183,43 +183,48 @@ test_cipher(const struct nettle_cipher *cipher,
 	    const struct tstring *ciphertext)
 {
   void *ctx = xalloc(cipher->context_size);
-  uint8_t *data = xalloc(cleartext->length);
+  uint8_t *buf = xalloc(cleartext->length + 7);
   size_t length;
+  unsigned align;
   ASSERT (cleartext->length == ciphertext->length);
   length = cleartext->length;
 
   ASSERT (key->length == cipher->key_size);
-  cipher->set_encrypt_key(ctx, key->data);
-  cipher->encrypt(ctx, length, data, cleartext->data);
 
-  if (!MEMEQ(length, data, ciphertext->data))
+  for (align = 0; align <= 7; align++)
     {
-      fprintf(stderr, "Encrypt failed:\nInput:");
-      tstring_print_hex(cleartext);
-      fprintf(stderr, "\nOutput: ");
-      print_hex(length, data);
-      fprintf(stderr, "\nExpected:");
-      tstring_print_hex(ciphertext);
-      fprintf(stderr, "\n");
-      FAIL();
-    }
-  cipher->set_decrypt_key(ctx, key->data);
-  cipher->decrypt(ctx, length, data, data);
+      uint8_t *data = buf + align;
+      cipher->set_encrypt_key(ctx, key->data);
+      cipher->encrypt(ctx, length, data, cleartext->data);
 
-  if (!MEMEQ(length, data, cleartext->data))
-    {
-      fprintf(stderr, "Decrypt failed:\nInput:");
-      tstring_print_hex(ciphertext);
-      fprintf(stderr, "\nOutput: ");
-      print_hex(length, data);
-      fprintf(stderr, "\nExpected:");
-      tstring_print_hex(cleartext);
-      fprintf(stderr, "\n");
-      FAIL();
-    }
+      if (!MEMEQ(length, data, ciphertext->data))
+	{
+	  fprintf(stderr, "Encrypt failed (align %d):\nInput:", align);
+	  tstring_print_hex(cleartext);
+	  fprintf(stderr, "\nOutput: ");
+	  print_hex(length, data);
+	  fprintf(stderr, "\nExpected:");
+	  tstring_print_hex(ciphertext);
+	  fprintf(stderr, "\n");
+	  FAIL();
+	}
+      cipher->set_decrypt_key(ctx, key->data);
+      cipher->decrypt(ctx, length, data, data);
 
+      if (!MEMEQ(length, data, cleartext->data))
+	{
+	  fprintf(stderr, "Decrypt failed (align %d):\nInput:", align);
+	  tstring_print_hex(ciphertext);
+	  fprintf(stderr, "\nOutput: ");
+	  print_hex(length, data);
+	  fprintf(stderr, "\nExpected:");
+	  tstring_print_hex(cleartext);
+	  fprintf(stderr, "\n");
+	  FAIL();
+	}
+    }
   free(ctx);
-  free(data);
+  free(buf);
 }
 
 void
