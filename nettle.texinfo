@@ -3418,10 +3418,8 @@ block size.
 
 @deftypefun void ccm_digest (struct ccm_ctx *@var{ctx}, const void *@var{cipher}, nettle_cipher_func *@var{f}, size_t @var{length}, uint8_t *@var{digest})
 Extracts the message digest (also known ``authentication tag''). This is
-the final operation when processing a message. @var{length} is usually
+the final operation when processing a message. @var{length} should be
 equal to the @var{taglen} parameter supplied to @code{ccm_set_nonce},
-but if you provide a smaller value, only the first @var{length} octets
-of the digest are written.
 @end deftypefun
 
 To encrypt a message using the general @acronym{CCM} interface, set the
@@ -3439,7 +3437,7 @@ be identical to the @acronym{MAC} in the received message.
 
 @subsubsection @acronym{CCM} message interface
 
-The @acronym{CCM} message fuctions provides a simple interface that will
+The @acronym{CCM} message functions provides a simple interface that will
 perform authentication and message encryption in a single function call.
 The length of the cleartext is given by @var{mlength} and the length of
 the ciphertext is given by @var{clength}, always exactly @var{tlength}
@@ -3505,7 +3503,7 @@ These are identical to @code{ccm_set_nonce}, except that @var{cipher},
 @deftypefun void ccm_aes128_update (struct ccm_aes128_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
 @deftypefunx void ccm_aes192_update (struct ccm_aes192_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
 @deftypefunx void ccm_aes256_update (struct ccm_aes256_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
-These are identical to @code{ccm_set_update}, except that @var{cipher},
+These are identical to @code{ccm_update}, except that @var{cipher},
 @var{f}, and @var{ctx} are replaced with a context structure.
 @end deftypefun
 
@@ -3515,14 +3513,14 @@ These are identical to @code{ccm_set_update}, except that @var{cipher},
 @deftypefunx void ccm_aes128_decrypt (struct ccm_aes128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 @deftypefunx void ccm_aes192_decrypt (struct ccm_aes192_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
 @deftypefunx void ccm_aes256_decrypt (struct ccm_aes256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{dst}, const uint8_t *@var{src})
-These are identical to @code{ccm_set_encrypt} and @code{ccm_set_decrypt}, except
+These are identical to @code{ccm_encrypt} and @code{ccm_decrypt}, except
 that @var{cipher}, @var{f}, and @var{ctx} are replaced with a context structure.
 @end deftypefun
 
 @deftypefun void ccm_aes128_digest (struct ccm_aes128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
 @deftypefunx void ccm_aes192_digest (struct ccm_aes192_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
 @deftypefunx void ccm_aes256_digest (struct ccm_aes256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
-These are identical to @code{ccm_set_digest}, except that @var{cipher},
+These are identical to @code{ccm_digest}, except that @var{cipher},
 @var{f}, and @var{ctx} are replaced with a context structure.
 @end deftypefun
 

@@ -111,7 +111,7 @@ struct ccm_ctx {
 
 /*
  * CCM mode requires the adata and message lengths when building the IV, which
- * prevents streaming processing and it incompatible with the AEAD API.
+ * prevents streaming processing and is incompatible with the AEAD API.
  */
 void
 ccm_set_nonce(struct ccm_ctx *ctx, const void *cipher, nettle_cipher_func *f,
@@ -120,7 +120,7 @@ ccm_set_nonce(struct ccm_ctx *ctx, const void *cipher, nettle_cipher_func *f,
 
 void
 ccm_update(struct ccm_ctx *ctx, const void *cipher, nettle_cipher_func *f,
-	    size_t length, const uint8_t *data);
+	   size_t length, const uint8_t *data);
 
 void
 ccm_encrypt(struct ccm_ctx *ctx, const void *cipher, nettle_cipher_func *f,
