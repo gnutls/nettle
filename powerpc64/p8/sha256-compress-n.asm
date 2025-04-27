@@ -207,8 +207,8 @@ define(`DOLOADS', `
 
 .text
 PROLOGUE(_nettle_sha256_compress_n)
-	cmpwi	0, NUMBLOCKS, 0
-	ble	0, .done
+	cmpldi	NUMBLOCKS, 0
+	ble	.done
 	mtctr	NUMBLOCKS
 
 	C Store non-volatile registers
