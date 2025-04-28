@@ -1,5 +1,14 @@
 2025-04-28  Niels Möller  <nisse@lysator.liu.se>
 
+	* bignum-random-prime.c (miller_rabin_pocklington): Adopt
+	mp_bitcnt_t type.
+	* ecc-mod-inv.c (ecc_mod_inv): Likewise.
+	* ecc-mul-a-eh.c (ecc_mul_a_eh): Likewise.
+	* ecc-mul-a.c (ecc_mul_a): Likewise.
+	* ecc-mul-g-eh.c (ecc_mul_g_eh): Likewise.
+	* ecc-mul-g.c (ecc_mul_g): Likewise.
+	* eccdata.c (ecc_mul_binary): Likewise.
+
 	* sha.h: Deleted file.
 	* nettle.texinfo: Delete all mention of sha.h.
 	* Makefile.in (HEADERS): Delete sha.h.
