@@ -47,8 +47,6 @@ extern "C" {
 
 #define MD4_DIGEST_SIZE 16
 #define MD4_BLOCK_SIZE 64
-/* For backwards compatibility */
-#define MD4_DATA_SIZE MD4_BLOCK_SIZE
 
 /* Digest is kept internally as 4 32-bit words. */
 #define _MD4_DIGEST_LENGTH 4

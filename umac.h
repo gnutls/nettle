@@ -67,8 +67,6 @@ extern "C" {
 #define UMAC_BLOCK_SIZE 1024
 #define UMAC_MIN_NONCE_SIZE 1
 #define UMAC_MAX_NONCE_SIZE AES_BLOCK_SIZE
-/* For backwards compatibility */
-#define UMAC_DATA_SIZE UMAC_BLOCK_SIZE
 
 /* Subkeys and state for UMAC with tag size 32*n bits. */
 #define _UMAC_STATE(n)					\

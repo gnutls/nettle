@@ -1,5 +1,9 @@
 2025-04-28  Niels Möller  <nisse@lysator.liu.se>
 
+	* ghosthash94.h, md*.h, ripemd160.h, sha*.h, umac.h: Delete all
+	_DATA_SIZE constant, they were backwards compatibility aliases for
+	_BLOCK_SIZE, from 2014 renaming.
+
 	* salsa20.h (salsa20_set_iv, SALSA20_IV_SIZE): Delete backwards
 	compatibility aliases.
 	* testsuite/salsa20-test.c: Update to consistently use "nonce"

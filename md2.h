@@ -47,8 +47,6 @@ extern "C" {
 
 #define MD2_DIGEST_SIZE 16
 #define MD2_BLOCK_SIZE 16
-/* For backwards compatibility */
-#define MD2_DATA_SIZE MD2_BLOCK_SIZE
 
 struct md2_ctx
 {

@@ -98,12 +98,6 @@ sha3_permute (struct sha3_state *state);
 #define SHA3_512_DIGEST_SIZE 64
 #define SHA3_512_BLOCK_SIZE 72
 
-/* For backwards compatibility */
-#define SHA3_224_DATA_SIZE SHA3_224_BLOCK_SIZE
-#define SHA3_256_DATA_SIZE SHA3_256_BLOCK_SIZE
-#define SHA3_384_DATA_SIZE SHA3_384_BLOCK_SIZE
-#define SHA3_512_DATA_SIZE SHA3_512_BLOCK_SIZE
-
 struct sha3_128_ctx
 {
   struct sha3_state state;

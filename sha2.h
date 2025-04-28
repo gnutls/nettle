@@ -58,12 +58,6 @@ extern "C" {
 #define sha512_256_init   nettle_sha512_256_init
 #define sha512_256_digest nettle_sha512_256_digest
 
-/* For backwards compatibility */
-#define SHA224_DATA_SIZE SHA256_BLOCK_SIZE
-#define SHA256_DATA_SIZE SHA256_BLOCK_SIZE
-#define SHA512_DATA_SIZE SHA512_BLOCK_SIZE
-#define SHA384_DATA_SIZE SHA512_BLOCK_SIZE
-
 /* SHA256 */
 
 #define SHA256_DIGEST_SIZE 32
