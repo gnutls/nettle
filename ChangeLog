@@ -1,3 +1,10 @@
+2025-04-28  Niels Möller  <nisse@lysator.liu.se>
+
+	* salsa20.h (salsa20_set_iv, SALSA20_IV_SIZE): Delete backwards
+	compatibility aliases.
+	* testsuite/salsa20-test.c: Update to consistently use "nonce"
+	names.
+
 2025-04-27  Niels Möller  <nisse@lysator.liu.se>
 
 	* powerpc64/p8/sha256-compress-n.asm: Use 64-bit unsigned compare
