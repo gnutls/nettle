@@ -55,7 +55,6 @@
 /knuth-lfib-test
 /md2-test
 /md4-test
-/md5-compat-test
 /md5-test
 /memeql-test
 /memxor-test
