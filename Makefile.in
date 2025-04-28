@@ -251,7 +251,7 @@ HEADERS = aes.h arcfour.h arctwo.h asn1.h blowfish.h balloon.h \
 	  ocb.h pbkdf2.h \
 	  pkcs1.h pss.h pss-mgf1.h realloc.h ripemd160.h rsa.h \
 	  salsa20.h sexp.h serpent.h \
-	  sha.h sha1.h sha2.h sha3.h sm3.h sm4.h streebog.h twofish.h \
+	  sha1.h sha2.h sha3.h sm3.h sm4.h streebog.h twofish.h \
 	  umac.h yarrow.h xts.h poly1305.h nist-keywrap.h \
 	  drbg-ctr.h
 

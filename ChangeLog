@@ -1,5 +1,9 @@
 2025-04-28  Niels Möller  <nisse@lysator.liu.se>
 
+	* sha.h: Deleted file.
+	* nettle.texinfo: Delete all mention of sha.h.
+	* Makefile.in (HEADERS): Delete sha.h.
+
 	* ghosthash94.h, md*.h, ripemd160.h, sha*.h, umac.h: Delete all
 	_DATA_SIZE constant, they were backwards compatibility aliases for
 	_BLOCK_SIZE, from 2014 renaming.

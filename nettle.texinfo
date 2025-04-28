@@ -449,16 +449,11 @@ for the rare applications that need that (e.g., using different IV from
 standard SHA256).
 @end deftypefun
 
-Earlier versions of nettle defined SHA256 in the header file
-@file{<nettle/sha.h>}, which is now deprecated, but kept for
-compatibility.
-
 @subsubsection @acronym{SHA224}
 
 SHA224 is a variant of SHA256, with a different initial state, and with
 the output truncated to 224 bits, or 28 octets. Nettle defines SHA224 in
-@file{<nettle/sha2.h>} (and in @file{<nettle/sha.h>}, for backwards
-compatibility).
+@file{<nettle/sha2.h>}.
 
 @deftp {Context struct} {struct sha224_ctx}
 @end deftp
@@ -494,8 +489,7 @@ SHA512 is a larger sibling to SHA256, with a very similar structure but
 with both the output and the internal variables of twice the size. The
 internal variables are 64 bits rather than 32, making it significantly
 slower on 32-bit computers. It outputs hash values of 512 bits, or 64
-octets. Nettle defines SHA512 in @file{<nettle/sha2.h>} (and in
-@file{<nettle/sha.h>}, for backwards compatibility).
+octets. Nettle defines SHA512 in @file{<nettle/sha2.h>}.
 
 @deftp {Context struct} {struct sha512_ctx}
 @end deftp
@@ -539,8 +533,7 @@ Several variants of SHA512 have been defined, with a different initial
 state, and with the output truncated to shorter length than 512 bits.
 Naming is a bit confused, these algorithms are called SHA512-224,
 SHA512-256 and SHA384, for output sizes of 224, 256 and 384 bits,
-respectively. Nettle defines these in @file{<nettle/sha2.h>} (and in
-@file{<nettle/sha.h>}, for backwards compatibility).
+respectively. Nettle defines these in @file{<nettle/sha2.h>}.
 
 @deftp {Context struct} {struct sha512_224_ctx}
 @deftpx {Context struct} {struct sha512_256_ctx}
@@ -1088,8 +1081,7 @@ This function also resets the context in the same way as
 
 SHA1 is a hash function specified by @dfn{NIST} (The U.S. National
 Institute for Standards and Technology). It outputs hash values of 160
-bits, or 20 octets. Nettle defines SHA1 in @file{<nettle/sha1.h>} (and
-in @file{<nettle/sha.h>}, for backwards compatibility).
+bits, or 20 octets. Nettle defines SHA1 in @file{<nettle/sha1.h>}.
 
 @deftp {Context struct} {struct sha1_ctx}
 @end deftp
