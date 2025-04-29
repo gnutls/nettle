@@ -50,9 +50,7 @@ sha3_512_init (struct sha3_512_ctx *ctx)
 }
 
 void
-sha3_512_update (struct sha3_512_ctx *ctx,
-		 size_t length,
-		 const uint8_t *data)
+sha3_512_update (struct sha3_512_ctx *ctx, size_t length, const uint8_t *data)
 {
   ctx->index = _nettle_sha3_update (&ctx->state,
 				    SHA3_512_BLOCK_SIZE, ctx->block,
@@ -60,8 +58,7 @@ sha3_512_update (struct sha3_512_ctx *ctx,
 }
 
 void
-sha3_512_digest(struct sha3_512_ctx *ctx,
-		uint8_t *digest)
+sha3_512_digest(struct sha3_512_ctx *ctx, uint8_t *digest)
 {
   _sha3_pad_hash (&ctx->state, SHA3_512_BLOCK_SIZE, ctx->block, ctx->index);
   _nettle_write_le64 (SHA3_512_DIGEST_SIZE, digest, ctx->state.a);

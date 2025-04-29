@@ -109,19 +109,13 @@ void
 sha3_128_init (struct sha3_128_ctx *ctx);
 
 void
-sha3_128_update (struct sha3_128_ctx *ctx,
-		 size_t length,
-		 const uint8_t *data);
+sha3_128_update (struct sha3_128_ctx *ctx, size_t length, const uint8_t *data);
 
 void
-sha3_128_shake (struct sha3_128_ctx *ctx,
-		size_t length,
-		uint8_t *digest);
+sha3_128_shake (struct sha3_128_ctx *ctx, size_t length, uint8_t *digest);
 
 void
-sha3_128_shake_output (struct sha3_128_ctx *ctx,
-		       size_t length,
-		       uint8_t *digest);
+sha3_128_shake_output (struct sha3_128_ctx *ctx, size_t length, uint8_t *digest);
 
 struct sha3_224_ctx
 {
@@ -134,13 +128,10 @@ void
 sha3_224_init (struct sha3_224_ctx *ctx);
 
 void
-sha3_224_update (struct sha3_224_ctx *ctx,
-		 size_t length,
-		 const uint8_t *data);
+sha3_224_update (struct sha3_224_ctx *ctx, size_t length, const uint8_t *data);
 
 void
-sha3_224_digest(struct sha3_224_ctx *ctx,
-		uint8_t *digest);
+sha3_224_digest(struct sha3_224_ctx *ctx, uint8_t *digest);
 
 struct sha3_256_ctx
 {
@@ -153,27 +144,20 @@ void
 sha3_256_init (struct sha3_256_ctx *ctx);
 
 void
-sha3_256_update (struct sha3_256_ctx *ctx,
-		 size_t length,
-		 const uint8_t *data);
+sha3_256_update (struct sha3_256_ctx *ctx, size_t length, const uint8_t *data);
 
 void
-sha3_256_digest(struct sha3_256_ctx *ctx,
-		uint8_t *digest);
+sha3_256_digest(struct sha3_256_ctx *ctx, uint8_t *digest);
 
 /* Alternative digest function implementing shake256, with arbitrary
    digest size */
 void
-sha3_256_shake(struct sha3_256_ctx *ctx,
-	       size_t length,
-	       uint8_t *digest);
+sha3_256_shake(struct sha3_256_ctx *ctx, size_t length, uint8_t *digest);
 
 /* Unlike sha3_256_shake, this function can be called multiple times
    to retrieve output from shake256 in an incremental manner */
 void
-sha3_256_shake_output(struct sha3_256_ctx *ctx,
-		      size_t length,
-		      uint8_t *digest);
+sha3_256_shake_output(struct sha3_256_ctx *ctx, size_t length, uint8_t *digest);
 
 struct sha3_384_ctx
 {
@@ -186,13 +170,10 @@ void
 sha3_384_init (struct sha3_384_ctx *ctx);
 
 void
-sha3_384_update (struct sha3_384_ctx *ctx,
-		 size_t length,
-		 const uint8_t *data);
+sha3_384_update (struct sha3_384_ctx *ctx, size_t length, const uint8_t *data);
 
 void
-sha3_384_digest(struct sha3_384_ctx *ctx,
-		uint8_t *digest);
+sha3_384_digest(struct sha3_384_ctx *ctx, uint8_t *digest);
 
 struct sha3_512_ctx
 {
@@ -205,13 +186,10 @@ void
 sha3_512_init (struct sha3_512_ctx *ctx);
 
 void
-sha3_512_update (struct sha3_512_ctx *ctx,
-		 size_t length,
-		 const uint8_t *data);
+sha3_512_update (struct sha3_512_ctx *ctx, size_t length, const uint8_t *data);
 
 void
-sha3_512_digest(struct sha3_512_ctx *ctx,
-		uint8_t *digest);
+sha3_512_digest(struct sha3_512_ctx *ctx, uint8_t *digest);
 
 #ifdef __cplusplus
 }
