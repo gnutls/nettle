@@ -3,7 +3,7 @@
 	Reduce size of sha3 context size to 216 bytes.
 	* sha3.h (struct sha3_ctx): New struct, replacing all sha3_*_ctx.
 	(struct sha3_128_ctx, struct sha3_224_ctx, struct sha3_256_ctx, struct sha3_384_ctx)
-	(struct sha3_512_ctx): Deleted.
+	(struct sha3_512_ctx): Redefined as aliases to sha3_ctx.
 
 	* sha3-internal.h (_NETTLE_SHA3_HASH): New macro.
 
@@ -26,11 +26,12 @@
 	(_nettle_sha3_shake_output) [!WORDS_BIGENDIAN]: No buffering, copy
 	output directly from state.
 
-	* shake128.c (sha3_128_init): Deleted.
-	* sha3-224.c (sha3_224_init): Deleted.
-	* sha3-256.c (sha3_256_init): Deleted.
-	* sha3-384.c (sha3_384_init): Deleted.
-	* sha3-512.c (sha3_512_init): Deleted.
+	* shake128.c (sha3_128_init): Deleted (redefined as alias for
+	sha3_init in sha3.h).
+	* sha3-224.c (sha3_224_init): Likewise.
+	* sha3-256.c (sha3_256_init): Likewise.
+	* sha3-384.c (sha3_384_init): Likewise.
+	* sha3-512.c (sha3_512_init): Likewise.
 
 	* nettle-internal.h (NETTLE_MAX_HASH_CONTEXT_SIZE): Lower,
 	streebog512_ctx is now the largest hash context struct.

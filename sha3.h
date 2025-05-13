@@ -153,6 +153,19 @@ sha3_512_update (struct sha3_ctx *ctx, size_t length, const uint8_t *data);
 void
 sha3_512_digest(struct sha3_ctx *ctx, uint8_t *digest);
 
+/* Old names, for compatibility with nettle-3. */
+#define sha3_128_ctx sha3_ctx
+#define sha3_224_ctx sha3_ctx
+#define sha3_256_ctx sha3_ctx
+#define sha3_384_ctx sha3_ctx
+#define sha3_512_ctx sha3_ctx
+
+#define sha3_128_init sha3_init
+#define sha3_224_init sha3_init
+#define sha3_256_init sha3_init
+#define sha3_384_init sha3_init
+#define sha3_512_init sha3_init
+
 #ifdef __cplusplus
 }
 #endif
