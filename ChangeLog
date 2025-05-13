@@ -1,3 +1,40 @@
+2025-05-13  Niels Möller  <nisse@lysator.liu.se>
+
+	Reduce size of sha3 context size to 216 bytes.
+	* sha3.h (struct sha3_ctx): New struct, replacing all sha3_*_ctx.
+	(struct sha3_128_ctx, struct sha3_224_ctx, struct sha3_256_ctx, struct sha3_384_ctx)
+	(struct sha3_512_ctx): Deleted.
+
+	* sha3-internal.h (_NETTLE_SHA3_HASH): New macro.
+
+	* sha3.c (sha3_xor_block, sha3_absorb): Deleted functions.
+	(sha3_init): New function, replacing all sha3_*_init.
+	(_nettle_sha3_update): Updated to take a struct sha3_ctx *
+	argument, updated all callers.
+	(_nettle_sha3_update) [WORDS_BIGENDIAN]: Use only a single 64-bit
+	word, 8 bytes, for input buffer.
+	(_nettle_sha3_update) [!WORDS_BIGENDIAN]: No buffering, xor input
+	into state directly.
+	(_nettle_sha3_pad): Updated to take a struct sha3_ctx * argument,
+	updated all callers.
+	(_nettle_sha3_digest): New function.
+
+	* sha3-shake.c (_nettle_sha3_shake_output): Updated to take a
+	struct sha3_ctx * argument, updated all callers.
+	(_nettle_sha3_shake_output) [WORDS_BIGENDIAN]: Use only a single
+	64-bit word, 8 bytes, for buffering partial output.
+	(_nettle_sha3_shake_output) [!WORDS_BIGENDIAN]: No buffering, copy
+	output directly from state.
+
+	* shake128.c (sha3_128_init): Deleted.
+	* sha3-224.c (sha3_224_init): Deleted.
+	* sha3-256.c (sha3_256_init): Deleted.
+	* sha3-384.c (sha3_384_init): Deleted.
+	* sha3-512.c (sha3_512_init): Deleted.
+
+	* nettle-internal.h (NETTLE_MAX_HASH_CONTEXT_SIZE): Lower,
+	streebog512_ctx is now the largest hash context struct.
+
 2025-04-28  Niels Möller  <nisse@lysator.liu.se>
 
 	* bignum-random-prime.c (miller_rabin_pocklington): Adopt

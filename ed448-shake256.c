@@ -52,7 +52,7 @@ ed448_dom(void *ctx)
 }
 
 static void
-ed448_digest(struct sha3_256_ctx *ctx, uint8_t *digest)
+ed448_digest(struct sha3_ctx *ctx, uint8_t *digest)
 {
   sha3_256_shake(ctx, 2*ED448_KEY_SIZE, digest);
 }

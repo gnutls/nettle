@@ -50,11 +50,11 @@ ed448_shake256_verify (const uint8_t *pub,
   const struct ecc_curve *ecc = &_nettle_curve448;
   mp_size_t itch = 3*ecc->p.size + _eddsa_verify_itch (ecc);
   mp_limb_t *scratch = gmp_alloc_limbs (itch);
-  struct sha3_256_ctx ctx;
+  struct sha3_ctx ctx;
   int res;
 #define A scratch
 #define scratch_out (scratch + 3*ecc->p.size)
-  sha3_256_init (&ctx);
+  sha3_init (&ctx);
 
   res = (_eddsa_decompress (ecc,
 			    A, pub, scratch_out)
