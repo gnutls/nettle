@@ -579,7 +579,7 @@ These function also reset the context in the same way as the
 corresponding init function.
 @end deftypefun
 
-@subsubsection @acronym{SHA3-224}
+@subsubsection @acronym{SHA3}
 @cindex SHA3
 
 The SHA3 hash functions were specified by NIST in response to weaknesses
@@ -593,22 +593,40 @@ are several variants, with output sizes of 224, 256, 384 and 512 bits
 formally standardized by NIST, as FIPS 202,
 @url{https://dx.doi.org/10.6028/NIST.FIPS.202}.
 
-Note that the SHA3 implementation in earlier versions of Nettle was
-based on the specification at the time Keccak was announced as the
-winner of the competition, which is incompatible with the final standard
-and hence with current versions of Nettle. The @file{nette/sha3.h}
-defines a preprocessor symbol @code{NETTLE_SHA3_FIPS202} to indicate
-conformance with the standard.
+Nettle uses the same context struct for all SHA3-variants.
+@deftp {Context struct} {struct sha3_ctx}
+@end deftp
+
+The corresponding initialization function must be called before any
+other of the sha3 functions.
+@deftypefun void sha3_init (struct sha3_ctx *@var{ctx})
+Initialize the SHA3 state.
+@end deftypefun
+
+Notes on the SHA3 implementation in older versions of Nettle:
+@itemize
+@item Prior to Nettle version 4.0, there were different context structs and
+initialization functions for each variant, e.g., @code{struct
+sha3_256_ctx} and @code{sha3_256_init}. For backwards compatibility, the
+old names are now defined as preprocessor aliases.
+
+@item Prior to Nettle version 3.2, the SHA3 implementation was based on the
+specification at the time Keccak was announced as the winner of the
+competition, which is incompatible with the final standard and hence
+with current versions of Nettle. The @file{nette/sha3.h} defines a
+preprocessor symbol @code{NETTLE_SHA3_FIPS202} to indicate conformance
+with the standard.
+@end itemize 
 
 @defvr Constant NETTLE_SHA3_FIPS202
 Defined to 1 in Nettle versions supporting FIPS 202. Undefined in
 earlier versions.
 @end defvr
 
-Nettle defines SHA3-224 in @file{<nettle/sha3.h>}.
+@subsubsection @acronym{SHA3-224}
 
-@deftp {Context struct} {struct sha3_224_ctx}
-@end deftp
+This is SHA3 with 224-bit output size. Nettle defines SHA3-224 in
+@file{<nettle/sha3.h>}.
 
 @defvr Constant SHA3_224_DIGEST_SIZE
 The size of a SHA3_224 digest, i.e., 28.
@@ -618,15 +636,11 @@ The size of a SHA3_224 digest, i.e., 28.
 The internal block size of SHA3_224.
 @end defvr
 
-@deftypefun void sha3_224_init (struct sha3_224_ctx *@var{ctx})
-Initialize the SHA3-224 state.
-@end deftypefun
-
-@deftypefun void sha3_224_update (struct sha3_224_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
+@deftypefun void sha3_224_update (struct sha3_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
 Hash some more data.
 @end deftypefun
 
-@deftypefun void sha3_224_digest (struct sha3_224_ctx *@var{ctx}, uint8_t *@var{digest})
+@deftypefun void sha3_224_digest (struct sha3_ctx *@var{ctx}, uint8_t *@var{digest})
 Performs final processing and extracts the message digest, writing
 @code{SHA3_224_DIGEST_SIZE} octets to @var{digest}.
 
@@ -636,12 +650,7 @@ This function also resets the context.
 @subsubsection @acronym{SHA3-256}
 
 This is SHA3 with 256-bit output size, and possibly the most useful
-of the SHA3 hash functions.
-
-Nettle defines SHA3-256 in @file{<nettle/sha3.h>}.
-
-@deftp {Context struct} {struct sha3_256_ctx}
-@end deftp
+of the SHA3 hash functions. Nettle defines SHA3-256 in @file{<nettle/sha3.h>}.
 
 @defvr Constant SHA3_256_DIGEST_SIZE
 The size of a SHA3_256 digest, i.e., 32.
@@ -651,15 +660,11 @@ The size of a SHA3_256 digest, i.e., 32.
 The internal block size of SHA3_256.
 @end defvr
 
-@deftypefun void sha3_256_init (struct sha3_256_ctx *@var{ctx})
-Initialize the SHA3-256 state.
-@end deftypefun
-
-@deftypefun void sha3_256_update (struct sha3_256_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
+@deftypefun void sha3_256_update (struct sha3_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
 Hash some more data.
 @end deftypefun
 
-@deftypefun void sha3_256_digest (struct sha3_256_ctx *@var{ctx}, uint8_t *@var{digest})
+@deftypefun void sha3_256_digest (struct sha3_ctx *@var{ctx}, uint8_t *@var{digest})
 Performs final processing and extracts the message digest, writing
 @code{SHA3_256_DIGEST_SIZE} octets to @var{digest}.
 
@@ -668,12 +673,8 @@ This function also resets the context.
 
 @subsubsection @acronym{SHA3-384}
 
-This is SHA3 with 384-bit output size.
-
-Nettle defines SHA3-384 in @file{<nettle/sha3.h>}.
-
-@deftp {Context struct} {struct sha3_384_ctx}
-@end deftp
+This is SHA3 with 384-bit output size. Nettle defines SHA3-384 in
+@file{<nettle/sha3.h>}.
 
 @defvr Constant SHA3_384_DIGEST_SIZE
 The size of a SHA3_384 digest, i.e., 48.
@@ -683,15 +684,11 @@ The size of a SHA3_384 digest, i.e., 48.
 The internal block size of SHA3_384.
 @end defvr
 
-@deftypefun void sha3_384_init (struct sha3_384_ctx *@var{ctx})
-Initialize the SHA3-384 state.
-@end deftypefun
-
-@deftypefun void sha3_384_update (struct sha3_384_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
+@deftypefun void sha3_384_update (struct sha3_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
 Hash some more data.
 @end deftypefun
 
-@deftypefun void sha3_384_digest (struct sha3_384_ctx *@var{ctx}, uint8_t *@var{digest})
+@deftypefun void sha3_384_digest (struct sha3_ctx *@var{ctx}, uint8_t *@var{digest})
 Performs final processing and extracts the message digest, writing
 @code{SHA3_384_DIGEST_SIZE} octets to @var{digest}.
 
@@ -700,12 +697,8 @@ This function also resets the context.
 
 @subsubsection @acronym{SHA3-512}
 
-This is SHA3 with 512-bit output size.
-
-Nettle defines SHA3-512 in @file{<nettle/sha3.h>}.
-
-@deftp {Context struct} {struct sha3_512_ctx}
-@end deftp
+This is SHA3 with 512-bit output size. Nettle defines SHA3-512 in
+@file{<nettle/sha3.h>}.
 
 @defvr Constant SHA3_512_DIGEST_SIZE
 The size of a SHA3_512 digest, i.e. 64.
@@ -715,15 +708,11 @@ The size of a SHA3_512 digest, i.e. 64.
 The internal block size of SHA3_512.
 @end defvr
 
-@deftypefun void sha3_512_init (struct sha3_512_ctx *@var{ctx})
-Initialize the SHA3-512 state.
-@end deftypefun
-
-@deftypefun void sha3_512_update (struct sha3_512_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
+@deftypefun void sha3_512_update (struct sha3_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
 Hash some more data.
 @end deftypefun
 
-@deftypefun void sha3_512_digest (struct sha3_512_ctx *@var{ctx}, uint8_t *@var{digest})
+@deftypefun void sha3_512_digest (struct sha3_ctx *@var{ctx}, uint8_t *@var{digest})
 Performs final processing and extracts the message digest, writing
 @code{SHA3_512_DIGEST_SIZE} octets to @var{digest}.
 
@@ -752,43 +741,36 @@ manner.
 
 For SHAKE-128 they are defined as follows.
 
-@deftp {Context struct} {struct sha3_128_ctx}
-@end deftp
-
-@deftypefun void sha3_128_init (struct sha3_128_ctx *@var{ctx})
-Initialize the SHA3-256 state.
-@end deftypefun
-
-@deftypefun void sha3_128_update (struct sha3_128_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
+@deftypefun void sha3_128_update (struct sha3_ctx *@var{ctx}, size_t @var{length}, const uint8_t *@var{data})
 Hash some more data.
 @end deftypefun
 
-@deftypefun void sha3_128_shake (struct sha3_128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+@deftypefun void sha3_128_shake (struct sha3_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
 Performs final processing and produces a SHAKE-128 digest, writing it
 to @var{digest}. @var{length} can be of arbitrary size.
 
 This function also resets the context.
 @end deftypefun
 
-@deftypefun void sha3_128_shake_output (struct sha3_128_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+@deftypefun void sha3_128_shake_output (struct sha3_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
 Performs final processing and produces a SHAKE-128 digest, writing it
 to @var{digest}. @var{length} can be of arbitrary size.
 
 This function does not reset the context.
 @end deftypefun
 
-For SHAKE-256, the corresponding context struct and the @code{init}
-and @code{update} functions are the same as SHA3-256. To generate a
-digest, use either the @code{shake} or @code{shake_output} function.
+For SHAKE-256, the @code{update} function is the same as SHA3-256. To
+generate a digest, use either the @code{shake} or @code{shake_output}
+function.
 
-@deftypefun void sha3_256_shake (struct sha3_256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+@deftypefun void sha3_256_shake (struct sha3_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
 Performs final processing and produces a SHAKE-256 digest, writing it
 to @var{digest}. @var{length} can be of arbitrary size.
 
 This function also resets the context.
 @end deftypefun
 
-@deftypefun void sha3_256_shake_output (struct sha3_256_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
+@deftypefun void sha3_256_shake_output (struct sha3_ctx *@var{ctx}, size_t @var{length}, uint8_t *@var{digest})
 Performs final processing and produces a SHAKE-256 digest, writing it
 to @var{digest}. @var{length} can be of arbitrary size.
 
