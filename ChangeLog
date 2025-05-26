@@ -1,3 +1,8 @@
+2025-05-26  Niels Möller  <nisse@lysator.liu.se>
+
+	* hmac.c (hmac_set_key, hmac_update, hmac_digest): Delete file and
+	functions.
+
 2024-10-21  Niels Möller  <nisse@lysator.liu.se>
 
 	* hmac.h (struct hmac_sha256_ctx): Change outer and inner members
