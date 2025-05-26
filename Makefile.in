@@ -20,7 +20,7 @@ OPT_NETTLE_SOURCES = @OPT_NETTLE_SOURCES@
 FAT_OVERRIDE_LIST = @FAT_OVERRIDE_LIST@
 FAT_EMULATE_LIST = @FAT_EMULATE_LIST@
 
-SUBDIRS = tools testsuite examples
+SUBDIRS = testsuite tools examples
 
 include config.make
 
