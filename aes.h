@@ -68,7 +68,7 @@ extern "C" {
 
 struct aes128_ctx
 {
-  uint32_t keys[4 * (_AES128_ROUNDS + 1)];
+  uint32_t _NETTLE_ALIGN16 keys[4 * (_AES128_ROUNDS + 1)];
 };
 
 void

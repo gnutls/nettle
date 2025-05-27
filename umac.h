@@ -70,7 +70,7 @@ extern "C" {
 
 /* Subkeys and state for UMAC with tag size 32*n bits. */
 #define _UMAC_STATE(n)					\
-  uint32_t l1_key[UMAC_BLOCK_SIZE/4 + 4*((n)-1)];	\
+  uint32_t _NETTLE_ALIGN16 l1_key[UMAC_BLOCK_SIZE/4 + 4*((n)-1)];	\
   /* Keys in 32-bit pieces, high first */		\
   uint32_t l2_key[6*(n)];				\
   uint64_t l3_key1[8*(n)];				\
