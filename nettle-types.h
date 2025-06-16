@@ -59,14 +59,15 @@ extern "C" {
 #endif
 
 /* On 64-bit platforms where uint64_t requires 8 byte alignment, use
-   twice the alignment. */
+   twice the alignment. To work for both C and C++, needs to be placed
+   before the type, see example for nettle_block16 below. */
 #define _NETTLE_ALIGN16 alignas(alignof(uint64_t) == 8 ? 16 : 0)
 
 /* An aligned 16-byte block. */
 union nettle_block16
 {
   uint8_t b[16];
-  uint64_t _NETTLE_ALIGN16 u64[2];
+  _NETTLE_ALIGN16 uint64_t u64[2];
 };
 
 union nettle_block8
