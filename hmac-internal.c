@@ -47,14 +47,6 @@ memxor_byte (uint8_t *p, uint8_t b, size_t n)
     p[i] ^= b;
 }
 
-static void
-memxor_byte4 (uint8_t *dst, const uint8_t *src, uint8_t b, size_t n)
-{
-  size_t i;
-  for (i = 0; i < n; i++)
-    dst[i] = src[i] ^ b;
-}
-
 void
 _nettle_hmac_set_key (size_t state_size, void *outer, void *inner,
 		      void *ctx, uint8_t *block,
@@ -69,11 +61,13 @@ _nettle_hmac_set_key (size_t state_size, void *outer, void *inner,
       hash->digest (ctx, block);
       key_size = hash->digest_size;
       memxor_byte (block, OPAD, key_size);
+      memset (block + key_size, OPAD, hash->block_size - key_size);
     }
   else
-    memxor_byte4 (block, key, OPAD, key_size);
-
-  memset (block + key_size, OPAD, hash->block_size - key_size);
+    {
+      memset (block, OPAD, hash->block_size);
+      memxor (block, key, key_size);
+    }
 
   hash->update (ctx, hash->block_size, block);
   memcpy (outer, ctx, state_size);
