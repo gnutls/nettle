@@ -34,6 +34,8 @@
 #ifndef NETTLE_HMAC_H_INCLUDED
 #define NETTLE_HMAC_H_INCLUDED
 
+#include <stdalign.h>
+
 #include "nettle-meta.h"
 
 #include "gosthash94.h"
@@ -83,10 +85,10 @@ extern "C" {
 #define hmac_sm3_update nettle_hmac_sm3_update
 #define hmac_sm3_digest nettle_hmac_sm3_digest
 
-#define _NETTLE_HMAC_CTX(type) {	\
-    char outer[offsetof (type, index)];	\
-    char inner[offsetof (type, index)];	\
-    type state;				\
+#define _NETTLE_HMAC_CTX(type) {			\
+    alignas(type) char outer[offsetof (type, index)];	\
+    alignas(type) char inner[offsetof (type, index)];	\
+    type state;						\
   }
 
 /* hmac-md5 */
