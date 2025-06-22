@@ -1,5 +1,10 @@
 2025-06-22  Niels Möller  <nisse@lysator.liu.se>
 
+	Delete the old "generic" HMAC API.
+	* hmac.h (HMAC_CTX, HMAC_SET_KEY, HMAC_DIGEST): Deleted macros.
+	* hmac.c (hmac_set_key, hmac_update, hmac_digest): Deleted file
+	and functions.
+
 	Refactor HMAC. Reduces the size of HMAC contexts, sha256 reduced
 	from 336 bytes to 192, sha512 from 648 to 376, and sha1 from 312
 	to 168.

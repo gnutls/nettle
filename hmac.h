@@ -51,9 +51,6 @@ extern "C" {
 #endif
 
 /* Namespace mangling */
-#define hmac_set_key nettle_hmac_set_key
-#define hmac_update nettle_hmac_update
-#define hmac_digest nettle_hmac_digest
 #define hmac_md5_set_key nettle_hmac_md5_set_key
 #define hmac_md5_update nettle_hmac_md5_update
 #define hmac_md5_digest nettle_hmac_md5_digest
@@ -87,36 +84,6 @@ extern "C" {
 #define hmac_sm3_set_key nettle_hmac_sm3_set_key
 #define hmac_sm3_update nettle_hmac_sm3_update
 #define hmac_sm3_digest nettle_hmac_sm3_digest
-
-/* Old "generic" hmac support. */
-void
-hmac_set_key(void *outer, void *inner, void *state,
-	     const struct nettle_hash *hash,
-	     size_t length, const uint8_t *key);
-
-/* This function is not strictly needed, it's s just the same as the
- * hash update function. */
-void
-hmac_update(void *state,
-	    const struct nettle_hash *hash,
-	    size_t length, const uint8_t *data);
-
-void
-hmac_digest(const void *outer, const void *inner, void *state,
-	    const struct nettle_hash *hash,
-	    uint8_t *digest);
-
-
-#define HMAC_CTX(type) \
-{ type outer; type inner; type state; }
-
-#define HMAC_SET_KEY(ctx, hash, length, key)			\
-  hmac_set_key( &(ctx)->outer, &(ctx)->inner, &(ctx)->state,	\
-                (hash), (length), (key) )
-
-#define HMAC_DIGEST(ctx, hash, digest)				\
-  hmac_digest( &(ctx)->outer, &(ctx)->inner, &(ctx)->state,	\
-               (hash), (digest) )
 
 #define _NETTLE_HMAC_CTX(type) {			\
     alignas(type) char outer[offsetof (type, index)];	\

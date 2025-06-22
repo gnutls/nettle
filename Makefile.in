@@ -130,7 +130,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt-table.c \
 		 cmac.c cmac64.c cmac-aes128.c cmac-aes256.c cmac-des3.c \
 		 cmac-aes128-meta.c cmac-aes256-meta.c cmac-des3-meta.c \
 		 gost28147.c gosthash94.c gosthash94-meta.c \
-		 hmac.c hmac-internal.c hmac-gosthash94.c hmac-md5.c hmac-ripemd160.c \
+		 hmac-internal.c hmac-gosthash94.c hmac-md5.c hmac-ripemd160.c \
 		 hmac-sha1.c hmac-sha224.c hmac-sha256.c hmac-sha384.c \
 		 hmac-sha512.c hmac-streebog.c hmac-sm3.c \
 		 hmac-md5-meta.c hmac-ripemd160-meta.c hmac-sha1-meta.c \
