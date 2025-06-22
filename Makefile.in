@@ -130,7 +130,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt-table.c \
 		 cmac.c cmac64.c cmac-aes128.c cmac-aes256.c cmac-des3.c \
 		 cmac-aes128-meta.c cmac-aes256-meta.c cmac-des3-meta.c \
 		 gost28147.c gosthash94.c gosthash94-meta.c \
-		 hmac.c hmac-gosthash94.c hmac-md5.c hmac-ripemd160.c \
+		 hmac.c hmac-internal.c hmac-gosthash94.c hmac-md5.c hmac-ripemd160.c \
 		 hmac-sha1.c hmac-sha224.c hmac-sha256.c hmac-sha384.c \
 		 hmac-sha512.c hmac-streebog.c hmac-sm3.c \
 		 hmac-md5-meta.c hmac-ripemd160-meta.c hmac-sha1-meta.c \
@@ -281,7 +281,7 @@ DISTFILES = $(SOURCES) $(HEADERS) getopt.h getopt_int.h \
 	serpent-internal.h cast128_sboxes.h desinfo.h desCode.h \
 	ripemd160-internal.h md-internal.h sha2-internal.h \
 	memxor-internal.h nettle-internal.h non-nettle.h nettle-write.h \
-	ctr-internal.h chacha-internal.h sha3-internal.h \
+	ctr-internal.h chacha-internal.h hmac-internal.h sha3-internal.h \
 	salsa20-internal.h umac-internal.h hogweed-internal.h \
 	rsa-internal.h pkcs1-internal.h dsa-internal.h eddsa-internal.h \
 	gmp-glue.h ecc-internal.h fat-setup.h oaep.h \

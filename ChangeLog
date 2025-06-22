@@ -1,5 +1,22 @@
 2025-06-22  Niels Möller  <nisse@lysator.liu.se>
 
+	Refactor HMAC. Reduces the size of HMAC contexts, sha256 reduced
+	from 336 bytes to 192, sha512 from 648 to 376, and sha1 from 312
+	to 168.
+	* hmac.h (_NETTLE_HMAC_CTX): New macro. The outer and inner
+	members no longer include any block buffers. Change all the
+	hmac_*_ctx structs to use the new definition.
+	* hmac-internal.h (_NETTLE_HMAC_DIGEST, _NETTLE_HMAC_DIGEST_U):
+	New file, new macros. Update all hmac_*_digest functions to use
+	one of these macros.
+	* hmac-internal.c (_nettle_hmac_set_key): New file, new function,
+	using the new style of context struct. Update all hmac_*_set_key
+	functions.
+	* Makefile.in (nettle_SOURCES): Add hmac-internal.c.
+	(DISTFILES): Add hmac-internal.h.
+
+2025-06-22  Niels Möller  <nisse@lysator.liu.se>
+
 	* testsuite/testutils.c (test_mac): Print name of mac algorithm on
 	failure.
 

@@ -1,8 +1,5 @@
-/* hmac-sm3.c
+/* hmac-internal.c
 
-   HMAC-SM3 message authentication code.
-
-   Copyright (C) 2021 Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
    Copyright (C) 2025 Niels Möller
 
    This file is part of GNU Nettle.
@@ -36,28 +33,48 @@
 # include "config.h"
 #endif
 
-#include "hmac.h"
+#include <assert.h>
+#include <string.h>
+
 #include "hmac-internal.h"
+#include "memxor.h"
 
-void
-hmac_sm3_set_key(struct hmac_sm3_ctx *ctx,
-		 size_t key_length, const uint8_t *key)
+static void
+memxor_byte (uint8_t *p, uint8_t b, size_t n)
 {
-  _nettle_hmac_set_key (sizeof(ctx->outer), ctx->outer, ctx->inner, &ctx->state,
-			ctx->state.block, &nettle_sm3, key_length, key);
+  size_t i;
+  for (i = 0; i < n; i++)
+    p[i] ^= b;
 }
 
 void
-hmac_sm3_update(struct hmac_sm3_ctx *ctx,
-		size_t length, const uint8_t *data)
+_nettle_hmac_set_key (size_t state_size, void *outer, void *inner,
+		      void *ctx, uint8_t *block,
+		      const struct nettle_hash *hash,
+		      size_t key_size, const uint8_t *key)
 {
-  sm3_update(&ctx->state, length, data);
-}
+  hash->init (ctx);
 
-void
-hmac_sm3_digest(struct hmac_sm3_ctx *ctx,
-		uint8_t *digest)
-{
-  _NETTLE_HMAC_DIGEST (ctx->outer, ctx->inner, &ctx->state, sm3_digest,
-		       SM3_DIGEST_SIZE, digest);
+  if (key_size > hash->block_size)
+    {
+      hash->update (ctx, key_size, key);
+      hash->digest (ctx, block);
+      key_size = hash->digest_size;
+      memxor_byte (block, OPAD, key_size);
+      memset (block + key_size, OPAD, hash->block_size - key_size);
+    }
+  else
+    {
+      memset (block, OPAD, hash->block_size);
+      memxor (block, key, key_size);
+    }
+
+  hash->update (ctx, hash->block_size, block);
+  memcpy (outer, ctx, state_size);
+
+  memxor_byte (block, OPAD ^ IPAD, hash->block_size);
+
+  hash->init (ctx);
+  hash->update (ctx, hash->block_size, block);
+  memcpy (inner, ctx, state_size);
 }
