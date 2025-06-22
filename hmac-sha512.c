@@ -57,7 +57,6 @@ void
 hmac_sha512_digest(struct hmac_sha512_ctx *ctx,
 		   uint8_t *digest)
 {
-  sha512_digest (&ctx->state, ctx->state.block);
-  ctx->state.index = SHA512_DIGEST_SIZE;
-  _NETTLE_HMAC_DIGEST (ctx->outer, ctx->inner, &ctx->state, sha512_digest, digest);
+  _NETTLE_HMAC_DIGEST (ctx->outer, ctx->inner, &ctx->state, sha512_digest,
+		       SHA512_DIGEST_SIZE, digest);
 }

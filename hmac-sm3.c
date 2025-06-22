@@ -58,7 +58,6 @@ void
 hmac_sm3_digest(struct hmac_sm3_ctx *ctx,
 		uint8_t *digest)
 {
-  sm3_digest (&ctx->state, ctx->state.block);
-  ctx->state.index = SM3_DIGEST_SIZE;
-  _NETTLE_HMAC_DIGEST (ctx->outer, ctx->inner, &ctx->state, sm3_digest, digest);
+  _NETTLE_HMAC_DIGEST (ctx->outer, ctx->inner, &ctx->state, sm3_digest,
+		       SM3_DIGEST_SIZE, digest);
 }

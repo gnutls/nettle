@@ -58,13 +58,10 @@ void
 hmac_gosthash94_digest(struct hmac_gosthash94_ctx *ctx,
 		       uint8_t *digest)
 {
-  /* Using _NETTLE_HMAC_DIGEST doesn't work since
+  /* Needs a call to gosthash94_update, since
      GOSTHASH94_DIGEST_SIZE == GOSTHASH94_BLOCK_SIZE. */
-  gosthash94_digest (&ctx->state, ctx->state.block);
-  memcpy (&ctx->state, ctx->outer, sizeof (ctx->outer));
-  gosthash94_update (&ctx->state, GOSTHASH94_DIGEST_SIZE, ctx->state.block);
-  gosthash94_digest (&ctx->state, digest);
-  memcpy (&ctx->state, ctx->inner, sizeof (ctx->inner));
+  _NETTLE_HMAC_DIGEST_U (ctx->outer, ctx->inner, &ctx->state, gosthash94_digest,
+			 gosthash94_update, digest);
 }
 
 void
@@ -86,11 +83,8 @@ void
 hmac_gosthash94cp_digest(struct hmac_gosthash94cp_ctx *ctx,
 			 uint8_t *digest)
 {
-  /* Using _NETTLE_HMAC_DIGEST doesn't work since
+  /* Needs a call to gosthash94cp_update, since
      GOSTHASH94CP_DIGEST_SIZE == GOSTHASH94CP_BLOCK_SIZE. */
-  gosthash94cp_digest (&ctx->state, ctx->state.block);
-  memcpy (&ctx->state, ctx->outer, sizeof (ctx->outer));
-  gosthash94cp_update (&ctx->state, GOSTHASH94CP_DIGEST_SIZE, ctx->state.block);
-  gosthash94cp_digest (&ctx->state, digest);
-  memcpy (&ctx->state, ctx->inner, sizeof (ctx->inner));
+  _NETTLE_HMAC_DIGEST_U (ctx->outer, ctx->inner, &ctx->state, gosthash94cp_digest,
+			 gosthash94cp_update, digest);
 }

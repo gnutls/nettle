@@ -57,7 +57,6 @@ void
 hmac_md5_digest(struct hmac_md5_ctx *ctx,
 		uint8_t *digest)
 {
-  md5_digest (&ctx->state, ctx->state.block);
-  ctx->state.index = MD5_DIGEST_SIZE;
-  _NETTLE_HMAC_DIGEST (ctx->outer, ctx->inner, &ctx->state, md5_digest, digest);
+  _NETTLE_HMAC_DIGEST (ctx->outer, ctx->inner, &ctx->state, md5_digest,
+		       MD5_DIGEST_SIZE, digest);
 }

@@ -57,7 +57,6 @@ void
 hmac_ripemd160_digest(struct hmac_ripemd160_ctx *ctx,
 		      uint8_t *digest)
 {
-  ripemd160_digest (&ctx->state, ctx->state.block);
-  ctx->state.index = RIPEMD160_DIGEST_SIZE;
-  _NETTLE_HMAC_DIGEST (ctx->outer, ctx->inner, &ctx->state, ripemd160_digest, digest);
+  _NETTLE_HMAC_DIGEST (ctx->outer, ctx->inner, &ctx->state, ripemd160_digest,
+		       RIPEMD160_DIGEST_SIZE, digest);
 }

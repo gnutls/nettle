@@ -46,10 +46,23 @@ _nettle_hmac_set_key (size_t state_size, void *outer, void *inner,
 		      const struct nettle_hash *hash,
 		      size_t key_size, const uint8_t *key);
 
-#define _NETTLE_HMAC_DIGEST(outer, inner, ctx, f, digest) do {	\
-    memcpy ((ctx), (outer), sizeof (outer));			\
-    f ((ctx), (digest));					\
-    memcpy ((ctx), (inner), sizeof ((inner)));			\
+/* Digest operation for the common case that digest_size < block_size. */
+#define _NETTLE_HMAC_DIGEST(outer, inner, ctx, digest, digest_size, out) do { \
+    digest((ctx), (ctx)->block);					\
+    memcpy ((ctx), (outer), sizeof (outer));				\
+    (ctx)->index = (digest_size);					\
+    digest ((ctx), (out));						\
+    memcpy ((ctx), (inner), sizeof (inner));				\
+  } while (0)
+
+/* Digest operation for the corner case that digest_size == block_size (e.g,
+   ghosthash and streebog512). */
+#define _NETTLE_HMAC_DIGEST_U(outer, inner, ctx, digest, update, out) do { \
+    digest((ctx), (ctx)->block);					\
+    memcpy ((ctx), (outer), sizeof (outer));				\
+    update ((ctx), sizeof( (ctx)->block), (ctx)->block);		\
+    digest ((ctx), (out));						\
+    memcpy ((ctx), (inner), sizeof (inner));				\
   } while (0)
 
 #endif /* NETTLE_HMAC_INTERNAL_H_INCLUDED */
