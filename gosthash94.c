@@ -52,7 +52,7 @@
 void
 gosthash94_init (struct gosthash94_ctx *ctx)
 {
-    memset (ctx, 0, sizeof (struct gosthash94_ctx));
+  memset (ctx, 0, offsetof (struct gosthash94_ctx, block));
 }
 
 /**

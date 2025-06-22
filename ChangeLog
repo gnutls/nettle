@@ -1,5 +1,9 @@
 2025-06-22  Niels Möller  <nisse@lysator.liu.se>
 
+	* gosthash94.c (gosthash94_init): Trim memset call, no need to
+	clear block buffer.
+	* md2.c (md2_init): Likewise.
+
 	* nettle-types.h (_NETTLE_ALIGN16): New macro, to require 16-byte
 	alignment. Enabled only on platforms where uint64_t needs 8-byte
 	alignment. Intended to improve performance for SIMD load and

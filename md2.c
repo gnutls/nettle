@@ -109,7 +109,7 @@ md2_transform(struct md2_ctx *ctx, const uint8_t *data)
 void
 md2_init(struct md2_ctx *ctx)
 {
-  memset(ctx, 0, sizeof(*ctx));
+  memset(ctx, 0, offsetof (struct md2_ctx, block));
 }
 
 void
