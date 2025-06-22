@@ -1,3 +1,21 @@
+2025-06-22  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle-types.h (_NETTLE_ALIGN16): New macro, to require 16-byte
+	alignment. Enabled only on platforms where uint64_t needs 8-byte
+	alignment. Intended to improve performance for SIMD load and
+	store, which on some platforms may be faster with proper
+	alignment. Depends on stdalign.h, defined in C11.
+	(union nettle_block16): Use _NETTLE_ALIGN16.
+
+	* ctr16.c (_nettle_ctr_crypt16): Update alignedness check to use
+	alignof(union nettle_block16).
+
+	* aes.h (struct aes128_ctx): Use _NETTLE_ALIGN16 for the array of subkeys.
+	(struct aes192_ctx): Likewise.
+	(struct aes256_ctx): Likewise.
+
+	* umac.h (_UMAC_STATE): Use _NETTLE_ALIGN16 for the l1_key array.
+
 2025-05-13  Niels Möller  <nisse@lysator.liu.se>
 
 	Reduce size of sha3 context size to 216 bytes.

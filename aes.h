@@ -68,7 +68,7 @@ extern "C" {
 
 struct aes128_ctx
 {
-  uint32_t keys[4 * (_AES128_ROUNDS + 1)];
+  _NETTLE_ALIGN16 uint32_t keys[4 * (_AES128_ROUNDS + 1)];
 };
 
 void
@@ -89,7 +89,7 @@ aes128_decrypt(const struct aes128_ctx *ctx,
 
 struct aes192_ctx
 {
-  uint32_t keys[4 * (_AES192_ROUNDS + 1)];
+  _NETTLE_ALIGN16 uint32_t keys[4 * (_AES192_ROUNDS + 1)];
 };
 
 void
@@ -110,7 +110,7 @@ aes192_decrypt(const struct aes192_ctx *ctx,
 
 struct aes256_ctx
 {
-  uint32_t keys[4 * (_AES256_ROUNDS + 1)];
+  _NETTLE_ALIGN16 uint32_t keys[4 * (_AES256_ROUNDS + 1)];
 };
 
 void
