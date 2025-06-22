@@ -1,3 +1,8 @@
+2025-06-22  Niels Möller  <nisse@lysator.liu.se>
+
+	HMAC context reductions: hmac_sha256_ctx reduced from 336 bytes to
+	192, hmac_sha512_ctx from 648 to 376, hmac_sha1_ctx from 312 to 168.
+
 2025-05-26  Niels Möller  <nisse@lysator.liu.se>
 
 	* hmac.c (hmac_set_key, hmac_update, hmac_digest): Delete file and
