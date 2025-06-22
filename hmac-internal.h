@@ -1,6 +1,6 @@
 /* hmac-internal.h
 
-   Copyright (C) 2024 Niels Möller
+   Copyright (C) 2025 Niels Möller
 
    This file is part of GNU Nettle.
 

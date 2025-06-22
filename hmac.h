@@ -2,7 +2,7 @@
 
    HMAC message authentication code (RFC-2104).
 
-   Copyright (C) 2001, 2002 Niels Möller
+   Copyright (C) 2001, 2002, 2025 Niels Möller
 
    This file is part of GNU Nettle.
 

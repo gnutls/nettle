@@ -2,7 +2,7 @@
 
    HMAC-RIPEMD160 message authentication code.
 
-   Copyright (C) 2011, 2024 Niels Möller
+   Copyright (C) 2011, 2025 Niels Möller
 
    This file is part of GNU Nettle.
 

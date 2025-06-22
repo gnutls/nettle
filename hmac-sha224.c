@@ -2,7 +2,7 @@
 
    HMAC-SHA224 message authentication code.
 
-   Copyright (C) 2003, 2010 Niels Möller
+   Copyright (C) 2003, 2010, 2025 Niels Möller
 
    This file is part of GNU Nettle.
 

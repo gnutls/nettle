@@ -3,7 +3,7 @@
    HMAC-SM3 message authentication code.
 
    Copyright (C) 2021 Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
-   Copyright (C) 2024 Niels Möller
+   Copyright (C) 2025 Niels Möller
 
    This file is part of GNU Nettle.
 

@@ -2,7 +2,7 @@
 
    HMAC-SHA1 message authentication code.
 
-   Copyright (C) 2002, 2024 Niels Möller
+   Copyright (C) 2002, 2025 Niels Möller
 
    This file is part of GNU Nettle.
 
