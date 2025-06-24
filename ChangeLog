@@ -1,3 +1,10 @@
+2025-06-24  Niels Möller  <nisse@lysator.liu.se>
+
+	Minimal patch for compilers that require prototypes, e.g., gcc-15.
+	* getopt.c (getenv): Delete non-prototype declaration.
+	* getopt.h (getopt): Declare getopt with a prototype, also for
+	non-glibc systems.
+
 2025-04-02  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: For ppc64, check if __VSX__ is defined, and
