@@ -1415,7 +1415,7 @@ arcfour_set_key_hashed(struct arcfour_ctx *ctx,
 
   sha256_init(&hash);
   sha256_update(&hash, length, key);
-  sha256_digest(&hash, SHA256_DIGEST_SIZE, digest);
+  sha256_digest(&hash, digest);
 
   arcfour_set_key(ctx, SHA256_DIGEST_SIZE, digest);
   arcfour_crypt(ctx, sizeof(buffer), buffer, buffer);
