@@ -1,3 +1,8 @@
+2025-06-24  Niels Möller  <nisse@lysator.liu.se>
+
+	* sha-example.c (main): Update to use sha256 rather than sha1, and
+	new use sha256_digest interface.
+
 2025-06-23  Niels Möller  <nisse@lysator.liu.se>
 
 	* blowfish-bcrypt.c (ibcrypt): Simplify salt logic, eliminating a
