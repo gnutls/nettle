@@ -3,6 +3,11 @@ NEWS for the Nettle 3.10.2 release
 	This is a maintenance release, with only a few bugfixes and
 	portability improvements.
 
+	The new version is intended to be fully source and binary
+	compatible with Nettle-3.6. The shared library names are
+	libnettle.so.8.11 and libhogweed.so.6.11, with sonames
+	libnettle.so.8 and libhogweed.so.6.
+
 	Bug fixes:
 
 	* Fix missing prototypes in getopt.h and getopt.c, affecting
