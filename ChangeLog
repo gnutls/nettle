@@ -1,5 +1,7 @@
 2025-06-26  Niels Möller  <nisse@lysator.liu.se>
 
+ 	* Released Nettle-3.10.2.
+
 	* config.guess: Update to 2024-07-27 version.
 	* config.sub: Update to 2024-05-27 version.
 
