@@ -1,6 +1,8 @@
 2025-06-26  Niels Möller  <nisse@lysator.liu.se>
 
 	Cherry-picked from branch nettle-3.10-fixes:
+	* config.guess: Update to 2024-07-27 version.
+	* config.sub: Update to 2024-05-27 version.
 	Minimal patch for compilers that require prototypes, e.g., gcc-15.
 	* getopt.c (getenv): Delete non-prototype declaration.
 	* getopt.h (getopt): Declare getopt with a prototype, also for
