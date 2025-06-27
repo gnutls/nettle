@@ -68,6 +68,9 @@ tstring_print_hex(const struct tstring *s);
 void
 print_hex(size_t length, const uint8_t *data);
 
+FILE *
+open_srcdir_file (const char *name);
+
 /* If side-channel tests are requested, attach valgrind annotations on
    given memory area. */
 void

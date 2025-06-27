@@ -122,6 +122,33 @@ print_hex(size_t length, const uint8_t *data)
   printf("\n");
 }
 
+/* Tries opening the file in $srcdir, if set, otherwise the current
+ * working directory */
+FILE *
+open_srcdir_file (const char *name)
+{
+  const char *srcdir = getenv("srcdir");
+  FILE *f;
+  if (srcdir && srcdir[0])
+    {
+      size_t size  = strlen(name) + strlen(srcdir) + 2;
+      char *buf = xalloc(size);
+      snprintf(buf, size, "%s/%s", srcdir, name);
+
+      f = fopen(buf, "r");
+      free(buf);
+    }
+  else
+    f = fopen(name, "r");
+
+  if (!f)
+    {
+      fprintf(stderr, "Failed to open '%s': %s\n", name, strerror(errno));
+      FAIL();
+    }
+  return f;
+}
+
 int verbose = 0;
 int test_side_channel = 0;
 

@@ -1,3 +1,9 @@
+2025-06-27  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/testutils.c (open_srcdir_file): New function.
+	* testsuite/yarrow-test.c (open_file): Deleted function.
+	(test_main): Use open_srcdir_file instead.
+
 2025-06-26  Niels Möller  <nisse@lysator.liu.se>
 
 	Cherry-picked from branch nettle-3.10-fixes:
