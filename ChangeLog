@@ -1,3 +1,20 @@
+2025-07-01  Niels Möller  <nisse@lysator.liu.se>
+
+	* slh-dsa-shake-128f.c (slh_dsa_shake_128f_root)
+	(slh_dsa_shake_128f_generate_keypair, slh_dsa_shake_128f_sign)
+	(slh_dsa_shake_128f_verify): New functions.
+
+	* slh-dsa.h: Declare new functions.
+	(SLH_DSA_SHAKE_128F_SIGNATURE_SIZE): New constant.
+	* Makefile.in (nettle_SOURCES): Add slh-dsa-shake-128f.c.
+
+	* testsuite/slh-dsa-test.c (test_main): Add test for slh-dsa-shake-128f.
+	* testsuite/slh-dsa-shake-128f.ref: New Reference signature.
+	* testsuite/Makefile.in (DISTFILES): Add slh-dsa-shake-128f.ref.
+
+	* examples/hogweed-benchmark.c (bench_slh_dsa_sign): New function.
+	(alg_list): Add benchmarking of slh-dsa-shake128f.
+
 2025-06-30  Niels Möller  <nisse@lysator.liu.se>
 
 	Implement slh-dsa-shake128s.

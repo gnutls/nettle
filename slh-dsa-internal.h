@@ -55,6 +55,7 @@
 #define _slh_dsa_verify _nettle_slh_dsa_verify
 
 #define _slh_dsa_shake_128s_params _nettle_slh_dsa_shake_128s_params
+#define _slh_dsa_shake_128f_params _nettle_slh_dsa_shake_128f_params
 
 /* Size of a single hash, including the seed and prf parameters */
 #define _SLH_DSA_128_SIZE 16

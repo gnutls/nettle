@@ -316,6 +316,15 @@ slh_dsa_shake_128s = {
   slh_dsa_shake_128s_verify,
 };
 
+static const struct slh_dsa_alg
+slh_dsa_shake_128f = {
+  "slh_dsa_shake_128f",
+  SLH_DSA_SHAKE_128_KEY_SIZE,
+  SLH_DSA_SHAKE_128F_SIGNATURE_SIZE,
+  slh_dsa_shake_128f_sign,
+  slh_dsa_shake_128f_verify,
+};
+
 static void
 test_slh_dsa (const struct slh_dsa_alg *alg,
 	      const struct tstring *pub, const struct tstring *priv,
@@ -561,4 +570,16 @@ test_main (void)
 		      "2A2C9957E835AD55 B22E75BF57BB556A"
 		      "C8"),
 		"slh-dsa-shake-128s.ref");
+
+  /* Test vector from
+     https://github.com/smuellerDD/leancrypto/blob/master/slh-dsa/tests/sphincs_tester_vectors_shake_128f.h */
+  test_slh_dsa (&slh_dsa_shake_128f,
+		SHEX ("B505D7CFAD1B4974 99323C8686325E47"
+		      "AFBC007BA1E2B4A1 38F03AA9A6195AC8"),
+		SHEX ("7C9935A0B07694AA 0C6D10E4DB6B1ADD"
+		      "2FD81A25CCB14803 2DCD739936737F2D"),
+		SHEX ("D81C4D8D734FCBFB EADE3D3F8A039FAA"
+		      "2A2C9957E835AD55 B22E75BF57BB556A"
+		      "C8"),
+		"slh-dsa-shake-128f.ref");
 }
