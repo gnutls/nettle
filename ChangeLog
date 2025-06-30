@@ -1,3 +1,46 @@
+2025-06-30  Niels Möller  <nisse@lysator.liu.se>
+
+	Implement slh-dsa-shake128s.
+	* slh-dsa.h: New public header file.
+	* slh-dsa-shake-128s.c (slh_dsa_shake_128s_root)
+	(slh_dsa_shake_128s_generate_keypair, slh_dsa_shake_128s_sign)
+	(slh_dsa_shake_128s_verify): New file, new public functions.
+	(parse_digest): New internal function.
+
+	* slh-dsa-internal.h: New header file with internal declarations.
+	(slh_addr_type): New enum.
+	(slh_address_hash, slh_merkle_ctx_public, slh_merkle_ctx_secret)
+	(slh_xmss_params, slh_fors_params, slh_dsa_params): New structs.
+	(merkle_leaf_hash_func, merkle_node_hash_func): New typedefs.
+	* slh-dsa.c (_slh_dsa_randomizer, _slh_dsa_digest)
+	(_slh_dsa_sign, _slh_dsa_verify): New file, new functions.
+	* slh-fors.c (_fors_gen, fors_leaf, fors_node, fors_sign_one)
+	(_fors_sign, fors_verify_one, _fors_verify): New file, new functions.
+	* slh-merkle.c (_merkle_root, _merkle_sign, _merkle_verify): New
+	file, new functions.
+	* slh-shake.c (_slh_shake_init, _slh_shake): New file, new functions.
+	* slh-wots.c (wots_chain, wots_pk_init, _wots_gen)
+	(wots_sign_one, _wots_sign, wots_verify_one, _wots_verify): New
+	file, new functions.
+	* slh-xmss.c (xmss_leaf, xmss_node, _xmss_gen, _xmss_sign)
+	(_xmss_verify): New file, new functions.
+	* Makefile.in (nettle_SOURCES): Add slh-fors.c, slh-merkle.c,
+	slh-shake.c, slh-wots.c, slh-xmss.c, slh-dsa.c, and
+	slh-dsa-shake-128s.c.
+	(HEADERS): Add slh-dsa.h.
+	(DISTFILES): Add slh-dsa-internal.h.
+
+	* testsuite/slh-dsa-test.c: New tests.
+	* testsuite/slh-dsa-shake-128s.ref: Reference signature.
+	* testsuite/sc-slh-dsa-test: New file.
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Add slh-dsa-test.c.
+	(TS_SC_NETTLE): Add sc-slh-dsa-test.
+	(DISTFILES): Add slh-dsa-shake-128s.ref.
+
+	* examples/hogweed-benchmark.c: Add benchmarking of
+	slh-dsa-shake128s.
+	(bench_alg): Change unit to sign/s and verify/s.
+
 2025-06-27  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/testutils.c (open_srcdir_file): New function.

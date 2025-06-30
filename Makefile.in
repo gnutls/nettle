@@ -175,7 +175,9 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt-table.c \
 		 write-be32.c write-le32.c write-le64.c \
 		 yarrow256.c yarrow_key_event.c \
 		 xts.c xts-aes128.c xts-aes256.c \
-		 drbg-ctr-aes256.c
+		 drbg-ctr-aes256.c \
+		 slh-fors.c slh-merkle.c slh-shake.c slh-wots.c slh-xmss.c \
+		 slh-dsa.c slh-dsa-shake-128s.c
 
 hogweed_SOURCES = sexp.c sexp-format.c \
 		  sexp-transport.c sexp-transport-format.c \
@@ -251,7 +253,7 @@ HEADERS = aes.h arcfour.h arctwo.h asn1.h blowfish.h balloon.h \
 	  ocb.h pbkdf2.h \
 	  pkcs1.h pss.h pss-mgf1.h realloc.h ripemd160.h rsa.h \
 	  salsa20.h sexp.h serpent.h \
-	  sha1.h sha2.h sha3.h sm3.h sm4.h streebog.h twofish.h \
+	  sha1.h sha2.h sha3.h slh-dsa.h sm3.h sm4.h streebog.h twofish.h \
 	  umac.h yarrow.h xts.h poly1305.h nist-keywrap.h \
 	  drbg-ctr.h
 
@@ -284,6 +286,7 @@ DISTFILES = $(SOURCES) $(HEADERS) getopt.h getopt_int.h \
 	ctr-internal.h chacha-internal.h hmac-internal.h sha3-internal.h \
 	salsa20-internal.h umac-internal.h hogweed-internal.h \
 	rsa-internal.h pkcs1-internal.h dsa-internal.h eddsa-internal.h \
+	slh-dsa-internal.h \
 	gmp-glue.h ecc-internal.h fat-setup.h oaep.h \
 	mini-gmp.h asm.m4 m4-utils.m4 \
 	nettle.texinfo nettle.info nettle.html nettle.pdf sha-example.c
