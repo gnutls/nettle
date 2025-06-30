@@ -64,6 +64,7 @@ read_hex_file (const char *name, size_t size, uint8_t *out)
 	      fprintf (stderr, "reading %s failed: %s\n", name, strerror (errno));
 	      FAIL ();
 	    }
+	  fclose (input);
 	  ASSERT (base16_decode_final (&ctx));
 	  return done;
 	}
@@ -343,6 +344,9 @@ test_slh_dsa (const struct slh_dsa_alg *alg,
     ASSERT (!alg->verify (pub->data, msg->length-1, msg->data, sig));
   sig[alg->signature_size-1] ^= 1;
   ASSERT (!alg->verify (pub->data, msg->length, msg->data, sig));
+
+  free (sig);
+  free (ref);
 }
 
 void
