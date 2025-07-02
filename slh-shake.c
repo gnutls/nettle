@@ -46,9 +46,9 @@ struct slh_address_tree
   uint64_t tree_idx;
 };
 
-void
-_slh_shake_init (struct sha3_ctx *ctx, const uint8_t *public_seed,
-		 uint32_t layer, uint64_t tree_idx)
+static void
+slh_shake_init_tree (struct sha3_ctx *ctx, const uint8_t *public_seed,
+		     uint32_t layer, uint64_t tree_idx)
 {
   struct slh_address_tree at = { bswap32_if_le (layer), 0, bswap64_if_le (tree_idx) };
 
@@ -58,36 +58,36 @@ _slh_shake_init (struct sha3_ctx *ctx, const uint8_t *public_seed,
 }
 
 static void
-slh_shake_start (const struct sha3_ctx *tree_ctx, struct sha3_ctx *ctx,
-		 const struct slh_address_hash *ah)
+slh_shake_init_hash (const struct sha3_ctx *tree_ctx, struct sha3_ctx *ctx,
+		     const struct slh_address_hash *ah)
 {
   *ctx = *tree_ctx;
   sha3_256_update (ctx, sizeof (*ah), (const uint8_t *) ah);
 }
 
-void
-_slh_shake (const struct sha3_ctx *tree_ctx, const struct slh_address_hash *ah,
-	    const uint8_t *secret, uint8_t *out)
+static void
+slh_shake_secret (const struct sha3_ctx *tree_ctx, const struct slh_address_hash *ah,
+		  const uint8_t *secret, uint8_t *out)
 {
   struct sha3_ctx ctx;
-  slh_shake_start (tree_ctx, &ctx, ah);;
+  slh_shake_init_hash (tree_ctx, &ctx, ah);;
   sha3_256_update (&ctx, _SLH_DSA_128_SIZE, secret);
   sha3_256_shake (&ctx, _SLH_DSA_128_SIZE, out);
 }
 
 static void
 slh_shake_node (const struct sha3_ctx *tree_ctx, const struct slh_address_hash *ah,
-		 const uint8_t *left, const uint8_t *right, uint8_t *out)
+		const uint8_t *left, const uint8_t *right, uint8_t *out)
 {
   struct sha3_ctx ctx;
-  slh_shake_start (tree_ctx, &ctx, ah);;
+  slh_shake_init_hash (tree_ctx, &ctx, ah);;
   sha3_256_update (&ctx, _SLH_DSA_128_SIZE, left);
   sha3_256_update (&ctx, _SLH_DSA_128_SIZE, right);
   sha3_256_shake (&ctx, _SLH_DSA_128_SIZE, out);
 }
 
-void
-_slh_shake_digest (struct sha3_ctx *ctx, uint8_t *out)
+static void
+slh_shake_digest (struct sha3_ctx *ctx, uint8_t *out)
 {
   sha3_256_shake (ctx, _SLH_DSA_128_SIZE, out);
 }
@@ -127,10 +127,10 @@ _slh_shake_msg_digest (const uint8_t *randomizer, const uint8_t *pub,
 const struct slh_hash
 _slh_hash_shake =
   {
-    (slh_hash_init_func *) _slh_shake_init,
-    (slh_hash_secret_func *) _slh_shake,
-    (slh_hash_node_func *) slh_shake_node,
-    (slh_hash_start_func *) slh_shake_start,
+    (slh_hash_init_tree_func *) slh_shake_init_tree,
+    (slh_hash_init_hash_func *) slh_shake_init_hash,
     (nettle_hash_update_func *) sha3_256_update,
-    (nettle_hash_digest_func *)_slh_shake_digest
+    (nettle_hash_digest_func *) slh_shake_digest,
+    (slh_hash_secret_func *) slh_shake_secret,
+    (slh_hash_node_func *) slh_shake_node,
   };

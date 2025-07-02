@@ -44,7 +44,7 @@
    dst. For the ah argument, leaves ah->keypair and ah->height_chain
    unchanged, but overwrites the other fields. */
 static const uint8_t *
-wots_chain (const struct slh_hash_ctxs *ctx,
+wots_chain (const struct slh_hash *hash, const union slh_hash_ctx *ctx,
 	    struct slh_address_hash *ah,
 	    unsigned i, unsigned s,
 	    const uint8_t *src, uint8_t *dst)
@@ -57,36 +57,39 @@ wots_chain (const struct slh_hash_ctxs *ctx,
   ah->type = bswap32_if_le (SLH_WOTS_HASH);
   ah->index_hash = bswap32_if_le (i);
 
-  ctx->hash->secret(ctx->tree, ah, src, dst);
+  hash->secret (ctx, ah, src, dst);
 
   for (j = 1; j < s; j++)
     {
       ah->index_hash = bswap32_if_le (i + j);
-      ctx->hash->secret (ctx->tree, ah, dst, dst);
+      hash->secret (ctx, ah, dst, dst);
     }
 
   return dst;
 }
 
 static void
-wots_pk_init (const struct slh_hash_ctxs *ctx,
-	      unsigned keypair, struct slh_address_hash *ah)
+wots_pk_init (const struct slh_hash *hash, const union slh_hash_ctx *tree_ctx,
+	      unsigned keypair, struct slh_address_hash *ah,
+	      union slh_hash_ctx *ctx)
 {
   ah->type = bswap32_if_le (SLH_WOTS_PK);
   ah->keypair = bswap32_if_le (keypair);
   ah->height_chain = 0;
   ah->index_hash = 0;
-  ctx->hash->start(ctx->tree, ctx->scratch, ah);
+  hash->init_hash (tree_ctx, ctx, ah);
 }
 
 void
-_wots_gen (const struct slh_hash_ctxs *ctx, const uint8_t *secret_seed,
+_wots_gen (const struct slh_hash *hash, const union slh_hash_ctx *tree_ctx,
+	   const uint8_t *secret_seed,
 	   uint32_t keypair, uint8_t *pub)
 {
   struct slh_address_hash ah;
+  union slh_hash_ctx ctx;
   unsigned i;
 
-  wots_pk_init (ctx, keypair, &ah);
+  wots_pk_init (hash, tree_ctx, keypair, &ah, &ctx);
 
   for (i = 0; i < _WOTS_SIGNATURE_LENGTH; i++)
     {
@@ -96,72 +99,76 @@ _wots_gen (const struct slh_hash_ctxs *ctx, const uint8_t *secret_seed,
       ah.type = bswap32_if_le (SLH_WOTS_PRF);
       ah.height_chain = bswap32_if_le (i);
       ah.index_hash = 0;
-      ctx->hash->secret (ctx->tree, &ah, secret_seed, out);
+      hash->secret (tree_ctx, &ah, secret_seed, out);
 
       /* Hash chain. */
-      wots_chain (ctx, &ah, 0, 15, out, out);
+      wots_chain (hash, tree_ctx, &ah, 0, 15, out, out);
 
-      ctx->hash->update (ctx->scratch, _SLH_DSA_128_SIZE, out);
+      hash->update (&ctx, _SLH_DSA_128_SIZE, out);
     }
-  ctx->hash->digest (ctx->scratch, pub);
+  hash->digest (&ctx, pub);
 }
 
 /* Produces signature hash corresponding to the ith message nybble. Modifies addr. */
 static void
-wots_sign_one (const struct slh_hash_ctxs *ctx, const uint8_t *secret_seed,
-	       uint32_t keypair,
-	       unsigned i, uint8_t msg, uint8_t *sig)
+wots_sign_one (const struct slh_hash *hash, const union slh_hash_ctx *tree_ctx,
+	       const uint8_t *secret_seed, uint32_t keypair,
+	       unsigned i, uint8_t msg,
+	       uint8_t *signature, union slh_hash_ctx *ctx)
 {
   struct slh_address_hash ah;
   uint8_t pub[_SLH_DSA_128_SIZE];
-  sig += i*_SLH_DSA_128_SIZE;
+  signature += i*_SLH_DSA_128_SIZE;
 
   /* Generate secret value. */
   ah.type = bswap32_if_le (SLH_WOTS_PRF);
   ah.keypair = bswap32_if_le (keypair);
   ah.height_chain = bswap32_if_le (i);
   ah.index_hash = 0;
-  ctx->hash->secret(ctx->tree, &ah, secret_seed, sig);
+  hash->secret (tree_ctx, &ah, secret_seed, signature);
 
   /* Hash chain. */
-  wots_chain (ctx, &ah, 0, msg, sig, sig);
+  wots_chain (hash, tree_ctx, &ah, 0, msg, signature, signature);
 
-  ctx->hash->update (ctx->scratch, _SLH_DSA_128_SIZE,
-		     wots_chain (ctx, &ah, msg, 15 - msg, sig, pub));
+  hash->update (ctx, _SLH_DSA_128_SIZE,
+		wots_chain (hash, tree_ctx, &ah, msg, 15 - msg, signature, pub));
 }
 
 void
-_wots_sign (const struct slh_hash_ctxs *ctx, const uint8_t *secret_seed,
-	    unsigned keypair, const uint8_t *msg, uint8_t *signature, uint8_t *pub)
+_wots_sign (const struct slh_hash *hash, const union slh_hash_ctx *tree_ctx,
+	    const uint8_t *secret_seed, unsigned keypair, const uint8_t *msg,
+	    uint8_t *signature, uint8_t *pub)
 {
   struct slh_address_hash ah;
+  union slh_hash_ctx ctx;
   unsigned i;
   uint32_t csum;
 
-  wots_pk_init (ctx, keypair, &ah);
+  wots_pk_init (hash, tree_ctx, keypair, &ah, &ctx);
 
   for (i = 0, csum = 15*32; i < _SLH_DSA_128_SIZE; i++)
     {
       uint8_t m0, m1;
       m0 = msg[i] >> 4;
       csum -= m0;
-      wots_sign_one (ctx, secret_seed, keypair, 2*i, m0, signature);
+      wots_sign_one (hash, tree_ctx, secret_seed, keypair, 2*i, m0, signature, &ctx);
 
       m1 = msg[i] & 0xf;
       csum -= m1;
-      wots_sign_one (ctx, secret_seed, keypair, 2*i + 1, m1, signature);
+      wots_sign_one (hash, tree_ctx, secret_seed, keypair, 2*i + 1, m1, signature, &ctx);
     }
 
-  wots_sign_one (ctx, secret_seed, keypair, 32, csum >> 8, signature);
-  wots_sign_one (ctx, secret_seed, keypair, 33, (csum >> 4) & 0xf, signature);
-  wots_sign_one (ctx, secret_seed, keypair, 34, csum & 0xf, signature);
+  wots_sign_one (hash, tree_ctx, secret_seed, keypair, 32, csum >> 8, signature, &ctx);
+  wots_sign_one (hash, tree_ctx, secret_seed, keypair, 33, (csum >> 4) & 0xf, signature, &ctx);
+  wots_sign_one (hash, tree_ctx, secret_seed, keypair, 34, csum & 0xf, signature, &ctx);
 
-  ctx->hash->digest (ctx->scratch, pub);
+  hash->digest (&ctx, pub);
 }
 
 static void
-wots_verify_one (struct slh_hash_ctxs *ctx,
-		 uint32_t keypair, unsigned i, uint8_t msg, const uint8_t *signature)
+wots_verify_one (const struct slh_hash *hash, const union slh_hash_ctx *tree_ctx,
+		 uint32_t keypair, unsigned i, uint8_t msg,
+		 const uint8_t *signature, union slh_hash_ctx *ctx)
 {
   struct slh_address_hash ah;
   uint8_t out[_SLH_DSA_128_SIZE];
@@ -170,35 +177,36 @@ wots_verify_one (struct slh_hash_ctxs *ctx,
   ah.keypair = bswap32_if_le (keypair);
   ah.height_chain = bswap32_if_le (i);
 
-  ctx->hash->update(ctx->scratch, _SLH_DSA_128_SIZE,
-		    wots_chain (ctx, &ah, msg, 15 - msg, signature, out));
+  hash->update (ctx, _SLH_DSA_128_SIZE,
+		wots_chain (hash, tree_ctx, &ah, msg, 15 - msg, signature, out));
 }
 
 void
-_wots_verify (struct slh_hash_ctxs *ctx,
+_wots_verify (const struct slh_hash *hash, const union slh_hash_ctx *tree_ctx,
 	      unsigned keypair, const uint8_t *msg, const uint8_t *signature, uint8_t *pub)
 {
   struct slh_address_hash ah;
+  union slh_hash_ctx ctx;
   unsigned i;
   uint32_t csum;
 
-  wots_pk_init (ctx, keypair, &ah);
+  wots_pk_init (hash, tree_ctx, keypair, &ah, &ctx);
 
   for (i = 0, csum = 15*32; i < _SLH_DSA_128_SIZE; i++)
     {
       uint8_t m0, m1;
       m0 = msg[i] >> 4;
       csum -= m0;
-      wots_verify_one (ctx, keypair, 2*i, m0, signature);
+      wots_verify_one (hash, tree_ctx, keypair, 2*i, m0, signature, &ctx);
 
       m1 = msg[i] & 0xf;
       csum -= m1;
-      wots_verify_one (ctx, keypair, 2*i + 1, m1, signature);
+      wots_verify_one (hash, tree_ctx, keypair, 2*i + 1, m1, signature, &ctx);
     }
 
-  wots_verify_one (ctx, keypair, 32, csum >> 8, signature);
-  wots_verify_one (ctx, keypair, 33, (csum >> 4) & 0xf, signature);
-  wots_verify_one (ctx, keypair, 34, csum & 0xf, signature);
+  wots_verify_one (hash, tree_ctx, keypair, 32, csum >> 8, signature, &ctx);
+  wots_verify_one (hash, tree_ctx, keypair, 33, (csum >> 4) & 0xf, signature, &ctx);
+  wots_verify_one (hash, tree_ctx, keypair, 34, csum & 0xf, signature, &ctx);
 
-  ctx->hash->digest (ctx->scratch, pub);
+  hash->digest (&ctx, pub);
 }

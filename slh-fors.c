@@ -41,7 +41,6 @@
 #include "sha3.h"
 #include "slh-dsa-internal.h"
 
-/* TODO: Like wots_gen, take hash ctx, secret seed (+ keypair) as separate arguments? */
 void
 _fors_gen (const struct slh_merkle_ctx_secret *ctx,
 	   unsigned idx, uint8_t *sk, uint8_t *leaf)
@@ -54,10 +53,10 @@ _fors_gen (const struct slh_merkle_ctx_secret *ctx,
       bswap32_if_le (idx),
     };
 
-  ctx->pub.ctx.hash->secret (ctx->pub.ctx.tree, &ah, ctx->secret_seed, sk);
+  ctx->pub.hash->secret (&ctx->pub.tree_ctx, &ah, ctx->secret_seed, sk);
 
   ah.type = bswap32_if_le (SLH_FORS_TREE);
-  ctx->pub.ctx.hash->secret (ctx->pub.ctx.tree, &ah, ctx->secret_seed, leaf);
+  ctx->pub.hash->secret (&ctx->pub.tree_ctx, &ah, sk, leaf);
 }
 
 static void
@@ -77,22 +76,22 @@ fors_node (const struct slh_merkle_ctx_public *ctx, unsigned height, unsigned in
       bswap32_if_le (height),
       bswap32_if_le (index),
     };
-  ctx->ctx.hash->node (ctx->ctx.tree, &ah, left, right, out);
+  ctx->hash->node (&ctx->tree_ctx, &ah, left, right, out);
 }
 
 static void
 fors_sign_one (const struct slh_merkle_ctx_secret *ctx, unsigned a,
-	       unsigned idx, uint8_t *signature)
+	       unsigned idx, uint8_t *signature, union slh_hash_ctx *pub)
 {
   uint8_t hash[_SLH_DSA_128_SIZE];
 
   _fors_gen (ctx, idx, signature, hash);
+  signature += _SLH_DSA_128_SIZE;
 
-  _merkle_sign (ctx, fors_leaf, fors_node, a, idx,
-		signature + _SLH_DSA_128_SIZE);
-  _merkle_verify (&ctx->pub, fors_node, a, idx, signature + _SLH_DSA_128_SIZE, hash);
+  _merkle_sign (ctx, fors_leaf, fors_node, a, idx, signature);
+  _merkle_verify (&ctx->pub, fors_node, a, idx, signature, hash);
 
-  ctx->pub.ctx.hash->update (ctx->pub.ctx.scratch, _SLH_DSA_128_SIZE, hash);
+  ctx->pub.hash->update (pub, _SLH_DSA_128_SIZE, hash);
 }
 
 void
@@ -106,10 +105,11 @@ _fors_sign (const struct slh_merkle_ctx_secret *ctx,
       bswap32_if_le (ctx->pub.keypair),
       0, 0,
     };
+  union slh_hash_ctx pub_ctx;
   unsigned i, w, bits;
   unsigned mask = (1 << fors->a) - 1;
 
-  ctx->pub.ctx.hash->start (ctx->pub.ctx.tree, ctx->pub.ctx.scratch, &ah);
+  ctx->pub.hash->init_hash (&ctx->pub.tree_ctx, &pub_ctx, &ah);
 
   for (i = w = bits = 0; i < fors->k; i++, signature += (fors->a + 1) * _SLH_DSA_128_SIZE)
     {
@@ -117,15 +117,15 @@ _fors_sign (const struct slh_merkle_ctx_secret *ctx,
 	w = (w << 8) | *msg++;
       bits -= fors->a;
 
-      fors_sign_one (ctx, fors->a, (i << fors->a) + ((w >> bits) & mask), signature);
+      fors_sign_one (ctx, fors->a, (i << fors->a) + ((w >> bits) & mask), signature, &pub_ctx);
      }
 
-  ctx->pub.ctx.hash->digest (ctx->pub.ctx.scratch, pub);
+  ctx->pub.hash->digest (&pub_ctx, pub);
 }
 
 static void
 fors_verify_one (const struct slh_merkle_ctx_public *ctx, unsigned a,
-		 unsigned idx, const uint8_t *signature)
+		 unsigned idx, const uint8_t *signature, union slh_hash_ctx *pub)
 {
   uint8_t root[_SLH_DSA_128_SIZE];
   struct slh_address_hash ah =
@@ -136,10 +136,10 @@ fors_verify_one (const struct slh_merkle_ctx_public *ctx, unsigned a,
       bswap32_if_le (idx),
     };
 
-  ctx->ctx.hash->secret (ctx->ctx.tree, &ah, signature, root);
+  ctx->hash->secret (&ctx->tree_ctx, &ah, signature, root);
   _merkle_verify (ctx, fors_node, a, idx, signature + _SLH_DSA_128_SIZE, root);
 
-  ctx->ctx.hash->update (ctx->ctx.scratch, _SLH_DSA_128_SIZE, root);
+  ctx->hash->update (pub, _SLH_DSA_128_SIZE, root);
 }
 
 void
@@ -153,10 +153,11 @@ _fors_verify (const struct slh_merkle_ctx_public *ctx,
       bswap32_if_le (ctx->keypair),
       0, 0,
     };
+  union slh_hash_ctx pub_ctx;
   unsigned i, w, bits;
   unsigned mask = (1 << fors->a) - 1;
 
-  ctx->ctx.hash->start (ctx->ctx.tree, ctx->ctx.scratch, &ah);
+  ctx->hash->init_hash (&ctx->tree_ctx, &pub_ctx, &ah);
 
   for (i = w = bits = 0; i < fors->k; i++, signature += (fors->a + 1) * _SLH_DSA_128_SIZE)
     {
@@ -164,7 +165,7 @@ _fors_verify (const struct slh_merkle_ctx_public *ctx,
 	w = (w << 8) | *msg++;
       bits -= fors->a;
 
-      fors_verify_one (ctx, fors->a, (i << fors->a) + ((w >> bits) & mask), signature);
+      fors_verify_one (ctx, fors->a, (i << fors->a) + ((w >> bits) & mask), signature, &pub_ctx);
     }
-  ctx->ctx.hash->digest (ctx->ctx.scratch, pub);
+  ctx->hash->digest (&pub_ctx, pub);
 }

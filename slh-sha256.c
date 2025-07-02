@@ -51,9 +51,9 @@
 */
 
 /* All hashing but H_{msg} and PRF_{msg} use plain sha256: */
-void
-_slh_sha256_init (struct sha256_ctx *ctx, const uint8_t *public_seed,
-		  uint32_t layer, uint64_t tree_idx)
+static void
+slh_sha256_init_tree (struct sha256_ctx *ctx, const uint8_t *public_seed,
+		      uint32_t layer, uint64_t tree_idx)
 {
   static const uint8_t pad[48];
   uint8_t addr_layer;
@@ -62,26 +62,52 @@ _slh_sha256_init (struct sha256_ctx *ctx, const uint8_t *public_seed,
   sha256_init (ctx);
   sha256_update (ctx, _SLH_DSA_128_SIZE, public_seed);
   /* This padding completes a sha256 block. */
-  sha256_update (ctx, sizeof(pad), pad);
+  sha256_update (ctx, sizeof (pad), pad);
   /* Compressed address. */
   addr_layer = layer;
   sha256_update (ctx, 1, &addr_layer);
   addr_tree = bswap64_if_le (tree_idx);
-  sha256_update (ctx, sizeof(addr_tree), (const uint8_t *) &addr_tree);
+  sha256_update (ctx, sizeof (addr_tree), (const uint8_t *) &addr_tree);
 }
 
-void
-_slh_sha256 (const struct sha256_ctx *tree_ctx,
-	     const struct slh_address_hash *ah,
-	     const uint8_t *secret, uint8_t *out)
+static void
+slh_sha256_init_hash (const struct sha256_ctx *tree_ctx, struct sha256_ctx *ctx,
+		      const struct slh_address_hash *ah)
 {
-  struct sha256_ctx ctx = *tree_ctx;
-  uint8_t digest[SHA256_DIGEST_SIZE];
+  *ctx = *tree_ctx;
   /* For compressed addr, hash only last byte of the type. */
-  sha256_update (&ctx, sizeof(*ah) - 3, (const uint8_t *) ah + 3);
-  sha256_update (&ctx, _SLH_DSA_128_SIZE, secret);
-  sha256_digest (&ctx, digest);
+  sha256_update (ctx, sizeof (*ah) - 3, (const uint8_t *) ah + 3);
+}
+
+static void
+slh_sha256_digest (struct sha256_ctx *ctx, uint8_t *out)
+{
+  uint8_t digest[SHA256_DIGEST_SIZE];
+  sha256_digest (ctx, digest);
   memcpy (out, digest, _SLH_DSA_128_SIZE);
+}
+
+static void
+slh_sha256_secret (const struct sha256_ctx *tree_ctx,
+		   const struct slh_address_hash *ah,
+		   const uint8_t *secret, uint8_t *out)
+{
+  struct sha256_ctx ctx;
+  slh_sha256_init_hash (tree_ctx, &ctx, ah);
+  sha256_update (&ctx, _SLH_DSA_128_SIZE, secret);
+  slh_sha256_digest (&ctx, out);
+}
+
+static void
+slh_sha256_node (const struct sha256_ctx *tree_ctx,
+		 const struct slh_address_hash *ah,
+		 const uint8_t *left, const uint8_t *right, uint8_t *out)
+{
+  struct sha256_ctx ctx;
+  slh_sha256_init_hash (tree_ctx, &ctx, ah);
+  sha256_update (&ctx, _SLH_DSA_128_SIZE, left);
+  sha256_update (&ctx, _SLH_DSA_128_SIZE, right);
+  slh_sha256_digest (&ctx, out);
 }
 
 static const uint8_t slh_pure_prefix[2] = {0, 0};
@@ -133,3 +159,14 @@ _slh_sha256_msg_digest (const uint8_t *randomizer, const uint8_t *pub,
       digest_size -= SHA256_DIGEST_SIZE;
     }
 }
+
+const struct slh_hash
+_slh_hash_sha256 =
+  {
+    (slh_hash_init_tree_func *) slh_sha256_init_tree,
+    (slh_hash_init_hash_func *) slh_sha256_init_hash,
+    (nettle_hash_update_func *) sha3_256_update,
+    (nettle_hash_digest_func *) slh_sha256_digest,
+    (slh_hash_secret_func *) slh_sha256_secret,
+    (slh_hash_node_func *) slh_sha256_node,
+  };

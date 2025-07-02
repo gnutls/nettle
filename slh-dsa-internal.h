@@ -35,17 +35,14 @@
 #include <stdint.h>
 
 #include "nettle-types.h"
+#include "sha2.h"
+#include "sha3.h"
 
 /* Name mangling */
-#define _slh_shake_init _nettle_slh_shake_init
-#define _slh_shake _nettle_slh_shake
-#define _slh_shake_digest _nettle_slh_shake_digest
 #define _slh_shake_randomizer _nettle_slh_shake_randomizer
 #define _slh_shake_msg_digest _nettle_slh_shake_msg_digest
-#define _slh_sha256_init _nettle_slh_sha256_init
-#define _slh_sha256 _nettle_slh_sha256
 #define _slh_sha256_randomizer _nettle_slh_sha256_randomizer
-#define _slh_sha256_digest _nettle_slh_sha256_digest
+#define _slh_sha256_msg_digest _nettle_slh_sha256_msg_digest
 #define _wots_gen _nettle_wots_gen
 #define _wots_sign _nettle_wots_sign
 #define _wots_verify _nettle_wots_verify
@@ -63,6 +60,9 @@
 
 #define _slh_dsa_shake_128s_params _nettle_slh_dsa_shake_128s_params
 #define _slh_dsa_shake_128f_params _nettle_slh_dsa_shake_128f_params
+
+#define _slh_hash_shake _nettle_slh_hash_shake
+#define _slh_hash_sha256 _nettle_slh_hash_sha256
 
 /* Size of a single hash, including the seed and prf parameters */
 #define _SLH_DSA_128_SIZE 16
@@ -89,40 +89,42 @@ enum slh_addr_type
     SLH_FORS_PRF = 6,
   };
 
-typedef void slh_hash_init_func (void *tree_ctx, const uint8_t *public_seed,
-				 uint32_t layer, uint64_t tree_idx);
-typedef void slh_hash_secret_func (const void *tree_ctx,
+union slh_hash_ctx
+{
+  struct sha256_ctx sha256;
+  struct sha3_ctx sha3;
+};
+
+typedef void slh_hash_init_tree_func (union slh_hash_ctx *tree_ctx, const uint8_t *public_seed,
+				      uint32_t layer, uint64_t tree_idx);
+typedef void slh_hash_init_hash_func (const union slh_hash_ctx *tree_ctx, union slh_hash_ctx *ctx,
+				      const struct slh_address_hash *ah);
+typedef void slh_hash_secret_func (const union slh_hash_ctx *tree_ctx,
 				   const struct slh_address_hash *ah,
 				   const uint8_t *secret, uint8_t *out);
-typedef void slh_hash_node_func (const void *tree_ctx,
+typedef void slh_hash_node_func (const union slh_hash_ctx *tree_ctx,
 				 const struct slh_address_hash *ah,
 				 const uint8_t *left, const uint8_t *right,
 				 uint8_t *out);
-typedef void slh_hash_start_func (const void *tree_ctx, void *ctx, const struct slh_address_hash *ah);
 
 struct slh_hash
 {
-  slh_hash_init_func *init;
-  slh_hash_secret_func *secret;
-  slh_hash_node_func *node;
-  slh_hash_start_func *start;
+  slh_hash_init_tree_func *init_tree;
+  slh_hash_init_hash_func *init_hash;
   nettle_hash_update_func *update;
   nettle_hash_digest_func *digest;
+  slh_hash_secret_func *secret;
+  slh_hash_node_func *node;
 };
 
 extern const struct slh_hash _slh_hash_shake;
-struct slh_hash_ctxs
-{
-  const struct slh_hash *hash;
-  /* Initialized based on public seed and slh_address_tree. */
-  const void *tree;
-  /* Working ctx for wots and fors. */
-  void *scratch;
-};
+extern const struct slh_hash _slh_hash_sha256;
 
 struct slh_merkle_ctx_public
 {
-  struct slh_hash_ctxs ctx;
+  const struct slh_hash *hash;
+  /* Initialized using hash->init_tree. */
+  union slh_hash_ctx tree_ctx;
   unsigned keypair; /* Used only by fors_leaf and fors_node. */
 };
 
@@ -143,6 +145,7 @@ struct slh_fors_params
 {
   unsigned short a; /* Height of tree. */
   unsigned short k; /* Number of trees. */
+  unsigned short msg_size; /* Currently used only by tests. */
   unsigned short signature_size;
 };
 
@@ -152,20 +155,8 @@ struct slh_dsa_params
   struct slh_fors_params fors;
 };
 
-extern const struct slh_dsa_params _slh_dsa_128s_params;
-
-struct sha3_ctx;
-void
-_slh_shake_init (struct sha3_ctx *ctx, const uint8_t *public_seed,
-		 uint32_t layer, uint64_t tree_idx);
-
-void
-_slh_shake (const struct sha3_ctx *tree_ctx,
-	    const struct slh_address_hash *ah,
-	    const uint8_t *secret, uint8_t *out);
-
-void
-_slh_shake_digest (struct sha3_ctx *ctx, uint8_t *out);
+extern const struct slh_dsa_params _slh_dsa_shake_128s_params;
+extern const struct slh_dsa_params _slh_dsa_shake_128f_params;
 
 void
 _slh_shake_randomizer (const uint8_t *public_seed, const uint8_t *secret_prf,
@@ -175,16 +166,6 @@ void
 _slh_shake_msg_digest (const uint8_t *randomizer, const uint8_t *pub,
 		       size_t length, const uint8_t *msg,
 		       size_t digest_size, uint8_t *digest);
-
-struct sha256_ctx;
-void
-_slh_sha256_init (struct sha256_ctx *ctx, const uint8_t *public_seed,
-		 uint32_t layer, uint64_t tree_idx);
-
-void
-_slh_sha256 (const struct sha256_ctx *tree_ctx,
-	     const struct slh_address_hash *ah,
-	     const uint8_t *secret, uint8_t *out);
 
 void
 _slh_sha256_randomizer (const uint8_t *public_seed, const uint8_t *secret_prf,
@@ -200,21 +181,23 @@ _slh_sha256_msg_digest (const uint8_t *randomizer, const uint8_t *pub,
 #define WOTS_SIGNATURE_SIZE (_WOTS_SIGNATURE_LENGTH*_SLH_DSA_128_SIZE)
 
 void
-_wots_gen (const struct slh_hash_ctxs *ctx, const uint8_t *secret_seed,
+_wots_gen (const struct slh_hash *hash, const union slh_hash_ctx *tree_ctx,
+	   const uint8_t *secret_seed,
 	   uint32_t keypair, uint8_t *pub);
 
 void
-_wots_sign (const struct slh_hash_ctxs *ctx, const uint8_t *secret_seed,
-	    unsigned keypair, const uint8_t *msg, uint8_t *signature, uint8_t *pub);
+_wots_sign (const struct slh_hash *hash, const union slh_hash_ctx *tree_ctx,
+	    const uint8_t *secret_seed,
+	    unsigned keypair, const uint8_t *msg,
+	    uint8_t *signature, uint8_t *pub);
 
 /* Computes candidate public key from signature. */
 void
-_wots_verify (struct slh_hash_ctxs *ctx,
+_wots_verify (const struct slh_hash *hash, const union slh_hash_ctx *tree_ctx,
 	      unsigned keypair, const uint8_t *msg, const uint8_t *signature, uint8_t *pub);
 
-/* Merkle tree functions. Leaf function uses a non-const context, to allow the ctx to point at
-   working storage. Could be generalized for other merkle tree
-   applications, by using void * for the ctx argument. */
+/* Merkle tree functions. Could be generalized for other merkle tree
+   applications, by using const void* for the ctx argument. */
 typedef void merkle_leaf_hash_func (const struct slh_merkle_ctx_secret *ctx, unsigned index, uint8_t *out);
 typedef void merkle_node_hash_func (const struct slh_merkle_ctx_public *ctx, unsigned height, unsigned index,
 				    const uint8_t *left, const uint8_t *right, uint8_t *out);
@@ -261,7 +244,6 @@ _fors_verify (const struct slh_merkle_ctx_public *ctx,
 /* Provided scratch must be of size (xmss->h + 1) * _SLH_DSA_128_SIZE. */
 void
 _xmss_gen (const struct slh_hash *hash,
-	   void *ha, void *hb,
 	   const uint8_t *public_seed, const uint8_t *secret_seed,
 	   const struct slh_xmss_params *xmss,
 	   uint8_t *scratch, uint8_t *root);
@@ -279,7 +261,6 @@ _xmss_verify (const struct slh_merkle_ctx_public *ctx, unsigned h,
 void
 _slh_dsa_sign (const struct slh_dsa_params *params,
 	       const struct slh_hash *hash,
-	       void *ha, void *hb,
 	       const uint8_t *pub, const uint8_t *priv,
 	       const uint8_t *digest,
 	       uint64_t tree_idx, unsigned leaf_idx,
@@ -287,7 +268,6 @@ _slh_dsa_sign (const struct slh_dsa_params *params,
 int
 _slh_dsa_verify (const struct slh_dsa_params *params,
 		 const struct slh_hash *hash,
-		 void *ha, void *hb,
 		 const uint8_t *pub,
 		 const uint8_t *digest, uint64_t tree_idx, unsigned leaf_idx,
 		 const uint8_t *signature);

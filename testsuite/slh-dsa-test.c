@@ -102,15 +102,15 @@ test_wots_gen (const struct tstring *public_seed, const struct tstring *secret_s
 	       unsigned layer, uint64_t tree_idx, uint32_t keypair,
 	       const struct tstring *exp_pub)
 {
-  struct sha3_ctx tree_ctx;
+  union slh_hash_ctx tree_ctx;
   uint8_t pub[_SLH_DSA_128_SIZE];
   ASSERT (public_seed->length == _SLH_DSA_128_SIZE);
   ASSERT (secret_seed->length == _SLH_DSA_128_SIZE);
   ASSERT (exp_pub->length == _SLH_DSA_128_SIZE);
 
-  _slh_shake_init (&tree_ctx, public_seed->data, layer, tree_idx);
+  _slh_hash_shake.init_tree (&tree_ctx, public_seed->data, layer, tree_idx);
 
-  _wots_gen (&tree_ctx, secret_seed->data, keypair, pub);
+  _wots_gen (&_slh_hash_shake, &tree_ctx, secret_seed->data, keypair, pub);
   mark_bytes_defined (sizeof (pub), pub);
   ASSERT (MEMEQ (sizeof (pub), pub, exp_pub->data));
 }
@@ -120,7 +120,7 @@ test_wots_sign (const struct tstring *public_seed, const struct tstring *secret_
 		unsigned layer, uint64_t tree_idx, uint32_t keypair, const struct tstring *msg,
 		const struct tstring *exp_pub, const struct tstring *exp_sig)
 {
-  struct sha3_ctx tree_ctx;
+  union slh_hash_ctx tree_ctx;
   uint8_t sig[WOTS_SIGNATURE_SIZE];
   uint8_t pub[_SLH_DSA_128_SIZE];
   ASSERT (public_seed->length == _SLH_DSA_128_SIZE);
@@ -129,9 +129,9 @@ test_wots_sign (const struct tstring *public_seed, const struct tstring *secret_
   ASSERT (exp_pub->length == _SLH_DSA_128_SIZE);
   ASSERT (exp_sig->length == WOTS_SIGNATURE_SIZE);
 
-  _slh_shake_init (&tree_ctx, public_seed->data, layer, tree_idx);
+  _slh_hash_shake.init_tree (&tree_ctx, public_seed->data, layer, tree_idx);
 
-  _wots_sign (&tree_ctx, secret_seed->data, keypair,
+  _wots_sign (&_slh_hash_shake, &tree_ctx, secret_seed->data, keypair,
 	      msg->data, sig, pub);
   mark_bytes_defined (sizeof (sig), sig);
   mark_bytes_defined (sizeof (pub), pub);
@@ -139,7 +139,7 @@ test_wots_sign (const struct tstring *public_seed, const struct tstring *secret_
   ASSERT (MEMEQ (sizeof (pub), pub, exp_pub->data));
 
   memset (pub, 0, sizeof (pub));
-  _wots_verify (&tree_ctx, keypair, msg->data, sig, pub);
+  _wots_verify (&_slh_hash_shake, &tree_ctx, keypair, msg->data, sig, pub);
   ASSERT (MEMEQ (sizeof (pub), pub, exp_pub->data));
 }
 
@@ -147,7 +147,7 @@ test_wots_sign (const struct tstring *public_seed, const struct tstring *secret_
 static void
 xmss_leaf (const struct slh_merkle_ctx_secret *ctx, unsigned idx, uint8_t *leaf)
 {
-  _wots_gen (ctx->pub.tree_ctx, ctx->secret_seed, idx, leaf);
+  _wots_gen (ctx->pub.hash, &ctx->pub.tree_ctx, ctx->secret_seed, idx, leaf);
   mark_bytes_defined (SLH_DSA_SHAKE_128_SEED_SIZE, leaf);
 }
 
@@ -155,7 +155,6 @@ static void
 xmss_node (const struct slh_merkle_ctx_public *ctx, unsigned height, unsigned index,
 	   const uint8_t *left, const uint8_t *right, uint8_t *out)
 {
-  struct sha3_ctx sha3 = *ctx->tree_ctx;
   struct slh_address_hash ah =
     {
       bswap32_if_le (SLH_XMSS_TREE),
@@ -164,10 +163,7 @@ xmss_node (const struct slh_merkle_ctx_public *ctx, unsigned height, unsigned in
       bswap32_if_le (index),
     };
 
-  sha3_256_update (&sha3, sizeof (ah), (const uint8_t *) &ah);
-  sha3_256_update (&sha3, _SLH_DSA_128_SIZE, left);
-  sha3_256_update (&sha3, _SLH_DSA_128_SIZE, right);
-  sha3_256_shake (&sha3, _SLH_DSA_128_SIZE, out);
+  ctx->hash->node (&ctx->tree_ctx, &ah, left, right, out);
 }
 
 static void
@@ -176,10 +172,9 @@ test_merkle (const struct tstring *public_seed, const struct tstring *secret_see
 	     unsigned layer, uint64_t tree_idx, uint32_t idx, const struct tstring *msg,
 	     const struct tstring *exp_pub, const struct tstring *exp_sig)
 {
-  struct sha3_ctx tree_ctx;
   struct slh_merkle_ctx_secret ctx =
     {
-      { &tree_ctx, 0 },
+      { &_slh_hash_shake, {}, 0 },
       secret_seed->data,
     };
 
@@ -192,7 +187,7 @@ test_merkle (const struct tstring *public_seed, const struct tstring *secret_see
   ASSERT (exp_pub->length == _SLH_DSA_128_SIZE);
   ASSERT (exp_sig->length == XMSS_AUTH_SIZE (h));
 
-  _slh_shake_init (&tree_ctx, public_seed->data, layer, tree_idx);
+  _slh_hash_shake.init_tree (&ctx.pub.tree_ctx, public_seed->data, layer, tree_idx);
 
   _merkle_sign (&ctx, xmss_leaf, xmss_node, h, idx, sig);
   ASSERT (MEMEQ (exp_sig->length, sig, exp_sig->data));
@@ -208,10 +203,9 @@ test_fors_gen (const struct tstring *public_seed, const struct tstring *secret_s
 	       unsigned layer, uint64_t tree_idx, unsigned keypair, unsigned idx,
 	       const struct tstring *exp_sk, const struct tstring *exp_leaf)
 {
-  struct sha3_ctx tree_ctx;
   struct slh_merkle_ctx_secret ctx =
     {
-      { &tree_ctx, keypair },
+      { &_slh_hash_shake, {}, keypair },
       secret_seed->data,
     };
   uint8_t sk[_SLH_DSA_128_SIZE];
@@ -221,7 +215,7 @@ test_fors_gen (const struct tstring *public_seed, const struct tstring *secret_s
   ASSERT (exp_sk->length == _SLH_DSA_128_SIZE);
   ASSERT (exp_leaf->length == _SLH_DSA_128_SIZE);
 
-  _slh_shake_init (&tree_ctx, public_seed->data, layer, tree_idx);
+  _slh_hash_shake.init_tree (&ctx.pub.tree_ctx, public_seed->data, layer, tree_idx);
 
   _fors_gen (&ctx, idx, sk, leaf);
   mark_bytes_defined (sizeof (sk), sk);
@@ -236,10 +230,9 @@ test_fors_sign (const struct tstring *public_seed, const struct tstring *secret_
 		unsigned layer, uint64_t tree_idx, unsigned keypair, const struct tstring *msg,
 		const struct tstring *exp_pub, const struct tstring *exp_sig)
 {
-  struct sha3_ctx tree_ctx;
   struct slh_merkle_ctx_secret ctx =
     {
-      { &tree_ctx, keypair },
+      { &_slh_hash_shake, {}, keypair },
       secret_seed->data,
     };
   uint8_t pub[_SLH_DSA_128_SIZE];
@@ -250,7 +243,7 @@ test_fors_sign (const struct tstring *public_seed, const struct tstring *secret_
   ASSERT (exp_pub->length == _SLH_DSA_128_SIZE);
   ASSERT (exp_sig->length == fors->signature_size);
 
-  _slh_shake_init (&tree_ctx, public_seed->data, layer, tree_idx);
+  _slh_hash_shake.init_tree (&ctx.pub.tree_ctx, public_seed->data, layer, tree_idx);
 
   _fors_sign (&ctx, fors, msg->data, sig, pub);
   mark_bytes_defined (exp_sig->length, sig);
@@ -270,10 +263,9 @@ test_xmss_sign (const struct tstring *public_seed, const struct tstring *secret_
 		unsigned layer, uint64_t tree_idx, uint32_t idx, const struct tstring *msg,
 		const struct tstring *exp_pub, const struct tstring *exp_sig)
 {
-  struct sha3_ctx tree_ctx;
   struct slh_merkle_ctx_secret ctx =
     {
-      { &tree_ctx, 0 },
+      { &_slh_hash_shake, {}, 0 },
       secret_seed->data,
     };
 
@@ -285,7 +277,7 @@ test_xmss_sign (const struct tstring *public_seed, const struct tstring *secret_
   ASSERT (exp_pub->length == _SLH_DSA_128_SIZE);
   ASSERT (exp_sig->length == XMSS_SIGNATURE_SIZE (xmss_h));
 
-  _slh_shake_init (&tree_ctx, public_seed->data, layer, tree_idx);
+  _slh_hash_shake.init_tree (&ctx.pub.tree_ctx, public_seed->data, layer, tree_idx);
 
   _xmss_sign (&ctx, xmss_h, idx, msg->data, sig, pub);
   mark_bytes_defined (sizeof (pub), pub);
