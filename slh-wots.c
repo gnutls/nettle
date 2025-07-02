@@ -44,7 +44,7 @@
    dst. For the ah argument, leaves ah->keypair and ah->height_chain
    unchanged, but overwrites the other fields. */
 static const uint8_t *
-wots_chain (const struct sha3_ctx *ctx,
+wots_chain (const struct slh_hash_ctxs *ctx,
 	    struct slh_address_hash *ah,
 	    unsigned i, unsigned s,
 	    const uint8_t *src, uint8_t *dst)
@@ -57,38 +57,36 @@ wots_chain (const struct sha3_ctx *ctx,
   ah->type = bswap32_if_le (SLH_WOTS_HASH);
   ah->index_hash = bswap32_if_le (i);
 
-  _slh_shake (ctx, ah, src, dst);
+  ctx->hash->secret(ctx->tree, ah, src, dst);
 
   for (j = 1; j < s; j++)
     {
       ah->index_hash = bswap32_if_le (i + j);
-      _slh_shake (ctx, ah, dst, dst);
+      ctx->hash->secret (ctx->tree, ah, dst, dst);
     }
 
   return dst;
 }
 
 static void
-wots_pk_init (const struct sha3_ctx *tree_ctx,
-	      unsigned keypair, struct slh_address_hash *ah, struct sha3_ctx *ctx)
+wots_pk_init (const struct slh_hash_ctxs *ctx,
+	      unsigned keypair, struct slh_address_hash *ah)
 {
   ah->type = bswap32_if_le (SLH_WOTS_PK);
   ah->keypair = bswap32_if_le (keypair);
   ah->height_chain = 0;
   ah->index_hash = 0;
-  *ctx = *tree_ctx;
-  sha3_256_update (ctx, sizeof (*ah), (const uint8_t *) ah);
+  ctx->hash->start(ctx->tree, ctx->scratch, ah);
 }
 
 void
-_wots_gen (const struct sha3_ctx *tree_ctx, const uint8_t *secret_seed,
+_wots_gen (const struct slh_hash_ctxs *ctx, const uint8_t *secret_seed,
 	   uint32_t keypair, uint8_t *pub)
 {
   struct slh_address_hash ah;
-  struct sha3_ctx ctx;
   unsigned i;
 
-  wots_pk_init (tree_ctx, keypair, &ah, &ctx);
+  wots_pk_init (ctx, keypair, &ah);
 
   for (i = 0; i < _WOTS_SIGNATURE_LENGTH; i++)
     {
@@ -98,21 +96,21 @@ _wots_gen (const struct sha3_ctx *tree_ctx, const uint8_t *secret_seed,
       ah.type = bswap32_if_le (SLH_WOTS_PRF);
       ah.height_chain = bswap32_if_le (i);
       ah.index_hash = 0;
-      _slh_shake (tree_ctx, &ah, secret_seed, out);
+      ctx->hash->secret (ctx->tree, &ah, secret_seed, out);
 
       /* Hash chain. */
-      wots_chain (tree_ctx, &ah, 0, 15, out, out);
+      wots_chain (ctx, &ah, 0, 15, out, out);
 
-      sha3_256_update (&ctx, _SLH_DSA_128_SIZE, out);
+      ctx->hash->update (ctx->scratch, _SLH_DSA_128_SIZE, out);
     }
-  sha3_256_shake (&ctx, _SLH_DSA_128_SIZE, pub);
+  ctx->hash->digest (ctx->scratch, pub);
 }
 
 /* Produces signature hash corresponding to the ith message nybble. Modifies addr. */
 static void
-wots_sign_one (const struct sha3_ctx *tree_ctx, const uint8_t *secret_seed,
+wots_sign_one (const struct slh_hash_ctxs *ctx, const uint8_t *secret_seed,
 	       uint32_t keypair,
-	       unsigned i, uint8_t msg, uint8_t *sig, struct sha3_ctx *ctx)
+	       unsigned i, uint8_t msg, uint8_t *sig)
 {
   struct slh_address_hash ah;
   uint8_t pub[_SLH_DSA_128_SIZE];
@@ -123,47 +121,46 @@ wots_sign_one (const struct sha3_ctx *tree_ctx, const uint8_t *secret_seed,
   ah.keypair = bswap32_if_le (keypair);
   ah.height_chain = bswap32_if_le (i);
   ah.index_hash = 0;
-  _slh_shake (tree_ctx, &ah, secret_seed, sig);
+  ctx->hash->secret(ctx->tree, &ah, secret_seed, sig);
 
   /* Hash chain. */
-  wots_chain (tree_ctx, &ah, 0, msg, sig, sig);
+  wots_chain (ctx, &ah, 0, msg, sig, sig);
 
-  sha3_256_update (ctx, _SLH_DSA_128_SIZE,
-		   wots_chain (tree_ctx, &ah, msg, 15 - msg, sig, pub));
+  ctx->hash->update (ctx->scratch, _SLH_DSA_128_SIZE,
+		     wots_chain (ctx, &ah, msg, 15 - msg, sig, pub));
 }
 
 void
-_wots_sign (const struct sha3_ctx *tree_ctx, const uint8_t *secret_seed,
+_wots_sign (const struct slh_hash_ctxs *ctx, const uint8_t *secret_seed,
 	    unsigned keypair, const uint8_t *msg, uint8_t *signature, uint8_t *pub)
 {
   struct slh_address_hash ah;
-  struct sha3_ctx ctx;
   unsigned i;
   uint32_t csum;
 
-  wots_pk_init (tree_ctx, keypair, &ah, &ctx);
+  wots_pk_init (ctx, keypair, &ah);
 
   for (i = 0, csum = 15*32; i < _SLH_DSA_128_SIZE; i++)
     {
       uint8_t m0, m1;
       m0 = msg[i] >> 4;
       csum -= m0;
-      wots_sign_one (tree_ctx, secret_seed, keypair, 2*i, m0, signature, &ctx);
+      wots_sign_one (ctx, secret_seed, keypair, 2*i, m0, signature);
 
       m1 = msg[i] & 0xf;
       csum -= m1;
-      wots_sign_one (tree_ctx, secret_seed, keypair, 2*i + 1, m1, signature, &ctx);
+      wots_sign_one (ctx, secret_seed, keypair, 2*i + 1, m1, signature);
     }
 
-  wots_sign_one (tree_ctx, secret_seed, keypair, 32, csum >> 8, signature, &ctx);
-  wots_sign_one (tree_ctx, secret_seed, keypair, 33, (csum >> 4) & 0xf, signature, &ctx);
-  wots_sign_one (tree_ctx, secret_seed, keypair, 34, csum & 0xf, signature, &ctx);
+  wots_sign_one (ctx, secret_seed, keypair, 32, csum >> 8, signature);
+  wots_sign_one (ctx, secret_seed, keypair, 33, (csum >> 4) & 0xf, signature);
+  wots_sign_one (ctx, secret_seed, keypair, 34, csum & 0xf, signature);
 
-  sha3_256_shake (&ctx, _SLH_DSA_128_SIZE, pub);
+  ctx->hash->digest (ctx->scratch, pub);
 }
 
 static void
-wots_verify_one (const struct sha3_ctx *tree_ctx, struct sha3_ctx *ctx,
+wots_verify_one (struct slh_hash_ctxs *ctx,
 		 uint32_t keypair, unsigned i, uint8_t msg, const uint8_t *signature)
 {
   struct slh_address_hash ah;
@@ -173,36 +170,35 @@ wots_verify_one (const struct sha3_ctx *tree_ctx, struct sha3_ctx *ctx,
   ah.keypair = bswap32_if_le (keypair);
   ah.height_chain = bswap32_if_le (i);
 
-  sha3_256_update (ctx, _SLH_DSA_128_SIZE,
-		   wots_chain (tree_ctx, &ah, msg, 15 - msg, signature, out));
+  ctx->hash->update(ctx->scratch, _SLH_DSA_128_SIZE,
+		    wots_chain (ctx, &ah, msg, 15 - msg, signature, out));
 }
 
 void
-_wots_verify (const struct sha3_ctx *tree_ctx,
+_wots_verify (struct slh_hash_ctxs *ctx,
 	      unsigned keypair, const uint8_t *msg, const uint8_t *signature, uint8_t *pub)
 {
   struct slh_address_hash ah;
-  struct sha3_ctx ctx;
   unsigned i;
   uint32_t csum;
 
-  wots_pk_init (tree_ctx, keypair, &ah, &ctx);
+  wots_pk_init (ctx, keypair, &ah);
 
   for (i = 0, csum = 15*32; i < _SLH_DSA_128_SIZE; i++)
     {
       uint8_t m0, m1;
       m0 = msg[i] >> 4;
       csum -= m0;
-      wots_verify_one (tree_ctx, &ctx, keypair, 2*i, m0, signature);
+      wots_verify_one (ctx, keypair, 2*i, m0, signature);
 
       m1 = msg[i] & 0xf;
       csum -= m1;
-      wots_verify_one (tree_ctx, &ctx, keypair, 2*i + 1, m1, signature);
+      wots_verify_one (ctx, keypair, 2*i + 1, m1, signature);
     }
 
-  wots_verify_one (tree_ctx, &ctx, keypair, 32, csum >> 8, signature);
-  wots_verify_one (tree_ctx, &ctx, keypair, 33, (csum >> 4) & 0xf, signature);
-  wots_verify_one (tree_ctx, &ctx, keypair, 34, csum & 0xf, signature);
+  wots_verify_one (ctx, keypair, 32, csum >> 8, signature);
+  wots_verify_one (ctx, keypair, 33, (csum >> 4) & 0xf, signature);
+  wots_verify_one (ctx, keypair, 34, csum & 0xf, signature);
 
-  sha3_256_shake (&ctx, _SLH_DSA_128_SIZE, pub);
+  ctx->hash->digest (ctx->scratch, pub);
 }

@@ -39,45 +39,33 @@
 #include <string.h>
 
 #include "memops.h"
-#include "sha3.h"
 #include "slh-dsa.h"
 #include "slh-dsa-internal.h"
 
+#if 0
+/* For 128s flavor. */
+#define SLH_DSA_M 30
 
-static const uint8_t slh_pure_prefix[2] = {0, 0};
+#define SLH_DSA_D 7
+#define XMSS_H 9
 
-void
-_slh_dsa_randomizer (const uint8_t *public_seed, const uint8_t *secret_prf,
-		     size_t msg_length, const uint8_t *msg,
-		     uint8_t *randomizer)
-{
-  struct sha3_ctx ctx;
+/* Use k Merkle trees, each of size 2^a. Signs messages of size
+   k * a = 168 bits or 21 octets. */
+#define FORS_A 12
+#define FORS_K 14
 
-  sha3_init (&ctx);
-  sha3_256_update (&ctx, _SLH_DSA_128_SIZE, secret_prf);
-  sha3_256_update (&ctx, _SLH_DSA_128_SIZE, public_seed);
-  sha3_256_update (&ctx, sizeof (slh_pure_prefix), slh_pure_prefix);
-  sha3_256_update (&ctx, msg_length, msg);
-  sha3_256_shake (&ctx, _SLH_DSA_128_SIZE, randomizer);
-}
-
-void
-_slh_dsa_digest (const uint8_t *randomizer, const uint8_t *pub,
-		 size_t length, const uint8_t *msg,
-		 size_t digest_size, uint8_t *digest)
-{
-  struct sha3_ctx ctx;
-
-  sha3_init (&ctx);
-  sha3_256_update (&ctx, _SLH_DSA_128_SIZE, randomizer);
-  sha3_256_update (&ctx, 2*_SLH_DSA_128_SIZE, pub);
-  sha3_256_update (&ctx, sizeof (slh_pure_prefix), slh_pure_prefix);
-  sha3_256_update (&ctx, length, msg);
-  sha3_256_shake (&ctx, digest_size, digest);
-}
+const struct slh_dsa_params
+_slh_dsa_128s_params =
+  {
+    { SLH_DSA_D, XMSS_H, XMSS_SIGNATURE_SIZE (XMSS_H) },
+    { FORS_A, FORS_K, FORS_SIGNATURE_SIZE (FORS_A, FORS_K) },
+  };
+#endif
 
 void
 _slh_dsa_sign (const struct slh_dsa_params *params,
+	       const struct slh_hash *hash,
+	       void *ha, void *hb,
 	       const uint8_t *pub, const uint8_t *priv,
 	       const uint8_t *digest,
 	       uint64_t tree_idx, unsigned leaf_idx,
@@ -86,13 +74,12 @@ _slh_dsa_sign (const struct slh_dsa_params *params,
   uint8_t root[_SLH_DSA_128_SIZE];
   int i;
 
-  struct sha3_ctx tree_ctx;
   struct slh_merkle_ctx_secret merkle_ctx =
     {
-      { &tree_ctx, leaf_idx },
+      { { hash, ha, hb }, leaf_idx },
       priv,
     };
-  _slh_shake_init (&tree_ctx, pub, 0, tree_idx);
+  hash->init(ha, pub, 0, tree_idx);
 
   _fors_sign (&merkle_ctx, &params->fors, digest, signature, root);
   signature += params->fors.signature_size;
@@ -106,7 +93,7 @@ _slh_dsa_sign (const struct slh_dsa_params *params,
       leaf_idx = tree_idx & ((1 << params->xmss.h) - 1);
       tree_idx >>= params->xmss.h;
 
-      _slh_shake_init (&tree_ctx, pub, i, tree_idx);
+      hash->init(ha, pub, i, tree_idx);
 
       _xmss_sign (&merkle_ctx, params->xmss.h, leaf_idx, root, signature, root);
     }
@@ -114,18 +101,20 @@ _slh_dsa_sign (const struct slh_dsa_params *params,
 }
 
 int
-_slh_dsa_verify (const struct slh_dsa_params *params, const uint8_t *pub,
+_slh_dsa_verify (const struct slh_dsa_params *params,
+		 const struct slh_hash *hash,
+		 void *ha, void *hb,
+		 const uint8_t *pub,
 		 const uint8_t *digest, uint64_t tree_idx, unsigned leaf_idx,
 		 const uint8_t *signature)
 {
   uint8_t root[_SLH_DSA_128_SIZE];
   int i;
 
-  struct sha3_ctx tree_ctx;
   struct slh_merkle_ctx_public merkle_ctx =
-    { &tree_ctx, leaf_idx };
+    { { hash, ha, hb }, leaf_idx };
 
-  _slh_shake_init (&tree_ctx, pub, 0, tree_idx);
+  hash->init(ha, pub, 0, tree_idx);
 
   _fors_verify (&merkle_ctx, &params->fors, digest, signature, root);
   signature += params->fors.signature_size;
@@ -139,7 +128,7 @@ _slh_dsa_verify (const struct slh_dsa_params *params, const uint8_t *pub,
       leaf_idx = tree_idx & ((1 << params->xmss.h) - 1);
       tree_idx >>= params->xmss.h;
 
-      _slh_shake_init (&tree_ctx, pub, i, tree_idx);
+      hash->init(ha, pub, i, tree_idx);
 
       _xmss_verify (&merkle_ctx, params->xmss.h, leaf_idx, root, signature, root);
     }

@@ -57,12 +57,80 @@ _slh_shake_init (struct sha3_ctx *ctx, const uint8_t *public_seed,
   sha3_256_update (ctx, sizeof (at), (const uint8_t *) &at);
 }
 
+static void
+slh_shake_start (const struct sha3_ctx *tree_ctx, struct sha3_ctx *ctx,
+		 const struct slh_address_hash *ah)
+{
+  *ctx = *tree_ctx;
+  sha3_256_update (ctx, sizeof (*ah), (const uint8_t *) ah);
+}
+
 void
 _slh_shake (const struct sha3_ctx *tree_ctx, const struct slh_address_hash *ah,
 	    const uint8_t *secret, uint8_t *out)
 {
-  struct sha3_ctx ctx = *tree_ctx;
-  sha3_256_update (&ctx, sizeof (*ah), (const uint8_t *) ah);
+  struct sha3_ctx ctx;
+  slh_shake_start (tree_ctx, &ctx, ah);;
   sha3_256_update (&ctx, _SLH_DSA_128_SIZE, secret);
   sha3_256_shake (&ctx, _SLH_DSA_128_SIZE, out);
 }
+
+static void
+slh_shake_node (const struct sha3_ctx *tree_ctx, const struct slh_address_hash *ah,
+		 const uint8_t *left, const uint8_t *right, uint8_t *out)
+{
+  struct sha3_ctx ctx;
+  slh_shake_start (tree_ctx, &ctx, ah);;
+  sha3_256_update (&ctx, _SLH_DSA_128_SIZE, left);
+  sha3_256_update (&ctx, _SLH_DSA_128_SIZE, right);
+  sha3_256_shake (&ctx, _SLH_DSA_128_SIZE, out);
+}
+
+void
+_slh_shake_digest (struct sha3_ctx *ctx, uint8_t *out)
+{
+  sha3_256_shake (ctx, _SLH_DSA_128_SIZE, out);
+}
+
+static const uint8_t slh_pure_prefix[2] = {0, 0};
+
+void
+_slh_shake_randomizer (const uint8_t *public_seed, const uint8_t *secret_prf,
+		       size_t msg_length, const uint8_t *msg,
+		       uint8_t *randomizer)
+{
+  struct sha3_ctx ctx;
+
+  sha3_init (&ctx);
+  sha3_256_update (&ctx, _SLH_DSA_128_SIZE, secret_prf);
+  sha3_256_update (&ctx, _SLH_DSA_128_SIZE, public_seed);
+  sha3_256_update (&ctx, sizeof (slh_pure_prefix), slh_pure_prefix);
+  sha3_256_update (&ctx, msg_length, msg);
+  sha3_256_shake (&ctx, _SLH_DSA_128_SIZE, randomizer);
+}
+
+void
+_slh_shake_msg_digest (const uint8_t *randomizer, const uint8_t *pub,
+		       size_t length, const uint8_t *msg,
+		       size_t digest_size, uint8_t *digest)
+{
+  struct sha3_ctx ctx;
+
+  sha3_init (&ctx);
+  sha3_256_update (&ctx, _SLH_DSA_128_SIZE, randomizer);
+  sha3_256_update (&ctx, 2*_SLH_DSA_128_SIZE, pub);
+  sha3_256_update (&ctx, sizeof (slh_pure_prefix), slh_pure_prefix);
+  sha3_256_update (&ctx, length, msg);
+  sha3_256_shake (&ctx, digest_size, digest);
+}
+
+const struct slh_hash
+_slh_hash_shake =
+  {
+    (slh_hash_init_func *) _slh_shake_init,
+    (slh_hash_secret_func *) _slh_shake,
+    (slh_hash_node_func *) slh_shake_node,
+    (slh_hash_start_func *) slh_shake_start,
+    (nettle_hash_update_func *) sha3_256_update,
+    (nettle_hash_digest_func *)_slh_shake_digest
+  };
