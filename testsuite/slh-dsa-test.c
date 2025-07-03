@@ -41,22 +41,26 @@
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
-/* The buffer size should be at least one larger than expected data
-   size. This function expects to read up to EOF without exhausting
-   the buffer, and makes the test fail if the file is too large. */
-static size_t
-read_hex_file (const char *name, size_t size, uint8_t *out)
+static const struct tstring *
+read_hex_file (const char *name, size_t max_size)
 {
   char input_buf[1000];
   FILE *input = open_srcdir_file (name);
   size_t done;
+  struct tstring *s;
   struct base16_decode_ctx ctx;
   base16_decode_init (&ctx);
 
-  for (done = 0; size > 0;)
+  /* This function expects to read up to EOF without exhausting the
+     buffer, and fails if the file is too large. */
+  s = tstring_alloc (max_size + 1);
+
+  for (done = 0;;)
     {
-      size_t got = fread (input_buf, 1, MIN (size, sizeof (input_buf)), input);
-      size_t decoded_length;
+      size_t left = s->length - done;
+      size_t got = fread (input_buf, 1, MIN (left, sizeof (input_buf)), input);
+      size_t i;
+
       if (!got)
 	{
 	  if (ferror (input))
@@ -66,11 +70,28 @@ read_hex_file (const char *name, size_t size, uint8_t *out)
 	    }
 	  fclose (input);
 	  ASSERT (base16_decode_final (&ctx));
-	  return done;
+	  s->length = done;
+	  return s;
 	}
 
-      ASSERT (base16_decode_update (&ctx, &decoded_length, out, got, input_buf));
-      out += decoded_length; done += decoded_length; size -= decoded_length;
+      /* Use base16_decode_single, to make handling of excess input
+	 straight-forward. */
+      for (i = 0; i < got; i++)
+	{
+	  int res = base16_decode_single (&ctx, s->data + done, input_buf[i]);
+	  if (res < 0)
+	    {
+	      fprintf (stderr, "hex decoding %s failed\n", name);
+	      FAIL ();
+	    }
+	  done += res;
+	  if (done == s->length)
+	    {
+	      fprintf (stderr, "hex file %s exceeds maximum size %ld\n",
+		       name, (long) s->length);
+	      FAIL ();
+	    }
+	}
     }
   fprintf (stderr, "file %s larger than expected\n", name);
   FAIL ();
@@ -331,20 +352,19 @@ slh_dsa_shake_128f = {
 static void
 test_slh_dsa (const struct slh_dsa_alg *alg,
 	      const struct tstring *pub, const struct tstring *priv,
-	      const struct tstring *msg, const char *sig_file)
+	      const struct tstring *msg, const struct tstring *ref)
 {
   uint8_t *sig = xalloc (alg->signature_size);
-  uint8_t *ref = xalloc (alg->signature_size + 1);
   ASSERT (pub->length == alg->key_size);
   ASSERT (priv->length == alg->key_size);
-  ASSERT (read_hex_file (sig_file, alg->signature_size + 1, ref) == alg->signature_size);
+  ASSERT (ref->length == alg->signature_size);
 
   alg->sign (pub->data, priv->data, msg->length, msg->data, sig);
-  if (! MEMEQ (alg->signature_size, sig, ref))
+  if (! MEMEQ (alg->signature_size, sig, ref->data))
     {
       size_t i;
       for (i = 0; i < alg->signature_size; i++)
-	if (sig[i] != ref[i])
+	if (sig[i] != ref->data[i])
 	  break;
 
       fprintf (stderr, "failed %s sign, first diff at %zd\n", alg->name, i);
@@ -358,7 +378,6 @@ test_slh_dsa (const struct slh_dsa_alg *alg,
   ASSERT (!alg->verify (pub->data, msg->length, msg->data, sig));
 
   free (sig);
-  free (ref);
 }
 
 void
@@ -593,7 +612,7 @@ test_main (void)
 		SHEX ("D81C4D8D734FCBFB EADE3D3F8A039FAA"
 		      "2A2C9957E835AD55 B22E75BF57BB556A"
 		      "C8"),
-		"slh-dsa-shake-128s.ref");
+		read_hex_file ("slh-dsa-shake-128s.ref", SLH_DSA_SHAKE_128S_SIGNATURE_SIZE));
 
   /* Test vector from
      https://github.com/smuellerDD/leancrypto/blob/master/slh-dsa/tests/sphincs_tester_vectors_shake_128f.h */
@@ -605,5 +624,19 @@ test_main (void)
 		SHEX ("D81C4D8D734FCBFB EADE3D3F8A039FAA"
 		      "2A2C9957E835AD55 B22E75BF57BB556A"
 		      "C8"),
-		"slh-dsa-shake-128f.ref");
+		read_hex_file ("slh-dsa-shake-128f.ref", SLH_DSA_SHAKE_128F_SIGNATURE_SIZE));
+
+  /* From
+     https://raw.githubusercontent.com/usnistgov/ACVP-Server/refs/heads/master/gen-val/json-files/SLH-DSA-sigGen-FIPS205/internalProjection.json: */
+  test_slh_dsa (&slh_dsa_shake_128f, /* tcId 64 */
+		SHEX ("C9A7900E931AFBA2B52A5BC55A2DC4D12DDC9BF8E0B2ED0BDE83E674F1ECE7AA"),
+		SHEX ("0E87FF20256E0E499A53B52DF91467C01F0431C07250AFE93DE814117B5D66D3"),
+		read_hex_file ("slh-dsa-shake-128f-tc64.msg", 2280),
+		read_hex_file ("slh-dsa-shake-128f-tc64.sig", SLH_DSA_SHAKE_128F_SIGNATURE_SIZE));
+
+  test_slh_dsa (&slh_dsa_shake_128s, /* tcId 215 */
+		SHEX ("DD286FF370CB50BC1B23894AA3F7025A534A788E697B94942AB845EFB753A30B"),
+		SHEX ("4738AC60C561FFBE15AB96EFFA1A09291A79332E1CA3C38B2FEF40ACA7CFE285"),
+		read_hex_file ("slh-dsa-shake-128s-tc215.msg", 5377),
+		read_hex_file ("slh-dsa-shake-128s-tc215.sig", SLH_DSA_SHAKE_128S_SIGNATURE_SIZE));
 }

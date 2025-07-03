@@ -1,7 +1,7 @@
 2025-07-03  Niels Möller  <nisse@lysator.liu.se>
 
-	* testsuite/slh-dsa-test.c (test_main): Additional key generation
-	test cases, from https://github.com/usnistgov/ACVP-Server.
+	* testsuite/slh-dsa-test.c (test_main): Additional test cases,
+	from https://github.com/usnistgov/ACVP-Server.
 
 2025-07-01  Niels Möller  <nisse@lysator.liu.se>
 
