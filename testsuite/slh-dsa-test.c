@@ -278,16 +278,19 @@ test_xmss_sign (const struct tstring *public_seed, const struct tstring *secret_
   free (sig);
 }
 
+typedef void root_func (const uint8_t *public_seed, const uint8_t *secret_seed, uint8_t *root);
+
 static void
-test_slh_dsa_shake_128s_root (const struct tstring *public_seed, const struct tstring *secret_seed,
-			      const struct tstring *exp_pub)
+test_slh_dsa_128_root (root_func *f,
+		       const struct tstring *public_seed, const struct tstring *secret_seed,
+		       const struct tstring *exp_pub)
 {
   uint8_t pub[_SLH_DSA_128_SIZE];
   ASSERT (public_seed->length == _SLH_DSA_128_SIZE);
   ASSERT (secret_seed->length == _SLH_DSA_128_SIZE);
   ASSERT (exp_pub->length == _SLH_DSA_128_SIZE);
 
-  slh_dsa_shake_128s_root (public_seed->data, secret_seed->data, pub);
+  f (public_seed->data, secret_seed->data, pub);
   mark_bytes_defined (sizeof (pub), pub);
   ASSERT (MEMEQ (sizeof (pub), pub, exp_pub->data));
 }
@@ -547,9 +550,30 @@ test_main (void)
 			"a467897bbed0d3a0 9d50e9deaadff78d e9ac65c1fd05d076 10a79c8c465141ad"
 			"65e60340531fab08 f1f433ef823283fe"));
 
-  test_slh_dsa_shake_128s_root (public_seed, secret_seed,
-				SHEX ("ac524902fc81f503 2bc27b17d9261ebd"));
+  test_slh_dsa_128_root (slh_dsa_shake_128s_root, public_seed, secret_seed,
+			 SHEX ("ac524902fc81f503 2bc27b17d9261ebd"));
 
+  /* From
+     https://github.com/usnistgov/ACVP-Server/blob/master/gen-val/json-files/SLH-DSA-keyGen-FIPS205/internalProjection.json */
+  test_slh_dsa_128_root (slh_dsa_shake_128s_root, /* tcId 11 */
+			 SHEX ("529FFE86200D1F32C2B60D0CD909F190"),
+			 SHEX ("C151951F3811029239B74ADD24C506AF"),
+			 SHEX ("0761F9B727AFA724B47223016BB5B2BA"));
+
+  test_slh_dsa_128_root (slh_dsa_shake_128s_root, /* tcId 12 */
+			 SHEX ("B64302C8D20FB89AA2414307D44E1F9C"),
+			 SHEX ("D3ADF41FF57EED108BEF2D8733F4C2B0"),
+			 SHEX ("6EFA39EBBA94B0633C900644B81DE2B9"));
+
+  test_slh_dsa_128_root (slh_dsa_shake_128f_root, /* tcId 31 */
+			 SHEX ("56505C229F4E7FA6B201714C7DCC9DA3"),
+			 SHEX ("3956AB391B4D22FC907AF0740326D061"),
+			 SHEX ("66578F1F24C3FE371C97C14CE0E79CDC"));
+
+  test_slh_dsa_128_root (slh_dsa_shake_128f_root, /* tcId 32 */
+			 SHEX ("F8B2314A9ABB09E72509F14A742035BA"),
+			 SHEX ("57250E2880AF25BC0D8DBA76A8FBB666"),
+			 SHEX ("6B5F4A0CC172672BBE8DF3F86CB58F51"));
 
   /* If we mark the private key for the top-level
      slh_dsa_shake_128s_sign call as undefined, then we get valgrind
