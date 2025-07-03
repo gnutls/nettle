@@ -35,10 +35,7 @@
 # include "config.h"
 #endif
 
-#include <assert.h>
-
 #include "bswap-internal.h"
-#include "sha3.h"
 #include "slh-dsa-internal.h"
 
 void

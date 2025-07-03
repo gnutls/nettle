@@ -36,7 +36,6 @@
 #endif
 
 #include "bswap-internal.h"
-#include "sha3.h"
 #include "slh-dsa-internal.h"
 
 static void

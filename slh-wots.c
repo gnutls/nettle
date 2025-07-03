@@ -35,10 +35,8 @@
 # include "config.h"
 #endif
 
-#include "slh-dsa-internal.h"
-
-#include "sha3.h"
 #include "bswap-internal.h"
+#include "slh-dsa-internal.h"
 
 /* If s == 0, returns src and leaves dst unchanged. Otherwise, returns
    dst. For the ah argument, leaves ah->keypair and ah->height_chain
