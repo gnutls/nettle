@@ -165,7 +165,7 @@ _slh_hash_sha256 =
   {
     (slh_hash_init_tree_func *) slh_sha256_init_tree,
     (slh_hash_init_hash_func *) slh_sha256_init_hash,
-    (nettle_hash_update_func *) sha3_256_update,
+    (nettle_hash_update_func *) sha256_update,
     (nettle_hash_digest_func *) slh_sha256_digest,
     (slh_hash_secret_func *) slh_sha256_secret,
     (slh_hash_node_func *) slh_sha256_node,
