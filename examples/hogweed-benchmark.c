@@ -857,8 +857,8 @@ bench_curve_clear (void *p)
 
 struct slh_dsa_ctx
 {
-  uint8_t pub[SLH_DSA_SHAKE_128_KEY_SIZE];
-  uint8_t key[SLH_DSA_SHAKE_128_KEY_SIZE];
+  uint8_t pub[SLH_DSA_128_KEY_SIZE];
+  uint8_t key[SLH_DSA_128_KEY_SIZE];
   uint8_t msg[10];
   uint8_t *sig;
   void (*sign)(const uint8_t *pub, const uint8_t *priv,
@@ -876,11 +876,11 @@ bench_slh_dsa_init_s (unsigned size)
   assert (size == 128);
 
   ctx = xalloc (sizeof (*ctx));
-  memset (ctx->key, 1, SLH_DSA_SHAKE_128_KEY_SIZE);
-  memset (ctx->pub, 2, SLH_DSA_SHAKE_128_SEED_SIZE);
-  slh_dsa_shake_128s_root (ctx->pub, ctx->key, ctx->pub + SLH_DSA_SHAKE_128_SEED_SIZE);
+  memset (ctx->key, 1, SLH_DSA_128_KEY_SIZE);
+  memset (ctx->pub, 2, SLH_DSA_128_SEED_SIZE);
+  slh_dsa_shake_128s_root (ctx->pub, ctx->key, ctx->pub + SLH_DSA_128_SEED_SIZE);
   memset (ctx->msg, 3, sizeof (ctx->msg));
-  ctx->sig = xalloc (SLH_DSA_SHAKE_128S_SIGNATURE_SIZE);
+  ctx->sig = xalloc (SLH_DSA_128S_SIGNATURE_SIZE);
   slh_dsa_shake_128s_sign (ctx->pub, ctx->key, sizeof (ctx->msg), ctx->msg, ctx->sig);
   ctx->sign = slh_dsa_shake_128s_sign;
   ctx->verify = slh_dsa_shake_128s_verify;
@@ -894,11 +894,11 @@ bench_slh_dsa_init_f (unsigned size)
   assert (size == 128);
 
   ctx = xalloc (sizeof (*ctx));
-  memset (ctx->key, 1, SLH_DSA_SHAKE_128_KEY_SIZE);
-  memset (ctx->pub, 2, SLH_DSA_SHAKE_128_SEED_SIZE);
-  slh_dsa_shake_128f_root (ctx->pub, ctx->key, ctx->pub + SLH_DSA_SHAKE_128_SEED_SIZE);
+  memset (ctx->key, 1, SLH_DSA_128_KEY_SIZE);
+  memset (ctx->pub, 2, SLH_DSA_128_SEED_SIZE);
+  slh_dsa_shake_128f_root (ctx->pub, ctx->key, ctx->pub + SLH_DSA_128_SEED_SIZE);
   memset (ctx->msg, 3, sizeof (ctx->msg));
-  ctx->sig = xalloc (SLH_DSA_SHAKE_128F_SIGNATURE_SIZE);
+  ctx->sig = xalloc (SLH_DSA_128F_SIGNATURE_SIZE);
   slh_dsa_shake_128f_sign (ctx->pub, ctx->key, sizeof (ctx->msg), ctx->msg, ctx->sig);
   ctx->sign = slh_dsa_shake_128f_sign;
   ctx->verify = slh_dsa_shake_128f_verify;

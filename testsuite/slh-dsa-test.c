@@ -148,7 +148,7 @@ static void
 xmss_leaf (const struct slh_merkle_ctx_secret *ctx, unsigned idx, uint8_t *leaf)
 {
   _wots_gen (ctx->pub.hash, &ctx->pub.tree_ctx, ctx->secret_seed, idx, leaf);
-  mark_bytes_defined (SLH_DSA_SHAKE_128_SEED_SIZE, leaf);
+  mark_bytes_defined (SLH_DSA_128_SEED_SIZE, leaf);
 }
 
 static void
@@ -326,8 +326,8 @@ struct slh_dsa_alg
 static const struct slh_dsa_alg
 slh_dsa_shake_128s = {
   "slh_dsa_shake_128s",
-  SLH_DSA_SHAKE_128_KEY_SIZE,
-  SLH_DSA_SHAKE_128S_SIGNATURE_SIZE,
+  SLH_DSA_128_KEY_SIZE,
+  SLH_DSA_128S_SIGNATURE_SIZE,
   slh_dsa_shake_128s_sign,
   slh_dsa_shake_128s_verify,
 };
@@ -335,8 +335,8 @@ slh_dsa_shake_128s = {
 static const struct slh_dsa_alg
 slh_dsa_shake_128f = {
   "slh_dsa_shake_128f",
-  SLH_DSA_SHAKE_128_KEY_SIZE,
-  SLH_DSA_SHAKE_128F_SIGNATURE_SIZE,
+  SLH_DSA_128_KEY_SIZE,
+  SLH_DSA_128F_SIGNATURE_SIZE,
   slh_dsa_shake_128f_sign,
   slh_dsa_shake_128f_verify,
 };
@@ -381,7 +381,7 @@ test_main (void)
   const struct tstring *secret_seed =
     SHEX ("7c9935a0b07694aa0c6d10e4db6b1add");
 
-  mark_bytes_undefined (2*SLH_DSA_SHAKE_128_SEED_SIZE, secret_seed->data);
+  mark_bytes_undefined (2*SLH_DSA_128_SEED_SIZE, secret_seed->data);
 
   test_wots_gen (public_seed, secret_seed, 6, 0, 0,
 		 SHEX ("38c9077d76d1e32933fb58a53e769ed7"));
@@ -434,7 +434,7 @@ test_main (void)
   test_fors_gen (public_seed, secret_seed, 0, UINT64_C(0x29877722d7c079), 0x156, 0x4e1e,
 		 SHEX ("17f55905e41a6dc6e5bab2c9f0c1d5d3"),
 		 SHEX ("15325ef3d2914cbd401327244cdb633d"));
-  test_fors_sign (public_seed, secret_seed, &_slh_dsa_shake_128s_params.fors,
+  test_fors_sign (public_seed, secret_seed, &_slh_dsa_128s_params.fors,
 		  0, UINT64_C(0x29877722d7c079), 0x156,
 		  SHEX ("2033c1a4df6fc230c699522a21bed913"
 			"0dda231526"),

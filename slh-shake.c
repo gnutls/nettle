@@ -92,35 +92,35 @@ slh_shake_digest (struct sha3_ctx *ctx, uint8_t *out)
   sha3_256_shake (ctx, _SLH_DSA_128_SIZE, out);
 }
 
-static const uint8_t slh_pure_prefix[2] = {0, 0};
-
-void
-_slh_shake_randomizer (const uint8_t *public_seed, const uint8_t *secret_prf,
-		       size_t msg_length, const uint8_t *msg,
-		       uint8_t *randomizer)
+static void
+slh_shake_randomizer (const uint8_t *public_seed, const uint8_t *secret_prf,
+		      size_t prefix_length, const uint8_t *prefix,
+		      size_t msg_length, const uint8_t *msg,
+		      uint8_t *randomizer)
 {
   struct sha3_ctx ctx;
 
   sha3_init (&ctx);
   sha3_256_update (&ctx, _SLH_DSA_128_SIZE, secret_prf);
   sha3_256_update (&ctx, _SLH_DSA_128_SIZE, public_seed);
-  sha3_256_update (&ctx, sizeof (slh_pure_prefix), slh_pure_prefix);
+  sha3_256_update (&ctx, prefix_length, prefix);
   sha3_256_update (&ctx, msg_length, msg);
   sha3_256_shake (&ctx, _SLH_DSA_128_SIZE, randomizer);
 }
 
-void
-_slh_shake_msg_digest (const uint8_t *randomizer, const uint8_t *pub,
-		       size_t length, const uint8_t *msg,
-		       size_t digest_size, uint8_t *digest)
+static void
+slh_shake_msg_digest (const uint8_t *randomizer, const uint8_t *pub,
+		      size_t prefix_length, const uint8_t *prefix,
+		      size_t msg_length, const uint8_t *msg,
+		      size_t digest_size, uint8_t *digest)
 {
   struct sha3_ctx ctx;
 
   sha3_init (&ctx);
   sha3_256_update (&ctx, _SLH_DSA_128_SIZE, randomizer);
   sha3_256_update (&ctx, 2*_SLH_DSA_128_SIZE, pub);
-  sha3_256_update (&ctx, sizeof (slh_pure_prefix), slh_pure_prefix);
-  sha3_256_update (&ctx, length, msg);
+  sha3_256_update (&ctx, prefix_length, prefix);
+  sha3_256_update (&ctx, msg_length, msg);
   sha3_256_shake (&ctx, digest_size, digest);
 }
 
@@ -133,4 +133,6 @@ _slh_hash_shake =
     (nettle_hash_digest_func *) slh_shake_digest,
     (slh_hash_secret_func *) slh_shake_secret,
     (slh_hash_node_func *) slh_shake_node,
+    (slh_hash_randomizer_func *) slh_shake_randomizer,
+    (slh_hash_msg_digest_func *) slh_shake_msg_digest
   };

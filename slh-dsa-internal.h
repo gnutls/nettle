@@ -39,10 +39,6 @@
 #include "sha3.h"
 
 /* Name mangling */
-#define _slh_shake_randomizer _nettle_slh_shake_randomizer
-#define _slh_shake_msg_digest _nettle_slh_shake_msg_digest
-#define _slh_sha256_randomizer _nettle_slh_sha256_randomizer
-#define _slh_sha256_msg_digest _nettle_slh_sha256_msg_digest
 #define _wots_gen _nettle_wots_gen
 #define _wots_sign _nettle_wots_sign
 #define _wots_verify _nettle_wots_verify
@@ -55,11 +51,13 @@
 #define _xmss_gen _nettle_xmss_gen
 #define _xmss_sign _nettle_xmss_sign
 #define _xmss_verify _nettle_xmss_verify
+#define _slh_dsa_pure_digest _nettle_slh_dsa_pure_digest
+#define _slh_dsa_pure_rdigest _nettle_slh_dsa_pure_rdigest
 #define _slh_dsa_sign _nettle_slh_dsa_sign
 #define _slh_dsa_verify _nettle_slh_dsa_verify
 
-#define _slh_dsa_shake_128s_params _nettle_slh_dsa_shake_128s_params
-#define _slh_dsa_shake_128f_params _nettle_slh_dsa_shake_128f_params
+#define _slh_dsa_128s_params _nettle_slh_dsa_128s_params
+#define _slh_dsa_128f_params _nettle_slh_dsa_128f_params
 
 #define _slh_hash_shake _nettle_slh_hash_shake
 #define _slh_hash_sha256 _nettle_slh_hash_sha256
@@ -95,6 +93,16 @@ union slh_hash_ctx
   struct sha3_ctx sha3;
 };
 
+typedef void slh_hash_randomizer_func (const uint8_t *public_seed, const uint8_t *secret_prf,
+				       size_t prefix_length, const uint8_t *prefix,
+				       size_t msg_length, const uint8_t *msg,
+				       uint8_t *randomizer);
+
+typedef void slh_hash_msg_digest_func (const uint8_t *randomizer, const uint8_t *pub,
+				       size_t prefix_length, const uint8_t *prefix,
+				       size_t msg_length, const uint8_t *msg,
+				       size_t digest_size, uint8_t *digest);
+
 typedef void slh_hash_init_tree_func (union slh_hash_ctx *tree_ctx, const uint8_t *public_seed,
 				      uint32_t layer, uint64_t tree_idx);
 typedef void slh_hash_init_hash_func (const union slh_hash_ctx *tree_ctx, union slh_hash_ctx *ctx,
@@ -115,6 +123,8 @@ struct slh_hash
   nettle_hash_digest_func *digest;
   slh_hash_secret_func *secret;
   slh_hash_node_func *node;
+  slh_hash_randomizer_func *randomizer;
+  slh_hash_msg_digest_func *msg_digest;
 };
 
 extern const struct slh_hash _slh_hash_shake;
@@ -134,6 +144,8 @@ struct slh_merkle_ctx_secret
   const uint8_t *secret_seed;
 };
 
+typedef void slh_parse_digest_func (const uint8_t *digest, uint64_t *tree_idx, unsigned *leaf_idx);
+
 struct slh_xmss_params
 {
   unsigned short d; /* Levels of xmss trees. */
@@ -151,12 +163,13 @@ struct slh_fors_params
 
 struct slh_dsa_params
 {
+  slh_parse_digest_func *parse_digest;
   struct slh_xmss_params xmss;
   struct slh_fors_params fors;
 };
 
-extern const struct slh_dsa_params _slh_dsa_shake_128s_params;
-extern const struct slh_dsa_params _slh_dsa_shake_128f_params;
+extern const struct slh_dsa_params _slh_dsa_128s_params;
+extern const struct slh_dsa_params _slh_dsa_128f_params;
 
 void
 _slh_shake_randomizer (const uint8_t *public_seed, const uint8_t *secret_prf,
@@ -259,18 +272,27 @@ _xmss_verify (const struct slh_merkle_ctx_public *ctx, unsigned h,
 	      unsigned idx, const uint8_t *msg, const uint8_t *signature, uint8_t *pub);
 
 void
+_slh_dsa_pure_digest (const struct slh_hash *hash,
+		      const uint8_t *pub,
+		      size_t length, const uint8_t *msg,
+		      const uint8_t *randomizer, size_t digest_size, uint8_t *digest);
+
+void
+_slh_dsa_pure_rdigest (const struct slh_hash *hash,
+		       const uint8_t *pub, const uint8_t *prf,
+		       size_t length, const uint8_t *msg,
+		       uint8_t *randomizer, size_t digest_size, uint8_t *digest);
+
+void
 _slh_dsa_sign (const struct slh_dsa_params *params,
 	       const struct slh_hash *hash,
 	       const uint8_t *pub, const uint8_t *priv,
-	       const uint8_t *digest,
-	       uint64_t tree_idx, unsigned leaf_idx,
-	       uint8_t *signature);
+	       const uint8_t *digest, uint8_t *signature);
 int
 _slh_dsa_verify (const struct slh_dsa_params *params,
 		 const struct slh_hash *hash,
 		 const uint8_t *pub,
-		 const uint8_t *digest, uint64_t tree_idx, unsigned leaf_idx,
-		 const uint8_t *signature);
+		 const uint8_t *digest, const uint8_t *signature);
 
 
 #endif /* NETTLE_SLH_DSA_INTERNAL_H_INCLUDED */

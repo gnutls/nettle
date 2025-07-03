@@ -59,10 +59,10 @@ extern "C" {
      root
 */
 
-#define SLH_DSA_SHAKE_128_SEED_SIZE 16
-#define SLH_DSA_SHAKE_128_KEY_SIZE 32
-#define SLH_DSA_SHAKE_128S_SIGNATURE_SIZE 7856
-#define SLH_DSA_SHAKE_128F_SIGNATURE_SIZE 17088
+#define SLH_DSA_128_SEED_SIZE 16
+#define SLH_DSA_128_KEY_SIZE 32
+#define SLH_DSA_128S_SIGNATURE_SIZE 7856
+#define SLH_DSA_128F_SIGNATURE_SIZE 17088
 
 /* Computes public key root, from the two seeds. */
 void

@@ -110,10 +110,9 @@ slh_sha256_node (const struct sha256_ctx *tree_ctx,
   slh_sha256_digest (&ctx, out);
 }
 
-static const uint8_t slh_pure_prefix[2] = {0, 0};
-
-void
-_slh_sha256_randomizer (const uint8_t *public_seed, const uint8_t *secret_prf,
+static void
+slh_sha256_randomizer (const uint8_t *public_seed, const uint8_t *secret_prf,
+		       size_t prefix_length, const uint8_t *prefix,
 		       size_t msg_length, const uint8_t *msg,
 		       uint8_t *randomizer)
 {
@@ -121,16 +120,17 @@ _slh_sha256_randomizer (const uint8_t *public_seed, const uint8_t *secret_prf,
   uint8_t digest[SHA256_DIGEST_SIZE];
   hmac_sha256_set_key (&ctx, _SLH_DSA_128_SIZE, secret_prf);
   hmac_sha256_update (&ctx, _SLH_DSA_128_SIZE, public_seed);
-  hmac_sha256_update (&ctx, sizeof (slh_pure_prefix), slh_pure_prefix);
+  hmac_sha256_update (&ctx, prefix_length, prefix);
   hmac_sha256_update (&ctx, msg_length, msg);
   hmac_sha256_digest (&ctx, digest);
   memcpy (randomizer, digest, _SLH_DSA_128_SIZE);
 }
 
-void
-_slh_sha256_msg_digest (const uint8_t *randomizer, const uint8_t *pub,
-			size_t length, const uint8_t *msg,
-			size_t digest_size, uint8_t *digest)
+static void
+slh_sha256_msg_digest (const uint8_t *randomizer, const uint8_t *pub,
+		       size_t prefix_length, const uint8_t *prefix,
+		       size_t length, const uint8_t *msg,
+		       size_t digest_size, uint8_t *digest)
 {
   struct sha256_ctx ctx;
   uint8_t inner[SHA256_DIGEST_SIZE];
@@ -138,7 +138,7 @@ _slh_sha256_msg_digest (const uint8_t *randomizer, const uint8_t *pub,
   sha256_init (&ctx);
   sha256_update (&ctx, _SLH_DSA_128_SIZE, randomizer);
   sha256_update (&ctx, 2*_SLH_DSA_128_SIZE, pub);
-  sha256_update (&ctx, sizeof (slh_pure_prefix), slh_pure_prefix);
+  sha256_update (&ctx, prefix_length, prefix);
   sha256_update (&ctx, length, msg);
   sha256_digest (&ctx, inner);
 
@@ -169,4 +169,6 @@ _slh_hash_sha256 =
     (nettle_hash_digest_func *) slh_sha256_digest,
     (slh_hash_secret_func *) slh_sha256_secret,
     (slh_hash_node_func *) slh_sha256_node,
+    (slh_hash_randomizer_func *) slh_sha256_randomizer,
+    (slh_hash_msg_digest_func *) slh_sha256_msg_digest
   };
