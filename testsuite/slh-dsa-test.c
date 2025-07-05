@@ -633,7 +633,7 @@ test_main (void)
 		read_hex_file ("slh-dsa-shake-128f.ref", SLH_DSA_128F_SIGNATURE_SIZE));
 
   /* From
-     https://raw.githubusercontent.com/usnistgov/ACVP-Server/refs/heads/master/gen-val/json-files/SLH-DSA-sigGen-FIPS205/internalProjection.json: */
+     https://github.com/usnistgov/ACVP-Server/blob/master/gen-val/json-files/SLH-DSA-sigGen-FIPS205/internalProjection.json */
   test_slh_dsa (&slh_dsa_shake_128f, /* tcId 64 */
 		SHEX ("C9A7900E931AFBA2B52A5BC55A2DC4D12DDC9BF8E0B2ED0BDE83E674F1ECE7AA"),
 		SHEX ("0E87FF20256E0E499A53B52DF91467C01F0431C07250AFE93DE814117B5D66D3"),
