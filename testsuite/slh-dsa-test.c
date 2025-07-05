@@ -88,7 +88,7 @@ read_hex_file (const char *name, size_t max_size)
 	  if (done == s->length)
 	    {
 	      fprintf (stderr, "hex file %s exceeds maximum size %ld\n",
-		       name, (long) s->length);
+		       name, (long) s->length - 1);
 	      FAIL ();
 	    }
 	}
@@ -341,6 +341,15 @@ slh_dsa_shake_128f = {
   slh_dsa_shake_128f_verify,
 };
 
+static const struct slh_dsa_alg
+slh_dsa_sha2_128s = {
+  "slh_dsa_sha2_128s",
+  SLH_DSA_128_KEY_SIZE,
+  SLH_DSA_128S_SIGNATURE_SIZE,
+  slh_dsa_sha2_128s_sign,
+  slh_dsa_sha2_128s_verify,
+};
+
 static void
 test_slh_dsa (const struct slh_dsa_alg *alg,
 	      const struct tstring *pub, const struct tstring *priv,
@@ -566,6 +575,11 @@ test_main (void)
 
   /* From
      https://github.com/usnistgov/ACVP-Server/blob/master/gen-val/json-files/SLH-DSA-keyGen-FIPS205/internalProjection.json */
+  test_slh_dsa_128_root (slh_dsa_sha2_128s_root, /* tcId 1 */
+			 SHEX ("0D794777914C99766827F0F09CA972BE"),
+			 SHEX ("173D04C938C1C36BF289C3C022D04B14"),
+			 SHEX ("0162C10219D422ADBA1359E6AA65299C"));
+
   test_slh_dsa_128_root (slh_dsa_shake_128s_root, /* tcId 11 */
 			 SHEX ("529FFE86200D1F32C2B60D0CD909F190"),
 			 SHEX ("C151951F3811029239B74ADD24C506AF"),
@@ -604,7 +618,7 @@ test_main (void)
 		SHEX ("D81C4D8D734FCBFB EADE3D3F8A039FAA"
 		      "2A2C9957E835AD55 B22E75BF57BB556A"
 		      "C8"),
-		read_hex_file ("slh-dsa-shake-128s.ref", SLH_DSA_SHAKE_128S_SIGNATURE_SIZE));
+		read_hex_file ("slh-dsa-shake-128s.ref", SLH_DSA_128S_SIGNATURE_SIZE));
 
   /* Test vector from
      https://github.com/smuellerDD/leancrypto/blob/master/slh-dsa/tests/sphincs_tester_vectors_shake_128f.h */
@@ -616,7 +630,7 @@ test_main (void)
 		SHEX ("D81C4D8D734FCBFB EADE3D3F8A039FAA"
 		      "2A2C9957E835AD55 B22E75BF57BB556A"
 		      "C8"),
-		read_hex_file ("slh-dsa-shake-128f.ref", SLH_DSA_SHAKE_128F_SIGNATURE_SIZE));
+		read_hex_file ("slh-dsa-shake-128f.ref", SLH_DSA_128F_SIGNATURE_SIZE));
 
   /* From
      https://raw.githubusercontent.com/usnistgov/ACVP-Server/refs/heads/master/gen-val/json-files/SLH-DSA-sigGen-FIPS205/internalProjection.json: */
@@ -624,11 +638,17 @@ test_main (void)
 		SHEX ("C9A7900E931AFBA2B52A5BC55A2DC4D12DDC9BF8E0B2ED0BDE83E674F1ECE7AA"),
 		SHEX ("0E87FF20256E0E499A53B52DF91467C01F0431C07250AFE93DE814117B5D66D3"),
 		read_hex_file ("slh-dsa-shake-128f-tc64.msg", 2280),
-		read_hex_file ("slh-dsa-shake-128f-tc64.sig", SLH_DSA_SHAKE_128F_SIGNATURE_SIZE));
+		read_hex_file ("slh-dsa-shake-128f-tc64.sig", SLH_DSA_128F_SIGNATURE_SIZE));
+
+  test_slh_dsa (&slh_dsa_sha2_128s, /* tcId 162 */
+		SHEX ("0FD12C3F990748CF9B1426413B64128EDF9242E50B9E29378BD24CAD4D547540"),
+		SHEX ("438E444071BD643C2407BD9FEB0071EC21DAA14113518133D6161EF420EE629D"),
+		read_hex_file ("slh-dsa-sha2-128s-tc162.msg", 5746),
+		read_hex_file ("slh-dsa-sha2-128s-tc162.sig", SLH_DSA_128S_SIGNATURE_SIZE));
 
   test_slh_dsa (&slh_dsa_shake_128s, /* tcId 215 */
 		SHEX ("DD286FF370CB50BC1B23894AA3F7025A534A788E697B94942AB845EFB753A30B"),
 		SHEX ("4738AC60C561FFBE15AB96EFFA1A09291A79332E1CA3C38B2FEF40ACA7CFE285"),
 		read_hex_file ("slh-dsa-shake-128s-tc215.msg", 5377),
-		read_hex_file ("slh-dsa-shake-128s-tc215.sig", SLH_DSA_SHAKE_128S_SIGNATURE_SIZE));
+		read_hex_file ("slh-dsa-shake-128s-tc215.sig", SLH_DSA_128S_SIGNATURE_SIZE));
 }

@@ -146,6 +146,8 @@ slh_sha256_msg_digest (const uint8_t *randomizer, const uint8_t *pub,
   for (i = 0; digest_size > 0; i++)
     {
       uint32_t i_be = bswap32_if_le (i);
+      sha256_update (&ctx, _SLH_DSA_128_SIZE, randomizer);
+      sha256_update (&ctx, _SLH_DSA_128_SIZE, pub);
       sha256_update (&ctx, sizeof (inner), inner);
       sha256_update (&ctx, sizeof (i_be), (const uint8_t *) &i_be);
       if (digest_size < SHA256_DIGEST_SIZE)

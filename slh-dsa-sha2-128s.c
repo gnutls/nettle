@@ -47,7 +47,7 @@ slh_dsa_sha2_128s_root (const uint8_t *public_seed, const uint8_t *private_seed,
 			uint8_t *root)
 {
   uint8_t scratch[(XMSS_H + 1)*_SLH_DSA_128_SIZE];
-  _xmss_gen (&_slh_hash_shake, public_seed, private_seed,
+  _xmss_gen (&_slh_hash_sha256, public_seed, private_seed,
 	     &_slh_dsa_128s_params.xmss, scratch, root);
 }
 
@@ -71,7 +71,7 @@ slh_dsa_sha2_128s_sign (const uint8_t *pub, const uint8_t *priv,
 			 pub, priv + _SLH_DSA_128_SIZE, length, msg,
 			 signature, sizeof (digest), digest);
   _slh_dsa_sign (&_slh_dsa_128s_params, &_slh_hash_sha256,
-		 pub, priv, digest, signature);
+		 pub, priv, digest, signature + _SLH_DSA_128_SIZE);
 }
 
 int
@@ -83,5 +83,5 @@ slh_dsa_sha2_128s_verify (const uint8_t *pub,
   _slh_dsa_pure_digest (&_slh_hash_sha256,
 			pub, length, msg, signature, sizeof (digest), digest);
   return _slh_dsa_verify (&_slh_dsa_128s_params, &_slh_hash_sha256,
-			  pub, digest, signature);
+			  pub, digest, signature + _SLH_DSA_128_SIZE);
 }
