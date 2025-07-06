@@ -1,3 +1,9 @@
+2025-07-06  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-secp192r1.c (ecc_secp192r1_modp) [GMP_NUMB_BITS == 32]: Use
+	assert_maybe. This version of the function was overlooked in the
+	2023-11-14 change.
+
 2025-07-03  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/slh-dsa-test.c (test_main): Additional test cases,
