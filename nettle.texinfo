@@ -8,14 +8,14 @@
 @syncodeindex tp cp
 @c %**end of header
 
-@set UPDATED-FOR 3.9
+@set UPDATED-FOR 4.0
 @set AUTHOR Niels Möller
 
 @copying
 This manual is for the Nettle library (version @value{UPDATED-FOR}), a
 low-level cryptographic library.
 
-Originally written 2001 by @value{AUTHOR}, updated 2023.
+Originally written 2001 by @value{AUTHOR}, updated 2025.
 
 @quotation
 This manual is placed in the public domain. You may freely copy it, in
@@ -245,7 +245,7 @@ functions which can fail, return one on success and zero on failure.
 @chapter Example
 
 A simple example program that reads a file from standard input and
-writes its SHA1 check-sum on standard output should give the flavor of
+writes its SHA256 checksum on standard output should give the flavor of
 Nettle.
 
 @example
