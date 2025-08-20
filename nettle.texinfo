@@ -4667,40 +4667,29 @@ more user-friendly variants of the general function.
 
 @node Public-key algorithms
 @section Public-key algorithms
+@cindex Public-key cryptography
+@cindex Digital signatures
 
 Nettle uses @acronym{GMP}, the GNU bignum library, for all calculations
-with large numbers. In order to use the public-key features of Nettle,
-you must install @acronym{GMP}, at least version 3.0, before compiling
-Nettle, and you need to link your programs with @code{-lhogweed -lnettle
--lgmp}.
+with large numbers. In order to use the public-key features of Nettle
+(with the exception of @acronym{SLH-DSA}), you must install @acronym{GMP}, at
+least version 6.1.0, before compiling Nettle, and you need to link your
+programs with @code{-lhogweed -lnettle -lgmp}.
 
-The concept of @dfn{Public-key} encryption and digital signatures was
+The concept of @dfn{Public-key} cryptography and digital signatures was
 discovered by Whitfield Diffie and Martin E. Hellman and described in a
 paper 1976. In traditional, ``symmetric'', cryptography, sender and
-receiver share the same keys, and these keys must be distributed in a
+receiver share the same key, and this key must be distributed in a
 secure way. And if there are many users or entities that need to
 communicate, each @emph{pair} needs a shared secret key known by nobody
-else.
+else. In public key cryptography, each user needs a ``key pair'',
+consisting of a private key which is kept secret, and corresponding
+public key that is distributed to all other users.
 
-@cindex Public Key Cryptography
-@cindex One-way function
-
-Public-key cryptography uses trapdoor one-way functions. A
-@dfn{one-way function} is a function @code{F} such that it is easy to
-compute the value @code{F(x)} for any @code{x}, but given a value
-@code{y}, it is hard to compute a corresponding @code{x} such that
-@code{y = F(x)}. Two examples are cryptographic hash functions, and
-exponentiation in certain groups.
-
-A @dfn{trapdoor one-way function} is a function @code{F} that is
-one-way, unless one knows some secret information about @code{F}. If one
-knows the secret, it is easy to compute both @code{F} and it's inverse.
-If this sounds strange, look at the @acronym{RSA} example below.
-
-Two important uses for one-way functions with trapdoors are public-key
-encryption, and digital signatures. The public-key encryption functions
-in Nettle are not yet documented; the rest of this chapter is about
-digital signatures.
+Public and private keys can be uses in several different ways: For key
+agreement (e.g., Diffie-Hellman or Curve25519 key exchange), digital
+signatures (e.g., @acronym{RSA} signatures and Ed25519 signatures), and
+public key encryption (e.g., @acronym{RSA} encryption).
 
 To use a digital signature algorithm, one must first create a
 @dfn{key-pair}: A public key and a corresponding private key. The private
@@ -4787,7 +4776,7 @@ usually has no factors common with @code{phi}.
 
 Finally, a number @code{d}, @code{d < n} is computed such that @code{e d
 mod phi = 1}. It can be shown that such a number exists (this is why
-@code{e} and @code{phi} must have no common factors), and that for all x,
+@code{e} and @code{phi} must have no common factors), and that for all @code{x},
 
 @example
 (x^e)^d mod n = x^(ed) mod n = (x^d)^e mod n = x
@@ -4798,19 +4787,19 @@ Using Euclid's algorithm, @code{d} can be computed quite easily from
 knowing @code{phi}, which depends on the factorization of @code{n}.
 
 So @code{d} is the trapdoor, if we know @code{d} and @code{y = F(x)}, we can
-recover x as @code{y^d mod n}. @code{d} is also the private half of
+recover @code{x} as @code{y^d mod n}. @code{d} is also the private half of
 the @acronym{RSA} key-pair.
 
 The most common signature operation for @acronym{RSA} is defined in
 @cite{PKCS#1}, a specification by RSA Laboratories. The message to be
 signed is first hashed using a cryptographic hash function, e.g.
-@acronym{MD5} or @acronym{SHA1}. Next, some padding, the @acronym{ASN.1}
+@acronym{SHA256}. Next, some padding, the @acronym{ASN.1}
 ``Algorithm Identifier'' for the hash function, and the message digest
 itself, are concatenated and converted to a number @code{x}. The
 signature is computed from @code{x} and the private key as @code{s = x^d
 mod n}@footnote{Actually, the computation is not done like this, it is
 done more efficiently using @code{p}, @code{q} and the Chinese remainder
-theorem (@acronym{CRT}). But the result is the same.}. The signature, @code{s} is a
+theorem (@acronym{CRT}). But the result is the same.}. The signature, @code{s}, is a
 number of about the same size of @code{n}, and it usually encoded as a
 sequence of octets, most significant octet first.
 
@@ -5371,8 +5360,8 @@ Nettle supports standard curves which are all of the form @math{y^2 =
 x^3 - 3 x + b @pmod{p}}, i.e., the points have coordinates @math{(x,y)},
 both considered as integers modulo a specified prime @math{p}. Curves
 are represented as a @code{struct ecc_curve}. It also supports
-curve25519, which uses a different form of curve. Supported curves are
-declared in @file{<nettle/ecc-curve.h>}, e.g., call
+curve25519 and curve488, which uses a different form of curve. Supported
+curves are declared in @file{<nettle/ecc-curve.h>}, e.g., call
 @code{nettle_get_secp_256r1} for a standardized curve using the 256-bit
 prime @math{p = 2^{256} - 2^{224} + 2^{192} + 2^{96} - 1}. The contents
 of these structs is not visible to nettle users. The ``bitsize of the
