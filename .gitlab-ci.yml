@@ -1,7 +1,7 @@
 variables:
-  BUILDENV_NATIVE_IMAGE: gnutls/nettle-build-images:buildenv-native
-  BUILDENV_CLANG_IMAGE: gnutls/nettle-build-images:buildenv-clang
-  BUILDENV_CROSS_IMAGE: gnutls/nettle-build-images:buildenv-cross
+  BUILDENV_NATIVE_IMAGE: nettle/build-images:buildenv-native
+  BUILDENV_CLANG_IMAGE: nettle/build-images:buildenv-clang
+  BUILDENV_CROSS_IMAGE: nettle/build-images:buildenv-cross
   GET_SOURCES_ATTEMPTS: "3"
 
 # "Native" means x86-64; no jobs run on anything else.
@@ -13,7 +13,7 @@ variables:
   - 'make -j$(nproc)'
   - 'make -j$(nproc) check $EXTRA_CHECK_TARGET'
   tags:
-  - saas-linux-small-amd64
+  - amd64
   except:
   - tags
   variables:
@@ -93,7 +93,7 @@ build/static-analyzers:
   - scan-build ./configure --disable-documentation --disable-assembler
   - scan-build --status-bugs -o scan-build-lib make -j$(nproc)
   tags:
-  - saas-linux-small-amd64
+  - amd64
   except:
   - tags
   artifacts:
@@ -115,7 +115,7 @@ build/gnutls:
       --disable-cxx --disable-guile --without-p11-kit --disable-doc &&
     make -j$(nproc) && make -j $(nproc) check
   tags:
-  - saas-linux-small-amd64
+  - amd64
   except:
   - tags
   artifacts:
@@ -157,7 +157,7 @@ remote/s390x:
     - $SSH_PRIVATE_KEY != ""
     - $S390X_ACCOUNT != ""
   tags:
-  - saas-linux-small-amd64
+  - amd64
   except:
   - tags
 
@@ -178,7 +178,7 @@ remote/s390x:
   - make -j$(nproc)
   - make EMULATOR=${EMULATOR} -j$(nproc) check $EXTRA_CHECK_TARGET
   tags:
-  - saas-linux-small-amd64
+  - amd64
   except:
   - tags
   variables:
