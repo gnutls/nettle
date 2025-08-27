@@ -176,7 +176,8 @@ remote/s390x:
   - ./.bootstrap
   - ./configure --disable-documentation $EXTRA_CONFIGURE_ARGS --build=$build --host=$host
   - make -j$(nproc)
-  - make EMULATOR=${EMULATOR} -j$(nproc) check $EXTRA_CHECK_TARGET
+  - make EMULATOR=${EMULATOR} -j$(nproc) check
+  - for t in $EXTRA_CHECK_TARGET ; do make EMULATOR=${EMULATOR} -j$(nproc) $t ; done
   tags:
   - amd64
   except:
