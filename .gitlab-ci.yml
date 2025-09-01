@@ -11,7 +11,8 @@ variables:
   - ./.bootstrap
   - './configure $EXTRA_CONFIGURE_ARGS --disable-documentation'
   - 'make -j$(nproc)'
-  - 'make -j$(nproc) check $EXTRA_CHECK_TARGET'
+  - 'make -j$(nproc) check'
+  - 'for t in $EXTRA_CHECK_TARGET ; do make -j$(nproc) $t ; done'
   tags:
   - amd64
   variables:
