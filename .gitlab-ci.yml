@@ -14,8 +14,6 @@ variables:
   - 'make -j$(nproc) check $EXTRA_CHECK_TARGET'
   tags:
   - amd64
-  except:
-  - tags
   variables:
     NETTLE_TEST_SEED: '0'
   artifacts:
@@ -94,8 +92,6 @@ build/static-analyzers:
   - scan-build --status-bugs -o scan-build-lib make -j$(nproc)
   tags:
   - amd64
-  except:
-  - tags
   artifacts:
     expire_in: 1 week
     when: on_failure
@@ -116,8 +112,6 @@ build/gnutls:
     make -j$(nproc) && make -j $(nproc) check
   tags:
   - amd64
-  except:
-  - tags
   artifacts:
     expire_in: 1 week
     when: on_failure
@@ -152,14 +146,10 @@ remote/s390x:
   after_script:
   - ssh -o 'StrictHostKeyChecking no' -i "$SSH_PRIVATE_KEY" "$S390X_ACCOUNT"
     "rm -rf ci-work/$CI_PIPELINE_IID"
-  only:
-    variables:
-    - $SSH_PRIVATE_KEY != ""
-    - $S390X_ACCOUNT != ""
+  rules:
+    - if: $SSH_PRIVATE_KEY != "" && $S390X_ACCOUNT != ""
   tags:
   - amd64
-  except:
-  - tags
 
 .cross-build:
   image: $CI_REGISTRY/$BUILDENV_CROSS_IMAGE
@@ -180,8 +170,6 @@ remote/s390x:
   - for t in $EXTRA_CHECK_TARGET ; do make EMULATOR=${EMULATOR} -j$(nproc) $t ; done
   tags:
   - amd64
-  except:
-  - tags
   variables:
     NETTLE_TEST_SEED: '0'
   artifacts:
