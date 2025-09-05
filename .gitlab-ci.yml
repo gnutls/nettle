@@ -1,7 +1,7 @@
 variables:
-  BUILDENV_NATIVE_IMAGE: gnutls/nettle-build-images:buildenv-native
-  BUILDENV_CLANG_IMAGE: gnutls/nettle-build-images:buildenv-clang
-  BUILDENV_CROSS_IMAGE: gnutls/nettle-build-images:buildenv-cross
+  BUILDENV_NATIVE_IMAGE: nettle/build-images:buildenv-native
+  BUILDENV_CLANG_IMAGE: nettle/build-images:buildenv-clang
+  BUILDENV_CROSS_IMAGE: nettle/build-images:buildenv-cross
   GET_SOURCES_ATTEMPTS: "3"
 
 # "Native" means x86-64; no jobs run on anything else.
@@ -11,11 +11,10 @@ variables:
   - ./.bootstrap
   - './configure $EXTRA_CONFIGURE_ARGS --disable-documentation'
   - 'make -j$(nproc)'
-  - 'make -j$(nproc) check $EXTRA_CHECK_TARGET'
+  - 'make -j$(nproc) check'
+  - 'for t in $EXTRA_CHECK_TARGET ; do make -j$(nproc) $t ; done'
   tags:
-  - saas-linux-small-amd64
-  except:
-  - tags
+  - amd64
   variables:
     NETTLE_TEST_SEED: '0'
   artifacts:
@@ -93,9 +92,7 @@ build/static-analyzers:
   - scan-build ./configure --disable-documentation --disable-assembler
   - scan-build --status-bugs -o scan-build-lib make -j$(nproc)
   tags:
-  - saas-linux-small-amd64
-  except:
-  - tags
+  - amd64
   artifacts:
     expire_in: 1 week
     when: on_failure
@@ -115,9 +112,7 @@ build/gnutls:
       --disable-cxx --disable-guile --without-p11-kit --disable-doc &&
     make -j$(nproc) && make -j $(nproc) check
   tags:
-  - saas-linux-small-amd64
-  except:
-  - tags
+  - amd64
   artifacts:
     expire_in: 1 week
     when: on_failure
@@ -152,14 +147,13 @@ remote/s390x:
   after_script:
   - ssh -o 'StrictHostKeyChecking no' -i "$SSH_PRIVATE_KEY" "$S390X_ACCOUNT"
     "rm -rf ci-work/$CI_PIPELINE_IID"
-  only:
-    variables:
-    - $SSH_PRIVATE_KEY != ""
-    - $S390X_ACCOUNT != ""
+  rules:
+  # For some reason, below condition doesn't disable job when
+  # variables are unset. So never run for now.
+  # - if: $SSH_PRIVATE_KEY != "" && $S390X_ACCOUNT != ""
+  - when: never
   tags:
-  - saas-linux-small-amd64
-  except:
-  - tags
+  - amd64
 
 .cross-build:
   image: $CI_REGISTRY/$BUILDENV_CROSS_IMAGE
@@ -176,11 +170,10 @@ remote/s390x:
   - ./.bootstrap
   - ./configure --disable-documentation $EXTRA_CONFIGURE_ARGS --build=$build --host=$host
   - make -j$(nproc)
-  - make EMULATOR=${EMULATOR} -j$(nproc) check $EXTRA_CHECK_TARGET
+  - make EMULATOR=${EMULATOR} -j$(nproc) check
+  - for t in $EXTRA_CHECK_TARGET ; do make EMULATOR=${EMULATOR} -j$(nproc) $t ; done
   tags:
-  - saas-linux-small-amd64
-  except:
-  - tags
+  - amd64
   variables:
     NETTLE_TEST_SEED: '0'
   artifacts:
