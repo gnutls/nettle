@@ -1,3 +1,12 @@
+2025-09-05  Niels Möller  <nisse@lysator.liu.se>
+
+	* slh-dsa.h (SLH_DSA_128_SEED_SIZE, SLH_DSA_128_KEY_SIZE)
+	(SLH_DSA_128S_SIGNATURE_SIZE, SLH_DSA_128F_SIGNATURE_SIZE):
+	Renamed and updated all uses, from...
+	(SLH_DSA_SHAKE_128_SEED_SIZE, SLH_DSA_SHAKE_128_KEY_SIZE)
+	(SLH_DSA_SHAKE_128S_SIGNATURE_SIZE)
+	(SLH_DSA_SHAKE_128F_SIGNATURE_SIZE): ... old names.
+
 2025-07-07  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-secp384r1.c (ecc_secp384r1_modp) [GMP_NUMB_BITS == 32]:

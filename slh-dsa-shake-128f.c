@@ -68,9 +68,9 @@ void
 slh_dsa_shake_128f_generate_keypair (uint8_t *pub, uint8_t *priv,
 				     void *random_ctx, nettle_random_func *random)
 {
-  random (random_ctx, SLH_DSA_SHAKE_128_SEED_SIZE, pub);
-  random (random_ctx, 2*SLH_DSA_SHAKE_128_SEED_SIZE, priv);
-  slh_dsa_shake_128f_root (pub, priv, pub + SLH_DSA_SHAKE_128_SEED_SIZE);
+  random (random_ctx, SLH_DSA_128_SEED_SIZE, pub);
+  random (random_ctx, 2*SLH_DSA_128_SEED_SIZE, priv);
+  slh_dsa_shake_128f_root (pub, priv, pub + SLH_DSA_128_SEED_SIZE);
 }
 
 static void
