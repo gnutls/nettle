@@ -122,6 +122,9 @@ build/gnutls:
       - gnutls-git/*.log
       - gnutls-git/tests/*/*.log
       - gnutls-git/tests/suite/*/*.log
+  rules:
+  # Temporarily disable; enable when gnutls is updated for Nettle-4.
+  - when: never
 
 remote/s390x:
   image: $CI_REGISTRY/$BUILDENV_NATIVE_IMAGE
