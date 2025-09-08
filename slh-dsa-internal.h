@@ -54,8 +54,8 @@
 #define _slh_dsa_sign _nettle_slh_dsa_sign
 #define _slh_dsa_verify _nettle_slh_dsa_verify
 
-#define _slh_dsa_shake_128s_params _nettle_slh_dsa_shake_128s_params
-#define _slh_dsa_shake_128f_params _nettle_slh_dsa_shake_128f_params
+#define _slh_dsa_128s_params _nettle_slh_dsa_128s_params
+#define _slh_dsa_128f_params _nettle_slh_dsa_128f_params
 
 /* Size of a single hash, including the seed and prf parameters */
 #define _SLH_DSA_128_SIZE 16
@@ -117,7 +117,8 @@ struct slh_dsa_params
   struct slh_fors_params fors;
 };
 
-extern const struct slh_dsa_params _slh_dsa_shake_128s_params;
+extern const struct slh_dsa_params _slh_dsa_128s_params;
+extern const struct slh_dsa_params _slh_dsa_128f_params;
 
 void
 _slh_shake_init (struct sha3_ctx *ctx, const uint8_t *public_seed,

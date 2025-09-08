@@ -442,7 +442,7 @@ test_main (void)
   test_fors_gen (public_seed, secret_seed, 0, UINT64_C(0x29877722d7c079), 0x156, 0x4e1e,
 		 SHEX ("17f55905e41a6dc6e5bab2c9f0c1d5d3"),
 		 SHEX ("15325ef3d2914cbd401327244cdb633d"));
-  test_fors_sign (public_seed, secret_seed, &_slh_dsa_shake_128s_params.fors,
+  test_fors_sign (public_seed, secret_seed, &_slh_dsa_128s_params.fors,
 		  0, UINT64_C(0x29877722d7c079), 0x156,
 		  SHEX ("2033c1a4df6fc230c699522a21bed913"
 			"0dda231526"),

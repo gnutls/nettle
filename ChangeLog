@@ -1,3 +1,10 @@
+2025-09-08  Niels Möller  <nisse@lysator.liu.se>
+
+	* slh-dsa-shake-128s.c (_slh_dsa_128s_params): Renamed, from...
+	(_slh_dsa_shake_128s_params): ... old name.
+	* slh-dsa-shake-128f.c (_slh_dsa_128f_params): Renamed, from...
+	(_slh_dsa_shake_128f_params): ... old name.
+
 2025-09-05  Niels Möller  <nisse@lysator.liu.se>
 
 	* slh-dsa.h (SLH_DSA_128_SEED_SIZE, SLH_DSA_128_KEY_SIZE)
