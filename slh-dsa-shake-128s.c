@@ -40,21 +40,7 @@
 
 #define SLH_DSA_M 30
 
-#define SLH_DSA_D 7
 #define XMSS_H 9
-
-/* Use k Merkle trees, each of size 2^a. Signs messages of size
-   k * a = 168 bits or 21 octets. */
-#define FORS_A 12
-#define FORS_K 14
-#define FORS_MSG_SIZE 21
-
-const struct slh_dsa_params
-_slh_dsa_128s_params =
-  {
-    { SLH_DSA_D, XMSS_H, XMSS_SIGNATURE_SIZE (XMSS_H) },
-    { FORS_A, FORS_K, FORS_MSG_SIZE, FORS_SIGNATURE_SIZE (FORS_A, FORS_K) },
-  };
 
 void
 slh_dsa_shake_128s_root (const uint8_t *public_seed, const uint8_t *private_seed,
@@ -73,33 +59,6 @@ slh_dsa_shake_128s_generate_keypair (uint8_t *pub, uint8_t *priv,
   slh_dsa_shake_128s_root (pub, priv, pub + SLH_DSA_128_SEED_SIZE);
 }
 
-static void
-parse_digest (const uint8_t *digest, uint64_t *tree_idx, unsigned *leaf_idx)
-{
-  uint64_t x;
-  unsigned i;
-
-  /* Split digest as
-     +----+------+-----+
-     | md | tree | leaf|
-     +----+------+-----+
-       21       7     2
-
-   The first 21 octets are the digest signed with fors (and not
-   processed by this function), the next 7 octets represent 54 bits
-   selecting the tree, the last 2 octets represent 9 bits selecting
-   the key in that tree.
-
-   Left over high bits are discarded.
-  */
-  x = digest[0] & 0x3f; /* Discard 2 high-most bits of 56 */
-  for (i = 1; i < 7; i++)
-    x = (x << 8) + digest[i];
-  *tree_idx = x;
-  /* Discard 7 high-most bits of 16 */
-  *leaf_idx = ((digest[7] & 1) << 8) + digest[8];
-}
-
 /* Only the "pure" and deterministic variant. */
 void
 slh_dsa_shake_128s_sign (const uint8_t *pub, const uint8_t *priv,
@@ -107,14 +66,10 @@ slh_dsa_shake_128s_sign (const uint8_t *pub, const uint8_t *priv,
 			 uint8_t *signature)
 {
   uint8_t digest[SLH_DSA_M];
-  uint64_t tree_idx;
-  unsigned leaf_idx;
 
   _slh_dsa_randomizer (pub, priv + _SLH_DSA_128_SIZE, length, msg, signature);
   _slh_dsa_digest (signature, pub, length, msg, SLH_DSA_M, digest);
-  parse_digest (digest + FORS_MSG_SIZE, &tree_idx, &leaf_idx);
-
-  _slh_dsa_sign (&_slh_dsa_128s_params, pub, priv, digest, tree_idx, leaf_idx,
+  _slh_dsa_sign (&_slh_dsa_128s_params, pub, priv, digest,
 		 signature + _SLH_DSA_128_SIZE);
 }
 
@@ -124,11 +79,8 @@ slh_dsa_shake_128s_verify (const uint8_t *pub,
 			   const uint8_t *signature)
 {
   uint8_t digest[SLH_DSA_M];
-  uint64_t tree_idx;
-  unsigned leaf_idx;
 
   _slh_dsa_digest (signature, pub, length, msg, SLH_DSA_M,digest);
-  parse_digest (digest + FORS_MSG_SIZE, &tree_idx, &leaf_idx);
-  return _slh_dsa_verify (&_slh_dsa_128s_params, pub, digest, tree_idx, leaf_idx,
+  return _slh_dsa_verify (&_slh_dsa_128s_params, pub, digest,
 			  signature + _SLH_DSA_128_SIZE);
 }

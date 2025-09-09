@@ -1,3 +1,29 @@
+2025-09-09  Niels Möller  <nisse@lysator.liu.se>
+
+	* slh-dsa-internal.h (slh_parse_digest_func): New typedef.
+	(struct slh_dsa_params): New function pointer parse_digest.
+
+	* slh-dsa.c (_slh_dsa_sign): Delete tree_idx and leaf_idx
+	arguments. Instead, call params->parse_digest to get them from the
+	digest. Introduce c99 mid-block declarations, for convenience.
+	(_slh_dsa_verify): Likewise.
+
+	* slh-dsa-128s.c: New file.
+	(_slh_dsa_128s_params): Params struct moved here.
+	(parse_digest): Corresponding function to extract tree and leaf
+	indices from digest.
+	* slh-dsa-shake-128s.c (_slh_dsa_128s_params, parse_digest): ...
+	old location.
+
+	* slh-dsa-128f.c: New file.
+	(_slh_dsa_128f_params): Params struct moved here.
+	(parse_digest): Corresponding function to extract tree and leaf
+	indices from digest.
+	* slh-dsa-shake-128f.c (_slh_dsa_128f_params, parse_digest): ...
+	old location.
+
+	* Makefile.in (nettle_SOURCES): Add slh-dsa-128s.c slh-dsa-128f.c.
+
 2025-09-08  Niels Möller  <nisse@lysator.liu.se>
 
 	* slh-dsa-shake-128s.c (_slh_dsa_128s_params): Renamed, from...

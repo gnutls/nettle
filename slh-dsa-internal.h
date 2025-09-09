@@ -111,8 +111,11 @@ struct slh_fors_params
   unsigned short signature_size;
 };
 
+typedef void slh_parse_digest_func (const uint8_t *digest, uint64_t *tree_idx, unsigned *leaf_idx);
+
 struct slh_dsa_params
 {
+  slh_parse_digest_func *parse_digest;
   struct slh_xmss_params xmss;
   struct slh_fors_params fors;
 };
@@ -218,13 +221,10 @@ _slh_dsa_digest (const uint8_t *randomizer, const uint8_t *pub,
 void
 _slh_dsa_sign (const struct slh_dsa_params *params,
 	       const uint8_t *pub, const uint8_t *priv,
-	       const uint8_t *digest,
-	       uint64_t tree_idx, unsigned leaf_idx,
-	       uint8_t *signature);
+	       const uint8_t *digest, uint8_t *signature);
 int
 _slh_dsa_verify (const struct slh_dsa_params *params, const uint8_t *pub,
-		 const uint8_t *digest, uint64_t tree_idx, unsigned leaf_idx,
-		 const uint8_t *signature);
+		 const uint8_t *digest, const uint8_t *signature);
 
 
 #endif /* NETTLE_SLH_DSA_INTERNAL_H_INCLUDED */
