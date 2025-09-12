@@ -1,3 +1,40 @@
+2025-09-12  Niels Möller  <nisse@lysator.liu.se>
+
+	* slh-dsa-internal.h (slh_hash_randomizer_func)
+	(slh_hash_msg_digest_func, slh_hash_init_tree_func)
+	(slh_hash_init_hash_func, slh_hash_secret_func)
+	(slh_hash_node_func): New typedefs, for slh-related hash
+	operations.
+	(struct slh_hash): New struct.
+	(struct slh_merkle_ctx_public): Add slh_hash pointer, and use
+	const void * for context.
+	(struct slh_merkle_ctx_secret): Add scratch_ctx, needed by
+	xmss_leaf.
+
+	* slh-shake.c (slh_shake_init_tree): Renamed and made static.
+	(_slh_shake_init): ... old name.
+	(slh_shake_secret): Renamed and made static.
+	(_slh_shake): ...old name.
+	(slh_shake_init_hash, slh_shake_node)
+	(slh_shake_digest, slh_shake_randomizer)
+	(slh_shake_msg_digest): New functions.
+	( _slh_hash_shake): New slh_hash struct.
+
+	* slh-fors.c: Update for new hash abstraction.
+	* slh-wots.c: Likewise.
+	* slh-xmss.c: Likewise.
+
+	* slh-dsa.c (_slh_dsa_pure_digest, _slh_dsa_pure_rdigest): New functions.
+	(_slh_dsa_sign): Add slh_hash argument, and contexts allocated by caller.
+	(_slh_dsa_verify): Likewise.
+	* slh-dsa-shake-128f.c (slh_dsa_shake_128f_root): Allocate sha3
+	contexts, use _slh_hash_shake.
+	(slh_dsa_shake_128f_sign): Allocate sha3 contexts, call
+	_slh_dsa_pure_rdigest.
+	(slh_dsa_shake_128f_verify): Allocate sha3 contexts, call
+	_slh_dsa_pure_digest.
+	* slh-dsa-shake-128s.c: Analogous changes.
+
 2025-09-09  Niels Möller  <nisse@lysator.liu.se>
 
 	* slh-dsa-internal.h (slh_parse_digest_func): New typedef.

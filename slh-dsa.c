@@ -39,7 +39,6 @@
 #include <string.h>
 
 #include "memops.h"
-#include "sha3.h"
 #include "slh-dsa.h"
 #include "slh-dsa-internal.h"
 
@@ -47,56 +46,48 @@
 static const uint8_t slh_pure_prefix[2] = {0, 0};
 
 void
-_slh_dsa_randomizer (const uint8_t *public_seed, const uint8_t *secret_prf,
-		     size_t msg_length, const uint8_t *msg,
-		     uint8_t *randomizer)
+_slh_dsa_pure_digest (const struct slh_hash *hash,
+		      const uint8_t *pub,
+		      size_t length, const uint8_t *msg,
+		      const uint8_t *randomizer, size_t digest_size, uint8_t *digest)
 {
-  struct sha3_ctx ctx;
-
-  sha3_init (&ctx);
-  sha3_256_update (&ctx, _SLH_DSA_128_SIZE, secret_prf);
-  sha3_256_update (&ctx, _SLH_DSA_128_SIZE, public_seed);
-  sha3_256_update (&ctx, sizeof (slh_pure_prefix), slh_pure_prefix);
-  sha3_256_update (&ctx, msg_length, msg);
-  sha3_256_shake (&ctx, _SLH_DSA_128_SIZE, randomizer);
+  hash->msg_digest (randomizer, pub, sizeof (slh_pure_prefix), slh_pure_prefix,
+		    length, msg, digest_size, digest);
 }
 
 void
-_slh_dsa_digest (const uint8_t *randomizer, const uint8_t *pub,
-		 size_t length, const uint8_t *msg,
-		 size_t digest_size, uint8_t *digest)
+_slh_dsa_pure_rdigest (const struct slh_hash *hash,
+		       const uint8_t *pub, const uint8_t *prf,
+		       size_t length, const uint8_t *msg,
+		       uint8_t *randomizer, size_t digest_size, uint8_t *digest)
 {
-  struct sha3_ctx ctx;
-
-  sha3_init (&ctx);
-  sha3_256_update (&ctx, _SLH_DSA_128_SIZE, randomizer);
-  sha3_256_update (&ctx, 2*_SLH_DSA_128_SIZE, pub);
-  sha3_256_update (&ctx, sizeof (slh_pure_prefix), slh_pure_prefix);
-  sha3_256_update (&ctx, length, msg);
-  sha3_256_shake (&ctx, digest_size, digest);
+  hash->randomizer (pub, prf,
+		    sizeof (slh_pure_prefix), slh_pure_prefix, length, msg, randomizer);
+  _slh_dsa_pure_digest (hash, pub, length, msg, randomizer, digest_size, digest);
 }
 
 void
 _slh_dsa_sign (const struct slh_dsa_params *params,
+	       const struct slh_hash *hash,
 	       const uint8_t *pub, const uint8_t *priv,
-	       const uint8_t *digest, uint8_t *signature)
+	       const uint8_t *digest, uint8_t *signature,
+	       void *tree_ctx, void *scratch_ctx)
 {
   uint64_t tree_idx;
   unsigned leaf_idx;
 
   params->parse_digest (digest + params->fors.msg_size, &tree_idx, &leaf_idx);
 
-  struct sha3_ctx tree_ctx;
   const struct slh_merkle_ctx_secret merkle_ctx =
     {
-      { &tree_ctx, leaf_idx },
-      priv,
+      { hash, tree_ctx, leaf_idx },
+      priv, scratch_ctx,
     };
+
+  hash->init_tree (tree_ctx, pub, 0, tree_idx);
+
   uint8_t root[_SLH_DSA_128_SIZE];
-
-  _slh_shake_init (&tree_ctx, pub, 0, tree_idx);
-
-  _fors_sign (&merkle_ctx, &params->fors, digest, signature, root);
+  _fors_sign (&merkle_ctx, &params->fors, digest, signature, root, scratch_ctx);
   signature += params->fors.signature_size;
 
   _xmss_sign (&merkle_ctx, params->xmss.h, leaf_idx, root, signature, root);
@@ -108,7 +99,7 @@ _slh_dsa_sign (const struct slh_dsa_params *params,
       leaf_idx = tree_idx & ((1 << params->xmss.h) - 1);
       tree_idx >>= params->xmss.h;
 
-      _slh_shake_init (&tree_ctx, pub, i, tree_idx);
+      hash->init_tree (tree_ctx, pub, i, tree_idx);
 
       _xmss_sign (&merkle_ctx, params->xmss.h, leaf_idx, root, signature, root);
     }
@@ -116,26 +107,27 @@ _slh_dsa_sign (const struct slh_dsa_params *params,
 }
 
 int
-_slh_dsa_verify (const struct slh_dsa_params *params, const uint8_t *pub,
-		 const uint8_t *digest, const uint8_t *signature)
+_slh_dsa_verify (const struct slh_dsa_params *params,
+		 const struct slh_hash *hash,
+		 const uint8_t *pub,
+		 const uint8_t *digest, const uint8_t *signature,
+		 void *tree_ctx, void *scratch_ctx)
 {
   uint64_t tree_idx;
   unsigned leaf_idx;
 
   params->parse_digest (digest + params->fors.msg_size, &tree_idx, &leaf_idx);
 
-  struct sha3_ctx tree_ctx;
   const struct slh_merkle_ctx_public merkle_ctx =
-    { &tree_ctx, leaf_idx };
+    { hash, tree_ctx, leaf_idx };
+
+  hash->init_tree (tree_ctx, pub, 0, tree_idx);
 
   uint8_t root[_SLH_DSA_128_SIZE];
-
-  _slh_shake_init (&tree_ctx, pub, 0, tree_idx);
-
-  _fors_verify (&merkle_ctx, &params->fors, digest, signature, root);
+  _fors_verify (&merkle_ctx, &params->fors, digest, signature, root, scratch_ctx);
   signature += params->fors.signature_size;
 
-  _xmss_verify (&merkle_ctx, params->xmss.h, leaf_idx, root, signature, root);
+  _xmss_verify (&merkle_ctx, params->xmss.h, leaf_idx, root, signature, root, scratch_ctx);
 
   for (unsigned i = 1; i < params->xmss.d; i++)
     {
@@ -144,9 +136,9 @@ _slh_dsa_verify (const struct slh_dsa_params *params, const uint8_t *pub,
       leaf_idx = tree_idx & ((1 << params->xmss.h) - 1);
       tree_idx >>= params->xmss.h;
 
-      _slh_shake_init (&tree_ctx, pub, i, tree_idx);
+      hash->init_tree (tree_ctx, pub, i, tree_idx);
 
-      _xmss_verify (&merkle_ctx, params->xmss.h, leaf_idx, root, signature, root);
+      _xmss_verify (&merkle_ctx, params->xmss.h, leaf_idx, root, signature, root, scratch_ctx);
     }
   return memcmp (root, pub + _SLH_DSA_128_SIZE, sizeof (root)) == 0;
 }

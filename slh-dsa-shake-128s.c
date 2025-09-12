@@ -38,6 +38,8 @@
 #include "slh-dsa.h"
 #include "slh-dsa-internal.h"
 
+#include "sha3.h"
+
 #define SLH_DSA_M 30
 
 #define XMSS_H 9
@@ -46,8 +48,11 @@ void
 slh_dsa_shake_128s_root (const uint8_t *public_seed, const uint8_t *private_seed,
 			 uint8_t *root)
 {
+  struct sha3_ctx tree_ctx, scratch_ctx;
   uint8_t scratch[(XMSS_H + 1)*_SLH_DSA_128_SIZE];
-  _xmss_gen (public_seed, private_seed, &_slh_dsa_128s_params.xmss, scratch, root);
+  _xmss_gen (&_slh_hash_shake, public_seed, private_seed,
+	     &_slh_dsa_128s_params.xmss, root,
+	     &tree_ctx, &scratch_ctx, scratch);
 }
 
 void
@@ -65,12 +70,14 @@ slh_dsa_shake_128s_sign (const uint8_t *pub, const uint8_t *priv,
 			 size_t length, const uint8_t *msg,
 			 uint8_t *signature)
 {
+  struct sha3_ctx tree_ctx, scratch_ctx;
   uint8_t digest[SLH_DSA_M];
-
-  _slh_dsa_randomizer (pub, priv + _SLH_DSA_128_SIZE, length, msg, signature);
-  _slh_dsa_digest (signature, pub, length, msg, SLH_DSA_M, digest);
-  _slh_dsa_sign (&_slh_dsa_128s_params, pub, priv, digest,
-		 signature + _SLH_DSA_128_SIZE);
+  _slh_dsa_pure_rdigest (&_slh_hash_shake,
+			 pub, priv + _SLH_DSA_128_SIZE, length, msg,
+			 signature, sizeof (digest), digest);
+  _slh_dsa_sign (&_slh_dsa_128s_params, &_slh_hash_shake,
+		 pub, priv, digest, signature + _SLH_DSA_128_SIZE,
+		 &tree_ctx, &scratch_ctx);
 }
 
 int
@@ -78,9 +85,11 @@ slh_dsa_shake_128s_verify (const uint8_t *pub,
 			   size_t length, const uint8_t *msg,
 			   const uint8_t *signature)
 {
+  struct sha3_ctx tree_ctx, scratch_ctx;
   uint8_t digest[SLH_DSA_M];
-
-  _slh_dsa_digest (signature, pub, length, msg, SLH_DSA_M,digest);
-  return _slh_dsa_verify (&_slh_dsa_128s_params, pub, digest,
-			  signature + _SLH_DSA_128_SIZE);
+  _slh_dsa_pure_digest (&_slh_hash_shake,
+			pub, length, msg, signature, sizeof (digest), digest);
+  return _slh_dsa_verify (&_slh_dsa_128s_params, &_slh_hash_shake,
+			  pub, digest, signature + _SLH_DSA_128_SIZE,
+			  &tree_ctx, &scratch_ctx);
 }
