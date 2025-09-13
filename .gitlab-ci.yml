@@ -151,10 +151,7 @@ remote/s390x:
   - ssh -o 'StrictHostKeyChecking no' -i "$SSH_PRIVATE_KEY" "$S390X_ACCOUNT"
     "rm -rf ci-work/$CI_PIPELINE_IID"
   rules:
-  # For some reason, below condition doesn't disable job when
-  # variables are unset. So never run for now.
-  # - if: $SSH_PRIVATE_KEY != "" && $S390X_ACCOUNT != ""
-  - when: never
+  - if: $SSH_PRIVATE_KEY && $S390X_ACCOUNT
   tags:
   - amd64
 
