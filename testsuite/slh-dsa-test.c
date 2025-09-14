@@ -642,6 +642,12 @@ test_main (void)
 
   /* From
      https://github.com/usnistgov/ACVP-Server/blob/master/gen-val/json-files/SLH-DSA-sigGen-FIPS205/internalProjection.json */
+  test_slh_dsa (&slh_dsa_shake_128f, /* tcId 64 */
+		SHEX ("C9A7900E931AFBA2B52A5BC55A2DC4D12DDC9BF8E0B2ED0BDE83E674F1ECE7AA"),
+		SHEX ("0E87FF20256E0E499A53B52DF91467C01F0431C07250AFE93DE814117B5D66D3"),
+		read_hex_file ("slh-dsa-shake-128f-tc64.msg", 2280),
+		read_hex_file ("slh-dsa-shake-128f-tc64.sig", SLH_DSA_128F_SIGNATURE_SIZE));
+
   test_slh_dsa (&slh_dsa_sha2_128s, /* tcId 162 */
 		SHEX ("0FD12C3F990748CF9B1426413B64128EDF9242E50B9E29378BD24CAD4D547540"),
 		SHEX ("438E444071BD643C2407BD9FEB0071EC21DAA14113518133D6161EF420EE629D"),
