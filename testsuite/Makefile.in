@@ -97,7 +97,8 @@ DISTFILES = $(SOURCES) $(CXX_SOURCES) Makefile.in \
 	    $(TS_SH) $(TS_SC_NETTLE) $(TS_SC_HOGWEED) sc-valgrind.sh testutils.h sha3.awk \
 	    gold-bug.txt slh-dsa-shake-128s.ref slh-dsa-shake-128f.ref \
 	    slh-dsa-shake-128f-tc64.msg slh-dsa-shake-128f-tc64.sig \
-	    slh-dsa-shake-128s-tc215.msg slh-dsa-shake-128s-tc215.sig
+	    slh-dsa-shake-128s-tc215.msg slh-dsa-shake-128s-tc215.sig \
+	    slh-dsa-sha2-128s-tc162.msg slh-dsa-sha2-128s-tc162.sig
 
 all: $(EXTRA_TARGETS)
 

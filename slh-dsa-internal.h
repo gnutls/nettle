@@ -58,6 +58,7 @@
 #define _slh_dsa_128f_params _nettle_slh_dsa_128f_params
 
 #define _slh_hash_shake _nettle_slh_hash_shake
+#define _slh_hash_sha256 _nettle_slh_hash_sha256
 
 /* Size of a single hash, including the seed and prf parameters */
 #define _SLH_DSA_128_SIZE 16
@@ -129,6 +130,7 @@ struct slh_hash
 };
 
 extern const struct slh_hash _slh_hash_shake;  /* For sha3_ctx. */
+extern const struct slh_hash _slh_hash_sha256; /* For sha256_ctx. */
 
 struct slh_merkle_ctx_public
 {
