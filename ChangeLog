@@ -1,3 +1,18 @@
+2025-09-14  Niels Möller  <nisse@lysator.liu.se>
+
+	* slh-sha256.c: New file.
+	(_slh_hash_sha256): New slh_hash struct, and corresponding functions.
+	* slh-dsa-sha2-128s.c (slh_dsa_sha2_128s_root)
+	(slh_dsa_sha2_128s_generate_keypair, slh_dsa_sha2_128s_sign)
+	(slh_dsa_sha2_128s_verify): New file, new functions.
+	* Makefile.in (nettle_SOURCES): Add slh-sha256.c and
+	slh-dsa-sha2-128s.c.
+
+	* testsuite/slh-dsa-test.c (test_main): Add tests for slh_dsa_sha2_128s.
+	* examples/hogweed-benchmark.c (bench_slh_dsa_init_sha2_s): New
+	function.
+	(alg_list): Add benchmarking of slh-dsa-sha2-128s.
+
 2025-09-12  Niels Möller  <nisse@lysator.liu.se>
 
 	* slh-dsa-internal.h (slh_hash_randomizer_func)
