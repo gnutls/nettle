@@ -98,7 +98,8 @@ DISTFILES = $(SOURCES) $(CXX_SOURCES) Makefile.in \
 	    gold-bug.txt slh-dsa-shake-128s.ref slh-dsa-shake-128f.ref \
 	    slh-dsa-shake-128f-tc64.msg slh-dsa-shake-128f-tc64.sig \
 	    slh-dsa-shake-128s-tc215.msg slh-dsa-shake-128s-tc215.sig \
-	    slh-dsa-sha2-128s-tc162.msg slh-dsa-sha2-128s-tc162.sig
+	    slh-dsa-sha2-128s-tc162.msg slh-dsa-sha2-128s-tc162.sig \
+	    slh-dsa-sha2-128f-tc7.msg slh-dsa-sha2-128f-tc7.sig
 
 all: $(EXTRA_TARGETS)
 

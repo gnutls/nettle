@@ -358,6 +358,15 @@ slh_dsa_sha2_128s = {
   slh_dsa_sha2_128s_verify,
 };
 
+static const struct slh_dsa_alg
+slh_dsa_sha2_128f = {
+  "slh_dsa_sha2_128f",
+  SLH_DSA_128_KEY_SIZE,
+  SLH_DSA_128F_SIGNATURE_SIZE,
+  slh_dsa_sha2_128f_sign,
+  slh_dsa_sha2_128f_verify,
+};
+
 static void
 test_slh_dsa (const struct slh_dsa_alg *alg,
 	      const struct tstring *pub, const struct tstring *priv,
@@ -588,6 +597,11 @@ test_main (void)
 			 SHEX ("173D04C938C1C36BF289C3C022D04B14"),
 			 SHEX ("0162C10219D422ADBA1359E6AA65299C"));
 
+  test_slh_dsa_128_root (slh_dsa_sha2_128f_root, /* tcId 31 */
+			 SHEX ("A868F1BD5DEBC12D4C9FAD66AABD0A94"),
+			 SHEX ("C42BCB3B5A6F331F5CCE899253C6D9E2"),
+			 SHEX ("B546DF247BE4C457F3D467CDFCFABD39"));
+
   test_slh_dsa_128_root (slh_dsa_shake_128s_root, /* tcId 11 */
 			 SHEX ("529FFE86200D1F32C2B60D0CD909F190"),
 			 SHEX ("C151951F3811029239B74ADD24C506AF"),
@@ -642,6 +656,12 @@ test_main (void)
 
   /* From
      https://github.com/usnistgov/ACVP-Server/blob/master/gen-val/json-files/SLH-DSA-sigGen-FIPS205/internalProjection.json */
+  test_slh_dsa (&slh_dsa_sha2_128f, /* tcId 7 */
+		SHEX ("0C04FABC4FCA7F356AC36C28B99D7A1FCFEF78F38B167CA9D0AB8772910C3945"),
+		SHEX ("704555B4E5DD1B979A4C3B7A0A0E4EE241D59AE0779CAF0DF58300F21066DDA7"),
+		read_hex_file ("slh-dsa-sha2-128f-tc7.msg", 5024),
+		read_hex_file ("slh-dsa-sha2-128f-tc7.sig", SLH_DSA_128F_SIGNATURE_SIZE));
+
   test_slh_dsa (&slh_dsa_shake_128f, /* tcId 64 */
 		SHEX ("C9A7900E931AFBA2B52A5BC55A2DC4D12DDC9BF8E0B2ED0BDE83E674F1ECE7AA"),
 		SHEX ("0E87FF20256E0E499A53B52DF91467C01F0431C07250AFE93DE814117B5D66D3"),
