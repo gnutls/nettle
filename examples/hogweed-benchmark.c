@@ -857,8 +857,8 @@ bench_curve_clear (void *p)
 
 struct slh_dsa_ctx
 {
-  uint8_t pub[SLH_DSA_SHAKE_128_KEY_SIZE];
-  uint8_t key[SLH_DSA_SHAKE_128_KEY_SIZE];
+  uint8_t pub[SLH_DSA_128_KEY_SIZE];
+  uint8_t key[SLH_DSA_128_KEY_SIZE];
   uint8_t msg[10];
   uint8_t *sig;
   void (*sign)(const uint8_t *pub, const uint8_t *priv,
@@ -870,17 +870,17 @@ struct slh_dsa_ctx
 };
 
 static void *
-bench_slh_dsa_init_s (unsigned size)
+bench_slh_dsa_init_shake_s (unsigned size)
 {
   struct slh_dsa_ctx *ctx;
   assert (size == 128);
 
   ctx = xalloc (sizeof (*ctx));
-  memset (ctx->key, 1, SLH_DSA_SHAKE_128_KEY_SIZE);
-  memset (ctx->pub, 2, SLH_DSA_SHAKE_128_SEED_SIZE);
-  slh_dsa_shake_128s_root (ctx->pub, ctx->key, ctx->pub + SLH_DSA_SHAKE_128_SEED_SIZE);
+  memset (ctx->key, 1, SLH_DSA_128_KEY_SIZE);
+  memset (ctx->pub, 2, SLH_DSA_128_SEED_SIZE);
+  slh_dsa_shake_128s_root (ctx->pub, ctx->key, ctx->pub + SLH_DSA_128_SEED_SIZE);
   memset (ctx->msg, 3, sizeof (ctx->msg));
-  ctx->sig = xalloc (SLH_DSA_SHAKE_128S_SIGNATURE_SIZE);
+  ctx->sig = xalloc (SLH_DSA_128S_SIGNATURE_SIZE);
   slh_dsa_shake_128s_sign (ctx->pub, ctx->key, sizeof (ctx->msg), ctx->msg, ctx->sig);
   ctx->sign = slh_dsa_shake_128s_sign;
   ctx->verify = slh_dsa_shake_128s_verify;
@@ -888,20 +888,56 @@ bench_slh_dsa_init_s (unsigned size)
 }
 
 static void *
-bench_slh_dsa_init_f (unsigned size)
+bench_slh_dsa_init_shake_f (unsigned size)
 {
   struct slh_dsa_ctx *ctx;
   assert (size == 128);
 
   ctx = xalloc (sizeof (*ctx));
-  memset (ctx->key, 1, SLH_DSA_SHAKE_128_KEY_SIZE);
-  memset (ctx->pub, 2, SLH_DSA_SHAKE_128_SEED_SIZE);
-  slh_dsa_shake_128f_root (ctx->pub, ctx->key, ctx->pub + SLH_DSA_SHAKE_128_SEED_SIZE);
+  memset (ctx->key, 1, SLH_DSA_128_KEY_SIZE);
+  memset (ctx->pub, 2, SLH_DSA_128_SEED_SIZE);
+  slh_dsa_shake_128f_root (ctx->pub, ctx->key, ctx->pub + SLH_DSA_128_SEED_SIZE);
   memset (ctx->msg, 3, sizeof (ctx->msg));
-  ctx->sig = xalloc (SLH_DSA_SHAKE_128F_SIGNATURE_SIZE);
+  ctx->sig = xalloc (SLH_DSA_128F_SIGNATURE_SIZE);
   slh_dsa_shake_128f_sign (ctx->pub, ctx->key, sizeof (ctx->msg), ctx->msg, ctx->sig);
   ctx->sign = slh_dsa_shake_128f_sign;
   ctx->verify = slh_dsa_shake_128f_verify;
+  return ctx;
+}
+
+static void *
+bench_slh_dsa_init_sha2_s (unsigned size)
+{
+  struct slh_dsa_ctx *ctx;
+  assert (size == 128);
+
+  ctx = xalloc (sizeof (*ctx));
+  memset (ctx->key, 1, SLH_DSA_128_KEY_SIZE);
+  memset (ctx->pub, 2, SLH_DSA_128_SEED_SIZE);
+  slh_dsa_sha2_128s_root (ctx->pub, ctx->key, ctx->pub + SLH_DSA_128_SEED_SIZE);
+  memset (ctx->msg, 3, sizeof (ctx->msg));
+  ctx->sig = xalloc (SLH_DSA_128S_SIGNATURE_SIZE);
+  slh_dsa_sha2_128s_sign (ctx->pub, ctx->key, sizeof (ctx->msg), ctx->msg, ctx->sig);
+  ctx->sign = slh_dsa_sha2_128s_sign;
+  ctx->verify = slh_dsa_sha2_128s_verify;
+  return ctx;
+}
+
+static void *
+bench_slh_dsa_init_sha2_f (unsigned size)
+{
+  struct slh_dsa_ctx *ctx;
+  assert (size == 128);
+
+  ctx = xalloc (sizeof (*ctx));
+  memset (ctx->key, 1, SLH_DSA_128_KEY_SIZE);
+  memset (ctx->pub, 2, SLH_DSA_128_SEED_SIZE);
+  slh_dsa_sha2_128f_root (ctx->pub, ctx->key, ctx->pub + SLH_DSA_128_SEED_SIZE);
+  memset (ctx->msg, 3, sizeof (ctx->msg));
+  ctx->sig = xalloc (SLH_DSA_128F_SIGNATURE_SIZE);
+  slh_dsa_sha2_128f_sign (ctx->pub, ctx->key, sizeof (ctx->msg), ctx->msg, ctx->sig);
+  ctx->sign = slh_dsa_sha2_128f_sign;
+  ctx->verify = slh_dsa_sha2_128f_verify;
   return ctx;
 }
 
@@ -959,8 +995,10 @@ struct alg alg_list[] = {
   { "curve", 448, bench_curve_init, bench_curve_mul_g, bench_curve_mul, bench_curve_clear },
   { "gostdsa",  256, bench_gostdsa_init, bench_gostdsa_sign, bench_gostdsa_verify, bench_gostdsa_clear },
   { "gostdsa",  512, bench_gostdsa_init, bench_gostdsa_sign, bench_gostdsa_verify, bench_gostdsa_clear },
-  { "slh-dsa-shake-s", 128, bench_slh_dsa_init_s, bench_slh_dsa_sign, bench_slh_dsa_verify, bench_slh_dsa_clear },
-  { "slh-dsa-shake-f", 128, bench_slh_dsa_init_f, bench_slh_dsa_sign, bench_slh_dsa_verify, bench_slh_dsa_clear },
+  { "slh-dsa-shake-s", 128, bench_slh_dsa_init_shake_s, bench_slh_dsa_sign, bench_slh_dsa_verify, bench_slh_dsa_clear },
+  { "slh-dsa-shake-f", 128, bench_slh_dsa_init_shake_f, bench_slh_dsa_sign, bench_slh_dsa_verify, bench_slh_dsa_clear },
+  { "slh-dsa-sha2-s", 128, bench_slh_dsa_init_sha2_s, bench_slh_dsa_sign, bench_slh_dsa_verify, bench_slh_dsa_clear },
+  { "slh-dsa-sha2-f", 128, bench_slh_dsa_init_sha2_f, bench_slh_dsa_sign, bench_slh_dsa_verify, bench_slh_dsa_clear },
 };
 
 #define numberof(x)  (sizeof (x) / sizeof ((x)[0]))

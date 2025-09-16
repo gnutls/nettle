@@ -34,9 +34,9 @@
 
 #include <stdint.h>
 
+#include "nettle-types.h"
+
 /* Name mangling */
-#define _slh_shake_init _nettle_slh_shake_init
-#define _slh_shake _nettle_slh_shake
 #define _wots_gen _nettle_wots_gen
 #define _wots_sign _nettle_wots_sign
 #define _wots_verify _nettle_wots_verify
@@ -49,13 +49,16 @@
 #define _xmss_gen _nettle_xmss_gen
 #define _xmss_sign _nettle_xmss_sign
 #define _xmss_verify _nettle_xmss_verify
-#define _slh_dsa_randomizer _nettle_slh_dsa_randomizer
-#define _slh_dsa_digest _nettle_slh_dsa_digest
+#define _slh_dsa_pure_digest _nettle_slh_dsa_pure_digest
+#define _slh_dsa_pure_rdigest _nettle_slh_dsa_pure_rdigest
 #define _slh_dsa_sign _nettle_slh_dsa_sign
 #define _slh_dsa_verify _nettle_slh_dsa_verify
 
-#define _slh_dsa_shake_128s_params _nettle_slh_dsa_shake_128s_params
-#define _slh_dsa_shake_128f_params _nettle_slh_dsa_shake_128f_params
+#define _slh_dsa_128s_params _nettle_slh_dsa_128s_params
+#define _slh_dsa_128f_params _nettle_slh_dsa_128f_params
+
+#define _slh_hash_shake _nettle_slh_hash_shake
+#define _slh_hash_sha256 _nettle_slh_hash_sha256
 
 /* Size of a single hash, including the seed and prf parameters */
 #define _SLH_DSA_128_SIZE 16
@@ -82,11 +85,58 @@ enum slh_addr_type
     SLH_FORS_PRF = 6,
   };
 
-struct sha3_ctx;
+/* Compute the randomizer for a prefix + message, from secret PRF. */
+typedef void slh_hash_randomizer_func (const uint8_t *public_seed, const uint8_t *secret_prf,
+				       size_t prefix_length, const uint8_t *prefix,
+				       size_t msg_length, const uint8_t *msg,
+				       uint8_t *randomizer);
+
+/* Compute the message digest, with the randomizer and public key
+   (both seed and root) as input. */
+typedef void slh_hash_msg_digest_func (const uint8_t *randomizer, const uint8_t *pub,
+				       size_t prefix_length, const uint8_t *prefix,
+				       size_t msg_length, const uint8_t *msg,
+				       size_t digest_size, uint8_t *digest);
+
+/* Initialize context with public seed and first part of the ADRS. */
+typedef void slh_hash_init_tree_func (void *tree_ctx, const uint8_t *public_seed,
+				      uint32_t layer, uint64_t tree_idx);
+/* Initialize a new context starting from the tree_ctx, extending it
+   with the rest of the ADRS. */
+typedef void slh_hash_init_hash_func (const void *tree_ctx, void *ctx,
+				      const struct slh_address_hash *ah);
+/* Initialize a temporary context like above _init_hash, and hash a
+   single value, e.g., the secret seed or a secret wots value. */
+typedef void slh_hash_secret_func (const void *tree_ctx,
+				   const struct slh_address_hash *ah,
+				   const uint8_t *secret, uint8_t *out);
+/* Initialize a temporary context like above _init_hash, and hash two
+   values: The left and right child hashes of a merkle tree node. */
+typedef void slh_hash_node_func (const void *tree_ctx,
+				 const struct slh_address_hash *ah,
+				 const uint8_t *left, const uint8_t *right,
+				 uint8_t *out);
+
+struct slh_hash
+{
+  slh_hash_init_tree_func *init_tree;
+  slh_hash_init_hash_func *init_hash;
+  nettle_hash_update_func *update;
+  nettle_hash_digest_func *digest;
+  slh_hash_secret_func *secret;
+  slh_hash_node_func *node;
+  slh_hash_randomizer_func *randomizer;
+  slh_hash_msg_digest_func *msg_digest;
+};
+
+extern const struct slh_hash _slh_hash_shake;  /* For sha3_ctx. */
+extern const struct slh_hash _slh_hash_sha256; /* For sha256_ctx. */
+
 struct slh_merkle_ctx_public
 {
+  const struct slh_hash *hash;
   /* Initialized based on public seed and slh_address_tree. */
-  const struct sha3_ctx *tree_ctx;
+  const void *tree_ctx;
   unsigned keypair; /* Used only by fors_leaf and fors_node. */
 };
 
@@ -94,6 +144,9 @@ struct slh_merkle_ctx_secret
 {
   struct slh_merkle_ctx_public pub;
   const uint8_t *secret_seed;
+  /* Scratch hashing context, used only by xmss_leaf and _xmss_sign
+     (where it is passed on to wots operations). */
+  void *scratch_ctx;
 };
 
 struct slh_xmss_params
@@ -111,39 +164,43 @@ struct slh_fors_params
   unsigned short signature_size;
 };
 
+typedef void slh_parse_digest_func (const uint8_t *digest, uint64_t *tree_idx, unsigned *leaf_idx);
+
 struct slh_dsa_params
 {
+  slh_parse_digest_func *parse_digest;
   struct slh_xmss_params xmss;
   struct slh_fors_params fors;
 };
 
-extern const struct slh_dsa_params _slh_dsa_shake_128s_params;
-
-void
-_slh_shake_init (struct sha3_ctx *ctx, const uint8_t *public_seed,
-		 uint32_t layer, uint64_t tree_idx);
-
-void
-_slh_shake (const struct sha3_ctx *tree_ctx,
-	    const struct slh_address_hash *ah,
-	    const uint8_t *secret, uint8_t *out);
+extern const struct slh_dsa_params _slh_dsa_128s_params;
+extern const struct slh_dsa_params _slh_dsa_128f_params;
 
 #define _WOTS_SIGNATURE_LENGTH 35
 /* 560 bytes */
 #define WOTS_SIGNATURE_SIZE (_WOTS_SIGNATURE_LENGTH*_SLH_DSA_128_SIZE)
 
 void
-_wots_gen (const struct sha3_ctx *tree_ctx, const uint8_t *secret_seed,
-	   uint32_t keypair, uint8_t *pub);
+_wots_gen (const struct slh_hash *hash, const void *tree_ctx,
+	   const uint8_t *secret_seed,
+	   uint32_t keypair, uint8_t *pub,
+	   /* Allocated by caller, initialized and clobbered by callee. */
+	   void *pub_ctx);
 
 void
-_wots_sign (const struct sha3_ctx *tree_ctx, const uint8_t *secret_seed,
-	    unsigned keypair, const uint8_t *msg, uint8_t *signature, uint8_t *pub);
+_wots_sign (const struct slh_hash *hash, const void *tree_ctx,
+	    const uint8_t *secret_seed,
+	    unsigned keypair, const uint8_t *msg,
+	    uint8_t *signature, uint8_t *pub,
+	    /* Allocated by caller, initialized and clobbered by callee. */
+	    void *pub_ctx);
 
 /* Computes candidate public key from signature. */
 void
-_wots_verify (const struct sha3_ctx *tree_ctx,
-	      unsigned keypair, const uint8_t *msg, const uint8_t *signature, uint8_t *pub);
+_wots_verify (const struct slh_hash *hash, const void *tree_ctx,
+	      unsigned keypair, const uint8_t *msg, const uint8_t *signature, uint8_t *pub,
+	      /* Allocated by caller, initialized and clobbered by callee. */
+	      void *pub_ctx);
 
 /* Merkle tree functions. Could be generalized for other merkle tree
    applications, by using const void* for the ctx argument. */
@@ -178,13 +235,17 @@ _fors_gen (const struct slh_merkle_ctx_secret *ctx, unsigned index, uint8_t *sk,
 void
 _fors_sign (const struct slh_merkle_ctx_secret *ctx,
 	    const struct slh_fors_params *fors,
-	    const uint8_t *msg, uint8_t *signature, uint8_t *pub);
+	    const uint8_t *msg, uint8_t *signature, uint8_t *pub,
+	    /* Allocated by caller, initialized and clobbered by callee. */
+	    void *pub_ctx);
 
 /* Computes candidate public key from signature. */
 void
 _fors_verify (const struct slh_merkle_ctx_public *ctx,
 	      const struct slh_fors_params *fors,
-	      const uint8_t *msg, const uint8_t *signature, uint8_t *pub);
+	      const uint8_t *msg, const uint8_t *signature, uint8_t *pub,
+	      /* Allocated by caller, initialized and clobbered by callee. */
+	      void *pub_ctx);
 
 /* Just the auth path, excluding the wots signature, 144 bytes. */
 #define XMSS_AUTH_SIZE(h) ((h) * _SLH_DSA_128_SIZE)
@@ -192,9 +253,10 @@ _fors_verify (const struct slh_merkle_ctx_public *ctx,
 
 /* Provided scratch must be of size (xmss->h + 1) * _SLH_DSA_128_SIZE. */
 void
-_xmss_gen (const uint8_t *public_seed, const uint8_t *secret_seed,
-	   const struct slh_xmss_params *xmss,
-	   uint8_t *scratch, uint8_t *root);
+_xmss_gen (const struct slh_hash *hash,
+	   const uint8_t *public_seed, const uint8_t *secret_seed,
+	   const struct slh_xmss_params *xmss, uint8_t *root,
+	   void *tree_ctx, void *scratch_ctx, uint8_t *scratch);
 
 /* Signs using wots, then signs wots public key using xmss. Also
    returns the xmss public key (i.e., root hash).*/
@@ -204,26 +266,34 @@ _xmss_sign (const struct slh_merkle_ctx_secret *ctx, unsigned h,
 
 void
 _xmss_verify (const struct slh_merkle_ctx_public *ctx, unsigned h,
-	      unsigned idx, const uint8_t *msg, const uint8_t *signature, uint8_t *pub);
+	      unsigned idx, const uint8_t *msg, const uint8_t *signature, uint8_t *pub,
+	      /* Allocated by caller, initialized and clobbered by callee. */
+	      void *scratch_ctx);
 
 void
-_slh_dsa_randomizer (const uint8_t *public_seed, const uint8_t *secret_prf,
-		     size_t msg_length, const uint8_t *msg,
-		     uint8_t *randomizer);
+_slh_dsa_pure_digest (const struct slh_hash *hash,
+		      const uint8_t *pub,
+		      size_t length, const uint8_t *msg,
+		      const uint8_t *randomizer, size_t digest_size, uint8_t *digest);
+
 void
-_slh_dsa_digest (const uint8_t *randomizer, const uint8_t *pub,
-		 size_t length, const uint8_t *msg,
-		 size_t digest_size, uint8_t *digest);
+_slh_dsa_pure_rdigest (const struct slh_hash *hash,
+		       const uint8_t *pub, const uint8_t *prf,
+		       size_t length, const uint8_t *msg,
+		       uint8_t *randomizer, size_t digest_size, uint8_t *digest);
+
 void
 _slh_dsa_sign (const struct slh_dsa_params *params,
+	       const struct slh_hash *hash,
 	       const uint8_t *pub, const uint8_t *priv,
-	       const uint8_t *digest,
-	       uint64_t tree_idx, unsigned leaf_idx,
-	       uint8_t *signature);
+	       const uint8_t *digest, uint8_t *signature,
+	       void *tree_ctx, void *scratch_ctx);
 int
-_slh_dsa_verify (const struct slh_dsa_params *params, const uint8_t *pub,
-		 const uint8_t *digest, uint64_t tree_idx, unsigned leaf_idx,
-		 const uint8_t *signature);
+_slh_dsa_verify (const struct slh_dsa_params *params,
+		 const struct slh_hash *hash,
+		 const uint8_t *pub,
+		 const uint8_t *digest, const uint8_t *signature,
+		 void *tree_ctx, void *scratch_ctx);
 
 
 #endif /* NETTLE_SLH_DSA_INTERNAL_H_INCLUDED */

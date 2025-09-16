@@ -1,3 +1,107 @@
+2025-09-15  Niels Möller  <nisse@lysator.liu.se>
+
+	* slh-dsa-sha2-128f.c (slh_dsa_sha2_128f_root)
+	(slh_dsa_sha2_128f_generate_keypair, slh_dsa_sha2_128f_sign)
+	(slh_dsa_sha2_128f_verify): New file, new functions.
+	* Makefile.in (nettle_SOURCES): Add slh-dsa-sha2-128f.c.
+
+	* testsuite/slh-dsa-test.c (test_main): Add tests for slh-dsa-sha2-128f.
+	* examples/hogweed-benchmark.c (alg_list): Add benchmarking of slh-dsa-sha2-128f.
+
+2025-09-14  Niels Möller  <nisse@lysator.liu.se>
+
+	* slh-sha256.c: New file.
+	(_slh_hash_sha256): New slh_hash struct, and corresponding functions.
+	* slh-dsa-sha2-128s.c (slh_dsa_sha2_128s_root)
+	(slh_dsa_sha2_128s_generate_keypair, slh_dsa_sha2_128s_sign)
+	(slh_dsa_sha2_128s_verify): New file, new functions.
+	* Makefile.in (nettle_SOURCES): Add slh-sha256.c and
+	slh-dsa-sha2-128s.c.
+
+	* testsuite/slh-dsa-test.c (test_main): Add tests for slh_dsa_sha2_128s.
+	* examples/hogweed-benchmark.c (bench_slh_dsa_init_sha2_s): New
+	function.
+	(alg_list): Add benchmarking of slh-dsa-sha2-128s.
+
+2025-09-12  Niels Möller  <nisse@lysator.liu.se>
+
+	* slh-dsa-internal.h (slh_hash_randomizer_func)
+	(slh_hash_msg_digest_func, slh_hash_init_tree_func)
+	(slh_hash_init_hash_func, slh_hash_secret_func)
+	(slh_hash_node_func): New typedefs, for slh-related hash
+	operations.
+	(struct slh_hash): New struct.
+	(struct slh_merkle_ctx_public): Add slh_hash pointer, and use
+	const void * for context.
+	(struct slh_merkle_ctx_secret): Add scratch_ctx, needed by
+	xmss_leaf.
+
+	* slh-shake.c (slh_shake_init_tree): Renamed and made static.
+	(_slh_shake_init): ... old name.
+	(slh_shake_secret): Renamed and made static.
+	(_slh_shake): ...old name.
+	(slh_shake_init_hash, slh_shake_node)
+	(slh_shake_digest, slh_shake_randomizer)
+	(slh_shake_msg_digest): New functions.
+	( _slh_hash_shake): New slh_hash struct.
+
+	* slh-fors.c: Update for new hash abstraction.
+	* slh-wots.c: Likewise.
+	* slh-xmss.c: Likewise.
+
+	* slh-dsa.c (_slh_dsa_pure_digest, _slh_dsa_pure_rdigest): New functions.
+	(_slh_dsa_sign): Add slh_hash argument, and contexts allocated by caller.
+	(_slh_dsa_verify): Likewise.
+	* slh-dsa-shake-128f.c (slh_dsa_shake_128f_root): Allocate sha3
+	contexts, use _slh_hash_shake.
+	(slh_dsa_shake_128f_sign): Allocate sha3 contexts, call
+	_slh_dsa_pure_rdigest.
+	(slh_dsa_shake_128f_verify): Allocate sha3 contexts, call
+	_slh_dsa_pure_digest.
+	* slh-dsa-shake-128s.c: Analogous changes.
+
+2025-09-09  Niels Möller  <nisse@lysator.liu.se>
+
+	* slh-dsa-internal.h (slh_parse_digest_func): New typedef.
+	(struct slh_dsa_params): New function pointer parse_digest.
+
+	* slh-dsa.c (_slh_dsa_sign): Delete tree_idx and leaf_idx
+	arguments. Instead, call params->parse_digest to get them from the
+	digest. Introduce c99 mid-block declarations, for convenience.
+	(_slh_dsa_verify): Likewise.
+
+	* slh-dsa-128s.c: New file.
+	(_slh_dsa_128s_params): Params struct moved here.
+	(parse_digest): Corresponding function to extract tree and leaf
+	indices from digest.
+	* slh-dsa-shake-128s.c (_slh_dsa_128s_params, parse_digest): ...
+	old location.
+
+	* slh-dsa-128f.c: New file.
+	(_slh_dsa_128f_params): Params struct moved here.
+	(parse_digest): Corresponding function to extract tree and leaf
+	indices from digest.
+	* slh-dsa-shake-128f.c (_slh_dsa_128f_params, parse_digest): ...
+	old location.
+
+	* Makefile.in (nettle_SOURCES): Add slh-dsa-128s.c slh-dsa-128f.c.
+
+2025-09-08  Niels Möller  <nisse@lysator.liu.se>
+
+	* slh-dsa-shake-128s.c (_slh_dsa_128s_params): Renamed, from...
+	(_slh_dsa_shake_128s_params): ... old name.
+	* slh-dsa-shake-128f.c (_slh_dsa_128f_params): Renamed, from...
+	(_slh_dsa_shake_128f_params): ... old name.
+
+2025-09-05  Niels Möller  <nisse@lysator.liu.se>
+
+	* slh-dsa.h (SLH_DSA_128_SEED_SIZE, SLH_DSA_128_KEY_SIZE)
+	(SLH_DSA_128S_SIGNATURE_SIZE, SLH_DSA_128F_SIGNATURE_SIZE):
+	Renamed and updated all uses, from...
+	(SLH_DSA_SHAKE_128_SEED_SIZE, SLH_DSA_SHAKE_128_KEY_SIZE)
+	(SLH_DSA_SHAKE_128S_SIGNATURE_SIZE)
+	(SLH_DSA_SHAKE_128F_SIGNATURE_SIZE): ... old names.
+
 2025-07-07  Niels Möller  <nisse@lysator.liu.se>
 
 	* ecc-secp384r1.c (ecc_secp384r1_modp) [GMP_NUMB_BITS == 32]:
