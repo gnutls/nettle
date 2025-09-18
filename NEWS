@@ -25,6 +25,37 @@ NEWS for the Nettle 4.0 release
 	libhogweed.so.7.0, with new sonames libnettle.so.9 and
 	libhogweed.so.7.
 
+	Interface changes:
+
+	* The _digest functions for hash algorithms, MACs and AEADs no
+          longer take the desired digest size as argument, instead,
+          they always produce the full-size digest. The typedef
+          nettle_hash_digest_func has also been changed accordingly.
+
+          There are two exceptions: CCM and OCB (functions ccm_digest,
+          ocb_digest, ccm_ae128_digest, ocb_aes128_digest, ...). These
+          AEAD algorithms are specified with a variable tag length,
+          which is not a mere truncation of the output.
+
+	* The functions to process complete messages using CCM AES now
+	  take a const cipher context as the first argument, e.g,
+	  first argument to ccm_aes128_encrypt_message is now a const
+	  struct aes128_ctx *. It used to be a struct ccm_aes128_ctx
+	  *, where everything but the underlying cipher context was
+	  ignored.
+
+	* The SHA3 functions now use the same struct sha3_ctx for all
+	  flavors, and the same function sha3_init. Old names, e.g.,
+	  sha3_256_ctx and sha3_256_init, are defined as preprocessor
+	  aliases, for backwards compatibility.
+
+	C language version:
+
+	* Support for at least C99 is required when building Nettle.
+	  In addition, support for alignof and alignas is required;
+	  these are part of C11, but intention is that this is the
+	  only required C11 feature.
+
 	Interface deletions:
 
 	* Deleted the old struct aes_ctx, and all functions operating
@@ -70,30 +101,6 @@ NEWS for the Nettle 4.0 release
 	* Deleted compatibility alias yarrow_force_reseed. Renamed to
           yarrow_slow_reseed in Nettle-2.0.
 
-	Interface changes:
-
-	* The _digest functions for hash algorithms, MACs and AEADs no
-          longer take the desired digest size as argument, instead,
-          they always produce the full-size digest. The typedef
-          nettle_hash_digest_func has also been changed accordingly.
-
-          There are two exceptions: CCM and OCB (functions ccm_digest,
-          ocb_digest, ccm_ae128_digest, ocb_aes128_digest, ...). These
-          AEAD algorithms are specified with a variable tag length,
-          which is not a mere truncation of the output.
-
-	* The functions to process complete messages using CCM AES now
-	  take a const cipher context as the first argument, e.g,
-	  first argument to ccm_aes128_encrypt_message is now a const
-	  struct aes128_ctx *. It used to be a struct ccm_aes128_ctx
-	  *, where everything but the underlying cipher context was
-	  ignored.
-
-	* The SHA3 functions now use the same struct sha3_ctx for all
-	  flavors, and the same function sha3_init. Old names, e.g.,
-	  sha3_256_ctx and sha3_256_init, are defined as preprocessor
-	  aliases, for backwards compatibility.
-
 	ABI changes and improvements.
 
 	* Introduce 16-byte alignment on certain types. Applied to
@@ -116,6 +123,22 @@ NEWS for the Nettle 4.0 release
 	  discussed for a long time, with first attempt made by Dmitry
 	  Baryshkov years ago, but delayed, since it implies an ABI
 	  break.
+
+	Configure changes:
+
+	* The unusual configure options --with-lib-path and
+	  --with-include-path has been deleted. Use CFLAGS and LDFLAGS
+	  instead. This implies that Nettle's configure script no
+	  longer attempts to add rpath-related linker flags
+	  automagically; if any are needed, they must be passed in
+	  LDFLAGS.
+
+	* The logic to sometimes change the default libdir has been
+          deleted. Previously, configure tried to be helpful and
+          change the default, e.g., to ${exec_prefix}/lib32 when you
+          build 32-bit libraries on a system where ${exec_prefix}/lib
+          is for 64-bit libraries. If you relied on this behavior, you
+          now have to use --libdir configure option.
 
 NEWS for the Nettle 3.10.2 release
 
