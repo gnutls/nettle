@@ -2,6 +2,8 @@
 
 	* configure.ac: Delete unusual configure options --with-lib-path
 	and --with-lib-path.
+	(libdir): Delete logic to set the default libdir depending on ABI.
+
 	* aclocal.m4 (LSH_PATH_ADD, LSH_RPATH_ADD, LSH_RPATH_INIT)
 	(LSH_RPATH_FIX): Deleted now unused macros.
 
