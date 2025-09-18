@@ -25,22 +25,6 @@ AC_SUBST([MINOR_VERSION])
 AC_CANONICAL_HOST
 
 # Command line options
-AC_ARG_WITH(include-path,
-  AS_HELP_STRING([--with-include-path], [A colon-separated list of directories to search for include files]),,
-  [with_include_path=''])
-
-if test x$with_include_path != x ; then
-  CPPFLAGS="$CPPFLAGS -I`echo $with_include_path | sed 's/:/ -I/g'`"
-fi
-
-AC_ARG_WITH(lib-path,
-  AS_HELP_STRING([--with-lib-path], [A colon-separated list of directories to search for libraries]),,
-  [with_lib_path=''])
-
-if test x$with_lib_path != x ; then
-  LDFLAGS="$LDFLAGS -L`echo $with_lib_path | sed 's/:/ -L/g'`"
-fi
-
 AC_ARG_ENABLE(public-key,
   AS_HELP_STRING([--disable-public-key], [Disable public key algorithms]),,
   [enable_public_key=yes])
@@ -140,11 +124,6 @@ AH_TEMPLATE([WITH_EXTRA_ASSERTS], [Defined to enable additional asserts])
 if test "$enable_extra_asserts" = yes ; then
   AC_DEFINE(WITH_EXTRA_ASSERTS)
 fi
-
-LSH_RPATH_INIT([`echo $with_lib_path | sed 's/:/ /g'` \
-    `echo $exec_prefix | sed "s@^NONE@$prefix/lib@g" | sed "s@^NONE@$ac_default_prefix/lib@g"` \
-    /usr/local/lib /sw/local/lib /sw/lib \
-    /usr/gnu/lib /opt/gnu/lib /sw/gnu/lib /usr/freeware/lib /usr/pkg/lib])
 
 # Checks for programs.
 AC_PROG_CC
@@ -270,9 +249,6 @@ if test "x$enable_public_key" = "xyes" ; then
     [GNU MP not found, or too old. GMP-6.1.0 or later is needed, see https://gmplib.org/.
     Support for public key algorithms will be unavailable.])]
         enable_public_key=no)
-
-    # Add -R flags needed to run programs linked with gmp
-    LSH_RPATH_FIX
   fi
 fi
 

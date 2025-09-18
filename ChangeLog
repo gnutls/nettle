@@ -1,3 +1,10 @@
+2025-09-18  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Delete unusual configure options --with-lib-path
+	and --with-lib-path.
+	* aclocal.m4 (LSH_PATH_ADD, LSH_RPATH_ADD, LSH_RPATH_INIT)
+	(LSH_RPATH_FIX): Deleted now unused macros.
+
 2025-09-15  Niels Möller  <nisse@lysator.liu.se>
 
 	* slh-dsa-sha2-128f.c (slh_dsa_sha2_128f_root)
