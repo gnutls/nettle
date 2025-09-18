@@ -1,5 +1,8 @@
 2025-09-18  Niels Möller  <nisse@lysator.liu.se>
 
+	* nettle.texinfo (Using Nettle): Group the sections Example,
+	Conventions, Linking, and Compatibility into a new chapter.
+
 	* configure.ac: Delete unusual configure options --with-lib-path
 	and --with-lib-path.
 	(libdir): Delete logic to set the default libdir depending on ABI.

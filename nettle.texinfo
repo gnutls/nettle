@@ -59,10 +59,7 @@ object-oriented wrapper for your favorite language or application.
 @menu
 * Introduction::                What is Nettle?
 * Copyright::                   Your rights.
-* Conventions::                 General interface conventions.
-* Example::                     An example program.
-* Linking::                     Linking with libnettle and libhogweed.
-* Compatibility::               On API and ABI compatibility between versions.
+* Using Nettle::                Example and conventions.
 * Reference::                   All Nettle functions and features.
 * Nettle soup::                 For the serious nettle hacker.
 * Installation::                How to install Nettle.
@@ -70,6 +67,13 @@ object-oriented wrapper for your favorite language or application.
 
 @detailmenu
  --- The Detailed Node Listing ---
+
+Using Nettle
+
+* Example::                     An example program.
+* Conventions::                 General interface conventions.
+* Linking::                     Linking with libnettle and libhogweed.
+* Compatibility::               On API and ABI compatibility between versions.
 
 Reference
 
@@ -198,8 +202,35 @@ in part, e.g., into documentation of programs that build on Nettle.
 Attribution, as well as contribution of improvements to the text, is of
 course appreciated, but it is not required.
 
+@node Using Nettle
+@chapter Using Nettle
+
+@menu
+* Example::                     An example program.
+* Conventions::                 General interface conventions.
+* Linking::                     Linking with libnettle and libhogweed.
+* Compatibility::               On API and ABI compatibility between versions.
+@end menu
+
+@node Example
+@section Example
+
+A simple example program that reads a file from standard input and
+writes its SHA256 checksum on standard output should give the flavor of
+Nettle.
+
+@example
+@verbatiminclude sha-example.c
+@end example
+
+On a typical Unix system, this program can be compiled and linked with
+the command line
+@example
+gcc sha-example.c -o sha-example -lnettle
+@end example
+
 @node Conventions
-@chapter Conventions
+@section Conventions
 
 For each supported algorithm, there is an include file that defines a
 @emph{context struct}, a few constants, and declares functions for
@@ -239,27 +270,8 @@ other way.
 Many of the functions lack return value and can never fail. Those
 functions which can fail, return one on success and zero on failure.
 
-@c FIXME: Say something about the name mangling.
-
-@node Example
-@chapter Example
-
-A simple example program that reads a file from standard input and
-writes its SHA256 checksum on standard output should give the flavor of
-Nettle.
-
-@example
-@verbatiminclude sha-example.c
-@end example
-
-On a typical Unix system, this program can be compiled and linked with
-the command line 
-@example
-gcc sha-example.c -o sha-example -lnettle
-@end example
-
 @node Linking
-@chapter Linking
+@section Linking
 
 Nettle actually consists of two libraries, @file{libnettle} and
 @file{libhogweed}. The @file{libhogweed} library contains those
@@ -275,8 +287,19 @@ algorithms, the recommended linker flags are @code{-lhogweed -lnettle
 may be sufficient to link with just @code{-lhogweed}, and the loader
 will resolve the dependencies automatically.
 
+To the linker, all external symbols in the @file{libnettle} and
+@file{libhogweed} libraries are prefixed with @code{nettle_} (or
+@code{_nettle_} for library internals). This reduces the risk of
+link-time name collisions with other libraries you want to link in the
+same program. However, you rarely see these prefixes, since header files
+define shorter preprocessor aliases. E.g., @file{nettle/sha2.h}, which
+declares @code{sha256_init} among other functions, also includes a
+@code{#define sha256_init nettle_sha256_init}. You can used either name,
+but the shorter names are recommended, and those are the ones used in
+this documentation.
+
 @node Compatibility
-@chapter Compatibility
+@section Compatibility
 @cindex ABI compatibility
 @cindex API compatibility
 @cindex Binary compatibility
