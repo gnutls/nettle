@@ -113,6 +113,7 @@ AC_ARG_VAR(ASM_FLAGS, [Extra flags for processing assembly source files])
 if test "x$enable_mini_gmp" = xyes ; then
   NETTLE_USE_MINI_GMP=1
   HOGWEED_EXTRA_SYMBOLS="mpz_*;gmp_*;mpn_*;mp_*;"
+  CFLAGS="$CFLAGS -DMINI_GMP_ENABLE_FLOAT=0"
 else
   NETTLE_USE_MINI_GMP=0
   HOGWEED_EXTRA_SYMBOLS=""

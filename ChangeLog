@@ -1,3 +1,10 @@
+2025-09-24  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac (CFLAGS): When using mini-gmp, define
+	MINI_GMP_ENABLE_FLOAT=0.
+
+	* mini-gmp.c, mini-gmp.h: Update from the GMP repository.
+
 2025-09-18  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle.texinfo (Using Nettle): Group the sections Example,
