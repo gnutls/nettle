@@ -1,10 +1,11 @@
 NEWS for the Nettle 4.0 release
 
-	This is a major cleanup release, with a few changes to
-	Nettle's API, as well as deletion of obsolete features. There
-	are also several improvements to the ABI that leaves the API
-	mostly unchanged, in particular, smaller context structs for
-	several algorithms.
+	This is a new major release. It includes one new feature,
+	support for SLH-DSA. There are several changes to Nettle's
+	API, as well as deletion of obsolete features. There are also
+	several improvements to the ABI that leaves the API mostly
+	unchanged, in particular, smaller context structs for several
+	algorithms.
 
 	The most disruptive API change is that the *_digest functions
         no longer takes the desired digest size as argument. Truncated
@@ -48,13 +49,6 @@ NEWS for the Nettle 4.0 release
 	  flavors, and the same function sha3_init. Old names, e.g.,
 	  sha3_256_ctx and sha3_256_init, are defined as preprocessor
 	  aliases, for backwards compatibility.
-
-	C language version:
-
-	* Support for at least C99 is required when building Nettle.
-	  In addition, support for alignof and alignas is required;
-	  these are part of C11, but intention is that this is the
-	  only required C11 feature.
 
 	Interface deletions:
 
@@ -124,7 +118,17 @@ NEWS for the Nettle 4.0 release
 	  Baryshkov years ago, but delayed, since it implies an ABI
 	  break.
 
-	Configure changes:
+	New features:
+
+	* Support for SLH-DSA signatures (stateless hash-based digital
+	  signature algorithm). See the Nettle manual for details.
+
+	Configure and build changes:
+
+	* Support for at least C99 is required when building Nettle.
+	  In addition, support for alignof and alignas is required;
+	  these are part of C11, but intention is that this is the
+	  only required C11 feature.
 
 	* The unusual configure options --with-lib-path and
 	  --with-include-path has been deleted. Use CFLAGS and LDFLAGS
