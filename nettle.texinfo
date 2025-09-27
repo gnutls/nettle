@@ -141,7 +141,8 @@ Public-key algorithms
 
 * RSA::                         The RSA public key algorithm.
 * DSA::                         The DSA digital signature algorithm.
-* Elliptic curves::             Elliptic curves and ECDSA
+* Elliptic curves::             Elliptic curves and ECDSA.
+* SLH-DSA::                     Stateless hash-based digital signatures.
 
 Elliptic curves
 
@@ -4732,7 +4733,8 @@ key, and to no others''.
 @menu
 * RSA::                         The RSA public key algorithm.
 * DSA::                         The DSA digital signature algorithm.
-* Elliptic curves::             Elliptic curves and ECDSA
+* Elliptic curves::             Elliptic curves and ECDSA.
+* SLH-DSA::                     Stateless hash-based digital signatures.
 @end menu
 
 @node RSA
@@ -5762,6 +5764,122 @@ Signs a message using the provided key pair.
 @end deftypefun
 
 @deftypefun int ed448_shake256_verify (const uint8_t *@var{pub}, size_t @var{length}, const uint8_t *@var{msg}, const uint8_t *@var{signature})
+Verifies a message using the provided public key. Returns 1 if the
+signature is valid, otherwise 0.
+@end deftypefun
+
+@node SLH-DSA
+@subsection SLH-DSA
+@cindex SLH-DSA
+@cindex post-quantum
+@cindex SPHINCS+
+
+SLH-DSA stands for Stateless hash-based digital signature algorithm. As
+the name suggests, it's security is based a cryptographic hash function.
+It is intended to be secure against an attacker with a large working
+quantum computer, often referred to as a ``post-quantum'' cryptographic
+algorithm. This is in contrast to ``classical'' public key algorithms
+based on the difficulty of the discrete logarithm problem or the
+factoring problem, because those problems can be solved efficiently if
+or when the attacker has a large scale quantum computer at their
+disposal.
+
+The SLH-DSA algorithm was standardized by NIST in 2024, as
+@cite{FIPS-205}, based on an algorithm proposal called SPHINCS+. Public
+and private keys are small, while signatures are rather large, 7856
+octets for the variant with smallest signatures.
+
+The main idea is that the private key is used as the seed for a
+pseudorandom generation of a large number of secret values. Each secret
+value is hashed, and the hashes are combined pairwise into a Merkle
+tree. The hash at the root of the Merkle tree is one piece of the public
+key. The holder of the private key can then prove knowledge of the
+private key by revealing one of the secret values, together with a
+Merkle tree inclusion proof that proves that the value is included in
+the public hash at the root of the tree. This idea is turned into a
+practical signature scheme by combining several variants of hash-based
+signatures and Merkle trees. The selection of secret values to reveal as
+part of an SLH-DSA signature depends on both the message and a
+deterministically generated nonce (also referred to as the message
+``randomizer'').
+
+Verifying an SLH-DSA signature boils down to verifying a number of
+Merkle inclusion proofs, which is pretty fast; performance is in the
+same ballpark as verifying elliptic curve signatures. Signing, on the
+other hand, needs to produce all those inclusion proofs, which requires
+traversal of all leaves of the corresponding Merkle trees, and this is
+several orders of magnitude slower than signing using elliptic curves or
+RSA.
+
+Nettle currently implements the four SLH-DSA variants designed for
+``128-bit security'': There's the choice of either SHA256 (in the SHA2
+family) or SHAKE256 (in the SHA3 family) as the underlying hash
+function. For either hash function, there's a ``small'' variant with
+smaller signature size and slower signing (but faster verify operation,
+since verify time depends directly on the signature size), and a
+``fast'' variant with faster signing time, larger signatures (and a
+slower verify operation).
+
+Both the private and public keys are of the same size, and each consists
+of two halves. It's somewhat peculiar that the public key is not derived
+deterministically from the private key, instead, the first half of the
+public key is a random seed value that should be generated independently
+of the private key, while the second half is the Merkle tree root hash
+that depends both on the private key and this public seed.
+
+Nettle defines SLH-DSA in @file{nettle/slh-dsa.h}.
+
+@defvr Constant SLH_DSA_128_KEY_SIZE
+Size in octets of public and private keys, 32, for SLH-DSA with 128-bit
+security level.
+@end defvr
+@defvr Constant SLH_DSA_128_SEED_SIZE
+Size in octets of the ``seed'' half of a private or public key, 16.
+@end defvr
+@defvr Constant SLH_DSA_128S_SIGNATURE_SIZE
+Signature size in octets for SLH-DSA with 128-bit security and the
+``small'' variant, 7856.
+@end defvr
+@defvr Constant SLH_DSA_128F_SIGNATURE_SIZE
+Signature size in octets for SLH-DSA with 128-bit security and the
+``fast'' variant, 17088.
+@end defvr
+
+@deftypefun void slh_dsa_shake_128s_generate_keypair (uint8_t *@var{pub}, uint8_t *@var{key}, void *@var{random_ctx}, nettle_random_func *@var{random})
+@deftypefunx void slh_dsa_shake_128f_generate_keypair (uint8_t *@var{pub}, uint8_t *@var{key}, void *@var{random_ctx}, nettle_random_func *@var{random})
+@deftypefunx void slh_dsa_sha2_128s_generate_keypair (uint8_t *@var{pub}, uint8_t *@var{key}, void *@var{random_ctx}, nettle_random_func *@var{random})
+@deftypefunx void slh_dsa_sha2_128f_generate_keypair (uint8_t *@var{pub}, uint8_t *@var{key}, void *@var{random_ctx}, nettle_random_func *@var{random})
+Generate a new keypair, public key stored at @var{pub}, private key
+stored at @var{key}, both of size @code{SLH_DSA_128_KEY_SIZE}.
+@var{random_ctx} and @var{random} is a randomness generator.
+@code{random(random_ctx, length, dst)} should generate @code{length}
+random octets and store them at @code{dst}.
+@end deftypefun
+
+@deftypefun void slh_dsa_shake_128s_root (const uint8_t *@var{public_seed}, const uint8_t *@var{private_seed}, uint8_t *@var{root})
+@deftypefunx void slh_dsa_shake_128f_root (const uint8_t *@var{public_seed}, const uint8_t *@var{private_seed}, uint8_t *@var{root})
+@deftypefunx void slh_dsa_sha2_128s_root (const uint8_t *@var{public_seed}, const uint8_t *@var{private_seed}, uint8_t *@var{root})
+@deftypefunx void slh_dsa_sha2_128f_root (const uint8_t *@var{public_seed}, const uint8_t *@var{private_seed}, uint8_t *@var{root})
+Perform the deterministic part of key generation. @var{public_seed} and
+@var{private_seed} are the first halves of respective key. @var{root},
+the output of this function, is the second half of the public key, i.e.,
+typically called with @var{root} = @var{public_seed} +
+@code{SLH_DSA_128_SEED_SIZE}.
+@end deftypefun
+
+@deftypefun void slh_dsa_shake_128s_sign (const uint8_t *@var{pub}, const uint8_t *@var{priv}, size_t @var{length}, const uint8_t *@var{msg}, uint8_t *@var{signature})
+@deftypefunx void slh_dsa_shake_128f_sign (const uint8_t *@var{pub}, const uint8_t *@var{priv}, size_t @var{length}, const uint8_t *@var{msg}, uint8_t *@var{signature})
+@deftypefunx void slh_dsa_sha2_128s_sign (const uint8_t *@var{pub}, const uint8_t *@var{priv}, size_t @var{length}, const uint8_t *@var{msg}, uint8_t *@var{signature})
+@deftypefunx void slh_dsa_sha2_128f_sign (const uint8_t *@var{pub}, const uint8_t *@var{priv}, size_t @var{length}, const uint8_t *@var{msg}, uint8_t *@var{signature})
+Signs a message using the provided key pair. The size of the resulting
+signature is @code{SLH_DSA_128S_SIGNATURE_SIZE} or
+@code{SLH_DSA_128F_SIGNATURE_SIZE} for respective functions.
+@end deftypefun
+
+@deftypefun int slh_dsa_shake_128s_verify (const uint8_t *@var{pub}, size_t @var{length}, const uint8_t *@var{msg}, const uint8_t *@var{signature})
+@deftypefunx int slh_dsa_shake_128f_verify (const uint8_t *@var{pub}, size_t @var{length}, const uint8_t *@var{msg}, const uint8_t *@var{signature})
+@deftypefunx int slh_dsa_sha2_128s_verify (const uint8_t *@var{pub}, size_t @var{length}, const uint8_t *@var{msg}, const uint8_t *@var{signature})
+@deftypefunx int slh_dsa_sha2_128f_verify (const uint8_t *@var{pub}, size_t @var{length}, const uint8_t *@var{msg}, const uint8_t *@var{signature})
 Verifies a message using the provided public key. Returns 1 if the
 signature is valid, otherwise 0.
 @end deftypefun

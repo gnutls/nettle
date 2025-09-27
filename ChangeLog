@@ -1,3 +1,7 @@
+2025-09-27  Niels Möller  <nisse@lysator.liu.se>
+
+	* nettle.texinfo (SLH-DSA): Document SLH-DSA.
+
 2025-09-24  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac (CFLAGS): When using mini-gmp, define
