@@ -1,3 +1,8 @@
+2025-10-02  Niels Möller  <nisse@lysator.liu.se>
+
+	* tools/sexp-conv-test: Improve tests, including --hash feature.
+	(test_hash): New function.
+
 2025-09-27  Niels Möller  <nisse@lysator.liu.se>
 
 	* nettle.texinfo (SLH-DSA): Document SLH-DSA.
