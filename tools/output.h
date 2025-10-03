@@ -64,11 +64,8 @@ struct sexp_output
 
 void
 sexp_output_init(struct sexp_output *output, FILE *f,
+		 const struct nettle_hash *hash,
 		 unsigned width, int prefer_hex);
-
-void
-sexp_output_hash_init(struct sexp_output *output,
-		      const struct nettle_hash *hash, void *ctx);
 
 void 
 sexp_put_newline(struct sexp_output *output,

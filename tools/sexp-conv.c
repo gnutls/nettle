@@ -384,7 +384,7 @@ main(int argc, char **argv)
   sexp_input_init(&input, stdin);
   sexp_parse_init(&parser, &input, SEXP_ADVANCED);
   sexp_compound_token_init(&token);
-  sexp_output_init(&output, stdout,
+  sexp_output_init(&output, stdout, options.hash,
 		   options.width, options.prefer_hex);
 
 #if HAVE_FCNTL_LOCKING
@@ -402,12 +402,6 @@ main(int argc, char **argv)
 	die("Locking output file failed: %s\n", strerror(errno));
     }
 #endif /* HAVE_FCNTL_LOCKING */
-  if (options.hash)
-    {
-      /* Leaks the context, but that doesn't matter */
-      void *ctx = xalloc(options.hash->context_size);
-      sexp_output_hash_init(&output, options.hash, ctx);
-    }
   
   sexp_get_char(&input);
   
@@ -439,6 +433,8 @@ main(int argc, char **argv)
   
   if (fflush(output.f) < 0)
     die("Final fflush failed: %s.\n", strerror(errno));
-  
+
+  free (output.ctx);
+
   return EXIT_SUCCESS;
 }

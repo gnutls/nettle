@@ -1,3 +1,11 @@
+2025-10-03  Niels Möller  <nisse@lysator.liu.se>
+
+	* tools/output.c (sexp_output_init): Add hash argument, allocate
+	context if non-null.
+	(sexp_output_hash_init): Deleted function.
+	* tools/sexp-conv.c (main): Update call to sexp_output_init. Free
+	context before exiting.
+
 2025-10-02  Niels Möller  <nisse@lysator.liu.se>
 
 	* tools/sexp-conv-test: Improve tests, including --hash feature.

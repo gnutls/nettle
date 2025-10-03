@@ -46,26 +46,24 @@
 
 void
 sexp_output_init(struct sexp_output *output, FILE *f,
+		 const struct nettle_hash *hash,
 		 unsigned width, int prefer_hex)
 {
   output->f = f;
   output->line_width = width;
   output->coding = NULL;
   output->prefer_hex = prefer_hex;
-  output->hash = NULL;
-  output->ctx = NULL;
+  output->hash = hash;
+  if (output->hash)
+    {
+      output->ctx = xalloc (output->hash->context_size);
+      output->hash->init (output->ctx);
+    }
+  else
+    output->ctx = NULL;
   
   output->pos = 0;
   output->soft_newline = 0;
-}
-
-void
-sexp_output_hash_init(struct sexp_output *output,
-		      const struct nettle_hash *hash, void *ctx)
-{
-  output->hash = hash;
-  output->ctx = ctx;
-  hash->init(ctx);
 }
 
 static void
