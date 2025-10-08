@@ -1,3 +1,10 @@
+2025-10-08  Niels Möller  <nisse@lysator.liu.se>
+
+	* tools/sexp-conv.c (list_hashes): New function.
+	(parse_options): Make --hash option use nettle_lookup_hash, and
+	change default to sha256. New option --list-hashes. Delete
+	obsolete option --raw-hash.
+
 2025-10-03  Niels Möller  <nisse@lysator.liu.se>
 
 	* tools/output.c (sexp_output_init): Add hash argument, allocate
