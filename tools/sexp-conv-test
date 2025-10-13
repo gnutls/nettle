@@ -14,82 +14,47 @@ print_nl () {
 
 test_advanced () {
     print_raw "$1" test.in
-    if $EMULATOR ./sexp-conv$EXEEXT -s advanced <test.in | tr -d '\r' >test1.out ; then
-	true
-    else
-	exit 1
-    fi
+    $EMULATOR ./sexp-conv$EXEEXT -s advanced <test.in | tr -d '\r' >test1.out || exit 1
+
     print_nl "$2" test2.out
 
-    if cmp test1.out test2.out ; then
-	true
-    else
-	exit 1;
-    fi
+    cmp test1.out test2.out || exit 1;
 }
 
 test_advanced_hex () {
     print_raw "$1" test.in
-    if $EMULATOR ./sexp-conv$EXEEXT -s hex <test.in | tr -d '\r' >test1.out ; then
-	true
-    else
-	exit 1
-    fi
+    $EMULATOR ./sexp-conv$EXEEXT -s hex <test.in | tr -d '\r' >test1.out || exit 1
+
     print_nl "$2" test2.out
 
-    if cmp test1.out test2.out ; then
-	true
-    else
-	exit 1;
-    fi
+    cmp test1.out test2.out || exit 1;
 }
 
 test_transport () {
     print_raw "$1" test.in
-    if $EMULATOR ./sexp-conv$EXEEXT -s transport <test.in | tr -d '\r' >test1.out ; then
-	true
-    else
-	exit 1
-    fi
+    $EMULATOR ./sexp-conv$EXEEXT -s transport <test.in | tr -d '\r' >test1.out || exit 1
+
     print_nl "$2" test2.out
 
-    if cmp test1.out test2.out ; then
-	true
-    else
-	exit 1;
-    fi
+    cmp test1.out test2.out || exit 1;
 }
 
 test_canonical () {
     print_raw "$1" test.in
-    if $EMULATOR ./sexp-conv$EXEEXT -s canonical <test.in >test1.out ; then
-	true
-    else
-	exit 1
-    fi
+    $EMULATOR ./sexp-conv$EXEEXT -s canonical <test.in >test1.out || exit 1
+
     print_raw "$2" test2.out
 
-    if cmp test1.out test2.out ; then
-	true
-    else
-	exit 1;
-    fi
+    cmp test1.out test2.out || exit 1;
 }
 
 test_hash () {
     print_raw "$1" test.in
-    if $EMULATOR ./sexp-conv$EXEEXT --hash=sha256 <test.in >test1.out ; then
-	true
-    else
-	exit 1
-    fi
+    $EMULATOR ./sexp-conv$EXEEXT --hash=sha256 <test.in >test1.out || exit 1
+
     print_nl "$2" test2.out
 
-    if cmp test1.out test2.out ; then
-	true
-    else
-	exit 1;
-    fi
+    cmp test1.out test2.out || exit 1
 }
 
 test_advanced '0:' '""'
