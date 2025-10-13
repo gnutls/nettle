@@ -1,5 +1,12 @@
 2025-10-13  Niels Möller  <nisse@lysator.liu.se>
 
+	* tools/input.h (struct sexp_input): Replace use of struct
+	nette_armor, replaced with...
+	(struct input_coding): New simpler struct.
+	* tools/input.c (sexp_input_start_base64)
+	(sexp_input_start_base16): New functions, replacing...
+	(sexp_input_start_coding, sexp_input_end_coding): Deleted functions.
+
 	* tools/output.h (struct sexp_output): Replace use of struct
 	nettle_armor, instead use just a put_char function pointer.
 	* tools/output.c (sexp_put_base16_start, sexp_put_base16_end)
