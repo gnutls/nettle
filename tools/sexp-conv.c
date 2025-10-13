@@ -77,9 +77,9 @@ sexp_convert_item(struct sexp_parser *parser,
   if (mode_out == SEXP_TRANSPORT)
     {
       sexp_put_char(output, '{');
-      sexp_put_code_start(output, &nettle_base64);
+      sexp_put_base64_start(output);
       sexp_convert_item(parser, token, output, SEXP_CANONICAL, 0);
-      sexp_put_code_end(output);
+      sexp_put_base64_end(output);
       sexp_put_char(output, '}');
     }
   else switch(token->type)

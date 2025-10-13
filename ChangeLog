@@ -1,3 +1,12 @@
+2025-10-13  Niels Möller  <nisse@lysator.liu.se>
+
+	* tools/output.h (struct sexp_output): Replace use of struct
+	nettle_armor, instead use just a put_char function pointer.
+	* tools/output.c (sexp_put_base16_start, sexp_put_base16_end)
+	(sexp_put_base64_start, sexp_put_base64_end): New functions,
+	replacing...
+	(sexp_put_code_start, sexp_put_code_end): Deleted functions.
+
 2025-10-08  Niels Möller  <nisse@lysator.liu.se>
 
 	* tools/sexp-conv.c (list_hashes): New function.
