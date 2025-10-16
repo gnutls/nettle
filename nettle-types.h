@@ -112,26 +112,6 @@ typedef void nettle_hash_update_func(void *ctx,
 				     const uint8_t *src);
 typedef void nettle_hash_digest_func(void *ctx, uint8_t *dst);
 
-/* ASCII armor codecs. NOTE: Experimental and subject to change. */
-
-typedef size_t nettle_armor_length_func(size_t length);
-typedef void nettle_armor_init_func(void *ctx);
-
-typedef size_t nettle_armor_encode_update_func(void *ctx,
-					       char *dst,
-					       size_t src_length,
-					       const uint8_t *src);
-
-typedef size_t nettle_armor_encode_final_func(void *ctx, char *dst);
-
-typedef int nettle_armor_decode_update_func(void *ctx,
-					    size_t *dst_length,
-					    uint8_t *dst,
-					    size_t src_length,
-					    const char *src);
-
-typedef int nettle_armor_decode_final_func(void *ctx);
-
 #ifdef __cplusplus
 }
 #endif

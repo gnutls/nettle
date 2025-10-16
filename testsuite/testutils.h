@@ -202,12 +202,6 @@ test_mac(const struct nettle_mac *mac,
 	 const struct tstring *msg,
 	 const struct tstring *digest);
 
-void
-test_armor(const struct nettle_armor *armor,
-           size_t data_length,
-           const uint8_t *data,
-           const char *ascii);
-
 #if WITH_HOGWEED
 
 #if NETTLE_USE_MINI_GMP

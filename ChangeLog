@@ -1,3 +1,29 @@
+2025-10-16  Niels Möller  <nisse@lysator.liu.se>
+
+	Delete the undocumented nettle_armor abstraction.
+	* nettle-types.h (nettle_armor_length_func)
+	(nettle_armor_init_func, nettle_armor_encode_update_func)
+	(nettle_armor_encode_final_func, nettle_armor_decode_update_func)
+	(nettle_armor_decode_final_func): Deleted typedefs.
+	* nettle-meta.h (struct nettle_armor): Deleted struct.
+	(_NETTLE_ARMOR, _NETTLE_ARMOR_0): Deleted macros.
+	(nettle_get_armors, nettle_armors, nettle_base64)
+	(nettle_base64url, nettle_base16): Deleted declarations.
+	* base16-meta.c: Deleted file.
+	* base64-meta.c: Deleted file.
+	* base64url-meta.c: Deleted file.
+	* nettle-meta-armors.c: Deleted file.
+	* Makefile.in (nettle_SOURCES): Drop deleted files.
+
+	* testsuite/base16-test.c (test_base16): New more concrete test function.
+	(test_main): Updated to use test_base16 rather than test_armor.
+	* testsuite/base64-test.c (test_base64): New more concretetest
+	function, parameterized only by init functions to use.
+	(test_main): Updated to use test_base64 rather than test_armor.
+	* testsuite/testutils.c (test_armor): Deleted function.
+	* testsuite/meta-armor-test.c: Deleted file.
+	* testsuite/Makefile.in (TS_NETTLE_SOURCES): Drop meta-armor-test.c.
+
 2025-10-13  Niels Möller  <nisse@lysator.liu.se>
 
 	* tools/input.h (struct sexp_input): Replace use of struct

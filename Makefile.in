@@ -94,9 +94,9 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt-table.c \
 		 arctwo.c arctwo-meta.c blowfish.c blowfish-bcrypt.c \
 		 balloon.c balloon-sha1.c balloon-sha256.c \
 		 balloon-sha384.c balloon-sha512.c \
-		 base16-encode.c base16-decode.c base16-meta.c \
-		 base64-encode.c base64-decode.c base64-meta.c \
-		 base64url-encode.c base64url-decode.c base64url-meta.c \
+		 base16-encode.c base16-decode.c \
+		 base64-encode.c base64-decode.c \
+		 base64url-encode.c base64url-decode.c \
 		 buffer.c buffer-init.c \
 		 camellia-crypt-internal.c camellia-table.c \
 		 camellia-absorb.c camellia-invert-key.c \
@@ -142,7 +142,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt-table.c \
 		 md5.c md5-meta.c \
 		 memeql-sec.c memxor.c memxor3.c \
 		 nettle-lookup-hash.c \
-		 nettle-meta-aeads.c nettle-meta-armors.c \
+		 nettle-meta-aeads.c \
 		 nettle-meta-ciphers.c nettle-meta-hashes.c nettle-meta-macs.c \
 		 ocb.c ocb-aes128.c \
 		 pbkdf2.c pbkdf2-hmac-gosthash94.c pbkdf2-hmac-sha1.c \

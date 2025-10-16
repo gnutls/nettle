@@ -1366,51 +1366,6 @@ test_mac(const struct nettle_mac *mac,
   free (hash);
 }
 
-void
-test_armor(const struct nettle_armor *armor,
-           size_t data_length,
-           const uint8_t *data,
-           const char *ascii)
-{
-  size_t ascii_length = strlen(ascii);
-  char *buffer = xalloc(1 + ascii_length);
-  uint8_t *check = xalloc(1 + armor->decode_length(ascii_length));
-  void *encode = xalloc(armor->encode_context_size);
-  void *decode = xalloc(armor->decode_context_size);
-  size_t done;
-
-  ASSERT(ascii_length
-	 <= (armor->encode_length(data_length) + armor->encode_final_length));
-  ASSERT(data_length <= armor->decode_length(ascii_length));
-  
-  memset(buffer, 0x33, 1 + ascii_length);
-  memset(check, 0x55, 1 + data_length);
-
-  armor->encode_init(encode);
-  
-  done = armor->encode_update(encode, buffer, data_length, data);
-  done += armor->encode_final(encode, buffer + done);
-  ASSERT(done == ascii_length);
-
-  ASSERT (MEMEQ(ascii_length, buffer, ascii));
-  ASSERT (0x33 == buffer[strlen(ascii)]);
-
-  armor->decode_init(decode);
-  done = armor->decode_length(ascii_length);
-
-  ASSERT(armor->decode_update(decode, &done, check, ascii_length, buffer));
-  ASSERT(done == data_length);
-  ASSERT(armor->decode_final(decode));
-  
-  ASSERT (MEMEQ(data_length, check, data));
-  ASSERT (0x55 == check[data_length]);
-
-  free(buffer);
-  free(check);
-  free(encode);
-  free(decode);
-}
-
 #if WITH_HOGWEED
 
 void
