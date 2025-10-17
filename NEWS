@@ -68,6 +68,8 @@ NEWS for the Nettle 4.0 release
 	  hmac_sha256_set_key, or the mac abstraction defined in
 	  nettle-meta.h, e.g, the nettle_hmac_sha256 instance.
 
+	* Deleted the undocumented struct nettle_armor abstraction.
+
 	* Deleted md5-compat.h, and everything declared therein. Use
           the interface in md5.h instead (or even better, stop using md5).
 
