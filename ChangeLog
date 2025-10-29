@@ -1,3 +1,8 @@
+2025-10-29  Niels Möller  <nisse@lysator.liu.se>
+
+	* base64-encode.c (base64_encode_group): Delete unused and
+	undocumented function.
+
 2025-10-16  Niels Möller  <nisse@lysator.liu.se>
 
 	Delete the undocumented nettle_armor abstraction.

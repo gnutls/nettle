@@ -47,7 +47,6 @@ extern "C" {
 #define base64_encode_update nettle_base64_encode_update
 #define base64_encode_final nettle_base64_encode_final
 #define base64_encode_raw nettle_base64_encode_raw
-#define base64_encode_group nettle_base64_encode_group
 #define base64_decode_init nettle_base64_decode_init
 #define base64url_decode_init nettle_base64url_decode_init
 #define base64_decode_single nettle_base64_decode_single
@@ -115,9 +114,6 @@ base64_encode_final(struct base64_encode_ctx *ctx,
  * to do that.*/
 void
 base64_encode_raw(char *dst, size_t length, const uint8_t *src);
-
-void
-base64_encode_group(char *dst, uint32_t group);
 
 
 /* Base64 decoding */

@@ -70,6 +70,8 @@ NEWS for the Nettle 4.0 release
 
 	* Deleted the undocumented struct nettle_armor abstraction.
 
+	* Deleted the undocumented function base64_encode_group.
+
 	* Deleted md5-compat.h, and everything declared therein. Use
           the interface in md5.h instead (or even better, stop using md5).
 
