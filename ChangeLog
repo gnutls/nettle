@@ -1,3 +1,13 @@
+2025-10-30  Niels Möller  <nisse@lysator.liu.se>
+
+	* base16-decode.c (base16_decode_single): Rewrite as a call to
+	base16_decode_update.
+	(base16_decode_update): Make *dst_length an input argument, should
+	hold size of dst buffer. Fail if decoding would exceed this size.
+	Update all callers.
+	* base64-decode.c (base64_decode_single, base64_decode_update):
+	Analogous changes.
+
 2025-10-29  Niels Möller  <nisse@lysator.liu.se>
 
 	* base64-encode.c (base64_encode_group): Delete unused and

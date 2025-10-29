@@ -23,7 +23,7 @@ test_base16 (size_t data_length, const uint8_t *data,
   ASSERT (0x33 == buffer[ascii_length]);
 
   base16_decode_init (&decode);
-  done = BASE16_DECODE_LENGTH (ascii_length);
+  done = data_length;
 
   ASSERT (base16_decode_update(&decode, &done, check, ascii_length, buffer));
   ASSERT (done == data_length);

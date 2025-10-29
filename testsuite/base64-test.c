@@ -132,6 +132,7 @@ static inline int
 base64_decode_in_place (struct base64_decode_ctx *ctx, size_t *dst_length,
 			size_t length, uint8_t *data)
 {
+  *dst_length = length;
   return base64_decode_update (ctx, dst_length,
 			       data, length, (const char *) data);
 }
