@@ -8,10 +8,10 @@ NEWS for the Nettle 4.0 release
 	algorithms.
 
 	The most disruptive API change is that the *_digest functions
-        no longer takes the desired digest size as argument. Truncated
-        hashes appeared to be an important use case decades ago when
-        the previous interface was designed, but that is now rather
-        obscure.
+	no longer takes the desired digest size as argument. Truncated
+	hashes appeared to be an important use case decades ago when
+	the previous interface was designed, but that is now rather
+	obscure.
 
 	Feedback on the new interfaces is appreciated, e.g., if the
 	variable tag length for OCB and CCM should be supported
@@ -29,14 +29,14 @@ NEWS for the Nettle 4.0 release
 	Interface changes:
 
 	* The _digest functions for hash algorithms, MACs and AEADs no
-          longer take the desired digest size as argument, instead,
-          they always produce the full-size digest. The typedef
-          nettle_hash_digest_func has also been changed accordingly.
+	  longer take the desired digest size as argument, instead,
+	  they always produce the full-size digest. The typedef
+	  nettle_hash_digest_func has also been changed accordingly.
 
-          There are two exceptions: CCM and OCB (functions ccm_digest,
-          ocb_digest, ccm_ae128_digest, ocb_aes128_digest, ...). These
-          AEAD algorithms are specified with a variable tag length,
-          which is not a mere truncation of the output.
+	  There are two exceptions: CCM and OCB (functions ccm_digest,
+	  ocb_digest, ccm_ae128_digest, ocb_aes128_digest, ...). These
+	  AEAD algorithms are specified with a variable tag length,
+	  which is not a mere truncation of the output.
 
 	* The functions to process complete messages using CCM AES now
 	  take a const cipher context as the first argument, e.g,
@@ -73,47 +73,47 @@ NEWS for the Nettle 4.0 release
 	* Deleted the undocumented function base64_encode_group.
 
 	* Deleted md5-compat.h, and everything declared therein. Use
-          the interface in md5.h instead (or even better, stop using md5).
+	  the interface in md5.h instead (or even better, stop using md5).
 
 	* Deleted pgp.h, and everything declared therein. This attempt
 	  to support openpgp formats was incomplete, undocumented, and
 	  mostly obsolete.
 
 	* Delete all the *_DATA_SIZE compatibility aliases. Use
-          corresponding *_BLOCK_SIZE constants instead, introduced in
-          Nettle-3.0.
+	  corresponding *_BLOCK_SIZE constants instead, introduced in
+	  Nettle-3.0.
 
 	* Deleted the obsolete functions _rsa_blind and _rsa_unblind.
 	  (Current RSA blinding in Nettle uses internal functions with
 	  a different interface).
 
 	* Delete compatibility aliases salsa20_set_iv,
-          SALSA20_IV_SIZE. These were renamed to salsa20_set_nonce and
-          SALSA20_NONCE_SIZE in Nettle-3.0.
+	  SALSA20_IV_SIZE. These were renamed to salsa20_set_nonce and
+	  SALSA20_NONCE_SIZE in Nettle-3.0.
 
 	* Deleted compatibility aliases _nettle_md5_compress,
-          _nettle_sha1_compress. These internal functions were
-          promoted to documented and supported functions in
-          Nettle-3.9, with new names md5_compress and sha1_compress.
+	  _nettle_sha1_compress. These internal functions were
+	  promoted to documented and supported functions in
+	  Nettle-3.9, with new names md5_compress and sha1_compress.
 
 	* Deleted compatibility alias yarrow_force_reseed. Renamed to
-          yarrow_slow_reseed in Nettle-2.0.
+	  yarrow_slow_reseed in Nettle-2.0.
 
 	ABI changes and improvements.
 
 	* Introduce 16-byte alignment on certain types. Applied to
-          union nettle_block16, and subkey arrays of AES and UMAC.
-          This is intended to improve performance for SIMD load and
-          store instructions, which on some platforms may be faster
-          with proper alignment. The larger alignment is enabled only
-          for platforms where the alignment of the uint64_t type is 8.
+	  union nettle_block16, and subkey arrays of AES and UMAC.
+	  This is intended to improve performance for SIMD load and
+	  store instructions, which on some platforms may be faster
+	  with proper alignment. The larger alignment is enabled only
+	  for platforms where the alignment of the uint64_t type is 8.
 
 	* Size of struct gcm_key is reduced from 4096 bytes to 2048.
 
 	* Size of the new sha3_ctx is considerable smaller, 216 bytes,
-          than the previous types that included a buffer for a
-          complete block. E.g., the largest one, for sha3_128_ctx
-          (shake128), used to be 376 bytes.
+	  than the previous types that included a buffer for a
+	  complete block. E.g., the largest one, for sha3_128_ctx
+	  (shake128), used to be 376 bytes.
 
 	* Size of HMAC contexts have been reduced, by not including
 	  multiple block buffers. E.g, size of struct hmac_sha256_ctx
@@ -142,11 +142,11 @@ NEWS for the Nettle 4.0 release
 	  LDFLAGS.
 
 	* The logic to sometimes change the default libdir has been
-          deleted. Previously, configure tried to be helpful and
-          change the default, e.g., to ${exec_prefix}/lib32 when you
-          build 32-bit libraries on a system where ${exec_prefix}/lib
-          is for 64-bit libraries. If you relied on this behavior, you
-          now have to use --libdir configure option.
+	  deleted. Previously, configure tried to be helpful and
+	  change the default, e.g., to ${exec_prefix}/lib32 when you
+	  build 32-bit libraries on a system where ${exec_prefix}/lib
+	  is for 64-bit libraries. If you relied on this behavior, you
+	  now have to use --libdir configure option.
 
 NEWS for the Nettle 3.10.2 release
 
