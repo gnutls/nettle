@@ -51,15 +51,15 @@ read_hex_file (const char *name, size_t max_size)
   struct base16_decode_ctx ctx;
   base16_decode_init (&ctx);
 
-  /* This function expects to read up to EOF without exhausting the
-     buffer, and fails if the file is too large. */
-  s = tstring_alloc (max_size + 1);
+  /* This function expects to read up to EOF, and fails if the amount
+     of data exceeds the max size. */
+  s = tstring_alloc (max_size);
 
   for (done = 0;;)
     {
       size_t left = s->length - done;
       size_t got = fread (input_buf, 1, MIN (left, sizeof (input_buf)), input);
-      size_t i;
+      size_t res;
 
       if (!got)
 	{
@@ -74,27 +74,14 @@ read_hex_file (const char *name, size_t max_size)
 	  return s;
 	}
 
-      /* Use base16_decode_single, to make handling of excess input
-	 straight-forward. */
-      for (i = 0; i < got; i++)
+      res = s->length - done;
+      if (!base16_decode_update (&ctx, &res, s->data + done, got, input_buf))
 	{
-	  int res = base16_decode_single (&ctx, s->data + done, input_buf[i]);
-	  if (res < 0)
-	    {
-	      fprintf (stderr, "hex decoding %s failed\n", name);
-	      FAIL ();
-	    }
-	  done += res;
-	  if (done == s->length)
-	    {
-	      fprintf (stderr, "hex file %s exceeds maximum size %ld\n",
-		       name, (long) s->length - 1);
-	      FAIL ();
-	    }
+	  fprintf (stderr, "hex decoding %s failed (possibly exceeding max size)\n", name);
+	  FAIL ();
 	}
+      done += res;
     }
-  fprintf (stderr, "file %s larger than expected\n", name);
-  FAIL ();
 }
 
 static void
