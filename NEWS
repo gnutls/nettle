@@ -50,6 +50,14 @@ NEWS for the Nettle 4.0 release
 	  sha3_256_ctx and sha3_256_init, are defined as preprocessor
 	  aliases, for backwards compatibility.
 
+	* The dst_length argument to base16_decode_update and
+	  base64_decode_update is now both an input and output
+	  argument. On input it must now hold the size of the
+	  destination buffer, and decoding fails if that is not
+	  sufficient. Previously, dst_length was an output only, and
+	  it was required that the destination buffer was large enough
+	  for any input of the given src_length.
+
 	Interface deletions:
 
 	* Deleted the old struct aes_ctx, and all functions operating
