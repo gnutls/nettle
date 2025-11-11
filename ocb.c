@@ -105,6 +105,8 @@ ocb_set_nonce (struct ocb_ctx *ctx,
   assert (tag_length > 0);
   assert (tag_length <= 16);
 
+  ctx->tag_length = tag_length;
+
   /* Bit size, or zero for tag_length == 16 */
   top.b[0] = (tag_length & 15) << 4;
   memset (top.b + 1, 0, 15 - nonce_length);
@@ -385,15 +387,15 @@ ocb_decrypt (struct ocb_ctx *ctx, const struct ocb_key *key,
 void
 ocb_digest (const struct ocb_ctx *ctx, const struct ocb_key *key,
 	    const void *cipher, nettle_cipher_func *f,
-	    size_t length, uint8_t *digest)
+	    uint8_t *digest)
 {
   union nettle_block16 block;
-  assert (length <= OCB_DIGEST_SIZE);
   block16_xor3 (&block,  &key->L[1],
 		(ctx->message_count > 0) ? &ctx->offset : &ctx->initial);
   block16_xor (&block, &ctx->checksum);
   f (cipher, OCB_BLOCK_SIZE, block.b, block.b);
-  memxor3 (digest, block.b, ctx->sum.b, length);
+  assert (ctx->tag_length <= OCB_BLOCK_SIZE);
+  memxor3 (digest, block.b, ctx->sum.b, ctx->tag_length);
 }
 
 void
@@ -409,7 +411,7 @@ ocb_encrypt_message (const struct ocb_key *key,
   ocb_set_nonce (&ctx, cipher, f, tlength, nlength, nonce);
   ocb_update (&ctx, key, cipher, f, alength, adata);
   ocb_encrypt (&ctx, key, cipher, f,  clength - tlength, dst, src);
-  ocb_digest (&ctx, key, cipher, f, tlength, dst + clength - tlength);
+  ocb_digest (&ctx, key, cipher, f, dst + clength - tlength);
 }
 
 int
@@ -427,6 +429,6 @@ ocb_decrypt_message (const struct ocb_key *key,
   ocb_update (&ctx, key, encrypt_ctx, encrypt, alength, adata);
   ocb_decrypt (&ctx, key, encrypt_ctx, encrypt, decrypt_ctx, decrypt,
 	       mlength, dst, src);
-  ocb_digest (&ctx, key, encrypt_ctx, encrypt, tlength, digest.b);
+  ocb_digest (&ctx, key, encrypt_ctx, encrypt, digest.b);
   return memeql_sec(digest.b, src + mlength, tlength);
 }

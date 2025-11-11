@@ -292,7 +292,7 @@ ocb_aes128_decrypt_wrapper (struct ocb_aes128_ctx *ctx,
 static void
 ocb_aes128_digest_wrapper (struct ocb_aes128_ctx *ctx, uint8_t *digest)
 {
-  ocb_aes128_digest (&ctx->ocb, &ctx->key, OCB_DIGEST_SIZE, digest);
+  ocb_aes128_digest (&ctx->ocb, &ctx->key, digest);
 }
 
 const struct nettle_aead
@@ -317,12 +317,6 @@ ocb_aes128_t96_set_nonce (struct ocb_aes128_ctx *ctx, const uint8_t *nonce)
 			12, OCB_NONCE_SIZE, nonce);
 }
 
-static void
-ocb_aes128_t96_digest (struct ocb_aes128_ctx *ctx, uint8_t *digest)
-{
-  ocb_aes128_digest (&ctx->ocb, &ctx->key, 12, digest);
-}
-
 const struct nettle_aead
 nettle_ocb_aes128_t96 =
   { "ocb_aes128", sizeof(struct ocb_aes128_ctx),
@@ -334,5 +328,5 @@ nettle_ocb_aes128_t96 =
     (nettle_hash_update_func *) ocb_aes128_update_wrapper,
     (nettle_crypt_func *) ocb_aes128_encrypt_wrapper,
     (nettle_crypt_func *) ocb_aes128_decrypt_wrapper,
-    (nettle_hash_digest_func *) ocb_aes128_t96_digest,
+    (nettle_hash_digest_func *) ocb_aes128_digest_wrapper,
   };
