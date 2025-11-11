@@ -81,11 +81,9 @@ ccm_aes192_decrypt(struct ccm_aes192_ctx *ctx,
 }
 
 void
-ccm_aes192_digest(struct ccm_aes192_ctx *ctx,
-		  size_t length, uint8_t *digest)
+ccm_aes192_digest(struct ccm_aes192_ctx *ctx, uint8_t *digest)
 {
-  ccm_digest(&ctx->ccm, &ctx->cipher, (nettle_cipher_func *) aes192_encrypt,
-	     length, digest);
+  ccm_digest(&ctx->ccm, &ctx->cipher, (nettle_cipher_func *) aes192_encrypt, digest);
 }
 
 void

@@ -133,7 +133,7 @@ test_cipher_ccm(const struct nettle_cipher *cipher,
     ccm_update(&ccm, ctx, cipher->encrypt, authdata->length, authdata->data);
   }
   ccm_encrypt(&ccm, ctx, cipher->encrypt, cleartext->length, en_data, cleartext->data);
-  ccm_digest(&ccm, ctx, cipher->encrypt, tlength, en_digest);
+  ccm_digest(&ccm, ctx, cipher->encrypt, en_digest);
 
   /* Decrypt using the incremental API. */
   ccm_set_nonce(&ccm, ctx, cipher->encrypt, nonce->length, nonce->data,
@@ -142,7 +142,7 @@ test_cipher_ccm(const struct nettle_cipher *cipher,
     ccm_update(&ccm, ctx, cipher->encrypt, authdata->length, authdata->data);
   }
   ccm_decrypt(&ccm, ctx, cipher->encrypt, cleartext->length, de_data, ciphertext->data);
-  ccm_digest(&ccm, ctx, cipher->encrypt, tlength, de_digest);
+  ccm_digest(&ccm, ctx, cipher->encrypt, de_digest);
 
   /* Compare results using the generic API. */
   test_compare_results("CCM", authdata,
@@ -205,7 +205,7 @@ test_cipher_ccm(const struct nettle_cipher *cipher,
       ccm_aes128_update(&aes, authdata->length, authdata->data);
     }
     ccm_aes128_encrypt(&aes, cleartext->length, en_data, cleartext->data);
-    ccm_aes128_digest(&aes, tlength, en_digest);
+    ccm_aes128_digest(&aes, en_digest);
 
     /* AES-128 decrypt. */
     ccm_aes128_set_nonce(&aes, nonce->length, nonce->data,
@@ -214,7 +214,7 @@ test_cipher_ccm(const struct nettle_cipher *cipher,
       ccm_aes128_update(&aes, authdata->length, authdata->data);
     }
     ccm_aes128_decrypt(&aes, cleartext->length, de_data, ciphertext->data);
-    ccm_aes128_digest(&aes, tlength, de_digest);
+    ccm_aes128_digest(&aes, de_digest);
 
     test_compare_results("CCM_AES_128", authdata,
 			 cleartext, ciphertext, de_data, en_data, de_digest);
@@ -251,7 +251,7 @@ test_cipher_ccm(const struct nettle_cipher *cipher,
       ccm_aes256_update(&aes, authdata->length, authdata->data);
     }
     ccm_aes256_encrypt(&aes, cleartext->length, en_data, cleartext->data);
-    ccm_aes256_digest(&aes, tlength, en_digest);
+    ccm_aes256_digest(&aes, en_digest);
 
     /* AES-256 decrypt. */
     ccm_aes256_set_nonce(&aes, nonce->length, nonce->data,
@@ -260,7 +260,7 @@ test_cipher_ccm(const struct nettle_cipher *cipher,
       ccm_aes256_update(&aes, authdata->length, authdata->data);
     }
     ccm_aes256_decrypt(&aes, cleartext->length, de_data, ciphertext->data);
-    ccm_aes256_digest(&aes, tlength, de_digest);
+    ccm_aes256_digest(&aes, de_digest);
 
     test_compare_results("CCM_AES_256", authdata,
 			 cleartext, ciphertext, de_data, en_data, de_digest);
@@ -632,16 +632,6 @@ test_main(void)
 		  SHEX("08 D0 84 21 43 01 00 00 00 00 48 DE AC 02 05 00 00 00 55 CF 00 00 51 52 53 54"), 1,
 		  SHEX(""),
 		  SHEX("22 3B C1 EC 84 1A B5 53"));
-
-  /*
-   * C.2.2 MAC data frame
-   */
-  test_cipher_ccm(&nettle_aes128,
-		  SHEX("C0 C1 C2 C3 C4 C5 C6 C7 C8 C9 CA CB CC CD CE CF"),
-		  SHEX("AC DE 48 00 00 00 00 01 00 00 00 05 04"),
-		  SHEX("69 DC 84 21 43 02 00 00 00 00 48 DE AC 01 00 00 00 00 48 DE AC 04 05 00 00 00"), 1,
-		  SHEX("61 62 63 64"),
-		  SHEX("D4 3E 02 2B"));
 
   /*
    * C.2.3 MAC command frame

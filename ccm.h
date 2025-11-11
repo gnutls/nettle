@@ -90,6 +90,8 @@ extern "C" {
 /* For CCM, the block size of the block cipher shall be 128 bits. */
 #define CCM_BLOCK_SIZE  16
 #define CCM_DIGEST_SIZE 16
+/* Digest size must be even, valid values 4, 6, 8, 10, 12, 14, 16 */
+#define CCM_MIN_DIGEST_SIZE 4
 #define CCM_MIN_NONCE_SIZE 7
 #define CCM_MAX_NONCE_SIZE 14
 
@@ -106,7 +108,8 @@ struct ccm_ctx {
   union nettle_block16 ctr;     /* Counter for CTR encryption. */
   union nettle_block16 tag;     /* CBC-MAC message tag. */
   /* Length of data processed by the CBC-MAC modulus the block size */
-  unsigned int blength;
+  unsigned short blength;
+  unsigned short tag_length;
 };
 
 /*
@@ -132,7 +135,7 @@ ccm_decrypt(struct ccm_ctx *ctx, const void *cipher, nettle_cipher_func *f,
 
 void
 ccm_digest(struct ccm_ctx *ctx, const void *cipher, nettle_cipher_func *f,
-	   size_t length, uint8_t *digest);
+	   uint8_t *digest);
 
 /*
  * All-in-one encryption and decryption API:
@@ -190,8 +193,7 @@ ccm_aes128_decrypt(struct ccm_aes128_ctx *ctx,
 		   size_t length, uint8_t *dst, const uint8_t *src);
 
 void
-ccm_aes128_digest(struct ccm_aes128_ctx *ctx,
-		  size_t length, uint8_t *digest);
+ccm_aes128_digest(struct ccm_aes128_ctx *ctx, uint8_t *digest);
 
 void
 ccm_aes128_encrypt_message(const struct aes128_ctx *ctx,
@@ -234,8 +236,7 @@ ccm_aes192_decrypt(struct ccm_aes192_ctx *ctx,
 		   size_t length, uint8_t *dst, const uint8_t *src);
 
 void
-ccm_aes192_digest(struct ccm_aes192_ctx *ctx,
-		  size_t length, uint8_t *digest);
+ccm_aes192_digest(struct ccm_aes192_ctx *ctx, uint8_t *digest);
 
 void
 ccm_aes192_encrypt_message(const struct aes192_ctx *ctx,
@@ -278,8 +279,7 @@ ccm_aes256_decrypt(struct ccm_aes256_ctx *ctx,
 		   size_t length, uint8_t *dst, const uint8_t *src);
 
 void
-ccm_aes256_digest(struct ccm_aes256_ctx *ctx,
-		  size_t length, uint8_t *digest);
+ccm_aes256_digest(struct ccm_aes256_ctx *ctx, uint8_t *digest);
 
 void
 ccm_aes256_encrypt_message(const struct aes256_ctx *ctx,

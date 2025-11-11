@@ -82,11 +82,9 @@ ccm_aes256_decrypt(struct ccm_aes256_ctx *ctx,
 }
 
 void
-ccm_aes256_digest(struct ccm_aes256_ctx *ctx,
-		  size_t length, uint8_t *digest)
+ccm_aes256_digest(struct ccm_aes256_ctx *ctx, uint8_t *digest)
 {
-  ccm_digest(&ctx->ccm, &ctx->cipher, (nettle_cipher_func *) aes256_encrypt,
-	     length, digest);
+  ccm_digest(&ctx->ccm, &ctx->cipher, (nettle_cipher_func *) aes256_encrypt, digest);
 }
 
 void
