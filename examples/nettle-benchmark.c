@@ -913,6 +913,7 @@ main(int argc, char **argv)
       &nettle_sha512_224, &nettle_sha512_256,
       &nettle_sha3_224, &nettle_sha3_256,
       &nettle_sha3_384, &nettle_sha3_512,
+      &nettle_blake2s_256, &nettle_blake2b_512,
       &nettle_ripemd160, &nettle_gosthash94,
       &nettle_gosthash94cp, &nettle_streebog256,
       &nettle_streebog512, &nettle_sm3,

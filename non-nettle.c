@@ -42,6 +42,7 @@
 
 #include "non-nettle.h"
 #include "arcfour.h"
+#include "blake2.h"
 #include "blowfish.h"
 #include "cbc.h"
 #include "chacha.h"
@@ -335,4 +336,28 @@ nettle_ocb_aes128_t96 =
     (nettle_crypt_func *) ocb_aes128_encrypt_wrapper,
     (nettle_crypt_func *) ocb_aes128_decrypt_wrapper,
     (nettle_hash_digest_func *) ocb_aes128_t96_digest,
+  };
+
+const struct nettle_hash
+nettle_blake2b_512 =
+  {
+    "blake2b_512",
+    sizeof (struct blake2b_ctx),
+    BLAKE2B_DIGEST_SIZE,
+    BLAKE2B_BLOCK_SIZE,
+    (nettle_hash_init_func *) blake2b_512_init,
+    (nettle_hash_update_func *) blake2b_update,
+    (nettle_hash_digest_func *) blake2b_digest,
+  };
+
+const struct nettle_hash
+nettle_blake2s_256 =
+  {
+    "blake2s_256",
+    sizeof (struct blake2s_ctx),
+    BLAKE2S_DIGEST_SIZE,
+    BLAKE2S_BLOCK_SIZE,
+    (nettle_hash_init_func *) blake2s_256_init,
+    (nettle_hash_update_func *) blake2s_update,
+    (nettle_hash_digest_func *) blake2s_digest,
   };

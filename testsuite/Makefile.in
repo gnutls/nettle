@@ -13,6 +13,7 @@ PRE_LDFLAGS = -L..
 TS_NETTLE_SOURCES = aes-test.c aes-keywrap-test.c arcfour-test.c arctwo-test.c \
 		    balloon-test.c blowfish-test.c bcrypt-test.c cast128-test.c \
 	            base16-test.c base64-test.c \
+		    blake2b-test.c blake2s-test.c \
 		    camellia-test.c chacha-test.c \
 		    cnd-memcpy-test.c \
 		    des-test.c des3-test.c \

@@ -92,5 +92,7 @@ struct ocb_aes128_ctx
 extern const struct nettle_aead nettle_ocb_aes128;
 extern const struct nettle_aead nettle_ocb_aes128_t96;
 
+extern const struct nettle_hash nettle_blake2b_512;
+extern const struct nettle_hash nettle_blake2s_256;
 
 #endif /* NETTLE_NON_NETTLE_H_INCLUDED */

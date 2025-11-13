@@ -97,6 +97,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt-table.c \
 		 base16-encode.c base16-decode.c \
 		 base64-encode.c base64-decode.c \
 		 base64url-encode.c base64url-decode.c \
+		 blake2b.c blake2s.c \
 		 buffer.c buffer-init.c \
 		 camellia-crypt-internal.c camellia-table.c \
 		 camellia-absorb.c camellia-invert-key.c \
@@ -241,7 +242,7 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 OPT_SOURCES = fat-arm.c fat-arm64.c fat-ppc.c fat-s390x.c fat-x86_64.c mini-gmp.c
 
 HEADERS = aes.h arcfour.h arctwo.h asn1.h blowfish.h balloon.h \
-	  base16.h base64.h bignum.h buffer.h camellia.h cast128.h \
+	  base16.h base64.h bignum.h blake2.h buffer.h camellia.h cast128.h \
 	  cbc.h ccm.h cfb.h chacha.h chacha-poly1305.h ctr.h \
 	  curve25519.h curve448.h des.h dsa.h eax.h \
 	  ecc-curve.h ecc.h ecdsa.h eddsa.h \
