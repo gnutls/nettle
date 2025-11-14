@@ -1,4 +1,4 @@
-/* base64-encode.c
+/* base64-decode.c
 
    Copyright (C) 2002 Niels Möller
 

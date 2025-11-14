@@ -4066,7 +4066,7 @@
 
 	* rsa-sec-decrypt.c (rsa_sec_decrypt): New function.
 	Fixed length side-channel silent version of rsa-decrypt.
-	* testsuite/rsa-encrypt-test.c: add tests for the new fucntion.
+	* testsuite/rsa-encrypt-test.c: add tests for the new function.
 
 	* testsuite/pkcs1-sec-decrypt-test.c: Adds tests for
 	_pkcs1_sec_decrypt.
@@ -14563,7 +14563,7 @@
 	* testsuite/cbc-test.c (test_cbc_bulk): Use aes_set_encrypt_key
 	and aes_set_decrypt_key.
 
-	* sparc/aes.asm (_aes_crypt): Use symbolic names for the fucntion
+	* sparc/aes.asm (_aes_crypt): Use symbolic names for the function
 	arguments.
 
 2002-02-14  Niels Möller  <nisse@cuckoo.hack.org>
