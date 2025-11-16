@@ -42,16 +42,19 @@ extern "C" {
 
 /* Name mangling */
 #define blake2b_init nettle_blake2b_init
+#define blake2b_set_key nettle_blake2b_set_key
 #define blake2b_update nettle_blake2b_update
 #define blake2b_digest nettle_blake2b_digest
 #define blake2b_512_init nettle_blake2b_512_init
 #define blake2s_init nettle_blake2s_init
+#define blake2s_set_key nettle_blake2s_set_key
 #define blake2s_update nettle_blake2s_update
 #define blake2s_digest nettle_blake2s_digest
 #define blake2s_256_init nettle_blake2s_256_init
 
 #define BLAKE2B_DIGEST_SIZE 64
 #define BLAKE2B_BLOCK_SIZE 128
+#define BLAKE2B_KEY_SIZE 64
 
 struct blake2b_ctx
 {
@@ -63,7 +66,12 @@ struct blake2b_ctx
 };
 
 void
-blake2b_init (struct blake2b_ctx *ctx, unsigned digest_size);
+blake2b_init (struct blake2b_ctx *ctx, size_t digest_size);
+
+/* Alternative initialization function with key. */
+void
+blake2b_set_key(struct blake2b_ctx *ctx, size_t key_size, const uint8_t *key,
+		size_t digest_size);
 
 void
 blake2b_update (struct blake2b_ctx *ctx,
@@ -77,6 +85,7 @@ blake2b_512_init (struct blake2b_ctx *ctx);
 
 #define BLAKE2S_DIGEST_SIZE 32
 #define BLAKE2S_BLOCK_SIZE 64
+#define BLAKE2S_KEY_SIZE 32
 
 struct blake2s_ctx
 {
@@ -88,7 +97,12 @@ struct blake2s_ctx
 };
 
 void
-blake2s_init (struct blake2s_ctx *ctx, unsigned digest_size);
+blake2s_init (struct blake2s_ctx *ctx, size_t digest_size);
+
+/* Alternative initialization function with key. */
+void
+blake2s_set_key(struct blake2s_ctx *ctx, size_t key_size, const uint8_t *key,
+		size_t digest_size);
 
 void
 blake2s_update (struct blake2s_ctx *ctx,

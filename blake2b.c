@@ -110,14 +110,35 @@ blake2b_compress (uint64_t *h, const uint8_t *input,
     h[i] ^= v[i] ^ v[8+i];
 }
 
-void
-blake2b_init (struct blake2b_ctx *ctx, unsigned digest_size)
+/* Initializes everything but ctx->index. */
+static void
+blake2b_init_internal (struct blake2b_ctx *ctx, size_t key_size,size_t digest_size)
 {
   assert (digest_size > 0 && digest_size <= BLAKE2B_DIGEST_SIZE);
   memcpy (ctx->state, iv, sizeof (ctx->state));
-  ctx->state[0] ^= 0x01010000 ^ digest_size;
-  ctx->count_low = ctx->count_high = ctx->index = 0;
+  ctx->state[0] ^= 0x01010000 ^ ((key_size << 8) | digest_size);
+  ctx->count_high = ctx->count_low = 0;
   ctx->digest_size = digest_size;
+}
+
+void
+blake2b_init (struct blake2b_ctx *ctx, size_t digest_size)
+{
+  ctx->index = 0;
+  blake2b_init_internal (ctx, 0, digest_size);
+}
+
+void
+blake2b_set_key(struct blake2b_ctx *ctx, size_t key_size, const uint8_t *key,
+		size_t digest_size)
+{
+  assert (key_size > 0 && key_size <= BLAKE2B_KEY_SIZE);
+
+  memcpy (ctx->block, key, key_size);
+  memset (ctx->block + key_size, 0, sizeof(ctx->block) - key_size);
+  ctx->index = sizeof(ctx->block);
+
+  blake2b_init_internal (ctx, key_size, digest_size);
 }
 
 void
