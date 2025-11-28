@@ -64,23 +64,21 @@ ocb_set_key (struct ocb_key *key, const void *cipher, nettle_cipher_func *f)
   block16_mulx_be (&key->L[2], &key->L[1]);
 }
 
-/* Add x^k L[2], where k is the number of trailing zero bits in i. */
+/* Add x^k L[2], where k > 0 is the number of trailing zero bits in i,
+   where i must be even. */
 static void
-update_offset(const struct ocb_key *key,
-	      union nettle_block16 *offset, uint64_t i)
+update_offset (const struct ocb_key *key,
+	       union nettle_block16 *offset, uint64_t i)
 {
-  if (i & 1)
-    block16_xor (offset, &key->L[2]);
-  else
-    {
-      assert (i > 0);
-      union nettle_block16 diff;
-      block16_mulx_be (&diff, &key->L[2]);
-      for (i >>= 1; !(i&1); i >>= 1)
-	block16_mulx_be (&diff, &diff);
+  union nettle_block16 diff;
+  assert (i > 0);
+  assert ((i&1) == 0);
 
-      block16_xor (offset, &diff);
-    }
+  block16_mulx_be (&diff, &key->L[2]);
+  for (i >>= 1; !(i&1); i >>= 1)
+    block16_mulx_be (&diff, &diff);
+
+  block16_xor (offset, &diff);
 }
 
 static void
@@ -153,16 +151,17 @@ ocb_fill_n (const struct ocb_key *key,
 
   for (; n >= 2; n -= 2, o += 2)
     {
+      union nettle_block16 diff;
       size_t i;
       count += 2; /* Always odd. */
 
       /* Based on trailing zeros of ctx->message_count - 1, the
          initial shift below discards a one bit. */
-      block16_mulx_be (&o[0], &key->L[2]);
+      block16_mulx_be (&diff, &key->L[2]);
       for (i = count >> 1; !(i&1); i >>= 1)
-	block16_mulx_be (&o[0], &o[0]);
+	block16_mulx_be (&diff, &diff);
 
-      block16_xor (&o[0], prev);
+      block16_xor3 (&o[0], prev, &diff);
       block16_xor3 (&o[1], &o[0], &key->L[2]);
       prev = &o[1];
     }
