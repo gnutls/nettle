@@ -67,7 +67,7 @@ ocb_set_key (struct ocb_key *key, const void *cipher, nettle_cipher_func *f)
 /* Add x^k L[2], where k is the number of trailing zero bits in i. */
 static void
 update_offset(const struct ocb_key *key,
-	      union nettle_block16 *offset, size_t i)
+	      union nettle_block16 *offset, uint64_t i)
 {
   if (i & 1)
     block16_xor (offset, &key->L[2]);
@@ -134,7 +134,7 @@ ocb_set_nonce (struct ocb_ctx *ctx,
 
 static void
 ocb_fill_n (const struct ocb_key *key,
-	    union nettle_block16 *offset, size_t count,
+	    union nettle_block16 *offset, uint64_t count,
 	    size_t n, union nettle_block16 *o)
 {
   assert (n > 0);
