@@ -1,3 +1,20 @@
+2025-12-02  Niels Möller  <nisse@lysator.liu.se>
+
+	Copy getopt files from current gnulib, using gnulib-tool.sh --copy-file.
+	* lib/getopt_int.h: New file (replacing old getopt_int.h).
+	* lib/getopt-ext.h: New file.
+	* lib/getopt-core.h: New File.
+	* lib/getopt.c: New file. Only change from gnulib is to wrap the
+	gettext.h usage inside a #ifndef _.
+	* lib/getopt1.c: New file.
+	* getopt.h: Rewritten as a wrapper for lib/getopt-core.h and
+	lib/getopt-ext.h.
+	* getopt.c: Rewritten as a wrapper for lib/getopt.c, including an
+	ELIDE_CODE check.
+	* getopt1.c: Analogous wrapper for lib/getopt1.c.
+	* Makefile.in (gnulib_FILES): New variable.
+	(DISTFILES): Updated to include $(gnulib_FILES) and getopt.h.
+
 2025-11-05  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/slh-dsa-test.c (read_hex_file): Simplify, using

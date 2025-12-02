@@ -30,6 +30,8 @@ EXTRA_CFLAGS = $(CCPIC)
 LIBTARGETS = @IF_STATIC@ libnettle.a @IF_HOGWEED@ libhogweed.a
 SHLIBTARGETS = @IF_SHARED@ $(LIBNETTLE_FORLINK) @IF_HOGWEED@ $(LIBHOGWEED_FORLINK)
 
+gnulib_FILES = lib/getopt-core.h lib/getopt-ext.h \
+	       lib/getopt.c lib/getopt1.c lib/getopt_int.h
 getopt_SOURCES = getopt.c getopt1.c
 getopt_TARGETS = $(getopt_SOURCES:.c=.$(OBJEXT))
 
@@ -268,7 +270,7 @@ SOURCES = $(nettle_SOURCES) $(hogweed_SOURCES) \
 
 # NOTE: This list must include all source files, with no duplicates,
 # independently of which source files are included in the build.
-DISTFILES = $(SOURCES) $(HEADERS) getopt.h getopt_int.h \
+DISTFILES = $(SOURCES) $(HEADERS) $(gnulib_FILES) getopt.h \
 	.bootstrap run-tests \
 	aclocal.m4 configure.ac \
 	configure stamp-h.in version.h.in \
