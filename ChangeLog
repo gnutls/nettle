@@ -1,3 +1,8 @@
+2025-12-02  Niels Möller  <nisse@lysator.liu.se>
+
+	* ocb.c (ocb_fill_n): Rework handling of initial blocks, and
+	eliminate the prev pointer.
+
 2025-11-05  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/slh-dsa-test.c (read_hex_file): Simplify, using
