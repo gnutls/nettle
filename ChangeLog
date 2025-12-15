@@ -1,3 +1,11 @@
+2025-12-15  Niels Möller  <nisse@lysator.liu.se>
+
+	* base16-decode.c (base16_decode_update): Fix returned value on
+	failure, should be 0. Previous change accidentally returned -1
+	instead.
+	* base64-decode.c (base64_decode_update): Analogous fix. This
+	regression was reported by Robert Augusteijn.
+
 2025-11-05  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/slh-dsa-test.c (read_hex_file): Simplify, using

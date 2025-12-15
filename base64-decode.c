@@ -99,7 +99,7 @@ base64_decode_update(struct base64_decode_ctx *ctx,
 	  assert(data >= 0 && data < 0x40);
 
 	  if (ctx->padding || (done >= *dst_length))
-	    return -1;
+	    return 0;
 
 	  ctx->word = ctx->word << 6 | data;
 	  ctx->bits += 6;
@@ -111,17 +111,17 @@ base64_decode_update(struct base64_decode_ctx *ctx,
 	    }
 	  break;
 	case TABLE_INVALID:
-	  return -1;
+	  return 0;
 	case TABLE_SPACE:
 	  continue;
 	case TABLE_END:
 	  /* There can be at most two padding characters. */
 	  if (!ctx->bits || ctx->padding > 2)
-	    return -1;
+	    return 0;
 
 	  if (ctx->word & ( (1<<ctx->bits) - 1))
 	    /* We shouldn't have any leftover bits */
-	    return -1;
+	    return 0;
 
 	  ctx->padding++;
 	  ctx->bits -= 2;

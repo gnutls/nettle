@@ -87,13 +87,13 @@ base16_decode_update(struct base16_decode_ctx *ctx,
     {
       unsigned char usrc = src[i];
       if (usrc >= 0x80)
-	return -1;
+	return 0;
 
       int digit = hex_decode_table[usrc];
       if (digit == HEX_SPACE)
 	continue;
       if (digit < 0 || done >= *dst_length)
-	return -1;
+	return 0;
 
       assert(digit < 0x10);
       if (ctx->bits)
