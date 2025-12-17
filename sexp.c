@@ -79,7 +79,8 @@ sexp_iterator_simple(struct sexp_iterator *iterator,
     do
       {
 	length = length * 10 + (c - '0');
-	if (length > (iterator->length - iterator->pos))
+	/* >= to account for ':' character */
+	if (length >= (iterator->length - iterator->pos))
 	  return 0;
 
 	if (EMPTY(iterator)) return 0;

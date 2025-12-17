@@ -1,3 +1,8 @@
+2025-12-17  Niels Möller  <nisse@lysator.liu.se>
+
+	* sexp.c (sexp_iterator_simple): Fix off-by-one error in length
+	check. Reported via oss-fuzz.
+
 2025-12-15  Niels Möller  <nisse@lysator.liu.se>
 
 	* base16-decode.c (base16_decode_update): Fix returned value on
