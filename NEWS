@@ -130,6 +130,13 @@ NEWS for the Nettle 4.0 release
 	  Baryshkov years ago, but delayed, since it implies an ABI
 	  break.
 
+	Bug fixes:
+
+	* Fix off-by-one bug in sexp parser, which could result in a
+	  one byte overread on invalid input. Also fix excessive
+	  recursion and stack usage for some inputs. Both problems
+	  reported via oss-fuzz.
+
 	New features:
 
 	* Support for SLH-DSA signatures (stateless hash-based digital
