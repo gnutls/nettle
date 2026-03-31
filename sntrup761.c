@@ -682,16 +682,28 @@ Short_fromlist (small * out, const uint32_t * in)
 
 /* e.g., b = 0 means out = Hash0(in) */
 static void
+hash_init (struct sha512_ctx *ctx, uint8_t b)
+{
+  sha512_init (ctx);
+  sha512_update (ctx, 1, &b);
+}
+#define hash_update sha512_update
+
+static void
+hash_digest (struct sha512_ctx *ctx, uint8_t *digest)
+{
+  uint8_t h[SHA512_DIGEST_SIZE];
+  sha512_digest (ctx, h);
+  memcpy (digest, h, HASH_SIZE);
+}
+
+static void
 Hash_prefix (uint8_t *out, uint8_t b, const uint8_t *in, int inlen)
 {
   struct sha512_ctx ctx;
-  uint8_t h[SHA512_DIGEST_SIZE];
-
-  sha512_init (&ctx);
-  sha512_update (&ctx, 1, &b);
-  sha512_update (&ctx, inlen, in);
-  sha512_digest (&ctx, h);
-  memcpy (out, h, HASH_SIZE);
+  hash_init (&ctx, b);
+  hash_update (&ctx, inlen, in);
+  hash_digest (&ctx, out);
 }
 
 /* ----- higher-level randomness */
@@ -944,13 +956,14 @@ static void
 HashConfirm (uint8_t *h, const uint8_t *r,
 	     /* const uint8_t *pk, */ const uint8_t *cache)
 {
-  uint8_t x[HASH_SIZE * 2];
-  int i;
+  struct sha512_ctx ctx;
+  uint8_t x[HASH_SIZE];
 
   Hash_prefix (x, 3, r, Inputs_bytes);
-  for (i = 0; i < HASH_SIZE; ++i)
-    x[HASH_SIZE + i] = cache[i];
-  Hash_prefix (h, 2, x, sizeof x);
+  hash_init (&ctx, 2);
+  hash_update (&ctx, sizeof (x), x);
+  hash_update (&ctx, HASH_SIZE, cache);
+  hash_digest (&ctx, h);
 }
 
 /* ----- session-key hash */
@@ -960,13 +973,14 @@ static void
 HashSession (uint8_t *k, uint8_t b, const uint8_t *y,
 	     const uint8_t *z)
 {
-  uint8_t x[HASH_SIZE + Ciphertexts_bytes + Confirm_bytes];
-  int i;
+  struct sha512_ctx ctx;
+  uint8_t x[HASH_SIZE];
 
   Hash_prefix (x, 3, y, Inputs_bytes);
-  for (i = 0; i < Ciphertexts_bytes + Confirm_bytes; ++i)
-    x[HASH_SIZE + i] = z[i];
-  Hash_prefix (k, b, x, sizeof x);
+  hash_init (&ctx, b);
+  hash_update (&ctx, sizeof (x), x);
+  hash_update (&ctx, Ciphertexts_bytes + Confirm_bytes, z);
+  hash_digest (&ctx, k);
 }
 
 /* ----- Streamlined NTRU Prime */
