@@ -9,7 +9,7 @@ variables:
   - ./.bootstrap
   - './configure $EXTRA_CONFIGURE_ARGS --disable-documentation'
   - 'make -j$(nproc)'
-  - 'make -j$(nproc) check'
+  - 'make -j$(nproc) check $EXTRA_CHECK_ARGS'
   - 'for t in $EXTRA_CHECK_TARGET ; do make -j$(nproc) $t ; done'
   variables:
     NETTLE_TEST_SEED: '0'
@@ -71,6 +71,7 @@ native/ubsan:
   extends: .native-build
   variables:
     EXTRA_CONFIGURE_ARGS: '--disable-assembler'
+    EXTRA_CHECK_ARGS: 'TS_SC=""'
     CFLAGS: '-fsanitize=undefined -fno-sanitize-recover -g -O2'
     CXXFLAGS: '-fsanitize=undefined -fno-sanitize-recover -g -O2'
 
