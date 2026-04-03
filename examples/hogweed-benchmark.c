@@ -52,6 +52,8 @@
 #include "curve25519.h"
 #include "curve448.h"
 #include "slh-dsa.h"
+#include "sntrup761.h"
+
 #include "nettle-meta.h"
 #include "sexp.h"
 #include "knuth-lfib.h"
@@ -964,6 +966,55 @@ bench_slh_dsa_clear (void *p)
   free (ctx);
 }
 
+struct sntrup_ctx
+{
+  uint8_t public_key[SNTRUP761_PUBLICKEY_SIZE];
+  uint8_t secret_key[SNTRUP761_SECRETKEY_SIZE];
+  uint8_t ciphertext[SNTRUP761_CIPHERTEXT_SIZE];
+  struct knuth_lfib_ctx lfib;
+
+};
+
+static void *
+bench_sntrup_init (unsigned size)
+{
+  struct sntrup_ctx *ctx;
+  uint8_t session_key[SNTRUP761_SIZE];
+  assert (size == 761);
+  ctx = xalloc (sizeof (*ctx));
+
+  knuth_lfib_init (&ctx->lfib, 1);
+  sntrup761_keypair (ctx->public_key, ctx->secret_key,
+		     &ctx->lfib,(nettle_random_func *)knuth_lfib_random);
+  sntrup761_enc (ctx->ciphertext, session_key, ctx->public_key,
+		 &ctx->lfib,(nettle_random_func *)knuth_lfib_random);
+
+  return ctx;
+}
+
+static void
+bench_sntrup_decrypt (void *p)
+{
+  struct sntrup_ctx *ctx = p;
+  uint8_t session_key[SNTRUP761_SIZE];
+  sntrup761_dec (session_key, ctx->ciphertext, ctx->secret_key);
+}
+
+static void
+bench_sntrup_encrypt (void *p)
+{
+  struct sntrup_ctx *ctx = p;
+  uint8_t session_key[SNTRUP761_SIZE];
+  sntrup761_enc (ctx->ciphertext, session_key, ctx->public_key,
+		 &ctx->lfib,(nettle_random_func *)knuth_lfib_random);
+}
+
+static void
+bench_sntrup_clear (void *p)
+{
+  free (p);
+}
+
 struct alg alg_list[] = {
   { "rsa",   1024, bench_rsa_init,   bench_rsa_sign,   bench_rsa_verify,   bench_rsa_clear },
   { "rsa",   2048, bench_rsa_init,   bench_rsa_sign,   bench_rsa_verify,   bench_rsa_clear },
@@ -999,6 +1050,7 @@ struct alg alg_list[] = {
   { "slh-dsa-shake-f", 128, bench_slh_dsa_init_shake_f, bench_slh_dsa_sign, bench_slh_dsa_verify, bench_slh_dsa_clear },
   { "slh-dsa-sha2-s", 128, bench_slh_dsa_init_sha2_s, bench_slh_dsa_sign, bench_slh_dsa_verify, bench_slh_dsa_clear },
   { "slh-dsa-sha2-f", 128, bench_slh_dsa_init_sha2_f, bench_slh_dsa_sign, bench_slh_dsa_verify, bench_slh_dsa_clear },
+  { "sntrup", 761, bench_sntrup_init, bench_sntrup_decrypt, bench_sntrup_encrypt, bench_sntrup_clear },
 };
 
 #define numberof(x)  (sizeof (x) / sizeof ((x)[0]))
