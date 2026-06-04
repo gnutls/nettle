@@ -38,6 +38,7 @@
 #include <assert.h>
 
 #include "ecc-internal.h"
+#include "nettle-internal.h"
 
 /* Routines for modp arithmetic. All values are ecc->size limbs, but
    not necessarily < p. */

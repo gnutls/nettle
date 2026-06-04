@@ -38,6 +38,7 @@
 #include <assert.h>
 
 #include "ecc-internal.h"
+#include "nettle-internal.h"
 
 static void
 cnd_neg (int cnd, mp_limb_t *rp, const mp_limb_t *ap, mp_size_t n)

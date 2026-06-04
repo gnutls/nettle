@@ -1,5 +1,10 @@
 2026-06-04  Niels Möller  <nisse@lysator.liu.se>
 
+	* nettle-internal.h (assert_maybe): Move macro here, replacing old
+	copies. Update all users.
+	* ecc-internal.h (assert_maybe): Deleted.
+	* sntrup-internal.h (assert_maybe): Deleted.
+
 	* ecc-secp256r1.c (ecc_secp256r1_modq): Rewrite adjustment step,
 	to work around gcc on riscv64 generating an unwanted branch
 	instruction. Suggested by Felix Yan.

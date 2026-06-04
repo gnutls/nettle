@@ -48,6 +48,8 @@
 #include "sntrup.h"
 #include "sntrup-internal.h"
 
+#include "nettle-internal.h"
+
 static void
 R3_random (sntrup761_R3_t out, void *random_ctx, nettle_random_func * random)
 {

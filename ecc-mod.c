@@ -38,6 +38,7 @@
 #include <assert.h>
 
 #include "ecc-internal.h"
+#include "nettle-internal.h"
 
 /* Computes r <-- x mod m, input 2*m->size, output m->size. It's
  * allowed to have rp == xp or rp == xp + m->size, but no other kind

@@ -50,6 +50,7 @@
 #include "sntrup761-encoding.h"
 
 #include "bswap-internal.h"
+#include "nettle-internal.h"
 #include "sha2.h"
 
 #define uint32_MINMAX(a,b) \

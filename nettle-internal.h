@@ -71,6 +71,13 @@
   do { assert((size_t)(size) <= (sizeof(name))); } while (0)
 #endif 
 
+/* For asserts that are incompatible with sc tests. */
+#if WITH_EXTRA_ASSERTS
+# define assert_maybe(x) assert(x)
+#else
+# define assert_maybe(x) ((void)(x))
+#endif
+
 /* Limits that apply to systems that don't have alloca */
 #define NETTLE_MAX_HASH_BLOCK_SIZE 144  /* For sha3_224*/
 #define NETTLE_MAX_HASH_DIGEST_SIZE 64

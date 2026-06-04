@@ -38,6 +38,7 @@
 #include <assert.h>
 
 #include "ecc-internal.h"
+#include "nettle-internal.h"
 
 /* Use that 1 = - (p - 1) (mod p), and that at least one low limb of p
    - 1 is zero. */
