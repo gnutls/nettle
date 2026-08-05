@@ -3081,7 +3081,8 @@ Size of the @acronym{GCM} digest, also 16.
 @end defvr
 
 @defvr Constant GCM_IV_SIZE
-Recommended size of the @acronym{IV}, 12. Arbitrary sizes are allowed.
+Recommended size of the @acronym{IV}, 12. Arbitrary non-zero sizes are
+allowed.
 @end defvr
 
 @deftypefun void gcm_set_key (struct gcm_key *@var{key}, const void *@var{cipher}, nettle_cipher_func *@var{f})
@@ -3091,9 +3092,9 @@ encryption, and @var{f} is the encryption function.
 @end deftypefun
 
 @deftypefun void gcm_set_iv (struct gcm_ctx *@var{ctx}, const struct gcm_key *@var{key}, size_t @var{length}, const uint8_t *@var{iv})
-Initializes @var{ctx} using the given @acronym{IV}. The @var{key}
-argument is actually needed only if @var{length} differs from
-@code{GCM_IV_SIZE}.
+Initializes @var{ctx} using the given @acronym{IV}, which must be
+non-empty. The @var{key} argument is actually needed only if
+@var{length} differs from @code{GCM_IV_SIZE}.
 @end deftypefun
 
 @deftypefun void gcm_update (struct gcm_ctx *@var{ctx}, const struct gcm_key *@var{key}, size_t @var{length}, const uint8_t *@var{data})

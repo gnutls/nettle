@@ -108,6 +108,7 @@ void
 gcm_set_iv(struct gcm_ctx *ctx, const struct gcm_key *key,
 	   size_t length, const uint8_t *iv)
 {
+  assert (length > 0);
   if (length == GCM_IV_SIZE)
     {
       memcpy (ctx->iv.b, iv, GCM_BLOCK_SIZE - 4);

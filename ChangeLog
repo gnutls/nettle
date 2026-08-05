@@ -1,3 +1,10 @@
+2026-08-05  Niels Möller  <nisse@lysator.liu.se>
+
+	* gcm.c (gcm_set_iv): Reject empty IV, with an assertion failure.
+	Empty IV is not allowed by the spec, and results in leakage of the
+	ghash authentication subkey. Reported by Feng Li and Yaobin Shen.
+	* nettle.texinfo (GCM): Document that IV must be non-empty.
+
 2026-06-30  Niels Möller  <nisse@lysator.liu.se>
 
 	* slh-dsa.c (_slh_dsa_sign): Change return type from void to int.
