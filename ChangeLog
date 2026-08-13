@@ -1,3 +1,10 @@
+2026-08-13  Niels Möller  <nisse@lysator.liu.se>
+
+	* ocb-aes128.c (ocb_aes128_decrypt_message): Fix bug, which
+	completely broke processing of messages with plaintext size of 16
+	bytes or larger. Reported by Cao LLan77.
+	* testsuite/ocb-test.c (test_main): Extend corresponding tests.
+
 2026-08-05  Niels Möller  <nisse@lysator.liu.se>
 
 	* gcm.c (gcm_set_iv): Reject empty IV, with an assertion failure.

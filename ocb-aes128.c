@@ -111,7 +111,7 @@ ocb_aes128_decrypt_message (const struct ocb_aes128_encrypt_key *key,
 			    size_t mlength, uint8_t *dst, const uint8_t *src)
 {
   return ocb_decrypt_message (&key->ocb, &key->encrypt, (nettle_cipher_func *) aes128_encrypt,
-			      &decrypt, (nettle_cipher_func *) aes128_decrypt,
+			      decrypt, (nettle_cipher_func *) aes128_decrypt,
 			      nlength, nonce, alength, adata,
 			      tlength, mlength, dst, src);
 }
