@@ -94,8 +94,7 @@ nist_keyunwrap16 (const void *ctx, nettle_cipher_func *decrypt,
 {
   union nettle_block16 I, B;
   union nettle_block8 A;
-  int i, j;
-  size_t n;
+  size_t i, j, n;
   uint8_t *R = cleartext;
 
   /* cleartext_length must be at least 8
@@ -107,9 +106,9 @@ nist_keyunwrap16 (const void *ctx, nettle_cipher_func *decrypt,
   memcpy (A.b, ciphertext, 8);
   memcpy (R, ciphertext + 8, cleartext_length);
 
-  for (j = 5; j >= 0; j--)
+  for (j = 6; j-- > 0;)
     {
-      for (i = n - 1; i >= 0; i--)
+      for (i = n; i-- > 0;)
 	{
 	  /* B = AES-1(K, (A ^ t) | R[i]) where t = n*j+i */
 	  I.u64[0] = A.u64 ^ bswap64_if_le ((n * j) + (i + 1));
