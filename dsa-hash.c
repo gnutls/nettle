@@ -33,8 +33,11 @@
 # include "config.h"
 #endif
 
+#include <assert.h>
+
 #include "dsa.h"
 #include "dsa-internal.h"
+#include "ecc-internal.h"
 
 #include "gmp-glue.h"
 
@@ -66,17 +69,30 @@ _nettle_dsa_hash (mp_limb_t *hp, unsigned bit_size,
     mpn_rshift (hp, hp, limb_size, 8*length - bit_size);
 }
 
-/* Uses little-endian order, and no trimming of left-over bits in the
-   last byte (bits will instead be reduced mod q later). */
+/* Uses little-endian order. By the spec, there is no trimming of
+   left-over bits in the last byte, instead, those bits should be
+   reduced mod q. And in case the reduced value is 0, it must be
+   replaced with 1. This implementation asserts that there are no
+   leftover bits, to simplify that reduction. This implies that
+   obscure combinations of curve and hash function may not work.*/
 void
-_nettle_gostdsa_hash (mp_limb_t *hp, unsigned bit_size,
+_nettle_gostdsa_hash (mp_limb_t *hp, const struct ecc_modulo *q,
 		      size_t length, const uint8_t *digest)
 {
-  unsigned octet_size = (bit_size + 7) / 8;
-  unsigned limb_size = NETTLE_BIT_SIZE_TO_LIMB_SIZE (bit_size);
+  unsigned octet_size = (q->bit_size + 7) / 8;
 
   if (length > octet_size)
     length = octet_size;
 
-  mpn_set_base256_le(hp, limb_size, digest, length);
+  /* No excess bits that need a more complicated reduction mod q. */
+  assert (8 * length <= q->bit_size);
+
+  mpn_set_base256_le(hp, q->size, digest, length);
+
+  /* Replace 0 (mod q) with 1. */
+  if (mpn_zero_p (hp, q->size) || mpn_cmp (hp, q->m, q->size) == 0)
+    {
+      hp[0] = 1;
+      mpn_zero (hp + 1, q->size - 1);
+    }
 }

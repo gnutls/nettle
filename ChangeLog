@@ -1,3 +1,14 @@
+2026-09-03  Niels Möller  <nisse@lysator.liu.se>
+
+	Fix bug in gostdsa digest handling, reported by Jérémy Jean.
+	* dsa-hash.c (_nettle_gostdsa_hash): Take an ecc_modulo as
+	argument, and add logic to replace 0 (mod q) with 1. Previously,
+	callers tried to replace 0 by 1, but failed to recognize that q ==
+	0 (mod q).
+	* ecc-gostdsa-sign.c (ecc_gostdsa_sign): Update call to
+	_nettle_gostdsa_hash.
+	* ecc-gostdsa-verify.c (ecc_gostdsa_verify): Likewise.
+
 2026-10-15  Niels Möller  <nisse@lysator.liu.se>
 
 	From Brad Smith:
