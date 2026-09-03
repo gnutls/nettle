@@ -94,10 +94,7 @@ ecc_gostdsa_verify (const struct ecc_curve *ecc,
 	 && ecdsa_in_range (ecc, sp)))
     return 0;
 
-  _nettle_gostdsa_hash (hp, ecc->q.bit_size, length, digest);
-
-  if (mpn_zero_p (hp, ecc->p.size))
-    mpn_add_1 (hp, hp, ecc->p.size, 1);
+  _nettle_gostdsa_hash (hp, &ecc->q, length, digest);
 
   /* Compute v */
   ecc->q.invert (&ecc->q, vp, hp, vp + ecc->p.size);

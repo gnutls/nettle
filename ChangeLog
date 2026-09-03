@@ -1,3 +1,14 @@
+2026-09-03  Niels Möller  <nisse@lysator.liu.se>
+
+	Fix bug in gostdsa digest handling, reported by Jérémy Jean.
+	* dsa-hash.c (_nettle_gostdsa_hash): Take an ecc_modulo as
+	argument, reduce output mod q, and add logic to replace 0 with 1.
+	Previously, callers tried to replace 0 by 1, but with the
+	reduction needed to really replace 0 (mod q) by 1.
+	* ecc-gostdsa-sign.c (ecc_gostdsa_sign): Update call to
+	_nettle_gostdsa_hash.
+	* ecc-gostdsa-verify.c (ecc_gostdsa_verify): Likewise.
+
 2026-08-27  Niels Möller  <nisse@lysator.liu.se>
 
 	* nist-keywrap.c (nist_keyunwrap16): Use size_t for loop

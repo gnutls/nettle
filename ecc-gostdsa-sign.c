@@ -80,9 +80,7 @@ ecc_gostdsa_sign (const struct ecc_curve *ecc,
   ecc_j_to_a (ecc, 2, rp, P, P + 3*ecc->p.size);
 
   /* Process hash digest */
-  _nettle_gostdsa_hash (hp, ecc->q.bit_size, length, digest);
-  if (mpn_zero_p (hp, ecc->p.size))
-    mpn_add_1 (hp, hp, ecc->p.size, 1);
+  _nettle_gostdsa_hash (hp, &ecc->q, length, digest);
 
   ecc_mod_mul (&ecc->q, tp, rp, zp, tp);
   ecc_mod_mul (&ecc->q, t2p, kp, hp, t2p);
