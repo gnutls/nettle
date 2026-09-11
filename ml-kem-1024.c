@@ -3,6 +3,7 @@
    The ML-KEM (Kyber) key encapsulation mechanism, FIPS 203
 
    Copyright (C) 2024 Red Hat, Inc.
+   Copyright (C) 2026 Niels Möller
 
    This file is part of GNU Nettle.
 
@@ -60,4 +61,52 @@ static const struct ml_kem_params _nettle_ml_kem_1024_params =
 const struct ml_kem_params *nettle_get_ml_kem_1024_params (void)
 {
   return &_nettle_ml_kem_1024_params;
+}
+
+size_t
+ml_kem_1024_generate_keypair_itch (void)
+{
+  return ml_kem_generate_keypair_itch (&_nettle_ml_kem_1024_params);
+}
+
+void
+ml_kem_1024_generate_keypair (uint8_t *pub, uint8_t *key,
+			     const uint8_t *seed,
+			     uint16_t *scratch)
+{
+  ml_kem_generate_keypair (&_nettle_ml_kem_1024_params,
+			   pub, key, seed, scratch);
+}
+
+size_t
+ml_kem_1024_encap_itch (void)
+{
+  return ml_kem_encap_itch (&_nettle_ml_kem_1024_params);
+}
+
+void
+ml_kem_1024_encap (const uint8_t *pub,
+		  uint8_t *secret, uint8_t *ciphertext,
+		  void *random_ctx, nettle_random_func *random,
+		  uint16_t *scratch)
+{
+  ml_kem_encap (&_nettle_ml_kem_1024_params,
+		pub, secret, ciphertext,
+		random_ctx, random, scratch);
+}
+
+size_t
+ml_kem_1024_decap_itch (void)
+{
+  return ml_kem_decap_itch (&_nettle_ml_kem_1024_params);
+}
+
+void
+ml_kem_1024_decap (const uint8_t *key,
+		  uint8_t *secret,
+		  const uint8_t *ciphertext,
+		  uint16_t *scratch)
+{
+  ml_kem_decap (&_nettle_ml_kem_1024_params,
+		key, secret, ciphertext, scratch);
 }
