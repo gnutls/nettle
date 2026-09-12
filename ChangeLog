@@ -1,3 +1,14 @@
+2026-09-12  Niels Möller  <nisse@lysator.liu.se>
+
+	* ml-kem-internal.c (poly_encode): Rewrite to output complete
+	bytes, and not require output area to be initialized to zero by
+	caller.
+	(SET_BIT): Deleted now unused macro.
+	(_ml_kem_inner_generate_keypair): Delete no longer needed memset
+	calls.
+	(_ml_kem_inner_encrypt): Likewise.
+	(_ml_kem_inner_decrypt): Likewise.
+
 2026-08-27  Niels Möller  <nisse@lysator.liu.se>
 
 	* nist-keywrap.c (nist_keyunwrap16): Use size_t for loop

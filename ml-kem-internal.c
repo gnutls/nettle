@@ -3,6 +3,7 @@
    ML-KEM (Kyber) key encapsulation mechanism, FIPS 203
 
    Copyright (C) 2024 Red Hat, Inc.
+   Copyright (C) 2026 Niels Möller
 
    This file is part of GNU Nettle.
 
@@ -55,10 +56,6 @@
 /* Check if a bit at IDX in a byte array ARR */
 #define IS_BIT_SET(arr, idx)				\
   ((((arr)[(idx) >> 3] >> ((idx) & 7))) & 1)
-
-/* Set a bit at IDX in a byte array ARR */
-#define SET_BIT(arr, idx, bit)				\
-  ((arr)[(idx) >> 3] |= (((bit) & 1) << ((idx) & 7)))
 
 /* A polynomial is represented as a uint16_t array of length N, where
  * an element at index i represents the coefficient of x^i.
@@ -461,23 +458,24 @@ matrix_sample (uint16_t *mp, const uint8_t *rho, unsigned int k)
     }
 }
 
+/* When d < Q_BITS == 12, only the low d bits of each entry are
+   written. */
 static void
-poly_encode (uint8_t *rp, const uint16_t *ap, unsigned int w)
+poly_encode (uint8_t *rp, const uint16_t *ap, unsigned d)
 {
-  size_t i;
+  size_t i, j;
+  unsigned bits, w;
+  uint16_t mask = (1U << d) - 1;
 
-  for (i = 0; i < N; i++)
+  for (i = j = bits = w = 0; i < N; i++)
     {
-      uint16_t a;
-      size_t j;
+      /* Needs worst case 7 + 11 = 18 bits in w. */
+      w |= (unsigned) (ap[i] & mask) << bits;
 
-      a = ap[i];
-      for (j = 0; j < w; j++)
-	{
-	  SET_BIT (rp, i * w + j, a);
-	  a >>= 1;
-	}
+      for (bits += d; bits >= 8; bits -= 8, w >>= 8)
+	rp[j++] = w;
     }
+  assert (bits == 0);
 }
 
 static void
@@ -567,9 +565,6 @@ _ml_kem_inner_generate_keypair (const struct ml_kem_params *params,
 	tp[j] = mod_add (tp[j], ep[j]);
     }
 
-  memset (pub, 0, params->inner_public_key_size);
-  memset (key, 0, params->inner_private_key_size);
-
   vector_encode (pub, t, params->k, Q_BITS);
 
   memcpy (pub + (params->k * Q_BITS * N) / 8, rho, 32);
@@ -652,8 +647,6 @@ _ml_kem_inner_encrypt (const struct ml_kem_params *params,
 	up[j] = compress (up[j], params->du);
     }
 
-  memset (ciphertext, 0, params->ciphertext_size);
-
   vector_encode (ciphertext, u, params->k, params->du);
 
   for (i = 0; i < N; i++)
@@ -713,8 +706,6 @@ _ml_kem_inner_decrypt (const struct ml_kem_params *params,
 
   for (i = 0; i < N; i++)
     v[i] = compress (v[i], 1);
-
-  memset (plaintext, 0, 32);
 
   poly_encode (plaintext, v, 1);
 }
