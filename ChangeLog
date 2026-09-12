@@ -8,6 +8,7 @@
 	calls.
 	(_ml_kem_inner_encrypt): Likewise.
 	(_ml_kem_inner_decrypt): Likewise.
+	(poly_decode): Rewrite to process one input byte at a time.
 
 2026-08-27  Niels Möller  <nisse@lysator.liu.se>
 

@@ -479,20 +479,26 @@ poly_encode (uint8_t *rp, const uint16_t *ap, unsigned d)
 }
 
 static void
-poly_decode (uint16_t *rp, const uint8_t *ap, unsigned int w)
+poly_decode (uint16_t *rp, const uint8_t *ap, unsigned d)
 {
-  size_t i;
+  size_t i, j;
+  unsigned bits, w;
+  uint16_t mask = (1U << d) - 1;
 
-  for (i = 0; i < N; i++)
+  for (i = j = bits = w = 0; i < N; )
     {
-      uint16_t a = 0;
-      size_t j;
+      /* Needs worst case 10 + 8 = 18 bits in w. */
+      for (; bits < d; bits +=8)
+	w |= (ap[j++] << bits);
 
-      for (j = 0; j < w; j++)
-	a += IS_BIT_SET (ap, i * w + j) * (1 << j);
-
-      rp[i] = reduce (a);
+      for (; i < N && bits >= d; bits -= d, w >>= d)
+	{
+	  /* Reduce mod q; needed only when d == 12 */
+	  uint32_t r = (w & mask) - Q;
+	  rp[i++] = r + ((r >> 16) & Q);
+	}
     }
+  assert (bits == 0);
 }
 
 static void
