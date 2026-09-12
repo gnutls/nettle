@@ -47,15 +47,11 @@
 #define Q_BITS 12
 #define N 256
 #define N_BITS 8
-#define INV2 1665
+#define INV2 ((Q + 1) / 2)
 
 #define ZETA 17
 #define ETA2 2
 #define MAX_ETA1 3
-
-/* Check if a bit at IDX in a byte array ARR */
-#define IS_BIT_SET(arr, idx)				\
-  ((((arr)[(idx) >> 3] >> ((idx) & 7))) & 1)
 
 /* A polynomial is represented as a uint16_t array of length N, where
  * an element at index i represents the coefficient of x^i.
@@ -397,36 +393,64 @@ poly_sample (uint16_t *pp, struct sha3_128_ctx *xof)
     }
 }
 
+/* Returns number of one bits in a number that is at most MAX_ETA1
+   bits, i.e., limited to 0 <= x < 8 */
+static inline uint16_t
+popcount_small(unsigned x)
+{
+  /*
+    000 --> 00
+    001 --> 01
+    010 --> 01
+    011 --> 10
+    100 --> 01
+    101 --> 10
+    110 --> 10
+    111 --> 11
+
+    and 1110 1001 1001 0100 = 0xe994.
+   */
+
+  const uint16_t magic = 0xe994;
+  return (magic >> (2*x)) & 3;
+}
+
 static void
-vector_sample (uint16_t *vp, const uint8_t *sigma, unsigned int eta1,
-	       unsigned int offset, unsigned int k)
+vector_sample (uint16_t *vp, const uint8_t *sigma, unsigned eta1,
+	       unsigned offset, unsigned k)
 {
   size_t i;
+  uint16_t mask = (1U << eta1) - 1;
 
   for (i = 0; i < k; i++)
     {
       struct sha3_ctx ctx;
       uint8_t arr[64 * MAX_ETA1];
       uint16_t *rp;
-      size_t j, n;
+      size_t j, l;
+      unsigned bits, w;
 
       PRF (&ctx, sigma, offset + i, 64 * eta1, arr);
 
       rp = VECTOR_GET_POLY (vp, i);
-      memset (rp, 0, sizeof(uint16_t) * N);
 
-      for (j = 0, n = 0; j < N; j++, n += 2)
+      /* Each iteration gets a block of 2*eta1 bits from the array. */
+      for (j = l = bits = w = 0; j < N; j++, bits -= 2*eta1, w >>= 2*eta1)
 	{
-	  size_t l, bitcnt1 = 0, bitcnt2 = 0;
-
-	  for (l = 0; l < eta1; l++)
+	  unsigned xbits, ybits;
+	  if (bits < 2 * eta1)
 	    {
-	      bitcnt1 += IS_BIT_SET (arr, n * eta1 + l);
-	      bitcnt2 += IS_BIT_SET (arr, (n + 1) * eta1 + l);
+	      w |= (arr[l++] << bits);
+	      bits += 8;
 	    }
 
-	  rp[j] = mod_sub (bitcnt1, bitcnt2);
+	  xbits = w & mask;
+	  ybits = (w >> eta1) & mask;
+
+	  rp[j] = mod_sub(popcount_small (xbits), popcount_small (ybits));
 	}
+      assert (bits == 0);
+      assert (l == 64 * eta1);
     }
 }
 
@@ -634,8 +658,16 @@ _ml_kem_inner_encrypt (const struct ml_kem_params *params,
 	up[j] = mod_add (up[j], ep[j]);
     }
 
-  for (i = 0; i < N; i++)
-    m[i] = decompress (IS_BIT_SET (msg, i), 1);
+  /* Expand each message bit into the values decompress (0,1) = 0 or
+     decompress (1, 1) = (Q+1)/2 */
+  for (i = 0; i < 32; i++)
+    {
+      unsigned j;
+      uint8_t b;
+
+      for (b = msg[i], j = 0; j < 8; j++, b >>= 1)
+	m[8*i+j] = - (b & 1) & INV2;
+    }
 
   vector_mul_ntt (v, t, r, params->k);
   poly_from_ntt (v);

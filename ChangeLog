@@ -9,6 +9,12 @@
 	(_ml_kem_inner_encrypt): Likewise.
 	(_ml_kem_inner_decrypt): Likewise.
 	(poly_decode): Rewrite to process one input byte at a time.
+	(popcount_small): New function.
+	(vector_sample): Rewrite to process bits 2*eta1 bits at a time and
+	use popcount_small.
+	(_ml_kem_inner_encrypt): Rewrite message expansion as one loop
+	over message bytes and an inner loop expanding each bit.
+	(IS_BIT_SET): Deleted now unused macro.
 
 2026-08-27  Niels Möller  <nisse@lysator.liu.se>
 
