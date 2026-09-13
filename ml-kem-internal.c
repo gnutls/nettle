@@ -78,21 +78,6 @@ G2 (struct sha3_ctx *ctx,
 }
 
 static inline void
-J2 (struct sha3_ctx *ctx,
-    size_t len1, const uint8_t *msg1,
-    size_t len2, const uint8_t *msg2,
-    uint8_t *dst)
-{
-  sha3_init (ctx);
-  sha3_256_update (ctx, len1, msg1);
-  sha3_256_update (ctx, len2, msg2);
-  sha3_256_shake (ctx, 32, dst);
-}
-
-#define KDF2(ctx, prekey1, prekey2, dst) \
-  J2(ctx, 32, prekey1, 32, prekey2, dst)
-
-static inline void
 PRF (struct sha3_ctx *ctx,
      const uint8_t *seed,
      uint8_t nonce,
