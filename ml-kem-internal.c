@@ -110,16 +110,16 @@ decompress (uint16_t y, unsigned d)
 /* Calculate x mod Q using Barrett reduction
    for x in range [0, Q^2) */
 static inline uint16_t
-reduce (uint64_t a)
+reduce (uint32_t u)
 {
-  uint64_t mask;
-  assert_maybe (a < Q*Q);
-
-  a -= ((a * 5039) >> (Q_BITS << 1)) * Q;
-  mask = -(uint64_t) (a >= Q);
-  a -= (Q & mask);
-  assert_maybe (a < Q);
-  return a;
+  uint32_t q, r, p;
+  /* Magic constant is ceil(2^32 / Q) */
+  q = ((uint64_t) 1290168 * u) >> 32;
+  p = q * Q;
+  r = u - p; /* Interpreted as two's complement, |r| < d */
+  r += ((r >> 16) & Q);
+  assert_maybe (r < Q);
+  return r;
 }
 
 /* Calculate a - b mod Q, where 0 <= a < Q and 0 <= b <= Q */

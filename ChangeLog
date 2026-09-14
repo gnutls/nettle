@@ -1,3 +1,8 @@
+2026-09-14  Niels Möller  <nisse@lysator.liu.se>
+
+	* ml-kem-internal.c (reduce): Rewrite using ceil(2^32/Q) as the
+	approximative inverse, extending input range to full 32-bits.
+
 2026-09-12  Niels Möller  <nisse@lysator.liu.se>
 
 	* ml-kem-internal.c (poly_encode): Rewrite to output complete
