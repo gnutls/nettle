@@ -58,10 +58,10 @@ struct ml_kem_params
   size_t private_key_size;
   size_t ciphertext_size;
 
-  unsigned int k;
-  unsigned int du;
-  unsigned int dv;
-  unsigned int eta1;
+  unsigned k;
+  unsigned du;
+  unsigned dv;
+  unsigned eta1;
 };
 
 size_t

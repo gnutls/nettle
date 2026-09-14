@@ -93,7 +93,7 @@ PRF (struct sha3_ctx *ctx,
 /* Compress(x, d) = Round((2^d/Q)x) mod 2^d
    for 0 <= x < Q and d < 12, the result is in [0, 2^d) */
 static inline uint16_t
-compress (uint16_t x, unsigned int d)
+compress (uint16_t x, unsigned d)
 {
   assert_maybe (x < Q);
   return ((UINT64_C(20642679) * ((x << d) + (Q >> 1)) >> 36) & ((1 << d) - 1));
@@ -102,7 +102,7 @@ compress (uint16_t x, unsigned int d)
 /* Decompress(y, d) = Round((Q/2^d)y)
    for 0 <= y < 2^d and d < 12, the result is in [0, Q) */
 static inline uint16_t
-decompress (uint16_t y, unsigned int d)
+decompress (uint16_t y, unsigned d)
 {
   return ((Q * y + (1 << (d - 1))) >> d);
 }
@@ -274,7 +274,7 @@ poly_mul_ntt (uint16_t *rp, const uint16_t *ap, const uint16_t *bp)
  */
 static void
 vector_mul_ntt (uint16_t *rp, const uint16_t *ap, const uint16_t *bp,
-		unsigned int k)
+		unsigned k)
 {
   uint16_t tp[N];
   size_t i;
@@ -310,9 +310,9 @@ vector_mul_ntt (uint16_t *rp, const uint16_t *ap, const uint16_t *bp,
  */
 static void
 matrix_mul_ntt (uint16_t *rp, const uint16_t *ap, const uint16_t *bp,
-		unsigned int k,
-		unsigned int row_stride,
-		unsigned int column_stride)
+		unsigned k,
+		unsigned row_stride,
+		unsigned column_stride)
 {
   size_t i;
 
@@ -440,7 +440,7 @@ vector_sample (uint16_t *vp, const uint8_t *sigma, unsigned eta1,
 }
 
 static void
-matrix_sample (uint16_t *mp, const uint8_t *rho, unsigned int k)
+matrix_sample (uint16_t *mp, const uint8_t *rho, unsigned k)
 {
   uint8_t i;
 
@@ -511,7 +511,7 @@ poly_decode (uint16_t *rp, const uint8_t *ap, unsigned d)
 }
 
 static void
-vector_encode (uint8_t *rp, const uint16_t *ap, unsigned int k, unsigned int w)
+vector_encode (uint8_t *rp, const uint16_t *ap, unsigned k, unsigned w)
 {
   size_t i;
 
@@ -520,7 +520,7 @@ vector_encode (uint8_t *rp, const uint16_t *ap, unsigned int k, unsigned int w)
 }
 
 static void
-vector_decode (uint16_t *rp, const uint8_t *ap, unsigned int k, unsigned int w)
+vector_decode (uint16_t *rp, const uint8_t *ap, unsigned k, unsigned w)
 {
   size_t i;
 
@@ -544,7 +544,7 @@ _ml_kem_inner_generate_keypair (const struct ml_kem_params *params,
   struct sha3_ctx gctx;
   uint8_t buffer[64];
   uint8_t *rho = buffer, *sigma = &buffer[32];
-  unsigned int i;
+  unsigned i;
   uint16_t *a, *s, *e, *t;
   uint8_t k = params->k;
 
