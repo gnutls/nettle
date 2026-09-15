@@ -3,6 +3,7 @@
 	* ml-kem-internal.c: Make use of extended reduce input range.
 	(poly_from_ntt): Eliminate unneeded mod_add.
 	(poly_mul_ntt): Likewise.
+	(mod_sub): Micro optimization of masking logic.
 
 2026-09-14  Niels Möller  <nisse@lysator.liu.se>
 

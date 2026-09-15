@@ -126,13 +126,15 @@ reduce (uint32_t u)
 static inline uint16_t
 mod_sub (uint16_t a, uint16_t b)
 {
-  uint16_t mask;
+  uint32_t d;
   assert_maybe (a < Q);
   assert_maybe (b <= Q);
 
-  mask = -(uint16_t) (a < b);
+  d = (uint32_t) a - b;
+  d += (d >> 16) & Q;
+  assert_maybe (d < Q);
 
-  return a + (Q & mask) - b;
+  return d;
 }
 
 /* Calculate a + b mod Q, where a and b are already reduced by Q */
