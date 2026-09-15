@@ -233,7 +233,7 @@ poly_from_ntt (uint16_t *pp)
 	      uint16_t t;
 
 	      t = mod_sub (pp[j + layer], pp[j]);
-	      pp[j] = reduce (INV2 * mod_add (pp[j], pp[j + layer]));
+	      pp[j] = reduce (INV2 * (pp[j] + pp[j + layer]));
 	      pp[j + layer] = reduce (INV2 * reduce (z * t));
 	    }
 	}
@@ -263,8 +263,8 @@ poly_mul_ntt (uint16_t *rp, const uint16_t *ap, const uint16_t *bp)
 
       z = zeta_pow_table2[i >> 1];
 
-      rp[i] = mod_add (reduce (a1 * b1), reduce (z * reduce (a2 * b2)));
-      rp[i + 1] = mod_add (reduce (a2 * b1), reduce (a1 * b2));
+      rp[i] = reduce (a1 * b1 + z * reduce (a2 * b2));
+      rp[i + 1] = reduce (a2 * b1 + a1 * b2);
     }
 }
 
