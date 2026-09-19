@@ -1,3 +1,17 @@
+2026-09-19  Niels Möller  <nisse@lysator.liu.se>
+
+	* ml-kem.c: Deleted file. The generic top-level functions moved to
+	ml-kem-internal.c.
+	* ml-kem-internal.c (H, J2): New macros, moved from ml-kem.c.
+	(_ml_kem_generate_keypair_itch, _ml_kem_generate_keypair)
+	(_ml_kem_encap_itch, _ml_kem_encap, _ml_kem_decap_itch)
+	(_ml_kem_decap): New internal functions, moved from ml-kem.c.
+	* ml-kem-768.c (nettle_get_ml_kem_768_params): Deleted function.
+	* ml-kem-1024.c (nettle_get_ml_kem_1024_params): Deleted function.
+	* examples/hogweed-benchmark.c: Update ml-kem benchmarking to use
+	functions pointers for generate, encap and decap, instead of an
+	ml_kem_params pointer.
+
 2026-09-15  Niels Möller  <nisse@lysator.liu.se>
 
 	* ml-kem-internal.c: Make use of extended reduce input range.

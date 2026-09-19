@@ -54,12 +54,6 @@ extern "C" {
 #define ml_kem_1024_encap nettle_ml_kem_1024_encap
 #define ml_kem_1024_decap_itch nettle_ml_kem_1024_decap_itch
 #define ml_kem_1024_decap nettle_ml_kem_1024_decap
-#define ml_kem_generate_keypair_itch nettle_ml_kem_generate_keypair_itch
-#define ml_kem_generate_keypair nettle_ml_kem_generate_keypair
-#define ml_kem_encap_itch nettle_ml_kem_encap_itch
-#define ml_kem_encap nettle_ml_kem_encap
-#define ml_kem_decap_itch nettle_ml_kem_decap_itch
-#define ml_kem_decap nettle_ml_kem_decap
 
 #define ML_KEM_SEED_SIZE 64
 #define ML_KEM_SESSION_KEY_SIZE 32
@@ -71,9 +65,6 @@ extern "C" {
 #define ML_KEM_1024_PUBLIC_KEY_SIZE 1568
 #define ML_KEM_1024_PRIVATE_KEY_SIZE 3168
 #define ML_KEM_1024_CIPHERTEXT_SIZE 1568
-
-const struct ml_kem_params * _NETTLE_ATTRIBUTE_PURE nettle_get_ml_kem_768_params (void);
-const struct ml_kem_params * _NETTLE_ATTRIBUTE_PURE nettle_get_ml_kem_1024_params (void);
 
 size_t
 ml_kem_768_generate_keypair_itch (void);
@@ -126,36 +117,6 @@ ml_kem_1024_decap (const uint8_t *key,
 		  uint8_t *secret,
 		  const uint8_t *ciphertext,
 		  uint16_t *scratch);
-
-size_t
-ml_kem_generate_keypair_itch (const struct ml_kem_params *params);
-
-void
-ml_kem_generate_keypair (const struct ml_kem_params *params,
-			 uint8_t *pub,
-			 uint8_t *key,
-			 const uint8_t *seed,
-			 uint16_t *scratch);
-
-size_t
-ml_kem_encap_itch (const struct ml_kem_params *params);
-
-void
-ml_kem_encap (const struct ml_kem_params *params,
-	      const uint8_t *pub,
-	      uint8_t *secret, uint8_t *ciphertext,
-	      void *random_ctx, nettle_random_func *random,
-	      uint16_t *scratch);
-
-size_t
-ml_kem_decap_itch (const struct ml_kem_params *params);
-
-void
-ml_kem_decap (const struct ml_kem_params *params,
-	      const uint8_t *key,
-	      uint8_t *secret,
-	      const uint8_t *ciphertext,
-	      uint16_t *scratch);
 
 #ifdef __cplusplus
 }

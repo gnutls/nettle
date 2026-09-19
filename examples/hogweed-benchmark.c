@@ -1065,12 +1065,22 @@ bench_sntrup_clear (void *p)
 
 struct ml_kem_ctx
 {
-  const struct ml_kem_params *params;
   uint8_t public_key[ML_KEM_1024_PUBLIC_KEY_SIZE];
   uint8_t secret_key[ML_KEM_1024_PRIVATE_KEY_SIZE];
   uint8_t ciphertext[ML_KEM_1024_CIPHERTEXT_SIZE];
   struct knuth_lfib_ctx lfib;
   uint16_t *scratch;
+  void (*generate)(uint8_t *pub, uint8_t *key,
+		   const uint8_t *seed,
+		   uint16_t *scratch);
+  void (*encap)(const uint8_t *pub,
+		uint8_t *secret, uint8_t *ciphertext,
+		void *random_ctx, nettle_random_func *random,
+		uint16_t *scratch);
+  void (*decap)(const uint8_t *key,
+		uint8_t *secret,
+		const uint8_t *ciphertext,
+		uint16_t *scratch);
 };
 
 static void *
@@ -1079,26 +1089,38 @@ bench_ml_kem_init (unsigned size)
   struct ml_kem_ctx *ctx;
   uint8_t session_key[ML_KEM_SESSION_KEY_SIZE];
   uint8_t seed[ML_KEM_SEED_SIZE];
+  size_t itch;
 
-  assert (size == 768 || size == 1024);
   ctx = xalloc (sizeof (*ctx));
-
-  ctx->params = size == 768 ?
-    nettle_get_ml_kem_768_params () : nettle_get_ml_kem_1024_params ();
-
-  ctx->scratch = xalloc (ml_kem_decap_itch (ctx->params) *
-			 sizeof(uint16_t));
+  switch (size)
+    {
+    case 768:
+      ctx->generate = ml_kem_768_generate_keypair;
+      ctx->encap = ml_kem_768_encap;
+      ctx->decap = ml_kem_768_decap;
+      itch = ml_kem_768_decap_itch ();
+      break;
+    case 1024:
+      ctx->generate = ml_kem_1024_generate_keypair;
+      ctx->encap = ml_kem_1024_encap;
+      ctx->decap = ml_kem_1024_decap;
+      itch = ml_kem_1024_decap_itch ();
+      break;
+    default:
+      die ("Internal error.\n");
+    }
+  // Assumes the decap_itch is largest. */
+  ctx->scratch = xalloc (itch * sizeof(uint16_t));
   knuth_lfib_init (&ctx->lfib, 1);
   knuth_lfib_random (&ctx->lfib, sizeof (seed), seed);
 
-  ml_kem_generate_keypair (ctx->params, ctx->public_key, ctx->secret_key,
-			   seed, ctx->scratch);
+  ctx->generate (ctx->public_key, ctx->secret_key,
+		 seed, ctx->scratch);
 
-  ml_kem_encap (ctx->params,
-		ctx->public_key,
-		session_key, ctx->ciphertext,
-		&ctx->lfib, (nettle_random_func *)knuth_lfib_random,
-		ctx->scratch);
+  ctx->encap (ctx->public_key,
+	      session_key, ctx->ciphertext,
+	      &ctx->lfib, (nettle_random_func *)knuth_lfib_random,
+	      ctx->scratch);
 
   return ctx;
 }
@@ -1114,8 +1136,8 @@ bench_ml_kem_keygen (void *p)
   knuth_lfib_init (&ctx->lfib, 1);
   knuth_lfib_random (&ctx->lfib, sizeof (seed), seed);
 
-  ml_kem_generate_keypair (ctx->params, public_key, secret_key, seed,
-			   ctx->scratch);
+  ctx->generate (public_key, secret_key, seed,
+		 ctx->scratch);
 }
 
 static void
@@ -1124,9 +1146,9 @@ bench_ml_kem_encrypt (void *p)
   struct ml_kem_ctx *ctx = p;
   uint8_t session_key[ML_KEM_SESSION_KEY_SIZE];
 
-  ml_kem_encap (ctx->params, ctx->public_key, session_key, ctx->ciphertext,
-		&ctx->lfib, (nettle_random_func *)knuth_lfib_random,
-		ctx->scratch);
+  ctx->encap (ctx->public_key, session_key, ctx->ciphertext,
+	      &ctx->lfib, (nettle_random_func *)knuth_lfib_random,
+	      ctx->scratch);
 }
 
 static void
@@ -1134,8 +1156,8 @@ bench_ml_kem_decrypt (void *p)
 {
   struct ml_kem_ctx *ctx = p;
   uint8_t session_key[ML_KEM_SESSION_KEY_SIZE];
-  ml_kem_decap (ctx->params, ctx->secret_key, session_key, ctx->ciphertext,
-		ctx->scratch);
+  ctx->decap (ctx->secret_key, session_key, ctx->ciphertext,
+	      ctx->scratch);
 }
 
 static void

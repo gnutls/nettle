@@ -58,30 +58,25 @@ static const struct ml_kem_params _nettle_ml_kem_1024_params =
     ML_KEM_1024_ETA1
   };
 
-const struct ml_kem_params *nettle_get_ml_kem_1024_params (void)
-{
-  return &_nettle_ml_kem_1024_params;
-}
-
 size_t
 ml_kem_1024_generate_keypair_itch (void)
 {
-  return ml_kem_generate_keypair_itch (&_nettle_ml_kem_1024_params);
+  return _ml_kem_generate_keypair_itch (&_nettle_ml_kem_1024_params);
 }
 
 void
 ml_kem_1024_generate_keypair (uint8_t *pub, uint8_t *key,
-			     const uint8_t *seed,
-			     uint16_t *scratch)
+			      const uint8_t *seed,
+			      uint16_t *scratch)
 {
-  ml_kem_generate_keypair (&_nettle_ml_kem_1024_params,
-			   pub, key, seed, scratch);
+  _ml_kem_generate_keypair (&_nettle_ml_kem_1024_params,
+			    pub, key, seed, scratch);
 }
 
 size_t
 ml_kem_1024_encap_itch (void)
 {
-  return ml_kem_encap_itch (&_nettle_ml_kem_1024_params);
+  return _ml_kem_encap_itch (&_nettle_ml_kem_1024_params);
 }
 
 void
@@ -90,15 +85,15 @@ ml_kem_1024_encap (const uint8_t *pub,
 		  void *random_ctx, nettle_random_func *random,
 		  uint16_t *scratch)
 {
-  ml_kem_encap (&_nettle_ml_kem_1024_params,
-		pub, secret, ciphertext,
-		random_ctx, random, scratch);
+  _ml_kem_encap (&_nettle_ml_kem_1024_params,
+		 pub, secret, ciphertext,
+		 random_ctx, random, scratch);
 }
 
 size_t
 ml_kem_1024_decap_itch (void)
 {
-  return ml_kem_decap_itch (&_nettle_ml_kem_1024_params);
+  return _ml_kem_decap_itch (&_nettle_ml_kem_1024_params);
 }
 
 void
@@ -107,6 +102,6 @@ ml_kem_1024_decap (const uint8_t *key,
 		  const uint8_t *ciphertext,
 		  uint16_t *scratch)
 {
-  ml_kem_decap (&_nettle_ml_kem_1024_params,
-		key, secret, ciphertext, scratch);
+  _ml_kem_decap (&_nettle_ml_kem_1024_params,
+		 key, secret, ciphertext, scratch);
 }

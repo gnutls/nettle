@@ -183,7 +183,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt-table.c \
 		 slh-dsa.c slh-dsa-128s.c slh-dsa-128f.c \
 		 slh-dsa-shake-128s.c slh-dsa-shake-128f.c slh-dsa-sha2-128s.c slh-dsa-sha2-128f.c \
 		 sntrup761.c sntrup761-keygen.c sntrup761-decap.c sntrup761-encap.c \
-		 ml-kem.c ml-kem-768.c ml-kem-1024.c ml-kem-internal.c
+		 ml-kem-768.c ml-kem-1024.c ml-kem-internal.c
 
 hogweed_SOURCES = sexp.c sexp-format.c \
 		  sexp-transport.c sexp-transport-format.c \

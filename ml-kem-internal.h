@@ -50,6 +50,13 @@
 #define _ml_kem_inner_decrypt_itch _nettle_ml_kem_inner_decrypt_itch
 #define _ml_kem_inner_decrypt _nettle_ml_kem_inner_decrypt
 
+#define _ml_kem_generate_keypair_itch _nettle_ml_kem_generate_keypair_itch
+#define _ml_kem_generate_keypair _nettle_ml_kem_generate_keypair
+#define _ml_kem_encap_itch _nettle_ml_kem_encap_itch
+#define _ml_kem_encap _nettle_ml_kem_encap
+#define _ml_kem_decap_itch _nettle_ml_kem_decap_itch
+#define _ml_kem_decap _nettle_ml_kem_decap
+
 struct ml_kem_params
 {
   size_t inner_public_key_size;
@@ -94,5 +101,35 @@ _ml_kem_inner_decrypt (const struct ml_kem_params *params,
 		       const uint8_t *ciphertext,
 		       uint8_t *plaintext,
 		       uint16_t *scratch);
+
+size_t
+_ml_kem_generate_keypair_itch (const struct ml_kem_params *params);
+
+void
+_ml_kem_generate_keypair (const struct ml_kem_params *params,
+			  uint8_t *pub,
+			  uint8_t *key,
+			  const uint8_t *seed,
+			  uint16_t *scratch);
+
+size_t
+_ml_kem_encap_itch (const struct ml_kem_params *params);
+
+void
+_ml_kem_encap (const struct ml_kem_params *params,
+	       const uint8_t *pub,
+	       uint8_t *secret, uint8_t *ciphertext,
+	       void *random_ctx, nettle_random_func *random,
+	       uint16_t *scratch);
+
+size_t
+_ml_kem_decap_itch (const struct ml_kem_params *params);
+
+void
+_ml_kem_decap (const struct ml_kem_params *params,
+	       const uint8_t *key,
+	       uint8_t *secret,
+	       const uint8_t *ciphertext,
+	       uint16_t *scratch);
 
 #endif /* NETTLE_ML_KEM_INTERNAL_H_INCLUDED */
