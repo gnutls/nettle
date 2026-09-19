@@ -554,18 +554,18 @@ vector_decode (uint16_t *rp, const uint8_t *ap, unsigned k, unsigned w)
     poly_decode (VECTOR_GET_POLY (rp, i), &ap[((w * N) >> 3) * i], w);
 }
 
-size_t
-_ml_kem_inner_generate_keypair_itch (const struct ml_kem_params *params)
+static size_t
+inner_generate_keypair_itch (const struct ml_kem_params *params)
 {
   return N * (params->k * params->k + params->k + params->k + params->k);
 }
 
-void
-_ml_kem_inner_generate_keypair (const struct ml_kem_params *params,
-				uint8_t *pub,
-				uint8_t *key,
-				const uint8_t *seed,
-				uint16_t *scratch)
+static void
+inner_generate_keypair (const struct ml_kem_params *params,
+			uint8_t *pub,
+			uint8_t *key,
+			const uint8_t *seed,
+			uint16_t *scratch)
 {
   struct sha3_ctx gctx;
   uint8_t buffer[64];
@@ -613,20 +613,20 @@ _ml_kem_inner_generate_keypair (const struct ml_kem_params *params,
   vector_encode (key, s, params->k, Q_BITS);
 }
 
-size_t
-_ml_kem_inner_encrypt_itch (const struct ml_kem_params *params)
+static size_t
+inner_encrypt_itch (const struct ml_kem_params *params)
 {
   return N * (params->k * params->k + params->k + 1 +
 	      params->k + params->k + params->k);
 }
 
-void
-_ml_kem_inner_encrypt (const struct ml_kem_params *params,
-		       const uint8_t *pub,
-		       const uint8_t *msg,
-		       const uint8_t *seed,
-		       uint8_t *ciphertext,
-		       uint16_t *scratch)
+static void
+inner_encrypt (const struct ml_kem_params *params,
+	       const uint8_t *pub,
+	       const uint8_t *msg,
+	       const uint8_t *seed,
+	       uint8_t *ciphertext,
+	       uint16_t *scratch)
 {
   const uint8_t *rho = &pub[(params->k * Q_BITS * N) / 8];
   uint16_t *a, *r, *e1, *e2, *t, *u;
@@ -705,18 +705,13 @@ _ml_kem_inner_encrypt (const struct ml_kem_params *params,
 	       params->dv);
 }
 
-size_t
-_ml_kem_inner_decrypt_itch (const struct ml_kem_params *params)
-{
-  return N * (params->k + params->k);
-}
-
-void
-_ml_kem_inner_decrypt (const struct ml_kem_params *params,
-		       const uint8_t *key,
-		       const uint8_t *ciphertext,
-		       uint8_t *plaintext,
-		       uint16_t *scratch)
+/* Scratch need is N * (params->k + params->k) */
+static void
+inner_decrypt (const struct ml_kem_params *params,
+	       const uint8_t *key,
+	       const uint8_t *ciphertext,
+	       uint8_t *plaintext,
+	       uint16_t *scratch)
 {
   uint16_t r[N], *s, *u, v[N];
   size_t i;
@@ -762,7 +757,7 @@ _ml_kem_inner_decrypt (const struct ml_kem_params *params,
 size_t
 _ml_kem_generate_keypair_itch (const struct ml_kem_params *params)
 {
-  return _ml_kem_inner_generate_keypair_itch (params);
+  return inner_generate_keypair_itch (params);
 }
 
 void
@@ -775,7 +770,7 @@ _ml_kem_generate_keypair (const struct ml_kem_params *params,
   struct sha3_ctx hctx;
   uint8_t *p;
 
-  _ml_kem_inner_generate_keypair (params, pub, key, seed, scratch);
+  inner_generate_keypair (params, pub, key, seed, scratch);
 
   /* dk = dk|ek|H(ek)|z */
   p = &key[params->inner_private_key_size];
@@ -791,15 +786,15 @@ _ml_kem_generate_keypair (const struct ml_kem_params *params,
 size_t
 _ml_kem_encap_itch (const struct ml_kem_params *params)
 {
-  return _ml_kem_inner_encrypt_itch (params);
+  return inner_encrypt_itch (params);
 }
 
 void
 _ml_kem_encap (const struct ml_kem_params *params,
 	       const uint8_t *pub,
-	      uint8_t *secret, uint8_t *ciphertext,
-	      void *random_ctx, nettle_random_func *random,
-	      uint16_t *scratch)
+	       uint8_t *secret, uint8_t *ciphertext,
+	       void *random_ctx, nettle_random_func *random,
+	       uint16_t *scratch)
 {
   uint8_t m[32], buffer[64], *r = &buffer[32];
   struct sha3_ctx hctx;
@@ -810,7 +805,7 @@ _ml_kem_encap (const struct ml_kem_params *params,
   H (&hctx, params->public_key_size, pub, buffer);
   G2 (&gctx, sizeof(m), m, 32, buffer, buffer);
 
-  _ml_kem_inner_encrypt (params, pub, m, r, ciphertext, scratch);
+  inner_encrypt (params, pub, m, r, ciphertext, scratch);
 
   memcpy (secret, buffer, 32);
 }
@@ -828,7 +823,7 @@ _ml_kem_decap_itch (const struct ml_kem_params *params)
      - params->ciphertext_size is multiple of 32-byte blocks and
      therefore no alignment violation
   */
-  return _ml_kem_inner_encrypt_itch (params) + params->ciphertext_size;
+  return inner_encrypt_itch (params) + params->ciphertext_size;
 }
 
 void
@@ -845,13 +840,13 @@ _ml_kem_decap (const struct ml_kem_params *params,
   struct sha3_ctx hctx;
   struct sha3_ctx gctx;
   volatile int ok = 1;
-  uint8_t *ciphertext2 = (uint8_t *)(scratch + _ml_kem_inner_encrypt_itch (params));
+  uint8_t *ciphertext2 = (uint8_t *)(scratch + inner_encrypt_itch (params));
 
-  _ml_kem_inner_decrypt (params, key, ciphertext, m, scratch);
+  inner_decrypt (params, key, ciphertext, m, scratch);
 
   G2 (&gctx, sizeof(m), m, 32, h, buffer);
 
-  _ml_kem_inner_encrypt (params, pub, m, &buffer[32], ciphertext2, scratch);
+  inner_encrypt (params, pub, m, &buffer[32], ciphertext2, scratch);
 
   /* K1 = KBar2 */
   memcpy (secret, buffer, 32);

@@ -43,13 +43,6 @@
 #define ML_KEM_1024_INNER_PRIVATE_KEY_SIZE 1536
 
 /* Name mangling */
-#define _ml_kem_inner_generate_keypair_itch _nettle_ml_kem_inner_generate_keypair_itch
-#define _ml_kem_inner_generate_keypair _nettle_ml_kem_inner_generate_keypair
-#define _ml_kem_inner_encrypt_itch _nettle_ml_kem_inner_encrypt_itch
-#define _ml_kem_inner_encrypt _nettle_ml_kem_inner_encrypt
-#define _ml_kem_inner_decrypt_itch _nettle_ml_kem_inner_decrypt_itch
-#define _ml_kem_inner_decrypt _nettle_ml_kem_inner_decrypt
-
 #define _ml_kem_generate_keypair_itch _nettle_ml_kem_generate_keypair_itch
 #define _ml_kem_generate_keypair _nettle_ml_kem_generate_keypair
 #define _ml_kem_encap_itch _nettle_ml_kem_encap_itch
@@ -70,37 +63,6 @@ struct ml_kem_params
   unsigned dv;
   unsigned eta1;
 };
-
-size_t
-_ml_kem_inner_generate_keypair_itch (const struct ml_kem_params *params);
-
-void
-_ml_kem_inner_generate_keypair (const struct ml_kem_params *params,
-				uint8_t *pub,
-				uint8_t *key,
-				const uint8_t *seed,
-				uint16_t *scratch);
-
-size_t
-_ml_kem_inner_encrypt_itch (const struct ml_kem_params *params);
-
-void
-_ml_kem_inner_encrypt (const struct ml_kem_params *params,
-		       const uint8_t *pub,
-		       const uint8_t *msg,
-		       const uint8_t *seed,
-		       uint8_t *ciphertext,
-		       uint16_t *scratch);
-
-size_t
-_ml_kem_inner_decrypt_itch (const struct ml_kem_params *params);
-
-void
-_ml_kem_inner_decrypt (const struct ml_kem_params *params,
-		       const uint8_t *key,
-		       const uint8_t *ciphertext,
-		       uint8_t *plaintext,
-		       uint16_t *scratch);
 
 size_t
 _ml_kem_generate_keypair_itch (const struct ml_kem_params *params);

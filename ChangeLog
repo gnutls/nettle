@@ -1,5 +1,9 @@
 2026-09-19  Niels Möller  <nisse@lysator.liu.se>
 
+	* ml-kem-internal.c: Declare all the "inner" functions as static.
+	(_ml_kem_inner_decrypt_itch): Delete unused function.
+	* ml-kem-internal.h: Delete corresponding declarations.
+
 	* ml-kem.c: Deleted file. The generic top-level functions moved to
 	ml-kem-internal.c.
 	* ml-kem-internal.c (H, J2): New macros, moved from ml-kem.c.
