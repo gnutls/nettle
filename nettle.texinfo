@@ -6000,6 +6000,11 @@ algorithm was standardized by NIST, as FIPS 203,
 Nettle defines ML-KEM in @file{<nettle/ml-kem.h>}, which supports two
 variants of the algorithm: ML-KEM-768 and ML-KEM-1024.
 
+The ML-KEM operations need several KiB of scratch space, which must be
+provided by the caller, as an argument @code{uint16_t *@var{scratch}}.
+The required size of the scratch buffer, in units of @code{uint16_t}, is
+returned by the corresponding @code{_itch} function.
+
 @defvr Constant ML_KEM_768_PRIVATE_KEY_SIZE
 The size (2400 bytes) of the ML-KEM-768 secret key.
 @end defvr
@@ -6033,43 +6038,46 @@ The size (64 bytes) of the ML-KEM secret seed to be expanded to a
 secret key.
 @end defvr
 
-@deftypefun void ml_kem_generate_keypair (const struct ml_kem_params *@var{params}, uint8_t *@var{pub}, uint8_t *@var{key}, const uint8_t *@var{seed}, uint16_t *@var{scratch});
+@deftypefun void ml_kem_768_generate_keypair (uint8_t *@var{pub}, uint8_t *@var{key}, const uint8_t *@var{seed}, uint16_t *@var{scratch})
+@deftypefunx void ml_kem_1024_generate_keypair (uint8_t *@var{pub}, uint8_t *@var{key}, const uint8_t *@var{seed}, uint16_t *@var{scratch})
 Generate an ML-KEM public key @var{pub} and private key @var{key} from
-the given @var{seed} of length @code{ML_KEM_SEED_SIZE}.  Scratch
-buffer @var{scratch} is a user allocated working space required by the
-algorithm.  To determine the required size of the scratch buffer use
-the utility function @code{ml_kem_generate_keypair_itch}.
+the given @var{seed} of length @code{ML_KEM_SEED_SIZE}. The
+@var{scratch} buffer must be allocated by the caller, with scratch need
+determined by the corresponding itch function, below.
 @end deftypefun
 
-@deftypefun size_t ml_kem_generate_keypair_itch (const struct ml_kem_params *@var{params})
+@deftypefun size_t ml_kem_768_generate_keypair_itch (void)
+@deftypefunx size_t ml_kem_1024_generate_keypair_itch (void)
 Compute the size of the scratch buffer @var{scratch} for generating an
 ML-KEM key pair.
 @end deftypefun
 
-@deftypefun void ml_kem_encap (const struct ml_kem_params *@var{params}, const uint8_t *@var{pub}, uint8_t *@var{secret}, uint8_t *@var{ciphertext}, void *@var{random_ctx}, nettle_random_func *@var{random}, uint16_t *@var{scratch})
+@deftypefun void ml_kem_768_encap (const uint8_t *@var{pub}, uint8_t *@var{secret}, uint8_t *@var{ciphertext}, void *@var{random_ctx}, nettle_random_func *@var{random}, uint16_t *@var{scratch})
+@deftypefunx void ml_kem_1024_encap (const uint8_t *@var{pub}, uint8_t *@var{secret}, uint8_t *@var{ciphertext}, void *@var{random_ctx}, nettle_random_func *@var{random}, uint16_t *@var{scratch})
 Generate a session key @var{secret} and encapsulate it into ciphertext
 @var{ciphertext} for the recipient with public-key @var{pub}, using
-randomness-generator @var{random} with context @var{random_ctx}.
-Scratch buffer @var{scratch} is a user allocated working space
-required by the algorithm.  To determine the required size of the
-scratch buffer use the utility function
-@code{ml_kem_encap_itch}.
+randomness-generator @var{random} with context @var{random_ctx}. The
+@var{scratch} buffer must be allocated by the caller, with scratch need
+determined by the corresponding itch function, below.
 @end deftypefun
 
-@deftypefun size_t ml_kem_encap_itch (const struct ml_kem_params *@var{params})
-Compute the size of the scratch buffer @var{scratch} for @code{ml_kem_encap}.
+@deftypefun size_t ml_kem_768_encap_itch (void)
+@deftypefunx size_t ml_kem_1024_encap_itch (void)
+Compute the size of the scratch buffer @var{scratch} for ML-KEM encapsulation.
 @end deftypefun
 
-@deftypefun void ml_kem_decap (const struct ml_kem_params *@var{params}, const uint8_t *@var{key}, uint8_t *@var{secret}, const uint8_t *@var{ciphertext}, uint16_t *@var{scratch})
+@deftypefun void ml_kem_768_decap (const uint8_t *@var{key}, uint8_t *@var{secret}, const uint8_t *@var{ciphertext}, uint16_t *@var{scratch})
+@deftypefunx void ml_kem_1024_decap (const uint8_t *@var{key}, uint8_t *@var{secret}, const uint8_t *@var{ciphertext}, uint16_t *@var{scratch})
 Decapsulate session key @var{secret} from ciphertext @var{ciphertext}
-using the private key @var{key}.  Scratch buffer @var{scratch} is a
-user allocated working space required by the algorithm.  To determine
-the required size of the scratch buffer use the utility function
-@code{ml_kem_decap_itch}.
+using the private key @var{key}. The @var{scratch} buffer must be
+allocated by the caller, with scratch need determined by the
+corresponding itch function, below.
 @end deftypefun
 
-@deftypefun size_t ml_kem_decap_itch (const struct ml_kem_params *@var{params})
-Compute the size of the scratch buffer @var{scratch} for @code{ml_kem_decap}.
+@deftypefun size_t ml_kem_768_decap_itch (void)
+@deftypefunx size_t ml_kem_1024_decap_itch (void)
+Compute the size of the scratch buffer @var{scratch} for ML-KEM
+decapsulation.
 @end deftypefun
 
 @node Randomness
