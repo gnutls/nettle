@@ -52,7 +52,7 @@
 
 #define ZETA 17
 #define ETA2 2
-#define MAX_ETA1 3
+#define MAX_ETA 3
 
 /* A polynomial is represented as a uint16_t array of length N, where
  * an element at index i represents the coefficient of x^i.
@@ -398,7 +398,7 @@ poly_sample (uint16_t *pp, struct sha3_128_ctx *xof)
     }
 }
 
-/* Returns number of one bits in a number that is at most MAX_ETA1
+/* Returns number of one bits in a number that is at most MAX_ETA
    bits, i.e., limited to 0 <= x < 8 */
 static inline uint16_t
 popcount_small(unsigned x)
@@ -421,41 +421,41 @@ popcount_small(unsigned x)
 }
 
 static void
-vector_sample (uint16_t *vp, const uint8_t *sigma, unsigned eta1,
+vector_sample (uint16_t *vp, const uint8_t *sigma, unsigned eta,
 	       unsigned offset, unsigned k)
 {
   size_t i;
-  uint16_t mask = (1U << eta1) - 1;
+  uint16_t mask = (1U << eta) - 1;
 
   for (i = 0; i < k; i++)
     {
       struct sha3_ctx ctx;
-      uint8_t arr[64 * MAX_ETA1];
+      uint8_t arr[64 * MAX_ETA];
       uint16_t *rp;
       size_t j, l;
       unsigned bits, w;
 
-      PRF (&ctx, sigma, offset + i, 64 * eta1, arr);
+      PRF (&ctx, sigma, offset + i, 64 * eta, arr);
 
       rp = VECTOR_GET_POLY (vp, i);
 
-      /* Each iteration gets a block of 2*eta1 bits from the array. */
-      for (j = l = bits = w = 0; j < N; j++, bits -= 2*eta1, w >>= 2*eta1)
+      /* Each iteration gets a block of 2*eta bits from the array. */
+      for (j = l = bits = w = 0; j < N; j++, bits -= 2*eta, w >>= 2*eta)
 	{
 	  unsigned xbits, ybits;
-	  if (bits < 2 * eta1)
+	  if (bits < 2 * eta)
 	    {
 	      w |= (arr[l++] << bits);
 	      bits += 8;
 	    }
 
 	  xbits = w & mask;
-	  ybits = (w >> eta1) & mask;
+	  ybits = (w >> eta) & mask;
 
 	  rp[j] = mod_sub(popcount_small (xbits), popcount_small (ybits));
 	}
       assert (bits == 0);
-      assert (l == 64 * eta1);
+      assert (l == 64 * eta);
     }
 }
 

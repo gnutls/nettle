@@ -1,5 +1,10 @@
 2026-10-05  Niels Möller  <nisse@lysator.liu.se>
 
+	* ml-kem-internal.c (MAX_ETA): Renamed constant, was...
+	(MAX_ETA1): ...old name.
+	(vector_sample): Rename argument eta1 --> eta, since this function
+	is used with both ETA2 and params->eta1.
+
 	* ecc-secp256r1.c (ecc_secp256r1_modp): Fix call to mpn_cnd_add_n
 	to pass zero or one.
 	* ecc-mod-inv.c (ecc_mod_inv): Likewise.
