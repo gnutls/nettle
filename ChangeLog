@@ -4,6 +4,10 @@
 	(MAX_ETA1): ...old name.
 	(vector_sample): Rename argument eta1 --> eta, since this function
 	is used with both ETA2 and params->eta1.
+	(full_encode, full_decode): New functions.
+	(poly_decode): Delete no longer needed mod q reduction.
+	(inner_generate_keypair): Use full_encode.
+	(inner_encrypt, inner_decrypt): Use full_decode.
 
 	* ecc-secp256r1.c (ecc_secp256r1_modp): Fix call to mpn_cnd_add_n
 	to pass zero or one.

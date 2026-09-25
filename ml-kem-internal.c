@@ -487,6 +487,45 @@ matrix_sample (uint16_t *mp, const uint8_t *rho, unsigned k)
     }
 }
 
+/* Encodes 12-bit coefficients, one "scalar" (256 coeffients) is
+   stored as 384 bytes. */
+static void
+full_encode (uint8_t *rp, const uint16_t *ap, unsigned k)
+{
+  size_t i, j;
+  for (i = j = 0; i < N*k; i += 2, j += 3)
+    {
+      uint16_t a0 = ap[i];
+      uint16_t a1 = ap[i+1];
+      assert_maybe (a0 < Q);
+      assert_maybe (a1 < Q);
+
+      rp[j] = a0;
+      rp[j+1] = (a0 >> 8) | a1 << 4;
+      rp[j+2] = a1 >> 4;
+    }
+  assert (j == 384 * k);
+}
+
+/* Decodes 12-bit coefficients, and reduces mod Q. One "scalar" (256
+   coeffients) corresponds to 384 bytes input. */
+static void
+full_decode (uint16_t *rp, const uint8_t *ap, unsigned k)
+{
+  size_t i, j;
+  for (i = j = 0; i < N*k; i += 2, j += 3)
+    {
+      uint8_t a1 = ap[j+1];
+      uint32_t r;
+
+      r = (ap[j] | ((a1 & 0x0f) << 8)) - Q;
+      rp[i] = r + ((r >> 16) & Q);
+      r = ((ap[j+2] << 4) | (a1 >> 4)) - Q;
+      rp[i+1] = r + ((r >> 16) & Q);
+    }
+  assert (j == 384 * k);
+}
+
 /* When d < Q_BITS == 12, only the low d bits of each entry are
    written. */
 static void
@@ -521,11 +560,7 @@ poly_decode (uint16_t *rp, const uint8_t *ap, unsigned d)
 	w |= (ap[j++] << bits);
 
       for (; i < N && bits >= d; bits -= d, w >>= d)
-	{
-	  /* Reduce mod q; needed only when d == 12 */
-	  uint32_t r = (w & mask) - Q;
-	  rp[i++] = r + ((r >> 16) & Q);
-	}
+	rp[i++] = (w & mask);
     }
   assert (bits == 0);
 }
@@ -600,11 +635,11 @@ inner_generate_keypair (const struct ml_kem_params *params,
 	tp[j] = mod_add (tp[j], ep[j]);
     }
 
-  vector_encode (pub, t, params->k, Q_BITS);
+  full_encode (pub, t, params->k);
 
   memcpy (pub + (params->k * Q_BITS * N) / 8, rho, 32);
 
-  vector_encode (key, s, params->k, Q_BITS);
+  full_encode (key, s, params->k);
 }
 
 static size_t
@@ -634,7 +669,7 @@ inner_encrypt (const struct ml_kem_params *params,
   t = r + N * params->k;
   u = t + N * params->k;
 
-  vector_decode (t, pub, params->k, Q_BITS);
+  full_decode (t, pub, params->k);
 
   matrix_sample (a, rho, params->k);
 
@@ -731,7 +766,7 @@ inner_decrypt (const struct ml_kem_params *params,
   for (i = 0; i < N; i++)
     v[i] = decompress (v[i], params->dv);
 
-  vector_decode (s, key, params->k, Q_BITS);
+  full_decode (s, key, params->k);
 
   for (i = 0; i < params->k; i++)
     poly_into_ntt (VECTOR_GET_POLY (u, i));
