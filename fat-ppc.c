@@ -130,8 +130,10 @@ get_ppc_features (struct ppc_features *features)
       hwcap = getauxval(AT_HWCAP);
       hwcap2 = getauxval(AT_HWCAP2);
 # elif defined(HAVE_ELF_AUX_INFO)
-      elf_aux_info(AT_HWCAP, &hwcap, sizeof(hwcap));
-      elf_aux_info(AT_HWCAP2, &hwcap2, sizeof(hwcap2));
+      if (elf_aux_info(AT_HWCAP, &hwcap, sizeof(hwcap)) != 0)
+        hwcap = 0;
+      if (elf_aux_info(AT_HWCAP2, &hwcap2, sizeof(hwcap2)) != 0)
+        hwcap2 = 0;
 # elif defined(__FreeBSD__)
       size_t len;
       len = sizeof(hwcap);

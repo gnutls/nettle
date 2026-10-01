@@ -141,7 +141,8 @@ get_arm64_features (struct arm64_features *features)
 #if USE_GETAUXVAL
       hwcap = getauxval(AT_HWCAP);
 #elif defined(HAVE_ELF_AUX_INFO)
-      elf_aux_info(AT_HWCAP, &hwcap, sizeof(hwcap));
+      if (elf_aux_info(AT_HWCAP, &hwcap, sizeof(hwcap)) != 0)
+        hwcap = 0;
 #endif
 
       features->have_aes
