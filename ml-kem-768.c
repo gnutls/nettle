@@ -47,7 +47,6 @@
 
 static const struct ml_kem_params _nettle_ml_kem_768_params =
   {
-    ML_KEM_768_INNER_PUBLIC_KEY_SIZE,
     ML_KEM_768_INNER_PRIVATE_KEY_SIZE,
     ML_KEM_768_PUBLIC_KEY_SIZE,
     ML_KEM_768_PRIVATE_KEY_SIZE,

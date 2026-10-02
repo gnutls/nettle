@@ -746,10 +746,10 @@ _ml_kem_generate_keypair (const struct ml_kem_params *params,
 
   /* dk = dk|ek|H(ek)|z */
   p = &key[params->inner_private_key_size];
-  memcpy (p, pub, params->inner_public_key_size);
-  p += params->inner_public_key_size;
+  memcpy (p, pub, params->public_key_size);
+  p += params->public_key_size;
 
-  H (&hctx, params->inner_public_key_size, pub, p);
+  H (&hctx, params->public_key_size, pub, p);
   p += 32;
 
   memcpy (p, &seed[32], 32);
@@ -807,7 +807,7 @@ _ml_kem_decap (const struct ml_kem_params *params,
 {
   uint8_t m[32], buffer[64], k2[32];
   const uint8_t *pub = key + params->inner_private_key_size;
-  const uint8_t *h = pub + params->inner_public_key_size;
+  const uint8_t *h = pub + params->public_key_size;
   const uint8_t *z = h + 32;
   struct sha3_ctx hctx;
   volatile int ok = 1;

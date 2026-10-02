@@ -36,10 +36,7 @@
 
 #include "ml-kem.h"
 
-#define ML_KEM_768_INNER_PUBLIC_KEY_SIZE 1184
 #define ML_KEM_768_INNER_PRIVATE_KEY_SIZE 1152
-
-#define ML_KEM_1024_INNER_PUBLIC_KEY_SIZE 1568
 #define ML_KEM_1024_INNER_PRIVATE_KEY_SIZE 1536
 
 /* Name mangling */
@@ -52,7 +49,6 @@
 
 struct ml_kem_params
 {
-  size_t inner_public_key_size;
   size_t inner_private_key_size;
   size_t public_key_size;
   size_t private_key_size;
