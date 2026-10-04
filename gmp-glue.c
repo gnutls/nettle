@@ -39,20 +39,23 @@
 
 #include "gmp-glue.h"
 
+#include "nettle-internal.h"
+
 #if NETTLE_USE_MINI_GMP
+/* Nettle always calls this function with cnd 0 or 1. */
 mp_limb_t
 mpn_cnd_add_n (mp_limb_t cnd, mp_limb_t *rp,
 	       const mp_limb_t *ap, const mp_limb_t *bp, mp_size_t n)
 {
-  mp_limb_t cy, mask;
+  mp_limb_t cy;
   mp_size_t  i;
 
-  mask = -(mp_limb_t) (cnd != 0);
+  assert (cnd <= 1);
 
   for (i = 0, cy = 0; i < n; i++)
     {
       mp_limb_t rl = ap[i] + cy;
-      mp_limb_t bl = bp[i] & mask;
+      mp_limb_t bl = bp[i] & -cnd;
       cy = (rl < cy);
       rl += bl;
       cy += (rl < bl);
@@ -61,19 +64,20 @@ mpn_cnd_add_n (mp_limb_t cnd, mp_limb_t *rp,
   return cy;
 }
 
+/* Nettle always calls this function with cnd 0 or 1. */
 mp_limb_t
 mpn_cnd_sub_n (mp_limb_t cnd, mp_limb_t *rp,
 	       const mp_limb_t *ap, const mp_limb_t *bp, mp_size_t n)
 {
-  mp_limb_t cy, mask;
+  mp_limb_t cy;
   mp_size_t  i;
 
-  mask = -(mp_limb_t) (cnd != 0);
+  assert (cnd <= 1);
 
   for (i = 0, cy = 0; i < n; i++)
     {
       mp_limb_t al = ap[i];
-      mp_limb_t bl = bp[i] & mask;
+      mp_limb_t bl = bp[i] & -cnd;
       mp_limb_t sl;
       sl = al - cy;
       cy = (al < cy) + (sl < bl);
@@ -83,17 +87,20 @@ mpn_cnd_sub_n (mp_limb_t cnd, mp_limb_t *rp,
   return cy;
 }
 
+/* Nettle always calls this function with cnd 0 or 1. */
 void
 mpn_cnd_swap (mp_limb_t cnd, volatile mp_limb_t *ap, volatile mp_limb_t *bp, mp_size_t n)
 {
-  volatile mp_limb_t mask = - (mp_limb_t) (cnd != 0);
   mp_size_t i;
+
+  assert (cnd <= 1);
+
   for (i = 0; i < n; i++)
     {
       mp_limb_t a, b, t;
       a = ap[i];
       b = bp[i];
-      t = (a ^ b) & mask;
+      t = (a ^ b) & -cnd;
       ap[i] = a ^ t;
       bp[i] = b ^ t;
     }
@@ -105,16 +112,16 @@ void
 mpn_sec_tabselect (volatile mp_limb_t *rp, volatile const mp_limb_t *table,
 		   mp_size_t rn, unsigned tn, unsigned k)
 {
-  volatile const mp_limb_t *end = table + tn * rn;
   volatile const mp_limb_t *p;
-  mp_size_t i;
+  unsigned i;
 
   assert (k < tn);
-  for (p = table; p < end; p += rn, k--)
+  for (i = 0, p = table; i < tn; p += rn, i++)
     {
-      mp_limb_t mask = - (mp_limb_t) (k == 0);
-      for (i = 0; i < rn; i++)
-	rp[i] = (~mask & rp[i]) | (mask & p[i]);
+      mp_limb_t mask = - (mp_limb_t) IS_ZERO_SMALL (i ^ k);
+      mp_size_t j;
+      for (j = 0; j < rn; j++)
+	rp[j] = (~mask & rp[j]) | (mask & p[j]);
     }
 }
 

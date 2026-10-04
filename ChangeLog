@@ -1,3 +1,12 @@
+2026-10-04  Niels Möller  <nisse@lysator.liu.se>
+
+	In replacement functions used with mini-gmp, avoid constructions
+	that are compiled as branches on some processors, in particular
+	AVR. Problem reported by Zahiya Zahid.
+	* gmp-glue.c (mpn_cnd_add_n, mpn_cnd_sub_n, mpn_cnd_swap): Require
+	that the cnd argument is zero or one, and use -cnd as a mask.
+	(mpn_sec_tabselect): Construct the mask using IS_ZERO_SMALL.
+
 2026-09-21  Niels Möller  <nisse@lysator.liu.se>
 
 	* sntrup761.c (uint32_16_mod): Moved, to...
