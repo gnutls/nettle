@@ -126,12 +126,14 @@ ecc_secp256r1_modp (const struct ecc_modulo *p, mp_limb_t *rp, mp_limb_t *xp)
 
       cy = mpn_submul_1 (xp + n - 4, p->m, 3, q1);
       mask = - (mp_limb_t) (r < cy);
+      r += (d1 & mask) - cy;
+
       if (n == p->size)
 	{
-	  rp[3] = r - cy + (mask & d1) + mpn_cnd_add_n (mask, rp, xp, p->m, 3);
+	  rp[3] = r + mpn_cnd_add_n (-mask, rp, xp, p->m, 3);
 	  return;
 	}
-      u1 = r - cy + (mask & d1) + mpn_cnd_add_n (mask, xp + n - 4, xp + n- 4, p->m, 3);
+      u1 = r + mpn_cnd_add_n (-mask, xp + n - 4, xp + n- 4, p->m, 3);
     }
 }
 

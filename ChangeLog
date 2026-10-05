@@ -1,3 +1,9 @@
+2026-10-05  Niels Möller  <nisse@lysator.liu.se>
+
+	* ecc-secp256r1.c (ecc_secp256r1_modp): Fix call to mpn_cnd_add_n
+	to pass zero or one.
+	* ecc-mod-inv.c (ecc_mod_inv): Likewise.
+
 2026-10-04  Niels Möller  <nisse@lysator.liu.se>
 
 	In replacement functions used with mini-gmp, avoid constructions
