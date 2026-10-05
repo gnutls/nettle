@@ -114,23 +114,6 @@ PRF (struct sha3_ctx *ctx,
   sha3_256_shake (ctx, length, dst);
 }
 
-/* Compress(x, d) = Round((2^d/Q)x) mod 2^d
-   for 0 <= x < Q and d < 12, the result is in [0, 2^d) */
-static inline uint16_t
-compress (uint16_t x, unsigned d)
-{
-  assert_maybe (x < Q);
-  return ((UINT64_C(20642679) * ((x << d) + (Q >> 1)) >> 36) & ((1 << d) - 1));
-}
-
-/* Decompress(y, d) = Round((Q/2^d)y)
-   for 0 <= y < 2^d and d < 12, the result is in [0, Q) */
-static inline uint16_t
-decompress (uint16_t y, unsigned d)
-{
-  return ((Q * y + (1 << (d - 1))) >> d);
-}
-
 /* Calculate x mod Q using Barrett reduction
    for x in range [0, Q^2) */
 static inline uint16_t
@@ -526,19 +509,26 @@ full_decode (uint16_t *rp, const uint8_t *ap, unsigned k)
   assert (j == 384 * k);
 }
 
-/* When d < Q_BITS == 12, only the low d bits of each entry are
-   written. */
+/* Compresses coeffients to d bits, and encodes them as a byte array
+   of size 32 * k * d bytes. */
 static void
-poly_encode (uint8_t *rp, const uint16_t *ap, unsigned d)
+compress_encode (uint8_t *rp, const uint16_t *ap, unsigned k, unsigned d)
 {
   size_t i, j;
   unsigned bits, w;
   uint16_t mask = (1U << d) - 1;
 
-  for (i = j = bits = w = 0; i < N; i++)
+  for (i = j = bits = w = 0; i < N * k ; i++)
     {
+      uint16_t x = ap[i];
+      uint16_t c;
+
+      assert_maybe (x < Q);
+      /* Compress(x, d) = Round((2^d x / Q)) mod 2^d
+	 for 0 <= x < Q and d < 12 */
+      c = ((UINT64_C(20642679) * ((x << d) + (Q >> 1))) >> 36) & mask;
       /* Needs worst case 7 + 11 = 18 bits in w. */
-      w |= (unsigned) (ap[i] & mask) << bits;
+      w |= (unsigned) c << bits;
 
       for (bits += d; bits >= 8; bits -= 8, w >>= 8)
 	rp[j++] = w;
@@ -547,40 +537,27 @@ poly_encode (uint8_t *rp, const uint16_t *ap, unsigned d)
 }
 
 static void
-poly_decode (uint16_t *rp, const uint8_t *ap, unsigned d)
+decompress_decode (uint16_t *rp, const uint8_t *ap, unsigned k, unsigned d)
 {
   size_t i, j;
   unsigned bits, w;
   uint16_t mask = (1U << d) - 1;
+  uint16_t half = 1U << (d-1);
 
-  for (i = j = bits = w = 0; i < N; )
+  for (i = j = bits = w = 0; i < N * k; )
     {
       /* Needs worst case 10 + 8 = 18 bits in w. */
       for (; bits < d; bits +=8)
 	w |= (ap[j++] << bits);
 
-      for (; i < N && bits >= d; bits -= d, w >>= d)
-	rp[i++] = (w & mask);
+      for (; bits >= d; bits -= d, w >>= d)
+	{
+	  /* Decompress(y, d) = Round((Q/2^d)y)
+	     for 0 <= y < 2^d and d < 12, the result is in [0, Q) */
+	  rp[i++] = (Q * (w & mask) + half) >> d;
+	}
     }
   assert (bits == 0);
-}
-
-static void
-vector_encode (uint8_t *rp, const uint16_t *ap, unsigned k, unsigned w)
-{
-  size_t i;
-
-  for (i = 0; i < k; i++)
-    poly_encode (&rp[((w * N) >> 3) * i], VECTOR_GET_POLY (ap, i), w);
-}
-
-static void
-vector_decode (uint16_t *rp, const uint8_t *ap, unsigned k, unsigned w)
-{
-  size_t i;
-
-  for (i = 0; i < k; i++)
-    poly_decode (VECTOR_GET_POLY (rp, i), &ap[((w * N) >> 3) * i], w);
 }
 
 static size_t
@@ -715,23 +692,9 @@ inner_encrypt (const struct ml_kem_params *params,
   for (i = 0; i < N; i++)
     v[i] = mod_add (mod_add (v[i], e2[i]), m[i]);
 
-  for (i = 0; i < params->k; i++)
-    {
-      size_t j;
-      uint16_t *up;
-
-      up = VECTOR_GET_POLY (u, i);
-      for (j = 0; j < N; j++)
-	up[j] = compress (up[j], params->du);
-    }
-
-  vector_encode (ciphertext, u, params->k, params->du);
-
-  for (i = 0; i < N; i++)
-    v[i] = compress (v[i], params->dv);
-
-  poly_encode (&ciphertext[(params->du * params->k * N) / 8], v,
-	       params->dv);
+  compress_encode (ciphertext, u, params->k, params->du);
+  compress_encode (&ciphertext[(params->du * params->k * N) / 8], v,
+		   1, params->dv);
 }
 
 /* Scratch need is N * (params->k + params->k) */
@@ -748,24 +711,9 @@ inner_decrypt (const struct ml_kem_params *params,
   s = scratch;
   u = s + N * params->k;
 
-  vector_decode (u, ciphertext, params->k, params->du);
-
-  for (i = 0; i < params->k; i++)
-    {
-      size_t j;
-      uint16_t *up;
-
-      up = VECTOR_GET_POLY (u, i);
-      for (j = 0; j < N; j++)
-	up[j] = decompress (up[j], params->du);
-    }
-
-  poly_decode (v, &ciphertext[(params->du * params->k * N) / 8],
-	       params->dv);
-
-  for (i = 0; i < N; i++)
-    v[i] = decompress (v[i], params->dv);
-
+  decompress_decode (u, ciphertext, params->k, params->du);
+  decompress_decode (v, &ciphertext[(params->du * params->k * N) / 8],
+		     1, params->dv);
   full_decode (s, key, params->k);
 
   for (i = 0; i < params->k; i++)
@@ -777,10 +725,7 @@ inner_decrypt (const struct ml_kem_params *params,
   for (i = 0; i < N; i++)
     v[i] = mod_sub (v[i], r[i]);
 
-  for (i = 0; i < N; i++)
-    v[i] = compress (v[i], 1);
-
-  poly_encode (plaintext, v, 1);
+  compress_encode (plaintext, v, 1, 1);
 }
 
 size_t

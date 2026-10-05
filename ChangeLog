@@ -1,5 +1,16 @@
 2026-10-05  Niels Möller  <nisse@lysator.liu.se>
 
+	* ml-kem-internal.c: (compress, decompress): Deleted functions.
+	(vector_encode, vector_decode): Deleted functions.
+	(poly_encode, poly_decode): Replaced by below functions.
+	(compress_encode): New function, replacing poly_encode and
+	vector_decode, and inlining compress operation.
+	(decompress_decode): New function replacing poly_decode and
+	vector_decode, and inlining decompress operation.
+	(inner_encrypt): Use compress_encode.
+	(inner_decrypt): Use decompress_decode.
+	(inner_decrypt): Use compress_encode.
+
 	* ml-kem-internal.c (MAX_ETA): Renamed constant, was...
 	(MAX_ETA1): ...old name.
 	(vector_sample): Rename argument eta1 --> eta, since this function
