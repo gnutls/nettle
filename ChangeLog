@@ -1,5 +1,9 @@
 2026-10-06  Niels Möller  <nisse@lysator.liu.se>
 
+	* ml-kem-internal.c (poly_addmul_ntt): New function.
+	(vector_mul_ntt): Simplify using poly_addmul_ntt, and reduce stack
+	allocation.
+
 	* ml-kem-internal.h (ML_KEM_768_INNER_PUBLIC_KEY_SIZE)
 	(ML_KEM_1024_INNER_PUBLIC_KEY_SIZE): Deleted.
 	(struct ml_kem_params): Delete inner_public_key_size. Replace all
@@ -48,6 +52,12 @@
 	* gmp-glue.c (mpn_cnd_add_n, mpn_cnd_sub_n, mpn_cnd_swap): Require
 	that the cnd argument is zero or one, and use -cnd as a mask.
 	(mpn_sec_tabselect): Construct the mask using IS_ZERO_SMALL.
+
+2026-09-23  Niels Möller  <nisse@lysator.liu.se>
+
+	* ml-kem-internal.c (MATRIX_GET_VECTOR): Delete unused macro.
+	(poly_addmul_ntt): New function.
+	(vector_mul_ntt): Use poly_addmul_ntt, eliminate temporary array.
 
 2026-09-21  Niels Möller  <nisse@lysator.liu.se>
 

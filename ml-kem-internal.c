@@ -249,8 +249,6 @@ poly_mul_ntt (uint16_t *rp, const uint16_t *ap, const uint16_t *bp)
 {
   size_t i;
 
-  memset (rp, 0, sizeof(uint16_t) * N);
-
   for (i = 0; i < N; i += 2)
     {
       uint16_t z, a1, a2, b1, b2;
@@ -267,6 +265,28 @@ poly_mul_ntt (uint16_t *rp, const uint16_t *ap, const uint16_t *bp)
     }
 }
 
+/* Calculate a product of two polynomials AP and BP in NTT domain, add to RP. */
+static void
+poly_addmul_ntt (uint16_t *rp, const uint16_t *ap, const uint16_t *bp)
+{
+  size_t i;
+
+  for (i = 0; i < N; i += 2)
+    {
+      uint16_t z, a1, a2, b1, b2;
+
+      a1 = ap[i];
+      a2 = ap[i + 1];
+      b1 = bp[i];
+      b2 = bp[i + 1];
+
+      z = zeta_pow_table2[i >> 1];
+
+      rp[i] = reduce (rp[i] + a1 * b1 + z * reduce (a2 * b2));
+      rp[i + 1] = reduce (rp[i + 1] + a2 * b1 + a1 * b2);
+    }
+}
+
 /* Calculate dot product of two vectors AP and BP with length K in NTT domain.
  *
  * Returns the result as a polynomial in RP.
@@ -275,28 +295,12 @@ static void
 vector_mul_ntt (uint16_t *rp, const uint16_t *ap, const uint16_t *bp,
 		unsigned k)
 {
-  uint16_t tp[N];
   size_t i;
 
-  memset (rp, 0, sizeof(uint16_t) * N);
+  poly_mul_ntt (rp, VECTOR_GET_POLY (ap, 0), VECTOR_GET_POLY (bp, 0));
 
-  for (i = 0; i < k; i++)
-    {
-      size_t j;
-
-      poly_mul_ntt (tp, VECTOR_GET_POLY (ap, i), VECTOR_GET_POLY (bp, i));
-
-      for (j = 0; j < N; j++)
-	{
-	  uint16_t t = tp[j];
-	  uint16_t r = rp[j];
-
-	  rp[j] = t + r;
-	}
-    }
-
-  for (i = 0; i < N; i++)
-    rp[i] = reduce (rp[i]);
+  for (i = 1; i < k; i++)
+    poly_addmul_ntt (rp, VECTOR_GET_POLY (ap, i), VECTOR_GET_POLY (bp, i));
 }
 
 /* Calculate a product of a K x K matrix AP and a vector with K
