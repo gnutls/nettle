@@ -72,7 +72,6 @@ H (struct sha3_ctx *ctx,
    const uint8_t *msg,
    uint8_t *dst)
 {
-  sha3_init (ctx);
   sha3_256_update (ctx, len, msg);
   sha3_256_digest (ctx, dst);
 }
@@ -83,7 +82,6 @@ G2 (struct sha3_ctx *ctx,
     size_t len2, const uint8_t *msg2,
     uint8_t *dst)
 {
-  sha3_init (ctx);
   sha3_512_update (ctx, len1, msg1);
   sha3_512_update (ctx, len2, msg2);
   sha3_512_digest (ctx, dst);
@@ -95,7 +93,6 @@ J2 (struct sha3_ctx *ctx,
     size_t len2, const uint8_t *msg2,
     uint8_t *dst)
 {
-  sha3_init (ctx);
   sha3_256_update (ctx, len1, msg1);
   sha3_256_update (ctx, len2, msg2);
   sha3_256_shake (ctx, 32, dst);
@@ -108,7 +105,6 @@ PRF (struct sha3_ctx *ctx,
      size_t length,
      uint8_t *dst)
 {
-  sha3_init (ctx);
   sha3_256_update (ctx, 32, seed);
   sha3_256_update (ctx, 1, &nonce);
   sha3_256_shake (ctx, length, dst);
@@ -360,7 +356,7 @@ poly_sample (uint16_t *pp, struct sha3_128_ctx *xof)
     {
       uint16_t d1, d2;
 
-      sha3_128_shake_output (xof, sizeof(b), b);
+      sha3_128_shake_output (xof, sizeof (b), b);
 
       d1 = b[0] + ((b[1] & 15) << 8);
       d2 = (b[1] >> 4) + (b[2] << 4);
@@ -404,7 +400,7 @@ popcount_small(unsigned x)
 }
 
 static void
-vector_sample (uint16_t *vp, const uint8_t *sigma, unsigned eta,
+vector_sample (uint16_t *vp, struct sha3_ctx *ctx, const uint8_t *sigma, unsigned eta,
 	       unsigned offset, unsigned k)
 {
   size_t i;
@@ -412,13 +408,12 @@ vector_sample (uint16_t *vp, const uint8_t *sigma, unsigned eta,
 
   for (i = 0; i < k; i++)
     {
-      struct sha3_ctx ctx;
       uint8_t arr[64 * MAX_ETA];
       uint16_t *rp;
       size_t j, l;
       unsigned bits, w;
 
-      PRF (&ctx, sigma, offset + i, 64 * eta, arr);
+      PRF (ctx, sigma, offset + i, 64 * eta, arr);
 
       rp = VECTOR_GET_POLY (vp, i);
 
@@ -443,7 +438,7 @@ vector_sample (uint16_t *vp, const uint8_t *sigma, unsigned eta,
 }
 
 static void
-matrix_sample (uint16_t *mp, const uint8_t *rho, unsigned k)
+matrix_sample (uint16_t *mp, struct sha3_ctx *xof, const uint8_t *rho, unsigned k)
 {
   uint8_t i;
 
@@ -456,16 +451,17 @@ matrix_sample (uint16_t *mp, const uint8_t *rho, unsigned k)
 
       for (j = 0; j < k; j++)
 	{
-	  struct sha3_128_ctx xof;
 	  uint16_t *p;
 
-	  sha3_128_init (&xof);
-	  sha3_128_update (&xof, 32, rho);
-	  sha3_128_update (&xof, 1, &j);
-	  sha3_128_update (&xof, 1, &i);
+	  sha3_128_update (xof, 32, rho);
+	  sha3_128_update (xof, 1, &j);
+	  sha3_128_update (xof, 1, &i);
 
 	  p = VECTOR_GET_POLY (v, j);
-	  poly_sample (p, &xof);
+	  poly_sample (p, xof);
+	  /* Explicit reinit needed since poly_sample uses
+	     sha3_128_shake_output. */
+	  sha3_init (xof);
 	}
     }
 }
@@ -570,10 +566,10 @@ static void
 inner_generate_keypair (const struct ml_kem_params *params,
 			uint8_t *pub,
 			uint8_t *key,
+			struct sha3_ctx *hctx,
 			const uint8_t *seed,
 			uint16_t *scratch)
 {
-  struct sha3_ctx gctx;
   uint8_t buffer[64];
   uint8_t *rho = buffer, *sigma = &buffer[32];
   unsigned i;
@@ -585,11 +581,11 @@ inner_generate_keypair (const struct ml_kem_params *params,
   e = s + N * params->k;
   t = e + N * params->k;
 
-  G2 (&gctx, 32, seed, 1, &k, buffer);
+  G2 (hctx, 32, seed, 1, &k, buffer);
 
-  matrix_sample (a, rho, params->k);
-  vector_sample (s, sigma, params->eta1, 0, params->k);
-  vector_sample (e, sigma, params->eta1, params->k, params->k);
+  matrix_sample (a, hctx, rho, params->k);
+  vector_sample (s, hctx, sigma, params->eta1, 0, params->k);
+  vector_sample (e, hctx, sigma, params->eta1, params->k, params->k);
 
   for (i = 0; i < params->k; i++)
     {
@@ -630,6 +626,7 @@ static void
 inner_encrypt (const struct ml_kem_params *params,
 	       const uint8_t *pub,
 	       const uint8_t *msg,
+	       struct sha3_ctx *hctx,
 	       const uint8_t *seed,
 	       uint8_t *ciphertext,
 	       uint16_t *scratch)
@@ -648,11 +645,11 @@ inner_encrypt (const struct ml_kem_params *params,
 
   full_decode (t, pub, params->k);
 
-  matrix_sample (a, rho, params->k);
+  matrix_sample (a, hctx, rho, params->k);
 
-  vector_sample (r, seed, params->eta1, 0, params->k);
-  vector_sample (e1, seed, ETA2, params->k, params->k);
-  vector_sample (e2, seed, ETA2, 2 * params->k, 1);
+  vector_sample (r, hctx, seed, params->eta1, 0, params->k);
+  vector_sample (e1, hctx, seed, ETA2, params->k, params->k);
+  vector_sample (e2, hctx, seed, ETA2, 2 * params->k, 1);
 
   for (i = 0; i < params->k; i++)
     poly_into_ntt (VECTOR_GET_POLY (r, i));
@@ -744,7 +741,8 @@ _ml_kem_generate_keypair (const struct ml_kem_params *params,
   struct sha3_ctx hctx;
   uint8_t *p;
 
-  inner_generate_keypair (params, pub, key, seed, scratch);
+  sha3_init (&hctx);
+  inner_generate_keypair (params, pub, key, &hctx, seed, scratch);
 
   /* dk = dk|ek|H(ek)|z */
   p = &key[params->inner_private_key_size];
@@ -772,14 +770,14 @@ _ml_kem_encap (const struct ml_kem_params *params,
 {
   uint8_t m[32], buffer[64], *r = &buffer[32];
   struct sha3_ctx hctx;
-  struct sha3_ctx gctx;
 
-  random (random_ctx, sizeof(m), m);
+  random (random_ctx, sizeof (m), m);
 
+  sha3_init (&hctx);
   H (&hctx, params->public_key_size, pub, buffer);
-  G2 (&gctx, sizeof(m), m, 32, buffer, buffer);
+  G2 (&hctx, sizeof (m), m, 32, buffer, buffer);
 
-  inner_encrypt (params, pub, m, r, ciphertext, scratch);
+  inner_encrypt (params, pub, m, &hctx, r, ciphertext, scratch);
 
   memcpy (secret, buffer, 32);
 }
@@ -812,15 +810,15 @@ _ml_kem_decap (const struct ml_kem_params *params,
   const uint8_t *h = pub + params->inner_public_key_size;
   const uint8_t *z = h + 32;
   struct sha3_ctx hctx;
-  struct sha3_ctx gctx;
   volatile int ok = 1;
   uint8_t *ciphertext2 = (uint8_t *)(scratch + inner_encrypt_itch (params));
 
   inner_decrypt (params, key, ciphertext, m, scratch);
 
-  G2 (&gctx, sizeof(m), m, 32, h, buffer);
+  sha3_init (&hctx);
+  G2 (&hctx, sizeof (m), m, 32, h, buffer);
 
-  inner_encrypt (params, pub, m, &buffer[32], ciphertext2, scratch);
+  inner_encrypt (params, pub, m, &hctx, &buffer[32], ciphertext2, scratch);
 
   /* K1 = KBar2 */
   memcpy (secret, buffer, 32);

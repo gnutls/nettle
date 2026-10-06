@@ -1,3 +1,14 @@
+2026-10-06  Niels Möller  <nisse@lysator.liu.se>
+
+	Reuse the same sha3_ctx for all hashing. Reduces stack allocation,
+	and eliminates redundant sha3_init calls.
+	* ml-kem-internal.c (H, G2, J2, PRF): Delete call to sha3_init,
+	let caller be responsible for initialization.
+	(vector_sample, matrix_sample, inner_generate_keypair)
+	(inner_encrypt): Take a sha3_ctx from caller.
+	(_ml_kem_generate_keypair, _ml_kem_encap, _ml_kem_decap): Allocate
+	and initialize a single sha3_ctx (on stack), reuse for everything.
+
 2026-10-05  Niels Möller  <nisse@lysator.liu.se>
 
 	* ml-kem-internal.c: (compress, decompress): Deleted functions.
