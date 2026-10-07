@@ -107,19 +107,58 @@ PRF (struct sha3_ctx *ctx,
   sha3_256_shake (ctx, length, dst);
 }
 
-/* Calculate x mod Q using Barrett reduction
-   for x in range [0, Q^2) */
+/* Calculate x mod Q using Barrett reduction for x in range somewhat
+   larger than [0, Q^2) */
 static inline uint16_t
-reduce (uint32_t u)
+reduce (uint32_t x)
 {
   uint32_t q, r, p;
-  /* Magic constant is ceil(2^32 / Q) */
-  q = ((uint64_t) 1290168 * u) >> 32;
+  /* We use the 14-bit reciprocal, ceil(2^25 / Q) = 10080 = 315 2^5.
+     When using
+
+       q = floor ((10080 x) / 2^25) = floor ((315 x) / 2^20)
+
+     the product fits in 32 bits if
+
+       x <= floor ((2^32 - 1) / 315) = 13634816.
+
+     The limit is (Q-1)^2 + 2559232 ~ 1.23 Q^2, so we have some margin
+     to use inputs larger than a single product a b with 0 <= a, b <
+     Q.
+  */
+  assert_maybe (x <= 13634816);
+
+  q = ((uint32_t) 315 * x) >> 20;
   p = q * Q;
-  r = u - p; /* Interpreted as two's complement, |r| < d */
+  r = x - p; /* Interpreted as two's complement, |r| < Q */
   r += ((r >> 16) & Q);
   assert_maybe (r < Q);
   return r;
+}
+
+/* Non-canonical reduction, output in range [0, 2Q). */
+static inline uint16_t
+reduce_appr (uint32_t x)
+{
+  uint16_t q, r, p;
+  assert_maybe (x <= 13634816);
+
+  q = ((uint32_t) 315 * x) >> 20;
+  p = q * Q;
+  r = x + Q - p;
+  assert_maybe (r < 2*Q);
+  return r;
+}
+
+static inline uint16_t
+reduce_sum (uint32_t x)
+{
+  /* 4095*Q is the largest multiple of Q in the range of reduce. */
+  assert_maybe (x <= 13634816 + 4095*Q);
+  x -= 4095*Q;
+  /* Undo on underflow. */
+  x += (4095*Q) & -(x>>31);
+  return reduce (x);
 }
 
 /* Calculate a - b mod Q, where 0 <= a < Q and 0 <= b <= Q */
@@ -195,8 +234,11 @@ poly_from_ntt (uint16_t *pp)
 	      uint16_t t;
 
 	      t = mod_sub (pp[j + layer], pp[j]);
+	      /* INV2 is one bit smaller than Q, so the other factor
+		 can be in range up to 2Q, without exceeding the input
+		 limit of the reduce function. */
 	      pp[j] = reduce (INV2 * (pp[j] + pp[j + layer]));
-	      pp[j + layer] = reduce (INV2 * reduce (z * t));
+	      pp[j + layer] = reduce (INV2 * reduce_appr (z * t));
 	    }
 	}
     }
@@ -223,8 +265,8 @@ poly_mul_ntt (uint16_t *rp, const uint16_t *ap, const uint16_t *bp)
 
       z = zeta_pow_table2[i >> 1];
 
-      rp[i] = reduce (a1 * b1 + z * reduce (a2 * b2));
-      rp[i + 1] = reduce (a2 * b1 + a1 * b2);
+      rp[i] = reduce_sum (a1 * b1 + z * reduce (a2 * b2));
+      rp[i + 1] = reduce_sum (a2 * b1 + a1 * b2);
     }
 }
 
@@ -245,8 +287,8 @@ poly_addmul_ntt (uint16_t *rp, const uint16_t *ap, const uint16_t *bp)
 
       z = zeta_pow_table2[i >> 1];
 
-      rp[i] = reduce (rp[i] + a1 * b1 + z * reduce (a2 * b2));
-      rp[i + 1] = reduce (rp[i + 1] + a2 * b1 + a1 * b2);
+      rp[i] = reduce_sum (rp[i] + a1 * b1 + z * reduce (a2 * b2));
+      rp[i + 1] = reduce_sum (rp[i + 1] + a2 * b1 + a1 * b2);
     }
 }
 
