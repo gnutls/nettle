@@ -739,7 +739,7 @@ _ml_kem_generate_keypair (const struct ml_kem_params *params,
 size_t
 _ml_kem_encap_itch (const struct ml_kem_params *params)
 {
-  return inner_encrypt_itch (params);
+  return inner_encrypt_itch (params) + 64/2;
 }
 
 void
@@ -749,18 +749,22 @@ _ml_kem_encap (const struct ml_kem_params *params,
 	       void *random_ctx, nettle_random_func *random,
 	       uint16_t *scratch)
 {
-  uint8_t m[32], buffer[64], *r = &buffer[32];
+  uint8_t *m, *seed, *buffer;
   struct sha3_ctx hctx;
+  /* First 32 bytes of the 64-byte buffer are copied out before
+     calling inner_encrypt, so they can be reused as scratch. */
+  buffer = (uint8_t *) (scratch + inner_encrypt_itch (params)) - 32;
+  seed = buffer + 32;
+  m = buffer + 64;
 
-  random (random_ctx, sizeof (m), m);
+  random (random_ctx, 32, m);
 
   sha3_init (&hctx);
   H (&hctx, params->public_key_size, pub, buffer);
-  G2 (&hctx, sizeof (m), m, 32, buffer, buffer);
-
-  inner_encrypt (params, pub, m, &hctx, r, ciphertext, scratch);
-
+  G2 (&hctx, 32, m, 32, buffer, buffer);
   memcpy (secret, buffer, 32);
+
+  inner_encrypt (params, pub, m, &hctx, seed, ciphertext, scratch);
 }
 
 size_t
