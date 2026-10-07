@@ -773,14 +773,8 @@ _ml_kem_decap_itch (const struct ml_kem_params *params)
   /* The scratch space consists of two parts: the first part is used
      for encrypt/decrypt and the second part
      is used for a new ciphertext (for implicit rejection).
-
-     This makes use of the fact that:
-     - _ml_kem_inner_encrypt_itch is larger than
-     _ml_kem_inner_decrypt_itch
-     - params->ciphertext_size is multiple of 32-byte blocks and
-     therefore no alignment violation
   */
-  return inner_encrypt_itch (params) + params->ciphertext_size;
+  return inner_encrypt_itch (params) + (64 + params->ciphertext_size) / 2;
 }
 
 void
@@ -790,28 +784,30 @@ _ml_kem_decap (const struct ml_kem_params *params,
 	       const uint8_t *ciphertext,
 	       uint16_t *scratch)
 {
-  uint8_t m[32], buffer[64], k2[32];
   const uint8_t *pub = key + params->inner_private_key_size;
   const uint8_t *h = pub + params->public_key_size;
   const uint8_t *z = h + 32;
   struct sha3_ctx hctx;
-  volatile int ok = 1;
-  uint8_t *ciphertext2 = (uint8_t *)(scratch + inner_encrypt_itch (params));
+  uint8_t *m, *seed, *buffer, *ciphertext2;
+  int ok;
+  /* First 32 bytes of the 64-byte buffer are copied out before
+     calling inner_encrypt, so they can be reused as scratch. */
+  buffer = (uint8_t *)(scratch + inner_encrypt_itch (params)) - 32;
+  seed = buffer + 32;
+  m = buffer + 64;
+  ciphertext2 = buffer + 96;
+
+  sha3_init (&hctx);
 
   inner_decrypt (params, key, ciphertext, m, scratch);
 
-  sha3_init (&hctx);
-  G2 (&hctx, sizeof (m), m, 32, h, buffer);
-
-  inner_encrypt (params, pub, m, &hctx, buffer + 32, ciphertext2, scratch);
-
-  /* K1 = KBar2 */
+  G2 (&hctx, 32, m, 32, h, buffer);
   memcpy (secret, buffer, 32);
+  inner_encrypt (params, pub, m, &hctx, seed, ciphertext2, scratch);
 
-  /* K2 = J(z || cipherText) */
-  J2 (&hctx, 32, z, params->ciphertext_size, ciphertext, k2);
+  /* Implicit rejection, with K2 = J(z || cipherText) */
+  J2 (&hctx, 32, z, params->ciphertext_size, ciphertext, buffer);
 
-  ok &= memeql_sec (ciphertext, ciphertext2, params->ciphertext_size);
-
-  cnd_memcpy (!ok, secret, k2, 32);
+  ok = memeql_sec (ciphertext, ciphertext2, params->ciphertext_size);
+  cnd_memcpy (ok ^ 1, secret, buffer, 32);
 }
