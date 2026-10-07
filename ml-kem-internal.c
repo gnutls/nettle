@@ -62,7 +62,6 @@
  * is an array of uint16_t, of length N * k. A matrix of l vectors is
  * an array of uint16_t, of length N * k * l.
  */
-#define VECTOR_GET_POLY(vec, i) &(vec)[(i) * N]
 
 static inline void
 H (struct sha3_ctx *ctx,
@@ -295,10 +294,10 @@ vector_mul_ntt (uint16_t *rp, const uint16_t *ap, const uint16_t *bp,
 {
   size_t i;
 
-  poly_mul_ntt (rp, VECTOR_GET_POLY (ap, 0), VECTOR_GET_POLY (bp, 0));
+  poly_mul_ntt (rp, ap, bp);
 
   for (i = 1; i < k; i++)
-    poly_addmul_ntt (rp, VECTOR_GET_POLY (ap, i), VECTOR_GET_POLY (bp, i));
+    poly_addmul_ntt (rp, ap + i*N, bp + i*N);
 }
 
 /* This is used to sample the matrix A. In the notation of the spec,
@@ -414,21 +413,18 @@ popcount_small (unsigned x)
 /* Needs a scratch buffer of 64*eta bytes, or at most 64*MAX_ETA ==
    192. */
 static void
-vector_sample (uint16_t *vp, struct sha3_ctx *ctx, const uint8_t *sigma, unsigned eta,
+vector_sample (uint16_t *rp, struct sha3_ctx *ctx, const uint8_t *sigma, unsigned eta,
 	       unsigned offset, unsigned k, uint8_t *buffer)
 {
   size_t i;
   uint16_t mask = (1U << eta) - 1;
 
-  for (i = 0; i < k; i++)
+  for (i = 0; i < k; i++, rp += N)
     {
-      uint16_t *rp;
       size_t j, l;
       unsigned bits, w;
 
       PRF (ctx, sigma, offset + i, 64 * eta, buffer);
-
-      rp = VECTOR_GET_POLY (vp, i);
 
       /* Each iteration gets a block of 2*eta bits from the buffer. */
       for (j = l = bits = w = 0; j < N; j++, bits -= 2*eta, w >>= 2*eta)
@@ -582,8 +578,8 @@ inner_generate_keypair (const struct ml_kem_params *params,
 
   for (i = 0; i < params->k; i++)
     {
-      poly_into_ntt (VECTOR_GET_POLY (s, i));
-      poly_into_ntt (VECTOR_GET_POLY (e, i));
+      poly_into_ntt (s + i*N);
+      poly_into_ntt (e + i*N);
     }
 
   rho = pub + (params->k * Q_BITS * N) / 8;
@@ -632,7 +628,7 @@ inner_encrypt (const struct ml_kem_params *params,
   vector_sample (r, hctx, seed, params->eta1, 0, params->k, (uint8_t *) scratch_out);
 
   for (i = 0; i < params->k; i++)
-    poly_into_ntt (VECTOR_GET_POLY (r, i));
+    poly_into_ntt (r + i*N);
 
   full_decode (t, pub, params->k);
 
@@ -643,7 +639,7 @@ inner_encrypt (const struct ml_kem_params *params,
   matrix_mul_ntt (u, hctx, rho, r, params->k, scratch_out);
 
   for (i = 0; i < params->k; i++)
-    poly_from_ntt (VECTOR_GET_POLY (u, i));
+    poly_from_ntt (u + i*N);
 
   vector_sample (e1, hctx, seed, ETA2, params->k, params->k, (uint8_t *) scratch_out);
 
@@ -692,7 +688,7 @@ inner_decrypt (const struct ml_kem_params *params,
   full_decode (s, key, params->k);
 
   for (i = 0; i < params->k; i++)
-    poly_into_ntt (VECTOR_GET_POLY (u, i));
+    poly_into_ntt (u + i*N);
 
   vector_mul_ntt (r, s, u, params->k);
   poly_from_ntt (r);
