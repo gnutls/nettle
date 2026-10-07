@@ -18,6 +18,7 @@
 	(inner_encrypt): Use scratch space for vector_sample.
 	(VECTOR_GET_POLY): Delete macro, update callers to use plain
 	pointer arithmetic.
+	(inner_decrypt): Use scratch space instead of stack allocation.
 
 2026-10-06  Niels Möller  <nisse@lysator.liu.se>
 

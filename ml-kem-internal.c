@@ -666,7 +666,7 @@ inner_encrypt (const struct ml_kem_params *params,
 		   v, 1, params->dv);
 }
 
-/* Scratch need is N * (params->k + params->k) */
+/* Scratch need is N * (2 * params->k + 1) */
 static void
 inner_decrypt (const struct ml_kem_params *params,
 	       const uint8_t *key,
@@ -674,22 +674,31 @@ inner_decrypt (const struct ml_kem_params *params,
 	       uint8_t *plaintext,
 	       uint16_t *scratch)
 {
-  uint16_t r[N], *s, *u, v[N];
+  uint16_t *r, *s, *u, *v;
   size_t i;
 
-  s = scratch;
-  u = s + N * params->k;
+  /* Scratch use:
+     +-------+-------+---+
+     |  u,v  |   s   | r |
+     +-------+-------+---+
+        k N     k N    N
+   */
+  u = scratch;
+  s = scratch + N * params->k;
+  r = scratch + N * 2 * params->k;
+  v = u; /* Reuse */
 
   decompress_decode (u, ciphertext, params->k, params->du);
-  decompress_decode (v, ciphertext + 32 * params->k * params->du,
-		     1, params->dv);
-  full_decode (s, key, params->k);
-
   for (i = 0; i < params->k; i++)
     poly_into_ntt (u + i*N);
 
+  full_decode (s, key, params->k);
+
   vector_mul_ntt (r, s, u, params->k);
   poly_from_ntt (r);
+
+  decompress_decode (v, ciphertext + 32 * params->k * params->du,
+		     1, params->dv);
 
   for (i = 0; i < N; i++)
     v[i] = mod_sub (v[i], r[i]);
