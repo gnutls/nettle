@@ -305,7 +305,7 @@ vector_mul_ntt (uint16_t *rp, const uint16_t *ap, const uint16_t *bp,
    this function produces A_ji, i.e., the first index i is the
    *column*, which is a bit weird. */
 static void
-sample_ntt(uint16_t *rp, struct sha3_ctx *xof, const uint8_t *rho, unsigned i, unsigned j)
+sample_ntt (uint16_t *rp, struct sha3_ctx *xof, const uint8_t *rho, unsigned i, unsigned j)
 {
   uint8_t indices[2] = { i, j };
   size_t n;
@@ -392,7 +392,7 @@ matrix_addmul_ntt (uint16_t *rp, struct sha3_ctx *hctx, const uint8_t *rho, cons
 /* Returns number of one bits in a number that is at most MAX_ETA
    bits, i.e., limited to 0 <= x < 8 */
 static inline uint16_t
-popcount_small(unsigned x)
+popcount_small (unsigned x)
 {
   /*
     000 --> 00
@@ -442,7 +442,7 @@ vector_sample (uint16_t *vp, struct sha3_ctx *ctx, const uint8_t *sigma, unsigne
 	  xbits = w & mask;
 	  ybits = (w >> eta) & mask;
 
-	  rp[j] = mod_sub(popcount_small (xbits), popcount_small (ybits));
+	  rp[j] = mod_sub (popcount_small (xbits), popcount_small (ybits));
 	}
       assert (bits == 0);
       assert (l == 64 * eta);
@@ -542,7 +542,7 @@ decompress_decode (uint16_t *rp, const uint8_t *ap, unsigned k, unsigned d)
 static size_t
 inner_generate_keypair_itch (const struct ml_kem_params *params)
 {
-  return N * (2*params->k + 1);
+  return N * (2 * params->k + 1);
 }
 
 static void
@@ -592,7 +592,7 @@ inner_generate_keypair (const struct ml_kem_params *params,
 static size_t
 inner_encrypt_itch (const struct ml_kem_params *params)
 {
-  return N * (2*params->k + 2);
+  return N * (2 * params->k + 2);
 }
 
 static void

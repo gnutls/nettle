@@ -2,9 +2,6 @@
 
 	* ml-kem-internal.c (MATRIX_GET_VECTOR, MATRIX_GET_POLY): Deleted
 	macros.
-	(poly_addmul_ntt): New function.
-	(vector_mul_ntt): Simplify using poly_addmul_ntt, and reduce stack
-	allocation.
 	(sample_ntt): New function, to sample a single matrix element. Replaces...
 	(matrix_sample, poly_sample): ...deleted functions.
 	(matrix_mul_ntt): Rewrite, and compute matrix elements on the fly.
@@ -17,6 +14,10 @@
 	allocation.
 
 2026-10-06  Niels Möller  <nisse@lysator.liu.se>
+
+	* ml-kem-internal.c (poly_addmul_ntt): New function.
+	(vector_mul_ntt): Simplify using poly_addmul_ntt, and reduce stack
+	allocation.
 
 	* ml-kem-internal.h (ML_KEM_768_INNER_PUBLIC_KEY_SIZE)
 	(ML_KEM_1024_INNER_PUBLIC_KEY_SIZE): Deleted.
