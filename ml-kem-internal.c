@@ -63,8 +63,6 @@
  * an array of uint16_t, of length N * k * l.
  */
 #define VECTOR_GET_POLY(vec, i) &(vec)[(i) * N]
-#define MATRIX_GET_VECTOR(mat, k, i) &(mat)[(k) * (i) * N]
-#define MATRIX_GET_POLY(mat, k, l, i, j) &(mat)[(k) * (i) * N + (l) * (j) * N]
 
 static inline void
 H (struct sha3_ctx *ctx,
@@ -303,80 +301,90 @@ vector_mul_ntt (uint16_t *rp, const uint16_t *ap, const uint16_t *bp,
     poly_addmul_ntt (rp, VECTOR_GET_POLY (ap, i), VECTOR_GET_POLY (bp, i));
 }
 
-/* Calculate a product of a K x K matrix AP and a vector with K
- * elements BP in NTT domain. ROW_STRIDE and COLUMN_STRIDE specify how
- * AP is accessed. To access in a row-major order, set ROW_STRIDE to K
- * and COLUMN_STRIDE to 1; otherwise set ROW_STRIDE to 1 and
- * COLUMN_STRIDE to K.
- *
- * Returns the result as a vector in RP.
- */
+/* This is used to sample the matrix A. In the notation of the spec,
+   this function produces A_ji, i.e., the first index i is the
+   *column*, which is a bit weird. */
 static void
-matrix_mul_ntt (uint16_t *rp, const uint16_t *ap, const uint16_t *bp,
-		unsigned k,
-		unsigned row_stride,
-		unsigned column_stride)
+sample_ntt(uint16_t *rp, struct sha3_ctx *xof, const uint8_t *rho, unsigned i, unsigned j)
 {
-  size_t i;
+  uint8_t indices[2] = { i, j };
+  size_t n;
 
-  for (i = 0; i < k; i++)
+  sha3_128_update (xof, 32, rho);
+  sha3_128_update (xof, 2, indices);
+
+  for (n = 0;;)
     {
-      uint16_t *pp;
-      size_t j;
-
-      pp = VECTOR_GET_POLY (rp, i);
-
-      memset (pp, 0, sizeof(uint16_t) * N);
-
-      for (j = 0; j < k; j++)
-	{
-	  uint16_t tp[N];
-	  size_t l;
-
-	  poly_mul_ntt (tp, MATRIX_GET_POLY (ap, row_stride, column_stride,
-					     i, j),
-			VECTOR_GET_POLY (bp, j));
-
-	  for (l = 0; l < N; l++)
-	    {
-	      uint16_t t = tp[l];
-	      uint16_t r = pp[l];
-
-	      pp[l] = mod_add (t, r);
-	    }
-	}
-    }
-}
-
-static void
-poly_sample (uint16_t *pp, struct sha3_128_ctx *xof)
-{
-  uint8_t b[3];
-  size_t n = 0;
-
-  memset (pp, 0, sizeof(uint8_t) * N);
-
-  for (;;)
-    {
+      uint8_t b[3]; /* Multiple of 8 would be more efficient with shake. */
       uint16_t d1, d2;
 
-      sha3_128_shake_output (xof, sizeof (b), b);
+      sha3_128_shake_output (xof, sizeof(b), b);
 
       d1 = b[0] + ((b[1] & 15) << 8);
       d2 = (b[1] >> 4) + (b[2] << 4);
 
       if (d1 < Q)
 	{
-	  pp[n++] = d1;
+	  rp[n++] = d1;
 	  if (n == N)
 	    break;
 	}
 
       if (d2 < Q)
 	{
-	  pp[n++] = d2;
+	  rp[n++] = d2;
 	  if (n == N)
 	    break;
+	}
+    }
+  /* Explicit reinit needed after sha3_128_shake_output. */
+  sha3_init (xof);
+}
+
+/* Calculate a product of the K x K matrix generated from rho,
+ * *transposed*, and a vector with K elements BP in NTT domain. Needs
+ * scratch space N for a single matrix element. */
+static void
+matrix_mul_ntt (uint16_t *rp, struct sha3_ctx *hctx, const uint8_t *rho, const uint16_t *bp,
+		unsigned k, uint16_t *scratch)
+{
+  size_t i;
+
+  for (i = 0; i < k; i++, rp += N)
+    {
+      size_t j;
+
+      sample_ntt (scratch, hctx, rho, i, 0);
+      poly_mul_ntt (rp, scratch, bp);
+
+      for (j = 1; j < k; j++)
+	{
+	  sample_ntt (scratch, hctx, rho, i, j);
+	  poly_addmul_ntt (rp, scratch, bp + j*N);
+	}
+    }
+}
+
+/* Calculate a product of the K x K matrix generated from rho and a
+ * vector with K elements BP in NTT domain. Needs scratch space N for
+ * a single matrix element.
+ *
+ * Adds the result to the vector in RP.
+ */
+static void
+matrix_addmul_ntt (uint16_t *rp, struct sha3_ctx *hctx, const uint8_t *rho, const uint16_t *bp,
+		   unsigned k, uint16_t *scratch)
+{
+  size_t i;
+
+  for (i = 0; i < k; i++, rp += N)
+    {
+      size_t j;
+
+      for (j = 0; j < k; j++)
+	{
+	  sample_ntt (scratch, hctx, rho, j, i);
+	  poly_addmul_ntt (rp, scratch, bp + j*N);
 	}
     }
 }
@@ -438,35 +446,6 @@ vector_sample (uint16_t *vp, struct sha3_ctx *ctx, const uint8_t *sigma, unsigne
 	}
       assert (bits == 0);
       assert (l == 64 * eta);
-    }
-}
-
-static void
-matrix_sample (uint16_t *mp, struct sha3_ctx *xof, const uint8_t *rho, unsigned k)
-{
-  uint8_t i;
-
-  for (i = 0; i < k; i++)
-    {
-      uint16_t *v;
-      uint8_t j;
-
-      v = MATRIX_GET_VECTOR (mp, k, i);
-
-      for (j = 0; j < k; j++)
-	{
-	  uint16_t *p;
-
-	  sha3_128_update (xof, 32, rho);
-	  sha3_128_update (xof, 1, &j);
-	  sha3_128_update (xof, 1, &i);
-
-	  p = VECTOR_GET_POLY (v, j);
-	  poly_sample (p, xof);
-	  /* Explicit reinit needed since poly_sample uses
-	     sha3_128_shake_output. */
-	  sha3_init (xof);
-	}
     }
 }
 
@@ -563,7 +542,7 @@ decompress_decode (uint16_t *rp, const uint8_t *ap, unsigned k, unsigned d)
 static size_t
 inner_generate_keypair_itch (const struct ml_kem_params *params)
 {
-  return N * (params->k * params->k + params->k + params->k + params->k);
+  return N * (2*params->k + 1);
 }
 
 static void
@@ -577,17 +556,21 @@ inner_generate_keypair (const struct ml_kem_params *params,
   uint8_t buffer[64];
   uint8_t *rho = buffer, *sigma = &buffer[32];
   unsigned i;
-  uint16_t *a, *s, *e, *t;
+  uint16_t *s, *e, *scratch_out;
   uint8_t k = params->k;
 
-  a = scratch;
-  s = a + N * params->k * params->k;
-  e = s + N * params->k;
-  t = e + N * params->k;
+  /* Scratch use:
+     +-------+-------+---+
+     |   s   |   e   |   |
+     +-------+-------+---+
+        k N     k N    N scratch_out
+   */
+  s = scratch;
+  e = scratch + N * params->k;
+  scratch_out = scratch + 2*N * params->k;
 
   G2 (hctx, 32, seed, 1, &k, buffer);
 
-  matrix_sample (a, hctx, rho, params->k);
   vector_sample (s, hctx, sigma, params->eta1, 0, params->k);
   vector_sample (e, hctx, sigma, params->eta1, params->k, params->k);
 
@@ -598,21 +581,8 @@ inner_generate_keypair (const struct ml_kem_params *params,
     }
 
   /* row-major */
-  matrix_mul_ntt (t, a, s, params->k, params->k, 1);
-
-  for (i = 0; i < params->k; i++)
-    {
-      uint16_t *tp, *ep;
-      size_t j;
-
-      tp = VECTOR_GET_POLY (t, i);
-      ep = VECTOR_GET_POLY (e, i);
-
-      for (j = 0; j < N; j++)
-	tp[j] = mod_add (tp[j], ep[j]);
-    }
-
-  full_encode (pub, t, params->k);
+  matrix_addmul_ntt (e, hctx, rho, s, params->k, scratch_out);
+  full_encode (pub, e, params->k);
 
   memcpy (pub + (params->k * Q_BITS * N) / 8, rho, 32);
 
@@ -622,8 +592,7 @@ inner_generate_keypair (const struct ml_kem_params *params,
 static size_t
 inner_encrypt_itch (const struct ml_kem_params *params)
 {
-  return N * (params->k * params->k + params->k + 1 +
-	      params->k + params->k + params->k);
+  return N * (2*params->k + 2);
 }
 
 static void
@@ -636,45 +605,47 @@ inner_encrypt (const struct ml_kem_params *params,
 	       uint16_t *scratch)
 {
   const uint8_t *rho = &pub[(params->k * Q_BITS * N) / 8];
-  uint16_t *a, *r, *e1, *e2, *t, *u;
-  uint16_t m[N], v[N];
+  uint16_t *r, *t, *u, *v, *e1, *e2, *scratch_out;
   size_t i;
 
-  a = scratch;
-  e1 = a + N * params->k * params->k;
-  e2 = e1 + N * params->k;
-  r = e2 + N;
-  t = r + N * params->k;
-  u = t + N * params->k;
-
-  full_decode (t, pub, params->k);
-
-  matrix_sample (a, hctx, rho, params->k);
+  /* Scratch use:
+     +-------+-------+---+---+
+     |  r,e  |  t,u  | v |   |
+     +-------+-------+---+---+
+        k N     k N    N   N scratch_out
+   */
+  r = scratch;
+  t = scratch + N * params->k;
+  v = scratch + N * 2*params->k;
+  u = t; /* Reuse storage */
+  e1 = r; /* Reuse storage */
+  e2 = r; /* Reuse storage */
+  scratch_out = scratch + N * (2*params->k + 1);
 
   vector_sample (r, hctx, seed, params->eta1, 0, params->k);
-  vector_sample (e1, hctx, seed, ETA2, params->k, params->k);
-  vector_sample (e2, hctx, seed, ETA2, 2 * params->k, 1);
 
   for (i = 0; i < params->k; i++)
     poly_into_ntt (VECTOR_GET_POLY (r, i));
 
+  full_decode (t, pub, params->k);
+
+  vector_mul_ntt (v, t, r, params->k);
+  poly_from_ntt (v);
+
   /* column-major */
-  matrix_mul_ntt (u, a, r, params->k, 1, params->k);
+  matrix_mul_ntt (u, hctx, rho, r, params->k, scratch_out);
 
   for (i = 0; i < params->k; i++)
     poly_from_ntt (VECTOR_GET_POLY (u, i));
 
-  for (i = 0; i < params->k; i++)
-    {
-      uint16_t *up, *ep;
-      size_t j;
+  vector_sample (e1, hctx, seed, ETA2, params->k, params->k);
 
-      up = VECTOR_GET_POLY (u, i);
-      ep = VECTOR_GET_POLY (e1, i);
+  for (i = 0; i < params->k * N; i++)
+    u[i] = mod_add (u[i], e1[i]);
 
-      for (j = 0; j < N; j++)
-	up[j] = mod_add (up[j], ep[j]);
-    }
+  compress_encode (ciphertext, u, params->k, params->du);
+
+  vector_sample (e2, hctx, seed, ETA2, 2 * params->k, 1);
 
   /* Expand each message bit into the values decompress (0,1) = 0 or
      decompress (1, 1) = (Q+1)/2 */
@@ -684,16 +655,12 @@ inner_encrypt (const struct ml_kem_params *params,
       uint8_t b;
 
       for (b = msg[i], j = 0; j < 8; j++, b >>= 1)
-	m[8*i+j] = - (b & 1) & INV2;
+	e2[8*i+j] = mod_add (e2[8*i+j], - (b & 1) & INV2);
     }
 
-  vector_mul_ntt (v, t, r, params->k);
-  poly_from_ntt (v);
-
   for (i = 0; i < N; i++)
-    v[i] = mod_add (mod_add (v[i], e2[i]), m[i]);
+    v[i] = mod_add (v[i], e2[i]);
 
-  compress_encode (ciphertext, u, params->k, params->du);
   compress_encode (&ciphertext[(params->du * params->k * N) / 8], v,
 		   1, params->dv);
 }

@@ -1,8 +1,22 @@
-2026-10-06  Niels Möller  <nisse@lysator.liu.se>
+2026-10-07  Niels Möller  <nisse@lysator.liu.se>
 
-	* ml-kem-internal.c (poly_addmul_ntt): New function.
+	* ml-kem-internal.c (MATRIX_GET_VECTOR, MATRIX_GET_POLY): Deleted
+	macros.
+	(poly_addmul_ntt): New function.
 	(vector_mul_ntt): Simplify using poly_addmul_ntt, and reduce stack
 	allocation.
+	(sample_ntt): New function, to sample a single matrix element. Replaces...
+	(matrix_sample, poly_sample): ...deleted functions.
+	(matrix_mul_ntt): Rewrite, and compute matrix elements on the fly.
+	(matrix_addmul_ntt): New function, computing the matrix elements
+	on the fly.
+	(inner_generate_keypair): Use matrix_addmul_ntt, and reduce
+	scratch need from N (k^2 + 3k) to N (2k + 1).
+	(inner_encrypt): Update use of matrix_mul_ntt, and reduce scratch
+	need from N (k^2 + 4k + 1) to N (2k + 2). Also reduce stack
+	allocation.
+
+2026-10-06  Niels Möller  <nisse@lysator.liu.se>
 
 	* ml-kem-internal.h (ML_KEM_768_INNER_PUBLIC_KEY_SIZE)
 	(ML_KEM_1024_INNER_PUBLIC_KEY_SIZE): Deleted.
