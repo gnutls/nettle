@@ -268,7 +268,7 @@ INSTALL_HEADERS = $(HEADERS) version.h @IF_MINI_GMP@ mini-gmp.h
 SOURCES = $(nettle_SOURCES) $(hogweed_SOURCES) \
 	  $(getopt_SOURCES) $(internal_SOURCES) \
 	  $(OPT_SOURCES) \
-	  aesdata.c desdata.c twofishdata.c shadata.c eccdata.c sntrupdata.c
+	  aesdata.c desdata.c twofishdata.c shadata.c eccdata.c sntrupdata.c mlkemdata.c
 
 # NOTE: This list must include all source files, with no duplicates,
 # independently of which source files are included in the build.
@@ -293,7 +293,7 @@ DISTFILES = $(SOURCES) $(HEADERS) getopt.h \
 	salsa20-internal.h umac-internal.h hogweed-internal.h \
 	rsa-internal.h pkcs1-internal.h dsa-internal.h eddsa-internal.h \
 	slh-dsa-internal.h sntrup-internal.h sntrup761-encoding.h \
-	ml-kem-internal.h \
+	ml-kem-internal.h mlkem-tables.h \
 	gmp-glue.h ecc-internal.h fat-setup.h oaep.h \
 	mini-gmp.h asm.m4 m4-utils.m4 \
 	nettle.texinfo nettle.info nettle.html nettle.pdf sha-example.c
@@ -460,6 +460,12 @@ sntrup761-encoding.h: sntrupdata.c
 	./sntrupdata$(EXEEXT_FOR_BUILD) > $(srcdir)/$(@F)T && mv $(srcdir)/$(@F)T $(srcdir)/$(@F)
 
 sntrup761.$(OBJEXT): sntrup761-encoding.h
+
+mlkem-tables.h: mlkemdata.c
+	$(MAKE) mlkemdata$(EXEEXT_FOR_BUILD)
+	./mlkemdata$(EXEEXT_FOR_BUILD) > $(srcdir)/$(@F)T && mv $(srcdir)/$(@F)T $(srcdir)/$(@F)
+
+mlkem-internal.$(OBJEXT): mlkem-tables.h
 
 # Texinfo rules
 %.info: %.texinfo

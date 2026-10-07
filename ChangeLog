@@ -1,5 +1,15 @@
 2026-10-07  Niels Möller  <nisse@lysator.liu.se>
 
+	* mlkemdata.c (powertable): New program, to generate tables for
+	the mlkem ntt operations.
+	* Makefile.in (SOURCES): Add mlkemdata.c
+	(DISTFILES): mlkem-tables.h.
+	(mlkem-tables.h): Add make targets to generate this file by
+	compiling and running mlkemdata.c.
+	* ml-kem-internal.c (zeta_pow_table, zeta_pow_table2): Include
+	mlkem-tables.h to define these tables, instead of defining them
+	inline.
+
 	* ml-kem-internal.c (MATRIX_GET_VECTOR, MATRIX_GET_POLY): Deleted
 	macros.
 	(sample_ntt): New function, to sample a single matrix element. Replaces...
