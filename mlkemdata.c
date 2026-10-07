@@ -52,18 +52,38 @@ reduce (uint32_t u)
   return r;
 }
 
+static inline uint16_t
+reduce_quotient (uint32_t x)
+{
+  uint16_t q, r, p;
+
+  q = ((uint32_t) 315 * x) >> 20;
+  p = q * Q;
+  r = x - p; /* Interpreted as two's complement, |r| < Q */
+  return q - (r >> 15);
+}
+
 static void
 test_reduce (void)
 {
   unsigned u;
   for (u = 0; u <= 13634816; u++)
     {
-      unsigned ref = u % Q;
-      unsigned r = reduce (u);
-      if (r != ref)
+      unsigned ref_q = u / Q;
+      unsigned ref_r = u % Q;
+      unsigned q, r;
+      r = reduce (u);
+      if (r != ref_r)
 	{
 	  fprintf (stderr, "reduce failed for u = %d, got %d, ref %d\n",
-		   u, r, ref);
+		   u, r, ref_r);
+	  exit (EXIT_FAILURE);
+	}
+      q = reduce_quotient (u);
+      if (q != ref_q)
+	{
+	  fprintf (stderr, "reduce_quotient failed for u = %d, got %d, ref %d\n",
+		   u, q, ref_q);
 	  exit (EXIT_FAILURE);
 	}
     }

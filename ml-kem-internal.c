@@ -161,6 +161,18 @@ reduce_sum (uint32_t x)
   return reduce (x);
 }
 
+static inline uint16_t
+reduce_quotient (uint32_t x)
+{
+  uint16_t q, r, p;
+  assert_maybe (x <= 13634816);
+
+  q = ((uint32_t) 315 * x) >> 20;
+  p = q * Q;
+  r = x - p; /* Interpreted as two's complement, |r| < Q */
+  return q - (r >> 15);
+}
+
 /* Calculate a - b mod Q, where 0 <= a < Q and 0 <= b <= Q */
 static inline uint16_t
 mod_sub (uint16_t a, uint16_t b)
@@ -494,7 +506,20 @@ full_decode (uint16_t *rp, const uint8_t *ap, unsigned k)
 }
 
 /* Compresses coeffients to d bits, and encodes them as a byte array
-   of size 32 * k * d bytes. */
+   of size 32 * k * d bytes.
+
+   The input values need not be canonically reduced. Compression
+   implies reduction mod Q, since
+
+     Compress(x + k Q, d) = Round((2^d (x + k Q) / Q)) mod 2^d
+                          = (2^d k + Round((2^d x) / Q) mod 2^d
+			  = Round((2^d x) / Q) = Compress(x, d)
+
+   The valid coeffient input range depends on d. With current
+   parameters, du <= 11, and then coefficients must be <= 2Q - 2.
+   While for dv <= 5, the inputs can be considerably larger, up to
+   around 127*Q.
+*/
 static void
 compress_encode (uint8_t *rp, const uint16_t *ap, unsigned k, unsigned d)
 {
@@ -507,10 +532,9 @@ compress_encode (uint8_t *rp, const uint16_t *ap, unsigned k, unsigned d)
       uint16_t x = ap[i];
       uint16_t c;
 
-      assert_maybe (x < Q);
       /* Compress(x, d) = Round((2^d x / Q)) mod 2^d
 	 for 0 <= x < Q and d < 12 */
-      c = ((UINT64_C(20642679) * ((x << d) + (Q >> 1))) >> 36) & mask;
+      c = reduce_quotient((x << d) + (Q >> 1)) & mask;
       /* Needs worst case 7 + 11 = 18 bits in w. */
       w |= (unsigned) c << bits;
 
@@ -652,7 +676,7 @@ inner_encrypt (const struct ml_kem_params *params,
   vector_sample (e1, hctx, seed, ETA2, params->k, params->k, (uint8_t *) scratch_out);
 
   for (i = 0; i < params->k * N; i++)
-    u[i] = mod_add (u[i], e1[i]);
+    u[i] += e1[i];
 
   compress_encode (ciphertext, u, params->k, params->du);
 
@@ -666,11 +690,11 @@ inner_encrypt (const struct ml_kem_params *params,
       uint8_t b;
 
       for (b = msg[i], j = 0; j < 8; j++, b >>= 1)
-	e2[8*i+j] = mod_add (e2[8*i+j], - (b & 1) & INV2);
+	e2[8*i+j] += - (b & 1) & INV2;
     }
 
   for (i = 0; i < N; i++)
-    v[i] = mod_add (v[i], e2[i]);
+    v[i] += e2[i];
 
   compress_encode (ciphertext + 32 * params->k * params->du,
 		   v, 1, params->dv);
@@ -711,7 +735,7 @@ inner_decrypt (const struct ml_kem_params *params,
 		     1, params->dv);
 
   for (i = 0; i < N; i++)
-    v[i] = mod_sub (v[i], r[i]);
+    v[i] += Q - r[i];
 
   compress_encode (plaintext, v, 1, 1);
 }
