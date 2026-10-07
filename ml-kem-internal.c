@@ -411,31 +411,32 @@ popcount_small (unsigned x)
   return (magic >> (2*x)) & 3;
 }
 
+/* Needs a scratch buffer of 64*eta bytes, or at most 64*MAX_ETA ==
+   192. */
 static void
 vector_sample (uint16_t *vp, struct sha3_ctx *ctx, const uint8_t *sigma, unsigned eta,
-	       unsigned offset, unsigned k)
+	       unsigned offset, unsigned k, uint8_t *buffer)
 {
   size_t i;
   uint16_t mask = (1U << eta) - 1;
 
   for (i = 0; i < k; i++)
     {
-      uint8_t arr[64 * MAX_ETA];
       uint16_t *rp;
       size_t j, l;
       unsigned bits, w;
 
-      PRF (ctx, sigma, offset + i, 64 * eta, arr);
+      PRF (ctx, sigma, offset + i, 64 * eta, buffer);
 
       rp = VECTOR_GET_POLY (vp, i);
 
-      /* Each iteration gets a block of 2*eta bits from the array. */
+      /* Each iteration gets a block of 2*eta bits from the buffer. */
       for (j = l = bits = w = 0; j < N; j++, bits -= 2*eta, w >>= 2*eta)
 	{
 	  unsigned xbits, ybits;
 	  if (bits < 2 * eta)
 	    {
-	      w |= (arr[l++] << bits);
+	      w |= (buffer[l++] << bits);
 	      bits += 8;
 	    }
 
@@ -553,8 +554,7 @@ inner_generate_keypair (const struct ml_kem_params *params,
 			const uint8_t *seed,
 			uint16_t *scratch)
 {
-  uint8_t buffer[64];
-  uint8_t *rho = buffer, *sigma = &buffer[32];
+  uint8_t *buffer, *rho, *sigma;
   unsigned i;
   uint16_t *s, *e, *scratch_out;
   uint8_t k = params->k;
@@ -568,11 +568,17 @@ inner_generate_keypair (const struct ml_kem_params *params,
   s = scratch;
   e = scratch + N * params->k;
   scratch_out = scratch + 2*N * params->k;
+  /* buffer is used for the 64 byte G2 hash, and as scratch for
+     vector_sample. This fits comfortable in the 512 bytes of scratch
+     for matrix_addmul_ntt, we just must copy out the rho value before
+     reusing this space. */
+  buffer = (uint8_t *) scratch_out;
+  sigma = buffer + 32;
 
   G2 (hctx, 32, seed, 1, &k, buffer);
 
-  vector_sample (s, hctx, sigma, params->eta1, 0, params->k);
-  vector_sample (e, hctx, sigma, params->eta1, params->k, params->k);
+  vector_sample (s, hctx, sigma, params->eta1, 0, params->k, buffer + 64);
+  vector_sample (e, hctx, sigma, params->eta1, params->k, params->k, buffer + 64);
 
   for (i = 0; i < params->k; i++)
     {
@@ -580,11 +586,12 @@ inner_generate_keypair (const struct ml_kem_params *params,
       poly_into_ntt (VECTOR_GET_POLY (e, i));
     }
 
+  rho = pub + (params->k * Q_BITS * N) / 8;
+  memcpy (rho, buffer, 32);
+
   /* row-major */
   matrix_addmul_ntt (e, hctx, rho, s, params->k, scratch_out);
   full_encode (pub, e, params->k);
-
-  memcpy (pub + (params->k * Q_BITS * N) / 8, rho, 32);
 
   full_encode (key, s, params->k);
 }
@@ -622,7 +629,7 @@ inner_encrypt (const struct ml_kem_params *params,
   e2 = r; /* Reuse storage */
   scratch_out = scratch + N * (2*params->k + 1);
 
-  vector_sample (r, hctx, seed, params->eta1, 0, params->k);
+  vector_sample (r, hctx, seed, params->eta1, 0, params->k, (uint8_t *) scratch_out);
 
   for (i = 0; i < params->k; i++)
     poly_into_ntt (VECTOR_GET_POLY (r, i));
@@ -638,14 +645,14 @@ inner_encrypt (const struct ml_kem_params *params,
   for (i = 0; i < params->k; i++)
     poly_from_ntt (VECTOR_GET_POLY (u, i));
 
-  vector_sample (e1, hctx, seed, ETA2, params->k, params->k);
+  vector_sample (e1, hctx, seed, ETA2, params->k, params->k, (uint8_t *) scratch_out);
 
   for (i = 0; i < params->k * N; i++)
     u[i] = mod_add (u[i], e1[i]);
 
   compress_encode (ciphertext, u, params->k, params->du);
 
-  vector_sample (e2, hctx, seed, ETA2, 2 * params->k, 1);
+  vector_sample (e2, hctx, seed, ETA2, 2 * params->k, 1, (uint8_t *) scratch_out);
 
   /* Expand each message bit into the values decompress (0,1) = 0 or
      decompress (1, 1) = (Q+1)/2 */

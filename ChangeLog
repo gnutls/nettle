@@ -12,6 +12,10 @@
 	(inner_encrypt): Update use of matrix_mul_ntt, and reduce scratch
 	need from N (k^2 + 4k + 1) to N (2k + 2). Also reduce stack
 	allocation.
+	(vector_sample): Let caller pass in the buffer area.
+	(inner_generate_keypair): Reduce stack allocation, and use scratch
+	space for vector_sample.
+	(inner_encrypt): Use scratch space for vector_sample.
 
 2026-10-06  Niels Möller  <nisse@lysator.liu.se>
 
