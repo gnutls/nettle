@@ -45,9 +45,7 @@
 #include "sha3.h"
 
 #define Q 3329
-#define Q_BITS 12
 #define N 256
-#define N_BITS 8
 #define INV2 ((Q + 1) / 2)
 
 #define ZETA 17
@@ -582,7 +580,7 @@ inner_generate_keypair (const struct ml_kem_params *params,
       poly_into_ntt (e + i*N);
     }
 
-  rho = pub + (params->k * Q_BITS * N) / 8;
+  rho = pub + params->public_key_size - 32;
   memcpy (rho, buffer, 32);
 
   /* row-major */
@@ -607,7 +605,7 @@ inner_encrypt (const struct ml_kem_params *params,
 	       uint8_t *ciphertext,
 	       uint16_t *scratch)
 {
-  const uint8_t *rho = &pub[(params->k * Q_BITS * N) / 8];
+  const uint8_t *rho = pub + params->public_key_size - 32;
   uint16_t *r, *t, *u, *v, *e1, *e2, *scratch_out;
   size_t i;
 
@@ -664,8 +662,8 @@ inner_encrypt (const struct ml_kem_params *params,
   for (i = 0; i < N; i++)
     v[i] = mod_add (v[i], e2[i]);
 
-  compress_encode (&ciphertext[(params->du * params->k * N) / 8], v,
-		   1, params->dv);
+  compress_encode (ciphertext + 32 * params->k * params->du,
+		   v, 1, params->dv);
 }
 
 /* Scratch need is N * (params->k + params->k) */
@@ -683,7 +681,7 @@ inner_decrypt (const struct ml_kem_params *params,
   u = s + N * params->k;
 
   decompress_decode (u, ciphertext, params->k, params->du);
-  decompress_decode (v, &ciphertext[(params->du * params->k * N) / 8],
+  decompress_decode (v, ciphertext + 32 * params->k * params->du,
 		     1, params->dv);
   full_decode (s, key, params->k);
 
@@ -719,14 +717,14 @@ _ml_kem_generate_keypair (const struct ml_kem_params *params,
   inner_generate_keypair (params, pub, key, &hctx, seed, scratch);
 
   /* dk = dk|ek|H(ek)|z */
-  p = &key[params->inner_private_key_size];
+  p = key + params->inner_private_key_size;
   memcpy (p, pub, params->public_key_size);
   p += params->public_key_size;
 
   H (&hctx, params->public_key_size, pub, p);
   p += 32;
 
-  memcpy (p, &seed[32], 32);
+  memcpy (p, seed + 32, 32);
 }
 
 size_t
@@ -792,7 +790,7 @@ _ml_kem_decap (const struct ml_kem_params *params,
   sha3_init (&hctx);
   G2 (&hctx, sizeof (m), m, 32, h, buffer);
 
-  inner_encrypt (params, pub, m, &hctx, &buffer[32], ciphertext2, scratch);
+  inner_encrypt (params, pub, m, &hctx, buffer + 32, ciphertext2, scratch);
 
   /* K1 = KBar2 */
   memcpy (secret, buffer, 32);
