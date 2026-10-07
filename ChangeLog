@@ -1,5 +1,13 @@
 2026-10-07  Niels Möller  <nisse@lysator.liu.se>
 
+	* ml-kem-internal.c (reduce): New reduction function with only
+	32-bit arithmetic, input range slightly larger than [0, Q^2).
+	(reduce_appr): New function, simpler non-canonical reduction to
+	range [0, 2Q).
+	(reduce_sum): New function, range slightly larger than [0, 2Q^2).
+	(poly_from_ntt): Use reduce_appr.
+	(poly_mul_ntt, poly_addmul_ntt): Use reduce_sum.
+
 	Revert 2026-09-21 change.
 	* nettle-internal.h (uint32_16_mod): Delete shared function, move
 	back to separate reduction code for sntrup761 and ml-kem.
