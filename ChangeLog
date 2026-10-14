@@ -1,3 +1,10 @@
+2026-10-14  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/ml-kem-test.c (test_ml_kem_decap_seed): New function,
+	suitable for wycheproof tests.
+	(test_main): Add a couple of wycheproof test vectors, to exercise
+	implicit rejection.
+
 2026-10-07  Niels Möller  <nisse@lysator.liu.se>
 
 	* mlkemdata.c (powertable): New program, to generate tables for

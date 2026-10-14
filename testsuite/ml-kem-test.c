@@ -156,28 +156,51 @@ test_ml_kem_encap (const struct ml_kem_alg *alg,
 
 static void
 test_ml_kem_decap (const struct ml_kem_alg *alg,
-		   const struct tstring *sk,
+		   const uint8_t *sk,
 		   const struct tstring *ciphertext,
 		   const struct tstring *secret)
 {
   uint8_t secret2[32];
   uint16_t *scratch;
 
-  ASSERT (sk->length == alg->private_key_size);
   ASSERT (ciphertext->length == alg->ciphertext_size);
   ASSERT (secret->length == ML_KEM_SESSION_KEY_SIZE);
 
   scratch = xalloc (alg->decap_itch () * sizeof(uint16_t));
 
-  mark_bytes_undefined (alg->inner_private_key_size, sk->data);
+  mark_bytes_undefined (alg->inner_private_key_size, sk);
 
-  alg->decap (sk->data, secret2, ciphertext->data, scratch);
+  alg->decap (sk, secret2, ciphertext->data, scratch);
 
   mark_bytes_defined (sizeof(secret2), secret2);
 
   ASSERT (MEMEQ (secret->length, secret->data, secret2));
 
   free (scratch);
+}
+
+static void
+test_ml_kem_decap_seed (const struct ml_kem_alg *alg,
+			const struct tstring *seed,
+			const struct tstring *ciphertext,
+			const struct tstring *secret)
+{
+  uint8_t *pub;
+  uint8_t *key;
+  uint16_t *scratch;
+
+  ASSERT (seed->length == ML_KEM_SEED_SIZE);
+
+  pub = xalloc (alg->public_key_size);
+  key = xalloc (alg->private_key_size);
+  scratch = xalloc (alg->generate_itch () * sizeof(uint16_t));
+
+  alg->generate (pub, key, seed->data, scratch);
+
+  free (scratch);
+  test_ml_kem_decap (alg, key, ciphertext, secret);
+  free (pub);
+  free (key);
 }
 
 static void
@@ -188,8 +211,9 @@ test_ml_kem_encap_decap (const struct ml_kem_alg *alg,
 			 const struct tstring *ciphertext,
 			 const struct tstring *secret)
 {
+  ASSERT (sk->length == alg->private_key_size);
   test_ml_kem_encap (alg, pk, seed, ciphertext, secret);
-  test_ml_kem_decap (alg, sk, ciphertext, secret);
+  test_ml_kem_decap (alg, sk->data, ciphertext, secret);
 }
 
 static void
@@ -288,6 +312,58 @@ test_main (void)
 			   SHEX ("8199CF923CE12126920108569C11CBF97CF03F44AF5CFA7D550E9B2AC7431982"),
 			   read_hex_file ("ml-kem-1024-encapdecap-tc51.ct", ML_KEM_1024_CIPHERTEXT_SIZE),
 			   SHEX ("5D537CD0EF7B58F0FE95370473B96878F138ECC259ADFBF77EBD7328B822D9D9"));
+
+  /* Test vectors from
+     https://github.com/C2SP/wycheproof/blob/main/testvectors_v1/mlkem_768_test.json */
+
+  /* tcId: 142, Random ciphertext */
+  test_ml_kem_decap_seed (&ml_kem_768,
+			  SHEX("3f6f67ff01382a44c8d5dc52295311a1934f1a10f0ca6085e53af2eb52433488"
+			       "1674047e7e7a1649482e1d9b0de92455cd14d0049bdcb7cea4b867ace5c8922b"),
+			  read_hex_file ("ml-kem-768-decap-tc142.ct", ML_KEM_768_CIPHERTEXT_SIZE),
+			  SHEX ("0483742b451a5b2364318ed5cc233ce07dbb3fd4ec9386050cb8cf0adc8d41e9"));
+
+  /* tcId: 161, Bit flipped ciphertext */
+  test_ml_kem_decap_seed (&ml_kem_768,
+			  SHEX("c0c62fae844fdc8e4715f21f7c54f964a5d14f2fd810480ac85cb248e7894e19"
+			       "00e4912eee10aa277a5bc25505fcbcaf9a017c9aa66bedf10ecc5907154ba75d"),
+			  read_hex_file ("ml-kem-768-decap-tc161.ct", ML_KEM_768_CIPHERTEXT_SIZE),
+			  SHEX("fe61122c2de55dc4f077f00b10b4fd9799580aafc85947e030d6f996f2797c80"));
+
+  /* tcId: 201, Ciphertext modified at byte 1087 (c2); implicit
+     rejection must fire, so a re-encryption comparison that skips
+     this position is detected */
+  test_ml_kem_decap_seed (&ml_kem_768,
+			  SHEX("7c9935a0b07694aa0c6d10e4db6b1add2fd81a25ccb148032dcd739936737f2d"
+			       "8626ed79d451140800e03b59b956f8210e556067407d13dc90fa9e8b872bfb8f"),
+			  read_hex_file ("ml-kem-768-decap-tc201.ct", ML_KEM_768_CIPHERTEXT_SIZE),
+			  SHEX("e1a42985ba28ea04265e5d50fe8396274ecbe42dd718a199a536b0347d858e6a"));
+
+  /* Test vectors from
+     https://github.com/C2SP/wycheproof/blob/main/testvectors_v1/mlkem_1024_test.json */
+
+  /* tcId: 142, Random ciphertext */
+  test_ml_kem_decap_seed (&ml_kem_1024,
+			  SHEX("3f6f67ff01382a44c8d5dc52295311a1934f1a10f0ca6085e53af2eb52433488"
+			       "1674047e7e7a1649482e1d9b0de92455cd14d0049bdcb7cea4b867ace5c8922b"),
+			  read_hex_file ("ml-kem-1024-decap-tc142.ct", ML_KEM_1024_CIPHERTEXT_SIZE),
+			  SHEX ("66e9331f3ed7e258aea053740f4b38f7bb53eb1221eafc8c59f5216491aeff93"));
+
+  /* tcId: 152, Bit flipped ciphertext */
+  test_ml_kem_decap_seed (&ml_kem_1024,
+			  SHEX("c3b1e8d41f7ef9ecc326223af28aaa2ff1417938c2570ffb586bb0815d928dad"
+			       "fef0627add21d6172ed739d3c57117969dabc1e3e9b90ceb39f0a5ec2c12f1fb"),
+			  read_hex_file ("ml-kem-1024-decap-tc152.ct", ML_KEM_1024_CIPHERTEXT_SIZE),
+			  SHEX ("b13b4044850f8e5ab79bf49362b52419ccbcec3d3ae02522436e09fc63692f74"));
+
+  /* tcId: 202, Ciphertext modified at byte 1567 (c2); implicit
+     rejection must fire, so a re-encryption comparison that skips
+     this position is detected */
+  test_ml_kem_decap_seed (&ml_kem_1024,
+			  SHEX("7c9935a0b07694aa0c6d10e4db6b1add2fd81a25ccb148032dcd739936737f2d"
+			       "8626ed79d451140800e03b59b956f8210e556067407d13dc90fa9e8b872bfb8f"),
+			  read_hex_file ("ml-kem-1024-decap-tc202.ct", ML_KEM_1024_CIPHERTEXT_SIZE),
+			  SHEX("075ce89e6e644f9ff21de40534e94a22753386f64878c554bb002775dd7a002e"));
 
   test_randomized ();
 }
