@@ -465,7 +465,7 @@ mlkem-tables.h: mlkemdata.c
 	$(MAKE) mlkemdata$(EXEEXT_FOR_BUILD)
 	./mlkemdata$(EXEEXT_FOR_BUILD) > $(srcdir)/$(@F)T && mv $(srcdir)/$(@F)T $(srcdir)/$(@F)
 
-mlkem-internal.$(OBJEXT): mlkem-tables.h
+ml-kem-internal.$(OBJEXT): mlkem-tables.h
 
 # Texinfo rules
 %.info: %.texinfo
