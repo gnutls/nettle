@@ -1,5 +1,8 @@
 2026-10-07  Niels Möller  <nisse@lysator.liu.se>
 
+	* mlkemdata.c (test_reduce): Include exhaustive tests of reduce
+	and reduce_quotient.
+
 	* ml-kem-internal.c (reduce): New reduction function with only
 	32-bit arithmetic, input range slightly larger than [0, Q^2).
 	(reduce_appr): New function, simpler non-canonical reduction to
