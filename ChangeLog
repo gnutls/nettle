@@ -1,3 +1,7 @@
+2026-10-15  Niels Möller  <nisse@lysator.liu.se>
+
+	* testsuite/Makefile.in (DISTFILES): Add new test vector files.
+
 2026-10-14  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/ml-kem-test.c (test_ml_kem_decap_seed): New function,

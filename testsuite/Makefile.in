@@ -103,9 +103,13 @@ DISTFILES = $(SOURCES) $(CXX_SOURCES) Makefile.in \
 	    sntrup761-tc0.pk sntrup761-tc0.sk sntrup761-tc0.ct \
 	    sntrup761-tc1.pk sntrup761-tc1.sk sntrup761-tc1.ct \
 	    ml-kem-768-keygen-tc26.pk ml-kem-768-keygen-tc26.sk \
+	    ml-kem-768-decap-tc142.ct ml-kem-768-decap-tc161.ct \
+	    ml-kem-768-decap-tc201.ct \
 	    ml-kem-768-encapdecap-tc26.pk ml-kem-768-encapdecap-tc26.sk \
 	    ml-kem-768-encapdecap-tc26.ct \
 	    ml-kem-1024-keygen-tc51.pk ml-kem-1024-keygen-tc51.sk \
+	    ml-kem-1024-decap-tc142.ct ml-kem-1024-decap-tc152.ct \
+	    ml-kem-1024-decap-tc202.ct \
 	    ml-kem-1024-encapdecap-tc51.pk ml-kem-1024-encapdecap-tc51.sk \
 	    ml-kem-1024-encapdecap-tc51.ct
 
