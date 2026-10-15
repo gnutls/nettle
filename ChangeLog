@@ -1,5 +1,11 @@
 2026-10-15  Niels Möller  <nisse@lysator.liu.se>
 
+	From Brad Smith:
+	* fat-arm64.c (get_arm64_features): Check return value of
+	elf_aux_info, and don't assume that output is left unchanged on
+	failure.
+	* fat-ppc.c (get_ppc_features): Likewise.
+
 	* testsuite/Makefile.in (DISTFILES): Add new test vector files.
 
 2026-10-14  Niels Möller  <nisse@lysator.liu.se>
