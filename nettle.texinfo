@@ -5590,11 +5590,14 @@ multiplication. Caller should do hashing on his own (it will be either
 GOST R 34.11-94 (@pxref{GOSTHASH94CP}) or GOST R 34.11-2012, Streebog, which nor part of the library yet).
 
 @deftypefun void gostdsa_vko (const struct ecc_scalar *@var{priv}, const struct ecc_point *@var{pub}, size_t @var{ukm_length}, const uint8_t *@var{ukm}, uint8_t *@var{out})
-Uses private key @var{priv}, public ket @var{pub} and shared key material
+Uses private key @var{priv}, public key @var{pub} and shared key material
 @var{ukm} to generate shared secret, written to buffer @var{out}. The buffer
-should be of the size equal to 2 private key lengths: 64 bytes for 256 bit
+should be of the size equal to 2 curve coordinate lengths: 64 bytes for 256 bit
 curves and 128 bytes for 512 bit ones. UKM is a shared key material, usually
-transferred in cleartext. It does not have to be secret.
+transferred in cleartext. The UKM is intended to be fairly small, and
+this functions requires that @var{ukm_length} is less than the byte size
+of the group order q, i.e., at most 31 with the gost_gc256b curve and at
+most 63 when used with the gost_gc512a curve.
 @end deftypefun
 
 @node Curve 25519 and Curve 448

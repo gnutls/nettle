@@ -1,3 +1,10 @@
+2026-10-22  Niels Möller  <nisse@lysator.liu.se>
+
+	* gostdsa-vko.c (gostdsa_vko): Require that size of the UKM is
+	strictly less than the bytesize of the group order q, to rule out
+	UKM >= q.
+	* nettle.texinfo (GOSTDSA): Document the maximum size for the UKM.
+
 2026-09-03  Niels Möller  <nisse@lysator.liu.se>
 
 	Fix bug in gostdsa digest handling, reported by Jérémy Jean.

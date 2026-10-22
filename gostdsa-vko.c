@@ -60,7 +60,7 @@ gostdsa_vko (const struct ecc_scalar *priv,
 		uint8_t *out)
 {
   const struct ecc_curve *ecc = priv->ecc;
-  unsigned bsize = (ecc_bit_size (ecc) + 7) / 8;
+  unsigned bsize = (ecc->p.bit_size + 7) / 8;
   mp_size_t size = ecc->p.size;
   mp_size_t itch = 4*size + ecc->mul_itch;
   mp_limb_t *scratch;
@@ -70,7 +70,8 @@ gostdsa_vko (const struct ecc_scalar *priv,
 
   assert (pub->ecc == ecc);
   assert (priv->ecc == ecc);
-  assert (ukm_length <= bsize);
+  /* Ensures that UKM < q, and hence already reduced mod q. */
+  assert (ukm_length < (ecc->q.bit_size + 7) / 8);
 
   scratch = gmp_alloc_limbs (itch);
 
@@ -79,7 +80,7 @@ gostdsa_vko (const struct ecc_scalar *priv,
 #define XYZ scratch
 #define TEMP_Y (scratch + 4*size)
 
-  mpn_set_base256_le (UKM, size, ukm, ukm_length);
+  mpn_set_base256_le (UKM, ecc->q.size, ukm, ukm_length);
 
   /* If ukm is 0, set it to 1, otherwise the result will be allways equal to 0,
    * no matter what private and public keys are. See RFC 4357 referencing GOST
