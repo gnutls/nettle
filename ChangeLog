@@ -2,7 +2,7 @@
 
 	* gostdsa-vko.c (gostdsa_vko): Require that size of the UKM is
 	strictly less than the bytesize of the group order q, to rule out
-	UKM >= q.
+	UKM >= q. Fixes another 0 (mod q) issue reported by Jérémy Jean.
 	* nettle.texinfo (GOSTDSA): Document the maximum size for the UKM.
 
 2026-09-03  Niels Möller  <nisse@lysator.liu.se>
