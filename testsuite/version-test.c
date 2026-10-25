@@ -39,4 +39,5 @@ test_main (void)
      version of nettle which is installed on the system. */
   ASSERT (nettle_version_major () == NETTLE_VERSION_MAJOR);
   ASSERT (nettle_version_minor () == NETTLE_VERSION_MINOR);
+  ASSERT (nettle_version_patch_level () == NETTLE_VERSION_PATCH_LEVEL);
 }
