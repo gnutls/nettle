@@ -1,3 +1,13 @@
+2026-10-25  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac: Use $(...) rather than `...`. Write shell tests
+	with proper and consistent quoting like "$foo " = yes, rather than
+	old-style variants like x$foo = xyes.
+	* Makefile.in: Use $$(...) rater than `...`, and GNU make
+	constructions rather than `basename ...`.
+	* testsuite/, tools/: Update various test shell scripts to use
+	$(...) rather than `...`.
+
 2026-10-22  Niels Möller  <nisse@lysator.liu.se>
 
 	* gostdsa-vko.c (gostdsa_vko): Require that size of the UKM is

@@ -3,7 +3,7 @@
 # Check that all exported symbols use the nettle prefix.
 
 if [ -z "$srcdir" ] ; then
-  srcdir=`pwd`
+  srcdir=$(pwd)
 fi
 
 : ${NM:=nm}

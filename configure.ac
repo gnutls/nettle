@@ -17,8 +17,8 @@ LIBHOGWEED_MAJOR=7
 LIBHOGWEED_MINOR=0
 
 dnl Note double square brackets, for extra m4 quoting.
-MAJOR_VERSION=`echo $PACKAGE_VERSION | sed 's/^\([[^.]]*\)\..*/\1/'`
-MINOR_VERSION=`echo $PACKAGE_VERSION | sed 's/^[[^.]]*\.\([[0-9]]*\).*/\1/'`
+MAJOR_VERSION=$(echo $PACKAGE_VERSION | sed 's/^\([[^.]]*\)\..*/\1/')
+MINOR_VERSION=$(echo $PACKAGE_VERSION | sed 's/^[[^.]]*\.\([[0-9]]*\).*/\1/')
 AC_SUBST([MAJOR_VERSION])
 AC_SUBST([MINOR_VERSION])
 
@@ -110,7 +110,7 @@ AC_ARG_ENABLE(mini-gmp,
 
 AC_ARG_VAR(ASM_FLAGS, [Extra flags for processing assembly source files])
 
-if test "x$enable_mini_gmp" = xyes ; then
+if test "$enable_mini_gmp" = yes ; then
   NETTLE_USE_MINI_GMP=1
   HOGWEED_EXTRA_SYMBOLS="mpz_*;gmp_*;mpn_*;mp_*;"
   CFLAGS="$CFLAGS -DMINI_GMP_ENABLE_FLOAT=0"
@@ -165,7 +165,7 @@ NETTLE_PROG_VALGRIND
 
 LSH_DEPENDENCY_TRACKING
 
-if test "x$enable_gcov" = "xyes"; then
+if test "$enable_gcov" = yes; then
   CFLAGS="$CFLAGS -ftest-coverage -fprofile-arcs"
 fi
 
@@ -211,7 +211,7 @@ uint64_t y = __builtin_bswap64(x);
   [nettle_cv_c_builtin_bswap64=no])])
 
 AH_TEMPLATE([HAVE_BUILTIN_BSWAP64], [Define if __builtin_bswap64 is available])
-if test "x$nettle_cv_c_builtin_bswap64" = "xyes" ; then
+if test "$nettle_cv_c_builtin_bswap64" = yes ; then
   AC_DEFINE(HAVE_BUILTIN_BSWAP64)
 fi
 
@@ -237,13 +237,13 @@ struct flock fl;
   [nettle_cv_fcntl_locking=no])])
 
 AH_TEMPLATE([HAVE_FCNTL_LOCKING], [Define if fcntl file locking is available])
-if test "x$nettle_cv_fcntl_locking" = "xyes" ; then
+if test "$nettle_cv_fcntl_locking" = yes ; then
   AC_DEFINE(HAVE_FCNTL_LOCKING)
 fi
 
 # Checks for libraries
-if test "x$enable_public_key" = "xyes" ; then
-  if test "x$enable_mini_gmp" = "xno" ; then
+if test "$enable_public_key" = yes ; then
+  if test "$enable_mini_gmp" = no ; then
     # mpn_zero_p was added in GMP-6.1.0
     AC_CHECK_LIB(gmp, __gmpn_zero_p,,
         [AC_MSG_WARN(
@@ -254,9 +254,9 @@ if test "x$enable_public_key" = "xyes" ; then
 fi
 
 nettle_cv_gmp_numb_bits=0
-if test "x$enable_public_key" = "xyes" ; then
+if test "$enable_public_key" = yes ; then
   # Check for gmp limb size
-  if test "x$enable_mini_gmp" = "xyes" ; then
+  if test "$enable_mini_gmp" = yes ; then
     AC_MSG_CHECKING([for mini-gmp limb size])
     # With mini-gmp, mp_limb_t is always unsigned long.
     AC_COMPUTE_INT(nettle_cv_gmp_numb_bits, [(sizeof(unsigned long) * CHAR_BIT)],
@@ -279,7 +279,7 @@ NUMB_BITS="$nettle_cv_gmp_numb_bits"
 AC_SUBST([NUMB_BITS])
 
 # Substituted in version.h, used only with mini-gmp.
-if test "x$enable_mini_gmp" = "xyes" ; then
+if test "$enable_mini_gmp" = yes ; then
   GMP_NUMB_BITS="$NUMB_BITS"
 else
   GMP_NUMB_BITS="n/a"
@@ -380,7 +380,7 @@ case "$host_cpu" in
     ;;
 esac
 
-if test "x$ABI" != xstandard ; then
+if test "$ABI" != standard ; then
   AC_MSG_NOTICE([Compiler uses $ABI-bit ABI. To change, set CC.])
 fi
 
@@ -391,7 +391,7 @@ ASM_PPC_WANT_R_REGISTERS="n/a"
 
 # Select assembler code
 asm_path=
-if test "x$enable_assembler" = xyes ; then
+if test "$enable_assembler" = yes ; then
   case "$host_cpu" in
     [x86 | i?86* | k[5-8]* | pentium* | athlon])
       asm_path=x86
@@ -399,20 +399,20 @@ if test "x$enable_assembler" = xyes ; then
     [x86_64 | amd64])
       if test "$ABI" = 64 ; then
 	asm_path=x86_64
-	if test "x$enable_fat" = xyes ; then
+	if test "$enable_fat" = yes ; then
 	  asm_path="x86_64/fat $asm_path"
 	  OPT_NETTLE_SOURCES="fat-x86_64.c $OPT_NETTLE_SOURCES"
 	  # For now, not enabling aesni or sha_ni, since at least 
 	  # the latter appears unavailable on the gitlab test machines.
 	  FAT_OVERRIDE_LIST="vendor:intel vendor:amd"
 	else
-	  if test "x$enable_x86_aesni" = xyes ; then
+	  if test "$enable_x86_aesni" = yes ; then
 	    asm_path="x86_64/aesni $asm_path"
 	  fi
-	  if test "x$enable_x86_sha_ni" = xyes ; then
+	  if test "$enable_x86_sha_ni" = yes ; then
 	    asm_path="x86_64/sha_ni $asm_path"
 	  fi
-	  if test "x$enable_x86_pclmul" = xyes ; then
+	  if test "$enable_x86_pclmul" = yes ; then
 	    asm_path="x86_64/pclmul $asm_path"
 	  fi
 	fi
@@ -427,7 +427,7 @@ if test "x$enable_assembler" = xyes ; then
       ;;
     arm*)
       asm_path=arm
-      if test "x$enable_fat" = xyes ; then
+      if test "$enable_fat" = yes ; then
 	asm_path="arm/fat $asm_path"
 	OPT_NETTLE_SOURCES="fat-arm.c $OPT_NETTLE_SOURCES"
 	FAT_OVERRIDE_LIST="arch:5 arch:6,neon"
@@ -439,7 +439,7 @@ if test "x$enable_assembler" = xyes ; then
 	    asm_path="arm/v6 arm"
 	    ;;
 	esac
-	if test "x$enable_arm_neon" = xyes ; then
+	if test "$enable_arm_neon" = yes ; then
 	  asm_path="arm/neon $asm_path"
 	fi
       fi
@@ -447,7 +447,7 @@ if test "x$enable_assembler" = xyes ; then
     aarch64*)
       if test "$ABI" = 64 ; then
         asm_path=arm64
-        if test "x$enable_fat" = xyes ; then
+        if test "$enable_fat" = yes ; then
           asm_path="arm64/fat $asm_path"
           OPT_NETTLE_SOURCES="fat-arm64.c $OPT_NETTLE_SOURCES"
           FAT_OVERRIDE_LIST="none aes pmull sha1 sha2"
@@ -468,7 +468,7 @@ if test "x$enable_assembler" = xyes ; then
       if test "$ABI" = 64 ; then
 	GMP_ASM_POWERPC_R_REGISTERS
 	asm_path="powerpc64"
-	if test "x$enable_fat" = xyes ; then
+	if test "$enable_fat" = yes ; then
 	  asm_path="powerpc64/fat $asm_path"
 	  OPT_NETTLE_SOURCES="fat-ppc.c $OPT_NETTLE_SOURCES"
 	  FAT_OVERRIDE_LIST="none crypto_ext altivec power9"
@@ -490,7 +490,7 @@ if test "x$enable_assembler" = xyes ; then
     *s390x*)
       if test "$ABI" = 64 ; then
         asm_path="s390x"
-        if test "x$enable_fat" = xyes ; then
+        if test "$enable_fat" = yes ; then
 	        asm_path="s390x/fat $asm_path"
 	        OPT_NETTLE_SOURCES="fat-s390x.c $OPT_NETTLE_SOURCES"
           FAT_OVERRIDE_LIST="none vf msa msa_x1 msa_x2 msa_x4"
@@ -554,7 +554,7 @@ asm_nettle_optional_list="cpuid.asm cpu-facility.asm \
   umac-nh-n-2.asm umac-nh-2.asm"
 
 asm_hogweed_optional_list=""
-if test "x$enable_public_key" = "xyes" ; then
+if test "$enable_public_key" = yes ; then
   asm_hogweed_optional_list="ecc-secp192r1-modp.asm ecc-secp224r1-modp.asm \
     ecc-secp256r1-redc.asm ecc-secp384r1-modp.asm ecc-secp521r1-modp.asm \
     ecc-curve25519-modp.asm ecc-curve448-modp.asm"
@@ -565,7 +565,7 @@ OPT_HOGWEED_OBJS=""
 
 asm_file_list=""
 
-if test "x$enable_assembler" = xyes ; then
+if test "$enable_assembler" = yes ; then
   if test -n "$asm_path"; then
     AC_MSG_NOTICE([Looking for assembler files in $asm_path.])
     for tmp_f in $asm_replace_list ; do
@@ -581,7 +581,7 @@ if test "x$enable_assembler" = xyes ; then
     dnl same destination argument $tmp_f multiple times.
     for tmp_n in $asm_nettle_optional_list ; do
       dnl Note extra pair of [] in sed expression
-      tmp_b=`echo "$tmp_n" | sed 's/\.[[^.]]*$//'`
+      tmp_b=$(echo "$tmp_n" | sed 's/\.[[^.]]*$//')
       for asm_dir in $asm_path ; do
 	if test -f "$srcdir/$asm_dir/$tmp_n"; then
 	  asm_file_list="$asm_file_list $tmp_n"
@@ -590,7 +590,7 @@ if test "x$enable_assembler" = xyes ; then
 	    AC_DEFINE_UNQUOTED(HAVE_NATIVE_$tmp_func)
 	    eval HAVE_NATIVE_$tmp_func=yes
 	  done <<EOF
-[`sed -n 's/^.*[^ 	]*PROLOGUE(_*\(nettle_\)*\([^)]*\)).*$/\2/p' < "$srcdir/$asm_dir/$tmp_n"`]
+[$(sed -n 's/^.*[^ 	]*PROLOGUE(_*\(nettle_\)*\([^)]*\)).*$/\2/p' < "$srcdir/$asm_dir/$tmp_n")]
 EOF
 	  OPT_NETTLE_OBJS="$OPT_NETTLE_OBJS $tmp_b"'.$(OBJEXT)'
 	  break
@@ -599,12 +599,12 @@ EOF
     done	
     for tmp_h in $asm_hogweed_optional_list ; do
       dnl Note extra pair of [] in sed expression
-      tmp_b=`echo "$tmp_h" | sed 's/\.[[^.]]*$//'`
+      tmp_b=$(echo "$tmp_h" | sed 's/\.[[^.]]*$//')
       for asm_dir in $asm_path ; do
 	if test -f "$srcdir/$asm_dir/$tmp_h"; then
 	  dnl Note double square brackets, for extra m4 quoting.
-	  tmp_bits=`grep GMP_NUMB_BITS "$srcdir/$asm_dir/$tmp_h" \
-            | sed 's/^.*GMP_NUMB_BITS(\([[0-9]]*\)).*$/\1/'`
+	  tmp_bits=$(grep GMP_NUMB_BITS "$srcdir/$asm_dir/$tmp_h" \
+            | sed 's/^.*GMP_NUMB_BITS(\([[0-9]]*\)).*$/\1/')
 	  if test "$tmp_bits" && test "$tmp_bits" != "${NUMB_BITS}" ; then
 	     AC_MSG_WARN([skipping $tmp_h, because GMP_NUMB_BITS != $tmp_bits])
 	     continue
@@ -615,7 +615,7 @@ EOF
 	    AC_DEFINE_UNQUOTED(HAVE_NATIVE_$tmp_func)
 	    eval HAVE_NATIVE_$tmp_func=yes
 	  done <<EOF
-[`sed -n 's/[^ 	]*PROLOGUE(_*\(nettle_\)*\([^)]*\)).*$/\2/p' < "$srcdir/$asm_dir/$tmp_h"`]
+[$(sed -n 's/[^ 	]*PROLOGUE(_*\(nettle_\)*\([^)]*\)).*$/\2/p' < "$srcdir/$asm_dir/$tmp_h")]
 EOF
 	  OPT_HOGWEED_OBJS="$OPT_HOGWEED_OBJS $tmp_b"'.$(OBJEXT)'
 	  break
@@ -643,7 +643,7 @@ AC_SUBST([OPT_NETTLE_SOURCES])
 AC_SUBST([FAT_OVERRIDE_LIST])
 AC_SUBST([FAT_EMULATE_LIST])
 AC_SUBST([ASM_RODATA])
-if test "x$enable_assembler" = xyes ; then
+if test "$enable_assembler" = yes ; then
   IF_ASM=''
 else
   IF_ASM='#'
@@ -714,7 +714,7 @@ AH_VERBATIM([HAVE_NATIVE],
 #undef HAVE_NATIVE_umac_nh
 #undef HAVE_NATIVE_umac_nh_n])
 
-if test "x$enable_pic" = xyes; then
+if test "$enable_pic" = yes; then
     LSH_CCPIC
 else
     CCPIC=''
@@ -742,10 +742,10 @@ case "$host_os" in
         LIBHOGWEED_FORLINK='cyghogweed-$(LIBHOGWEED_MAJOR).dll'
         ;;
     esac
-    if test "x$cross_compiling" = xyes ; then
+    if test "$cross_compiling" = yes ; then
       EMULATOR=wine
     fi
-    if test "x$ABI" = x64 ; then
+    if test "$ABI" = 64 ; then
         W64_ABI=yes
     fi
     LIBNETTLE_SONAME=''
@@ -762,7 +762,7 @@ case "$host_os" in
     IF_DLL=''
     ;;
   midipix*)
-    if test "x$ABI" = x64 ; then
+    if test "$ABI" = 64 ; then
         W64_ABI=yes
     fi
     LIBNETTLE_FORLINK=libnettle.so
@@ -834,7 +834,7 @@ ASM_TYPE_PROGBITS='@progbits'
 ASM_MARK_NOEXEC_STACK=''
 ASM_ALIGN_LOG=''
 
-if test x$enable_assembler = xyes ; then
+if test "$enable_assembler" = yes ; then
   AC_CACHE_CHECK([if globals are prefixed by underscore],
   nettle_cv_asm_underscore,
   [ # Default is no underscore
@@ -850,7 +850,7 @@ if test x$enable_assembler = xyes ; then
           AC_MSG_WARN([nm does not list a_global_symbol at all])
 	fi],
       [AC_MSG_WARN([test program with a single global could not be compiled!?])])])
-  if test x$nettle_cv_asm_underscore = xyes ; then
+  if test "$nettle_cv_asm_underscore" = yes ; then
     ASM_SYMBOL_PREFIX='_'
   fi
 
@@ -883,12 +883,12 @@ foo:
        [nettle_cv_asm_type_hash_function=yes],
        [nettle_cv_asm_type_hash_function=no])])
 
-  if test x$nettle_cv_asm_type_percent_function = xyes ; then
+  if test "$nettle_cv_asm_type_percent_function" = yes ; then
     ASM_ELF_STYLE='yes'
     ASM_TYPE_FUNCTION='%function'
     ASM_TYPE_PROGBITS='%progbits'
   else
-    if test x$nettle_cv_asm_type_hash_function = xyes ; then
+    if test "$nettle_cv_asm_type_hash_function" = yes ; then
       ASM_ELF_STYLE='yes'
       ASM_TYPE_FUNCTION='#function'
       ASM_TYPE_PROGBITS='#progbits'
@@ -908,7 +908,7 @@ _foo:
 ],
         [nettle_cv_asm_coff_type=yes],
         [nettle_cv_asm_coff_type=no])])
-  if test "x$nettle_cv_asm_coff_type" = "xyes" ; then
+  if test "$nettle_cv_asm_coff_type" = yes ; then
     ASM_COFF_STYLE=yes
   fi
 
@@ -931,7 +931,7 @@ EOF
       cat conftest.s >&AS_MESSAGE_LOG_FD
     fi
     rm -f conftest.*])
-  if test x$nettle_cv_asm_gnu_stack = xyes ; then
+  if test "$nettle_cv_asm_gnu_stack" = yes ; then
     ASM_MARK_NOEXEC_STACK='.section .note.GNU-stack,"",TYPE_PROGBITS'
   fi
 
@@ -1044,24 +1044,24 @@ AC_PATH_PROG(M4, m4, m4)
 
 AH_TEMPLATE([WITH_HOGWEED], [Defined if public key features are enabled])
 
-if test "x$enable_public_key" = xyes ; then
+if test "$enable_public_key" = yes ; then
   AC_DEFINE(WITH_HOGWEED)
   IF_HOGWEED=''
 else
   IF_HOGWEED='#'
 fi
 
-if test "x$enable_static" = xyes ; then
+if test "$enable_static" = yes ; then
   IF_STATIC=''
 else
   IF_STATIC='#'
 fi
 
 IF_DLOPEN_TEST='#'
-if test "x$enable_shared" = xyes ; then
+if test "$enable_shared" = yes ; then
   IF_SHARED=''
   IF_NOT_SHARED='#'
-  if test "x$ac_cv_lib_dl_dlopen" = xyes ; then
+  if test "$ac_cv_lib_dl_dlopen" = yes ; then
     IF_DLOPEN_TEST=''
   fi
 else
@@ -1070,14 +1070,14 @@ else
 fi
 
 # Documentation tools
-if test "x$enable_documentation" != "xno"; then
+if test "$enable_documentation" != no; then
   AC_PATH_PROG(MAKEINFO, makeinfo, not-found)
 
-  if test "x$MAKEINFO" != "xnot-found"; then
+  if test "$MAKEINFO" != not-found; then
     enable_documentation=yes
     AC_SUBST(MAKEINFO)
   else
-    if test "x$enable_documentation" == "xauto" ; then
+    if test "$enable_documentation" = auto ; then
       enable_documentation=no
     else
       AC_MSG_ERROR([Cannot find 'makeinfo', required for documentation.])
@@ -1085,13 +1085,13 @@ if test "x$enable_documentation" != "xno"; then
   fi
 fi
 
-if test "x$enable_documentation" = "xyes" ; then
+if test "$enable_documentation" = yes ; then
   IF_DOCUMENTATION=''
 else
   IF_DOCUMENTATION='#'
 fi
 
-if test "x$enable_mini_gmp" = "xyes" ; then
+if test "$enable_mini_gmp" = yes ; then
   IF_MINI_GMP=''
 else
   IF_MINI_GMP='#'
@@ -1109,12 +1109,12 @@ AC_SUBST(IF_MINI_GMP)
 OPENSSL_LIBFLAGS=''
 
 # Check for openssl's libcrypto (used only for benchmarking)
-if test x$enable_openssl = xyes ; then
+if test "$enable_openssl" = yes ; then
   AC_CHECK_LIB(crypto, EVP_CIPHER_CTX_new,
     [OPENSSL_LIBFLAGS='-lcrypto'],
     [enable_openssl=no])
 fi
-if test x$enable_openssl = xyes ; then
+if test "$enable_openssl" = yes ; then
   AC_MSG_CHECKING([if openssl supports the functions used by nettle benchmark programs])
   save_LIBS="$LIBS"
   LIBS="$LIBS $OPENSSL_LIBFLAGS"
@@ -1164,7 +1164,7 @@ LIBS="$old_LIBS"
 AC_SUBST(BENCH_LIBS)
 
 # Set these flags *last*, or else the test programs won't compile
-if test x$GCC = xyes ; then
+if test "$GCC" = yes ; then
   CFLAGS="$CFLAGS -ggdb3 -Wall -W -Wno-sign-compare \
   -Wmissing-prototypes -Wmissing-declarations -Wstrict-prototypes \
   -Wpointer-arith -Wbad-function-cast -Wnested-externs"

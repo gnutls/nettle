@@ -362,7 +362,7 @@ des_headers = rotors.h keymap.h
 
 # Generate DES headers.
 $(des_headers): desdata.stamp
-	f="$(srcdir)/`basename $@`"; \
+	f="$(srcdir)/$(@F)"; \
 	  ./desdata$(EXEEXT_FOR_BUILD) $(@F) > $${f}T; \
 	  test -s $${f}T && mv -f $${f}T $$f
 
@@ -469,15 +469,15 @@ ml-kem-internal.$(OBJEXT): mlkem-tables.h
 
 # Texinfo rules
 %.info: %.texinfo
-	cd $(srcdir) && $(MAKEINFO) --output $@ `basename "$<"`
+	cd $(srcdir) && $(MAKEINFO) --output $@ $(<F)
 
 %.html: %.texinfo
 	cd $(srcdir) && $(MAKEINFO) --html --no-split \
-	  --output $@T `basename "$<"` \
+	  --output $@T $(<F) \
 	  && test -s $@T && mv -f $@T $@
 
 %.pdf: %.texinfo
-	cd $(srcdir) && texi2pdf `basename "$<"`
+	cd $(srcdir) && texi2pdf $(<F)
 
 # Configure-related rules, mostly copied from the autoconf manual. No
 # $(srcdir) prefixes on the targets, though.
@@ -660,7 +660,7 @@ distdir: $(DISTFILES)
 	done
 	set -e; for d in $(SUBDIRS); do \
 	  sd="$(distdir)/$$d" ; \
-	  mkdir "$$sd" && $(MAKE) -C $$d distdir="`cd $$sd && pwd`" $@ ; \
+	  mkdir "$$sd" && $(MAKE) -C $$d distdir="$$(cd $$sd && pwd)" $@ ; \
 	done
 
 TAR_OPTIONS = --owner=0 --group=0 --numeric-owner --sort=name --mode=go+u,go-w --format=ustar
@@ -679,24 +679,24 @@ distcheck: dist
 	  | { cd distcheck-tmp && tar xf - && chmod -R a-w $(distdir) ; }
 	mkdir distcheck-tmp/build
 	mkdir distcheck-tmp/install
-	cd distcheck-tmp/build && ../$(distdir)/configure --prefix="`cd ../install && pwd`"
+	cd distcheck-tmp/build && ../$(distdir)/configure --prefix="$$(cd ../install && pwd)"
 	cd distcheck-tmp/build && $(MAKE)
 	cd distcheck-tmp/build && $(MAKE) check
 	cd distcheck-tmp/build && $(MAKE) install
 	cd distcheck-tmp/build && $(MAKE) uninstall
 	cd distcheck-tmp && find install -type f -print > leftover-install-files
-	@test `cat distcheck-tmp/leftover-install-files | wc -l` -le 1  \
+	@test "$$(cat distcheck-tmp/leftover-install-files | wc -l)" -le 1  \
 	  || { echo "ERROR: files left after uninstall:" ; \
 	       cat distcheck-tmp/leftover-install-files ; \
 	       exit 1; }
 	chmod -R a-w distcheck-tmp/install
 	mkdir distcheck-tmp/destdir
-	destdir="`cd distcheck-tmp/destdir && pwd`" \
+	destdir="$$(cd distcheck-tmp/destdir && pwd)" \
 	  && cd distcheck-tmp/build \
 	  && $(MAKE) install DESTDIR="$$destdir" \
 	  && $(MAKE) uninstall DESTDIR="$$destdir"
 	cd distcheck-tmp && find destdir -type f -print > leftover-destdir-files
-	@test `cat distcheck-tmp/leftover-destdir-files | wc -l` -le 1  \
+	@test "$$(cat distcheck-tmp/leftover-destdir-files | wc -l)" -le 1  \
 	  || { echo "ERROR: destdir files left after uninstall:" ; \
 	       cat distcheck-tmp/leftover-destdir-files ; \
 	       exit 1; }	
@@ -704,7 +704,7 @@ distcheck: dist
 	cd distcheck-tmp/build && rm *.gz
 	cd distcheck-tmp/build && $(MAKE) distclean
 	cd distcheck-tmp && find build -type f -print > leftover-build-files
-	@test `cat distcheck-tmp/leftover-build-files | wc -l` -eq 0  \
+	@test "$$(cat distcheck-tmp/leftover-build-files | wc -l)" -eq 0  \
 	  || { echo "ERROR: files left in build directory after distclean:" ; \
 	       cat distcheck-tmp/leftover-build-files ; \
 	       exit 1; }

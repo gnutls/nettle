@@ -1,7 +1,7 @@
 #! /bin/sh
 
 if [ -z "$srcdir" ] ; then
-  srcdir=`pwd`
+  srcdir=$(pwd)
 fi
 
 test_pbkdf2 () {
@@ -11,7 +11,7 @@ test_pbkdf2 () {
     expected="$4"
     # Relies on division rounding down; breaks if
     # $expected contains more than one space.
-    length=`expr "$expected" : '.*' / 2`
+    length=$(expr "$expected" : '.*' / 2)
 
     # Delete carriage return characters, needed when testing with
     # wine.
