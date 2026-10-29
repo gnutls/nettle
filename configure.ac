@@ -17,10 +17,14 @@ LIBHOGWEED_MAJOR=7
 LIBHOGWEED_MINOR=0
 
 dnl Note double square brackets, for extra m4 quoting.
-MAJOR_VERSION=$(echo $PACKAGE_VERSION | sed 's/^\([[^.]]*\)\..*/\1/')
-MINOR_VERSION=$(echo $PACKAGE_VERSION | sed 's/^[[^.]]*\.\([[0-9]]*\).*/\1/')
-AC_SUBST([MAJOR_VERSION])
-AC_SUBST([MINOR_VERSION])
+NETTLE_VERSION_MAJOR=$(echo $PACKAGE_VERSION | sed 's/^\([[^.]]*\)\..*/\1/')
+NETTLE_VERSION_MINOR=$(echo $PACKAGE_VERSION | sed 's/^[[^.]]*\.\([[0-9]]*\).*/\1/')
+NETTLE_VERSION_PATCH_LEVEL=$(echo $PACKAGE_VERSION | sed -n 's/^[[^.]]*\.[[^.]]*\.\([[0-9]]*\).*/\1/;tfound;i0
+q;:found;p')
+
+AC_SUBST([NETTLE_VERSION_MAJOR])
+AC_SUBST([NETTLE_VERSION_MINOR])
+AC_SUBST([NETTLE_VERSION_PATCH_LEVEL])
 
 AC_CANONICAL_HOST
 

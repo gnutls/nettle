@@ -1,3 +1,12 @@
+2026-10-29  Niels Möller  <nisse@lysator.liu.se>
+
+	* configure.ac (MAJOR_VERSIONMINOR_VERSION): Renamed, to...
+	(NETTLE_VERSION_MAJOR, NETTLE_VERSION_MINOR): ... new names.
+	(NETTLE_VERSION_PATCH_LEVEL): New substituted value.
+	* version.h.in (NETTLE_VERSION_PATCH_LEVEL): New constant.
+	* version.c: (nettle_version_patch_level): New function.
+	* testsuite/version-test.c (test_main): Update test.
+
 2026-10-25  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac: Use $(...) rather than `...`. Write shell tests

@@ -40,8 +40,9 @@ extern "C" {
 #endif
 
 /* Individual version numbers in decimal */
-#define NETTLE_VERSION_MAJOR @MAJOR_VERSION@
-#define NETTLE_VERSION_MINOR @MINOR_VERSION@
+#define NETTLE_VERSION_MAJOR @NETTLE_VERSION_MAJOR@
+#define NETTLE_VERSION_MINOR @NETTLE_VERSION_MINOR@
+#define NETTLE_VERSION_PATCH_LEVEL @NETTLE_VERSION_PATCH_LEVEL@
 
 #define NETTLE_USE_MINI_GMP @NETTLE_USE_MINI_GMP@
 
@@ -56,6 +57,9 @@ nettle_version_major (void);
 
 int
 nettle_version_minor (void);
+
+int
+nettle_version_patch_level (void);
 
 #ifdef __cplusplus
 }

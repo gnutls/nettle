@@ -46,3 +46,9 @@ nettle_version_minor (void)
 {
   return NETTLE_VERSION_MINOR;
 }
+
+int
+nettle_version_patch_level (void)
+{
+  return NETTLE_VERSION_PATCH_LEVEL;
+}
