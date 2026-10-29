@@ -40,7 +40,7 @@ Simon Josefsson		Port of Arctwo, from GnuTLS and libgcrypt. New
 			ports of LGPL Serpent and Blowfish code, from
 			libgcrypt. Port of Salsa20, based on djb's
 			reference. Implementation of PBKDF2 (RFC
-			2898) and drbg-ctr.
+			2898), drbg-ctr and sntrup761.
 
 Henrik Grubbström	AES assembly for Sparc64.
 
@@ -96,7 +96,7 @@ Amos Jeffries		Implementation of base64url encoding.
 Daiki Ueno		Implementation of RSA-PSS signatures,
 			curve448, SHA3 shake, ed448-shake256 signatures,
 			chacha functions for 32-bit nonce, struct
-			nettle_mac interface, siv-gcm, RSA-OAEP.
+			nettle_mac interface, siv-gcm, RSA-OAEP, ML-KEM.
 
 Dmitry Baryshkov	CFB and CFB8 modes, CMAC64. gosthash94cp and
 			Streebog hash functions, GOST DSA signatures
