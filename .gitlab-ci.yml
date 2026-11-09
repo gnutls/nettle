@@ -67,6 +67,13 @@ native/ndebug:
   variables:
     EXTRA_CONFIGURE_ARGS: 'CPPFLAGS=-DNDEBUG --disable-assembler'
 
+native/clang:
+  extends: .native-build
+  image: $BUILD_IMAGES:buildenv-clang
+  variables:
+    EXTRA_CONFIGURE_ARGS: '--disable-assembler'
+    CC: clang
+
 native/ubsan:
   extends: .native-build
   variables:
