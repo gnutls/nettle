@@ -46,18 +46,7 @@
 #include "sntrup-internal.h"
 
 #include "memops.h"
-
-/* 0 if weight(r) == w, else -1 */
-static int
-Weightw_mask (sntrup761_R3_t r)
-{
-  int weight = 0;
-  int i;
-
-  for (i = 0; i < SNTRUP761_P; i++)
-    weight += r[i] & 1;
-  return uint16_nonzero_mask (weight - SNTRUP761_W);
-}
+#include "nettle-internal.h"
 
 /* R3_fromR(R_fromRq(r)) */
 static void
@@ -144,13 +133,33 @@ Rounded_decode (sntrup761_Rq_t r, const uint8_t *s)
     r[i] = R[i] * 3 - SNTRUP761_Q12;
 }
 
+/* Check that weight equals SNTRUP761_W. If not, set r to the
+   polynomial 1,..,1,0,...0 of the right weight. */
+static void
+check_weight (volatile sntrup761_R3_t r)
+{
+  uint16_t w, mask;
+  int i;
+
+  for (i = 0, w = SNTRUP761_W; i < SNTRUP761_P; i++)
+    w -= r[i] & 1;
+
+  mask = -IS_ZERO_SMALL (w); /* Mask set to all-ones if valid */
+
+  for (i = 0; i < SNTRUP761_P; i++)
+    r[i] &= mask;
+
+  mask = ~mask; /* Mask set to all-ones if not valid */
+  for (i = 0; i < SNTRUP761_W; i++)
+    r[i] -= mask;
+}
+
 /* r = ZDecrypt(C,sk) */
 static void
 ZDecrypt (const uint8_t *sk, sntrup761_R3_t r, const uint8_t *c_enc)
 {
   sntrup761_R3_t f, ginv;
   sntrup761_Rq_t c;
-  int mask;
   int i;
 
   Small_decode (f, sk);
@@ -166,11 +175,7 @@ ZDecrypt (const uint8_t *sk, sntrup761_R3_t r, const uint8_t *c_enc)
   R3_fromRq (r, c);
   R3_mult (r, r, ginv);
 
-  mask = Weightw_mask (r);	/* 0 if weight SNTRUP761_W, else -1 */
-  for (i = 0; i < SNTRUP761_W; i++)
-    r[i] = ((r[i] ^ 1) & ~mask) ^ 1;
-  for (; i < SNTRUP761_P; i++)
-    r[i] &= ~mask;
+  check_weight (r);
 }
 
 /* k = Decap(c,sk) */

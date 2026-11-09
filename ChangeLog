@@ -1,3 +1,10 @@
+2026-11-09  Niels Möller  <nisse@lysator.liu.se>
+
+	* sntrup761-decap.c (Weightw_mask): Deleted function, replaced with...
+	(check_weight): New function, hopefully less likely to be compiled
+	with undesired data-dependent branches.
+	(ZDecrypt): Updated to use check_weight.
+
 2026-10-29  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac (MAJOR_VERSIONMINOR_VERSION): Renamed, to...
