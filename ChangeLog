@@ -1,3 +1,8 @@
+2026-11-11  Niels Möller  <nisse@lysator.liu.se>
+
+	* tools/pkcs1-conv.c (main): On failure, call exit rather than
+	returning.
+
 2026-10-29  Niels Möller  <nisse@lysator.liu.se>
 
 	* configure.ac (MAJOR_VERSIONMINOR_VERSION): Renamed, to...

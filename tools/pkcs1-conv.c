@@ -655,7 +655,7 @@ main(int argc, char **argv)
   if (optind == argc)
     {
       if (!convert_file(&buffer, stdin, type, base64))
-	return EXIT_FAILURE;
+	exit (EXIT_FAILURE);
     }
   else
     {
@@ -669,7 +669,7 @@ main(int argc, char **argv)
 	    die("Failed to open `%s': %s.\n", argv[i], strerror(errno));
 
 	  if (!convert_file(&buffer, f, type, base64))
-	    return EXIT_FAILURE;
+	    exit (EXIT_FAILURE);
 
 	  fclose(f);
 	}
