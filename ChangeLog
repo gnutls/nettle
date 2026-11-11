@@ -1,5 +1,8 @@
 2026-11-11  Niels Möller  <nisse@lysator.liu.se>
 
+	* testsuite/testutils.c (read_hex_file): Rework EOF handling, to
+	never call fread again after EOF.
+
 	* tools/pkcs1-conv.c (main): On failure, call exit rather than
 	returning.
 

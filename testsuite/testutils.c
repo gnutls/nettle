@@ -2575,11 +2575,18 @@ read_hex_file (const char *name, size_t max_size)
 
   for (done = 0;;)
     {
-      size_t left = s->length - done;
-      size_t got = fread (input_buf, 1, MIN (left, sizeof (input_buf)), input);
+      size_t got = fread (input_buf, 1, sizeof (input_buf), input);
       size_t res;
 
-      if (!got)
+      res = s->length - done;
+      if (!base16_decode_update (&ctx, &res, s->data + done, got, input_buf))
+	{
+	  fprintf (stderr, "hex decoding %s failed (possibly exceeding max size)\n", name);
+	  FAIL ();
+	}
+      done += res;
+
+      if (got < sizeof(input_buf))
 	{
 	  if (ferror (input))
 	    {
@@ -2591,14 +2598,6 @@ read_hex_file (const char *name, size_t max_size)
 	  s->length = done;
 	  return s;
 	}
-
-      res = s->length - done;
-      if (!base16_decode_update (&ctx, &res, s->data + done, got, input_buf))
-	{
-	  fprintf (stderr, "hex decoding %s failed (possibly exceeding max size)\n", name);
-	  FAIL ();
-	}
-      done += res;
     }
 }
 
