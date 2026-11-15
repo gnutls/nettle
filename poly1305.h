@@ -42,6 +42,9 @@ extern "C" {
 #endif
 
 /* Name mangling */
+#define poly1305_mac_set_key nettle_poly1305_mac_set_key
+#define poly1305_mac_update nettle_poly1305_mac_update
+#define poly1305_mac_digest nettle_poly1305_mac_digest
 #define poly1305_aes_set_key nettle_poly1305_aes_set_key
 #define poly1305_aes_set_nonce nettle_poly1305_aes_set_nonce
 #define poly1305_aes_update nettle_poly1305_aes_update
@@ -69,6 +72,26 @@ struct poly1305_ctx {
     uint64_t h64[2];
   } h;
 };
+
+struct poly1305_mac_ctx {
+  struct poly1305_ctx pctx;
+  uint8_t block[POLY1305_BLOCK_SIZE];
+  unsigned index;
+};
+
+#define POLY1305_MAC_DIGEST_SIZE 16
+#define POLY1305_MAC_S_SIZE 16
+#define POLY1305_MAC_R_SIZE 16
+
+void
+poly1305_mac_set_key(struct poly1305_mac_ctx* ctx, const uint8_t *r);
+
+void
+poly1305_mac_update(struct poly1305_mac_ctx* ctx, size_t length, const uint8_t *data);
+
+void
+poly1305_mac_digest(struct poly1305_mac_ctx* ctx, const uint8_t *s, uint8_t* digest);
+
 
 /* poly1305-aes */
 

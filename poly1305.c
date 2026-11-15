@@ -1,0 +1,72 @@
+/* poly1305.c
+
+   Copyright (C) 2013 Nikos Mavrogiannopoulos
+   Copyright (C) 2014 Niels Möller
+
+   This file is part of GNU Nettle.
+
+   GNU Nettle is free software: you can redistribute it and/or
+   modify it under the terms of either:
+
+     * the GNU Lesser General Public License as published by the Free
+       Software Foundation; either version 3 of the License, or (at your
+       option) any later version.
+
+   or
+
+     * the GNU General Public License as published by the Free
+       Software Foundation; either version 2 of the License, or (at your
+       option) any later version.
+
+   or both in parallel, as here.
+
+   GNU Nettle is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+
+   You should have received copies of the GNU General Public License and
+   the GNU Lesser General Public License along with this program.  If
+   not, see http://www.gnu.org/licenses/.
+*/
+
+#if HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#include <assert.h>
+#include <string.h>
+
+#include "poly1305.h"
+#include "poly1305-internal.h"
+#include "macros.h"
+
+void
+poly1305_mac_set_key(struct poly1305_mac_ctx* ctx, const uint8_t *r)
+{
+  _nettle_poly1305_set_key(&ctx->pctx, r);
+  ctx->index = 0;
+}
+
+void
+poly1305_mac_update(struct poly1305_mac_ctx* ctx, size_t length, const uint8_t *data)
+{
+  ctx->index = _nettle_poly1305_update(&ctx->pctx, ctx->block, ctx->index, length, data);
+}
+
+void
+poly1305_mac_digest(struct poly1305_mac_ctx* ctx, const uint8_t *s, uint8_t* digest)
+{
+  union nettle_block16 buffer;
+
+  if (ctx->index > 0) {
+    ctx->block[ctx->index] = 1;
+    memset(ctx->block + ctx->index + 1, 0, POLY1305_BLOCK_SIZE - 1 - ctx->index);
+    _nettle_poly1305_block (&ctx->pctx, ctx->block, 0);
+  }
+
+  memcpy(&buffer.b, s, POLY1305_MAC_S_SIZE);
+  _nettle_poly1305_digest(&ctx->pctx, &buffer);
+  memcpy(digest, buffer.b, POLY1305_MAC_DIGEST_SIZE);
+  ctx->index = 0;
+}
