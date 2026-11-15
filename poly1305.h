@@ -84,13 +84,13 @@ struct poly1305_mac_ctx {
 #define POLY1305_MAC_R_SIZE 16
 
 void
-poly1305_mac_set_key(struct poly1305_mac_ctx* ctx, const uint8_t *r);
+poly1305_mac_set_key(struct poly1305_mac_ctx *ctx, const uint8_t *r);
 
 void
-poly1305_mac_update(struct poly1305_mac_ctx* ctx, size_t length, const uint8_t *data);
+poly1305_mac_update(struct poly1305_mac_ctx *ctx, size_t length, const uint8_t *data);
 
 void
-poly1305_mac_digest(struct poly1305_mac_ctx* ctx, const uint8_t *s, uint8_t* digest);
+poly1305_mac_digest(struct poly1305_mac_ctx *ctx, const uint8_t *s, uint8_t *digest);
 
 
 /* poly1305-aes */

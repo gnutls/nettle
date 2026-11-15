@@ -1,3 +1,16 @@
+2026-11-15  Niels Möller  <nisse@lysator.liu.se>
+
+	From Tim Kosse:
+	* poly1305.h (struct poly1305_mac_ctx): New struct.
+	(POLY1305_MAC_DIGEST_SIZE, POLY1305_MAC_S_SIZE)
+	(POLY1305_MAC_R_SIZE): New constants.
+	* poly1305-mac.c (poly1305_mac_set_key, poly1305_mac_update)
+	(poly1305_mac_digest): New file, new functions.
+	* Makefile.in (nettle_SOURCES): Add poly1305-mac.c.
+	* nettle.texinfo (Poly1305): Document poly1305-mac.
+	* testsuite/poly1305-test.c (test_poly1305_mac): New functions.
+	(test_main): New tests for poly1305-mac.
+
 2026-11-11  Niels Möller  <nisse@lysator.liu.se>
 
 	* testsuite/testutils.c (read_hex_file): Rework EOF handling, to

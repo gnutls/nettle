@@ -1,7 +1,8 @@
-/* poly1305.c
+/* poly1305-mac.c
 
    Copyright (C) 2013 Nikos Mavrogiannopoulos
    Copyright (C) 2014 Niels Möller
+   Copyright (C) 2026 Tim Kosse
 
    This file is part of GNU Nettle.
 
@@ -42,28 +43,29 @@
 #include "macros.h"
 
 void
-poly1305_mac_set_key(struct poly1305_mac_ctx* ctx, const uint8_t *r)
+poly1305_mac_set_key(struct poly1305_mac_ctx *ctx, const uint8_t *r)
 {
   _nettle_poly1305_set_key(&ctx->pctx, r);
   ctx->index = 0;
 }
 
 void
-poly1305_mac_update(struct poly1305_mac_ctx* ctx, size_t length, const uint8_t *data)
+poly1305_mac_update(struct poly1305_mac_ctx *ctx, size_t length, const uint8_t *data)
 {
   ctx->index = _nettle_poly1305_update(&ctx->pctx, ctx->block, ctx->index, length, data);
 }
 
 void
-poly1305_mac_digest(struct poly1305_mac_ctx* ctx, const uint8_t *s, uint8_t* digest)
+poly1305_mac_digest(struct poly1305_mac_ctx *ctx, const uint8_t *s, uint8_t *digest)
 {
   union nettle_block16 buffer;
 
-  if (ctx->index > 0) {
-    ctx->block[ctx->index] = 1;
-    memset(ctx->block + ctx->index + 1, 0, POLY1305_BLOCK_SIZE - 1 - ctx->index);
-    _nettle_poly1305_block (&ctx->pctx, ctx->block, 0);
-  }
+  if (ctx->index > 0)
+    {
+      ctx->block[ctx->index] = 1;
+      memset(ctx->block + ctx->index + 1, 0, POLY1305_BLOCK_SIZE - 1 - ctx->index);
+      _nettle_poly1305_block (&ctx->pctx, ctx->block, 0);
+    }
 
   memcpy(&buffer.b, s, POLY1305_MAC_S_SIZE);
   _nettle_poly1305_digest(&ctx->pctx, &buffer);
